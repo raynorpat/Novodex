@@ -38,11 +38,29 @@
 
 	typedef float				NxF32;
 	typedef double				NxF64;
+
+#elif __APPLE__
+    typedef long long				NxI64;
+    typedef signed int			NxI32;
+    typedef signed short		NxI16;
+    typedef signed char			NxI8;
+
+    typedef unsigned long long	NxU64;
+    typedef unsigned int		NxU32;
+    typedef unsigned short		NxU16;
+    typedef unsigned char		NxU8;
+
+    typedef float				NxF32;
+    typedef double				NxF64;
 #else
 	#error Unknown platform!
 #endif
 
+#if __APPLE__
+    NX_COMPILE_TIME_ASSERT(sizeof(bool)==4);    // PPC has 4 byte bools
+#else
 	NX_COMPILE_TIME_ASSERT(sizeof(bool)==1);	// ...otherwise things might fail with VC++ 4.2 !
+#endif
 	NX_COMPILE_TIME_ASSERT(sizeof(NxI8)==1);
 	NX_COMPILE_TIME_ASSERT(sizeof(NxU8)==1);
 	NX_COMPILE_TIME_ASSERT(sizeof(NxI16)==2);

@@ -47,6 +47,7 @@ class NxMat33
 	public:
 	NX_INLINE NxMat33();
 	NX_INLINE NxMat33(NxMatrixType type);
+	NX_INLINE NxMat33(const NxVec3 &row0, const NxVec3 &row1, const NxVec3 &row2);
 
 	NX_INLINE NxMat33(const NxMat33&);
 	NX_INLINE NxMat33(const NxQuat &);
@@ -84,6 +85,10 @@ class NxMat33
 	NX_INLINE void setColumn(int col, const NxVec3 &);
 	NX_INLINE void getRow(int row, NxVec3 &) const;
 	NX_INLINE void getColumn(int col, NxVec3 &) const;
+
+	NX_INLINE NxVec3 getRow(int row) const;
+	NX_INLINE NxVec3 getColumn(int col) const;
+
 
 	//element access:
     NX_INLINE NxReal & operator()(int row, int col);
@@ -295,6 +300,12 @@ NX_INLINE NxMat33::NxMat33(const NxQuat &q)
 	fromQuat(q);
 	}
 
+NX_INLINE NxMat33::NxMat33(const NxVec3 &row0, const NxVec3 &row1, const NxVec3 &row2)
+{
+	data.s._11 = row0.x;  data.s._12 = row0.y;  data.s._13 = row0.z;
+	data.s._21 = row1.x;  data.s._22 = row1.y;  data.s._23 = row1.z;
+	data.s._31 = row2.x;  data.s._32 = row2.y;  data.s._33 = row2.z;
+}
 
 
 NX_INLINE NxMat33::~NxMat33()
@@ -646,6 +657,24 @@ NX_INLINE void NxMat33::getColumn(int col, NxVec3 & v) const
 #endif
 	}
 
+
+NX_INLINE NxVec3 NxMat33::getRow(int row) const
+{
+#ifndef TRANSPOSED_MAT33
+	return NxVec3(data.m[row][0],data.m[row][1],data.m[row][2]);
+#else
+	return NxVec3(data.m[0][row],data.m[1][row],data.m[2][row]);
+#endif
+}
+
+NX_INLINE NxVec3 NxMat33::getColumn(int col) const
+{
+#ifndef TRANSPOSED_MAT33
+	return NxVec3(data.m[0][col],data.m[1][col],data.m[2][col]);
+#else
+	return NxVec3(data.m[col][0],data.m[col][1],data.m[col][2]);
+#endif
+}
 
 NX_INLINE NxReal & NxMat33::operator()(int row, int col)
 	{

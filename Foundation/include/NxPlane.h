@@ -12,6 +12,7 @@
 #include "NxVec3.h"
 #include "NxMat34.h"
 
+// Plane equation used: a*x + b*y + c*z + d = 0
 class NxPlane
 	{
 	public:
@@ -91,6 +92,11 @@ class NxPlane
 	NX_INLINE NxPlane& set(const NxVec3& p, const NxVec3& _n)
 		{
 		normal = _n;
+		// Plane equation: a*x + b*y + c*z + d = 0
+		// p belongs to plane so:
+		//     a*p.x + b*p.y + c*p.z + d = 0
+		// <=> (n|p) + d = 0
+		// <=> d = - (n|p)
 		d = - p.dot(_n);
 		return *this;
 		}
@@ -106,6 +112,7 @@ class NxPlane
 		normal = Edge0.cross(Edge1);
 		normal.normalize();
 
+		// See comments in set() for computation of d
 		d = -p0.dot(normal);
 
 		return	*this;
@@ -113,6 +120,7 @@ class NxPlane
 
 	NX_INLINE NxF32 distance(const NxVec3& p) const
 		{
+		// Valid for plane equation a*x + b*y + c*z + d = 0
 		return p.dot(normal) + d;
 		}
 
@@ -126,7 +134,10 @@ class NxPlane
 	*/
 	NX_INLINE NxVec3 project(const NxVec3 & p) const
 		{
-		return p + normal * distance(p);
+		// Pretend p is on positive side of plane, i.e. plane.distance(p)>0.
+		// To project the point we have to go in a direction opposed to plane's normal, i.e.:
+		return p - normal * distance(p);
+//		return p + normal * distance(p);
 		}
 
 	/**
@@ -134,7 +145,10 @@ class NxPlane
 	*/
 	NX_INLINE NxVec3 pointInPlane() const
 		{
-		return normal * d;
+		// Project origin (0,0,0) to plane:
+		// (0) - normal * distance(0) = - normal * ((p|(0)) + d) = -normal*d
+		return - normal * d;
+//		return normal * d;
 		}
 
 	NX_INLINE void normalize()

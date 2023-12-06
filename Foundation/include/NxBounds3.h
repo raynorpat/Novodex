@@ -109,6 +109,11 @@ class NxBounds3
 	 */
 	NX_INLINE void setCenterExtents(const NxVec3& c, const NxVec3& e);
 
+	/**
+	scales the AABB.
+	 */
+	NX_INLINE void scale(NxF32 scale);
+
 	NX_INLINE NxVec3 & getMin();
 	NX_INLINE NxVec3 & getMax();
 
@@ -259,6 +264,12 @@ NX_INLINE void NxBounds3::setCenterExtents(const NxVec3& c, const NxVec3& e)
 	{
 	min = c - e;
 	max = c + e;
+	}
+
+NX_INLINE void NxBounds3::scale(NxF32 scale)
+	{
+	min *= scale;
+	max *= scale;
 	}
 
 NX_INLINE NxVec3 & NxBounds3::getMin()

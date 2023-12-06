@@ -52,8 +52,9 @@ class NxUserAllocatorAccess
 		*/
 		NX_INLINE void free(void * memory)
 			{
-			nxFoundationSDKAllocator->free(memory);
+			if(memory)	nxFoundationSDKAllocator->free(memory);
 			}
+
 	};
 
 #endif

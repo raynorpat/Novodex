@@ -10,6 +10,10 @@
 
 #include "Nx.h"
 
+#ifndef WIN32
+#include "math.h"
+#endif
+
 	#define	NX_SIGN_BITMASK		0x80000000
 
 	//Integer representation of a floating-point value.
@@ -35,5 +39,23 @@
 	NX_C_EXPORT NXF_DLL_EXPORT int NX_CALL_CONV NxIntChop(const NxF32& f);
 	NX_C_EXPORT NXF_DLL_EXPORT int NX_CALL_CONV NxIntFloor(const NxF32& f);
 	NX_C_EXPORT NXF_DLL_EXPORT int NX_CALL_CONV NxIntCeil(const NxF32& f);
+
+	// Calling fsincos instead of fsin+fcos
+	NX_INLINE void NxSinCos(NxF32& c, NxF32& s, NxF32 f)
+	{
+#ifdef WIN32
+		NxF32 localCos, localSin;
+		NxF32 local = f;
+		_asm	fld		local
+		_asm	fsincos
+		_asm	fstp	localCos
+		_asm	fstp	localSin
+		c = localCos;
+		s = localSin;
+#else
+		c = cosf(f);
+		s = sinf(f);
+#endif
+	}
 
 #endif

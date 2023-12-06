@@ -69,7 +69,7 @@ class NxAllocatorDefault
 		*/
 		NX_INLINE void free(void * memory)
 			{
-			::free(memory);
+			if(memory)	::free(memory);	// Deleting null ptrs is valid, but still useless
 			}
 	};
 

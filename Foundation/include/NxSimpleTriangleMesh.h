@@ -23,10 +23,10 @@ enum NxMeshFlags
 
 	If this does not match the winding order for your triangles, raise the below flag.
 	*/
-	NX_MF_FLIPNORMALS		=	1 << 0,
-	NX_MF_16_BIT_INDICES	=	1 << 1,	//<! Denotes the use of 16-bit vertex indices
-	NX_MF_CONVEX			=	1 << 2,	//<! Denotes that the mesh is convex.
-	NX_MF_COMPUTE_CONVEX	=	1 << 3,	//<! Automatically recomputes the hull from the vertices
+	NX_MF_FLIPNORMALS		=	(1<<0),
+	NX_MF_16_BIT_INDICES	=	(1<<1),	//<! Denotes the use of 16-bit vertex indices
+	NX_MF_CONVEX			=	(1<<2),	//<! Denotes that the mesh is convex.
+	NX_MF_COMPUTE_CONVEX	=	(1<<3),	//<! Automatically recomputes the hull from the vertices
 	};
 
 typedef NxVec3 NxPoint;

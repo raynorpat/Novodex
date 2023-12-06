@@ -420,7 +420,7 @@ NX_INLINE NxReal NxQuat::getAngle(const NxQuat & q) const
 
 NX_INLINE NxReal NxQuat::magnitudeSquared() const
 
-//modifyers:
+//modifiers:
 	{
 	return x*x + y*y + z*z + w*w;
 	}
@@ -634,4 +634,5 @@ NX_INLINE NxQuat& NxQuat::operator*= (const NxReal s)
 	w*=s;
 	return *this;
 	}
+
 #endif

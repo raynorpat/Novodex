@@ -14,6 +14,10 @@
 #include "Nx.h"
 #include "NxFPU.h"
 
+#ifdef log2
+#undef log2
+#endif
+
 //constants
 static const NxF64 NxPiF64		= 3.141592653589793;
 static const NxF64 NxHalfPiF64	= 1.57079632679489661923;
@@ -102,6 +106,11 @@ class NxMath
 		*/
 		NX_INLINE static NxF32 sqrt(NxF32);
 		NX_INLINE static NxF64 sqrt(NxF64);
+		/**
+		reciprocal square root.
+		*/
+		NX_INLINE static NxF32 recipSqrt(NxF32);
+		NX_INLINE static NxF64 recipSqrt(NxF64);
 		/**
 		Calculates x raised to the power of y.
 		*/
@@ -378,6 +387,16 @@ NX_INLINE NxF32 NxMath::sqrt(NxF32 a)
 NX_INLINE NxF64 NxMath::sqrt(NxF64 a)
 	{
 	return ::sqrt(a);
+	}
+
+NX_INLINE NxF32 NxMath::recipSqrt(NxF32 a)
+	{
+	return 1.0f/::sqrtf(a);
+	}
+
+NX_INLINE NxF64 NxMath::recipSqrt(NxF64 a)
+	{
+	return 1.0/::sqrt(a);
 	}
 
 NX_INLINE NxF32 NxMath::pow(NxF32 x, NxF32 y)

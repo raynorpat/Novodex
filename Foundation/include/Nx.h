@@ -40,27 +40,44 @@ DLL export macros
 #endif
 
 #ifndef NX_CALL_CONV
-    #define NX_CALL_CONV __cdecl
+	#if defined WIN32
+    	#define NX_CALL_CONV __cdecl
+	#elif defined LINUX
+		#define NX_CALL_CONV
+    #elif defined __APPLE__
+        #define NX_CALL_CONV
+	#else
+		#error custom definition of NX_CALL_CONV for your OS needed!
+	#endif
 #endif
 
 #if	  defined NX32
 #elif defined NX64
 #elif defined WIN32
 #ifdef NX64
-#error NovodeX SDK: Platform's pointer size ambiguous!  The defines WIN32 and NX64 are in conflict.  
+#error NovodeX SDK: Platforms pointer size ambiguous!  The defines WIN32 and NX64 are in conflict.  
 #endif
 #define NX32
 #elif defined WIN64
 #ifdef NX32
-#error NovodeX SDK: Platform's pointer size ambiguous!  The defines WIN64 and NX32 are in conflict.  
+#error NovodeX SDK: Platforms pointer size ambiguous!  The defines WIN64 and NX32 are in conflict.  
 #endif
 #define NX64
 #else
-#error NovodeX SDK: Platform's pointer size ambiguous.  Please define NX32 or Nx64 in the compiler settings!
+#error NovodeX SDK: Platforms pointer size ambiguous.  Please define NX32 or Nx64 in the compiler settings!
 #endif
 
 #define NX_COMPILE_TIME_ASSERT(exp)	extern char NX_CompileTimeAssert[ (exp) ? 1 : -1 ]
 
+#if _MSC_VER
+	#define NX_MSVC		// Compiling with VC++
+	#if _MSC_VER > 1300
+		#define NX_VC7		// Compiling with VC7
+	#else
+		#define NX_VC6		// Compiling with VC6
+		#define __FUNCTION__	"Undefined"
+	#endif
+#endif
 
 /**
  Nx SDK misc defines.
@@ -73,7 +90,7 @@ DLL export macros
 
 //NX_INLINE
 #if (_MSC_VER>=1000)
-	#define NX_INLINE __forceinline	//alternative is simple NX_INLINE
+	#define NX_INLINE __forceinline	//alternative is simple inline
 	#pragma inline_depth( 255 )
 
 	#include <string.h>
@@ -94,6 +111,7 @@ DLL export macros
 	#define NX_INLINE inline
 #endif
 
+	#define NX_DELETE(x)	delete x
 	#define NX_DELETE_SINGLE(x)	if (x) { delete x;		x = NULL; }
 	#define NX_DELETE_ARRAY(x)	if (x) { delete []x;	x = NULL; }
 
@@ -128,9 +146,27 @@ enum NxErrorCode
 #pragma warning( disable : 4251 )  //class needs to have dll-interface to be used by clients of class
 
 //files to always include:
-
 #include "NxSimpleTypes.h"
 #include "NxAssert.h"
+#ifdef LINUX
+	#include <time.h>
+#elif __APPLE__
+	#include <time.h>
+#endif
+
+#define NX_DEBUG_MALLOC 0
+
+// Don't use inline for alloca !!!
+#ifdef WIN32
+    #include <malloc.h>
+	#define NxAlloca(x)	_alloca(x)
+#elif LINUX
+    #include <malloc.h>
+	#define NxAlloca(x)	alloca(x)
+#elif __APPLE__
+    #include <alloca.h>
+    #define NxAlloca(x)	alloca(x)
+#endif
 
 //#define TRANSPOSED_MAT33
 //#define COMPILE_CCD

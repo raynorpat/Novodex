@@ -101,6 +101,14 @@ class NxMat34
 	convert to a matrix format appropriate for rendering
 	*/
 	NX_INLINE void getColumnMajor44(NxF32 *) const;
+	/**
+	set the matrix given a row major matrix.
+	*/
+	NX_INLINE void setRowMajor44(const NxF32 *);
+	/**
+	retrieve the matrix in a row major format.
+	*/
+	NX_INLINE void getRowMajor44(NxF32 *) const;
 	};
 
 
@@ -165,9 +173,7 @@ NX_INLINE bool NxMat34::getInverseRT(NxMat34& dest) const
 
 NX_INLINE void NxMat34::multiply(const NxVec3 &src, NxVec3 &dst) const
 	{
-	//dst = M * src + t
-	M.multiply(src, dst);
-	dst += t;
+	dst = M * src + t;
 	}
 
 
@@ -180,30 +186,25 @@ NX_INLINE void NxMat34::multiplyByInverseRT(const NxVec3 &src, NxVec3 &dst) cons
 
 NX_INLINE void NxMat34::multiply(const NxMat34& left, const NxMat34& right)
 	{
-	//[aR at] * [bR bt] = [aR * bR		aR * bt + at]
+	//[aR at] * [bR bt] = [aR * bR		aR * bt + at]  NOTE: order of operations important so it works when this ?= left ?= right.
+	t = left.M * right.t + left.t;
 	M.multiply(left.M, right.M);
-	left.M.multiply(right.t, t);
-	t += left.t;
 	}
 
 
 NX_INLINE void NxMat34::multiplyInverseRTLeft(const NxMat34& left, const NxMat34& right)
 	{
-	//[aR' -aR'*at] * [bR bt] = [aR' * bR		aR' * bt  - aR'*at]	//aR' ( bt  - at )
+	//[aR' -aR'*at] * [bR bt] = [aR' * bR		aR' * bt  - aR'*at]	//aR' ( bt  - at )	NOTE: order of operations important so it works when this ?= left ?= right.
+	t = left.M % (right.t - left.t);
 	M.multiplyTransposeLeft(left.M, right.M);
-	NxVec3 temp;
-	temp.subtract(right.t, left.t);
-	left.M.multiplyByTranspose(temp, t);
 	}
 
 
 NX_INLINE void NxMat34::multiplyInverseRTRight(const NxMat34& left, const NxMat34& right)
 	{
-	//[aR at] * [bR' -bR'*bt] = [aR * bR'		-aR * bR' * bt + at]
+	//[aR at] * [bR' -bR'*bt] = [aR * bR'		-aR * bR' * bt + at]	NOTE: order of operations important so it works when this ?= left ?= right.
 	M.multiplyTransposeRight(left.M, right.M);
-	M.multiply(right.t, t);
-	t*= -1;
-	t += left.t;
+	t = left.t - M * right.t;
 	}
 
 NX_INLINE void NxMat34::setColumnMajor44(const NxF32 * d) 
@@ -221,6 +222,24 @@ NX_INLINE void NxMat34::getColumnMajor44(NxF32 * d) const
 	d[13] = t.y;
 	d[14] = t.z;
 	d[3] = d[7] = d[11] = 0.0f;
+	d[15] = 1.0f;
+	}
+
+NX_INLINE void NxMat34::setRowMajor44(const NxF32 * d) 
+	{
+	M.setRowMajorStride4(d);
+    t.x = d[3];
+	t.y = d[7];
+	t.z = d[11];
+	}
+
+NX_INLINE void NxMat34::getRowMajor44(NxF32 * d) const
+	{
+	M.getRowMajorStride4(d);
+    d[3] = t.x;
+	d[7] = t.y;
+	d[11] = t.z;
+	d[12] = d[13] = d[14] = 0.0f;
 	d[15] = 1.0f;
 	}
 #endif
