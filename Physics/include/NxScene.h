@@ -35,7 +35,7 @@ struct NxPairFlag
 	void*	objects[2];
 	NxU32	flags;
 
-	NX_INLINE isActorPair() const { return flags & 0x80000000;	}
+	NX_INLINE NxU32 isActorPair() const { return flags & 0x80000000;	}
 	};
 
 

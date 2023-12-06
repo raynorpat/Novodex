@@ -108,5 +108,4 @@ Alternatively, one can instead directly #include a subset of the below files.
 #include "NxSmoothNormals.h"
 #include "NxConvexHull.h"
 
-
 #endif
