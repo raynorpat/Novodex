@@ -529,6 +529,33 @@ static bool nearVector(const NxVec3& a, const NxVec3& b, float tolerance = 1.0e-
 	return nearFloat(a.x, b.x, tolerance) && nearFloat(a.y, b.y, tolerance) && nearFloat(a.z, b.z, tolerance);
 	}
 
+static NxU32 floatBits(NxF32 value)
+	{
+	NxU32 bits;
+	memcpy(&bits, &value, sizeof(bits));
+	return bits;
+	}
+
+static void printVectorBits(const NxVec3& value)
+	{
+	printf("%08x,%08x,%08x", floatBits(value.x), floatBits(value.y), floatBits(value.z));
+	}
+
+static void printDebugPointBits(const NxDebugPoint& point)
+	{
+	printVectorBits(point.p); printf(",%08x", point.color);
+	}
+
+static void printDebugLineBits(const NxDebugLine& line)
+	{
+	printVectorBits(line.p0); printf(","); printVectorBits(line.p1); printf(",%08x", line.color);
+	}
+
+static void printDebugTriangleBits(const NxDebugTriangle& triangle)
+	{
+	printVectorBits(triangle.p0); printf(","); printVectorBits(triangle.p1); printf(","); printVectorBits(triangle.p2); printf(",%08x", triangle.color);
+	}
+
 static NxVec3 multiplyMatrix(const NxMat33& matrix, const NxVec3& vector)
 	{
 	return matrix * vector;
@@ -645,10 +672,28 @@ static int runBox(HMODULE module)
 	if(planesFn(&box, 0) || pointsFn(&box, 0) || vertexNormalsFn(&box, 0) ||
 		!planesFn(&box, planes) || !pointsFn(&box, points) || !vertexNormalsFn(&box, normals))
 		return fprintf(stderr, "FAIL box output null/success\n"), 1;
-	if(!nearVector(points[0], NxVec3(-1,-1,-1)) || !nearVector(points[6], NxVec3(3,5,7)) ||
-		!nearVector(planes[0].normal, NxVec3(1,0,0)) || !nearFloat(planes[0].distance(center), -2.0f) ||
-		!nearFloat(normals[0].magnitude(), 1.0f))
-		return fprintf(stderr, "FAIL box points/planes/normals\n"), 1;
+	static const NxVec3 expectedPoints[8] = {
+		NxVec3(-1,-1,-1), NxVec3(3,-1,-1), NxVec3(3,5,-1), NxVec3(-1,5,-1),
+		NxVec3(-1,-1,7), NxVec3(3,-1,7), NxVec3(3,5,7), NxVec3(-1,5,7)
+	};
+	static const NxVec3 expectedPlaneNormals[6] = {
+		NxVec3(1,0,0), NxVec3(-1,0,0), NxVec3(0,1,0), NxVec3(0,-1,0), NxVec3(0,0,1), NxVec3(0,0,-1)
+	};
+	static const NxF32 expectedPlaneD[6] = {-3,-1,-5,-1,-7,-1};
+	const NxF32 invSqrt3 = 0.5773502691896258f;
+	static const NxVec3 normalSigns[8] = {
+		NxVec3(-1,-1,-1), NxVec3(1,-1,-1), NxVec3(1,1,-1), NxVec3(-1,1,-1),
+		NxVec3(-1,-1,1), NxVec3(1,-1,1), NxVec3(1,1,1), NxVec3(-1,1,1)
+	};
+	for(unsigned i=0;i<8;++i)
+		if(!nearVector(points[i], expectedPoints[i]) || !nearVector(normals[i], normalSigns[i]*invSqrt3))
+			{
+			fprintf(stderr, "FAIL box complete point/normal row=%u point=", i);
+			printVectorBits(points[i]); fprintf(stderr, "\n"); return 1;
+			}
+	for(unsigned i=0;i<6;++i)
+		if(!nearVector(planes[i].normal, expectedPlaneNormals[i]) || !nearFloat(planes[i].d, expectedPlaneD[i]))
+			return fprintf(stderr, "FAIL box complete plane row=%u\n", i), 1;
 
 	static const NxU32 expectedEdges[24] = {0,1,1,2,2,3,3,0,7,6,6,5,5,4,4,7,1,5,6,2,3,7,4,0};
 	static const NxI32 expectedAxes[12] = {1,2,-1,-2,1,-2,-1,2,3,-3,3,-3};
@@ -681,7 +726,13 @@ static int runBox(HMODULE module)
 	if(!inside(&inner, &outer) || !inside(&touching, &outer) || inside(&outside, &outer) || inside(&outer, &inner))
 		return fprintf(stderr, "FAIL box-box containment\n"), 1;
 
-	printf("box exports=13 contains=interior,boundary_excluded,exterior,degenerate create=translated_aabb outputs=null_rejected,planes,points,vertex_normals tables=edges,axes,quads,triangles vertex_to_quad=345/045/015/135/234/024/012/123 world_normal=identity containment=inside,touching,outside,reverse\n");
+	printf("box_geometry planes=");
+	for(unsigned i=0;i<6;++i) { if(i) printf("/"); printVectorBits(planes[i].normal); printf(",%08x", floatBits(planes[i].d)); }
+	printf(" points=");
+	for(unsigned i=0;i<8;++i) { if(i) printf("/"); printVectorBits(points[i]); }
+	printf(" normals=");
+	for(unsigned i=0;i<8;++i) { if(i) printf("/"); printVectorBits(normals[i]); }
+	printf("\nbox exports=13 contains=interior,boundary_excluded,exterior,degenerate create=translated_aabb outputs=null_rejected,planes,points,vertex_normals tables=edges,axes,quads,triangles vertex_to_quad=345/045/015/135/234/024/012/123 world_normal=identity containment=inside,touching,outside,reverse\n");
 	return 0;
 	}
 
@@ -692,6 +743,11 @@ static int runCapsule(HMODULE module)
 	if(!boxAround || !capsuleAround) return 1;
 	NxMat33 identity; identity.id();
 	const NxVec3 directions[] = { NxVec3(4,0,0), NxVec3(0,6,0), NxVec3(0,0,8) };
+	static const NxU32 expectedRotationBits[3][9] = {
+		{0x3f800000,0x00000000,0x00000000, 0x80000000,0x3f800000,0x00000000, 0x80000000,0x80000000,0x3f800000},
+		{0x00000000,0x3f800000,0x00000000, 0x00000000,0x80000000,0x3f800000, 0x3f800000,0x80000000,0x80000000},
+		{0x00000000,0x00000000,0x3f800000, 0x3f800000,0x00000000,0x80000000, 0x80000000,0x3f800000,0x80000000}
+	};
 	for(unsigned i = 0; i < 3; ++i)
 		{
 		NxCapsule capsule;
@@ -700,13 +756,28 @@ static int runCapsule(HMODULE module)
 		capsule.radius = 1.5f;
 		NxBox box;
 		boxAround(&capsule, &box);
-		NxVec3 axis;
-		box.rot.getRow(0, axis);
+		NxVec3 rows[3], columns[3];
+		for(unsigned j=0;j<3;++j) { box.rot.getRow(j, rows[j]); box.rot.getColumn(j, columns[j]); }
 		NxVec3 expectedAxis = directions[i]; expectedAxis.normalize();
 		if(!nearVector(box.center, NxVec3(1,2,3)) ||
 			!nearVector(box.extents, NxVec3(1.5f + directions[i].magnitude() * 0.5f, 1.5f, 1.5f)) ||
-			!nearVector(axis, expectedAxis) || !nearFloat(box.rot.determinant(), 1.0f, 2.0e-4f))
+			!nearVector(rows[0], expectedAxis) || !nearFloat(box.rot.determinant(), 1.0f, 2.0e-4f))
 			return fprintf(stderr, "FAIL capsule-to-box axis %u\n", i), 1;
+		for(unsigned j=0;j<3;++j)
+			if(!nearFloat(rows[j].magnitude(),1,2.0e-4f) || !nearFloat(columns[j].magnitude(),1,2.0e-4f))
+				return fprintf(stderr, "FAIL capsule-to-box basis norm %u,%u\n",i,j),1;
+		for(unsigned a=0;a<3;++a) for(unsigned b=a+1;b<3;++b)
+			if(!nearFloat(rows[a].dot(rows[b]),0,2.0e-4f) || !nearFloat(columns[a].dot(columns[b]),0,2.0e-4f))
+				return fprintf(stderr, "FAIL capsule-to-box basis dot %u,%u,%u\n",i,a,b),1;
+		for(unsigned row=0;row<3;++row) for(unsigned column=0;column<3;++column)
+			if(floatBits(rows[row][column]) != expectedRotationBits[i][row*3+column])
+				{
+				fprintf(stderr,"FAIL capsule-to-box exact rotation %u expected_variant=",i);
+				for(unsigned j=0;j<3;++j) { if(j) fprintf(stderr,"/"); fprintf(stderr,"%08x,%08x,%08x",floatBits(rows[j].x),floatBits(rows[j].y),floatBits(rows[j].z)); }
+				fprintf(stderr,"\n"); return 1;
+				}
+		printf("capsule_box%u center=",i); printVectorBits(box.center); printf(" extents="); printVectorBits(box.extents); printf(" rotation=");
+		for(unsigned j=0;j<3;++j) { if(j) printf("/"); printVectorBits(rows[j]); } printf("\n");
 		}
 
 	const NxVec3 extents[] = { NxVec3(5,2,1), NxVec3(1,6,2), NxVec3(2,1,7), NxVec3(4,4,1), NxVec3(0,0,0) };
@@ -933,8 +1004,14 @@ static int runDebug(HMODULE module)
 	first->addTriangle(NxVec3(0,0,0), NxVec3(1,0,0), NxVec3(0,1,0), 0x99aabbcc);
 	if(first->getNbPoints()!=1 || first->getNbLines()!=1 || first->getNbTriangles()!=1 ||
 		first->getPoints()[0].color != 0x11223344 || first->getPoints()[0].p != NxVec3(1,2,3) ||
-		first->getLines()[0].color != 0x55667788 || first->getTriangles()[0].color != 0x99aabbcc)
+		first->getLines()[0].color != 0x55667788 || !nearVector(first->getLines()[0].p0,NxVec3(0,0,0)) ||
+		!nearVector(first->getLines()[0].p1,NxVec3(1,2,3)) || first->getTriangles()[0].color != 0x99aabbcc ||
+		!nearVector(first->getTriangles()[0].p0,NxVec3(0,0,0)) || !nearVector(first->getTriangles()[0].p1,NxVec3(1,0,0)) ||
+		!nearVector(first->getTriangles()[0].p2,NxVec3(0,1,0)))
 		return fprintf(stderr, "FAIL debug primitive buffers\n"), 1;
+	NxDebugPoint lowPoint = first->getPoints()[0];
+	NxDebugLine lowLine = first->getLines()[0];
+	NxDebugTriangle lowTriangle = first->getTriangles()[0];
 	const NxDebugPoint* pointBuffer = first->getPoints();
 	first->clear();
 	if(first->getNbPoints() || first->getNbLines() || first->getNbTriangles() || first->getPoints()!=pointBuffer)
@@ -945,8 +1022,19 @@ static int runDebug(HMODULE module)
 	NxBounds3 bounds; bounds.set(NxVec3(-1,-2,-3), NxVec3(1,2,3));
 	first->addAABB(bounds, 0x01020304, true);
 	if(first->getNbLines()!=15) return fprintf(stderr, "FAIL debug AABB/frame count=%u\n", first->getNbLines()), 1;
-	for(unsigned i=0;i<12;++i) if(first->getLines()[i].color!=0x01020304) return fprintf(stderr, "FAIL debug AABB color\n"), 1;
-	if(first->getLines()[12].color!=0x00ff0000 || first->getLines()[13].color!=0x0000ff00 || first->getLines()[14].color!=0x000000ff)
+	static const NxVec3 aabbPoints[8] = {
+		NxVec3(-1,-2,-3),NxVec3(1,-2,-3),NxVec3(1,2,-3),NxVec3(-1,2,-3),
+		NxVec3(-1,-2,3),NxVec3(1,-2,3),NxVec3(1,2,3),NxVec3(-1,2,3)
+	};
+	static const NxU32 aabbEdges[24] = {0,1,1,2,2,3,3,0,7,6,6,5,5,4,4,7,1,5,6,2,3,7,4,0};
+	for(unsigned i=0;i<12;++i)
+		if(first->getLines()[i].color!=0x01020304 || !nearVector(first->getLines()[i].p0,aabbPoints[aabbEdges[i*2]]) ||
+			!nearVector(first->getLines()[i].p1,aabbPoints[aabbEdges[i*2+1]]))
+			return fprintf(stderr, "FAIL debug AABB complete line %u\n",i), 1;
+	if(first->getLines()[12].color!=0x00ff0000 || first->getLines()[13].color!=0x0000ff00 || first->getLines()[14].color!=0x000000ff ||
+		!nearVector(first->getLines()[12].p0,NxVec3(0,0,0)) || !nearVector(first->getLines()[12].p1,NxVec3(1,0,0)) ||
+		!nearVector(first->getLines()[13].p0,NxVec3(0,0,0)) || !nearVector(first->getLines()[13].p1,NxVec3(0,1,0)) ||
+		!nearVector(first->getLines()[14].p0,NxVec3(0,0,0)) || !nearVector(first->getLines()[14].p1,NxVec3(0,0,1)))
 		return fprintf(stderr, "FAIL debug frame colors\n"), 1;
 	NxMat33 identity; identity.id();
 	NxBox box(NxVec3(0,0,0), NxVec3(1,1,1), identity);
@@ -963,6 +1051,13 @@ static int runDebug(HMODULE module)
 	NxDebugRenderable* second = createDebug(sdk);
 	if(!second) return fprintf(stderr, "FAIL debug second create\n"), 1;
 	second->addPoint(NxVec3(9,8,7), 6);
+	if(second->getNbPoints()!=1 || !nearVector(second->getPoints()[0].p,NxVec3(9,8,7)) || second->getPoints()[0].color!=6)
+		return fprintf(stderr,"FAIL debug second complete point\n"),1;
+	printf("debug_records low_point="); printDebugPointBits(lowPoint); printf(" low_line="); printDebugLineBits(lowLine); printf(" low_triangle="); printDebugTriangleBits(lowTriangle);
+	printf(" retained_points="); for(unsigned i=0;i<first->getNbPoints();++i) { if(i) printf("/"); printDebugPointBits(first->getPoints()[i]); }
+	printf(" generated_lines="); for(unsigned i=0;i<first->getNbLines();++i) { if(i) printf("/"); printDebugLineBits(first->getLines()[i]); }
+	printf(" generated_triangles="); for(unsigned i=0;i<first->getNbTriangles();++i) { if(i) printf("/"); printDebugTriangleBits(first->getTriangles()[i]); }
+	printf(" second_points="); for(unsigned i=0;i<second->getNbPoints();++i) { if(i) printf("/"); printDebugPointBits(second->getPoints()[i]); } printf("\n");
 	ClusterDebugRenderer renderer;
 	renderDebug(sdk, &renderer);
 	if(renderer.calls!=2 || renderer.seen[0]!=first || renderer.seen[1]!=second)

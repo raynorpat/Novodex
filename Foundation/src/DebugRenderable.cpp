@@ -13,6 +13,59 @@
 namespace NxFoundation
 	{
 
+	static void computeScaledCircleSinCos(NxU32 index, NxF32 step, NxF32 radius, NxF32& sine, NxF32& cosine)
+		{
+#if defined(_MSC_VER) && defined(_M_IX86)
+		NxI32 signedIndex = NxI32(index);
+		__asm
+			{
+			fild signedIndex
+			fmul step
+			fld st(0)
+			fsin
+			fmul radius
+			mov eax, sine
+			fstp dword ptr [eax]
+			fcos
+			fmul radius
+			mov eax, cosine
+			fstp dword ptr [eax]
+			}
+#else
+		NxF32 angle = NxF32(index) * step;
+		sine = radius * sinf(angle);
+		cosine = radius * cosf(angle);
+#endif
+		}
+
+	static void computeScaledCircleSinCosRounded(NxU32 index, NxF32 step, NxF32 radius, NxF32& sine, NxF32& cosine)
+		{
+#if defined(_MSC_VER) && defined(_M_IX86)
+		NxI32 signedIndex = NxI32(index);
+		NxF32 angle;
+		__asm
+			{
+			fild signedIndex
+			fmul step
+			fstp angle
+			fld angle
+			fld st(0)
+			fsin
+			fmul radius
+			mov eax, sine
+			fstp dword ptr [eax]
+			fcos
+			fmul radius
+			mov eax, cosine
+			fstp dword ptr [eax]
+			}
+#else
+		NxF32 angle = NxF32(index) * step;
+		sine = radius * sinf(angle);
+		cosine = radius * cosf(angle);
+#endif
+		}
+
 	DebugRenderable::DebugRenderable()
 		{
 		}
@@ -183,12 +236,12 @@ namespace NxFoundation
 			NxU32 j=i+1;
 			if(j==nbSegments)	j=0;
 
-			NxF32 angle0 = NxF32(i)*step;
-			NxF32 angle1 = NxF32(j)*step;
-
+			NxF32 sine0, cosine0, sine1, cosine1;
+			computeScaledCircleSinCos(i, step, radius, sine0, cosine0);
+			computeScaledCircleSinCosRounded(j, step, radius, sine1, cosine1);
 			NxVec3 p0,p1;
-			matrix.multiply(NxVec3(radius * sinf(angle0), radius * cosf(angle0), 0.0f), p0);
-			matrix.multiply(NxVec3(radius * sinf(angle1), radius * cosf(angle1), 0.0f), p1);
+			matrix.multiply(NxVec3(sine0, cosine0, 0.0f), p0);
+			matrix.multiply(NxVec3(sine1, cosine1, 0.0f), p1);
 
 			addLine(p0, p1, color);
 			}
