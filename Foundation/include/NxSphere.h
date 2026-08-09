@@ -23,6 +23,7 @@
 class NxSphere;
 NX_C_EXPORT NXF_DLL_EXPORT NxBSphereMethod NX_CALL_CONV NxComputeSphere(NxSphere& sphere, unsigned nb_verts, const NxVec3* verts);
 NX_C_EXPORT NXF_DLL_EXPORT bool NX_CALL_CONV NxFastComputeSphere(NxSphere& sphere, unsigned nb_verts, const NxVec3* verts);
+NX_C_EXPORT NXF_DLL_EXPORT void NX_CALL_CONV NxMergeSpheres(NxSphere& merged, const NxSphere& sphere0, const NxSphere& sphere1);
 
 class NxSphere
 	{
@@ -54,6 +55,14 @@ class NxSphere
 	*/
 	NX_INLINE NxSphere(const NxSphere& sphere) : center(sphere.center), radius(sphere.radius)
 		{
+		}
+
+	/**
+	Union of spheres
+	*/
+	NX_INLINE NxSphere(const NxSphere& sphere0, const NxSphere& sphere1)
+		{
+		NxMergeSpheres(*this, sphere0, sphere1);
 		}
 
 	/**

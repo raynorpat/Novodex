@@ -11,8 +11,9 @@
 #include "Nx.h"
 
 #include <stdlib.h>
-#ifdef WIN32
-#include <crtdbg.h>
+
+#if defined(WIN32) && NX_DEBUG_MALLOC
+  #include <crtdbg.h>
 #endif
 
 /**
@@ -26,7 +27,11 @@ class NxUserAllocatorDefault : public NxUserAllocator
 
 		Compatible with the standard C malloc().
 		*/
-		void * malloc(size_t size)
+		void* malloc(size_t size, NxMemoryType type)
+			{
+			return ::malloc(size);
+			}
+		void* malloc(size_t size)
 			{
 			return ::malloc(size);
 			}
@@ -36,10 +41,23 @@ class NxUserAllocatorDefault : public NxUserAllocator
 
 		Same as above, but with extra debug info fields.
 		*/
-		void * mallocDEBUG(size_t size, const char * fileName, int line)
+		void* mallocDEBUG(size_t size, const char* fileName, int line, const char* className, NxMemoryType type)
 			{
 #ifdef _DEBUG
-	#ifdef WIN32
+	#if defined(WIN32) && NX_DEBUG_MALLOC
+			return ::_malloc_dbg(size, _NORMAL_BLOCK, fileName, line);
+	#else
+			return ::malloc(size);
+	#endif
+#else
+			NX_ASSERT(0);//Don't use debug malloc for release mode code!
+			return 0;
+#endif
+			}
+		void* mallocDEBUG(size_t size, const char* fileName, int line)
+			{
+#ifdef _DEBUG
+	#if defined(WIN32) && NX_DEBUG_MALLOC
 			return ::_malloc_dbg(size, _NORMAL_BLOCK, fileName, line);
 	#else
 			return ::malloc(size);
@@ -56,7 +74,7 @@ class NxUserAllocatorDefault : public NxUserAllocator
 
 		Compatible with the standard C realloc().
 		*/
-		void * realloc(void * memory, size_t size)
+		void* realloc(void* memory, size_t size)
 			{
 			return ::realloc(memory,size);
 			}
@@ -66,15 +84,17 @@ class NxUserAllocatorDefault : public NxUserAllocator
 
 		Compatible with the standard C free().
 		*/
-		void free(void * memory)
+		void free(void* memory)
 			{
 			::free(memory);
 			}
+
+		void check()
+		{
+#if defined(WIN32) && defined(_DEBUG)
+			_CrtCheckMemory();
+#endif
+		}
 	};
 
 #endif
-
-
-
-
-

@@ -10,6 +10,7 @@
 #include "Nx.h"
 #include "NxAllocatorDefault.h"
 #include "NxUserAllocatorAccess.h"
+#include "NxAllocateable.h"
 
 /**
  Simple 'std::vector' style template container.
@@ -18,7 +19,7 @@
  Note: the methods of this template are implemented inline in order to avoid the not yet very cross-compileable 'typename' keyword.
 */
 template<class ElemType, class AllocType = NxAllocatorDefault>
-class NxArray
+class NxArray : public NxAllocateable
 	{
 	public:
 	typedef NxArray<ElemType,AllocType> MyType;
@@ -150,11 +151,11 @@ class NxArray
 																			memEnd = 0;
 																			}
 
-																		if (memEnd > last) 
+																		if (memEnd > last) //release unused memory
 																			{
-																			Iterator newFirst = reallocate(size(), first);
-																			NX_ASSERT(newFirst == first);
-																			memEnd = last;
+																			size_t s = (size_t)(last - first);
+																			first = reallocate(size(), first);
+																			memEnd = last  = first + s;
 																			}
 																		}
 
@@ -163,7 +164,7 @@ class NxArray
 	*/
 	NX_INLINE unsigned size() const
 																		{
-																		return (unsigned)(first == 0 ? 0 : last - first);
+																		return (unsigned)(last - first);
 																		}
 
 	/**
@@ -196,6 +197,18 @@ class NxArray
 																		last ++;
 																		}
 
+	/**
+	The member function inserts an uninitialized element at the end of the controlled sequence.  This element is returned so that the user can initialize it.
+	*/
+	NX_INLINE ElemType & pushBack()
+																		{
+																		if (memEnd <= last)
+																			{
+																			reserve((1 + size()) * 2);
+																			}
+																		last ++;
+																		return *(last-1);
+																		}
 	/**
 	Same as above with STL compliant syntax.  Deprecated.
 	*/
@@ -334,7 +347,7 @@ class NxArray
 																		}
 
 	/**
-	Erase elements from from to to
+	Erase elements from from to to.  Does not call destructors!
 	*/
 	NX_INLINE void erase(Iterator from, Iterator to)
 																		{	
@@ -343,6 +356,14 @@ class NxArray
 																			copy(to, last, from);
 																			}
 																		last = last - (to - from);
+																		}
+
+	/**
+	Erase elements from from to end.  Does not call destructors!
+	*/
+	NX_INLINE void erase(Iterator from)
+																		{	
+																		last = from;
 																		}
 
 	private:
@@ -361,7 +382,11 @@ class NxArray
 
 	NX_INLINE ElemType * allocate(size_t n)
 																		{
-																		return (ElemType *)allocator.malloc(n * sizeof(ElemType));
+#ifdef _DEBUG
+																		return (ElemType *)allocator.mallocDEBUG(n * sizeof(ElemType), (const char *)__FILE__, __LINE__, "ElemType", NX_MEMORY_PERSISTENT);
+#else
+																		return (ElemType *)allocator.malloc(n * sizeof(ElemType), NX_MEMORY_PERSISTENT);
+#endif
 																		}
 
 	NX_INLINE ElemType * reallocate(size_t n, ElemType *old)
@@ -371,7 +396,7 @@ class NxArray
 
 	NX_INLINE void deallocate(ElemType *p)
 																		{
-																		allocator.free(p);
+																		if(p)	allocator.free(p);
 																		}
 
 	NX_INLINE void destroy(Iterator f, Iterator l)

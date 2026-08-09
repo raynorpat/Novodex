@@ -24,25 +24,25 @@ class NxUserAllocatorAccess
 		/**
 		Allocates size bytes of memory.
 		*/
-		NX_INLINE void * malloc(size_t size)
+		NX_INLINE void* malloc(size_t size, NxMemoryType type)
 			{
-			return nxFoundationSDKAllocator->malloc(size);
+			return nxFoundationSDKAllocator->malloc(size, type);
 			}
 
 		/**
 		Allocates size bytes of memory.
 		Same as above, but with extra debug info fields.
 		*/
-		NX_INLINE void * mallocDEBUG(size_t size, const char * fileName, int line)
+		NX_INLINE void* mallocDEBUG(size_t size, const char* fileName, int line, const char* className, NxMemoryType type)
 			{
-			return nxFoundationSDKAllocator->mallocDEBUG(size, fileName, line);
+			return nxFoundationSDKAllocator->mallocDEBUG(size, fileName, line, className, type);
 			}
 
 		/**
 		Resizes the memory block previously allocated with malloc() or
 		realloc() to be size() bytes, and returns the possibly moved memory.
 		*/
-		NX_INLINE void * realloc(void * memory, size_t size)
+		NX_INLINE void* realloc(void* memory, size_t size)
 			{
 			return nxFoundationSDKAllocator->realloc(memory, size);
 			}
@@ -50,11 +50,15 @@ class NxUserAllocatorAccess
 		/**
 		Frees the memory previously allocated by malloc() or realloc().
 		*/
-		NX_INLINE void free(void * memory)
+		NX_INLINE void free(void* memory)
 			{
 			if(memory)	nxFoundationSDKAllocator->free(memory);
 			}
 
+		void checkDEBUG(void)
+		{
+			nxFoundationSDKAllocator->checkDEBUG();
+		}
 	};
 
 #endif

@@ -104,6 +104,21 @@
 	/**
 	computes bounds of an array of vertices
 	*/
-	NX_C_EXPORT NXF_DLL_EXPORT void NX_CALL_CONV NxComputeBounds(NxBounds3& bounds, NxU32 nbVerts, const NxVec3* verts);
+	NX_C_EXPORT NXF_DLL_EXPORT void NX_CALL_CONV NxComputeBounds(NxVec3& min, NxVec3& max, NxU32 nbVerts, const NxVec3* verts);
+
+	/**
+	computes bounds of an array of vertices
+	*/
+	NX_INLINE void NxComputeBounds(NxBounds3& bounds, NxU32 nbVerts, const NxVec3* verts)
+		{
+		NxVec3 min, max;
+		NxComputeBounds(min, max, nbVerts, verts);
+		bounds.set(min, max);
+		}
+
+	/**
+	computes CRC of input buffer
+	*/
+	NX_C_EXPORT NXF_DLL_EXPORT NxU32 NX_CALL_CONV NxCrc32(const void* buffer, NxU32 nbBytes);
 
 #endif

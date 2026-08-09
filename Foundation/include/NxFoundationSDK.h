@@ -9,6 +9,7 @@
 \*----------------------------------------------------------------------------*/
 
 #include "Nxf.h"
+#include "../../NxVersionNumber.h"
 
 class NxUserOutputStream;
 class NxUserAllocator;
@@ -89,7 +90,8 @@ Pass the constant NX_FOUNDATION_SDK_VERSION to the NxCreateFoundationSDK functio
 This is to ensure that the application is using the same header version as the
 library was built with.
 */
-#define NX_FOUNDATION_SDK_VERSION ((   2   <<24)+(1    <<16)+(0    <<8) + 0)
+#define NX_FOUNDATION_SDK_VERSION ((   NX_SDK_VERSION_MAJOR   <<24)+(NX_SDK_VERSION_MINOR    <<16)+(NX_SDK_VERSION_BUGFIX    <<8) + 0)
+//2.1.1 Automatic scheme via VersionNumber.h on July 9, 2004.
 //2.1.0 (new scheme: major.minor.build.configCode) on May 12, 2004.  ConfigCode can be i.e. 32 vs. 64 bit.
 //2.2 on Friday Feb 13, 2004
 //2.1 on Jan 20, 2004

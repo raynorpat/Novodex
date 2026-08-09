@@ -71,7 +71,8 @@ class NxBitField
 	NX_INLINE void setFlagMask(Mask mask, Flag value);
 	NX_INLINE void raiseFlagMask(Mask mask);
 	NX_INLINE void lowerFlagMask(Mask mask);
-	NX_INLINE Flag getFlagMask(Mask mask) const;
+
+	NX_INLINE bool getFlagMask(Mask mask) const;
 
 
 	/**
@@ -162,7 +163,8 @@ NX_INLINE void NxBitField::lowerFlagMask(Mask mask)
 	}
 
 
-NX_INLINE NxBitField::Flag NxBitField::getFlagMask(Mask mask) const
+//NX_INLINE NxBitField::Flag NxBitField::getFlagMask(Mask mask) const
+NX_INLINE bool NxBitField::getFlagMask(Mask mask) const
 	{
 	return (bitField & mask) != 0;
 	}

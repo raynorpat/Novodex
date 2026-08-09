@@ -1,5 +1,91 @@
 NovodeX Physics SDK Changelog
 
+2.1.2 - 2004.11.08
+==================
+- more strict error checking
+- multithreaded implementation
+- shape descriptors in NxActorDesc can now be allocated using a custom allocator.
+- fluid API
+- NX_MESH_SMOOTH_SPHERE_COLLISIONS now disabled by default
+- made mesh instances default to flat and not smooth sphere mode
+- removed neccesarily reentrant method NxContactPair::setPairNotify(NxU32).  Workaround:  use any of the several different ways to set actor flags.
+- actor group and actor group pair flags
+- raycast car support, including:
+	- New + improved 'multipatch' friction implementation. 
+		Fringe benefits are that rare contact situations with multiple contact normals or materials-per-triangle are now handled correctly.  
+	- Capsule shapes now have a 'swept shape' mode that can be used to get raycast wheel behavior.  
+		This is enabled with the new NX_SWEPT_SHAPE flag in NxCapsuleShapeDesc.
+	- programData member in NxMaterial
+	- NX_MF_SPRING_CONTACT flag of NxMaterial, and the appropriate code to emit suspension-spring-like contacts when this is enabled.
+	- SampleRaycast car
+- Reworked applyForce code:
+	- removed these methods of NxActor because they were causing user confusion (they were hoping that it did more than just read back what they have previously set...)
+    	setForce(), setTorque(), getForce(), getTorque()
+		The replacement for setForce/setTorque is calling addForce/addTorque just once (per frame).
+		The replacement of getForce()/getTorque() is to keep track of the forces you add.  
+	- removed the variables:
+		NxBodyDesc::initialForce, NxBodyDesc::initialTorque.
+		The replacement for initialForce, initialTorque is addForce/addTorque after creating the object.
+	- forces act over the entire time step, including all substeps
+- NxMaterial's vectors are now in shape space not in actor space.
+- added 3 new joint types:
+	- Distance
+	- Pulley
+	- Fixed
+- kinematics perform move over a whole step, not a substep
+- added methods to add impulses and velocity changes
+- exception handling in SDK off, was enabled by mistake in 2.1.1
+- implemented more material combine modes
+- fixed a debug rendering crash bug
+- fixed debug rendering extra lines and zero length lines bugs
+- NX_VISUALIZE_COLLISION_NORMALS now defaults to zero.
+- raycasting based approximate continuous collision detection (enable using NX_CONTINUOUS_CD)
+- faster raycasting, now also supports segment queries
+- 'one shot' scene collision queries
+- added access to internal mesh data
+
+2.1.1 - 2004.07.15
+==================
+- convex-mesh collision detection
+- convex meshes viewer scene
+- broken joints deletion process cleared up
+- raycasting against compounds fix
+- NX_NOTIFY_ON_START_TOUCH bug fixed
+- bugs related to jointing bodies to kinematics fixed
+- crash fixed when switching body from kinematic to dynamic
+- implemented contact and friction force feedback in contact report
+- joints to kinematic bodies now projected correctly
+- removed reduced simulation mode for joints
+- made it possible to set a different number of solver iterations per body
+- added adaptive force parameter
+- improved solver:  bodies don't pop out of other bodies as fast as before
+- improved solver: non-reduced mode joints work better
+- fixed rotating spheres and longs solver problem
+- fixed solver instability on very thin objects
+- visual C++ .NET project files
+- fixed several box-capsule contact generation bugs
+- added more error messages regarding broken joints
+- removed '#'-s in filenames of monster truck demos
+- updated docs with more information on releasing actors and broken joints
+- added angular projection for revolute joints
+- fixed some bias scaling related bugs in friction and joint setup code
+- fixed uninitialized variable bug in viewer
+- removed obsolete files from foundation
+- extended ODF files to permit specification of joint projection
+- fixed joint projection bug
+- fixed fat lines rendering bug in viewer
+- fixed some doc bugs
+- fixed bug regarding kinematic bodies going to sleep
+- fixed sphere joint limit visualization bug
+- visualization flag for shapes, bodies, and joints
+- added docs on masses of trigger shapes
+- added FAQ section to SDK docs
+- simplified versioning mechanism
+- renamed ShapeDesc::triggerFlags into ShapeDesc::flags.
+- fixed bug regarding deletion of trigger shapes
+- removed personal edition copy protection scheme
+
+
 2.1  - 2004.05.15
 =================
 - Pulled enums and typedefs out of classes.  For example NxSomeClass::SOME_FLAG is now NX_SOME_FLAG.

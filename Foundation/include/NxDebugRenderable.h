@@ -12,6 +12,21 @@
 #include "NxBox.h"
 #include "NxBounds3.h"
 
+/**
+Default color values used for debug rendering.
+*/
+enum NxDebugColor
+{
+	NX_ARGB_BLACK	= 0xff000000,
+	NX_ARGB_RED		= 0xffff0000,
+	NX_ARGB_GREEN	= 0xff00ff00,
+	NX_ARGB_BLUE	= 0xff0000ff,
+	NX_ARGB_YELLOW	= 0xffffff00,
+	NX_ARGB_MAGENTA	= 0xffff00ff,
+	NX_ARGB_CYAN	= 0xff00ffff,
+	NX_ARGB_WHITE	= 0xffffffff,
+};
+
 struct NxDebugPoint
 {
 	NxVec3	p;
@@ -63,10 +78,10 @@ class NxDebugRenderable
 
 
 	//high level writing
-	virtual void addOBB(const NxBox& box, NxU32 color=0xffffffff, bool render_frame=false) = 0;
-	virtual void addAABB(const NxBounds3& bounds) = 0;
-	virtual void addArrow(const NxVec3 & position, const NxVec3 & direction, NxReal length, NxReal scale, NxU32 color=0xffffffff) = 0;
-	virtual void addBasis(const NxVec3 & position, const NxMat33 & columns, const NxVec3 & lengths, NxReal scale, NxU32 colors[3] = 0) = 0;
+	virtual void addOBB(const NxBox& box, NxU32 color=0xffffffff, bool renderFrame=false) = 0;
+	virtual void addAABB(const NxBounds3& bounds, NxU32 color=0x00ffff00, bool renderFrame=false) = 0;
+	virtual void addArrow(const NxVec3& position, const NxVec3& direction, NxReal length, NxReal scale, NxU32 color=0xffffffff) = 0;
+	virtual void addBasis(const NxVec3& position, const NxMat33& columns, const NxVec3& lengths, NxReal scale, NxU32 colors[3] = 0) = 0;
 	virtual	void addCircle(NxU32 nbSegments, const NxMat34& matrix, NxU32 color, NxF32 radius, bool semicircle = false) = 0;
 	};
 

@@ -1397,4 +1397,9 @@ NX_INLINE NxMat33	NxMat33::operator*  (float s)			const
 	return temp;
 	}
 
+NX_INLINE NxQuat::NxQuat(const NxMat33 &m)
+{
+	m.toQuat(*this);
+}
+
 #endif

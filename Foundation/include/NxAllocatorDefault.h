@@ -9,10 +9,11 @@
 \*----------------------------------------------------------------------------*/
 
 #include "Nx.h"
+#include "NxUserAllocator.h"
 
 #include <stdlib.h>
 
-#ifdef WIN32
+#if defined(WIN32) && NX_DEBUG_MALLOC
 	#include <crtdbg.h>
 #endif
 /**
@@ -26,7 +27,7 @@ class NxAllocatorDefault
 
 		Compatible with the standard C malloc().
 		*/
-		NX_INLINE void * malloc(size_t size)
+		NX_INLINE void* malloc(size_t size, NxMemoryType type)
 			{
 			return ::malloc(size);
 			}
@@ -36,10 +37,10 @@ class NxAllocatorDefault
 
 		Same as above, but with extra debug info fields.
 		*/
-		NX_INLINE void * mallocDEBUG(size_t size, const char * fileName, int line)
+		NX_INLINE void* mallocDEBUG(size_t size, const char* fileName, int line, const char* className, NxMemoryType type)
 			{
 #ifdef _DEBUG
-	#ifdef WIN32
+	#if defined(WIN32) && NX_DEBUG_MALLOC
 			return ::_malloc_dbg(size, _NORMAL_BLOCK, fileName, line);
 	#else
 	// TODO: insert a Linux Debugger Function
@@ -57,7 +58,7 @@ class NxAllocatorDefault
 
 		Compatible with the standard C realloc().
 		*/
-		NX_INLINE void * realloc(void * memory, size_t size)
+		NX_INLINE void* realloc(void* memory, size_t size)
 			{
 			return ::realloc(memory,size);
 			}
@@ -67,15 +68,14 @@ class NxAllocatorDefault
 
 		Compatible with the standard C free().
 		*/
-		NX_INLINE void free(void * memory)
+		NX_INLINE void free(void* memory)
 			{
 			if(memory)	::free(memory);	// Deleting null ptrs is valid, but still useless
+			}
+
+		NX_INLINE void check(void* memory)
+			{
 			}
 	};
 
 #endif
-
-
-
-
-

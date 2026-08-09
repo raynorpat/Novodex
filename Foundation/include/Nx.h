@@ -10,6 +10,9 @@
 /**
 DLL export macros
 */
+//@epic_sas_xenon start
+#if !defined(_XBOX)
+//@epic_sas_xenon stop
 #ifndef NXF_DLL_EXPORT
 	#ifdef NX_FOUNDATION_DLL
 
@@ -34,6 +37,11 @@ DLL export macros
 	
 	#endif
 #endif
+//@epic_sas_xenon start
+#else	//#if !defined(_XBOX)
+	#define NXF_DLL_EXPORT
+#endif	//#if !defined(_XBOX)
+//@epic_sas_xenon stop
 
 #ifndef NX_C_EXPORT
 	#define NX_C_EXPORT extern "C"
@@ -41,13 +49,17 @@ DLL export macros
 
 #ifndef NX_CALL_CONV
 	#if defined WIN32
-    	#define NX_CALL_CONV __cdecl
+		#define NX_CALL_CONV __cdecl
 	#elif defined LINUX
 		#define NX_CALL_CONV
     #elif defined __APPLE__
         #define NX_CALL_CONV
+//@epic_sas_xenon start
+    #elif defined _XBOX
+        #define NX_CALL_CONV
+//@epic_sas_xenon stop
 	#else
-		#error custom definition of NX_CALL_CONV for your OS needed!
+	#error custom definition of NX_CALL_CONV for your OS needed!
 	#endif
 #endif
 
@@ -63,6 +75,13 @@ DLL export macros
 #error NovodeX SDK: Platforms pointer size ambiguous!  The defines WIN64 and NX32 are in conflict.  
 #endif
 #define NX64
+//@epic_sas_xenon start
+#elif defined _XBOX
+#ifdef NX64
+#error NovodeX SDK: Platforms pointer size ambiguous!  The defines WIN32 and NX64 are in conflict.  
+#endif
+#define NX32
+//@epic_sas_xenon stop
 #else
 #error NovodeX SDK: Platforms pointer size ambiguous.  Please define NX32 or Nx64 in the compiler settings!
 #endif
@@ -82,11 +101,6 @@ DLL export macros
 /**
  Nx SDK misc defines.
 */
-#ifdef _DEBUG	//TODO move to somewhere else
-	#define NX_NEW new((const char *)__FILE__,__LINE__)
-#else
-	#define NX_NEW new
-#endif
 
 //NX_INLINE
 #if (_MSC_VER>=1000)
@@ -149,9 +163,13 @@ enum NxErrorCode
 #include "NxSimpleTypes.h"
 #include "NxAssert.h"
 #ifdef LINUX
-	#include <time.h>
+#include <time.h>
 #elif __APPLE__
 	#include <time.h>
+//@epic_sas_xenon start
+#elif _XBOX
+	#include <time.h>
+//@epic_sas_xenon stop
 #endif
 
 #define NX_DEBUG_MALLOC 0
@@ -166,6 +184,13 @@ enum NxErrorCode
 #elif __APPLE__
     #include <alloca.h>
     #define NxAlloca(x)	alloca(x)
+//@epic_sas_xenon start
+#elif _XBOX
+	#define NOMINMAX
+	#include <Xtl.h>
+	#include <malloc.h>
+    #define NxAlloca(x)		alloca(x)
+//@epic_sas_xenon stop
 #endif
 
 //#define TRANSPOSED_MAT33

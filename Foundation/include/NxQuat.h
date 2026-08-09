@@ -38,9 +38,9 @@ class NxQuat
 	NX_INLINE NxQuat(const NxQuat&);
 
 	/**
-	copies xyz elements, sets w to zero.
+	copies xyz elements from v, and scalar from w (defaults to 0).
 	*/
-	NX_INLINE NxQuat(const NxVec3& v);
+	NX_INLINE NxQuat(const NxVec3& v, NxReal w = 0);
 
 	/**
 	creates from angle-axis representation.
@@ -49,7 +49,15 @@ class NxQuat
 	*/
 	NX_INLINE NxQuat(const NxReal angle, const NxVec3 & axis);
 
+	/**
+	creates from orientation matrix.
+	*/
+
+	NX_INLINE NxQuat(const class NxMat33 &); /* defined in NxMat33.h */
+
+
 	NX_INLINE void id();
+	NX_INLINE bool isIdentityRotation() const;
 
 	//setting:
 	NX_INLINE void setWXYZ(NxReal w, NxReal x, NxReal y, NxReal z);
@@ -161,6 +169,16 @@ class NxQuat
 	NX_INLINE void inverseRotate(NxVec3 &) const;
 
 	/**
+	rotates passed vec by rot expressed by unit quaternion.
+	*/
+	NX_INLINE NxVec3 rot(const NxVec3 &) const;
+	/**
+	rotates passed vec by opposite of rot expressed by unit quaternion.
+	*/
+	NX_INLINE NxVec3 invRot(const NxVec3 &) const;
+
+
+	/**
 	negates all the elements of the quat.  q and -q represent the same rotation.
 	*/
 	NX_INLINE void negate();
@@ -172,18 +190,29 @@ class NxQuat
 
     NxReal x,y,z,w;
 
+	/** quaternion multiplication */
+	NX_INLINE NxQuat operator *(const NxQuat &) const; 
+
+	/** quaternion addition */
+	NX_INLINE NxQuat operator +(const NxQuat &) const; 
+
+	/** quaternion subtraction */
+	NX_INLINE NxQuat operator -(const NxQuat &) const; 
+
+	/** quaternion conjugate */
+	NX_INLINE NxQuat operator !() const; 
+
     /* 
 	ops we decided not to implement:
 	bool  operator== (const NxQuat&) const;
-	NxQuat  operator+  (const NxQuat& r_h_s) const;
-	NxQuat  operator-  (const NxQuat& r_h_s) const;
-	NxQuat  operator*  (const NxQuat& r_h_s) const;
 	NxVec3  operator^  (const NxQuat& r_h_s) const;//same as normal quat rot, but casts itself into a vector.  (doesn't compute w term)
 	NxQuat  operator*  (const NxVec3& v) const;//implicitly extends vector by a 0 w element.
 	NxQuat  operator*  (const NxReal Scale) const;
 	*/
 
 	friend class NxMat33;
+	private:
+		NX_INLINE NxQuat(float x, float y, float z, float w);
 	};
 
 
@@ -200,12 +229,12 @@ NX_INLINE NxQuat::NxQuat(const NxQuat& q) : x(q.x), y(q.y), z(q.z), w(q.w)
 	}
 
 
-NX_INLINE NxQuat::NxQuat(const NxVec3& v)						// copy constructor, assumes w=0 
+NX_INLINE NxQuat::NxQuat(const NxVec3& v, NxReal s)						// copy constructor, assumes w=0 
 	{
 	x = v.x;
 	y = v.y;
 	z = v.z;
-	w = NxReal(0.0);
+	w = s;
 	}
 
 
@@ -222,6 +251,11 @@ NX_INLINE void NxQuat::id()
 	z = NxReal(0);
 	w = NxReal(1);
 	}
+
+NX_INLINE  bool NxQuat::isIdentityRotation() const
+{
+	return x==0 && y==0 && z==0 && fabsf(w)==1;
+}
 
 
 NX_INLINE void NxQuat::setWXYZ(NxReal sw, NxReal sx, NxReal sy, NxReal sz)
@@ -457,19 +491,33 @@ NX_INLINE void NxQuat::conjugate()											// convert this NxQuat to a unit cl
 
 NX_INLINE void NxQuat::multiply(const NxQuat& left, const NxQuat& right)		// this = a * b
 	{
-	w =left.w*right.w - left.x*right.x - left.y*right.y - left.z*right.z;
-	x =left.w*right.x + right.w*left.x + left.y*right.z - right.y*left.z;
-	y =left.w*right.y + right.w*left.y + left.z*right.x - right.z*left.x;
-	z =left.w*right.z + right.w*left.z + left.x*right.y - right.x*left.y;
+	NxReal a,b,c,d;
+
+	a =left.w*right.w - left.x*right.x - left.y*right.y - left.z*right.z;
+	b =left.w*right.x + right.w*left.x + left.y*right.z - right.y*left.z;
+	c =left.w*right.y + right.w*left.y + left.z*right.x - right.z*left.x;
+	d =left.w*right.z + right.w*left.z + left.x*right.y - right.x*left.y;
+
+	w = a;
+	x = b;
+	y = c;
+	z = d;
 	}
 
 
 NX_INLINE void NxQuat::multiply(const NxQuat& left, const NxVec3& right)		// this = a * b
 	{
-	w = - left.x*right.x - left.y*right.y - left.z *right.z;
-	x =   left.w*right.x + left.y*right.z - right.y*left.z;
-	y =   left.w*right.y + left.z*right.x - right.z*left.x;
-	z =   left.w*right.z + left.x*right.y - right.x*left.y;
+	NxReal a,b,c,d;
+
+	a = - left.x*right.x - left.y*right.y - left.z *right.z;
+	b =   left.w*right.x + left.y*right.z - right.y*left.z;
+	c =   left.w*right.y + left.z*right.x - right.z*left.x;
+	d =   left.w*right.z + left.x*right.y - right.x*left.y;
+
+	w = a;
+	x = b;
+	y = c;
+	z = d;
 	}
 
 
@@ -571,6 +619,43 @@ NX_INLINE void NxQuat::inverseRotate(NxVec3 & v) const				//rotates passed vec b
 	}
 
 
+NX_INLINE NxVec3 NxQuat::rot(const NxVec3 & v) const						//rotates passed vec by rot expressed by quaternion.  overwrites arg ith the result.
+	{
+	//NxReal msq = NxReal(1.0)/magnitudeSquared();	//assume unit quat!
+	NxQuat myInverse;
+	myInverse.x = -x;//*msq;
+	myInverse.y = -y;//*msq;
+	myInverse.z = -z;//*msq;
+	myInverse.w =  w;//*msq;
+
+	//v = ((*this) * v) ^ myInverse;
+
+	// TODO(djs): replace with less pessimal version
+	NxQuat left;
+	left.multiply(*this,v);
+	return NxVec3(left.w*myInverse.x + myInverse.w*left.x + left.y*myInverse.z - myInverse.y*left.z,
+				  left.w*myInverse.y + myInverse.w*left.y + left.z*myInverse.x - myInverse.z*left.x,
+				  left.w*myInverse.z + myInverse.w*left.z + left.x*myInverse.y - myInverse.x*left.y);
+	}
+
+
+NX_INLINE NxVec3 NxQuat::invRot(const NxVec3 & v) const				//rotates passed vec by opposite of rot expressed by quaternion.  overwrites arg ith the result.
+	{
+	//NxReal msq = NxReal(1.0)/magnitudeSquared();	//assume unit quat!
+	NxQuat myInverse;
+	myInverse.x = -x;//*msq;
+	myInverse.y = -y;//*msq;
+	myInverse.z = -z;//*msq;
+	myInverse.w =  w;//*msq;
+
+	//v = (myInverse * v) ^ (*this);
+	NxQuat left;
+	left.multiply(myInverse,v);
+	return NxVec3(left.w*x + w*left.x + left.y*z - y*left.z,
+				  left.w*y + w*left.y + left.z*x - z*left.x,
+				  left.w*z + w*left.z + left.x*y - x*left.y);
+	}
+
 NX_INLINE NxQuat& NxQuat::operator=  (const NxQuat& q)
 	{
 	x = q.x;
@@ -634,5 +719,36 @@ NX_INLINE NxQuat& NxQuat::operator*= (const NxReal s)
 	w*=s;
 	return *this;
 	}
+
+NX_INLINE NxQuat::NxQuat(NxReal ix, NxReal iy, NxReal iz, NxReal iw)
+{
+	x = ix;
+	y = iy;
+	z = iz;
+	w = iw;
+}
+
+NX_INLINE NxQuat NxQuat::operator*(const NxQuat &q) const
+{
+	return NxQuat(w*q.x + q.w*x + y*q.z - q.y*z,
+				  w*q.y + q.w*y + z*q.x - q.z*x,
+				  w*q.z + q.w*z + x*q.y - q.x*y,
+				  w*q.w - x*q.x - y*q.y - z*q.z);
+}
+
+NX_INLINE NxQuat NxQuat::operator+(const NxQuat &q) const
+{
+	return NxQuat(x+q.x,y+q.y,z+q.z,w+q.w);
+}
+
+NX_INLINE NxQuat NxQuat::operator-(const NxQuat &q) const
+{
+	return NxQuat(x-q.x,y-q.y,z-q.z,w-q.w);
+}
+
+NX_INLINE NxQuat NxQuat::operator!() const
+{
+	return NxQuat(-x,-y,-z,w);
+}
 
 #endif

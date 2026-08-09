@@ -18,59 +18,54 @@ Subclasses of this base class automatically take part in user memory management
 class NxAllocateable
 	{
 	public:
-	NX_INLINE void* operator new( size_t size );
-	NX_INLINE void* operator new( size_t size, const char * fileName, int line );
-	NX_INLINE void* operator new[]( size_t size );
-	NX_INLINE void* operator new[]( size_t size, const char * fileName, int line );
-	NX_INLINE void  operator delete( void* p );
-	NX_INLINE void  operator delete( void* p, const char *, int);
+	NX_INLINE void* operator new(size_t size, NxMemoryType type);
+	NX_INLINE void* operator new(size_t size, const char* fileName, int line, const char* className, NxMemoryType type);
+	NX_INLINE void* operator new[](size_t size, NxMemoryType type);
+	NX_INLINE void* operator new[](size_t size, const char* fileName, int line, const char* className, NxMemoryType type);
+	NX_INLINE void  operator delete(void* p);
+	NX_INLINE void  operator delete(void* p, const char*, int);
 	NX_INLINE void  operator delete[](void* p);
-	NX_INLINE void  operator delete[](void* p, const char *, int);
-
+	NX_INLINE void  operator delete[](void* p, const char*, int);
 	};
 
-NX_INLINE void* NxAllocateable::operator new( size_t size )	
+NX_INLINE void* NxAllocateable::operator new(size_t size, NxMemoryType type)
 	{	
-	void * mem = nxFoundationSDKAllocator->malloc(size);	
-	return mem;	
+	return nxFoundationSDKAllocator->malloc(size, type);
 	}
 
-NX_INLINE void* NxAllocateable::operator new( size_t size, const char * fileName, int line )	
+NX_INLINE void* NxAllocateable::operator new(size_t size, const char* fileName, int line, const char* className, NxMemoryType type)
 	{	
-	void * mem = nxFoundationSDKAllocator->mallocDEBUG(size, fileName, line);	
-	return mem;	
+	return nxFoundationSDKAllocator->mallocDEBUG(size, fileName, line, className, type);
 	}
 
-NX_INLINE void* NxAllocateable::operator new[]( size_t size )	
+NX_INLINE void* NxAllocateable::operator new[](size_t size, NxMemoryType type)
 	{	
-	void * mem = nxFoundationSDKAllocator->malloc(size);	
-	return mem;	
+	return nxFoundationSDKAllocator->malloc(size, type);
 	}
 
-NX_INLINE void* NxAllocateable::operator new[]( size_t size, const char * fileName, int line )	
-	{	
-	void * mem = nxFoundationSDKAllocator->mallocDEBUG(size, fileName, line);	
-	return mem;	
+NX_INLINE void* NxAllocateable::operator new[](size_t size, const char* fileName, int line, const char* className, NxMemoryType type)
+	{
+	return nxFoundationSDKAllocator->mallocDEBUG(size, fileName, line, className, type);
 	}
 
-NX_INLINE void NxAllocateable::operator delete( void* p )	
-	{	
-	nxFoundationSDKAllocator->free(p);	
+NX_INLINE void NxAllocateable::operator delete(void* p)
+	{
+	nxFoundationSDKAllocator->free(p);
 	}
 
-NX_INLINE void NxAllocateable::operator delete( void* p, const char *, int)	
-	{	
-	nxFoundationSDKAllocator->free(p);	
+NX_INLINE void NxAllocateable::operator delete(void* p, const char*, int)
+	{
+	nxFoundationSDKAllocator->free(p);
 	}
 
-NX_INLINE void NxAllocateable::operator delete[]( void* p )	
-	{	
-	nxFoundationSDKAllocator->free(p);	
+NX_INLINE void NxAllocateable::operator delete[](void* p)
+	{
+	nxFoundationSDKAllocator->free(p);
 	}
 
-NX_INLINE void NxAllocateable::operator delete[]( void* p, const char *, int)	
-	{	
-	nxFoundationSDKAllocator->free(p);	
+NX_INLINE void NxAllocateable::operator delete[](void* p, const char*, int)
+	{
+	nxFoundationSDKAllocator->free(p);
 	}
 
 #endif
