@@ -111,13 +111,13 @@ namespace NxFoundation
 			}
 		}
 	
-	void DebugRenderable::addAABB(const NxBounds3& bounds)
+	void DebugRenderable::addAABB(const NxBounds3& bounds, NxU32 color, bool renderFrame)
 		{
 		// Reuse OBB code...
 		NxVec3 center;	bounds.getCenter(center);
 		NxVec3 extents;	bounds.getExtents(extents);
 		NxMat33 id;	id.id();
-		addOBB(NxBox(center, extents, id), 0x00ffff00, false);
+		addOBB(NxBox(center, extents, id), color, renderFrame);
 		}
 
 	void DebugRenderable::addArrow(const NxVec3 & position, const NxVec3 & direction, NxReal length, NxReal scale, NxU32 color)

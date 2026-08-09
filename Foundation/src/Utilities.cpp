@@ -15,13 +15,13 @@
 #define M_SQRT1_2 double(0.7071067811865475244008443621048490)
 #endif
 
-void NxComputeBounds(NxBounds3& bounds, NxU32 nbVerts, const NxVec3* verts)
+void NxComputeBounds(NxVec3& min, NxVec3& max, NxU32 nbVerts, const NxVec3* verts)
 	{
 	if(!nbVerts || !verts)
 		return;
 
-	NxVec3 max(NX_MIN_F32, NX_MIN_F32, NX_MIN_F32);
-	NxVec3 min(NX_MAX_F32, NX_MAX_F32, NX_MAX_F32);
+	max.set(NX_MIN_F32, NX_MIN_F32, NX_MIN_F32);
+	min.set(NX_MAX_F32, NX_MAX_F32, NX_MAX_F32);
 		{
 		while(nbVerts--)
 			{
@@ -37,7 +37,6 @@ void NxComputeBounds(NxBounds3& bounds, NxU32 nbVerts, const NxVec3* verts)
 			verts ++;
 			}
 		}
-	bounds.set(min, max);
 	}
 
 void NxNormalToTangents(const NxVec3 & n, NxVec3 & t1, NxVec3 & t2)

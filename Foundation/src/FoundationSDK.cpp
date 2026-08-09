@@ -71,7 +71,7 @@ NxUserAllocator & FoundationSDK::getAllocator()
 
 NxProfilingZone * FoundationSDK::createProfilingZone(const char * x)
 	{
-	return NX_NEW NxProfiler::DefineZone(x);
+	return NX_NEW(NxProfiler::DefineZone)(x);
 	}
 /* obsolete
 NxUserDynamicMesh * FoundationSDK::createDefaultDynamicMesh()
@@ -81,7 +81,7 @@ NxUserDynamicMesh * FoundationSDK::createDefaultDynamicMesh()
 */
 NxDebugRenderable* FoundationSDK::createDebugRenderable()
 	{
-	NxDebugRenderable* data = NX_NEW DebugRenderable();
+	NxDebugRenderable* data = NX_NEW(DebugRenderable)();
 	if(!data)	return NULL;
 
 	debugDataArray.pushBack(data);
@@ -268,7 +268,7 @@ NxFoundationSDK *	NxCreateFoundationSDK(NxU32 sdkVersion,NxUserOutputStream * es
 		else  
 			nxFoundationSDKAllocator = &NxFoundation::FoundationSDK::defaultSDKAllocator;	//gotta assign before new is called.
 
-		NxFoundation::FoundationSDK::instance = NX_NEW NxFoundation::FoundationSDK();
+		NxFoundation::FoundationSDK::instance = NX_NEW(NxFoundation::FoundationSDK)();
 		}
 	NxFoundation::FoundationSDK::instance->setErrorStream(es);
 

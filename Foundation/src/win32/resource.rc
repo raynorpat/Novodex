@@ -1,6 +1,7 @@
 //Microsoft Developer Studio generated resource script.
 //
 #include "resource.h"
+#include "../../../NxBuildNumber.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -28,8 +29,8 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,1,0,0
- PRODUCTVERSION 2,1,0,0
+ FILEVERSION NX_SDK_VERSION_MAJOR,NX_SDK_VERSION_MINOR,NX_SDK_VERSION_BUGFIX,NX_SDK_VERSION_BUILDNUM
+ PRODUCTVERSION NX_SDK_VERSION_MAJOR,NX_SDK_VERSION_MINOR,NX_SDK_VERSION_BUGFIX,NX_SDK_VERSION_BUILDNUM
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -47,14 +48,14 @@ BEGIN
             VALUE "Comments", "Part of NovodeX SDK.\0"
             VALUE "CompanyName", "NovodeX AG\0"
             VALUE "FileDescription", "NovodeX Foundation SDK\0"
-            VALUE "FileVersion", "2, 1, 0, 0\0"
+            VALUE "FileVersion", NX_SDK_FULL_VERSION_STRING "\0"
             VALUE "InternalName", "NxFoundation\0"
             VALUE "LegalCopyright", "Copyright © 2004 NovodeX AG\0"
             VALUE "LegalTrademarks", "\0"
             VALUE "OriginalFilename", "\0"
             VALUE "PrivateBuild", "\0"
             VALUE "ProductName", "  NxFoundation\0"
-            VALUE "ProductVersion", "2, 1, 0, 0\0"
+            VALUE "ProductVersion", NX_SDK_FULL_VERSION_STRING "\0"
             VALUE "SpecialBuild", "\0"
         END
     END
