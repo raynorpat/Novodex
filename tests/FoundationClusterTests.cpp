@@ -17,6 +17,8 @@
 #include "NxSphere.h"
 #include "NxRay.h"
 #include "NxSegment.h"
+#include "NxVolumeIntegration.h"
+#include "NxSimpleTriangleMesh.h"
 
 typedef void* (__thiscall *ExceptionValueCtorFn)(void*, NxErrorCode, const char*, int);
 typedef void* (__thiscall *ExceptionCopyCtorFn)(void*, const void*);
@@ -73,6 +75,7 @@ typedef bool (__cdecl *FastSphereFn)(NxSphere*, unsigned, const NxVec3*);
 typedef void (__cdecl *MergeSpheresFn)(NxSphere*, const NxSphere*, const NxSphere*);
 typedef NxF32 (__cdecl *RayDistanceFn)(const NxRay*, const NxVec3*, NxF32*);
 typedef NxF32 (__cdecl *SegmentDistanceFn)(const NxSegment*, const NxVec3*, NxF32*);
+typedef bool (__cdecl *VolumeIntegralsFn)(const NxSimpleTriangleMesh*, NxReal, NxIntegrals*);
 
 struct CallbackObserver
 	{
@@ -783,11 +786,82 @@ static int runRaySegment(HMODULE module)
 	return 0;
 	}
 
+static bool nearDouble(double a, double b, double tolerance = 1e-9)
+	{
+	return fabs(a - b) <= tolerance;
+	}
+
+static bool checkTetraIntegrals(const NxIntegrals& result, double mass, const NxVec3& center)
+	{
+	if(!nearDouble(result.mass, mass) || !nearFloat(result.COM.x, center.x) ||
+		!nearFloat(result.COM.y, center.y) || !nearFloat(result.COM.z, center.z)) return false;
+	const double originDiag[3] = {
+		mass * (0.075 + center.y*center.y + center.z*center.z),
+		mass * (0.075 + center.z*center.z + center.x*center.x),
+		mass * (0.075 + center.x*center.x + center.y*center.y)
+	};
+	for(unsigned i = 0; i < 3; ++i)
+		for(unsigned j = 0; j < 3; ++j)
+		{
+			double comExpected = mass * (i == j ? 0.075 : 0.0125);
+			double originExpected = i == j ? originDiag[i] :
+				mass * (0.0125 - center[i] * center[j]);
+			if(!nearDouble(result.COMInertiaTensor[i][j], comExpected, 1e-4) ||
+				!nearDouble(result.inertiaTensor[i][j], originExpected, 1e-4)) return false;
+		}
+	return true;
+	}
+
+static int runVolume(HMODULE module)
+	{
+	VolumeIntegralsFn compute = reinterpret_cast<VolumeIntegralsFn>(requireExport(module, "NxComputeVolumeIntegrals"));
+	CreateFoundationSDKFn createSDK = reinterpret_cast<CreateFoundationSDKFn>(requireExport(module, "NxCreateFoundationSDK"));
+	if(!compute || !createSDK) return 1;
+	NxVec3 points[] = { NxVec3(0,0,0), NxVec3(1,0,0), NxVec3(0,1,0), NxVec3(0,0,1) };
+	NxU32 indices[] = { 0,2,1, 0,1,3, 0,3,2, 1,2,3 };
+	NxSimpleTriangleMesh mesh;
+	mesh.numVertices = 4; mesh.numTriangles = 4;
+	mesh.pointStrideBytes = sizeof(NxVec3); mesh.triangleStrideBytes = 3 * sizeof(NxU32);
+	mesh.points = points; mesh.triangles = indices;
+	NxIntegrals untouched;
+	memset(&untouched, 0x5a, sizeof(untouched));
+	NxIntegrals sentinel;
+	memcpy(&sentinel, &untouched, sizeof(sentinel));
+	if(compute(&mesh, 6.0f, &untouched) || memcmp(&untouched, &sentinel, sizeof(untouched)))
+		return fprintf(stderr, "FAIL volume allocator guard\n"), 1;
+	NxFoundationSDK* sdk = createSDK(NX_FOUNDATION_SDK_VERSION, 0, 0);
+	if(!sdk) return fprintf(stderr, "FAIL volume SDK create\n"), 1;
+	NxIntegrals result;
+	if(!compute(&mesh, 6.0f, &result) || !checkTetraIntegrals(result, 1.0, NxVec3(0.25f,0.25f,0.25f)))
+		return fprintf(stderr, "FAIL volume tetra32\n"), 1;
+
+	NxVec3 translated[] = { NxVec3(2,3,4), NxVec3(3,3,4), NxVec3(2,4,4), NxVec3(2,3,5) };
+	mesh.points = translated;
+	if(!compute(&mesh, 12.0f, &result) || !checkTetraIntegrals(result, 2.0, NxVec3(2.25f,3.25f,4.25f)))
+		{
+		fprintf(stderr, "FAIL volume translated density mass=%.17g com=%.9g,%.9g,%.9g\n", result.mass, result.COM.x, result.COM.y, result.COM.z);
+		for(unsigned i=0;i<3;++i) fprintf(stderr, " origin[%u]=%.17g,%.17g,%.17g comI[%u]=%.17g,%.17g,%.17g\n", i,
+			result.inertiaTensor[i][0],result.inertiaTensor[i][1],result.inertiaTensor[i][2],i,
+			result.COMInertiaTensor[i][0],result.COMInertiaTensor[i][1],result.COMInertiaTensor[i][2]);
+		return 1;
+		}
+
+	NxU16 reversed16[] = { 0,1,2, 0,3,1, 0,2,3, 1,3,2 };
+	mesh.points = points; mesh.triangles = reversed16;
+	mesh.triangleStrideBytes = 3 * sizeof(NxU16);
+	mesh.flags = NX_MF_16_BIT_INDICES | NX_MF_FLIPNORMALS;
+	if(!compute(&mesh, 6.0f, &result) || !checkTetraIntegrals(result, 1.0, NxVec3(0.25f,0.25f,0.25f)))
+		return fprintf(stderr, "FAIL volume tetra16 flip\n"), 1;
+	sdk->release();
+	printf("volume exports=1 allocator_guard=unchanged tetra32=analytic translated=density12 tetra16_flip=analytic\n");
+	return 0;
+	}
+
 int main(int argc, char** argv)
 	{
-	if(argc != 3 || (strcmp(argv[1], "exception") && strcmp(argv[1], "observable") && strcmp(argv[1], "profiler") && strcmp(argv[1], "time") && strcmp(argv[1], "fpu") && strcmp(argv[1], "util") && strcmp(argv[1], "box") && strcmp(argv[1], "capsule") && strcmp(argv[1], "sphere") && strcmp(argv[1], "ray_seg")))
+	if(argc != 3 || (strcmp(argv[1], "exception") && strcmp(argv[1], "observable") && strcmp(argv[1], "profiler") && strcmp(argv[1], "time") && strcmp(argv[1], "fpu") && strcmp(argv[1], "util") && strcmp(argv[1], "box") && strcmp(argv[1], "capsule") && strcmp(argv[1], "sphere") && strcmp(argv[1], "ray_seg") && strcmp(argv[1], "volume")))
 		{
-		fprintf(stderr, "usage: NxFoundationClusterTests <exception|observable|profiler|time|fpu|util|box|capsule|sphere|ray_seg> <NxFoundation.dll>\n");
+		fprintf(stderr, "usage: NxFoundationClusterTests <exception|observable|profiler|time|fpu|util|box|capsule|sphere|ray_seg|volume> <NxFoundation.dll>\n");
 		return 2;
 		}
 	HMODULE module = LoadLibraryA(argv[2]);
@@ -801,7 +875,8 @@ int main(int argc, char** argv)
 		(!strcmp(argv[1], "util") ? runUtil(module) :
 		(!strcmp(argv[1], "box") ? runBox(module) :
 		(!strcmp(argv[1], "capsule") ? runCapsule(module) :
-		(!strcmp(argv[1], "sphere") ? runSphere(module) : runRaySegment(module)))))))));
+		(!strcmp(argv[1], "sphere") ? runSphere(module) :
+		(!strcmp(argv[1], "ray_seg") ? runRaySegment(module) : runVolume(module))))))))));
 	FreeLibrary(module);
 	return result;
 	}
