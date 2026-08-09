@@ -35,6 +35,8 @@ if(WIN32)
 		target_include_directories(NxFoundationSDKTests PRIVATE Foundation/include)
 		add_executable(NxFoundationClusterTests tests/FoundationClusterTests.cpp)
 		target_include_directories(NxFoundationClusterTests PRIVATE Foundation/include)
+		add_executable(NxFoundationCustomArrayTests tests/FoundationCustomArrayTests.cpp Foundation/src/CustomArray.cpp)
+		target_include_directories(NxFoundationCustomArrayTests PRIVATE Foundation/include Foundation/src)
 	endif()
 endif()
 
