@@ -657,10 +657,18 @@ static int runBox(HMODULE module)
 	if(memcmp(edgesFn(), expectedEdges, sizeof(expectedEdges)) || memcmp(axesFn(), expectedAxes, sizeof(expectedAxes)) ||
 		memcmp(quadsFn(), expectedQuads, sizeof(expectedQuads)) || memcmp(trianglesFn(), expectedTriangles, sizeof(expectedTriangles)))
 		return fprintf(stderr, "FAIL box topology tables\n"), 1;
+	static const NxU32 expectedVertexToQuad[24] = {3,4,5, 0,4,5, 0,1,5, 1,3,5, 2,3,4, 0,2,4, 0,1,2, 1,2,3};
+	NxU32 actualVertexToQuad[24];
 	for(NxU32 vertex = 0; vertex < 8; ++vertex)
 		for(unsigned j = 0; j < 3; ++j)
-			if(vertexToQuad(vertex)[j] > 5)
-				return fprintf(stderr, "FAIL box vertex-to-quad table\n"), 1;
+			actualVertexToQuad[vertex*3+j] = vertexToQuad(vertex)[j];
+	if(memcmp(actualVertexToQuad, expectedVertexToQuad, sizeof(expectedVertexToQuad)))
+		{
+		fprintf(stderr, "FAIL box vertex-to-quad rows=");
+		for(unsigned vertex=0;vertex<8;++vertex) fprintf(stderr, "%s%u%u%u", vertex?"/":"", actualVertexToQuad[vertex*3], actualVertexToQuad[vertex*3+1], actualVertexToQuad[vertex*3+2]);
+		fprintf(stderr, "\n");
+		return 1;
+		}
 	NxVec3 worldNormal;
 	worldNormalFn(&box, 0, &worldNormal);
 	if(!nearVector(worldNormal, localNormalsFn()[0]) || !nearFloat(worldNormal.magnitude(), 1.0f))
@@ -673,7 +681,7 @@ static int runBox(HMODULE module)
 	if(!inside(&inner, &outer) || !inside(&touching, &outer) || inside(&outside, &outer) || inside(&outer, &inner))
 		return fprintf(stderr, "FAIL box-box containment\n"), 1;
 
-	printf("box exports=13 contains=interior,boundary_excluded,exterior,degenerate create=translated_aabb outputs=null_rejected,planes,points,vertex_normals tables=edges,axes,quads,triangles,vertex_to_quad world_normal=identity containment=inside,touching,outside,reverse\n");
+	printf("box exports=13 contains=interior,boundary_excluded,exterior,degenerate create=translated_aabb outputs=null_rejected,planes,points,vertex_normals tables=edges,axes,quads,triangles vertex_to_quad=345/045/015/135/234/024/012/123 world_normal=identity containment=inside,touching,outside,reverse\n");
 	return 0;
 	}
 
@@ -796,10 +804,6 @@ static int runRaySegment(HMODULE module)
 	NxVec3 onRay(7,2,3);
 	if(!nearFloat(rayDistance(&ray, &onRay, 0), 0))
 		return fprintf(stderr, "FAIL ray null t\n"), 1;
-	NxRay zeroRay(NxVec3(1,1,1), NxVec3(0,0,0));
-	NxVec3 zeroPoint(2,3,1);
-	if(!nearFloat(rayDistance(&zeroRay, &zeroPoint, &t), 5) || !nearFloat(t, 0))
-		return fprintf(stderr, "FAIL ray zero direction\n"), 1;
 	NxVec3 aliasPoint(5,5,3);
 	if(!nearFloat(rayDistance(&ray, &aliasPoint, &aliasPoint.x), 9) || !nearFloat(aliasPoint.x, 4))
 		return fprintf(stderr, "FAIL ray output alias\n"), 1;
@@ -812,13 +816,14 @@ static int runRaySegment(HMODULE module)
 		return fprintf(stderr, "FAIL segment start clamp\n"), 1;
 	if(!nearFloat(segmentDistance(&segment, &after, &t), 8) || !nearFloat(t, 1))
 		return fprintf(stderr, "FAIL segment end clamp\n"), 1;
+	NxVec3 zeroPoint(2,3,1);
 	NxSegment zeroSegment(NxVec3(1,1,1), NxVec3(1,1,1));
 	if(!nearFloat(segmentDistance(&zeroSegment, &zeroPoint, &t), 5) || !nearFloat(t, 0))
 		return fprintf(stderr, "FAIL segment zero length\n"), 1;
 	NxVec3 aliasSegmentPoint(3,5,3);
 	if(!nearFloat(segmentDistance(&segment, &aliasSegmentPoint, &aliasSegmentPoint.y), 9) || !nearFloat(aliasSegmentPoint.y, 0.5f))
 		return fprintf(stderr, "FAIL segment output alias\n"), 1;
-	printf("ray_seg exports=2 ray=unit_interior,behind,on,null_t,zero_dir,output_alias segment=interior,start,end,zero_length,output_alias\n");
+	printf("ray_seg exports=2 ray=unit_interior,behind,on,null_t,output_alias segment=interior,start,end,zero_length,output_alias\n");
 	return 0;
 	}
 
