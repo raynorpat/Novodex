@@ -34,6 +34,10 @@ typedef void (__cdecl *ProfilerSetModeFn)(NxDisplayMode);
 typedef double (__cdecl *ProfilerGetStdevFn)(NxProfiler::History_Scalar*, int);
 typedef int (__cdecl *ProfilerSortFn)(const void*, const void*);
 typedef void* (__thiscall *SetCurrentZoneCtorFn)(void*, void*);
+typedef void* (__thiscall *TimeCtorFn)(void*);
+typedef void* (__thiscall *TimeAssignFn)(void*, const void*);
+typedef double (__thiscall *TimeElapsedFn)(void*);
+typedef double (__cdecl *TimeStaticFn)();
 
 struct CallbackObserver
 	{
@@ -323,18 +327,62 @@ static int runProfiler(HMODULE module)
 	return 0;
 	}
 
+static int runTime(HMODULE module)
+	{
+	TimeCtorFn ctor = reinterpret_cast<TimeCtorFn>(requireExport(module, "??0Time@NxFoundation@@QAE@XZ"));
+	TimeAssignFn assign = reinterpret_cast<TimeAssignFn>(requireExport(module, "??4Time@NxFoundation@@QAEAAV01@ABV01@@Z"));
+	TimeStaticFn frequency = reinterpret_cast<TimeStaticFn>(requireExport(module, "?GetClockFrequency@Time@NxFoundation@@CANXZ"));
+	TimeElapsedFn elapsed = reinterpret_cast<TimeElapsedFn>(requireExport(module, "?GetElapsedSeconds@Time@NxFoundation@@QAENXZ"));
+	TimeStaticFn ticks = reinterpret_cast<TimeStaticFn>(requireExport(module, "?GetTimeTicks@Time@NxFoundation@@CANXZ"));
+	TimeElapsedFn peek = reinterpret_cast<TimeElapsedFn>(requireExport(module, "?PeekElapsedSeconds@Time@NxFoundation@@QAENXZ"));
+	if(!ctor || !assign || !frequency || !elapsed || !ticks || !peek)
+		return 1;
+	double hzA = frequency();
+	double hzB = frequency();
+	double tickA = ticks();
+	double tickB = ticks();
+	if(hzA <= 0 || hzB != hzA || tickA <= 0 || tickB < tickA)
+		return fprintf(stderr, "FAIL Time clock source\n"), 1;
+
+	unsigned char timer[8] = {};
+	unsigned char assigned[8] = {};
+	if(ctor(timer) != timer)
+		return fprintf(stderr, "FAIL Time construction\n"), 1;
+	Sleep(15);
+	double peekA = peek(timer);
+	Sleep(15);
+	double peekB = peek(timer);
+	double elapsedA = elapsed(timer);
+	double resetPeek = peek(timer);
+	if(peekA < 0.005 || peekA > 1.0 || peekB < peekA || peekB > 1.0 ||
+		elapsedA < peekA || elapsedA > 1.0 || resetPeek < 0 || resetPeek > 0.25)
+		return fprintf(stderr, "FAIL Time elapsed/peek invariants\n"), 1;
+	if(assign(assigned, timer) != assigned || memcmp(assigned, timer, sizeof(timer)))
+		return fprintf(stderr, "FAIL Time assignment\n"), 1;
+	Sleep(5);
+	double originalPeek = peek(timer);
+	double assignedPeek = peek(assigned);
+	double difference = originalPeek > assignedPeek ? originalPeek - assignedPeek : assignedPeek - originalPeek;
+	if(originalPeek < 0 || assignedPeek < 0 || difference > 0.05)
+		return fprintf(stderr, "FAIL Time assigned epoch\n"), 1;
+
+	printf("time size=8 frequency=positive_stable ticks=positive_monotonic peek=nonreset_monotonic elapsed=resets assignment=epoch_exact windows=bounded\n");
+	return 0;
+	}
+
 int main(int argc, char** argv)
 	{
-	if(argc != 3 || (strcmp(argv[1], "exception") && strcmp(argv[1], "observable") && strcmp(argv[1], "profiler")))
+	if(argc != 3 || (strcmp(argv[1], "exception") && strcmp(argv[1], "observable") && strcmp(argv[1], "profiler") && strcmp(argv[1], "time")))
 		{
-		fprintf(stderr, "usage: NxFoundationClusterTests <exception|observable|profiler> <NxFoundation.dll>\n");
+		fprintf(stderr, "usage: NxFoundationClusterTests <exception|observable|profiler|time> <NxFoundation.dll>\n");
 		return 2;
 		}
 	HMODULE module = LoadLibraryA(argv[2]);
 	if(!module)
 		return fprintf(stderr, "FAIL LoadLibrary %lu\n", GetLastError()), 2;
 	int result = !strcmp(argv[1], "exception") ? runException(module) :
-		(!strcmp(argv[1], "observable") ? runObservable(module) : runProfiler(module));
+		(!strcmp(argv[1], "observable") ? runObservable(module) :
+		(!strcmp(argv[1], "profiler") ? runProfiler(module) : runTime(module)));
 	FreeLibrary(module);
 	return result;
 	}
