@@ -10,6 +10,9 @@
 #include "NxProfiler.h"
 #include "NxUtilities.h"
 #include "NxMat33.h"
+#include "NxBox.h"
+#include "NxBounds3.h"
+#include "NxPlane.h"
 
 typedef void* (__thiscall *ExceptionValueCtorFn)(void*, NxErrorCode, const char*, int);
 typedef void* (__thiscall *ExceptionCopyCtorFn)(void*, const void*);
@@ -50,6 +53,15 @@ typedef NxU32 (__cdecl *Crc32Fn)(const void*, NxU32);
 typedef bool (__cdecl *DiagonalizeFn)(const NxMat33*, NxVec3*, NxMat33*);
 typedef void (__cdecl *RotationFn)(const NxVec3*, const NxVec3*, NxMat33*);
 typedef void (__cdecl *TangentsFn)(const NxVec3*, NxVec3*, NxVec3*);
+typedef bool (__cdecl *BoxContainsFn)(const NxBox*, const NxVec3*);
+typedef const NxU32* (__cdecl *BoxVertexToQuadFn)(NxU32);
+typedef bool (__cdecl *BoxOutputFn)(const NxBox*, void*);
+typedef void (__cdecl *BoxWorldNormalFn)(const NxBox*, NxU32, NxVec3*);
+typedef void (__cdecl *CreateBoxFn)(NxBox*, const NxBounds3*, const NxMat34*);
+typedef const NxU32* (__cdecl *GetU32TableFn)();
+typedef const NxI32* (__cdecl *GetI32TableFn)();
+typedef const NxVec3* (__cdecl *GetVec3TableFn)();
+typedef bool (__cdecl *BoxInsideFn)(const NxBox*, const NxBox*);
 
 struct CallbackObserver
 	{
@@ -542,11 +554,84 @@ static int runUtil(HMODULE module)
 	return 0;
 	}
 
+static int runBox(HMODULE module)
+	{
+	BoxContainsFn contains = reinterpret_cast<BoxContainsFn>(requireExport(module, "NxBoxContainsPoint"));
+	BoxVertexToQuadFn vertexToQuad = reinterpret_cast<BoxVertexToQuadFn>(requireExport(module, "NxBoxVertexToQuad"));
+	BoxOutputFn planesFn = reinterpret_cast<BoxOutputFn>(requireExport(module, "NxComputeBoxPlanes"));
+	BoxOutputFn pointsFn = reinterpret_cast<BoxOutputFn>(requireExport(module, "NxComputeBoxPoints"));
+	BoxOutputFn vertexNormalsFn = reinterpret_cast<BoxOutputFn>(requireExport(module, "NxComputeBoxVertexNormals"));
+	BoxWorldNormalFn worldNormalFn = reinterpret_cast<BoxWorldNormalFn>(requireExport(module, "NxComputeBoxWorldEdgeNormal"));
+	CreateBoxFn create = reinterpret_cast<CreateBoxFn>(requireExport(module, "NxCreateBox"));
+	GetU32TableFn edgesFn = reinterpret_cast<GetU32TableFn>(requireExport(module, "NxGetBoxEdges"));
+	GetI32TableFn axesFn = reinterpret_cast<GetI32TableFn>(requireExport(module, "NxGetBoxEdgesAxes"));
+	GetVec3TableFn localNormalsFn = reinterpret_cast<GetVec3TableFn>(requireExport(module, "NxGetBoxLocalEdgeNormals"));
+	GetU32TableFn quadsFn = reinterpret_cast<GetU32TableFn>(requireExport(module, "NxGetBoxQuads"));
+	GetU32TableFn trianglesFn = reinterpret_cast<GetU32TableFn>(requireExport(module, "NxGetBoxTriangles"));
+	BoxInsideFn inside = reinterpret_cast<BoxInsideFn>(requireExport(module, "NxIsBoxAInsideBoxB"));
+	if(!contains || !vertexToQuad || !planesFn || !pointsFn || !vertexNormalsFn || !worldNormalFn || !create ||
+		!edgesFn || !axesFn || !localNormalsFn || !quadsFn || !trianglesFn || !inside)
+		return 1;
+
+	NxMat33 identity; identity.id();
+	NxBox box(NxVec3(1, 2, 3), NxVec3(2, 3, 4), identity);
+	NxVec3 center(1, 2, 3), interior(2.999f, 2, 3), boundary(3, 2, 3), exterior(3.001f, 2, 3);
+	if(!contains(&box, &center) || !contains(&box, &interior) || contains(&box, &boundary) || contains(&box, &exterior))
+		return fprintf(stderr, "FAIL box point containment\n"), 1;
+	NxBox degenerate(NxVec3(0,0,0), NxVec3(0,1,1), identity);
+	NxVec3 origin(0,0,0);
+	if(contains(&degenerate, &origin))
+		return fprintf(stderr, "FAIL box degenerate boundary\n"), 1;
+
+	NxBounds3 bounds;
+	bounds.set(NxVec3(-1,-2,-3), NxVec3(3,4,5));
+	NxMat34 transform(identity, NxVec3(10,20,30));
+	NxBox created;
+	create(&created, &bounds, &transform);
+	if(!nearVector(created.center, NxVec3(11,21,31)) || !nearVector(created.extents, NxVec3(2,3,4)))
+		return fprintf(stderr, "FAIL box creation\n"), 1;
+
+	NxPlane planes[6]; NxVec3 points[8], normals[8];
+	if(planesFn(&box, 0) || pointsFn(&box, 0) || vertexNormalsFn(&box, 0) ||
+		!planesFn(&box, planes) || !pointsFn(&box, points) || !vertexNormalsFn(&box, normals))
+		return fprintf(stderr, "FAIL box output null/success\n"), 1;
+	if(!nearVector(points[0], NxVec3(-1,-1,-1)) || !nearVector(points[6], NxVec3(3,5,7)) ||
+		!nearVector(planes[0].normal, NxVec3(1,0,0)) || !nearFloat(planes[0].distance(center), -2.0f) ||
+		!nearFloat(normals[0].magnitude(), 1.0f))
+		return fprintf(stderr, "FAIL box points/planes/normals\n"), 1;
+
+	static const NxU32 expectedEdges[24] = {0,1,1,2,2,3,3,0,7,6,6,5,5,4,4,7,1,5,6,2,3,7,4,0};
+	static const NxI32 expectedAxes[12] = {1,2,-1,-2,1,-2,-1,2,3,-3,3,-3};
+	static const NxU32 expectedQuads[24] = {1,2,6,5,2,3,7,6,4,5,6,7,0,4,7,3,0,1,5,4,0,3,2,1};
+	static const NxU32 expectedTriangles[36] = {0,2,1,0,3,2,1,6,5,1,2,6,5,7,4,5,6,7,4,3,0,4,7,3,3,6,2,3,7,6,5,0,1,5,4,0};
+	if(memcmp(edgesFn(), expectedEdges, sizeof(expectedEdges)) || memcmp(axesFn(), expectedAxes, sizeof(expectedAxes)) ||
+		memcmp(quadsFn(), expectedQuads, sizeof(expectedQuads)) || memcmp(trianglesFn(), expectedTriangles, sizeof(expectedTriangles)))
+		return fprintf(stderr, "FAIL box topology tables\n"), 1;
+	for(NxU32 vertex = 0; vertex < 8; ++vertex)
+		for(unsigned j = 0; j < 3; ++j)
+			if(vertexToQuad(vertex)[j] > 5)
+				return fprintf(stderr, "FAIL box vertex-to-quad table\n"), 1;
+	NxVec3 worldNormal;
+	worldNormalFn(&box, 0, &worldNormal);
+	if(!nearVector(worldNormal, localNormalsFn()[0]) || !nearFloat(worldNormal.magnitude(), 1.0f))
+		return fprintf(stderr, "FAIL box world edge normal\n"), 1;
+
+	NxBox outer(NxVec3(0,0,0), NxVec3(5,5,5), identity);
+	NxBox inner(NxVec3(1,1,1), NxVec3(2,2,2), identity);
+	NxBox touching(NxVec3(3,0,0), NxVec3(2,2,2), identity);
+	NxBox outside(NxVec3(3.01f,0,0), NxVec3(2,2,2), identity);
+	if(!inside(&inner, &outer) || !inside(&touching, &outer) || inside(&outside, &outer) || inside(&outer, &inner))
+		return fprintf(stderr, "FAIL box-box containment\n"), 1;
+
+	printf("box exports=13 contains=interior,boundary_excluded,exterior,degenerate create=translated_aabb outputs=null_rejected,planes,points,vertex_normals tables=edges,axes,quads,triangles,vertex_to_quad world_normal=identity containment=inside,touching,outside,reverse\n");
+	return 0;
+	}
+
 int main(int argc, char** argv)
 	{
-	if(argc != 3 || (strcmp(argv[1], "exception") && strcmp(argv[1], "observable") && strcmp(argv[1], "profiler") && strcmp(argv[1], "time") && strcmp(argv[1], "fpu") && strcmp(argv[1], "util")))
+	if(argc != 3 || (strcmp(argv[1], "exception") && strcmp(argv[1], "observable") && strcmp(argv[1], "profiler") && strcmp(argv[1], "time") && strcmp(argv[1], "fpu") && strcmp(argv[1], "util") && strcmp(argv[1], "box")))
 		{
-		fprintf(stderr, "usage: NxFoundationClusterTests <exception|observable|profiler|time|fpu|util> <NxFoundation.dll>\n");
+		fprintf(stderr, "usage: NxFoundationClusterTests <exception|observable|profiler|time|fpu|util|box> <NxFoundation.dll>\n");
 		return 2;
 		}
 	HMODULE module = LoadLibraryA(argv[2]);
@@ -556,7 +641,8 @@ int main(int argc, char** argv)
 		(!strcmp(argv[1], "observable") ? runObservable(module) :
 		(!strcmp(argv[1], "profiler") ? runProfiler(module) :
 		(!strcmp(argv[1], "time") ? runTime(module) :
-		(!strcmp(argv[1], "fpu") ? runFpu(module) : runUtil(module)))));
+		(!strcmp(argv[1], "fpu") ? runFpu(module) :
+		(!strcmp(argv[1], "util") ? runUtil(module) : runBox(module))))));
 	FreeLibrary(module);
 	return result;
 	}
