@@ -10,31 +10,31 @@
 #include "NxVec3.h"
 
 #ifdef WIN32
-void NxSetFPUPrecision24()	{ _controlfp(_PC_24,	_MCW_PC); }
-void NxSetFPUPrecision53()	{ _controlfp(_PC_53,	_MCW_PC); }
-void NxSetFPUPrecision64()	{ _controlfp(_PC_64,	_MCW_PC); }
+static void setX87ControlWord(unsigned short value, unsigned short mask)
+	{
+	unsigned short controlWord;
+	__asm
+		{
+		fnstcw controlWord
+		}
+	controlWord = (controlWord & ~mask) | value;
+	__asm
+		{
+		fldcw controlWord
+		}
+	}
 
-void NxSetFPURoundingChop()	{ _controlfp(_RC_CHOP,	_MCW_RC); }
-void NxSetFPURoundingUp()	{ _controlfp(_RC_UP,	_MCW_RC); }
-void NxSetFPURoundingDown()	{ _controlfp(_RC_DOWN,	_MCW_RC); }
-void NxSetFPURoundingNear()	{ _controlfp(_RC_NEAR,	_MCW_RC); }
-void NxSetFPUExceptions(bool exOn) 
-	{ 
-	if (exOn)
-		{
-		_controlfp(
-			_EM_INVALID|
-			_EM_DENORMAL|
-			_EM_ZERODIVIDE|
-			_EM_OVERFLOW|
-			_EM_UNDERFLOW|
-			_EM_INEXACT
-			,_MCW_EM);
-		}
-	else
-		{
-		_controlfp(0,_MCW_EM);
-		}
+void NxSetFPUPrecision24()	{ setX87ControlWord(0x0000, 0x0300); }
+void NxSetFPUPrecision53()	{ setX87ControlWord(0x0200, 0x0300); }
+void NxSetFPUPrecision64()	{ setX87ControlWord(0x0300, 0x0300); }
+
+void NxSetFPURoundingChop()	{ setX87ControlWord(0x0c00, 0x0c00); }
+void NxSetFPURoundingUp()	{ setX87ControlWord(0x0800, 0x0c00); }
+void NxSetFPURoundingDown()	{ setX87ControlWord(0x0400, 0x0c00); }
+void NxSetFPURoundingNear()	{ setX87ControlWord(0x0000, 0x0c00); }
+void NxSetFPUExceptions(bool exOn)
+	{
+	setX87ControlWord(exOn ? 0x003f : 0x0002, 0x003f);
 	}
 
 #elif LINUX

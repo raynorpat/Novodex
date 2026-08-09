@@ -2,6 +2,8 @@
 #include <windows.h>
 #include <stdio.h>
 #include <string.h>
+#include <float.h>
+#include <xmmintrin.h>
 
 #include "NxException.h"
 #include "NxFoundationSDK.h"
@@ -38,6 +40,9 @@ typedef void* (__thiscall *TimeCtorFn)(void*);
 typedef void* (__thiscall *TimeAssignFn)(void*, const void*);
 typedef double (__thiscall *TimeElapsedFn)(void*);
 typedef double (__cdecl *TimeStaticFn)();
+typedef int (__cdecl *FpuIntFn)(const float*);
+typedef void (__cdecl *FpuVoidFn)();
+typedef void (__cdecl *FpuExceptionsFn)(bool);
 
 struct CallbackObserver
 	{
@@ -370,11 +375,85 @@ static int runTime(HMODULE module)
 	return 0;
 	}
 
+static unsigned short getX87ControlWord()
+	{
+	unsigned short controlWord;
+	__asm
+		{
+		fnstcw controlWord
+		}
+	return controlWord;
+	}
+
+static int runFpu(HMODULE module)
+	{
+	FpuIntFn ceilFn = reinterpret_cast<FpuIntFn>(requireExport(module, "NxIntCeil"));
+	FpuIntFn chopFn = reinterpret_cast<FpuIntFn>(requireExport(module, "NxIntChop"));
+	FpuIntFn floorFn = reinterpret_cast<FpuIntFn>(requireExport(module, "NxIntFloor"));
+	FpuExceptionsFn exceptions = reinterpret_cast<FpuExceptionsFn>(requireExport(module, "NxSetFPUExceptions"));
+	FpuVoidFn precision24 = reinterpret_cast<FpuVoidFn>(requireExport(module, "NxSetFPUPrecision24"));
+	FpuVoidFn precision53 = reinterpret_cast<FpuVoidFn>(requireExport(module, "NxSetFPUPrecision53"));
+	FpuVoidFn precision64 = reinterpret_cast<FpuVoidFn>(requireExport(module, "NxSetFPUPrecision64"));
+	FpuVoidFn roundingChop = reinterpret_cast<FpuVoidFn>(requireExport(module, "NxSetFPURoundingChop"));
+	FpuVoidFn roundingDown = reinterpret_cast<FpuVoidFn>(requireExport(module, "NxSetFPURoundingDown"));
+	FpuVoidFn roundingNear = reinterpret_cast<FpuVoidFn>(requireExport(module, "NxSetFPURoundingNear"));
+	FpuVoidFn roundingUp = reinterpret_cast<FpuVoidFn>(requireExport(module, "NxSetFPURoundingUp"));
+	if(!ceilFn || !chopFn || !floorFn || !exceptions || !precision24 || !precision53 || !precision64 ||
+		!roundingChop || !roundingDown || !roundingNear || !roundingUp)
+		return 1;
+
+	const float values[] = { -3.75f, -1.0f, -0.25f, 0.0f, 0.25f, 1.0f, 3.75f };
+	const int expectedChop[] = { -3, -1, 0, 0, 0, 1, 3 };
+	const int expectedFloor[] = { -4, -1, -1, 0, 0, 1, 3 };
+	const int expectedCeil[] = { -3, -1, 0, 0, 1, 1, 4 };
+	for(unsigned i = 0; i < sizeof(values) / sizeof(values[0]); ++i)
+		if(chopFn(&values[i]) != expectedChop[i] || floorFn(&values[i]) != expectedFloor[i] || ceilFn(&values[i]) != expectedCeil[i])
+			return fprintf(stderr, "FAIL FPU integer conversion vector %u\n", i), 1;
+
+	unsigned savedControl = _controlfp(0, 0);
+	unsigned savedMxcsr = _mm_getcsr();
+	precision24();
+	if((getX87ControlWord() & 0x0300) != 0x0000 || (_mm_getcsr() & 0x6000) != (savedMxcsr & 0x6000))
+		return fprintf(stderr, "FAIL FPU precision24\n"), 1;
+	precision53();
+	if((getX87ControlWord() & 0x0300) != 0x0200)
+		return fprintf(stderr, "FAIL FPU precision53\n"), 1;
+	precision64();
+	if((getX87ControlWord() & 0x0300) != 0x0300)
+		return fprintf(stderr, "FAIL FPU precision64\n"), 1;
+	roundingChop();
+	if((getX87ControlWord() & 0x0c00) != 0x0c00 || _mm_getcsr() != savedMxcsr)
+		return fprintf(stderr, "FAIL FPU rounding chop x87=%04x mxcsr=%08x\n", getX87ControlWord(), _mm_getcsr()), 1;
+	roundingUp();
+	if((getX87ControlWord() & 0x0c00) != 0x0800 || _mm_getcsr() != savedMxcsr)
+		return fprintf(stderr, "FAIL FPU rounding up\n"), 1;
+	roundingDown();
+	if((getX87ControlWord() & 0x0c00) != 0x0400 || _mm_getcsr() != savedMxcsr)
+		return fprintf(stderr, "FAIL FPU rounding down\n"), 1;
+	roundingNear();
+	if((getX87ControlWord() & 0x0c00) != 0 || _mm_getcsr() != savedMxcsr)
+		return fprintf(stderr, "FAIL FPU rounding near\n"), 1;
+	exceptions(true);
+	if((getX87ControlWord() & 0x003f) != 0x003f || _mm_getcsr() != savedMxcsr)
+		return fprintf(stderr, "FAIL FPU exception true masks\n"), 1;
+	exceptions(false);
+	if((getX87ControlWord() & 0x003f) != 0x0002 || _mm_getcsr() != savedMxcsr)
+		return fprintf(stderr, "FAIL FPU exception false masks x87=%04x mxcsr=%08x\n", getX87ControlWord(), _mm_getcsr()), 1;
+
+	_controlfp(savedControl, _MCW_PC | _MCW_RC | _MCW_EM);
+	_mm_setcsr(savedMxcsr);
+	if((_controlfp(0, 0) & (_MCW_PC | _MCW_RC | _MCW_EM)) != (savedControl & (_MCW_PC | _MCW_RC | _MCW_EM)) ||
+		_mm_getcsr() != savedMxcsr)
+		return fprintf(stderr, "FAIL FPU restoration\n"), 1;
+	printf("fpu exports=11 ints=7_vectors precision=x87_24,53,64 rounding=x87_chop,up,down,near exceptions=x87_true_masked,false_unmasked mxcsr=unchanged restoration=exact\n");
+	return 0;
+	}
+
 int main(int argc, char** argv)
 	{
-	if(argc != 3 || (strcmp(argv[1], "exception") && strcmp(argv[1], "observable") && strcmp(argv[1], "profiler") && strcmp(argv[1], "time")))
+	if(argc != 3 || (strcmp(argv[1], "exception") && strcmp(argv[1], "observable") && strcmp(argv[1], "profiler") && strcmp(argv[1], "time") && strcmp(argv[1], "fpu")))
 		{
-		fprintf(stderr, "usage: NxFoundationClusterTests <exception|observable|profiler|time> <NxFoundation.dll>\n");
+		fprintf(stderr, "usage: NxFoundationClusterTests <exception|observable|profiler|time|fpu> <NxFoundation.dll>\n");
 		return 2;
 		}
 	HMODULE module = LoadLibraryA(argv[2]);
@@ -382,7 +461,8 @@ int main(int argc, char** argv)
 		return fprintf(stderr, "FAIL LoadLibrary %lu\n", GetLastError()), 2;
 	int result = !strcmp(argv[1], "exception") ? runException(module) :
 		(!strcmp(argv[1], "observable") ? runObservable(module) :
-		(!strcmp(argv[1], "profiler") ? runProfiler(module) : runTime(module)));
+		(!strcmp(argv[1], "profiler") ? runProfiler(module) :
+		(!strcmp(argv[1], "time") ? runTime(module) : runFpu(module))));
 	FreeLibrary(module);
 	return result;
 	}
