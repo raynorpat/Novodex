@@ -14,6 +14,7 @@
 #include "NxBounds3.h"
 #include "NxPlane.h"
 #include "NxCapsule.h"
+#include "NxSphere.h"
 
 typedef void* (__thiscall *ExceptionValueCtorFn)(void*, NxErrorCode, const char*, int);
 typedef void* (__thiscall *ExceptionCopyCtorFn)(void*, const void*);
@@ -65,6 +66,9 @@ typedef const NxVec3* (__cdecl *GetVec3TableFn)();
 typedef bool (__cdecl *BoxInsideFn)(const NxBox*, const NxBox*);
 typedef void (__cdecl *BoxAroundCapsuleFn)(const NxCapsule*, NxBox*);
 typedef void (__cdecl *CapsuleAroundBoxFn)(const NxBox*, NxCapsule*);
+typedef NxBSphereMethod (__cdecl *ComputeSphereFn)(NxSphere*, unsigned, const NxVec3*);
+typedef bool (__cdecl *FastSphereFn)(NxSphere*, unsigned, const NxVec3*);
+typedef void (__cdecl *MergeSpheresFn)(NxSphere*, const NxSphere*, const NxSphere*);
 
 struct CallbackObserver
 	{
@@ -677,11 +681,66 @@ static int runCapsule(HMODULE module)
 	return 0;
 	}
 
+static int runSphere(HMODULE module)
+	{
+	ComputeSphereFn compute = reinterpret_cast<ComputeSphereFn>(requireExport(module, "NxComputeSphere"));
+	FastSphereFn fast = reinterpret_cast<FastSphereFn>(requireExport(module, "NxFastComputeSphere"));
+	MergeSpheresFn merge = reinterpret_cast<MergeSpheresFn>(requireExport(module, "NxMergeSpheres"));
+	if(!compute || !fast || !merge) return 1;
+	NxSphere sentinel(NxVec3(9,8,7), 6);
+	if(compute(&sentinel, 0, 0) != NX_BS_NONE || !nearVector(sentinel.center, NxVec3(9,8,7)) || !nearFloat(sentinel.radius, 6) || fast(&sentinel, 1, 0))
+		return fprintf(stderr, "FAIL sphere empty/null\n"), 1;
+	NxVec3 one[] = { NxVec3(2,3,4) };
+	NxSphere sphere;
+	if(!fast(&sphere, 1, one) || !nearVector(sphere.center, one[0]) || !nearFloat(sphere.radius, 0))
+		return fprintf(stderr, "FAIL sphere fast single\n"), 1;
+	NxVec3 two[] = { NxVec3(-2,0,0), NxVec3(4,0,0) };
+	if(!fast(&sphere, 2, two) || !nearVector(sphere.center, NxVec3(1,0,0)) || !nearFloat(sphere.radius, 3))
+		return fprintf(stderr, "FAIL sphere fast pair\n"), 1;
+	NxVec3 points[] = { NxVec3(-2,0,0), NxVec3(4,0,0), NxVec3(1,2,0), NxVec3(1,0,-2) };
+	if(!fast(&sphere, 4, points))
+		return fprintf(stderr, "FAIL sphere fast multi\n"), 1;
+	for(unsigned i = 0; i < 4; ++i)
+		if(sphere.center.distance(points[i]) > sphere.radius + 1.0e-4f)
+			return fprintf(stderr, "FAIL sphere fast containment\n"), 1;
+	NxSphere robust;
+	NxBSphereMethod method = compute(&robust, 4, points);
+	if(method != NX_BS_GEMS || !nearVector(robust.center, sphere.center) || !nearFloat(robust.radius, sphere.radius))
+		return fprintf(stderr, "FAIL sphere robust selection\n"), 1;
+
+	NxSphere a(NxVec3(0,0,0), 1), b(NxVec3(4,0,0), 2), merged;
+	merge(&merged, &a, &b);
+	if(!nearVector(merged.center, NxVec3(2.5f,0,0)) || !nearFloat(merged.radius, 3.5f))
+		return fprintf(stderr, "FAIL sphere disjoint merge\n"), 1;
+	NxSphere outer(NxVec3(1,2,3), 5), inner(NxVec3(2,2,3), 1);
+	merge(&merged, &outer, &inner);
+	if(!nearVector(merged.center, outer.center) || !nearFloat(merged.radius, outer.radius))
+		return fprintf(stderr, "FAIL sphere containment merge\n"), 1;
+	merge(&merged, &inner, &outer);
+	if(!nearVector(merged.center, outer.center) || !nearFloat(merged.radius, outer.radius))
+		return fprintf(stderr, "FAIL sphere reverse containment merge\n"), 1;
+	NxSphere coincident0(NxVec3(3,4,5), 2), coincident1(NxVec3(3,4,5), 2);
+	merge(&merged, &coincident0, &coincident1);
+	if(!nearVector(merged.center, coincident1.center) || !nearFloat(merged.radius, 2))
+		return fprintf(stderr, "FAIL sphere coincident merge\n"), 1;
+	NxSphere touching0(NxVec3(0,0,0), 1), touching1(NxVec3(2,0,0), 1);
+	merge(&merged, &touching0, &touching1);
+	if(!nearVector(merged.center, NxVec3(1,0,0)) || !nearFloat(merged.radius, 2))
+		return fprintf(stderr, "FAIL sphere touching merge\n"), 1;
+	NxSphere alias0(NxVec3(0,0,0), 1), alias1(NxVec3(4,0,0), 2);
+	merge(&alias0, &alias0, &alias1);
+	if(!nearVector(alias0.center, NxVec3(2.5f,0,0)) || !nearFloat(alias0.radius, 3.5f))
+		return fprintf(stderr, "FAIL sphere alias output\n"), 1;
+
+	printf("sphere exports=3 fast=null,single,pair,multi_contains compute=empty_none,multi_gems merge=disjoint,containment,both_orders,coincident,touching,alias_first\n");
+	return 0;
+	}
+
 int main(int argc, char** argv)
 	{
-	if(argc != 3 || (strcmp(argv[1], "exception") && strcmp(argv[1], "observable") && strcmp(argv[1], "profiler") && strcmp(argv[1], "time") && strcmp(argv[1], "fpu") && strcmp(argv[1], "util") && strcmp(argv[1], "box") && strcmp(argv[1], "capsule")))
+	if(argc != 3 || (strcmp(argv[1], "exception") && strcmp(argv[1], "observable") && strcmp(argv[1], "profiler") && strcmp(argv[1], "time") && strcmp(argv[1], "fpu") && strcmp(argv[1], "util") && strcmp(argv[1], "box") && strcmp(argv[1], "capsule") && strcmp(argv[1], "sphere")))
 		{
-		fprintf(stderr, "usage: NxFoundationClusterTests <exception|observable|profiler|time|fpu|util|box|capsule> <NxFoundation.dll>\n");
+		fprintf(stderr, "usage: NxFoundationClusterTests <exception|observable|profiler|time|fpu|util|box|capsule|sphere> <NxFoundation.dll>\n");
 		return 2;
 		}
 	HMODULE module = LoadLibraryA(argv[2]);
@@ -693,7 +752,8 @@ int main(int argc, char** argv)
 		(!strcmp(argv[1], "time") ? runTime(module) :
 		(!strcmp(argv[1], "fpu") ? runFpu(module) :
 		(!strcmp(argv[1], "util") ? runUtil(module) :
-		(!strcmp(argv[1], "box") ? runBox(module) : runCapsule(module)))))));
+		(!strcmp(argv[1], "box") ? runBox(module) :
+		(!strcmp(argv[1], "capsule") ? runCapsule(module) : runSphere(module))))))));
 	FreeLibrary(module);
 	return result;
 	}
