@@ -13,6 +13,7 @@
 #include "NxBox.h"
 #include "NxBounds3.h"
 #include "NxPlane.h"
+#include "NxCapsule.h"
 
 typedef void* (__thiscall *ExceptionValueCtorFn)(void*, NxErrorCode, const char*, int);
 typedef void* (__thiscall *ExceptionCopyCtorFn)(void*, const void*);
@@ -62,6 +63,8 @@ typedef const NxU32* (__cdecl *GetU32TableFn)();
 typedef const NxI32* (__cdecl *GetI32TableFn)();
 typedef const NxVec3* (__cdecl *GetVec3TableFn)();
 typedef bool (__cdecl *BoxInsideFn)(const NxBox*, const NxBox*);
+typedef void (__cdecl *BoxAroundCapsuleFn)(const NxCapsule*, NxBox*);
+typedef void (__cdecl *CapsuleAroundBoxFn)(const NxBox*, NxCapsule*);
 
 struct CallbackObserver
 	{
@@ -627,11 +630,58 @@ static int runBox(HMODULE module)
 	return 0;
 	}
 
+static int runCapsule(HMODULE module)
+	{
+	BoxAroundCapsuleFn boxAround = reinterpret_cast<BoxAroundCapsuleFn>(requireExport(module, "NxComputeBoxAroundCapsule"));
+	CapsuleAroundBoxFn capsuleAround = reinterpret_cast<CapsuleAroundBoxFn>(requireExport(module, "NxComputeCapsuleAroundBox"));
+	if(!boxAround || !capsuleAround) return 1;
+	NxMat33 identity; identity.id();
+	const NxVec3 directions[] = { NxVec3(4,0,0), NxVec3(0,6,0), NxVec3(0,0,8) };
+	for(unsigned i = 0; i < 3; ++i)
+		{
+		NxCapsule capsule;
+		capsule.p0 = NxVec3(1,2,3) - directions[i] * 0.5f;
+		capsule.p1 = NxVec3(1,2,3) + directions[i] * 0.5f;
+		capsule.radius = 1.5f;
+		NxBox box;
+		boxAround(&capsule, &box);
+		NxVec3 axis;
+		box.rot.getRow(0, axis);
+		NxVec3 expectedAxis = directions[i]; expectedAxis.normalize();
+		if(!nearVector(box.center, NxVec3(1,2,3)) ||
+			!nearVector(box.extents, NxVec3(1.5f + directions[i].magnitude() * 0.5f, 1.5f, 1.5f)) ||
+			!nearVector(axis, expectedAxis) || !nearFloat(box.rot.determinant(), 1.0f, 2.0e-4f))
+			return fprintf(stderr, "FAIL capsule-to-box axis %u\n", i), 1;
+		}
+
+	const NxVec3 extents[] = { NxVec3(5,2,1), NxVec3(1,6,2), NxVec3(2,1,7), NxVec3(4,4,1), NxVec3(0,0,0) };
+	for(unsigned i = 0; i < 5; ++i)
+		{
+		NxBox box(NxVec3(10,20,30), extents[i], identity);
+		NxCapsule capsule;
+		capsuleAround(&box, &capsule);
+		if(!nearVector((capsule.p0 + capsule.p1) * 0.5f, box.center) || capsule.radius < 0)
+			return fprintf(stderr, "FAIL box-to-capsule center %u\n", i), 1;
+		if(i == 0 && (!nearFloat(capsule.radius, 1.5f) || !nearVector(capsule.p0, NxVec3(13.5f,20,30)) || !nearVector(capsule.p1, NxVec3(6.5f,20,30))))
+			return fprintf(stderr, "FAIL box-to-capsule x\n"), 1;
+		if(i == 1 && (!nearFloat(capsule.radius, 1.5f) || !nearVector(capsule.p0, NxVec3(10,24.5f,30)) || !nearVector(capsule.p1, NxVec3(10,15.5f,30))))
+			return fprintf(stderr, "FAIL box-to-capsule y\n"), 1;
+		if(i == 2 && (!nearFloat(capsule.radius, 1.5f) || !nearVector(capsule.p0, NxVec3(10,20,35.5f)) || !nearVector(capsule.p1, NxVec3(10,20,24.5f))))
+			return fprintf(stderr, "FAIL box-to-capsule z\n"), 1;
+		if(i == 3 && !nearFloat(capsule.radius, 2.5f))
+			return fprintf(stderr, "FAIL box-to-capsule tie\n"), 1;
+		if(i == 4 && (!nearFloat(capsule.radius, 0) || !nearVector(capsule.p0, box.center) || !nearVector(capsule.p1, box.center)))
+			return fprintf(stderr, "FAIL box-to-capsule zero\n"), 1;
+		}
+	printf("capsule exports=2 capsule_to_box=axis_x,y,z_center_extents_orthonormal box_to_capsule=largest_x,y,z,tie_x,zero_center_radius\n");
+	return 0;
+	}
+
 int main(int argc, char** argv)
 	{
-	if(argc != 3 || (strcmp(argv[1], "exception") && strcmp(argv[1], "observable") && strcmp(argv[1], "profiler") && strcmp(argv[1], "time") && strcmp(argv[1], "fpu") && strcmp(argv[1], "util") && strcmp(argv[1], "box")))
+	if(argc != 3 || (strcmp(argv[1], "exception") && strcmp(argv[1], "observable") && strcmp(argv[1], "profiler") && strcmp(argv[1], "time") && strcmp(argv[1], "fpu") && strcmp(argv[1], "util") && strcmp(argv[1], "box") && strcmp(argv[1], "capsule")))
 		{
-		fprintf(stderr, "usage: NxFoundationClusterTests <exception|observable|profiler|time|fpu|util|box> <NxFoundation.dll>\n");
+		fprintf(stderr, "usage: NxFoundationClusterTests <exception|observable|profiler|time|fpu|util|box|capsule> <NxFoundation.dll>\n");
 		return 2;
 		}
 	HMODULE module = LoadLibraryA(argv[2]);
@@ -642,7 +692,8 @@ int main(int argc, char** argv)
 		(!strcmp(argv[1], "profiler") ? runProfiler(module) :
 		(!strcmp(argv[1], "time") ? runTime(module) :
 		(!strcmp(argv[1], "fpu") ? runFpu(module) :
-		(!strcmp(argv[1], "util") ? runUtil(module) : runBox(module))))));
+		(!strcmp(argv[1], "util") ? runUtil(module) :
+		(!strcmp(argv[1], "box") ? runBox(module) : runCapsule(module)))))));
 	FreeLibrary(module);
 	return result;
 	}
