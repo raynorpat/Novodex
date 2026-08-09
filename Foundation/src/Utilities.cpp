@@ -186,7 +186,7 @@ bool NxDiagonalizeInertiaTensor(const NxMat33 & denseInertia, NxVec3 & diagonalI
  * "from" into another vector called "to".
  * Input : from[3], to[3] which both must be *normalized* non-zero vectors
  * Output: mtx[3][3] -- a 3x3 matrix in colum-major form
- * Authors: Tomas MÃ¶ller, John Hughes 1999
+ * Authors: Tomas Möller, John Hughes 1999
 
 adapted by Adam M.
  */
