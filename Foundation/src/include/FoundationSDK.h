@@ -58,9 +58,6 @@ class NXF_DLL_EXPORT  FoundationSDK : public Observable, public NxFoundationSDK
 	static NxUserAllocatorDefault defaultSDKAllocator;
 	NxUserOutputStream * errorStream; //note: may be 0.
 
-	NxU32	getNewID();
-	void	freeID(NxU32 id);
-
 	private:
 	//methods
 	FoundationSDK();
@@ -68,16 +65,12 @@ class NXF_DLL_EXPORT  FoundationSDK : public Observable, public NxFoundationSDK
 	bool errorImpl(NxErrorCode, const char * file, int line, bool * ignoreAlways, const char * messageFmt, va_list );
 
 	//variables
-	NxU32					currentID;
-	NxArraySDK<NxU32>		freeIDs;
-
-	bool userHoldsReference;
-	NxErrorCode firstError, lastError;
-
 	static FoundationSDK * instance;
 
 	typedef NxArraySDK<NxDebugRenderable*> DebugDataArray;
 	DebugDataArray debugDataArray;
+	NxErrorCode firstError, lastError;
+	bool userHoldsReference;
 
 	//friends
 	friend NxFoundationSDK *	::NxCreateFoundationSDK(NxU32 sdkVersion, NxUserOutputStream * errorStream, NxUserAllocator * allocator);

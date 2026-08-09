@@ -27,8 +27,7 @@ NxUserAllocatorDefault FoundationSDK::defaultSDKAllocator;
 FoundationSDK * FoundationSDK::instance = 0;
 
 
-FoundationSDK::FoundationSDK():
-	currentID	(0)
+FoundationSDK::FoundationSDK()
 	{
 	errorStream = 0;
 	userHoldsReference = true;
@@ -129,32 +128,6 @@ void FoundationSDK::event(NxU32 e, Observable &)
 			instance = 0;
 			}
 	}
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-NxU32 FoundationSDK::getNewID()
-	{
-	// If recycled IDs are available, use them
-	NxU32 size = freeIDs.size();
-	if(size)
-		{
-		NxU32 id = freeIDs[size-1];	// Recycle last ID
-		freeIDs.popBack();
-		return id;
-		}
-	// Else create a new ID
-	return currentID++;
-	}
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void FoundationSDK::freeID(NxU32 id)
-	{
-	// Allocate on first call
-	// Add released ID to the array of free IDs
-	freeIDs.pushBack(id);
-	}
-
 
 NxErrorCode FoundationSDK::getLastError()
 	{
