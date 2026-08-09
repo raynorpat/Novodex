@@ -15,6 +15,19 @@
 #define M_SQRT1_2 double(0.7071067811865475244008443621048490)
 #endif
 
+NxU32 NxCrc32(const void* buffer, NxU32 nbBytes)
+	{
+	const NxU8* bytes = static_cast<const NxU8*>(buffer);
+	NxU32 crc = 0;
+	while(nbBytes--)
+		{
+		crc ^= *bytes++;
+		for(NxU32 bit=0; bit<8; bit++)
+			crc = (crc & 1) ? (crc >> 1) ^ 0xedb88320 : crc >> 1;
+		}
+	return crc;
+	}
+
 void NxComputeBounds(NxVec3& min, NxVec3& max, NxU32 nbVerts, const NxVec3* verts)
 	{
 	if(!nbVerts || !verts)
@@ -173,7 +186,7 @@ bool NxDiagonalizeInertiaTensor(const NxMat33 & denseInertia, NxVec3 & diagonalI
  * "from" into another vector called "to".
  * Input : from[3], to[3] which both must be *normalized* non-zero vectors
  * Output: mtx[3][3] -- a 3x3 matrix in colum-major form
- * Authors: Tomas Möller, John Hughes 1999
+ * Authors: Tomas MÃ¶ller, John Hughes 1999
 
 adapted by Adam M.
  */

@@ -27,6 +27,11 @@ target_include_directories(NxFoundation PRIVATE
 
 target_compile_definitions(NxFoundation PRIVATE NX_FOUNDATION_DLL=1 FOUNDATIONDLL_EXPORTS=1)
 
+if(WIN32)
+	add_executable(NxFoundationExportTests tests/FoundationExportTests.cpp)
+	target_include_directories(NxFoundationExportTests PRIVATE Foundation/include)
+endif()
+
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
 	if(WIN32)
 		target_compile_definitions(NxFoundation PRIVATE WIN64=1)

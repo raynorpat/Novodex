@@ -22,6 +22,25 @@
 /* The abs() of all coordinates must be < BIGNUMBER */
 /* Code written by Jack Ritter and Lyle Rains. */
 
+void NxMergeSpheres(NxSphere& merged, const NxSphere& sphere0, const NxSphere& sphere1)
+	{
+	const NxVec3 delta = sphere1.center - sphere0.center;
+	const NxReal distanceSquared = delta.magnitudeSquared();
+	const NxReal radiusDelta = sphere1.radius - sphere0.radius;
+
+	if(radiusDelta * radiusDelta >= distanceSquared)
+		{
+		merged = radiusDelta >= 0 ? sphere1 : sphere0;
+		return;
+		}
+
+	const NxReal distance = NxMath::sqrt(distanceSquared);
+	merged.center = sphere0.center;
+	if(distance > NX_EPS_REAL)
+		merged.center += delta * ((radiusDelta + distance) / (2 * distance));
+	merged.radius = (distance + sphere0.radius + sphere1.radius) * 0.5f;
+	}
+
 bool NxFastComputeSphere(NxSphere& sphere, unsigned nb_verts, const NxVec3* verts)
 	{
 	unsigned i;
