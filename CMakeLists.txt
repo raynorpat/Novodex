@@ -33,6 +33,8 @@ if(WIN32)
 	if(CMAKE_SIZEOF_VOID_P EQUAL 4)
 		add_executable(NxFoundationSDKTests tests/FoundationSDKTests.cpp)
 		target_include_directories(NxFoundationSDKTests PRIVATE Foundation/include)
+		add_executable(NxFoundationClusterTests tests/FoundationClusterTests.cpp)
+		target_include_directories(NxFoundationClusterTests PRIVATE Foundation/include)
 	endif()
 endif()
 
