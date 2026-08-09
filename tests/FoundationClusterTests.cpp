@@ -1,6 +1,7 @@
 #define NOMINMAX
 #include <windows.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <float.h>
 #include <xmmintrin.h>
@@ -19,6 +20,9 @@
 #include "NxSegment.h"
 #include "NxVolumeIntegration.h"
 #include "NxSimpleTriangleMesh.h"
+#include "NxDebugRenderable.h"
+#include "NxUserDebugRenderer.h"
+#include "NxUserAllocator.h"
 
 typedef void* (__thiscall *ExceptionValueCtorFn)(void*, NxErrorCode, const char*, int);
 typedef void* (__thiscall *ExceptionCopyCtorFn)(void*, const void*);
@@ -76,6 +80,38 @@ typedef void (__cdecl *MergeSpheresFn)(NxSphere*, const NxSphere*, const NxSpher
 typedef NxF32 (__cdecl *RayDistanceFn)(const NxRay*, const NxVec3*, NxF32*);
 typedef NxF32 (__cdecl *SegmentDistanceFn)(const NxSegment*, const NxVec3*, NxF32*);
 typedef bool (__cdecl *VolumeIntegralsFn)(const NxSimpleTriangleMesh*, NxReal, NxIntegrals*);
+typedef NxDebugRenderable* (__thiscall *CreateDebugRenderableFn)(NxFoundationSDK*);
+typedef void (__thiscall *ReleaseDebugRenderableFn)(NxFoundationSDK*, NxDebugRenderable**);
+typedef void (__thiscall *RenderDebugDataFn)(const NxFoundationSDK*, const NxUserDebugRenderer*);
+
+class ClusterRecordingAllocator : public NxUserAllocator
+	{
+	public:
+	ClusterRecordingAllocator(): calls(0), frees(0) { memset(sizes, 0, sizeof(sizes)); }
+	void* mallocDEBUG(size_t size, const char*, int) { return allocate(size); }
+	void* mallocDEBUG(size_t size, const char*, int, const char*, NxMemoryType) { return allocate(size); }
+	void* malloc(size_t size) { return allocate(size); }
+	void* malloc(size_t size, NxMemoryType) { return allocate(size); }
+	void* realloc(void* memory, size_t size) { if(calls < 64) sizes[calls] = size; ++calls; return ::realloc(memory, size); }
+	void free(void* memory) { ++frees; ::free(memory); }
+	unsigned calls, frees;
+	size_t sizes[64];
+	private:
+	void* allocate(size_t size) { if(calls < 64) sizes[calls] = size; ++calls; return ::malloc(size); }
+	};
+
+class ClusterDebugRenderer : public NxUserDebugRenderer
+	{
+	public:
+	ClusterDebugRenderer(): calls(0) { memset(seen, 0, sizeof(seen)); }
+	void renderData(const NxDebugRenderable& data) const
+		{
+		if(calls < 4) seen[calls] = &data;
+		++calls;
+		}
+	mutable unsigned calls;
+	mutable const NxDebugRenderable* seen[4];
+	};
 
 struct CallbackObserver
 	{
@@ -857,11 +893,94 @@ static int runVolume(HMODULE module)
 	return 0;
 	}
 
+static bool executableAddress(const void* address)
+	{
+	MEMORY_BASIC_INFORMATION info;
+	if(!VirtualQuery(address, &info, sizeof(info))) return false;
+	DWORD protection = info.Protect & 0xff;
+	return protection == PAGE_EXECUTE || protection == PAGE_EXECUTE_READ ||
+		protection == PAGE_EXECUTE_READWRITE || protection == PAGE_EXECUTE_WRITECOPY;
+	}
+
+static int runDebug(HMODULE module)
+	{
+	CreateFoundationSDKFn createSDK = reinterpret_cast<CreateFoundationSDKFn>(requireExport(module, "NxCreateFoundationSDK"));
+	CreateDebugRenderableFn createDebug = reinterpret_cast<CreateDebugRenderableFn>(requireExport(module, "?createDebugRenderable@FoundationSDK@NxFoundation@@UAEPAVNxDebugRenderable@@XZ"));
+	ReleaseDebugRenderableFn releaseDebug = reinterpret_cast<ReleaseDebugRenderableFn>(requireExport(module, "?releaseDebugRenderable@FoundationSDK@NxFoundation@@UAEXAAPAVNxDebugRenderable@@@Z"));
+	RenderDebugDataFn renderDebug = reinterpret_cast<RenderDebugDataFn>(requireExport(module, "?renderDebugData@FoundationSDK@NxFoundation@@UBEXABVNxUserDebugRenderer@@@Z"));
+	if(!createSDK || !createDebug || !releaseDebug || !renderDebug) return 1;
+	ClusterRecordingAllocator allocator;
+	NxFoundationSDK* sdk = createSDK(NX_FOUNDATION_SDK_VERSION, 0, &allocator);
+	if(!sdk || allocator.calls != 1 || allocator.sizes[0] != 56)
+		return fprintf(stderr, "FAIL debug SDK allocation\n"), 1;
+	unsigned beforeCreate = allocator.calls;
+	NxDebugRenderable* first = createDebug(sdk);
+	if(!first || allocator.calls < beforeCreate + 2 || allocator.sizes[beforeCreate] != 52)
+		return fprintf(stderr, "FAIL debug object size calls=%u size=%u\n", allocator.calls-beforeCreate, unsigned(allocator.sizes[beforeCreate])), 1;
+	void** vftable = *reinterpret_cast<void***>(first);
+	for(unsigned i=0; i<15; ++i)
+		if(!executableAddress(vftable[i])) return fprintf(stderr, "FAIL debug vftable slot %u\n", i), 1;
+	if(first->getNbPoints() || first->getNbLines() || first->getNbTriangles() ||
+		first->getPoints() || first->getLines() || first->getTriangles())
+		return fprintf(stderr, "FAIL debug initial buffers\n"), 1;
+	first->addPoint(NxVec3(1,2,3), 0x11223344);
+	first->addLine(NxVec3(0,0,0), NxVec3(1,2,3), 0x55667788);
+	first->addTriangle(NxVec3(0,0,0), NxVec3(1,0,0), NxVec3(0,1,0), 0x99aabbcc);
+	if(first->getNbPoints()!=1 || first->getNbLines()!=1 || first->getNbTriangles()!=1 ||
+		first->getPoints()[0].color != 0x11223344 || first->getPoints()[0].p != NxVec3(1,2,3) ||
+		first->getLines()[0].color != 0x55667788 || first->getTriangles()[0].color != 0x99aabbcc)
+		return fprintf(stderr, "FAIL debug primitive buffers\n"), 1;
+	const NxDebugPoint* pointBuffer = first->getPoints();
+	first->clear();
+	if(first->getNbPoints() || first->getNbLines() || first->getNbTriangles() || first->getPoints()!=pointBuffer)
+		return fprintf(stderr, "FAIL debug clear retention\n"), 1;
+	first->addPoint(NxVec3(4,5,6), 7);
+	if(first->getPoints()!=pointBuffer) return fprintf(stderr, "FAIL debug buffer reuse\n"), 1;
+
+	NxBounds3 bounds; bounds.set(NxVec3(-1,-2,-3), NxVec3(1,2,3));
+	first->addAABB(bounds, 0x01020304, true);
+	if(first->getNbLines()!=15) return fprintf(stderr, "FAIL debug AABB/frame count=%u\n", first->getNbLines()), 1;
+	for(unsigned i=0;i<12;++i) if(first->getLines()[i].color!=0x01020304) return fprintf(stderr, "FAIL debug AABB color\n"), 1;
+	if(first->getLines()[12].color!=0x00ff0000 || first->getLines()[13].color!=0x0000ff00 || first->getLines()[14].color!=0x000000ff)
+		return fprintf(stderr, "FAIL debug frame colors\n"), 1;
+	NxMat33 identity; identity.id();
+	NxBox box(NxVec3(0,0,0), NxVec3(1,1,1), identity);
+	first->addOBB(box, 9, false);
+	first->addArrow(NxVec3(0,0,0), NxVec3(1,0,0), 2, 1, 10);
+	first->addArrow(NxVec3(0,0,0), NxVec3(1,0,0), 0, 1, 10);
+	NxU32 colors[3] = { 11, 12, 13 };
+	first->addBasis(NxVec3(0,0,0), identity, NxVec3(1,1,1), 1, colors);
+	NxMat34 transform; transform.id();
+	first->addCircle(8, transform, 14, 2, false);
+	first->addCircle(8, transform, 15, 2, true);
+	if(first->getNbLines()!=59) return fprintf(stderr, "FAIL debug high-level count=%u\n", first->getNbLines()), 1;
+
+	NxDebugRenderable* second = createDebug(sdk);
+	if(!second) return fprintf(stderr, "FAIL debug second create\n"), 1;
+	second->addPoint(NxVec3(9,8,7), 6);
+	ClusterDebugRenderer renderer;
+	renderDebug(sdk, &renderer);
+	if(renderer.calls!=2 || renderer.seen[0]!=first || renderer.seen[1]!=second)
+		return fprintf(stderr, "FAIL debug render append order\n"), 1;
+	releaseDebug(sdk, &first);
+	if(first) return fprintf(stderr, "FAIL debug release nulling\n"), 1;
+	renderer.calls=0; memset(renderer.seen,0,sizeof(renderer.seen));
+	renderDebug(sdk, &renderer);
+	if(renderer.calls!=1 || renderer.seen[0]!=second) return fprintf(stderr, "FAIL debug release ownership\n"), 1;
+	NxDebugRenderable* nullRenderable = 0;
+	releaseDebug(sdk, &nullRenderable);
+	releaseDebug(sdk, &second);
+	if(second) return fprintf(stderr, "FAIL debug second release\n"), 1;
+	sdk->release();
+	printf("debug exports=3 object_size=52 vftable=15 primitives=point,line,triangle clear=retains_buffer aabb=12+frame3 high_level=59 append=2,1 release=nulls\n");
+	return 0;
+	}
+
 int main(int argc, char** argv)
 	{
-	if(argc != 3 || (strcmp(argv[1], "exception") && strcmp(argv[1], "observable") && strcmp(argv[1], "profiler") && strcmp(argv[1], "time") && strcmp(argv[1], "fpu") && strcmp(argv[1], "util") && strcmp(argv[1], "box") && strcmp(argv[1], "capsule") && strcmp(argv[1], "sphere") && strcmp(argv[1], "ray_seg") && strcmp(argv[1], "volume")))
+	if(argc != 3 || (strcmp(argv[1], "exception") && strcmp(argv[1], "observable") && strcmp(argv[1], "profiler") && strcmp(argv[1], "time") && strcmp(argv[1], "fpu") && strcmp(argv[1], "util") && strcmp(argv[1], "box") && strcmp(argv[1], "capsule") && strcmp(argv[1], "sphere") && strcmp(argv[1], "ray_seg") && strcmp(argv[1], "volume") && strcmp(argv[1], "debug")))
 		{
-		fprintf(stderr, "usage: NxFoundationClusterTests <exception|observable|profiler|time|fpu|util|box|capsule|sphere|ray_seg|volume> <NxFoundation.dll>\n");
+		fprintf(stderr, "usage: NxFoundationClusterTests <exception|observable|profiler|time|fpu|util|box|capsule|sphere|ray_seg|volume|debug> <NxFoundation.dll>\n");
 		return 2;
 		}
 	HMODULE module = LoadLibraryA(argv[2]);
@@ -876,7 +995,8 @@ int main(int argc, char** argv)
 		(!strcmp(argv[1], "box") ? runBox(module) :
 		(!strcmp(argv[1], "capsule") ? runCapsule(module) :
 		(!strcmp(argv[1], "sphere") ? runSphere(module) :
-		(!strcmp(argv[1], "ray_seg") ? runRaySegment(module) : runVolume(module))))))))));
+		(!strcmp(argv[1], "ray_seg") ? runRaySegment(module) :
+		(!strcmp(argv[1], "volume") ? runVolume(module) : runDebug(module)))))))))));
 	FreeLibrary(module);
 	return result;
 	}
