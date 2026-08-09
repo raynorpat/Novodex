@@ -15,6 +15,8 @@
 #include "NxPlane.h"
 #include "NxCapsule.h"
 #include "NxSphere.h"
+#include "NxRay.h"
+#include "NxSegment.h"
 
 typedef void* (__thiscall *ExceptionValueCtorFn)(void*, NxErrorCode, const char*, int);
 typedef void* (__thiscall *ExceptionCopyCtorFn)(void*, const void*);
@@ -69,6 +71,8 @@ typedef void (__cdecl *CapsuleAroundBoxFn)(const NxBox*, NxCapsule*);
 typedef NxBSphereMethod (__cdecl *ComputeSphereFn)(NxSphere*, unsigned, const NxVec3*);
 typedef bool (__cdecl *FastSphereFn)(NxSphere*, unsigned, const NxVec3*);
 typedef void (__cdecl *MergeSpheresFn)(NxSphere*, const NxSphere*, const NxSphere*);
+typedef NxF32 (__cdecl *RayDistanceFn)(const NxRay*, const NxVec3*, NxF32*);
+typedef NxF32 (__cdecl *SegmentDistanceFn)(const NxSegment*, const NxVec3*, NxF32*);
 
 struct CallbackObserver
 	{
@@ -736,11 +740,54 @@ static int runSphere(HMODULE module)
 	return 0;
 	}
 
+static int runRaySegment(HMODULE module)
+	{
+	RayDistanceFn rayDistance = reinterpret_cast<RayDistanceFn>(requireExport(module, "NxComputeDistanceSquared"));
+	SegmentDistanceFn segmentDistance = reinterpret_cast<SegmentDistanceFn>(requireExport(module, "NxComputeSquareDistance"));
+	if(!rayDistance || !segmentDistance) return 1;
+	NxRay ray(NxVec3(1,2,3), NxVec3(1,0,0));
+	NxF32 t = -9;
+	NxVec3 interior(5,5,3);
+	NxF32 rayInteriorDistance = rayDistance(&ray, &interior, &t);
+	if(!nearFloat(rayInteriorDistance, 9) || !nearFloat(t, 4))
+		return fprintf(stderr, "FAIL ray interior projection distance=%g t=%g\n", rayInteriorDistance, t), 1;
+	NxVec3 behind(-1,4,3);
+	if(!nearFloat(rayDistance(&ray, &behind, &t), 8) || !nearFloat(t, 0))
+		return fprintf(stderr, "FAIL ray origin clamp\n"), 1;
+	NxVec3 onRay(7,2,3);
+	if(!nearFloat(rayDistance(&ray, &onRay, 0), 0))
+		return fprintf(stderr, "FAIL ray null t\n"), 1;
+	NxRay zeroRay(NxVec3(1,1,1), NxVec3(0,0,0));
+	NxVec3 zeroPoint(2,3,1);
+	if(!nearFloat(rayDistance(&zeroRay, &zeroPoint, &t), 5) || !nearFloat(t, 0))
+		return fprintf(stderr, "FAIL ray zero direction\n"), 1;
+	NxVec3 aliasPoint(5,5,3);
+	if(!nearFloat(rayDistance(&ray, &aliasPoint, &aliasPoint.x), 9) || !nearFloat(aliasPoint.x, 4))
+		return fprintf(stderr, "FAIL ray output alias\n"), 1;
+
+	NxSegment segment(NxVec3(1,2,3), NxVec3(5,2,3));
+	NxVec3 middle(3,5,3), before(-1,4,3), after(7,4,3);
+	if(!nearFloat(segmentDistance(&segment, &middle, &t), 9) || !nearFloat(t, 0.5f))
+		return fprintf(stderr, "FAIL segment interior\n"), 1;
+	if(!nearFloat(segmentDistance(&segment, &before, &t), 8) || !nearFloat(t, 0))
+		return fprintf(stderr, "FAIL segment start clamp\n"), 1;
+	if(!nearFloat(segmentDistance(&segment, &after, &t), 8) || !nearFloat(t, 1))
+		return fprintf(stderr, "FAIL segment end clamp\n"), 1;
+	NxSegment zeroSegment(NxVec3(1,1,1), NxVec3(1,1,1));
+	if(!nearFloat(segmentDistance(&zeroSegment, &zeroPoint, &t), 5) || !nearFloat(t, 0))
+		return fprintf(stderr, "FAIL segment zero length\n"), 1;
+	NxVec3 aliasSegmentPoint(3,5,3);
+	if(!nearFloat(segmentDistance(&segment, &aliasSegmentPoint, &aliasSegmentPoint.y), 9) || !nearFloat(aliasSegmentPoint.y, 0.5f))
+		return fprintf(stderr, "FAIL segment output alias\n"), 1;
+	printf("ray_seg exports=2 ray=unit_interior,behind,on,null_t,zero_dir,output_alias segment=interior,start,end,zero_length,output_alias\n");
+	return 0;
+	}
+
 int main(int argc, char** argv)
 	{
-	if(argc != 3 || (strcmp(argv[1], "exception") && strcmp(argv[1], "observable") && strcmp(argv[1], "profiler") && strcmp(argv[1], "time") && strcmp(argv[1], "fpu") && strcmp(argv[1], "util") && strcmp(argv[1], "box") && strcmp(argv[1], "capsule") && strcmp(argv[1], "sphere")))
+	if(argc != 3 || (strcmp(argv[1], "exception") && strcmp(argv[1], "observable") && strcmp(argv[1], "profiler") && strcmp(argv[1], "time") && strcmp(argv[1], "fpu") && strcmp(argv[1], "util") && strcmp(argv[1], "box") && strcmp(argv[1], "capsule") && strcmp(argv[1], "sphere") && strcmp(argv[1], "ray_seg")))
 		{
-		fprintf(stderr, "usage: NxFoundationClusterTests <exception|observable|profiler|time|fpu|util|box|capsule|sphere> <NxFoundation.dll>\n");
+		fprintf(stderr, "usage: NxFoundationClusterTests <exception|observable|profiler|time|fpu|util|box|capsule|sphere|ray_seg> <NxFoundation.dll>\n");
 		return 2;
 		}
 	HMODULE module = LoadLibraryA(argv[2]);
@@ -753,7 +800,8 @@ int main(int argc, char** argv)
 		(!strcmp(argv[1], "fpu") ? runFpu(module) :
 		(!strcmp(argv[1], "util") ? runUtil(module) :
 		(!strcmp(argv[1], "box") ? runBox(module) :
-		(!strcmp(argv[1], "capsule") ? runCapsule(module) : runSphere(module))))))));
+		(!strcmp(argv[1], "capsule") ? runCapsule(module) :
+		(!strcmp(argv[1], "sphere") ? runSphere(module) : runRaySegment(module)))))))));
 	FreeLibrary(module);
 	return result;
 	}
