@@ -197,7 +197,7 @@ void NxFindRotationMatrix(const NxVec3 & from, const NxVec3 & to, NxMat33 & mtx)
 	NxReal e, h, f;
 	static const NxReal EPSILON = 0.000001f;
 	
-	v.cross(from, to);
+	v.cross(to, from);
 	e = from.dot(to);
 	f = (e < 0)? -e:e;
 	if (f > 1.0 - EPSILON)     /* "from" and "to"-vector almost parallel */

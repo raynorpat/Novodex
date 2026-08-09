@@ -8,6 +8,8 @@
 #include "NxException.h"
 #include "NxFoundationSDK.h"
 #include "NxProfiler.h"
+#include "NxUtilities.h"
+#include "NxMat33.h"
 
 typedef void* (__thiscall *ExceptionValueCtorFn)(void*, NxErrorCode, const char*, int);
 typedef void* (__thiscall *ExceptionCopyCtorFn)(void*, const void*);
@@ -43,6 +45,11 @@ typedef double (__cdecl *TimeStaticFn)();
 typedef int (__cdecl *FpuIntFn)(const float*);
 typedef void (__cdecl *FpuVoidFn)();
 typedef void (__cdecl *FpuExceptionsFn)(bool);
+typedef void (__cdecl *ComputeBoundsFn)(NxVec3*, NxVec3*, NxU32, const NxVec3*);
+typedef NxU32 (__cdecl *Crc32Fn)(const void*, NxU32);
+typedef bool (__cdecl *DiagonalizeFn)(const NxMat33*, NxVec3*, NxMat33*);
+typedef void (__cdecl *RotationFn)(const NxVec3*, const NxVec3*, NxMat33*);
+typedef void (__cdecl *TangentsFn)(const NxVec3*, NxVec3*, NxVec3*);
 
 struct CallbackObserver
 	{
@@ -449,11 +456,97 @@ static int runFpu(HMODULE module)
 	return 0;
 	}
 
+static bool nearFloat(float a, float b, float tolerance = 1.0e-4f)
+	{
+	float difference = a > b ? a - b : b - a;
+	return difference <= tolerance;
+	}
+
+static bool nearVector(const NxVec3& a, const NxVec3& b, float tolerance = 1.0e-4f)
+	{
+	return nearFloat(a.x, b.x, tolerance) && nearFloat(a.y, b.y, tolerance) && nearFloat(a.z, b.z, tolerance);
+	}
+
+static NxVec3 multiplyMatrix(const NxMat33& matrix, const NxVec3& vector)
+	{
+	return matrix * vector;
+	}
+
+static int runUtil(HMODULE module)
+	{
+	ComputeBoundsFn bounds = reinterpret_cast<ComputeBoundsFn>(requireExport(module, "NxComputeBounds"));
+	Crc32Fn crc = reinterpret_cast<Crc32Fn>(requireExport(module, "NxCrc32"));
+	DiagonalizeFn diagonalize = reinterpret_cast<DiagonalizeFn>(requireExport(module, "NxDiagonalizeInertiaTensor"));
+	RotationFn rotation = reinterpret_cast<RotationFn>(requireExport(module, "NxFindRotationMatrix"));
+	TangentsFn tangents = reinterpret_cast<TangentsFn>(requireExport(module, "NxNormalToTangents"));
+	if(!bounds || !crc || !diagonalize || !rotation || !tangents)
+		return 1;
+
+	unsigned char bytes256[256];
+	for(unsigned i = 0; i < 256; ++i) bytes256[i] = static_cast<unsigned char>(i);
+	unsigned char ff = 0xff;
+	const char embedded[] = "abc\0def";
+	char repeated[4096];
+	memset(repeated, 'a', sizeof(repeated));
+	if(crc(0, 0) != 0 || crc("123456789", 9) != 0x2dfd2d88 || crc(bytes256, 256) != 0x2493092b ||
+		crc(&ff, 1) != 0x2d02ef8d || crc(embedded, 7) != 0x45eadcee || crc(repeated, sizeof(repeated)) != 0x5b85dc62)
+		return fprintf(stderr, "FAIL utility CRC vectors\n"), 1;
+
+	NxVec3 minimum(9, 8, 7), maximum(6, 5, 4);
+	bounds(&minimum, &maximum, 0, 0);
+	if(!nearVector(minimum, NxVec3(9, 8, 7)) || !nearVector(maximum, NxVec3(6, 5, 4)))
+		return fprintf(stderr, "FAIL utility empty bounds\n"), 1;
+	NxVec3 vertices[] = { NxVec3(3, -2, 9), NxVec3(-4, 8, 1), NxVec3(3, 8, -5), NxVec3(-4, -2, 9) };
+	bounds(&minimum, &maximum, 4, vertices);
+	if(!nearVector(minimum, NxVec3(-4, -2, -5)) || !nearVector(maximum, NxVec3(3, 8, 9)))
+		return fprintf(stderr, "FAIL utility bounds\n"), 1;
+
+	NxVec3 normals[] = { NxVec3(0, 0, 1), NxVec3(0.6f, 0.8f, 0) };
+	for(unsigned i = 0; i < 2; ++i)
+		{
+		NxVec3 tangent1, tangent2;
+		tangents(&normals[i], &tangent1, &tangent2);
+		if(!nearFloat(tangent1.magnitude(), 1.0f) || !nearFloat(tangent2.magnitude(), 1.0f) ||
+			!nearFloat(normals[i].dot(tangent1), 0) || !nearFloat(normals[i].dot(tangent2), 0) || !nearFloat(tangent1.dot(tangent2), 0))
+			return fprintf(stderr, "FAIL utility tangent branch %u\n", i), 1;
+		}
+
+	NxVec3 from(1, 0, 0);
+	NxVec3 targets[] = { NxVec3(0, 1, 0), NxVec3(1, 0, 0), NxVec3(-1, 0, 0) };
+	for(unsigned i = 0; i < 3; ++i)
+		{
+		NxMat33 matrix;
+		rotation(&from, &targets[i], &matrix);
+		if(!nearVector(multiplyMatrix(matrix, from), targets[i], 2.0e-4f))
+			return fprintf(stderr, "FAIL utility rotation branch %u matrix=%g,%g,%g;%g,%g,%g;%g,%g,%g product=%g,%g,%g\n", i,
+				matrix(0,0), matrix(1,0), matrix(2,0), matrix(0,1), matrix(1,1), matrix(2,1), matrix(0,2), matrix(1,2), matrix(2,2),
+				multiplyMatrix(matrix, from).x, multiplyMatrix(matrix, from).y, multiplyMatrix(matrix, from).z), 1;
+		}
+
+	NxMat33 diagonalMatrix;
+	diagonalMatrix.zero();
+	diagonalMatrix(0, 0) = 2; diagonalMatrix(1, 1) = 3; diagonalMatrix(2, 2) = 5;
+	NxVec3 diagonal;
+	NxMat33 axes;
+	if(!diagonalize(&diagonalMatrix, &diagonal, &axes) || !nearVector(diagonal, NxVec3(2, 3, 5)))
+		return fprintf(stderr, "FAIL utility diagonal inertia\n"), 1;
+	NxMat33 symmetric;
+	symmetric(0, 0) = 4; symmetric(1, 0) = 1; symmetric(2, 0) = 0;
+	symmetric(0, 1) = 1; symmetric(1, 1) = 3; symmetric(2, 1) = 0;
+	symmetric(0, 2) = 0; symmetric(1, 2) = 0; symmetric(2, 2) = 2;
+	if(!diagonalize(&symmetric, &diagonal, &axes) || diagonal.x <= 0 || diagonal.y <= 0 || diagonal.z <= 0 ||
+		!nearFloat(diagonal.x + diagonal.y + diagonal.z, 9.0f, 2.0e-3f))
+		return fprintf(stderr, "FAIL utility symmetric inertia\n"), 1;
+
+	printf("util exports=5 crc=empty,canonical,byte_domain,ff,embedded_nul,4096 bounds=empty_unchanged,extrema tangents=both_branches_orthonormal rotation=general,parallel,antiparallel inertia=diagonal,symmetric_positive_trace\n");
+	return 0;
+	}
+
 int main(int argc, char** argv)
 	{
-	if(argc != 3 || (strcmp(argv[1], "exception") && strcmp(argv[1], "observable") && strcmp(argv[1], "profiler") && strcmp(argv[1], "time") && strcmp(argv[1], "fpu")))
+	if(argc != 3 || (strcmp(argv[1], "exception") && strcmp(argv[1], "observable") && strcmp(argv[1], "profiler") && strcmp(argv[1], "time") && strcmp(argv[1], "fpu") && strcmp(argv[1], "util")))
 		{
-		fprintf(stderr, "usage: NxFoundationClusterTests <exception|observable|profiler|time|fpu> <NxFoundation.dll>\n");
+		fprintf(stderr, "usage: NxFoundationClusterTests <exception|observable|profiler|time|fpu|util> <NxFoundation.dll>\n");
 		return 2;
 		}
 	HMODULE module = LoadLibraryA(argv[2]);
@@ -462,7 +555,8 @@ int main(int argc, char** argv)
 	int result = !strcmp(argv[1], "exception") ? runException(module) :
 		(!strcmp(argv[1], "observable") ? runObservable(module) :
 		(!strcmp(argv[1], "profiler") ? runProfiler(module) :
-		(!strcmp(argv[1], "time") ? runTime(module) : runFpu(module))));
+		(!strcmp(argv[1], "time") ? runTime(module) :
+		(!strcmp(argv[1], "fpu") ? runFpu(module) : runUtil(module)))));
 	FreeLibrary(module);
 	return result;
 	}
