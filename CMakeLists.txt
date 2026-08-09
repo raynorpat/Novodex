@@ -30,8 +30,10 @@ target_compile_definitions(NxFoundation PRIVATE NX_FOUNDATION_DLL=1 FOUNDATIONDL
 if(WIN32)
 	add_executable(NxFoundationExportTests tests/FoundationExportTests.cpp)
 	target_include_directories(NxFoundationExportTests PRIVATE Foundation/include)
-	add_executable(NxFoundationSDKTests tests/FoundationSDKTests.cpp)
-	target_include_directories(NxFoundationSDKTests PRIVATE Foundation/include)
+	if(CMAKE_SIZEOF_VOID_P EQUAL 4)
+		add_executable(NxFoundationSDKTests tests/FoundationSDKTests.cpp)
+		target_include_directories(NxFoundationSDKTests PRIVATE Foundation/include)
+	endif()
 endif()
 
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
