@@ -16,6 +16,12 @@ static_assert(sizeof(NpPhysicsSDK) == 0xc, "NpPhysicsSDK is 12 bytes in the orac
 static_assert(offsetof(NpPhysicsSDK, mSdk) == 4, "the SDK pointer follows the vtable pointer");
 static_assert(offsetof(NpPhysicsSDK, mLock) == 8, "the lock follows the SDK pointer");
 
+// The two fluid group-pair report sites, from the immediates at 0x0000c182 and
+// 0x0000c1b2. Like every other line number in this reconstruction they belong to
+// the build tree the DLL was compiled from, so __LINE__ cannot produce them.
+static const int gSetFluidGroupPairFlagsWarningLine = 257;
+static const int gGetFluidGroupPairFlagsWarningLine = 265;
+
 // Around every forwarded call the oracle walks mSdk's scenes and takes each
 // scene's writer lock (or, for the const queries, its reader lock), unwinding
 // and reporting NXE_INVALID_OPERATION with
@@ -86,7 +92,11 @@ void NpPhysicsSDK::releaseScene(NxScene&)
 
 NxScene* NpPhysicsSDK::getScene(NxU32)
 	{
-	// phys_fn_000240 -> phys_fn_000450; needs Scene, Phase 3.
+	// phys_fn_000240 -> phys_fn_000450. Twenty-two bytes with no lock walk: it
+	// forwards, then reads the NxScene wrapper out of Scene at +0x6cc and
+	// returns it, unguarded -- 0x0000b7cd dereferences whatever getScene handed
+	// back, so an out of range index faults. Reconstructing that needs the Scene
+	// layout, which Phase 3 owns, so this slot is blocked, not open.
 	return 0;
 	}
 
@@ -101,45 +111,61 @@ void NpPhysicsSDK::releaseTriangleMesh(NxTriangleMesh&)
 	// phys_fn_000244 -> phys_fn_000470; needs TriangleMesh, Phase 4.
 	}
 
-void NpPhysicsSDK::setGroupCollisionFlag(NxCollisionGroup, NxCollisionGroup, bool)
+// phys_fn_000248 and phys_fn_000250. The mutating slot walks the scenes taking
+// each writer lock at +0xc with tryLock (0x0000b9c8 calls phys_fn_002364) and
+// unwinds with the deadlock report below if one is held; the const slot takes
+// each reader lock at +0x10 outright (0x0000bab5 calls phys_fn_002362) and has
+// no failure path at all. Both walks are Phase 3's and run zero iterations here.
+
+void NpPhysicsSDK::setGroupCollisionFlag(NxCollisionGroup group1, NxCollisionGroup group2, bool enable)
 	{
-	// phys_fn_000248 -> phys_fn_000452.
+	mSdk->setGroupCollisionFlag(group1, group2, enable);
 	}
 
-bool NpPhysicsSDK::getGroupCollisionFlag(NxCollisionGroup, NxCollisionGroup) const
+bool NpPhysicsSDK::getGroupCollisionFlag(NxCollisionGroup group1, NxCollisionGroup group2) const
 	{
-	// phys_fn_000250 -> phys_fn_000431.
-	return false;
+	return mSdk->getGroupCollisionFlag(group1, group2);
 	}
 
 void NpPhysicsSDK::setActorGroupPairFlags(NxActorGroup, NxActorGroup, NxU32)
 	{
-	// phys_fn_000269 -> phys_fn_000433.
+	// phys_fn_000269 -> phys_fn_000433 -> phys_fn_004155, which the census
+	// places in Phase 6. Blocked on the pair-keyed hash at .data 0x00123c28.
 	}
 
 NxU32 NpPhysicsSDK::getActorGroupPairFlags(NxActorGroup, NxActorGroup) const
 	{
-	// phys_fn_000271 -> phys_fn_000435.
+	// phys_fn_000271 -> phys_fn_000435 -> phys_fn_004153, Phase 6. Blocked on
+	// the same hash.
 	return 0;
 	}
 
 #if NX_USE_FLUID_API
+// phys_fn_000273 and phys_fn_000275. The shipped DLL exposes the fluid API and
+// refuses this part of it: both report and return, and neither touches the SDK.
+// The error code pushed at 0x0000c18c and 0x0000c1bc is 0xce, NXE_DB_WARNING,
+// not an error code, and the lines are the immediates at 0x0000c182 and
+// 0x0000c1b2.
 void NpPhysicsSDK::setFluidGroupPairFlags(NxActorGroup, NxFluidGroup, NxU32)
 	{
-	// phys_fn_000273.
+	NxFoundation::FoundationSDK::getInstance().error(NXE_DB_WARNING, NX_NP_PHYSICS_SDK_CPP,
+		gSetFluidGroupPairFlagsWarningLine, 0, "NxFluid::setFluidGroupPairFlags(): Feature not available!");
 	}
 
 NxU32 NpPhysicsSDK::getFluidGroupPairFlags(NxActorGroup, NxFluidGroup) const
 	{
-	// phys_fn_000275.
+	NxFoundation::FoundationSDK::getInstance().error(NXE_DB_WARNING, NX_NP_PHYSICS_SDK_CPP,
+		gGetFluidGroupPairFlagsWarningLine, 0, "NxFluid::getFluidGroupPairFlags(): Feature not available!");
 	return 0;
 	}
 #endif
 
-NxMaterialIndex NpPhysicsSDK::addMaterial(const NxMaterial&)
+// phys_fn_000254, with phys_fn_000256 as the outlined unwind MSVC produced for
+// its deadlock path. Slot 17 is a writer slot: 0x0000bbb4 tries each scene's
+// lock at +0xc and reports NpPhysicsSDK.cpp:173 if one is held.
+NxMaterialIndex NpPhysicsSDK::addMaterial(const NxMaterial& material)
 	{
-	// phys_fn_000254 -> phys_fn_000482.
-	return 0;
+	return mSdk->addMaterial(material);
 	}
 
 void NpPhysicsSDK::setMaterialAtIndex(NxMaterialIndex, const NxMaterial*)
@@ -147,10 +173,10 @@ void NpPhysicsSDK::setMaterialAtIndex(NxMaterialIndex, const NxMaterial*)
 	// phys_fn_000258 -> phys_fn_000484.
 	}
 
-NxMaterial* NpPhysicsSDK::getMaterial(NxMaterialIndex)
+// phys_fn_000260, a const slot, so the reader lock at +0x10 and no failure path.
+NxMaterial* NpPhysicsSDK::getMaterial(NxMaterialIndex index)
 	{
-	// phys_fn_000260 -> phys_fn_000456.
-	return 0;
+	return mSdk->getMaterial(index);
 	}
 
 void NpPhysicsSDK::purgeMaterials()

@@ -26,17 +26,17 @@ Layout is measured from phys_fn_000226 (the constructor, 0x0000b5d0): 0x0000ea05
 allocates 0xc bytes, 0x0000b5d0 writes the vtable pointer at +0, the lock is
 constructed at +8 and the SDK pointer is stored at +4.
 
-Only the lifecycle slots are reconstructed in this component. The rest forward to
-SDK-side methods this component does not own; each one names the oracle rows it
-stands in for, and none of them is reached by the SDK lifecycle differential.
+The lifecycle, visualization, collision-group, material read/add and fluid
+group-pair slots are reconstructed. The rest forward to SDK-side methods this
+component does not own; each one names the oracle rows it stands in for, and
+none of them returns a value the oracle would not -- the two placeholders that
+did, getGroupCollisionFlag and addMaterial, are now the real thing.
 
-Two of those placeholders return a value the oracle would not, so nothing should
-read them as recovered behaviour:
-  - getGroupCollisionFlag returns false. The oracle returns true for every pair,
-    because the constructor reconstructed here sets all 32 collision group masks
-    to 0xffffffff. The placeholder is the exact inverse of recovered state.
-  - addMaterial returns 0, which is a valid NxMaterialIndex -- the default
-    material's -- and not an error value.
+The remaining placeholders are blocked rather than unwritten. getScene,
+releaseScene, createScene, createTriangleMesh and releaseTriangleMesh all need
+the Scene or TriangleMesh layout that Phases 3 and 4 own; setActorGroupPairFlags
+and getActorGroupPairFlags need phys_fn_004155 and phys_fn_004153, which the
+census places in Phase 6; coreDump needs seventeen rows across Phases 3, 4 and 6.
 */
 class NpPhysicsSDK : public NxPhysicsSDK, public NxAllocateable
 	{
@@ -44,15 +44,16 @@ class NpPhysicsSDK : public NxPhysicsSDK, public NxAllocateable
 	NpPhysicsSDK(PhysicsSDK* sdk);
 	~NpPhysicsSDK();
 
-	// Reconstructed: phys_fn_000228, 000230, 000232, 000238 and 000261, plus
-	// phys_fn_000252 (visualize), which has to stay in declaration order below.
+	// Reconstructed: phys_fn_000228, 000230, 000232, 000238 and 000261, plus the
+	// slots below that have to stay in declaration order: phys_fn_000248,
+	// 000250, 000252, 000254, 000260, 000273 and 000275.
 	void release();
 	bool setParameter(NxParameter paramEnum, NxReal paramValue);
 	NxReal getParameter(NxParameter paramEnum) const;
 	NxU32 getNbScenes() const;
 	NxU32 getNbMaterials();
 
-	// Not reconstructed in this component.
+	// Blocked on a later phase; each definition names what blocks it.
 	NxScene* createScene(const NxSceneDesc& desc);
 	void releaseScene(NxScene& scene);
 	NxScene* getScene(NxU32 index);

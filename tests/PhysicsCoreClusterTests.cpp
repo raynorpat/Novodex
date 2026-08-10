@@ -7,6 +7,7 @@
 #include "NxUserOutputStream.h"
 #include "NxUserDebugRenderer.h"
 #include "NxDebugRenderable.h"
+#include "NxMaterial.h"
 
 // The Phase 2 shared runtime components that are reachable without a scene:
 // FluidSupport (the nine NxFluid* exports) and Visualization (the three
@@ -72,19 +73,52 @@ class RecordingAllocator : public NxUserAllocator
 		}
 	};
 
-class SilentOutputStream : public NxUserOutputStream
+class RecordingOutputStream : public NxUserOutputStream
 	{
 	public:
-	SilentOutputStream(): errors(0), asserts(0), prints(0) {}
+	RecordingOutputStream(): errors(0), asserts(0), prints(0), code(NXE_NO_ERROR), line(0)
+		{
+		message[0] = 0;
+		file[0] = 0;
+		}
 
-	void reportError(NxErrorCode, const char*, const char*, int)	{ ++errors; }
+	void reportError(NxErrorCode errorCode, const char* errorMessage, const char* errorFile, int errorLine)
+		{
+		++errors;
+		code = errorCode;
+		line = errorLine;
+		copy(message, sizeof(message), errorMessage);
+		copy(file, sizeof(file), errorFile);
+		}
+
 	NxAssertResponse reportAssertViolation(const char*, const char*, int)	{ ++asserts; return NX_AR_CONTINUE; }
 	void print(const char*)	{ ++prints; }
 
 	unsigned errors;
 	unsigned asserts;
 	unsigned prints;
+	NxErrorCode code;
+	int line;
+	char message[96];
+	char file[64];
+
+	private:
+	static void copy(char* destination, size_t capacity, const char* source)
+		{
+		if(!source)
+			{
+			destination[0] = 0;
+			return;
+			}
+		strncpy_s(destination, capacity, source, _TRUNCATE);
+		}
 	};
+
+static void reportStream(const char* step, const RecordingOutputStream& stream)
+	{
+	printf("step=%s errors=%u code=%d line=%d file=%s message=%s\n",
+		step, stream.errors, static_cast<int>(stream.code), stream.line, stream.file, stream.message);
+	}
 
 // Copies out what it is handed, because the renderable is only valid for the
 // duration of the callback. The renderable itself is kept so the sphere's
@@ -205,7 +239,7 @@ int wmain(int argc, wchar_t** argv)
 	printf("step=assert_before_create returned=1\n");
 
 	RecordingAllocator allocator;
-	SilentOutputStream stream;
+	RecordingOutputStream stream;
 	NxPhysicsSDK* sdk = createSDK(NX_PHYSICS_SDK_VERSION, &allocator, &stream);
 	printf("step=create sdk=%s\n", sdk ? "nonnull" : "null");
 	if(!sdk)
@@ -326,6 +360,103 @@ int wmain(int argc, wchar_t** argv)
 	reportVisualize("visualize_after_recreate", second, renderer, 0);
 	debugLine(linePoints, 0xff0000ff);
 	reportVisualize("line_after_recreate", second, renderer, 0);
+
+	// ---- Factory-A: collision groups, and the material read/add pair ----
+	//
+	// Both halves are read back through the public API, so what is gated is the
+	// recovered state and not the reconstruction's own bookkeeping: the group
+	// mask through getGroupCollisionFlag, the material array through
+	// getNbMaterials and getMaterial. The oracle's constructor fills all 32 group
+	// words with 0xffffffff, so every pair starts enabled -- the case the old
+	// placeholder got exactly backwards.
+
+	printf("step=groups_default self=%d pair=%d high=%d cross=%d\n",
+		second->getGroupCollisionFlag(0, 0) ? 1 : 0,
+		second->getGroupCollisionFlag(3, 7) ? 1 : 0,
+		second->getGroupCollisionFlag(31, 31) ? 1 : 0,
+		second->getGroupCollisionFlag(31, 0) ? 1 : 0);
+
+	second->setGroupCollisionFlag(3, 7, false);
+	printf("step=groups_disabled forward=%d reverse=%d neighbour=%d unrelated=%d\n",
+		second->getGroupCollisionFlag(3, 7) ? 1 : 0,
+		second->getGroupCollisionFlag(7, 3) ? 1 : 0,
+		second->getGroupCollisionFlag(3, 8) ? 1 : 0,
+		second->getGroupCollisionFlag(4, 7) ? 1 : 0);
+
+	second->setGroupCollisionFlag(3, 7, true);
+	printf("step=groups_reenabled forward=%d reverse=%d\n",
+		second->getGroupCollisionFlag(3, 7) ? 1 : 0,
+		second->getGroupCollisionFlag(7, 3) ? 1 : 0);
+
+	// 31 is the last legal group and 32 the first illegal one. The oracle also
+	// carries an unreachable 0xffff sentinel test behind the range check, so
+	// 0xffff must report the range error and not be waved through.
+	second->getGroupCollisionFlag(32, 0);
+	reportStream("groups_get_out_of_range", stream);
+	printf("step=groups_get_out_of_range value=%d\n", second->getGroupCollisionFlag(32, 0) ? 1 : 0);
+	printf("step=groups_get_sentinel value=%d\n", second->getGroupCollisionFlag(0xffff, 0) ? 1 : 0);
+	reportStream("groups_get_sentinel", stream);
+
+	second->setGroupCollisionFlag(32, 0, false);
+	reportStream("groups_set_out_of_range", stream);
+	printf("step=groups_unchanged_after_error pair=%d\n", second->getGroupCollisionFlag(0, 0) ? 1 : 0);
+
+	// The default material is index 0 and the array holds exactly it.
+	printf("step=materials_initial count=%u\n", second->getNbMaterials());
+	NxMaterial* defaultMaterial = second->getMaterial(0);
+	printf("step=material_default nonnull=%d dynamic=%.6f static=%.6f restitution=%.6f flags=0x%08x\n",
+		defaultMaterial ? 1 : 0,
+		defaultMaterial ? defaultMaterial->dynamicFriction : 0.0f,
+		defaultMaterial ? defaultMaterial->staticFriction : 0.0f,
+		defaultMaterial ? defaultMaterial->restitution : 0.0f,
+		defaultMaterial ? static_cast<unsigned>(defaultMaterial->flags) : 0u);
+	printf("step=material_out_of_range is_default=%d\n",
+		second->getMaterial(5) == defaultMaterial ? 1 : 0);
+
+	// Nine pushes past a capacity of one force the (1 + size()) * 2 growth twice
+	// over, so the readback also gates that the copy preserved every element.
+	NxMaterial added;
+	added.setToDefault();
+	unsigned indices[9];
+	for(unsigned i = 0; i < 9; ++i)
+		{
+		added.dynamicFriction = 0.125f * static_cast<NxReal>(i + 1);
+		added.staticFriction = 0.25f * static_cast<NxReal>(i + 1);
+		added.restitution = 0.0625f * static_cast<NxReal>(i + 1);
+		indices[i] = second->addMaterial(added);
+		}
+	printf("step=materials_added count=%u indices=%u,%u,%u,%u,%u,%u,%u,%u,%u\n",
+		second->getNbMaterials(), indices[0], indices[1], indices[2], indices[3],
+		indices[4], indices[5], indices[6], indices[7], indices[8]);
+	for(unsigned i = 0; i < 9; ++i)
+		{
+		NxMaterial* read = second->getMaterial(static_cast<NxMaterialIndex>(indices[i]));
+		printf("  material=%u dynamic=%.6f static=%.6f restitution=%.6f is_default=%d\n",
+			indices[i], read ? read->dynamicFriction : 0.0f, read ? read->staticFriction : 0.0f,
+			read ? read->restitution : 0.0f, read == defaultMaterial ? 1 : 0);
+		}
+	printf("step=material_default_still_reads dynamic=%.6f\n", second->getMaterial(0)->dynamicFriction);
+	reportAllocator("materials.allocator", allocator);
+
+	// Bit 31 of flags marks a slot the oracle refuses to hand back: getMaterial
+	// falls through to index 0 rather than returning the slot or an error.
+	added.dynamicFriction = 9.0f;
+	added.flags |= 0x80000000;
+	NxMaterialIndex retired = second->addMaterial(added);
+	NxMaterial* retiredRead = second->getMaterial(retired);
+	printf("step=material_bit31 index=%u count=%u is_default=%d dynamic=%.6f\n",
+		retired, second->getNbMaterials(), retiredRead == second->getMaterial(0) ? 1 : 0,
+		retiredRead ? retiredRead->dynamicFriction : 0.0f);
+	reportStream("material_bit31", stream);
+
+	// The two fluid group-pair slots are the shipped DLL refusing part of the
+	// fluid API it exports. They report a debug warning, not an error.
+#if NX_USE_FLUID_API
+	second->setFluidGroupPairFlags(1, 2, 3);
+	reportStream("fluid_pair_set", stream);
+	printf("step=fluid_pair_get value=%u\n", second->getFluidGroupPairFlags(1, 2));
+	reportStream("fluid_pair_get", stream);
+#endif
 
 	second->release();
 	printf("step=recreate_release\n");

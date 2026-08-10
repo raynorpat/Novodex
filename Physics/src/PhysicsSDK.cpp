@@ -19,6 +19,10 @@
 static const int gSetParameterEnumErrorLine = 263;
 static const int gSetParameterRangeErrorLine = 292;
 static const int gGetParameterEnumErrorLine = 306;
+// The two collision-group error sites, from the immediates pushed at 0x0000df71
+// and 0x0000dc9b. Both push an error code of 1, NXE_INVALID_PARAMETER.
+static const int gSetGroupCollisionFlagErrorLine = 576;
+static const int gGetGroupCollisionFlagErrorLine = 584;
 
 // .data 0x001238b8, 0x001239a8 and 0x001237c8. The constructor fills all three,
 // then copies the defaults into the live values at .data 0x00123b18.
@@ -238,6 +242,81 @@ Scene* PhysicsSDK::getScene(NxU32 index)
 NxU32 PhysicsSDK::getNbMaterials() const
 	{
 	return mMaterials.size();
+	}
+
+// phys_fn_000437 (0x0000dda0): a file scope __cdecl helper taking the two groups
+// and the flag. The mask is symmetric -- 0x0000ddc3 records group2 in group1's
+// word and 0x0000dddc records group1 in group2's, in that order -- and the shift
+// counts are never masked in the source, because shl already takes cl modulo 32.
+static void setGroupCollisionMask(NxCollisionGroup group1, NxCollisionGroup group2, bool enable)
+	{
+	NxU32 mask = 1 << group2;
+	if(enable)
+		{
+		gGroupCollisionMask[group1] |= mask;
+		gGroupCollisionMask[group2] |= 1 << group1;
+		}
+	else
+		{
+		gGroupCollisionMask[group1] &= ~mask;
+		gGroupCollisionMask[group2] &= ~(1 << group1);
+		}
+	}
+
+void PhysicsSDK::setGroupCollisionFlag(NxCollisionGroup group1, NxCollisionGroup group2, bool enable)
+	{
+	if(group1 < 32 && group2 < 32)
+		{
+		setGroupCollisionMask(group1, group2, enable);
+		return;
+		}
+
+	NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_PARAMETER, NX_PHYSICS_SDK_CPP,
+		gSetGroupCollisionFlagErrorLine, 0, "PhysicsSDK::setGroupCollisionFlag: invalid params!  Group must be <= 31!");
+	}
+
+bool PhysicsSDK::getGroupCollisionFlag(NxCollisionGroup group1, NxCollisionGroup group2) const
+	{
+	if(group1 >= 32 || group2 >= 32)
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_PARAMETER, NX_PHYSICS_SDK_CPP,
+			gGetGroupCollisionFlagErrorLine, 0, "PhysicsSDK::getGroupCollisionFlag: invalid params!  Group must be <= 31!");
+		return false;
+		}
+
+	// 0x0000dc6c and 0x0000dc73 test the 0xffff sentinel that 0x0000dc59 and
+	// 0x0000dc64 have already rejected, so the block at 0x0000dc97 that returns
+	// true is unreachable. It is written out because the source has it, not
+	// because it runs; every reachable pair reads the mask.
+	if(group1 != 0xffff && group2 != 0xffff)
+		return (gGroupCollisionMask[group1] & (1 << group2)) != 0;
+	return true;
+	}
+
+// phys_fn_000482 (0x0000ef50). The growth the oracle performs is exactly
+// NxArray::pushBack's: reserve((1 + size()) * 2) when memEnd <= last, copy every
+// 0x48 byte element eighteen words at a time, free the old block, then assign
+// and step last. The returned index is the new size less one.
+NxMaterialIndex PhysicsSDK::addMaterial(const NxMaterial& material)
+	{
+	mMaterials.pushBack(material);
+	return static_cast<NxMaterialIndex>(mMaterials.size() - 1);
+	}
+
+// phys_fn_000456 (0x0000dfd0) reads the singleton at .data 0x00123c04 rather than
+// its own this, which is why Ghidra types it __stdcall. An index at or past the
+// end silently becomes index 0, and so does a slot whose flags carry bit 31 --
+// 0x0000e00c tests the signed word at +0x38 of the element and falls back to the
+// first element. Neither case is an error and neither is reported.
+NxMaterial* PhysicsSDK::getMaterial(NxMaterialIndex index)
+	{
+	NxMaterial* materials = instance->mMaterials.begin();
+	NxMaterial* found = materials;
+	if(index < instance->mMaterials.size())
+		found = materials + index;
+	if(found->flags & NX_MF_INTERNAL_BIT31)
+		return materials;
+	return found;
 	}
 
 // 0x0000de1c tail-jumps slot +0x24 of the Foundation vtable, renderDebugData;

@@ -46,6 +46,15 @@ class PhysicsSDK : public NxAllocateable
 	// phys_fn_000458 (0x0000e030)
 	NxU32 getNbMaterials() const;
 
+	// phys_fn_000452 (0x0000df30)
+	void setGroupCollisionFlag(NxCollisionGroup group1, NxCollisionGroup group2, bool enable);
+	// phys_fn_000431 (0x0000dc50)
+	bool getGroupCollisionFlag(NxCollisionGroup group1, NxCollisionGroup group2) const;
+	// phys_fn_000482 (0x0000ef50)
+	NxMaterialIndex addMaterial(const NxMaterial& material);
+	// phys_fn_000456 (0x0000dfd0). Reads the singleton rather than this object.
+	NxMaterial* getMaterial(NxMaterialIndex index);
+
 	// The three visualization entry points. None of them reads this object -- the
 	// Foundation and the cached renderable are both file scope in PhysicsSDK.cpp
 	// -- but all three are entered with ecx holding a PhysicsSDK, so they are
