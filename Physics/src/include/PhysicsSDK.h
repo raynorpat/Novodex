@@ -58,6 +58,8 @@ class PhysicsSDK : public NxAllocateable
 	void setMaterialAtIndex(NxMaterialIndex index, const NxMaterial* material);
 	// phys_fn_000486 with phys_fn_000488 as its tail (0x0000f690)
 	void purgeMaterials();
+	// phys_fn_000446 (0x0000dee0)
+	bool setPerformanceInspector(NxPerformanceInspector* inspector);
 
 	// The three visualization entry points. None of them reads this object -- the
 	// Foundation and the cached renderable are both file scope in PhysicsSDK.cpp

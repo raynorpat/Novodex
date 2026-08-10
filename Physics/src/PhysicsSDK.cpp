@@ -369,6 +369,14 @@ void PhysicsSDK::purgeMaterials()
 	mMaterials.resize(1);
 	}
 
+// phys_fn_000446 (0x0000dee0). Two bytes of body: mov al, 1. It reads neither
+// this object nor its argument -- the inspector is accepted and dropped, and
+// nothing in the image reads it back.
+bool PhysicsSDK::setPerformanceInspector(NxPerformanceInspector*)
+	{
+	return true;
+	}
+
 // 0x0000de1c tail-jumps slot +0x24 of the Foundation vtable, renderDebugData;
 // the null test at 0x0000de16 guards it and otherwise returns without
 // rendering. The renderer reference is passed straight through, and the tail

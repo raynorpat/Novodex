@@ -194,8 +194,10 @@ bool NpPhysicsSDK::coreDump(const char*, bool, const char*)
 	return false;
 	}
 
-bool NpPhysicsSDK::setPerformanceInspector(NxPerformanceInspector*)
+// phys_fn_000277 with phys_fn_000279 as its outlined unwind, which reports
+// NpPhysicsSDK.cpp:277 from the immediate at 0x0000c28f and returns false at
+// 0x0000c2a5. A writer slot, so tryLock at 0x0000c1f4.
+bool NpPhysicsSDK::setPerformanceInspector(NxPerformanceInspector* inspector)
 	{
-	// phys_fn_000277 -> phys_fn_000446.
-	return false;
+	return mSdk->setPerformanceInspector(inspector);
 	}

@@ -549,6 +549,12 @@ int wmain(int argc, wchar_t** argv)
 		second->addMaterial(replacement), second->getNbMaterials());
 	reportAllocator("purge_then_add.allocator", allocator);
 
+	// phys_fn_000446 is two bytes returning a literal 1: the inspector is
+	// accepted and dropped, and a null one is accepted just the same.
+	printf("step=performance_inspector null=%d nonnull=%d\n",
+		second->setPerformanceInspector(0) ? 1 : 0,
+		second->setPerformanceInspector(reinterpret_cast<NxPerformanceInspector*>(&allocator)) ? 1 : 0);
+
 	// The two fluid group-pair slots are the shipped DLL refusing part of the
 	// fluid API it exports. They report a debug warning, not an error.
 #if NX_USE_FLUID_API

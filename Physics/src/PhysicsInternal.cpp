@@ -6,6 +6,7 @@
 |
 \*----------------------------------------------------------------------------*/
 #include "PhysicsInternal.h"
+#include "NxArray.h"
 
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
@@ -171,4 +172,73 @@ SdkAllocator* nxGetSdkAllocator()
 	if(!gSdkAllocator)
 		gSdkAllocator = &gSdkDefaultAllocator;
 	return gSdkAllocator;
+	}
+
+// .data 0x00123c0c. The oracle allocates 0x10 bytes and clears three words,
+// which is exactly what NX_NEW of an NxArraySDK does, and releases it with the
+// destructor plus operator delete that phys_fn_000474 is.
+static NxArraySDK<SdkPointerPair>* gPointerBindings = 0;
+
+// phys_fn_000454 (0x0000df90). A linear scan; a miss and a value of zero are the
+// same answer, and neither is reported.
+void* nxGetSdkPointerBinding(void* key)
+	{
+	if(gPointerBindings && key)
+		{
+		NxU32 count = gPointerBindings->size();
+		SdkPointerPair* pair = gPointerBindings->begin();
+		for(NxU32 i = 0; i < count; i++, pair++)
+			if(pair->key == key)
+				return pair->value;
+		}
+	return 0;
+	}
+
+// phys_fn_000480 (0x0000edc0). A null key is the only rejection. A null value
+// removes the binding, and removing the last one destroys the table outright
+// rather than leaving an empty one -- 0x0000ef1c tests the byte count against 8
+// and 0x0000ef26 clears the pointer.
+//
+// The table is created only when a value is being stored, and the creation is
+// NOT checked: if the allocation fails the oracle carries straight on into the
+// scan and faults on the null. That is reproduced.
+bool nxSetSdkPointerBinding(void* key, void* value)
+	{
+	if(!key)
+		return false;
+
+	if(!value)
+		{
+		if(!gPointerBindings)
+			return true;
+		}
+	else if(!gPointerBindings)
+		gPointerBindings = NX_NEW(NxArraySDK<SdkPointerPair>)();
+
+	NxU32 count = gPointerBindings->size();
+	for(NxU32 i = 0; i < count; i++)
+		{
+		if((*gPointerBindings)[i].key != key)
+			continue;
+
+		if(value)
+			{
+			(*gPointerBindings)[i].value = value;
+			return true;
+			}
+
+		gPointerBindings->replaceWithLast(i);
+		if(gPointerBindings->size() == 0)
+			{
+			NX_DELETE_SINGLE(gPointerBindings);
+			gPointerBindings = 0;
+			}
+		return true;
+		}
+
+	SdkPointerPair pair;
+	pair.key = key;
+	pair.value = value;
+	gPointerBindings->pushBack(pair);
+	return true;
 	}

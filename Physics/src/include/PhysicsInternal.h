@@ -153,4 +153,32 @@ bool nxSetSdkAllocatorBridge(SdkAllocator* allocator);
 // the built-in default the first time if nothing has been registered.
 SdkAllocator* nxGetSdkAllocator();
 
+/**
+The pointer binding table at .data 0x00123c0c: an NxArraySDK of eight byte
+(key, value) pairs, created on first use and destroyed the moment it empties.
+phys_fn_000454 reads it, phys_fn_000480 writes it, phys_fn_000474 is the array's
+scalar deleting destructor, and the PhysicsSDK destructor releases whatever is
+left.
+
+What the binding means is not recoverable from Phase 2: all 25 writers and all
+three readers outside this pair are Phase 3, 5, 6 and 7 rows, and none of them is
+reachable from any Phase 2 entry point.
+
+File placement is a choice, not a measurement. phys_fn_000454 sits inside
+PhysicsSDK.cpp's span while phys_fn_000480 and phys_fn_000474 sit in the gap
+above it, which names no unit; they are here so NxPhysicsInternalTests can link
+and gate them, and that is the only reason.
+*/
+struct SdkPointerPair
+	{
+	void* key;
+	void* value;
+	};
+
+// phys_fn_000454 (0x0000df90)
+void* nxGetSdkPointerBinding(void* key);
+// phys_fn_000480 (0x0000edc0), with phys_fn_000474 (0x0000ea30) as the array's
+// destructor.
+bool nxSetSdkPointerBinding(void* key, void* value);
+
 #endif

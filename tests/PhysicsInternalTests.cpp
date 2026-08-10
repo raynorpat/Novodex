@@ -27,8 +27,31 @@
 #include "PhysicsInternal.h"
 #include "Containers.h"
 #include "NxFoundationSDK.h"
+#include "NxUserAllocator.h"
 
 static int gChecks = 0;
+
+// Handed to NxCreateFoundationSDK so nxFoundationSDKAllocator is this object.
+// The pointer binding table is created and destroyed through it, and its
+// destruction has no other observable consequence, so counting is the only way
+// to gate it.
+class FoundationCounter : public NxUserAllocator
+	{
+	public:
+	FoundationCounter(): mallocs(0), frees(0) {}
+
+	void* mallocDEBUG(size_t size, const char*, int)								{ ++mallocs; return ::malloc(size); }
+	void* mallocDEBUG(size_t size, const char*, int, const char*, NxMemoryType)	{ ++mallocs; return ::malloc(size); }
+	void* malloc(size_t size)													{ ++mallocs; return ::malloc(size); }
+	void* malloc(size_t size, NxMemoryType)										{ ++mallocs; return ::malloc(size); }
+	void* realloc(void* memory, size_t size)									{ return ::realloc(memory, size); }
+	void free(void* memory)														{ ++frees; ::free(memory); }
+
+	unsigned mallocs;
+	unsigned frees;
+	};
+
+static FoundationCounter gFoundationCounter;
 
 static int fail(const char* message)
 	{
@@ -303,11 +326,84 @@ static int testContainer()
 	return 0;
 	}
 
+// -------------------------------------------------------- pointer bindings
+
+static int testPointerBindings()
+	{
+	int a = 0, b = 0, c = 0;
+
+	// phys_fn_000454 with no table: a miss and an unset key are the same answer.
+	if(!check(nxGetSdkPointerBinding(&a) == 0, "a lookup with no table misses"))
+		return fail("lookup with no table");
+
+	// phys_fn_000480: a null key is the only rejection, and it is refused before
+	// the table is even consulted.
+	if(!check(!nxSetSdkPointerBinding(0, &b), "a null key is refused"))
+		return fail("null key accepted");
+
+	// Removing from a table that does not exist succeeds without creating one.
+	if(!check(nxSetSdkPointerBinding(&a, 0), "removing with no table succeeds"))
+		return fail("remove with no table");
+	if(!check(nxGetSdkPointerBinding(&a) == 0, "and creates nothing"))
+		return fail("remove created a table");
+
+	if(!check(nxSetSdkPointerBinding(&a, &b) && nxSetSdkPointerBinding(&b, &c),
+			"two bindings are stored"))
+		return fail("store");
+	if(!check(nxGetSdkPointerBinding(&a) == &b && nxGetSdkPointerBinding(&b) == &c,
+			"both read back"))
+		return fail("readback");
+	if(!check(nxGetSdkPointerBinding(&c) == 0, "an unbound key still misses"))
+		return fail("unbound key");
+
+	// A second store against the same key updates in place rather than appending.
+	if(!check(nxSetSdkPointerBinding(&a, &c) && nxGetSdkPointerBinding(&a) == &c,
+			"rebinding a key updates it"))
+		return fail("rebind");
+
+	// 0x0000ee1e replaces the removed slot with the last one, so the survivor
+	// must still be found afterwards whichever order they were stored in.
+	unsigned freesBefore = gFoundationCounter.frees;
+	if(!check(nxSetSdkPointerBinding(&a, 0), "removing a binding succeeds"))
+		return fail("remove");
+	if(!check(gFoundationCounter.frees == freesBefore,
+			"removing one of two bindings does not release the table"))
+		return fail("early table release");
+	if(!check(nxGetSdkPointerBinding(&a) == 0 && nxGetSdkPointerBinding(&b) == &c,
+			"the removed one is gone and the survivor is intact"))
+		return fail("replaceWithLast");
+
+	// Removing the last binding destroys the table; the next lookup must take
+	// the no-table path rather than read a freed one.
+	freesBefore = gFoundationCounter.frees;
+	if(!check(nxSetSdkPointerBinding(&b, 0), "removing the last binding succeeds"))
+		return fail("remove last");
+	// phys_fn_000474 frees the entries and then the header, so two frees, and
+	// 0x0000ef26 clears the pointer. An implementation that left an empty table
+	// standing would free nothing here.
+	if(!check(gFoundationCounter.frees == freesBefore + 2,
+			"emptying the table releases its entries and the table itself"))
+		return fail("table not released");
+	if(!check(nxGetSdkPointerBinding(&b) == 0, "the emptied table is gone"))
+		return fail("empty table");
+
+	// The table is rebuilt on demand after being destroyed, which also proves
+	// the pointer was cleared rather than left dangling.
+	unsigned mallocsBefore = gFoundationCounter.mallocs;
+	if(!check(nxSetSdkPointerBinding(&a, &b) && nxGetSdkPointerBinding(&a) == &b,
+			"the table is rebuilt after being emptied"))
+		return fail("rebuild");
+	if(!check(gFoundationCounter.mallocs > mallocsBefore, "rebuilding allocates a new table"))
+		return fail("rebuild allocated nothing");
+	nxSetSdkPointerBinding(&a, 0);
+	return 0;
+	}
+
 int main()
 	{
 	// ReadWriteLock allocates its block through nxFoundationSDKAllocator, which
 	// only the Foundation SDK installs.
-	NxFoundationSDK* foundation = NxCreateFoundationSDK(NX_FOUNDATION_SDK_VERSION, 0, 0);
+	NxFoundationSDK* foundation = NxCreateFoundationSDK(NX_FOUNDATION_SDK_VERSION, 0, &gFoundationCounter);
 	if(!foundation)
 		return fail("NxCreateFoundationSDK returned null");
 
@@ -316,6 +412,8 @@ int main()
 		status = testLock();
 	if(!status)
 		status = testContainer();
+	if(!status)
+		status = testPointerBindings();
 
 	printf("static_proof checks=%d status=%s\n", gChecks, status ? "fail" : "pass");
 	foundation->release();
