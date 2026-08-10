@@ -40,14 +40,25 @@ frees the block.
 
 The block is a CRITICAL_SECTION followed by the interlocked owner flag written by
 phys_fn_002362/002364/002366 at +0x18 and the owning thread id they cache at
-+0x1c. Only the constructor and destructor are reconstructed here: the lock and
-unlock entry points are reached exclusively through NpScene, which Phase 3 owns.
++0x1c. The three entry points are reached exclusively through NpScene, which Phase 3
+owns, so no Phase 2 differential can observe them: every caller reaches them from
+a loop bounded by getNbScenes(), which is zero while createScene is blocked. They
+are gated by NxPhysicsInternalTests, a static-proof gate, and their dynamic
+behaviour has never been compared against the oracle.
 */
 class ReadWriteLock
 	{
 	public:
 	ReadWriteLock();
 	~ReadWriteLock();
+
+	// phys_fn_002362 (0x0005b700), phys_fn_002364 (0x0005b730) and
+	// phys_fn_002366 (0x0005b790). All three return a literal true except the
+	// one tryLock path that fails. Reentrant on the owning thread; tryLock fails
+	// only when another thread holds the lock.
+	bool lock();
+	bool tryLock();
+	bool unlock();
 
 	private:
 	ReadWriteLock(const ReadWriteLock&);
@@ -80,29 +91,66 @@ class ShapePairFunctionTable : public NxAllocateable
 	};
 
 /**
-The global allocator adapter at .data 0x001220e8 that NxCreatePhysicsSDK hands
-to phys_fn_004805 when the caller supplies an allocator. Its vtable at .rdata
-0x00106304 has four slots -- phys_fn_000460, phys_fn_000466, phys_fn_000462,
-phys_fn_000464 -- and no destructor slot, and the object's second word is the
-NxUserAllocator the caller passed.
-
-phys_fn_000460 and phys_fn_000466 normalise the memory type to 0 or 1 before
-forwarding; the pass-through pair does not. The subsystem that reads the
-registered pointer back is not in this component.
+The SDK-side allocator interface. Two objects in the image implement it and their
+vtables agree slot for slot: the bridge at .data 0x001220e8 with vtable .rdata
+0x00106304, and the built-in default at .data 0x00122368 with vtable .rdata
+0x0011b580. Four slots, no destructor slot.
 */
-class SdkAllocatorBridge
+class SdkAllocator
 	{
 	public:
-	virtual void* malloc(size_t size, NxMemoryType type);
-	virtual void* mallocDEBUG(size_t size, const char* fileName, int line, const char* className, NxMemoryType type);
-	virtual void* realloc(void* memory, size_t size);
-	virtual void free(void* memory);
+	virtual void* malloc(size_t size, NxMemoryType type) = 0;
+	virtual void* mallocDEBUG(size_t size, const char* fileName, int line, const char* className, NxMemoryType type) = 0;
+	virtual void* realloc(void* memory, size_t size) = 0;
+	virtual void free(void* memory) = 0;
+	};
+
+/**
+The global allocator adapter at .data 0x001220e8 that NxCreatePhysicsSDK hands
+to phys_fn_004805 when the caller supplies an allocator. The object's second word
+is the NxUserAllocator the caller passed.
+
+phys_fn_000460 and phys_fn_000466 normalise the memory type to 0 or 1 before
+forwarding; the pass-through pair does not.
+*/
+class SdkAllocatorBridge : public SdkAllocator
+	{
+	public:
+	void* malloc(size_t size, NxMemoryType type);
+	void* mallocDEBUG(size_t size, const char* fileName, int line, const char* className, NxMemoryType type);
+	void* realloc(void* memory, size_t size);
+	void free(void* memory);
 
 	NxUserAllocator* mAllocator;
 	};
 
+/**
+The built-in fallback at .data 0x00122368, statically initialised in the image
+with the vptr 0x0011b580. phys_fn_004803 installs it the first time the SDK
+allocator is asked for and nothing has been registered.
+
+Its four slot bodies are NOT Phase 2 rows -- phys_fn_004807 (0x000b4030),
+phys_fn_004812 (0x000b4070), phys_fn_004808 (0x000b4040) and phys_fn_004810
+(0x000b4060) are Phase 6, 3, 6 and 6 -- and each forwards to the statically
+linked CRT (malloc at 0x000f4722, realloc at 0x000f788e, free at 0x000f4734).
+They are written here only so that the accessor has the object it installs;
+their phases own the bodies.
+*/
+class SdkDefaultAllocator : public SdkAllocator
+	{
+	public:
+	void* malloc(size_t size, NxMemoryType type);
+	void* mallocDEBUG(size_t size, const char* fileName, int line, const char* className, NxMemoryType type);
+	void* realloc(void* memory, size_t size);
+	void free(void* memory);
+	};
+
 // phys_fn_004805 (0x000b4020): stores the adapter in a file scope pointer and
 // returns true.
-bool nxSetSdkAllocatorBridge(SdkAllocatorBridge* bridge);
+bool nxSetSdkAllocatorBridge(SdkAllocator* allocator);
+
+// phys_fn_004803 (0x000b4000): hands back the registered allocator, installing
+// the built-in default the first time if nothing has been registered.
+SdkAllocator* nxGetSdkAllocator();
 
 #endif
