@@ -8,8 +8,8 @@
 |
 \*----------------------------------------------------------------------------*/
 
+#include "NxCapsuleShape.h"
 #include "NxShapeDesc.h"
-
 /**
 Descriptor class for NxCapsuleShape.
 */
@@ -18,6 +18,7 @@ class NxCapsuleShapeDesc : public NxShapeDesc
 	public:
 	NxReal		radius;			//!< radius of the capsule's hemispherical ends and its trunk.
 	NxReal		height;			//!< the distance between the two hemispherical ends of the capsule. The height is along the capsule's Y axis. 
+	NxU32		flags;			//!< Combination of ::NxCapsuleShapeFlag
 
 	/**
 	constructor sets to default.
@@ -43,6 +44,7 @@ NX_INLINE void NxCapsuleShapeDesc::setToDefault()
 	NxShapeDesc::setToDefault();
 	radius = 0.0f;
 	height = 0.0f;
+	flags  = 0;
 	}
 
 NX_INLINE bool NxCapsuleShapeDesc::isValid() const

@@ -9,8 +9,8 @@
 \*----------------------------------------------------------------------------*/
 
 #include "Nxp.h"
+#include "NxShape.h"
 
-class NxShape;
 class NxSphereShapeDesc;
 
 /**
@@ -26,15 +26,22 @@ shape descriptor into the NxActorDesc class before creating the actor.
 The shape is deleted by calling NxActor::releaseShape() on the owning actor.
 */
 
-class NxSphereShape
+class NxSphereShape : public NxShape
 	{
 	public:
 
+	/**
+	\deprecated { casts to a superclass are now implicit }
+	casts to shape type
+	*/ 
+	NX_INLINE operator NxShape &()					{ return *this; }
 
-
-	virtual bool saveToDesc(NxSphereShapeDesc&)	const = 0;
-
-
+	/**
+	\deprecated { casts to a superclass are now implicit }
+	casts to shape type
+	*/ 
+	NX_INLINE NxShape & getShape()					{ return *this; }
+	NX_INLINE const NxShape & getShape() const		{ return *this; }
 
 	/**
 	Call this to initialize or alter the sphere. If this is not called,
@@ -48,22 +55,6 @@ class NxSphereShape
 
 	virtual NxReal getRadius() const = 0;
 
-
-
-	/**
-	This class is internally a subclass of NxShape. Use this
-	method to perform an upcast.
-	*/
-	virtual NxShape& getShape() = 0;
-	virtual const NxShape& getShape() const = 0;
-
-	/**
-	This class is internally a subclass of NxShape. This operator
-	is automatically used to perform an upcast.
-	*/
-	virtual operator NxShape &() = 0;
-
-
-
+	virtual bool saveToDesc(NxSphereShapeDesc&)	const = 0;
 	};
 #endif

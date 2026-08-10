@@ -9,6 +9,7 @@
 \*----------------------------------------------------------------------------*/
 
 #include "Nxp.h"
+#include "NxEffector.h"
 
 class NxActor;
 class NxEffector;
@@ -17,7 +18,7 @@ class NxEffector;
  Represents a spring and damper element, which exerts a force between two bodies,
  proportional to the relative positions and the relative velocities of the bodies.
 */
-class NxSpringAndDamperEffector
+class NxSpringAndDamperEffector: public NxEffector
 	{
 	public:
 
@@ -85,16 +86,17 @@ class NxSpringAndDamperEffector
 	*/
 	virtual void getLinearDamper(NxReal & velCompressSaturate, NxReal & velStretchSaturate, NxReal & maxCompressForce, NxReal & maxStretchForce) = 0;
 	
-	/**
-	This class is internally a subclass of NxEffector. This operator
-	is automatically used to perform an upcast.
-	*/
-	virtual operator NxEffector &() = 0;
 
 	/**
-	This class is internally a subclass of NxEffector. Use this
-	method to perform an upcast.
-	*/
-	virtual NxEffector & getEffector() = 0;
+	\deprecated { casts to a superclass are now implicit }
+	casts to effector type
+	*/ 
+	NX_INLINE operator NxEffector &()		{ return *this; }
+
+	/**
+	\deprecated { casts to a superclass are now implicit }
+	casts to effector type
+	*/ 
+	NX_INLINE NxEffector & getEffector()		{ return *this; };
 	};
 #endif

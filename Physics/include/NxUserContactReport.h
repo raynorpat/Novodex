@@ -14,6 +14,10 @@
 
 class NxActor;
 
+#if NX_USE_FLUID_API
+class NxFluid;
+#endif
+
 enum NxContactPairFlag
 	{
 	NX_IGNORE_PAIR				= (1<<0),	//!< Disable contact generation for this pair
@@ -24,41 +28,30 @@ enum NxContactPairFlag
 	NX_NOTIFY_ON_IMPACT			= (1<<4),	//!< [Not yet implemented] pair callback will be called when it may be appropriate for the pair to play an impact sound
 	NX_NOTIFY_ON_ROLL			= (1<<5),	//!< [Not yet implemented] pair callback will be called when the pair is in contact and rolling.
 	NX_NOTIFY_ON_SLIDE			= (1<<6),	//!< [Not yet implemented] pair callback will be called when the pair is in contact and sliding (and not rolling).
-
-	NX_NOTIFY_DISABLE			= 0,		//!< Pair will be ignored and onPairCreated will never be called again.
 	};
-
 
 /**
 An instance of this class is passed to NxUserContactReport::onContactNotify().
 It contains a contact stream which may be parsed using the class NxContactStreamIterator.
-You may also use the setPairNotify() method to change the behavior of the pair.
 */
 class NxContactPair
 	{
 	public:
 	NX_INLINE	NxContactPair() : stream(NULL)	{}
 
-	/**
-	Call this to change the pair behavior that you previously specified with the return 
-	value of NxUserContactReport::onPairCreated().
-	The parameter is a combination of the flags in NxContactPairFlags.
-	*/
-	virtual void setPairNotify(NxU32) = 0;
-
 	NxActor*				actors[2];			//!< the two actors that make up the pair.
 	NxConstContactStream	stream;				//!< use this to create stream iter.
-	NxVec3					sumNormalForce;		//!< [unimplemented!]
-	NxVec3					sumFrictionForce;	//!< [unimplemented!]
+	NxVec3					sumNormalForce;		//!< the total contact normal force that was applied for this pair, to maintain nonpenetration constraints.
+	NxVec3					sumFrictionForce;	//!< the total tangential force that was applied for this pair.
 	};
 
 /**
 The user needs to implement this interface class in order to be notified when
 certain contact events occur. Once you pass an instance of this class to 
-NxScene::setUserContactReport(), its  onPairCreated() method will be called for
-each pair of actors which comes into close proximity. From then on you may 
-request additional contact information, or you may suppress contact between the
-two shapes.
+NxScene::setUserContactReport(), its  onContactNotify() method will be called for
+each pair of actors which comes into contact, for which this behavior was enabled.
+You request which events are reported using NxScene::setActorPairFlags(), 
+NxScene::setShapePairFlags(), or NxPhysicsSDK::getActorGroupPairFlags()
 */
 class NxUserContactReport
 	{
@@ -74,12 +67,60 @@ class NxUserContactReport
 	NX_NOTIFY_ON_SLIDE,		//unimplemented!
 
 	See the documentation of NxContactPairFlag for an explanation of each. You request which events 
-	are reported with the return value of onPairCreated(), or by calling the appropriate method
-	of the passed pair. Do not keep a reference to the passed object, as it will be invalid after
-	this function returns.
+	are reported using NxScene::setActorPairFlags(), NxScene::setShapePairFlags(), or 
+	NxPhysicsSDK::getActorGroupPairFlags().  Do not keep a reference to the passed object, as it will
+	be invalid after this function returns.
 	*/
 	virtual void  onContactNotify(NxContactPair& pair, NxU32 events) = 0;
 	};
+
+#if NX_USE_FLUID_API
+
+enum NxFluidContactPairFlag
+	{
+	NX_FPF_IGNORE_PAIR				= (1<<0),	//!< Not available in the current release. Disable contact generation for this pair
+	NX_FPF_NOTIFY_ON_COLLISION		= (1<<1),	//!< Not available in the current release. Pair callback will be called when the pair collides
+	};
+
+/**
+Not available in the current release. 
+An instance of this class is passed to NxUserFluidContactReport::onContactNotify().
+It contains a contact stream which may be parsed using the class NxContactStreamIterator.
+*/
+class NxFluidContactPair
+	{
+	public:
+	NX_INLINE	NxFluidContactPair() : stream(NULL)	{}
+
+	NxFluid*				fluid;
+	NxActor*				actor;
+	NxConstContactStream	stream;
+	};
+
+/**
+The user needs to implement this interface class in order to be notified when
+certain fluid actor contact events occur. Once you pass an instance of this class to 
+NxScene::setUserFluidContactReport(), its  onContactNotify() method will be called for
+each pair of actors which comes into contact, for which this behavior was enabled.
+You request which events are reported using NxPhysicsSDK::getFluidGroupPairFlags()
+*/
+class NxUserFluidContactReport
+	{
+	public:
+ 	/**
+	Called for a pair in contact. The events parameter is at the moment always NX_NOTIFY_ON_COLLISION:
+
+	NX_NOTIFY_ON_COLLISION,
+
+	See the documentation of NxFluidContactPairFlag for an explanation of each. You request which events 
+	are reported using NxScene::setActorPairFlags(), NxScene::setShapePairFlags(), or 
+	NxPhysicsSDK::getActorGroupPairFlags().  Do not keep a reference to the passed object, as it will
+	be invalid after this function returns.
+	*/
+	virtual void  onContactNotify(NxFluidContactPair& pair, NxU32 events) = 0;
+	};
+
+#endif
 
 /**
 The user needs to implement this interface class in order to be notified when trigger events

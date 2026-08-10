@@ -19,7 +19,7 @@ enum NxMaterialFlag
 
 	The anisotropy direction of the chosen material is transformed to world space:
 
-	dirOfAnisotropyWS = actor2world * dirOfAnisotropy
+	dirOfAnisotropyWS = shape2world * dirOfAnisotropy
 
 	Next, the directions of anisotropy in one or more contact planes (i.e. orthogonal to the contact normal) have to be determined. 
 	The two directions are:
@@ -45,12 +45,16 @@ enum NxMaterialFlag
 	*/
 	NX_MF_MOVING_SURFACE = 1 << 1,
 
+	/**
+	If a material with this flag set is involved in the contact, the contact constraints generated behave like a unilateral spring.
+	The user must assign the programData member to point to a NxSpringDesc object.
+	*/
+	NX_MF_SPRING_CONTACT = 1 << 2,			// AM: replace this later with NX_MF_PROGRAMMABLE! : The contact and friction effects become programmable if a material with this flag set is involved in the contact.
+
 	//Note: Bits 16-31 are reserved for internal use!
 	};
 
 /**
-[Not yet implemented]
-
 Flag that determines the combine mode. When two actors come in contact with eachother, they each have
 materials with various coefficients, but we only need a single set of coefficients for the pair.
 
@@ -59,23 +63,23 @@ basis. However, simulating this with a pairwise lookup table is often impractica
 
 For this reason the following combine behaviors are available:
 
-CM_MIN = 0,
-CM_MULTIPLY = 1,
-CM_AVERAGE = 2,
-CM_MAX = 3,
-CM_TABLE = 4,
+NX_CM_AVERAGE = 2,
+NX_CM_MIN = 0,
+NX_CM_MULTIPLY = 1,
+NX_CM_MAX = 3,
+NX_CM_TABLE = 4,	//Table mode is not yet implemented.
 
 The effective combine mode for the pair is max(material0.combineMode, material1.combineMode).
 */
 enum NxCombineMode
 	{
-	CM_MIN = 0,
-	CM_MULTIPLY = 1,
-	CM_AVERAGE = 2,
-	CM_MAX = 3,
-	CM_TABLE = 4,
-	CM_N_VALUES = 5,	//this a sentinel to denote the number of possible values.  We assert that the variable's value is smaller than this.
-	CM_PAD_32 = 0xffffffff 
+	NX_CM_AVERAGE = 0,
+	NX_CM_MIN = 1,
+	NX_CM_MULTIPLY = 2,
+	NX_CM_MAX = 3,
+	NX_CM_TABLE = 4,		//!< Table mode is not yet implemented.
+	NX_CM_N_VALUES = 5,	//this a sentinel to denote the number of possible values.  We assert that the variable's value is smaller than this.
+	NX_CM_PAD_32 = 0xffffffff 
 	};
 
 
@@ -111,16 +115,18 @@ class NxMaterial
 	*/
 	NxReal staticFrictionV;
 	/**
-	actor space direction (unit vector) of anisotropy.
+	shape space direction (unit vector) of anisotropy.
 	This is only used if flags.anisotropic is set.
 	*/
 	NxVec3 dirOfAnisotropy;
 	/**
-	actor space direction (unit vector) of surface motion.
+	[not yet implemented]
+	shape space direction (unit vector) of surface motion.
 	This is only used if flags.movingSurface is set.
 	*/
 	NxVec3 dirOfMotion;
 	/**
+	[not yet implemented]
 	The current speed of surface motion in the direction of dirOfMotion.
 	This is only used if flags.movingSurface is set.
 	*/
@@ -132,10 +138,19 @@ class NxMaterial
 	NxU32 flags;
 
 	/**
-	[Not yet implemented]
 	Friction combine mode.  See the enum ::NxCombineMode .
 	*/
 	NxCombineMode frictionCombineMode;
+
+	/**
+	Restitution combine mode.  See the enum ::NxCombineMode .
+	*/
+	NxCombineMode restitutionCombineMode;
+
+	/**
+	additional SDK side user defined data for material programs.
+	*/
+	void * programData;
 
 	/**
 	constructor sets to default.
@@ -172,7 +187,9 @@ NX_INLINE	void NxMaterial::setToDefault()
 	dirOfMotion.set(1,0,0);
 	speedOfMotion = 0.0f;
 	flags = 0;
-	frictionCombineMode = CM_AVERAGE;
+	frictionCombineMode = NX_CM_AVERAGE;
+	restitutionCombineMode = NX_CM_AVERAGE;
+	programData = 0;
 	}
 
 NX_INLINE	bool NxMaterial::isValid()	const
@@ -200,7 +217,9 @@ NX_INLINE	bool NxMaterial::isValid()	const
 		if (md < 0.98f || md > 1.03f)
 			return false;
 		}
-	if (frictionCombineMode >= CM_N_VALUES)
+	if (frictionCombineMode >= NX_CM_N_VALUES)
+		return false;
+	if (restitutionCombineMode >= NX_CM_N_VALUES)
 		return false;
 
 	return true;

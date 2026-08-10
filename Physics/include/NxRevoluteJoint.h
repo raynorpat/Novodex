@@ -10,7 +10,7 @@
 
 #include "Nxp.h"
 
-class NxJoint;
+#include "NxJoint.h"
 #include "NxRevoluteJointDesc.h"
 
 static const NxReal NX_NO_LOW_LIMIT  = -16;
@@ -22,7 +22,7 @@ static const NxReal NX_NO_HIGH_LIMIT =  16;
  The axis along which the two bodies may rotate is specified with a point and a direction
  vector.
 */
-class NxRevoluteJoint
+class NxRevoluteJoint: public NxJoint
 	{
 	public:
 	/**
@@ -68,17 +68,17 @@ class NxRevoluteJoint
 	sets motor parameters for the joint. The motor rotates the bodies relative to each other
 	along the hinge axis. The motor has these parameters:
 	
-	motorVrelTarget - the relative velocity the motor is trying to achieve. The motor will only be able
-				to reach this velocity if the motorMaxForce is sufficiently large. If the joint is 
+	velTarget - the relative velocity the motor is trying to achieve. The motor will only be able
+				to reach this velocity if the maxForce is sufficiently large. If the joint is 
 				spinning faster than this velocity, the motor will actually try to brake. If you set this
 				to infinity then the motor will keep speeding up, unless there is some sort of resistance
 				on the attached bodies. The sign of this variable determines the rotation direction,
 				with positive values going the same way as positive joint angles.
 				Default is infinity.
-	motorMaxForce - the maximum force (torque in this case) the motor can exert. Zero disables the motor.
-				Default is 0, should be >= 0. Setting this to a very large value if motorVrelTarget is also 
+	maxForce -  the maximum force (torque in this case) the motor can exert. Zero disables the motor.
+				Default is 0, should be >= 0. Setting this to a very large value if velTarget is also 
 				very large may not be a good idea.
-	freeSpin - if this flag is set, and if the joint is spinning faster than motorVrelTarget, then neither
+	freeSpin -  if this flag is set, and if the joint is spinning faster than velTarget, then neither
 				braking nor additional acceleration will result.
 				default: false.
 
@@ -96,11 +96,11 @@ class NxRevoluteJoint
 	priority and the spring settings are ignored.
 	If you would like to simulate your motor's internal friction, do this by altering the motor parameters directly.
 
-	axialSpringCoeff - The rotational spring acts along the hinge axis and tries to force
+	spring - The rotational spring acts along the hinge axis and tries to force
 				the joint angle to zero. A setting of zero disables the spring. Default is 0, should be >= 0.
-	axialDamperCoeff - Damping coefficient; acts against the hinge's angular velocity. A setting of zero disables
+	damper - Damping coefficient; acts against the hinge's angular velocity. A setting of zero disables
 				the damping. The default is 0, should be >= 0.
-	springTargetAngle - The angle at which the spring is relaxed. In [-Pi,Pi]. Default is 0.
+	targetValue - The angle at which the spring is relaxed. In [-Pi,Pi]. Default is 0.
 
 	This automatically enables the spring.
 	*/
@@ -146,16 +146,17 @@ class NxRevoluteJoint
 	returns the current flag settings.
 	*/
 	virtual NxJointProjectionMode getProjectionMode() = 0;
-	/**
-	This class is internally a subclass of NxJoint. This operator
-	is automatically used to perform an upcast.
-	*/
-	virtual operator NxJoint &() = 0;
 
 	/**
-	This class is internally a subclass of NxJoint. Use this
-	method to perform an upcast.
-	*/
-	virtual NxJoint & getJoint() = 0;
+	\deprecated { casts to a superclass are now implicit }
+	casts to joint type
+	*/ 
+	NX_INLINE operator NxJoint &()		{ return *this; }
+
+	/**
+	\deprecated { casts to a superclass are now implicit }
+	casts to joint type
+	*/ 
+	NX_INLINE NxJoint & getJoint()		{ return *this; };
 	};
 #endif

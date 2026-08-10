@@ -11,19 +11,19 @@
 	*/
 	NX_INLINE NX_BOOL NxPointTriangleIntersect(const NxVec3& p, const NxVec3& p0, const NxVec3& edge10, const NxVec3& edge20)
 		{ 
-		NxF32 a = edge10|edge10;
-		NxF32 b = edge10|edge20;
-		NxF32 c = edge20|edge20;
-		NxF32 ac_bb = (a*c)-(b*b);
+		NxReal a = edge10|edge10;
+		NxReal b = edge10|edge20;
+		NxReal c = edge20|edge20;
+		NxReal ac_bb = (a*c)-(b*b);
 
 		NxVec3 vp = p - p0;
 
-		NxF32 d = vp|edge10;
-		NxF32 e = vp|edge20;
+		NxReal d = vp|edge10;
+		NxReal e = vp|edge20;
 
-		NxF32 x = (d*c) - (e*b);
-		NxF32 y = (e*a) - (d*b);
-		NxF32 z = x + y - ac_bb;
+		NxReal x = (d*c) - (e*b);
+		NxReal y = (e*a) - (d*b);
+		NxReal z = x + y - ac_bb;
 
 		// Same as: if(x>0.0f && y>0.0f && z<0.0f)	return TRUE;
 		//			else							return FALSE;
@@ -34,25 +34,25 @@
 	Dedicated 2D version of previous test
 	*/
 	NX_INLINE NX_BOOL NxPointTriangleIntersect2D(
-		NxF32 px, NxF32 pz,
-		NxF32 p0x, NxF32 p0z,
-		NxF32 e10x, NxF32 e10z,
-		NxF32 e20x, NxF32 e20z)
+		NxReal px, NxReal pz,
+		NxReal p0x, NxReal p0z,
+		NxReal e10x, NxReal e10z,
+		NxReal e20x, NxReal e20z)
 		{ 
-		NxF32 a = e10x*e10x + e10z*e10z;
-		NxF32 b = e10x*e20x + e10z*e20z;
-		NxF32 c = e20x*e20x + e20z*e20z;
-		NxF32 ac_bb = (a*c)-(b*b);
+		NxReal a = e10x*e10x + e10z*e10z;
+		NxReal b = e10x*e20x + e10z*e20z;
+		NxReal c = e20x*e20x + e20z*e20z;
+		NxReal ac_bb = (a*c)-(b*b);
 
-		NxF32 vpx = px - p0x;
-		NxF32 vpz = pz - p0z;
+		NxReal vpx = px - p0x;
+		NxReal vpz = pz - p0z;
 
-		NxF32 d = vpx*e10x + vpz*e10z;
-		NxF32 e = vpx*e20x + vpz*e20z;
+		NxReal d = vpx*e10x + vpz*e10z;
+		NxReal e = vpx*e20x + vpz*e20z;
 
-		NxF32 x = (d*c) - (e*b);
-		NxF32 y = (e*a) - (d*b);
-		NxF32 z = x + y - ac_bb;
+		NxReal x = (d*c) - (e*b);
+		NxReal y = (e*a) - (d*b);
+		NxReal z = x + y - ac_bb;
 
 		// Same as: if(x>0.0f && y>0.0f && z<0.0f)	return TRUE;
 		//			else							return FALSE;

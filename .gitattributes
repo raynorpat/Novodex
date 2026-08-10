@@ -1,0 +1,22 @@
+# The public headers here are a vendored source oracle whose exact bytes two
+# projects in the Unreal_3 evidence tree hash: the completed novodex-foundation
+# project's immutable_public_hashes.json and the Physics reconstruction's
+# public_header_hashes.json. Both sets of pins were taken over CRLF bytes, so
+# the checkout has to produce CRLF everywhere or the hashes verify only on the
+# machine that made them. These are assertions about one specific byte sequence
+# that serves as the oracle, not a style preference: you do not renormalise an
+# oracle to suit a platform.
+Physics/include/**/*.h text eol=crlf
+Foundation/include/*.h text eol=crlf
+/BuildNumber.h         text eol=crlf
+/NxBuildNumber.h       text eol=crlf
+/NxVersionNumber.h     text eol=crlf
+/VersionNumber.h       text eol=crlf
+/changes.txt           text eol=crlf
+
+# The shipped SDK documentation is binary. Git leaves it alone today only
+# because auto-detection guesses right, and an explicit text attribute would
+# override that, so say so rather than relying on the guess.
+*.chi -text
+*.chm -text
+*.pdf -text

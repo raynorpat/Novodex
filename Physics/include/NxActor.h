@@ -22,6 +22,18 @@ class NxJoint;
 class NxShape;
 
 /**
+Parameter to addForce*() calls, determines the exact operation that is carried out.
+*/
+enum NxForceMode
+	{
+	NX_FORCE,                   //!< parameter has unit of mass * distance/ time^2, i.e. a force
+	NX_IMPULSE,                 //!< parameter has unit of mass * distance /time
+	NX_VELOCITY_CHANGE,			//!< parameter has unit of distance / time, i.e. the effect is mass independent: a velocity change.
+	NX_SMOOTH_IMPULSE,          //!< same as NX_IMPULSE but the effect is applied over all substeps.  Use this for motion controllers that repeatedly apply an impulse.
+	NX_SMOOTH_VELOCITY_CHANGE	//!< same as NX_VELOCITY_CHANGE but the effect is applied over all substeps.  Use this for motion controllers that repeatedly apply an impulse.
+	};
+
+/**
 NxActor is the main simulation object in the physics sdk. The actor is owned by and contained in a NxScene .
 An actor may optionally encapsulate a dynamic rigid body, otherwise it is static (i.e. fixed in the world).
 
@@ -37,15 +49,9 @@ class NxActor
 
 	public:
 
-	/**
-	Saves the state of the object to the passed descriptor.
-	*/
-//	virtual			void			saveToDesc(NxActorDesc &) = 0;
-
 	// Runtime modifications
 
 	/** Methods for static and dynamic actors  */
-
 
 	/**
 	Methods for setting a dynamic actor's pose in the world.	These methods instantaneously change the 
@@ -72,62 +78,88 @@ class NxActor
 	setGlobalOrientation(m.M);	and setGlobalPosition(m.t); 
 	but setGlobalPose() may be faster as it doesn't recompute some internal values twice.
 	*/
-	virtual		void setGlobalPose(const NxMat34&)				= 0;
-	virtual		void setGlobalPosition(const NxVec3&)			= 0;
-	virtual		void setGlobalOrientation(const NxMat33&)		= 0;
-	virtual		void setGlobalOrientationQuat(const NxQuat&)	= 0;
+	virtual		void			setGlobalPose(const NxMat34&)			= 0;
+
+	/**
+	Sets a dynamic actor's pose in the world.
+	see ::setGlobalPose() for information.
+	*/
+	virtual		void			setGlobalPosition(const NxVec3&)		= 0;
+
+	/**
+	Sets a dynamic actor's pose in the world.
+	see ::setGlobalPose() for information.
+	*/
+	virtual		void			setGlobalOrientation(const NxMat33&)	= 0;
+
+	/**
+	Sets a dynamic actor's pose in the world.
+	see ::setGlobalPose() for information.
+	*/
+	virtual		void			setGlobalOrientationQuat(const NxQuat&)	= 0;
 
 	/**
 	The getGlobal*() methods retrieve the actor's current actor space to world space transformation.
 	\deprecated { theGet*(x) methods are deprecated.  Use the new convention x = get*() instead. }
 	*/
-	virtual		void getGlobalPose(NxMat34&) const				= 0;
-	virtual		void getGlobalPosition(NxVec3&)	const			= 0;
-	virtual		void getGlobalOrientation(NxMat33&)	const		= 0;
-	virtual		void getGlobalOrientationQuat(NxQuat&) const	= 0;
+	NX_INLINE	void			getGlobalPose(NxMat34&d)			const	{d = getGlobalPoseVal();}
+
+	/**
+	The getGlobal*() methods retrieve the actor's current actor space to world space transformation.
+	\deprecated { theGet*(x) methods are deprecated.  Use the new convention x = get*() instead. }
+	*/
+	NX_INLINE	void			getGlobalPosition(NxVec3&d)			const	{d = getGlobalPositionVal();}
+
+	/**
+	The getGlobal*() methods retrieve the actor's current actor space to world space transformation.
+	\deprecated { theGet*(x) methods are deprecated.  Use the new convention x = get*() instead. }
+	*/
+	NX_INLINE	void			getGlobalOrientation(NxMat33&d)		const	{d = getGlobalOrientationVal();}
+
+	/**
+	The getGlobal*() methods retrieve the actor's current actor space to world space transformation.
+	\deprecated { theGet*(x) methods are deprecated.  Use the new convention x = get*() instead. }
+	*/
+	NX_INLINE	void			getGlobalOrientationQuat(NxQuat&d)	const	{d = getGlobalOrientationQuatVal();}
 
 #ifndef DOXYGEN
-	virtual		NxMat34 	getGlobalPoseVal()			const = 0;
-	virtual		NxVec3 		getGlobalPositionVal()		const = 0;
-	virtual		NxMat33 	getGlobalOrientationVal()	const = 0;
-	virtual		NxQuat 		getGlobalOrientationQuatVal()const= 0;
+	virtual		NxMat34 		getGlobalPoseVal()			const = 0;
+	virtual		NxVec3 			getGlobalPositionVal()		const = 0;
+	virtual		NxMat33 		getGlobalOrientationVal()	const = 0;
+	virtual		NxQuat 			getGlobalOrientationQuatVal()const= 0;
 #endif
 
-	NX_INLINE		NxMat34 	getGlobalPose()			  const	{ return getGlobalPoseVal()			;}
-	NX_INLINE		NxVec3 		getGlobalPosition()		  const	{ return getGlobalPositionVal()		;}
-	NX_INLINE		NxMat33 	getGlobalOrientation()	  const	{ return getGlobalOrientationVal()	;}
-	NX_INLINE		NxQuat 		getGlobalOrientationQuat()const	{ return getGlobalOrientationQuatVal();}
+	/**
+	The getGlobal*() methods retrieve the actor's current actor space to world space transformation.
+	*/
+	NX_INLINE	NxMat34 		getGlobalPose()			  const	{ return getGlobalPoseVal()			;}
+
+	/**
+	The getGlobal*() methods retrieve the actor's current actor space to world space transformation.
+	*/
+	NX_INLINE	NxVec3 			getGlobalPosition()		  const	{ return getGlobalPositionVal()		;}
+
+	/**
+	The getGlobal*() methods retrieve the actor's current actor space to world space transformation.
+	*/
+	NX_INLINE	NxMat33 		getGlobalOrientation()	  const	{ return getGlobalOrientationVal()	;}
+
+	/**
+	The getGlobal*() methods retrieve the actor's current actor space to world space transformation.
+	*/
+	NX_INLINE	NxQuat 			getGlobalOrientationQuat()const	{ return getGlobalOrientationQuatVal();}
 
 
 	/**
-	The getGlobalPoseReference() method works just like the getGlobal*() methods, except it 
-	returns a const reference, and this way a redundant copy can be avoided. Note that the caller
-	may absolutely not cast away const and change the returned value.
+	\deprecated { Use getGlobalPose() instead. }
 	*/
-	virtual		const NxMat34& getGlobalPoseReference()	const	= 0;
-
-
-
-	/**
-	Makes the actor dynamic by creating a body from the passed descriptor.
-	It overwrites the current body state if any. NxBodyDesc::isValid() must return true.
-	*/
-	virtual		void			setDynamic(const NxBodyDesc&)		= 0;
-
-	/**
-	Returns true if the actor is dynamic.
-	*/
-	virtual		bool			isDynamic()	const			= 0;
-
-
-
-
+	virtual const NxMat34 &	getGlobalPoseReference()	const = 0;
 
 	/**
 	The moveGlobal* calls serve to move kinematically controlled
 	dynamic actors through the game world.  
 
-	You set a dynamic actor to be kinematic using the BF_KINEMATIC body flag,
+	You set a dynamic actor to be kinematic using the NX_BF_KINEMATIC body flag,
 	used either in the NxBodyDesc or with raiseBodyFlag().
 	
 	The move command will result in a velocity that, when successfully carried 
@@ -144,18 +176,23 @@ class NxActor
 	in certain cases (such as when a box jams in an automatic door), but currently
 	the motion is always fully carried out.	
 	*/
-	virtual		void moveGlobalPose(const NxMat34&)				= 0;
-	virtual		void moveGlobalPosition(const NxVec3&)			= 0;
-	virtual		void moveGlobalOrientation(const NxMat33&)		= 0;
-
+	virtual		void			moveGlobalPose(const NxMat34&)			= 0;
 
 	/**
-	Recomputes a dynamic actor's mass properties from its shapes, given
-	a constant density or a total mass.  I.e. if you want to set a total mass, 
-	leave density at zero and specify a nonzero mass.  Do the opposite to specify a density.
-	*/
-	virtual		void			updateMassFromShapes(NxReal density, NxReal totalMass)		= 0;
+	The moveGlobal* calls serve to move kinematically controlled
+	dynamic actors through the game world.  
 
+	See ::moveGlobalPose() for more information.
+	*/
+	virtual		void			moveGlobalPosition(const NxVec3&)		= 0;
+
+	/**
+	The moveGlobal* calls serve to move kinematically controlled
+	dynamic actors through the game world.  
+
+	See ::moveGlobalPose() for more information.
+	*/
+	virtual		void			moveGlobalOrientation(const NxMat33&)	= 0;
 
 	/**
 	Creates a new shape and adds it to the list of shapes of this actor.
@@ -184,115 +221,194 @@ class NxActor
 	*/
 	virtual		NxShape**		getShapes()			const	= 0;
 
+	/**
+	Recomputes a dynamic actor's mass properties from its shapes, given
+	a constant density or a total mass.  I.e. if you want to set a total mass, 
+	leave density at zero and specify a nonzero mass.  Do the opposite to specify a density.
+	*/
+	virtual		void			updateMassFromShapes(NxReal density, NxReal totalMass)		= 0;
 
+	/**
+	Makes the actor dynamic by creating a body from the passed descriptor.
+	It overwrites the current body state if any. NxBodyDesc::isValid() must return true.
+	*/
+	virtual		void			setDynamic(const NxBodyDesc&)		= 0;
 
+	/**
+	Returns true if the actor is dynamic.
+	*/
+	virtual		bool			isDynamic()	const			= 0;
+
+	/*
+	AM: This doesn't work yet: 
+
+	Makes a dynamic body static.  (Opposite of setDynamic() ).  Does nothing 
+	if the body is already static.  Otherwise it deletes all the dynamics information and effectively
+	renders the body immovable.
+	virtual		void			setStatic()					= 0;
+	*/
 
 	/** Methods for dynamic actors only.  Call setDynamic() to make a static actor dynamic.  */
 
-
-
 	/**
 	The setCMassLocal*() methods set the pose of the center of mass relative to the actor.
-	In other words, the set the actor to world transform.
-	This transformation is identity by default (the center of mass is at the origin of the actor).
+	Methods that automatically compute the center of mass such as updateMassFromShapes() as well as constructing
+	the actor using shapes with a given density will set this pose automatically.
 	Changing this transform will not move the actor in the world!
 	The actor must be dynamic.
 	*/
-	virtual		void setCMassLocalPose(const NxMat34&)				= 0;
-	virtual		void setCMassLocalPosition(const NxVec3&)			= 0;
-	virtual		void setCMassLocalOrientation(const NxMat33&)		= 0;
+	virtual		void			setCMassOffsetLocalPose(const NxMat34&)			= 0;
+
+	/**
+	The setCMassLocal*() methods set the pose of the center of mass relative to the actor.
+	See ::setCMassOffsetLocalPose() for more information.
+	*/
+	virtual		void			setCMassOffsetLocalPosition(const NxVec3&)		= 0;
+
+	/**
+	The setCMassLocal*() methods set the pose of the center of mass relative to the actor.
+	See ::setCMassOffsetLocalPose() for more information.
+	*/
+	virtual		void			setCMassOffsetLocalOrientation(const NxMat33&)	= 0;
+
+	/**
+	The setCMassGlobal*Offset() methods set the pose of the center of mass relative to world space.
+	Note that this will simply transform the parameter to actor space and then call 
+	setCMassLocal*(). In other words it only shifts the center of mass but does not move the actor.
+	The actor must be dynamic.
+	*/
+	virtual		void			setCMassOffsetGlobalPose(const NxMat34&)		= 0;
+
+	/**
+	The setCMassGlobal*Offset() methods set the pose of the center of mass relative to world space.
+	See ::setCMassOffsetGlobalPose() for more information.
+	*/
+	virtual		void			setCMassOffsetGlobalPosition(const NxVec3&)		= 0;
+
+	/**
+	The setCMassGlobal*Offset() methods set the pose of the center of mass relative to world space.
+	See ::setCMassOffsetGlobalPose() for more information.
+	*/
+	virtual		void			setCMassOffsetGlobalOrientation(const NxMat33&)	= 0;
+
+	/**
+	The setCMassGlobal*() methods move the actor by setting the pose of the center of mass.
+	Here the transform between the center of mass and the actor frame is held fixed and the actor
+	to world transform is updated.
+	The actor must be dynamic.
+	*/
+	virtual		void			setCMassGlobalPose(const NxMat34&)			= 0;
+
+	/**
+	The setCMassGlobal*() methods move the actor by setting the pose of the center of mass.
+	See ::setCMassGlobalPose() for more information.
+	*/
+	virtual		void			setCMassGlobalPosition(const NxVec3&)		= 0;
+
+	/**
+	The setCMassGlobal*() methods move the actor by setting the pose of the center of mass.
+	See ::setCMassGlobalPose() for more information.
+	*/
+	virtual		void			setCMassGlobalOrientation(const NxMat33&)	= 0;
 
 	/**
 	The getCMassLocal*() methods retrieve the center of mass pose relative to the actor.
 	The actor must be dynamic.
 	\deprecated { theGet*(x) methods are deprecated.  Use the new convention x = get*() instead. }
 	*/
-	virtual		void getCMassLocalPose(NxMat34&) const				= 0;
-	virtual		void getCMassLocalPosition(NxVec3&)	const			= 0;
-	virtual		void getCMassLocalOrientation(NxMat33&)	const		= 0;
-
-#ifndef DOXYGEN
-	virtual		NxMat34 			getCMassLocalPoseVal()			const = 0;
-	virtual		NxVec3 				getCMassLocalPositionVal()		const = 0;
-	virtual		NxMat33 			getCMassLocalOrientationVal()	const = 0;
-#endif
-	NX_INLINE	NxMat34 			getCMassLocalPose()				const {return getCMassLocalPoseVal();		}
-	NX_INLINE	NxVec3 				getCMassLocalPosition()			const {return getCMassLocalPositionVal();	}
-	NX_INLINE	NxMat33 			getCMassLocalOrientation()		const {return getCMassLocalOrientationVal();}
+	NX_INLINE	void			getCMassLocalPose(NxMat34&d)		const	{ d = getCMassLocalPoseVal();		}
 
 	/**
-	The setCMassGlobal*() methods set the pose of the center of mass relative to world space.
-	Note that this will simply transform the parameter to actor space and then call 
-	setCMassLocal*(). In other words it only shifts the center of mass but does not move the actor.
+	The getCMassLocal*() methods retrieve the center of mass pose relative to the actor.
 	The actor must be dynamic.
+	\deprecated { theGet*(x) methods are deprecated.  Use the new convention x = get*() instead. }
 	*/
-	virtual		void setCMassGlobalPose(const NxMat34&)				= 0;
-	virtual		void setCMassGlobalPosition(const NxVec3&)			= 0;
-	virtual		void setCMassGlobalOrientation(const NxMat33&)		= 0;
+	NX_INLINE	void			getCMassLocalPosition(NxVec3&d)		const	{ d = getCMassLocalPositionVal();	}
+
+	/**
+	The getCMassLocal*() methods retrieve the center of mass pose relative to the actor.
+	The actor must be dynamic.
+	\deprecated { theGet*(x) methods are deprecated.  Use the new convention x = get*() instead. }
+	*/
+	NX_INLINE	void			getCMassLocalOrientation(NxMat33&d)	const	{ d = getCMassLocalOrientationVal();}
+
+#ifndef DOXYGEN
+	virtual		NxMat34 		getCMassLocalPoseVal()				const	= 0;
+	virtual		NxVec3 			getCMassLocalPositionVal()			const	= 0;
+	virtual		NxMat33 		getCMassLocalOrientationVal()		const	= 0;
+#endif
+
+	/**
+	The getCMassLocal*() methods retrieve the center of mass pose relative to the actor.
+	*/
+	NX_INLINE	NxMat34 		getCMassLocalPose()					const	{ return getCMassLocalPoseVal();		}
+
+	/**
+	The getCMassLocal*() methods retrieve the center of mass pose relative to the actor.
+	*/
+	NX_INLINE	NxVec3 			getCMassLocalPosition()				const	{ return getCMassLocalPositionVal();	}
+
+	/**
+	The getCMassLocal*() methods retrieve the center of mass pose relative to the actor.
+	*/
+	NX_INLINE	NxMat33 		getCMassLocalOrientation()			const	{ return getCMassLocalOrientationVal();	}
 
 	/**
 	The getCMassGlobal*() methods retrieve the center of mass pose in world space.
 	The actor must be dynamic.
 	\deprecated { theGet*(x) methods are deprecated.  Use the new convention x = get*() instead. }
 	*/
-	virtual		void getCMassGlobalPose(NxMat34&) const				= 0;
-	virtual		void getCMassGlobalPosition(NxVec3&)	const		= 0;
-	virtual		void getCMassGlobalOrientation(NxMat33&)	const	= 0;
+	NX_INLINE	void			getCMassGlobalPose(NxMat34&d)		const	{ d = getCMassGlobalPoseVal();			}
+
+	/**
+	The getCMassGlobal*() methods retrieve the center of mass pose in world space.
+	The actor must be dynamic.
+	\deprecated { theGet*(x) methods are deprecated.  Use the new convention x = get*() instead. }
+	*/
+	NX_INLINE	void			getCMassGlobalPosition(NxVec3&d)	const	{ d = getCMassGlobalPositionVal();		}
+
+	/**
+	The getCMassGlobal*() methods retrieve the center of mass pose in world space.
+	The actor must be dynamic.
+	\deprecated { theGet*(x) methods are deprecated.  Use the new convention x = get*() instead. }
+	*/
+	NX_INLINE	void			getCMassGlobalOrientation(NxMat33&d)const	{ d = getCMassGlobalOrientationVal();	}
 
 #ifndef DOXYGEN
-	virtual		NxMat34 			getCMassGlobalPoseVal()			const = 0;
-	virtual		NxVec3 				getCMassGlobalPositionVal()		const = 0;
-	virtual		NxMat33 			getCMassGlobalOrientationVal()	const = 0;
+	virtual		NxMat34 		getCMassGlobalPoseVal()				const	= 0;
+	virtual		NxVec3 			getCMassGlobalPositionVal()			const	= 0;
+	virtual		NxMat33 		getCMassGlobalOrientationVal()		const	= 0;
 #endif
-	NX_INLINE		NxMat34 			getCMassGlobalPose()		const {return getCMassGlobalPoseVal()		;}
-	NX_INLINE		NxVec3 				getCMassGlobalPosition()	const {return getCMassGlobalPositionVal()	;}
-	NX_INLINE		NxMat33 			getCMassGlobalOrientation()	const {return getCMassGlobalOrientationVal();}
-
-
 
 	/**
-	Sets the linear damping coefficient. 0 means no damping, 1 is very high damping.
-	The default is 0.
+	The getCMassGlobal*() methods retrieve the center of mass pose in world space.
 	The actor must be dynamic.
 	*/
-	virtual		void			setLinearDamping(NxReal) = 0;
+	NX_INLINE	NxMat34 		getCMassGlobalPose()				const { return getCMassGlobalPoseVal();			}
 
 	/**
-	Retrieves the linear damping coefficient.
+	The getCMassGlobal*() methods retrieve the center of mass pose in world space.
 	The actor must be dynamic.
 	*/
-	virtual		NxReal			getLinearDamping() const = 0;
+	NX_INLINE	NxVec3 			getCMassGlobalPosition()			const { return getCMassGlobalPositionVal();		}
 
 	/**
-	Sets the angular damping coefficient. 0 means no damping, 1 is very high damping.
-	The default is 0.25
+	The getCMassGlobal*() methods retrieve the center of mass pose in world space.
 	The actor must be dynamic.
 	*/
-	virtual		void			setAngularDamping(NxReal) = 0;
+	NX_INLINE	NxMat33 		getCMassGlobalOrientation()			const { return getCMassGlobalOrientationVal();	}
 
 	/**
-	Retrieves the angular damping coefficient.
+	Sets the mass of a dynamic actor. Mass must be positive.	The actor must be dynamic.
 	The actor must be dynamic.
 	*/
-	virtual		NxReal			getAngularDamping() const = 0;
-
-
-	/**
-	saves the body information of a dynamic actor to the passed body
-	descriptor.
-	*/
-	virtual		bool			saveBodyToDesc(NxBodyDesc&) = 0;
+	virtual		void			setMass(NxReal) = 0;
 
 	/**
-	Saves the state of the object to the passed descriptor.
-	Does not save out any eventual shapes of the actor to the descriptor's
-	shape
-	vector, nor does it write to its body member.  You have to iterate through
-	the shapes of the actor and save them manually, and you have to call the
-	saveBodyToDesc() method for dynamic actors.
+	Retrieves the mass of the actor. Static actors return 0, dynamic actors return a positive value.
+	The actor must be dynamic.
 	*/
-	virtual		void			saveToDesc(NxActorDesc&) = 0;
-
+	virtual		NxReal			getMass() const = 0;
 
 	/**
 	Sets the inertia tensor, using a parameter specified in mass space coordinates. Note that such matrices are diagonal --
@@ -307,32 +423,291 @@ class NxActor
 	The actor must be dynamic.
 	\deprecated { theGet*(x) methods are deprecated.  Use the new convention x = get*() instead. }
 	*/
-	virtual		void			getMassSpaceInertiaTensor(NxVec3& dest) const = 0;
+	NX_INLINE	void			getMassSpaceInertiaTensor(NxVec3& dest) const { dest = getMassSpaceInertiaTensorVal(); }
 
 	/**
 	Retrieves the inertia tensor of the actor relative to the world coordinate frame.
 	The actor must be dynamic.
 	\deprecated { theGet*(x) methods are deprecated.  Use the new convention x = get*() instead. }
 	*/
-	virtual		void			getGlobalInertiaTensor(NxMat33& dest) const = 0;
+	NX_INLINE		void		getGlobalInertiaTensor(NxMat33& dest) const { dest = getGlobalInertiaTensorVal(); }
 
 	/**
 	Retrieves the inverse of the inertia tensor of the actor relative to the world coordinate frame.
 	The actor must be dynamic.
 	\deprecated { theGet*(x) methods are deprecated.  Use the new convention x = get*() instead. }
 	*/
-	virtual		void			getGlobalInertiaTensorInverse(NxMat33& dest) const = 0;
+	NX_INLINE		void		getGlobalInertiaTensorInverse(NxMat33& dest) const { dest = getGlobalInertiaTensorInverseVal(); }
 
 #ifndef DOXYGEN
-	virtual		NxVec3				getMassSpaceInertiaTensorVal()		const = 0;
-	virtual		NxMat33				getGlobalInertiaTensorVal()			const = 0;
-	virtual		NxMat33				getGlobalInertiaTensorInverseVal()	const = 0;
+	virtual		NxVec3			getMassSpaceInertiaTensorVal()		const = 0;
+	virtual		NxMat33			getGlobalInertiaTensorVal()			const = 0;
+	virtual		NxMat33			getGlobalInertiaTensorInverseVal()	const = 0;
 #endif
-	NX_INLINE	NxVec3				getMassSpaceInertiaTensor()			const { return getMassSpaceInertiaTensorVal()	; };
-	NX_INLINE	NxMat33				getGlobalInertiaTensor()			const { return getGlobalInertiaTensorVal()		; };
-	NX_INLINE	NxMat33				getGlobalInertiaTensorInverse()		const { return getGlobalInertiaTensorInverseVal(); };
 
+	/**
+	Retrieves the diagonal inertia tensor of the actor relative to the mass coordinate frame.
+	The actor must be dynamic.
+	*/
+	NX_INLINE	NxVec3			getMassSpaceInertiaTensor()			const { return getMassSpaceInertiaTensorVal()	; };
 
+	/**
+	Retrieves the inertia tensor of the actor relative to the world coordinate frame.
+	The actor must be dynamic.
+	*/
+	NX_INLINE	NxMat33			getGlobalInertiaTensor()			const { return getGlobalInertiaTensorVal()		; };
+
+	/**
+	Retrieves the inverse of the inertia tensor of the actor relative to the world coordinate frame.
+	The actor must be dynamic.
+	*/
+	NX_INLINE	NxMat33			getGlobalInertiaTensorInverse()		const { return getGlobalInertiaTensorInverseVal(); };
+
+	/**
+	Sets the linear damping coefficient. 0 means no damping, must be nonnegative.
+	The default is 0.
+	The actor must be dynamic.
+	*/
+	virtual		void			setLinearDamping(NxReal) = 0;
+
+	/**
+	Retrieves the linear damping coefficient.
+	The actor must be dynamic.
+	*/
+	virtual		NxReal			getLinearDamping() const = 0;
+
+	/**
+	Sets the angular damping coefficient. 0 means no damping, must be nonnegative.
+	The default is 0.05
+	The actor must be dynamic.
+	*/
+	virtual		void			setAngularDamping(NxReal) = 0;
+
+	/**
+	Retrieves the angular damping coefficient.
+	The actor must be dynamic.
+	*/
+	virtual		NxReal			getAngularDamping() const = 0;
+
+	/**
+	Sets the linear velocity of the actor. Note that if you continuously set the velocity of an actor yourself, 
+	forces such as gravity or friction will not be able to manifest themselves, because forces directly
+	influence only the velocity of an actor.
+
+	The velocities / momenta of jointed actors can not be set. You should remove the joint, set the velocities,
+	and then reconnect the actors. Future versions should perform this automatically.
+	The actor must be dynamic.
+	*/
+	virtual		void			setLinearVelocity(const NxVec3&) = 0;
+
+	/**
+	Retrieves the linear velocity of an actor.
+	The actor must be dynamic.
+	\deprecated { theGet*(x) methods are deprecated.  Use the new convention x = get*() instead. }
+	*/
+	NX_INLINE		void		getLinearVelocity(NxVec3& dest) const { dest = getLinearVelocityVal(); }
+
+	/**
+	Sets the angular velocity of the actor. Note that if you continuously set the angular velocity of an actor yourself, 
+	forces such as friction will not be able to rotate the actor, because forces directly influence only the velocity.
+
+	The velocities / momenta of jointed actors can not be set. You should remove the joint, set the velocities,
+	and then reconnect the actors. Future versions should perform this automatically.
+	The actor must be dynamic.
+	*/
+	virtual		void			setAngularVelocity(const NxVec3&) = 0;
+
+	/**
+	Retrieves the angular velocity of the actor.
+	The actor must be dynamic.
+	\deprecated { theGet*(x) methods are deprecated.  Use the new convention x = get*() instead. }
+	*/
+	NX_INLINE		void		getAngularVelocity(NxVec3& dest) const { dest = getAngularVelocityVal();  }
+
+#ifndef DOXYGEN
+	virtual		NxVec3			getLinearVelocityVal()	const = 0;
+	virtual		NxVec3			getAngularVelocityVal()	const = 0;
+#endif
+	/**
+	Retrieves the linear velocity of an actor.
+	The actor must be dynamic.
+	*/
+	NX_INLINE	NxVec3			getLinearVelocity()		const { return getLinearVelocityVal();}
+
+	/**
+	Retrieves the angular velocity of the actor.
+	The actor must be dynamic.
+	*/
+	NX_INLINE	NxVec3			getAngularVelocity()	const { return getAngularVelocityVal();}
+
+	/**
+	Lets you set the maximum angular velocity permitted for this actor. Because for various computations, the rotation
+	of an object is linearized, quickly rotating actors introduce error into the simulation, which leads to bad things.
+
+	With NxPhysicsSDK::setParameter(MAX_ANGULAR_VELOCITY) you can set the default maximum velocity for actors created
+	after the call. Bodies' high angular velocities are clamped to this value. 
+
+	However, because some actors, such as car wheels, should be able to rotate quickly, you can override the default setting
+	on a per-actor basis with the below call. Note that objects such as wheels which are approximated with spherical or 
+	other smooth collision primitives can be simulated with stability at a much higher angular velocity than, say, a box that
+	has corners.
+	The actor must be dynamic.
+	*/
+	virtual		void			setMaxAngularVelocity(NxReal) = 0;
+
+	/**
+	Sets the linear momentum of the actor. 
+	
+	Note that if you continuously set the velocity of a actor yourself, 
+	forces such as gravity or friction will not be able to manifest themselves, because forces directly
+	influence only the velocity of a actor.
+
+	The velocities / momenta of jointed actors can not be set. You should remove the joint, set the velocities,
+	and then reconnect the actors. Future versions should perform this automatically.
+
+	This should only be called outside of NxScene::run().
+	The actor must be dynamic.
+	*/
+	virtual		void			setLinearMomentum(const NxVec3&) = 0;
+
+	/**
+	Retrieves the linear momentum of an actor. The momentum is equal to the velocity times the mass.
+	The actor must be dynamic.
+	\deprecated { theGet*(x) methods are deprecated.  Use the new convention x = get*() instead. }
+	*/
+	NX_INLINE		void			getLinearMomentum(NxVec3&dest) const { dest = getLinearMomentumVal(); }
+
+	/**
+	Sets the angular momentum of the actor. Note that if you continuously set the angular velocity of an actor yourself, 
+	forces such as friction will not be able to rotate the actor, because forces directly
+	influence only the velocity of actor.
+
+	The velocities / momenta of jointed actors can not be set. You should remove the joint, set the velocities,
+	and then reconnect the actors. Future versions should perform this automatically.
+
+	This should only be called outside of NxScene::run().
+	The actor must be dynamic.
+	*/
+	virtual		void			setAngularMomentum(const NxVec3&) = 0;
+
+	/**
+	Retrieves the angular velocity of an actor. The angular momentum is
+	equal to the angular velocity times the global space inertia tensor.
+	The momentum of an object cannot be set directly: you should set the 
+	inertia tensor and the angular velocity separately instead.
+	The actor must be dynamic.
+	\deprecated { theGet*(x) methods are deprecated.  Use the new convention x = get*() instead. }
+	*/
+	NX_INLINE		void			getAngularMomentum(NxVec3&dest) const {dest = getAngularMomentumVal(); }
+
+#ifndef DOXYGEN
+	virtual		NxVec3			getLinearMomentumVal()	const = 0;
+	virtual		NxVec3			getAngularMomentumVal()	const = 0;
+#endif
+
+	/**
+	Retrieves the linear momentum of an actor. The momentum is equal to the velocity times the mass.
+	The actor must be dynamic.
+	*/
+	NX_INLINE	NxVec3			getLinearMomentum()		const {return getLinearMomentumVal(); };
+
+	/**
+	Retrieves the angular velocity of an actor. The angular momentum is
+	equal to the angular velocity times the global space inertia tensor.
+	The momentum of an object cannot be set directly: you should set the 
+	inertia tensor and the angular velocity separately instead.
+	The actor must be dynamic.
+	*/
+	NX_INLINE	NxVec3			getAngularMomentum()	const {return getAngularMomentumVal(); };
+
+	/**
+	Applies a force (or impulse) defined in the global coordinate frame, 
+	acting at a particular point in global coordinates, to the actor. 
+	Note that if the force does not act along the center of mass of the actor, this
+	will also add the corresponding torque. Because forces are reset at the end of every timestep, you can maintain a
+	total external force on an object by calling this once every frame.
+
+    ::NxForceMode determines if the force is to be conventional or impulsive.
+
+	The actor must be dynamic.
+	*/
+	virtual		void			addForceAtPos(const NxVec3& force, const NxVec3& pos, NxForceMode mode = NX_FORCE) = 0;
+
+	/**
+	Applies a force (or impulse) defined in the global coordinate frame,
+	acting at a particular point in local coordinates, to the actor. 
+	Note that if the force does not act along the center of mass of the actor, this
+	will also add the corresponding torque. Because forces are reset at the end of every timestep, you can maintain a
+	total external force on an object by calling this once every frame.
+
+	::NxForceMode determines if the force is to be conventional or impulsive.
+
+	The actor must be dynamic.
+	*/
+	virtual		void			addForceAtLocalPos(const NxVec3& force, const NxVec3& pos, NxForceMode mode = NX_FORCE) = 0;
+
+	/**
+	Applies a force (or impulse) defined in the actor local coordinate frame,
+	acting at a particular point in global coordinates, to the actor. 
+	Note that if the force does not act along the center of mass of the actor, this
+	will also add the corresponding torque. Because forces are reset at the end of every timestep, you can maintain a
+	total external force on an object by calling this once every frame.
+
+	::NxForceMode determines if the force is to be conventional or impulsive.
+
+	The actor must be dynamic.
+	*/
+	virtual		void			addLocalForceAtPos(const NxVec3& force, const NxVec3& pos, NxForceMode mode = NX_FORCE) = 0;
+
+	/**
+	Applies a force (or impulse) defined in the actor local coordinate frame,
+	acting at a particular point in local coordinates, to the actor. 
+	Note that if the force does not act along the center of mass of the actor, this
+	will also add the corresponding torque. Because forces are reset at the end of every timestep, you can maintain a
+	total external force on an object by calling this once every frame.
+
+	::NxForceMode determines if the force is to be conventional or impulsive.
+
+	The actor must be dynamic.
+	*/
+	virtual		void			addLocalForceAtLocalPos(const NxVec3& force, const NxVec3& pos, NxForceMode mode = NX_FORCE) = 0;
+
+	/**
+	Applies a force (or impulse) defined in the global coordinate frame to the actor.
+	This will not induce a torque.
+
+	::NxForceMode determines if the force is to be conventional or impulsive.
+
+	The actor must be dynamic.
+	*/
+	virtual		void			addForce(const NxVec3&, NxForceMode mode = NX_FORCE) = 0;
+
+	/**
+	Applies a force (or impulse) defined in the actor local coordinate frame to the actor.
+
+	::NxForceMode determines if the force is to be conventional or impulsive.
+
+	The actor must be dynamic.
+	*/
+	virtual		void			addLocalForce(const NxVec3&, NxForceMode mode = NX_FORCE) = 0;
+
+	/**
+	Applies an (eventually impulsive) torque defined in the global coordinate frame to the actor.
+
+	::NxForceMode determines if the torque is to be conventional or impulsive.
+
+	The actor must be dynamic.
+	*/
+	virtual		void			addTorque(const NxVec3&, NxForceMode mode = NX_FORCE) = 0;
+
+	/**
+	Applies an (eventually impulsive) torque defined in the actor local coordinate frame to the actor.
+
+	::NxForceMode determines if the torque is to be conventional or impulsive.
+
+	The actor must be dynamic.
+	*/
+	virtual		void			addLocalTorque(const NxVec3&, NxForceMode mode = NX_FORCE) = 0;
 
 	/**
 	Computes the total kinetic (rotational and translational) energy of the object.
@@ -345,23 +720,31 @@ class NxActor
 	The actor must be dynamic.
 	\deprecated { theGet*(x) methods are deprecated.  Use the new convention x = get*() instead. }
 	*/
-	virtual		void			getPointVelocity(const NxVec3& point, NxVec3& result) const = 0;
+	virtual		void			getPointVelocity(const NxVec3& point, NxVec3& result) const { result = getPointVelocityVal(point); }
 
 	/**
 	Computes the velocity of a point given in body local coordinates if it were attached to the actor and moving with it.
 	The actor must be dynamic.
 	\deprecated { theGet*(x) methods are deprecated.  Use the new convention x = get*() instead. }
 	*/
-	virtual		void			getLocalPointVelocity(const NxVec3& point, NxVec3& result) const = 0;
+	virtual		void			getLocalPointVelocity(const NxVec3& point, NxVec3& result) const { result = getLocalPointVelocityVal(point); }
 
 #ifndef DOXYGEN
 	virtual		NxVec3			getPointVelocityVal(const NxVec3& point)		const = 0;
 	virtual		NxVec3			getLocalPointVelocityVal(const NxVec3& point)	const = 0;
 #endif
+
+	/**
+	Computes the velocity of a point given in world coordinates if it were attached to the actor and moving with it.
+	The actor must be dynamic.
+	*/
 	NX_INLINE	NxVec3			getPointVelocity(const NxVec3& point)			{ return getPointVelocityVal(point); };
+
+	/**
+	Computes the velocity of a point given in body local coordinates if it were attached to the actor and moving with it.
+	The actor must be dynamic.
+	*/
 	NX_INLINE	NxVec3			getLocalPointVelocity(const NxVec3& point)		{ return getLocalPointVelocityVal(point); };
-
-
 
 	/**
 	Returns true if this body and all the actors it is touching or is linked to with joints are sleeping.
@@ -387,7 +770,6 @@ class NxActor
 	*/
 	virtual		bool			isSleeping() const = 0;
 
-
 	/**
 	Returns the linear velocity below which an actor may go to sleep. Actors whose linear velocity is above
     this threshold will not be put to sleep.
@@ -397,8 +779,7 @@ class NxActor
     @see isSleeping
 
 	*/
-
-    virtual     NxReal              getSleepLinearVelocity() const = 0;
+    virtual		NxReal			getSleepLinearVelocity() const = 0;
 
     /**
 
@@ -411,8 +792,7 @@ class NxActor
     @see isSleeping
 
 	*/
-
-    virtual     void                setSleepLinearVelocity(NxReal threshold) = 0;
+    virtual		void			setSleepLinearVelocity(NxReal threshold) = 0;
 
 	/**
 	Returns the angular velocity below which an actor may go to sleep. Actors whose angular velocity is above
@@ -423,8 +803,7 @@ class NxActor
     @see isSleeping
 
 	*/
-
-    virtual     NxReal              getSleepAngularVelocity() const = 0;
+    virtual		NxReal			getSleepAngularVelocity() const = 0;
 
  	/**
 	Sets the angular velocity below which an actor may go to sleep. Actors whose angular velocity is above
@@ -436,146 +815,17 @@ class NxActor
     @see isSleeping
 
 	*/
-
-    virtual     void               setSleepAngularVelocity(NxReal threshold) = 0;
-
+    virtual		void			setSleepAngularVelocity(NxReal threshold) = 0;
 
 	/**
 	Wakes up the actor if it is sleeping.  
 	*/
-	virtual		void			wakeUp(NxF32 wakeCounterValue=NX_NUM_SLEEP_FRAMES)	= 0;
+	virtual		void			wakeUp(NxReal wakeCounterValue=NX_NUM_SLEEP_FRAMES)	= 0;
 
 	/**
 	Forces the actor to sleep.  
 	*/
 	virtual		void			putToSleep()	= 0;
-
-
-
-	/**
-	Sets the total (not only external) force acting on the actor.
-	Caution: calling this function may cancel friction forces!  Its better to
-	use addForce*() below.
-	The actor must be dynamic.
-	*/
-	virtual		void			setForce(const NxVec3&) = 0;
-
-	/**
-	Sets the total (not only external) torque acting on the actor.
-	Caution: calling this function may cancel friction forces!  Its better to
-	use addForce/Torque*() below.
-	The actor must be dynamic.
-	*/
-	virtual		void			setTorque(const NxVec3&) = 0;
-
-	/**
-	Retrieves the total external force (defined in the global coordinate frame) acting on the actor. This may
-	include forces such as gravity, spring and dampers, friction, and forces set by the user.
-	The actor must be dynamic.
-	\deprecated { theGet*(x) methods are deprecated.  Use the new convention x = get*() instead. }
-	*/
-	virtual		void			getForce(NxVec3&) const = 0;
-
-	/**
-	Retrieves the total external torque (defined in the global coordinate frame) acting on the actor. This may
-	include torques such as spring and dampers, friction, and forces set by the user.
-	The actor must be dynamic.
-	\deprecated { theGet*(x) methods are deprecated.  Use the new convention x = get*() instead. }
-	*/
-	virtual		void			getTorque(NxVec3&) const = 0;
-
-#ifndef DOXYGEN
-	virtual		NxVec3				getForceVal()	const = 0;
-	virtual		NxVec3				getTorqueVal()	const = 0;
-#endif
-	NX_INLINE	NxVec3				getForce()		const { return getForceVal(); };
-	NX_INLINE	NxVec3				getTorque()		const { return getTorqueVal(); };
-
-
-
-	/**
-	Sets the mass of a dynamic actor. Mass must be positive.	The actor must be dynamic.
-	The actor must be dynamic.
-	*/
-	virtual		void			setMass(NxReal) = 0;
-
-	/**
-	Retrieves the mass of the actor. Static actors return 0, dynamic actors return a positive value.
-	The actor must be dynamic.
-	*/
-	virtual		NxReal			getMass() const = 0;
-
-
-
-	/**
-	Sets the linear velocity of the actor. Note that if you continuously set the velocity of an actor yourself, 
-	forces such as gravity or friction will not be able to manifest themselves, because forces directly
-	influence only the velocity of an actor.
-
-	The velocities / momenta of jointed actors can not be set. You should remove the joint, set the velocities,
-	and then reconnect the actors. Future versions should perform this automatically.
-	The actor must be dynamic.
-	*/
-	virtual		void			setLinearVelocity(const NxVec3&) = 0;
-
-	/**
-	Retrieves the linear velocity of an actor.
-	The actor must be dynamic.
-	\deprecated { theGet*(x) methods are deprecated.  Use the new convention x = get*() instead. }
-	*/
-	virtual		void			getLinearVelocity(NxVec3&) const = 0;
-
-	/**
-	Sets the angular velocity of the actor. Note that if you continuously set the angular velocity of an actor yourself, 
-	forces such as friction will not be able to rotate the actor, because forces directly influence only the velocity.
-
-	The velocities / momenta of jointed actors can not be set. You should remove the joint, set the velocities,
-	and then reconnect the actors. Future versions should perform this automatically.
-	The actor must be dynamic.
-	*/
-	virtual		void			setAngularVelocity(const NxVec3&) = 0;
-
-	/**
-	Retrieves the angular velocity of the actor.
-	The actor must be dynamic.
-	\deprecated { theGet*(x) methods are deprecated.  Use the new convention x = get*() instead. }
-	*/
-	virtual		void			getAngularVelocity(NxVec3&) const = 0;
-
-#ifndef DOXYGEN
-	virtual		NxVec3			getLinearVelocityVal()	const = 0;
-	virtual		NxVec3			getAngularVelocityVal()	const = 0;
-#endif
-	NX_INLINE	NxVec3			getLinearVelocity()		const { return getLinearVelocityVal();}
-	NX_INLINE	NxVec3			getAngularVelocity()	const { return getAngularVelocityVal();}
-
-	/**
-	Lets you set the maximum angular velocity permitted for this actor. Because for various computations, the rotation
-	of an object is linearized, quickly rotating actors introduce error into the simulation, which leads to bad things.
-
-	With NxPhysicsSDK::setParameter(MAX_ANGULAR_VELOCITY) you can set the default maximum velocity for actors created
-	after the call. Bodies' high angular velocities are clamped to this value. 
-
-	However, because some actors, such as car wheels, should be able to rotate quickly, you can override the default setting
-	on a per-actor basis with the below call. Note that objects such as wheels which are approximated with spherical or 
-	other smooth collision primitives can be simulated with stability at a much higher angular velocity than, say, a box that
-	has corners.
-	The actor must be dynamic.
-	*/
-	virtual		void			setMaxAngularVelocity(NxReal) = 0;
-
-
-	/**
-	Sets a name string for the object that can be retrieved with getName().  This is for debugging and is not used
-	by the SDK.  The string is not copied by the SDK, only the pointer is stored.
-	*/
-	virtual	void			setName(const char*)		= 0;
-
-	/**
-	retrieves the name string set with setName().
-	*/
-	virtual	const char*		getName()			const	= 0;
-
 
 	/**
 	Raises a particular actor flag. See the list of flags in NxActorDesc.h.
@@ -603,130 +853,47 @@ class NxActor
 	*/
 	virtual		bool			readBodyFlag(NxBodyFlag)		const	= 0;
 
-
+	/**
+	saves the body information of a dynamic actor to the passed body
+	descriptor.
+	*/
+	virtual		bool			saveBodyToDesc(NxBodyDesc&) = 0;
 
 	/**
-	Sets the linear momentum of the actor. 
-	
-	Note that if you continuously set the velocity of a actor yourself, 
-	forces such as gravity or friction will not be able to manifest themselves, because forces directly
-	influence only the velocity of a actor.
-
-	The velocities / momenta of jointed actors can not be set. You should remove the joint, set the velocities,
-	and then reconnect the actors. Future versions should perform this automatically.
-
-	This should only be called outside of NxScene::run().
-	The actor must be dynamic.
+	Saves the state of the object to the passed descriptor.
+	Does not save out any eventual shapes of the actor to the descriptor's
+	shape
+	vector, nor does it write to its body member.  You have to iterate through
+	the shapes of the actor and save them manually, and you have to call the
+	saveBodyToDesc() method for dynamic actors.
 	*/
-	virtual		void			setLinearMomentum(const NxVec3&) = 0;
+	virtual		void			saveToDesc(NxActorDescBase&) = 0;
 
 	/**
-	Retrieves the linear momentum of an actor. The momentum is equal to the velocity times the mass.
-	The actor must be dynamic.
-	\deprecated { theGet*(x) methods are deprecated.  Use the new convention x = get*() instead. }
+	Sets a name string for the object that can be retrieved with getName().  This is for debugging and is not used
+	by the SDK.  The string is not copied by the SDK, only the pointer is stored.
 	*/
-	virtual		void			getLinearMomentum(NxVec3&) const = 0;
+	virtual		void			setName(const char*)		= 0;
 
 	/**
-	Sets the angular momentum of the actor. Note that if you continuously set the angular velocity of an actor yourself, 
-	forces such as friction will not be able to rotate the actor, because forces directly
-	influence only the velocity of actor.
-
-	The velocities / momenta of jointed actors can not be set. You should remove the joint, set the velocities,
-	and then reconnect the actors. Future versions should perform this automatically.
-
-	This should only be called outside of NxScene::run().
-	The actor must be dynamic.
+	retrieves the name string set with setName().
 	*/
-	virtual		void			setAngularMomentum(const NxVec3&) = 0;
+	virtual		const char*		getName()			const	= 0;
 
 	/**
-	Retrieves the angular velocity of an actor. The angular momentum is
-	equal to the angular velocity times the global space inertia tensor.
-	The momentum of an object cannot be set directly: you should set the 
-	inertia tensor and the angular velocity separately instead.
-	The actor must be dynamic.
-	\deprecated { theGet*(x) methods are deprecated.  Use the new convention x = get*() instead. }
+	Assigns the actor to a user defined group of actors.  NxActorGroup is a 16 bit group identifier.
+	This is similar to NxShape groups, except those are only five bits and serve a different purpose.
+	The NxPhysicsSDK::setActorGroupPairFlags() lets you set certain behaviors for pairs of actor groups.
+	By default every actor is created in group 0.
 	*/
-	virtual		void			getAngularMomentum(NxVec3&) const = 0;
-
-#ifndef DOXYGEN
-	virtual		NxVec3			getLinearMomentumVal()	const = 0;
-	virtual		NxVec3			getAngularMomentumVal()	const = 0;
-#endif
-	NX_INLINE	NxVec3			getLinearMomentum()		const {return getLinearMomentumVal(); };
-	NX_INLINE	NxVec3			getAngularMomentum()	const {return getAngularMomentumVal(); };
-
-
-
+	virtual		void			setGroup(NxActorGroup)		 = 0;
 	/**
-	Adds a force defined in the global coordinate frame, 
-	acting at a particular point in global coordinates, to the total external force and torque
-	acting on the actor. Note that if the force does not act along the center of mass of the actor, this
-	will also add the corresponding torque. Because forces are zeroed every timestep, you can set the
-	total external force on an object by calling this once every frame.
-	The actor must be dynamic.
+	retrieves the value set with setGroup().
 	*/
-	virtual		void			addForceAtPos(const NxVec3& force, const NxVec3& pos) = 0;
-
-	/**
-	Adds a force defined in the global coordinate frame,
-	acting at a particular point in local coordinates, to the total external force and torque
-	acting on the actor. Note that if the force does not act along the center of mass of the actor, this
-	will also add the corresponding torque. Because forces are zeroed every timestep, you can set the
-	total external force on an object by calling this once every frame.
-	The actor must be dynamic.
-	*/
-	virtual		void			addForceAtLocalPos(const NxVec3& force, const NxVec3& pos) = 0;
-
-	/**
-	Adds a force defined in the actor local coordinate frame,
-	acting at a particular point in global coordinates, to the total external force and torque
-	acting on the actor. Note that if the force does not act along the center of mass of the actor, this
-	will also add the corresponding torque. Because forces are zeroed every timestep, you can set the
-	total external force on an object by calling this once every frame.
-	The actor must be dynamic.
-	*/
-	virtual		void			addLocalForceAtPos(const NxVec3& force, const NxVec3& pos) = 0;
-
-	/**
-	Adds a force defined in the actor local coordinate frame,
-	acting at a particular point in local coordinates, to the total external force and torque
-	acting on the actor. Note that if the force does not act along the center of mass of the actor, this
-	will also add the corresponding torque. Because forces are zeroed every timestep, you can set the
-	total external force on an object by calling this once every frame.
-	The actor must be dynamic.
-	*/
-	virtual		void			addLocalForceAtLocalPos(const NxVec3& force, const NxVec3& pos) = 0;
-
-	/**
-	Adds a force defined in the global coordinate frame to the total external force acting on the actor.
-	This will not induce a torque.
-	The actor must be dynamic.
-	*/
-	virtual		void			addForce(const NxVec3&) = 0;
-
-	/**
-	Adds a force defined in the actor local coordinate frame to the total external force acting on the actor.
-	The actor must be dynamic.
-	*/
-	virtual		void			addLocalForce(const NxVec3&) = 0;
-
-	/**
-	Adds a torque defined in the global coordinate frame to the total external torque acting on the actor.
-	The actor must be dynamic.
-	*/
-	virtual		void			addTorque(const NxVec3&) = 0;
-
-	/**
-	Adds a torque defined in the actor local coordinate frame to the total external torque acting on the actor.
-	The actor must be dynamic.
-	*/
-	virtual		void			addLocalTorque(const NxVec3&) = 0;
-
+	virtual		NxActorGroup	getGroup() const			 = 0;
 
 	//public variables:
-	void*			userData;	//!< user can assign this to whatever, usually to create a 1:1 relationship with a user object.
+				void*			userData;	//!< user can assign this to whatever, usually to create a 1:1 relationship with a user object.
 	};
 
 #endif

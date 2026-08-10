@@ -10,7 +10,7 @@
 
 #include "Nxp.h"
 
-class NxJoint;
+#include "NxJoint.h"
 class NxPointOnLineJointDesc;
 
 /**
@@ -20,7 +20,7 @@ class NxPointOnLineJointDesc;
  The starting point of the point is defined as the anchor point. The line
  through this point is specified by its direction (axis) vector.
 */
-class NxPointOnLineJoint
+class NxPointOnLineJoint: public NxJoint
 	{
 	public:
 	/**
@@ -35,15 +35,15 @@ class NxPointOnLineJoint
 	virtual void saveToDesc(NxPointOnLineJointDesc&) = 0;
 
 	/**
-	This class is internally a subclass of NxJoint. This operator
-	is automatically used to perform an upcast.
-	*/
-	virtual operator NxJoint &() = 0;
+	\deprecated { casts to a superclass are now implicit }
+	casts to joint type
+	*/ 
+	NX_INLINE operator NxJoint &()		{ return *this; }
 
 	/**
-	This class is internally a subclass of NxJoint. Use this
-	method to perform an upcast.
-	*/
-	virtual NxJoint & getJoint() = 0;
+	\deprecated { casts to a superclass are now implicit }
+	casts to joint type
+	*/ 
+	NX_INLINE NxJoint & getJoint()		{ return *this; };
 	};
 #endif

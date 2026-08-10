@@ -10,14 +10,14 @@
 
 #include "NxSphericalJointDesc.h"
 
-class NxJoint;
+#include "NxJoint.h"
 
 /**
  A sphere joint constrains two points on two bodies to coincide.
  This point, specified in world space (this guarantees that the points coincide 
  to start with) is the only parameter that has to be specified.
 */
-class NxSphericalJoint
+class NxSphericalJoint: public NxJoint
 	{
 	public:
 
@@ -53,15 +53,16 @@ class NxSphericalJoint
 	virtual NxJointProjectionMode getProjectionMode() = 0;
 
 	/**
-	This class is internally a subclass of NxJoint. This operator
-	is automatically used to perform an upcast.
-	*/
-	virtual operator NxJoint &() = 0;
+	\deprecated { casts to a superclass are now implicit }
+	casts to joint type
+	*/ 
+	NX_INLINE operator NxJoint &()		{ return *this; }
 
 	/**
-	This class is internally a subclass of NxJoint. Use this
-	method to perform an upcast.
-	*/
-	virtual NxJoint & getJoint() = 0;
+	\deprecated { casts to a superclass are now implicit }
+	casts to joint type
+	*/ 
+	NX_INLINE NxJoint & getJoint()		{ return *this; };
+
 	};
 #endif

@@ -19,6 +19,11 @@ class NxRay;
 	NX_C_EXPORT NXP_DLL_EXPORT bool NX_CALL_CONV NxRayAABBIntersect(const NxVec3& min, const NxVec3& max, const NxVec3& origin, const NxVec3& dir, NxVec3& coord);
 
 	/**
+	Extended Ray-AABB intersection test. Also computes intersection point, and parameter and returns contacted box axis index+1.  Rays starting from inside the box are ignored.
+	*/
+	NX_C_EXPORT NXP_DLL_EXPORT NxU32 NX_CALL_CONV NxRayAABBIntersect2(const NxVec3& min, const NxVec3& max, const NxVec3& origin, const NxVec3& dir, NxVec3& coord, NxReal & t);
+
+	/**
 	Boolean segment-OBB intersection test. Based on separating axis theorem.
 	*/
 	NX_C_EXPORT NXP_DLL_EXPORT bool NX_CALL_CONV NxSegmentOBBIntersect(const NxVec3& p0, const NxVec3& p1, const NxVec3& center, const NxVec3& extents, const NxMat33& rot);

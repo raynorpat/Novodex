@@ -9,8 +9,8 @@
 \*----------------------------------------------------------------------------*/
 
 #include "Nxp.h"
+#include "NxShape.h"
 
-class NxShape;
 class NxTriangleMeshShapeDesc;
 class NxTriangleMesh;
 
@@ -41,7 +41,7 @@ shape descriptor into the NxActorDesc class before creating the actor.
 The shape is deleted by calling NxActor::releaseShape() on the owning actor.
 */
 
-class NxTriangleMeshShape
+class NxTriangleMeshShape: public NxShape
 	{
 	public:
 
@@ -49,14 +49,19 @@ class NxTriangleMeshShape
 	This class is internally a subclass of NxShape. Use this
 	method to perform an upcast.
 	*/
-	virtual NxShape& getShape() = 0;
-	virtual const NxShape& getShape() const = 0;
 
 	/**
-	This class is internally a subclass of NxShape. This operator
-	is automatically used to perform an upcast.
-	*/
-	virtual operator NxShape &() = 0;
+	\deprecated { casts to a superclass are now implicit }
+	casts to shape type
+	*/ 
+	NX_INLINE operator NxShape &()					{ return *this; }
+
+	/**
+	\deprecated { casts to a superclass are now implicit }
+	casts to shape type
+	*/ 
+	NX_INLINE NxShape & getShape()					{ return *this; }
+	NX_INLINE const NxShape & getShape() const		{ return *this; }
 
 	virtual	bool				saveToDesc(NxTriangleMeshShapeDesc&)	const = 0;
 

@@ -14,26 +14,28 @@ Describes a joint motor.
 class NxMotorDesc
 	{
 	public:
-/**
+	/**
 	The relative velocity the motor is trying to achieve. The motor will only be able
-	to reach this velocity if the motorMaxForce is sufficiently large. If the joint is 
+	to reach this velocity if the maxForce is sufficiently large. If the joint is 
 	spinning faster than this velocity, the motor will actually try to brake. If you set this
 	to infinity then the motor will keep speeding up, unless there is some sort of resistance
 	on the attached bodies. The sign of this variable determines the rotation direction,
 	with positive values going the same way as positive joint angles.
 	Default is infinity.
-*/
+	*/
 	NxReal velTarget;	//target velocity of motor
-/**
+
+	/**
 	The maximum force (torque in this case) the motor can exert. Zero disables the motor.
-	Default is 0, should be >= 0. Setting this to a very large value if motorVrelTarget is also 
+	Default is 0, should be >= 0. Setting this to a very large value if velTarget is also 
 	very large may not be a good idea.
-*/
+	*/
 	NxReal maxForce;	//maximum motor force/torque
-/**
+
+	/**
 	If true, motor will not brake when it spins faster than velTarget
 	default: false.
-*/
+	*/
 	NX_BOOL freeSpin;
 
 	NX_INLINE NxMotorDesc();

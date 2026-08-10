@@ -9,9 +9,20 @@
 \*----------------------------------------------------------------------------*/
 
 #include "Nxp.h"
+#include "NxShape.h"
 
 class NxShape;
 class NxCapsuleShapeDesc;
+
+enum NxCapsuleShapeFlag
+	{
+	/*
+	If this flag is set, the capsule shape represents a moving sphere, moving along the ray defined by the capsule's positive Y axis.  
+	Currently this behavior is only implemented for points (zero radius spheres).
+	*/
+	NX_SWEPT_SHAPE	= (1<<0)
+	};
+
 
 /**
 A capsule shaped collision detection primitive, also known as a line swept sphere.
@@ -29,30 +40,22 @@ shape descriptor into the NxActorDesc class before creating the actor.
 The shape is deleted by calling NxActor::releaseShape() on the owning actor.
 */
 
-class NxCapsuleShape
+class NxCapsuleShape: public NxShape
 	{
 	public:
 
-
-
-	virtual	bool	saveToDesc(NxCapsuleShapeDesc&)		const = 0;
-
-
+	/**
+	\deprecated { casts to a superclass are now implicit }
+	casts to shape type
+	*/ 
+	NX_INLINE operator NxShape &()					{ return *this; }
 
 	/**
-	This class is internally a subclass of NxShape. Use this
-	method to perform an upcast.
-	*/
-	virtual NxShape& getShape() = 0;
-	virtual const NxShape& getShape() const = 0;
-
-	/**
-	This class is internally a subclass of NxShape. This operator
-	is automatically used to perform an upcast.
-	*/
-	virtual operator NxShape &() = 0;
-
-
+	\deprecated { casts to a superclass are now implicit }
+	casts to shape type
+	*/ 
+	NX_INLINE NxShape & getShape()					{ return *this; }
+	NX_INLINE const NxShape & getShape() const		{ return *this; }
 
 	/**
 	Call this to initialize or alter the capsule. 
@@ -79,8 +82,6 @@ class NxCapsuleShape
 	*/
 	virtual NxReal getHeight() const = 0;
 
-
-
-
+	virtual	bool	saveToDesc(NxCapsuleShapeDesc&)		const = 0;
 	};
 #endif

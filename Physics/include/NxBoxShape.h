@@ -9,9 +9,9 @@
 \*----------------------------------------------------------------------------*/
 
 #include "Nxp.h"
+#include "NxShape.h"
 
 class NxBox;
-class NxShape;
 class NxBoxShapeDesc;
 
 /**
@@ -25,11 +25,22 @@ shape descriptor into the NxActorDesc class before creating the actor.
 
 The shape is deleted by calling NxActor::releaseShape() on the owning actor.
 */
-class NxBoxShape 
+class NxBoxShape: public NxShape
 	{
 	public:
 
+	/**
+	\deprecated { casts to a superclass are now implicit }
+	casts to shape type
+	*/ 
+	NX_INLINE operator NxShape &()					{ return *this; }
 
+	/**
+	\deprecated { casts to a superclass are now implicit }
+	casts to shape type
+	*/ 
+	NX_INLINE NxShape & getShape()					{ return *this; }
+	NX_INLINE const NxShape & getShape() const		{ return *this; }
 
 	/**
 	The dimensions are the 'radii' of the box, meaning 1/2 extents in x dimension, 
@@ -47,26 +58,6 @@ class NxBoxShape
 	*/
 	virtual void getWorldOBB(NxBox&) const = 0;
 
-
-
-	/**
-	This class is internally a subclass of NxShape. Use this
-	method to perform an upcast.
-	*/
-	virtual NxShape& getShape() = 0;
-	virtual const NxShape& getShape() const = 0;
-
-	/**
-	This class is internally a subclass of NxShape. This operator
-	is automatically used to perform an upcast.
-	*/
-	virtual operator NxShape&() = 0;
-
-
-
 	virtual	bool saveToDesc(NxBoxShapeDesc&) const = 0;
-
-
-
 	};
 #endif

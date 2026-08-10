@@ -18,8 +18,10 @@ class NxTriangleMeshShapeDesc : public NxShapeDesc
 	{
 	public:
 	NxTriangleMesh*	meshData;	//!< References the triangle mesh that we want to instance.
-	NxU32			flags;		//!< Combination of NxTriangleMeshShape::NxMeshShapeFlag(s)
-
+	NxU32			meshFlags;	//!< Combination of ::NxMeshShapeFlag
+#ifdef NX_SUPPORT_MESH_SCALE
+	NxReal			scale;
+#endif
 	/**
 	constructor sets to default.
 	*/
@@ -43,12 +45,18 @@ NX_INLINE void NxTriangleMeshShapeDesc::setToDefault()
 	{
 	NxShapeDesc::setToDefault();
 	meshData	= NULL;
-	flags		= NX_MESH_SMOOTH_SPHERE_COLLISIONS;
+	meshFlags	= 0;
+#ifdef NX_SUPPORT_MESH_SCALE
+	scale		= 1.0f;
+#endif
 	}
 
 NX_INLINE bool NxTriangleMeshShapeDesc::isValid() const
 	{
 	if(!meshData)	return false;
+#ifdef NX_SUPPORT_MESH_SCALE
+	if(scale<=0.0f)	return false;
+#endif
 	return NxShapeDesc::isValid();
 	}
 

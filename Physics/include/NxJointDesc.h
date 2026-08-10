@@ -15,7 +15,8 @@
 
 enum NxJointFlag
     {
-    NX_JF_COLLISION_ENABLED = 1 << 0,	//!< raised if collision detection should be enabled between the jointed parts.
+    NX_JF_COLLISION_ENABLED	= (1<<0),	//!< Raised if collision detection should be enabled between the jointed parts.
+    NX_JF_VISUALIZATION		= (1<<1),	//!< Enable debug renderer for this joint
     };
 
 enum NxJointProjectionMode
@@ -40,9 +41,8 @@ class NxJointDesc
 	NxVec3 localAxis[2];			//!< Z axis of joint space, in actor[i]'s space. This is the primary axis of the joint.
 	NxVec3 localAnchor[2];			//!< Attachment point of joint in actor[i]'s space
 
-	NxJointMethod method;			//!< Joint method: determines how the joint is simulated. Default is JM_REDUCED. See NxJoint::requestMethod() for details.
-	NxReal maxForce;				//!< Maximum linear force that the joint can withstand before breaking, must be positive. Default: +inf. Only the method JM_LAGRANGE joints support breakability at the moment.
-	NxReal maxTorque;				//!< Maximum angular force (torque) that the joint can withstand before breaking, must be positive. Default: +inf. Only the method JM_LAGRANGE joints support breakability at the moment.
+	NxReal maxForce;				//!< Maximum linear force that the joint can withstand before breaking, must be positive. Default: +inf. 
+	NxReal maxTorque;				//!< Maximum angular force (torque) that the joint can withstand before breaking, must be positive. Default: +inf. 
 	void* userData;					//!< Will be copied to NxJoint::userData.
 	const char* name;				//!< Possible debug name.  The string is not copied by the SDK, only the pointer is stored.
 
@@ -104,12 +104,11 @@ NX_INLINE void NxJointDesc::setToDefault()
 		localAnchor[i].zero();
 		}
 
-	method		= NX_JM_REDUCED;
 	maxForce	= NX_MAX_REAL;
 	maxTorque	= NX_MAX_REAL;
 	userData	= NULL;
 	name		= NULL;
-	jointFlags	= 0;
+	jointFlags	= NX_JF_VISUALIZATION;
 	}
 
 NX_INLINE bool NxJointDesc::isValid() const

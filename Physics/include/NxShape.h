@@ -9,6 +9,7 @@
 \*----------------------------------------------------------------------------*/
 #include "Nxp.h"
 #include "NxPhysicsSDK.h"
+#include "NxAllocateable.h"
 
 class NxBounds3;
 class NxBoxShape;
@@ -33,13 +34,28 @@ enum NxShapeType
 	NX_SHAPE_FORCE_DWORD = 0x7fffffff
 	};
 
-enum NxTriggerFlag
+enum NxShapeFlag
 	{
-	NX_TRIGGER_ON_ENTER	= (1<<0),		//!< Trigger callback will be called when a shape enters the trigger volume.
-	NX_TRIGGER_ON_LEAVE	= (1<<1),		//!< Trigger callback will be called after a shape leaves the trigger volume.
-	NX_TRIGGER_ON_STAY	= (1<<2),		//!< Trigger callback will be called while a shape is intersecting the trigger volume.
-	NX_TRIGGER_ENABLE	= NX_TRIGGER_ON_ENTER|NX_TRIGGER_ON_LEAVE|NX_TRIGGER_ON_STAY
+	NX_TRIGGER_ON_ENTER				= (1<<0),	//!< Trigger callback will be called when a shape enters the trigger volume.
+	NX_TRIGGER_ON_LEAVE				= (1<<1),	//!< Trigger callback will be called after a shape leaves the trigger volume.
+	NX_TRIGGER_ON_STAY				= (1<<2),	//!< Trigger callback will be called while a shape is intersecting the trigger volume.
+	NX_TRIGGER_ENABLE				= NX_TRIGGER_ON_ENTER|NX_TRIGGER_ON_LEAVE|NX_TRIGGER_ON_STAY,
+
+	NX_SF_VISUALIZATION				= (1<<3),	//!< Enable debug renderer for this shape
+	NX_SF_DISABLE_COLLISION			= (1<<4),	//!< Disable collision detection for this shape (counterpart of NX_AF_DISABLE_COLLISION)
+												//!< IMPORTANT: this is only used for compound objects! Use NX_AF_DISABLE_COLLISION otherwise.
+	NX_SF_FEATURE_INDICES			= (1<<5),	//!< Enable feature indices in contact stream.
+	NX_SF_DISABLE_RAYCASTING		= (1<<6),	//!< Disable raycasting for this shape
+
+#if NX_USE_FLUID_API
+	NX_SF_FLUID_DRAIN				= (1<<7),	//!< Not available in the current release. Sets the shape to be a fluid drain.
+	NX_SF_FLUID_DRAIN_INVERT		= (1<<8),	//!< Not available in the current release. Invert the domain of the fluid drain.
+	NX_SF_FLUID_DISABLE_COLLISION	= (1<<9),	//!< Not available in the current release. Disable collision with fluids.
+	NX_SF_FLUID_ACTOR_REACTION		= (1<<10),	//!< Not available in the current release. Enables the reaction of the shapes actor on fluid collision.
+#endif
 	};
+
+typedef NxShapeFlag	NxTriggerFlag;		//!< For compatibility with previous SDK versions before 2.1.1
 
 /**
 Abstract base class for the various collision shapes.
@@ -51,66 +67,16 @@ Note: in order to avoid a naming conflict, downcast operators are isTYPE(), whil
 class NxShape
 	{
 	protected:
-	NX_INLINE					NxShape() : userData(NULL)
-											{}
-	virtual						~NxShape()	{}
+	NX_INLINE							NxShape() : userData(NULL), appData(NULL)
+													{}
+	virtual								~NxShape()	{}
 
 	public:
-
-
-	/**
-	Assigns a material index to the shape.  The material index should
-	have been provided by NxPhysicsSDK::addMaterial(), or a similar call.
-	If the material index is invalid, it will still be recorded, but 
-	the default material (at index 0) will effectively be used for simulation.
-	*/
-	virtual void				setMaterial(NxMaterialIndex)	= 0;
-
-	/**
-	Retrieves the material index currently assigned to the shape.
-	*/
-	virtual NxMaterialIndex		getMaterial() const				= 0;
-
-	/**
-	Sets a name string for the object that can be retrieved with getName().  This is for debugging and is not used
-	by the SDK.  The string is not copied by the SDK, only the pointer is stored.
-	*/
-	virtual	void			setName(const char*)		= 0;
-
-	/**
-	retrieves the name string set with setName().
-	*/
-	virtual	const char*		getName()			const	= 0;
-
-
-
-	/**
-	The shape may be turned into a trigger by setting one or more of the
-	above TriggerFlag-s to true. A trigger shape will not collide
-	with other shapes. Instead, if a shape enters the trigger's volume, 
-	a trigger event will be sent to the user via the NxUserTriggerReport::onTrigger method.
-	You can set a NxUserTriggerReport object with NxScene::setUserTriggerReport().
-	*/
-	virtual	void	setFlag(NxTriggerFlag flag, bool value) = 0;
-
-	/**
-	Retrieves a flag.
-	*/
-	virtual	NX_BOOL	getFlag(NxTriggerFlag flag) const = 0;
-
-
-
-	/**
-	Returns a world space AABB enclosing this shape.
-	*/
-	virtual void getWorldBounds(NxBounds3& dest) const = 0;	
-
-
 
 	/**
 	Retrieves the actor which this shape is associated with.
 	*/
-	virtual NxActor & getActor() const = 0;
+	virtual		NxActor&				getActor() const = 0;
 
 	/**
 	Sets which collision group this shape is part of. Default group is 0. Maximum possible group is 31.
@@ -118,56 +84,43 @@ class NxShape
 	to collision detect with each other, by NxPhysicsSDK::setGroupCollisionFlag()
 	NxCollisionGroup is an integer between 0 and 31.
 	*/
-	virtual void setGroup(NxCollisionGroup) = 0;
+	virtual		void					setGroup(NxCollisionGroup) = 0;
 
 	/**
 	Retrieves the value set with the above call.
 	NxCollisionGroup is an integer between 0 and 31.
 	*/
-	virtual NxCollisionGroup getGroup() = 0;
-
-
+	virtual		NxCollisionGroup		getGroup() const = 0;
 
 	/**
-	returns the type of shape.
+	Returns a world space AABB enclosing this shape.
 	*/
-	virtual NxShapeType  getType() const = 0;
+	virtual		void					getWorldBounds(NxBounds3& dest) const = 0;	
 
 	/**
-	Type casting operator. The result may be cast to the desired subclass type.
+	The shape may be turned into a trigger by setting one or more of the
+	above TriggerFlag-s to true. A trigger shape will not collide
+	with other shapes. Instead, if a shape enters the trigger's volume, 
+	a trigger event will be sent to the user via the NxUserTriggerReport::onTrigger method.
+	You can set a NxUserTriggerReport object with NxScene::setUserTriggerReport().
+
+	Since version 2.1.1 this is also used to setup generic (non-trigger) flags.
 	*/
-	virtual void* is(NxShapeType) const = 0;
+	virtual		void					setFlag(NxShapeFlag flag, bool value) = 0;
 
 	/**
-	attempts to perform an downcast to the type returned. Returns 0 if this object is not of the appropriate type.
+	Retrieves a flag.
 	*/
-	NX_INLINE NxPlaneShape*			isPlane()			{ return (NxPlaneShape*)		is(NX_SHAPE_PLANE);			}
-	/**
-	attempts to perform an downcast to the type returned. Returns 0 if this object is not of the appropriate type.
-	*/
-	NX_INLINE NxSphereShape*		isSphere()			{ return (NxSphereShape*)		is(NX_SHAPE_SPHERE);		}
-	/**
-	attempts to perform an downcast to the type returned. Returns 0 if this object is not of the appropriate type.
-	*/
-	NX_INLINE NxBoxShape*			isBox()				{ return (NxBoxShape*)			is(NX_SHAPE_BOX);			}
-	/**
-	attempts to perform an downcast to the type returned. Returns 0 if this object is not of the appropriate type.
-	*/
-	NX_INLINE NxCapsuleShape*		isCapsule()			{ return (NxCapsuleShape*)		is(NX_SHAPE_CAPSULE);		}
-	/**
-	attempts to perform an downcast to the type returned. Returns 0 if this object is not of the appropriate type.
-	*/
-	NX_INLINE NxTriangleMeshShape*	isTriangleMesh()	{ return (NxTriangleMeshShape*)	is(NX_SHAPE_MESH);			}
-
+	virtual		NX_BOOL					getFlag(NxShapeFlag flag) const = 0;
 
 	/**
 	The setLocal*() methods set the pose of the shape in actor space, i.e. relative
 	to the actor they are owned by.
 	This transformation is identity by default.
 	*/
-	virtual		void setLocalPose(const NxMat34&)				= 0;
-	virtual		void setLocalPosition(const NxVec3&)			= 0;
-	virtual		void setLocalOrientation(const NxMat33&)		= 0;
+	virtual		void					setLocalPose(const NxMat34&)			= 0;
+	virtual		void					setLocalPosition(const NxVec3&)			= 0;
+	virtual		void					setLocalOrientation(const NxMat33&)		= 0;
 
 	/**
 	The getLocal*() methods retrieve the pose of the shape in actor space, i.e. relative
@@ -175,51 +128,105 @@ class NxShape
 	This transformation is identity by default.
 	\deprecated { theGet*(x) methods are deprecated.  Use the new convention x = get*() instead. }
 	*/
-	virtual		void getLocalPose(NxMat34&) const				= 0;
-	virtual		void getLocalPosition(NxVec3&)	const			= 0;
-	virtual		void getLocalOrientation(NxMat33&)	const		= 0;
+	virtual		void					getLocalPose(NxMat34&)			const	= 0;
+	virtual		void					getLocalPosition(NxVec3&)		const	= 0;
+	virtual		void					getLocalOrientation(NxMat33&)	const	= 0;
 
 #ifndef DOXYGEN
-	virtual		NxMat34		getLocalPoseVal()			const = 0;
-	virtual		NxVec3		getLocalPositionVal()		const = 0;
-	virtual		NxMat33		getLocalOrientationVal()	const = 0;
+	virtual		NxMat34					getLocalPoseVal()				const	= 0;
+	virtual		NxVec3					getLocalPositionVal()			const	= 0;
+	virtual		NxMat33					getLocalOrientationVal()		const	= 0;
 #endif
-	NX_INLINE	NxMat34		getLocalPose()				const { return getLocalPoseVal()		;}
-	NX_INLINE	NxVec3		getLocalPosition()			const { return getLocalPositionVal()	;}
-	NX_INLINE	NxMat33		getLocalOrientation()		const { return getLocalOrientationVal();}
-
+	NX_INLINE	NxMat34					getLocalPose()					const	{ return getLocalPoseVal();			}
+	NX_INLINE	NxVec3					getLocalPosition()				const	{ return getLocalPositionVal();		}
+	NX_INLINE	NxMat33					getLocalOrientation()			const	{ return getLocalOrientationVal();	}
 
 	/**
 	The setGlobal() calls are convenience methods which transform the passed parameter
 	into the current local space of the actor and then call setLocalPose().
 	*/
-	virtual		void setGlobalPose(const NxMat34&)				= 0;
-	virtual		void setGlobalPosition(const NxVec3&)			= 0;
-	virtual		void setGlobalOrientation(const NxMat33&)		= 0;
+	virtual		void					setGlobalPose(const NxMat34&)			= 0;
+	virtual		void					setGlobalPosition(const NxVec3&)		= 0;
+	virtual		void					setGlobalOrientation(const NxMat33&)	= 0;
 
 	/**
 	The getGlobal*() methods retrieve the shape's current world space pose. This is 
 	the local pose multiplied by the actor's current global pose.
 	\deprecated { theGet*(x) methods are deprecated.  Use the new convention x = get*() instead. }
 	*/
-	virtual		void getGlobalPose(NxMat34&) const				= 0;
-	virtual		void getGlobalPosition(NxVec3&)	const			= 0;
-	virtual		void getGlobalOrientation(NxMat33&)	const		= 0;
+	virtual		void					getGlobalPose(NxMat34&)			const	= 0;
+	virtual		void					getGlobalPosition(NxVec3&)		const	= 0;
+	virtual		void					getGlobalOrientation(NxMat33&)	const	= 0;
 
 	/**
 	The get*Val() methods works just like the get*() methods, except they return the 
 	desired value instead of copying it to a destination variable.
 	*/
 #ifndef DOXYGEN
-	virtual		NxMat34		getGlobalPoseVal()			const = 0;
-	virtual		NxVec3		getGlobalPositionVal()		const = 0;
-	virtual		NxMat33		getGlobalOrientationVal()	const = 0;
+	virtual		NxMat34					getGlobalPoseVal()				const	= 0;
+	virtual		NxVec3					getGlobalPositionVal()			const	= 0;
+	virtual		NxMat33					getGlobalOrientationVal()		const	= 0;
 #endif
-	NX_INLINE	NxMat34		getGlobalPose()				{ return getGlobalPoseVal()		;}
-	NX_INLINE	NxVec3		getGlobalPosition()			{ return getGlobalPositionVal()	;}
-	NX_INLINE	NxMat33		getGlobalOrientation()		{ return getGlobalOrientationVal();}
+	NX_INLINE	NxMat34					getGlobalPose()					const	{ return getGlobalPoseVal();		}
+	NX_INLINE	NxVec3					getGlobalPosition()				const	{ return getGlobalPositionVal();	}
+	NX_INLINE	NxMat33					getGlobalOrientation()			const	{ return getGlobalOrientationVal();	}
 
+	/**
+	Assigns a material index to the shape.  The material index should
+	have been provided by NxPhysicsSDK::addMaterial(), or a similar call.
+	If the material index is invalid, it will still be recorded, but 
+	the default material (at index 0) will effectively be used for simulation.
+	*/
+	virtual		void					setMaterial(NxMaterialIndex)	= 0;
 
-	void*				userData;	//!< user can assign this to whatever, usually to create a 1:1 relationship with a user object.
+	/**
+	Retrieves the material index currently assigned to the shape.
+	*/
+	virtual		NxMaterialIndex			getMaterial() const				= 0;
+
+	/**
+	returns the type of shape.
+	*/
+	virtual		NxShapeType				getType() const = 0;
+
+	/**
+	Type casting operator. The result may be cast to the desired subclass type.
+	*/
+	virtual		void*					is(NxShapeType) const = 0;
+
+	/**
+	attempts to perform an downcast to the type returned. Returns 0 if this object is not of the appropriate type.
+	*/
+	NX_INLINE	NxPlaneShape*			isPlane()			{ return (NxPlaneShape*)		is(NX_SHAPE_PLANE);		}
+	/**
+	attempts to perform an downcast to the type returned. Returns 0 if this object is not of the appropriate type.
+	*/
+	NX_INLINE	NxSphereShape*			isSphere()			{ return (NxSphereShape*)		is(NX_SHAPE_SPHERE);	}
+	/**
+	attempts to perform an downcast to the type returned. Returns 0 if this object is not of the appropriate type.
+	*/
+	NX_INLINE	NxBoxShape*				isBox()				{ return (NxBoxShape*)			is(NX_SHAPE_BOX);		}
+	/**
+	attempts to perform an downcast to the type returned. Returns 0 if this object is not of the appropriate type.
+	*/
+	NX_INLINE	NxCapsuleShape*			isCapsule()			{ return (NxCapsuleShape*)		is(NX_SHAPE_CAPSULE);	}
+	/**
+	attempts to perform an downcast to the type returned. Returns 0 if this object is not of the appropriate type.
+	*/
+	NX_INLINE	NxTriangleMeshShape*	isTriangleMesh()	{ return (NxTriangleMeshShape*)	is(NX_SHAPE_MESH);		}
+
+	/**
+	Sets a name string for the object that can be retrieved with getName().  This is for debugging and is not used
+	by the SDK.  The string is not copied by the SDK, only the pointer is stored.
+	*/
+	virtual		void					setName(const char*)		= 0;
+
+	/**
+	retrieves the name string set with setName().
+	*/
+	virtual		const char*				getName()			const	= 0;
+
+				void*					userData;	//!< user can assign this to whatever, usually to create a 1:1 relationship with a user object.
+				void*					appData;
 	};
 #endif

@@ -30,6 +30,24 @@ class NxSpringAndDamperEffectorDesc
 	*/
 	NX_INLINE bool isValid() const;
 
+	NxActor* body1;
+	NxActor* body2;
+
+	NxVec3 pos1;
+	NxVec3 pos2;
+
+	//linear spring parameters:
+	NxReal springDistCompressSaturate;
+	NxReal springDistRelaxed;
+	NxReal springDistStretchSaturate;
+	NxReal springMaxCompressForce;
+	NxReal springMaxStretchForce;
+
+	//linear damper parameters:
+	NxReal damperVelCompressSaturate;
+	NxReal damperVelStretchSaturate;
+	NxReal damperMaxCompressForce;
+	NxReal damperMaxStretchForce;
 	};
 
 NX_INLINE NxSpringAndDamperEffectorDesc::NxSpringAndDamperEffectorDesc()	//constructor sets to default
@@ -39,6 +57,22 @@ NX_INLINE NxSpringAndDamperEffectorDesc::NxSpringAndDamperEffectorDesc()	//const
 
 NX_INLINE void NxSpringAndDamperEffectorDesc::setToDefault()
 	{
+	body1 = NULL;
+    body2 = NULL;
+
+	pos1.zero();
+	pos2.zero();
+
+	springDistCompressSaturate = 0;
+	springDistRelaxed = 0;
+	springDistStretchSaturate = 0;
+	springMaxCompressForce = 0;
+	springMaxStretchForce = 0;
+
+	damperVelCompressSaturate = 0;
+    damperVelStretchSaturate = 0;
+	damperMaxCompressForce = 0;
+	damperMaxStretchForce = 0;
 	}
 
 NX_INLINE bool NxSpringAndDamperEffectorDesc::isValid() const

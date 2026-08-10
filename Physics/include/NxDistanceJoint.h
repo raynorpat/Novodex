@@ -1,5 +1,5 @@
-#ifndef NX_PHYSICS_NXPOINTINPLANEJOINT
-#define NX_PHYSICS_NXPOINTINPLANEJOINT
+#ifndef NX_PHYSICS_NXDISTANCEJOINT
+#define NX_PHYSICS_NXDISTANCEJOINT
 /*----------------------------------------------------------------------------*\
 |
 |						Public Interface to NovodeX Technology
@@ -11,28 +11,24 @@
 #include "Nxp.h"
 #include "NxJoint.h"
 
-class NxPointInPlaneJointDesc;
+class NxDistanceJointDesc;
 
 /**
- A point in plane joint constrains a point on one body to only move inside
- a plane attached to another body.
-
- The starting point of the point is defined as the anchor point. The plane
- through this point is specified by its normal which is the joint axis vector.
+ A distance joint maintains a certain distance between two points on two actors.
 */
-class NxPointInPlaneJoint : public NxJoint
+class NxDistanceJoint : public NxJoint
 	{
 	public:
 	/**
 	use this for changing a significant number of joint parameters at once.
 	Use the set() methods for changing only a single property at once.
 	*/
-	virtual void loadFromDesc(const NxPointInPlaneJointDesc&) = 0;
+	virtual void loadFromDesc(const NxDistanceJointDesc&) = 0;
 
 	/**
 	writes all of the object's attributes to the desc struct  
 	*/
-	virtual void saveToDesc(NxPointInPlaneJointDesc&) = 0;
+	virtual void saveToDesc(NxDistanceJointDesc&) = 0;
 
 	/**
 	\deprecated { casts to a superclass are now implicit }

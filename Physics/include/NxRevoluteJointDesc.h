@@ -36,6 +36,10 @@ class NxRevoluteJointDesc : public NxJointDesc
 	Should be nonnegative.  However, it may be a bad idea to always project to a very small or zero distance because the solver *needs* some error in order to produce correct motion.
 */
 	NxReal projectionDistance;	
+/**
+	same deal as projectionDistance, except this is an angle (in radians) to which angular drift is projected.
+*/
+	NxReal projectionAngle;
 
 	NxU32 flags;							//!< This is a combination of the bits defined by ::NxRevoluteJointFlag . 
 	NxJointProjectionMode projectionMode;	//!< use this to enable joint projection
@@ -64,6 +68,7 @@ NX_INLINE void NxRevoluteJointDesc::setToDefault(bool fromCtor)
 	{
 	NxJointDesc::setToDefault();
 	projectionDistance = 1.0f;
+	projectionAngle = 0.0872f;	//about 5 degrees in radians.
 
 	if (!fromCtor)
 		{
@@ -79,6 +84,8 @@ NX_INLINE void NxRevoluteJointDesc::setToDefault(bool fromCtor)
 NX_INLINE bool NxRevoluteJointDesc::isValid() const
 	{
 	if (projectionDistance < 0.0f) return false;
+	if (projectionAngle < 0.02f) return false;	//if its smaller then current algo gets too close to a singularity.
+	
 
 	if (!limit.isValid()) return false;
 	if (!motor.isValid()) return false;

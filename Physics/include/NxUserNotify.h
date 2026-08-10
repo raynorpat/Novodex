@@ -17,8 +17,11 @@ class NxUserNotify
 	{
 	public:
 	/**
-	This is called when a breakable joint breaks.
+	This is called when a breakable joint breaks.  The user should not release
+	the joint inside this call!  Instead, if the user would like to have the joint
+	released and no longer holds any referenced to it, he should return true.  
+	In this case the joint will be released by the system.  Otherwise the user should return false.
 	*/
-	virtual void onJointBreak(NxReal breakingForce, NxJoint & brokenJoint) = 0;
+	virtual bool onJointBreak(NxReal breakingForce, NxJoint & brokenJoint) = 0;
 	};
 #endif

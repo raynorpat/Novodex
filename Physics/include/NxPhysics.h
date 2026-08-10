@@ -40,6 +40,14 @@ Alternatively, one can instead directly #include a subset of the below files.
 #include "NxSpringAndDamperEffector.h"
 #include "NxSpringAndDamperEffectorDesc.h"
 
+#if NX_USE_FLUID_API
+#include "fluids/NxFluid.h"
+#include "fluids/NxFluidDesc.h"
+#include "fluids/NxFluidEmitter.h"
+#include "fluids/NxFluidEmitterDesc.h"
+#endif
+
+
 /////////////joints:
 
 #include "NxJoint.h"
@@ -67,6 +75,18 @@ Alternatively, one can instead directly #include a subset of the below files.
 #include "NxSphericalJoint.h"
 #include "NxSphericalJointDesc.h"
 
+#include "NxFixedJoint.h"
+#include "NxFixedJointDesc.h"
+
+#include "NxDistanceJoint.h"
+#include "NxDistanceJointDesc.h"
+
+#include "NxPulleyJoint.h"
+#include "NxPulleyJointDesc.h"
+
+#include "NxD6Joint.h"
+#include "NxD6JointDesc.h"
+
 //////////////shapes:
 
 #include "NxShape.h"
@@ -93,7 +113,6 @@ Alternatively, one can instead directly #include a subset of the below files.
 
 //////////////utils:
 
-#include "NxDistanceTriangleTriangle.h"
 #include "NxInertiaTensor.h"
 #include "NxIntersectionBoxBox.h"
 #include "NxIntersectionPointTriangle.h"

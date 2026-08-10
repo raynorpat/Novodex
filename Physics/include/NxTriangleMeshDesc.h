@@ -47,8 +47,8 @@ class NxTriangleMeshDesc : public NxSimpleTriangleMesh
 	However, height fields must be 'flat' in the sense that the projections of all triangles onto the
 	height field plane must be disjoint. (If the height field vertical axis is Y, the height field plane is spanned by X and Z.)
 
-	To create a height field, set heightFieldVerticalAxis to NxTriangleMesh::X, NxTriangleMesh::Y or NxTriangleMesh::Z, 
-	or leave it set to NxTriangleMesh::NOT_HEIGHTFIELD for an arbitrary mesh.
+	To create a height field, set heightFieldVerticalAxis to NX_X, NX_Y or NX_Z, 
+	or leave it set to NX_NOT_HEIGHTFIELD for an arbitrary mesh.
 	*/
 	NxHeightFieldAxis		heightFieldVerticalAxis;
 
@@ -78,6 +78,12 @@ class NxTriangleMeshDesc : public NxSimpleTriangleMesh
 	NxPMap*					pmap;
 
 	/**
+	The SDK computes convex edges of a mesh and use them for collision detection. This parameter allows you to
+	setup a tolerance for the convex edge detector.
+	*/
+	NxReal					convexEdgeThreshold;
+
+	/**
 	constructor sets to default.
 	*/
 	NX_INLINE NxTriangleMeshDesc();	
@@ -103,6 +109,7 @@ NX_INLINE void NxTriangleMeshDesc::setToDefault()
 	materialIndices				= 0;
 	heightFieldVerticalAxis		= NX_NOT_HEIGHTFIELD;
 	heightFieldVerticalExtent	= 0;
+	convexEdgeThreshold			= 0.001f;
 	pmap						= NULL;
 	}
 

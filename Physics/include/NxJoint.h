@@ -16,6 +16,9 @@ class NxPointOnLineJoint;
 class NxPrismaticJoint;
 class NxCylindricalJoint;
 class NxSphericalJoint;
+class NxFixedJoint;
+class NxDistanceJoint;
+class NxPulleyJoint;
 
 enum NxJointType
 	{
@@ -25,15 +28,13 @@ enum NxJointType
 	NX_JOINT_SPHERICAL,			//!< Also known as a ball or ball and socket joint.
 	NX_JOINT_POINT_ON_LINE,		//!< A point on one actor is constrained to stay on a line on another.
 	NX_JOINT_POINT_IN_PLANE,	//!< A point on one actor is constrained to stay on a plane on another.
+	NX_JOINT_DISTANCE,			//!< A point on one actor maintains a certain distance range to another point on another actor.
+	NX_JOINT_PULLEY,			//!< A pulley joint.
+	NX_JOINT_FIXED,				//!< A "fixed" connection.
+	NX_JOINT_D6,				//!< A 6 degree of freedom joint
 
 	NX_JOINT_COUNT,				//!< Just to track the number of available enum values. Not a joint type.
 	NX_JOINT_FORCE_DWORD = 0x7fffffff
-	};
-
-enum NxJointMethod
-	{
-	NX_JM_LAGRANGE,
-	NX_JM_REDUCED
 	};
 
 enum NxJointState
@@ -54,7 +55,7 @@ enum NxJointState
 class NxJoint
 	{
 	protected:
-	NX_INLINE					NxJoint() : userData(NULL)
+	NX_INLINE					NxJoint() : userData(NULL), appData(NULL)
 											{}
 	virtual						~NxJoint()	{}
 
@@ -97,33 +98,6 @@ class NxJoint
 	NX_INLINE	NxVec3	getGlobalAxis()		const {return getGlobalAxisVal();}
 
 	/**
-	Requests a type of simulation method for this joint. It can be either
-	JM_LAGRANGE or JM_REDUCED.
-	The request may not always be satisfied. 
-	The JM_LAGRANGE method is faster but less accurate. It supports breakable 
-	joints, cyclic configurations, but not (yet) damping.
-
-	The JM_REDUCED method is slower (but still linear time); 
-	JM_REDUCED does not yet support breakable joints or cyclic configurations.
-
-	Some joint types are supported only in one or the other configuration.
-
-	By default, joints try to be created in JM_REDUCED mode.
-	To query the current mode, retrieve the joint flags with getFlags() and 
-	inspect the bits for 
-	*/
-	virtual void requestMethod(NxJointMethod) = 0;
-
-	/**
-	Retrieves the current simulation method. As long as the state of the joint
-	is JS_UNBOUND, the return value is only the last method request. The actual
-	sim method is only determined when the joint is bound the first time the 
-	simulation is advanced after creating or changing the joint, and the state becomes
-	JS_SIMULATING.
-	*/
-	virtual NxJointMethod getMethod() = 0;
-
-	/**
 	Returns the state of the joint.
 	Joints are created in the JS_UNBOUND state. Making certain changes to the simulation or the joint 
 	can also make joints become unbound.
@@ -145,9 +119,6 @@ class NxJoint
 
 	Both force values are NX_MAX_REAL by default. This setting makes the joint unbreakable. 
 	The values should always be nonnegative.
-	
-	Only JM_LAGRANGE joints support breakability at the moment. You can force
-	JM_LAGRANGE mode using requestMethod().
 	*/
 	virtual void setBreakable(NxReal maxForce, NxReal maxTorque) = 0;
 
@@ -238,32 +209,47 @@ class NxJoint
 	/**
 	attempts to perform an downcast to the type returned. Returns 0 if this object is not of the appropriate type.
 	*/
-	virtual NxRevoluteJoint* isRevoluteJoint() = 0;
+	virtual NxRevoluteJoint* isRevoluteJoint() { return (NxRevoluteJoint*)is(NX_JOINT_REVOLUTE);}
 
 	/**
 	attempts to perform an downcast to the type returned. Returns 0 if this object is not of the appropriate type.
 	*/
-	virtual NxPointInPlaneJoint* isPointInPlaneJoint() = 0;
+	virtual NxPointInPlaneJoint* isPointInPlaneJoint() { return (NxPointInPlaneJoint*)is(NX_JOINT_POINT_IN_PLANE);}
 
 	/**
 	attempts to perform an downcast to the type returned. Returns 0 if this object is not of the appropriate type.
 	*/
-	virtual NxPointOnLineJoint* isPointOnLineJoint() = 0;
+	virtual NxPointOnLineJoint* isPointOnLineJoint() { return (NxPointOnLineJoint*)is(NX_JOINT_POINT_ON_LINE);}
 
 	/**
 	attempts to perform an downcast to the type returned. Returns 0 if this object is not of the appropriate type.
 	*/
-	virtual NxPrismaticJoint* isPrismaticJoint() = 0;
+	virtual NxPrismaticJoint* isPrismaticJoint() { return (NxPrismaticJoint*)is(NX_JOINT_PRISMATIC);}
 
 	/**
 	attempts to perform an downcast to the type returned. Returns 0 if this object is not of the appropriate type.
 	*/
-	virtual NxCylindricalJoint* isCylindricalJoint() = 0;
+	virtual NxCylindricalJoint* isCylindricalJoint() { return (NxCylindricalJoint*)is(NX_JOINT_CYLINDRICAL);}
 
 	/**
 	attempts to perform an downcast to the type returned. Returns 0 if this object is not of the appropriate type.
 	*/
-	virtual NxSphericalJoint* isSphericalJoint() = 0;
+	virtual NxSphericalJoint* isSphericalJoint() { return (NxSphericalJoint*)is(NX_JOINT_SPHERICAL);}
+
+	/**
+	attempts to perform an downcast to the type returned. Returns 0 if this object is not of the appropriate type.
+	*/
+	virtual NxFixedJoint* isFixedJoint() { return (NxFixedJoint*)is(NX_JOINT_FIXED);}
+
+	/**
+	attempts to perform an downcast to the type returned. Returns 0 if this object is not of the appropriate type.
+	*/
+	virtual NxDistanceJoint* isDistanceJoint() { return (NxDistanceJoint*)is(NX_JOINT_DISTANCE);}
+
+	/**
+	attempts to perform an downcast to the type returned. Returns 0 if this object is not of the appropriate type.
+	*/
+	virtual NxPulleyJoint* isPulleyJoint() { return (NxPulleyJoint*)is(NX_JOINT_PULLEY);}
 
 	/**
 	Sets a name string for the object that can be retrieved with getName().  This is for debugging and is not used
@@ -277,5 +263,6 @@ class NxJoint
 	virtual	const char*		getName()			const	= 0;
 
 	void*			userData;	//!< user can assign this to whatever, usually to create a 1:1 relationship with a user object.
+	void*			appData;	
 	};
 #endif

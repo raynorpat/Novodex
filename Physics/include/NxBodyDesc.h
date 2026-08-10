@@ -10,19 +10,19 @@
 
 	enum NxBodyFlag
 		{
-		NX_BF_DISABLE_GRAVITY	= 1 << 0,	//!< set if gravity should not be applied on this body
+		NX_BF_DISABLE_GRAVITY	= (1<<0),	//!< set if gravity should not be applied on this body
 		
 		/**	
 		Enable/disable freezing for this body/actor. A frozen actor becomes temporarily static.
 		Note: this is an experimental feature which doesn't always work on actors which have joints 
 		connected to them.
 		*/
-		NX_BF_FROZEN_POS_X		= 1 << 1,
-		NX_BF_FROZEN_POS_Y		= 1 << 2,
-		NX_BF_FROZEN_POS_Z		= 1 << 3,
-		NX_BF_FROZEN_ROT_X		= 1 << 4,
-		NX_BF_FROZEN_ROT_Y		= 1 << 5,
-		NX_BF_FROZEN_ROT_Z		= 1 << 6,
+		NX_BF_FROZEN_POS_X		= (1<<1),
+		NX_BF_FROZEN_POS_Y		= (1<<2),
+		NX_BF_FROZEN_POS_Z		= (1<<3),
+		NX_BF_FROZEN_ROT_X		= (1<<4),
+		NX_BF_FROZEN_ROT_Y		= (1<<5),
+		NX_BF_FROZEN_ROT_Z		= (1<<6),
 		NX_BF_FROZEN_POS		= NX_BF_FROZEN_POS_X|NX_BF_FROZEN_POS_Y|NX_BF_FROZEN_POS_Z,
 		NX_BF_FROZEN_ROT		= NX_BF_FROZEN_ROT_X|NX_BF_FROZEN_ROT_Y|NX_BF_FROZEN_ROT_Z,
 		NX_BF_FROZEN			= NX_BF_FROZEN_POS|NX_BF_FROZEN_ROT,
@@ -44,7 +44,8 @@
 		You can not connect Reduced joints to kinematic actors.  Lagrange joints work ok if the platform
 		is moving with a relatively low, uniform velocity.
 		*/
-		NX_BF_KINEMATIC		= 1 << 7,	
+		NX_BF_KINEMATIC			= (1<<7),
+		NX_BF_VISUALIZATION		= (1<<8),		//!< Enable debug renderer for this body
 		};
 
 /**
@@ -58,17 +59,16 @@ class NxBodyDesc
 	NxReal		mass;				  //!< Mass of body
 	NxVec3		linearVelocity;		  //!< Initial linear velocity
 	NxVec3		angularVelocity;	  //!< Initial angular velocity
-	NxVec3		initialForce;		  //!< Initial force
-	NxVec3		initialTorque;		  //!< Initial torque
 	NxReal		wakeUpCounter;		  //!< Initial wake-up counter
 	NxReal		linearDamping;		  //!< Linear damping
 	NxReal		angularDamping;		  //!< Angular damping
 	NxReal		maxAngularVelocity;	  //!< Max. allowed angular velocity (negative values to use default)
 	NxU32		flags;				  //!< Combination of body flags
 
-    NxReal      sleepLinearVelocity;  //!< maximum linear velocity at which body can go to sleep. If negative, the global default will be used.
-    NxReal      sleepAngularVelocity; //!< maximum angular velocity at which body can go to sleep.  If negative, the global default will be used.
+	NxReal		sleepLinearVelocity;  //!< maximum linear velocity at which body can go to sleep. If negative, the global default will be used.
+	NxReal		sleepAngularVelocity; //!< maximum angular velocity at which body can go to sleep.  If negative, the global default will be used.
 
+	NxU32		solverIterationCount; //!< solver accuracy setting when dealing with this body.
 	/**
 	constructor sets to default, mass == 0 (an immediate call to isValid() 
 	will return false). 
@@ -92,20 +92,20 @@ NX_INLINE NxBodyDesc::NxBodyDesc()	//constructor sets to default
 
 NX_INLINE void NxBodyDesc::setToDefault()
 	{
-	massLocalPose		.id();
-	massSpaceInertia	.zero();
-	linearVelocity		.setNotUsed();
-	angularVelocity		.setNotUsed();
-	initialForce		.setNotUsed();
-	initialTorque		.setNotUsed();
-	wakeUpCounter		= 20.0f*0.02f;
-	mass				= 0.0f;
-	linearDamping		= 0.0f;
-	angularDamping		= 0.05f;
-	maxAngularVelocity	= -1.0f;
-	flags				= 0;
-    sleepLinearVelocity = -1.0;
-    sleepAngularVelocity = -1.0;
+	massLocalPose			.id();
+	massSpaceInertia		.zero();
+	linearVelocity			.zero();	//setNotUsed();	//when doing a loadFromDesc, the user expects to set the complete state, so this is not OK.
+	angularVelocity			.zero();	//setNotUsed();
+	wakeUpCounter			= 20.0f*0.02f;
+	mass					= 0.0f;
+	linearDamping			= 0.0f;
+	angularDamping			= 0.05f;
+	maxAngularVelocity		= -1.0f;
+	flags					= NX_BF_VISUALIZATION;
+	sleepLinearVelocity		= -1.0;
+	sleepAngularVelocity	= -1.0;
+
+	solverIterationCount    = 4;
 	}
 
 NX_INLINE bool NxBodyDesc::isValid() const
@@ -114,7 +114,6 @@ NX_INLINE bool NxBodyDesc::isValid() const
 		return false;
 	if(!massLocalPose.isFinite())
 		return false;
-
 	return true;
 	}
 
