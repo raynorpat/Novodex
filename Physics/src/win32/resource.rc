@@ -50,7 +50,7 @@ BEGIN
             VALUE "FileDescription", "NovodeX Physics SDK\0"
             VALUE "FileVersion", NX_SDK_FULL_VERSION_STRING "\0"
             VALUE "InternalName", "NxPhysics\0"
-            VALUE "LegalCopyright", "Copyright ï¿½ 2004 NovodeX AG\0"
+            VALUE "LegalCopyright", "Copyright © 2004 NovodeX AG\0"
             VALUE "LegalTrademarks", "\0"
             VALUE "OriginalFilename", "\0"
             VALUE "PrivateBuild", "\0"
