@@ -29,6 +29,14 @@ constructed at +8 and the SDK pointer is stored at +4.
 Only the lifecycle slots are reconstructed in this component. The rest forward to
 SDK-side methods this component does not own; each one names the oracle rows it
 stands in for, and none of them is reached by the SDK lifecycle differential.
+
+Two of those placeholders return a value the oracle would not, so nothing should
+read them as recovered behaviour:
+  - getGroupCollisionFlag returns false. The oracle returns true for every pair,
+    because the constructor reconstructed here sets all 32 collision group masks
+    to 0xffffffff. The placeholder is the exact inverse of recovered state.
+  - addMaterial returns 0, which is a valid NxMaterialIndex -- the default
+    material's -- and not an error value.
 */
 class NpPhysicsSDK : public NxPhysicsSDK, public NxAllocateable
 	{

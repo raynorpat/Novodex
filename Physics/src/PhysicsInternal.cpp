@@ -46,7 +46,7 @@ ReadWriteLock::~ReadWriteLock()
 	NX_FREE(mData);
 	}
 
-// 0x0000e9a5 (in the SDK constructor) pushes 0x124 as the allocation size, and
+// 0x0000e733 (in the SDK constructor) pushes 0x124 as the allocation size, and
 // phys_fn_002338 writes words 1..0x48 of the block.
 static_assert(sizeof(ShapePairFunctionTable) == 0x124, "ShapePairFunctionTable is 292 bytes in the oracle");
 static_assert(offsetof(ShapePairFunctionTable, mFunction) == 4, "the table follows the vtable pointer");

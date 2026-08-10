@@ -32,8 +32,11 @@ static NxReal gParameter[NX_PARAMS_NUM_VALUES];
 // are phys_fn_000452 and phys_fn_000431, which this component does not own.
 static NxU32 gGroupCollisionMask[32];
 
-// .data 0x001220a0. Zero in the image and filled by the constructor, which is
-// why it is assigned rather than constructed here.
+// .data 0x001220a0. Statically initialised in the oracle's image -- the 72 bytes
+// there are setToDefault()'s result, 1.0f at +0x1c and +0x28 and zero elsewhere,
+// with no dynamic initialiser anywhere in the binary. MSVC folds this
+// declaration to the same static image, so the reconstruction matches. The
+// constructor re-runs setToDefault() on it because the oracle's does.
 static NxMaterial gDefaultMaterial;
 
 // .data 0x001220e8, 0x00123c08, 0x00123c14 and 0x00123c18.
@@ -190,7 +193,7 @@ bool PhysicsSDK::setParameter(NxParameter paramEnum, NxReal paramValue)
 	{
 	if(paramEnum >= NX_PARAMS_NUM_VALUES)
 		{
-		NxFoundation::FoundationSDK::error(NXE_INVALID_PARAMETER, NX_PHYSICS_SDK_CPP, gSetParameterEnumErrorLine,
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_PARAMETER, NX_PHYSICS_SDK_CPP, gSetParameterEnumErrorLine,
 			0, "setParameter: parameter value out of range.");
 		return false;
 		}
@@ -204,7 +207,7 @@ bool PhysicsSDK::setParameter(NxParameter paramEnum, NxReal paramValue)
 		return true;
 		}
 
-	NxFoundation::FoundationSDK::error(NXE_INVALID_PARAMETER, NX_PHYSICS_SDK_CPP, gSetParameterRangeErrorLine,
+	NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_PARAMETER, NX_PHYSICS_SDK_CPP, gSetParameterRangeErrorLine,
 		0, "setParameter: parameter value out of range.");
 	return false;
 	}
@@ -213,7 +216,7 @@ NxReal PhysicsSDK::getParameter(NxParameter paramEnum) const
 	{
 	if(paramEnum >= NX_PARAMS_NUM_VALUES)
 		{
-		NxFoundation::FoundationSDK::error(NXE_INVALID_PARAMETER, NX_PHYSICS_SDK_CPP, gGetParameterEnumErrorLine,
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_PARAMETER, NX_PHYSICS_SDK_CPP, gGetParameterEnumErrorLine,
 			0, "getParameter: param is not an enum.");
 		return 0.0f;
 		}
