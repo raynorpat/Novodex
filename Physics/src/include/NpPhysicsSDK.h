@@ -46,14 +46,17 @@ class NpPhysicsSDK : public NxPhysicsSDK, public NxAllocateable
 
 	// Reconstructed: phys_fn_000228, 000230, 000232, 000238 and 000261, plus the
 	// slots below that have to stay in declaration order: phys_fn_000248,
-	// 000250, 000252, 000254, 000260, 000273 and 000275.
+	// 000250, 000252, 000254, 000258, 000260, 000263, 000273, 000275 and 000277.
+	// gates/phase2-closure.json is the authority on which of these are proved
+	// and how; this list only says which have bodies.
 	void release();
 	bool setParameter(NxParameter paramEnum, NxReal paramValue);
 	NxReal getParameter(NxParameter paramEnum) const;
 	NxU32 getNbScenes() const;
 	NxU32 getNbMaterials();
 
-	// Blocked on a later phase; each definition names what blocks it.
+	// Placeholders. Each definition names what blocks it, and every one of them
+	// is deferred in gates/phase2-closure.json rather than counted as closed.
 	NxScene* createScene(const NxSceneDesc& desc);
 	void releaseScene(NxScene& scene);
 	NxScene* getScene(NxU32 index);

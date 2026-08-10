@@ -196,8 +196,8 @@ void* nxGetSdkPointerBinding(void* key)
 
 // phys_fn_000480 (0x0000edc0). A null key is the only rejection. A null value
 // removes the binding, and removing the last one destroys the table outright
-// rather than leaving an empty one -- 0x0000ef1c tests the byte count against 8
-// and 0x0000ef26 clears the pointer.
+// rather than leaving an empty one -- 0x0000ee98 tests the remaining byte count
+// and 0x0000eeac clears the pointer.
 //
 // The table is created only when a value is being stored, and the creation is
 // NOT checked: if the allocation fails the oracle carries straight on into the

@@ -171,9 +171,10 @@ PhysicsSDK::~PhysicsSDK()
 
 	// Not reconstructed here, in the oracle's order and all inert for the whole
 	// of this component's differential because the SDK owns no scene, no mesh
-	// and no pruning cache at this point:
-	//   - the array at .data 0x00123c0c, which phys_fn_000454 and phys_fn_000480
-	//     populate and this destructor deletes;
+	// and no pruning cache at this point. The pointer binding table the oracle
+	// releases first is reconstructed, in PhysicsInternal.cpp, but it is empty
+	// here and its teardown is not:
+	//   - the release of the table at .data 0x00123c0c;
 	//   - the scene release loop over mScenes (phys_fn_001275), Phase 3;
 	//   - the mesh release loop over mTriangleMeshes (phys_fn_002253), Phase 4;
 	//   - the three cache teardowns phys_fn_004834, phys_fn_004828 and
@@ -369,7 +370,7 @@ void PhysicsSDK::purgeMaterials()
 	mMaterials.resize(1);
 	}
 
-// phys_fn_000446 (0x0000dee0). Two bytes of body: mov al, 1. It reads neither
+// phys_fn_000446 (0x0000dee0). Five bytes: mov al, 1 / ret 4. It reads neither
 // this object nor its argument -- the inspector is accepted and dropped, and
 // nothing in the image reads it back.
 bool PhysicsSDK::setPerformanceInspector(NxPerformanceInspector*)

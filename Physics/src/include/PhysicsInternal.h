@@ -146,7 +146,11 @@ class SdkDefaultAllocator : public SdkAllocator
 	};
 
 // phys_fn_004805 (0x000b4020): stores the adapter in a file scope pointer and
-// returns true.
+// returns true. The census places this row in Phase 6, not Phase 2 -- it is
+// written here because NxCreatePhysicsSDK calls it and phys_fn_004803 reads what
+// it stores, and Phase 6 owns the row. Its parameter widened from
+// SdkAllocatorBridge* to SdkAllocator* when the built-in default gained the same
+// interface; the oracle stores a bare pointer either way.
 bool nxSetSdkAllocatorBridge(SdkAllocator* allocator);
 
 // phys_fn_004803 (0x000b4000): hands back the registered allocator, installing

@@ -158,20 +158,43 @@ static DWORD WINAPI contend(LPVOID parameter)
 // timeout is a distinct third answer rather than a hang.
 enum ContenderOutcome { CONTENDER_REFUSED, CONTENDER_TOOK, CONTENDER_BLOCKED };
 
+static const char* outcomeName(ContenderOutcome outcome)
+	{
+	return outcome == CONTENDER_TOOK ? "took"
+		: outcome == CONTENDER_REFUSED ? "refused" : "blocked";
+	}
+
 static ContenderOutcome tryLockOnAnotherThread(ReadWriteLock& lock)
 	{
-	ContenderArgs args;
+	// The contender writes its answer into these after the wait may have given
+	// up on it, so they outlive this frame, and a thread still running is not
+	// closed out from under itself. On a timeout both are deliberately leaked:
+	// the process is about to fail anyway, and reclaiming them would mean
+	// waiting for a thread that is by definition not going to finish.
+	static ContenderArgs args;
 	args.lock = &lock;
 	args.tryLockResult = false;
+
 	HANDLE thread = CreateThread(0, 0, contend, &args, 0, 0);
-	DWORD waited = WaitForSingleObject(thread, 5000);
-	if(waited != WAIT_OBJECT_0)
-		{
-		CloseHandle(thread);
+	if(!thread)
 		return CONTENDER_BLOCKED;
-		}
+	if(WaitForSingleObject(thread, 5000) != WAIT_OBJECT_0)
+		return CONTENDER_BLOCKED;
+
 	CloseHandle(thread);
 	return args.tryLockResult ? CONTENDER_TOOK : CONTENDER_REFUSED;
+	}
+
+// Named rather than folded into a bool, so "blocked" reads as itself in the
+// transcript instead of as "refused".
+static bool checkOutcome(ContenderOutcome actual, ContenderOutcome expected, const char* what)
+	{
+	++gChecks;
+	if(actual == expected)
+		return true;
+	printf("check_failed %s: contender %s, expected %s\n",
+		what, outcomeName(actual), outcomeName(expected));
+	return false;
 	}
 
 static int testLock()
@@ -186,7 +209,7 @@ static int testLock()
 	// the owning thread may take it again; 0x0005b75c is the only false return.
 	if(!check(lock.tryLock(), "tryLock is reentrant on the owning thread"))
 		return fail("tryLock reentrancy");
-	if(!check(tryLockOnAnotherThread(lock) == CONTENDER_REFUSED,
+	if(!checkOutcome(tryLockOnAnotherThread(lock), CONTENDER_REFUSED,
 			"tryLock is refused for another thread while the flag is claimed"))
 		return fail("tryLock cross-thread");
 
@@ -199,7 +222,7 @@ static int testLock()
 		return fail("unlock return");
 	if(!check(lock.unlock(), "the second unlock returns true"))
 		return fail("second unlock return");
-	if(!check(tryLockOnAnotherThread(lock) == CONTENDER_TOOK,
+	if(!checkOutcome(tryLockOnAnotherThread(lock), CONTENDER_TOOK,
 			"another thread can take it once it is fully released"))
 		return fail("release did not publish");
 
@@ -208,12 +231,12 @@ static int testLock()
 		return fail("lock return");
 	if(!check(lock.lock(), "lock is reentrant on the owning thread"))
 		return fail("lock reentrancy");
-	if(!check(tryLockOnAnotherThread(lock) == CONTENDER_REFUSED,
+	if(!checkOutcome(tryLockOnAnotherThread(lock), CONTENDER_REFUSED,
 			"lock claims the flag against other threads too"))
 		return fail("lock cross-thread");
 	if(!check(lock.unlock() && lock.unlock(), "both unlocks report success"))
 		return fail("lock unlock pair");
-	if(!check(tryLockOnAnotherThread(lock) == CONTENDER_TOOK, "lock releases fully"))
+	if(!checkOutcome(tryLockOnAnotherThread(lock), CONTENDER_TOOK, "lock releases fully"))
 		return fail("lock release");
 	return 0;
 	}
