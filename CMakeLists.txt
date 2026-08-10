@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 11)
 
 #### FOUNDATION ####
 
-file(GLOB FOUNDATION_HEADERS Foundation/include/*.h Foundation/src/include/*.h)
+file(GLOB_RECURSE FOUNDATION_HEADERS Foundation/include/*.h Foundation/src/include/*.h)
 source_group("Header Files" FILES ${FOUNDATION_HEADERS})
 
 file(GLOB FOUNDATION_SOURCES Foundation/src/*.cpp)
@@ -49,7 +49,7 @@ endif()
 
 #### PHYSICS ####
 
-file(GLOB PHYSICS_HEADERS Physics/include/*.h)
+file(GLOB_RECURSE PHYSICS_HEADERS Physics/include/*.h)
 source_group("Header Files" FILES ${PHYSICS_HEADERS})
 
 file(GLOB PHYSICS_SOURCES Physics/src/*.cpp)
