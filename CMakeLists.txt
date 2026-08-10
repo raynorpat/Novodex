@@ -68,3 +68,11 @@ target_include_directories(NxPhysics PRIVATE
 	Foundation/include
 	Physics/include
 )
+
+if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
+	add_executable(NxPhysicsExportTests tests/PhysicsExportTests.cpp)
+	target_link_libraries(NxPhysicsExportTests bcrypt)
+	add_executable(NxPhysicsSDKTests tests/PhysicsSDKTests.cpp)
+	target_include_directories(NxPhysicsSDKTests PRIVATE Foundation/include Physics/include)
+	target_link_libraries(NxPhysicsSDKTests bcrypt)
+endif()
