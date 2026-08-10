@@ -44,7 +44,8 @@ class NpPhysicsSDK : public NxPhysicsSDK, public NxAllocateable
 	NpPhysicsSDK(PhysicsSDK* sdk);
 	~NpPhysicsSDK();
 
-	// Reconstructed: phys_fn_000228, 000230, 000232, 000238 and 000261.
+	// Reconstructed: phys_fn_000228, 000230, 000232, 000238 and 000261, plus
+	// phys_fn_000252 (visualize), which has to stay in declaration order below.
 	void release();
 	bool setParameter(NxParameter paramEnum, NxReal paramValue);
 	NxReal getParameter(NxParameter paramEnum) const;
@@ -65,7 +66,7 @@ class NpPhysicsSDK : public NxPhysicsSDK, public NxAllocateable
 	void setFluidGroupPairFlags(NxActorGroup actorGroup, NxFluidGroup fluidGroup, NxU32 flags);
 	NxU32 getFluidGroupPairFlags(NxActorGroup actorGroup, NxFluidGroup fluidGroup) const;
 #endif
-	void visualize(const NxUserDebugRenderer& renderer);
+	void visualize(const NxUserDebugRenderer& renderer);	// reconstructed
 	NxMaterialIndex addMaterial(const NxMaterial& material);
 	void setMaterialAtIndex(NxMaterialIndex index, const NxMaterial* material);
 	NxMaterial* getMaterial(NxMaterialIndex index);

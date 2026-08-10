@@ -240,6 +240,34 @@ NxU32 PhysicsSDK::getNbMaterials() const
 	return mMaterials.size();
 	}
 
+// 0x0000de1c tail-jumps slot +0x24 of the Foundation vtable, renderDebugData;
+// the null test at 0x0000de16 guards it and otherwise returns without
+// rendering. The renderer reference is passed straight through, and the tail
+// jump into a thiscall is what gives this row its stack purge of 4.
+void PhysicsSDK::visualize(const NxUserDebugRenderer& renderer)
+	{
+	if(gFoundation)
+		gFoundation->renderDebugData(renderer);
+	}
+
+// 0x0000dec1 calls slot +0x1c, createDebugRenderable, only when the cached
+// pointer at .data 0x00123c14 is null, and 0x0000dec4 caches the result. There
+// is no null check on the Foundation, so calling this before NxCreatePhysicsSDK
+// faults; the six NxFluidDebug* exports inherit that.
+NxDebugRenderable* PhysicsSDK::getDebugRenderable()
+	{
+	if(!gDebugRenderable)
+		gDebugRenderable = gFoundation->createDebugRenderable();
+	return gDebugRenderable;
+	}
+
+// 0x0000dedc tail-jumps slot +0x18 of the renderable vtable, clear().
+void PhysicsSDK::clearDebugRenderable()
+	{
+	if(gDebugRenderable)
+		gDebugRenderable->clear();
+	}
+
 NxPhysicsSDK* NX_CALL_CONV NxCreatePhysicsSDK(NxU32 sdkVersion, NxUserAllocator* allocator, NxUserOutputStream* outputStream)
 	{
 	if(!gFoundation)

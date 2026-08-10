@@ -13,6 +13,8 @@
 #include "NxPhysicsSDK.h"
 
 class NpPhysicsSDK;
+class NxDebugRenderable;
+class NxUserDebugRenderer;
 
 /**
 The SDK-side singleton. The public NxPhysicsSDK the user is handed is the
@@ -43,6 +45,21 @@ class PhysicsSDK : public NxAllocateable
 	Scene* getScene(NxU32 index);
 	// phys_fn_000458 (0x0000e030)
 	NxU32 getNbMaterials() const;
+
+	// The three visualization entry points. None of them reads this object -- the
+	// Foundation and the cached renderable are both file scope in PhysicsSDK.cpp
+	// -- but all three are entered with ecx holding a PhysicsSDK, so they are
+	// members and not free functions: 0x0000bb4b loads the SDK into ecx before
+	// calling phys_fn_000439, and every NxFluidDebug* export loads the singleton
+	// from .data 0x00123c04 into ecx before calling phys_fn_000443.
+	//
+	// phys_fn_000439 (0x0000de10)
+	void visualize(const NxUserDebugRenderer& renderer);
+	// phys_fn_000443 (0x0000deb0)
+	NxDebugRenderable* getDebugRenderable();
+	// phys_fn_000445 (0x0000ded0). Its one caller, phys_fn_000608 at 0x00011190,
+	// is Phase 7, so no Phase 2 differential can reach it.
+	void clearDebugRenderable();
 
 	NpPhysicsSDK* getNp() const { return mNp; }
 

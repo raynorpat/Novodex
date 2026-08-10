@@ -60,6 +60,16 @@ NxU32 NpPhysicsSDK::getNbMaterials()
 	return mSdk->getNbMaterials();
 	}
 
+// phys_fn_000252. Unlike every other wrapper in this vtable it takes each
+// scene's writer lock outright (0x0000bb34 calls phys_fn_002362, not
+// phys_fn_002364) and so references neither the deadlock string nor an error
+// site. The two scene walks around the forwarded call are Phase 3's and run
+// zero iterations for every state this component can reach.
+void NpPhysicsSDK::visualize(const NxUserDebugRenderer& renderer)
+	{
+	mSdk->visualize(renderer);
+	}
+
 // Everything below stands in for an oracle row this component does not own. The
 // stable IDs are the wrapper row and the SDK-side row it forwards to.
 
@@ -125,11 +135,6 @@ NxU32 NpPhysicsSDK::getFluidGroupPairFlags(NxActorGroup, NxFluidGroup) const
 	return 0;
 	}
 #endif
-
-void NpPhysicsSDK::visualize(const NxUserDebugRenderer&)
-	{
-	// phys_fn_000252.
-	}
 
 NxMaterialIndex NpPhysicsSDK::addMaterial(const NxMaterial&)
 	{
