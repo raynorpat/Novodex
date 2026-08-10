@@ -132,16 +132,22 @@ static int nxAuditModules(const wchar_t* pairDirectory)
 	}
 
 // argv[1] must already be an absolute canonical directory; anything else is a
-// caller error we refuse rather than silently resolve.
-static bool nxPairDirectory(const char* argument, wchar_t* directory)
+// caller error we refuse rather than silently resolve. The argument arrives wide
+// from wmain, so a path outside the ANSI code page is rejected, not mangled.
+static bool nxPairDirectory(const wchar_t* argument, wchar_t* directory)
 	{
-	wchar_t given[MAX_PATH];
 	wchar_t resolved[MAX_PATH];
-	if(!MultiByteToWideChar(CP_ACP, 0, argument, -1, given, MAX_PATH))
+	if(!GetFullPathNameW(argument, MAX_PATH, resolved, 0) || _wcsicmp(argument, resolved) != 0)
 		return false;
-	if(!GetFullPathNameW(given, MAX_PATH, resolved, 0) || _wcsicmp(given, resolved) != 0)
+
+	// A trailing separator survives GetFullPathNameW and would then fail every
+	// directory comparison, so refuse it here rather than mis-report it later.
+	size_t length = wcslen(resolved);
+	if(!length || resolved[length - 1] == L'\\')
 		return false;
-	if(GetFileAttributesW(resolved) == INVALID_FILE_ATTRIBUTES)
+
+	DWORD attributes = GetFileAttributesW(resolved);
+	if(attributes == INVALID_FILE_ATTRIBUTES || !(attributes & FILE_ATTRIBUTE_DIRECTORY))
 		return false;
 	wcscpy_s(directory, MAX_PATH, resolved);
 	return true;
@@ -161,7 +167,7 @@ static HMODULE nxLoadPhysics(const wchar_t* pairDirectory)
 
 // Loads the pair, audits the module set, and reports the absolute path and
 // SHA-256 the differential runner matches against the directory it staged.
-static int nxOpenPair(int argc, char** argv, const char* usage, wchar_t* pairDirectory, HMODULE* physics)
+static int nxOpenPair(int argc, wchar_t** argv, const char* usage, wchar_t* pairDirectory, HMODULE* physics)
 	{
 	if(argc != 2)
 		{
@@ -186,6 +192,12 @@ static int nxOpenPair(int argc, char** argv, const char* usage, wchar_t* pairDir
 
 static int nxReportPairIdentity(const wchar_t* pairDirectory)
 	{
+	// The audit in nxOpenPair only covers the load. Re-audit here, at the end of
+	// the run, so anything the SDK lifecycle full-path-loaded is caught too.
+	int status = nxAuditModules(pairDirectory);
+	if(status)
+		return status;
+
 	static const wchar_t* const names[] = { L"NxPhysics.dll", L"NxFoundation.dll" };
 	for(int i = 0; i < 2; ++i)
 		{

@@ -123,7 +123,7 @@ static int checkImports(HMODULE module, const wchar_t* pairDirectory)
 	return 0;
 	}
 
-int main(int argc, char** argv)
+int wmain(int argc, wchar_t** argv)
 	{
 	wchar_t pairDirectory[MAX_PATH];
 	HMODULE physics = 0;

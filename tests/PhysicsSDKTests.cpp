@@ -160,7 +160,7 @@ static int runCombination(CreatePhysicsSDKFn createSDK, const char* name,
 	return 0;
 	}
 
-int main(int argc, char** argv)
+int wmain(int argc, wchar_t** argv)
 	{
 	wchar_t pairDirectory[MAX_PATH];
 	HMODULE physics = 0;
@@ -237,8 +237,7 @@ int main(int argc, char** argv)
 	reportStream("step=release.stream", streamFirst);
 
 	NxPhysicsSDK* recreated = createSDK(NX_PHYSICS_SDK_VERSION, &allocatorSecond, &streamSecond);
-	printf("step=recreate sdk=%s identity=%s\n", recreated ? "nonnull" : "null",
-		recreated == first ? "same" : "different");
+	printf("step=recreate sdk=%s\n", recreated ? "nonnull" : "null");
 	if(!recreated)
 		{
 		FreeLibrary(physics);
@@ -246,6 +245,13 @@ int main(int argc, char** argv)
 		}
 	reportAllocator("step=recreate.allocator", allocatorSecond);
 	reportStream("step=recreate.stream", streamSecond);
+
+	// Both pointers are live here. Comparing against the instance released above
+	// would read a freed pointer, and the answer would depend on heap reuse.
+	NxPhysicsSDK* recreatedAgain = createSDK(NX_PHYSICS_SDK_VERSION, &allocatorSecond, &streamSecond);
+	printf("step=recreate_second sdk=%s identity=%s\n", recreatedAgain ? "nonnull" : "null",
+		recreatedAgain == recreated ? "same" : "different");
+
 	recreated->release();
 	printf("step=recreate_release\n");
 	reportAllocator("step=recreate_release.allocator", allocatorSecond);
