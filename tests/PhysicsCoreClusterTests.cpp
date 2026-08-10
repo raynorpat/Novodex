@@ -42,13 +42,15 @@ static const size_t nxAllocationCap = 0x10000000;
 class RecordingAllocator : public NxUserAllocator
 	{
 	public:
-	RecordingAllocator(): mallocCalls(0), refusedCalls(0), freeCalls(0) {}
+	RecordingAllocator(): mallocCalls(0), refusedCalls(0), reallocCalls(0), freeCalls(0) {}
 
 	void* mallocDEBUG(size_t size, const char*, int)					{ return allocate(size); }
 	void* mallocDEBUG(size_t size, const char*, int, const char*, NxMemoryType)	{ return allocate(size); }
 	void* malloc(size_t size)											{ return allocate(size); }
 	void* malloc(size_t size, NxMemoryType)								{ return allocate(size); }
-	void* realloc(void* memory, size_t size)							{ return ::realloc(memory, size); }
+	// resize's shrink-to-fit is the only thing in Phase 2 that reaches the
+	// allocator's realloc slot, so purgeMaterials is what gates it.
+	void* realloc(void* memory, size_t size)							{ ++reallocCalls; return ::realloc(memory, size); }
 
 	void free(void* memory)
 		{
@@ -58,6 +60,7 @@ class RecordingAllocator : public NxUserAllocator
 
 	unsigned mallocCalls;
 	unsigned refusedCalls;
+	unsigned reallocCalls;
 	unsigned freeCalls;
 
 	private:
@@ -199,12 +202,16 @@ static void reportVisualize(const char* step, NxPhysicsSDK* sdk, RecordingRender
 
 static void reportAllocator(const char* step, const RecordingAllocator& allocator)
 	{
-	printf("step=%s alloc_calls=%u refused_calls=%u free_calls=%u\n",
-		step, allocator.mallocCalls, allocator.refusedCalls, allocator.freeCalls);
+	printf("step=%s alloc_calls=%u refused_calls=%u realloc_calls=%u free_calls=%u\n",
+		step, allocator.mallocCalls, allocator.refusedCalls, allocator.reallocCalls, allocator.freeCalls);
 	}
 
 int wmain(int argc, wchar_t** argv)
 	{
+	// Unbuffered, so a fault truncates the transcript at the call that faulted
+	// rather than at whatever stdio had last flushed.
+	setvbuf(stdout, 0, _IONBF, 0);
+
 	wchar_t pairDirectory[MAX_PATH];
 	HMODULE physics = 0;
 	int status = nxOpenPair(argc, argv, "NxPhysicsCoreClusterTests", pairDirectory, &physics);
@@ -448,6 +455,99 @@ int wmain(int argc, wchar_t** argv)
 		retired, second->getNbMaterials(), retiredRead == second->getMaterial(0) ? 1 : 0,
 		retiredRead ? retiredRead->dynamicFriction : 0.0f);
 	reportStream("material_bit31", stream);
+
+
+	// ---- Factory-A part 2: setMaterialAtIndex and purgeMaterials ----
+	//
+	// The array is 11 long here with index 10 already retired. Every case below
+	// is read back through getNbMaterials and getMaterial, so what is gated is
+	// the array state and not the call.
+
+	NxMaterial replacement;
+	replacement.setToDefault();
+	replacement.dynamicFriction = 42.0f;
+	second->setMaterialAtIndex(2, &replacement);
+	NxMaterial* slot2 = second->getMaterial(2);
+	printf("step=set_in_range count=%u dynamic=%.6f is_default=%d\n",
+		second->getNbMaterials(), slot2 ? slot2->dynamicFriction : 0.0f,
+		slot2 == second->getMaterial(0) ? 1 : 0);
+
+	// A null material retires the slot rather than clearing it, and the count
+	// does not move.
+	second->setMaterialAtIndex(2, 0);
+	printf("step=set_null_retires count=%u is_default=%d\n",
+		second->getNbMaterials(), second->getMaterial(2) == second->getMaterial(0) ? 1 : 0);
+
+	// Index 0 is the one slot a null cannot retire.
+	second->setMaterialAtIndex(0, 0);
+	printf("step=set_null_index0 count=%u flags=0x%08x dynamic=%.6f\n",
+		second->getNbMaterials(), static_cast<unsigned>(second->getMaterial(0)->flags),
+		second->getMaterial(0)->dynamicFriction);
+
+	// Past the end: grow to the index with the default material template, then
+	// append. The template carries bit 31, so every gap slot reads back as the
+	// default material and not as itself.
+	//
+	// The index is 16 and not 12 or 14 for a reason that is the oracle's, not
+	// this harness's. NxArray::insert reserves size() + n but its
+	// copy(where, where + n, where + n) writes n elements starting AT where + n,
+	// so inserting at end() needs size() + 2n. Measured against the shipped DLL
+	// from this exact state -- 11 materials, capacity 14 -- index 12 (n = 1)
+	// completes, index 13 (n = 2) and index 14 (n = 3) both fault, and index 16
+	// (n = 5) completes because it is the first that forces a reserve. The
+	// faulting cases corrupt the CRT heap, so no transcript taken from them
+	// would mean anything; 16 exercises the same grow, gap fill and append.
+	NxMaterial beyond;
+	beyond.setToDefault();
+	beyond.dynamicFriction = 3.5f;
+	beyond.restitution = 0.75f;
+	unsigned before = second->getNbMaterials();
+	second->setMaterialAtIndex(16, &beyond);
+	NxMaterial* placed = second->getMaterial(16);
+	printf("step=set_past_end before=%u count=%u placed_dynamic=%.6f placed_restitution=%.6f\n",
+		before, second->getNbMaterials(), placed ? placed->dynamicFriction : 0.0f,
+		placed ? placed->restitution : 0.0f);
+	printf("step=set_past_end_gap gap12_is_default=%d gap15_is_default=%d last_live=%d\n",
+		second->getMaterial(12) == second->getMaterial(0) ? 1 : 0,
+		second->getMaterial(15) == second->getMaterial(0) ? 1 : 0,
+		second->getMaterial(16) == second->getMaterial(0) ? 0 : 1);
+
+	// Past the end with a null material does nothing at all.
+	second->setMaterialAtIndex(40, 0);
+	printf("step=set_past_end_null count=%u\n", second->getNbMaterials());
+
+	// Exactly at the end is a plain append: the grow is a no-op and the push is
+	// the whole effect.
+	NxMaterial appended;
+	appended.setToDefault();
+	appended.staticFriction = 6.25f;
+	before = second->getNbMaterials();
+	second->setMaterialAtIndex(static_cast<NxMaterialIndex>(before), &appended);
+	printf("step=set_at_end before=%u count=%u static=%.6f\n",
+		before, second->getNbMaterials(), second->getMaterial(static_cast<NxMaterialIndex>(before))->staticFriction);
+	reportAllocator("set_material.allocator", allocator);
+
+	// purgeMaterials keeps index 0 exactly as it is and drops everything else.
+	NxMaterial kept;
+	kept.setToDefault();
+	kept.dynamicFriction = 7.5f;
+	kept.restitution = 0.375f;
+	second->setMaterialAtIndex(0, &kept);
+	second->purgeMaterials();
+	NxMaterial* survivor = second->getMaterial(0);
+	printf("step=purge count=%u dynamic=%.6f restitution=%.6f flags=0x%08x\n",
+		second->getNbMaterials(), survivor ? survivor->dynamicFriction : 0.0f,
+		survivor ? survivor->restitution : 0.0f,
+		survivor ? static_cast<unsigned>(survivor->flags) : 0u);
+	reportAllocator("purge.allocator", allocator);
+
+	// A second purge is a no-op, and the array can be rebuilt afterwards.
+	second->purgeMaterials();
+	printf("step=purge_again count=%u dynamic=%.6f\n",
+		second->getNbMaterials(), second->getMaterial(0)->dynamicFriction);
+	printf("step=purge_then_add index=%u count=%u\n",
+		second->addMaterial(replacement), second->getNbMaterials());
+	reportAllocator("purge_then_add.allocator", allocator);
 
 	// The two fluid group-pair slots are the shipped DLL refusing part of the
 	// fluid API it exports. They report a debug warning, not an error.

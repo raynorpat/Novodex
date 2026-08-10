@@ -54,6 +54,10 @@ class PhysicsSDK : public NxAllocateable
 	NxMaterialIndex addMaterial(const NxMaterial& material);
 	// phys_fn_000456 (0x0000dfd0). Reads the singleton rather than this object.
 	NxMaterial* getMaterial(NxMaterialIndex index);
+	// phys_fn_000484 (0x0000f0d0)
+	void setMaterialAtIndex(NxMaterialIndex index, const NxMaterial* material);
+	// phys_fn_000486 with phys_fn_000488 as its tail (0x0000f690)
+	void purgeMaterials();
 
 	// The three visualization entry points. None of them reads this object -- the
 	// Foundation and the cached renderable are both file scope in PhysicsSDK.cpp

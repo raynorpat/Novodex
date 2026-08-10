@@ -319,6 +319,56 @@ NxMaterial* PhysicsSDK::getMaterial(NxMaterialIndex index)
 	return found;
 	}
 
+// phys_fn_000484 (0x0000f0d0), 1457 bytes, all of it NxArray inlined. Four
+// reachable cases and one that does nothing:
+//   in range with a material   -> assign in place
+//   in range with null         -> retire the slot, unless it is index 0
+//   past the end with material -> grow to index with the default material, then
+//                                 append the one passed
+//   past the end with null     -> nothing at all
+// The gap the grow leaves is filled from gDefaultMaterial, not from a fresh
+// NxMaterial: 0x0000f13f copies .data 0x001220a0 into the insert temporary. That
+// template carries bit 31, which is what the constructor sets on it after the
+// first copy, so every gap slot reads back as the default material through
+// getMaterial rather than as itself.
+void PhysicsSDK::setMaterialAtIndex(NxMaterialIndex index, const NxMaterial* material)
+	{
+	if(index < mMaterials.size())
+		{
+		if(material)
+			{
+			mMaterials[index] = *material;
+			return;
+			}
+
+		// 0x0000f11a skips the flag write when the index is zero: the default
+		// material is the one slot that cannot be retired.
+		if(index != 0)
+			mMaterials[index].flags |= NX_MF_INTERNAL_BIT31;
+		return;
+		}
+
+	if(material)
+		{
+		mMaterials.resize(index, gDefaultMaterial);
+		mMaterials.pushBack(*material);
+		}
+	}
+
+// phys_fn_000486 (0x0000f690) with phys_fn_000488 (0x0000f9a0) as its tail; the
+// census splits them but Ghidra decodes one function. The whole body is
+// NxArray::resize(1) with the defaulted second argument: the temporary at
+// 0x0000f6b4 is a default constructed NxMaterial, built unconditionally and used
+// only when the array is empty, and the tail from 0x0000fa49 is resize's own
+// "free when empty, otherwise realloc down to size()".
+//
+// resize does not touch the elements it keeps, so a modified index 0 survives a
+// purge unchanged.
+void PhysicsSDK::purgeMaterials()
+	{
+	mMaterials.resize(1);
+	}
+
 // 0x0000de1c tail-jumps slot +0x24 of the Foundation vtable, renderDebugData;
 // the null test at 0x0000de16 guards it and otherwise returns without
 // rendering. The renderer reference is passed straight through, and the tail

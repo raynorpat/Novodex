@@ -168,9 +168,11 @@ NxMaterialIndex NpPhysicsSDK::addMaterial(const NxMaterial& material)
 	return mSdk->addMaterial(material);
 	}
 
-void NpPhysicsSDK::setMaterialAtIndex(NxMaterialIndex, const NxMaterial*)
+// phys_fn_000258, a writer slot; its deadlock report is NpPhysicsSDK.cpp:182,
+// from the immediate at 0x0000bd2f.
+void NpPhysicsSDK::setMaterialAtIndex(NxMaterialIndex index, const NxMaterial* material)
 	{
-	// phys_fn_000258 -> phys_fn_000484.
+	mSdk->setMaterialAtIndex(index, material);
 	}
 
 // phys_fn_000260, a const slot, so the reader lock at +0x10 and no failure path.
@@ -179,9 +181,11 @@ NxMaterial* NpPhysicsSDK::getMaterial(NxMaterialIndex index)
 	return mSdk->getMaterial(index);
 	}
 
+// phys_fn_000263 with phys_fn_000265 as its outlined unwind, which reports
+// NpPhysicsSDK.cpp:211 from the immediate at 0x0000beff.
 void NpPhysicsSDK::purgeMaterials()
 	{
-	// phys_fn_000263 -> phys_fn_000486.
+	mSdk->purgeMaterials();
 	}
 
 bool NpPhysicsSDK::coreDump(const char*, bool, const char*)
