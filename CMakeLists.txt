@@ -49,7 +49,7 @@ endif()
 
 #### PHYSICS ####
 
-file(GLOB_RECURSE PHYSICS_HEADERS Physics/include/*.h)
+file(GLOB_RECURSE PHYSICS_HEADERS Physics/include/*.h Physics/src/include/*.h)
 source_group("Header Files" FILES ${PHYSICS_HEADERS})
 
 file(GLOB PHYSICS_SOURCES Physics/src/*.cpp)
@@ -64,10 +64,14 @@ add_library(NxPhysics SHARED ${PHYSICS_HEADERS} ${PHYSICS_SOURCES} ${PHYSICS_RES
 target_link_libraries(NxPhysics NxFoundation)
 set_target_properties(NxPhysics PROPERTIES LINKER_LANGUAGE CXX)
 
-target_include_directories(NxPhysics PRIVATE 
+target_include_directories(NxPhysics PRIVATE
 	Foundation/include
+	Foundation/src/include
 	Physics/include
+	Physics/src/include
 )
+
+target_compile_definitions(NxPhysics PRIVATE NX_PHYSICS_DLL=1)
 
 if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	add_executable(NxPhysicsExportTests tests/PhysicsExportTests.cpp)
