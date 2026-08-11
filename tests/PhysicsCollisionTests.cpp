@@ -3205,11 +3205,18 @@ int wmain(int argc, wchar_t** argv)
 	NxOracleGetParameterFn oracleGetParameter = (NxOracleGetParameterFn) (base + kGetParameterRva);
 	float* const oracleParameters = (float*) (base + kParameterArrayRva);
 
+	// Two digests, because these are two rows: a registration that covered both
+	// with one could lose either without the pinned number moving.
 	NxDigest oracleDigest, candidateDigest;
+	NxDigest guardOracleDigest, guardCandidateDigest;
 	nxDigestInit(&oracleDigest);
 	nxDigestInit(&candidateDigest);
+	nxDigestInit(&guardOracleDigest);
+	nxDigestInit(&guardCandidateDigest);
 	unsigned mismatches = 0;
+	unsigned guardMismatches = 0;
 	unsigned ownerProbes = 0;
+	unsigned staticFirst = 0;
 	unsigned guardProbes = 0;
 	unsigned guardTrue = 0;
 	unsigned sinkUntouched = 0;
@@ -3248,6 +3255,8 @@ int wmain(int argc, wchar_t** argv)
 		// One side static in each iteration, alternating, so the accessor is
 		// asked about both an owner that carries a holder and one that does not.
 		const unsigned staticSide = nxNext(&state) & 1;
+		if(staticSide == 0)
+			++staticFirst;
 		*(unsigned char**) (ownerStorage[staticSide] + 8) = 0;
 		*(unsigned char**) (ownerStorage[1 - staticSide] + 8) = holderStorage[1 - staticSide];
 
@@ -3284,12 +3293,12 @@ int wmain(int argc, wchar_t** argv)
 				++guardTrue;
 			if(untouched)
 				++sinkUntouched;
-			nxDigestByte(&oracleDigest, fromOracle);
-			nxDigestByte(&oracleDigest, untouched ? 1 : 0);
-			nxDigestByte(&candidateDigest, fromCandidate);
-			nxDigestByte(&candidateDigest, 1);
+			nxDigestByte(&guardOracleDigest, fromOracle);
+			nxDigestByte(&guardOracleDigest, untouched ? 1 : 0);
+			nxDigestByte(&guardCandidateDigest, fromCandidate);
+			nxDigestByte(&guardCandidateDigest, 1);
 			if(fromOracle != fromCandidate || !untouched)
-				++mismatches;
+				++guardMismatches;
 			}
 		}
 
@@ -3327,13 +3336,18 @@ int wmain(int argc, wchar_t** argv)
 		}
 	}
 
-	totalMismatch += mismatches;
+	totalMismatch += mismatches + guardMismatches;
 	printf("collision name=shape_owner index=- rva=0x%08x owner=phys_fn_001281 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
 		kShapeOwnerRva, oracleDigest.checks, oracleDigest.state,
 		candidateDigest.state, mismatches);
-	printf("collision coverage name=ccd_guard rva=0x%08x owner=phys_fn_002266 continuous_cd=%08x owner_probes=%u guard_probes=%u guard_true=%u sink_untouched=%u index_probes=%u index_wrong=%u\n",
-		kContinuousCdRva, continuousBits, ownerProbes, guardProbes, guardTrue,
-		sinkUntouched, indexProbes, indexWrongHere);
+	printf("collision coverage name=shape_owner probes=%u static_first=%u\n",
+		ownerProbes, staticFirst);
+	printf("collision name=ccd_guard index=- rva=0x%08x owner=phys_fn_002266 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		kContinuousCdRva, guardOracleDigest.checks, guardOracleDigest.state,
+		guardCandidateDigest.state, guardMismatches);
+	printf("collision coverage name=ccd_guard continuous_cd=%08x probes=%u returned_true=%u sink_untouched=%u index_probes=%u index_wrong=%u\n",
+		continuousBits, guardProbes, guardTrue, sinkUntouched, indexProbes,
+		indexWrongHere);
 	if(indexWrongHere)
 		return nxFail("the continuous-CD guard answered to a parameter other than NX_CONTINUOUS_CD");
 	}
