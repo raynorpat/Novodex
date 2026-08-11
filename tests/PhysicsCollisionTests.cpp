@@ -1497,13 +1497,13 @@ int wmain(int argc, wchar_t** argv)
 		nxDigestInit(&candidateDigest[f]);
 		}
 	unsigned mismatches[2] = { 0, 0 };
-	unsigned perMode[2] = { 0, 0 };
-	unsigned emitted = 0;
-	unsigned zeroCount = 0;
-	unsigned swapDiffers = 0;
-	unsigned nanDepth = 0;
-	unsigned overSixteen = 0;
-	unsigned maxContacts = 0;
+	unsigned perMode[2][2] = { { 0, 0 }, { 0, 0 } };
+	unsigned emitted[2] = { 0, 0 };
+	unsigned zeroCount[2] = { 0, 0 };
+	unsigned swapDiffers[2] = { 0, 0 };
+	unsigned nanDepth[2] = { 0, 0 };
+	unsigned overSixteen[2] = { 0, 0 };
+	unsigned maxContacts[2] = { 0, 0 };
 	unsigned faceFace = 0;
 	unsigned edgeClip = 0;
 	unsigned vertexFace = 0;
@@ -1659,19 +1659,19 @@ int wmain(int argc, wchar_t** argv)
 							++differing;
 						}
 					mismatches[family] += differing;
-					perMode[mode] += differing;
+					perMode[family][mode] += differing;
 
 					// Everything below is read off the oracle's own answer.
-					emitted += (unsigned) countO;
+					emitted[family] += (unsigned) countO;
 					if(countO == 0)
-						++zeroCount;
-					if(countO > (int) maxContacts)
-						maxContacts = (unsigned) countO;
+						++zeroCount[family];
+					if(countO > (int) maxContacts[family])
+						maxContacts[family] = (unsigned) countO;
 					if(countO > 16)
-						++overSixteen;
+						++overSixteen[family];
 					for(int c = 0; c < countO && c < kSlots; ++c)
 						if(!nxFinite(separationsO[c]))
-							++nanDepth;
+							++nanDepth[family];
 
 					if(family && orientation == 0)
 						{
@@ -1693,7 +1693,7 @@ int wmain(int argc, wchar_t** argv)
 					if(orientation == 0)
 						swapProbe = countO;
 					else if(countO != swapProbe)
-						++swapDiffers;
+						++swapDiffers[family];
 					}
 				}
 			}
@@ -1702,11 +1702,13 @@ int wmain(int argc, wchar_t** argv)
 	totalMismatch += mismatches[0] + mismatches[1];
 	printf("collision name=box_clip.random index=- rva=0x00038ba0 owner=phys_fn_001741 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
 		oracleDigest[0].checks, oracleDigest[0].state, candidateDigest[0].state, mismatches[0]);
+	printf("collision coverage name=box_clip.random emitted=%u zero_count=%u swap_differs=%u nan_depth=%u over_sixteen=%u max_contacts=%u default_mismatches=%u simulate_mismatches=%u\n",
+		emitted[0], zeroCount[0], swapDiffers[0], nanDepth[0], overSixteen[0], maxContacts[0], perMode[0][0], perMode[0][1]);
 	printf("collision name=box_clip.aimed index=- rva=0x00038ba0 owner=phys_fn_001741 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
 		oracleDigest[1].checks, oracleDigest[1].state, candidateDigest[1].state, mismatches[1]);
-	printf("collision coverage name=box_clip emitted=%u zero_count=%u face_face=%u edge_clip=%u vertex_face=%u plane_cross=%u swap_differs=%u nan_depth=%u over_sixteen=%u max_contacts=%u default_mismatches=%u simulate_mismatches=%u\n",
-		emitted, zeroCount, faceFace, edgeClip, vertexFace, planeCross,
-		swapDiffers, nanDepth, overSixteen, maxContacts, perMode[0], perMode[1]);
+	printf("collision coverage name=box_clip.aimed emitted=%u zero_count=%u face_face=%u edge_clip=%u vertex_face=%u plane_cross=%u swap_differs=%u nan_depth=%u over_sixteen=%u max_contacts=%u default_mismatches=%u simulate_mismatches=%u\n",
+		emitted[1], zeroCount[1], faceFace, edgeClip, vertexFace, planeCross,
+		swapDiffers[1], nanDepth[1], overSixteen[1], maxContacts[1], perMode[1][0], perMode[1][1]);
 	}
 
 	// -----------------------------------------------------------------------
