@@ -9,14 +9,22 @@
 // The boolean overlap half of the shape-pair dispatch matrix, for the four
 // primitive shape types.
 //
-// The floating-point model here is not the one the exported geometry kernels
-// use, and the difference is measured rather than assumed. Those exports are
-// called straight out of a consumer, where the x87 control word is the CRT
-// default 0x027f: 53-bit precision, round to nearest. These entries are only
-// ever reached from the simulation step, and phys_fn_000659 at 0x00013c40 calls
-// NxSetFPURoundingChop and then NxSetFPUPrecision64 on its way in and restores
-// the caller's word with `fldcw` on its way out. So the whole narrow phase runs
-// at 64-bit precision with round-toward-zero.
+// The floating-point model here is not the one a consumer calling an exported
+// geometry kernel sees, and the difference is measured rather than assumed. A
+// consumer call runs at the CRT default 0x027f: 53-bit precision, round to
+// nearest. These entries are only ever reached from the simulation step, and
+// phys_fn_000659 at 0x00013c40 calls NxSetFPURoundingChop and then
+// NxSetFPUPrecision64 on its way in and restores the caller's word with `fldcw`
+// on its way out. So the whole narrow phase runs at 64-bit precision with
+// round-toward-zero.
+//
+// That window is wider than the narrow phase, and this matrix is what shows it.
+// Three of the Phase 3 exports are inside it as well as outside:
+// NxBoxBoxIntersect from the [BOX][BOX] overlap entry, NxBuildSmoothNormals
+// from [BOX][MESH] contact generation and NxRayTriIntersect from [MESH][MESH].
+// The step reaches the matrix through a function pointer, so no direct call
+// edge crosses it and nothing before the matrix was recovered could have shown
+// which exports the step reaches.
 //
 // No C++ type names a 64-bit x87 significand -- MSVC's long double is double --
 // so the precision cannot be written down. It does not have to be: the control

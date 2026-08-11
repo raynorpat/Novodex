@@ -90,23 +90,46 @@ if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		PROPERTIES COMPILE_OPTIONS "/arch:IA32")
 endif()
 
-# NarrowPhase.cpp is on that list for a second and stronger reason than the
-# other three, and it is measured rather than inherited. Those three are
-# exports, called straight out of a consumer, where the x87 control word is the
-# CRT default 0x027f -- 53-bit precision, round to nearest -- and for them the
-# flag buys only the NaN payload rule. The narrow phase is never called that
-# way. It is reached only from the simulation step, and phys_fn_000659 at
-# 0x00013c40 calls NxSetFPURoundingChop and then NxSetFPUPrecision64 on its way
-# in and restores the caller's word with `fldcw` on its way out, so every
-# collision kernel runs at 64-bit precision with round-toward-zero.
+# All four files are on that list because the x87 control word is not the same
+# everywhere this code runs, and the flag is what lets a translation unit follow
+# it at all.
+#
+# phys_fn_000659 at 0x00013c40 -- the simulation step -- calls
+# NxSetFPURoundingChop and then NxSetFPUPrecision64 on its way in and restores
+# the caller's word with `fldcw` on its way out. Everything it reaches runs at
+# 64-bit precision with round-toward-zero; everything called straight out of a
+# consumer runs at the CRT default 0x027f, 53-bit and round to nearest.
+#
+# Which files are inside that window is a question the recovered shape-pair
+# dispatch matrix answers and nothing before it could. The step reaches the
+# matrix through a function pointer, so no direct call edge crosses it, and
+# these three exports looked like consumer-facing leaves until the matrix was
+# read out of the oracle's own constructor:
+#
+#   NxBoxBoxIntersect     <- 0x00038a82 in phys_fn_001738, matrix B [BOX][BOX]
+#   NxBuildSmoothNormals  <- 0x00052271 <- 0x0003c344 <- 0x0003d87c in
+#                            phys_fn_001772, matrix A [BOX][MESH]
+#   NxRayTriIntersect     <- 0x00036e4b <- 0x000415a2 <- 0x00042ea2
+#                         <- 0x0004366c <- 0x00047067 in phys_fn_001876,
+#                            matrix A [MESH][MESH]
+#
+# Every edge there is a direct `call rel32`. So Geometry.cpp and
+# SmoothNormals.cpp are inside the window as well as outside it, and an earlier
+# version of this comment calling all three of them consumer-facing was wrong.
+# MassProperties.cpp is reached from Actor.cpp and is outside it.
 #
 # No C++ type names a 64-bit x87 significand: MSVC's long double is double. The
 # precision therefore cannot be written into the source at all -- it is process
 # state, and x87 code picks up whatever the control word says, which is exactly
 # how the oracle gets it. An SSE2 build ignores the control word outright and
-# can never follow it. So for this file the flag is not an optimisation of the
-# last bit, it is the only way the file can be right.
-# NxPhysicsCollisionTests drives every kernel under both control words.
+# can never follow it. So the flag is not an optimisation of the last bit; it is
+# the only way any of these files can be right inside the step.
+#
+# NxPhysicsCollisionTests drives every kernel under both control words, and it
+# is the reason this comment could be corrected. It also found the limit of the
+# approach: NxBuildSmoothNormals agrees under 0x027f and differs on 24 of
+# 459,676 checks under 0x0f7f, because under 64-bit precision every `double`
+# the compiler spills truncates and nothing in C++ says where MSVC spills.
 #
 # NOTE FOR WHOEVER ADDS THE NEXT KERNEL TRANSLATION UNIT. This rule names four
 # files, not a directory, so anything else added under Physics/src builds SSE2
@@ -170,7 +193,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# harness's own, which is why -- unlike a symmetric differential -- a check
 	# inside it can fail the gate.
 	add_executable(NxPhysicsCollisionTests tests/PhysicsCollisionTests.cpp
-		Physics/src/NarrowPhase.cpp Physics/src/Geometry.cpp)
+		Physics/src/NarrowPhase.cpp Physics/src/Geometry.cpp Physics/src/SmoothNormals.cpp)
 	target_include_directories(NxPhysicsCollisionTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include Physics/src/include)
 	# Geometry.cpp defines exports, so it has to be compiled with the same

@@ -6,16 +6,33 @@
 //
 // The oracle keeps two 6x6 matrices of function pointers in one heap object the
 // SDK constructor builds (phys_fn_002338 at 0x0005a8e0, 0x124 bytes: a vtable
-// pointer, then 36 slots at +0x04 and 36 more at +0x94). phys_fn_002348 at
-// 0x0005ab80 is the only reader. It orders the pair by shape type, indexes
-// `6 * type0 + type1` with `type0 <= type1`, and calls
+// pointer, then 36 slots at +0x04 and 36 more at +0x94).
 //
-//   +0x04  contact generation, four arguments, __cdecl, result ignored
-//   +0x94  the boolean overlap test, three arguments, __cdecl, result in al
+// There are two readers, not one. phys_fn_002348 at 0x0005ab80 is the
+// dispatcher and reads both halves. phys_fn_002350 at 0x0005ae50 -- Phase 7,
+// reached from 0x0001399c, the persistent trigger-pair reconciliation pass --
+// reads the +0x94 half only, with the same type swap at 0x0005b28c, the same
+// `6 * type0 + type1` at 0x0005b2b7 and the same null skip at 0x0005b2c7.
+// Whoever owns trigger enter/stay/leave wants the second one.
 //
-// choosing the second matrix when either shape carries one of the three trigger
-// bits in its flag byte. Only the upper triangle is ever indexed, so the lower
-// triangle is left null by construction rather than by omission.
+// The dispatcher orders the pair by shape type, indexes `6 * type0 + type1`
+// with `type0 <= type1`, and calls
+//
+//   +0x04  contact generation, three arguments plus the shared context:
+//          (shape0, shape1, contact sink, context), __cdecl
+//   +0x94  the boolean overlap test, (shape0, shape1, context), __cdecl,
+//          result in al
+//
+// The two agree on their last argument -- the overlap test's third is the
+// contact path's fourth, both the dispatcher's own param_4 -- and what contact
+// generation has that the overlap test does not is the *third*, the sink. That
+// matters for anyone extending this: an entry declared with two parameters is
+// safe under __cdecl for the seven driven here, which read neither, but the
+// four mesh entries do read the context.
+//
+// The second matrix is chosen when either shape carries one of the three
+// trigger bits in its flag byte. Only the upper triangle is ever indexed, so
+// the lower triangle is left null by construction rather than by omission.
 //
 // This header declares the +0x94 entries for the four primitive shape types.
 // Everything mesh- or compound-shaped, and the whole +0x04 matrix, is still

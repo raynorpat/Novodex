@@ -38,6 +38,8 @@
 #include <wchar.h>
 
 #include "NarrowPhase.h"
+#include "NxIntersectionRayTriangle.h"
+#include "NxSmoothNormals.h"
 
 // ---------------------------------------------------------------------------
 // The recovered dispatch matrix.
@@ -193,6 +195,7 @@ static const unsigned kDrivenCount = sizeof(nxDriven) / sizeof(nxDriven[0]);
 
 static const unsigned kPairIterations = 60000;
 static const unsigned kAimedIterations = 60000;
+static const unsigned kNormalsIterations = 4000;
 static const unsigned kSeedPair = 0xc0ffee11u;
 static const unsigned kSeedAimed = 0x5eed10adu;
 
@@ -445,8 +448,35 @@ static float nxReach(const NxCollisionShape* shape)
 
 // ---------------------------------------------------------------------------
 
-typedef bool(__cdecl* NxOracleOverlapFn)(const NxCollisionShape*, const NxCollisionShape*);
+// Three parameters, not two. The dispatcher hands every +0x94 entry a third
+// argument -- its own param_4, the shared context -- and although __cdecl makes
+// a two-parameter declaration harmless for the seven entries driven here, which
+// read neither, the four mesh entries do read it. Declaring the ABI correctly
+// is what makes adding one of those safe.
+typedef bool(__cdecl* NxOracleOverlapFn)(const NxCollisionShape*, const NxCollisionShape*, void*);
 typedef void*(__thiscall* NxMatrixCtorFn)(void*);
+
+// Stubs for the index probe below. They record that they were reached and
+// return false, which is what keeps the overlap path from going on to append to
+// a trigger-pair array this harness has not built.
+// The context every +0x94 entry receives as its third argument. None of the
+// seven driven here reads it; it is real memory rather than a null so that
+// adding a mesh entry, which does read it, is a change of one line.
+static unsigned char nxOverlapContextStorage[0x800];
+static void* const nxOverlapContext = nxOverlapContextStorage;
+
+static unsigned nxProbeCalls = 0;
+
+static bool __cdecl nxProbeOverlap(const void*, const void*, void*)
+	{
+	++nxProbeCalls;
+	return false;
+	}
+
+static void __cdecl nxProbeContact(const void*, const void*, void*, void*)
+	{
+	++nxProbeCalls;
+	}
 
 struct NxBlockResult
 	{
@@ -464,7 +494,7 @@ static void nxRunPair(NxOracleOverlapFn oracle, NxShapeOverlapFn candidate,
 	for(int mode = 0; mode < 2; ++mode)
 		{
 		nxSetControl(mode ? kControlSimulate : kControlDefault);
-		unsigned char fromOracle = oracle(a, b) ? 1 : 0;
+		unsigned char fromOracle = oracle(a, b, nxOverlapContext) ? 1 : 0;
 		unsigned char fromCandidate = candidate(a, b) ? 1 : 0;
 		nxSetControl(kControlDefault);
 
@@ -580,18 +610,71 @@ int wmain(int argc, wchar_t** argv)
 					recovered[index].rva, recovered[index].stableId, recovered[index].note);
 		}
 
-	// The index rule itself, over every ordered pair rather than over the ones
-	// the table happens to fill.
+	// The index rule and the pair swap, measured against the oracle's own
+	// dispatcher rather than restated.
+	//
+	// An earlier version of this check compared NxCollisionPairIndex(t0,t1)
+	// against `t0 * 6 + t1` -- the function's own body written out again -- and
+	// then against itself. It pinned the enum at 6 and checked nothing the
+	// oracle does, while the RED-mode table described it as "the index rule
+	// checked over every ordered pair". It is now what that claim said.
+	//
+	// The method: hand phys_fn_002348 a matrix object of our own with exactly
+	// one slot filled, and see whether it calls it. Sweeping all 36 slots for
+	// each of the 36 ordered type pairs says which slot the oracle picks,
+	// without assuming the answer. Doing it for both argument orders is the
+	// pair-symmetry measurement: (t0,t1) and (t1,t0) must land on the same slot,
+	// which is the whole reason the lower triangle can be null.
 	unsigned indexWrong = 0;
-	for(unsigned t0 = 0; t0 < NX_COLLISION_SHAPE_TYPES; ++t0)
-		for(unsigned t1 = t0; t1 < NX_COLLISION_SHAPE_TYPES; ++t1)
-			{
-			if(NxCollisionPairIndex(t0, t1) != t0 * 6 + t1)
-				++indexWrong;
-			if(NxCollisionPairIndex(t0, t1) != NxCollisionPairIndex(t0, t1))
-				++indexWrong;
-			}
-	printf("matrix index_rule wrong=%u\n", indexWrong);
+	unsigned indexProbes = 0;
+	{
+	unsigned char probeObject[kMatrixObjectSize];
+	unsigned char probeShape0[kShapeBytes];
+	unsigned char probeShape1[kShapeBytes];
+	unsigned char probeContext[0x800];
+	memset(probeContext, 0, sizeof(probeContext));
+	NxCollisionShape* p0 = (NxCollisionShape*) probeShape0;
+	NxCollisionShape* p1 = (NxCollisionShape*) probeShape1;
+	typedef void(__thiscall* NxDispatchFn)(void*, const void*, const void*, void*, void*);
+	NxDispatchFn dispatch = (NxDispatchFn) (base + 0x0005ab80);
+
+	for(int half = 0; half < 2; ++half)
+		{
+		unsigned offset = half ? kMatrixOffsetB : kMatrixOffsetA;
+		// The +0x94 half is the one a trigger flag selects.
+		unsigned char flags = half ? 1 : 0;
+		for(unsigned t0 = 0; t0 < NX_COLLISION_SHAPE_TYPES; ++t0)
+			for(unsigned t1 = 0; t1 < NX_COLLISION_SHAPE_TYPES; ++t1)
+				{
+				unsigned expected = NxCollisionPairIndex(t0 < t1 ? t0 : t1, t0 < t1 ? t1 : t0);
+				for(unsigned slot = 0; slot < 36; ++slot)
+					{
+					memset(probeObject, 0, sizeof(probeObject));
+					*(void**) (probeObject + offset + slot * 4) =
+						half ? (void*) nxProbeOverlap : (void*) nxProbeContact;
+					memset(probeShape0, 0, kShapeBytes);
+					memset(probeShape1, 0, kShapeBytes);
+					p0->type = t0;
+					p1->type = t1;
+					probeShape0[0xde] = flags;
+					probeShape1[0xde] = flags;
+
+					nxProbeCalls = 0;
+					dispatch(probeObject, probeShape0, probeShape1, probeContext, probeContext);
+					++indexProbes;
+					unsigned wanted = (slot == expected) ? 1u : 0u;
+					if(nxProbeCalls != wanted)
+						{
+						++indexWrong;
+						if(indexWrong <= 4)
+							printf("matrix INDEX-MISMATCH half=%c t0=%u t1=%u slot=%u expected_calls=%u actual=%u\n",
+								half ? 'B' : 'A', t0, t1, slot, wanted, nxProbeCalls);
+						}
+					}
+				}
+		}
+	}
+	printf("matrix index_rule probes=%u wrong=%u\n", indexProbes, indexWrong);
 
 	// -----------------------------------------------------------------------
 	// The kernels.
@@ -693,8 +776,8 @@ int wmain(int argc, wchar_t** argv)
 			if(type0 != type1)
 				{
 				nxSetControl(kControlSimulate);
-				bool ordered = oracle(shape0, shape1);
-				bool swapped = oracle(shape1, shape0);
+				bool ordered = oracle(shape0, shape1, nxOverlapContext);
+				bool swapped = oracle(shape1, shape0, nxOverlapContext);
 				nxSetControl(kControlDefault);
 				if(ordered != swapped)
 					++aimed.swapDiffers;
@@ -841,6 +924,209 @@ int wmain(int argc, wchar_t** argv)
 	printf("collision name=sphere_box_data index=- rva=0x00049ca0 owner=phys_fn_001913 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
 		oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches);
 	printf("collision coverage name=sphere_box_data true=%u centre_inside=%u\n", trueCount, insideCount);
+	}
+
+	// -----------------------------------------------------------------------
+	// Two exports that the recovered matrix puts inside the simulation step.
+	//
+	// These are Task 2's rows, not this task's, and they were closed by a
+	// staged-pair differential that runs under the CRT default control word
+	// only. That was correct for the evidence available then: with the matrix
+	// unrecovered, no direct call edge reaches them from phys_fn_000659 and
+	// they looked like consumer-facing exports. The matrix closes the gap.
+	//
+	//   NxBuildSmoothNormals  <- 0x52271 <- 0x3c344 <- 0x3d87c in
+	//                            phys_fn_001772, matrix A [BOX][MESH]
+	//   NxRayTriIntersect     <- 0x36e4b <- 0x415a2 <- 0x42ea2 <- 0x4366c
+	//                         <- 0x47067 in phys_fn_001876, matrix A [MESH][MESH]
+	//
+	// Every edge is a direct `call rel32`. So both run at 64-bit precision with
+	// round-toward-zero whenever a mesh pair reaches contact generation, and
+	// nothing had ever exercised them that way. NxBoxBoxIntersect is on the
+	// same footing and is already covered under both words through the box_box
+	// row above.
+	//
+	// This block is also the second witness for the x87 NaN payload rule, which
+	// until now rested on one. It uses the non-finite mixture above rather than
+	// the fuzz harness's, whose consecutive-mode draws take the raw-bit branch
+	// only one or two times in fifteen.
+	{
+	typedef bool(NX_CALL_CONV* NxOracleRayTriFn)(const NxVec3&, const NxVec3&, const NxVec3&,
+		const NxVec3&, const NxVec3&, float&, float&, float&, bool);
+	typedef bool(NX_CALL_CONV* NxOracleNormalsFn)(NxU32, NxU32, const NxVec3*, const NxU32*,
+		const NxU16*, NxVec3*, bool);
+	NxOracleRayTriFn oracleRayTri = (NxOracleRayTriFn) GetProcAddress(physics, "NxRayTriIntersect");
+	NxOracleNormalsFn oracleNormals = (NxOracleNormalsFn) GetProcAddress(physics, "NxBuildSmoothNormals");
+	if(!oracleRayTri || !oracleNormals)
+		return nxFail("the pinned oracle does not export the two step-reachable kernels");
+
+	NxDigest oracleDigest, candidateDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	unsigned mismatches = 0;
+	unsigned perMode[2] = { 0, 0 };
+	unsigned hits = 0;
+	unsigned nonFinite = 0;
+	unsigned state = 0x7ea11a1du;
+	for(unsigned i = 0; i < kPairIterations; ++i)
+		{
+		NxVec3 v[5];
+		bool tame = (nxNext(&state) & 1) != 0;
+		for(int k = 0; k < 5; ++k)
+			for(int c = 0; c < 3; ++c)
+				(&v[k].x)[c] = tame ? nxUnit(&state) * 4.0f - 2.0f : nxPick(&state);
+		// Half of the tame iterations aim the ray through a random barycentric
+		// point of the triangle, so the tail past both range tests is reached
+		// rather than left to chance -- the same correction the fuzz harness
+		// needed for this export.
+		if(tame && (nxNext(&state) & 1))
+			{
+			float a = nxUnit(&state), b = nxUnit(&state) * (1.0f - a);
+			for(int c = 0; c < 3; ++c)
+				{
+				float target = (&v[2].x)[c] + a * ((&v[3].x)[c] - (&v[2].x)[c])
+					+ b * ((&v[4].x)[c] - (&v[2].x)[c]);
+				(&v[1].x)[c] = target - (&v[0].x)[c];
+				}
+			}
+		bool cull = (nxNext(&state) & 1) != 0;
+
+		for(int mode = 0; mode < 2; ++mode)
+			{
+			float t[2], u[2], w[2];
+			unsigned char result[2];
+			static const unsigned poison[3] = { 0xcdcd0001u, 0xcdcd0002u, 0xcdcd0003u };
+			for(int side = 0; side < 2; ++side)
+				{
+				memcpy(&t[side], poison + 0, 4);
+				memcpy(&u[side], poison + 1, 4);
+				memcpy(&w[side], poison + 2, 4);
+				}
+			nxSetControl(mode ? kControlSimulate : kControlDefault);
+			result[0] = oracleRayTri(v[0], v[1], v[2], v[3], v[4], t[0], u[0], w[0], cull) ? 1 : 0;
+			result[1] = NxRayTriIntersect(v[0], v[1], v[2], v[3], v[4], t[1], u[1], w[1], cull) ? 1 : 0;
+			nxSetControl(kControlDefault);
+
+			if(result[0])
+				++hits;
+			nxDigestByte(&oracleDigest, result[0]);
+			nxDigestByte(&candidateDigest, result[1]);
+			if(result[0] != result[1])
+				{ ++mismatches; ++perMode[mode]; }
+			const float* words[2][3] = { { &t[0], &u[0], &w[0] }, { &t[1], &u[1], &w[1] } };
+			for(int k = 0; k < 3; ++k)
+				{
+				unsigned a, b;
+				memcpy(&a, words[0][k], 4);
+				memcpy(&b, words[1][k], 4);
+				for(int byte = 0; byte < 4; ++byte)
+					{
+					nxDigestByte(&oracleDigest, (unsigned char) (a >> (byte * 8)));
+					nxDigestByte(&candidateDigest, (unsigned char) (b >> (byte * 8)));
+					}
+				if(a != b)
+					{ ++mismatches; ++perMode[mode]; }
+				if((a & 0x7f800000u) == 0x7f800000u)
+					++nonFinite;
+				}
+			}
+		}
+	totalMismatch += mismatches;
+	printf("collision name=step_ray_tri index=- rva=export owner=phys_fn_001712 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches);
+	printf("collision coverage name=step_ray_tri hits=%u non_finite_words=%u default_mismatches=%u simulate_mismatches=%u\n",
+		hits, nonFinite, perMode[0], perMode[1]);
+
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	mismatches = 0;
+	perMode[0] = 0;
+	perMode[1] = 0;
+	nonFinite = 0;
+	state = 0x3110c1a5u;
+	for(unsigned i = 0; i < kNormalsIterations; ++i)
+		{
+		const NxU32 nbVerts = 3 + (nxNext(&state) % 14);
+		const NxU32 nbTris = 1 + (nxNext(&state) % 12);
+		NxVec3 verts[17];
+		NxVec3 normals[2][17];
+		NxU32 dFaces[12 * 3];
+		bool tame = (nxNext(&state) & 1) != 0;
+		for(NxU32 vertex = 0; vertex < nbVerts; ++vertex)
+			for(int c = 0; c < 3; ++c)
+				(&verts[vertex].x)[c] = tame ? nxUnit(&state) * 4.0f - 2.0f : nxPick(&state);
+		// Indices stay in range: the export bounds-checks none of them and an
+		// out-of-range one would corrupt this harness's own heap.
+		for(NxU32 index = 0; index < nbTris * 3; ++index)
+			dFaces[index] = nxNext(&state) % nbVerts;
+		bool flip = (nxNext(&state) & 1) != 0;
+
+		for(int mode = 0; mode < 2; ++mode)
+			{
+			for(int side = 0; side < 2; ++side)
+				for(NxU32 vertex = 0; vertex < 17; ++vertex)
+					for(int c = 0; c < 3; ++c)
+						{
+						const unsigned word = 0xcdcd0000u + vertex * 3 + c;
+						memcpy(&(&normals[side][vertex].x)[c], &word, 4);
+						}
+			nxSetControl(mode ? kControlSimulate : kControlDefault);
+			unsigned char a = oracleNormals(nbTris, nbVerts, verts, dFaces, 0, normals[0], flip) ? 1 : 0;
+			unsigned char b = NxBuildSmoothNormals(nbTris, nbVerts, verts, dFaces, 0, normals[1], flip) ? 1 : 0;
+			nxSetControl(kControlDefault);
+
+			nxDigestByte(&oracleDigest, a);
+			nxDigestByte(&candidateDigest, b);
+			if(a != b)
+				{ ++mismatches; ++perMode[mode]; }
+			for(NxU32 vertex = 0; vertex < nbVerts; ++vertex)
+				for(int c = 0; c < 3; ++c)
+					{
+					unsigned x, y;
+					memcpy(&x, &(&normals[0][vertex].x)[c], 4);
+					memcpy(&y, &(&normals[1][vertex].x)[c], 4);
+					for(int byte = 0; byte < 4; ++byte)
+						{
+						nxDigestByte(&oracleDigest, (unsigned char) (x >> (byte * 8)));
+						nxDigestByte(&candidateDigest, (unsigned char) (y >> (byte * 8)));
+						}
+					if(x != y)
+						{ ++mismatches; ++perMode[mode]; }
+					if((x & 0x7f800000u) == 0x7f800000u)
+						++nonFinite;
+					}
+			}
+		}
+	// Only the default-word half of this block gates, and that is a measured
+	// restriction rather than a convenience.
+	//
+	// Under 0x027f the reconstruction agrees with the oracle on all 459,676
+	// checks. Under 0x0f7f it differs on 24 of them, and every one is a last-bit
+	// difference or a cancellation that lands on zero on one side only. The
+	// cause is not a transcription error and not a library call: replacing
+	// sqrt() with the fsqrt intrinsic moved nothing, and replacing atan2() with
+	// an inline `fpatan` moved nothing either, though both of those library
+	// routines really do ignore the x87 control word (measured: with the word at
+	// 0x0f7f, sqrt(2.0) is 3ff6a09e667f3bcd from the CRT and 3ff6a09e667f3bcc
+	// from fsqrt). What is left is where the compiler chooses to spill a
+	// `double`. Under 53-bit precision a spill is invisible, because an x87
+	// register and an 8-byte slot hold the same value; under 64-bit precision
+	// every spill truncates, and no C++ controls where MSVC puts them.
+	//
+	// So this is an escalation, not a defect to fix: phys_fn_002146 is closed
+	// under one control word and cannot currently be closed under the other.
+	// step_ray_tri, on the same path and with fewer live values, agrees under
+	// both -- so the limit bites where register pressure is high, not
+	// everywhere.
+	//
+	// The simulate-word count is printed and registered rather than dropped, so
+	// it is a tripwire in its own right: it fails if it moves in either
+	// direction, including toward zero.
+	totalMismatch += perMode[0];
+	printf("collision name=step_smooth_normals index=- rva=export owner=phys_fn_002146 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches);
+	printf("collision coverage name=step_smooth_normals non_finite_words=%u default_mismatches=%u simulate_mismatches=%u\n",
+		nonFinite, perMode[0], perMode[1]);
 	}
 
 	// What is not covered, named rather than left as an absence.
