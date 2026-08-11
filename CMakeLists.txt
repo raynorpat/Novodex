@@ -83,6 +83,7 @@ target_compile_definitions(NxPhysics PRIVATE NX_PHYSICS_DLL=1)
 # else in NxPhysics keeps the default architecture.
 if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	set_source_files_properties(
+		Physics/src/Geometry.cpp
 		Physics/src/MassProperties.cpp
 		PROPERTIES COMPILE_OPTIONS "/arch:IA32")
 endif()
