@@ -86,18 +86,36 @@ if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/Geometry.cpp
 		Physics/src/MassProperties.cpp
 		Physics/src/SmoothNormals.cpp
+		Physics/src/NarrowPhase.cpp
 		PROPERTIES COMPILE_OPTIONS "/arch:IA32")
 endif()
 
-# NOTE FOR WHOEVER ADDS THE NEXT KERNEL TRANSLATION UNIT. This rule names three
+# NarrowPhase.cpp is on that list for a second and stronger reason than the
+# other three, and it is measured rather than inherited. Those three are
+# exports, called straight out of a consumer, where the x87 control word is the
+# CRT default 0x027f -- 53-bit precision, round to nearest -- and for them the
+# flag buys only the NaN payload rule. The narrow phase is never called that
+# way. It is reached only from the simulation step, and phys_fn_000659 at
+# 0x00013c40 calls NxSetFPURoundingChop and then NxSetFPUPrecision64 on its way
+# in and restores the caller's word with `fldcw` on its way out, so every
+# collision kernel runs at 64-bit precision with round-toward-zero.
+#
+# No C++ type names a 64-bit x87 significand: MSVC's long double is double. The
+# precision therefore cannot be written into the source at all -- it is process
+# state, and x87 code picks up whatever the control word says, which is exactly
+# how the oracle gets it. An SSE2 build ignores the control word outright and
+# can never follow it. So for this file the flag is not an optimisation of the
+# last bit, it is the only way the file can be right.
+# NxPhysicsCollisionTests drives every kernel under both control words.
+#
+# NOTE FOR WHOEVER ADDS THE NEXT KERNEL TRANSLATION UNIT. This rule names four
 # files, not a directory, so anything else added under Physics/src builds SSE2
 # by default and will silently disagree with the oracle on NaN payloads -- and,
 # if it is written with NxReal temporaries rather than double register
-# lifetimes, on the last bit of ordinary results too. The collision kernels
-# Phase 3 Task 3 adds (BroadPhase.cpp, NarrowPhase.cpp, ContactGeneration.cpp,
-# Filtering.cpp) are almost certainly x87 in the 2003 oracle as well: check one
-# against the shipped export before assuming otherwise, and extend this list if
-# so. The check is cheap -- pick an input where the two models differ in the
+# lifetimes, on the last bit of ordinary results too. The remaining collision
+# units (BroadPhase.cpp, ContactGeneration.cpp, Filtering.cpp) are on the same
+# simulation-step path as NarrowPhase.cpp and will need the flag for the same
+# reason. The check is cheap -- pick an input where the two models differ in the
 # last bit and compare, the way the witnesses in
 # tests/PhysicsKernelFuzzTests.cpp do.
 #
@@ -142,4 +160,23 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_include_directories(NxPhysicsInternalTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include Physics/src/include)
 	target_link_libraries(NxPhysicsInternalTests NxFoundation)
+
+	# The narrow-phase differential. Neither a staged-pair differential nor a
+	# static proof: it holds the pinned oracle in its own process and calls the
+	# recorded internal addresses, because the shape-pair dispatch matrix and
+	# the overlap tests it selects are not exported and the public path that
+	# would reach them belongs to phases 4, 5 and 7. It links the
+	# reconstruction so both sides run in one process and the comparison is the
+	# harness's own, which is why -- unlike a symmetric differential -- a check
+	# inside it can fail the gate.
+	add_executable(NxPhysicsCollisionTests tests/PhysicsCollisionTests.cpp
+		Physics/src/NarrowPhase.cpp Physics/src/Geometry.cpp)
+	target_include_directories(NxPhysicsCollisionTests PRIVATE
+		Foundation/include Foundation/src/include Physics/include Physics/src/include)
+	# Geometry.cpp defines exports, so it has to be compiled with the same
+	# linkage here as in the DLL or every one of them warns.
+	target_compile_definitions(NxPhysicsCollisionTests PRIVATE NX_PHYSICS_DLL=1)
+	target_link_libraries(NxPhysicsCollisionTests NxFoundation bcrypt)
+	set_source_files_properties(Physics/src/NarrowPhase.cpp Physics/src/Geometry.cpp
+		PROPERTIES COMPILE_OPTIONS "/arch:IA32")
 endif()
