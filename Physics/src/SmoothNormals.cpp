@@ -61,10 +61,11 @@ static NxReal angleAtVertex(NxU32 vertex, const NxU32* index, const NxVec3* vert
 
 	const double cx = bzRegister * ay - by * az;
 	// The narrowing of C.y here, and the narrowed B.z in the dot product below,
-	// are both transcribed from the disassembly and neither is observable:
-	// mutations that keep either at register precision move 0 matrix cases and
-	// 0 digests. atan2 is flat enough near its argument that a one-ulp change to
-	// a cross-product component does not survive into the weight.
+	// are each independently observable: removing either one alone moves the
+	// NxBuildSmoothNormals digest, and removing both moves it too. Neither
+	// moves a single matrix case, so the randomized block is the only evidence
+	// for either -- and only since it began generating non-finite vertices.
+	// Against the earlier finite-only generator both mutations were silent.
 	const NxReal cy = (NxReal) (az * bx - bz * ax);
 	const double czRegister = by * ax - bx * ay;
 	const NxReal cz = (NxReal) czRegister;
