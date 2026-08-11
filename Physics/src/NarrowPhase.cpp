@@ -46,7 +46,9 @@
 
 // The four offsets every kernel below reads out of a shape. They are the
 // oracle's, so they are asserted rather than commented.
+static_assert(offsetof(NxCollisionShape, owner) == 0x04, "shape owner is at 0x04");
 static_assert(offsetof(NxCollisionShape, rotation) == 0x0c, "shape rotation is at 0x0c");
+static_assert(offsetof(NxCollisionShape, collisionObject) == 0x9c, "shape collision object is at 0x9c");
 static_assert(offsetof(NxCollisionShape, translation) == 0x30, "shape translation is at 0x30");
 static_assert(offsetof(NxCollisionShape, type) == 0xd0, "shape type is at 0xd0");
 static_assert(offsetof(NxCollisionShape, geometry) == 0xe0, "shape geometry union is at 0xe0");

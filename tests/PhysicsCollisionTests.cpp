@@ -38,6 +38,7 @@
 #include <wchar.h>
 
 #include "NarrowPhase.h"
+#include "ContactGeneration.h"
 #include "NxIntersectionRayTriangle.h"
 #include "NxSmoothNormals.h"
 
@@ -196,6 +197,7 @@ static const unsigned kDrivenCount = sizeof(nxDriven) / sizeof(nxDriven[0]);
 static const unsigned kPairIterations = 60000;
 static const unsigned kAimedIterations = 60000;
 static const unsigned kNormalsIterations = 4000;
+static const unsigned kContactIterations = 20000;
 static const unsigned kSeedPair = 0xc0ffee11u;
 static const unsigned kSeedAimed = 0x5eed10adu;
 
@@ -476,6 +478,90 @@ static bool __cdecl nxProbeOverlap(const void*, const void*, void*)
 static void __cdecl nxProbeContact(const void*, const void*, void*, void*)
 	{
 	++nxProbeCalls;
+	}
+
+// One side's world for the contact-generation differential: two shapes, the
+// borrowed Phase 5 graph each needs before the emitter will write, a sink and a
+// stream. Two are built, one per side, so neither can observe the other's
+// addresses.
+//
+// Every offset touched here is in the borrowed-layout section of
+// evidence/phase3-narrow-phase.md with the address that establishes it, and
+// nothing is filled in to make the call complete: the emitter reads
+// `owner+0x08` at 0x0001d729 and `holder+0x240` at 0x0001d730, the shape
+// constructors write `object+0x08` at 0x000247e9, and `shape+0x04` and
+// `shape+0x9c` come from 0x00025543 and 0x00024f0b.
+struct NxContactWorld
+	{
+	NxCollisionShape* plane;
+	NxCollisionShape* sphere;
+	NxContactSink sink;
+	NxU32 stream[0x2000];
+	unsigned char shapeStore[2][sizeof(NxCollisionShape) + 16];
+	unsigned char objectStore[2][2][0x20];
+	unsigned char ownerStore[2][0x40];
+	unsigned char holderStore[2][0x280];
+	NxU32 generation;
+	};
+
+static void nxResetWorld(NxContactWorld* world)
+	{
+	memset(&world->sink, 0, sizeof(world->sink));
+	memset(world->stream, 0, sizeof(world->stream));
+	world->sink.stream = world->stream;
+	world->sink.streamCapacity = sizeof(world->stream) / sizeof(world->stream[0]);
+	// Word 0 is the pair counter the header increments; the emitter never
+	// appends it, so the harness reserves it as a real caller would.
+	world->sink.streamCount = 1;
+	world->sink.pairCountIndex = 0;
+	world->generation = 0;
+	world->plane = (NxCollisionShape*) world->shapeStore[0];
+	world->sphere = (NxCollisionShape*) world->shapeStore[1];
+	}
+
+static void nxStageWorld(NxContactWorld* world, const NxCollisionShape* planeShape,
+	const NxCollisionShape* sphereShape, bool newIdentity, NxU32 material, bool orientToSphere)
+	{
+	if(newIdentity)
+		++world->generation;
+	memcpy(world->plane, planeShape, sizeof(NxCollisionShape));
+	memcpy(world->sphere, sphereShape, sizeof(NxCollisionShape));
+	for(int which = 0; which < 2; ++which)
+		{
+		NxCollisionShape* shape = which ? world->sphere : world->plane;
+		const unsigned slot = world->generation & 1;
+		unsigned char* owner = world->ownerStore[which];
+		unsigned char* holder = world->holderStore[which];
+		memset(owner, 0, sizeof(world->ownerStore[which]));
+		memset(holder, 0, sizeof(world->holderStore[which]));
+		// Both collision objects are fully built, because the emitter reaches
+		// the shape back through `object+0x08` -- an identity change that only
+		// moved the pointer would leave that read pointing at nothing.
+		for(unsigned s = 0; s < 2; ++s)
+			{
+			memset(world->objectStore[which][s], 0, sizeof(world->objectStore[which][s]));
+			*(NxCollisionShape**) (world->objectStore[which][s] + 8) = shape;
+			}
+		*(unsigned char**) (owner + 8) = holder;
+		*(NxU32*) (holder + 0x240) = material;
+		shape->owner = owner;
+		// The header turns on this pointer changing, so a new identity picks the
+		// other of the two objects.
+		shape->collisionObject = world->objectStore[which][slot];
+		}
+	world->sink.orientedTo = orientToSphere ? world->holderStore[1] : 0;
+	}
+
+// The two header words are addresses and differ between the sides by
+// construction; canonicalise them to which shape they name so everything else
+// can be compared raw.
+static NxU32 nxCanonical(const NxContactWorld* world, NxU32 word)
+	{
+	for(int which = 0; which < 2; ++which)
+		for(int slot = 0; slot < 2; ++slot)
+			if(word == (NxU32) (size_t) world->objectStore[which][slot])
+				return 0xf0000000u | (NxU32) (which * 2 + slot);
+	return word;
 	}
 
 struct NxBlockResult
@@ -1127,6 +1213,124 @@ int wmain(int argc, wchar_t** argv)
 		oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches);
 	printf("collision coverage name=step_smooth_normals non_finite_words=%u default_mismatches=%u simulate_mismatches=%u\n",
 		nonFinite, perMode[0], perMode[1]);
+	}
+
+	// -----------------------------------------------------------------------
+	// Contact generation: complete records, not counts.
+	//
+	// Each side gets its own world -- shapes, owners, holders, collision
+	// objects, sink and stream -- so neither can observe the other. A run drives
+	// a short sequence of pairs into one sink before resetting it, which is what
+	// exercises the three nested count levels: the pair header is written only
+	// when a collision object changes, the normal block only when the normal
+	// changes, and the pair is swapped with the normal negated when the sink is
+	// oriented to the other body. Comparing only the last record would miss all
+	// three.
+	//
+	// The stream is pre-sized so the oracle's growth path at 0x000b4de0 -- a
+	// Phase 2 row reaching the SDK allocator -- is never entered on either side.
+	// That path is unexercised and a matching stream says nothing about it.
+	{
+	typedef void(__cdecl* NxOracleContactFn)(const NxCollisionShape*, const NxCollisionShape*,
+		NxContactSink*, void*);
+	NxOracleContactFn oracleContact = (NxOracleContactFn) (base + nxMatrixA[1].rva);
+
+	static NxContactWorld world[2];
+	NxDigest oracleDigest, candidateDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	unsigned mismatches = 0;
+	unsigned emitted = 0;
+	unsigned normalBlocks = 0;
+	unsigned headers = 0;
+	unsigned negatedPath = 0;
+	unsigned state = 0x4dea11c7u;
+
+	for(unsigned i = 0; i < kContactIterations; ++i)
+		{
+		// One geometry sequence, replayed under both control words.
+		const unsigned sequenceSeed = nxNext(&state);
+		const unsigned pairs = 1 + (nxNext(&state) % 4);
+
+		for(int mode = 0; mode < 2; ++mode)
+			{
+			for(int side = 0; side < 2; ++side)
+				nxResetWorld(&world[side]);
+
+			unsigned local = sequenceSeed;
+			// The plane is generated once per sequence, so the contact normal
+			// is constant across the sequence and the normal-block skip is
+			// reached. With a fresh plane per pair the block was rewritten
+			// almost every time and the caching rule went untested.
+			NxCollisionShape planeShape;
+			const bool planeTame = (nxNext(&local) & 3) != 0;
+			nxIdentity(&planeShape);
+			nxFillGeometry(&local, &planeShape, 0, planeTame);
+			for(unsigned p = 0; p < pairs; ++p)
+				{
+				NxCollisionShape sphereShape;
+				const bool tame = (nxNext(&local) & 3) != 0;
+				nxIdentity(&sphereShape);
+				nxFillGeometry(&local, &sphereShape, 1, tame);
+				for(int k = 0; k < 3; ++k)
+					sphereShape.translation[k] = tame ? nxUnit(&local) * 3.0f - 1.5f : nxPick(&local);
+				// One pair in four starts a new shape identity, so both the
+				// header-writing and header-skipping paths are reached.
+				const bool newIdentity = (p == 0) || ((nxNext(&local) & 3) == 0);
+				const NxU32 material = nxNext(&local) & 0x7f;
+				const bool orientToSphere = (nxNext(&local) & 1) != 0;
+
+				const unsigned before = world[0].sink.streamCount;
+				for(int side = 0; side < 2; ++side)
+					nxStageWorld(&world[side], &planeShape, &sphereShape,
+						newIdentity, material, orientToSphere);
+
+				nxSetControl(mode ? kControlSimulate : kControlDefault);
+				oracleContact(world[0].plane, world[0].sphere, &world[0].sink, nxOverlapContext);
+				NxContactPlaneSphere(world[1].plane, world[1].sphere, &world[1].sink, nxOverlapContext);
+				nxSetControl(kControlDefault);
+
+				const unsigned appended = world[0].sink.streamCount - before;
+				if(appended)
+					++emitted;
+				if(appended >= 8)
+					++normalBlocks;
+				if(appended >= 11)
+					++headers;
+				if(!orientToSphere)
+					++negatedPath;
+				}
+
+			if(world[0].sink.streamCount != world[1].sink.streamCount
+				|| world[0].sink.contactCount != world[1].sink.contactCount
+				|| world[0].sink.featurePairValid != world[1].sink.featurePairValid)
+				++mismatches;
+
+			const unsigned words = world[0].sink.streamCount < world[1].sink.streamCount
+				? world[0].sink.streamCount : world[1].sink.streamCount;
+			for(unsigned w = 0; w < words; ++w)
+				{
+				// The two collision-object words are addresses, and each side
+				// has its own, so they are canonicalised to which shape they
+				// name. Everything else is compared raw.
+				const NxU32 a = nxCanonical(&world[0], world[0].stream[w]);
+				const NxU32 b = nxCanonical(&world[1], world[1].stream[w]);
+				for(int byte = 0; byte < 4; ++byte)
+					{
+					nxDigestByte(&oracleDigest, (unsigned char) (a >> (byte * 8)));
+					nxDigestByte(&candidateDigest, (unsigned char) (b >> (byte * 8)));
+					}
+				if(a != b)
+					++mismatches;
+				}
+			}
+		}
+	totalMismatch += mismatches;
+	printf("collision name=contact_plane_sphere index=1 rva=0x%08x owner=%s checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		nxMatrixA[1].rva, nxMatrixA[1].stableId,
+		oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches);
+	printf("collision coverage name=contact_plane_sphere emitted=%u normal_blocks=%u headers=%u negated_path=%u\n",
+		emitted, normalBlocks, headers, negatedPath);
 	}
 
 	// What is not covered, named rather than left as an absence.

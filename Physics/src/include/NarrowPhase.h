@@ -59,12 +59,20 @@ enum
 //   sphere   radius in [0]
 //   capsule  radius in [0], half height in [1]
 //   box      extents in [1..3]; [0] is not read by any kernel here
+// `owner` and `collisionObject` are BORROWED Phase 5 fields. Phase 3 reads them
+// because contact generation cannot emit without them; Phase 5 owns and must
+// still close the rows behind them. See the borrowed-layout section of
+// evidence/phase3-narrow-phase.md for the address establishing each.
 struct NxCollisionShape
 	{
-	NxU8   head[0x0c];
+	NxU8   vtable[4];
+	void*  owner;				// 0x04: borrowed, written at 0x00025543
+	NxU8   head[0x0c - 0x08];
 	NxReal rotation[9];			// 0x0c: world rotation, row major
 	NxReal translation[3];		// 0x30: world position
-	NxU8   middle[0xd0 - 0x3c];
+	NxU8   middle[0x9c - 0x3c];
+	void*  collisionObject;		// 0x9c: borrowed, written at 0x00024f0b etc
+	NxU8   middle2[0xd0 - 0xa0];
 	NxU32  type;				// 0xd0: NxShapeType
 	NxU8   tail[0xe0 - 0xd4];
 	NxReal geometry[4];			// 0xe0

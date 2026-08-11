@@ -87,6 +87,7 @@ if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/MassProperties.cpp
 		Physics/src/SmoothNormals.cpp
 		Physics/src/NarrowPhase.cpp
+		Physics/src/ContactGeneration.cpp
 		PROPERTIES COMPILE_OPTIONS "/arch:IA32")
 endif()
 
@@ -193,7 +194,8 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# harness's own, which is why -- unlike a symmetric differential -- a check
 	# inside it can fail the gate.
 	add_executable(NxPhysicsCollisionTests tests/PhysicsCollisionTests.cpp
-		Physics/src/NarrowPhase.cpp Physics/src/Geometry.cpp Physics/src/SmoothNormals.cpp)
+		Physics/src/NarrowPhase.cpp Physics/src/ContactGeneration.cpp
+		Physics/src/Geometry.cpp Physics/src/SmoothNormals.cpp)
 	target_include_directories(NxPhysicsCollisionTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include Physics/src/include)
 	# Geometry.cpp defines exports, so it has to be compiled with the same
