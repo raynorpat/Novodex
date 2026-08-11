@@ -4,7 +4,7 @@
 // hand-authored matrix of 299 cases, and the matrix is blind to two properties
 // of these kernels that the disassembly says are real:
 //
-//   * the floating-point model. All 106 mass and inertia cases pass under an
+//   * the floating-point model. All 108 mass and inertia cases pass under an
 //     evaluation that rounds to 32 bits after every operation, and the shipped
 //     DLL does not do that -- it is x87 with the process's _PC_53 precision
 //     control, so intermediates carry a 53-bit significand until they are
@@ -15,14 +15,20 @@
 //     broken instrument.
 //   * NaN payload propagation. When an operation has two NaN operands, x87
 //     yields the one with the larger significand and SSE yields the first
-//     source. Reproducing that is why Geometry.cpp and MassProperties.cpp are
-//     built /arch:IA32.
+//     source. Reproducing that is why Geometry.cpp, MassProperties.cpp and
+//     SmoothNormals.cpp are built /arch:IA32. SmoothNormals.cpp was added to
+//     that list only after the normals block below started generating
+//     non-finite vertices: while it fed finite geometry alone, the SSE2 build
+//     of that file matched the oracle on every committed check.
 //
 // Both were found here and neither can be found by the case matrix. The first
 // transcription of MassProperties.cpp, which used NxReal temporaries where the
 // oracle keeps an x87 register live, passed all 299 matrix cases and was
-// rejected by this harness on 525,995 of 4,800,000 checks -- every one of them
-// a single ulp.
+// rejected by this harness on every one of eleven digests.
+//
+// (An earlier draft of this comment quoted `525,995 of 4,800,000 checks` for
+// that rejection. That figure came from a pre-commit scratch sweep and is not
+// reproducible from anything committed here; the eleven-digest count is.)
 //
 // How to read the transcript. Nothing here decides whether a result is right:
 // this prints a digest of every value each export returned, and
@@ -94,6 +100,29 @@ static void nxDigestReport(const char* name, int present, const NxDigest* d)
 		return;
 		}
 	printf("fuzz name=%s present=1 checks=%u digest=%016llx\n", name, d->checks, d->state);
+	}
+
+// One coverage line per generator, printed separately from its digest line.
+//
+// Separately, and with the export name in the same string as the count, because
+// run_phase_gate.ps1 matches a registered coverage line by substring and two
+// exports can emit the same count. NxSegmentAABBIntersect.aimed and
+// NxSegmentBoxIntersect.aimed both reach 34575, so a bare `hits=34575`
+// registration is satisfied by either one: de-aiming only the segment/AABB
+// generator dropped it from 34575 to 92 -- 99.7% of the aimed path lost -- and
+// the gate still passed, because the other export's line matched the registered
+// string. That is a gate that cannot fail for the thing it was written to
+// protect. Putting the export name in the line makes each registered string
+// unique by construction, and test_gate_targets.py asserts that uniqueness
+// rather than leaving it to whoever edits the registry next.
+static void nxCoverage(const char* name, int present, unsigned reached)
+	{
+	if(!present)
+		{
+		printf("fuzz coverage name=%s present=0\n", name);
+		return;
+		}
+	printf("fuzz coverage name=%s reached=%u\n", name, reached);
 	}
 
 // xorshift32. Seeded per block so a change to one block cannot silently shift
@@ -649,6 +678,13 @@ static void nxRunAimedBoxBlock(HMODULE physics)
 		rayObb ? 1 : 0, dRayObb.checks, dRayObb.state, hitRayObb);
 	printf("fuzz name=NxSegmentOBBIntersect.aimed present=%d checks=%u digest=%016llx hits=%u\n",
 		segObb ? 1 : 0, dSegObb.checks, dSegObb.state, hitSegObb);
+
+	nxCoverage("NxRayAABBIntersect.aimed", rayAabb != 0, hitRayAabb);
+	nxCoverage("NxRayAABBIntersect2.aimed", rayAabb2 != 0, hitRayAabb2);
+	nxCoverage("NxSegmentAABBIntersect.aimed", segAabb != 0, hitSegAabb);
+	nxCoverage("NxSegmentBoxIntersect.aimed", segBox != 0, hitSegBox);
+	nxCoverage("NxRayOBBIntersect.aimed", rayObb != 0, hitRayObb);
+	nxCoverage("NxSegmentOBBIntersect.aimed", segObb != 0, hitSegObb);
 	}
 
 // The capsule and swept-sphere kernels, general input then aimed.
@@ -742,6 +778,9 @@ static void nxRunCapsuleBlock(HMODULE physics)
 		rayCapsule ? 1 : 0, dCapsuleAimed.checks, dCapsuleAimed.state, hitCapsule);
 	printf("fuzz name=NxSweptSpheresIntersect.aimed present=%d checks=%u digest=%016llx hits=%u\n",
 		swept ? 1 : 0, dSweptAimed.checks, dSweptAimed.state, hitSwept);
+
+	nxCoverage("NxRayCapsuleIntersect.aimed", rayCapsule != 0, hitCapsule);
+	nxCoverage("NxSweptSpheresIntersect.aimed", swept != 0, hitSwept);
 	}
 
 // The two separating-axis exports.
@@ -767,6 +806,11 @@ static void nxRunSatBlock(HMODULE physics)
 	nxDigestInit(&dBoxBoxAimed);
 	nxDigestInit(&dSepAxisAimed);
 	unsigned overlaps = 0;
+	// NxSeparatingAxis returns an axis index rather than a bool, so the useful
+	// coverage signal is how often it actually found one. A generator that
+	// stopped producing separated pairs would leave the whole argmax tail
+	// untested while still returning a plausible-looking digest.
+	unsigned separated = 0, separatedAimed = 0;
 
 	NxRandom random = { 0x0f1e2d3cu };
 	for(unsigned i = 0; i < kSatIterations; ++i)
@@ -789,7 +833,11 @@ static void nxRunSatBlock(HMODULE physics)
 		// third column -- are reproduced, and the case matrix covers them
 		// through NxSeparatingAxis.05, which returns 9 for exactly that reason.
 		if(sepAxis)
-			nxDigestWord(&dSepAxis, (NxU32) sepAxis(w + 0, w + 3, w + 6, w + 15, w + 18, w + 21, 1));
+			{
+			const int axis = sepAxis(w + 0, w + 3, w + 6, w + 15, w + 18, w + 21, 1);
+			separated += axis != 0 ? 1 : 0;
+			nxDigestWord(&dSepAxis, (NxU32) axis);
+			}
 
 		float extents0[3], centre0[3], rot0[9], extents1[3], centre1[3], rot1[9];
 		for(int k = 0; k < 3; ++k)
@@ -815,8 +863,11 @@ static void nxRunSatBlock(HMODULE physics)
 				}
 			}
 		if(sepAxis)
-			nxDigestWord(&dSepAxisAimed,
-				(NxU32) sepAxis(extents0, centre0, rot0, extents1, centre1, rot1, 1));
+			{
+			const int axis = sepAxis(extents0, centre0, rot0, extents1, centre1, rot1, 1);
+			separatedAimed += axis != 0 ? 1 : 0;
+			nxDigestWord(&dSepAxisAimed, (NxU32) axis);
+			}
 		}
 
 	nxDigestReport("NxBoxBoxIntersect", boxBox != 0, &dBoxBox);
@@ -824,6 +875,10 @@ static void nxRunSatBlock(HMODULE physics)
 	printf("fuzz name=NxBoxBoxIntersect.aimed present=%d checks=%u digest=%016llx overlaps=%u\n",
 		boxBox ? 1 : 0, dBoxBoxAimed.checks, dBoxBoxAimed.state, overlaps);
 	nxDigestReport("NxSeparatingAxis.aimed", sepAxis != 0, &dSepAxisAimed);
+
+	nxCoverage("NxBoxBoxIntersect.aimed", boxBox != 0, overlaps);
+	nxCoverage("NxSeparatingAxis", sepAxis != 0, separated);
+	nxCoverage("NxSeparatingAxis.aimed", sepAxis != 0, separatedAimed);
 	}
 
 // NxBuildSmoothNormals.
@@ -853,9 +908,27 @@ static void nxRunNormalsBlock(HMODULE physics)
 		float normals[17 * 3];
 		NxU32 dFaces[12 * 3];
 		unsigned short wFaces[12 * 3];
+		// Half the meshes are ordinary finite geometry and half are drawn from
+		// the same raw-bit mixture every other block uses.
+		//
+		// The finite-only version of this loop is why SmoothNormals.cpp was
+		// first built without /arch:IA32 and looked correct: no committed
+		// instrument had ever put a NaN, an infinity or a denormal into this
+		// export -- all 17 matrix cases are finite too -- so the one thing the
+		// architecture flag governs was the one thing never exercised. With
+		// this mixture the SSE2 build diverges from the oracle on the first
+		// operation with two NaN operands.
+		//
+		// Only the vertex coordinates vary. Indices stay in range on purpose:
+		// the export bounds-checks none of them, and an out-of-range index
+		// would corrupt this harness's own heap identically on both pairs,
+		// which is neither a useful check nor a safe one.
+		const int nonFinite = (nxNext(&random) & 1) != 0;
 		for(NxU32 v = 0; v < nbVerts; ++v)
 			for(int k = 0; k < 3; ++k)
-				verts[v * 3 + k] = nxUnit(&random) * 4.0f - 2.0f;
+				verts[v * 3 + k] = nonFinite
+					? nxPick(&random, i + v + (unsigned) k)
+					: nxUnit(&random) * 4.0f - 2.0f;
 		for(NxU32 t = 0; t < nbTris * 3; ++t)
 			{
 			const NxU32 index = nxNext(&random) % nbVerts;
@@ -890,6 +963,7 @@ static void nxRunNormalsBlock(HMODULE physics)
 		}
 	printf("fuzz name=NxBuildSmoothNormals present=1 checks=%u digest=%016llx accepted=%u\n",
 		digest.checks, digest.state, accepted);
+	nxCoverage("NxBuildSmoothNormals", 1, accepted);
 	}
 
 int wmain(int argc, wchar_t** argv)

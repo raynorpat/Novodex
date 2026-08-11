@@ -85,10 +85,11 @@ if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	set_source_files_properties(
 		Physics/src/Geometry.cpp
 		Physics/src/MassProperties.cpp
+		Physics/src/SmoothNormals.cpp
 		PROPERTIES COMPILE_OPTIONS "/arch:IA32")
 endif()
 
-# NOTE FOR WHOEVER ADDS THE NEXT KERNEL TRANSLATION UNIT. This rule names two
+# NOTE FOR WHOEVER ADDS THE NEXT KERNEL TRANSLATION UNIT. This rule names three
 # files, not a directory, so anything else added under Physics/src builds SSE2
 # by default and will silently disagree with the oracle on NaN payloads -- and,
 # if it is written with NxReal temporaries rather than double register
@@ -99,6 +100,17 @@ endif()
 # so. The check is cheap -- pick an input where the two models differ in the
 # last bit and compare, the way the witnesses in
 # tests/PhysicsKernelFuzzTests.cpp do.
+#
+# AND CHECK IT OVER THE RIGHT DOMAIN. SmoothNormals.cpp was added to this list
+# late, because the first measurement said it did not need the flag. That
+# measurement was wrong in a way worth repeating here: the normals fuzz block
+# generated only finite vertices, and all 17 matrix cases are finite too, so
+# nothing had ever put a NaN into the export. NaN payload propagation is exactly
+# what the flag exists for, so the domain that was measured was the one domain
+# where the flag cannot matter. Fed the same raw-bit mixture every other kernel
+# gets, the SSE2 build differs from the oracle on the first NaN that reaches a
+# two-NaN operation: oracle ffcad8b2, SSE2 ffc00000. A test that cannot fail is
+# worth nothing whichever side of the build it sits on.
 
 if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	add_executable(NxPhysicsExportTests tests/PhysicsExportTests.cpp)
