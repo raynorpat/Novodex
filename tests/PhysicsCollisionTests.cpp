@@ -236,6 +236,7 @@ static const unsigned nxDrivenContact[] =
 	1 * 6 + 1,		// phys_fn_001933
 	1 * 6 + 2,		// phys_fn_001919
 	1 * 6 + 3,		// phys_fn_001923
+	2 * 6 + 2,		// phys_fn_001749
 	3 * 6 + 3		// phys_fn_001775
 	};
 static const unsigned kDrivenContactCount = sizeof(nxDrivenContact) / sizeof(nxDrivenContact[0]);
@@ -2072,6 +2073,410 @@ int wmain(int argc, wchar_t** argv)
 		arms[1][0], arms[1][1], arms[1][2], arms[1][3], arms[1][4], arms[1][5],
 		separatedCount[1], negatedCount[1], warmEntry[1], carryWarmed[1], edgeOnly[1],
 		emitted[1], atSixteen[1], overSixteen[1], maxContacts[1], perMode[1][0], perMode[1][1]);
+	}
+
+
+	// -----------------------------------------------------------------------
+	// phys_fn_001748 at 0x0003ace0 -- the transpose-and-copy shim.
+	//
+	// 240 bytes, twenty-four integer moves and one call. It is driven as a row
+	// of its own because the transposition is the whole of what it does, and
+	// nothing above it can tell a transpose from its inverse unless the pose is
+	// asymmetric -- which is exactly what a raw-bit pose is and what a rotation
+	// matrix built from a random quaternion is. Every argument is on the stack
+	// (`add esp,0x20` at 0x0003ae4f), so this one needs no thunk.
+	//
+	// Two pairs per iteration through one cache byte, for the same reason the
+	// search's own block does it: the shim forwards that pointer and does not
+	// touch it, so the carry has to survive one more frame.
+	{
+	typedef int(__cdecl* NxOracleShimFn)(NxVec3*, NxReal*, NxVec3*, const NxReal*,
+		const NxReal*, const NxReal*, const NxReal*, unsigned char*);
+	NxOracleShimFn oracleShim = (NxOracleShimFn) (base + 0x0003ace0);
+	const int kSlots = 80;
+	const unsigned kShimIterations = 16000;
+	const NxU32 kUntouched = 0xcdcdcdcdu;
+
+	NxDigest oracleDigest, candidateDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	unsigned mismatches = 0;
+	unsigned perMode[2] = { 0, 0 };
+	unsigned aimedCalls = 0;
+	unsigned separatedCount = 0;
+	unsigned emittedContacts = 0;
+	unsigned carryWarmed = 0;
+	unsigned maxContacts = 0;
+	unsigned aimedMax = 0;
+	unsigned overSixteen = 0;
+	unsigned state = 0x3d70f21bu;
+
+	for(unsigned it = 0; it < kShimIterations; ++it)
+		{
+		NxReal pose[2][2][12];
+		NxReal extent[2][2][3];
+		const bool aimed = (nxNext(&state) & 1) != 0;
+
+		for(int p = 0; p < 2; ++p)
+			for(int boxIndex = 0; boxIndex < 2; ++boxIndex)
+				{
+				if(!aimed)
+					{
+					for(int k = 0; k < 12; ++k)
+						pose[p][boxIndex][k] = nxPick(&state);
+					for(int k = 0; k < 3; ++k)
+						extent[p][boxIndex][k] = nxPick(&state);
+					}
+				else
+					{
+					// Finite by construction, and a real rotation, so the
+					// transposition is its own inverse only if the matrix is
+					// symmetric -- which a random quaternion's is not.
+					unsigned char rotationStore[kShapeBytes];
+					NxCollisionShape* const rotation = (NxCollisionShape*) rotationStore;
+					nxIdentity(rotation);
+					nxRandomRotation(&state, rotation);
+					for(int k = 0; k < 9; ++k)
+						pose[p][boxIndex][k] = rotation->rotation[k];
+					for(int k = 0; k < 3; ++k)
+						{
+						extent[p][boxIndex][k] = nxUnit(&state) * 1.4f + 0.3f;
+						pose[p][boxIndex][9 + k] = boxIndex == 0
+							? nxUnit(&state) * 2.0f - 1.0f
+							: pose[p][0][9 + k] + (nxUnit(&state) * 2.0f - 1.0f)
+								* (extent[p][0][k] + extent[p][1][k]) * 0.9f;
+						}
+					}
+				}
+		if(aimed)
+			aimedCalls += 2;
+
+		const unsigned choice = nxNext(&state) & 7;
+		const unsigned char seed = (choice == 0)
+			? (unsigned char) 0xff : (unsigned char) (choice - 1);
+
+		for(int mode = 0; mode < 2; ++mode)
+			{
+			unsigned char cacheO = seed;
+			unsigned char cacheC = seed;
+			for(int pair = 0; pair < 2; ++pair)
+				{
+				const unsigned char entering = cacheO;
+				NxVec3 pointsO[80], pointsC[80];
+				NxReal separationsO[80], separationsC[80];
+				NxVec3 normalO, normalC;
+				memset(pointsO, 0xcd, sizeof(pointsO));
+				memset(pointsC, 0xcd, sizeof(pointsC));
+				memset(separationsO, 0xcd, sizeof(separationsO));
+				memset(separationsC, 0xcd, sizeof(separationsC));
+				memset(&normalO, 0xcd, sizeof(normalO));
+				memset(&normalC, 0xcd, sizeof(normalC));
+
+				nxSetControl(mode ? kControlSimulate : kControlDefault);
+				const int countO = oracleShim(pointsO, separationsO, &normalO,
+					extent[pair][0], pose[pair][0], extent[pair][1],
+					pose[pair][1], &cacheO);
+				const int countC = NxBoxBoxTransposedPair(pointsC, separationsC,
+					&normalC, extent[pair][0], pose[pair][0], extent[pair][1],
+					pose[pair][1], &cacheC);
+				nxSetControl(kControlDefault);
+
+				nxDigestByte(&oracleDigest, (unsigned char) countO);
+				nxDigestByte(&candidateDigest, (unsigned char) countC);
+				nxDigestByte(&oracleDigest, cacheO);
+				nxDigestByte(&candidateDigest, cacheC);
+					{
+					const NxU32 o[3] = { nxBits(normalO.x), nxBits(normalO.y), nxBits(normalO.z) };
+					const NxU32 c[3] = { nxBits(normalC.x), nxBits(normalC.y), nxBits(normalC.z) };
+					for(int w = 0; w < 3; ++w)
+						for(int byte = 0; byte < 4; ++byte)
+							{
+							nxDigestByte(&oracleDigest, (unsigned char) (o[w] >> (byte * 8)));
+							nxDigestByte(&candidateDigest, (unsigned char) (c[w] >> (byte * 8)));
+							}
+					}
+				for(int c = 0; c < countO && c < kSlots; ++c)
+					{
+					const NxU32 words[4] = { nxBits(separationsO[c]),
+						nxBits(pointsO[c].x), nxBits(pointsO[c].y), nxBits(pointsO[c].z) };
+					for(int w = 0; w < 4; ++w)
+						for(int byte = 0; byte < 4; ++byte)
+							nxDigestByte(&oracleDigest, (unsigned char) (words[w] >> (byte * 8)));
+					}
+				for(int c = 0; c < countC && c < kSlots; ++c)
+					{
+					const NxU32 words[4] = { nxBits(separationsC[c]),
+						nxBits(pointsC[c].x), nxBits(pointsC[c].y), nxBits(pointsC[c].z) };
+					for(int w = 0; w < 4; ++w)
+						for(int byte = 0; byte < 4; ++byte)
+							nxDigestByte(&candidateDigest, (unsigned char) (words[w] >> (byte * 8)));
+					}
+
+				unsigned differing = (countO != countC) ? 1u : 0u;
+				if(cacheO != cacheC)
+					++differing;
+				if(nxBits(normalO.x) != nxBits(normalC.x))
+					++differing;
+				if(nxBits(normalO.y) != nxBits(normalC.y))
+					++differing;
+				if(nxBits(normalO.z) != nxBits(normalC.z))
+					++differing;
+				for(int c = 0; c < kSlots; ++c)
+					{
+					if(nxBits(separationsO[c]) != nxBits(separationsC[c]))
+						++differing;
+					if(nxBits(pointsO[c].x) != nxBits(pointsC[c].x))
+						++differing;
+					if(nxBits(pointsO[c].y) != nxBits(pointsC[c].y))
+						++differing;
+					if(nxBits(pointsO[c].z) != nxBits(pointsC[c].z))
+						++differing;
+					}
+				mismatches += differing;
+				perMode[mode] += differing;
+
+				const bool reached = nxBits(normalO.x) != kUntouched
+					|| nxBits(normalO.y) != kUntouched
+					|| nxBits(normalO.z) != kUntouched;
+				if(!reached)
+					++separatedCount;
+				if(pair == 1 && (seed == 0 || seed == 0xff)
+					&& entering >= 1 && entering <= 6)
+					++carryWarmed;
+				emittedContacts += (unsigned) countO;
+				if(countO > (int) maxContacts)
+					maxContacts = (unsigned) countO;
+				// SPLIT BY FAMILY, because the two answer different questions
+				// about phys_fn_001749's sixteen-contact frame. `aimed_max` is
+				// the count with real rotations and physical extents -- the
+				// configuration a scene can actually be in -- and
+				// `over_sixteen` counts every call of either kind that returned
+				// more than the entry's arrays hold.
+				if(aimed && countO > (int) aimedMax)
+					aimedMax = (unsigned) countO;
+				if(countO > 16)
+					++overSixteen;
+				}
+			}
+		}
+
+	totalMismatch += mismatches;
+	printf("collision name=box_shim index=- rva=0x0003ace0 owner=phys_fn_001748 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches);
+	printf("collision coverage name=box_shim aimed=%u separated=%u emitted=%u carry_warmed=%u over_sixteen=%u aimed_max=%u max_contacts=%u default_mismatches=%u simulate_mismatches=%u\n",
+		aimedCalls, separatedCount, emittedContacts, carryWarmed, overSixteen,
+		aimedMax, maxContacts, perMode[0], perMode[1]);
+	}
+
+	// -----------------------------------------------------------------------
+	// phys_fn_001749 at 0x0003add0, matrix A [BOX][BOX] -- the last entry of
+	// matrix A this phase can close, and the only one that emits a manifold.
+	//
+	// The stream half is the plane/box pattern, so what this block has to
+	// distinguish is what is NOT shared: the header written with no predicate,
+	// the normal block written with no predicate over a cache the entry has
+	// just cleared, the orientation swap reading the FIRST shape's owner where
+	// plane/box reads the second's, a contact loop with NO CAP, and a
+	// separation that is negated and then masked.
+	//
+	// AND THE WARM START, END TO END. Each iteration drives up to four box
+	// pairs into ONE sink without resetting it between them, which is the
+	// state the shipped pipeline is in: sink+0xe8 is per sink, the per-step
+	// reset never clears it, and the only thing that ever writes 0 there is
+	// this entry, on a pair that produced nothing (0x0003ae5d). `warm_carried`
+	// counts pairs that arrived with an index an earlier PAIR left behind and
+	// `axis_cleared` counts the pairs that wiped it; a reimplementation that
+	// treats the byte as per-call scratch agrees on the first pair of every
+	// sequence and diverges after it.
+	//
+	// The sink's own constructor writes 0xff (0x0001efc8) and nxResetWorld
+	// zeroes it, so the sequence is started at one sentinel or the other in
+	// turn -- both mean "no cache" to the search and driving only one would
+	// leave the other's branch untested.
+	{
+	typedef void(__cdecl* NxOracleContactFn)(const NxCollisionShape*, const NxCollisionShape*,
+		NxContactSink*, void*);
+	NxOracleContactFn oracleContact = (NxOracleContactFn) (base + nxMatrixA[14].rva);
+	typedef int(__cdecl* NxOracleShimFn)(NxVec3*, NxReal*, NxVec3*, const NxReal*,
+		const NxReal*, const NxReal*, const NxReal*, unsigned char*);
+	NxOracleShimFn oracleShim = (NxOracleShimFn) (base + 0x0003ace0);
+
+	static NxContactWorld world[2];
+
+	NxDigest oracleDigest, candidateDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	unsigned mismatches = 0;
+	unsigned perMode[2] = { 0, 0 };
+	unsigned emitted = 0;
+	unsigned negatedPath = 0;
+	unsigned staticSide[2] = { 0, 0 };
+	unsigned warmCarried = 0;
+	unsigned axisCleared = 0;
+	unsigned atSixteen = 0;
+	unsigned maxContacts = 0;
+	unsigned overflowSkipped = 0;
+	unsigned probeMax = 0;
+	unsigned widths[80];
+	memset(widths, 0, sizeof(widths));
+	unsigned state = 0x1c8b47e5u;
+
+	for(unsigned i = 0; i < kContactIterations; ++i)
+		{
+		const unsigned sequenceSeed = nxNext(&state);
+		const unsigned pairs = 1 + (nxNext(&state) % 4);
+		const unsigned char sentinel = (i & 1) ? (unsigned char) 0xff : (unsigned char) 0;
+
+		for(int mode = 0; mode < 2; ++mode)
+			{
+			for(int side = 0; side < 2; ++side)
+				{
+				nxResetWorld(&world[side]);
+				world[side].sink.separatingAxis = sentinel;
+				}
+
+			unsigned local = sequenceSeed;
+			static unsigned char box0Storage[kShapeBytes];
+			static unsigned char box1Storage[kShapeBytes];
+			NxCollisionShape* box0Shape = (NxCollisionShape*) box0Storage;
+			NxCollisionShape* box1Shape = (NxCollisionShape*) box1Storage;
+			for(unsigned p = 0; p < pairs; ++p)
+				{
+				const bool tame = (nxNext(&local) & 3) != 0;
+				const bool deep = (nxNext(&local) & 1) != 0;
+				nxIdentity(box0Shape);
+				nxIdentity(box1Shape);
+				nxFillGeometry(&local, box0Shape, 2, tame);
+				nxFillGeometry(&local, box1Shape, 2, tame);
+				nxRandomRotation(&local, box0Shape);
+				nxRandomRotation(&local, box1Shape);
+				for(int k = 0; k < 3; ++k)
+					box0Shape->translation[k] = tame
+						? nxUnit(&local) * 2.0f - 1.0f : nxPick(&local);
+				if(tame)
+					{
+					// PER AXIS, not from a mean reach. The mean spreads the
+					// same offset over three unequal extents and mostly
+					// produces shallow contacts; scaling each axis by its own
+					// pair of extents is what puts two boxes deeply into each
+					// other, and a deep overlap is the only configuration whose
+					// manifold can exceed phys_fn_001749's sixteen slots.
+					const float spread = deep ? 0.6f : 1.2f;
+					for(int k = 0; k < 3; ++k)
+						box1Shape->translation[k] = box0Shape->translation[k]
+							+ (nxUnit(&local) * 2.0f - 1.0f) * spread
+								* (box0Shape->geometry[k + 1] + box1Shape->geometry[k + 1]);
+					}
+				else
+					for(int k = 0; k < 3; ++k)
+						box1Shape->translation[k] = nxPick(&local);
+
+				const bool newIdentity0 = (p == 0) || ((nxNext(&local) & 3) == 0);
+				const bool newIdentity1 = (p == 0) || ((nxNext(&local) & 3) == 0);
+				const NxU32 material0 = nxNext(&local) & 0xff;
+				const NxU32 material1 = nxNext(&local) & 0xff;
+				const unsigned staticDraw = nxNext(&local) % 12;
+				const bool nullHolder0 = staticDraw == 0;
+				const bool nullHolder1 = staticDraw == 1;
+				const bool orientToBox1 = (nxNext(&local) & 1) != 0;
+				if(mode == 0)
+					{
+					if(nullHolder0)
+						++staticSide[0];
+					if(nullHolder1)
+						++staticSide[1];
+					if(orientToBox1)
+						++negatedPath;
+					}
+
+				const unsigned before = world[0].sink.streamCount;
+				const unsigned char entering = world[0].sink.separatingAxis;
+				for(int side = 0; side < 2; ++side)
+					nxStageWorld(&world[side], box0Shape, box1Shape,
+						newIdentity0, newIdentity1, material0, material1,
+						nullHolder0, nullHolder1, !orientToBox1);
+
+				// PRE-FLIGHT, AND IT IS NOT BELT AND BRACES.
+				// phys_fn_001749's points array holds SIXTEEN and its
+				// seventeenth entry IS its own return address, so a pair whose
+				// manifold is larger does not merely disagree -- the oracle
+				// returns into a contact coordinate and takes the harness with
+				// it. phys_fn_001748 is called first with the identical
+				// arguments and a COPY of the live cache byte, so the count it
+				// returns is exactly the count the entry would produce, into
+				// eighty slots of the harness's own where the overrun is
+				// harmless. A pair that would overflow is COUNTED AND NOT
+				// DRIVEN, and `overflow_skipped` is therefore the reachability
+				// measurement itself: it is taken at the entry's own inputs.
+				unsigned char probeAxis = world[0].sink.separatingAxis;
+				NxVec3 probePoints[80];
+				NxReal probeSeparations[80];
+				NxVec3 probeNormal;
+				nxSetControl(mode ? kControlSimulate : kControlDefault);
+				const int probeCount = oracleShim(probePoints, probeSeparations,
+					&probeNormal, &world[0].plane->geometry[1],
+					&world[0].plane->rotation[0], &world[0].sphere->geometry[1],
+					&world[0].sphere->rotation[0], &probeAxis);
+				nxSetControl(kControlDefault);
+				if(mode == 0 && probeCount > (int) probeMax)
+					probeMax = (unsigned) probeCount;
+				if(probeCount > 16)
+					{
+					if(mode == 0)
+						++overflowSkipped;
+					continue;
+					}
+
+				nxSetControl(mode ? kControlSimulate : kControlDefault);
+				oracleContact(world[0].plane, world[0].sphere, &world[0].sink, nxOverlapContext);
+				NxContactBoxBox(world[1].plane, world[1].sphere, &world[1].sink, nxOverlapContext);
+				nxSetControl(kControlDefault);
+
+				// Read entirely off the oracle. `appended` is 7 + 4n for n
+				// contacts, because both the header and the normal block are
+				// unconditional here.
+				const unsigned appended = world[0].sink.streamCount - before;
+				if(appended)
+					++emitted;
+				if(appended < 80)
+					++widths[appended];
+				if(appended >= 11)
+					{
+					const unsigned contacts = (appended - 7) / 4;
+					if(contacts > maxContacts)
+						maxContacts = contacts;
+					if(contacts == 16)
+						++atSixteen;
+					}
+				if(mode == 0 && p > 0 && entering >= 1 && entering <= 6)
+					++warmCarried;
+				if(mode == 0 && world[0].sink.separatingAxis == 0 && entering != 0)
+					++axisCleared;
+
+				if(world[0].sink.separatingAxis != world[1].sink.separatingAxis)
+					{
+					++mismatches;
+					++perMode[mode];
+					}
+				nxDigestByte(&oracleDigest, world[0].sink.separatingAxis);
+				nxDigestByte(&candidateDigest, world[1].sink.separatingAxis);
+				}
+
+			nxFoldStream(&oracleDigest, &world[0]);
+			nxFoldStream(&candidateDigest, &world[1]);
+			const unsigned differing = nxCompareStreams(&world[0], &world[1]);
+			mismatches += differing;
+			perMode[mode] += differing;
+			}
+		}
+	totalMismatch += mismatches;
+	printf("collision name=contact_box_box index=14 rva=0x%08x owner=%s checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		nxMatrixA[14].rva, nxMatrixA[14].stableId,
+		oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches);
+	printf("collision coverage name=contact_box_box emitted=%u negated=%u static0=%u static1=%u warm_carried=%u axis_cleared=%u w11=%u w15=%u w31=%u at_sixteen=%u max_contacts=%u overflow_skipped=%u probe_max=%u default_mismatches=%u simulate_mismatches=%u\n",
+		emitted, negatedPath, staticSide[0], staticSide[1], warmCarried, axisCleared,
+		widths[11], widths[15], widths[31], atSixteen, maxContacts,
+		overflowSkipped, probeMax, perMode[0], perMode[1]);
 	}
 
 	// -----------------------------------------------------------------------

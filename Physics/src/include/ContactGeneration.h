@@ -54,6 +54,19 @@ struct NxContactSink
 	NxU32  streamCapacity;		// 0x38
 	NxU32  streamCount;			// 0x3c
 	NxU32* stream;				// 0x40
+	// Everything between 0x44 and 0xe8 belongs to phases 5 and 7 and nothing in
+	// this component reads it. It is a gap rather than a guess.
+	NxU8   gap1[0xe8 - 0x44];
+	// 0xe8: the box/box separating-axis warm start. The sink's own constructor
+	// writes 0xff here and at 0xe9 -- `mov cl,0xff` at 0x0001efc6 and the two
+	// stores at 0x0001efc8 and 0x0001efce, on an esi the call at 0x0001efa6
+	// proves is the sink base -- and the per-step reset at 0x0005b620 covers
+	// 0x10..0x43 and never clears it. So this byte carries ACROSS SIMULATION
+	// STEPS AND ACROSS SHAPE PAIRS: one cached axis for a whole sink.
+	NxU8   separatingAxis;
+	// 0xe9 is written 0xff beside it and read by phys_fn_002264, which is a
+	// stop. Named only as far as this component establishes it.
+	NxU8   tail[2];
 	};
 
 // phys_fn_000873 at 0x0001d610. __thiscall on the sink, seven stack arguments,
@@ -282,5 +295,51 @@ int NxBoxBoxClipFace(NxVec3* points, NxReal* separations, const NxReal* pose,
 int NxBoxBoxSeparatingAxis(NxVec3* points, NxReal* separations,
 	const NxReal* extentsA, const NxReal* poseB, unsigned char* cache,
 	const NxReal* poseA, NxVec3* normal, const NxReal* extentsB);
+
+// phys_fn_001748 at 0x0003ace0, 240 bytes, and no arithmetic at all: it copies
+// two 12-dword poses into its own frame with each 3x3 TRANSPOSED and the
+// trailing translation straight (0x0003ace8..0x0003ad33 and
+// 0x0003ad3e..0x0003ad9d), then calls NxBoxBoxSeparatingAxis with five stack
+// arguments and three registers. Every move is an integer `mov`, so a
+// signalling NaN in a pose survives it.
+//
+// Eight arguments on the stack, `add esp,0x20` at 0x0003ae4f. It is a row of
+// its own in the census and it is driven as one, because the transposition is
+// the whole of what it does and a caller cannot distinguish it from its inverse
+// without a non-symmetric pose.
+int NxBoxBoxTransposedPair(NxVec3* points, NxReal* separations, NxVec3* normal,
+	const NxReal* extentsA, const NxReal* poseA,
+	const NxReal* extentsB, const NxReal* poseB, unsigned char* cache);
+
+// phys_fn_001749 at 0x0003add0, 775 bytes, matrix A slot [BOX][BOX] -- and the
+// last entry of matrix A that Phase 3 can close.
+//
+// It is the second entry that INLINES the emitter rather than calling
+// phys_fn_000873, and it inlines the same three levels plane/box does, so the
+// shared helpers cover its stream half. What is its own is four things:
+//
+//   the orientation swap is here, not in the emitter (0x0003ae67), and it reads
+//     the FIRST shape's owner where plane/box reads the second's;
+//   it is the only matrix A entry that emits a MANIFOLD -- the loop at
+//     0x0003b010..0x0003b0c6 walks a 12-byte-strided point array and a parallel
+//     separation array;
+//   there is NO CONTACT CAP, where plane/box stops at six (`cmp eax,6` at
+//     0x00048218 has no counterpart here);
+//   the separation is negated at 0x0003b013 AND masked at 0x0003b064, so the
+//     negation is invisible for every finite value but the `fld dword` quiets a
+//     signalling NaN on the way through.
+//
+// THE ORACLE'S THREE OUTPUT BUFFERS ARE IN ITS OWN FRAME AND HOLD SIXTEEN.
+// `sub esp,0x128` plus four pushes puts the body's esp at `entry - 0x138`, and
+// the three `lea`s feeding the call at 0x0003ae4a resolve to a normal at +0x20,
+// sixteen separations at +0x38..+0x78 and sixteen points at +0x78..+0x138.
+// +0x138 IS THE RETURN ADDRESS and nothing lies between; the prologue carries
+// no /GS cookie. Driven with the reference face the search actually selects,
+// the count reaches sixteen and does not exceed it -- see the box_axis coverage
+// line -- so the frame is filled exactly and the margin is one contact. This
+// copy gives itself room for the whole manifold instead, on the same footing as
+// nxReserve: it stops rather than overruns.
+void __cdecl NxContactBoxBox(const NxCollisionShape* box0,
+	const NxCollisionShape* box1, NxContactSink* sink, void* context);
 
 #endif

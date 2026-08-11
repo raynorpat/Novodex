@@ -2575,3 +2575,128 @@ int NxBoxBoxSeparatingAxis(NxVec3* points, NxReal* separations,
 		refExtents[(i + 1) % 3], refExtents[(i + 2) % 3],
 		referenceIsA ? poseB : poseA, referenceIsA ? extentsB : extentsA);
 	}
+
+// ---------------------------------------------------------------------------
+// phys_fn_001748 at 0x0003ace0 -- the transpose-and-copy shim.
+
+// The 3x3 transposed and the translation straight, twenty-four integer moves
+// and nothing else. `out[i*3+j] = in[j*3+i]` is what
+// `[eax+0] -> [esp+0x34]`, `[eax+0xc] -> [esp+0x38]`, `[eax+0x18] -> [esp+0x3c]`
+// says: the copy's first ROW is the source's first COLUMN.
+static void nxBoxBoxTranspose(NxReal* out, const NxReal* in)
+	{
+	for(int i = 0; i < 3; ++i)
+		for(int j = 0; j < 3; ++j)
+			memcpy(&out[i * 3 + j], &in[j * 3 + i], 4);
+	for(int k = 9; k < 12; ++k)
+		memcpy(&out[k], &in[k], 4);
+	}
+
+int NxBoxBoxTransposedPair(NxVec3* points, NxReal* separations, NxVec3* normal,
+	const NxReal* extentsA, const NxReal* poseA,
+	const NxReal* extentsB, const NxReal* poseB, unsigned char* cache)
+	{
+	// Two 12-dword frames. The oracle puts box A's at [esp+0x34] and box B's at
+	// [esp+0x04] and passes the first in ebx and the second as its callee's
+	// third stack argument (`lea ebx,[esp+0x48]` at 0x0003adbf and
+	// `lea ecx,[esp+8]` at 0x0003ada5).
+	NxReal transposedA[12];
+	NxReal transposedB[12];
+	nxBoxBoxTranspose(transposedA, poseA);
+	nxBoxBoxTranspose(transposedB, poseB);
+
+	return NxBoxBoxSeparatingAxis(points, separations, extentsA, transposedB,
+		cache, transposedA, normal, extentsB);
+	}
+
+// ---------------------------------------------------------------------------
+// phys_fn_001749 at 0x0003add0 -- matrix A [BOX][BOX]. See the header.
+
+void __cdecl NxContactBoxBox(const NxCollisionShape* box0,
+	const NxCollisionShape* box1, NxContactSink* sink, void* context)
+	{
+	(void) context;
+
+	// 0x0003ade1..0x0003ae18, the same guard the two sphere entries carry and
+	// in the same shape: box0 is tested first and box1 only if box0's
+	// owner->[8] is non-null. The pushes name the argument order --
+	// `push edi; push esi; push ebp` at 0x0003adfd is
+	// (moving = box1, fixed = box0, sink).
+	if(!*(void* const*) ((const NxU8*) NxShapeOwner(box0, 0) + 8))
+		NxContinuousCdPair(box1, box0, sink);
+	else if(!*(void* const*) ((const NxU8*) NxShapeOwner(box1, 0) + 8))
+		NxContinuousCdPair(box0, box1, sink);
+
+	// The oracle's arrays are sixteen deep and end flush against its own return
+	// address; see the header. Eighty is what phys_fn_001741 can actually
+	// produce, so this copy stops where the oracle would start writing over its
+	// caller.
+	NxVec3 points[80];
+	NxReal separations[80];
+	NxVec3 normal;
+
+	// `lea eax,[esi+0xe4]` and `lea edx,[esi+0xc]` at 0x0003ae31 and 0x0003ae2d:
+	// the extents are Shape+0xe4, which is `geometry[1..3]`, and the pose is
+	// Shape+0x0c, the row-major 3x3 followed by the translation.
+	const int count = NxBoxBoxTransposedPair(points, separations, &normal,
+		&box0->geometry[1], &box0->rotation[0],
+		&box1->geometry[1], &box1->rotation[0],
+		&sink->separatingAxis);
+
+	// 0x0003ae52..0x0003ae66. A pair that produced nothing writes ZERO over the
+	// cached axis on the way out -- so the entry, not the search, is what
+	// forgets an axis, and it only forgets it when the search found none.
+	if(count == 0)
+		{
+		sink->separatingAxis = 0;
+		return;
+		}
+
+	// The orientation swap, 0x0003ae67, and it reads the FIRST shape's owner
+	// where plane/box reads the second's. box0 is this entry's `object1`.
+	const NxCollisionShape* first = box0;
+	const NxCollisionShape* second = box1;
+	const bool negated =
+		*(void* const*) ((const NxU8*) box0->owner + 8) != sink->orientedTo;
+	if(negated)
+		{
+		first = box1;
+		second = box0;
+		}
+
+	// No header predicate: written whenever the call emitted (`test eax,eax;
+	// jne` at 0x0003ae58 is the only gate). The feature half is always zero
+	// because sink->[0x34] is cleared at 0x0003ae82, which also makes the fifth
+	// contact word at 0x0003b08e dead.
+	sink->featurePairValid = 0;
+	nxAppendPairHeader(sink, first->collisionObject, second->collisionObject,
+		nxHeaderMaterial(first, second), 0);
+
+	// No normal predicate either: the block always follows. The oracle even
+	// clears the cached normal at 0x0003af45 and overwrites it at 0x0003af81,
+	// so the comparison the emitter makes is not merely skipped here -- the
+	// state it would read is destroyed first.
+	NxVec3 emitted;
+	if(negated)
+		{
+		emitted.x = (NxReal) (-(double) normal.x);
+		emitted.y = (NxReal) (-(double) normal.y);
+		emitted.z = (NxReal) (-(double) normal.z);
+		}
+	else
+		emitted = normal;
+	nxAppendNormalBlock(sink, &emitted);
+
+	// The manifold, 0x0003b010..0x0003b0c6. NO CAP -- there is no `cmp eax,6`
+	// here, which is what makes this the one entry where the stream growth path
+	// could actually be reached. The separation is negated through the x87
+	// (`fld dword; fchs; fstp dword` at 0x0003b013) and then masked by
+	// nxAppendContactRecord's own `and ebp,0x7fffffff` at 0x0003b064, so the
+	// negation changes nothing for a finite value -- but the load quiets a
+	// signalling NaN, which a bare mask would not.
+	for(int c = 0; c < count; ++c)
+		{
+		const NxReal flipped = (NxReal) (-(double) separations[c]);
+		nxAppendContactRecord(sink, &points[c], nxBits(flipped), 0);
+		}
+	}
