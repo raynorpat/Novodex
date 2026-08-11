@@ -101,6 +101,15 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_include_directories(NxPhysicsGeometryTests PRIVATE Foundation/include Physics/include)
 	target_link_libraries(NxPhysicsGeometryTests bcrypt)
 
+	# The randomized kernel differential. Same staged-pair machinery as the case
+	# matrix above; it is a second target rather than more cases because the
+	# matrix cannot see the x87 precision model or NaN payload propagation, and
+	# a digest over millions of inputs is not a transcript anyone would read
+	# case by case.
+	add_executable(NxPhysicsKernelFuzzTests tests/PhysicsKernelFuzzTests.cpp)
+	target_include_directories(NxPhysicsKernelFuzzTests PRIVATE Foundation/include Physics/include)
+	target_link_libraries(NxPhysicsKernelFuzzTests bcrypt)
+
 	# A static-proof gate, not a differential: it links the private translation
 	# units directly because the rows it covers cannot be reached through the
 	# public API. Same shape as NxFoundationCustomArrayTests above.
