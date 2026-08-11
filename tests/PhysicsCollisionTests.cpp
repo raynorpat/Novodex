@@ -497,11 +497,11 @@ struct NxContactWorld
 	NxCollisionShape* sphere;
 	NxContactSink sink;
 	NxU32 stream[0x2000];
-	unsigned char shapeStore[2][sizeof(NxCollisionShape) + 16];
+	unsigned char shapeStore[2][kShapeBytes];
 	unsigned char objectStore[2][2][0x20];
 	unsigned char ownerStore[2][0x40];
 	unsigned char holderStore[2][0x280];
-	NxU32 generation;
+	NxU32 generation[2];
 	};
 
 static void nxResetWorld(NxContactWorld* world)
@@ -510,26 +510,45 @@ static void nxResetWorld(NxContactWorld* world)
 	memset(world->stream, 0, sizeof(world->stream));
 	world->sink.stream = world->stream;
 	world->sink.streamCapacity = sizeof(world->stream) / sizeof(world->stream[0]);
-	// Word 0 is the pair counter the header increments; the emitter never
-	// appends it, so the harness reserves it as a real caller would.
+	// Word 0 is the pair counter the header increments. This is not the harness
+	// improvising: it is what phys_fn_002354 at 0x0005b620 does, which resets
+	// this object at `sink + 0x10` and reserves exactly one stream word whose
+	// index it records. Driving the oracle's own reset over a poisoned sink
+	// reproduces the state below field for field.
 	world->sink.streamCount = 1;
 	world->sink.pairCountIndex = 0;
-	world->generation = 0;
+	world->generation[0] = 0;
+	world->generation[1] = 0;
 	world->plane = (NxCollisionShape*) world->shapeStore[0];
 	world->sphere = (NxCollisionShape*) world->shapeStore[1];
 	}
 
+// The two shapes are staged independently on purpose. An earlier version used
+// one identity flag and one material for both, which made two behaviours of the
+// emitter unmeasurable: the header predicate is an OR over the two collision
+// objects, so with them always changing together `||` and `&&` are the same
+// function; and the material is read from shape1's owner with a fallback to
+// shape0's, so with both holders carrying the same value the choice never
+// showed. Both are now driven separately.
 static void nxStageWorld(NxContactWorld* world, const NxCollisionShape* planeShape,
-	const NxCollisionShape* sphereShape, bool newIdentity, NxU32 material, bool orientToSphere)
+	const NxCollisionShape* sphereShape, bool newIdentity0, bool newIdentity1,
+	NxU32 material0, NxU32 material1, bool nullHolder1, bool orientToSphere)
 	{
-	if(newIdentity)
-		++world->generation;
-	memcpy(world->plane, planeShape, sizeof(NxCollisionShape));
-	memcpy(world->sphere, sphereShape, sizeof(NxCollisionShape));
+	if(newIdentity0)
+		++world->generation[0];
+	if(newIdentity1)
+		++world->generation[1];
+	// kShapeBytes, not sizeof(NxCollisionShape): the struct models the fields
+	// the kernels read, and the oracle's shape is larger. Every buffer a shape
+	// pointer can reach is kShapeBytes here and zeroed by nxIdentity, so a read
+	// past the modelled fields is deterministic rather than whatever was on the
+	// stack.
+	memcpy(world->plane, planeShape, kShapeBytes);
+	memcpy(world->sphere, sphereShape, kShapeBytes);
 	for(int which = 0; which < 2; ++which)
 		{
 		NxCollisionShape* shape = which ? world->sphere : world->plane;
-		const unsigned slot = world->generation & 1;
+		const unsigned slot = world->generation[which] & 1;
 		unsigned char* owner = world->ownerStore[which];
 		unsigned char* holder = world->holderStore[which];
 		memset(owner, 0, sizeof(world->ownerStore[which]));
@@ -542,8 +561,11 @@ static void nxStageWorld(NxContactWorld* world, const NxCollisionShape* planeSha
 			memset(world->objectStore[which][s], 0, sizeof(world->objectStore[which][s]));
 			*(NxCollisionShape**) (world->objectStore[which][s] + 8) = shape;
 			}
-		*(unsigned char**) (owner + 8) = holder;
-		*(NxU32*) (holder + 0x240) = material;
+		// A null `owner->[8]` on shape1's side is a supported state -- the
+		// emitter falls back to shape0's at 0x0001d738 -- and nothing had ever
+		// entered it.
+		*(unsigned char**) (owner + 8) = (which == 1 && nullHolder1) ? 0 : holder;
+		*(NxU32*) (holder + 0x240) = which ? material1 : material0;
 		shape->owner = owner;
 		// The header turns on this pointer changing, so a new identity picks the
 		// other of the two objects.
@@ -1241,8 +1263,10 @@ int wmain(int argc, wchar_t** argv)
 	nxDigestInit(&candidateDigest);
 	unsigned mismatches = 0;
 	unsigned emitted = 0;
-	unsigned normalBlocks = 0;
-	unsigned headers = 0;
+	unsigned widths[16];
+	memset(widths, 0, sizeof(widths));
+
+
 	unsigned negatedPath = 0;
 	unsigned state = 0x4dea11c7u;
 
@@ -1262,41 +1286,69 @@ int wmain(int argc, wchar_t** argv)
 			// is constant across the sequence and the normal-block skip is
 			// reached. With a fresh plane per pair the block was rewritten
 			// almost every time and the caching rule went untested.
-			NxCollisionShape planeShape;
+			static unsigned char planeStorage[kShapeBytes];
+			NxCollisionShape* planeShape = (NxCollisionShape*) planeStorage;
 			const bool planeTame = (nxNext(&local) & 3) != 0;
-			nxIdentity(&planeShape);
-			nxFillGeometry(&local, &planeShape, 0, planeTame);
+			nxIdentity(planeShape);
+			nxFillGeometry(&local, planeShape, 0, planeTame);
 			for(unsigned p = 0; p < pairs; ++p)
 				{
-				NxCollisionShape sphereShape;
+				static unsigned char sphereStorage[kShapeBytes];
+				NxCollisionShape* sphereShape = (NxCollisionShape*) sphereStorage;
 				const bool tame = (nxNext(&local) & 3) != 0;
-				nxIdentity(&sphereShape);
-				nxFillGeometry(&local, &sphereShape, 1, tame);
+				nxIdentity(sphereShape);
+				nxFillGeometry(&local, sphereShape, 1, tame);
 				for(int k = 0; k < 3; ++k)
-					sphereShape.translation[k] = tame ? nxUnit(&local) * 3.0f - 1.5f : nxPick(&local);
+					sphereShape->translation[k] = tame ? nxUnit(&local) * 3.0f - 1.5f : nxPick(&local);
 				// One pair in four starts a new shape identity, so both the
 				// header-writing and header-skipping paths are reached.
-				const bool newIdentity = (p == 0) || ((nxNext(&local) & 3) == 0);
-				const NxU32 material = nxNext(&local) & 0x7f;
+				// The two identities move independently, so the header
+				// predicate's OR is exercised on each side alone as well as on
+				// both together. With one flag for both, `||` and `&&` are the
+				// same function and the rule went untested.
+				const bool newIdentity0 = (p == 0) || ((nxNext(&local) & 3) == 0);
+				const bool newIdentity1 = (p == 0) || ((nxNext(&local) & 3) == 0);
+				// Different materials, and a full byte each, so the shift into
+				// bits 24..31 is exercised rather than only its low seven bits.
+				const NxU32 material0 = nxNext(&local) & 0xff;
+				const NxU32 material1 = nxNext(&local) & 0xff;
+				// A null `owner->[8]` on shape1's side is a supported state --
+				// the emitter falls back to shape0's at 0x0001d738 -- and
+				// nothing had ever entered it.
+				const bool nullHolder1 = (nxNext(&local) & 7) == 0;
 				const bool orientToSphere = (nxNext(&local) & 1) != 0;
+				// One pair in three re-rolls the plane, so a normal can change
+				// without an identity changing. That is the one stream state a
+				// per-sequence plane could never reach.
+				if(p && (nxNext(&local) % 3) == 0)
+					{
+					nxIdentity(planeShape);
+					nxFillGeometry(&local, planeShape, 0, planeTame);
+					}
 
 				const unsigned before = world[0].sink.streamCount;
 				for(int side = 0; side < 2; ++side)
-					nxStageWorld(&world[side], &planeShape, &sphereShape,
-						newIdentity, material, orientToSphere);
+					nxStageWorld(&world[side], planeShape, sphereShape,
+						newIdentity0, newIdentity1, material0, material1,
+						nullHolder1, orientToSphere);
 
 				nxSetControl(mode ? kControlSimulate : kControlDefault);
 				oracleContact(world[0].plane, world[0].sphere, &world[0].sink, nxOverlapContext);
 				NxContactPlaneSphere(world[1].plane, world[1].sphere, &world[1].sink, nxOverlapContext);
 				nxSetControl(kControlDefault);
 
+				// A histogram, not buckets. The previous counters keyed on the
+				// total words appended and called anything >= 8 a normal block
+				// and >= 11 a header, so a header without a normal block -- 7
+				// words -- counted as neither, and `headers == normal_blocks`
+				// would have survived the very failure it was offered as ruling
+				// out. Each distinct width is reported instead: 4 is a bare
+				// record, 8 adds a normal block, 11 adds a header as well.
 				const unsigned appended = world[0].sink.streamCount - before;
 				if(appended)
 					++emitted;
-				if(appended >= 8)
-					++normalBlocks;
-				if(appended >= 11)
-					++headers;
+				if(appended < 16)
+					++widths[appended];
 				if(!orientToSphere)
 					++negatedPath;
 				}
@@ -1329,8 +1381,117 @@ int wmain(int argc, wchar_t** argv)
 	printf("collision name=contact_plane_sphere index=1 rva=0x%08x owner=%s checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
 		nxMatrixA[1].rva, nxMatrixA[1].stableId,
 		oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches);
-	printf("collision coverage name=contact_plane_sphere emitted=%u normal_blocks=%u headers=%u negated_path=%u\n",
-		emitted, normalBlocks, headers, negatedPath);
+	printf("collision coverage name=contact_plane_sphere emitted=%u w4=%u w7=%u w8=%u w11=%u negated_path=%u\n",
+		emitted, widths[4], widths[7], widths[8], widths[11], negatedPath);
+	}
+
+	// -----------------------------------------------------------------------
+	// The emitter, driven directly with real feature ids.
+	//
+	// Every matrix A entry reachable today is a primitive pair and passes
+	// 0xffff/0xffff, so `featurePairValid` is always 0, the fifth word of a
+	// record is never appended, and both halves of the feature rule -- the
+	// validity test at 0x0001d694 and the swap at 0x0001d63c -- were dead. The
+	// mesh entries are where real ids come from and they need Phase 4, but the
+	// emitter is __thiscall at a known address and can be driven now.
+	{
+	typedef void(__thiscall* NxOracleEmitFn)(NxContactSink*, void*, void*, NxU32,
+		const NxVec3*, const NxVec3*, NxU16, NxU16);
+	NxOracleEmitFn oracleEmit = (NxOracleEmitFn) (base + 0x0001d610);
+
+	static NxContactWorld emitWorld[2];
+	NxDigest oracleDigest, candidateDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	unsigned mismatches = 0;
+	unsigned realFeatures = 0;
+	unsigned fifthWords = 0;
+	unsigned state = 0x0fea70edu;
+
+	for(unsigned i = 0; i < kContactIterations; ++i)
+		{
+		const unsigned sequenceSeed = nxNext(&state);
+		const unsigned pairs = 1 + (nxNext(&state) % 4);
+		for(int mode = 0; mode < 2; ++mode)
+			{
+			for(int side = 0; side < 2; ++side)
+				nxResetWorld(&emitWorld[side]);
+			unsigned local = sequenceSeed;
+			for(unsigned p = 0; p < pairs; ++p)
+				{
+				static unsigned char planeStore[kShapeBytes];
+				static unsigned char sphereStore[kShapeBytes];
+				NxCollisionShape* pl = (NxCollisionShape*) planeStore;
+				NxCollisionShape* sp = (NxCollisionShape*) sphereStore;
+				const bool tame = (nxNext(&local) & 3) != 0;
+				nxIdentity(pl);
+				nxIdentity(sp);
+				nxFillGeometry(&local, pl, 0, tame);
+				nxFillGeometry(&local, sp, 1, tame);
+
+				// Half the ids are real and half are 0xffff, independently, so
+				// all four combinations of the validity rule are reached.
+				const NxU16 id0 = (nxNext(&local) & 1) ? (NxU16) (nxNext(&local) & 0x7fff) : (NxU16) 0xffff;
+				const NxU16 id1 = (nxNext(&local) & 1) ? (NxU16) (nxNext(&local) & 0x7fff) : (NxU16) 0xffff;
+				if(id0 != 0xffff && id1 != 0xffff)
+					++realFeatures;
+
+				NxVec3 point, normal;
+				for(int k = 0; k < 3; ++k)
+					{
+					(&point.x)[k] = tame ? nxUnit(&local) * 4.0f - 2.0f : nxPick(&local);
+					(&normal.x)[k] = tame ? nxUnit(&local) * 2.0f - 1.0f : nxPick(&local);
+					}
+				const NxU32 separationBits = nxNext(&local);
+
+				const bool newIdentity0 = (p == 0) || ((nxNext(&local) & 3) == 0);
+				const bool newIdentity1 = (p == 0) || ((nxNext(&local) & 3) == 0);
+				const NxU32 material0 = nxNext(&local) & 0xff;
+				const NxU32 material1 = nxNext(&local) & 0xff;
+				const bool nullHolder1 = (nxNext(&local) & 7) == 0;
+				const bool orientToSphere = (nxNext(&local) & 1) != 0;
+
+				for(int side = 0; side < 2; ++side)
+					nxStageWorld(&emitWorld[side], pl, sp, newIdentity0, newIdentity1,
+						material0, material1, nullHolder1, orientToSphere);
+
+				const unsigned before = emitWorld[0].sink.streamCount;
+				nxSetControl(mode ? kControlSimulate : kControlDefault);
+				oracleEmit(&emitWorld[0].sink, emitWorld[0].sphere->collisionObject,
+					emitWorld[0].plane->collisionObject, separationBits, &point, &normal, id0, id1);
+				NxEmitContact(&emitWorld[1].sink, emitWorld[1].sphere->collisionObject,
+					emitWorld[1].plane->collisionObject, separationBits, &point, &normal, id0, id1);
+				nxSetControl(kControlDefault);
+				const unsigned appended = emitWorld[0].sink.streamCount - before;
+				if(appended == 5 || appended == 9 || appended == 12)
+					++fifthWords;
+				}
+
+			if(emitWorld[0].sink.streamCount != emitWorld[1].sink.streamCount
+				|| emitWorld[0].sink.contactCount != emitWorld[1].sink.contactCount
+				|| emitWorld[0].sink.featurePairValid != emitWorld[1].sink.featurePairValid)
+				++mismatches;
+			const unsigned words = emitWorld[0].sink.streamCount < emitWorld[1].sink.streamCount
+				? emitWorld[0].sink.streamCount : emitWorld[1].sink.streamCount;
+			for(unsigned w = 0; w < words; ++w)
+				{
+				const NxU32 a = nxCanonical(&emitWorld[0], emitWorld[0].stream[w]);
+				const NxU32 b = nxCanonical(&emitWorld[1], emitWorld[1].stream[w]);
+				for(int byte = 0; byte < 4; ++byte)
+					{
+					nxDigestByte(&oracleDigest, (unsigned char) (a >> (byte * 8)));
+					nxDigestByte(&candidateDigest, (unsigned char) (b >> (byte * 8)));
+					}
+				if(a != b)
+					++mismatches;
+				}
+			}
+		}
+	totalMismatch += mismatches;
+	printf("collision name=contact_emit index=- rva=0x0001d610 owner=phys_fn_000873 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches);
+	printf("collision coverage name=contact_emit real_feature_pairs=%u fifth_words=%u\n",
+		realFeatures, fifthWords);
 	}
 
 	// What is not covered, named rather than left as an absence.

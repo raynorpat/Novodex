@@ -17,10 +17,25 @@
 // behind this, and should report any disagreement with this struct as a finding
 // rather than silently preferring one version.
 //
-// What is NOT established here, and is therefore not written down: what
-// constructs this object, what `orientedTo` points at, and whether the fields
-// the emitter never touches exist at all. `0x0005b620` is not its initialiser --
-// both of that function's call sites pass `this + 0x10`.
+// The object is built and reset by two rows outside Phase 3: phys_fn_002356 at
+// 0x0005b680 (Phase 7) constructs the stream sub-object at `+0x38` through
+// 0x000b4d70 and then calls phys_fn_002354 at 0x0005b620 (Phase 2) to reset it.
+// 0x0005b620 operates on `sink + 0x10`, so every offset inside that function is
+// 0x10 lower than the ones here: the sink is an outer object with a 0x10
+// prefix, and `orientedTo` at `+0x08` lives in that prefix and survives a reset.
+//
+// Measured, not inferred. Calling the pinned oracle's 0x0005b620 on
+// `&sink + 0x10` over a 0xcd-poisoned sink zeroes `+0x10`..`+0x43`, leaves the
+// prefix at 0xcdcdcdcd, preserves the stream array header and reserves one
+// stream word whose index it records -- which is field for field what the
+// harness's nxResetWorld produces.
+//
+// An earlier version of this comment said 0x0005b620 was not the initialiser.
+// That came from a reference scan that found two of its three call sites; the
+// third, 0x0005b68d, passes `this` directly. What is still NOT established is
+// what `orientedTo` points at or what else lives in the 0x10 prefix. The 0x44
+// minimum is now explained as a 0x10 prefix plus a 0x34 sub-object, and 0x48
+// remains unestablished.
 struct NxContactSink
 	{
 	NxU8   head[8];

@@ -26,15 +26,49 @@ static_assert(offsetof(NxContactSink, stream) == 0x40, "sink stream data is at 0
 
 // The stream never reallocates here.
 //
-// The oracle grows it through phys_fn_004840 at 0x000b4de0, a Phase 2 row that
-// reaches the SDK allocator. Reproducing the growth policy is that row's
-// business, not this one's, and the differential pre-sizes the stream so the
-// call is never reached on either side. That is a stated limitation, not an
-// oversight: the growth path of this emitter is unexercised, and a reader
-// should not take a matching stream as evidence about it.
+// The *policy* -- how much phys_fn_004840 at 0x000b4de0 adds and where it gets
+// it -- is that Phase 2 row's business and is not reproduced. What belongs to
+// this row is *when* it is called and with what count, and the oracle uses two
+// different predicates:
+//
+//   count == capacity      before every single-word append
+//   count + 3 > capacity   before each of the two three-word bursts
+//
+// eight sites in all: 0x0001d6d2, 0x0001d6ff, 0x0001d744, 0x0001d7c0,
+// 0x0001d7f1, 0x0001d838, 0x0001d873 and 0x0001d8a0. Roughly 110 of this row's
+// 706 bytes are those tests and the calls under them. An earlier version of
+// this file had neither predicate and never read streamCapacity at all, so it
+// would have run off the end of a real caller's buffer instead of growing.
+//
+// The differential pre-sizes the stream, so no reserve ever fails and the
+// growth path is unexercised on both sides; a matching stream says nothing
+// about it. What the guard buys is that this reconstruction stops rather than
+// overruns.
+static bool nxReserve(NxContactSink* sink, NxU32 count)
+	{
+	const bool full = (count == 1)
+		? (sink->streamCount == sink->streamCapacity)
+		: (sink->streamCount + count > sink->streamCapacity);
+	// phys_fn_004840 would grow here. Until that row is reconstructed, refusing
+	// the write is the only safe thing.
+	return !full;
+	}
+
 static void nxAppend(NxContactSink* sink, NxU32 word)
 	{
+	if(!nxReserve(sink, 1))
+		return;
 	sink->stream[sink->streamCount++] = word;
+	}
+
+static void nxAppend3(NxContactSink* sink, NxU32 a, NxU32 b, NxU32 c)
+	{
+	if(!nxReserve(sink, 3))
+		return;
+	sink->stream[sink->streamCount + 0] = a;
+	sink->stream[sink->streamCount + 1] = b;
+	sink->stream[sink->streamCount + 2] = c;
+	sink->streamCount += 3;
 	}
 
 static NxU32 nxBits(NxReal value)
@@ -123,9 +157,7 @@ void NxEmitContact(NxContactSink* sink, void* object1, void* object0,
 		sink->lastNormal[1] = normal->y;
 		sink->lastNormal[2] = normal->z;
 
-		nxAppend(sink, nxBits(normal->x));
-		nxAppend(sink, nxBits(normal->y));
-		nxAppend(sink, nxBits(normal->z));
+		nxAppend3(sink, nxBits(normal->x), nxBits(normal->y), nxBits(normal->z));
 
 		sink->pointCountIndex = sink->streamCount;
 		nxAppend(sink, 0);
@@ -134,9 +166,7 @@ void NxEmitContact(NxContactSink* sink, void* object1, void* object0,
 
 	++sink->contactCount;
 
-	nxAppend(sink, nxBits(point->x));
-	nxAppend(sink, nxBits(point->y));
-	nxAppend(sink, nxBits(point->z));
+	nxAppend3(sink, nxBits(point->x), nxBits(point->y), nxBits(point->z));
 	// The sign bit is masked off, not negated -- `and ebx, 0x7fffffff` at
 	// 0x0001d86d. For the negative separations a penetrating contact produces
 	// the two are indistinguishable, which is why this reads as a negation.
