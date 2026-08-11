@@ -193,9 +193,18 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# reconstruction so both sides run in one process and the comparison is the
 	# harness's own, which is why -- unlike a symmetric differential -- a check
 	# inside it can fail the gate.
+	#
+	# The last four are not narrow-phase code. phys_fn_002266, which both sphere
+	# entries of matrix A call, reads NX_CONTINUOUS_CD out of the SDK's live
+	# parameter array through phys_fn_000429 -- a Phase 2 row -- so the
+	# reconstruction of that guard has to reach the same array the oracle does
+	# rather than a copy of it. PhysicsSDK.cpp owns it and drags its own
+	# neighbours in with it.
 	add_executable(NxPhysicsCollisionTests tests/PhysicsCollisionTests.cpp
 		Physics/src/NarrowPhase.cpp Physics/src/ContactGeneration.cpp
-		Physics/src/Geometry.cpp Physics/src/SmoothNormals.cpp)
+		Physics/src/Geometry.cpp Physics/src/SmoothNormals.cpp
+		Physics/src/PhysicsSDK.cpp Physics/src/NpPhysicsSDK.cpp
+		Physics/src/PhysicsInternal.cpp Physics/src/Containers.cpp)
 	target_include_directories(NxPhysicsCollisionTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include Physics/src/include)
 	# Geometry.cpp defines exports, so it has to be compiled with the same

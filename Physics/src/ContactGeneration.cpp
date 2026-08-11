@@ -14,6 +14,10 @@
 
 #include "ContactGeneration.h"
 
+// phys_fn_002266 reads NX_CONTINUOUS_CD out of the SDK's live parameter array
+// through phys_fn_000429, so this unit reaches Phase 2's PhysicsSDK.
+#include "PhysicsSDK.h"
+
 #include "NxIntersectionRayPlane.h"
 #include "NxIntersectionRaySphere.h"
 #include "NxIntersectionSegmentCapsule.h"
@@ -1210,4 +1214,358 @@ void __cdecl NxContactPlaneBox(const NxCollisionShape* plane,
 				if(++emittedCount >= 6)
 					return;
 				}
+	}
+
+// phys_fn_001281 at 0x000257a0. Four bytes, and its whole body is the load: the
+// oracle reaches Shape+0x04 through it in both sphere entries and inline in the
+// emitter, which is why the two spellings sit side by side in this file.
+const void* __fastcall NxShapeOwner(const NxCollisionShape* shape, void* edxUnused)
+	{
+	(void) edxUnused;
+	return shape->owner;
+	}
+
+// phys_fn_002266 at 0x00056650.
+//
+// `mov ecx,[0x10123c04]` loads the SDK singleton and phys_fn_000429 -- the
+// reconstruction's PhysicsSDK::getParameter -- never touches it: 0x0000dc00
+// reads its argument off the stack and indexes a file-scope array. The null
+// guard below therefore changes no state the oracle can be in, because the only
+// thing that fills that array is the SDK constructor, and it writes
+// NX_CONTINUOUS_CD's default of 0.0f -- the same value the array holds
+// statically before any SDK exists.
+//
+// The comparison is `fucompp` against the 0.0f at 0x101041f0 with
+// `test ah,0x44; jp` at 0x00056667, which is MSVC's `==`: a NaN parameter is NOT
+// equal and takes the sweep.
+bool __cdecl NxContinuousCdPair(const NxCollisionShape* moving,
+	const NxCollisionShape* fixed, NxContactSink* sink)
+	{
+	const PhysicsSDK* const sdk = PhysicsSDK::instance;
+	const NxReal continuous = sdk ? sdk->getParameter(NX_CONTINUOUS_CD) : 0.0f;
+	if(continuous == 0.0f)
+		return true;
+
+	// phys_fn_002264 at 0x00055eb0 runs here in the oracle. It is a stop, not an
+	// omission: see the header for the three things it reads that nothing in
+	// this program establishes. Leaving the sink alone is the only safe thing,
+	// which is the same call this file already makes for the stream growth path.
+	(void) moving;
+	(void) fixed;
+	(void) sink;
+	return false;
+	}
+
+// phys_fn_001933 at 0x0004b860, matrix A slot [SPHERE][SPHERE]. 341 bytes.
+//
+// The narrowing is per component and is not symmetric. The z separation and the
+// radius sum are each stored with `fst` -- 0x0004b8b8 and 0x0004b8e4 -- so the
+// square of each is the wide value times the narrowed one, while x and y are
+// squared from their slots. Both matter: a - b of two floats is exact in an
+// 80-bit register only while their exponents are close, so two spheres whose
+// centres or radii differ by many orders of magnitude are a case where the wide
+// and the narrow product are different numbers.
+//
+// It stores the squared distance and the radius sum over the caller's second and
+// first argument slots (0x0004b8d4, 0x0004b8e4), which is safe only because edi
+// and esi already hold both shapes.
+//
+// There is no `double` alive across a branch anywhere in it -- every value that
+// survives a comparison went through a 32-bit slot on the way -- so this row is
+// not in the codegen-divergence class the four capsule rows are.
+void __cdecl NxContactSphereSphere(const NxCollisionShape* sphere0,
+	const NxCollisionShape* sphere1, NxContactSink* sink, void* context)
+	{
+	(void) context;
+
+	// 0x0004b86c..0x0004b89b. A null `owner->[8]` on either side sends the pair
+	// to the continuous-CD entry with the shape whose owner->[8] is NOT null
+	// first. Shape 0 is tested first and shape 1 only if shape 0's is non-null,
+	// so a pair with two nulls takes the first branch alone.
+	if(!*(void* const*) ((const NxU8*) NxShapeOwner(sphere0, 0) + 8))
+		NxContinuousCdPair(sphere1, sphere0, sink);
+	else if(!*(void* const*) ((const NxU8*) NxShapeOwner(sphere1, 0) + 8))
+		NxContinuousCdPair(sphere0, sphere1, sink);
+
+	const NxReal* c0 = sphere0->translation;
+	const NxReal* c1 = sphere1->translation;
+
+	NxVec3 delta;
+	delta.x = (NxReal) ((double) c1[0] - c0[0]);
+	delta.y = (NxReal) ((double) c1[1] - c0[1]);
+	const double wideZ = (double) c1[2] - c0[2];
+	delta.z = (NxReal) wideZ;
+
+	// z, then y, then x -- 0x0004b8bc..0x0004b8d2.
+	const NxReal distanceSquared = (NxReal) ((wideZ * delta.z
+		+ (double) delta.y * delta.y) + (double) delta.x * delta.x);
+
+	const double wideRadius = (double) sphere1->geometry[0] + sphere0->geometry[0];
+	const NxReal radiusSum = (NxReal) wideRadius;
+	// Strict and ordered: `test ah,0x41; jne` at 0x0004b8f2 leaves on less, on
+	// equal and on unordered, so two spheres exactly touching produce nothing
+	// and a NaN anywhere in either centre or radius produces nothing. That
+	// agrees with phys_fn_001931, the overlap test for the same pair.
+	if(!(wideRadius * radiusSum > (double) distanceSquared))
+		return;
+
+	// 1e-5f at 0x00107a08, and `jnp` at 0x0004b90a leaves on less and on equal.
+	// Two coincident centres have no direction to push along, and this is where
+	// that is caught -- the divide below would otherwise be by zero. A NaN
+	// cannot reach this test; the comparison above has already left.
+	if(!((double) distanceSquared > (double) 1.0e-5f))
+		return;
+
+	const double distance = nxSqrt(distanceSquared);
+	const double inverse = 1.0 / distance;
+	delta.x = (NxReal) ((double) delta.x * inverse);
+	delta.y = (NxReal) ((double) delta.y * inverse);
+	delta.z = (NxReal) ((double) delta.z * inverse);
+
+	// The contact point is on sphere0's surface, along the normal towards
+	// sphere1 -- a fourth convention in this matrix, after the sphere, the plane
+	// and the box corner. x keeps the wide product (0x0004b981 adds straight to
+	// it) while y and z are read back from their slots.
+	const double radius0 = sphere0->geometry[0];
+	const double scaledX = (double) delta.x * radius0;
+	const NxReal scaledY = (NxReal) ((double) delta.y * radius0);
+	const NxReal scaledZ = (NxReal) ((double) delta.z * radius0);
+
+	NxVec3 point;
+	point.x = (NxReal) (scaledX + c0[0]);
+	point.y = (NxReal) ((double) scaledY + c0[1]);
+	point.z = (NxReal) ((double) scaledZ + c0[2]);
+
+	// The wide root minus the narrowed radius sum, from the slot it was stored
+	// in at 0x0004b8e4 and read back at 0x0004b9a0.
+	const NxReal separation = (NxReal) (distance - radiusSum);
+
+	NxEmitContact(sink, sphere1->collisionObject, sphere0->collisionObject,
+		nxBits(separation), &point, &delta, 0xffff, 0xffff);
+	}
+
+// phys_fn_001917 at 0x00049f00.
+//
+// The first two thirds are phys_fn_001913 -- the same transform into box space
+// with the wide z on the first row and the narrowed z on the other two, the same
+// per-axis clamp, the same flag that is set on the x and y axes only. What is
+// new is what happens after.
+//
+// OUTSIDE (0x0004a02b). The clamped point goes back out through the rotation's
+// rows, the vector from it to the sphere centre becomes the normal, and its
+// length becomes the separation once the radius is taken off. Two details are
+// the oracle's: the third world component is left in a register while the first
+// two are pushed through slots, so the normal's z is formed against a wider
+// number than the point's z was (`fst` at 0x0004a08b, `fsub st(3)` at
+// 0x0004a0a2); and the box centre is added back x-first, y-second and z-third
+// with the operands the other way round on y alone (0x0004a10a..0x0004a11f).
+//
+// INSIDE (0x0004a131). The centre is inside the box, so the contact is taken
+// from the shallowest of the three faces: the depths are `extent - |local|` per
+// axis, the smallest wins with ties going to z, and the normal is that axis
+// signed by which side of the centre the sphere is on. The point is then the
+// SPHERE CENTRE copied dword for dword (0x0004a253..0x0004a266) rather than any
+// point on the box, and the separation is `-(depth + radius)`.
+//
+// A NaN reaching the length test returns TRUE, because `test ah,0x41; jne` at
+// 0x0004a0d7 continues on unordered. That is the same disagreement with the
+// other kernels that phys_fn_001913 has and it is reached the same way.
+bool __cdecl NxSphereBoxContactData(const NxCollisionSphereData* sphere,
+	const NxCollisionBoxData* box, NxVec3* point, NxVec3* normal,
+	NxReal* separation)
+	{
+	const NxReal* m = box->rotation;
+	const NxReal* extents = box->extents;
+
+	const NxReal dx = (NxReal) ((double) sphere->center[0] - box->center[0]);
+	const NxReal dy = (NxReal) ((double) sphere->center[1] - box->center[1]);
+	const double wideZ = (double) sphere->center[2] - box->center[2];
+	const NxReal dz = (NxReal) wideZ;
+
+	const NxReal local0 = (NxReal) ((wideZ * m[6] + (double) dy * m[3]) + (double) dx * m[0]);
+	const NxReal local1 = (NxReal) (((double) dz * m[7] + (double) dy * m[4]) + (double) dx * m[1]);
+	const NxReal local2 = (NxReal) (((double) dz * m[8] + (double) dy * m[5]) + (double) dx * m[2]);
+
+	NxReal clamped0 = local0;
+	NxReal clamped1 = local1;
+	bool clamped = false;
+
+	if(local0 < -extents[0])
+		{
+		clamped0 = -extents[0];
+		clamped = true;
+		}
+	else if(local0 > extents[0])
+		{
+		clamped0 = extents[0];
+		clamped = true;
+		}
+
+	if(local1 < -extents[1])
+		{
+		clamped1 = -extents[1];
+		clamped = true;
+		}
+	else if(local1 > extents[1])
+		{
+		clamped1 = extents[1];
+		clamped = true;
+		}
+
+	// The clamped z never reaches a 32-bit slot: it stays in st(0) from
+	// 0x00049f88 to 0x0004a02b. Every value it can hold is a float either way,
+	// so a spill of this one cannot truncate anything.
+	double clamped2;
+	bool inside = false;
+	if(local2 < -extents[2])
+		clamped2 = -extents[2];
+	else if(local2 > extents[2])
+		clamped2 = extents[2];
+	else
+		{
+		clamped2 = local2;
+		// The z axis does not set the flag. Control only reaches this test with
+		// z inside its extent, so the flag answers "is the centre inside the
+		// box" exactly -- and a NaN z with x and y unclamped answers yes.
+		inside = !clamped;
+		}
+
+	if(!inside)
+		{
+		const NxReal world0 = (NxReal) ((clamped2 * m[2] + (double) clamped1 * m[1]) + (double) clamped0 * m[0]);
+		const NxReal world1 = (NxReal) ((clamped2 * m[5] + (double) clamped1 * m[4]) + (double) clamped0 * m[3]);
+		const double world2 = (clamped2 * m[8] + (double) clamped1 * m[7]) + (double) clamped0 * m[6];
+
+		// y is stored before x -- 0x0004a080 against 0x0004a089 -- and z is the
+		// `fst` at 0x0004a08b, so the wide value survives into the normal below.
+		point->y = world1;
+		point->x = world0;
+		point->z = (NxReal) world2;
+
+		const double e0 = (double) dx - world0;
+		const double e1 = (double) dy - world1;
+		const double e2 = (double) dz - world2;
+		normal->x = (NxReal) e0;
+		normal->y = (NxReal) e1;
+		normal->z = (NxReal) e2;
+
+		const double squared = (e2 * e2 + e1 * e1) + e0 * e0;
+		const double radius = sphere->radius;
+		if(squared > radius * radius)
+			return false;
+
+		const double distance = nxSqrt(squared);
+		*separation = (NxReal) distance;
+		const double inverse = 1.0 / distance;
+		normal->x = (NxReal) (inverse * normal->x);
+		normal->y = (NxReal) (inverse * normal->y);
+		normal->z = (NxReal) (inverse * normal->z);
+
+		point->x = (NxReal) ((double) box->center[0] + point->x);
+		point->y = (NxReal) ((double) point->y + box->center[1]);
+		point->z = (NxReal) ((double) box->center[2] + point->z);
+		*separation = (NxReal) ((double) *separation - sphere->radius);
+		return true;
+		}
+
+	// |x| and |y| stay in registers; |z| is narrowed into a slot at 0x0004a145
+	// before the depth is taken, so the three depths are not formed alike. The
+	// magnitude of a float is a float, so the two spellings agree bit for bit
+	// and this asymmetry is transcribed rather than measured.
+	const double absolute0 = (double) clamped0 < 0.0 ? -(double) clamped0 : (double) clamped0;
+	const double absolute1 = (double) clamped1 < 0.0 ? -(double) clamped1 : (double) clamped1;
+	const NxReal absolute2 = (NxReal) ((double) local2 < 0.0 ? -(double) local2 : (double) local2);
+
+	const NxReal depth0 = (NxReal) ((double) extents[0] - absolute0);
+	const NxReal depth1 = (NxReal) ((double) extents[1] - absolute1);
+	const NxReal depth2 = (NxReal) ((double) extents[2] - (double) absolute2);
+
+	// Two strict ordered comparisons per branch, so a NaN depth is never the
+	// smallest and z wins every tie: 0x0004a174, 0x0004a18b and 0x0004a1d0.
+	NxReal depth;
+	NxVec3 local;
+	local.x = 0.0f;
+	local.y = 0.0f;
+	local.z = 0.0f;
+	if(depth1 < depth0)
+		{
+		if(depth1 < depth2)
+			{
+			depth = depth1;
+			local.y = clamped1 > 0.0f ? 1.0f : -1.0f;
+			}
+		else
+			{
+			depth = depth2;
+			local.z = local2 > 0.0f ? 1.0f : -1.0f;
+			}
+		}
+	else if(depth0 < depth2)
+		{
+		depth = depth0;
+		local.x = clamped0 > 0.0f ? 1.0f : -1.0f;
+		}
+	else
+		{
+		depth = depth2;
+		local.z = local2 > 0.0f ? 1.0f : -1.0f;
+		}
+
+	*separation = (NxReal) (-(double) depth);
+	point->x = sphere->center[0];
+	point->y = sphere->center[1];
+	point->z = sphere->center[2];
+
+	const NxReal world0 = (NxReal) (((double) local.z * m[2] + (double) local.y * m[1]) + (double) local.x * m[0]);
+	const NxReal world1 = (NxReal) (((double) local.z * m[5] + (double) local.y * m[4]) + (double) local.x * m[3]);
+	const double world2 = ((double) local.z * m[8] + (double) local.y * m[7]) + (double) local.x * m[6];
+
+	normal->y = world1;
+	normal->x = world0;
+	normal->z = (NxReal) world2;
+	*separation = (NxReal) ((double) *separation - sphere->radius);
+	return true;
+	}
+
+// phys_fn_001919 at 0x0004a2d0, matrix A slot [SPHERE][BOX]. 259 bytes, of which
+// most is the two stack structures -- the same flattening phys_fn_001915 does
+// for the overlap test, which is what fixes their field order.
+void __cdecl NxContactSphereBox(const NxCollisionShape* sphere,
+	const NxCollisionShape* box, NxContactSink* sink, void* context)
+	{
+	(void) context;
+
+	// 0x0004a2db..0x0004a30e, the same shape as the sphere pair: the sphere is
+	// tested first and the box only if the sphere's owner->[8] is non-null.
+	if(!*(void* const*) ((const NxU8*) NxShapeOwner(sphere, 0) + 8))
+		NxContinuousCdPair(box, sphere, sink);
+	else if(!*(void* const*) ((const NxU8*) NxShapeOwner(box, 0) + 8))
+		NxContinuousCdPair(sphere, box, sink);
+
+	NxCollisionSphereData sphereData;
+	NxCollisionBoxData boxData;
+
+	boxData.center[0] = box->translation[0];
+	boxData.center[1] = box->translation[1];
+	boxData.center[2] = box->translation[2];
+	boxData.extents[0] = box->geometry[1];
+	boxData.extents[1] = box->geometry[2];
+	boxData.extents[2] = box->geometry[3];
+	for(int i = 0; i < 9; ++i)
+		boxData.rotation[i] = box->rotation[i];
+
+	sphereData.center[0] = sphere->translation[0];
+	sphereData.center[1] = sphere->translation[1];
+	sphereData.center[2] = sphere->translation[2];
+	sphereData.radius = sphere->geometry[0];
+
+	NxVec3 point;
+	NxVec3 normal;
+	NxReal separation;
+	if(!NxSphereBoxContactData(&sphereData, &boxData, &point, &normal, &separation))
+		return;
+
+	// The sphere in the `object1` slot and the box in `object0`. See the header.
+	NxEmitContact(sink, sphere->collisionObject, box->collisionObject,
+		nxBits(separation), &point, &normal, 0xffff, 0xffff);
 	}

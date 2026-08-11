@@ -179,6 +179,24 @@ static const unsigned kSphereRaycastRva = 0x00027c70;
 static const unsigned kSegmentDistanceRva = 0x00033e80;
 // phys_fn_001010, slot 5 on a CAPSULE shape, from 0x00106b20 + 0x14.
 static const unsigned kCapsuleRaycastRva = 0x00022480;
+// phys_fn_001281, the four-byte `mov eax,[ecx+4]; ret` both sphere entries of
+// matrix A use to reach Shape+0x04.
+static const unsigned kShapeOwnerRva = 0x000257a0;
+// phys_fn_002266, the continuous-CD guard both sphere entries call when one of
+// the two shapes has a null `owner->[8]`.
+static const unsigned kContinuousCdRva = 0x00056650;
+// phys_fn_000429, PhysicsSDK::getParameter -- a Phase 2 row, driven here only
+// to read the oracle's own live parameter array back out of it.
+static const unsigned kGetParameterRva = 0x0000dc00;
+// .data 0x00123b18, the live parameter array phys_fn_000472 fills from the
+// defaults at 0x001238b8 with `rep movsd` at 0x0000e72c. 0x3b entries.
+static const unsigned kParameterArrayRva = 0x00123b18;
+static const unsigned kParameterCount = 0x3b;
+// NX_CONTINUOUS_CD's index, from the `push 0xb` at 0x00056656. The block below
+// measures that the guard reads this one and no other rather than restating it.
+static const unsigned kContinuousCdParameter = 11;
+// phys_fn_001917, the sphere/box contact geometry.
+static const unsigned kSphereBoxContactRva = 0x00049f00;
 // hit.shape is written from shape->[0x9c] and never dereferenced by that row,
 // so both sides are given the same made-up value: a real address would put this
 // process's load address into an oracle-side digest that is pinned in the gate.
@@ -205,6 +223,22 @@ static const NxDrivenEntry nxDriven[] =
 	{ "box_box",        2 * 6 + 2, NxOverlapBoxBox }
 	};
 static const unsigned kDrivenCount = sizeof(nxDriven) / sizeof(nxDriven[0]);
+
+// The matrix A slots this target drives. It exists because the summary at the
+// end reported every non-null A slot as unreconstructed whatever was driven, so
+// five closed entries were being listed as absent -- a line that could not
+// change and therefore could not be read.
+static const unsigned nxDrivenContact[] =
+	{
+	0 * 6 + 1,		// phys_fn_001901
+	0 * 6 + 2,		// phys_fn_001883
+	0 * 6 + 3,		// phys_fn_001891
+	1 * 6 + 1,		// phys_fn_001933
+	1 * 6 + 2,		// phys_fn_001919
+	1 * 6 + 3,		// phys_fn_001923
+	3 * 6 + 3		// phys_fn_001775
+	};
+static const unsigned kDrivenContactCount = sizeof(nxDrivenContact) / sizeof(nxDrivenContact[0]);
 
 // ---------------------------------------------------------------------------
 // The generator. xorshift32, seeded per block, counts fixed in the source, both
@@ -651,9 +685,17 @@ static void nxResetWorld(NxContactWorld* world)
 // function; and the material is read from shape1's owner with a fallback to
 // shape0's, so with both holders carrying the same value the choice never
 // showed. Both are now driven separately.
+//
+// `nullHolder0` was added for the two sphere entries of matrix A, which read
+// BOTH owners' `+0x08` and branch on either being null (0x0004b874 and
+// 0x0004b88f). Only shape1's had ever been driven, so the first of those two
+// branches had never been taken. Both null at once is not offered, because the
+// emitter's material fallback would then dereference a null holder -- the
+// oracle does the same and it is a state no caller can be in.
 static void nxStageWorld(NxContactWorld* world, const NxCollisionShape* planeShape,
 	const NxCollisionShape* sphereShape, bool newIdentity0, bool newIdentity1,
-	NxU32 material0, NxU32 material1, bool nullHolder1, bool orientToSphere)
+	NxU32 material0, NxU32 material1, bool nullHolder0, bool nullHolder1,
+	bool orientToSphere)
 	{
 	if(newIdentity0)
 		++world->generation[0];
@@ -685,7 +727,8 @@ static void nxStageWorld(NxContactWorld* world, const NxCollisionShape* planeSha
 		// A null `owner->[8]` on shape1's side is a supported state -- the
 		// emitter falls back to shape0's at 0x0001d738 -- and nothing had ever
 		// entered it.
-		*(unsigned char**) (owner + 8) = (which == 1 && nullHolder1) ? 0 : holder;
+		const bool nullHolder = which ? nullHolder1 : nullHolder0;
+		*(unsigned char**) (owner + 8) = nullHolder ? 0 : holder;
 		*(NxU32*) (holder + 0x240) = which ? material1 : material0;
 		shape->owner = owner;
 		// The header turns on this pointer changing, so a new identity picks the
@@ -1483,7 +1526,7 @@ int wmain(int argc, wchar_t** argv)
 				for(int side = 0; side < 2; ++side)
 					nxStageWorld(&world[side], planeShape, sphereShape,
 						newIdentity0, newIdentity1, material0, material1,
-						nullHolder1, orientToSphere);
+						false, nullHolder1, orientToSphere);
 
 				nxSetControl(mode ? kControlSimulate : kControlDefault);
 				oracleContact(world[0].plane, world[0].sphere, &world[0].sink, nxOverlapContext);
@@ -1602,7 +1645,7 @@ int wmain(int argc, wchar_t** argv)
 
 				for(int side = 0; side < 2; ++side)
 					nxStageWorld(&emitWorld[side], pl, sp, newIdentity0, newIdentity1,
-						material0, material1, nullHolder1, orientToSphere);
+						material0, material1, false, nullHolder1, orientToSphere);
 
 				const unsigned before = emitWorld[0].sink.streamCount;
 				nxSetControl(mode ? kControlSimulate : kControlDefault);
@@ -1928,7 +1971,7 @@ int wmain(int argc, wchar_t** argv)
 					{
 					nxStageWorld(&world[side], planeShape, capsuleShape,
 						newIdentity0, newIdentity1, material0, material1,
-						nullHolder1, orientToSphere);
+						false, nullHolder1, orientToSphere);
 					// After staging: nxStageWorld copies the shape template in,
 					// and that template's vtable pointer is zero.
 					*(void**) world[side].plane = world[side].shapeVtable;
@@ -2264,7 +2307,7 @@ int wmain(int argc, wchar_t** argv)
 					{
 					nxStageWorld(&world[side], sphereShape, capsuleShape,
 						newIdentity0, newIdentity1, material0, material1,
-						nullHolder1, orientToSphere);
+						false, nullHolder1, orientToSphere);
 					*(void**) world[side].plane = world[side].shapeVtable;
 					}
 
@@ -2424,7 +2467,7 @@ int wmain(int argc, wchar_t** argv)
 				for(int side = 0; side < 2; ++side)
 					nxStageWorld(&world[side], planeShape, boxShape,
 						newIdentity0, newIdentity1, material0, material1,
-						nullHolder1, !orientToBox);
+						false, nullHolder1, !orientToBox);
 
 				nxSetControl(mode ? kControlSimulate : kControlDefault);
 				oracleContact(world[0].plane, world[0].sphere, &world[0].sink, nxOverlapContext);
@@ -2831,7 +2874,7 @@ int wmain(int argc, wchar_t** argv)
 					{
 					nxStageWorld(&world[side], first, second,
 						newIdentity0, newIdentity1, material0, material1,
-						nullHolder1, orientToSecond);
+						false, nullHolder1, orientToSecond);
 					// Both shapes need one: the receiver is whichever capsule is
 					// not the ray, and the kernel picks that at runtime.
 					*(void**) world[side].plane = world[side].shapeVtable;
@@ -3126,6 +3169,654 @@ int wmain(int argc, wchar_t** argv)
 		nonFinite, canonicalised, perMode[0], perMode[1]);
 	}
 
+	// -----------------------------------------------------------------------
+	// phys_fn_001281 at 0x000257a0, and phys_fn_002266 at 0x00056650. Both are
+	// reached from the two sphere entries below and neither is observable in
+	// the contact stream, so both are driven at their own addresses instead.
+	//
+	// phys_fn_002266 is the continuous-collision guard. Its `true` arm --
+	// NX_CONTINUOUS_CD equal to 0.0f -- returns without touching the sink, and
+	// that is the whole of it that is reachable under the SDK as it ships. Its
+	// other arm calls phys_fn_002264 at 0x00055eb0, which THIS PROGRAM HAS NOT
+	// RECONSTRUCTED and must not: it reads a second pose at Shape+0x3c..+0x68,
+	// reads and writes `sink+0xdc`..`+0xe9` where the borrowed sink layout stops
+	// at 0x44, and dispatches through vtable slot 7 at 0x000562c3. So this block
+	// measures three things and stops:
+	//
+	//   * what NX_CONTINUOUS_CD actually holds, read back out of the oracle's
+	//     own array through the oracle's own accessor. That is the reachability
+	//     claim for phys_fn_002264, and it is measured rather than assumed.
+	//   * that the guard's `true` arm leaves a poisoned sink byte for byte
+	//     untouched, over more bytes than phys_fn_002264 would write.
+	//   * that the guard reads parameter 11 and no other, by setting each of the
+	//     other 58 non-zero in turn and checking the answer does not move. That
+	//     replaces reading `push 0xb` off the disassembly with a measurement.
+	//
+	// What is NOT measured is the other arm being entered. Driving it would mean
+	// executing phys_fn_002264 against a vtable slot nothing has resolved, which
+	// is the thing the borrowed-layout rule exists to prevent.
+	{
+	typedef const void* (__fastcall* NxOracleShapeOwnerFn)(const NxCollisionShape*, void*);
+	typedef bool (__cdecl* NxOracleContinuousFn)(const NxCollisionShape*, const NxCollisionShape*, void*);
+	typedef float (__fastcall* NxOracleGetParameterFn)(void*, void*, int);
+
+	NxOracleShapeOwnerFn oracleOwner = (NxOracleShapeOwnerFn) (base + kShapeOwnerRva);
+	NxOracleContinuousFn oracleGuard = (NxOracleContinuousFn) (base + kContinuousCdRva);
+	NxOracleGetParameterFn oracleGetParameter = (NxOracleGetParameterFn) (base + kGetParameterRva);
+	float* const oracleParameters = (float*) (base + kParameterArrayRva);
+
+	NxDigest oracleDigest, candidateDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	unsigned mismatches = 0;
+	unsigned ownerProbes = 0;
+	unsigned guardProbes = 0;
+	unsigned guardTrue = 0;
+	unsigned sinkUntouched = 0;
+	unsigned indexProbes = 0;
+	unsigned indexWrongHere = 0;
+	unsigned state = 0x2b19f74du;
+
+	// Read the live parameter through the oracle's own getParameter, exactly as
+	// phys_fn_002266 does, and print the word rather than the float so a
+	// negative zero or a denormal could not read as the same thing.
+	const float continuous = oracleGetParameter(0, 0, (int) kContinuousCdParameter);
+	NxU32 continuousBits;
+	memcpy(&continuousBits, &continuous, 4);
+
+	// A sink far larger than the borrowed layout, so a write anywhere
+	// phys_fn_002264 would reach is caught. 0x300 is well past the `+0xe9` that
+	// row's own frame reaches.
+	static unsigned char poisonedSink[0x300];
+	static unsigned char poisonedCopy[0x300];
+
+	for(unsigned i = 0; i < kNormalsIterations; ++i)
+		{
+		static unsigned char shapeStorage[2][kShapeBytes];
+		static unsigned char ownerStorage[2][0x40];
+		static unsigned char holderStorage[2][0x280];
+		NxCollisionShape* shapes[2];
+		for(int which = 0; which < 2; ++which)
+			{
+			shapes[which] = (NxCollisionShape*) shapeStorage[which];
+			nxIdentity(shapes[which]);
+			nxFillGeometry(&state, shapes[which], 1, true);
+			memset(ownerStorage[which], 0, sizeof(ownerStorage[which]));
+			memset(holderStorage[which], 0, sizeof(holderStorage[which]));
+			shapes[which]->owner = ownerStorage[which];
+			}
+		// One side static in each iteration, alternating, so the accessor is
+		// asked about both an owner that carries a holder and one that does not.
+		const unsigned staticSide = nxNext(&state) & 1;
+		*(unsigned char**) (ownerStorage[staticSide] + 8) = 0;
+		*(unsigned char**) (ownerStorage[1 - staticSide] + 8) = holderStorage[1 - staticSide];
+
+		for(int which = 0; which < 2; ++which)
+			{
+			const void* fromOracle = oracleOwner(shapes[which], 0);
+			const void* fromCandidate = NxShapeOwner(shapes[which], 0);
+			++ownerProbes;
+			// The answer is an address, so what is digested is whether it is the
+			// field -- not the address itself, which differs per run.
+			const unsigned char oracleMatches = fromOracle == shapes[which]->owner ? 1 : 0;
+			const unsigned char candidateMatches = fromCandidate == shapes[which]->owner ? 1 : 0;
+			nxDigestByte(&oracleDigest, oracleMatches);
+			nxDigestByte(&candidateDigest, candidateMatches);
+			if(fromOracle != fromCandidate || !oracleMatches)
+				++mismatches;
+			}
+
+		for(int mode = 0; mode < 2; ++mode)
+			{
+			memset(poisonedSink, 0xcd, sizeof(poisonedSink));
+			memcpy(poisonedCopy, poisonedSink, sizeof(poisonedSink));
+
+			nxSetControl(mode ? kControlSimulate : kControlDefault);
+			const unsigned char fromOracle = oracleGuard(shapes[1 - staticSide],
+				shapes[staticSide], poisonedSink) ? 1 : 0;
+			const bool untouched = memcmp(poisonedSink, poisonedCopy, sizeof(poisonedSink)) == 0;
+			const unsigned char fromCandidate = NxContinuousCdPair(shapes[1 - staticSide],
+				shapes[staticSide], (NxContactSink*) poisonedSink) ? 1 : 0;
+			nxSetControl(kControlDefault);
+
+			++guardProbes;
+			if(fromOracle)
+				++guardTrue;
+			if(untouched)
+				++sinkUntouched;
+			nxDigestByte(&oracleDigest, fromOracle);
+			nxDigestByte(&oracleDigest, untouched ? 1 : 0);
+			nxDigestByte(&candidateDigest, fromCandidate);
+			nxDigestByte(&candidateDigest, 1);
+			if(fromOracle != fromCandidate || !untouched)
+				++mismatches;
+			}
+		}
+
+	// Which parameter the guard reads. Every index except 11 is set to 1.0f in
+	// turn and the guard is asked again; if it read any of them the answer would
+	// move. 11 itself is never disturbed, because that arm is the stop above.
+	{
+	static unsigned char probeShape[2][kShapeBytes];
+	static unsigned char probeOwner[2][0x40];
+	static unsigned char probeHolder[0x280];
+	NxCollisionShape* first = (NxCollisionShape*) probeShape[0];
+	NxCollisionShape* second = (NxCollisionShape*) probeShape[1];
+	nxIdentity(first);
+	nxIdentity(second);
+	memset(probeOwner, 0, sizeof(probeOwner));
+	memset(probeHolder, 0, sizeof(probeHolder));
+	first->owner = probeOwner[0];
+	second->owner = probeOwner[1];
+	*(unsigned char**) (probeOwner[0] + 8) = probeHolder;
+
+	for(unsigned index = 0; index < kParameterCount; ++index)
+		{
+		if(index == kContinuousCdParameter)
+			continue;
+		const float saved = oracleParameters[index];
+		oracleParameters[index] = 1.0f;
+		memset(poisonedSink, 0xcd, sizeof(poisonedSink));
+		memcpy(poisonedCopy, poisonedSink, sizeof(poisonedSink));
+		const bool answered = oracleGuard(first, second, poisonedSink);
+		const bool untouched = memcmp(poisonedSink, poisonedCopy, sizeof(poisonedSink)) == 0;
+		oracleParameters[index] = saved;
+		++indexProbes;
+		if(!answered || !untouched)
+			++indexWrongHere;
+		}
+	}
+
+	totalMismatch += mismatches;
+	printf("collision name=shape_owner index=- rva=0x%08x owner=phys_fn_001281 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		kShapeOwnerRva, oracleDigest.checks, oracleDigest.state,
+		candidateDigest.state, mismatches);
+	printf("collision coverage name=ccd_guard rva=0x%08x owner=phys_fn_002266 continuous_cd=%08x owner_probes=%u guard_probes=%u guard_true=%u sink_untouched=%u index_probes=%u index_wrong=%u\n",
+		kContinuousCdRva, continuousBits, ownerProbes, guardProbes, guardTrue,
+		sinkUntouched, indexProbes, indexWrongHere);
+	if(indexWrongHere)
+		return nxFail("the continuous-CD guard answered to a parameter other than NX_CONTINUOUS_CD");
+	}
+
+	// -----------------------------------------------------------------------
+	// Matrix A [SPHERE][SPHERE].
+	//
+	// The entry is 341 bytes and drags six more rows in behind it, of which two
+	// -- phys_fn_001281 and phys_fn_002266 -- are driven by the block above and
+	// four are the stop it describes. What is left here is the geometry, and
+	// three of its inputs no random pair reaches:
+	//
+	//   coincident -- two centres within 1e-5f of each other, the only way to
+	//     reach the epsilon test at 0x0004b8ff. Without it the radius test is
+	//     the only exit and the divide by the distance is never guarded.
+	//   static0/static1 -- a null `owner->[8]` on each side in turn. The entry
+	//     tests shape0 first and shape1 only if shape0's is non-null, so the
+	//     first of those two branches needs the side the harness had never
+	//     driven null.
+	//   the sink oriented to the second sphere, which is the emitter's negated
+	//     path with a normal this entry computed rather than borrowed.
+	{
+	typedef void(__cdecl* NxOracleContactFn)(const NxCollisionShape*, const NxCollisionShape*,
+		NxContactSink*, void*);
+	NxOracleContactFn oracleContact = (NxOracleContactFn) (base + nxMatrixA[7].rva);
+
+	static NxContactWorld world[2];
+
+	NxDigest oracleDigest, candidateDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	unsigned mismatches = 0;
+	unsigned perMode[2] = { 0, 0 };
+	unsigned emitted = 0;
+	unsigned coincident = 0;
+	unsigned coincidentEmitted = 0;
+	unsigned repeated = 0;
+	unsigned negatedPath = 0;
+	unsigned staticSide[2] = { 0, 0 };
+	unsigned widths[48];
+	memset(widths, 0, sizeof(widths));
+	unsigned state = 0x7d31c40bu;
+
+	for(unsigned i = 0; i < kContactIterations; ++i)
+		{
+		const unsigned sequenceSeed = nxNext(&state);
+		const unsigned pairs = 1 + (nxNext(&state) % 4);
+
+		for(int mode = 0; mode < 2; ++mode)
+			{
+			for(int side = 0; side < 2; ++side)
+				nxResetWorld(&world[side]);
+
+			unsigned local = sequenceSeed;
+			static unsigned char firstStorage[kShapeBytes];
+			static unsigned char secondStorage[kShapeBytes];
+			NxCollisionShape* firstShape = (NxCollisionShape*) firstStorage;
+			NxCollisionShape* secondShape = (NxCollisionShape*) secondStorage;
+			bool coincidentPair = false;
+			for(unsigned p = 0; p < pairs; ++p)
+				{
+				// The same pair again with the same identities. The emitter
+				// skips both the header and the normal block for it, which is
+				// the ordering rule's third state and the only way this block
+				// reaches a four-word contact.
+				const bool repeat = p > 0 && (nxNext(&local) & 1) != 0;
+				if(!repeat)
+					{
+					const bool tame = (nxNext(&local) & 3) != 0;
+					nxIdentity(firstShape);
+					nxIdentity(secondShape);
+					nxFillGeometry(&local, firstShape, 1, tame);
+					nxFillGeometry(&local, secondShape, 1, tame);
+					for(int k = 0; k < 3; ++k)
+						firstShape->translation[k] = tame ? nxUnit(&local) * 4.0f - 2.0f : nxPick(&local);
+
+					// The placement is along a direction the generator builds
+					// itself, so nothing multiplies a value it also allows to be
+					// non-finite: the direction is always three finite units.
+					float direction[3];
+					float length = 0.0f;
+					for(int k = 0; k < 3; ++k)
+						{
+						direction[k] = nxUnit(&local) * 2.0f - 1.0f;
+						length += direction[k] * direction[k];
+						}
+					length = (float) sqrt((double) length);
+					if(length > 1e-4f)
+						for(int k = 0; k < 3; ++k)
+							direction[k] /= length;
+					else
+						{ direction[0] = 0.0f; direction[1] = 1.0f; direction[2] = 0.0f; }
+
+					coincidentPair = tame && (nxNext(&local) % 6) == 0;
+					if(tame)
+						{
+						const float reach = firstShape->geometry[0] + secondShape->geometry[0];
+						// Coincident draws span 0 to 1e-2, whose square straddles
+						// the 1e-5f at 0x00107a08 about one time in three, so the
+						// epsilon test is crossed in BOTH directions rather than
+						// only entered. Everything else is 0.2 to 1.6 reaches,
+						// which crosses the radius test the same way.
+						const float span = coincidentPair
+							? nxUnit(&local) * 1e-2f
+							: reach * (nxUnit(&local) * 1.4f + 0.2f);
+						for(int k = 0; k < 3; ++k)
+							secondShape->translation[k] = firstShape->translation[k]
+								+ direction[k] * span;
+						}
+					else
+						for(int k = 0; k < 3; ++k)
+							secondShape->translation[k] = nxPick(&local);
+					}
+				if(coincidentPair)
+					++coincident;
+				if(repeat && mode == 0)
+					++repeated;
+
+				const bool newIdentity0 = !repeat && ((p == 0) || ((nxNext(&local) & 3) == 0));
+				const bool newIdentity1 = !repeat && ((p == 0) || ((nxNext(&local) & 3) == 0));
+				const NxU32 material0 = nxNext(&local) & 0xff;
+				const NxU32 material1 = nxNext(&local) & 0xff;
+				// One side static in one call in six, and which side alternates.
+				// Never both: the emitter's material fallback would then read
+				// through a null holder, which the oracle does too.
+				const unsigned staticDraw = nxNext(&local) % 12;
+				const bool nullHolder0 = staticDraw == 0;
+				const bool nullHolder1 = staticDraw == 1;
+				const bool orientToSecond = (nxNext(&local) & 1) != 0;
+				if(mode == 0)
+					{
+					if(nullHolder0)
+						++staticSide[0];
+					if(nullHolder1)
+						++staticSide[1];
+					if(orientToSecond)
+						++negatedPath;
+					}
+
+				const unsigned before = world[0].sink.streamCount;
+				for(int side = 0; side < 2; ++side)
+					nxStageWorld(&world[side], firstShape, secondShape,
+						newIdentity0, newIdentity1, material0, material1,
+						nullHolder0, nullHolder1, !orientToSecond);
+
+				nxSetControl(mode ? kControlSimulate : kControlDefault);
+				oracleContact(world[0].plane, world[0].sphere, &world[0].sink, nxOverlapContext);
+				NxContactSphereSphere(world[1].plane, world[1].sphere, &world[1].sink, nxOverlapContext);
+				nxSetControl(kControlDefault);
+
+				const unsigned appended = world[0].sink.streamCount - before;
+				if(appended)
+					++emitted;
+				// The oracle's own answer for the coincident draws: the ones
+				// that still emitted are the ones whose squared distance was
+				// above the epsilon, so a generator that stopped straddling it
+				// takes one of these two counts to zero.
+				if(coincidentPair && appended)
+					++coincidentEmitted;
+				if(appended < 48)
+					++widths[appended];
+				}
+
+			nxFoldStream(&oracleDigest, &world[0]);
+			nxFoldStream(&candidateDigest, &world[1]);
+			const unsigned differing = nxCompareStreams(&world[0], &world[1]);
+			mismatches += differing;
+			perMode[mode] += differing;
+			}
+		}
+	totalMismatch += perMode[0];
+	printf("collision name=contact_sphere_sphere index=7 rva=0x%08x owner=%s checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		nxMatrixA[7].rva, nxMatrixA[7].stableId,
+		oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches);
+	printf("collision coverage name=contact_sphere_sphere emitted=%u coincident=%u coincident_emitted=%u repeated=%u static0=%u static1=%u negated=%u w4=%u w8=%u w11=%u default_mismatches=%u simulate_mismatches=%u\n",
+		emitted, coincident, coincidentEmitted, repeated, staticSide[0], staticSide[1],
+		negatedPath, widths[4], widths[8], widths[11], perMode[0], perMode[1]);
+	}
+
+	// -----------------------------------------------------------------------
+	// phys_fn_001917 at 0x00049f00, driven at its own address.
+	//
+	// The entry above it cannot reach all of it and the block after cannot
+	// reach it often enough. Its second algorithm -- the sphere centre inside
+	// the box, where there is no closest point and the contact comes from the
+	// shallowest face -- is only entered when every axis is inside its extent,
+	// which a placed pair reaches by accident. Half this generator puts the
+	// centre inside on purpose, the same way the phys_fn_001913 block does for
+	// the early return that path shares.
+	{
+	typedef bool (__cdecl* NxOracleSphereBoxContactFn)(const NxCollisionSphereData*,
+		const NxCollisionBoxData*, NxVec3*, NxVec3*, NxReal*);
+	NxOracleSphereBoxContactFn oracleContact =
+		(NxOracleSphereBoxContactFn) (base + kSphereBoxContactRva);
+
+	NxDigest oracleDigest, candidateDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	unsigned mismatches = 0;
+	unsigned perMode[2] = { 0, 0 };
+	unsigned trueCount = 0;
+	unsigned insideCount = 0;
+	unsigned axisWins[3] = { 0, 0, 0 };
+	unsigned state = 0x9f2c81a3u;
+
+	for(unsigned i = 0; i < kPairIterations; ++i)
+		{
+		const bool tame = (nxNext(&state) & 3) != 0;
+		static unsigned char boxStorage[kShapeBytes];
+		NxCollisionShape* boxShape = (NxCollisionShape*) boxStorage;
+		nxIdentity(boxShape);
+		nxFillGeometry(&state, boxShape, 2, tame);
+		nxRandomRotation(&state, boxShape);
+
+		NxCollisionSphereData sphere;
+		NxCollisionBoxData box;
+		for(int k = 0; k < 3; ++k)
+			{
+			box.center[k] = tame ? nxUnit(&state) * 2.0f - 1.0f : nxPick(&state);
+			box.extents[k] = boxShape->geometry[k + 1];
+			}
+		for(int k = 0; k < 9; ++k)
+			box.rotation[k] = boxShape->rotation[k];
+		sphere.radius = tame ? nxUnit(&state) * 1.5f + 0.02f : nxPick(&state);
+
+		const bool inside = tame && (nxNext(&state) & 1) != 0;
+		if(inside)
+			{
+			++insideCount;
+			// Placed in box space and rotated back out, so the centre really is
+			// inside every extent and not merely near the centre in world
+			// coordinates -- which for a rotated box is not the same thing.
+			float localOffset[3];
+			for(int k = 0; k < 3; ++k)
+				localOffset[k] = (nxUnit(&state) * 2.0f - 1.0f) * box.extents[k] * 0.9f;
+			for(int k = 0; k < 3; ++k)
+				sphere.center[k] = box.center[k]
+					+ box.rotation[k * 3 + 0] * localOffset[0]
+					+ box.rotation[k * 3 + 1] * localOffset[1]
+					+ box.rotation[k * 3 + 2] * localOffset[2];
+			}
+		else
+			{
+			for(int k = 0; k < 3; ++k)
+				sphere.center[k] = tame ? nxUnit(&state) * 4.0f - 2.0f : nxPick(&state);
+			}
+
+		for(int mode = 0; mode < 2; ++mode)
+			{
+			NxVec3 point[2], normal[2];
+			NxReal separation[2];
+			memset(point, 0xcd, sizeof(point));
+			memset(normal, 0xcd, sizeof(normal));
+			memset(separation, 0xcd, sizeof(separation));
+
+			nxSetControl(mode ? kControlSimulate : kControlDefault);
+			const unsigned char fromOracle =
+				oracleContact(&sphere, &box, &point[0], &normal[0], &separation[0]) ? 1 : 0;
+			const unsigned char fromCandidate =
+				NxSphereBoxContactData(&sphere, &box, &point[1], &normal[1], &separation[1]) ? 1 : 0;
+			nxSetControl(kControlDefault);
+
+			if(fromOracle)
+				++trueCount;
+			nxDigestByte(&oracleDigest, fromOracle);
+			nxDigestByte(&candidateDigest, fromCandidate);
+			if(fromOracle != fromCandidate)
+				{ ++mismatches; ++perMode[mode]; }
+
+			// Which face won, taken from the oracle's own normal rather than
+			// from anything this harness recomputes: on the inside path exactly
+			// one local axis is +-1 and the world normal is that axis through
+			// the rotation, so the winning column is the one it matches.
+			if(fromOracle && mode == 0 && inside)
+				{
+				for(int axis = 0; axis < 3; ++axis)
+					{
+					const float* column = &box.rotation[axis];
+					if(fabs((double) normal[0].x - column[0]) < 1e-3
+						&& fabs((double) normal[0].y - column[3]) < 1e-3
+						&& fabs((double) normal[0].z - column[6]) < 1e-3)
+						++axisWins[axis];
+					else if(fabs((double) normal[0].x + column[0]) < 1e-3
+						&& fabs((double) normal[0].y + column[3]) < 1e-3
+						&& fabs((double) normal[0].z + column[6]) < 1e-3)
+						++axisWins[axis];
+					}
+				}
+
+			const NxU32* words[2];
+			words[0] = (const NxU32*) &point[0];
+			words[1] = (const NxU32*) &point[1];
+			for(int word = 0; word < 3; ++word)
+				{
+				nxDigestByte(&oracleDigest, (unsigned char) words[0][word]);
+				nxDigestByte(&oracleDigest, (unsigned char) (words[0][word] >> 8));
+				nxDigestByte(&oracleDigest, (unsigned char) (words[0][word] >> 16));
+				nxDigestByte(&oracleDigest, (unsigned char) (words[0][word] >> 24));
+				nxDigestByte(&candidateDigest, (unsigned char) words[1][word]);
+				nxDigestByte(&candidateDigest, (unsigned char) (words[1][word] >> 8));
+				nxDigestByte(&candidateDigest, (unsigned char) (words[1][word] >> 16));
+				nxDigestByte(&candidateDigest, (unsigned char) (words[1][word] >> 24));
+				if(words[0][word] != words[1][word])
+					{ ++mismatches; ++perMode[mode]; }
+				}
+			const NxU32* normalWords[2];
+			normalWords[0] = (const NxU32*) &normal[0];
+			normalWords[1] = (const NxU32*) &normal[1];
+			for(int word = 0; word < 3; ++word)
+				{
+				nxDigestByte(&oracleDigest, (unsigned char) normalWords[0][word]);
+				nxDigestByte(&oracleDigest, (unsigned char) (normalWords[0][word] >> 8));
+				nxDigestByte(&oracleDigest, (unsigned char) (normalWords[0][word] >> 16));
+				nxDigestByte(&oracleDigest, (unsigned char) (normalWords[0][word] >> 24));
+				nxDigestByte(&candidateDigest, (unsigned char) normalWords[1][word]);
+				nxDigestByte(&candidateDigest, (unsigned char) (normalWords[1][word] >> 8));
+				nxDigestByte(&candidateDigest, (unsigned char) (normalWords[1][word] >> 16));
+				nxDigestByte(&candidateDigest, (unsigned char) (normalWords[1][word] >> 24));
+				if(normalWords[0][word] != normalWords[1][word])
+					{ ++mismatches; ++perMode[mode]; }
+				}
+			NxU32 separationWords[2];
+			memcpy(&separationWords[0], &separation[0], 4);
+			memcpy(&separationWords[1], &separation[1], 4);
+			for(int half = 0; half < 2; ++half)
+				for(int byte = 0; byte < 4; ++byte)
+					nxDigestByte(half ? &candidateDigest : &oracleDigest,
+						(unsigned char) (separationWords[half] >> (byte * 8)));
+			if(separationWords[0] != separationWords[1])
+				{ ++mismatches; ++perMode[mode]; }
+			}
+		}
+	totalMismatch += perMode[0];
+	printf("collision name=sphere_box_contact index=- rva=0x%08x owner=phys_fn_001917 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		kSphereBoxContactRva, oracleDigest.checks, oracleDigest.state,
+		candidateDigest.state, mismatches);
+	printf("collision coverage name=sphere_box_contact true=%u centre_inside=%u axis_x=%u axis_y=%u axis_z=%u default_mismatches=%u simulate_mismatches=%u\n",
+		trueCount, insideCount, axisWins[0], axisWins[1], axisWins[2],
+		perMode[0], perMode[1]);
+	}
+
+	// -----------------------------------------------------------------------
+	// Matrix A [SPHERE][BOX].
+	//
+	// The entry itself is 259 bytes of flattening plus the emitter call, and the
+	// one thing in it that no other block in this target measures is which side
+	// lands in which emitter slot: it hands the SPHERE as `object1` and the BOX
+	// as `object0`, which is shape0 in the slot plane/sphere gives shape1. That
+	// decides which owner the header material comes from first and which
+	// collision object the ordering rule compares, so the two materials and the
+	// two identities are driven apart here for the same reason the emitter block
+	// drives them apart.
+	{
+	typedef void(__cdecl* NxOracleContactFn)(const NxCollisionShape*, const NxCollisionShape*,
+		NxContactSink*, void*);
+	NxOracleContactFn oracleContact = (NxOracleContactFn) (base + nxMatrixA[8].rva);
+
+	static NxContactWorld world[2];
+
+	NxDigest oracleDigest, candidateDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	unsigned mismatches = 0;
+	unsigned perMode[2] = { 0, 0 };
+	unsigned emitted = 0;
+	unsigned insideCount = 0;
+	unsigned repeated = 0;
+	unsigned negatedPath = 0;
+	unsigned staticSide[2] = { 0, 0 };
+	unsigned widths[48];
+	memset(widths, 0, sizeof(widths));
+	unsigned state = 0x4ea6b03fu;
+
+	for(unsigned i = 0; i < kContactIterations; ++i)
+		{
+		const unsigned sequenceSeed = nxNext(&state);
+		const unsigned pairs = 1 + (nxNext(&state) % 4);
+
+		for(int mode = 0; mode < 2; ++mode)
+			{
+			for(int side = 0; side < 2; ++side)
+				nxResetWorld(&world[side]);
+
+			unsigned local = sequenceSeed;
+			static unsigned char sphereStorage[kShapeBytes];
+			static unsigned char boxStorage[kShapeBytes];
+			NxCollisionShape* sphereShape = (NxCollisionShape*) sphereStorage;
+			NxCollisionShape* boxShape = (NxCollisionShape*) boxStorage;
+			for(unsigned p = 0; p < pairs; ++p)
+				{
+				// The same pair again with the same identities, which is the
+				// only way to a four-word contact: both the header and the
+				// normal block are then skipped.
+				const bool repeat = p > 0 && (nxNext(&local) & 1) != 0;
+				bool insidePair = false;
+				if(!repeat)
+					{
+					const bool tame = (nxNext(&local) & 3) != 0;
+					nxIdentity(sphereShape);
+					nxIdentity(boxShape);
+					nxFillGeometry(&local, sphereShape, 1, tame);
+					nxFillGeometry(&local, boxShape, 2, tame);
+					nxRandomRotation(&local, boxShape);
+					for(int k = 0; k < 3; ++k)
+						boxShape->translation[k] = tame ? nxUnit(&local) * 2.0f - 1.0f : nxPick(&local);
+
+					insidePair = tame && (nxNext(&local) % 3) == 0;
+					if(tame)
+						{
+						// In box space and back out, so "inside" means inside
+						// every extent of the ROTATED box, which is not the same
+						// as near the centre in world coordinates.
+						float localOffset[3];
+						for(int k = 0; k < 3; ++k)
+							localOffset[k] = (nxUnit(&local) * 2.0f - 1.0f)
+								* boxShape->geometry[k + 1] * (insidePair ? 0.9f : 2.4f);
+						for(int k = 0; k < 3; ++k)
+							sphereShape->translation[k] = boxShape->translation[k]
+								+ boxShape->rotation[k * 3 + 0] * localOffset[0]
+								+ boxShape->rotation[k * 3 + 1] * localOffset[1]
+								+ boxShape->rotation[k * 3 + 2] * localOffset[2];
+						}
+					else
+						for(int k = 0; k < 3; ++k)
+							sphereShape->translation[k] = nxPick(&local);
+					}
+				if(insidePair && mode == 0)
+					++insideCount;
+				if(repeat && mode == 0)
+					++repeated;
+
+				const bool newIdentity0 = !repeat && ((p == 0) || ((nxNext(&local) & 3) == 0));
+				const bool newIdentity1 = !repeat && ((p == 0) || ((nxNext(&local) & 3) == 0));
+				const NxU32 material0 = nxNext(&local) & 0xff;
+				const NxU32 material1 = nxNext(&local) & 0xff;
+				const unsigned staticDraw = nxNext(&local) % 12;
+				const bool nullHolder0 = staticDraw == 0;
+				const bool nullHolder1 = staticDraw == 1;
+				const bool orientToBox = (nxNext(&local) & 1) != 0;
+				if(mode == 0)
+					{
+					if(nullHolder0)
+						++staticSide[0];
+					if(nullHolder1)
+						++staticSide[1];
+					if(orientToBox)
+						++negatedPath;
+					}
+
+				const unsigned before = world[0].sink.streamCount;
+				for(int side = 0; side < 2; ++side)
+					nxStageWorld(&world[side], sphereShape, boxShape,
+						newIdentity0, newIdentity1, material0, material1,
+						nullHolder0, nullHolder1, !orientToBox);
+
+				nxSetControl(mode ? kControlSimulate : kControlDefault);
+				oracleContact(world[0].plane, world[0].sphere, &world[0].sink, nxOverlapContext);
+				NxContactSphereBox(world[1].plane, world[1].sphere, &world[1].sink, nxOverlapContext);
+				nxSetControl(kControlDefault);
+
+				const unsigned appended = world[0].sink.streamCount - before;
+				if(appended)
+					++emitted;
+				if(appended < 48)
+					++widths[appended];
+				}
+
+			nxFoldStream(&oracleDigest, &world[0]);
+			nxFoldStream(&candidateDigest, &world[1]);
+			const unsigned differing = nxCompareStreams(&world[0], &world[1]);
+			mismatches += differing;
+			perMode[mode] += differing;
+			}
+		}
+	totalMismatch += perMode[0];
+	printf("collision name=contact_sphere_box index=8 rva=0x%08x owner=%s checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		nxMatrixA[8].rva, nxMatrixA[8].stableId,
+		oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches);
+	printf("collision coverage name=contact_sphere_box emitted=%u centre_inside=%u repeated=%u static0=%u static1=%u negated=%u w4=%u w8=%u w11=%u default_mismatches=%u simulate_mismatches=%u\n",
+		emitted, insideCount, repeated, staticSide[0], staticSide[1], negatedPath,
+		widths[4], widths[8], widths[11], perMode[0], perMode[1]);
+	}
+
 	// What is not covered, named rather than left as an absence.
 	for(unsigned index = 0; index < 36; ++index)
 		{
@@ -3138,9 +3829,15 @@ int wmain(int argc, wchar_t** argv)
 				index / 6, index % 6, nxMatrixB[index].rva, nxMatrixB[index].stableId);
 		}
 	for(unsigned index = 0; index < 36; ++index)
-		if(nxMatrixA[index].rva)
+		{
+		bool driven = false;
+		for(unsigned entry = 0; entry < kDrivenContactCount; ++entry)
+			if(nxDrivenContact[entry] == index)
+				driven = true;
+		if(!driven && nxMatrixA[index].rva)
 			printf("collision unreconstructed half=A type0=%u type1=%u rva=0x%08x owner=%s\n",
 				index / 6, index % 6, nxMatrixA[index].rva, nxMatrixA[index].stableId);
+		}
 
 	printf("collision matrix_wrong=%u index_wrong=%u mismatches=%u\n", matrixWrong, indexWrong, totalMismatch);
 	if(matrixWrong || indexWrong || totalMismatch)

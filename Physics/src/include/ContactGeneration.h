@@ -137,4 +137,65 @@ void __cdecl NxContactCapsuleCapsule(const NxCollisionShape* capsule0,
 void __cdecl NxContactPlaneBox(const NxCollisionShape* plane,
 	const NxCollisionShape* box, NxContactSink* sink, void* context);
 
+// phys_fn_001281 at 0x000257a0, four bytes: `mov eax,[ecx+4]; ret`. The shape's
+// owner, the BORROWED Phase 5 field at Shape+0x04 established at 0x00025543.
+// The two sphere entries below reach it through this accessor where the emitter
+// reads the same field inline at 0x0001d61b. Same __fastcall-for-__thiscall note
+// as the raycast rows above, except that this one takes no stack argument at all.
+const void* __fastcall NxShapeOwner(const NxCollisionShape* shape, void* edxUnused);
+
+// phys_fn_002266 at 0x00056650, 57 bytes. NOT an error path.
+//
+// Both sphere entries call it when one of the two shapes has a null
+// `owner->[8]`, passing the shape whose `owner->[8]` is NOT null first. It reads
+// NX_CONTINUOUS_CD out of the SDK's live parameter array through
+// phys_fn_000429 -- `mov ecx,[0x10123c04]; push 0xb; call 0x0000dc00` at
+// 0x00056650..0x00056658 -- and returns true without touching the sink when that
+// parameter is 0.0f. Otherwise it tail-calls phys_fn_002264 at 0x00055eb0, the
+// continuous-collision sweep.
+//
+// phys_fn_002264 IS NOT RECONSTRUCTED AND MUST NOT BE GUESSED. It reads a
+// SECOND pose at Shape+0x3c..+0x68 (0x00055ebe onward) that no Phase 3 or
+// borrowed-layout evidence establishes, reads and writes `sink+0xdc`, `+0xe0`,
+// `+0xe4` and `+0xe9` (0x00056196..0x000561d2) where the borrowed sink layout
+// stops at 0x44, and dispatches through vtable slot 7 at 0x000562c3 and
+// 0x000564b9 -- a slot no constructor scan in this program has resolved. Three
+// unestablished things, so this row stops here rather than inventing them.
+//
+// NX_CONTINUOUS_CD's shipped default is 0.0f -- phys_fn_000472 writes `ebp`,
+// which it zeroed at 0x0000e1bb, into the defaults table at 0x0000e56e -- so
+// under the SDK as it ships the guard closes and phys_fn_002264 is unreachable.
+// The differential measures that rather than assuming it.
+bool __cdecl NxContinuousCdPair(const NxCollisionShape* moving,
+	const NxCollisionShape* fixed, NxContactSink* sink);
+
+// phys_fn_001933 at 0x0004b860, matrix A slot [SPHERE][SPHERE].
+void __cdecl NxContactSphereSphere(const NxCollisionShape* sphere0,
+	const NxCollisionShape* sphere1, NxContactSink* sink, void* context);
+
+// phys_fn_001917 at 0x00049f00, 969 bytes: the sphere/box contact geometry.
+//
+// It is phys_fn_001913 -- the [SPHERE][BOX] overlap test in NarrowPhase.cpp --
+// with the answer kept rather than thrown away, plus a whole second algorithm
+// for the case that one returns `true` from early: a sphere centre inside the
+// box, where there is no closest point to push away from and the contact has to
+// come from the shallowest face instead.
+//
+// It takes the same two flattened structures the overlap test does, which is
+// what fixes their field order, and writes three results through pointers.
+bool __cdecl NxSphereBoxContactData(const NxCollisionSphereData* sphere,
+	const NxCollisionBoxData* box, NxVec3* point, NxVec3* normal,
+	NxReal* separation);
+
+// phys_fn_001919 at 0x0004a2d0, matrix A slot [SPHERE][BOX].
+//
+// It hands the emitter the SPHERE as `object1` and the BOX as `object0` -- that
+// is, shape0 in the slot the plane/sphere entry gives shape1 (0x0004a3c7 pushes
+// `[ebp+0x9c]` and 0x0004a3c6 pushes `[ebx+0x9c]`). Which side lands in which
+// slot decides which owner the header's material is taken from first and which
+// collision object the ordering rule compares, so it is a per-entry fact and not
+// a convention.
+void __cdecl NxContactSphereBox(const NxCollisionShape* sphere,
+	const NxCollisionShape* box, NxContactSink* sink, void* context);
+
 #endif
