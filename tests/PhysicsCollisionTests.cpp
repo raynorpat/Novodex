@@ -170,6 +170,8 @@ static const unsigned kSquareDistanceIatRva = 0x00104170;
 // phys_fn_001261, what a PLANE shape puts in vtable slot 5. Recovered from the
 // plane shape constructor's vtable store at 0x00107430 + 0x14.
 static const unsigned kPlaneRaycastRva = 0x00025350;
+// phys_fn_001377, the same slot on a SPHERE shape, from 0x00107528 + 0x14.
+static const unsigned kSphereRaycastRva = 0x00027c70;
 // hit.shape is written from shape->[0x9c] and never dereferenced by that row,
 // so both sides are given the same made-up value: a real address would put this
 // process's load address into an oracle-side digest that is pinned in the gate.
@@ -1721,7 +1723,23 @@ int wmain(int argc, wchar_t** argv)
 				// or a zero one -- and those are exactly the cases that make the
 				// two endpoints behave differently from each other, so they are
 				// generated rather than waited for.
-				const unsigned axisMode = nxNext(&local) % 5;
+				// Every aim below is arithmetic on the plane's own normal or on the
+				// capsule's own geometry, so it is done only when those are
+				// finite. A NaN reaching one of these multiplies is propagated
+				// by SSE, and which operand's payload survives depends on the
+				// order the compiler happened to emit -- so the *generated
+				// shape* would differ between two builds of this harness, and
+				// with it the oracle's own digest. That is not hypothetical: it
+				// is what made an earlier version of this block print a
+				// different oracle digest whenever the file was recompiled, and
+				// it is why the aimed placement falls back to raw draws rather
+				// than aiming with a non-finite normal.
+				const bool aimable = planeTame && tame;
+				unsigned axisMode = nxNext(&local) % 5;
+				// Modes 2 and 3 are the two built out of the plane's normal. The
+				// draw itself is left alone so the sequence does not move.
+				if(!aimable && (axisMode == 2 || axisMode == 3))
+					axisMode = 4;
 				const NxReal* planeNormal = planeShape->geometry;
 				if(axisMode == 0)
 					nxRandomRotation(&local, capsuleShape);
@@ -1774,7 +1792,7 @@ int wmain(int argc, wchar_t** argv)
 				// plane often enough for the emitting paths to be reached at
 				// all. The fourth is unaimed so the far-away and non-finite
 				// cases still arrive.
-				if((nxNext(&local) & 3) != 0)
+				if(aimable && (nxNext(&local) & 3) != 0)
 					{
 					const float span = capsuleShape->geometry[0] + capsuleShape->geometry[1];
 					const float offset = (nxUnit(&local) * 2.0f - 1.0f) * (span * 1.5f + 0.25f);
@@ -1850,6 +1868,331 @@ int wmain(int argc, wchar_t** argv)
 	printf("collision coverage name=contact_plane_capsule emitted=%u one=%u two=%u swept=%u swept_emitted=%u zero_axis=%u w4=%u w8=%u w11=%u w15=%u\n",
 		emitted, oneContact, twoContacts, swept, sweptEmitted, zeroAxis,
 		widths[4], widths[8], widths[11], widths[15]);
+	}
+
+	// -----------------------------------------------------------------------
+	// phys_fn_001377, driven at its own address.
+	//
+	// Two behaviours the sphere/capsule entry cannot reach: it always passes
+	// NX_RAYCAST_NORMAL, so the flags-clear path is dead from there, and it
+	// always passes a limit equal to the segment length. And two this row has
+	// that the plane's does not: it has no facing test, so a sphere *behind*
+	// the ray origin is a hit whenever NxRaySphereIntersect says so, and it
+	// writes hit.distance before it tests the limit, so a rejected raycast
+	// still leaves one field written. Poisoning the hit is what makes the
+	// second visible.
+	{
+	typedef const void*(__thiscall* NxOracleRaycastFn)(const void*, const NxRay*, NxReal,
+		NxU32, NxU32, NxRaycastHit*);
+	NxOracleRaycastFn oracleRaycast = (NxOracleRaycastFn) (base + kSphereRaycastRva);
+
+	NxDigest oracleDigest, candidateDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	unsigned mismatches = 0;
+	unsigned perMode[2] = { 0, 0 };
+	unsigned hits = 0;
+	unsigned wroteNormal = 0;
+	unsigned behindRays = 0;
+	unsigned aimedRays = 0;
+	unsigned state = 0x7b0c1d33u;
+
+	for(unsigned i = 0; i < kPairIterations; ++i)
+		{
+		const bool tame = (nxNext(&state) & 3) != 0;
+		nxIdentity(shape0);
+		nxFillGeometry(&state, shape0, 1, tame);
+		for(int k = 0; k < 3; ++k)
+			shape0->translation[k] = tame ? nxUnit(&state) * 4.0f - 2.0f : nxPick(&state);
+		shape0->collisionObject = kFakeCollisionObject;
+
+		NxRay ray;
+		NxReal maxDistance;
+		const bool aimed = tame && (nxNext(&state) & 1) != 0;
+		if(aimed)
+			{
+			++aimedRays;
+			float direction[3];
+			float length = 0.0f;
+			for(int k = 0; k < 3; ++k)
+				{
+				direction[k] = nxUnit(&state) * 2.0f - 1.0f;
+				length += direction[k] * direction[k];
+				}
+			length = (float) sqrt((double) length);
+			if(length < 1e-4f)
+				{ direction[0] = 1.0f; direction[1] = 0.0f; direction[2] = 0.0f; length = 1.0f; }
+			for(int k = 0; k < 3; ++k)
+				(&ray.dir.x)[k] = direction[k] / length;
+			// A signed distance along that direction. Negative puts the sphere
+			// behind the origin, which this row -- unlike the plane's -- has no
+			// test to reject.
+			const bool behind = (nxNext(&state) & 3) == 0;
+			if(behind)
+				++behindRays;
+			const float along = (nxUnit(&state) * 3.0f + 0.5f) * (behind ? -1.0f : 1.0f);
+			// An offset across the ray, so the sphere is grazed as well as hit
+			// through the middle and missed outright.
+			const float across = (nxUnit(&state) * 2.0f - 1.0f) * shape0->geometry[0] * 1.4f;
+			for(int k = 0; k < 3; ++k)
+				(&ray.orig.x)[k] = shape0->translation[k] - (&ray.dir.x)[k] * along
+					+ ((k + 1) % 3 == 0 ? across : -across) * 0.5f;
+			maxDistance = (along < 0.0f ? -along : along) * (0.2f + nxUnit(&state) * 1.6f);
+			}
+		else
+			{
+			for(int k = 0; k < 3; ++k)
+				{
+				(&ray.orig.x)[k] = tame ? nxUnit(&state) * 4.0f - 2.0f : nxPick(&state);
+				(&ray.dir.x)[k] = tame ? nxUnit(&state) * 2.0f - 1.0f : nxPick(&state);
+				}
+			maxDistance = tame ? nxUnit(&state) * 6.0f : nxPick(&state);
+			}
+
+		NxU32 hintFlags = nxNext(&state) & 0xfbu;
+		if(nxNext(&state) & 1)
+			hintFlags |= NX_RAYCAST_NORMAL;
+
+		for(int mode = 0; mode < 2; ++mode)
+			{
+			NxRaycastHit hit[2];
+			memset(hit, 0xcd, sizeof(hit));
+
+			nxSetControl(mode ? kControlSimulate : kControlDefault);
+			const unsigned char fromOracle =
+				oracleRaycast(shape0, &ray, maxDistance, 0, hintFlags, &hit[0]) ? 1 : 0;
+			const unsigned char fromCandidate =
+				NxShapeRaycastSphere(shape0, 0, &ray, maxDistance, 0, hintFlags, &hit[1]) ? 1 : 0;
+			nxSetControl(kControlDefault);
+
+			if(fromOracle)
+				++hits;
+			if((hit[0].flags & NX_RAYCAST_NORMAL) && fromOracle)
+				++wroteNormal;
+			nxDigestByte(&oracleDigest, fromOracle);
+			nxDigestByte(&candidateDigest, fromCandidate);
+			if(fromOracle != fromCandidate)
+				{ ++mismatches; ++perMode[mode]; }
+			for(unsigned w = 0; w < sizeof(NxRaycastHit) / 4; ++w)
+				{
+				NxU32 a, b;
+				memcpy(&a, (const unsigned char*) &hit[0] + w * 4, 4);
+				memcpy(&b, (const unsigned char*) &hit[1] + w * 4, 4);
+				for(int byte = 0; byte < 4; ++byte)
+					{
+					nxDigestByte(&oracleDigest, (unsigned char) (a >> (byte * 8)));
+					nxDigestByte(&candidateDigest, (unsigned char) (b >> (byte * 8)));
+					}
+				if(a != b)
+					{ ++mismatches; ++perMode[mode]; }
+				}
+			}
+		}
+	// Only the default-word half gates, and that is a measured restriction with
+	// a named cause rather than a convenience.
+	//
+	// Under 0x027f the reconstruction agrees on all 2,940,000 checks. Under
+	// 0x0f7f it differs on 13, and every one of those is hit.worldImpact or the
+	// hit.distance derived from it -- never a field this row computes for
+	// itself. worldImpact is written by NxRaySphereIntersect, and the recovered
+	// matrix has just put that export inside the simulation step for the first
+	// time: phys_fn_001923, matrix A [SPHERE][CAPSULE], dispatches through
+	// vtable slot 5 to phys_fn_001377, whose only callee is phys_fn_001710 at
+	// 0x00036e80. Its reconstruction in Geometry.cpp takes sqrt() of the
+	// discriminant and keeps the root wide across a subtraction; the CRT routine
+	// ignores the x87 control word, and no C++ hands a 64-bit significand to the
+	// operation after it. That is Task 2's row and the same escalation
+	// NxBuildSmoothNormals already carries, so the count is registered rather
+	// than dropped: it fails if it moves either way, including toward zero.
+	totalMismatch += perMode[0];
+	printf("collision name=shape_raycast_sphere index=- rva=0x%08x owner=phys_fn_001377 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		kSphereRaycastRva, oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches);
+	printf("collision coverage name=shape_raycast_sphere hits=%u wrote_normal=%u aimed=%u behind=%u default_mismatches=%u simulate_mismatches=%u\n",
+		hits, wroteNormal, aimedRays, behindRays, perMode[0], perMode[1]);
+	}
+
+	// -----------------------------------------------------------------------
+	// Matrix A [SPHERE][CAPSULE].
+	//
+	// The same NX_SWEPT_SHAPE split, but the flag-clear path is a segment/point
+	// distance rather than two plane distances, so what distinguishes its cases
+	// is *where along the axis* the sphere sits: past an endpoint, beside the
+	// interior, or exactly on the axis -- the last being the one placement that
+	// reaches the zero-length-normal return at 0x0004a811. A random pair
+	// reaches none of the three often enough to matter, so the sphere is placed
+	// in the capsule's own frame.
+	//
+	// world->plane is the first shape slot; here it carries the sphere, and it
+	// is the one that needs a vtable.
+	{
+	typedef void(__cdecl* NxOracleContactFn)(const NxCollisionShape*, const NxCollisionShape*,
+		NxContactSink*, void*);
+	NxOracleContactFn oracleContact = (NxOracleContactFn) (base + nxMatrixA[9].rva);
+
+	static NxContactWorld world[2];
+	world[0].shapeVtable[5] = (void*) (base + kSphereRaycastRva);
+	world[1].shapeVtable[5] = (void*) &NxShapeRaycastSphere;
+
+	NxDigest oracleDigest, candidateDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	unsigned mismatches = 0;
+	unsigned emitted = 0;
+	unsigned swept = 0;
+	unsigned sweptEmitted = 0;
+	unsigned zeroAxis = 0;
+	unsigned coincident = 0;
+	unsigned beyondEnd = 0;
+	unsigned widths[24];
+	memset(widths, 0, sizeof(widths));
+	unsigned state = 0x2ca95e11u;
+
+	for(unsigned i = 0; i < kContactIterations; ++i)
+		{
+		const unsigned sequenceSeed = nxNext(&state);
+		const unsigned pairs = 1 + (nxNext(&state) % 4);
+
+		for(int mode = 0; mode < 2; ++mode)
+			{
+			for(int side = 0; side < 2; ++side)
+				nxResetWorld(&world[side]);
+
+			unsigned local = sequenceSeed;
+			for(unsigned p = 0; p < pairs; ++p)
+				{
+				static unsigned char sphereStorage[kShapeBytes];
+				static unsigned char capsuleStorage[kShapeBytes];
+				NxCollisionShape* sphereShape = (NxCollisionShape*) sphereStorage;
+				NxCollisionShape* capsuleShape = (NxCollisionShape*) capsuleStorage;
+				const bool tame = (nxNext(&local) & 3) != 0;
+				nxIdentity(sphereShape);
+				nxIdentity(capsuleShape);
+				nxFillGeometry(&local, sphereShape, 1, tame);
+				nxFillGeometry(&local, capsuleShape, 3, tame);
+				for(int k = 0; k < 3; ++k)
+					capsuleShape->translation[k] =
+						tame ? nxUnit(&local) * 3.0f - 1.5f : nxPick(&local);
+
+				const unsigned axisMode = nxNext(&local) % 4;
+				if(axisMode == 0)
+					nxRandomRotation(&local, capsuleShape);
+				else if(axisMode == 2)
+					{
+					// A skew axis that is not a rotation column at all: only
+					// m[1], m[4] and m[7] are read and nothing requires them to
+					// be unit, so a drifted pose is a state this can be in.
+					capsuleShape->rotation[1] = nxUnit(&local) * 4.0f - 2.0f;
+					capsuleShape->rotation[4] = nxUnit(&local) * 4.0f - 2.0f;
+					capsuleShape->rotation[7] = nxUnit(&local) * 4.0f - 2.0f;
+					}
+				else if(axisMode == 3)
+					memset(capsuleShape->rotation, 0, sizeof(capsuleShape->rotation));
+				// axisMode 1 keeps the identity: the axis is world +Y.
+
+				const bool degenerate = (nxNext(&local) & 7) == 0;
+				if(degenerate)
+					capsuleShape->geometry[1] = 0.0f;
+				if(degenerate || axisMode == 3)
+					++zeroAxis;
+
+				NxU32 flagWord = nxNext(&local);
+				const bool sweptShape = (nxNext(&local) & 1) != 0;
+				flagWord = sweptShape ? (flagWord | 1u) : (flagWord & ~1u);
+				memcpy(&capsuleShape->geometry[2], &flagWord, 4);
+
+				// Place the sphere in the capsule's frame: `along` is measured
+				// in half heights from the centre, so |along| > 1 is past an
+				// endpoint, and `across` is a perpendicular offset in units of
+				// the two radii, with zero putting the centre exactly on the
+				// axis. Both are aims; neither decides an answer.
+				// Same finiteness rule as the plane/capsule block above, and for
+				// the same reason: aiming through a non-finite axis would make
+				// the generated shape depend on how the compiler ordered a
+				// multiply.
+				bool placed = false;
+				if(tame && (nxNext(&local) & 3) != 0)
+					{
+					const float hh = capsuleShape->geometry[1];
+					float axis[3];
+					axis[0] = capsuleShape->rotation[1] * hh;
+					axis[1] = capsuleShape->rotation[4] * hh;
+					axis[2] = capsuleShape->rotation[7] * hh;
+					float other[3] = { 0.0f, 0.0f, 0.0f };
+					other[nxNext(&local) % 3] = 1.0f;
+					float perp[3];
+					perp[0] = axis[1] * other[2] - axis[2] * other[1];
+					perp[1] = axis[2] * other[0] - axis[0] * other[2];
+					perp[2] = axis[0] * other[1] - axis[1] * other[0];
+					const float norm = (float) sqrt((double) (perp[0] * perp[0]
+						+ perp[1] * perp[1] + perp[2] * perp[2]));
+					if(norm > 1e-6f)
+						{
+						const float along = nxUnit(&local) * 3.0f - 1.5f;
+						const bool onAxis = (nxNext(&local) & 7) == 0;
+						const float span = sphereShape->geometry[0] + capsuleShape->geometry[0];
+						const float across = onAxis ? 0.0f
+							: (nxUnit(&local) * 1.8f + 0.05f) * span;
+						if(onAxis)
+							++coincident;
+						if(along < -1.0f || along > 1.0f)
+							++beyondEnd;
+						for(int k = 0; k < 3; ++k)
+							sphereShape->translation[k] = capsuleShape->translation[k]
+								+ axis[k] * along + perp[k] * (across / norm);
+						placed = true;
+						}
+					}
+				if(!placed)
+					for(int k = 0; k < 3; ++k)
+						sphereShape->translation[k] =
+							tame ? nxUnit(&local) * 3.0f - 1.5f : nxPick(&local);
+
+				const bool newIdentity0 = (p == 0) || ((nxNext(&local) & 3) == 0);
+				const bool newIdentity1 = (p == 0) || ((nxNext(&local) & 3) == 0);
+				const NxU32 material0 = nxNext(&local) & 0xff;
+				const NxU32 material1 = nxNext(&local) & 0xff;
+				const bool nullHolder1 = (nxNext(&local) & 7) == 0;
+				const bool orientToSphere = (nxNext(&local) & 1) != 0;
+
+				const unsigned before = world[0].sink.streamCount;
+				for(int side = 0; side < 2; ++side)
+					{
+					nxStageWorld(&world[side], sphereShape, capsuleShape,
+						newIdentity0, newIdentity1, material0, material1,
+						nullHolder1, orientToSphere);
+					*(void**) world[side].plane = world[side].shapeVtable;
+					}
+
+				nxSetControl(mode ? kControlSimulate : kControlDefault);
+				oracleContact(world[0].plane, world[0].sphere, &world[0].sink, nxOverlapContext);
+				NxContactSphereCapsule(world[1].plane, world[1].sphere, &world[1].sink, nxOverlapContext);
+				nxSetControl(kControlDefault);
+
+				const unsigned appended = world[0].sink.streamCount - before;
+				if(appended)
+					++emitted;
+				if(appended < 24)
+					++widths[appended];
+				if(sweptShape)
+					{
+					++swept;
+					if(appended)
+						++sweptEmitted;
+					}
+				}
+
+			nxFoldStream(&oracleDigest, &world[0]);
+			nxFoldStream(&candidateDigest, &world[1]);
+			mismatches += nxCompareStreams(&world[0], &world[1]);
+			}
+		}
+	totalMismatch += mismatches;
+	printf("collision name=contact_sphere_capsule index=9 rva=0x%08x owner=%s checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		nxMatrixA[9].rva, nxMatrixA[9].stableId,
+		oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches);
+	printf("collision coverage name=contact_sphere_capsule emitted=%u swept=%u swept_emitted=%u zero_axis=%u coincident=%u beyond_end=%u w4=%u w8=%u w11=%u\n",
+		emitted, swept, sweptEmitted, zeroAxis, coincident, beyondEnd,
+		widths[4], widths[8], widths[11]);
 	}
 
 	// What is not covered, named rather than left as an absence.

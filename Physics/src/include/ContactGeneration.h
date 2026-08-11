@@ -75,8 +75,8 @@ void __cdecl NxContactPlaneSphere(const NxCollisionShape* plane,
 // `+0x04` (the ray), `+0x08` (the distance limit), `+0x10` (the hint flags) and
 // `+0x14` (the hit), and nothing reads `+0x0c`. It is left unnamed rather than
 // guessed at.
-// The slot as the oracle holds it. Every shape type has one; only the plane's
-// is reconstructed here.
+// The slot as the oracle holds it. Every shape type has one; the plane's and the
+// sphere's are reconstructed here.
 typedef const NxCollisionShape* (__thiscall* NxShapeRaycastFn)(const NxCollisionShape*,
 	const NxRay*, NxReal, NxU32, NxU32, NxRaycastHit*);
 
@@ -91,8 +91,22 @@ const NxCollisionShape* __fastcall NxShapeRaycastPlane(const NxCollisionShape* p
 	void* edxUnused, const NxRay* worldRay, NxReal maxDistance, NxU32 unread,
 	NxU32 hintFlags, NxRaycastHit* hit);
 
+// phys_fn_001377 at 0x00027c70, slot 5 of the *sphere* shape's vtable
+// (0x00107528 + 0x14). Same ABI note as above.
+//
+// It is not the plane's function written twice. It has no facing test and no
+// "ahead of the origin" test -- only the distance limit -- and it computes and
+// normalises its own hit normal where the plane's copies the plane's geometry.
+const NxCollisionShape* __fastcall NxShapeRaycastSphere(const NxCollisionShape* sphere,
+	void* edxUnused, const NxRay* worldRay, NxReal maxDistance, NxU32 unread,
+	NxU32 hintFlags, NxRaycastHit* hit);
+
 // phys_fn_001891 at 0x00048370, matrix A slot [PLANE][CAPSULE].
 void __cdecl NxContactPlaneCapsule(const NxCollisionShape* plane,
+	const NxCollisionShape* capsule, NxContactSink* sink, void* context);
+
+// phys_fn_001923 at 0x0004a4b0, matrix A slot [SPHERE][CAPSULE].
+void __cdecl NxContactSphereCapsule(const NxCollisionShape* sphere,
 	const NxCollisionShape* capsule, NxContactSink* sink, void* context);
 
 #endif
