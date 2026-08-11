@@ -2301,6 +2301,168 @@ int wmain(int argc, wchar_t** argv)
 	}
 
 	// -----------------------------------------------------------------------
+	// Matrix A [PLANE][BOX], the one entry that inlines the emitter.
+	//
+	// Three of the four differences between the inlined copy and phys_fn_000873
+	// need a generator that reaches them, and none is reached by a random pair:
+	//
+	//   header_rewrite -- the inlined copy has no header predicate, so driving
+	//     the *same* pair twice in a row into one sink makes it write a second
+	//     header where the emitter would have written none. That needs a
+	//     sequence that repeats a pair without changing either identity.
+	//   zero_normal -- the only case where the missing normal predicate shows,
+	//     since the header it just wrote cleared the cache.
+	//   six -- the contact cap. Eight corners below the plane, which needs the
+	//     box wholly under it.
+	//
+	// The fourth, the always-zero feature half, is structural: no matrix A entry
+	// reachable today passes anything but 0xffff, so the fifth-word branch is
+	// dead in both copies and the emitter block drives it directly instead.
+	{
+	typedef void(__cdecl* NxOracleContactFn)(const NxCollisionShape*, const NxCollisionShape*,
+		NxContactSink*, void*);
+	NxOracleContactFn oracleContact = (NxOracleContactFn) (base + nxMatrixA[2].rva);
+
+	static NxContactWorld world[2];
+
+	NxDigest oracleDigest, candidateDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	unsigned mismatches = 0;
+	unsigned perMode[2] = { 0, 0 };
+	unsigned emitted = 0;
+	unsigned headerRewrite = 0;
+	unsigned zeroNormal = 0;
+	unsigned belowPlane = 0;
+	unsigned negatedPath = 0;
+	unsigned contactCounts[10];
+	unsigned widths[48];
+	memset(contactCounts, 0, sizeof(contactCounts));
+	memset(widths, 0, sizeof(widths));
+	unsigned state = 0x1c7a4e05u;
+
+	for(unsigned i = 0; i < kContactIterations; ++i)
+		{
+		const unsigned sequenceSeed = nxNext(&state);
+		const unsigned pairs = 1 + (nxNext(&state) % 4);
+
+		for(int mode = 0; mode < 2; ++mode)
+			{
+			for(int side = 0; side < 2; ++side)
+				nxResetWorld(&world[side]);
+
+			unsigned local = sequenceSeed;
+			static unsigned char planeStorage[kShapeBytes];
+			static unsigned char boxStorage[kShapeBytes];
+			NxCollisionShape* planeShape = (NxCollisionShape*) planeStorage;
+			NxCollisionShape* boxShape = (NxCollisionShape*) boxStorage;
+			for(unsigned p = 0; p < pairs; ++p)
+				{
+				// A repeated pair: the same shapes and the same identities as
+				// the previous one, which is the only way to reach the missing
+				// header predicate.
+				const bool repeat = p > 0 && (nxNext(&local) & 1) != 0;
+				bool zeroNormalPair = false;
+				if(!repeat)
+					{
+					const bool tame = (nxNext(&local) & 3) != 0;
+					nxIdentity(planeShape);
+					nxIdentity(boxShape);
+					nxFillGeometry(&local, planeShape, 0, tame);
+					nxFillGeometry(&local, boxShape, 2, tame);
+					zeroNormalPair = tame && (nxNext(&local) & 15) == 0;
+					if(zeroNormalPair)
+						{
+						planeShape->geometry[0] = 0.0f;
+						planeShape->geometry[1] = 0.0f;
+						planeShape->geometry[2] = 0.0f;
+						}
+					nxRandomRotation(&local, boxShape);
+					// The box placed relative to the plane along its own normal,
+					// so "no corner below", "some below" and "all eight below"
+					// are all reached. Gated on the normal being finite, since
+					// the placement multiplies it.
+					bool finite = tame;
+					for(int k = 0; k < 3; ++k)
+						if(!nxFinite(planeShape->geometry[k]))
+							finite = false;
+					if(!nxFinite(planeShape->geometry[3]))
+						finite = false;
+					const float reach = boxShape->geometry[1] + boxShape->geometry[2]
+						+ boxShape->geometry[3];
+					const bool sink6 = finite && (nxNext(&local) & 3) == 0;
+					if(sink6)
+						++belowPlane;
+					if(finite)
+						{
+						const float offset = sink6 ? -(reach + nxUnit(&local) * 2.0f)
+							: (nxUnit(&local) * 2.4f - 1.2f) * reach;
+						for(int k = 0; k < 3; ++k)
+							boxShape->translation[k] =
+								planeShape->geometry[k] * (offset - planeShape->geometry[3]);
+						}
+					else
+						for(int k = 0; k < 3; ++k)
+							boxShape->translation[k] = nxPick(&local);
+					}
+				if(zeroNormalPair)
+					++zeroNormal;
+
+				const bool newIdentity0 = !repeat && ((p == 0) || ((nxNext(&local) & 3) == 0));
+				const bool newIdentity1 = !repeat && ((p == 0) || ((nxNext(&local) & 3) == 0));
+				const NxU32 material0 = nxNext(&local) & 0xff;
+				const NxU32 material1 = nxNext(&local) & 0xff;
+				const bool nullHolder1 = (nxNext(&local) & 7) == 0;
+				const bool orientToBox = (nxNext(&local) & 1) != 0;
+				if(orientToBox)
+					++negatedPath;
+				if(repeat)
+					++headerRewrite;
+
+				const unsigned before = world[0].sink.streamCount;
+				const unsigned contactsBefore = world[0].sink.contactCount;
+				for(int side = 0; side < 2; ++side)
+					nxStageWorld(&world[side], planeShape, boxShape,
+						newIdentity0, newIdentity1, material0, material1,
+						nullHolder1, !orientToBox);
+
+				nxSetControl(mode ? kControlSimulate : kControlDefault);
+				oracleContact(world[0].plane, world[0].sphere, &world[0].sink, nxOverlapContext);
+				NxContactPlaneBox(world[1].plane, world[1].sphere, &world[1].sink, nxOverlapContext);
+				nxSetControl(kControlDefault);
+
+				const unsigned appended = world[0].sink.streamCount - before;
+				const unsigned contacts = world[0].sink.contactCount - contactsBefore;
+				if(appended)
+					++emitted;
+				if(appended < 48)
+					++widths[appended];
+				if(contacts < 10)
+					++contactCounts[contacts];
+				}
+
+			nxFoldStream(&oracleDigest, &world[0]);
+			nxFoldStream(&candidateDigest, &world[1]);
+			const unsigned differing = nxCompareStreams(&world[0], &world[1]);
+			mismatches += differing;
+			perMode[mode] += differing;
+			}
+		}
+	totalMismatch += perMode[0];
+	printf("collision name=contact_plane_box index=2 rva=0x%08x owner=%s checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		nxMatrixA[2].rva, nxMatrixA[2].stableId,
+		oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches);
+	// c6 is the cap: eight corners below the plane and the oracle stops at six.
+	// header_rewrite counts the repeated pairs that reach the missing header
+	// predicate, zero_normal the plane normals that reach the missing normal
+	// predicate, and below_plane the placements aimed at the cap.
+	printf("collision coverage name=contact_plane_box emitted=%u header_rewrite=%u zero_normal=%u below_plane=%u negated=%u c1=%u c2=%u c4=%u c6=%u c7=%u w11=%u w15=%u w31=%u default_mismatches=%u simulate_mismatches=%u\n",
+		emitted, headerRewrite, zeroNormal, belowPlane, negatedPath,
+		contactCounts[1], contactCounts[2], contactCounts[4], contactCounts[6],
+		contactCounts[7], widths[11], widths[15], widths[31], perMode[0], perMode[1]);
+	}
+
+	// -----------------------------------------------------------------------
 	// phys_fn_001010, driven at its own address.
 	//
 	// The entry cannot reach two of the things this row does. It always passes a

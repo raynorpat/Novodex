@@ -127,4 +127,14 @@ const NxCollisionShape* __fastcall NxShapeRaycastCapsule(const NxCollisionShape*
 void __cdecl NxContactCapsuleCapsule(const NxCollisionShape* capsule0,
 	const NxCollisionShape* capsule1, NxContactSink* sink, void* context);
 
+// phys_fn_001883 at 0x00047f20, matrix A slot [PLANE][BOX] -- 42 bytes plus 786
+// in two annotated continuations.
+//
+// The one entry in this matrix that does not call NxEmitContact: the oracle
+// inlines the stream logic into it. The three append levels are shared in the
+// .cpp so there is only one copy of what the two agree on; what this row
+// duplicates is only the predicates, and each one is a recorded difference.
+void __cdecl NxContactPlaneBox(const NxCollisionShape* plane,
+	const NxCollisionShape* box, NxContactSink* sink, void* context);
+
 #endif

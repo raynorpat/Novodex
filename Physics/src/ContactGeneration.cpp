@@ -114,6 +114,95 @@ static NxU32 nxBits(NxReal value)
 	return word;
 	}
 
+// The three stream levels, factored out because there are two implementations
+// of them in the oracle and therefore two here.
+//
+// phys_fn_000873 at 0x0001d610 is the emitter that fifteen inventory rows call.
+// phys_fn_001883, matrix A [PLANE][BOX], does not call it: it writes
+// `sink->[0x34]`, `+0x20` and `+0x24` itself at 0x00047fdf, 0x00047fec and
+// 0x00047ff5 and appends through its own `lea esi,[edi+0x38]`. So the oracle
+// carries a second copy, and a reconstruction that transcribed both would carry
+// a second copy too -- with nothing forcing the two to stay in step.
+//
+// HOW A FUTURE READER CHECKS THEY STILL AGREE: by there being nothing left to
+// check. Everything the two oracle copies do identically is written once, in the
+// three helpers below, and called from both. What phys_fn_001883 duplicates is
+// only the *predicates* -- when a header is written and when a normal block is
+// -- and those are exactly where the two oracle copies disagree, which is
+// recorded on NxContactPlaneBox with the addresses that establish it. If a
+// future edit changes an append rule it changes it for both by construction; if
+// it changes a predicate, it changes only the row whose predicate it is.
+//
+// The differential is the second half of that: contact_emit drives
+// phys_fn_000873 and contact_plane_box drives the inlined copy, each against its
+// own counterpart in the pinned DLL, so a drift that these helpers cannot
+// prevent is a drift one of the two blocks fails on.
+
+// The material the pair header carries in its high byte. shape1's owner is
+// consulted first and shape0's is the fallback -- 0x0001d726..0x0001d73e in the
+// emitter and 0x00048053..0x0004806b in plane/box, which are the same three
+// loads in the same order.
+static NxU32 nxHeaderMaterial(const NxCollisionShape* shape1, const NxCollisionShape* shape0)
+	{
+	const NxU8* holder = *(const NxU8* const*) ((const NxU8*) shape1->owner + 8);
+	if(!holder)
+		holder = *(const NxU8* const*) ((const NxU8*) shape0->owner + 8);
+	return *(const NxU32*) (holder + 0x240);
+	}
+
+// Level one: the pair header. Three words, and writing it clears the cached
+// normal so the block below always follows.
+static void nxAppendPairHeader(NxContactSink* sink, void* object1, void* object0,
+	NxU32 material, NxU32 packed)
+	{
+	sink->lastObject1 = object1;
+	sink->lastObject0 = object0;
+
+	nxAppend(sink, (NxU32) (size_t) object1);
+	nxAppend(sink, (NxU32) (size_t) object0);
+
+	sink->normalCountIndex = sink->streamCount;
+	nxAppend(sink, (material << 24) | packed);
+	++sink->stream[sink->pairCountIndex];
+
+	sink->lastNormal[0] = 0.0f;
+	sink->lastNormal[1] = 0.0f;
+	sink->lastNormal[2] = 0.0f;
+	}
+
+// Level two: the normal and the count word its contacts increment.
+static void nxAppendNormalBlock(NxContactSink* sink, const NxVec3* normal)
+	{
+	sink->lastNormal[0] = normal->x;
+	sink->lastNormal[1] = normal->y;
+	sink->lastNormal[2] = normal->z;
+
+	nxAppend3(sink, nxBits(normal->x), nxBits(normal->y), nxBits(normal->z));
+
+	sink->pointCountIndex = sink->streamCount;
+	nxAppend(sink, 0);
+	++sink->stream[sink->normalCountIndex];
+	}
+
+// Level three: the contact itself. Four words, or five where both feature ids
+// are real -- and the contact counter is incremented before any of them.
+static void nxAppendContactRecord(NxContactSink* sink, const NxVec3* point,
+	NxU32 separationBits, NxU32 featureWord)
+	{
+	++sink->contactCount;
+
+	nxAppend3(sink, nxBits(point->x), nxBits(point->y), nxBits(point->z));
+	// The sign bit is masked off, not negated -- `and ebx, 0x7fffffff` at
+	// 0x0001d86d in the emitter and 0x000481bf in plane/box. For the negative
+	// separations a penetrating contact produces the two are indistinguishable,
+	// which is why this reads as a negation.
+	nxAppend(sink, separationBits & 0x7fffffffu);
+	++sink->stream[sink->pointCountIndex];
+
+	if(sink->featurePairValid & 1)
+		nxAppend(sink, featureWord);
+	}
+
 // phys_fn_000873 at 0x0001d610.
 //
 // Three nested levels, each opened by a count word that later appends increment
@@ -155,30 +244,11 @@ void NxEmitContact(NxContactSink* sink, void* object1, void* object0,
 		// The flag is an integer 1 or 0, and the header word carries it shifted
 		// into bits 16..31 alongside the material in bits 24..31.
 		sink->featurePairValid = (featureId0 != 0xffff && featureId1 != 0xffff) ? 1u : 0u;
-		const NxU32 packed = sink->featurePairValid << 16;
-
-		sink->lastObject1 = shape1->collisionObject;
-		sink->lastObject0 = shape0->collisionObject;
-
-		nxAppend(sink, (NxU32) (size_t) shape1->collisionObject);
-		nxAppend(sink, (NxU32) (size_t) shape0->collisionObject);
-
-		// The material comes from shape1's owner when `owner->[8]` is non-null
-		// and from shape0's otherwise -- 0x0001d726..0x0001d73e. `+0x240` is a
-		// borrowed Phase 5 offset.
-		const NxU8* holder = *(const NxU8* const*) ((const NxU8*) shape1->owner + 8);
-		if(!holder)
-			holder = *(const NxU8* const*) ((const NxU8*) shape0->owner + 8);
-		const NxU32 material = *(const NxU32*) (holder + 0x240);
-
-		sink->normalCountIndex = sink->streamCount;
-		nxAppend(sink, (material << 24) | packed);
-		++sink->stream[sink->pairCountIndex];
-
-		// The cached normal is cleared, so the block below always writes.
-		sink->lastNormal[0] = 0.0f;
-		sink->lastNormal[1] = 0.0f;
-		sink->lastNormal[2] = 0.0f;
+		// The cached normal is cleared by the header, so the block below always
+		// writes -- unless the normal is bit-for-bit zero, which is the `w7`
+		// state the emitter block measures.
+		nxAppendPairHeader(sink, shape1->collisionObject, shape0->collisionObject,
+			nxHeaderMaterial(shape1, shape0), sink->featurePairValid << 16);
 		}
 
 	// The comparison is on the raw words, not on float equality: the oracle
@@ -188,29 +258,10 @@ void NxEmitContact(NxContactSink* sink, void* object1, void* object0,
 	if(nxBits(sink->lastNormal[0]) != nxBits(normal->x)
 		|| nxBits(sink->lastNormal[1]) != nxBits(normal->y)
 		|| nxBits(sink->lastNormal[2]) != nxBits(normal->z))
-		{
-		sink->lastNormal[0] = normal->x;
-		sink->lastNormal[1] = normal->y;
-		sink->lastNormal[2] = normal->z;
+		nxAppendNormalBlock(sink, normal);
 
-		nxAppend3(sink, nxBits(normal->x), nxBits(normal->y), nxBits(normal->z));
-
-		sink->pointCountIndex = sink->streamCount;
-		nxAppend(sink, 0);
-		++sink->stream[sink->normalCountIndex];
-		}
-
-	++sink->contactCount;
-
-	nxAppend3(sink, nxBits(point->x), nxBits(point->y), nxBits(point->z));
-	// The sign bit is masked off, not negated -- `and ebx, 0x7fffffff` at
-	// 0x0001d86d. For the negative separations a penetrating contact produces
-	// the two are indistinguishable, which is why this reads as a negation.
-	nxAppend(sink, separationBits & 0x7fffffffu);
-	++sink->stream[sink->pointCountIndex];
-
-	if(sink->featurePairValid & 1)
-		nxAppend(sink, ((NxU32) featureId1 << 16) | (NxU32) featureId0);
+	nxAppendContactRecord(sink, point, separationBits,
+		((NxU32) featureId1 << 16) | (NxU32) featureId0);
 	}
 
 // phys_fn_001901 at 0x00048a70, matrix A slot [PLANE][SPHERE].
@@ -1042,4 +1093,121 @@ void __cdecl NxContactCapsuleCapsule(const NxCollisionShape* capsule0,
 	const NxReal separation = (NxReal) (nxSqrt((NxReal) squared) - radiusSum);
 	NxEmitContact(sink, capsule0->collisionObject, capsule1->collisionObject,
 		nxBits(separation), &contact, &normal, 0xffff, 0xffff);
+	}
+
+// phys_fn_001883 at 0x00047f20, matrix A slot [PLANE][BOX]. 42 bytes plus 786
+// in two continuations the census splits at the entry's internal alignment
+// padding and annotates: 0x00047f50 (9) and 0x00047f60 (777), both carrying
+// `continuation of the entry at 0x00047f20`. A reader has to sum them.
+//
+// The one entry in this matrix that does not call phys_fn_000873. It writes the
+// sink's own fields at 0x00047fdf, 0x00047fec and 0x00047ff5 and appends through
+// `lea esi,[edi+0x38]`, so the oracle carries a second copy of the stream logic.
+// Everything the two copies do identically is in the three helpers above and is
+// written once; what is duplicated here is only where they disagree, and each
+// disagreement carries the address that establishes it:
+//
+//  * NO HEADER PREDICATE. The emitter compares `shape1->[0x9c]` against
+//    `sink->[0x20]` and `shape0->[0x9c]` against `sink->[0x24]` and skips the
+//    header when both match (0x0001d67d, 0x0001d688). This writes it whenever
+//    the call emits at all -- `test eax,eax; jne` at 0x00047fbc branches on this
+//    call's own contact count and on nothing the sink holds. So a second
+//    plane/box against the same pair rewrites the header where the emitter would
+//    not, and the pair counter is incremented again with it.
+//  * NO NORMAL PREDICATE. The emitter compares the normal against the cache
+//    (0x0001d78c..0x0001d7a3). This writes the block unconditionally. Since the
+//    header it just wrote cleared the cache, the two agree except for a plane
+//    whose normal is bit-for-bit zero -- which the emitter would skip and this
+//    does not.
+//  * THE HEADER'S SECOND HALF IS ALWAYS ZERO. `sink->[0x34]` is set to 0 at
+//    0x00047fdf rather than computed, so the feature-valid bit never reaches the
+//    packed word and the fifth contact word is unreachable from this entry. The
+//    test for it at 0x000481ed is still emitted and is dead.
+//  * AT MOST SIX CONTACTS, from a shape with eight corners. `cmp eax,6; jae` at
+//    0x00048218 returns as soon as the sixth is emitted, so a box resting
+//    corner-on into a plane loses two of its eight. That is a buffer limit
+//    inside a kernel rather than in a buffer, and it is the only one this
+//    component can reach.
+//
+// It also stores a flag byte over the caller's third argument slot at
+// 0x00047fcf, which is the sink pointer -- safe only because `edi` already holds
+// it.
+void __cdecl NxContactPlaneBox(const NxCollisionShape* plane,
+	const NxCollisionShape* box, NxContactSink* sink, void* context)
+	{
+	(void) context;
+
+	const NxReal* normalWords = plane->geometry;
+	NxU32 emittedCount = 0;
+
+	// signZ innermost: 0x00047f50 seeds it, 0x00048229 steps it, and the two
+	// outer counters live in the frame. All three step by 2 from -1 and are
+	// passed to phys_fn_000943 as full ints.
+	for(int signX = -1; signX <= 1; signX += 2)
+		for(int signY = -1; signY <= 1; signY += 2)
+			for(int signZ = -1; signZ <= 1; signZ += 2)
+				{
+				NxVec3 corner;
+				NxBoxShapeCorner(box, signX, signY, signZ, &corner);
+
+				// y and z first, then x, then the plane constant -- and the
+				// wide value is what the comparison sees while the narrowed
+				// copy is what reaches the stream.
+				const double wide = ((((double) corner.y * normalWords[1]
+					+ (double) corner.z * normalWords[2])
+					+ (double) corner.x * normalWords[0]) + normalWords[3]);
+				const NxReal distance = (NxReal) wide;
+				// `test ah,0x41` + `jp`: greater and unordered both skip, so a
+				// corner exactly on the plane is a contact and a NaN is not.
+				if(!(wide <= 0.0))
+					continue;
+
+				if(emittedCount == 0)
+					{
+					// The orientation rule, inlined. It reads the *box's*
+					// owner, which is the pair's shape1, exactly as the emitter
+					// does at 0x0001d61b.
+					const NxCollisionShape* first = box;
+					const NxCollisionShape* second = plane;
+					const bool negated =
+						*(void* const*) ((const NxU8*) box->owner + 8) != sink->orientedTo;
+					if(negated)
+						{
+						first = plane;
+						second = box;
+						}
+
+					sink->featurePairValid = 0;
+					nxAppendPairHeader(sink, first->collisionObject,
+						second->collisionObject, nxHeaderMaterial(first, second), 0);
+
+					// The plane's own normal, negated component by component
+					// through the FPU when the pair is the other way round.
+					NxVec3 normal;
+					if(negated)
+						{
+						normal.x = (NxReal) (-(double) normalWords[0]);
+						normal.y = (NxReal) (-(double) normalWords[1]);
+						normal.z = (NxReal) (-(double) normalWords[2]);
+						}
+					else
+						{
+						normal.x = normalWords[0];
+						normal.y = normalWords[1];
+						normal.z = normalWords[2];
+						}
+					nxAppendNormalBlock(sink, &normal);
+					}
+
+				// The contact point is the box corner itself, not a point on
+				// the plane -- a third convention in one matrix column, after
+				// plane/sphere putting it on the sphere and plane/capsule on
+				// the plane. And the separation is the plane distance, which
+				// for a corner below the plane is what the emitter's mask makes
+				// indistinguishable from its magnitude.
+				nxAppendContactRecord(sink, &corner, nxBits(distance), 0);
+
+				if(++emittedCount >= 6)
+					return;
+				}
 	}
