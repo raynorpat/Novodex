@@ -172,6 +172,10 @@ static const unsigned kSquareDistanceIatRva = 0x00104170;
 static const unsigned kPlaneRaycastRva = 0x00025350;
 // phys_fn_001377, the same slot on a SPHERE shape, from 0x00107528 + 0x14.
 static const unsigned kSphereRaycastRva = 0x00027c70;
+// phys_fn_001690, the segment/segment squared distance. A Phase 2 row, reached
+// by direct call from both capsule/capsule entries -- 0x0003dc68 in matrix A's
+// and from matrix B's at 0x0003d890.
+static const unsigned kSegmentDistanceRva = 0x00033e80;
 // hit.shape is written from shape->[0x9c] and never dereferenced by that row,
 // so both sides are given the same made-up value: a real address would put this
 // process's load address into an oracle-side digest that is pinned in the gate.
@@ -292,6 +296,81 @@ static void nxSetControl(unsigned short word)
 	{
 	unsigned short value = word;
 	__asm { fldcw value }
+	}
+
+// True for anything that is not an infinity and not a NaN. Used only to decide
+// whether a generator may aim, never to decide an answer: a generator that does
+// arithmetic on a value it also allows to be non-finite makes its own inputs
+// depend on which operand the compiler put first, which is how the seventeenth
+// gate defect in this program made an oracle-side digest move on a recompile of
+// the candidate.
+static bool nxFinite(float value)
+	{
+	unsigned bits;
+	memcpy(&bits, &value, 4);
+	return (bits & 0x7f800000u) != 0x7f800000u;
+	}
+
+// A NaN in the 80-bit spill and in a 32-bit parameter. Returns true if the
+// value was one, and rewrites it to a single pattern so that NaN compares equal
+// to NaN and to nothing else. An infinity is left alone: its sign is a fact the
+// row does reproduce.
+static bool nxCanonicalWide(unsigned char wide[10])
+	{
+	const bool infiniteOrNan = (wide[9] & 0x7f) == 0x7f && wide[8] == 0xff;
+	bool significand = false;
+	for(int i = 0; i < 8; ++i)
+		if(wide[i] != (i == 7 ? 0x80 : 0x00))
+			significand = true;
+	if(!infiniteOrNan || !significand)
+		return false;
+	memset(wide, 0, 8);
+	wide[7] = 0xc0;
+	wide[8] = 0xff;
+	wide[9] = 0x7f;
+	return true;
+	}
+
+static bool nxCanonicalNarrow(NxU32* word)
+	{
+	if((*word & 0x7f800000u) != 0x7f800000u || (*word & 0x007fffffu) == 0)
+		return false;
+	*word = 0x7fc00000u;
+	return true;
+	}
+
+// phys_fn_001690 leaves its result in st(0) at whatever precision the control
+// word says, and its one decoded caller uses it both ways: `fst` a narrowed
+// copy into its own frame at 0x0003dc6d and then `fcompp` the wide register
+// against the squared radius sum. Taking the result as a `double` would round
+// the register to 53 bits before anything here could look at it, so both sides
+// go through this thunk and the register is spilled with `fstp tbyte`. All ten
+// bytes are compared and digested.
+//
+// The compiler assumes a call inside an __asm block destroys eax, ebx, ecx and
+// edx, and the callee is __cdecl, so nothing else has to be saved. The x87
+// stack is balanced across the block -- the call pushes one value and the
+// `fstp` pops it -- which is what the compiler's own model of it expects.
+static void nxCallSegmentDistance(const void* fn, const NxSegment* segment0,
+	const NxSegment* segment1, NxReal* parameter0, NxReal* parameter1,
+	unsigned char wide[10])
+	{
+	__asm
+		{
+		mov  eax, parameter1
+		push eax
+		mov  eax, parameter0
+		push eax
+		mov  eax, segment1
+		push eax
+		mov  eax, segment0
+		push eax
+		mov  eax, fn
+		call eax
+		add  esp, 16
+		mov  eax, wide
+		fstp tbyte ptr [eax]
+		}
 	}
 
 static unsigned short nxGetControl()
@@ -2193,6 +2272,230 @@ int wmain(int argc, wchar_t** argv)
 	printf("collision coverage name=contact_sphere_capsule emitted=%u swept=%u swept_emitted=%u zero_axis=%u coincident=%u beyond_end=%u w4=%u w8=%u w11=%u\n",
 		emitted, swept, sweptEmitted, zeroAxis, coincident, beyondEnd,
 		widths[4], widths[8], widths[11]);
+	}
+
+	// -----------------------------------------------------------------------
+	// phys_fn_001690 at 0x00033e80, the segment/segment squared distance.
+	//
+	// A PHASE 2 row, driven here because Phase 3 is what creates the
+	// reachability Phase 2 said it lacked: matrix A [CAPSULE][CAPSULE] at
+	// 0x0003d9d0 calls it directly at 0x0003dc68 and matrix B's capsule pair at
+	// 0x0003d890 calls it too. Phase 2's ledger deferred it `homeless_shared_code`
+	// with `driving_phases: [3, 4]`; this block is the proof that discharges
+	// that deferral, and it is recorded on Phase 2's ledger with
+	// `discharged_by_phase: 3` rather than adopted into Phase 3's.
+	//
+	// It is driven at its own address rather than only through a caller for the
+	// usual reason and one extra: the near-parallel tree at 0x000343cf is
+	// unreachable from any pair of capsule axes a random rotation produces, and
+	// two of its leaves are the only places in the function where `e` is
+	// recomputed rather than read from its slot.
+	{
+	const void* const oracleSegment = (const void*) (base + kSegmentDistanceRva);
+	const void* const candidateSegment = (const void*) &NxSegmentSegmentSquareDistance;
+
+	NxDigest oracleDigest, candidateDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	unsigned mismatches = 0;
+	unsigned perMode[2] = { 0, 0 };
+	unsigned parallelPairs = 0;
+	unsigned degeneratePairs = 0;
+	unsigned nullParameters = 0;
+	unsigned interiorPairs = 0;
+	unsigned clampedS = 0;
+	unsigned clampedT = 0;
+	unsigned nonFinite = 0;
+	unsigned canonicalised = 0;
+	unsigned state = 0x51e6d0a7u;
+
+	for(unsigned i = 0; i < kPairIterations; ++i)
+		{
+		const bool tame = (nxNext(&state) & 3) != 0;
+		const unsigned shape = nxNext(&state) % 5;
+
+		NxSegment segment[2];
+		float* const words0 = &segment[0].p0.x;
+		float* const words1 = &segment[1].p0.x;
+		for(int k = 0; k < 6; ++k)
+			{
+			words0[k] = tame ? nxUnit(&state) * 6.0f - 3.0f : nxPick(&state);
+			words1[k] = tame ? nxUnit(&state) * 6.0f - 3.0f : nxPick(&state);
+			}
+
+		// Every aim below multiplies segment0's own direction, so every one is
+		// gated on that direction being finite. A generator that does
+		// arithmetic on a value it also allows to be non-finite makes the
+		// *inputs* depend on which operand the compiler put first, and the
+		// oracle-side digest then moves on a recompile of the candidate.
+		float direction[3];
+		bool aimable = tame;
+		for(int k = 0; k < 3; ++k)
+			{
+			direction[k] = segment[0].p1[k] - segment[0].p0[k];
+			if(!nxFinite(direction[k]) || !nxFinite(segment[0].p0[k]))
+				aimable = false;
+			}
+
+		if(shape == 1 && aimable)
+			{
+			// Near-parallel: the only inputs that reach the second tree at
+			// 0x000343cf at all. The scale carries a sign so anti-parallel
+			// axes are driven as well, and the jitter is small enough to keep
+			// |ac - b^2| under the 1e-5f epsilon for most draws and large
+			// enough to cross it for some.
+			++parallelPairs;
+			const float scale = (nxUnit(&state) * 1.8f + 0.2f)
+				* ((nxNext(&state) & 1) ? 1.0f : -1.0f);
+			const float jitter = nxUnit(&state) * 4e-3f;
+			for(int k = 0; k < 3; ++k)
+				{
+				segment[1].p0[k] = segment[0].p0[k] + (nxUnit(&state) * 2.0f - 1.0f);
+				segment[1].p1[k] = segment[1].p0[k] + direction[k] * scale
+					+ (nxUnit(&state) * 2.0f - 1.0f) * jitter;
+				}
+			}
+		else if(shape == 2)
+			{
+			// A zero-length segment on either side or both. `a` or `c` is then
+			// zero and the leaves that divide by it are reached with a zero
+			// divisor, which is a state the geometry really can be in -- a
+			// capsule with a zero half height builds exactly this.
+			++degeneratePairs;
+			const unsigned which = nxNext(&state) % 3;
+			if(which != 1)
+				for(int k = 0; k < 3; ++k)
+					segment[0].p1[k] = segment[0].p0[k];
+			if(which != 0)
+				for(int k = 0; k < 3; ++k)
+					segment[1].p1[k] = segment[1].p0[k];
+			}
+		else if(shape == 3 && aimable)
+			{
+			// Aimed through a point on segment0, so the closest points land in
+			// the interior of both and the leaf at 0x0003402d is reached
+			// rather than a corner.
+			const float along = nxUnit(&state);
+			float target[3];
+			for(int k = 0; k < 3; ++k)
+				target[k] = segment[0].p0[k] + direction[k] * along;
+			float across[3];
+			across[0] = direction[1];
+			across[1] = -direction[0];
+			across[2] = direction[2] * 0.5f + 0.25f;
+			const float offset = nxUnit(&state) * 2.0f - 1.0f;
+			for(int k = 0; k < 3; ++k)
+				{
+				const float half = (nxUnit(&state) * 2.0f - 1.0f) * 1.5f;
+				segment[1].p0[k] = target[k] + across[k] * offset - half;
+				segment[1].p1[k] = target[k] + across[k] * offset + half;
+				}
+			}
+		// shape 0 and shape 4 leave the raw draws, which is where the
+		// non-finite mixture reaches this row.
+
+		// Both output pointers are optional and the oracle tests each one, so
+		// the null cases are driven -- no caller in the census passes null, so
+		// nothing else can reach those two branches.
+		const unsigned nulls = (nxNext(&state) % 8 == 0) ? (1 + nxNext(&state) % 3) : 0;
+		if(nulls)
+			++nullParameters;
+
+		for(int mode = 0; mode < 2; ++mode)
+			{
+			unsigned char wide[2][10];
+			NxReal parameters[2][2];
+			memset(wide, 0xcd, sizeof(wide));
+			memset(parameters, 0xcd, sizeof(parameters));
+
+			nxSetControl(mode ? kControlSimulate : kControlDefault);
+			nxCallSegmentDistance(oracleSegment, &segment[0], &segment[1],
+				(nulls & 1) ? 0 : &parameters[0][0], (nulls & 2) ? 0 : &parameters[0][1],
+				wide[0]);
+			nxCallSegmentDistance(candidateSegment, &segment[0], &segment[1],
+				(nulls & 1) ? 0 : &parameters[1][0], (nulls & 2) ? 0 : &parameters[1][1],
+				wide[1]);
+			nxSetControl(kControlDefault);
+
+			// The classification is taken from the oracle's own answers, not
+			// from anything this harness computes: the two parameters say which
+			// leaf ran, and a parameter left at its 0xcd poison says the null
+			// branch was taken.
+			if(!nulls)
+				{
+				const NxReal s = parameters[0][0];
+				const NxReal t = parameters[0][1];
+				if(s == 0.0f || s == 1.0f)
+					++clampedS;
+				if(t == 0.0f || t == 1.0f)
+					++clampedT;
+				if(s > 0.0f && s < 1.0f && t > 0.0f && t < 1.0f)
+					++interiorPairs;
+				}
+			// The exponent byte of the 80-bit spill: 0x7fff is an infinity or a
+			// NaN whatever the significand says.
+			if((wide[0][9] & 0x7f) == 0x7f && wide[0][8] == 0xff)
+				++nonFinite;
+
+			// Both sides are canonicalised before the comparison, and only for
+			// NaN. Which of two NaNs an x87 instruction returns is decided by
+			// the significand with ties going to the *destination* operand, and
+			// no C++ names the destination of an x87 instruction: MSVC picked
+			// `fsubr` where the oracle has `fsub` on the very first subtraction
+			// in this row. Three spellings of the negated dot products were
+			// measured and moved 3,500, 3,500 and 5,956 words here and zero on
+			// finite inputs, which is what says this is the machine and not the
+			// transcription. Everything else -- which leaf ran, whether a
+			// result is a NaN at all, every finite value and both infinities --
+			// is still compared bit for bit, and the canonicalisation count is
+			// registered so a generator that stops reaching NaN is a failure
+			// rather than a quieter pass.
+			if(nxCanonicalWide(wide[0]) | nxCanonicalWide(wide[1]))
+				++canonicalised;
+			for(int byte = 0; byte < 10; ++byte)
+				{
+				nxDigestByte(&oracleDigest, wide[0][byte]);
+				nxDigestByte(&candidateDigest, wide[1][byte]);
+				if(wide[0][byte] != wide[1][byte])
+					{ ++mismatches; ++perMode[mode]; }
+				}
+			for(int half = 0; half < 2; ++half)
+				{
+				NxU32 a, b;
+				memcpy(&a, &parameters[0][half], 4);
+				memcpy(&b, &parameters[1][half], 4);
+				if(nxCanonicalNarrow(&a) | nxCanonicalNarrow(&b))
+					++canonicalised;
+				for(int byte = 0; byte < 4; ++byte)
+					{
+					nxDigestByte(&oracleDigest, (unsigned char) (a >> (byte * 8)));
+					nxDigestByte(&candidateDigest, (unsigned char) (b >> (byte * 8)));
+					}
+				if(a != b)
+					{ ++mismatches; ++perMode[mode]; }
+				}
+			}
+		}
+	// Only the default-word half gates, and here that is a weaker statement than
+	// it is for the two raycast rows: those are also reachable from a consumer
+	// call, and this one is not -- phys_fn_001690 is only ever entered from
+	// inside the simulation step, so 0x0f7f is the *only* word it really runs
+	// under. Under 0x027f the reconstruction agrees on all 1,080,000 checks.
+	// Under 0x0f7f it differs on 662, and the cause is the one this program has
+	// already escalated twice: MSVC spills a `double` to an 8-byte slot, which
+	// truncates a 64-bit significand to 53, and no C++ says where the spills go.
+	// This row keeps three of them live across the whole region tree where
+	// phys_fn_001377 kept one, which is why 662 rather than 13.
+	//
+	// The count is registered rather than dropped, so it fails if it moves in
+	// either direction including toward zero.
+	totalMismatch += perMode[0];
+	printf("collision name=segment_segment index=- rva=0x%08x owner=phys_fn_001690 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		kSegmentDistanceRva, oracleDigest.checks, oracleDigest.state,
+		candidateDigest.state, mismatches);
+	printf("collision coverage name=segment_segment parallel=%u degenerate=%u null_params=%u interior=%u clamped_s=%u clamped_t=%u non_finite=%u default_mismatches=%u simulate_mismatches=%u\n",
+		parallelPairs, degeneratePairs, nullParameters, interiorPairs, clampedS, clampedT,
+		nonFinite, perMode[0], perMode[1]);
 	}
 
 	// What is not covered, named rather than left as an absence.

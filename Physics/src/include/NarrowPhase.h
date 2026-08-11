@@ -40,6 +40,7 @@
 // recovered table and what each slot is.
 
 #include "Nxf.h"
+#include "NxSegment.h"
 #include "NxVec3.h"
 
 // NxShapeType, from the pinned public NxShape.h. NX_SHAPE_COUNT is 6 and that
@@ -96,6 +97,27 @@ bool __cdecl NxOverlapSphereSphere(const NxCollisionShape* sphere0, const NxColl
 bool __cdecl NxOverlapSphereBox(const NxCollisionShape* sphere, const NxCollisionShape* box);
 bool __cdecl NxOverlapSphereCapsule(const NxCollisionShape* sphere, const NxCollisionShape* capsule);
 bool __cdecl NxOverlapBoxBox(const NxCollisionShape* box0, const NxCollisionShape* box1);
+
+// phys_fn_001690 at 0x00033e80, 1,836 bytes -- and a PHASE 2 row, written here
+// because it has no translation unit of its own and both capsule/capsule
+// entries need it. Phase 2 censused it as `shared_by_callers` with no span,
+// deferred it `homeless_shared_code`, and recorded that phases 3 and 4 could
+// discharge the deferral. This is that discharge: the reachability Phase 2
+// lacked is matrix A [CAPSULE][CAPSULE] at 0x0003d9d0, which calls it directly
+// at 0x0003dc68, and matrix B [CAPSULE][CAPSULE] at 0x0003d890.
+//
+// It is the squared distance between two segments, with the two closest-point
+// parameters written back through pointers the callee null-checks. Both
+// parameters are on [0,1] and both output pointers really are optional --
+// `test eax,eax; je` at 0x0003458f and 0x0003459c -- although no caller in the
+// census passes null.
+//
+// The return value is left in st(0) at whatever precision the control word
+// says, and the one caller that is decoded uses it *both* ways: it narrows a
+// copy into its own frame and then compares the wide register against the
+// squared radius sum.
+double __cdecl NxSegmentSegmentSquareDistance(const NxSegment* segment0,
+	const NxSegment* segment1, NxReal* parameter0, NxReal* parameter1);
 
 // The two helpers the entries above share, declared because the differential
 // drives them at their own recorded addresses as well as through their callers.
