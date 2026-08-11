@@ -48,6 +48,11 @@
 static const unsigned kScalarIterations = 120000;
 static const unsigned kVectorIterations = 40000;
 static const unsigned kAimedIterations = 60000;
+static const unsigned kBoxIterations = 40000;
+static const unsigned kAimedBoxIterations = 40000;
+static const unsigned kCapsuleIterations = 30000;
+static const unsigned kSatIterations = 20000;
+static const unsigned kNormalsIterations = 4000;
 
 // FNV-1a, 64 bit, over the raw result words. Every export folds its return
 // value and every output word it wrote into one of these, so one line of
@@ -162,6 +167,39 @@ typedef void (NX_CALL_CONV *NxFnSegmentPlane)(const float*, const float*, const 
 typedef unsigned char (NX_CALL_CONV *NxFnRaySphere)(const float*, const float*, const float*, float, float*);
 typedef unsigned char (NX_CALL_CONV *NxFnRayTri)(const float*, const float*, const float*,
 	const float*, const float*, float*, float*, float*, unsigned char);
+
+// The eleven box, capsule, swept-sphere, separating-axis and smooth-normal
+// exports. Signatures are transcribed from the pinned public headers, not
+// guessed from the disassembly, so a block here cannot drift from the API.
+typedef unsigned char (NX_CALL_CONV *NxFnRayAABB)(const float*, const float*, const float*, const float*, float*);
+typedef NxU32 (NX_CALL_CONV *NxFnRayAABB2)(const float*, const float*, const float*, const float*, float*, float*);
+typedef unsigned char (NX_CALL_CONV *NxFnSegAABB)(const float*, const float*, const float*, const float*);
+typedef unsigned char (NX_CALL_CONV *NxFnSegBox)(const float*, const float*, const float*, const float*, float*);
+typedef unsigned char (NX_CALL_CONV *NxFnRayOBB)(const float*, const float*, const float*, const float*);
+typedef unsigned char (NX_CALL_CONV *NxFnSegOBB)(const float*, const float*, const float*, const float*, const float*);
+typedef NxU32 (NX_CALL_CONV *NxFnRayCapsule)(const float*, const float*, const float*, float*);
+typedef unsigned char (NX_CALL_CONV *NxFnSweptSpheres)(const float*, const float*, const float*, const float*);
+typedef unsigned char (NX_CALL_CONV *NxFnBoxBox)(const float*, const float*, const float*,
+	const float*, const float*, const float*, unsigned char);
+typedef int (NX_CALL_CONV *NxFnSepAxis)(const float*, const float*, const float*,
+	const float*, const float*, const float*, unsigned char);
+typedef unsigned char (NX_CALL_CONV *NxFnSmoothNormals)(NxU32, NxU32, const float*,
+	const NxU32*, const unsigned short*, float*, unsigned char);
+
+// A rotation from three angles. The exact matrix does not matter -- what
+// matters is that it is a real rotation rather than nine random floats, because
+// an OBB test fed a non-orthonormal matrix degenerates and stops discriminating
+// between a correct implementation and a wrong one. The general blocks below
+// still feed raw random matrices; this is for the aimed blocks.
+static void nxRotation(float* m, float ax, float ay, float az)
+	{
+	const float ca = (float) cos(ax), sa = (float) sin(ax);
+	const float cb = (float) cos(ay), sb = (float) sin(ay);
+	const float cc = (float) cos(az), sc = (float) sin(az);
+	m[0] = cb * cc;                    m[1] = cb * sc;                    m[2] = -sb;
+	m[3] = sa * sb * cc - ca * sc;     m[4] = sa * sb * sc + ca * cc;     m[5] = sa * cb;
+	m[6] = ca * sb * cc + sa * sc;     m[7] = ca * sb * sc - sa * cc;     m[8] = ca * cb;
+	}
 
 // The precision witness. These three inputs separate the x87 _PC_53 model from
 // a float32-everywhere model in the last bit; the two controls agree under
@@ -388,6 +426,472 @@ static void nxRunAimedBlock(HMODULE physics)
 		digest.checks, digest.state, hits);
 	}
 
+// The box kernels on ordinary random input.
+//
+// Six exports, all slab tests of one shape or another. Four of them return a
+// bare bool and write nothing at all, so nothing but a digest over many inputs
+// has any resolution on them: the hand-authored case matrix cannot tell a
+// correct implementation from the oracle for NxRayOBBIntersect,
+// NxSegmentOBBIntersect or NxSegmentAABBIntersect by construction.
+//
+// This block feeds the raw random mixture, which is mostly NaN, infinity and
+// wildly-scaled values. That covers the rejection paths and the unordered
+// comparisons thoroughly and the hit paths almost never -- which is a defect in
+// a generator, not a property of the functions. nxRunAimedBoxBlock below is the
+// other half and reports its hit counts so the coverage cannot quietly lapse.
+static void nxRunBoxBlock(HMODULE physics)
+	{
+	NxFnRayAABB rayAabb = (NxFnRayAABB) GetProcAddress(physics, "NxRayAABBIntersect");
+	NxFnRayAABB2 rayAabb2 = (NxFnRayAABB2) GetProcAddress(physics, "NxRayAABBIntersect2");
+	NxFnSegAABB segAabb = (NxFnSegAABB) GetProcAddress(physics, "NxSegmentAABBIntersect");
+	NxFnSegBox segBox = (NxFnSegBox) GetProcAddress(physics, "NxSegmentBoxIntersect");
+	NxFnRayOBB rayObb = (NxFnRayOBB) GetProcAddress(physics, "NxRayOBBIntersect");
+	NxFnSegOBB segObb = (NxFnSegOBB) GetProcAddress(physics, "NxSegmentOBBIntersect");
+
+	NxDigest dRayAabb, dRayAabb2, dSegAabb, dSegBox, dRayObb, dSegObb;
+	nxDigestInit(&dRayAabb);
+	nxDigestInit(&dRayAabb2);
+	nxDigestInit(&dSegAabb);
+	nxDigestInit(&dSegBox);
+	nxDigestInit(&dRayObb);
+	nxDigestInit(&dSegObb);
+
+	NxRandom random = { 0x1a2b3c4du };
+	for(unsigned i = 0; i < kBoxIterations; ++i)
+		{
+		float w[24];
+		for(int k = 0; k < 24; ++k)
+			w[k] = nxPick(&random, i + k);
+
+		if(rayAabb)
+			{
+			float coord[3];
+			nxPoison(coord, 3);
+			nxDigestWord(&dRayAabb, rayAabb(w + 0, w + 3, w + 6, w + 9, coord));
+			for(int k = 0; k < 3; ++k)
+				nxDigestFloat(&dRayAabb, coord[k]);
+			}
+		if(rayAabb2)
+			{
+			float coord[3], t;
+			nxPoison(coord, 3);
+			nxPoison(&t, 1);
+			nxDigestWord(&dRayAabb2, rayAabb2(w + 0, w + 3, w + 6, w + 9, coord, &t));
+			for(int k = 0; k < 3; ++k)
+				nxDigestFloat(&dRayAabb2, coord[k]);
+			nxDigestFloat(&dRayAabb2, t);
+			}
+		if(segAabb)
+			nxDigestWord(&dSegAabb, segAabb(w + 0, w + 3, w + 6, w + 9));
+		if(segBox)
+			{
+			float intercept[3];
+			nxPoison(intercept, 3);
+			nxDigestWord(&dSegBox, segBox(w + 0, w + 3, w + 6, w + 9, intercept));
+			for(int k = 0; k < 3; ++k)
+				nxDigestFloat(&dSegBox, intercept[k]);
+			}
+		if(rayObb)
+			nxDigestWord(&dRayObb, rayObb(w + 0, w + 6, w + 9, w + 12));
+		if(segObb)
+			nxDigestWord(&dSegObb, segObb(w + 0, w + 3, w + 6, w + 9, w + 12));
+		}
+
+	nxDigestReport("NxRayAABBIntersect", rayAabb != 0, &dRayAabb);
+	nxDigestReport("NxRayAABBIntersect2", rayAabb2 != 0, &dRayAabb2);
+	nxDigestReport("NxSegmentAABBIntersect", segAabb != 0, &dSegAabb);
+	nxDigestReport("NxSegmentBoxIntersect", segBox != 0, &dSegBox);
+	nxDigestReport("NxRayOBBIntersect", rayObb != 0, &dRayObb);
+	nxDigestReport("NxSegmentOBBIntersect", segObb != 0, &dSegObb);
+	}
+
+// The box kernels with the ray and the segment aimed at the box.
+//
+// Same lesson as nxRunAimedBlock: a generator that never hits leaves the whole
+// tail of a kernel untested and will accept a mutation to it. Here a box is
+// built around a random centre, a target point is chosen inside it, and the ray
+// or segment is aimed through that point from outside, so the hit path is
+// entered by construction. The OBB variants get a genuine rotation and the same
+// target transformed into world space.
+//
+// Each export's hit count is printed. A generator that stops hitting therefore
+// changes the transcript rather than passing quietly, and the counts are
+// registered in $NxRequiredCoverageLines so the phase gate fails on it -- a
+// symmetric differential cannot catch that by itself, because a harness that
+// stops covering something stops covering it identically on both pairs.
+static void nxRunAimedBoxBlock(HMODULE physics)
+	{
+	NxFnRayAABB rayAabb = (NxFnRayAABB) GetProcAddress(physics, "NxRayAABBIntersect");
+	NxFnRayAABB2 rayAabb2 = (NxFnRayAABB2) GetProcAddress(physics, "NxRayAABBIntersect2");
+	NxFnSegAABB segAabb = (NxFnSegAABB) GetProcAddress(physics, "NxSegmentAABBIntersect");
+	NxFnSegBox segBox = (NxFnSegBox) GetProcAddress(physics, "NxSegmentBoxIntersect");
+	NxFnRayOBB rayObb = (NxFnRayOBB) GetProcAddress(physics, "NxRayOBBIntersect");
+	NxFnSegOBB segObb = (NxFnSegOBB) GetProcAddress(physics, "NxSegmentOBBIntersect");
+
+	NxDigest dRayAabb, dRayAabb2, dSegAabb, dSegBox, dRayObb, dSegObb;
+	nxDigestInit(&dRayAabb);
+	nxDigestInit(&dRayAabb2);
+	nxDigestInit(&dSegAabb);
+	nxDigestInit(&dSegBox);
+	nxDigestInit(&dRayObb);
+	nxDigestInit(&dSegObb);
+	unsigned hitRayAabb = 0, hitRayAabb2 = 0, hitSegAabb = 0, hitSegBox = 0, hitRayObb = 0, hitSegObb = 0;
+
+	NxRandom random = { 0x5e6f7a8bu };
+	for(unsigned i = 0; i < kAimedBoxIterations; ++i)
+		{
+		float centre[3], extents[3], target[3], origin[3], direction[3], min[3], max[3];
+		for(int k = 0; k < 3; ++k)
+			{
+			centre[k] = nxUnit(&random) * 8.0f - 4.0f;
+			extents[k] = nxUnit(&random) * 3.0f + 0.03125f;
+			min[k] = centre[k] - extents[k];
+			max[k] = centre[k] + extents[k];
+			// Inside the box for most iterations, a little outside for some, so
+			// the near-miss boundary is exercised as well as the clean hit.
+			target[k] = centre[k] + extents[k] * (nxUnit(&random) * 2.4f - 1.2f);
+			origin[k] = nxUnit(&random) * 24.0f - 12.0f;
+			direction[k] = target[k] - origin[k];
+			}
+		// The segment runs from the origin to a point past the target, so it
+		// reaches the box rather than stopping short of it.
+		float far_[3];
+		for(int k = 0; k < 3; ++k)
+			far_[k] = origin[k] + direction[k] * 1.75f;
+
+		float ray[6];
+		for(int k = 0; k < 3; ++k)
+			{
+			ray[k] = origin[k];
+			ray[k + 3] = direction[k];
+			}
+
+		if(rayAabb)
+			{
+			float coord[3];
+			nxPoison(coord, 3);
+			const unsigned char hit = rayAabb(min, max, origin, direction, coord);
+			hitRayAabb += hit ? 1 : 0;
+			nxDigestWord(&dRayAabb, hit);
+			for(int k = 0; k < 3; ++k)
+				nxDigestFloat(&dRayAabb, coord[k]);
+			}
+		if(rayAabb2)
+			{
+			float coord[3], t;
+			nxPoison(coord, 3);
+			nxPoison(&t, 1);
+			const NxU32 hit = rayAabb2(min, max, origin, direction, coord, &t);
+			hitRayAabb2 += hit ? 1 : 0;
+			nxDigestWord(&dRayAabb2, hit);
+			for(int k = 0; k < 3; ++k)
+				nxDigestFloat(&dRayAabb2, coord[k]);
+			nxDigestFloat(&dRayAabb2, t);
+			}
+		if(segAabb)
+			{
+			const unsigned char hit = segAabb(origin, far_, min, max);
+			hitSegAabb += hit ? 1 : 0;
+			nxDigestWord(&dSegAabb, hit);
+			}
+		if(segBox)
+			{
+			float intercept[3];
+			nxPoison(intercept, 3);
+			const unsigned char hit = segBox(origin, far_, min, max, intercept);
+			hitSegBox += hit ? 1 : 0;
+			nxDigestWord(&dSegBox, hit);
+			for(int k = 0; k < 3; ++k)
+				nxDigestFloat(&dSegBox, intercept[k]);
+			}
+
+		// The oriented variants. The same target is expressed in box space and
+		// pushed back out through the rotation, so the ray still aims at it.
+		float rot[9];
+		nxRotation(rot, nxUnit(&random) * 6.2831853f, nxUnit(&random) * 6.2831853f,
+			nxUnit(&random) * 6.2831853f);
+		float local[3], world[3];
+		for(int k = 0; k < 3; ++k)
+			local[k] = extents[k] * (nxUnit(&random) * 2.4f - 1.2f);
+		for(int k = 0; k < 3; ++k)
+			world[k] = centre[k] + rot[k] * local[0] + rot[k + 3] * local[1] + rot[k + 6] * local[2];
+		float obbRay[6], obbFar[3];
+		for(int k = 0; k < 3; ++k)
+			{
+			obbRay[k] = origin[k];
+			obbRay[k + 3] = world[k] - origin[k];
+			obbFar[k] = origin[k] + (world[k] - origin[k]) * 1.75f;
+			}
+
+		if(rayObb)
+			{
+			const unsigned char hit = rayObb(obbRay, centre, extents, rot);
+			hitRayObb += hit ? 1 : 0;
+			nxDigestWord(&dRayObb, hit);
+			}
+		if(segObb)
+			{
+			const unsigned char hit = segObb(origin, obbFar, centre, extents, rot);
+			hitSegObb += hit ? 1 : 0;
+			nxDigestWord(&dSegObb, hit);
+			}
+		}
+
+	printf("fuzz name=NxRayAABBIntersect.aimed present=%d checks=%u digest=%016llx hits=%u\n",
+		rayAabb ? 1 : 0, dRayAabb.checks, dRayAabb.state, hitRayAabb);
+	printf("fuzz name=NxRayAABBIntersect2.aimed present=%d checks=%u digest=%016llx hits=%u\n",
+		rayAabb2 ? 1 : 0, dRayAabb2.checks, dRayAabb2.state, hitRayAabb2);
+	printf("fuzz name=NxSegmentAABBIntersect.aimed present=%d checks=%u digest=%016llx hits=%u\n",
+		segAabb ? 1 : 0, dSegAabb.checks, dSegAabb.state, hitSegAabb);
+	printf("fuzz name=NxSegmentBoxIntersect.aimed present=%d checks=%u digest=%016llx hits=%u\n",
+		segBox ? 1 : 0, dSegBox.checks, dSegBox.state, hitSegBox);
+	printf("fuzz name=NxRayOBBIntersect.aimed present=%d checks=%u digest=%016llx hits=%u\n",
+		rayObb ? 1 : 0, dRayObb.checks, dRayObb.state, hitRayObb);
+	printf("fuzz name=NxSegmentOBBIntersect.aimed present=%d checks=%u digest=%016llx hits=%u\n",
+		segObb ? 1 : 0, dSegObb.checks, dSegObb.state, hitSegObb);
+	}
+
+// The capsule and swept-sphere kernels, general input then aimed.
+//
+// NxRayCapsuleIntersect returns a count and writes up to two roots, so the
+// poison ladder is what distinguishes "returned 1 and wrote one root" from
+// "returned 1 and wrote both". NxSweptSpheresIntersect returns a bare bool and
+// writes nothing, so the aimed half -- two spheres actually put on a collision
+// course -- is the only thing that exercises its interesting path at all.
+static void nxRunCapsuleBlock(HMODULE physics)
+	{
+	NxFnRayCapsule rayCapsule = (NxFnRayCapsule) GetProcAddress(physics, "NxRayCapsuleIntersect");
+	NxFnSweptSpheres swept = (NxFnSweptSpheres) GetProcAddress(physics, "NxSweptSpheresIntersect");
+
+	NxDigest dCapsule, dSwept, dCapsuleAimed, dSweptAimed;
+	nxDigestInit(&dCapsule);
+	nxDigestInit(&dSwept);
+	nxDigestInit(&dCapsuleAimed);
+	nxDigestInit(&dSweptAimed);
+	unsigned hitCapsule = 0, hitSwept = 0;
+
+	NxRandom random = { 0x9c0d1e2fu };
+	for(unsigned i = 0; i < kCapsuleIterations; ++i)
+		{
+		float w[16];
+		for(int k = 0; k < 16; ++k)
+			w[k] = nxPick(&random, i + k);
+
+		if(rayCapsule)
+			{
+			float t[2];
+			nxPoison(t, 2);
+			nxDigestWord(&dCapsule, rayCapsule(w + 0, w + 3, w + 6, t));
+			nxDigestFloat(&dCapsule, t[0]);
+			nxDigestFloat(&dCapsule, t[1]);
+			}
+		if(swept)
+			nxDigestWord(&dSwept, swept(w + 0, w + 4, w + 7, w + 11));
+
+		// Aimed: a capsule with a real axis and radius, and a ray fired at a
+		// point near its surface from outside.
+		float capsule[7], origin[3], direction[3], target[3];
+		for(int k = 0; k < 3; ++k)
+			{
+			capsule[k] = nxUnit(&random) * 6.0f - 3.0f;
+			capsule[k + 3] = capsule[k] + nxUnit(&random) * 6.0f - 3.0f;
+			}
+		capsule[6] = nxUnit(&random) * 1.5f + 0.03125f;
+		const float along = nxUnit(&random);
+		for(int k = 0; k < 3; ++k)
+			{
+			const float axis = capsule[k] + along * (capsule[k + 3] - capsule[k]);
+			target[k] = axis + capsule[6] * (nxUnit(&random) * 2.4f - 1.2f);
+			origin[k] = nxUnit(&random) * 20.0f - 10.0f;
+			direction[k] = target[k] - origin[k];
+			}
+		if(rayCapsule)
+			{
+			float t[2];
+			nxPoison(t, 2);
+			const NxU32 hit = rayCapsule(origin, direction, capsule, t);
+			hitCapsule += hit ? 1 : 0;
+			nxDigestWord(&dCapsuleAimed, hit);
+			nxDigestFloat(&dCapsuleAimed, t[0]);
+			nxDigestFloat(&dCapsuleAimed, t[1]);
+			}
+
+		// Aimed: two spheres whose relative velocity closes the gap between
+		// them, so the quadratic actually has roots for a good share of them.
+		float sphere0[4], sphere1[4], velocity0[3], velocity1[3];
+		for(int k = 0; k < 3; ++k)
+			{
+			sphere0[k] = nxUnit(&random) * 6.0f - 3.0f;
+			sphere1[k] = nxUnit(&random) * 6.0f - 3.0f;
+			velocity0[k] = (sphere1[k] - sphere0[k]) * (nxUnit(&random) * 2.0f);
+			velocity1[k] = (sphere0[k] - sphere1[k]) * (nxUnit(&random) * 2.0f);
+			}
+		sphere0[3] = nxUnit(&random) * 2.0f + 0.03125f;
+		sphere1[3] = nxUnit(&random) * 2.0f + 0.03125f;
+		if(swept)
+			{
+			const unsigned char hit = swept(sphere0, velocity0, sphere1, velocity1);
+			hitSwept += hit ? 1 : 0;
+			nxDigestWord(&dSweptAimed, hit);
+			}
+		}
+
+	nxDigestReport("NxRayCapsuleIntersect", rayCapsule != 0, &dCapsule);
+	nxDigestReport("NxSweptSpheresIntersect", swept != 0, &dSwept);
+	printf("fuzz name=NxRayCapsuleIntersect.aimed present=%d checks=%u digest=%016llx hits=%u\n",
+		rayCapsule ? 1 : 0, dCapsuleAimed.checks, dCapsuleAimed.state, hitCapsule);
+	printf("fuzz name=NxSweptSpheresIntersect.aimed present=%d checks=%u digest=%016llx hits=%u\n",
+		swept ? 1 : 0, dSweptAimed.checks, dSweptAimed.state, hitSwept);
+	}
+
+// The two separating-axis exports.
+//
+// NxBoxBoxIntersect returns a bool and NxSeparatingAxis returns which axis
+// separated the pair, so the second is the more informative of the two: it
+// distinguishes fifteen outcomes where the first distinguishes two, and a
+// reconstruction that tests the axes in the wrong order is caught by it and not
+// by the bool. Both are run with fullTest set and clear, because clearing it is
+// what skips the nine cross-product axes.
+//
+// Random boxes essentially never overlap, so the aimed half places the second
+// box near the first. The overlap count is printed for the same reason the ray
+// hit counts are.
+static void nxRunSatBlock(HMODULE physics)
+	{
+	NxFnBoxBox boxBox = (NxFnBoxBox) GetProcAddress(physics, "NxBoxBoxIntersect");
+	NxFnSepAxis sepAxis = (NxFnSepAxis) GetProcAddress(physics, "NxSeparatingAxis");
+
+	NxDigest dBoxBox, dSepAxis, dBoxBoxAimed, dSepAxisAimed;
+	nxDigestInit(&dBoxBox);
+	nxDigestInit(&dSepAxis);
+	nxDigestInit(&dBoxBoxAimed);
+	nxDigestInit(&dSepAxisAimed);
+	unsigned overlaps = 0;
+
+	NxRandom random = { 0x0f1e2d3cu };
+	for(unsigned i = 0; i < kSatIterations; ++i)
+		{
+		float w[30];
+		for(int k = 0; k < 30; ++k)
+			w[k] = nxPick(&random, i + k);
+		for(unsigned char full = 0; full < 2; ++full)
+			{
+			if(boxBox)
+				nxDigestWord(&dBoxBox, boxBox(w + 0, w + 3, w + 6, w + 15, w + 18, w + 21, full));
+			}
+		// NxSeparatingAxis is driven with fullTest set only, and that is a
+		// measured limitation rather than an oversight. With fullTest clear the
+		// oracle skips the nine cross-axis stores but still scans all fifteen
+		// slots, so six of them hold whatever the caller last left on the
+		// stack: on that path the shipped function is not a function of its
+		// arguments and no reimplementation can match it in general. The three
+		// slots that ARE deterministic -- the prologue's spill of rotation1's
+		// third column -- are reproduced, and the case matrix covers them
+		// through NxSeparatingAxis.05, which returns 9 for exactly that reason.
+		if(sepAxis)
+			nxDigestWord(&dSepAxis, (NxU32) sepAxis(w + 0, w + 3, w + 6, w + 15, w + 18, w + 21, 1));
+
+		float extents0[3], centre0[3], rot0[9], extents1[3], centre1[3], rot1[9];
+		for(int k = 0; k < 3; ++k)
+			{
+			extents0[k] = nxUnit(&random) * 2.0f + 0.0625f;
+			extents1[k] = nxUnit(&random) * 2.0f + 0.0625f;
+			centre0[k] = nxUnit(&random) * 4.0f - 2.0f;
+			// Near box0, and sometimes far enough to separate, so both answers
+			// occur often enough to discriminate.
+			centre1[k] = centre0[k] + (nxUnit(&random) * 6.0f - 3.0f);
+			}
+		nxRotation(rot0, nxUnit(&random) * 6.2831853f, nxUnit(&random) * 6.2831853f,
+			nxUnit(&random) * 6.2831853f);
+		nxRotation(rot1, nxUnit(&random) * 6.2831853f, nxUnit(&random) * 6.2831853f,
+			nxUnit(&random) * 6.2831853f);
+		for(unsigned char full = 0; full < 2; ++full)
+			{
+			if(boxBox)
+				{
+				const unsigned char hit = boxBox(extents0, centre0, rot0, extents1, centre1, rot1, full);
+				overlaps += hit ? 1 : 0;
+				nxDigestWord(&dBoxBoxAimed, hit);
+				}
+			}
+		if(sepAxis)
+			nxDigestWord(&dSepAxisAimed,
+				(NxU32) sepAxis(extents0, centre0, rot0, extents1, centre1, rot1, 1));
+		}
+
+	nxDigestReport("NxBoxBoxIntersect", boxBox != 0, &dBoxBox);
+	nxDigestReport("NxSeparatingAxis", sepAxis != 0, &dSepAxis);
+	printf("fuzz name=NxBoxBoxIntersect.aimed present=%d checks=%u digest=%016llx overlaps=%u\n",
+		boxBox ? 1 : 0, dBoxBoxAimed.checks, dBoxBoxAimed.state, overlaps);
+	nxDigestReport("NxSeparatingAxis.aimed", sepAxis != 0, &dSepAxisAimed);
+	}
+
+// NxBuildSmoothNormals.
+//
+// The odd one out: it takes arrays rather than scalars and it allocates. The
+// mesh is small and the indices are generated in range deliberately -- the
+// export does not bounds-check them, and feeding it an out-of-range index would
+// corrupt the harness's own heap identically on both pairs, which is neither a
+// useful check nor a safe one. That the check is missing is recorded in the
+// evidence rather than exercised here.
+//
+// Both index widths are driven, because the export takes a dword array and a
+// word array and chooses between them, and so is the flip flag.
+static void nxRunNormalsBlock(HMODULE physics)
+	{
+	NxFnSmoothNormals smooth = (NxFnSmoothNormals) GetProcAddress(physics, "NxBuildSmoothNormals");
+	NxDigest digest;
+	nxDigestInit(&digest);
+	unsigned accepted = 0;
+
+	NxRandom random = { 0x7b8a9d6eu };
+	for(unsigned i = 0; i < kNormalsIterations; ++i)
+		{
+		const NxU32 nbVerts = 3 + (nxNext(&random) % 14);
+		const NxU32 nbTris = 1 + (nxNext(&random) % 12);
+		float verts[17 * 3];
+		float normals[17 * 3];
+		NxU32 dFaces[12 * 3];
+		unsigned short wFaces[12 * 3];
+		for(NxU32 v = 0; v < nbVerts; ++v)
+			for(int k = 0; k < 3; ++k)
+				verts[v * 3 + k] = nxUnit(&random) * 4.0f - 2.0f;
+		for(NxU32 t = 0; t < nbTris * 3; ++t)
+			{
+			const NxU32 index = nxNext(&random) % nbVerts;
+			dFaces[t] = index;
+			wFaces[t] = (unsigned short) index;
+			}
+
+		if(!smooth)
+			continue;
+		const unsigned char flip = (unsigned char) (nxNext(&random) & 1);
+		// The dword path.
+		nxPoison(normals, (unsigned) nbVerts * 3);
+		unsigned char ok = smooth(nbTris, nbVerts, verts, dFaces, 0, normals, flip);
+		accepted += ok ? 1 : 0;
+		nxDigestWord(&digest, ok);
+		for(NxU32 k = 0; k < nbVerts * 3; ++k)
+			nxDigestFloat(&digest, normals[k]);
+		// The word path, same mesh, so a divergence between the two index
+		// widths shows up as a digest change rather than as nothing.
+		nxPoison(normals, (unsigned) nbVerts * 3);
+		ok = smooth(nbTris, nbVerts, verts, 0, wFaces, normals, flip);
+		accepted += ok ? 1 : 0;
+		nxDigestWord(&digest, ok);
+		for(NxU32 k = 0; k < nbVerts * 3; ++k)
+			nxDigestFloat(&digest, normals[k]);
+		}
+
+	if(!smooth)
+		{
+		printf("fuzz name=NxBuildSmoothNormals present=0 skipped=export_missing\n");
+		return;
+		}
+	printf("fuzz name=NxBuildSmoothNormals present=1 checks=%u digest=%016llx accepted=%u\n",
+		digest.checks, digest.state, accepted);
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	setvbuf(stdout, 0, _IONBF, 0);
@@ -402,10 +906,19 @@ int wmain(int argc, wchar_t** argv)
 		kScalarIterations, kVectorIterations, kAimedIterations);
 	printf("fuzz seeds scalar=13579bdf vector=02468ace aimed=feedface\n");
 
+	printf("fuzz box_iterations=%u aimed_box_iterations=%u capsule_iterations=%u sat_iterations=%u normals_iterations=%u\n",
+		kBoxIterations, kAimedBoxIterations, kCapsuleIterations, kSatIterations, kNormalsIterations);
+	printf("fuzz seeds box=1a2b3c4d aimedbox=5e6f7a8b capsule=9c0d1e2f sat=0f1e2d3c normals=7b8a9d6e\n");
+
 	nxPrecisionWitness(physics);
 	nxRunScalarBlock(physics);
 	nxRunVectorBlock(physics);
 	nxRunAimedBlock(physics);
+	nxRunBoxBlock(physics);
+	nxRunAimedBoxBlock(physics);
+	nxRunCapsuleBlock(physics);
+	nxRunSatBlock(physics);
+	nxRunNormalsBlock(physics);
 
 	status = nxReportPairIdentity(pairDirectory);
 	FreeLibrary(physics);
