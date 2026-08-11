@@ -248,4 +248,39 @@ int NxBoxBoxClipFace(NxVec3* points, NxReal* separations, const NxReal* pose,
 	NxReal extentY, NxReal extentZ, const NxReal* incidentPose,
 	const NxReal* incidentExtents);
 
+// phys_fn_001745 at 0x00039c10, 4,271 bytes -- the fifteen-axis separating-axis
+// search of matrix A [BOX][BOX], and the row that chooses the reference face
+// NxBoxBoxClipFace then clips against. It owns the 24-byte switch table
+// phys_data_000006 at 0x0003acc0, whose six slots are the six dispatch arms at
+// 0x0003a47a, 0x0003a5ca, 0x0003a734, 0x0003a89d, 0x0003a9f4 and 0x0003ab42.
+//
+// EIGHT INPUTS, THREE OF THEM IN REGISTERS. The call at 0x0003adc3 is resolved
+// by walking phys_fn_001748's pushes; `add esp,0x14` at 0x0003adc8 confirms the
+// five stack arguments.
+//
+//   ebx  poseA, the first transposed pose (0x0003adbf)
+//   eax  normal, the contact normal out-parameter (0x0003adb7)
+//   edx  extentsB, box B's three half extents (0x0003adaf)
+//
+// `edx` matters twice over: this row must set it on EVERY arm before tail
+// calling NxBoxBoxClipFace, because that row reads the incident box's extents
+// from it, and only the last three arms reload it -- the first three leave it
+// holding what phys_fn_001748 put there, which is exactly what they need.
+//
+// `cache` is sink+0xe8, a WARM START and not a scratch byte. The sink's own
+// constructor writes 0xff there (0x0001efc8) and the per-step reset at
+// 0x0005b620 covers +0x10..+0x43 and never clears it, so one axis index serves
+// the whole sink and carries ACROSS SHAPE PAIRS. This row reads it at
+// 0x0003a016 before it writes it at 0x0003a458, and the value decides two
+// things rather than one: 0 and 0xff run the nine edge-axis tests, while 1..6
+// SKIP THEM ENTIRELY and scale the remembered axis's overlap by 0.999f so the
+// same axis wins again. A reimplementation that clears it per call agrees on
+// the first pair in a sink and diverges from the second.
+//
+// Returns 0 for a separated pair -- 0x0003acb3, reached from all fifteen axis
+// tests -- and otherwise whatever NxBoxBoxClipFace returned.
+int NxBoxBoxSeparatingAxis(NxVec3* points, NxReal* separations,
+	const NxReal* extentsA, const NxReal* poseB, unsigned char* cache,
+	const NxReal* poseA, NxVec3* normal, const NxReal* extentsB);
+
 #endif

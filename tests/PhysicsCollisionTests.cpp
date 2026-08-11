@@ -529,6 +529,49 @@ static int nxCallClipFaceOracle(const void* fn, NxVec3* points, NxReal* separati
 	return result;
 	}
 
+// phys_fn_001745 is the fourth row in this component entered through registers
+// and the first entered through THREE: ebx carries box A's pose, eax the
+// contact normal out-parameter and edx box B's half extents. Five arguments are
+// on the stack and the caller cleans (`add esp,0x14` at 0x0003adc8).
+//
+// ebx is the one that needs care here. The oracle neither saves nor writes it
+// -- it uses it as a base register throughout and phys_fn_001741 pushes it --
+// but MSVC is free to have something of its own in it across this block, so it
+// is pushed and popped rather than trusted. The oracle preserves ebp, esi and
+// edi itself.
+//
+// Nothing is live in the x87 stack across the call on either side.
+static int nxCallSeparatingAxisOracle(const void* fn, NxVec3* points,
+	NxReal* separations, const NxReal* extentsA, const NxReal* poseB,
+	unsigned char* cache, const NxReal* poseA, NxVec3* normal,
+	const NxReal* extentsB)
+	{
+	int result;
+	__asm
+		{
+		push ebx
+		mov  eax, cache
+		push eax
+		mov  eax, poseB
+		push eax
+		mov  eax, extentsA
+		push eax
+		mov  eax, separations
+		push eax
+		mov  eax, points
+		push eax
+		mov  ebx, poseA
+		mov  edx, extentsB
+		mov  eax, normal
+		mov  ecx, fn
+		call ecx
+		add  esp, 20
+		mov  result, eax
+		pop  ebx
+		}
+	return result;
+	}
+
 static unsigned short nxGetControl()
 	{
 	unsigned short value;
@@ -1709,6 +1752,326 @@ int wmain(int argc, wchar_t** argv)
 	printf("collision coverage name=box_clip.aimed emitted=%u zero_count=%u face_face=%u edge_clip=%u vertex_face=%u plane_cross=%u swap_differs=%u nan_depth=%u over_sixteen=%u max_contacts=%u default_mismatches=%u simulate_mismatches=%u\n",
 		emitted[1], zeroCount[1], faceFace, edgeClip, vertexFace, planeCross,
 		swapDiffers[1], nanDepth[1], overSixteen[1], maxContacts[1], perMode[1][0], perMode[1][1]);
+	}
+
+
+	// -----------------------------------------------------------------------
+	// phys_fn_001745 at 0x00039c10 -- the fifteen-axis separating-axis search,
+	// the row that chooses which face phys_fn_001741 clips against, and the
+	// only row in this component that reads state it did not write.
+	//
+	// THE CACHE IS DRIVEN ACROSS PAIRS, WHICH IS THE POINT OF THIS BLOCK.
+	// sink+0xe8 is one byte per SINK and not one per pair: the sink's
+	// constructor writes 0xff there (0x0001efc8) and the per-step reset at
+	// 0x0005b620 covers +0x10..+0x43 and never touches it. So each iteration
+	// builds TWO different box pairs and drives both through ONE cache byte on
+	// each side. A reimplementation that clears the byte per call agrees on the
+	// first pair -- which starts from the constructor's sentinel anyway -- and
+	// diverges from the second. A block that reset between pairs could not see
+	// that at all, and the mutation that catches it is exactly "clear it".
+	//
+	// A THIRD CALL re-runs the first pair from a fresh cold byte, and that is
+	// what `edge_only` counts: geometries the cold call separates and the warm
+	// call does not. A warm byte does not merely bias the search -- it SKIPS
+	// THE NINE EDGE-AXIS TESTS OUTRIGHT (`cmp al,0xff; jne 0x0003a2e8` at
+	// 0x0003a01e) -- so that number is the one measurement that says both the
+	// edge tests and the shortcut past them are reached, and every input to it
+	// is the oracle's own answer.
+	//
+	// TWO FAMILIES, the split box_clip uses one row down and for the same
+	// reasons. `.random` draws every pose element, extent and centre through
+	// nxPick, which is what reaches the edge test's integer compare on a NaN
+	// projection, the negative radius sum that separates nothing, and a
+	// minimum search whose six candidates are all NaNs. `.aimed` builds real
+	// box pairs, which is what puts a manifold behind each of the six arms.
+	//
+	// `arms0..arms5` are read off the byte the oracle itself wrote
+	// (`inc cl; mov [eax],cl` at 0x0003a456), so the dispatch table's six slots
+	// are counted rather than assumed; `negated` compares the normal the oracle
+	// returned against the raw words of the row it came from, which is exact
+	// because `fchs` always flips the sign bit.
+	{
+	const void* oracleAxis = (const void*) (base + 0x00039c10);
+	const int kSlots = 80;
+	const unsigned kAxisIterations = 24000;
+	const NxU32 kUntouched = 0xcdcdcdcdu;
+
+	NxDigest oracleDigest[2], candidateDigest[2];
+	for(int f = 0; f < 2; ++f)
+		{
+		nxDigestInit(&oracleDigest[f]);
+		nxDigestInit(&candidateDigest[f]);
+		}
+	unsigned mismatches[2] = { 0, 0 };
+	unsigned perMode[2][2] = { { 0, 0 }, { 0, 0 } };
+	unsigned arms[2][6];
+	unsigned separatedCount[2] = { 0, 0 };
+	unsigned negatedCount[2] = { 0, 0 };
+	unsigned warmEntry[2] = { 0, 0 };
+	unsigned carryWarmed[2] = { 0, 0 };
+	unsigned edgeOnly[2] = { 0, 0 };
+	unsigned emitted[2] = { 0, 0 };
+	unsigned overSixteen[2] = { 0, 0 };
+	unsigned atSixteen[2] = { 0, 0 };
+	unsigned maxContacts[2] = { 0, 0 };
+	for(int f = 0; f < 2; ++f)
+		for(int k = 0; k < 6; ++k)
+			arms[f][k] = 0;
+
+	for(int family = 0; family < 2; ++family)
+		{
+		unsigned state = family ? 0x5be13c09u : 0x71a3d84fu;
+		for(unsigned it = 0; it < kAxisIterations; ++it)
+			{
+			NxReal pose[2][2][12];
+			NxReal extent[2][2][3];
+
+			if(!family)
+				{
+				for(int p = 0; p < 2; ++p)
+					for(int boxIndex = 0; boxIndex < 2; ++boxIndex)
+						{
+						for(int k = 0; k < 12; ++k)
+							pose[p][boxIndex][k] = nxPick(&state);
+						for(int k = 0; k < 3; ++k)
+							extent[p][boxIndex][k] = nxPick(&state);
+						}
+				}
+			else
+				{
+				// Every operand below is finite by construction; nothing here
+				// multiplies or adds a value it also allows to be non-finite.
+				const int aimedMode = (int) (nxNext(&state) & 3);
+				for(int p = 0; p < 2; ++p)
+					{
+					unsigned char rotationStore[kShapeBytes];
+					NxCollisionShape* const rotation = (NxCollisionShape*) rotationStore;
+					for(int boxIndex = 0; boxIndex < 2; ++boxIndex)
+						{
+						nxIdentity(rotation);
+						if(aimedMode == 0)
+							{
+							// Box A keeps the identity and box B is tilted by a
+							// couple of degrees, so the two frames are nearly
+							// parallel and all nine edge cross products are
+							// near zero -- the configuration the 1e-6f fudge at
+							// 0x10106880 is added for.
+							if(boxIndex == 1)
+								{
+								const float t = (nxUnit(&state) * 2.0f - 1.0f) * 0.05f;
+								rotation->rotation[0] = (float) cos((double) t);
+								rotation->rotation[1] = -(float) sin((double) t);
+								rotation->rotation[3] = (float) sin((double) t);
+								rotation->rotation[4] = (float) cos((double) t);
+								}
+							}
+						else
+							nxRandomRotation(&state, rotation);
+
+						for(int k = 0; k < 9; ++k)
+							pose[p][boxIndex][k] = rotation->rotation[k];
+						for(int k = 0; k < 3; ++k)
+							extent[p][boxIndex][k] = nxUnit(&state) * 1.4f + 0.3f;
+						}
+
+					// Mode 2 makes box B much the larger, so its faces win the
+					// minimum search and arms 3..5 are reached; mode 1 makes it
+					// much the smaller, so box A's do.
+					const float scale = (aimedMode == 2) ? 2.5f
+						: (aimedMode == 1) ? 0.4f : 1.0f;
+					for(int k = 0; k < 3; ++k)
+						extent[p][1][k] = extent[p][1][k] * scale;
+
+					// Box A anywhere, box B offset per axis by a fraction of
+					// the two extents' sum, so the placement straddles the
+					// contact boundary. Mode 3 spreads it wider, which is where
+					// the edge-axis tests get to decide; mode 0 keeps it tight,
+					// which is the DEEP overlap of two nearly parallel boxes --
+					// the configuration that produces the largest manifolds, and
+					// so the one that decides whether a real caller can reach
+					// phys_fn_001749's seventeenth contact.
+					const float spread = (aimedMode == 3) ? 1.35f
+						: (aimedMode == 0) ? 0.30f : 0.85f;
+					for(int k = 0; k < 3; ++k)
+						{
+						const float reach = (extent[p][0][k] + extent[p][1][k]) * spread;
+						pose[p][0][9 + k] = nxUnit(&state) * 4.0f - 2.0f;
+						pose[p][1][9 + k] = pose[p][0][9 + k]
+							+ (nxUnit(&state) * 2.0f - 1.0f) * reach;
+						}
+					}
+				}
+
+			// The byte the sink is carrying when the first pair arrives. 0xff is
+			// what the constructor leaves, 0 is what phys_fn_001749 writes after
+			// a call that produced nothing, and 1..6 is what an earlier pair in
+			// the same sink left behind.
+			const unsigned choice = nxNext(&state) & 7;
+			const unsigned char seed = (choice == 0)
+				? (unsigned char) 0xff : (unsigned char) (choice - 1);
+
+			for(int mode = 0; mode < 2; ++mode)
+				{
+				unsigned char cacheO = seed;
+				unsigned char cacheC = seed;
+				bool warmProbe = false;
+				bool warmReached = false;
+
+				for(int call = 0; call < 3; ++call)
+					{
+					const int pair = (call == 1) ? 1 : 0;
+					unsigned char coldO = 0xff;
+					unsigned char coldC = 0xff;
+					unsigned char* const cO = (call == 2) ? &coldO : &cacheO;
+					unsigned char* const cC = (call == 2) ? &coldC : &cacheC;
+					const unsigned char entering = *cO;
+
+					NxVec3 pointsO[80], pointsC[80];
+					NxReal separationsO[80], separationsC[80];
+					NxVec3 normalO, normalC;
+					memset(pointsO, 0xcd, sizeof(pointsO));
+					memset(pointsC, 0xcd, sizeof(pointsC));
+					memset(separationsO, 0xcd, sizeof(separationsO));
+					memset(separationsC, 0xcd, sizeof(separationsC));
+					memset(&normalO, 0xcd, sizeof(normalO));
+					memset(&normalC, 0xcd, sizeof(normalC));
+
+					nxSetControl(mode ? kControlSimulate : kControlDefault);
+					const int countO = nxCallSeparatingAxisOracle(oracleAxis,
+						pointsO, separationsO, extent[pair][0], pose[pair][1],
+						cO, pose[pair][0], &normalO, extent[pair][1]);
+					const int countC = NxBoxBoxSeparatingAxis(pointsC,
+						separationsC, extent[pair][0], pose[pair][1], cC,
+						pose[pair][0], &normalC, extent[pair][1]);
+					nxSetControl(kControlDefault);
+
+					// Each side folds its own count, its own cache byte, its own
+					// normal and then its own contacts over its own count, so a
+					// candidate that returned fewer contacts cannot shorten the
+					// oracle's digest.
+					nxDigestByte(&oracleDigest[family], (unsigned char) countO);
+					nxDigestByte(&candidateDigest[family], (unsigned char) countC);
+					nxDigestByte(&oracleDigest[family], *cO);
+					nxDigestByte(&candidateDigest[family], *cC);
+						{
+						const NxU32 oWords[3] = { nxBits(normalO.x), nxBits(normalO.y), nxBits(normalO.z) };
+						const NxU32 cWords[3] = { nxBits(normalC.x), nxBits(normalC.y), nxBits(normalC.z) };
+						for(int w = 0; w < 3; ++w)
+							for(int byte = 0; byte < 4; ++byte)
+								{
+								nxDigestByte(&oracleDigest[family], (unsigned char) (oWords[w] >> (byte * 8)));
+								nxDigestByte(&candidateDigest[family], (unsigned char) (cWords[w] >> (byte * 8)));
+								}
+						}
+					for(int c = 0; c < countO && c < kSlots; ++c)
+						{
+						const NxU32 words[4] = { nxBits(separationsO[c]),
+							nxBits(pointsO[c].x), nxBits(pointsO[c].y), nxBits(pointsO[c].z) };
+						for(int w = 0; w < 4; ++w)
+							for(int byte = 0; byte < 4; ++byte)
+								nxDigestByte(&oracleDigest[family],
+									(unsigned char) (words[w] >> (byte * 8)));
+						}
+					for(int c = 0; c < countC && c < kSlots; ++c)
+						{
+						const NxU32 words[4] = { nxBits(separationsC[c]),
+							nxBits(pointsC[c].x), nxBits(pointsC[c].y), nxBits(pointsC[c].z) };
+						for(int w = 0; w < 4; ++w)
+							for(int byte = 0; byte < 4; ++byte)
+								nxDigestByte(&candidateDigest[family],
+									(unsigned char) (words[w] >> (byte * 8)));
+						}
+
+					// The comparison covers the cache byte, the normal and all
+					// eighty slots rather than the count, so a contact written
+					// past either side's answer is a mismatch.
+					unsigned differing = (countO != countC) ? 1u : 0u;
+					if(*cO != *cC)
+						++differing;
+					if(nxBits(normalO.x) != nxBits(normalC.x))
+						++differing;
+					if(nxBits(normalO.y) != nxBits(normalC.y))
+						++differing;
+					if(nxBits(normalO.z) != nxBits(normalC.z))
+						++differing;
+					for(int c = 0; c < kSlots; ++c)
+						{
+						if(nxBits(separationsO[c]) != nxBits(separationsC[c]))
+							++differing;
+						if(nxBits(pointsO[c].x) != nxBits(pointsC[c].x))
+							++differing;
+						if(nxBits(pointsO[c].y) != nxBits(pointsC[c].y))
+							++differing;
+						if(nxBits(pointsO[c].z) != nxBits(pointsC[c].z))
+							++differing;
+						}
+					mismatches[family] += differing;
+					perMode[family][mode] += differing;
+
+					// Everything below is read off the oracle's own answer. The
+					// normal is written unconditionally by every arm and by no
+					// other path, so it is what says the dispatch was reached;
+					// a separated pair returns from 0x0003acb3 and leaves the
+					// sentinel in place.
+					const bool reached = nxBits(normalO.x) != kUntouched
+						|| nxBits(normalO.y) != kUntouched
+						|| nxBits(normalO.z) != kUntouched;
+					if(entering >= 1 && entering <= 6)
+						++warmEntry[family];
+					if(call == 1 && (seed == 0 || seed == 0xff)
+						&& entering >= 1 && entering <= 6)
+						++carryWarmed[family];
+					if(!reached)
+						++separatedCount[family];
+					else
+						{
+						const int code = (int) *cO - 1;
+						++arms[family][code];
+						const NxReal* const ref = (code < 3) ? pose[pair][0] : pose[pair][1];
+						if(nxBits(normalO.x) != nxBits(ref[3 * (code % 3)]))
+							++negatedCount[family];
+						}
+					emitted[family] += (unsigned) countO;
+					if(countO > (int) maxContacts[family])
+						maxContacts[family] = (unsigned) countO;
+					// The tail of the contact-count distribution, and the reason
+					// it is registered rather than mentioned: phys_fn_001749's
+					// points array holds SIXTEEN and its seventeenth entry is
+					// the return address. `at_sixteen` is how often the shipped
+					// chain fills it exactly and `over_sixteen` how often it
+					// runs past. When phys_fn_001741 was driven with a synthetic
+					// reference face those read 18 and 20; here the face comes
+					// from the search, which is the measurement Phase 8 wanted.
+					if(countO == 16)
+						++atSixteen[family];
+					if(countO > 16)
+						++overSixteen[family];
+
+					if(call == 0)
+						{
+						warmProbe = entering >= 1 && entering <= 6;
+						warmReached = reached;
+						}
+					else if(call == 2 && warmProbe && warmReached && !reached)
+						++edgeOnly[family];
+					}
+				}
+			}
+		}
+
+	totalMismatch += mismatches[0] + mismatches[1];
+	printf("collision name=box_axis.random index=- rva=0x00039c10 owner=phys_fn_001745 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		oracleDigest[0].checks, oracleDigest[0].state, candidateDigest[0].state, mismatches[0]);
+	printf("collision coverage name=box_axis.random arm0=%u arm1=%u arm2=%u arm3=%u arm4=%u arm5=%u separated=%u negated=%u warm_entry=%u carry_warmed=%u edge_only=%u emitted=%u at_sixteen=%u over_sixteen=%u max_contacts=%u default_mismatches=%u simulate_mismatches=%u\n",
+		arms[0][0], arms[0][1], arms[0][2], arms[0][3], arms[0][4], arms[0][5],
+		separatedCount[0], negatedCount[0], warmEntry[0], carryWarmed[0], edgeOnly[0],
+		emitted[0], atSixteen[0], overSixteen[0], maxContacts[0], perMode[0][0], perMode[0][1]);
+	printf("collision name=box_axis.aimed index=- rva=0x00039c10 owner=phys_fn_001745 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		oracleDigest[1].checks, oracleDigest[1].state, candidateDigest[1].state, mismatches[1]);
+	printf("collision coverage name=box_axis.aimed arm0=%u arm1=%u arm2=%u arm3=%u arm4=%u arm5=%u separated=%u negated=%u warm_entry=%u carry_warmed=%u edge_only=%u emitted=%u at_sixteen=%u over_sixteen=%u max_contacts=%u default_mismatches=%u simulate_mismatches=%u\n",
+		arms[1][0], arms[1][1], arms[1][2], arms[1][3], arms[1][4], arms[1][5],
+		separatedCount[1], negatedCount[1], warmEntry[1], carryWarmed[1], edgeOnly[1],
+		emitted[1], atSixteen[1], overSixteen[1], maxContacts[1], perMode[1][0], perMode[1][1]);
 	}
 
 	// -----------------------------------------------------------------------

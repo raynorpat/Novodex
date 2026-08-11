@@ -2250,3 +2250,328 @@ int NxBoxBoxClipFace(NxVec3* points, NxReal* separations, const NxReal* pose,
 	// `mov eax,ebx` at 0x00039bfe.
 	return count;
 	}
+
+// ---------------------------------------------------------------------------
+// phys_fn_001745 at 0x00039c10 -- the fifteen-axis separating-axis search of
+// matrix A [BOX][BOX], its 24-byte switch table and its warm-start cache. See
+// the header for the three register arguments and for what sink+0xe8 is.
+
+// The three memory constants this row reads, each with the address it reads it
+// from and the word that is actually there. The fudge is added to every
+// |R[i][j]| BEFORE any radius sum, which is what keeps two exactly parallel
+// boxes from failing an edge test on a zero-length cross product.
+//
+//   0x10106880  0x358637bd  1e-6f       the fudge, 0x00039cbf and eight more
+//   0x10106858  0x7f7fffff  FLT_MAX     the minimum search's seed, 0x0003a303
+//   0x10107b30  0x3f7fbe77  0.999f      the warm-start bias, 0x0003a2fb
+static const NxReal kNxBoxAxisFudge = 1e-6f;
+static const NxReal kNxBoxAxisSeed = 3.402823466e+38f;
+static const NxReal kNxBoxAxisBias = 0.999f;
+
+// One of the six face-axis overlaps: `radiusSum - |projection|`. The whole
+// chain is formed in the x87 stack -- the three products, the two adds, the
+// box's own extent and the subtraction -- and narrowed once by the `fstp dword`
+// that stores it (0x00039d14 and its five siblings), so the sum is never
+// rounded to 32 bits on the way.
+//
+// `fabs`, not `x < 0 ? -x : x`: 0x00039d07 is an `fabs`, which clears the sign
+// bit, and the two spellings differ on a -0.0f projection. That is the same
+// correction the sphere/box row needed.
+static NxReal nxBoxAxisOverlap(NxReal f0, NxReal e0, NxReal f1, NxReal e1,
+	NxReal f2, NxReal e2, NxReal own, NxReal projection)
+	{
+	const double sum = (((double) f0 * e0 + (double) f1 * e1) + (double) f2 * e2) + own;
+	return (NxReal) (sum - fabs((double) projection));
+	}
+
+// One of the nine edge-axis radius sums. Four terms, left-associated, and the
+// four are NOT in the same order at every site: seven of the nine take both of
+// box A's terms first and edges 7 and 8 interleave them with box B's
+// (0x0003a262 and 0x0003a2b0). Only rounding can tell, which is why they are
+// passed positionally rather than by axis.
+static NxReal nxBoxAxisRadius(NxReal f0, NxReal e0, NxReal f1, NxReal e1,
+	NxReal f2, NxReal e2, NxReal f3, NxReal e3)
+	{
+	return (NxReal) ((((double) f0 * e0 + (double) f1 * e1) + (double) f2 * e2)
+		+ (double) f3 * e3);
+	}
+
+// An edge axis's projection of the centre difference: two products and a
+// subtract, narrowed by `fstp dword ptr [esp+0x1c]`.
+static NxReal nxBoxAxisCross(NxReal a0, NxReal b0, NxReal a1, NxReal b1)
+	{
+	return (NxReal) ((double) a0 * b0 - (double) a1 * b1);
+	}
+
+// The edge test itself, and it is not a float compare. 0x0003a06a is
+// `cmp dword ptr [esp+0x18], ecx; jb` on the two stored WORDS, with only the
+// projection's word masked (`and ecx,0x7fffffff` at 0x0003a045). Three
+// consequences, all of them reproduced rather than smoothed over: an IEEE
+// float's bit pattern orders correctly for non-negative values, so this is a
+// magnitude compare while both sides are non-negative; a NaN projection masks
+// to a very large magnitude and SEPARATES the pair; and a negative radius sum
+// has its sign bit set, reads as a huge unsigned word and separates nothing.
+static bool nxBoxAxisSeparated(NxReal radius, NxReal projection)
+	{
+	return nxBits(radius) < (nxBits(projection) & 0x7fffffffu);
+	}
+
+int NxBoxBoxSeparatingAxis(NxVec3* points, NxReal* separations,
+	const NxReal* extentsA, const NxReal* poseB, unsigned char* cache,
+	const NxReal* poseA, NxVec3* normal, const NxReal* extentsB)
+	{
+	const NxReal* const a = poseA;
+	const NxReal* const b = poseB;
+
+	// The centre difference in world space, 0x00039c1e. Narrowed per component.
+	const NxReal dx = (NxReal) ((double) b[9] - a[9]);
+	const NxReal dy = (NxReal) ((double) b[10] - a[10]);
+	const NxReal dz = (NxReal) ((double) b[11] - a[11]);
+
+	// R, nine dot products in nine different accumulation orders, each narrowed
+	// by its own `fstp dword` from 0x00039c5c on. nxBoxBoxDot takes the operands
+	// in the order the oracle multiplies them and adds them in the order it
+	// accumulates them; nothing here reorders anything.
+	//
+	// The projections of the centre difference onto A's three rows and B's
+	// three rows have their own orders too, and the last is the odd one -- x, z,
+	// y where the other five are z/y-first (0x00039faf).
+	//
+	// Rows are interleaved with their tests the way the oracle interleaves them:
+	// each face axis is tested before the next row of R is formed, so a
+	// separated pair never computes the rest.
+	NxReal m[9];
+	NxReal f[9];
+	NxReal overlap[6];
+	NxReal projection[6];
+
+	m[0] = nxBoxBoxDot(a[0], b[0], b[2], a[2], a[1], b[1]);
+	m[1] = nxBoxBoxDot(b[4], a[1], b[5], a[2], b[3], a[0]);
+	m[2] = nxBoxBoxDot(b[7], a[1], b[8], a[2], b[6], a[0]);
+	projection[0] = nxBoxBoxDot(dy, a[1], dx, a[0], dz, a[2]);
+	f[0] = (NxReal) (fabs((double) m[0]) + kNxBoxAxisFudge);
+	f[1] = (NxReal) (fabs((double) m[1]) + kNxBoxAxisFudge);
+	f[2] = (NxReal) (fabs((double) m[2]) + kNxBoxAxisFudge);
+
+	// The face-axis test is an integer sign test on the STORED overlap --
+	// `mov eax,0x80000000; test eax,ecx; jne 0x0003acb3` at 0x00039d22 -- so a
+	// NaN overlap with a clear sign bit passes it, and -0.0f does not.
+	overlap[0] = nxBoxAxisOverlap(f[0], extentsB[0], f[2], extentsB[2],
+		f[1], extentsB[1], extentsA[0], projection[0]);
+	if((nxBits(overlap[0]) & 0x80000000u) != 0)
+		return 0;
+
+	m[3] = nxBoxBoxDot(b[1], a[4], b[2], a[5], b[0], a[3]);
+	m[4] = nxBoxBoxDot(b[3], a[3], b[5], a[5], b[4], a[4]);
+	m[5] = nxBoxBoxDot(b[6], a[3], b[8], a[5], b[7], a[4]);
+	projection[1] = nxBoxBoxDot(dz, a[5], dy, a[4], dx, a[3]);
+	f[3] = (NxReal) (fabs((double) m[3]) + kNxBoxAxisFudge);
+	f[4] = (NxReal) (fabs((double) m[4]) + kNxBoxAxisFudge);
+	f[5] = (NxReal) (fabs((double) m[5]) + kNxBoxAxisFudge);
+	overlap[1] = nxBoxAxisOverlap(f[3], extentsB[0], f[5], extentsB[2],
+		f[4], extentsB[1], extentsA[1], projection[1]);
+	if((nxBits(overlap[1]) & 0x80000000u) != 0)
+		return 0;
+
+	m[6] = nxBoxBoxDot(b[2], a[8], a[6], b[0], a[7], b[1]);
+	m[7] = nxBoxBoxDot(b[3], a[6], b[5], a[8], b[4], a[7]);
+	m[8] = nxBoxBoxDot(b[6], a[6], b[8], a[8], b[7], a[7]);
+	projection[2] = nxBoxBoxDot(dz, a[8], dy, a[7], dx, a[6]);
+	f[6] = (NxReal) (fabs((double) m[6]) + kNxBoxAxisFudge);
+	f[7] = (NxReal) (fabs((double) m[7]) + kNxBoxAxisFudge);
+	f[8] = (NxReal) (fabs((double) m[8]) + kNxBoxAxisFudge);
+	overlap[2] = nxBoxAxisOverlap(f[6], extentsB[0], f[8], extentsB[2],
+		f[7], extentsB[1], extentsA[2], projection[2]);
+	if((nxBits(overlap[2]) & 0x80000000u) != 0)
+		return 0;
+
+	projection[3] = nxBoxBoxDot(dz, b[2], dy, b[1], dx, b[0]);
+	overlap[3] = nxBoxAxisOverlap(f[6], extentsA[2], f[0], extentsA[0],
+		f[3], extentsA[1], extentsB[0], projection[3]);
+	if((nxBits(overlap[3]) & 0x80000000u) != 0)
+		return 0;
+
+	projection[4] = nxBoxBoxDot(dz, b[5], dy, b[4], dx, b[3]);
+	overlap[4] = nxBoxAxisOverlap(f[7], extentsA[2], f[1], extentsA[0],
+		f[4], extentsA[1], extentsB[1], projection[4]);
+	if((nxBits(overlap[4]) & 0x80000000u) != 0)
+		return 0;
+
+	projection[5] = nxBoxBoxDot(dx, b[6], dz, b[8], dy, b[7]);
+	overlap[5] = nxBoxAxisOverlap(f[8], extentsA[2], f[2], extentsA[0],
+		f[5], extentsA[1], extentsB[2], projection[5]);
+	if((nxBits(overlap[5]) & 0x80000000u) != 0)
+		return 0;
+
+	// -- The warm start, read at 0x0003a016 --------------------------------
+	//
+	// AND IT DECIDES TWO THINGS. `test al,al; je` then `cmp al,0xff; jne` sends
+	// 0 and 0xff into the nine edge-axis tests and everything else STRAIGHT
+	// PAST THEM to the bias at 0x0003a2e8. So a pair whose only separating axis
+	// is an edge cross product is reported as overlapping whenever the sink
+	// happens to be carrying an index from an earlier pair.
+	const unsigned char cached = *cache;
+	const bool warm = cached != 0 && cached != 0xff;
+
+	if(!warm)
+		{
+		if(nxBoxAxisSeparated(nxBoxAxisRadius(f[3], extentsA[2], f[6], extentsA[1],
+				f[2], extentsB[1], f[1], extentsB[2]),
+			nxBoxAxisCross(projection[2], m[3], m[6], projection[1])))
+			return 0;
+		if(nxBoxAxisSeparated(nxBoxAxisRadius(f[4], extentsA[2], f[7], extentsA[1],
+				f[2], extentsB[0], f[0], extentsB[2]),
+			nxBoxAxisCross(projection[2], m[4], m[7], projection[1])))
+			return 0;
+		if(nxBoxAxisSeparated(nxBoxAxisRadius(f[5], extentsA[2], f[8], extentsA[1],
+				f[1], extentsB[0], f[0], extentsB[1]),
+			nxBoxAxisCross(projection[2], m[5], m[8], projection[1])))
+			return 0;
+		if(nxBoxAxisSeparated(nxBoxAxisRadius(f[6], extentsA[0], f[0], extentsA[2],
+				f[5], extentsB[1], f[4], extentsB[2]),
+			nxBoxAxisCross(m[6], projection[0], projection[2], m[0])))
+			return 0;
+		if(nxBoxAxisSeparated(nxBoxAxisRadius(f[7], extentsA[0], f[1], extentsA[2],
+				f[5], extentsB[0], f[3], extentsB[2]),
+			nxBoxAxisCross(m[7], projection[0], projection[2], m[1])))
+			return 0;
+		if(nxBoxAxisSeparated(nxBoxAxisRadius(f[8], extentsA[0], f[2], extentsA[2],
+				f[4], extentsB[0], f[3], extentsB[1]),
+			nxBoxAxisCross(m[8], projection[0], projection[2], m[2])))
+			return 0;
+		if(nxBoxAxisSeparated(nxBoxAxisRadius(f[3], extentsA[0], f[0], extentsA[1],
+				f[8], extentsB[1], f[7], extentsB[2]),
+			nxBoxAxisCross(projection[1], m[0], m[3], projection[0])))
+			return 0;
+		// Edges 7 and 8 accumulate their four terms in a different order from
+		// the seven above: A, B, A, B rather than A, A, B, B.
+		if(nxBoxAxisSeparated(nxBoxAxisRadius(f[4], extentsA[0], f[8], extentsB[0],
+				f[1], extentsA[1], f[6], extentsB[2]),
+			nxBoxAxisCross(projection[1], m[1], m[4], projection[0])))
+			return 0;
+		if(nxBoxAxisSeparated(nxBoxAxisRadius(f[5], extentsA[0], f[7], extentsB[0],
+				f[2], extentsA[1], f[6], extentsB[1]),
+			nxBoxAxisCross(projection[1], m[2], m[5], projection[0])))
+			return 0;
+		}
+
+	// 0x0003a2e8. `cmp al,0x10; ja` then `test al,al; jbe` admits 1..16 where
+	// only six overlaps exist, and `lea eax,[esp + eax*4 + 0x7c]` walks straight
+	// past them into the stored projections and, at 16, into the argument area.
+	// Nothing can write such a value: this row writes `code + 1`, which is 1..6
+	// (0x0003a456), the sink's constructor writes 0xff (0x0001efc8) and
+	// phys_fn_001749 writes 0 (0x0003ae5d). So 7..16 is unreachable and is not
+	// reproduced.
+	if(warm && cached <= 6)
+		overlap[cached - 1] = (NxReal) ((double) overlap[cached - 1] * kNxBoxAxisBias);
+
+	// The minimum search, 0x0003a303: six copies of one comparison, seeded from
+	// FLT_MAX. `fcomp 0.0f; test ah,1; jne` skips an overlap that is negative
+	// OR UNORDERED, which is the only filter a NaN meets here -- every negative
+	// one has already returned above -- and `test ah,5; jp` takes the strictly
+	// smaller. If all six are NaNs the code stays 0 and the seed is never
+	// replaced.
+	NxReal best = kNxBoxAxisSeed;
+	int code = 0;
+	for(int k = 0; k < 6; ++k)
+		if(overlap[k] >= 0.0f && overlap[k] < best)
+			{
+			best = overlap[k];
+			code = k;
+			}
+
+	// `inc cl; mov byte ptr [eax],cl` at 0x0003a456. Written on every path that
+	// reaches the dispatch and on none that returns 0, so a separated pair
+	// leaves the previous pair's index in place.
+	*cache = (unsigned char) (code + 1);
+
+	// `mov eax,[esp + ecx*4 + 0x98]; and eax,0x80000000` at 0x0003a45e: the
+	// STORED projection's word, not a recomputed one.
+	const NxU32 sign = nxBits(projection[code]) & 0x80000000u;
+
+	// -- The dispatch, 0x0003a473 ------------------------------------------
+	//
+	// `jmp dword ptr [ecx*4 + 0x1003acc0]` walks phys_data_000006, whose six
+	// slots are 0x0003a47a, 0x0003a5ca, 0x0003a734, 0x0003a89d, 0x0003a9f4 and
+	// 0x0003ab42. Arms 0..2 make box A the reference and leave edx holding box
+	// B's extents; arms 3..5 make box B the reference and reload edx with box
+	// A's, at two addresses for THREE arms -- 0x0003a9de is arm 3's own tail
+	// and 0x0003ac9d is the tail arms 4 and 5 share.
+	const bool referenceIsA = code < 3;
+	const int i = code % 3;
+	const NxReal* const refPose = referenceIsA ? poseA : poseB;
+	const NxReal* const refExtents = referenceIsA ? extentsA : extentsB;
+	const NxReal* const r0 = refPose + 3 * i;
+	const NxReal* const r1 = refPose + 3 * ((i + 1) % 3);
+	const NxReal* const r2 = refPose + 3 * ((i + 2) % 3);
+	const NxReal e0 = refExtents[i];
+
+	// The normal is the winning row copied as three raw words (0x0003a47c) and
+	// then negated in place with three `fld; fchs; fstp` when the projection's
+	// sign bit is CLEAR (0x0003a4e8 and its five siblings). The copy preserves a
+	// signalling NaN and the negation quiets one, so which path ran is visible
+	// in the payload as well as in the sign.
+	memcpy(&normal->x, &r0[0], 4);
+	memcpy(&normal->y, &r0[1], 4);
+	memcpy(&normal->z, &r0[2], 4);
+	if(sign == 0)
+		{
+		normal->x = -normal->x;
+		normal->y = -normal->y;
+		normal->z = -normal->z;
+		}
+
+	// WHICH FACE CONSTRUCTION RUNS IS NOT THE SAME TEST ON BOTH HALVES OF THE
+	// TABLE. Arms 0..2 take the `centre + e*row` form when the sign bit is
+	// clear (`je 0x0003a4e8`) and arms 3..5 take it when the sign bit is SET
+	// (`je 0x0003a955` goes to the other one). Every projection is measured
+	// along box A's frame, so this is what keeps the reference face the one
+	// facing the other box on both halves of the table.
+	const bool plus = referenceIsA ? (sign == 0) : (sign != 0);
+
+	// The pose handed to the clip row: the winning row first, then the other
+	// two cyclically. Only the first two rows are negated -- the third is a raw
+	// copy on both paths (0x0003a55e, 0x0003a591) -- which leaves the
+	// determinant's sign alone.
+	NxReal face[12];
+	for(int k = 0; k < 3; ++k)
+		{
+		if(plus)
+			{
+			face[k] = -r0[k];
+			face[3 + k] = -r1[k];
+			}
+		else
+			{
+			memcpy(&face[k], &r0[k], 4);
+			memcpy(&face[3 + k], &r1[k], 4);
+			}
+		memcpy(&face[6 + k], &r2[k], 4);
+		}
+
+	// The face centre, 0x0003a48e and 0x0003a4fe. THE THREE COMPONENTS ARE NOT
+	// CARRIED AT THE SAME WIDTH: the x and y terms go through 32-bit slots
+	// (`fstp dword ptr [esp+0xc]` and `[esp+0x10]`) and the z term does not --
+	// `fmul [ebx+8]` leaves it in st(0) and `fsub st(3)` or `fadd [ebx+0x2c]`
+	// consumes it wide.
+	const NxReal t0 = (NxReal) ((double) e0 * r0[0]);
+	const NxReal t1 = (NxReal) ((double) e0 * r0[1]);
+	if(plus)
+		{
+		face[9] = (NxReal) ((double) t0 + refPose[9]);
+		face[10] = (NxReal) ((double) t1 + refPose[10]);
+		face[11] = (NxReal) ((double) e0 * r0[2] + refPose[11]);
+		}
+	else
+		{
+		face[9] = (NxReal) ((double) refPose[9] - t0);
+		face[10] = (NxReal) ((double) refPose[10] - t1);
+		face[11] = (NxReal) ((double) refPose[11] - (double) e0 * r0[2]);
+		}
+
+	// The two half extents the clip row range-checks against are the reference
+	// box's OTHER two, in the same cyclic order as the rows.
+	return NxBoxBoxClipFace(points, separations, face,
+		refExtents[(i + 1) % 3], refExtents[(i + 2) % 3],
+		referenceIsA ? poseB : poseA, referenceIsA ? extentsB : extentsA);
+	}
