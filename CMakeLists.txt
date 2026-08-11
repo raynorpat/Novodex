@@ -73,6 +73,20 @@ target_include_directories(NxPhysics PRIVATE
 
 target_compile_definitions(NxPhysics PRIVATE NX_PHYSICS_DLL=1)
 
+# The mass and geometry kernels are x87 in the oracle and their results depend
+# on it. Two differences are measured, not assumed: the oracle keeps
+# intermediates at the process's _PC_53 precision instead of rounding each one
+# to 32 bits, and when an operation has two NaN operands x87 propagates the one
+# with the larger significand where SSE propagates the first source. The C++
+# expresses the first by typing register lifetimes `double`; only the second
+# needs the code generator, and only on these translation units. Everything
+# else in NxPhysics keeps the default architecture.
+if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
+	set_source_files_properties(
+		Physics/src/MassProperties.cpp
+		PROPERTIES COMPILE_OPTIONS "/arch:IA32")
+endif()
+
 if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	add_executable(NxPhysicsExportTests tests/PhysicsExportTests.cpp)
 	target_link_libraries(NxPhysicsExportTests bcrypt)
