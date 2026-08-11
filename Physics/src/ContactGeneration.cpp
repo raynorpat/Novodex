@@ -24,6 +24,7 @@
 #include "NxPlane.h"
 #include "NxSegment.h"
 
+#include <math.h>
 #include <stddef.h>
 #include <string.h>
 
@@ -1470,11 +1471,19 @@ bool __cdecl NxSphereBoxContactData(const NxCollisionSphereData* sphere,
 
 	// |x| and |y| stay in registers; |z| is narrowed into a slot at 0x0004a145
 	// before the depth is taken, so the three depths are not formed alike. The
-	// magnitude of a float is a float, so the two spellings agree bit for bit
-	// and this asymmetry is transcribed rather than measured.
-	const double absolute0 = (double) clamped0 < 0.0 ? -(double) clamped0 : (double) clamped0;
-	const double absolute1 = (double) clamped1 < 0.0 ? -(double) clamped1 : (double) clamped1;
-	const NxReal absolute2 = (NxReal) ((double) local2 < 0.0 ? -(double) local2 : (double) local2);
+	// magnitude of a float is a float, so that asymmetry is transcribed rather
+	// than measured.
+	//
+	// `fabs` rather than `x < 0 ? -x : x`, and the difference is not academic:
+	// the oracle's `fabs` at 0x0004a137 clears the sign bit, so it turns -0.0
+	// into +0.0 where the comparison spelling leaves it negative. With an extent
+	// of -0.0 -- which the raw-bit half of the generator can produce -- the two
+	// give `-0.0 - -0.0 = +0.0` and `-0.0 - 0.0 = -0.0`, and the sign of that
+	// zero reaches the stream. No draw in 3,480,000 hit it; it was found by
+	// reading, and is fixed rather than left for a different seed to find.
+	const double absolute0 = fabs((double) clamped0);
+	const double absolute1 = fabs((double) clamped1);
+	const NxReal absolute2 = (NxReal) fabs((double) local2);
 
 	const NxReal depth0 = (NxReal) ((double) extents[0] - absolute0);
 	const NxReal depth1 = (NxReal) ((double) extents[1] - absolute1);
