@@ -604,6 +604,34 @@ static NxU32 nxCanonical(const NxContactWorld* world, NxU32 word)
 	return word;
 	}
 
+// One side's whole stream into that side's own digest. Each side is folded over
+// its own word count rather than over the shorter of the two, so the oracle
+// half of a registered line is a function of the oracle alone.
+static void nxFoldStream(NxDigest* digest, const NxContactWorld* world)
+	{
+	for(unsigned w = 0; w < world->sink.streamCount; ++w)
+		{
+		const NxU32 word = nxCanonical(world, world->stream[w]);
+		for(int byte = 0; byte < 4; ++byte)
+			nxDigestByte(digest, (unsigned char) (word >> (byte * 8)));
+		}
+	}
+
+static unsigned nxCompareStreams(const NxContactWorld* a, const NxContactWorld* b)
+	{
+	unsigned differing = 0;
+	if(a->sink.streamCount != b->sink.streamCount
+		|| a->sink.contactCount != b->sink.contactCount
+		|| a->sink.featurePairValid != b->sink.featurePairValid)
+		++differing;
+	const unsigned common = a->sink.streamCount < b->sink.streamCount
+		? a->sink.streamCount : b->sink.streamCount;
+	for(unsigned w = 0; w < common; ++w)
+		if(nxCanonical(a, a->stream[w]) != nxCanonical(b, b->stream[w]))
+			++differing;
+	return differing;
+	}
+
 struct NxBlockResult
 	{
 	NxDigest oracle;
@@ -1371,28 +1399,24 @@ int wmain(int argc, wchar_t** argv)
 					++negatedPath;
 				}
 
-			if(world[0].sink.streamCount != world[1].sink.streamCount
-				|| world[0].sink.contactCount != world[1].sink.contactCount
-				|| world[0].sink.featurePairValid != world[1].sink.featurePairValid)
-				++mismatches;
-
-			const unsigned words = world[0].sink.streamCount < world[1].sink.streamCount
-				? world[0].sink.streamCount : world[1].sink.streamCount;
-			for(unsigned w = 0; w < words; ++w)
-				{
-				// The two collision-object words are addresses, and each side
-				// has its own, so they are canonicalised to which shape they
-				// name. Everything else is compared raw.
-				const NxU32 a = nxCanonical(&world[0], world[0].stream[w]);
-				const NxU32 b = nxCanonical(&world[1], world[1].stream[w]);
-				for(int byte = 0; byte < 4; ++byte)
-					{
-					nxDigestByte(&oracleDigest, (unsigned char) (a >> (byte * 8)));
-					nxDigestByte(&candidateDigest, (unsigned char) (b >> (byte * 8)));
-					}
-				if(a != b)
-					++mismatches;
-				}
+			// Each side is folded over its own stream and only the overlap is
+			// compared. An earlier version digested both sides over the shorter
+			// of the two counts, which made the oracle-side digest a function
+			// of the candidate: a reconstruction that emitted fewer words moved
+			// it. Measured, not argued -- a mutant that made the plane/capsule
+			// entry return early moved that block's oracle digest and its
+			// `checks` from 2180528 to 2077464. It could never have produced a
+			// false pass, because a shortened digest does not equal the pin
+			// either, but the registration says the oracle half cannot be moved
+			// from this side and that was not true. The two counts are equal on
+			// every agreeing run, so no pinned digest moves.
+			//
+			// The collision-object words are addresses and each side has its
+			// own, so they are canonicalised to which shape they name.
+			// Everything else is folded raw.
+			nxFoldStream(&oracleDigest, &world[0]);
+			nxFoldStream(&candidateDigest, &world[1]);
+			mismatches += nxCompareStreams(&world[0], &world[1]);
 			}
 		}
 	totalMismatch += mismatches;
@@ -1485,24 +1509,9 @@ int wmain(int argc, wchar_t** argv)
 					++fifthWords;
 				}
 
-			if(emitWorld[0].sink.streamCount != emitWorld[1].sink.streamCount
-				|| emitWorld[0].sink.contactCount != emitWorld[1].sink.contactCount
-				|| emitWorld[0].sink.featurePairValid != emitWorld[1].sink.featurePairValid)
-				++mismatches;
-			const unsigned words = emitWorld[0].sink.streamCount < emitWorld[1].sink.streamCount
-				? emitWorld[0].sink.streamCount : emitWorld[1].sink.streamCount;
-			for(unsigned w = 0; w < words; ++w)
-				{
-				const NxU32 a = nxCanonical(&emitWorld[0], emitWorld[0].stream[w]);
-				const NxU32 b = nxCanonical(&emitWorld[1], emitWorld[1].stream[w]);
-				for(int byte = 0; byte < 4; ++byte)
-					{
-					nxDigestByte(&oracleDigest, (unsigned char) (a >> (byte * 8)));
-					nxDigestByte(&candidateDigest, (unsigned char) (b >> (byte * 8)));
-					}
-				if(a != b)
-					++mismatches;
-				}
+			nxFoldStream(&oracleDigest, &emitWorld[0]);
+			nxFoldStream(&candidateDigest, &emitWorld[1]);
+			mismatches += nxCompareStreams(&emitWorld[0], &emitWorld[1]);
 			}
 		}
 	totalMismatch += mismatches;
@@ -1825,25 +1834,9 @@ int wmain(int argc, wchar_t** argv)
 					}
 				}
 
-			if(world[0].sink.streamCount != world[1].sink.streamCount
-				|| world[0].sink.contactCount != world[1].sink.contactCount
-				|| world[0].sink.featurePairValid != world[1].sink.featurePairValid)
-				++mismatches;
-
-			const unsigned words = world[0].sink.streamCount < world[1].sink.streamCount
-				? world[0].sink.streamCount : world[1].sink.streamCount;
-			for(unsigned w = 0; w < words; ++w)
-				{
-				const NxU32 a = nxCanonical(&world[0], world[0].stream[w]);
-				const NxU32 b = nxCanonical(&world[1], world[1].stream[w]);
-				for(int byte = 0; byte < 4; ++byte)
-					{
-					nxDigestByte(&oracleDigest, (unsigned char) (a >> (byte * 8)));
-					nxDigestByte(&candidateDigest, (unsigned char) (b >> (byte * 8)));
-					}
-				if(a != b)
-					++mismatches;
-				}
+			nxFoldStream(&oracleDigest, &world[0]);
+			nxFoldStream(&candidateDigest, &world[1]);
+			mismatches += nxCompareStreams(&world[0], &world[1]);
 			}
 		}
 	totalMismatch += mismatches;
