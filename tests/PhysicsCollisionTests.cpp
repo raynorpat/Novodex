@@ -348,6 +348,13 @@ static bool nxFinite(float value)
 	return (bits & 0x7f800000u) != 0x7f800000u;
 	}
 
+static NxU32 nxBits(NxReal value)
+	{
+	NxU32 word;
+	memcpy(&word, &value, 4);
+	return word;
+	}
+
 // The stack the next callee is about to use, filled with one repeated dword.
 //
 // phys_fn_001775's swept path hands the emitter `hit.worldNormal`, and
@@ -481,6 +488,45 @@ static void nxCallQuadDepthCandidate(NxQuadDepthFn fn, const NxVec3* const* quad
 		mov  eax, wide
 		fstp tbyte ptr [eax]
 		}
+	}
+
+// phys_fn_001741 is the third row in this component entered through registers,
+// and the first entered through TWO: eax carries the incident box's pose and
+// edx its three half extents. Neither is expressible in C++, and edx is the
+// worse of the two -- four of phys_fn_001745's six dispatch arms never load it,
+// so it survives untouched from phys_fn_001748 across a 4,271-byte function.
+//
+// The two extents travel as their bit patterns for the same reason the leaf's
+// two floats do: a `push` of a float parameter can quiet a signalling NaN and
+// the oracle's own caller pushes raw dwords.
+//
+// The count comes back in eax. The x87 stack is empty across the call on both
+// sides, so nothing has to be spilled here.
+static int nxCallClipFaceOracle(const void* fn, NxVec3* points, NxReal* separations,
+	const NxReal* pose, NxU32 extentY, NxU32 extentZ,
+	const NxReal* incidentPose, const NxReal* incidentExtents)
+	{
+	int result;
+	__asm
+		{
+		mov  eax, extentZ
+		push eax
+		mov  eax, extentY
+		push eax
+		mov  eax, pose
+		push eax
+		mov  eax, separations
+		push eax
+		mov  eax, points
+		push eax
+		mov  edx, incidentExtents
+		mov  eax, incidentPose
+		mov  ecx, fn
+		call ecx
+		add  esp, 20
+		mov  result, eax
+		}
+	return result;
 	}
 
 static unsigned short nxGetControl()
@@ -1410,6 +1456,257 @@ int wmain(int argc, wchar_t** argv)
 		oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches);
 	printf("collision coverage name=box_quad_depth aimed_inside=%u reversed=%u interpolated=%u non_finite=%u default_mismatches=%u simulate_mismatches=%u\n",
 		aimedInside, reversed, interpolated, nonFinite, perMode[0], perMode[1]);
+	}
+
+	// -----------------------------------------------------------------------
+	// phys_fn_001741 at 0x00038ba0 with its continuation phys_fn_001743 at
+	// 0x00039730 -- the clipping/manifold row of matrix A [BOX][BOX].
+	//
+	// Driven at its own address because phys_fn_001745, the separating-axis
+	// search above it, is not reconstructed. That is not a limitation of this
+	// block: the row's argument domain IS a reference face plus an incident
+	// box, and the search only chooses which face. Driving the arguments
+	// directly reaches configurations a search would take a long time to
+	// produce, which is what the three manifold modes need.
+	//
+	// TWO FAMILIES. `.random` draws everything through nxPick, so poses are
+	// unnormalised, extents can be negative and every coordinate can be
+	// non-finite -- which is what reaches the integer extent tests' NaN
+	// behaviour and the negative-extent case. `.aimed` builds real box pairs
+	// and is where the manifold modes live.
+	//
+	// The aimed family gives the reference box an IDENTITY pose with a zero
+	// centre, and that is what makes the mode attribution exact rather than
+	// approximate. Stage 5 then maps every point through
+	// `(1*x + z*0) + 0*y + 0`, which is the identity for a finite coordinate,
+	// so the points come back in the reference frame and each contact says
+	// which stage produced it: stage 4 puts BOTH of y and z exactly on the face
+	// boundary, stage 3's four clip cases put exactly one there, its fifth case
+	// emits a point whose x is an integer zero, and stage 2's corners are
+	// strictly inside. Nothing in the attribution is computed from the
+	// candidate. The incident box keeps a general pose, so the relative
+	// geometry is fully general; the random family covers the reference pose.
+	{
+	const void* oracleClip = (const void*) (base + 0x00038ba0);
+	const int kSlots = 80;		// 8 corners + 5 cases on each of 12 edges + 4
+
+	NxDigest oracleDigest[2], candidateDigest[2];
+	for(int f = 0; f < 2; ++f)
+		{
+		nxDigestInit(&oracleDigest[f]);
+		nxDigestInit(&candidateDigest[f]);
+		}
+	unsigned mismatches[2] = { 0, 0 };
+	unsigned perMode[2] = { 0, 0 };
+	unsigned emitted = 0;
+	unsigned zeroCount = 0;
+	unsigned swapDiffers = 0;
+	unsigned nanDepth = 0;
+	unsigned overSixteen = 0;
+	unsigned maxContacts = 0;
+	unsigned faceFace = 0;
+	unsigned edgeClip = 0;
+	unsigned vertexFace = 0;
+	unsigned planeCross = 0;
+	int swapProbe = 0;
+
+	for(int family = 0; family < 2; ++family)
+		{
+		unsigned state = family ? 0x2c1de5a7u : 0x9f31b70du;
+		const unsigned iterations = family ? kAimedIterations : kPairIterations;
+		for(unsigned i = 0; i < iterations; ++i)
+			{
+			NxReal poseA[12], poseB[12], extentA[3], extentB[3];
+			int aimedMode = 0;
+
+			if(!family)
+				{
+				for(int k = 0; k < 12; ++k)
+					{
+					poseA[k] = nxPick(&state);
+					poseB[k] = nxPick(&state);
+					}
+				for(int k = 0; k < 3; ++k)
+					{
+					extentA[k] = nxPick(&state);
+					extentB[k] = nxPick(&state);
+					}
+				}
+			else
+				{
+				// Every operand below is finite by construction; nothing here
+				// multiplies a value it also allows to be non-finite.
+				aimedMode = (int) (nxNext(&state) & 3);
+				for(int k = 0; k < 3; ++k)
+					extentA[k] = nxUnit(&state) * 1.5f + 0.25f;
+
+				// mode 0 -- an incident box small enough to sit wholly inside
+				//           the reference face: stage 2 alone.
+				// mode 1 -- comparable extents and a random rotation: edges
+				//           crossing the face boundary.
+				// mode 2 -- an incident face larger than the reference face,
+				//           so no corner is inside and the reference face's own
+				//           vertices are what land: stage 4.
+				// mode 3 -- unaimed placement, which mostly produces nothing
+				//           and is what makes `zero_count` non-trivial.
+				const float scale = (aimedMode == 0) ? 0.35f
+					: (aimedMode == 2) ? 3.0f : 1.0f;
+				for(int k = 0; k < 3; ++k)
+					extentB[k] = extentA[k] * scale * (nxUnit(&state) * 0.6f + 0.7f);
+
+				unsigned char rotationStore[kShapeBytes];
+				NxCollisionShape* const rotation = (NxCollisionShape*) rotationStore;
+				nxIdentity(rotation);
+				if(aimedMode == 1 || aimedMode == 3)
+					nxRandomRotation(&state, rotation);
+				else
+					{
+					// A small tilt, so the face pair is nearly parallel and the
+					// corners really do land inside.
+					const float t = (nxUnit(&state) * 2.0f - 1.0f) * 0.15f;
+					rotation->rotation[4] = (float) cos((double) t);
+					rotation->rotation[5] = -(float) sin((double) t);
+					rotation->rotation[7] = (float) sin((double) t);
+					rotation->rotation[8] = (float) cos((double) t);
+					}
+
+				// The reference face is box A's -x face: identity rotation and
+				// the face centre at the origin, so "behind" is x >= 0.
+				for(int k = 0; k < 9; ++k)
+					poseA[k] = (k % 4) == 0 ? 1.0f : 0.0f;
+				poseA[9] = poseA[10] = poseA[11] = 0.0f;
+
+				for(int k = 0; k < 9; ++k)
+					poseB[k] = rotation->rotation[k];
+				const float depth = (aimedMode == 3)
+					? (nxUnit(&state) * 6.0f - 3.0f)
+					: (nxUnit(&state) * 0.8f - 0.1f) * extentA[0];
+				const float spread = (aimedMode == 3) ? 3.0f : 1.2f;
+				poseB[9] = depth;
+				poseB[10] = (nxUnit(&state) * 2.0f - 1.0f) * extentA[1] * spread;
+				poseB[11] = (nxUnit(&state) * 2.0f - 1.0f) * extentA[2] * spread;
+				}
+
+			for(int mode = 0; mode < 2; ++mode)
+				{
+				for(int orientation = 0; orientation < 2; ++orientation)
+					{
+					// Orientation 0 makes A's face the reference; orientation 1
+					// makes B's. The second is the same geometry driven the
+					// other way round, which is the only thing that says the
+					// row is not accidentally symmetric.
+					const NxReal* refPose = orientation ? poseB : poseA;
+					const NxReal* incPose = orientation ? poseA : poseB;
+					const NxReal* incExtent = orientation ? extentA : extentB;
+					const NxReal refY = orientation ? extentB[1] : extentA[1];
+					const NxReal refZ = orientation ? extentB[2] : extentA[2];
+
+					NxVec3 pointsO[80], pointsC[80];
+					NxReal separationsO[80], separationsC[80];
+					memset(pointsO, 0xcd, sizeof(pointsO));
+					memset(pointsC, 0xcd, sizeof(pointsC));
+					memset(separationsO, 0xcd, sizeof(separationsO));
+					memset(separationsC, 0xcd, sizeof(separationsC));
+
+					NxU32 yBits, zBits;
+					memcpy(&yBits, &refY, 4);
+					memcpy(&zBits, &refZ, 4);
+
+					nxSetControl(mode ? kControlSimulate : kControlDefault);
+					const int countO = nxCallClipFaceOracle(oracleClip, pointsO,
+						separationsO, refPose, yBits, zBits, incPose, incExtent);
+					const int countC = NxBoxBoxClipFace(pointsC, separationsC,
+						refPose, refY, refZ, incPose, incExtent);
+					nxSetControl(kControlDefault);
+
+					// Each side folds its own answer over its own count, the
+					// way nxFoldStream does, so a candidate that returned fewer
+					// contacts cannot shorten the oracle's digest.
+					nxDigestByte(&oracleDigest[family], (unsigned char) countO);
+					nxDigestByte(&candidateDigest[family], (unsigned char) countC);
+					for(int c = 0; c < countO && c < kSlots; ++c)
+						{
+						const NxU32 words[4] = { nxBits(separationsO[c]),
+							nxBits(pointsO[c].x), nxBits(pointsO[c].y), nxBits(pointsO[c].z) };
+						for(int w = 0; w < 4; ++w)
+							for(int byte = 0; byte < 4; ++byte)
+								nxDigestByte(&oracleDigest[family],
+									(unsigned char) (words[w] >> (byte * 8)));
+						}
+					for(int c = 0; c < countC && c < kSlots; ++c)
+						{
+						const NxU32 words[4] = { nxBits(separationsC[c]),
+							nxBits(pointsC[c].x), nxBits(pointsC[c].y), nxBits(pointsC[c].z) };
+						for(int w = 0; w < 4; ++w)
+							for(int byte = 0; byte < 4; ++byte)
+								nxDigestByte(&candidateDigest[family],
+									(unsigned char) (words[w] >> (byte * 8)));
+						}
+
+					// The comparison covers all eighty slots rather than the
+					// count, so a contact written past either side's answer is
+					// a mismatch and not a silent agreement.
+					unsigned differing = (countO != countC) ? 1u : 0u;
+					for(int c = 0; c < kSlots; ++c)
+						{
+						if(nxBits(separationsO[c]) != nxBits(separationsC[c]))
+							++differing;
+						if(nxBits(pointsO[c].x) != nxBits(pointsC[c].x))
+							++differing;
+						if(nxBits(pointsO[c].y) != nxBits(pointsC[c].y))
+							++differing;
+						if(nxBits(pointsO[c].z) != nxBits(pointsC[c].z))
+							++differing;
+						}
+					mismatches[family] += differing;
+					perMode[mode] += differing;
+
+					// Everything below is read off the oracle's own answer.
+					emitted += (unsigned) countO;
+					if(countO == 0)
+						++zeroCount;
+					if(countO > (int) maxContacts)
+						maxContacts = (unsigned) countO;
+					if(countO > 16)
+						++overSixteen;
+					for(int c = 0; c < countO && c < kSlots; ++c)
+						if(!nxFinite(separationsO[c]))
+							++nanDepth;
+
+					if(family && orientation == 0)
+						{
+						for(int c = 0; c < countO && c < kSlots; ++c)
+							{
+							const bool onY = pointsO[c].y == refY || pointsO[c].y == -refY;
+							const bool onZ = pointsO[c].z == refZ || pointsO[c].z == -refZ;
+							if(onY && onZ)
+								++vertexFace;
+							else if(onY || onZ)
+								++edgeClip;
+							else if(nxBits(pointsO[c].x) == 0)
+								++planeCross;
+							else
+								++faceFace;
+							}
+						}
+
+					if(orientation == 0)
+						swapProbe = countO;
+					else if(countO != swapProbe)
+						++swapDiffers;
+					}
+				}
+			}
+		}
+
+	totalMismatch += mismatches[0] + mismatches[1];
+	printf("collision name=box_clip.random index=- rva=0x00038ba0 owner=phys_fn_001741 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		oracleDigest[0].checks, oracleDigest[0].state, candidateDigest[0].state, mismatches[0]);
+	printf("collision name=box_clip.aimed index=- rva=0x00038ba0 owner=phys_fn_001741 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		oracleDigest[1].checks, oracleDigest[1].state, candidateDigest[1].state, mismatches[1]);
+	printf("collision coverage name=box_clip emitted=%u zero_count=%u face_face=%u edge_clip=%u vertex_face=%u plane_cross=%u swap_differs=%u nan_depth=%u over_sixteen=%u max_contacts=%u default_mismatches=%u simulate_mismatches=%u\n",
+		emitted, zeroCount, faceFace, edgeClip, vertexFace, planeCross,
+		swapDiffers, nanDepth, overSixteen, maxContacts, perMode[0], perMode[1]);
 	}
 
 	// -----------------------------------------------------------------------

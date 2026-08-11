@@ -1674,3 +1674,473 @@ double NxBoxBoxQuadDepth(const NxVec3* const* quad, NxReal pointY, NxReal pointZ
 		+ origin->x);
 	return nxQuadEdge(origin, alongV, pointY, pointZ, true) + (double) partial;
 	}
+
+// ---------------------------------------------------------------------------
+// phys_fn_001741 at 0x00038ba0 and its continuation phys_fn_001743 at
+// 0x00039730 -- the clipping/manifold row of matrix A [BOX][BOX], in five
+// stages. See the header for the two register arguments.
+
+// A corner of the incident box in the reference face's frame, with the two
+// integer flags the oracle keeps beside it. The oracle's record is five
+// consecutive dwords at [esp+0x54 + 20*i] -- x, y, z, `behind`, `emitted` --
+// which is what the `+0xc` and `+0x10` reads in the edge loop (0x000393e9,
+// 0x000393ff) and the face loop (0x00039745, 0x000397ad) index, and what the
+// `lea ecx,[esp + ecx*4 + 0x54]` with `ecx = 5*index` at 0x000393e1 strides.
+struct NxBoxBoxCorner
+	{
+	NxVec3 p;
+	int behind;
+	int emitted;
+	};
+
+// One of the four y/z clip cases of the edge loop -- 0x00039411, 0x000394b3,
+// 0x00039545 and 0x000395e7, which are the same seven instructions with the
+// axis and the sign changed. `alongY` picks which component is the clip
+// parameter; the other one is interpolated and range-checked.
+//
+// TWO WIDE VALUES CROSS A BRANCH HERE, not one. `t` is the fdivp quotient at
+// 0x00039456 and it is live across the |other| <= extent test at 0x00039475;
+// the projected x is live across the x >= 0.0f test at 0x0003948a, and it is
+// COMPARED while wide (`fcom [0x101041f0]`, no narrowing store before it).
+// Neither is ever spilled by the oracle. That is the phys_fn_001690 shape and
+// it is why this row was forecast into the codegen-divergence class.
+static bool nxBoxBoxClipCase(const NxVec3* c, const NxVec3* s, NxReal limit,
+	NxReal otherLimit, bool alongY, NxVec3* point, NxReal* separation)
+	{
+	const NxReal cAxis = alongY ? c->y : c->z;
+	const NxReal sAxis = alongY ? s->y : s->z;
+	const NxReal cOther = alongY ? c->z : c->y;
+	const NxReal sOther = alongY ? s->z : s->y;
+
+	// 0x00039424 and 0x00039435. `test ah,5; jp` and `test ah,1; jne` both put
+	// the unordered case on the reject side, so an edge with a NaN endpoint
+	// never clips.
+	if(!(cAxis < limit) || !(sAxis >= limit))
+		return false;
+
+	const double t = ((double) limit - cAxis) / ((double) sAxis - cAxis);
+	const double other = ((double) sOther - cOther) * t + cOther;
+	// 0x00039463: a narrowed copy is stored and the wide one stays in st(0).
+	const NxReal otherStored = (NxReal) other;
+	// 0x00039467: `fabs` on the WIDE value, then `test ah,0x41; jp`, which
+	// rejects |other| > limit and the unordered case alike.
+	if(!(fabs(other) <= otherLimit))
+		return false;
+
+	const double x = ((double) s->x - c->x) * t + c->x;
+	// 0x0003947f: compared against the 0.0f at 0x101041f0 while still wide, and
+	// `test ah,1; jne` rejects a negative depth and a NaN.
+	if(!(x >= 0.0f))
+		return false;
+
+	*separation = (NxReal) x;
+	point->x = (NxReal) x;
+	if(alongY)
+		{
+		point->y = limit;
+		point->z = otherStored;
+		}
+	else
+		{
+		point->y = otherStored;
+		point->z = limit;
+		}
+	return true;
+	}
+
+// The fifth case, at 0x00039695: where the edge crosses the reference face's
+// own plane. Its quotient is -c.x / (s.x - c.x) and BOTH interpolated
+// components are range-checked, so `t` crosses the first branch and the
+// interpolated z crosses the second.
+static bool nxBoxBoxClipPlane(const NxVec3* c, const NxVec3* s, NxReal extentY,
+	NxReal extentZ, NxVec3* point, NxReal* separation)
+	{
+	const double t = (double) (-c->x) / ((double) s->x - c->x);
+	const double y = ((double) s->y - c->y) * t + c->y;
+	const NxReal yStored = (NxReal) y;
+	if(!(fabs(y) <= extentY))
+		return false;
+	const double z = ((double) s->z - c->z) * t + c->z;
+	// 0x000396c9 duplicates z with `fld st(0)` so the wide copy survives the
+	// test and is what gets stored.
+	if(!(fabs(z) <= extentZ))
+		return false;
+
+	// 0x000396df and 0x000396ef store integer zeros: this case's separation and
+	// its point's x are +0.0f by construction, not by arithmetic.
+	*separation = 0.0f;
+	point->x = 0.0f;
+	point->y = yStored;
+	point->z = (NxReal) z;
+	return true;
+	}
+
+// Stage 5, one point. The unrolled body at 0x000399b0 and the remainder loop at
+// 0x00039b88 do NOT accumulate the same way, and neither do the four copies of
+// the unrolled body, so `variant` picks between them: 0..3 are the four unrolled
+// copies and 4 is the remainder. X is one association in all five; Y is one in
+// the four unrolled copies and another in the remainder; Z has THREE.
+//
+// So the unrolling is observable, which is the opposite of what the decode
+// recorded for this stage. What makes it observable is only the ORDER the three
+// products are added in -- every product and every operand is the same.
+static void nxBoxBoxToWorld(NxVec3* point, const NxReal* pose, int variant)
+	{
+	const NxReal px = point->x;
+	const NxReal py = point->y;
+	const NxReal pz = point->z;
+
+	double wx, wy, wz;
+	if(variant == 4)
+		{
+		wx = ((double) pz * pose[6] + (double) pose[0] * px) + (double) pose[3] * py;
+		wy = ((double) pose[1] * px + (double) pose[4] * py) + (double) pz * pose[7];
+		wz = ((double) px * pose[2] + (double) pose[5] * py) + (double) pz * pose[8];
+		}
+	else
+		{
+		wx = ((double) pose[0] * px + (double) pz * pose[6]) + (double) pose[3] * py;
+		wy = ((double) pose[1] * px + (double) pose[7] * pz) + (double) pose[4] * py;
+		if(variant == 1 || variant == 3)
+			wz = ((double) pose[8] * pz + (double) pose[5] * py) + (double) pose[2] * px;
+		else
+			wz = ((double) pose[8] * pz + (double) px * pose[2]) + (double) pose[5] * py;
+		}
+
+	// 0x000399dc and 0x000399f6 narrow y and z into 32-bit slots and read them
+	// back; x is never stored, so the centre is added to a wide x and to two
+	// narrowed ones. 0x00039a0b then narrows z a second time before the integer
+	// move at 0x00039a13.
+	const NxReal yn = (NxReal) wy;
+	const NxReal zn = (NxReal) wz;
+	const NxReal outX = (NxReal) (wx + pose[9]);
+	const NxReal outY = (NxReal) ((double) yn + pose[10]);
+	const NxReal outZ = (NxReal) ((double) zn + pose[11]);
+	point->x = outX;
+	point->y = outY;
+	point->z = outZ;
+	}
+
+// The twelve edges at 0x10107ad0 and the six faces at 0x10107a70, read out of
+// .rdata. The edge loop walks two dwords per iteration and stops when its
+// cursor reaches 0x10107b30 (0x000396fc); the face loop walks four and stops
+// at 0x10107ad8 (0x0003997d), which is the same table read four at a time
+// starting two dwords early.
+static const int kNxBoxBoxEdges[12][2] =
+	{
+	{ 0, 1 }, { 1, 3 }, { 3, 2 }, { 2, 0 },
+	{ 4, 5 }, { 5, 7 }, { 7, 6 }, { 6, 4 },
+	{ 0, 4 }, { 1, 5 }, { 2, 6 }, { 3, 7 }
+	};
+
+static const int kNxBoxBoxFaces[6][4] =
+	{
+	{ 0, 1, 3, 2 }, { 1, 5, 7, 3 }, { 5, 4, 6, 7 },
+	{ 4, 0, 2, 6 }, { 2, 3, 7, 6 }, { 0, 4, 5, 1 }
+	};
+
+int NxBoxBoxClipFace(NxVec3* points, NxReal* separations, const NxReal* pose,
+	NxReal extentY, NxReal extentZ, const NxReal* incidentPose,
+	const NxReal* incidentExtents)
+	{
+	// -- Stage 1, 0x00038ba0..0x00038f93 -----------------------------------
+	//
+	// Nine dot products of the reference pose's rows against the incident
+	// pose's rows, each accumulated in its own order and each narrowed by its
+	// own `fstp dword` from 0x00038bc8 on. The oracle then `rep movsd`s all
+	// nine into a second copy at [esp+0x130] (0x00038cc8) because stage 5 reads
+	// them back after the first copy's slots have been reused; one array does
+	// for both here.
+	const NxReal* const q = incidentPose;
+	NxReal m[9];
+	m[0] = (NxReal) (((double) pose[1] * q[1] + (double) q[2] * pose[2]) + (double) pose[0] * q[0]);
+	m[1] = (NxReal) (((double) q[2] * pose[5] + (double) q[1] * pose[4]) + (double) pose[3] * q[0]);
+	m[2] = (NxReal) (((double) pose[7] * q[1] + (double) q[0] * pose[6]) + (double) pose[8] * q[2]);
+	m[3] = (NxReal) (((double) pose[0] * q[3] + (double) q[5] * pose[2]) + (double) pose[1] * q[4]);
+	m[4] = (NxReal) (((double) pose[5] * q[5] + (double) pose[4] * q[4]) + (double) pose[3] * q[3]);
+	m[5] = (NxReal) (((double) q[3] * pose[6] + (double) pose[8] * q[5]) + (double) pose[7] * q[4]);
+	m[6] = (NxReal) (((double) pose[0] * q[6] + (double) q[8] * pose[2]) + (double) pose[1] * q[7]);
+	m[7] = (NxReal) (((double) pose[5] * q[8] + (double) pose[4] * q[7]) + (double) pose[3] * q[6]);
+	m[8] = (NxReal) (((double) q[6] * pose[6] + (double) pose[8] * q[8]) + (double) pose[7] * q[7]);
+
+	// The centre difference, projected onto the reference pose's three rows.
+	// 0x00038cca. The third component is the one the oracle never stores -- it
+	// stays in st(0) through the whole corner construction below -- so it is
+	// `double` and the other two are not.
+	const double dx = (double) q[9] - pose[9];
+	const double dy = (double) q[10] - pose[10];
+	const double dz = (double) q[11] - pose[11];
+	const NxReal d0 = (NxReal) ((dy * pose[1] + dz * pose[2]) + dx * pose[0]);
+	const NxReal d1 = (NxReal) ((dx * pose[3] + dz * pose[5]) + dy * pose[4]);
+	const double d2 = (dz * pose[8] + dy * pose[7]) + dx * pose[6];
+
+	// The three scaled half axes. The FIRST component of the first one is the
+	// only one the oracle leaves in a register (0x00038d24); the other eight go
+	// through 32-bit slots at 0x00038d2f onward. That asymmetry is not an
+	// accident of transcription -- it decides the width of half the corners.
+	const double ax0x = (double) m[0] * incidentExtents[0];
+	const NxReal ax0y = (NxReal) ((double) m[1] * incidentExtents[0]);
+	const NxReal ax0z = (NxReal) ((double) m[2] * incidentExtents[0]);
+	const NxReal ax1x = (NxReal) ((double) m[3] * incidentExtents[1]);
+	const NxReal ax1y = (NxReal) ((double) m[4] * incidentExtents[1]);
+	const NxReal ax1z = (NxReal) ((double) m[5] * incidentExtents[1]);
+	const NxReal ax2x = (NxReal) ((double) m[6] * incidentExtents[2]);
+	const NxReal ax2y = (NxReal) ((double) m[7] * incidentExtents[2]);
+	const NxReal ax2z = (NxReal) ((double) m[8] * incidentExtents[2]);
+
+	// 0x00038daa. `a` is the centre minus the first half axis and `p` is the
+	// centre plus it; `w` is the sum of the other two and `u` their difference,
+	// so the eight corners are a/p combined with -w, +u, -u, +w.
+	const NxReal a0 = (NxReal) ((double) d0 - ax0x);
+	const NxReal a1 = (NxReal) ((double) d1 - ax0y);
+	const NxReal a2 = (NxReal) (d2 - ax0z);
+	const double p0 = ax0x + d0;
+	const NxReal p1 = (NxReal) ((double) ax0y + d1);
+	const NxReal p2 = (NxReal) ((double) ax0z + d2);
+	const double w0 = (double) ax2x + ax1x;
+	const double w1 = (double) ax2y + ax1y;
+	const NxReal w2 = (NxReal) ((double) ax2z + ax1z);
+	const double u0 = (double) ax1x - ax2x;
+	const NxReal u1 = (NxReal) ((double) ax1y - ax2y);
+	const NxReal u2 = (NxReal) ((double) ax1z - ax2z);
+
+	NxBoxBoxCorner corner[8];
+	corner[0].p.x = (NxReal) ((double) a0 - w0);
+	corner[0].p.y = (NxReal) ((double) a1 - w1);
+	corner[0].p.z = (NxReal) ((double) a2 - w2);
+	corner[1].p.x = (NxReal) (p0 - w0);
+	corner[1].p.y = (NxReal) ((double) p1 - w1);
+	corner[1].p.z = (NxReal) ((double) p2 - w2);
+	corner[6].p.x = (NxReal) ((double) a0 + w0);
+	corner[6].p.y = (NxReal) ((double) a1 + w1);
+	corner[6].p.z = (NxReal) ((double) a2 + w2);
+	corner[7].p.x = (NxReal) (p0 + w0);
+	corner[7].p.y = (NxReal) ((double) p1 + w1);
+	corner[7].p.z = (NxReal) ((double) p2 + w2);
+	corner[2].p.x = (NxReal) ((double) a0 + u0);
+	corner[2].p.y = (NxReal) ((double) u1 + a1);
+	corner[2].p.z = (NxReal) ((double) u2 + a2);
+	corner[3].p.x = (NxReal) (u0 + p0);
+	corner[3].p.y = (NxReal) ((double) u1 + p1);
+	corner[3].p.z = (NxReal) ((double) u2 + p2);
+	corner[4].p.x = (NxReal) ((double) a0 - u0);
+	corner[4].p.y = (NxReal) ((double) a1 - u1);
+	corner[4].p.z = (NxReal) ((double) a2 - u2);
+	corner[5].p.x = (NxReal) (p0 - u0);
+	corner[5].p.y = (NxReal) ((double) p1 - u1);
+	corner[5].p.z = (NxReal) ((double) p2 - u2);
+
+	// -- Stage 2, 0x00038f9a..0x000393b7 -----------------------------------
+	//
+	// Eight identical blocks, unrolled. THIS IS THE KERNEL THAT REJECTS A NaN,
+	// and it is the opposite of every other kernel in this component and of the
+	// box/box leaf: all three tests are on integer words.
+	int count = 0;
+	for(int i = 0; i < 8; ++i)
+		{
+		// `test eax,eax; jns` at 0x00038f3a/0x00038f9a is an integer sign test
+		// on the depth's bit pattern, so a NaN with a clear sign bit is behind
+		// the face and -0.0f is not.
+		if((nxBits(corner[i].p.x) & 0x80000000u) != 0)
+			{
+			corner[i].behind = 0;
+			corner[i].emitted = 0;
+			continue;
+			}
+		corner[i].behind = 1;
+
+		// `and eax,0x7fffffff; cmp eax,esi; ja` at 0x00038fac and 0x00038fbd:
+		// an unsigned compare of the masked coordinate against the extent's
+		// UNMASKED word, which is an ordering test on the magnitude only
+		// because an IEEE float's bit pattern is monotonic for non-negative
+		// values. Two consequences: a NaN coordinate is a very large magnitude
+		// and is rejected where every fcom in this component lets the unordered
+		// case through, and -0.0f compares equal to +0.0f. A third follows from
+		// the extent side not being masked: a negative extent admits
+		// everything.
+		if((nxBits(corner[i].p.y) & 0x7fffffffu) > nxBits(extentY)
+			|| (nxBits(corner[i].p.z) & 0x7fffffffu) > nxBits(extentZ))
+			{
+			corner[i].emitted = 0;
+			continue;
+			}
+		corner[i].emitted = 1;
+
+		// 0x00038fc6: one load of the corner's x serves as both the separation
+		// and the point's x, and all three stores are integer moves.
+		separations[count] = corner[i].p.x;
+		points[count] = corner[i].p;
+		++count;
+		}
+
+	// -- Stage 3, 0x000393c5..0x000396fc -----------------------------------
+	//
+	// The edge clip: twelve edges, five cases each.
+	for(int e = 0; e < 12; ++e)
+		{
+		const NxBoxBoxCorner* c = &corner[kNxBoxBoxEdges[e][0]];
+		const NxBoxBoxCorner* s = &corner[kNxBoxBoxEdges[e][1]];
+
+		// 0x000393e9: an edge with neither endpoint behind the reference face
+		// cannot cross it.
+		if(!c->behind && !s->behind)
+			continue;
+
+		// 0x000393ff: an edge whose two endpoints were BOTH emitted as corners
+		// has nothing left to clip, and drops straight to the fifth case --
+		// which then rejects it too, because that case needs one endpoint
+		// behind and unemitted.
+		if(!(c->emitted && s->emitted))
+			{
+			// 0x00039417: order the endpoints by y, then clip against +extentY
+			// and -extentY. The swap is by value, and it persists into the z
+			// pair below and into the fifth case.
+			if(c->p.y > s->p.y)
+				{
+				const NxBoxBoxCorner* swap = c;
+				c = s;
+				s = swap;
+				}
+			if(nxBoxBoxClipCase(&c->p, &s->p, extentY, extentZ, true,
+					&points[count], &separations[count]))
+				++count;
+			if(nxBoxBoxClipCase(&c->p, &s->p, (NxReal) -extentY, extentZ, true,
+					&points[count], &separations[count]))
+				++count;
+
+			// 0x0003954b: the same again ordered by z.
+			if(c->p.z > s->p.z)
+				{
+				const NxBoxBoxCorner* swap = c;
+				c = s;
+				s = swap;
+				}
+			if(nxBoxBoxClipCase(&c->p, &s->p, extentZ, extentY, false,
+					&points[count], &separations[count]))
+				++count;
+			if(nxBoxBoxClipCase(&c->p, &s->p, (NxReal) -extentZ, extentY, false,
+					&points[count], &separations[count]))
+				++count;
+			}
+
+		// 0x00039679, transcribed as the four tests it is rather than as the
+		// predicate they reduce to: exactly one endpoint behind the face, and
+		// that endpoint not already emitted.
+		bool crossesPlane;
+		if(!c->behind && !s->emitted)
+			crossesPlane = true;
+		else
+			crossesPlane = !s->behind && !c->emitted;
+		if(crossesPlane && nxBoxBoxClipPlane(&c->p, &s->p, extentY, extentZ,
+				&points[count], &separations[count]))
+			++count;
+		}
+
+	// -- Stage 4, 0x00039730..0x0003998c, the phys_fn_001743 continuation ---
+	//
+	// The reference face's own four vertices, queried against each face of the
+	// incident box in turn. `mask` is the oracle's [esp+0x14]: one bit per
+	// reference-face vertex, and the loop stops as soon as all four are found
+	// (`cmp [esp+0x14],0xf; je` at 0x00039730, tested before the first face).
+	int mask = 0;
+	for(int f = 0; f < 6; ++f)
+		{
+		if(mask == 0xf)
+			break;
+
+		const NxBoxBoxCorner* const v0 = &corner[kNxBoxBoxFaces[f][0]];
+		const NxBoxBoxCorner* const v1 = &corner[kNxBoxBoxFaces[f][1]];
+		const NxBoxBoxCorner* const v2 = &corner[kNxBoxBoxFaces[f][2]];
+		const NxBoxBoxCorner* const v3 = &corner[kNxBoxBoxFaces[f][3]];
+
+		// 0x00039749 onward: every one of the four has to be behind the
+		// reference face, and they must not all four already have been emitted.
+		if(!v0->behind || !v1->behind || !v2->behind || !v3->behind)
+			continue;
+		if(v0->emitted && v1->emitted && v2->emitted && v3->emitted)
+			continue;
+
+		const NxVec3* quad[4];
+		quad[0] = &v0->p;
+		quad[1] = &v1->p;
+		quad[2] = &v2->p;
+		quad[3] = &v3->p;
+
+		// The four calls at 0x000397fb, 0x0003986f, 0x000398d6 and 0x00039933,
+		// in that order and with those signs. Each result is rejected by
+		// `fcom 0.0f; test ah,1; jne`, so the leaf's -1.0f for a point outside
+		// the quad contributes nothing -- and so does a NaN.
+		if(!(mask & 1))
+			{
+			const double depth = NxBoxBoxQuadDepth(quad, (NxReal) -extentY, (NxReal) -extentZ);
+			if(depth >= 0.0f)
+				{
+				mask |= 1;
+				separations[count] = (NxReal) depth;
+				points[count].x = (NxReal) depth;
+				points[count].y = (NxReal) -extentY;
+				points[count].z = (NxReal) -extentZ;
+				++count;
+				}
+			}
+		if(!(mask & 2))
+			{
+			const double depth = NxBoxBoxQuadDepth(quad, extentY, (NxReal) -extentZ);
+			if(depth >= 0.0f)
+				{
+				mask |= 2;
+				separations[count] = (NxReal) depth;
+				points[count].x = (NxReal) depth;
+				points[count].y = extentY;
+				points[count].z = (NxReal) -extentZ;
+				++count;
+				}
+			}
+		if(!(mask & 4))
+			{
+			const double depth = NxBoxBoxQuadDepth(quad, (NxReal) -extentY, extentZ);
+			if(depth >= 0.0f)
+				{
+				mask |= 4;
+				separations[count] = (NxReal) depth;
+				points[count].x = (NxReal) depth;
+				points[count].y = (NxReal) -extentY;
+				points[count].z = extentZ;
+				++count;
+				}
+			}
+		if(!(mask & 8))
+			{
+			const double depth = NxBoxBoxQuadDepth(quad, extentY, extentZ);
+			if(depth >= 0.0f)
+				{
+				mask |= 8;
+				separations[count] = (NxReal) depth;
+				points[count].x = (NxReal) depth;
+				points[count].y = extentY;
+				points[count].z = extentZ;
+				++count;
+				}
+			}
+		}
+
+	// -- Stage 5, 0x0003998c..0x00039c07 -----------------------------------
+	//
+	// Back to world space through the reference pose transposed, four points at
+	// a time and then a remainder loop. `blocks` is the oracle's
+	// `lea ecx,[ebx-4]; shr ecx,2; inc ecx` at 0x0003999e.
+	int index = 0;
+	if(count >= 4)
+		{
+		const int blocks = ((count - 4) >> 2) + 1;
+		for(int b = 0; b < blocks; ++b)
+			for(int k = 0; k < 4; ++k)
+				nxBoxBoxToWorld(&points[b * 4 + k], pose, k);
+		index = blocks * 4;
+		}
+	for(; index < count; ++index)
+		nxBoxBoxToWorld(&points[index], pose, 4);
+
+	// `mov eax,ebx` at 0x00039bfe.
+	return count;
+	}

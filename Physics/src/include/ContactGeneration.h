@@ -215,4 +215,37 @@ void __cdecl NxContactSphereBox(const NxCollisionShape* sphere,
 // compares the register before it narrows it, so the return type is `double`.
 double NxBoxBoxQuadDepth(const NxVec3* const* quad, NxReal pointY, NxReal pointZ);
 
+// phys_fn_001741 at 0x00038ba0 with its continuation phys_fn_001743 at
+// 0x00039730 -- 4,193 bytes, the clipping/manifold row of matrix A [BOX][BOX].
+// It builds the whole contact manifold for one reference face and returns the
+// contact count in eax (`mov eax,ebx` at 0x00039bfe).
+//
+// THE ORACLE TAKES SEVEN INPUTS AND NO C++ DECLARATION EXPRESSES TWO OF THEM.
+// Five arrive on the stack and two in registers:
+//
+//   eax  the incident box's pose, read from 0x00038bb3 on
+//   edx  the incident box's three half extents, read at 0x00038d1b,
+//        0x00038d40 and 0x00038d75
+//
+// `edx` is not in the decode's argument table, and it is a register argument in
+// two different ways: the last two of phys_fn_001745's six dispatch arms set it
+// with `mov edx,edi` immediately before the call (0x0003a9de, 0x0003ac9d) and
+// the first four do not set it at all -- it survives untouched from
+// phys_fn_001748, which loaded it before calling phys_fn_001745. So four of the
+// six arms depend on a register living across a 4,271-byte function.
+//
+// A pose is twelve floats: a row-major 3x3 followed by the centre. `extentY`
+// and `extentZ` are the REFERENCE face's other two half extents, by value.
+//
+// The differential calls this copy by name and drives the oracle through a
+// thunk that loads eax and edx, the way nxCallQuadDepthOracle does for the leaf.
+//
+// NO CAP. The count can reach 72 -- eight corners, five clip cases on each of
+// twelve edges, four face vertices -- and phys_fn_001749's own buffers hold
+// sixteen, so the caller's frame is what bounds it. See the note on the
+// implementation.
+int NxBoxBoxClipFace(NxVec3* points, NxReal* separations, const NxReal* pose,
+	NxReal extentY, NxReal extentZ, const NxReal* incidentPose,
+	const NxReal* incidentExtents);
+
 #endif
