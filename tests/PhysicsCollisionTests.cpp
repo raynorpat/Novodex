@@ -1307,7 +1307,6 @@ int wmain(int argc, wchar_t** argv)
 	unsigned reversed = 0;
 	unsigned interpolated = 0;
 	unsigned nonFinite = 0;
-	unsigned canonicalised = 0;
 	unsigned state = 0x71dbeef3u;
 	for(unsigned i = 0; i < kPairIterations; ++i)
 		{
@@ -1391,8 +1390,12 @@ int wmain(int argc, wchar_t** argv)
 					++nonFinite;
 				}
 
-			if(nxCanonicalWide(wide[0]) | nxCanonicalWide(wide[1]))
-				++canonicalised;
+			// NOT canonicalised, unlike segment_segment: removing the
+			// canonicalisation entirely leaves mismatches=0, so the two sides
+			// agree on the NaN payloads as well as on which results are NaNs,
+			// and a filter that hides nothing here would only weaken the block.
+			// 12,737 of the 120,000 answers are non-finite and every one of them
+			// is a NaN -- no draw produces an infinity.
 			for(int byte = 0; byte < 10; ++byte)
 				{
 				nxDigestByte(&oracleDigest, wide[0][byte]);
@@ -1405,8 +1408,8 @@ int wmain(int argc, wchar_t** argv)
 	totalMismatch += mismatches;
 	printf("collision name=box_quad_depth index=- rva=0x00038a90 owner=phys_fn_001739 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
 		oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches);
-	printf("collision coverage name=box_quad_depth aimed_inside=%u reversed=%u interpolated=%u non_finite=%u canonicalised=%u default_mismatches=%u simulate_mismatches=%u\n",
-		aimedInside, reversed, interpolated, nonFinite, canonicalised, perMode[0], perMode[1]);
+	printf("collision coverage name=box_quad_depth aimed_inside=%u reversed=%u interpolated=%u non_finite=%u default_mismatches=%u simulate_mismatches=%u\n",
+		aimedInside, reversed, interpolated, nonFinite, perMode[0], perMode[1]);
 	}
 
 	// -----------------------------------------------------------------------
