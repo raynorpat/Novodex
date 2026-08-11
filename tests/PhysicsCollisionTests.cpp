@@ -574,9 +574,13 @@ static void nxStageWorld(NxContactWorld* world, const NxCollisionShape* planeSha
 	world->sink.orientedTo = orientToSphere ? world->holderStore[1] : 0;
 	}
 
-// The two header words are addresses and differ between the sides by
-// construction; canonicalise them to which shape they name so everything else
-// can be compared raw.
+// Canonicalise a stream word. Only the two header words are addresses, but this
+// is applied to every word rather than to those two positions, because the
+// reader does not track where it is in the stream -- so a point or a normal
+// that happened to equal one of the four object addresses would be rewritten
+// too. That is a deliberate trade: mistaking a coordinate for an address folds
+// both sides identically and cannot mask a difference, whereas position
+// tracking would have to duplicate the emitter's own state machine.
 static NxU32 nxCanonical(const NxContactWorld* world, NxU32 word)
 	{
 	for(int which = 0; which < 2; ++which)
