@@ -34,6 +34,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <malloc.h>
 #include <string.h>
 #include <wchar.h>
 
@@ -176,6 +177,8 @@ static const unsigned kSphereRaycastRva = 0x00027c70;
 // by direct call from both capsule/capsule entries -- 0x0003dc68 in matrix A's
 // and from matrix B's at 0x0003d890.
 static const unsigned kSegmentDistanceRva = 0x00033e80;
+// phys_fn_001010, slot 5 on a CAPSULE shape, from 0x00106b20 + 0x14.
+static const unsigned kCapsuleRaycastRva = 0x00022480;
 // hit.shape is written from shape->[0x9c] and never dereferenced by that row,
 // so both sides are given the same made-up value: a real address would put this
 // process's load address into an oracle-side digest that is pinned in the gate.
@@ -309,6 +312,29 @@ static bool nxFinite(float value)
 	unsigned bits;
 	memcpy(&bits, &value, 4);
 	return (bits & 0x7f800000u) != 0x7f800000u;
+	}
+
+// The stack the next callee is about to use, filled with one repeated dword.
+//
+// phys_fn_001775's swept path hands the emitter `hit.worldNormal`, and
+// phys_fn_001010 -- the only slot-5 row a capsule pair can reach -- never writes
+// it, so the three words that end up in the contact stream are whatever the
+// caller left at that address. Neither implementation can make that
+// deterministic; the harness can, from outside, by leaving a known pattern
+// where both frames will land. `_alloca` reserves the region, the loop fills it,
+// and the reservation is given back when this function returns, so the bytes are
+// still there when the callee's frame is laid over them.
+//
+// One repeated dword rather than a varied fill, deliberately: an unwritten slot
+// then reads the same value whatever offset each compiler chose for the hit,
+// which is the only property available here. It makes the read reproducible; it
+// does not prove the two frames agree about where the hit is, and nothing in
+// this harness could.
+static void nxSeedFrameBelow(NxU32 pattern)
+	{
+	volatile NxU32* block = (volatile NxU32*) _alloca(4096);
+	for(int i = 0; i < 1024; ++i)
+		block[i] = pattern;
 	}
 
 // A NaN in the 80-bit spill and in a 32-bit parameter. Returns true if the
@@ -2272,6 +2298,446 @@ int wmain(int argc, wchar_t** argv)
 	printf("collision coverage name=contact_sphere_capsule emitted=%u swept=%u swept_emitted=%u zero_axis=%u coincident=%u beyond_end=%u w4=%u w8=%u w11=%u\n",
 		emitted, swept, sweptEmitted, zeroAxis, coincident, beyondEnd,
 		widths[4], widths[8], widths[11]);
+	}
+
+	// -----------------------------------------------------------------------
+	// phys_fn_001010, driven at its own address.
+	//
+	// The entry cannot reach two of the things this row does. It always passes a
+	// distance limit equal to the segment length it just measured, so the limit
+	// gate is never anything but an exact fit; and it can only ever produce the
+	// two-root case through capsule geometry, where a direct drive reaches the
+	// one-root and zero-root returns of NxRayCapsuleIntersect as well.
+	//
+	// The hit is 0xcd-poisoned before every call and every word of it compared,
+	// which is what turns "it writes no normal" from a reading of the
+	// disassembly into a measurement: `untouched_normal` counts the calls after
+	// which all three worldNormal words are still poison on the oracle side.
+	{
+	typedef const void*(__thiscall* NxOracleRaycastFn)(const void*, const NxRay*, NxReal,
+		NxU32, NxU32, NxRaycastHit*);
+	NxOracleRaycastFn oracleRaycast = (NxOracleRaycastFn) (base + kCapsuleRaycastRva);
+
+	NxDigest oracleDigest, candidateDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	unsigned mismatches = 0;
+	unsigned perMode[2] = { 0, 0 };
+	unsigned hits = 0;
+	unsigned aimedRays = 0;
+	unsigned untouchedNormal = 0;
+	unsigned zeroAxis = 0;
+	unsigned state = 0x3d1f77a9u;
+
+	for(unsigned i = 0; i < kPairIterations; ++i)
+		{
+		const bool tame = (nxNext(&state) & 3) != 0;
+		nxIdentity(shape0);
+		nxFillGeometry(&state, shape0, 3, tame);
+		for(int k = 0; k < 3; ++k)
+			shape0->translation[k] = tame ? nxUnit(&state) * 4.0f - 2.0f : nxPick(&state);
+		shape0->collisionObject = kFakeCollisionObject;
+		const unsigned axisMode = nxNext(&state) % 4;
+		if(axisMode == 0)
+			nxRandomRotation(&state, shape0);
+		else if(axisMode == 3)
+			{
+			memset(shape0->rotation, 0, sizeof(shape0->rotation));
+			++zeroAxis;
+			}
+
+		NxRay ray;
+		NxReal maxDistance;
+		const bool aimed = tame && (nxNext(&state) & 1) != 0;
+		if(aimed)
+			{
+			++aimedRays;
+			float direction[3];
+			float length = 0.0f;
+			for(int k = 0; k < 3; ++k)
+				{
+				direction[k] = nxUnit(&state) * 2.0f - 1.0f;
+				length += direction[k] * direction[k];
+				}
+			length = (float) sqrt((double) length);
+			if(length < 1e-4f)
+				{ direction[0] = 1.0f; direction[1] = 0.0f; direction[2] = 0.0f; length = 1.0f; }
+			for(int k = 0; k < 3; ++k)
+				(&ray.dir.x)[k] = direction[k] / length;
+			const float along = nxUnit(&state) * 4.0f + 0.5f;
+			const float across = (nxUnit(&state) * 2.0f - 1.0f) * shape0->geometry[0] * 1.4f;
+			for(int k = 0; k < 3; ++k)
+				(&ray.orig.x)[k] = shape0->translation[k] - (&ray.dir.x)[k] * along
+					+ ((k + 1) % 3 == 0 ? across : -across) * 0.5f;
+			maxDistance = along * (0.2f + nxUnit(&state) * 1.6f);
+			}
+		else
+			{
+			for(int k = 0; k < 3; ++k)
+				{
+				(&ray.orig.x)[k] = tame ? nxUnit(&state) * 4.0f - 2.0f : nxPick(&state);
+				(&ray.dir.x)[k] = tame ? nxUnit(&state) * 2.0f - 1.0f : nxPick(&state);
+				}
+			maxDistance = tame ? nxUnit(&state) * 8.0f : nxPick(&state);
+			}
+
+		// Every hint flag combination, because this row ignores all of them and
+		// that is the thing worth measuring.
+		NxU32 hintFlags = nxNext(&state) & 0xffu;
+
+		for(int mode = 0; mode < 2; ++mode)
+			{
+			NxRaycastHit hit[2];
+			memset(hit, 0xcd, sizeof(hit));
+
+			nxSetControl(mode ? kControlSimulate : kControlDefault);
+			const unsigned char fromOracle =
+				oracleRaycast(shape0, &ray, maxDistance, 0, hintFlags, &hit[0]) ? 1 : 0;
+			const unsigned char fromCandidate =
+				NxShapeRaycastCapsule(shape0, 0, &ray, maxDistance, 0, hintFlags, &hit[1]) ? 1 : 0;
+			nxSetControl(kControlDefault);
+
+			if(fromOracle)
+				{
+				++hits;
+				NxU32 normalWords[3];
+				memcpy(normalWords, &hit[0].worldNormal, 12);
+				if(normalWords[0] == 0xcdcdcdcdu && normalWords[1] == 0xcdcdcdcdu
+					&& normalWords[2] == 0xcdcdcdcdu)
+					++untouchedNormal;
+				}
+			nxDigestByte(&oracleDigest, fromOracle);
+			nxDigestByte(&candidateDigest, fromCandidate);
+			if(fromOracle != fromCandidate)
+				{ ++mismatches; ++perMode[mode]; }
+			for(unsigned w = 0; w < sizeof(NxRaycastHit) / 4; ++w)
+				{
+				NxU32 a, b;
+				memcpy(&a, (const unsigned char*) &hit[0] + w * 4, 4);
+				memcpy(&b, (const unsigned char*) &hit[1] + w * 4, 4);
+				for(int byte = 0; byte < 4; ++byte)
+					{
+					nxDigestByte(&oracleDigest, (unsigned char) (a >> (byte * 8)));
+					nxDigestByte(&candidateDigest, (unsigned char) (b >> (byte * 8)));
+					}
+				if(a != b)
+					{ ++mismatches; ++perMode[mode]; }
+				}
+			}
+		}
+	totalMismatch += perMode[0];
+	printf("collision name=shape_raycast_capsule index=- rva=0x%08x owner=phys_fn_001010 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		kCapsuleRaycastRva, oracleDigest.checks, oracleDigest.state,
+		candidateDigest.state, mismatches);
+	// untouched_normal equalling hits is the measurement, not a coincidence:
+	// every hint flag combination is driven and the oracle never writes the
+	// field on any of them.
+	printf("collision coverage name=shape_raycast_capsule hits=%u untouched_normal=%u aimed=%u zero_axis=%u default_mismatches=%u simulate_mismatches=%u\n",
+		hits, untouchedNormal, aimedRays, zeroAxis, perMode[0], perMode[1]);
+	}
+
+	// -----------------------------------------------------------------------
+	// Matrix A [CAPSULE][CAPSULE].
+	//
+	// Two halves, and only one of them is a function of its arguments.
+	//
+	// The swept half hands the emitter hit.worldNormal, which phys_fn_001010
+	// never writes, so the three words that reach the contact stream are
+	// whatever the caller's stack left at that address. There is no way to make
+	// that deterministic from inside either implementation, so the harness makes
+	// it deterministic from outside: nxSeedFrameBelow fills the stack the callee
+	// is about to use with one repeated dword before *each* of the two calls, so
+	// an unwritten slot reads the same value on both sides whatever offset each
+	// compiler put the hit at. That is a real limitation and it is stated rather
+	// than hidden -- a uniform seed makes the read reproducible; it does not
+	// prove the two frames put the hit in the same place, and it could not.
+	//
+	// What it does prove is that the read happens: the seed alternates between
+	// two patterns and `seeded_normal` counts the swept contacts whose emitted
+	// normal words are the pattern that was in force. A reconstruction that
+	// computed a normal instead would not track it.
+	//
+	// The flag byte is driven independently on the two capsules because the
+	// branch is an OR and the ray selector is shape1's bit alone: setting both
+	// together drives three of the four combinations into one branch and cannot
+	// tell the OR from an AND, which is the defect four of the emitter's own
+	// behaviours had.
+	{
+	typedef void(__cdecl* NxOracleContactFn)(const NxCollisionShape*, const NxCollisionShape*,
+		NxContactSink*, void*);
+	NxOracleContactFn oracleContact = (NxOracleContactFn) (base + nxMatrixA[21].rva);
+
+	static NxContactWorld world[2];
+	world[0].shapeVtable[5] = (void*) (base + kCapsuleRaycastRva);
+	world[1].shapeVtable[5] = (void*) &NxShapeRaycastCapsule;
+
+	NxDigest oracleDigest, candidateDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	unsigned mismatches = 0;
+	unsigned perMode[2] = { 0, 0 };
+	unsigned emitted = 0;
+	unsigned flagPairs[4] = { 0, 0, 0, 0 };
+	unsigned sweptEmitted = 0;
+	unsigned seededNormal = 0;
+	unsigned parallelAxes = 0;
+	unsigned zeroAxis = 0;
+	unsigned coincident = 0;
+	unsigned beyondEnd = 0;
+	unsigned contactCounts[8];
+	unsigned widths[40];
+	memset(contactCounts, 0, sizeof(contactCounts));
+	memset(widths, 0, sizeof(widths));
+	unsigned state = 0x6b4de20fu;
+
+	for(unsigned i = 0; i < kContactIterations; ++i)
+		{
+		const unsigned sequenceSeed = nxNext(&state);
+		const unsigned pairs = 1 + (nxNext(&state) % 4);
+		// Two patterns, alternating, so the stream can be asked whether the
+		// normal really did come out of the seed.
+		const NxU32 seed = (i & 1) ? 0xcdcdcdcdu : 0xa5a5a5a5u;
+
+		for(int mode = 0; mode < 2; ++mode)
+			{
+			for(int side = 0; side < 2; ++side)
+				nxResetWorld(&world[side]);
+
+			unsigned local = sequenceSeed;
+			for(unsigned p = 0; p < pairs; ++p)
+				{
+				static unsigned char firstStorage[kShapeBytes];
+				static unsigned char secondStorage[kShapeBytes];
+				NxCollisionShape* first = (NxCollisionShape*) firstStorage;
+				NxCollisionShape* second = (NxCollisionShape*) secondStorage;
+				const bool tame = (nxNext(&local) & 3) != 0;
+				nxIdentity(first);
+				nxIdentity(second);
+				nxFillGeometry(&local, first, 3, tame);
+				nxFillGeometry(&local, second, 3, tame);
+				for(int k = 0; k < 3; ++k)
+					first->translation[k] = tame ? nxUnit(&local) * 3.0f - 1.5f : nxPick(&local);
+
+				const unsigned axisMode = nxNext(&local) % 4;
+				if(axisMode == 0)
+					nxRandomRotation(&local, first);
+				else if(axisMode == 2)
+					{
+					first->rotation[1] = nxUnit(&local) * 4.0f - 2.0f;
+					first->rotation[4] = nxUnit(&local) * 4.0f - 2.0f;
+					first->rotation[7] = nxUnit(&local) * 4.0f - 2.0f;
+					}
+				else if(axisMode == 3)
+					memset(first->rotation, 0, sizeof(first->rotation));
+
+				// The second capsule's axis, and the branch that decides which
+				// of the two algorithms in the non-swept half runs. Parallel and
+				// anti-parallel are the only inputs that reach the endpoint clip
+				// at all -- two independent rotations essentially never put the
+				// axis dot product above 0.9998f -- and the sign is drawn so
+				// both are reached.
+				const bool parallel = tame && (nxNext(&local) & 1) != 0;
+				bool axisPlaced = false;
+				if(parallel)
+					{
+					float axis[3];
+					bool finite = true;
+					for(int k = 0; k < 3; ++k)
+						{
+						axis[k] = first->rotation[1 + k * 3];
+						if(!nxFinite(axis[k]))
+							finite = false;
+						}
+					if(finite)
+						{
+						// A small perturbation, so pairs land either side of the
+						// threshold rather than all above it.
+						const float sign = (nxNext(&local) & 1) ? 1.0f : -1.0f;
+						const float wobble = nxUnit(&local) * 0.05f;
+						for(int k = 0; k < 3; ++k)
+							second->rotation[1 + k * 3] =
+								axis[k] * sign + (nxUnit(&local) * 2.0f - 1.0f) * wobble;
+						axisPlaced = true;
+						++parallelAxes;
+						}
+					}
+				if(!axisPlaced)
+					{
+					const unsigned secondMode = nxNext(&local) % 3;
+					if(secondMode == 0)
+						nxRandomRotation(&local, second);
+					else if(secondMode == 2)
+						memset(second->rotation, 0, sizeof(second->rotation));
+					}
+
+				// The endpoint clip can only produce four contacts when each
+				// capsule's two endpoints both project inside the other's
+				// parameter range, and that needs the two half heights to be
+				// close as well as the axes to be. Independent draws never
+				// arrange it, so a third of the parallel pairs get matched
+				// lengths and a small offset along the axis.
+				const bool matched = axisPlaced && (nxNext(&local) % 3) == 0;
+				if(matched)
+					second->geometry[1] = first->geometry[1];
+
+				const bool degenerate = (nxNext(&local) & 7) == 0;
+				if(degenerate)
+					first->geometry[1] = 0.0f;
+				const bool degenerate1 = (nxNext(&local) & 7) == 0;
+				if(degenerate1)
+					second->geometry[1] = 0.0f;
+				if(degenerate || degenerate1 || axisMode == 3)
+					++zeroAxis;
+
+				// Independent flag words. The low bit is what the kernel reads
+				// and the other 31 are randomised, so "only bit 0 matters" is
+				// measured rather than assumed.
+				NxU32 flagWord0 = nxNext(&local);
+				NxU32 flagWord1 = nxNext(&local);
+				const unsigned combination = nxNext(&local) & 3u;
+				flagWord0 = (combination & 1) ? (flagWord0 | 1u) : (flagWord0 & ~1u);
+				flagWord1 = (combination & 2) ? (flagWord1 | 1u) : (flagWord1 & ~1u);
+				memcpy(&first->geometry[2], &flagWord0, 4);
+				memcpy(&second->geometry[2], &flagWord1, 4);
+				++flagPairs[combination];
+
+				// The second capsule placed in the first's frame: `along` in half
+				// heights so |along| > 1 is past an endpoint, `across` in units
+				// of the two radii with zero putting the axes coincident. Gated
+				// on the first capsule's axis being finite, so no aim ever
+				// multiplies a value that could be a NaN.
+				bool placed = false;
+				if(tame && (nxNext(&local) & 3) != 0)
+					{
+					const float halfHeight = first->geometry[1];
+					float axis[3];
+					bool finite = true;
+					for(int k = 0; k < 3; ++k)
+						{
+						axis[k] = first->rotation[1 + k * 3] * halfHeight;
+						if(!nxFinite(axis[k]) || !nxFinite(first->translation[k]))
+							finite = false;
+						}
+					float other[3] = { 0.0f, 0.0f, 0.0f };
+					other[nxNext(&local) % 3] = 1.0f;
+					float perp[3];
+					perp[0] = axis[1] * other[2] - axis[2] * other[1];
+					perp[1] = axis[2] * other[0] - axis[0] * other[2];
+					perp[2] = axis[0] * other[1] - axis[1] * other[0];
+					const float norm = (float) sqrt((double) (perp[0] * perp[0]
+						+ perp[1] * perp[1] + perp[2] * perp[2]));
+					if(finite && norm > 1e-6f)
+						{
+						// Four contacts need the two axes co-located to within
+						// the 0.1% parameter tolerance, which no random offset
+						// reaches, so a quarter of the matched pairs are placed
+						// exactly.
+						const bool aligned = matched && (nxNext(&local) & 3) == 0;
+						const float along = aligned ? 0.0f
+							: matched ? nxUnit(&local) * 0.7f - 0.35f
+							: nxUnit(&local) * 3.2f - 1.6f;
+						const bool onAxis = (nxNext(&local) & 7) == 0;
+						const float span = first->geometry[0] + second->geometry[0];
+						const float across = onAxis ? 0.0f
+							: (matched ? nxUnit(&local) * 0.9f
+								: nxUnit(&local) * 1.9f + 0.02f) * span;
+						if(onAxis)
+							++coincident;
+						if(along < -1.0f || along > 1.0f)
+							++beyondEnd;
+						for(int k = 0; k < 3; ++k)
+							second->translation[k] = first->translation[k]
+								+ axis[k] * along + perp[k] * (across / norm);
+						placed = true;
+						}
+					}
+				if(!placed)
+					for(int k = 0; k < 3; ++k)
+						second->translation[k] =
+							tame ? nxUnit(&local) * 3.0f - 1.5f : nxPick(&local);
+
+				const bool newIdentity0 = (p == 0) || ((nxNext(&local) & 3) == 0);
+				const bool newIdentity1 = (p == 0) || ((nxNext(&local) & 3) == 0);
+				const NxU32 material0 = nxNext(&local) & 0xff;
+				const NxU32 material1 = nxNext(&local) & 0xff;
+				const bool nullHolder1 = (nxNext(&local) & 7) == 0;
+				const bool orientToSecond = (nxNext(&local) & 1) != 0;
+
+				const unsigned before = world[0].sink.streamCount;
+				const unsigned contactsBefore = world[0].sink.contactCount;
+				for(int side = 0; side < 2; ++side)
+					{
+					nxStageWorld(&world[side], first, second,
+						newIdentity0, newIdentity1, material0, material1,
+						nullHolder1, orientToSecond);
+					// Both shapes need one: the receiver is whichever capsule is
+					// not the ray, and the kernel picks that at runtime.
+					*(void**) world[side].plane = world[side].shapeVtable;
+					*(void**) world[side].sphere = world[side].shapeVtable;
+					}
+
+				nxSetControl(mode ? kControlSimulate : kControlDefault);
+				nxSeedFrameBelow(seed);
+				oracleContact(world[0].plane, world[0].sphere, &world[0].sink, nxOverlapContext);
+				nxSeedFrameBelow(seed);
+				NxContactCapsuleCapsule(world[1].plane, world[1].sphere, &world[1].sink, nxOverlapContext);
+				nxSetControl(kControlDefault);
+
+				const unsigned appended = world[0].sink.streamCount - before;
+				const unsigned contacts = world[0].sink.contactCount - contactsBefore;
+				if(appended)
+					++emitted;
+				if(appended < 40)
+					++widths[appended];
+				if(contacts < 8)
+					++contactCounts[contacts];
+				if((flagWord0 | flagWord1) & 1)
+					{
+					if(appended)
+						{
+						++sweptEmitted;
+						// The seed, or the seed with its sign bit flipped: the
+						// emitter negates all three normal components when the
+						// pair is emitted against the body the sink is not
+						// oriented to.
+						for(unsigned w = before; w < world[0].sink.streamCount; ++w)
+							if(world[0].sink.stream[w] == seed
+								|| world[0].sink.stream[w] == (seed ^ 0x80000000u))
+								{ ++seededNormal; break; }
+						}
+					}
+				}
+
+			nxFoldStream(&oracleDigest, &world[0]);
+			nxFoldStream(&candidateDigest, &world[1]);
+			const unsigned differing = nxCompareStreams(&world[0], &world[1]);
+			mismatches += differing;
+			perMode[mode] += differing;
+			}
+		}
+	// The default-word half gates, as it does for the other three rows that
+	// carry a pinned divergence under 0x0f7f. Under 0x027f the reconstruction
+	// agrees on every one of the checks below; under 0x0f7f it differs on 43,
+	// and the source is the one already escalated twice -- MSVC spilling a
+	// `double` to an 8-byte slot, which truncates a 64-bit significand to 53.
+	// Like phys_fn_001690 and unlike the two raycast rows, this entry is only
+	// ever reached from inside the simulation step, so the half that gates is
+	// not the half it runs under. The count is registered so it fails if it
+	// moves in either direction.
+	totalMismatch += perMode[0];
+	printf("collision name=contact_capsule_capsule index=21 rva=0x%08x owner=%s checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		nxMatrixA[21].rva, nxMatrixA[21].stableId,
+		oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches);
+	// seeded_normal is the measurement that the swept normal is uninitialised
+	// stack: it counts swept emissions whose stream carries the dword the
+	// harness had just seeded the frame with, and the seed alternates between
+	// two values so a match cannot be a constant the kernel happens to write.
+	// f00..f11 are the four flag combinations, driven independently.
+	printf("collision coverage name=contact_capsule_capsule emitted=%u f00=%u f01=%u f10=%u f11=%u swept_emitted=%u seeded_normal=%u parallel=%u zero_axis=%u coincident=%u beyond_end=%u c1=%u c2=%u c3=%u c4=%u default_mismatches=%u simulate_mismatches=%u\n",
+		emitted, flagPairs[0], flagPairs[1], flagPairs[2], flagPairs[3],
+		sweptEmitted, seededNormal, parallelAxes, zeroAxis, coincident, beyondEnd,
+		contactCounts[1], contactCounts[2], contactCounts[3], contactCounts[4],
+		perMode[0], perMode[1]);
 	}
 
 	// -----------------------------------------------------------------------

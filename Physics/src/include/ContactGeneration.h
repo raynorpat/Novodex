@@ -109,4 +109,22 @@ void __cdecl NxContactPlaneCapsule(const NxCollisionShape* plane,
 void __cdecl NxContactSphereCapsule(const NxCollisionShape* sphere,
 	const NxCollisionShape* capsule, NxContactSink* sink, void* context);
 
+// phys_fn_001010 at 0x00022480, slot 5 of a *capsule* shape's vtable
+// (0x00106b20 + 0x14). Same ABI note as the two above.
+//
+// It writes no normal at all, whatever the hint flags say -- `flags` is the
+// literal 0x13 and nothing in the 321 bytes touches hit+0x10..+0x18. That is
+// load-bearing for NxContactCapsuleCapsule below.
+const NxCollisionShape* __fastcall NxShapeRaycastCapsule(const NxCollisionShape* capsule,
+	void* edxUnused, const NxRay* worldRay, NxReal maxDistance, NxU32 unread,
+	NxU32 hintFlags, NxRaycastHit* hit);
+
+// phys_fn_001775 at 0x0003d9d0, matrix A slot [CAPSULE][CAPSULE].
+//
+// Its swept half is NOT a function of its arguments: it passes hintFlags = 4 and
+// hands the emitter hit.worldNormal, which the only slot-5 row it can reach
+// never writes. See the comment on the definition.
+void __cdecl NxContactCapsuleCapsule(const NxCollisionShape* capsule0,
+	const NxCollisionShape* capsule1, NxContactSink* sink, void* context);
+
 #endif

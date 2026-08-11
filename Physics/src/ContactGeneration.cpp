@@ -16,6 +16,7 @@
 
 #include "NxIntersectionRayPlane.h"
 #include "NxIntersectionRaySphere.h"
+#include "NxIntersectionSegmentCapsule.h"
 #include "NxPlane.h"
 #include "NxSegment.h"
 
@@ -675,4 +676,370 @@ void __cdecl NxContactSphereCapsule(const NxCollisionShape* sphere,
 	const NxReal separation = (NxReal) (nxSqrt((double) squared) - radiusSum);
 	NxEmitContact(sink, capsule->collisionObject, sphere->collisionObject,
 		nxBits(separation), &point, &normal, 0xffff, 0xffff);
+	}
+
+// phys_fn_001010 at 0x00022480, slot 5 of a CAPSULE shape's vtable
+// (0x00106b20 + 0x14). Same ABI note as the two above.
+//
+// A third convention across three slot-5 rows, and the one that matters: the
+// plane's copies the plane geometry into hit.worldNormal under a flag test, the
+// sphere's computes and normalises one under the same test, and this one has no
+// normal branch at all. `flags` is the literal 0x13 at 0x000225b0 -- SHAPE,
+// IMPACT and DISTANCE -- with no `|4` anywhere, and nothing in the 321 bytes
+// writes hit+0x10..+0x18 under any hint flags. That is not an oversight to fix
+// here; phys_fn_001775 depends on it, in the worst way. See the comment on
+// NxContactCapsuleCapsule.
+const NxCollisionShape* __fastcall NxShapeRaycastCapsule(const NxCollisionShape* capsule,
+	void* edxUnused, const NxRay* worldRay, NxReal maxDistance, NxU32 unread,
+	NxU32 hintFlags, NxRaycastHit* hit)
+	{
+	(void) edxUnused;
+	(void) unread;
+	(void) hintFlags;
+
+	const NxReal* m = capsule->rotation;
+	const NxReal* translation = capsule->translation;
+	const NxReal halfHeight = capsule->geometry[1];
+
+	// The same column-1 axis, the same narrowing of the x half-axis and the same
+	// narrowed -axisZ as the three capsule entries already closed.
+	const NxReal axisX = (NxReal) ((double) m[1] * halfHeight);
+	const double axisY = (double) m[4] * halfHeight;
+	const double axisZ = (double) m[7] * halfHeight;
+	const NxReal negatedAxisZ = (NxReal) (-axisZ);
+
+	NxCapsule body;
+	body.p0.x = (NxReal) (-(double) axisX + translation[0]);
+	body.p0.y = (NxReal) (-axisY + translation[1]);
+	body.p0.z = (NxReal) ((double) negatedAxisZ + translation[2]);
+	body.p1.x = (NxReal) ((double) axisX + translation[0]);
+	body.p1.y = (NxReal) (axisY + translation[1]);
+	body.p1.z = (NxReal) (axisZ + translation[2]);
+	// An integer move at 0x000224a4/0x000224d8, so the radius arrives exactly as
+	// the shape holds it.
+	body.radius = capsule->geometry[0];
+
+	NxReal roots[2];
+	const NxU32 count = NxRayCapsuleIntersect(worldRay->orig, worldRay->dir, body, roots);
+	if(count == 0)
+		return 0;
+
+	// Three ways, not two: one root is taken directly and anything else compares
+	// the pair and takes the smaller, with the unordered case taking the second.
+	double distance;
+	if(count == 1)
+		distance = roots[0];
+	else
+		distance = roots[0] < roots[1] ? roots[0] : roots[1];
+
+	// `test ah,0x41` + `jne`: less, equal or unordered all continue.
+	if(distance > maxDistance)
+		return 0;
+
+	const NxReal scaledY = (NxReal) (distance * worldRay->dir.y);
+	const NxReal scaledZ = (NxReal) (distance * worldRay->dir.z);
+	hit->worldImpact.x = (NxReal) (distance * worldRay->dir.x + worldRay->orig.x);
+	hit->worldImpact.y = (NxReal) ((double) scaledY + worldRay->orig.y);
+	hit->worldImpact.z = (NxReal) ((double) scaledZ + worldRay->orig.z);
+	hit->distance = (NxReal) distance;
+	hit->shape = (NxShape*) capsule->collisionObject;
+	hit->faceID = 0;
+	hit->u = 0.0f;
+	hit->v = 0.0f;
+	hit->flags = 0x13;
+	// hit->worldNormal is deliberately not written. See above.
+	return capsule;
+	}
+
+// phys_fn_001775 at 0x0003d9d0, matrix A slot [CAPSULE][CAPSULE], 2,463 bytes.
+//
+// Two unrelated algorithms behind one flag test, like the other three capsule
+// entries -- and then the non-swept half is itself two algorithms with a
+// fallthrough between them, which none of the others is.
+//
+// THE SWEPT HALF IS NOT A FUNCTION OF ITS ARGUMENTS. It passes hintFlags = 4 and
+// then hands the emitter `hit.worldNormal`, and the callee it dispatches to is
+// always phys_fn_001010 -- both shapes are capsules, so there is no
+// configuration in which any other slot-5 row runs -- and phys_fn_001010 writes
+// no normal at all. The three words the emitter receives as the contact normal
+// are whatever the caller's stack left at `esp+0xcc`. This is the second such
+// case in the programme after NxSeparatingAxis with fullTest = false, and it is
+// the worse of the two: that one reaches a return value and this one reaches a
+// contact record. Reproduced, not corrected -- `hit` below is deliberately
+// uninitialised and `&hit.worldNormal` is deliberately passed. The differential
+// seeds the stack under both calls with one repeated dword so that the read is
+// the same on both sides, and measures that the seed really does come out.
+//
+// The swept branch is the OR of the two flag bytes at 0x0003da3a, but which
+// capsule becomes the ray is shape1's flag *alone* at 0x0003dae9 and the
+// receiver is the other one. So the predicate and the selector read different
+// things and all four flag combinations are distinct inputs.
+void __cdecl NxContactCapsuleCapsule(const NxCollisionShape* capsule0,
+	const NxCollisionShape* capsule1, NxContactSink* sink, void* context)
+	{
+	(void) context;
+
+	const NxCollisionShape* const shapes[2] = { capsule0, capsule1 };
+	NxSegment segment[2];
+	for(int which = 0; which < 2; ++which)
+		{
+		const NxReal* m = shapes[which]->rotation;
+		const NxReal* translation = shapes[which]->translation;
+		const NxReal halfHeight = shapes[which]->geometry[1];
+		const NxReal axisX = (NxReal) ((double) m[1] * halfHeight);
+		const double axisY = (double) m[4] * halfHeight;
+		const double axisZ = (double) m[7] * halfHeight;
+		const NxReal negatedAxisZ = (NxReal) (-axisZ);
+		segment[which].p0.x = (NxReal) (-(double) axisX + translation[0]);
+		segment[which].p0.y = (NxReal) (-axisY + translation[1]);
+		segment[which].p0.z = (NxReal) ((double) negatedAxisZ + translation[2]);
+		segment[which].p1.x = (NxReal) ((double) axisX + translation[0]);
+		segment[which].p1.y = (NxReal) (axisY + translation[1]);
+		segment[which].p1.z = (NxReal) (axisZ + translation[2]);
+		}
+
+	NxU32 flags0, flags1;
+	memcpy(&flags0, &capsule0->geometry[2], 4);
+	memcpy(&flags1, &capsule1->geometry[2], 4);
+
+	if((flags0 | flags1) & 1)
+		{
+		// 0x0003dae9. shape1's bit alone picks the ray.
+		const unsigned rayIndex = flags1 & 1u;
+		const unsigned targetIndex = 1u - rayIndex;
+		const NxSegment& ray = segment[rayIndex];
+
+		const double wideX = (double) ray.p1.x - ray.p0.x;
+		const NxReal deltaX = (NxReal) wideX;
+		const NxReal deltaY = (NxReal) ((double) ray.p1.y - ray.p0.y);
+		const NxReal deltaZ = (NxReal) ((double) ray.p1.z - ray.p0.z);
+		const NxReal length = (NxReal) nxSqrt(((double) deltaX * deltaX
+			+ (double) deltaZ * deltaZ) + (double) deltaY * deltaY);
+
+		NxRay worldRay;
+		worldRay.orig = ray.p0;
+		// A zero length skips the normalisation but not the call, and what
+		// reaches slot 5 is then the raw difference -- with x still wide, since
+		// the `fst` at 0x0003db07 kept it in st(0). Same guard as
+		// plane/capsule's, same consequence.
+		if(length != 0.0f)
+			{
+			const NxReal inverse = (NxReal) ((double) 1.0f / length);
+			worldRay.dir.x = (NxReal) ((double) deltaX * inverse);
+			worldRay.dir.y = (NxReal) ((double) deltaY * inverse);
+			worldRay.dir.z = (NxReal) ((double) deltaZ * inverse);
+			}
+		else
+			{
+			worldRay.dir.x = (NxReal) wideX;
+			worldRay.dir.y = deltaY;
+			worldRay.dir.z = deltaZ;
+			}
+
+		// Deliberately uninitialised; see the comment above the function.
+		NxRaycastHit hit;
+		const NxCollisionShape* const receiver = shapes[targetIndex];
+		const NxShapeRaycastFn slot5 =
+			(NxShapeRaycastFn) (*(void***) receiver)[5];
+		if(slot5(receiver, &worldRay, length, 0, 4, &hit))
+			NxEmitContact(sink, shapes[rayIndex]->collisionObject,
+				receiver->collisionObject, 0, &hit.worldImpact, &hit.worldNormal,
+				0xffff, 0xffff);
+		return;
+		}
+
+	// 0x0003dc4e. phys_fn_001690 is a Phase 2 row; see NarrowPhase.cpp.
+	NxReal parameter0, parameter1;
+	const double squared = NxSegmentSegmentSquareDistance(&segment[0], &segment[1],
+		&parameter0, &parameter1);
+	const double wideSum = (double) capsule1->geometry[0] + capsule0->geometry[0];
+	const NxReal radiusSum = (NxReal) wideSum;
+	// Strictly less: two capsules exactly touching produce nothing, and an
+	// unordered comparison produces nothing either.
+	if(!(squared < wideSum * radiusSum))
+		return;
+
+	// dir[k] is the axis direction, normalised unless its length is exactly
+	// zero, in which case the raw difference stays. length[k] is kept because
+	// the endpoint loop below clips against it.
+	NxVec3 direction[2];
+	NxReal length[2];
+	const double wideX0 = (double) segment[0].p1.x - segment[0].p0.x;
+	const NxReal deltaY0 = (NxReal) ((double) segment[0].p1.y - segment[0].p0.y);
+	const double wideZ0 = (double) segment[0].p1.z - segment[0].p0.z;
+	direction[0].x = (NxReal) wideX0;
+	direction[0].y = deltaY0;
+	direction[0].z = (NxReal) wideZ0;
+	const double wideX1 = (double) segment[1].p1.x - segment[1].p0.x;
+	const NxReal deltaX1 = (NxReal) wideX1;
+	const NxReal deltaY1 = (NxReal) ((double) segment[1].p1.y - segment[1].p0.y);
+	const NxReal deltaZ1 = (NxReal) ((double) segment[1].p1.z - segment[1].p0.z);
+	direction[1].x = (NxReal) wideX1;
+	direction[1].y = deltaY1;
+	direction[1].z = deltaZ1;
+
+	// The two lengths are not formed the same way: the first squares the wide x
+	// and z still in registers and the second reads all three back from their
+	// 32-bit slots.
+	length[0] = (NxReal) nxSqrt((wideX0 * wideX0 + wideZ0 * wideZ0)
+		+ (double) deltaY0 * deltaY0);
+	if(length[0] != 0.0f)
+		{
+		const double inverse = (double) 1.0f / length[0];
+		direction[0].x = (NxReal) (inverse * wideX0);
+		direction[0].y = (NxReal) ((double) deltaY0 * inverse);
+		direction[0].z = (NxReal) (wideZ0 * inverse);
+		}
+	const double wideLength1 = nxSqrt(((double) deltaX1 * deltaX1
+		+ (double) deltaZ1 * deltaZ1) + (double) deltaY1 * deltaY1);
+	if(wideLength1 != 0.0f)
+		{
+		// And the second divides by the *wide* length where the first divides by
+		// the narrowed one.
+		const double inverse = (double) 1.0f / wideLength1;
+		direction[1].x = (NxReal) ((double) deltaX1 * inverse);
+		direction[1].y = (NxReal) ((double) deltaY1 * inverse);
+		direction[1].z = (NxReal) ((double) deltaZ1 * inverse);
+		}
+	length[1] = (NxReal) wideLength1;
+
+	const double dot = ((double) direction[1].x * direction[0].x
+		+ (double) direction[1].z * direction[0].z)
+		+ (double) direction[1].y * direction[0].y;
+
+	// 0x00107bf4 is 0.9998f. Strictly greater, so an unordered comparison takes
+	// the single-contact path.
+	NxU32 emitted = 0;
+	if(dot > 0.9998f)
+		{
+		// The endpoint clip, up to four contacts. 0x00107690 is 0.001f, so the
+		// tolerance is a tenth of a percent of the axis length -- and it is a
+		// tolerance on the *parameter range*, not on the distance.
+		NxReal tolerance[2];
+		tolerance[0] = (NxReal) ((double) length[0] * 0.001f);
+		tolerance[1] = (NxReal) (wideLength1 * 0.001f);
+
+		NxVec3 point[2];
+		for(unsigned index = 0; index < 2; ++index)
+			{
+			const NxReal lowerBound = (NxReal) (-(double) tolerance[index]);
+			const unsigned other = 1u - index;
+			const NxSegment& axis = segment[index];
+			const NxVec3& along = direction[index];
+
+			for(unsigned end = 0; end < 2; ++end)
+				{
+				point[index] = end ? segment[other].p1 : segment[other].p0;
+
+				const double projection =
+					(((double) point[index].z - axis.p0.z) * along.z
+						+ ((double) point[index].y - axis.p0.y) * along.y)
+					+ ((double) point[index].x - axis.p0.x) * along.x;
+				const NxReal narrowedProjection = (NxReal) projection;
+				if(projection < lowerBound)
+					continue;
+				if((double) length[index] + tolerance[index] < narrowedProjection)
+					continue;
+
+				const NxReal scaledY = (NxReal) ((double) narrowedProjection * along.y);
+				const NxReal scaledZ = (NxReal) ((double) narrowedProjection * along.z);
+				point[other].x = (NxReal) ((double) narrowedProjection * along.x + axis.p0.x);
+				point[other].y = (NxReal) ((double) scaledY + axis.p0.y);
+				point[other].z = (NxReal) ((double) scaledZ + axis.p0.z);
+
+				const double normalX = (double) point[1].x - point[0].x;
+				const NxReal normalY = (NxReal) ((double) point[1].y - point[0].y);
+				const double normalZ = (double) point[1].z - point[0].z;
+				const double reverseX = (double) point[0].x - point[1].x;
+				const double reverseY = (double) point[0].y - point[1].y;
+				const double reverseZ = (double) point[0].z - point[1].z;
+				const double gap = nxSqrt((reverseZ * reverseZ + reverseY * reverseY)
+					+ reverseX * reverseX);
+				const NxReal separation = (NxReal) (gap - radiusSum);
+
+				const double normalLength = nxSqrt((normalZ * normalZ
+					+ (double) normalY * normalY) + normalX * normalX);
+				// A zero-length normal skips the contact here, where the
+				// single-contact path below returns outright.
+				if(normalLength == 0.0)
+					continue;
+				const double inverse = (double) 1.0f / normalLength;
+				NxVec3 normal;
+				normal.x = (NxReal) (inverse * normalX);
+				normal.y = (NxReal) ((double) normalY * inverse);
+				normal.z = (NxReal) (normalZ * inverse);
+
+				// Strictly penetrating, and an unordered separation emits
+				// nothing.
+				if(!(separation < 0.0f))
+					continue;
+
+				// The radius of the *other* capsule, and the point is always
+				// point[1] whichever way round the loop is.
+				const double radius = shapes[other]->geometry[0];
+				const NxReal scaledNormalY = (NxReal) ((double) normal.y * radius);
+				const NxReal scaledNormalZ = (NxReal) ((double) normal.z * radius);
+				NxVec3 contact;
+				contact.x = (NxReal) ((double) point[1].x - (double) normal.x * radius);
+				contact.y = (NxReal) ((double) point[1].y - scaledNormalY);
+				contact.z = (NxReal) ((double) point[1].z - scaledNormalZ);
+
+				NxEmitContact(sink, capsule0->collisionObject, capsule1->collisionObject,
+					nxBits(separation), &contact, &normal, 0xffff, 0xffff);
+				++emitted;
+				}
+			}
+		if(emitted)
+			return;
+		// And when the clip emitted nothing it falls through, so one call can
+		// run both algorithms. 0x0003e162.
+		}
+
+	// 0x0003e184, one contact at the closest points.
+	const NxReal firstZ = (NxReal) ((double) segment[0].p1.z - segment[0].p0.z);
+	const NxReal firstScaledX = (NxReal) (((double) segment[0].p1.x - segment[0].p0.x)
+		* parameter0);
+	const double firstScaledY = ((double) segment[0].p1.y - segment[0].p0.y) * parameter0;
+	const double firstScaledZ = (double) firstZ * parameter0;
+	const NxReal closest0X = (NxReal) ((double) firstScaledX + segment[0].p0.x);
+	const NxReal closest0Y = (NxReal) (firstScaledY + segment[0].p0.y);
+	const double closest0Z = firstScaledZ + segment[0].p0.z;
+
+	const NxReal secondZ = (NxReal) ((double) segment[1].p1.z - segment[1].p0.z);
+	const NxReal secondScaledX = (NxReal) (((double) segment[1].p1.x - segment[1].p0.x)
+		* parameter1);
+	const double secondScaledY = ((double) segment[1].p1.y - segment[1].p0.y) * parameter1;
+	const double secondScaledZ = (double) secondZ * parameter1;
+	const NxReal closest1X = (NxReal) ((double) secondScaledX + segment[1].p0.x);
+	const NxReal closest1Y = (NxReal) (secondScaledY + segment[1].p0.y);
+	const double closest1Z = secondScaledZ + segment[1].p0.z;
+
+	NxVec3 normal;
+	normal.x = (NxReal) ((double) closest0X - closest1X);
+	normal.y = (NxReal) ((double) closest0Y - closest1Y);
+	normal.z = (NxReal) (closest0Z - closest1Z);
+
+	const double span = nxSqrt(((double) normal.z * normal.z
+		+ (double) normal.y * normal.y) + (double) normal.x * normal.x);
+	if(span == 0.0)
+		return;
+	const double inverse = (double) 1.0f / span;
+	normal.x = (NxReal) ((double) normal.x * inverse);
+	normal.y = (NxReal) ((double) normal.y * inverse);
+	normal.z = (NxReal) ((double) normal.z * inverse);
+
+	// The first capsule's radius, not the sum, and the point is on segment 0.
+	const double radius = capsule0->geometry[0];
+	const NxReal scaledNormalY = (NxReal) ((double) normal.y * radius);
+	const NxReal scaledNormalZ = (NxReal) ((double) normal.z * radius);
+	NxVec3 contact;
+	contact.x = (NxReal) ((double) closest0X - (double) normal.x * radius);
+	contact.y = (NxReal) ((double) closest0Y - scaledNormalY);
+	contact.z = (NxReal) (closest0Z - scaledNormalZ);
+
+	// The root is re-taken from the narrowed squared distance rather than kept
+	// from anything, exactly as sphere/capsule does.
+	const NxReal separation = (NxReal) (nxSqrt((NxReal) squared) - radiusSum);
+	NxEmitContact(sink, capsule0->collisionObject, capsule1->collisionObject,
+		nxBits(separation), &contact, &normal, 0xffff, 0xffff);
 	}
