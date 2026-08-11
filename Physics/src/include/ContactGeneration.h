@@ -10,6 +10,8 @@
 // phys_fn_000873, which owns the stream format.
 
 #include "NarrowPhase.h"
+#include "NxRay.h"
+#include "NxUserRaycastReport.h"
 
 // BORROWED Phase 7 layout. Recovered from phys_fn_000873 with the address for
 // every offset; see the borrowed-layout section of
@@ -63,5 +65,34 @@ void NxEmitContact(NxContactSink* sink, void* object1, void* object0,
 // phys_fn_001901 at 0x00048a70, matrix A slot [PLANE][SPHERE].
 void __cdecl NxContactPlaneSphere(const NxCollisionShape* plane,
 	const NxCollisionShape* sphere, NxContactSink* sink, void* context);
+
+// phys_fn_001261 at 0x00025350, slot 5 of the *plane* shape's vtable
+// (0x00107430 + 0x14). __thiscall on the shape, five stack arguments,
+// `ret 0x14`, and it returns `this` rather than a boolean -- `mov eax,ebx` at
+// 0x00025415 against `xor eax,eax` at the two failure exits.
+//
+// The third argument is never read: the 203 bytes touch the argument slots at
+// `+0x04` (the ray), `+0x08` (the distance limit), `+0x10` (the hint flags) and
+// `+0x14` (the hit), and nothing reads `+0x0c`. It is left unnamed rather than
+// guessed at.
+// The slot as the oracle holds it. Every shape type has one; only the plane's
+// is reconstructed here.
+typedef const NxCollisionShape* (__thiscall* NxShapeRaycastFn)(const NxCollisionShape*,
+	const NxRay*, NxReal, NxU32, NxU32, NxRaycastHit*);
+
+// MSVC rejects __thiscall on anything that is not a member function (C3865),
+// and this row has no class to be a member of -- Phase 5 owns the shape. The
+// declaration below is the same ABI written the way the compiler will accept:
+// __fastcall passes the first two integer arguments in ecx and edx and leaves
+// the rest on the stack for the callee to pop, so an unused second parameter
+// makes it byte-for-byte __thiscall with `ret 0x14`. It goes into a vtable slot
+// and is called back through NxShapeRaycastFn.
+const NxCollisionShape* __fastcall NxShapeRaycastPlane(const NxCollisionShape* plane,
+	void* edxUnused, const NxRay* worldRay, NxReal maxDistance, NxU32 unread,
+	NxU32 hintFlags, NxRaycastHit* hit);
+
+// phys_fn_001891 at 0x00048370, matrix A slot [PLANE][CAPSULE].
+void __cdecl NxContactPlaneCapsule(const NxCollisionShape* plane,
+	const NxCollisionShape* capsule, NxContactSink* sink, void* context);
 
 #endif

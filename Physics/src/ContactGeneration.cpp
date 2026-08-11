@@ -14,6 +14,10 @@
 
 #include "ContactGeneration.h"
 
+#include "NxIntersectionRayPlane.h"
+#include "NxPlane.h"
+
+#include <math.h>
 #include <stddef.h>
 #include <string.h>
 
@@ -216,4 +220,212 @@ void __cdecl NxContactPlaneSphere(const NxCollisionShape* plane,
 
 	NxEmitContact(sink, sphere->collisionObject, plane->collisionObject,
 		nxBits(separationStored), &point, (const NxVec3*) n, 0xffff, 0xffff);
+	}
+
+// phys_fn_001261 at 0x00025350: what a PLANE shape puts in vtable slot 5.
+//
+// It is a segment/plane raycast whose only callee is NxRayPlaneIntersect at
+// 0x00036bb0, a Task 2 export. Three gates in order -- the ray must run into
+// the plane, the hit must be ahead of the origin, and it must be within the
+// distance limit -- and every one of them lets an unordered comparison through,
+// so a NaN anywhere in the ray or the plane reaches the hit record rather than
+// being rejected.
+//
+// `hit.shape` is written from `shape->[0x9c]` (0x000253d8), the collision
+// object, not from the shape itself. Whether that object is what the public API
+// hands out as an NxShape is a Phase 5 question; this row only records which
+// pointer the oracle stores.
+const NxCollisionShape* __fastcall NxShapeRaycastPlane(const NxCollisionShape* plane,
+	void* edxUnused, const NxRay* worldRay, NxReal maxDistance, NxU32 unread,
+	NxU32 hintFlags, NxRaycastHit* hit)
+	{
+	(void) edxUnused;
+	(void) unread;
+	const NxReal* n = plane->geometry;
+
+	// 0x00025357..0x00025377, accumulated z, y, x and left in st(0).
+	const double facing = ((double) n[2] * worldRay->dir.z + (double) n[1] * worldRay->dir.y)
+		+ (double) n[0] * worldRay->dir.x;
+	// `test ah,1; jne` at 0x00025381 reads C0 alone, which is set for "less"
+	// and for "unordered" alike, so a NaN dot product continues.
+	if(facing >= 0.0)
+		return 0;
+
+	// The oracle passes the address of its own first argument slot as `dist`
+	// (0x00025396) -- a store into the caller's frame, dead by then.
+	NxReal distance;
+	if(!NxRayPlaneIntersect(*worldRay, *(const NxPlane*) n, distance, hit->worldImpact))
+		return 0;
+
+	// 0x000253bb and 0x000253cc, both `test ah,0x41` over C3 and C0 but with
+	// opposite branches: strictly ahead of the origin, and not past the limit.
+	// Both let the unordered case through.
+	if(distance <= 0.0f)
+		return 0;
+	if(distance > maxDistance)
+		return 0;
+
+	// Integer moves, not float stores: an fld/fstp pair would quiet a
+	// signalling NaN, and these are `mov` at 0x000253d1 and 0x000253ff.
+	memcpy(&hit->distance, &distance, 4);
+	hit->shape = (NxShape*) plane->collisionObject;
+	hit->faceID = 0;
+	hit->u = 0.0f;
+	hit->v = 0.0f;
+	hit->flags = NX_RAYCAST_SHAPE | NX_RAYCAST_IMPACT | NX_RAYCAST_DISTANCE;
+	if(hintFlags & NX_RAYCAST_NORMAL)
+		{
+		memcpy(&hit->worldNormal.x, &n[0], 4);
+		memcpy(&hit->worldNormal.y, &n[1], 4);
+		memcpy(&hit->worldNormal.z, &n[2], 4);
+		hit->flags |= NX_RAYCAST_NORMAL;
+		}
+	return plane;
+	}
+
+// phys_fn_001891 at 0x00048370, matrix A slot [PLANE][CAPSULE].
+//
+// The byte at `capsule+0xe8` picks between two entirely different algorithms
+// (`test al,1` at 0x000483aa, branch at 0x00048400). It is
+// NxCapsuleShapeDesc::flags: 0x00021ad0 loads the capsule's geometry from its
+// descriptor and copies `desc+0x54` straight into `+0xe8` at 0x00021af9, one
+// field after the radius at `desc+0x4c` and the height at `desc+0x50`. The only
+// bit that enum defines is NX_SWEPT_SHAPE, and bit 0 is the bit tested.
+//
+// Both paths build the two endpoints the way phys_fn_001889 does -- the same
+// column-1 axis, the same narrowed x half-axis, the same narrowed -axisZ -- with
+// one difference: p1.z is narrowed here (0x000483fc) where the overlap test
+// leaves it in a register.
+void __cdecl NxContactPlaneCapsule(const NxCollisionShape* plane,
+	const NxCollisionShape* capsule, NxContactSink* sink, void* context)
+	{
+	(void) context;
+	const NxReal* m = capsule->rotation;
+	const NxReal* t = capsule->translation;
+
+	// Stored over the caller's second argument slot at 0x0004839c and read back
+	// from it twice. The swept path overwrites that slot with the inverse
+	// length at 0x0004847b, which is safe only because it never reads the
+	// radius again.
+	const NxReal radius = capsule->geometry[0];
+	const NxReal halfHeight = capsule->geometry[1];
+
+	const NxReal axisX = (NxReal) ((double) m[1] * halfHeight);
+	const double axisY = (double) m[4] * halfHeight;
+	const double axisZ = (double) m[7] * halfHeight;
+	const NxReal negatedAxisZ = (NxReal) (-axisZ);
+
+	NxVec3 p0, p1;
+	p0.x = (NxReal) (-(double) axisX + t[0]);
+	p0.y = (NxReal) (-axisY + t[1]);
+	p0.z = (NxReal) ((double) negatedAxisZ + t[2]);
+	p1.x = (NxReal) ((double) axisX + t[0]);
+	p1.y = (NxReal) (axisY + t[1]);
+	p1.z = (NxReal) (axisZ + t[2]);
+
+	// `mov al, byte ptr [edi+0xe8]`: the low byte of the flags word, not the
+	// float in that union slot.
+	const NxU8 sweptFlag = *(const NxU8*) &capsule->geometry[2];
+	if(sweptFlag & 1)
+		{
+		// 0x00048406. A moving sphere: normalise the endpoint difference and
+		// ask the partner shape's own vtable slot 5 to raycast the segment.
+		const NxReal dx = (NxReal) ((double) p1.x - p0.x);
+		const NxReal dy = (NxReal) ((double) p1.y - p0.y);
+		const NxReal dz = (NxReal) ((double) p1.z - p0.z);
+
+		// Every squared term reads its 32-bit slot back, so the length is not
+		// formed from the register copies.
+		const NxReal length = (NxReal) sqrt(((double) dz * dz + (double) dy * dy)
+			+ (double) dx * dx);
+
+		// `fucompp` against the 0.0f at 0x101041f0 with `jnp`: the equal case
+		// skips the normalisation and the *unnormalised* difference is what
+		// reaches slot 5. An unordered compare normalises.
+		NxVec3 direction;
+		if(length == 0.0f)
+			{
+			// The two slots the zero path leaves alone hold the raw copies made
+			// at 0x00048426 and 0x0004843a; the x slot is written from the
+			// register copy of the same subtraction, which narrows to `dx`.
+			direction.x = dx;
+			direction.y = dy;
+			direction.z = dz;
+			}
+		else
+			{
+			const NxReal inverse = (NxReal) (1.0 / (double) length);
+			direction.x = (NxReal) ((double) dx * inverse);
+			direction.y = (NxReal) ((double) dy * inverse);
+			direction.z = (NxReal) ((double) dz * inverse);
+			}
+
+		NxRay ray;
+		ray.orig = p0;
+		ray.dir = direction;
+
+		// `mov edx,[esi]; call dword ptr [edx+0x14]` at 0x000484e1-0x000484e6.
+		// A closure over direct call edges cannot see this, which is why the
+		// entry survey undercounted four of the eight matrix A rows.
+		NxRaycastHit hit;
+		const NxShapeRaycastFn raycast = (*(const NxShapeRaycastFn* const*) plane)[5];
+		if(!raycast(plane, &ray, length, 0, 0, &hit))
+			return;
+
+		// The separation is an immediate `push 0` at 0x00048513, not a computed
+		// value, and the point is the impact point the raycast wrote.
+		NxEmitContact(sink, capsule->collisionObject, plane->collisionObject,
+			0, &hit.worldImpact, (const NxVec3*) plane->geometry, 0xffff, 0xffff);
+		return;
+		}
+
+	// 0x00048529. A plane distance per endpoint, and a contact for each that is
+	// strictly closer than the radius -- so up to two contacts from one call.
+	const NxReal* n = plane->geometry;
+
+	// dist0 stays in st(0) for the comparison, the point and the separation;
+	// dist1 is pushed through the caller's first argument slot at 0x00048572
+	// and every later use reads the narrowed copy back. The two endpoints are
+	// therefore not treated at the same precision.
+	const double distance0 = (((double) p0.z * n[2] + (double) p0.y * n[1])
+		+ (double) p0.x * n[0]) + n[3];
+	const NxReal distance1 = (NxReal) ((((double) p1.y * n[1] + (double) p1.z * n[2])
+		+ (double) p1.x * n[0]) + n[3]);
+
+	// `fcom` then `test ah,5` then `jp`: strictly less, and an unordered
+	// comparison emits nothing.
+	if(distance0 < (double) radius)
+		{
+		// point = endpoint - distance * normal, which puts the point on the
+		// PLANE. plane/sphere scales the normal by the radius instead and puts
+		// its point on the sphere; the two entries do not agree.
+		const double scaledX = distance0 * n[0];
+		const double scaledY = distance0 * n[1];
+		const NxReal scaledZ = (NxReal) (distance0 * n[2]);
+
+		NxVec3 point;
+		point.x = (NxReal) ((double) p0.x - scaledX);
+		point.y = (NxReal) ((double) p0.y - scaledY);
+		point.z = (NxReal) ((double) p0.z - (double) scaledZ);
+
+		const NxReal separation = (NxReal) (distance0 - radius);
+		NxEmitContact(sink, capsule->collisionObject, plane->collisionObject,
+			nxBits(separation), &point, (const NxVec3*) n, 0xffff, 0xffff);
+		}
+
+	if((double) distance1 < (double) radius)
+		{
+		const double scaledX = (double) distance1 * n[0];
+		const double scaledY = (double) distance1 * n[1];
+		const NxReal scaledZ = (NxReal) ((double) distance1 * n[2]);
+
+		NxVec3 point;
+		point.x = (NxReal) ((double) p1.x - scaledX);
+		point.y = (NxReal) ((double) p1.y - scaledY);
+		point.z = (NxReal) ((double) p1.z - (double) scaledZ);
+
+		const NxReal separation = (NxReal) ((double) distance1 - radius);
+		NxEmitContact(sink, capsule->collisionObject, plane->collisionObject,
+			nxBits(separation), &point, (const NxVec3*) n, 0xffff, 0xffff);
+		}
 	}

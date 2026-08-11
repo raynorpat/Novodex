@@ -167,6 +167,13 @@ static const unsigned kMatrixObjectSize = 0x124;
 static const unsigned kMatrixOffsetA = 0x04;
 static const unsigned kMatrixOffsetB = 0x94;
 static const unsigned kSquareDistanceIatRva = 0x00104170;
+// phys_fn_001261, what a PLANE shape puts in vtable slot 5. Recovered from the
+// plane shape constructor's vtable store at 0x00107430 + 0x14.
+static const unsigned kPlaneRaycastRva = 0x00025350;
+// hit.shape is written from shape->[0x9c] and never dereferenced by that row,
+// so both sides are given the same made-up value: a real address would put this
+// process's load address into an oracle-side digest that is pinned in the gate.
+static void* const kFakeCollisionObject = (void*) 0x0badc0deu;
 
 // The reconstruction, against the matrix B slot each entry sits in. Everything
 // not named here is still unreconstructed and is reported as such rather than
@@ -502,6 +509,13 @@ struct NxContactWorld
 	unsigned char ownerStore[2][0x40];
 	unsigned char holderStore[2][0x280];
 	NxU32 generation[2];
+	// A vtable for the first shape. phys_fn_001891 dispatches through slot 5 of
+	// the *partner* shape's vtable at 0x000484e6, so a plane driven into it
+	// needs one; six slots because 0x14 is the highest offset any kernel here
+	// reads. Installed after nxStageWorld, which copies a zeroed vtable pointer
+	// in with the shape, and only by the block that needs it -- the plane/sphere
+	// and emitter blocks leave it null and never read it.
+	void* shapeVtable[6];
 	};
 
 static void nxResetWorld(NxContactWorld* world)
@@ -1496,6 +1510,353 @@ int wmain(int argc, wchar_t** argv)
 		oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches);
 	printf("collision coverage name=contact_emit real_feature_pairs=%u fifth_words=%u\n",
 		realFeatures, fifthWords);
+	}
+
+	// -----------------------------------------------------------------------
+	// phys_fn_001261, driven at its own address before the entry that reaches
+	// it, because the entry cannot reach all of it.
+	//
+	// phys_fn_001891 calls this with hintFlags = 0 and with the distance limit
+	// set to exactly the segment length it just measured. So the
+	// NX_RAYCAST_NORMAL branch at 0x000253fd -- the only thing that ever writes
+	// hit.worldNormal -- and any limit other than an exact fit are dead from
+	// there. That is the same shape of gap the feature ids had: a behaviour is
+	// not covered because the code that contains it ran.
+	//
+	// The hit is poisoned before every call, so "wrote nothing" and "wrote
+	// zero" are different transcripts. It matters here: NxRayPlaneIntersect
+	// fills hit.worldImpact before either distance gate runs, so a raycast
+	// rejected for being behind the origin still leaves one field written.
+	{
+	typedef const void*(__thiscall* NxOracleRaycastFn)(const void*, const NxRay*, NxReal,
+		NxU32, NxU32, NxRaycastHit*);
+	NxOracleRaycastFn oracleRaycast = (NxOracleRaycastFn) (base + kPlaneRaycastRva);
+
+	NxDigest oracleDigest, candidateDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	unsigned mismatches = 0;
+	unsigned hits = 0;
+	unsigned wroteNormal = 0;
+	unsigned aimedRays = 0;
+	unsigned state = 0x51ce9a11u;
+
+	for(unsigned i = 0; i < kPairIterations; ++i)
+		{
+		const bool tame = (nxNext(&state) & 3) != 0;
+		nxIdentity(shape0);
+		nxFillGeometry(&state, shape0, 0, tame);
+		shape0->collisionObject = kFakeCollisionObject;
+
+		NxRay ray;
+		for(int k = 0; k < 3; ++k)
+			(&ray.orig.x)[k] = tame ? nxUnit(&state) * 4.0f - 2.0f : nxPick(&state);
+
+		NxReal maxDistance;
+		// Half the tame rays are aimed at a point that really is on the plane,
+		// so the hit distance is known and the limit can be placed either side
+		// of it. Unaimed, the facing test at 0x00025381 rejects most rays and
+		// the two distance gates behind it are barely reached.
+		const bool aimed = tame && (nxNext(&state) & 1) != 0;
+		if(aimed)
+			{
+			++aimedRays;
+			const float* n = shape0->geometry;
+			float tangent[3];
+			float projection = 0.0f;
+			for(int k = 0; k < 3; ++k)
+				{
+				tangent[k] = nxUnit(&state) * 6.0f - 3.0f;
+				projection += tangent[k] * n[k];
+				}
+			float delta[3];
+			float length = 0.0f;
+			for(int k = 0; k < 3; ++k)
+				{
+				const float target = n[k] * -shape0->geometry[3] + (tangent[k] - projection * n[k]);
+				delta[k] = target - (&ray.orig.x)[k];
+				length += delta[k] * delta[k];
+				}
+			length = (float) sqrt((double) length);
+			if(length < 1e-4f)
+				{ delta[0] = 1.0f; delta[1] = 0.0f; delta[2] = 0.0f; length = 1.0f; }
+			for(int k = 0; k < 3; ++k)
+				(&ray.dir.x)[k] = delta[k] / length;
+			maxDistance = length * (0.2f + nxUnit(&state) * 1.6f);
+			}
+		else
+			{
+			for(int k = 0; k < 3; ++k)
+				(&ray.dir.x)[k] = tame ? nxUnit(&state) * 2.0f - 1.0f : nxPick(&state);
+			maxDistance = tame ? nxUnit(&state) * 6.0f : nxPick(&state);
+			}
+
+		// Bit 2 is the only one 0x000253f4 tests. It is set on half the calls
+		// and the other seven bits are random, so "only bit 2 matters" is
+		// driven rather than assumed.
+		NxU32 hintFlags = nxNext(&state) & 0xfbu;
+		if(nxNext(&state) & 1)
+			hintFlags |= NX_RAYCAST_NORMAL;
+
+		for(int mode = 0; mode < 2; ++mode)
+			{
+			NxRaycastHit hit[2];
+			memset(hit, 0xcd, sizeof(hit));
+
+			nxSetControl(mode ? kControlSimulate : kControlDefault);
+			const unsigned char fromOracle =
+				oracleRaycast(shape0, &ray, maxDistance, 0, hintFlags, &hit[0]) ? 1 : 0;
+			const unsigned char fromCandidate =
+				NxShapeRaycastPlane(shape0, 0, &ray, maxDistance, 0, hintFlags, &hit[1]) ? 1 : 0;
+			nxSetControl(kControlDefault);
+
+			if(fromOracle)
+				++hits;
+			if((hit[0].flags & NX_RAYCAST_NORMAL) && fromOracle)
+				++wroteNormal;
+			nxDigestByte(&oracleDigest, fromOracle);
+			nxDigestByte(&candidateDigest, fromCandidate);
+			if(fromOracle != fromCandidate)
+				++mismatches;
+			for(unsigned w = 0; w < sizeof(NxRaycastHit) / 4; ++w)
+				{
+				NxU32 a, b;
+				memcpy(&a, (const unsigned char*) &hit[0] + w * 4, 4);
+				memcpy(&b, (const unsigned char*) &hit[1] + w * 4, 4);
+				for(int byte = 0; byte < 4; ++byte)
+					{
+					nxDigestByte(&oracleDigest, (unsigned char) (a >> (byte * 8)));
+					nxDigestByte(&candidateDigest, (unsigned char) (b >> (byte * 8)));
+					}
+				if(a != b)
+					++mismatches;
+				}
+			}
+		}
+	totalMismatch += mismatches;
+	printf("collision name=shape_raycast_plane index=- rva=0x%08x owner=phys_fn_001261 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		kPlaneRaycastRva, oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches);
+	printf("collision coverage name=shape_raycast_plane hits=%u wrote_normal=%u aimed=%u\n",
+		hits, wroteNormal, aimedRays);
+	}
+
+	// -----------------------------------------------------------------------
+	// Matrix A [PLANE][CAPSULE].
+	//
+	// The first entry in this matrix that is not one kernel. The byte at
+	// capsule+0xe8 selects between a two-endpoint plane test and a segment
+	// raycast issued through slot 5 of the partner shape's vtable, and the two
+	// share nothing but the endpoint construction. That byte is
+	// NxCapsuleShapeDesc::flags -- 0x00021ad0 loads the capsule's geometry from
+	// its descriptor and copies desc+0x54 into +0xe8 at 0x00021af9, one field
+	// past the radius at +0x4c and the height at +0x50 -- and NX_SWEPT_SHAPE is
+	// bit 0, the bit `test al,1` reads. Nothing else in this harness touches it,
+	// so it is driven from the generator on both sides.
+	//
+	// world->sphere is the second shape slot; here it carries the capsule.
+	{
+	typedef void(__cdecl* NxOracleContactFn)(const NxCollisionShape*, const NxCollisionShape*,
+		NxContactSink*, void*);
+	NxOracleContactFn oracleContact = (NxOracleContactFn) (base + nxMatrixA[3].rva);
+
+	static NxContactWorld world[2];
+	// The oracle's side dispatches into the shipped DLL's own plane slot 5 and
+	// the candidate's into the reconstruction, so the entry and the row it
+	// reaches are covered together and neither can be right by borrowing the
+	// other's answer.
+	world[0].shapeVtable[5] = (void*) (base + kPlaneRaycastRva);
+	world[1].shapeVtable[5] = (void*) &NxShapeRaycastPlane;
+
+	NxDigest oracleDigest, candidateDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	unsigned mismatches = 0;
+	unsigned emitted = 0;
+	unsigned oneContact = 0;
+	unsigned twoContacts = 0;
+	unsigned swept = 0;
+	unsigned sweptEmitted = 0;
+	unsigned zeroAxis = 0;
+	unsigned widths[24];
+	memset(widths, 0, sizeof(widths));
+	unsigned state = 0x9cab5017u;
+
+	for(unsigned i = 0; i < kContactIterations; ++i)
+		{
+		const unsigned sequenceSeed = nxNext(&state);
+		const unsigned pairs = 1 + (nxNext(&state) % 4);
+
+		for(int mode = 0; mode < 2; ++mode)
+			{
+			for(int side = 0; side < 2; ++side)
+				nxResetWorld(&world[side]);
+
+			unsigned local = sequenceSeed;
+			static unsigned char planeStorage[kShapeBytes];
+			NxCollisionShape* planeShape = (NxCollisionShape*) planeStorage;
+			const bool planeTame = (nxNext(&local) & 3) != 0;
+			nxIdentity(planeShape);
+			nxFillGeometry(&local, planeShape, 0, planeTame);
+
+			for(unsigned p = 0; p < pairs; ++p)
+				{
+				static unsigned char capsuleStorage[kShapeBytes];
+				NxCollisionShape* capsuleShape = (NxCollisionShape*) capsuleStorage;
+				const bool tame = (nxNext(&local) & 3) != 0;
+				nxIdentity(capsuleShape);
+				nxFillGeometry(&local, capsuleShape, 3, tame);
+
+				// The capsule axis is column 1 of the rotation and nothing else
+				// of it is read. A random quaternion essentially never produces
+				// an axis parallel to the plane normal, one lying in the plane,
+				// or a zero one -- and those are exactly the cases that make the
+				// two endpoints behave differently from each other, so they are
+				// generated rather than waited for.
+				const unsigned axisMode = nxNext(&local) % 5;
+				const NxReal* planeNormal = planeShape->geometry;
+				if(axisMode == 0)
+					nxRandomRotation(&local, capsuleShape);
+				else if(axisMode == 2)
+					{
+					const float sign = (nxNext(&local) & 1) ? 1.0f : -1.0f;
+					capsuleShape->rotation[1] = planeNormal[0] * sign;
+					capsuleShape->rotation[4] = planeNormal[1] * sign;
+					capsuleShape->rotation[7] = planeNormal[2] * sign;
+					}
+				else if(axisMode == 3)
+					{
+					// Orthogonal to the normal, so both endpoints sit at the
+					// same plane distance and the two contacts stand or fall
+					// together.
+					float pick[3];
+					float projection = 0.0f;
+					for(int k = 0; k < 3; ++k)
+						{
+						pick[k] = nxUnit(&local) * 2.0f - 1.0f;
+						projection += pick[k] * planeNormal[k];
+						}
+					capsuleShape->rotation[1] = pick[0] - projection * planeNormal[0];
+					capsuleShape->rotation[4] = pick[1] - projection * planeNormal[1];
+					capsuleShape->rotation[7] = pick[2] - projection * planeNormal[2];
+					}
+				else if(axisMode == 4)
+					memset(capsuleShape->rotation, 0, sizeof(capsuleShape->rotation));
+				// axisMode 1 keeps the identity, so the axis is world +Y.
+
+				// A zero-length capsule, which is what the swept path's
+				// normalisation guard at 0x0004846d exists for. Two ways to
+				// reach it, because a zero half height and a zero axis are not
+				// the same input to the endpoint construction.
+				const bool degenerate = (nxNext(&local) & 7) == 0;
+				if(degenerate)
+					capsuleShape->geometry[1] = 0.0f;
+				if(degenerate || axisMode == 4)
+					++zeroAxis;
+
+				// Bit 0 half the time, the other 31 bits random, so "only bit 0
+				// is tested" is driven rather than assumed.
+				NxU32 flagWord = nxNext(&local);
+				const bool sweptShape = (nxNext(&local) & 1) != 0;
+				flagWord = sweptShape ? (flagWord | 1u) : (flagWord & ~1u);
+				memcpy(&capsuleShape->geometry[2], &flagWord, 4);
+
+				// Three placements in four straddle the plane: with the capsule
+				// centred at random, neither endpoint is within a radius of the
+				// plane often enough for the emitting paths to be reached at
+				// all. The fourth is unaimed so the far-away and non-finite
+				// cases still arrive.
+				if((nxNext(&local) & 3) != 0)
+					{
+					const float span = capsuleShape->geometry[0] + capsuleShape->geometry[1];
+					const float offset = (nxUnit(&local) * 2.0f - 1.0f) * (span * 1.5f + 0.25f);
+					for(int k = 0; k < 3; ++k)
+						capsuleShape->translation[k] =
+							planeNormal[k] * (offset - planeShape->geometry[3]);
+					}
+				else
+					for(int k = 0; k < 3; ++k)
+						capsuleShape->translation[k] =
+							tame ? nxUnit(&local) * 3.0f - 1.5f : nxPick(&local);
+
+				const bool newIdentity0 = (p == 0) || ((nxNext(&local) & 3) == 0);
+				const bool newIdentity1 = (p == 0) || ((nxNext(&local) & 3) == 0);
+				const NxU32 material0 = nxNext(&local) & 0xff;
+				const NxU32 material1 = nxNext(&local) & 0xff;
+				const bool nullHolder1 = (nxNext(&local) & 7) == 0;
+				const bool orientToSphere = (nxNext(&local) & 1) != 0;
+				if(p && (nxNext(&local) % 3) == 0)
+					{
+					nxIdentity(planeShape);
+					nxFillGeometry(&local, planeShape, 0, planeTame);
+					}
+
+				const unsigned before = world[0].sink.streamCount;
+				const unsigned contactsBefore = world[0].sink.contactCount;
+				for(int side = 0; side < 2; ++side)
+					{
+					nxStageWorld(&world[side], planeShape, capsuleShape,
+						newIdentity0, newIdentity1, material0, material1,
+						nullHolder1, orientToSphere);
+					// After staging: nxStageWorld copies the shape template in,
+					// and that template's vtable pointer is zero.
+					*(void**) world[side].plane = world[side].shapeVtable;
+					}
+
+				nxSetControl(mode ? kControlSimulate : kControlDefault);
+				oracleContact(world[0].plane, world[0].sphere, &world[0].sink, nxOverlapContext);
+				NxContactPlaneCapsule(world[1].plane, world[1].sphere, &world[1].sink, nxOverlapContext);
+				nxSetControl(kControlDefault);
+
+				const unsigned appended = world[0].sink.streamCount - before;
+				const unsigned contacts = world[0].sink.contactCount - contactsBefore;
+				if(appended)
+					++emitted;
+				if(appended < 24)
+					++widths[appended];
+				if(contacts == 1)
+					++oneContact;
+				else if(contacts == 2)
+					++twoContacts;
+				if(sweptShape)
+					{
+					++swept;
+					if(appended)
+						++sweptEmitted;
+					}
+				}
+
+			if(world[0].sink.streamCount != world[1].sink.streamCount
+				|| world[0].sink.contactCount != world[1].sink.contactCount
+				|| world[0].sink.featurePairValid != world[1].sink.featurePairValid)
+				++mismatches;
+
+			const unsigned words = world[0].sink.streamCount < world[1].sink.streamCount
+				? world[0].sink.streamCount : world[1].sink.streamCount;
+			for(unsigned w = 0; w < words; ++w)
+				{
+				const NxU32 a = nxCanonical(&world[0], world[0].stream[w]);
+				const NxU32 b = nxCanonical(&world[1], world[1].stream[w]);
+				for(int byte = 0; byte < 4; ++byte)
+					{
+					nxDigestByte(&oracleDigest, (unsigned char) (a >> (byte * 8)));
+					nxDigestByte(&candidateDigest, (unsigned char) (b >> (byte * 8)));
+					}
+				if(a != b)
+					++mismatches;
+				}
+			}
+		}
+	totalMismatch += mismatches;
+	printf("collision name=contact_plane_capsule index=3 rva=0x%08x owner=%s checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		nxMatrixA[3].rva, nxMatrixA[3].stableId,
+		oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches);
+	// one/two are the oracle's own contact count moving by one or by two, which
+	// is the multiple-contact rule; swept_emitted is how often the vtable call
+	// reported a hit. w15 is a header, a normal block and two records in one
+	// call -- the state only this entry can produce.
+	printf("collision coverage name=contact_plane_capsule emitted=%u one=%u two=%u swept=%u swept_emitted=%u zero_axis=%u w4=%u w8=%u w11=%u w15=%u\n",
+		emitted, oneContact, twoContacts, swept, sweptEmitted, zeroAxis,
+		widths[4], widths[8], widths[11], widths[15]);
 	}
 
 	// What is not covered, named rather than left as an absence.
