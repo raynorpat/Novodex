@@ -60,6 +60,11 @@ static NxReal angleAtVertex(NxU32 vertex, const NxU32* index, const NxVec3* vert
 	const NxReal bz = (NxReal) bzRegister;
 
 	const double cx = bzRegister * ay - by * az;
+	// The narrowing of C.y here, and the narrowed B.z in the dot product below,
+	// are both transcribed from the disassembly and neither is observable:
+	// mutations that keep either at register precision move 0 matrix cases and
+	// 0 digests. atan2 is flat enough near its argument that a one-ulp change to
+	// a cross-product component does not survive into the weight.
 	const NxReal cy = (NxReal) (az * bx - bz * ax);
 	const double czRegister = by * ax - bx * ay;
 	const NxReal cz = (NxReal) czRegister;
@@ -117,7 +122,8 @@ bool NX_CALL_CONV NxBuildSmoothNormals(NxU32 nbTris, NxU32 nbVerts, const NxVec3
 	if(!faceNormals)
 		return false;
 
-	// 0x0005341d is `setne dl` on the raw argument byte, so *any* nonzero byte
+	// 0x00053425 is `setne dl` on the raw argument byte (0x0005341d is the
+	// `mov cl, byte ptr [esp+0x74]` that loads it), so *any* nonzero byte
 	// normalises to exactly 1. That matters: a caller can pass a `bool` holding
 	// a value other than 0 or 1, and the case matrix does exactly that in
 	// NxBuildSmoothNormals.12. Written as `flip ? 1 : 0` the compiler is
