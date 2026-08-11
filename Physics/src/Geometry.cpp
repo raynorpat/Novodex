@@ -189,8 +189,10 @@ bool NX_CALL_CONV NxRaySphereIntersect(const NxVec3& origin, const NxVec3& dir,
 //     0x000370a9 and 0x000371f5.
 //
 // The u and v range tests are `test eax, eax; js` on the word just stored,
-// which is a sign-bit test and not `< 0`, and the upper test reads u back out
-// of the caller's float rather than using the register copy.
+// which is a sign-bit test and not `< 0`. u's upper test uses the register copy
+// (`fcomp dword ptr [esp + 0x40]` at 0x0003705a); it is v's that reads u back
+// out of the caller's float (`fadd dword ptr [ecx]` at 0x000370d3), so an
+// aliasing caller changes the second test and not the first.
 bool NX_CALL_CONV NxRayTriIntersect(const NxVec3& orig, const NxVec3& dir,
 	const NxVec3& vert0, const NxVec3& vert1, const NxVec3& vert2,
 	float& t, float& u, float& v, bool cull)

@@ -88,6 +88,18 @@ if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		PROPERTIES COMPILE_OPTIONS "/arch:IA32")
 endif()
 
+# NOTE FOR WHOEVER ADDS THE NEXT KERNEL TRANSLATION UNIT. This rule names two
+# files, not a directory, so anything else added under Physics/src builds SSE2
+# by default and will silently disagree with the oracle on NaN payloads -- and,
+# if it is written with NxReal temporaries rather than double register
+# lifetimes, on the last bit of ordinary results too. The collision kernels
+# Phase 3 Task 3 adds (BroadPhase.cpp, NarrowPhase.cpp, ContactGeneration.cpp,
+# Filtering.cpp) are almost certainly x87 in the 2003 oracle as well: check one
+# against the shipped export before assuming otherwise, and extend this list if
+# so. The check is cheap -- pick an input where the two models differ in the
+# last bit and compare, the way the witnesses in
+# tests/PhysicsKernelFuzzTests.cpp do.
+
 if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	add_executable(NxPhysicsExportTests tests/PhysicsExportTests.cpp)
 	target_link_libraries(NxPhysicsExportTests bcrypt)

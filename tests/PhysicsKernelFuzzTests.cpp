@@ -132,6 +132,21 @@ static float nxPick(NxRandom* r, unsigned mode)
 		}
 	}
 
+// Output buffers are poisoned before every call with the same cdcd000N ladder
+// the case matrix uses, and the poison is folded into the digest along with
+// everything else. Zero-filling them instead would make "wrote zero" and "did
+// not write" the same transcript, and at least one kernel here -- the parallel
+// path of NxSegmentPlaneIntersect, which returns without touching dist -- turns
+// on exactly that distinction.
+static void nxPoison(float* out, unsigned count)
+	{
+	for(unsigned i = 0; i < count; ++i)
+		{
+		const NxU32 word = 0xcdcd0000u + i;
+		memcpy(out + i, &word, 4);
+		}
+	}
+
 static float nxUnit(NxRandom* r)
 	{
 	return (float) ((double) (nxNext(r) >> 8) / 16777216.0);
@@ -219,14 +234,16 @@ static void nxRunScalarBlock(HMODULE physics)
 
 		if(table[10].fn)
 			{
-			float out[3] = { 0, 0, 0 };
+			float out[3];
+			nxPoison(out, 3);
 			((NxFnBoxInertia) table[10].fn)(out, a, b, c, d);
 			for(int k = 0; k < 3; ++k)
 				nxDigestFloat(&table[10].digest, out[k]);
 			}
 		if(table[11].fn)
 			{
-			float out[3] = { 0, 0, 0 };
+			float out[3];
+			nxPoison(out, 3);
 			((NxFnSphereInertia) table[11].fn)(out, a, b, hollow);
 			for(int k = 0; k < 3; ++k)
 				nxDigestFloat(&table[11].digest, out[k]);
@@ -259,8 +276,9 @@ static void nxRunVectorBlock(HMODULE physics)
 
 		if(rayPlane)
 			{
-			float point[3] = { 0, 0, 0 };
-			float distance = 0.0f;
+			float point[3], distance;
+			nxPoison(point, 3);
+			nxPoison(&distance, 1);
 			nxDigestWord(&dRayPlane, rayPlane(w + 0, w + 6, &distance, point));
 			nxDigestFloat(&dRayPlane, distance);
 			for(int k = 0; k < 3; ++k)
@@ -268,8 +286,9 @@ static void nxRunVectorBlock(HMODULE physics)
 			}
 		if(segmentPlane)
 			{
-			float point[3] = { 0, 0, 0 };
-			float distance = 0.0f;
+			float point[3], distance;
+			nxPoison(point, 3);
+			nxPoison(&distance, 1);
 			segmentPlane(w + 0, w + 3, w + 6, &distance, point);
 			nxDigestFloat(&dSegmentPlane, distance);
 			for(int k = 0; k < 3; ++k)
@@ -277,7 +296,8 @@ static void nxRunVectorBlock(HMODULE physics)
 			}
 		if(raySphere)
 			{
-			float coord[3] = { 0, 0, 0 };
+			float coord[3];
+			nxPoison(coord, 3);
 			nxDigestWord(&dRaySphere, raySphere(w + 0, w + 3, w + 6, w[9], coord));
 			for(int k = 0; k < 3; ++k)
 				nxDigestFloat(&dRaySphere, coord[k]);
@@ -285,7 +305,11 @@ static void nxRunVectorBlock(HMODULE physics)
 		if(rayTri)
 			for(unsigned char cull = 0; cull < 2; ++cull)
 				{
-				float t = 0.0f, u = 0.0f, v = 0.0f;
+				float barycentric[3];
+				nxPoison(barycentric, 3);
+				float& t = barycentric[0];
+				float& u = barycentric[1];
+				float& v = barycentric[2];
 				nxDigestWord(&dRayTri, rayTri(w + 0, w + 3, w + 6, w + 9, w + 12, &t, &u, &v, cull));
 				nxDigestFloat(&dRayTri, t);
 				nxDigestFloat(&dRayTri, u);
@@ -341,7 +365,11 @@ static void nxRunAimedBlock(HMODULE physics)
 			continue;
 		for(unsigned char cull = 0; cull < 2; ++cull)
 			{
-			float t = 0.0f, u = 0.0f, v = 0.0f;
+			float barycentric[3];
+			nxPoison(barycentric, 3);
+			float& t = barycentric[0];
+			float& u = barycentric[1];
+			float& v = barycentric[2];
 			const unsigned char hit = rayTri(origin, direction, v0, v1, v2, &t, &u, &v, cull);
 			hits += hit ? 1 : 0;
 			nxDigestWord(&digest, hit);
