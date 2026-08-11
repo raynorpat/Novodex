@@ -2493,9 +2493,9 @@ int wmain(int argc, wchar_t** argv)
 	printf("collision name=segment_segment index=- rva=0x%08x owner=phys_fn_001690 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
 		kSegmentDistanceRva, oracleDigest.checks, oracleDigest.state,
 		candidateDigest.state, mismatches);
-	printf("collision coverage name=segment_segment parallel=%u degenerate=%u null_params=%u interior=%u clamped_s=%u clamped_t=%u non_finite=%u default_mismatches=%u simulate_mismatches=%u\n",
+	printf("collision coverage name=segment_segment parallel=%u degenerate=%u null_params=%u interior=%u clamped_s=%u clamped_t=%u non_finite=%u canonical_nan=%u default_mismatches=%u simulate_mismatches=%u\n",
 		parallelPairs, degeneratePairs, nullParameters, interiorPairs, clampedS, clampedT,
-		nonFinite, perMode[0], perMode[1]);
+		nonFinite, canonicalised, perMode[0], perMode[1]);
 	}
 
 	// What is not covered, named rather than left as an absence.
