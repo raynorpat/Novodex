@@ -177,6 +177,9 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# linkage here as in the DLL or every one of them warns.
 	target_compile_definitions(NxPhysicsCollisionTests PRIVATE NX_PHYSICS_DLL=1)
 	target_link_libraries(NxPhysicsCollisionTests NxFoundation bcrypt)
-	set_source_files_properties(Physics/src/NarrowPhase.cpp Physics/src/Geometry.cpp
-		PROPERTIES COMPILE_OPTIONS "/arch:IA32")
+	# No architecture rule here: source file properties are per directory, so
+	# the /arch:IA32 rule above already covers these two files in this target
+	# too. A second rule naming them would set the same value and silently
+	# override the first, which would leave the first untestable -- the mutation
+	# that removes NarrowPhase.cpp from it moved nothing until this was deleted.
 endif()
