@@ -198,4 +198,21 @@ bool __cdecl NxSphereBoxContactData(const NxCollisionSphereData* sphere,
 void __cdecl NxContactSphereBox(const NxCollisionShape* sphere,
 	const NxCollisionShape* box, NxContactSink* sink, void* context);
 
+// phys_fn_001739 at 0x00038a90, 258 bytes, and the leaf of the box/box subtree:
+// it is the only row under matrix A [BOX][BOX] that calls nothing.
+//
+// Given a quad as four vertex pointers and a point in the (y, z) plane, it
+// answers "is the point inside the quad, and if it is, what x does it
+// interpolate to". Outside is -1.0f, the constant at 0x1010687c, which its one
+// caller rejects with `fcom 0.0f; test ah,1; jne` at 0x00039938.
+//
+// The oracle is entered with the quad in ecx and the two floats on the stack,
+// and the CALLER cleans -- `add esp,8` at 0x0003993e and at the three other
+// call sites in phys_fn_001741. That is a compiler-chosen convention for an
+// internal function and no C++ declaration expresses it, so this copy takes
+// ordinary parameters: the differential calls the candidate by name and only
+// the oracle side needs the ABI. The result is left in st(0) and the caller
+// compares the register before it narrows it, so the return type is `double`.
+double NxBoxBoxQuadDepth(const NxVec3* const* quad, NxReal pointY, NxReal pointZ);
+
 #endif

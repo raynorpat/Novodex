@@ -433,6 +433,56 @@ static void nxCallSegmentDistance(const void* fn, const NxSegment* segment0,
 		}
 	}
 
+// phys_fn_001739 is the second row in this component entered through a register:
+// its quad arrives in ecx and its two floats on the stack, and the CALLER cleans
+// -- `add esp,8` at 0x0003993e. So the oracle side needs a thunk and the
+// candidate, which takes ordinary parameters, needs its own. Both spill st(0)
+// with `fstp tbyte` for the same reason nxCallSegmentDistance does: the one
+// caller compares the register against 0.0f at 0x00039938 before it narrows it
+// with `fst dword` at 0x0003994c, so a `double` return would round away the
+// bits that decide that comparison under 0x0f7f.
+//
+// The two floats travel as their bit patterns, so nothing here can quiet a
+// signalling NaN on the way in and the two sides are handed identical words.
+static void nxCallQuadDepthOracle(const void* fn, const NxVec3* const* quad,
+	NxU32 pointY, NxU32 pointZ, unsigned char wide[10])
+	{
+	__asm
+		{
+		mov  eax, pointZ
+		push eax
+		mov  eax, pointY
+		push eax
+		mov  ecx, quad
+		mov  eax, fn
+		call eax
+		add  esp, 8
+		mov  eax, wide
+		fstp tbyte ptr [eax]
+		}
+	}
+
+typedef double(__cdecl* NxQuadDepthFn)(const NxVec3* const*, NxReal, NxReal);
+
+static void nxCallQuadDepthCandidate(NxQuadDepthFn fn, const NxVec3* const* quad,
+	NxU32 pointY, NxU32 pointZ, unsigned char wide[10])
+	{
+	__asm
+		{
+		mov  eax, pointZ
+		push eax
+		mov  eax, pointY
+		push eax
+		mov  eax, quad
+		push eax
+		mov  eax, fn
+		call eax
+		add  esp, 12
+		mov  eax, wide
+		fstp tbyte ptr [eax]
+		}
+	}
+
 static unsigned short nxGetControl()
 	{
 	unsigned short value;
@@ -1228,6 +1278,135 @@ int wmain(int argc, wchar_t** argv)
 	printf("collision name=sphere_box_data index=- rva=0x00049ca0 owner=phys_fn_001913 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
 		oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches);
 	printf("collision coverage name=sphere_box_data true=%u centre_inside=%u\n", trueCount, insideCount);
+	}
+
+	// -----------------------------------------------------------------------
+	// phys_fn_001739 at 0x00038a90, the leaf of the box/box subtree.
+	//
+	// The containment test accepts one winding only -- every one of the four
+	// cross products has to be strictly negative -- so a random quadruple
+	// essentially never reaches the interpolation. Half the tame draws are
+	// therefore built as a rectangle wound the way the test accepts, with the
+	// point placed inside it, and the other half is the reversed winding, which
+	// is rejected at the very first edge. Both are needed: without the first the
+	// whole second half of the row is dead, and without the second the loop
+	// never exits early.
+	{
+	const void* oracleQuadDepth = (const void*) (base + 0x00038a90);
+	// -1.0f as x87 leaves it in st(0): significand 0x8000000000000000,
+	// exponent 0x3fff, sign set.
+	static const unsigned char kOutside[10] =
+		{ 0, 0, 0, 0, 0, 0, 0, 0x80, 0xff, 0xbf };
+
+	NxDigest oracleDigest, candidateDigest;
+	nxDigestInit(&oracleDigest);
+	nxDigestInit(&candidateDigest);
+	unsigned mismatches = 0;
+	unsigned perMode[2] = { 0, 0 };
+	unsigned aimedInside = 0;
+	unsigned reversed = 0;
+	unsigned interpolated = 0;
+	unsigned nonFinite = 0;
+	unsigned canonicalised = 0;
+	unsigned state = 0x71dbeef3u;
+	for(unsigned i = 0; i < kPairIterations; ++i)
+		{
+		const bool tame = (nxNext(&state) & 3) != 0;
+		NxVec3 corner[4];
+		NxReal pointY, pointZ;
+
+		if(tame)
+			{
+			// Every operand below is finite by construction, so nothing here
+			// multiplies a value it also allows to be non-finite.
+			const NxReal y0 = nxUnit(&state) * 4.0f - 2.0f;
+			const NxReal z0 = nxUnit(&state) * 4.0f - 2.0f;
+			const NxReal y1 = y0 + nxUnit(&state) * 3.0f + 0.05f;
+			const NxReal z1 = z0 + nxUnit(&state) * 3.0f + 0.05f;
+			const bool accepted = (nxNext(&state) & 1) != 0;
+			// quad[0] (y0,z0), quad[1] (y0,z1), quad[2] (y1,z1), quad[3] (y1,z0)
+			// is the winding whose four cross products are all negative for an
+			// interior point; the reverse of it is rejected at index 0.
+			const NxReal ys[4] = { y0, y0, y1, y1 };
+			const NxReal zs[4] = { z0, z1, z1, z0 };
+			for(int k = 0; k < 4; ++k)
+				{
+				const int slot = accepted ? k : (3 - k);
+				corner[slot].x = nxUnit(&state) * 4.0f - 2.0f;
+				corner[slot].y = ys[k];
+				corner[slot].z = zs[k];
+				}
+			if(!accepted)
+				++reversed;
+
+			if((nxNext(&state) & 1) != 0)
+				{
+				pointY = y0 + nxUnit(&state) * (y1 - y0);
+				pointZ = z0 + nxUnit(&state) * (z1 - z0);
+				if(accepted)
+					++aimedInside;
+				}
+			else
+				{
+				// Outside on a random side, which is what walks the loop to a
+				// different index before it leaves.
+				pointY = nxUnit(&state) * 8.0f - 4.0f;
+				pointZ = nxUnit(&state) * 8.0f - 4.0f;
+				}
+			}
+		else
+			{
+			for(int k = 0; k < 4; ++k)
+				{
+				corner[k].x = nxPick(&state);
+				corner[k].y = nxPick(&state);
+				corner[k].z = nxPick(&state);
+				}
+			pointY = nxPick(&state);
+			pointZ = nxPick(&state);
+			}
+
+		const NxVec3* quad[4] = { &corner[0], &corner[1], &corner[2], &corner[3] };
+		NxU32 pointYBits, pointZBits;
+		memcpy(&pointYBits, &pointY, 4);
+		memcpy(&pointZBits, &pointZ, 4);
+
+		for(int mode = 0; mode < 2; ++mode)
+			{
+			unsigned char wide[2][10];
+			memset(wide, 0xcd, sizeof(wide));
+
+			nxSetControl(mode ? kControlSimulate : kControlDefault);
+			nxCallQuadDepthOracle(oracleQuadDepth, quad, pointYBits, pointZBits, wide[0]);
+			nxCallQuadDepthCandidate(NxBoxBoxQuadDepth, quad, pointYBits, pointZBits, wide[1]);
+			nxSetControl(kControlDefault);
+
+			// Classified from the oracle's own answer: -1.0f is the only value
+			// the containment test can return, so anything else says the
+			// interpolation ran.
+			if(memcmp(wide[0], kOutside, 10) != 0)
+				{
+				++interpolated;
+				if((wide[0][9] & 0x7f) == 0x7f && wide[0][8] == 0xff)
+					++nonFinite;
+				}
+
+			if(nxCanonicalWide(wide[0]) | nxCanonicalWide(wide[1]))
+				++canonicalised;
+			for(int byte = 0; byte < 10; ++byte)
+				{
+				nxDigestByte(&oracleDigest, wide[0][byte]);
+				nxDigestByte(&candidateDigest, wide[1][byte]);
+				if(wide[0][byte] != wide[1][byte])
+					{ ++mismatches; ++perMode[mode]; }
+				}
+			}
+		}
+	totalMismatch += mismatches;
+	printf("collision name=box_quad_depth index=- rva=0x00038a90 owner=phys_fn_001739 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches);
+	printf("collision coverage name=box_quad_depth aimed_inside=%u reversed=%u interpolated=%u non_finite=%u canonicalised=%u default_mismatches=%u simulate_mismatches=%u\n",
+		aimedInside, reversed, interpolated, nonFinite, canonicalised, perMode[0], perMode[1]);
 	}
 
 	// -----------------------------------------------------------------------

@@ -1578,3 +1578,99 @@ void __cdecl NxContactSphereBox(const NxCollisionShape* sphere,
 	NxEmitContact(sink, sphere->collisionObject, box->collisionObject,
 		nxBits(separation), &point, &normal, 0xffff, 0xffff);
 	}
+
+// One edge of the quad phys_fn_001739 interpolates over, projected onto the
+// query point.
+//
+// A SEPARATE, NOINLINE FUNCTION, AND THAT IS THE WHOLE POINT OF IT. The oracle
+// holds the three edge components and the two deltas in st(1)..st(6) from
+// 0x00038b0d to 0x00038b39 and never stores one, and MSVC only leaves a
+// `double` in a register while the live set fits the x87 stack. Four spellings
+// were measured against the oracle over the same 1,200,000 checks, and all four
+// agree on every one of them under 0x027f:
+//
+//   named `double` locals, inline           88 words differ under 0x0f7f
+//   every use written out as a subexpression  20,060  (MSVC re-CSEs them and
+//                                             spills the temps it invented)
+//   this function, allowed to inline            68  (dy and dz spilled, since
+//                                             each is used by both edges)
+//   this function, noinline                      0
+//
+// Every one of those differences is an 8-byte spill slot truncating a 64-bit
+// significand to 53. Nothing about the arithmetic changed between the four.
+//
+// That matters beyond this row: the `double`-liveness signal has been read in
+// this program as "a value carried across a branch", and there is no branch
+// anywhere in this region. The cause is the spill and a branch is only its
+// commonest reason -- register pressure in straight-line code is another, and
+// counting x87 depth at branches cannot see it. It also says a divergence in
+// that class is not automatically something to pin: this one was removable.
+//
+// The two callers do NOT share a denominator order: quad[1]'s is
+// (z*z + y*y) + x*x at 0x00038b29..0x00038b37 and quad[3]'s is
+// (z*z + x*x) + y*y at 0x00038b63..0x00038b71, so `swapped` picks between them
+// rather than the caller picking an argument order.
+static __declspec(noinline) double nxQuadEdge(const NxVec3* origin, const NxVec3* along,
+	NxReal pointY, NxReal pointZ, bool swapped)
+	{
+	const double ex = (double) along->x - origin->x;
+	const double ey = (double) along->y - origin->y;
+	const double ez = (double) along->z - origin->z;
+	const double numerator = ex * (ez * ((double) pointZ - origin->z)
+		+ ey * ((double) pointY - origin->y));
+	if(swapped)
+		return numerator / ((ez * ez + ex * ex) + ey * ey);
+	return numerator / ((ez * ez + ey * ey) + ex * ex);
+	}
+
+// phys_fn_001739 at 0x00038a90. See the header for the ABI note.
+//
+// A containment test in the (y, z) plane followed by an interpolation of x, and
+// the two halves do not use the same corners: the test walks all four edges and
+// the interpolation reads quad[0], quad[1] and quad[3] only. quad[2] never
+// reaches an arithmetic instruction.
+//
+// Its one branch above x87 depth 0 is the loop's back edge at 0x00038af0, which
+// carries the previous corner's y and z -- both `fld dword` of a 32-bit slot the
+// loop wrote with an integer move at 0x00038aa9 and 0x00038ab1 -- so nothing
+// that survives a branch here is anything but a float. That is what said this
+// row should be bit-exact, and it was not until the spill in the tail was taken
+// out; see nxQuadEdge above for the measurement and for what it corrects.
+double NxBoxBoxQuadDepth(const NxVec3* const* quad, NxReal pointY, NxReal pointZ)
+	{
+	// The previous corner starts at quad[3] (0x00038a90) and each iteration
+	// leaves its own y and z for the next (0x00038ae4, 0x00038aec).
+	double previousY = quad[3]->y;
+	double previousZ = quad[3]->z;
+
+	for(int index = 0; index < 4; ++index)
+		{
+		const NxVec3* const corner = quad[index];
+		const NxReal cornerY = corner->y;
+		const NxReal cornerZ = corner->z;
+
+		const double first = ((double) cornerY - previousY) * ((double) pointZ - previousZ);
+		const double second = ((double) cornerZ - previousZ) * ((double) pointY - previousY);
+		// `test ah,1` at 0x00038ad9 reads C0 alone, which is set for "less" and
+		// for "unordered" alike, so a corner exactly on an edge is outside and a
+		// NaN cross product keeps walking. -1.0f is the constant at 0x1010687c.
+		if(first - second >= 0.0)
+			return -1.0f;
+
+		previousY = cornerY;
+		previousZ = cornerZ;
+		}
+
+	// 0x00038af4. The point is inside, so x comes from two independent edge
+	// projections added to quad[0]'s own x.
+	const NxVec3* const origin = quad[0];
+	const NxVec3* const alongU = quad[1];
+	const NxVec3* const alongV = quad[3];
+
+	// The first quotient is added to quad[0].x and NARROWED through a 32-bit
+	// slot at 0x00038b3d; the second is added to that narrowed copy and left
+	// wide. So the two halves of the answer are not carried at the same width.
+	const NxReal partial = (NxReal) (nxQuadEdge(origin, alongU, pointY, pointZ, false)
+		+ origin->x);
+	return nxQuadEdge(origin, alongV, pointY, pointZ, true) + (double) partial;
+	}
