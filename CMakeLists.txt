@@ -82,6 +82,9 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	add_executable(NxPhysicsCoreClusterTests tests/PhysicsCoreClusterTests.cpp)
 	target_include_directories(NxPhysicsCoreClusterTests PRIVATE Foundation/include Physics/include)
 	target_link_libraries(NxPhysicsCoreClusterTests bcrypt)
+	add_executable(NxPhysicsGeometryTests tests/PhysicsGeometryTests.cpp)
+	target_include_directories(NxPhysicsGeometryTests PRIVATE Foundation/include Physics/include)
+	target_link_libraries(NxPhysicsGeometryTests bcrypt)
 
 	# A static-proof gate, not a differential: it links the private translation
 	# units directly because the rows it covers cannot be reached through the
