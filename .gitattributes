@@ -14,6 +14,13 @@ Foundation/include/*.h text eol=crlf
 /VersionNumber.h       text eol=crlf
 /changes.txt           text eol=crlf
 
+# The vendored third-party trees are the same kind of oracle. External/*/upstream
+# is checked byte-for-byte against the pinned qhull-2003.1 and Opcode13 archives
+# on every gate run, and the two trees disagree about line endings -- qhull ships
+# LF, OPCODE ships CRLF -- so any normalisation at all fails the check on one of
+# them. -text turns EOL conversion off without turning diffs off.
+External/** -text
+
 # The shipped SDK documentation is binary. Git leaves it alone today only
 # because auto-detection guesses right, and an explicit text attribute would
 # override that, so say so rather than relying on the guess.
