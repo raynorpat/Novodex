@@ -952,6 +952,51 @@ static void nxCheckLayouts()
 	// these offsets.
 	nxLayout("sizeof_Segment", sizeof(Segment), 24, "0x000f0560");
 	nxLayout("MeshInterface.mTris", 8, 8, "0x000e9012");
+
+	// THE VTABLE SHAPES, checked by dispatching through the slot rather than by
+	// counting anything. Nothing in C++ says how many virtuals a class has, so
+	// the assertion is the one that matters instead: the slot the oracle
+	// dispatches through has to reach the function the oracle reaches.
+	//
+	// Stock gives AABBOptimizedTree five slots with GetUsedBytes at 4. The image
+	// has eight with GetUsedBytes at 7, and Model::GetUsedBytes at 0x000e90c0
+	// tail-jumps [eax+0x1c] to get there. If the three added virtuals are
+	// dropped from OPC_OptimizedTree.h everything still compiles and slot 7 is
+	// past the end of the table.
+	typedef unsigned (__thiscall* SlotFn)(const void*);
+	AABBCollisionTree tree;
+	// mNbNodes is protected and at AABBOptimizedTree+4, which is what the stock
+	// class layout gives and what GetUsedBytes multiplies. Poked rather than
+	// built, so the number the two sides compare is NOT zero -- 0 == 0 would
+	// have passed against a vtable with no slot 7 in it at all.
+	((unsigned*) &tree)[1] = 7;
+	{
+	void** vtable = *(void***) &tree;
+	nxLayout("AABBOptimizedTree.GetUsedBytes_slot7",
+		((SlotFn) vtable[7])(&tree), tree.GetUsedBytes(), "0x000e90c0 jmp [eax+0x1c]");
+	// Slot 4 is one of the three added ones. Its body is Task 2b's and returns
+	// zero; what is asserted is that the slot EXISTS and is distinct from
+	// GetUsedBytes, which a stock header makes false -- there, slot 4 IS
+	// GetUsedBytes and this check reads 7*sizeof(node) instead of 0.
+	nxLayout("AABBOptimizedTree.added_slot4", ((SlotFn) vtable[4])(&tree),
+		tree.NovodeXSlot4(), "0x000e9420 jmp [edx+0x10]");
+	}
+	{
+	// BaseModel keeps GetUsedBytes at slot 2 -- its three virtuals are APPENDED,
+	// not inserted -- and this pair is what says the two hierarchies were
+	// changed differently.
+	Model model;
+	// mTree is at BaseModel+0x10, read there by Model::GetUsedBytes at
+	// 0x000e90c0. Installed by hand and removed again before the destructor,
+	// which would otherwise release a stack object.
+	((void**) &model)[4] = &tree;
+	void** vtable = *(void***) &model;
+	nxLayout("BaseModel.GetUsedBytes_slot2",
+		((SlotFn) vtable[2])(&model), model.GetUsedBytes(), ".rdata:0x0011bac8");
+	nxLayout("BaseModel.added_slot4", ((SlotFn) vtable[4])(&model),
+		model.NovodeXSlot4(), "0x000e9420");
+	((void**) &model)[4] = 0;
+	}
 	}
 
 //////////////////////////////////////////////////////////////////////////////
