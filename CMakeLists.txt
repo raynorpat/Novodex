@@ -176,6 +176,17 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_include_directories(NxPhysicsKernelFuzzTests PRIVATE Foundation/include Physics/include)
 	target_link_libraries(NxPhysicsKernelFuzzTests bcrypt)
 
+	# The Phase 4 asset-format gate. An oracle differential like
+	# NxPhysicsCollisionTests below, and RED on purpose: it drives the recovered
+	# penetration-map and triangle-mesh byte formats against the pinned DLL and
+	# then asks the reconstruction the same questions, and Phase 4 has no
+	# reconstruction yet. It links no Physics source, because there is none to
+	# link -- Task 2 adds TriangleMesh.cpp and PenetrationMap.cpp here and
+	# replaces the three nxCandidate* functions in the harness.
+	add_executable(NxPhysicsAssetTests tests/PhysicsAssetTests.cpp)
+	target_include_directories(NxPhysicsAssetTests PRIVATE Foundation/include Physics/include)
+	target_link_libraries(NxPhysicsAssetTests bcrypt)
+
 	# A static-proof gate, not a differential: it links the private translation
 	# units directly because the rows it covers cannot be reached through the
 	# public API. Same shape as NxFoundationCustomArrayTests above.
