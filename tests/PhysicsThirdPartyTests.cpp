@@ -807,7 +807,7 @@ static void nxDriveRadix(const NxOracleRows& o, bool selfOnly)
 		free(dwords);
 		free(floats);
 		}
-	nxReport("radixsort", "0x000e32c0", "phys_fn_005141", "Ice/IceRevisitedRadix.cpp:170,186,225,350", selfOnly);
+	nxReport("radixsort", "0x000e32c0", "phys_fn_005157", "Ice/IceRevisitedRadix.cpp:170,186,238,350", selfOnly);
 	}
 
 //////////////////////////////////////////////////////////////////////////////
@@ -816,10 +816,14 @@ static void nxDriveRadix(const NxOracleRows& o, bool selfOnly)
 static void nxDriveSegment(const NxOracleRows& o, bool selfOnly)
 	{
 	// Integral coordinates in [-32, 32]. Every product and every sum below is
-	// exactly representable, the only inexact step is the single division
-	// fT/SqrLen, and the final SquareMagnitude is a sum of squares -- all
-	// positive, so nothing cancels. On this domain the two code generators have
-	// nowhere to disagree, and they don't.
+	// exactly representable and the final SquareMagnitude is a sum of squares --
+	// all positive, so the result cannot cancel. The intermediate can: fT/SqrLen
+	// is inexact and `Diff -= fT*Dir` then subtracts two nearly equal
+	// quantities. So this family is NOT clean either. It reports
+	// mismatches=9356 worst_ulp=67, is registered `divergent`, and is not
+	// counted as a proof of the row -- the same as the wide family below and
+	// for the same reason: st(0) at 53 bits against stores no C++ type names.
+	// What separates the two is size, 67 ULP here against 8420 there.
 	gState = 0x5e6de717;
 	gOracleTape.reset();
 	gCandidateTape.reset();
@@ -946,7 +950,7 @@ static void nxDriveMeshInterface(const NxOracleRows& o, bool selfOnly)
 			gCandidateTape.push(mesh.CheckTopology());
 			}
 		}
-	nxReport("mesh_topology", "0x000e8fd0", "phys_fn_005357", "OPC_MeshInterface.cpp:178,225", selfOnly);
+	nxReport("mesh_topology", "0x000e8fd0", "phys_fn_005357", "OPC_MeshInterface.cpp:178,228", selfOnly);
 	}
 
 //////////////////////////////////////////////////////////////////////////////
@@ -1568,6 +1572,81 @@ static void nxLayout(const char* what, size_t measured, size_t expected, const c
 		what, (unsigned) measured, (unsigned) expected, rva, ok ? "ok" : "FAILED");
 	}
 
+// The two blocks of NovodeX code in OPC_AABBTree.cpp. No offset check can see
+// them -- they are statements, not layout -- so this drives them: three trees
+// over the same four vertices, one per setting, and the root box of each.
+//
+// The point of the assertion is the middle and last cases. Vendoring
+// OPC_AABBTree.cpp stock passes the first one, because both features default to
+// off, and fails the other two.
+static unsigned nxBits(float value)
+	{
+	unsigned w;
+	memcpy(&w, &value, sizeof(w));
+	return w;
+	}
+
+static void nxCheckAABBTreeExtension()
+	{
+	static const Point kVerts[4] =
+		{
+		Point(0.0f, 0.0f, 0.0f), Point(4.0f, 0.0f, 0.0f),
+		Point(0.0f, 4.0f, 0.0f), Point(0.0f, 0.0f, 4.0f)
+		};
+
+	// (a) The defaults. The root box is the stock global box, [0,0,0]-[4,4,4].
+	{
+	AABBTreeOfVerticesBuilder builder;
+	builder.mVertexArray	= kVerts;
+	builder.mNbPrimitives	= 4;
+	AABBTree tree;
+	tree.Build(&builder);
+	const AABB* root = tree.GetAABB();
+	nxLayout("AABBTree.defaults_root_min_y", nxBits(root->GetMin(1)), nxBits(0.0f),
+		"0x000f0ec0 cmp edx,-1 skips the block");
+	nxLayout("AABBTree.defaults_root_max_y", nxBits(root->GetMax(1)), nxBits(4.0f),
+		"0x000f0f83 test eax,eax skips the inflate");
+	}
+
+	// (b) The extension. Axis 1, value -3: below the root box's own minimum, so
+	// 0x000f0efe's compare takes the fallthrough and mMin[1] becomes -3.
+	{
+	AABBTreeOfVerticesBuilder builder;
+	builder.mVertexArray	= kVerts;
+	builder.mNbPrimitives	= 4;
+	builder.mSettings.mNovodeXExtendAxis		= 1;
+	builder.mSettings.mNovodeXExtendValue		= -3.0f;
+	AABBTree tree;
+	tree.Build(&builder);
+	const AABB* root = tree.GetAABB();
+	nxLayout("AABBTree.extend_pulls_min", nxBits(root->GetMin(1)), nxBits(-3.0f),
+		"0x000f0efe fcomp [esi+edx*4+0x20]; 0x000f0f3b stores");
+	nxLayout("AABBTree.extend_leaves_max", nxBits(root->GetMax(1)), nxBits(4.0f),
+		"0x000f0f47 fcomp [esi+edx*4+0x2c] not taken");
+	// The latch is one-shot and cleared, which is what makes every node after
+	// the root compare against the ROOT's box and not its own.
+	nxLayout("AABBTree.capture_latch_cleared", builder.mNovodeXCaptureRootBV ? 1 : 0, 0,
+		"0x000f0efa mov byte ptr [esi+0x38],0");
+	nxLayout("AABBTree.captured_root_max_y", nxBits(builder.mNovodeXRootBV.GetMax(1)), nxBits(4.0f),
+		"0x000f0ed7 lea eax,[esi+0x20] + six moves");
+	}
+
+	// (c) The margin. Every node's box grows by it on both sides.
+	{
+	AABBTreeOfVerticesBuilder builder;
+	builder.mVertexArray	= kVerts;
+	builder.mNbPrimitives	= 4;
+	builder.mSettings.mNovodeXInflate	= 0.5f;
+	AABBTree tree;
+	tree.Build(&builder);
+	const AABB* root = tree.GetAABB();
+	nxLayout("AABBTree.inflate_min", nxBits(root->GetMin(1)), nxBits(-0.5f),
+		"0x000f0f8e fld [esi+0x14]; fsub");
+	nxLayout("AABBTree.inflate_max", nxBits(root->GetMax(1)), nxBits(4.5f),
+		"0x000f0ff5 fadd");
+	}
+	}
+
 // RayCollider's members are protected, so the offsets are read from a derived
 // class -- which is also how OPCODE's own colliders reach them.
 struct NxRayColliderProbe : public RayCollider
@@ -1588,6 +1667,54 @@ static void nxCheckLayouts()
 	// sizeof(AABBTreeOfTrianglesBuilder) is Model::Build's local frame at
 	// 0x000e9100: `sub esp, 0x48`.
 	nxLayout("sizeof_AABBTreeOfTrianglesBuilder", sizeof(AABBTreeOfTrianglesBuilder), 72, "0x000e9100");
+
+	// The three added BuildSettings members and the 28 added AABBTreeBuilder
+	// bytes, which Task 2a left unidentified and Task 2a's fix pass read off
+	// AABBTree::Build and AABBTreeNode::_BuildHierarchy. Offsets are taken from
+	// a real object rather than offsetof, because AABBTreeBuilder is polymorphic.
+	//
+	// Two of these are the types, not the offsets: `mNovodeXExtendValue` and
+	// `mNovodeXInflate` were declared udword and are loaded with `fld dword ptr`
+	// by the image. A wrong type here is invisible to every offset check --
+	// float and udword are both 4 bytes -- so it is asserted directly.
+	{
+	AABBTreeOfTrianglesBuilder builder;
+	const char* base = (const char*) &builder;
+	nxLayout("AABBTreeBuilder.mSettings", (size_t) ((const char*) &builder.mSettings - base),
+		4, "0x000e9060");
+	nxLayout("BuildSettings.mNovodeXExtendValue",
+		(size_t) ((const char*) &builder.mSettings.mNovodeXExtendValue - base), 0x0c, "0x000f0efe");
+	nxLayout("BuildSettings.mNovodeXExtendAxis",
+		(size_t) ((const char*) &builder.mSettings.mNovodeXExtendAxis - base), 0x10, "0x000f0ec0");
+	nxLayout("BuildSettings.mNovodeXInflate",
+		(size_t) ((const char*) &builder.mSettings.mNovodeXInflate - base), 0x14, "0x000f0f83");
+	nxLayout("AABBTreeBuilder.mNovodeXRootBV",
+		(size_t) ((const char*) &builder.mNovodeXRootBV - base), 0x20, "0x000f0ed7");
+	nxLayout("AABBTreeBuilder.mNovodeXCaptureRootBV",
+		(size_t) ((const char*) &builder.mNovodeXCaptureRootBV - base), 0x38, "0x000f1187");
+	// A udword member truncates 0.5f to 0; a float keeps it. Both are 4 bytes,
+	// so this is the only check that can see the type.
+	builder.mSettings.mNovodeXExtendValue	= 0.5f;
+	builder.mSettings.mNovodeXInflate		= 0.5f;
+	nxLayout("BuildSettings.mNovodeXExtendValue_is_float",
+		builder.mSettings.mNovodeXExtendValue == 0.5f ? 1 : 0, 1,
+		"0x000f0efe fld dword ptr [esi+0x0c]");
+	nxLayout("BuildSettings.mNovodeXInflate_is_float",
+		builder.mSettings.mNovodeXInflate == 0.5f ? 1 : 0, 1,
+		"0x000f0f8e fld dword ptr [esi+0x14]");
+	// The defaults, which are what makes both features off unless a cook turns
+	// them on: OPCODECREATE::OPCODECREATE writes -1 and 0 at 0x000e92b0.
+	nxLayout("BuildSettings.defaults_are_off",
+		(BuildSettings().mNovodeXExtendAxis == -1
+			&& BuildSettings().mNovodeXExtendValue == 0.0f
+			&& BuildSettings().mNovodeXInflate == 0.0f) ? 1 : 0, 1, "0x000e92b0");
+	}
+
+	// The two blocks of NovodeX code in OPC_AABBTree.cpp, driven rather than
+	// inspected. Vendoring that file stock compiles, links, builds an identical
+	// tree at the defaults, and builds a different one the moment either added
+	// field is set -- so the assertion has to turn one on.
+	nxCheckAABBTreeExtension();
 
 	// OPC_RAYHIT_CALLBACK off, plus one added member.
 	nxLayout("RayCollider.mMaxDist", NxRayColliderProbe::maxDistOffset(), 0x84, "0x000b5770");
