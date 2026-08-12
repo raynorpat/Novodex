@@ -3,17 +3,46 @@
  * upstream: External/qhull/upstream/src/mem.c
  *
  * [1] malloc and free routed to the host object's slots +0x14 and +0x18.
- *     Only the sites in this file are converted, because these are the only
- *     malloc/free sites that survive into the image: /OPT:REF removed the input
- *     readers in io.c, the projection helpers in geom2.c and qh_freeqhull's
- *     command-line paths in global.c, and qh_memfreeshort is absent altogether.
- *     Converting a site that is not in the image would be an unevidenced edit.
- *     established at the two surviving allocation sites are 0x0006dade and 0x0006de24 and
- *     the one surviving free is 0x0006dc74, all inside mem.c's translation-unit
- *     band 0x0006da40-0x0006e0a8. qh_memalloc at 0x0006da50 reaches qh_errexit
- *     as `push edi; push edi; push 4` = qh_errexit(qhmem_ERRmem, NULL, NULL).
- *     Every qhmem field offset matches a 104-byte struct at .data:0x00124fd8
- *     zeroed by `rep stosd 0x1a`, so the file is otherwise verbatim.
+ *     Re-enumerated instruction by instruction over the whole of mem.c's
+ *     translation-unit band, 0x0006da40 (qh_intcompare) to 0x0006e0a8 (end of
+ *     qh_memstatistics). The band contains exactly four dispatches on the
+ *     allocation slots and exactly three direct calls that leave it:
+ *
+ *       0x0006dade  call [eax+0x14]   upstream mem.c:121, the short buffer:
+ *                                     qhmem.totshort += bufsize; push esi
+ *       0x0006dbb3  call [eax+0x14]   upstream mem.c:148, the long allocation,
+ *                                     after the cntlong/curlong/totlong/maxlong
+ *                                     updates
+ *       0x0006de24  call [edx+0x14]   upstream mem.c:292, the index table:
+ *                                     eax=[0x10124fe8] (qhmem.LASTsize),
+ *                                     lea eax,[eax*4+4], result to [0x10124ff8]
+ *       0x0006dc74  call [edx+0x18]   upstream mem.c:190, the only free
+ *
+ *       0x00084800 x8                 qh_errexit
+ *       0x000f5b44 x2 (0x0006dd26,    the CRT's calloc, NOT converted: upstream
+ *                     0x0006dd33)     mem.c:266-267, qhmem.sizetable and
+ *                                     qhmem.freelists
+ *       0x000f5cb0 x1 (0x0006ddb6)    the CRT's qsort, with qh_intcompare
+ *
+ *     So the seam is malloc and free, not allocation in general: calloc reaches
+ *     the CRT in the shipped image and is left alone here. qh_memfreeshort,
+ *     which holds upstream's four remaining free() calls, is absent from the
+ *     image outright -- the band runs qh_memfree (upstream mem.c:177) straight
+ *     into qh_meminit (upstream mem.c:234) -- so there is no site. Everything
+ *     else that calls malloc or free upstream (io.c's input readers, geom2.c's
+ *     projection helpers, global.c's qh_freeqhull command-line paths) is gone
+ *     too, and converting a site that is not in the image would be an
+ *     unevidenced edit.
+ *
+ *     An earlier pass named only 0x0006dade and 0x0006de24 as the allocation
+ *     sites, converted 0x0006dbb3's line instead of 0x0006de24's, and asserted
+ *     that these were the only malloc/free sites in the image at all. Three of
+ *     those four statements were wrong; this block is the recount.
+ *
+ *     qh_memalloc at 0x0006da50 reaches qh_errexit as `push edi; push edi;
+ *     push 4` = qh_errexit(qhmem_ERRmem, NULL, NULL). Every qhmem field offset
+ *     matches a 104-byte struct at .data:0x00124fd8 zeroed by `rep stosd 0x1a`,
+ *     so the file is otherwise verbatim.
  *
  * Geometry Center licence clause 1: the copyright notice below is intact.
  * Clause 3: see ../NOTICE.txt. Clause 4: the original source may be
@@ -311,7 +340,7 @@ void qh_memsetup (void) {
             qhmem .LASTsize, qhmem .BUFsize, qhmem .BUFinit);
     qh_errexit(qhmem_ERRmem, NULL, NULL);
   }
-  if (!(qhmem.indextable= (int *)malloc((qhmem.LASTsize+1) * sizeof(int)))) {
+  if (!(qhmem.indextable= (int *)qhNovodeXMalloc((qhmem.LASTsize+1) * sizeof(int)))) {	/* NOVODEX [1] */
     fprintf(qhmem.ferr, "qhull error (qh_memsetup): insufficient memory\n");
     qh_errexit(qhmem_ERRmem, NULL, NULL);
   }

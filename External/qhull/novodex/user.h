@@ -3,10 +3,41 @@
  * upstream: External/qhull/upstream/src/user.h
  *
  * [1] fprintf redirected to the host object's slot +0x10.
- *     established at 587 of the 601 classified call sites through .data:0x00125080 are on
- *     that slot, spread over the whole qhull span; the global is written exactly
- *     once, at 0x0007ea51. No fprintf survives in the span that does not go
- *     through it.
+ *     established at 593 of the 611 classified call sites through
+ *     .data:0x00125080 are on that slot, spread over the whole qhull span; the
+ *     global is written exactly once, at 0x0007ea51; and no CRT fprintf, fputs
+ *     or fwrite is reachable from the span at all.
+ *
+ *     What this macro does NOT cover, and what an earlier version of this block
+ *     wrongly claimed it did ("No fprintf survives in the span that does not go
+ *     through it"): ten diagnostic dispatches in the span are on other slots,
+ *     and a #define cannot produce them.
+ *
+ *       0x00067c7a  +0x08  qh_printfacet3vertex   io.c:2183
+ *       0x00067f84  +0x04  qh_printpointid        io.c:2951
+ *       0x00069982  +0x04  qh_printpoints_out     io.c:3005
+ *       0x0006b6c2  +0x04  qh_printfacetheader    io.c:2368
+ *       0x0006c727  +0x00  qh_printbegin          io.c:1240
+ *       0x0006c76a  +0x04  qh_printbegin          io.c:1240
+ *       0x0006c7ba  +0x04  qh_printbegin          io.c:1240
+ *       0x0006d2c9  +0x04  qh_printfacets         io.c:2567
+ *       0x0006d458  +0x0c  qh_printfacets         io.c:2567
+ *       0x0007965a  +0x1c  qh_initialhull         poly2.c:1746
+ *
+ *     0x00069982 settles what those are. It pushes three 32-bit floats --
+ *     fstp dword ptr [esp], [esp+4], [esp+8], narrowed from the realT doubles
+ *     at [esi], [esi+8], [esi+0x10] -- and then calls [edx+0x04]. Default
+ *     argument promotion makes a 32-bit float impossible in a variadic call, so
+ *     +0x04 is a typed method taking three floats and not any spelling of
+ *     fprintf. io.c's printers were restructured to call the host object
+ *     directly. That restructuring is NOT reconstructed here: vendoring stock
+ *     io.c with this macro reproduces the +0x10 traffic and none of the ten
+ *     sites above, which is a divergence this file declares rather than hides.
+ *
+ *     The other eight non-+0x10 sites are not diagnostics: 0x0006dade,
+ *     0x0006dbb3, 0x0006de24 (+0x14) and 0x0006dc74 (+0x18) are mem.c's, see
+ *     that file; 0x0008480d (+0x20) is qh_errexit's, see user.c; and
+ *     0x0007d466, 0x0007d4ec and 0x0007ed26 are inside NovodeX's own rows.
  *
  * Geometry Center licence clause 1: the copyright notice below is intact.
  * Clause 3: see ../NOTICE.txt. Clause 4: the original source may be

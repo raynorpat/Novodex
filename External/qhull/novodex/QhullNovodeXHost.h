@@ -13,25 +13,31 @@
  * constructor at 0x0007e370 rep-stosd-zeroes a 16,384-byte inline arena at
  * this+0x34 and stores its one argument at this+0x4048.
  *
- * Slot census, recomputed for this task over all 683 occurrences of the global
- * in .text (601 classified to a slot):
+ * Slot census, recounted over all 683 occurrences of the global in .text
+ * (611 classified to a slot):
  *
- *     slot +0x10    587 call sites    fprintf -- qh ferr / qh fout
- *     slot +0x14      2 call sites    malloc, both inside mem.c's band
- *                                     (0x0006dade, 0x0006de24)
- *     slot +0x18      1 call site     free, inside mem.c's band (0x0006dc74)
+ *     slot +0x10    593 call sites    fprintf -- qh ferr / qh fout
+ *     slot +0x14      4 call sites    malloc: 0x0006dade, 0x0006dbb3 and
+ *                                     0x0006de24 in mem.c's band, and
+ *                                     0x0007d466 in NovodeX's own driver row
+ *                                     0x0007d420
+ *     slot +0x18      3 call sites    free: 0x0006dc74 in mem.c's band, and
+ *                                     0x0007d4ec / 0x0007ed26 in NovodeX's rows
  *     slot +0x20      1 call site     error exit (0x0008480d, qh_errexit)
- *     slot +0x04      6 call sites    emits three floats -- a geometry dump
- *     +0x00/+0x08/+0x0c/+0x1c   1 each
+ *     slot +0x04      6 call sites    emits three 32-bit floats -- a typed
+ *                                     geometry dump, not an fprintf; see user.h
+ *     +0x00/+0x08/+0x0c/+0x1c   1 each, all in io.c's printers except +0x1c,
+ *                                     which is qh_initialhull (0x0007965a)
  *
  * So the object is an I/O redirection shim with allocation attached, not an
- * allocator: 587 of the 601 classified sites print. An earlier pass reported
- * 561 / 4 / 3 for the first three slots; those numbers are close but not what
- * this pass measures, and the difference is in the classifier, not the image --
- * neither pass can attribute a load that feeds two calls without ambiguity.
- * What is not ambiguous, and is what the modification rests on: malloc and free
- * survive in mem.c only, the error exit survives in user.c only, and printing
- * survives everywhere.
+ * allocator: 593 of the 611 classified sites print. Two earlier passes reported
+ * 561 / 4 / 3 and 587 / 6 / 2 for +0x10 / +0x04 / +0x14; the +0x10 differences
+ * are in the classifier rather than the image -- no pass can attribute a load
+ * that feeds two calls without ambiguity -- but the +0x14 and +0x18 counts are
+ * unambiguous and both earlier passes were low, which is how mem.c's third
+ * allocation site went unconverted for a task. What the modification rests on:
+ * malloc and free survive in mem.c and in NovodeX's own rows only, the error
+ * exit survives in user.c only, and printing survives everywhere else.
  *
  * The object itself is a NovodeX row inside qhull's address span. Task 2b owns
  * it. This header is the interface the vendored tree calls; the host supplies
