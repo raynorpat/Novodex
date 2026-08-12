@@ -7,10 +7,30 @@
 `Opcode13.zip` (SHA-256
 `ecf649c786b4916e15cd613eef1ec5b727ee7cca11865fc9fae886151644fb91`), Pierre
 Terdiman's standalone OPCODE 1.3 distribution, contains 102 files and not one
-of them is a `LICENSE`, a `COPYING`, or a per-file copyright notice. A search
-over the whole tree for `licen|copyright|public domain|royalt|permission`
-returns one hit, and it is about the demo's artwork. The author says in
-`upstream/Opcode/ReadMe.txt` that he omitted a licence deliberately.
+of them is a `LICENSE` or a `COPYING`. Case-insensitive searches over the whole
+tree, counted by file:
+
+| term | files |
+|---|---:|
+| `licen` | **0** |
+| `public domain` | **0** |
+| `royalt` | **0** |
+| `permission` | **0** |
+| `copyright` | **46** |
+
+The 46 are 45 source files carrying the header
+`Copyright (C) 2001 Pierre Terdiman`, plus `ReadMe.txt`, whose one hit is line
+100 and is about the demo's artwork. `ReadMe.txt` is 171 lines and says nothing
+about licensing at all: it neither grants terms nor explains their absence.
+
+An earlier version of this notice said that no per-file copyright notice existed
+anywhere in the 102 files, that the whole search returned one hit, and that the
+author had explained the omission in `ReadMe.txt`. All three were false, and all
+three understated the problem. **45 files asserting copyright with no grant
+anywhere in the archive is a stronger reason to settle terms before
+redistributing, not a weaker one:** an author who said nothing at all might be
+argued to have been indifferent; an author who asserted copyright 45 times and
+granted nothing cannot.
 
 **The only explicit grant that exists is attached to a different archive.**
 `COPYING.from-ode-0.13.1.txt` beside this file is a byte-for-byte copy of
@@ -56,5 +76,8 @@ under an unrelated edit the way a line number can.
 OPCODE's terms, such as they are, impose no modification-notice requirement, so
 this section exists for the reader rather than for a licence. The local
 modifications are listed with their establishing addresses in
-`MODIFICATIONS.md`, and the difference between `upstream/Opcode/` and
-`novodex/` is the whole of them.
+`MODIFICATIONS.md`. `novodex/` holds every one of them and nothing else — that
+much a checker enforces — but the list is **not proven closed**: a modification
+nobody has found is a file that is not in `novodex/` and does not appear here
+either. `OPC_AABBTree.cpp` was exactly that until this pass. `MODIFICATIONS.md`
+says so at the top of the table and says how it was missed.
