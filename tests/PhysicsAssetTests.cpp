@@ -64,9 +64,9 @@ static const unsigned kPMapObjectSize   = 0x78;
 static const unsigned kStreamObjectSize = 0x1c;
 
 // Offsets inside PenetrationMap, each established by the store that writes it.
-static const unsigned kPMapResolution   = 0x5c;	// 0x0004ff80 + 0x00
-static const unsigned kPMapCellCount    = 0x6c;	// res*res*res, 0x0004ffe4
-static const unsigned kPMapGrid         = 0x70;	// res*res*res dwords, 0x0004ffff
+static const unsigned kPMapResolution   = 0x5c;	// stored at 0x0004ff99
+static const unsigned kPMapCellCount    = 0x6c;	// res*res*res, stored at 0x000500ca
+static const unsigned kPMapGrid         = 0x70;	// res*res*res dwords, stored at 0x000500ef
 
 typedef void* (__thiscall* NxPMapCtorFn)(void* self);
 typedef void (__thiscall* NxPMapDtorFn)(void* self);
@@ -356,12 +356,9 @@ struct NxMeshStandIn
 	unsigned char tail[0x20];
 	};
 
-static void nxRunPMapOracle(const NxOracle* oracle, const NxPMapFixture* fixture, NxPMapResult* result)
+static void nxRunPMapOracle(const NxOracle* oracle, const unsigned char* storage, unsigned length,
+	NxPMapResult* result)
 	{
-	unsigned char storage[256];
-	memset(storage, 0, sizeof(storage));
-	unsigned length = nxDecodeHex(fixture->bytes, storage, sizeof(storage));
-
 	NxMeshStandIn mesh;
 	memset(&mesh, 0, sizeof(mesh));
 	mesh.bounds[0] = -1.0f; mesh.bounds[1] = -1.0f; mesh.bounds[2] = -1.0f;
@@ -400,12 +397,9 @@ static void nxRunPMapOracle(const NxOracle* oracle, const NxPMapFixture* fixture
 	oracle->streamDtor(stream);
 	}
 
-static void nxRunMeshOracle(const NxOracle* oracle, const NxMeshFixture* fixture, NxMeshResult* result)
+static void nxRunMeshOracle(const NxOracle* oracle, const unsigned char* storage, unsigned length,
+	NxMeshResult* result)
 	{
-	unsigned char storage[64];
-	memset(storage, 0, sizeof(storage));
-	unsigned length = nxDecodeHex(fixture->bytes, storage, sizeof(storage));
-
 	NxHarnessStream stream;
 	stream.vtable = nxHarnessStreamVtable;
 	stream.bytes = storage;
@@ -428,16 +422,26 @@ static void nxRunMeshOracle(const NxOracle* oracle, const NxMeshFixture* fixture
 //
 // Phase 4 Task 2 replaces these three with calls into Physics/src. Until then
 // they report that the row is not reconstructed, and every case is a mismatch.
-// They are NOT stubs that return the right answer: a stub that agreed would
-// make this file green while nothing existed, which is the failure mode this
-// programme keeps finding.
+//
+// THEY TAKE FIXTURE BYTES AND NOTHING ELSE, and that is the part that has to
+// survive Task 2. The first version handed them `const NxPMapFixture*` and
+// `const NxMeshFixture*`, and those structs carry expectAccepted, expectErrors,
+// expectErrorLine, expectCells, expectGrid and expectDwordsRead -- the oracle's
+// own recorded answers. A reconstruction that copied them out would agree with
+// the oracle on every case and turn this gate green without decoding a single
+// byte of either format. A candidate that is handed only the input it is meant
+// to parse cannot do that.
+//
+// For the same reason the release probe below hands the candidate its own
+// NxPMap with the same seeded fields the oracle was given, and its own output
+// variable, rather than the one the oracle already wrote its answer into.
 
-static bool nxCandidatePMapLoad(const NxPMapFixture*, NxPMapResult*)
+static bool nxCandidatePMapLoad(const unsigned char*, unsigned, NxPMapResult*)
 	{
 	return false;
 	}
 
-static bool nxCandidateMeshHeader(const NxMeshFixture*, NxMeshResult*)
+static bool nxCandidateMeshHeader(const unsigned char*, unsigned, NxMeshResult*)
 	{
 	return false;
 	}
@@ -554,9 +558,13 @@ int wmain(int argc, wchar_t** argv)
 	for(unsigned i = 0; i < kPMapFixtureCount; ++i)
 		{
 		const NxPMapFixture* fixture = &nxPMapFixtures[i];
+		unsigned char storage[256];
+		memset(storage, 0, sizeof(storage));
+		unsigned length = nxDecodeHex(fixture->bytes, storage, sizeof(storage));
+
 		NxPMapResult actual;
 		memset(&actual, 0, sizeof(actual));
-		nxRunPMapOracle(&oracle, fixture, &actual);
+		nxRunPMapOracle(&oracle, storage, length, &actual);
 
 		oracleDigest = nxFold(oracleDigest, actual.accepted);
 		oracleDigest = nxFold(oracleDigest, actual.errors);
@@ -591,7 +599,7 @@ int wmain(int argc, wchar_t** argv)
 			{
 			NxPMapResult candidate;
 			memset(&candidate, 0, sizeof(candidate));
-			if(!nxCandidatePMapLoad(fixture, &candidate))
+			if(!nxCandidatePMapLoad(storage, length, &candidate))
 				{
 				++candidateMismatch;
 				printf("pmap CANDIDATE-MISSING case=%s: no reconstruction of phys_fn_002047\n",
@@ -599,11 +607,17 @@ int wmain(int argc, wchar_t** argv)
 				}
 			else if(memcmp(&candidate, &actual, sizeof(candidate)) != 0)
 				{
+				// Every field the memcmp above compares is printed. errorLine and
+				// resolution were compared and not printed, so a run that differed
+				// only in one of them printed a line whose every field was
+				// identical on both sides and said nothing about why it failed.
 				++candidateMismatch;
-				printf("pmap CANDIDATE-MISMATCH case=%s accepted=%u/%u errors=%u/%u cells=%u/%u grid=%08x/%08x\n",
+				printf("pmap CANDIDATE-MISMATCH case=%s accepted=%u/%u errors=%u/%u line=0x%03x/0x%03x "
+					"cells=%u/%u grid=%08x/%08x resolution=%u/%u\n",
 					fixture->name, candidate.accepted, actual.accepted,
-					candidate.errors, actual.errors, candidate.cells, actual.cells,
-					candidate.grid, actual.grid);
+					candidate.errors, actual.errors, candidate.errorLine, actual.errorLine,
+					candidate.cells, actual.cells, candidate.grid, actual.grid,
+					candidate.resolution, actual.resolution);
 				}
 			}
 		}
@@ -619,9 +633,13 @@ int wmain(int argc, wchar_t** argv)
 	for(unsigned i = 0; i < kMeshFixtureCount; ++i)
 		{
 		const NxMeshFixture* fixture = &nxMeshFixtures[i];
+		unsigned char storage[64];
+		memset(storage, 0, sizeof(storage));
+		unsigned length = nxDecodeHex(fixture->bytes, storage, sizeof(storage));
+
 		NxMeshResult actual;
 		memset(&actual, 0, sizeof(actual));
-		nxRunMeshOracle(&oracle, fixture, &actual);
+		nxRunMeshOracle(&oracle, storage, length, &actual);
 
 		oracleDigest = nxFold(oracleDigest, actual.accepted);
 		oracleDigest = nxFold(oracleDigest, actual.dwordsRead);
@@ -644,7 +662,7 @@ int wmain(int argc, wchar_t** argv)
 			{
 			NxMeshResult candidate;
 			memset(&candidate, 0, sizeof(candidate));
-			if(!nxCandidateMeshHeader(fixture, &candidate))
+			if(!nxCandidateMeshHeader(storage, length, &candidate))
 				{
 				++candidateMismatch;
 				printf("mesh CANDIDATE-MISSING case=%s: no reconstruction of phys_fn_002262\n",
@@ -686,12 +704,29 @@ int wmain(int argc, wchar_t** argv)
 		}
 	if(!selfOnly)
 		{
+		// Its own NxPMap seeded exactly the way the oracle's was, and its own
+		// output variable: handing it `&returned`, which already held the
+		// oracle's answer, made a candidate that wrote nothing agree, and the
+		// answer it did write was never compared with the oracle's at all.
 		unsigned char candidatePMap[8];
 		memset(candidatePMap, 0, sizeof(candidatePMap));
-		if(!nxCandidateReleasePMap(candidatePMap, &returned))
+		*(unsigned*) candidatePMap = 0x5a5a5a5au;
+		*(void**) (candidatePMap + 4) = 0;
+		unsigned char candidateReturned = 0;
+		if(!nxCandidateReleasePMap(candidatePMap, &candidateReturned))
 			{
 			++candidateMismatch;
 			printf("release CANDIDATE-MISSING case=null_data: no reconstruction of phys_fn_002051\n");
+			}
+		else if(candidateReturned != returned
+			|| *(unsigned*) candidatePMap != size
+			|| *(unsigned*) (candidatePMap + 4) != data)
+			{
+			++candidateMismatch;
+			printf("release CANDIDATE-MISMATCH case=null_data returned=%u/%u data_size=%08x/%08x data=%08x/%08x\n",
+				candidateReturned, returned,
+				*(unsigned*) candidatePMap, size,
+				*(unsigned*) (candidatePMap + 4), data);
 			}
 		}
 	}
