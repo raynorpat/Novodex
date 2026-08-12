@@ -16,7 +16,9 @@
  *     Task 2b owns.
  * [2] Resize() returns false unless mGrowthFactor > 0.0f. A DIFFERENT test from [1]:
  *     this one also returns false at exactly 0.0f.
- *     established at 0x000b4de7 `fcomp [0x101041f0]; fnstsw ax; test ah,0x41; jp body`. 0x41
+ *     established at 0x000b4de4 `fld [ebx+0x0c]`, 0x000b4de7
+ *     `fcomp [0x101041f0]`, 0x000b4ded `fnstsw ax`, 0x000b4def
+ *     `test ah,0x41`, 0x000b4df2 `jp 0x000b4dfb` (the body). 0x41
  *     is C0|C3; jp takes the branch on EVEN parity, so the body runs on
  *     greater-than (no bits) and on unordered (both bits) and NOT on equal or
  *     less-than -- MSVC's idiom for `if(x <= 0.0f) return false;`. An earlier

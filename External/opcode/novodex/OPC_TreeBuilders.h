@@ -2,12 +2,9 @@
  * NOVODEX LOCAL MODIFICATION
  * upstream: External/opcode/upstream/Opcode/OPC_TreeBuilders.h
  *
- * [1] BuildSettings grows from 8 bytes to 20: three udwords added after mRules.
+ * [1] BuildSettings grows from 8 bytes to 20: three members added after mRules.
  *     Consequence: sizeof(OPCODECREATE) 16 -> 32 and
- *     sizeof(AABBTreeOfTrianglesBuilder) 32 -> 72. The three are NOT named,
- *     because nothing measured says what they are. An earlier pass read two of
- *     them as a height-field axis and extent; that reading is consistent with
- *     the measurement but is not established by it.
+ *     sizeof(AABBTreeOfTrianglesBuilder) 32 -> 72.
  *     established at 0x000e92b0 OPCODECREATE::OPCODECREATE runs the sub-object's constructor
  *     FIRST -- +0x0c=0x7fffffff, +0x10=0, +0x14=0xffffffff, +0x18=0, +0x08=1 --
  *     and only then its own body, which is where a member sub-object lands.
@@ -16,10 +13,42 @@
  *     0x000e91cc-0x000e91fd copies exactly those five dwords as a unit into the
  *     builder, then mNbPrimitives -- a 20-byte struct assignment.
  *     0x000e9129 reads mLimit at OPCODECREATE+0x08, not +0x04.
+ *
+ *     WHAT THE THREE ARE. Task 2a left them unidentified and declared as
+ *     udword. AABBTreeNode::_BuildHierarchy at 0x000f0ea0 reads all three, and
+ *     two of them as float. With the builder in esi, mSettings at builder+0x04:
+ *
+ *       builder+0x10 = mSettings+0x0c   0x000f0ec0 `mov edx,[esi+0x10];
+ *                                       cmp edx,-1; je` -- an axis index, and
+ *                                       -1 (its default) is "off". It then
+ *                                       indexes the captured box as
+ *                                       [esi+edx*4+0x20] and [esi+edx*4+0x2c],
+ *                                       i.e. mMin[axis] and mMax[axis], which
+ *                                       is what pins it to 0/1/2.
+ *       builder+0x0c = mSettings+0x08   0x000f0efe `fld dword ptr [esi+0x0c]`
+ *                                       -- a FLOAT, compared against the
+ *                                       captured box's min then max along that
+ *                                       axis and written into whichever bound
+ *                                       it falls outside. Default 0.0f.
+ *       builder+0x14 = mSettings+0x10   0x000f0f83 `mov eax,[esi+0x14];
+ *                                       test eax,eax; je` gates, and
+ *                                       0x000f0f8e `fld dword ptr [esi+0x14]`
+ *                                       loads -- a FLOAT margin, subtracted
+ *                                       from mBV.mMin and added to mBV.mMax
+ *                                       (0x000f0f8e-0x000f1026). Default 0.0f,
+ *                                       which is "off".
+ *
+ *     Declaring the two floats as udword compiled and linked and was silently
+ *     wrong: any caller setting them would have written an integer where the
+ *     image reads a float. The gate at +0x14 is an integer test of the float's
+ *     bit pattern rather than an FPU compare, so it also fires on -0.0f; that
+ *     is recorded, not reproduced, because a C++ `if(mMargin != 0.0f)` does not
+ *     compile to it and nothing establishes which source form NovodeX wrote.
+ *
  * [2] AABBTreeBuilder gained 28 bytes between mNodeBase and mCount, so
  *     sizeof(AABBTreeOfTrianglesBuilder) is 72 rather than the 44 the modified
  *     BuildSettings alone would give. NOT in the eleven modifications the
- *     evidence documents record; found by this task when the vendored header
+ *     evidence documents record; found by Task 2a when the vendored header
  *     produced 44.
  *     established at 0x000e9060, the builder's constructor, which writes
  *     mSettings' five dwords at +0x04..+0x14, then mNbPrimitives at +0x18 and
@@ -27,8 +56,25 @@
  *     members stock initialises, so mCount is at +0x3c and mNbInvalidSplits at
  *     +0x40, not at +0x20 and +0x24. Model::Build writes mIMesh at builder+0x44
  *     (0x000e91d1, `mov [esp+0x50],eax` against `lea ecx,[esp+0x0c]` at
- *     0x000e91c1) and its frame is `sub esp,0x48` at 0x000e9100. The 28 bytes at
- *     +0x20..+0x3b are written by nothing this task disassembled.
+ *     0x000e91c1) and its frame is `sub esp,0x48` at 0x000e9100.
+ *
+ *     WHAT THE 28 ARE. Task 2a said "written by nothing this task
+ *     disassembled" and left them as an array named for their offset. One call
+ *     edge further -- Model::Build -> AABBTree::Build -> _BuildHierarchy --
+ *     writes every one of them:
+ *
+ *       +0x20..+0x37   six floats, the root node's mBV, copied dword by dword
+ *                      out of the node at 0x000f0ed7-0x000f0ef7
+ *                      (`lea eax,[esi+0x20]` then six moves from [ecx+0..0x14])
+ *       +0x38          a one-shot capture latch. AABBTree::Build sets it at
+ *                      0x000f1187 (`mov byte ptr [esi+0x38],1`) in the two
+ *                      instructions before it calls _BuildHierarchy;
+ *                      _BuildHierarchy tests it at 0x000f0ecc and clears it at
+ *                      0x000f0efa (`mov byte ptr [esi+0x38],0`) once the copy
+ *                      is done, so only the root's box is captured.
+ *       +0x39..+0x3b   padding, from a 1-byte member ahead of udword mCount.
+ *
+ *     See novodex/OPC_AABBTree.cpp, which is where both halves are applied.
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
@@ -73,14 +119,16 @@
 		// NOVODEX: three members added, see [1]. The initialiser list carries their
 		// defaults, read out of OPCODECREATE::OPCODECREATE at 0x000e92b0.
 		inline_	BuildSettings() : mLimit(1), mRules(SPLIT_FORCE_DWORD),
-								 mNovodeXSetting08(0), mNovodeXSetting0c(0xffffffff),
-								 mNovodeXSetting10(0)	{}
+								 mNovodeXExtendValue(0.0f), mNovodeXExtendAxis(-1),
+								 mNovodeXInflate(0.0f)	{}
 
 		udword	mLimit;		//!< Limit number of primitives / node. If limit is 1, build a complete tree (2*N-1 nodes)
 		udword	mRules;		//!< Building/Splitting rules (a combination of SplittingRules flags)
-		udword	mNovodeXSetting08;	//!< NOVODEX: added, default 0
-		udword	mNovodeXSetting0c;	//!< NOVODEX: added, default 0xffffffff
-		udword	mNovodeXSetting10;	//!< NOVODEX: added, default 0
+		// NOVODEX [1]. Both floats were declared udword by Task 2a; 0x000f0efe and
+		// 0x000f0f8e are `fld dword ptr`, which is what says they are not.
+		float	mNovodeXExtendValue;	//!< NOVODEX: every node's box is extended to this value along mNovodeXExtendAxis. Default 0.0f
+		sdword	mNovodeXExtendAxis;		//!< NOVODEX: 0, 1 or 2; -1 (the default) disables the extension
+		float	mNovodeXInflate;		//!< NOVODEX: margin subtracted from mBV.mMin and added to mBV.mMax. Default 0.0f, which disables it
 	};
 
 	class OPCODE_API AABBTreeBuilder
@@ -152,10 +200,12 @@
 									BuildSettings	mSettings;			//!< Splitting rules & split limit [Opcode 1.3]
 									udword			mNbPrimitives;		//!< Total number of primitives.
 									void*			mNodeBase;			//!< Address of node pool [Opcode 1.3]
-									// NOVODEX: 28 bytes added here. See [2]. Unidentified: the
-									// constructor never writes them, so nothing measured says what
-									// they are. Named for their offset, not guessed at.
-									udword			mNovodeXBuilder20[7];
+									// NOVODEX: 28 bytes added here. See [2]. The constructor never
+									// writes them; AABBTree::Build and AABBTreeNode::_BuildHierarchy
+									// do, which is where they were identified.
+									AABB			mNovodeXRootBV;			//!< NOVODEX (+0x20): the root node's box, captured once per build
+									bool			mNovodeXCaptureRootBV;	//!< NOVODEX (+0x38): one-shot latch, set by AABBTree::Build, cleared after the capture
+									// +0x39..+0x3b: padding to mCount, which the image puts at +0x3c.
 		// Stats
 		inline_						void			SetCount(udword nb)				{ mCount=nb;				}
 		inline_						void			IncreaseCount(udword nb)		{ mCount+=nb;				}
