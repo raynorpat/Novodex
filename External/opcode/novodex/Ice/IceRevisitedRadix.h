@@ -10,8 +10,10 @@
  *     `mov byte ptr [eax+0x14], 1`, then 0x80000000 to mCurrentSize
  *     (INVALIDATE_RANKS). 0x000e32e3 is `mov al,[esi+0x14]; test al,al; je` and
  *     the destructor frees mRanks2 then mRanks only inside it. 0x000e3333 is the
- *     same guard in Resize. The row that CLEARS the marker, 0x000e3ea0, is a
- *     NovodeX addition Task 2b owns.
+ *     same guard in Resize.
+ *
+ * [4] SetRankBuffers, the row that CLEARS the marker. Reconstructed by P4 Task 2b.
+ *     established at 0x000e3ea0 phys_fn_005177, 36 bytes, __thiscall, `ret 8`.
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
@@ -53,6 +55,9 @@
 
 		//! mIndices2 gets trashed on calling the sort routine, but otherwise you can recycle it the way you want.
 		inline_	udword*			GetRecyclable()		const	{ return mRanks2;		}
+
+		//! NOVODEX ADDITION: lend the sorter two rank buffers it does not own. See [4].
+				bool			SetRankBuffers(udword* ranks1, udword* ranks2);
 
 		// Stats
 				udword			GetUsedRam()		const;

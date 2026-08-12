@@ -550,3 +550,41 @@ udword RadixSort::GetUsedRam() const
 	UsedRam += 2*CURRENT_SIZE*sizeof(udword);	// 2 lists of indices
 	return UsedRam;
 }
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ *	NOVODEX ADDITION [4]. Lends the sorter two rank buffers it does not own.
+ *
+ *	Reconstructed from phys_fn_005177 at 0x000e3ea0, 36 bytes, __thiscall, ret 8.
+ *	The whole row is:
+ *
+ *	    mov edx,[esp+4]      ranks1
+ *	    test edx,edx
+ *	    je   fail            -- rejected BEFORE either member is written
+ *	    mov eax,[esp+8]      ranks2
+ *	    test eax,eax
+ *	    je   fail
+ *	    mov [ecx+8],eax      mRanks2 first
+ *	    mov [ecx+4],edx      then mRanks
+ *	    mov byte [ecx+0x14],0  mDeleteRanks = false -- the marker [1] guards
+ *	    mov al,1 / ret 8
+ *	  fail:
+ *	    xor al,al / ret 8
+ *
+ *	Three things the row establishes and this body keeps: both arguments are
+ *	tested before ANY member is written, so a rejected call leaves the object
+ *	untouched; the two pointers are stored mRanks2 first; and mCurrentSize is NOT
+ *	invalidated, so the borrowed buffers are adopted at whatever size the sorter
+ *	already believes it has.
+ */
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool RadixSort::SetRankBuffers(udword* ranks1, udword* ranks2)
+{
+	if(!ranks1)	return false;
+	if(!ranks2)	return false;
+
+	mRanks2			= ranks2;
+	mRanks			= ranks1;
+	mDeleteRanks	= false;
+	return true;
+}

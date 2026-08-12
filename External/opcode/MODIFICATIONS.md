@@ -19,8 +19,8 @@ unmodified** under a 2026 MSVC. Every one of these exists because the shipped
 | `OPC_IceHook.h` | `SetIceError` becomes a reporter carrying `__FILE__` and `__LINE__` | `0x000539b0`, `0x000e903b`, `0x000e912f` |
 | `OPC_Model.cpp` | the `mDeserializeFrom` guard around the `mLimit` check and `CheckTopology`, plus the loader dispatch; `AABBTree` through the host allocator | `0x000e9122`, `0x000e912f` (line 147), `0x000e9161`, `0x000e9191` |
 | `Ice/IceContainer.cpp` | the borrowed-buffer guards — `Empty()` frees only when `mGrowthFactor >= 0.0f`, `Resize()` returns false unless `> 0.0f`; allocation through the host allocator | `0x000b4d93`, `0x000b4e93`, `0x000b4f53`, `0x000b4de7`, `0x000b4fd5` |
-| `Ice/IceRevisitedRadix.h` | `mDeleteRanks` added at +0x14 | `0x000e32c0` |
-| `Ice/IceRevisitedRadix.cpp` | the destructor and `Resize` free only when `mDeleteRanks`; allocation through the host allocator | `0x000e32e3`, `0x000e3333` |
+| `Ice/IceRevisitedRadix.h` | `mDeleteRanks` added at +0x14; `SetRankBuffers` declared | `0x000e32c0`, `0x000e3ea0` |
+| `Ice/IceRevisitedRadix.cpp` | the destructor and `Resize` free only when `mDeleteRanks`; allocation through the host allocator; **`SetRankBuffers`, the added member that clears the marker, reconstructed by P4 Task 2b** | `0x000e32e3`, `0x000e3333`, `0x000e3ea0` |
 | `OpcodeNovodeXHost.h` | **added file**, no upstream counterpart: the allocation and error-reporting seam | `0x000b4000`, `0x000539b0` |
 
 ## The two that bite hardest
@@ -44,13 +44,24 @@ and run, and every indirect call goes to the wrong function.
 | `Log` was replaced alongside `SetIceError` | **stock.** `Model::Build`'s `if(NbDegenerate) Log(...)` compiles to nothing in the image: `0x000e9150` calls `CheckTopology` and `0x000e9155` goes straight to `Release` with no test and no call between them |
 | `sizeof(AABBTree)` changed | **stock.** `0x000e919a` allocates `0x30` = 48, and a stock compile gives 48 |
 
-## Not applied here — Task 2b's
+## Not applied here — still nobody's
 
 The bodies of the three added virtuals (`0x000e9420`, `0x000e9440`,
-`0x000e94c0` and the twelve instantiations behind the four tree classes),
-`Container::setExternalBuffer` (`0x000b4f90`), `RadixSort::SetRankBuffers`
-(`0x000e3ea0`), `IcePrunable.cpp` and `IceAdjacencies.cpp` are NovodeX code with
-no upstream counterpart. What is applied here is the interface each of them
-needs — the vtable slot, the member, the marker — because a stock header gets
-those wrong silently. The bodies that appear under `novodex/` are marked
-`NOT RECONSTRUCTED` and return zero.
+`0x000e94c0` and the instantiations behind the four tree classes),
+`Container::setExternalBuffer` (`0x000b4f90`) and `IceAdjacencies.cpp` are
+NovodeX code with no upstream counterpart. What is applied here is the interface
+each of them needs — the vtable slot, the member, the marker — because a stock
+header gets those wrong silently. The bodies that appear under `novodex/` are
+marked `NOT RECONSTRUCTED` and return zero.
+
+**`RadixSort::SetRankBuffers` (`0x000e3ea0`) is no longer on that list.** P4
+Task 2b reconstructed it into `novodex/Ice/IceRevisitedRadix.cpp`, and
+`NxPhysicsThirdPartyTests`' `radix_setrankbuffers` family drives it against the
+shipped row.
+
+**`IcePrunable.cpp` is not on it either, and never belonged under `novodex/`.**
+No `Prunable` exists in either pinned OPCODE tree, so it is not a modification of
+OPCODE at all; NovodeX filed it under `src\opcode\` by directory convention. P4
+Task 2b reconstructed it at `Physics/src/opcode/IcePrunable.cpp`, on the host
+side, which keeps this directory an answer to "what did NovodeX change in
+OPCODE?" rather than a place NovodeX's own files accumulate.

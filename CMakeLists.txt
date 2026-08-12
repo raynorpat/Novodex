@@ -56,10 +56,15 @@ add_subdirectory(External)
 
 #### PHYSICS ####
 
-file(GLOB_RECURSE PHYSICS_HEADERS Physics/include/*.h Physics/src/include/*.h)
+file(GLOB_RECURSE PHYSICS_HEADERS Physics/include/*.h Physics/src/include/*.h Physics/src/opcode/*.h)
 source_group("Header Files" FILES ${PHYSICS_HEADERS})
 
-file(GLOB PHYSICS_SOURCES Physics/src/*.cpp)
+# Physics/src/opcode/ is NovodeX's own directory name, not a second copy of
+# OPCODE. The oracle's assert literals say
+# `\Epic\Novodex\SDKs\Physics\src\opcode\IcePrunable.cpp`, and nothing under
+# this directory has a counterpart in either pinned OPCODE 1.3 tree. Vendored
+# OPCODE is External/opcode/ and nowhere else.
+file(GLOB PHYSICS_SOURCES Physics/src/*.cpp Physics/src/opcode/*.cpp)
 source_group("Source Files" FILES ${PHYSICS_SOURCES})
 
 if(WIN32)
@@ -207,9 +212,11 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# -- and that pulls PhysicsInternal.cpp in with it, the same way
 	# NxPhysicsInternalTests does.
 	add_executable(NxPhysicsThirdPartyTests tests/PhysicsThirdPartyTests.cpp
-		Physics/src/ThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp)
+		Physics/src/ThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp
+		Physics/src/opcode/IcePrunable.cpp)
 	target_include_directories(NxPhysicsThirdPartyTests PRIVATE
-		Foundation/include Foundation/src/include Physics/include Physics/src/include)
+		Foundation/include Foundation/src/include Physics/include Physics/src/include
+		Physics/src/opcode)
 	target_link_libraries(NxPhysicsThirdPartyTests NxFoundation NxQhull NxOpcode bcrypt)
 	# The harness itself compares x87 results the vendored libraries produce, so
 	# it follows the same architecture rule they do. A target option rather than

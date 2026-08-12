@@ -94,6 +94,43 @@ static const unsigned kMeshCheckTopology	= 0x000e8fd0;	// OPC_MeshInterface.cpp:
 static const unsigned kMeshSetPointers		= 0x000e9020;	// OPC_MeshInterface.cpp:225
 
 //////////////////////////////////////////////////////////////////////////////
+// P4 TASK 2b. NovodeX rows inside the OPCODE span, with no upstream source.
+// These are graded `unmapped` in the correspondence map and reconstructed, not
+// vendored: everything below is a census row this harness is the proof of.
+
+// Ice/IceRevisitedRadix.h -- the NovodeX addition that clears the marker.
+static const unsigned kRadixSetRankBuffers	= 0x000e3ea0;	// phys_fn_005177
+
+// Physics/src/opcode/IcePrunable.cpp -- twelve rows.
+static const unsigned kPrunableCtor			= 0x000b54a0;	// phys_fn_004874
+static const unsigned kPrunableGetWorldAABB	= 0x000b5590;	// phys_fn_004884
+static const unsigned kPrunableUpdateAABB	= 0x000b55b0;	// phys_fn_004886
+static const unsigned kPrunableSetType		= 0x000b55e0;	// phys_fn_004888
+static const unsigned kPrunableSetSection	= 0x000b5610;	// phys_fn_004890
+static const unsigned kPrunableDtor			= 0x000b5640;	// phys_fn_004892
+static const unsigned kPrunableGetUpdated	= 0x000b5670;	// phys_fn_004894
+// Slots 0-4 of `.rdata:0x0011b5a4` are reached through the object's own vtable
+// rather than by address, because the slot index is part of what is asserted:
+// phys_fn_004896 (0x000b56d0), 004876 (0x000b54f0), 004878 (0x000b5520),
+// 004880 (0x000b5550) and 004882 (0x000b5570), in that order.
+
+// The unnamed 20-byte member at Prunable+0x0c -- three rows.
+static const unsigned kPrunable0CCtor		= 0x000e7330;	// phys_fn_005297
+static const unsigned kPrunable0CDtor		= 0x000e7350;	// phys_fn_005299
+// phys_fn_005311 (0x000e7670) is slot 0 of `.rdata:0x0011ba1c`, likewise
+// reached through the vtable.
+
+// The three .data slots IcePrunable.cpp touches.
+static const unsigned kDataOwnerWorldAABB	= 0x00128478;	// read at 0x000b55b0
+static const unsigned kDataAdapterQuery		= 0x001284fc;	// written at 0x000b54d0
+static const unsigned kDataAdapterNotify	= 0x00128500;	// written at 0x000b54da
+
+// The import slot SetIceError dispatches through, .rdata:0x001041b4 ->
+// NxFoundation `?error@FoundationSDK@NxFoundation@@SA_NW4NxErrorCode@@PBDHPA_N1ZZ`.
+// See nxDrivePrunableRanges for why this harness redirects it.
+static const unsigned kIatFoundationError	= 0x001041b4;
+
+//////////////////////////////////////////////////////////////////////////////
 // Calling conventions. qhull is C; OPCODE members are __thiscall.
 
 typedef void	(__cdecl* QhCrossproductFn)(int, realT*, realT*, realT*);
@@ -115,6 +152,15 @@ typedef void*	(__thiscall* RadixSortFloatsFn)(void*, const float*, unsigned);
 typedef float	(__thiscall* SegmentSqrDistFn)(const void*, const void*, float*);
 typedef unsigned (__thiscall* MeshCheckTopologyFn)(const void*);
 typedef bool	(__thiscall* MeshSetPointersFn)(void*, const void*, const void*);
+
+// P4 Task 2b.
+typedef bool	(__thiscall* RadixSetRankBuffersFn)(void*, unsigned*, unsigned*);
+typedef void*	(__thiscall* PrunableCtorFn)(void*);
+typedef void*	(__thiscall* PrunableGetAABBFn)(void*);
+typedef void	(__thiscall* PrunableUpdateAABBFn)(void*, void*);
+typedef bool	(__thiscall* PrunableSetRangeFn)(void*, unsigned);
+typedef void*	(__thiscall* DeletingDtorFn)(void*, unsigned);
+typedef void	(__cdecl* PrunableWorldAABBFn)(void*, void*);
 
 struct NxOracleRows
 	{
@@ -145,6 +191,17 @@ struct NxOracleRows
 	SegmentSqrDistFn	segmentSqrDist;
 	MeshCheckTopologyFn	meshCheckTopology;
 	MeshSetPointersFn	meshSetPointers;
+
+	RadixSetRankBuffersFn	radixSetRankBuffers;
+	PrunableCtorFn			prunableCtor;
+	PrunableGetAABBFn		prunableGetWorldAABB;
+	PrunableUpdateAABBFn	prunableUpdateAABB;
+	PrunableSetRangeFn		prunableSetType;
+	PrunableSetRangeFn		prunableSetSection;
+	VoidThisFn				prunableDtor;
+	PrunableGetAABBFn		prunableGetUpdated;
+	PrunableCtorFn			prunable0CCtor;
+	VoidThisFn				prunable0CDtor;
 	};
 
 //////////////////////////////////////////////////////////////////////////////
@@ -893,6 +950,603 @@ static void nxDriveMeshInterface(const NxOracleRows& o, bool selfOnly)
 	}
 
 //////////////////////////////////////////////////////////////////////////////
+// P4 TASK 2b -- the NovodeX rows inside the OPCODE span.
+//
+// These rows have no upstream source, so unlike everything above them the
+// candidate side is a RECONSTRUCTION and this is what proves it. Three things
+// make the comparison mean something across two modules:
+//
+//   * addresses are never compared. A vtable pointer is compared as "installed
+//     or not", a self-pointer as "is it this object", a returned AABB as its
+//     INDEX into the array both sides were given.
+//   * the recorders -- the pruner's remove-object slot, the world-AABB
+//     callback, the flag hook at vtable slot 5 -- are the SAME functions on
+//     both sides, reached the way the image reaches them: through a patched
+//     copy of the oracle's own vtable on one side and through an override on
+//     the other. So what the tapes compare is what each side's rows did to a
+//     recorder, not what either side thinks it did.
+//   * every virtual is called through the object's vtable by INDEX, so the slot
+//     numbering is part of the assertion rather than an assumption.
+
+#include "IcePrunable.h"
+
+static NxTape*	gActiveTape			= 0;
+static unsigned	gPrunerRemovals		= 0;
+static void*	gPrunerLastRemoved	= 0;
+static unsigned	gWorldAABBCalls		= 0;
+static void*	gWorldAABBLastOwner	= 0;
+static void*	gWorldAABBLastBox	= 0;
+static unsigned	gSlot5Calls			= 0;
+static unsigned	gSlot5LastFlags		= 0;
+static bool		gSlot5Result		= true;
+
+static void nxResetProbes()
+	{
+	gPrunerRemovals = 0;	gPrunerLastRemoved = 0;
+	gWorldAABBCalls = 0;	gWorldAABBLastOwner = 0;	gWorldAABBLastBox = 0;
+	gSlot5Calls = 0;		gSlot5LastFlags = 0;
+	}
+
+// The owner's world-AABB recomputation, .data:0x00128478. Installed into the
+// LOADED DLL's own slot on the oracle side and into gPrunableOwnerWorldAABB on
+// the candidate side -- the same function either way, so its counters are
+// directly comparable.
+static void __cdecl nxWorldAABBProbe(void* owner, void* box)
+	{
+	++gWorldAABBCalls;
+	gWorldAABBLastOwner	= owner;
+	gWorldAABBLastBox	= box;
+	if(box)
+		for(int i = 0; i < 6; ++i)
+			((float*) box)[i] = (float) (gWorldAABBCalls * 10 + i);
+	}
+
+// Vtable slot 5, the hook the three mutating flag members tail-call. __fastcall
+// with an unused second register argument is __thiscall with one stack
+// argument: `this` in ecx, the argument at [esp+4], callee pops 4.
+static bool __fastcall nxSlot5Probe(void* /*self*/, int /*edx*/, unsigned flags)
+	{
+	++gSlot5Calls;
+	gSlot5LastFlags = flags;
+	return gSlot5Result;
+	}
+
+// The pruner's remove-object slot, `.rdata` slot 2, called by ~Prunable.
+static void __fastcall nxRemoveObjectProbe(void* /*pruner*/, int /*edx*/, void* prunable)
+	{
+	++gPrunerRemovals;
+	gPrunerLastRemoved = prunable;
+	}
+
+// The candidate side of the same two hooks.
+struct NxCandidatePruner : public Pruner
+	{
+	void	NovodeXPrunerSlot1()					{}
+	void	RemoveObject(Prunable* object)			{ ++gPrunerRemovals; gPrunerLastRemoved = object; }
+	};
+
+struct NxCandidatePrunable : public Prunable
+	{
+	bool	NovodeXSlot5(udword flags)				{ ++gSlot5Calls; gSlot5LastFlags = flags; return gSlot5Result; }
+	};
+
+// The oracle's fake pruner: a vtable pointer, four unidentified dwords and the
+// world-box array at +0x14, which is the whole of what Prunable reaches into it.
+struct NxOraclePruner
+	{
+	void*		vtable;
+	unsigned	unidentified[4];
+	void*		boxes;
+	};
+
+typedef bool	(__thiscall* PrunableSetOrClearFn)(void*, unsigned, bool);
+
+// A box pointer as a comparable number: which slot of the array both sides own,
+// or a marker for null and for the caller's own scratch box. Never an address.
+static unsigned nxBoxIndex(const void* box, const void* arrayBase, const void* scratch)
+	{
+	if(!box)						return 0xffffffffu;
+	if(box == scratch)				return 0xfffffffeu;
+	const unsigned offset = (unsigned) ((const unsigned char*) box - (const unsigned char*) arrayBase);
+	if(offset >= 8 * 24)			return 0xfffffffdu;
+	return offset / 24;
+	}
+
+// The object image, minus everything that is an address. 0xcd fill before every
+// construction, so a member the constructor does not write shows up as 0xcdcdcdcd
+// on both sides and a member it stops writing shows up as a mismatch.
+static void nxPushPrunableImage(NxTape& tape, const unsigned char* object)
+	{
+	const unsigned* words = (const unsigned*) object;
+	tape.push(words[0] != 0 ? 1u : 0u);								// +0x00 vptr installed
+	tape.push(words[1]);											// +0x04 mOwner
+	tape.push(words[2]);											// +0x08 mFlags
+	tape.push(words[3] != 0 ? 1u : 0u);								// +0x0c member vptr installed
+	tape.push(words[4] == (unsigned) (size_t) object ? 1u : 0u);	// +0x10 member.mPrunable == this
+	tape.push(words[5]);											// +0x14
+	tape.push(words[6]);											// +0x18
+	tape.push(words[7]);											// +0x1c
+	tape.push(words[8] == 0 ? 0u : 1u);								// +0x20 mPruner installed
+	tape.push(words[9]);											// +0x24
+	tape.push(*(const unsigned short*) (object + 0x28));			// +0x28 mHandle
+	tape.push(object[0x2a]);										// +0x2a mPruningType
+	tape.push(object[0x2b]);										// +0x2b mPruningSection
+	for(int i = 0x2c; i < 0x40; i += 4)								// past the end: still 0xcd
+		tape.push(*(const unsigned*) (object + i));
+	}
+
+// Prunable::Prunable, and the member constructor it calls.
+//
+// The two adapter slots are read BEFORE the first construction on each side and
+// again after it. The image installs two of its own function addresses there
+// (0x000b54d0, 0x000b54da) and this build installs two of its own, so the
+// addresses cannot be compared -- but "null before, not null after" survives the
+// change of module and is exactly what the two writes do. This family runs first
+// for that reason: nothing else in this harness constructs a Prunable.
+static void nxDrivePrunableCtor(const NxOracleRows& o, bool selfOnly)
+	{
+	gOracleTape.reset();
+	gCandidateTape.reset();
+
+	void** oracleQuerySlot	= (void**) (o.base + kDataAdapterQuery);
+	void** oracleNotifySlot	= (void**) (o.base + kDataAdapterNotify);
+	gOracleTape.push(*oracleQuerySlot  == 0 ? 1u : 0u);
+	gOracleTape.push(*oracleNotifySlot == 0 ? 1u : 0u);
+
+	unsigned char object[64];
+	memset(object, 0xcd, sizeof(object));
+	void* returned = o.prunableCtor(object);
+	gOracleTape.push(returned == object ? 1u : 0u);
+	nxPushPrunableImage(gOracleTape, object);
+	gOracleTape.push(*oracleQuerySlot  != 0 ? 1u : 0u);
+	gOracleTape.push(*oracleNotifySlot != 0 ? 1u : 0u);
+
+	// The member on its own, 0x000e7330 and 0x000e7350, driven at its own
+	// address rather than only through Prunable.
+	unsigned char member[32];
+	memset(member, 0xcd, sizeof(member));
+	void* memberReturned = o.prunable0CCtor(member);
+	gOracleTape.push(memberReturned == member ? 1u : 0u);
+	gOracleTape.push(((unsigned*) member)[0] != 0 ? 1u : 0u);
+	for(int i = 1; i < 8; ++i)
+		gOracleTape.push(((unsigned*) member)[i]);
+	// Slot 0 of `.rdata:0x0011ba1c`, the only virtual the class has, with the
+	// deleting bit clear: it rewrites the vptr and returns the object.
+	{
+	void** memberVtable = *(void***) member;
+	void* fromSlot0 = ((DeletingDtorFn) memberVtable[0])(member, 0);
+	gOracleTape.push(fromSlot0 == member ? 1u : 0u);
+	gOracleTape.push(*(void***) member == memberVtable ? 1u : 0u);
+	}
+	// The whole of 0x000e7350 is `mov [ecx], vtable; ret`, so what there is to
+	// check is that it writes NOTHING else -- read the image back, not just the
+	// vptr.
+	o.prunable0CDtor(member);
+	gOracleTape.push(((unsigned*) member)[0] != 0 ? 1u : 0u);
+	for(int i = 1; i < 8; ++i)
+		gOracleTape.push(((unsigned*) member)[i]);
+
+	if(!selfOnly)
+		{
+		gCandidateTape.push(gPrunableAdapterQuery  == 0 ? 1u : 0u);
+		gCandidateTape.push(gPrunableAdapterNotify == 0 ? 1u : 0u);
+
+		unsigned char candidate[64];
+		memset(candidate, 0xcd, sizeof(candidate));
+		Prunable* built = new (candidate) Prunable;
+		gCandidateTape.push((void*) built == candidate ? 1u : 0u);
+		nxPushPrunableImage(gCandidateTape, candidate);
+		gCandidateTape.push(gPrunableAdapterQuery  != 0 ? 1u : 0u);
+		gCandidateTape.push(gPrunableAdapterNotify != 0 ? 1u : 0u);
+
+		unsigned char member2[32];
+		memset(member2, 0xcd, sizeof(member2));
+		Prunable0C* builtMember = new (member2) Prunable0C;
+		gCandidateTape.push((void*) builtMember == member2 ? 1u : 0u);
+		gCandidateTape.push(((unsigned*) member2)[0] != 0 ? 1u : 0u);
+		for(int i = 1; i < 8; ++i)
+			gCandidateTape.push(((unsigned*) member2)[i]);
+		{
+		void** memberVtable = *(void***) member2;
+		void* fromSlot0 = ((DeletingDtorFn) memberVtable[0])(member2, 0);
+		gCandidateTape.push(fromSlot0 == member2 ? 1u : 0u);
+		gCandidateTape.push(*(void***) member2 == memberVtable ? 1u : 0u);
+		}
+		builtMember->~Prunable0C();
+		gCandidateTape.push(((unsigned*) member2)[0] != 0 ? 1u : 0u);
+		for(int i = 1; i < 8; ++i)
+			gCandidateTape.push(((unsigned*) member2)[i]);
+		built->~Prunable();
+		}
+	nxReport("prunable_ctor", "0x000b54a0", "phys_fn_004874", "IcePrunable.cpp", selfOnly);
+	}
+
+// The four flag members, vtable slots 1-4, and the hook at slot 5.
+//
+// Slot 5 is replaced on both sides. On the oracle side by copying the DLL's own
+// six-slot table into a local array and repointing the object at it -- the row
+// then reaches the probe exactly the way it reaches 0x0000dee0, through
+// `jmp [vptr+0x14]`. Without that the tail call is invisible: the shipped slot 5
+// returns true and so does a body that never calls it.
+static void nxDrivePrunableFlags(const NxOracleRows& o, bool selfOnly)
+	{
+	gOracleTape.reset();
+	gCandidateTape.reset();
+
+	static const unsigned kArgs[] =
+		{ 0, 1, 2, 3, 4, 5, 6, 8, 0x0c, 0x10, 0x12, 0xff, 0x8000, 0x80000002u, 0xffffffffu };
+	static const unsigned kStates[] = { 0, 1, 2, 3, 4, 6, 0x0f, 0xffffffffu };
+	static const bool kResults[] = { true, false };
+
+	unsigned char object[64];
+	void* patched[8];
+	o.prunableCtor(object);
+	{
+	void** shipped = *(void***) object;
+	for(int i = 0; i < 6; ++i)
+		patched[i] = shipped[i];
+	patched[5] = (void*) &nxSlot5Probe;
+	*(void***) object = patched;
+	}
+
+	for(unsigned s = 0; s < sizeof(kStates) / sizeof(kStates[0]); ++s)
+		for(unsigned a = 0; a < sizeof(kArgs) / sizeof(kArgs[0]); ++a)
+			for(unsigned r = 0; r < 2; ++r)
+				for(int which = 0; which < 6; ++which)
+					{
+					gSlot5Result = kResults[r];
+					nxResetProbes();
+					((unsigned*) object)[2] = kStates[s];
+					bool returned = false;
+					switch(which)
+						{
+						case 0:	returned = ((BoolThisUdwordFn) patched[1])(object, kArgs[a]);			break;
+						case 1:	returned = ((BoolThisUdwordFn) patched[2])(object, kArgs[a]);			break;
+						case 2:	returned = ((BoolThisUdwordFn) patched[3])(object, kArgs[a]);			break;
+						case 3:	returned = ((PrunableSetOrClearFn) patched[4])(object, kArgs[a], true);	break;
+						case 4:	returned = ((PrunableSetOrClearFn) patched[4])(object, kArgs[a], false);	break;
+						case 5:	returned = ((BoolThisUdwordFn) patched[5])(object, kArgs[a]);			break;
+						}
+					gOracleTape.push(returned ? 1u : 0u);
+					gOracleTape.push(((unsigned*) object)[2]);
+					gOracleTape.push(gSlot5Calls);
+					gOracleTape.push(gSlot5LastFlags);
+					}
+
+	if(!selfOnly)
+		{
+		unsigned char storage[64];
+		NxCandidatePrunable* probe = new (storage) NxCandidatePrunable;
+		void** vtable = *(void***) storage;
+		for(unsigned s = 0; s < sizeof(kStates) / sizeof(kStates[0]); ++s)
+			for(unsigned a = 0; a < sizeof(kArgs) / sizeof(kArgs[0]); ++a)
+				for(unsigned r = 0; r < 2; ++r)
+					for(int which = 0; which < 6; ++which)
+						{
+						gSlot5Result = kResults[r];
+						nxResetProbes();
+						probe->mFlags = kStates[s];
+						bool returned = false;
+						switch(which)
+							{
+							case 0:	returned = ((BoolThisUdwordFn) vtable[1])(storage, kArgs[a]);			break;
+							case 1:	returned = ((BoolThisUdwordFn) vtable[2])(storage, kArgs[a]);			break;
+							case 2:	returned = ((BoolThisUdwordFn) vtable[3])(storage, kArgs[a]);			break;
+							case 3:	returned = ((PrunableSetOrClearFn) vtable[4])(storage, kArgs[a], true);	break;
+							case 4:	returned = ((PrunableSetOrClearFn) vtable[4])(storage, kArgs[a], false);	break;
+							case 5:	returned = ((BoolThisUdwordFn) vtable[5])(storage, kArgs[a]);			break;
+							}
+						gCandidateTape.push(returned ? 1u : 0u);
+						gCandidateTape.push(probe->mFlags);
+						gCandidateTape.push(gSlot5Calls);
+						gCandidateTape.push(gSlot5LastFlags);
+						}
+		probe->~NxCandidatePrunable();
+		}
+	nxReport("prunable_flags", "0x000b54f0", "phys_fn_004876", "IcePrunable.cpp", selfOnly);
+	}
+
+// GetWorldAABB, UpdateWorldAABB, GetUpdatedWorldAABB, and both destructors.
+//
+// The world-AABB callback is installed into the LOADED DLL's own .data slot at
+// 0x00128478 -- writable, and null until 0x0002562b runs, which it never does
+// here. That is the same kind of poke as `mNbNodes` in the layout block: it
+// puts both sides in a state the shipped code reaches and does not change what
+// either side computes from it.
+static void nxDrivePrunablePruner(const NxOracleRows& o, bool selfOnly)
+	{
+	gOracleTape.reset();
+	gCandidateTape.reset();
+
+	// Handles stay inside the eight-box array both sides own, because the two
+	// getters index it without a bound check -- exactly as the image does.
+	static const unsigned kHandles[] = { 0, 1, 3, 7, 0xffff };
+	static const unsigned kFlags[] = { 0, 1, 2, 3, 6 };
+
+	// GetWorldAABB and GetUpdatedWorldAABB dereference mPruner with the invalid
+	// handle as their ONLY guard -- 0x000b559d loads it and 0x000b55a0
+	// dereferences it with no null test in between. A valid handle beside a null
+	// pruner is therefore not a state the shipped row survives, and driving it
+	// would be measuring the harness's luck. The two destructors DO test the
+	// pointer (0x000b5654) and are driven in every combination.
+	#define NX_PRUNABLE_REACHABLE(which, withPruner, handle) \
+		((which) >= 3 || (withPruner) || (handle) == 0xffff)
+
+	// Driven with the callback installed AND with it null. Both readers test the
+	// slot for null before dispatching (0x000b55b5, 0x000b5695) and both set the
+	// flag on the join AFTER the test, not inside it -- and with the callback
+	// always installed there is no way to tell those two apart. Found by a
+	// mutation that moved the flag inside the guard and came out green.
+	unsigned char boxes[8 * 24];
+	void* pruningVtable[3];
+	pruningVtable[0] = 0;
+	pruningVtable[1] = 0;
+	pruningVtable[2] = (void*) &nxRemoveObjectProbe;
+	NxOraclePruner pruner;
+	pruner.vtable = pruningVtable;
+	pruner.boxes = boxes;
+
+	unsigned char object[64];
+	for(unsigned h = 0; h < sizeof(kHandles) / sizeof(kHandles[0]); ++h)
+		for(unsigned f = 0; f < sizeof(kFlags) / sizeof(kFlags[0]); ++f)
+			for(int withPruner = 0; withPruner < 2; ++withPruner)
+				for(int withCallback = 0; withCallback < 2; ++withCallback)
+				for(int which = 0; which < 5; ++which)
+					{
+					if(!NX_PRUNABLE_REACHABLE(which, withPruner, kHandles[h]))
+						continue;
+					nxResetProbes();
+					memset(boxes, 0, sizeof(boxes));
+					*(PrunableWorldAABBFn*) (o.base + kDataOwnerWorldAABB) =
+						withCallback ? nxWorldAABBProbe : 0;
+					o.prunableCtor(object);
+					((unsigned*) object)[1] = 0xa5a50000u + h;			// mOwner, a value not an address
+					((unsigned*) object)[2] = kFlags[f];
+					((void**) object)[8] = withPruner ? (void*) &pruner : 0;
+					*(unsigned short*) (object + 0x28) = (unsigned short) kHandles[h];
+
+					unsigned char localBox[24];
+					void* got = 0;
+					switch(which)
+						{
+						case 0:	got = o.prunableGetWorldAABB(object);						break;
+						case 1:	o.prunableUpdateAABB(object, localBox);						break;
+						case 2:	got = o.prunableGetUpdated(object);							break;
+						case 3:	o.prunableDtor(object);										break;
+						case 4:	got = ((DeletingDtorFn) (*(void***) object)[0])(object, 0);	break;
+						}
+					// Never the pointer: the index into the array both sides own.
+					gOracleTape.push(nxBoxIndex(got, boxes, localBox));
+					gOracleTape.push(((unsigned*) object)[2]);
+					gOracleTape.push(gWorldAABBCalls);
+					gOracleTape.push(gWorldAABBLastOwner == 0 ? 0u : *(unsigned*) &gWorldAABBLastOwner);
+					gOracleTape.push(nxBoxIndex(gWorldAABBLastBox, boxes, localBox));
+					gOracleTape.push(gPrunerRemovals);
+					gOracleTape.push(gPrunerLastRemoved == object ? 1u : 0u);
+					for(int b = 0; b < 8 * 6; ++b)
+						gOracleTape.pushFloat(((float*) boxes)[b]);
+					}
+
+	if(!selfOnly)
+		{
+		AABB candidateBoxes[8];
+		unsigned char prunerStorage[64];
+		NxCandidatePruner* candidatePruner = new (prunerStorage) NxCandidatePruner;
+		candidatePruner->mWorldBoxes = candidateBoxes;
+
+		unsigned char storage[64];
+		for(unsigned h = 0; h < sizeof(kHandles) / sizeof(kHandles[0]); ++h)
+			for(unsigned f = 0; f < sizeof(kFlags) / sizeof(kFlags[0]); ++f)
+				for(int withPruner = 0; withPruner < 2; ++withPruner)
+					for(int withCallback = 0; withCallback < 2; ++withCallback)
+					for(int which = 0; which < 5; ++which)
+						{
+						if(!NX_PRUNABLE_REACHABLE(which, withPruner, kHandles[h]))
+							continue;
+						nxResetProbes();
+						memset(candidateBoxes, 0, sizeof(candidateBoxes));
+						gPrunableOwnerWorldAABB = withCallback
+							? (void (*)(void*, AABB*)) nxWorldAABBProbe : 0;
+						Prunable* p = new (storage) Prunable;
+						p->mOwner		= (void*) (0xa5a50000u + h);
+						p->mFlags		= kFlags[f];
+						p->mPruner		= withPruner ? candidatePruner : 0;
+						p->mHandle		= (uword) kHandles[h];
+
+						unsigned char localBox[24];
+						const void* got = 0;
+						switch(which)
+							{
+							case 0:	got = p->GetWorldAABB();									break;
+							case 1:	p->UpdateWorldAABB((AABB*) localBox);						break;
+							case 2:	got = p->GetUpdatedWorldAABB();								break;
+							case 3:	p->~Prunable();												break;
+							case 4:	got = ((DeletingDtorFn) (*(void***) storage)[0])(storage, 0);	break;
+							}
+						gCandidateTape.push(nxBoxIndex(got, candidateBoxes, localBox));
+						gCandidateTape.push(((unsigned*) storage)[2]);
+						gCandidateTape.push(gWorldAABBCalls);
+						gCandidateTape.push(gWorldAABBLastOwner == 0 ? 0u : *(unsigned*) &gWorldAABBLastOwner);
+						gCandidateTape.push(nxBoxIndex(gWorldAABBLastBox, candidateBoxes, localBox));
+						gCandidateTape.push(gPrunerRemovals);
+						gCandidateTape.push(gPrunerLastRemoved == storage ? 1u : 0u);
+						for(int b = 0; b < 8 * 6; ++b)
+							gCandidateTape.pushFloat(((float*) candidateBoxes)[b]);
+						}
+		candidatePruner->~NxCandidatePruner();
+		gPrunableOwnerWorldAABB = 0;
+		}
+	*(PrunableWorldAABBFn*) (o.base + kDataOwnerWorldAABB) = 0;
+	nxReport("prunable_pruner", "0x000b5590", "phys_fn_004884", "IcePrunable.cpp", selfOnly);
+	}
+
+// A stand-in for NxFoundation's error reporter, installed over the oracle's own
+// import slot for the duration of the range family. See nxDrivePrunableRanges.
+static bool __cdecl nxFoundationErrorProbe(int /*code*/, const char* /*file*/, int /*line*/,
+	bool* /*flag*/, const char* /*message*/, ...)
+	{
+	return false;
+	}
+
+// SetPruningType and SetPruningSection, both arms.
+//
+// WHY THE ORACLE'S IMPORT TABLE IS REDIRECTED, AND WHAT THAT DOES NOT DO.
+// The rejecting arm of both rows calls SetIceError at 0x000539b0, which
+// dispatches through the import slot at .rdata:0x001041b4 into
+// NxFoundation::FoundationSDK::error. Called in a process that never created an
+// SDK, that reporter aborts -- measured, exit code 3 -- so driving the rejecting
+// arm at all means the reporter has to go somewhere that returns.
+//
+// So this family points the oracle's own import slot at a stub that returns
+// false, drives, and puts the slot back. It does not patch a single byte of any
+// row: 0x000539b0 still runs, still pushes (2, file, line, 0, message), and
+// still returns false. What changes is where its fifth-argument call lands,
+// which is a property of the environment the row runs in and not of the row.
+//
+// What is compared is only what THESE rows do -- the return value and the whole
+// object image -- and not what the reporter received. The reporter is
+// phys_fn_002160, which is not this task's row, and the candidate side of it is
+// the declared shim in ThirdPartyHost.cpp. Comparing a shim against the real
+// reporter would be measuring the shim.
+//
+// The mutation that falsifies the bound: `>= 4` to `>= 5` makes SetPruningType(4)
+// write the byte and return true, and 0x000b55e8 `cmp eax,4` says it does not.
+static void nxDrivePrunableRanges(const NxOracleRows& o, bool selfOnly)
+	{
+	gOracleTape.reset();
+	gCandidateTape.reset();
+
+	static const unsigned kValues[] = { 0, 1, 2, 3, 4, 5, 0x80000000u, 0xffffffffu };
+
+	void** errorSlot = (void**) (o.base + kIatFoundationError);
+	void* shippedReporter = *errorSlot;
+	DWORD wasProtected = 0;
+	if(!VirtualProtect(errorSlot, sizeof(void*), PAGE_READWRITE, &wasProtected))
+		{
+		fprintf(stderr, "FAIL cannot reach the oracle's error import slot\n");
+		++gMismatches;
+		return;
+		}
+	*errorSlot = (void*) &nxFoundationErrorProbe;
+
+	unsigned char object[64];
+	for(unsigned v = 0; v < sizeof(kValues) / sizeof(kValues[0]); ++v)
+		for(int which = 0; which < 2; ++which)
+			{
+			memset(object, 0xcd, sizeof(object));
+			o.prunableCtor(object);
+			const bool returned = which == 0
+				? o.prunableSetType(object, kValues[v])
+				: o.prunableSetSection(object, kValues[v]);
+			gOracleTape.push(returned ? 1u : 0u);
+			nxPushPrunableImage(gOracleTape, object);
+			}
+
+	if(!selfOnly)
+		{
+		unsigned char storage[64];
+		for(unsigned v = 0; v < sizeof(kValues) / sizeof(kValues[0]); ++v)
+			for(int which = 0; which < 2; ++which)
+				{
+				memset(storage, 0xcd, sizeof(storage));
+				Prunable* p = new (storage) Prunable;
+				const bool returned = which == 0
+					? p->SetPruningType(kValues[v])
+					: p->SetPruningSection(kValues[v]);
+				gCandidateTape.push(returned ? 1u : 0u);
+				nxPushPrunableImage(gCandidateTape, storage);
+				p->~Prunable();
+				}
+		}
+	*errorSlot = shippedReporter;
+	VirtualProtect(errorSlot, sizeof(void*), wasProtected, &wasProtected);
+	nxReport("prunable_ranges", "0x000b55e0", "phys_fn_004888", "IcePrunable.cpp:152,174", selfOnly);
+	}
+
+// RadixSort::SetRankBuffers, 0x000e3ea0. The row that turns the borrowed-buffer
+// marker OFF -- the counterpart of the constructor's `mov byte [eax+0x14], 1`
+// that the `radixsort` family above already drives.
+//
+// Both sides read all six members back after every call, so the rejecting arm
+// is checked for what it does NOT write as well as for its return value: the
+// image tests both arguments before it stores either one.
+static void nxDriveRadixSetRankBuffers(const NxOracleRows& o, bool selfOnly)
+	{
+	gOracleTape.reset();
+	gCandidateTape.reset();
+
+	unsigned ranksA[16], ranksB[16];
+	for(int i = 0; i < 16; ++i) { ranksA[i] = 0x1000u + i; ranksB[i] = 0x2000u + i; }
+
+	for(int first = 0; first < 2; ++first)
+		for(int second = 0; second < 2; ++second)
+			for(int sortFirst = 0; sortFirst < 2; ++sortFirst)
+				{
+				unsigned char sorter[64];
+				memset(sorter, 0xcd, sizeof(sorter));
+				o.radixCtor(sorter);
+				if(sortFirst)
+					{
+					unsigned input[8];
+					for(int i = 0; i < 8; ++i)	input[i] = (unsigned) (7 - i);
+					o.radixSortDwords(sorter, input, 8, 1);
+					}
+				const bool returned = o.radixSetRankBuffers(sorter,
+					first ? ranksA : 0, second ? ranksB : 0);
+				gOracleTape.push(returned ? 1u : 0u);
+				gOracleTape.push(((unsigned*) sorter)[0]);					// mCurrentSize
+				gOracleTape.push(((void**) sorter)[1] == ranksA ? 1u
+					: (((void**) sorter)[1] == 0 ? 0u : 2u));				// mRanks
+				gOracleTape.push(((void**) sorter)[2] == ranksB ? 1u
+					: (((void**) sorter)[2] == 0 ? 0u : 2u));				// mRanks2
+				gOracleTape.push(((unsigned*) sorter)[3]);					// mTotalCalls
+				gOracleTape.push(((unsigned*) sorter)[4]);					// mNbHits
+				gOracleTape.push(sorter[0x14]);								// mDeleteRanks
+				// The marker is cleared before every destruction on BOTH sides.
+				// After a successful call the sorter is holding two stack
+				// arrays, and after a rejected one following a Sort it is
+				// holding two it allocated; letting the destructor run either
+				// way would free a stack array or free through an allocator
+				// this harness would then have to keep alive. It leaks the
+				// allocated pair, symmetrically, and that is the cheaper lie.
+				sorter[0x14] = 0;
+				o.radixDtor(sorter);
+				}
+
+	if(!selfOnly)
+		{
+		for(int first = 0; first < 2; ++first)
+			for(int second = 0; second < 2; ++second)
+				for(int sortFirst = 0; sortFirst < 2; ++sortFirst)
+					{
+					unsigned char storage[64];
+					memset(storage, 0xcd, sizeof(storage));
+					RadixSort* sorter = new (storage) RadixSort;
+					if(sortFirst)
+						{
+						unsigned input[8];
+						for(int i = 0; i < 8; ++i)	input[i] = (unsigned) (7 - i);
+						sorter->Sort(input, 8, RADIX_UNSIGNED);
+						}
+					const bool returned = sorter->SetRankBuffers(first ? ranksA : 0, second ? ranksB : 0);
+					gCandidateTape.push(returned ? 1u : 0u);
+					gCandidateTape.push(((unsigned*) storage)[0]);
+					gCandidateTape.push(((void**) storage)[1] == ranksA ? 1u
+						: (((void**) storage)[1] == 0 ? 0u : 2u));
+					gCandidateTape.push(((void**) storage)[2] == ranksB ? 1u
+						: (((void**) storage)[2] == 0 ? 0u : 2u));
+					gCandidateTape.push(((unsigned*) storage)[3]);
+					gCandidateTape.push(((unsigned*) storage)[4]);
+					gCandidateTape.push(storage[0x14]);
+					storage[0x14] = 0;
+					sorter->~RadixSort();
+					}
+		}
+	nxReport("radix_setrankbuffers", "0x000e3ea0", "phys_fn_005177",
+		"Ice/IceRevisitedRadix.h", selfOnly);
+	}
+
+//////////////////////////////////////////////////////////////////////////////
 // Layout assertions. Not a differential -- a static check that the vendored
 // headers produce the sizes and offsets the disassembly measured. Every one of
 // these is a modification a stock header gets silently wrong.
@@ -997,6 +1651,24 @@ static void nxCheckLayouts()
 		model.NovodeXSlot4(), "0x000e9420");
 	((void**) &model)[4] = 0;
 	}
+
+	// P4 Task 2b. IcePrunable.cpp is a reconstruction, so every one of these is
+	// an offset this task read off an instruction rather than a modification a
+	// stock header would get wrong -- but the consequence is the same: get one
+	// of them wrong and the differential above compares the wrong bytes.
+	nxLayout("sizeof_AABB", sizeof(AABB), 24, "0x000b55a6 lea eax,[eax+eax*2]; lea eax,[edx+eax*8]");
+	nxLayout("Prunable.mOwner", (size_t) &(((Prunable*) 0)->mOwner), 0x04, "0x000b55c0");
+	nxLayout("Prunable.mFlags", (size_t) &(((Prunable*) 0)->mFlags), 0x08, "0x000b54f0");
+	nxLayout("Prunable.mMember0C", (size_t) &(((Prunable*) 0)->mMember0C), 0x0c, "0x000b54a9");
+	nxLayout("Prunable.mMember0C.mPrunable",
+		(size_t) &(((Prunable*) 0)->mMember0C.mPrunable), 0x10, "0x000b54e4");
+	nxLayout("Prunable.mPruner", (size_t) &(((Prunable*) 0)->mPruner), 0x20, "0x000b559d");
+	nxLayout("Prunable.mPrunable24", (size_t) &(((Prunable*) 0)->mPrunable24), 0x24, "0x000b54c3");
+	nxLayout("Prunable.mHandle", (size_t) &(((Prunable*) 0)->mHandle), 0x28, "0x000b5590");
+	nxLayout("Prunable.mPruningType", (size_t) &(((Prunable*) 0)->mPruningType), 0x2a, "0x000b55ed");
+	nxLayout("Prunable.mPruningSection", (size_t) &(((Prunable*) 0)->mPruningSection), 0x2b, "0x000b561d");
+	nxLayout("sizeof_Prunable0C", sizeof(Prunable0C), 20, "0x000e7330,0x000b54a9");
+	nxLayout("Pruner.mWorldBoxes", (size_t) &(((Pruner*) 0)->mWorldBoxes), 0x14, "0x000b55a0");
 	}
 
 //////////////////////////////////////////////////////////////////////////////
@@ -1103,6 +1775,16 @@ int wmain(int argc, wchar_t** argv)
 	o.segmentSqrDist	= (SegmentSqrDistFn)	(o.base + kSegmentSqrDist);
 	o.meshCheckTopology	= (MeshCheckTopologyFn)	(o.base + kMeshCheckTopology);
 	o.meshSetPointers	= (MeshSetPointersFn)	(o.base + kMeshSetPointers);
+	o.radixSetRankBuffers	= (RadixSetRankBuffersFn)	(o.base + kRadixSetRankBuffers);
+	o.prunableCtor			= (PrunableCtorFn)			(o.base + kPrunableCtor);
+	o.prunableGetWorldAABB	= (PrunableGetAABBFn)		(o.base + kPrunableGetWorldAABB);
+	o.prunableUpdateAABB	= (PrunableUpdateAABBFn)	(o.base + kPrunableUpdateAABB);
+	o.prunableSetType		= (PrunableSetRangeFn)		(o.base + kPrunableSetType);
+	o.prunableSetSection	= (PrunableSetRangeFn)		(o.base + kPrunableSetSection);
+	o.prunableDtor			= (VoidThisFn)				(o.base + kPrunableDtor);
+	o.prunableGetUpdated	= (PrunableGetAABBFn)		(o.base + kPrunableGetUpdated);
+	o.prunable0CCtor		= (PrunableCtorFn)			(o.base + kPrunable0CCtor);
+	o.prunable0CDtor		= (VoidThisFn)				(o.base + kPrunable0CDtor);
 
 	printf("thirdparty libraries qhull=2003.1 opcode=1.3-standalone\n");
 	printf("thirdparty generator=xorshift32 mode=%s\n", selfOnly ? "self" : "differential");
@@ -1116,6 +1798,14 @@ int wmain(int argc, wchar_t** argv)
 	nxDriveRadix(o, selfOnly);
 	nxDriveSegment(o, selfOnly);
 	nxDriveMeshInterface(o, selfOnly);
+
+	// P4 Task 2b. The constructor family runs first, because it is the only one
+	// that can see the two adapter slots go from null to installed.
+	nxDrivePrunableCtor(o, selfOnly);
+	nxDrivePrunableFlags(o, selfOnly);
+	nxDrivePrunablePruner(o, selfOnly);
+	nxDrivePrunableRanges(o, selfOnly);
+	nxDriveRadixSetRankBuffers(o, selfOnly);
 
 	printf("thirdparty coverage driven=%u divergent=%u words=%u layout_checks=%u\n",
 		gDriven, gDivergent, gWordsCompared, gLayoutChecks);
