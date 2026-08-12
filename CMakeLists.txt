@@ -47,6 +47,13 @@ if(CMAKE_SIZEOF_VOID_P EQUAL 8)
 	target_compile_definitions(NxFoundation PRIVATE NX64=1)
 endif()
 
+#### THIRD PARTY ####
+
+# qhull 2003.1 and OPCODE 1.3 ship inside NxPhysics.dll: 722 census rows and
+# 377,842 bytes, 91% of Phase 4's mapped bytes. They are vendored, not
+# reconstructed. External/README.md carries the layout rule and the licences.
+add_subdirectory(External)
+
 #### PHYSICS ####
 
 file(GLOB_RECURSE PHYSICS_HEADERS Physics/include/*.h Physics/src/include/*.h)
@@ -61,7 +68,7 @@ if(WIN32)
 endif()
 
 add_library(NxPhysics SHARED ${PHYSICS_HEADERS} ${PHYSICS_SOURCES} ${PHYSICS_RESOURCES})
-target_link_libraries(NxPhysics NxFoundation)
+target_link_libraries(NxPhysics NxFoundation NxQhull NxOpcode)
 set_target_properties(NxPhysics PROPERTIES LINKER_LANGUAGE CXX)
 
 target_include_directories(NxPhysics PRIVATE
@@ -186,6 +193,31 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	add_executable(NxPhysicsAssetTests tests/PhysicsAssetTests.cpp)
 	target_include_directories(NxPhysicsAssetTests PRIVATE Foundation/include Physics/include)
 	target_link_libraries(NxPhysicsAssetTests bcrypt)
+
+	# The vendored third-party differential. Same shape as the two above: it
+	# holds the pinned oracle in its own process and calls qhull and OPCODE rows
+	# at their recorded internal addresses, comparing against the vendored
+	# sources linked in beside them.
+	#
+	# It exists because vendoring proves nothing on its own. 722 census rows
+	# acquired a source file; a source file nothing runs is present, not proven.
+	#
+	# It links ThirdPartyHost.cpp and its neighbours because the vendored tree's
+	# allocation seam reaches nxGetSdkAllocator -- phys_fn_004803, a Phase 2 row
+	# -- and that pulls PhysicsInternal.cpp in with it, the same way
+	# NxPhysicsInternalTests does.
+	add_executable(NxPhysicsThirdPartyTests tests/PhysicsThirdPartyTests.cpp
+		Physics/src/ThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp)
+	target_include_directories(NxPhysicsThirdPartyTests PRIVATE
+		Foundation/include Foundation/src/include Physics/include Physics/src/include)
+	target_link_libraries(NxPhysicsThirdPartyTests NxFoundation NxQhull NxOpcode bcrypt)
+	# The harness itself compares x87 results the vendored libraries produce, so
+	# it follows the same architecture rule they do. A target option rather than
+	# a source property: the source-property rule above names Physics/src files
+	# and a second one naming the same files would silently override it.
+	if(MSVC)
+		target_compile_options(NxPhysicsThirdPartyTests PRIVATE /arch:IA32 /GR- /wd4996)
+	endif()
 
 	# A static-proof gate, not a differential: it links the private translation
 	# units directly because the rows it covers cannot be reached through the
