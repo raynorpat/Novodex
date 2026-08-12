@@ -1,0 +1,60 @@
+Qhull 2003.1 (released 2003/12/30) - modification notice
+========================================================
+
+This directory contains Qhull 2003.1, obtained from http://www.qhull.org, in
+modified form.  See upstream/COPYING.txt for the licence.  Clause 2 of that
+licence requires COPYING.txt to be distributed with any copy of Qhull,
+including a copy inside a larger product; it is at
+External/qhull/upstream/COPYING.txt and must travel with this directory.
+
+
+ORIGINAL SOURCE  (clause 4)
+---------------------------
+The original, unmodified source code for Qhull may be obtained via http from
+www.qhull.org.  The version vendored here is Qhull 2003.1, whose source archive
+qhull-2003.1.tar.gz has SHA-256
+c97d1982e6f5423379bf0ad6dd7293886ac69cae1596b59a305614aec4ae54f8.
+
+An unmodified copy of that archive's src/ directory is also kept here, at
+External/qhull/upstream/src/, and is checked byte-for-byte against the archive
+on every build.  The modifications below are the difference between that
+directory and External/qhull/novodex/.
+
+
+MODIFICATIONS  (clause 3)
+-------------------------
+Clause 3 requires, for every modification, a notice giving the name of the
+person performing it, the date, and the reason.  There are two entries because
+Qhull has been modified twice: once by NovodeX, and once by this project in the
+course of reconstructing what NovodeX did.
+
+1.  Modified by: NovodeX AG (the original modification, reconstructed here,
+                 not performed by this project).
+    Date:        on or before 2005, the build date of the reference binary
+                 NxPhysics.dll (SHA-256 4b7db3e126735c576f79fe5666e6fa661de972
+                 4b2a78808bb0924325ac79602c).
+    Reason:      to route Qhull's diagnostic output, its allocation and its
+                 error exit through the host engine's own interfaces instead of
+                 the C library, and to drive Qhull from an in-process
+                 convex-hull cooker rather than from a command-line program.
+
+2.  Modified by: the NovodeX Physics reconstruction project.
+    Date:        2026-08-12.
+    Reason:      to reproduce modification 1 in source form.  The reference
+                 binary cannot be reproduced without it, and a vendored stock
+                 tree would silently differ from the binary this project exists
+                 to reproduce.  The changes are confined to
+                 External/qhull/novodex/ and are listed, with the address in the
+                 reference binary that establishes each one, in
+                 External/qhull/MODIFICATIONS.md.
+
+    (Append one entry per further change.  Clause 3 requires a name, a date and
+    a reason for every modification, so this file grows rather than being
+    rewritten.)
+
+
+COPYRIGHT NOTICES  (clause 1)
+-----------------------------
+All copyright notices in the original files are intact.  Every modified file
+carries its NovodeX marker BELOW the Geometry Center header, never in place of
+it, for exactly this reason.
