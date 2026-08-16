@@ -44,6 +44,14 @@
 #include <string.h>
 #include <wchar.h>
 
+// The reconstruction under test.
+#include "PMap.h"
+#include "TriangleMesh.h"
+#include "NxStream.h"
+#include "NxUserOutputStream.h"
+class NxTriangleMesh;
+#include "NxPMap.h"
+
 // ---------------------------------------------------------------------------
 // The recovered addresses. Every one is an inventory row this phase owns; the
 // evidence for what each does is evidence/phase4-formats.md.
@@ -420,35 +428,141 @@ static void nxRunMeshOracle(const NxOracle* oracle, const unsigned char* storage
 // ---------------------------------------------------------------------------
 // The candidate side.
 //
-// Phase 4 Task 2 replaces these three with calls into Physics/src. Until then
-// they report that the row is not reconstructed, and every case is a mismatch.
+// Phase 4 Task 3 fills these three in from Physics/src.
 //
-// THEY TAKE FIXTURE BYTES AND NOTHING ELSE, and that is the part that has to
-// survive Task 2. The first version handed them `const NxPMapFixture*` and
+// THEY TAKE FIXTURE BYTES AND NOTHING ELSE, and that is the part that had to
+// survive. The first version handed them `const NxPMapFixture*` and
 // `const NxMeshFixture*`, and those structs carry expectAccepted, expectErrors,
 // expectErrorLine, expectCells, expectGrid and expectDwordsRead -- the oracle's
 // own recorded answers. A reconstruction that copied them out would agree with
 // the oracle on every case and turn this gate green without decoding a single
 // byte of either format. A candidate that is handed only the input it is meant
-// to parse cannot do that.
+// to parse cannot do that, and these three signatures are unchanged.
 //
 // For the same reason the release probe below hands the candidate its own
 // NxPMap with the same seeded fields the oracle was given, and its own output
 // variable, rather than the one the oracle already wrote its answer into.
+//
+// Everything the candidate needs beyond those bytes it builds for itself: its
+// own error sink, its own mesh stand-in with the same bounds the oracle side
+// seeds, and its own stream. None of the three ever sees the oracle's process.
 
-static bool nxCandidatePMapLoad(const unsigned char*, unsigned, NxPMapResult*)
+// The candidate's error sink, on the PUBLIC NxUserOutputStream, which is what
+// PenetrationMap::Create reports through. It counts and remembers the same two
+// fields the oracle side reads out of its own hand-rolled sink.
+struct NxCandidateSink : public NxUserOutputStream
 	{
-	return false;
+	unsigned calls;
+	unsigned lastCode;
+	unsigned lastLine;
+
+	NxCandidateSink() : calls(0), lastCode(0), lastLine(0) { }
+
+	virtual void reportError(NxErrorCode code, const char*, const char*, int line)
+		{
+		++calls;
+		lastCode = (unsigned) code;
+		lastLine = (unsigned) line;
+		}
+	virtual NxAssertResponse reportAssertViolation(const char*, const char*, int)
+		{
+		return NX_AR_CONTINUE;
+		}
+	virtual void print(const char*) { }
+	};
+
+// The candidate's NxStream over the fixture bytes, counting dwords the same way
+// the oracle side's does. It is a real NxStream subclass rather than the
+// hand-rolled __fastcall table above, because the reconstruction takes an
+// NxStream& and the oracle takes a vtable at a recorded offset; the two sides
+// reach the same bytes by their own module's calling convention.
+struct NxCandidateStream : public NxStream
+	{
+	const unsigned char* bytes;
+	unsigned size;
+	mutable unsigned offset;
+	mutable unsigned dwordsRead;
+
+	NxCandidateStream(const unsigned char* b, unsigned n)
+		: bytes(b), size(n), offset(0), dwordsRead(0) { }
+
+	unsigned take(unsigned count) const
+		{
+		unsigned value = 0;
+		for(unsigned i = 0; i < count; ++i)
+			{
+			unsigned byte = offset < size ? bytes[offset] : 0u;
+			value |= byte << (i * 8);
+			++offset;
+			}
+		return value;
+		}
+
+	virtual NxU8 readByte() const					{ return (NxU8) take(1); }
+	virtual NxU16 readWord() const					{ return (NxU16) take(2); }
+	virtual NxU32 readDword() const					{ ++dwordsRead; return take(4); }
+	virtual NxF32 readFloat() const					{ unsigned b = take(4); NxF32 v; memcpy(&v, &b, 4); return v; }
+	virtual NxF64 readDouble() const				{ take(4); take(4); return 0.0; }
+	virtual void readBuffer(void* buffer, NxU32 n) const { memset(buffer, 0, n); offset += n; }
+
+	virtual NxStream& storeByte(NxU8)				{ return *this; }
+	virtual NxStream& storeWord(NxU16)				{ return *this; }
+	virtual NxStream& storeDword(NxU32)				{ return *this; }
+	virtual NxStream& storeFloat(NxF32)				{ return *this; }
+	virtual NxStream& storeDouble(NxF64)			{ return *this; }
+	virtual NxStream& storeBuffer(const void*, NxU32)	{ return *this; }
+	};
+
+static bool nxCandidatePMapLoad(const unsigned char* storage, unsigned length, NxPMapResult* result)
+	{
+	// The same six floats the oracle side seeds, in the candidate's own object.
+	// They reach only the AABB fields at PenetrationMap+0x08..+0x58, none of
+	// which the harness compares -- what is compared is acceptance, the error
+	// count, the reported line, the cell count, the decoded grid and the stored
+	// resolution.
+	unsigned char mesh[0x64];
+	memset(mesh, 0, sizeof(mesh));
+	float bounds[6] = { -1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f };
+	memcpy(mesh + 0x44, bounds, sizeof(bounds));
+
+	NxCandidateSink sink;
+	MemoryStream stream(storage, length);
+	PenetrationMap pmap;
+
+	bool accepted = pmap.create(mesh, 0, 0, &stream, true, &sink);
+
+	result->accepted = accepted ? 1u : 0u;
+	result->errors = sink.calls;
+	result->errorLine = sink.lastLine;
+	result->resolution = pmap.getResolution();
+	result->cells = pmap.getCellCount();
+	result->grid = 0;
+	if(accepted && pmap.getGrid())
+		{
+		unsigned digest = 2166136261u;
+		for(unsigned i = 0; i < result->cells; ++i)
+			digest = nxFold(digest, pmap.getGrid()[i]);
+		result->grid = digest;
+		}
+	return true;
 	}
 
-static bool nxCandidateMeshHeader(const unsigned char*, unsigned, NxMeshResult*)
+static bool nxCandidateMeshHeader(const unsigned char* storage, unsigned length, NxMeshResult* result)
 	{
-	return false;
+	NxCandidateStream stream(storage, length);
+	NxTriangleMeshHeader header = nxTriangleMeshReadHeader(stream);
+	if(header != NX_TRIANGLE_MESH_HEADER_REJECTED)
+		return false;		// fields 3-19 are not reconstructed; see TriangleMesh.h
+
+	result->accepted = 0;
+	result->dwordsRead = stream.dwordsRead;
+	return true;
 	}
 
-static bool nxCandidateReleasePMap(void*, unsigned char*)
+static bool nxCandidateReleasePMap(void* pmap, unsigned char* returned)
 	{
-	return false;
+	*returned = NxReleasePMap(*(NxPMap*) pmap) ? 1u : 0u;
+	return true;
 	}
 
 // ---------------------------------------------------------------------------

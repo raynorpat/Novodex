@@ -189,15 +189,31 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_link_libraries(NxPhysicsKernelFuzzTests bcrypt)
 
 	# The Phase 4 asset-format gate. An oracle differential like
-	# NxPhysicsCollisionTests below, and RED on purpose: it drives the recovered
-	# penetration-map and triangle-mesh byte formats against the pinned DLL and
-	# then asks the reconstruction the same questions, and Phase 4 has no
-	# reconstruction yet. It links no Physics source, because there is none to
-	# link -- Task 2 adds TriangleMesh.cpp and PenetrationMap.cpp here and
-	# replaces the three nxCandidate* functions in the harness.
-	add_executable(NxPhysicsAssetTests tests/PhysicsAssetTests.cpp)
-	target_include_directories(NxPhysicsAssetTests PRIVATE Foundation/include Physics/include)
-	target_link_libraries(NxPhysicsAssetTests bcrypt)
+	# NxPhysicsCollisionTests below: it drives the recovered penetration-map and
+	# triangle-mesh byte formats against the pinned DLL and then asks the
+	# reconstruction the same questions.
+	#
+	# It links NxOpcode because PenetrationMap does: the payload loader builds an
+	# Ice Container per value record (0x00050216) and the reorder pass sorts the
+	# Morton keys with a RadixSort (0x0005052f), and both are vendored OPCODE
+	# rows rather than reconstructed ones.
+	#
+	# ThirdPartyHost.cpp and PhysicsInternal.cpp come with NxOpcode for the same
+	# reason they do in NxPhysicsThirdPartyTests: the vendored tree's allocation
+	# seam is opcNovodeXAlloc/opcNovodeXFree and that reaches nxGetSdkAllocator.
+	add_executable(NxPhysicsAssetTests tests/PhysicsAssetTests.cpp
+		Physics/src/PMap.cpp Physics/src/MemoryStream.cpp Physics/src/TriangleMesh.cpp
+		Physics/src/ThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp)
+	target_include_directories(NxPhysicsAssetTests PRIVATE
+		Foundation/include Foundation/src/include Physics/include Physics/src/include)
+	# NxReleasePMap is declared NXP_DLL_EXPORT in the pinned public NxPMap.h and
+	# this target links PMap.cpp directly, so the declaration must not come out
+	# dllimport. NX_PHYSICS_DLL is the arm of Nxp.h's chain that gives NXP export
+	# and leaves NXF import, which is what PhysicsInternal.cpp needs to reach
+	# nxFoundationSDKAllocator in NxFoundation.dll. NX_PHYSICS_STATICLIB would
+	# clear both and break that import.
+	target_compile_definitions(NxPhysicsAssetTests PRIVATE NX_PHYSICS_DLL=1)
+	target_link_libraries(NxPhysicsAssetTests NxFoundation NxOpcode bcrypt)
 
 	# The vendored third-party differential. Same shape as the two above: it
 	# holds the pinned oracle in its own process and calls qhull and OPCODE rows
