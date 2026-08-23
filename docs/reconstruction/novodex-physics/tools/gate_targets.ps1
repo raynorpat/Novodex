@@ -65,7 +65,7 @@ $NxPhaseOracleDifferentialTargets = [ordered] @{
     '2' = @()
     '3' = @('NxPhysicsCollisionTests')
     '4' = @('NxPhysicsAssetTests', 'NxPhysicsThirdPartyTests')
-    '5' = @()
+    '5' = @('NxPhysicsObjectLayoutTests')
     '6' = @()
     '7' = @()
     '8' = @()
@@ -579,6 +579,36 @@ $NxRequiredCoverageLines = [ordered] @{
         'release case=null_data returned=1 data_size=5a5a5a5a data=00000000'
     )
 
+    # The Phase 5 object-layout gate. RED on purpose until Tasks 2 and 3
+    # transcribe the object-model classes; its own exit code fails the phase
+    # until then, exactly the way the asset gate was born. Every line below is
+    # a fact about the shipped DLL alone:
+    #
+    #   * eight `vt` digests over the loaded oracle's slot words -- the two
+    #     actor tables in full (87 and 88 slots; the dynamic table's window
+    #     includes the adjacent one-slot member table its ctor installs into
+    #     the +8 subobject) and a twelve-slot window of every shape final plus
+    #     the base-shape table;
+    #   * `colobj`, phys_fn_001193 run on a poisoned 0x1c buffer with a marked
+    #     argument: three vtables, a zeroed word, and the argument stored at
+    #     both +8 and +0x18 -- the borrowed collision-object layout pinned
+    #     byte for byte by the oracle's own constructor;
+    #   * `owner`, the four-byte accessor phys_fn_001281 reading +0x04.
+    'NxPhysicsObjectLayoutTests' = @(
+        'vt name=actor_interface slots=87 digest=62936499',
+        'vt name=actor_dynamic slots=88 digest=cdd44a90',
+        'vt name=shape_base slots=12 digest=650a3f61',
+        'vt name=box slots=12 digest=5daef065',
+        'vt name=capsule slots=12 digest=ef7766c2',
+        'vt name=plane slots=12 digest=2368c934',
+        'vt name=sphere slots=12 digest=86cf5cb3',
+        'vt name=mesh slots=12 digest=cef7ce84',
+        'colobj ctor=phys_fn_001193 size=28 digest=e1df25e5 vptr_final=10107218 zero04=00000000 arg_at_8=a5a5a5a5 vptr_member=101072a0 arg_at_18=a5a5a5a5',
+        'owner accessor=phys_fn_001281 mark=13579bdf returned=13579bdf',
+        'layout coverage tables=8 colobj=1 owner=1',
+        'layout oracle digest=99eee5c2'
+    )
+
     # The vendored third-party differential. Phase 4 vendors qhull 2003.1 and
     # OPCODE 1.3 instead of reconstructing them -- 722 census rows and 377,842
     # bytes -- and a vendored row that nothing runs is present, not proven. This
@@ -734,7 +764,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 100  # 34 for NxPhysicsAssetTests, 66 for NxPhysicsThirdPartyTests
-    '5' = 0
+    '5' = 12   # all twelve for NxPhysicsObjectLayoutTests (RED on purpose)
     '6' = 0
     '7' = 0
     '8' = 0
@@ -767,6 +797,7 @@ $NxRegisteredStaticProofTargets = @(
 $NxRegisteredOracleDifferentialTargets = @(
     'NxPhysicsAssetTests',
     'NxPhysicsCollisionTests',
+    'NxPhysicsObjectLayoutTests',
     'NxPhysicsThirdPartyTests'
 )
 $NxSkippedExitCode = 3

@@ -96,7 +96,34 @@ Separately, `phys_fn_000973` (p2, 913 bytes) installs **twelve** small
 vtables (`0x10106998`–`0x10106a48`) — almost certainly the descriptor
 `setToDefault` family, which Task 2 owns confirming.
 
-## 5. What this task did not do
+## 5. The RED layout gate
+
+`NxPhysicsObjectLayoutTests` pins this task's structural claims against the
+shipped DLL and is registered for Phase 5 RED on purpose -- three
+`CANDIDATE-MISSING` families (vtables, collision object, owner accessor)
+until Tasks 2 and 3 transcribe the classes:
+
+- eight `vt` digests over the loaded oracle's slot words: both actor tables
+  in full, and twelve-slot windows of every shape final plus the base table;
+- `colobj`: phys_fn_001193 run on a poisoned 0x1c buffer -- the oracle's own
+  constructor writes vptr `0x10107218`, zeroes +4, stores the argument at
+  BOTH +8 and +0x18, and installs member vptr `0x101072a0`, exactly as the
+  listing predicts (`digest=e1df25e5`);
+- `owner`: phys_fn_001281 returns the mark planted at fake-shape +0x04,
+  confirming the borrowed field through the accessor Phase 3 closed.
+
+Oracle digest `99eee5c2`; twelve registrations; Phase 5 coverage floor 12.
+
+A defect worth keeping on the record: the first build HUNG rather than ran.
+The cause was an address-space mixup in the harness itself -- censused RVAs
+pasted into a field named `va` and subtracted by the image base a second
+time, sending every read ~4 GB past the module. A crash sitting in a Windows
+Error Reporting dialog looks exactly like a hang from a redirected-process
+watchdog, and nothing in stdout says so. The minimal read probe
+(`build/probe_read.cpp`) is what separated "the module cannot be read" from
+"my pointer is wrong"; one was environment, the other was the bug.
+
+## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
   differential drives it.

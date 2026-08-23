@@ -1,0 +1,239 @@
+// The Phase 5 object-layout gate, and why it is RED.
+//
+// Task 1 locks the object model BEFORE behaviour is reconstructed. This
+// harness pins the structural facts the model claims, against the shipped
+// DLL, so that Tasks 2 and 3 write layouts that already have something
+// failing for them:
+//
+//   * VTABLE IDENTITY. For each table the model names -- the two actor
+//     tables in full, and a twelve-slot window of every shape final plus the
+//     base-shape table -- the loaded oracle's slot words are folded into one
+//     digest. A slot order that moved would move the digest; nothing on the
+//     candidate side can produce these words.
+//   * THE COLLISION OBJECT. The oracle's own constructor for the 0x1c-byte
+//     object Shape+0x9c points at (phys_fn_001193) is called on a poisoned
+//     buffer with a marked argument, and the resulting bytes are folded and
+//     printed field by field: three vtables, the zeroed word, and the
+//     argument stored twice. That pins the borrowed layout byte for byte.
+//   * THE OWNER ACCESSOR. phys_fn_001281 is four bytes -- mov eax,[ecx+4];
+//     ret -- and is driven against a fake shape whose +0x04 carries a mark.
+//
+// The candidate side answers CANDIDATE-MISSING per family until Task 2/3
+// transcribe the constructors; the compile-time half of the lock lives in
+// docs/reconstruction/novodex-physics/object_model.json and in the static
+// asserts Tasks 2 and 3 will carry in their headers.
+
+#define NOMINMAX
+#include <windows.h>
+#include <bcrypt.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// ---------------------------------------------------------------------------
+// Addresses, all censused and image-relative like every other address in this
+// programme.
+
+struct NxTableSpec
+	{
+	const char* name;
+	unsigned rva;			// image-relative, like every other address here
+	unsigned slots;
+	unsigned expectSlotsPrinted;
+	};
+
+// Twelve-slot windows for the shape finals: each stays inside the extent the
+// neighbouring known tables bound, so the window is slot semantics rather
+// than arbitrary bytes. The two actor tables are folded in FULL -- their
+// extents are exact, and the dynamic table's includes the adjacent one-slot
+// member table the ctor overwrites into the +8 subobject.
+static const NxTableSpec nxTables[] =
+	{
+	{ "actor_interface", 0x001043d0, 87, 87 },
+	{ "actor_dynamic",   0x00104530, 88, 88 },
+	{ "shape_base",      0x00107494, 12, 12 },
+	{ "box",             0x00106ab8, 12, 12 },
+	{ "capsule",         0x00106b20, 12, 12 },
+	{ "plane",           0x00107430, 12, 12 },
+	{ "sphere",          0x00107528, 12, 12 },
+	{ "mesh",            0x00107630, 12, 12 },
+	};
+
+static const unsigned kColObjCtorRva = 0x000247c0;	// phys_fn_001193, 57 bytes
+static const unsigned kOwnerAccessorRva = 0x000257a0;	// phys_fn_001281, mov eax,[ecx+4]; ret
+
+typedef void (__thiscall* NxColObjCtorFn)(void* self, unsigned arg);
+typedef const void* (__fastcall* NxOwnerAccessorFn)(const void* self, void* edxUnused);
+
+// ---------------------------------------------------------------------------
+
+static unsigned nxFold(unsigned digest, unsigned word)
+	{
+	digest ^= word & 0xffu;              digest *= 16777619u;
+	digest ^= (word >> 8) & 0xffu;       digest *= 16777619u;
+	digest ^= (word >> 16) & 0xffu;      digest *= 16777619u;
+	digest ^= (word >> 24) & 0xffu;      digest *= 16777619u;
+	return digest;
+	}
+
+static int nxFail(const char* message)
+	{
+	fprintf(stderr, "FAIL %s\n", message);
+	return 1;
+	}
+
+static bool nxSha256(const wchar_t* path, char* text)
+	{
+	HANDLE file = CreateFileW(path, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+	if(file == INVALID_HANDLE_VALUE)
+		return false;
+	LARGE_INTEGER size;
+	BYTE digest[32];
+	bool ok = GetFileSizeEx(file, &size) != 0 && size.QuadPart > 0 && size.QuadPart < 0x08000000;
+	BYTE* bytes = ok ? static_cast<BYTE*>(malloc(static_cast<size_t>(size.QuadPart))) : 0;
+	DWORD read = 0;
+	ok = bytes != 0
+		&& ReadFile(file, bytes, static_cast<DWORD>(size.QuadPart), &read, 0) != 0
+		&& read == size.QuadPart
+		&& BCryptHash(BCRYPT_SHA256_ALG_HANDLE, 0, 0, bytes, read, digest, sizeof(digest)) == 0;
+	free(bytes);
+	CloseHandle(file);
+	if(!ok)
+		return false;
+	for(int i = 0; i < 32; ++i)
+		sprintf_s(text + i * 2, 3, "%02x", digest[i]);
+	return true;
+	}
+
+int wmain(int argc, wchar_t** argv)
+	{
+	bool selfOnly = false;
+	if(argc == 4 && wcscmp(argv[3], L"--self") == 0)
+		selfOnly = true;
+	else if(argc != 3)
+		{
+		fprintf(stderr, "usage: NxPhysicsObjectLayoutTests <oracle directory> <NxPhysics.dll sha256> [--self]\n");
+		return 2;
+		}
+
+	wchar_t physicsPath[MAX_PATH];
+	if(swprintf_s(physicsPath, L"%s\\NxPhysics.dll", argv[1]) < 0)
+		return nxFail("cannot form the oracle path");
+
+	if(!SetDefaultDllDirectories(LOAD_LIBRARY_SEARCH_SYSTEM32) || !AddDllDirectory(argv[1]))
+		return nxFail("cannot restrict the DLL search path");
+	HMODULE physics = LoadLibraryExW(physicsPath, 0, LOAD_LIBRARY_SEARCH_USER_DIRS | LOAD_LIBRARY_SEARCH_SYSTEM32);
+	if(!physics)
+		{
+		fprintf(stderr, "FAIL isolated LoadLibraryEx failed: %lu\n", GetLastError());
+		return 1;
+		}
+
+	wchar_t loadedPath[MAX_PATH];
+	char loadedHash[65];
+	if(!GetModuleFileNameW(physics, loadedPath, MAX_PATH) || !nxSha256(loadedPath, loadedHash))
+		return nxFail("cannot identify the loaded oracle");
+	char expected[65];
+	size_t converted = 0;
+	if(wcstombs_s(&converted, expected, sizeof(expected), argv[2], _TRUNCATE) != 0)
+		return nxFail("cannot read the expected hash argument");
+
+	printf("layout module path=%S sha256=%s\n", loadedPath, loadedHash);
+	printf("layout base=%p mode=%s\n", (void*) physics, selfOnly ? "self" : "differential");
+	if(strcmp(loadedHash, expected) != 0)
+		{
+		fprintf(stderr, "FAIL loaded oracle is not the pinned one: expected %s\n", expected);
+		return 1;
+		}
+	printf("layout pin=matched\n");
+	fflush(stdout);
+
+	const unsigned char* base = (const unsigned char*) physics;
+
+	unsigned oracleDigest = 2166136261u;
+	unsigned candidateMissing = 0;
+
+	// -----------------------------------------------------------------------
+	// Vtable identity.
+	for(size_t t = 0; t < sizeof(nxTables) / sizeof(nxTables[0]); ++t)
+		{
+		const NxTableSpec* spec = &nxTables[t];
+		const unsigned rva = spec->rva;
+		unsigned digest = 2166136261u;
+		unsigned printed = 0;
+		for(unsigned i = 0; i < spec->slots; ++i)
+			{
+			unsigned word;
+			memcpy(&word, base + rva + i * 4, 4);
+			digest = nxFold(digest, word);
+			++printed;
+			}
+		oracleDigest = nxFold(oracleDigest, digest);
+		printf("vt name=%s slots=%u digest=%08x\n", spec->name, printed, digest);
+		if(printed != spec->expectSlotsPrinted)
+			return nxFail("slot window drifted from its registration");
+		}
+
+	// -----------------------------------------------------------------------
+	// The collision object constructor, on a poisoned buffer.
+	{
+	NxColObjCtorFn colObjCtor = (NxColObjCtorFn) (base + kColObjCtorRva);
+	unsigned char object[0x1c];
+	memset(object, 0xcd, sizeof(object));
+	const unsigned kArg = 0xa5a5a5a5u;
+	colObjCtor(object, kArg);
+
+	unsigned digest = 2166136261u;
+	for(unsigned i = 0; i < sizeof(object); i += 4)
+		{
+		unsigned word;
+		memcpy(&word, object + i, 4);
+		digest = nxFold(digest, word);
+		}
+	unsigned vptrFinal, vptrMember, w04, w08, arg18;
+	memcpy(&vptrFinal, object + 0x00, 4);
+	memcpy(&w04, object + 0x04, 4);
+	memcpy(&w08, object + 0x08, 4);
+	memcpy(&vptrMember, object + 0x0c, 4);
+	memcpy(&arg18, object + 0x18, 4);
+	oracleDigest = nxFold(oracleDigest, digest);
+
+	printf("colobj ctor=phys_fn_001193 size=28 digest=%08x vptr_final=%08x zero04=%08x "
+		"arg_at_8=%08x vptr_member=%08x arg_at_18=%08x\n",
+		digest, vptrFinal, w04, w08, vptrMember, arg18);
+	}
+
+	// -----------------------------------------------------------------------
+	// The owner accessor against a fake shape.
+	{
+	NxOwnerAccessorFn ownerAccessor = (NxOwnerAccessorFn) (base + kOwnerAccessorRva);
+	unsigned char fake[16];
+	memset(fake, 0, sizeof(fake));
+	const unsigned kMark = 0x13579bdfu;
+	memcpy(fake + 0x04, &kMark, 4);
+	const void* owner = ownerAccessor(fake, 0);
+	unsigned got;
+	memcpy(&got, &owner, 4);
+	oracleDigest = nxFold(oracleDigest, got);
+	printf("owner accessor=phys_fn_001281 mark=%08x returned=%08x\n", kMark, got);
+	}
+
+	printf("layout coverage tables=%u colobj=1 owner=1\n",
+		(unsigned) (sizeof(nxTables) / sizeof(nxTables[0])));
+	printf("layout oracle digest=%08x\n", oracleDigest);
+
+	// The candidate side. Every family below stays CANDIDATE-MISSING until
+	// its task transcribes the rows; the count is what makes this gate RED.
+	if(!selfOnly)
+		{
+		printf("candidate CANDIDATE-MISSING family=vtables reason=no reconstruction transcribes the object-model classes yet (Task 2/3)\n");
+		printf("candidate CANDIDATE-MISSING family=collision_object reason=phys_fn_001193 is not transcribed\n");
+		printf("candidate CANDIDATE-MISSING family=owner_accessor reason=phys_fn_001281 is not transcribed\n");
+		candidateMissing = 3;
+		printf("layout candidate mismatches=%u mode=differential\n", candidateMissing);
+		return nxFail("the Phase 5 reconstruction does not exist yet; this gate is RED on purpose");
+		}
+	printf("layout candidate mismatches=0 mode=self\n");
+	printf("layout result=self-pass\n");
+	return 0;
+	}
