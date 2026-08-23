@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "phase": 5,
+  "generated_from": [
+    "evidence/phase5-vtable-census.json",
+    "oracle/pe.json pointers",
+    "oracle/capstone/manifest.json",
+    "constructor listings cited per entry"
+  ],
+  "address_space_note": "vtable addresses are virtual addresses (image base 0x10000000); function rvas are image-relative, as everywhere else in this census",
+  "interfaces": {
+    "NxActor": {
+      "header": "Physics/include/NxActor.h",
+      "declared_virtuals": 88,
+      "concrete_implementations": ["dynamic_actor @TBL_88"],
+      "abstract_interface_vtable": {
+        "rva": "0x101043d0",
+        "inventory_row": "phys_data_000678",
+        "slots": 87,
+        "implemented_slots": {"0": "phys_fn_000042", "63": "phys_fn_000038", "64": "phys_fn_000040"},
+        "purecall_filler": "phys_fn_005667 (84 slots)",
+        "note": "an abstract base's vtable: MSVC fills unimplemented slots with the pure-call stub"
+      }
+    },
+    "NxShape": {
+      "header": "Physics/include/NxShape.h",
+      "declared_virtuals": 31,
+      "base_shape_vtable": {"rva": "0x10107494", "installed_by": "phys_fn_001273 at 0x0002553d"},
+      "note": "per-type final tables and slot maps below"
+    },
+    "NxMaterial": {
+      "header": "Physics/include/NxMaterial.h",
+      "declared_virtuals": 0,
+      "note": "materials are NOT polymorphic in 2.1.2; Task 2 scope shrinks accordingly"
+    }
+  },
+  "concrete_classes": {
+    "dynamic_actor": {
+      "vtable": {"rva": "0x10104530", "inventory_row": "phys_data_000679", "slots": 88, "distinct_targets": 88, "phase5_targets": 88},
+      "constructor": {"row": "phys_fn_000044", "rva": "0x00002480", "listing_evidence": {
+        "base_vptr_store": "0x00002489 -> 0x101043d0",
+        "secondary_base_at_plus_8": {"member_base_ctor": "phys_fn_002404 (p2) via call 0x1005ba70 at 0x00002496", "base_member_vptr": "0x101088b8 installed by phys_fn_002404", "final_vptr": "0x1010468c stored at 0x0000249f", "one_slot_table_adjacent_to_TBL_88_tail": true},
+        "arg_store": "+0x14 <- [esp+0xc] at 0x000024a5",
+        "final_vptr": "0x000024a9 -> 0x10104530"
+      }},
+      "destructor": {"row": "phys_fn_000118", "rva": "0x00003650", "frees_through": "SDK allocator global 0x101041bc, vtable slot +0x14, guarded by flag byte"},
+      "layout_known_fields": {"+0x00": "vptr", "+0x04": "dword zeroed by ctor", "+0x08": "secondary base subobject (vptr first)", "+0x14": "ctor argument (unestablished meaning)"}
+    },
+    "box_shape": {
+      "final_vtable": {"rva": "0x10106ab8", "slots_established": "17-slot extent bounded below by table B and above by CAPSULE table; no inventory row of its own (census merge)"},
+      "constructor_rows": ["phys_fn_000977 (207 bytes)", "phys_fn_000979"],
+      "ctor_listing_evidence": {
+        "base_shape_ctor_call": "0x10025530 (phys_fn_001273) at 0x00021880",
+        "desc_mixin_vptr_at_plus_e0": "A=0x10106a58 then B=0x10106a88 (12-slot tables each), stores at 0x00021885/0x00021895",
+        "zeroed_trio": "+0x150..+0x158"
+      },
+      "slot_5_raycast": "phys_fn_000949 (phase 3 recorded)",
+      "slot_7_sweep_dispatch": "phys_fn_000951"
+    },
+    "sphere_shape": {
+      "final_vtable": {"rva": "0x10107528"},
+      "constructor_rows": ["phys_fn_001349 (91 bytes)"],
+      "ctor_listing_evidence": {
+        "collision_object_allocation": "0x1c bytes through SDK allocator global 0x101041bc via slot +8 with (size,0) at 0x000277ee..0x000277f2",
+        "collision_object_ctor": "phys_fn_001193 (0x000247c0, 57 bytes, phase 3)",
+        "stored_at": "+0x9c at 0x00027805 -- CONFIRMS the borrowed Phase 3 claim from the constructor side",
+        "plus_d0_init": "+0xd0 = 1 at 0x0002780b",
+        "plus_e0": "nulled (no desc mixin pointer for spheres)"
+      },
+      "slot_5_raycast": "phys_fn_001377",
+      "slot_7_sweep_dispatch": "phys_fn_001373"
+    },
+    "capsule_shape": {"final_vtable": {"rva": "0x10106b20"}, "constructor_rows": ["phys_fn_000987"], "slot_5_raycast": "phys_fn_001010", "slot_7_sweep_dispatch": "phys_fn_001012"},
+    "plane_shape": {"final_vtable": {"rva": "0x10107430"}, "constructor_rows": ["phys_fn_001247"], "slot_5_raycast": "phys_fn_001261", "slot_7_sweep_dispatch": "phys_fn_001035 (shared with BASE-SHAPE -- plane does not override)"},
+    "mesh_shape": {"final_vtable": {"rva": "0x10107630"}, "constructor_rows": ["phys_fn_001379"], "slot_5_raycast": "phys_fn_001405", "slot_7_sweep_dispatch": "phys_fn_001407"}
+  },
+  "shape_layout": {
+    "source": "phys_fn_001273 (0x00025530, 424 bytes, shared base-shape ctor), decoded at 0x0002553d..0x000255cd",
+    "fields": {
+      "+0x00": {"meaning": "vptr", "established_by": "ctor stores 0x10107494 at 0x0002553d"},
+      "+0x04": {"meaning": "owner", "established_by": "ctor stores arg1 at 0x00025543 -- CONFIRMS borrowed Phase 3 claim", "accessor": "phys_fn_001281 mov eax,[ecx+4]; ret"},
+      "+0x08": {"meaning": "dword zeroed by ctor", "established_by": "0x00025549"},
+      "+0x0c..+0x38": {"meaning": "pose #1 (NxMat33 rows then t), ctor writes identity/zero", "established_by": "diagonals 1.0f at 0x0c/0x1c/0x2c (ebx=0x3f800000), zeros elsewhere, t at 0x30..0x38"},
+      "+0x3c..+0x68": {"meaning": "pose #2, ctor writes identity/zero", "established_by": "diagonals at 0x3c/0x4c/0x5c, t at 0x60..0x68", "status": "Phase 3 called this UNESTABLISHED; the constructor establishes it as an identity-initialised second pose"},
+      "+0x6c..+0x98": {"meaning": "pose #3, ctor writes identity/zero", "established_by": "diagonals at 0x6c/0x7c/0x8c, t at 0x90..0x98", "status": "NEW -- a third pose neither Phase 3 nor the escalation named"},
+      "+0x9c": {"meaning": "pointer to the 0x1c-byte collision object", "established_by": "sphere ctor allocation sequence 0x000277e4..0x00027805 -- CONFIRMS borrowed claim"},
+      "+0xa4": {"meaning": "subobject constructed at ctor tail (lea ecx,[esi+0xa4] at 0x000255cd)", "status": "contents unestablished"},
+      "+0xd0": {"meaning": " initialised to 1 by sphere ctor", "established_by": "0x0002780b"},
+      "+0xe0": {"meaning": "secondary-base vptr for desc-mixin types (box: A/B tables); NULL for sphere", "established_by": "0x00021885/0x00021895 (box), 0x000277da (sphere)"},
+      "+0xe4..+0xec": {"meaning": "per-type geometry area; Phase 3 read box half extents as three floats here (0x0003ae31/0x0003ae26) and capsule radius/halfHeight/swept", "status": "consistent with the ctor layout; per-type confirmation belongs to Task 3"}
+    },
+    "cross_check_status": "borrowed offsets +0x04, +0x9c confirmed from constructors; pose region re-established with THREE poses; +0xe0..+0xec refined (vptr + geometry floats)"
+  },
+  "descriptor_family_hint": {
+    "factory_row": "phys_fn_000973 (0x00021420, 913 bytes, phase 2)",
+    "installs_twelve_vtables": ["0x10106998", "0x101069a8", "0x101069b8", "0x101069c8", "0x101069d8", "0x101069e8", "0x101069f8", "0x10106a08", "0x10106a18", "0x10106a28", "0x10106a38", "0x10106a48"],
+    "interpretation": "likely the descriptor setToDefault family; Task 2 owns the confirmation",
+    "flagged_resolution": "the census's 41-slot merged run at 0x106a58 is THREE real tables: A(12)@0x106a58 + B(12)@0x106a88 + BOX(17)@0x106ab8, ending together at 0x106afc"
+  },
+  "open_questions": [
+    "what the actor's +8 secondary base subobject IS (its interface has a one-slot table; ctor arg stored at actor+0x14 uninterpreted)",
+    "identity of TBL_87 implemented slots 63/64 (phys_fn_000038/_000040)",
+    "the third pose's role (saved previous? sweep source?)",
+    "which of the twelve small vtables phys_fn_000973 installs maps to which Nx*Desc type",
+    "whether Shape+0x150..+0x158 trio is box-specific or common"
+  ]
+}

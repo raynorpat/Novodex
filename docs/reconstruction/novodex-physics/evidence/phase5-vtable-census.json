@@ -1,0 +1,1706 @@
+{
+ "generated_from": "inventory.json",
+ "tables": [
+  {
+   "id": "phys_data_000678",
+   "rva": "0x001043d0",
+   "size": 348,
+   "slots": 87,
+   "slot_map": [
+    [
+     0,
+     "0x00002460",
+     "phys_fn_000042",
+     5
+    ],
+    [
+     1,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     2,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     3,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     4,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     5,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     6,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     7,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     8,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     9,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     10,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     11,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     12,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     13,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     14,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     15,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     16,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     17,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     18,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     19,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     20,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     21,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     22,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     23,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     24,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     25,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     26,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     27,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     28,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     29,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     30,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     31,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     32,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     33,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     34,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     35,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     36,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     37,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     38,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     39,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     40,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     41,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     42,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     43,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     44,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     45,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     46,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     47,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     48,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     49,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     50,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     51,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     52,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     53,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     54,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     55,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     56,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     57,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     58,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     59,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     60,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     61,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     62,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     63,
+     "0x00002400",
+     "phys_fn_000038",
+     5
+    ],
+    [
+     64,
+     "0x00002430",
+     "phys_fn_000040",
+     5
+    ],
+    [
+     65,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     66,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     67,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     68,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     69,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     70,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     71,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     72,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     73,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     74,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     75,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     76,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     77,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     78,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     79,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     80,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     81,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     82,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     83,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     84,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     85,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     86,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ]
+   ],
+   "distinct_targets": 4,
+   "shared_with": []
+  },
+  {
+   "id": "phys_data_000679",
+   "rva": "0x00104530",
+   "size": 352,
+   "slots": 88,
+   "slot_map": [
+    [
+     0,
+     "0x00003650",
+     "phys_fn_000118",
+     5
+    ],
+    [
+     1,
+     "0x00008b00",
+     "phys_fn_000196",
+     5
+    ],
+    [
+     2,
+     "0x00008f60",
+     "phys_fn_000198",
+     5
+    ],
+    [
+     3,
+     "0x00009110",
+     "phys_fn_000200",
+     5
+    ],
+    [
+     4,
+     "0x00009450",
+     "phys_fn_000202",
+     5
+    ],
+    [
+     5,
+     "0x00004580",
+     "phys_fn_000130",
+     5
+    ],
+    [
+     6,
+     "0x00002ed0",
+     "phys_fn_000092",
+     5
+    ],
+    [
+     7,
+     "0x000046c0",
+     "phys_fn_000132",
+     5
+    ],
+    [
+     8,
+     "0x00002f30",
+     "phys_fn_000094",
+     5
+    ],
+    [
+     9,
+     "0x00004430",
+     "phys_fn_000128",
+     5
+    ],
+    [
+     10,
+     "0x00003b40",
+     "phys_fn_000124",
+     5
+    ],
+    [
+     11,
+     "0x00002df0",
+     "phys_fn_000090",
+     5
+    ],
+    [
+     12,
+     "0x00003f80",
+     "phys_fn_000126",
+     5
+    ],
+    [
+     13,
+     "0x00002a80",
+     "phys_fn_000070",
+     5
+    ],
+    [
+     14,
+     "0x00002b40",
+     "phys_fn_000072",
+     5
+    ],
+    [
+     15,
+     "0x00002d00",
+     "phys_fn_000082",
+     5
+    ],
+    [
+     16,
+     "0x00002d30",
+     "phys_fn_000084",
+     5
+    ],
+    [
+     17,
+     "0x00006520",
+     "phys_fn_000164",
+     5
+    ],
+    [
+     18,
+     "0x00003840",
+     "phys_fn_000122",
+     5
+    ],
+    [
+     19,
+     "0x00003580",
+     "phys_fn_000110",
+     5
+    ],
+    [
+     20,
+     "0x00009cc0",
+     "phys_fn_000210",
+     5
+    ],
+    [
+     21,
+     "0x0000a0b0",
+     "phys_fn_000212",
+     5
+    ],
+    [
+     22,
+     "0x0000a3a0",
+     "phys_fn_000214",
+     5
+    ],
+    [
+     23,
+     "0x0000a680",
+     "phys_fn_000218",
+     5
+    ],
+    [
+     24,
+     "0x0000acd0",
+     "phys_fn_000220",
+     5
+    ],
+    [
+     25,
+     "0x0000b100",
+     "phys_fn_000222",
+     5
+    ],
+    [
+     26,
+     "0x000096c0",
+     "phys_fn_000204",
+     5
+    ],
+    [
+     27,
+     "0x000098d0",
+     "phys_fn_000206",
+     5
+    ],
+    [
+     28,
+     "0x00009ad0",
+     "phys_fn_000208",
+     5
+    ],
+    [
+     29,
+     "0x00003140",
+     "phys_fn_000096",
+     5
+    ],
+    [
+     30,
+     "0x00003200",
+     "phys_fn_000098",
+     5
+    ],
+    [
+     31,
+     "0x000032a0",
+     "phys_fn_000100",
+     5
+    ],
+    [
+     32,
+     "0x000047d0",
+     "phys_fn_000134",
+     5
+    ],
+    [
+     33,
+     "0x00004b60",
+     "phys_fn_000136",
+     5
+    ],
+    [
+     34,
+     "0x00004d60",
+     "phys_fn_000138",
+     5
+    ],
+    [
+     35,
+     "0x00006c60",
+     "phys_fn_000166",
+     5
+    ],
+    [
+     36,
+     "0x000025c0",
+     "phys_fn_000048",
+     5
+    ],
+    [
+     37,
+     "0x00006e40",
+     "phys_fn_000168",
+     5
+    ],
+    [
+     38,
+     "0x00003310",
+     "phys_fn_000102",
+     5
+    ],
+    [
+     39,
+     "0x00005000",
+     "phys_fn_000140",
+     5
+    ],
+    [
+     40,
+     "0x000052d0",
+     "phys_fn_000142",
+     5
+    ],
+    [
+     41,
+     "0x00007090",
+     "phys_fn_000170",
+     5
+    ],
+    [
+     42,
+     "0x00002610",
+     "phys_fn_000050",
+     5
+    ],
+    [
+     43,
+     "0x00007240",
+     "phys_fn_000172",
+     5
+    ],
+    [
+     44,
+     "0x00002680",
+     "phys_fn_000052",
+     5
+    ],
+    [
+     45,
+     "0x000073f0",
+     "phys_fn_000174",
+     5
+    ],
+    [
+     46,
+     "0x00007700",
+     "phys_fn_000176",
+     5
+    ],
+    [
+     47,
+     "0x000033b0",
+     "phys_fn_000104",
+     5
+    ],
+    [
+     48,
+     "0x00003440",
+     "phys_fn_000106",
+     5
+    ],
+    [
+     49,
+     "0x00007a20",
+     "phys_fn_000178",
+     5
+    ],
+    [
+     50,
+     "0x00007bb0",
+     "phys_fn_000180",
+     5
+    ],
+    [
+     51,
+     "0x00007ec0",
+     "phys_fn_000182",
+     5
+    ],
+    [
+     52,
+     "0x000034d0",
+     "phys_fn_000108",
+     5
+    ],
+    [
+     53,
+     "0x00005590",
+     "phys_fn_000144",
+     5
+    ],
+    [
+     54,
+     "0x000026f0",
+     "phys_fn_000054",
+     5
+    ],
+    [
+     55,
+     "0x00006100",
+     "phys_fn_000154",
+     5
+    ],
+    [
+     56,
+     "0x000061d0",
+     "phys_fn_000156",
+     5
+    ],
+    [
+     57,
+     "0x000062a0",
+     "phys_fn_000158",
+     5
+    ],
+    [
+     58,
+     "0x000027a0",
+     "phys_fn_000056",
+     5
+    ],
+    [
+     59,
+     "0x00006380",
+     "phys_fn_000160",
+     5
+    ],
+    [
+     60,
+     "0x00002850",
+     "phys_fn_000058",
+     5
+    ],
+    [
+     61,
+     "0x00006450",
+     "phys_fn_000162",
+     5
+    ],
+    [
+     62,
+     "0x00002900",
+     "phys_fn_000060",
+     5
+    ],
+    [
+     63,
+     "0x00002400",
+     "phys_fn_000038",
+     5
+    ],
+    [
+     64,
+     "0x00002430",
+     "phys_fn_000040",
+     5
+    ],
+    [
+     65,
+     "0x000058f0",
+     "phys_fn_000146",
+     5
+    ],
+    [
+     66,
+     "0x00005b40",
+     "phys_fn_000148",
+     5
+    ],
+    [
+     67,
+     "0x00002950",
+     "phys_fn_000062",
+     5
+    ],
+    [
+     68,
+     "0x00002990",
+     "phys_fn_000064",
+     5
+    ],
+    [
+     69,
+     "0x000029e0",
+     "phys_fn_000066",
+     5
+    ],
+    [
+     70,
+     "0x00008230",
+     "phys_fn_000184",
+     5
+    ],
+    [
+     71,
+     "0x00002a30",
+     "phys_fn_000068",
+     5
+    ],
+    [
+     72,
+     "0x00008380",
+     "phys_fn_000186",
+     5
+    ],
+    [
+     73,
+     "0x00008810",
+     "phys_fn_000192",
+     5
+    ],
+    [
+     74,
+     "0x00008990",
+     "phys_fn_000194",
+     5
+    ],
+    [
+     75,
+     "0x00002ba0",
+     "phys_fn_000074",
+     5
+    ],
+    [
+     76,
+     "0x00002c00",
+     "phys_fn_000076",
+     5
+    ],
+    [
+     77,
+     "0x00002c60",
+     "phys_fn_000078",
+     5
+    ],
+    [
+     78,
+     "0x000084d0",
+     "phys_fn_000188",
+     5
+    ],
+    [
+     79,
+     "0x00008670",
+     "phys_fn_000190",
+     5
+    ],
+    [
+     80,
+     "0x00002c90",
+     "phys_fn_000080",
+     5
+    ],
+    [
+     81,
+     "0x000024c0",
+     "phys_fn_000046",
+     5
+    ],
+    [
+     82,
+     "0x00003690",
+     "phys_fn_000120",
+     5
+    ],
+    [
+     83,
+     "0x00002d90",
+     "phys_fn_000088",
+     5
+    ],
+    [
+     84,
+     "0x00002d60",
+     "phys_fn_000086",
+     5
+    ],
+    [
+     85,
+     "0x000035b0",
+     "phys_fn_000112",
+     5
+    ],
+    [
+     86,
+     "0x00003610",
+     "phys_fn_000114",
+     5
+    ],
+    [
+     87,
+     "0x00003640",
+     "phys_fn_000116",
+     5
+    ]
+   ],
+   "distinct_targets": 88,
+   "shared_with": []
+  },
+  {
+   "id": "phys_data_000842",
+   "rva": "0x00106a58",
+   "size": 164,
+   "slots": 41,
+   "slot_map": [
+    [
+     0,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     1,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     2,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     3,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     4,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     5,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     6,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     7,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     8,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     9,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     10,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     11,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     12,
+     "0x00021a10",
+     "phys_fn_000985",
+     5
+    ],
+    [
+     13,
+     "0x00020d20",
+     "phys_fn_000953",
+     5
+    ],
+    [
+     14,
+     "0x00020d30",
+     "phys_fn_000955",
+     5
+    ],
+    [
+     15,
+     "0x000213c0",
+     "phys_fn_000961",
+     5
+    ],
+    [
+     16,
+     "0x000213d0",
+     "phys_fn_000963",
+     5
+    ],
+    [
+     17,
+     "0x000213e0",
+     "phys_fn_000965",
+     2
+    ],
+    [
+     18,
+     "0x000213f0",
+     "phys_fn_000967",
+     5
+    ],
+    [
+     19,
+     "0x00021400",
+     "phys_fn_000969",
+     5
+    ],
+    [
+     20,
+     "0x00021410",
+     "phys_fn_000971",
+     5
+    ],
+    [
+     21,
+     "0x00020d40",
+     "phys_fn_000957",
+     5
+    ],
+    [
+     22,
+     "0x00020f90",
+     "phys_fn_000959",
+     5
+    ],
+    [
+     23,
+     "0x000217c0",
+     "phys_fn_000975",
+     5
+    ],
+    [
+     24,
+     "0x00021940",
+     "phys_fn_000979",
+     5
+    ],
+    [
+     25,
+     "0x00027740",
+     "phys_fn_001347",
+     3
+    ],
+    [
+     26,
+     "0x000256f0",
+     "phys_fn_001277",
+     3
+    ],
+    [
+     27,
+     "0x000207e0",
+     "phys_fn_000945",
+     5
+    ],
+    [
+     28,
+     "0x00020850",
+     "phys_fn_000947",
+     5
+    ],
+    [
+     29,
+     "0x00020880",
+     "phys_fn_000949",
+     5
+    ],
+    [
+     30,
+     "0x000266a0",
+     "phys_fn_001315",
+     3
+    ],
+    [
+     31,
+     "0x00020b20",
+     "phys_fn_000951",
+     5
+    ],
+    [
+     32,
+     "0x00020700",
+     "phys_fn_000941",
+     5
+    ],
+    [
+     33,
+     "0x000205a0",
+     "phys_fn_000935",
+     5
+    ],
+    [
+     34,
+     "0x00020670",
+     "phys_fn_000937",
+     5
+    ],
+    [
+     35,
+     "0x000206c0",
+     "phys_fn_000939",
+     5
+    ],
+    [
+     36,
+     "0x00021990",
+     "phys_fn_000981",
+     5
+    ],
+    [
+     37,
+     "0x00020450",
+     "phys_fn_000927",
+     5
+    ],
+    [
+     38,
+     "0x00027f00",
+     "phys_fn_001391",
+     3
+    ],
+    [
+     39,
+     "0x00027f00",
+     "phys_fn_001391",
+     3
+    ],
+    [
+     40,
+     "0x00027f00",
+     "phys_fn_001391",
+     3
+    ]
+   ],
+   "distinct_targets": 28,
+   "shared_with": []
+  },
+  {
+   "id": "phys_data_000976",
+   "rva": "0x0010878c",
+   "size": 32,
+   "slots": 8,
+   "slot_map": [
+    [
+     0,
+     "0x0005a080",
+     "phys_fn_002312",
+     5
+    ],
+    [
+     1,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     2,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     3,
+     "0x0005a440",
+     "phys_fn_002326",
+     5
+    ],
+    [
+     4,
+     "0x0005a080",
+     "phys_fn_002312",
+     5
+    ],
+    [
+     5,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     6,
+     "0x000f41dc",
+     "phys_fn_005667",
+     8
+    ],
+    [
+     7,
+     "0x0005a230",
+     "phys_fn_002322",
+     5
+    ]
+   ],
+   "distinct_targets": 4,
+   "shared_with": []
+  },
+  {
+   "id": "phys_data_000979",
+   "rva": "0x00108818",
+   "size": 24,
+   "slots": 6,
+   "slot_map": [
+    [
+     0,
+     "0x00091de0",
+     "phys_fn_004031",
+     6
+    ],
+    [
+     1,
+     "0x0005a0a0",
+     "phys_fn_002314",
+     7
+    ],
+    [
+     2,
+     "0x0005a240",
+     "phys_fn_002324",
+     5
+    ],
+    [
+     3,
+     "0x0005a470",
+     "phys_fn_002328",
+     5
+    ],
+    [
+     4,
+     "0x00059710",
+     "phys_fn_002308",
+     7
+    ],
+    [
+     5,
+     "0x0005a870",
+     "phys_fn_002334",
+     7
+    ]
+   ],
+   "distinct_targets": 6,
+   "shared_with": []
+  }
+ ],
+ "largest_pair_summary": {
+  "tables": [
+   "phys_data_000678",
+   "phys_data_000679"
+  ],
+  "rvas": [
+   "0x001043d0",
+   "0x00104530"
+  ],
+  "slot_counts": [
+   87,
+   88
+  ],
+  "size_bytes": [
+   348,
+   352
+  ],
+  "distinct_targets": [
+   4,
+   88
+  ],
+  "shared_distinct_target_count": 2,
+  "shared_ratio_vs_smaller_table": 0.5,
+  "positions_with_identical_target_same_index": 2,
+  "first_12_slots": {
+   "0x001043d0": [
+    "0x00002460",
+    "0x000f41dc",
+    "0x000f41dc",
+    "0x000f41dc",
+    "0x000f41dc",
+    "0x000f41dc",
+    "0x000f41dc",
+    "0x000f41dc",
+    "0x000f41dc",
+    "0x000f41dc",
+    "0x000f41dc",
+    "0x000f41dc"
+   ],
+   "0x00104530": [
+    "0x00003650",
+    "0x00008b00",
+    "0x00008f60",
+    "0x00009110",
+    "0x00009450",
+    "0x00004580",
+    "0x00002ed0",
+    "0x000046c0",
+    "0x00002f30",
+    "0x00004430",
+    "0x00003b40",
+    "0x00002df0"
+   ]
+  },
+  "unrecovered_slots": [
+   0,
+   0
+  ]
+ },
+ "non_phase5_target_histogram": {
+  "2": 1,
+  "3": 6,
+  "6": 1,
+  "7": 3,
+  "8": 100
+ },
+ "shape_tables_found": [
+  {
+   "shape_type": "PLANE",
+   "vtable_rva": "0x00107430",
+   "source_evidence": "phase3-narrow-phase.md L556 slot-5 table",
+   "inventory_dispatch_table_row": "phys_data_000864",
+   "included_in_tables": false,
+   "reason": "inventory row exists but its full target list contains no phase-5 function",
+   "slots": 17,
+   "distinct_targets": 14,
+   "phase5_target_hits": 0,
+   "slot_5": {
+    "target": "0x00025350",
+    "fn_id": "phys_fn_001261",
+    "phase": 3
+   },
+   "slot_7": {
+    "target": "0x00022dd0",
+    "fn_id": "phys_fn_001035",
+    "phase": 3
+   }
+  },
+  {
+   "shape_type": "SPHERE",
+   "vtable_rva": "0x00107528",
+   "source_evidence": "phase3-narrow-phase.md L557 slot-5 table",
+   "inventory_dispatch_table_row": "phys_data_000869",
+   "included_in_tables": false,
+   "reason": "inventory row exists but its full target list contains no phase-5 function",
+   "slots": 19,
+   "distinct_targets": 17,
+   "phase5_target_hits": 0,
+   "slot_5": {
+    "target": "0x00027c70",
+    "fn_id": "phys_fn_001377",
+    "phase": 3
+   },
+   "slot_7": {
+    "target": "0x00027c10",
+    "fn_id": "phys_fn_001373",
+    "phase": 3
+   }
+  },
+  {
+   "shape_type": "BOX",
+   "vtable_rva": "0x00106ab8",
+   "source_evidence": "phase3-narrow-phase.md L558 slot-5 table",
+   "inventory_dispatch_table_row": null,
+   "included_in_tables": false,
+   "reason": "no inventory dispatch_table row; extent derived from consecutive oracle/pe.json pointer records (heuristic)",
+   "slots": 17,
+   "distinct_targets": 15,
+   "phase5_target_hits": 11,
+   "slot_5": {
+    "target": "0x00020880",
+    "fn_id": "phys_fn_000949",
+    "phase": 5
+   },
+   "slot_7": {
+    "target": "0x00020b20",
+    "fn_id": "phys_fn_000951",
+    "phase": 5
+   }
+  },
+  {
+   "shape_type": "CAPSULE",
+   "vtable_rva": "0x00106b20",
+   "source_evidence": "phase3-narrow-phase.md L559 slot-5 table",
+   "inventory_dispatch_table_row": "phys_data_000843",
+   "included_in_tables": false,
+   "reason": "inventory row exists but its full target list contains no phase-5 function",
+   "slots": 19,
+   "distinct_targets": 17,
+   "phase5_target_hits": 0,
+   "slot_5": {
+    "target": "0x00022480",
+    "fn_id": "phys_fn_001010",
+    "phase": 3
+   },
+   "slot_7": {
+    "target": "0x000225d0",
+    "fn_id": "phys_fn_001012",
+    "phase": 3
+   }
+  },
+  {
+   "shape_type": "MESH",
+   "vtable_rva": "0x00107630",
+   "source_evidence": "phase3-narrow-phase.md L560 slot-5 table",
+   "inventory_dispatch_table_row": "phys_data_000873",
+   "included_in_tables": false,
+   "reason": "inventory row exists but its full target list contains no phase-5 function",
+   "slots": 18,
+   "distinct_targets": 16,
+   "phase5_target_hits": 0,
+   "slot_5": {
+    "target": "0x00029230",
+    "fn_id": "phys_fn_001405",
+    "phase": 3
+   },
+   "slot_7": {
+    "target": "0x00029610",
+    "fn_id": "phys_fn_001407",
+    "phase": 3
+   }
+  },
+  {
+   "shape_type": "BASE_SHAPE",
+   "vtable_rva": "0x00107494",
+   "source_evidence": "phase3-narrow-phase.md L3692 (+0x00 vtable store 0x10107494)",
+   "inventory_dispatch_table_row": "phys_data_000866",
+   "included_in_tables": false,
+   "reason": "inventory row exists but its full target list contains no phase-5 function",
+   "slots": 12,
+   "distinct_targets": 9,
+   "phase5_target_hits": 0,
+   "slot_5": {
+    "target": "0x000b4070",
+    "fn_id": "phys_fn_004812",
+    "phase": 3
+   },
+   "slot_7": {
+    "target": "0x00022dd0",
+    "fn_id": "phys_fn_001035",
+    "phase": 3
+   }
+  },
+  {
+   "shape_type": "FAMILY_FINAL_a",
+   "vtable_rva": "0x001070b0",
+   "source_evidence": "phase3-narrow-phase.md L3710 final rewritten vtable",
+   "inventory_dispatch_table_row": "phys_data_000857",
+   "included_in_tables": false,
+   "reason": "inventory row exists but its full target list contains no phase-5 function",
+   "slots": 34,
+   "distinct_targets": 34,
+   "phase5_target_hits": 0,
+   "slot_5": {
+    "target": "0x00023da0",
+    "fn_id": "phys_fn_001131",
+    "phase": 3
+   },
+   "slot_7": {
+    "target": "0x00023e00",
+    "fn_id": "phys_fn_001133",
+    "phase": 3
+   }
+  },
+  {
+   "shape_type": "FAMILY_FINAL_b",
+   "vtable_rva": "0x00107218",
+   "source_evidence": "phase3-narrow-phase.md L3710 final rewritten vtable",
+   "inventory_dispatch_table_row": "phys_data_000860",
+   "included_in_tables": false,
+   "reason": "inventory row exists but its full target list contains no phase-5 function",
+   "slots": 35,
+   "distinct_targets": 35,
+   "phase5_target_hits": 0,
+   "slot_5": {
+    "target": "0x00024340",
+    "fn_id": "phys_fn_001167",
+    "phase": 3
+   },
+   "slot_7": {
+    "target": "0x000243a0",
+    "fn_id": "phys_fn_001169",
+    "phase": 3
+   }
+  },
+  {
+   "shape_type": "FAMILY_FINAL_c",
+   "vtable_rva": "0x00107388",
+   "source_evidence": "phase3-narrow-phase.md L3710 final rewritten vtable",
+   "inventory_dispatch_table_row": "phys_data_000863",
+   "included_in_tables": false,
+   "reason": "inventory row exists but its full target list contains no phase-5 function",
+   "slots": 34,
+   "distinct_targets": 34,
+   "phase5_target_hits": 0,
+   "slot_5": {
+    "target": "0x00024990",
+    "fn_id": "phys_fn_001211",
+    "phase": 3
+   },
+   "slot_7": {
+    "target": "0x000249f0",
+    "fn_id": "phys_fn_001213",
+    "phase": 3
+   }
+  }
+ ],
+ "notes": [
+  "Byte provenance: pins.oracle.path ('Binaries/NxPhysics.dll') is ABSENT from this checkout and no workspace file carries the pinned identity (size 1253376, sha256 4b7db3e126735c57...). The only NxPhysics.dll present (build/Release/NxPhysics.dll, 37,376 bytes, different digest) was NOT used. Full slot lists were rebuilt from docs/reconstruction/novodex-physics/oracle/pe.json 'pointers' (21844 decoded pointer records mapping slot RVA -> target RVA), which the Phase 1 oracle census extracted from the pinned image itself.",
+  "Inclusion rule: every data_objects row of type 'dispatch_table' whose REBUILT full target list contains at least one RVA exactly matching a functions row with phase==5. 5 of 131 dispatch_table rows qualify (phys_data_000678, _000679, _000842, _000976, _000979). Restricting the rule to the recorded notes-blob previews would admit only 4: 74 of the 131 rows record just their first 8 targets, which hides phys_data_000842 (its first 8 slots are pure-call filler; its phase-5 hits begin at slot 12).",
+  "Validation: every row's first min(recorded, slots) rebuilt targets equal the recorded preview (0 mismatches; re-checked from the saved output: 0 bad). Total declared slots across all 131 rows = 2437, matching oracle/data-coverage.json's 'pointer_table_slots': 2437 exactly.",
+  "Slot resolution is exact RVA match against inventory functions; fn_id=null marks an RVA with no function row, target=null marks a slot with no recovered pointer record. Every slot of every qualifying table resolved (no unrecovered slots).",
+  "Family grouping (|A n B| / min(|A|,|B|) of distinct targets > 0.60): NO family components emerged. Closest pair is phys_data_000678/phys_data_000679 sharing only 2 distinct targets (ratio 0.500 against the smaller set); the five qualifying tables are structurally independent vtables, not base/derived replicas.",
+  "Largest pair read. 0x001043d0 (phys_data_000678, 87 slots) is interface-SHAPED: slot 0 -> phys_fn_000042 (0x00002460, phase 5), slots 63/64 -> phys_fn_000038/_000040 (0x00002400/0x00002430, phase 5), and the other 84 slots all point at phys_fn_005667 (0x000f41dc, a 20-byte phase-8 runtime-tail compiler artifact acting as the pure-call filler). 0x00104530 (phys_data_000679, 88 slots) is fully implemented: 88 distinct targets, ALL 88 resolving to phase-5 function rows. Only slots 63/64 are identical between them. oracle/ghidra/manifest.json corroborates the pairing: ctor FUN_10002480 stores PTR_LAB_101043d0 while ctor FUN_10003650 stores PTR_FUN_10104530. Reading: 0x1043d0 is the abstract actor-interface vtable and 0x104530 the concrete dynamic-actor implementation; the body layer contributes the single extra tail slot rather than a third table.",
+  "non_phase5_target_histogram counts slot OCCURRENCES (not distinct targets) over all included tables. 100 of the 111 non-phase-5 occurrences are the single pure-call filler phys_fn_005667 (phase 8): 84 in phys_data_000678, 12 in phys_data_000842, 4 in phys_data_000976. Genuine cross-phase borrowings are thin: phase 3 x6, phase 7 x3, phase 2 x1, phase 6 x1. Both large tables are therefore essentially phase-5-owned once filler is discounted.",
+  "Shape-run observation. The five per-type shape vtables from evidence/phase3-narrow-phase.md L552-L560 sit inside one contiguous .rdata run together with phys_data_000842 @ 0x00106a58 (declared 41 slots, size 164): BOX @ 0x106ab8 is exactly 24 slots into that run, and BOX's slot 5 (0x00020880 / phys_fn_000949, the sole phase-5 raycast partner Phase 3 identified) appears at index 5+24=29 of phys_data_000842, with BOX slot 7 (0x00020b20 / phys_fn_000951) likewise at index 31. Caveat flagged for Phase 5 owners: a 41-slot table at 0x106a58 would overrun BOX @ +24 slots, so either the declared 41 covers a merged multi-class pointer run (constructors storing interior offsets) or the BOX extent (17 slots here, derived heuristically from consecutive pe.json pointer records because BOX has NO inventory dispatch_table row) is short. Resolve from the five shape ctors' vtable stores before relying on extents.",
+  "vtable slot 7 (the continuous-collision sweep entry Phase 3 left unresolved, call [eax+0x1c]): pe.json gives its byte-level target for every shape type - PLANE 0x00022dd0/phys_fn_001035(p3), SPHERE 0x00027c10/phys_fn_001373(p3), BOX 0x00020b20/phys_fn_000951(p5), CAPSULE 0x000225d0/phys_fn_001012(p3), MESH 0x00029610/phys_fn_001407(p3). Phase 3's 'never resolved' was behavioural, not byte absence; semantic identification still belongs to whichever phase picks the sweep up.",
+  "Minor qualifying tables: phys_data_000976 @ 0x0010878c (8 slots, owner_phase 2) mixes four phase-5 targets with four filler slots; phys_data_000979 @ 0x00108818 (6 slots, owner_phase 2) mixes phases 6/7/5. No identity claimed.",
+  "Files consulted: inventory.json; evidence/phase3-narrow-phase.md; gates/phase3.json; gates/phase3-closure.json; oracle/pe.json; oracle/data-coverage.json (pointer-table totals; its own 'vtables' and 'rtti' sections are EMPTY lists); oracle/ghidra/manifest.json + oracle/capstone/manifest.json (ctor vtable-store corroboration). Every required input existed EXCEPT the pinned oracle binary itself (pins.oracle.path), substituted by oracle/pe.json pointer records extracted from that same pinned image in Phase 1.",
+  "Public headers under Physics/include were deliberately left unread: this census is structural and header declaration order was not needed to resolve RVAs. Header-order slot naming is the natural next step for whoever consumes this file."
+ ]
+}
