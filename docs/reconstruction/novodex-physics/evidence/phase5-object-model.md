@@ -127,16 +127,39 @@ A defect caught before it could mislead: the first candidate run failed
 passed `&kArg` where the row takes the value. The oracle side was never
 wrong; only the probe was.
 
-## 5a. The twelve-vtable row is not descriptors
+## 5a. The six records at Shape+0x150 — corrected twice
 
-`phys_fn_000973` (0x21420, 913 bytes, phase 2, shared_by_callers) looked
-like a descriptor `setToDefault` family because it installs twelve distinct
-vtables. Its listing says otherwise: it constructs **six 36-byte subobjects
-at Shape+0x150, stride 0x24**, each `{ dword 4; vtableA_k; vtableB_k; five
-dwords of float data }`, with identity-ish vectors (1,0,0 / -1,0,...)
-appearing in the float areas, called from two small wrappers
-(`phys_fn_000981` p5, `phys_fn_000983` p3). What the six subobjects ARE is
-open; the descriptor theory is withdrawn.
+`phys_fn_000973` (0x21420, 913 bytes, phase 2) constructs **six 36-byte
+records at Shape+0x150, stride 0x24**: `{ dword 4; const dword* listA;
+const dword* listB; five dwords of float data }`, called from two small
+mutators (`phys_fn_000981` p5, `phys_fn_000983` p3) that first copy the box
+dims into `+0xe4..+0xec` — Phase 3's half-extent claim confirmed from the
+write side.
+
+Two readings of this row were published here and both were wrong:
+
+1. *"a descriptor setToDefault family"* — withdrawn when the listing showed
+   one function building six subobjects, not twelve functions.
+2. *"twelve small vtables"* — withdrawn on the bytes: pe.json records **no
+   relocations** at any of the twelve addresses, and the raw words are small
+   integer runs (`0 1 2 3 | 1 5 6 2`, ...), not function entries. They are
+   static index data:
+
+- the **listA family** chains face quads over an 8-corner numbering:
+  `[0,1,2,3 | 1,5,6,2]` → `[1,5,6,2 | 5,4,7,6]` → … cycling all six faces;
+- the **listB family** reaches corner ids up to 11 (`[1,8,5,9]`,
+  `[11,3,10,7]`) — a second topology this task has not named;
+- the float areas carry face normals as constants (±X, ±Y, ±Z), which for a
+  box are dim-independent.
+
+So the six subobjects are per-face records of the box — spheres, capsules
+and planes never call this row. What consumes them (sweep? hull queries?)
+and what the two index families count are open. Separately, the `+0xe0`
+subobject's abstract table at `0x106a58` is a pure-call wall, and its final
+table at `0x106a88` is twelve slots whose targets are ALL phase-5 rows
+(`phys_fn_000953`..`phys_fn_000985`) — Task 3's to reconstruct. The census's
+merged 41-slot row spans exactly [purecall wall][12-slot concrete][BOX final],
+and its distinct-target figure treated static data as slots.
 
 A defect worth keeping on the record: the first build HUNG rather than ran.
 The cause was an address-space mixup in the harness itself -- censused RVAs

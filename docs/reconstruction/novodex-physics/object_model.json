@@ -91,12 +91,27 @@
     },
     "cross_check_status": "borrowed offsets +0x04, +0x9c confirmed from constructors; pose region re-established with THREE poses; +0xe0..+0xec refined (vptr + geometry floats)"
   },
-  "descriptor_family_hint": {
-    "status": "WITHDRAWN -- see evidence/phase5-object-model.md section 5a",
-    "factory_row": "phys_fn_000973 (0x00021420, 913 bytes, phase 2, shared_by_callers)",
-    "actually_constructs": "six 36-byte subobjects at Shape+0x150 stride 0x24: { dword 4, vtableA_k, vtableB_k, five dwords of float data }, called from phys_fn_000981 (p5) and phys_fn_000983 (p3)",
-    "twelve_vtables": ["0x10106998", "0x101069a8", "0x101069b8", "0x101069c8", "0x101069d8", "0x101069e8", "0x101069f8", "0x10106a08", "0x10106a18", "0x10106a28", "0x10106a38", "0x10106a48"],
-    "open": "what the six subobjects are"
+  "box_face_records": {
+    "status": "CORRECTED in place -- the earlier descriptor AND twelve-vtable readings were both wrong",
+    "constructor_row": "phys_fn_000973 (0x00021420, 913 bytes, phase 2, shared_by_callers)",
+    "called_from": ["phys_fn_000981 (p5)", "phys_fn_000983 (p3)"],
+    "what_it_constructs": "six 36-byte records at Shape+0x150 stride 0x24: { dword 4; const dword* listA; const dword* listB; five dwords of float data }",
+    "the_pointers_are_data_not_vtables": {
+      "evidence": "pe.json records NO relocations at any of the twelve addresses; raw bytes are small integer runs, not function entries",
+      "listA_family": "chained face quads over an 8-corner numbering, e.g. [0,1,2,3 | 1,5,6,2] -> [1,5,6,2 | 5,4,7,6] -> ... cycling through six faces",
+      "listB_family": "second index family reaching corner ids 8..11 (e.g. [0,1,2,3 | 1,8,5,9], [11,3,10,7]); trailing words at one address are a neighbouring object, so list lengths vary",
+      "float_data": "face normals as constants (+/-X, +/-Y, +/-Z) -- axis-aligned regardless of dims"
+    },
+    "semantic_reading": "per-face records of the box (six faces; spheres/capsules/planes never call this row); role of the two index families open -- sweep/hull candidates",
+    "plus_e0_subobject": {
+      "abstract_table": {"rva": "0x10106a58", "content": "pure-call filler wall (all slots 0x000f41dc)"},
+      "final_vtable": {"rva": "0x10106a88", "slots": 12, "targets_all_phase5": [
+        "phys_fn_000985", "phys_fn_000953", "phys_fn_000955", "phys_fn_000961",
+        "phys_fn_000963", "phys_fn_000965", "phys_fn_000967", "phys_fn_000969",
+        "phys_fn_000971", "phys_fn_000957", "phys_fn_000959", "phys_fn_000975"
+      ]}
+    },
+    "census_correction": "phys_data_000842 (41 slots, distinct 28) spans [purecall abstract][12-slot concrete][BOX final]; its distinct-target count treated static data as slots"
   },
   "transcribed_rows": [
     {"row": "phys_fn_001193", "source": "Physics/src/ObjectModel.cpp", "gate_family": "colobj"},
