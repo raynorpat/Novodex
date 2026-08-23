@@ -1,0 +1,12 @@
+# Written hashes and generated manifests must survive a checkout byte for
+# byte: a pinned hash taken over CRLF bytes verifies only on the machine that
+# produced it. See README.md, "That property has to hold for every hashed
+# artifact".
+*.json text eol=lf
+*.h text eol=lf
+*.dot text eol=lf
+*.csv text eol=lf
+
+# Interpreter and test-runner scratch is never evidence.
+__pycache__/** -text
+.pytest_cache/** -text

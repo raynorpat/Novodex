@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "phase": 3,
+  "name": "Geometry and collision",
+  "status": "pass",
+  "closure_ledger": "gates/phase3-closure.json",
+  "implementation_commit": "7da93f7246e7003ceb15dfebb9d48353547d7c02",
+  "evidence_commit": "5f7628e44d2e153bb2b3d92c16ba8a7b14f1578f",
+  "note": "The gate side of the Phase 3 close: what was run against which pair, and what it measured. The row side is gates/phase3-closure.json, which says how each of the 434 function rows and 102 data objects Phase 3 owns is accounted for; the two meet only at the counts below, which validate_inventory.py recomputes from the ledger's own entries rather than reading. The commits are inputs, not this record: implementation_commit is the Novodex tree the mutations were measured against and evidence_commit is the evidence tree they were recorded in, so the commit that adds this file is the child of the second. Phase 3 closes on an exception list, and it is a partial close: 61 of its 434 function rows and none of its 102 data objects. It reconstructed all 27 named exports, the contact emitter, the primitive half of matrix B, and eight of the nine non-mesh matrix A entries together with the vtable slot-5 partners they dispatch into. It did not reconstruct the mesh column, the compound entries, the rest of matrix B's primitive half, the broad phase, or the continuous-collision subtree, and 353 of the deferred rows say only that the phase ran out of dispatches. A green Phase 3 gate does not mean the phase is done: the differential targets reach 61 rows and are structurally unable to see the other 373, which is why the ledger beside this file is the document that says what is accounted for. Two schema changes were needed to record this close and both are named here rather than left in the diff: validate_inventory.py gained two deferral reasons, because Phase 2's vocabulary can say 'blocked', 'homeless' and 'measured unreachable' and cannot say 'nobody got to it'; and a differential falsification may now record its detection as a count of differing cases or digests, because the Phase 3 staged-pair targets print one line per case and one digest per export and their per-row mutation probes were measured against the committed oracle transcript at that granularity. Converting those counts into the whole-target stdout_delta run_differential.ps1 prints would have been arithmetic on Compare-Object's semantics presented as a measurement. P4 Task 1c re-closed this phase after the third-party phase column was corrected: seven function rows left Phase 3 for Phase 4 -- five IcePrunable.cpp and two OPCODE Ice/IceContainer.cpp members -- none of them closed, so the 61 is unchanged and only the deferred side moves.",
+  "counts": {
+    "closed": 61,
+    "deferred": 475
+  },
+  "gate_sequence": [
+    {
+      "name": "immutable_headers",
+      "command": "python -B docs/reconstruction/novodex-physics/tools/verify_public_headers.py --root <root> --manifest docs/reconstruction/novodex-physics/public_header_hashes.json",
+      "result": "public_headers=pass files=80, for both D:\\FlamingEnt__\\Unreal_3\\Development\\External\\Novodex\\Physics\\include and D:\\github\\Novodex\\Physics\\include; header drift zero"
+    },
+    {
+      "name": "validate_inventory",
+      "command": "python -B docs/reconstruction/novodex-physics/tools/validate_inventory.py docs/reconstruction/novodex-physics/inventory.json",
+      "result": "inventory=pass; closure phase=2 closed=60 deferred=1154; closure phase=3 closed=61 deferred=482; functions=6338 data_objects=5138 unexplained=0"
+    },
+    {
+      "name": "build_configure",
+      "command": "cmake -S D:\\github\\Novodex -B D:\\github\\Novodex\\build -G \"Visual Studio 18 2026\" -A Win32",
+      "result": "configured_generator=Visual Studio 18 2026 configured_platform=Win32, read back from CMakeCache.txt"
+    },
+    {
+      "name": "build_physics",
+      "command": "cmake --build D:\\github\\Novodex\\build --config Release --target NxPhysics NxPhysicsGeometryTests NxPhysicsCollisionTests NxPhysicsKernelFuzzTests --clean-first",
+      "result": "exit=0; NxPhysics.dll and all three Phase 3 test executables rebuilt from scratch under D:\\github\\Novodex\\build\\Release"
+    },
+    {
+      "name": "differential:NxPhysicsGeometryTests",
+      "command": "powershell -NoProfile -File docs/reconstruction/novodex-physics/tools/run_differential.ps1 -Phase 3",
+      "result": "oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True; all 299 matrix cases over the 27 exports"
+    },
+    {
+      "name": "differential:NxPhysicsKernelFuzzTests",
+      "command": "powershell -NoProfile -File docs/reconstruction/novodex-physics/tools/run_differential.ps1 -Phase 3",
+      "result": "oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True; differential=pass over both targets"
+    },
+    {
+      "name": "oracle_differential:NxPhysicsCollisionTests",
+      "command": "D:\\github\\Novodex\\build\\Release\\NxPhysicsCollisionTests.exe <oracle directory> <NxPhysics.dll sha256>",
+      "result": "exit=0; 40 driven blocks, every one reporting default_mismatches=0. Four report a non-zero simulate_mismatches and all four are registered, so they fail if they move in either direction including toward zero: shape_raycast_sphere 13, shape_raycast_capsule 242, contact_capsule_capsule 43, and segment_segment 662, which is Phase 2's phys_fn_001690 discharged by Phase 3"
+    },
+    {
+      "name": "phase_gate",
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase 3",
+      "result": "phase_gate=3 status=pass at coverage_assertions_evaluated=103 floor=103"
+    },
+    {
+      "name": "phase_gate",
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase 2",
+      "result": "static_proof checks=51 status=pass; differential=pass; coverage_assertions_evaluated=0 floor=0; phase_gate=2 status=pass. The Phase 2 close is unmoved by this one"
+    },
+    {
+      "name": "phase_gate_completed",
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase completed",
+      "result": "highest_passing_phase=3 differential_phases=1,2,3; phase_gate=completed status=pass. Phase 1 registers no differential target, so this runs the Phase 2 and Phase 3 sets plus the always-on export and isolated-pair identity target."
+    },
+    {
+      "name": "python_suite",
+      "command": "python -m pytest docs/reconstruction/novodex-physics/tools/tests -q",
+      "result": "510 passed, 626 subtests passed; 505 before this close, plus five tests pinning the two schema changes this record names"
+    },
+    {
+      "name": "reclose:p4_task_1c",
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase 3",
+      "result": "phase_gate=3 status=pass at coverage_assertions_evaluated=103 floor=103, re-run after seven function rows left Phase 3 for Phase 4. inventory=pass; closure phase=2 closed=56 deferred=1139; closure phase=3 closed=61 deferred=475; functions=6338 data_objects=5138 unexplained=0. differential=pass over NxPhysicsGeometryTests and NxPhysicsKernelFuzzTests; oracle_differential:NxPhysicsCollisionTests exit=0. None of the seven departing rows was closed, so the 61 is unchanged and no falsification left this phase."
+    }
+  ],
+  "excluded_from_comparison": [
+    "pair_directory=",
+    "loaded module=",
+    "modules ",
+    "imports "
+  ],
+  "escalations": [
+    {
+      "id": "simulation_control_word_scope",
+      "summary": "The x87 control word this programme measures against is scoped, not universal, and recovering an indirect-dispatch table can move rows an earlier phase has already closed. Scene::simulate -- phys_fn_000659 at 0x00013c40, a Phase 7 row -- installs _PC_64 | _RC_CHOP, control word 0x0f7f, on its way into the step and restores the caller's on the way out. Code reached through the exported API sees the CRT default 0x027f; nothing inside the step does. Five of Task 2's 27 closed exports turned out to run inside that window once Phase 3 recovered the dispatch matrix -- NxBoxBoxIntersect, NxBuildSmoothNormals, NxRayTriIntersect, NxRaySphereIntersect and NxRayCapsuleIntersect -- and all five had been closed under the default word alone, because the edge that puts them inside the step runs through a function pointer and then, for two of them, a vtable slot, so no closure walk could have found it. Phases 4, 5, 6 and 7 each own dispatch tables of their own and should expect the same reopening rather than treating it as a regression; Phase 8 has to decide what the programme's end state is, because the honest form of it is 'semantically identical, differentially proven, and bit-exact except where 2003 and 2026 code generation disagree', not 'byte-identical behaviour'. A closed row's evidence should from here on record which control word it was measured under; none of Task 2's does, because there was no reason to.",
+      "reproduction": "Read phys_fn_000659 at 0x00013c40: fnstcw at 0x00013c46 saves the caller's word, the 1.9f/fistp probe at 0x00013c55..0x00013c76 detects the current rounding mode, NxSetFPURoundingChop and NxSetFPUPrecision64 are called at 0x00013c7d and 0x00013c83, and fldcw at 0x00013df7 restores. Then run NxPhysicsCollisionTests, which drives every block under both 0x027f and 0x0f7f and prints default_mismatches and simulate_mismatches per block: step_smooth_normals and step_ray_tri drive NxBuildSmoothNormals and NxRayTriIntersect from inside the window, and shape_raycast_sphere reaches NxRaySphereIntersect through a SPHERE shape's vtable slot 5. Removing the matrix edges leaves none of the 27 exports reachable from phys_fn_000659 by any direct call.",
+      "evidence": "docs/reconstruction/novodex-physics/evidence/phase3-narrow-phase.md, '/arch:IA32 does extend to NarrowPhase.cpp' and 'The window is wider than the narrow phase'",
+      "inherited_by": [
+        4,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    {
+      "id": "codegen_spill_divergence_pinned",
+      "summary": "Two Phase 3 rows are closed on algorithmic agreement under a control word they do not execute under, with the real-context divergence pinned rather than removed: phys_fn_001775 at 43 differing words and phys_fn_001690 at 662. Both agree on every check under 0x027f and differ under 0x0f7f, and both are reached only from inside the simulation step, so there is no context in which either is both exact and real. The cause in every case is where MSVC spills a double to an 8-byte slot, which truncates a 64-bit significand to 53 and which no C++ construct names. This is a searched-and-bounded limit rather than an inherent one: two rows that carried pinned counts have since gone to zero once the carrier was found -- NxBuildSmoothNormals from 24, by moving one dot product into a noinline helper, and the box/box leaf phys_fn_001739 from 88 -- and a third, phys_fn_001010's 242, turned out not to be that row's at all. It belongs to its callee NxRayCapsuleIntersect, a Task 2 export closed by its own differential which compiles with 37 qword stores, so Geometry.cpp is an open front. The boundary of the technique is named: MSVC spills every live x87 value before a call, so a noinline helper removes a spill only where nothing else is live -- applying it to phys_fn_001690's f took 662 to 29,529.",
+      "reproduction": "Run NxPhysicsCollisionTests and read simulate_mismatches on contact_capsule_capsule (43 of 1,073,192) and segment_segment (662 of 2,160,000); both are registered in tools/gate_targets.ps1 so they fail if they move in either direction, including toward zero. To find a carrier, run dumpbin /disasm on the object and scan for an 8-byte x87 store whose previous instruction is arithmetic -- 'fadd qword ptr [X]; fstp qword ptr [X]' -- which names every spill site at once; phys_fn_001741 is the positive control for that scan at four sites and 276 words, and phys_fn_001745 is the negative control at 26 qword stores and zero after an arithmetic instruction. The untried idea for phys_fn_001690, recorded as untried: give each of its twenty-nine leaves its own noinline function so f is the only value crossing a call.",
+      "evidence": "docs/reconstruction/novodex-physics/evidence/phase3-narrow-phase.md, 'The four pinned rows, retried against the spill finding'",
+      "inherited_by": [
+        8
+      ]
+    },
+    {
+      "id": "narrow_phase_oracle_defects_to_reproduce",
+      "summary": "Two shipped defects Phase 3 reproduced rather than corrected, beside NxArray::insert's heap overflow which gates/phase2.json already carries. First, NxSeparatingAxis with fullTest clear reads uninitialised stack: d[9]..d[14] at esp+0x8c..0xa0 are the 24 bytes below the return address and nothing outside the fullTest branch writes them, so that path is not a function of its arguments and cannot be matched in general. Confirmed dynamically against the shipped DLL -- identical arguments with stack dirt -1e30 return axis 9, with 1e30 return 10, with 7.0 return 10 -- and the reconstruction seeds the residue with -FLT_MAX, the only choice that cannot move the argmax, while the fuzzer drives fullTest=1 only. The one caller in the dispatch matrix, phys_fn_001738, always passes fullTest=true, so the defect is unreachable from the narrow phase. Second, a swept capsule/capsule contact's normal is uninitialised stack: phys_fn_001010 never writes hit.worldNormal in its 321 bytes under any hint flag, its hit.flags is a literal 0x13 so a caller asking for NX_RAYCAST_NORMAL is told it did not get one, and phys_fn_001775 hands the emitter hit+0x10 anyway. Its separation on that path is a literal push 0, so a swept pair reports an exactly-touching contact with a normal that depends on what the caller did last.",
+      "reproduction": "For the separating axis, call the shipped NxSeparatingAxis with fullTest=false from a frame whose 24 bytes below the return address hold known dirt and vary only the dirt. For the capsule normal, run NxPhysicsCollisionTests and read the shape_raycast_capsule coverage line: untouched_normal=32821 equals hits=32821 under every hint-flag combination, measured from the oracle, and the contact_capsule_capsule line reads seeded_normal=10008 of swept_emitted=10174 with the seed alternating between two patterns so a match cannot be a constant. The mutation that makes phys_fn_001010 write a normal under NX_RAYCAST_NORMAL moves 65,343 words on its own block and 31,150 on the contact stream, which is what says the read is load-bearing. Stated limit: the seed makes the read reproducible, it does not prove the two frames put the hit at the same address.",
+      "evidence": "docs/reconstruction/novodex-physics/evidence/phase3-leaf-kernels.md, 'NxSeparatingAxis with fullTest clear is not a function of its arguments'; evidence/phase3-narrow-phase.md, 'Things the oracle does that a correct implementation would not' under capsule/capsule",
+      "inherited_by": [
+        8
+      ]
+    },
+    {
+      "id": "box_box_contact_frame_overflow",
+      "summary": "A third confirmed shipped defect, and unlike the other two it is reachable from ordinary geometry. phys_fn_001741 has no contact cap and phys_fn_001749's frame holds sixteen. From the entry's prologue -- sub esp,0x128 then four pushes at 0x0003add0..0x0003ade0 -- the body's esp is entry-0x138: the normal is at +0x20, sixteen separations at +0x38..+0x78 and sixteen NxVec3 points at +0x78..+0x138. +0x138 is the return address with nothing between it and the sixteenth point, and phys_fn_001749 has no /GS cookie. The seventeenth separation lands on points[0].x, corrupting a contact the entry then emits, and the seventeenth point lands on the return address. This was open twice and is now closed the other way: driven with a synthetic reference face the clip row returned 20 contacts; driven with the face phys_fn_001745's fifteen-axis search selects it fills the frame exactly, max_contacts=16 at_sixteen=14 over_sixteen=0 across 288,000 calls; driven through the shim with exactly the arguments the entry passes it, aimed_max=18 over_sixteen=2, at a rate of about 2 in 32,000 aimed calls with a real rotation, physical extents and a physical placement. Reproduce it as shipped behaviour; do not fix it into a divergence.",
+      "reproduction": "Run NxPhysicsCollisionTests and read the box_shim coverage line: aimed=15954 separated=13747 emitted=130986 carry_warmed=5342 over_sixteen=2 aimed_max=18 max_contacts=18. That block drives phys_fn_001748 at its own address with the entry's own arguments -- Shape+0xe4 and Shape+0x0c per shape, from lea eax,[esi+0xe4] and lea edx,[esi+0xc] at 0x0003ae31 and 0x0003ae2d -- but into eighty harness slots instead of the entry's sixteen, which is what lets an oversized manifold be measured rather than returning the oracle into a contact coordinate. The contact_box_box block pre-flights every pair through the same shim with a copy of the live cache byte and reports overflow_skipped=0 probe_max=16 at_sixteen=18, so a later retune of that generator fails the run rather than crashing it.",
+      "evidence": "docs/reconstruction/novodex-physics/evidence/phase3-narrow-phase.md, 'The seventeenth contact is REACHABLE, and the open question is closed'",
+      "inherited_by": [
+        7,
+        8
+      ]
+    },
+    {
+      "id": "contact_sink_warm_start_axis_survives_reset",
+      "summary": "sink+0xe8 is a warm-start separating-axis index that the sink's reset never clears, so narrow-phase state carries across pairs. phys_fn_000893, the sink's constructor, writes 0xff to it at 0x0001efc8 as the no-cache sentinel; phys_fn_002354 at 0x0005b620, the reset, covers +0x10..+0x43 and never touches it; and phys_fn_001749 is the only writer in the image that ever clears it, to 0, and only when a pair produces nothing. Inside phys_fn_001745 the byte is not merely a bias: cmp al,0xff; jne 0x0003a2e8 at 0x0003a01e jumps past the nine edge-axis tests entirely, so a pair whose only separating axis is an edge cross product is reported as overlapping, with a full manifold, whenever the sink is carrying an index from an earlier pair. The cache is also written before the clip runs and never unwound. Cross-pair state is a behaviour a correct-looking reimplementation would not have, and it means a pair's result depends on what was tested before it in the same step.",
+      "reproduction": "Run NxPhysicsCollisionTests: the contact_box_box block drives up to four box pairs into one sink without resetting it between them -- the state the shipped pipeline is in -- and reports warm_carried=18611 axis_cleared=13132; box_shim reports carry_warmed=5342. Treating the byte as per-call scratch, saved before the call and restored after, moves 89,102 words and moves none of them on the first pair of any sequence. Driving the same geometry from a cold byte and from a warm one answers differently 1,276 times in 144,000 aimed pairs. Degrading the generator to one pair per sequence takes warm_carried to 0 and the oracle digest from f9afbd75702ac4a2 to d44650efbd3b91c6 while both sides still agree and the harness still exits 0, which is the strong form for a registration a single-pair block could not have.",
+      "evidence": "docs/reconstruction/novodex-physics/evidence/phase3-narrow-phase.md, 'sink+0xe8 is NOT a stop' and 'The warm start, end to end'",
+      "inherited_by": [
+        7,
+        8
+      ]
+    },
+    {
+      "id": "borrowed_phase_5_and_7_layout",
+      "summary": "Phase 3 could not reconstruct a single matrix entry without knowing the layout of objects it does not own, so it borrowed them under a rule: every offset is recorded with the address that establishes it, and nothing is assumed. Phase 5 owns Shape and the 0x1c-byte collision object at Shape+0x9c; Phase 7 owns the contact sink. The borrowed set includes Shape+0x04 (the owner, and phys_fn_001281 is the accessor, closed here), Shape+0x0c..+0x38 (the pose), Shape+0x9c, Shape+0xe0..+0xec (the capsule's radius, half height and swept flag byte), Shape+0xe4 read as three floats for a box's half extents at 0x0003ae31 and 0x0003ae26, owner->[8] and the material at owner->[8]+0x240, the sink's 0x10 prefix plus its 0x34 sub-object to +0x44, the cached contact normal at sink+0x28..+0x30, and sink+0xe8. Those phases own the rows and must cross-check the offsets rather than inherit them: this programme has already had one relayed layout claim contaminate a recovery designed to prevent invention, and reading the emitter end to end found three errors in it. Two offsets beyond the borrowed set are named as unestablished and are why the continuous-collision sweep is a stop: a second pose at Shape+0x3c..+0x68 and the sink past +0x44, at +0xdc..+0xe9.",
+      "reproduction": "The reconciliation list is in the evidence with an address per offset. To check one, run NxPhysicsCollisionTests, whose harness builds each side its own world -- shapes, owner, holder, collision objects, sink and stream -- so neither side can observe the other's addresses, and whose blocks call the pinned oracle at the recorded RVAs; a wrong offset moves the oracle-side answers, not just the candidate's. For the sink's reset specifically, call the pinned oracle's 0x0005b620 on &sink+0x10 against a 0xcd-poisoned sink and compare byte for byte over sink+0x10..sink+0x40; orientedTo stays 0xcdcdcdcd because it lives in the 0x10 prefix. That measurement takes one call and settled a question three rounds of reasoning had got wrong twice.",
+      "evidence": "docs/reconstruction/novodex-physics/evidence/phase3-narrow-phase.md, 'BORROWED LAYOUT -- Phase 5 and Phase 7 own these rows, not Phase 3'",
+      "inherited_by": [
+        5,
+        7
+      ]
+    }
+  ]
+}

@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "phase": 2,
+  "name": "SDK core",
+  "status": "pass",
+  "closure_ledger": "gates/phase2-closure.json",
+  "implementation_commit": "ac739543956cc4ea22bff832f17c66d07666b9da",
+  "evidence_commit": "dcaa8391de0ae5ef45a00d5007d55aa4a19aef1c",
+  "note": "The gate side of the Phase 2 close: what was run against which pair, and what it measured. The row side is gates/phase2-closure.json, which says how each of the 144 function rows and 1051 data objects Phase 2 owns is accounted for; the two meet only at the counts below, which validate_inventory.py recomputes from the ledger's own entries rather than reading. The commits are inputs, not this record: implementation_commit is the Novodex tree the mutations were measured against and evidence_commit is the evidence tree they were recorded in, so the commit that adds this file is the child of the second. Phase 2 closes on an exception list. It closed 56 of its 144 function rows and none of its 1051 data objects; what the other 1139 rows are waiting for is named per row in the ledger, and the ledger's own note states where the guarantee of a closure ends. P4 Task 1c re-closed this phase after the third-party phase column was corrected: 19 function rows left Phase 2 for Phase 4 -- 14 qhull, one IcePrunable.cpp and four OPCODE Ice/IceContainer.cpp members -- and four of them were closed rows, so the closed count falls from 60 to 56 and those four falsifications are carried as the third_party_container_rows_moved escalation below.",
+  "counts": {
+    "closed": 56,
+    "deferred": 1139
+  },
+  "gate_sequence": [
+    {
+      "name": "immutable_headers",
+      "command": "python -B docs/reconstruction/novodex-physics/tools/verify_public_headers.py --root <root> --manifest docs/reconstruction/novodex-physics/public_header_hashes.json",
+      "result": "public_headers=pass files=80, for both D:\\FlamingEnt__\\Unreal_3\\Development\\External\\Novodex\\Physics\\include and D:\\github\\Novodex\\Physics\\include; header drift zero"
+    },
+    {
+      "name": "validate_inventory",
+      "command": "python -B docs/reconstruction/novodex-physics/tools/validate_inventory.py docs/reconstruction/novodex-physics/inventory.json",
+      "result": "inventory=pass; closure phase=2 closed=59 deferred=1155; functions=6338 data_objects=5138 unexplained=0"
+    },
+    {
+      "name": "build_configure",
+      "command": "cmake -S D:\\github\\Novodex -B D:\\github\\Novodex\\build -G \"Visual Studio 18 2026\" -A Win32 --fresh",
+      "result": "configured_generator=Visual Studio 18 2026 configured_platform=Win32, read back from CMakeCache.txt"
+    },
+    {
+      "name": "build_physics",
+      "command": "cmake --build D:\\github\\Novodex\\build --config Release --target NxPhysics NxPhysicsCoreClusterTests NxPhysicsExportTests NxPhysicsSDKTests NxPhysicsInternalTests",
+      "result": "exit=0; all four test executables present under D:\\github\\Novodex\\build\\Release"
+    },
+    {
+      "name": "static_proof:NxPhysicsInternalTests",
+      "command": "D:\\github\\Novodex\\build\\Release\\NxPhysicsInternalTests.exe",
+      "result": "static_proof checks=51 status=pass exit=0"
+    },
+    {
+      "name": "differential:NxPhysicsExportTests",
+      "command": "powershell -NoProfile -File docs/reconstruction/novodex-physics/tools/run_differential.ps1 -Phase 2",
+      "result": "exports expected=10 found=10; oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True"
+    },
+    {
+      "name": "differential:NxPhysicsSDKTests",
+      "command": "powershell -NoProfile -File docs/reconstruction/novodex-physics/tools/run_differential.ps1 -Phase 2",
+      "result": "oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True"
+    },
+    {
+      "name": "differential:NxPhysicsCoreClusterTests",
+      "command": "powershell -NoProfile -File docs/reconstruction/novodex-physics/tools/run_differential.ps1 -Phase 2",
+      "result": "oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True; differential=pass"
+    },
+    {
+      "name": "phase_gate",
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase 2",
+      "result": "phase_gate=2 status=pass"
+    },
+    {
+      "name": "phase_gate_completed",
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase completed",
+      "result": "highest_passing_phase=2 differential_phases=1,2; phase_gate=completed status=pass. Phase 1 registers no differential target, so this runs the Phase 2 set plus the always-on export and isolated-pair identity target."
+    },
+    {
+      "name": "reclose:p4_task_1c",
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase 2",
+      "result": "phase_gate=2 status=pass, re-run after 19 function rows left Phase 2 for Phase 4. inventory=pass; closure phase=2 closed=56 deferred=1139; functions=6338 data_objects=5138 unexplained=0. static_proof checks=51 status=pass -- all 51 NxPhysicsInternalTests checks still run and still pass, including the four aimed at phys_fn_004836/004840/004846/004847; what left this ledger is the four citations, not the measurements, and gates/phase2.json carries them as third_party_container_rows_moved. differential=pass over NxPhysicsExportTests, NxPhysicsSDKTests and NxPhysicsCoreClusterTests, each oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True; coverage_assertions_evaluated=0 floor=0. The red path was run too: declaring one unmapped row third party makes this same command exit 1 at validate_inventory, which is the check the census change is gated on."
+    }
+  ],
+  "excluded_from_comparison": [
+    "pair_directory=",
+    "loaded module=",
+    "modules ",
+    "imports "
+  ],
+  "escalations": [
+    {
+      "id": "foundation_mat34_multiply_ulp",
+      "summary": "The shipped and the rebuilt NxFoundation.dll disagree by one unit in the last place on 3 of 120 sphere points, through the hash-pinned inline NxMat34::multiply, and only where the rotation is not the identity. Phase 2 cannot fix it: NxMat34.h is byte-pinned on both sides, so the difference is x87 scheduling in the rebuilt Foundation, not a reconstruction defect. Phase 8 has to decide whether one ULP of x87 scheduling is in scope for the Foundation, and gate the answer either way.",
+      "reproduction": "Run NxPhysicsCoreClusterTests through run_differential.ps1 -Phase 2 and read step=sphere_arguments, which draws NxFluidDebugSphere's three circles and replays the 120 recorded lines. Against the shipped NxFoundation.dll the divergence appears at line 79 p0.z=6.414214 (candidate 6.414213), line 102 p0.z=4.381966 (candidate 4.381967) and line 138 p0.z=6.175571 (candidate 6.175570). Passing the identity transform reproduces nothing; the rotation has to be non-identity. FoundationClusterTests reaches addCircle but asserts only getNbLines()==59 and only ever passes the identity, which is why nothing gated the coordinates before.",
+      "evidence": "docs/reconstruction/novodex-physics/evidence/phase2-fluid-visualization.md section 5",
+      "inherited_by": [
+        8
+      ]
+    },
+    {
+      "id": "nxarray_insert_at_end_overflow",
+      "summary": "A latent heap overflow in the shipped SDK, reachable from the public API. NxArray::insert(end(), n, x) reserves size()+n and then runs copy(where, where+n, where+n), the shift that makes room for a middle insert; at where==end() that writes n elements past the buffer, so it needs size()+2n. The reserve path is always safe because 2(size()+n) >= size()+2n. NxArray.h is hash-pinned, so the candidate reproduces it exactly: this is the oracle's defect and Phase 8 must record it as shipped behaviour rather than let a later phase fix it into a divergence.",
+      "reproduction": "Call NxPhysicsSDK::setMaterialAtIndex(index, material) with index > getNbMaterials() from any state where size()+n <= capacity() < size()+2n. Measured from one exact state, 11 materials at capacity 14: index 12 (n=1, no reserve, writes 12) completes; index 13 (n=2, writes 13 and 14) faults; index 14 (n=3, writes 14..16) faults; index 16 (n=5) forces a reserve to 32 and completes. The faulting cases corrupt the CRT heap and die inside a later free or realloc, so no transcript taken from them means anything -- which is why the Phase 2 differential uses index 16, exercising the same grow, gap fill and append.",
+      "evidence": "docs/reconstruction/novodex-physics/evidence/phase2-factory-a.md, 'A latent heap overflow in the shipped SDK, measured'",
+      "inherited_by": [
+        8
+      ]
+    },
+    {
+      "id": "static_proof_closures_have_no_oracle_side",
+      "summary": "Ten rows are closed on a static proof, which has no oracle side at all: the mutation is caught by a check written from the disassembly, not by a transcript diff against the shipped DLL, so a closure is only as good as that reading. The lock rows are the sharpest case -- phys_fn_002362, phys_fn_002364 and phys_fn_002366 -- whose dynamic behaviour against the oracle was never observed, only derived. The other seven are phys_fn_000454, phys_fn_000480, phys_fn_004803, phys_fn_004836, phys_fn_004840, phys_fn_004846 and phys_fn_004847. One measured expectation could not be derived into a check at all: the store at 0x000b400e is unobservable from outside, because an implementation that returned &gSdkDefaultAllocator without recording it behaves identically, and that mutation was applied and not caught.",
+      "reproduction": "Run D:\\github\\Novodex\\build\\Release\\NxPhysicsInternalTests.exe, which links the candidate's private translation units directly and reports 'static_proof checks=51 status=pass'. Each of the ten rows carries the check name its mutation failed in gates/phase2-closure.json; for the lock rows those are 'check_failed lock returns the literal true at 0x0005b727', 'check_failed tryLock is reentrant on the owning thread' and 'check_failed unlock returns the literal true at 0x0005b7ac'. No pair is staged and no oracle process runs, so none of these deltas is a comparison against the shipped binary. Phase 8 should reach these rows through the public API against a staged pair and replace the derived expectation with a measured one.",
+      "evidence": "docs/reconstruction/novodex-physics/evidence/phase2-static-proof.md sections 4 to 6",
+      "inherited_by": [
+        3,
+        7,
+        8
+      ]
+    },
+    {
+      "id": "third_party_container_rows_moved",
+      "summary": "Four rows Phase 2 closed are OPCODE Ice/IceContainer.cpp members, not NovodeX code, and P4 Task 1c moved them to Phase 4 with the rest of the third-party column. Phase 2 closed them believing they were its own shared-infrastructure helpers -- its own mutation text calls phys_fn_004847 'setExternalBuffer' and phys_fn_004846 'empty releases a buffer it does not own', which is the NovodeX modification to a stock class rather than a NovodeX class. The measurements were real and are reproduced below; what did not survive the move is the ledger entry, because Phase 4 has no closure ledger yet, so the four rows are back at state 'reconstructed' and Phase 4 must close them again -- and must do it against whatever a vendored IceContainer.cpp supplies, because three of the four bodies carry local modifications a stock tree will not.",
+      "reproduction": "Rebuild NxPhysicsInternalTests at implementation_commit ac739543956cc4ea22bff832f17c66d07666b9da and run the four static-proof checks Phase 2 recorded, each of which failed under its own mutation: phys_fn_004836 (0x000b4d70, Container::Container()) -- mutation 'the constructor leaves a growth factor of 1.0f instead of 2.0f', detected 'check_failed phys_fn_004836 leaves {0, 0, 0, 2.0f}'; phys_fn_004840 (0x000b4de0, Container::Resize(udword)) -- mutation 'resize stores the capacity after the allocation instead of before', detected 'check_failed a failed allocation still leaves the capacity grown'; phys_fn_004846 (0x000b4f50, Container::~Container()) -- mutation 'empty releases a buffer it does not own', detected 'check_failed empty does not release a buffer it does not own'; phys_fn_004847 (0x000b4f90, the NovodeX-added external-buffer member) -- mutation 'setExternalBuffer leaves the growth factor positive', detected 'check_failed phys_fn_004847 installs the buffer and the marker'. The correspondence itself re-derives from the disassembly against .analysis/novodex-physics/thirdparty/opcode13/Opcode/Ice/IceContainer.cpp: the Container layout is mMaxNbEntries+0, mCurNbEntries+4, mEntries+8, mGrowthFactor+0xc, and 0x000b4d70 writes exactly those four in declaration order with 0x40000000 = the 2.0f default of the member-initialiser list.",
+      "evidence": "docs/reconstruction/novodex-physics/evidence/phase4-third-party-map/opcode_outside_span_map.csv rows 0x000b4d70, 0x000b4d90, 0x000b4de0, 0x000b4e90, 0x000b4f00, 0x000b4f50; docs/reconstruction/novodex-physics/evidence/phase2-static-proof.md for the four checks as Phase 2 recorded them; .superpowers/sdd/p4-task-1c-report.md for the move and the re-derived counts.",
+      "inherited_by": [
+        4
+      ]
+    }
+  ]
+}

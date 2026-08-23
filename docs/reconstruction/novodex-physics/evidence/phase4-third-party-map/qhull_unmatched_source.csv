@@ -1,0 +1,86 @@
+source_file,source_line,source_function,reason_absent
+geom2.c,1186,qh_minabsval,linker-eliminated (/OPT:REF): no call site anywhere in qhull-2003.1 library sources
+geom2.c,1206,qh_mindiff,linker-eliminated (/OPT:REF): no call site anywhere in qhull-2003.1 library sources
+geom2.c,1916,qh_sethalfspace,"linker-eliminated (/OPT:REF): every source call site is itself absent [geom2.c:1988, io.c:3758] (6/7 of its string literals are absent from .rdata)"
+geom2.c,1988,qh_sethalfspace_all,linker-eliminated (/OPT:REF): every source call site is itself absent [user.c:117] (3/3 of its string literals are absent from .rdata)
+global.c,53,qh_appendprint,"INLINED into qh_initflags (global.c:540) at 0x000626f0: all 20+ call sites are inside qh_initflags, and the inventory rows 0x00062860/0x000628b0/0x00062900/0x00062950/0x00062fe0/0x00063100/0x00063150/0x000631a0 etc. each contain the loop `for (i=0; i<qh_PRINTEND(=0x1d); i++)` over qh PRINTout[] at .data:0x00124784."
+global.c,80,qh_checkflags,linker-eliminated (/OPT:REF): no call site anywhere in qhull-2003.1 library sources (5/7 of its string literals are absent from .rdata)
+global.c,167,qh_clock,linker-eliminated (/OPT:REF): no call site anywhere in qhull-2003.1 library sources (3/3 of its string literals are absent from .rdata)
+global.c,204,qh_freebuffers,linker-eliminated (/OPT:REF): every source call site is itself absent [global.c:363] (2/2 of its string literals are absent from .rdata)
+global.c,363,qh_freeqhull,linker-eliminated (/OPT:REF): no call site anywhere in qhull-2003.1 library sources (1/1 of its string literals are absent from .rdata)
+global.c,1954,qh_restore_qhull,linker-eliminated (/OPT:REF): no call site anywhere in qhull-2003.1 library sources (4/5 of its string literals are absent from .rdata)
+global.c,1997,qh_save_qhull,linker-eliminated (/OPT:REF): no call site anywhere in qhull-2003.1 library sources (2/2 of its string literals are absent from .rdata)
+io.c,90,dfacet,linker-eliminated (/OPT:REF): no call site anywhere in qhull-2003.1 library sources
+io.c,108,dvertex,linker-eliminated (/OPT:REF): no call site anywhere in qhull-2003.1 library sources
+io.c,126,qh_compare_vertexpoint,linker-eliminated (/OPT:REF): no call site anywhere in qhull-2003.1 library sources
+io.c,683,qh_eachvoronoi_all,"COMPILED OUT: its only call site (io.c:3258, in qh_printvdiagram) is inside an `#if 0` block; qh_printvdiagram at 0x00069cd0 calls qh_printvdiagram2 (0x00067f90) instead."
+io.c,2650,qh_printhelp_degenerate,"ELIMINATED: its only call site is user.c:231 inside qh_errexit, and qh_errexit was reduced by NovodeX to a 17-byte forwarder at 0x00084800; all 7 of its literals are absent from .rdata."
+io.c,2723,qh_printhelp_singular,"ELIMINATED: its only call site is user.c:229 inside qh_errexit, and qh_errexit was reduced by NovodeX to a 17-byte forwarder at 0x00084800; 13 of its 15 literals are absent from .rdata (the other 2 are short strings owned elsewhere)."
+io.c,3677,qh_readfeasible,"linker-eliminated (/OPT:REF): every source call site is itself absent [global.c:204, io.c:3758] (5/5 of its string literals are absent from .rdata)"
+io.c,3758,qh_readpoints,linker-eliminated (/OPT:REF): no call site anywhere in qhull-2003.1 library sources (23/23 of its string literals are absent from .rdata)
+io.c,4051,qh_setfeasible,"ELIMINATED: both call sites are in absent functions (io.c:3857 qh_readpoints, user.c:145 qh_new_qhull). NOTE its literal ""qhull error: insufficient memory for 'Hn,n,n'"" IS in the pool, but only because global.c:657 (inside qh_initflags) contains a byte-identical duplicate that /GF pooled to the same address 0x0010b1bc."
+mem.c,206,qh_memfreeshort,linker-eliminated (/OPT:REF): no call site anywhere in qhull-2003.1 library sources
+mem.c,394,qh_memalloc,conditional-compilation alternate not selected (qh_NOmem alternate); the other definition of qh_memalloc was compiled in
+mem.c,406,qh_memfree,conditional-compilation alternate not selected (qh_NOmem alternate); the other definition of qh_memfree was compiled in
+mem.c,415,qh_memfreeshort,conditional-compilation alternate not selected (qh_NOmem alternate); the other definition of qh_memfreeshort was compiled in
+mem.c,422,qh_meminit,conditional-compilation alternate not selected (qh_NOmem alternate); the other definition of qh_meminit was compiled in
+mem.c,432,qh_meminitbuffers,conditional-compilation alternate not selected (qh_NOmem alternate); the other definition of qh_meminitbuffers was compiled in
+mem.c,438,qh_memsetup,conditional-compilation alternate not selected (qh_NOmem alternate); the other definition of qh_memsetup was compiled in
+mem.c,442,qh_memsize,conditional-compilation alternate not selected (qh_NOmem alternate); the other definition of qh_memsize was compiled in
+mem.c,446,qh_memstatistics,conditional-compilation alternate not selected (qh_NOmem alternate); the other definition of qh_memstatistics was compiled in
+merge.c,423,qh_checkconnect,ELIMINATED: its only call site (merge.c:282) is commented out in the source; its one literal is absent from .rdata.
+merge.c,591,qh_comparevisit,"/OPT:ICF folded: identical body to qh_comparemerge (merge.c:579); the single shared function at 0x0006e650 is address-taken from all 3 source qsort sites (merge.c:1178,1243 for qh_comparemerge and merge.c:808 for qh_comparevisit)."
+merge.c,3611,qh_premerge,conditional-compilation alternate not selected (qh_NOmerge alternate); the other definition of qh_premerge was compiled in
+merge.c,3613,qh_postmerge,conditional-compilation alternate not selected (qh_NOmerge alternate); the other definition of qh_postmerge was compiled in
+merge.c,3616,qh_checkzero,conditional-compilation alternate not selected (qh_NOmerge alternate); the other definition of qh_checkzero was compiled in
+poly.c,618,qh_makenew_nonsimplicial,conditional-compilation alternate not selected (qh_NOmerge alternate); the other definition of qh_makenew_nonsimplicial was compiled in
+poly2.c,64,qh_check_bestdist,linker-eliminated (/OPT:REF): every source call site is itself absent [poly2.c:313] (8/8 of its string literals are absent from .rdata)
+poly2.c,239,qh_check_maxout,conditional-compilation alternate not selected (qh_NOmerge alternate); the other definition of qh_check_maxout was compiled in
+poly2.c,273,qh_check_point,linker-eliminated (/OPT:REF): every source call site is itself absent [poly2.c:313] (1/1 of its string literals are absent from .rdata)
+poly2.c,313,qh_check_points,linker-eliminated (/OPT:REF): every source call site is itself absent [user.c:117] (11/11 of its string literals are absent from .rdata)
+poly2.c,1189,qh_findbestfacet,"ELIMINATED: the source itself notes ""qh_findbestfacet is not used by qhull"" (poly2.c:1183); its only call sites are in user_eg.c / user_eg2.c, which are not linked."
+poly2.c,1292,qh_findfacet_all,linker-eliminated (/OPT:REF): every source call site is itself absent [poly2.c:1189] (1/1 of its string literals are absent from .rdata)
+poly2.c,2325,qh_matchduplicates,conditional-compilation alternate not selected (qh_NOmerge alternate); the other definition of qh_matchduplicates was compiled in
+poly2.c,2327,qh_nextridge3d,conditional-compilation alternate not selected (qh_NOmerge alternate); the other definition of qh_nextridge3d was compiled in
+poly2.c,2665,qh_setvoronoi_all,linker-eliminated (/OPT:REF): no call site anywhere in qhull-2003.1 library sources
+poly2.c,3004,qh_triangulate_null,"INLINED into qh_triangulate (poly2.c:2696) at 0x00079cf0: its literal ""qh_triangulate_null: delete null facet f%d"" is referenced from that cluster and nowhere else."
+poly2.c,3015,qh_triangulate,conditional-compilation alternate not selected (qh_NOmerge alternate); the other definition of qh_triangulate was compiled in
+poly2.c,3121,qh_vertexsubset,linker-eliminated (/OPT:REF): no call site anywhere in qhull-2003.1 library sources
+qset.c,97,qh_setaddsorted,linker-eliminated (/OPT:REF): no call site anywhere in qhull-2003.1 library sources
+qset.c,530,qh_setduplicate,linker-eliminated (/OPT:REF): no call site anywhere in qhull-2003.1 library sources
+qset.c,1165,qh_settempfree_all,"INLINED into qh_freebuild (global.c:268) at 0x00061d90: that cluster calls qh_setfree and qh_settruncate directly, which is exactly qh_settempfree_all body, and there is no standalone counterpart."
+stat.c,421,qh_freestatistics,linker-eliminated (/OPT:REF): every source call site is itself absent [global.c:363]
+stat.c,687,qh_stddev,"COMPILED OUT: its only call sites (qhull.c:1331 and 1336, in qh_printsummary) sit inside an `#if 0` block; qh_printsummary at 0x0007ae80 contains no fsqrt."
+stat.c,698,qh_collectstatistics,conditional-compilation alternate not selected (not-qh_KEEPstatistics alternate); the other definition of qh_collectstatistics was compiled in
+user.c,117,qh_new_qhull,"ABSENT: none of its 3 literals (incl. the ""qhull "" prefix tested by strncmp and the ""qh_new_qhull: ..."" diagnostics) exist anywhere in the image. NovodeX replaced it with its own driver at 0x0007d420, which follows the qhull main() pattern (qh_init_A + qh_initflags(qh qhull_command)) instead."
+user.c,320,qh_user_memsizes,PRESENT but outside the analysed span: emitted as a bare `ret` at RVA 0x0002ea70 (phys_fn_001583); tail-referenced by qh_initqhull_mem at 0x00062390. Almost certainly /OPT:ICF-folded with other empty functions.
+qconvex.c,273,main,"translation unit not linked: qconvex.c is a standalone qhull/rbox main program; its distinctive literals (e.g. ""qhull internal warning (main): ..."") are absent from the image"
+qdelaun.c,259,main,"translation unit not linked: qdelaun.c is a standalone qhull/rbox main program; its distinctive literals (e.g. ""qhull internal warning (main): ..."") are absent from the image"
+qhalf.c,256,main,"translation unit not linked: qhalf.c is a standalone qhull/rbox main program; its distinctive literals (e.g. ""qhull internal warning (main): ..."") are absent from the image"
+qvoronoi.c,253,main,"translation unit not linked: qvoronoi.c is a standalone qhull/rbox main program; its distinctive literals (e.g. ""qhull internal warning (main): ..."") are absent from the image"
+unix.c,321,main,"translation unit not linked: unix.c is a standalone qhull/rbox main program; its distinctive literals (e.g. ""qhull internal warning (main): ..."") are absent from the image"
+rbox.c,92,main,"translation unit not linked: rbox.c is a standalone qhull/rbox main program; its distinctive literals (e.g. ""qhull internal warning (main): ..."") are absent from the image"
+rbox.c,728,out1,"translation unit not linked: rbox.c is a standalone qhull/rbox main program; its distinctive literals (e.g. ""qhull internal warning (main): ..."") are absent from the image"
+rbox.c,736,out2n,"translation unit not linked: rbox.c is a standalone qhull/rbox main program; its distinctive literals (e.g. ""qhull internal warning (main): ..."") are absent from the image"
+rbox.c,744,out3n,"translation unit not linked: rbox.c is a standalone qhull/rbox main program; its distinctive literals (e.g. ""qhull internal warning (main): ..."") are absent from the image"
+rbox.c,763,qh_rand,"translation unit not linked: rbox.c is a standalone qhull/rbox main program; its distinctive literals (e.g. ""qhull internal warning (main): ..."") are absent from the image"
+rbox.c,780,qh_srand,"translation unit not linked: rbox.c is a standalone qhull/rbox main program; its distinctive literals (e.g. ""qhull internal warning (main): ..."") are absent from the image"
+user_eg.c,62,print_summary,"translation unit not linked: user_eg.c is a standalone qhull/rbox main program; its distinctive literals (e.g. ""qhull internal warning (main): ..."") are absent from the image"
+user_eg.c,79,makecube,"translation unit not linked: user_eg.c is a standalone qhull/rbox main program; its distinctive literals (e.g. ""qhull internal warning (main): ..."") are absent from the image"
+user_eg.c,100,makeDelaunay,"translation unit not linked: user_eg.c is a standalone qhull/rbox main program; its distinctive literals (e.g. ""qhull internal warning (main): ..."") are absent from the image"
+user_eg.c,124,findDelaunay,"translation unit not linked: user_eg.c is a standalone qhull/rbox main program; its distinctive literals (e.g. ""qhull internal warning (main): ..."") are absent from the image"
+user_eg.c,154,makehalf,"translation unit not linked: user_eg.c is a standalone qhull/rbox main program; its distinctive literals (e.g. ""qhull internal warning (main): ..."") are absent from the image"
+user_eg.c,184,main,"translation unit not linked: user_eg.c is a standalone qhull/rbox main program; its distinctive literals (e.g. ""qhull internal warning (main): ..."") are absent from the image"
+user_eg2.c,69,print_summary,"translation unit not linked: user_eg2.c is a standalone qhull/rbox main program; its distinctive literals (e.g. ""qhull internal warning (main): ..."") are absent from the image"
+user_eg2.c,86,makecube,"translation unit not linked: user_eg2.c is a standalone qhull/rbox main program; its distinctive literals (e.g. ""qhull internal warning (main): ..."") are absent from the image"
+user_eg2.c,113,adddiamond,"translation unit not linked: user_eg2.c is a standalone qhull/rbox main program; its distinctive literals (e.g. ""qhull internal warning (main): ..."") are absent from the image"
+user_eg2.c,153,makeDelaunay,"translation unit not linked: user_eg2.c is a standalone qhull/rbox main program; its distinctive literals (e.g. ""qhull internal warning (main): ..."") are absent from the image"
+user_eg2.c,180,addDelaunay,"translation unit not linked: user_eg2.c is a standalone qhull/rbox main program; its distinctive literals (e.g. ""qhull internal warning (main): ..."") are absent from the image"
+user_eg2.c,227,findDelaunay,"translation unit not linked: user_eg2.c is a standalone qhull/rbox main program; its distinctive literals (e.g. ""qhull internal warning (main): ..."") are absent from the image"
+user_eg2.c,257,makehalf,"translation unit not linked: user_eg2.c is a standalone qhull/rbox main program; its distinctive literals (e.g. ""qhull internal warning (main): ..."") are absent from the image"
+user_eg2.c,294,addhalf,"translation unit not linked: user_eg2.c is a standalone qhull/rbox main program; its distinctive literals (e.g. ""qhull internal warning (main): ..."") are absent from the image"
+user_eg2.c,344,main,"translation unit not linked: user_eg2.c is a standalone qhull/rbox main program; its distinctive literals (e.g. ""qhull internal warning (main): ..."") are absent from the image"
+user_eg2.c,473,qh_errexit,"translation unit not linked: user_eg2.c is a standalone qhull/rbox main program; its distinctive literals (e.g. ""qhull internal warning (main): ..."") are absent from the image"
+user_eg2.c,509,qh_errprint,"translation unit not linked: user_eg2.c is a standalone qhull/rbox main program; its distinctive literals (e.g. ""qhull internal warning (main): ..."") are absent from the image"
+user_eg2.c,517,qh_printfacetlist,"translation unit not linked: user_eg2.c is a standalone qhull/rbox main program; its distinctive literals (e.g. ""qhull internal warning (main): ..."") are absent from the image"
+user_eg2.c,537,qh_user_memsizes,"translation unit not linked: user_eg2.c is a standalone qhull/rbox main program; its distinctive literals (e.g. ""qhull internal warning (main): ..."") are absent from the image"

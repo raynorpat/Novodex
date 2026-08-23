@@ -1,0 +1,408 @@
+{
+  "schema_version": 1,
+  "algorithm": "SHA-256",
+  "root": "D:/FlamingEnt__/Unreal_3/Development/External/Novodex/Physics/include",
+  "file_count": 80,
+  "files": [
+    {
+      "path": "NxActor.h",
+      "size": 35899,
+      "sha256": "8fe75fe4978c45480e2eb7154b50857908bef9d57241f8a977d0c518b7f4d721"
+    },
+    {
+      "path": "NxActorDesc.h",
+      "size": 9075,
+      "sha256": "90ecad9b4735e70e09d68e8a6fd67108f2831dacbfb80817388acf15dcfde6c2"
+    },
+    {
+      "path": "NxBodyDesc.h",
+      "size": 4534,
+      "sha256": "c9d2d7e9d0573e71a41e042f37a267d2ce9e654d15d3c07fc46f8c4bcbde159a"
+    },
+    {
+      "path": "NxBoxShape.h",
+      "size": 1705,
+      "sha256": "534ccf36619d87dc4aaea9f134b8a3df4b5704324dd26f3e895b6b7ba3f746c9"
+    },
+    {
+      "path": "NxBoxShapeDesc.h",
+      "size": 1469,
+      "sha256": "4cc3466ae1a2e475d45ad62a1fbd484acd50d4c80f2ce5ded49ef67c92166dc4"
+    },
+    {
+      "path": "NxCapsuleShape.h",
+      "size": 2370,
+      "sha256": "591775a68906c6d3b6c4ee82b4e07c47b5af12c44e083fe3f0ff569d4a49080b"
+    },
+    {
+      "path": "NxCapsuleShapeDesc.h",
+      "size": 1606,
+      "sha256": "91f7efb7b77da5f89a362a665506f9f78329015d6727106d4f70e37ee3bef2da"
+    },
+    {
+      "path": "NxContactStreamIterator.h",
+      "size": 9065,
+      "sha256": "25b10bb4111ee8de8e7888e7befd89af3a2f6cbceb681c30b441073ead5e532f"
+    },
+    {
+      "path": "NxConvexHull.h",
+      "size": 539,
+      "sha256": "0fe23a17743b377619dc017b61d9f91604de2710978a3834a13bdb0336df51a0"
+    },
+    {
+      "path": "NxCylindricalJoint.h",
+      "size": 1252,
+      "sha256": "9cb19bab130132381804ed7ab7480f6843e37918fe4d3d2aa0ca8badde8a9b19"
+    },
+    {
+      "path": "NxCylindricalJointDesc.h",
+      "size": 1106,
+      "sha256": "562cfa523a560b7a24919f1cb6413ead1e5f403bef31fe3e849e0d9d60ac8e73"
+    },
+    {
+      "path": "NxD6Joint.h",
+      "size": 1589,
+      "sha256": "e813146465e2ff5dd8eb8256807a61483dafeddd1f16bcd4100cb34c627d63ea"
+    },
+    {
+      "path": "NxD6JointDesc.h",
+      "size": 4631,
+      "sha256": "e72b8f59b5304e9938561b1ed3a2fb83ae3ec3ef5be9991530a7f2d9c7d8741a"
+    },
+    {
+      "path": "NxDistanceJoint.h",
+      "size": 1187,
+      "sha256": "a71e87e4344412c90641d2f7b4042ca4b279c44c401a8aa50e397309f25783af"
+    },
+    {
+      "path": "NxDistanceJointDesc.h",
+      "size": 2492,
+      "sha256": "271b5008637dc667aaefe27e339abb919c1d22ad3d70e91aa682885457f3728a"
+    },
+    {
+      "path": "NxDistanceTriangleTriangle.h",
+      "size": 747,
+      "sha256": "d397df569705178047163fbdb6e645ddafd98cf0113d4b056b43cc00b2edc5d9"
+    },
+    {
+      "path": "NxEffector.h",
+      "size": 881,
+      "sha256": "eaad7e1df663dda6d2b3a1264de7e14c057ccf43aabb0e5eaa79847c0ef6a165"
+    },
+    {
+      "path": "NxFixedJoint.h",
+      "size": 1151,
+      "sha256": "8ae7de135060a8dd5d5675573d921cf9176ab6e8de217ba87c697f02f77774e2"
+    },
+    {
+      "path": "NxFixedJointDesc.h",
+      "size": 1058,
+      "sha256": "0f4022870d00e9fc507e4e38d0eceeb6b6abb3cdf3a5e7162c3d13523e276f67"
+    },
+    {
+      "path": "NxInertiaTensor.h",
+      "size": 3729,
+      "sha256": "ea0f303753992b27f00164262a6e5de2432e25157d3203cacd63043886a69851"
+    },
+    {
+      "path": "NxIntersectionBoxBox.h",
+      "size": 2231,
+      "sha256": "f911404321122d8c17754271a746d99ed0106d3ec633bdea45332cd4f5b3a790"
+    },
+    {
+      "path": "NxIntersectionPointTriangle.h",
+      "size": 1697,
+      "sha256": "5ca59f2eaa3e0b33e342968c44cad05baa91642784e621ca91fd6f8d8cd59ca7"
+    },
+    {
+      "path": "NxIntersectionRayPlane.h",
+      "size": 700,
+      "sha256": "fa425eccf68290ec567ce79dc4445a625f3cce38eb6a3c6033d89bc4d932b9a7"
+    },
+    {
+      "path": "NxIntersectionRaySphere.h",
+      "size": 428,
+      "sha256": "3b3a326b99841d8ef1ca1458ba5c683403f6f16cb9f60a8fb63e4ae585c90b0a"
+    },
+    {
+      "path": "NxIntersectionRayTriangle.h",
+      "size": 657,
+      "sha256": "fffcb005acbe0e6656fe1ac7c4d40c6770fda4006bc3a2e4be3457e2537ce4b3"
+    },
+    {
+      "path": "NxIntersectionSegmentBox.h",
+      "size": 1754,
+      "sha256": "6abfe23ad9fde40e22a95aea522698c0a315172613bc127186d5e093039a058a"
+    },
+    {
+      "path": "NxIntersectionSegmentCapsule.h",
+      "size": 1035,
+      "sha256": "4fe362473a097dcac8ebf78ba461349c683b474e8f442cb9304a7b229d4bfb17"
+    },
+    {
+      "path": "NxIntersectionSweptSpheres.h",
+      "size": 462,
+      "sha256": "5b2f7aad62d5f38d35a122ce442c21a1a9da30192c30aa7132d32984cce9bc3c"
+    },
+    {
+      "path": "NxJoint.h",
+      "size": 9946,
+      "sha256": "44e712337886b36eac2dedef026fcd98a019b4417c1437bc651873226ea383a0"
+    },
+    {
+      "path": "NxJointDesc.h",
+      "size": 4770,
+      "sha256": "462faa8e98510817cb6a91016fb927de355eccda45ec10e11c4d720ff926cf2c"
+    },
+    {
+      "path": "NxJointLimitDesc.h",
+      "size": 1141,
+      "sha256": "a1d17ef81e7d8cdf2e408fdb244d5b31d61454a48aea170740f2e7412ecf04db"
+    },
+    {
+      "path": "NxJointLimitPairDesc.h",
+      "size": 985,
+      "sha256": "acef6a0a2f6c326e4f668286580015e27bb5b17abdbeddc0ced02d27032dafe6"
+    },
+    {
+      "path": "NxMaterial.h",
+      "size": 6913,
+      "sha256": "f7ae121a649ec68924bcc4c77c81e41e00c0fe32063d9b8be717ce97e480d5cc"
+    },
+    {
+      "path": "NxMotorDesc.h",
+      "size": 1946,
+      "sha256": "fccab557a82dfd41640b2e307e9b711d5ef69c7c7a5251845bcbc9c1e2c101e3"
+    },
+    {
+      "path": "NxPMap.h",
+      "size": 1676,
+      "sha256": "4c5fabf63e7f90a88366dcdc00ef15f862d579db618a59f4bce40da241fe627f"
+    },
+    {
+      "path": "NxPhysics.h",
+      "size": 2929,
+      "sha256": "f18d53dda97d8e0b160ba31e6e5b8c9334bffe72aa4aa53f56c6515ddee6b048"
+    },
+    {
+      "path": "NxPhysicsSDK.h",
+      "size": 12818,
+      "sha256": "5d0df9ec5fc246fbf5b5e32adf4147f77f58e96fc42a10f025ab7d9c7dc2a870"
+    },
+    {
+      "path": "NxPlaneShape.h",
+      "size": 2014,
+      "sha256": "d33cc25d6b6449cce66128b927d92fc4d1e20d8c3d69758be5dcb1246454ca86"
+    },
+    {
+      "path": "NxPlaneShapeDesc.h",
+      "size": 1382,
+      "sha256": "59ff38fd9b69995aa7340ee8777a0dd2a291be26d8e51e95fb7ade6febccb1ec"
+    },
+    {
+      "path": "NxPointInPlaneJoint.h",
+      "size": 1399,
+      "sha256": "4fb53a953726ae348282337dd0fbf82812b9751ae75af173f30b2b83726af7ec"
+    },
+    {
+      "path": "NxPointInPlaneJointDesc.h",
+      "size": 1132,
+      "sha256": "12209dc6554d40541aac8125c63fe034c7e6828e47882580508990c626f31f9b"
+    },
+    {
+      "path": "NxPointOnLineJoint.h",
+      "size": 1374,
+      "sha256": "48944fa6ce9bff4918b40b7405303ff5ca47055c196530f87fc235588f318252"
+    },
+    {
+      "path": "NxPointOnLineJointDesc.h",
+      "size": 1122,
+      "sha256": "0292d304f96d96a46c5b47d13f5be7ec4a28677790ccad5456132274deb5ebb3"
+    },
+    {
+      "path": "NxPrismaticJoint.h",
+      "size": 1243,
+      "sha256": "0691c7948be27e387007566bc1a7684b86fd35d0ccb777d0df7e5c0537cac349"
+    },
+    {
+      "path": "NxPrismaticJointDesc.h",
+      "size": 1098,
+      "sha256": "5d5fb669839cbe21527f7f2e932e66cbda6af39244abd1e8f7007ef010af48f6"
+    },
+    {
+      "path": "NxPulleyJoint.h",
+      "size": 1110,
+      "sha256": "29ef5bcfde5efdb36b3f84448c14236f51a4a44436173ac3d096683649d7bc68"
+    },
+    {
+      "path": "NxPulleyJointDesc.h",
+      "size": 1901,
+      "sha256": "6e645cb5c9ccaed6387db9510316d61cd69d159c12bd71550e0be7cd5a85ec97"
+    },
+    {
+      "path": "NxRevoluteJoint.h",
+      "size": 5970,
+      "sha256": "26804ab910065a072b5e94ad72ae4d616d3b5c26bea15da6a55116ec7cb44352"
+    },
+    {
+      "path": "NxRevoluteJointDesc.h",
+      "size": 3010,
+      "sha256": "023acda7cb0c36256d94cf05954aa8bfed5037994b7cd4b8c52cfdf0c4325a0d"
+    },
+    {
+      "path": "NxScene.h",
+      "size": 21424,
+      "sha256": "fc7c01b709918cc5c6e1211d21ed51f8f243aa7cbd6412463c6e1b62dd005ece"
+    },
+    {
+      "path": "NxSceneDesc.h",
+      "size": 3946,
+      "sha256": "939fb49f74691c2c3560d41ba456efb9032fab0f79f96085f1263f2801c37913"
+    },
+    {
+      "path": "NxSceneStats.h",
+      "size": 1273,
+      "sha256": "802ba469b560fa34a4142902327d978b62d2b3b065137011b1aee114d9862f3f"
+    },
+    {
+      "path": "NxShape.h",
+      "size": 9399,
+      "sha256": "1446db87be924e21c0026ec188f9c805f69a1e8266af11ff317bbe5713e011aa"
+    },
+    {
+      "path": "NxShapeDesc.h",
+      "size": 4015,
+      "sha256": "15202464a9ac5c239c593003e5a22ac26bad6cf8f4f3e06a771789028138264d"
+    },
+    {
+      "path": "NxSmoothNormals.h",
+      "size": 1015,
+      "sha256": "b21e7769a43213abd188f8fbfb8e30369f8a2fe0ed565054ac846a6376b58f70"
+    },
+    {
+      "path": "NxSphereShape.h",
+      "size": 1612,
+      "sha256": "9bd0778d851b5ee194db22457c7413783d234a338d4458668d26a394864e1806"
+    },
+    {
+      "path": "NxSphereShapeDesc.h",
+      "size": 1242,
+      "sha256": "54291ceb1a322584e8c189373a62cacae4594b5f8d5a86f14828c11598a8e8d4"
+    },
+    {
+      "path": "NxSphericalJoint.h",
+      "size": 1811,
+      "sha256": "32138264b37e38c651d9ea4326c7ca0e30daf58b81d22b9c7f681880aa47a2c6"
+    },
+    {
+      "path": "NxSphericalJointDesc.h",
+      "size": 3492,
+      "sha256": "c4e8b7a48600d9c7cb459dbd4613b52a208859242f1e04b1c5acaeca31243e88"
+    },
+    {
+      "path": "NxSpringAndDamperEffector.h",
+      "size": 4383,
+      "sha256": "b7e3c5d39510e27cc172b2502ef0fa6ba189e4503b2e0fa422d00e2a103abf87"
+    },
+    {
+      "path": "NxSpringAndDamperEffectorDesc.h",
+      "size": 1895,
+      "sha256": "ca83425d170761cd44a3cc1d9be66dc9384924f153137574a3047ebafbfd91a3"
+    },
+    {
+      "path": "NxSpringDesc.h",
+      "size": 1257,
+      "sha256": "7ac04bfbb79514556c1a88b5e7a7fa7be8e4f7f6c935e1739b4ccc3cfec55e36"
+    },
+    {
+      "path": "NxTriangle.h",
+      "size": 1745,
+      "sha256": "6736d61772841797624330d7215fda763d69096f89b5ce1f002fe2e50904de71"
+    },
+    {
+      "path": "NxTriangleMesh.h",
+      "size": 4707,
+      "sha256": "dcfc6270233680a70db793d4ff4e65a8e5b6404be2d11b346386b0709d0a0e88"
+    },
+    {
+      "path": "NxTriangleMeshDesc.h",
+      "size": 5030,
+      "sha256": "56924dabd4d2d5bce6354556a7610f63acbd1f5056bc5db6d270355893a39bd7"
+    },
+    {
+      "path": "NxTriangleMeshShape.h",
+      "size": 2478,
+      "sha256": "bda8e3d49c0db8dad21f48ecb00aa17ffc4cc7c4356ff70ffa8dd5290632b54e"
+    },
+    {
+      "path": "NxTriangleMeshShapeDesc.h",
+      "size": 1561,
+      "sha256": "f51df1fc06b8dc0bd7392711bc4fc08f9c65d90843583dc68a0a6ecac8a96d0a"
+    },
+    {
+      "path": "NxUserContactReport.h",
+      "size": 5684,
+      "sha256": "d041d703babbac9a0e7fb6958c63fcb408f0537d8ba9a84c45c32217b1d0d3eb"
+    },
+    {
+      "path": "NxUserEntityReport.h",
+      "size": 3981,
+      "sha256": "6294095b050983d97e845ad2e389a9d7d6ab1fc4077cb08302ec065ad6b2dbf9"
+    },
+    {
+      "path": "NxUserNotify.h",
+      "size": 905,
+      "sha256": "d60aadf49bf589059cf499109dfd0af3d6e61d3cf7b13d8fbc74e3621ff83455"
+    },
+    {
+      "path": "NxUserRaycastReport.h",
+      "size": 3154,
+      "sha256": "015c8fdaae79435bb713bd42757954b3f4d1408a161040833e80a1c4e86ee1ec"
+    },
+    {
+      "path": "Nxp.h",
+      "size": 4248,
+      "sha256": "830696508ac1f542408033b9b58e9fcad980d3b4b43163bf80c91bf3da0d0564"
+    },
+    {
+      "path": "fluids/NxFluid.h",
+      "size": 10862,
+      "sha256": "ed347257024ce04c2affd4748cb89ea7236eec883730d3a6352fdfbda6076511"
+    },
+    {
+      "path": "fluids/NxFluidDesc.h",
+      "size": 10486,
+      "sha256": "cebe34c355bfab8f381288dc044e9193635d644dac30e80aa049cd9338468a4f"
+    },
+    {
+      "path": "fluids/NxFluidEmitter.h",
+      "size": 7794,
+      "sha256": "ba1226cc10681fec7c996a388eba30f3250dd06444a333f9a3423e50edb6ec7c"
+    },
+    {
+      "path": "fluids/NxFluidEmitterDesc.h",
+      "size": 6644,
+      "sha256": "242719c32b8b557eefc51aeddae8c513f16bae4b7b887998ff2236711b08c43c"
+    },
+    {
+      "path": "fluids/NxImplicitMesh.h",
+      "size": 4135,
+      "sha256": "55d0f8afa4387b1593fe40c968a46969fa779dc574368d8e0e0f6c0cd34989a0"
+    },
+    {
+      "path": "fluids/NxImplicitMeshDesc.h",
+      "size": 2996,
+      "sha256": "85e6b3577f0d91cce4087c0e4bd77d2b11f01374ccc0fa2c70678e819b14164e"
+    },
+    {
+      "path": "fluids/NxMeshData.h",
+      "size": 5714,
+      "sha256": "e9d2fd29499f2b3348c7f242ad41a578d15a6355457f97ded44a1f36705bf9bd"
+    },
+    {
+      "path": "fluids/NxParticleData.h",
+      "size": 4025,
+      "sha256": "41345a476703be43ab74741733cbe1369b4c0bbea203ae99ff938b8ef860e39c"
+    }
+  ]
+}

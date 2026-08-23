@@ -1,0 +1,493 @@
+rva,id,size,grade,source_file,source_line,source_function,signals,notes
+0x0005c5c0,phys_fn_002425,490,mapped,geom.c,33,qh_distplane,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x0005c7d0,phys_fn_002428,876,mapped,geom.c,278,qh_findbesthorizon,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x0005cb40,phys_fn_002430,869,mapped,geom.c,409,qh_findbestnew,S1-string(6 uniquely-owned literal(s));S3-TU-band,
+0x0005ceb0,phys_fn_002432,237,mapped,geom.c,518,qh_backnormal,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x0005cfa0,phys_fn_002434,307,mapped,geom.c,518,qh_backnormal,S1-string(2 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x0005ceb0
+0x0005d0e0,phys_fn_002436,813,mapped,geom.c,578,qh_gausselim,S1-string(4 uniquely-owned literal(s));S3-TU-band,
+0x0005d410,phys_fn_002438,142,mapped,geom.c,641,qh_getangle,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x0005d4a0,phys_fn_002440,105,mapped,geom.c,666,qh_getcenter,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x0005d510,phys_fn_002442,69,mapped,geom.c,666,qh_getcenter,S1-string(1 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x0005d4a0
+0x0005d560,phys_fn_002444,264,mapped,geom.c,725,qh_getdistance,"S2-callgraph(4 agreeing edges, 0 contradicting);S3-TU-band",
+0x0005d670,phys_fn_002446,770,mapped,geom.c,801,qh_normalize2,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x0005d980,phys_fn_002448,107,mapped,geom.c,890,qh_projectpoint,"S4-shape(inlined qh_memalloc_ fast path on normal_size, then *np = *point - dist*normal over hull_dim, exact);S2-callgraph(8 callers, callee qh_memalloc)",
+0x0005d9f0,phys_fn_002450,1117,mapped,geom.c,1098,qh_sethyperplane_det,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x0005de50,phys_fn_002452,348,mapped,geom.c,1196,qh_sethyperplane_gauss,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x0005dfb0,phys_fn_002454,1060,mapped,geom.c,137,qh_findbest,S1-string(5 uniquely-owned literal(s));S3-TU-band,
+0x0005e3e0,phys_fn_002456,140,mapped,geom.c,697,qh_getcentrum,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x0005e470,phys_fn_002458,28,mapped,geom.c,765,qh_normalize,"S2-callgraph(2 agreeing edges, 0 contradicting);S3-TU-band",
+0x0005e490,phys_fn_002460,439,mapped,geom.c,925,qh_setfacetplane,S1-string(6 uniquely-owned literal(s));S3-TU-band,
+0x0005e650,phys_fn_002462,1026,mapped,geom.c,925,qh_setfacetplane,S1-string(6 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x0005e490
+0x0005ea60,phys_fn_002464,96,mapped,geom2.c,25,qh_copypoints,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x0005eac0,phys_fn_002465,68,mapped,geom2.c,50,qh_crossproduct,"S4-shape(if dim==3 then three 2x2 dets with fchs on the middle, exact);S2-callgraph",
+0x0005eb10,phys_fn_002467,318,mapped,geom2.c,78,qh_determinant,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x0005ec50,phys_fn_002469,61,mapped,geom2.c,300,qh_detsimplex,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x0005ec90,phys_fn_002471,29,mapped,geom2.c,300,qh_detsimplex,S1-string(2 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x0005ec50
+0x0005ecb0,phys_fn_002473,161,mapped,geom2.c,300,qh_detsimplex,S1-string(2 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x0005ec50
+0x0005ed60,phys_fn_002475,39,mapped,geom2.c,344,qh_distnorm,"S4-shape(dist=*offsetp then dim-times fmul/faddp, returns realT in st0, 4 args, exact);S2-callgraph",
+0x0005ed90,phys_fn_002477,133,mapped,geom2.c,373,qh_distround,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x0005ee20,phys_fn_002479,170,mapped,geom2.c,406,qh_divzero,"S2-callgraph(7 agreeing edges, 0 contradicting);S3-TU-band",
+0x0005eed0,phys_fn_002481,157,mapped,geom2.c,514,qh_facetarea_simplex,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x0005ef70,phys_fn_002483,505,mapped,geom2.c,514,qh_facetarea_simplex,S1-string(2 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x0005eed0
+0x0005f170,phys_fn_002485,482,mapped,geom2.c,627,qh_findgooddist,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x0005f360,phys_fn_002487,248,mapped,geom2.c,753,qh_gram_schmidt,"S2-callgraph(sole caller qh_init_B == global.c:465);S4-shape(2 rets, 30 x87 ops, no callees)",
+0x0005f460,phys_fn_002489,45,mapped,geom2.c,801,qh_inthresholds,"S2-callgraph(2 agreeing edges, 0 contradicting);S3-TU-band",
+0x0005f490,phys_fn_002491,150,mapped,geom2.c,801,qh_inthresholds,"S2-callgraph(2 agreeing edges, 0 contradicting);S3-TU-band",continuation block of the function entered at 0x0005f460
+0x0005f530,phys_fn_002493,87,mapped,geom2.c,927,qh_maxabsval,"S4-shape(maxval=-REALmax, fabs scan keeping pointer to max, exact);S2-callgraph",
+0x0005f590,phys_fn_002495,98,mapped,geom2.c,1055,qh_maxouter,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x0005f600,phys_fn_002497,473,mapped,geom2.c,1087,qh_maxsimplex,S1-string(7 uniquely-owned literal(s));S3-TU-band,
+0x0005f7e0,phys_fn_002499,516,mapped,geom2.c,1087,qh_maxsimplex,S1-string(7 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x0005f600
+0x0005f9f0,phys_fn_002501,105,mapped,geom2.c,1233,qh_orientoutside,"S2-callgraph(3 agreeing edges, 0 contradicting);S3-TU-band",
+0x0005fa60,phys_fn_002503,258,mapped,geom2.c,1266,qh_outerinner,"S2-callgraph(5 agreeing edges, 0 contradicting);S3-TU-band",
+0x0005fb70,phys_fn_002505,63,mapped,geom2.c,1307,qh_pointdist,"S4-shape(sum of squared differences then fsqrt gated on dim>0, k=(dim>0?dim:-dim), exact);S2-callgraph",
+0x0005fbb0,phys_fn_002507,146,mapped,geom2.c,1332,qh_printmatrix,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x0005fc50,phys_fn_002509,181,mapped,geom2.c,1356,qh_printpoints,"S2-callgraph(3 agreeing edges, 0 contradicting);S3-TU-band",
+0x0005fd10,phys_fn_002511,264,mapped,geom2.c,1513,qh_projectpoints,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x0005fe20,phys_fn_002513,44,mapped,geom2.c,1566,qh_rand,"S3-constants(127773,2836,16807,0x7fffffff Park-Miller);S4-shape exact",
+0x0005fe50,phys_fn_002515,43,mapped,geom2.c,1587,qh_srand,S3-constants(clamp to 1..0x7ffffffe on same seed global .data:0x122340);S4-shape exact,
+0x0005fe80,phys_fn_002517,64,mapped,geom2.c,1605,qh_randomfactor,"S3-constants(qh_rand inlined);S4-shape(randr*RANDOMa+RANDOMb, globals 0x124828/0x124830)",
+0x0005fec0,phys_fn_002518,117,mapped,geom2.c,1624,qh_randommatrix,S3-constants(qh_rand inlined; 2.0/(RANDOMmax+1) and -1.0);S2-caller qh_init_B,
+0x0005ff40,phys_fn_002520,167,mapped,geom2.c,1683,qh_rotatepoints,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x0005fff0,phys_fn_002522,309,mapped,geom2.c,1748,qh_scalelast,S1-string(3 uniquely-owned literal(s));S3-TU-band,
+0x00060130,phys_fn_002524,525,mapped,geom2.c,1794,qh_scalepoints,S1-string(3 uniquely-owned literal(s));S3-TU-band,
+0x00060340,phys_fn_002526,211,mapped,geom2.c,1794,qh_scalepoints,S1-string(3 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x00060130
+0x00060420,phys_fn_002528,162,mapped,geom2.c,1879,qh_setdelaunay,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x000604d0,phys_fn_002530,277,mapped,geom2.c,2030,qh_sharpnewfacets,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x000605f0,phys_fn_002532,152,mapped,geom2.c,2080,qh_voronoi_center,S1-string(5 uniquely-owned literal(s));S3-TU-band,
+0x00060690,phys_fn_002534,88,mapped,geom2.c,2080,qh_voronoi_center,S1-string(5 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x000605f0
+0x000606f0,phys_fn_002536,345,mapped,geom2.c,2080,qh_voronoi_center,S1-string(5 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x000605f0
+0x00060850,phys_fn_002538,493,mapped,geom2.c,2080,qh_voronoi_center,S1-string(5 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x000605f0
+0x00060a40,phys_fn_002540,410,mapped,geom2.c,125,qh_detjoggle,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x00060be0,phys_fn_002542,1413,mapped,geom2.c,188,qh_detroundoff,S1-string(14 uniquely-owned literal(s));S3-TU-band,
+0x00061170,phys_fn_002544,303,mapped,geom2.c,454,qh_facetarea,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x000612a0,phys_fn_002546,100,mapped,geom2.c,588,qh_facetcenter,"S2-callgraph(7 agreeing edges, 0 contradicting);S3-TU-band",
+0x00061310,phys_fn_002548,378,mapped,geom2.c,698,qh_getarea,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x00061490,phys_fn_002550,747,mapped,geom2.c,864,qh_joggleinput,S1-string(4 uniquely-owned literal(s));S3-TU-band,
+0x00061780,phys_fn_002552,519,mapped,geom2.c,969,qh_maxmin,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x00061990,phys_fn_002554,616,mapped,geom2.c,1411,qh_projectinput,S1-string(5 uniquely-owned literal(s));S3-TU-band,
+0x00061c00,phys_fn_002556,206,mapped,geom2.c,1411,qh_projectinput,S1-string(5 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x00061990
+0x00061cd0,phys_fn_002558,86,mapped,geom2.c,1657,qh_rotateinput,"S2-callgraph(2 agreeing edges, 0 contradicting);S3-TU-band",
+0x00061d30,phys_fn_002560,94,mapped,geom2.c,1719,qh_scaleinput,"S2-callgraph(2 agreeing edges, 0 contradicting);S3-TU-band",
+0x00061d90,phys_fn_002562,378,mapped,global.c,268,qh_freebuild,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x00061f10,phys_fn_002564,343,mapped,global.c,268,qh_freebuild,S1-string(1 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x00061d90
+0x00062070,phys_fn_002566,137,mapped,global.c,484,qh_init_qhull_command,S1-string(3 uniquely-owned literal(s));S3-TU-band,
+0x00062100,phys_fn_002568,61,mapped,global.c,484,qh_init_qhull_command,S1-string(3 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x00062070
+0x00062140,phys_fn_002570,128,mapped,global.c,484,qh_init_qhull_command,S1-string(3 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x00062070
+0x000621c0,phys_fn_002571,211,mapped,global.c,1371,qh_initqhull_buffers,"S2-callgraph(3 agreeing edges, 0 contradicting);S3-TU-band",
+0x000622a0,phys_fn_002573,117,mapped,global.c,1371,qh_initqhull_buffers,"S2-callgraph(3 agreeing edges, 0 contradicting);S3-TU-band",continuation block of the function entered at 0x000621c0
+0x00062320,phys_fn_002575,123,mapped,global.c,1701,qh_initqhull_mem,"S2-callgraph(2 agreeing edges, 0 contradicting);S3-TU-band",
+0x000623a0,phys_fn_002577,447,mapped,global.c,1733,qh_initqhull_start,"S2-callgraph(sole caller 0x000626c0=qh_init_A, which calls qh_meminit+qh_initqhull_start+qh_init_qhull_command in that order; callees qh_srand(qh_RANDOMseed_(1)) and qh_initstatistics + CRT memset(&qh_qh,0,sizeof(qhT))));S4-shape(46 x87 REALmax stores)",
+0x00062560,phys_fn_002579,243,mapped,global.c,1915,qh_option,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x00062660,phys_fn_002581,40,mapped,global.c,2025,qh_strtod,"S2-callee=CRT strtod;S4-shape(trailing-blank back-up, exact)",
+0x00062690,phys_fn_002583,42,mapped,global.c,2034,qh_strtol,"S2-callee=CRT strtol base 10;S4-shape(trailing-blank back-up, exact)",
+0x000626c0,phys_fn_002585,47,mapped,global.c,397,qh_init_A,"S2-callgraph(2 agreeing edges, 0 contradicting);S3-TU-band",
+0x000626f0,phys_fn_002587,356,mapped,global.c,540,qh_initflags,S1-string(156 uniquely-owned literal(s));S3-TU-band,
+0x00062860,phys_fn_002591,68,mapped,global.c,540,qh_initflags,S1-string(156 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x000626f0
+0x000628b0,phys_fn_002595,68,mapped,global.c,540,qh_initflags,S1-string(156 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x000626f0
+0x00062900,phys_fn_002599,68,mapped,global.c,540,qh_initflags,S1-string(156 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x000626f0
+0x00062950,phys_fn_002603,68,mapped,global.c,540,qh_initflags,S1-string(156 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x000626f0
+0x000629a0,phys_fn_002607,1590,mapped,global.c,540,qh_initflags,S1-string(156 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x000626f0
+0x00062fe0,phys_fn_002609,68,mapped,global.c,540,qh_initflags,S1-string(156 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x000626f0
+0x00063030,phys_fn_002613,196,mapped,global.c,540,qh_initflags,S1-string(156 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x000626f0
+0x00063100,phys_fn_002617,68,mapped,global.c,540,qh_initflags,S1-string(156 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x000626f0
+0x00063150,phys_fn_002621,68,mapped,global.c,540,qh_initflags,S1-string(156 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x000626f0
+0x000631a0,phys_fn_002625,68,mapped,global.c,540,qh_initflags,S1-string(156 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x000626f0
+0x000631f0,phys_fn_002629,132,mapped,global.c,540,qh_initflags,S1-string(156 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x000626f0
+0x00063280,phys_fn_002633,72,mapped,global.c,540,qh_initflags,S1-string(156 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x000626f0
+0x000632d0,phys_fn_002635,85,mapped,global.c,540,qh_initflags,S1-string(156 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x000626f0
+0x00063330,phys_fn_002637,148,mapped,global.c,540,qh_initflags,S1-string(156 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x000626f0
+0x000633d0,phys_fn_002641,72,mapped,global.c,540,qh_initflags,S1-string(156 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x000626f0
+0x00063420,phys_fn_002643,136,mapped,global.c,540,qh_initflags,S1-string(156 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x000626f0
+0x000634b0,phys_fn_002645,84,mapped,global.c,540,qh_initflags,S1-string(156 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x000626f0
+0x00063510,phys_fn_002649,55,mapped,global.c,540,qh_initflags,S1-string(156 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x000626f0
+0x00063550,phys_fn_002651,72,mapped,global.c,540,qh_initflags,S1-string(156 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x000626f0
+0x000635a0,phys_fn_002653,72,mapped,global.c,540,qh_initflags,S1-string(156 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x000626f0
+0x000635f0,phys_fn_002655,148,mapped,global.c,540,qh_initflags,S1-string(156 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x000626f0
+0x00063690,phys_fn_002659,58,mapped,global.c,540,qh_initflags,S1-string(156 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x000626f0
+0x000636d0,phys_fn_002661,1325,mapped,global.c,540,qh_initflags,S1-string(156 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x000626f0
+0x00063c00,phys_fn_002663,2397,mapped,global.c,540,qh_initflags,S1-string(156 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x000626f0
+0x00064560,phys_fn_002665,2199,mapped,global.c,540,qh_initflags,S1-string(156 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x000626f0
+0x00065110,phys_fn_002670,1565,mapped,global.c,1426,qh_initqhull_globals,S1-string(33 uniquely-owned literal(s));S3-TU-band;S1-note(1 literal(s) of qh_option also present -> inlined there),
+0x00065730,phys_fn_002672,1291,mapped,global.c,1426,qh_initqhull_globals,S1-string(33 uniquely-owned literal(s));S3-TU-band;S1-note(1 literal(s) of qh_option also present -> inlined there),continuation block of the function entered at 0x00065110
+0x00065c40,phys_fn_002674,1002,mapped,global.c,1806,qh_initthresholds,S1-string(5 uniquely-owned literal(s));S3-TU-band,
+0x00066030,phys_fn_002676,97,mapped,global.c,1806,qh_initthresholds,S1-string(5 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x00065c40
+0x000660a0,phys_fn_002678,183,mapped,global.c,444,qh_init_B,"S2-callgraph(8 agreeing edges, 0 contradicting);S3-TU-band",
+0x00066160,phys_fn_002680,168,mapped,global.c,444,qh_init_B,"S2-callgraph(8 agreeing edges, 0 contradicting);S3-TU-band",continuation block of the function entered at 0x000660a0
+0x00066210,phys_fn_002682,93,mapped,global.c,444,qh_init_B,"S2-callgraph(8 agreeing edges, 0 contradicting);S3-TU-band",continuation block of the function entered at 0x000660a0
+0x00066270,phys_fn_002684,74,mapped,io.c,138,qh_compare_facetarea,S2-address-taken in qh_markkeep(io.c:868);S3-isarea bitfield mask 0x100000;S4-shape,
+0x000662c0,phys_fn_002686,32,mapped,io.c,158,qh_compare_facetmerge,S2-address-taken in qh_markkeep(io.c:879);S3-nummerge:9 bitfield mask 0x1ff,
+0x000662e0,phys_fn_002687,39,mapped,io.c,170,qh_compare_facetvisit,"S2-address-taken from exactly 3 rows == io.c:458,3438,3539;S4-shape(visitid else -id)",
+0x00066310,phys_fn_002689,317,mapped,io.c,297,qh_detvnorm,S1-string(5 uniquely-owned literal(s));S3-TU-band,
+0x00066450,phys_fn_002691,389,mapped,io.c,297,qh_detvnorm,S1-string(5 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x00066310
+0x000665e0,phys_fn_002693,90,mapped,io.c,297,qh_detvnorm,S1-string(5 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x00066310
+0x00066640,phys_fn_002695,1233,mapped,io.c,297,qh_detvnorm,S1-string(5 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x00066310
+0x00066b20,phys_fn_002697,202,mapped,io.c,440,qh_detvridge,"S2-callgraph(4 agreeing edges, 0 contradicting);S3-TU-band",
+0x00066bf0,phys_fn_002699,269,mapped,io.c,482,qh_detvridge3,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x00066d00,phys_fn_002701,219,mapped,io.c,482,qh_detvridge3,S1-string(1 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x00066bf0
+0x00066de0,phys_fn_002703,621,mapped,io.c,581,qh_eachvoronoi,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x00067050,phys_fn_002705,41,mapped,io.c,581,qh_eachvoronoi,S1-string(1 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x00066de0
+0x00067080,phys_fn_002707,171,mapped,io.c,723,qh_facet2point,"S2-callgraph(2 agreeing edges, 0 contradicting);S3-TU-band",
+0x00067130,phys_fn_002709,186,mapped,io.c,812,qh_geomplanes,"S2-callgraph(4 agreeing edges, 0 contradicting);S3-TU-band",
+0x000671f0,phys_fn_002711,465,mapped,io.c,854,qh_markkeep,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x000673d0,phys_fn_002713,292,mapped,io.c,995,qh_order_vertexneighbors,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x00067500,phys_fn_002715,116,mapped,io.c,1511,qh_printcenter,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x00067580,phys_fn_002719,253,mapped,io.c,1511,qh_printcenter,S1-string(1 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x00067500
+0x00067680,phys_fn_002721,286,mapped,io.c,1915,qh_printfacet2geom_points,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x000677a0,phys_fn_002723,169,mapped,io.c,1945,qh_printfacet2math,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x00067850,phys_fn_002725,216,mapped,io.c,2031,qh_printfacet3geom_points,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x00067930,phys_fn_002727,255,mapped,io.c,2031,qh_printfacet3geom_points,S1-string(2 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x00067850
+0x00067a30,phys_fn_002729,102,mapped,io.c,2131,qh_printfacet3math,S1-string(3 uniquely-owned literal(s));S3-TU-band,
+0x00067aa0,phys_fn_002731,360,mapped,io.c,2131,qh_printfacet3math,S1-string(3 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x00067a30
+0x00067c10,phys_fn_002733,130,mapped,io.c,2183,qh_printfacet3vertex,"S2-callgraph(5 agreeing edges, 0 contradicting);S3-TU-band",
+0x00067ca0,phys_fn_002735,339,mapped,io.c,2311,qh_printfacetNvertex_nonsimplicial,"S2-callgraph(2 agreeing edges, 0 contradicting);S3-TU-band",
+0x00067e00,phys_fn_002737,205,mapped,io.c,2342,qh_printfacetNvertex_simplicial,"S2-callgraph(3 agreeing edges, 0 contradicting);S3-TU-band",
+0x00067ed0,phys_fn_002739,70,mapped,io.c,2342,qh_printfacetNvertex_simplicial,"S2-callgraph(3 agreeing edges, 0 contradicting);S3-TU-band",continuation block of the function entered at 0x00067e00
+0x00067f20,phys_fn_002741,105,mapped,io.c,2951,qh_printpointid,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x00067f90,phys_fn_002743,214,mapped,io.c,3292,qh_printvdiagram2,S2-callees qh_eachvoronoi+qh_pointid+qh_setsize; sole caller qh_printvdiagram,
+0x00068070,phys_fn_002745,125,mapped,io.c,3315,qh_printvertex,S1-string(6 uniquely-owned literal(s));S3-TU-band,
+0x000680f0,phys_fn_002747,269,mapped,io.c,3315,qh_printvertex,S1-string(6 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x00068070
+0x00068200,phys_fn_002749,40,mapped,io.c,3376,qh_printvertices,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x00068230,phys_fn_002751,83,mapped,io.c,3376,qh_printvertices,S1-string(1 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x00068200
+0x00068290,phys_fn_002753,223,mapped,io.c,3596,qh_printvnorm,"S2-callgraph(2 agreeing edges, 0 contradicting);S3-TU-band",
+0x00068370,phys_fn_002755,156,mapped,io.c,3623,qh_printvridge,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x00068410,phys_fn_002757,26,mapped,io.c,3644,qh_projectdim3,"S2-callgraph(4 agreeing edges, 0 contradicting);S3-TU-band",
+0x00068430,phys_fn_002759,75,mapped,io.c,3644,qh_projectdim3,"S2-callgraph(4 agreeing edges, 0 contradicting);S3-TU-band",continuation block of the function entered at 0x00068410
+0x00068480,phys_fn_002761,142,mapped,io.c,4091,qh_skipfacet,"S2-callgraph(5 agreeing edges, 0 contradicting);S3-TU-band",
+0x00068510,phys_fn_002763,40,mapped,io.c,208,qh_countfacets,"S2-callgraph(6 agreeing edges, 0 contradicting);S3-TU-band",
+0x00068540,phys_fn_002765,434,mapped,io.c,208,qh_countfacets,"S2-callgraph(6 agreeing edges, 0 contradicting);S3-TU-band",continuation block of the function entered at 0x00068510
+0x00068700,phys_fn_002767,189,mapped,io.c,764,qh_facetvertices,"S2-callgraph(6 agreeing edges, 0 contradicting);S3-TU-band",
+0x000687c0,phys_fn_002769,103,mapped,io.c,764,qh_facetvertices,"S2-callgraph(6 agreeing edges, 0 contradicting);S3-TU-band",continuation block of the function entered at 0x00068700
+0x00068830,phys_fn_002771,54,mapped,io.c,764,qh_facetvertices,"S2-callgraph(6 agreeing edges, 0 contradicting);S3-TU-band",continuation block of the function entered at 0x00068700
+0x00068870,phys_fn_002773,381,mapped,io.c,927,qh_markvoronoi,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x000689f0,phys_fn_002775,92,mapped,io.c,927,qh_markvoronoi,S1-string(1 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x00068870
+0x00068a50,phys_fn_002777,644,mapped,io.c,1677,qh_printend4geom,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x00068ce0,phys_fn_002779,255,mapped,io.c,1734,qh_printextremes,"S2-callgraph(7 agreeing edges, 0 contradicting);S3-TU-band",
+0x00068de0,phys_fn_002781,186,mapped,io.c,1773,qh_printextremes_2d,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x00068ea0,phys_fn_002783,246,mapped,io.c,1773,qh_printextremes_2d,S1-string(1 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x00068de0
+0x00068fa0,phys_fn_002785,264,mapped,io.c,1830,qh_printextremes_d,"S2-callgraph(4 agreeing edges, 0 contradicting);S3-TU-band",
+0x000690b0,phys_fn_002787,264,mapped,io.c,1889,qh_printfacet2geom,"S2-callgraph(4 agreeing edges, 0 contradicting);S3-TU-band",
+0x000691c0,phys_fn_002789,858,mapped,io.c,2816,qh_printhyperplaneintersection,S1-string(8 uniquely-owned literal(s));S3-TU-band,
+0x00069520,phys_fn_002791,361,mapped,io.c,2871,qh_printline3geom,S1-string(3 uniquely-owned literal(s));S3-TU-band,
+0x00069690,phys_fn_002793,39,mapped,io.c,2945,qh_printpoint,"S2-callgraph(4 agreeing edges, 0 contradicting);S3-TU-band",
+0x000696c0,phys_fn_002795,110,mapped,io.c,2978,qh_printpoint3,"S2-callgraph(4 agreeing edges, 0 contradicting);S3-TU-band",
+0x00069730,phys_fn_002797,660,mapped,io.c,3005,qh_printpoints_out,"S2-callgraph(7 agreeing edges, 0 contradicting);S3-TU-band",
+0x000699d0,phys_fn_002799,222,mapped,io.c,3071,qh_printpointvect,"S2-callgraph(3 agreeing edges, 0 contradicting);S3-TU-band",
+0x00069ab0,phys_fn_002801,147,mapped,io.c,3096,qh_printpointvect2,"S2-callgraph(2 agreeing edges, 0 contradicting);S3-TU-band",
+0x00069b50,phys_fn_002803,179,mapped,io.c,3112,qh_printridge,S1-string(4 uniquely-owned literal(s));S3-TU-band,
+0x00069c10,phys_fn_002805,182,mapped,io.c,3135,qh_printspheres,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x00069cd0,phys_fn_002807,206,mapped,io.c,3231,qh_printvdiagram,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x00069da0,phys_fn_002809,100,mapped,io.c,3357,qh_printvertexlist,"S2-callgraph(4 agreeing edges, 0 contradicting);S3-TU-band",
+0x00069e10,phys_fn_002811,706,mapped,io.c,3402,qh_printvneighbors,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x0006a0e0,phys_fn_002813,345,mapped,io.c,3477,qh_printvoronoi,S1-string(6 uniquely-owned literal(s));S3-TU-band,
+0x0006a240,phys_fn_002815,772,mapped,io.c,3477,qh_printvoronoi,S1-string(6 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x0006a0e0
+0x0006a550,phys_fn_002817,701,mapped,io.c,1555,qh_printcentrum,S1-string(5 uniquely-owned literal(s));S3-TU-band,
+0x0006a810,phys_fn_002819,369,mapped,io.c,1618,qh_printend,S1-string(3 uniquely-owned literal(s));S3-TU-band,
+0x0006a9b0,phys_fn_002822,628,mapped,io.c,1973,qh_printfacet3geom_nonsimplicial,"S2-callgraph(10 agreeing edges, 0 contradicting);S3-TU-band",
+0x0006ac30,phys_fn_002824,594,mapped,io.c,2077,qh_printfacet3geom_simplicial,"S2-callgraph(7 agreeing edges, 0 contradicting);S3-TU-band",
+0x0006ae90,phys_fn_002826,282,mapped,io.c,2209,qh_printfacet4geom_nonsimplicial,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x0006afb0,phys_fn_002828,251,mapped,io.c,2209,qh_printfacet4geom_nonsimplicial,S1-string(2 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x0006ae90
+0x0006b0b0,phys_fn_002830,87,mapped,io.c,2263,qh_printfacet4geom_simplicial,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x0006b110,phys_fn_002832,199,mapped,io.c,2263,qh_printfacet4geom_simplicial,S1-string(2 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x0006b0b0
+0x0006b1e0,phys_fn_002834,194,mapped,io.c,2263,qh_printfacet4geom_simplicial,S1-string(2 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x0006b0b0
+0x0006b2b0,phys_fn_002836,1846,mapped,io.c,2368,qh_printfacetheader,S1-string(48 uniquely-owned literal(s));S3-TU-band,
+0x0006b9f0,phys_fn_002838,234,mapped,io.c,2510,qh_printfacetridges,S1-string(4 uniquely-owned literal(s));S3-TU-band,
+0x0006bae0,phys_fn_002840,218,mapped,io.c,2510,qh_printfacetridges,S1-string(4 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x0006b9f0
+0x0006bbc0,phys_fn_002842,112,mapped,io.c,2510,qh_printfacetridges,S1-string(4 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x0006b9f0
+0x0006bc30,phys_fn_002843,845,mapped,io.c,1240,qh_printbegin,S1-string(21 uniquely-owned literal(s));S3-TU-band,
+0x0006bf80,phys_fn_002845,295,mapped,io.c,1240,qh_printbegin,S1-string(21 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x0006bc30
+0x0006c0b0,phys_fn_002847,664,mapped,io.c,1240,qh_printbegin,S1-string(21 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x0006bc30
+0x0006c350,phys_fn_002849,170,mapped,io.c,1240,qh_printbegin,S1-string(21 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x0006bc30
+0x0006c400,phys_fn_002851,247,mapped,io.c,1240,qh_printbegin,S1-string(21 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x0006bc30
+0x0006c500,phys_fn_002853,976,mapped,io.c,1240,qh_printbegin,S1-string(21 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x0006bc30
+0x0006c920,phys_fn_002855,40,mapped,io.c,1870,qh_printfacet,"S2-callgraph(5 agreeing edges, 0 contradicting);S3-TU-band",
+0x0006c950,phys_fn_002857,1018,mapped,io.c,1046,qh_printafacet,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x0006cd50,phys_fn_002859,1081,mapped,io.c,1046,qh_printafacet,S1-string(2 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x0006c950
+0x0006d200,phys_fn_002862,1260,mapped,io.c,2567,qh_printfacets,S1-string(5 uniquely-owned literal(s));S3-TU-band,
+0x0006d6f0,phys_fn_002864,263,mapped,io.c,2902,qh_printneighborhood,"S2-callgraph(7 agreeing edges, 0 contradicting);S3-TU-band",
+0x0006d800,phys_fn_002866,566,mapped,io.c,35,qh_produce_output,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x0006da40,phys_fn_002868,13,mapped,mem.c,66,qh_intcompare,"S2-address-taken by qh_memsetup qsort;S4-shape(*(int*)i - *(int*)j, exact)",
+0x0006da50,phys_fn_002870,442,mapped,mem.c,99,qh_memalloc,S1-string(3 uniquely-owned literal(s));S3-TU-band,
+0x0006dc10,phys_fn_002872,143,mapped,mem.c,177,qh_memfree,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x0006dca0,phys_fn_002874,26,mapped,mem.c,234,qh_meminit,"S4-shape(rep stosd 0x1a dwords = memset(&qhmem,0,104) then qhmem.ferr=arg, exact);S2-callgraph(first callee of qh_init_A)",
+0x0006dcc0,phys_fn_002876,218,mapped,mem.c,255,qh_meminitbuffers,S1-string(3 uniquely-owned literal(s));S3-TU-band,
+0x0006dda0,phys_fn_002878,258,mapped,mem.c,282,qh_memsetup,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x0006deb0,phys_fn_002880,151,mapped,mem.c,313,qh_memsize,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x0006df50,phys_fn_002882,345,mapped,mem.c,341,qh_memstatistics,S1-string(3 uniquely-owned literal(s));S3-TU-band,
+0x0006e0b0,phys_fn_002884,393,mapped,merge.c,318,qh_appendmergeset,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x0006e240,phys_fn_002886,58,mapped,merge.c,382,qh_basevertices,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x0006e280,phys_fn_002888,145,mapped,merge.c,382,qh_basevertices,S1-string(1 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x0006e240
+0x0006e320,phys_fn_002890,93,mapped,merge.c,486,qh_checkzero,S1-string(6 uniquely-owned literal(s));S3-TU-band,
+0x0006e380,phys_fn_002892,668,mapped,merge.c,486,qh_checkzero,S1-string(6 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x0006e320
+0x0006e620,phys_fn_002894,33,mapped,merge.c,567,qh_compareangle,"S2-address-taken from 2 rows == merge.c:1176,1241;S4-shape(realT compare, +1/-1)",
+0x0006e650,phys_fn_002896,23,mapped,merge.c,579,qh_comparemerge,"S2-address-taken from 3 rows == merge.c:1178,1243 (qh_comparemerge) plus merge.c:808 (qh_comparevisit): /OPT:ICF folded qh_comparevisit (merge.c:591) into this same body",
+0x0006e670,phys_fn_002898,125,mapped,merge.c,611,qh_copynonconvex,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x0006e6f0,phys_fn_002900,74,mapped,merge.c,645,qh_degen_redundant_facet,S1-string(3 uniquely-owned literal(s));S3-TU-band,
+0x0006e740,phys_fn_002902,440,mapped,merge.c,645,qh_degen_redundant_facet,S1-string(3 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x0006e6f0
+0x0006e900,phys_fn_002904,375,mapped,merge.c,701,qh_degen_redundant_neighbors,S1-string(4 uniquely-owned literal(s));S3-TU-band,
+0x0006ea80,phys_fn_002906,421,mapped,merge.c,701,qh_degen_redundant_neighbors,S1-string(4 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x0006e900
+0x0006ec30,phys_fn_002908,186,mapped,merge.c,858,qh_findbest_test,"S2-callgraph(3 agreeing edges, 0 contradicting);S3-TU-band",
+0x0006ecf0,phys_fn_002910,424,mapped,merge.c,908,qh_findbestneighbor,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x0006eea0,phys_fn_002912,75,mapped,merge.c,1267,qh_hashridge,S2-callee qh_gethash; sole caller qh_find_newvertex,
+0x0006eef0,phys_fn_002914,181,mapped,merge.c,1310,qh_hashridge_find,S2-callees qh_gethash+qh_setequal_except; sole caller qh_find_newvertex,
+0x0006efb0,phys_fn_002916,141,mapped,merge.c,1361,qh_makeridges,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x0006f040,phys_fn_002918,206,mapped,merge.c,1361,qh_makeridges,S1-string(1 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x0006efb0
+0x0006f110,phys_fn_002920,432,mapped,merge.c,1451,qh_mark_dupridges,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x0006f2c0,phys_fn_002921,72,mapped,merge.c,1515,qh_maydropneighbor,S1-string(3 uniquely-owned literal(s));S3-TU-band,
+0x0006f310,phys_fn_002923,61,mapped,merge.c,1515,qh_maydropneighbor,S1-string(3 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x0006f2c0
+0x0006f350,phys_fn_002925,552,mapped,merge.c,1515,qh_maydropneighbor,S1-string(3 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x0006f2c0
+0x0006f580,phys_fn_002927,583,mapped,merge.c,1978,qh_mergecycle_neighbors,S1-string(3 uniquely-owned literal(s));S3-TU-band,
+0x0006f7d0,phys_fn_002929,168,mapped,merge.c,2075,qh_mergecycle_ridges,S1-string(4 uniquely-owned literal(s));S3-TU-band,
+0x0006f880,phys_fn_002931,562,mapped,merge.c,2075,qh_mergecycle_ridges,S1-string(4 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x0006f7d0
+0x0006fac0,phys_fn_002933,373,mapped,merge.c,2177,qh_mergecycle_vneighbors,S1-string(3 uniquely-owned literal(s));S3-TU-band,
+0x0006fc40,phys_fn_002935,334,mapped,merge.c,2413,qh_mergefacet2d,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x0006fd90,phys_fn_002937,258,mapped,merge.c,2488,qh_mergeneighbors,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x0006fea0,phys_fn_002939,202,mapped,merge.c,2536,qh_mergeridges,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x0006ff70,phys_fn_002941,113,mapped,merge.c,2715,qh_mergevertex_del,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x0006fff0,phys_fn_002943,154,mapped,merge.c,2741,qh_mergevertex_neighbors,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x00070090,phys_fn_002945,104,mapped,merge.c,2741,qh_mergevertex_neighbors,S1-string(2 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x0006fff0
+0x00070100,phys_fn_002947,253,mapped,merge.c,2779,qh_mergevertices,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x00070200,phys_fn_002949,104,mapped,merge.c,2779,qh_mergevertices,S1-string(1 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x00070100
+0x00070270,phys_fn_002951,29,mapped,merge.c,2832,qh_neighbor_intersections,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x00070290,phys_fn_002953,277,mapped,merge.c,2832,qh_neighbor_intersections,S1-string(1 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x00070270
+0x000703b0,phys_fn_002955,57,mapped,merge.c,2878,qh_newvertices,"S2-callgraph(5 agreeing edges, 0 contradicting);S3-TU-band",
+0x000703f0,phys_fn_002957,413,mapped,merge.c,3020,qh_remove_extravertices,S1-string(3 uniquely-owned literal(s));S3-TU-band,
+0x00070590,phys_fn_002959,280,mapped,merge.c,3142,qh_renameridgevertex,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x000706b0,phys_fn_002961,555,mapped,merge.c,3204,qh_renamevertex,S1-string(3 uniquely-owned literal(s));S3-TU-band,
+0x000708e0,phys_fn_002963,766,mapped,merge.c,3284,qh_test_appendmerge,S1-string(3 uniquely-owned literal(s));S3-TU-band,
+0x00070be0,phys_fn_002965,105,mapped,merge.c,3367,qh_test_vneighbors,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x00070c50,phys_fn_002967,224,mapped,merge.c,3367,qh_test_vneighbors,S1-string(2 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x00070be0
+0x00070d30,phys_fn_002968,343,mapped,merge.c,3403,qh_tracemerge,S1-string(3 uniquely-owned literal(s));S3-TU-band,
+0x00070e90,phys_fn_002970,190,mapped,merge.c,3452,qh_tracemerging,"S2-callgraph(3 agreeing edges, 0 contradicting);S3-TU-band",
+0x00070f50,phys_fn_002972,221,mapped,merge.c,3494,qh_updatetested,"S2-callgraph(3 agreeing edges, 0 contradicting);S3-TU-band",
+0x00071030,phys_fn_002974,132,mapped,merge.c,3578,qh_vertexridges_facet,"S2-callgraph(2 agreeing edges, 0 contradicting);S3-TU-band",
+0x000710c0,phys_fn_002976,54,mapped,merge.c,3601,qh_willdelete,"S4-shape(qh_removefacet + qh_prependfacet(&qh visible_list) + num_visible++ + visible bit 0x800 + f.replace at +0x20, exact);S2-callgraph",
+0x00071100,phys_fn_002978,464,mapped,merge.c,1142,qh_getmergeset,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x000712d0,phys_fn_002979,364,mapped,merge.c,1215,qh_getmergeset_initial,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x00071440,phys_fn_002981,244,mapped,merge.c,1920,qh_mergecycle_facets,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x00071540,phys_fn_002983,733,mapped,merge.c,2603,qh_mergesimplex,S1-string(4 uniquely-owned literal(s));S3-TU-band,
+0x00071820,phys_fn_002985,313,mapped,merge.c,2603,qh_mergesimplex,S1-string(4 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x00071540
+0x00071960,phys_fn_002987,56,mapped,merge.c,3537,qh_vertexridges,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x000719a0,phys_fn_002989,186,mapped,merge.c,3537,qh_vertexridges,S1-string(1 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x00071960
+0x00071a60,phys_fn_002991,685,mapped,merge.c,771,qh_find_newvertex,S1-string(5 uniquely-owned literal(s));S3-TU-band,
+0x00071d10,phys_fn_002993,247,mapped,merge.c,771,qh_find_newvertex,S1-string(5 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x00071a60
+0x00071e10,phys_fn_002995,583,mapped,merge.c,1742,qh_mergecycle,S1-string(6 uniquely-owned literal(s));S3-TU-band,
+0x00072060,phys_fn_002997,1320,mapped,merge.c,2262,qh_mergefacet,S1-string(8 uniquely-owned literal(s));S3-TU-band,
+0x00072590,phys_fn_002999,148,mapped,merge.c,2988,qh_redundant_vertex,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x00072630,phys_fn_003001,103,mapped,merge.c,3079,qh_rename_sharedvertex,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x000726a0,phys_fn_003003,385,mapped,merge.c,3079,qh_rename_sharedvertex,S1-string(2 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x00072630
+0x00072830,phys_fn_003005,621,mapped,merge.c,1046,qh_forcedmerges,S1-string(4 uniquely-owned literal(s));S3-TU-band,
+0x00072aa0,phys_fn_003007,108,mapped,merge.c,1046,qh_forcedmerges,S1-string(4 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x00072830
+0x00072b10,phys_fn_003009,42,mapped,merge.c,1575,qh_merge_degenredundant,S1-string(5 uniquely-owned literal(s));S3-TU-band,
+0x00072b40,phys_fn_003011,728,mapped,merge.c,1575,qh_merge_degenredundant,S1-string(5 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x00072b10
+0x00072e20,phys_fn_003013,652,mapped,merge.c,1664,qh_merge_nonconvex,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x000730b0,phys_fn_003015,173,mapped,merge.c,1832,qh_mergecycle_all,S1-string(3 uniquely-owned literal(s));S3-TU-band,
+0x00073160,phys_fn_003017,58,mapped,merge.c,1832,qh_mergecycle_all,S1-string(3 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x000730b0
+0x000731a0,phys_fn_003019,286,mapped,merge.c,1832,qh_mergecycle_all,S1-string(3 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x000730b0
+0x000732c0,phys_fn_003021,58,mapped,merge.c,2916,qh_reducevertices,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x00073300,phys_fn_003023,340,mapped,merge.c,2916,qh_reducevertices,S1-string(1 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x000732c0
+0x00073460,phys_fn_003025,137,mapped,merge.c,213,qh_all_merges,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x000734f0,phys_fn_003027,544,mapped,merge.c,213,qh_all_merges,S1-string(2 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x00073460
+0x00073710,phys_fn_003028,620,mapped,merge.c,973,qh_flippedmerges,S1-string(3 uniquely-owned literal(s));S3-TU-band,
+0x00073980,phys_fn_003030,432,mapped,merge.c,54,qh_premerge,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x00073b30,phys_fn_003031,494,mapped,merge.c,127,qh_postmerge,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x00073d20,phys_fn_003033,117,mapped,poly.c,36,qh_appendfacet,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x00073da0,phys_fn_003035,112,mapped,poly.c,70,qh_appendvertex,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x00073e10,phys_fn_003036,269,mapped,poly.c,127,qh_attachnewfacets,S1-string(3 uniquely-owned literal(s));S3-TU-band,
+0x00073f20,phys_fn_003038,367,mapped,poly.c,127,qh_attachnewfacets,S1-string(3 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x00073e10
+0x00074090,phys_fn_003040,217,mapped,poly.c,216,qh_checkflipped,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x00074170,phys_fn_003042,379,mapped,poly.c,341,qh_facetintersect,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x000742f0,phys_fn_003044,281,mapped,poly.c,402,qh_gethash,"S2-callgraph(4 agreeing edges, 0 contradicting);S3-TU-band",
+0x00074430,phys_fn_003047,13,mapped,poly.c,497,qh_makenewplanes,"S2-callgraph(2 agreeing edges, 0 contradicting);S3-TU-band",
+0x00074440,phys_fn_003049,85,mapped,poly.c,497,qh_makenewplanes,"S2-callgraph(2 agreeing edges, 0 contradicting);S3-TU-band",continuation block of the function entered at 0x00074430
+0x000744a0,phys_fn_003051,187,mapped,poly.c,929,qh_matchvertices,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x00074560,phys_fn_003053,210,mapped,poly.c,962,qh_newfacet,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x00074640,phys_fn_003055,201,mapped,poly.c,995,qh_newridge,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x00074710,phys_fn_003057,104,mapped,poly.c,1028,qh_pointid,"S2-callgraph(49 agreeing edges, 0 contradicting);S3-TU-band",
+0x00074780,phys_fn_003059,121,mapped,poly.c,1059,qh_removefacet,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x00074800,phys_fn_003061,103,mapped,poly.c,1090,qh_removevertex,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x00074870,phys_fn_003063,205,mapped,poly.c,1130,qh_updatevertices,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x00074940,phys_fn_003065,39,mapped,poly.c,1130,qh_updatevertices,S1-string(2 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x00074870
+0x00074970,phys_fn_003067,418,mapped,poly.c,1130,qh_updatevertices,S1-string(2 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x00074870
+0x00074b20,phys_fn_003069,341,mapped,poly.c,245,qh_delfacet,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x00074c80,phys_fn_003071,234,mapped,poly.c,290,qh_deletevisible,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x00074d70,phys_fn_003073,39,mapped,poly.c,290,qh_deletevisible,S1-string(2 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x00074c80
+0x00074da0,phys_fn_003075,125,mapped,poly.c,463,qh_makenewfacet,"S2-callgraph(6 agreeing edges, 0 contradicting);S3-TU-band",
+0x00074e20,phys_fn_003077,584,mapped,poly.c,547,qh_makenew_nonsimplicial,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x00075070,phys_fn_003079,42,mapped,poly.c,644,qh_makenew_simplicial,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x000750a0,phys_fn_003081,282,mapped,poly.c,644,qh_makenew_simplicial,S1-string(1 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x00075070
+0x000751c0,phys_fn_003083,883,mapped,poly.c,708,qh_matchneighbor,S1-string(8 uniquely-owned literal(s));S3-TU-band,
+0x00075540,phys_fn_003085,793,mapped,poly.c,820,qh_matchnewfacets,S1-string(3 uniquely-owned literal(s));S3-TU-band;S1-note(1 literal(s) of qh_checkflipped also present -> inlined there),
+0x00075860,phys_fn_003087,73,mapped,poly2.c,24,qh_addhash,"S4-shape(open-addressed hash insert with wrap-around, exact);S2-caller qh_matchneighbor",
+0x000758b0,phys_fn_003089,1301,mapped,poly2.c,427,qh_checkconvex,S1-string(12 uniquely-owned literal(s));S3-TU-band,
+0x00075dd0,phys_fn_003091,215,mapped,poly2.c,783,qh_checkflipped_all,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x00075eb0,phys_fn_003093,300,mapped,poly2.c,953,qh_checkvertex,S1-string(3 uniquely-owned literal(s));S3-TU-band,
+0x00075fe0,phys_fn_003095,131,mapped,poly2.c,992,qh_clearcenters,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x00076070,phys_fn_003097,77,mapped,poly2.c,1076,qh_delridge,"S2-callgraph(2 agreeing edges, 0 contradicting);S3-TU-band",
+0x000760c0,phys_fn_003099,52,mapped,poly2.c,1096,qh_delvertex,"S2-callgraph(5 agreeing edges, 0 contradicting);S3-TU-band",
+0x00076100,phys_fn_003101,207,mapped,poly2.c,1565,qh_furthestout,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x000761d0,phys_fn_003103,41,mapped,poly2.c,1596,qh_infiniteloop,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x00076200,phys_fn_003105,42,mapped,poly2.c,1917,qh_isvertex,"S4-shape(FOREACHvertex_ scan comparing vertex->point at +8, exact);S2-caller qh_initbuild",
+0x00076230,phys_fn_003107,221,mapped,poly2.c,2030,qh_matchduplicates,S1-string(8 uniquely-owned literal(s));S3-TU-band,
+0x00076310,phys_fn_003109,767,mapped,poly2.c,2030,qh_matchduplicates,S1-string(8 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x00076230
+0x00076610,phys_fn_003111,282,mapped,poly2.c,2140,qh_nearcoplanar,"S2-callgraph(4 agreeing edges, 0 contradicting);S3-TU-band",
+0x00076730,phys_fn_003113,428,mapped,poly2.c,2190,qh_nearvertex,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x000768e0,phys_fn_003115,76,mapped,poly2.c,2242,qh_newhashtable,"S2-callgraph(3 agreeing edges, 0 contradicting);S3-TU-band",
+0x00076930,phys_fn_003117,210,mapped,poly2.c,2263,qh_newvertex,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x00076a10,phys_fn_003119,110,mapped,poly2.c,2298,qh_nextridge3d,S2-callers == io.c:2531(qh_printfacetridges) and poly2.c:1141(qh_facet3vertex),
+0x00076a80,phys_fn_003121,184,mapped,poly2.c,2347,qh_outcoplanar,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x00076b40,phys_fn_003123,73,mapped,poly2.c,2376,qh_point,"S4-shape(id<0 -> NULL; id<num_points -> first_point+id*hull_dim; else SETelemt_(other_points,id) via qh_setsize, exact);S2-callee qh_setsize",
+0x00076b90,phys_fn_003125,147,mapped,poly2.c,2400,qh_point_add,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x00076c30,phys_fn_003127,237,mapped,poly2.c,2440,qh_pointfacet,"S2-callgraph(5 agreeing edges, 0 contradicting);S3-TU-band",
+0x00076d20,phys_fn_003129,83,mapped,poly2.c,2477,qh_pointvertex,"S2-callgraph(6 agreeing edges, 0 contradicting);S3-TU-band",
+0x00076d80,phys_fn_003131,138,mapped,poly2.c,2504,qh_prependfacet,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x00076e10,phys_fn_003133,184,mapped,poly2.c,2543,qh_printhashtable,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x00076ed0,phys_fn_003135,220,mapped,poly2.c,2543,qh_printhashtable,S1-string(1 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x00076e10
+0x00076fb0,phys_fn_003137,360,mapped,poly2.c,2581,qh_printlists,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x00077120,phys_fn_003139,29,mapped,poly2.c,2615,qh_resetlists,"S2-callgraph(4 agreeing edges, 0 contradicting);S3-TU-band",
+0x00077140,phys_fn_003141,216,mapped,poly2.c,2615,qh_resetlists,"S2-callgraph(4 agreeing edges, 0 contradicting);S3-TU-band",continuation block of the function entered at 0x00077120
+0x00077220,phys_fn_003143,640,mapped,poly2.c,2875,qh_triangulate_facet,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x000774a0,phys_fn_003144,212,mapped,poly2.c,2944,qh_triangulate_link,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x00077580,phys_fn_003146,143,mapped,poly2.c,2975,qh_triangulate_mirror,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x00077610,phys_fn_003148,45,mapped,poly2.c,3050,qh_vertexintersect_new,"S2-callgraph(3 agreeing edges, 0 contradicting);S3-TU-band",
+0x00077640,phys_fn_003150,71,mapped,poly2.c,3050,qh_vertexintersect_new,"S2-callgraph(3 agreeing edges, 0 contradicting);S3-TU-band",continuation block of the function entered at 0x00077610
+0x00077690,phys_fn_003152,176,mapped,poly2.c,3089,qh_vertexneighbors,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x00077740,phys_fn_003153,520,mapped,poly2.c,166,qh_check_maxout,S1-string(5 uniquely-owned literal(s));S3-TU-band,
+0x00077950,phys_fn_003155,594,mapped,poly2.c,166,qh_check_maxout,S1-string(5 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x00077740
+0x00077bb0,phys_fn_003157,2154,mapped,poly2.c,579,qh_checkfacet,S1-string(24 uniquely-owned literal(s));S3-TU-band,
+0x00078420,phys_fn_003159,198,mapped,poly2.c,579,qh_checkfacet,S1-string(24 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x00077bb0
+0x000784f0,phys_fn_003161,845,mapped,poly2.c,830,qh_checkpolygon,S1-string(10 uniquely-owned literal(s));S3-TU-band,
+0x00078840,phys_fn_003163,304,mapped,poly2.c,830,qh_checkpolygon,S1-string(10 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x000784f0
+0x00078970,phys_fn_003164,285,mapped,poly2.c,1032,qh_createsimplex,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x00078a90,phys_fn_003166,99,mapped,poly2.c,1032,qh_createsimplex,S1-string(1 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x00078970
+0x00078b00,phys_fn_003168,336,mapped,poly2.c,1119,qh_facet3vertex,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x00078c50,phys_fn_003169,202,mapped,poly2.c,1228,qh_findbestlower,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x00078d20,phys_fn_003171,199,mapped,poly2.c,1228,qh_findbestlower,S1-string(1 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x00078c50
+0x00078df0,phys_fn_003173,708,mapped,poly2.c,1352,qh_findgood,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x000790c0,phys_fn_003175,185,mapped,poly2.c,1452,qh_findgood_all,S1-string(5 uniquely-owned literal(s));S3-TU-band,
+0x00079180,phys_fn_003177,464,mapped,poly2.c,1452,qh_findgood_all,S1-string(5 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x000790c0
+0x00079350,phys_fn_003178,148,mapped,poly2.c,1522,qh_furthestnext,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x000793f0,phys_fn_003180,710,mapped,poly2.c,1746,qh_initialhull,S1-string(6 uniquely-owned literal(s));S3-TU-band,
+0x000796c0,phys_fn_003182,83,mapped,poly2.c,1746,qh_initialhull,S1-string(6 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x000793f0
+0x00079720,phys_fn_003184,1111,mapped,poly2.c,1834,qh_initialvertices,S2-callgraph(9 agreeing edges: qh_settemp/qh_maxsimplex/qh_rand/qh_detsimplex/qh_newvertex/qh_setaddnth/qh_setdellast/qh_setin/qh_setsize/qh_settempfree; sole caller qh_initbuild);S3-TU-band,
+0x00079b80,phys_fn_003186,353,mapped,poly2.c,1962,qh_makenewfacets,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x00079cf0,phys_fn_003188,264,mapped,poly2.c,2696,qh_triangulate,S1-string(11 uniquely-owned literal(s));S3-TU-band;S1-note(1 literal(s) of qh_triangulate_null also present -> inlined there),
+0x00079e00,phys_fn_003190,429,mapped,poly2.c,2696,qh_triangulate,S1-string(11 uniquely-owned literal(s));S3-TU-band;S1-note(1 literal(s) of qh_triangulate_null also present -> inlined there),continuation block of the function entered at 0x00079cf0
+0x00079fb0,phys_fn_003192,157,mapped,poly2.c,2696,qh_triangulate,S1-string(11 uniquely-owned literal(s));S3-TU-band;S1-note(1 literal(s) of qh_triangulate_null also present -> inlined there),continuation block of the function entered at 0x00079cf0
+0x0007a050,phys_fn_003194,540,mapped,poly2.c,2696,qh_triangulate,S1-string(11 uniquely-owned literal(s));S3-TU-band;S1-note(1 literal(s) of qh_triangulate_null also present -> inlined there),continuation block of the function entered at 0x00079cf0
+0x0007a270,phys_fn_003196,41,mapped,poly2.c,3032,qh_vertexintersect,"S2-callgraph(4 agreeing edges, 0 contradicting);S3-TU-band",
+0x0007a2a0,phys_fn_003198,137,mapped,poly2.c,250,qh_check_output,"S2-callees qh_checkconvex+qh_checkflipped_all+qh_checkpolygon+qh_newstats; called by the NovodeX driver 0x0007d420 right after qh_qhull, matching qh_new_qhull ordering",
+0x0007a330,phys_fn_003200,1274,mapped,poly2.c,1627,qh_initbuild,S1-string(5 uniquely-owned literal(s));S3-TU-band,
+0x0007a830,phys_fn_003202,848,mapped,qhull.c,433,qh_buildtracing,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x0007ab80,phys_fn_003203,48,mapped,qhull.c,515,qh_errexit2,"S2-callgraph(14 agreeing edges, 0 contradicting);S3-TU-band",
+0x0007abb0,phys_fn_003204,622,mapped,qhull.c,656,qh_nextfurthest,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x0007ae20,phys_fn_003206,93,mapped,qhull.c,1174,qh_precision,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x0007ae80,phys_fn_003208,109,mapped,qhull.c,1198,qh_printsummary,S1-string(49 uniquely-owned literal(s));S3-TU-band,
+0x0007aef0,phys_fn_003210,2490,mapped,qhull.c,1198,qh_printsummary,S1-string(49 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x0007ae80
+0x0007b8b0,phys_fn_003212,1087,mapped,qhull.c,550,qh_findhorizon,S1-string(9 uniquely-owned literal(s));S3-TU-band;S1-note(1 literal(s) of qh_precision also present -> inlined there),
+0x0007bcf0,phys_fn_003214,754,mapped,qhull.c,999,qh_partitionpoint,S1-string(5 uniquely-owned literal(s));S3-TU-band,
+0x0007bff0,phys_fn_003216,89,mapped,qhull.c,771,qh_partitionall,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x0007c050,phys_fn_003218,333,mapped,qhull.c,771,qh_partitionall,S1-string(1 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x0007bff0
+0x0007c1a0,phys_fn_003220,514,mapped,qhull.c,771,qh_partitionall,S1-string(1 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x0007bff0
+0x0007c3b0,phys_fn_003222,835,mapped,qhull.c,890,qh_partitioncoplanar,S1-string(5 uniquely-owned literal(s));S3-TU-band,
+0x0007c700,phys_fn_003224,333,mapped,qhull.c,1111,qh_partitionvisible,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x0007c850,phys_fn_003226,174,mapped,qhull.c,1111,qh_partitionvisible,S1-string(2 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x0007c700
+0x0007c900,phys_fn_003228,1143,mapped,qhull.c,166,qh_addpoint,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x0007cd80,phys_fn_003230,504,mapped,qhull.c,362,qh_buildhull,S1-string(6 uniquely-owned literal(s));S3-TU-band,
+0x0007cf80,phys_fn_003232,509,mapped,qhull.c,287,qh_build_withrestart,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x0007d180,phys_fn_003234,657,mapped,qhull.c,58,qh_qhull,S1-string(6 uniquely-owned literal(s));S3-TU-band,
+0x0007d420,phys_fn_003236,214,unmapped,,,,no qhull counterpart: NovodeX-authored block NOVODEX-A,band=NOVODEX-A
+0x0007d500,phys_fn_003238,106,unmapped,,,,no qhull counterpart: NovodeX-authored block NOVODEX-A,band=NOVODEX-A
+0x0007d570,phys_fn_003240,32,unmapped,,,,no qhull counterpart: NovodeX-authored block NOVODEX-A,band=NOVODEX-A
+0x0007d590,phys_fn_003241,31,unmapped,,,,no qhull counterpart: NovodeX-authored block NOVODEX-A,band=NOVODEX-A
+0x0007d5b0,phys_fn_003243,933,unmapped,,,,no qhull counterpart: NovodeX-authored block NOVODEX-A,band=NOVODEX-A
+0x0007d960,phys_fn_003245,1331,unmapped,,,,no qhull counterpart: NovodeX-authored block NOVODEX-A,continuation block of the function entered at 0x0007d5b0; band=NOVODEX-A
+0x0007dea0,phys_fn_003247,121,unmapped,,,,no qhull counterpart: NovodeX-authored block NOVODEX-A,band=NOVODEX-A
+0x0007df20,phys_fn_003249,299,unmapped,,,,no qhull counterpart: NovodeX-authored block NOVODEX-A,continuation block of the function entered at 0x0007dea0; band=NOVODEX-A
+0x0007e050,phys_fn_003251,158,unmapped,,,,no qhull counterpart: NovodeX-authored block NOVODEX-A,band=NOVODEX-A
+0x0007e0f0,phys_fn_003253,526,unmapped,,,,no qhull counterpart: NovodeX-authored block NOVODEX-A,band=NOVODEX-A
+0x0007e300,phys_fn_003255,99,unmapped,,,,no qhull counterpart: NovodeX-authored block NOVODEX-A,band=NOVODEX-A
+0x0007e370,phys_fn_003257,95,unmapped,,,,no qhull counterpart: NovodeX-authored block NOVODEX-A,band=NOVODEX-A
+0x0007e3d0,phys_fn_003259,210,unmapped,,,,no qhull counterpart: NovodeX-authored block NOVODEX-A,band=NOVODEX-A
+0x0007e4b0,phys_fn_003261,43,unmapped,,,,no qhull counterpart: NovodeX-authored block NOVODEX-A,band=NOVODEX-A
+0x0007e4e0,phys_fn_003263,60,unmapped,,,,no qhull counterpart: NovodeX-authored block NOVODEX-A,band=NOVODEX-A
+0x0007e520,phys_fn_003265,23,unmapped,,,,no qhull counterpart: NovodeX-authored block NOVODEX-A,band=NOVODEX-A
+0x0007e540,phys_fn_003267,32,unmapped,,,,no qhull counterpart: NovodeX-authored block NOVODEX-A,band=NOVODEX-A
+0x0007e560,phys_fn_003268,210,unmapped,,,,no qhull counterpart: NovodeX-authored block NOVODEX-A,band=NOVODEX-A
+0x0007e640,phys_fn_003270,454,unmapped,,,,no qhull counterpart: NovodeX-authored block NOVODEX-A,band=NOVODEX-A
+0x0007e810,phys_fn_003272,222,unmapped,,,,no qhull counterpart: NovodeX-authored block NOVODEX-A,band=NOVODEX-A
+0x0007e8f0,phys_fn_003274,48,unmapped,,,,no qhull counterpart: NovodeX-authored block NOVODEX-A,band=NOVODEX-A
+0x0007e920,phys_fn_003275,92,unmapped,,,,no qhull counterpart: NovodeX-authored block NOVODEX-A,band=NOVODEX-A
+0x0007e980,phys_fn_003277,130,unmapped,,,,no qhull counterpart: NovodeX-authored block NOVODEX-A,band=NOVODEX-A
+0x0007ea10,phys_fn_003279,819,unmapped,,,,no qhull counterpart: NovodeX-authored block NOVODEX-A,band=NOVODEX-A
+0x0007ed50,phys_fn_003281,89,mapped,qset.c,335,qh_setdel,"S2-callgraph(17 agreeing edges, 0 contradicting);S3-TU-band",
+0x0007edb0,phys_fn_003283,63,mapped,qset.c,374,qh_setdellast,"S2-callgraph(6 agreeing edges, 0 contradicting);S3-TU-band",
+0x0007edf0,phys_fn_003285,92,mapped,qset.c,493,qh_setdelsorted,"S2-callgraph(5 agreeing edges, 0 contradicting);S3-TU-band",
+0x0007ee50,phys_fn_003287,86,mapped,qset.c,561,qh_setequal,"S2-callgraph(2 agreeing edges, 0 contradicting);S3-TU-band",
+0x0007eeb0,phys_fn_003289,115,mapped,qset.c,599,qh_setequal_except,S2-sole caller qh_hashridge_find(merge.c:1310),
+0x0007ef30,phys_fn_003291,86,mapped,qset.c,647,qh_setequal_skip,"S2-callgraph(2 agreeing edges, 0 contradicting);S3-TU-band",
+0x0007ef90,phys_fn_003293,89,mapped,qset.c,686,qh_setfree,"S2-callgraph(22 agreeing edges, 0 contradicting);S3-TU-band",
+0x0007eff0,phys_fn_003295,48,mapped,qset.c,740,qh_setfreelong,"S2-callgraph(2 agreeing edges, 0 contradicting);S3-TU-band",
+0x0007f020,phys_fn_003296,43,mapped,qset.c,765,qh_setin,"S2-callgraph(10 agreeing edges, 0 contradicting);S3-TU-band",
+0x0007f050,phys_fn_003298,68,mapped,qset.c,790,qh_setindex,"S4-shape(SETreturnsize_ then linear scan returning index or -1, exact);S2-callgraph",
+0x0007f0a0,phys_fn_003300,36,mapped,qset.c,861,qh_setlast,"S4-shape(size==0 -> e[maxsize-1]; size>1 -> e[size-2]; else NULL, exact);S2-callgraph",
+0x0007f0d0,phys_fn_003302,156,mapped,qset.c,890,qh_setnew,"S2-callgraph(9 agreeing edges, 0 contradicting);S3-TU-band",
+0x0007f170,phys_fn_003304,165,mapped,qset.c,1015,qh_setprint,S1-string(3 uniquely-owned literal(s));S3-TU-band,
+0x0007f220,phys_fn_003306,122,mapped,qset.c,1046,qh_setreplace,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x0007f2a0,phys_fn_003308,98,mapped,qset.c,1076,qh_setsize,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x0007f310,phys_fn_003310,106,mapped,qset.c,714,qh_setfree2,"S2-callgraph(2 agreeing edges, 0 contradicting);S3-TU-band",
+0x0007f380,phys_fn_003312,188,mapped,qset.c,1185,qh_settemppop,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x0007f440,phys_fn_003314,93,mapped,qset.c,1236,qh_settruncate,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x0007f4a0,phys_fn_003316,125,mapped,qset.c,1288,qh_setzero,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x0007f520,phys_fn_003318,158,mapped,qset.c,225,qh_setcheck,S1-string(2 uniquely-owned literal(s));S3-TU-band,
+0x0007f5c0,phys_fn_003320,76,mapped,qset.c,267,qh_setcompact,"S2-callgraph(6 agreeing edges, 0 contradicting);S3-TU-band",
+0x0007f610,phys_fn_003322,82,mapped,qset.c,301,qh_setcopy,"S2-callgraph(2 agreeing edges, 0 contradicting);S3-TU-band",
+0x0007f670,phys_fn_003324,121,mapped,qset.c,414,qh_setdelnth,"S2-callgraph(6 agreeing edges, 0 contradicting);S3-TU-band",
+0x0007f6f0,phys_fn_003326,139,mapped,qset.c,455,qh_setdelnthsorted,"S1-literal ""qhull internal error (qh_setaddnth): nth %d is out-of-bounds for set:"" (qhull copy-paste bug, shared with qh_setaddnth);S2-callees qh_setprint+qh_errexit, caller qh_renameridgevertex",
+0x0007f780,phys_fn_003328,185,mapped,qset.c,822,qh_setlarger,S2-callers == exactly the 5 qset.c functions that call qh_setlarger,
+0x0007f840,phys_fn_003330,325,mapped,qset.c,933,qh_setnew_delnthsorted,"S2-callgraph(9 agreeing edges, 0 contradicting);S3-TU-band",
+0x0007f9b0,phys_fn_003332,171,mapped,qset.c,59,qh_setaddnth,"S1-string(""qhull internal error (qh_setaddnth)..."");S2-callgraph(9 agreeing edges)",
+0x0007fa60,phys_fn_003334,70,mapped,qset.c,128,qh_setappend,"S4-shape(qh_setlarger on full/absent set then *endp++=newelem, *endp=NULL, exact);S2-callgraph(50 agreeing caller edges)",
+0x0007fab0,phys_fn_003336,159,mapped,qset.c,157,qh_setappend_set,"S2-callgraph(4 agreeing edges, 0 contradicting);S3-TU-band",
+0x0007fb50,phys_fn_003338,73,mapped,qset.c,199,qh_setappend2ndlast,"S4-shape(shifts last element up and writes newelem into the vacated 2nd-last slot, exact);S2-callgraph",
+0x0007fba0,phys_fn_003340,145,mapped,qset.c,1110,qh_settemp,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x0007fc40,phys_fn_003342,145,mapped,qset.c,1211,qh_settemppush,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x0007fce0,phys_fn_003344,58,mapped,qset.c,1260,qh_setunique,"S2-callgraph(4 agreeing edges, 0 contradicting);S3-TU-band",
+0x0007fd20,phys_fn_003346,128,mapped,qset.c,1138,qh_settempfree,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x0007fda0,phys_fn_003347,125,unmapped,,,,no qhull counterpart: NovodeX-authored block NOVODEX-B,band=NOVODEX-B
+0x0007fe20,phys_fn_003349,1145,unmapped,,,,no qhull counterpart: NovodeX-authored block NOVODEX-B,continuation block of the function entered at 0x0007fda0; band=NOVODEX-B
+0x000802a0,phys_fn_003351,351,unmapped,,,,no qhull counterpart: NovodeX-authored block NOVODEX-B,continuation block of the function entered at 0x0007fda0; band=NOVODEX-B
+0x00080400,phys_fn_003353,138,unmapped,,,,no qhull counterpart: NovodeX-authored block NOVODEX-B,band=NOVODEX-B
+0x00080490,phys_fn_003355,210,unmapped,,,,no qhull counterpart: NovodeX-authored block NOVODEX-B,band=NOVODEX-B
+0x00080570,phys_fn_003357,261,unmapped,,,,no qhull counterpart: NovodeX-authored block NOVODEX-B,band=NOVODEX-B
+0x00080680,phys_fn_003359,245,unmapped,,,,no qhull counterpart: NovodeX-authored block NOVODEX-B,band=NOVODEX-B
+0x00080780,phys_fn_003361,405,unmapped,,,,no qhull counterpart: NovodeX-authored block NOVODEX-B,band=NOVODEX-B
+0x00080920,phys_fn_003363,486,unmapped,,,,no qhull counterpart: NovodeX-authored block NOVODEX-B,band=NOVODEX-B
+0x00080b10,phys_fn_003365,235,unmapped,,,,no qhull counterpart: NovodeX-authored block NOVODEX-B,band=NOVODEX-B
+0x00080c00,phys_fn_003367,648,unmapped,,,,no qhull counterpart: NovodeX-authored block NOVODEX-B,band=NOVODEX-B
+0x00080e90,phys_fn_003369,93,unmapped,,,,no qhull counterpart: NovodeX-authored block NOVODEX-B,band=NOVODEX-B
+0x00080ef0,phys_fn_003371,1536,unmapped,,,,no qhull counterpart: NovodeX-authored block NOVODEX-B,continuation block of the function entered at 0x00080e90; band=NOVODEX-B
+0x000814f0,phys_fn_003372,776,mapped,stat.c,34,qh_allstatA,S1-string(17 uniquely-owned literal(s));S3-TU-band,
+0x00081800,phys_fn_003374,1197,mapped,stat.c,58,qh_allstatB,S1-string(25 uniquely-owned literal(s));S3-TU-band,
+0x00081cb0,phys_fn_003376,1298,mapped,stat.c,88,qh_allstatC,S1-string(28 uniquely-owned literal(s));S3-TU-band,
+0x000821d0,phys_fn_003378,832,mapped,stat.c,120,qh_allstatD,S1-string(14 uniquely-owned literal(s));S3-TU-band,
+0x00082510,phys_fn_003379,761,mapped,stat.c,141,qh_allstatE,S1-string(18 uniquely-owned literal(s));S3-TU-band,
+0x00082810,phys_fn_003381,682,mapped,stat.c,161,qh_allstatE2,S1-string(16 uniquely-owned literal(s));S3-TU-band,
+0x00082ac0,phys_fn_003383,1166,mapped,stat.c,180,qh_allstatF,S1-string(27 uniquely-owned literal(s));S3-TU-band,
+0x00082f50,phys_fn_003385,878,mapped,stat.c,209,qh_allstatG,S1-string(9 uniquely-owned literal(s));S3-TU-band,
+0x000832c0,phys_fn_003387,1068,mapped,stat.c,232,qh_allstatH,S1-string(24 uniquely-owned literal(s));S3-TU-band,
+0x000836f0,phys_fn_003389,880,mapped,stat.c,261,qh_allstatI,S1-string(18 uniquely-owned literal(s));S3-TU-band,
+0x00083a60,phys_fn_003390,17,mapped,stat.c,292,qh_allstatistics,S3-ZEND=221 clear loop over qhstat.printed;S4-shape,
+0x00083a80,phys_fn_003392,378,mapped,stat.c,307,qh_collectstatistics,"S2-callgraph(4 agreeing edges, 0 contradicting);S3-TU-band",
+0x00083c00,phys_fn_003394,805,mapped,stat.c,307,qh_collectstatistics,"S2-callgraph(4 agreeing edges, 0 contradicting);S3-TU-band",continuation block of the function entered at 0x00083a80
+0x00083f30,phys_fn_003396,689,mapped,stat.c,438,qh_initstatistics,S1-string(1 uniquely-owned literal(s));S3-TU-band,
+0x000841f0,phys_fn_003398,74,probable,stat.c,526,qh_nostatistic,"S2-callgraph(1 agreeing, 0 contradicting);S3-TU-band",
+0x00084240,phys_fn_003400,401,mapped,stat.c,622,qh_printstatlevel,S1-string(5 uniquely-owned literal(s));S3-TU-band,
+0x000843e0,phys_fn_003402,39,mapped,stat.c,504,qh_newstats,"S2-callgraph(2 agreeing edges, 0 contradicting);S3-TU-band",
+0x00084410,phys_fn_003404,130,mapped,stat.c,504,qh_newstats,"S2-callgraph(2 agreeing edges, 0 contradicting);S3-TU-band",continuation block of the function entered at 0x000843e0
+0x000844a0,phys_fn_003406,103,mapped,stat.c,659,qh_printstats,"S2-callgraph(3 agreeing edges, 0 contradicting);S3-TU-band",
+0x00084510,phys_fn_003408,566,mapped,stat.c,562,qh_printstatistics,S1-string(7 uniquely-owned literal(s));S3-TU-band,
+0x00084750,phys_fn_003410,116,mapped,stat.c,562,qh_printstatistics,S1-string(7 uniquely-owned literal(s));S3-TU-band,continuation block of the function entered at 0x00084510
+0x000847d0,phys_fn_003412,48,mapped,stat.c,543,qh_printallstatistics,"S2-callgraph(4 agreeing edges, 0 contradicting);S3-TU-band",
+0x00084800,phys_fn_003413,17,mapped,user.c,189,qh_errexit,"S2-69 qhull callers, 3-arg (exitcode,facet,ridge);S5-arity. Body replaced by a virtual call [vtable+0x20] on the NovodeX object at .data:0x00125080",
+0x00084820,phys_fn_003415,390,mapped,user.c,251,qh_errprint,S1-string(5 uniquely-owned literal(s));S3-TU-band,
+0x000849b0,phys_fn_003417,148,mapped,user.c,299,qh_printfacetlist,"S2-callgraph(8 agreeing edges, 0 contradicting);S3-TU-band",

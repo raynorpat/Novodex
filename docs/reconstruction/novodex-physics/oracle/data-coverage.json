@@ -1,0 +1,657 @@
+{
+  "schema_version": 1,
+  "classes": [
+    "relocation_metadata",
+    "export_directory",
+    "resource",
+    "import_address_table",
+    "dispatch_table",
+    "pointer_slot",
+    "string",
+    "ghidra_data",
+    "code_addressed_global"
+  ],
+  "referenced_addresses": 4670,
+  "explained_referenced_bytes": 95822,
+  "bounded_referenced_bytes": 78621,
+  "unexplained_referenced_bytes": 0,
+  "unexplained_referenced_addresses": 0,
+  "unexplained_addresses": [],
+  "overlaps": 0,
+  "objects_by_type": {
+    "ascii_blob": 1,
+    "code_addressed_global": 2367,
+    "derived_switch_table": 6,
+    "dispatch_table": 131,
+    "export_directory": 1,
+    "ghidra_data": 1308,
+    "import_address_table": 110,
+    "pointer_slot": 43,
+    "relocation_metadata": 1,
+    "string": 1128,
+    "switch_table": 42
+  },
+  "bytes_by_type": {
+    "code_addressed_global": 78621,
+    "dispatch_table": 9748,
+    "export_directory": 1293,
+    "ghidra_data": 3291,
+    "import_address_table": 440,
+    "pointer_slot": 172,
+    "relocation_metadata": 46016,
+    "string": 35006
+  },
+  "dispatch_table_bytes_without_a_recorded_reference": 144,
+  "references_outside_the_image": [
+    {
+      "rva": "0xefdfffff",
+      "from": "0x00072405",
+      "reason": "no mapped section of the image covers it"
+    },
+    {
+      "rva": "0x70000002",
+      "from": "0x00089a1e",
+      "reason": "no mapped section of the image covers it"
+    },
+    {
+      "rva": "0xefdff000",
+      "from": "0x000f612d",
+      "reason": "no mapped section of the image covers it"
+    },
+    {
+      "rva": "0xefdff000",
+      "from": "0x000f61c6",
+      "reason": "no mapped section of the image covers it"
+    },
+    {
+      "rva": "0xefdff000",
+      "from": "0x000f8afd",
+      "reason": "no mapped section of the image covers it"
+    },
+    {
+      "rva": "0xefdff000",
+      "from": "0x000f8b2c",
+      "reason": "no mapped section of the image covers it"
+    },
+    {
+      "rva": "0xefdff000",
+      "from": "0x000f8b36",
+      "reason": "no mapped section of the image covers it"
+    },
+    {
+      "rva": "0xefdff000",
+      "from": "0x000fd8c9",
+      "reason": "no mapped section of the image covers it"
+    },
+    {
+      "rva": "0xefdff000",
+      "from": "0x000fd8d0",
+      "reason": "no mapped section of the image covers it"
+    },
+    {
+      "rva": "0xefdff000",
+      "from": "0x000fd914",
+      "reason": "no mapped section of the image covers it"
+    },
+    {
+      "rva": "0xefdff018",
+      "from": "0x000ff5b8",
+      "reason": "no mapped section of the image covers it"
+    },
+    {
+      "rva": "0xefdff000",
+      "from": "0x000ff5be",
+      "reason": "no mapped section of the image covers it"
+    },
+    {
+      "rva": "0xefdff008",
+      "from": "0x000ff5c4",
+      "reason": "no mapped section of the image covers it"
+    },
+    {
+      "rva": "0xefdff004",
+      "from": "0x000ff5ce",
+      "reason": "no mapped section of the image covers it"
+    },
+    {
+      "rva": "0xefdff000",
+      "from": "0xefdff018",
+      "reason": "no mapped section of the image covers it"
+    }
+  ],
+  "vtables": [],
+  "rtti": [],
+  "dispatch_structures": {
+    "vtables_recovered": 0,
+    "rtti_records_recovered": 0,
+    "pointer_tables_recovered": 131,
+    "pointer_table_slots": 2437,
+    "pointer_tables": [
+      {
+        "rva": "0x001043d0",
+        "slots": 87
+      },
+      {
+        "rva": "0x00104530",
+        "slots": 88
+      },
+      {
+        "rva": "0x00105800",
+        "slots": 48
+      },
+      {
+        "rva": "0x00105988",
+        "slots": 67
+      },
+      {
+        "rva": "0x00105a98",
+        "slots": 68
+      },
+      {
+        "rva": "0x00106304",
+        "slots": 4
+      },
+      {
+        "rva": "0x00106414",
+        "slots": 3
+      },
+      {
+        "rva": "0x0010656c",
+        "slots": 3
+      },
+      {
+        "rva": "0x00106944",
+        "slots": 4
+      },
+      {
+        "rva": "0x00106a58",
+        "slots": 41
+      },
+      {
+        "rva": "0x00106b20",
+        "slots": 19
+      },
+      {
+        "rva": "0x00106c2c",
+        "slots": 15
+      },
+      {
+        "rva": "0x00106c88",
+        "slots": 31
+      },
+      {
+        "rva": "0x00106d08",
+        "slots": 35
+      },
+      {
+        "rva": "0x00106dc8",
+        "slots": 36
+      },
+      {
+        "rva": "0x00106e78",
+        "slots": 37
+      },
+      {
+        "rva": "0x00106f40",
+        "slots": 38
+      },
+      {
+        "rva": "0x00106ff8",
+        "slots": 33
+      },
+      {
+        "rva": "0x001070b0",
+        "slots": 34
+      },
+      {
+        "rva": "0x00107158",
+        "slots": 34
+      },
+      {
+        "rva": "0x00107218",
+        "slots": 35
+      },
+      {
+        "rva": "0x001072c8",
+        "slots": 33
+      },
+      {
+        "rva": "0x00107388",
+        "slots": 34
+      },
+      {
+        "rva": "0x00107430",
+        "slots": 17
+      },
+      {
+        "rva": "0x00107494",
+        "slots": 12
+      },
+      {
+        "rva": "0x00107528",
+        "slots": 19
+      },
+      {
+        "rva": "0x00107630",
+        "slots": 18
+      },
+      {
+        "rva": "0x0010767c",
+        "slots": 4
+      },
+      {
+        "rva": "0x0010769c",
+        "slots": 4
+      },
+      {
+        "rva": "0x00107724",
+        "slots": 4
+      },
+      {
+        "rva": "0x00107848",
+        "slots": 4
+      },
+      {
+        "rva": "0x0010785c",
+        "slots": 8
+      },
+      {
+        "rva": "0x00107890",
+        "slots": 4
+      },
+      {
+        "rva": "0x0010829c",
+        "slots": 13
+      },
+      {
+        "rva": "0x0010833c",
+        "slots": 10
+      },
+      {
+        "rva": "0x001085d4",
+        "slots": 12
+      },
+      {
+        "rva": "0x00108608",
+        "slots": 19
+      },
+      {
+        "rva": "0x00108740",
+        "slots": 2
+      },
+      {
+        "rva": "0x0010878c",
+        "slots": 8
+      },
+      {
+        "rva": "0x00108818",
+        "slots": 6
+      },
+      {
+        "rva": "0x0010886c",
+        "slots": 2
+      },
+      {
+        "rva": "0x00108894",
+        "slots": 2
+      },
+      {
+        "rva": "0x00113614",
+        "slots": 9
+      },
+      {
+        "rva": "0x00115f48",
+        "slots": 97
+      },
+      {
+        "rva": "0x00116630",
+        "slots": 69
+      },
+      {
+        "rva": "0x00116798",
+        "slots": 33
+      },
+      {
+        "rva": "0x001178f8",
+        "slots": 4
+      },
+      {
+        "rva": "0x00117920",
+        "slots": 3
+      },
+      {
+        "rva": "0x00117948",
+        "slots": 9
+      },
+      {
+        "rva": "0x001179ac",
+        "slots": 6
+      },
+      {
+        "rva": "0x001179e4",
+        "slots": 4
+      },
+      {
+        "rva": "0x00117a44",
+        "slots": 3
+      },
+      {
+        "rva": "0x00118274",
+        "slots": 15
+      },
+      {
+        "rva": "0x001182b4",
+        "slots": 12
+      },
+      {
+        "rva": "0x001192cc",
+        "slots": 10
+      },
+      {
+        "rva": "0x00119570",
+        "slots": 16
+      },
+      {
+        "rva": "0x00119840",
+        "slots": 14
+      },
+      {
+        "rva": "0x00119948",
+        "slots": 13
+      },
+      {
+        "rva": "0x00119a50",
+        "slots": 13
+      },
+      {
+        "rva": "0x00119b48",
+        "slots": 13
+      },
+      {
+        "rva": "0x00119cb0",
+        "slots": 13
+      },
+      {
+        "rva": "0x00119e20",
+        "slots": 17
+      },
+      {
+        "rva": "0x0011a048",
+        "slots": 14
+      },
+      {
+        "rva": "0x0011a1c0",
+        "slots": 17
+      },
+      {
+        "rva": "0x0011a4d0",
+        "slots": 13
+      },
+      {
+        "rva": "0x0011a648",
+        "slots": 8
+      },
+      {
+        "rva": "0x0011a680",
+        "slots": 31
+      },
+      {
+        "rva": "0x0011a700",
+        "slots": 37
+      },
+      {
+        "rva": "0x0011a7c8",
+        "slots": 38
+      },
+      {
+        "rva": "0x0011a878",
+        "slots": 33
+      },
+      {
+        "rva": "0x0011a938",
+        "slots": 34
+      },
+      {
+        "rva": "0x0011a9d8",
+        "slots": 33
+      },
+      {
+        "rva": "0x0011aa98",
+        "slots": 34
+      },
+      {
+        "rva": "0x0011ab38",
+        "slots": 33
+      },
+      {
+        "rva": "0x0011abf8",
+        "slots": 34
+      },
+      {
+        "rva": "0x0011ac98",
+        "slots": 33
+      },
+      {
+        "rva": "0x0011ad58",
+        "slots": 34
+      },
+      {
+        "rva": "0x0011adf8",
+        "slots": 33
+      },
+      {
+        "rva": "0x0011aeb8",
+        "slots": 34
+      },
+      {
+        "rva": "0x0011af58",
+        "slots": 37
+      },
+      {
+        "rva": "0x0011b028",
+        "slots": 38
+      },
+      {
+        "rva": "0x0011b0d8",
+        "slots": 33
+      },
+      {
+        "rva": "0x0011b198",
+        "slots": 34
+      },
+      {
+        "rva": "0x0011b238",
+        "slots": 45
+      },
+      {
+        "rva": "0x0011b328",
+        "slots": 46
+      },
+      {
+        "rva": "0x0011b3f8",
+        "slots": 33
+      },
+      {
+        "rva": "0x0011b4b8",
+        "slots": 34
+      },
+      {
+        "rva": "0x0011b558",
+        "slots": 8
+      },
+      {
+        "rva": "0x0011b580",
+        "slots": 4
+      },
+      {
+        "rva": "0x0011b5a4",
+        "slots": 6
+      },
+      {
+        "rva": "0x0011b628",
+        "slots": 3
+      },
+      {
+        "rva": "0x0011b750",
+        "slots": 3
+      },
+      {
+        "rva": "0x0011b764",
+        "slots": 3
+      },
+      {
+        "rva": "0x0011b774",
+        "slots": 3
+      },
+      {
+        "rva": "0x0011b784",
+        "slots": 3
+      },
+      {
+        "rva": "0x0011b794",
+        "slots": 3
+      },
+      {
+        "rva": "0x0011b9c8",
+        "slots": 9
+      },
+      {
+        "rva": "0x0011b9f0",
+        "slots": 9
+      },
+      {
+        "rva": "0x0011bab4",
+        "slots": 12
+      },
+      {
+        "rva": "0x0011bb5c",
+        "slots": 7
+      },
+      {
+        "rva": "0x0011bb84",
+        "slots": 3
+      },
+      {
+        "rva": "0x0011bb98",
+        "slots": 9
+      },
+      {
+        "rva": "0x0011bbc0",
+        "slots": 9
+      },
+      {
+        "rva": "0x0011bbec",
+        "slots": 3
+      },
+      {
+        "rva": "0x0011bc00",
+        "slots": 3
+      },
+      {
+        "rva": "0x0011bc18",
+        "slots": 9
+      },
+      {
+        "rva": "0x0011bc4c",
+        "slots": 32
+      },
+      {
+        "rva": "0x0011bcd0",
+        "slots": 8
+      },
+      {
+        "rva": "0x0011bfbc",
+        "slots": 2
+      },
+      {
+        "rva": "0x0011c00c",
+        "slots": 2
+      },
+      {
+        "rva": "0x0011c03c",
+        "slots": 2
+      },
+      {
+        "rva": "0x0011c2ac",
+        "slots": 2
+      },
+      {
+        "rva": "0x0011fc7c",
+        "slots": 2
+      },
+      {
+        "rva": "0x0011fc8c",
+        "slots": 2
+      },
+      {
+        "rva": "0x0012039c",
+        "slots": 2
+      },
+      {
+        "rva": "0x001203a8",
+        "slots": 2
+      },
+      {
+        "rva": "0x001203b4",
+        "slots": 2
+      },
+      {
+        "rva": "0x00120404",
+        "slots": 2
+      },
+      {
+        "rva": "0x001209c4",
+        "slots": 2
+      },
+      {
+        "rva": "0x00120a0c",
+        "slots": 2
+      },
+      {
+        "rva": "0x00120a54",
+        "slots": 2
+      },
+      {
+        "rva": "0x00120a84",
+        "slots": 2
+      },
+      {
+        "rva": "0x00120b24",
+        "slots": 2
+      },
+      {
+        "rva": "0x00120b30",
+        "slots": 2
+      },
+      {
+        "rva": "0x00122004",
+        "slots": 6
+      },
+      {
+        "rva": "0x00122024",
+        "slots": 5
+      },
+      {
+        "rva": "0x0012234c",
+        "slots": 7
+      },
+      {
+        "rva": "0x001225c0",
+        "slots": 3
+      },
+      {
+        "rva": "0x00122960",
+        "slots": 6
+      },
+      {
+        "rva": "0x00122dca",
+        "slots": 4
+      },
+      {
+        "rva": "0x001232be",
+        "slots": 64
+      }
+    ],
+    "note": "the image was built /GR-: it carries no RTTI record and Ghidra's vtable analyzer recovers nothing, which is why vtables and rtti are both empty. The dispatch a C++ image still needs survives as runs of consecutive relocated slots that every one name a function entry, and those are recovered here from the PE pointer table instead."
+  }
+}

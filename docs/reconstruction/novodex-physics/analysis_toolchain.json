@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "ghidra": {
+    "home": "D:\\ghidra",
+    "version": "12.1.2",
+    "headless_path": "D:\\ghidra\\support\\analyzeHeadless.bat",
+    "headless_sha256": "dd7b9d17d32ed70a71df82a43a21cdaed6c4ce67064e30f8642c149f81c2ae07"
+  },
+  "capstone": {
+    "version": "5.0.6",
+    "package_root": "C:\\Users\\raynorpat\\AppData\\Roaming\\Python\\Python313\\site-packages\\capstone",
+    "package_sha256": "01da1c7d55346d13f721dbdcf05a90a900053595b5e8de0a33e956e36db2567d"
+  },
+  "python": {
+    "version": "3.13.9"
+  },
+  "analysis_options": {
+    "processor": "x86",
+    "language_id": "x86:LE:32:default",
+    "compiler_spec_id": "windows",
+    "analysis_timeout_seconds": 3600,
+    "analyzers": {
+      "Aggressive Instruction Finder": false,
+      "Decompiler Parameter ID": true,
+      "Demangler Microsoft": true,
+      "Non-Returning Functions - Discovered": true,
+      "Windows x86 PE Exception Handling": true,
+      "Windows x86 PE RTTI Analyzer": true
+    }
+  },
+  "analysis_options_sha256": "92454518973f33dbb59ae8ecd2fb8031c045f931eefdf2dfe8b81766a2738f4a"
+}

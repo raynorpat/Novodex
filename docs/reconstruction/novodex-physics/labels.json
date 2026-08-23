@@ -1,0 +1,2469 @@
+{
+ "schema_version": 1,
+ "labels": [
+  {
+   "id": "phys_fn_000490",
+   "label": "NxCreatePhysicsSDK",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/179",
+   "reason": "the PE export directory names this entry"
+  },
+  {
+   "id": "phys_fn_000803",
+   "label": "NxComputeSphereMass",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/327",
+   "reason": "the PE export directory names this entry"
+  },
+  {
+   "id": "phys_fn_000805",
+   "label": "NxComputeSphereDensity",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/328",
+   "reason": "the PE export directory names this entry"
+  },
+  {
+   "id": "phys_fn_000807",
+   "label": "NxComputeBoxMass",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/329",
+   "reason": "the PE export directory names this entry"
+  },
+  {
+   "id": "phys_fn_000809",
+   "label": "NxComputeBoxDensity",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/330",
+   "reason": "the PE export directory names this entry"
+  },
+  {
+   "id": "phys_fn_000811",
+   "label": "NxComputeEllipsoidMass",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/331",
+   "reason": "the PE export directory names this entry"
+  },
+  {
+   "id": "phys_fn_000813",
+   "label": "NxComputeEllipsoidDensity",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/332",
+   "reason": "the PE export directory names this entry"
+  },
+  {
+   "id": "phys_fn_000815",
+   "label": "NxComputeCylinderMass",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/333",
+   "reason": "the PE export directory names this entry"
+  },
+  {
+   "id": "phys_fn_000817",
+   "label": "NxComputeCylinderDensity",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/334",
+   "reason": "the PE export directory names this entry"
+  },
+  {
+   "id": "phys_fn_000819",
+   "label": "NxComputeConeMass",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/335",
+   "reason": "the PE export directory names this entry"
+  },
+  {
+   "id": "phys_fn_000821",
+   "label": "NxComputeConeDensity",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/336",
+   "reason": "the PE export directory names this entry"
+  },
+  {
+   "id": "phys_fn_000823",
+   "label": "NxComputeBoxInertiaTensor",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/337",
+   "reason": "the PE export directory names this entry"
+  },
+  {
+   "id": "phys_fn_000825",
+   "label": "NxComputeSphereInertiaTensor",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/338",
+   "reason": "the PE export directory names this entry"
+  },
+  {
+   "id": "phys_fn_001583",
+   "label": "NxFluidAssert",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/624",
+   "reason": "the PE export directory names this entry"
+  },
+  {
+   "id": "phys_fn_001696",
+   "label": "NxSeparatingAxis",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/673",
+   "reason": "the PE export directory names this entry"
+  },
+  {
+   "id": "phys_fn_001702",
+   "label": "NxBoxBoxIntersect",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/674",
+   "reason": "the PE export directory names this entry"
+  },
+  {
+   "id": "phys_fn_001704",
+   "label": "NxRayPlaneIntersect",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/675",
+   "reason": "the PE export directory names this entry"
+  },
+  {
+   "id": "phys_fn_001706",
+   "label": "NxSegmentPlaneIntersect",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/676",
+   "reason": "the PE export directory names this entry"
+  },
+  {
+   "id": "phys_fn_001710",
+   "label": "NxRaySphereIntersect",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/678",
+   "reason": "the PE export directory names this entry"
+  },
+  {
+   "id": "phys_fn_001712",
+   "label": "NxRayTriIntersect",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/679",
+   "reason": "the PE export directory names this entry"
+  },
+  {
+   "id": "phys_fn_001714",
+   "label": "NxSegmentBoxIntersect",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/680",
+   "reason": "the PE export directory names this entry"
+  },
+  {
+   "id": "phys_fn_001716",
+   "label": "NxSegmentOBBIntersect",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/681",
+   "reason": "the PE export directory names this entry"
+  },
+  {
+   "id": "phys_fn_001718",
+   "label": "NxRayOBBIntersect",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/682",
+   "reason": "the PE export directory names this entry"
+  },
+  {
+   "id": "phys_fn_001720",
+   "label": "NxSegmentAABBIntersect",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/683",
+   "reason": "the PE export directory names this entry"
+  },
+  {
+   "id": "phys_fn_001722",
+   "label": "NxRayAABBIntersect",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/684",
+   "reason": "the PE export directory names this entry"
+  },
+  {
+   "id": "phys_fn_001726",
+   "label": "NxRayAABBIntersect2",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/685",
+   "reason": "the PE export directory names this entry"
+  },
+  {
+   "id": "phys_fn_001734",
+   "label": "NxRayCapsuleIntersect",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/687",
+   "reason": "the PE export directory names this entry"
+  },
+  {
+   "id": "phys_fn_001736",
+   "label": "NxSweptSpheresIntersect",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/688",
+   "reason": "the PE export directory names this entry"
+  },
+  {
+   "id": "phys_fn_002033",
+   "label": "PenetrationMap::setup",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/790",
+   "reason": "derives n*n at 0x0004ff8d, (float)(n-1) at 0x0004ffab, the centre and extents from the AABB at mesh+0x44, and allocates the n*n*n grid at 0x000500cd"
+  },
+  {
+   "id": "phys_fn_002035",
+   "label": "PenetrationMap::loadPayload",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/791",
+   "reason": "the MSB-first value/cell-run/sign bit stream from 0x000501b0, called only from Create at 0x0005074d"
+  },
+  {
+   "id": "phys_fn_002045",
+   "label": "PenetrationMap::PenetrationMap",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/793",
+   "reason": "installs the vtable .rdata:0x10107f40 at 0x000505f3, seeds the AABB with FLT_MAX/-FLT_MAX at 0x000505fe and 0x0005060c, clears +0x5c..+0x74, and returns this"
+  },
+  {
+   "id": "phys_fn_002047",
+   "label": "PenetrationMap::Create",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/794",
+   "reason": "the only reader of the PMAP tag at 0x0005069a..0x000506be and of the version at 0x000506c9; it reports the PenetrationMap.cpp string at .rdata:0x0010802c with lines 979 and 986"
+  },
+  {
+   "id": "phys_fn_002049",
+   "label": "NxCreatePMap",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/795",
+   "reason": "the PE export directory names this entry"
+  },
+  {
+   "id": "phys_fn_002051",
+   "label": "NxReleasePMap",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/796",
+   "reason": "the PE export directory names this entry"
+  },
+  {
+   "id": "phys_fn_002146",
+   "label": "NxBuildSmoothNormals",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/819",
+   "reason": "the PE export directory names this entry"
+  },
+  {
+   "id": "phys_fn_002162",
+   "label": "TriangleMesh::save",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/instruction_ranges/1054",
+   "reason": "slot 18 of the TriangleMesh vtable phys_data_000967 at .rdata:0x00108608 (0x00108650 holds 0x100539d0), immediately beside slot 17, and it writes the NXST/MESH tags at 0x000539de/0x000539ea through storeDword"
+  },
+  {
+   "id": "phys_fn_002262",
+   "label": "TriangleMesh::load",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/845",
+   "reason": "slot 17 of the TriangleMesh vtable phys_data_000967 at .rdata:0x00108608; reads the NXST/MESH tags at 0x00055cc2 and 0x00055cd0 through NxStream::readDword"
+  },
+  {
+   "id": "phys_fn_003907",
+   "label": "NxFluidDebugTriangle",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/1460",
+   "reason": "the PE export directory names this entry"
+  },
+  {
+   "id": "phys_fn_003909",
+   "label": "NxFluidDebugLine",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/1461",
+   "reason": "the PE export directory names this entry"
+  },
+  {
+   "id": "phys_fn_003911",
+   "label": "NxFluidDebugSphere",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/1462",
+   "reason": "the PE export directory names this entry"
+  },
+  {
+   "id": "phys_fn_003913",
+   "label": "NxFluidDebugPoint",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/1463",
+   "reason": "the PE export directory names this entry"
+  },
+  {
+   "id": "phys_fn_003915",
+   "label": "NxFluidDebugArrow",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/1464",
+   "reason": "the PE export directory names this entry"
+  },
+  {
+   "id": "phys_fn_003917",
+   "label": "NxFluidPAlloc",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/1465",
+   "reason": "the PE export directory names this entry"
+  },
+  {
+   "id": "phys_fn_003919",
+   "label": "NxFluidFree",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/1466",
+   "reason": "the PE export directory names this entry"
+  },
+  {
+   "id": "phys_fn_003921",
+   "label": "NxFluidDebugAABB",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/1467",
+   "reason": "the PE export directory names this entry"
+  },
+  {
+   "id": "phys_fn_004115",
+   "label": "NxJointDesc_SetGlobalAnchor",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/1548",
+   "reason": "the PE export directory names this entry"
+  },
+  {
+   "id": "phys_fn_004117",
+   "label": "NxJointDesc_SetGlobalAxis",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/1549",
+   "reason": "the PE export directory names this entry"
+  },
+  {
+   "id": "phys_fn_004766",
+   "label": "MemoryStream::appendBlock",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/1807",
+   "reason": "allocates one 16-byte block plus a data buffer whose size is prev->size << 1 (0x000b39df..0x000b39e2) or the caller's argument, links prev->next at 0x000b3a20 and moves current to it"
+  },
+  {
+   "id": "phys_fn_004768",
+   "label": "MemoryStream::getLength",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/1808",
+   "reason": "walks head->next summing each block->offset (0x000b3a40..0x000b3a52) and adds the last block's offset; Model::Save's caller reads the blob length through it"
+  },
+  {
+   "id": "phys_fn_004770",
+   "label": "MemoryStream::storeByte",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/1809",
+   "reason": "flushes pending bits (call 0x100b3c70 at 0x000b3a64), grows by doubling when offset+1 exceeds size (0x000b3a71..0x000b3a7b), then stores through lastAddress"
+  },
+  {
+   "id": "phys_fn_004772",
+   "label": "MemoryStream::readByte",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/1810",
+   "reason": "reads block->data[block->offset] and increments the offset (0x000b3aa6..0x000b3ab4); the four PMAP tag bytes are read one at a time through it"
+  },
+  {
+   "id": "phys_fn_004774",
+   "label": "MemoryStream::readDword",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/1811",
+   "reason": "the same block walk with a four-byte advance and mov eax,[eax] at 0x000b3ad5, which is what makes the format little-endian"
+  },
+  {
+   "id": "phys_fn_004780",
+   "label": "MemoryStream::seek",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/1814",
+   "reason": "compares the argument against the CURRENT block's size only (cmp edx,[ecx+8]; jae at 0x000b3b38) and rewinds offset within that one block"
+  },
+  {
+   "id": "phys_fn_004782",
+   "label": "MemoryStream::initBlock",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/1815",
+   "reason": "takes one 16-byte block and one size-byte buffer from nxGetSdkAllocator (0x000b4000 -> call [edx] at 0x000b3b62/0x000b3b8d), links them as current and head, copies a non-null buffer in starting full, or memsets the BYTE 1 over an empty one when fill is non-zero; ret 0x10 -- four stack arguments"
+  },
+  {
+   "id": "phys_fn_004784",
+   "label": "MemoryStream::~MemoryStream",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/1816",
+   "reason": "frees the two owned allocations at +0x08/+0x0c (0x000b3bf3..0x000b3c29), then walks the block list from +0x04 freeing each block's data and the block itself"
+  },
+  {
+   "id": "phys_fn_004786",
+   "label": "MemoryStream::flushBits",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/1817",
+   "reason": "shifts the accumulator left once per pending bit until the count wraps at eight (shl dl,1 / inc cl / cmp al,8 at 0x000b3c86..0x000b3c96), then stores the padded byte; called at the head of every raw store"
+  },
+  {
+   "id": "phys_fn_004788",
+   "label": "MemoryStream::MemoryStream",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/1818",
+   "reason": "zeroes +0x08..+0x19 and calls the block allocator phys_fn_004782 with four stack arguments at 0x000b3d07; the harness has called it as kStreamCtorRva since Task 3"
+  },
+  {
+   "id": "phys_fn_004791",
+   "label": "MemoryStream::~MemoryStream",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/1820",
+   "reason": "a five-byte jmp to phys_fn_004784 at 0x000b3db5; the writer's scope exit calls it at 0x00053b5d"
+  },
+  {
+   "id": "phys_fn_004795",
+   "label": "MemoryStream::collapse",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/1822",
+   "reason": "with a null destination frees the previous collapsed buffer, sums the length walk into one allocation (0x000b3e85..0x000b3e97), remembers it at +0x08 and copies each block's offset bytes in order (0x000b3eb0..0x000b3eeb); a non-null destination is filled instead of allocated; clears +0x14 either way"
+  },
+  {
+   "id": "phys_fn_004797",
+   "label": "MemoryStream::storeDword",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/1823",
+   "reason": "flushes bits, grows when offset+4 exceeds size, stores a native dword at data+offset (mov [eax],ecx at 0x000b3f39); Model::Save calls it directly at 0x000e944e"
+  },
+  {
+   "id": "phys_fn_004874",
+   "label": "Prunable::Prunable",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/1855",
+   "reason": "the constructor at 0x000b54a0 writes vtable .rdata:0x0011b5a4, whose file/line literal at .rdata:0x0011b5d4 names \\Epic\\Novodex\\SDKs\\Physics\\src\\opcode\\IcePrunable.cpp"
+  },
+  {
+   "id": "phys_fn_004876",
+   "label": "Prunable::SetFlags",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/instruction_ranges/2362",
+   "reason": "slot 1 of .rdata:0x0011b5a4; ORs its argument into +0x08 and tail-calls slot 5 with it"
+  },
+  {
+   "id": "phys_fn_004878",
+   "label": "Prunable::ClearFlags",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/instruction_ranges/2363",
+   "reason": "slot 2 of .rdata:0x0011b5a4; ANDs the complement of its argument into +0x08"
+  },
+  {
+   "id": "phys_fn_004880",
+   "label": "Prunable::ToggleFlags",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/instruction_ranges/2364",
+   "reason": "slot 3 of .rdata:0x0011b5a4; XORs its argument into +0x08"
+  },
+  {
+   "id": "phys_fn_004882",
+   "label": "Prunable::SetOrClearFlags",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/instruction_ranges/2365",
+   "reason": "slot 4 of .rdata:0x0011b5a4; dispatches slot 1 or slot 2 on its second argument"
+  },
+  {
+   "id": "phys_fn_004884",
+   "label": "Prunable::GetWorldAABB",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/1856",
+   "reason": "returns [[this+0x20]+0x14] + 24*[this+0x28], and 24 is sizeof(AABB)"
+  },
+  {
+   "id": "phys_fn_004886",
+   "label": "Prunable::UpdateWorldAABB",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/1857",
+   "reason": "calls the global at .data:0x00128478 with (mOwner, its argument) and sets flag 2"
+  },
+  {
+   "id": "phys_fn_004888",
+   "label": "Prunable::SetPruningType",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/1858",
+   "reason": "range-checks 0..3 into the byte at +0x2a and reports 'Invalid pruning type' at IcePrunable.cpp:152"
+  },
+  {
+   "id": "phys_fn_004890",
+   "label": "Prunable::SetPruningSection",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/1859",
+   "reason": "range-checks 0..2 into the byte at +0x2b and reports 'Invalid pruning section' at IcePrunable.cpp:174"
+  },
+  {
+   "id": "phys_fn_004892",
+   "label": "Prunable::~Prunable",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/1860",
+   "reason": "rewrites the vtable, dispatches the pruner's slot 2 with this, and tail-jumps the member destructor"
+  },
+  {
+   "id": "phys_fn_004894",
+   "label": "Prunable::GetUpdatedWorldAABB",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/1861",
+   "reason": "the same body as 0x000b55b0 inlined behind a flag-2 test, returning the pruner's box"
+  },
+  {
+   "id": "phys_fn_004896",
+   "label": "Prunable::`scalar deleting destructor'",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/1862",
+   "reason": "slot 0 of .rdata:0x0011b5a4; the body of 0x000b5640 plus the flags&1 release arm"
+  },
+  {
+   "id": "phys_fn_005177",
+   "label": "RadixSort::SetRankBuffers",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/1973",
+   "reason": "writes mRanks/mRanks2 at +4/+8 and clears the borrowed-buffer marker at +0x14 that 0x000e32c0 sets"
+  },
+  {
+   "id": "phys_fn_005297",
+   "label": "Prunable0C::Prunable0C",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2020",
+   "reason": "writes vtable .rdata:0x0011ba1c and zeroes four dwords; reached only from 0x000b54a0"
+  },
+  {
+   "id": "phys_fn_005299",
+   "label": "Prunable0C::~Prunable0C",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2021",
+   "reason": "writes vtable .rdata:0x0011ba1c and returns; reached only from 0x000b5640 and 0x000b56d0"
+  },
+  {
+   "id": "phys_fn_005311",
+   "label": "Prunable0C::`scalar deleting destructor'",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/instruction_ranges/2572",
+   "reason": "slot 0 and the only slot of .rdata:0x0011ba1c, the vtable 0x000e7330 installs"
+  },
+  {
+   "id": "phys_fn_005322",
+   "label": "_rand",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2031",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005665",
+   "label": "__fpmath",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2165",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005666",
+   "label": "__fpclass",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2166",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005668",
+   "label": "_free",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2167",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005669",
+   "label": "__fsopen",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2168",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005672",
+   "label": "__fclose_lk",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2171",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005673",
+   "label": "_fclose",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2172",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005676",
+   "label": "__fread_lk",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2174",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005677",
+   "label": "_fread",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2175",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005679",
+   "label": "__fwrite_lk",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2177",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005680",
+   "label": "_fwrite",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2178",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005682",
+   "label": "__onexit_lk",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2180",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005683",
+   "label": "___onexitinit",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2181",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005684",
+   "label": "__onexit",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2182",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005686",
+   "label": "_atexit",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2184",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005687",
+   "label": "__heap_alloc",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2185",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005690",
+   "label": "__nh_malloc",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2187",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005691",
+   "label": "_malloc",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2188",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005692",
+   "label": "_free",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2189",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005695",
+   "label": "__chkstk",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2191",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005700",
+   "label": "_free",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2194",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005701",
+   "label": "operator_new",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2195",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005702",
+   "label": "operator_new",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2196",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005716",
+   "label": "_fprintf",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2203",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005720",
+   "label": "___crtExitProcess",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2206",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005723",
+   "label": "__initterm",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2209",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005724",
+   "label": "__cinit",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2210",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005725",
+   "label": "doexit",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2211",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005728",
+   "label": "_exit",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2213",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005729",
+   "label": "__exit",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2214",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005730",
+   "label": "__cexit",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2215",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005734",
+   "label": "_strrchr",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2217",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005735",
+   "label": "_clock",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2218",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005736",
+   "label": "___inittime",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2219",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005738",
+   "label": "_strncat",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2220",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005739",
+   "label": "_sprintf",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2221",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005740",
+   "label": "_strtod",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2222",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005741",
+   "label": "strtoxl",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2223",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005742",
+   "label": "_strtol",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2224",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005743",
+   "label": "_isdigit",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2225",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005744",
+   "label": "_isspace",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2226",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005750",
+   "label": "_strpbrk",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2228",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005751",
+   "label": "_freopen",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2229",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005755",
+   "label": "__lock_file",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2231",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005756",
+   "label": "FID_conflict:__lock_file2",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2232",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005757",
+   "label": "__unlock_file",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2233",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005758",
+   "label": "FID_conflict:__lock_file2",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2234",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005759",
+   "label": "___toupper_mt",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2235",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005760",
+   "label": "_toupper",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2236",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005762",
+   "label": "_strncpy",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2237",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005763",
+   "label": "_calloc",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2238",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005766",
+   "label": "FID_conflict:__time32",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2240",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005768",
+   "label": "shortsort",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2241",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005772",
+   "label": "_qsort",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2242",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005773",
+   "label": "_fputs",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2243",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005775",
+   "label": "_localtime",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2245",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005776",
+   "label": "_longjmp",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2246",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005779",
+   "label": "__setjmp3",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2247",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005780",
+   "label": "_vsprintf",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2248",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005782",
+   "label": "_strncmp",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2249",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005783",
+   "label": "_atol",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2250",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005784",
+   "label": "_atol",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2251",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005785",
+   "label": "_strtok",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2252",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005786",
+   "label": "__store_str",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2253",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005787",
+   "label": "__store_num",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2254",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005788",
+   "label": "__expandtime",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2255",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005789",
+   "label": "__store_winword",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2256",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005792",
+   "label": "__Strftime_mt",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2257",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005793",
+   "label": "__Strftime",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2258",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005794",
+   "label": "_strftime",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2259",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005795",
+   "label": "__tzset_lk",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2260",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005798",
+   "label": "cvtdate",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2262",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005799",
+   "label": "__isindst_lk",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2263",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005800",
+   "label": "___tzset",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2264",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005802",
+   "label": "__tzset",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2266",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005804",
+   "label": "__isindst",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2268",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005806",
+   "label": "__CRT_INIT@12",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2270",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005807",
+   "label": "entry",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2271",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005810",
+   "label": "__amsg_exit",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2272",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005811",
+   "label": "__ftell_lk",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2273",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005812",
+   "label": "_ftell",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2274",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005814",
+   "label": "__fseek_lk",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2276",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005815",
+   "label": "_fseek",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2277",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005817",
+   "label": "report_failure",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2279",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005820",
+   "label": "__security_check_cookie",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2280",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005821",
+   "label": "_realloc",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2281",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005826",
+   "label": "_rand",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2284",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005827",
+   "label": "__forcdecpt",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2285",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005830",
+   "label": "__fassign",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2286",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005831",
+   "label": "__shift",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2287",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005832",
+   "label": "__cftoe2",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2288",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005833",
+   "label": "__cftoe",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2289",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005834",
+   "label": "__cftof2",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2290",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005835",
+   "label": "__cftof",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2291",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005836",
+   "label": "__cftog",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2292",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005837",
+   "label": "__cfltcvt",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2293",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005838",
+   "label": "__setdefaultprecision",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2294",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005839",
+   "label": "__ms_p5_test_fdiv",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2295",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005840",
+   "label": "__ms_p5_mp_test_fdiv",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2296",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005841",
+   "label": "__set_exp",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2297",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005842",
+   "label": "__sptype",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2298",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005843",
+   "label": "__decomp",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2299",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005844",
+   "label": "__raise_exc",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2300",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005845",
+   "label": "__handle_exc",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2301",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005846",
+   "label": "__set_errno",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2302",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005847",
+   "label": "__errcode",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2303",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005848",
+   "label": "__umatherr",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2304",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005849",
+   "label": "__handle_qnan1",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2305",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005850",
+   "label": "__except1",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2306",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005851",
+   "label": "__statfp",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2307",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005852",
+   "label": "__clrfp",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2308",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005853",
+   "label": "__ctrlfp",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2309",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005855",
+   "label": "__openfile",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2311",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005858",
+   "label": "__dosmaperr",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2314",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005859",
+   "label": "__getstream",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2315",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005863",
+   "label": "__SEH_prolog",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2317",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005864",
+   "label": "__SEH_epilog",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2318",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005866",
+   "label": "__seh_longjmp_unwind@4",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2319",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005867",
+   "label": "__close_lk",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2320",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005868",
+   "label": "__close",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2321",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005871",
+   "label": "__freebuf",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2323",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005872",
+   "label": "__flush",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2324",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005873",
+   "label": "__fflush_lk",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2325",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005879",
+   "label": "__filbuf",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2326",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005880",
+   "label": "__read_lk",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2327",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005881",
+   "label": "__read",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2328",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005885",
+   "label": "_memcpy",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2330",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005926",
+   "label": "__flsbuf",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2331",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005927",
+   "label": "__write_lk",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2332",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005928",
+   "label": "__write",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2333",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005931",
+   "label": "__msize",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2335",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005934",
+   "label": "__mtinitlocks",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2337",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005935",
+   "label": "__mtdeletelocks",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2338",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005937",
+   "label": "__mtinitlocknum",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2340",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005939",
+   "label": "__lock",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2342",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005940",
+   "label": "___heap_select",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2343",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005941",
+   "label": "__heap_init",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2344",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005942",
+   "label": "__heap_term",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2345",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005943",
+   "label": "___sbh_heap_init",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2346",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005944",
+   "label": "___sbh_find_block",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2347",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005945",
+   "label": "___sbh_free_block",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2348",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005946",
+   "label": "___sbh_alloc_new_region",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2349",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005947",
+   "label": "___sbh_alloc_new_group",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2350",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005948",
+   "label": "___sbh_resize_block",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2351",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005949",
+   "label": "___sbh_alloc_block",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2352",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005950",
+   "label": "__callnewh",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2353",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005962",
+   "label": "__startOneArgErrorHandling",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2355",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005967",
+   "label": "__fload_withFB",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2359",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005970",
+   "label": "__math_exit",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2362",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005973",
+   "label": "___libm_error_support",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2364",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005977",
+   "label": "___sse2_available_init",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2366",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005991",
+   "label": "__d_inttype",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2369",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005992",
+   "label": "__powhlp",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2370",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005993",
+   "label": "__stbuf",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2371",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005994",
+   "label": "__ftbuf",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2372",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005995",
+   "label": "write_char",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2373",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005996",
+   "label": "write_multi_char",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2374",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005997",
+   "label": "write_string",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2375",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_005998",
+   "label": "__output",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2376",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006000",
+   "label": "__RTC_Initialize",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2377",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006007",
+   "label": "__aulldiv",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2379",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006009",
+   "label": "__allmul",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2380",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006010",
+   "label": "__fltin2",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2381",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006012",
+   "label": "_strlen",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2382",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006013",
+   "label": "___isctype_mt",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2383",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006014",
+   "label": "___freetlocinfo",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2384",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006015",
+   "label": "___updatetlocinfo_lk",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2385",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006016",
+   "label": "___updatetlocinfo",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2386",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006019",
+   "label": "__mtterm",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2389",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006020",
+   "label": "__initptd",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2390",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006021",
+   "label": "__getptd",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2391",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006022",
+   "label": "__freefls@4",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2392",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006027",
+   "label": "__freeptd",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2395",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006028",
+   "label": "__mtinit",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2396",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006029",
+   "label": "__ioinit",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2397",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006030",
+   "label": "__ioterm",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2398",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006032",
+   "label": "___crtLCMapStringA",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2399",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006040",
+   "label": "_memset",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2400",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006041",
+   "label": "_gmtime",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2401",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006043",
+   "label": "__global_unwind2",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2402",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006046",
+   "label": "__local_unwind2",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2403",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006049",
+   "label": "__rt_probe_read4@4",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2405",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006057",
+   "label": "___ascii_stricmp",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2408",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006058",
+   "label": "__resetstkoflw",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2409",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006060",
+   "label": "_strcmp",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2410",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006063",
+   "label": "__getenv_lk",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2411",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006064",
+   "label": "__setenvp",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2412",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006065",
+   "label": "parse_cmdline",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2413",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006066",
+   "label": "__setargv",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2414",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006067",
+   "label": "___crtGetEnvironmentStringsA",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2415",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006068",
+   "label": "__XcptFilter",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2416",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006071",
+   "label": "__NMSG_WRITE",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2418",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006072",
+   "label": "__FF_MSGBANNER",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2419",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006073",
+   "label": "__lseek_lk",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2420",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006074",
+   "label": "__lseek",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2421",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006077",
+   "label": "___security_init_cookie",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2423",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006078",
+   "label": "___security_error_handler",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2424",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006081",
+   "label": "___tolower_mt",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2425",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006082",
+   "label": "_tolower",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2426",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006083",
+   "label": "__ZeroTail",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2427",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006084",
+   "label": "__IncMan",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2428",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006085",
+   "label": "__RoundMan",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2429",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006086",
+   "label": "__CopyMan",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2430",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006087",
+   "label": "__IsZeroMan",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2431",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006088",
+   "label": "__ShrMan",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2432",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006089",
+   "label": "__ld12cvt",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2433",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006090",
+   "label": "__ld12tod",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2434",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006091",
+   "label": "__ld12tof",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2435",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006092",
+   "label": "FID_conflict:__atodbl",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2436",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006093",
+   "label": "FID_conflict:__atodbl",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2437",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006095",
+   "label": "_memmove",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2438",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006136",
+   "label": "__fptostr",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2439",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006137",
+   "label": "___dtold",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2440",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006138",
+   "label": "__fltout2",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2441",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006139",
+   "label": "__fptrap",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2442",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006140",
+   "label": "__abstract_cw",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2443",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006141",
+   "label": "__hw_cw",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2444",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006142",
+   "label": "__control87",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2445",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006143",
+   "label": "__controlfp",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2446",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006145",
+   "label": "__tsopen_lk",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2448",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006146",
+   "label": "__sopen",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2449",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006148",
+   "label": "___crtInitCritSecNoSpinCount@8",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2451",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006149",
+   "label": "___crtInitCritSecAndSpinCount",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2452",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006152",
+   "label": "__ValidateEH3RN",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2453",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006153",
+   "label": "__set_osfhnd",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2454",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006154",
+   "label": "__free_osfhnd",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2455",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006155",
+   "label": "__get_osfhandle",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2456",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006156",
+   "label": "__lock_fhandle",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2457",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006159",
+   "label": "__unlock_fhandle",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2459",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006160",
+   "label": "__alloc_osfhnd",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2460",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006164",
+   "label": "__commit",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2463",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006167",
+   "label": "__getbuf",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2465",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006168",
+   "label": "__isatty",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2466",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006169",
+   "label": "__lseeki64_lk",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2467",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006170",
+   "label": "__87except",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2468",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006171",
+   "label": "__frnd",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2469",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006242",
+   "label": "___wctomb_mt",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2470",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006243",
+   "label": "_wctomb",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2471",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006245",
+   "label": "__aulldvrm",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2472",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006246",
+   "label": "___strgtold12",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2473",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006247",
+   "label": "___crtGetStringTypeA",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2474",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006250",
+   "label": "___free_lc_time",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2475",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006251",
+   "label": "___free_lconv_num",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2476",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006252",
+   "label": "___free_lconv_mon",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2477",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006254",
+   "label": "_strcspn",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2478",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006257",
+   "label": "_CPtoLCID",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2479",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006258",
+   "label": "setSBCS",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2480",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006259",
+   "label": "setSBUpLow",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2481",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006260",
+   "label": "___updatetmbcinfo",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2482",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006263",
+   "label": "__setmbcp_lk",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2484",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006264",
+   "label": "__setmbcp",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2485",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006266",
+   "label": "___initmbctable",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2487",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006267",
+   "label": "___ansicp",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2488",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006268",
+   "label": "___convertcp",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2489",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006271",
+   "label": "__mbsnbicoll",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2490",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006272",
+   "label": "___wtomb_environ",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2491",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006273",
+   "label": "___crtMessageBoxA",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2492",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006274",
+   "label": "___addl",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2493",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006275",
+   "label": "___add_12",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2494",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006276",
+   "label": "___shl_12",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2495",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006277",
+   "label": "___shr_12",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2496",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006278",
+   "label": "___mtold12",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2497",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006279",
+   "label": "$I10_OUTPUT",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2498",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006280",
+   "label": "__chsize_lk",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2499",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006281",
+   "label": "___ld12mul",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2500",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006282",
+   "label": "___multtenpow12",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2501",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006283",
+   "label": "_strncnt",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2502",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006284",
+   "label": "___crtCompareStringA",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2503",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006289",
+   "label": "findenv",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2504",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006290",
+   "label": "copy_environ",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2505",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006291",
+   "label": "___crtsetenv",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2506",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006292",
+   "label": "__setmode_lk",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2507",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006294",
+   "label": "___ascii_strnicmp",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2508",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006295",
+   "label": "__strdup",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2509",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006296",
+   "label": "__mbschr",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2510",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_006298",
+   "label": "RtlUnwind",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/2511",
+   "reason": "Ghidra Function ID matched a runtime signature"
+  }
+ ]
+}

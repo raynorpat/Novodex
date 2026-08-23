@@ -1,0 +1,10997 @@
+{
+ "schema_version": 1,
+ "phase": 3,
+ "note": "The Phase 3 geometry case matrix.  One entry per case that tests/PhysicsGeometryTests.cpp runs, carrying the exact input words it passes and the return value and output bytes the shipped oracle produced for them.  The oracle values are a record, not an expectation the harness checks: the gate is run_differential.ps1 comparing the two transcripts.  tools/tests/test_geometry_cases.py holds this file to the committed oracle transcript so it cannot drift from what the harness actually ran.",
+ "transcript": "cases/geometry-oracle-transcript.txt",
+ "exports": [
+  {
+   "name": "NxComputeSphereMass",
+   "ordinal": 14,
+   "returns": "float32",
+   "input_layout": [
+    {
+     "field": "radius",
+     "words": 1,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "scalar",
+     "words": 1,
+     "encoding": "float32_bits"
+    }
+   ],
+   "output_layout": [],
+   "cases": 9
+  },
+  {
+   "name": "NxComputeSphereDensity",
+   "ordinal": 12,
+   "returns": "float32",
+   "input_layout": [
+    {
+     "field": "radius",
+     "words": 1,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "scalar",
+     "words": 1,
+     "encoding": "float32_bits"
+    }
+   ],
+   "output_layout": [],
+   "cases": 9
+  },
+  {
+   "name": "NxComputeBoxMass",
+   "ordinal": 5,
+   "returns": "float32",
+   "input_layout": [
+    {
+     "field": "extents",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "scalar",
+     "words": 1,
+     "encoding": "float32_bits"
+    }
+   ],
+   "output_layout": [],
+   "cases": 9
+  },
+  {
+   "name": "NxComputeBoxDensity",
+   "ordinal": 3,
+   "returns": "float32",
+   "input_layout": [
+    {
+     "field": "extents",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "scalar",
+     "words": 1,
+     "encoding": "float32_bits"
+    }
+   ],
+   "output_layout": [],
+   "cases": 9
+  },
+  {
+   "name": "NxComputeEllipsoidMass",
+   "ordinal": 11,
+   "returns": "float32",
+   "input_layout": [
+    {
+     "field": "extents",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "scalar",
+     "words": 1,
+     "encoding": "float32_bits"
+    }
+   ],
+   "output_layout": [],
+   "cases": 9
+  },
+  {
+   "name": "NxComputeEllipsoidDensity",
+   "ordinal": 10,
+   "returns": "float32",
+   "input_layout": [
+    {
+     "field": "extents",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "scalar",
+     "words": 1,
+     "encoding": "float32_bits"
+    }
+   ],
+   "output_layout": [],
+   "cases": 9
+  },
+  {
+   "name": "NxComputeCylinderMass",
+   "ordinal": 9,
+   "returns": "float32",
+   "input_layout": [
+    {
+     "field": "radius",
+     "words": 1,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "length",
+     "words": 1,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "scalar",
+     "words": 1,
+     "encoding": "float32_bits"
+    }
+   ],
+   "output_layout": [],
+   "cases": 9
+  },
+  {
+   "name": "NxComputeCylinderDensity",
+   "ordinal": 8,
+   "returns": "float32",
+   "input_layout": [
+    {
+     "field": "radius",
+     "words": 1,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "length",
+     "words": 1,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "scalar",
+     "words": 1,
+     "encoding": "float32_bits"
+    }
+   ],
+   "output_layout": [],
+   "cases": 9
+  },
+  {
+   "name": "NxComputeConeMass",
+   "ordinal": 7,
+   "returns": "float32",
+   "input_layout": [
+    {
+     "field": "radius",
+     "words": 1,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "length",
+     "words": 1,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "scalar",
+     "words": 1,
+     "encoding": "float32_bits"
+    }
+   ],
+   "output_layout": [],
+   "cases": 9
+  },
+  {
+   "name": "NxComputeConeDensity",
+   "ordinal": 6,
+   "returns": "float32",
+   "input_layout": [
+    {
+     "field": "radius",
+     "words": 1,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "length",
+     "words": 1,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "scalar",
+     "words": 1,
+     "encoding": "float32_bits"
+    }
+   ],
+   "output_layout": [],
+   "cases": 9
+  },
+  {
+   "name": "NxComputeBoxInertiaTensor",
+   "ordinal": 4,
+   "returns": "void",
+   "input_layout": [
+    {
+     "field": "mass",
+     "words": 1,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "xlength",
+     "words": 1,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "ylength",
+     "words": 1,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "zlength",
+     "words": 1,
+     "encoding": "float32_bits"
+    }
+   ],
+   "output_layout": [
+    {
+     "field": "diagInertia",
+     "words": 3,
+     "guard_words": 2
+    }
+   ],
+   "cases": 8
+  },
+  {
+   "name": "NxComputeSphereInertiaTensor",
+   "ordinal": 13,
+   "returns": "void",
+   "input_layout": [
+    {
+     "field": "mass",
+     "words": 1,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "radius",
+     "words": 1,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "hollow",
+     "words": 1,
+     "encoding": "integer"
+    }
+   ],
+   "output_layout": [
+    {
+     "field": "diagInertia",
+     "words": 3,
+     "guard_words": 2
+    }
+   ],
+   "cases": 10
+  },
+  {
+   "name": "NxRayPlaneIntersect",
+   "ordinal": 32,
+   "returns": "bool",
+   "input_layout": [
+    {
+     "field": "ray_orig",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "ray_dir",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "plane_normal",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "plane_d",
+     "words": 1,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "mode",
+     "words": 1,
+     "encoding": "integer"
+    }
+   ],
+   "output_layout": [
+    {
+     "field": "dist",
+     "words": 1,
+     "guard_words": 2
+    },
+    {
+     "field": "pointOnPlane",
+     "words": 3,
+     "guard_words": 2
+    }
+   ],
+   "cases": 11
+  },
+  {
+   "name": "NxSegmentPlaneIntersect",
+   "ordinal": 39,
+   "returns": "void",
+   "input_layout": [
+    {
+     "field": "v1",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "v2",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "plane_normal",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "plane_d",
+     "words": 1,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "mode",
+     "words": 1,
+     "encoding": "integer"
+    }
+   ],
+   "output_layout": [
+    {
+     "field": "dist",
+     "words": 1,
+     "guard_words": 2
+    },
+    {
+     "field": "pointOnPlane",
+     "words": 3,
+     "guard_words": 2
+    }
+   ],
+   "cases": 10
+  },
+  {
+   "name": "NxRaySphereIntersect",
+   "ordinal": 33,
+   "returns": "bool",
+   "input_layout": [
+    {
+     "field": "origin",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "dir",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "center",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "radius",
+     "words": 1,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "mode",
+     "words": 1,
+     "encoding": "integer"
+    }
+   ],
+   "output_layout": [
+    {
+     "field": "coord",
+     "words": 3,
+     "guard_words": 2
+    }
+   ],
+   "cases": 13
+  },
+  {
+   "name": "NxRayTriIntersect",
+   "ordinal": 34,
+   "returns": "bool",
+   "input_layout": [
+    {
+     "field": "orig",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "dir",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "vert0",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "vert1",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "vert2",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "cull",
+     "words": 1,
+     "encoding": "integer"
+    },
+    {
+     "field": "mode",
+     "words": 1,
+     "encoding": "integer"
+    }
+   ],
+   "output_layout": [
+    {
+     "field": "t",
+     "words": 1,
+     "guard_words": 2
+    },
+    {
+     "field": "u",
+     "words": 1,
+     "guard_words": 2
+    },
+    {
+     "field": "v",
+     "words": 1,
+     "guard_words": 2
+    }
+   ],
+   "cases": 15
+  },
+  {
+   "name": "NxRayAABBIntersect",
+   "ordinal": 28,
+   "returns": "bool",
+   "input_layout": [
+    {
+     "field": "min",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "max",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "origin",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "dir",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "mode",
+     "words": 1,
+     "encoding": "integer"
+    }
+   ],
+   "output_layout": [
+    {
+     "field": "coord",
+     "words": 3,
+     "guard_words": 2
+    }
+   ],
+   "cases": 13
+  },
+  {
+   "name": "NxRayAABBIntersect2",
+   "ordinal": 29,
+   "returns": "uint32",
+   "input_layout": [
+    {
+     "field": "min",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "max",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "origin",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "dir",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "mode",
+     "words": 1,
+     "encoding": "integer"
+    }
+   ],
+   "output_layout": [
+    {
+     "field": "coord",
+     "words": 3,
+     "guard_words": 2
+    },
+    {
+     "field": "t",
+     "words": 1,
+     "guard_words": 2
+    }
+   ],
+   "cases": 13
+  },
+  {
+   "name": "NxSegmentBoxIntersect",
+   "ordinal": 37,
+   "returns": "bool",
+   "input_layout": [
+    {
+     "field": "p1",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "p2",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "bbox_min",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "bbox_max",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "mode",
+     "words": 1,
+     "encoding": "integer"
+    }
+   ],
+   "output_layout": [
+    {
+     "field": "intercept",
+     "words": 3,
+     "guard_words": 2
+    }
+   ],
+   "cases": 13
+  },
+  {
+   "name": "NxSegmentAABBIntersect",
+   "ordinal": 36,
+   "returns": "bool",
+   "input_layout": [
+    {
+     "field": "p0",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "p1",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "min",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "max",
+     "words": 3,
+     "encoding": "float32_bits"
+    }
+   ],
+   "output_layout": [],
+   "cases": 12
+  },
+  {
+   "name": "NxRayOBBIntersect",
+   "ordinal": 31,
+   "returns": "bool",
+   "input_layout": [
+    {
+     "field": "ray_orig",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "ray_dir",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "center",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "extents",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "rot",
+     "words": 9,
+     "encoding": "float32_bits"
+    }
+   ],
+   "output_layout": [],
+   "cases": 13
+  },
+  {
+   "name": "NxSegmentOBBIntersect",
+   "ordinal": 38,
+   "returns": "bool",
+   "input_layout": [
+    {
+     "field": "p0",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "p1",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "center",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "extents",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "rot",
+     "words": 9,
+     "encoding": "float32_bits"
+    }
+   ],
+   "output_layout": [],
+   "cases": 13
+  },
+  {
+   "name": "NxRayCapsuleIntersect",
+   "ordinal": 30,
+   "returns": "uint32",
+   "input_layout": [
+    {
+     "field": "origin",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "dir",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "capsule_p0",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "capsule_p1",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "capsule_radius",
+     "words": 1,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "mode",
+     "words": 1,
+     "encoding": "integer"
+    }
+   ],
+   "output_layout": [
+    {
+     "field": "t",
+     "words": 2,
+     "guard_words": 2
+    }
+   ],
+   "cases": 13
+  },
+  {
+   "name": "NxSweptSpheresIntersect",
+   "ordinal": 41,
+   "returns": "bool",
+   "input_layout": [
+    {
+     "field": "sphere0_center",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "sphere0_radius",
+     "words": 1,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "velocity0",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "sphere1_center",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "sphere1_radius",
+     "words": 1,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "velocity1",
+     "words": 3,
+     "encoding": "float32_bits"
+    }
+   ],
+   "output_layout": [],
+   "cases": 11
+  },
+  {
+   "name": "NxBoxBoxIntersect",
+   "ordinal": 1,
+   "returns": "bool",
+   "input_layout": [
+    {
+     "field": "extents0",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "center0",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "rotation0",
+     "words": 9,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "extents1",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "center1",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "rotation1",
+     "words": 9,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "fullTest",
+     "words": 1,
+     "encoding": "integer"
+    }
+   ],
+   "output_layout": [],
+   "cases": 12
+  },
+  {
+   "name": "NxSeparatingAxis",
+   "ordinal": 40,
+   "returns": "uint32",
+   "input_layout": [
+    {
+     "field": "extents0",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "center0",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "rotation0",
+     "words": 9,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "extents1",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "center1",
+     "words": 3,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "rotation1",
+     "words": 9,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "fullTest",
+     "words": 1,
+     "encoding": "integer"
+    }
+   ],
+   "output_layout": [],
+   "cases": 12
+  },
+  {
+   "name": "NxBuildSmoothNormals",
+   "ordinal": 2,
+   "returns": "bool",
+   "input_layout": [
+    {
+     "field": "nbTris",
+     "words": 1,
+     "encoding": "integer"
+    },
+    {
+     "field": "nbVerts",
+     "words": 1,
+     "encoding": "integer"
+    },
+    {
+     "field": "index_kind",
+     "words": 1,
+     "encoding": "integer"
+    },
+    {
+     "field": "flip",
+     "words": 1,
+     "encoding": "integer"
+    },
+    {
+     "field": "mode",
+     "words": 1,
+     "encoding": "integer"
+    },
+    {
+     "field": "verts",
+     "words": 24,
+     "encoding": "float32_bits"
+    },
+    {
+     "field": "faces",
+     "words": 36,
+     "encoding": "integer"
+    }
+   ],
+   "output_layout": [
+    {
+     "field": "normals",
+     "words": 24,
+     "guard_words": 2
+    }
+   ],
+   "cases": 17
+  }
+ ],
+ "cases": [
+  {
+   "id": "NxComputeSphereMass.00",
+   "export": "NxComputeSphereMass",
+   "ordinal": 14,
+   "dimension": "nominal",
+   "detail": [],
+   "inputs": [
+    "3f800000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "40860a92",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeSphereMass.01",
+   "export": "NxComputeSphereMass",
+   "ordinal": 14,
+   "dimension": "nominal",
+   "detail": [],
+   "inputs": [
+    "40000000",
+    "3f000000"
+   ],
+   "oracle": {
+    "ret": "41860a92",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeSphereMass.02",
+   "export": "NxComputeSphereMass",
+   "ordinal": 14,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_first"
+   ],
+   "inputs": [
+    "00000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeSphereMass.03",
+   "export": "NxComputeSphereMass",
+   "ordinal": 14,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_second"
+   ],
+   "inputs": [
+    "3f800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeSphereMass.04",
+   "export": "NxComputeSphereMass",
+   "ordinal": 14,
+   "dimension": "undocumented_domain",
+   "detail": [
+    "negative"
+   ],
+   "inputs": [
+    "bf800000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "c0860a92",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeSphereMass.05",
+   "export": "NxComputeSphereMass",
+   "ordinal": 14,
+   "dimension": "overflow",
+   "detail": [],
+   "inputs": [
+    "7f7fffff",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "7f800000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeSphereMass.06",
+   "export": "NxComputeSphereMass",
+   "ordinal": 14,
+   "dimension": "underflow",
+   "detail": [
+    "denormal"
+   ],
+   "inputs": [
+    "00000001",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeSphereMass.07",
+   "export": "NxComputeSphereMass",
+   "ordinal": 14,
+   "dimension": "non_finite",
+   "detail": [
+    "infinity"
+   ],
+   "inputs": [
+    "3f800000",
+    "7f800000"
+   ],
+   "oracle": {
+    "ret": "7f800000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeSphereMass.08",
+   "export": "NxComputeSphereMass",
+   "ordinal": 14,
+   "dimension": "non_finite",
+   "detail": [
+    "nan"
+   ],
+   "inputs": [
+    "7fc00000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "7fc00000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeSphereDensity.00",
+   "export": "NxComputeSphereDensity",
+   "ordinal": 12,
+   "dimension": "nominal",
+   "detail": [],
+   "inputs": [
+    "3f800000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "3e747645",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeSphereDensity.01",
+   "export": "NxComputeSphereDensity",
+   "ordinal": 12,
+   "dimension": "nominal",
+   "detail": [],
+   "inputs": [
+    "40000000",
+    "3f000000"
+   ],
+   "oracle": {
+    "ret": "3c747645",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeSphereDensity.02",
+   "export": "NxComputeSphereDensity",
+   "ordinal": 12,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_first"
+   ],
+   "inputs": [
+    "00000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "7f800000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeSphereDensity.03",
+   "export": "NxComputeSphereDensity",
+   "ordinal": 12,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_second"
+   ],
+   "inputs": [
+    "3f800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeSphereDensity.04",
+   "export": "NxComputeSphereDensity",
+   "ordinal": 12,
+   "dimension": "undocumented_domain",
+   "detail": [
+    "negative"
+   ],
+   "inputs": [
+    "bf800000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "be747645",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeSphereDensity.05",
+   "export": "NxComputeSphereDensity",
+   "ordinal": 12,
+   "dimension": "overflow",
+   "detail": [],
+   "inputs": [
+    "7f7fffff",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeSphereDensity.06",
+   "export": "NxComputeSphereDensity",
+   "ordinal": 12,
+   "dimension": "underflow",
+   "detail": [
+    "denormal"
+   ],
+   "inputs": [
+    "00000001",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "7f800000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeSphereDensity.07",
+   "export": "NxComputeSphereDensity",
+   "ordinal": 12,
+   "dimension": "non_finite",
+   "detail": [
+    "infinity"
+   ],
+   "inputs": [
+    "3f800000",
+    "7f800000"
+   ],
+   "oracle": {
+    "ret": "7f800000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeSphereDensity.08",
+   "export": "NxComputeSphereDensity",
+   "ordinal": 12,
+   "dimension": "non_finite",
+   "detail": [
+    "nan"
+   ],
+   "inputs": [
+    "7fc00000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "7fc00000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeBoxMass.00",
+   "export": "NxComputeBoxMass",
+   "ordinal": 5,
+   "dimension": "nominal",
+   "detail": [],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "3f800000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeBoxMass.01",
+   "export": "NxComputeBoxMass",
+   "ordinal": 5,
+   "dimension": "nominal",
+   "detail": [
+    "asymmetric"
+   ],
+   "inputs": [
+    "40000000",
+    "40400000",
+    "40800000",
+    "3f000000"
+   ],
+   "oracle": {
+    "ret": "41400000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeBoxMass.02",
+   "export": "NxComputeBoxMass",
+   "ordinal": 5,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_extent"
+   ],
+   "inputs": [
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "3f800000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeBoxMass.03",
+   "export": "NxComputeBoxMass",
+   "ordinal": 5,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_second"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeBoxMass.04",
+   "export": "NxComputeBoxMass",
+   "ordinal": 5,
+   "dimension": "undocumented_domain",
+   "detail": [
+    "negative"
+   ],
+   "inputs": [
+    "bf800000",
+    "40000000",
+    "40400000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "c0c00000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeBoxMass.05",
+   "export": "NxComputeBoxMass",
+   "ordinal": 5,
+   "dimension": "overflow",
+   "detail": [],
+   "inputs": [
+    "7f7fffff",
+    "7f7fffff",
+    "7f7fffff",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "7f800000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeBoxMass.06",
+   "export": "NxComputeBoxMass",
+   "ordinal": 5,
+   "dimension": "underflow",
+   "detail": [
+    "denormal"
+   ],
+   "inputs": [
+    "00000001",
+    "3f800000",
+    "3f800000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeBoxMass.07",
+   "export": "NxComputeBoxMass",
+   "ordinal": 5,
+   "dimension": "non_finite",
+   "detail": [
+    "nan"
+   ],
+   "inputs": [
+    "7fc00000",
+    "3f800000",
+    "3f800000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "7fc00000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeBoxMass.08",
+   "export": "NxComputeBoxMass",
+   "ordinal": 5,
+   "dimension": "non_finite",
+   "detail": [
+    "infinity"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "7f800000"
+   ],
+   "oracle": {
+    "ret": "7f800000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeBoxDensity.00",
+   "export": "NxComputeBoxDensity",
+   "ordinal": 3,
+   "dimension": "nominal",
+   "detail": [],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "3f800000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeBoxDensity.01",
+   "export": "NxComputeBoxDensity",
+   "ordinal": 3,
+   "dimension": "nominal",
+   "detail": [
+    "asymmetric"
+   ],
+   "inputs": [
+    "40000000",
+    "40400000",
+    "40800000",
+    "3f000000"
+   ],
+   "oracle": {
+    "ret": "3caaaaab",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeBoxDensity.02",
+   "export": "NxComputeBoxDensity",
+   "ordinal": 3,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_extent"
+   ],
+   "inputs": [
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "3f800000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeBoxDensity.03",
+   "export": "NxComputeBoxDensity",
+   "ordinal": 3,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_second"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeBoxDensity.04",
+   "export": "NxComputeBoxDensity",
+   "ordinal": 3,
+   "dimension": "undocumented_domain",
+   "detail": [
+    "negative"
+   ],
+   "inputs": [
+    "bf800000",
+    "40000000",
+    "40400000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "be2aaaab",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeBoxDensity.05",
+   "export": "NxComputeBoxDensity",
+   "ordinal": 3,
+   "dimension": "overflow",
+   "detail": [],
+   "inputs": [
+    "7f7fffff",
+    "7f7fffff",
+    "7f7fffff",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeBoxDensity.06",
+   "export": "NxComputeBoxDensity",
+   "ordinal": 3,
+   "dimension": "underflow",
+   "detail": [
+    "denormal"
+   ],
+   "inputs": [
+    "00000001",
+    "3f800000",
+    "3f800000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "7f800000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeBoxDensity.07",
+   "export": "NxComputeBoxDensity",
+   "ordinal": 3,
+   "dimension": "non_finite",
+   "detail": [
+    "nan"
+   ],
+   "inputs": [
+    "7fc00000",
+    "3f800000",
+    "3f800000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "7fc00000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeBoxDensity.08",
+   "export": "NxComputeBoxDensity",
+   "ordinal": 3,
+   "dimension": "non_finite",
+   "detail": [
+    "infinity"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "7f800000"
+   ],
+   "oracle": {
+    "ret": "7f800000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeEllipsoidMass.00",
+   "export": "NxComputeEllipsoidMass",
+   "ordinal": 11,
+   "dimension": "nominal",
+   "detail": [],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "40860a92",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeEllipsoidMass.01",
+   "export": "NxComputeEllipsoidMass",
+   "ordinal": 11,
+   "dimension": "nominal",
+   "detail": [
+    "asymmetric"
+   ],
+   "inputs": [
+    "40000000",
+    "40400000",
+    "40800000",
+    "3f000000"
+   ],
+   "oracle": {
+    "ret": "42490fdb",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeEllipsoidMass.02",
+   "export": "NxComputeEllipsoidMass",
+   "ordinal": 11,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_extent"
+   ],
+   "inputs": [
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "40860a92",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeEllipsoidMass.03",
+   "export": "NxComputeEllipsoidMass",
+   "ordinal": 11,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_second"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeEllipsoidMass.04",
+   "export": "NxComputeEllipsoidMass",
+   "ordinal": 11,
+   "dimension": "undocumented_domain",
+   "detail": [
+    "negative"
+   ],
+   "inputs": [
+    "bf800000",
+    "40000000",
+    "40400000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "c1c90fdb",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeEllipsoidMass.05",
+   "export": "NxComputeEllipsoidMass",
+   "ordinal": 11,
+   "dimension": "overflow",
+   "detail": [],
+   "inputs": [
+    "7f7fffff",
+    "7f7fffff",
+    "7f7fffff",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "7f800000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeEllipsoidMass.06",
+   "export": "NxComputeEllipsoidMass",
+   "ordinal": 11,
+   "dimension": "underflow",
+   "detail": [
+    "denormal"
+   ],
+   "inputs": [
+    "00000001",
+    "3f800000",
+    "3f800000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000004",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeEllipsoidMass.07",
+   "export": "NxComputeEllipsoidMass",
+   "ordinal": 11,
+   "dimension": "non_finite",
+   "detail": [
+    "nan"
+   ],
+   "inputs": [
+    "7fc00000",
+    "3f800000",
+    "3f800000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "7fc00000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeEllipsoidMass.08",
+   "export": "NxComputeEllipsoidMass",
+   "ordinal": 11,
+   "dimension": "non_finite",
+   "detail": [
+    "infinity"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "7f800000"
+   ],
+   "oracle": {
+    "ret": "7f800000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeEllipsoidDensity.00",
+   "export": "NxComputeEllipsoidDensity",
+   "ordinal": 10,
+   "dimension": "nominal",
+   "detail": [],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "3e747645",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeEllipsoidDensity.01",
+   "export": "NxComputeEllipsoidDensity",
+   "ordinal": 10,
+   "dimension": "nominal",
+   "detail": [
+    "asymmetric"
+   ],
+   "inputs": [
+    "40000000",
+    "40400000",
+    "40800000",
+    "3f000000"
+   ],
+   "oracle": {
+    "ret": "3ba2f983",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeEllipsoidDensity.02",
+   "export": "NxComputeEllipsoidDensity",
+   "ordinal": 10,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_extent"
+   ],
+   "inputs": [
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "3e747645",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeEllipsoidDensity.03",
+   "export": "NxComputeEllipsoidDensity",
+   "ordinal": 10,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_second"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeEllipsoidDensity.04",
+   "export": "NxComputeEllipsoidDensity",
+   "ordinal": 10,
+   "dimension": "undocumented_domain",
+   "detail": [
+    "negative"
+   ],
+   "inputs": [
+    "bf800000",
+    "40000000",
+    "40400000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "bd22f983",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeEllipsoidDensity.05",
+   "export": "NxComputeEllipsoidDensity",
+   "ordinal": 10,
+   "dimension": "overflow",
+   "detail": [],
+   "inputs": [
+    "7f7fffff",
+    "7f7fffff",
+    "7f7fffff",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeEllipsoidDensity.06",
+   "export": "NxComputeEllipsoidDensity",
+   "ordinal": 10,
+   "dimension": "underflow",
+   "detail": [
+    "denormal"
+   ],
+   "inputs": [
+    "00000001",
+    "3f800000",
+    "3f800000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "7f800000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeEllipsoidDensity.07",
+   "export": "NxComputeEllipsoidDensity",
+   "ordinal": 10,
+   "dimension": "non_finite",
+   "detail": [
+    "nan"
+   ],
+   "inputs": [
+    "7fc00000",
+    "3f800000",
+    "3f800000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "7fc00000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeEllipsoidDensity.08",
+   "export": "NxComputeEllipsoidDensity",
+   "ordinal": 10,
+   "dimension": "non_finite",
+   "detail": [
+    "infinity"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "7f800000"
+   ],
+   "oracle": {
+    "ret": "7f800000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeCylinderMass.00",
+   "export": "NxComputeCylinderMass",
+   "ordinal": 9,
+   "dimension": "nominal",
+   "detail": [],
+   "inputs": [
+    "3f800000",
+    "40000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "41490fdb",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeCylinderMass.01",
+   "export": "NxComputeCylinderMass",
+   "ordinal": 9,
+   "dimension": "nominal",
+   "detail": [],
+   "inputs": [
+    "3f000000",
+    "40400000",
+    "40000000"
+   ],
+   "oracle": {
+    "ret": "4116cbe4",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeCylinderMass.02",
+   "export": "NxComputeCylinderMass",
+   "ordinal": 9,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_radius"
+   ],
+   "inputs": [
+    "00000000",
+    "40000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeCylinderMass.03",
+   "export": "NxComputeCylinderMass",
+   "ordinal": 9,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_length"
+   ],
+   "inputs": [
+    "3f800000",
+    "00000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeCylinderMass.04",
+   "export": "NxComputeCylinderMass",
+   "ordinal": 9,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_third"
+   ],
+   "inputs": [
+    "3f800000",
+    "40000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeCylinderMass.05",
+   "export": "NxComputeCylinderMass",
+   "ordinal": 9,
+   "dimension": "undocumented_domain",
+   "detail": [
+    "negative"
+   ],
+   "inputs": [
+    "bf800000",
+    "40000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "41490fdb",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeCylinderMass.06",
+   "export": "NxComputeCylinderMass",
+   "ordinal": 9,
+   "dimension": "overflow",
+   "detail": [],
+   "inputs": [
+    "7f7fffff",
+    "7f7fffff",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "7f800000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeCylinderMass.07",
+   "export": "NxComputeCylinderMass",
+   "ordinal": 9,
+   "dimension": "non_finite",
+   "detail": [
+    "nan"
+   ],
+   "inputs": [
+    "7fc00000",
+    "40000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "7fc00000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeCylinderMass.08",
+   "export": "NxComputeCylinderMass",
+   "ordinal": 9,
+   "dimension": "underflow",
+   "detail": [
+    "denormal"
+   ],
+   "inputs": [
+    "00000001",
+    "40000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeCylinderDensity.00",
+   "export": "NxComputeCylinderDensity",
+   "ordinal": 8,
+   "dimension": "nominal",
+   "detail": [],
+   "inputs": [
+    "3f800000",
+    "40000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "3da2f983",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeCylinderDensity.01",
+   "export": "NxComputeCylinderDensity",
+   "ordinal": 8,
+   "dimension": "nominal",
+   "detail": [],
+   "inputs": [
+    "3f000000",
+    "40400000",
+    "40000000"
+   ],
+   "oracle": {
+    "ret": "3ed94caf",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeCylinderDensity.02",
+   "export": "NxComputeCylinderDensity",
+   "ordinal": 8,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_radius"
+   ],
+   "inputs": [
+    "00000000",
+    "40000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "7f800000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeCylinderDensity.03",
+   "export": "NxComputeCylinderDensity",
+   "ordinal": 8,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_length"
+   ],
+   "inputs": [
+    "3f800000",
+    "00000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "7f800000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeCylinderDensity.04",
+   "export": "NxComputeCylinderDensity",
+   "ordinal": 8,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_third"
+   ],
+   "inputs": [
+    "3f800000",
+    "40000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeCylinderDensity.05",
+   "export": "NxComputeCylinderDensity",
+   "ordinal": 8,
+   "dimension": "undocumented_domain",
+   "detail": [
+    "negative"
+   ],
+   "inputs": [
+    "bf800000",
+    "40000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "3da2f983",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeCylinderDensity.06",
+   "export": "NxComputeCylinderDensity",
+   "ordinal": 8,
+   "dimension": "overflow",
+   "detail": [],
+   "inputs": [
+    "7f7fffff",
+    "7f7fffff",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeCylinderDensity.07",
+   "export": "NxComputeCylinderDensity",
+   "ordinal": 8,
+   "dimension": "non_finite",
+   "detail": [
+    "nan"
+   ],
+   "inputs": [
+    "7fc00000",
+    "40000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "7fc00000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeCylinderDensity.08",
+   "export": "NxComputeCylinderDensity",
+   "ordinal": 8,
+   "dimension": "underflow",
+   "detail": [
+    "denormal"
+   ],
+   "inputs": [
+    "00000001",
+    "40000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "7f800000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeConeMass.00",
+   "export": "NxComputeConeMass",
+   "ordinal": 7,
+   "dimension": "nominal",
+   "detail": [],
+   "inputs": [
+    "3f800000",
+    "40000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "40060a92",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeConeMass.01",
+   "export": "NxComputeConeMass",
+   "ordinal": 7,
+   "dimension": "nominal",
+   "detail": [],
+   "inputs": [
+    "3f000000",
+    "40400000",
+    "40000000"
+   ],
+   "oracle": {
+    "ret": "3fc90fdb",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeConeMass.02",
+   "export": "NxComputeConeMass",
+   "ordinal": 7,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_radius"
+   ],
+   "inputs": [
+    "00000000",
+    "40000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeConeMass.03",
+   "export": "NxComputeConeMass",
+   "ordinal": 7,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_length"
+   ],
+   "inputs": [
+    "3f800000",
+    "00000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeConeMass.04",
+   "export": "NxComputeConeMass",
+   "ordinal": 7,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_third"
+   ],
+   "inputs": [
+    "3f800000",
+    "40000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeConeMass.05",
+   "export": "NxComputeConeMass",
+   "ordinal": 7,
+   "dimension": "undocumented_domain",
+   "detail": [
+    "negative"
+   ],
+   "inputs": [
+    "bf800000",
+    "40000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "40060a92",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeConeMass.06",
+   "export": "NxComputeConeMass",
+   "ordinal": 7,
+   "dimension": "overflow",
+   "detail": [],
+   "inputs": [
+    "7f7fffff",
+    "7f7fffff",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "7f800000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeConeMass.07",
+   "export": "NxComputeConeMass",
+   "ordinal": 7,
+   "dimension": "non_finite",
+   "detail": [
+    "nan"
+   ],
+   "inputs": [
+    "7fc00000",
+    "40000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "7fc00000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeConeMass.08",
+   "export": "NxComputeConeMass",
+   "ordinal": 7,
+   "dimension": "underflow",
+   "detail": [
+    "denormal"
+   ],
+   "inputs": [
+    "00000001",
+    "40000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeConeDensity.00",
+   "export": "NxComputeConeDensity",
+   "ordinal": 6,
+   "dimension": "nominal",
+   "detail": [],
+   "inputs": [
+    "3f800000",
+    "40000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "3ef47645",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeConeDensity.01",
+   "export": "NxComputeConeDensity",
+   "ordinal": 6,
+   "dimension": "nominal",
+   "detail": [],
+   "inputs": [
+    "3f000000",
+    "40400000",
+    "40000000"
+   ],
+   "oracle": {
+    "ret": "4022f983",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeConeDensity.02",
+   "export": "NxComputeConeDensity",
+   "ordinal": 6,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_radius"
+   ],
+   "inputs": [
+    "00000000",
+    "40000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "7f800000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeConeDensity.03",
+   "export": "NxComputeConeDensity",
+   "ordinal": 6,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_length"
+   ],
+   "inputs": [
+    "3f800000",
+    "00000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "7f800000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeConeDensity.04",
+   "export": "NxComputeConeDensity",
+   "ordinal": 6,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_third"
+   ],
+   "inputs": [
+    "3f800000",
+    "40000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeConeDensity.05",
+   "export": "NxComputeConeDensity",
+   "ordinal": 6,
+   "dimension": "undocumented_domain",
+   "detail": [
+    "negative"
+   ],
+   "inputs": [
+    "bf800000",
+    "40000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "3ef47645",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeConeDensity.06",
+   "export": "NxComputeConeDensity",
+   "ordinal": 6,
+   "dimension": "overflow",
+   "detail": [],
+   "inputs": [
+    "7f7fffff",
+    "7f7fffff",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeConeDensity.07",
+   "export": "NxComputeConeDensity",
+   "ordinal": 6,
+   "dimension": "non_finite",
+   "detail": [
+    "nan"
+   ],
+   "inputs": [
+    "7fc00000",
+    "40000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "7fc00000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeConeDensity.08",
+   "export": "NxComputeConeDensity",
+   "ordinal": 6,
+   "dimension": "underflow",
+   "detail": [
+    "denormal"
+   ],
+   "inputs": [
+    "00000001",
+    "40000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "7f800000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxComputeBoxInertiaTensor.00",
+   "export": "NxComputeBoxInertiaTensor",
+   "ordinal": 4,
+   "dimension": "nominal",
+   "detail": [],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "void",
+    "out": [
+     "3e2aaaab",
+     "3e2aaaab",
+     "3e2aaaab",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxComputeBoxInertiaTensor.01",
+   "export": "NxComputeBoxInertiaTensor",
+   "ordinal": 4,
+   "dimension": "nominal",
+   "detail": [
+    "asymmetric"
+   ],
+   "inputs": [
+    "40200000",
+    "3f800000",
+    "40000000",
+    "40400000"
+   ],
+   "oracle": {
+    "ret": "void",
+    "out": [
+     "402d5556",
+     "40055556",
+     "3f855556",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxComputeBoxInertiaTensor.02",
+   "export": "NxComputeBoxInertiaTensor",
+   "ordinal": 4,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_mass"
+   ],
+   "inputs": [
+    "00000000",
+    "3f800000",
+    "40000000",
+    "40400000"
+   ],
+   "oracle": {
+    "ret": "void",
+    "out": [
+     "00000000",
+     "00000000",
+     "00000000",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxComputeBoxInertiaTensor.03",
+   "export": "NxComputeBoxInertiaTensor",
+   "ordinal": 4,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_extent"
+   ],
+   "inputs": [
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "void",
+    "out": [
+     "00000000",
+     "00000000",
+     "00000000",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxComputeBoxInertiaTensor.04",
+   "export": "NxComputeBoxInertiaTensor",
+   "ordinal": 4,
+   "dimension": "undocumented_domain",
+   "detail": [
+    "negative"
+   ],
+   "inputs": [
+    "3f800000",
+    "bf800000",
+    "40000000",
+    "40400000"
+   ],
+   "oracle": {
+    "ret": "void",
+    "out": [
+     "3f8aaaab",
+     "3f555556",
+     "3ed55556",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxComputeBoxInertiaTensor.05",
+   "export": "NxComputeBoxInertiaTensor",
+   "ordinal": 4,
+   "dimension": "overflow",
+   "detail": [],
+   "inputs": [
+    "7f7fffff",
+    "7f7fffff",
+    "3f800000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "void",
+    "out": [
+     "7e2aaaaa",
+     "7f800000",
+     "7f800000",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxComputeBoxInertiaTensor.06",
+   "export": "NxComputeBoxInertiaTensor",
+   "ordinal": 4,
+   "dimension": "non_finite",
+   "detail": [
+    "nan"
+   ],
+   "inputs": [
+    "7fc00000",
+    "3f800000",
+    "3f800000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "void",
+    "out": [
+     "7fc00000",
+     "7fc00000",
+     "7fc00000",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxComputeBoxInertiaTensor.07",
+   "export": "NxComputeBoxInertiaTensor",
+   "ordinal": 4,
+   "dimension": "non_finite",
+   "detail": [
+    "infinity"
+   ],
+   "inputs": [
+    "3f800000",
+    "7f800000",
+    "3f800000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "void",
+    "out": [
+     "3e2aaaab",
+     "7f800000",
+     "7f800000",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxComputeSphereInertiaTensor.00",
+   "export": "NxComputeSphereInertiaTensor",
+   "ordinal": 13,
+   "dimension": "nominal",
+   "detail": [
+    "solid"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "void",
+    "out": [
+     "3ecccccd",
+     "3ecccccd",
+     "3ecccccd",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxComputeSphereInertiaTensor.01",
+   "export": "NxComputeSphereInertiaTensor",
+   "ordinal": 13,
+   "dimension": "nominal",
+   "detail": [
+    "hollow"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "00000001"
+   ],
+   "oracle": {
+    "ret": "void",
+    "out": [
+     "3f2aaaab",
+     "3f2aaaab",
+     "3f2aaaab",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxComputeSphereInertiaTensor.02",
+   "export": "NxComputeSphereInertiaTensor",
+   "ordinal": 13,
+   "dimension": "nominal",
+   "detail": [
+    "solid"
+   ],
+   "inputs": [
+    "40200000",
+    "3f000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "void",
+    "out": [
+     "3e800000",
+     "3e800000",
+     "3e800000",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxComputeSphereInertiaTensor.03",
+   "export": "NxComputeSphereInertiaTensor",
+   "ordinal": 13,
+   "dimension": "nominal",
+   "detail": [
+    "hollow"
+   ],
+   "inputs": [
+    "40200000",
+    "3f000000",
+    "00000001"
+   ],
+   "oracle": {
+    "ret": "void",
+    "out": [
+     "3ed55556",
+     "3ed55556",
+     "3ed55556",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxComputeSphereInertiaTensor.04",
+   "export": "NxComputeSphereInertiaTensor",
+   "ordinal": 13,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_mass"
+   ],
+   "inputs": [
+    "00000000",
+    "3f800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "void",
+    "out": [
+     "00000000",
+     "00000000",
+     "00000000",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxComputeSphereInertiaTensor.05",
+   "export": "NxComputeSphereInertiaTensor",
+   "ordinal": 13,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_radius"
+   ],
+   "inputs": [
+    "3f800000",
+    "00000000",
+    "00000001"
+   ],
+   "oracle": {
+    "ret": "void",
+    "out": [
+     "00000000",
+     "00000000",
+     "00000000",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxComputeSphereInertiaTensor.06",
+   "export": "NxComputeSphereInertiaTensor",
+   "ordinal": 13,
+   "dimension": "undocumented_domain",
+   "detail": [
+    "negative"
+   ],
+   "inputs": [
+    "3f800000",
+    "bf800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "void",
+    "out": [
+     "3ecccccd",
+     "3ecccccd",
+     "3ecccccd",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxComputeSphereInertiaTensor.07",
+   "export": "NxComputeSphereInertiaTensor",
+   "ordinal": 13,
+   "dimension": "non_finite",
+   "detail": [
+    "nan"
+   ],
+   "inputs": [
+    "7fc00000",
+    "3f800000",
+    "00000001"
+   ],
+   "oracle": {
+    "ret": "void",
+    "out": [
+     "7fc00000",
+     "7fc00000",
+     "7fc00000",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxComputeSphereInertiaTensor.08",
+   "export": "NxComputeSphereInertiaTensor",
+   "ordinal": 13,
+   "dimension": "overflow",
+   "detail": [],
+   "inputs": [
+    "7f7fffff",
+    "7f7fffff",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "void",
+    "out": [
+     "7f800000",
+     "7f800000",
+     "7f800000",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxComputeSphereInertiaTensor.09",
+   "export": "NxComputeSphereInertiaTensor",
+   "ordinal": 13,
+   "dimension": "undocumented_bool_encoding",
+   "detail": [],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "00000002"
+   ],
+   "oracle": {
+    "ret": "void",
+    "out": [
+     "3f2aaaab",
+     "3f2aaaab",
+     "3f2aaaab",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxRayPlaneIntersect.00",
+   "export": "NxRayPlaneIntersect",
+   "ordinal": 32,
+   "dimension": "hit",
+   "detail": [],
+   "inputs": [
+    "00000000",
+    "41200000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "41200000",
+     "cdcd0001",
+     "cdcd0002",
+     "00000000",
+     "00000000",
+     "00000000",
+     "cdcd0007",
+     "cdcd0008"
+    ]
+   }
+  },
+  {
+   "id": "NxRayPlaneIntersect.01",
+   "export": "NxRayPlaneIntersect",
+   "ordinal": 32,
+   "dimension": "miss",
+   "detail": [
+    "reversed_direction"
+   ],
+   "inputs": [
+    "00000000",
+    "41200000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "c1200000",
+     "cdcd0001",
+     "cdcd0002",
+     "00000000",
+     "00000000",
+     "00000000",
+     "cdcd0007",
+     "cdcd0008"
+    ]
+   }
+  },
+  {
+   "id": "NxRayPlaneIntersect.02",
+   "export": "NxRayPlaneIntersect",
+   "ordinal": 32,
+   "dimension": "miss",
+   "detail": [
+    "parallel"
+   ],
+   "inputs": [
+    "00000000",
+    "41200000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": [
+     "cdcd0000",
+     "cdcd0001",
+     "cdcd0002",
+     "cdcd0004",
+     "cdcd0005",
+     "cdcd0006",
+     "cdcd0007",
+     "cdcd0008"
+    ]
+   }
+  },
+  {
+   "id": "NxRayPlaneIntersect.03",
+   "export": "NxRayPlaneIntersect",
+   "ordinal": 32,
+   "dimension": "tangent",
+   "detail": [
+    "origin_on_plane"
+   ],
+   "inputs": [
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "00000000",
+     "cdcd0001",
+     "cdcd0002",
+     "00000000",
+     "00000000",
+     "00000000",
+     "cdcd0007",
+     "cdcd0008"
+    ]
+   }
+  },
+  {
+   "id": "NxRayPlaneIntersect.04",
+   "export": "NxRayPlaneIntersect",
+   "ordinal": 32,
+   "dimension": "hit",
+   "detail": [
+    "offset_plane"
+   ],
+   "inputs": [
+    "00000000",
+    "41200000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "c0000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "41000000",
+     "cdcd0001",
+     "cdcd0002",
+     "00000000",
+     "40000000",
+     "00000000",
+     "cdcd0007",
+     "cdcd0008"
+    ]
+   }
+  },
+  {
+   "id": "NxRayPlaneIntersect.05",
+   "export": "NxRayPlaneIntersect",
+   "ordinal": 32,
+   "dimension": "non_normalized",
+   "detail": [
+    "direction"
+   ],
+   "inputs": [
+    "00000000",
+    "41200000",
+    "00000000",
+    "00000000",
+    "c0000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "40a00000",
+     "cdcd0001",
+     "cdcd0002",
+     "00000000",
+     "00000000",
+     "00000000",
+     "cdcd0007",
+     "cdcd0008"
+    ]
+   }
+  },
+  {
+   "id": "NxRayPlaneIntersect.06",
+   "export": "NxRayPlaneIntersect",
+   "ordinal": 32,
+   "dimension": "zero_length",
+   "detail": [
+    "direction"
+   ],
+   "inputs": [
+    "00000000",
+    "41200000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": [
+     "cdcd0000",
+     "cdcd0001",
+     "cdcd0002",
+     "cdcd0004",
+     "cdcd0005",
+     "cdcd0006",
+     "cdcd0007",
+     "cdcd0008"
+    ]
+   }
+  },
+  {
+   "id": "NxRayPlaneIntersect.07",
+   "export": "NxRayPlaneIntersect",
+   "ordinal": 32,
+   "dimension": "non_normalized",
+   "detail": [
+    "plane_normal"
+   ],
+   "inputs": [
+    "00000000",
+    "41200000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "00000000",
+    "00000000",
+    "40000000",
+    "00000000",
+    "c0800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "41000000",
+     "cdcd0001",
+     "cdcd0002",
+     "00000000",
+     "40000000",
+     "00000000",
+     "cdcd0007",
+     "cdcd0008"
+    ]
+   }
+  },
+  {
+   "id": "NxRayPlaneIntersect.08",
+   "export": "NxRayPlaneIntersect",
+   "ordinal": 32,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_plane_normal"
+   ],
+   "inputs": [
+    "00000000",
+    "41200000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": [
+     "cdcd0000",
+     "cdcd0001",
+     "cdcd0002",
+     "cdcd0004",
+     "cdcd0005",
+     "cdcd0006",
+     "cdcd0007",
+     "cdcd0008"
+    ]
+   }
+  },
+  {
+   "id": "NxRayPlaneIntersect.09",
+   "export": "NxRayPlaneIntersect",
+   "ordinal": 32,
+   "dimension": "non_finite",
+   "detail": [
+    "nan"
+   ],
+   "inputs": [
+    "00000000",
+    "41200000",
+    "00000000",
+    "00000000",
+    "7fc00000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "ffc00000",
+     "cdcd0001",
+     "cdcd0002",
+     "ffc00000",
+     "7fc00000",
+     "ffc00000",
+     "cdcd0007",
+     "cdcd0008"
+    ]
+   }
+  },
+  {
+   "id": "NxRayPlaneIntersect.10",
+   "export": "NxRayPlaneIntersect",
+   "ordinal": 32,
+   "dimension": "aliasing",
+   "detail": [
+    "point_aliases_ray_origin"
+   ],
+   "inputs": [
+    "00000000",
+    "41200000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000001"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "41200000",
+     "cdcd0001",
+     "cdcd0002",
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "bf800000"
+    ]
+   }
+  },
+  {
+   "id": "NxSegmentPlaneIntersect.00",
+   "export": "NxSegmentPlaneIntersect",
+   "ordinal": 39,
+   "dimension": "hit",
+   "detail": [],
+   "inputs": [
+    "00000000",
+    "41200000",
+    "00000000",
+    "00000000",
+    "c1200000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "void",
+    "out": [
+     "41200000",
+     "cdcd0001",
+     "cdcd0002",
+     "00000000",
+     "00000000",
+     "00000000",
+     "cdcd0007",
+     "cdcd0008"
+    ]
+   }
+  },
+  {
+   "id": "NxSegmentPlaneIntersect.01",
+   "export": "NxSegmentPlaneIntersect",
+   "ordinal": 39,
+   "dimension": "miss",
+   "detail": [
+    "both_endpoints_above"
+   ],
+   "inputs": [
+    "00000000",
+    "41200000",
+    "00000000",
+    "00000000",
+    "40a00000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "void",
+    "out": [
+     "41200000",
+     "cdcd0001",
+     "cdcd0002",
+     "00000000",
+     "00000000",
+     "00000000",
+     "cdcd0007",
+     "cdcd0008"
+    ]
+   }
+  },
+  {
+   "id": "NxSegmentPlaneIntersect.02",
+   "export": "NxSegmentPlaneIntersect",
+   "ordinal": 39,
+   "dimension": "miss",
+   "detail": [
+    "parallel"
+   ],
+   "inputs": [
+    "00000000",
+    "41200000",
+    "00000000",
+    "41200000",
+    "41200000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "void",
+    "out": [
+     "cdcd0000",
+     "cdcd0001",
+     "cdcd0002",
+     "00000000",
+     "41200000",
+     "00000000",
+     "cdcd0007",
+     "cdcd0008"
+    ]
+   }
+  },
+  {
+   "id": "NxSegmentPlaneIntersect.03",
+   "export": "NxSegmentPlaneIntersect",
+   "ordinal": 39,
+   "dimension": "tangent",
+   "detail": [
+    "both_endpoints_on_plane"
+   ],
+   "inputs": [
+    "00000000",
+    "00000000",
+    "00000000",
+    "41200000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "void",
+    "out": [
+     "cdcd0000",
+     "cdcd0001",
+     "cdcd0002",
+     "00000000",
+     "00000000",
+     "00000000",
+     "cdcd0007",
+     "cdcd0008"
+    ]
+   }
+  },
+  {
+   "id": "NxSegmentPlaneIntersect.04",
+   "export": "NxSegmentPlaneIntersect",
+   "ordinal": 39,
+   "dimension": "reversed_direction",
+   "detail": [],
+   "inputs": [
+    "00000000",
+    "c1200000",
+    "00000000",
+    "00000000",
+    "41200000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "void",
+    "out": [
+     "41200000",
+     "cdcd0001",
+     "cdcd0002",
+     "00000000",
+     "00000000",
+     "00000000",
+     "cdcd0007",
+     "cdcd0008"
+    ]
+   }
+  },
+  {
+   "id": "NxSegmentPlaneIntersect.05",
+   "export": "NxSegmentPlaneIntersect",
+   "ordinal": 39,
+   "dimension": "zero_length",
+   "detail": [
+    "degenerate_segment"
+   ],
+   "inputs": [
+    "00000000",
+    "41200000",
+    "00000000",
+    "00000000",
+    "41200000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "void",
+    "out": [
+     "cdcd0000",
+     "cdcd0001",
+     "cdcd0002",
+     "00000000",
+     "41200000",
+     "00000000",
+     "cdcd0007",
+     "cdcd0008"
+    ]
+   }
+  },
+  {
+   "id": "NxSegmentPlaneIntersect.06",
+   "export": "NxSegmentPlaneIntersect",
+   "ordinal": 39,
+   "dimension": "non_normalized",
+   "detail": [
+    "plane_normal"
+   ],
+   "inputs": [
+    "00000000",
+    "41200000",
+    "00000000",
+    "00000000",
+    "c1200000",
+    "00000000",
+    "00000000",
+    "40000000",
+    "00000000",
+    "c0800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "void",
+    "out": [
+     "41000000",
+     "cdcd0001",
+     "cdcd0002",
+     "00000000",
+     "40000000",
+     "00000000",
+     "cdcd0007",
+     "cdcd0008"
+    ]
+   }
+  },
+  {
+   "id": "NxSegmentPlaneIntersect.07",
+   "export": "NxSegmentPlaneIntersect",
+   "ordinal": 39,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_plane_normal"
+   ],
+   "inputs": [
+    "00000000",
+    "41200000",
+    "00000000",
+    "00000000",
+    "c1200000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "void",
+    "out": [
+     "cdcd0000",
+     "cdcd0001",
+     "cdcd0002",
+     "00000000",
+     "41200000",
+     "00000000",
+     "cdcd0007",
+     "cdcd0008"
+    ]
+   }
+  },
+  {
+   "id": "NxSegmentPlaneIntersect.08",
+   "export": "NxSegmentPlaneIntersect",
+   "ordinal": 39,
+   "dimension": "non_finite",
+   "detail": [
+    "nan"
+   ],
+   "inputs": [
+    "00000000",
+    "7fc00000",
+    "00000000",
+    "00000000",
+    "c1200000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "void",
+    "out": [
+     "ffc00000",
+     "cdcd0001",
+     "cdcd0002",
+     "7fc00000",
+     "7fc00000",
+     "7fc00000",
+     "cdcd0007",
+     "cdcd0008"
+    ]
+   }
+  },
+  {
+   "id": "NxSegmentPlaneIntersect.09",
+   "export": "NxSegmentPlaneIntersect",
+   "ordinal": 39,
+   "dimension": "aliasing",
+   "detail": [
+    "point_aliases_v1"
+   ],
+   "inputs": [
+    "00000000",
+    "41200000",
+    "00000000",
+    "00000000",
+    "c1200000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000001"
+   ],
+   "oracle": {
+    "ret": "void",
+    "out": [
+     "41200000",
+     "cdcd0001",
+     "cdcd0002",
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "c1200000"
+    ]
+   }
+  },
+  {
+   "id": "NxRaySphereIntersect.00",
+   "export": "NxRaySphereIntersect",
+   "ordinal": 33,
+   "dimension": "hit",
+   "detail": [],
+   "inputs": [
+    "00000000",
+    "00000000",
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "00000000",
+     "00000000",
+     "bf800000",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxRaySphereIntersect.01",
+   "export": "NxRaySphereIntersect",
+   "ordinal": 33,
+   "dimension": "miss",
+   "detail": [
+    "beside"
+   ],
+   "inputs": [
+    "00000000",
+    "40000000",
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": [
+     "cdcd0000",
+     "cdcd0001",
+     "cdcd0002",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxRaySphereIntersect.02",
+   "export": "NxRaySphereIntersect",
+   "ordinal": 33,
+   "dimension": "tangent",
+   "detail": [],
+   "inputs": [
+    "00000000",
+    "3f800000",
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "00000000",
+     "3f800000",
+     "00000000",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxRaySphereIntersect.03",
+   "export": "NxRaySphereIntersect",
+   "ordinal": 33,
+   "dimension": "hit",
+   "detail": [
+    "origin_inside"
+   ],
+   "inputs": [
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "00000000",
+     "00000000",
+     "bf800000",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxRaySphereIntersect.04",
+   "export": "NxRaySphereIntersect",
+   "ordinal": 33,
+   "dimension": "tangent",
+   "detail": [
+    "origin_on_surface"
+   ],
+   "inputs": [
+    "00000000",
+    "00000000",
+    "bf800000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "00000000",
+     "00000000",
+     "bf800000",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxRaySphereIntersect.05",
+   "export": "NxRaySphereIntersect",
+   "ordinal": 33,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_radius"
+   ],
+   "inputs": [
+    "00000000",
+    "00000000",
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "00000000",
+     "00000000",
+     "00000000",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxRaySphereIntersect.06",
+   "export": "NxRaySphereIntersect",
+   "ordinal": 33,
+   "dimension": "undocumented_domain",
+   "detail": [
+    "negative_radius"
+   ],
+   "inputs": [
+    "00000000",
+    "00000000",
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "00000000",
+     "00000000",
+     "bf800000",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxRaySphereIntersect.07",
+   "export": "NxRaySphereIntersect",
+   "ordinal": 33,
+   "dimension": "non_normalized",
+   "detail": [
+    "direction"
+   ],
+   "inputs": [
+    "00000000",
+    "00000000",
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "40000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "00000000",
+     "00000000",
+     "c01be0cd",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxRaySphereIntersect.08",
+   "export": "NxRaySphereIntersect",
+   "ordinal": 33,
+   "dimension": "zero_length",
+   "detail": [
+    "direction"
+   ],
+   "inputs": [
+    "00000000",
+    "00000000",
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": [
+     "cdcd0000",
+     "cdcd0001",
+     "cdcd0002",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxRaySphereIntersect.09",
+   "export": "NxRaySphereIntersect",
+   "ordinal": 33,
+   "dimension": "miss",
+   "detail": [
+    "reversed_direction"
+   ],
+   "inputs": [
+    "00000000",
+    "00000000",
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "00000000",
+     "00000000",
+     "3f800000",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxRaySphereIntersect.10",
+   "export": "NxRaySphereIntersect",
+   "ordinal": 33,
+   "dimension": "null_optional_output",
+   "detail": [],
+   "inputs": [
+    "00000000",
+    "00000000",
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000001"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "cdcd0000",
+     "cdcd0001",
+     "cdcd0002",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxRaySphereIntersect.11",
+   "export": "NxRaySphereIntersect",
+   "ordinal": 33,
+   "dimension": "aliasing",
+   "detail": [
+    "coord_aliases_origin"
+   ],
+   "inputs": [
+    "00000000",
+    "00000000",
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000002"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "00000000",
+     "00000000",
+     "bf800000",
+     "00000000",
+     "00000000"
+    ]
+   }
+  },
+  {
+   "id": "NxRaySphereIntersect.12",
+   "export": "NxRaySphereIntersect",
+   "ordinal": 33,
+   "dimension": "non_finite",
+   "detail": [
+    "nan"
+   ],
+   "inputs": [
+    "00000000",
+    "00000000",
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "7fc00000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "7fc00000",
+     "7fc00000",
+     "7fc00000",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxRayTriIntersect.00",
+   "export": "NxRayTriIntersect",
+   "ordinal": 34,
+   "dimension": "hit",
+   "detail": [
+    "culling_on"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "40a00000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000001",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "40a00000",
+     "cdcd0001",
+     "cdcd0002",
+     "3e800000",
+     "cdcd0005",
+     "cdcd0006",
+     "3e800000",
+     "cdcd0009",
+     "cdcd000a"
+    ]
+   }
+  },
+  {
+   "id": "NxRayTriIntersect.01",
+   "export": "NxRayTriIntersect",
+   "ordinal": 34,
+   "dimension": "miss",
+   "detail": [
+    "opposite_face_culled"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000001",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": [
+     "cdcd0000",
+     "cdcd0001",
+     "cdcd0002",
+     "cdcd0004",
+     "cdcd0005",
+     "cdcd0006",
+     "cdcd0008",
+     "cdcd0009",
+     "cdcd000a"
+    ]
+   }
+  },
+  {
+   "id": "NxRayTriIntersect.02",
+   "export": "NxRayTriIntersect",
+   "ordinal": 34,
+   "dimension": "hit",
+   "detail": [
+    "opposite_face_culling_off"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "40a00000",
+     "cdcd0001",
+     "cdcd0002",
+     "3e800000",
+     "cdcd0005",
+     "cdcd0006",
+     "3e800000",
+     "cdcd0009",
+     "cdcd000a"
+    ]
+   }
+  },
+  {
+   "id": "NxRayTriIntersect.03",
+   "export": "NxRayTriIntersect",
+   "ordinal": 34,
+   "dimension": "miss",
+   "detail": [
+    "outside_triangle"
+   ],
+   "inputs": [
+    "41200000",
+    "41200000",
+    "40a00000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000001",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": [
+     "cdcd0000",
+     "cdcd0001",
+     "cdcd0002",
+     "42200000",
+     "cdcd0005",
+     "cdcd0006",
+     "cdcd0008",
+     "cdcd0009",
+     "cdcd000a"
+    ]
+   }
+  },
+  {
+   "id": "NxRayTriIntersect.04",
+   "export": "NxRayTriIntersect",
+   "ordinal": 34,
+   "dimension": "tangent",
+   "detail": [
+    "edge_hit"
+   ],
+   "inputs": [
+    "00000000",
+    "40000000",
+    "40a00000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000001",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "40a00000",
+     "cdcd0001",
+     "cdcd0002",
+     "00000000",
+     "cdcd0005",
+     "cdcd0006",
+     "3f000000",
+     "cdcd0009",
+     "cdcd000a"
+    ]
+   }
+  },
+  {
+   "id": "NxRayTriIntersect.05",
+   "export": "NxRayTriIntersect",
+   "ordinal": 34,
+   "dimension": "tangent",
+   "detail": [
+    "vertex_hit"
+   ],
+   "inputs": [
+    "00000000",
+    "00000000",
+    "40a00000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000001",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "40a00000",
+     "cdcd0001",
+     "cdcd0002",
+     "00000000",
+     "cdcd0005",
+     "cdcd0006",
+     "00000000",
+     "cdcd0009",
+     "cdcd000a"
+    ]
+   }
+  },
+  {
+   "id": "NxRayTriIntersect.06",
+   "export": "NxRayTriIntersect",
+   "ordinal": 34,
+   "dimension": "miss",
+   "detail": [
+    "parallel"
+   ],
+   "inputs": [
+    "00000000",
+    "00000000",
+    "40a00000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000001",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": [
+     "cdcd0000",
+     "cdcd0001",
+     "cdcd0002",
+     "cdcd0004",
+     "cdcd0005",
+     "cdcd0006",
+     "cdcd0008",
+     "cdcd0009",
+     "cdcd000a"
+    ]
+   }
+  },
+  {
+   "id": "NxRayTriIntersect.07",
+   "export": "NxRayTriIntersect",
+   "ordinal": 34,
+   "dimension": "degenerate",
+   "detail": [
+    "repeated_vertex"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "40a00000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000001",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": [
+     "cdcd0000",
+     "cdcd0001",
+     "cdcd0002",
+     "cdcd0004",
+     "cdcd0005",
+     "cdcd0006",
+     "cdcd0008",
+     "cdcd0009",
+     "cdcd000a"
+    ]
+   }
+  },
+  {
+   "id": "NxRayTriIntersect.08",
+   "export": "NxRayTriIntersect",
+   "ordinal": 34,
+   "dimension": "degenerate",
+   "detail": [
+    "collinear_vertices"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "40a00000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000001",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": [
+     "cdcd0000",
+     "cdcd0001",
+     "cdcd0002",
+     "cdcd0004",
+     "cdcd0005",
+     "cdcd0006",
+     "cdcd0008",
+     "cdcd0009",
+     "cdcd000a"
+    ]
+   }
+  },
+  {
+   "id": "NxRayTriIntersect.09",
+   "export": "NxRayTriIntersect",
+   "ordinal": 34,
+   "dimension": "zero_length",
+   "detail": [
+    "direction"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "40a00000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000001",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": [
+     "cdcd0000",
+     "cdcd0001",
+     "cdcd0002",
+     "cdcd0004",
+     "cdcd0005",
+     "cdcd0006",
+     "cdcd0008",
+     "cdcd0009",
+     "cdcd000a"
+    ]
+   }
+  },
+  {
+   "id": "NxRayTriIntersect.10",
+   "export": "NxRayTriIntersect",
+   "ordinal": 34,
+   "dimension": "miss",
+   "detail": [
+    "reversed_direction"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "40a00000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000001",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": [
+     "cdcd0000",
+     "cdcd0001",
+     "cdcd0002",
+     "cdcd0004",
+     "cdcd0005",
+     "cdcd0006",
+     "cdcd0008",
+     "cdcd0009",
+     "cdcd000a"
+    ]
+   }
+  },
+  {
+   "id": "NxRayTriIntersect.11",
+   "export": "NxRayTriIntersect",
+   "ordinal": 34,
+   "dimension": "non_normalized",
+   "detail": [
+    "direction"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "40a00000",
+    "00000000",
+    "00000000",
+    "c0000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000001",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "40200000",
+     "cdcd0001",
+     "cdcd0002",
+     "3e800000",
+     "cdcd0005",
+     "cdcd0006",
+     "3e800000",
+     "cdcd0009",
+     "cdcd000a"
+    ]
+   }
+  },
+  {
+   "id": "NxRayTriIntersect.12",
+   "export": "NxRayTriIntersect",
+   "ordinal": 34,
+   "dimension": "undocumented_bool_encoding",
+   "detail": [],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000002",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": [
+     "cdcd0000",
+     "cdcd0001",
+     "cdcd0002",
+     "cdcd0004",
+     "cdcd0005",
+     "cdcd0006",
+     "cdcd0008",
+     "cdcd0009",
+     "cdcd000a"
+    ]
+   }
+  },
+  {
+   "id": "NxRayTriIntersect.13",
+   "export": "NxRayTriIntersect",
+   "ordinal": 34,
+   "dimension": "aliasing",
+   "detail": [
+    "u_aliases_t"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "40a00000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000001",
+    "00000001"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "3ea00000",
+     "cdcd0001",
+     "cdcd0002",
+     "3ea00000",
+     "cdcd0001",
+     "cdcd0002",
+     "3e800000",
+     "cdcd0009",
+     "cdcd000a"
+    ]
+   }
+  },
+  {
+   "id": "NxRayTriIntersect.14",
+   "export": "NxRayTriIntersect",
+   "ordinal": 34,
+   "dimension": "non_finite",
+   "detail": [
+    "nan"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "40a00000",
+    "00000000",
+    "00000000",
+    "7fc00000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000001",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "7fc00000",
+     "cdcd0001",
+     "cdcd0002",
+     "7fc00000",
+     "cdcd0005",
+     "cdcd0006",
+     "7fc00000",
+     "cdcd0009",
+     "cdcd000a"
+    ]
+   }
+  },
+  {
+   "id": "NxRayAABBIntersect.00",
+   "export": "NxRayAABBIntersect",
+   "ordinal": 28,
+   "dimension": "hit",
+   "detail": [
+    "from_outside"
+   ],
+   "inputs": [
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "bf800000",
+     "00000000",
+     "00000000",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxRayAABBIntersect.01",
+   "export": "NxRayAABBIntersect",
+   "ordinal": 28,
+   "dimension": "hit",
+   "detail": [
+    "origin_inside"
+   ],
+   "inputs": [
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "00000000",
+     "00000000",
+     "00000000",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxRayAABBIntersect.02",
+   "export": "NxRayAABBIntersect",
+   "ordinal": 28,
+   "dimension": "miss",
+   "detail": [
+    "beside"
+   ],
+   "inputs": [
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "c0a00000",
+    "41200000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": [
+     "bf800000",
+     "41200000",
+     "cdcd0002",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxRayAABBIntersect.03",
+   "export": "NxRayAABBIntersect",
+   "ordinal": 28,
+   "dimension": "tangent",
+   "detail": [
+    "grazes_face"
+   ],
+   "inputs": [
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "c0a00000",
+    "3f800000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "bf800000",
+     "3f800000",
+     "00000000",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxRayAABBIntersect.04",
+   "export": "NxRayAABBIntersect",
+   "ordinal": 28,
+   "dimension": "tangent",
+   "detail": [
+    "grazes_corner"
+   ],
+   "inputs": [
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "c0a00000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "bf800000",
+     "3f800000",
+     "3f800000",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxRayAABBIntersect.05",
+   "export": "NxRayAABBIntersect",
+   "ordinal": 28,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_size_box"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "c0a00000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "3f800000",
+     "3f800000",
+     "3f800000",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxRayAABBIntersect.06",
+   "export": "NxRayAABBIntersect",
+   "ordinal": 28,
+   "dimension": "degenerate",
+   "detail": [
+    "inverted_box"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": [
+     "3f800000",
+     "00000000",
+     "3f800000",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxRayAABBIntersect.07",
+   "export": "NxRayAABBIntersect",
+   "ordinal": 28,
+   "dimension": "non_normalized",
+   "detail": [
+    "direction"
+   ],
+   "inputs": [
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "40000000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "bf800000",
+     "00000000",
+     "00000000",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxRayAABBIntersect.08",
+   "export": "NxRayAABBIntersect",
+   "ordinal": 28,
+   "dimension": "zero_length",
+   "detail": [
+    "direction"
+   ],
+   "inputs": [
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": [
+     "bf800000",
+     "cdcd0001",
+     "cdcd0002",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxRayAABBIntersect.09",
+   "export": "NxRayAABBIntersect",
+   "ordinal": 28,
+   "dimension": "miss",
+   "detail": [
+    "reversed_direction"
+   ],
+   "inputs": [
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": [
+     "bf800000",
+     "cdcd0001",
+     "cdcd0002",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxRayAABBIntersect.10",
+   "export": "NxRayAABBIntersect",
+   "ordinal": 28,
+   "dimension": "hit",
+   "detail": [
+    "diagonal_direction"
+   ],
+   "inputs": [
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "c0a00000",
+    "c0a00000",
+    "c0a00000",
+    "3f13cd3a",
+    "3f13cd3a",
+    "3f13cd3a",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "bf800000",
+     "bf7ffffe",
+     "bf7ffffe",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxRayAABBIntersect.11",
+   "export": "NxRayAABBIntersect",
+   "ordinal": 28,
+   "dimension": "non_finite",
+   "detail": [
+    "nan"
+   ],
+   "inputs": [
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "7fc00000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "bf800000",
+     "7fc00000",
+     "7fc00000",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxRayAABBIntersect.12",
+   "export": "NxRayAABBIntersect",
+   "ordinal": 28,
+   "dimension": "aliasing",
+   "detail": [
+    "coord_aliases_origin"
+   ],
+   "inputs": [
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000001"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "bf800000",
+     "00000000",
+     "00000000",
+     "3f800000",
+     "00000000"
+    ]
+   }
+  },
+  {
+   "id": "NxRayAABBIntersect2.00",
+   "export": "NxRayAABBIntersect2",
+   "ordinal": 29,
+   "dimension": "hit",
+   "detail": [
+    "from_outside"
+   ],
+   "inputs": [
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "bf800000",
+     "00000000",
+     "00000000",
+     "cdcd0003",
+     "cdcd0004",
+     "40800000",
+     "cdcd0009",
+     "cdcd000a"
+    ]
+   }
+  },
+  {
+   "id": "NxRayAABBIntersect2.01",
+   "export": "NxRayAABBIntersect2",
+   "ordinal": 29,
+   "dimension": "hit",
+   "detail": [
+    "origin_inside"
+   ],
+   "inputs": [
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": [
+     "cdcd0000",
+     "cdcd0001",
+     "cdcd0002",
+     "cdcd0003",
+     "cdcd0004",
+     "cdcd0008",
+     "cdcd0009",
+     "cdcd000a"
+    ]
+   }
+  },
+  {
+   "id": "NxRayAABBIntersect2.02",
+   "export": "NxRayAABBIntersect2",
+   "ordinal": 29,
+   "dimension": "miss",
+   "detail": [
+    "beside"
+   ],
+   "inputs": [
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "c0a00000",
+    "41200000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": [
+     "bf800000",
+     "41200000",
+     "cdcd0002",
+     "cdcd0003",
+     "cdcd0004",
+     "cdcd0008",
+     "cdcd0009",
+     "cdcd000a"
+    ]
+   }
+  },
+  {
+   "id": "NxRayAABBIntersect2.03",
+   "export": "NxRayAABBIntersect2",
+   "ordinal": 29,
+   "dimension": "tangent",
+   "detail": [
+    "grazes_face"
+   ],
+   "inputs": [
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "c0a00000",
+    "3f800000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "bf800000",
+     "3f800000",
+     "00000000",
+     "cdcd0003",
+     "cdcd0004",
+     "40800000",
+     "cdcd0009",
+     "cdcd000a"
+    ]
+   }
+  },
+  {
+   "id": "NxRayAABBIntersect2.04",
+   "export": "NxRayAABBIntersect2",
+   "ordinal": 29,
+   "dimension": "tangent",
+   "detail": [
+    "grazes_corner"
+   ],
+   "inputs": [
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "c0a00000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "bf800000",
+     "3f800000",
+     "3f800000",
+     "cdcd0003",
+     "cdcd0004",
+     "40800000",
+     "cdcd0009",
+     "cdcd000a"
+    ]
+   }
+  },
+  {
+   "id": "NxRayAABBIntersect2.05",
+   "export": "NxRayAABBIntersect2",
+   "ordinal": 29,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_size_box"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "c0a00000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "3f800000",
+     "3f800000",
+     "3f800000",
+     "cdcd0003",
+     "cdcd0004",
+     "40c00000",
+     "cdcd0009",
+     "cdcd000a"
+    ]
+   }
+  },
+  {
+   "id": "NxRayAABBIntersect2.06",
+   "export": "NxRayAABBIntersect2",
+   "ordinal": 29,
+   "dimension": "degenerate",
+   "detail": [
+    "inverted_box"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": [
+     "3f800000",
+     "00000000",
+     "3f800000",
+     "cdcd0003",
+     "cdcd0004",
+     "cdcd0008",
+     "cdcd0009",
+     "cdcd000a"
+    ]
+   }
+  },
+  {
+   "id": "NxRayAABBIntersect2.07",
+   "export": "NxRayAABBIntersect2",
+   "ordinal": 29,
+   "dimension": "non_normalized",
+   "detail": [
+    "direction"
+   ],
+   "inputs": [
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "40000000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "bf800000",
+     "00000000",
+     "00000000",
+     "cdcd0003",
+     "cdcd0004",
+     "40000000",
+     "cdcd0009",
+     "cdcd000a"
+    ]
+   }
+  },
+  {
+   "id": "NxRayAABBIntersect2.08",
+   "export": "NxRayAABBIntersect2",
+   "ordinal": 29,
+   "dimension": "zero_length",
+   "detail": [
+    "direction"
+   ],
+   "inputs": [
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": [
+     "bf800000",
+     "cdcd0001",
+     "cdcd0002",
+     "cdcd0003",
+     "cdcd0004",
+     "cdcd0008",
+     "cdcd0009",
+     "cdcd000a"
+    ]
+   }
+  },
+  {
+   "id": "NxRayAABBIntersect2.09",
+   "export": "NxRayAABBIntersect2",
+   "ordinal": 29,
+   "dimension": "miss",
+   "detail": [
+    "reversed_direction"
+   ],
+   "inputs": [
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": [
+     "bf800000",
+     "cdcd0001",
+     "cdcd0002",
+     "cdcd0003",
+     "cdcd0004",
+     "cdcd0008",
+     "cdcd0009",
+     "cdcd000a"
+    ]
+   }
+  },
+  {
+   "id": "NxRayAABBIntersect2.10",
+   "export": "NxRayAABBIntersect2",
+   "ordinal": 29,
+   "dimension": "hit",
+   "detail": [
+    "diagonal_direction"
+   ],
+   "inputs": [
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "c0a00000",
+    "c0a00000",
+    "c0a00000",
+    "3f13cd3a",
+    "3f13cd3a",
+    "3f13cd3a",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "bf800000",
+     "bf7ffffe",
+     "bf7ffffe",
+     "cdcd0003",
+     "cdcd0004",
+     "40ddb3d8",
+     "cdcd0009",
+     "cdcd000a"
+    ]
+   }
+  },
+  {
+   "id": "NxRayAABBIntersect2.11",
+   "export": "NxRayAABBIntersect2",
+   "ordinal": 29,
+   "dimension": "non_finite",
+   "detail": [
+    "nan"
+   ],
+   "inputs": [
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "7fc00000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "bf800000",
+     "7fc00000",
+     "7fc00000",
+     "cdcd0003",
+     "cdcd0004",
+     "7fc00000",
+     "cdcd0009",
+     "cdcd000a"
+    ]
+   }
+  },
+  {
+   "id": "NxRayAABBIntersect2.12",
+   "export": "NxRayAABBIntersect2",
+   "ordinal": 29,
+   "dimension": "aliasing",
+   "detail": [
+    "coord_aliases_origin"
+   ],
+   "inputs": [
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000001"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "bf800000",
+     "00000000",
+     "00000000",
+     "3f800000",
+     "00000000",
+     "00000000",
+     "cdcd0009",
+     "cdcd000a"
+    ]
+   }
+  },
+  {
+   "id": "NxSegmentBoxIntersect.00",
+   "export": "NxSegmentBoxIntersect",
+   "ordinal": 37,
+   "dimension": "hit",
+   "detail": [],
+   "inputs": [
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "40a00000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "bf800000",
+     "00000000",
+     "00000000",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxSegmentBoxIntersect.01",
+   "export": "NxSegmentBoxIntersect",
+   "ordinal": 37,
+   "dimension": "miss",
+   "detail": [
+    "too_short"
+   ],
+   "inputs": [
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "c0400000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": [
+     "cdcd0000",
+     "cdcd0001",
+     "cdcd0002",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxSegmentBoxIntersect.02",
+   "export": "NxSegmentBoxIntersect",
+   "ordinal": 37,
+   "dimension": "miss",
+   "detail": [
+    "beside"
+   ],
+   "inputs": [
+    "c0a00000",
+    "41200000",
+    "00000000",
+    "40a00000",
+    "41200000",
+    "00000000",
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": [
+     "cdcd0000",
+     "cdcd0001",
+     "cdcd0002",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxSegmentBoxIntersect.03",
+   "export": "NxSegmentBoxIntersect",
+   "ordinal": 37,
+   "dimension": "hit",
+   "detail": [
+    "endpoint_inside"
+   ],
+   "inputs": [
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "00000000",
+     "00000000",
+     "00000000",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxSegmentBoxIntersect.04",
+   "export": "NxSegmentBoxIntersect",
+   "ordinal": 37,
+   "dimension": "hit",
+   "detail": [
+    "both_endpoints_inside"
+   ],
+   "inputs": [
+    "bf000000",
+    "00000000",
+    "00000000",
+    "3f000000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "bf000000",
+     "00000000",
+     "00000000",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxSegmentBoxIntersect.05",
+   "export": "NxSegmentBoxIntersect",
+   "ordinal": 37,
+   "dimension": "tangent",
+   "detail": [
+    "grazes_face"
+   ],
+   "inputs": [
+    "c0a00000",
+    "3f800000",
+    "00000000",
+    "40a00000",
+    "3f800000",
+    "00000000",
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "bf800000",
+     "3f800000",
+     "00000000",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxSegmentBoxIntersect.06",
+   "export": "NxSegmentBoxIntersect",
+   "ordinal": 37,
+   "dimension": "zero_length",
+   "detail": [
+    "inside"
+   ],
+   "inputs": [
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "00000000",
+     "00000000",
+     "00000000",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxSegmentBoxIntersect.07",
+   "export": "NxSegmentBoxIntersect",
+   "ordinal": 37,
+   "dimension": "zero_length",
+   "detail": [
+    "outside"
+   ],
+   "inputs": [
+    "40a00000",
+    "00000000",
+    "00000000",
+    "40a00000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": [
+     "cdcd0000",
+     "cdcd0001",
+     "cdcd0002",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxSegmentBoxIntersect.08",
+   "export": "NxSegmentBoxIntersect",
+   "ordinal": 37,
+   "dimension": "degenerate",
+   "detail": [
+    "inverted_box"
+   ],
+   "inputs": [
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "40a00000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": [
+     "cdcd0000",
+     "cdcd0001",
+     "cdcd0002",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxSegmentBoxIntersect.09",
+   "export": "NxSegmentBoxIntersect",
+   "ordinal": 37,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_size_box"
+   ],
+   "inputs": [
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "40a00000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": [
+     "cdcd0000",
+     "cdcd0001",
+     "cdcd0002",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxSegmentBoxIntersect.10",
+   "export": "NxSegmentBoxIntersect",
+   "ordinal": 37,
+   "dimension": "reversed_direction",
+   "detail": [],
+   "inputs": [
+    "40a00000",
+    "00000000",
+    "00000000",
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "3f800000",
+     "00000000",
+     "00000000",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxSegmentBoxIntersect.11",
+   "export": "NxSegmentBoxIntersect",
+   "ordinal": 37,
+   "dimension": "non_finite",
+   "detail": [
+    "nan"
+   ],
+   "inputs": [
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "7fc00000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "7fc00000",
+     "00000000",
+     "00000000",
+     "cdcd0003",
+     "cdcd0004"
+    ]
+   }
+  },
+  {
+   "id": "NxSegmentBoxIntersect.12",
+   "export": "NxSegmentBoxIntersect",
+   "ordinal": 37,
+   "dimension": "aliasing",
+   "detail": [
+    "intercept_aliases_p1"
+   ],
+   "inputs": [
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "40a00000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000001"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "bf800000",
+     "00000000",
+     "00000000",
+     "40a00000",
+     "00000000"
+    ]
+   }
+  },
+  {
+   "id": "NxSegmentAABBIntersect.00",
+   "export": "NxSegmentAABBIntersect",
+   "ordinal": 36,
+   "dimension": "hit",
+   "detail": [],
+   "inputs": [
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "40a00000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSegmentAABBIntersect.01",
+   "export": "NxSegmentAABBIntersect",
+   "ordinal": 36,
+   "dimension": "miss",
+   "detail": [
+    "too_short"
+   ],
+   "inputs": [
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "c0400000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSegmentAABBIntersect.02",
+   "export": "NxSegmentAABBIntersect",
+   "ordinal": 36,
+   "dimension": "miss",
+   "detail": [
+    "beside"
+   ],
+   "inputs": [
+    "c0a00000",
+    "41200000",
+    "00000000",
+    "40a00000",
+    "41200000",
+    "00000000",
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSegmentAABBIntersect.03",
+   "export": "NxSegmentAABBIntersect",
+   "ordinal": 36,
+   "dimension": "hit",
+   "detail": [
+    "endpoint_inside"
+   ],
+   "inputs": [
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSegmentAABBIntersect.04",
+   "export": "NxSegmentAABBIntersect",
+   "ordinal": 36,
+   "dimension": "hit",
+   "detail": [
+    "both_endpoints_inside"
+   ],
+   "inputs": [
+    "bf000000",
+    "00000000",
+    "00000000",
+    "3f000000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSegmentAABBIntersect.05",
+   "export": "NxSegmentAABBIntersect",
+   "ordinal": 36,
+   "dimension": "tangent",
+   "detail": [
+    "grazes_face"
+   ],
+   "inputs": [
+    "c0a00000",
+    "3f800000",
+    "00000000",
+    "40a00000",
+    "3f800000",
+    "00000000",
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSegmentAABBIntersect.06",
+   "export": "NxSegmentAABBIntersect",
+   "ordinal": 36,
+   "dimension": "zero_length",
+   "detail": [
+    "inside"
+   ],
+   "inputs": [
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSegmentAABBIntersect.07",
+   "export": "NxSegmentAABBIntersect",
+   "ordinal": 36,
+   "dimension": "zero_length",
+   "detail": [
+    "outside"
+   ],
+   "inputs": [
+    "40a00000",
+    "00000000",
+    "00000000",
+    "40a00000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSegmentAABBIntersect.08",
+   "export": "NxSegmentAABBIntersect",
+   "ordinal": 36,
+   "dimension": "degenerate",
+   "detail": [
+    "inverted_box"
+   ],
+   "inputs": [
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "40a00000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "bf800000",
+    "bf800000",
+    "bf800000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSegmentAABBIntersect.09",
+   "export": "NxSegmentAABBIntersect",
+   "ordinal": 36,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_size_box"
+   ],
+   "inputs": [
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "40a00000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSegmentAABBIntersect.10",
+   "export": "NxSegmentAABBIntersect",
+   "ordinal": 36,
+   "dimension": "reversed_direction",
+   "detail": [],
+   "inputs": [
+    "40a00000",
+    "00000000",
+    "00000000",
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSegmentAABBIntersect.11",
+   "export": "NxSegmentAABBIntersect",
+   "ordinal": 36,
+   "dimension": "non_finite",
+   "detail": [
+    "nan"
+   ],
+   "inputs": [
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "7fc00000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxRayOBBIntersect.00",
+   "export": "NxRayOBBIntersect",
+   "ordinal": 31,
+   "dimension": "hit",
+   "detail": [
+    "identity_rotation"
+   ],
+   "inputs": [
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxRayOBBIntersect.01",
+   "export": "NxRayOBBIntersect",
+   "ordinal": 31,
+   "dimension": "miss",
+   "detail": [
+    "beside"
+   ],
+   "inputs": [
+    "c0a00000",
+    "41200000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxRayOBBIntersect.02",
+   "export": "NxRayOBBIntersect",
+   "ordinal": 31,
+   "dimension": "hit",
+   "detail": [
+    "rotated_box"
+   ],
+   "inputs": [
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f3504f3",
+    "bf3504f3",
+    "00000000",
+    "3f3504f3",
+    "3f3504f3",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxRayOBBIntersect.03",
+   "export": "NxRayOBBIntersect",
+   "ordinal": 31,
+   "dimension": "tangent",
+   "detail": [
+    "grazes_face"
+   ],
+   "inputs": [
+    "c0a00000",
+    "3f800000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxRayOBBIntersect.04",
+   "export": "NxRayOBBIntersect",
+   "ordinal": 31,
+   "dimension": "hit",
+   "detail": [
+    "origin_inside"
+   ],
+   "inputs": [
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxRayOBBIntersect.05",
+   "export": "NxRayOBBIntersect",
+   "ordinal": 31,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_extents"
+   ],
+   "inputs": [
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxRayOBBIntersect.06",
+   "export": "NxRayOBBIntersect",
+   "ordinal": 31,
+   "dimension": "undocumented_domain",
+   "detail": [
+    "negative_extents"
+   ],
+   "inputs": [
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxRayOBBIntersect.07",
+   "export": "NxRayOBBIntersect",
+   "ordinal": 31,
+   "dimension": "non_normalized",
+   "detail": [
+    "rotation"
+   ],
+   "inputs": [
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "40000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxRayOBBIntersect.08",
+   "export": "NxRayOBBIntersect",
+   "ordinal": 31,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_rotation"
+   ],
+   "inputs": [
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxRayOBBIntersect.09",
+   "export": "NxRayOBBIntersect",
+   "ordinal": 31,
+   "dimension": "zero_length",
+   "detail": [
+    "direction"
+   ],
+   "inputs": [
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxRayOBBIntersect.10",
+   "export": "NxRayOBBIntersect",
+   "ordinal": 31,
+   "dimension": "miss",
+   "detail": [
+    "reversed_direction"
+   ],
+   "inputs": [
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxRayOBBIntersect.11",
+   "export": "NxRayOBBIntersect",
+   "ordinal": 31,
+   "dimension": "non_normalized",
+   "detail": [
+    "direction"
+   ],
+   "inputs": [
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "40000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxRayOBBIntersect.12",
+   "export": "NxRayOBBIntersect",
+   "ordinal": 31,
+   "dimension": "non_finite",
+   "detail": [
+    "nan"
+   ],
+   "inputs": [
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "7fc00000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSegmentOBBIntersect.00",
+   "export": "NxSegmentOBBIntersect",
+   "ordinal": 38,
+   "dimension": "hit",
+   "detail": [
+    "identity_rotation"
+   ],
+   "inputs": [
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "40a00000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSegmentOBBIntersect.01",
+   "export": "NxSegmentOBBIntersect",
+   "ordinal": 38,
+   "dimension": "miss",
+   "detail": [
+    "too_short"
+   ],
+   "inputs": [
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "c0400000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSegmentOBBIntersect.02",
+   "export": "NxSegmentOBBIntersect",
+   "ordinal": 38,
+   "dimension": "miss",
+   "detail": [
+    "beside"
+   ],
+   "inputs": [
+    "c0a00000",
+    "41200000",
+    "00000000",
+    "40a00000",
+    "41200000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSegmentOBBIntersect.03",
+   "export": "NxSegmentOBBIntersect",
+   "ordinal": 38,
+   "dimension": "hit",
+   "detail": [
+    "rotated_box"
+   ],
+   "inputs": [
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "40a00000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f3504f3",
+    "bf3504f3",
+    "00000000",
+    "3f3504f3",
+    "3f3504f3",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSegmentOBBIntersect.04",
+   "export": "NxSegmentOBBIntersect",
+   "ordinal": 38,
+   "dimension": "tangent",
+   "detail": [
+    "grazes_face"
+   ],
+   "inputs": [
+    "c0a00000",
+    "3f800000",
+    "00000000",
+    "40a00000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSegmentOBBIntersect.05",
+   "export": "NxSegmentOBBIntersect",
+   "ordinal": 38,
+   "dimension": "zero_length",
+   "detail": [
+    "inside"
+   ],
+   "inputs": [
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSegmentOBBIntersect.06",
+   "export": "NxSegmentOBBIntersect",
+   "ordinal": 38,
+   "dimension": "zero_length",
+   "detail": [
+    "outside"
+   ],
+   "inputs": [
+    "40a00000",
+    "00000000",
+    "00000000",
+    "40a00000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSegmentOBBIntersect.07",
+   "export": "NxSegmentOBBIntersect",
+   "ordinal": 38,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_extents"
+   ],
+   "inputs": [
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "40a00000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSegmentOBBIntersect.08",
+   "export": "NxSegmentOBBIntersect",
+   "ordinal": 38,
+   "dimension": "undocumented_domain",
+   "detail": [
+    "negative_extents"
+   ],
+   "inputs": [
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "40a00000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSegmentOBBIntersect.09",
+   "export": "NxSegmentOBBIntersect",
+   "ordinal": 38,
+   "dimension": "non_normalized",
+   "detail": [
+    "rotation"
+   ],
+   "inputs": [
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "40a00000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "40000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSegmentOBBIntersect.10",
+   "export": "NxSegmentOBBIntersect",
+   "ordinal": 38,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_rotation"
+   ],
+   "inputs": [
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "40a00000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSegmentOBBIntersect.11",
+   "export": "NxSegmentOBBIntersect",
+   "ordinal": 38,
+   "dimension": "reversed_direction",
+   "detail": [],
+   "inputs": [
+    "40a00000",
+    "00000000",
+    "00000000",
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSegmentOBBIntersect.12",
+   "export": "NxSegmentOBBIntersect",
+   "ordinal": 38,
+   "dimension": "non_finite",
+   "detail": [
+    "nan"
+   ],
+   "inputs": [
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "7fc00000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxRayCapsuleIntersect.00",
+   "export": "NxRayCapsuleIntersect",
+   "ordinal": 30,
+   "dimension": "hit",
+   "detail": [
+    "two_impacts"
+   ],
+   "inputs": [
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "c0000000",
+    "00000000",
+    "00000000",
+    "40000000",
+    "00000000",
+    "3f800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000002",
+    "out": [
+     "40800000",
+     "40c00000",
+     "cdcd0002",
+     "cdcd0003"
+    ]
+   }
+  },
+  {
+   "id": "NxRayCapsuleIntersect.01",
+   "export": "NxRayCapsuleIntersect",
+   "ordinal": 30,
+   "dimension": "tangent",
+   "detail": [
+    "one_impact"
+   ],
+   "inputs": [
+    "c0a00000",
+    "3f800000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "c0000000",
+    "00000000",
+    "00000000",
+    "40000000",
+    "00000000",
+    "3f800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000002",
+    "out": [
+     "40800000",
+     "40c00000",
+     "cdcd0002",
+     "cdcd0003"
+    ]
+   }
+  },
+  {
+   "id": "NxRayCapsuleIntersect.02",
+   "export": "NxRayCapsuleIntersect",
+   "ordinal": 30,
+   "dimension": "miss",
+   "detail": [
+    "beside"
+   ],
+   "inputs": [
+    "c0a00000",
+    "41200000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "c0000000",
+    "00000000",
+    "00000000",
+    "40000000",
+    "00000000",
+    "3f800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": [
+     "cdcd0000",
+     "cdcd0001",
+     "cdcd0002",
+     "cdcd0003"
+    ]
+   }
+  },
+  {
+   "id": "NxRayCapsuleIntersect.03",
+   "export": "NxRayCapsuleIntersect",
+   "ordinal": 30,
+   "dimension": "hit",
+   "detail": [
+    "origin_inside"
+   ],
+   "inputs": [
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "c0000000",
+    "00000000",
+    "00000000",
+    "40000000",
+    "00000000",
+    "3f800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000002",
+    "out": [
+     "bf800000",
+     "3f800000",
+     "cdcd0002",
+     "cdcd0003"
+    ]
+   }
+  },
+  {
+   "id": "NxRayCapsuleIntersect.04",
+   "export": "NxRayCapsuleIntersect",
+   "ordinal": 30,
+   "dimension": "hit",
+   "detail": [
+    "through_cap"
+   ],
+   "inputs": [
+    "00000000",
+    "40a00000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "00000000",
+    "00000000",
+    "c0000000",
+    "00000000",
+    "00000000",
+    "40000000",
+    "00000000",
+    "3f800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000002",
+    "out": [
+     "41000000",
+     "40000000",
+     "cdcd0002",
+     "cdcd0003"
+    ]
+   }
+  },
+  {
+   "id": "NxRayCapsuleIntersect.05",
+   "export": "NxRayCapsuleIntersect",
+   "ordinal": 30,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_radius"
+   ],
+   "inputs": [
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "c0000000",
+    "00000000",
+    "00000000",
+    "40000000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "40a00000",
+     "cdcd0001",
+     "cdcd0002",
+     "cdcd0003"
+    ]
+   }
+  },
+  {
+   "id": "NxRayCapsuleIntersect.06",
+   "export": "NxRayCapsuleIntersect",
+   "ordinal": 30,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_length_capsule"
+   ],
+   "inputs": [
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": [
+     "cdcd0000",
+     "cdcd0001",
+     "cdcd0002",
+     "cdcd0003"
+    ]
+   }
+  },
+  {
+   "id": "NxRayCapsuleIntersect.07",
+   "export": "NxRayCapsuleIntersect",
+   "ordinal": 30,
+   "dimension": "miss",
+   "detail": [
+    "reversed_direction"
+   ],
+   "inputs": [
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "c0000000",
+    "00000000",
+    "00000000",
+    "40000000",
+    "00000000",
+    "3f800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000002",
+    "out": [
+     "c0c00000",
+     "c0800000",
+     "cdcd0002",
+     "cdcd0003"
+    ]
+   }
+  },
+  {
+   "id": "NxRayCapsuleIntersect.08",
+   "export": "NxRayCapsuleIntersect",
+   "ordinal": 30,
+   "dimension": "zero_length",
+   "detail": [
+    "direction"
+   ],
+   "inputs": [
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "c0000000",
+    "00000000",
+    "00000000",
+    "40000000",
+    "00000000",
+    "3f800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": [
+     "cdcd0000",
+     "cdcd0001",
+     "cdcd0002",
+     "cdcd0003"
+    ]
+   }
+  },
+  {
+   "id": "NxRayCapsuleIntersect.09",
+   "export": "NxRayCapsuleIntersect",
+   "ordinal": 30,
+   "dimension": "non_normalized",
+   "detail": [
+    "direction"
+   ],
+   "inputs": [
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "40000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "c0000000",
+    "00000000",
+    "00000000",
+    "40000000",
+    "00000000",
+    "3f800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000002",
+    "out": [
+     "40000000",
+     "40400000",
+     "cdcd0002",
+     "cdcd0003"
+    ]
+   }
+  },
+  {
+   "id": "NxRayCapsuleIntersect.10",
+   "export": "NxRayCapsuleIntersect",
+   "ordinal": 30,
+   "dimension": "undocumented_domain",
+   "detail": [
+    "negative_radius"
+   ],
+   "inputs": [
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "c0000000",
+    "00000000",
+    "00000000",
+    "40000000",
+    "00000000",
+    "bf800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000002",
+    "out": [
+     "40800000",
+     "40c00000",
+     "cdcd0002",
+     "cdcd0003"
+    ]
+   }
+  },
+  {
+   "id": "NxRayCapsuleIntersect.11",
+   "export": "NxRayCapsuleIntersect",
+   "ordinal": 30,
+   "dimension": "non_finite",
+   "detail": [
+    "nan"
+   ],
+   "inputs": [
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "7fc00000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "c0000000",
+    "00000000",
+    "00000000",
+    "40000000",
+    "00000000",
+    "3f800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": [
+     "cdcd0000",
+     "cdcd0001",
+     "cdcd0002",
+     "cdcd0003"
+    ]
+   }
+  },
+  {
+   "id": "NxRayCapsuleIntersect.12",
+   "export": "NxRayCapsuleIntersect",
+   "ordinal": 30,
+   "dimension": "aliasing",
+   "detail": [
+    "t_aliases_origin"
+   ],
+   "inputs": [
+    "c0a00000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "c0000000",
+    "00000000",
+    "00000000",
+    "40000000",
+    "00000000",
+    "3f800000",
+    "00000001"
+   ],
+   "oracle": {
+    "ret": "00000002",
+    "out": [
+     "40800000",
+     "40c00000",
+     "00000000",
+     "3f800000"
+    ]
+   }
+  },
+  {
+   "id": "NxSweptSpheresIntersect.00",
+   "export": "NxSweptSpheresIntersect",
+   "ordinal": 41,
+   "dimension": "hit",
+   "detail": [
+    "already_overlapping"
+   ],
+   "inputs": [
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSweptSpheresIntersect.01",
+   "export": "NxSweptSpheresIntersect",
+   "ordinal": 41,
+   "dimension": "hit",
+   "detail": [
+    "approaching"
+   ],
+   "inputs": [
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "41200000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "bf800000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSweptSpheresIntersect.02",
+   "export": "NxSweptSpheresIntersect",
+   "ordinal": 41,
+   "dimension": "miss",
+   "detail": [
+    "separating"
+   ],
+   "inputs": [
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "bf800000",
+    "00000000",
+    "00000000",
+    "41200000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSweptSpheresIntersect.03",
+   "export": "NxSweptSpheresIntersect",
+   "ordinal": 41,
+   "dimension": "miss",
+   "detail": [
+    "stationary_apart"
+   ],
+   "inputs": [
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "41200000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSweptSpheresIntersect.04",
+   "export": "NxSweptSpheresIntersect",
+   "ordinal": 41,
+   "dimension": "miss",
+   "detail": [
+    "parallel_same_velocity"
+   ],
+   "inputs": [
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "41200000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSweptSpheresIntersect.05",
+   "export": "NxSweptSpheresIntersect",
+   "ordinal": 41,
+   "dimension": "tangent",
+   "detail": [
+    "touching_at_rest"
+   ],
+   "inputs": [
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSweptSpheresIntersect.06",
+   "export": "NxSweptSpheresIntersect",
+   "ordinal": 41,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_radii"
+   ],
+   "inputs": [
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "41200000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSweptSpheresIntersect.07",
+   "export": "NxSweptSpheresIntersect",
+   "ordinal": 41,
+   "dimension": "undocumented_domain",
+   "detail": [
+    "negative_radius"
+   ],
+   "inputs": [
+    "00000000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "41200000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "bf800000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSweptSpheresIntersect.08",
+   "export": "NxSweptSpheresIntersect",
+   "ordinal": 41,
+   "dimension": "hit",
+   "detail": [
+    "oblique"
+   ],
+   "inputs": [
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "41200000",
+    "41200000",
+    "00000000",
+    "3f800000",
+    "bf800000",
+    "bf800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSweptSpheresIntersect.09",
+   "export": "NxSweptSpheresIntersect",
+   "ordinal": 41,
+   "dimension": "zero_length",
+   "detail": [
+    "both_velocities"
+   ],
+   "inputs": [
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3fc00000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSweptSpheresIntersect.10",
+   "export": "NxSweptSpheresIntersect",
+   "ordinal": 41,
+   "dimension": "non_finite",
+   "detail": [
+    "nan"
+   ],
+   "inputs": [
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "7fc00000",
+    "00000000",
+    "00000000",
+    "41200000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "bf800000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxBoxBoxIntersect.00",
+   "export": "NxBoxBoxIntersect",
+   "ordinal": 1,
+   "dimension": "hit",
+   "detail": [
+    "overlapping_axis_aligned"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000001"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxBoxBoxIntersect.01",
+   "export": "NxBoxBoxIntersect",
+   "ordinal": 1,
+   "dimension": "miss",
+   "detail": [
+    "separated_on_x"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "40a00000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000001"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxBoxBoxIntersect.02",
+   "export": "NxBoxBoxIntersect",
+   "ordinal": 1,
+   "dimension": "tangent",
+   "detail": [
+    "faces_touching"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "40000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000001"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxBoxBoxIntersect.03",
+   "export": "NxBoxBoxIntersect",
+   "ordinal": 1,
+   "dimension": "hit",
+   "detail": [
+    "identical_boxes"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000001"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxBoxBoxIntersect.04",
+   "export": "NxBoxBoxIntersect",
+   "ordinal": 1,
+   "dimension": "rotated",
+   "detail": [
+    "full_test"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "4019999a",
+    "00000000",
+    "00000000",
+    "3f3504f3",
+    "bf3504f3",
+    "00000000",
+    "3f3504f3",
+    "3f3504f3",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000001"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxBoxBoxIntersect.05",
+   "export": "NxBoxBoxIntersect",
+   "ordinal": 1,
+   "dimension": "rotated",
+   "detail": [
+    "six_axis_test"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "4019999a",
+    "00000000",
+    "00000000",
+    "3f3504f3",
+    "bf3504f3",
+    "00000000",
+    "3f3504f3",
+    "3f3504f3",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxBoxBoxIntersect.06",
+   "export": "NxBoxBoxIntersect",
+   "ordinal": 1,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_extents"
+   ],
+   "inputs": [
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000001"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxBoxBoxIntersect.07",
+   "export": "NxBoxBoxIntersect",
+   "ordinal": 1,
+   "dimension": "undocumented_domain",
+   "detail": [
+    "negative_extents"
+   ],
+   "inputs": [
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000001"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxBoxBoxIntersect.08",
+   "export": "NxBoxBoxIntersect",
+   "ordinal": 1,
+   "dimension": "non_normalized",
+   "detail": [
+    "rotation"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "40400000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000001"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxBoxBoxIntersect.09",
+   "export": "NxBoxBoxIntersect",
+   "ordinal": 1,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_rotation"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000001"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxBoxBoxIntersect.10",
+   "export": "NxBoxBoxIntersect",
+   "ordinal": 1,
+   "dimension": "non_finite",
+   "detail": [
+    "nan"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "7fc00000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000001"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxBoxBoxIntersect.11",
+   "export": "NxBoxBoxIntersect",
+   "ordinal": 1,
+   "dimension": "undocumented_bool_encoding",
+   "detail": [],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "4019999a",
+    "00000000",
+    "00000000",
+    "3f3504f3",
+    "bf3504f3",
+    "00000000",
+    "3f3504f3",
+    "3f3504f3",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000002"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSeparatingAxis.00",
+   "export": "NxSeparatingAxis",
+   "ordinal": 40,
+   "dimension": "hit",
+   "detail": [
+    "overlapping_axis_aligned"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000001"
+   ],
+   "oracle": {
+    "ret": "00000007",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSeparatingAxis.01",
+   "export": "NxSeparatingAxis",
+   "ordinal": 40,
+   "dimension": "miss",
+   "detail": [
+    "separated_on_x"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "40a00000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000001"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSeparatingAxis.02",
+   "export": "NxSeparatingAxis",
+   "ordinal": 40,
+   "dimension": "tangent",
+   "detail": [
+    "faces_touching"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "40000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000001"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSeparatingAxis.03",
+   "export": "NxSeparatingAxis",
+   "ordinal": 40,
+   "dimension": "hit",
+   "detail": [
+    "identical_boxes"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000001"
+   ],
+   "oracle": {
+    "ret": "00000007",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSeparatingAxis.04",
+   "export": "NxSeparatingAxis",
+   "ordinal": 40,
+   "dimension": "rotated",
+   "detail": [
+    "full_test"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "4019999a",
+    "00000000",
+    "00000000",
+    "3f3504f3",
+    "bf3504f3",
+    "00000000",
+    "3f3504f3",
+    "3f3504f3",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000001"
+   ],
+   "oracle": {
+    "ret": "0000000f",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSeparatingAxis.05",
+   "export": "NxSeparatingAxis",
+   "ordinal": 40,
+   "dimension": "rotated",
+   "detail": [
+    "six_axis_test"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "4019999a",
+    "00000000",
+    "00000000",
+    "3f3504f3",
+    "bf3504f3",
+    "00000000",
+    "3f3504f3",
+    "3f3504f3",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000009",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSeparatingAxis.06",
+   "export": "NxSeparatingAxis",
+   "ordinal": 40,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_extents"
+   ],
+   "inputs": [
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000001"
+   ],
+   "oracle": {
+    "ret": "00000007",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSeparatingAxis.07",
+   "export": "NxSeparatingAxis",
+   "ordinal": 40,
+   "dimension": "undocumented_domain",
+   "detail": [
+    "negative_extents"
+   ],
+   "inputs": [
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000001"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSeparatingAxis.08",
+   "export": "NxSeparatingAxis",
+   "ordinal": 40,
+   "dimension": "non_normalized",
+   "detail": [
+    "rotation"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "40400000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000001"
+   ],
+   "oracle": {
+    "ret": "00000004",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSeparatingAxis.09",
+   "export": "NxSeparatingAxis",
+   "ordinal": 40,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_rotation"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000001"
+   ],
+   "oracle": {
+    "ret": "00000007",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSeparatingAxis.10",
+   "export": "NxSeparatingAxis",
+   "ordinal": 40,
+   "dimension": "non_finite",
+   "detail": [
+    "nan"
+   ],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "7fc00000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000001"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": []
+   }
+  },
+  {
+   "id": "NxSeparatingAxis.11",
+   "export": "NxSeparatingAxis",
+   "ordinal": 40,
+   "dimension": "undocumented_bool_encoding",
+   "detail": [],
+   "inputs": [
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "4019999a",
+    "00000000",
+    "00000000",
+    "3f3504f3",
+    "bf3504f3",
+    "00000000",
+    "3f3504f3",
+    "3f3504f3",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000002"
+   ],
+   "oracle": {
+    "ret": "0000000f",
+    "out": []
+   }
+  },
+  {
+   "id": "NxBuildSmoothNormals.00",
+   "export": "NxBuildSmoothNormals",
+   "ordinal": 2,
+   "dimension": "nominal",
+   "detail": [
+    "dword_indices"
+   ],
+   "inputs": [
+    "00000001",
+    "00000003",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000001",
+    "00000002",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "00000000",
+     "00000000",
+     "bf800000",
+     "00000000",
+     "00000000",
+     "bf800000",
+     "00000000",
+     "00000000",
+     "bf800000",
+     "cdcd0009",
+     "cdcd000a",
+     "cdcd000b",
+     "cdcd000c",
+     "cdcd000d",
+     "cdcd000e",
+     "cdcd000f",
+     "cdcd0010",
+     "cdcd0011",
+     "cdcd0012",
+     "cdcd0013",
+     "cdcd0014",
+     "cdcd0015",
+     "cdcd0016",
+     "cdcd0017",
+     "cdcd0018",
+     "cdcd0019"
+    ]
+   }
+  },
+  {
+   "id": "NxBuildSmoothNormals.01",
+   "export": "NxBuildSmoothNormals",
+   "ordinal": 2,
+   "dimension": "nominal",
+   "detail": [
+    "flipped"
+   ],
+   "inputs": [
+    "00000001",
+    "00000003",
+    "00000000",
+    "00000001",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000001",
+    "00000002",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "00000000",
+     "00000000",
+     "3f800000",
+     "00000000",
+     "00000000",
+     "3f800000",
+     "00000000",
+     "00000000",
+     "3f800000",
+     "cdcd0009",
+     "cdcd000a",
+     "cdcd000b",
+     "cdcd000c",
+     "cdcd000d",
+     "cdcd000e",
+     "cdcd000f",
+     "cdcd0010",
+     "cdcd0011",
+     "cdcd0012",
+     "cdcd0013",
+     "cdcd0014",
+     "cdcd0015",
+     "cdcd0016",
+     "cdcd0017",
+     "cdcd0018",
+     "cdcd0019"
+    ]
+   }
+  },
+  {
+   "id": "NxBuildSmoothNormals.02",
+   "export": "NxBuildSmoothNormals",
+   "ordinal": 2,
+   "dimension": "nominal",
+   "detail": [
+    "word_indices"
+   ],
+   "inputs": [
+    "00000001",
+    "00000003",
+    "00000001",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000001",
+    "00000002",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "00000000",
+     "00000000",
+     "bf800000",
+     "00000000",
+     "00000000",
+     "bf800000",
+     "00000000",
+     "00000000",
+     "bf800000",
+     "cdcd0009",
+     "cdcd000a",
+     "cdcd000b",
+     "cdcd000c",
+     "cdcd000d",
+     "cdcd000e",
+     "cdcd000f",
+     "cdcd0010",
+     "cdcd0011",
+     "cdcd0012",
+     "cdcd0013",
+     "cdcd0014",
+     "cdcd0015",
+     "cdcd0016",
+     "cdcd0017",
+     "cdcd0018",
+     "cdcd0019"
+    ]
+   }
+  },
+  {
+   "id": "NxBuildSmoothNormals.03",
+   "export": "NxBuildSmoothNormals",
+   "ordinal": 2,
+   "dimension": "nominal",
+   "detail": [
+    "quad"
+   ],
+   "inputs": [
+    "00000002",
+    "00000004",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000001",
+    "00000002",
+    "00000000",
+    "00000002",
+    "00000003",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "00000000",
+     "00000000",
+     "bf800000",
+     "00000000",
+     "00000000",
+     "bf800000",
+     "00000000",
+     "00000000",
+     "bf800000",
+     "00000000",
+     "00000000",
+     "bf800000",
+     "cdcd000c",
+     "cdcd000d",
+     "cdcd000e",
+     "cdcd000f",
+     "cdcd0010",
+     "cdcd0011",
+     "cdcd0012",
+     "cdcd0013",
+     "cdcd0014",
+     "cdcd0015",
+     "cdcd0016",
+     "cdcd0017",
+     "cdcd0018",
+     "cdcd0019"
+    ]
+   }
+  },
+  {
+   "id": "NxBuildSmoothNormals.04",
+   "export": "NxBuildSmoothNormals",
+   "ordinal": 2,
+   "dimension": "nominal",
+   "detail": [
+    "cube"
+   ],
+   "inputs": [
+    "0000000c",
+    "00000008",
+    "00000000",
+    "00000000",
+    "00000000",
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000002",
+    "00000001",
+    "00000000",
+    "00000003",
+    "00000002",
+    "00000004",
+    "00000005",
+    "00000006",
+    "00000004",
+    "00000006",
+    "00000007",
+    "00000000",
+    "00000001",
+    "00000005",
+    "00000000",
+    "00000005",
+    "00000004",
+    "00000002",
+    "00000003",
+    "00000007",
+    "00000002",
+    "00000007",
+    "00000006",
+    "00000000",
+    "00000004",
+    "00000007",
+    "00000000",
+    "00000007",
+    "00000003",
+    "00000001",
+    "00000002",
+    "00000006",
+    "00000001",
+    "00000006",
+    "00000005"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "3f13cd3a",
+     "3f13cd3a",
+     "3f13cd3a",
+     "bf13cd3a",
+     "3f13cd3a",
+     "3f13cd3a",
+     "bf13cd3a",
+     "bf13cd3a",
+     "3f13cd3a",
+     "3f13cd3a",
+     "bf13cd3a",
+     "3f13cd3a",
+     "3f13cd3a",
+     "3f13cd3a",
+     "bf13cd3a",
+     "bf13cd3a",
+     "3f13cd3a",
+     "bf13cd3a",
+     "bf13cd3a",
+     "bf13cd3a",
+     "bf13cd3a",
+     "3f13cd3a",
+     "bf13cd3a",
+     "bf13cd3a",
+     "cdcd0018",
+     "cdcd0019"
+    ]
+   }
+  },
+  {
+   "id": "NxBuildSmoothNormals.05",
+   "export": "NxBuildSmoothNormals",
+   "ordinal": 2,
+   "dimension": "nominal",
+   "detail": [
+    "cube_word_indices_flipped"
+   ],
+   "inputs": [
+    "0000000c",
+    "00000008",
+    "00000001",
+    "00000001",
+    "00000000",
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "bf800000",
+    "bf800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "bf800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000002",
+    "00000001",
+    "00000000",
+    "00000003",
+    "00000002",
+    "00000004",
+    "00000005",
+    "00000006",
+    "00000004",
+    "00000006",
+    "00000007",
+    "00000000",
+    "00000001",
+    "00000005",
+    "00000000",
+    "00000005",
+    "00000004",
+    "00000002",
+    "00000003",
+    "00000007",
+    "00000002",
+    "00000007",
+    "00000006",
+    "00000000",
+    "00000004",
+    "00000007",
+    "00000000",
+    "00000007",
+    "00000003",
+    "00000001",
+    "00000002",
+    "00000006",
+    "00000001",
+    "00000006",
+    "00000005"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "bf13cd3a",
+     "bf13cd3a",
+     "bf13cd3a",
+     "3f13cd3a",
+     "bf13cd3a",
+     "bf13cd3a",
+     "3f13cd3a",
+     "3f13cd3a",
+     "bf13cd3a",
+     "bf13cd3a",
+     "3f13cd3a",
+     "bf13cd3a",
+     "bf13cd3a",
+     "bf13cd3a",
+     "3f13cd3a",
+     "3f13cd3a",
+     "bf13cd3a",
+     "3f13cd3a",
+     "3f13cd3a",
+     "3f13cd3a",
+     "3f13cd3a",
+     "bf13cd3a",
+     "3f13cd3a",
+     "3f13cd3a",
+     "cdcd0018",
+     "cdcd0019"
+    ]
+   }
+  },
+  {
+   "id": "NxBuildSmoothNormals.06",
+   "export": "NxBuildSmoothNormals",
+   "ordinal": 2,
+   "dimension": "degenerate",
+   "detail": [
+    "no_triangles"
+   ],
+   "inputs": [
+    "00000000",
+    "00000003",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000001",
+    "00000002",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": [
+     "cdcd0000",
+     "cdcd0001",
+     "cdcd0002",
+     "cdcd0003",
+     "cdcd0004",
+     "cdcd0005",
+     "cdcd0006",
+     "cdcd0007",
+     "cdcd0008",
+     "cdcd0009",
+     "cdcd000a",
+     "cdcd000b",
+     "cdcd000c",
+     "cdcd000d",
+     "cdcd000e",
+     "cdcd000f",
+     "cdcd0010",
+     "cdcd0011",
+     "cdcd0012",
+     "cdcd0013",
+     "cdcd0014",
+     "cdcd0015",
+     "cdcd0016",
+     "cdcd0017",
+     "cdcd0018",
+     "cdcd0019"
+    ]
+   }
+  },
+  {
+   "id": "NxBuildSmoothNormals.07",
+   "export": "NxBuildSmoothNormals",
+   "ordinal": 2,
+   "dimension": "degenerate",
+   "detail": [
+    "no_vertices"
+   ],
+   "inputs": [
+    "00000001",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000001",
+    "00000002",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000000",
+    "out": [
+     "cdcd0000",
+     "cdcd0001",
+     "cdcd0002",
+     "cdcd0003",
+     "cdcd0004",
+     "cdcd0005",
+     "cdcd0006",
+     "cdcd0007",
+     "cdcd0008",
+     "cdcd0009",
+     "cdcd000a",
+     "cdcd000b",
+     "cdcd000c",
+     "cdcd000d",
+     "cdcd000e",
+     "cdcd000f",
+     "cdcd0010",
+     "cdcd0011",
+     "cdcd0012",
+     "cdcd0013",
+     "cdcd0014",
+     "cdcd0015",
+     "cdcd0016",
+     "cdcd0017",
+     "cdcd0018",
+     "cdcd0019"
+    ]
+   }
+  },
+  {
+   "id": "NxBuildSmoothNormals.08",
+   "export": "NxBuildSmoothNormals",
+   "ordinal": 2,
+   "dimension": "degenerate",
+   "detail": [
+    "zero_area_triangle"
+   ],
+   "inputs": [
+    "00000001",
+    "00000003",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000001",
+    "00000002",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "cdcd0009",
+     "cdcd000a",
+     "cdcd000b",
+     "cdcd000c",
+     "cdcd000d",
+     "cdcd000e",
+     "cdcd000f",
+     "cdcd0010",
+     "cdcd0011",
+     "cdcd0012",
+     "cdcd0013",
+     "cdcd0014",
+     "cdcd0015",
+     "cdcd0016",
+     "cdcd0017",
+     "cdcd0018",
+     "cdcd0019"
+    ]
+   }
+  },
+  {
+   "id": "NxBuildSmoothNormals.09",
+   "export": "NxBuildSmoothNormals",
+   "ordinal": 2,
+   "dimension": "null_optional_input",
+   "detail": [
+    "both_index_arrays_null"
+   ],
+   "inputs": [
+    "00000001",
+    "00000003",
+    "00000002",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000001",
+    "00000002",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "00000000",
+     "00000000",
+     "bf800000",
+     "00000000",
+     "00000000",
+     "bf800000",
+     "00000000",
+     "00000000",
+     "bf800000",
+     "cdcd0009",
+     "cdcd000a",
+     "cdcd000b",
+     "cdcd000c",
+     "cdcd000d",
+     "cdcd000e",
+     "cdcd000f",
+     "cdcd0010",
+     "cdcd0011",
+     "cdcd0012",
+     "cdcd0013",
+     "cdcd0014",
+     "cdcd0015",
+     "cdcd0016",
+     "cdcd0017",
+     "cdcd0018",
+     "cdcd0019"
+    ]
+   }
+  },
+  {
+   "id": "NxBuildSmoothNormals.10",
+   "export": "NxBuildSmoothNormals",
+   "ordinal": 2,
+   "dimension": "undocumented_domain",
+   "detail": [
+    "both_index_arrays_supplied"
+   ],
+   "inputs": [
+    "00000001",
+    "00000003",
+    "00000003",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000001",
+    "00000002",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "00000000",
+     "00000000",
+     "bf800000",
+     "00000000",
+     "00000000",
+     "bf800000",
+     "00000000",
+     "00000000",
+     "bf800000",
+     "cdcd0009",
+     "cdcd000a",
+     "cdcd000b",
+     "cdcd000c",
+     "cdcd000d",
+     "cdcd000e",
+     "cdcd000f",
+     "cdcd0010",
+     "cdcd0011",
+     "cdcd0012",
+     "cdcd0013",
+     "cdcd0014",
+     "cdcd0015",
+     "cdcd0016",
+     "cdcd0017",
+     "cdcd0018",
+     "cdcd0019"
+    ]
+   }
+  },
+  {
+   "id": "NxBuildSmoothNormals.11",
+   "export": "NxBuildSmoothNormals",
+   "ordinal": 2,
+   "dimension": "aliasing",
+   "detail": [
+    "normals_alias_verts"
+   ],
+   "inputs": [
+    "00000001",
+    "00000003",
+    "00000000",
+    "00000000",
+    "00000001",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000001",
+    "00000002",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "cdcd0018",
+     "cdcd0019"
+    ]
+   }
+  },
+  {
+   "id": "NxBuildSmoothNormals.12",
+   "export": "NxBuildSmoothNormals",
+   "ordinal": 2,
+   "dimension": "undocumented_bool_encoding",
+   "detail": [],
+   "inputs": [
+    "00000001",
+    "00000003",
+    "00000000",
+    "00000002",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000001",
+    "00000002",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "00000000",
+     "00000000",
+     "3f800000",
+     "00000000",
+     "00000000",
+     "3f800000",
+     "00000000",
+     "00000000",
+     "3f800000",
+     "cdcd0009",
+     "cdcd000a",
+     "cdcd000b",
+     "cdcd000c",
+     "cdcd000d",
+     "cdcd000e",
+     "cdcd000f",
+     "cdcd0010",
+     "cdcd0011",
+     "cdcd0012",
+     "cdcd0013",
+     "cdcd0014",
+     "cdcd0015",
+     "cdcd0016",
+     "cdcd0017",
+     "cdcd0018",
+     "cdcd0019"
+    ]
+   }
+  },
+  {
+   "id": "NxBuildSmoothNormals.13",
+   "export": "NxBuildSmoothNormals",
+   "ordinal": 2,
+   "dimension": "null_optional_input",
+   "detail": [
+    "both_index_arrays_null_two_triangles"
+   ],
+   "inputs": [
+    "00000002",
+    "00000006",
+    "00000002",
+    "00000001",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "40800000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "40800000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000001",
+    "00000002",
+    "00000003",
+    "00000004",
+    "00000005",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "00000000",
+     "00000000",
+     "bf800000",
+     "00000000",
+     "00000000",
+     "bf800000",
+     "00000000",
+     "00000000",
+     "bf800000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "00000000",
+     "cdcd0012",
+     "cdcd0013",
+     "cdcd0014",
+     "cdcd0015",
+     "cdcd0016",
+     "cdcd0017",
+     "cdcd0018",
+     "cdcd0019"
+    ]
+   }
+  },
+  {
+   "id": "NxBuildSmoothNormals.14",
+   "export": "NxBuildSmoothNormals",
+   "ordinal": 2,
+   "dimension": "nominal",
+   "detail": [
+    "indexed_control_for_the_null_index_path"
+   ],
+   "inputs": [
+    "00000002",
+    "00000006",
+    "00000000",
+    "00000001",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "40800000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "40800000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000001",
+    "00000002",
+    "00000003",
+    "00000004",
+    "00000005",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "00000000",
+     "00000000",
+     "3f800000",
+     "00000000",
+     "00000000",
+     "3f800000",
+     "00000000",
+     "00000000",
+     "3f800000",
+     "00000000",
+     "00000000",
+     "3f800000",
+     "00000000",
+     "00000000",
+     "3f800000",
+     "00000000",
+     "00000000",
+     "3f800000",
+     "cdcd0012",
+     "cdcd0013",
+     "cdcd0014",
+     "cdcd0015",
+     "cdcd0016",
+     "cdcd0017",
+     "cdcd0018",
+     "cdcd0019"
+    ]
+   }
+  },
+  {
+   "id": "NxBuildSmoothNormals.15",
+   "export": "NxBuildSmoothNormals",
+   "ordinal": 2,
+   "dimension": "nominal",
+   "detail": [
+    "angle_versus_area_weighting"
+   ],
+   "inputs": [
+    "00000002",
+    "00000005",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "40800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000001",
+    "00000002",
+    "00000000",
+    "00000003",
+    "00000004",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "00000000",
+     "3f3504f3",
+     "bf3504f3",
+     "00000000",
+     "00000000",
+     "bf800000",
+     "00000000",
+     "00000000",
+     "bf800000",
+     "00000000",
+     "3f800000",
+     "00000000",
+     "00000000",
+     "3f800000",
+     "00000000",
+     "cdcd000f",
+     "cdcd0010",
+     "cdcd0011",
+     "cdcd0012",
+     "cdcd0013",
+     "cdcd0014",
+     "cdcd0015",
+     "cdcd0016",
+     "cdcd0017",
+     "cdcd0018",
+     "cdcd0019"
+    ]
+   }
+  },
+  {
+   "id": "NxBuildSmoothNormals.16",
+   "export": "NxBuildSmoothNormals",
+   "ordinal": 2,
+   "dimension": "nominal",
+   "detail": [
+    "angle_versus_unit_average_weighting"
+   ],
+   "inputs": [
+    "00000002",
+    "00000005",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "3f800000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000001",
+    "00000002",
+    "00000000",
+    "00000003",
+    "00000004",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000",
+    "00000000"
+   ],
+   "oracle": {
+    "ret": "00000001",
+    "out": [
+     "00000000",
+     "3ee4f92e",
+     "bf64f92e",
+     "00000000",
+     "00000000",
+     "bf800000",
+     "00000000",
+     "00000000",
+     "bf800000",
+     "00000000",
+     "3f800000",
+     "00000000",
+     "00000000",
+     "3f800000",
+     "00000000",
+     "cdcd000f",
+     "cdcd0010",
+     "cdcd0011",
+     "cdcd0012",
+     "cdcd0013",
+     "cdcd0014",
+     "cdcd0015",
+     "cdcd0016",
+     "cdcd0017",
+     "cdcd0018",
+     "cdcd0019"
+    ]
+   }
+  }
+ ]
+}

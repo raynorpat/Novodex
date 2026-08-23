@@ -1,0 +1,64 @@
+id,rva,size,reached_by,evidence
+phys_fn_005380,0x000e9420,19,vtable_slot,its address is the .rdata word at 0x0011bad8
+phys_fn_005382,0x000e9440,53,vtable_slot,its address is the .rdata word at 0x0011badc
+phys_fn_005386,0x000e94c0,133,vtable_slot,its address is the .rdata word at 0x0011bae0
+phys_fn_005404,0x000e9b20,94,direct_call,phys_fn_002282 calls it at 0x00057435
+phys_fn_005438,0x000ef270,182,direct_call,phys_fn_004830 calls it at 0x000b4ce8
+phys_fn_005440,0x000ef330,152,direct_call,phys_fn_005442 calls it at 0x000ef56b
+phys_fn_005442,0x000ef3d0,485,direct_call,phys_fn_004830 calls it at 0x000b4cf9
+phys_fn_005444,0x000ef5c0,146,direct_call,phys_fn_004832 calls it at 0x000b4d2f
+phys_fn_005446,0x000ef660,14,direct_call,phys_fn_004834 calls it at 0x000b4d4d
+phys_fn_005448,0x000ef670,29,direct_call,phys_fn_004852 calls it at 0x000b5116
+phys_fn_005450,0x000ef690,50,vtable_slot,its address is the .rdata word at 0x0011bba4
+phys_fn_005452,0x000ef6d0,117,direct_call,phys_fn_005456 calls it at 0x000ef793
+phys_fn_005454,0x000ef750,53,vtable_slot,its address is the .rdata word at 0x0011bb98
+phys_fn_005456,0x000ef790,44,vtable_slot,its address is the .rdata word at 0x0011bbac
+phys_fn_005458,0x000ef7c0,44,vtable_slot,its address is the .rdata word at 0x0011bbb0
+phys_fn_005460,0x000ef7f0,39,vtable_slot,its address is the .rdata word at 0x0011bbb8
+phys_fn_005462,0x000ef820,39,vtable_slot,its address is the .rdata word at 0x0011bbb4
+phys_fn_005464,0x000ef850,18,direct_call,phys_fn_004852 calls it at 0x000b50b9
+phys_fn_005466,0x000ef870,536,vtable_slot,its address is the .rdata word at 0x0011bbd4
+phys_fn_005468,0x000efa90,503,vtable_slot,its address is the .rdata word at 0x0011bbd8
+phys_fn_005470,0x000efc90,208,vtable_slot,its address is the .rdata word at 0x0011bbe0
+phys_fn_005471,0x000efd60,273,vtable_slot,its address is the .rdata word at 0x0011bbdc
+phys_fn_005473,0x000efe80,40,vtable_slot,its address is the .rdata word at 0x0011bbc0
+phys_fn_005475,0x000efeb0,27,direct_call,phys_fn_005531 calls it at 0x000f1556
+phys_fn_005477,0x000efed0,65,direct_call,phys_fn_005537 calls it at 0x000f15b5
+phys_fn_005479,0x000eff20,148,direct_call,phys_fn_004855 calls it at 0x000b5156
+phys_fn_005481,0x000effc0,252,direct_call,phys_fn_005483 calls it at 0x000f00c3
+phys_fn_005483,0x000f00c0,476,direct_call,phys_fn_005208 calls it at 0x000e50c3
+phys_fn_005485,0x000f02a0,622,direct_call,phys_fn_005210 calls it at 0x000e50db
+phys_fn_005531,0x000f1550,37,direct_call,phys_fn_005232 calls it at 0x000e56d5
+phys_fn_005533,0x000f1580,5,vtable_slot,its address is the .rdata word at 0x0011bc2c
+phys_fn_005535,0x000f1590,5,vtable_slot,its address is the .rdata word at 0x0011bc34
+phys_fn_005537,0x000f15a0,26,direct_call,phys_fn_005234 calls it at 0x000e5778
+phys_fn_005539,0x000f15c0,51,vtable_slot,its address is the .rdata word at 0x0011bc18
+phys_fn_005541,0x000f1600,444,direct_call,phys_fn_005256 calls it at 0x000e6011
+phys_fn_005543,0x000f17c0,420,direct_call,phys_fn_005256 calls it at 0x000e5eec
+phys_fn_005545,0x000f1970,178,direct_call,phys_fn_005260 calls it at 0x000e6190
+phys_fn_005547,0x000f1a30,56,direct_call,phys_fn_005549 calls it at 0x000f1a98
+phys_fn_005549,0x000f1a70,80,direct_call,phys_fn_005550 calls it at 0x000f1c12
+phys_fn_005550,0x000f1ac0,412,direct_call,phys_fn_005552 calls it at 0x000f1c9b
+phys_fn_005552,0x000f1c60,70,direct_call,phys_fn_005254 calls it at 0x000e5b82
+phys_fn_005554,0x000f1cb0,93,direct_call,phys_fn_005556 calls it at 0x000f1d36
+phys_fn_005556,0x000f1d10,49,direct_call,phys_fn_005256 calls it at 0x000e5f97
+phys_fn_005558,0x000f1d50,93,direct_call,phys_fn_005560 calls it at 0x000f1dd6
+phys_fn_005560,0x000f1db0,49,direct_call,phys_fn_005256 calls it at 0x000e5e6f
+phys_fn_005562,0x000f1df0,605,direct_call,phys_fn_005564 calls it at 0x000f207e
+phys_fn_005564,0x000f2050,57,direct_call,phys_fn_005258 calls it at 0x000e610e
+phys_fn_005566,0x000f2090,199,direct_call,phys_fn_005568 calls it at 0x000f218e
+phys_fn_005568,0x000f2160,57,direct_call,phys_fn_005262 calls it at 0x000e62de
+phys_fn_005584,0x000f2570,10,vtable_slot,its address is the .rdata word at 0x0011bc7c
+phys_fn_005586,0x000f2580,43,vtable_slot,its address is the .rdata word at 0x0011bc80
+phys_fn_005588,0x000f25b0,168,vtable_slot,its address is the .rdata word at 0x0011bc84
+phys_fn_005590,0x000f2660,36,direct_call,phys_fn_005588 calls it at 0x000f2656
+phys_fn_005604,0x000f2eb0,10,vtable_slot,its address is the .rdata word at 0x0011bc9c
+phys_fn_005606,0x000f2ec0,43,vtable_slot,its address is the .rdata word at 0x0011bca0
+phys_fn_005608,0x000f2ef0,168,vtable_slot,its address is the .rdata word at 0x0011bca4
+phys_fn_005610,0x000f2fa0,52,direct_call,phys_fn_005608 calls it at 0x000f2f96
+phys_fn_005622,0x000f3620,10,vtable_slot,its address is the .rdata word at 0x0011bcbc
+phys_fn_005624,0x000f3630,117,vtable_slot,its address is the .rdata word at 0x0011bcc0
+phys_fn_005640,0x000f3d30,14,vtable_slot,its address is the .rdata word at 0x0011bce0
+phys_fn_005642,0x000f3d40,118,vtable_slot,its address is the .rdata word at 0x0011bce4
+phys_fn_005644,0x000f3dc0,167,vtable_slot,its address is the .rdata word at 0x0011bce8
+phys_fn_005646,0x000f3e70,116,direct_call,phys_fn_005644 calls it at 0x000f3e65

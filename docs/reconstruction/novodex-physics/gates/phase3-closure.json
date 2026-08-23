@@ -1,0 +1,4699 @@
+{
+  "schema_version": 1,
+  "phase": 3,
+  "note": "Phase 3 closes on an exception list, the same shape Phase 2 closed on, and it is a partial close: 61 of its 434 function rows are closed and none of its 102 data objects is. Every Phase 3 row in inventory.json appears exactly once below and validate_inventory.py enforces that, recomputes the counts from these entries, checks every gate against the real target registry and rejects a closure claiming a falsification it does not carry. What the 61 amount to: the 27 named exports and the four continuation rows the census splits them into, closed by the staged-pair differentials; the contact emitter, the primitive half of matrix B, and eight of the nine non-mesh matrix A entries with the vtable slot-5 partners they dispatch into, closed by NxPhysicsCollisionTests, which loads the pinned DLL in its own process, re-hashes it and calls the recorded RVAs directly. What they do not amount to is the phase: the mesh column, the compound entries, the rest of matrix B's primitive half, the broad phase and the continuous-collision subtree are all still open, and 353 rows below say only that Phase 3 ran out of dispatches. Three limits are in the numbers themselves. First, the sixteen first-dispatch export rows record the measurement completely and the edit not at all, and the two have to be separated because they are not the same weakness. The measurement is traceable: evidence/phase3-leaf-kernels.md carries a per-row `mutation delta` column for all sixteen, those sixteen deltas sum to the 67 differing cases its own totals block states, the positive control in the same run read 142, and every one of the sixteen is a leaf whose Ghidra `called` list is empty -- so no delta there can have been produced by a callee, which is the misattribution that later reassigned `phys_fn_001010`'s 242 to NxRayCapsuleIntersect. The edit is not reproducible: the evidence records the sixteen mutations collectively -- one per row, each perturbing that kernel alone -- and never names the line any one of them changed, so the mutation field paraphrases the collective statement and re-running a single row means deriving its edit again. That is a reproducibility gap, and it is the smaller of the two this ledger has to declare. The sharper one is `phys_fn_001741`/`phys_fn_001743`, now the only place here where a delta is published without the site that produced it: evidence/phase3-narrow-phase.md tables all eight of that row's mutations, but only the closing one -- the corner depth test written as a float compare -- is recorded against a site, and the three further non-zero counts (557,830, 120 + 57,942 and 3,053) are carried by every committed record as bare numbers. The row closes on the one that names its site; the other three are published as counts, because choosing a site for them now would be a reconstruction rather than a reading. Second, `phys_fn_001901` is deferred rather than closed although Phase 3's own record calls it closed, because every mutation recorded for its dispatch changes the emitter it calls; its deferral entry says so. Third, two rows here are closed on algorithmic agreement under a control word they do not execute under, with the divergence pinned -- `phys_fn_001775` at 43 words and `phys_fn_001010` at 242, and the 242 has since been shown to belong to its callee NxRayCapsuleIntersect, a Phase 2-era Task 2 export. gates/phase3.json carries that as an escalation. Where the guarantee ends is where Phase 2 left it and one step further. Recomputed counts and a required non-zero delta make the strongest claim the costly one; they do not make a false one impossible, because the probe transcripts are not committed artifacts. And Phase 3 itself demonstrated the deeper limit: evidence in this programme is relative to the reachability graph known at the time, and recovering the dispatch matrix moved five rows Task 2 had already closed into a different floating-point environment. That is why nothing here is `closed` in the inventory: these rows are `dynamically_gated`, which says a gate entered them and caught a mutation, and the terminal rung stays Phase 8's to grant. P4 Task 1c removed seven rows from this ledger because the census no longer gives them to Phase 3: five IcePrunable.cpp rows and phys_fn_004842/004844, which the source correspondence map identifies as OPCODE Ice/IceContainer.cpp members. All seven were deferred not_reconstructed_in_phase, so no closure left with them and the 61 is unchanged.",
+  "proof_kinds": {
+    "differential_falsified": "a mutation was aimed at this row's reconstruction in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through a Phase 3 staged-pair target. NxPhysicsGeometryTests prints one line per case and NxPhysicsKernelFuzzTests one digest per export, so what a per-row probe reports is a count of differing cases or differing digests rather than the whole-target `stdout_delta` run_differential.ps1 prints; the detection records the unit it was measured in rather than converting it, and the gate is the target that produced it. Every one of these runs was accompanied by an un-mutated copy of the same tree built and run in the same session reading zero",
+    "static_proof_falsified": "a mutation was aimed at this row and the static-proof gate failed the named check; there is no oracle side, so this is weaker than any differential. Phase 3 closes no row this way",
+    "oracle_differential_falsified": "a mutation was aimed at this row's reconstruction in a throwaway `git archive` copy, rebuilt, and run through NxPhysicsCollisionTests -- a target that loads the pinned DLL in its own process, checks its hash and calls the recorded internal address directly, because none of these rows is exported and the public path that would reach them is Phase 4, 5 and 7 work that does not exist. It runs once rather than once per pair, so there is no transcript to diff and the detection is a mismatch count against the shipped bytes. Where one mutation was measured on more than one block or under both control words the largest single count is recorded and the mutation names the split"
+  },
+  "deferred_reasons": {
+    "blocked_on_later_phase": "the row, or something it must dispatch into to be driven at all, belongs to a phase after 3. Nineteen rows: the thirteen that make up the dispatch matrix's mesh column and its continuations, matrix B's [BOX][CAPSULE] entry, matrix A's [BOX][CAPSULE] entry, and the four rows of the continuous-collision subtree",
+    "unreachable_in_phase_2": "Phase 2's reason, unused here",
+    "not_independently_falsifiable": "the row has no counterpart in the candidate that can be mutated on its own. Unused here",
+    "homeless_shared_code": "Phase 2's reason for shared code with no translation unit span. Unused here",
+    "not_reconstructed_in_phase": "Phase 3 did not reconstruct this row and names nothing that blocks it. This is a debt, not an obstruction, and it is the largest single category in this ledger. No per-row reachability claim is made for these 360 rows, and that is deliberate: this component dispatches through function-pointer tables and vtable slots and the census splits functions at their internal alignment padding, so a call-edge closure over them systematically undercounts -- four separate counting methods in this programme have each answered a narrower question than the one asked, the last of them a call-edge walk that could not see a continuation row. Some of these rows will turn out to be blocked on Phase 4 mesh data once someone walks them properly; asserting which ones without walking them is the claim this reason refuses to make. Where the evidence does say something specific about a row -- the six compound entries, matrix B's [CAPSULE][CAPSULE] -- the entry carries a note",
+    "reconstructed_not_falsified": "the row is reconstructed and driven against the pinned oracle, and no mutation aimed at its own body is recorded. One row, `phys_fn_001901`. This is not `unreachable` and not `blocked`: the instrument exists and runs, and what is missing is one mutation",
+    "data_object_not_dispositioned": "a Phase 3 data object that no Phase 3 task dispositioned. A data object has no body to mutate and no transcript of its own, so it cannot carry a code proof kind; Phase 2 left its 1,051 in the same state and this list makes the same debt countable rather than silent. One of the 102 is load-bearing and named in the evidence: phys_data_000006 at 0x0003acc0, the 24-byte switch table phys_fn_001745's `jmp dword ptr [ecx*4+0x1003acc0]` walks, whose six slots were all resolved when that row was closed"
+  },
+  "measured_from": {
+    "entry_points": [
+      "the 27 named Phase 3 exports, resolved by GetProcAddress against both staged pairs",
+      "0x0001d610",
+      "0x00020750",
+      "0x00022480",
+      "0x00025350",
+      "0x00027c70",
+      "0x000257a0",
+      "0x000389d0",
+      "0x00038a90",
+      "0x00038ba0",
+      "0x00039c10",
+      "0x0003ace0",
+      "0x0003add0",
+      "0x0003d9d0",
+      "0x00047e90",
+      "0x00047f20",
+      "0x00048270",
+      "0x00048370",
+      "0x00048a20",
+      "0x00048a70",
+      "0x00049ca0",
+      "0x00049e70",
+      "0x00049f00",
+      "0x0004a2d0",
+      "0x0004a3e0",
+      "0x0004a4b0",
+      "0x0004b800",
+      "0x0004b860",
+      "0x00056650"
+    ],
+    "method": "the exports are driven through a staged-pair differential; every other address above is called directly inside NxPhysicsCollisionTests against the pinned DLL after a hash check, because no public API path reaches them. Each closed row was entered by a block that prints an oracle-side digest, and every digest and coverage line is registered in tools/gate_targets.ps1 with a per-phase floor, so a generator that degrades to nothing fails the gate rather than passing it",
+    "rows_reachable_within_phase_3": "not stated. Both walks available -- direct call edges over the census, and the closure used by Phase 2 -- are known to undercount this component: it dispatches through two function-pointer matrices and per-type vtable slots, and a continuation row is not a call target. A number produced by either would be an answer to a narrower question, and this ledger declines to publish one rather than publish a floor that reads like a total",
+    "control_words": "every NxPhysicsCollisionTests block is driven under both 0x027f, the CRT default, and 0x0f7f, the _PC_64 | _RC_CHOP word Scene::simulate installs. Which word a row actually executes under, and which one it agrees under, is recorded per row in the evidence and escalated in gates/phase3.json"
+  },
+  "counts": {
+    "deferred_blocked_on_later_phase": 19,
+    "deferred_data_object_not_dispositioned": 102,
+    "deferred_not_reconstructed_in_phase": 353,
+    "deferred_reconstructed_not_falsified": 1,
+    "differential_falsified": 31,
+    "oracle_differential_falsified": 30
+  },
+  "closed": [
+    {
+      "id": "phys_fn_000803",
+      "rva": "0x0001ba90",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsGeometryTests",
+      "falsification": {
+        "mutation": "one of sixteen mutations built one per row in a `git archive` copy at a18e48a, each perturbing this kernel alone; evidence/phase3-leaf-kernels.md records the sixteen collectively rather than naming this one, and the delta is this row's own differing cases of the 157 the sixteen rows own, against a 142-case positive control that read non-zero in the same run",
+        "detected": "cases=2"
+      }
+    },
+    {
+      "id": "phys_fn_000805",
+      "rva": "0x0001bab0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsGeometryTests",
+      "falsification": {
+        "mutation": "one of sixteen mutations built one per row in a `git archive` copy at a18e48a, each perturbing this kernel alone; evidence/phase3-leaf-kernels.md records the sixteen collectively rather than naming this one, and the delta is this row's own differing cases of the 157 the sixteen rows own, against a 142-case positive control that read non-zero in the same run",
+        "detected": "cases=2"
+      }
+    },
+    {
+      "id": "phys_fn_000807",
+      "rva": "0x0001bad0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsGeometryTests",
+      "falsification": {
+        "mutation": "one of sixteen mutations built one per row in a `git archive` copy at a18e48a, each perturbing this kernel alone; evidence/phase3-leaf-kernels.md records the sixteen collectively rather than naming this one, and the delta is this row's own differing cases of the 157 the sixteen rows own, against a 142-case positive control that read non-zero in the same run",
+        "detected": "cases=5"
+      }
+    },
+    {
+      "id": "phys_fn_000809",
+      "rva": "0x0001bb00",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsGeometryTests",
+      "falsification": {
+        "mutation": "one of sixteen mutations built one per row in a `git archive` copy at a18e48a, each perturbing this kernel alone; evidence/phase3-leaf-kernels.md records the sixteen collectively rather than naming this one, and the delta is this row's own differing cases of the 157 the sixteen rows own, against a 142-case positive control that read non-zero in the same run",
+        "detected": "cases=4"
+      }
+    },
+    {
+      "id": "phys_fn_000811",
+      "rva": "0x0001bb30",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsGeometryTests",
+      "falsification": {
+        "mutation": "one of sixteen mutations built one per row in a `git archive` copy at a18e48a, each perturbing this kernel alone; evidence/phase3-leaf-kernels.md records the sixteen collectively rather than naming this one, and the delta is this row's own differing cases of the 157 the sixteen rows own, against a 142-case positive control that read non-zero in the same run",
+        "detected": "cases=5"
+      }
+    },
+    {
+      "id": "phys_fn_000813",
+      "rva": "0x0001bb70",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsGeometryTests",
+      "falsification": {
+        "mutation": "one of sixteen mutations built one per row in a `git archive` copy at a18e48a, each perturbing this kernel alone; evidence/phase3-leaf-kernels.md records the sixteen collectively rather than naming this one, and the delta is this row's own differing cases of the 157 the sixteen rows own, against a 142-case positive control that read non-zero in the same run",
+        "detected": "cases=4"
+      }
+    },
+    {
+      "id": "phys_fn_000815",
+      "rva": "0x0001bbb0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsGeometryTests",
+      "falsification": {
+        "mutation": "one of sixteen mutations built one per row in a `git archive` copy at a18e48a, each perturbing this kernel alone; evidence/phase3-leaf-kernels.md records the sixteen collectively rather than naming this one, and the delta is this row's own differing cases of the 157 the sixteen rows own, against a 142-case positive control that read non-zero in the same run",
+        "detected": "cases=3"
+      }
+    },
+    {
+      "id": "phys_fn_000817",
+      "rva": "0x0001bbd0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsGeometryTests",
+      "falsification": {
+        "mutation": "one of sixteen mutations built one per row in a `git archive` copy at a18e48a, each perturbing this kernel alone; evidence/phase3-leaf-kernels.md records the sixteen collectively rather than naming this one, and the delta is this row's own differing cases of the 157 the sixteen rows own, against a 142-case positive control that read non-zero in the same run",
+        "detected": "cases=3"
+      }
+    },
+    {
+      "id": "phys_fn_000819",
+      "rva": "0x0001bbf0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsGeometryTests",
+      "falsification": {
+        "mutation": "one of sixteen mutations built one per row in a `git archive` copy at a18e48a, each perturbing this kernel alone; evidence/phase3-leaf-kernels.md records the sixteen collectively rather than naming this one, and the delta is this row's own differing cases of the 157 the sixteen rows own, against a 142-case positive control that read non-zero in the same run",
+        "detected": "cases=3"
+      }
+    },
+    {
+      "id": "phys_fn_000821",
+      "rva": "0x0001bc10",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsGeometryTests",
+      "falsification": {
+        "mutation": "one of sixteen mutations built one per row in a `git archive` copy at a18e48a, each perturbing this kernel alone; evidence/phase3-leaf-kernels.md records the sixteen collectively rather than naming this one, and the delta is this row's own differing cases of the 157 the sixteen rows own, against a 142-case positive control that read non-zero in the same run",
+        "detected": "cases=2"
+      }
+    },
+    {
+      "id": "phys_fn_000823",
+      "rva": "0x0001bc30",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsGeometryTests",
+      "falsification": {
+        "mutation": "one of sixteen mutations built one per row in a `git archive` copy at a18e48a, each perturbing this kernel alone; evidence/phase3-leaf-kernels.md records the sixteen collectively rather than naming this one, and the delta is this row's own differing cases of the 157 the sixteen rows own, against a 142-case positive control that read non-zero in the same run",
+        "detected": "cases=5"
+      }
+    },
+    {
+      "id": "phys_fn_000825",
+      "rva": "0x0001bc80",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsGeometryTests",
+      "falsification": {
+        "mutation": "one of sixteen mutations built one per row in a `git archive` copy at a18e48a, each perturbing this kernel alone; evidence/phase3-leaf-kernels.md records the sixteen collectively rather than naming this one, and the delta is this row's own differing cases of the 157 the sixteen rows own, against a 142-case positive control that read non-zero in the same run",
+        "detected": "cases=3"
+      }
+    },
+    {
+      "id": "phys_fn_000873",
+      "rva": "0x0001d610",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "the contact emitter's fifth contact word requires both feature ids to be real: `&&` becomes `||`. Measured on `contact_emit`, the block that drives the emitter directly at 0x0001d610 with real feature ids, because no matrix A entry reachable today passes anything but 0xffff. Three further mutations on this row moved 64,222 + 183,774, 44,874 + 72,508 and 12,156, and removing the separation's sign mask moved 59,186",
+        "detected": "mismatches=433140"
+      }
+    },
+    {
+      "id": "phys_fn_000943",
+      "rva": "0x00020750",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "the box corner helper keeps the first row of the rotation wide where the oracle narrows it",
+        "detected": "mismatches=28009"
+      }
+    },
+    {
+      "id": "phys_fn_001010",
+      "rva": "0x00022480",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "a CAPSULE shape's vtable slot 5: the row writes `hit.worldNormal` under NX_RAYCAST_NORMAL, the way the sphere's slot 5 does -- 65,343 of 5,880,000 on its own block and 31,150 on the capsule/capsule contact stream, which is what makes the uninitialised normal load-bearing rather than incidental",
+        "detected": "mismatches=65343"
+      }
+    },
+    {
+      "id": "phys_fn_001261",
+      "rva": "0x00025350",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "a PLANE shape's vtable slot 5: the facing test reads the ray origin where the oracle reads the direction -- 438,954 of 5,880,000 on its own block and 31,400 more through the entry, which is itself the evidence that the vtable edge is real",
+        "detected": "mismatches=438954"
+      }
+    },
+    {
+      "id": "phys_fn_001281",
+      "rva": "0x000257a0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "`Shape+0x04`, the owner accessor: the accessor reads a different field -- 8,000 of 8,000",
+        "detected": "mismatches=8000"
+      }
+    },
+    {
+      "id": "phys_fn_001377",
+      "rva": "0x00027c70",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "a SPHERE shape's vtable slot 5: the normal is taken against the ray origin instead of the sphere centre -- 47,687 of 5,880,000, 23,766 of them under the gating default word",
+        "detected": "mismatches=47687"
+      }
+    },
+    {
+      "id": "phys_fn_001696",
+      "rva": "0x000360e0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsKernelFuzzTests",
+      "falsification": {
+        "mutation": "NxSeparatingAxis takes the face-axis radius from the wrong box. The mutation lands in `phys_fn_001698`, the matrix loop the entry reaches by `jmp 0x361f0` over its alignment pad, and the argmax tail `phys_fn_001700` is the same function; the same mutation moves 1 of the 299 matrix cases",
+        "detected": "digests=2"
+      }
+    },
+    {
+      "id": "phys_fn_001698",
+      "rva": "0x000361f0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsKernelFuzzTests",
+      "falsification": {
+        "mutation": "NxSeparatingAxis takes the face-axis radius from the wrong box. The mutation lands in `phys_fn_001698`, the matrix loop the entry reaches by `jmp 0x361f0` over its alignment pad, and the argmax tail `phys_fn_001700` is the same function; the same mutation moves 1 of the 299 matrix cases",
+        "detected": "digests=2"
+      }
+    },
+    {
+      "id": "phys_fn_001700",
+      "rva": "0x00036600",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsKernelFuzzTests",
+      "falsification": {
+        "mutation": "NxSeparatingAxis takes the face-axis radius from the wrong box. The mutation lands in `phys_fn_001698`, the matrix loop the entry reaches by `jmp 0x361f0` over its alignment pad, and the argmax tail `phys_fn_001700` is the same function; the same mutation moves 1 of the 299 matrix cases",
+        "detected": "digests=2"
+      }
+    },
+    {
+      "id": "phys_fn_001702",
+      "rva": "0x00036690",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsKernelFuzzTests",
+      "falsification": {
+        "mutation": "NxBoxBoxIntersect takes the face-axis radius from the wrong box; the same mutation moves 1 of the 299 matrix cases",
+        "detected": "digests=2"
+      }
+    },
+    {
+      "id": "phys_fn_001704",
+      "rva": "0x00036bb0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsGeometryTests",
+      "falsification": {
+        "mutation": "one of sixteen mutations built one per row in a `git archive` copy at a18e48a, each perturbing this kernel alone; evidence/phase3-leaf-kernels.md records the sixteen collectively rather than naming this one, and the delta is this row's own differing cases of the 157 the sixteen rows own, against a 142-case positive control that read non-zero in the same run",
+        "detected": "cases=8"
+      }
+    },
+    {
+      "id": "phys_fn_001706",
+      "rva": "0x00036c60",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsGeometryTests",
+      "falsification": {
+        "mutation": "one of sixteen mutations built one per row in a `git archive` copy at a18e48a, each perturbing this kernel alone; evidence/phase3-leaf-kernels.md records the sixteen collectively rather than naming this one, and the delta is this row's own differing cases of the 157 the sixteen rows own, against a 142-case positive control that read non-zero in the same run",
+        "detected": "cases=5"
+      }
+    },
+    {
+      "id": "phys_fn_001710",
+      "rva": "0x00036e80",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsGeometryTests",
+      "falsification": {
+        "mutation": "one of sixteen mutations built one per row in a `git archive` copy at a18e48a, each perturbing this kernel alone; evidence/phase3-leaf-kernels.md records the sixteen collectively rather than naming this one, and the delta is this row's own differing cases of the 157 the sixteen rows own, against a 142-case positive control that read non-zero in the same run",
+        "detected": "cases=7"
+      }
+    },
+    {
+      "id": "phys_fn_001712",
+      "rva": "0x00036f50",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsGeometryTests",
+      "falsification": {
+        "mutation": "one of sixteen mutations built one per row in a `git archive` copy at a18e48a, each perturbing this kernel alone; evidence/phase3-leaf-kernels.md records the sixteen collectively rather than naming this one, and the delta is this row's own differing cases of the 157 the sixteen rows own, against a 142-case positive control that read non-zero in the same run",
+        "detected": "cases=6"
+      }
+    },
+    {
+      "id": "phys_fn_001714",
+      "rva": "0x00037260",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsKernelFuzzTests",
+      "falsification": {
+        "mutation": "NxSegmentBoxIntersect's candidate plane takes the wrong face; the same mutation moves 4 of the 299 matrix cases",
+        "detected": "digests=2"
+      }
+    },
+    {
+      "id": "phys_fn_001716",
+      "rva": "0x00037550",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsKernelFuzzTests",
+      "falsification": {
+        "mutation": "NxSegmentOBBIntersect reads the narrowed `C.z` where the oracle keeps the register copy",
+        "detected": "digests=1"
+      }
+    },
+    {
+      "id": "phys_fn_001718",
+      "rva": "0x00037820",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsKernelFuzzTests",
+      "falsification": {
+        "mutation": "NxRayOBBIntersect reads the narrowed `C.z` where the oracle keeps the register copy",
+        "detected": "digests=1"
+      }
+    },
+    {
+      "id": "phys_fn_001720",
+      "rva": "0x00037ab0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsKernelFuzzTests",
+      "falsification": {
+        "mutation": "NxSegmentAABBIntersect's one cross-axis radius term",
+        "detected": "digests=2"
+      }
+    },
+    {
+      "id": "phys_fn_001722",
+      "rva": "0x00037c80",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsKernelFuzzTests",
+      "falsification": {
+        "mutation": "NxRayAABBIntersect's origin copy for a ray that starts inside the box",
+        "detected": "digests=2"
+      }
+    },
+    {
+      "id": "phys_fn_001724",
+      "rva": "0x00037dc0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsKernelFuzzTests",
+      "falsification": {
+        "mutation": "NxRayAABBIntersect's origin copy for a ray that starts inside the box. The census splits this export into two rows at a three-byte alignment pad -- `phys_fn_001723` at 0x00037dbd -- and the reconstruction is one function, so the digests recorded here are the entry row `phys_fn_001722`'s",
+        "detected": "digests=2"
+      }
+    },
+    {
+      "id": "phys_fn_001726",
+      "rva": "0x00037e70",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsKernelFuzzTests",
+      "falsification": {
+        "mutation": "NxRayAABBIntersect2's reported distance takes the wrong plane",
+        "detected": "digests=2"
+      }
+    },
+    {
+      "id": "phys_fn_001728",
+      "rva": "0x00037fb0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsKernelFuzzTests",
+      "falsification": {
+        "mutation": "NxRayAABBIntersect2's reported distance takes the wrong plane. The census splits this export into two rows at a three-byte alignment pad -- `phys_fn_001727` at 0x00037fad -- and the reconstruction is one function, so the digests recorded here are the entry row `phys_fn_001726`'s",
+        "detected": "digests=2"
+      }
+    },
+    {
+      "id": "phys_fn_001734",
+      "rva": "0x000381c0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsKernelFuzzTests",
+      "falsification": {
+        "mutation": "NxRayCapsuleIntersect's missing `fsqrt` put back",
+        "detected": "digests=2"
+      }
+    },
+    {
+      "id": "phys_fn_001736",
+      "rva": "0x00038810",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsKernelFuzzTests",
+      "falsification": {
+        "mutation": "NxSweptSpheresIntersect's touching test written so a NaN goes the wrong way",
+        "detected": "digests=1"
+      }
+    },
+    {
+      "id": "phys_fn_001738",
+      "rva": "0x000389d0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "matrix B [BOX][BOX]: `fullTest` cleared on the NxBoxBoxIntersect call -- 3,134 and 4,332 on the two blocks, the larger recorded here",
+        "detected": "mismatches=4332"
+      }
+    },
+    {
+      "id": "phys_fn_001739",
+      "rva": "0x00038a90",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "the box/box quad containment and depth leaf: the second edge taken from `quad[2]` instead of `quad[3]`. Three further mutations on this row moved 544, 10 and 103,619",
+        "detected": "mismatches=197404"
+      }
+    },
+    {
+      "id": "phys_fn_001741",
+      "rva": "0x00038ba0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "the box/box clipping and manifold row: the corner depth test written as a float compare instead of the oracle's integer sign test on the masked word. Seven further mutations moved 557,830, 120 + 57,942 and 3,053, and four moved zero and are recorded as zeroes. The two census rows are one function, split at the `jmp 0x39730` over a seven-byte pad",
+        "detected": "mismatches=584167"
+      }
+    },
+    {
+      "id": "phys_fn_001743",
+      "rva": "0x00039730",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "the box/box clipping and manifold row: the corner depth test written as a float compare instead of the oracle's integer sign test on the masked word. Seven further mutations moved 557,830, 120 + 57,942 and 3,053, and four moved zero and are recorded as zeroes. The two census rows are one function, split at the `jmp 0x39730` over a seven-byte pad",
+        "detected": "mismatches=584167"
+      }
+    },
+    {
+      "id": "phys_fn_001745",
+      "rva": "0x00039c10",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "the box/box fifteen-axis separating-axis search: both halves of the overlap table take the same sign test. Nine of ten mutations were non-zero, including 105,675 / 79,986 for clearing the warm-start cache per call, which is what measures the cross-pair carry; one moved zero and is recorded as zero",
+        "detected": "mismatches=1751126"
+      }
+    },
+    {
+      "id": "phys_fn_001748",
+      "rva": "0x0003ace0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "the box/box transpose-and-copy shim: the two transposed poses exchanged -- 833,114 on its own block and 1,176,674 through the entry, the larger recorded here. Copying without transposing moves 787,813 and 1,175,310",
+        "detected": "mismatches=1176674"
+      }
+    },
+    {
+      "id": "phys_fn_001749",
+      "rva": "0x0003add0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "matrix A [BOX][BOX]: the header's feature half is not hard-zeroed, so the dead fifth contact word is appended -- 1,141,955 words. Seven of eight mutations were non-zero, including 380,158 for the emitter's header predicate -- the same defect `phys_fn_001883` measured at 452,624 -- and 89,102 for treating `sink+0xe8` as per-call scratch; one moved zero and is recorded as zero",
+        "detected": "mismatches=1141955"
+      }
+    },
+    {
+      "id": "phys_fn_001775",
+      "rva": "0x0003d9d0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "matrix A [CAPSULE][CAPSULE]: the ray selector reads the OR of the two swept flags instead of shape1's alone -- 24,141 of 1,073,192, 11,959 under the gating word",
+        "detected": "mismatches=24141"
+      }
+    },
+    {
+      "id": "phys_fn_001881",
+      "rva": "0x00047e90",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "matrix B [PLANE][BOX]: the corner loop steps by 3 instead of 2 -- 8,505 on one block and 16,318 on the other, the larger recorded here",
+        "detected": "mismatches=16318"
+      }
+    },
+    {
+      "id": "phys_fn_001883",
+      "rva": "0x00047f20",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "matrix A [PLANE][BOX]: the inlined copy of the stream logic is given the emitter's header predicate -- 452,624 of 7,450,176 words, 226,312 under the gating word. The predicate the mutation replaces is at 0x00047fbc, inside `phys_fn_001887`; the census splits this entry into three rows at its internal alignment padding and the reconstruction is one function",
+        "detected": "mismatches=452624"
+      }
+    },
+    {
+      "id": "phys_fn_001885",
+      "rva": "0x00047f50",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "matrix A [PLANE][BOX]: the inlined copy of the stream logic is given the emitter's header predicate -- 452,624 of 7,450,176 words, 226,312 under the gating word. The predicate the mutation replaces is at 0x00047fbc, inside `phys_fn_001887`; the census splits this entry into three rows at its internal alignment padding and the reconstruction is one function",
+        "detected": "mismatches=452624"
+      }
+    },
+    {
+      "id": "phys_fn_001887",
+      "rva": "0x00047f60",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "matrix A [PLANE][BOX]: the inlined copy of the stream logic is given the emitter's header predicate -- 452,624 of 7,450,176 words, 226,312 under the gating word. The predicate the mutation replaces is at 0x00047fbc, inside `phys_fn_001887`; the census splits this entry into three rows at its internal alignment padding and the reconstruction is one function",
+        "detected": "mismatches=452624"
+      }
+    },
+    {
+      "id": "phys_fn_001889",
+      "rva": "0x00048270",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "matrix B [PLANE][CAPSULE]: the capsule axis taken from column 0 instead of row 1 -- 6,372 and 8,628 on the two blocks, the larger recorded here",
+        "detected": "mismatches=8628"
+      }
+    },
+    {
+      "id": "phys_fn_001891",
+      "rva": "0x00048370",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "matrix A [PLANE][CAPSULE]: the contact point scales the normal by the radius instead of by the plane distance -- the plane/sphere convention -- 162,288 of 2,180,528 words",
+        "detected": "mismatches=162288"
+      }
+    },
+    {
+      "id": "phys_fn_001899",
+      "rva": "0x00048a20",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "matrix B [PLANE][SPHERE]: the plane-distance test `<= 0` becomes `< 0`",
+        "detected": "mismatches=4"
+      }
+    },
+    {
+      "id": "phys_fn_001913",
+      "rva": "0x00049ca0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "the sphere/box closest point uses the rotation instead of its transpose -- 5,754, 16,032 and 8,114 on the three blocks, the largest recorded here",
+        "detected": "mismatches=16032"
+      }
+    },
+    {
+      "id": "phys_fn_001915",
+      "rva": "0x00049e70",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "matrix B [SPHERE][BOX]: two extents swapped in the copy -- 5,974 and 17,030 on the two blocks, the larger recorded here",
+        "detected": "mismatches=17030"
+      }
+    },
+    {
+      "id": "phys_fn_001917",
+      "rva": "0x00049f00",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "the sphere/box contact geometry: the inside path picks the deepest face -- 126,980 of 3,480,000, and 57,508 through the entry. Two further mutations on this row moved 48,894 and 38,844",
+        "detected": "mismatches=126980"
+      }
+    },
+    {
+      "id": "phys_fn_001919",
+      "rva": "0x0004a2d0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "matrix A [SPHERE][BOX]: the two emitter object slots swapped -- 248,352 of 2,453,136, 124,176 per control word",
+        "detected": "mismatches=248352"
+      }
+    },
+    {
+      "id": "phys_fn_001921",
+      "rva": "0x0004a3e0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "matrix B [SPHERE][CAPSULE]: the capsule axis taken from row 1 -- 4,923 and 9,414 on the two blocks, the larger recorded here",
+        "detected": "mismatches=9414"
+      }
+    },
+    {
+      "id": "phys_fn_001923",
+      "rva": "0x0004a4b0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "matrix A [SPHERE][CAPSULE]: the contact point is scaled by the radius sum instead of by the sphere's own radius -- 54,001 of 1,802,896 words",
+        "detected": "mismatches=54001"
+      }
+    },
+    {
+      "id": "phys_fn_001931",
+      "rva": "0x0004b800",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "matrix B [SPHERE][SPHERE]: the squared distance narrowed to 32 bits",
+        "detected": "mismatches=70"
+      }
+    },
+    {
+      "id": "phys_fn_001933",
+      "rva": "0x0004b860",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "matrix A [SPHERE][SPHERE]: the 1e-5f coincidence test deleted -- 14,814 of 2,061,456, 7,407 per control word",
+        "detected": "mismatches=14814"
+      }
+    },
+    {
+      "id": "phys_fn_002146",
+      "rva": "0x000533c0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsKernelFuzzTests",
+      "falsification": {
+        "mutation": "NxBuildSmoothNormals narrows the edge component the oracle keeps live in `angleAtVertex`",
+        "detected": "digests=1"
+      }
+    },
+    {
+      "id": "phys_fn_002266",
+      "rva": "0x00056650",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsCollisionTests",
+      "falsification": {
+        "mutation": "the continuous-collision guard: the guard's equality inverted -- 8,000 of 16,000. Closed on its reachable arm only; the other arm tails into `phys_fn_002264`, which NX_CONTINUOUS_CD's shipped 0.0f default closes off and which this ledger defers",
+        "detected": "mismatches=8000"
+      }
+    }
+  ],
+  "deferred": [
+    {
+      "id": "phys_data_000006",
+      "rva": "0x0003acc0",
+      "size": 24,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "layout_adjacency",
+      "type": "switch_table",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000815",
+      "rva": "0x001068d0",
+      "size": 8,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000816",
+      "rva": "0x001068d8",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000817",
+      "rva": "0x001068dc",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000819",
+      "rva": "0x001068e4",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000820",
+      "rva": "0x001068e8",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000823",
+      "rva": "0x001068f4",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000824",
+      "rva": "0x001068f8",
+      "size": 36,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000844",
+      "rva": "0x00106b6c",
+      "size": 48,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000845",
+      "rva": "0x00106b9c",
+      "size": 55,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000846",
+      "rva": "0x00106bd4",
+      "size": 56,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000847",
+      "rva": "0x00106c2c",
+      "size": 60,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "dispatch_table",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000848",
+      "rva": "0x00106c88",
+      "size": 124,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "dispatch_table",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000849",
+      "rva": "0x00106d08",
+      "size": 140,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "dispatch_table",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000850",
+      "rva": "0x00106d94",
+      "size": 46,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000851",
+      "rva": "0x00106dc8",
+      "size": 144,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "dispatch_table",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000852",
+      "rva": "0x00106e78",
+      "size": 148,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "dispatch_table",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000853",
+      "rva": "0x00106f0c",
+      "size": 50,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000854",
+      "rva": "0x00106f40",
+      "size": 152,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "dispatch_table",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000855",
+      "rva": "0x00106ff8",
+      "size": 132,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "dispatch_table",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000856",
+      "rva": "0x0010707c",
+      "size": 48,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000857",
+      "rva": "0x001070b0",
+      "size": 136,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "dispatch_table",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000858",
+      "rva": "0x00107158",
+      "size": 136,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "dispatch_table",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000859",
+      "rva": "0x001071e0",
+      "size": 49,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000860",
+      "rva": "0x00107218",
+      "size": 140,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "dispatch_table",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000861",
+      "rva": "0x001072c8",
+      "size": 132,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "dispatch_table",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000862",
+      "rva": "0x0010734c",
+      "size": 55,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000863",
+      "rva": "0x00107388",
+      "size": 136,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "dispatch_table",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000864",
+      "rva": "0x00107430",
+      "size": 68,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "dispatch_table",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000865",
+      "rva": "0x00107474",
+      "size": 32,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000866",
+      "rva": "0x00107494",
+      "size": 48,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "dispatch_table",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000867",
+      "rva": "0x001074c4",
+      "size": 41,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000868",
+      "rva": "0x001074f0",
+      "size": 23,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000869",
+      "rva": "0x00107528",
+      "size": 76,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "dispatch_table",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000870",
+      "rva": "0x00107574",
+      "size": 47,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000871",
+      "rva": "0x001075a4",
+      "size": 54,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000872",
+      "rva": "0x001075dc",
+      "size": 51,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000873",
+      "rva": "0x00107630",
+      "size": 72,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "dispatch_table",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000874",
+      "rva": "0x0010767c",
+      "size": 16,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "dispatch_table",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000877",
+      "rva": "0x0010769c",
+      "size": 16,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "dispatch_table",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000878",
+      "rva": "0x001076ac",
+      "size": 46,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000879",
+      "rva": "0x001076e0",
+      "size": 8,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000881",
+      "rva": "0x001076f0",
+      "size": 8,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000882",
+      "rva": "0x001076f8",
+      "size": 8,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000884",
+      "rva": "0x00107708",
+      "size": 8,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000886",
+      "rva": "0x00107718",
+      "size": 12,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000900",
+      "rva": "0x00107978",
+      "size": 112,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000905",
+      "rva": "0x00107a30",
+      "size": 64,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000906",
+      "rva": "0x00107a70",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000907",
+      "rva": "0x00107a74",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000908",
+      "rva": "0x00107a78",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000909",
+      "rva": "0x00107a7c",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000910",
+      "rva": "0x00107a80",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000911",
+      "rva": "0x00107a84",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000912",
+      "rva": "0x00107a88",
+      "size": 16,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000913",
+      "rva": "0x00107a98",
+      "size": 56,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000914",
+      "rva": "0x00107ad0",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000915",
+      "rva": "0x00107ad4",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000916",
+      "rva": "0x00107ad8",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000917",
+      "rva": "0x00107adc",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000918",
+      "rva": "0x00107ae0",
+      "size": 80,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000919",
+      "rva": "0x00107b30",
+      "size": 36,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000920",
+      "rva": "0x00107b54",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000921",
+      "rva": "0x00107b58",
+      "size": 36,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000922",
+      "rva": "0x00107b7c",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000923",
+      "rva": "0x00107b80",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000924",
+      "rva": "0x00107b84",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000925",
+      "rva": "0x00107b88",
+      "size": 2,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000926",
+      "rva": "0x00107b8a",
+      "size": 55,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000928",
+      "rva": "0x00107bf4",
+      "size": 100,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000929",
+      "rva": "0x00107c58",
+      "size": 36,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000930",
+      "rva": "0x00107c7c",
+      "size": 60,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000931",
+      "rva": "0x00107cd4",
+      "size": 40,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000932",
+      "rva": "0x00107cfc",
+      "size": 3,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000933",
+      "rva": "0x00107cff",
+      "size": 59,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000934",
+      "rva": "0x00107d5c",
+      "size": 51,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000935",
+      "rva": "0x00107e0c",
+      "size": 52,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003505",
+      "rva": "0x00123bd0",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003506",
+      "rva": "0x00123bd4",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003540",
+      "rva": "0x00123c74",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003556",
+      "rva": "0x00123ce4",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003557",
+      "rva": "0x00123ce8",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003558",
+      "rva": "0x00123cf4",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003559",
+      "rva": "0x00123cf8",
+      "size": 128,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003560",
+      "rva": "0x00123d78",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003561",
+      "rva": "0x00123d7c",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003562",
+      "rva": "0x00123d80",
+      "size": 8,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003563",
+      "rva": "0x00123d88",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003564",
+      "rva": "0x00123d8c",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003565",
+      "rva": "0x00123d90",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003566",
+      "rva": "0x00123d94",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003567",
+      "rva": "0x00123d98",
+      "size": 8,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003568",
+      "rva": "0x00123da0",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003569",
+      "rva": "0x00123da4",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003570",
+      "rva": "0x00123da8",
+      "size": 376,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003571",
+      "rva": "0x00123f20",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003572",
+      "rva": "0x00123f24",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003573",
+      "rva": "0x00123f28",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003574",
+      "rva": "0x00123f2c",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003575",
+      "rva": "0x00123f30",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003576",
+      "rva": "0x00123f34",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_005007",
+      "rva": "0x001284fc",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000738",
+      "rva": "0x00016c00",
+      "size": 21,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000772",
+      "rva": "0x00018470",
+      "size": 207,
+      "reason": "blocked_on_later_phase",
+      "phase_provenance": "callers",
+      "driving_phases": [
+        4,
+        5,
+        7
+      ],
+      "blocked_on": [
+        "phys_fn_000754",
+        "phys_fn_005191"
+      ],
+      "blocked_on_type": "Shape",
+      "vtable_slot": 7,
+      "note": "the continuous-collision sweep and what only it reaches, 3,802 bytes behind phys_fn_002266's guard. NX_CONTINUOUS_CD is parameter 11 and its shipped default is 0.0f -- measured three ways against the oracle's own live array rather than read off the disassembly -- so the guard closes and this arm runs in no configuration the shipped SDK produces. Driving it needs vtable slot 7, which no phase has resolved for any shape type, a second pose at Shape+0x3c..+0x68 and the sink past +0x44; it also reaches phys_fn_000754, a 1,027-byte Phase 7 row nothing else reaches, and phys_fn_005191, a Phase 4 row"
+    },
+    {
+      "id": "phys_fn_000774",
+      "rva": "0x00018540",
+      "size": 34,
+      "reason": "blocked_on_later_phase",
+      "phase_provenance": "callers",
+      "driving_phases": [
+        4,
+        5,
+        7
+      ],
+      "blocked_on": [
+        "phys_fn_000754",
+        "phys_fn_005191"
+      ],
+      "blocked_on_type": "Shape",
+      "vtable_slot": 7,
+      "note": "the continuous-collision sweep and what only it reaches, 3,802 bytes behind phys_fn_002266's guard. NX_CONTINUOUS_CD is parameter 11 and its shipped default is 0.0f -- measured three ways against the oracle's own live array rather than read off the disassembly -- so the guard closes and this arm runs in no configuration the shipped SDK produces. Driving it needs vtable slot 7, which no phase has resolved for any shape type, a second pose at Shape+0x3c..+0x68 and the sink past +0x44; it also reaches phys_fn_000754, a 1,027-byte Phase 7 row nothing else reaches, and phys_fn_005191, a Phase 4 row"
+    },
+    {
+      "id": "phys_fn_000827",
+      "rva": "0x0001bcc0",
+      "size": 50,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000835",
+      "rva": "0x0001c5a0",
+      "size": 30,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000843",
+      "rva": "0x0001c750",
+      "size": 110,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000845",
+      "rva": "0x0001c7c0",
+      "size": 181,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000851",
+      "rva": "0x0001c930",
+      "size": 77,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000853",
+      "rva": "0x0001c980",
+      "size": 115,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000875",
+      "rva": "0x0001d8e0",
+      "size": 915,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000887",
+      "rva": "0x0001e910",
+      "size": 41,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000889",
+      "rva": "0x0001e940",
+      "size": 99,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000903",
+      "rva": "0x0001fb30",
+      "size": 120,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000925",
+      "rva": "0x00020440",
+      "size": 13,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000929",
+      "rva": "0x00020480",
+      "size": 7,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000933",
+      "rva": "0x000204e0",
+      "size": 188,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000983",
+      "rva": "0x000219d0",
+      "size": 62,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000989",
+      "rva": "0x00021ad0",
+      "size": 110,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000991",
+      "rva": "0x00021b40",
+      "size": 42,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000993",
+      "rva": "0x00021b70",
+      "size": 108,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000995",
+      "rva": "0x00021be0",
+      "size": 23,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000997",
+      "rva": "0x00021c00",
+      "size": 29,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000999",
+      "rva": "0x00021c20",
+      "size": 9,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001001",
+      "rva": "0x00021c30",
+      "size": 39,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001003",
+      "rva": "0x00021c60",
+      "size": 32,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001004",
+      "rva": "0x00021c80",
+      "size": 78,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001006",
+      "rva": "0x00021cd0",
+      "size": 1896,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001008",
+      "rva": "0x00022440",
+      "size": 57,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001012",
+      "rva": "0x000225d0",
+      "size": 15,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001014",
+      "rva": "0x000225e0",
+      "size": 59,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001016",
+      "rva": "0x00022620",
+      "size": 419,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001018",
+      "rva": "0x000227d0",
+      "size": 62,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001020",
+      "rva": "0x00022810",
+      "size": 349,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001022",
+      "rva": "0x00022970",
+      "size": 52,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001024",
+      "rva": "0x000229b0",
+      "size": 87,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001026",
+      "rva": "0x00022a10",
+      "size": 313,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001028",
+      "rva": "0x00022b50",
+      "size": 152,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001030",
+      "rva": "0x00022bf0",
+      "size": 267,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001032",
+      "rva": "0x00022d00",
+      "size": 96,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001033",
+      "rva": "0x00022d60",
+      "size": 99,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001035",
+      "rva": "0x00022dd0",
+      "size": 5,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001037",
+      "rva": "0x00022de0",
+      "size": 110,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001039",
+      "rva": "0x00022e50",
+      "size": 34,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001041",
+      "rva": "0x00022e80",
+      "size": 442,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001043",
+      "rva": "0x00023040",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001045",
+      "rva": "0x000230a0",
+      "size": 89,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001047",
+      "rva": "0x00023100",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001049",
+      "rva": "0x00023160",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001051",
+      "rva": "0x000231c0",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001053",
+      "rva": "0x00023220",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001055",
+      "rva": "0x00023280",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001057",
+      "rva": "0x000232e0",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001059",
+      "rva": "0x00023340",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001061",
+      "rva": "0x000233a0",
+      "size": 37,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001063",
+      "rva": "0x000233d0",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001065",
+      "rva": "0x00023430",
+      "size": 43,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001067",
+      "rva": "0x00023460",
+      "size": 92,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001069",
+      "rva": "0x000234c0",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001071",
+      "rva": "0x00023520",
+      "size": 36,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001073",
+      "rva": "0x00023550",
+      "size": 39,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001075",
+      "rva": "0x00023580",
+      "size": 57,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001077",
+      "rva": "0x000235c0",
+      "size": 8,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001079",
+      "rva": "0x000235d0",
+      "size": 55,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001081",
+      "rva": "0x00023610",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001083",
+      "rva": "0x00023670",
+      "size": 89,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001085",
+      "rva": "0x000236d0",
+      "size": 43,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001087",
+      "rva": "0x00023700",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001089",
+      "rva": "0x00023760",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001091",
+      "rva": "0x000237c0",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001093",
+      "rva": "0x00023820",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001095",
+      "rva": "0x00023880",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001097",
+      "rva": "0x000238e0",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001099",
+      "rva": "0x00023940",
+      "size": 39,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001101",
+      "rva": "0x00023970",
+      "size": 39,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001103",
+      "rva": "0x000239a0",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001105",
+      "rva": "0x00023a00",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001107",
+      "rva": "0x00023a60",
+      "size": 43,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001109",
+      "rva": "0x00023a90",
+      "size": 50,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001111",
+      "rva": "0x00023ad0",
+      "size": 92,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001113",
+      "rva": "0x00023b30",
+      "size": 89,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001115",
+      "rva": "0x00023b90",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001117",
+      "rva": "0x00023bf0",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001119",
+      "rva": "0x00023c50",
+      "size": 42,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001121",
+      "rva": "0x00023c80",
+      "size": 42,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001123",
+      "rva": "0x00023cb0",
+      "size": 57,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001125",
+      "rva": "0x00023cf0",
+      "size": 8,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001127",
+      "rva": "0x00023d00",
+      "size": 55,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001129",
+      "rva": "0x00023d40",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001131",
+      "rva": "0x00023da0",
+      "size": 89,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001133",
+      "rva": "0x00023e00",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001135",
+      "rva": "0x00023e60",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001137",
+      "rva": "0x00023ec0",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001139",
+      "rva": "0x00023f20",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001141",
+      "rva": "0x00023f80",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001143",
+      "rva": "0x00023fe0",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001145",
+      "rva": "0x00024040",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001147",
+      "rva": "0x000240a0",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001149",
+      "rva": "0x00024100",
+      "size": 43,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001151",
+      "rva": "0x00024130",
+      "size": 43,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001153",
+      "rva": "0x00024160",
+      "size": 43,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001155",
+      "rva": "0x00024190",
+      "size": 92,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001157",
+      "rva": "0x000241f0",
+      "size": 89,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001159",
+      "rva": "0x00024250",
+      "size": 57,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001161",
+      "rva": "0x00024290",
+      "size": 8,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001163",
+      "rva": "0x000242a0",
+      "size": 55,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001165",
+      "rva": "0x000242e0",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001167",
+      "rva": "0x00024340",
+      "size": 89,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001169",
+      "rva": "0x000243a0",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001171",
+      "rva": "0x00024400",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001173",
+      "rva": "0x00024460",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001175",
+      "rva": "0x000244c0",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001177",
+      "rva": "0x00024520",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001179",
+      "rva": "0x00024580",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001181",
+      "rva": "0x000245e0",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001183",
+      "rva": "0x00024640",
+      "size": 36,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001185",
+      "rva": "0x00024670",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001187",
+      "rva": "0x000246d0",
+      "size": 43,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001189",
+      "rva": "0x00024700",
+      "size": 92,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001191",
+      "rva": "0x00024760",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001193",
+      "rva": "0x000247c0",
+      "size": 57,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001195",
+      "rva": "0x00024800",
+      "size": 8,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001197",
+      "rva": "0x00024810",
+      "size": 55,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001199",
+      "rva": "0x00024850",
+      "size": 31,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001201",
+      "rva": "0x00024870",
+      "size": 36,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001203",
+      "rva": "0x000248a0",
+      "size": 36,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001205",
+      "rva": "0x000248d0",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001207",
+      "rva": "0x00024930",
+      "size": 37,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001209",
+      "rva": "0x00024960",
+      "size": 39,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001211",
+      "rva": "0x00024990",
+      "size": 89,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001213",
+      "rva": "0x000249f0",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001215",
+      "rva": "0x00024a50",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001217",
+      "rva": "0x00024ab0",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001219",
+      "rva": "0x00024b10",
+      "size": 39,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001221",
+      "rva": "0x00024b40",
+      "size": 39,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001223",
+      "rva": "0x00024b70",
+      "size": 39,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001225",
+      "rva": "0x00024ba0",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001227",
+      "rva": "0x00024c00",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001229",
+      "rva": "0x00024c60",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001231",
+      "rva": "0x00024cc0",
+      "size": 39,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001233",
+      "rva": "0x00024cf0",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001235",
+      "rva": "0x00024d50",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001237",
+      "rva": "0x00024db0",
+      "size": 36,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001239",
+      "rva": "0x00024de0",
+      "size": 92,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001241",
+      "rva": "0x00024e40",
+      "size": 57,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001243",
+      "rva": "0x00024e80",
+      "size": 8,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001245",
+      "rva": "0x00024e90",
+      "size": 55,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001247",
+      "rva": "0x00024ed0",
+      "size": 151,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001249",
+      "rva": "0x00024f70",
+      "size": 5,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001251",
+      "rva": "0x00024f80",
+      "size": 51,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001253",
+      "rva": "0x00024fc0",
+      "size": 207,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001255",
+      "rva": "0x00025090",
+      "size": 315,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001257",
+      "rva": "0x000251d0",
+      "size": 24,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001259",
+      "rva": "0x000251f0",
+      "size": 351,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001263",
+      "rva": "0x00025420",
+      "size": 59,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001265",
+      "rva": "0x00025460",
+      "size": 36,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001267",
+      "rva": "0x00025490",
+      "size": 116,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001269",
+      "rva": "0x00025510",
+      "size": 15,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001271",
+      "rva": "0x00025520",
+      "size": 15,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001273",
+      "rva": "0x00025530",
+      "size": 424,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001275",
+      "rva": "0x000256e0",
+      "size": 11,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001277",
+      "rva": "0x000256f0",
+      "size": 98,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001279",
+      "rva": "0x00025760",
+      "size": 53,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001283",
+      "rva": "0x000257b0",
+      "size": 7,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001285",
+      "rva": "0x000257c0",
+      "size": 8,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001287",
+      "rva": "0x000257d0",
+      "size": 14,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001289",
+      "rva": "0x000257e0",
+      "size": 43,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001291",
+      "rva": "0x00025810",
+      "size": 21,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001293",
+      "rva": "0x00025830",
+      "size": 8,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001295",
+      "rva": "0x00025840",
+      "size": 43,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001297",
+      "rva": "0x00025870",
+      "size": 33,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001299",
+      "rva": "0x000258a0",
+      "size": 23,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001301",
+      "rva": "0x000258c0",
+      "size": 43,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001303",
+      "rva": "0x000258f0",
+      "size": 98,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001305",
+      "rva": "0x00025960",
+      "size": 685,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001307",
+      "rva": "0x00025c10",
+      "size": 846,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001309",
+      "rva": "0x00025f60",
+      "size": 797,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001311",
+      "rva": "0x00026280",
+      "size": 424,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001313",
+      "rva": "0x00026430",
+      "size": 617,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001315",
+      "rva": "0x000266a0",
+      "size": 1061,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001317",
+      "rva": "0x00026ad0",
+      "size": 157,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001319",
+      "rva": "0x00026b70",
+      "size": 41,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001321",
+      "rva": "0x00026ba0",
+      "size": 40,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001323",
+      "rva": "0x00026bd0",
+      "size": 182,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001325",
+      "rva": "0x00026c90",
+      "size": 141,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001327",
+      "rva": "0x00026d20",
+      "size": 99,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001329",
+      "rva": "0x00026d90",
+      "size": 94,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001331",
+      "rva": "0x00026df0",
+      "size": 53,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001333",
+      "rva": "0x00026e30",
+      "size": 139,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001335",
+      "rva": "0x00026ec0",
+      "size": 129,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001337",
+      "rva": "0x00026f50",
+      "size": 117,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001339",
+      "rva": "0x00026fd0",
+      "size": 905,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001341",
+      "rva": "0x00027360",
+      "size": 903,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001343",
+      "rva": "0x000276f0",
+      "size": 25,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001345",
+      "rva": "0x00027710",
+      "size": 34,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001347",
+      "rva": "0x00027740",
+      "size": 119,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001349",
+      "rva": "0x000277c0",
+      "size": 91,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001351",
+      "rva": "0x00027820",
+      "size": 33,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001353",
+      "rva": "0x00027850",
+      "size": 79,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001355",
+      "rva": "0x000278a0",
+      "size": 22,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001357",
+      "rva": "0x000278c0",
+      "size": 89,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001359",
+      "rva": "0x00027920",
+      "size": 7,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001361",
+      "rva": "0x00027930",
+      "size": 78,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001363",
+      "rva": "0x00027980",
+      "size": 33,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001365",
+      "rva": "0x000279b0",
+      "size": 26,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001367",
+      "rva": "0x000279d0",
+      "size": 84,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001369",
+      "rva": "0x00027a30",
+      "size": 424,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001371",
+      "rva": "0x00027be0",
+      "size": 39,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001373",
+      "rva": "0x00027c10",
+      "size": 17,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001375",
+      "rva": "0x00027c30",
+      "size": 59,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001379",
+      "rva": "0x00027db0",
+      "size": 101,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001381",
+      "rva": "0x00027e20",
+      "size": 13,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001383",
+      "rva": "0x00027e30",
+      "size": 46,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001385",
+      "rva": "0x00027e60",
+      "size": 37,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001387",
+      "rva": "0x00027e90",
+      "size": 39,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001389",
+      "rva": "0x00027ec0",
+      "size": 51,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001391",
+      "rva": "0x00027f00",
+      "size": 3,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001393",
+      "rva": "0x00027f10",
+      "size": 1114,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001395",
+      "rva": "0x00028370",
+      "size": 2715,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001397",
+      "rva": "0x00028e10",
+      "size": 104,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001399",
+      "rva": "0x00028e80",
+      "size": 72,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001401",
+      "rva": "0x00028ed0",
+      "size": 696,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001403",
+      "rva": "0x00029190",
+      "size": 152,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001405",
+      "rva": "0x00029230",
+      "size": 978,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001407",
+      "rva": "0x00029610",
+      "size": 314,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001409",
+      "rva": "0x00029750",
+      "size": 41,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001411",
+      "rva": "0x00029780",
+      "size": 412,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001413",
+      "rva": "0x00029920",
+      "size": 30,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001415",
+      "rva": "0x00029940",
+      "size": 53,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001417",
+      "rva": "0x00029980",
+      "size": 32,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001418",
+      "rva": "0x000299a0",
+      "size": 32,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001419",
+      "rva": "0x000299c0",
+      "size": 78,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001421",
+      "rva": "0x00029a10",
+      "size": 17,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001423",
+      "rva": "0x00029a30",
+      "size": 51,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001425",
+      "rva": "0x00029a70",
+      "size": 516,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001427",
+      "rva": "0x00029c80",
+      "size": 793,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001429",
+      "rva": "0x00029fa0",
+      "size": 253,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001431",
+      "rva": "0x0002a0a0",
+      "size": 186,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001433",
+      "rva": "0x0002a160",
+      "size": 39,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001435",
+      "rva": "0x0002a190",
+      "size": 989,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001437",
+      "rva": "0x0002a570",
+      "size": 152,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001439",
+      "rva": "0x0002a610",
+      "size": 15,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001441",
+      "rva": "0x0002a620",
+      "size": 178,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001443",
+      "rva": "0x0002a6e0",
+      "size": 170,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001445",
+      "rva": "0x0002a790",
+      "size": 146,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001447",
+      "rva": "0x0002a830",
+      "size": 206,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001449",
+      "rva": "0x0002a900",
+      "size": 156,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001451",
+      "rva": "0x0002a9a0",
+      "size": 233,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001453",
+      "rva": "0x0002aa90",
+      "size": 584,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001455",
+      "rva": "0x0002ace0",
+      "size": 65,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001457",
+      "rva": "0x0002ad30",
+      "size": 34,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001459",
+      "rva": "0x0002ad60",
+      "size": 241,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001461",
+      "rva": "0x0002ae60",
+      "size": 194,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001463",
+      "rva": "0x0002af30",
+      "size": 337,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001465",
+      "rva": "0x0002b090",
+      "size": 791,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001467",
+      "rva": "0x0002b3b0",
+      "size": 452,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001469",
+      "rva": "0x0002b580",
+      "size": 76,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001471",
+      "rva": "0x0002b5d0",
+      "size": 288,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001474",
+      "rva": "0x0002b990",
+      "size": 34,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001476",
+      "rva": "0x0002b9c0",
+      "size": 253,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001478",
+      "rva": "0x0002bac0",
+      "size": 189,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001480",
+      "rva": "0x0002bb80",
+      "size": 301,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001482",
+      "rva": "0x0002bcb0",
+      "size": 509,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001484",
+      "rva": "0x0002beb0",
+      "size": 461,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001486",
+      "rva": "0x0002c080",
+      "size": 365,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001488",
+      "rva": "0x0002c1f0",
+      "size": 285,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001490",
+      "rva": "0x0002c310",
+      "size": 237,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001492",
+      "rva": "0x0002c400",
+      "size": 794,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001494",
+      "rva": "0x0002c720",
+      "size": 459,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001542",
+      "rva": "0x0002de60",
+      "size": 91,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001641",
+      "rva": "0x00031480",
+      "size": 61,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001643",
+      "rva": "0x000314c0",
+      "size": 433,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001649",
+      "rva": "0x00031890",
+      "size": 61,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001651",
+      "rva": "0x000318d0",
+      "size": 1240,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001653",
+      "rva": "0x00031db0",
+      "size": 1618,
+      "reason": "blocked_on_later_phase",
+      "phase_provenance": "callers",
+      "driving_phases": [
+        4,
+        5,
+        7
+      ],
+      "blocked_on": [
+        "phys_fn_000754",
+        "phys_fn_005191"
+      ],
+      "blocked_on_type": "Shape",
+      "vtable_slot": 7,
+      "note": "the continuous-collision sweep and what only it reaches, 3,802 bytes behind phys_fn_002266's guard. NX_CONTINUOUS_CD is parameter 11 and its shipped default is 0.0f -- measured three ways against the oracle's own live array rather than read off the disassembly -- so the guard closes and this arm runs in no configuration the shipped SDK produces. Driving it needs vtable slot 7, which no phase has resolved for any shape type, a second pose at Shape+0x3c..+0x68 and the sink past +0x44; it also reaches phys_fn_000754, a 1,027-byte Phase 7 row nothing else reaches, and phys_fn_005191, a Phase 4 row"
+    },
+    {
+      "id": "phys_fn_001655",
+      "rva": "0x00032410",
+      "size": 66,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001663",
+      "rva": "0x00032590",
+      "size": 19,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001665",
+      "rva": "0x000325b0",
+      "size": 95,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001667",
+      "rva": "0x00032610",
+      "size": 512,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001668",
+      "rva": "0x00032810",
+      "size": 40,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001692",
+      "rva": "0x000345b0",
+      "size": 684,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001708",
+      "rva": "0x00036d90",
+      "size": 227,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001751",
+      "rva": "0x0003b0e0",
+      "size": 370,
+      "reason": "blocked_on_later_phase",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": [
+        4
+      ],
+      "blocked_on": [
+        "phys_fn_001670",
+        "phys_fn_001684",
+        "phys_fn_001688"
+      ],
+      "note": "matrix B [BOX][CAPSULE]. The instrument that would drive it exists, but it calls three rows the census gives Phase 4 by layout adjacency and none of them is reconstructed: `phys_fn_001670` at 0x00032840 (403 bytes), `phys_fn_001684` at 0x00033a50 (237) and `phys_fn_001688` at 0x00033d00 (378). No blocking type is named: [BOX][CAPSULE] is a primitive pair with no mesh in it and the three blockers are unlabelled rows rather than a type, so `blocked_on` carries them instead, which is the stronger form of the same statement"
+    },
+    {
+      "id": "phys_fn_001753",
+      "rva": "0x0003b260",
+      "size": 2267,
+      "reason": "blocked_on_later_phase",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": [
+        5
+      ],
+      "blocked_on": [
+        "phys_fn_000949"
+      ],
+      "blocked_on_type": "Shape",
+      "vtable_slot": 5,
+      "note": "matrix A [BOX][CAPSULE], the ninth of the nine non-mesh entries and the only one Phase 3 did not close. Its partner's vtable slot 5 resolves to phys_fn_000949 at 0x00020880, a 663-byte Phase 5 row; the other four capsule pairs' slot-5 partners are all Phase 3 rows and were closed alongside their entries"
+    },
+    {
+      "id": "phys_fn_001755",
+      "rva": "0x0003bb40",
+      "size": 386,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001757",
+      "rva": "0x0003bcd0",
+      "size": 464,
+      "reason": "blocked_on_later_phase",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": [
+        4
+      ],
+      "blocked_on_type": "TriangleMesh",
+      "note": "matrix B [BOX][MESH] -- the mesh column of the recovered dispatch matrix. It needs the triangle mesh, its acceleration structure and the vertex and index data behind them, which are Phase 4's rows and do not exist, so no Phase 3 harness can drive it"
+    },
+    {
+      "id": "phys_fn_001758",
+      "rva": "0x0003bea0",
+      "size": 694,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001760",
+      "rva": "0x0003c160",
+      "size": 222,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001762",
+      "rva": "0x0003c240",
+      "size": 493,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001764",
+      "rva": "0x0003c430",
+      "size": 1258,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001766",
+      "rva": "0x0003c920",
+      "size": 922,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001768",
+      "rva": "0x0003ccc0",
+      "size": 1053,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001770",
+      "rva": "0x0003d0e0",
+      "size": 1054,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001772",
+      "rva": "0x0003d500",
+      "size": 911,
+      "reason": "blocked_on_later_phase",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": [
+        4
+      ],
+      "blocked_on_type": "TriangleMesh",
+      "note": "matrix A [BOX][MESH] -- the mesh column of the recovered dispatch matrix. It needs the triangle mesh, its acceleration structure and the vertex and index data behind them, which are Phase 4's rows and do not exist, so no Phase 3 harness can drive it"
+    },
+    {
+      "id": "phys_fn_001774",
+      "rva": "0x0003d890",
+      "size": 320,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": [],
+      "note": "matrix B [CAPSULE][CAPSULE]. Tractable today: its one callee is phys_fn_001690, the Phase 2 segment/segment distance Phase 3 discharged, and the instrument that would drive it exists"
+    },
+    {
+      "id": "phys_fn_001777",
+      "rva": "0x0003e370",
+      "size": 447,
+      "reason": "blocked_on_later_phase",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": [
+        4
+      ],
+      "blocked_on_type": "TriangleMesh",
+      "note": "matrix B [CAPSULE][MESH] -- the mesh column of the recovered dispatch matrix. It needs the triangle mesh, its acceleration structure and the vertex and index data behind them, which are Phase 4's rows and do not exist, so no Phase 3 harness can drive it"
+    },
+    {
+      "id": "phys_fn_001779",
+      "rva": "0x0003e530",
+      "size": 1656,
+      "reason": "blocked_on_later_phase",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": [
+        4
+      ],
+      "blocked_on_type": "TriangleMesh",
+      "note": "matrix A [CAPSULE][MESH] -- the mesh column of the recovered dispatch matrix. It needs the triangle mesh, its acceleration structure and the vertex and index data behind them, which are Phase 4's rows and do not exist, so no Phase 3 harness can drive it"
+    },
+    {
+      "id": "phys_fn_001781",
+      "rva": "0x0003ebb0",
+      "size": 867,
+      "reason": "blocked_on_later_phase",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": [
+        4
+      ],
+      "blocked_on_type": "TriangleMesh",
+      "note": "continuation at 0x0003ebb0 of matrix A [CAPSULE][MESH] -- the mesh column of the recovered dispatch matrix. It needs the triangle mesh, its acceleration structure and the vertex and index data behind them, which are Phase 4's rows and do not exist, so no Phase 3 harness can drive it"
+    },
+    {
+      "id": "phys_fn_001783",
+      "rva": "0x0003ef20",
+      "size": 1127,
+      "reason": "blocked_on_later_phase",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": [
+        4
+      ],
+      "blocked_on_type": "TriangleMesh",
+      "note": "continuation at 0x0003ef20 of matrix A [CAPSULE][MESH] -- the mesh column of the recovered dispatch matrix. It needs the triangle mesh, its acceleration structure and the vertex and index data behind them, which are Phase 4's rows and do not exist, so no Phase 3 harness can drive it"
+    },
+    {
+      "id": "phys_fn_001785",
+      "rva": "0x0003f390",
+      "size": 471,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": [],
+      "note": "matrix B [CAPSULE][COMPOUND]. The six compound entries are a layout question at +0xe0/+0xe4 rather than a new subsystem, and nothing outside Phase 3 blocks them"
+    },
+    {
+      "id": "phys_fn_001787",
+      "rva": "0x0003f570",
+      "size": 56,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": [],
+      "note": "matrix B [PLANE][COMPOUND] and [MESH][COMPOUND]; it always returns false and is the cheapest row in either matrix. The six compound entries are a layout question at +0xe0/+0xe4 rather than a new subsystem, and nothing outside Phase 3 blocks them"
+    },
+    {
+      "id": "phys_fn_001789",
+      "rva": "0x0003f5b0",
+      "size": 334,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": [],
+      "note": "matrix B [SPHERE][COMPOUND]. The six compound entries are a layout question at +0xe0/+0xe4 rather than a new subsystem, and nothing outside Phase 3 blocks them"
+    },
+    {
+      "id": "phys_fn_001791",
+      "rva": "0x0003f700",
+      "size": 418,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": [],
+      "note": "matrix B [BOX][COMPOUND]. The six compound entries are a layout question at +0xe0/+0xe4 rather than a new subsystem, and nothing outside Phase 3 blocks them"
+    },
+    {
+      "id": "phys_fn_001793",
+      "rva": "0x0003f8b0",
+      "size": 345,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001795",
+      "rva": "0x0003fa10",
+      "size": 29,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": [],
+      "note": "matrix A's compound entry, shared by every cell of the compound column. The six compound entries are a layout question at +0xe0/+0xe4 rather than a new subsystem, and nothing outside Phase 3 blocks them"
+    },
+    {
+      "id": "phys_fn_001797",
+      "rva": "0x0003fa30",
+      "size": 77,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": [],
+      "note": "matrix A [COMPOUND][COMPOUND]. The six compound entries are a layout question at +0xe0/+0xe4 rather than a new subsystem, and nothing outside Phase 3 blocks them"
+    },
+    {
+      "id": "phys_fn_001799",
+      "rva": "0x0003fa80",
+      "size": 409,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001801",
+      "rva": "0x0003fc20",
+      "size": 346,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001803",
+      "rva": "0x0003fd80",
+      "size": 152,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001805",
+      "rva": "0x0003fe20",
+      "size": 117,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001807",
+      "rva": "0x0003fea0",
+      "size": 301,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001809",
+      "rva": "0x0003ffd0",
+      "size": 432,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001810",
+      "rva": "0x00040180",
+      "size": 611,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001812",
+      "rva": "0x000403f0",
+      "size": 125,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001814",
+      "rva": "0x00040470",
+      "size": 381,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001816",
+      "rva": "0x000405f0",
+      "size": 1490,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001818",
+      "rva": "0x00040bd0",
+      "size": 1478,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001820",
+      "rva": "0x000411a0",
+      "size": 442,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001822",
+      "rva": "0x00041360",
+      "size": 717,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001824",
+      "rva": "0x00041630",
+      "size": 348,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001826",
+      "rva": "0x00041790",
+      "size": 166,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001828",
+      "rva": "0x00041840",
+      "size": 235,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001830",
+      "rva": "0x00041930",
+      "size": 123,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001832",
+      "rva": "0x000419b0",
+      "size": 496,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001833",
+      "rva": "0x00041ba0",
+      "size": 112,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001834",
+      "rva": "0x00041c10",
+      "size": 961,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001836",
+      "rva": "0x00041fe0",
+      "size": 342,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001838",
+      "rva": "0x00042140",
+      "size": 790,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001840",
+      "rva": "0x00042460",
+      "size": 247,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001842",
+      "rva": "0x00042560",
+      "size": 623,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001844",
+      "rva": "0x000427d0",
+      "size": 2170,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001846",
+      "rva": "0x00043050",
+      "size": 640,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001847",
+      "rva": "0x000432d0",
+      "size": 943,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001849",
+      "rva": "0x00043680",
+      "size": 2899,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001851",
+      "rva": "0x000441e0",
+      "size": 790,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001853",
+      "rva": "0x00044500",
+      "size": 5,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001855",
+      "rva": "0x00044510",
+      "size": 837,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001857",
+      "rva": "0x00044860",
+      "size": 774,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001859",
+      "rva": "0x00044b70",
+      "size": 2892,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001861",
+      "rva": "0x000456c0",
+      "size": 538,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001863",
+      "rva": "0x000458e0",
+      "size": 1155,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001865",
+      "rva": "0x00045d70",
+      "size": 1498,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001867",
+      "rva": "0x00046350",
+      "size": 439,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001869",
+      "rva": "0x00046510",
+      "size": 64,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001870",
+      "rva": "0x00046550",
+      "size": 394,
+      "reason": "blocked_on_later_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": [
+        4
+      ],
+      "blocked_on_type": "TriangleMesh",
+      "note": "matrix B [MESH][MESH] -- the mesh column of the recovered dispatch matrix. It needs the triangle mesh, its acceleration structure and the vertex and index data behind them, which are Phase 4's rows and do not exist, so no Phase 3 harness can drive it"
+    },
+    {
+      "id": "phys_fn_001872",
+      "rva": "0x000466e0",
+      "size": 146,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001874",
+      "rva": "0x00046780",
+      "size": 801,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001876",
+      "rva": "0x00046ab0",
+      "size": 1597,
+      "reason": "blocked_on_later_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [
+        4
+      ],
+      "blocked_on_type": "TriangleMesh",
+      "note": "matrix A [MESH][MESH] -- the mesh column of the recovered dispatch matrix. It needs the triangle mesh, its acceleration structure and the vertex and index data behind them, which are Phase 4's rows and do not exist, so no Phase 3 harness can drive it"
+    },
+    {
+      "id": "phys_fn_001878",
+      "rva": "0x000470f0",
+      "size": 3422,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001880",
+      "rva": "0x00047e50",
+      "size": 64,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001893",
+      "rva": "0x00048680",
+      "size": 219,
+      "reason": "blocked_on_later_phase",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": [
+        4
+      ],
+      "blocked_on_type": "TriangleMesh",
+      "note": "matrix B [PLANE][MESH] -- the mesh column of the recovered dispatch matrix. It needs the triangle mesh, its acceleration structure and the vertex and index data behind them, which are Phase 4's rows and do not exist, so no Phase 3 harness can drive it"
+    },
+    {
+      "id": "phys_fn_001895",
+      "rva": "0x00048760",
+      "size": 390,
+      "reason": "blocked_on_later_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [
+        4
+      ],
+      "blocked_on_type": "TriangleMesh",
+      "note": "matrix A [PLANE][MESH] -- the mesh column of the recovered dispatch matrix. It needs the triangle mesh, its acceleration structure and the vertex and index data behind them, which are Phase 4's rows and do not exist, so no Phase 3 harness can drive it"
+    },
+    {
+      "id": "phys_fn_001897",
+      "rva": "0x000488f0",
+      "size": 296,
+      "reason": "blocked_on_later_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [
+        4
+      ],
+      "blocked_on_type": "TriangleMesh",
+      "note": "continuation at 0x000488f0 of matrix A [PLANE][MESH] -- the mesh column of the recovered dispatch matrix. It needs the triangle mesh, its acceleration structure and the vertex and index data behind them, which are Phase 4's rows and do not exist, so no Phase 3 harness can drive it"
+    },
+    {
+      "id": "phys_fn_001901",
+      "rva": "0x00048a70",
+      "size": 177,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": [],
+      "note": "matrix A [PLANE][SPHERE]. Reconstructed and driven at its own RVA as `contact_plane_sphere` -- 2,452,600 checks, oracle digest cb3db7abc1f39025, mismatches=0 under both control words -- but every mutation recorded for that dispatch changes the emitter it calls rather than this row's own arithmetic: 59,186 for removing the separation's sign mask at 0x0001d86d, and the four emitter behaviours at 64,222 + 183,774, 44,874 + 72,508, 433,140 and 12,156. Those measure that this row's block bites, not that a wrong plane/sphere contact would be caught. Phase 3's own dispatch record calls this row closed; re-derived from the evidence it does not meet the standard the other 61 meet, and closing it on a callee's mutation would repeat the error the programme already caught once, when 242 words were attributed to phys_fn_001010 and belonged to NxRayCapsuleIntersect. One mutation aimed at this row's own body discharges it"
+    },
+    {
+      "id": "phys_fn_001903",
+      "rva": "0x00048b30",
+      "size": 45,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001905",
+      "rva": "0x00048b60",
+      "size": 111,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001907",
+      "rva": "0x00048bd0",
+      "size": 607,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001909",
+      "rva": "0x00048e30",
+      "size": 733,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001911",
+      "rva": "0x00049110",
+      "size": 2952,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001925",
+      "rva": "0x0004a820",
+      "size": 274,
+      "reason": "blocked_on_later_phase",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": [
+        4
+      ],
+      "blocked_on_type": "TriangleMesh",
+      "note": "matrix B [SPHERE][MESH] -- the mesh column of the recovered dispatch matrix. It needs the triangle mesh, its acceleration structure and the vertex and index data behind them, which are Phase 4's rows and do not exist, so no Phase 3 harness can drive it"
+    },
+    {
+      "id": "phys_fn_001927",
+      "rva": "0x0004a940",
+      "size": 2223,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001929",
+      "rva": "0x0004b1f0",
+      "size": 1542,
+      "reason": "blocked_on_later_phase",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": [
+        4
+      ],
+      "blocked_on_type": "TriangleMesh",
+      "note": "matrix A [SPHERE][MESH] -- the mesh column of the recovered dispatch matrix. It needs the triangle mesh, its acceleration structure and the vertex and index data behind them, which are Phase 4's rows and do not exist, so no Phase 3 harness can drive it"
+    },
+    {
+      "id": "phys_fn_001935",
+      "rva": "0x0004b9c0",
+      "size": 46,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001945",
+      "rva": "0x0004bbd0",
+      "size": 74,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001947",
+      "rva": "0x0004bc20",
+      "size": 89,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001955",
+      "rva": "0x0004bde0",
+      "size": 153,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001965",
+      "rva": "0x0004c000",
+      "size": 22,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_002029",
+      "rva": "0x0004f070",
+      "size": 3751,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_002264",
+      "rva": "0x00055eb0",
+      "size": 1943,
+      "reason": "blocked_on_later_phase",
+      "phase_provenance": "callers",
+      "driving_phases": [
+        4,
+        5,
+        7
+      ],
+      "blocked_on": [
+        "phys_fn_000754",
+        "phys_fn_005191"
+      ],
+      "blocked_on_type": "Shape",
+      "vtable_slot": 7,
+      "note": "the continuous-collision sweep and what only it reaches, 3,802 bytes behind phys_fn_002266's guard. NX_CONTINUOUS_CD is parameter 11 and its shipped default is 0.0f -- measured three ways against the oracle's own live array rather than read off the disassembly -- so the guard closes and this arm runs in no configuration the shipped SDK produces. Driving it needs vtable slot 7, which no phase has resolved for any shape type, a second pose at Shape+0x3c..+0x68 and the sink past +0x44; it also reaches phys_fn_000754, a 1,027-byte Phase 7 row nothing else reaches, and phys_fn_005191, a Phase 4 row"
+    },
+    {
+      "id": "phys_fn_002344",
+      "rva": "0x0005aae0",
+      "size": 104,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_002413",
+      "rva": "0x0005bbe0",
+      "size": 38,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_002423",
+      "rva": "0x0005c390",
+      "size": 552,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_004812",
+      "rva": "0x000b4070",
+      "size": 5,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_004859",
+      "rva": "0x000b5260",
+      "size": 55,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    }
+  ]
+}

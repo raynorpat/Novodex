@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "generator_version": 1,
+  "physics_manifest": {
+    "path": "../public_header_hashes.json",
+    "sha256": "143ddbb0d6c2a366e94d53ae13e20060c34a6878bd6ee0d954751a5f03a5791c"
+  },
+  "foundation_manifest": {
+    "path": "../../novodex-foundation/dumps/immutable_public_hashes.json",
+    "sha256": "b96d239c03847b5d222eb43ca9341f1fbdc945f6247147558be4569fad257556"
+  },
+  "include_roots": [
+    "Physics/include",
+    "Foundation/include"
+  ],
+  "excluded_headers": [
+    {
+      "path": "Foundation/include/NxXBOX.h",
+      "reason": "Xbox-only header; its own '#error This is for xbox only!' guard rejects a Win32 configuration, and it declares no types, only #define NOMINMAX and #include <xtl.h>."
+    },
+    {
+      "path": "Foundation/include/NxList.h",
+      "reason": "Shipped placeholder: the file's entire content is '#include \"?.h\"' and 'class ? { public: };'. Its class tag is the literal character '?', so it declares no type and is not valid C++."
+    }
+  ],
+  "excluded_types": [
+    {
+      "name": "NxProfiler_DefineZone",
+      "reason": "UNDERIVABLE UNDER THE TARGET ABI - not merely unverified, and not closed by verifying it. Foundation/include/NxProfiler.h:76 declares 'class DefineZone : public NxAllocateable, public NxProfilingZone', the only multiple-inheritance site in either pinned tree. NxAllocateable declares only operator new/delete, so it is empty and non-polymorphic; NxProfilingZone declares three pure virtuals, so it is polymorphic and forces a vftable slot. Deriving the layout would require assuming the empty base is elided, and MSVC's default Win32 ABI does not reliably apply empty-base optimization when a class has multiple bases - that is precisely why __declspec(empty_bases) was later added to the compiler. For the 2003-era MSVC that built this DLL, 'EBO applies' is a coin flip, not a conservative default, and guessing wrong would place the vftable slot and every field after it at the wrong offset while decompiling confidently. R4 therefore withholds the type rather than emitting a layout it cannot derive. Nothing in the Physics tree reaches it: NxPerformanceInspector is declared in Physics/include/NxSceneStats.h, not here, and all three of NxProfiler's DefineZone members (NxProfiler.h:153, :169, :188) are static. The generator hard-errors if this type ever becomes reachable."
+    }
+  ],
+  "preprocessor_definitions": {
+    "WIN32": "1",
+    "_WIN32": "1",
+    "_MSC_VER": "1310",
+    "NX32": "1",
+    "NX_USE_SDK_DLLS": "1",
+    "NX_USE_FLUID_API": "1",
+    "NX_C_EXPORT": "extern \"C\"",
+    "NX_CALL_CONV": "__cdecl",
+    "NXP_DLL_EXPORT": "__declspec(dllexport)",
+    "NXF_DLL_EXPORT": "__declspec(dllimport)",
+    "NX_INLINE": "inline"
+  },
+  "forced_declarations": [
+    {
+      "name": "NxArray<NxShapeDesc*>",
+      "emit_as": "NxArray_NxShapeDesc_ptr",
+      "declaration": "typedef struct NxArray_NxShapeDesc_ptr {\n    NxShapeDesc **first;\n    NxShapeDesc **last;\n    NxShapeDesc **memEnd;\n    unsigned char allocator;\n} NxArray_NxShapeDesc_ptr;",
+      "reason": "Class template instantiation; R6 does not instantiate templates. The three pointer fields are the 'Iterator first, last, memEnd;' declared at Foundation/include/NxArray.h:410, with Iterator = ElemType* per NxArray.h:26. The trailing field stands for the 'AllocType allocator;' at NxArray.h:412, whose type NxAllocatorDefault declares only member functions. ASSUMPTION NOT YET VERIFIED AGAINST THE BINARY: this assumes MSVC empty-base optimization for the NxAllocateable base (0 bytes) and a 1-byte empty-class member padded to the struct's 4-byte alignment, giving 16 bytes total. Task 5 must confirm the size against the oracle before any reconstruction relies on it."
+    },
+    {
+      "name": "NxArray<NxFluidEmitterDesc>",
+      "emit_as": "NxArray_NxFluidEmitterDesc",
+      "declaration": "typedef struct NxArray_NxFluidEmitterDesc {\n    NxFluidEmitterDesc *first;\n    NxFluidEmitterDesc *last;\n    NxFluidEmitterDesc *memEnd;\n    unsigned char allocator;\n} NxArray_NxFluidEmitterDesc;",
+      "reason": "Class template instantiation; R6 does not instantiate templates. The three pointer fields are the 'Iterator first, last, memEnd;' declared at Foundation/include/NxArray.h:410, with Iterator = ElemType* per NxArray.h:26. The trailing field stands for the 'AllocType allocator;' at NxArray.h:412, whose type NxAllocatorDefault declares only member functions. ASSUMPTION NOT YET VERIFIED AGAINST THE BINARY: this assumes MSVC empty-base optimization for the NxAllocateable base (0 bytes) and a 1-byte empty-class member padded to the struct's 4-byte alignment, giving 16 bytes total. Task 5 must confirm the size against the oracle before any reconstruction relies on it."
+    }
+  ],
+  "type_selection_rules": [
+    "R0 file-scope typedefs are emitted in declaration order.",
+    "R1 every tagged enum becomes a C enum whose enumerators are evaluated to literal integers, widened with a generator-added <Name>__nx_force_32bit enumerator when its own values do not reach 32 bits, so it matches the 4-byte underlying type MSVC gives every enum.",
+    "R2 every tagged class or struct becomes a C struct of its data members in declaration order; member functions, inline bodies, operators, constructors, destructors, static members and in-body typedefs declare no storage and are dropped. An in-body typedef still names a type and is recorded as a scope alias.",
+    "R3 a class gains a leading void **__vftable only when it introduces virtual members and does not already inherit a vftable from its base chain. A class that introduces virtual members over a base with no vftable is rejected, because MSVC would place the pointer before the base subobject. A virtual member of a nested type belongs to that nested type, not to its enclosing class.",
+    "R4 a class with one non-virtual base embeds it first as __base_<Base>, by the same code path for nested and top-level classes. Multiple and virtual inheritance are not derived: the type is withheld under R9 rather than emitted with a guessed layout.",
+    "R5 C++ references become pointers, top-level const is dropped, and bool and __int64 are replaced by their layout-identical C spellings.",
+    "R6 templates are not instantiated; a member naming one resolves through a forced declaration, whose reason is emitted as a comment above it. A forced declaration may not supply a layout for a type the headers define, and may not name a type withheld under R9.",
+    "R7 free functions declared NX_C_EXPORT NXP_DLL_EXPORT become C prototypes carrying their calling convention; an extern \"C\" declaration with no parameter list is recognized as a variable and contributes no prototype.",
+    "R8 any construct outside this subset is rejected by file and line; nothing is skipped in silence. A type withheld under R9 is the one thing not emitted, and it leaves a visible marker in its place rather than nothing.",
+    "R9 excluded_types withholds a named type whose layout is not derivable under the target ABI. Each entry carries a reason; a name no pinned header declares is an error; the withheld type leaves a /* excluded type: ... */ marker where it would have appeared, which ApplyPhysicsTypes.java reads back out of the shim into the manifest; and the generator hard-errors if a withheld type is reachable from an export signature, a base clause, a member of any emitted type, or a forced declaration body.",
+    "R10 excluded_headers withholds a whole header that is not part of a Win32 configuration. Its bytes are still verified against the pinned manifest; only its declarations are skipped."
+  ]
+}

@@ -1,0 +1,446 @@
+{
+  "schema_version": 1,
+  "executable_bytes": 1056977,
+  "layers": {
+    "capstone_instruction_bytes": 1029064,
+    "walked_switch_table_bytes": 1676,
+    "ghidra_only_instruction_bytes": 586,
+    "derived_switch_table_bytes": 104,
+    "ghidra_data_bytes": 509,
+    "ascii_blob_bytes": 8,
+    "alignment_padding_bytes": 21946,
+    "alignment_jump_bytes": 30,
+    "unreferenced_code_bytes": 3054
+  },
+  "rows": {
+    "code": 2721,
+    "compiler_artifact": 3617,
+    "data_objects_in_text": 558
+  },
+  "target_discovery": {
+    "recovered_targets": 22102,
+    "unresolved_targets": 0,
+    "relocation_sites_too_lone_to_be_a_table": [
+      "0x000fd92e"
+    ],
+    "function_like_targets": 3049,
+    "resolved_by_ghidra_decode_only": 12,
+    "targets_naming_a_jump_table_base": [
+      "0x000f93bc",
+      "0x000f9558",
+      "0x000feccc",
+      "0x000fee68"
+    ]
+  },
+  "derived_switch_tables": [
+    {
+      "rva": "0x000f92d4",
+      "slots": 3
+    },
+    {
+      "rva": "0x000f9460",
+      "slots": 3
+    },
+    {
+      "rva": "0x000f94ec",
+      "slots": 7
+    },
+    {
+      "rva": "0x000febe4",
+      "slots": 3
+    },
+    {
+      "rva": "0x000fed70",
+      "slots": 3
+    },
+    {
+      "rva": "0x000fedfc",
+      "slots": 7
+    }
+  ],
+  "ghidra_only_instruction_ranges": [
+    {
+      "rva": "0x000f92e0",
+      "size": 41
+    },
+    {
+      "rva": "0x000f930c",
+      "size": 35
+    },
+    {
+      "rva": "0x000f9330",
+      "size": 29
+    },
+    {
+      "rva": "0x000f946c",
+      "size": 33
+    },
+    {
+      "rva": "0x000f9490",
+      "size": 39
+    },
+    {
+      "rva": "0x000f94b8",
+      "size": 49
+    },
+    {
+      "rva": "0x000f950c",
+      "size": 67
+    },
+    {
+      "rva": "0x000febf0",
+      "size": 41
+    },
+    {
+      "rva": "0x000fec1c",
+      "size": 35
+    },
+    {
+      "rva": "0x000fec40",
+      "size": 29
+    },
+    {
+      "rva": "0x000fed7c",
+      "size": 33
+    },
+    {
+      "rva": "0x000feda0",
+      "size": 39
+    },
+    {
+      "rva": "0x000fedc8",
+      "size": 49
+    },
+    {
+      "rva": "0x000fee1c",
+      "size": 67
+    }
+  ],
+  "unreferenced_code_regions": [
+    {
+      "rva": "0x000f4804",
+      "size": 9,
+      "gap": "0x000f4804",
+      "swept_instructions": 2,
+      "nearest_named_runtime_function": {
+        "rva": "0x000f47b0",
+        "label": "__chkstk",
+        "distance": 84
+      }
+    },
+    {
+      "rva": "0x000f48f4",
+      "size": 9,
+      "gap": "0x000f48f4",
+      "swept_instructions": 2,
+      "nearest_named_runtime_function": {
+        "rva": "0x000f48c5",
+        "label": "operator_new",
+        "distance": 47
+      }
+    },
+    {
+      "rva": "0x000f4ad0",
+      "size": 63,
+      "gap": "0x000f4acd",
+      "swept_instructions": 19,
+      "nearest_named_runtime_function": {
+        "rva": "0x000f48c5",
+        "label": "operator_new",
+        "distance": 523
+      }
+    },
+    {
+      "rva": "0x000f4b64",
+      "size": 9,
+      "gap": "0x000f4b64",
+      "swept_instructions": 2,
+      "nearest_named_runtime_function": {
+        "rva": "0x000f48c5",
+        "label": "operator_new",
+        "distance": 671
+      }
+    },
+    {
+      "rva": "0x000f619c",
+      "size": 1,
+      "gap": "0x000f619c",
+      "swept_instructions": 4,
+      "nearest_named_runtime_function": {
+        "rva": "0x000f6124",
+        "label": "_longjmp",
+        "distance": 120
+      }
+    },
+    {
+      "rva": "0x000fa770",
+      "size": 248,
+      "gap": "0x000fa761",
+      "swept_instructions": 91,
+      "nearest_named_runtime_function": {
+        "rva": "0x000fa746",
+        "label": "__callnewh",
+        "distance": 42
+      }
+    },
+    {
+      "rva": "0x000fa86d",
+      "size": 9,
+      "gap": "0x000fa86d",
+      "swept_instructions": 3,
+      "nearest_named_runtime_function": {
+        "rva": "0x000fa746",
+        "label": "__callnewh",
+        "distance": 295
+      }
+    },
+    {
+      "rva": "0x000fa87b",
+      "size": 2,
+      "gap": "0x000fa87b",
+      "swept_instructions": 1,
+      "nearest_named_runtime_function": {
+        "rva": "0x000fa746",
+        "label": "__callnewh",
+        "distance": 309
+      }
+    },
+    {
+      "rva": "0x000fa8ad",
+      "size": 141,
+      "gap": "0x000fa8ad",
+      "swept_instructions": 42,
+      "nearest_named_runtime_function": {
+        "rva": "0x000fa746",
+        "label": "__callnewh",
+        "distance": 359
+      }
+    },
+    {
+      "rva": "0x000faa75",
+      "size": 20,
+      "gap": "0x000faa75",
+      "swept_instructions": 6,
+      "nearest_named_runtime_function": {
+        "rva": "0x000faa4b",
+        "label": "__math_exit",
+        "distance": 42
+      }
+    },
+    {
+      "rva": "0x000fbae0",
+      "size": 17,
+      "gap": "0x000fbad6",
+      "swept_instructions": 8,
+      "nearest_named_runtime_function": {
+        "rva": "0x000fadef",
+        "label": "___sse2_available_init",
+        "distance": 3313
+      }
+    },
+    {
+      "rva": "0x000fbb36",
+      "size": 174,
+      "gap": "0x000fbb36",
+      "swept_instructions": 64,
+      "nearest_named_runtime_function": {
+        "rva": "0x000fadef",
+        "label": "___sse2_available_init",
+        "distance": 3399
+      }
+    },
+    {
+      "rva": "0x000fbbe9",
+      "size": 7,
+      "gap": "0x000fbbe9",
+      "swept_instructions": 2,
+      "nearest_named_runtime_function": {
+        "rva": "0x000fadef",
+        "label": "___sse2_available_init",
+        "distance": 3578
+      }
+    },
+    {
+      "rva": "0x000fbc1f",
+      "size": 18,
+      "gap": "0x000fbc1f",
+      "swept_instructions": 5,
+      "nearest_named_runtime_function": {
+        "rva": "0x000fadef",
+        "label": "___sse2_available_init",
+        "distance": 3632
+      }
+    },
+    {
+      "rva": "0x000fbc81",
+      "size": 102,
+      "gap": "0x000fbc81",
+      "swept_instructions": 42,
+      "nearest_named_runtime_function": {
+        "rva": "0x000fadef",
+        "label": "___sse2_available_init",
+        "distance": 3730
+      }
+    },
+    {
+      "rva": "0x000fd922",
+      "size": 44,
+      "gap": "0x000fd922",
+      "swept_instructions": 14,
+      "nearest_named_runtime_function": {
+        "rva": "0x000fd8ba",
+        "label": "__local_unwind2",
+        "distance": 104
+      }
+    },
+    {
+      "rva": "0x000fff17",
+      "size": 13,
+      "gap": "0x000fff17",
+      "swept_instructions": 3,
+      "nearest_named_runtime_function": {
+        "rva": "0x000ffded",
+        "label": "__frnd",
+        "distance": 298
+      }
+    },
+    {
+      "rva": "0x001003b6",
+      "size": 571,
+      "gap": "0x001003b6",
+      "swept_instructions": 192,
+      "nearest_named_runtime_function": {
+        "rva": "0x000ffded",
+        "label": "__frnd",
+        "distance": 1481
+      }
+    },
+    {
+      "rva": "0x00100606",
+      "size": 1413,
+      "gap": "0x00100606",
+      "swept_instructions": 400,
+      "nearest_named_runtime_function": {
+        "rva": "0x000ffded",
+        "label": "__frnd",
+        "distance": 2073
+      }
+    },
+    {
+      "rva": "0x001015c0",
+      "size": 184,
+      "gap": "0x001015b6",
+      "swept_instructions": 88,
+      "nearest_named_runtime_function": {
+        "rva": "0x00101570",
+        "label": "_strcspn",
+        "distance": 80
+      }
+    }
+  ],
+  "ascii_blobs": [
+    {
+      "rva": "0x000f8b44",
+      "size": 8,
+      "value": "VC20XC00",
+      "note": "MSVC C++ exception runtime signature"
+    }
+  ],
+  "interior_padding_runs": 0,
+  "padding_runs": 2879,
+  "padding_runs_ending_on_an_alignment_boundary": 2864,
+  "rows_per_phase": {
+    "2": 163,
+    "3": 441,
+    "4": 946,
+    "5": 176,
+    "6": 433,
+    "7": 562,
+    "8": 3617
+  },
+  "phase_seeds": {
+    "source_references": 566,
+    "source_references_with_no_owner": 0,
+    "seeded_entries": 500,
+    "runtime_artifacts": 663,
+    "entries_phased_by": {
+      "callers": 718,
+      "enclosed_by_one_phase": 643,
+      "export_pin": 41,
+      "layout_adjacency": 98,
+      "runtime_artifact": 351,
+      "runtime_tail": 312,
+      "shared_by_callers": 79,
+      "translation_unit": 829
+    }
+  },
+  "entries_per_phase_by_provenance": {
+    "2": {
+      "callers": 5,
+      "export_pin": 10,
+      "layout_adjacency": 4,
+      "shared_by_callers": 79,
+      "translation_unit": 49
+    },
+    "3": {
+      "callers": 75,
+      "enclosed_by_one_phase": 151,
+      "export_pin": 27,
+      "layout_adjacency": 43,
+      "translation_unit": 108
+    },
+    "4": {
+      "callers": 409,
+      "enclosed_by_one_phase": 238,
+      "export_pin": 2,
+      "layout_adjacency": 21,
+      "translation_unit": 62
+    },
+    "5": {
+      "callers": 46,
+      "enclosed_by_one_phase": 6,
+      "layout_adjacency": 18,
+      "translation_unit": 100
+    },
+    "6": {
+      "callers": 16,
+      "enclosed_by_one_phase": 144,
+      "export_pin": 2,
+      "layout_adjacency": 7,
+      "translation_unit": 254
+    },
+    "7": {
+      "callers": 167,
+      "enclosed_by_one_phase": 104,
+      "layout_adjacency": 5,
+      "translation_unit": 256
+    },
+    "8": {
+      "runtime_artifact": 351,
+      "runtime_tail": 312
+    }
+  },
+  "label_sources": {
+    "pe_export_directory": 41,
+    "ghidra_function_id": 276,
+    "not_attempted": "recovering a product name from calls, arguments, constants, switches or floating-point behaviour. Phase 1 censuses bytes; a name inferred from behaviour is an inference, and the ledger admits only evidence an oracle records."
+  },
+  "unmapped_source_files": [],
+  "oracle_independence": {
+    "capstone_entries": 22081,
+    "entries_named_only_by_ghidra": 5,
+    "entries_unreachable_without_ghidra": 5,
+    "unreachable_entries": [
+      "0x000f48e0",
+      "0x000f5720",
+      "0x000f8c32",
+      "0x00101570",
+      "0x00102e80"
+    ],
+    "ghidra_functions": 2527,
+    "ghidra_functions_that_are_capstone_entries": 2527,
+    "ghidra_instruction_bytes": 1027076,
+    "capstone_instruction_bytes": 1029064,
+    "note": "the two disassemblers were run apart and agree on the extent of the code to within the difference these two totals show; dropping Ghidra costs the descent only the entries counted here."
+  }
+}

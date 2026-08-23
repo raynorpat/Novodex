@@ -1,0 +1,177 @@
+{
+  "schema_version": 1,
+  "oracle": {
+    "path": "Binaries/NxPhysics.dll",
+    "sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+    "size": 1253376,
+    "named_exports": 41,
+    "installed_foundation": {
+      "path": "Binaries/NxFoundation.dll",
+      "sha256": "7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990"
+    }
+  },
+  "link_oracle": {
+    "path": "Development/External/Novodex/Physics/lib/win32/Release/NxPhysics.lib",
+    "sha256": "a99cddd2057b18407294f1621c1938be5f304c3712b03c167d9c8bbfded83c47"
+  },
+  "header_root": {
+    "root": "Development/External/Novodex/",
+    "sdk_version": "2.1.2.6000",
+    "physics_manifest": "public_header_hashes.json",
+    "foundation_manifest": "../novodex-foundation/dumps/immutable_public_hashes.json"
+  },
+  "foundation_commit": "62b26f4f672ea70b73742302db52c67e338565e3",
+  "evidence_commit": "bf340799fe1cb06271344857f33fc79751956e2e",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Oracle census",
+      "plan": "docs/superpowers/plans/2026-08-09-novodex-physics-phase1-oracle-census.md",
+      "gate": "Every executable oracle byte classified; stable-ID inventory and dependency graph validate",
+      "status": "pass",
+      "implementation_commit": null,
+      "evidence_commit": "bf340799fe1cb06271344857f33fc79751956e2e",
+      "gate_artifact": "inventory.json",
+      "owned_functions": 0,
+      "owned_data_objects": 0,
+      "closed_functions": 0,
+      "closed_data_objects": 0,
+      "remaining_functions": 0,
+      "remaining_data_objects": 0
+    },
+    {
+      "phase": 2,
+      "name": "SDK core",
+      "plan": "docs/superpowers/plans/2026-08-09-novodex-physics-phase2-sdk-core.md",
+      "gate": "DLL and SDK lifecycle, allocation, errors, registries, factories, and shared infrastructure close",
+      "status": "pass",
+      "implementation_commit": "ac739543956cc4ea22bff832f17c66d07666b9da",
+      "evidence_commit": "dcaa8391de0ae5ef45a00d5007d55aa4a19aef1c",
+      "gate_artifact": "gates/phase2.json",
+      "owned_functions": 144,
+      "owned_data_objects": 1051,
+      "closed_functions": 56,
+      "closed_data_objects": 0,
+      "remaining_functions": 88,
+      "remaining_data_objects": 1051
+    },
+    {
+      "phase": 3,
+      "name": "Geometry and collision",
+      "plan": "docs/superpowers/plans/2026-08-09-novodex-physics-phase3-geometry-collision.md",
+      "gate": "Geometry, broad/narrow phase, queries, filtering, and contact primitives close",
+      "status": "pass",
+      "implementation_commit": "7da93f7246e7003ceb15dfebb9d48353547d7c02",
+      "evidence_commit": "5f7628e44d2e153bb2b3d92c16ba8a7b14f1578f",
+      "gate_artifact": "gates/phase3.json",
+      "owned_functions": 434,
+      "owned_data_objects": 102,
+      "closed_functions": 61,
+      "closed_data_objects": 0,
+      "remaining_functions": 373,
+      "remaining_data_objects": 102
+    },
+    {
+      "phase": 4,
+      "name": "Mesh and spatial assets",
+      "plan": "docs/superpowers/plans/2026-08-09-novodex-physics-phase4-mesh-assets.md",
+      "gate": "Meshes, convex data, PMaps, acceleration data, ownership, and runtime queries close",
+      "status": "pending",
+      "implementation_commit": null,
+      "evidence_commit": null,
+      "gate_artifact": null,
+      "owned_functions": 1137,
+      "owned_data_objects": 2813,
+      "closed_functions": null,
+      "closed_data_objects": null,
+      "remaining_functions": null,
+      "remaining_data_objects": null
+    },
+    {
+      "phase": 5,
+      "name": "Objects",
+      "plan": "docs/superpowers/plans/2026-08-09-novodex-physics-phase5-objects.md",
+      "gate": "Actors, bodies, shapes, materials, descriptors, mass/inertia, and lifecycle close",
+      "status": "pending",
+      "implementation_commit": null,
+      "evidence_commit": null,
+      "gate_artifact": null,
+      "owned_functions": 162,
+      "owned_data_objects": 122,
+      "closed_functions": null,
+      "closed_data_objects": null,
+      "remaining_functions": null,
+      "remaining_data_objects": null
+    },
+    {
+      "phase": 6,
+      "name": "Joints and effectors",
+      "plan": "docs/superpowers/plans/2026-08-09-novodex-physics-phase6-joints-effectors.md",
+      "gate": "All recovered joint families and effectors close",
+      "status": "pending",
+      "implementation_commit": null,
+      "evidence_commit": null,
+      "gate_artifact": null,
+      "owned_functions": 433,
+      "owned_data_objects": 531,
+      "closed_functions": null,
+      "closed_data_objects": null,
+      "remaining_functions": null,
+      "remaining_data_objects": null
+    },
+    {
+      "phase": 7,
+      "name": "Scenes and simulation",
+      "plan": "docs/superpowers/plans/2026-08-09-novodex-physics-phase7-scenes-simulation.md",
+      "gate": "Scene lifecycle, stepping, islands, constraints, solver, sleeping, and callbacks close",
+      "status": "pending",
+      "implementation_commit": null,
+      "evidence_commit": null,
+      "gate_artifact": null,
+      "owned_functions": 561,
+      "owned_data_objects": 502,
+      "closed_functions": null,
+      "closed_data_objects": null,
+      "remaining_functions": null,
+      "remaining_data_objects": null
+    },
+    {
+      "phase": 8,
+      "name": "Full semantic audit",
+      "plan": "docs/superpowers/plans/2026-08-09-novodex-physics-phase8-full-audit.md",
+      "gate": "Entire census closed; full ABI/static/differential/trajectory/consumer gates pass",
+      "status": "pending",
+      "implementation_commit": null,
+      "evidence_commit": null,
+      "gate_artifact": null,
+      "owned_functions": 3467,
+      "owned_data_objects": 17,
+      "closed_functions": null,
+      "closed_data_objects": null,
+      "remaining_functions": null,
+      "remaining_data_objects": null
+    }
+  ],
+  "global_gates": [
+    {
+      "name": "build_configure",
+      "command": "cmake -S D:\\github\\Novodex -B D:\\github\\Novodex\\build -A Win32 --fresh",
+      "status": "pending"
+    },
+    {
+      "name": "build_physics",
+      "command": "cmake --build D:\\github\\Novodex\\build --config Release --target NxPhysics --clean-first",
+      "status": "pending"
+    },
+    {
+      "name": "validate_inventory",
+      "command": "python docs\\reconstruction\\novodex-physics\\tools\\validate_inventory.py docs\\reconstruction\\novodex-physics\\inventory.json",
+      "status": "pending"
+    },
+    {
+      "name": "phase_gate_completed",
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs\\reconstruction\\novodex-physics\\tools\\run_phase_gate.ps1 -Phase completed",
+      "status": "pending"
+    }
+  ]
+}

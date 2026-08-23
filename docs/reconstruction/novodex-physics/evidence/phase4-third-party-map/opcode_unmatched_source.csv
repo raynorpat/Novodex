@@ -1,0 +1,164 @@
+source_file,source_line,source_function,reason_absent
+OPC_AABBCollider.cpp,288,"AABBCollider::AABBContainsBox(const Point&, const Point&)",fully inlined (declared inline_ / used only from one call site)
+OPC_AABBCollider.cpp,560,HybridAABBCollider::HybridAABBCollider(),"not compiled in - OPC_HybridModel.cpp absent, no HybridModel vtable anywhere in the image"
+OPC_AABBCollider.cpp,569,HybridAABBCollider::~HybridAABBCollider(),"not compiled in - OPC_HybridModel.cpp absent, no HybridModel vtable anywhere in the image"
+OPC_AABBCollider.cpp,573,"HybridAABBCollider::Collide(AABBCache&, const CollisionAABB&, const HybridModel&)","not compiled in - OPC_HybridModel.cpp absent, no HybridModel vtable anywhere in the image"
+OPC_AABBTree.cpp,354,AABBTreeNode::_Refit(AABBTreeBuilder*),dead-stripped by /OPT:REF - never referenced by NovodeX (AABBTree::Refit is never called)
+OPC_AABBTree.cpp,456,AABBTree::ComputeDepth() const,dead-stripped by /OPT:REF - never referenced by NovodeX
+OPC_AABBTree.cpp,501,AABBTree::Refit(AABBTreeBuilder*),dead-stripped by /OPT:REF - never referenced by NovodeX
+OPC_AABBTree.cpp,556,AABBTree::GetUsedBytes() const,dead-stripped by /OPT:REF - never referenced by NovodeX / inlined
+OPC_AABBTree.cpp,570,AABBTree::IsComplete() const,dead-stripped by /OPT:REF - never referenced by NovodeX / inlined
+OPC_BoxPruning.cpp,59,GetCompletePruningSorter(),"translation unit not compiled in - no code, no vtable and no literal from this file anywhere in the image"
+OPC_BoxPruning.cpp,64,GetBipartitePruningSorter0(),"translation unit not compiled in - no code, no vtable and no literal from this file anywhere in the image"
+OPC_BoxPruning.cpp,69,GetBipartitePruningSorter1(),"translation unit not compiled in - no code, no vtable and no literal from this file anywhere in the image"
+OPC_BoxPruning.cpp,74,ReleasePruningSorters(),"translation unit not compiled in - no code, no vtable and no literal from this file anywhere in the image"
+OPC_BoxPruning.cpp,94,Opcode::BipartiteBoxPruning(...),"translation unit not compiled in - no code, no vtable and no literal from this file anywhere in the image"
+OPC_BoxPruning.cpp,188,Opcode::CompleteBoxPruning(...),"translation unit not compiled in - no code, no vtable and no literal from this file anywhere in the image"
+OPC_BoxPruning.cpp,328,Opcode::BruteForceBipartiteBoxTest(...),"translation unit not compiled in - no code, no vtable and no literal from this file anywhere in the image"
+OPC_BoxPruning.cpp,353,Opcode::BruteForceCompleteBoxTest(...),"translation unit not compiled in - no code, no vtable and no literal from this file anywhere in the image"
+OPC_HybridModel.cpp,94,HybridModel::HybridModel(),"not compiled in - OPC_HybridModel.cpp absent, no HybridModel vtable anywhere in the image"
+OPC_HybridModel.cpp,107,HybridModel::~HybridModel(),"not compiled in - OPC_HybridModel.cpp absent, no HybridModel vtable anywhere in the image"
+OPC_HybridModel.cpp,117,HybridModel::Release(),"not compiled in - OPC_HybridModel.cpp absent, no HybridModel vtable anywhere in the image"
+OPC_HybridModel.cpp,153,HybridModel::Build(const OPCODECREATE&),"not compiled in - OPC_HybridModel.cpp absent, no HybridModel vtable anywhere in the image"
+OPC_HybridModel.cpp,303,HybridModel::GetUsedBytes() const,"not compiled in - OPC_HybridModel.cpp absent, no HybridModel vtable anywhere in the image"
+OPC_HybridModel.cpp,312,"ComputeMinMax(Point&, Point&, const VertexPointers&)","not compiled in - OPC_HybridModel.cpp absent, no HybridModel vtable anywhere in the image"
+OPC_HybridModel.cpp,342,HybridModel::Refit(),"not compiled in - OPC_HybridModel.cpp absent, no HybridModel vtable anywhere in the image"
+OPC_LSSCollider.cpp,295,"LSSCollider::Collide(LSSCache&, const LSS&, const AABBTree*)","dead-stripped by /OPT:REF - never referenced by NovodeX - only the RayCollider, AABBCollider and SphereCollider tree overloads survive"
+OPC_LSSCollider.cpp,559,LSSCollider::_Collide(const AABBTreeNode*),"dead-stripped by /OPT:REF - never referenced by NovodeX - its only caller, Collide(...,AABBTree*), was stripped"
+OPC_LSSCollider.cpp,322,"LSSCollider::LSSContainsBox(const Point&, const Point&)",fully inlined (declared inline_ / used only from one call site)
+OPC_LSSCollider.cpp,589,HybridLSSCollider::HybridLSSCollider(),"not compiled in - OPC_HybridModel.cpp absent, no HybridModel vtable anywhere in the image"
+OPC_LSSCollider.cpp,598,HybridLSSCollider::~HybridLSSCollider(),"not compiled in - OPC_HybridModel.cpp absent, no HybridModel vtable anywhere in the image"
+OPC_LSSCollider.cpp,602,"HybridLSSCollider::Collide(LSSCache&, const LSS&, const HybridModel&, ...)","not compiled in - OPC_HybridModel.cpp absent, no HybridModel vtable anywhere in the image"
+OPC_MeshInterface.cpp,150,MeshInterface::~MeshInterface(),"trivial body, inlined into its owners"
+OPC_MeshInterface.cpp,211,"MeshInterface::SetCallback(RequestCallback, void*)",dead-stripped by /OPT:REF - never referenced by NovodeX - NovodeX uses the pointer path
+OPC_MeshInterface.cpp,245,"MeshInterface::SetStrides(udword, udword)",dead-stripped by /OPT:REF - never referenced by NovodeX
+OPC_MeshInterface.cpp,265,"MeshInterface::RemapClient(udword, const udword*) const",dead-stripped by /OPT:REF - never referenced by NovodeX - OPCODECREATE::mCanRemap is initialised to false
+OPC_OBBCollider.cpp,346,"OBBCollider::OBBContainsBox(const Point&, const Point&)",fully inlined (declared inline_ / used only from one call site) - accounts for the 8397-byte InitQuery
+OPC_OBBCollider.cpp,631,HybridOBBCollider::HybridOBBCollider(),"not compiled in - OPC_HybridModel.cpp absent, no HybridModel vtable anywhere in the image"
+OPC_OBBCollider.cpp,640,HybridOBBCollider::~HybridOBBCollider(),"not compiled in - OPC_HybridModel.cpp absent, no HybridModel vtable anywhere in the image"
+OPC_OBBCollider.cpp,644,"HybridOBBCollider::Collide(OBBCache&, const OBB&, const HybridModel&, ...)","not compiled in - OPC_HybridModel.cpp absent, no HybridModel vtable anywhere in the image"
+OPC_OptimizedTree.cpp,351,"ComputeMinMax(Point&, Point&, const VertexPointers&)",fully inlined (declared inline_ / used only from one call site) - folded into AABBNoLeafTree::Refit @000f27c0
+OPC_Picking.cpp,35,"Opcode::SetupAllHits(RayCollider&, CollisionFaces&)","translation unit not compiled in - no code, no vtable and no literal from this file anywhere in the image"
+OPC_Picking.cpp,52,"Opcode::SetupClosestHit(RayCollider&, CollisionFace&)","translation unit not compiled in - no code, no vtable and no literal from this file anywhere in the image"
+OPC_Picking.cpp,70,Opcode::SetupShadowFeeler(RayCollider&),"translation unit not compiled in - no code, no vtable and no literal from this file anywhere in the image"
+OPC_Picking.cpp,77,Opcode::SetupInOutTest(RayCollider&),"translation unit not compiled in - no code, no vtable and no literal from this file anywhere in the image"
+OPC_Picking.cpp,85,Opcode::Picking(...),"translation unit not compiled in - no code, no vtable and no literal from this file anywhere in the image"
+OPC_PlanesCollider.cpp,513,HybridPlanesCollider::HybridPlanesCollider(),"not compiled in - OPC_HybridModel.cpp absent, no HybridModel vtable anywhere in the image"
+OPC_PlanesCollider.cpp,522,HybridPlanesCollider::~HybridPlanesCollider(),"not compiled in - OPC_HybridModel.cpp absent, no HybridModel vtable anywhere in the image"
+OPC_PlanesCollider.cpp,526,"HybridPlanesCollider::Collide(PlanesCache&, const Plane*, udword, const HybridModel&, ...)","not compiled in - OPC_HybridModel.cpp absent, no HybridModel vtable anywhere in the image"
+OPC_SphereCollider.cpp,311,"SphereCollider::SphereContainsBox(const Point&, const Point&)",fully inlined (declared inline_ / used only from one call site)
+OPC_SphereCollider.cpp,590,HybridSphereCollider::HybridSphereCollider(),"not compiled in - OPC_HybridModel.cpp absent, no HybridModel vtable anywhere in the image"
+OPC_SphereCollider.cpp,599,HybridSphereCollider::~HybridSphereCollider(),"not compiled in - OPC_HybridModel.cpp absent, no HybridModel vtable anywhere in the image"
+OPC_SphereCollider.cpp,603,"HybridSphereCollider::Collide(SphereCache&, const Sphere&, const HybridModel&, ...)","not compiled in - OPC_HybridModel.cpp absent, no HybridModel vtable anywhere in the image"
+OPC_SweepAndPrune.cpp,24,"Sort(udword&, udword&)",fully inlined (declared inline_ / used only from one call site)
+OPC_SweepAndPrune.cpp,123,SAP_PairData::~SAP_PairData(),inlined into SweepAndPrune::~SweepAndPrune / Release
+OPC_SweepAndPrune.cpp,128,SAP_PairData::Release(),inlined
+OPC_SweepAndPrune.cpp,165,"Remap(SAP_Element*&, udword)",fully inlined (declared inline_ / used only from one call site)
+OPC_SweepAndPrune.cpp,233,SAP_PairData::FreeElem(SAP_Element*),fully inlined (declared inline_ / used only from one call site)
+OPC_SweepAndPrune.cpp,323,SAP_PairData::DumpPairs(Pairs&) const,dead-stripped by /OPT:REF - never referenced by NovodeX - NovodeX uses only the PairCallback overload @000e66f0
+OPC_SweepAndPrune.cpp,398,SweepAndPrune::~SweepAndPrune(),trivial / inlined
+OPC_SweepAndPrune.cpp,402,SweepAndPrune::GetPairs(Pairs&) const,dead-stripped by /OPT:REF - never referenced by NovodeX
+OPC_SweepAndPrune.cpp,489,SweepAndPrune::CheckListsIntegrity(),dead-stripped by /OPT:REF - never referenced by NovodeX - debug-only
+OPC_SweepAndPrune.cpp,522,"Intersect(const AABB&, const SAP_Box&)",fully inlined (declared inline_ / used only from one call site)
+OPC_TreeBuilders.cpp,200,AABBTreeOfVerticesBuilder::ComputeGlobalBox(...) const,dead-stripped by /OPT:REF - never referenced by NovodeX - no AABBTreeOfVerticesBuilder vtable anywhere in the image
+OPC_TreeBuilders.cpp,225,"AABBTreeOfVerticesBuilder::GetSplittingValue(udword, udword) const",dead-stripped by /OPT:REF - never referenced by NovodeX
+OPC_TreeBuilders.cpp,241,"AABBTreeOfVerticesBuilder::GetSplittingValue(const udword*, udword, const AABB&, udword) const",dead-stripped by /OPT:REF - never referenced by NovodeX
+OPC_TreeCollider.cpp,277,AABBTreeCollider::CheckTemporalCoherence(Pair*),"fully inlined (declared inline_ / used only from one call site) - inlined into all four Collide(tree,tree) overloads, which is why they all call PrimTest @000bbd60 directly"
+OPC_TreeCollider.cpp,447,"AABBTreeCollider::_Collide(const AABBCollisionNode*, const AABBCollisionNode*) [OPC_USE_CALLBACKS branch]",preprocessor-excluded - only the :477 branch is compiled
+OPC_TreeCollider.cpp,558,AABBTreeCollider::PrimTestTriIndex(udword),fully inlined (declared inline_ / used only from one call site)
+OPC_TreeCollider.cpp,580,AABBTreeCollider::PrimTestIndexTri(udword),fully inlined (declared inline_ / used only from one call site)
+Opcode.cpp,38,Opcode::InitOpcode(),"translation unit not compiled in - no code, no vtable and no literal from this file anywhere in the image - NovodeX supplies its own module init"
+Opcode.cpp,46,Opcode::CloseOpcode(),"translation unit not compiled in - no code, no vtable and no literal from this file anywhere in the image"
+Opcode.cpp,57,ModuleAttach(HINSTANCE),"translation unit not compiled in - no code, no vtable and no literal from this file anywhere in the image"
+Opcode.cpp,61,ModuleDetach(),"translation unit not compiled in - no code, no vtable and no literal from this file anywhere in the image"
+Ice/IceAABB.cpp,71,AABB::MakeSphere(Sphere&) const,dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IceAABB.cpp,103,AABB::ComputePlanes(Plane*) const,dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IceAABB.cpp,184,AABB::GetVertexNormals() const,dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IceAABB.cpp,206,AABB::GetEdges() const,dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IceAABB.cpp,223,AABB::GetEdgeNormals() const,dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IceAABB.cpp,354,"AABB::ComputeOutline(const Point&, sdword&) const",dead-stripped by /OPT:REF - never referenced by NovodeX - rendering helper
+Ice/IceAABB.cpp,382,"AABB::ComputeBoxArea(const Point&, const Matrix4x4&, float, float, sdword&) const",dead-stripped by /OPT:REF - never referenced by NovodeX - rendering helper
+Ice/IceContainer.cpp,40,Container::Container(),"linked outside the measured OPCODE span - the container ctor/dtor/add used by every collider live at 0x000b4d70 / 0x000b4f50 / 0x000b4f90 / 0x000b4000, below 0x000b54a0; individual members not resolved in this pass"
+Ice/IceContainer.cpp,53,"Container::Container(udword, float)","linked outside the measured OPCODE span - the container ctor/dtor/add used by every collider live at 0x000b4d70 / 0x000b4f50 / 0x000b4f90 / 0x000b4000, below 0x000b54a0; individual members not resolved in this pass"
+Ice/IceContainer.cpp,67,Container::Container(const Container&),"linked outside the measured OPCODE span - the container ctor/dtor/add used by every collider live at 0x000b4d70 / 0x000b4f50 / 0x000b4f90 / 0x000b4000, below 0x000b54a0; individual members not resolved in this pass"
+Ice/IceContainer.cpp,81,Container::~Container(),"linked outside the measured OPCODE span - the container ctor/dtor/add used by every collider live at 0x000b4d70 / 0x000b4f50 / 0x000b4f90 / 0x000b4000, below 0x000b54a0; individual members not resolved in this pass"
+Ice/IceContainer.cpp,97,Container::Empty(),"linked outside the measured OPCODE span - the container ctor/dtor/add used by every collider live at 0x000b4d70 / 0x000b4f50 / 0x000b4f90 / 0x000b4000, below 0x000b54a0; individual members not resolved in this pass"
+Ice/IceContainer.cpp,114,Container::Resize(udword),"linked outside the measured OPCODE span - the container ctor/dtor/add used by every collider live at 0x000b4d70 / 0x000b4f50 / 0x000b4f90 / 0x000b4000, below 0x000b54a0; individual members not resolved in this pass"
+Ice/IceContainer.cpp,153,Container::SetSize(udword),"linked outside the measured OPCODE span - the container ctor/dtor/add used by every collider live at 0x000b4d70 / 0x000b4f50 / 0x000b4f90 / 0x000b4000, below 0x000b54a0; individual members not resolved in this pass"
+Ice/IceContainer.cpp,181,Container::Refit(),"linked outside the measured OPCODE span - the container ctor/dtor/add used by every collider live at 0x000b4d70 / 0x000b4f50 / 0x000b4f90 / 0x000b4000, below 0x000b54a0; individual members not resolved in this pass"
+Ice/IceContainer.cpp,224,"Container::Contains(udword, udword*) const","linked outside the measured OPCODE span - the container ctor/dtor/add used by every collider live at 0x000b4d70 / 0x000b4f50 / 0x000b4f90 / 0x000b4000, below 0x000b54a0; individual members not resolved in this pass"
+Ice/IceContainer.cpp,246,Container::Delete(udword),"linked outside the measured OPCODE span - the container ctor/dtor/add used by every collider live at 0x000b4d70 / 0x000b4f50 / 0x000b4f90 / 0x000b4000, below 0x000b54a0; individual members not resolved in this pass"
+Ice/IceContainer.cpp,269,Container::DeleteKeepingOrder(udword),"linked outside the measured OPCODE span - the container ctor/dtor/add used by every collider live at 0x000b4d70 / 0x000b4f50 / 0x000b4f90 / 0x000b4000, below 0x000b54a0; individual members not resolved in this pass"
+Ice/IceContainer.cpp,297,"Container::FindNext(udword&, FindMode)","linked outside the measured OPCODE span - the container ctor/dtor/add used by every collider live at 0x000b4d70 / 0x000b4f50 / 0x000b4f90 / 0x000b4000, below 0x000b54a0; individual members not resolved in this pass"
+Ice/IceContainer.cpp,317,"Container::FindPrev(udword&, FindMode)","linked outside the measured OPCODE span - the container ctor/dtor/add used by every collider live at 0x000b4d70 / 0x000b4f50 / 0x000b4f90 / 0x000b4000, below 0x000b54a0; individual members not resolved in this pass"
+Ice/IceContainer.cpp,335,Container::GetUsedRam() const,"linked outside the measured OPCODE span - the container ctor/dtor/add used by every collider live at 0x000b4d70 / 0x000b4f50 / 0x000b4f90 / 0x000b4000, below 0x000b54a0; individual members not resolved in this pass"
+Ice/IceContainer.cpp,340,Container::operator=(const Container&),"linked outside the measured OPCODE span - the container ctor/dtor/add used by every collider live at 0x000b4d70 / 0x000b4f50 / 0x000b4f90 / 0x000b4000, below 0x000b54a0; individual members not resolved in this pass"
+Ice/IceHPoint.cpp,36,HPoint::operator*(const Matrix3x3&) const,dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IceHPoint.cpp,47,HPoint::operator*(const Matrix4x4&) const,dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IceHPoint.cpp,59,HPoint::operator*=(const Matrix4x4&),dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IceIndexedTriangle.cpp,32,IndexedTriangle::Flip,dead-stripped by /OPT:REF - never referenced by NovodeX - only ReplaceVertex and FindEdge survive
+Ice/IceIndexedTriangle.cpp,44,IndexedTriangle::Area,dead-stripped by /OPT:REF - never referenced by NovodeX - only ReplaceVertex and FindEdge survive
+Ice/IceIndexedTriangle.cpp,60,IndexedTriangle::Perimeter,dead-stripped by /OPT:REF - never referenced by NovodeX - only ReplaceVertex and FindEdge survive
+Ice/IceIndexedTriangle.cpp,78,IndexedTriangle::Compacity,dead-stripped by /OPT:REF - never referenced by NovodeX - only ReplaceVertex and FindEdge survive
+Ice/IceIndexedTriangle.cpp,93,IndexedTriangle::Normal,dead-stripped by /OPT:REF - never referenced by NovodeX - only ReplaceVertex and FindEdge survive
+Ice/IceIndexedTriangle.cpp,110,IndexedTriangle::DenormalizedNormal,dead-stripped by /OPT:REF - never referenced by NovodeX - only ReplaceVertex and FindEdge survive
+Ice/IceIndexedTriangle.cpp,127,IndexedTriangle::Center,dead-stripped by /OPT:REF - never referenced by NovodeX - only ReplaceVertex and FindEdge survive
+Ice/IceIndexedTriangle.cpp,144,IndexedTriangle::CenteredNormal,dead-stripped by /OPT:REF - never referenced by NovodeX - only ReplaceVertex and FindEdge survive
+Ice/IceIndexedTriangle.cpp,162,IndexedTriangle::RandomPoint,dead-stripped by /OPT:REF - never referenced by NovodeX - only ReplaceVertex and FindEdge survive
+Ice/IceIndexedTriangle.cpp,189,IndexedTriangle::IsVisible,dead-stripped by /OPT:REF - never referenced by NovodeX - only ReplaceVertex and FindEdge survive
+Ice/IceIndexedTriangle.cpp,217,IndexedTriangle::BackfaceCulling,dead-stripped by /OPT:REF - never referenced by NovodeX - only ReplaceVertex and FindEdge survive
+Ice/IceIndexedTriangle.cpp,249,IndexedTriangle::ComputeOcclusionPotential,dead-stripped by /OPT:REF - never referenced by NovodeX - only ReplaceVertex and FindEdge survive
+Ice/IceIndexedTriangle.cpp,287,IndexedTriangle::IsDegenerate,dead-stripped by /OPT:REF - never referenced by NovodeX - only ReplaceVertex and FindEdge survive
+Ice/IceIndexedTriangle.cpp,302,IndexedTriangle::HasVertex(udword),dead-stripped by /OPT:REF - never referenced by NovodeX - only ReplaceVertex and FindEdge survive
+Ice/IceIndexedTriangle.cpp,318,"IndexedTriangle::HasVertex(udword, udword*)",dead-stripped by /OPT:REF - never referenced by NovodeX - only ReplaceVertex and FindEdge survive
+Ice/IceIndexedTriangle.cpp,353,IndexedTriangle::OppositeVertex,dead-stripped by /OPT:REF - never referenced by NovodeX - only ReplaceVertex and FindEdge survive
+Ice/IceIndexedTriangle.cpp,377,IndexedTriangle::GetVRefs,dead-stripped by /OPT:REF - never referenced by NovodeX - only ReplaceVertex and FindEdge survive
+Ice/IceIndexedTriangle.cpp,406,IndexedTriangle::MinEdgeLength,dead-stripped by /OPT:REF - never referenced by NovodeX - only ReplaceVertex and FindEdge survive
+Ice/IceIndexedTriangle.cpp,427,IndexedTriangle::MaxEdgeLength,dead-stripped by /OPT:REF - never referenced by NovodeX - only ReplaceVertex and FindEdge survive
+Ice/IceIndexedTriangle.cpp,450,IndexedTriangle::ComputePoint,dead-stripped by /OPT:REF - never referenced by NovodeX - only ReplaceVertex and FindEdge survive
+Ice/IceIndexedTriangle.cpp,516,IndexedTriangle::Angle,dead-stripped by /OPT:REF - never referenced by NovodeX - only ReplaceVertex and FindEdge survive
+Ice/IceIndexedTriangle.cpp,542,IndexedTriangle::Equal,dead-stripped by /OPT:REF - never referenced by NovodeX - only ReplaceVertex and FindEdge survive
+Ice/IceMatrix3x3.cpp,41,Matrix3x3::operator Matrix4x4() const,dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IceOBB.cpp,32,OBB::ContainsPoint,not located in the measured OPCODE span; may live elsewhere in the image (not resolved in this pass) / dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IceOBB.cpp,60,OBB::Create,not located in the measured OPCODE span; may live elsewhere in the image (not resolved in this pass) / dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IceOBB.cpp,82,OBB::ComputePlanes,not located in the measured OPCODE span; may live elsewhere in the image (not resolved in this pass) / dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IceOBB.cpp,125,OBB::ComputePoints,not located in the measured OPCODE span; may live elsewhere in the image (not resolved in this pass) / dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IceOBB.cpp,166,OBB::ComputeVertexNormals,not located in the measured OPCODE span; may live elsewhere in the image (not resolved in this pass) / dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IceOBB.cpp,197,OBB::GetEdges,not located in the measured OPCODE span; may live elsewhere in the image (not resolved in this pass) / dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IceOBB.cpp,214,OBB::GetLocalEdgeNormals,not located in the measured OPCODE span; may live elsewhere in the image (not resolved in this pass) / dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IceOBB.cpp,243,OBB::ComputeWorldEdgeNormal,not located in the measured OPCODE span; may live elsewhere in the image (not resolved in this pass) / dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IceOBB.cpp,255,OBB::ComputeLSS,not located in the measured OPCODE span; may live elsewhere in the image (not resolved in this pass) / dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IceOBB.cpp,288,OBB::IsInside,not located in the measured OPCODE span; may live elsewhere in the image (not resolved in this pass) / dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IcePoint.cpp,59,Point::PositiveUnitRandomVector,dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IcePoint.cpp,74,Point::UnitRandomVector,dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IcePoint.cpp,85,Point::operator HPoint,dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IcePoint.cpp,87,Point::Refract,dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IcePoint.cpp,109,Point::ProjectToPlane,dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IcePoint.cpp,115,Point::ProjectToScreen,dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IcePoint.cpp,128,Point::SetNotUsed,dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IcePoint.cpp,136,Point::IsNotUsed,dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IcePoint.cpp,152,Point::Mult2,dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IcePoint.cpp,160,Point::Mac,dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IcePoint.cpp,168,Point::TransMult,dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IcePoint.cpp,176,Point::Transform,dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IcePoint.cpp,184,Point::InvTransform,dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IceRandom.cpp,16,IceCore::SRand(udword),dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IceRandom.cpp,21,IceCore::Rand(),dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IceRandom.cpp,29,IceCore::GetRandomIndex(udword),dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IceRay.cpp,66,"Ray::SquareDistance(const Point&, float*) const",dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IceRevisitedRadix.cpp,217,RadixSort::CheckResize(udword),fully inlined (declared inline_ / used only from one call site)
+Ice/IceRevisitedRadix.cpp,511,RadixSort::GetUsedRam() const,dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IceSegment.cpp,29,"Segment::SquareDistance(const Point&, float*) const",fully inlined (declared inline_ / used only from one call site) - folded into the LSS overlap tests
+Ice/IceTriangle.cpp,27,VPlaneSideEps,dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IceTriangle.cpp,43,Triangle::Flip,dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IceTriangle.cpp,70,Triangle::Perimeter,dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IceTriangle.cpp,99,Triangle::Normal,dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IceTriangle.cpp,113,Triangle::DenormalizedNormal,dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IceTriangle.cpp,135,Triangle::TestAgainstPlane,dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IceTriangle.cpp,165,Triangle::ComputeMoment,dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IceTriangle.cpp,213,Triangle::MinEdgeLength,dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IceTriangle.cpp,231,Triangle::MaxEdgeLength,dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IceTriangle.cpp,251,Triangle::ComputePoint,dead-stripped by /OPT:REF - never referenced by NovodeX
+Ice/IceUtils.cpp,24,IceCore::Alignment(udword),dead-stripped by /OPT:REF - never referenced by NovodeX
+OPC_Common.cpp,0,(no function definitions - data/typedefs only),nothing to match; the header-side CollisionFace / CollisionFaces machinery is inlined
+StdAfx.cpp,0,(no function definitions),nothing to match

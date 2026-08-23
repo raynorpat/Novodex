@@ -1,0 +1,322 @@
+{
+ "schema_version": 1,
+ "phase": 4,
+ "note": "The Phase 4 asset byte-format fixtures.  Each case carries the exact bytes tests/PhysicsAssetTests.cpp feeds the shipped oracle and the answer the oracle gave for them.  The oracle values are a record of a run, not a claim about a format: what each field of each format IS, and the address that establishes it, is in evidence/phase4-formats.md.  No fixture contains a pointer, so every one of them means the same thing in any process.  tools/tests/test_asset_cases.py holds this file to the committed transcript and to the harness so the three cannot drift.",
+ "transcript": "cases/assets/oracle-transcript.txt",
+ "harness": "D:/github/Novodex/tests/PhysicsAssetTests.cpp",
+ "probes": [
+  {
+   "name": "pmap",
+   "rva": "0x00050640",
+   "owner": "phys_fn_002047",
+   "entry": "PenetrationMap::Create, driven on the load path with a mesh stand-in, because that path reads only the six floats at mesh+0x44",
+   "cases": 14
+  },
+  {
+   "name": "mesh",
+   "rva": "0x00055cb0",
+   "owner": "phys_fn_002262",
+   "entry": "the NxStream triangle-mesh reader, driven on its reject arms only; the accept arm needs the Foundation SDK allocator at 0x101041bc, which is null until an NxPhysicsSDK exists",
+   "cases": 6
+  },
+  {
+   "name": "release",
+   "rva": "0x00051040",
+   "owner": "phys_fn_002051",
+   "entry": "NxReleasePMap, driven on its null-data arm; the free arm needs a buffer NxCreatePMap allocated in the oracle's own CRT and is deferred to Task 3",
+   "cases": 1
+  }
+ ],
+ "pmap_cases": [
+  {
+   "id": "pmap.minimal_valid",
+   "dimension": "minimal_valid",
+   "bytes": "504d415004000000010000007fffffffc0",
+   "byte_count": 17,
+   "note": "one cell, no value records, terminator first",
+   "oracle": {
+    "accepted": 1,
+    "errors": 0,
+    "error_line": "0x000",
+    "resolution": 1,
+    "cells": 1,
+    "grid": "e3160fb1"
+   }
+  },
+  {
+   "id": "pmap.multi_value",
+   "dimension": "multi_element",
+   "bytes": "504d415004000000020000000000000000000000400000001fffffffffe0",
+   "byte_count": 30,
+   "note": "two value records before the terminator; the second uses the previous+1 branch at 0x000501d7",
+   "oracle": {
+    "accepted": 1,
+    "errors": 0,
+    "error_line": "0x000",
+    "resolution": 2,
+    "cells": 8,
+    "grid": "5b517625"
+   }
+  },
+  {
+   "id": "pmap.boundary_res4",
+   "dimension": "boundary",
+   "bytes": "504d415004000000040000007fffffffaaaaaaaaaaaaaaaa80",
+   "byte_count": 25,
+   "note": "res 4 exercises the 64-cell sign block; alternating bits",
+   "oracle": {
+    "accepted": 1,
+    "errors": 0,
+    "error_line": "0x000",
+    "resolution": 4,
+    "cells": 64,
+    "grid": "06a34ac5"
+   }
+  },
+  {
+   "id": "pmap.boundary_res1_signclear",
+   "dimension": "boundary",
+   "bytes": "504d415004000000010000007fffffff80",
+   "byte_count": 17,
+   "note": "the one sign bit clear, which is the branch that ORs 0x80000000",
+   "oracle": {
+    "accepted": 1,
+    "errors": 0,
+    "error_line": "0x000",
+    "resolution": 1,
+    "cells": 1,
+    "grid": "e3160fb1"
+   }
+  },
+  {
+   "id": "pmap.bad_magic_0",
+   "dimension": "malformed",
+   "bytes": "584d415004000000010000007fffffffc0",
+   "byte_count": 17,
+   "note": "byte 0 of the tag replaced with 'X'; rejected at 0x0005069a",
+   "oracle": {
+    "accepted": 0,
+    "errors": 1,
+    "error_line": "0x3d3",
+    "resolution": 0,
+    "cells": 0,
+    "grid": "00000000"
+   }
+  },
+  {
+   "id": "pmap.bad_magic_1",
+   "dimension": "malformed",
+   "bytes": "5058415004000000010000007fffffffc0",
+   "byte_count": 17,
+   "note": "byte 1 of the tag replaced with 'X'; rejected at 0x000506a8",
+   "oracle": {
+    "accepted": 0,
+    "errors": 1,
+    "error_line": "0x3d3",
+    "resolution": 0,
+    "cells": 0,
+    "grid": "00000000"
+   }
+  },
+  {
+   "id": "pmap.bad_magic_2",
+   "dimension": "malformed",
+   "bytes": "504d585004000000010000007fffffffc0",
+   "byte_count": 17,
+   "note": "byte 2 of the tag replaced with 'X'; rejected at 0x000506b3",
+   "oracle": {
+    "accepted": 0,
+    "errors": 1,
+    "error_line": "0x3d3",
+    "resolution": 0,
+    "cells": 0,
+    "grid": "00000000"
+   }
+  },
+  {
+   "id": "pmap.bad_magic_3",
+   "dimension": "malformed",
+   "bytes": "504d415804000000010000007fffffffc0",
+   "byte_count": 17,
+   "note": "byte 3 of the tag replaced with 'X'; rejected at 0x000506be",
+   "oracle": {
+    "accepted": 0,
+    "errors": 1,
+    "error_line": "0x3d3",
+    "resolution": 0,
+    "cells": 0,
+    "grid": "00000000"
+   }
+  },
+  {
+   "id": "pmap.bad_version_00000000",
+   "dimension": "malformed",
+   "bytes": "504d415000000000010000007fffffffc0",
+   "byte_count": 17,
+   "note": "version 0; the equality test at 0x000506c9 accepts only 4",
+   "oracle": {
+    "accepted": 0,
+    "errors": 1,
+    "error_line": "0x3da",
+    "resolution": 0,
+    "cells": 0,
+    "grid": "00000000"
+   }
+  },
+  {
+   "id": "pmap.bad_version_00000003",
+   "dimension": "malformed",
+   "bytes": "504d415003000000010000007fffffffc0",
+   "byte_count": 17,
+   "note": "version 3; the equality test at 0x000506c9 accepts only 4",
+   "oracle": {
+    "accepted": 0,
+    "errors": 1,
+    "error_line": "0x3da",
+    "resolution": 0,
+    "cells": 0,
+    "grid": "00000000"
+   }
+  },
+  {
+   "id": "pmap.bad_version_00000005",
+   "dimension": "malformed",
+   "bytes": "504d415005000000010000007fffffffc0",
+   "byte_count": 17,
+   "note": "version 5; the equality test at 0x000506c9 accepts only 4",
+   "oracle": {
+    "accepted": 0,
+    "errors": 1,
+    "error_line": "0x3da",
+    "resolution": 0,
+    "cells": 0,
+    "grid": "00000000"
+   }
+  },
+  {
+   "id": "pmap.bad_version_ffffffff",
+   "dimension": "malformed",
+   "bytes": "504d4150ffffffff010000007fffffffc0",
+   "byte_count": 17,
+   "note": "version 4294967295; the equality test at 0x000506c9 accepts only 4",
+   "oracle": {
+    "accepted": 0,
+    "errors": 1,
+    "error_line": "0x3da",
+    "resolution": 0,
+    "cells": 0,
+    "grid": "00000000"
+   }
+  },
+  {
+   "id": "pmap.truncated_after_magic",
+   "dimension": "truncated",
+   "bytes": "504d41500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+   "byte_count": 84,
+   "note": "only the tag is present, followed by 80 zero bytes of padding so the reader -- which bounds-checks nothing -- stays inside allocated memory; the version dword reads 0 and is rejected at 0x000506c9",
+   "oracle": {
+    "accepted": 0,
+    "errors": 1,
+    "error_line": "0x3da",
+    "resolution": 0,
+    "cells": 0,
+    "grid": "00000000"
+   }
+  },
+  {
+   "id": "pmap.truncated_mid_tag",
+   "dimension": "truncated",
+   "bytes": "504d000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+   "byte_count": 83,
+   "note": "the tag is cut after two bytes and padded with zeros for the same reason; the third byte reads 0 and is rejected at 0x000506b3",
+   "oracle": {
+    "accepted": 0,
+    "errors": 1,
+    "error_line": "0x3d3",
+    "resolution": 0,
+    "cells": 0,
+    "grid": "00000000"
+   }
+  }
+ ],
+ "mesh_cases": [
+  {
+   "id": "mesh.bad_tag0",
+   "dimension": "malformed",
+   "bytes": "5353584e4853454d",
+   "note": "first dword is not 0x4e585354; rejected at 0x00055cc2",
+   "oracle": {
+    "accepted": 0,
+    "dwords_read": 1
+   },
+   "byte_count": 8
+  },
+  {
+   "id": "mesh.bad_tag0_zero",
+   "dimension": "malformed",
+   "bytes": "000000004853454d",
+   "note": "first dword zero",
+   "oracle": {
+    "accepted": 0,
+    "dwords_read": 1
+   },
+   "byte_count": 8
+  },
+  {
+   "id": "mesh.bad_tag0_byteswapped",
+   "dimension": "malformed",
+   "bytes": "4e5853544853454d",
+   "note": "the tag written most-significant byte first; rejected, which is what fixes the on-disc byte order",
+   "oracle": {
+    "accepted": 0,
+    "dwords_read": 1
+   },
+   "byte_count": 8
+  },
+  {
+   "id": "mesh.bad_tag1",
+   "dimension": "malformed",
+   "bytes": "5453584e4753454d",
+   "note": "second dword is not 0x4d455348; rejected at 0x00055cd0",
+   "oracle": {
+    "accepted": 0,
+    "dwords_read": 2
+   },
+   "byte_count": 8
+  },
+  {
+   "id": "mesh.bad_tag1_zero",
+   "dimension": "malformed",
+   "bytes": "5453584e00000000",
+   "note": "second dword zero",
+   "oracle": {
+    "accepted": 0,
+    "dwords_read": 2
+   },
+   "byte_count": 8
+  },
+  {
+   "id": "mesh.truncated_after_tag0",
+   "dimension": "truncated",
+   "bytes": "5453584e",
+   "note": "only the first tag present; the second dword reads past it",
+   "oracle": {
+    "accepted": 0,
+    "dwords_read": 2
+   },
+   "byte_count": 4
+  }
+ ],
+ "release_cases": [
+  {
+   "id": "release.null_data",
+   "dimension": "ownership",
+   "note": "NxReleasePMap on an NxPMap whose data is null and whose dataSize is 0x5a5a5a5a; the null test is `test eax, eax` at 0x00051048 and the unconditional `mov al,1` at 0x0005105c",
+   "oracle": {
+    "returned": 1,
+    "data_size": "5a5a5a5a",
+    "data": "00000000"
+   }
+  }
+ ]
+}
