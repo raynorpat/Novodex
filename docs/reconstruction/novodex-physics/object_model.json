@@ -111,7 +111,12 @@
         "phys_fn_000971", "phys_fn_000957", "phys_fn_000959", "phys_fn_000975"
       ]}
     },
-    "census_correction": "phys_data_000842 (41 slots, distinct 28) spans [purecall abstract][12-slot concrete][BOX final]; its distinct-target count treated static data as slots"
+    "census_correction": "phys_data_000842 (41 slots, distinct 28) spans [purecall abstract][12-slot concrete][BOX final]; its distinct-target count treated static data as slots",
+    "algorithm_rows_open": {
+      "phys_fn_000957": {"rva": "0x00020d40", "size": 578, "identified_as": "per-face query over the six records: optional external pose (null-tested at entry, column-dot transform when present), reads its own vtable slot 3 for the face count, scales stacked values by facade floats at +0x7c/+0x80/+0x84, walks records from +0xa4", "state": "discovered -- needs full transcription plus falsification-grade mutation runs"},
+      "phys_fn_000959": {"rva": "0x00020f90", "size": 1062, "identified_as": "larger algorithm copying a 3x3 matrix and projecting (seen at its head)", "state": "discovered"},
+      "phys_fn_000985": {"status": "RECONSTRUCTED as box hull sharedHook (see transcribed_rows)"}
+    }
   },
   "transcribed_rows": [
     {"row": "phys_fn_001193", "source": "Physics/src/ObjectModel.cpp", "gate_family": "colobj"},
