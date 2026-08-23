@@ -153,15 +153,17 @@ with the independent minimum in `test_gate_targets.py` raised to match.
 
 ## 6. Environment escalations carried, not resolved
 
-- **The pinned Nxp.h cannot pass against both roots at once.**
-  `public_header_hashes.json` pins the UE3 tree's post-edit Nxp.h (4,248
-  bytes, `#include "../../NxVersionNumber.h"`), while this repository carries
-  db44d18's include-path adaptation (4,242 bytes, `"NxVersionNumber.h"`
-  resolving through Foundation/include). The same relative path resolves
-  differently under the two layouts, so byte-equality is structurally
-  impossible until their owner reconciles the two sides. The immutable-header
-  gate stage fails on this today; everything after it was validated by running
-  the stages individually, and all of them pass.
+- ~~The pinned Nxp.h cannot pass against both roots at once.~~ **RESOLVED by
+  moving the UE3 oracle tree onto the Foundation header.** The UE3 tree's
+  `Physics/include/Nxp.h` and `Foundation/include/NxFoundationSDK.h` gave up
+  their root-relative climbs -- the same change db44d18 made on this side --
+  and `NxVersionNumber.h` (byte-identical, sha256 `0b0ee61a…`) was placed in
+  the UE3 tree's `Foundation/include`. Both files now hash identically to
+  this repository's copies (`ab032b9c…`, `31426e59…`),
+  `public_header_hashes.json` was regenerated from this repository's tree,
+  and verify_public_headers passes against BOTH roots; `run_phase_gate.ps1`
+  -Phase 4 reports `status=pass at coverage_assertions_evaluated=100
+  floor=100`, and -Phase 3 stays pass at 103.
 - The vendored-source correspondence trees are staged at
   `.analysis/novodex-physics/thirdparty` (git-excluded copies of
   `External/*/upstream`), which is where validate_inventory expects them.

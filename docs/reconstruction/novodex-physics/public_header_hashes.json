@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "algorithm": "SHA-256",
-  "root": "D:/FlamingEnt__/Unreal_3/Development/External/Novodex/Physics/include",
+  "root": "D:/github/Novodex/Physics/include",
   "file_count": 80,
   "files": [
     {
@@ -361,8 +361,8 @@
     },
     {
       "path": "Nxp.h",
-      "size": 4248,
-      "sha256": "830696508ac1f542408033b9b58e9fcad980d3b4b43163bf80c91bf3da0d0564"
+      "size": 4242,
+      "sha256": "ab032b9cc2f1a10b48b6bde81430fac22b6f2a7f73e2e46d4bebba19e45a1743"
     },
     {
       "path": "fluids/NxFluid.h",
