@@ -84,7 +84,12 @@
       "+0x3c..+0x68": {"meaning": "pose #2, ctor writes identity/zero", "established_by": "diagonals at 0x3c/0x4c/0x5c, t at 0x60..0x68", "status": "Phase 3 called this UNESTABLISHED; the constructor establishes it as an identity-initialised second pose"},
       "+0x6c..+0x98": {"meaning": "pose #3, ctor writes identity/zero", "established_by": "diagonals at 0x6c/0x7c/0x8c, t at 0x90..0x98", "status": "NEW -- a third pose neither Phase 3 nor the escalation named"},
       "+0x9c": {"meaning": "pointer to the 0x1c-byte collision object", "established_by": "sphere ctor allocation sequence 0x000277e4..0x00027805 -- CONFIRMS borrowed claim"},
-      "+0xa4": {"meaning": "subobject constructed at ctor tail (lea ecx,[esi+0xa4] at 0x000255cd)", "status": "contents unestablished"},
+      "+0xa4": {"meaning": "embedded IcePrunable -- base ctor calls the reconstructed prunable_ctor row 0x000b54a0 here", "established_by": "call at 0x000255df; Phase 2b owns that row"},
+      "+0xd0": {"meaning": "base ctor writes +FLT_MAX (0x7fffffff); the sphere ctor then overwrites it with 1", "established_by": "0x000255ed vs 0x0002780b"},
+      "+0xd4": {"meaning": "ctor argument 3", "established_by": "store 0x000255f7"},
+      "+0xdc/+0xde": {"meaning": "words 6 and 8 -- face count and vertex count mirrored beside the pose region", "established_by": "stores 0x0002560b/0x00025614"},
+      "owner_registration": {"meaning": "when owner is non-null, the ctor calls owner->[vtbl+0x48](shape)", "established_by": "cmp/test at 0x000255e7, call 0x0005c390 at 0x00025626"},
+      "global_hook_install": {"meaning": ".data 0x10128470/474/478 <- 0x100213e0 (the facade getZero row), 0x10025520, 0x10025510", "established_by": "stores 0x0002562b..0x0002563f"},
       "+0xd0": {"meaning": " initialised to 1 by sphere ctor", "established_by": "0x0002780b"},
       "+0xe0": {"meaning": "secondary-base vptr for desc-mixin types (box: A/B tables); NULL for sphere", "established_by": "0x00021885/0x00021895 (box), 0x000277da (sphere)"},
       "+0xe4..+0xec": {"meaning": "per-type geometry area; Phase 3 read box half extents as three floats here (0x0003ae31/0x0003ae26) and capsule radius/halfHeight/swept", "status": "consistent with the ctor layout; per-type confirmation belongs to Task 3"}
