@@ -28,8 +28,10 @@
 //     prints the oracle-side digests that gate_targets.ps1 registers.
 //
 // A harness that fails because its target does not exist is not a RED gate, it
-// is an absent one. This one builds, runs, calls the oracle 21 times, prints
-// every oracle answer, and then reports the reconstruction missing.
+// is an absent one. This one builds, runs, calls the oracle 30 times -- fourteen
+// penetration-map fixtures, six mesh-header rejects, nine mesh-writer
+// serialisations and one release probe -- prints every oracle answer, and then
+// reports any part of the reconstruction that disagrees or is missing.
 //
 // FIXTURES CARRY NO ORACLE PROCESS POINTERS. Every byte below is either a
 // constant of the format or a value this file computes; nothing is copied out
@@ -61,9 +63,15 @@ static const unsigned kPMapDtorRva      = 0x0004cae0;	// phys_fn_001984
 static const unsigned kPMapCreateRva    = 0x00050640;	// phys_fn_002047, PenetrationMap::Create
 static const unsigned kStreamCtorRva    = 0x000b3ce0;	// phys_fn_004788, (size, buffer)
 static const unsigned kStreamSeekRva    = 0x000b3b30;	// phys_fn_004780
-static const unsigned kStreamDtorRva    = 0x000b3db0;	// phys_fn_004791
+static const unsigned kStreamDtorRva    = 0x000b3db0;	// phys_fn_004791, jmp to phys_fn_004784
 static const unsigned kMeshHeaderRva    = 0x00055cb0;	// phys_fn_002262, the NxStream mesh loader
 static const unsigned kReleasePMapRva   = 0x00051040;	// phys_fn_002051, NxReleasePMap
+
+// The mesh writer and its growable stream's store half. The writer builds its
+// own stream through kStreamCtorRva/kStreamDtorRva; these are what stand in
+// for BaseModel slot 5 on the oracle side.
+static const unsigned kMeshWriterRva    = 0x000539d0;	// phys_fn_002162, TriangleMesh slot 18
+static const unsigned kStoreDwordRva    = 0x000b3f00;	// phys_fn_004797, the row Model::Save calls
 
 // sizeof, from the allocation sites rather than from a guess:
 //   0x78 -- `push 0x78` at 0x00053d35 in TriangleMesh::loadPMap
@@ -85,6 +93,8 @@ typedef void* (__thiscall* NxStreamSeekFn)(void* self, unsigned offset);
 typedef void (__thiscall* NxStreamDtorFn)(void* self);
 typedef char (__thiscall* NxMeshHeaderFn)(void* self, void* stream);
 typedef unsigned char (__cdecl* NxReleasePMapFn)(void* pmap);
+typedef char (__thiscall* NxMeshWriterFn)(void* self, void* stream);
+typedef void* (__thiscall* NxStoreDwordFn)(void* self, unsigned value);
 
 // ---------------------------------------------------------------------------
 // The fixtures.
@@ -167,6 +177,50 @@ static const NxMeshFixture nxMeshFixtures[] =
 
 static const unsigned kMeshFixtureCount = sizeof(nxMeshFixtures) / sizeof(nxMeshFixtures[0]);
 
+// The writer fixtures. These are NOT recorded oracle answers -- they are
+// inputs, the same kind of thing the pmap hex strings are: a mesh description
+// handed identically to both sides, each of which serialises it through its
+// own module. What the oracle's answers get folded into is the per-case digest
+// over everything its writer stored, and that is what the candidate must
+// reproduce byte for byte.
+//
+// The optional-buffer flags are exercised every way singly as well as all
+// together, because the writer has four separate conditional arms and a
+// combined-only fixture would let two wrong conditions cancel.
+struct NxWriterFixture
+	{
+	const char* name;
+	const char* dimension;
+	unsigned vertexCount;
+	unsigned triangleCount;
+	unsigned hullModeBit;		// TriangleMesh+0x40 bit 0 -> flags bit 3
+	int hasMaterials;			// internal+0x10 non-null -> flags bit 0
+	int hasRemap;				// internal+0x14 non-null -> flags bit 1
+	int hasArrayA;				// +0x94 non-null
+	int hasArrayB;				// +0x98 non-null
+	int hasHull;				// +0xa0 non-null -> flags bit 2
+	float threshold;			// +0x6c, storeFloat
+	unsigned axis;				// +0x7c, storeDword
+	float extent;				// +0x80, storeFloat
+	unsigned flagA;				// +0x8c, storeDword unconditional
+	unsigned flagB;				// +0x90, storeDword unconditional
+	};
+
+static const NxWriterFixture nxWriterFixtures[] =
+	{
+	{ "writer.full",          "everything",   7, 9, 1, 1, 1, 1, 1, 1,   0.001f, 0xffu, 0.0f,    0x11223344u, 0x55667788u },
+	{ "writer.minimal",       "nothing_optional", 3, 1, 0, 0, 0, 0, 0, 0,  0.001f, 0xffu, 0.0f,    0, 0 },
+	{ "writer.empty_mesh",    "zero_counts",  0, 0, 0, 0, 0, 0, 0, 0,      0.001f, 0xffu, 0.0f,    0, 0 },
+	{ "writer.materials_only","single_flag",  2, 3, 0, 1, 0, 0, 0, 0,      0.0025f, 2u, -1.5f,     1, 0 },
+	{ "writer.remap_only",    "single_flag",  2, 3, 0, 0, 1, 0, 0, 0,      0.0025f, 2u, -1.5f,     0, 1 },
+	{ "writer.array_a_only",  "single_flag",  2, 3, 0, 0, 0, 1, 0, 0,      0.0025f, 2u, -1.5f,     0, 0 },
+	{ "writer.array_b_only",  "single_flag",  2, 3, 0, 0, 0, 0, 1, 0,      0.0025f, 2u, -1.5f,     0, 0 },
+	{ "writer.hull_present",  "hull",         5, 6, 0, 0, 0, 0, 0, 1,      0.01f, 1u, 2.5f,          7, 7 },
+	{ "writer.hull_mode_bit", "hull",         5, 6, 1, 0, 0, 0, 0, 0,      0.01f, 1u, 2.5f,          0, 0 }
+	};
+
+static const unsigned kWriterFixtureCount = sizeof(nxWriterFixtures) / sizeof(nxWriterFixtures[0]);
+
 // ---------------------------------------------------------------------------
 // Results, and the digest that folds them.
 
@@ -185,6 +239,77 @@ struct NxMeshResult
 	unsigned accepted;
 	unsigned dwordsRead;
 	};
+
+// Everything one writer run stored, in order. Both sides record through their
+// own module's stream implementation and the comparison is element-wise, so a
+// difference is reported at the event that first differs rather than only as
+// an opaque digest. The digest is FNV-1a over the whole log and is what the
+// oracle-side registration pins.
+struct NxWriteLog
+	{
+	static const unsigned kMaxEvents = 256;
+	static const unsigned kMaxBytes = 8192;
+	unsigned kind[kMaxEvents];		// 1 dword, 2 float, 3 buffer
+	unsigned value[kMaxEvents];		// the dword / the float's bits / the byte count
+	unsigned bytes[kMaxBytes];		// buffer contents, one byte per word
+	unsigned count;
+	unsigned byteCount;
+
+	void reset() { count = 0; byteCount = 0; }
+	bool addEvent(unsigned eventKind, unsigned eventValue)
+		{
+		if(count >= kMaxEvents)
+			return false;
+		kind[count] = eventKind;
+		value[count] = eventValue;
+		++count;
+		return true;
+		}
+	bool addByte(unsigned byte)
+		{
+		if(byteCount >= kMaxBytes)
+			return false;
+		bytes[byteCount++] = byte & 0xffu;
+		return true;
+		}
+	};
+
+static unsigned nxFold(unsigned digest, unsigned word);
+
+static unsigned nxLogFold(const NxWriteLog& log)
+	{
+	unsigned digest = 2166136261u;
+	unsigned offset = 0;
+	for(unsigned i = 0; i < log.count; ++i)
+		{
+		digest = nxFold(digest, log.kind[i]);
+		digest = nxFold(digest, log.value[i]);
+		if(log.kind[i] == 3)
+			{
+			for(unsigned b = 0; b < log.value[i]; ++b)
+				digest = nxFold(digest, log.bytes[offset + b]);
+			offset += log.value[i];
+			}
+		}
+	return digest;
+	}
+
+static unsigned nxLogFirstDifference(const NxWriteLog& candidate, const NxWriteLog& oracle)
+	{
+	unsigned n = candidate.count < oracle.count ? candidate.count : oracle.count;
+	for(unsigned i = 0; i < n; ++i)
+		{
+		if(candidate.kind[i] != oracle.kind[i] || candidate.value[i] != oracle.value[i])
+			return i;
+		if(oracle.kind[i] == 3)
+			for(unsigned b = 0; b < oracle.value[i]; ++b)
+				if(candidate.bytes[b] != oracle.bytes[b])
+					return i;
+		}
+	if(candidate.count != oracle.count)
+		return n;
+	return 0xffffffffu;
+	}
 
 // FNV-1a, 32 bit. Small on purpose: what is being pinned is that the oracle
 // produced these words for these bytes, and a wider digest would say the same.
@@ -279,7 +404,9 @@ static void nxResetSink(NxErrorSink* sink)
 // NxStream, from the pinned Foundation header. The slot offsets are not a
 // guess: phys_fn_002262 calls +0x0c for every dword it reads, +0x10 for every
 // float and +0x18 for every buffer, which is readDword, readFloat and
-// readBuffer in declaration order after the virtual destructor.
+// readBuffer in declaration order after the virtual destructor. The writer
+// calls +0x24, +0x28 and +0x30 -- storeDword, storeFloat and storeBuffer, the
+// slots five past their read partners.
 
 struct NxHarnessStream
 	{
@@ -288,6 +415,7 @@ struct NxHarnessStream
 	unsigned size;
 	unsigned offset;
 	unsigned dwordsRead;
+	NxWriteLog* log;		// non-null when the writer is being recorded
 	};
 
 static unsigned nxStreamTake(NxHarnessStream* self, unsigned count)
@@ -315,8 +443,46 @@ static double __fastcall nxStreamReadDouble(NxHarnessStream* self, void*)
 	{ nxStreamTake(self, 4); nxStreamTake(self, 4); return 0.0; }
 static void __fastcall nxStreamReadBuffer(NxHarnessStream* self, void*, void* buffer, unsigned size)
 	{ memset(buffer, 0, size); self->offset += size; }
-static void* __fastcall nxStreamStore(NxHarnessStream* self, void*, unsigned) { return self; }
-static void* __fastcall nxStreamStoreBuffer(NxHarnessStream* self, void*, const void*, unsigned) { return self; }
+static void* __fastcall nxStreamStoreByte(NxHarnessStream* self, void*, unsigned char value)
+	{
+	if(self->log) { self->log->addEvent(1, value); }
+	return self;
+	}
+static void* __fastcall nxStreamStoreWord(NxHarnessStream* self, void*, unsigned short value)
+	{
+	if(self->log) { self->log->addEvent(1, value); }
+	return self;
+	}
+static void* __fastcall nxStreamStoreDword(NxHarnessStream* self, void*, unsigned value)
+	{
+	if(self->log) { self->log->addEvent(1, value); }
+	return self;
+	}
+static void* __fastcall nxStreamStoreFloat(NxHarnessStream* self, void*, float value)
+	{
+	unsigned bits;
+	memcpy(&bits, &value, 4);
+	if(self->log) { self->log->addEvent(2, bits); }
+	return self;
+	}
+static void* __fastcall nxStreamStoreDouble(NxHarnessStream* self, void*, double value)
+	{
+	unsigned bits[2];
+	memcpy(bits, &value, 8);
+	if(self->log) { self->log->addEvent(2, bits[0]); self->log->addEvent(2, bits[1]); }
+	return self;
+	}
+static void* __fastcall nxStreamStoreBuffer(NxHarnessStream* self, void*, const void* buffer, unsigned size)
+	{
+	if(self->log)
+		{
+		self->log->addEvent(3, size);
+		const unsigned char* p = (const unsigned char*) buffer;
+		for(unsigned i = 0; i < size; ++i)
+			self->log->addByte(p[i]);
+		}
+	return self;
+	}
 
 static const void* nxHarnessStreamVtable[13] =
 	{
@@ -327,11 +493,11 @@ static const void* nxHarnessStreamVtable[13] =
 	(const void*) &nxStreamReadFloat,
 	(const void*) &nxStreamReadDouble,
 	(const void*) &nxStreamReadBuffer,
-	(const void*) &nxStreamStore,
-	(const void*) &nxStreamStore,
-	(const void*) &nxStreamStore,
-	(const void*) &nxStreamStore,
-	(const void*) &nxStreamStore,
+	(const void*) &nxStreamStoreByte,
+	(const void*) &nxStreamStoreWord,
+	(const void*) &nxStreamStoreDword,
+	(const void*) &nxStreamStoreFloat,
+	(const void*) &nxStreamStoreDouble,
 	(const void*) &nxStreamStoreBuffer
 	};
 
@@ -349,6 +515,8 @@ struct NxOracle
 	NxStreamDtorFn streamDtor;
 	NxMeshHeaderFn meshHeader;
 	NxReleasePMapFn releasePMap;
+	NxMeshWriterFn meshWriter;
+	NxStoreDwordFn storeDword;
 	};
 
 // A mesh stand-in. On the LOAD path -- `load != 0` -- PenetrationMap::Create
@@ -426,6 +594,145 @@ static void nxRunMeshOracle(const NxOracle* oracle, const unsigned char* storage
 	}
 
 // ---------------------------------------------------------------------------
+// The mesh writer, oracle side.
+//
+// The writer is driven exactly the way the real caller would drive it: a
+// TriangleMesh-shaped byte object at the measured offsets, and an NxStream.
+// What stands in for the OPCODE model at +0x28 is a fake object whose slot 5
+// -- BaseModel::Save, established by the Model vtable at .rdata:0x0011badc --
+// writes four deterministic dwords through phys_fn_004797, the row the real
+// Model::Save calls at 0x000e944e. The stand-in is INPUT, not reconstruction:
+// both sides see the same four words, so the comparison pins everything the
+// writer itself does around that call -- field order, sizes, conditional arms,
+// the length store and the collapsed buffer -- without depending on the tree
+// serialiser, which is unmapped census work.
+
+// The four words the model save writes, derived from the fixture. Both sides
+// derive them from the same fields, so any drift in the derivation shows up
+// as an identical movement on both sides and cancels in the comparison.
+static unsigned nxBlobWords[4];
+
+static void nxSeedBlobWords(const NxWriterFixture* fixture)
+	{
+	unsigned digest = 2166136261u;
+	for(const char* p = fixture->name; *p; ++p)
+		digest = nxFold(digest, (unsigned char) *p);
+	digest = nxFold(digest, fixture->vertexCount);
+	digest = nxFold(digest, fixture->triangleCount);
+	for(unsigned i = 0; i < 4; ++i)
+		{
+		nxBlobWords[i] = digest;
+		digest = digest * 16777619u + 1u;
+		}
+	}
+
+// The fake BaseModel. Seven slots: 0/1 the destructor pair, 2 GetUsedBytes,
+// 3 Refit, 4 NovodeXSlot4, 5 Save, 6 Load. Only slot 5 is ever dispatched,
+// because the only entry into this object is the writer's `call [edx+0x14]`.
+struct NxFakeModel
+	{
+	const void** vtable;
+	};
+
+static char __fastcall nxFakeModelUnused(void*, void*) { return 0; }
+
+// Set once per run to the oracle's phys_fn_004797. A static is the honest
+// carrier here: the oracle process has exactly one of this row.
+static NxStoreDwordFn nxOracleStoreDword = 0;
+
+static char __fastcall nxFakeModelSave(NxFakeModel*, void*, void* growableStream)
+	{
+	for(unsigned i = 0; i < 4; ++i)
+		nxOracleStoreDword(growableStream, nxBlobWords[i]);
+	return 1;
+	}
+
+static const void* nxFakeModelVtable[7] =
+	{
+	(const void*) &nxFakeModelUnused,
+	(const void*) &nxFakeModelUnused,
+	(const void*) &nxFakeModelUnused,
+	(const void*) &nxFakeModelUnused,
+	(const void*) &nxFakeModelUnused,
+	(const void*) &nxFakeModelSave,
+	(const void*) &nxFakeModelUnused
+	};
+
+// The fixture's arrays, one allocation per run, deterministic contents. The
+// face remap and the two presence arrays are three distinct buffers even
+// though they have the same shape, so no two conditional arms can agree by
+// accident of sharing.
+struct NxWriterBuffers
+	{
+	unsigned vertices[16 * 3];		// NxVec3 triads
+	unsigned triangles[16 * 3];		// three 32-bit indices per triangle
+	unsigned short materials[16];
+	unsigned faceRemap[16];
+	unsigned arrayA[16];
+	unsigned arrayB[16];
+	};
+
+static void nxFillWriterBuffers(const NxWriterFixture* fixture, NxWriterBuffers* buffers)
+	{
+	for(unsigned i = 0; i < fixture->vertexCount * 3; ++i)
+		buffers->vertices[i] = 0x01020304u + i * 0x1010101u;
+	for(unsigned i = 0; i < fixture->triangleCount * 3; ++i)
+		buffers->triangles[i] = (i / 3) * 0x300u + (i % 3);
+	for(unsigned i = 0; i < fixture->triangleCount; ++i)
+		{
+		buffers->materials[i] = (unsigned short) (0x1000 + i);
+		buffers->faceRemap[i] = 0xf0000000u + i;
+		buffers->arrayA[i] = 0xa0000000u + i;
+		buffers->arrayB[i] = 0xb0000000u + i;
+		}
+	}
+
+// Builds the byte object at the measured offsets and drives the oracle writer
+// against the recording stream. The optional pointers are null exactly when
+// their fixture flag says so -- that is what moves the four conditional arms.
+static bool nxRunMeshWriterOracle(const NxOracle* oracle, const NxWriterFixture* fixture,
+	NxWriteLog* log, unsigned* accepted)
+	{
+	NxWriterBuffers buffers;
+	memset(&buffers, 0, sizeof(buffers));
+	nxFillWriterBuffers(fixture, &buffers);
+
+	NxFakeModel model;
+	model.vtable = nxFakeModelVtable;
+
+	// Offsets per TriangleMesh.h; every store here mirrors an address in the
+	// class comment.
+	unsigned char object[0xc0];
+	memset(object, 0, sizeof(object));
+	*(unsigned*) (object + 0x08) = fixture->vertexCount;
+	*(unsigned*) (object + 0x0c) = fixture->triangleCount;
+	*(void**) (object + 0x10) = buffers.vertices;
+	*(void**) (object + 0x14) = buffers.triangles;
+	*(void**) (object + 0x18) = fixture->hasMaterials ? (void*) buffers.materials : (void*) 0;
+	*(void**) (object + 0x1c) = fixture->hasRemap ? (void*) buffers.faceRemap : (void*) 0;
+	*(unsigned*) (object + 0x40) = fixture->hullModeBit;
+	*(float*) (object + 0x6c) = fixture->threshold;
+	*(unsigned*) (object + 0x7c) = fixture->axis;
+	*(float*) (object + 0x80) = fixture->extent;
+	*(unsigned*) (object + 0x8c) = fixture->flagA;
+	*(unsigned*) (object + 0x90) = fixture->flagB;
+	*(void**) (object + 0x94) = fixture->hasArrayA ? (void*) buffers.arrayA : (void*) 0;
+	*(void**) (object + 0x98) = fixture->hasArrayB ? (void*) buffers.arrayB : (void*) 0;
+	*(void**) (object + 0xa0) = fixture->hasHull ? (void*) &buffers : (void*) 0;
+	*(void**) (object + 0x28) = &model;
+
+	NxHarnessStream stream;
+	memset(&stream, 0, sizeof(stream));
+	stream.vtable = nxHarnessStreamVtable;
+	stream.log = log;
+
+	char ok = oracle->meshWriter(object, &stream);
+	*accepted = ok ? 1u : 0u;
+	return true;
+	}
+
+
+// ---------------------------------------------------------------------------
 // The candidate side.
 //
 // Phase 4 Task 3 fills these three in from Physics/src.
@@ -482,9 +789,10 @@ struct NxCandidateStream : public NxStream
 	unsigned size;
 	mutable unsigned offset;
 	mutable unsigned dwordsRead;
+	NxWriteLog* log;
 
 	NxCandidateStream(const unsigned char* b, unsigned n)
-		: bytes(b), size(n), offset(0), dwordsRead(0) { }
+		: bytes(b), size(n), offset(0), dwordsRead(0), log(0) { }
 
 	unsigned take(unsigned count) const
 		{
@@ -505,12 +813,30 @@ struct NxCandidateStream : public NxStream
 	virtual NxF64 readDouble() const				{ take(4); take(4); return 0.0; }
 	virtual void readBuffer(void* buffer, NxU32 n) const { memset(buffer, 0, n); offset += n; }
 
-	virtual NxStream& storeByte(NxU8)				{ return *this; }
-	virtual NxStream& storeWord(NxU16)				{ return *this; }
-	virtual NxStream& storeDword(NxU32)				{ return *this; }
-	virtual NxStream& storeFloat(NxF32)				{ return *this; }
-	virtual NxStream& storeDouble(NxF64)			{ return *this; }
-	virtual NxStream& storeBuffer(const void*, NxU32)	{ return *this; }
+	virtual NxStream& storeByte(NxU8 v)				{ if(log) { log->addEvent(1, v); } return *this; }
+	virtual NxStream& storeWord(NxU16 v)			{ if(log) { log->addEvent(1, v); } return *this; }
+	virtual NxStream& storeDword(NxU32 v)			{ if(log) { log->addEvent(1, v); } return *this; }
+	virtual NxStream& storeFloat(NxF32 v)
+		{
+		if(log) { unsigned bits; memcpy(&bits, &v, 4); log->addEvent(2, bits); }
+		return *this;
+		}
+	virtual NxStream& storeDouble(NxF64 v)
+		{
+		if(log) { unsigned bits[2]; memcpy(bits, &v, 8); log->addEvent(2, bits[0]); log->addEvent(2, bits[1]); }
+		return *this;
+		}
+	virtual NxStream& storeBuffer(const void* buffer, NxU32 n)
+		{
+		if(log)
+			{
+			log->addEvent(3, n);
+			const unsigned char* p = (const unsigned char*) buffer;
+			for(NxU32 i = 0; i < n; ++i)
+				log->addByte(p[i]);
+			}
+		return *this;
+		}
 	};
 
 static bool nxCandidatePMapLoad(const unsigned char* storage, unsigned length, NxPMapResult* result)
@@ -526,7 +852,11 @@ static bool nxCandidatePMapLoad(const unsigned char* storage, unsigned length, N
 	memcpy(mesh + 0x44, bounds, sizeof(bounds));
 
 	NxCandidateSink sink;
-	MemoryStream stream(storage, length);
+	// phys_fn_004788 builds the stream FULL over given bytes (the block starts
+	// at offset = size), so the rewind is part of the construction sequence,
+	// exactly as it is on the oracle side above.
+	MemoryStream stream(length, storage);
+	stream.seek(0);
 	PenetrationMap pmap;
 
 	bool accepted = pmap.create(mesh, 0, 0, &stream, true, &sink);
@@ -562,6 +892,60 @@ static bool nxCandidateMeshHeader(const unsigned char* storage, unsigned length,
 static bool nxCandidateReleasePMap(void* pmap, unsigned char* returned)
 	{
 	*returned = NxReleasePMap(*(NxPMap*) pmap) ? 1u : 0u;
+	return true;
+	}
+
+// ---------------------------------------------------------------------------
+// The candidate's fake model. It derives from the vendored BaseModel -- whose
+// seven-slot vtable shape NxPhysicsThirdPartyTests asserts against the image --
+// and overrides Save with the same four-dword stand-in the oracle side uses,
+// written through the reconstruction's own MemoryStream store row.
+
+struct NxCandidateFakeModel : public Opcode::BaseModel
+	{
+	virtual bool Build(const Opcode::OPCODECREATE&) { return false; }
+	virtual udword GetUsedBytes() const { return 0; }
+	virtual bool Save(void* stream)
+		{
+		MemoryStream* growable = static_cast<MemoryStream*>(stream);
+		for(unsigned i = 0; i < 4; ++i)
+			growable->storeDword(nxBlobWords[i]);
+		return true;
+		}
+	};
+
+static bool nxCandidateMeshWriter(const NxWriterFixture* fixture, NxWriteLog* log, unsigned* accepted)
+	{
+	NxWriterBuffers buffers;
+	memset(&buffers, 0, sizeof(buffers));
+	nxFillWriterBuffers(fixture, &buffers);
+
+	NxCandidateFakeModel model;
+
+	TriangleMesh mesh;
+	memset(&mesh, 0, sizeof(mesh));
+	mesh.mInternal.mVertexCount = fixture->vertexCount;
+	mesh.mInternal.mTriangleCount = fixture->triangleCount;
+	mesh.mInternal.mVertices = buffers.vertices;
+	mesh.mInternal.mTriangles = buffers.triangles;
+	mesh.mInternal.mMaterialIndices = fixture->hasMaterials ? buffers.materials : 0;
+	mesh.mInternal.mFaceRemap = fixture->hasRemap ? buffers.faceRemap : 0;
+	mesh.mHullFlags = fixture->hullModeBit;
+	mesh.mConvexEdgeThreshold = fixture->threshold;
+	mesh.mHeightFieldVerticalAxis = fixture->axis;
+	mesh.mHeightFieldVerticalExtent = fixture->extent;
+	mesh.mPresenceFlagA = fixture->flagA;
+	mesh.mPresenceFlagB = fixture->flagB;
+	mesh.mArrayA = fixture->hasArrayA ? buffers.arrayA : 0;
+	mesh.mArrayB = fixture->hasArrayB ? buffers.arrayB : 0;
+	mesh.mConvexMesh = fixture->hasHull ? (void*) &buffers : 0;
+	mesh.mInternal.mModel = &model;
+
+	NxCandidateStream stream(0, 0);
+	stream.log = log;
+
+	bool ok = mesh.save(stream);
+	*accepted = ok ? 1u : 0u;
 	return true;
 	}
 
@@ -655,10 +1039,13 @@ int wmain(int argc, wchar_t** argv)
 		return nxFail("the pinned oracle does not export NxReleasePMap");
 	if((unsigned char*) oracle.releasePMap - oracle.base != kReleasePMapRva)
 		return nxFail("NxReleasePMap is not at the censused RVA");
+	oracle.meshWriter = (NxMeshWriterFn) (oracle.base + kMeshWriterRva);
+	nxOracleStoreDword = (NxStoreDwordFn) (oracle.base + kStoreDwordRva);
 
-	printf("asset fixtures pmap=%u mesh=%u release=1\n", kPMapFixtureCount, kMeshFixtureCount);
+	printf("asset fixtures pmap=%u mesh=%u writer=%u release=1\n",
+		kPMapFixtureCount, kMeshFixtureCount, kWriterFixtureCount);
 	printf("asset rows pmap_create=phys_fn_002047 pmap_load=phys_fn_002035 "
-		"mesh_header=phys_fn_002262 release_pmap=phys_fn_002051\n");
+		"mesh_header=phys_fn_002262 mesh_writer=phys_fn_002162 release_pmap=phys_fn_002051\n");
 
 	unsigned expectMismatch = 0;
 	unsigned candidateMismatch = 0;
@@ -793,6 +1180,62 @@ int wmain(int argc, wchar_t** argv)
 		}
 
 	// -----------------------------------------------------------------------
+	// The triangle-mesh stream writer. The same fixture description goes to
+	// both sides; each serialises it through its own module, and what is
+	// compared is the complete store log and the return value.
+	for(unsigned i = 0; i < kWriterFixtureCount; ++i)
+		{
+		const NxWriterFixture* fixture = &nxWriterFixtures[i];
+		nxSeedBlobWords(fixture);
+
+		NxWriteLog oracleLog;
+		oracleLog.reset();
+		unsigned oracleAccepted = 0;
+		nxRunMeshWriterOracle(&oracle, fixture, &oracleLog, &oracleAccepted);
+		unsigned caseDigest = nxLogFold(oracleLog);
+
+		oracleDigest = nxFold(oracleDigest, oracleAccepted);
+		oracleDigest = nxFold(oracleDigest, caseDigest);
+		if(oracleAccepted)
+			++drivenAccepted;
+		else
+			++drivenRejected;
+
+		printf("writer case=%s dimension=%s accepted=%u events=%u bytes=%u digest=%08x\n",
+			fixture->name, fixture->dimension, oracleAccepted,
+			oracleLog.count, oracleLog.byteCount, caseDigest);
+
+		if(!selfOnly)
+			{
+			NxWriteLog candidateLog;
+			candidateLog.reset();
+			unsigned candidateAccepted = 0;
+			if(!nxCandidateMeshWriter(fixture, &candidateLog, &candidateAccepted))
+				{
+				++candidateMismatch;
+				printf("writer CANDIDATE-MISSING case=%s: no reconstruction of phys_fn_002162\n",
+					fixture->name);
+				}
+			else if(candidateAccepted != oracleAccepted)
+				{
+				++candidateMismatch;
+				printf("writer CANDIDATE-MISMATCH case=%s accepted=%u/%u\n",
+					fixture->name, candidateAccepted, oracleAccepted);
+				}
+			else if(nxLogFold(candidateLog) != caseDigest)
+				{
+				++candidateMismatch;
+				printf("writer CANDIDATE-MISMATCH case=%s digest=%08x/%08x first_differing_event=%u "
+					"events=%u/%u bytes=%u/%u\n",
+					fixture->name, nxLogFold(candidateLog), caseDigest,
+					nxLogFirstDifference(candidateLog, oracleLog),
+					candidateLog.count, oracleLog.count,
+					candidateLog.byteCount, oracleLog.byteCount);
+				}
+			}
+		}
+
+	// -----------------------------------------------------------------------
 	// NxReleasePMap on a null buffer.
 	//
 	// The null arm is the whole of what can be driven without an NxCreatePMap,
@@ -846,7 +1289,8 @@ int wmain(int argc, wchar_t** argv)
 	}
 
 	printf("asset coverage driven=%u accepted=%u rejected=%u errors=%u\n",
-		kPMapFixtureCount + kMeshFixtureCount + 1, drivenAccepted, drivenRejected, drivenErrors);
+		kPMapFixtureCount + kMeshFixtureCount + kWriterFixtureCount + 1,
+		drivenAccepted, drivenRejected, drivenErrors);
 	printf("asset oracle digest=%08x expect_mismatches=%u\n", oracleDigest, expectMismatch);
 	printf("asset candidate mismatches=%u mode=%s\n",
 		candidateMismatch, selfOnly ? "self" : "differential");
