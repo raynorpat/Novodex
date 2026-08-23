@@ -256,8 +256,11 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# collision-object constructor bytes and the owner accessor against the
 	# pinned DLL so the layouts Tasks 2 and 3 write already have something
 	# failing for them. See evidence/phase5-object-model.md.
-	add_executable(NxPhysicsObjectLayoutTests tests/PhysicsObjectLayoutTests.cpp)
-	target_link_libraries(NxPhysicsObjectLayoutTests bcrypt)
+	add_executable(NxPhysicsObjectLayoutTests tests/PhysicsObjectLayoutTests.cpp
+		Physics/src/ObjectModel.cpp)
+	target_include_directories(NxPhysicsObjectLayoutTests PRIVATE
+		Foundation/include Foundation/src/include Physics/include Physics/src/include)
+	target_link_libraries(NxPhysicsObjectLayoutTests NxFoundation bcrypt)
 
 	# The narrow-phase differential. Neither a staged-pair differential nor a
 	# static proof: it holds the pinned oracle in its own process and calls the

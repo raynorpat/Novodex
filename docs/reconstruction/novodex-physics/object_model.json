@@ -92,11 +92,17 @@
     "cross_check_status": "borrowed offsets +0x04, +0x9c confirmed from constructors; pose region re-established with THREE poses; +0xe0..+0xec refined (vptr + geometry floats)"
   },
   "descriptor_family_hint": {
-    "factory_row": "phys_fn_000973 (0x00021420, 913 bytes, phase 2)",
-    "installs_twelve_vtables": ["0x10106998", "0x101069a8", "0x101069b8", "0x101069c8", "0x101069d8", "0x101069e8", "0x101069f8", "0x10106a08", "0x10106a18", "0x10106a28", "0x10106a38", "0x10106a48"],
-    "interpretation": "likely the descriptor setToDefault family; Task 2 owns the confirmation",
-    "flagged_resolution": "the census's 41-slot merged run at 0x106a58 is THREE real tables: A(12)@0x106a58 + B(12)@0x106a88 + BOX(17)@0x106ab8, ending together at 0x106afc"
+    "status": "WITHDRAWN -- see evidence/phase5-object-model.md section 5a",
+    "factory_row": "phys_fn_000973 (0x00021420, 913 bytes, phase 2, shared_by_callers)",
+    "actually_constructs": "six 36-byte subobjects at Shape+0x150 stride 0x24: { dword 4, vtableA_k, vtableB_k, five dwords of float data }, called from phys_fn_000981 (p5) and phys_fn_000983 (p3)",
+    "twelve_vtables": ["0x10106998", "0x101069a8", "0x101069b8", "0x101069c8", "0x101069d8", "0x101069e8", "0x101069f8", "0x10106a08", "0x10106a18", "0x10106a28", "0x10106a38", "0x10106a48"],
+    "open": "what the six subobjects are"
   },
+  "transcribed_rows": [
+    {"row": "phys_fn_001193", "source": "Physics/src/ObjectModel.cpp", "gate_family": "colobj"},
+    {"row": "phys_fn_001281", "source": "Physics/src/ObjectModel.cpp", "gate_family": "owner"}
+  ],
+  "layout_gate_state": {"oracle_digest": "99eee5c2", "candidate_missing_families": ["vtables"], "red_count": 1},
   "open_questions": [
     "what the actor's +8 secondary base subobject IS (its interface has a one-slot table; ctor arg stored at actor+0x14 uninterpreted)",
     "identity of TBL_87 implemented slots 63/64 (phys_fn_000038/_000040)",

@@ -30,6 +30,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+// The reconstruction under test (Phase 5 Task 1/2 rows).
+#include "ObjectModel.h"
+
 // ---------------------------------------------------------------------------
 // Addresses, all censused and image-relative like every other address in this
 // programme.
@@ -222,16 +225,59 @@ int wmain(int argc, wchar_t** argv)
 		(unsigned) (sizeof(nxTables) / sizeof(nxTables[0])));
 	printf("layout oracle digest=%08x\n", oracleDigest);
 
-	// The candidate side. Every family below stays CANDIDATE-MISSING until
-	// its task transcribes the rows; the count is what makes this gate RED.
+	// The candidate side. Families whose rows are transcribed answer through
+	// the reconstruction; the rest stay CANDIDATE-MISSING and keep the gate
+	// RED until their task lands.
 	if(!selfOnly)
 		{
-		printf("candidate CANDIDATE-MISSING family=vtables reason=no reconstruction transcribes the object-model classes yet (Task 2/3)\n");
-		printf("candidate CANDIDATE-MISSING family=collision_object reason=phys_fn_001193 is not transcribed\n");
-		printf("candidate CANDIDATE-MISSING family=owner_accessor reason=phys_fn_001281 is not transcribed\n");
-		candidateMissing = 3;
-		printf("layout candidate mismatches=%u mode=differential\n", candidateMissing);
-		return nxFail("the Phase 5 reconstruction does not exist yet; this gate is RED on purpose");
+		unsigned candidateFold = 2166136261u;
+
+		// -- collision object: the transcription constructs the same
+		// post-construction state. The vptr words are module-specific and are
+		// folded only on the oracle side; what must match is zeroed +04, the
+		// argument at BOTH +8 and +0x18, and a member present at +0xc.
+		{
+		const unsigned kArg = 0xa5a5a5a5u;
+		CollisionObject object(reinterpret_cast<void*>(kArg));
+		unsigned char bytes[0x1c];
+		memcpy(bytes, &object, sizeof(bytes));
+		unsigned w04, w08, w18, memberVptr;
+		memcpy(&w04, bytes + 0x04, 4);
+		memcpy(&w08, bytes + 0x08, 4);
+		memcpy(&memberVptr, bytes + 0x0c, 4);
+		memcpy(&w18, bytes + 0x18, 4);
+		bool ok = w04 == 0 && w08 == kArg && w18 == kArg && memberVptr != 0;
+		printf("colobj candidate ok=%u zero04=%08x arg8=%08x arg18=%08x member=%08x\n",
+			ok ? 1u : 0u, w04, w08, w18, memberVptr);
+		if(!ok)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 1u);
+		}
+
+		// -- owner accessor: same fake shape the oracle side used.
+		{
+		unsigned char fake[16];
+		memset(fake, 0, sizeof(fake));
+		const unsigned kMark = 0x13579bdfu;
+		memcpy(fake + 0x04, &kMark, 4);
+		const void* got = nxShapeOwner(fake);
+		unsigned value;
+		memcpy(&value, &got, 4);
+		bool ok = value == kMark;
+		printf("owner candidate ok=%u returned=%08x\n", ok ? 1u : 0u, value);
+		if(!ok)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 2u);
+		}
+
+		printf("candidate CANDIDATE-MISSING family=vtables reason=shape/actor classes are Tasks 2-3\n");
+		++candidateMissing;
+
+		printf("layout candidate mismatches=%u mode=differential candidate_fold=%08x\n",
+			candidateMissing, candidateFold);
+		return nxFail("the Phase 5 reconstruction is incomplete; this gate is RED on purpose");
 		}
 	printf("layout candidate mismatches=0 mode=self\n");
 	printf("layout result=self-pass\n");

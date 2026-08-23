@@ -114,6 +114,30 @@ until Tasks 2 and 3 transcribe the classes:
 
 Oracle digest `99eee5c2`; twelve registrations; Phase 5 coverage floor 12.
 
+**First transcriptions landed (Task 2 opened early).** `Physics/src/ObjectModel.cpp`
+carries `CollisionObject` (phys_fn_001193) and `nxShapeOwner`
+(phys_fn_001281), with layout static asserts; the harness now answers both
+candidate families through the reconstruction -- `colobj ok=1` and
+`owner ok=1` against the same poisoned-buffer/mark probes the oracle side
+runs -- and the gate's red count is down from three to one. The remaining
+missing family is `vtables`, which waits on the shape/actor classes.
+
+A defect caught before it could mislead: the first candidate run failed
+`colobj` with a stack address where the argument belonged -- the harness had
+passed `&kArg` where the row takes the value. The oracle side was never
+wrong; only the probe was.
+
+## 5a. The twelve-vtable row is not descriptors
+
+`phys_fn_000973` (0x21420, 913 bytes, phase 2, shared_by_callers) looked
+like a descriptor `setToDefault` family because it installs twelve distinct
+vtables. Its listing says otherwise: it constructs **six 36-byte subobjects
+at Shape+0x150, stride 0x24**, each `{ dword 4; vtableA_k; vtableB_k; five
+dwords of float data }`, with identity-ish vectors (1,0,0 / -1,0,...)
+appearing in the float areas, called from two small wrappers
+(`phys_fn_000981` p5, `phys_fn_000983` p3). What the six subobjects ARE is
+open; the descriptor theory is withdrawn.
+
 A defect worth keeping on the record: the first build HUNG rather than ran.
 The cause was an address-space mixup in the harness itself -- censused RVAs
 pasted into a field named `va` and subtracted by the image base a second
