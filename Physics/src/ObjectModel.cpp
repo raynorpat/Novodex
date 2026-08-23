@@ -29,3 +29,42 @@ const void* nxShapeOwner(const void* shape)
 	return *reinterpret_cast<const void* const*>(
 		static_cast<const unsigned char*>(const_cast<void*>(shape)) + 4);
 	}
+
+// ---------------------------------------------------------------------------
+// The box hull facade. The static tables' CONTENTS are transcribed from the
+// pinned image (.rdata 0x10122180/0x101221e0/0x10122240); this binary's
+// copies live at different addresses, which is fine -- consumers get them
+// through these getters, and the layout gate compares content, not pointers.
+
+static const NxU32 gEdgeTable[12] =
+	{ 0, 1, 1, 2, 2, 3, 3, 0, 7, 6, 6, 5 };			// 0x10122180..
+static const NxU32 gFaceCornerTable[12] =
+	{ 131073, 0, 131073, 2, 131073, 4, 131073, 6, 131073, 8, 131073, 10 };	// 0x101221e0..
+static const NxU32 gAdjacencyTable[12] =
+	{ 0, 5, 0, 1, 0, 4, 0, 3, 2, 4, 1, 2 };			// 0x10122240..
+
+const NxU32* BoxHullFacade::vertices() const
+	{
+	return mVertices;							// lea eax,[ecx+0x10]
+	}
+
+const BoxFaceRecord* BoxHullFacade::face(unsigned index) const
+	{
+	// lea eax,[eax+eax*8]; lea eax,[ecx+eax*4+0x70] -- index*36 + (this+0x70).
+	return &mFaces[index];
+	}
+
+const NxU32* BoxHullFacade::edgeTable()
+	{
+	return gEdgeTable;
+	}
+
+const NxU32* BoxHullFacade::faceCornerTable()
+	{
+	return gFaceCornerTable;
+	}
+
+const NxU32* BoxHullFacade::adjacencyTable()
+	{
+	return gAdjacencyTable;
+	}

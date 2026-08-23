@@ -221,7 +221,53 @@ int wmain(int argc, wchar_t** argv)
 	printf("owner accessor=phys_fn_001281 mark=%08x returned=%08x\n", kMark, got);
 	}
 
-	printf("layout coverage tables=%u colobj=1 owner=1\n",
+	// -----------------------------------------------------------------------
+	// The box hull facade's trivial rows, driven on a poisoned buffer at the
+	// recorded RVAs. Pointer-valued results are module-specific, so what is
+	// printed is their OFFSET from the fake object, plus the three constant
+	// rows and the static-table contents.
+	{
+	typedef unsigned (__thiscall* NxConstFn)(void* self);
+	typedef const void* (__thiscall* NxIndexFn)(void* self, unsigned index);
+	typedef const void* (__thiscall* NxThisFn)(void* self);
+	unsigned char fake[sizeof(BoxHullFacade)];
+	memset(fake, 0xcd, sizeof(fake));
+	NxConstFn vertexCount = (NxConstFn) (base + 0x00020d20);
+	NxConstFn faceCount = (NxConstFn) (base + 0x000213c0);
+	NxConstFn zeroRow = (NxConstFn) (base + 0x000213e0);
+	NxIndexFn faceRow = (NxIndexFn) (base + 0x000213d0);
+	NxThisFn verticesRow = (NxThisFn) (base + 0x00020d30);
+	unsigned vc = vertexCount(fake);
+	unsigned fc = faceCount(fake);
+	unsigned zr = zeroRow(fake);
+	const void* f2 = faceRow(fake, 2);
+	const void* vx = verticesRow(fake);
+	unsigned offFace = (unsigned) ((const unsigned char*) f2 - fake);
+	unsigned offVerts = (unsigned) ((const unsigned char*) vx - fake);
+	oracleDigest = nxFold(oracleDigest, vc);
+	oracleDigest = nxFold(oracleDigest, fc);
+	oracleDigest = nxFold(oracleDigest, zr);
+	oracleDigest = nxFold(oracleDigest, offFace);
+	oracleDigest = nxFold(oracleDigest, offVerts);
+	printf("hull row=phys_fn_000953..71 vertexCount=%u faceCount=%u zero=%u "
+		"face2_offset=%#x vertices_offset=%#x\n", vc, fc, zr, offFace, offVerts);
+
+	unsigned digestTables = 2166136261u;
+	for(int t = 0; t < 3; ++t)
+		{
+		static const unsigned rvas[3] = { 0x00122180, 0x001221e0, 0x00122240 };
+		for(unsigned i = 0; i < 12 * 4; i += 4)
+			{
+			unsigned word;
+			memcpy(&word, base + rvas[t] + i, 4);
+			digestTables = nxFold(digestTables, word);
+			}
+		}
+	oracleDigest = nxFold(oracleDigest, digestTables);
+	printf("hull static tables digest=%08x\n", digestTables);
+	}
+
+	printf("layout coverage tables=%u colobj=1 owner=1 hull=1\n",
 		(unsigned) (sizeof(nxTables) / sizeof(nxTables[0])));
 	printf("layout oracle digest=%08x\n", oracleDigest);
 
@@ -270,6 +316,33 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 2u);
+		}
+
+		// -- box hull facade: constants, pointer arithmetic and static-table
+		// content must match the oracle's rows on a twin buffer.
+		{
+		BoxHullFacade facade;
+		memset(&facade, 0xcd, sizeof(facade));
+		bool ok = BoxHullFacade::kVertexCount == 8
+			&& BoxHullFacade::kFaceCount == 6
+			&& facade.vertices() == &facade.mVertices[0]
+			&& facade.face(2) == &facade.mFaces[2];
+		unsigned offFace = (unsigned) ((const unsigned char*) facade.face(2) - (const unsigned char*) &facade);
+		unsigned offVerts = (unsigned) ((const unsigned char*) facade.vertices() - (const unsigned char*) &facade);
+		ok = ok && offFace == 0x70 + 2 * 0x24 && offVerts == 0x10;
+		for(int t = 0; t < 3; ++t)
+			{
+			// .rdata rvas 0x00122180 / 0x001221e0 / 0x00122240, twelve words each.
+			const NxU32* mine[3] = { BoxHullFacade::edgeTable(), BoxHullFacade::faceCornerTable(), BoxHullFacade::adjacencyTable() };
+			if(memcmp(mine[t], base + 0x00122180 + t * 0x60, 48) != 0)
+				ok = false;
+			}
+		printf("hull candidate ok=%u face2_offset=%#x vertices_offset=%#x\n",
+			ok ? 1u : 0u, offFace, offVerts);
+		if(!ok)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 3u);
 		}
 
 		printf("candidate CANDIDATE-MISSING family=vtables reason=shape/actor classes are Tasks 2-3\n");

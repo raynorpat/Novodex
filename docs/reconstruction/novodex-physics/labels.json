@@ -93,6 +93,62 @@
    "reason": "the PE export directory names this entry"
   },
   {
+   "id": "phys_fn_000953",
+   "label": "box hull getVertexCount",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/instruction_ranges/465",
+   "reason": "mov eax,8; ret at 0x00020d20 -- eight corners; slot of the +0xe0 subobject final table at .rdata 0x106a88"
+  },
+  {
+   "id": "phys_fn_000955",
+   "label": "box hull getVertices",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/instruction_ranges/466",
+   "reason": "lea eax,[ecx+0x10]; ret at 0x00020d30 -- the vertex array; slot of the +0xe0 subobject final table at .rdata 0x106a88"
+  },
+  {
+   "id": "phys_fn_000961",
+   "label": "box hull getFaceCount",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/instruction_ranges/469",
+   "reason": "mov eax,6; ret at 0x000213c0 -- six faces; slot of the +0xe0 subobject final table at .rdata 0x106a88"
+  },
+  {
+   "id": "phys_fn_000963",
+   "label": "box hull getFaceRecord",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/instruction_ranges/470",
+   "reason": "lea eax,[eax+eax*8]; lea eax,[ecx+eax*4+0x70] at 0x000213d0 -- index*36 over the records this+0x70; slot of the +0xe0 subobject final table at .rdata 0x106a88"
+  },
+  {
+   "id": "phys_fn_000965",
+   "label": "box hull getZero",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/functions/391",
+   "reason": "xor eax,eax; ret at 0x000213e0; slot of the +0xe0 subobject final table at .rdata 0x106a88"
+  },
+  {
+   "id": "phys_fn_000967",
+   "label": "box hull getEdgeTable",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/instruction_ranges/472",
+   "reason": "mov eax,0x10122180; ret at 0x000213f0 -- corner edge pairs; slot of the +0xe0 subobject final table at .rdata 0x106a88"
+  },
+  {
+   "id": "phys_fn_000969",
+   "label": "box hull getFaceCornerTable",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/instruction_ranges/473",
+   "reason": "mov eax,0x101221e0; ret at 0x00021400; slot of the +0xe0 subobject final table at .rdata 0x106a88"
+  },
+  {
+   "id": "phys_fn_000971",
+   "label": "box hull getAdjacencyTable",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/instruction_ranges/474",
+   "reason": "mov eax,0x10122240; ret at 0x00021415; slot of the +0xe0 subobject final table at .rdata 0x106a88"
+  },
+  {
    "id": "phys_fn_001583",
    "label": "NxFluidAssert",
    "confidence": "semantic",

@@ -127,11 +127,35 @@ A defect caught before it could mislead: the first candidate run failed
 passed `&kArg` where the row takes the value. The oracle side was never
 wrong; only the probe was.
 
+## 5b. The +0xe0 subobject named: the box's convex-hull descriptor
+
+The twelve-slot final table at `0x106a88` decodes as a facade over the hull:
+
+| slot | row | behaviour |
+| ---: | --- | --- |
+| 0 | `phys_fn_000985` | dtor (78 bytes, untranscribed) |
+| 1 | `phys_fn_000953` | `mov eax,8` — eight corners |
+| 2 | `phys_fn_000955` | `lea eax,[ecx+0x10]` — the vertex array |
+| 3 | `phys_fn_000961` | `mov eax,6` — six faces |
+| 4 | `phys_fn_000963` | `index*36 + this+0x70` — face-record[k] |
+| 5 | `phys_fn_000965` | returns 0 |
+| 6-8 | `000967/969/971` | three static .rdata tables (`0x10122180/e0/240`) |
+| 9-10 | `000957/000959` | algorithms (578/1062 bytes; the second copies a 3×3 matrix and projects) — untranscribed |
+| 11 | `phys_fn_000975` | support mapping: ±FLT_MAX sentinels, then min/max over eight vertices at stride 0xc against a direction |
+
+Eight trivial rows are transcribed in `BoxHullFacade`
+(`Physics/src/ObjectModel.cpp`) and driven both sides by the layout gate on
+twin buffers: constants, `face(k)` pointer arithmetic (`0xb8` for k=2), and
+static-table content equality against the oracle's `.rdata`. Gate state:
+oracle digest `5dee60fa`, RED=1 (the vtables family — shape/actor classes).
+Census: these eight rows stand at `reconstructed`; slots 0/9/10/11 remain
+`discovered` until their listings are transcribed and falsified.
+
 ## 5a. The six records at Shape+0x150 — corrected twice
 
 `phys_fn_000973` (0x21420, 913 bytes, phase 2) constructs **six 36-byte
 records at Shape+0x150, stride 0x24**: `{ dword 4; const dword* listA;
-const dword* listB; five dwords of float data }`, called from two small
+const dword* listB; six dwords of float data }`, called from two small
 mutators (`phys_fn_000981` p5, `phys_fn_000983` p3) that first copy the box
 dims into `+0xe4..+0xec` — Phase 3's half-extent claim confirmed from the
 write side.
