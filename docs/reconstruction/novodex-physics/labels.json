@@ -156,6 +156,13 @@
    "reason": "slot 11 of the +0xe0 facade table at .rdata 0x106a88; writes +/-FLT_MAX sentinels then loops eight vertices at this+0x10 stride 0xc projecting through the pose argument"
   },
   {
+   "id": "phys_fn_000985",
+   "label": "box hull sharedHook",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/instruction_ranges/481",
+   "reason": "slot 0 of the +0xe0 facade table at .rdata 0x106a88; reads the guard byte at .data 0x10123c70 and returns the twelve-byte global at 0x10123c64"
+  },
+  {
    "id": "phys_fn_001583",
    "label": "NxFluidAssert",
    "confidence": "semantic",

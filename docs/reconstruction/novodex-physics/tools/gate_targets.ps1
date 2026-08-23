@@ -608,8 +608,9 @@ $NxRequiredCoverageLines = [ordered] @{
         'hull row=phys_fn_000953..71 vertexCount=8 faceCount=6 zero=0 face2_offset=0xb8 vertices_offset=0x10',
         'hull static tables digest=f835c8c3',
         'hull support row=phys_fn_000975 min_bits=c19c0000 max_bits=4eada5a5',
+        'hull sharedhook row=phys_fn_000985 stable=1 words=00000000.00000000.00000000',
         'layout coverage tables=8 colobj=1 owner=1 hull=1',
-        'layout oracle digest=bfb698ec'
+        'layout oracle digest=8d76f55d'
     )
 
     # The vendored third-party differential. Phase 4 vendors qhull 2003.1 and
@@ -767,7 +768,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 100  # 34 for NxPhysicsAssetTests, 66 for NxPhysicsThirdPartyTests
-    '5' = 15   # fifteen for NxPhysicsObjectLayoutTests (RED on purpose: vtables family open)
+    '5' = 16   # sixteen for NxPhysicsObjectLayoutTests (RED on purpose: vtables family open)
     '6' = 0
     '7' = 0
     '8' = 0

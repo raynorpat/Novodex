@@ -152,6 +152,13 @@ class BoxHullFacade
 	//! the first and last are read by nothing.
 	void				supportBounds(const float* direction, float* outMin,
 							float* outMax, const float* pose) const;
+
+	//! phys_fn_000985 (0x00021a10), slot 0. A once-guarded lazy init: zeroes
+	//! a twelve-byte .data global (.data 0x10123c64), runs an initializer
+	//! array whose entries are bare `ret` stubs (.rdata 0x10103010), and
+	//! returns the global's address -- which therefore stays all-zero for
+	//! the life of the process. Ignores `this`.
+	static const void*	sharedHook();
 	};
 
 static_assert(offsetof(BoxHullFacade, mVertices) == 0x10, "vertices are at +0x10");

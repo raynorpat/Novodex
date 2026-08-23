@@ -113,3 +113,16 @@ void BoxHullFacade::supportBounds(const float* direction, float* outMin,
 	memcpy(outMin, &minValue, sizeof(minValue));
 	memcpy(outMax, &maxValue, sizeof(maxValue));
 	}
+
+// phys_fn_000985 (0x00021a10). The image's initializer array at .rdata
+// 0x10103010 is twelve `ret` stubs, so the CRT helper runs nothing and the
+// twelve-byte global stays zeroed. Same observable state here: a static
+// all-zero object behind a once-flag.
+const void* BoxHullFacade::sharedHook()
+	{
+	static NxU32 shared[3] = { 0, 0, 0 };	// .data 0x10123c64..0x10123c70
+	static bool initialised = false;		// the guard byte at .data 0x10123c70
+	if(!initialised)
+		initialised = true;
+	return shared;
+	}

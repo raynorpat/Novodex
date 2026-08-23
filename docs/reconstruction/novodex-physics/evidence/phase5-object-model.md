@@ -176,7 +176,7 @@ The twelve-slot final table at `0x106a88` decodes as a facade over the hull:
 
 | slot | row | behaviour |
 | ---: | --- | --- |
-| 0 | `phys_fn_000985` | dtor (78 bytes, untranscribed) |
+| 0 | `phys_fn_000985` | lazy shared-hook accessor — **transcribed** |
 | 1 | `phys_fn_000953` | `mov eax,8` — eight corners |
 | 2 | `phys_fn_000955` | `lea eax,[ecx+0x10]` — the vertex array |
 | 3 | `phys_fn_000961` | `mov eax,6` — six faces |
@@ -187,19 +187,27 @@ The twelve-slot final table at `0x106a88` decodes as a facade over the hull:
 | 11 | `phys_fn_000975` | support mapping: ±FLT_MAX sentinels, then min/max over eight vertices at stride 0xc against a direction — **transcribed** |
 
 Nine rows are transcribed in `BoxHullFacade` (`Physics/src/ObjectModel.cpp`)
-and driven both sides by the layout gate on twin buffers: constants,
-`face(k)` pointer arithmetic (`0xb8` for k=2), static-table content
-equality, and the support bounds bitwise (`min=c19c0000 max=4eada5a5` on
-the registered seed). The support frame decodes as (this, a1 unread,
-a2=&min, a3=&max, a4=dir, a5=pose, a6 unread) — the sentinel addresses name
-the outputs, which is how the first wiring was corrected after it returned
-zeros. Two probe-side print defects were also found: `(unsigned const&)x`
-on a float performs a value conversion to unsigned (yielding 0 at these
-magnitudes) rather than binding the storage, so every early "bits" print
-lied; the honest pattern is memcpy into an unsigned first. Gate state:
-oracle digest `bfb698ec`, RED=1 (the vtables family — shape/actor classes).
-Census: nine facade rows stand at `reconstructed`; slots 0/9/10 remain
-`discovered` until their listings are transcribed and falsified.
+— plus slot 0, which turned out to be a lazy shared-hook accessor rather
+than a destructor: it once-guards a twelve-byte `.data` global at
+`0x10123c64` whose initializer array (.rdata `0x10103010`) is twelve bare
+`ret` stubs, so the global stays all-zero and the row returns its address.
+Ten rows are driven both sides by the layout gate on twin buffers:
+constants, `face(k)` pointer arithmetic (`0xb8` for k=2), static-table
+content equality, the support bounds bitwise (`min=c19c0000 max=4eada5a5`
+on the registered seed), and the shared hook (stable pointer, zero words).
+The support frame decodes as (this, a1 unread, a2=&min, a3=&max, a4=dir,
+a5=pose, a6 unread) — the sentinel stores name the outputs, which is how
+the first wiring was corrected after it returned zeros. Three probe-side
+defects were found and fixed on the way: `(unsigned const&)x` on a float
+value-converts to unsigned (yielding 0 at these magnitudes) instead of
+binding storage, so early "bits" prints lied; the shared-hook probe folded
+its returned pointer into the digest although ASLR moves it between runs —
+only stability and the pointed-to words are deterministic facts; and the
+support sentinels were transcribed swapped before the frame decode named
+them. Gate state: oracle digest `8d76f55d`, RED=1 (the vtables family —
+shape/actor classes). Census: ten facade rows stand at `reconstructed`;
+slots 9/10 (`phys_fn_000957/000959`) remain `discovered` until their
+listings are transcribed and falsified.
 
 ## 6. What this task did not do
 

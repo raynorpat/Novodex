@@ -294,6 +294,24 @@ int wmain(int argc, wchar_t** argv)
 	oracleDigest = nxFold(oracleDigest, oMaxBits);
 	printf("hull support row=phys_fn_000975 min_bits=%08x max_bits=%08x\n",
 		oMinBits, oMaxBits);
+
+	// Slot 0: the lazy shared-hook accessor. Oracle side -- two calls must
+	// return the same pointer and the twelve bytes behind it stay zero.
+	typedef const void* (__thiscall* NxSharedHookFn)(void* self);
+	NxSharedHookFn sharedHook = (NxSharedHookFn) (base + 0x00021a10);
+	const void* hook1 = sharedHook(fakeFacade);
+	const void* hook2 = sharedHook(fakeFacade);
+	unsigned hookWords[3] = { 0, 0, 0 };
+	if(hook1)
+		memcpy(hookWords, hook1, 12);
+	bool hookOk = hook1 != 0 && hook1 == hook2
+		&& hookWords[0] == 0 && hookWords[1] == 0 && hookWords[2] == 0;
+	unsigned hookStable = (hook1 != 0 && hook1 == hook2) ? 1u : 0u;
+	oracleDigest = nxFold(oracleDigest, hookStable);	// ptr itself is ASLR-moved: never folded
+	oracleDigest = nxFold(oracleDigest, hookWords[0]);
+	oracleDigest = nxFold(oracleDigest, hookWords[2]);
+	printf("hull sharedhook row=phys_fn_000985 stable=%u words=%08x.%08x.%08x\n",
+		hookStable, hookWords[0], hookWords[1], hookWords[2]);
 	}
 
 	printf("layout coverage tables=%u colobj=1 owner=1 hull=1\n",
@@ -390,6 +408,22 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 4u);
+		}
+
+		// -- shared hook: stable pointer, zero content, same shape as oracle.
+		{
+		const void* m1 = BoxHullFacade::sharedHook();
+		const void* m2 = BoxHullFacade::sharedHook();
+		unsigned words[3] = { 1, 1, 1 };
+		if(m1)
+			memcpy(words, m1, 12);
+		bool ok = m1 != 0 && m1 == m2 && words[0] == 0 && words[1] == 0 && words[2] == 0;
+		printf("hull sharedhook candidate ok=%u stable=%u\n",
+			ok ? 1u : 0u, (m1 != 0 && m1 == m2) ? 1u : 0u);
+		if(!ok)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 5u);
 		}
 
 		printf("candidate CANDIDATE-MISSING family=vtables reason=shape/actor classes are Tasks 2-3\n");
