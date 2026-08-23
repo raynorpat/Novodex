@@ -9,7 +9,7 @@
 \*----------------------------------------------------------------------------*/
 
 #include "Nxf.h"
-#include "../../NxVersionNumber.h"
+#include "NxVersionNumber.h"
 
 class NxUserOutputStream;
 class NxUserAllocator;

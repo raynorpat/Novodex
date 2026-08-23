@@ -54,7 +54,7 @@
 #include "NxMat33.h"
 #include "NxMat34.h"
 
-#include "../../NxVersionNumber.h"
+#include "NxVersionNumber.h"
 /**
 Pass the constant NX_PHYSICS_SDK_VERSION to the NxCreatePhysicsSDK function. 
 This is to ensure that the application is using the same header version as the
