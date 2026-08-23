@@ -88,8 +88,8 @@
       "+0xd0": {"meaning": "base ctor writes +FLT_MAX (0x7fffffff); the sphere ctor then overwrites it with 1", "established_by": "0x000255ed vs 0x0002780b"},
       "+0xd4": {"meaning": "ctor argument 3", "established_by": "store 0x000255f7"},
       "+0xdc/+0xde": {"meaning": "words 6 and 8 -- face count and vertex count mirrored beside the pose region", "established_by": "stores 0x0002560b/0x00025614"},
-      "owner_registration": {"meaning": "when owner is non-null, the ctor calls owner->[vtbl+0x48](shape)", "established_by": "cmp/test at 0x000255e7, call 0x0005c390 at 0x00025626"},
-      "global_hook_install": {"meaning": ".data 0x10128470/474/478 <- 0x100213e0 (the facade getZero row), 0x10025520, 0x10025510", "established_by": "stores 0x0002562b..0x0002563f"},
+      "owner_registration": {"meaning": "when owner is non-null, the ctor calls owner->[vtbl+0x48](shape) = phys_fn_002423 (552 bytes, phase 3, discovered)", "established_by": "call 0x0005c390 at 0x00025626; row identified in inventory"},
+      "global_hook_install": {"meaning": ".data words phys_data_004979/80/81 (0x128470..78, ghidra_data rows) <- the facade getZero row 0x100213e0 and two shape rows 0x10025520/0x10025510", "established_by": "stores 0x0002562b..0x0002563f"},
       "+0xd0": {"meaning": " initialised to 1 by sphere ctor", "established_by": "0x0002780b"},
       "+0xe0": {"meaning": "secondary-base vptr for desc-mixin types (box: A/B tables); NULL for sphere", "established_by": "0x00021885/0x00021895 (box), 0x000277da (sphere)"},
       "+0xe4..+0xec": {"meaning": "per-type geometry area; Phase 3 read box half extents as three floats here (0x0003ae31/0x0003ae26) and capsule radius/halfHeight/swept", "status": "consistent with the ctor layout; per-type confirmation belongs to Task 3"}
