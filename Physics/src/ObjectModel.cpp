@@ -68,3 +68,48 @@ const NxU32* BoxHullFacade::adjacencyTable()
 	{
 	return gAdjacencyTable;
 	}
+
+// phys_fn_000975 (0x000217c0). The three per-corner values are column dots
+// plus translation: A = col0.v + tx, B = col1.v + ty, C = col2.v + tz; the
+// projection combines them as A*dx + (C*dz + B*dy) -- that exact association,
+// because the x87 stack built C first and folded B before A. Bounds updates
+// reproduce fcom/fnstsw exactly: the minimum replaces on strictly less, the
+// maximum on strictly greater, and a NaN projection replaces neither (the
+// unordered case sets C0, which both masks include). Intermediates are kept
+// in double so a spilled value cannot truncate what the x87 stack held at
+// 64-bit. The row reads neither of its two unread stack arguments.
+void BoxHullFacade::supportBounds(const float* direction, float* outMin,
+	float* outMax, const float* pose) const
+	{
+	NxU32 minBits = 0x7f7fffffu;				// +FLT_MAX: the minimum starts high (store 0x000217d7 -> a2)
+	NxU32 maxBits = 0xff7fffffu;				// -FLT_MAX: the maximum starts low (store 0x000217dd -> a3)
+	float minValue;
+	float maxValue;
+	memcpy(&minValue, &minBits, sizeof(minValue));
+	memcpy(&maxValue, &maxBits, sizeof(maxValue));
+	for(unsigned i = 0; i < 8; ++i)				// mov ebp,8 at 0x000217e3
+		{
+		const float* v = reinterpret_cast<const float*>(&mVertices[i * 3]);
+		double a = (double)v[0] * pose[0]
+			+ (double)v[1] * pose[4]
+			+ (double)v[2] * pose[8]
+			+ pose[12];
+		double b = (double)v[1] * pose[5]
+			+ (double)v[0] * pose[1]
+			+ (double)v[2] * pose[9]
+			+ pose[13];
+		double c = pose[10] * v[2]
+			+ pose[2] * v[0]
+			+ pose[6] * v[1]
+			+ pose[14];
+		double projection = a * direction[0]
+			+ (c * direction[2] + b * direction[1]);
+		float asFloat = (float) projection;
+		if(asFloat < minValue)
+			minValue = asFloat;
+		if(asFloat > maxValue)
+			maxValue = asFloat;
+		}
+	memcpy(outMin, &minValue, sizeof(minValue));
+	memcpy(outMax, &maxValue, sizeof(maxValue));
+	}

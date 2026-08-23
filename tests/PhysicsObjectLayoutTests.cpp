@@ -68,6 +68,13 @@ static const unsigned kOwnerAccessorRva = 0x000257a0;	// phys_fn_001281, mov eax
 typedef void (__thiscall* NxColObjCtorFn)(void* self, unsigned arg);
 typedef const void* (__fastcall* NxOwnerAccessorFn)(const void* self, void* edxUnused);
 
+// Shared seed for the support-map probes: a scaled+translated pose used as
+// stand-in vertex data and as the pose argument alike.
+static float nxSupportPose[16] =
+	{ 2.0f, 0.0f, 0.0f,   0.0f, 3.0f, 0.0f,   0.0f, 0.0f, 4.0f,
+	  1.5f, -2.5f, 0.25f };
+static float nxSupportDirection[3] = { 0.5f, -1.25f, 2.0f };
+
 // ---------------------------------------------------------------------------
 
 static unsigned nxFold(unsigned digest, unsigned word)
@@ -155,6 +162,8 @@ int wmain(int argc, wchar_t** argv)
 
 	unsigned oracleDigest = 2166136261u;
 	unsigned candidateMissing = 0;
+	float oMin = 0.0f, oMax = 0.0f;
+	unsigned oMinBits = 0, oMaxBits = 0, cMinBits = 0, cMaxBits = 0;
 
 	// -----------------------------------------------------------------------
 	// Vtable identity.
@@ -265,6 +274,26 @@ int wmain(int argc, wchar_t** argv)
 		}
 	oracleDigest = nxFold(oracleDigest, digestTables);
 	printf("hull static tables digest=%08x\n", digestTables);
+
+	// The support mapping: seed twin buffers with known vertices, an
+	// identity-ish pose and a direction. The row's frame decodes as
+	// (this, a1 unread, a2=&minOut, a3=&maxOut, a4=direction, a5=pose,
+	// a6 unread): edx=a4 multiplies, edi=[E+8]=a2 gets the +FLT_MAX
+	// sentinel, ebx=[E+0xc]=a3 the -FLT_MAX one.
+	typedef void (__thiscall* NxSupportFn)(void* self, const void* unread1,
+		float* outMin, float* outMax, const float* direction, const float* pose,
+		const void* unread6);
+	NxSupportFn support = (NxSupportFn) (base + 0x000217c0);
+	unsigned char fakeFacade[sizeof(BoxHullFacade)];
+	memset(fakeFacade, 0xcd, sizeof(fakeFacade));
+	memcpy(fakeFacade + 0x10, nxSupportPose, sizeof(nxSupportPose));	// stand-in vertices
+	support(fakeFacade, 0, &oMin, &oMax, nxSupportDirection, nxSupportPose, 0);
+	memcpy(&oMinBits, &oMin, 4);
+	memcpy(&oMaxBits, &oMax, 4);
+	oracleDigest = nxFold(oracleDigest, oMinBits);
+	oracleDigest = nxFold(oracleDigest, oMaxBits);
+	printf("hull support row=phys_fn_000975 min_bits=%08x max_bits=%08x\n",
+		oMinBits, oMaxBits);
 	}
 
 	printf("layout coverage tables=%u colobj=1 owner=1 hull=1\n",
@@ -343,6 +372,24 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 3u);
+		}
+
+		// -- support mapping: same seed, candidate method, bitwise compare.
+		{
+		BoxHullFacade seeded;
+		memset(&seeded, 0xcd, sizeof(seeded));
+		memcpy(seeded.mVertices, nxSupportPose, sizeof(nxSupportPose));
+		float cMin = 0.0f, cMax = 0.0f;
+		seeded.supportBounds(nxSupportDirection, &cMin, &cMax, nxSupportPose);
+		memcpy(&cMinBits, &cMin, 4);
+		memcpy(&cMaxBits, &cMax, 4);
+		bool ok = memcmp(&oMinBits, &cMinBits, 4) == 0 && memcmp(&oMaxBits, &cMaxBits, 4) == 0;
+		printf("hull support candidate ok=%u min_bits=%08x max_bits=%08x\n",
+			ok ? 1u : 0u, cMinBits, cMaxBits);
+		if(!ok)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 4u);
 		}
 
 		printf("candidate CANDIDATE-MISSING family=vtables reason=shape/actor classes are Tasks 2-3\n");

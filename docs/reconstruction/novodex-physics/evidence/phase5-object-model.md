@@ -184,14 +184,21 @@ The twelve-slot final table at `0x106a88` decodes as a facade over the hull:
 | 5 | `phys_fn_000965` | returns 0 |
 | 6-8 | `000967/969/971` | three static .rdata tables (`0x10122180/e0/240`) |
 | 9-10 | `000957/000959` | algorithms (578/1062 bytes; the second copies a 3×3 matrix and projects) — untranscribed |
-| 11 | `phys_fn_000975` | support mapping: ±FLT_MAX sentinels, then min/max over eight vertices at stride 0xc against a direction |
+| 11 | `phys_fn_000975` | support mapping: ±FLT_MAX sentinels, then min/max over eight vertices at stride 0xc against a direction — **transcribed** |
 
-Eight trivial rows are transcribed in `BoxHullFacade`
-(`Physics/src/ObjectModel.cpp`) and driven both sides by the layout gate on
-twin buffers: constants, `face(k)` pointer arithmetic (`0xb8` for k=2), and
-static-table content equality against the oracle's `.rdata`. Gate state:
-oracle digest `5dee60fa`, RED=1 (the vtables family — shape/actor classes).
-Census: these eight rows stand at `reconstructed`; slots 0/9/10/11 remain
+Nine rows are transcribed in `BoxHullFacade` (`Physics/src/ObjectModel.cpp`)
+and driven both sides by the layout gate on twin buffers: constants,
+`face(k)` pointer arithmetic (`0xb8` for k=2), static-table content
+equality, and the support bounds bitwise (`min=c19c0000 max=4eada5a5` on
+the registered seed). The support frame decodes as (this, a1 unread,
+a2=&min, a3=&max, a4=dir, a5=pose, a6 unread) — the sentinel addresses name
+the outputs, which is how the first wiring was corrected after it returned
+zeros. Two probe-side print defects were also found: `(unsigned const&)x`
+on a float performs a value conversion to unsigned (yielding 0 at these
+magnitudes) rather than binding the storage, so every early "bits" print
+lied; the honest pattern is memcpy into an unsigned first. Gate state:
+oracle digest `bfb698ec`, RED=1 (the vtables family — shape/actor classes).
+Census: nine facade rows stand at `reconstructed`; slots 0/9/10 remain
 `discovered` until their listings are transcribed and falsified.
 
 ## 6. What this task did not do

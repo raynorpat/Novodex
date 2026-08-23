@@ -149,6 +149,13 @@
    "reason": "mov eax,0x10122240; ret at 0x00021415; slot of the +0xe0 subobject final table at .rdata 0x106a88"
   },
   {
+   "id": "phys_fn_000975",
+   "label": "box hull supportBounds",
+   "confidence": "semantic",
+   "evidence": "oracle/ghidra/manifest.json#/instruction_ranges/476",
+   "reason": "slot 11 of the +0xe0 facade table at .rdata 0x106a88; writes +/-FLT_MAX sentinels then loops eight vertices at this+0x10 stride 0xc projecting through the pose argument"
+  },
+  {
    "id": "phys_fn_001583",
    "label": "NxFluidAssert",
    "confidence": "semantic",

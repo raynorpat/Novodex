@@ -144,6 +144,14 @@ class BoxHullFacade
 	static const NxU32*	faceCornerTable();
 	//! phys_fn_000971 (0x00021410): mov eax,0x10122240; ret.
 	static const NxU32*	adjacencyTable();
+
+	//! phys_fn_000975 (0x000217c0). Projects all eight vertices through
+	//! `pose` (a column-major 3x4: rotation words then translation at word
+	//! 12..14) and folds them with `direction`, keeping the min into
+	//! `outMin` and the max into `outMax`. Six stack arguments in the row;
+	//! the first and last are read by nothing.
+	void				supportBounds(const float* direction, float* outMin,
+							float* outMax, const float* pose) const;
 	};
 
 static_assert(offsetof(BoxHullFacade, mVertices) == 0x10, "vertices are at +0x10");
