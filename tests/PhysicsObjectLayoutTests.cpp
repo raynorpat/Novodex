@@ -275,6 +275,7 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oSphereLocalDigest = 0;
 	unsigned oSphereSetDigest = 0;
 	unsigned oCapsuleSetDigest = 0;
+	unsigned oPlaneExtentDigest = 0;
 	static unsigned char sSaveStateRecord[0x48];
 
 	// -----------------------------------------------------------------------
@@ -1494,7 +1495,38 @@ int wmain(int argc, wchar_t** argv)
 		radBits, cBits);
 	}
 
-	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1\n",
+	// -----------------------------------------------------------------------
+	// PLANE slots 9/11, phys_fn_001257: zero vec3 + +FLT_MAX reach.
+	{
+	typedef void (__thiscall* NxPlaneExtFn)(void* self, float* out);
+	NxPlaneExtFn planeExt = (NxPlaneExtFn) (base + 0x000251d0);
+
+	unsigned char pshape[0x10c];
+	memset(pshape, 0xcd, sizeof(pshape));
+	typedef void (__thiscall* NxCtorFnf)(void* self, void* owner, unsigned argument);
+	NxCtorFnf planeCtor3 = (NxCtorFnf) (base + 0x00024ed0);
+	planeCtor3(pshape, 0, 0);
+
+	float out[4] = { 0, 0, 0, 0 };
+	planeExt(pshape, out);
+
+	unsigned dp = 2166136261u;
+	for(int i = 0; i < 4; ++i)
+		{
+		unsigned w; memcpy(&w, out + i, 4);
+		dp = nxFold(dp, w);
+		}
+	oPlaneExtentDigest = dp;
+	oracleDigest = nxFold(oracleDigest, dp);
+
+	unsigned pb[4] = { 0, 0, 0, 0 };
+	for(int i = 0; i < 4; ++i)
+		memcpy(&pb[i], out + i, 4);
+	printf("planeext row=phys_fn_001257 out=%08x.%08x.%08x.%08x\n",
+		pb[0], pb[1], pb[2], pb[3]);
+	}
+
+	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1\n",
 		(unsigned) (sizeof(nxTables) / sizeof(nxTables[0])));
 	printf("layout oracle digest=%08x\n", oracleDigest);
 
@@ -2450,6 +2482,32 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 26u);
+		}
+
+		// -- plane extent row: zero vec3 + +FLT_MAX reach, bitwise.
+		{
+		unsigned char pbytes[0x10c];
+		memset(pbytes, 0xcd, sizeof(pbytes));
+		PlaneShape& plane = *new(pbytes) PlaneShape(0, 0);
+
+		float out[4] = { 0, 0, 0, 0 };
+		plane.nxPlaneExtentRow(out);
+
+		unsigned dp = 2166136261u;
+		for(int i = 0; i < 4; ++i)
+			{
+			unsigned w; memcpy(&w, out + i, 4);
+			dp = nxFold(dp, w);
+			}
+		const unsigned kBig = 0x7f7fffffu;
+		bool ok = dp == oPlaneExtentDigest
+			&& out[0] == 0.0f && out[1] == 0.0f && out[2] == 0.0f
+			&& memcmp(&out[3], &kBig, 4) == 0;
+		printf("planeext candidate ok=%u dp=%08x\n", ok ? 1u : 0u, dp);
+		if(!ok)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 27u);
 		}
 
 		printf("candidate CANDIDATE-MISSING family=vtables reason=shape finals/actor classes are Tasks 3-4\n");

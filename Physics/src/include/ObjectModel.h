@@ -574,6 +574,11 @@ class PlaneShape
 	//! load path inverts -- then tail-jumps to the BASE save-to-descriptor
 	//! row.
 	bool				nxPlaneSaveState(void* record);
+
+	//! PLANE-table slots 9 and 11, phys_fn_001257 (0x000251d0): one row
+	//! filling two slots -- zeroes out[0..2] and writes +FLT_MAX (the
+	//! plane's unbounded reach) to out[3].
+	void				nxPlaneExtentRow(float* out) const;
 	};
 
 static_assert(sizeof(PlaneShape) == 0x10c, "the plane spans base plus its basis frame");

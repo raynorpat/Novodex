@@ -2697,6 +2697,13 @@
    "reason": "SPHERE vtable slot 10; copies pose-one translation and the radius into a caller record; driven bitwise by the sphererows family"
   },
   {
+   "id": "phys_fn_001257",
+   "label": "NxPlane unbounded-extent row (slots 9/11)",
+   "confidence": "semantic",
+   "evidence": "oracle/capstone/manifest.json#/entries/2975",
+   "reason": "ONE row filling BOTH PLANE vtable slots 9 and 11; zeroes a caller vec3 and writes +FLT_MAX as the reach -- the plane is unbounded; driven bitwise by the planeext family"
+  },
+  {
    "id": "phys_fn_000995",
    "label": "NxCapsule set-radius (slot 14)",
    "confidence": "semantic",

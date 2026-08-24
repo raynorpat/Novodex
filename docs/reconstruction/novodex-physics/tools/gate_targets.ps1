@@ -630,9 +630,10 @@ $NxRequiredCoverageLines = [ordered] @{
         'sphlocal row=phys_fn_001367 minmax=80000000.80000000.80000000.00000000.00000000.00000000',
         'setrad row=phys_fn_001357 stored=3fa00000 expected=3fa00000',
         'capsetrad row=phys_fn_000995 stored=3fc00000 expected=3fc00000',
+        'planeext row=phys_fn_001257 out=00000000.00000000.00000000.7f7fffff',
         'sphererows r15=00000000 save13=1 d13=f9280a78 zcr=00000000.00000000.00000000.00000000 cr=00000000.00000000.00000000.00000000',
-        'layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1',
-        'layout oracle digest=c5326782'
+        'layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1',
+        'layout oracle digest=9db24f7c'
     )
 
     # The vendored third-party differential. Phase 4 vendors qhull 2003.1 and
@@ -790,7 +791,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 100  # 34 for NxPhysicsAssetTests, 66 for NxPhysicsThirdPartyTests
-    '5' = 38   # thirty-eight for NxPhysicsObjectLayoutTests (RED on purpose: vtables family open)
+    '5' = 39   # thirty-nine for NxPhysicsObjectLayoutTests (RED on purpose: vtables family open)
     '6' = 0
     '7' = 0
     '8' = 0

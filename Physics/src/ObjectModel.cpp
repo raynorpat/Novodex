@@ -524,6 +524,16 @@ bool PlaneShape::nxPlaneSaveState(void* record)
 	return mBase.nxBaseSaveState(record);	// jmp 0x000256f0 at 0x00024fae
 	}
 
+// phys_fn_001257 (0x000251d0), PLANE-table slots 9 and 11.
+void PlaneShape::nxPlaneExtentRow(float* out) const
+	{
+	out[0] = 0.0f;							// xor ecx,ecx; three stores
+	out[1] = 0.0f;
+	out[2] = 0.0f;
+	unsigned big = 0x7f7fffffu;				// +FLT_MAX: the unbounded reach
+	memcpy(out + 3, &big, sizeof(big));
+	}
+
 // ---------------------------------------------------------------------------
 // MeshShape. See ObjectModel.h for the row map.
 

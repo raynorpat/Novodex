@@ -450,7 +450,12 @@ coverage floor 37.
 the argument then tail-jumps through BASE slot 6 with the flag forced to 1
 (null-owner no-op on a detached shape). Driven with radius `1.5f`: stored
 word `3fc00000` equal candidate. Registrations 38 lines, oracle digest
-`c5326782`, coverage floor 38.## 4. The census merge resolved
+`c5326782`, coverage floor 38.**PLANE slots 9/11 closed** (phys_fn_001257): one row filling BOTH slots --
+zero vec3 + `+FLT_MAX` reach, the plane's unbounded-extent answer. Driven
+bitwise on a real constructed plane (`7f7fffff` pinned). Registrations 39
+lines, oracle digest `9db24f7c`, coverage floor 39.
+
+## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is
 three real tables ending together at `0x106afc`: A(12) + B(12) + BOX(17).
