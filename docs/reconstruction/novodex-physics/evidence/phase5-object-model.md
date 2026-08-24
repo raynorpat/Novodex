@@ -468,6 +468,18 @@ bound (mirroring slot 12's increment). Both driven bitwise (flag=0) by the
 extended `dtors2` family: plane digest `7ac6fe28`, mesh digest `b3c6ab70`.
 Registrations 41 lines, oracle digest `e2111385`, coverage floor 41.
 
+**CAPSULE slot 12 decoded** (phys_fn_000989, loadFromDesc core): reads
+radius from desc+0x4c into +0xe0, height from desc+0x50 through
+`fmul [0x101043cc]` -- a `.rdata` float constant read back as **0.5f**,
+confirming desc stores FULL height while the shape stores HALF -- third
+desc word raw to +0xe8, validates radius against the zero global with the
+assert-report arm, then tail-calls the BASE apply-desc row. The row stays
+discovered until that chain closes; the decode is complete and recorded.
+
+Two pinned-image constants resolved alongside: `.rdata 0x101043cc = 0.5f`
+(the height halver) and `.rdata 0x101041f0 = 0.0f` (the validation zero
+every setter fcomp's against).
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is
