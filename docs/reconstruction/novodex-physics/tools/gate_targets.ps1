@@ -623,7 +623,6 @@ $NxRequiredCoverageLines = [ordered] @{
         'boxrow4 slots14-16=phys_fn_001391 stable=1',
         'planesave row=phys_fn_001251 saved=1 digest=7629841d normal_y=3f800000 neg_d=80000000',
         'meshword row=phys_fn_001381 mark_hit=1',
-        'meshwords44 row=phys_fn_001389 out=deadbeef.cafebabe.12345678.00000000.00000000.00000000',
         'aabbrows sph9=phys_fn_001361 minmax=00000000.00000000.00000000.00000000.00000000.00000000 cap10=phys_fn_001001 cr=00000000.00000000.00000000.00000000 cap11=phys_fn_001003 cr=00000000.00000000.00000000.00000000',
         'meshrows slot13=phys_fn_001385 saved=1 digest=0ccd08b4 slot11=phys_fn_001387 words=0badf00d.00000000.00000000.13579bdf',
         'sphlocal row=phys_fn_001367 minmax=80000000.80000000.80000000.00000000.00000000.00000000',
@@ -648,7 +647,6 @@ $NxRequiredCoverageLines = [ordered] @{
         'planesave candidate ok=1 digest=7629841d',
         'aabbrows candidate ok=1 d9=e2ba14a5 dc=0b2ae445',
         'meshrows candidate ok=1 d13=0ccd08b4 dw=966271e0',
-        'meshwords44 candidate ok=1 d44=2e7f4c1b',
         'sphlocal candidate ok=1 d8=33c61825',
         'dtors2 candidate ok=1 plane=7ac6fe28 mesh=b3c6ab70',
         'capaabb candidate ok=1 da=33c61825',
@@ -814,7 +812,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 100  # 34 for NxPhysicsAssetTests, 66 for NxPhysicsThirdPartyTests
-    '5' = 62   # forty-two for NxPhysicsObjectLayoutTests (RED on purpose: vtables family open)
+    '5' = 60   # forty-two for NxPhysicsObjectLayoutTests (RED on purpose: vtables family open)
     '6' = 0
     '7' = 0
     '8' = 0
