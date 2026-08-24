@@ -537,6 +537,31 @@ save/load rows read and write; reconstructing them is now mostly
 assembling already-pinned offsets under their pinned names. The remaining
 unknowns are confined to per-type payload tails beyond the first field.
 
+## 3n. Status: all simple rows exhausted
+
+Every self-contained row -- getters, setters, save-to-descriptor variants,
+AABB/local-AABB/world-AABB computations, identity/self-return rows,
+destructors, validated group/radius setters, and the BASE stub trio --
+has been transcribed and driven bitwise against the pinned oracle. That is
+**30+ rows closed across six tables**, each with a named transcription in
+`Physics/src/ObjectModel.cpp` and a registered coverage assertion.
+
+The remaining open rows are exclusively DEEP CHAINS that require shared
+infrastructure from later tasks:
+- **slots 1/12** (apply-desc / loadFromDesc): need the registry fixture
+  (phys_fn_000480) and the error-stream reporter (Task 2);
+- **slot 5** (raycast): needs the NxRaycastHit output structure (Task 2);
+- **slot 7** (sweep): needs the swept-contact pipeline (Task 4);
+- **slot 3** (debug draw): needs the renderer vtable interface (Task 4);
+- **slot 4** (cached bounds): needs helper chains like `0x1c8c0` and
+  `0x1c930` which are themselves multi-hundred-byte functions reaching
+  into scene infrastructure (Task 4).
+
+These are NOT deferred because they are hard -- they are deferred because
+their inputs come from subsystems that Tasks 2 and 4 reconstruct. Closing
+them now would require either mocking those subsystems (dishonest) or
+reconstructing them first (the correct order).
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is
