@@ -2669,6 +2669,13 @@
    "reason": "the 3-byte mov eax,ecx; ret that fills BOX vtable slots 14, 15 AND 16 -- returns this and ignores every argument; driven by pointer equality through the NxPhysicsObjectLayoutTests boxrow family"
   },
   {
+   "id": "phys_fn_001251",
+   "label": "NxPlane save-to-descriptor (slot 13)",
+   "confidence": "semantic",
+   "evidence": "oracle/capstone/manifest.json#/entries/3378",
+   "reason": "PLANE vtable .rdata:0x107430 slot 13; writes normal to record+0x4c and NEGATED distance to record+0x58 then tail-jumps to the BASE save-to-descriptor row phys_fn_001277 -- the descriptor stores -D; driven bitwise by the NxPhysicsObjectLayoutTests planesave family"
+  },
+  {
    "id": "phys_fn_000979",
    "label": "NxBox scalar deleting destructor (slot 0)",
    "confidence": "semantic",

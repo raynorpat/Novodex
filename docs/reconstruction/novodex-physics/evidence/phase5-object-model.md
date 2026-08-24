@@ -363,6 +363,41 @@ flag=0 path folds bitwise: `boxdtor` digest `a29800b7`, candidate equal.
 The colobj's own deleting-dtor row (`0x235d0`) stays its own census row.
 Registrations 29 lines, oracle digest `5defe17a`, coverage floor 29.
 
+## 3h. The remaining four finals' slot maps — inheritance locked, PLANE slot 13 closed
+
+The pe.json pointer records give every remaining final its full map, and
+they LOCK the inheritance story:
+
+- **slots 1 and 2 are the BASE rows everywhere**: phys_fn_001347
+  (apply-from-descriptor) and phys_fn_001277 (save-to-descriptor, §3f)
+  appear in all five finals.
+- **slots 14–16 are the identity row phys_fn_001391** in CAPSULE, PLANE,
+  SPHERE and MESH too (CAPSULE/SPHERE carry it at 16–18 of their 19 slots;
+  MESH adds a genuine tail row, phys_fn_001381, at its slot 17).
+- **PLANE slot 4 and CAPSULE slot 4 inherit the BASE stub** phys_fn_001249
+  outright; CAPSULE slot 6 / PLANE slot 6 / SPHERE slot 6 / MESH slot 6 are
+  all the same phys_fn_001315 owner-update row as BASE slot 6.
+- Per-type maps: CAPSULE 0=001014, 3=001006, 4=1249(base), 5=001010,
+  7=001012(sweep), 8=001004, 9=001016, 10=001001, 11=001003, 12=000989,
+  13=000991, 14=000995, 15=001359. SPHERE 0=001375(dtor), 3=001369,
+  4=001371, 5=001377(raycast), 7=001373(sweep), 8=001367, 9=001361,
+  10=001363, 11=001365, 12=001353(radius load), 13=001355, 14=001357,
+  15=001359. MESH 0=001399(dtor), 3=001393, 4=001397, 5=001405(raycast),
+  7=001407(sweep), 8=001389, 9=001401, 10=001403, 11=001387, 12=001383,
+  13=001385, 17=001381. PLANE 0=001263(dtor), 3=001259, 5=001261(raycast),
+  7=BASE sweep stub itself, 8=001267, 9/11=001257 (one row, two slots),
+  12=001265, 13=001251. Every slot resolved to a censused function id —
+  no unknown slots anywhere in Phase 5's shape family.
+
+**PLANE slot 13 closed**: phys_fn_001251 (51 bytes) writes the normal to
+record+0x4c..+0x54 and the **NEGATED distance** (`fld [+0xec]; fchs`) to
+record+0x58 — the descriptor stores −D, which is exactly what the ctor's
+load path inverts — then tail-jumps to the BASE save-state row. Transcribed
+as `PlaneShape::nxPlaneSaveState`; driven by a new `planesave` family on a
+real constructed plane: oracle digest `7629841d`, candidate bitwise equal,
+the `neg_d = 80000000` sign-bit word asserted. Registrations 30 lines,
+oracle digest `1e9b7708`, coverage floor 30.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is

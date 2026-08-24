@@ -263,6 +263,7 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oBoxSlot9Digest = 0;
 	unsigned oBoxDtorDigest = 0;
 	static unsigned char sBoxDtorReference[0x228];
+	unsigned oPlaneSaveDigest = 0;
 	static unsigned char sSaveStateRecord[0x48];
 
 	// -----------------------------------------------------------------------
@@ -1113,7 +1114,45 @@ int wmain(int argc, wchar_t** argv)
 	printf("boxdtor row=phys_fn_000979 digest=%08x\n", digest);
 	}
 
-	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6\n",
+	// -----------------------------------------------------------------------
+	// PLANE-table slot 13, phys_fn_001251: save-to-descriptor with the
+	// NEGATED distance. Driven on a real constructed plane; every written
+	// byte is module-independent.
+	{
+	typedef bool (__thiscall* NxPlaneSaveFn)(void* self, void* record);
+	NxPlaneSaveFn planeSave = (NxPlaneSaveFn) (base + 0x00024f80);
+
+	if(!nxInstallAllocatorShim(base))
+		return nxFail("the allocator holder word moved; re-pin the probe");
+
+	unsigned char shape[0x10c];
+	memset(shape, 0xcd, sizeof(shape));
+	typedef void (__thiscall* NxCtorFn7)(void* self, void* owner, unsigned argument);
+	NxCtorFn7 planeCtor2 = (NxCtorFn7) (base + 0x00024ed0);
+	planeCtor2(shape, 0, 0);
+
+	unsigned char record[0x58];
+	memset(record, 0xcd, sizeof(record));
+	bool saved = planeSave(shape, record);
+
+	unsigned digest = 2166136261u;
+	for(unsigned i = 0; i < sizeof(record); i += 4)
+		{
+		unsigned word;
+		memcpy(&word, record + i, 4);
+		digest = nxFold(digest, word);
+		}
+	oPlaneSaveDigest = digest;
+	oracleDigest = nxFold(oracleDigest, digest);
+
+	unsigned normal = 0, negD = 0;
+	memcpy(&normal, record + 0x50, 4);
+	memcpy(&negD, record + 0x58, 4);
+	printf("planesave row=phys_fn_001251 saved=%u digest=%08x normal_y=%08x neg_d=%08x\n",
+		saved ? 1u : 0u, digest, normal, negD);
+	}
+
+	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1\n",
 		(unsigned) (sizeof(nxTables) / sizeof(nxTables[0])));
 	printf("layout oracle digest=%08x\n", oracleDigest);
 
@@ -1792,6 +1831,38 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 18u);
+		}
+
+		// -- plane save-state: twin drive; the negated-D word is asserted.
+		{
+		unsigned char bytes[0x10c];
+		memset(bytes, 0xcd, sizeof(bytes));
+		PlaneShape& shape = *new(bytes) PlaneShape(0, 0);
+
+		unsigned char record[0x58];
+		memset(record, 0xcd, sizeof(record));
+		bool saved = shape.nxPlaneSaveState(record);
+
+		unsigned digest = 2166136261u;
+		for(unsigned i = 0; i < sizeof(record); i += 4)
+			{
+			unsigned word;
+			memcpy(&word, record + i, 4);
+			digest = nxFold(digest, word);
+			}
+
+		const unsigned kOneBits = 0x3f800000u;
+		unsigned normalY = 0, negD = 0;
+		memcpy(&normalY, record + 0x50, 4);
+		memcpy(&negD, record + 0x58, 4);
+		// -(+0.0f) carries the sign bit: the negated distance is -0.0f.
+		bool ok = saved && digest == oPlaneSaveDigest
+			&& normalY == kOneBits && negD == 0x80000000u;
+		printf("planesave candidate ok=%u digest=%08x\n", ok ? 1u : 0u, digest);
+		if(!ok)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 19u);
 		}
 
 		printf("candidate CANDIDATE-MISSING family=vtables reason=shape finals/actor classes are Tasks 3-4\n");

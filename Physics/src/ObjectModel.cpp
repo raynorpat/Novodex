@@ -407,6 +407,16 @@ PlaneShape::PlaneShape(void* owner, unsigned argument)
 	mWord108 = 1;							// 0x00024f57
 	}
 
+// phys_fn_001251 (0x00024f80), PLANE-table slot 13.
+bool PlaneShape::nxPlaneSaveState(void* record)
+	{
+	unsigned char* rec = static_cast<unsigned char*>(record);
+	memcpy(rec + 0x4c, &mNormalE0[0], sizeof(mNormalE0));	// 0x00024f80..9c
+	const float negD = -mDistanceEC;		// fld [+0xec]; fchs at 0x00024f9f..a5
+	memcpy(rec + 0x58, &negD, sizeof(negD));
+	return mBase.nxBaseSaveState(record);	// jmp 0x000256f0 at 0x00024fae
+	}
+
 // ---------------------------------------------------------------------------
 // MeshShape. See ObjectModel.h for the row map.
 

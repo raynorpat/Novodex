@@ -370,6 +370,7 @@ class BoxShape
 	//! row fills all three slots.
 	BoxShape*			nxBoxSelf() const { return const_cast<BoxShape*>(this); }
 
+
 	//! BOX-table slot 0, phys_fn_000979 (0x00021940): the scalar deleting
 	//! destructor. Destroys the embedded collision object through its own
 	//! vtable with flag 1 UNCONDITIONALLY (the colobj's own deleting row is
@@ -508,6 +509,13 @@ class PlaneShape
 	float				mBinormalFC[3];
 	//! +0x108, one.
 	NxU32				mWord108;
+
+	//! PLANE-table slot 13, phys_fn_001251 (0x00024f80): writes the normal to
+	//! record+0x4c/50/54 and the NEGATED distance to record+0x58 -- the
+	//! descriptor stores -D, which is exactly the transform the ctor's
+	//! load path inverts -- then tail-jumps to the BASE save-to-descriptor
+	//! row.
+	bool				nxPlaneSaveState(void* record);
 	};
 
 static_assert(sizeof(PlaneShape) == 0x10c, "the plane spans base plus its basis frame");
