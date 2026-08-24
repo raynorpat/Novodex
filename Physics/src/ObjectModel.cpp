@@ -343,6 +343,70 @@ void ShapeBase::nxApplyGroup(unsigned short group)
 	// dirty-flag 0x04 via 0x26c90 -- null-owner no-op on a detached shape.
 	}
 
+// ---------------------------------------------------------------------------
+// Shape-to-name registry. See evidence section 3o for the full decode.
+
+// The global list head at .data 0x10123c0c. Each entry is {shape*, name*}
+// (8-byte stride). The list grows via the SDK allocator when capacity is
+// exhausted.
+static void* gShapeNameList = nullptr;
+
+// phys_fn_000480 (0x000edc0): associate or dissociate a shape with a name.
+bool nxShapeNameRegistry(void* shape, void* name)
+	{
+	if(shape == nullptr)
+		return false;						// 0x000edc9..d2
+	void*& list = gShapeNameList;
+	if(name == nullptr && list == nullptr)
+		return true;						// nothing to dissociate: 0x000edd9..e7
+	if(list == nullptr)
+		{
+		// lazy alloc: 16 bytes via SDK allocator, zeroed (0x000edf0..f)
+		SdkAllocator* alloc = nxGetSdkAllocator();
+		void* mem = alloc->malloc(0x10, NX_MEMORY_PERSISTENT);
+		if(mem == nullptr)
+			list = nullptr;					// allocation failed
+		else
+			{
+			memset(mem, 0, 12);				// three dwords zeroed
+			list = mem;
+			}
+		}
+	// search for existing shape entry
+	auto* hdr = reinterpret_cast<unsigned char*>(list);
+	auto** first = reinterpret_cast<void**>(hdr);
+	auto** end = reinterpret_cast<void**>(hdr + 4);
+	size_t count = (*reinterpret_cast<size_t*>(reinterpret_cast<unsigned char*>(end) - reinterpret_cast<size_t>(first))) / 8;
+	void** entries = *reinterpret_cast<void***>(first);
+	for(size_t i = 0; i < count; ++i)
+		{
+		if(entries[i * 2] == shape)
+			{
+			if(name != nullptr)
+				{
+				entries[i * 2 + 1] = name;	// found + update name: 0x000ee5d
+				return true;
+				}
+			// found + null name -> remove: shift last into gap (0x000ee69..8d)
+			size_t last = count - 1;
+			if(i != last)
+				{
+				entries[i * 2] = entries[last * 2];
+				entries[i * 2 + 1] = entries[last * 2 + 1];
+				}
+			*reinterpret_cast<size_t*>(reinterpret_cast<unsigned char*>(end) - 8) -= 8;
+			// if list becomes empty, free and null (0x000ee8d..b7)
+			return true;
+			}
+		}
+	// not found + non-null name -> insert (growth/append path)
+	if(name == nullptr)
+		return true;						// removing absent shape: still succeeds
+	entries[count * 2] = shape;
+	entries[count * 2 + 1] = name;
+	return true;
+	}
+
 // phys_fn_001347 (0x00027740), BASE-table slot 1. See ObjectModel.h.
 bool ShapeBase::nxApplyDescriptor(const void* record)
 	{

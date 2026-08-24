@@ -258,6 +258,12 @@ class ShapeBase
 	//! because every family's apply/load rows reach it.
 	void				nxApplyGroup(unsigned short group);
 
+	//! BASE-level registry helper phys_fn_000480 (0x000edc0): associate or
+	//! dissociate a shape with a debug name through the global list at
+	//! .data 0x10123c0c. Called from apply-desc (slot 1) with the
+	//! descriptor's name field.
+	bool				nxShapeNameRegistry(void* shape, void* name);
+
 	//! BASE-table slot 1, phys_fn_001347 (0x00027740): apply-from-descriptor.
 	//! Copies the twelve-word pose from record+8 into shape+0x6c, mirrors
 	//! halfwords record+0x38 -> +0xde, record+0x3e -> +0xda, writes
