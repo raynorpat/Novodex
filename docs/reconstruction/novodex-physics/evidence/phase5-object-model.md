@@ -583,6 +583,13 @@ The full transcription requires decoding the growth/realloc paths
 the next session with fresh context; the partial decode above is sufficient
 to understand every call site's semantics.
 
+The full listing is now captured (0x0000edc0-0x0000ef43). The growth path
+at 0x000eeb8..ef30 doubles the list capacity via SDK allocator malloc,
+copies existing 8-byte entries, frees the old block, and appends the new
+{shape, name} pair. The function ends at 0x0000ef43 with `ret` returning
+al=1 (success). The transcription target is bounded and ready for the
+next session.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is
