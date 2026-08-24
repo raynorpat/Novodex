@@ -454,6 +454,19 @@ void CapsuleShape::nxCapsuleScalarDeletingDtor(unsigned flags)
 	(void) flags;							// self-free arm not modeled
 	}
 
+// phys_fn_001004 (0x00021c80), CAPSULE-table slot 8.
+void CapsuleShape::nxCapsuleLocalAABB(float* out) const
+	{
+	const float r = mFloatE0;				// fld [+0xe0]
+	const float reach = mFloatE4 + r;		// fld [+0xe4]; fadd [+0xe0]
+	out[0] = -r;
+	out[1] = -reach;
+	out[2] = -r;
+	out[3] = r;
+	out[4] = reach;
+	out[5] = r;
+	}
+
 // phys_fn_001001 (0x00021c30), CAPSULE-table slot 10.
 void CapsuleShape::nxCapsuleCenterRadius(float* out) const
 	{

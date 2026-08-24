@@ -537,6 +537,11 @@ class CapsuleShape
 	//! self-free through allocator slot +0x14 when flags&1.
 	void				nxCapsuleScalarDeletingDtor(unsigned flags);
 
+	//! CAPSULE-table slot 8, phys_fn_001004 (0x00021c80): local AABB --
+	//! min = (-r, -(hh+r), -r), max = (+r, +(hh+r), +r) where r = radius
+	//! and hh = stored half-height.
+	void				nxCapsuleLocalAABB(float* out) const;
+
 	//! CAPSULE-table slot 10, phys_fn_001001 (0x00021c30): pose-one
 	//! translation to out[0..2], halfHeight+radius to out[3].
 	void				nxCapsuleCenterRadius(float* out) const;
