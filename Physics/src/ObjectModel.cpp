@@ -319,6 +319,19 @@ CapsuleShape::CapsuleShape(void* owner, unsigned argument)
 	mBase.mSentinelD0 = 3;					// NX_SHAPE_CAPSULE: 0x00021ab5
 	}
 
+// phys_fn_000991 (0x00021b40), CAPSULE-table slot 13.
+bool CapsuleShape::nxCapsuleSaveState(void* record)
+	{
+	unsigned char* rec = static_cast<unsigned char*>(record);
+	memcpy(rec + 0x4c, &mFloatE0, sizeof(mFloatE0));	// mov at 0x00021b4a
+	const float height = mFloatE4 + mFloatE4;			// fld; fadd st(0),st(0):
+	memcpy(rec + 0x50, &height, sizeof(height));		//   descriptor height = 2 * stored half-height
+	// The third saved word lives at +0xe8 (mWordE8) -- real storage the
+	// constructor leaves poisoned and nothing has named yet.
+	memcpy(rec + 0x54, &mWordE8, sizeof(mWordE8));	// mov [+eax+0x54] at 0x00021b5e
+	return mBase.nxBaseSaveState(record);				// jmp 0x000256f0 at 0x00021b65
+	}
+
 // ---------------------------------------------------------------------------
 // BOX-table slot 10. See ObjectModel.h.
 

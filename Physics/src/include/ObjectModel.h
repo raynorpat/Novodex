@@ -436,8 +436,7 @@ class SphereShape
 
 	//! SPHERE-table slot 10, phys_fn_001363 (0x00027980): pose-one
 	//! translation to out[0..2], radius to out[3].
-	void				nxSphereCenterRadius(float* out) const;
-	};
+	void				nxSphereCenterRadius(float* out) const;	};
 
 static_assert(sizeof(SphereShape) == 0xe4, "the sphere is base plus one float so far");
 static_assert(offsetof(SphereShape, mRadiusE0) == 0xe0, "the radius is the first word past the base");
@@ -471,11 +470,23 @@ class CapsuleShape
 	//! +0x0e0, +0x0e4, two data words construction zeroes; unnamed yet.
 	float				mFloatE0;
 	float				mFloatE4;
+
+	//! +0x0e8, a third data word. Its existence is fixed by the slot-13
+	//! save row phys_fn_000991, which copies it raw into descriptor+0x54;
+	//! the constructor leaves it poisoned, unnamed, and untouched.
+	NxU32				mWordE8;
+
+	//! CAPSULE-table slot 13, phys_fn_000991 (0x00021b40): radius to
+	//! record+0x4c, TWICE mFloatE4 to record+0x50 (the descriptor's height is
+	//! the full height; the stored word is the half-height), mWordE8 raw to
+	//! record+0x54, then the BASE save-to-descriptor row.
+	bool				nxCapsuleSaveState(void* record);
 	};
 
-static_assert(sizeof(CapsuleShape) == 0xe8, "the capsule is base plus two floats so far");
+static_assert(sizeof(CapsuleShape) == 0xec, "the capsule is base plus three data words");
 static_assert(offsetof(CapsuleShape, mFloatE0) == 0xe0, "the first datum is at +0xe0");
 static_assert(offsetof(CapsuleShape, mFloatE4) == 0xe4, "the second datum is at +0xe4");
+static_assert(offsetof(CapsuleShape, mWordE8) == 0xe8, "the third datum is at +0xe8");
 
 /**
 The plane shape. Constructor phys_fn_001247 (0x00024ed0, 141 bytes,
@@ -573,6 +584,13 @@ class MeshShape
 	//! +0x0e0, +0x0e4, two data words construction zeroes; unnamed yet.
 	NxU32				mWordE0;
 	NxU32				mWordE4;
+
+	//! MESH-table slot 17, phys_fn_001381 (0x00027e20): dereferences the
+	//! mesh-data pointer at +0xe0 and returns its word at +0xe4. The probe
+	//  plants its own record because the real assignment is a later task.
+	NxU32				nxMeshGetMeshWord() const
+							{ return *reinterpret_cast<const NxU32*>(
+								reinterpret_cast<const unsigned char*>(mWordE0) + 0xe4); }
 	};
 
 static_assert(sizeof(MeshShape) == 0xe8, "the mesh is base plus two words so far");

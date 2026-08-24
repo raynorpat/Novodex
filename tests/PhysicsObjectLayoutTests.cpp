@@ -266,6 +266,8 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oPlaneSaveDigest = 0;
 	unsigned oSphereRowsDigest = 0;
 	unsigned oSphereRadBits = 0;
+	unsigned oCapsuleSaveDigest = 0;
+	static unsigned char sCapsuleSaveReference[0x58];
 	static unsigned char sSaveStateRecord[0x48];
 
 	// -----------------------------------------------------------------------
@@ -617,7 +619,7 @@ int wmain(int argc, wchar_t** argv)
 	{
 	NxShapeCtorFn capsuleCtor = (NxShapeCtorFn) (base + 0x00021a60);
 	static const unsigned kPointerWords[] = { 0x00, 0x9c, 0xa4, 0xa8, 0xb0, 0xb4 };
-	unsigned char object[0xe8];
+	unsigned char object[0xec];
 	memset(object, 0xcd, sizeof(object));
 	const unsigned kArg2 = 0x5a5a5a5au;
 
@@ -1212,7 +1214,72 @@ int wmain(int argc, wchar_t** argv)
 		z11[0], z11[1], z11[2], z11[3], c10[0], c10[1], c10[2], c10[3]);
 	}
 
-	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4\n",
+	// -----------------------------------------------------------------------
+	// CAPSULE-table slot 13, phys_fn_000991: radius / 2*half-height / raw
+	// third word into the descriptor, then the BASE save row. Driven on a
+	// real constructed capsule; the untouched +0xe8 poison is identical.
+	{
+	typedef bool (__thiscall* NxCapSaveFn)(void* self, void* record);
+	NxCapSaveFn capSave = (NxCapSaveFn) (base + 0x00021b40);
+
+	if(!nxInstallAllocatorShim(base))
+		return nxFail("the allocator holder word moved; re-pin the probe");
+
+	unsigned char shape[0xec];
+	memset(shape, 0xcd, sizeof(shape));
+	typedef void (__thiscall* NxCtorFn9)(void* self, void* owner, unsigned argument);
+	NxCtorFn9 capsuleCtor2 = (NxCtorFn9) (base + 0x00021a60);
+	capsuleCtor2(shape, 0, 0);
+
+	unsigned char record[0x58];
+	memset(record, 0xcd, sizeof(record));
+	bool saved = capSave(shape, record);
+
+	unsigned digest = 2166136261u;
+	for(unsigned i = 0; i < sizeof(record); i += 4)
+		{
+		unsigned w; memcpy(&w, record + i, 4);
+		digest = nxFold(digest, w);
+		}
+	oCapsuleSaveDigest = digest;
+	memcpy(sCapsuleSaveReference, record, sizeof(record));
+	oracleDigest = nxFold(oracleDigest, digest);
+
+	unsigned rad4c = 0, hgt50 = 0;
+	memcpy(&rad4c, record + 0x4c, 4);
+	memcpy(&hgt50, record + 0x50, 4);
+	printf("capsave row=phys_fn_000991 saved=%u digest=%08x rad4c=%08x hgt50=%08x\n",
+		saved ? 1u : 0u, digest, rad4c, hgt50);
+	}
+
+	// -----------------------------------------------------------------------
+	// MESH-table slot 17, phys_fn_001381: dereferences the +0xe0 pointer and
+	// returns its +0xe4 word. The probe plants a record for it on both sides
+	// because the real mesh assignment is a later task.
+	{
+	typedef unsigned (__thiscall* NxMeshWordFn)(void* self);
+	NxMeshWordFn meshWord = (NxMeshWordFn) (base + 0x00027e20);
+
+	unsigned char shape[0xe8];
+	memset(shape, 0xcd, sizeof(shape));
+	typedef void (__thiscall* NxCtorFn10)(void* self, void* owner, unsigned argument);
+	NxCtorFn10 meshCtor2 = (NxCtorFn10) (base + 0x00027db0);
+	meshCtor2(shape, 0, 0);
+
+	static unsigned char fakeMesh[0xe8];
+	memset(fakeMesh, 0, sizeof(fakeMesh));
+	const unsigned kMark = 0x13572468u;
+	memcpy(fakeMesh + 0xe4, &kMark, 4);
+	void* fm = fakeMesh;
+	memcpy(shape + 0xe0, &fm, 4);			// plant
+
+	unsigned got = meshWord(shape);
+	bool hit = got == kMark;
+	oracleDigest = nxFold(oracleDigest, hit ? 1u : 0u);
+	printf("meshword row=phys_fn_001381 mark_hit=%u\n", hit ? 1u : 0u);
+	}
+
+	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1\n",
 		(unsigned) (sizeof(nxTables) / sizeof(nxTables[0])));
 	printf("layout oracle digest=%08x\n", oracleDigest);
 
@@ -1497,7 +1564,7 @@ int wmain(int argc, wchar_t** argv)
 		{
 		static const unsigned kPointerWords[] = { 0x00, 0x9c, 0xa4, 0xa8, 0xb0, 0xb4 };
 		const unsigned kArg2 = 0x5a5a5a5au;
-		unsigned char bytes[0xe8];
+		unsigned char bytes[0xec];
 		memset(bytes, 0xcd, sizeof(bytes));
 		CapsuleShape& shape = *new(bytes) CapsuleShape(0, kArg2);
 
@@ -1964,6 +2031,56 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 20u);
+		}
+
+		// -- capsule save-state and mesh word: twin drives.
+		{
+		unsigned char cbytes[0xec];
+		memset(cbytes, 0xcd, sizeof(cbytes));
+		CapsuleShape& cap = *new(cbytes) CapsuleShape(0, 0);
+
+		unsigned char record[0x58];
+		memset(record, 0xcd, sizeof(record));
+		bool saved = cap.nxCapsuleSaveState(record);
+
+		unsigned digest = 2166136261u;
+		for(unsigned i = 0; i < sizeof(record); i += 4)
+			{
+			unsigned w; memcpy(&w, record + i, 4);
+			digest = nxFold(digest, w);
+			}
+		const unsigned kZero = 0;
+		unsigned rad4c = 0, hgt50 = 0;
+		memcpy(&rad4c, record + 0x4c, 4);
+		memcpy(&hgt50, record + 0x50, 4);
+		bool okCap = saved && digest == oCapsuleSaveDigest
+			&& rad4c == kZero && hgt50 == kZero;
+		if(digest != oCapsuleSaveDigest)
+			for(unsigned i = 0; i < sizeof(record); ++i)
+				if(record[i] != sCapsuleSaveReference[i])
+					{
+					fprintf(stderr, "FAIL capsave first mismatch at +%#x: cand=%02x oracle=%02x\n",
+						i, record[i], sCapsuleSaveReference[i]);
+					break;
+					}
+
+		unsigned char mbytes[0xe8];
+		memset(mbytes, 0xcd, sizeof(mbytes));
+		MeshShape& mesh = *new(mbytes) MeshShape(0, 0);
+		static unsigned char fakeMesh2[0xe8];
+		memset(fakeMesh2, 0, sizeof(fakeMesh2));
+		const unsigned kMark = 0x13572468u;
+		memcpy(fakeMesh2 + 0xe4, &kMark, 4);
+		mesh.mWordE0 = reinterpret_cast<NxU32>(fakeMesh2);
+		bool okMesh = mesh.nxMeshGetMeshWord() == kMark;
+
+		printf("morerows candidate okCap=%u okMesh=%u\n",
+			okCap ? 1u : 0u, okMesh ? 1u : 0u);
+		bool ok = okCap && okMesh;
+		if(!ok)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 21u);
 		}
 
 		printf("candidate CANDIDATE-MISSING family=vtables reason=shape finals/actor classes are Tasks 3-4\n");

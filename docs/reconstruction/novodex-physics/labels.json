@@ -2697,6 +2697,20 @@
    "reason": "SPHERE vtable slot 10; copies pose-one translation and the radius into a caller record; driven bitwise by the sphererows family"
   },
   {
+   "id": "phys_fn_000991",
+   "label": "NxCapsule save-to-descriptor (slot 13)",
+   "confidence": "semantic",
+   "evidence": "oracle/capstone/manifest.json#/entries/3053",
+   "reason": "CAPSULE vtable .rdata:0x106b20 slot 13; writes radius, the DOUBLED half-height (descriptor height is full), and the raw +0xe8 word into a descriptor record then tail-jumps to the BASE save-to-descriptor row phys_fn_001277; driven bitwise by the NxPhysicsObjectLayoutTests capsave family"
+  },
+  {
+   "id": "phys_fn_001381",
+   "label": "NxMesh mesh-word getter (slot 17)",
+   "confidence": "semantic",
+   "evidence": "oracle/capstone/manifest.json#/entries/3544",
+   "reason": "MESH vtable .rdata:0x107630 slot 17 -- the tail row beyond the shared identity triple; dereferences the mesh-data pointer at +0xe0 and returns its +0xe4 word; driven by the meshword family with a planted record"
+  },
+  {
    "id": "phys_fn_001251",
    "label": "NxPlane save-to-descriptor (slot 13)",
    "confidence": "semantic",
