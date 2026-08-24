@@ -12,12 +12,18 @@
     "NxActor": {
       "header": "Physics/include/NxActor.h",
       "declared_virtuals": 88,
-      "concrete_implementations": ["dynamic_actor @TBL_88"],
+      "concrete_implementations": [
+        "dynamic_actor @TBL_88"
+      ],
       "abstract_interface_vtable": {
         "rva": "0x101043d0",
         "inventory_row": "phys_data_000678",
         "slots": 87,
-        "implemented_slots": {"0": "phys_fn_000042", "63": "phys_fn_000038", "64": "phys_fn_000040"},
+        "implemented_slots": {
+          "0": "phys_fn_000042",
+          "63": "phys_fn_000038",
+          "64": "phys_fn_000040"
+        },
         "purecall_filler": "phys_fn_005667 (84 slots)",
         "note": "an abstract base's vtable: MSVC fills unimplemented slots with the pure-call stub"
       }
@@ -25,7 +31,10 @@
     "NxShape": {
       "header": "Physics/include/NxShape.h",
       "declared_virtuals": 31,
-      "base_shape_vtable": {"rva": "0x10107494", "installed_by": "phys_fn_001273 at 0x0002553d"},
+      "base_shape_vtable": {
+        "rva": "0x10107494",
+        "installed_by": "phys_fn_001273 at 0x0002553d"
+      },
       "note": "per-type final tables and slot maps below"
     },
     "NxMaterial": {
@@ -36,19 +45,49 @@
   },
   "concrete_classes": {
     "dynamic_actor": {
-      "vtable": {"rva": "0x10104530", "inventory_row": "phys_data_000679", "slots": 88, "distinct_targets": 88, "phase5_targets": 88},
-      "constructor": {"row": "phys_fn_000044", "rva": "0x00002480", "listing_evidence": {
-        "base_vptr_store": "0x00002489 -> 0x101043d0",
-        "secondary_base_at_plus_8": {"member_base_ctor": "phys_fn_002404 (p2) via call 0x1005ba70 at 0x00002496", "base_member_vptr": "0x101088b8 installed by phys_fn_002404", "final_vptr": "0x1010468c stored at 0x0000249f", "one_slot_table_adjacent_to_TBL_88_tail": true},
-        "arg_store": "+0x14 <- [esp+0xc] at 0x000024a5",
-        "final_vptr": "0x000024a9 -> 0x10104530"
-      }},
-      "destructor": {"row": "phys_fn_000118", "rva": "0x00003650", "frees_through": "SDK allocator global 0x101041bc, vtable slot +0x14, guarded by flag byte"},
-      "layout_known_fields": {"+0x00": "vptr", "+0x04": "dword zeroed by ctor", "+0x08": "secondary base subobject (vptr first)", "+0x14": "ctor argument (unestablished meaning)"}
+      "vtable": {
+        "rva": "0x10104530",
+        "inventory_row": "phys_data_000679",
+        "slots": 88,
+        "distinct_targets": 88,
+        "phase5_targets": 88
+      },
+      "constructor": {
+        "row": "phys_fn_000044",
+        "rva": "0x00002480",
+        "listing_evidence": {
+          "base_vptr_store": "0x00002489 -> 0x101043d0",
+          "secondary_base_at_plus_8": {
+            "member_base_ctor": "phys_fn_002404 (p2) via call 0x1005ba70 at 0x00002496",
+            "base_member_vptr": "0x101088b8 installed by phys_fn_002404",
+            "final_vptr": "0x1010468c stored at 0x0000249f",
+            "one_slot_table_adjacent_to_TBL_88_tail": true
+          },
+          "arg_store": "+0x14 <- [esp+0xc] at 0x000024a5",
+          "final_vptr": "0x000024a9 -> 0x10104530"
+        }
+      },
+      "destructor": {
+        "row": "phys_fn_000118",
+        "rva": "0x00003650",
+        "frees_through": "SDK allocator global 0x101041bc, vtable slot +0x14, guarded by flag byte"
+      },
+      "layout_known_fields": {
+        "+0x00": "vptr",
+        "+0x04": "dword zeroed by ctor",
+        "+0x08": "secondary base subobject (vptr first)",
+        "+0x14": "ctor argument (unestablished meaning)"
+      }
     },
     "box_shape": {
-      "final_vtable": {"rva": "0x10106ab8", "slots_established": "17-slot extent bounded below by table B and above by CAPSULE table; no inventory row of its own (census merge)"},
-      "constructor_rows": ["phys_fn_000977 (207 bytes)", "phys_fn_000979"],
+      "final_vtable": {
+        "rva": "0x10106ab8",
+        "slots_established": "17-slot extent bounded below by table B and above by CAPSULE table; no inventory row of its own (census merge)"
+      },
+      "constructor_rows": [
+        "phys_fn_000977 (207 bytes)",
+        "phys_fn_000979"
+      ],
       "ctor_listing_evidence": {
         "base_shape_ctor_call": "0x10025530 (phys_fn_001273) at 0x00021880",
         "desc_mixin_vptr_at_plus_e0": "A=0x10106a58 then B=0x10106a88 (12-slot tables each), stores at 0x00021885/0x00021895",
@@ -58,8 +97,12 @@
       "slot_7_sweep_dispatch": "phys_fn_000951"
     },
     "sphere_shape": {
-      "final_vtable": {"rva": "0x10107528"},
-      "constructor_rows": ["phys_fn_001349 (91 bytes)"],
+      "final_vtable": {
+        "rva": "0x10107528"
+      },
+      "constructor_rows": [
+        "phys_fn_001349 (91 bytes)"
+      ],
       "ctor_listing_evidence": {
         "collision_object_allocation": "0x1c bytes through SDK allocator global 0x101041bc via slot +8 with (size,0) at 0x000277ee..0x000277f2",
         "collision_object_ctor": "phys_fn_001193 (0x000247c0, 57 bytes, phase 3)",
@@ -70,36 +113,113 @@
       "slot_5_raycast": "phys_fn_001377",
       "slot_7_sweep_dispatch": "phys_fn_001373"
     },
-    "capsule_shape": {"final_vtable": {"rva": "0x10106b20"}, "constructor_rows": ["phys_fn_000987"], "slot_5_raycast": "phys_fn_001010", "slot_7_sweep_dispatch": "phys_fn_001012"},
-    "plane_shape": {"final_vtable": {"rva": "0x10107430"}, "constructor_rows": ["phys_fn_001247"], "slot_5_raycast": "phys_fn_001261", "slot_7_sweep_dispatch": "phys_fn_001035 (shared with BASE-SHAPE -- plane does not override)"},
-    "mesh_shape": {"final_vtable": {"rva": "0x10107630"}, "constructor_rows": ["phys_fn_001379"], "slot_5_raycast": "phys_fn_001405", "slot_7_sweep_dispatch": "phys_fn_001407"}
+    "capsule_shape": {
+      "final_vtable": {
+        "rva": "0x10106b20"
+      },
+      "constructor_rows": [
+        "phys_fn_000987"
+      ],
+      "slot_5_raycast": "phys_fn_001010",
+      "slot_7_sweep_dispatch": "phys_fn_001012"
+    },
+    "plane_shape": {
+      "final_vtable": {
+        "rva": "0x10107430"
+      },
+      "constructor_rows": [
+        "phys_fn_001247"
+      ],
+      "slot_5_raycast": "phys_fn_001261",
+      "slot_7_sweep_dispatch": "phys_fn_001035 (shared with BASE-SHAPE -- plane does not override)"
+    },
+    "mesh_shape": {
+      "final_vtable": {
+        "rva": "0x10107630"
+      },
+      "constructor_rows": [
+        "phys_fn_001379"
+      ],
+      "slot_5_raycast": "phys_fn_001405",
+      "slot_7_sweep_dispatch": "phys_fn_001407"
+    }
   },
   "shape_layout": {
     "source": "phys_fn_001273 (0x00025530, 424 bytes, shared base-shape ctor), decoded at 0x0002553d..0x000255cd",
     "fields": {
-      "+0x00": {"meaning": "vptr", "established_by": "ctor stores 0x10107494 at 0x0002553d"},
-      "+0x04": {"meaning": "owner", "established_by": "ctor stores arg1 at 0x00025543 -- CONFIRMS borrowed Phase 3 claim", "accessor": "phys_fn_001281 mov eax,[ecx+4]; ret"},
-      "+0x08": {"meaning": "dword zeroed by ctor", "established_by": "0x00025549"},
-      "+0x0c..+0x38": {"meaning": "pose #1 (NxMat33 rows then t), ctor writes identity/zero", "established_by": "diagonals 1.0f at 0x0c/0x1c/0x2c (ebx=0x3f800000), zeros elsewhere, t at 0x30..0x38"},
-      "+0x3c..+0x68": {"meaning": "pose #2, ctor writes identity/zero", "established_by": "diagonals at 0x3c/0x4c/0x5c, t at 0x60..0x68", "status": "Phase 3 called this UNESTABLISHED; the constructor establishes it as an identity-initialised second pose"},
-      "+0x6c..+0x98": {"meaning": "pose #3, ctor writes identity/zero", "established_by": "diagonals at 0x6c/0x7c/0x8c, t at 0x90..0x98", "status": "NEW -- a third pose neither Phase 3 nor the escalation named"},
-      "+0x9c": {"meaning": "pointer to the 0x1c-byte collision object", "established_by": "sphere ctor allocation sequence 0x000277e4..0x00027805 -- CONFIRMS borrowed claim"},
-      "+0xa4": {"meaning": "embedded IcePrunable -- base ctor calls the reconstructed prunable_ctor row 0x000b54a0 here", "established_by": "call at 0x000255df; Phase 2b owns that row"},
-      "+0xd0": {"meaning": "base ctor writes +FLT_MAX (0x7fffffff); the sphere ctor then overwrites it with 1", "established_by": "0x000255ed vs 0x0002780b"},
-      "+0xd4": {"meaning": "ctor argument 3", "established_by": "store 0x000255f7"},
-      "+0xdc/+0xde": {"meaning": "words 6 and 8 -- face count and vertex count mirrored beside the pose region", "established_by": "stores 0x0002560b/0x00025614"},
-      "owner_registration": {"meaning": "when owner is non-null, the ctor calls owner->[vtbl+0x48](shape) = phys_fn_002423 (552 bytes, phase 3, discovered)", "established_by": "call 0x0005c390 at 0x00025626; row identified in inventory"},
-      "global_hook_install": {"meaning": ".data words phys_data_004979/80/81 (0x128470..78, ghidra_data rows) <- the facade getZero row 0x100213e0 and two shape rows 0x10025520/0x10025510", "established_by": "stores 0x0002562b..0x0002563f"},
-      "+0xd0": {"meaning": " initialised to 1 by sphere ctor", "established_by": "0x0002780b"},
-      "+0xe0": {"meaning": "secondary-base vptr for desc-mixin types (box: A/B tables); NULL for sphere", "established_by": "0x00021885/0x00021895 (box), 0x000277da (sphere)"},
-      "+0xe4..+0xec": {"meaning": "per-type geometry area; Phase 3 read box half extents as three floats here (0x0003ae31/0x0003ae26) and capsule radius/halfHeight/swept", "status": "consistent with the ctor layout; per-type confirmation belongs to Task 3"}
+      "+0x00": {
+        "meaning": "vptr",
+        "established_by": "ctor stores 0x10107494 at 0x0002553d"
+      },
+      "+0x04": {
+        "meaning": "owner",
+        "established_by": "ctor stores arg1 at 0x00025543 -- CONFIRMS borrowed Phase 3 claim",
+        "accessor": "phys_fn_001281 mov eax,[ecx+4]; ret"
+      },
+      "+0x08": {
+        "meaning": "dword zeroed by ctor",
+        "established_by": "0x00025549"
+      },
+      "+0x0c..+0x38": {
+        "meaning": "pose #1 (NxMat33 rows then t), ctor writes identity/zero",
+        "established_by": "diagonals 1.0f at 0x0c/0x1c/0x2c (ebx=0x3f800000), zeros elsewhere, t at 0x30..0x38"
+      },
+      "+0x3c..+0x68": {
+        "meaning": "pose #2, ctor writes identity/zero",
+        "established_by": "diagonals at 0x3c/0x4c/0x5c, t at 0x60..0x68",
+        "status": "Phase 3 called this UNESTABLISHED; the constructor establishes it as an identity-initialised second pose"
+      },
+      "+0x6c..+0x98": {
+        "meaning": "pose #3, ctor writes identity/zero",
+        "established_by": "diagonals at 0x6c/0x7c/0x8c, t at 0x90..0x98",
+        "status": "NEW -- a third pose neither Phase 3 nor the escalation named"
+      },
+      "+0x9c": {
+        "meaning": "pointer to the 0x1c-byte collision object",
+        "established_by": "sphere ctor allocation sequence 0x000277e4..0x00027805 -- CONFIRMS borrowed claim"
+      },
+      "+0xa4": {
+        "meaning": "embedded IcePrunable -- base ctor calls the reconstructed prunable_ctor row 0x000b54a0 here",
+        "established_by": "call at 0x000255df; Phase 2b owns that row"
+      },
+      "+0xd0": {
+        "meaning": " initialised to 1 by sphere ctor",
+        "established_by": "0x0002780b"
+      },
+      "+0xd4": {
+        "meaning": "ctor argument 3",
+        "established_by": "store 0x000255f7"
+      },
+      "+0xdc/+0xde": {
+        "meaning": "words 6 and 8 -- face count and vertex count mirrored beside the pose region",
+        "established_by": "stores 0x0002560b/0x00025614"
+      },
+      "owner_registration": {
+        "meaning": "when owner is non-null, the ctor calls owner->[vtbl+0x48](shape) = phys_fn_002423 (552 bytes, phase 3, discovered)",
+        "established_by": "call 0x0005c390 at 0x00025626; row identified in inventory"
+      },
+      "global_hook_install": {
+        "meaning": ".data words phys_data_004979/80/81 (0x128470..78, ghidra_data rows) <- the facade getZero row 0x100213e0 and two shape rows 0x10025520/0x10025510",
+        "established_by": "stores 0x0002562b..0x0002563f"
+      },
+      "+0xe0": {
+        "meaning": "secondary-base vptr for desc-mixin types (box: A/B tables); NULL for sphere",
+        "established_by": "0x00021885/0x00021895 (box), 0x000277da (sphere)"
+      },
+      "+0xe4..+0xec": {
+        "meaning": "per-type geometry area; Phase 3 read box half extents as three floats here (0x0003ae31/0x0003ae26) and capsule radius/halfHeight/swept",
+        "status": "consistent with the ctor layout; per-type confirmation belongs to Task 3"
+      }
     },
     "cross_check_status": "borrowed offsets +0x04, +0x9c confirmed from constructors; pose region re-established with THREE poses; +0xe0..+0xec refined (vptr + geometry floats)"
   },
   "box_face_records": {
     "status": "CORRECTED in place -- the earlier descriptor AND twelve-vtable readings were both wrong",
     "constructor_row": "phys_fn_000973 (0x00021420, 913 bytes, phase 2, shared_by_callers)",
-    "called_from": ["phys_fn_000981 (p5)", "phys_fn_000983 (p3)"],
+    "called_from": [
+      "phys_fn_000981 (p5)",
+      "phys_fn_000983 (p3)"
+    ],
     "what_it_constructs": "six 36-byte records at Shape+0x150 stride 0x24: { dword 4; const dword* listA; const dword* listB; five dwords of float data }",
     "the_pointers_are_data_not_vtables": {
       "evidence": "pe.json records NO relocations at any of the twelve addresses; raw bytes are small integer runs, not function entries",
@@ -109,30 +229,207 @@
     },
     "semantic_reading": "per-face records of the box (six faces; spheres/capsules/planes never call this row); role of the two index families open -- sweep/hull candidates",
     "plus_e0_subobject": {
-      "abstract_table": {"rva": "0x10106a58", "content": "pure-call filler wall (all slots 0x000f41dc)"},
-      "final_vtable": {"rva": "0x10106a88", "slots": 12, "targets_all_phase5": [
-        "phys_fn_000985", "phys_fn_000953", "phys_fn_000955", "phys_fn_000961",
-        "phys_fn_000963", "phys_fn_000965", "phys_fn_000967", "phys_fn_000969",
-        "phys_fn_000971", "phys_fn_000957", "phys_fn_000959", "phys_fn_000975"
-      ]}
+      "abstract_table": {
+        "rva": "0x10106a58",
+        "content": "pure-call filler wall (all slots 0x000f41dc)"
+      },
+      "final_vtable": {
+        "rva": "0x10106a88",
+        "slots": 12,
+        "targets_all_phase5": [
+          "phys_fn_000985",
+          "phys_fn_000953",
+          "phys_fn_000955",
+          "phys_fn_000961",
+          "phys_fn_000963",
+          "phys_fn_000965",
+          "phys_fn_000967",
+          "phys_fn_000969",
+          "phys_fn_000971",
+          "phys_fn_000957",
+          "phys_fn_000959",
+          "phys_fn_000975"
+        ]
+      }
     },
     "census_correction": "phys_data_000842 (41 slots, distinct 28) spans [purecall abstract][12-slot concrete][BOX final]; its distinct-target count treated static data as slots",
     "algorithm_rows_open": {
-      "phys_fn_000957": {"rva": "0x00020d40", "size": 578, "identified_as": "per-face query over the six records: optional external pose (null-tested at entry, column-dot transform when present), reads its own vtable slot 3 for the face count, scales stacked values by facade floats at +0x7c/+0x80/+0x84, walks records from +0xa4", "state": "discovered -- needs full transcription plus falsification-grade mutation runs"},
-      "phys_fn_000959": {"rva": "0x00020f90", "size": 1062, "identified_as": "larger algorithm copying a 3x3 matrix and projecting (seen at its head)", "state": "discovered"},
-      "phys_fn_000985": {"status": "RECONSTRUCTED as box hull sharedHook (see transcribed_rows)"}
+      "phys_fn_000957": {
+        "rva": "0x00020d40",
+        "size": 578,
+        "identified_as": "per-face query over the six records: optional external pose (null-tested at entry, column-dot transform when present), reads its own vtable slot 3 for the face count, scales stacked values by facade floats at +0x7c/+0x80/+0x84, walks records from +0xa4",
+        "state": "discovered -- needs full transcription plus falsification-grade mutation runs"
+      },
+      "phys_fn_000959": {
+        "rva": "0x00020f90",
+        "size": 1062,
+        "identified_as": "larger algorithm copying a 3x3 matrix and projecting (seen at its head)",
+        "state": "discovered"
+      },
+      "phys_fn_000985": {
+        "status": "RECONSTRUCTED as box hull sharedHook (see transcribed_rows)"
+      }
     }
   },
   "transcribed_rows": [
-    {"row": "phys_fn_001193", "source": "Physics/src/ObjectModel.cpp", "gate_family": "colobj"},
-    {"row": "phys_fn_001281", "source": "Physics/src/ObjectModel.cpp", "gate_family": "owner"}
+    {
+      "row": "phys_fn_001193",
+      "source": "Physics/src/ObjectModel.cpp",
+      "gate_family": "colobj"
+    },
+    {
+      "row": "phys_fn_001281",
+      "source": "Physics/src/ObjectModel.cpp",
+      "gate_family": "owner"
+    }
   ],
-  "layout_gate_state": {"oracle_digest": "99eee5c2", "candidate_missing_families": ["vtables"], "red_count": 1},
+  "layout_gate_state": {
+    "oracle_digest": "99eee5c2",
+    "candidate_missing_families": [
+      "vtables"
+    ],
+    "red_count": 1
+  },
   "open_questions": [
     "what the actor's +8 secondary base subobject IS (its interface has a one-slot table; ctor arg stored at actor+0x14 uninterpreted)",
     "identity of TBL_87 implemented slots 63/64 (phys_fn_000038/_000040)",
     "the third pose's role (saved previous? sweep source?)",
     "which of the twelve small vtables phys_fn_000973 installs maps to which Nx*Desc type",
     "whether Shape+0x150..+0x158 trio is box-specific or common"
-  ]
+  ],
+  "shape_final_slot_maps": {
+    "source": "oracle/pe.json pointers + evidence/phase5-object-model.md sections 3h/3j",
+    "note": "suffix * marks a row inherited from the BASE table or otherwise already closed; every slot resolved to a censused function id",
+    "legend": {
+      "1347": "slot 1 apply-from-desc (base row, deferred)",
+      "1277": "slot 2 save-to-desc (CLOSED)",
+      "1249": "slot 4 BASE stub (CLOSED)",
+      "1035": "slot 7 BASE sweep stub (plane inherits it; CLOSED)",
+      "1315": "slot 6 owner-update (deferred)",
+      "1391": "identity/self row (CLOSED)",
+      "1359": "get-radius shared with sphere slot 15 (CLOSED)"
+    },
+    "tables": {
+      "CAPSULE": {
+        "rva": "0x106b20",
+        "slots": 19,
+        "map": [
+          "001014",
+          "1347*",
+          "1277*",
+          "001006",
+          "001008",
+          "001010",
+          "1315*",
+          "001012",
+          "001004",
+          "001016",
+          "001001",
+          "001003",
+          "000989",
+          "000991",
+          "000995",
+          "001359",
+          "1391",
+          "1391",
+          "1391"
+        ]
+      },
+      "PLANE": {
+        "rva": "0x107430",
+        "slots": 17,
+        "map": [
+          "001263",
+          "1347*",
+          "1277*",
+          "001259",
+          "1249*",
+          "001261",
+          "1315*",
+          "001035*",
+          "001267",
+          "001257",
+          "001257",
+          "001257",
+          "001265",
+          "001251",
+          "1391",
+          "1391",
+          "1391"
+        ]
+      },
+      "SPHERE": {
+        "rva": "0x107528",
+        "slots": 19,
+        "map": [
+          "001375",
+          "1347*",
+          "1277*",
+          "001369",
+          "001371",
+          "001377",
+          "1315*",
+          "001373",
+          "001367",
+          "001361",
+          "001363",
+          "001365",
+          "001353",
+          "001355",
+          "001357",
+          "001359",
+          "1391",
+          "1391",
+          "1391"
+        ]
+      },
+      "MESH": {
+        "rva": "0x107630",
+        "slots": 18,
+        "map": [
+          "001399",
+          "1347*",
+          "1277*",
+          "001393",
+          "001397",
+          "001405",
+          "1315*",
+          "001407",
+          "001389",
+          "001401",
+          "001403",
+          "001387",
+          "001383",
+          "001385",
+          "1391",
+          "1391",
+          "1391",
+          "001381"
+        ]
+      }
+    },
+    "closed_rows_this_phase": [
+      "001249",
+      "004812",
+      "001035",
+      "001277",
+      "000937",
+      "000939",
+      "000941",
+      "000927",
+      "001391",
+      "000979",
+      "001355",
+      "001359",
+      "001363",
+      "001365",
+      "001361",
+      "001001",
+      "001003",
+      "001251",
+      "000991",
+      "001385",
+      "001387"
+    ]
+  }
 }
