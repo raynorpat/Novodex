@@ -548,6 +548,12 @@ class CapsuleShape
 	//! and hh = stored half-height.
 	void				nxCapsuleLocalAABB(float* out) const;
 
+	//! CAPSULE-table slot 12, phys_fn_000989 (0x00021ad0): loadFromDesc --
+	//! reads radius (+0xe0), half-height (desc+0x50 * 0.5f), third word
+	//! (+0xe8) from the descriptor, then applies base fields through
+	//! BASE slot 1.
+	void				nxCapsuleLoadFromDesc(const void* record);
+
 	//! CAPSULE-table slot 10, phys_fn_001001 (0x00021c30): pose-one
 	//! translation to out[0..2], halfHeight+radius to out[3].
 	void				nxCapsuleCenterRadius(float* out) const;

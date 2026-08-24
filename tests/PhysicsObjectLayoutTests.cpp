@@ -276,6 +276,7 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oSphereDtorDigest = 0;
 	unsigned oMesh44Digest = 0;
 	unsigned oCapsuleDtorDigest = 0;
+	unsigned oCapsuleLoadRadBits = 0;
 	unsigned oCapsuleAABBDigest = 0;
 	unsigned oSphereLoadRadBits = 0;
 	unsigned oSphereLoadGroup = 0;
@@ -1782,6 +1783,7 @@ int wmain(int argc, wchar_t** argv)
 	printf("capdtor row=phys_fn_001014 digest=%08x\n", digest);
 	}
 
+
 	// -----------------------------------------------------------------------
 	// CAPSULE slot 8, phys_fn_001004: local AABB. Fresh capsule (all zeros).
 	{
@@ -2833,6 +2835,8 @@ int wmain(int argc, wchar_t** argv)
 		else
 			candidateFold = nxFold(candidateFold, 29u);
 		}
+
+
 
 
 

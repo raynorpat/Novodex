@@ -513,6 +513,19 @@ void CapsuleShape::nxCapsuleLocalAABB(float* out) const
 	out[5] = r;
 	}
 
+// phys_fn_000989 (0x00021ad0), CAPSULE-table slot 12.
+void CapsuleShape::nxCapsuleLoadFromDesc(const void* record)
+	{
+	const unsigned char* rec = static_cast<const unsigned char*>(record);
+	memcpy(&mFloatE0, rec + 0x4c, sizeof(mFloatE0));			// radius: 0x00021ad8
+	float h = 0.0f;
+	memcpy(&h, rec + 0x50, sizeof(h));							// desc height
+	h *= 0.5f;													// fmul [0x101043cc] at 0x00021ae4
+	mFloatE4 = h;												// fstp [+0xe4]
+	memcpy(&mWordE8, rec + 0x54, sizeof(mWordE8));				// third word: 0x00021af0
+	mBase.nxApplyDescriptor(rec);										// call BASE slot 1 at 0x00021b34
+	}
+
 // phys_fn_001001 (0x00021c30), CAPSULE-table slot 10.
 void CapsuleShape::nxCapsuleCenterRadius(float* out) const
 	{
