@@ -297,6 +297,18 @@ void SphereShape::nxSphereCenterRadius(float* out) const
 	out[3] = mRadiusE0;
 	}
 
+// phys_fn_001361 (0x00027930), SPHERE-table slot 9.
+void SphereShape::nxSphereWorldAABB(float* out) const
+	{
+	const float* t = mBase.mPose0C.mTranslation;
+	out[0] = t[0] - mRadiusE0;				// fsub chain, 0x00027961..6a
+	out[1] = t[1] - mRadiusE0;
+	out[2] = t[2] - mRadiusE0;
+	out[3] = t[0] + mRadiusE0;				// fadd chain, 0x00027937..49
+	out[4] = t[1] + mRadiusE0;
+	out[5] = t[2] + mRadiusE0;
+	}
+
 // ---------------------------------------------------------------------------
 // CapsuleShape. See ObjectModel.h for the row map.
 
@@ -330,6 +342,26 @@ bool CapsuleShape::nxCapsuleSaveState(void* record)
 	// constructor leaves poisoned and nothing has named yet.
 	memcpy(rec + 0x54, &mWordE8, sizeof(mWordE8));	// mov [+eax+0x54] at 0x00021b5e
 	return mBase.nxBaseSaveState(record);				// jmp 0x000256f0 at 0x00021b65
+	}
+
+// phys_fn_001001 (0x00021c30), CAPSULE-table slot 10.
+void CapsuleShape::nxCapsuleCenterRadius(float* out) const
+	{
+	out[0] = mBase.mPose0C.mTranslation[0];	// +0x30 at 0x00021c30
+	out[1] = mBase.mPose0C.mTranslation[1];
+	out[2] = mBase.mPose0C.mTranslation[2];
+	const float rr = mFloatE4 + mFloatE0;	// fld [+0xe4]; fadd [+0xe0]
+	out[3] = rr;
+	}
+
+// phys_fn_001003 (0x00021c60), CAPSULE-table slot 11.
+void CapsuleShape::nxCapsuleZeroCenterRadius(float* out) const
+	{
+	out[0] = 0.0f;							// xor edx,edx; three stores
+	out[1] = 0.0f;
+	out[2] = 0.0f;
+	const float rr = mFloatE4 + mFloatE0;
+	out[3] = rr;
 	}
 
 // ---------------------------------------------------------------------------

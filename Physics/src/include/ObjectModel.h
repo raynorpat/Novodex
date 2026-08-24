@@ -430,6 +430,10 @@ class SphereShape
 	//! record+0x4c, then the BASE save-to-descriptor row.
 	bool				nxSphereSaveState(void* record);
 
+	//! SPHERE-table slot 9, phys_fn_001361 (0x00027930): world AABB --
+	//! min = t - r, max = t + r per axis (six floats).
+	void				nxSphereWorldAABB(float* out) const;
+
 	//! SPHERE-table slot 11, phys_fn_001365 (0x000279b0): zeroes out[0..2],
 	//! radius to out[3].
 	void				nxSphereZeroCenterRadius(float* out) const;
@@ -481,6 +485,14 @@ class CapsuleShape
 	//! the full height; the stored word is the half-height), mWordE8 raw to
 	//! record+0x54, then the BASE save-to-descriptor row.
 	bool				nxCapsuleSaveState(void* record);
+
+	//! CAPSULE-table slot 10, phys_fn_001001 (0x00021c30): pose-one
+	//! translation to out[0..2], halfHeight+radius to out[3].
+	void				nxCapsuleCenterRadius(float* out) const;
+
+	//! CAPSULE-table slot 11, phys_fn_001003 (0x00021c60): zeroes out[0..2],
+	//! halfHeight+radius to out[3].
+	void				nxCapsuleZeroCenterRadius(float* out) const;
 	};
 
 static_assert(sizeof(CapsuleShape) == 0xec, "the capsule is base plus three data words");

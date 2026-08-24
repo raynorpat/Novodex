@@ -268,6 +268,8 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oSphereRadBits = 0;
 	unsigned oCapsuleSaveDigest = 0;
 	static unsigned char sCapsuleSaveReference[0x58];
+	unsigned oSphereAABBDigest = 0;
+	unsigned oCapsuleCRDigest = 0;
 	static unsigned char sSaveStateRecord[0x48];
 
 	// -----------------------------------------------------------------------
@@ -1279,7 +1281,76 @@ int wmain(int argc, wchar_t** argv)
 	printf("meshword row=phys_fn_001381 mark_hit=%u\n", hit ? 1u : 0u);
 	}
 
-	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1\n",
+	// -----------------------------------------------------------------------
+	// SPHERE slot 9 (phys_fn_001361) world AABB and CAPSULE slots 10/11
+	// (phys_fn_001001 / phys_fn_001003) center+radius rows. Fresh shapes:
+	// radius/half-height zero, so every output word is a deterministic zero.
+	{
+	typedef void (__thiscall* NxOutFn)(void* self, float* out);
+	NxOutFn sphAABB = (NxOutFn) (base + 0x00027930);
+	NxOutFn capCR = (NxOutFn) (base + 0x00021c30);
+	NxOutFn capZCR = (NxOutFn) (base + 0x00021c60);
+
+	if(!nxInstallAllocatorShim(base))
+		return nxFail("the allocator holder word moved; re-pin the probe");
+
+	unsigned char sshape[0xe4];
+	memset(sshape, 0xcd, sizeof(sshape));
+	typedef void (__thiscall* NxCtorFna)(void* self, void* owner, unsigned argument);
+	NxCtorFna sphereCtor4 = (NxCtorFna) (base + 0x000277c0);
+	sphereCtor4(sshape, 0, 0);
+	float so[6] = { 0, 0, 0, 0, 0, 0 };
+	sphAABB(sshape, so);
+
+	unsigned char cshape[0xec];
+	memset(cshape, 0xcd, sizeof(cshape));
+	NxCtorFna capsuleCtor3 = (NxCtorFna) (base + 0x00021a60);
+	capsuleCtor3(cshape, 0, 0);
+	float c10[4] = { 0, 0, 0, 0 };
+	capCR(cshape, c10);
+	float c11[4] = { 0, 0, 0, 0 };
+	capZCR(cshape, c11);
+
+	unsigned d9 = 2166136261u;
+	for(int i = 0; i < 6; ++i)
+		{
+		unsigned w; memcpy(&w, so + i, 4);
+		d9 = nxFold(d9, w);
+		}
+	oSphereAABBDigest = d9;
+	oracleDigest = nxFold(oracleDigest, d9);
+
+	unsigned dc = 2166136261u;
+	for(int i = 0; i < 4; ++i)
+		{
+		unsigned w; memcpy(&w, c10 + i, 4);
+		dc = nxFold(dc, w);
+		}
+	for(int i = 0; i < 4; ++i)
+		{
+		unsigned w; memcpy(&w, c11 + i, 4);
+		dc = nxFold(dc, w);
+		}
+	oCapsuleCRDigest = dc;
+	oracleDigest = nxFold(oracleDigest, dc);
+
+	unsigned sb[6] = { 0, 0, 0, 0, 0, 0 }, cb10[4] = { 0, 0, 0, 0 }, cb11[4] = { 0, 0, 0, 0 };
+	for(int i = 0; i < 6; ++i)
+		memcpy(&sb[i], so + i, 4);
+	for(int i = 0; i < 4; ++i)
+		{
+		memcpy(&cb10[i], c10 + i, 4);
+		memcpy(&cb11[i], c11 + i, 4);
+		}
+	printf("aabbrows sph9=phys_fn_001361 minmax=%08x.%08x.%08x.%08x.%08x.%08x "
+		"cap10=phys_fn_001001 cr=%08x.%08x.%08x.%08x "
+		"cap11=phys_fn_001003 cr=%08x.%08x.%08x.%08x\n",
+		sb[0], sb[1], sb[2], sb[3], sb[4], sb[5],
+		cb10[0], cb10[1], cb10[2], cb10[3],
+		cb11[0], cb11[1], cb11[2], cb11[3]);
+	}
+
+	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3\n",
 		(unsigned) (sizeof(nxTables) / sizeof(nxTables[0])));
 	printf("layout oracle digest=%08x\n", oracleDigest);
 
@@ -2081,6 +2152,51 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 21u);
+		}
+
+		// -- aabb rows: sphere world AABB and capsule center+radius twins.
+		{
+		unsigned char sbytes[0xe4];
+		memset(sbytes, 0xcd, sizeof(sbytes));
+		SphereShape& sph = *new(sbytes) SphereShape(0, 0);
+
+		unsigned char cbytes2[0xec];
+		memset(cbytes2, 0xcd, sizeof(cbytes2));
+		CapsuleShape& cap = *new(cbytes2) CapsuleShape(0, 0);
+
+		float so[6] = { 0, 0, 0, 0, 0, 0 };
+		sph.nxSphereWorldAABB(so);
+		float c10[4] = { 0, 0, 0, 0 };
+		cap.nxCapsuleCenterRadius(c10);
+		float c11[4] = { 0, 0, 0, 0 };
+		cap.nxCapsuleZeroCenterRadius(c11);
+
+		unsigned d9 = 2166136261u;
+		for(int i = 0; i < 6; ++i)
+			{
+			unsigned w; memcpy(&w, so + i, 4);
+			d9 = nxFold(d9, w);
+			}
+		unsigned dc = 2166136261u;
+		for(int i = 0; i < 4; ++i)
+			{
+			unsigned w; memcpy(&w, c10 + i, 4);
+			dc = nxFold(dc, w);
+			}
+		for(int i = 0; i < 4; ++i)
+			{
+			unsigned w; memcpy(&w, c11 + i, 4);
+			dc = nxFold(dc, w);
+			}
+		bool ok = d9 == oSphereAABBDigest && dc == oCapsuleCRDigest
+			&& so[0] == 0.0f && so[5] == 0.0f
+			&& c10[3] == 0.0f && c11[3] == 0.0f;
+		printf("aabbrows candidate ok=%u d9=%08x dc=%08x\n",
+			ok ? 1u : 0u, d9, dc);
+		if(!ok)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 22u);
 		}
 
 		printf("candidate CANDIDATE-MISSING family=vtables reason=shape finals/actor classes are Tasks 3-4\n");

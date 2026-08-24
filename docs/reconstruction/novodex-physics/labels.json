@@ -2697,6 +2697,27 @@
    "reason": "SPHERE vtable slot 10; copies pose-one translation and the radius into a caller record; driven bitwise by the sphererows family"
   },
   {
+   "id": "phys_fn_001361",
+   "label": "NxSphere world-AABB row (slot 9)",
+   "confidence": "semantic",
+   "evidence": "oracle/capstone/manifest.json#/entries/3518",
+   "reason": "SPHERE vtable .rdata:0x107528 slot 9; min = t - r and max = t + r per axis into a six-float caller record; driven bitwise by the NxPhysicsObjectLayoutTests aabbrows family"
+  },
+  {
+   "id": "phys_fn_001001",
+   "label": "NxCapsule center+radius row (slot 10)",
+   "confidence": "semantic",
+   "evidence": "oracle/capstone/manifest.json#/entries/2970",
+   "reason": "CAPSULE vtable .rdata:0x106b20 slot 10; copies pose-one translation and the halfHeight+radius reach into a caller record; driven bitwise by the aabbrows family"
+  },
+  {
+   "id": "phys_fn_001003",
+   "label": "NxCapsule zero-center+radius row (slot 11)",
+   "confidence": "semantic",
+   "evidence": "oracle/capstone/manifest.json#/entries/2971",
+   "reason": "CAPSULE vtable slot 11; zeroes a caller vec3 and writes the halfHeight+radius reach at +0xc; driven bitwise by the aabbrows family"
+  },
+  {
    "id": "phys_fn_000991",
    "label": "NxCapsule save-to-descriptor (slot 13)",
    "confidence": "semantic",
