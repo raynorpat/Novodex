@@ -205,3 +205,43 @@ ShapeBase::ShapeBase(void* owner, unsigned argument)
 	// [owner+4]'s word at +0x48 becomes the `this` for phys_fn_002423 with the
 	// shape pushed. Driven with Task 4's actor classes; not replayed here.
 	}
+
+// ---------------------------------------------------------------------------
+// BoxShape. See ObjectModel.h for the row map.
+
+BoxShape::BoxShape(void* owner, unsigned argument)
+	: mBase(owner, argument)				// forwarded unchanged: 0x0002187c..80
+	{
+	// vptr stores. The image stores the abstract wall at +0xe0 first
+	// (0x00021885), the BOX primary table next (0x0002188f), then replaces
+	// the wall with the facade's final twelve-slot table (0x00021895). The
+	// wall store is a chained-construction intermediate; C++ installs both
+	// final tables and it is never observable after the constructor returns.
+	// The transcription writes the face-record pointer words once; the image
+	// reaches record 5 through a walking pointer with identical effect.
+	for(unsigned r = 0; r < 6; ++r)			// 0x000218a1..0x000218ee
+		{
+		mHull.mFaces[r].mCorners = 0;
+		mHull.mFaces[r].mIndexListA = 0;
+		mHull.mFaces[r].mIndexListB = 0;
+		}
+
+	// The embedded collision object: a fresh 0x1c-byte block through the SDK
+	// allocator (0x000218f1..fe -- malloc slot, size 0x1c, flag 0), built by
+	// phys_fn_001075 (0x00023580), whose body is phys_fn_001193 with the
+	// box-family tables and which stores the box at BOTH +0x08 and +0x18.
+	void* memory = nxGetSdkAllocator()->malloc(0x1c, NX_MEMORY_PERSISTENT);
+	CollisionObject* object = memory
+		? new(memory) CollisionObject(this)
+		: 0;								// null arm: 0x0002190f
+	mBase.mWord9C = reinterpret_cast<NxU32>(object);	// 0x00021911
+
+	const float one = 1.0f;					// mov eax,0x3f800000 at 0x00021917
+	mBase.mSentinelD0 = 2;					// OVERWRITES the base's sentinel: 0x0002191c
+	mHull.mDims04[0] = one;					// 0x00021926
+	mHull.mDims04[1] = one;					// 0x0002192c
+	mHull.mDims04[2] = one;					// 0x00021932
+
+	// The vertices and every face-record float word are written by nobody
+	// here; a fresh box carries poison there until the face builder runs.
+	}

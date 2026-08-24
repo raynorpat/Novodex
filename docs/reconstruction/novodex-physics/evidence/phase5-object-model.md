@@ -129,6 +129,44 @@ prunable's back-pointer, the inner member's vptr). Oracle digest
 `de5f5000`; candidate identical bitwise; `owner_self` asserted. Registrations
 17 lines, oracle digest `1c848a60`, coverage floor 17.
 
+## 3b. The BOX final: constructor transcribed, primary slot map resolved, and a probe lesson
+
+Task 3 continued with `phys_fn_000977` (0x21870, 207 bytes), the BOX
+constructor, into `Physics/src/ObjectModel.cpp` (`BoxShape`,
+`sizeof == 0xe0 + 0x148`, facade embedded at +0xe0):
+
+1. **The primary BOX slot map is resolved** through the merged run at
+   0x106a58 (indices 24..40 = BOX slots 0..16): `000979, 001347(p3),
+   001277(p3), 000945, 000947, 000949, 001315(p3), 000951, 000941, 000935,
+   000937, 000939, 000981, 000927, 001391(p3)×3`. Slot 5 is the Phase 3
+   raycast partner; slot 7 is the sweep entry — both byte-level targets were
+   already in the census, now they sit in an ordered map.
+2. **The ctor forwards BOTH arguments unchanged** to phys_fn_001273
+   (0x2187c..80) and then: installs the final BOX vptr (0x2188f; the wall-A
+   store at 0x21885 is a chained-construction intermediate, never
+   observable); zeroes the first THREE words of each of the six face records
+   at +0x150 (corners + both index lists — float data stays POISONED until
+   the face builder runs, and so do the vertices at +0xf0..+0x14f);
+   allocates a 0x1c-byte collision object through the SDK allocator
+   (`malloc(0x1c, 0)`), constructs it with **phys_fn_001075** (the same
+   57-byte body as phys_fn_001193 but box-family tables 0x106d08/6e54/6dc8),
+   stores it at +0x9c; **overwrites the base ctor's +0xd0 sentinel with 2**;
+   seeds dims 1.0f×3 into the facade gap (+0xe4..ec).
+3. **Probe lesson, recorded because it cost a crash to find**: driving the
+   ctor on a bare LoadLibrary process faults at 0x218fe — the SDK allocator
+   holder word is NULL until an NxPhysicsSDK exists (as phase4-formats.md
+   already said). The gate now installs a minimal shim interface at the
+   holder so every instruction of phys_fn_000977/phys_fn_001075 still runs
+   natively; only the 28 bytes come from the shim. A first shim draft also
+   wrote the wrong word (`memcpy(dst,&array,4)` copies element [0], not the
+   array's address) — caught by chain readback before it could mislead.
+
+Driven: new `boxshape` family — poisoned 0x228 twin buffers, seven pointer
+words masked (both final vtables, colobj pointer, four base-ctor pointers).
+Oracle digest `ac5ed12f`; candidate identical bitwise; poison preservation,
+face zeroing, sentinel=2, dims and the back-pointing colobj all asserted.
+Registrations 18 lines, oracle digest `dc5e5ec6`, coverage floor 18.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is

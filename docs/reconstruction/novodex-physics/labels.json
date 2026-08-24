@@ -2555,6 +2555,20 @@
    "confidence": "semantic",
    "evidence": "oracle/capstone/manifest.json#/entries/3409",
    "reason": "the value stored at .data 0x10128474 by 0x00025635 inside phys_fn_001273; dispatches owner vtable slot 10 (+0x28) in the same frame as phys_fn_001269"
+  },
+  {
+   "id": "phys_fn_000977",
+   "label": "BoxShape::BoxShape",
+   "confidence": "semantic",
+   "evidence": "oracle/capstone/manifest.json#/entries/3037",
+   "reason": "calls phys_fn_001273 (the base-shape ctor) at 0x00021880, installs the BOX primary vtable .rdata:0x10106ab8 (0x0002188f), builds the hull facade whose final table 0x10106a88 it stores at +0xe0, zeroes the six face records' pointer words, allocates a collision object through phys_fn_001075 into +0x9c, overwrites the sentinel with 2 and seeds dims 1,1,1 -- driven byte-for-byte by the NxPhysicsObjectLayoutTests boxshape family"
+  },
+  {
+   "id": "phys_fn_001075",
+   "label": "CollisionObject::CollisionObject (box variant)",
+   "confidence": "semantic",
+   "evidence": "oracle/capstone/manifest.json#/entries/3184",
+   "reason": "57 bytes with the exact body of phys_fn_001193 but the box-family tables (wall 0x10106d08, member 0x10106e54, final 0x10106dc8); called only from phys_fn_000977's allocator arm"
   }
  ]
 }

@@ -119,8 +119,10 @@ class BoxHullFacade
 	public:
 	//! +0x00, vtable slot, carried opaque.
 	void*				mVptrSlot;
-	//! +0x04..+0x0f, unestablished.
-	NxU8				mGap04[0x0c];
+	//! +0x04..+0x0f, the three dimensions. Named by the box constructor
+	//! phys_fn_000977, which stores 1.0f into each word (0x00021926..36)
+	//! after ShapeBase leaves them poisoned; consumers read them as floats.
+	float				mDims04[3];
 	//! +0x10, the eight corners; phys_fn_000973 fills them from the dims.
 	NxU32				mVertices[8 * 3];
 	//! +0x70, six per-face records; Shape+0x150 when embedded.
@@ -265,5 +267,60 @@ static_assert(offsetof(ShapeBase, mPrunable) == 0xa4, "the prunable is at +0xa4"
 static_assert(offsetof(ShapeBase, mSentinelD0) == 0xd0, "the sentinel is at +0xd0");
 static_assert(offsetof(ShapeBase, mArgumentD4) == 0xd4, "the second argument lands at +0xd4");
 static_assert(offsetof(ShapeBase, mHalfwordDC) == 0xdc, "the 6/8 halfwords close the object");
+
+/**
+The box shape. Constructor phys_fn_000977 (0x00021870, 207 bytes,
+__thiscall, `ret 8`), which forwards BOTH arguments unchanged to
+ShapeBase::ShapeBase (0x0002187c..80: arg1 re-read from [esp+0xc] after two
+pushes, pushed first, then arg2) and then:
+
+	+0x000	vptr			final BOX primary table .rdata 0x10106ab8, store
+	                        0x0002188f -- slot map resolved through the merged
+	                        run at 0x106a58 (see evidence/phase5-object-model.md):
+	                        0 phys_fn_000979, 1 phys_fn_001347(p3),
+	                        2 phys_fn_001277(p3), 3 phys_fn_000945,
+	                        4 phys_fn_000947, 5 phys_fn_000949 (the raycast
+	                        partner Phase 3 named), 6 phys_fn_001315(p3),
+	                        7 phys_fn_000951 (the sweep entry), 8 phys_fn_000941,
+	                        9 phys_fn_000935, 10 phys_fn_000937, 11 phys_fn_000939,
+	                        12 phys_fn_000981, 13 phys_fn_000927,
+	                        14-16 phys_fn_001391(p3)
+	+0x0e0	hull facade		final twelve-slot table .rdata 0x10106a88 at
+	                        0x00021895; the abstract wall 0x10106a58 is stored
+	                        first (0x00021885) as a chained-construction
+	                        intermediate and never observable after return
+	+0x150..+0x227	faces	the first THREE words of each of the six records are
+	                        zeroed (corners, both index lists -- stores
+	                        0x000218a1..ee); the float data stays whatever the
+	                        memory held, so a fresh object's records carry
+	                        poison until the face builder runs
+	+0x09c	collision object	a fresh 0x1c-byte block through the SDK allocator
+	                        ([0x101041bc] malloc slot, size 0x1c, flag 0 --
+	                        0x000218f1..fe), constructed by phys_fn_001075
+	                        (0x00023580: same body as phys_fn_001193 with the
+	                        box-family tables 0x10106dc8/0x10106e54; the box is
+	                        stored at +0x08 AND +0x18) and its address stored at
+	                        +0x9c (0x00021911); null if the allocation failed
+	+0x0d0	2				OVERWRITES the base ctor's 0x7fffffff sentinel
+	                        (store 0x0002191c)
+	+0x0e4..+0x0ec	dims	the facade gap words become 1.0f, 1.0f, 1.0f
+	                        (stores 0x00021926..36)
+
+The vertices (+0xf0..+0x14f) and every face-record float word stay untouched.
+*/
+class BoxShape
+	{
+	public:
+	//! phys_fn_000977 (0x00021870). Same argument pair as the base ctor.
+					BoxShape(void* owner, unsigned argument);
+
+	//! +0x00..+0xdf, the base shape subobject.
+	ShapeBase			mBase;
+	//! +0xe0..+0x227, the convex-hull descriptor.
+	BoxHullFacade		mHull;
+	};
+
+static_assert(sizeof(BoxShape) == 0x228, "the box spans base plus hull facade");
+static_assert(offsetof(BoxShape, mHull) == 0xe0, "the hull embeds where the base ends");
 
 #endif

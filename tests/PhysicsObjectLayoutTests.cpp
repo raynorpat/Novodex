@@ -26,6 +26,7 @@
 #define NOMINMAX
 #include <windows.h>
 #include <bcrypt.h>
+#include <new>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -65,8 +66,33 @@ static const NxTableSpec nxTables[] =
 static const unsigned kColObjCtorRva = 0x000247c0;	// phys_fn_001193, 57 bytes
 static const unsigned kOwnerAccessorRva = 0x000257a0;	// phys_fn_001281, mov eax,[ecx+4]; ret
 
+typedef void (__thiscall* NxBoxCtorFn)(void* self, void* owner, unsigned argument);
+
+// Runs the box ctor under SEH so a fault inside the oracle code reports its
+// address instead of killing the transcript. No unwindable locals here.
+static unsigned gFaultCode;
+static unsigned gFaultAddr;
+static void nxGuardedBoxCtor(NxBoxCtorFn fn, void* object, void* owner,
+	unsigned argument, unsigned& outCode, unsigned& outAddr)
+	{
+	gFaultCode = 0;
+	gFaultAddr = 0;
+	__try
+		{
+		fn(object, owner, argument);
+		}
+	__except(gFaultAddr = (unsigned) GetExceptionInformation()->ExceptionRecord->ExceptionAddress,
+		gFaultCode = GetExceptionInformation()->ExceptionRecord->ExceptionCode,
+		EXCEPTION_EXECUTE_HANDLER)
+		{
+		}
+	outCode = gFaultCode;
+	outAddr = gFaultAddr;
+	}
+
 typedef void (__thiscall* NxColObjCtorFn)(void* self, unsigned arg);
 typedef const void* (__fastcall* NxOwnerAccessorFn)(const void* self, void* edxUnused);
+
 
 // Shared seed for the support-map probes: a scaled+translated pose used as
 // stand-in vertex data and as the pose argument alike.
@@ -157,6 +183,7 @@ int wmain(int argc, wchar_t** argv)
 		}
 	printf("layout pin=matched\n");
 	fflush(stdout);
+	setvbuf(stdout, 0, _IONBF, 0);	// probe crashes must not eat the transcript
 
 	const unsigned char* base = (const unsigned char*) physics;
 
@@ -165,6 +192,7 @@ int wmain(int argc, wchar_t** argv)
 	float oMin = 0.0f, oMax = 0.0f;
 	unsigned oMinBits = 0, oMaxBits = 0, cMinBits = 0, cMaxBits = 0;
 	unsigned oShapeBaseDigest = 0;
+	unsigned oBoxDigest = 0;
 
 	// -----------------------------------------------------------------------
 	// Vtable identity.
@@ -346,7 +374,6 @@ int wmain(int argc, wchar_t** argv)
 		}
 	oShapeBaseDigest = digest;
 	oracleDigest = nxFold(oracleDigest, digest);
-
 	unsigned w08, pose00c, w9c, wa0, prun24, prun28, sentinel, argD4, hwDC, hwDE;
 	w08 = pose00c = w9c = wa0 = prun24 = prun28 = sentinel = argD4 = hwDC = hwDE = 0;
 	memcpy(&w08, object + 0x08, 4);
@@ -366,7 +393,104 @@ int wmain(int argc, wchar_t** argv)
 		sentinel, argD4, hwDC, hwDE);
 	}
 
-	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1\n",
+	// -----------------------------------------------------------------------
+	// The box-shape constructor, phys_fn_000977 (0x00021870): __thiscall,
+	// `ret 8`, both arguments forwarded to phys_fn_001273. Driven on a
+	// poisoned 0x228 buffer with a null owner and a marked second argument.
+	// Masked words: the two final vtables (+0x00/+0xe0), the heap collision
+	// object pointer (+0x9c), and the four base-ctor pointer words.
+	{
+	typedef void (__thiscall* NxBoxCtorFn)(void* self, void* owner, unsigned argument);
+	NxBoxCtorFn boxCtor = (NxBoxCtorFn) (base + 0x00021870);
+	static const unsigned kPointerWords[] = { 0x00, 0x9c, 0xa4, 0xa8, 0xb0, 0xb4, 0xe0 };
+	unsigned char object[0x228];
+	memset(object, 0xcd, sizeof(object));
+	const unsigned kArg2 = 0x5a5a5a5au;
+
+	// Allocator shim. The ctor's collision-object arm allocates through the
+	// SDK allocator singleton ([.data 0x101041bc] -> holder -> interface ->
+	// vtable slot +8), and the shipped holder word is NULL until an
+	// NxPhysicsSDK exists (phase4-formats.md). Creating one is Task-4/SDK
+	// machinery this gate does not own, so the probe installs a minimal
+	// interface whose slot +8 hands back a fixed block. Every instruction of
+	// the rows under test -- phys_fn_000977 and phys_fn_001075 -- still runs
+	// natively; only the 28 bytes come from the shim.
+	static unsigned char gShimBlock[0x20];
+	typedef void* (__fastcall* NxAllocFn)(void* ecx, void* edx, unsigned size, unsigned flag);
+	static NxAllocFn gShimTable[4];
+	struct NxShim { static void* __fastcall alloc(void*, void*, unsigned size, unsigned)
+		{ return size <= sizeof(gShimBlock) ? gShimBlock : 0; } };
+	gShimTable[2] = reinterpret_cast<NxAllocFn>(&NxShim::alloc);
+	static void* gShimIface[1] = { gShimTable };
+	unsigned holder = 0;
+	memcpy(&holder, base + 0x001041bc, 4);
+	if(!holder)
+		return nxFail("the allocator holder word moved; re-pin the probe");
+	void* shimIface = gShimIface;
+	memcpy((void*) holder, &shimIface, 4);
+
+	unsigned faultAddr = 0, faultCode = 0;
+	nxGuardedBoxCtor(boxCtor, object, 0, kArg2, faultCode, faultAddr);
+	if(faultCode)
+		{
+		fprintf(stderr, "FAIL box ctor fault code=%08x at=%08x rva=%08x\n",
+			faultCode, faultAddr, faultAddr - (unsigned) (uintptr_t) base);
+		return 1;
+		}
+
+	unsigned digest = 2166136261u;
+	for(unsigned i = 0; i < sizeof(object); i += 4)
+		{
+		bool pointer = false;
+		for(size_t p = 0; p < sizeof(kPointerWords) / sizeof(kPointerWords[0]); ++p)
+			if(kPointerWords[p] == i)
+				pointer = true;
+		if(pointer)
+			continue;
+		unsigned word;
+		memcpy(&word, object + i, 4);
+		digest = nxFold(digest, word);
+		}
+	oBoxDigest = digest;
+	oracleDigest = nxFold(oracleDigest, digest);
+
+	// Structural facts about the masked collision-object word: it must point
+	// at a live 0x1c-byte object whose +8/+0x18 carry THIS buffer and whose
+	// member slot is non-null.
+	unsigned colobj = 0;
+	memcpy(&colobj, object + 0x9c, 4);
+	bool colobjOk = colobj != 0;
+	unsigned colobjArg8 = 0, colobjArg18 = 0, colobjMember = 0;
+	if(colobjOk)
+		{
+		memcpy(&colobjArg8, (unsigned char*) colobj + 0x08, 4);
+		memcpy(&colobjArg18, (unsigned char*) colobj + 0x18, 4);
+		memcpy(&colobjMember, (unsigned char*) colobj + 0x0c, 4);
+		colobjOk = colobjArg8 == (unsigned) (uintptr_t) object
+			&& colobjArg18 == (unsigned) (uintptr_t) object
+			&& colobjMember != 0;
+		}
+
+	unsigned dims04, dims08, dims0c, poisonVerts, poisonFaceFloats, face0w0, face5w0, sentinelBox, argD4Box;
+	dims04 = dims08 = dims0c = poisonVerts = poisonFaceFloats = face0w0 = face5w0 = sentinelBox = argD4Box = 0;
+	memcpy(&sentinelBox, object + 0xd0, 4);
+	memcpy(&argD4Box, object + 0xd4, 4);
+	memcpy(&dims04, object + 0xe4, 4);
+	memcpy(&dims08, object + 0xe8, 4);
+	memcpy(&dims0c, object + 0xec, 4);
+	memcpy(&poisonVerts, object + 0xf0, 4);			// first untouched vertex word
+	memcpy(&poisonFaceFloats, object + 0x164, 4);	// record 0 float data
+	memcpy(&face0w0, object + 0x150, 4);			// record 0 corners
+	memcpy(&face5w0, object + 0x204, 4);			// record 5 corners
+	printf("boxshape ctor=phys_fn_000977 size=%u digest=%08x sentinel_d0=%u arg_d4=%08x "
+		"dims=%08x.%08x.%08x face0_corners=%08x face5_corners=%08x verts_poison=%08x "
+		"floats_poison=%08x colobj_ok=%u\n",
+		(unsigned) sizeof(object), digest, sentinelBox, argD4Box,
+		dims04, dims08, dims0c, face0w0, face5w0, poisonVerts, poisonFaceFloats,
+		colobjOk ? 1u : 0u);
+	}
+
+	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1\n",
 		(unsigned) (sizeof(nxTables) / sizeof(nxTables[0])));
 	printf("layout oracle digest=%08x\n", oracleDigest);
 
@@ -529,6 +653,70 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 6u);
+		}
+
+		// -- box shape: the transcription's constructor over the same poisoned
+		// twin buffer must match the oracle's masked fold, preserve the poison
+		// the ctor never touches, zero the face pointer words, overwrite the
+		// sentinel with 2, and build a live collision object pointing back.
+		{
+		static const unsigned kPointerWords[] = { 0x00, 0x9c, 0xa4, 0xa8, 0xb0, 0xb4, 0xe0 };
+		const unsigned kArg2 = 0x5a5a5a5au;
+		unsigned char bytes[0x228];
+		memset(bytes, 0xcd, sizeof(bytes));
+		BoxShape& shape = *new(bytes) BoxShape(0, kArg2);
+
+		unsigned digest = 2166136261u;
+		for(unsigned i = 0; i < sizeof(bytes); i += 4)
+			{
+			bool pointer = false;
+			for(size_t p = 0; p < sizeof(kPointerWords) / sizeof(kPointerWords[0]); ++p)
+				if(kPointerWords[p] == i)
+					pointer = true;
+			if(pointer)
+				continue;
+			unsigned word;
+			memcpy(&word, bytes + i, 4);
+			digest = nxFold(digest, word);
+			}
+
+		unsigned colobj = 0;
+		memcpy(&colobj, bytes + 0x9c, 4);
+		bool colobjOk = colobj != 0;
+		unsigned colobjArg8 = 0, colobjArg18 = 0, colobjMember = 0;
+		if(colobjOk)
+			{
+			memcpy(&colobjArg8, (unsigned char*) colobj + 0x08, 4);
+			memcpy(&colobjArg18, (unsigned char*) colobj + 0x18, 4);
+			memcpy(&colobjMember, (unsigned char*) colobj + 0x0c, 4);
+			colobjOk = colobjArg8 == (unsigned) (uintptr_t) bytes
+				&& colobjArg18 == (unsigned) (uintptr_t) bytes
+				&& colobjMember != 0;
+			}
+
+		const unsigned kPoison = 0xcdcdcdcdu;
+		const float kOne = 1.0f;
+		float d0, d1, d2;
+		memcpy(&d0, bytes + 0xe4, 4);
+		memcpy(&d1, bytes + 0xe8, 4);
+		memcpy(&d2, bytes + 0xec, 4);
+		unsigned sentinelBox = 0;
+		memcpy(&sentinelBox, bytes + 0xd0, 4);
+		bool ok = digest == oBoxDigest
+			&& sentinelBox == 2
+			&& d0 == kOne && d1 == kOne && d2 == kOne
+			&& memcmp(bytes + 0xf0, &kPoison, 4) == 0
+			&& memcmp(bytes + 0x164, &kPoison, 4) == 0
+			&& colobjOk
+			// the hull's static tables still answer through the facade
+			&& BoxHullFacade::kVertexCount == 8 && BoxHullFacade::kFaceCount == 6
+			&& shape.mHull.face(2) == &shape.mHull.mFaces[2];
+		printf("boxshape candidate ok=%u digest=%08x sentinel_d0=%u\n",
+			ok ? 1u : 0u, digest, sentinelBox);
+		if(!ok)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 7u);
 		}
 
 		printf("candidate CANDIDATE-MISSING family=vtables reason=shape finals/actor classes are Tasks 3-4\n");
