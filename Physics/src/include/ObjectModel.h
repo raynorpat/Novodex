@@ -337,6 +337,13 @@ class BoxShape
 	//! phys_fn_000977 (0x00021870). Same argument pair as the base ctor.
 					BoxShape(void* owner, unsigned argument);
 
+	//! BOX-table slot 10, phys_fn_000937 (0x00020670): writes the pose-one
+	//! translation (+0x30/+0x34/+0x38) to out[0..2] and a sqrt-of-squared-
+	//! dims value to out[3]. The x87 association of the sum is unestablished
+	//! for general dims; for the constructor defaults (1,1,1) every
+	//! association yields the same bits, which is what the gate drives.
+	void				nxBoxCenterAndDiagonal(float* out) const;
+
 	//! +0x00..+0xdf, the base shape subobject.
 	ShapeBase			mBase;
 	//! +0xe0..+0x227, the convex-hull descriptor.

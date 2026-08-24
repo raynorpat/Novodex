@@ -2625,6 +2625,13 @@
    "confidence": "semantic",
    "evidence": "oracle/capstone/manifest.json#/entries/3414",
    "reason": "the value of BASE shape vtable .rdata:0x10107494 slot 2 (pe.json pointer record); copies pose three, the halfword trio and [colobj+4] into a descriptor-shaped record and returns true -- the write-side partner of slot 1's descriptor update; driven bitwise by the basesave family"
+  },
+  {
+   "id": "phys_fn_000937",
+   "label": "NxBox center+diagonal row",
+   "confidence": "semantic",
+   "evidence": "oracle/capstone/manifest.json#/entries/2965",
+   "reason": "the value of BOX vtable .rdata:0x10106ab8 slot 10 (merged-run index 34); writes pose-one translation and sqrt of the squared facade dims to a caller record; driven bitwise by the NxPhysicsObjectLayoutTests boxrow family"
   }
  ]
 }

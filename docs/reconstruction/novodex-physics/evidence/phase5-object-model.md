@@ -302,8 +302,20 @@ real constructed sphere: oracle digest `bc9dc964`, candidate bitwise equal
 over the whole poisoned 0x48-byte record. The differential caught a
 first-draft transcription bug — I had read `[colobj]` (the vptr word,
 0x6b...) instead of `[colobj+4]` — before it could ship, which is exactly
-the failure mode this gate exists for. Registrations now 24 lines, oracle
+the failure mode this gate exists for. Driven: registrations now 24 lines, oracle
 digest `4aa4d389`, coverage floor 24.
+
+## 3g. The first BOX-final behavior row
+
+`phys_fn_000937` (0x20670, 69 bytes), BOX-table slot 10, transcribed as
+`BoxShape::nxBoxCenterAndDiagonal`: writes the pose-one translation to
+out[0..2] and `sqrt(dx²+dy²+dz²)` over the facade dims to out[3]. Driven by
+a new `boxrow` family on a real constructed box: oracle words
+`00000000.00000000.00000000.3fddb3d7` (center = origin, diagonal = √3),
+candidate bitwise identical — at the constructor-default dims every x87
+association of the sum is exact, so the drive is valid while the
+general-dims association stays an explicitly open question in the header.
+Registrations 25 lines, oracle digest `629e8ada`, coverage floor 25.
 
 ## 4. The census merge resolved
 

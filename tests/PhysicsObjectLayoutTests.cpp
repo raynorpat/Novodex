@@ -226,6 +226,7 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oPlaneDigest = 0;
 	unsigned oMeshDigest = 0;
 	unsigned oSaveStateDigest = 0;
+	unsigned oBoxRowDigest = 0;
 	static unsigned char sSaveStateRecord[0x48];
 
 	// -----------------------------------------------------------------------
@@ -847,7 +848,43 @@ int wmain(int argc, wchar_t** argv)
 		saved ? 1u : 0u, digest, poseDiag, word38, word3c, word40, poisonHead);
 	}
 
-	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1\n",
+	// -----------------------------------------------------------------------
+	// BOX-table slot 10, phys_fn_000937: pose-one translation + sqrt of the
+	// squared dims. Driven on a real constructed box (default dims 1,1,1,
+	// where every association of the sum is exact).
+	{
+	typedef void (__thiscall* NxBoxRowFn)(void* self, float* out);
+	NxBoxRowFn boxRow10 = (NxBoxRowFn) (base + 0x00020670);
+	typedef void (__thiscall* NxShapeCtor2Fn)(void* self, void* owner, unsigned argument);
+
+	if(!nxInstallAllocatorShim(base))
+		return nxFail("the allocator holder word moved; re-pin the probe");
+
+	unsigned char shape[0x228];
+	memset(shape, 0xcd, sizeof(shape));
+	NxShapeCtor2Fn boxCtor2 = (NxShapeCtor2Fn) (base + 0x00021870);
+	boxCtor2(shape, 0, 0);
+
+	float out[4] = { 0, 0, 0, 0 };
+	boxRow10(shape, out);
+
+	unsigned digest = 2166136261u;
+	for(int i = 0; i < 4; ++i)
+		{
+		unsigned word;
+		memcpy(&word, out + i, 4);
+		digest = nxFold(digest, word);
+		}
+	oBoxRowDigest = digest;
+	oracleDigest = nxFold(oracleDigest, digest);
+	unsigned ob[4] = { 0, 0, 0, 0 };
+	for(int i = 0; i < 4; ++i)
+		memcpy(&ob[i], out + i, 4);
+	printf("boxrow slot10=phys_fn_000937 out=%08x.%08x.%08x.%08x\n",
+		ob[0], ob[1], ob[2], ob[3]);
+	}
+
+	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=1\n",
 		(unsigned) (sizeof(nxTables) / sizeof(nxTables[0])));
 	printf("layout oracle digest=%08x\n", oracleDigest);
 
@@ -1359,6 +1396,31 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 13u);
+		}
+
+		// -- box row 10: the transcription's member must reproduce the oracle
+		// words bitwise on a twin constructed box.
+		{
+		unsigned char bytes[0x228];
+		memset(bytes, 0xcd, sizeof(bytes));
+		BoxShape& shape = *new(bytes) BoxShape(0, 0);
+
+		float out[4] = { 0, 0, 0, 0 };
+		shape.nxBoxCenterAndDiagonal(out);
+
+		unsigned digest = 2166136261u;
+		for(int i = 0; i < 4; ++i)
+			{
+			unsigned word;
+			memcpy(&word, out + i, 4);
+			digest = nxFold(digest, word);
+			}
+		bool ok = digest == oBoxRowDigest;
+		printf("boxrow candidate ok=%u digest=%08x\n", ok ? 1u : 0u, digest);
+		if(!ok)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 14u);
 		}
 
 		printf("candidate CANDIDATE-MISSING family=vtables reason=shape finals/actor classes are Tasks 3-4\n");

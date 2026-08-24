@@ -7,6 +7,7 @@
 \*----------------------------------------------------------------------------*/
 #include "ObjectModel.h"
 
+#include <math.h>
 #include <string.h>
 
 // phys_fn_002404 (0x0005ba70) is the shared member constructor; the oracle's
@@ -287,6 +288,20 @@ CapsuleShape::CapsuleShape(void* owner, unsigned argument)
 	mBase.mWord9C = reinterpret_cast<NxU32>(object);	// 0x00021aaf
 
 	mBase.mSentinelD0 = 3;					// NX_SHAPE_CAPSULE: 0x00021ab5
+	}
+
+// ---------------------------------------------------------------------------
+// BOX-table slot 10. See ObjectModel.h.
+
+void BoxShape::nxBoxCenterAndDiagonal(float* out) const
+	{
+	out[0] = mBase.mPose0C.mTranslation[0];	// mov edx,[ecx+0x30] at 0x00020670
+	out[1] = mBase.mPose0C.mTranslation[1];	// +0x34
+	out[2] = mBase.mPose0C.mTranslation[2];	// +0x38
+	const double dx = mHull.mDims04[0];		// fld [+0xe4]
+	const double dy = mHull.mDims04[1];		// [+0xe8]
+	const double dz = mHull.mDims04[2];		// [+0xec]
+	out[3] = static_cast<float>(sqrt(dx * dx + dy * dy + dz * dz));
 	}
 
 // ---------------------------------------------------------------------------
