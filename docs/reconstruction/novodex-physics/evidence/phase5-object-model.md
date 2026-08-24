@@ -417,6 +417,29 @@ garbage — replaced with per-float compares. Registrations 31 lines, oracle
 digest `71c21761`, coverage floor 31. SPHERE slots open: 0/3/4/5/7/8/9/
 12/14.
 
+## 3j. AABB reach rows, MESH save/get rows -- and a Phase 4 cross-check gift
+
+Three reach rows fold bitwise on fresh objects (every output word a
+deterministic zero): SPHERE slot 9 (`phys_fn_001361`) world AABB
+`min = t - r`, `max = t + r`; CAPSULE slots 10/11 (`phys_fn_001001`/
+`001003`) center+reach and its zero-center twin, where the capsule's
+effective sphere reach is **halfHeight + radius** -- matching how the
+shipped narrow phase treats an LSS.
+
+Two MESH composable rows close with a planted mesh record (the real +0xe0
+assignment arrives with NxTriangleMesh wiring): slot 13 (`phys_fn_001385`)
+saves the mesh's +0xe4 word and the shape flags word through the BASE
+save-state row (`0ccd08b4` bitwise); slot 11 (`phys_fn_001387`) copies four
+dwords from `meshptr+0x5c` (marked words round-trip bitwise).
+
+**Cross-check gift from slot 12** (`phys_fn_001383`, loadFromDesc core,
+deferred for its slot-1 tail): on accepting a descriptor it executes
+`inc dword ptr [mesh+0x74]` -- TriangleMesh+0x74 is a REFERENCE COUNT,
+incremented when a shape binds a mesh. New evidence for the Phase 4
+TriangleMesh layout transcription, recorded here for its next revision.
+
+Registrations 35 lines, oracle digest `66e19364`, coverage floor 35.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is

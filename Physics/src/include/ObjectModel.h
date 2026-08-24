@@ -603,6 +603,15 @@ class MeshShape
 	NxU32				nxMeshGetMeshWord() const
 							{ return *reinterpret_cast<const NxU32*>(
 								reinterpret_cast<const unsigned char*>(mWordE0) + 0xe4); }
+
+	//! MESH-table slot 13, phys_fn_001385 (0x00027e60): the mesh's +0xe4
+	//! word to record+0x4c, mWordE4 to record+0x50, then the BASE
+	//! save-to-descriptor row.
+	bool				nxMeshSaveState(void* record);
+
+	//! MESH-table slot 11, phys_fn_001387 (0x00027e90): copies four words
+	//! from mesh+0x5c into out.
+	void				nxMeshGetWords5C(unsigned* out) const;
 	};
 
 static_assert(sizeof(MeshShape) == 0xe8, "the mesh is base plus two words so far");

@@ -2697,6 +2697,20 @@
    "reason": "SPHERE vtable slot 10; copies pose-one translation and the radius into a caller record; driven bitwise by the sphererows family"
   },
   {
+   "id": "phys_fn_001385",
+   "label": "NxMesh save-to-descriptor (slot 13)",
+   "confidence": "semantic",
+   "evidence": "oracle/capstone/manifest.json#/entries/3546",
+   "reason": "MESH vtable .rdata:0x107630 slot 13; writes the mesh word (+0xe0 deref +0xe4) and the shape flags word into a descriptor record then tail-jumps to the BASE save-to-descriptor row phys_fn_001277; driven bitwise by the meshrows family"
+  },
+  {
+   "id": "phys_fn_001387",
+   "label": "NxMesh words-0x5c getter (slot 11)",
+   "confidence": "semantic",
+   "evidence": "oracle/capstone/manifest.json#/entries/3547",
+   "reason": "MESH vtable slot 11; copies four dwords from meshptr+0x5c into a caller record; driven bitwise by the meshrows family"
+  },
+  {
    "id": "phys_fn_001361",
    "label": "NxSphere world-AABB row (slot 9)",
    "confidence": "semantic",

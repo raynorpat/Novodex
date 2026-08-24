@@ -513,6 +513,24 @@ MeshShape::MeshShape(void* owner, unsigned argument)
 	mBase.mSentinelD0 = 4;					// NX_SHAPE_MESH: 0x00027e05
 	}
 
+// phys_fn_001385 (0x00027e60), MESH-table slot 13.
+bool MeshShape::nxMeshSaveState(void* record)
+	{
+	const unsigned char* mesh = reinterpret_cast<const unsigned char*>(mWordE0);
+	unsigned meshWord = *reinterpret_cast<const unsigned*>(mesh + 0xe4);	// 0x00027e60..66
+	unsigned char* rec = static_cast<unsigned char*>(record);
+	memcpy(rec + 0x4c, &meshWord, sizeof(meshWord));
+	memcpy(rec + 0x50, &mWordE4, sizeof(mWordE4));		// 0x00027e73..79
+	return mBase.nxBaseSaveState(record);				// jmp 0x000256f0 at 0x00027e80
+	}
+
+// phys_fn_001387 (0x00027e90), MESH-table slot 11.
+void MeshShape::nxMeshGetWords5C(unsigned* out) const
+	{
+	const unsigned char* mesh = reinterpret_cast<const unsigned char*>(mWordE0);
+	memcpy(out, mesh + 0x5c, 16);						// four dwords, 0x00027e96..b1
+	}
+
 // ---------------------------------------------------------------------------
 // The BASE vtable's stub rows. See ObjectModel.h for the slot map.
 

@@ -270,6 +270,8 @@ int wmain(int argc, wchar_t** argv)
 	static unsigned char sCapsuleSaveReference[0x58];
 	unsigned oSphereAABBDigest = 0;
 	unsigned oCapsuleCRDigest = 0;
+	unsigned oMeshSaveDigest = 0;
+	unsigned oMeshWordsDigest = 2166136261u;
 	static unsigned char sSaveStateRecord[0x48];
 
 	// -----------------------------------------------------------------------
@@ -1350,7 +1352,58 @@ int wmain(int argc, wchar_t** argv)
 		cb11[0], cb11[1], cb11[2], cb11[3]);
 	}
 
-	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3\n",
+	// -----------------------------------------------------------------------
+	// MESH-table slots 13 and 11, phys_fn_001385 / phys_fn_001387. The probe
+	// plants a fake mesh record (marked +0xe4 word and marked 0x5c quad) on
+	// both sides; every compared byte is then module-independent.
+	{
+	typedef bool (__thiscall* NxMeshSaveFn)(void* self, void* record);
+	typedef void (__thiscall* NxMeshWordsFn)(void* self, unsigned* out);
+	NxMeshSaveFn meshSave13 = (NxMeshSaveFn) (base + 0x00027e60);
+	NxMeshWordsFn meshWords11 = (NxMeshWordsFn) (base + 0x00027e90);
+
+	unsigned char shape[0xe8];
+	memset(shape, 0xcd, sizeof(shape));
+	typedef void (__thiscall* NxCtorFnb)(void* self, void* owner, unsigned argument);
+	NxCtorFnb meshCtor3 = (NxCtorFnb) (base + 0x00027db0);
+	meshCtor3(shape, 0, 0);
+
+	static unsigned char fm[0xe8];
+	memset(fm, 0, sizeof(fm));
+	const unsigned kM4 = 0x2468ace0u, kW0 = 0x0badf00du, kW3 = 0x13579bdfu;
+	memcpy(fm + 0xe4, &kM4, 4);
+	memcpy(fm + 0x5c, &kW0, 4);
+	memcpy(fm + 0x68, &kW3, 4);
+	void* fmp = fm;
+	memcpy(shape + 0xe0, &fmp, 4);
+	const unsigned kFlags = 0x5a5a5a5au;
+	memcpy(shape + 0xe4, &kFlags, 4);
+
+	unsigned char record[0x58];
+	memset(record, 0xcd, sizeof(record));
+	bool saved = meshSave13(shape, record);
+	unsigned words[4] = { 0, 0, 0, 0 };
+	meshWords11(shape, words);
+
+	unsigned d13m = 2166136261u;
+	for(unsigned i = 0; i < sizeof(record); i += 4)
+		{
+		unsigned w; memcpy(&w, record + i, 4);
+		d13m = nxFold(d13m, w);
+		}
+	oMeshSaveDigest = d13m;
+	unsigned dw = 2166136261u;
+	for(int i = 0; i < 4; ++i)
+		dw = nxFold(dw, words[i]);
+	oMeshWordsDigest = dw;
+	oracleDigest = nxFold(oracleDigest, d13m);
+	oracleDigest = nxFold(oracleDigest, dw);
+	printf("meshrows slot13=phys_fn_001385 saved=%u digest=%08x "
+		"slot11=phys_fn_001387 words=%08x.%08x.%08x.%08x\n",
+		saved ? 1u : 0u, d13m, words[0], words[1], words[2], words[3]);
+	}
+
+	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2\n",
 		(unsigned) (sizeof(nxTables) / sizeof(nxTables[0])));
 	printf("layout oracle digest=%08x\n", oracleDigest);
 
@@ -2197,6 +2250,48 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 22u);
+		}
+
+		// -- mesh rows 13 and 11: twin drives with the same planted record.
+		{
+		unsigned char mbytes[0xe8];
+		memset(mbytes, 0xcd, sizeof(mbytes));
+		MeshShape& mesh = *new(mbytes) MeshShape(0, 0);
+
+		static unsigned char fm2[0xe8];
+		memset(fm2, 0, sizeof(fm2));
+		const unsigned kM4 = 0x2468ace0u, kW0 = 0x0badf00du, kW3 = 0x13579bdfu;
+		memcpy(fm2 + 0xe4, &kM4, 4);
+		memcpy(fm2 + 0x5c, &kW0, 4);
+		memcpy(fm2 + 0x68, &kW3, 4);
+		mesh.mWordE0 = reinterpret_cast<NxU32>(fm2);
+		const unsigned kFlags = 0x5a5a5a5au;
+		memcpy(&mesh.mWordE4, &kFlags, 4);
+
+		unsigned char record[0x58];
+		memset(record, 0xcd, sizeof(record));
+		bool saved = mesh.nxMeshSaveState(record);
+		unsigned words[4] = { 0, 0, 0, 0 };
+		mesh.nxMeshGetWords5C(words);
+
+		unsigned d13m = 2166136261u;
+		for(unsigned i = 0; i < sizeof(record); i += 4)
+			{
+			unsigned w; memcpy(&w, record + i, 4);
+			d13m = nxFold(d13m, w);
+			}
+		unsigned dw = 2166136261u;
+		for(int i = 0; i < 4; ++i)
+			dw = nxFold(dw, words[i]);
+
+		bool ok = d13m == oMeshSaveDigest && dw == oMeshWordsDigest && saved
+			&& words[0] == kW0 && words[3] == kW3;
+		printf("meshrows candidate ok=%u d13=%08x dw=%08x\n",
+			ok ? 1u : 0u, d13m, dw);
+		if(!ok)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 23u);
 		}
 
 		printf("candidate CANDIDATE-MISSING family=vtables reason=shape finals/actor classes are Tasks 3-4\n");
