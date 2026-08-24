@@ -470,6 +470,11 @@ class SphereShape
 	//! when flags&1.
 	void				nxSphereScalarDeletingDtor(unsigned flags);
 
+	//! SPHERE-table slot 12, phys_fn_001353 (0x00027850): loadFromDesc.
+	//! Reads radius from record+0x4c (validating through the error stream),
+	//! stores at +0xe0, then tail-calls the BASE apply-desc row.
+	void				nxSphereLoadFromDesc(const void* record);
+
 	//! SPHERE-table slot 11, phys_fn_001365 (0x000279b0): zeroes out[0..2],
 	//! radius to out[3].
 	void				nxSphereZeroCenterRadius(float* out) const;

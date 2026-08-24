@@ -274,6 +274,8 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oMeshWordsDigest = 2166136261u;
 	unsigned oSphereLocalDigest = 0;
 	unsigned oSphereDtorDigest = 0;
+	unsigned oSphereLoadRadBits = 0;
+	unsigned oSphereLoadGroup = 0;
 	unsigned oPlaneDtorDigest = 0;
 	unsigned oMeshDtorDigest = 0;
 	static const unsigned kDtorMask[] = { 0x00, 0x9c, 0xa4, 0xa8, 0xb0, 0xb4 };
@@ -1538,6 +1540,45 @@ int wmain(int argc, wchar_t** argv)
 	printf("sphdtor row=phys_fn_001375 digest=%08x\n", digest);
 	}
 
+	// SPHERE slot 12, phys_fn_001353: loadFromDesc. NULL name record.
+	{
+	typedef void (__thiscall* NxSphLoadFn)(void* self, const void* rec);
+	NxSphLoadFn sphLoad = (NxSphLoadFn) (base + 0x00027850);
+
+	if(!nxInstallAllocatorShim(base))
+		return nxFail("the allocator holder word moved; re-pin the probe");
+
+	unsigned char sshape[0xe4];
+	memset(sshape, 0xcd, sizeof(sshape));
+	typedef void (__thiscall* NxCtorFnk)(void* self, void* owner, unsigned argument);
+	NxCtorFnk sphereCtor10 = (NxCtorFnk) (base + 0x000277c0);
+	sphereCtor10(sshape, 0, 0);
+
+	unsigned char record[0x58];
+	memset(record, 0xcd, sizeof(record));
+	const float kR = 2.5f;
+	memcpy(record + 0x4c, &kR, 4);
+	const unsigned short kGrp = 0x0006u;
+	memcpy(record + 0x3c, &kGrp, 2);
+	memset(record + 0x44, 0, 4);
+
+	sphLoad(sshape, record);
+
+	float gotRad = 0.0f;
+	memcpy(&gotRad, sshape + 0xe0, 4);
+	unsigned radBits = 0;
+	memcpy(&radBits, &gotRad, 4);
+	oSphereLoadRadBits = radBits;
+
+	unsigned short hwD8 = 0;
+	memcpy(&hwD8, sshape + 0xd8, 2);
+	oSphereLoadGroup = hwD8;
+
+	oracleDigest = nxFold(oracleDigest, radBits);
+	oracleDigest = nxFold(oracleDigest, hwD8);
+	printf("sphload row=phys_fn_001353 rad=%08x group=%04x\n", radBits, hwD8);
+	}
+
 	// sphere; +0xd8 must carry it (the dirty-flag arm is a null-owner no-op).
 	{
 	typedef void (__thiscall* NxGroupFn)(void* self, unsigned short g);
@@ -1662,7 +1703,7 @@ int wmain(int argc, wchar_t** argv)
 		dpl, dm);
 	}
 
-	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 sphdtor=1 setgroup=1 dtors2=2\n",
+	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 sphload=1 sphload=1 sphdtor=1 sphload=1 sphload=1 setgroup=1 dtors2=2\n",
 		(unsigned) (sizeof(nxTables) / sizeof(nxTables[0])));
 	printf("layout oracle digest=%08x\n", oracleDigest);
 

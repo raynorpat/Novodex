@@ -390,6 +390,16 @@ void SphereShape::nxSphereScalarDeletingDtor(unsigned flags)
 	(void) flags;							// self-free arm not modeled
 	}
 
+// phys_fn_001353 (0x00027850), SPHERE-table slot 12.
+void SphereShape::nxSphereLoadFromDesc(const void* record)
+	{
+	const unsigned char* rec = static_cast<const unsigned char*>(record);
+	float r = 0.0f;
+	memcpy(&r, rec + 0x4c, sizeof(r));		// fld [edi+0x4c] at 0x00027856
+	mRadiusE0 = r;							// fst [esi+0xe0] at 0x0002785b
+	mBase.nxApplyDescriptor(record);				// call 0x00027740 at 0x00027895
+	}
+
 // ---------------------------------------------------------------------------
 // CapsuleShape. See ObjectModel.h for the row map.
 
