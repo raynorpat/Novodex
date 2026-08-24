@@ -690,6 +690,10 @@ class MeshShape
 	//! MESH-table slot 11, phys_fn_001387 (0x00027e90): copies four words
 	//! from mesh+0x5c into out.
 	void				nxMeshGetWords5C(unsigned* out) const;
+
+	//! MESH-table slot 8, phys_fn_001389 (0x00027ec0): copies six words from
+	//! meshptr+0x44 into out.
+	void				nxMeshGetWords44(unsigned* out) const;
 	};
 
 static_assert(sizeof(MeshShape) == 0xe8, "the mesh is base plus two words so far");

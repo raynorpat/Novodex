@@ -725,6 +725,13 @@ void MeshShape::nxMeshGetWords5C(unsigned* out) const
 	memcpy(out, mesh + 0x5c, 16);						// four dwords, 0x00027e96..b1
 	}
 
+// phys_fn_001389 (0x00027ec0), MESH-table slot 8.
+void MeshShape::nxMeshGetWords44(unsigned* out) const
+	{
+	const unsigned char* mesh = reinterpret_cast<const unsigned char*>(mWordE0);
+	memcpy(out, mesh + 0x44, 24);						// six dwords, 0x00027ec0..ef
+	}
+
 // ---------------------------------------------------------------------------
 // The BASE vtable's stub rows. See ObjectModel.h for the slot map.
 

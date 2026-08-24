@@ -274,6 +274,7 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oMeshWordsDigest = 2166136261u;
 	unsigned oSphereLocalDigest = 0;
 	unsigned oSphereDtorDigest = 0;
+	unsigned oMesh44Digest = 0;
 	unsigned oCapsuleDtorDigest = 0;
 	unsigned oCapsuleAABBDigest = 0;
 	unsigned oSphereLoadRadBits = 0;
@@ -1294,6 +1295,46 @@ int wmain(int argc, wchar_t** argv)
 	bool hit = got == kMark;
 	oracleDigest = nxFold(oracleDigest, hit ? 1u : 0u);
 	printf("meshword row=phys_fn_001381 mark_hit=%u\n", hit ? 1u : 0u);
+	}
+
+	// -----------------------------------------------------------------------
+	// MESH slot 8, phys_fn_001389: copies six words from mesh+0x44 to out.
+	{
+	typedef void (__thiscall* NxWords44Fn)(void* self, unsigned* out);
+	NxWords44Fn words44 = (NxWords44Fn) (base + 0x00027ec0);
+
+	unsigned char mshape[0xe8];
+	memset(mshape, 0xcd, sizeof(mshape));
+	typedef void (__thiscall* NxCtorFn14)(void* self, void* owner, unsigned argument);
+	NxCtorFn14 meshCtor5 = (NxCtorFn14) (base + 0x00027db0);
+	meshCtor5(mshape, 0, 0);
+
+	static unsigned char fm44[0x100];
+	memset(fm44, 0, sizeof(fm44));
+	const unsigned kM44 = 0xdeadbeefu, kM48 = 0xcafebabeu, kM4c = 0x12345678u;
+	memcpy(fm44 + 0x44, &kM44, 4);
+	memcpy(fm44 + 0x48, &kM48, 4);
+	memcpy(fm44 + 0x4c, &kM4c, 4);
+	void* fmp2 = fm44;
+	memcpy(mshape + 0xe0, &fmp2, 4);
+
+	unsigned out44[6] = { 0, 0, 0, 0, 0, 0 };
+	words44(mshape, out44);
+
+	unsigned d44 = 2166136261u;
+	for(int i = 0; i < 6; ++i)
+		{
+		unsigned w; memcpy(&w, out44 + i, 4);
+		d44 = nxFold(d44, w);
+		}
+	oMesh44Digest = d44;
+	oracleDigest = nxFold(oracleDigest, d44);
+
+	unsigned ab44[6] = { 0, 0, 0, 0, 0, 0 };
+	for(int i = 0; i < 6; ++i)
+		memcpy(&ab44[i], out44 + i, 4);
+	printf("meshwords44 row=phys_fn_001389 out=%08x.%08x.%08x.%08x.%08x.%08x\n",
+		ab44[0], ab44[1], ab44[2], ab44[3], ab44[4], ab44[5]);
 	}
 
 	// -----------------------------------------------------------------------
@@ -2661,6 +2702,36 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 23u);
+		}
+
+		// -- mesh slot 8 words-0x44: twin drive.
+		{
+		unsigned char mb[0xe8];
+		memset(mb, 0xcd, sizeof(mb));
+		MeshShape& mesh2 = *new(mb) MeshShape(0, 0);
+		static unsigned char fm44[0x100];
+		memset(fm44, 0, sizeof(fm44));
+		const unsigned kM44v = 0xdeadbeefu;
+		const unsigned kM48v = 0xcafebabeu;
+		memcpy(fm44 + 0x44, &kM44v, 4);
+		memcpy(fm44 + 0x48, &kM48v, 4);
+		const unsigned kM4cv = 0x12345678u;
+		memcpy(fm44 + 0x4c, &kM4cv, 4);
+		mesh2.mWordE0 = reinterpret_cast<NxU32>(fm44);
+		unsigned out44[6] = { 0, 0, 0, 0, 0, 0 };
+		mesh2.nxMeshGetWords44(out44);
+		unsigned d44 = 2166136261u;
+		for(int i = 0; i < 6; ++i)
+			{
+			unsigned w; memcpy(&w, out44 + i, 4);
+			d44 = nxFold(d44, w);
+			}
+		bool ok44 = d44 == oMesh44Digest && out44[0] == kM44v;
+		printf("meshwords44 candidate ok=%u d44=%08x\n", ok44 ? 1u : 0u, d44);
+		if(!ok44)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 31u);
 		}
 
 		// -- sphere local AABB: the transcription's negations must produce the
