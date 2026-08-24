@@ -323,4 +323,42 @@ class BoxShape
 static_assert(sizeof(BoxShape) == 0x228, "the box spans base plus hull facade");
 static_assert(offsetof(BoxShape, mHull) == 0xe0, "the hull embeds where the base ends");
 
+/**
+The sphere shape. Constructor phys_fn_001349 (0x000277c0, 91 bytes,
+__thiscall, `ret 8`), which forwards BOTH arguments unchanged to
+ShapeBase::ShapeBase (0x000277bb..cf) and then:
+
+	+0x000	vptr			final SPHERE table .rdata 0x10107528, store 0x000277d4
+	+0x0e0	radius			ZEROED (store 0x000277da). The sphere has no secondary
+	                        base: where the box embeds its hull facade the
+	                        sphere keeps plain data, and its first datum is the
+	                        radius. Construction leaves it 0; the descriptor
+	                        path writes the real value here (0x00027850 reads
+	                        the descriptor's word +0x4c straight into it).
+	+0x09c	collision object	a fresh 0x1c-byte block through the SDK allocator
+	                        (malloc(0x1c,0), 0x00027de4..f2) built by
+	                        phys_fn_001193 ITSELF -- the generic collision-object
+	                        constructor, not a per-type variant -- and stored at
+	                        +0x9c (0x00027805); null if the allocation failed
+	+0x0d0	1				sentinel, OVERWRITING the base ctor's 0x7fffffff
+	                        (store 0x0002780b)
+
+The per-shape sentinel values now read: box 2, sphere 1 -- plausibly an
+NxShapeType tag, consumer unestablished.
+*/
+class SphereShape
+	{
+	public:
+	//! phys_fn_001349 (0x000277c0). Same argument pair as the base ctor.
+					SphereShape(void* owner, unsigned argument);
+
+	//! +0x00..+0xdf, the base shape subobject.
+	ShapeBase			mBase;
+	//! +0xe0, the radius; zero until a radius source writes it.
+	float				mRadiusE0;
+	};
+
+static_assert(sizeof(SphereShape) == 0xe4, "the sphere is base plus one float so far");
+static_assert(offsetof(SphereShape, mRadiusE0) == 0xe0, "the radius is the first word past the base");
+
 #endif

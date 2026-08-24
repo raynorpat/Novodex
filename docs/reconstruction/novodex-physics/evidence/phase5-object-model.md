@@ -167,6 +167,36 @@ Oracle digest `ac5ed12f`; candidate identical bitwise; poison preservation,
 face zeroing, sentinel=2, dims and the back-pointing colobj all asserted.
 Registrations 18 lines, oracle digest `dc5e5ec6`, coverage floor 18.
 
+## 3c. The SPHERE final transcribed — and a census mislabel corrected
+
+Task 3 continued with `phys_fn_001349` (0x277c0, 91 bytes), the SPHERE
+constructor, into `Physics/src/ObjectModel.cpp` (`SphereShape`,
+`sizeof == 0xe4`, radius at +0xe0):
+
+1. **The sphere has NO secondary base.** The ctor forwards both arguments to
+   phys_fn_001273 (0x277bb..cf), stores the SPHERE vptr 0x10107528
+   (0x277d4), and ZEROES the dword at +0xe0 (0x277da) — where the box embeds
+   its facade, the sphere keeps plain data, and its first datum is the
+   radius. The descriptor path later writes it directly (0x27850 reads the
+   descriptor's word +0x4c straight into +0xe0).
+2. The collision object is built by **phys_fn_001193 ITSELF** (call
+   0x277fc) — the generic row, unlike the box's per-type variant — from an
+   SDK-allocator block (`malloc(0x1c,0)`), stored at +0x9c (0x27805). The
+   sentinel is overwritten with **1** (0x2780b): box 2, sphere 1 so far.
+3. **Correction to this file's own §4 note**: the function I had tentatively
+   read as the sphere ctor is the **MESH ctor** — `phys_fn_001379`
+   (0x27db0, 101 bytes) stores vptr 0x10107630, nulls BOTH +0xe0 and +0xe4,
+   builds its collision object through **phys_fn_001241** (0x24e40, another
+   57-byte variant row) and overwrites the sentinel with **4**. What §4
+   called "sphere: NULLed" is really the mesh nulling two words; the sphere
+   ctor nulls exactly one because that word IS its radius.
+
+Driven: new `sphere` family — poisoned 0xe4 twin buffers, six pointer words
+masked. Oracle digest `37ea7205`; candidate identical bitwise; radius zero,
+sentinel 1 and the back-pointing colobj asserted. Registrations 19 lines,
+oracle digest `bd8572e2`, coverage floor 19. The allocator shim moved into a
+shared helper both shape probes install.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is

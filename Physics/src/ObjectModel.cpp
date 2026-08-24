@@ -245,3 +245,24 @@ BoxShape::BoxShape(void* owner, unsigned argument)
 	// The vertices and every face-record float word are written by nobody
 	// here; a fresh box carries poison there until the face builder runs.
 	}
+
+// ---------------------------------------------------------------------------
+// SphereShape. See ObjectModel.h for the row map.
+
+SphereShape::SphereShape(void* owner, unsigned argument)
+	: mBase(owner, argument)				// forwarded unchanged: 0x000277bb..cf
+	{
+	mRadiusE0 = 0.0f;						// mov [esi+0xe0],0 at 0x000277da
+
+	// The embedded collision object: a fresh 0x1c-byte block through the SDK
+	// allocator (0x00027de4..f2), built by phys_fn_001193 itself -- the
+	// GENERIC collision-object constructor, not a per-type variant -- with
+	// the sphere stored at BOTH +0x08 and +0x18.
+	void* memory = nxGetSdkAllocator()->malloc(0x1c, NX_MEMORY_PERSISTENT);
+	CollisionObject* object = memory
+		? new(memory) CollisionObject(this)
+		: 0;								// null arm: 0x00027803
+	mBase.mWord9C = reinterpret_cast<NxU32>(object);	// 0x00027805
+
+	mBase.mSentinelD0 = 1;					// OVERWRITES the base's sentinel: 0x0002780b
+	}

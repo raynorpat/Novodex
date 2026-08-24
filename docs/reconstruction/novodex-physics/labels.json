@@ -2569,6 +2569,13 @@
    "confidence": "semantic",
    "evidence": "oracle/capstone/manifest.json#/entries/3184",
    "reason": "57 bytes with the exact body of phys_fn_001193 but the box-family tables (wall 0x10106d08, member 0x10106e54, final 0x10106dc8); called only from phys_fn_000977's allocator arm"
+  },
+  {
+   "id": "phys_fn_001349",
+   "label": "SphereShape::SphereShape",
+   "confidence": "semantic",
+   "evidence": "oracle/capstone/manifest.json#/entries/3510",
+   "reason": "calls phys_fn_001273 (the base-shape ctor) at 0x000277bf, stores the SPHERE vtable .rdata:0x10107528 (0x000277d4), zeroes the radius word at +0xe0, builds its collision object with phys_fn_001193 ITSELF -- the generic row, unlike the box's variant -- and overwrites the sentinel with 1; driven byte-for-byte by the NxPhysicsObjectLayoutTests sphere family"
   }
  ]
 }
