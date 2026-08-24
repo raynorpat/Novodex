@@ -509,5 +509,50 @@
     "desc+0x40": "userData (void*) -- written to [colobj+4] by apply-desc",
     "desc+0x44": "name (const char*) -- passed to registry phys_fn_000480",
     "TriangleMesh+0x74": "reference count (inc on shape bind, dec on unbind)"
+  },
+  "remaining_open_rows": {
+    "BASE": [
+      "slot1 apply-desc/001347",
+      "slot3 debug-draw/001305",
+      "slot6 owner-update/001315"
+    ],
+    "BOX": [
+      "slot1 apply-desc",
+      "slot3 debug-draw/001003",
+      "slot4 cached-bounds/000941",
+      "slot5 raycast/000949",
+      "slot7 sweep/000951",
+      "slot12 loadFromDesc/000981"
+    ],
+    "SPHERE": [
+      "slot3 debug-draw/001369",
+      "slot4 cached-bounds/001371",
+      "slot5 raycast/001377",
+      "slot7 sweep/001373",
+      "slot12 loadFromDesc/001353"
+    ],
+    "CAPSULE": [
+      "slot3 debug-draw/001006",
+      "slot4 cached-bounds/001008",
+      "slot5 raycast/001010",
+      "slot7 sweep/001012",
+      "slot12 loadFromDesc/000989"
+    ],
+    "PLANE": [
+      "slot5 raycast/001261",
+      "slot8 prunable-query/001267",
+      "slot12 loadFromDesc/001265"
+    ],
+    "MESH": [
+      "slots3/4/5/7/8/9/10/12 various mesh-pipeline rows"
+    ]
+  },
+  "blocked_on": {
+    "registry_fixture": "phys_fn_000480 decode complete; needs transcription + drive",
+    "error_stream": "Task 2 owns the error reporter used by validation arms",
+    "raycast_pipeline": "Phase 3 closed these through CollisionTests",
+    "sweep_pipeline": "Task 4 continuous-collision detection",
+    "debug_draw": "renderer vtable interface",
+    "cached_bounds": "multi-level helper chains (0x1c8c0, 0x1c930, 0x1c980)"
   }
 }
