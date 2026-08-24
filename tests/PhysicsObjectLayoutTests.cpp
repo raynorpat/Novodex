@@ -274,6 +274,9 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oMeshWordsDigest = 2166136261u;
 	unsigned oSphereLocalDigest = 0;
 	unsigned oSphereDtorDigest = 0;
+	unsigned oPlaneDtorDigest = 0;
+	unsigned oMeshDtorDigest = 0;
+	static const unsigned kDtorMask[] = { 0x00, 0x9c, 0xa4, 0xa8, 0xb0, 0xb4 };
 	unsigned oSphereSetDigest = 0;
 	unsigned oCapsuleSetDigest = 0;
 	unsigned oPlaneExtentDigest = 0;
@@ -1566,7 +1569,79 @@ int wmain(int argc, wchar_t** argv)
 	printf("sphdtor row=phys_fn_001375 digest=%08x\n", digest);
 	}
 
-	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1\n",
+	// -----------------------------------------------------------------------
+	// PLANE slot 0 (phys_fn_001263) and MESH slot 0 (phys_fn_001399):
+	// scalar deleting destructors, flag=0. The mesh one decrements the bound
+	// mesh's refcount when non-null -- fresh meshes have none, so the dec
+	// arm is skipped on both sides.
+	{
+	typedef void (__thiscall* NxPlaneDtorFn)(void* self, unsigned flags);
+	typedef unsigned (__thiscall* NxMeshDtorFn)(void* self, unsigned flags);
+	NxPlaneDtorFn planeDtor = (NxPlaneDtorFn) (base + 0x00025420);
+	NxMeshDtorFn meshDtor = (NxMeshDtorFn) (base + 0x00028e80);
+	static const unsigned kMask[] = { 0x00, 0x9c, 0xa4, 0xa8, 0xb0, 0xb4 };
+
+	if(!nxInstallAllocatorShim(base))
+		return nxFail("the allocator holder word moved; re-pin the probe");
+
+	unsigned char pshape[0x10c];
+	memset(pshape, 0xcd, sizeof(pshape));
+	typedef void (__thiscall* NxCtorFnh)(void* self, void* owner, unsigned argument);
+	NxCtorFnh planeCtor4 = (NxCtorFnh) (base + 0x00024ed0);
+	planeCtor4(pshape, 0, 0);
+
+	unsigned fc = 0, fa = 0;
+	nxGuardedBoxDtor((NxBoxDtorFn) planeDtor, pshape, 0);
+	fc = gDtorFaultCode; fa = gDtorFaultAddr;
+	if(fc)
+		return nxFail("plane dtor faulted");
+
+	unsigned dpl = 2166136261u;
+	for(unsigned i = 0; i < sizeof(pshape); i += 4)
+		{
+		bool pointer = false;
+		for(size_t p = 0; p < sizeof(kMask) / sizeof(kMask[0]); ++p)
+			if(kMask[p] == i)
+				pointer = true;
+		if(pointer)
+			continue;
+		unsigned w; memcpy(&w, pshape + i, 4);
+		dpl = nxFold(dpl, w);
+		}
+	oPlaneDtorDigest = dpl;
+	oracleDigest = nxFold(oracleDigest, dpl);
+
+	unsigned char mshape[0xe8];
+	memset(mshape, 0xcd, sizeof(mshape));
+	NxCtorFnh meshCtor4 = (NxCtorFnh) (base + 0x00027db0);
+	meshCtor4(mshape, 0, 0);
+
+	nxGuardedBoxDtor((NxBoxDtorFn) meshDtor, mshape, 0);
+	fc = gDtorFaultCode; fa = gDtorFaultAddr;
+	if(fc)
+		return nxFail("mesh dtor faulted");
+
+	unsigned dm = 2166136261u;
+	for(unsigned i = 0; i < sizeof(mshape); i += 4)
+		{
+		bool pointer = false;
+		for(size_t p = 0; p < sizeof(kMask) / sizeof(kMask[0]); ++p)
+			if(kMask[p] == i)
+				pointer = true;
+		if(pointer)
+			continue;
+		unsigned w;
+		memcpy(&w, mshape + i, 4);
+		dm = nxFold(dm, w);
+		}
+	oMeshDtorDigest = dm;
+	oracleDigest = nxFold(oracleDigest, dm);
+
+	printf("dtors2 plane=phys_fn_001263 digest=%08x mesh=phys_fn_001399 digest=%08x\n",
+		dpl, dm);
+	}
+
+	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 dtors2=2\n",
 		(unsigned) (sizeof(nxTables) / sizeof(nxTables[0])));
 	printf("layout oracle digest=%08x\n", oracleDigest);
 
@@ -2484,6 +2559,56 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 24u);
+		}
+
+		// -- plane and mesh dtors: transcription members leave the same
+		// post-dtor words under the mask (flag=0 path).
+		{
+		unsigned char pbytes[0x10c];
+		memset(pbytes, 0xcd, sizeof(pbytes));
+		PlaneShape& plane = *new(pbytes) PlaneShape(0, 0);
+		plane.nxPlaneScalarDeletingDtor(0);
+
+		unsigned dpl = 2166136261u;
+		for(unsigned i = 0; i < sizeof(pbytes); i += 4)
+			{
+			bool pointer = false;
+			for(size_t p = 0; p < 6; ++p)
+				if(kDtorMask[p] == i)
+					pointer = true;
+			if(pointer)
+				continue;
+			unsigned w;
+			memcpy(&w, pbytes + i, 4);
+			dpl = nxFold(dpl, w);
+			}
+
+		unsigned char mbytes[0xe8];
+		memset(mbytes, 0xcd, sizeof(mbytes));
+		MeshShape& mesh = *new(mbytes) MeshShape(0, 0);
+		mesh.nxMeshScalarDeletingDtor(0);
+
+		unsigned dm = 2166136261u;
+		for(unsigned i = 0; i < sizeof(mbytes); i += 4)
+			{
+			bool pointer = false;
+			for(size_t p = 0; p < 6; ++p)
+				if(kDtorMask[p] == i)
+					pointer = true;
+			if(pointer)
+				continue;
+			unsigned w;
+			memcpy(&w, mbytes + i, 4);
+			dm = nxFold(dm, w);
+			}
+
+		bool ok = dpl == oPlaneDtorDigest && dm == oMeshDtorDigest;
+		printf("dtors2 candidate ok=%u plane=%08x mesh=%08x\n",
+			ok ? 1u : 0u, dpl, dm);
+		if(!ok)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 26u);
 		}
 
 		// -- sphere set-radius: stored word must equal the driven value.

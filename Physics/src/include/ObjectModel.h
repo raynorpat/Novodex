@@ -581,6 +581,11 @@ class PlaneShape
 	//! row.
 	bool				nxPlaneSaveState(void* record);
 
+	//! PLANE-table slot 0, phys_fn_001263 (0x00025420): scalar deleting
+	//! destructor -- colobj destroyed unconditionally, base-dtor chain,
+	//! self-free through allocator slot +0x14 when flags&1.
+	void				nxPlaneScalarDeletingDtor(unsigned flags);
+
 	//! PLANE-table slots 9 and 11, phys_fn_001257 (0x000251d0): one row
 	//! filling two slots -- zeroes out[0..2] and writes +FLT_MAX (the
 	//! plane's unbounded reach) to out[3].
@@ -633,6 +638,12 @@ class MeshShape
 	NxU32				nxMeshGetMeshWord() const
 							{ return *reinterpret_cast<const NxU32*>(
 								reinterpret_cast<const unsigned char*>(mWordE0) + 0xe4); }
+
+	//! MESH-table slot 0, phys_fn_001399 (0x00028e80): scalar deleting
+	//! destructor -- colobj destroyed unconditionally, the bound mesh's
+	//! refcount at mesh+0x74 DECREMENTED when non-null, base-dtor chain,
+	//! self-free through allocator slot +0x14 when flags&1.
+	void				nxMeshScalarDeletingDtor(unsigned flags);
 
 	//! MESH-table slot 13, phys_fn_001385 (0x00027e60): the mesh's +0xe4
 	//! word to record+0x4c, mWordE4 to record+0x50, then the BASE

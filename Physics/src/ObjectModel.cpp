@@ -334,6 +334,17 @@ void SphereShape::nxSphereSetRadius(float radius)
 	// phys_fn_001315-adjacent helper 0x26c90 (see evidence 3k).
 	}
 
+// phys_fn_001263 (0x00025420), PLANE-table slot 0.
+void PlaneShape::nxPlaneScalarDeletingDtor(unsigned flags)
+	{
+	if(mBase.mWord9C)
+		{
+		// destroyed through its own vtable: 0x00025433..37
+		}
+	mBase.mPrunable.~Prunable();			// tail of the base-dtor chain
+	(void) flags;							// self-free arm not modeled
+	}
+
 // phys_fn_001375 (0x00027c30), SPHERE-table slot 0.
 void SphereShape::nxSphereScalarDeletingDtor(unsigned flags)
 	{
@@ -489,6 +500,21 @@ void BoxShape::nxBoxScalarDeletingDtor(unsigned flags)
 	mBase.mPrunable.~Prunable();			// tail of 0x00026bd0: jmp 0xb5640
 	(void) flags;							// flags&1 self-free arm: operator
 	}										// delete territory, not modeled
+
+// phys_fn_001399 (0x00028e80), MESH-table slot 0.
+void MeshShape::nxMeshScalarDeletingDtor(unsigned flags)
+	{
+	if(mBase.mWord9C)
+		{
+		// destroyed through its own vtable: 0x00028e93..97
+		}
+	if(mWordE0)
+		{
+		--*reinterpret_cast<NxU32*>(mWordE0 + 0x74);	// dec [mesh+0x74]: 0x00028ea3
+		}
+	mBase.mPrunable.~Prunable();			// tail of the base-dtor chain
+	(void) flags;							// self-free arm not modeled
+	}
 
 // ---------------------------------------------------------------------------
 // PlaneShape. See ObjectModel.h for the row map.

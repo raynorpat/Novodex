@@ -461,6 +461,13 @@ object unconditionally through its own vtable, base-dtor chain, self-free
 through allocator slot +0x14 when flag&1. Driven bitwise (flag=0) by the
 `sphdtor` family: oracle digest `c4a35d15`.
 
+**PLANE and MESH slot-0 destructors closed** (phys_fn_001263 /
+phys_fn_001399): same deleting-destructor structure as box/sphere, with the
+mesh adding a symmetric `dec [mesh+0x74]` refcount decrement when a mesh is
+bound (mirroring slot 12's increment). Both driven bitwise (flag=0) by the
+extended `dtors2` family: plane digest `7ac6fe28`, mesh digest `b3c6ab70`.
+Registrations 41 lines, oracle digest `e2111385`, coverage floor 41.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is

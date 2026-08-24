@@ -2697,6 +2697,20 @@
    "reason": "SPHERE vtable slot 10; copies pose-one translation and the radius into a caller record; driven bitwise by the sphererows family"
   },
   {
+   "id": "phys_fn_001263",
+   "label": "NxPlane scalar deleting destructor (slot 0)",
+   "confidence": "semantic",
+   "evidence": "oracle/capstone/manifest.json#/entries/2976",
+   "reason": "PLANE vtable .rdata:0x107430 slot 0; destroys the embedded collision object unconditionally through its own vtable, runs the base-dtor chain, then frees this through SDK-allocator slot +0x14 when flag&1; driven bitwise (flag=0) by the dtors2 family"
+  },
+  {
+   "id": "phys_fn_001399",
+   "label": "NxMesh scalar deleting destructor (slot 0)",
+   "confidence": "semantic",
+   "evidence": "oracle/capstone/manifest.json#/entries/3548",
+   "reason": "MESH vtable .rdata:0x107630 slot 0; destroys the embedded collision object unconditionally, DECREMENTS the bound mesh refcount at mesh+0x74 when non-null, runs the base-dtor chain, then frees this through allocator slot +0x14 when flag&1; driven bitwise by the dtors2 family"
+  },
+  {
    "id": "phys_fn_001257",
    "label": "NxPlane unbounded-extent row (slots 9/11)",
    "confidence": "semantic",
