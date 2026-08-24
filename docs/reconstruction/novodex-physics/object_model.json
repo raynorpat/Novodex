@@ -554,5 +554,37 @@
     "sweep_pipeline": "Task 4 continuous-collision detection",
     "debug_draw": "renderer vtable interface",
     "cached_bounds": "multi-level helper chains (0x1c8c0, 0x1c930, 0x1c980)"
+  },
+  "next_steps": {
+    "task_2_descriptors": {
+      "status": "foundation complete",
+      "done": "descriptor layout fully named; save/load rows closed for box/sphere/capsule/plane/mesh",
+      "next": [
+        "reconstruct NxShapeDesc::isValid() validation chain",
+        "reconstruct NxMaterial and material combine logic",
+        "close remaining loadFromDesc rows using transcribed nxApplyDescriptor"
+      ]
+    },
+    "task_3_shapes": {
+      "status": "simple rows exhausted; deep chains blocked on infrastructure",
+      "closed": 38,
+      "remaining": [
+        "raycast partners (slot 5)",
+        "sweep entries (slot 7)",
+        "debug draw (slot 3)",
+        "cached bounds (slot 4)"
+      ],
+      "blocked_on": [
+        "registry fixture",
+        "error stream",
+        "raycast pipeline",
+        "sweep pipeline",
+        "renderer interface"
+      ]
+    },
+    "task_4_actors": {
+      "status": "not started",
+      "prerequisite": "scene infrastructure (dirty-flag accumulator table, actor body links)"
+    }
   }
 }
