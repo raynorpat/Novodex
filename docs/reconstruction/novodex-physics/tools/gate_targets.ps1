@@ -634,7 +634,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'planeext row=phys_fn_001257 out=00000000.00000000.00000000.7f7fffff',
         'dtors2 plane=phys_fn_001263 digest=7ac6fe28 mesh=phys_fn_001399 digest=b3c6ab70',
         'capdtor row=phys_fn_001014 digest=7a376673',
-        'capaabb row=phys_fn_001004 minmax=00000000.00000000.00000000.00000000.00000000.00000000',
+        'capaabb row=phys_fn_001004 minmax=80000000.80000000.80000000.00000000.00000000.00000000',
         'sphload row=phys_fn_001353 rad=40200000 group=0006',
         'setgroup row=phys_fn_001329 hw_d8=0007 expected=0007',
         'sphererows r15=00000000 save13=1 d13=f9280a78 zcr=00000000.00000000.00000000.00000000 cr=00000000.00000000.00000000.00000000',
