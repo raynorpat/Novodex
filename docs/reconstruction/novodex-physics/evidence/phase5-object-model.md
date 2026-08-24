@@ -263,6 +263,35 @@ Driven: new `mesh` family on a poisoned 0xe8 twin (six pointer words
 masked). Oracle digest `422a1f78`; candidate identical bitwise.
 Registrations 22 lines, oracle digest `ba13689f`, coverage floor 22.
 
+## 3f. The BASE vtable's slot map, and its first three behavior rows
+
+The BASE shape table `.rdata 0x107494` (12 slots, from the pe.json pointer
+records — slot → target):
+
+| slot | target | row | state |
+|------|--------|-----|-------|
+| 0 | 0x00027710 | phys_fn_001345 (34 B): scalar deleting dtor — calls 0x26bd0 then frees through SDK-allocator slot +0x14 when flag&1 | discovered |
+| 1 | 0x00027740 | descriptor-driven update: copies a pose into +0x6c, halfwords from the desc, colobj+4; calls 0xedc0/0x26d90 | discovered |
+| 2 | 0x000256f0 | phys_fn_001277 (98 B): deleting-dtor thunk over slot 0 | discovered |
+| 3 | 0x00025960 | phys_fn_001305 (685 B): x87 world-bounds-class computation against globals 0x10123bc8/0x10123b4c | discovered |
+| 4 | 0x00024f70 | **phys_fn_001249**: `xor al,al; ret 0xc` — two args, false | **reconstructed** |
+| 5 | 0x000b4070 | **phys_fn_004812**: `xor eax,eax; ret 0x14` — four args, null | **reconstructed** |
+| 6 | 0x000266a0 | phys_fn_001315 (1061 B): owner/scene-touching update (reads [owner+4]+0x540) | discovered |
+| 7 | 0x00022dd0 | **phys_fn_001035**: `xor al,al; ret 8` — the sweep stub Phase 3 left unresolved | **reconstructed** |
+| 8–11 | 0x000f41dc ×4 | purecall filler | filler |
+
+The three stub rows are transcribed as `ShapeBase` members
+(`nxBaseSlot4/nxBaseSlot5/nxBaseSlot7`) and driven by a new `basevt`
+family: the oracle rows run on a dummy this with marked arguments, the
+candidate members answer through the reconstruction, both fold to the same
+transcript (`ret4=0 ret5=00000000 ret7=0`). Slot 7's closure is exact: it is
+Phase 3's continuous-collision sweep entry, and what the base shape does
+with it is answer "no sweep" — the finals' overrides (box phys_fn_000951
+etc.) remain the sweep's owning rows. Slots 0–3 and 6 stay open until their
+drives exist; making `ShapeBase` polymorphic waits for them.
+
+Driven: registrations 23 lines, oracle digest `5f70966f`, coverage floor 23.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is

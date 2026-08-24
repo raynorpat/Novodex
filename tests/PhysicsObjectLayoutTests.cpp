@@ -773,7 +773,37 @@ int wmain(int argc, wchar_t** argv)
 		colobjOk ? 1u : 0u);
 	}
 
-	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1\n",
+	// -----------------------------------------------------------------------
+	// The BASE vtable's stub rows, driven on a dummy this (the rows read
+	// nothing): slot 4 phys_fn_001249 (two args -> false), slot 5
+	// phys_fn_004812 (four args -> null), slot 7 phys_fn_001035 (one arg ->
+	// false, the sweep stub). The candidate side answers through ShapeBase's
+	// member transcriptions.
+	{
+	typedef bool (__thiscall* NxSlot4Fn)(void* self, void* a1, void* a2);
+	typedef void* (__thiscall* NxSlot5Fn)(void* self, void* a1, void* a2, void* a3, void* a4);
+	typedef bool (__thiscall* NxSlot7Fn)(void* self, void* a1);
+	NxSlot4Fn slot4 = (NxSlot4Fn) (base + 0x00024f70);
+	NxSlot5Fn slot5 = (NxSlot5Fn) (base + 0x000b4070);
+	NxSlot7Fn slot7 = (NxSlot7Fn) (base + 0x00022dd0);
+	unsigned char dummyThis[0x20];
+	memset(dummyThis, 0xcd, sizeof(dummyThis));
+	const unsigned kA1 = 0x11111111u, kA2 = 0x22222222u,
+		kA3 = 0x33333333u, kA4 = 0x44444444u;
+
+	bool r4 = slot4(dummyThis, (void*) kA1, (void*) kA2);
+	void* r5 = slot5(dummyThis, (void*) kA1, (void*) kA2, (void*) kA3, (void*) kA4);
+	bool r7 = slot7(dummyThis, (void*) kA1);
+	unsigned r5bits = 0;
+	memcpy(&r5bits, &r5, 4);
+	oracleDigest = nxFold(oracleDigest, r4 ? 1u : 0u);
+	oracleDigest = nxFold(oracleDigest, r5bits);
+	oracleDigest = nxFold(oracleDigest, r7 ? 1u : 0u);
+	printf("basevt slots=4:001249,5:004812,7:001035 ret4=%u ret5=%08x ret7=%u\n",
+		r4 ? 1u : 0u, r5bits, r7 ? 1u : 0u);
+	}
+
+	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3\n",
 		(unsigned) (sizeof(nxTables) / sizeof(nxTables[0])));
 	printf("layout oracle digest=%08x\n", oracleDigest);
 
@@ -1220,6 +1250,26 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 11u);
+		}
+
+		// -- base vtable stubs: the transcription's members must answer the
+		// marked arguments exactly as the oracle rows do.
+		{
+		const unsigned kA1 = 0x11111111u, kA2 = 0x22222222u,
+			kA3 = 0x33333333u, kA4 = 0x44444444u;
+		ShapeBase shape(0, 0);
+		bool c4 = shape.nxBaseSlot4((void*) kA1, (void*) kA2);
+		void* c5 = shape.nxBaseSlot5((void*) kA1, (void*) kA2, (void*) kA3, (void*) kA4);
+		bool c7 = shape.nxBaseSlot7((void*) kA1);
+		unsigned c5bits = 0;
+		memcpy(&c5bits, &c5, 4);
+		bool ok = !c4 && c5bits == 0 && !c7;
+		printf("basevt candidate ok=%u ret4=%u ret5=%08x ret7=%u\n",
+			ok ? 1u : 0u, c4 ? 1u : 0u, c5bits, c7 ? 1u : 0u);
+		if(!ok)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 12u);
 		}
 
 		printf("candidate CANDIDATE-MISSING family=vtables reason=shape finals/actor classes are Tasks 3-4\n");

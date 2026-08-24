@@ -228,6 +228,22 @@ class ShapeBase
 	//! second is stored raw at +0xd4 and named by nothing yet.
 					ShapeBase(void* owner, unsigned argument);
 
+	// The BASE vtable's stub rows (.rdata 0x10107494), transcribed as members
+	// ahead of the class going polymorphic. Each carries its slot number.
+
+	//! Slot 4, phys_fn_001249 (0x00024f70): `xor al,al; ret 0xc` -- two stack
+	//! arguments, always false. Consumer unestablished.
+	bool				nxBaseSlot4(void* argument1, void* argument2);
+	//! Slot 5, phys_fn_004812 (0x000b4070): `xor eax,eax; ret 0x14` -- four
+	//! stack arguments, always null.
+	void*				nxBaseSlot5(void* argument1, void* argument2,
+							void* argument3, void* argument4);
+	//! Slot 7, phys_fn_001035 (0x00022dd0): `xor al,al; ret 8` -- one stack
+	//! argument, always false. This is the continuous-collision sweep entry
+	//! Phase 3 left unresolved: the base shape cannot sweep, so the row is a
+	//! stub here while every final overrides it.
+	bool				nxBaseSlot7(void* argument1);
+
 	//! +0x00, carried opaque like every other vtable slot in this model.
 	void*				mVptrSlot;
 	//! +0x04, first argument: the shape's owner.

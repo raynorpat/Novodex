@@ -2597,6 +2597,27 @@
    "confidence": "semantic",
    "evidence": "oracle/capstone/manifest.json#/entries/3541",
    "reason": "calls phys_fn_001273 (the base-shape ctor) at 0x00027dbf, stores the MESH vtable .rdata:0x10107630 (0x00027dc4), zeroes two data words at +0xe0/+0xe4 (mesh pointer and flags candidates), builds its collision object through the mesh-family variant phys_fn_001241 and overwrites the sentinel with 4 = NX_SHAPE_MESH; driven byte-for-byte by the NxPhysicsObjectLayoutTests mesh family"
+  },
+  {
+   "id": "phys_fn_001249",
+   "label": "NxShape base-table slot 4 stub",
+   "confidence": "semantic",
+   "evidence": "oracle/capstone/manifest.json#/entries/3377",
+   "reason": "the value of BASE shape vtable .rdata:0x10107494 slot 4 (pe.json pointer record); xor al,al; ret 0xc -- always false; driven against ShapeBase::nxBaseSlot4 by the basevt family"
+  },
+  {
+   "id": "phys_fn_004812",
+   "label": "NxShape base-table slot 5 stub",
+   "confidence": "semantic",
+   "evidence": "oracle/capstone/manifest.json#/entries/15619",
+   "reason": "the value of BASE shape vtable .rdata:0x10107494 slot 5 (pe.json pointer record); xor eax,eax; ret 0x14 -- always null; driven against ShapeBase::nxBaseSlot5 by the basevt family"
+  },
+  {
+   "id": "phys_fn_001035",
+   "label": "NxShape sweep stub (base slot 7)",
+   "confidence": "semantic",
+   "evidence": "oracle/capstone/manifest.json#/entries/3125",
+   "reason": "the value of BASE shape vtable .rdata:0x10107494 slot 7 (pe.json pointer record); xor al,al; ret 8 -- Phase 3's unresolved continuous-collision sweep entry, which the base shape answers with a stub while every final overrides it; driven against ShapeBase::nxBaseSlot7 by the basevt family"
   }
  ]
 }

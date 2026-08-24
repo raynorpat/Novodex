@@ -345,3 +345,25 @@ MeshShape::MeshShape(void* owner, unsigned argument)
 
 	mBase.mSentinelD0 = 4;					// NX_SHAPE_MESH: 0x00027e05
 	}
+
+// ---------------------------------------------------------------------------
+// The BASE vtable's stub rows. See ObjectModel.h for the slot map.
+
+// phys_fn_001249 (0x00024f70), base-table slot 4.
+bool ShapeBase::nxBaseSlot4(void* /*argument1*/, void* /*argument2*/)
+	{
+	return false;							// xor al,al; ret 0xc
+	}
+
+// phys_fn_004812 (0x000b4070), base-table slot 5.
+void* ShapeBase::nxBaseSlot5(void* /*argument1*/, void* /*argument2*/,
+	void* /*argument3*/, void* /*argument4*/)
+	{
+	return 0;								// xor eax,eax; ret 0x14
+	}
+
+// phys_fn_001035 (0x00022dd0), base-table slot 7.
+bool ShapeBase::nxBaseSlot7(void* /*argument1*/)
+	{
+	return false;							// xor al,al; ret 8
+	}
