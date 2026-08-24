@@ -224,6 +224,7 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oSphereDigest = 0;
 	unsigned oCapsuleDigest = 0;
 	unsigned oPlaneDigest = 0;
+	unsigned oMeshDigest = 0;
 
 	// -----------------------------------------------------------------------
 	// Vtable identity.
@@ -707,7 +708,72 @@ int wmain(int argc, wchar_t** argv)
 		colobjOk ? 1u : 0u);
 	}
 
-	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1\n",
+	// -----------------------------------------------------------------------
+	// The mesh-shape constructor, phys_fn_001379 (0x00027db0): __thiscall,
+	// `ret 8`, both arguments forwarded to phys_fn_001273. Driven on a
+	// poisoned 0xe8 buffer with a null owner and a marked second argument.
+	// Masked words: vtable (+0x00), colobj (+0x9c) and the four base-ctor
+	// pointer words.
+	{
+	NxShapeCtorFn meshCtor = (NxShapeCtorFn) (base + 0x00027db0);
+	static const unsigned kPointerWords[] = { 0x00, 0x9c, 0xa4, 0xa8, 0xb0, 0xb4 };
+	unsigned char object[0xe8];
+	memset(object, 0xcd, sizeof(object));
+	const unsigned kArg2 = 0x5a5a5a5au;
+
+	if(!nxInstallAllocatorShim(base))
+		return nxFail("the allocator holder word moved; re-pin the probe");
+
+	unsigned faultAddr = 0, faultCode = 0;
+	nxGuardedCtor(meshCtor, object, 0, kArg2, faultCode, faultAddr);
+	if(faultCode)
+		{
+		fprintf(stderr, "FAIL mesh ctor fault code=%08x at=%08x rva=%08x\n",
+			faultCode, faultAddr, faultAddr - (unsigned) (uintptr_t) base);
+		return 1;
+		}
+
+	unsigned digest = 2166136261u;
+	for(unsigned i = 0; i < sizeof(object); i += 4)
+		{
+		bool pointer = false;
+		for(size_t p = 0; p < sizeof(kPointerWords) / sizeof(kPointerWords[0]); ++p)
+			if(kPointerWords[p] == i)
+				pointer = true;
+		if(pointer)
+			continue;
+		unsigned word;
+		memcpy(&word, object + i, 4);
+		digest = nxFold(digest, word);
+		}
+	oMeshDigest = digest;
+	oracleDigest = nxFold(oracleDigest, digest);
+
+	unsigned colobj = 0;
+	memcpy(&colobj, object + 0x9c, 4);
+	bool colobjOk = colobj != 0;
+	unsigned colobjArg8 = 0, colobjArg18 = 0, colobjMember = 0;
+	if(colobjOk)
+		{
+		memcpy(&colobjArg8, (unsigned char*) colobj + 0x08, 4);
+		memcpy(&colobjArg18, (unsigned char*) colobj + 0x18, 4);
+		memcpy(&colobjMember, (unsigned char*) colobj + 0x0c, 4);
+		colobjOk = colobjArg8 == (unsigned) (uintptr_t) object
+			&& colobjArg18 == (unsigned) (uintptr_t) object
+			&& colobjMember != 0;
+		}
+
+	unsigned wE0 = 0, wE4 = 0, sentinelMesh = 0;
+	memcpy(&wE0, object + 0xe0, 4);
+	memcpy(&wE4, object + 0xe4, 4);
+	memcpy(&sentinelMesh, object + 0xd0, 4);
+	printf("mesh ctor=phys_fn_001379 size=%u digest=%08x sentinel_d0=%u arg_d4=%08x "
+		"word_e0=%08x word_e4=%08x colobj_ok=%u\n",
+		(unsigned) sizeof(object), digest, sentinelMesh, kArg2, wE0, wE4,
+		colobjOk ? 1u : 0u);
+	}
+
+	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1\n",
 		(unsigned) (sizeof(nxTables) / sizeof(nxTables[0])));
 	printf("layout oracle digest=%08x\n", oracleDigest);
 
@@ -1103,6 +1169,57 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 9u);
+		}
+
+		// -- mesh shape: same contract on a 0xe8 twin; the ctor zeroes its two
+		// data words and overwrites the sentinel with NX_SHAPE_MESH=4.
+		{
+		static const unsigned kPointerWords[] = { 0x00, 0x9c, 0xa4, 0xa8, 0xb0, 0xb4 };
+		const unsigned kArg2 = 0x5a5a5a5au;
+		unsigned char bytes[0xe8];
+		memset(bytes, 0xcd, sizeof(bytes));
+		MeshShape& shape = *new(bytes) MeshShape(0, kArg2);
+
+		unsigned digest = 2166136261u;
+		for(unsigned i = 0; i < sizeof(bytes); i += 4)
+			{
+			bool pointer = false;
+			for(size_t p = 0; p < sizeof(kPointerWords) / sizeof(kPointerWords[0]); ++p)
+				if(kPointerWords[p] == i)
+					pointer = true;
+			if(pointer)
+				continue;
+			unsigned word;
+			memcpy(&word, bytes + i, 4);
+			digest = nxFold(digest, word);
+			}
+
+		unsigned colobj = 0;
+		memcpy(&colobj, bytes + 0x9c, 4);
+		bool colobjOk = colobj != 0;
+		unsigned colobjArg8 = 0, colobjArg18 = 0, colobjMember = 0;
+		if(colobjOk)
+			{
+			memcpy(&colobjArg8, (unsigned char*) colobj + 0x08, 4);
+			memcpy(&colobjArg18, (unsigned char*) colobj + 0x18, 4);
+			memcpy(&colobjMember, (unsigned char*) colobj + 0x0c, 4);
+			colobjOk = colobjArg8 == (unsigned) (uintptr_t) bytes
+				&& colobjArg18 == (unsigned) (uintptr_t) bytes
+				&& colobjMember != 0;
+			}
+
+		unsigned wE0 = 0, wE4 = 0, sentinelMesh = 0;
+		memcpy(&wE0, bytes + 0xe0, 4);
+		memcpy(&wE4, bytes + 0xe4, 4);
+		memcpy(&sentinelMesh, bytes + 0xd0, 4);
+		bool ok = digest == oMeshDigest
+			&& wE0 == 0 && wE4 == 0 && sentinelMesh == 4 && colobjOk;
+		printf("mesh candidate ok=%u digest=%08x sentinel_d0=%u\n",
+			ok ? 1u : 0u, digest, sentinelMesh);
+		if(!ok)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 11u);
 		}
 
 		printf("candidate CANDIDATE-MISSING family=vtables reason=shape finals/actor classes are Tasks 3-4\n");

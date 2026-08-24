@@ -2590,6 +2590,13 @@
    "confidence": "semantic",
    "evidence": "oracle/capstone/manifest.json#/entries/3374",
    "reason": "calls phys_fn_001273 (the base-shape ctor) at 0x00024edf, stores the PLANE vtable .rdata:0x10107430 (0x00024ee4), plants the default plane equation normal(0,1,0)/D=0 at +0xe0..+0xec, fills the tangent frame through NxFoundation!NxNormalToTangents (import 0x1010418c), sets +0x108=1 and overwrites the sentinel with 0 = NX_SHAPE_PLANE; driven byte-for-byte by the NxPhysicsObjectLayoutTests plane family"
+  },
+  {
+   "id": "phys_fn_001379",
+   "label": "MeshShape::MeshShape",
+   "confidence": "semantic",
+   "evidence": "oracle/capstone/manifest.json#/entries/3541",
+   "reason": "calls phys_fn_001273 (the base-shape ctor) at 0x00027dbf, stores the MESH vtable .rdata:0x10107630 (0x00027dc4), zeroes two data words at +0xe0/+0xe4 (mesh pointer and flags candidates), builds its collision object through the mesh-family variant phys_fn_001241 and overwrites the sentinel with 4 = NX_SHAPE_MESH; driven byte-for-byte by the NxPhysicsObjectLayoutTests mesh family"
   }
  ]
 }

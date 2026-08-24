@@ -234,6 +234,35 @@ words masked each; the plane folds its tangents IN). Oracle digests
 `9b0768d7` / `abed37e0`; candidates identical bitwise. Registrations 21
 lines, oracle digest `a6f9c9fe`, coverage floor 21.
 
+## 3e. MESH transcribed — the six shape-family constructors are now decoded
+
+Task 3 continued with `phys_fn_001379` (0x27db0, 101 bytes), the MESH
+constructor, into `Physics/src/ObjectModel.cpp` (`MeshShape`,
+`sizeof == 0xe8`): forwards both arguments to phys_fn_001273
+(0x27dbb..bf), stores the MESH vptr 0x10107630 (0x27dc4), zeroes TWO data
+words at +0xe0/+0xe4 (a triangle-mesh pointer and a flag word are the
+natural candidates; nothing in this ctor names them — the descriptor path
+will), builds its collision object through the mesh-family variant
+**phys_fn_001241** (0x24e40) into +0x9c, and overwrites the sentinel with
+**4** = NX_SHAPE_MESH.
+
+With this, every shape-family constructor is accounted for from listings:
+
+| type | ctor | sentinel | colobj variant | tail data |
+|------|------|----------|----------------|-----------|
+| plane | phys_fn_001247 | 0 | phys_fn_001159 | equation + tangent frame (+0x108=1) |
+| sphere | phys_fn_001349 | 1 | phys_fn_001193 (generic) | radius @+0xe0 |
+| box | phys_fn_000977 | 2 | phys_fn_001075 | hull facade + dims, faces ptr-zeroed |
+| capsule | phys_fn_000987 | 3 | phys_fn_001123 | two zeroed floats |
+| mesh | phys_fn_001379 | 4 | phys_fn_001241 | two zeroed words |
+| compound | phys_fn_001033 | 5 | NONE | triplets +0xe0/+0xf0, +0xd8=ffff, -1.0f@+0x10c |
+
+The compound stays untranscribed; its ctor is decoded in §3d.
+
+Driven: new `mesh` family on a poisoned 0xe8 twin (six pointer words
+masked). Oracle digest `422a1f78`; candidate identical bitwise.
+Registrations 22 lines, oracle digest `ba13689f`, coverage floor 22.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is

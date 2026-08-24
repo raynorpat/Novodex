@@ -452,4 +452,43 @@ static_assert(offsetof(PlaneShape, mDistanceEC) == 0xec, "the distance follows t
 static_assert(offsetof(PlaneShape, mTangentF0) == 0xf0, "the first tangent is at +0xf0");
 static_assert(offsetof(PlaneShape, mBinormalFC) == 0xfc, "the second tangent is at +0xfc");
 
+/**
+The mesh shape. Constructor phys_fn_001379 (0x00027db0, 101 bytes,
+__thiscall, `ret 8`), which forwards BOTH arguments unchanged to
+ShapeBase::ShapeBase (0x00027dbb..bf) and then:
+
+	+0x000	vptr			final MESH table .rdata 0x10107630, store 0x00027dc4
+	+0x09c	collision object	a fresh 0x1c-byte block through the SDK allocator
+	                        (malloc(0x1c,0), 0x00027dde..ec) built by
+	                        phys_fn_001241 (0x00024e40, the mesh-family variant
+	                        of the shared collision-object constructor) and
+	                        stored at +0x9c (0x00027dff); null if allocation failed
+	+0x0d0	4				sentinel = NX_SHAPE_MESH, overwriting the base's
+	                        0x7fffffff (store 0x00027e05)
+	+0x0e0, +0x0e4	two zeroed words -- by every analogue so far these are the
+	                        mesh's first data words (a triangle-mesh pointer and
+	                        a flag word are the natural candidates); this
+	                        constructor only zeroes them, and nothing in it
+	                        names them.
+
+Like every family so far, the mesh writes its own tail (vptr 0x00027dc4,
+zeroes 0x00027dca/dd4) after the forwarded base construction returns.
+*/
+class MeshShape
+	{
+	public:
+	//! phys_fn_001379 (0x00027db0). Same argument pair as the base ctor.
+					MeshShape(void* owner, unsigned argument);
+
+	//! +0x00..+0xdf, the base shape subobject.
+	ShapeBase			mBase;
+	//! +0x0e0, +0x0e4, two data words construction zeroes; unnamed yet.
+	NxU32				mWordE0;
+	NxU32				mWordE4;
+	};
+
+static_assert(sizeof(MeshShape) == 0xe8, "the mesh is base plus two words so far");
+static_assert(offsetof(MeshShape, mWordE0) == 0xe0, "the first datum is at +0xe0");
+static_assert(offsetof(MeshShape, mWordE4) == 0xe4, "the second datum is at +0xe4");
+
 #endif

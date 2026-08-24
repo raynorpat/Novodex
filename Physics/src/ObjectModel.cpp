@@ -323,3 +323,25 @@ PlaneShape::PlaneShape(void* owner, unsigned argument)
 
 	mWord108 = 1;							// 0x00024f57
 	}
+
+// ---------------------------------------------------------------------------
+// MeshShape. See ObjectModel.h for the row map.
+
+MeshShape::MeshShape(void* owner, unsigned argument)
+	: mBase(owner, argument)				// forwarded unchanged: 0x00027dbb..bf
+	{
+	mWordE0 = 0;							// mov [esi+0xe0],0 at 0x00027dca
+	mWordE4 = 0;							// mov [esi+0xe4],0 at 0x00027dd4
+
+	// The embedded collision object: a fresh 0x1c-byte block through the SDK
+	// allocator (0x00027dde..ec), built by phys_fn_001241 -- the mesh-family
+	// variant of the shared collision-object constructor -- with the mesh
+	// shape stored at BOTH +0x08 and +0x18.
+	void* memory = nxGetSdkAllocator()->malloc(0x1c, NX_MEMORY_PERSISTENT);
+	CollisionObject* object = memory
+		? new(memory) CollisionObject(this)
+		: 0;								// null arm: 0x00027dfd
+	mBase.mWord9C = reinterpret_cast<NxU32>(object);	// 0x00027dff
+
+	mBase.mSentinelD0 = 4;					// NX_SHAPE_MESH: 0x00027e05
+	}
