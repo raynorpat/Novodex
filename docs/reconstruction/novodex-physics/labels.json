@@ -2618,6 +2618,13 @@
    "confidence": "semantic",
    "evidence": "oracle/capstone/manifest.json#/entries/3125",
    "reason": "the value of BASE shape vtable .rdata:0x10107494 slot 7 (pe.json pointer record); xor al,al; ret 8 -- Phase 3's unresolved continuous-collision sweep entry, which the base shape answers with a stub while every final overrides it; driven against ShapeBase::nxBaseSlot7 by the basevt family"
+  },
+  {
+   "id": "phys_fn_001277",
+   "label": "NxShape save-to-descriptor (base slot 2)",
+   "confidence": "semantic",
+   "evidence": "oracle/capstone/manifest.json#/entries/3414",
+   "reason": "the value of BASE shape vtable .rdata:0x10107494 slot 2 (pe.json pointer record); copies pose three, the halfword trio and [colobj+4] into a descriptor-shaped record and returns true -- the write-side partner of slot 1's descriptor update; driven bitwise by the basesave family"
   }
  ]
 }

@@ -367,3 +367,21 @@ bool ShapeBase::nxBaseSlot7(void* /*argument1*/)
 	{
 	return false;							// xor al,al; ret 8
 	}
+
+// phys_fn_001277 (0x000256f0), base-table slot 2. Pure data movement:
+// pose three, the halfword trio and [colobj+4] go into a descriptor-shaped
+// record; every other byte of the record is untouched.
+bool ShapeBase::nxBaseSaveState(void* record)
+	{
+	unsigned char* rec = static_cast<unsigned char*>(record);
+	memcpy(rec + 8, &mPose6C, sizeof(mPose6C));		// rep movsd 9 + three words
+	unsigned int de = mHalfwordDE;
+	memcpy(rec + 0x38, &de, sizeof(de));			// movzx + dword store
+	memcpy(rec + 0x3c, &mHalfwordD8, sizeof(mHalfwordD8));
+	memcpy(rec + 0x3e, &mHalfwordDA, sizeof(mHalfwordDA));
+	unsigned colobj = mWord9C;						// mov edx,[eax+0x9c]
+	unsigned word04 = *reinterpret_cast<const unsigned*>(
+		reinterpret_cast<const unsigned char*>(colobj) + 4);
+	memcpy(rec + 0x40, &word04, sizeof(word04));	// no null test in the image
+	return true;									// mov al,1
+	}

@@ -225,6 +225,8 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oCapsuleDigest = 0;
 	unsigned oPlaneDigest = 0;
 	unsigned oMeshDigest = 0;
+	unsigned oSaveStateDigest = 0;
+	static unsigned char sSaveStateRecord[0x48];
 
 	// -----------------------------------------------------------------------
 	// Vtable identity.
@@ -803,7 +805,49 @@ int wmain(int argc, wchar_t** argv)
 		r4 ? 1u : 0u, r5bits, r7 ? 1u : 0u);
 	}
 
-	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3\n",
+	// -----------------------------------------------------------------------
+	// BASE slot 2, phys_fn_001277: save-to-descriptor. A real sphere is
+	// constructed first (shim allocator), then the row fills a poisoned
+	// descriptor record; every byte it writes is module-independent.
+	{
+	NxShapeCtorFn sphereCtor2 = (NxShapeCtorFn) (base + 0x000277c0);
+	typedef bool (__thiscall* NxSaveStateFn)(void* self, void* record);
+	NxSaveStateFn saveState = (NxSaveStateFn) (base + 0x000256f0);
+
+	if(!nxInstallAllocatorShim(base))
+		return nxFail("the allocator holder word moved; re-pin the probe");
+
+	unsigned char shape[0xe4];
+	memset(shape, 0xcd, sizeof(shape));
+	sphereCtor2(shape, 0, 0);
+
+	unsigned char record[0x48];
+	memset(record, 0xcd, sizeof(record));
+	bool saved = saveState(shape, record);
+
+	unsigned digest = 2166136261u;
+	for(unsigned i = 0; i < sizeof(record); i += 4)
+		{
+		unsigned word;
+		memcpy(&word, record + i, 4);
+		digest = nxFold(digest, word);
+		}
+	oSaveStateDigest = digest;
+	oracleDigest = nxFold(oracleDigest, digest);
+
+	unsigned poseDiag = 0, word38 = 0, word3c = 0, word40 = 0, poisonHead = 0;
+	memcpy(&poseDiag, record + 8, 4);
+	memcpy(&word38, record + 0x38, 4);
+	memcpy(&word3c, record + 0x3c, 4);
+	memcpy(&word40, record + 0x40, 4);
+	memcpy(&poisonHead, record, 4);
+	memcpy(sSaveStateRecord, record, sizeof(record));
+	printf("basesave row=phys_fn_001277 saved=%u digest=%08x pose_diag=%08x "
+		"word38=%08x word3c=%08x word40=%08x poison_head=%08x\n",
+		saved ? 1u : 0u, digest, poseDiag, word38, word3c, word40, poisonHead);
+	}
+
+	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1\n",
 		(unsigned) (sizeof(nxTables) / sizeof(nxTables[0])));
 	printf("layout oracle digest=%08x\n", oracleDigest);
 
@@ -1270,6 +1314,51 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 12u);
+		}
+
+		// -- base save-state: the transcription fills a poisoned twin record
+		// from a constructed sphere; every byte must match the oracle's.
+		{
+		unsigned char bytes[0xe4];
+		memset(bytes, 0xcd, sizeof(bytes));
+		SphereShape& shape = *new(bytes) SphereShape(0, 0);
+
+		unsigned char record[0x48];
+		memset(record, 0xcd, sizeof(record));
+		bool saved = shape.mBase.nxBaseSaveState(record);
+
+		unsigned digest = 2166136261u;
+		for(unsigned i = 0; i < sizeof(record); i += 4)
+			{
+			unsigned word;
+			memcpy(&word, record + i, 4);
+			digest = nxFold(digest, word);
+			}
+
+		const unsigned kOneBits = 0x3f800000u, kPoison = 0xcdcdcdcdu, kEight = 8u;
+		unsigned poseDiag = 0, word38 = 0, word40 = 0, poisonHead = 0;
+		memcpy(&poseDiag, record + 8, 4);
+		memcpy(&word38, record + 0x38, 4);
+		memcpy(&word40, record + 0x40, 4);
+		memcpy(&poisonHead, record, 4);
+		bool ok = saved && digest == oSaveStateDigest
+			&& poseDiag == kOneBits && word38 == kEight && word40 == 0
+			&& poisonHead == kPoison;	// bytes the row never touches stay poison
+		if(!ok && digest != oSaveStateDigest)
+			{
+			for(unsigned i = 0; i < sizeof(record); ++i)
+				if(record[i] != sSaveStateRecord[i])
+					{
+					fprintf(stderr, "FAIL basesave first mismatch at record+%#x: "
+						"cand=%02x oracle=%02x\n", i, record[i], sSaveStateRecord[i]);
+					break;
+					}
+			}
+		printf("basesave candidate ok=%u digest=%08x\n", ok ? 1u : 0u, digest);
+		if(!ok)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 13u);
 		}
 
 		printf("candidate CANDIDATE-MISSING family=vtables reason=shape finals/actor classes are Tasks 3-4\n");

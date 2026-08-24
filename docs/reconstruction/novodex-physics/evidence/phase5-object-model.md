@@ -272,7 +272,7 @@ records — slot → target):
 |------|--------|-----|-------|
 | 0 | 0x00027710 | phys_fn_001345 (34 B): scalar deleting dtor — calls 0x26bd0 then frees through SDK-allocator slot +0x14 when flag&1 | discovered |
 | 1 | 0x00027740 | descriptor-driven update: copies a pose into +0x6c, halfwords from the desc, colobj+4; calls 0xedc0/0x26d90 | discovered |
-| 2 | 0x000256f0 | phys_fn_001277 (98 B): deleting-dtor thunk over slot 0 | discovered |
+| 2 | 0x000256f0 | **phys_fn_001277** (98 B): save-to-descriptor — pose3 + halfword trio + [colobj+4] into a record, returns true | **reconstructed** |
 | 3 | 0x00025960 | phys_fn_001305 (685 B): x87 world-bounds-class computation against globals 0x10123bc8/0x10123b4c | discovered |
 | 4 | 0x00024f70 | **phys_fn_001249**: `xor al,al; ret 0xc` — two args, false | **reconstructed** |
 | 5 | 0x000b4070 | **phys_fn_004812**: `xor eax,eax; ret 0x14` — four args, null | **reconstructed** |
@@ -287,10 +287,23 @@ candidate members answer through the reconstruction, both fold to the same
 transcript (`ret4=0 ret5=00000000 ret7=0`). Slot 7's closure is exact: it is
 Phase 3's continuous-collision sweep entry, and what the base shape does
 with it is answer "no sweep" — the finals' overrides (box phys_fn_000951
-etc.) remain the sweep's owning rows. Slots 0–3 and 6 stay open until their
-drives exist; making `ShapeBase` polymorphic waits for them.
+etc.) remain the sweep's owning rows. Slots 0–1 and 3/6 stay open until
+their drives exist; making `ShapeBase` polymorphic waits for them.
 
-Driven: registrations 23 lines, oracle digest `5f70966f`, coverage floor 23.
+**Slot 2 corrected and closed.** The first draft of this section called slot
+2 a "deleting-dtor thunk" — wrong; that snippet lives at 0x256e0 in a
+different function. The listing shows phys_fn_001277 is the WRITE-side
+partner of slot 1: a save-to-descriptor row copying pose three (12 words)
+to record+8, zero-extending halfword +0xde to record+0x38, moving halfwords
++0xd8/+0xda to record+0x3c/0x3e, and reading **[colobj+4] unconditionally**
+into record+0x40 before returning true. Transcribed as
+`ShapeBase::nxBaseSaveState` and driven by the new `basesave` family on a
+real constructed sphere: oracle digest `bc9dc964`, candidate bitwise equal
+over the whole poisoned 0x48-byte record. The differential caught a
+first-draft transcription bug — I had read `[colobj]` (the vptr word,
+0x6b...) instead of `[colobj+4]` — before it could ship, which is exactly
+the failure mode this gate exists for. Registrations now 24 lines, oracle
+digest `4aa4d389`, coverage floor 24.
 
 ## 4. The census merge resolved
 

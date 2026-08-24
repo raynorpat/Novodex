@@ -243,6 +243,13 @@ class ShapeBase
 	//! Phase 3 left unresolved: the base shape cannot sweep, so the row is a
 	//! stub here while every final overrides it.
 	bool				nxBaseSlot7(void* argument1);
+	//! Slot 2, phys_fn_001277 (0x000256f0): save-to-descriptor. Copies the
+	//! third pose (12 words) to record+8, the +0xde halfword zero-extended to
+	//! record+0x38, the +0xd8/+0xda halfwords to record+0x3c/0x3e, and
+	//! [collision-object+4] to record+0x40; returns true. Reads [colobj+4]
+	//! UNCONDITIONALLY, exactly like the image -- a shape whose allocation
+	//! failed faults here identically.
+	bool				nxBaseSaveState(void* record);
 
 	//! +0x00, carried opaque like every other vtable slot in this model.
 	void*				mVptrSlot;
