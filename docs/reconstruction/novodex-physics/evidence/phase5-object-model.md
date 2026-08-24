@@ -480,6 +480,26 @@ Two pinned-image constants resolved alongside: `.rdata 0x101043cc = 0.5f`
 (the height halver) and `.rdata 0x101041f0 = 0.0f` (the validation zero
 every setter fcomp's against).
 
+## 3l. Slot 1 decoded: apply-from-descriptor
+
+phys_fn_001347 (`0x00027740`, BASE slot 1, inherited by every final):
+copies descriptor+`0x08..0x38` -- the twelve-word third pose -- into
+shape+`0x6c`, moves halfword `desc+0x38` to shape+`0xde`, `desc+0x3c` to
+shape+`0xda`, writes `desc+0x40` into `[colobj+4]` when the colobj exists,
+then calls helper phys_fn_000480 (`0xedc0`) with `(shape, [desc+0x44])`
+and helper `0x26d90` with `(this, [desc+0x3c])`, returning true.
+
+The descriptor COMMON layout is now fully mapped: `+0x00` id/handle,
+`+0x08..0x38` pose three, `+0x38/3c/3e` the halfword trio mirrored from
+the shape, `+0x40` collision-object data, `+0x44` group, `+0x4c..`
+per-type payload (dims / radius / normal+D / mesh pointer -- each closed
+save-row writes its own payload there). Helper `0x26d90` is a VALIDATED
+group setter (rejects >= `0x20` through the error stream, sets shape+`0xd8`
+and derives dirty-mask `1 << group` via `0x26c90`); helper `0x000480` is a
+lazy shape-to-descriptor REGISTRY (an allocator-grown list keyed by the
+descriptor pointer, searched and inserted on apply). Both stay discovered;
+their drives need the registry fixture Task 2 owns.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is
