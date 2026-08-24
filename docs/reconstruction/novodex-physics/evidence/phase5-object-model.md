@@ -317,6 +317,16 @@ association of the sum is exact, so the drive is valid while the
 general-dims association stays an explicitly open question in the header.
 Registrations 25 lines, oracle digest `629e8ada`, coverage floor 25.
 
+Extended: slots 11 and 13 closed the same way. Slot 11 (`phys_fn_000939`)
+zeroes a caller vec3 and writes the identical diagonal; slot 13
+(`phys_fn_000927`) writes dims to record+0x4c — exactly where the box
+constructor read `desc+0x4c` — then **tail-jumps to the BASE save-state row**,
+so the transcription composes `nxBaseSaveState` rather than duplicating it.
+Oracle digests `2f2dc4eb` / `853c971d`, both bitwise equal on poisoned twins.
+A census bookkeeping slip (a duplicated inventory row for 927/939) was caught
+and fixed before commit; registrations 26 lines, oracle digest `053011c2`,
+coverage floor 26.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is

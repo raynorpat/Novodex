@@ -2632,6 +2632,20 @@
    "confidence": "semantic",
    "evidence": "oracle/capstone/manifest.json#/entries/2965",
    "reason": "the value of BOX vtable .rdata:0x10106ab8 slot 10 (merged-run index 34); writes pose-one translation and sqrt of the squared facade dims to a caller record; driven bitwise by the NxPhysicsObjectLayoutTests boxrow family"
+  },
+  {
+   "id": "phys_fn_000939",
+   "label": "NxBox zero-center+diagonal row",
+   "confidence": "semantic",
+   "evidence": "oracle/capstone/manifest.json#/entries/2966",
+   "reason": "the value of BOX vtable .rdata:0x10106ab8 slot 11 (merged-run index 35); zeroes a caller vec3 and writes the same sqrt-of-squared-dims diagonal as slot 10; driven bitwise by the NxPhysicsObjectLayoutTests boxrow family"
+  },
+  {
+   "id": "phys_fn_000927",
+   "label": "NxBox save-to-descriptor (slot 13)",
+   "confidence": "semantic",
+   "evidence": "oracle/capstone/manifest.json#/entries/2960",
+   "reason": "BOX vtable .rdata:0x10106ab8 slot 13; writes facade dims to record+0x4c then tail-jumps to the BASE save-to-descriptor row phys_fn_001277 -- the dims land exactly where the box ctor read desc+0x4c; driven bitwise by the NxPhysicsObjectLayoutTests boxrow family"
   }
  ]
 }

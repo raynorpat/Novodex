@@ -227,6 +227,8 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oMeshDigest = 0;
 	unsigned oSaveStateDigest = 0;
 	unsigned oBoxRowDigest = 0;
+	unsigned oBoxSlot11Digest = 0;
+	unsigned oBoxSlot13Digest = 0;
 	static unsigned char sSaveStateRecord[0x48];
 
 	// -----------------------------------------------------------------------
@@ -884,7 +886,60 @@ int wmain(int argc, wchar_t** argv)
 		ob[0], ob[1], ob[2], ob[3]);
 	}
 
-	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=1\n",
+	// -----------------------------------------------------------------------
+	// BOX-table slots 11 and 13, phys_fn_000939 and phys_fn_000927. Slot 11
+	// zeroes the vec3 and writes the diagonal; slot 13 writes dims into a
+	// descriptor record at +0x4c then reuses the BASE save-state row.
+	{
+	typedef void (__thiscall* NxBoxRowFn)(void* self, float* out);
+	typedef bool (__thiscall* NxBoxSaveFn)(void* self, void* record);
+	NxBoxRowFn boxRow11 = (NxBoxRowFn) (base + 0x000206c0);
+	NxBoxSaveFn boxSave13 = (NxBoxSaveFn) (base + 0x00020450);
+
+	if(!nxInstallAllocatorShim(base))
+		return nxFail("the allocator holder word moved; re-pin the probe");
+
+	unsigned char shape[0x228];
+	memset(shape, 0xcd, sizeof(shape));
+	typedef void (__thiscall* NxShapeCtor3Fn)(void* self, void* owner, unsigned argument);
+	NxShapeCtor3Fn boxCtor3 = (NxShapeCtor3Fn) (base + 0x00021870);
+	boxCtor3(shape, 0, 0);
+
+	float out11[4] = { 1, 1, 1, 1 };
+	boxRow11(shape, out11);
+	unsigned d11 = 2166136261u;
+	for(int i = 0; i < 4; ++i)
+		{
+		unsigned w; memcpy(&w, out11 + i, 4);
+		d11 = nxFold(d11, w);
+		}
+	oBoxSlot11Digest = d11;
+	oracleDigest = nxFold(oracleDigest, d11);
+
+	unsigned char record[0x58];
+	memset(record, 0xcd, sizeof(record));
+	bool saved13 = boxSave13(shape, record);
+	unsigned d13 = 2166136261u;
+	for(unsigned i = 0; i < sizeof(record); i += 4)
+		{
+		unsigned w; memcpy(&w, record + i, 4);
+		d13 = nxFold(d13, w);
+		}
+	oBoxSlot13Digest = d13;
+	oracleDigest = nxFold(oracleDigest, d13);
+
+	unsigned ob11[4] = { 0, 0, 0, 0 };
+	unsigned dims4c = 0;
+	for(int i = 0; i < 4; ++i)
+		memcpy(&ob11[i], out11 + i, 4);
+	memcpy(&dims4c, record + 0x4c, 4);
+	printf("boxrow2 slot11=phys_fn_000939 out=%08x.%08x.%08x.%08x "
+		"slot13=phys_fn_000927 saved=%u digest=%08x dims_at_4c=%08x\n",
+		ob11[0], ob11[1], ob11[2], ob11[3],
+		saved13 ? 1u : 0u, d13, dims4c);
+	}
+
+	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=2\n",
 		(unsigned) (sizeof(nxTables) / sizeof(nxTables[0])));
 	printf("layout oracle digest=%08x\n", oracleDigest);
 
@@ -1421,6 +1476,47 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 14u);
+		}
+
+		// -- box rows 11 and 13: twin drives through the transcription.
+		{
+		unsigned char bytes[0x228];
+		memset(bytes, 0xcd, sizeof(bytes));
+		BoxShape& shape = *new(bytes) BoxShape(0, 0);
+
+		float out11[4] = { 1, 1, 1, 1 };
+		shape.nxBoxZeroCenterAndDiagonal(out11);
+		unsigned d11 = 2166136261u;
+		for(int i = 0; i < 4; ++i)
+			{
+			unsigned w; memcpy(&w, out11 + i, 4);
+			d11 = nxFold(d11, w);
+			}
+
+		unsigned char record[0x58];
+		memset(record, 0xcd, sizeof(record));
+		bool saved13 = shape.nxBoxSaveState(record);
+		unsigned d13 = 2166136261u;
+		for(unsigned i = 0; i < sizeof(record); i += 4)
+			{
+			unsigned w; memcpy(&w, record + i, 4);
+			d13 = nxFold(d13, w);
+			}
+
+		const unsigned kOneBits = 0x3f800000u;
+		unsigned dims4c = 0;
+		memcpy(&dims4c, record + 0x4c, 4);
+		bool ok = d11 == oBoxSlot11Digest && d13 == oBoxSlot13Digest && saved13
+			&& out11[0] == 0.0f && out11[1] == 0.0f && out11[2] == 0.0f
+			&& dims4c == kOneBits
+			// the base save-state half of slot 13 still fills record+8..+0x40
+			&& memcmp(record + 8, sSaveStateRecord + 8, 0x38) == 0;
+		printf("boxrow2 candidate ok=%u d11=%08x d13=%08x\n",
+			ok ? 1u : 0u, d11, d13);
+		if(!ok)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 15u);
 		}
 
 		printf("candidate CANDIDATE-MISSING family=vtables reason=shape finals/actor classes are Tasks 3-4\n");

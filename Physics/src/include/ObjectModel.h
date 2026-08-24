@@ -344,6 +344,16 @@ class BoxShape
 	//! association yields the same bits, which is what the gate drives.
 	void				nxBoxCenterAndDiagonal(float* out) const;
 
+	//! BOX-table slot 11, phys_fn_000939 (0x000206c0): zeroes out[0..2] and
+	//! writes the same sqrt-of-squared-dims value to out[3].
+	void				nxBoxZeroCenterAndDiagonal(float* out) const;
+
+	//! BOX-table slot 13, phys_fn_000927 (0x00020450): writes the facade
+	//! dims (+0xe4/+0xe8/+0xec) to record+0x4c/0x50/0x54, then tail-jumps to
+	//! the BASE save-to-descriptor row -- the descriptor's dims slot sits at
+	//! exactly the offset the constructor read them back from.
+	bool				nxBoxSaveState(void* record);
+
 	//! +0x00..+0xdf, the base shape subobject.
 	ShapeBase			mBase;
 	//! +0xe0..+0x227, the convex-hull descriptor.

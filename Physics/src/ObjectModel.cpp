@@ -304,6 +304,26 @@ void BoxShape::nxBoxCenterAndDiagonal(float* out) const
 	out[3] = static_cast<float>(sqrt(dx * dx + dy * dy + dz * dz));
 	}
 
+// phys_fn_000939 (0x000206c0), BOX-table slot 11.
+void BoxShape::nxBoxZeroCenterAndDiagonal(float* out) const
+	{
+	out[0] = 0.0f;							// xor edx,edx; mov [eax],edx ...
+	out[1] = 0.0f;							//   (three dword stores, 0x000206c4..cc)
+	out[2] = 0.0f;
+	const double dx = mHull.mDims04[0];
+	const double dy = mHull.mDims04[1];
+	const double dz = mHull.mDims04[2];
+	out[3] = static_cast<float>(sqrt(dx * dx + dy * dy + dz * dz));	// 0x000206ce..f8
+	}
+
+// phys_fn_000927 (0x00020450), BOX-table slot 13.
+bool BoxShape::nxBoxSaveState(void* record)
+	{
+	memcpy(reinterpret_cast<unsigned char*>(record) + 0x4c,
+		&mHull.mDims04[0], sizeof(mHull.mDims04));	// 0x00020450..6e
+	return mBase.nxBaseSaveState(record);			// jmp 0x000256f0 at 0x00020473
+	}
+
 // ---------------------------------------------------------------------------
 // PlaneShape. See ObjectModel.h for the row map.
 
