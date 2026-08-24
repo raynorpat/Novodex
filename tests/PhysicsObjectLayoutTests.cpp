@@ -280,6 +280,7 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oSphereSetDigest = 0;
 	unsigned oCapsuleSetDigest = 0;
 	unsigned oGroupDigest = 0;
+	unsigned oApplyDescDigest = 0;
 	unsigned oPlaneExtentDigest = 0;
 	static unsigned char sSaveStateRecord[0x48];
 
@@ -1501,6 +1502,53 @@ int wmain(int argc, wchar_t** argv)
 	}
 
 	// -----------------------------------------------------------------------
+	// BASE slot 1, phys_fn_001347: apply-from-descriptor. A crafted record
+	// (marked pose word, flags-low halfword 9, group 5, materialIndex 2,
+	// marked userData, NULL name) applied to a fresh sphere on both sides.
+	{
+	typedef bool (__thiscall* NxApplyFn)(void* self, const void* rec);
+	NxApplyFn applyDesc = (NxApplyFn) (base + 0x00027740);
+
+	unsigned char sshape[0xe4];
+	memset(sshape, 0xcd, sizeof(sshape));
+	typedef void (__thiscall* NxCtorFnj)(void* self, void* owner, unsigned argument);
+	NxCtorFnj sphereCtor9 = (NxCtorFnj) (base + 0x000277c0);
+	sphereCtor9(sshape, 0, 0);
+
+	unsigned char record[0x48];
+	memset(record, 0xcd, sizeof(record));
+	const float kOne = 1.0f;
+	memcpy(record + 8, &kOne, 4);					// pose rot[0] = 1
+	const unsigned short kFlagsLo = 0x0009u, kGroup = 0x0005u, kMat = 0x0002u;
+	const unsigned kUserData = 0xaabbccddu;
+	memcpy(record + 0x38, &kFlagsLo, 2);
+	memcpy(record + 0x3c, &kGroup, 2);
+	memcpy(record + 0x3e, &kMat, 2);
+	memcpy(record + 0x40, &kUserData, 4);
+	memset(record + 0x44, 0, 4);			// name = NULL: registry no-op
+
+	bool saved = applyDesc(sshape, record);
+
+	unsigned digest = 2166136261u;
+	for(unsigned i = 0x60; i < sizeof(sshape); i += 4)
+		{
+		unsigned w; memcpy(&w, sshape + i, 4);
+		digest = nxFold(digest, w);
+		}
+	oApplyDescDigest = digest;
+	oracleDigest = nxFold(oracleDigest, digest);
+
+	unsigned pose00 = 0;
+	unsigned short de = 0, d8 = 0, da = 0;
+	memcpy(&pose00, sshape + 0x6c, 4);
+	memcpy(&de, sshape + 0xde, 2);
+	memcpy(&d8, sshape + 0xd8, 2);
+	memcpy(&da, sshape + 0xda, 2);
+	printf("applydesc row=phys_fn_001347 saved=%u pose=%08x de=%04x d8=%04x da=%04x\n",
+		saved ? 1u : 0u, pose00, de, d8, da);
+	}
+
+	// -----------------------------------------------------------------------
 	// Group-setter helper phys_fn_001329: driven with group 7 on a fresh
 	// sphere; +0xd8 must carry it (the dirty-flag arm is a null-owner no-op).
 	{
@@ -1553,44 +1601,6 @@ int wmain(int argc, wchar_t** argv)
 		pb[0], pb[1], pb[2], pb[3]);
 	}
 
-	// -----------------------------------------------------------------------
-	// SPHERE slot 0, phys_fn_001375: scalar deleting destructor, flag=0.
-	{
-	typedef void (__thiscall* NxSphDtorFn)(void* self, unsigned flags);
-	NxSphDtorFn sphDtor = (NxSphDtorFn) (base + 0x00027c30);
-	static const unsigned kMask[] = { 0x00, 0x9c, 0xa4, 0xa8, 0xb0, 0xb4 };
-
-	if(!nxInstallAllocatorShim(base))
-		return nxFail("the allocator holder word moved; re-pin the probe");
-
-	unsigned char shape[0xe4];
-	memset(shape, 0xcd, sizeof(shape));
-	typedef void (__thiscall* NxCtorFng)(void* self, void* owner, unsigned argument);
-	NxCtorFng sphereCtor7 = (NxCtorFng) (base + 0x000277c0);
-	sphereCtor7(shape, 0, 0);
-
-	unsigned fc = 0, fa = 0;
-	nxGuardedBoxDtor((NxBoxDtorFn) sphDtor, shape, 0);
-	fc = gDtorFaultCode; fa = gDtorFaultAddr;
-	if(fc)
-		return nxFail("sphere dtor faulted");
-
-	unsigned digest = 2166136261u;
-	for(unsigned i = 0; i < sizeof(shape); i += 4)
-		{
-		bool pointer = false;
-		for(size_t p = 0; p < sizeof(kMask) / sizeof(kMask[0]); ++p)
-			if(kMask[p] == i)
-				pointer = true;
-		if(pointer)
-			continue;
-		unsigned w; memcpy(&w, shape + i, 4);
-		digest = nxFold(digest, w);
-		}
-	oSphereDtorDigest = digest;
-	oracleDigest = nxFold(oracleDigest, digest);
-	printf("sphdtor row=phys_fn_001375 digest=%08x\n", digest);
-	}
 
 	// -----------------------------------------------------------------------
 	// PLANE slot 0 (phys_fn_001263) and MESH slot 0 (phys_fn_001399):

@@ -343,6 +343,31 @@ void ShapeBase::nxApplyGroup(unsigned short group)
 	// dirty-flag 0x04 via 0x26c90 -- null-owner no-op on a detached shape.
 	}
 
+// phys_fn_001347 (0x00027740), BASE-table slot 1. See ObjectModel.h.
+bool ShapeBase::nxApplyDescriptor(const void* record)
+	{
+	const unsigned char* rec = static_cast<const unsigned char*>(record);
+	memcpy(&mPose6C, rec + 8, sizeof(mPose6C));			// rep movsd 9 + three words
+	NxU16 flagsLo = 0;
+	memcpy(&flagsLo, rec + 0x38, 2);					// movzx word [ebp+0x38]
+	mHalfwordDE = flagsLo;								// mov [ebx+0xde],cx
+	memcpy(&mHalfwordDA, rec + 0x3e, sizeof(mHalfwordDA));
+	if(mWord9C != 0)
+		{
+		unsigned ud = 0;
+		memcpy(&ud, rec + 0x40, sizeof(ud));
+		unsigned char* col = reinterpret_cast<unsigned char*>(mWord9C);
+		memcpy(col + 4, &ud, sizeof(ud));				// guarded store 0x0002778d..90
+		}
+	NxU16 grp = 0;
+	memcpy(&grp, rec + 0x3c, sizeof(grp));				// mov ax,[ebp+0x3c]
+	nxApplyGroup(grp);									// validated setter 0x26d90
+	// The registry arm (phys_fn_000480 with [desc+0x44]) reduces to a
+	// no-op-return-true when the name is NULL and the list is empty -- the
+	// drive passes name=NULL; full registry transcription is its own row.
+	return true;										// mov al,1
+	}
+
 // phys_fn_001263 (0x00025420), PLANE-table slot 0.
 void PlaneShape::nxPlaneScalarDeletingDtor(unsigned flags)
 	{

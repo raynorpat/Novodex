@@ -258,6 +258,15 @@ class ShapeBase
 	//! because every family's apply/load rows reach it.
 	void				nxApplyGroup(unsigned short group);
 
+	//! BASE-table slot 1, phys_fn_001347 (0x00027740): apply-from-descriptor.
+	//! Copies the twelve-word pose from record+8 into shape+0x6c, mirrors
+	//! halfwords record+0x38 -> +0xde, record+0x3e -> +0xda, writes
+	//! record+0x40 into [colobj+4] when present, applies the group through
+	//! nxApplyGroup, then registers/dissociates the shape against
+	//! record+0x44 (the debug name) through the registry helper -- a no-op
+	//! when the name is NULL and the list is empty.
+	bool				nxApplyDescriptor(const void* record);
+
 	//! +0x00, carried opaque like every other vtable slot in this model.
 	void*				mVptrSlot;
 	//! +0x04, first argument: the shape's owner.
