@@ -81,6 +81,7 @@ target_include_directories(NxPhysics PRIVATE
 	Foundation/src/include
 	Physics/include
 	Physics/src/include
+	Physics/src/opcode
 )
 
 target_compile_definitions(NxPhysics PRIVATE NX_PHYSICS_DLL=1)
@@ -257,10 +258,15 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# pinned DLL so the layouts Tasks 2 and 3 write already have something
 	# failing for them. See evidence/phase5-object-model.md.
 	add_executable(NxPhysicsObjectLayoutTests tests/PhysicsObjectLayoutTests.cpp
-		Physics/src/ObjectModel.cpp)
+		Physics/src/ObjectModel.cpp Physics/src/opcode/IcePrunable.cpp
+		Physics/src/ThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp)
 	target_include_directories(NxPhysicsObjectLayoutTests PRIVATE
-		Foundation/include Foundation/src/include Physics/include Physics/src/include)
-	target_link_libraries(NxPhysicsObjectLayoutTests NxFoundation bcrypt)
+		Foundation/include Foundation/src/include Physics/include Physics/src/include
+		Physics/src/opcode)
+	target_link_libraries(NxPhysicsObjectLayoutTests NxFoundation NxOpcode bcrypt)
+	if(MSVC)
+		target_compile_options(NxPhysicsObjectLayoutTests PRIVATE /arch:IA32 /GR- /wd4996)
+	endif()
 
 	# The narrow-phase differential. Neither a staged-pair differential nor a
 	# static proof: it holds the pinned oracle in its own process and calls the

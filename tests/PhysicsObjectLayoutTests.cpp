@@ -164,6 +164,7 @@ int wmain(int argc, wchar_t** argv)
 	unsigned candidateMissing = 0;
 	float oMin = 0.0f, oMax = 0.0f;
 	unsigned oMinBits = 0, oMaxBits = 0, cMinBits = 0, cMaxBits = 0;
+	unsigned oShapeBaseDigest = 0;
 
 	// -----------------------------------------------------------------------
 	// Vtable identity.
@@ -314,7 +315,58 @@ int wmain(int argc, wchar_t** argv)
 		hookStable, hookWords[0], hookWords[1], hookWords[2]);
 	}
 
-	printf("layout coverage tables=%u colobj=1 owner=1 hull=1\n",
+	// -----------------------------------------------------------------------
+	// The base-shape constructor, phys_fn_001273 (0x00025530): __thiscall,
+	// `ret 8`. Driven on a poisoned 0xe0 buffer with a null owner -- the
+	// registration arm through [owner+4]+0x48 needs Task 4's actor classes --
+	// and a marked second argument. Words that are module-specific pointers
+	// (both vtables, the shape-to-prunable owner store and the prunable's
+	// back-pointer into itself) are folded on neither side.
+	{
+	typedef void (__thiscall* NxShapeBaseCtorFn)(void* self, void* owner, unsigned argument);
+	NxShapeBaseCtorFn shapeBaseCtor = (NxShapeBaseCtorFn) (base + 0x00025530);
+	static const unsigned kPointerWords[] = { 0x00, 0xa4, 0xa8, 0xb0, 0xb4 };
+	unsigned char object[0xe0];
+	memset(object, 0xcd, sizeof(object));
+	const unsigned kArg2 = 0x5a5a5a5au;
+	shapeBaseCtor(object, 0, kArg2);
+
+	unsigned digest = 2166136261u;
+	for(unsigned i = 0; i < sizeof(object); i += 4)
+		{
+		bool pointer = false;
+		for(size_t p = 0; p < sizeof(kPointerWords) / sizeof(kPointerWords[0]); ++p)
+			if(kPointerWords[p] == i)
+				pointer = true;
+		if(pointer)
+			continue;
+		unsigned word;
+		memcpy(&word, object + i, 4);
+		digest = nxFold(digest, word);
+		}
+	oShapeBaseDigest = digest;
+	oracleDigest = nxFold(oracleDigest, digest);
+
+	unsigned w08, pose00c, w9c, wa0, prun24, prun28, sentinel, argD4, hwDC, hwDE;
+	w08 = pose00c = w9c = wa0 = prun24 = prun28 = sentinel = argD4 = hwDC = hwDE = 0;
+	memcpy(&w08, object + 0x08, 4);
+	memcpy(&pose00c, object + 0x0c, 4);
+	memcpy(&w9c, object + 0x9c, 4);
+	memcpy(&wa0, object + 0xa0, 4);
+	memcpy(&prun24, object + 0xc8, 4);	// Prunable+0x24
+	memcpy(&prun28, object + 0xcc, 4);	// Prunable+0x28 as a word: ffff then zero bytes
+	memcpy(&sentinel, object + 0xd0, 4);
+	memcpy(&argD4, object + 0xd4, 4);
+	memcpy(&hwDC, object + 0xdc, 2);
+	memcpy(&hwDE, object + 0xde, 2);
+	printf("shapebase ctor=phys_fn_001273 size=%u digest=%08x zero08=%08x pose_diag=%08x "
+		"zero9c=%08x zeroa0=%08x prun24=%08x prun28=%08x sentinel_d0=%08x arg_d4=%08x "
+		"hw_dc=%u hw_de=%u\n",
+		(unsigned) sizeof(object), digest, w08, pose00c, w9c, wa0, prun24, prun28,
+		sentinel, argD4, hwDC, hwDE);
+	}
+
+	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1\n",
 		(unsigned) (sizeof(nxTables) / sizeof(nxTables[0])));
 	printf("layout oracle digest=%08x\n", oracleDigest);
 
@@ -426,7 +478,60 @@ int wmain(int argc, wchar_t** argv)
 			candidateFold = nxFold(candidateFold, 5u);
 		}
 
-		printf("candidate CANDIDATE-MISSING family=vtables reason=shape/actor classes are Tasks 2-3\n");
+		// -- base shape: the transcription's constructor must leave the same
+		// post-construction words the oracle's does under the identical mask,
+		// and the named fields must carry the marked values.
+		{
+		static const unsigned kPointerWords[] = { 0x00, 0xa4, 0xa8, 0xb0, 0xb4 };
+		const unsigned kArg2 = 0x5a5a5a5au;
+		ShapeBase shape(0, kArg2);
+		unsigned char bytes[0xe0];
+		memcpy(bytes, &shape, sizeof(bytes));
+
+		unsigned digest = 2166136261u;
+		for(unsigned i = 0; i < sizeof(bytes); i += 4)
+			{
+			bool pointer = false;
+			for(size_t p = 0; p < sizeof(kPointerWords) / sizeof(kPointerWords[0]); ++p)
+				if(kPointerWords[p] == i)
+					pointer = true;
+			if(pointer)
+				continue;
+			unsigned word;
+			memcpy(&word, bytes + i, 4);
+			digest = nxFold(digest, word);
+			}
+
+		unsigned w08, pose00c, w9c, wa0, prun24, prun28, sentinel, argD4, hwDC, hwDE;
+		w08 = pose00c = w9c = wa0 = prun24 = prun28 = sentinel = argD4 = hwDC = hwDE = 0;
+		memcpy(&w08, bytes + 0x08, 4);
+		memcpy(&pose00c, bytes + 0x0c, 4);
+		memcpy(&w9c, bytes + 0x9c, 4);
+		memcpy(&wa0, bytes + 0xa0, 4);
+		memcpy(&prun24, bytes + 0xc8, 4);
+		memcpy(&prun28, bytes + 0xcc, 4);
+		memcpy(&sentinel, bytes + 0xd0, 4);
+		memcpy(&argD4, bytes + 0xd4, 4);
+		memcpy(&hwDC, bytes + 0xdc, 2);
+		memcpy(&hwDE, bytes + 0xde, 2);
+
+		const unsigned oneBits = 0x3f800000u;
+		bool ok = digest == oShapeBaseDigest
+			&& w08 == 0 && pose00c == oneBits && w9c == 0 && wa0 == 0
+			&& prun24 == 0xffffffffu && prun28 == 0x0000ffffu
+			&& sentinel == 0x7fffffffu && argD4 == kArg2
+			&& hwDC == 6 && hwDE == 8
+			// and the owner registration: the shape is its prunable's owner.
+			&& shape.mPrunable.mOwner == &shape;
+		printf("shapebase candidate ok=%u digest=%08x owner_self=%u\n",
+			ok ? 1u : 0u, digest, shape.mPrunable.mOwner == &shape ? 1u : 0u);
+		if(!ok)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 6u);
+		}
+
+		printf("candidate CANDIDATE-MISSING family=vtables reason=shape finals/actor classes are Tasks 3-4\n");
 		++candidateMissing;
 
 		printf("layout candidate mismatches=%u mode=differential candidate_fold=%08x\n",

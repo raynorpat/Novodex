@@ -88,6 +88,47 @@ Consequences:
    consistent with Phase 3's box-half-extents/capsule-radius reads and
    refines rather than contradicts them.
 
+## 3a. phys_fn_001273 transcribed: the +0xa4 subobject is a Prunable, and the shape owns it
+
+Task 3 opened with the full transcription of `phys_fn_001273` into
+`Physics/src/ObjectModel.cpp` (`ShapeBase`, 0xe0 bytes, static asserts on
+every offset). What the complete listing adds to section 3:
+
+1. **+0xa4 is `Prunable`** (phys_fn_004874, 0xb54a0 — the Phase 4 Ice
+   reconstruction, 0x2c bytes ending exactly at +0xd0). And at 0x25649, after
+   the prunable is built, the constructor stores **itself** into it:
+   `mov [esi+0xa8],esi` writes the shape's address into `Prunable::mOwner`
+   (+0xa4+0x04). The shape is its prunable's owner; what looked like an
+   anonymous "another subobject" in section 3 is the scene-query prunable
+   with its owner link set.
+2. **The ctor installs the three Prunable owner adapters** that Phase 4 had
+   to leave null because their only writer sat outside its population:
+   `.data 0x10128470/74/78` receive `phys_fn_000965` (the folded
+   `xor eax,eax; ret` stub), `phys_fn_001271` and `phys_fn_001269`
+   (0x0002562b..3f). The two latter are 15-byte cdecl frames that push the
+   box and call owner-vtable slot 10 (+0x28) and slot 9 (+0x24)
+   respectively, with no null test. All three are now reconstructed rows;
+   `IcePrunable.h`'s "written exactly once" note is discharged.
+3. **The argument count is two, and the checkpoint's "+0xd4 = arg3" was a
+   misread**: `ret 8` fixes two stack arguments, and `[esp+0x14]` at
+   0x255e9 stands after three pushes (ebx/esi/edi), so it is entry
+   `[esp+8]` — arg **2**. It is stored raw at +0xd4.
+4. Tail fields: sentinel `+0xd0 = 0x7fffffff` (0x255ed); halfwords
+   `+0xd8/+0xda` zeroed, `+0xdc = 6`, `+0xde = 8` (0x255fd..0x25614).
+   A helper at 0x25760 reads +0xa0 as a null-tested pointer — unestablished.
+5. The identity-pose stores run TWICE (0x25555..cd and again 0x2564f..cd,
+   after the hook stores). Both passes write identical bytes, so the
+   transcription stores once; recorded here so nobody re-derives a mystery.
+
+Driven: the layout gate grew a `shapebase` family — the oracle constructor
+runs on a poisoned 0xe0 buffer (owner NULL; the registration arm through
+`[owner+4]+0x48` → phys_fn_002423 waits for Task 4 actors) with a marked
+second argument, five module-specific pointer words masked out of both
+sides (`+0x00/+0xa4/+0xa8/+0xb0/+0xb4`: both vtables, the owner store, the
+prunable's back-pointer, the inner member's vptr). Oracle digest
+`de5f5000`; candidate identical bitwise; `owner_self` asserted. Registrations
+17 lines, oracle digest `1c848a60`, coverage floor 17.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is

@@ -2534,6 +2534,27 @@
    "confidence": "semantic",
    "evidence": "oracle/ghidra/manifest.json#/functions/2511",
    "reason": "Ghidra Function ID matched a runtime signature"
+  },
+  {
+   "id": "phys_fn_001273",
+   "label": "ShapeBase::ShapeBase",
+   "confidence": "semantic",
+   "evidence": "oracle/capstone/manifest.json#/entries/3410",
+   "reason": "writes the BASE shape vtable .rdata:0x10107494 first (0x0002553d), builds a Prunable at +0xa4 through phys_fn_004874 and registers itself as its owner (0x00025649), and installs the three Prunable owner adapters into .data 0x10128470/74/78 -- the ctor its six shape finals chain from; driven byte-for-byte by the NxPhysicsObjectLayoutTests shapebase family"
+  },
+  {
+   "id": "phys_fn_001269",
+   "label": "PrunableOwnerWorldAABB adapter",
+   "confidence": "semantic",
+   "evidence": "oracle/capstone/manifest.json#/entries/3408",
+   "reason": "the value stored at .data 0x10128478 by 0x0002562b inside phys_fn_001273; dispatches owner vtable slot 9 (+0x24), the recompute arm Prunable::UpdateWorldAABB reads the same global for"
+  },
+  {
+   "id": "phys_fn_001271",
+   "label": "PrunableOwnerNotify adapter",
+   "confidence": "semantic",
+   "evidence": "oracle/capstone/manifest.json#/entries/3409",
+   "reason": "the value stored at .data 0x10128474 by 0x00025635 inside phys_fn_001273; dispatches owner vtable slot 10 (+0x28) in the same frame as phys_fn_001269"
   }
  ]
 }

@@ -8,6 +8,7 @@
 |
 \*----------------------------------------------------------------------------*/
 #include "PhysicsInternal.h"
+#include "IcePrunable.h"
 
 /**
 The shared object-model rows Phase 5 Task 1 locked: the 0x1c-byte collision
@@ -164,5 +165,105 @@ class BoxHullFacade
 static_assert(offsetof(BoxHullFacade, mVertices) == 0x10, "vertices are at +0x10");
 static_assert(offsetof(BoxHullFacade, mFaces) == 0x70, "face records are at +0x70");
 static_assert(sizeof(BoxHullFacade) == 0x148, "the facade spans vptr-to-last-record");
+
+/**
+One column-major 3x4 pose as the base constructor initialises it: nine
+rotation words at +0x00..+0x20 and the translation at +0x24..+0x2c. The
+constructor stores the identity diagonal (1.0f at words 0/4/8 -- the
+`mov ebx,0x3f800000` at 0x00025535 feeding stores like 0x00025555) and zeroes
+everything else, three times over.
+*/
+struct ShapePose
+	{
+	NxU32				mRotation[9];	//!< +0x00 relative; diag words carry 1.0f bits
+	float				mTranslation[3];//!< +0x24 relative; zeroed
+	};
+
+static_assert(sizeof(ShapePose) == 0x30, "a pose is twelve words");
+
+/**
+The base-shape class its six finals embed first. Constructor phys_fn_001273
+(0x00025530, 424 bytes, __thiscall, `ret 8`: two stack arguments):
+
+	+0x000	vptr			final BASE table .rdata 0x10107494, store 0x0002553d
+	+0x004	first argument	the owner nxShapeOwner reads back out of +0x04,
+	                        store 0x00025543; when non-null, 0x0002561f..26
+	                        reaches [owner+4], loads word +0x48 of it and calls
+	                        phys_fn_002423 (0x0005c390) with the shape pushed --
+	                        owner registration (driven with Task 4's actors)
+	+0x008	zeroed			store 0x00025549
+	+0x00c	pose one		identity, stores 0x00025555..0x000255cd
+	+0x03c	pose two		identity, same instruction run
+	+0x06c	pose three		identity, same instruction run -- the third pose the
+	                        phase 3 escalation asked about exists and starts here
+	+0x09c	zeroed			store 0x000255d3
+	+0x0a0	zeroed			store 0x000255d9; a later helper (0x00025760) reads it
+	                        as a pointer and null-tests it
+	+0x0a4	Prunable		ctor phys_fn_004874 called at 0x000255df; immediately
+	                        afterwards the shape stores ITSELF into the prunable's
+	                        mOwner (0x00025649) -- the shape is the owner its
+	                        prunable reports
+	+0x0d0	0x7fffffff		store 0x000255ed
+	+0x0d4	second argument	store 0x000255f7: [esp+0x14] after three pushes is the
+	                        entry [esp+8] slot (`ret 8` fixes the count at two)
+	+0x0d8	word			zeroed halfwords, stores 0x000255fd / 0x00025604
+	+0x0dc	6				halfword store 0x0002560b
+	+0x0de	8				halfword store 0x00025614
+
+The image writes the three identity poses TWICE (0x00025555..cd and again
+0x0002564f..cd, the second pass after the hook stores); the transcription
+writes them once because both passes store identical bytes. The ctor also
+installs the three Prunable owner adapters into `.data` (0x10128470/74/78 --
+stores 0x0002562b..3f), which Phase 4 had to leave null because their only
+writer sat outside that task's population; this constructor is that writer.
+
+Derived classes continue at +0xe0: the box embeds its BoxHullFacade there.
+*/
+class ShapeBase
+	{
+	public:
+	//! phys_fn_001273 (0x00025530). The first argument is the owner; the
+	//! second is stored raw at +0xd4 and named by nothing yet.
+					ShapeBase(void* owner, unsigned argument);
+
+	//! +0x00, carried opaque like every other vtable slot in this model.
+	void*				mVptrSlot;
+	//! +0x04, first argument: the shape's owner.
+	void*				mOwner04;
+	//! +0x08, zeroed.
+	NxU32				mWord08;
+	//! +0x0c, +0x3c, +0x6c: three identity poses.
+	ShapePose			mPose0C;
+	ShapePose			mPose3C;
+	ShapePose			mPose6C;
+	//! +0x9c, zeroed.
+	NxU32				mWord9C;
+	//! +0xa0, zeroed; read as a pointer by the 0x00025760 helper.
+	NxU32				mWordA0;
+	//! +0xa4, the embedded scene-query prunable; its mOwner is set back to
+	//! this shape before the constructor returns.
+	Prunable			mPrunable;
+	//! +0xd0, 0x7fffffff -- an INT_MAX-shaped sentinel, consumer unestablished.
+	NxU32				mSentinelD0;
+	//! +0xd4, the second constructor argument verbatim.
+	NxU32				mArgumentD4;
+	//! +0xd8, two zeroed halfwords.
+	NxU16				mHalfwordD8;
+	NxU16				mHalfwordDA;
+	//! +0xdc = 6, +0xde = 8.
+	NxU16				mHalfwordDC;
+	NxU16				mHalfwordDE;
+	};
+
+static_assert(sizeof(ShapeBase) == 0xe0, "the base shape spans to where the hull embeds");
+static_assert(offsetof(ShapeBase, mOwner04) == 0x04, "the owner sits at +0x04, as nxShapeOwner reads it");
+static_assert(offsetof(ShapeBase, mPose0C) == 0x0c, "the first pose is at +0x0c");
+static_assert(offsetof(ShapeBase, mPose3C) == 0x3c, "the second pose is at +0x3c");
+static_assert(offsetof(ShapeBase, mPose6C) == 0x6c, "the third pose is at +0x6c");
+static_assert(offsetof(ShapeBase, mWord9C) == 0x9c, "+0x9c is zeroed");
+static_assert(offsetof(ShapeBase, mPrunable) == 0xa4, "the prunable is at +0xa4");
+static_assert(offsetof(ShapeBase, mSentinelD0) == 0xd0, "the sentinel is at +0xd0");
+static_assert(offsetof(ShapeBase, mArgumentD4) == 0xd4, "the second argument lands at +0xd4");
+static_assert(offsetof(ShapeBase, mHalfwordDC) == 0xdc, "the 6/8 halfwords close the object");
 
 #endif

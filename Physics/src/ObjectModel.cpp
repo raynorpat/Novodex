@@ -126,3 +126,82 @@ const void* BoxHullFacade::sharedHook()
 		initialised = true;
 	return shared;
 	}
+
+// ---------------------------------------------------------------------------
+// The Prunable owner adapters. The base-shape constructor installs their
+// addresses into .data 0x10128470/74/78 (stores 0x0002562b..3f); Phase 4 had
+// to leave the globals null because their only writer sat outside its
+// population. All three are cdecl, owner first, and ignore nothing they are
+// handed -- the shipped rows carry no null tests.
+
+// phys_fn_000965 (0x000213e0): `xor eax,eax; ret` -- the same folded stub the
+// facade exposes as kZero, installed as .data 0x10128470.
+static udword shapeOwnerQuery(void* /*owner*/)
+	{
+	return 0;
+	}
+
+// phys_fn_001271 (0x00025520, 15 bytes): reads [owner], pushes the box, calls
+// vtable slot 10 (+0x28). Installed at .data 0x10128474.
+static void shapeOwnerNotify(void* owner, AABB* box)
+	{
+	void** vtable = *reinterpret_cast<void***>(owner);
+	typedef void (__thiscall* NotifyFn)(void*, AABB*);
+	reinterpret_cast<NotifyFn>(vtable[10])(owner, box);
+	}
+
+// phys_fn_001269 (0x00025510, 15 bytes): the same frame through slot 9
+// (+0x24) -- the owner recomputing the box. Installed at .data 0x10128478.
+static void shapeOwnerWorldAABB(void* owner, AABB* box)
+	{
+	void** vtable = *reinterpret_cast<void***>(owner);
+	typedef void (__thiscall* WorldAABBFn)(void*, AABB*);
+	reinterpret_cast<WorldAABBFn>(vtable[9])(owner, box);
+	}
+
+// ---------------------------------------------------------------------------
+// ShapeBase. See ObjectModel.h for the row map; every store below carries the
+// instruction address that fixes it.
+
+ShapeBase::ShapeBase(void* owner, unsigned argument)
+	{
+	mOwner04 = owner;						// 0x00025543
+	mWord08 = 0;							// 0x00025549
+
+	const NxU32 one = 0x3f800000u;			// mov ebx,0x3f800000 at 0x00025535
+	ShapePose identity;
+	memset(&identity, 0, sizeof(identity));
+	identity.mRotation[0] = one;			// stores like 0x00025555
+	identity.mRotation[4] = one;
+	identity.mRotation[8] = one;
+	mPose0C = identity;						// 0x00025555..0x000255cd
+	mPose3C = identity;						// second instruction run, +0x3c
+	mPose6C = identity;						// third instruction run, +0x6c
+	// The image runs the identical pose stores a SECOND time (0x0002564f..
+	// 0x000256cd) after the hook stores; both passes write the same bytes, so
+	// the transcription writes them once.
+
+	mWord9C = 0;							// 0x000255d3
+	mWordA0 = 0;							// 0x000255d9
+
+	// mPrunable is constructed here by member semantics; the image reaches
+	// Prunable::Prunable (phys_fn_004874) at 0x000255df.
+
+	gPrunableOwnerQuery = shapeOwnerQuery;		// .data 0x10128470, store 0x0002563f
+	gPrunableOwnerNotify = shapeOwnerNotify;	// .data 0x10128474, store 0x00025635
+	gPrunableOwnerWorldAABB = shapeOwnerWorldAABB;	// 0x10128478, store 0x0002562b
+
+	// Then the constructor registers THIS SHAPE as the prunable's owner.
+	mPrunable.mOwner = this;				// mov [esi+0xa8],esi at 0x00025649
+
+	mSentinelD0 = 0x7fffffffu;				// 0x000255ed
+	mArgumentD4 = argument;					// 0x000255f7 ([esp+0x14]: entry [esp+8])
+	mHalfwordD8 = 0;						// 0x000255fd
+	mHalfwordDA = 0;						// 0x00025604
+	mHalfwordDC = 6;						// 0x0002560b
+	mHalfwordDE = 8;						// 0x00025614
+
+	// The owner-registration arm (0x0002561f..26): when the owner is non-null,
+	// [owner+4]'s word at +0x48 becomes the `this` for phys_fn_002423 with the
+	// shape pushed. Driven with Task 4's actor classes; not replayed here.
+	}
