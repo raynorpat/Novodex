@@ -322,6 +322,18 @@ void SphereShape::nxSphereLocalAABB(float* out) const
 	out[5] = mRadiusE0;						// fstp [eax+0x10]
 	}
 
+// phys_fn_001357 (0x000278c0), SPHERE-table slot 14.
+void SphereShape::nxSphereSetRadius(float radius)
+	{
+	mRadiusE0 = radius;						// mov [esi+0xe0],eax at 0x000278d1
+	// The image then fcomp's the stored value against the zero global
+	// (0x101041f0) and reports through the error stream on unordered/less
+	// (assert literals at .rdata 0x10107574/0x101075dc, line 0x4a) -- Task 2
+	// owns the reporter. With a valid radius both remaining arms are no-ops
+	// on a detached shape: BASE slot 6 owner-notify and dirty-flag 0x20 via
+	// phys_fn_001315-adjacent helper 0x26c90 (see evidence 3k).
+	}
+
 // ---------------------------------------------------------------------------
 // CapsuleShape. See ObjectModel.h for the row map.
 

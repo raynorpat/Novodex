@@ -273,6 +273,7 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oMeshSaveDigest = 0;
 	unsigned oMeshWordsDigest = 2166136261u;
 	unsigned oSphereLocalDigest = 0;
+	unsigned oSphereSetDigest = 0;
 	static unsigned char sSaveStateRecord[0x48];
 
 	// -----------------------------------------------------------------------
@@ -1436,7 +1437,36 @@ int wmain(int argc, wchar_t** argv)
 		lb[0], lb[1], lb[2], lb[3], lb[4], lb[5]);
 	}
 
-	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1\n",
+	// -----------------------------------------------------------------------
+	// SPHERE slot 14, phys_fn_001357: set-radius. Driven with a valid radius
+	// on both sides (the invalid-report arm needs Task 2's error stream).
+	{
+	typedef void (__thiscall* NxSetRadFn)(void* self, float r);
+	NxSetRadFn setRad = (NxSetRadFn) (base + 0x000278c0);
+	const float kR = 1.25f;
+
+	unsigned char sshape[0xe4];
+	memset(sshape, 0xcd, sizeof(sshape));
+	typedef void (__thiscall* NxCtorFnd)(void* self, void* owner, unsigned argument);
+	NxCtorFnd sphereCtor6 = (NxCtorFnd) (base + 0x000277c0);
+	sphereCtor6(sshape, 0, 0);
+	setRad(sshape, kR);
+
+	float got = 0.0f;
+	memcpy(&got, sshape + 0xe0, 4);
+	unsigned radBits = 0;
+	memcpy(&radBits, &got, 4);
+	oSphereSetDigest = radBits;
+	oracleDigest = nxFold(oracleDigest, radBits);
+
+	const float kR2 = kR;
+	unsigned cBits = 0;
+	memcpy(&cBits, &kR2, 4);
+	printf("setrad row=phys_fn_001357 stored=%08x expected=%08x\n",
+		radBits, cBits);
+	}
+
+	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1\n",
 		(unsigned) (sizeof(nxTables) / sizeof(nxTables[0])));
 	printf("layout oracle digest=%08x\n", oracleDigest);
 
@@ -2354,6 +2384,25 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 24u);
+		}
+
+		// -- sphere set-radius: stored word must equal the driven value.
+		{
+		unsigned char sbytes[0xe4];
+		memset(sbytes, 0xcd, sizeof(sbytes));
+		SphereShape& sph = *new(sbytes) SphereShape(0, 0);
+		sph.nxSphereSetRadius(1.25f);
+
+		float got = sph.nxSphereGetRadius();
+		unsigned radBits = 0;
+		memcpy(&radBits, &got, 4);
+		const unsigned kExpected = 0x3fa00000u;	// 1.25f
+		bool ok = radBits == kExpected && oSphereSetDigest == kExpected;
+		printf("setrad candidate ok=%u rad=%08x\n", ok ? 1u : 0u, radBits);
+		if(!ok)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 25u);
 		}
 
 		printf("candidate CANDIDATE-MISSING family=vtables reason=shape finals/actor classes are Tasks 3-4\n");

@@ -440,6 +440,14 @@ class SphereShape
 	//! differential pins.
 	void				nxSphereLocalAABB(float* out) const;
 
+	//! SPHERE-table slot 14, phys_fn_001357 (0x000278c0): set-radius.
+	//! Stores unconditionally, then (image order) reports an invalid
+	//! argument through the error stream when the fcomp against the
+	//! zero-global fails, notifies the owner through BASE slot 6, and marks
+	//! dirty-flag 0x20 -- all three null-owner/Task-4 no-ops on a fresh
+	//! shape.
+	void				nxSphereSetRadius(float radius);
+
 	//! SPHERE-table slot 11, phys_fn_001365 (0x000279b0): zeroes out[0..2],
 	//! radius to out[3].
 	void				nxSphereZeroCenterRadius(float* out) const;

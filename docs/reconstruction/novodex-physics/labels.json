@@ -2697,6 +2697,13 @@
    "reason": "SPHERE vtable slot 10; copies pose-one translation and the radius into a caller record; driven bitwise by the sphererows family"
   },
   {
+   "id": "phys_fn_001357",
+   "label": "NxSphere set-radius (slot 14)",
+   "confidence": "semantic",
+   "evidence": "oracle/capstone/manifest.json#/entries/3542",
+   "reason": "SPHERE vtable .rdata:0x107528 slot 14; stores the argument to +0xe0, validates against the zero global through the error stream, notifies through BASE slot 6 and marks dirty-flag 0x20; driven by the setrad family with radius 1.25f"
+  },
+  {
    "id": "phys_fn_001367",
    "label": "NxSphere local-AABB row (slot 8)",
    "confidence": "semantic",
