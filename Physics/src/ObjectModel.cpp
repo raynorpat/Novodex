@@ -269,6 +269,35 @@ SphereShape::SphereShape(void* owner, unsigned argument)
 	}
 
 // ---------------------------------------------------------------------------
+// SPHERE-table rows. See ObjectModel.h.
+
+// phys_fn_001355 (0x000278a0), SPHERE-table slot 13.
+bool SphereShape::nxSphereSaveState(void* record)
+	{
+	memcpy(reinterpret_cast<unsigned char*>(record) + 0x4c,
+		&mRadiusE0, sizeof(mRadiusE0));		// mov [+eax+0x4c] at 0x000278aa
+	return mBase.nxBaseSaveState(record);	// jmp 0x000256f0 at 0x000278b1
+	}
+
+// phys_fn_001365 (0x000279b0), SPHERE-table slot 11.
+void SphereShape::nxSphereZeroCenterRadius(float* out) const
+	{
+	out[0] = 0.0f;							// xor edx,edx; three stores
+	out[1] = 0.0f;
+	out[2] = 0.0f;
+	out[3] = mRadiusE0;						// mov ecx,[ecx+0xe0]
+	}
+
+// phys_fn_001363 (0x00027980), SPHERE-table slot 10.
+void SphereShape::nxSphereCenterRadius(float* out) const
+	{
+	out[0] = mBase.mPose0C.mTranslation[0];	// +0x30
+	out[1] = mBase.mPose0C.mTranslation[1];	// +0x34
+	out[2] = mBase.mPose0C.mTranslation[2];	// +0x38
+	out[3] = mRadiusE0;
+	}
+
+// ---------------------------------------------------------------------------
 // CapsuleShape. See ObjectModel.h for the row map.
 
 CapsuleShape::CapsuleShape(void* owner, unsigned argument)

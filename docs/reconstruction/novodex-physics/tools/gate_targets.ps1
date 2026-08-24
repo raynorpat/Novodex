@@ -623,8 +623,9 @@ $NxRequiredCoverageLines = [ordered] @{
         'boxrow4 slots14-16=phys_fn_001391 stable=1',
         'boxdtor row=phys_fn_000979 digest=a29800b7',
         'planesave row=phys_fn_001251 saved=1 digest=7629841d normal_y=3f800000 neg_d=80000000',
-        'layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1',
-        'layout oracle digest=1e9b7708'
+        'sphererows r15=00000000 save13=1 d13=f9280a78 zcr=00000000.00000000.00000000.00000000 cr=00000000.00000000.00000000.00000000',
+        'layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4',
+        'layout oracle digest=71c21761'
     )
 
     # The vendored third-party differential. Phase 4 vendors qhull 2003.1 and
@@ -782,7 +783,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 100  # 34 for NxPhysicsAssetTests, 66 for NxPhysicsThirdPartyTests
-    '5' = 30   # thirty for NxPhysicsObjectLayoutTests (RED on purpose: vtables family open)
+    '5' = 31   # thirty-one for NxPhysicsObjectLayoutTests (RED on purpose: vtables family open)
     '6' = 0
     '7' = 0
     '8' = 0

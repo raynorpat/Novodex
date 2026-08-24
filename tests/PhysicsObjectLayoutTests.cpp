@@ -264,6 +264,8 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oBoxDtorDigest = 0;
 	static unsigned char sBoxDtorReference[0x228];
 	unsigned oPlaneSaveDigest = 0;
+	unsigned oSphereRowsDigest = 0;
+	unsigned oSphereRadBits = 0;
 	static unsigned char sSaveStateRecord[0x48];
 
 	// -----------------------------------------------------------------------
@@ -1152,7 +1154,65 @@ int wmain(int argc, wchar_t** argv)
 		saved ? 1u : 0u, digest, normal, negD);
 	}
 
-	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1\n",
+	// -----------------------------------------------------------------------
+	// SPHERE-table slots 15/13/11/10, phys_fn_001359/1355/1365/1363: radius
+	// getter, radius save-state, zero-center+radius, center+radius. Driven on
+	// a real constructed sphere (fresh radius = 0; every output byte is a
+	// deterministic zero or the untouched poison).
+	{
+	typedef float (__thiscall* NxSphRadFn)(void* self);
+	typedef bool (__thiscall* NxSphSaveFn)(void* self, void* record);
+	typedef void (__thiscall* NxSphOutFn)(void* self, float* out);
+	NxSphRadFn sphRad = (NxSphRadFn) (base + 0x00027920);
+	NxSphSaveFn sphSave = (NxSphSaveFn) (base + 0x000278a0);
+	NxSphOutFn sphZCR = (NxSphOutFn) (base + 0x000279b0);
+	NxSphOutFn sphCR = (NxSphOutFn) (base + 0x00027980);
+
+	if(!nxInstallAllocatorShim(base))
+		return nxFail("the allocator holder word moved; re-pin the probe");
+
+	unsigned char shape[0xe4];
+	memset(shape, 0xcd, sizeof(shape));
+	typedef void (__thiscall* NxCtorFn8)(void* self, void* owner, unsigned argument);
+	NxCtorFn8 sphereCtor3 = (NxCtorFn8) (base + 0x000277c0);
+	sphereCtor3(shape, 0, 0);
+
+	float rad = sphRad(shape);
+	unsigned radBits = 0;
+	memcpy(&radBits, &rad, 4);
+
+	unsigned char record[0x58];
+	memset(record, 0xcd, sizeof(record));
+	bool saved13 = sphSave(shape, record);
+
+	float out11[4] = { 1, 1, 1, 1 };
+	sphZCR(shape, out11);
+	float out10[4] = { 1, 1, 1, 1 };
+	sphCR(shape, out10);
+
+	unsigned d13 = 2166136261u;
+	for(unsigned i = 0; i < sizeof(record); i += 4)
+		{
+		unsigned w; memcpy(&w, record + i, 4);
+		d13 = nxFold(d13, w);
+		}
+	oSphereRowsDigest = d13;
+	oSphereRadBits = radBits;
+	oracleDigest = nxFold(oracleDigest, d13);
+	oracleDigest = nxFold(oracleDigest, radBits);
+	unsigned z11[4] = { 0, 0, 0, 0 }, c10[4] = { 0, 0, 0, 0 };
+	for(int i = 0; i < 4; ++i)
+		{
+		memcpy(&z11[i], out11 + i, 4);
+		memcpy(&c10[i], out10 + i, 4);
+		}
+	printf("sphererows r15=%08x save13=%u d13=%08x zcr=%08x.%08x.%08x.%08x "
+		"cr=%08x.%08x.%08x.%08x\n",
+		radBits, saved13 ? 1u : 0u, d13,
+		z11[0], z11[1], z11[2], z11[3], c10[0], c10[1], c10[2], c10[3]);
+	}
+
+	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4\n",
 		(unsigned) (sizeof(nxTables) / sizeof(nxTables[0])));
 	printf("layout oracle digest=%08x\n", oracleDigest);
 
@@ -1863,6 +1923,47 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 19u);
+		}
+
+		// -- sphere rows 15/13/11/10: twin drives through the transcription.
+		{
+		unsigned char bytes[0xe4];
+		memset(bytes, 0xcd, sizeof(bytes));
+		SphereShape& shape = *new(bytes) SphereShape(0, 0);
+
+		float rad = shape.nxSphereGetRadius();
+		unsigned radBits = 0;
+		memcpy(&radBits, &rad, 4);
+
+		unsigned char record[0x58];
+		memset(record, 0xcd, sizeof(record));
+		bool saved13 = shape.nxSphereSaveState(record);
+
+		float out11[4] = { 1, 1, 1, 1 };
+		shape.nxSphereZeroCenterRadius(out11);
+		float out10[4] = { 1, 1, 1, 1 };
+		shape.nxSphereCenterRadius(out10);
+
+		unsigned d13 = 2166136261u;
+		for(unsigned i = 0; i < sizeof(record); i += 4)
+			{
+			unsigned w; memcpy(&w, record + i, 4);
+			d13 = nxFold(d13, w);
+			}
+
+		const unsigned kZero = 0;
+		bool ok = d13 == oSphereRowsDigest && radBits == oSphereRadBits
+			&& saved13
+			&& out11[0] == 0.0f && out11[1] == 0.0f && out11[2] == 0.0f
+			&& out11[3] == 0.0f
+			&& out10[0] == 0.0f && out10[1] == 0.0f && out10[2] == 0.0f
+			&& out10[3] == 0.0f;
+		printf("sphererows candidate ok=%u d13=%08x rad=%08x\n",
+			ok ? 1u : 0u, d13, radBits);
+		if(!ok)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 20u);
 		}
 
 		printf("candidate CANDIDATE-MISSING family=vtables reason=shape finals/actor classes are Tasks 3-4\n");

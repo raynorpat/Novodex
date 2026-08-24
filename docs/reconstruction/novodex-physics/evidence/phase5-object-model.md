@@ -398,6 +398,25 @@ real constructed plane: oracle digest `7629841d`, candidate bitwise equal,
 the `neg_d = 80000000` sign-bit word asserted. Registrations 30 lines,
 oracle digest `1e9b7708`, coverage floor 30.
 
+## 3i. Four SPHERE rows closed
+
+The sphere's small overrides decode as a family of radius accessors and all
+four are now closed through a single `sphererows` drive on a real
+constructed sphere (fresh radius = 0; every output byte deterministic):
+
+- slot 15 phys_fn_001359 (7 B): `fld [+0xe0]; ret` — getRadius;
+- slot 13 phys_fn_001355 (17 B): radius → record+0x4c, tail-jump to the
+  BASE save-state row — the third slot-13 composition (box, plane, sphere);
+- slot 11 phys_fn_001365 (23 B): zero vec3 + radius at +0xc;
+- slot 10 phys_fn_001363 (36 B): pose-one translation + radius.
+
+Oracle digest `f9280a78` over the record and zero bits everywhere else;
+candidate bitwise equal. One harness defect caught before commit: a
+`memcmp(out, &zero, 12)` read past its four-byte reference into stack
+garbage — replaced with per-float compares. Registrations 31 lines, oracle
+digest `71c21761`, coverage floor 31. SPHERE slots open: 0/3/4/5/7/8/9/
+12/14.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is

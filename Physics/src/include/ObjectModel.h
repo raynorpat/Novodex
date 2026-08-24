@@ -421,6 +421,22 @@ class SphereShape
 	ShapeBase			mBase;
 	//! +0xe0, the radius; zero until a radius source writes it.
 	float				mRadiusE0;
+
+	//! SPHERE-table slot 15, phys_fn_001359 (0x00027920): `fld [+0xe0]; ret`.
+	float				nxSphereGetRadius() const
+							{ return mRadiusE0; }
+
+	//! SPHERE-table slot 13, phys_fn_001355 (0x000278a0): radius to
+	//! record+0x4c, then the BASE save-to-descriptor row.
+	bool				nxSphereSaveState(void* record);
+
+	//! SPHERE-table slot 11, phys_fn_001365 (0x000279b0): zeroes out[0..2],
+	//! radius to out[3].
+	void				nxSphereZeroCenterRadius(float* out) const;
+
+	//! SPHERE-table slot 10, phys_fn_001363 (0x00027980): pose-one
+	//! translation to out[0..2], radius to out[3].
+	void				nxSphereCenterRadius(float* out) const;
 	};
 
 static_assert(sizeof(SphereShape) == 0xe4, "the sphere is base plus one float so far");
