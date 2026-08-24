@@ -2667,6 +2667,13 @@
    "confidence": "semantic",
    "evidence": "oracle/capstone/manifest.json#/entries/3550",
    "reason": "the 3-byte mov eax,ecx; ret that fills BOX vtable slots 14, 15 AND 16 -- returns this and ignores every argument; driven by pointer equality through the NxPhysicsObjectLayoutTests boxrow family"
+  },
+  {
+   "id": "phys_fn_000979",
+   "label": "NxBox scalar deleting destructor (slot 0)",
+   "confidence": "semantic",
+   "evidence": "oracle/capstone/manifest.json#/entries/3040",
+   "reason": "BOX vtable .rdata:0x10106ab8 slot 0; destroys the embedded collision object unconditionally through its own vtable, runs the base-dtor chain, then frees this through SDK-allocator slot +0x14 when flag&1; driven bitwise (flag=0 path) by the NxPhysicsObjectLayoutTests boxdtor family"
   }
  ]
 }

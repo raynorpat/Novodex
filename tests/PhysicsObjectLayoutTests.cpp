@@ -67,6 +67,24 @@ static const unsigned kColObjCtorRva = 0x000247c0;	// phys_fn_001193, 57 bytes
 static const unsigned kOwnerAccessorRva = 0x000257a0;	// phys_fn_001281, mov eax,[ecx+4]; ret
 
 typedef void (__thiscall* NxShapeCtorFn)(void* self, void* owner, unsigned argument);
+typedef void (__thiscall* NxBoxDtorFn)(void* self, unsigned flags);
+
+static unsigned gDtorFaultCode;
+static unsigned gDtorFaultAddr;
+static void nxGuardedBoxDtor(NxBoxDtorFn fn, void* object, unsigned flags)
+	{
+	gDtorFaultCode = 0;
+	gDtorFaultAddr = 0;
+	__try
+		{
+		fn(object, flags);
+		}
+	__except(gDtorFaultAddr = (unsigned) GetExceptionInformation()->ExceptionRecord->ExceptionAddress,
+		gDtorFaultCode = GetExceptionInformation()->ExceptionRecord->ExceptionCode,
+		EXCEPTION_EXECUTE_HANDLER)
+		{
+		}
+	}
 
 // Runs a two-argument __thiscall constructor under SEH so a fault inside the
 // oracle code reports its address instead of killing the transcript. No
@@ -103,10 +121,22 @@ static bool nxInstallAllocatorShim(const unsigned char* base)
 	{
 	static unsigned char sBlock[0x20];
 	typedef void* (__fastcall* NxAllocFn)(void*, void*, unsigned, unsigned);
-	static NxAllocFn sTable[4];
-	struct NxShim { static void* __fastcall alloc(void*, void*, unsigned size, unsigned)
-		{ return size <= sizeof(sBlock) ? sBlock : 0; } };
-	sTable[2] = reinterpret_cast<NxAllocFn>(&NxShim::alloc);
+	// The shipped allocator's ABI: malloc takes two pushed arguments (callee
+	// pops eight bytes); both free slots take ONE pushed argument (callee
+	// pops four -- the callers do `push x; call [slot]` with no esp fixup).
+	// A wrong pop count drifts the stack and corrupts the caller's return.
+	static NxAllocFn sTable[6];
+	struct NxShim
+		{
+		static void* __fastcall alloc(void*, void*, unsigned size, unsigned)
+			{ return size <= sizeof(sBlock) ? sBlock : 0; }
+		static void* __fastcall freeOne(void*, void*, unsigned)
+			{ return 0; }
+		};
+	sTable[0] = reinterpret_cast<NxAllocFn>(&NxShim::freeOne);	// +0x00
+	sTable[2] = reinterpret_cast<NxAllocFn>(&NxShim::alloc);	// +0x08 malloc
+	sTable[3] = reinterpret_cast<NxAllocFn>(&NxShim::freeOne);	// +0x0c free
+	sTable[5] = reinterpret_cast<NxAllocFn>(&NxShim::freeOne);	// +0x14 free
 	static void* sIface[1] = { sTable };
 	unsigned holder = 0;
 	memcpy(&holder, base + 0x001041bc, 4);
@@ -231,6 +261,8 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oBoxSlot13Digest = 0;
 	unsigned oBoxSlot8Digest = 0;
 	unsigned oBoxSlot9Digest = 0;
+	unsigned oBoxDtorDigest = 0;
+	static unsigned char sBoxDtorReference[0x228];
 	static unsigned char sSaveStateRecord[0x48];
 
 	// -----------------------------------------------------------------------
@@ -1021,7 +1053,67 @@ int wmain(int argc, wchar_t** argv)
 	printf("boxrow4 slots14-16=phys_fn_001391 stable=%u\n", stable ? 1u : 0u);
 	}
 
-	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=5\n",
+	// -----------------------------------------------------------------------
+	// BOX-table slot 0, phys_fn_000979: scalar deleting destructor, flag=0
+	// path. Driven on a fresh constructed box; post-dtor bytes folded under
+	// the six-pointer mask (both sides' destruction-time vptrs differ by
+	// module and are masked).
+	{
+	typedef void (__thiscall* NxBoxDtorFn)(void* self, unsigned flags);
+	NxBoxDtorFn boxDtor = (NxBoxDtorFn) (base + 0x00021940);
+	// +0xe0 is masked here: the dtor dance restores the facade vptr word, a
+	// module-specific pointer like every other vptr slot.
+	static const unsigned kPointerWords[] = { 0x00, 0x9c, 0xa4, 0xa8, 0xb0, 0xb4, 0xe0 };
+
+	if(!nxInstallAllocatorShim(base))
+		return nxFail("the allocator holder word moved; re-pin the probe");
+
+	unsigned char shape[0x228];
+	memset(shape, 0xcd, sizeof(shape));
+	typedef void (__thiscall* NxCtorFn6)(void* self, void* owner, unsigned argument);
+	NxCtorFn6 boxCtor6 = (NxCtorFn6) (base + 0x00021870);
+	boxCtor6(shape, 0, 0);
+
+	{
+	unsigned colobjW = 0, cVT = 0, cSlot0 = 0;
+	memcpy(&colobjW, shape + 0x9c, 4);
+	if(colobjW) memcpy(&cVT, (void*) colobjW, 4);
+	if(cVT) memcpy(&cSlot0, (void*) cVT, 4);
+	fprintf(stderr, "DBG colobj=%08x vtbl=%08x slot0=%08x rva=%08x\n",
+		colobjW, cVT, cSlot0, cSlot0 ? cSlot0 - (unsigned) (uintptr_t) base : 0);
+	fflush(stderr);
+	}
+
+	unsigned faultAddr = 0, faultCode = 0;
+	nxGuardedBoxDtor(boxDtor, shape, 0);
+	faultCode = gDtorFaultCode; faultAddr = gDtorFaultAddr;
+	if(faultCode)
+		{
+		fprintf(stderr, "FAIL box dtor fault code=%08x at=%08x rva=%08x\n",
+			faultCode, faultAddr, faultAddr - (unsigned) (uintptr_t) base);
+		return 1;
+		}
+
+	unsigned digest = 2166136261u;
+	for(unsigned i = 0; i < sizeof(shape); i += 4)
+		{
+		bool pointer = false;
+		for(size_t p = 0; p < sizeof(kPointerWords) / sizeof(kPointerWords[0]); ++p)
+			if(kPointerWords[p] == i)
+				pointer = true;
+		if(pointer)
+			continue;
+		unsigned word;
+		memcpy(&word, shape + i, 4);
+		digest = nxFold(digest, word);
+		}
+	oBoxDtorDigest = digest;
+	memcpy(sBoxDtorReference, shape, sizeof(shape));
+	oracleDigest = nxFold(oracleDigest, digest);
+	printf("boxdtor row=phys_fn_000979 digest=%08x\n", digest);
+	}
+
+	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6\n",
 		(unsigned) (sizeof(nxTables) / sizeof(nxTables[0])));
 	printf("layout oracle digest=%08x\n", oracleDigest);
 
@@ -1650,6 +1742,56 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 17u);
+		}
+
+		// -- box dtor: the transcription's member must leave the same
+		// post-dtor words under the mask (flag=0 path). +0xe0 masked: the
+		// dtor dance restores the facade vptr word.
+		{
+		static const unsigned kPointerWords[] = { 0x00, 0x9c, 0xa4, 0xa8, 0xb0, 0xb4, 0xe0 };
+		unsigned char bytes[0x228];
+		memset(bytes, 0xcd, sizeof(bytes));
+		BoxShape& shape = *new(bytes) BoxShape(0, 0);
+		shape.nxBoxScalarDeletingDtor(0);
+
+		unsigned digest = 2166136261u;
+		for(unsigned i = 0; i < sizeof(bytes); i += 4)
+			{
+			bool pointer = false;
+			for(size_t p = 0; p < sizeof(kPointerWords) / sizeof(kPointerWords[0]); ++p)
+				if(kPointerWords[p] == i)
+					pointer = true;
+			if(pointer)
+				continue;
+			unsigned word;
+			memcpy(&word, bytes + i, 4);
+			digest = nxFold(digest, word);
+			}
+		bool ok = digest == oBoxDtorDigest;
+		if(!ok)
+			for(unsigned i = 0; i < sizeof(bytes); i += 4)
+				{
+				bool pointer = false;
+				for(size_t p = 0; p < sizeof(kPointerWords) / sizeof(kPointerWords[0]); ++p)
+					if(kPointerWords[p] == i)
+						pointer = true;
+				if(pointer)
+					continue;
+				if(memcmp(bytes + i, sBoxDtorReference + i, 4) != 0)
+					{
+					unsigned cb = 0, ob = 0;
+					memcpy(&cb, bytes + i, 4);
+					memcpy(&ob, sBoxDtorReference + i, 4);
+					fprintf(stderr, "FAIL boxdtor first unmasked mismatch at +%#x: cand=%08x oracle=%08x\n",
+						i, cb, ob);
+					break;
+					}
+				}
+		printf("boxdtor candidate ok=%u digest=%08x\n", ok ? 1u : 0u, digest);
+		if(!ok)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 18u);
 		}
 
 		printf("candidate CANDIDATE-MISSING family=vtables reason=shape finals/actor classes are Tasks 3-4\n");

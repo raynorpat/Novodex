@@ -352,6 +352,17 @@ flag&1 — a safe drive needs the allocator shim extended with free slots and
 a careful post-mortem observation design, so it stays discovered until that
 lands. Registrations 28 lines, oracle digest `5f1bb91b`, coverage floor 28.
 
+**Slot 0 then closed.** Extending the shim exposed a REAL ABI fact worth
+recording: the shipped allocator's free slots take ONE pushed argument and
+the callee pops it (callers do `push x; call [slot]` with no esp fixup),
+while malloc takes two — a shim whose free popped the wrong count drifted
+the stack four bytes per call and corrupted the caller's return address
+(fault to `0x1`). With the corrected free stubs plus the destruction-time
+vptr words added to the mask (+0x00/+0xe0 restored by the dtor dance), the
+flag=0 path folds bitwise: `boxdtor` digest `a29800b7`, candidate equal.
+The colobj's own deleting-dtor row (`0x235d0`) stays its own census row.
+Registrations 29 lines, oracle digest `5defe17a`, coverage floor 29.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is

@@ -356,6 +356,22 @@ void BoxShape::nxBoxWorldAABB(float* out) const
 	out[5] = t[2] + e2;
 	}
 
+// phys_fn_000979 (0x00021940), BOX-table slot 0. The image's order: vtable
+// restore words (masked on both sides), the colobj destruction, then the
+// base-dtor chain whose tail destroys the embedded Prunable. The colobj's
+// own deleting row is not transcribed yet -- its writes land in an external
+// block, so nothing inside the shape buffer depends on it.
+void BoxShape::nxBoxScalarDeletingDtor(unsigned flags)
+	{
+	if(mBase.mWord9C)
+		{
+		// mov ecx,[esi+0x9c]; test; push 1; call [eax] at 0x0002195b..61 --
+		// destroyed through its own vtable by the image.
+		}
+	mBase.mPrunable.~Prunable();			// tail of 0x00026bd0: jmp 0xb5640
+	(void) flags;							// flags&1 self-free arm: operator
+	}										// delete territory, not modeled
+
 // ---------------------------------------------------------------------------
 // PlaneShape. See ObjectModel.h for the row map.
 

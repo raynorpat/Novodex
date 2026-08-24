@@ -370,6 +370,14 @@ class BoxShape
 	//! row fills all three slots.
 	BoxShape*			nxBoxSelf() const { return const_cast<BoxShape*>(this); }
 
+	//! BOX-table slot 0, phys_fn_000979 (0x00021940): the scalar deleting
+	//! destructor. Destroys the embedded collision object through its own
+	//! vtable with flag 1 UNCONDITIONALLY (the colobj's own deleting row is
+	/// separate and not yet transcribed), runs the base-dtor chain -- owner
+	//! arms, +0xa0 arms, Prunable destruction -- and frees this through the
+	//! SDK allocator slot +0x14 only when flags&1.
+	void				nxBoxScalarDeletingDtor(unsigned flags);
+
 	//! +0x00..+0xdf, the base shape subobject.
 	ShapeBase			mBase;
 	//! +0xe0..+0x227, the convex-hull descriptor.
