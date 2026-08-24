@@ -562,6 +562,27 @@ their inputs come from subsystems that Tasks 2 and 4 reconstruct. Closing
 them now would require either mocking those subsystems (dishonest) or
 reconstructing them first (the correct order).
 
+## 3o. Registry helper phys_fn_000480 partially decoded
+
+`phys_fn_000480` (`0xedc0`, ~400 bytes, cdecl): shape-to-name association
+tracker. Signature `bool f(void* shape, void* name)`:
+
+- null shape -> return false
+- null name + null list -> return true (nothing to dissociate)
+- non-null name + null list -> alloc 16-byte list via SDK allocator,
+  zero three dwords, store at global `.data 0x10123c0c`
+- search entries (8-byte stride) comparing against shape pointer
+- found + non-null name -> update name at entry+4, return true
+- found + null name -> remove entry (shift last into gap), shrink list;
+  if list becomes empty, free it via helper `0x0ea30` and null the global
+- not found + non-null name -> grow list if needed (realloc pattern),
+  insert `{shape, name}` pair
+
+The full transcription requires decoding the growth/realloc paths
+(`0x000eeb8..f30`) which interact with the SDK allocator shim. Deferred to
+the next session with fresh context; the partial decode above is sufficient
+to understand every call site's semantics.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is
