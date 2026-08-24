@@ -500,6 +500,11 @@ class CapsuleShape
 	//! record+0x54, then the BASE save-to-descriptor row.
 	bool				nxCapsuleSaveState(void* record);
 
+	//! CAPSULE-table slot 14, phys_fn_000995 (0x00021be0): set-radius.
+	//! Stores to +0xe0 then tail-jumps through BASE slot 6 -- a null-owner
+	//! no-op on a detached shape.
+	void				nxCapsuleSetRadius(float radius);
+
 	//! CAPSULE-table slot 10, phys_fn_001001 (0x00021c30): pose-one
 	//! translation to out[0..2], halfHeight+radius to out[3].
 	void				nxCapsuleCenterRadius(float* out) const;

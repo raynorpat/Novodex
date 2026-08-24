@@ -446,10 +446,11 @@ x87 `fchs` negates before storing, maxes `+0.0f`. Oracle digest `33c61825`,
 candidate bitwise equal. Registrations 37 lines, oracle digest `37188f32`,
 coverage floor 37.
 
-**Slot 14 closed**: phys_fn_001357 -- set-radius (stores unconditionally,
-validates through the error stream, notifies via BASE slot 6, marks
-dirty-flag `0x20`). Driven with radius `1.25f`: stored word `3fa00000`
-equal candidate. SPHERE open slots now: 0/3/4/5/7/12.## 4. The census merge resolved
+**Slot 14 (capsule twin) closed**: phys_fn_000995 -- set-radius; stores
+the argument then tail-jumps through BASE slot 6 with the flag forced to 1
+(null-owner no-op on a detached shape). Driven with radius `1.5f`: stored
+word `3fc00000` equal candidate. Registrations 38 lines, oracle digest
+`c5326782`, coverage floor 38.## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is
 three real tables ending together at `0x106afc`: A(12) + B(12) + BOX(17).

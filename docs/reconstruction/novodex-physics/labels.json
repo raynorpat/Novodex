@@ -2697,6 +2697,13 @@
    "reason": "SPHERE vtable slot 10; copies pose-one translation and the radius into a caller record; driven bitwise by the sphererows family"
   },
   {
+   "id": "phys_fn_000995",
+   "label": "NxCapsule set-radius (slot 14)",
+   "confidence": "semantic",
+   "evidence": "oracle/capstone/manifest.json#/entries/2972",
+   "reason": "CAPSULE vtable .rdata:0x106b20 slot 14; stores the argument to +0xe0 then tail-jumps through BASE slot 6 with the flag forced to 1 -- a null-owner no-op on a detached shape; driven by the capsetrad family with radius 1.5f"
+  },
+  {
    "id": "phys_fn_001357",
    "label": "NxSphere set-radius (slot 14)",
    "confidence": "semantic",

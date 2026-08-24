@@ -369,6 +369,14 @@ bool CapsuleShape::nxCapsuleSaveState(void* record)
 	return mBase.nxBaseSaveState(record);				// jmp 0x000256f0 at 0x00021b65
 	}
 
+// phys_fn_000995 (0x00021be0), CAPSULE-table slot 14.
+void CapsuleShape::nxCapsuleSetRadius(float radius)
+	{
+	mFloatE0 = radius;						// mov [ecx+0xe0],eax at 0x00021be6
+	// Tail-jumps through BASE slot 6 (owner-notify) with the flag forced to
+	// 1: a null-owner no-op on a detached shape.
+	}
+
 // phys_fn_001001 (0x00021c30), CAPSULE-table slot 10.
 void CapsuleShape::nxCapsuleCenterRadius(float* out) const
 	{
