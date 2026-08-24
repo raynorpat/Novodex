@@ -496,5 +496,18 @@
       ".rdata 0x101041f0 = 0.0f (validation zero)"
     ],
     "remaining_open": "deep shared chains: raycast(s5), sweep(s7), debug-draw(s3), cached-bounds(s4), apply/load-desc(s1/s12 per-type tails) -- all require Task 2/4 infrastructure"
+  },
+  "resolved_field_semantics": {
+    "shape+0xd0": "NxShapeType tag (plane=0, sphere=1, box=2, capsule=3, mesh=4, compound=5)",
+    "shape+0xd4": "scene slot index (passed by scene at creation, used by dirty-flag accumulator 0x26c90)",
+    "shape+0xd8": "collision group (NxU16), set via validated group setter phys_fn_001329",
+    "shape+0xda": "material index low halfword (from descriptor materialIndex field)",
+    "shape+0xde": "cached shapeFlags low halfword (mirrored from descriptor shapeFlags by apply-desc)",
+    "desc+0x38": "shapeFlags (u32) in NxShapeDesc",
+    "desc+0x3c": "group (NxCollisionGroup = NxU16)",
+    "desc+0x3e": "materialIndex (NxMaterialIndex = NxU16)",
+    "desc+0x40": "userData (void*) -- written to [colobj+4] by apply-desc",
+    "desc+0x44": "name (const char*) -- passed to registry phys_fn_000480",
+    "TriangleMesh+0x74": "reference count (inc on shape bind, dec on unbind)"
   }
 }
