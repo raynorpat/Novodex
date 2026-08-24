@@ -440,6 +440,12 @@ TriangleMesh layout transcription, recorded here for its next revision.
 
 Registrations 35 lines, oracle digest `66e19364`, coverage floor 35.
 
+Extended: SPHERE slot 8 (`phys_fn_001367`) -- the local AABB, closing with
+the sign-bit claim intact: mins are **-0.0f** (`80000000x3`) because the
+x87 `fchs` negates before storing, maxes `+0.0f`. Oracle digest `33c61825`,
+candidate bitwise equal. Registrations 37 lines, oracle digest `37188f32`,
+coverage floor 37. SPHERE slots open: 0/3/4/5/7/12/14.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is

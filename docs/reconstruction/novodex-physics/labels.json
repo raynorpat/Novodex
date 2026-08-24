@@ -2697,6 +2697,13 @@
    "reason": "SPHERE vtable slot 10; copies pose-one translation and the radius into a caller record; driven bitwise by the sphererows family"
   },
   {
+   "id": "phys_fn_001367",
+   "label": "NxSphere local-AABB row (slot 8)",
+   "confidence": "semantic",
+   "evidence": "oracle/capstone/manifest.json#/entries/3543",
+   "reason": "SPHERE vtable .rdata:0x107528 slot 8; negated radius to out[0..2] and raw radius to out[3..5] -- the box-around-its-own-center pattern; driven bitwise (including the -0.0f sign bits) by the sphlocal family"
+  },
+  {
    "id": "phys_fn_001385",
    "label": "NxMesh save-to-descriptor (slot 13)",
    "confidence": "semantic",

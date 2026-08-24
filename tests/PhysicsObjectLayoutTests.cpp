@@ -272,6 +272,7 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oCapsuleCRDigest = 0;
 	unsigned oMeshSaveDigest = 0;
 	unsigned oMeshWordsDigest = 2166136261u;
+	unsigned oSphereLocalDigest = 0;
 	static unsigned char sSaveStateRecord[0x48];
 
 	// -----------------------------------------------------------------------
@@ -1403,7 +1404,39 @@ int wmain(int argc, wchar_t** argv)
 		saved ? 1u : 0u, d13m, words[0], words[1], words[2], words[3]);
 	}
 
-	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2\n",
+	// -----------------------------------------------------------------------
+	// SPHERE slot 8, phys_fn_001367: local AABB. On a fresh sphere the mins
+	// are -0.0f (0x80000000) and maxes +0.0f -- the sign bits are the claim.
+	{
+	typedef void (__thiscall* NxOutFn)(void* self, float* out);
+	NxOutFn sphLocal = (NxOutFn) (base + 0x000279d0);
+
+	unsigned char sshape[0xe4];
+	memset(sshape, 0xcd, sizeof(sshape));
+	typedef void (__thiscall* NxCtorFnc)(void* self, void* owner, unsigned argument);
+	NxCtorFnc sphereCtor5 = (NxCtorFnc) (base + 0x000277c0);
+	sphereCtor5(sshape, 0, 0);
+
+	float lo[6] = { 0, 0, 0, 0, 0, 0 };
+	sphLocal(sshape, lo);
+
+	unsigned d8s = 2166136261u;
+	for(int i = 0; i < 6; ++i)
+		{
+		unsigned w; memcpy(&w, lo + i, 4);
+		d8s = nxFold(d8s, w);
+		}
+	oSphereLocalDigest = d8s;
+	oracleDigest = nxFold(oracleDigest, d8s);
+
+	unsigned lb[6] = { 0, 0, 0, 0, 0, 0 };
+	for(int i = 0; i < 6; ++i)
+		memcpy(&lb[i], lo + i, 4);
+	printf("sphlocal row=phys_fn_001367 minmax=%08x.%08x.%08x.%08x.%08x.%08x\n",
+		lb[0], lb[1], lb[2], lb[3], lb[4], lb[5]);
+	}
+
+	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1\n",
 		(unsigned) (sizeof(nxTables) / sizeof(nxTables[0])));
 	printf("layout oracle digest=%08x\n", oracleDigest);
 
@@ -2292,6 +2325,35 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 23u);
+		}
+
+		// -- sphere local AABB: the transcription's negations must produce the
+		// same -0.0f sign bits the oracle does.
+		{
+		unsigned char sbytes[0xe4];
+		memset(sbytes, 0xcd, sizeof(sbytes));
+		SphereShape& sph = *new(sbytes) SphereShape(0, 0);
+
+		float lo[6] = { 0, 0, 0, 0, 0, 0 };
+		sph.nxSphereLocalAABB(lo);
+
+		unsigned d8s = 2166136261u;
+		for(int i = 0; i < 6; ++i)
+			{
+			unsigned w; memcpy(&w, lo + i, 4);
+			d8s = nxFold(d8s, w);
+			}
+		const unsigned kMinusZero = 0x80000000u;
+		bool ok = d8s == oSphereLocalDigest
+			&& memcmp(&lo[0], &kMinusZero, 4) == 0
+			&& memcmp(&lo[1], &kMinusZero, 4) == 0
+			&& memcmp(&lo[2], &kMinusZero, 4) == 0
+			&& lo[3] == 0.0f && lo[4] == 0.0f && lo[5] == 0.0f;
+		printf("sphlocal candidate ok=%u d8=%08x\n", ok ? 1u : 0u, d8s);
+		if(!ok)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 24u);
 		}
 
 		printf("candidate CANDIDATE-MISSING family=vtables reason=shape finals/actor classes are Tasks 3-4\n");

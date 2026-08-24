@@ -309,6 +309,19 @@ void SphereShape::nxSphereWorldAABB(float* out) const
 	out[5] = t[2] + mRadiusE0;
 	}
 
+// phys_fn_001367 (0x000279d0), SPHERE-table slot 8. The x87 dance (fchs,
+// dup, fxch) stores the negated radius three times then the raw radius
+// three times -- an AABB around the sphere's own center, like BOX slot 8.
+void SphereShape::nxSphereLocalAABB(float* out) const
+	{
+	out[0] = -mRadiusE0;					// fchs; fst [esp]; ... fstp [eax]
+	out[1] = -mRadiusE0;
+	out[2] = -mRadiusE0;
+	out[3] = mRadiusE0;						// mov [eax+0x14],edx
+	out[4] = mRadiusE0;						// fstp [eax+0xc]
+	out[5] = mRadiusE0;						// fstp [eax+0x10]
+	}
+
 // ---------------------------------------------------------------------------
 // CapsuleShape. See ObjectModel.h for the row map.
 

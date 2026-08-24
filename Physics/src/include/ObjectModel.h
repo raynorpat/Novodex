@@ -434,6 +434,12 @@ class SphereShape
 	//! min = t - r, max = t + r per axis (six floats).
 	void				nxSphereWorldAABB(float* out) const;
 
+	//! SPHERE-table slot 8, phys_fn_001367 (0x000279d0): local AABB --
+	//! negated radius to out[0..2], raw radius to out[3..5]. On a fresh
+	//! sphere the mins are -0.0f (sign bit set), which is exactly what the
+	//! differential pins.
+	void				nxSphereLocalAABB(float* out) const;
+
 	//! SPHERE-table slot 11, phys_fn_001365 (0x000279b0): zeroes out[0..2],
 	//! radius to out[3].
 	void				nxSphereZeroCenterRadius(float* out) const;
