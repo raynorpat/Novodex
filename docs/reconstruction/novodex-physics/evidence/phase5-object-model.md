@@ -327,6 +327,19 @@ A census bookkeeping slip (a duplicated inventory row for 927/939) was caught
 and fixed before commit; registrations 26 lines, oracle digest `053011c2`,
 coverage floor 26.
 
+Extended again: slots 8 and 9 closed. Slot 8 (`phys_fn_000941`) is the box's
+local AABB — negated dims then raw dims, six words. Slot 9
+(`phys_fn_000935`, 198 bytes) is the OBB world-AABB: per-axis extents
+`|rot-row . dims|` over pose one (axis0 r0/r2/r1, axis1 r3/r5/r4, axis2
+r6/r8/r7) with `min = t − ext`, `max = t + ext`. On the identity pose the
+arithmetic is exact, so both drives fold bitwise (`d8 == d9 == 8428d8b5`,
+minmax `bf800000×3 / 3f800000×3`); the image's mixed single/extended
+rounding of partial sums stays open for general poses. Registrations 27
+lines, oracle digest `f1d18d6a`, coverage floor 27. BOX slots now closed:
+2, 8, 9, 10, 11, 13. Open: 0/1 (dtor + apply-desc chain), 3 (debug draw),
+4 (cached-bounds update via 0x1c8c0), 5 (raycast), 7 (sweep), 12
+(loadFromDesc), 14–16.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is

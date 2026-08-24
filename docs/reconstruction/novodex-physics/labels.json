@@ -2646,6 +2646,20 @@
    "confidence": "semantic",
    "evidence": "oracle/capstone/manifest.json#/entries/2960",
    "reason": "BOX vtable .rdata:0x10106ab8 slot 13; writes facade dims to record+0x4c then tail-jumps to the BASE save-to-descriptor row phys_fn_001277 -- the dims land exactly where the box ctor read desc+0x4c; driven bitwise by the NxPhysicsObjectLayoutTests boxrow family"
+  },
+  {
+   "id": "phys_fn_000941",
+   "label": "NxBox local-AABB row",
+   "confidence": "semantic",
+   "evidence": "oracle/capstone/manifest.json#/entries/2967",
+   "reason": "BOX vtable .rdata:0x10106ab8 slot 8 (merged-run index 32); negated dims to out[0..2] and raw dims to out[3..5] -- the box's AABB around its own center; driven bitwise by the NxPhysicsObjectLayoutTests boxrow family"
+  },
+  {
+   "id": "phys_fn_000935",
+   "label": "NxBox world-AABB row",
+   "confidence": "semantic",
+   "evidence": "oracle/capstone/manifest.json#/entries/2964",
+   "reason": "BOX vtable .rdata:0x10106ab8 slot 9 (merged-run index 33); computes per-axis extents |rot-row . dims| over pose one and writes min=t-ext, max=t+ext into a caller record; driven bitwise by the NxPhysicsObjectLayoutTests boxrow family on the identity pose"
   }
  ]
 }

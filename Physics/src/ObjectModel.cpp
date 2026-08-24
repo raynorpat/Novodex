@@ -324,6 +324,38 @@ bool BoxShape::nxBoxSaveState(void* record)
 	return mBase.nxBaseSaveState(record);			// jmp 0x000256f0 at 0x00020473
 	}
 
+// phys_fn_000941 (0x00020700), BOX-table slot 8.
+void BoxShape::nxBoxLocalAABB(float* out) const
+	{
+	out[0] = -mHull.mDims04[0];				// fld/fchs/fxch chain, 0x00020700..23
+	out[1] = -mHull.mDims04[1];
+	out[2] = -mHull.mDims04[2];
+	out[3] = mHull.mDims04[0];				// raw copies, 0x00020726..41
+	out[4] = mHull.mDims04[1];
+	out[5] = mHull.mDims04[2];
+	}
+
+// phys_fn_000935 (0x000205a0), BOX-table slot 9. Extent rows of pose one's
+// rotation: axis 0 uses r0/r2/r1, axis 1 r3/r5/r4, axis 2 r6/r7/r8 -- the
+// same |row . dims| pattern as every OBB bounds helper.
+void BoxShape::nxBoxWorldAABB(float* out) const
+	{
+	const float* r = reinterpret_cast<const float*>(&mBase.mPose0C.mRotation[0]);
+	const float dx = mHull.mDims04[0];
+	const float dy = mHull.mDims04[1];
+	const float dz = mHull.mDims04[2];
+	const float e0 = fabsf(dx * r[0]) + fabsf(dy * r[2]) + fabsf(dz * r[1]);
+	const float e1 = fabsf(dx * r[3]) + fabsf(dy * r[5]) + fabsf(dz * r[4]);
+	const float e2 = fabsf(dx * r[6]) + fabsf(dy * r[8]) + fabsf(dz * r[7]);
+	const float* t = mBase.mPose0C.mTranslation;
+	out[0] = t[0] - e0;						// fsub [esp+4], 0x00020639
+	out[1] = t[1] - e1;
+	out[2] = t[2] - e2;
+	out[3] = t[0] + e0;						// fadd, 0x0002064b..5b
+	out[4] = t[1] + e1;
+	out[5] = t[2] + e2;
+	}
+
 // ---------------------------------------------------------------------------
 // PlaneShape. See ObjectModel.h for the row map.
 

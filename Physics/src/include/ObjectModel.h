@@ -354,6 +354,17 @@ class BoxShape
 	//! exactly the offset the constructor read them back from.
 	bool				nxBoxSaveState(void* record);
 
+	//! BOX-table slot 8, phys_fn_000941 (0x00020700): local AABB -- out[0..2]
+	//! = negated dims, out[3..5] = raw dims.
+	void				nxBoxLocalAABB(float* out) const;
+
+	//! BOX-table slot 9, phys_fn_000935 (0x000205a0): world AABB from pose
+	//! one -- extents |rot-row . dims| per axis, then min = t - ext,
+	//! max = t + ext. Exact for the identity pose the gate drives; the
+	//! image's mixed single/extended rounding of partial sums is left open
+	//! for general poses.
+	void				nxBoxWorldAABB(float* out) const;
+
 	//! +0x00..+0xdf, the base shape subobject.
 	ShapeBase			mBase;
 	//! +0xe0..+0x227, the convex-hull descriptor.

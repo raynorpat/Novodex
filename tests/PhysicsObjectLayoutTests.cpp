@@ -229,6 +229,8 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oBoxRowDigest = 0;
 	unsigned oBoxSlot11Digest = 0;
 	unsigned oBoxSlot13Digest = 0;
+	unsigned oBoxSlot8Digest = 0;
+	unsigned oBoxSlot9Digest = 0;
 	static unsigned char sSaveStateRecord[0x48];
 
 	// -----------------------------------------------------------------------
@@ -939,7 +941,60 @@ int wmain(int argc, wchar_t** argv)
 		saved13 ? 1u : 0u, d13, dims4c);
 	}
 
-	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=2\n",
+	// -----------------------------------------------------------------------
+	// BOX-table slots 8 and 9, phys_fn_000941 and phys_fn_000935: local AABB
+	// and world AABB from pose one. Driven on a real constructed box
+	// (identity pose, dims 1,1,1 -- exact arithmetic).
+	{
+	typedef void (__thiscall* NxBoxRowFn)(void* self, float* out);
+	NxBoxRowFn boxRow8 = (NxBoxRowFn) (base + 0x00020700);
+	NxBoxRowFn boxRow9 = (NxBoxRowFn) (base + 0x000205a0);
+
+	if(!nxInstallAllocatorShim(base))
+		return nxFail("the allocator holder word moved; re-pin the probe");
+
+	unsigned char shape[0x228];
+	memset(shape, 0xcd, sizeof(shape));
+	typedef void (__thiscall* NxCtorFn4)(void* self, void* owner, unsigned argument);
+	NxCtorFn4 boxCtor4 = (NxCtorFn4) (base + 0x00021870);
+	boxCtor4(shape, 0, 0);
+
+	float out8[6] = { 0, 0, 0, 0, 0, 0 };
+	boxRow8(shape, out8);
+	float out9[6] = { 0, 0, 0, 0, 0, 0 };
+	boxRow9(shape, out9);
+
+	unsigned d8 = 2166136261u;
+	for(int i = 0; i < 6; ++i)
+		{
+		unsigned w; memcpy(&w, out8 + i, 4);
+		d8 = nxFold(d8, w);
+		}
+	oBoxSlot8Digest = d8;
+	oracleDigest = nxFold(oracleDigest, d8);
+
+	unsigned d9 = 2166136261u;
+	for(int i = 0; i < 6; ++i)
+		{
+		unsigned w; memcpy(&w, out9 + i, 4);
+		d9 = nxFold(d9, w);
+		}
+	oBoxSlot9Digest = d9;
+	oracleDigest = nxFold(oracleDigest, d9);
+
+	unsigned b8[6] = { 0, 0, 0, 0, 0, 0 }, b9[6] = { 0, 0, 0, 0, 0, 0 };
+	for(int i = 0; i < 6; ++i)
+		{
+		memcpy(&b8[i], out8 + i, 4);
+		memcpy(&b9[i], out9 + i, 4);
+		}
+	printf("boxrow3 slot8=phys_fn_000941 minmax=%08x.%08x.%08x.%08x.%08x.%08x "
+		"slot9=phys_fn_000935 minmax=%08x.%08x.%08x.%08x.%08x.%08x\n",
+		b8[0], b8[1], b8[2], b8[3], b8[4], b8[5],
+		b9[0], b9[1], b9[2], b9[3], b9[4], b9[5]);
+	}
+
+	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=4\n",
 		(unsigned) (sizeof(nxTables) / sizeof(nxTables[0])));
 	printf("layout oracle digest=%08x\n", oracleDigest);
 
@@ -1517,6 +1572,43 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 15u);
+		}
+
+		// -- box rows 8 and 9: twin drives through the transcription.
+		{
+		unsigned char bytes[0x228];
+		memset(bytes, 0xcd, sizeof(bytes));
+		BoxShape& shape = *new(bytes) BoxShape(0, 0);
+
+		float out8[6] = { 0, 0, 0, 0, 0, 0 };
+		shape.nxBoxLocalAABB(out8);
+		float out9[6] = { 0, 0, 0, 0, 0, 0 };
+		shape.nxBoxWorldAABB(out9);
+
+		unsigned d8 = 2166136261u;
+		for(int i = 0; i < 6; ++i)
+			{
+			unsigned w; memcpy(&w, out8 + i, 4);
+			d8 = nxFold(d8, w);
+			}
+		unsigned d9 = 2166136261u;
+		for(int i = 0; i < 6; ++i)
+			{
+			unsigned w; memcpy(&w, out9 + i, 4);
+			d9 = nxFold(d9, w);
+			}
+
+		const unsigned kOneBits = 0x3f800000u, kMinusOneBits = 0xbf800000u;
+		bool ok = d8 == oBoxSlot8Digest && d9 == oBoxSlot9Digest
+			&& out8[0] == -1.0f && out8[3] == 1.0f
+			&& memcmp(&out9[0], &kMinusOneBits, 4) == 0
+			&& memcmp(&out9[3], &kOneBits, 4) == 0;
+		printf("boxrow3 candidate ok=%u d8=%08x d9=%08x\n",
+			ok ? 1u : 0u, d8, d9);
+		if(!ok)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 16u);
 		}
 
 		printf("candidate CANDIDATE-MISSING family=vtables reason=shape finals/actor classes are Tasks 3-4\n");
