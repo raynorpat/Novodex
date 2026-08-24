@@ -532,6 +532,11 @@ class CapsuleShape
 	//! no-op on a detached shape.
 	void				nxCapsuleSetRadius(float radius);
 
+	//! CAPSULE-table slot 0, phys_fn_001014 (0x000225e0): scalar deleting
+	//! destructor -- destroys colobj unconditionally, base-dtor chain,
+	//! self-free through allocator slot +0x14 when flags&1.
+	void				nxCapsuleScalarDeletingDtor(unsigned flags);
+
 	//! CAPSULE-table slot 10, phys_fn_001001 (0x00021c30): pose-one
 	//! translation to out[0..2], halfHeight+radius to out[3].
 	void				nxCapsuleCenterRadius(float* out) const;

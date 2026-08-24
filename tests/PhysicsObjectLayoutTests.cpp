@@ -274,6 +274,7 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oMeshWordsDigest = 2166136261u;
 	unsigned oSphereLocalDigest = 0;
 	unsigned oSphereDtorDigest = 0;
+	unsigned oCapsuleDtorDigest = 0;
 	unsigned oSphereLoadRadBits = 0;
 	unsigned oSphereLoadGroup = 0;
 	unsigned oPlaneDtorDigest = 0;
@@ -1703,7 +1704,43 @@ int wmain(int argc, wchar_t** argv)
 		dpl, dm);
 	}
 
-	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 setgroup=1 dtors2=2 sphload=1\n",
+	// -----------------------------------------------------------------------
+	// CAPSULE slot 0, phys_fn_001014: scalar deleting destructor, flag=0.
+	{
+	typedef void (__thiscall* NxCapDtorFn)(void* self, unsigned flags);
+	NxCapDtorFn capDtor = (NxCapDtorFn) (base + 0x000225e0);
+
+	if(!nxInstallAllocatorShim(base))
+		return nxFail("the allocator holder word moved; re-pin the probe");
+
+	unsigned char cshape[0xec];
+	memset(cshape, 0xcd, sizeof(cshape));
+	typedef void (__thiscall* NxCtorFn12)(void* self, void* owner, unsigned argument);
+	NxCtorFn12 capsuleCtor5 = (NxCtorFn12) (base + 0x00021a60);
+	capsuleCtor5(cshape, 0, 0);
+
+	nxGuardedBoxDtor((NxBoxDtorFn) capDtor, cshape, 0);
+	if(gDtorFaultCode)
+		return nxFail("capsule dtor faulted");
+
+	unsigned digest = 2166136261u;
+	for(unsigned i = 0; i < sizeof(cshape); i += 4)
+		{
+		bool pointer = false;
+		for(size_t p = 0; p < 6; ++p)
+			if(kDtorMask[p] == i)
+				pointer = true;
+		if(pointer)
+			continue;
+		unsigned w; memcpy(&w, cshape + i, 4);
+		digest = nxFold(digest, w);
+		}
+	oCapsuleDtorDigest = digest;
+	oracleDigest = nxFold(oracleDigest, digest);
+	printf("capdtor row=phys_fn_001014 digest=%08x\n", digest);
+	}
+
+	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1\n",
 		(unsigned) (sizeof(nxTables) / sizeof(nxTables[0])));
 	printf("layout oracle digest=%08x\n", oracleDigest);
 
@@ -2671,6 +2708,35 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 26u);
+		}
+
+		// -- capsule dtor: twin drive.
+		{
+		unsigned char cbytes[0xec];
+		memset(cbytes, 0xcd, sizeof(cbytes));
+		CapsuleShape& cap = *new(cbytes) CapsuleShape(0, 0);
+		cap.nxCapsuleScalarDeletingDtor(0);
+
+		 unsigned dc = 2166136261u;
+		for(unsigned i = 0; i < sizeof(cbytes); i += 4)
+			{
+			bool pointer = false;
+			for(size_t p = 0; p < 6; ++p)
+				if(kDtorMask[p] == i)
+					pointer = true;
+			if(pointer)
+				continue;
+			unsigned w;
+			memcpy(&w, cbytes + i, 4);
+			dc = nxFold(dc, w);
+			}
+
+		bool ok = dc == oCapsuleDtorDigest;
+		printf("capdtor candidate ok=%u dc=%08x\n", ok ? 1u : 0u, dc);
+		if(!ok)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 29u);
 		}
 
 		// -- sphere set-radius: stored word must equal the driven value.

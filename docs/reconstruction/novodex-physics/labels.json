@@ -2746,7 +2746,14 @@
    "reason": "SPHERE vtable .rdata:0x107528 slot 0; destroys the embedded collision object unconditionally through its own vtable, runs the base-dtor chain, then frees this through SDK-allocator slot +0x14 when flag&1; driven bitwise (flag=0) by the sphdtor family"
   },
   {
-   "id": "phys_fn_001347",
+   "id": "phys_fn_001014",
+   "label": "NxCapsule scalar deleting destructor (slot 0)",
+   "confidence": "semantic",
+   "evidence": "oracle/capstone/manifest.json#/entries/2973",
+   "reason": "CAPSULE vtable .rdata:0x106b20 slot 0; driven bitwise by the capdtor family"
+  },
+  {
+      "id": "phys_fn_001347",
    "label": "NxShape apply-from-descriptor (slot 1)",
    "confidence": "semantic",
    "evidence": "oracle/capstone/manifest.json#/entries/3516",

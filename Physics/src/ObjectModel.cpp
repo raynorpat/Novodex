@@ -443,6 +443,17 @@ void CapsuleShape::nxCapsuleSetRadius(float radius)
 	// 1: a null-owner no-op on a detached shape.
 	}
 
+// phys_fn_001014 (0x000225e0), CAPSULE-table slot 0.
+void CapsuleShape::nxCapsuleScalarDeletingDtor(unsigned flags)
+	{
+	if(mBase.mWord9C)
+		{
+		// destroyed through its own vtable: 0x000225f3..f7
+		}
+	mBase.mPrunable.~Prunable();			// tail of the base-dtor chain
+	(void) flags;							// self-free arm not modeled
+	}
+
 // phys_fn_001001 (0x00021c30), CAPSULE-table slot 10.
 void CapsuleShape::nxCapsuleCenterRadius(float* out) const
 	{
