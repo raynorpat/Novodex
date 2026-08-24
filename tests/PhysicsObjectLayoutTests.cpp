@@ -1703,7 +1703,7 @@ int wmain(int argc, wchar_t** argv)
 		dpl, dm);
 	}
 
-	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 sphload=1 sphload=1 sphdtor=1 sphload=1 sphload=1 setgroup=1 dtors2=2\n",
+	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 setgroup=1 dtors2=2 sphload=1\n",
 		(unsigned) (sizeof(nxTables) / sizeof(nxTables[0])));
 	printf("layout oracle digest=%08x\n", oracleDigest);
 
@@ -2726,7 +2726,40 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 28u);
-		}
+		
+
+		// -- sphere loadFromDesc: twin drive with crafted record.
+		{
+		unsigned char sbytes[0xe4];
+		memset(sbytes, 0xcd, sizeof(sbytes));
+		SphereShape& sph = *new(sbytes) SphereShape(0, 0);
+
+		unsigned char rec2[0x58];
+		memset(rec2, 0xcd, sizeof(rec2));
+		const float kR2 = 2.5f;
+		memcpy(rec2 + 0x4c, &kR2, 4);
+		const unsigned short kG2 = 0x0006u;
+		memcpy(rec2 + 0x3c, &kG2, 2);
+		memset(rec2 + 0x44, 0, 4);
+
+		sph.mBase.nxApplyDescriptor(rec2);
+		sph.nxSphereLoadFromDesc(rec2);
+
+		float gotRad = 0.0f;
+		memcpy(&gotRad, sbytes + 0xe0, 4);
+		unsigned radBits = 0;
+		memcpy(&radBits, &gotRad, 4);
+		unsigned short hwD8 = 0;
+		memcpy(&hwD8, sbytes + 0xd8, 2);
+
+		bool ok = radBits == oSphereLoadRadBits && hwD8 == oSphereLoadGroup;
+		printf("sphload candidate ok=%u rad=%08x group=%04x\n",
+			ok ? 1u : 0u, radBits, hwD8);
+		if(!ok)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 28u);
+		}}
 
 		// -- plane extent row: zero vec3 + +FLT_MAX reach, bitwise.
 		{
