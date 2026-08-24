@@ -446,6 +446,33 @@ x87 `fchs` negates before storing, maxes `+0.0f`. Oracle digest `33c61825`,
 candidate bitwise equal. Registrations 37 lines, oracle digest `37188f32`,
 coverage floor 37. SPHERE slots open: 0/3/4/5/7/12/14.
 
+coverage floor 37. SPHERE slots open: 0/3/4/5/7/12/14.
+
+## 3k. The second constructor argument NAMED: scene slot index
+
+The shared helper `phys_fn_001315`-adjacent row at `0x26c90` (called by the
+sphere/capsule radius setters and the box/mesh dimension setters with masks
+`0x20/0x40/0x100/4`) decodes as a SCENE DIRTY-FLAG ACCUMULATOR:
+
+    this+0x04 -> owner; if null, return
+    eax = [owner+4]                 ; scene structure
+    ebp = [this+0xd4]               ; THE SECOND CTOR ARGUMENT: scene slot index
+    esi = [eax+0x48]                ; per-scene dirty-word table descriptor
+    if [table + index*4] == 0:      ; grow/insert path with SDK allocator
+        ... realloc, copy, free old ...
+    tail: [[table]+index*4] |= mask ; OR the change-mask in
+
+So the +0xd4 word every ctor writes is the SHAPE'S SLOT INDEX in its scene,
+and each setter flags WHAT changed by OR-ing a bit-mask into the scene's
+per-slot word. The masks seen so far: sphere radius setter `0x20`, capsule
+setter `0x100`, box setDims `0x100`, apply-desc helper `0x4`. This also
+finally explains why the ctors forward their second argument unchanged and
+store it raw at +0xd4: the scene hands out the slot at creation time.
+The full chain (who allocates the table, who consumes the dirty words)
+belongs to Task 4's actor/scene work; recorded here because it resolves
+one of the longest-standing unnamed words in the shape layout.
+
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is
