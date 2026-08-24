@@ -55,7 +55,7 @@
   "counts": {
     "deferred_blocked_on_later_phase": 19,
     "deferred_data_object_not_dispositioned": 102,
-    "deferred_not_reconstructed_in_phase": 321,
+    "deferred_not_reconstructed_in_phase": 320,
     "deferred_reconstructed_not_falsified": 1,
     "differential_falsified": 31,
     "oracle_differential_falsified": 30
@@ -3033,14 +3033,6 @@
       "id": "phys_fn_001345",
       "rva": "0x00027710",
       "size": 34,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_001347",
-      "rva": "0x00027740",
-      "size": 119,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": []
