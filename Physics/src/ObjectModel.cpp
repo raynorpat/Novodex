@@ -334,6 +334,15 @@ void SphereShape::nxSphereSetRadius(float radius)
 	// phys_fn_001315-adjacent helper 0x26c90 (see evidence 3k).
 	}
 
+// phys_fn_001329 (0x00026d90): apply a GROUP. See ObjectModel.h.
+void ShapeBase::nxApplyGroup(unsigned short group)
+	{
+	if(group >= 0x20)
+		return;							// error-report arm: Task 2's reporter
+	mHalfwordD8 = group;				// mov [esi+0xd8],ax at 0x00026dc7
+	// dirty-flag 0x04 via 0x26c90 -- null-owner no-op on a detached shape.
+	}
+
 // phys_fn_001263 (0x00025420), PLANE-table slot 0.
 void PlaneShape::nxPlaneScalarDeletingDtor(unsigned flags)
 	{

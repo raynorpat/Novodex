@@ -500,6 +500,12 @@ lazy shape-to-descriptor REGISTRY (an allocator-grown list keyed by the
 descriptor pointer, searched and inserted on apply). Both stay discovered;
 their drives need the registry fixture Task 2 owns.
 
+**Group setter closed** (phys_fn_001329): the validated group-setter
+transcribed as `ShapeBase::nxApplyGroup` -- rejects >= `0x20` (report arm
+recorded, not modeled), stores at shape+`0xd8`, marks dirty-flag `0x04`.
+Driven with group 7 on a fresh sphere: `+0xd8 = 0007` bitwise. Registrations
+42 lines, oracle digest `18f5c3ca`, coverage floor 42.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is

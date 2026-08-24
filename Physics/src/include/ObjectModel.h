@@ -251,6 +251,13 @@ class ShapeBase
 	//! failed faults here identically.
 	bool				nxBaseSaveState(void* record);
 
+	//! BASE-level helper phys_fn_001329 (0x00026d90): apply a GROUP.
+	//! Validates against 0x20 through the error stream (Task 2 owns the
+	//! reporter), stores the group at +0xd8, then marks dirty-flag 0x04 via
+	//! 0x26c90 -- a null-owner no-op on a detached shape. Lives on ShapeBase
+	//! because every family's apply/load rows reach it.
+	void				nxApplyGroup(unsigned short group);
+
 	//! +0x00, carried opaque like every other vtable slot in this model.
 	void*				mVptrSlot;
 	//! +0x04, first argument: the shape's owner.

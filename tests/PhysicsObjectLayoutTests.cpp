@@ -279,6 +279,7 @@ int wmain(int argc, wchar_t** argv)
 	static const unsigned kDtorMask[] = { 0x00, 0x9c, 0xa4, 0xa8, 0xb0, 0xb4 };
 	unsigned oSphereSetDigest = 0;
 	unsigned oCapsuleSetDigest = 0;
+	unsigned oGroupDigest = 0;
 	unsigned oPlaneExtentDigest = 0;
 	static unsigned char sSaveStateRecord[0x48];
 
@@ -1500,6 +1501,28 @@ int wmain(int argc, wchar_t** argv)
 	}
 
 	// -----------------------------------------------------------------------
+	// Group-setter helper phys_fn_001329: driven with group 7 on a fresh
+	// sphere; +0xd8 must carry it (the dirty-flag arm is a null-owner no-op).
+	{
+	typedef void (__thiscall* NxGroupFn)(void* self, unsigned short g);
+	NxGroupFn setGroup = (NxGroupFn) (base + 0x00026d90);
+
+	unsigned char sshape[0xe4];
+	memset(sshape, 0xcd, sizeof(sshape));
+	typedef void (__thiscall* NxCtorFni)(void* self, void* owner, unsigned argument);
+	NxCtorFni sphereCtor8 = (NxCtorFni) (base + 0x000277c0);
+	sphereCtor8(sshape, 0, 0);
+
+	setGroup(sshape, 7);
+
+	unsigned short hw = 0;
+	memcpy(&hw, sshape + 0xd8, 2);
+	oGroupDigest = hw;
+	oracleDigest = nxFold(oracleDigest, hw);
+	printf("setgroup row=phys_fn_001329 hw_d8=%04x expected=0007\n", hw);
+	}
+
+	// -----------------------------------------------------------------------
 	// PLANE slots 9/11, phys_fn_001257: zero vec3 + +FLT_MAX reach.
 	{
 	typedef void (__thiscall* NxPlaneExtFn)(void* self, float* out);
@@ -1641,7 +1664,7 @@ int wmain(int argc, wchar_t** argv)
 		dpl, dm);
 	}
 
-	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 dtors2=2\n",
+	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 setgroup=1 dtors2=2\n",
 		(unsigned) (sizeof(nxTables) / sizeof(nxTables[0])));
 	printf("layout oracle digest=%08x\n", oracleDigest);
 
@@ -2647,6 +2670,23 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 26u);
+		}
+
+		// -- group setter: the transcription must carry the group at +0xd8.
+		{
+		unsigned char sbytes[0xe4];
+		memset(sbytes, 0xcd, sizeof(sbytes));
+		SphereShape& sph = *new(sbytes) SphereShape(0, 0);
+		sph.mBase.nxApplyGroup(7);
+
+		unsigned short hw = 0;
+		memcpy(&hw, sbytes + 0xd8, 2);
+		bool ok = hw == 7 && oGroupDigest == 7;
+		printf("setgroup candidate ok=%u hw_d8=%04x\n", ok ? 1u : 0u, hw);
+		if(!ok)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 28u);
 		}
 
 		// -- plane extent row: zero vec3 + +FLT_MAX reach, bitwise.

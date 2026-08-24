@@ -2746,6 +2746,13 @@
    "reason": "SPHERE vtable .rdata:0x107528 slot 0; destroys the embedded collision object unconditionally through its own vtable, runs the base-dtor chain, then frees this through SDK-allocator slot +0x14 when flag&1; driven bitwise (flag=0) by the sphdtor family"
   },
   {
+   "id": "phys_fn_001329",
+   "label": "NxShape apply-group (validated)",
+   "confidence": "semantic",
+   "evidence": "oracle/capstone/manifest.json#/entries/3540",
+   "reason": "the validated group setter every apply/load row reaches: rejects groups >= 0x20 through the error stream, stores at shape+0xd8, and marks dirty-flag 0x04 through the accumulator; driven by the setgroup family with group 7"
+  },
+  {
    "id": "phys_fn_001385",
    "label": "NxMesh save-to-descriptor (slot 13)",
    "confidence": "semantic",
