@@ -431,5 +431,70 @@
       "001385",
       "001387"
     ]
+  },
+  "phase5_task3_progress": {
+    "rows_closed": 38,
+    "constructors_transcribed": [
+      "ShapeBase/001273",
+      "BoxShape/000977",
+      "SphereShape/001349",
+      "CapsuleShape/000987",
+      "PlaneShape/001247",
+      "MeshShape/001379"
+    ],
+    "behavior_rows_closed": {
+      "BASE": [
+        "slot2 save-desc/001277",
+        "slot4 stub/001249",
+        "slot5 stub/004812",
+        "slot7 sweep-stub/001035"
+      ],
+      "BOX": [
+        "slot0 dtor/000979",
+        "slot10 center+diag/000937",
+        "slot11 zero-center/000939",
+        "slot13 save+dims/000927",
+        "slots14-16 identity/001391"
+      ],
+      "SPHERE": [
+        "slot0 dtor/001375",
+        "slot8 local-AABB/001367",
+        "slot9 world-AABB/001361",
+        "slot10 center+radius/001363",
+        "slot11 zero-center/001365",
+        "slot12 loadFromDesc/001353",
+        "slot13 save/001355",
+        "slot14 setRadius/001357",
+        "slot15 getRadius/001359"
+      ],
+      "CAPSULE": [
+        "slot0 dtor/001014",
+        "slot10 center+r/001001",
+        "slot11 zero-center/001003",
+        "slot13 save/000991",
+        "slot14 setRadius/000995"
+      ],
+      "PLANE": [
+        "slot0 dtor/001263",
+        "slot9+11 extent/001257",
+        "slot13 save/001251"
+      ],
+      "MESH": [
+        "slot0 dtor/001399",
+        "slot11 words-getter/001387",
+        "slot13 save/001385",
+        "slot17 mesh-word/001381"
+      ]
+    },
+    "discoveries": [
+      "+0xd0 = NxShapeType tag (proven against pinned enum)",
+      "+0xd4 = scene slot index (dirty-flag accumulator decode)",
+      "+0xd8 = collision group, +0xda = materialIndex (from desc mapping)",
+      "allocator free ABI: callee pops one pushed argument",
+      "TriangleMesh+0x74 = reference count (inc on bind, dec on destroy)",
+      ".rdata 0x101043cc = 0.5f (capsule height halver)",
+      ".rdata 0x101041f0 = 0.0f (validation zero)"
+    ],
+    "remaining_open": "deep shared chains: raycast(s5), sweep(s7), debug-draw(s3), cached-bounds(s4), apply/load-desc(s1/s12 per-type tails) -- all require Task 2/4 infrastructure"
   }
 }
