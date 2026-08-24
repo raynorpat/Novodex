@@ -280,7 +280,6 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oSphereSetDigest = 0;
 	unsigned oCapsuleSetDigest = 0;
 	unsigned oGroupDigest = 0;
-	unsigned oApplyDescDigest = 0;
 	unsigned oPlaneExtentDigest = 0;
 	static unsigned char sSaveStateRecord[0x48];
 
@@ -1502,54 +1501,43 @@ int wmain(int argc, wchar_t** argv)
 	}
 
 	// -----------------------------------------------------------------------
-	// BASE slot 1, phys_fn_001347: apply-from-descriptor. A crafted record
-	// (marked pose word, flags-low halfword 9, group 5, materialIndex 2,
-	// marked userData, NULL name) applied to a fresh sphere on both sides.
+	// SPHERE slot 0, phys_fn_001375: scalar deleting destructor, flag=0.
 	{
-	typedef bool (__thiscall* NxApplyFn)(void* self, const void* rec);
-	NxApplyFn applyDesc = (NxApplyFn) (base + 0x00027740);
+	typedef void (__thiscall* NxSphDtorFn)(void* self, unsigned flags);
+	NxSphDtorFn sphDtor = (NxSphDtorFn) (base + 0x00027c30);
 
-	unsigned char sshape[0xe4];
-	memset(sshape, 0xcd, sizeof(sshape));
-	typedef void (__thiscall* NxCtorFnj)(void* self, void* owner, unsigned argument);
-	NxCtorFnj sphereCtor9 = (NxCtorFnj) (base + 0x000277c0);
-	sphereCtor9(sshape, 0, 0);
+	if(!nxInstallAllocatorShim(base))
+		return nxFail("the allocator holder word moved; re-pin the probe");
 
-	unsigned char record[0x48];
-	memset(record, 0xcd, sizeof(record));
-	const float kOne = 1.0f;
-	memcpy(record + 8, &kOne, 4);					// pose rot[0] = 1
-	const unsigned short kFlagsLo = 0x0009u, kGroup = 0x0005u, kMat = 0x0002u;
-	const unsigned kUserData = 0xaabbccddu;
-	memcpy(record + 0x38, &kFlagsLo, 2);
-	memcpy(record + 0x3c, &kGroup, 2);
-	memcpy(record + 0x3e, &kMat, 2);
-	memcpy(record + 0x40, &kUserData, 4);
-	memset(record + 0x44, 0, 4);			// name = NULL: registry no-op
+	unsigned char shape[0xe4];
+	memset(shape, 0xcd, sizeof(shape));
+	typedef void (__thiscall* NxCtorFng)(void* self, void* owner, unsigned argument);
+	NxCtorFng sphereCtor7 = (NxCtorFng) (base + 0x000277c0);
+	sphereCtor7(shape, 0, 0);
 
-	bool saved = applyDesc(sshape, record);
+	unsigned fc = gDtorFaultCode, fa = gDtorFaultAddr;
+	nxGuardedBoxDtor((NxBoxDtorFn) sphDtor, shape, 0);
+	fc = gDtorFaultCode; fa = gDtorFaultAddr;
+	if(fc)
+		return nxFail("sphere dtor faulted");
 
 	unsigned digest = 2166136261u;
-	for(unsigned i = 0x60; i < sizeof(sshape); i += 4)
+	for(unsigned i = 0; i < sizeof(shape); i += 4)
 		{
-		unsigned w; memcpy(&w, sshape + i, 4);
+		bool pointer = false;
+		for(size_t p = 0; p < sizeof(kDtorMask) / sizeof(kDtorMask[0]); ++p)
+			if(kDtorMask[p] == i)
+				pointer = true;
+		if(pointer)
+			continue;
+		unsigned w; memcpy(&w, shape + i, 4);
 		digest = nxFold(digest, w);
 		}
-	oApplyDescDigest = digest;
+	oSphereDtorDigest = digest;
 	oracleDigest = nxFold(oracleDigest, digest);
-
-	unsigned pose00 = 0;
-	unsigned short de = 0, d8 = 0, da = 0;
-	memcpy(&pose00, sshape + 0x6c, 4);
-	memcpy(&de, sshape + 0xde, 2);
-	memcpy(&d8, sshape + 0xd8, 2);
-	memcpy(&da, sshape + 0xda, 2);
-	printf("applydesc row=phys_fn_001347 saved=%u pose=%08x de=%04x d8=%04x da=%04x\n",
-		saved ? 1u : 0u, pose00, de, d8, da);
+	printf("sphdtor row=phys_fn_001375 digest=%08x\n", digest);
 	}
 
-	// -----------------------------------------------------------------------
-	// Group-setter helper phys_fn_001329: driven with group 7 on a fresh
 	// sphere; +0xd8 must carry it (the dirty-flag arm is a null-owner no-op).
 	{
 	typedef void (__thiscall* NxGroupFn)(void* self, unsigned short g);
@@ -1674,7 +1662,7 @@ int wmain(int argc, wchar_t** argv)
 		dpl, dm);
 	}
 
-	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 setgroup=1 dtors2=2\n",
+	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 sphdtor=1 setgroup=1 dtors2=2\n",
 		(unsigned) (sizeof(nxTables) / sizeof(nxTables[0])));
 	printf("layout oracle digest=%08x\n", oracleDigest);
 
