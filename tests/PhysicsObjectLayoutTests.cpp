@@ -273,6 +273,7 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oMeshSaveDigest = 0;
 	unsigned oMeshWordsDigest = 2166136261u;
 	unsigned oSphereLocalDigest = 0;
+	unsigned oSphereDtorDigest = 0;
 	unsigned oSphereSetDigest = 0;
 	unsigned oCapsuleSetDigest = 0;
 	unsigned oPlaneExtentDigest = 0;
@@ -1524,6 +1525,45 @@ int wmain(int argc, wchar_t** argv)
 		memcpy(&pb[i], out + i, 4);
 	printf("planeext row=phys_fn_001257 out=%08x.%08x.%08x.%08x\n",
 		pb[0], pb[1], pb[2], pb[3]);
+	}
+
+	// -----------------------------------------------------------------------
+	// SPHERE slot 0, phys_fn_001375: scalar deleting destructor, flag=0.
+	{
+	typedef void (__thiscall* NxSphDtorFn)(void* self, unsigned flags);
+	NxSphDtorFn sphDtor = (NxSphDtorFn) (base + 0x00027c30);
+	static const unsigned kMask[] = { 0x00, 0x9c, 0xa4, 0xa8, 0xb0, 0xb4 };
+
+	if(!nxInstallAllocatorShim(base))
+		return nxFail("the allocator holder word moved; re-pin the probe");
+
+	unsigned char shape[0xe4];
+	memset(shape, 0xcd, sizeof(shape));
+	typedef void (__thiscall* NxCtorFng)(void* self, void* owner, unsigned argument);
+	NxCtorFng sphereCtor7 = (NxCtorFng) (base + 0x000277c0);
+	sphereCtor7(shape, 0, 0);
+
+	unsigned fc = 0, fa = 0;
+	nxGuardedBoxDtor((NxBoxDtorFn) sphDtor, shape, 0);
+	fc = gDtorFaultCode; fa = gDtorFaultAddr;
+	if(fc)
+		return nxFail("sphere dtor faulted");
+
+	unsigned digest = 2166136261u;
+	for(unsigned i = 0; i < sizeof(shape); i += 4)
+		{
+		bool pointer = false;
+		for(size_t p = 0; p < sizeof(kMask) / sizeof(kMask[0]); ++p)
+			if(kMask[p] == i)
+				pointer = true;
+		if(pointer)
+			continue;
+		unsigned w; memcpy(&w, shape + i, 4);
+		digest = nxFold(digest, w);
+		}
+	oSphereDtorDigest = digest;
+	oracleDigest = nxFold(oracleDigest, digest);
+	printf("sphdtor row=phys_fn_001375 digest=%08x\n", digest);
 	}
 
 	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1\n",

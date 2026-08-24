@@ -334,6 +334,17 @@ void SphereShape::nxSphereSetRadius(float radius)
 	// phys_fn_001315-adjacent helper 0x26c90 (see evidence 3k).
 	}
 
+// phys_fn_001375 (0x00027c30), SPHERE-table slot 0.
+void SphereShape::nxSphereScalarDeletingDtor(unsigned flags)
+	{
+	if(mBase.mWord9C)
+		{
+		// destroyed through its own vtable by the image: 0x00027c43..47
+		}
+	mBase.mPrunable.~Prunable();			// tail of the base-dtor chain
+	(void) flags;							// self-free arm not modeled
+	}
+
 // ---------------------------------------------------------------------------
 // CapsuleShape. See ObjectModel.h for the row map.
 

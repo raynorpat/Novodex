@@ -455,6 +455,12 @@ zero vec3 + `+FLT_MAX` reach, the plane's unbounded-extent answer. Driven
 bitwise on a real constructed plane (`7f7fffff` pinned). Registrations 39
 lines, oracle digest `9db24f7c`, coverage floor 39.
 
+**SPHERE slot 0 closed** (phys_fn_001375): the sphere's scalar deleting
+destructor -- same structure as the box's: destroys the embedded collision
+object unconditionally through its own vtable, base-dtor chain, self-free
+through allocator slot +0x14 when flag&1. Driven bitwise (flag=0) by the
+`sphdtor` family: oracle digest `c4a35d15`.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is
