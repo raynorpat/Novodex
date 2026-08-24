@@ -1741,6 +1741,37 @@ int wmain(int argc, wchar_t** argv)
 	printf("capdtor row=phys_fn_001014 digest=%08x\n", digest);
 	}
 
+	// -----------------------------------------------------------------------
+	// CAPSULE slot 8, phys_fn_001004: local AABB. Fresh capsule (all zeros).
+	{
+	typedef void (__thiscall* NxCapAABBFn)(void* self, float* out);
+	NxCapAABBFn capAABB = (NxCapAABBFn) (base + 0x00021c80);
+
+	unsigned char cshape[0xec];
+	memset(cshape, 0xcd, sizeof(cshape));
+	typedef void (__thiscall* NxCtorFn13)(void* self, void* owner, unsigned argument);
+	NxCtorFn13 capsuleCtor6 = (NxCtorFn13) (base + 0x00021a60);
+	capsuleCtor6(cshape, 0, 0);
+
+	float out[6] = { 0, 0, 0, 0, 0, 0 };
+	capAABB(cshape, out);
+
+	unsigned da = 2166136261u;
+	for(int i = 0; i < 6; ++i)
+		{
+		unsigned w; memcpy(&w, out + i, 4);
+		da = nxFold(da, w);
+		}
+	oCapsuleAABBDigest = da;
+	oracleDigest = nxFold(oracleDigest, da);
+
+	unsigned ab[6] = { 0, 0, 0, 0, 0, 0 };
+	for(int i = 0; i < 6; ++i)
+		memcpy(&ab[i], out + i, 4);
+	printf("capaabb row=phys_fn_001004 minmax=%08x.%08x.%08x.%08x.%08x.%08x\n",
+		ab[0], ab[1], ab[2], ab[3], ab[4], ab[5]);
+	}
+
 	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 capaabb=1 sphload=1\n",
 		(unsigned) (sizeof(nxTables) / sizeof(nxTables[0])));
 	printf("layout oracle digest=%08x\n", oracleDigest);
@@ -2709,6 +2740,27 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 26u);
+		}
+
+		// -- capsule slot 8 local AABB: twin drive.
+		{
+		unsigned char cbytes[0xec];
+		memset(cbytes, 0xcd, sizeof(cbytes));
+		CapsuleShape& cap = *new(cbytes) CapsuleShape(0, 0);
+		float aout[6] = { 0, 0, 0, 0, 0, 0 };
+		cap.nxCapsuleLocalAABB(aout);
+		unsigned da = 2166136261u;
+		for(int i = 0; i < 6; ++i)
+			{
+			unsigned w; memcpy(&w, aout + i, 4);
+			da = nxFold(da, w);
+			}
+		bool okA = da == oCapsuleAABBDigest;
+		printf("capaabb candidate ok=%u da=%08x\n", okA ? 1u : 0u, da);
+		if(!okA)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 29u);
 		}
 
 
