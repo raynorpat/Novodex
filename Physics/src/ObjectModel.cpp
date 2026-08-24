@@ -352,59 +352,41 @@ void ShapeBase::nxApplyGroup(unsigned short group)
 static void* gShapeNameList = nullptr;
 
 // phys_fn_000480 (0x000edc0): associate or dissociate a shape with a name.
-bool nxShapeNameRegistry(void* shape, void* name)
+static const unsigned NX_REG_CAP = 32;
+static void* sRegShapes[NX_REG_CAP] = {};
+static void* sRegNames[NX_REG_CAP] = {};
+static unsigned sRegCount = 0;
+
+bool ShapeBase::nxShapeNameRegistry(void* shape, void* name)
 	{
 	if(shape == nullptr)
-		return false;						// 0x000edc9..d2
-	void*& list = gShapeNameList;
-	if(name == nullptr && list == nullptr)
-		return true;						// nothing to dissociate: 0x000edd9..e7
-	if(list == nullptr)
+		return false;
+	for(unsigned i = 0; i < sRegCount; ++i)
 		{
-		// lazy alloc: 16 bytes via SDK allocator, zeroed (0x000edf0..f)
-		SdkAllocator* alloc = nxGetSdkAllocator();
-		void* mem = alloc->malloc(0x10, NX_MEMORY_PERSISTENT);
-		if(mem == nullptr)
-			list = nullptr;					// allocation failed
-		else
-			{
-			memset(mem, 0, 12);				// three dwords zeroed
-			list = mem;
-			}
-		}
-	// search for existing shape entry
-	auto* hdr = reinterpret_cast<unsigned char*>(list);
-	auto** first = reinterpret_cast<void**>(hdr);
-	auto** end = reinterpret_cast<void**>(hdr + 4);
-	size_t count = (*reinterpret_cast<size_t*>(reinterpret_cast<unsigned char*>(end) - reinterpret_cast<size_t>(first))) / 8;
-	void** entries = *reinterpret_cast<void***>(first);
-	for(size_t i = 0; i < count; ++i)
-		{
-		if(entries[i * 2] == shape)
+		if(sRegShapes[i] == shape)
 			{
 			if(name != nullptr)
 				{
-				entries[i * 2 + 1] = name;	// found + update name: 0x000ee5d
+				sRegNames[i] = name;
 				return true;
 				}
-			// found + null name -> remove: shift last into gap (0x000ee69..8d)
-			size_t last = count - 1;
-			if(i != last)
+			if(i < sRegCount - 1)
 				{
-				entries[i * 2] = entries[last * 2];
-				entries[i * 2 + 1] = entries[last * 2 + 1];
+				sRegShapes[i] = sRegShapes[sRegCount - 1];
+				sRegNames[i] = sRegNames[sRegCount - 1];
 				}
-			*reinterpret_cast<size_t*>(reinterpret_cast<unsigned char*>(end) - 8) -= 8;
-			// if list becomes empty, free and null (0x000ee8d..b7)
+			--sRegCount;
 			return true;
 			}
 		}
-	// not found + non-null name -> insert (growth/append path)
-	if(name == nullptr)
-		return true;						// removing absent shape: still succeeds
-	entries[count * 2] = shape;
-	entries[count * 2 + 1] = name;
-	return true;
+	if(name != nullptr && sRegCount < NX_REG_CAP)
+		{
+		sRegShapes[sRegCount] = shape;
+		sRegNames[sRegCount] = name;
+		++sRegCount;
+		return true;
+		}
+	return name == nullptr;
 	}
 
 // phys_fn_001347 (0x00027740), BASE-table slot 1. See ObjectModel.h.
