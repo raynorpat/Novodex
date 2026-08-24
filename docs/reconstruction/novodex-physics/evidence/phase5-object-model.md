@@ -590,6 +590,37 @@ copies existing 8-byte entries, frees the old block, and appends the new
 al=1 (success). The transcription target is bounded and ready for the
 next session.
 
+## Session Summary: Phase 5 Task 3 Progress
+
+Across this session's rounds, Phase 5 Task 3 produced:
+
+**Constructors transcribed** (all six shape families):
+ShapeBase/001273, BoxShape/000977, SphereShape/001349,
+CapsuleShape/000987, PlaneShape/001247, MeshShape/001379
+
+**Behavior rows closed** (bitwise differentials against pinned oracle):
+BASE: slot2 save-desc/001277, slot4 stub/001249, slot5 stub/004812,
+slot7 sweep-stub/001035
+BOX: slot0 dtor/000979, slots10-13 AABB+diag/save/dims,
+slots14-16 identity/001391
+SPHERE: slots8-15 local-AABB/world-AABB/center+radius/getRadius/
+setRadius/save/loadFromDesc
+CAPSULE: slots0/8/10/11/13/14 dtor/local-AABB/center+radius/save/setRadius
+PLANE: slots0 dtor/1263, slots9-11 extent/001257, slot13 save/001251
+MESH: slots13 save/001385, slot17 mesh-word/001381
+
+**Key discoveries**:
+- +0xd0 = NxShapeType tag (proven against pinned enum)
+- +0xd4 = scene slot index (dirty-flag accumulator decode)
+- +0xd8 = collision group; +0xda = materialIndex
+- +0xde = cached shapeFlags low halfword
+- Allocator free ABI: callee pops one pushed argument
+- TriangleMesh+0x74 = reference count
+- Descriptor layout fully mapped to pinned header field names
+
+**Gate state**: auto-generated registrations from binary output;
+coverage assertions matching floor exactly; only designed RED remaining.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is
