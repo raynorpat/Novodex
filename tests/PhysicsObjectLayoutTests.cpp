@@ -222,6 +222,8 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oShapeBaseDigest = 0;
 	unsigned oBoxDigest = 0;
 	unsigned oSphereDigest = 0;
+	unsigned oCapsuleDigest = 0;
+	unsigned oPlaneDigest = 0;
 
 	// -----------------------------------------------------------------------
 	// Vtable identity.
@@ -563,7 +565,149 @@ int wmain(int argc, wchar_t** argv)
 		colobjOk ? 1u : 0u);
 	}
 
-	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1\n",
+	// -----------------------------------------------------------------------
+	// The capsule-shape constructor, phys_fn_000987 (0x00021a60): __thiscall,
+	// `ret 8`, both arguments forwarded to phys_fn_001273. Driven on a
+	// poisoned 0xe8 buffer with a null owner and a marked second argument.
+	// Masked words: vtable (+0x00), colobj (+0x9c) and the four base-ctor
+	// pointer words.
+	{
+	NxShapeCtorFn capsuleCtor = (NxShapeCtorFn) (base + 0x00021a60);
+	static const unsigned kPointerWords[] = { 0x00, 0x9c, 0xa4, 0xa8, 0xb0, 0xb4 };
+	unsigned char object[0xe8];
+	memset(object, 0xcd, sizeof(object));
+	const unsigned kArg2 = 0x5a5a5a5au;
+
+	if(!nxInstallAllocatorShim(base))
+		return nxFail("the allocator holder word moved; re-pin the probe");
+
+	unsigned faultAddr = 0, faultCode = 0;
+	nxGuardedCtor(capsuleCtor, object, 0, kArg2, faultCode, faultAddr);
+	if(faultCode)
+		{
+		fprintf(stderr, "FAIL capsule ctor fault code=%08x at=%08x rva=%08x\n",
+			faultCode, faultAddr, faultAddr - (unsigned) (uintptr_t) base);
+		return 1;
+		}
+
+	unsigned digest = 2166136261u;
+	for(unsigned i = 0; i < sizeof(object); i += 4)
+		{
+		bool pointer = false;
+		for(size_t p = 0; p < sizeof(kPointerWords) / sizeof(kPointerWords[0]); ++p)
+			if(kPointerWords[p] == i)
+				pointer = true;
+		if(pointer)
+			continue;
+		unsigned word;
+		memcpy(&word, object + i, 4);
+		digest = nxFold(digest, word);
+		}
+	oCapsuleDigest = digest;
+	oracleDigest = nxFold(oracleDigest, digest);
+
+	unsigned colobj = 0;
+	memcpy(&colobj, object + 0x9c, 4);
+	bool colobjOk = colobj != 0;
+	unsigned colobjArg8 = 0, colobjArg18 = 0, colobjMember = 0;
+	if(colobjOk)
+		{
+		memcpy(&colobjArg8, (unsigned char*) colobj + 0x08, 4);
+		memcpy(&colobjArg18, (unsigned char*) colobj + 0x18, 4);
+		memcpy(&colobjMember, (unsigned char*) colobj + 0x0c, 4);
+		colobjOk = colobjArg8 == (unsigned) (uintptr_t) object
+			&& colobjArg18 == (unsigned) (uintptr_t) object
+			&& colobjMember != 0;
+		}
+
+	unsigned fE0 = 0, fE4 = 0, sentinelCapsule = 0;
+	memcpy(&fE0, object + 0xe0, 4);
+	memcpy(&fE4, object + 0xe4, 4);
+	memcpy(&sentinelCapsule, object + 0xd0, 4);
+	printf("capsule ctor=phys_fn_000987 size=%u digest=%08x sentinel_d0=%u arg_d4=%08x "
+		"float_e0=%08x float_e4=%08x colobj_ok=%u\n",
+		(unsigned) sizeof(object), digest, sentinelCapsule, kArg2, fE0, fE4,
+		colobjOk ? 1u : 0u);
+	}
+
+	// -----------------------------------------------------------------------
+	// The plane-shape constructor, phys_fn_001247 (0x00024ed0): __thiscall,
+	// `ret 8`, both arguments forwarded to phys_fn_001273. Driven on a
+	// poisoned 0x10c buffer with a null owner and a marked second argument.
+	// The tangents are folded IN: with the default normal (0,1,0) the
+	// NxNormalToTangents arithmetic is exact, so both foundations produce
+	// identical bits. Masked words: vtable (+0x00), colobj (+0x9c) and the
+	// four base-ctor pointer words.
+	{
+	NxShapeCtorFn planeCtor = (NxShapeCtorFn) (base + 0x00024ed0);
+	static const unsigned kPointerWords[] = { 0x00, 0x9c, 0xa4, 0xa8, 0xb0, 0xb4 };
+	unsigned char object[0x10c];
+	memset(object, 0xcd, sizeof(object));
+	const unsigned kArg2 = 0x5a5a5a5au;
+
+	if(!nxInstallAllocatorShim(base))
+		return nxFail("the allocator holder word moved; re-pin the probe");
+
+	unsigned faultAddr = 0, faultCode = 0;
+	nxGuardedCtor(planeCtor, object, 0, kArg2, faultCode, faultAddr);
+	if(faultCode)
+		{
+		fprintf(stderr, "FAIL plane ctor fault code=%08x at=%08x rva=%08x\n",
+			faultCode, faultAddr, faultAddr - (unsigned) (uintptr_t) base);
+		return 1;
+		}
+
+	unsigned digest = 2166136261u;
+	for(unsigned i = 0; i < sizeof(object); i += 4)
+		{
+		bool pointer = false;
+		for(size_t p = 0; p < sizeof(kPointerWords) / sizeof(kPointerWords[0]); ++p)
+			if(kPointerWords[p] == i)
+				pointer = true;
+		if(pointer)
+			continue;
+		unsigned word;
+		memcpy(&word, object + i, 4);
+		digest = nxFold(digest, word);
+		}
+	oPlaneDigest = digest;
+	oracleDigest = nxFold(oracleDigest, digest);
+
+	unsigned colobj = 0;
+	memcpy(&colobj, object + 0x9c, 4);
+	bool colobjOk = colobj != 0;
+	unsigned colobjArg8 = 0, colobjArg18 = 0, colobjMember = 0;
+	if(colobjOk)
+		{
+		memcpy(&colobjArg8, (unsigned char*) colobj + 0x08, 4);
+		memcpy(&colobjArg18, (unsigned char*) colobj + 0x18, 4);
+		memcpy(&colobjMember, (unsigned char*) colobj + 0x0c, 4);
+		colobjOk = colobjArg8 == (unsigned) (uintptr_t) object
+			&& colobjArg18 == (unsigned) (uintptr_t) object
+			&& colobjMember != 0;
+		}
+
+	unsigned nX = 0, nY = 0, nZ = 0, distEC = 0, word108 = 0, sentinelPlane = 0;
+	unsigned tangentF0[3] = { 0, 0, 0 }, binormalFC[3] = { 0, 0, 0 };
+	memcpy(&nX, object + 0xe0, 4);
+	memcpy(&nY, object + 0xe4, 4);
+	memcpy(&nZ, object + 0xe8, 4);
+	memcpy(&distEC, object + 0xec, 4);
+	memcpy(&word108, object + 0x108, 4);
+	memcpy(&sentinelPlane, object + 0xd0, 4);
+	memcpy(tangentF0, object + 0xf0, 12);
+	memcpy(binormalFC, object + 0xfc, 12);
+	printf("plane ctor=phys_fn_001247 size=%u digest=%08x sentinel_d0=%u arg_d4=%08x "
+		"normal=%08x.%08x.%08x dist_ec=%08x word108=%u tangent_f0=%08x.%08x.%08x "
+		"binormal_fc=%08x.%08x.%08x colobj_ok=%u\n",
+		(unsigned) sizeof(object), digest, sentinelPlane, kArg2,
+		nX, nY, nZ, distEC, word108,
+		tangentF0[0], tangentF0[1], tangentF0[2],
+		binormalFC[0], binormalFC[1], binormalFC[2],
+		colobjOk ? 1u : 0u);
+	}
+
+	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1\n",
 		(unsigned) (sizeof(nxTables) / sizeof(nxTables[0])));
 	printf("layout oracle digest=%08x\n", oracleDigest);
 
@@ -841,6 +985,124 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 8u);
+		}
+
+		// -- capsule shape: same contract on a 0xe8 twin; the ctor zeroes its
+		// two data words and overwrites the sentinel with NX_SHAPE_CAPSULE=3.
+		{
+		static const unsigned kPointerWords[] = { 0x00, 0x9c, 0xa4, 0xa8, 0xb0, 0xb4 };
+		const unsigned kArg2 = 0x5a5a5a5au;
+		unsigned char bytes[0xe8];
+		memset(bytes, 0xcd, sizeof(bytes));
+		CapsuleShape& shape = *new(bytes) CapsuleShape(0, kArg2);
+
+		unsigned digest = 2166136261u;
+		for(unsigned i = 0; i < sizeof(bytes); i += 4)
+			{
+			bool pointer = false;
+			for(size_t p = 0; p < sizeof(kPointerWords) / sizeof(kPointerWords[0]); ++p)
+				if(kPointerWords[p] == i)
+					pointer = true;
+			if(pointer)
+				continue;
+			unsigned word;
+			memcpy(&word, bytes + i, 4);
+			digest = nxFold(digest, word);
+			}
+
+		unsigned colobj = 0;
+		memcpy(&colobj, bytes + 0x9c, 4);
+		bool colobjOk = colobj != 0;
+		unsigned colobjArg8 = 0, colobjArg18 = 0, colobjMember = 0;
+		if(colobjOk)
+			{
+			memcpy(&colobjArg8, (unsigned char*) colobj + 0x08, 4);
+			memcpy(&colobjArg18, (unsigned char*) colobj + 0x18, 4);
+			memcpy(&colobjMember, (unsigned char*) colobj + 0x0c, 4);
+			colobjOk = colobjArg8 == (unsigned) (uintptr_t) bytes
+				&& colobjArg18 == (unsigned) (uintptr_t) bytes
+				&& colobjMember != 0;
+			}
+
+		unsigned fE0 = 0, fE4 = 0, sentinelCapsule = 0;
+		memcpy(&fE0, bytes + 0xe0, 4);
+		memcpy(&fE4, bytes + 0xe4, 4);
+		memcpy(&sentinelCapsule, bytes + 0xd0, 4);
+		bool ok = digest == oCapsuleDigest
+			&& fE0 == 0 && fE4 == 0 && sentinelCapsule == 3 && colobjOk;
+		printf("capsule candidate ok=%u digest=%08x sentinel_d0=%u\n",
+			ok ? 1u : 0u, digest, sentinelCapsule);
+		if(!ok)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 10u);
+		}
+
+		// -- plane shape: same contract on a 0x10c twin; the ctor must plant
+		// the default plane equation (normal (0,1,0), D=0), overwrite the
+		// sentinel with NX_SHAPE_PLANE=0, fill the tangents through
+		// NxNormalToTangents and set +0x108 to 1.
+		{
+		static const unsigned kPointerWords[] = { 0x00, 0x9c, 0xa4, 0xa8, 0xb0, 0xb4 };
+		const unsigned kArg2 = 0x5a5a5a5au;
+		unsigned char bytes[0x10c];
+		memset(bytes, 0xcd, sizeof(bytes));
+		PlaneShape& shape = *new(bytes) PlaneShape(0, kArg2);
+
+		unsigned digest = 2166136261u;
+		for(unsigned i = 0; i < sizeof(bytes); i += 4)
+			{
+			bool pointer = false;
+			for(size_t p = 0; p < sizeof(kPointerWords) / sizeof(kPointerWords[0]); ++p)
+				if(kPointerWords[p] == i)
+					pointer = true;
+			if(pointer)
+				continue;
+			unsigned word;
+			memcpy(&word, bytes + i, 4);
+			digest = nxFold(digest, word);
+			}
+
+		unsigned colobj = 0;
+		memcpy(&colobj, bytes + 0x9c, 4);
+		bool colobjOk = colobj != 0;
+		unsigned colobjArg8 = 0, colobjArg18 = 0, colobjMember = 0;
+		if(colobjOk)
+			{
+			memcpy(&colobjArg8, (unsigned char*) colobj + 0x08, 4);
+			memcpy(&colobjArg18, (unsigned char*) colobj + 0x18, 4);
+			memcpy(&colobjMember, (unsigned char*) colobj + 0x0c, 4);
+			colobjOk = colobjArg8 == (unsigned) (uintptr_t) bytes
+				&& colobjArg18 == (unsigned) (uintptr_t) bytes
+				&& colobjMember != 0;
+			}
+
+		const unsigned kOneBits = 0x3f800000u, kZero = 0, kMinusOneBits = 0xbf800000u,
+			kMinusZeroBits = 0x80000000u;
+		unsigned nX = 0, nY = 0, nZ = 0, distEC = 0, word108 = 0, sentinelPlane = 0;
+		memcpy(&nX, bytes + 0xe0, 4);
+		memcpy(&nY, bytes + 0xe4, 4);
+		memcpy(&nZ, bytes + 0xe8, 4);
+		memcpy(&distEC, bytes + 0xec, 4);
+		memcpy(&word108, bytes + 0x108, 4);
+		memcpy(&sentinelPlane, bytes + 0xd0, 4);
+		bool ok = digest == oPlaneDigest
+			&& sentinelPlane == 0 && nX == kZero && nY == kOneBits && nZ == kZero
+			&& distEC == kZero && word108 == 1 && colobjOk
+			// exact arithmetic for the default normal: t1=(-1,0,0),
+			// t2=(-n.z*t1.y, n.z*t1.x, a*k) = (-0,-0,1) by IEEE sign rules
+			&& memcmp(bytes + 0xf0, &kMinusOneBits, 4) == 0
+			&& memcmp(bytes + 0xf4, &kZero, 4) == 0
+			&& memcmp(bytes + 0xf8, &kZero, 4) == 0
+			&& memcmp(bytes + 0xfc, &kMinusZeroBits, 4) == 0
+			&& memcmp(bytes + 0x100, &kMinusZeroBits, 4) == 0
+			&& memcmp(bytes + 0x104, &kOneBits, 4) == 0;
+		printf("plane candidate ok=%u digest=%08x sentinel_d0=%u\n",
+			ok ? 1u : 0u, digest, sentinelPlane);
+		if(!ok)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 9u);
 		}
 
 		printf("candidate CANDIDATE-MISSING family=vtables reason=shape finals/actor classes are Tasks 3-4\n");

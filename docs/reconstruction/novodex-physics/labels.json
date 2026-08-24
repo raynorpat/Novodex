@@ -2576,6 +2576,20 @@
    "confidence": "semantic",
    "evidence": "oracle/capstone/manifest.json#/entries/3510",
    "reason": "calls phys_fn_001273 (the base-shape ctor) at 0x000277bf, stores the SPHERE vtable .rdata:0x10107528 (0x000277d4), zeroes the radius word at +0xe0, builds its collision object with phys_fn_001193 ITSELF -- the generic row, unlike the box's variant -- and overwrites the sentinel with 1; driven byte-for-byte by the NxPhysicsObjectLayoutTests sphere family"
+  },
+  {
+   "id": "phys_fn_000987",
+   "label": "CapsuleShape::CapsuleShape",
+   "confidence": "semantic",
+   "evidence": "oracle/capstone/manifest.json#/entries/3047",
+   "reason": "calls phys_fn_001273 (the base-shape ctor) at 0x00021a6f, stores the CAPSULE vtable .rdata:0x10106b20 (0x00021a74), zeroes two data words at +0xe0/+0xe4, builds its collision object through the capsule-family variant phys_fn_001123, and overwrites the sentinel with 3; driven byte-for-byte by the NxPhysicsObjectLayoutTests capsule family"
+  },
+  {
+   "id": "phys_fn_001247",
+   "label": "PlaneShape::PlaneShape",
+   "confidence": "semantic",
+   "evidence": "oracle/capstone/manifest.json#/entries/3374",
+   "reason": "calls phys_fn_001273 (the base-shape ctor) at 0x00024edf, stores the PLANE vtable .rdata:0x10107430 (0x00024ee4), plants the default plane equation normal(0,1,0)/D=0 at +0xe0..+0xec, fills the tangent frame through NxFoundation!NxNormalToTangents (import 0x1010418c), sets +0x108=1 and overwrites the sentinel with 0 = NX_SHAPE_PLANE; driven byte-for-byte by the NxPhysicsObjectLayoutTests plane family"
   }
  ]
 }

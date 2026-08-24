@@ -266,3 +266,60 @@ SphereShape::SphereShape(void* owner, unsigned argument)
 
 	mBase.mSentinelD0 = 1;					// OVERWRITES the base's sentinel: 0x0002780b
 	}
+
+// ---------------------------------------------------------------------------
+// CapsuleShape. See ObjectModel.h for the row map.
+
+CapsuleShape::CapsuleShape(void* owner, unsigned argument)
+	: mBase(owner, argument)				// forwarded unchanged: 0x00021a67..6f
+	{
+	mFloatE0 = 0.0f;						// mov [esi+0xe0],0 at 0x00021a7a
+	mFloatE4 = 0.0f;						// mov [esi+0xe4],0 at 0x00021a84
+
+	// The embedded collision object: a fresh 0x1c-byte block through the SDK
+	// allocator (0x00021a8e..9c), built by phys_fn_001123 -- the capsule-family
+	// variant of the shared collision-object constructor -- with the capsule
+	// stored at BOTH +0x08 and +0x18.
+	void* memory = nxGetSdkAllocator()->malloc(0x1c, NX_MEMORY_PERSISTENT);
+	CollisionObject* object = memory
+		? new(memory) CollisionObject(this)
+		: 0;								// null arm: 0x00021aad
+	mBase.mWord9C = reinterpret_cast<NxU32>(object);	// 0x00021aaf
+
+	mBase.mSentinelD0 = 3;					// NX_SHAPE_CAPSULE: 0x00021ab5
+	}
+
+// ---------------------------------------------------------------------------
+// PlaneShape. See ObjectModel.h for the row map.
+
+#include "NxUtilities.h"
+
+PlaneShape::PlaneShape(void* owner, unsigned argument)
+	: mBase(owner, argument)				// forwarded unchanged: 0x00024edb..df
+	{
+	// The embedded collision object: a fresh 0x1c-byte block through the SDK
+	// allocator (0x00024eea..f8), built by phys_fn_001159 -- the plane-family
+	// variant of the shared collision-object constructor -- with the plane
+	// stored at BOTH +0x08 and +0x18.
+	void* memory = nxGetSdkAllocator()->malloc(0x1c, NX_MEMORY_PERSISTENT);
+	CollisionObject* object = memory
+		? new(memory) CollisionObject(this)
+		: 0;								// null arm: 0x00024f09
+	mBase.mWord9C = reinterpret_cast<NxU32>(object);	// 0x00024f0b
+
+	mBase.mSentinelD0 = 0;					// NX_SHAPE_PLANE: 0x00024f24
+	mNormalE0[0] = 0.0f;					// 0x00024f2f
+	mNormalE0[1] = 1.0f;					// 0x00024f35
+	mNormalE0[2] = 0.0f;					// 0x00024f3c
+	mDistanceEC = 0.0f;						// 0x00024f44
+
+	// The image calls NxFoundation's NxNormalToTangents through the import at
+	// .rdata 0x1010418c (call 0x00024f4e); the transcription reaches the same
+	// function through the reconstruction's own export.
+	NxNormalToTangents(
+		*reinterpret_cast<const NxVec3*>(&mNormalE0[0]),
+		*reinterpret_cast<NxVec3*>(&mTangentF0[0]),
+		*reinterpret_cast<NxVec3*>(&mBinormalFC[0]));
+
+	mWord108 = 1;							// 0x00024f57
+	}

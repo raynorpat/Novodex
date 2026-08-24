@@ -197,6 +197,43 @@ sentinel 1 and the back-pointing colobj asserted. Registrations 19 lines,
 oracle digest `bd8572e2`, coverage floor 19. The allocator shim moved into a
 shared helper both shape probes install.
 
+## 3d. CAPSULE and PLANE transcribed; the +0xd0 sentinel PROVEN to be NxShapeType
+
+Task 3 continued with two more constructors into `Physics/src/ObjectModel.cpp`
+(`CapsuleShape`, `sizeof == 0xe8`; `PlaneShape`, `sizeof == 0x10c`):
+
+1. **The +0xd0 sentinel is the NxShapeType tag — proven, not guessed.** The
+   pinned `Physics/include/NxShape.h` enumerates
+   PLANE=0, SPHERE=1, BOX=2, CAPSULE=3, MESH=4, COMPOUND=5. The ctors write
+   exactly those constants after zeroing/overwriting the base's 0x7fffffff:
+   sphere 1 (§3c), box 2, capsule **3** (`phys_fn_000987`, store 0x21ab5),
+   mesh 4 (§3c), plane **0** (`phys_fn_001247`, store 0x24f24).
+2. **CAPSULE** (phys_fn_000987, 0x21a60): forwards both args to the base
+   ctor, zeroes TWO data words at +0xe0/+0xe4 (radius/half-height
+   candidates — named by nothing yet), builds its collision object through
+   the capsule-family variant **phys_fn_001123** (0x23cb0) and stores it at
+   +0x9c.
+3. **PLANE** (phys_fn_001247, 0x24ed0): plants the default plane equation —
+   normal `(0,1,0)`, `D=0` at +0xe0..+0xec — then fills a tangent frame at
+   +0xf0/+0xfc through **NxFoundation!NxNormalToTangents**, called via the
+   import at `.rdata 0x1010418c` (14 call sites, no in-image writer). The
+   transcription calls the reconstruction's own export of the same NovodeX
+   algorithm; for the default normal the arithmetic is exact, so both sides
+   fold identical bits. Sets +0x108 = 1. Its collision object comes from the
+   plane-family variant **phys_fn_001159** (0x24250). This vindicates the
+   census's PLANE table 0x107430.
+4. **COMPOUND identified by elimination**: phys_fn_001033 (0x22d60) writes
+   sentinel **5** and stores table .rdata 0x106c2c — so the earlier guess
+   that 0x106c2c was "plane" is dead; the compound ctor also nulls two
+   vec3-sized triplets (+0xe0/+0xf0), writes halfword +0xd8 = 0xffff and
+   float -1.0f at +0x10c, and builds NO collision object. It stays
+   untranscribed.
+
+Driven: new `capsule` and `plane` families on poisoned twins (six pointer
+words masked each; the plane folds its tangents IN). Oracle digests
+`9b0768d7` / `abed37e0`; candidates identical bitwise. Registrations 21
+lines, oracle digest `a6f9c9fe`, coverage floor 21.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is

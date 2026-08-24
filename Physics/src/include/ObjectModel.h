@@ -361,4 +361,95 @@ class SphereShape
 static_assert(sizeof(SphereShape) == 0xe4, "the sphere is base plus one float so far");
 static_assert(offsetof(SphereShape, mRadiusE0) == 0xe0, "the radius is the first word past the base");
 
+/**
+The capsule shape. Constructor phys_fn_000987 (0x00021a60, 98 bytes,
+__thiscall, `ret 8`), which forwards BOTH arguments unchanged to
+ShapeBase::ShapeBase (0x00021a67..6f) and then:
+
+	+0x000	vptr			final CAPSULE table .rdata 0x10106b20, store 0x00021a74
+	+0x09c	collision object	a fresh 0x1c-byte block through the SDK allocator
+	                        (malloc(0x1c,0), 0x00021a8e..9c) built by
+	                        phys_fn_001123 (0x00023cb0, the capsule-family variant
+	                        of the shared collision-object constructor) and stored
+	                        at +0x9c (0x00021aaf); null if allocation failed
+	+0x0d0	3				sentinel = NX_SHAPE_CAPSULE, overwriting the base's
+	                        0x7fffffff (store 0x00021ab5)
+	+0x0e0, +0x0e4	two zeroed floats -- by analogy with the sphere's radius
+	                        these are the capsule's first data words (radius and
+	                        half-height candidates); the descriptor path names
+	                        them, this constructor only zeroes them.
+*/
+class CapsuleShape
+	{
+	public:
+	//! phys_fn_000987 (0x00021a60). Same argument pair as the base ctor.
+					CapsuleShape(void* owner, unsigned argument);
+
+	//! +0x00..+0xdf, the base shape subobject.
+	ShapeBase			mBase;
+	//! +0x0e0, +0x0e4, two data words construction zeroes; unnamed yet.
+	float				mFloatE0;
+	float				mFloatE4;
+	};
+
+static_assert(sizeof(CapsuleShape) == 0xe8, "the capsule is base plus two floats so far");
+static_assert(offsetof(CapsuleShape, mFloatE0) == 0xe0, "the first datum is at +0xe0");
+static_assert(offsetof(CapsuleShape, mFloatE4) == 0xe4, "the second datum is at +0xe4");
+
+/**
+The plane shape. Constructor phys_fn_001247 (0x00024ed0, 141 bytes,
+__thiscall, `ret 8`), which forwards BOTH arguments unchanged to
+ShapeBase::ShapeBase (0x00024edb..df) and then:
+
+	+0x000	vptr			final PLANE table .rdata 0x10107430, store 0x00024ee4
+	+0x09c	collision object	a fresh 0x1c-byte block through the SDK allocator
+	                        (malloc(0x1c,0), 0x00024eea..f8) built by
+	                        phys_fn_001159 (0x00024250, the plane-family variant
+	                        of the shared collision-object constructor) and
+	                        stored at +0x9c (0x00024f0b); null if allocation failed
+	+0x0d0	0				sentinel = NX_SHAPE_PLANE, overwriting the base's
+	                        0x7fffffff (store 0x00024f24). The +0xd0 word is now
+	                        PROVEN to be the NxShapeType tag: sphere 1, box 2,
+	                        capsule 3, mesh 4, plane 0 -- exactly the pinned
+	                        NxShape.h enumeration.
+	+0x0e0..+0xeb	plane equation	NxPlane { normal(0,1,0), D=0 }: stores
+	                        0x00024f2f/35/3c (normal words; y carries
+	                        0x3f800000) and 0x00024f44 (D)
+	+0x0f0..+0xfb	tangent u	filled by NxNormalToTangents(normal, u, v),
+	                        called through the NxFoundation import at
+	                        .rdata 0x1010418c (call 0x00024f4e)
+	+0x0fc..+0x107	tangent v	filled by the same call
+	+0x108	1				store 0x00024f57
+
+The shape-type tags also identify phys_fn_001033 (0x22d60): sentinel 5 =
+NX_SHAPE_COMPOUND -- that constructor stores table .rdata 0x10106c2c,
+zeroes two vec3-sized triplets at +0xe0/+0xf0 (skipping +0xec), writes
+halfword +0xd8 = 0xffff and float -1.0f at +0x10c, and builds NO collision
+object. It stays untranscribed here.
+*/
+class PlaneShape
+	{
+	public:
+	//! phys_fn_001247 (0x00024ed0). Same argument pair as the base ctor.
+					PlaneShape(void* owner, unsigned argument);
+
+	//! +0x00..+0xdf, the base shape subobject.
+	ShapeBase			mBase;
+	//! +0x0e0..+0x0eb, the plane equation: normal then distance.
+	float				mNormalE0[3];
+	float				mDistanceEC;
+	//! +0x0f0..+0x0fb, first tangent from NxNormalToTangents.
+	float				mTangentF0[3];
+	//! +0x0fc..+0x107, second tangent.
+	float				mBinormalFC[3];
+	//! +0x108, one.
+	NxU32				mWord108;
+	};
+
+static_assert(sizeof(PlaneShape) == 0x10c, "the plane spans base plus its basis frame");
+static_assert(offsetof(PlaneShape, mNormalE0) == 0xe0, "the normal starts where the base ends");
+static_assert(offsetof(PlaneShape, mDistanceEC) == 0xec, "the distance follows the normal");
+static_assert(offsetof(PlaneShape, mTangentF0) == 0xf0, "the first tangent is at +0xf0");
+static_assert(offsetof(PlaneShape, mBinormalFC) == 0xfc, "the second tangent is at +0xfc");
+
 #endif
