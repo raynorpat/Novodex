@@ -506,6 +506,37 @@ recorded, not modeled), stores at shape+`0xd8`, marks dirty-flag `0x04`.
 Driven with group 7 on a fresh sphere: `+0xd8 = 0007` bitwise. Registrations
 42 lines, oracle digest `18f5c3ca`, coverage floor 42.
 
+## 3m. The descriptor layout NAMED -- every offset maps to a pinned field
+
+Cross-referencing the decoded rows against the pinned public headers
+(`Physics/include/NxShapeDesc.h`, `Nxp.h`) names every descriptor offset
+the Phase 5 rows touch:
+
+| desc offset | pinned field | evidence |
+|---|---|---|
+| +0x00 | vptr | virtual dtor/setToDefault/isValid |
+| +0x04 | type (NxShapeType) | set by derived ctor |
+| +0x08..+0x37 | **localPose** (NxMat33 @+8, NxVec3 t @+0x30) | BASE slot 2 saves shape pose three here; slot 1 loads it back |
+| +0x38 | **shapeFlags** (u32; low halfword cached at shape+0xde) | apply/save rows move the low word |
+| +0x3c | **group** (NxCollisionGroup = NxU16) | slot 1 passes it to validated setter phys_fn_001329 -> shape+0xd8 |
+| +0x3e | **materialIndex** (NxMaterialIndex = NxU16) | applied to shape+0xda |
+| +0x40 | **userData** (void*) | written to [collision object+4] by slot 1, saved back by slot 2 |
+| +0x44 | **name** (const char*) | passed to registry phys_fn_000480 -- it associates shapes with their debug NAME pointers |
+| +0x4c.. | derived payload | box dims / plane normal+D / sphere radius / capsule radius+height / mesh ptr |
+
+The registry helper phys_fn_000480 decodes completely under this light:
+`f(shape, name)` -- null shape returns false; null name with no list
+returns true (nothing to dissociate); otherwise it lazily grows an
+allocator-backed list keyed by shape pointers, inserting or removing the
+shape/name association. NovodeX tracks which shapes carry which debug
+names so the error stream can report them (the assert literals at
+.rdata 0x10107574 etc. are exactly such name strings).
+
+Consequences for Task 2: the descriptor structs ARE the records the
+save/load rows read and write; reconstructing them is now mostly
+assembling already-pinned offsets under their pinned names. The remaining
+unknowns are confined to per-type payload tails beyond the first field.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is
