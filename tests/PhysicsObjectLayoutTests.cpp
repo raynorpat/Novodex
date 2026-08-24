@@ -994,7 +994,34 @@ int wmain(int argc, wchar_t** argv)
 		b9[0], b9[1], b9[2], b9[3], b9[4], b9[5]);
 	}
 
-	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=4\n",
+	// -----------------------------------------------------------------------
+	// BOX-table slots 14-16, phys_fn_001391: the identity row. Driven by
+	// pointer-equality on a real constructed box -- the returned address must
+	// be the object itself on both sides (never folded; ASLR moves it).
+	{
+	typedef void* (__thiscall* NxSelfFn)(void* self);
+	NxSelfFn self14 = (NxSelfFn) (base + 0x00027f00);
+	NxSelfFn self15 = (NxSelfFn) (base + 0x00027f00);
+	NxSelfFn self16 = (NxSelfFn) (base + 0x00027f00);
+
+	if(!nxInstallAllocatorShim(base))
+		return nxFail("the allocator holder word moved; re-pin the probe");
+
+	unsigned char shape[0x228];
+	memset(shape, 0xcd, sizeof(shape));
+	typedef void (__thiscall* NxCtorFn5)(void* self, void* owner, unsigned argument);
+	NxCtorFn5 boxCtor5 = (NxCtorFn5) (base + 0x00021870);
+	boxCtor5(shape, 0, 0);
+
+	void* r14 = self14(shape);
+	void* r15 = self15(shape);
+	void* r16 = self16(shape);
+	bool stable = r14 == shape && r15 == shape && r16 == shape;
+	oracleDigest = nxFold(oracleDigest, stable ? 1u : 0u);
+	printf("boxrow4 slots14-16=phys_fn_001391 stable=%u\n", stable ? 1u : 0u);
+	}
+
+	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=5\n",
 		(unsigned) (sizeof(nxTables) / sizeof(nxTables[0])));
 	printf("layout oracle digest=%08x\n", oracleDigest);
 
@@ -1609,6 +1636,20 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 16u);
+		}
+
+		// -- box identity row: the member returns this on both sides.
+		{
+		unsigned char bytes[0x228];
+		memset(bytes, 0xcd, sizeof(bytes));
+		BoxShape& shape = *new(bytes) BoxShape(0, 0);
+
+		bool ok = shape.nxBoxSelf() == &shape;
+		printf("boxrow4 candidate ok=%u\n", ok ? 1u : 0u);
+		if(!ok)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 17u);
 		}
 
 		printf("candidate CANDIDATE-MISSING family=vtables reason=shape finals/actor classes are Tasks 3-4\n");

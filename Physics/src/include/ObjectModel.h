@@ -365,6 +365,11 @@ class BoxShape
 	//! for general poses.
 	void				nxBoxWorldAABB(float* out) const;
 
+	//! BOX-table slots 14, 15 and 16, phys_fn_001391 (0x00027f00): a 3-byte
+	//! `mov eax,ecx; ret` -- returns this, ignores every argument. The same
+	//! row fills all three slots.
+	BoxShape*			nxBoxSelf() const { return const_cast<BoxShape*>(this); }
+
 	//! +0x00..+0xdf, the base shape subobject.
 	ShapeBase			mBase;
 	//! +0xe0..+0x227, the convex-hull descriptor.

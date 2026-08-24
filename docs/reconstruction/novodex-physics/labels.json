@@ -2660,6 +2660,13 @@
    "confidence": "semantic",
    "evidence": "oracle/capstone/manifest.json#/entries/2964",
    "reason": "BOX vtable .rdata:0x10106ab8 slot 9 (merged-run index 33); computes per-axis extents |rot-row . dims| over pose one and writes min=t-ext, max=t+ext into a caller record; driven bitwise by the NxPhysicsObjectLayoutTests boxrow family on the identity pose"
+  },
+  {
+   "id": "phys_fn_001391",
+   "label": "NxBox identity row (slots 14-16)",
+   "confidence": "semantic",
+   "evidence": "oracle/capstone/manifest.json#/entries/3550",
+   "reason": "the 3-byte mov eax,ecx; ret that fills BOX vtable slots 14, 15 AND 16 -- returns this and ignores every argument; driven by pointer equality through the NxPhysicsObjectLayoutTests boxrow family"
   }
  ]
 }

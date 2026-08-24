@@ -340,6 +340,18 @@ lines, oracle digest `f1d18d6a`, coverage floor 27. BOX slots now closed:
 4 (cached-bounds update via 0x1c8c0), 5 (raycast), 7 (sweep), 12
 (loadFromDesc), 14–16.
 
+Extended: **slots 14–16 closed** — they are the SAME three-byte row,
+`phys_fn_001391` (`mov eax,ecx; ret`), an identity/self-return that ignores
+its arguments; transcribed as `BoxShape::nxBoxSelf()` and driven by pointer
+equality on a real constructed box (stable on both sides; never folded).
+Slot 0 (`phys_fn_000979`) is now fully DECODED but deliberately unclaimed:
+it destroys the embedded collision object through `[colobj-vtbl+0]` with
+flag 1 UNCONDITIONALLY, runs the base-dtor chain (owner arms, +0xa0 arms,
+Prunable tail), then frees `this` through SDK-allocator slot +0x14 when
+flag&1 — a safe drive needs the allocator shim extended with free slots and
+a careful post-mortem observation design, so it stays discovered until that
+lands. Registrations 28 lines, oracle digest `5f1bb91b`, coverage floor 28.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is
