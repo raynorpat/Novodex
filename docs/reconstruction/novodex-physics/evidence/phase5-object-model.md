@@ -1112,6 +1112,20 @@ Task-4 status after this round: construct-with-owner closed bitwise;
 remove-with-owner interface mapped (three sites, offsets recorded); remover
 decode queued.
 
+**Remover decode progress + drive status**: all three removers are now
+transcribed in the reconstruction (`nxSceneRemoveShape` with the freelist/
+swap-remove/poison semantics, `nxSceneRemovePairs`, `nxSceneSlotFree`) and
+wired into `nxSphereScalarDeletingDtor` via `nxBaseDtorOwnerArms`; the
+other four per-shape dtors carry the same call. Two branch facts learned
+the hard way: remover #3's `+0x0c` field is a LIMIT, not an end -- push at
+the `+0x08` cursor happens when limit > cursor (ja) -- and 0x5bc90's grow
+trigger is capacity <= end. The owned-dtor differential itself remains
+BLOCKED: even with every container pre-sized, the oracle dtor still
+fail-fasts inside some undecoded segment of the three removers. No family
+or registration has been created for it; the transcription stands ready to
+close bitwise once the remaining bodies (0x5aae0 tail, 0x1b90 middle,
+0x5bac0 grow path) are decoded.
+
 **Refinement (full registrar body walked)**: phys_fn_002423 touches ONLY
 container+0x90/0x94/0x98 -- every allocation goes through interface calls
 (`[eax+8]`, `[edx+0x14]`, `[ebp+0x10]`, i.e. the SDK allocator adapter),

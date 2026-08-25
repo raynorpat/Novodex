@@ -687,6 +687,7 @@ void PlaneShape::nxPlaneScalarDeletingDtor(unsigned flags)
 		{
 		// destroyed through its own vtable: 0x00025433..37
 		}
+	mBase.nxBaseDtorOwnerArms();		// owner arms, 0x26be1..c35
 	mBase.mPrunable.~Prunable();			// tail of the base-dtor chain
 	(void) flags;							// self-free arm not modeled
 	}
@@ -1104,6 +1105,7 @@ void CapsuleShape::nxCapsuleScalarDeletingDtor(unsigned flags)
 		{
 		// destroyed through its own vtable: 0x000225f3..f7
 		}
+	mBase.nxBaseDtorOwnerArms();		// owner arms, 0x26be1..c35
 	mBase.mPrunable.~Prunable();			// tail of the base-dtor chain
 	(void) flags;							// self-free arm not modeled
 	}
@@ -1238,6 +1240,7 @@ void BoxShape::nxBoxScalarDeletingDtor(unsigned flags)
 		// mov ecx,[esi+0x9c]; test; push 1; call [eax] at 0x0002195b..61 --
 		// destroyed through its own vtable by the image.
 		}
+	mBase.nxBaseDtorOwnerArms();		// owner arms, 0x26be1..c35
 	mBase.mPrunable.~Prunable();			// tail of 0x00026bd0: jmp 0xb5640
 	(void) flags;							// flags&1 self-free arm: operator
 	}										// delete territory, not modeled
@@ -1253,6 +1256,7 @@ void MeshShape::nxMeshScalarDeletingDtor(unsigned flags)
 		{
 		--*reinterpret_cast<NxU32*>(mWordE0 + 0x74);	// dec [mesh+0x74]: 0x00028ea3
 		}
+	mBase.nxBaseDtorOwnerArms();		// owner arms, 0x26be1..c35
 	mBase.mPrunable.~Prunable();			// tail of the base-dtor chain
 	(void) flags;							// self-free arm not modeled
 	}
