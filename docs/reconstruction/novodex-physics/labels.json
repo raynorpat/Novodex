@@ -2891,6 +2891,20 @@
       "confidence": "semantic",
       "evidence": "oracle/capstone/manifest.json",
       "reason": "straight-line transform over {Vec3 d; SymMat3 K} payloads; driven bitwise by the paxis family"
+    },
+    {
+      "id": "phys_fn_001353",
+      "label": "NxSphereShape loadFromDesc row (slot 12)",
+      "confidence": "semantic",
+      "evidence": "oracle/capstone/manifest.json",
+      "reason": "reads radius from record+0x4c through the error stream, stores at +0xe0, tail-applies BASE slot 1; driven bitwise by the sphload family"
+    },
+    {
+      "id": "phys_fn_001389",
+      "label": "NxTriangleMeshShape words44 getter row (slot 8)",
+      "confidence": "semantic",
+      "evidence": "oracle/capstone/manifest.json",
+      "reason": "copies six dwords from mesh+0x44 to the out array; driven bitwise by the meshwords44 family"
     }
   ]
 }
