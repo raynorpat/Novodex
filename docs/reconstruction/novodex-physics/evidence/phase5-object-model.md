@@ -921,6 +921,35 @@ static to own beyond the slot constants documented here. This unblocks the
 validation arms of applyGroup (group >= 0x20) and the descriptor
 loadFromDesc rows for Task 2 proper.
 
+## 3u. The group-validation arm: applyGroup completed, and mPrunable24 named
+
+applyGroup (0x26d90) was transcribed with its invalid arm stubbed. The full
+decode, using the section 3t mechanics:
+
+- `cmp ax,0x20 / jb` splits the paths. The INVALID arm reports through the
+  same guarded slot -- (1, "\Epic\Novodex\SDKs\Physics\src\Shape.cpp",
+  line **0xe0**, 0, "group ID must be < 32!") -- and then **JOINS** the
+  valid path at the dirty-flag call: the store at +0xd8 is skipped but the
+  dirty flag 0x04 and everything after run EITHER WAY.
+- Both paths end by rewriting the prunable's unidentified dword
+  `mPrunable24` -- which sits at abs shape+0xc8 -- as a group mask:
+  `1 << low-byte(group)`, the x86 shift masking its count to five bits.
+  That names the field: it is the collision-group mask the broad-phase
+  filters against.
+
+Transcription updated (`nxApplyGroup` reports through the reconstruction's
+own sink with Shape.cpp's exact literals, skips only the store on invalid,
+and rewrites `mPrunable.mPrunable24`). New `grouperr` family: drive
+group=0xFF then group=5 against both sides, folding the capture plus the
+post-drive +0xd8 word pair and +0xc8 mask. Oracle:
+`invalid_fires=1 d8=00000005 c8=00000020 digest=b6f879ec` -- the invalid
+drive fired once and stored nothing; the valid drive left d8=5 and
+mask=1<<5. Candidate identical first try.
+
+Registrations +2 lines, floor 77->79, oracle digest re-pinned
+45014fec->bea77b31. phys_fn_001329's static_proof records the report arm
+and the mask naming.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is

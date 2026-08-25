@@ -541,6 +541,9 @@ void					nxInstallReportSink(NxReportFn sink);
 //! The image's own literal pair, exposed so tests can pin against them.
 extern const char* const	nxSourceFileSphereShapeCpp;
 extern const char* const	nxMsgSetRadiusPositive;
+//! And Shape.cpp's pair for the group-validation arm.
+extern const char* const	nxSourceFileShapeCpp;
+extern const char* const	nxMsgGroupBelow32;
 
 /**
 The sphere shape. Constructor phys_fn_001349 (0x000277c0).

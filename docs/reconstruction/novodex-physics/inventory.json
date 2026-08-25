@@ -23986,7 +23986,7 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/541",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3480",
-      "static_proof": "__thiscall ret 4: validates the word argument against 0x20 through the error stream (assert path 0x00026d9e..dc), stores it at shape+0xd8, then calls the dirty-flag accumulator 0x26c90 with mask 4",
+      "static_proof": "BASE-level apply-group: group >= 0x20 reports (1, Shape.cpp, line 0xe0, 0, \"group ID must be < 32!\") through the guarded error-stream slot -- int3 when the flag word is zero -- then JOINS the valid path, skipping only the store; valid groups store at +0xd8; BOTH paths run the dirty-flag 0x04 helper 0x26c90 and rewrite the prunable unidentified dword mPrunable24 (abs +0xc8) as the group mask 1 << low-byte(group), shift count masked to five bits. Report arm and mask driven bitwise by the grouperr family",
       "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests setgroup family on a fresh sphere with group 7: +0xd8 word 0007 equal candidate",
       "notes": ""
     },

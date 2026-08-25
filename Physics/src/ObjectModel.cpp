@@ -80,6 +80,10 @@ const char* const	nxSourceFileSphereShapeCpp =
 	"\\Epic\\Novodex\\SDKs\\Physics\\src\\SphereShape.cpp";
 const char* const	nxMsgSetRadiusPositive =
 	"SphereShape::setRadius: radius should be positive!";
+const char* const	nxSourceFileShapeCpp =
+	"\\Epic\\Novodex\\SDKs\\Physics\\src\\Shape.cpp";
+const char* const	nxMsgGroupBelow32 =
+	"group ID must be < 32!";
 
 static NxReportFn	gReportSink = nullptr;
 
@@ -369,9 +373,24 @@ void SphereShape::nxSphereSetRadius(float radius)
 void ShapeBase::nxApplyGroup(unsigned short group)
 	{
 	if(group >= 0x20)
-		return;							// error-report arm: Task 2's reporter
-	mHalfwordD8 = group;				// mov [esi+0xd8],ax at 0x00026dc7
-	// dirty-flag 0x04 via 0x26c90 -- null-owner no-op on a detached shape.
+		{
+		// The image reports (1, Shape.cpp, 0xe0, 0, "group ID must be
+		// < 32!") through the guarded slot -- int3 when the flag word is
+		// zero -- and then JOINS the valid path at the dirty-flag call,
+		// skipping only the store. Evidence section 3u.
+		nxReport(1, nxSourceFileShapeCpp, 0xe0, 0, nxMsgGroupBelow32);
+		}
+	else
+		{
+		mHalfwordD8 = group;			// mov [esi+0xd8],ax at 0x00026dc7
+		}
+	// Both paths rejoin at 0x00026dce: dirty-flag 0x04 via 0x26c90 -- a
+	// null-owner no-op on a detached shape -- then the prunable's
+	// unidentified dword at abs +0xc8 (mPrunable24) becomes the group mask
+	// 1 << low-byte(group). The x86 shift masks its count to five bits;
+	// reproduced.
+	mPrunable.mPrunable24 =
+		1u << ((mHalfwordD8 & 0xff) & 0x1f);
 	}
 
 // phys_fn_001315 (0x000266a0), BASE-table slot 6. Detached-shape path:

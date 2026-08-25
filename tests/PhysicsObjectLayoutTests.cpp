@@ -347,6 +347,7 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oCapMassDigest = 0;
 	unsigned oFoldDigest = 0;
 	unsigned oErrDigest = 0;
+	unsigned oGroupErrDigest = 0;
 	static unsigned char sSaveStateRecord[0x48];
 
 	// -----------------------------------------------------------------------
@@ -1969,6 +1970,54 @@ int wmain(int argc, wchar_t** argv)
 	}
 
 	// -----------------------------------------------------------------------
+	// The group-validation arm of applyGroup (phys_fn_001329): drive
+	// group=0xFF -- report fires, the store is SKIPPED, yet the dirty-flag
+	// and mask paths still run. Fold captures kind/line/code/strings plus
+	// the post-drive +0xd8 halfword pair and the +0xc8 prunable-mask dword.
+	{
+	typedef void (__thiscall* NxSetGrpFn)(void* self, unsigned short g);
+	NxSetGrpFn setGrpFn = (NxSetGrpFn) (base + 0x00026d90);
+
+	unsigned* slotPtrG = (unsigned*) (base + 0x001041b4);
+	unsigned* guardPtrPtrG = (unsigned*) (base + 0x001041b0);
+
+	memset(&g_errCap, 0, sizeof(g_errCap));
+	typedef void(__cdecl* NxReportFnO)(int, const char*, int, int,
+		const char*);
+	DWORD oldProtectG = 0;
+	if(!VirtualProtect(slotPtrG, 8, PAGE_READWRITE, &oldProtectG))
+		return nxFail("grouperr: VirtualProtect over the report slot failed");
+	if(*guardPtrPtrG != 0 && *reinterpret_cast<unsigned*>(*guardPtrPtrG) == 0)
+		*reinterpret_cast<unsigned*>(*guardPtrPtrG) = 1;
+
+	unsigned char sphG[0xe4];
+	memset(sphG, 0xcd, sizeof(sphG));
+	typedef void (__thiscall* NxCtorFnEG)(void*, void*, unsigned);
+	NxCtorFnEG ctorEG = (NxCtorFnEG) (base + 0x000277c0);
+	ctorEG(sphG, 0, 0);
+
+	NxReportFnO savedSinkG = reinterpret_cast<NxReportFnO>(*slotPtrG);
+	*slotPtrG = reinterpret_cast<unsigned>(&g_errSink);
+	setGrpFn(sphG, 0xFFu);
+	int groupFiredInvalid = g_errCap.fired;
+	setGrpFn(sphG, 5u);					// a valid drive on top
+	*slotPtrG = reinterpret_cast<unsigned>(savedSinkG);
+	VirtualProtect(slotPtrG, 8, oldProtectG, &oldProtectG);
+
+	unsigned gd = nxFoldErrCap(2166136261u);
+	unsigned d8word, c8mask;
+	memcpy(&d8word, sphG + 0xd8, 4);
+	memcpy(&c8mask, sphG + 0xc8, 4);
+	gd = nxFold(gd, d8word);
+	gd = nxFold(gd, c8mask);
+	oGroupErrDigest = gd;
+
+	oracleDigest = nxFold(oracleDigest, gd);
+	printf("grouperr row=phys_fn_001329 invalid_fires=%u d8=%08x c8=%08x digest=%08x\n",
+		groupFiredInvalid, d8word, c8mask, gd);
+	}
+
+	// -----------------------------------------------------------------------
 	// PLANE slots 9/11, phys_fn_001257: zero vec3 + +FLT_MAX reach.
 	{
 	typedef void (__thiscall* NxPlaneExtFn)(void* self, float* out);
@@ -3580,6 +3629,33 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 45u);
+		}
+		// -- group validation arm: twin drive through the transcription.
+		{
+		memset(&g_errCap, 0, sizeof(g_errCap));
+		nxInstallReportSink(&g_errSink);
+
+		unsigned char sphGG[0xe4];
+		memset(sphGG, 0xcd, sizeof(sphGG));
+		SphereShape& sphGR = *new(sphGG) SphereShape(0, 0);
+		sphGR.mBase.nxApplyGroup(0xFFu);
+		int groupFired = g_errCap.fired;
+		sphGR.mBase.nxApplyGroup(5u);
+		nxInstallReportSink(nullptr);
+
+		unsigned gd2 = nxFoldErrCap(2166136261u);
+		unsigned d8w2 = 0, c8m2 = 0;
+		memcpy(&d8w2, sphGG + 0xd8, 4);
+		memcpy(&c8m2, sphGG + 0xc8, 4);
+		gd2 = nxFold(gd2, d8w2);
+		gd2 = nxFold(gd2, c8m2);
+
+		bool okGE = gd2 == oGroupErrDigest && groupFired == 1;
+		printf("grouperr candidate ok=%u digest=%08x\n", okGE ? 1u : 0u, gd2);
+		if(!okGE)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 46u);
 		}
 
 
