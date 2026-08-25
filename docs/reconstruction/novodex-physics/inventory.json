@@ -15058,7 +15058,7 @@
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/342",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2545",
-      "static_proof": null,
+      "static_proof": "partner fold step for the second {Vec3 d; SymMat3 K} payload record (extra+0x24): early-outs when d is all-zero; forms d+o per component against the negated frame offset and branches to a centered path (0x1c0d7, quadratic offset terms) or a displaced path (0x1c26f, parallel-axis cross terms with several terms multiplied by the .rdata 0x101041f0 = 0.0f literal); shared tail at 0x1c592; formula-level decode deferred",
       "dynamic_proof": null,
       "notes": ""
     },

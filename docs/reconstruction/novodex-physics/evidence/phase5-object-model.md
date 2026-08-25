@@ -835,8 +835,39 @@ from the PHASE-2 ledger (its `homeless_shared_code` deferral; deferred
 One process lesson recorded: an earlier build printed a different oracle
 word for drive 2's last slot; the current build is stable across repeated
 runs and the drives are dyadic-exact, so the pinned digest no longer
-depends on any rounding path. The parallel-axis partner 0x1c040 (1371 B)
-remains undecoded behind null-extra drives.
+depends on any rounding path.
+
+## 3s. The partner helper phys_fn_000833: structure mapped, transcription open
+
+`0x1c040` (1371 B) is the second call of the pair -- `__thiscall`
+(frame, payload2) with payload2 = extra+0x24, i.e. a SECOND {Vec3 d;
+SymMat3 K}-shaped stride into the same buffer. It is NOT the same transform
+as 0x1bdc0. Structure, from the depth-annotated listing:
+
+- **Early out**: if all three payload words d.[0..8] are zero, jump straight
+  to the tail at 0x1c592.
+- The frame's COM offset is read and NEGATED term by term (fchs), and each
+  component of d+o is formed and integer-tested. All three sums zero sends
+  control down a SHORT centered path at 0x1c0d7; any non-zero sum takes the
+  LONG displaced path at 0x1c26f.
+- Short path: builds quadratic forms in the negated offset -- e.g.
+  (-oy)*oy + (-ox)*oz chains against [esp+0x24]/[esp+0x20] -- consistent
+  with pure-shape folding where d == -o makes the displacement vanish while
+  dd^T-style sign terms survive.
+- Long path: negates the three sums into r = -(d+o), keeps one component
+  alive across registers ([esp+0x7c]), and emits the standard parallel-axis
+  cross-term pattern (products like Ry*sumy stored as partials, Rx*sumz
+  cross terms added, .rdata literals multiplied in). Several terms are
+  multiplied by the literal **[0x101041f0] = 0.0f** -- zeroed coefficients
+  whose signed-zero results still propagate through the adds, so a faithful
+  transcription must KEEP the multiplies exactly where they stand.
+- Tail at 0x1c592 shared by all paths.
+
+Status: row phys_fn_000833 stays OPEN (`discovered`, phase 2 ownership).
+The mass-frame chain stands at: builders + scale + merge + fold step closed
+bitwise (six rows), partner structure mapped, formula-level decode of both
+0x1c040 paths deferred -- it gates nothing currently driven, since every
+closed slot-4 row uses null-extra drives.
 
 ## 4. The census merge resolved
 
