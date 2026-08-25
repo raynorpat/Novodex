@@ -425,6 +425,8 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oMaterialBootedDigest = 0;
 	unsigned oOwnDigest = 0;
 	unsigned oOwnDtorDigest = 0;
+	unsigned oZeroDigest = 0;
+	unsigned oZeroCandDigest = 0;
 	static unsigned char sSaveStateRecord[0x48];
 
 	// -----------------------------------------------------------------------
@@ -2349,6 +2351,50 @@ int wmain(int argc, wchar_t** argv)
 	}
 
 	// -----------------------------------------------------------------------
+	// phys_fn_000847: the conditional mass-frame zeroizer. Two drives --
+	// flag=1 (zeroes all 13 words) and flag=0 (leaves untouched) -- against
+	// pre-populated frames.
+	{
+	typedef void (__thiscall* NxZeroFn)(void* self, unsigned flag);
+	NxZeroFn zeroFn = (NxZeroFn) (base + 0x0001c880);
+
+	unsigned char zA[0x34];
+	memset(zA, 0xcd, sizeof(zA));
+	for(int i = 0; i < 13; ++i)
+		{
+		unsigned w = 0x41414141u + static_cast<unsigned>(i);
+		memcpy(zA + i * 4, &w, 4);
+		}
+	unsigned char zB[0x34];
+	memset(zB, 0xcd, sizeof(zB));
+	for(int i = 0; i < 13; ++i)
+		{
+		unsigned w = 0x42424242u + static_cast<unsigned>(i);
+		memcpy(zB + i * 4, &w, 4);
+		}
+	zeroFn(zA, 1);
+	zeroFn(zB, 0);
+
+	unsigned zd = 2166136261u;
+	for(int v = 0; v < 2; ++v)
+		{
+		const unsigned char* src = (v == 0) ? zA : zB;
+		for(int i = 0; i < 0x34; i += 4)
+			{
+			unsigned w;
+			memcpy(&w, src + i, 4);
+			zd = nxFold(zd, w);
+			}
+		}
+	oZeroDigest = zd;
+
+	oracleDigest = nxFold(oracleDigest, zd);
+	printf("mzero row=phys_fn_000847 zA=%08x zB=%08x digest=%08x\n",
+		*reinterpret_cast<const unsigned*>(zA),
+		*reinterpret_cast<const unsigned*>(zB), zd);
+	}
+
+	// -----------------------------------------------------------------------
 
 
 	// -----------------------------------------------------------------------
@@ -4218,6 +4264,42 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 49u);
+		}
+		// -- conditional mass-frame zeroizer: twin drive.
+		{
+		unsigned char zA2[0x34];
+		memset(zA2, 0xcd, sizeof(zA2));
+		unsigned char zB2[0x34];
+		memset(zB2, 0xcd, sizeof(zB2));
+		for(int i = 0; i < 13; ++i)
+			{
+			unsigned wa = 0x41414141u + static_cast<unsigned>(i);
+			unsigned wb = 0x42424242u + static_cast<unsigned>(i);
+			memcpy(zA2 + i * 4, &wa, 4);
+			memcpy(zB2 + i * 4, &wb, 4);
+			}
+		MassFrame& mfA = *reinterpret_cast<MassFrame*>(zA2);
+		MassFrame& mfB = *reinterpret_cast<MassFrame*>(zB2);
+		mfA.nxMassFrameConditionalZero(1);
+		mfB.nxMassFrameConditionalZero(0);
+
+		unsigned zd2 = 2166136261u;
+		for(int v = 0; v < 2; ++v)
+			{
+			const unsigned char* src = (v == 0) ? zA2 : zB2;
+			for(int i = 0; i < 0x34; i += 4)
+				{
+				unsigned w;
+				memcpy(&w, src + i, 4);
+				zd2 = nxFold(zd2, w);
+				}
+			}
+		bool okMZ = zd2 == oZeroDigest;
+		printf("mzero candidate ok=%u digest=%08x\n", okMZ ? 1u : 0u, zd2);
+		if(!okMZ)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 51u);
 		}
 		// -- owned-arm registration: twin drive through the transcription.
 		{
