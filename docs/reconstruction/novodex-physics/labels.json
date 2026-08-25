@@ -2835,6 +2835,34 @@
       "confidence": "semantic",
       "evidence": "oracle/capstone/manifest.json#/entries/2969",
       "reason": "CAPSULE vtable .rdata:0x106b20 slot 8; computes the capsule local AABB from radius and half-height; driven bitwise by the capaabb family"
+    },
+    {
+      "id": "phys_fn_000981",
+      "label": "NxBoxShape loadFromDesc row (slot 12)",
+      "confidence": "semantic",
+      "evidence": "oracle/capstone/manifest.json",
+      "reason": "stores dims into facade +0xe4/e8/ec; hull-recompute helper then BASE slot 1"
+    },
+    {
+      "id": "phys_fn_000989",
+      "label": "NxCapsuleShape loadFromDesc row (slot 12)",
+      "confidence": "semantic",
+      "evidence": "oracle/capstone/manifest.json",
+      "reason": "reads radius/half-height/third word (height halved), applies BASE slot 1"
+    },
+    {
+      "id": "phys_fn_001265",
+      "label": "NxPlaneShape loadFromDesc row (slot 12)",
+      "confidence": "semantic",
+      "evidence": "oracle/capstone/manifest.json",
+      "reason": "normal-setter helper then tail-applies BASE slot 1"
+    },
+    {
+      "id": "phys_fn_001383",
+      "label": "NxMeshShape loadFromDesc row (slot 12)",
+      "confidence": "semantic",
+      "evidence": "oracle/capstone/manifest.json",
+      "reason": "wrapper indirection; inner refcount incremented on bind"
     }
   ]
 }

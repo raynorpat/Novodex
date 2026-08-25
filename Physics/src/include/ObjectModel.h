@@ -381,6 +381,11 @@ class BoxShape
 	//! exactly the offset the constructor read them back from.
 	bool				nxBoxSaveState(void* record);
 
+	//! BOX-table slot 12, phys_fn_000981: loadFromDesc -- stores dimensions
+	//! from desc+0x4c/50/54 into the facade dims, recomputes derived data
+	//! via helper 0x21420, then applies BASE fields.
+	void				nxBoxLoadFromDesc(const void* record);
+
 	//! BOX-table slot 8, phys_fn_000941 (0x00020700): local AABB -- out[0..2]
 	//! = negated dims, out[3..5] = raw dims.
 	void				nxBoxLocalAABB(float* out) const;

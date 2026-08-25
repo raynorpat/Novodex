@@ -1916,6 +1916,42 @@ int wmain(int argc, wchar_t** argv)
 	oracleDigest = nxFold(oracleDigest, okM ? 1u : 0u);
 	printf("meshload row=phys_fn_001383 bound=%u\n", okM ? 1u : 0u);
 	}
+	// -----------------------------------------------------------------------
+	// BOX slot 12, phys_fn_000981: loadFromDesc (RVA 0x00021990, 55 B).
+	{
+	typedef void (__thiscall* NxBoxLoadFn)(void* self, const void* rec);
+	NxBoxLoadFn boxLoad = (NxBoxLoadFn) (base + 0x00021990);
+
+	if(!nxInstallAllocatorShim(base))
+		return nxFail("the allocator holder word moved; re-pin the probe");
+
+	unsigned char bshape[0x230];
+	memset(bshape, 0xcd, sizeof(bshape));
+	typedef void (__thiscall* NxCtorFnBL)(void* self, void* owner, unsigned argument);
+	NxCtorFnBL boxCtorBL = (NxCtorFnBL) (base + 0x00021870);
+	boxCtorBL(bshape, 0, 0);
+
+	unsigned char brec[0x58];
+	memset(brec, 0, sizeof(brec));
+	const unsigned kDx = 0x3f800000u;
+	const unsigned kDy = 0x40000000u;
+	const unsigned kDz = 0x40400000u;
+	memcpy(brec + 0x4c, &kDx, 4);
+	memcpy(brec + 0x50, &kDy, 4);
+	memcpy(brec + 0x54, &kDz, 4);
+	const unsigned short kGb = 2u;
+	memcpy(brec + 0x3c, &kGb, 2);
+
+	nxGuardedBoxDtor((NxBoxDtorFn) boxLoad, bshape, reinterpret_cast<unsigned>(brec));
+	if(gDtorFaultCode)
+		return nxFail("box loadFromDesc faulted");
+
+	unsigned gotX = 0; memcpy(&gotX, bshape + 0xe4, 4);
+	unsigned gotY = 0; memcpy(&gotY, bshape + 0xe8, 4);
+	bool okB = gotX == kDx && gotY == kDy;
+	oracleDigest = nxFold(oracleDigest, okB ? 1u : 0u);
+	printf("boxload row=phys_fn_000981 stored=%u\n", okB ? 1u : 0u);
+	}
 
 	// -----------------------------------------------------------------------
 	// CAPSULE slot 8, phys_fn_001004: local AABB. Fresh capsule (all zeros).
@@ -3037,6 +3073,26 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 38u);
+		}
+		// -- box loadFromDesc: twin drive through transcription.
+		{
+		unsigned char bb[0x230];
+		memset(bb, 0xcd, sizeof(bb));
+		BoxShape& bxL = *new(bb) BoxShape(0, 0);
+		unsigned char br[0x58];
+		memset(br, 0, sizeof(br));
+		const unsigned kDx3 = 0x3f800000u;
+		memcpy(br + 0x4c, &kDx3, 4);
+		bxL.mBase.nxApplyDescriptor(br);
+		bxL.nxBoxLoadFromDesc(br);
+		float gx = 0.0f;
+		memcpy(&gx, bb + 0xe4, 4);
+		bool okBL = *reinterpret_cast<unsigned*>(&gx) == kDx3;
+		printf("boxload candidate ok=%u\n", okBL ? 1u : 0u);
+		if(!okBL)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 39u);
 		}
 
 
