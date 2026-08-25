@@ -709,6 +709,11 @@ class MeshShape
 	//! MESH-table slot 8, phys_fn_001389 (0x00027ec0): copies six words from
 	//! meshptr+0x44 into out.
 	void				nxMeshGetWords44(unsigned* out) const;
+
+	//! MESH-table slot 12, phys_fn_001383: loadFromDesc. The record holds
+	//! a wrapper pointer; stores *(wrapper+4) at +0xe0 and increments the
+	//! inner object refcount at +0x74.
+	bool				nxMeshLoadFromDesc(const void* record);
 	};
 
 static_assert(sizeof(MeshShape) == 0xe8, "the mesh is base plus two words so far");

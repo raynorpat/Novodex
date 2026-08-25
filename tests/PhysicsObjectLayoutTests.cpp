@@ -1873,6 +1873,49 @@ int wmain(int argc, wchar_t** argv)
 	oracleDigest = nxFold(oracleDigest, nyBits);
 	printf("planeload row=phys_fn_001265 ny=%08x\n", nyBits);
 	}
+	// -----------------------------------------------------------------------
+	// MESH slot 12, phys_fn_001383: loadFromDesc. The record holds a
+	// wrapper pointer; shape+0xe0 gets *(wrapper+4) and the refcount at
+	// that inner object +0x74 is incremented (decoded from 46 B listing).
+	{
+	typedef void (__thiscall* NxMeshLoadFn)(void* self, const void* rec);
+	NxMeshLoadFn meshLoad = (NxMeshLoadFn) (base + 0x00027e30);
+
+	if(!nxInstallAllocatorShim(base))
+		return nxFail("the allocator holder word moved; re-pin the probe");
+
+	unsigned char mshape[0xe8];
+	memset(mshape, 0xcd, sizeof(mshape));
+	typedef void (__thiscall* NxCtorFnML)(void* self, void* owner, unsigned argument);
+	NxCtorFnML meshCtorML = (NxCtorFnML) (base + 0x00027db0);
+	meshCtorML(mshape, 0, 0);
+
+	static unsigned char fwrapper[0x10];
+	static unsigned char finner[0x100];
+	memset(fwrapper, 0, sizeof(fwrapper));
+	memset(finner, 0, sizeof(finner));
+	void* innerPtr = finner;
+	memcpy(fwrapper + 4, &innerPtr, 4);
+	unsigned* refcnt = reinterpret_cast<unsigned*>(finner + 0x74);
+	*refcnt = 0;
+	void* wrapperPtr = fwrapper;
+
+	unsigned char mrec[0x58];
+	memset(mrec, 0, sizeof(mrec));
+	memcpy(mrec + 0x4c, &wrapperPtr, 4);
+	const unsigned short kGm = 4u;
+	memcpy(mrec + 0x3c, &kGm, 2);
+
+	nxGuardedBoxDtor((NxBoxDtorFn) meshLoad, mshape, reinterpret_cast<unsigned>(mrec));
+	if(gDtorFaultCode)
+		return nxFail("mesh loadFromDesc faulted");
+
+	void* gotInner = nullptr;
+	memcpy(&gotInner, mshape + 0xe0, 4);
+	bool okM = gotInner == innerPtr && *refcnt == 1;
+	oracleDigest = nxFold(oracleDigest, okM ? 1u : 0u);
+	printf("meshload row=phys_fn_001383 bound=%u\n", okM ? 1u : 0u);
+	}
 
 	// -----------------------------------------------------------------------
 	// CAPSULE slot 8, phys_fn_001004: local AABB. Fresh capsule (all zeros).
@@ -2966,6 +3009,34 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 37u);
+		}
+		// -- mesh loadFromDesc: twin drive through transcription.
+		{
+		unsigned char mb[0xe8];
+		memset(mb, 0xcd, sizeof(mb));
+		MeshShape& mshL = *new(mb) MeshShape(0, 0);
+		static unsigned char fw2[0x10];
+		static unsigned char fi2[0x100];
+		memset(fw2, 0, sizeof(fw2));
+		memset(fi2, 0, sizeof(fi2));
+		void* ip2 = fi2;
+		memcpy(fw2 + 4, &ip2, 4);
+		unsigned* rc2 = reinterpret_cast<unsigned*>(fi2 + 0x74);
+		*rc2 = 0;
+		void* wp2 = fw2;
+		unsigned char mr2[0x58];
+		memset(mr2, 0, sizeof(mr2));
+		memcpy(mr2 + 0x4c, &wp2, 4);
+		mshL.mBase.nxApplyDescriptor(mr2);
+		bool okML = mshL.nxMeshLoadFromDesc(mr2);
+		void* gi2 = nullptr;
+		memcpy(&gi2, mb + 0xe0, 4);
+		bool okM2 = okML && gi2 == ip2 && *rc2 == 1;
+		printf("meshload candidate ok=%u\n", okM2 ? 1u : 0u);
+		if(!okM2)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 38u);
 		}
 
 

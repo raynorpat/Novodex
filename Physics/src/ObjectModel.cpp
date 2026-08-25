@@ -347,6 +347,23 @@ void ShapeBase::nxApplyGroup(unsigned short group)
 // owner == null takes the early exit at 0x00026abb which is a pure no-op
 // (pop ebp / add esp,0x84 / ret 4). The owned path needs scene
 // infrastructure from Task 4 and is not reachable for detached shapes.
+// phys_fn_001383 (0x00027e30), MESH-table slot 12.
+bool MeshShape::nxMeshLoadFromDesc(const void* record)
+	{
+	const unsigned char* rec = static_cast<const unsigned char*>(record);
+	void* wrapper = nullptr;
+	memcpy(&wrapper, rec + 0x4c, sizeof(wrapper));
+	if(wrapper == nullptr)
+		return false;
+	void* inner = nullptr;
+	memcpy(&inner, static_cast<unsigned char*>(wrapper) + 4, sizeof(inner));
+	mWordE0 = reinterpret_cast<NxU32>(inner);
+	++*reinterpret_cast<unsigned*>(static_cast<unsigned char*>(inner) + 0x74);
+	memcpy(&mWordE4, rec + 0x50, sizeof(mWordE4));
+	mBase.nxApplyDescriptor(rec);
+	return true;
+	}
+
 // phys_fn_001265 (0x00025460), PLANE-table slot 12.
 void PlaneShape::nxPlaneLoadFromDesc(const void* record)
 	{

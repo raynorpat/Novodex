@@ -636,6 +636,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'ownerupd row=phys_fn_001315 noop=1',
         'capload row=phys_fn_000989 rad=3fc00000',
         'planeload row=phys_fn_001265 ny=3f800000',
+        'meshload row=phys_fn_001383 bound=1',
         'capdtor row=phys_fn_001014 digest=7a376673',
         'capaabb row=phys_fn_001004 minmax=80000000.80000000.80000000.00000000.00000000.00000000',
         'layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1',
@@ -816,7 +817,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 100  # 34 for NxPhysicsAssetTests, 66 for NxPhysicsThirdPartyTests
-    '5' = 64   # forty-two for NxPhysicsObjectLayoutTests (RED on purpose: vtables family open)
+    '5' = 65   # forty-two for NxPhysicsObjectLayoutTests (RED on purpose: vtables family open)
     '6' = 0
     '7' = 0
     '8' = 0

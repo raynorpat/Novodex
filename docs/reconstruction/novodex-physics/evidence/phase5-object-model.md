@@ -621,6 +621,13 @@ MESH: slots13 save/001385, slot17 mesh-word/001381
 **Gate state**: auto-generated registrations from binary output;
 coverage assertions matching floor exactly; only designed RED remaining.
 
+The MESH loadFromDesc (phys_fn_001383, 46 B at 0x00027e30) decode reveals
+a wrapper indirection: the descriptor's mesh pointer is a wrapper whose +4
+field points to the inner triangle-mesh object. shape+0xe0 receives
+*(wrapper+4) and the reference count lives on the inner object at +0x74.
+After storing mesh and flags (+0xe4 from desc+0x50), it tail-jumps to BASE
+slot 1. Null mesh pointer returns false without touching state.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is
