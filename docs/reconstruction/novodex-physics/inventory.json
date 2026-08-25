@@ -15306,7 +15306,7 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "callers",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/349",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2560",
