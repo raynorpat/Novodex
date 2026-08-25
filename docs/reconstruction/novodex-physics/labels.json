@@ -2905,6 +2905,13 @@
       "confidence": "semantic",
       "evidence": "oracle/capstone/manifest.json",
       "reason": "copies six dwords from mesh+0x44 to the out array; driven bitwise by the meshwords44 family"
+    },
+    {
+      "id": "phys_fn_000116",
+      "label": "This-adjustor thunk (-8) -> 0x3650",
+      "confidence": "semantic",
+      "evidence": "oracle/capstone/manifest.json",
+      "reason": "sub ecx,8 then tail-jump to 0x3650; multiple-inheritance offset adjustment"
     }
   ]
 }
