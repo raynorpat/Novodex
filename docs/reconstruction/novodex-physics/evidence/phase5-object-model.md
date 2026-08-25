@@ -1108,6 +1108,18 @@ Removers #2/#3 (0x5aae0, 0x1b90) plus 0x5bac0's tail are undecoded. An
 owned-dtor differential therefore waits on those bodies; the registration
 side (section 3y) remains closed and unaffected.
 
+**Status update**: all three removers are now transcribed
+(`nxSceneRemoveShape` / `nxSceneRemovePairs` / `nxSceneSlotFree`) and wired
+into every per-shape dtor through `nxBaseDtorOwnerArms`. The differential
+itself stays BLOCKED: a fully pre-sized fake scene still diverges from the
+oracle on four structural predicates (count pop, swap-move, pair
+compaction, slot freepush all read false after an oracle dtor pass), which
+means at least one of the three remover bodies contains behaviour beyond
+the natural model -- most plausibly in 0x5aae0's tail or 0x5bac0's grow
+path. The transcription is decode-faithful to everything verified so far;
+the family gets built the moment those bodies are finished. No census or
+registration claims were made for the owned-dtor chain.
+
 Task-4 status after this round: construct-with-owner closed bitwise;
 remove-with-owner interface mapped (three sites, offsets recorded); remover
 decode queued.
