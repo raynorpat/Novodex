@@ -1021,12 +1021,14 @@ Two copies of one cube topology against a DOUBLED vertex array (corners
 FACE-RECORD BUILDER: it writes PAIRS of pointers into hull records at
 +0x154/+0x158, +0x178/+0x17c, +0x19c/+0x1a0, +0x1c0/+0x1c4, +0x1e4/... --
 one pair per face at a 0x24 stride, each pair being {base corner list,
-shifted corner list}. This also explains the doubled vertices the facade
-carries and ties the records to the support/bounds tables BoxHullFacade
-already transcribes from .rdata 0x10122180+ (a third copy of related
-topology). The census row stays discovered under phase-2 ownership; its
-full decode belongs to whoever reconstructs the box-hull construction end
-to end.
+shifted corner list}. The transcription already anticipated the slots --
+BoxFaceRecord's mIndexListA/mIndexListB -- so what today's dump adds is
+their CONTENT: the actual six quad faces of the cube, base and shifted
+copies, confirming the doubled-vertex layout the facade carries. The
+tables also relate to the support/bounds tables BoxHullFacade transcribes
+from .rdata 0x10122180+ (a third copy of related topology). The census row
+stays discovered under phase-2 ownership; its full decode belongs to
+whoever reconstructs the box-hull construction end to end.
 
 ## 4. The census merge resolved
 
