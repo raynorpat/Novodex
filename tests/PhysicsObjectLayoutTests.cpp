@@ -422,6 +422,7 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oGroupErrDigest = 0;
 	unsigned oLoadErrDigest = 0;
 	unsigned oMaterialTemplateDigest = 0;
+	unsigned oMaterialBootedDigest = 0;
 	unsigned oOwnDigest = 0;
 	static unsigned char sSaveStateRecord[0x48];
 
@@ -2254,6 +2255,32 @@ int wmain(int argc, wchar_t** argv)
 	memcpy(&flagsWord, base + 0x001220a0 + 0x38, 4);
 	oracleDigest = nxFold(oracleDigest, mt);
 	printf("material row=template flags=%08x digest=%08x\n", flagsWord, mt);
+
+	// Post-creation state (0x0000e9ee): the image sets bit 31 of the
+	// template's flags AFTER copying it into the SDK array. Replicate that
+	// single store against .rdata (VirtualProtect, flip, restore) and fold
+	// again -- this is the state NxMaterialRecord + setInternalFlagBit31
+	// must reproduce.
+	unsigned* tmplFlags = reinterpret_cast<unsigned*>(
+		const_cast<unsigned char*>(base) + 0x001220a0 + 0x38);
+	DWORD oldProtM = 0;
+	if(!VirtualProtect(tmplFlags, 4, PAGE_READWRITE, &oldProtM))
+		return nxFail("material: VirtualProtect over the template failed");
+	*tmplFlags |= 0x80000000u;
+	unsigned mtBoot = 2166136261u;
+	for(int i = 0; i < 0x48; i += 4)
+		{
+		unsigned w;
+		memcpy(&w, base + 0x001220a0 + i, 4);
+		mtBoot = nxFold(mtBoot, w);
+		}
+	*tmplFlags &= ~0x80000000u;
+	VirtualProtect(tmplFlags, 4, oldProtM, &oldProtM);
+	oMaterialBootedDigest = mtBoot;
+
+	unsigned flagsBoot = *reinterpret_cast<const unsigned*>(base + 0x001220a0 + 0x38);
+	oracleDigest = nxFold(oracleDigest, mtBoot);
+	printf("materialboot row=template flags=%08x digest=%08x\n", flagsBoot, mtBoot);
 	}
 
 	// -----------------------------------------------------------------------
@@ -3960,6 +3987,26 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 48u);
+		}
+		// -- post-creation template state: fresh record + internal bit31.
+		{
+		unsigned char matB[0x48];
+		memset(matB, 0xcd, sizeof(matB));
+		new (matB) NxMaterialRecord();
+		reinterpret_cast<NxMaterialRecord*>(matB)->setInternalFlagBit31();
+		unsigned cb = 2166136261u;
+		for(int i = 0; i < 0x48; i += 4)
+			{
+			unsigned w;
+			memcpy(&w, matB + i, 4);
+			cb = nxFold(cb, w);
+			}
+		bool okMB = cb == oMaterialBootedDigest;
+		printf("materialboot candidate ok=%u digest=%08x\n", okMB ? 1u : 0u, cb);
+		if(!okMB)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 49u);
 		}
 		// -- owned-arm registration: twin drive through the transcription.
 		{
