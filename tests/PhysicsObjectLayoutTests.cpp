@@ -1804,6 +1804,40 @@ int wmain(int argc, wchar_t** argv)
 	printf("capdtor row=phys_fn_001014 digest=%08x\n", digest);
 	}
 
+	// -----------------------------------------------------------------------
+	// CAPSULE slot 12, phys_fn_000989: loadFromDesc.
+	{
+	typedef void (__thiscall* NxCapLoadFn)(void* self, const void* rec);
+	NxCapLoadFn capLoad = (NxCapLoadFn) (base + 0x00021ad0);
+
+	if(!nxInstallAllocatorShim(base))
+		return nxFail("the allocator holder word moved; re-pin the probe");
+
+	unsigned char cshape[0xec];
+	memset(cshape, 0xcd, sizeof(cshape));
+	typedef void (__thiscall* NxCtorFnCL)(void* self, void* owner, unsigned argument);
+	NxCtorFnCL capsuleCtorCL = (NxCtorFnCL) (base + 0x00021a60);
+	capsuleCtorCL(cshape, 0, 0);
+
+	unsigned char crec[0x58];
+	memset(crec, 0, sizeof(crec));
+	const float kR2 = 1.5f;
+	memcpy(crec + 0x4c, &kR2, 4);
+	const unsigned short kGrp2 = 3u;
+	memcpy(crec + 0x3c, &kGrp2, 2);
+
+	nxGuardedBoxDtor((NxBoxDtorFn) capLoad, cshape, reinterpret_cast<unsigned>(crec));
+	if(gDtorFaultCode)
+		return nxFail("capsule loadFromDesc faulted");
+
+	float gotRad = 0.0f;
+	memcpy(&gotRad, cshape + 0xe0, 4);
+	unsigned radBits = 0;
+	memcpy(&radBits, &gotRad, 4);
+	oCapsuleLoadRadBits = radBits;
+	oracleDigest = nxFold(oracleDigest, radBits);
+	printf("capload row=phys_fn_000989 rad=%08x\n", radBits);
+	}
 
 	// -----------------------------------------------------------------------
 	// CAPSULE slot 8, phys_fn_001004: local AABB. Fresh capsule (all zeros).
@@ -2855,6 +2889,28 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 29u);
+		}
+		// -- capsule loadFromDesc: twin drive through transcription.
+		{
+		unsigned char cb[0xec];
+		memset(cb, 0xcd, sizeof(cb));
+		CapsuleShape& capL = *new(cb) CapsuleShape(0, 0);
+		unsigned char cr[0x58];
+		memset(cr, 0, sizeof(cr));
+		const float kR3 = 1.5f;
+		memcpy(cr + 0x4c, &kR3, 4);
+		const unsigned short kG3 = 3u;
+		memcpy(cr + 0x3c, &kG3, 2);
+		capL.mBase.nxApplyDescriptor(cr);
+		capL.nxCapsuleLoadFromDesc(cr);
+		float gr2 = 0.0f;
+		memcpy(&gr2, cb + 0xe0, 4);
+		bool okCL = gr2 == kR3;
+		printf("capload candidate ok=%u rad=%08x\n", okCL ? 1u : 0u, *reinterpret_cast<unsigned*>(&gr2));
+		if(!okCL)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 36u);
 		}
 
 
