@@ -520,6 +520,11 @@ class MassFrame
 	//! Transcribed op-for-op; section 3r carries the formula table.
 	void				nxMassFrameFoldPayload(const void* payload);
 
+	//! phys_fn_000847 (0x0001c880), __thiscall `ret 4`: conditionally zero
+	//! the entire frame. When the byte argument is non-zero every word is
+	//! integer-zeroed; when it is zero the frame is left untouched.
+	void				nxMassFrameConditionalZero(unsigned flag);
+
 	//! +0x00..+0x20, stored row-major as three column triples.
 	NxF32				mInertia[9];
 	//! +0x24..+0x2c.

@@ -1024,6 +1024,20 @@ void MassFrame::nxMassFrameFoldPayload(const void* payload)
 	mOffset.z = nz;
 	}
 
+// phys_fn_000847 (0x0001c880), __thiscall ret 4. Conditionally zeroes all
+// thirteen words when the byte argument is non-zero; leaves the frame
+// untouched when it is zero.
+void MassFrame::nxMassFrameConditionalZero(unsigned flag)
+	{
+	if(flag == 0)
+		return;
+	mInertia[0] = 0.0f; mInertia[1] = 0.0f; mInertia[2] = 0.0f;
+	mInertia[3] = 0.0f; mInertia[4] = 0.0f; mInertia[5] = 0.0f;
+	mInertia[6] = 0.0f; mInertia[7] = 0.0f; mInertia[8] = 0.0f;
+	mOffset.x = 0.0f; mOffset.y = 0.0f; mOffset.z = 0.0f;
+	mMass = 0.0f;
+	}
+
 // phys_fn_000849 (0x0001c8c0), __thiscall ret 0xc, BOX-table slot 4.
 void BoxShape::nxBoxComputeMassFrame(MassFrame* dest, float density,
 	const float* halfExtents, const void* extra)
