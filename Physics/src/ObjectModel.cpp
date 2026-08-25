@@ -70,6 +70,32 @@ const NxU32* BoxHullFacade::adjacencyTable()
 	return gAdjacencyTable;
 	}
 
+// ---------------------------------------------------------------------------
+// The error stream. Evidence section 3t: the image reports through an
+// indirect cdecl five-argument call guarded by a non-zero flag word; this
+// reconstruction mirrors the shape with its own slot so differentials can
+// capture reports on both sides.
+
+const char* const	nxSourceFileSphereShapeCpp =
+	"\\Epic\\Novodex\\SDKs\\Physics\\src\\SphereShape.cpp";
+const char* const	nxMsgSetRadiusPositive =
+	"SphereShape::setRadius: radius should be positive!";
+
+static NxReportFn	gReportSink = nullptr;
+
+void nxInstallReportSink(NxReportFn sink)
+	{
+	gReportSink = sink;
+	}
+
+void nxReport(int kind, const char* file, int line, int code,
+	const char* message)
+	{
+	if(gReportSink != nullptr)
+		gReportSink(kind, file, line, code, message);
+	}
+
+
 // phys_fn_000975 (0x000217c0). The three per-corner values are column dots
 // plus translation: A = col0.v + tx, B = col1.v + ty, C = col2.v + tz; the
 // projection combines them as A*dx + (C*dz + B*dy) -- that exact association,
@@ -327,11 +353,16 @@ void SphereShape::nxSphereSetRadius(float radius)
 	{
 	mRadiusE0 = radius;						// mov [esi+0xe0],eax at 0x000278d1
 	// The image then fcomp's the stored value against the zero global
-	// (0x101041f0) and reports through the error stream on unordered/less
-	// (assert literals at .rdata 0x10107574/0x101075dc, line 0x4a) -- Task 2
-	// owns the reporter. With a valid radius both remaining arms are no-ops
-	// on a detached shape: BASE slot 6 owner-notify and dirty-flag 0x20 via
-	// phys_fn_001315-adjacent helper 0x26c90 (see evidence 3k).
+	// (0x101041f0): a report fires unless radius > 0 (unordered and less
+	// both fall through the jp). Report shape at 0x000278de..0x27900:
+	// assert-guarded indirect cdecl call with (1, SphereShape.cpp,
+	// 0x4a, 0, "radius should be positive!"). With a valid radius both
+	// remaining arms are no-ops on a detached shape: BASE slot 6
+	// owner-notify and dirty-flag 0x20 via phys_fn_001315-adjacent helper
+	// 0x26c90 (see evidence 3k/3t).
+	if(!(radius > 0.0f))
+		nxReport(1, nxSourceFileSphereShapeCpp, 0x4a, 0,
+			nxMsgSetRadiusPositive);
 	}
 
 // phys_fn_001329 (0x00026d90): apply a GROUP. See ObjectModel.h.

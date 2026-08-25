@@ -24490,7 +24490,7 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/553",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3519",
-      "static_proof": "__thiscall: stores the argument to +0xe0 (0x000278d1) then validates against the zero global (fcomp 0x101041f0; error-report literals .rdata 0x10107574/dc line 0x4a) and notifies through BASE slot 6 + dirty-flag 0x20 via 0x26c90",
+      "static_proof": "SPHERE slot-14 set-radius: stores unconditionally at +0xe0, fcomps against the .rdata 0x101041f0 zero literal (report fires unless strictly positive), then BASE slot 6 owner notify and dirty-flag 0x20 via 0x26c90; the report arm is transcribed through the error stream -- indirect cdecl five-arg call (kind,file,line=0x4a,code,message) behind the guarded slot at 0x101041b4/0x101041b4 -- and driven bitwise by the errstream family",
       "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests setrad family on a real constructed sphere with radius 1.25f: stored word 3fa00000 equal candidate",
       "notes": "P5 Task 3: the invalid-radius report arm needs Task 2's error stream; recorded, not modeled."
     },

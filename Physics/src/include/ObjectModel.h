@@ -525,6 +525,24 @@ class MassFrame
 static_assert(sizeof(MassFrame) == 0x34, "the mass frame is thirteen floats");
 
 /**
+The error stream. The image reports warnings through an indirect cdecl
+call with five arguments -- (kind, sourceFile, line, code, message) --
+through a function-pointer slot guarded by a non-zero flag word; the
+literals live in .rdata ("\\Epic\\Novodex\\SDKs\\Physics\\src\\SphereShape.cpp",
+"SphereShape::setRadius: radius should be positive!", line 0x4a). See
+evidence section 3t.
+*/
+typedef void(__cdecl* NxReportFn)(int kind, const char* file, int line,
+	int code, const char* message);
+
+//! Install the reconstruction's report sink (null restores silence).
+void					nxInstallReportSink(NxReportFn sink);
+
+//! The image's own literal pair, exposed so tests can pin against them.
+extern const char* const	nxSourceFileSphereShapeCpp;
+extern const char* const	nxMsgSetRadiusPositive;
+
+/**
 The sphere shape. Constructor phys_fn_001349 (0x000277c0).
 */
 class SphereShape

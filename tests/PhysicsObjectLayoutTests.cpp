@@ -176,6 +176,60 @@ static int nxFail(const char* message)
 	return 1;
 	}
 
+// ---------------------------------------------------------------------------
+// Error-stream capture, shared by the oracle and candidate errstream drives
+// (they run sequentially and never overlap).
+
+struct NxErrCap
+	{
+	int fired;
+	int kind;
+	int line;
+	int code;
+	char file[160];
+	char msg[160];
+	};
+
+static NxErrCap g_errCap;
+
+static void __cdecl g_errSink(int kind, const char* file, int line,
+	int code, const char* message)
+	{
+	g_errCap.fired += 1;
+	g_errCap.kind = kind;
+	g_errCap.line = line;
+	g_errCap.code = code;
+	if(file != nullptr)
+		{
+		size_t n = strlen(file);
+		if(n >= sizeof(g_errCap.file))
+			n = sizeof(g_errCap.file) - 1;
+		memcpy(g_errCap.file, file, n);
+		g_errCap.file[n] = 0;
+		}
+	if(message != nullptr)
+		{
+		size_t n = strlen(message);
+		if(n >= sizeof(g_errCap.msg))
+			n = sizeof(g_errCap.msg) - 1;
+		memcpy(g_errCap.msg, message, n);
+		g_errCap.msg[n] = 0;
+		}
+	}
+
+static unsigned nxFoldErrCap(unsigned digest)
+	{
+	digest = nxFold(digest, static_cast<unsigned>(g_errCap.fired));
+	digest = nxFold(digest, static_cast<unsigned>(g_errCap.kind));
+	digest = nxFold(digest, static_cast<unsigned>(g_errCap.line));
+	digest = nxFold(digest, static_cast<unsigned>(g_errCap.code));
+	for(const char* q = g_errCap.file; *q; ++q)
+		digest = nxFold(digest, static_cast<unsigned char>(*q));
+	for(const char* q = g_errCap.msg; *q; ++q)
+		digest = nxFold(digest, static_cast<unsigned char>(*q));
+	return digest;
+	}
+
 static bool nxSha256(const wchar_t* path, char* text)
 	{
 	HANDLE file = CreateFileW(path, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
@@ -292,6 +346,7 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oBoxMassDigest = 0;
 	unsigned oCapMassDigest = 0;
 	unsigned oFoldDigest = 0;
+	unsigned oErrDigest = 0;
 	static unsigned char sSaveStateRecord[0x48];
 
 	// -----------------------------------------------------------------------
@@ -1857,6 +1912,60 @@ int wmain(int argc, wchar_t** argv)
 	memcpy(&w01, frP, 4);
 	oracleDigest = nxFold(oracleDigest, pd);
 	printf("paxis row=phys_fn_000831 s0=%08x q0=%08x digest=%08x\n", w00, w01, pd);
+	}
+
+	// -----------------------------------------------------------------------
+	// Task 2 keystone: the error stream, exercised through sphere
+	// setRadius's invalid-radius arm. The image reports through an indirect
+	// cdecl five-arg call at [base+0x1041b4], guarded by a non-zero flag
+	// word behind [base+0x1041b0]. We install a capture sink over the slot,
+	// drive radius=-1 (report fires) and radius=2.5 (silent), restore the
+	// slot, and fold kind/line/code plus both literal strings.
+	{
+	typedef void (__thiscall* NxSetRadFn)(void* self, float radius);
+	NxSetRadFn setRadFn = (NxSetRadFn) (base + 0x000278c0);
+
+	unsigned* slotPtr = (unsigned*) (base + 0x001041b4);
+	unsigned* guardPtrPtr = (unsigned*) (base + 0x001041b0);	memset(&g_errCap, 0, sizeof(g_errCap));
+	typedef void(__cdecl* NxReportFnO)(int, const char*, int, int,
+		const char*);
+	NxReportFnO savedSink = reinterpret_cast<NxReportFnO>(*slotPtr);
+
+	// The slot and its guard live on .rdata pages -- read-only. Flip the
+	// page while we patch; restore when the drives are done. (The allocator
+	// shim never needed this: it writes through its pointer into heap.)
+	DWORD oldProtect = 0;
+	if(!VirtualProtect(slotPtr, 8, PAGE_READWRITE, &oldProtect))
+		return nxFail("errstream: VirtualProtect over the report slot failed");
+
+	if(*guardPtrPtr != 0 && *reinterpret_cast<unsigned*>(*guardPtrPtr) == 0)
+		*reinterpret_cast<unsigned*>(*guardPtrPtr) = 1;	// satisfy the assert
+
+	unsigned char sphE[0xe4];
+	memset(sphE, 0xcd, sizeof(sphE));
+	typedef void (__thiscall* NxCtorFnER)(void*, void*, unsigned);
+	NxCtorFnER ctorER = (NxCtorFnER) (base + 0x000277c0);
+	ctorER(sphE, 0, 0);
+
+	// The shipped reporter itself is FATAL when no user stream is installed
+	// -- that is what the zero flag word guards -- so the sink must be ours
+	// before any invalid-radius drive. Both writes above sit on .rdata
+	// pages: flip protection while we patch, restore after.
+	*slotPtr = reinterpret_cast<unsigned>(&g_errSink);
+	setRadFn(sphE, -1.0f);
+	int firedAfterInvalid = g_errCap.fired;
+	setRadFn(sphE, 2.5f);
+	int firedAfterValid = g_errCap.fired;
+
+	*slotPtr = reinterpret_cast<unsigned>(savedSink);
+	VirtualProtect(slotPtr, 8, oldProtect, &oldProtect);
+
+	unsigned ed = nxFoldErrCap(2166136261u);
+	oErrDigest = ed;
+
+	oracleDigest = nxFold(oracleDigest, ed);
+	printf("errstream row=phys_fn_001357 invalid_fires=%u valid_fires=%u digest=%08x\n",
+		firedAfterInvalid, firedAfterValid - firedAfterInvalid, ed);
 	}
 
 	// -----------------------------------------------------------------------
@@ -3448,6 +3557,29 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 44u);
+		}
+		// -- error stream: twin drive through the reconstruction. Same two
+		// setRadius drives against our own report sink.
+		{
+		memset(&g_errCap, 0, sizeof(g_errCap));
+		nxInstallReportSink(&g_errSink);
+
+		unsigned char sphC[0xe4];
+		memset(sphC, 0xcd, sizeof(sphC));
+		SphereShape& sphER = *new(sphC) SphereShape(0, 0);
+		sphER.nxSphereSetRadius(-1.0f);
+		int firedInvalid = g_errCap.fired;
+		sphER.nxSphereSetRadius(2.5f);
+
+		nxInstallReportSink(nullptr);	// restore silence
+
+		unsigned ed2 = nxFoldErrCap(2166136261u);
+		bool okES = ed2 == oErrDigest && firedInvalid == 1;
+		printf("errstream candidate ok=%u digest=%08x\n", okES ? 1u : 0u, ed2);
+		if(!okES)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 45u);
 		}
 
 

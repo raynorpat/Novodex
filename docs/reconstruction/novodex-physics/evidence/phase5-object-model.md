@@ -869,6 +869,58 @@ bitwise (six rows), partner structure mapped, formula-level decode of both
 0x1c040 paths deferred -- it gates nothing currently driven, since every
 closed slot-4 row uses null-extra drives.
 
+## 3t. The error stream: Task 2's keystone decoded and driven
+
+Sphere setRadius (0x278c0) exposed the whole mechanism in one block. After
+storing the radius, the image `fcomp`s it against the zero literal
+(0x101041f0) and takes `test ah,0x41 / jp` over the FPU status: a report
+fires unless the radius is strictly positive (zero, negative and NaN all
+fall through). The report itself:
+
+    mov ecx,[0x101041b0]      ; guard object pointer
+    cmp dword ptr [ecx],0     ; flag word must be non-zero...
+    jne +1 / int3             ; ...else INT3, by design
+    push 0x101075dc           ; "SphereShape::setRadius: radius should be positive!"
+    push 0                    ; code
+    push 0x4a                 ; line 74
+    push 0x10107574           ; "\Epic\Novodex\SDKs\Physics\src\SphereShape.cpp"
+    push 1                    ; kind
+    call [0x101041b4]         ; indirect cdecl through the report slot
+    add esp,0x14
+
+So: a five-argument cdecl reporter -- (kind, sourceFile, line, code,
+message) -- behind a function-pointer slot at .rdata 0x101041b4, gated by a
+flag word one pointer earlier. The strings pin the build tree
+(`\Epic\Novodex\SDKs\Physics`) and give Task 2 its first two exact
+literals.
+
+**Two operational discoveries**, both paid for with a fail-fast:
+
+1. The SHIPPED default reporter is fatal on warnings -- that is what the
+   zero flag word guards. Calling it directly (or leaving the flag zero
+   while an invalid radius fires) kills the process with 0xC0000409.
+2. The slot and its guard live on READ-ONLY .rdata pages. Patching them
+   needs VirtualProtect around the write window; restore afterwards. The
+   allocator shim never hit this because it writes THROUGH its pointer
+   into heap.
+
+**Driven bitwise**: new `errstream` family. Oracle side flips the page
+protection, installs a capture sink over [base+0x1041b4], satisfies the
+guard flag, drives setRadius(-1) then setRadius(2.5), restores everything;
+the fold covers fired-count, kind, line, code and both literal strings.
+`invalid_fires=1 valid_fires=0 digest=c2ab04f6`. Candidate side runs the
+same two drives through the reconstruction (`nxInstallReportSink` +
+`nxSphereSetRadius`, whose report arm is now transcribed with the image's
+exact literals) and matches bitwise first try.
+
+Registrations +2 lines, coverage floor 75->77, oracle digest re-pinned
+836cc35f->45014fec. No new census row -- the call site lives inside
+already-reconstructed phys_fn_001357, whose static_proof now records the
+report arm; the reporter being runtime-installed means there is nothing
+static to own beyond the slot constants documented here. This unblocks the
+validation arms of applyGroup (group >= 0x20) and the descriptor
+loadFromDesc rows for Task 2 proper.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is
