@@ -2912,6 +2912,20 @@
       "confidence": "semantic",
       "evidence": "oracle/capstone/manifest.json",
       "reason": "sub ecx,8 then tail-jump to 0x3650; multiple-inheritance offset adjustment"
+    },
+    {
+      "id": "phys_fn_002322",
+      "label": "This-adjustor thunk (-8) -> 0x5a470",
+      "confidence": "semantic",
+      "evidence": "oracle/capstone/manifest.json",
+      "reason": "sub ecx,8 then tail-jump to 0x5a470"
+    },
+    {
+      "id": "phys_fn_002352",
+      "label": "This-adjustor thunk (+0x28) -> 0xb4f50",
+      "confidence": "semantic",
+      "evidence": "oracle/capstone/manifest.json",
+      "reason": "add ecx,0x28 then tail-jump to 0xb4f50"
     }
   ]
 }
