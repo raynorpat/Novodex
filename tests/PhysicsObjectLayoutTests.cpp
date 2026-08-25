@@ -2090,6 +2090,77 @@ int wmain(int argc, wchar_t** argv)
 	}
 
 	// -----------------------------------------------------------------------
+	// Task 4: owned-arm registration through a FAKE scene. Container header
+	// uses exact-offset dword slots: registrar vector at +0x90/94/98, four
+	// bookkeeping vectors at +0x00/04/08, +0x10/14/18, +0x20/24/28,
+	// +0x30/34/38 -- every count 8 > slot 3, so all paths stay in-place.
+	{
+	static unsigned arrSent[64];
+	static unsigned arrCntB[64];
+	static unsigned arrMirror[64];
+	static unsigned arrExtra[64];
+	static unsigned arrShapes[64];
+	for(int i = 0; i < 8; ++i)
+		{
+		arrSent[i] = 0x11111111u;
+		arrCntB[i] = 0x22222222u;
+		arrMirror[i] = 0x33333333u;
+		arrExtra[i] = 0x55555555u;
+		arrShapes[i] = 0x44444444u;
+		}
+	unsigned hdr[64];
+	memset(hdr, 0, sizeof(hdr));
+	hdr[0x00 / 4] = reinterpret_cast<unsigned>(arrSent);
+	hdr[0x04 / 4] = reinterpret_cast<unsigned>(arrSent + 8);
+	hdr[0x08 / 4] = reinterpret_cast<unsigned>(arrSent + 64);
+	hdr[0x10 / 4] = reinterpret_cast<unsigned>(arrCntB);
+	hdr[0x14 / 4] = reinterpret_cast<unsigned>(arrCntB + 8);
+	hdr[0x18 / 4] = reinterpret_cast<unsigned>(arrCntB + 64);
+	hdr[0x20 / 4] = reinterpret_cast<unsigned>(arrMirror);
+	hdr[0x24 / 4] = reinterpret_cast<unsigned>(arrMirror + 8);
+	hdr[0x28 / 4] = reinterpret_cast<unsigned>(arrMirror + 64);
+	hdr[0x30 / 4] = reinterpret_cast<unsigned>(arrExtra);
+	hdr[0x34 / 4] = reinterpret_cast<unsigned>(arrExtra + 8);
+	hdr[0x38 / 4] = reinterpret_cast<unsigned>(arrExtra + 64);
+	hdr[0x90 / 4] = reinterpret_cast<unsigned>(arrShapes);
+	hdr[0x94 / 4] = reinterpret_cast<unsigned>(arrShapes + 8);
+	hdr[0x98 / 4] = reinterpret_cast<unsigned>(arrShapes + 64);
+
+	unsigned fakeScene[32];
+	memset(fakeScene, 0, sizeof(fakeScene));
+	fakeScene[0x48 / 4] = reinterpret_cast<unsigned>(hdr);
+	unsigned fakeOwner[4];
+	memset(fakeOwner, 0, sizeof(fakeOwner));
+	fakeOwner[1] = reinterpret_cast<unsigned>(fakeScene);
+
+	const unsigned SLOT = 3;
+	typedef void (__thiscall* NxCtorFnFO)(void*, void*, unsigned);
+	NxCtorFnFO ctorFO = (NxCtorFnFO) (base + 0x000277c0);
+	unsigned char sphO[0xe4];
+	memset(sphO, 0xcd, sizeof(sphO));
+	ctorFO(sphO, fakeOwner, SLOT);
+
+	unsigned d4o = 0, shpO = 0, sentO = 0, mirO = 0;
+	memcpy(&d4o, sphO + 0xd4, 4);
+	shpO = arrShapes[SLOT];
+	sentO = arrSent[SLOT];
+	mirO = arrMirror[SLOT];
+
+	unsigned od = 2166136261u;
+	od = nxFold(od, d4o);
+	od = nxFold(od, sentO == 0xFFFFFFFFu ? 1u : 0u);
+	od = nxFold(od, mirO == 8u ? 1u : 0u);
+	od = nxFold(od, (shpO != 0x44444444u && shpO != 0u) ? 1u : 0u);
+	oOwnDigest = od;
+	oracleDigest = nxFold(oracleDigest, od);
+	printf("ownctor row=oracle d4=%08x sent_ok=%u mirror_ok=%u shp_ok=%u digest=%08x\n",
+		d4o,
+		sentO == 0xFFFFFFFFu ? 1u : 0u,
+		mirO == 8u ? 1u : 0u,
+		(shpO != 0x44444444u && shpO != 0u) ? 1u : 0u, od);
+	}
+
+	// -----------------------------------------------------------------------
 
 
 	// -----------------------------------------------------------------------
@@ -3817,6 +3888,68 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 48u);
+		}
+		// -- owned-arm registration: twin drive through the transcription.
+		{
+		static unsigned arrSent2[64];
+		static unsigned arrCntB2[64];
+		static unsigned arrMirror2[64];
+		static unsigned arrExtra2[64];
+		static unsigned arrShapes2[64];
+		for(int i = 0; i < 8; ++i)
+			{
+			arrSent2[i] = 0x11111111u;
+			arrCntB2[i] = 0x22222222u;
+			arrMirror2[i] = 0x33333333u;
+			arrExtra2[i] = 0x55555555u;
+			arrShapes2[i] = 0x44444444u;
+			}
+		unsigned hdr2[64];
+		memset(hdr2, 0, sizeof(hdr2));
+		hdr2[0x00 / 4] = reinterpret_cast<unsigned>(arrSent2);
+		hdr2[0x04 / 4] = reinterpret_cast<unsigned>(arrSent2 + 8);
+		hdr2[0x08 / 4] = reinterpret_cast<unsigned>(arrSent2 + 64);
+		hdr2[0x10 / 4] = reinterpret_cast<unsigned>(arrCntB2);
+		hdr2[0x14 / 4] = reinterpret_cast<unsigned>(arrCntB2 + 8);
+		hdr2[0x18 / 4] = reinterpret_cast<unsigned>(arrCntB2 + 64);
+		hdr2[0x20 / 4] = reinterpret_cast<unsigned>(arrMirror2);
+		hdr2[0x24 / 4] = reinterpret_cast<unsigned>(arrMirror2 + 8);
+		hdr2[0x28 / 4] = reinterpret_cast<unsigned>(arrMirror2 + 64);
+		hdr2[0x30 / 4] = reinterpret_cast<unsigned>(arrExtra2);
+		hdr2[0x34 / 4] = reinterpret_cast<unsigned>(arrExtra2 + 8);
+		hdr2[0x38 / 4] = reinterpret_cast<unsigned>(arrExtra2 + 64);
+		hdr2[0x90 / 4] = reinterpret_cast<unsigned>(arrShapes2);
+		hdr2[0x94 / 4] = reinterpret_cast<unsigned>(arrShapes2 + 8);
+		hdr2[0x98 / 4] = reinterpret_cast<unsigned>(arrShapes2 + 64);
+
+		unsigned fakeScene2[32];
+		memset(fakeScene2, 0, sizeof(fakeScene2));
+		fakeScene2[0x48 / 4] = reinterpret_cast<unsigned>(hdr2);
+		unsigned fakeOwner2[4];
+		memset(fakeOwner2, 0, sizeof(fakeOwner2));
+		fakeOwner2[1] = reinterpret_cast<unsigned>(fakeScene2);
+
+		const unsigned SLOT2 = 3;
+		unsigned char sphC3[0xe4];
+		memset(sphC3, 0xcd, sizeof(sphC3));
+		SphereShape& sphCR = *new(sphC3) SphereShape(fakeOwner2, SLOT2);
+
+		unsigned d4c = 0;
+		memcpy(&d4c, sphC3 + 0xd4, 4);
+		unsigned cd = 2166136261u;
+		cd = nxFold(cd, d4c);
+		cd = nxFold(cd, arrSent2[SLOT2] == 0xFFFFFFFFu ? 1u : 0u);
+		cd = nxFold(cd, arrMirror2[SLOT2] == 8u ? 1u : 0u);
+		cd = nxFold(cd,
+			(arrShapes2[SLOT2] != 0x44444444u && arrShapes2[SLOT2] != 0u)
+				? 1u : 0u);
+
+		bool okOW = cd == oOwnDigest;
+		printf("ownctor candidate ok=%u digest=%08x\n", okOW ? 1u : 0u, cd);
+		if(!okOW)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 49u);
 		}
 
 

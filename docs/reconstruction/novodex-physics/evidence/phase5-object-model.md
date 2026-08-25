@@ -1067,6 +1067,22 @@ owned-arm drive stays open; the transcription side is implemented
 invoked from the base ctor when owner != null) and is ready to close
 bitwise the moment the oracle side can run.
 
+**Then SOLVED.** Running under cdb put the fault at 0x5c102 -- the growth
+copy loop writing through a NULL buffer. The trigger: 0x5bc90 grows when
+**capacity <= end** (`cmp [esi+0x18],[esi+0x14]; ja skip`), and new
+capacity is `2*count+2` entries -- my fake vectors had cap == end, so every
+drive took the grow branch and the shim's malloc returned NULL above 32
+bytes. The fix is simply RESERVE: capacity pointers well beyond end on all
+five triples. With reserved caps the oracle ctor runs to completion against
+the fake scene, and the new `ownctor` family folds structural facts (slot
+stored at +0xd4; sentinel -1 written; count mirrored; shapes vector holds a
+non-poison pointer): `d4=00000003 sent_ok=1 mirror_ok=1 shp_ok=1 digest=
+641beb67`. Candidate identical through `nxSceneInsertShape`.
+
+Registrations +2 lines, coverage floor 83->85, oracle digest re-pinned
+e493f315->3171b22c. Task 4's first chain -- construct-with-owner registers
+into the scene arrays -- is closed bitwise without any scene simulation.
+
 **Refinement (full registrar body walked)**: phys_fn_002423 touches ONLY
 container+0x90/0x94/0x98 -- every allocation goes through interface calls
 (`[eax+8]`, `[edx+0x14]`, `[ebp+0x10]`, i.e. the SDK allocator adapter),
