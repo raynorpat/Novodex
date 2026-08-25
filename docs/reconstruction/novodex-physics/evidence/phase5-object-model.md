@@ -1057,6 +1057,18 @@ every base-ctor run re-installs the three Prunable owner adapters at
 .data 0x10128470/74/78 (values 0x213e0/0x25520/0x25510), matching
 IcePrunable.h's globals.
 
+**Refinement (full registrar body walked)**: phys_fn_002423 touches ONLY
+container+0x90/0x94/0x98 -- every allocation goes through interface calls
+(`[eax+8]`, `[edx+0x14]`, `[ebp+0x10]`, i.e. the SDK allocator adapter),
+never a raw malloc. The second array at container+0x00 belongs entirely to
+0x5bc90, whose visible tail writes a FREE-LIST SENTINEL
+(`[array2[slot]] = -1`) into it and mirrors a count into yet another
+buffer at container+0x20 -- so 0x5bc90 manages at least three parallel
+arrays (free-list, counts, and the +0x10/0x14 pair it sizes from). A safe
+fake-owner drive therefore needs the whole 0x5bc90 body decoded first:
+every un-decoded branch is a potential growth path whose allocator call
+returns NULL under the shim.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is
