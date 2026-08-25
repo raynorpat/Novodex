@@ -1004,13 +1004,38 @@ Registrations +2 lines, coverage floor 81->83, oracle digest re-pinned
 family; data rows carry no static_proof key, so the validation lives here.
 Task 3's material model now stands on bitwise ground.
 
+## 3x. phys_fn_000973 corrected: the box-hull face-record builder
+
+The section 4 guess that 0x10106998-0x10106a48 held "twelve small vtables"
+of a descriptor setToDefault family is FALSE -- dumping the slots shows no
+function pointers at all, only small integers. The region is CUBE-FACE
+TOPOLOGY:
+
+    0x10106998..0x101069f7  six faces x four corner indices (values 0-7):
+        0123 / 1562 / 5476 / 4037 / 3267 / 4510
+    0x101069f8..0x10106a57  the same six faces with every index shifted
+        by +8: 0123 / 1865(1,8,5,9) / 6745 / 11-3-10-7 / 2-9-6-10 / 4-11-0-8
+
+Two copies of one cube topology against a DOUBLED vertex array (corners
+0-7 and 8-15). phys_fn_000973 (0x21420) is therefore the box-hull
+FACE-RECORD BUILDER: it writes PAIRS of pointers into hull records at
++0x154/+0x158, +0x178/+0x17c, +0x19c/+0x1a0, +0x1c0/+0x1c4, +0x1e4/... --
+one pair per face at a 0x24 stride, each pair being {base corner list,
+shifted corner list}. This also explains the doubled vertices the facade
+carries and ties the records to the support/bounds tables BoxHullFacade
+already transcribes from .rdata 0x10122180+ (a third copy of related
+topology). The census row stays discovered under phase-2 ownership; its
+full decode belongs to whoever reconstructs the box-hull construction end
+to end.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is
 three real tables ending together at `0x106afc`: A(12) + B(12) + BOX(17).
-Separately, `phys_fn_000973` (p2, 913 bytes) installs **twelve** small
-vtables (`0x10106998`–`0x10106a48`) — almost certainly the descriptor
-`setToDefault` family, which Task 2 owns confirming.
+Separately, `phys_fn_000973` (p2, 913 bytes) installs twelve small vtables
+(`0x10106998`–`0x10106a48`) -- **corrected, section 3x**: those slots are
+not vtables and have nothing to do with descriptor setToDefault. They are
+CUBE-FACE TOPOLOGY TABLES, and 000973 is the box-hull face-record builder.
 
 ## 5. The RED layout gate
 
