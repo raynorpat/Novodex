@@ -275,7 +275,39 @@ ShapeBase::ShapeBase(void* owner, unsigned argument)
 
 	// The owner-registration arm (0x0002561f..26): when the owner is non-null,
 	// [owner+4]'s word at +0x48 becomes the `this` for phys_fn_002423 with the
-	// shape pushed. Driven with Task 4's actor classes; not replayed here.
+	// shape pushed. Transcribed through nxSceneInsertShape, which reproduces
+	// the registrar's three observable writes (evidence 3y/3z).
+	if(mOwner04 != nullptr)
+		{
+		NxU32 scene = *reinterpret_cast<const NxU32*>(
+			reinterpret_cast<const unsigned char*>(mOwner04) + 4);
+		void* container = *reinterpret_cast<void* const*>(
+			reinterpret_cast<const unsigned char*>(scene) + 0x48);
+		nxSceneInsertShape(container, this, mArgumentD4);
+		}
+	}
+
+// Task 4 scaffolding: the scene shape-array insert. Write order follows the
+// image -- registrar's shape store first (0x5c5a4), then the notify helper's
+// free-list sentinel (0x5c093) and count mirror (0x5c0a8). Slot must be
+// within every pre-sized vector's count: growth is not modelled.
+void nxSceneInsertShape(void* container, void* shape, NxU32 slot)
+	{
+	unsigned self = reinterpret_cast<unsigned>(shape);
+	unsigned c = reinterpret_cast<unsigned>(container);
+
+	unsigned* shapesBegin = *reinterpret_cast<unsigned**>(c + 0x90);
+	shapesBegin[slot] = self;					// [begin+slot*4] = shape
+
+	unsigned* sentBegin = *reinterpret_cast<unsigned**>(c + 0x00);
+	sentBegin[slot] = 0xFFFFFFFFu;				// free-list sentinel
+
+	unsigned* bBegin = *reinterpret_cast<unsigned**>(c + 0x10);
+	unsigned* bEnd = *reinterpret_cast<unsigned**>(c + 0x14);
+	unsigned countB = static_cast<NxU32>(
+		(reinterpret_cast<unsigned>(bEnd) - reinterpret_cast<unsigned>(bBegin)) >> 2);
+	unsigned* cBegin = *reinterpret_cast<unsigned**>(c + 0x20);
+	cBegin[slot] = countB;						// count mirror
 	}
 
 // ---------------------------------------------------------------------------

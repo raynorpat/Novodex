@@ -350,6 +350,7 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oGroupErrDigest = 0;
 	unsigned oLoadErrDigest = 0;
 	unsigned oMaterialTemplateDigest = 0;
+	unsigned oOwnDigest = 0;
 	static unsigned char sSaveStateRecord[0x48];
 
 	// -----------------------------------------------------------------------
@@ -2089,6 +2090,9 @@ int wmain(int argc, wchar_t** argv)
 	}
 
 	// -----------------------------------------------------------------------
+
+
+	// -----------------------------------------------------------------------
 	// The default material template at .data 0x1220a0: the shipped 72 bytes
 	// folded raw, versus the transcription's fresh record + the internal
 	// flag bit the image sets on the template after copying it into the
@@ -3814,6 +3818,7 @@ int wmain(int argc, wchar_t** argv)
 		else
 			candidateFold = nxFold(candidateFold, 48u);
 		}
+
 
 
 

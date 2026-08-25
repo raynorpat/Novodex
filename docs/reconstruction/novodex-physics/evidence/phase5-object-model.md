@@ -1057,6 +1057,16 @@ every base-ctor run re-installs the three Prunable owner adapters at
 .data 0x10128470/74/78 (values 0x213e0/0x25520/0x25510), matching
 IcePrunable.h's globals.
 
+**Drive attempt (blocked)**: a four-vector fake scene -- all triples
+(+0x00/04/08, +0x10/14/18, +0x20/24/28, +0x30/34/38, +0x90/94/98)
+pre-pointed at eight-entry arrays with count 8 > slot 3 -- still fail-fasts
+inside the oracle ctor's registration. Some undecoded branch in 002417's
+middle wanders past the modelled fields. Until that body is decoded, the
+owned-arm drive stays open; the transcription side is implemented
+(`nxSceneInsertShape` reproducing shape-store / sentinel / count-mirror,
+invoked from the base ctor when owner != null) and is ready to close
+bitwise the moment the oracle side can run.
+
 **Refinement (full registrar body walked)**: phys_fn_002423 touches ONLY
 container+0x90/0x94/0x98 -- every allocation goes through interface calls
 (`[eax+8]`, `[edx+0x14]`, `[ebp+0x10]`, i.e. the SDK allocator adapter),

@@ -575,6 +575,14 @@ typedef void(__cdecl* NxReportFn)(int kind, const char* file, int line,
 //! Install the reconstruction's report sink (null restores silence).
 void					nxInstallReportSink(NxReportFn sink);
 
+//! Task 4 scaffolding: the scene shape-array insert the base ctor's owned
+//! arm performs. Reproduces the three observable writes -- shape pointer
+//! into the +0x90 vector, free-list sentinel -1 into the +0x00 vector, and
+//! the +0x10/14 vector's count into the +0x20 vector -- all indexed by the
+//! shape's scene slot. Pre-sized containers only: growth is not modelled.
+void					nxSceneInsertShape(void* container, void* shape,
+							NxU32 slot);
+
 //! The image's own literal pair, exposed so tests can pin against them.
 extern const char* const	nxSourceFileSphereShapeCpp;
 extern const char* const	nxMsgSetRadiusPositive;
