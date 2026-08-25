@@ -505,6 +505,16 @@ class MassFrame
 	void				nxMassFrameBuildCapsule(unsigned axisSelector,
 							float radius, float cylHalfHeight);
 
+	//! phys_fn_000831 (0x0001bdc0), __thiscall `ret 4`: the payload fold
+	//! step the slot-4 wrappers run when their `extra` pointer is non-null.
+	//! The 0x24-byte payload record is {Vec3 d; SymMat3 K} (upper triangle
+	//! packed k00/k01/k02/k11/k12/k22 at +0x0c..+0x20). STRAIGHT-LINE
+	//! TRANSFORM, not an accumulate: all nine inertia words are OVERWRITTEN
+	//! from products of the old inertia with d and K, the COM offset becomes
+	//! {o^T K col0, o^T K col1, o . d}, and the mass word is untouched.
+	//! Transcribed op-for-op; section 3r carries the formula table.
+	void				nxMassFrameFoldPayload(const void* payload);
+
 	//! +0x00..+0x20, stored row-major as three column triples.
 	NxF32				mInertia[9];
 	//! +0x24..+0x2c.

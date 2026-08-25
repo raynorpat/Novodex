@@ -9,7 +9,7 @@
   "note": "The gate side of the Phase 2 close: what was run against which pair, and what it measured. The row side is gates/phase2-closure.json, which says how each of the 144 function rows and 1051 data objects Phase 2 owns is accounted for; the two meet only at the counts below, which validate_inventory.py recomputes from the ledger's own entries rather than reading. The commits are inputs, not this record: implementation_commit is the Novodex tree the mutations were measured against and evidence_commit is the evidence tree they were recorded in, so the commit that adds this file is the child of the second. Phase 2 closes on an exception list. It closed 56 of its 144 function rows and none of its 1051 data objects; what the other 1139 rows are waiting for is named per row in the ledger, and the ledger's own note states where the guarantee of a closure ends. P4 Task 1c re-closed this phase after the third-party phase column was corrected: 19 function rows left Phase 2 for Phase 4 -- 14 qhull, one IcePrunable.cpp and four OPCODE Ice/IceContainer.cpp members -- and four of them were closed rows, so the closed count falls from 60 to 56 and those four falsifications are carried as the third_party_container_rows_moved escalation below.",
   "counts": {
     "closed": 56,
-    "deferred": 1139
+    "deferred": 1138
   },
   "gate_sequence": [
     {

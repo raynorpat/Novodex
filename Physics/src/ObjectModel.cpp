@@ -734,6 +734,72 @@ void MassFrame::nxMassFrameBuildCapsule(unsigned axisSelector, float radius,
 	mOffset.x = 0.0f; mOffset.y = 0.0f; mOffset.z = 0.0f;
 	}
 
+// phys_fn_000831 (0x0001bdc0), __thiscall ret 4. Straight-line x87 transform
+// over payload {Vec3 d; SymMat3 K}. Nine intermediates -- each an faddp chain
+// ROUNDED TO FLOAT32 by its fstp m32 store before the rep movsd copy feeds
+// them back -- then nine inertia stores, then the offset triple. The mass at
+// +0x30 never participates. Formula table in evidence section 3r.
+void MassFrame::nxMassFrameFoldPayload(const void* payload)
+	{
+	const NxF32* p = static_cast<const NxF32*>(payload);
+	const double dx = p[0], dy = p[1], dz = p[2];
+	const double k00 = p[3], k01 = p[4], k02 = p[5];
+	const double k11 = p[6], k12 = p[7], k22 = p[8];
+
+	const double i0 = mInertia[0], i1 = mInertia[1], i2 = mInertia[2];
+	const double i3 = mInertia[3], i4 = mInertia[4], i5 = mInertia[5];
+	const double i6 = mInertia[6], i7 = mInertia[7], i8 = mInertia[8];
+
+	// 0x0001bdc7..0x0001beb8: nine three-product chains; each fstp m32
+	// rounds its result before anything reads it back.
+	NxF32 a0 = static_cast<NxF32>((dy * i3 + dz * i6) + dx * i0);
+	NxF32 a1 = static_cast<NxF32>((dz * i7 + dy * i4) + dx * i1);
+	NxF32 a2 = static_cast<NxF32>((dz * i8 + dx * i2) + dy * i5);
+	NxF32 a3 = static_cast<NxF32>((k00 * i0 + k02 * i6) + k01 * i3);
+	NxF32 a4 = static_cast<NxF32>((k02 * i7 + k01 * i4) + k00 * i1);
+	NxF32 a5 = static_cast<NxF32>((k00 * i2 + k02 * i8) + k01 * i5);
+	NxF32 a6 = static_cast<NxF32>((k11 * i0 + k22 * i6) + k12 * i3);
+	NxF32 a7 = static_cast<NxF32>((k22 * i7 + k12 * i4) + k11 * i1);
+	NxF32 a8 = static_cast<NxF32>((k11 * i2 + k22 * i8) + k12 * i5);
+
+	// 0x0001bebe..0x0001bfc5: six stored results plus two stacked values and
+	// the final scalar. After pop edi/pop esi the 0x1bfb1 load reads A[1]
+	// (old frame +0x20): the scalar is the quadratic form d' I d.
+	double t1 = ((double)a1 * k01 + (double)a2 * k02) + (double)a0 * k00;
+	double u1 = ((double)a3 * k00 + (double)a4 * k01) + (double)a5 * k02;
+	double u2 = ((double)a3 * k11 + (double)a4 * k12) + (double)a5 * k22;
+	double w  = ((double)a6 * dx + (double)a8 * dz) + (double)a7 * dy;
+	double v1 = ((double)a6 * k00 + (double)a7 * k01) + (double)a8 * k02;
+	double v2 = ((double)a6 * k11 + (double)a7 * k12) + (double)a8 * k22;
+	double t2 = ((double)a1 * k12 + (double)a2 * k22) + (double)a0 * k11;
+	double q0 = ((double)a3 * dx + (double)a5 * dz) + (double)a4 * dy;
+	double s  = ((double)a0 * dx + (double)a2 * dz) + (double)a1 * dy;
+
+	// 0x0001bfa9..0x0001bfe6: inertia overwrite -- integer moves carry the
+	// memory temps while the FPU stack yields [edx]/[edx+4]/[edx+8] through
+	// one fxch (top becomes T1).
+	mInertia[0] = static_cast<NxF32>(s);
+	mInertia[1] = static_cast<NxF32>(t1);
+	mInertia[2] = static_cast<NxF32>(t2);
+	mInertia[3] = static_cast<NxF32>(q0);
+	mInertia[4] = static_cast<NxF32>(u1);
+	mInertia[5] = static_cast<NxF32>(u2);
+	mInertia[6] = static_cast<NxF32>(w);
+	mInertia[7] = static_cast<NxF32>(v1);
+	mInertia[8] = static_cast<NxF32>(v2);
+
+	// 0x0001bfe9..0x0001c032: offset triple -- fstp order stores the o.d
+	// term FIRST, then fxch hands the two o^T K columns to +0x28/+0x2c.
+	// Mass untouched.
+	const double ox = mOffset.x, oy = mOffset.y, oz = mOffset.z;
+	NxF32 nx = static_cast<NxF32>((oz * dz + dy * oy) + dx * ox);	// [edx+0x24]
+	NxF32 ny = static_cast<NxF32>((oy * k01 + ox * k00) + oz * k02);	// [edx+0x28]
+	NxF32 nz = static_cast<NxF32>((oy * k12 + ox * k11) + oz * k22);	// [edx+0x2c]
+	mOffset.x = nx;
+	mOffset.y = ny;
+	mOffset.z = nz;
+	}
+
 // phys_fn_000849 (0x0001c8c0), __thiscall ret 0xc, BOX-table slot 4.
 void BoxShape::nxBoxComputeMassFrame(MassFrame* dest, float density,
 	const float* halfExtents, const void* extra)

@@ -291,6 +291,7 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oMassFrameDigest = 0;
 	unsigned oBoxMassDigest = 0;
 	unsigned oCapMassDigest = 0;
+	unsigned oFoldDigest = 0;
 	static unsigned char sSaveStateRecord[0x48];
 
 	// -----------------------------------------------------------------------
@@ -1795,6 +1796,67 @@ int wmain(int argc, wchar_t** argv)
 	oracleDigest = nxFold(oracleDigest, cd);
 	printf("capmass row=phys_fn_000853 e=%08x.%08x.%08x.%08x f=%08x.%08x.%08x.%08x digest=%08x\n",
 		eI0, eI4, eI8, mE, fI0, fI4, fI8, mF, cd);
+	}
+
+	// -----------------------------------------------------------------------
+	// phys_fn_000831 driven DIRECTLY: the payload fold step. Two crafted
+	// (frame, payload) pairs -- full non-symmetric inertia, non-zero offset,
+	// every payload field non-zero -- folded over all thirteen result words.
+	// The mass word is known untouched by the decode; it rides along in the
+	// fold anyway.
+	{
+	typedef void (__thiscall* NxFoldFn)(void* self, const void* payload);
+	NxFoldFn foldFn = (NxFoldFn) (base + 0x0001bdc0);
+
+	unsigned char frO[0x34];
+	memset(frO, 0, sizeof(frO));
+	unsigned char payO[0x24];
+	memset(payO, 0, sizeof(payO));
+	{
+	const float fi[12] = { 1.5f, -0.5f, 0.25f, -0.5f, 2.0f, 0.75f,
+		0.25f, 0.75f, 3.0f, 0.5f, -0.25f, 1.75f };
+	const float fp[9] = { 1.5f, -2.0f, 0.75f, 2.0f, -0.5f, 1.25f,
+		3.0f, -1.5f, 0.5f };
+	memcpy(frO, fi, sizeof(fi));
+	const float m7 = 7.0f;
+	memcpy(frO + 0x30, &m7, 4);
+	memcpy(payO, fp, sizeof(fp));
+	}
+	foldFn(frO, payO);
+
+	unsigned char frP[0x34];
+	memset(frP, 0, sizeof(frP));
+	unsigned char payP[0x24];
+	memset(payP, 0, sizeof(payP));
+	{
+	const float fi[12] = { -1.25f, 2.5f, 0.0f, 4.0f, 0.125f, -2.0f,
+		0.5f, -0.75f, 1.0f, -3.0f, 0.5f, 2.25f };
+	const float fp[9] = { -0.5f, 1.0f, 2.0f, 0.25f, 1.5f, -2.5f,
+		-1.0f, 0.5f, 4.0f };
+	memcpy(frP, fi, sizeof(fi));
+	memcpy(frP + 0x30, fi + 9, 4);	// mass word distinct
+	memcpy(payP, fp, sizeof(fp));
+	}
+	foldFn(frP, payP);
+
+	unsigned pd = 2166136261u;
+	for(int v = 0; v < 2; ++v)
+		{
+		const unsigned char* src = (v == 0) ? frO : frP;
+		for(int i = 0; i < 0x34; i += 4)
+			{
+			unsigned w;
+			memcpy(&w, src + i, 4);
+			pd = nxFold(pd, w);
+			}
+		}
+	oFoldDigest = pd;
+
+	unsigned w00, w01;
+	memcpy(&w00, frO, 4);
+	memcpy(&w01, frP, 4);
+	oracleDigest = nxFold(oracleDigest, pd);
+	printf("paxis row=phys_fn_000831 s0=%08x q0=%08x digest=%08x\n", w00, w01, pd);
 	}
 
 	// -----------------------------------------------------------------------
@@ -3332,6 +3394,60 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 43u);
+		}
+		// -- payload fold step: twin drive through transcription. Same two
+		// crafted pairs as the oracle block, same fold order.
+		{
+		unsigned char frO2[0x34];
+		memset(frO2, 0, sizeof(frO2));
+		unsigned char payQ[0x24];
+		memset(payQ, 0, sizeof(payQ));
+		{
+		const float fi[12] = { 1.5f, -0.5f, 0.25f, -0.5f, 2.0f, 0.75f,
+			0.25f, 0.75f, 3.0f, 0.5f, -0.25f, 1.75f };
+		const float fp[9] = { 1.5f, -2.0f, 0.75f, 2.0f, -0.5f, 1.25f,
+			3.0f, -1.5f, 0.5f };
+		memcpy(frO2, fi, sizeof(fi));
+		const float m7 = 7.0f;
+		memcpy(frO2 + 0x30, &m7, 4);
+		memcpy(payQ, fp, sizeof(fp));
+		}
+		MassFrame& fo = *reinterpret_cast<MassFrame*>(frO2);
+		fo.nxMassFrameFoldPayload(payQ);
+
+		unsigned char frP2[0x34];
+		memset(frP2, 0, sizeof(frP2));
+		unsigned char payR[0x24];
+		memset(payR, 0, sizeof(payR));
+		{
+		const float fi[12] = { -1.25f, 2.5f, 0.0f, 4.0f, 0.125f, -2.0f,
+			0.5f, -0.75f, 1.0f, -3.0f, 0.5f, 2.25f };
+		const float fp[9] = { -0.5f, 1.0f, 2.0f, 0.25f, 1.5f, -2.5f,
+			-1.0f, 0.5f, 4.0f };
+		memcpy(frP2, fi, sizeof(fi));
+		memcpy(frP2 + 0x30, fi + 9, 4);
+		memcpy(payR, fp, sizeof(fp));
+		}
+		MassFrame& fp2 = *reinterpret_cast<MassFrame*>(frP2);
+		fp2.nxMassFrameFoldPayload(payR);
+
+		unsigned pd2 = 2166136261u;
+		for(int v = 0; v < 2; ++v)
+			{
+			const unsigned char* src = (v == 0) ? frO2 : frP2;
+			for(int i = 0; i < 0x34; i += 4)
+				{
+				unsigned w;
+				memcpy(&w, src + i, 4);
+				pd2 = nxFold(pd2, w);
+				}
+			}
+		bool okPD = pd2 == oFoldDigest;
+		printf("paxis candidate ok=%u digest=%08x\n", okPD ? 1u : 0u, pd2);
+		if(!okPD)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 44u);
 		}
 
 

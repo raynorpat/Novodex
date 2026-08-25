@@ -48,11 +48,11 @@
       "implementation_commit": "ac739543956cc4ea22bff832f17c66d07666b9da",
       "evidence_commit": "dcaa8391de0ae5ef45a00d5007d55aa4a19aef1c",
       "gate_artifact": "gates/phase2.json",
-      "owned_functions": 144,
+      "owned_functions": 143,
       "owned_data_objects": 1051,
       "closed_functions": 56,
       "closed_data_objects": 0,
-      "remaining_functions": 88,
+      "remaining_functions": 87,
       "remaining_data_objects": 1051
     },
     {
@@ -96,7 +96,7 @@
       "implementation_commit": null,
       "evidence_commit": null,
       "gate_artifact": null,
-      "owned_functions": 202,
+      "owned_functions": 203,
       "owned_data_objects": 122,
       "closed_functions": null,
       "closed_data_objects": null,

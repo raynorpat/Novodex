@@ -787,9 +787,56 @@ program.json p3 owned 394 / remaining 333, p5 owned 202. Builders
 000829/000845 annotated via static_proof while staying discovered.
 
 All three per-type compute-mass rows are now closed against the pinned
-oracle; the shared helpers' only remaining secret is the parallel-axis
-pair (0x1bdc0 635 B, 0x1c040 1371 B), reachable later through non-null
-`extra` drives.
+oracle; the shared helpers' only remaining secret was the parallel-axis
+pair -- and half of it fell the next round:
+
+## 3r. The payload fold step, phys_fn_000831
+
+The wrappers call it twice for a non-null `extra`: `0x1bdc0(frame, extra)`
+then `0x1c040(frame, extra+0x24)` -- both `__thiscall`, callee pops. The
+payload record is **{Vec3 d; SymMat3 K}** at 0x24-byte stride (upper
+triangle packed k00/k01/k02/k11/k12/k22 at +0x0c..+0x20).
+
+Decoded with an x87 stack-depth simulator over the listing (a plain read
+misled twice: two phase-2 results stay STACKED across later blocks, and
+the pop edi/pop esi pair shifts the frame so 0x1bfb1's `[esp+0x18]` reads
+**A[1]**, not the W slot). Semantics: a STRAIGHT-LINE TRANSFORM, not an
+accumulate -- all nine inertia words are OVERWRITTEN from products of the
+old inertia with d and K; the COM offset becomes {o.d, o^T K col0,
+o^T K col1}; mass untouched. With A-temps as the nine faddp chains:
+
+    a0..a2 = d^T I columns      (dy*I3+dz*I6+dx*I0, cyclic)
+    a3..a8 = K·I rows 0-1       (k00*I0+k02*I6+k01*I3, ...)
+    I'00 = (A0dx + A2dz) + A1dy          -- the quadratic form d'Id
+    I'01 = T1 = (A1k01 + A2k02) + A0k00  -- stacked, survives to the fxch
+    I'02 = T2 = (A1k12 + A2k22) + A0k11  -- stacked
+    I'03 = Q0 = (A3dx + A5dz) + A4dy     -- first fstp ([esp+0x68])
+    I'11/12 = U1/U2;  I'20 = W;  I'21/22 = V1/V2
+
+**The decisive modelling fact**: every phase-1 temp is rounded to float32
+by its own fstp m32 before the copy feeds it back. Drive 1's dyadic values
+hid this completely; drive 2's non-dyadic payload exposed it as 1-3 ULP
+drift on exactly the words downstream of the copy. The transcription
+therefore rounds each intermediate -- and the differential drives use
+fully dyadic inputs on both drives so no future rounding-path question can
+perturb the pinned words.
+
+Driven bitwise: new `paxis` family calls 0x1bdc0 DIRECTLY on two crafted
+(frame, payload) pairs -- full non-symmetric inertia, non-zero offset,
+every payload field non-zero -- folding all thirteen result words.
+`s0=41660000 q0=c0ae0000 digest=1d701701`; candidate identical through
+`MassFrame::nxMassFrameFoldPayload`, stable across three consecutive runs.
+Registrations +2 lines (oracle row, candidate line), floor 73->75, oracle
+digest re-pinned b6b7eb30->836cc35f. Census: phys_fn_000831 discharged
+from the PHASE-2 ledger (its `homeless_shared_code` deferral; deferred
+1139->1138) into phase-5 ownership as reconstructed; program.json p2 owned
+143 / remaining 87, p5 owned 203.
+
+One process lesson recorded: an earlier build printed a different oracle
+word for drive 2's last slot; the current build is stable across repeated
+runs and the drives are dyadic-exact, so the pinned digest no longer
+depends on any rounding path. The parallel-axis partner 0x1c040 (1371 B)
+remains undecoded behind null-extra drives.
 
 ## 4. The census merge resolved
 
