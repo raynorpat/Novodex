@@ -310,6 +310,99 @@ void nxSceneInsertShape(void* container, void* shape, NxU32 slot)
 	cBegin[slot] = countB;						// count mirror
 	}
 
+// The base dtor's owner arms, image order (0x00026be1..0x00026c35).
+void ShapeBase::nxBaseDtorOwnerArms(void)
+	{
+	if(mOwner04 == nullptr)
+		return;
+	unsigned scene = *reinterpret_cast<const NxU32*>(
+		reinterpret_cast<const unsigned char*>(mOwner04) + 4);
+	unsigned char* sc = reinterpret_cast<unsigned char*>(scene);
+	*reinterpret_cast<NxU32*>(sc + 0x70c) |= 2;
+
+	void* c1 = *reinterpret_cast<void* const*>(sc + 0x48);
+	nxSceneRemoveShape(c1, this);
+
+	void* c2 = *reinterpret_cast<void* const*>(sc + 0x5d4);
+	nxSceneRemovePairs(c2, this);
+
+	void* c3 = *reinterpret_cast<void* const*>(sc + 0x6e4);
+	nxSceneSlotFree(c3, mArgumentD4);
+	}
+
+// Task 4 scaffolding: remover chain. Guard semantics from 0x0005bac0's
+// tail: freelist push of the slot (skipped when the sentinel already reads
+// -1), then a swap-remove across three parallel arrays -- cntA gets the
+// count vector's last value at the mirror-indexed position, the mirror
+// cross-updates, the count vector pops, and the slot's mirror word takes
+// the 0xD00BEED0 poison -- then 0x5bbe0 clears shapes[slot].
+void nxSceneRemoveShape(void* container, void* shape)
+	{
+	unsigned c = reinterpret_cast<unsigned>(container);
+	const unsigned char* sh = static_cast<const unsigned char*>(shape);
+	NxU32 slot = *reinterpret_cast<const NxU32*>(sh + 0xd4);
+
+	unsigned* sent = *reinterpret_cast<unsigned**>(c + 0x00);
+	unsigned* flEnd = *reinterpret_cast<unsigned**>(c + 0x34);
+	unsigned* flBegin = *reinterpret_cast<unsigned**>(c + 0x30);
+	if(sent[slot] != 0xFFFFFFFFu)
+		{
+		*flEnd = slot;							// freelist push
+		*reinterpret_cast<unsigned**>(c + 0x34) = flEnd + 1;
+		}
+	if(sent[slot] == 0)
+		return;
+
+	unsigned* cntA = *reinterpret_cast<unsigned**>(c + 0x10);
+	unsigned* cntBEnd = *reinterpret_cast<unsigned**>(c + 0x14);
+	unsigned* mir = *reinterpret_cast<unsigned**>(c + 0x20);
+	unsigned lastVal = *(cntBEnd - 1);
+	NxU32 idx = mir[slot];
+	cntA[idx] = lastVal;
+	mir[lastVal] = idx;
+	*reinterpret_cast<unsigned**>(c + 0x14) = cntBEnd - 1;
+	sent[slot] = 0;
+	mir[slot] = 0xD00BEED0u;
+
+	unsigned* shapes = *reinterpret_cast<unsigned**>(c + 0x90);
+	shapes[slot] = 0;							// 0x5bbe0's clear
+	}
+
+// Remover #2 (0x5aae0): pair-list swap-remove.
+void nxSceneRemovePairs(void* container, void* shape)
+	{
+	unsigned c = reinterpret_cast<unsigned>(container);
+	unsigned self = reinterpret_cast<unsigned>(shape);
+	unsigned* begin = *reinterpret_cast<unsigned**>(c + 0x00);
+	unsigned* end = *reinterpret_cast<unsigned**>(c + 0x04);
+	unsigned count = static_cast<NxU32>(
+		(reinterpret_cast<unsigned>(end) - reinterpret_cast<unsigned>(begin)) >> 3);
+	unsigned i = 0;
+	while(i < count)
+		{
+		if(begin[i * 2] == self || begin[i * 2 + 1] == self)
+			{
+			begin[i * 2] = begin[(count - 1) * 2];
+			begin[i * 2 + 1] = begin[(count - 1) * 2 + 1];
+			count -= 1;
+			}
+		else
+			i += 1;
+		}
+	*reinterpret_cast<unsigned**>(c + 0x04) =
+		reinterpret_cast<unsigned*>(reinterpret_cast<unsigned>(begin) + count * 8);
+	}
+
+// Remover #3 (0x1b90): free-list push at the capacity cursor. With
+// cap >= end the image skips its growth block and simply stores.
+void nxSceneSlotFree(void* container, NxU32 slot)
+	{
+	unsigned c = reinterpret_cast<unsigned>(container);
+	unsigned* cap = *reinterpret_cast<unsigned**>(c + 0x08);
+	*cap = slot;
+	*reinterpret_cast<unsigned**>(c + 0x08) = cap + 1;
+	}
+
 // ---------------------------------------------------------------------------
 // BoxShape. See ObjectModel.h for the row map.
 
@@ -605,6 +698,7 @@ void SphereShape::nxSphereScalarDeletingDtor(unsigned flags)
 		{
 		// destroyed through its own vtable by the image: 0x00027c43..47
 		}
+	mBase.nxBaseDtorOwnerArms();			// owner arms, 0x26be1..c35
 	mBase.mPrunable.~Prunable();			// tail of the base-dtor chain
 	(void) flags;							// self-free arm not modeled
 	}

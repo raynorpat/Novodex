@@ -263,6 +263,11 @@ class ShapeBase
 	//! returns immediately through the early exit at 0x00026abb.
 	void				nxApplyOwnerUpdate(unsigned flags);
 
+	//! The base dtor's owner arms (0x26bd0 body, 0x00026be1..0x00026c35):
+	//! scene dirty flag |= 2, then removers #1/#2/#3 against [scene+0x48],
+	//! [scene]+0x5d4 and [scene]+0x6e4 respectively. No-op when detached.
+	void				nxBaseDtorOwnerArms(void);
+
 	//! BASE-level registry helper phys_fn_000480 (0x000edc0): associate or
 	//! dissociate a shape with a debug name through the global list at
 	//! .data 0x10123c0c. Called from apply-desc (slot 1) with the
@@ -582,6 +587,21 @@ void					nxInstallReportSink(NxReportFn sink);
 //! shape's scene slot. Pre-sized containers only: growth is not modelled.
 void					nxSceneInsertShape(void* container, void* shape,
 							NxU32 slot);
+
+//! Task 4 scaffolding: remover #1 (phys_fn_002418's guard 0x5bac0 + clear
+//! 0x5bbe0). Freelist push of the scene slot when not already freed, then
+//! swap-remove across the sentinel/count/mirror arrays with the
+//! 0xD00BEED0 poison, then shapes[slot] = 0. Pre-sized containers only.
+void					nxSceneRemoveShape(void* container, void* shape);
+
+//! Task 4 scaffolding: remover #2 (0x5aae0). Removes every {a,b} pair of
+//! the stride-8 array referencing `shape` from either half via swap-with-
+//! last. Pre-sized containers only.
+void					nxSceneRemovePairs(void* container, void* shape);
+
+//! Task 4 scaffolding: remover #3 (0x1b90). Pushes the scene slot onto the
+//! container's free list at its capacity cursor (cap >= end assumed).
+void					nxSceneSlotFree(void* container, NxU32 slot);
 
 //! The image's own literal pair, exposed so tests can pin against them.
 extern const char* const	nxSourceFileSphereShapeCpp;
