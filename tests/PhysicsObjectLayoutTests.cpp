@@ -1644,6 +1644,27 @@ int wmain(int argc, wchar_t** argv)
 	}
 
 	// -----------------------------------------------------------------------
+	// BASE slot 6, phys_fn_001315: owner-update no-op for detached shapes.
+	{
+	typedef void (__thiscall* NxOwnerUpdFn)(void* self, unsigned flags);
+	NxOwnerUpdFn ownerUpd = (NxOwnerUpdFn) (base + 0x000266a0);
+
+	unsigned char oshape[0xe4];
+	memset(oshape, 0xcd, sizeof(oshape));
+	typedef void (__thiscall* NxCtorFnOU)(void* self, void* owner, unsigned argument);
+	NxCtorFnOU sphereCtorOU = (NxCtorFnOU) (base + 0x000277c0);
+	sphereCtorOU(oshape, 0, 0);
+
+	unsigned char pre[16];
+	memcpy(pre, oshape, sizeof(pre));
+	ownerUpd(oshape, 0);
+
+	bool noop = memcmp(pre, oshape, sizeof(pre)) == 0;
+	oracleDigest = nxFold(oracleDigest, noop ? 1u : 0u);
+	printf("ownerupd row=phys_fn_001315 noop=%u\n", noop ? 1u : 0u);
+	}
+
+	// -----------------------------------------------------------------------
 	// PLANE slots 9/11, phys_fn_001257: zero vec3 + +FLT_MAX reach.
 	{
 	typedef void (__thiscall* NxPlaneExtFn)(void* self, float* out);
