@@ -950,6 +950,28 @@ Registrations +2 lines, floor 77->79, oracle digest re-pinned
 45014fec->bea77b31. phys_fn_001329's static_proof records the report arm
 and the mask naming.
 
+## 3v. The loadFromDesc validation arms: store-anyway semantics pinned
+
+Sphere loadFromDesc (0x27850) and capsule loadFromDesc (0x21ad0) both
+validate their radius with the section 3t pattern -- but the ordering is
+the finding: the radius is STORED UNCONDITIONALLY FIRST (sphere: `fst
+[esi+0xe0]` before the fcomp; capsule: all three data words written before
+the fcomp), the report fires unless strictly positive (sphere line **0x35**,
+capsule line **0x37**, each with its own file/message literals), and the
+BASE apply-desc tail runs REGARDLESS. An invalid descriptor therefore
+leaves a fully-populated, invalid shape behind -- shipped behaviour,
+reproduced. Plane loadFromDesc (0x25460) has no report arm at all; mesh's
+(0x27e30) only null-checks its wrapper.
+
+New `loaderr` family: radius=-1 descriptors driven through both rows on
+both sides; fold covers both captures plus the stored sphere/capsule radii
+and capsule half-height. `fires=1/1 rad=bf800000.bf800000 hh=00000000
+digest=8f125103` -- candidate identical first try through the updated
+transcriptions.
+
+Registrations +2 lines, coverage floor 79->81, oracle digest re-pinned
+bea77b31->2a993332. 001353/000989 static_proofs extended.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is

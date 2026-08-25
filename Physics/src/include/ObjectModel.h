@@ -544,6 +544,12 @@ extern const char* const	nxMsgSetRadiusPositive;
 //! And Shape.cpp's pair for the group-validation arm.
 extern const char* const	nxSourceFileShapeCpp;
 extern const char* const	nxMsgGroupBelow32;
+//! SphereShape.cpp's loadFromDesc pair (line 0x35).
+extern const char* const	nxSourceFileSphereLoadCpp;
+extern const char* const	nxMsgSphereLoadRadius;
+//! CapsuleShape.cpp's loadFromDesc pair (line 0x37).
+extern const char* const	nxSourceFileCapsuleShapeCpp;
+extern const char* const	nxMsgCapsuleLoadRadius;
 
 /**
 The sphere shape. Constructor phys_fn_001349 (0x000277c0).

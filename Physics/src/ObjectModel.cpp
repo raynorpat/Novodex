@@ -84,6 +84,14 @@ const char* const	nxSourceFileShapeCpp =
 	"\\Epic\\Novodex\\SDKs\\Physics\\src\\Shape.cpp";
 const char* const	nxMsgGroupBelow32 =
 	"group ID must be < 32!";
+const char* const	nxSourceFileSphereLoadCpp =
+	"\\Epic\\Novodex\\SDKs\\Physics\\src\\SphereShape.cpp";
+const char* const	nxMsgSphereLoadRadius =
+	"SphereShape::loadFromDesc: radius should be positive!";
+const char* const	nxSourceFileCapsuleShapeCpp =
+	"\\Epic\\Novodex\\SDKs\\Physics\\src\\CapsuleShape.cpp";
+const char* const	nxMsgCapsuleLoadRadius =
+	"CapsuleShape::loadFromDesc: radius should be positive!";
 
 static NxReportFn	gReportSink = nullptr;
 
@@ -543,6 +551,12 @@ void SphereShape::nxSphereLoadFromDesc(const void* record)
 	float r = 0.0f;
 	memcpy(&r, rec + 0x4c, sizeof(r));		// fld [edi+0x4c] at 0x00027856
 	mRadiusE0 = r;							// fst [esi+0xe0] at 0x0002785b
+	// fcomp against the zero literal at 0x00027861: a report fires unless
+	// strictly positive (line 0x35). The radius was already stored
+	// unconditionally, and the BASE apply-desc tail runs either way.
+	if(!(mRadiusE0 > 0.0f))
+		nxReport(1, nxSourceFileSphereLoadCpp, 0x35, 0,
+			nxMsgSphereLoadRadius);
 	mBase.nxApplyDescriptor(record);				// call 0x00027740 at 0x00027895
 	}
 
@@ -958,6 +972,12 @@ void CapsuleShape::nxCapsuleLoadFromDesc(const void* record)
 	h *= 0.5f;													// fmul [0x101043cc] at 0x00021ae4
 	mFloatE4 = h;												// fstp [+0xe4]
 	memcpy(&mWordE8, rec + 0x54, sizeof(mWordE8));				// third word: 0x00021af0
+	// The radius is reloaded and fcomp'd against the zero literal at
+	// 0x00021aff: a report fires unless strictly positive (line 0x37).
+	// Everything was already stored unconditionally above.
+	if(!(mFloatE0 > 0.0f))
+		nxReport(1, nxSourceFileCapsuleShapeCpp, 0x37, 0,
+			nxMsgCapsuleLoadRadius);
 	mBase.nxApplyDescriptor(rec);										// call BASE slot 1 at 0x00021b34
 	}
 

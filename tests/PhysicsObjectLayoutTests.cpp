@@ -348,6 +348,7 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oFoldDigest = 0;
 	unsigned oErrDigest = 0;
 	unsigned oGroupErrDigest = 0;
+	unsigned oLoadErrDigest = 0;
 	static unsigned char sSaveStateRecord[0x48];
 
 	// -----------------------------------------------------------------------
@@ -2018,6 +2019,75 @@ int wmain(int argc, wchar_t** argv)
 	}
 
 	// -----------------------------------------------------------------------
+	// The loadFromDesc validation arms: an invalid radius is STORED
+	// unconditionally AND reported, then the BASE apply-desc tail runs
+	// anyway. Sphere drives radius=-1 through 0x27850; capsule drives it
+	// through 0x21ad0 (which also halves height into +0xe4). Fold captures
+	// plus each shape's post-drive data words.
+	{
+	typedef void (__thiscall* NxSphLoadFn)(void* self, const void* rec);
+	NxSphLoadFn sphLoadErrFn = (NxSphLoadFn) (base + 0x00027850);
+	typedef void (__thiscall* NxCapLoadFn)(void* self, const void* rec);
+	NxCapLoadFn capLoadErrFn = (NxCapLoadFn) (base + 0x00021ad0);
+
+	unsigned* slotPtrL = (unsigned*) (base + 0x001041b4);
+	unsigned* guardPtrPtrL = (unsigned*) (base + 0x001041b0);
+
+	memset(&g_errCap, 0, sizeof(g_errCap));
+	typedef void(__cdecl* NxReportFnO)(int, const char*, int, int,
+		const char*);
+	DWORD oldProtectL = 0;
+	if(!VirtualProtect(slotPtrL, 8, PAGE_READWRITE, &oldProtectL))
+		return nxFail("loaderr: VirtualProtect over the report slot failed");
+	if(*guardPtrPtrL != 0 && *reinterpret_cast<unsigned*>(*guardPtrPtrL) == 0)
+		*reinterpret_cast<unsigned*>(*guardPtrPtrL) = 1;
+	NxReportFnO savedSinkL = reinterpret_cast<NxReportFnO>(*slotPtrL);
+	*slotPtrL = reinterpret_cast<unsigned>(&g_errSink);
+
+	unsigned char sphL[0xe4];
+	memset(sphL, 0xcd, sizeof(sphL));
+	typedef void (__thiscall* NxCtorFnEL)(void*, void*, unsigned);
+	NxCtorFnEL ctorEL = (NxCtorFnEL) (base + 0x000277c0);
+	ctorEL(sphL, 0, 0);
+
+	const float negOne = -1.0f;
+	unsigned char recS[0x58];
+	memset(recS, 0, sizeof(recS));
+	memcpy(recS + 0x4c, &negOne, 4);
+	sphLoadErrFn(sphL, recS);
+	int sphereFired = g_errCap.fired;
+
+	unsigned char capL[0xec];
+	memset(capL, 0xcd, sizeof(capL));
+	typedef void (__thiscall* NxCtorFnCL)(void*, void*, unsigned);
+	NxCtorFnCL ctorCL = (NxCtorFnCL) (base + 0x00021a60);
+	ctorCL(capL, 0, 0);
+
+	unsigned char recC[0x58];
+	memset(recC, 0, sizeof(recC));
+	memcpy(recC + 0x4c, &negOne, 4);
+	capLoadErrFn(capL, recC);
+	int capsFired = g_errCap.fired - sphereFired;
+
+	*slotPtrL = reinterpret_cast<unsigned>(savedSinkL);
+	VirtualProtect(slotPtrL, 8, oldProtectL, &oldProtectL);
+
+	unsigned ld = nxFoldErrCap(2166136261u);
+	unsigned sphRad, capRad, capHH;
+	memcpy(&sphRad, sphL + 0xe0, 4);
+	memcpy(&capRad, capL + 0xe0, 4);
+	memcpy(&capHH, capL + 0xe4, 4);
+	ld = nxFold(ld, sphRad);
+	ld = nxFold(ld, capRad);
+	ld = nxFold(ld, capHH);
+	oLoadErrDigest = ld;
+
+	oracleDigest = nxFold(oracleDigest, ld);
+	printf("loaderr row=sphere+capsule fires=%u/%u rad=%08x.%08x hh=%08x digest=%08x\n",
+		sphereFired, capsFired, sphRad, capRad, capHH, ld);
+	}
+
+	// -----------------------------------------------------------------------
 	// PLANE slots 9/11, phys_fn_001257: zero vec3 + +FLT_MAX reach.
 	{
 	typedef void (__thiscall* NxPlaneExtFn)(void* self, float* out);
@@ -3656,6 +3726,50 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 46u);
+		}
+		// -- loadFromDesc validation arms: twin drive through the
+		// transcription. Same invalid-radius descriptors.
+		{
+		memset(&g_errCap, 0, sizeof(g_errCap));
+		nxInstallReportSink(&g_errSink);
+
+		unsigned char sphL2[0xe4];
+		memset(sphL2, 0xcd, sizeof(sphL2));
+		SphereShape& sphLR = *new(sphL2) SphereShape(0, 0);
+		unsigned char recS2[0x58];
+		memset(recS2, 0, sizeof(recS2));
+		const float negOne2 = -1.0f;
+		memcpy(recS2 + 0x4c, &negOne2, 4);
+		sphLR.nxSphereLoadFromDesc(recS2);
+		int sphereFired2 = g_errCap.fired;
+
+		unsigned char capL2[0xec];
+		memset(capL2, 0xcd, sizeof(capL2));
+		CapsuleShape& capLR = *new(capL2) CapsuleShape(0, 0);
+		unsigned char recC2[0x58];
+		memset(recC2, 0, sizeof(recC2));
+		memcpy(recC2 + 0x4c, &negOne2, 4);
+		capLR.nxCapsuleLoadFromDesc(recC2);
+		int capsFired2 = g_errCap.fired - sphereFired2;
+
+		nxInstallReportSink(nullptr);
+
+		unsigned ld2 = nxFoldErrCap(2166136261u);
+		unsigned sphRad2, capRad2, capHH2;
+		memcpy(&sphRad2, sphL2 + 0xe0, 4);
+		memcpy(&capRad2, capL2 + 0xe0, 4);
+		memcpy(&capHH2, capL2 + 0xe4, 4);
+		ld2 = nxFold(ld2, sphRad2);
+		ld2 = nxFold(ld2, capRad2);
+		ld2 = nxFold(ld2, capHH2);
+
+		bool okLE = ld2 == oLoadErrDigest && sphereFired2 == 1 &&
+			capsFired2 == 1;
+		printf("loaderr candidate ok=%u digest=%08x\n", okLE ? 1u : 0u, ld2);
+		if(!okLE)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 47u);
 		}
 
 

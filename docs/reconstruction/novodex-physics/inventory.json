@@ -17866,7 +17866,7 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/398",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3050",
-      "static_proof": "reads radius/half-height/third word from desc into +0xe0/e4/e8 (height halved), then applies BASE slot 1",
+      "static_proof": "reads radius/half-height/third word from desc into +0xe0/e4/e8 (height halved), then applies BASE slot 1; the validation arm is also transcribed and driven: an invalid radius is stored unconditionally (with height halved into +0xe4 regardless), reported through the error stream (1, CapsuleShape.cpp, line 0x37, 0, \"radius should be positive!\"), and the BASE apply-desc tail runs anyway (loaderr family)",
       "dynamic_proof": null,
       "notes": ""
     },
@@ -24418,7 +24418,7 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/664",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3515",
-      "static_proof": "reads radius from record+0x4c through the error stream, stores at +0xe0, tail-applies BASE slot 1; driven bitwise by the sphload family",
+      "static_proof": "reads radius from record+0x4c through the error stream, stores at +0xe0, tail-applies BASE slot 1; driven bitwise by the sphload family; the validation arm is also transcribed and driven: an invalid radius is STORED unconditionally, reported through the error stream (1, SphereShape.cpp, line 0x35, 0, \"radius should be positive!\"), and the BASE apply-desc tail runs anyway (loaderr family)",
       "dynamic_proof": null,
       "notes": ""
     },
