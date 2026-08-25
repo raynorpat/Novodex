@@ -279,6 +279,7 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oCapsuleLoadRadBits = 0;
 	unsigned oCapsuleAABBDigest = 0;
 	unsigned oSphereLoadRadBits = 0;
+	unsigned oPlaneLoadNyBits = 0;
 	unsigned oSphereLoadGroup = 0;
 	unsigned oPlaneDtorDigest = 0;
 	unsigned oMeshDtorDigest = 0;
@@ -1838,6 +1839,40 @@ int wmain(int argc, wchar_t** argv)
 	oracleDigest = nxFold(oracleDigest, radBits);
 	printf("capload row=phys_fn_000989 rad=%08x\n", radBits);
 	}
+	// -----------------------------------------------------------------------
+	// PLANE slot 12, phys_fn_001265: loadFromDesc.
+	{
+	typedef void (__thiscall* NxPlaneLoadFn)(void* self, const void* rec);
+	NxPlaneLoadFn planeLoad = (NxPlaneLoadFn) (base + 0x00025460);
+
+	if(!nxInstallAllocatorShim(base))
+		return nxFail("the allocator holder word moved; re-pin the probe");
+
+	unsigned char pshape[0x110];
+	memset(pshape, 0xcd, sizeof(pshape));
+	typedef void (__thiscall* NxCtorFnPL)(void* self, void* owner, unsigned argument);
+	NxCtorFnPL planeCtorPL = (NxCtorFnPL) (base + 0x00024ed0);
+	planeCtorPL(pshape, 0, 0);
+
+	unsigned char prec[0x58];
+	memset(prec, 0, sizeof(prec));
+	const float kNY = 1.0f;
+	memcpy(prec + 0x50, &kNY, 4);		// normal.y = 1
+	const unsigned short kGp = 0u;
+	memcpy(prec + 0x3c, &kGp, 2);
+
+	nxGuardedBoxDtor((NxBoxDtorFn) planeLoad, pshape, reinterpret_cast<unsigned>(prec));
+	if(gDtorFaultCode)
+		return nxFail("plane loadFromDesc faulted");
+
+	float gotNy = 0.0f;
+	memcpy(&gotNy, pshape + 0xe4, 4);
+	unsigned nyBits = 0;
+	memcpy(&nyBits, &gotNy, 4);
+	oPlaneLoadNyBits = nyBits;
+	oracleDigest = nxFold(oracleDigest, nyBits);
+	printf("planeload row=phys_fn_001265 ny=%08x\n", nyBits);
+	}
 
 	// -----------------------------------------------------------------------
 	// CAPSULE slot 8, phys_fn_001004: local AABB. Fresh capsule (all zeros).
@@ -2911,6 +2946,26 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 36u);
+		}
+		// -- plane loadFromDesc: twin drive through transcription.
+		{
+		unsigned char pb[0x110];
+		memset(pb, 0xcd, sizeof(pb));
+		PlaneShape& pln = *new(pb) PlaneShape(0, 0);
+		unsigned char pr[0x58];
+		memset(pr, 0, sizeof(pr));
+		const float kNY2 = 1.0f;
+		memcpy(pr + 0x50, &kNY2, 4);
+		pln.mBase.nxApplyDescriptor(pr);
+		pln.nxPlaneLoadFromDesc(pr);
+		float gny = 0.0f;
+		memcpy(&gny, pb + 0xe4, 4);
+		bool okPL = gny == kNY2 && *reinterpret_cast<unsigned*>(&gny) == oPlaneLoadNyBits;
+		printf("planeload candidate ok=%u ny=%08x\n", okPL ? 1u : 0u, *reinterpret_cast<unsigned*>(&gny));
+		if(!okPL)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 37u);
 		}
 
 

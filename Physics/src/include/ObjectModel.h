@@ -634,6 +634,10 @@ class PlaneShape
 	//! self-free through allocator slot +0x14 when flags&1.
 	void				nxPlaneScalarDeletingDtor(unsigned flags);
 
+	//! PLANE-table slot 12, phys_fn_001265: loadFromDesc -- stores the
+	//! descriptor normal/D through helper 0x24fc0 then applies BASE fields.
+	void				nxPlaneLoadFromDesc(const void* record);
+
 	//! PLANE-table slots 9 and 11, phys_fn_001257 (0x000251d0): one row
 	//! filling two slots -- zeroes out[0..2] and writes +FLT_MAX (the
 	//! plane's unbounded reach) to out[3].
