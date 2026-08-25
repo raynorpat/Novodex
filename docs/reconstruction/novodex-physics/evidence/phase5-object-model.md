@@ -1083,6 +1083,35 @@ Registrations +2 lines, coverage floor 83->85, oracle digest re-pinned
 e493f315->3171b22c. Task 4's first chain -- construct-with-owner registers
 into the scene arrays -- is closed bitwise without any scene simulation.
 
+## 3z. Deregistration: the base dtor's three remover call sites
+
+The BASE scalar-deleting dtor (0x27710) calls the real dtor body 0x26bd0,
+which -- when owner != null -- performs THREE separate removals against
+THREE different scene containers:
+
+    0x00026beb  [scene + 0x70c] |= 2          scene dirty flag
+    0x00026bfc  container = [scene + 0x48]
+                0x5bbe0(container, shape)      shapes-array remove #1
+    0x00026c0f  container = [scene ] + 0x5d4
+                0x5aae0(container, shape)      shapes-array remove #2
+    0x00026c25  container = [scene ] + 0x6e4
+                0x1b90(container, slot=d4)     slot-keyed remove #3
+
+Remove #1 (0x5bbe0, 36 B): reads the shape's slot, calls guard 0x5bac0,
+then `shapes[slot] = 0`. The GUARD (0x5bac0) is itself substantial: it
+early-outs when `array[slot] == -1` (already freed), and otherwise may run
+the same grow-or-skip logic against the FREE-LIST vector at container
++0x30/0x34/0x38 before pushing the slot onto it -- the shapes array keeps
+a classic free-list for reuse by later createMaterial/createShape calls.
+
+Removers #2/#3 (0x5aae0, 0x1b90) plus 0x5bac0's tail are undecoded. An
+owned-dtor differential therefore waits on those bodies; the registration
+side (section 3y) remains closed and unaffected.
+
+Task-4 status after this round: construct-with-owner closed bitwise;
+remove-with-owner interface mapped (three sites, offsets recorded); remover
+decode queued.
+
 **Refinement (full registrar body walked)**: phys_fn_002423 touches ONLY
 container+0x90/0x94/0x98 -- every allocation goes through interface calls
 (`[eax+8]`, `[edx+0x14]`, `[ebp+0x10]`, i.e. the SDK allocator adapter),
