@@ -2926,6 +2926,27 @@
       "confidence": "semantic",
       "evidence": "oracle/capstone/manifest.json",
       "reason": "add ecx,0x28 then tail-jump to 0xb4f50"
+    },
+    {
+      "id": "phys_fn_000038",
+      "label": "FoundationSDK +0x104 wrapper (returns 3 dwords)",
+      "confidence": "semantic",
+      "evidence": "oracle/capstone/manifest.json",
+      "reason": "calls [adapter_vtable+0x104] with two args and copies 3 dwords from the result to the caller buffer; __thiscall ret 8"
+    },
+    {
+      "id": "phys_fn_000040",
+      "label": "FoundationSDK +0x108 wrapper (returns 3 dwords)",
+      "confidence": "semantic",
+      "evidence": "oracle/capstone/manifest.json",
+      "reason": "calls [adapter_vtable+0x108] with two args and copies 3 dwords from the result to the caller buffer; __thiscall ret 8"
+    },
+    {
+      "id": "phys_fn_000042",
+      "label": "Scalar-deleting dtor (vtable 0x101043d0)",
+      "confidence": "semantic",
+      "evidence": "oracle/capstone/manifest.json",
+      "reason": "sets vtable to 0x101043d0 then frees this through allocator adapter when flags&1; __thiscall ret 4"
     }
   ]
 }
