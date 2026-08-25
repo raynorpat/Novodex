@@ -117,26 +117,98 @@ static void nxGuardedCtor(NxShapeCtorFn fn, void* object, void* owner,
 // minimal interface whose slot +8 hands back a fixed block. Every instruction
 // of the rows under test still runs natively; only the 28 bytes come from the
 // shim.
+// ---------------------------------------------------------------------------
+// Allocator emulator. The real SDK creation path needs genuine malloc/free
+// semantics (arbitrary sizes, reuse after free) -- a flat block cannot
+// serve it (evidence 3z2). First-fit free list over a 1 MiB arena, with an
+// 8-byte header per block carrying the block size for free().
+static unsigned char g_arena[1 << 20];
+struct NxFreeEnt { unsigned off; unsigned sz; };
+static NxFreeEnt g_free[2048];
+static unsigned g_freeN = 0;
+
+static void nxHeapInit()
+	{
+	g_free[0].off = 0;
+	g_free[0].sz = sizeof(g_arena);
+	g_freeN = 1;
+	}
+
+static void* nxHeapAlloc(unsigned size)
+	{
+	if(g_freeN == 0) nxHeapInit();
+	unsigned need = ((size + 7u) & ~7u) + 4u;
+	if(need < 4u) need = 4u;
+	for(unsigned i = 0; i < g_freeN; ++i)
+		if(g_free[i].sz >= need)
+			{
+			unsigned off = g_free[i].off;
+			if(g_free[i].sz == need)
+				{
+				for(unsigned j = i; j + 1 < g_freeN; ++j) g_free[j] = g_free[j + 1];
+				--g_freeN;
+				}
+			else
+				{
+				g_free[i].off += need;
+				g_free[i].sz -= need;
+				}
+			*reinterpret_cast<unsigned*>(g_arena + off) = need;
+			return g_arena + off + 4;
+			}
+	return nullptr;
+	}
+
+static void nxHeapFree(void* p)
+	{
+	if(p == nullptr) return;
+	unsigned off = static_cast<unsigned>(
+		reinterpret_cast<unsigned char*>(p) - 4 - g_arena);
+	if(off >= sizeof(g_arena)) return;
+	unsigned sz = *reinterpret_cast<unsigned*>(g_arena + off);
+	unsigned i = 0;
+	while(i < g_freeN && g_free[i].off < off) ++i;
+	for(unsigned j = g_freeN; j > i; --j) g_free[j] = g_free[j - 1];
+	g_free[i].off = off;
+	g_free[i].sz = sz;
+	++g_freeN;
+	if(i + 1 < g_freeN && g_free[i].off + g_free[i].sz == g_free[i + 1].off)
+		{
+		g_free[i].sz += g_free[i + 1].sz;
+		for(unsigned j = i + 1; j + 1 < g_freeN; ++j) g_free[j] = g_free[j + 1];
+		--g_freeN;
+		}
+	if(i > 0 && g_free[i - 1].off + g_free[i - 1].sz == g_free[i].off)
+		{
+		g_free[i - 1].sz += g_free[i].sz;
+		for(unsigned j = i; j + 1 < g_freeN; ++j) g_free[j] = g_free[j + 1];
+		--g_freeN;
+		}
+	}
+
 static bool nxInstallAllocatorShim(const unsigned char* base)
 	{
-	static unsigned char sBlock[0x20];
 	typedef void* (__fastcall* NxAllocFn)(void*, void*, unsigned, unsigned);
-	// The shipped allocator's ABI: malloc takes two pushed arguments (callee
-	// pops eight bytes); both free slots take ONE pushed argument (callee
-	// pops four -- the callers do `push x; call [slot]` with no esp fixup).
-	// A wrong pop count drifts the stack and corrupts the caller's return.
 	static NxAllocFn sTable[6];
 	struct NxShim
 		{
+		// Adapter vtable layout: +0x00/+0x0c/+0x14 are free variants (one
+		// pushed pointer), +0x08 is malloc (two pushed args: size, flags).
+		static void* __fastcall freeA(void*, void*, unsigned p)
+			{ nxHeapFree(reinterpret_cast<void*>(p)); return nullptr; }
+		static void* __fastcall freeB(void*, void*, unsigned p)
+			{ nxHeapFree(reinterpret_cast<void*>(p)); return nullptr; }
 		static void* __fastcall alloc(void*, void*, unsigned size, unsigned)
-			{ return size <= sizeof(sBlock) ? sBlock : 0; }
-		static void* __fastcall freeOne(void*, void*, unsigned)
-			{ return 0; }
+			{ return nxHeapAlloc(size); }
+		static void* __fastcall freeC(void*, void*, unsigned p)
+			{ nxHeapFree(reinterpret_cast<void*>(p)); return nullptr; }
+		static void* __fastcall freeD(void*, void*, unsigned p)
+			{ nxHeapFree(reinterpret_cast<void*>(p)); return nullptr; }
 		};
-	sTable[0] = reinterpret_cast<NxAllocFn>(&NxShim::freeOne);	// +0x00
-	sTable[2] = reinterpret_cast<NxAllocFn>(&NxShim::alloc);	// +0x08 malloc
-	sTable[3] = reinterpret_cast<NxAllocFn>(&NxShim::freeOne);	// +0x0c free
-	sTable[5] = reinterpret_cast<NxAllocFn>(&NxShim::freeOne);	// +0x14 free
+	sTable[0] = reinterpret_cast<NxAllocFn>(&NxShim::freeA);
+	sTable[2] = reinterpret_cast<NxAllocFn>(&NxShim::alloc);
+	sTable[3] = reinterpret_cast<NxAllocFn>(&NxShim::freeB);
+	sTable[5] = reinterpret_cast<NxAllocFn>(&NxShim::freeC);
 	static void* sIface[1] = { sTable };
 	unsigned holder = 0;
 	memcpy(&holder, base + 0x001041bc, 4);

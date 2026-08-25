@@ -1136,9 +1136,18 @@ allocator adapter needs REAL malloc/free semantics (arbitrary sizes,
 reuse after free) that a static block cannot provide. The honest bill:
 a proper bump-plus-freelist allocator emulation in the shim (sized ~64 KiB,
 serving any request, reusing freed ranges) before real-scene differentials
-become safe. That allocator emulator is Task 4's next infrastructure item;
-everything else (creator RVA, version constant, boot flow, singleton and
-materials-array mechanics) is now on the table.
+become safe.
+
+**Allocator emulator LANDED** (first-fit free list over a 1 MiB arena,
+8-byte headers, immediate coalescing; frees served at adapter vtable slots
++0x00/+0x0c/+0x14, malloc at +0x08). Validated against every existing
+family -- all digests stable, designed RED only -- so it is strictly more
+faithful than the flat block it replaces. The boot itself now proceeds past
+Foundation allocation and fails inside a foreign CRT module during the
+Foundation factory call at [0x101041a8], which uses its own CRT heap beyond
+the emulator's reach: emulating/stubbing THAT factory (or decoding
+phys_fn_000490's full expectations of it) is the next Task-4 infrastructure
+item before real-scene differentials become safe.
 
 Task-4 status after this round: construct-with-owner closed bitwise;
 remove-with-owner interface mapped (three sites, offsets recorded); remover
