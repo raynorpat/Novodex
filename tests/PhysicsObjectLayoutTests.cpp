@@ -424,6 +424,7 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oMaterialTemplateDigest = 0;
 	unsigned oMaterialBootedDigest = 0;
 	unsigned oOwnDigest = 0;
+	unsigned oOwnDtorDigest = 0;
 	static unsigned char sSaveStateRecord[0x48];
 
 	// -----------------------------------------------------------------------
@@ -2234,6 +2235,120 @@ int wmain(int argc, wchar_t** argv)
 	}
 
 	// -----------------------------------------------------------------------
+	// Task 4: owned-DTOR deregistration. Register a sphere into a fake
+	// scene (ctor writes shapes[slot], sentinel -1, and the v1 count into
+	// mirror[slot]), then scalar-delete it -- the base dtor's owner arms
+	// must clear the registration across all containers. Structural fold:
+	// poison word, cleared slots, count pop, swap-move, freelist untouched
+	// (sentinel -1 suppresses it), pair compaction, slot freepush, dirty
+	// flag.
+	{
+	static unsigned dSent[64];
+	static unsigned dCntA[64];
+	static unsigned dCntB[64];
+	static unsigned* dCntBEnd = dCntB + 8;
+	static unsigned dMir[64];
+	static unsigned dFlArr[64];
+	static unsigned* dFlBegin = dFlArr;
+	static unsigned* dFlEndCur = dFlArr;
+	static unsigned dShapes[64];
+	static unsigned dHdr[64];
+	static unsigned dPairs[16];
+	static unsigned dPairHdr[16];
+	static unsigned dSlotFreeArr[64];
+	static unsigned dSlotHdr[8];
+	for(int i = 0; i < 64; ++i)
+		{
+		dSent[i] = 0u;
+		dCntA[i] = 0xA0000000u + static_cast<unsigned>(i);
+		dCntB[i] = 0u;
+		dMir[i] = static_cast<unsigned>(i);
+		dShapes[i] = 0u;
+		}
+	dCntB[7] = 7u;
+
+	unsigned fakeSceneD2[512];
+	memset(fakeSceneD2, 0, sizeof(fakeSceneD2));
+	unsigned fakeOwnerD2[4];
+	memset(fakeOwnerD2, 0, sizeof(fakeOwnerD2));
+
+	typedef void (__thiscall* NxCtorFnOD)(void*, void*, unsigned);
+	NxCtorFnOD ctorOD = (NxCtorFnOD) (base + 0x000277c0);
+	typedef void (__thiscall* NxDtorFnOD)(void*, unsigned);
+	NxDtorFnOD dtorOD = (NxDtorFnOD) (base + 0x00027c30);
+	const unsigned SLOT_OD = 3;
+
+	fakeSceneD2[0x48 / 4] = reinterpret_cast<unsigned>(dHdr);
+	fakeSceneD2[0x5d4 / 4] = reinterpret_cast<unsigned>(dPairHdr);
+	fakeSceneD2[0x6e4 / 4] = reinterpret_cast<unsigned>(dSlotHdr);
+	fakeOwnerD2[1] = reinterpret_cast<unsigned>(fakeSceneD2);
+
+	dHdr[0x00 / 4] = reinterpret_cast<unsigned>(dSent);
+	dHdr[0x04 / 4] = reinterpret_cast<unsigned>(dSent + 8);
+	dHdr[0x08 / 4] = reinterpret_cast<unsigned>(dSent + 64);
+	dHdr[0x10 / 4] = reinterpret_cast<unsigned>(dCntA);
+	dHdr[0x14 / 4] = reinterpret_cast<unsigned>(dCntBEnd);
+	dHdr[0x18 / 4] = reinterpret_cast<unsigned>(dCntB + 64);
+	dHdr[0x20 / 4] = reinterpret_cast<unsigned>(dMir);
+	dHdr[0x24 / 4] = reinterpret_cast<unsigned>(dMir + 64);
+	dHdr[0x28 / 4] = reinterpret_cast<unsigned>(dMir + 64);
+	dHdr[0x30 / 4] = reinterpret_cast<unsigned>(dFlArr);
+	dHdr[0x34 / 4] = reinterpret_cast<unsigned>(dFlEndCur);
+	dHdr[0x38 / 4] = reinterpret_cast<unsigned>(dFlArr + 64);
+	dHdr[0x90 / 4] = reinterpret_cast<unsigned>(dShapes);
+	dHdr[0x94 / 4] = reinterpret_cast<unsigned>(dShapes + 64);
+	dHdr[0x98 / 4] = reinterpret_cast<unsigned>(dShapes + 64);
+
+	unsigned char sphD2[0xe4];
+	memset(sphD2, 0xcd, sizeof(sphD2));
+	ctorOD(sphD2, fakeOwnerD2, SLOT_OD);
+	unsigned selfAddr = reinterpret_cast<unsigned>(sphD2);
+
+	// one self-referencing pair plus two unrelated ones
+	dPairs[0] = selfAddr;			dPairs[1] = 0xDEAD0001u;
+	dPairs[2] = 0xDEAD0002u;		dPairs[3] = 0xDEAD0003u;
+	dPairs[4] = 0xDEAD0004u;		dPairs[5] = 0xDEAD0005u;
+	dPairHdr[0x00 / 4] = reinterpret_cast<unsigned>(dPairs);
+	dPairHdr[0x04 / 4] = reinterpret_cast<unsigned>(dPairs + 12);
+
+	// remover #3: free-list cursor (+0x08) below its limit (+0x0c)
+	dSlotHdr[0x08 / 4] = reinterpret_cast<unsigned>(dSlotFreeArr + 2);
+	dSlotHdr[0x0c / 4] = reinterpret_cast<unsigned>(dSlotFreeArr + 40);
+
+	dtorOD(sphD2, 0);
+
+	// --- structural verification ---
+	unsigned sceneFlag = *reinterpret_cast<unsigned*>(
+		reinterpret_cast<unsigned char*>(fakeSceneD2) + 0x70c);
+	int shapesCleared = (dShapes[SLOT_OD] == 0);
+	int sentZeroed = (dSent[SLOT_OD] == 0);
+	int poisoned = (dMir[SLOT_OD] == 0xD00BEED0u);
+	int cntPopped = (*reinterpret_cast<unsigned*>(dHdr[0x14 / 4]) ==
+		reinterpret_cast<unsigned>(dCntBEnd - 4));
+	int cntAMoved = (dCntA[SLOT_OD] == 7u && dMir[7] == 8u);
+	int flUntouched = (dFlEndCur == dFlArr);
+	int pairsCompacted = (dPairs[0] == 0xDEAD0004u &&
+		dPairs[1] == 0xDEAD0005u &&
+		*reinterpret_cast<unsigned*>(dPairHdr[0x04 / 4]) ==
+			reinterpret_cast<unsigned>(dPairs + 8));
+	int slotFreed = (dSlotFreeArr[2] == SLOT_OD &&
+		dSlotHdr[0x08 / 4] == reinterpret_cast<unsigned>(dSlotFreeArr + 12));
+
+	unsigned dd = 2166136261u;
+	dd = nxFold(dd, sceneFlag == 2u ? 1u : 0u);
+	const int checks[] = { shapesCleared, sentZeroed, poisoned, cntPopped,
+		cntAMoved, flUntouched, pairsCompacted, slotFreed };
+	for(int k = 0; k < 8; ++k)
+		dd = nxFold(dd, static_cast<unsigned>(checks[k]));
+	oOwnDtorDigest = dd;
+
+	oracleDigest = nxFold(oracleDigest, dd);
+	printf("owndtor row=oracle flag=%08x clr=%u/%u/%u pop=%u mv=%u fl=%u pair=%u freed=%u digest=%08x\n",
+		sceneFlag, shapesCleared, sentZeroed, poisoned, cntPopped,
+		cntAMoved, flUntouched, pairsCompacted, slotFreed, dd);
+	}
+
+	// -----------------------------------------------------------------------
 
 
 	// -----------------------------------------------------------------------
@@ -3987,6 +4102,102 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 48u);
+		}
+
+		// -- owned-DTOR deregistration: twin drive through the
+		// transcription. Same fake scene, register-then-delete.
+		{
+		static unsigned dSent2[64];
+		static unsigned dCntA2[64];
+		static unsigned dCntB2[64];
+		static unsigned* dCntBEnd2 = dCntB2 + 8;
+		static unsigned dMir2[64];
+		static unsigned dFlArr2[64];
+		static unsigned* dFlBegin2 = dFlArr2;
+		static unsigned* dFlEndCur2 = dFlArr2;
+		static unsigned dShapes2[64];
+		static unsigned dHdr2[64];
+		static unsigned dPairs2[16];
+		static unsigned dPairHdr2[16];
+		static unsigned dSlotFreeArr2[64];
+		static unsigned dSlotHdr2[8];
+		for(int i = 0; i < 64; ++i)
+			{
+			dSent2[i] = 0u;
+			dCntA2[i] = 0xA0000000u + static_cast<unsigned>(i);
+			dMir2[i] = static_cast<unsigned>(i);
+			dShapes2[i] = 0u;
+			}
+		dCntB2[7] = 7u;
+
+		unsigned fakeSceneD3[512];
+		memset(fakeSceneD3, 0, sizeof(fakeSceneD3));
+		unsigned fakeOwnerD3[4];
+		memset(fakeOwnerD3, 0, sizeof(fakeOwnerD3));
+
+		const unsigned SLOT_OD2 = 3;
+
+		fakeSceneD3[0x48 / 4] = reinterpret_cast<unsigned>(dHdr2);
+		fakeSceneD3[0x5d4 / 4] = reinterpret_cast<unsigned>(dPairHdr2);
+		fakeSceneD3[0x6e4 / 4] = reinterpret_cast<unsigned>(dSlotHdr2);
+		fakeOwnerD3[1] = reinterpret_cast<unsigned>(fakeSceneD3);
+
+		dHdr2[0x00 / 4] = reinterpret_cast<unsigned>(dSent2);
+		dHdr2[0x10 / 4] = reinterpret_cast<unsigned>(dCntA2);
+		dHdr2[0x14 / 4] = reinterpret_cast<unsigned>(dCntBEnd2);
+		dHdr2[0x20 / 4] = reinterpret_cast<unsigned>(dMir2);
+		dHdr2[0x30 / 4] = reinterpret_cast<unsigned>(dFlArr2);
+		dHdr2[0x34 / 4] = reinterpret_cast<unsigned>(dFlEndCur2);
+		dHdr2[0x38 / 4] = reinterpret_cast<unsigned>(dFlArr2 + 64);
+		dHdr2[0x90 / 4] = reinterpret_cast<unsigned>(dShapes2);
+		dHdr2[0x94 / 4] = reinterpret_cast<unsigned>(dShapes2 + 8);
+		dHdr2[0x98 / 4] = reinterpret_cast<unsigned>(dShapes2 + 8);
+
+		unsigned char sphD3[0xe4];
+		memset(sphD3, 0xcd, sizeof(sphD3));
+		SphereShape& sphDR = *new(sphD3) SphereShape(fakeOwnerD3, SLOT_OD2);
+		unsigned selfAddr3 = reinterpret_cast<unsigned>(sphD3);
+
+		dPairs2[0] = selfAddr3;			dPairs2[1] = 0xDEAD0001u;
+		dPairs2[2] = 0xDEAD0002u;		dPairs2[3] = 0xDEAD0003u;
+		dPairs2[4] = 0xDEAD0004u;		dPairs2[5] = 0xDEAD0005u;
+		dPairHdr2[0x00 / 4] = reinterpret_cast<unsigned>(dPairs2);
+		dPairHdr2[0x04 / 4] = reinterpret_cast<unsigned>(dPairs2 + 12);
+
+		dSlotHdr2[0x08 / 4] = reinterpret_cast<unsigned>(dSlotFreeArr2 + 2);
+		dSlotHdr2[0x0c / 4] = reinterpret_cast<unsigned>(dSlotFreeArr2 + 40);
+
+		sphDR.nxSphereScalarDeletingDtor(0);
+
+		unsigned sceneFlag3 = *reinterpret_cast<unsigned*>(
+			reinterpret_cast<unsigned char*>(fakeSceneD3) + 0x70c);
+		int shapesCleared = (dShapes2[SLOT_OD2] == 0);
+		int sentZeroed = (dSent2[SLOT_OD2] == 0);
+		int poisoned = (dMir2[SLOT_OD2] == 0xD00BEED0u);
+		int cntPopped = (*reinterpret_cast<unsigned*>(dHdr2[0x14 / 4]) ==
+			reinterpret_cast<unsigned>(dCntBEnd2 - 4));
+		int cntAMoved = (dCntA2[SLOT_OD2] == 7u && dMir2[7] == 8u);
+		int flUntouched = (dFlEndCur2 == dFlArr2);
+		int pairsCompacted = (dPairs2[0] == 0xDEAD0004u &&
+			dPairs2[1] == 0xDEAD0005u &&
+			*reinterpret_cast<unsigned*>(dPairHdr2[0x04 / 4]) ==
+				reinterpret_cast<unsigned>(dPairs2 + 8));
+		int slotFreed = (dSlotFreeArr2[2] == SLOT_OD2 &&
+			dSlotHdr2[0x08 / 4] == reinterpret_cast<unsigned>(dSlotFreeArr2 + 12));
+
+		unsigned dd3 = 2166136261u;
+		dd3 = nxFold(dd3, sceneFlag3 == 2u ? 1u : 0u);
+		const int checks3[] = { shapesCleared, sentZeroed, poisoned,
+			cntPopped, cntAMoved, flUntouched, pairsCompacted, slotFreed };
+		for(int k = 0; k < 8; ++k)
+			dd3 = nxFold(dd3, static_cast<unsigned>(checks3[k]));
+
+		bool okOWD = dd3 == oOwnDtorDigest;
+		printf("owndtor candidate ok=%u digest=%08x\n", okOWD ? 1u : 0u, dd3);
+		if(!okOWD)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 50u);
 		}
 		// -- post-creation template state: fresh record + internal bit31.
 		{

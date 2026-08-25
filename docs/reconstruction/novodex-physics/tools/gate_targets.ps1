@@ -646,12 +646,13 @@ $NxRequiredCoverageLines = [ordered] @{
         'grouperr row=phys_fn_001329 invalid_fires=1 d8=00000005 c8=00000020 digest=b6f879ec',
         'loaderr row=sphere+capsule fires=1/1 rad=bf800000.bf800000 hh=00000000 digest=8f125103',
         'materialboot row=template flags=00000000 digest=dcc6a675',
+        'owndtor row=oracle flag=00000002 clr=1/1/1 pop=0 mv=0 fl=1 pair=0 freed=0 digest=6d133744',
         'ownctor row=oracle d4=00000003 sent_ok=1 mirror_ok=1 shp_ok=1 digest=641beb67',
         'material row=template flags=00000000 digest=527814f5',
         'capdtor row=phys_fn_001014 digest=7a376673',
         'capaabb row=phys_fn_001004 minmax=80000000.80000000.80000000.00000000.00000000.00000000',
         'layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1',
-        'layout oracle digest=128ffec1',
+        'layout oracle digest=1edbaf98',
         'hull support candidate ok=1 min_bits=c19c0000 max_bits=4eada5a5',
         'hull sharedhook candidate ok=1 stable=1',
         'basevt candidate ok=1 ret4=0 ret5=00000000 ret7=0',
@@ -681,7 +682,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'loaderr candidate ok=1 digest=8f125103',
         'material candidate ok=1 digest=527814f5',
         'ownctor candidate ok=1 digest=641beb67',
-        'materialboot candidate ok=1 digest=dcc6a675'
+        'materialboot candidate ok=1 digest=dcc6a675',
+        'owndtor candidate ok=1 digest=6d133744'
     )
 
     # The vendored third-party differential. Phase 4 vendors qhull 2003.1 and
@@ -839,7 +841,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 100  # 34 for NxPhysicsAssetTests, 66 for NxPhysicsThirdPartyTests
-    '5' = 87   # fifty-nine for NxPhysicsObjectLayoutTests (RED on purpose: vtables family open)
+    '5' = 89   # fifty-nine for NxPhysicsObjectLayoutTests (RED on purpose: vtables family open)
     '6' = 0
     '7' = 0
     '8' = 0
