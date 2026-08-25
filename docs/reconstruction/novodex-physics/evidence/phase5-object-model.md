@@ -1030,6 +1030,33 @@ from .rdata 0x10122180+ (a third copy of related topology). The census row
 stays discovered under phase-2 ownership; its full decode belongs to
 whoever reconstructs the box-hull construction end to end.
 
+## 3y. Task 4 scaffolding: the shape-to-scene registration interface
+
+ShapeBase's ctor owned arm -- everything Task 4's actors must provide --
+is now decoded end to end from the listing:
+
+- Guard (`0x000255e4..0x0002561d`): `owner = this[+0x04]`; registration
+  runs only when owner != null.
+- `scene = owner[+0x04]`; `container = scene[+0x48]`; then
+  `phys_fn_002423(container, shape)` registers the shape.
+- phys_fn_002423 (0x5c390) reads the shape's SCENE SLOT (this[+0xd4],
+  i.e. the base ctor's second argument) and inserts the shape pointer
+  into a growable vector at container+0x90/0x94/0x98
+  (begin/end/capacity): in-place store `[begin + slot*4] = shape` when
+  slot < count, otherwise growth in chunks of `(slot+0x100) & ~0xff`
+  entries through the SDK allocator.
+- It then calls 0x5bc90(container, slot), which performs the same dual
+  bookkeeping on a SECOND vector at container+0x00/0x04: two parallel
+  arrays indexed by scene slot.
+
+Consequences for a fake-owner differential (next step): a capture
+container must pre-size BOTH vectors so both paths take their in-place
+stores, and 0x5bc90's own tail needs decoding first -- it is another
+chunk-growing walker, not a trivial store. Also recorded en passant:
+every base-ctor run re-installs the three Prunable owner adapters at
+.data 0x10128470/74/78 (values 0x213e0/0x25520/0x25510), matching
+IcePrunable.h's globals.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is
