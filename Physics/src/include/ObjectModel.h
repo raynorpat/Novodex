@@ -258,6 +258,11 @@ class ShapeBase
 	//! because every family's apply/load rows reach it.
 	void				nxApplyGroup(unsigned short group);
 
+	//! BASE-table slot 6, phys_fn_001315 (0x000266a0): owner update.
+	//! For a detached shape (owner == null) this is a proven no-op that
+	//! returns immediately through the early exit at 0x00026abb.
+	void				nxApplyOwnerUpdate(unsigned flags);
+
 	//! BASE-level registry helper phys_fn_000480 (0x000edc0): associate or
 	//! dissociate a shape with a debug name through the global list at
 	//! .data 0x10123c0c. Called from apply-desc (slot 1) with the

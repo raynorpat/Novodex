@@ -343,6 +343,17 @@ void ShapeBase::nxApplyGroup(unsigned short group)
 	// dirty-flag 0x04 via 0x26c90 -- null-owner no-op on a detached shape.
 	}
 
+// phys_fn_001315 (0x000266a0), BASE-table slot 6. Detached-shape path:
+// owner == null takes the early exit at 0x00026abb which is a pure no-op
+// (pop ebp / add esp,0x84 / ret 4). The owned path needs scene
+// infrastructure from Task 4 and is not reachable for detached shapes.
+void ShapeBase::nxApplyOwnerUpdate(unsigned flags)
+	{
+	if(mOwner04 == nullptr)
+		return;
+	(void) flags;
+	}
+
 // ---------------------------------------------------------------------------
 // Shape-to-name registry. See evidence section 3o for the full decode.
 
