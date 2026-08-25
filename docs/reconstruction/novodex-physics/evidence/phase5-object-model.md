@@ -1120,6 +1120,26 @@ path. The transcription is decode-faithful to everything verified so far;
 the family gets built the moment those bodies are finished. No census or
 registration claims were made for the owned-dtor chain.
 
+## 3z2. The real-SDK pivot opened (and its price tag)
+
+The fake-container gymnastics have a natural exit: boot the REAL SDK
+in-process. `NxCreatePhysicsSDK` is not exported from this UE3 build, but
+the creator is located in the census: **phys_fn_000490** (0xfae0, 138 B)
+-- it bootstraps the FoundationSDK through the allocator adapter at
+0x101041a8, checks the version immediate **0x02010200 (= 2.1.2)** against
+its first argument, allocates a 0x38-byte SDK wrapper, constructs it via
+0xe1b0 and stores the singleton at 0x123c04.
+
+A first boot attempt under cdb crashes inside an external CRT-era module
+(0x60f54335) -- the shim's flat 1 MiB block is not enough: the SDK's
+allocator adapter needs REAL malloc/free semantics (arbitrary sizes,
+reuse after free) that a static block cannot provide. The honest bill:
+a proper bump-plus-freelist allocator emulation in the shim (sized ~64 KiB,
+serving any request, reusing freed ranges) before real-scene differentials
+become safe. That allocator emulator is Task 4's next infrastructure item;
+everything else (creator RVA, version constant, boot flow, singleton and
+materials-array mechanics) is now on the table.
+
 Task-4 status after this round: construct-with-owner closed bitwise;
 remove-with-owner interface mapped (three sites, offsets recorded); remover
 decode queued.
