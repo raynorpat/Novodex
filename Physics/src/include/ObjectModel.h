@@ -358,6 +358,8 @@ pushes, pushed first, then arg2) and then:
 
 The vertices (+0xf0..+0x14f) and every face-record float word stay untouched.
 */
+class MassFrame;	// declared in full below its first pointer-using member
+
 class BoxShape
 	{
 	public:
@@ -401,6 +403,15 @@ class BoxShape
 	//! `mov eax,ecx; ret` -- returns this, ignores every argument. The same
 	//! row fills all three slots.
 	BoxShape*			nxBoxSelf() const { return const_cast<BoxShape*>(this); }
+
+	//! BOX-table slot 4, phys_fn_000849 (0x0001c8c0), __thiscall
+	//! `ret 0xc`: the compute-mass row. Builds the unit-density solid-box
+	//! frame from the three half-extents into a local MassFrame, folds the
+	//! optional payload pair when `extra` is non-null, scales by `density`
+	//! unless it equals the .rdata 1.0f sentinel (fucompp), then merges
+	//! into *dest. Argument order as pushed: density, halfExtents, extra.
+	void				nxBoxComputeMassFrame(MassFrame* dest, float density,
+							const float* halfExtents, const void* extra);
 
 
 	//! BOX-table slot 0, phys_fn_000979 (0x00021940): the scalar deleting
@@ -474,6 +485,25 @@ class MassFrame
 	//! division whose quotient is 1/sum, not a no-op); inertia accumulates
 	//! componentwise. this and other must not alias.
 	void				nxMassFrameMerge(const MassFrame& other);
+
+	//! phys_fn_000829 (0x0001bd00), __thiscall `ret 4`: unit-density solid
+	//! box over three HALF-extents. The accumulator opens at the .rdata
+	//! 1.0f literal and each non-zero extent replaces-or-multiplies into
+	//! it (an integer word-compare -- -0.0f counts as non-zero); mass =
+	//! 8*hx*hy*hz ([0x101068f0]), diagonal = (mass/3) ([0x101068ec]) times
+	//! the pairwise squared-extent sums, every other word integer-zeroed.
+	void				nxMassFrameBuildBox(const float* halfExtents);
+
+	//! phys_fn_000845 (0x0001c7c0), __thiscall `ret 0xc`: unit-density
+	//! solid CYLINDER -- the hemispherical caps contribute nothing here.
+	//! mass = pi*r^2*(2c); the axial diagonal gets mass*r^2/2, the other
+	//! two the full cylinder transverse mass*(3r^2+4c^2)/12 over the
+	//! .rdata 3 ([0x101068f8]) / 4 ([0x101068f4]) / one-twelfth constants.
+	//! `axisSelector` picks the axial diagonal (0=x, 1=y, >=2=z). The
+	//! selector==1 path never writes +0x00 -- an image hole reproduced by
+	//! leaving that word untouched; drives use 0 and 2.
+	void				nxMassFrameBuildCapsule(unsigned axisSelector,
+							float radius, float cylHalfHeight);
 
 	//! +0x00..+0x20, stored row-major as three column triples.
 	NxF32				mInertia[9];
@@ -616,6 +646,16 @@ class CapsuleShape
 	//! (+0xe8) from the descriptor, then applies base fields through
 	//! BASE slot 1.
 	void				nxCapsuleLoadFromDesc(const void* record);
+
+	//! CAPSULE-table slot 4, phys_fn_000853 (0x0001c980), __thiscall
+	//! `ret 0x14`: the compute-mass row. Builds the unit-density cylinder
+	//! frame into a local MassFrame, folds the optional payload pair when
+	//! `extra` is non-null, scales by `density` unless it equals the .rdata
+	//! 1.0f sentinel, then merges into *dest. Argument order as pushed:
+	//! density, axisSelector, radius, cylHalfHeight, extra.
+	void				nxCapsuleComputeMassFrame(MassFrame* dest, float density,
+							unsigned axisSelector, float radius,
+							float cylHalfHeight, const void* extra);
 
 	//! CAPSULE-table slot 10, phys_fn_001001 (0x00021c30): pose-one
 	//! translation to out[0..2], halfHeight+radius to out[3].

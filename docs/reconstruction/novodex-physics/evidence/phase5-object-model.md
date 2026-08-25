@@ -554,9 +554,9 @@ infrastructure from later tasks:
 - **slot 7** (sweep): needs the swept-contact pipeline (Task 4);
 - **slot 3** (debug draw): needs the renderer vtable interface (Task 4);
 - **slot 4** (compute-mass; the "cached bounds" reading was falsified --
-  section 3p): the SPHERE row closed there without any scene
-  infrastructure; BOX and CAPSULE remain behind their builders (0x1bd00,
-  0x1c7c0) and the parallel-axis pair (0x1bdc0/0x1c040).
+  sections 3p/3q): all three per-type rows closed -- SPHERE, BOX and
+  CAPSULE -- without any scene infrastructure. Only the parallel-axis
+  pair (0x1bdc0/0x1c040) behind non-null `extra` drives stays open.
 
 These are NOT deferred because they are hard -- they are deferred because
 their inputs come from subsystems that Tasks 2 and 4 reconstruct. Closing
@@ -719,9 +719,77 @@ reconstructed state. The remaining ~376 discovered rows whose source names
 a not-yet-created per-class file are aspirational homes for Tasks 2–4 and
 were left alone.
 
-Still open in the chains: the box builder 0x1bd00, capsule builder
-0x1c7c0, and the parallel-axis pair 0x1bdc0/0x1c040; driving them closes
-BOX and CAPSULE slot 4 the same way.
+Still open in the chains after this round: nothing in the builders -- BOX
+and CAPSULE closed below; only the parallel-axis pair 0x1bdc0/0x1c040
+remains undecoded behind the null-extra drives.
+
+## 3q. BOX and CAPSULE slot 4: the remaining two mass-frame rows
+
+**BOX (phys_fn_000849, 0x0001c8c0, 101 B, `ret 0xc`).** Same skeleton as
+the sphere wrapper: local frame, optional payload pair when the fourth
+argument is non-null, density scale skipped exactly on fucompp equality
+with the 1.0f literal, merge into the destination. Pushed args:
+(density, halfExtents pointer, extra). The builder phys_fn_000829
+(0x0001bd00, 187 B) takes a POINTER to three floats and treats them as
+HALF-extents:
+
+- volume accumulator opens at the .rdata 1.0f literal; each extent is
+  tested with an INTEGER word compare (`cmp [eax],0`), non-zero replaces
+  the accumulator for the first hit then multiplies for the rest --
+  MassProperties.cpp documents the same shipped quirk;
+- mass = accumulator x **8** ([0x101068f0]) = 8hxhyhz -- full extents are
+  twice half-extents. That value stays live on the x87 stack across the
+  whole function while everything else is computed above it;
+- diagonal factor F = mass x **1/3** ([0x101068ec]); diagonals are
+  F(hy^2+hz^2), F(hz^2+hx^2), F(hx^2+hy^2) from squares of the raw
+  half-extents -- exactly m/12((2h)^2+(2h)^2), the solid-box tensor;
+- every off-diagonal and the COM offset integer-zeroed.
+
+Driven bitwise: halfExtents {1.5, 2.0, 2.5}, densities 2.0 and 1.0,
+mass_scaled=42f00000 (=120.0 exact), fold `d82de90e`, candidate identical
+first run through `BoxShape::nxBoxComputeMassFrame`.
+
+**CAPSULE (phys_fn_000853, 0x0001c980, 115 B, `ret 0x14`).** Five pushed
+args: (density, axisSelector, radius, cylHalfHeight, extra). Builder
+phys_fn_000845 (0x0001c7c0, 181 B):
+
+- unit-density CYLINDER: mass = pi*r^2*(2c) ([0x101068d0] = pi); the
+  hemispherical caps contribute nothing here;
+- axial diagonal = mass*r^2/2 (folded through .rdata 0.5f at 0x101043cc);
+- transverse pair = mass*(3r^2+4c^2)/12 -- the full cylinder formula over
+  [0x101068f8]=3, [0x101068f4]=4, [0x101068e0]=1/12;
+- axisSelector routes the axial term: 0 -> +0x00, >=2 -> +0x20, and
+  selector==1 writes +0x10 but NEVER WRITES +0x00 -- a real image hole.
+  The transcription reproduces the hole; the differential deliberately
+  drives selectors 2 and 0 only, because folding an uninitialised word
+  would compare garbage on both sides;
+- wrapper wiring confirmed against the ret: density compares at arg+4,
+  the payload pointer is arg+0x14.
+
+A second constant trap fell in the decode and cost one candidate
+iteration: `[0x101068f8]` was first read as 0.0f -- the zero belonged to
+the NEXT slot (0x101068fc); the dword at f8 is bits 0x40400000 = **3.0f**.
+The transcript's own diagonal words caught it: oracle transverse
+33.846 = m(3r^2+4c^2)/12 against the wrong-model prediction 26.18 =
+m(4c^2)/12. Lesson recorded: read constants with their addresses printed
+BESIDE the values, never infer a slot's value from its neighbour.
+
+Driven bitwise: drive E (selector 2, r 1.25, c 2.0, density 2) folds with
+diagonals 4287663e.4287663e.41f56fdb and mass 421d1463; drive F (selector
+0, density 1) gives 41756fdb.4207663e.4207663e.419d1463; fold `ab81bd0c`,
+candidate identical through `CapsuleShape::nxCapsuleComputeMassFrame`.
+
+Registrations +4 lines (two oracle rows, two candidate lines), coverage
+floor 69->73, oracle digest re-pinned 9f55f43b->b6b7eb30. Census:
+000849 reconstructed (already phase 5), 000853 reconstructed into phase 5
+-- ledger discharges it (deferred 436->435, phase3.json total follows);
+program.json p3 owned 394 / remaining 333, p5 owned 202. Builders
+000829/000845 annotated via static_proof while staying discovered.
+
+All three per-type compute-mass rows are now closed against the pinned
+oracle; the shared helpers' only remaining secret is the parallel-axis
+pair (0x1bdc0 635 B, 0x1c040 1371 B), reachable later through non-null
+`extra` drives.
 
 ## 4. The census merge resolved
 

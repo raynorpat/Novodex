@@ -613,6 +613,157 @@ void SphereShape::nxSphereComputeMassFrame(MassFrame* dest, float density,
 		local.nxMassFrameScale(density);
 	dest->nxMassFrameMerge(local);		}
 
+// ---------------------------------------------------------------------------
+// The BOX and CAPSULE slot-4 rows behind the same frame. Evidence section 3p.
+
+static const NxF32 gMassKOneThird = (1.0f / 3.0f);	// [0x101068ec] stored 0.33333334
+static const NxF32 gMassKEight = 8.0f;				// [0x101068f0]
+static const NxF32 gMassKFour = 4.0f;				// [0x101068f4]
+static const NxF32 gMassKThree = 3.0f;				// [0x101068f8] (bits 0x40400000)
+static const NxF32 gPiLiteral = 3.1415927f;			// [0x101068d0]
+static const NxF32 gHalfLiteral = 0.5f;				// [0x101043cc]
+static const NxF32 gTwelfthLiteral = 0.083333336f;	// [0x101068e0]
+
+namespace
+	{
+	// The box/capsule builders open their volume accumulator at the .rdata
+	// 1.0f literal and test each extent with an INTEGER word compare, so
+	// -0.0f counts as non-zero and replaces/multiplies in. MassProperties.cpp
+	// documents the same shipped quirk in the exported kernels.
+	inline bool nonZeroWord(float v)
+		{
+		NxU32 word;
+		memcpy(&word, &v, sizeof(word));
+		return word != 0;
+		}
+	}
+
+// phys_fn_000829 (0x0001bd00), __thiscall ret 4. Volume over half-extents:
+// the accumulator replaces with the first non-zero extent then multiplies the
+// rest, times 8 ([0x101068f0]) -- full extents are twice half-extents. That
+// mass value stays live on the x87 stack for the whole function; a copy times
+// 1/3 ([0x101068ec]) becomes the diagonal factor F. Squares are taken from
+// the raw floats; each diagonal is F times its pairwise sum (xx: y^2+z^2,
+// yy: z^2+x^2, zz: x^2+y^2), rounded once at the store.
+void MassFrame::nxMassFrameBuildBox(const float* he)
+	{
+	double acc = static_cast<double>(gMassDensitySentinel);	// fld 1.0f
+	if(nonZeroWord(he[0]))
+		acc = static_cast<double>(he[0]);					// fstp st(0); fld [eax]
+	if(nonZeroWord(he[1]))
+		acc *= static_cast<double>(he[1]);
+	if(nonZeroWord(he[2]))
+		acc *= static_cast<double>(he[2]);
+
+	double m = acc * static_cast<double>(gMassKEight);		// fmul [0x101068f0]
+	double f = m * static_cast<double>(gMassKOneThird);		// fld 1/3; fmul st(1)
+
+	double xx = static_cast<double>(he[0]) * static_cast<double>(he[0]);
+	double yy = static_cast<double>(he[1]) * static_cast<double>(he[1]);
+	double zz = static_cast<double>(he[2]) * static_cast<double>(he[2]);
+
+	mInertia[1] = mInertia[2] = mInertia[3] = 0.0f;			// integer zero stores
+	mInertia[5] = mInertia[6] = mInertia[7] = 0.0f;
+
+	double iXX = (zz + yy) * f;								// fadd st(2) chain
+	double iYY = (zz + xx) * f;
+	double iZZ = (yy + xx) * f;
+
+	mMass = static_cast<NxF32>(m);							// fstp [ecx+0x30]
+	mInertia[0] = static_cast<NxF32>(iXX);					// fstp [ecx]
+	mInertia[4] = static_cast<NxF32>(iYY);					// via [esp+0x10]
+	mInertia[8] = static_cast<NxF32>(iZZ);					// via [esp+0x14]
+	mOffset.x = 0.0f; mOffset.y = 0.0f; mOffset.z = 0.0f;
+	}
+
+// phys_fn_000845 (0x0001c7c0), __thiscall ret 0xc. A unit-density cylinder of
+// radius `radius` and height 2*cylHalfHeight: mass = pi*r^2*2c. The axial
+// diagonal carries mass*r^2/2 (through r^2*pi*c*... folded to mr^2/2 by the
+// .rdata 0.5f at 0x101043cc); the transverse pair carries the full cylinder
+// formula mass*(3r^2+4c^2)/12 ([0x101068f8] = 3, [0x101068f4] = 4, over the
+// .rdata 1/12 at 0x101068e0). axisSelector routes the axial term:
+// 0 -> +0x00, 1 -> +0x10 (and that path never writes +0x00 -- an image hole
+// this transcription reproduces), anything else -> +0x20.
+void MassFrame::nxMassFrameBuildCapsule(unsigned axisSelector, float radius,
+	float cylHalfHeight)
+	{
+	mInertia[1] = mInertia[2] = mInertia[3] = 0.0f;
+	mInertia[5] = mInertia[6] = mInertia[7] = 0.0f;
+
+	double c2 = static_cast<double>(cylHalfHeight);
+	c2 += c2;												// fadd st(0),st(0)
+	double m = c2 * static_cast<double>(radius);
+	m *= static_cast<double>(radius);
+	m *= static_cast<double>(gPiLiteral);					// pi from 0x101068d0
+
+	double axial = m * static_cast<double>(radius);			// fld r; fmul st(1)
+	axial *= static_cast<double>(radius);
+	axial *= static_cast<double>(gHalfLiteral);				// .rdata 0.5f
+
+	double rr = static_cast<double>(radius) * static_cast<double>(radius);
+	double t0 = rr * static_cast<double>(gMassKThree);
+	double t1 = static_cast<double>(cylHalfHeight) *
+		static_cast<double>(cylHalfHeight);
+	t1 *= static_cast<double>(gMassKFour);
+	double side = (t0 + t1) * m;							// faddp st(1); fmul st(1)
+	side *= static_cast<double>(gTwelfthLiteral);			// 1/12 from 0x101068e0
+
+	mMass = static_cast<NxF32>(m);
+
+	NxF32 sAx = static_cast<NxF32>(axial);
+	NxF32 sSide = static_cast<NxF32>(side);
+	if(axisSelector == 0)
+		{
+		mInertia[0] = sAx;
+		mInertia[4] = sSide;
+		mInertia[8] = sSide;
+		}
+	else if(axisSelector == 1)
+		{
+		mInertia[4] = sAx;
+		mInertia[8] = sSide;
+		// +0x00 stays as the caller left it: the image's selector==1 path
+		// never stores it.
+		}
+	else
+		{
+		mInertia[0] = sSide;
+		mInertia[4] = sSide;
+		mInertia[8] = sAx;
+		}
+	mOffset.x = 0.0f; mOffset.y = 0.0f; mOffset.z = 0.0f;
+	}
+
+// phys_fn_000849 (0x0001c8c0), __thiscall ret 0xc, BOX-table slot 4.
+void BoxShape::nxBoxComputeMassFrame(MassFrame* dest, float density,
+	const float* halfExtents, const void* extra)
+	{
+	MassFrame local;
+	local.nxMassFrameBuildBox(halfExtents);
+	if(extra != nullptr)
+		{
+		// push extra; call 0x1bdc0 ; extra += 0x24 ; call 0x1c040 -- the
+		// parallel-axis pair, not yet transcribed; drives pass null.
+		(void) extra;
+		}
+	if(density != gMassDensitySentinel)
+		local.nxMassFrameScale(density);
+	dest->nxMassFrameMerge(local);		}
+
+// phys_fn_000853 (0x0001c980), __thiscall ret 0x14, CAPSULE-table slot 4.
+void CapsuleShape::nxCapsuleComputeMassFrame(MassFrame* dest, float density,
+	unsigned axisSelector, float radius, float cylHalfHeight, const void* extra)
+	{
+	MassFrame local;
+	local.nxMassFrameBuildCapsule(axisSelector, radius, cylHalfHeight);
+	if(extra != nullptr)
+		{
+		(void) extra;						// parallel-axis pair, see above
+		}
+	if(density != gMassDensitySentinel)
+		local.nxMassFrameScale(density);
+	dest->nxMassFrameMerge(local);		}
+
 
 // ---------------------------------------------------------------------------
 // CapsuleShape. See ObjectModel.h for the row map.

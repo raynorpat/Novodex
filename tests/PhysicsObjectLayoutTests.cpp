@@ -289,6 +289,8 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oGroupDigest = 0;
 	unsigned oPlaneExtentDigest = 0;
 	unsigned oMassFrameDigest = 0;
+	unsigned oBoxMassDigest = 0;
+	unsigned oCapMassDigest = 0;
 	static unsigned char sSaveStateRecord[0x48];
 
 	// -----------------------------------------------------------------------
@@ -1704,6 +1706,95 @@ int wmain(int argc, wchar_t** argv)
 	oracleDigest = nxFold(oracleDigest, md);
 	printf("massframe row=phys_fn_000851 mass_scaled=%08x mass_unit=%08x digest=%08x\n",
 		massA, massB, md);
+	}
+
+	// -----------------------------------------------------------------------
+	// BOX slot 4, phys_fn_000849: the compute-mass row over three
+	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
+	// exact 1.0f sentinel -- folded over all thirteen words of each frame.
+	// Extra payload pointer stays null (parallel-axis pair undecoded).
+	{
+	typedef void (__thiscall* NxBoxMassFn)(void* self, float density,
+		const float* halfExtents, const void* extra);
+	NxBoxMassFn boxMassFn = (NxBoxMassFn) (base + 0x0001c8c0);
+
+	static const float kHalfExt[3] = { 1.5f, 2.0f, 2.5f };
+	unsigned char destC[0x34];
+	memset(destC, 0, sizeof(destC));
+	boxMassFn(destC, 2.0f, kHalfExt, 0);
+
+	unsigned char destD[0x34];
+	memset(destD, 0, sizeof(destD));
+	boxMassFn(destD, 1.0f, kHalfExt, 0);
+
+	unsigned bd = 2166136261u;
+	for(int v = 0; v < 2; ++v)
+		{
+		const unsigned char* src = (v == 0) ? destC : destD;
+		for(int i = 0; i < 0x34; i += 4)
+			{
+			unsigned w;
+			memcpy(&w, src + i, 4);
+			bd = nxFold(bd, w);
+			}
+		}
+	oBoxMassDigest = bd;
+
+	unsigned mC, mD;
+	memcpy(&mC, destC + 0x30, 4);
+	memcpy(&mD, destD + 0x30, 4);
+	oracleDigest = nxFold(oracleDigest, bd);
+	printf("boxmass row=phys_fn_000849 mass_scaled=%08x mass_unit=%08x digest=%08x\n",
+		mC, mD, bd);
+	}
+
+	// -----------------------------------------------------------------------
+	// CAPSULE slot 4, phys_fn_000853: the compute-mass row. Drive one:
+	// axisSelector 2 (axial on +0x20), radius 1.25, cylHalfHeight 2.0,
+	// density 2.0f. Drive two: selector 0 (the other fully-written path),
+	// same geometry, density exactly 1.0f. Selector 1 is not driven: its
+	// path never writes +0x00, so the fold would compare uninitialised
+	// memory on both sides.
+	{
+	typedef void (__thiscall* NxCapMassFn)(void* self, float density,
+		unsigned axisSelector, float radius, float cylHalfHeight,
+		const void* extra);
+	NxCapMassFn capMassFn = (NxCapMassFn) (base + 0x0001c980);
+
+	unsigned char destE[0x34];
+	memset(destE, 0, sizeof(destE));
+	capMassFn(destE, 2.0f, 2u, 1.25f, 2.0f, 0);
+
+	unsigned char destF[0x34];
+	memset(destF, 0, sizeof(destF));
+	capMassFn(destF, 1.0f, 0u, 1.25f, 2.0f, 0);
+
+	unsigned cd = 2166136261u;
+	for(int v = 0; v < 2; ++v)
+		{
+		const unsigned char* src = (v == 0) ? destE : destF;
+		for(int i = 0; i < 0x34; i += 4)
+			{
+			unsigned w;
+			memcpy(&w, src + i, 4);
+			cd = nxFold(cd, w);
+			}
+		}
+	oCapMassDigest = cd;
+
+	unsigned mE, mF;
+	memcpy(&mE, destE + 0x30, 4);
+	memcpy(&mF, destF + 0x30, 4);
+	unsigned eI0, eI4, eI8, fI0, fI4, fI8;
+	memcpy(&eI0, destE, 4);
+	memcpy(&eI4, destE + 0x10, 4);
+	memcpy(&eI8, destE + 0x20, 4);
+	memcpy(&fI0, destF, 4);
+	memcpy(&fI4, destF + 0x10, 4);
+	memcpy(&fI8, destF + 0x20, 4);
+	oracleDigest = nxFold(oracleDigest, cd);
+	printf("capmass row=phys_fn_000853 e=%08x.%08x.%08x.%08x f=%08x.%08x.%08x.%08x digest=%08x\n",
+		eI0, eI4, eI8, mE, fI0, fI4, fI8, mF, cd);
 	}
 
 	// -----------------------------------------------------------------------
@@ -3180,6 +3271,67 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 41u);
+		}
+		// -- box slot 4 compute-mass: twin drive through transcription.
+		{
+		unsigned char bbytesM[0x228];
+		memset(bbytesM, 0xcd, sizeof(bbytesM));
+		BoxShape& bxsM = *new(bbytesM) BoxShape(0, 0);
+		static const float kHalfExt2[3] = { 1.5f, 2.0f, 2.5f };
+		unsigned char dC[0x34];
+		memset(dC, 0, sizeof(dC));
+		bxsM.nxBoxComputeMassFrame(reinterpret_cast<MassFrame*>(dC), 2.0f, kHalfExt2, 0);
+		unsigned char dD[0x34];
+		memset(dD, 0, sizeof(dD));
+		bxsM.nxBoxComputeMassFrame(reinterpret_cast<MassFrame*>(dD), 1.0f, kHalfExt2, 0);
+
+		unsigned bd2 = 2166136261u;
+		for(int v = 0; v < 2; ++v)
+			{
+			const unsigned char* src = (v == 0) ? dC : dD;
+			for(int i = 0; i < 0x34; i += 4)
+				{
+				unsigned w;
+				memcpy(&w, src + i, 4);
+				bd2 = nxFold(bd2, w);
+				}
+			}
+		bool okBM = bd2 == oBoxMassDigest;
+		printf("boxmass candidate ok=%u digest=%08x\n", okBM ? 1u : 0u, bd2);
+		if(!okBM)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 42u);
+		}
+		// -- capsule slot 4 compute-mass: twin drive through transcription.
+		{
+		unsigned char cbytesM[0xec];
+		memset(cbytesM, 0xcd, sizeof(cbytesM));
+		CapsuleShape& capM = *new(cbytesM) CapsuleShape(0, 0);
+		unsigned char dE[0x34];
+		memset(dE, 0, sizeof(dE));
+		capM.nxCapsuleComputeMassFrame(reinterpret_cast<MassFrame*>(dE), 2.0f, 2u, 1.25f, 2.0f, 0);
+		unsigned char dF[0x34];
+		memset(dF, 0, sizeof(dF));
+		capM.nxCapsuleComputeMassFrame(reinterpret_cast<MassFrame*>(dF), 1.0f, 0u, 1.25f, 2.0f, 0);
+
+		unsigned cd2 = 2166136261u;
+		for(int v = 0; v < 2; ++v)
+			{
+			const unsigned char* src = (v == 0) ? dE : dF;
+			for(int i = 0; i < 0x34; i += 4)
+				{
+				unsigned w;
+				memcpy(&w, src + i, 4);
+				cd2 = nxFold(cd2, w);
+				}
+			}
+		bool okCM = cd2 == oCapMassDigest;
+		printf("capmass candidate ok=%u digest=%08x\n", okCM ? 1u : 0u, cd2);
+		if(!okCM)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 43u);
 		}
 
 
