@@ -43573,7 +43573,7 @@
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/908",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7458",
-      "static_proof": null,
+      "static_proof": "slot bookkeeping for the same scene arrays: writes a free-list sentinel -1 into array2[slot] and mirrors a count into a further vector at container+0x20; manages at least three parallel arrays (+0x00/04, +0x10/14, +0x20) with the same chunk-growth pattern; full body undecoded",
       "dynamic_proof": null,
       "notes": ""
     },
@@ -43681,7 +43681,7 @@
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/910",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7531",
-      "static_proof": null,
+      "static_proof": "scene shape-array insert: keyed by the shape's scene slot (shape+0xd4), inserts the shape pointer into the growable vector at container+0x90/0x94/0x98 -- in-place store [begin+slot*4] when slot < count, otherwise chunk growth of (slot+0x100)&~0xff entries through the SDK allocator adapter; touches no other container fields",
       "dynamic_proof": null,
       "notes": ""
     },
