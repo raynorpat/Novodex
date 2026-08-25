@@ -2863,6 +2863,13 @@
       "confidence": "semantic",
       "evidence": "oracle/capstone/manifest.json",
       "reason": "wrapper indirection; inner refcount incremented on bind"
+    },
+    {
+      "id": "phys_fn_000851",
+      "label": "NxSphereShape compute-mass row (slot 4)",
+      "confidence": "semantic",
+      "evidence": "oracle/capstone/manifest.json",
+      "reason": "builds a unit-density sphere mass frame, density-scales it unless equal to the .rdata 1.0f sentinel, merges into the destination; driven bitwise by the massframe family"
     }
   ]
 }

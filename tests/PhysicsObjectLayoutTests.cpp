@@ -288,6 +288,7 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oCapsuleSetDigest = 0;
 	unsigned oGroupDigest = 0;
 	unsigned oPlaneExtentDigest = 0;
+	unsigned oMassFrameDigest = 0;
 	static unsigned char sSaveStateRecord[0x48];
 
 	// -----------------------------------------------------------------------
@@ -1663,6 +1664,46 @@ int wmain(int argc, wchar_t** argv)
 	bool noop = memcmp(pre, oshape, sizeof(pre)) == 0;
 	oracleDigest = nxFold(oracleDigest, noop ? 1u : 0u);
 	printf("ownerupd row=phys_fn_001315 noop=%u\n", noop ? 1u : 0u);
+	}
+
+	// -----------------------------------------------------------------------
+	// SPHERE slot 4, phys_fn_000851: the compute-mass row. Two drives -- a
+	// scaled density (2.0f, through 0x1c5c0) and the exact .rdata 1.0f
+	// sentinel (skipping it) -- folded over all thirteen words of each
+	// destination frame. The optional payload pointer stays null: its
+	// parallel-axis pair (0x1bdc0/0x1c040) is not decoded yet.
+	{
+	typedef void (__thiscall* NxMassFn)(void* self, float density,
+		float radius, const void* extra);
+	NxMassFn massFn = (NxMassFn) (base + 0x0001c930);
+
+	unsigned char destA[0x34];
+	memset(destA, 0, sizeof(destA));
+	massFn(destA, 2.0f, 2.5f, 0);
+
+	unsigned char destB[0x34];
+	memset(destB, 0, sizeof(destB));
+	massFn(destB, 1.0f, 2.5f, 0);
+
+	unsigned md = 2166136261u;
+	for(int v = 0; v < 2; ++v)
+		{
+		const unsigned char* src = (v == 0) ? destA : destB;
+		for(int i = 0; i < 0x34; i += 4)
+			{
+			unsigned w;
+			memcpy(&w, src + i, 4);
+			md = nxFold(md, w);
+			}
+		}
+	oMassFrameDigest = md;
+
+	unsigned massA, massB;
+	memcpy(&massA, destA + 0x30, 4);
+	memcpy(&massB, destB + 0x30, 4);
+	oracleDigest = nxFold(oracleDigest, md);
+	printf("massframe row=phys_fn_000851 mass_scaled=%08x mass_unit=%08x digest=%08x\n",
+		massA, massB, md);
 	}
 
 	// -----------------------------------------------------------------------
@@ -3093,6 +3134,52 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 39u);
+		}
+		// -- base slot 6 owner-update: detached no-op, twin drive.
+		{
+		unsigned char obytes[0xe4];
+		memset(obytes, 0xcd, sizeof(obytes));
+		SphereShape& sphOU = *new(obytes) SphereShape(0, 0);
+		unsigned char preOU[16];
+		memcpy(preOU, obytes, sizeof(preOU));
+		sphOU.mBase.nxApplyOwnerUpdate(0);
+		bool okOU = memcmp(preOU, obytes, sizeof(preOU)) == 0;
+		printf("ownerupd candidate ok=%u\n", okOU ? 1u : 0u);
+		if(!okOU)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 40u);
+		}
+		// -- sphere slot 4 compute-mass: twin drive through transcription.
+		// Same two drives as the oracle block, same fold order.
+		{
+		unsigned char sbytesM[0xe4];
+		memset(sbytesM, 0xcd, sizeof(sbytesM));
+		SphereShape& sphM = *new(sbytesM) SphereShape(0, 0);
+		unsigned char dA[0x34];
+		memset(dA, 0, sizeof(dA));
+		sphM.nxSphereComputeMassFrame(reinterpret_cast<MassFrame*>(dA), 2.0f, 2.5f, 0);
+		unsigned char dB[0x34];
+		memset(dB, 0, sizeof(dB));
+		sphM.nxSphereComputeMassFrame(reinterpret_cast<MassFrame*>(dB), 1.0f, 2.5f, 0);
+
+		unsigned md2 = 2166136261u;
+		for(int v = 0; v < 2; ++v)
+			{
+			const unsigned char* src = (v == 0) ? dA : dB;
+			for(int i = 0; i < 0x34; i += 4)
+				{
+				unsigned w;
+				memcpy(&w, src + i, 4);
+				md2 = nxFold(md2, w);
+				}
+			}
+		bool okMF = md2 == oMassFrameDigest;
+		printf("massframe candidate ok=%u digest=%08x\n", okMF ? 1u : 0u, md2);
+		if(!okMF)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 41u);
 		}
 
 

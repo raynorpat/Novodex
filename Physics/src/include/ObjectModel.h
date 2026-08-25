@@ -443,6 +443,50 @@ ShapeBase::ShapeBase (0x000277bb..cf) and then:
 The per-shape sentinel values now read: box 2, sphere 1 -- plausibly an
 NxShapeType tag, consumer unestablished.
 */
+/**
+The 0x34-byte mass frame the shape tables' slot-4 rows accumulate: a 3x3
+inertia tensor at +0x00..+0x20, a center-of-mass offset at +0x24..+0x2c and a
+mass at +0x30. Decoded out of the SPHERE slot-4 chain -- evidence section
+3p carries the full disassembly walk. This is the structure the exported
+Phase 3 mass kernels feed: the same .rdata constants (0x101068d8 = 4pi/3,
+0x101068e4 = 2/5) participate on both sides.
+*/
+class MassFrame
+	{
+	public:
+	//! phys_fn_000843 (0x0001c750), __thiscall `ret 8`: unit-density solid
+	//! sphere of `radius`. mass = (4pi/3)r^3, diagonal inertia =
+	//! (2/5)mass r^2, every other word zeroed. When `extra` is non-null two
+	//! point-mass payloads at extra+0 and extra+0x24 fold in through
+	//! phys_fn_000831/000833 -- not yet transcribed, so this transcription
+	//! documents rather than reproduces that arm; the differential drives
+	//! null.
+	void				nxMassFrameBuildSphere(float radius, const void* extra);
+
+	//! phys_fn_000837 (0x0001c5c0), __thiscall `ret 4`: multiply the nine
+	//! inertia words and the mass by `s`. The COM offset does not
+	//! participate -- scaling a frame by a density keeps its center.
+	void				nxMassFrameScale(float s);
+
+	//! phys_fn_000839 (0x0001c630), __thiscall `ret 4`: merge `other` into
+	//! this. mass sums; the offset becomes the mass-weighted average
+	//! divided through the .rdata 1.0f literal at 0x101041ec (a full x87
+	//! division whose quotient is 1/sum, not a no-op); inertia accumulates
+	//! componentwise. this and other must not alias.
+	void				nxMassFrameMerge(const MassFrame& other);
+
+	//! +0x00..+0x20, stored row-major as three column triples.
+	NxF32				mInertia[9];
+	//! +0x24..+0x2c.
+	NxVec3				mOffset;
+	//! +0x30.
+	NxF32				mMass;		};
+
+static_assert(sizeof(MassFrame) == 0x34, "the mass frame is thirteen floats");
+
+/**
+The sphere shape. Constructor phys_fn_001349 (0x000277c0).
+*/
 class SphereShape
 	{
 	public:
@@ -490,6 +534,15 @@ class SphereShape
 	//! Reads radius from record+0x4c (validating through the error stream),
 	//! stores at +0xe0, then tail-calls the BASE apply-desc row.
 	void				nxSphereLoadFromDesc(const void* record);
+
+	//! SPHERE-table slot 4, phys_fn_000851 (0x0001c930), __thiscall
+	//! `ret 0xc`: the compute-mass row. Builds the unit-density solid-sphere
+	//! frame into a local MassFrame, folds the optional payload pair when
+	//! `extra` is non-null, scales by `density` unless it equals the .rdata
+	//! 1.0f sentinel (fucompp -- an unordered density still scales), then
+	//! merges into *dest. Argument order as pushed: density, radius, extra.
+	void				nxSphereComputeMassFrame(MassFrame* dest, float density,
+							float radius, const void* extra);
 
 	//! SPHERE-table slot 11, phys_fn_001365 (0x000279b0): zeroes out[0..2],
 	//! radius to out[3].

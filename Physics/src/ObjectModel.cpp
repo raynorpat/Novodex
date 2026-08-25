@@ -497,6 +497,124 @@ void SphereShape::nxSphereLoadFromDesc(const void* record)
 	}
 
 // ---------------------------------------------------------------------------
+// The mass frame and the SPHERE slot-4 row behind it. See evidence section
+// 3p for the disassembly walk this transcribes.
+
+// The stored .rdata words participate in the arithmetic, exactly as in
+// MassProperties.cpp -- same literals, different rows.
+static const NxF32 gMassKFourThirdsPi = 4.1887903f;	// [0x101068d8]
+static const NxF32 gMassKTwoFifths = 0.4f;			// [0x101068e4]
+static const NxF32 gMassDensitySentinel = 1.0f;		// [0x101041ec]
+
+namespace
+	{
+	// The process runs x87 at _PC_53, so every register intermediate is a
+	// double and only the stores round to 32 bits. Writing the lifetimes as
+	// double reproduces the oracle bitwise (same argument as
+	// MassProperties.cpp's header comment).
+	inline NxF32 mul32(NxF32 a, NxF32 b)
+		{
+		double p = static_cast<double>(a) * static_cast<double>(b);
+		return static_cast<NxF32>(p);
+		}
+	}
+
+// phys_fn_000843 (0x0001c750), __thiscall ret 8. The image squares and cubes
+// the radius on the x87 stack, multiplies by 4pi/3 for the mass, then keeps
+// going from the mass value -- r^3 -> r^5 through two more radius multiplies,
+// one 2/5 -- for the diagonal inertia. Nine words are zeroed by integer moves
+// (+0x04..+0x1c off-diagonal thirds and the whole offset), which is why a
+// fresh frame carries exact +0.0f there.
+void MassFrame::nxMassFrameBuildSphere(float radius, const void* extra)
+	{
+	double r3 = static_cast<double>(radius);
+	r3 *= static_cast<double>(radius);
+	r3 *= static_cast<double>(radius);					// fld/fmul/fmul chain
+	double mass = r3 * static_cast<double>(gMassKFourThirdsPi);
+
+	double diag = mass;
+	diag *= static_cast<double>(radius);				// back up to r^4
+	diag *= static_cast<double>(radius);				// r^5
+	diag *= static_cast<double>(gMassKTwoFifths);		// (2/5) m r^2
+
+	NxF32 stored = static_cast<NxF32>(mass);
+	mMass = stored;										// fstp [esi+0x30]
+	NxF32 inertia = static_cast<NxF32>(diag);
+	mInertia[0] = inertia;								// fst [esi] / [esi+0x10] / [esi+0x20]
+	mInertia[4] = inertia;
+	mInertia[8] = inertia;
+	// mov dword ptr [esi+4/+8/+0xc/+0x14/+0x18/+0x1c], 0
+	mInertia[1] = mInertia[2] = mInertia[3] = 0.0f;
+	mInertia[5] = mInertia[6] = mInertia[7] = 0.0f;
+	// and the whole COM offset triple, also integer-zeroed
+	mOffset.x = 0.0f; mOffset.y = 0.0f; mOffset.z = 0.0f;
+
+	if(extra != nullptr)
+		{
+		// push extra; call 0x1bdc0 ; add extra,0x24 ; call 0x1c040 --
+		// the parallel-axis pair. Neither helper is transcribed yet; this
+		// arm is documented, not reproduced, and every drive passes null.
+		(void) extra;
+		}
+	}
+
+// phys_fn_000837 (0x0001c5c0), __thiscall ret 4. Ten fld/fmul/fstp triples:
+// the nine inertia words and the mass. The offset at +0x24..+0x2c is skipped
+// entirely -- scaling by density keeps the center.
+void MassFrame::nxMassFrameScale(float s)
+	{
+	for(unsigned i = 0; i < 9; ++i)
+		mInertia[i] = mul32(mInertia[i], s);
+	mMass = mul32(mMass, s);
+	}
+
+// phys_fn_000839 (0x0001c630), __thiscall ret 4. The weights live at +0x30 on
+// both frames; the quotient divides the .rdata 1.0f literal by their sum (a
+// real fdiv, kept single-precision-source but full x87 precision). The
+// products are formed weight-times-offset per frame first, added pairwise --
+// x-side as other+this, y/z sides as this+other, matching the stack order --
+// scaled by the quotient and stored z, x, y. Then mass takes the raw sum and
+// the nine inertia words accumulate componentwise.
+void MassFrame::nxMassFrameMerge(const MassFrame& other)
+	{
+	double sum = static_cast<double>(mMass) + static_cast<double>(other.mMass);
+	double q = static_cast<double>(gMassDensitySentinel) / sum;
+
+	double ax = static_cast<double>(other.mMass) * static_cast<double>(other.mOffset.x);
+	double ay = static_cast<double>(other.mMass) * static_cast<double>(other.mOffset.y);
+	double az = static_cast<double>(other.mMass) * static_cast<double>(other.mOffset.z);
+	double cx = static_cast<double>(mMass) * static_cast<double>(mOffset.x);
+	double cy = static_cast<double>(mMass) * static_cast<double>(mOffset.y);
+	double cz = static_cast<double>(mMass) * static_cast<double>(mOffset.z);
+
+	NxF32 zx = static_cast<NxF32>((ax + cx) * q);
+	NxF32 zz = static_cast<NxF32>((cz + az) * q);
+	NxF32 zy = static_cast<NxF32>((cy + ay) * q);
+	mOffset.x = zx;						// fstp [ecx+0x24]
+	mOffset.y = zy;						// fstp [ecx+0x28]
+	mOffset.z = zz;						// fstp [ecx+0x2c] (stored first in the image)
+	mMass = static_cast<NxF32>(sum);	// fstp [ecx+0x30]
+
+	for(unsigned i = 0; i < 9; ++i)
+		mInertia[i] = static_cast<NxF32>(
+			static_cast<double>(mInertia[i]) + static_cast<double>(other.mInertia[i]));
+	}
+
+// phys_fn_000851 (0x0001c930), __thiscall ret 0xc, SPHERE-table slot 4.
+// Local frame, optional payload fold, conditional density scale against the
+// 1.0f sentinel (fucompp/test ah,0x44/jnp: an unordered density falls through
+// and scales, which `!=` reproduces), merge into the destination.
+void SphereShape::nxSphereComputeMassFrame(MassFrame* dest, float density,
+	float radius, const void* extra)
+	{
+	MassFrame local;
+	local.nxMassFrameBuildSphere(radius, extra);
+	if(density != gMassDensitySentinel)
+		local.nxMassFrameScale(density);
+	dest->nxMassFrameMerge(local);		}
+
+
+// ---------------------------------------------------------------------------
 // CapsuleShape. See ObjectModel.h for the row map.
 
 CapsuleShape::CapsuleShape(void* owner, unsigned argument)

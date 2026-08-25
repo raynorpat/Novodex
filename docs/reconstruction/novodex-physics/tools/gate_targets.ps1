@@ -638,10 +638,11 @@ $NxRequiredCoverageLines = [ordered] @{
         'planeload row=phys_fn_001265 ny=3f800000',
         'meshload row=phys_fn_001383 bound=1',
         'boxload row=phys_fn_000981 stored=1',
+        'massframe row=phys_fn_000851 mass_scaled=4302e653 mass_unit=4282e653 digest=0bed6c36',
         'capdtor row=phys_fn_001014 digest=7a376673',
         'capaabb row=phys_fn_001004 minmax=80000000.80000000.80000000.00000000.00000000.00000000',
         'layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1',
-        'layout oracle digest=df843c3c',
+        'layout oracle digest=9f55f43b',
         'hull support candidate ok=1 min_bits=c19c0000 max_bits=4eada5a5',
         'hull sharedhook candidate ok=1 stable=1',
         'basevt candidate ok=1 ret4=0 ret5=00000000 ret7=0',
@@ -660,7 +661,9 @@ $NxRequiredCoverageLines = [ordered] @{
         'setrad candidate ok=1 rad=3fa00000',
         'capsetrad candidate ok=1 rad=3fc00000',
         'setgroup candidate ok=1 hw_d8=0007',
-        'sphload candidate ok=1 rad=40200000 group=0006'
+        'sphload candidate ok=1 rad=40200000 group=0006',
+        'ownerupd candidate ok=1',
+        'massframe candidate ok=1 digest=0bed6c36'
     )
 
     # The vendored third-party differential. Phase 4 vendors qhull 2003.1 and
@@ -818,7 +821,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 100  # 34 for NxPhysicsAssetTests, 66 for NxPhysicsThirdPartyTests
-    '5' = 66   # forty-two for NxPhysicsObjectLayoutTests (RED on purpose: vtables family open)
+    '5' = 69   # forty-five for NxPhysicsObjectLayoutTests (RED on purpose: vtables family open)
     '6' = 0
     '7' = 0
     '8' = 0

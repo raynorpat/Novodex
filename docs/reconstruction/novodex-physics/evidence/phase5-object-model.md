@@ -553,9 +553,10 @@ infrastructure from later tasks:
 - **slot 5** (raycast): needs the NxRaycastHit output structure (Task 2);
 - **slot 7** (sweep): needs the swept-contact pipeline (Task 4);
 - **slot 3** (debug draw): needs the renderer vtable interface (Task 4);
-- **slot 4** (cached bounds): needs helper chains like `0x1c8c0` and
-  `0x1c930` which are themselves multi-hundred-byte functions reaching
-  into scene infrastructure (Task 4).
+- **slot 4** (compute-mass; the "cached bounds" reading was falsified --
+  section 3p): the SPHERE row closed there without any scene
+  infrastructure; BOX and CAPSULE remain behind their builders (0x1bd00,
+  0x1c7c0) and the parallel-axis pair (0x1bdc0/0x1c040).
 
 These are NOT deferred because they are hard -- they are deferred because
 their inputs come from subsystems that Tasks 2 and 4 reconstruct. Closing
@@ -628,7 +629,8 @@ field points to the inner triangle-mesh object. shape+0xe0 receives
 After storing mesh and flags (+0xe4 from desc+0x50), it tail-jumps to BASE
 slot 1. Null mesh pointer returns false without touching state.
 
-Cached-bounds (slot 4) helper call graph, decoded from prologues:
+Slot-4 helper call graph, decoded from prologues (later falsified and
+corrected -- see section 3p):
 
 - BOX slot 4 -> 0x1c8c0 -> {0x1bd00, 0x1bdc0, 0x1c040, 0x1c5c0*, 0x1c630}
 - SPHERE slot 4 -> 0x1c930 -> {0x1c750, 0x1c5c0*, 0x1c630}
@@ -640,6 +642,86 @@ expands through 0x1bdc0+0x1c040 when a second operand exists, applies a
 conditional transform via 0x1c5c0 when a scalar equals [.rdata 0x101041ec]
 (= 0.0f sentinel), then commits through 0x1c630 into the caller output.
 Decoding the five shared sub-helpers unlocks all three slot-4 rows at once.
+
+## 3p. Slot 4 is a mass-frame row: the SPHERE chain decoded, driven, closed
+
+The prologue-level reading above was wrong twice over, and both errors came
+out of decoding the shared helpers instead of guessing from their callers.
+
+**The constant was misread.** `.rdata 0x101041ec` is **1.0f** (bits
+`0x3f800000`, read straight out of the file through the section table; the
+phase 3 narrow-phase evidence already recorded it correctly). It is not a
+0.0f sentinel, and the branch it participates in is an *equality skip*, not
+a zero-detect.
+
+**The rows are not cached bounds.** They are compute-mass rows. The
+structure every chain member operates on is a 13-float **mass frame**:
+
+```
++0x00..+0x20   nine floats   inertia tensor (row-major triples)
++0x24..+0x2c   three floats  center-of-mass offset
++0x30          one float     mass
+```
+
+The decode, smallest helper first:
+
+- **phys_fn_000837 (0x0001c5c0, 101 B)** — scale, `__thiscall ret 4`. Ten
+  `fld/fmul/fstp` triples multiply the nine inertia words and the mass by
+  the argument. The COM offset at +0x24..+0x2c does not participate:
+  scaling by a density keeps the center.
+- **phys_fn_000839 (0x0001c630, 231 B)** — merge, `__thiscall ret 4`.
+  Masses sum (`fld [ecx+0x30]; fadd [eax+0x30]`). The quotient is a real
+  x87 `fdiv`: the 1.0f literal divided by the mass sum. Each side's
+  weight-times-offset products are formed first, added pairwise (x as
+  other+this, y/z as this+other — stack order, bitwise irrelevant for
+  clean inputs), scaled by the quotient and stored z, x, y into the COM
+  offset; then the raw sum stores into +0x30; then the nine inertia words
+  accumulate componentwise. This is a center-of-mass merge plus parallel-
+  axis-ready inertia accumulation.
+- **phys_fn_000843 (0x0001c750, 110 B)** — unit-density solid-sphere
+  builder, `__thiscall ret 8`. Radius cubed on the x87 stack, times
+  `[.rdata 0x101068d8]` = **4π/3**, stored at +0x30; from that same value,
+  two more radius multiplies then `[.rdata 0x101068e4]` = **2/5** give the
+  diagonal inertia `(2/5)·m·r²`, stored to +0x00/+0x10/+0x20. Every other
+  word is integer-zeroed (exact +0.0f). A non-null second argument folds
+  two point-mass payloads at arg+0 and arg+0x24 through phys_fn_000831 /
+  000833 (the parallel-axis pair, still undecoded).
+- **phys_fn_000851 (0x0001c930, 77 B)** — the SPHERE-table slot-4 row
+  itself, `__thiscall ret 0xc`, args pushed (density, radius, extra).
+  Builds the unit frame into a local, scales it through 0x1c5c0 unless a
+  `fucompp` against the 1.0f literal finds equality (`test ah,0x44/jnp` —
+  an unordered density falls through and scales), then commits into the
+  destination through 0x1c630.
+
+The same constants participate in the exported Phase 3 mass kernels
+(MassProperties.cpp records 0x101068d8 and 0x101068e4 already); slot 4 is
+where those kernels' math hangs off the shape tables.
+
+**Driven bitwise.** New `massframe` family: two oracle drives of 0x1c930
+(density 2.0f through the scale arm; exactly 1.0f skipping it), radius
+2.5f, extra null, all thirteen words of each destination folded.
+`mass_scaled=4302e653` (=130.90…, exactly (4π/3)·2.5³·2), `mass_unit=
+4282e653`, fold `0bed6c36`; candidate answers through the transcription
+(`MassFrame` + `SphereShape::nxSphereComputeMassFrame`) and matches
+bitwise first run. Registrations +3 lines (oracle row, both candidate
+lines), floor 66→69, oracle digest re-pinned df843c3c→9f55f43b in the same
+diff. Census: phys_fn_000851 → reconstructed/phase 5 with semantic label;
+helpers 000837/000839/000843 annotated via static_proof while staying
+discovered; phase-3 ledger discharges the row (deferred 437→436,
+not-reconstructed sub-count 315→314); program.json rebalanced p3 owned
+395 / remaining 334, p5 owned 201.
+
+Two census hygiene defects fixed in passing: phys_fn_000989 and
+phys_fn_001353 (both driven, one reconstructed) recorded sources under
+per-class filenames that do not exist — the transcriptions live in
+Physics/src/ObjectModel.cpp; so did phys_fn_001329 and phys_fn_001357 at
+reconstructed state. The remaining ~376 discovered rows whose source names
+a not-yet-created per-class file are aspirational homes for Tasks 2–4 and
+were left alone.
+
+Still open in the chains: the box builder 0x1bd00, capsule builder
+0x1c7c0, and the parallel-axis pair 0x1bdc0/0x1c040; driving them closes
+BOX and CAPSULE slot 4 the same way.
 
 ## 4. The census merge resolved
 
