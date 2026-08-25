@@ -628,6 +628,19 @@ field points to the inner triangle-mesh object. shape+0xe0 receives
 After storing mesh and flags (+0xe4 from desc+0x50), it tail-jumps to BASE
 slot 1. Null mesh pointer returns false without touching state.
 
+Cached-bounds (slot 4) helper call graph, decoded from prologues:
+
+- BOX slot 4 -> 0x1c8c0 -> {0x1bd00, 0x1bdc0, 0x1c040, 0x1c5c0*, 0x1c630}
+- SPHERE slot 4 -> 0x1c930 -> {0x1c750, 0x1c5c0*, 0x1c630}
+- CAPSULE slot 4 -> 0x1c980 -> {0x1c7c0, 0x1bdc0, 0x1c040, 0x1c5c0*, 0x1c630}
+
+Common tail: each builds a local bounding volume via the family-specific
+builder (0x1bd00 box / 0x1c750 sphere / 0x1c7c0 capsule), optionally
+expands through 0x1bdc0+0x1c040 when a second operand exists, applies a
+conditional transform via 0x1c5c0 when a scalar equals [.rdata 0x101041ec]
+(= 0.0f sentinel), then commits through 0x1c630 into the caller output.
+Decoding the five shared sub-helpers unlocks all three slot-4 rows at once.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is
