@@ -525,6 +525,43 @@ class MassFrame
 static_assert(sizeof(MassFrame) == 0x34, "the mass frame is thirteen floats");
 
 /**
+The 0x48-byte material record the SDK stores BY VALUE in its materials
+array (stride 0x48 -- phase2-sdk.md section 4.6) and keeps as a statically
+initialised default template at .data 0x1220a0. Field order is the pinned
+NxMaterial header's; setToDefault matches both the pinned inline and
+phys_fn_000472's eighteen-word write (all zero except dirOfAnisotropy.x and
+dirOfMotion.x = 1.0f). The image then sets bit 31 of flags ON THE TEMPLATE
+after copying it into the array (0x0000e9ee) -- modelled separately so the
+fresh-record and shipped-template states stay distinguishable.
+*/
+class NxMaterialRecord
+	{
+	public:
+					NxMaterialRecord(void);
+	void			setToDefault(void);
+	void			setInternalFlagBit31(void);
+
+	NxF32				dynamicFriction;			//!< +0x00
+	NxF32				staticFriction;				//!< +0x04
+	NxF32				spinFriction;				//!< +0x08, not yet implemented
+	NxF32				rollFriction;				//!< +0x0c, not yet implemented
+	NxF32				restitution;				//!< +0x10
+	NxF32				dynamicFrictionV;			//!< +0x14
+	NxF32				staticFrictionV;			//!< +0x18
+	NxVec3				dirOfAnisotropy;			//!< +0x1c
+	NxVec3				dirOfMotion;				//!< +0x28
+	NxF32				speedOfMotion;				//!< +0x34
+	NxU32				flags;						//!< +0x38
+	NxU32				frictionCombineMode;		//!< +0x3c, NX_CM_AVERAGE
+	NxU32				restitutionCombineMode;		//!< +0x40, NX_CM_AVERAGE
+	void*				programData;				//!< +0x44
+	};
+
+static_assert(sizeof(NxMaterialRecord) == 0x48, "the material record is 72 bytes");
+static_assert(offsetof(NxMaterialRecord, dirOfAnisotropy) == 0x1c, "+0x1c carries the 1.0f");
+static_assert(offsetof(NxMaterialRecord, flags) == 0x38, "flags at +0x38 per the pinned header");
+
+/**
 The error stream. The image reports warnings through an indirect cdecl
 call with five arguments -- (kind, sourceFile, line, code, message) --
 through a function-pointer slot guarded by a non-zero flag word; the

@@ -93,6 +93,39 @@ const char* const	nxSourceFileCapsuleShapeCpp =
 const char* const	nxMsgCapsuleLoadRadius =
 	"CapsuleShape::loadFromDesc: radius should be positive!";
 
+// ---------------------------------------------------------------------------
+// NxMaterialRecord. Evidence: phase2-sdk.md section 4.6 and section 3v here.
+// setToDefault matches the pinned header inline exactly; the internal flag
+// bit is the store at 0x0000e9ee that runs on the TEMPLATE after the copy
+// into the SDK's materials array.
+NxMaterialRecord::NxMaterialRecord(void)
+	{
+	setToDefault();
+	}
+
+void NxMaterialRecord::setToDefault(void)
+	{
+	dynamicFriction = 0.0f;
+	staticFriction = 0.0f;
+	spinFriction = 0.0f;
+	rollFriction = 0.0f;
+	restitution = 0.0f;
+	dynamicFrictionV = 0.0f;
+	staticFrictionV = 0.0f;
+	dirOfAnisotropy.set(1.0f, 0.0f, 0.0f);
+	dirOfMotion.set(1.0f, 0.0f, 0.0f);
+	speedOfMotion = 0.0f;
+	flags = 0;
+	frictionCombineMode = 0;			// NX_CM_AVERAGE
+	restitutionCombineMode = 0;			// NX_CM_AVERAGE
+	programData = nullptr;
+	}
+
+void NxMaterialRecord::setInternalFlagBit31(void)
+	{
+	flags |= 0x80000000u;				// or edi,0x80000000 at 0x0000e9ee
+	}
+
 static NxReportFn	gReportSink = nullptr;
 
 void nxInstallReportSink(NxReportFn sink)

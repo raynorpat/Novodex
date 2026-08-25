@@ -972,6 +972,38 @@ transcriptions.
 Registrations +2 lines, coverage floor 79->81, oracle digest re-pinned
 bea77b31->2a993332. 001353/000989 static_proofs extended.
 
+## 3w. The default material template: NxMaterial lands bitwise
+
+The SDK stores materials BY VALUE -- `NxArraySDK<NxMaterial>` at SDK+0x28,
+stride 0x48 (phase2-sdk.md 4.6) -- and keeps the default template at .data
+0x1220a0, statically initialised in the image. The pinned header's field
+order fills all 72 bytes:
+
+    +0x00 dynamicFriction   +0x1c dirOfAnisotropy.x = 1.0f   +0x34 speedOfMotion
+    +0x04 staticFriction    +0x20 dirOfAnisotropy.y          +0x38 flags
+    +0x08 spinFriction      +0x24 dirOfAnisotropy.z          +0x3c frictionCombineMode
+    +0x0c rollFriction      +0x28 dirOfMotion.x = 1.0f       +0x40 restitutionCombineMode
+    +0x10 restitution       +0x2c dirOfMotion.y              +0x44 programData
+    +0x14 dynamicFrictionV  +0x30 dirOfMotion.z
+    +0x18 staticFrictionV
+
+Transcribed as `NxMaterialRecord` (`setToDefault` matching the pinned
+inline; `setInternalFlagBit31` modelling the store at 0x0000e9ee that runs
+on the TEMPLATE only after it has been copied into the SDK array).
+
+New `material` family folds the shipped template bytes raw against a fresh
+record: **bitwise identical** (`flags=00000000 digest=527814f5`). The
+harness never creates an SDK, so the template sits in its pre-creation
+state -- pure setToDefault, bit31 not yet set; the candidate therefore
+compares WITHOUT the internal bit, which is exactly the distinction the
+image itself draws between "fresh record" and "shipped template".
+
+Registrations +2 lines, coverage floor 81->83, oracle digest re-pinned
+2a993332->e493f315. The sixteen censused data-word rows covering the first
+64 bytes of the template (phys_data_003047..003062) are validated by this
+family; data rows carry no static_proof key, so the validation lives here.
+Task 3's material model now stands on bitwise ground.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is

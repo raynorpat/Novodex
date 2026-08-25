@@ -349,6 +349,7 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oErrDigest = 0;
 	unsigned oGroupErrDigest = 0;
 	unsigned oLoadErrDigest = 0;
+	unsigned oMaterialTemplateDigest = 0;
 	static unsigned char sSaveStateRecord[0x48];
 
 	// -----------------------------------------------------------------------
@@ -2088,6 +2089,27 @@ int wmain(int argc, wchar_t** argv)
 	}
 
 	// -----------------------------------------------------------------------
+	// The default material template at .data 0x1220a0: the shipped 72 bytes
+	// folded raw, versus the transcription's fresh record + the internal
+	// flag bit the image sets on the template after copying it into the
+	// SDK array.
+	{
+	unsigned mt = 2166136261u;
+	for(int i = 0; i < 0x48; i += 4)
+		{
+		unsigned w;
+		memcpy(&w, base + 0x001220a0 + i, 4);
+		mt = nxFold(mt, w);
+		}
+	oMaterialTemplateDigest = mt;
+
+	unsigned flagsWord;
+	memcpy(&flagsWord, base + 0x001220a0 + 0x38, 4);
+	oracleDigest = nxFold(oracleDigest, mt);
+	printf("material row=template flags=%08x digest=%08x\n", flagsWord, mt);
+	}
+
+	// -----------------------------------------------------------------------
 	// PLANE slots 9/11, phys_fn_001257: zero vec3 + +FLT_MAX reach.
 	{
 	typedef void (__thiscall* NxPlaneExtFn)(void* self, float* out);
@@ -3770,6 +3792,27 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 47u);
+		}
+		// -- default material template: fresh record vs the shipped .data
+		// template. The harness never creates an SDK, so the template is in
+		// its pre-creation state: pure setToDefault, flags bit31 not yet set.
+		{
+		unsigned char matC[0x48];
+		memset(matC, 0xcd, sizeof(matC));
+		new (matC) NxMaterialRecord();
+		unsigned ct = 2166136261u;
+		for(int i = 0; i < 0x48; i += 4)
+			{
+			unsigned w;
+			memcpy(&w, matC + i, 4);
+			ct = nxFold(ct, w);
+			}
+		bool okMT = ct == oMaterialTemplateDigest;
+		printf("material candidate ok=%u digest=%08x\n", okMT ? 1u : 0u, ct);
+		if(!okMT)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 48u);
 		}
 
 
