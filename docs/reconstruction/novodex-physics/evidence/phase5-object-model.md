@@ -1252,6 +1252,70 @@ claimed since that deferral named no drivers. Registrations +7 (four rows,
 three candidate drives), floor 91 -> 98, oracle digest re-pinned
 f9691824 -> e7114361.
 
+## 3z4. Task 4 opens: the actor scaffolding lands, fourteen rows close
+
+Task 4's first body of work is not the actor CONSTRUCTOR -- it is what the
+eight smallest slots of the dynamic table (0x104530) turn out to be:
+guarded reads through a two-pointer spine. The actor layout this round
+establishes: +0x00 vptr, +0x04 owner, +0x08 a TWELVE-BYTE member subobject,
++0x10 the scene lock context, +0x14 the body pointer.
+
+**The guard pair.** Every accessor runs `edi = [this+0x10]; enter(edi);
+read through [this+0x14]; leave(edi)`. The pair at 0x5b700/0x5b790 resolves
+through four kernel32 import slots (0x10104010/14/2c/44 = EnterCritical-
+Section, LeaveCriticalSection, InterlockedCompareExchange, GetCurrent-
+ThreadId): a critical-section POINTER at *[scene], a writer flag swapped in
+at block+0x18 and the owning thread id at +0x1c. The drives therefore run
+real locking on both sides over a real initialized CRITICAL_SECTION, and
+the thread id is folded only as a recorded/not-zeroed predicate -- the
+first version folded its value and produced an unregistrable digest that
+moved between processes while both sides still agreed.
+
+**The eight accessors** decode uniformly once one trap is survived: slot 69
+and 71 dereference TWICE -- [body+8] names a nested record and fsqrt reads
+record+0xd0 / +0xd4 -- with only the RECORD guarded, so a null body would
+fault the image itself. The first fixture put a scalar mark at body+8 and
+the oracle faulted at `fld [eax+0xd0]` with eax=0xC001, the mark read as a
+pointer; cdb named the instruction and the fix was semantic, not harness.
+Slot 19 is bool([body+8]); slot 86 the group WORD at [body+0x1c]; slot 77
+`([body+0x14] & mask) != 0`; slots 15/16 wrap two tiny helpers (phys_fn_
+000015: mesh triangle span via the Shape type word at +0xd0 == 5 and the
++0xe0/+0xe4 array, else 1 or 0; phys_fn_000019: [+0xf0] for meshes, else
+shape+0x9c -- both offsets the Shape layout already owned); slot 84 looks
+the body up in the SDK pointer-binding table under guard.
+
+**Construction.** phys_fn_000044 (0x2480) is the construction TAIL: wall
+vptr, owner zero, member init over +0x08..+0x13, the one-slot member table
+0x1010468c over +8, the body pointer at +0x14, then dynamic final
+0x10104530. The member subobject lives under a THIRD table -- 0x101088b8
+installed by phys_fn_002404 before life and RE-INSTALLED by its destructor
+phys_fn_002406 after it. Slot 87 is an eight-byte this-adjustor thunk
+(`sub ecx,8`, tail to the slot-0 deleting dtor), answering how the member
+table reaches actor semantics. Slot 0 restores final tables, resets the
+member, and releases through adapter slot +0x14 when flagged -- while
+phys_fn_000042, the interface-wall dtor, frees through the LINKED CRT
+directly (0x0002471 calls 0x100f41f0). Feeding that one an arena block
+ended in STATUS_HEAP_CORRUPTION; it now receives its own CRT's malloc
+(0x000f4722) and post-free bytes are not read.
+
+**Falsifications** (throwaway tree, control mismatches=1): dropping the
+member constructor's field zeroing moves actorctor to mismatches=2 via
+ctMemberZeroed=0; restoring null instead of 0x101088b8 in the member
+destructor moves BOTH post-free member reads to 0. Two transcription
+defects were caught by these drives before any registration: the
+construction tail passed the actor base where the image passes base+8 to
+member init, and the candidate emulated the adjustor thunk by calling the
+dtor at base+8 instead of writing the thunk's minus-eight semantics as its
+own row.
+
+**Census.** Twelve Phase 5 rows close reconstructed (000042, 000044,
+000066, 000068, 000078, 000082, 000084, 000086, 000110, 000114, 000116,
+000118); phys_fn_002404 and phys_fn_002406 leave Phase 2's
+homeless_shared_code deferrals discharged_by_phase 5 (both deferrals
+already listed phases [3, 5, 6, 7]), closing 59 of Phase 2's 143 rows.
+Registrations +4, floor 98 -> 102, oracle digest re-pinned e7114361 ->
+a969c85b.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is
