@@ -1179,6 +1179,79 @@ fake-owner drive therefore needs the whole 0x5bc90 body decoded first:
 every un-decoded branch is a potential growth path whose allocator call
 returns NULL under the shim.
 
+## 3z3. The remover chain closed: growth arms decoded, three rows discharged
+
+The blocked differential of §3z is unblocked by decoding the three bodies,
+and the decode corrects two beliefs that section recorded. All three
+removers are now transcribed at full fidelity and driven bitwise on twin
+state; phase-5's reconstructed count rises 64 -> 65, and two cross-phase
+rows leave their deferrals as dynamically_gated (Phase 2's total closed
+56 -> 57, Phase 3's 61 -> 62).
+
+**phys_fn_000028 (0x1b90, 165 B) is not a "slot-keyed remove"** -- it is
+`std::vector<NxU32>::push_back` over the VC9 layout {_Myproxy@+0x00 never
+touched by this row, _Myfirst@+4, _Mylast@+8, _Myend@+0xc}, `ret 4`. The
+fast path stores at the cursor when capEnd > end; otherwise the growth arm
+allocates **2*size + 2 dwords** (`lea eax,[eax+eax+2]`) through adapter slot
++8 with flag word 0, copies the live elements dword-wise, releases the old
+block through slot +0x14, and reseats all three cursors. The compiler's own
+escape (`jae` over the arm when old capacity >= new) is arithmetically
+unreachable while full; it is transcribed anyway.
+
+**phys_fn_002410 (0x5bac0, 240 B) carries the same push arm inlined** at
+fields +0x30/34/38, wrapped in TWO narrower guards than §3z believed:
+sentinel != -1 gates only the PUSH, sentinel == 0 gates only the UNLINK.
+Consequences the family pins: a virgin index (-1) skips the push but STILL
+runs the unlink against whatever its mirror word names -- cntA gets
+rewritten and the count cursor pops again -- and an already-released index
+pushes a DUPLICATE onto the freelist while skipping the unlink. The unlink
+itself swaps the count vector's last value across the +0x10 counts /
++0x14 cursor / +0x20 mirrors arrays, pops, zeroes the sentinel and poisons
+the mirror with 0xD00BEED0.
+
+**phys_fn_002418's contract was misread in §3z**: the dtor calls it with
+`ecx = scene + 0x5d4` -- THE ADDRESS OF THE FIELD (0x00026c13
+`add ecx,0x5d4`), not the field's value -- and phys_fn_002344 (0x5aae0)
+dereferences twice: `[this]` names a second header whose words are
+{begin,end} of the stride-8 pair array. A match is either half equal to
+the value; a matched record is replaced by the LAST record with the
+self-copy skipped at matched-last; the header cursor shrinks by 8 per
+removal; and because the loop rescans the slot a swap just filled,
+duplicate matches fall in one pass. The earlier owndtor drive passed with
+this row effectively unproven: its pair predicate was false on both sides
+(the swap brings the last RECORD forward, which that fixture's expectations
+did not model), so both sides folded the same zero. pairrm supersedes it
+with exact sub-drives: middle removal, matched-last shrink, duplicates,
+no-match, empty list.
+
+**Harness changes.** The candidate's allocator now rides the same emulator
+arena as the oracle: `NxTestArenaAllocator` registers through
+nxSetSdkAllocatorBridge at boot, so transcription-side allocations answer
+for shim-side ones and four new counters (malloc/free ops and bytes, folded
+as per-drive deltas) pin the allocation stream itself. relgrow's initial
+free-vector block comes FROM the arena -- a foreign block would turn the
+growth arm's release into a silent no-op. Two harness defects were found
+and fixed on the way: the first relgrow setup never assigned header field
++0x20 (the mirror array), faulting the oracle at 0x0005bb85 inside the
+unlink -- diagnosed under cdb from the faulting instruction's ecx=0 -- and
+the fold originally read the STALE pre-growth buffer instead of the live
+vector data.
+
+**Falsifications.** Two mutation probes in the throwaway tree, each against
+a control run reading mismatches=1 (the designed vtables RED):
+releasing with the partner index in place of the poison constant moves
+mismatches to 3 via relgrow AND the owndtor chain; dropping the pair
+matcher's first-half arm moves the pairrm digest f0bdae43 -> 2df229f4
+(mismatches=2).
+
+**Census.** phys_fn_000028 closes as a Phase 5 row. phys_fn_002410 leaves
+Phase 2's homeless_shared_code deferral -- which had already named phases
+[3, 5] as drivers -- discharged_by_phase 5; phys_fn_002344 leaves Phase 3's
+not_reconstructed_in_phase deferral, closed outright with no discharge
+claimed since that deferral named no drivers. Registrations +7 (four rows,
+three candidate drives), floor 91 -> 98, oracle digest re-pinned
+f9691824 -> e7114361.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is
