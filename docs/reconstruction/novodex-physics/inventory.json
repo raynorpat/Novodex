@@ -41823,11 +41823,11 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/864",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7287",
-      "static_proof": null,
+      "static_proof": "cached-list destroyer under no guard: walks the +0x5a8 cache chain via each node's +0x30 link, deleting through the node's own virtual slot 0 with argument 1; cache field nulled between iterations",
       "dynamic_proof": null,
       "notes": ""
     },

@@ -1310,8 +1310,9 @@ void nxDestroyCachedList(void* self)
 		unsigned next = *reinterpret_cast<unsigned*>(cache + 0x30);
 		*reinterpret_cast<unsigned*>(cache + 0x30) = 0;
 		unsigned vtable = *reinterpret_cast<unsigned*>(cache);
+		unsigned slot0 = *reinterpret_cast<const unsigned*>(vtable);
 		typedef void (__thiscall* NxNodeKillFn)(void* node, unsigned arg);
-		NxNodeKillFn kill = reinterpret_cast<NxNodeKillFn>(vtable);
+		NxNodeKillFn kill = reinterpret_cast<NxNodeKillFn>(slot0);
 		kill(reinterpret_cast<void*>(cache), 1);
 		*reinterpret_cast<unsigned*>(a + 0x5a8) = 0;
 		cache = next;

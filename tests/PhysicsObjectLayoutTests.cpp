@@ -380,6 +380,18 @@ static unsigned nxFoldErrCap(unsigned digest)
 	return digest;
 	}
 
+// Slate-11 node-kill shim: the image deletes cached nodes via their own
+// virtual slot 0 (__thiscall: ecx=this, push arg, callee pops) -- served by
+// a fastcall free function (ecx=node, one stack param, callee pops 4).
+static unsigned g_sl11KillCount;
+static unsigned g_sl11KillLast;
+static unsigned __fastcall NxS11KillThunk(void* ecxDummy, void*, unsigned arg)
+	{
+	g_sl11KillCount += 1;
+	g_sl11KillLast = reinterpret_cast<unsigned>(ecxDummy);
+	return 0;
+	}
+
 static bool nxSha256(const wchar_t* path, char* text)
 	{
 	HANDLE file = CreateFileW(path, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
@@ -3634,6 +3646,8 @@ int wmain(int argc, wchar_t** argv)
 	NxDelFnS chainOD = (NxDelFnS)(base + 0x0005a470);		// 002328
 	NxDelFnS adjOD = (NxDelFnS)(base + 0x0005a230);			// 002322
 	NxDelFnS crtOD = (NxDelFnS)(base + 0x0005a080);			// 002312
+	typedef void (__thiscall* NxListFnS)(void* self);
+	NxListFnS listOD10 = (NxListFnS)(base + 0x0005a1e0);		// 002320
 
 	unsigned dA = 2166136261u;
 
@@ -3656,6 +3670,23 @@ int wmain(int argc, wchar_t** argv)
 	memset(stk78, 0xcd, sizeof(stk78));
 	crtOD(stk78, 0);
 	dA = nxFold(dA, stk78[0] == 0x1010878cu ? 1u : 0u);
+
+	// 002320: cached-list destroyer over two planted nodes
+	static unsigned sLNVT[4];
+	sLNVT[0] = reinterpret_cast<unsigned>(&NxS11KillThunk);
+	g_sl11KillCount = 0;
+	unsigned nA[16], nM[16];
+	memset(nA, 0, sizeof(nA));
+	memset(nM, 0, sizeof(nM));
+	nA[0] = reinterpret_cast<unsigned>(sLNVT);
+	nA[3] = reinterpret_cast<unsigned>(nM);		// +0x30 link (word 3)
+	nM[0] = reinterpret_cast<unsigned>(sLNVT);
+	nM[3] = 0;
+	static unsigned sLH[0x170];
+	memset(sLH, 0, sizeof(sLH));
+	sLH[0x16a] = reinterpret_cast<unsigned>(nA);	// byte +0x5a8
+	listOD10(sLH);
+	dA = nxFold(dA, g_sl11KillCount == 2 ? 1u : 0u); // two nodes deleted
 
 	oSlate11Digest = dA;
 	oracleDigest = nxFold(oracleDigest, dA);
@@ -6521,6 +6552,23 @@ int wmain(int argc, wchar_t** argv)
 		memset(stk78C, 0xcd, sizeof(stk78C));
 		nxPoolDeletingDtor78c(stk78C, 0);
 		dSC = nxFold(dSC, stk78C[0] == 0x1010878cu ? 1u : 0u);
+
+		// 002320: cached-list destroyer over two planted nodes
+		static unsigned sLNVT[4];
+		sLNVT[0] = reinterpret_cast<unsigned>(&NxS11KillThunk);
+		g_sl11KillCount = 0;
+		unsigned nA[16], nM[16];
+		memset(nA, 0, sizeof(nA));
+		memset(nM, 0, sizeof(nM));
+		nA[0] = reinterpret_cast<unsigned>(sLNVT);
+		nA[3] = reinterpret_cast<unsigned>(nM);		// +0x30 link (word 3)
+		nM[0] = reinterpret_cast<unsigned>(sLNVT);
+		nM[3] = 0;
+		static unsigned sLH[0x170];
+		memset(sLH, 0, sizeof(sLH));
+		sLH[0x16a] = reinterpret_cast<unsigned>(nA);	// byte +0x5a8
+		nxDestroyCachedList(sLH);
+		dSC = nxFold(dSC, g_sl11KillCount == 2 ? 1u : 0u); // two nodes deleted
 
 		bool okS11 = dSC == oSlate11Digest;
 		printf("slate11 candidate ok=%u digest=%08x\n", okS11 ? 1u : 0u, dSC);
