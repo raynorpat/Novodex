@@ -1533,6 +1533,20 @@ these stay discovered until their drives land in a future round.
 **Census.** Registrations +2, floor 118 -> 120, oracle digest re-pinned
 ecc2d29c -> c41764d9.
 
+## 3z15. Slate 11 extended: the cached-list destroyer closes
+
+phys_fn_002320 (the cached-list destroyer) now has its list-walk drive
+added and closes bitwise. The transcription had a double-dereference bug:
+it treated the vtable pointer as a direct function address when the image
+does `call [eax]` -- a double dereference through the vtable table to slot
+0. With the fix, both sides walk a two-node planted chain (A -> M -> null)
+and fold two kills through a shared fastcall thunk. The +0x30 link field
+and the +0x5a8 cache offset in the pool holder are named by this decode.
+
+**Census.** miscsm2/slate11 digests re-pinned (row 2a145f64, candidate
+2a145f64), oracle digest re-pinned c41764d9 -> 8a423adf. phys_fn_002320
+closes reconstructed; Phase 5 reconstructed count rises to 106.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is
