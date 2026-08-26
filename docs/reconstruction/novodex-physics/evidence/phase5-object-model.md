@@ -1397,6 +1397,26 @@ and moved the transcript to mismatches=2 against control 1.
 **Census.** Registrations +2, floor 106 -> 108, oracle digest re-pinned
 a3636235 -> 0e64d9fc.
 
+## 3z8. Slate 5: the sleep chain is union-find
+
+Three rows close (000062, 000713, 000744), and the decode answers what the
+record's +0x1e8 word IS: a cached GROUP ROOT. phys_fn_000713 is textbook
+union-find find() -- recursive path compression, self-parented cache at the
+root, the fixed root stored back down the chain it walked. phys_fn_000744
+compresses first, then walks the +0x1fc list answering whether every node's
+word at +0x84 reads zero (the group-wide sleep test); slot 67 wraps both
+under the read guard with true for a null record. The family drives the
+fixer directly over a two-hop chain and folds the COMPRESSION ITSELF --
+after the drive, A's cache must read the root -- plus settled/awake/null
+arms through the wrapper. Falsified by dropping the compression store
+(A's cache stays mid-chain; candidate ok=0, mismatches=2 against control
+1). The +0x84 words are the same field the slate-2 energy term scales,
+which suggests the group test and the energy word measure one system from
+two directions; that reading stays open until the body ctor lands.
+
+**Census.** Registrations +2, floor 108 -> 110, oracle digest re-pinned
+0e64d9fc -> 98f55439.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is
