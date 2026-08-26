@@ -1260,6 +1260,79 @@ unsigned nxIdAllocNext(void* container)
 	}
 
 // ---------------------------------------------------------------------------
+// Actor slate 10: sibling pool-class lifecycle rows.
+
+// phys_fn_002328 (0x5a470): chained deleting destructor -- member vptr at
+// +8 restored through two third tables (0x101087a8 then 0x10108798),
+// primary vptr 0x1010878c installed, then ADAPTER release when flagged.
+void nxChainedDeletingDtor(void* self, unsigned flags)
+	{
+	unsigned a = reinterpret_cast<unsigned>(self);
+	*reinterpret_cast<unsigned**>(a + 8) =
+		reinterpret_cast<unsigned*>(0x101087a8u);
+	*reinterpret_cast<unsigned**>(a + 8) =
+		reinterpret_cast<unsigned*>(0x10108798u);
+	*reinterpret_cast<unsigned**>(a) =
+		reinterpret_cast<unsigned*>(0x1010878cu);
+	if(flags & 1)
+		nxGetSdkAllocator()->free(self);
+	}
+
+// phys_fn_002322 (0x5a230): member-table adjustor thunk -- `sub ecx,8` onto
+// the pool base, tail-call to the chained deleting destructor (002328).
+void nxChainedDeletingDtorThunk(void* memberThis, unsigned flags)
+	{
+	nxChainedDeletingDtor(
+		reinterpret_cast<unsigned char*>(memberThis) - 8, flags);
+	}
+
+// phys_fn_002320 (0x5a1e0): destroys the node LIST cached at this+0x5a8.
+// Per iteration: cache's +0x30 link is read and zeroed, the cache node is
+// deleted through its OWN virtual slot 0 with argument 1, the cache field
+// is nulled, then refilled with the saved link -- looping until it reads
+// null.
+void nxDestroyCachedList(void* self)
+	{
+	unsigned a = reinterpret_cast<unsigned>(self);
+	unsigned cache = *reinterpret_cast<unsigned*>(a + 0x5a8);
+	while(cache != 0)
+		{
+		unsigned next = *reinterpret_cast<unsigned*>(cache + 0x30);
+		*reinterpret_cast<unsigned*>(cache + 0x30) = 0;
+		unsigned vtable = *reinterpret_cast<unsigned*>(cache);
+		typedef void (__thiscall* NxNodeKillFn)(void* node, unsigned arg);
+		NxNodeKillFn kill = reinterpret_cast<NxNodeKillFn>(vtable);
+		kill(reinterpret_cast<void*>(cache), 1);
+		*reinterpret_cast<unsigned*>(a + 0x5a8) = 0;
+		cache = next;
+		*reinterpret_cast<unsigned*>(a + 0x5a8) = next;
+		}
+	}
+
+// phys_fn_002352 (0x5b610): adjustor thunk -- `add ecx,0x28`, tail-call to
+// phys_fn_004846 at 0xb4f50 (already reconstructed from vendored OPCODE).
+unsigned nxContainerAddThunk(void* innerThis)
+	{
+	typedef unsigned (__thiscall* NxContFn)(void* self);
+	NxContFn fn = reinterpret_cast<NxContFn>(0x100b4f50u);
+	return fn(reinterpret_cast<void*>(
+		reinterpret_cast<unsigned>(innerThis) + 0x28));
+	}
+
+// phys_fn_002379 (0x5b860): virtual slot-1 wrapper -- invokes arg's own
+// virtual slot 1 and always returns false.
+bool nxVirtualSlot1Wrapper(void* arg)
+	{
+	unsigned a = reinterpret_cast<unsigned>(arg);
+	unsigned vtable = *reinterpret_cast<unsigned*>(a);
+	typedef void (__thiscall* NxSlot1Fn)(void* self);
+	NxSlot1Fn fn = reinterpret_cast<NxSlot1Fn>(
+		*reinterpret_cast<unsigned*>(vtable + 4));
+	fn(arg);
+	return false;
+	}
+
+// ---------------------------------------------------------------------------
 // Actor slate 9: five small rows.
 
 // phys_fn_000080 (0x2c90): readBodyFlag -- ([record+0x10c] byte AND mask)
