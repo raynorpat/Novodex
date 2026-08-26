@@ -1500,6 +1500,22 @@ discovered until that fixture is built properly.
 **Census.** Registrations +2, floor 116 -> 118, oracle digest re-pinned
 3f37c9a2 -> a18e1d49.
 
+## 3z13. The shapes-clear fixture, rebuilt right
+
+The deliberate deferral of 3z12 did not survive its own round. Rereading
+the call site solved it: phys_fn_002411 receives the POOL BASE as this --
+its release-arm header sits at THIS+0x40 BYTES -- and the first fixture
+had passed base+0x40 bytes as this instead, double-shifting every field
+and faulting the arm on a null counts pointer. With this = pool base the
+entry closes bitwise: freelist push with arena growth, sentinel clear,
+mirror poison, cursor pop, then shapes[slot] = 0 through [this+0x80].
+Falsified by shifting the slot word (+0x104 -> +0x108; candidate ok=0,
+mismatches=2 against control 1).
+
+phys_fn_002411 closes reconstructed. Registrations unchanged in count,
+floor stays 118, miscsm2 digests re-pinned (row c4bc7155, candidate
+c4bc7155), oracle digest re-pinned a18e1d49 -> ecc2d29c.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is
