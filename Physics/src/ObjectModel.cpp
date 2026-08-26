@@ -1021,6 +1021,69 @@ bool nxActorChainSettled(void* self)
 	}
 
 // ---------------------------------------------------------------------------
+// Actor slate 6: the center-of-mass local frame getters. Both answer from
+// record+0xdc (a nine-word rotation followed by a three-word translation at
+// +0x100); a STATIC actor (null record) reports kind 1 and hands back an
+// identity-plus-zero pose instead.
+const char* const	nxMsgCMassLocalPoseStatic =
+	"Actor::getCMassLocalPose: Cannot be called on a static actor!";
+const char* const	nxMsgCMassLocalOrientationStatic =
+	"Actor::getCMassLocalOrientation: Cannot be called on a static actor!";
+
+// phys_fn_000096 (slot 29, 0x3140): twelve words into `out` -- rotation
+// then translation -- identity and zero for a static actor.
+void* nxActorGetCMassLocalPose(void* self, void* out)
+	{
+	unsigned a = reinterpret_cast<unsigned>(self);
+	void* scene = *reinterpret_cast<void**>(a + 0x10);
+	nxSceneGuardEnter(scene);
+	unsigned body = *reinterpret_cast<unsigned*>(a + 0x14);
+	unsigned rec = *reinterpret_cast<unsigned*>(body + 8);
+	if(rec == 0)
+		{
+		nxReport(1, nxSourceFileNpActorCpp, 0x2f2, 0,
+			nxMsgCMassLocalPoseStatic);
+		unsigned* o = reinterpret_cast<unsigned*>(out);
+		o[0] = 0x3f800000u;
+		o[1] = 0; o[2] = 0; o[3] = 0;
+		o[4] = 0x3f800000u;
+		o[5] = 0; o[6] = 0; o[7] = 0;
+		o[8] = 0x3f800000u;
+		o[9] = 0; o[10] = 0; o[11] = 0;
+		nxSceneGuardLeave(scene);
+		return out;
+		}
+	memcpy(out, reinterpret_cast<const void*>(rec + 0xdc), 48);
+	nxSceneGuardLeave(scene);
+	return out;
+	}
+
+// phys_fn_000100 (slot 31, 0x32a0): nine-word orientation into `out`;
+// static actors get the shipped identity table (.rdata 0x10122078) after
+// the line-0x301 warning.
+void* nxActorGetCMassLocalOrientation(void* self, void* out)
+	{
+	static const unsigned kIdentity3x3[9] =
+		{ 0x3f800000u, 0, 0, 0, 0x3f800000u, 0, 0, 0, 0x3f800000u };
+	unsigned a = reinterpret_cast<unsigned>(self);
+	void* scene = *reinterpret_cast<void**>(a + 0x10);
+	nxSceneGuardEnter(scene);
+	unsigned body = *reinterpret_cast<unsigned*>(a + 0x14);
+	unsigned rec = *reinterpret_cast<unsigned*>(body + 8);
+	if(rec == 0)
+		{
+		nxReport(1, nxSourceFileNpActorCpp, 0x301, 0,
+			nxMsgCMassLocalOrientationStatic);
+		memcpy(out, kIdentity3x3, sizeof(kIdentity3x3));
+		nxSceneGuardLeave(scene);
+		return out;
+		}
+	memcpy(out, reinterpret_cast<const void*>(rec + 0xdc), 36);
+	nxSceneGuardLeave(scene);
+	return out;
+	}
+
+// ---------------------------------------------------------------------------
 // BoxShape. See ObjectModel.h for the row map.
 
 BoxShape::BoxShape(void* owner, unsigned argument)

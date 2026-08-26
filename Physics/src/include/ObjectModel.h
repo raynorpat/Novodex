@@ -760,6 +760,20 @@ bool					nxBodyRecordChainSettled(void* rec);
 //! nested record; true when the record itself is null.
 bool					nxActorChainSettled(void* self);
 
+//! The static-actor warning literals for the COM frame getters.
+extern const char* const	nxMsgCMassLocalPoseStatic;
+extern const char* const	nxMsgCMassLocalOrientationStatic;
+
+//! phys_fn_000096 (slot 29): twelve-word CMass local pose into `out`
+//! (rotation then translation); identity+zero after a kind-1 warning on a
+//! static actor. Returns the out pointer.
+void*					nxActorGetCMassLocalPose(void* self, void* out);
+
+//! phys_fn_000100 (slot 31): nine-word CMass local orientation into `out`;
+//! shipped identity table after a kind-1 warning on a static actor.
+void*					nxActorGetCMassLocalOrientation(void* self,
+							void* out);
+
 //! The image's own literal pair, exposed so tests can pin against them.
 extern const char* const	nxSourceFileSphereShapeCpp;
 extern const char* const	nxMsgSetRadiusPositive;

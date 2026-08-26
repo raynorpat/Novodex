@@ -685,12 +685,16 @@ $NxRequiredCoverageLines = [ordered] @{
         # +0x1e8 caches, the +0x1fc group walk over the +0x84 words, and the
         # guarded wrapper; the compression store itself is folded.
         'actorsm5 row=oracle digest=75b57124',
+        # Slate 6: the CMass local frame getters -- kind-1 static-actor
+        # warnings with identity-plus-zero / shipped-identity defaults,
+        # each warning folded per arm.
+        'actorsm6 row=oracle digest=6f47ea3d',
         'ownctor row=oracle d4=00000003 sent_ok=1 mirror_ok=1 shp_ok=1 digest=641beb67',
         'material row=template flags=00000000 digest=527814f5',
         'capdtor row=phys_fn_001014 digest=7a376673',
         'capaabb row=phys_fn_001004 minmax=80000000.80000000.80000000.00000000.00000000.00000000',
         'layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1',
-        'layout oracle digest=98f55439',
+        'layout oracle digest=1efebac8',
         'hull support candidate ok=1 min_bits=c19c0000 max_bits=4eada5a5',
         'hull sharedhook candidate ok=1 stable=1',
         'basevt candidate ok=1 ret4=0 ret5=00000000 ret7=0',
@@ -732,6 +736,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'actorsm3 candidate ok=1 lin=3eb33333 ang=3e000000 digest=5bc8156a'
         'actorsm4 candidate ok=1 digest=0ecc5ea9'
         'actorsm5 candidate ok=1 digest=75b57124'
+        'actorsm6 candidate ok=1 digest=6f47ea3d'
     )
 
     # The vendored third-party differential. Phase 4 vendors qhull 2003.1 and
@@ -889,7 +894,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 100  # 34 for NxPhysicsAssetTests, 66 for NxPhysicsThirdPartyTests
-    '5' = 110  # was 108: +2 for the actorsm5 sleep-chain family (row +
+    '5' = 112  # was 110: +2 for the actorsm6 CMass-frame family (row +
                # candidate drive)
                # (RED on purpose: vtables family open)
     '6' = 0

@@ -514,6 +514,7 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oActorsm3Digest = 0;
 	unsigned oActorsm4Digest = 0;
 	unsigned oActorsm5Digest = 0;
+	unsigned oActorsm6Digest = 0;
 	unsigned oZeroDigest = 0;
 	unsigned oZeroCandDigest = 0;
 	static unsigned char sSaveStateRecord[0x48];
@@ -3183,6 +3184,83 @@ int wmain(int argc, wchar_t** argv)
 	}
 
 	// -----------------------------------------------------------------------
+	// Actor slate 6: the CMass local frame getters. Present-record arms
+	// fold marked matrix+translation words; static arms report kind 1 (one
+	// capture per arm) and hand back identity-plus-zero / identity.
+	{
+	typedef void* (__thiscall* NxActorPoseOutFn)(void* self, void* out);
+	NxActorPoseOutFn cmPoseOD = (NxActorPoseOutFn)(base + 0x0003140);
+	NxActorPoseOutFn cmOriOD = (NxActorPoseOutFn)(base + 0x00032a0);
+
+	static unsigned sR6Cs[16];
+	static unsigned sR6Scene[4];
+	static unsigned sR6Body[64];
+	static unsigned sR6Rec[0x50];
+	InitializeCriticalSection((LPCRITICAL_SECTION)sR6Cs);
+	sR6Scene[0] = reinterpret_cast<unsigned>(sR6Cs);
+	memset(sR6Body, 0, sizeof(sR6Body));
+	memset(sR6Rec, 0, sizeof(sR6Rec));
+	sR6Body[2] = reinterpret_cast<unsigned>(sR6Rec);
+	for(int i = 0; i < 12; ++i)
+		sR6Rec[0x37 + i] = 0x00C0FFEEu + static_cast<unsigned>(i);
+			// +0xdc: nine rotation words then three translation words
+
+	unsigned char actJ[0x20];
+	memset(actJ, 0xcd, sizeof(actJ));
+	unsigned* jf = reinterpret_cast<unsigned*>(actJ);
+	jf[4] = reinterpret_cast<unsigned>(sR6Scene);
+	jf[5] = reinterpret_cast<unsigned>(sR6Body);
+
+	unsigned poseJ[12];
+	memset(poseJ, 0xcd, sizeof(poseJ));
+
+	unsigned d6 = 2166136261u;
+	cmPoseOD(actJ, poseJ);
+	for(int i = 0; i < 12; ++i)
+		d6 = nxFold(d6, poseJ[i]);
+	memset(poseJ, 0xcd, sizeof(poseJ));
+	cmOriOD(actJ, poseJ);
+	for(int i = 0; i < 9; ++i)
+		d6 = nxFold(d6, poseJ[i]);
+
+	// static-actor arms: warnings fire, defaults come back
+	unsigned* slot6 = (unsigned*) (base + 0x001041b4);
+	unsigned* guard6Ptr = (unsigned*) (base + 0x001041b0);
+	typedef void(__cdecl* NxReportFnO6)(int, const char*, int, int,
+		const char*);
+	NxReportFnO6 savedSink6 = reinterpret_cast<NxReportFnO6>(*slot6);
+	DWORD oldProt6 = 0;
+	if(!VirtualProtect(slot6, 8, PAGE_READWRITE, &oldProt6))
+		return nxFail("actorsm6: VirtualProtect over the report slot failed");
+	if(*guard6Ptr != 0 && *reinterpret_cast<unsigned*>(*guard6Ptr) == 0)
+		*reinterpret_cast<unsigned*>(*guard6Ptr) = 1;
+	*slot6 = reinterpret_cast<unsigned>(&g_errSink);
+
+	sR6Body[2] = 0;
+	memset(&g_errCap, 0, sizeof(g_errCap));
+	cmPoseOD(actJ, poseJ);
+	d6 = nxFoldErrCap(d6);
+	const unsigned kIdent[9] =
+		{ 0x3f800000u, 0, 0, 0, 0x3f800000u, 0, 0, 0, 0x3f800000u };
+	int poseOk = memcmp(poseJ, kIdent, 36) == 0
+		&& poseJ[9] == 0 && poseJ[10] == 0 && poseJ[11] == 0;
+	d6 = nxFold(d6, poseOk ? 1u : 0u);
+
+	memset(&g_errCap, 0, sizeof(g_errCap));
+	cmOriOD(actJ, poseJ);
+	d6 = nxFoldErrCap(d6);
+	int oriOk = memcmp(poseJ, kIdent, 36) == 0;
+	d6 = nxFold(d6, oriOk ? 1u : 0u);
+
+	*slot6 = reinterpret_cast<unsigned>(savedSink6);
+	VirtualProtect(slot6, 8, oldProt6, &oldProt6);
+
+	oActorsm6Digest = d6;
+	oracleDigest = nxFold(oracleDigest, d6);
+	printf("actorsm6 row=oracle digest=%08x\n", d6);
+	}
+
+	// -----------------------------------------------------------------------
 	// phys_fn_000847: the conditional mass-frame zeroizer. Two drives --
 	// flag=1 (zeroes all 13 words) and flag=0 (leaves untouched) -- against
 	// pre-populated frames.
@@ -5675,6 +5753,64 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 59u);
+		}
+
+		// -- actorsm6: CMass local frame getters. Twin of the oracle
+		// family.
+		{
+		static unsigned sR6CsC[16];
+		static unsigned sR6SceneC[4];
+		static unsigned sR6BodyC[64];
+		static unsigned sR6RecC[0x50];
+		InitializeCriticalSection((LPCRITICAL_SECTION)sR6CsC);
+		sR6SceneC[0] = reinterpret_cast<unsigned>(sR6CsC);
+		memset(sR6BodyC, 0, sizeof(sR6BodyC));
+		memset(sR6RecC, 0, sizeof(sR6RecC));
+		sR6BodyC[2] = reinterpret_cast<unsigned>(sR6RecC);
+		for(int i = 0; i < 12; ++i)
+			sR6RecC[0x37 + i] = 0x00C0FFEEu + static_cast<unsigned>(i);
+
+		unsigned char actJ2[0x20];
+		memset(actJ2, 0xcd, sizeof(actJ2));
+		unsigned* jf2 = reinterpret_cast<unsigned*>(actJ2);
+		jf2[4] = reinterpret_cast<unsigned>(sR6SceneC);
+		jf2[5] = reinterpret_cast<unsigned>(sR6BodyC);
+
+		unsigned poseJ2[12];
+
+		unsigned d6C = 2166136261u;
+		nxActorGetCMassLocalPose(actJ2, poseJ2);
+		for(int i = 0; i < 12; ++i)
+			d6C = nxFold(d6C, poseJ2[i]);
+		memset(poseJ2, 0xcd, sizeof(poseJ2));
+		nxActorGetCMassLocalOrientation(actJ2, poseJ2);
+		for(int i = 0; i < 9; ++i)
+			d6C = nxFold(d6C, poseJ2[i]);
+
+		memset(&g_errCap, 0, sizeof(g_errCap));
+		nxInstallReportSink(&g_errSink);
+		sR6BodyC[2] = 0;
+		nxActorGetCMassLocalPose(actJ2, poseJ2);
+		d6C = nxFoldErrCap(d6C);
+		const unsigned kIdent[9] =
+			{ 0x3f800000u, 0, 0, 0, 0x3f800000u, 0, 0, 0, 0x3f800000u };
+		int poseOk = memcmp(poseJ2, kIdent, 36) == 0
+			&& poseJ2[9] == 0 && poseJ2[10] == 0 && poseJ2[11] == 0;
+		d6C = nxFold(d6C, poseOk ? 1u : 0u);
+
+		memset(&g_errCap, 0, sizeof(g_errCap));
+		nxActorGetCMassLocalOrientation(actJ2, poseJ2);
+		d6C = nxFoldErrCap(d6C);
+		int oriOk = memcmp(poseJ2, kIdent, 36) == 0;
+		d6C = nxFold(d6C, oriOk ? 1u : 0u);
+		nxInstallReportSink(nullptr);
+
+		bool okA6 = d6C == oActorsm6Digest;
+		printf("actorsm6 candidate ok=%u digest=%08x\n", okA6 ? 1u : 0u, d6C);
+		if(!okA6)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 60u);
 		}
 		// -- post-creation template state: fresh record + internal bit31.
 		{
