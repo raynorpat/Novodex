@@ -1260,6 +1260,81 @@ unsigned nxIdAllocNext(void* container)
 	}
 
 // ---------------------------------------------------------------------------
+// Actor slate 9: five small rows.
+
+// phys_fn_000080 (0x2c90): readBodyFlag -- ([record+0x10c] byte AND mask)
+// under the READ guard; kind-1 warning ("readBodyFlag: Actor must be
+// dynamic!") and false on a static actor.
+const char* const	nxMsgReadBodyFlagDynamic =
+	"Actor::readBodyFlag: Actor must be dynamic!";
+bool nxActorReadBodyFlag(void* self, unsigned mask)
+	{
+	unsigned a = reinterpret_cast<unsigned>(self);
+	void* scene = *reinterpret_cast<void**>(a + 0x10);
+	nxSceneGuardEnter(scene);
+	unsigned body = *reinterpret_cast<unsigned*>(a + 0x14);
+	unsigned rec = body != 0
+		? *reinterpret_cast<unsigned*>(body + 8) : 0u;
+	if(rec == 0)
+		{
+		nxReport(1, nxSourceFileNpActorCpp, 0x1e3, 0,
+			nxMsgReadBodyFlagDynamic);
+		nxSceneGuardLeave(scene);
+		return false;
+		}
+	unsigned flagByte = *reinterpret_cast<const unsigned char*>(rec + 0x10c);
+	nxSceneGuardLeave(scene);
+	return (flagByte & mask) != 0;
+	}
+
+// phys_fn_002408 (0x5baa0): the member subobject's scalar-deleting
+// destructor -- third table again, then release through the LINKED CRT
+// (0x100f41f0) when flagged, exactly like phys_fn_000042.
+void nxMemberDeletingDtor(void* self, unsigned flags)
+	{
+	*reinterpret_cast<unsigned**>(self) =
+		reinterpret_cast<unsigned*>(0x101088b8u);
+	if(flags & 1)
+		::free(self);
+	}
+
+// phys_fn_002411 (0x5bbb0): the shapes-clear entry its deregistration
+// callers use instead of a raw store: release slot=[arg+0x104] through the
+// pool header at this+0x40 (so the release arm's own +0x30-family offsets
+// land at this+0x70 family), then zero shapes[slot] in the array named by
+// [this+0x80].
+void nxSceneClearShapeSlot(void* scenePool, void* shapeArg)
+	{
+	unsigned s = reinterpret_cast<unsigned>(scenePool);
+	unsigned slot = *reinterpret_cast<const unsigned*>(
+		reinterpret_cast<unsigned>(shapeArg) + 0x104);
+	nxSceneReleaseIndex(reinterpret_cast<unsigned char*>(scenePool) + 0x40,
+		slot);
+	unsigned shapes = *reinterpret_cast<unsigned*>(s + 0x80);
+	*reinterpret_cast<unsigned*>(shapes + slot * 4) = 0;
+	}
+
+// phys_fn_002326 (0x5a440): deleting destructor installing vptr 0x10108798,
+// adapter release through slot +0x14 when flagged.
+void nxBoundDeletingDtor798(void* self, unsigned flags)
+	{
+	*reinterpret_cast<unsigned**>(self) =
+		reinterpret_cast<unsigned*>(0x10108798u);
+	if(flags & 1)
+		nxGetSdkAllocator()->free(self);
+	}
+
+// phys_fn_002340 (0x5aa60): same shape for the second pool class, vptr
+// 0x1010884c.
+void nxBoundDeletingDtor84c(void* self, unsigned flags)
+	{
+	*reinterpret_cast<unsigned**>(self) =
+		reinterpret_cast<unsigned*>(0x1010884cu);
+	if(flags & 1)
+		nxGetSdkAllocator()->free(self);
+	}
+
+// ---------------------------------------------------------------------------
 // BoxShape. See ObjectModel.h for the row map.
 
 BoxShape::BoxShape(void* owner, unsigned argument)

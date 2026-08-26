@@ -819,6 +819,25 @@ unsigned				nxForwardSubobjectCall(void* self, void* arg);
 //! and increments the counter.
 unsigned				nxIdAllocNext(void* container);
 
+//! phys_fn_000080: readBodyFlag -- ([record+0x10c] byte AND mask) under the
+//! read guard; kind-1 warning and false on a static actor.
+bool					nxActorReadBodyFlag(void* self, unsigned mask);
+
+//! phys_fn_002408: the member subobject's scalar-deleting destructor;
+//! linked-CRT release when flagged.
+void					nxMemberDeletingDtor(void* self, unsigned flags);
+
+//! phys_fn_002411: shapes-clear entry -- release slot=[arg+0x104] through
+//! the pool header at this+0x40, then zero shapes[slot] in [this+0x80]'s
+//! array.
+void					nxSceneClearShapeSlot(void* scenePool,
+							void* shapeArg);
+
+//! phys_fn_002326 / phys_fn_002340: bound-pool deleting destructors
+//! installing vptrs 0x10108798 / 0x1010884c, adapter release when flagged.
+void					nxBoundDeletingDtor798(void* self, unsigned flags);
+void					nxBoundDeletingDtor84c(void* self, unsigned flags);
+
 //! The image's own literal pair, exposed so tests can pin against them.
 extern const char* const	nxSourceFileSphereShapeCpp;
 extern const char* const	nxMsgSetRadiusPositive;

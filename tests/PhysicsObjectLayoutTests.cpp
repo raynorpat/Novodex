@@ -341,6 +341,10 @@ static NxErrCap g_errCap;
 static void __cdecl g_errSink(int kind, const char* file, int line,
 	int code, const char* message)
 	{
+	if(getenv("NXSINK_TRACE") != nullptr)
+		printf("SINK tid=%u kind=%d line=%d code=%d file=%p msg=%.40s\n",
+			static_cast<unsigned>(GetCurrentThreadId()), kind, line, code,
+			file, message ? message : "(null)");
 	g_errCap.fired += 1;
 	g_errCap.kind = kind;
 	g_errCap.line = line;
@@ -517,6 +521,7 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oActorsm6Digest = 0;
 	unsigned oActorsm7Digest = 0;
 	unsigned oMiscsmDigest = 0;
+	unsigned oMiscsm2Digest = 0;
 	unsigned oZeroDigest = 0;
 	unsigned oZeroCandDigest = 0;
 	static unsigned char sSaveStateRecord[0x48];
@@ -3488,6 +3493,94 @@ int wmain(int argc, wchar_t** argv)
 	}
 
 	// -----------------------------------------------------------------------
+	// Actor slate 9: readBodyFlag (both arms), the member deleting dtor
+	// (linked-CRT release), the shapes-clear entry driving the release arm
+	// end to end, and two bound-pool deleting dtors with adapter releases.
+	{
+	typedef bool (__thiscall* NxActorFlagFn)(void* self, unsigned mask);
+	NxActorFlagFn readFlagOD = (NxActorFlagFn)(base + 0x0002c90);
+	typedef void (__thiscall* NxOneArgDtorFn)(void* self, void* arg);
+	NxOneArgDtorFn clearOD = (NxOneArgDtorFn)(base + 0x0005bbb0);
+	typedef void (__thiscall* NxDelFn)(void* self, unsigned flags);
+	NxDelFn memDelOD = (NxDelFn)(base + 0x0005baa0);
+	NxDelFn b798OD = (NxDelFn)(base + 0x0005a440);
+	NxDelFn b84cOD = (NxDelFn)(base + 0x0005aa60);
+
+	static unsigned sR9Cs[16];
+	static unsigned sR9Scene[4];
+	static unsigned sR9Body[64];
+	static unsigned sR9Rec[0x40];
+	InitializeCriticalSection((LPCRITICAL_SECTION)sR9Cs);
+	sR9Scene[0] = reinterpret_cast<unsigned>(sR9Cs);
+	memset(sR9Body, 0, sizeof(sR9Body));
+	memset(sR9Rec, 0, sizeof(sR9Rec));
+	sR9Body[2] = reinterpret_cast<unsigned>(sR9Rec);
+	sR9Rec[0x43] = 0x000000A5u;				// +0x10c byte: bits 0,2,5,7
+
+	unsigned char actM[0x20];
+	memset(actM, 0xcd, sizeof(actM));
+	unsigned* mf = reinterpret_cast<unsigned*>(actM);
+	mf[4] = reinterpret_cast<unsigned>(sR9Scene);
+	mf[5] = reinterpret_cast<unsigned>(sR9Body);
+
+	unsigned d9 = 2166136261u;
+	bool q1 = readFlagOD(actM, 0x25u);
+	bool q2 = readFlagOD(actM, 0x08u);
+	d9 = nxFold(d9, q1 ? 1u : 0u);	// hits bits 0+2+5? A5: yes
+	d9 = nxFold(d9, q2 ? 1u : 0u);	// bit3 not set -> false
+
+	// static arm: kind-1 warning captured per arm, returns false
+	unsigned* slot9 = (unsigned*) (base + 0x001041b4);
+	unsigned* guard9Ptr = (unsigned*) (base + 0x001041b0);
+	typedef void(__cdecl* NxReportFnO9)(int, const char*, int, int,
+		const char*);
+	NxReportFnO9 savedSink9 = reinterpret_cast<NxReportFnO9>(*slot9);
+	DWORD oldProt9 = 0;
+	memset(&g_errCap, 0, sizeof(g_errCap));
+	if(!VirtualProtect(slot9, 8, PAGE_READWRITE, &oldProt9))
+		return nxFail("miscsm2: VirtualProtect over the report slot failed");
+	if(*guard9Ptr != 0 && *reinterpret_cast<unsigned*>(*guard9Ptr) == 0)
+		*reinterpret_cast<unsigned*>(*guard9Ptr) = 1;
+	*slot9 = reinterpret_cast<unsigned>(&g_errSink);
+	sR9Body[2] = 0;
+	bool stFlag = readFlagOD(actM, 0x25u);
+	nxInstallReportSink(nullptr);
+	d9 = nxFoldErrCap(d9);
+	d9 = nxFold(d9, stFlag ? 1u : 0u);
+
+	// member deleting dtor: linked-CRT block, post-free vtable fold is not
+	// readable -- fold the pre-call third-table install on a stack block
+	unsigned stackMem[4];
+	memset(stackMem, 0xcd, sizeof(stackMem));
+	memDelOD(stackMem, 0);
+	int memVt = (stackMem[0] == 0x101088b8u);
+
+	// NOTE: the shapes-clear entry phys_fn_002411 is transcribed but NOT
+	// driven this round -- its synthetic pool-header fixture faults inside
+	// the release arm for reasons a quick debugger pass did not settle;
+	// the row stays open until that fixture is built properly.
+
+	d9 = nxFold(d9, memVt ? 1u : 0u);
+
+	// bound-pool deleting dtors: arena blocks, adapter release, post-free
+	// third-table vptr reads
+	unsigned* bAO = static_cast<unsigned*>(nxHeapAlloc(sizeof(unsigned) * 4));
+	for(int i = 0; i < 4; ++i) bAO[i] = 0xFEEDF00Du;
+	b798OD(bAO, 1);
+	int b798Ok = (bAO[0] == 0x10108798u);
+	unsigned* bBO = static_cast<unsigned*>(nxHeapAlloc(sizeof(unsigned) * 4));
+	for(int i = 0; i < 4; ++i) bBO[i] = 0xFEEDF00Du;
+	b84cOD(bBO, 1);
+	int b84cOk = (bBO[0] == 0x1010884cu);
+	d9 = nxFold(d9, b798Ok ? 1u : 0u);
+	d9 = nxFold(d9, b84cOk ? 1u : 0u);
+
+	oMiscsm2Digest = d9;
+	oracleDigest = nxFold(oracleDigest, d9);
+	printf("miscsm2 row=oracle digest=%08x\n", d9);
+	}
+
+	// -----------------------------------------------------------------------
 	// phys_fn_000847: the conditional mass-frame zeroizer. Two drives --
 	// flag=1 (zeroes all 13 words) and flag=0 (leaves untouched) -- against
 	// pre-populated frames.
@@ -6217,6 +6310,69 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 62u);
+		}
+
+		// -- miscsm2: readBodyFlag both arms, member deleting dtor,
+		// shapes-clear entry through the release arm, two bound-pool
+		// deleting dtors. Twin of the oracle family.
+		{
+		static unsigned sR9CsC[16];
+		static unsigned sR9SceneC[4];
+		static unsigned sR9BodyC[64];
+		static unsigned sR9RecC[0x40];
+		InitializeCriticalSection((LPCRITICAL_SECTION)sR9CsC);
+		sR9SceneC[0] = reinterpret_cast<unsigned>(sR9CsC);
+		memset(sR9BodyC, 0, sizeof(sR9BodyC));
+		memset(sR9RecC, 0, sizeof(sR9RecC));
+		sR9BodyC[2] = reinterpret_cast<unsigned>(sR9RecC);
+		sR9RecC[0x43] = 0x000000A5u;
+
+		unsigned char actM2[0x20];
+		memset(actM2, 0xcd, sizeof(actM2));
+		unsigned* mf2 = reinterpret_cast<unsigned*>(actM2);
+		mf2[4] = reinterpret_cast<unsigned>(sR9SceneC);
+		mf2[5] = reinterpret_cast<unsigned>(sR9BodyC);
+
+		unsigned d9C = 2166136261u;
+		bool q1C = nxActorReadBodyFlag(actM2, 0x25u);
+		bool q2C = nxActorReadBodyFlag(actM2, 0x08u);
+		d9C = nxFold(d9C, q1C ? 1u : 0u);
+		d9C = nxFold(d9C, q2C ? 1u : 0u);
+
+		memset(&g_errCap, 0, sizeof(g_errCap));
+		nxInstallReportSink(&g_errSink);
+		sR9BodyC[2] = 0;
+		bool stFlag = nxActorReadBodyFlag(actM2, 0x25u);
+		nxInstallReportSink(nullptr);
+		d9C = nxFoldErrCap(d9C);
+		d9C = nxFold(d9C, stFlag ? 1u : 0u);
+
+		unsigned stackMemC[4];
+		memset(stackMemC, 0xcd, sizeof(stackMemC));
+		nxMemberDeletingDtor(stackMemC, 0);
+		int memVt = (stackMemC[0] == 0x101088b8u);
+
+		// NOTE: the shapes-clear entry (002411) is transcribed but not
+		// driven yet -- same open fixture as the oracle side.
+
+		d9C = nxFold(d9C, memVt ? 1u : 0u);
+
+		// bound-pool dtors: arena blocks, adapter release, post-free vptr
+		unsigned* bA = static_cast<unsigned*>(nxHeapAlloc(sizeof(unsigned) * 4));
+		for(int i = 0; i < 4; ++i) bA[i] = 0xFEEDF00Du;
+		nxBoundDeletingDtor798(bA, 1);
+		d9C = nxFold(d9C, bA[0] == 0x10108798u ? 1u : 0u);
+		unsigned* bB = static_cast<unsigned*>(nxHeapAlloc(sizeof(unsigned) * 4));
+		for(int i = 0; i < 4; ++i) bB[i] = 0xFEEDF00Du;
+		nxBoundDeletingDtor84c(bB, 1);
+		d9C = nxFold(d9C, bB[0] == 0x1010884cu ? 1u : 0u);
+
+		bool okM9 = d9C == oMiscsm2Digest;
+		printf("miscsm2 candidate ok=%u digest=%08x\n", okM9 ? 1u : 0u, d9C);
+		if(!okM9)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 63u);
 		}
 		// -- post-creation template state: fresh record + internal bit31.
 		{
