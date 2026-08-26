@@ -677,12 +677,16 @@ $NxRequiredCoverageLines = [ordered] @{
         # Slate 3: the damping getters -- kind-1 warnings on a null record,
         # each folded immediately (a shared cap keeps only the last report).
         'actorsm3 row=oracle lin=3eb33333 ang=3e000000 digest=5bc8156a',
+        # Slate 4: the guarded binding WRITE (slot 83) and the pose read
+        # with body-default fallback (slot 6); value-equality predicates
+        # fold because the binding key is each side's own body pointer.
+        'actorsm4 row=oracle digest=0ecc5ea9',
         'ownctor row=oracle d4=00000003 sent_ok=1 mirror_ok=1 shp_ok=1 digest=641beb67',
         'material row=template flags=00000000 digest=527814f5',
         'capdtor row=phys_fn_001014 digest=7a376673',
         'capaabb row=phys_fn_001004 minmax=80000000.80000000.80000000.00000000.00000000.00000000',
         'layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1',
-        'layout oracle digest=a3636235',
+        'layout oracle digest=0e64d9fc',
         'hull support candidate ok=1 min_bits=c19c0000 max_bits=4eada5a5',
         'hull sharedhook candidate ok=1 stable=1',
         'basevt candidate ok=1 ret4=0 ret5=00000000 ret7=0',
@@ -722,6 +726,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'actorctor candidate ok=1 ct=1/1/1/1/1 dd=1/1/1 adj=1/1/1 w=1/1/1 digest=19f4915a',
         'actorsm2 candidate ok=1 energy=42500000/42500000 digest=663451db',
         'actorsm3 candidate ok=1 lin=3eb33333 ang=3e000000 digest=5bc8156a'
+        'actorsm4 candidate ok=1 digest=0ecc5ea9'
     )
 
     # The vendored third-party differential. Phase 4 vendors qhull 2003.1 and
@@ -879,8 +884,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 100  # 34 for NxPhysicsAssetTests, 66 for NxPhysicsThirdPartyTests
-    '5' = 106  # was 104: +2 for the actorsm3 damping-getter family (row +
-               # candidate drive)
+    '5' = 108  # was 106: +2 for the actorsm4 family (row + candidate drive)
                # (RED on purpose: vtables family open)
     '6' = 0
     '7' = 0

@@ -739,6 +739,15 @@ float					nxActorGetAngularDamping(void* self);
 //! null, no report.
 float					nxActorRecordField188(void* self);
 
+//! phys_fn_000088 (slot 83): guarded SDK pointer-binding write keyed on the
+//! body pointer; report line 0x1ff on a failed write-guard upgrade.
+void					nxActorSetBoundTarget(void* self, void* value);
+
+//! phys_fn_000092 (slot 6): guarded three-word read into `out` --
+//! record+0x50/54/58 when a record exists, else body+0x44/48/4c. Returns
+//! the out pointer.
+void*					nxActorGetPoseWords(void* self, void* out);
+
 //! The image's own literal pair, exposed so tests can pin against them.
 extern const char* const	nxSourceFileSphereShapeCpp;
 extern const char* const	nxMsgSetRadiusPositive;

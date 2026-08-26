@@ -512,6 +512,7 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oActorCtorDigest = 0;
 	unsigned oActorsm2Digest = 0;
 	unsigned oActorsm3Digest = 0;
+	unsigned oActorsm4Digest = 0;
 	unsigned oZeroDigest = 0;
 	unsigned oZeroCandDigest = 0;
 	static unsigned char sSaveStateRecord[0x48];
@@ -3033,6 +3034,90 @@ int wmain(int argc, wchar_t** argv)
 	}
 
 	// -----------------------------------------------------------------------
+	// Actor slate 4: the guarded binding WRITE (slot 83) and the pose-word
+	// read with body-default fallback (slot 6). The binding key is each
+	// side's own body pointer, so value-equality predicates fold instead of
+	// addresses; the failed-upgrade arm reports line 0x1ff.
+	{
+	typedef void (__thiscall* NxActorSetBoundFn)(void* self, void* value);
+	NxActorSetBoundFn setBoundOD = (NxActorSetBoundFn)(base + 0x0002d90);
+	typedef void* (__thiscall* NxActorPoseFn)(void* self, void* out);
+	NxActorPoseFn poseOD = (NxActorPoseFn)(base + 0x0002ed0);
+
+	static unsigned sR4Cs[16];
+	static unsigned sR4Scene[4];
+	static unsigned sR4Body[64];
+	static unsigned sR4Rec[0x40];
+	InitializeCriticalSection((LPCRITICAL_SECTION)sR4Cs);
+	sR4Scene[0] = reinterpret_cast<unsigned>(sR4Cs);
+	memset(sR4Body, 0, sizeof(sR4Body));
+	memset(sR4Rec, 0, sizeof(sR4Rec));
+	sR4Body[2] = reinterpret_cast<unsigned>(sR4Rec);
+	sR4Rec[0x14] = 0x00500001u;				// +0x50
+	sR4Rec[0x15] = 0x00540002u;				// +0x54
+	sR4Rec[0x16] = 0x00580003u;				// +0x58
+	sR4Body[0x11] = 0x00440004u;			// +0x44 fallback
+	sR4Body[0x12] = 0x00480005u;			// +0x48
+	sR4Body[0x13] = 0x004c0006u;			// +0x4c
+
+	unsigned char actH[0x20];
+	memset(actH, 0xcd, sizeof(actH));
+	unsigned* hf = reinterpret_cast<unsigned*>(actH);
+	hf[3] = reinterpret_cast<unsigned>(sR4Scene);
+	hf[4] = reinterpret_cast<unsigned>(sR4Scene);
+	hf[5] = reinterpret_cast<unsigned>(sR4Body);
+
+	unsigned d4 = 2166136261u;
+	unsigned poseO[4];
+	poseOD(actH, poseO);
+	d4 = nxFold(d4, poseO[0]);
+	d4 = nxFold(d4, poseO[1]);
+	d4 = nxFold(d4, poseO[2]);
+
+	// fallback arm: drop the record
+	sR4Body[2] = 0;
+	poseOD(actH, poseO);
+	d4 = nxFold(d4, poseO[0]);
+	d4 = nxFold(d4, poseO[1]);
+	d4 = nxFold(d4, poseO[2]);
+	sR4Body[2] = reinterpret_cast<unsigned>(sR4Rec);
+
+	// binding write under the write guard: unbound check, bind to a magic
+	// value, verify through the read accessor, contended failure
+	setBoundOD(actH, reinterpret_cast<void*>(0x5A5A2000u));
+	typedef void* (__thiscall* NxActorPtrFn2)(void* self);
+	NxActorPtrFn2 boundOD2 = (NxActorPtrFn2)(base + 0x0002d60);
+	d4 = nxFold(d4,
+		reinterpret_cast<unsigned>(boundOD2(actH)) == 0x5A5A2000u ? 1u : 0u);
+
+	memset(&g_errCap, 0, sizeof(g_errCap));
+	unsigned* slot4 = (unsigned*) (base + 0x001041b4);
+	unsigned* guard4Ptr = (unsigned*) (base + 0x001041b0);
+	typedef void(__cdecl* NxReportFnO4)(int, const char*, int, int,
+		const char*);
+	NxReportFnO4 savedSink4 = reinterpret_cast<NxReportFnO4>(*slot4);
+	DWORD oldProt4 = 0;
+	if(!VirtualProtect(slot4, 8, PAGE_READWRITE, &oldProt4))
+		return nxFail("actorsm4: VirtualProtect over the report slot failed");
+	if(*guard4Ptr != 0 && *reinterpret_cast<unsigned*>(*guard4Ptr) == 0)
+		*reinterpret_cast<unsigned*>(*guard4Ptr) = 1;
+	*slot4 = reinterpret_cast<unsigned>(&g_errSink);
+	sR4Cs[6] = 1;
+	sR4Cs[7] = ::GetCurrentThreadId() + 1u;
+	setBoundOD(actH, reinterpret_cast<void*>(0xDEAD2000u));
+	nxInstallReportSink(nullptr);
+	*slot4 = reinterpret_cast<unsigned>(savedSink4);
+	VirtualProtect(slot4, 8, oldProt4, &oldProt4);
+	d4 = nxFoldErrCap(d4);
+	d4 = nxFold(d4,
+		reinterpret_cast<unsigned>(boundOD2(actH)) == 0x5A5A2000u ? 1u : 0u);
+
+	oActorsm4Digest = d4;
+	oracleDigest = nxFold(oracleDigest, d4);
+	printf("actorsm4 row=oracle digest=%08x\n", d4);
+	}
+
+	// -----------------------------------------------------------------------
 	// phys_fn_000847: the conditional mass-frame zeroizer. Two drives --
 	// flag=1 (zeroes all 13 words) and flag=0 (leaves untouched) -- against
 	// pre-populated frames.
@@ -5409,6 +5494,70 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 57u);
+		}
+
+		// -- actorsm4: binding write + pose read with fallback. Twin of the
+		// oracle family.
+		{
+		static unsigned sR4CsC[16];
+		static unsigned sR4SceneC[4];
+		static unsigned sR4BodyC[64];
+		static unsigned sR4RecC[0x40];
+		InitializeCriticalSection((LPCRITICAL_SECTION)sR4CsC);
+		sR4SceneC[0] = reinterpret_cast<unsigned>(sR4CsC);
+		memset(sR4BodyC, 0, sizeof(sR4BodyC));
+		memset(sR4RecC, 0, sizeof(sR4RecC));
+		sR4BodyC[2] = reinterpret_cast<unsigned>(sR4RecC);
+		sR4RecC[0x14] = 0x00500001u;
+		sR4RecC[0x15] = 0x00540002u;
+		sR4RecC[0x16] = 0x00580003u;
+		sR4BodyC[0x11] = 0x00440004u;
+		sR4BodyC[0x12] = 0x00480005u;
+		sR4BodyC[0x13] = 0x004c0006u;
+
+		unsigned char actH2[0x20];
+		memset(actH2, 0xcd, sizeof(actH2));
+		unsigned* hf2 = reinterpret_cast<unsigned*>(actH2);
+		hf2[3] = reinterpret_cast<unsigned>(sR4SceneC);
+		hf2[4] = reinterpret_cast<unsigned>(sR4SceneC);
+		hf2[5] = reinterpret_cast<unsigned>(sR4BodyC);
+
+		unsigned d4C = 2166136261u;
+		unsigned poseO2[4];
+		nxActorGetPoseWords(actH2, poseO2);
+		d4C = nxFold(d4C, poseO2[0]);
+		d4C = nxFold(d4C, poseO2[1]);
+		d4C = nxFold(d4C, poseO2[2]);
+
+		sR4BodyC[2] = 0;
+		nxActorGetPoseWords(actH2, poseO2);
+		d4C = nxFold(d4C, poseO2[0]);
+		d4C = nxFold(d4C, poseO2[1]);
+		d4C = nxFold(d4C, poseO2[2]);
+		sR4BodyC[2] = reinterpret_cast<unsigned>(sR4RecC);
+
+		nxActorSetBoundTarget(actH2, reinterpret_cast<void*>(0x5A5A2000u));
+		d4C = nxFold(d4C,
+			reinterpret_cast<unsigned>(nxActorBoundTarget(actH2))
+				== 0x5A5A2000u ? 1u : 0u);
+
+		memset(&g_errCap, 0, sizeof(g_errCap));
+		nxInstallReportSink(&g_errSink);
+		sR4CsC[6] = 1;
+		sR4CsC[7] = ::GetCurrentThreadId() + 1u;
+		nxActorSetBoundTarget(actH2, reinterpret_cast<void*>(0xDEAD2000u));
+		nxInstallReportSink(nullptr);
+		d4C = nxFoldErrCap(d4C);
+		d4C = nxFold(d4C,
+			reinterpret_cast<unsigned>(nxActorBoundTarget(actH2))
+				== 0x5A5A2000u ? 1u : 0u);
+
+		bool okA4 = d4C == oActorsm4Digest;
+		printf("actorsm4 candidate ok=%u digest=%08x\n", okA4 ? 1u : 0u, d4C);
+		if(!okA4)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 58u);
 		}
 		// -- post-creation template state: fresh record + internal bit31.
 		{

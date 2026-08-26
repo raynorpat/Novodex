@@ -914,6 +914,55 @@ float nxActorRecordField188(void* self)
 	}
 
 // ---------------------------------------------------------------------------
+// Actor slate 4.
+
+// phys_fn_000088 (slot 83, 0x2d90): guarded SDK pointer-binding WRITE --
+// phys_fn_000480 keyed on the body pointer, under the write guard; report
+// line 0x1ff on a failed upgrade, skip without binding.
+void nxActorSetBoundTarget(void* self, void* value)
+	{
+	unsigned a = reinterpret_cast<unsigned>(self);
+	void* ctx = *reinterpret_cast<void**>(a + 0xc);
+	if(!nxSceneGuardWriteTry(ctx))
+		{
+		nxReport(2, nxSourceFileNpActorCpp, 0x1ff, 0,
+			nxMsgWriteLockStillAcquired);
+		return;
+		}
+	unsigned body = *reinterpret_cast<unsigned*>(a + 0x14);
+	nxSetSdkPointerBinding(reinterpret_cast<void*>(body),
+		reinterpret_cast<void*>(value));
+	nxSceneGuardLeave(ctx);
+	}
+
+// phys_fn_000092 (slot 6, 0x2ed0): guarded three-word read into `out`.
+// With a nested record the words come from record+0x50/54/58; without one,
+// from the BODY defaults at +0x44/48/4c. Returns the out pointer.
+void* nxActorGetPoseWords(void* self, void* out)
+	{
+	unsigned a = reinterpret_cast<unsigned>(self);
+	void* scene = *reinterpret_cast<void**>(a + 0x10);
+	nxSceneGuardEnter(scene);
+	unsigned body = *reinterpret_cast<unsigned*>(a + 0x14);
+	unsigned rec = *reinterpret_cast<unsigned*>(body + 8);
+	unsigned* o = reinterpret_cast<unsigned*>(out);
+	if(rec != 0)
+		{
+		o[0] = *reinterpret_cast<const unsigned*>(rec + 0x50);
+		o[1] = *reinterpret_cast<const unsigned*>(rec + 0x54);
+		o[2] = *reinterpret_cast<const unsigned*>(rec + 0x58);
+		}
+	else
+		{
+		o[0] = *reinterpret_cast<const unsigned*>(body + 0x44);
+		o[1] = *reinterpret_cast<const unsigned*>(body + 0x48);
+		o[2] = *reinterpret_cast<const unsigned*>(body + 0x4c);
+		}
+	nxSceneGuardLeave(scene);
+	return out;
+	}
+
+// ---------------------------------------------------------------------------
 // BoxShape. See ObjectModel.h for the row map.
 
 BoxShape::BoxShape(void* owner, unsigned argument)
