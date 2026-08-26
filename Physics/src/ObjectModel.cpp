@@ -724,6 +724,130 @@ void nxActorDeletingDtorThunk(void* memberThis, unsigned flags)
 	}
 
 // ---------------------------------------------------------------------------
+// Actor slate 2: the write side and two record readers.
+//
+// phys_fn_000742 (0x16dd0): record helper -- a pure x87 chain whose cross
+// terms carry their scale factors SQUARED (the fxch/faddp ladder multiplies
+// each product by its second word a second time): 0.5 * (([+0x74]^2 +
+// [+0x70]^2 + [+0x6c]^2)*[+0x188] + [+0x194]*[+0x80]^2 + [+0x190]*[+0x7c]^2
+// + [+0x18c]*[+0x78]^2). Every intermediate stays at full precision and
+// there is ONE rounding -- the helpers return in st(0) and their callers'
+// fstp m32 does that rounding, so the C++ computes in double and casts once.
+float nxBodyRecordEnergyWord(void* rec)
+	{
+	unsigned r = reinterpret_cast<unsigned>(rec);
+	double v6c = *reinterpret_cast<const float*>(r + 0x6c);
+	double v70 = *reinterpret_cast<const float*>(r + 0x70);
+	double v74 = *reinterpret_cast<const float*>(r + 0x74);
+	double m78 = *reinterpret_cast<const float*>(r + 0x78);
+	double m7c = *reinterpret_cast<const float*>(r + 0x7c);
+	double m80 = *reinterpret_cast<const float*>(r + 0x80);
+	double m188 = *reinterpret_cast<const float*>(r + 0x188);
+	double v18c = *reinterpret_cast<const float*>(r + 0x18c);
+	double v190 = *reinterpret_cast<const float*>(r + 0x190);
+	double v194 = *reinterpret_cast<const float*>(r + 0x194);
+	return static_cast<float>(
+		(((v74 * v74 + v70 * v70) + v6c * v6c) * m188
+		+ v194 * (m80 * m80) + v190 * (m7c * m7c)
+		+ v18c * (m78 * m78)) * 0.5);
+	}
+
+// phys_fn_000730-equivalent guard upgrade (0x5b730): try to take the writer
+// flag at [cs]+0x18; if it is already held by ANOTHER thread, fail without
+// entering -- the caller reports and skips to avoid a deadlock. Held by this
+// thread or free: enter, re-take, record the tid, succeed.
+bool nxSceneGuardWriteTry(void* ctx)
+	{
+	CRITICAL_SECTION* cs =
+		*reinterpret_cast<CRITICAL_SECTION**>(ctx);
+	unsigned* flag = reinterpret_cast<unsigned*>(cs) + 6;
+	long held = ::InterlockedCompareExchange(
+		reinterpret_cast<volatile long*>(flag), 1, 0);
+	if(held != 0
+		&& flag[1] != static_cast<unsigned>(::GetCurrentThreadId()))
+		return false;
+	::EnterCriticalSection(cs);
+	::InterlockedCompareExchange(reinterpret_cast<volatile long*>(flag),
+		1, 0);
+	flag[1] = ::GetCurrentThreadId();
+	return true;
+	}
+
+// The NpActor.cpp write-lock literals, exposed for the transcript pin.
+const char* const	nxSourceFileNpActorCpp =
+	"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpActor.cpp";
+const char* const	nxMsgWriteLockStillAcquired =
+	"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to "
+	"avoid a deadlock!";
+
+// Shared body of both flag writers: guard-upgrade on the member field at
+// +0xc, report kind 2 and skip on failure, else mutate body+0x14. The line
+// differs between the two rows (0x1bb raise, 0x1c1 clear).
+static bool nxActorWriteFlagsGuarded(void* self, unsigned mask,
+	bool raise, int line)
+	{
+	unsigned a = reinterpret_cast<unsigned>(self);
+	void* ctx = *reinterpret_cast<void**>(a + 0xc);
+	if(!nxSceneGuardWriteTry(ctx))
+		{
+		nxReport(2, nxSourceFileNpActorCpp, line, 0,
+			nxMsgWriteLockStillAcquired);
+		return false;
+		}
+	unsigned body = *reinterpret_cast<unsigned*>(a + 0x14);
+	unsigned flags = *reinterpret_cast<unsigned*>(body + 0x14);
+	flags = raise ? (flags | mask) : (flags & ~mask);
+	*reinterpret_cast<unsigned*>(body + 0x14) = flags;
+	nxSceneGuardLeave(ctx);
+	return true;
+	}
+
+// phys_fn_000074 (slot 75, 0x2ba0): flags |= mask under the write guard.
+void nxActorRaiseFlags(void* self, unsigned mask)
+	{
+	nxActorWriteFlagsGuarded(self, mask, true, 0x1bb);
+	}
+
+// phys_fn_000076 (slot 76, 0x2c00): flags &= ~mask under the write guard.
+void nxActorClearFlags(void* self, unsigned mask)
+	{
+	nxActorWriteFlagsGuarded(self, mask, false, 0x1c1);
+	}
+
+// phys_fn_000060 (slot 62, 0x2900): guarded; the nested record's energy
+// word from phys_fn_000742, exact float zero when the record is null.
+float nxActorRecordEnergyWord(void* self)
+	{
+	unsigned a = reinterpret_cast<unsigned>(self);
+	void* scene = *reinterpret_cast<void**>(a + 0x10);
+	nxSceneGuardEnter(scene);
+	unsigned body = *reinterpret_cast<unsigned*>(a + 0x14);
+	unsigned rec = body != 0
+		? *reinterpret_cast<unsigned*>(body + 8) : 0u;
+	float out = 0.0f;
+	if(rec != 0)
+		out = nxBodyRecordEnergyWord(reinterpret_cast<void*>(rec));
+	nxSceneGuardLeave(scene);
+	return out;
+	}
+
+// phys_fn_000064 (slot 68, 0x2990): guarded; true when the nested record is
+// null OR its word at +0x84 reads zero.
+bool nxActorRecordWord84Zero(void* self)
+	{
+	unsigned a = reinterpret_cast<unsigned>(self);
+	void* scene = *reinterpret_cast<void**>(a + 0x10);
+	nxSceneGuardEnter(scene);
+	unsigned body = *reinterpret_cast<unsigned*>(a + 0x14);
+	unsigned rec = body != 0
+		? *reinterpret_cast<unsigned*>(body + 8) : 0u;
+	unsigned w84 = rec != 0
+		? *reinterpret_cast<unsigned*>(rec + 0x84) : 0u;
+	nxSceneGuardLeave(scene);
+	return w84 == 0;
+	}
+
+// ---------------------------------------------------------------------------
 // BoxShape. See ObjectModel.h for the row map.
 
 BoxShape::BoxShape(void* owner, unsigned argument)

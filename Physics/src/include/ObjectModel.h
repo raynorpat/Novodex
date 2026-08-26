@@ -697,6 +697,33 @@ void					nxActorDeletingDtor(void* self, unsigned flags);
 void					nxActorDeletingDtorThunk(void* memberThis,
 							unsigned flags);
 
+//! phys_fn_000742: record helper -- the full-precision x87 chain over
+//! +0x6c/70/74/78/7c/80/188/18c/190/194 scaled by one half; single rounding.
+float					nxBodyRecordEnergyWord(void* rec);
+
+//! The write-guard upgrade (0x5b730): take the writer flag unless another
+//! thread holds it; false means the caller reports and skips.
+bool					nxSceneGuardWriteTry(void* ctx);
+
+//! The NpActor.cpp write-lock literals, exposed for the transcript pin.
+extern const char* const	nxSourceFileNpActorCpp;
+extern const char* const	nxMsgWriteLockStillAcquired;
+
+//! phys_fn_000074 (slot 75): flags |= mask under the write guard; on a
+//! failed upgrade reports kind 2 (NpActor.cpp line 0x1bb) and skips.
+void					nxActorRaiseFlags(void* self, unsigned mask);
+
+//! phys_fn_000076 (slot 76): flags &= ~mask under the write guard; report
+//! line 0x1c1.
+void					nxActorClearFlags(void* self, unsigned mask);
+
+//! phys_fn_000060 (slot 62): guarded record energy word, +0.0f when null.
+float					nxActorRecordEnergyWord(void* self);
+
+//! phys_fn_000064 (slot 68): guarded -- true when the nested record is null
+//! or its word at +0x84 reads zero.
+bool					nxActorRecordWord84Zero(void* self);
+
 //! The image's own literal pair, exposed so tests can pin against them.
 extern const char* const	nxSourceFileSphereShapeCpp;
 extern const char* const	nxMsgSetRadiusPositive;

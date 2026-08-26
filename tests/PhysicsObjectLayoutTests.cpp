@@ -510,6 +510,7 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oPairRmDigest = 0;
 	unsigned oActorsmDigest = 0;
 	unsigned oActorCtorDigest = 0;
+	unsigned oActorsm2Digest = 0;
 	unsigned oZeroDigest = 0;
 	unsigned oZeroCandDigest = 0;
 	static unsigned char sSaveStateRecord[0x48];
@@ -2856,6 +2857,105 @@ int wmain(int argc, wchar_t** argv)
 	}
 
 	// -----------------------------------------------------------------------
+	// Actor slate 2: the record energy word (slot 62 over helper phys_fn_
+	// 000742, direct-driven at its own address too), the +0x84 zero test
+	// (slot 68), and the write-guard flag writers (slots 75/76) including
+	// their deadlock-report arms -- a contended writer flag fires kind 2
+	// through the error stream and leaves the flags untouched.
+	{
+	typedef float (__thiscall* NxRecEnergyFn)(void* rec);
+	NxRecEnergyFn recEnergyOD = (NxRecEnergyFn)(base + 0x0016dd0);
+	typedef float (__thiscall* NxActorFloatFn2)(void* self);
+	typedef bool (__thiscall* NxActorBoolFn2)(void* self);
+	typedef void (__thiscall* NxActorMaskFn2)(void* self, unsigned mask);
+	NxActorFloatFn2 energyOD = (NxActorFloatFn2)(base + 0x0002900);	// slot 62
+	NxActorBoolFn2 w84OD = (NxActorBoolFn2)(base + 0x0002990);		// slot 68
+	NxActorMaskFn2 raiseOD = (NxActorMaskFn2)(base + 0x0002ba0);	// slot 75
+	NxActorMaskFn2 clearOD = (NxActorMaskFn2)(base + 0x0002c00);	// slot 76
+
+	static unsigned sR2Cs[16];
+	static unsigned sR2Scene[4];
+	static unsigned sR2Body[64];
+	static unsigned sR2Rec[0x70];
+	InitializeCriticalSection((LPCRITICAL_SECTION)sR2Cs);
+	sR2Scene[0] = reinterpret_cast<unsigned>(sR2Cs);
+	memset(sR2Body, 0, sizeof(sR2Body));
+	memset(sR2Rec, 0, sizeof(sR2Rec));
+	sR2Body[2] = reinterpret_cast<unsigned>(sR2Rec);
+	sR2Body[5] = 0x00000030u;
+	float v6c = 1.5f, v70 = 2.0f, v74 = 2.5f;
+	float m78 = 3.0f, m7c = 4.0f, m80 = 5.0f;
+	float v18c = 0.25f, v190 = 0.5f, v194 = 0.75f, m188 = 6.0f;
+	memcpy(sR2Rec + 0x1b, &v6c, 4);
+	memcpy(sR2Rec + 0x1c, &v70, 4);
+	memcpy(sR2Rec + 0x1d, &v74, 4);
+	memcpy(sR2Rec + 0x1e, &m78, 4);
+	memcpy(sR2Rec + 0x1f, &m7c, 4);
+	memcpy(sR2Rec + 0x20, &m80, 4);
+	memcpy(sR2Rec + 0x62, &m188, 4);
+	memcpy(sR2Rec + 0x63, &v18c, 4);
+	memcpy(sR2Rec + 0x64, &v190, 4);
+	memcpy(sR2Rec + 0x65, &v194, 4);
+
+	unsigned char actE[0x20];
+	memset(actE, 0xcd, sizeof(actE));
+	unsigned* ef = reinterpret_cast<unsigned*>(actE);
+	ef[3] = reinterpret_cast<unsigned>(sR2Scene);	// +0x0c member ctx
+	ef[4] = reinterpret_cast<unsigned>(sR2Scene);	// +0x10 read ctx
+	ef[5] = reinterpret_cast<unsigned>(sR2Body);
+
+	unsigned d2 = 2166136261u;
+	float eDirect = recEnergyOD(sR2Rec);
+	float eViaSlot = energyOD(actE);
+	unsigned eb0, eb1;
+	memcpy(&eb0, &eDirect, 4);
+	memcpy(&eb1, &eViaSlot, 4);
+	d2 = nxFold(d2, eb0);
+	d2 = nxFold(d2, eb1);
+	d2 = nxFold(d2, w84OD(actE) ? 1u : 0u);
+	sR2Rec[0x21] = 0x00000077u;				// +0x84 nonzero
+	d2 = nxFold(d2, w84OD(actE) ? 1u : 0u);
+	sR2Rec[0x21] = 0;
+
+	raiseOD(actE, 0x40u);
+	d2 = nxFold(d2, sR2Body[5]);
+	clearOD(actE, 0x10u);
+	d2 = nxFold(d2, sR2Body[5]);
+
+	// contended arms: a writer flag held by another thread makes both rows
+	// report kind 2 and skip the mutation entirely. The oracle reports
+	// through [.rdata 0x101041b4] -- flip the page, install the capture
+	// sink, satisfy the guard word, restore afterwards (the errstream
+	// family's pattern).
+	memset(&g_errCap, 0, sizeof(g_errCap));
+	unsigned* slot2 = (unsigned*) (base + 0x001041b4);
+	unsigned* guard2Ptr = (unsigned*) (base + 0x001041b0);
+	typedef void(__cdecl* NxReportFnO2)(int, const char*, int, int,
+		const char*);
+	NxReportFnO2 savedSink2 = reinterpret_cast<NxReportFnO2>(*slot2);
+	DWORD oldProt2 = 0;
+	if(!VirtualProtect(slot2, 8, PAGE_READWRITE, &oldProt2))
+		return nxFail("actorsm2: VirtualProtect over the report slot failed");
+	if(*guard2Ptr != 0 && *reinterpret_cast<unsigned*>(*guard2Ptr) == 0)
+		*reinterpret_cast<unsigned*>(*guard2Ptr) = 1;
+	*slot2 = reinterpret_cast<unsigned>(&g_errSink);
+	sR2Cs[6] = 1;
+	sR2Cs[7] = ::GetCurrentThreadId() + 1u;
+	raiseOD(actE, 0x40u);
+	clearOD(actE, 0x10u);
+	*slot2 = reinterpret_cast<unsigned>(savedSink2);
+	VirtualProtect(slot2, 8, oldProt2, &oldProt2);
+	d2 = nxFoldErrCap(d2);
+	d2 = nxFold(d2, sR2Body[5]);			// unchanged 0x60
+	d2 = nxFold(d2, sR2Cs[6]);				// foreign hold left standing
+
+	oActorsm2Digest = d2;
+	oracleDigest = nxFold(oracleDigest, d2);
+	printf("actorsm2 row=oracle energy=%08x/%08x digest=%08x\n",
+		eb0, eb1, d2);
+	}
+
+	// -----------------------------------------------------------------------
 	// phys_fn_000847: the conditional mass-frame zeroizer. Two drives --
 	// flag=1 (zeroes all 13 words) and flag=0 (leaves untouched) -- against
 	// pre-populated frames.
@@ -5100,6 +5200,78 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 55u);
+		}
+
+		// -- actorsm2: energy word, +0x84 test, flag writers with their
+		// deadlock-report arms. Twin of the oracle family.
+		{
+		static unsigned sR2CsC[16];
+		static unsigned sR2SceneC[4];
+		static unsigned sR2BodyC[64];
+		static unsigned sR2RecC[0x70];
+		InitializeCriticalSection((LPCRITICAL_SECTION)sR2CsC);
+		sR2SceneC[0] = reinterpret_cast<unsigned>(sR2CsC);
+		memset(sR2BodyC, 0, sizeof(sR2BodyC));
+		memset(sR2RecC, 0, sizeof(sR2RecC));
+		sR2BodyC[2] = reinterpret_cast<unsigned>(sR2RecC);
+		sR2BodyC[5] = 0x00000030u;
+		float v6c = 1.5f, v70 = 2.0f, v74 = 2.5f;
+		float m78 = 3.0f, m7c = 4.0f, m80 = 5.0f;
+		float v18c = 0.25f, v190 = 0.5f, v194 = 0.75f, m188 = 6.0f;
+		memcpy(sR2RecC + 0x1b, &v6c, 4);
+		memcpy(sR2RecC + 0x1c, &v70, 4);
+		memcpy(sR2RecC + 0x1d, &v74, 4);
+		memcpy(sR2RecC + 0x1e, &m78, 4);
+		memcpy(sR2RecC + 0x1f, &m7c, 4);
+		memcpy(sR2RecC + 0x20, &m80, 4);
+		memcpy(sR2RecC + 0x62, &m188, 4);
+		memcpy(sR2RecC + 0x63, &v18c, 4);
+		memcpy(sR2RecC + 0x64, &v190, 4);
+		memcpy(sR2RecC + 0x65, &v194, 4);
+
+		unsigned char actE2[0x20];
+		memset(actE2, 0xcd, sizeof(actE2));
+		unsigned* ef2 = reinterpret_cast<unsigned*>(actE2);
+		ef2[3] = reinterpret_cast<unsigned>(sR2SceneC);
+		ef2[4] = reinterpret_cast<unsigned>(sR2SceneC);
+		ef2[5] = reinterpret_cast<unsigned>(sR2BodyC);
+
+		unsigned d2C = 2166136261u;
+		float eDirectC = nxBodyRecordEnergyWord(sR2RecC);
+		float eViaSlotC = nxActorRecordEnergyWord(actE2);
+		unsigned ec0, ec1;
+		memcpy(&ec0, &eDirectC, 4);
+		memcpy(&ec1, &eViaSlotC, 4);
+		d2C = nxFold(d2C, ec0);
+		d2C = nxFold(d2C, ec1);
+		d2C = nxFold(d2C, nxActorRecordWord84Zero(actE2) ? 1u : 0u);
+		sR2RecC[0x21] = 0x00000077u;
+		d2C = nxFold(d2C, nxActorRecordWord84Zero(actE2) ? 1u : 0u);
+		sR2RecC[0x21] = 0;
+
+		nxActorRaiseFlags(actE2, 0x40u);
+		d2C = nxFold(d2C, sR2BodyC[5]);
+		nxActorClearFlags(actE2, 0x10u);
+		d2C = nxFold(d2C, sR2BodyC[5]);
+
+		memset(&g_errCap, 0, sizeof(g_errCap));
+		nxInstallReportSink(&g_errSink);
+		sR2CsC[6] = 1;
+		sR2CsC[7] = ::GetCurrentThreadId() + 1u;
+		nxActorRaiseFlags(actE2, 0x40u);
+		nxActorClearFlags(actE2, 0x10u);
+		nxInstallReportSink(nullptr);
+		d2C = nxFoldErrCap(d2C);
+		d2C = nxFold(d2C, sR2BodyC[5]);
+		d2C = nxFold(d2C, sR2CsC[6]);
+
+		bool okA2 = d2C == oActorsm2Digest;
+		printf("actorsm2 candidate ok=%u energy=%08x/%08x digest=%08x\n",
+			okA2 ? 1u : 0u, ec0, ec1, d2C);
+		if(!okA2)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 56u);
 		}
 		// -- post-creation template state: fresh record + internal bit31.
 		{
