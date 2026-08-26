@@ -511,6 +511,7 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oActorsmDigest = 0;
 	unsigned oActorCtorDigest = 0;
 	unsigned oActorsm2Digest = 0;
+	unsigned oActorsm3Digest = 0;
 	unsigned oZeroDigest = 0;
 	unsigned oZeroCandDigest = 0;
 	static unsigned char sSaveStateRecord[0x48];
@@ -2956,6 +2957,82 @@ int wmain(int argc, wchar_t** argv)
 	}
 
 	// -----------------------------------------------------------------------
+	// Actor slate 3: the damping getters (slots 42/44) and the +0x188 field
+	// reader (slot 36). Present-record arms fold the field values; the
+	// null-record arms report kind 1 through the oracle's .rdata slot --
+	// captured with the VirtualProtect dance -- and return exact zero.
+	{
+	typedef float (__thiscall* NxActorFloatFn3)(void* self);
+	NxActorFloatFn3 linDampOD = (NxActorFloatFn3)(base + 0x0002610);
+	NxActorFloatFn3 angDampOD = (NxActorFloatFn3)(base + 0x0002680);
+	NxActorFloatFn3 f188OD = (NxActorFloatFn3)(base + 0x00025c0);
+
+	static unsigned sR3Cs[16];
+	static unsigned sR3Scene[4];
+	static unsigned sR3Body[64];
+	static unsigned sR3Rec[0x80];
+	InitializeCriticalSection((LPCRITICAL_SECTION)sR3Cs);
+	sR3Scene[0] = reinterpret_cast<unsigned>(sR3Cs);
+	memset(sR3Body, 0, sizeof(sR3Body));
+	memset(sR3Rec, 0, sizeof(sR3Rec));
+	sR3Body[2] = reinterpret_cast<unsigned>(sR3Rec);
+	float linMark = 0.35f, angMark = 0.125f, f188Mark = 7.5f;
+	memcpy(sR3Rec + 0x2e, &linMark, 4);		// +0xb8
+	memcpy(sR3Rec + 0x2f, &angMark, 4);		// +0xbc
+	memcpy(sR3Rec + 0x62, &f188Mark, 4);	// +0x188
+
+	unsigned char actG[0x20];
+	memset(actG, 0xcd, sizeof(actG));
+	unsigned* gf = reinterpret_cast<unsigned*>(actG);
+	gf[4] = reinterpret_cast<unsigned>(sR3Scene);
+	gf[5] = reinterpret_cast<unsigned>(sR3Body);
+
+	unsigned d3 = 2166136261u;
+	float ldv = linDampOD(actG), adv = angDampOD(actG), f188v = f188OD(actG);
+	unsigned lb, ab, fb;
+	memcpy(&lb, &ldv, 4);
+	memcpy(&ab, &adv, 4);
+	memcpy(&fb, &f188v, 4);
+	d3 = nxFold(d3, lb);
+	d3 = nxFold(d3, ab);
+	d3 = nxFold(d3, fb);
+
+	// null-record arms: each kind-1 warning folded immediately -- a single
+	// shared cap would keep only the second report
+	memset(&g_errCap, 0, sizeof(g_errCap));
+	unsigned* slot3 = (unsigned*) (base + 0x001041b4);
+	unsigned* guard3Ptr = (unsigned*) (base + 0x001041b0);
+	typedef void(__cdecl* NxReportFnO3)(int, const char*, int, int,
+		const char*);
+	NxReportFnO3 savedSink3 = reinterpret_cast<NxReportFnO3>(*slot3);
+	DWORD oldProt3 = 0;
+	if(!VirtualProtect(slot3, 8, PAGE_READWRITE, &oldProt3))
+		return nxFail("actorsm3: VirtualProtect over the report slot failed");
+	if(*guard3Ptr != 0 && *reinterpret_cast<unsigned*>(*guard3Ptr) == 0)
+		*reinterpret_cast<unsigned*>(*guard3Ptr) = 1;
+	*slot3 = reinterpret_cast<unsigned>(&g_errSink);
+	sR3Body[2] = 0;
+	float nz1 = linDampOD(actG);
+	unsigned z1;
+	memcpy(&z1, &nz1, 4);
+	d3 = nxFold(d3, z1);
+	d3 = nxFoldErrCap(d3);
+	memset(&g_errCap, 0, sizeof(g_errCap));
+	float nz2 = angDampOD(actG);
+	unsigned z2;
+	memcpy(&z2, &nz2, 4);
+	d3 = nxFold(d3, z2);
+	d3 = nxFoldErrCap(d3);
+	*slot3 = reinterpret_cast<unsigned>(savedSink3);
+	VirtualProtect(slot3, 8, oldProt3, &oldProt3);
+
+	oActorsm3Digest = d3;
+	oracleDigest = nxFold(oracleDigest, d3);
+	printf("actorsm3 row=oracle lin=%08x ang=%08x digest=%08x\n",
+		lb, ab, d3);
+	}
+
+	// -----------------------------------------------------------------------
 	// phys_fn_000847: the conditional mass-frame zeroizer. Two drives --
 	// flag=1 (zeroes all 13 words) and flag=0 (leaves untouched) -- against
 	// pre-populated frames.
@@ -5272,6 +5349,66 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 56u);
+		}
+
+		// -- actorsm3: damping getters with their null-record warnings.
+		// Twin of the oracle family.
+		{
+		static unsigned sR3CsC[16];
+		static unsigned sR3SceneC[4];
+		static unsigned sR3BodyC[64];
+		static unsigned sR3RecC[0x80];
+		InitializeCriticalSection((LPCRITICAL_SECTION)sR3CsC);
+		sR3SceneC[0] = reinterpret_cast<unsigned>(sR3CsC);
+		memset(sR3BodyC, 0, sizeof(sR3BodyC));
+		memset(sR3RecC, 0, sizeof(sR3RecC));
+		sR3BodyC[2] = reinterpret_cast<unsigned>(sR3RecC);
+		float linMark = 0.35f, angMark = 0.125f, f188Mark = 7.5f;
+		memcpy(sR3RecC + 0x2e, &linMark, 4);
+		memcpy(sR3RecC + 0x2f, &angMark, 4);
+		memcpy(sR3RecC + 0x62, &f188Mark, 4);
+
+		unsigned char actG2[0x20];
+		memset(actG2, 0xcd, sizeof(actG2));
+		unsigned* gf2 = reinterpret_cast<unsigned*>(actG2);
+		gf2[4] = reinterpret_cast<unsigned>(sR3SceneC);
+		gf2[5] = reinterpret_cast<unsigned>(sR3BodyC);
+
+		unsigned d3C = 2166136261u;
+		float ldv = nxActorGetLinearDamping(actG2);
+		float adv = nxActorGetAngularDamping(actG2);
+		float f188v = nxActorRecordField188(actG2);
+		unsigned lb, ab, fb;
+		memcpy(&lb, &ldv, 4);
+		memcpy(&ab, &adv, 4);
+		memcpy(&fb, &f188v, 4);
+		d3C = nxFold(d3C, lb);
+		d3C = nxFold(d3C, ab);
+		d3C = nxFold(d3C, fb);
+
+		memset(&g_errCap, 0, sizeof(g_errCap));
+		nxInstallReportSink(&g_errSink);
+		sR3BodyC[2] = 0;
+		float nz1 = nxActorGetLinearDamping(actG2);
+		unsigned z1;
+		memcpy(&z1, &nz1, 4);
+		d3C = nxFold(d3C, z1);
+		d3C = nxFoldErrCap(d3C);
+		memset(&g_errCap, 0, sizeof(g_errCap));
+		float nz2 = nxActorGetAngularDamping(actG2);
+		unsigned z2;
+		memcpy(&z2, &nz2, 4);
+		d3C = nxFold(d3C, z2);
+		d3C = nxFoldErrCap(d3C);
+		nxInstallReportSink(nullptr);
+
+		bool okA3 = d3C == oActorsm3Digest;
+		printf("actorsm3 candidate ok=%u lin=%08x ang=%08x digest=%08x\n",
+			okA3 ? 1u : 0u, lb, ab, d3C);
+		if(!okA3)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 57u);
 		}
 		// -- post-creation template state: fresh record + internal bit31.
 		{

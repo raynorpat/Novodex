@@ -724,6 +724,21 @@ float					nxActorRecordEnergyWord(void* self);
 //! or its word at +0x84 reads zero.
 bool					nxActorRecordWord84Zero(void* self);
 
+//! The damping-getter warning literals, exposed for the transcript pin.
+extern const char* const	nxMsgLinearDampingDynamic;
+extern const char* const	nxMsgAngularDampingDynamic;
+
+//! phys_fn_000050 (slot 42): getLinearDamping -- [+0xb8] under the read
+//! guard; kind-1 report (line 0xd9) and 0.0f when the record is null.
+float					nxActorGetLinearDamping(void* self);
+
+//! phys_fn_000052 (slot 44): getAngularDamping -- [+0xbc], line 0xe8.
+float					nxActorGetAngularDamping(void* self);
+
+//! phys_fn_000048 (slot 36): guarded float at [record+0x188]; 0.0f when
+//! null, no report.
+float					nxActorRecordField188(void* self);
+
 //! The image's own literal pair, exposed so tests can pin against them.
 extern const char* const	nxSourceFileSphereShapeCpp;
 extern const char* const	nxMsgSetRadiusPositive;

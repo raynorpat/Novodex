@@ -848,6 +848,72 @@ bool nxActorRecordWord84Zero(void* self)
 	}
 
 // ---------------------------------------------------------------------------
+// Actor slate 3: the damping getters. Both read one float off the nested
+// record and REPORT kind 1 when the record is null -- the actor must be
+// dynamic -- returning the zero constant at 0x101041f0 afterwards.
+const char* const	nxMsgLinearDampingDynamic =
+	"Actor::setLinearDamping: Actor must be dynamic!";
+const char* const	nxMsgAngularDampingDynamic =
+	"Actor::getAngularDamping: Actor must be dynamic!";
+
+// phys_fn_000050 (slot 42, 0x2610): getLinearDamping -- [+0xb8].
+float nxActorGetLinearDamping(void* self)
+	{
+	unsigned a = reinterpret_cast<unsigned>(self);
+	void* scene = *reinterpret_cast<void**>(a + 0x10);
+	nxSceneGuardEnter(scene);
+	unsigned body = *reinterpret_cast<unsigned*>(a + 0x14);
+	unsigned rec = *reinterpret_cast<unsigned*>(body + 8);
+	if(rec == 0)
+		{
+		nxReport(1, nxSourceFileNpActorCpp, 0xd9, 0,
+			nxMsgLinearDampingDynamic);
+		nxSceneGuardLeave(scene);
+		return 0.0f;
+		}
+	float v = *reinterpret_cast<const float*>(rec + 0xb8);
+	nxSceneGuardLeave(scene);
+	return v;
+	}
+
+// phys_fn_000052 (slot 44, 0x2680): getAngularDamping -- [+0xbc], line 0xe8.
+float nxActorGetAngularDamping(void* self)
+	{
+	unsigned a = reinterpret_cast<unsigned>(self);
+	void* scene = *reinterpret_cast<void**>(a + 0x10);
+	nxSceneGuardEnter(scene);
+	unsigned body = *reinterpret_cast<unsigned*>(a + 0x14);
+	unsigned rec = *reinterpret_cast<unsigned*>(body + 8);
+	if(rec == 0)
+		{
+		nxReport(1, nxSourceFileNpActorCpp, 0xe8, 0,
+			nxMsgAngularDampingDynamic);
+		nxSceneGuardLeave(scene);
+		return 0.0f;
+		}
+	float v = *reinterpret_cast<const float*>(rec + 0xbc);
+	nxSceneGuardLeave(scene);
+	return v;
+	}
+
+// phys_fn_000048 (slot 36, 0x25c0): guarded float at [record+0x188]; exact
+// float zero when the record is null -- no report on this one.
+float nxActorRecordField188(void* self)
+	{
+	unsigned a = reinterpret_cast<unsigned>(self);
+	void* scene = *reinterpret_cast<void**>(a + 0x10);
+	nxSceneGuardEnter(scene);
+	unsigned body = *reinterpret_cast<unsigned*>(a + 0x14);
+	unsigned rec = body != 0
+		? *reinterpret_cast<unsigned*>(body + 8) : 0u;
+	float out = 0.0f;
+	if(rec != 0)
+		out = *reinterpret_cast<const float*>(rec + 0x188);
+	nxSceneGuardLeave(scene);
+	return out;
+	}
+
+// ---------------------------------------------------------------------------
 // BoxShape. See ObjectModel.h for the row map.
 
 BoxShape::BoxShape(void* owner, unsigned argument)
