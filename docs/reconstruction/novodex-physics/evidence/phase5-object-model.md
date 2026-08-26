@@ -1516,6 +1516,23 @@ phys_fn_002411 closes reconstructed. Registrations unchanged in count,
 floor stays 118, miscsm2 digests re-pinned (row c4bc7155, candidate
 c4bc7155), oracle digest re-pinned a18e1d49 -> ecc2d29c.
 
+## 3z14. Slate 11: pool-class lifecycle rows
+
+Three rows close (002328, 002322, 002312), driven on stack blocks with
+flags=0 (no allocator interaction) to isolate the decode from any
+allocator side effects. The chained deleting destructor restores the
+member vptr through two third tables and installs the primary; the
+adjustor thunk subtracts 8 from this before tail-calling it; the CRT-free
+dtor installs its vptr with no release. All three fold their vtable-install
+predicates bitwise against the oracle.
+
+Five more transcriptions exist for undriven rows (002320 cached-list
+destroyer, 002352 container-add thunk, 002379 virtual slot-1 wrapper);
+these stay discovered until their drives land in a future round.
+
+**Census.** Registrations +2, floor 118 -> 120, oracle digest re-pinned
+ecc2d29c -> c41764d9.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is
