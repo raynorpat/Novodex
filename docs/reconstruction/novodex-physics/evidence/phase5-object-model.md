@@ -1457,6 +1457,26 @@ inertia diagonal +0x18c..194, mass +0x188, CMass frame +0xdc/+0x100.
 **Census.** Registrations +2, floor 112 -> 114, oracle digest re-pinned
 1efebac8 -> 7b7cd8d7.
 
+## 3z11. Slate 8: the group writer, a forwarder, an id allocator
+
+Three direct rows close (000112, 000004, 000012) plus two indirect flips
+(000015, 000019 -- the body helpers behind slots 15/16, closed through
+those wrappers' bitwise drives under the programme's indirect-bitwise rule).
+Slot 85 is the group WRITER -- word into body+0x1c under the write guard,
+line 0x3cd when contended -- completing the read/write pair with slate 1's
+reader; the drive reads back through slot 86 itself. phys_fn_000004 is a
+sub-object virtual FORWARDER: [this+0x10] names a sub-object whose vtable
+slot +0x18 receives (sub, arg); driven through a planted __thiscall member
+sentinel recording both arguments. Its null path returns whatever eax held,
+so it is deliberately undriven -- a nondeterministic value cannot be pinned.
+phys_fn_000012 is an ID ALLOCATOR over {counter, freelist begin, cursor}:
+pop the freelist's last dword when non-empty, else return and increment the
+counter. Falsified by moving the group store to +0x18 (candidate ok=0,
+mismatches=2 against control 1).
+
+**Census.** Registrations +2, floor 114 -> 116, oracle digest re-pinned
+7b7cd8d7 -> 3f37c9a2.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is
