@@ -515,6 +515,7 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oActorsm4Digest = 0;
 	unsigned oActorsm5Digest = 0;
 	unsigned oActorsm6Digest = 0;
+	unsigned oActorsm7Digest = 0;
 	unsigned oZeroDigest = 0;
 	unsigned oZeroCandDigest = 0;
 	static unsigned char sSaveStateRecord[0x48];
@@ -3261,6 +3262,100 @@ int wmain(int argc, wchar_t** argv)
 	}
 
 	// -----------------------------------------------------------------------
+	// Actor slate 7: five guarded three-word readers. Each folds its
+	// present-record marks, then its static arm -- warning captured per
+	// arm and the default triple folded as words.
+	{
+	typedef void (__thiscall* NxActorFill3Fn)(void* self, void* out);
+	NxActorFill3Fn cmPosOD = (NxActorFill3Fn)(base + 0x0003200);	// 000098
+	NxActorFill3Fn inertiaOD = (NxActorFill3Fn)(base + 0x0003310);	// 000102
+	NxActorFill3Fn linVelOD = (NxActorFill3Fn)(base + 0x00033b0);	// 000104
+	NxActorFill3Fn angVelOD = (NxActorFill3Fn)(base + 0x0003440);	// 000106
+	NxActorFill3Fn linMomOD = (NxActorFill3Fn)(base + 0x00034d0);	// 000108
+
+	static unsigned sR7Cs[16];
+	static unsigned sR7Scene[4];
+	static unsigned sR7Body[64];
+	static unsigned sR7Rec[0x70];
+	InitializeCriticalSection((LPCRITICAL_SECTION)sR7Cs);
+	sR7Scene[0] = reinterpret_cast<unsigned>(sR7Cs);
+	memset(sR7Body, 0, sizeof(sR7Body));
+	memset(sR7Rec, 0, sizeof(sR7Rec));
+	sR7Body[2] = reinterpret_cast<unsigned>(sR7Rec);
+	for(int i = 0; i < 3; ++i)
+		{
+		unsigned w = 0x43B00000u + static_cast<unsigned>(i) * 0x01000000u;
+		memcpy(sR7Rec + 0x40 + i, &w, 4);	// +0x100..: distinct floats
+		memcpy(sR7Rec + 0x63 + i, &w, 4);	// +0x18c..: same marks (inertia)
+		}
+	float v6c = 1.25f, v70 = 2.5f, v74 = 3.75f;
+	float a78 = 0.5f, a7c = 1.0f, a80 = 1.5f;
+	float mass = 8.0f;
+	memcpy(sR7Rec + 0x1b, &v6c, 4);			// +0x6c velocity
+	memcpy(sR7Rec + 0x1c, &v70, 4);
+	memcpy(sR7Rec + 0x1d, &v74, 4);
+	memcpy(sR7Rec + 0x1e, &a78, 4);			// +0x78 angular
+	memcpy(sR7Rec + 0x1f, &a7c, 4);
+	memcpy(sR7Rec + 0x20, &a80, 4);
+	memcpy(sR7Rec + 0x62, &mass, 4);		// +0x188
+
+	unsigned char actK[0x20];
+	memset(actK, 0xcd, sizeof(actK));
+	unsigned* kf = reinterpret_cast<unsigned*>(actK);
+	kf[4] = reinterpret_cast<unsigned>(sR7Scene);
+	kf[5] = reinterpret_cast<unsigned>(sR7Body);
+
+	unsigned d7 = 2166136261u;
+	unsigned out7[4];
+
+	struct NxArm { NxActorFill3Fn fn; const char* tag; };
+	NxArm arms[5] =
+		{
+			{ cmPosOD, "cmpos" },
+			{ inertiaOD, "inertia" },
+			{ linVelOD, "linvel" },
+			{ angVelOD, "angvel" },
+			{ linMomOD, "linmom" },
+		};
+	for(int k = 0; k < 5; ++k)
+		{
+		arms[k].fn(actK, out7);
+		d7 = nxFold(d7, out7[0]);
+		d7 = nxFold(d7, out7[1]);
+		d7 = nxFold(d7, out7[2]);
+		}
+
+	// static arms with per-arm capture
+	unsigned* slot7 = (unsigned*) (base + 0x001041b4);
+	unsigned* guard7Ptr = (unsigned*) (base + 0x001041b0);
+	typedef void(__cdecl* NxReportFnO7)(int, const char*, int, int,
+		const char*);
+	NxReportFnO7 savedSink7 = reinterpret_cast<NxReportFnO7>(*slot7);
+	DWORD oldProt7 = 0;
+	if(!VirtualProtect(slot7, 8, PAGE_READWRITE, &oldProt7))
+		return nxFail("actorsm7: VirtualProtect over the report slot failed");
+	if(*guard7Ptr != 0 && *reinterpret_cast<unsigned*>(*guard7Ptr) == 0)
+		*reinterpret_cast<unsigned*>(*guard7Ptr) = 1;
+	*slot7 = reinterpret_cast<unsigned>(&g_errSink);
+	sR7Body[2] = 0;
+	for(int k = 0; k < 5; ++k)
+		{
+		memset(&g_errCap, 0, sizeof(g_errCap));
+		arms[k].fn(actK, out7);
+		d7 = nxFold(d7, out7[0]);
+		d7 = nxFold(d7, out7[1]);
+		d7 = nxFold(d7, out7[2]);
+		d7 = nxFoldErrCap(d7);
+		}
+	*slot7 = reinterpret_cast<unsigned>(savedSink7);
+	VirtualProtect(slot7, 8, oldProt7, &oldProt7);
+
+	oActorsm7Digest = d7;
+	oracleDigest = nxFold(oracleDigest, d7);
+	printf("actorsm7 row=oracle digest=%08x\n", d7);
+	}
+
+	// -----------------------------------------------------------------------
 	// phys_fn_000847: the conditional mass-frame zeroizer. Two drives --
 	// flag=1 (zeroes all 13 words) and flag=0 (leaves untouched) -- against
 	// pre-populated frames.
@@ -5811,6 +5906,83 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 60u);
+		}
+
+		// -- actorsm7: the five three-word readers through the
+		// transcription helper. Twin of the oracle family.
+		{
+		static unsigned sR7CsC[16];
+		static unsigned sR7SceneC[4];
+		static unsigned sR7BodyC[64];
+		static unsigned sR7RecC[0x70];
+		InitializeCriticalSection((LPCRITICAL_SECTION)sR7CsC);
+		sR7SceneC[0] = reinterpret_cast<unsigned>(sR7CsC);
+		memset(sR7BodyC, 0, sizeof(sR7BodyC));
+		memset(sR7RecC, 0, sizeof(sR7RecC));
+		sR7BodyC[2] = reinterpret_cast<unsigned>(sR7RecC);
+		for(int i = 0; i < 3; ++i)
+			{
+			unsigned w = 0x43B00000u + static_cast<unsigned>(i) * 0x01000000u;
+			memcpy(sR7RecC + 0x40 + i, &w, 4);
+			memcpy(sR7RecC + 0x63 + i, &w, 4);
+			}
+		float v6c = 1.25f, v70 = 2.5f, v74 = 3.75f;
+		float a78 = 0.5f, a7c = 1.0f, a80 = 1.5f;
+		float mass = 8.0f;
+		memcpy(sR7RecC + 0x1b, &v6c, 4);
+		memcpy(sR7RecC + 0x1c, &v70, 4);
+		memcpy(sR7RecC + 0x1d, &v74, 4);
+		memcpy(sR7RecC + 0x1e, &a78, 4);
+		memcpy(sR7RecC + 0x1f, &a7c, 4);
+		memcpy(sR7RecC + 0x20, &a80, 4);
+		memcpy(sR7RecC + 0x62, &mass, 4);
+
+		unsigned char actK2[0x20];
+		memset(actK2, 0xcd, sizeof(actK2));
+		unsigned* kf2 = reinterpret_cast<unsigned*>(actK2);
+		kf2[4] = reinterpret_cast<unsigned>(sR7SceneC);
+		kf2[5] = reinterpret_cast<unsigned>(sR7BodyC);
+
+		unsigned d7C = 2166136261u;
+		unsigned out7C[4];
+
+		struct NxArmC { void (*fn)(void*, void*); };
+		NxArmC armsC[5] =
+			{
+				{ nxActorGetCMassLocalPosition },
+				{ nxActorGetMassSpaceInertia },
+				{ nxActorGetLinearVelocity },
+				{ nxActorGetAngularVelocity },
+				{ nxActorGetLinearMomentum },
+			};
+		for(int k = 0; k < 5; ++k)
+			{
+			armsC[k].fn(actK2, out7C);
+			d7C = nxFold(d7C, out7C[0]);
+			d7C = nxFold(d7C, out7C[1]);
+			d7C = nxFold(d7C, out7C[2]);
+			}
+
+		memset(&g_errCap, 0, sizeof(g_errCap));
+		nxInstallReportSink(&g_errSink);
+		sR7BodyC[2] = 0;
+		for(int k = 0; k < 5; ++k)
+			{
+			memset(&g_errCap, 0, sizeof(g_errCap));
+			armsC[k].fn(actK2, out7C);
+			d7C = nxFold(d7C, out7C[0]);
+			d7C = nxFold(d7C, out7C[1]);
+			d7C = nxFold(d7C, out7C[2]);
+			d7C = nxFoldErrCap(d7C);
+			}
+		nxInstallReportSink(nullptr);
+
+		bool okA7 = d7C == oActorsm7Digest;
+		printf("actorsm7 candidate ok=%u digest=%08x\n", okA7 ? 1u : 0u, d7C);
+		if(!okA7)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 61u);
 		}
 		// -- post-creation template state: fresh record + internal bit31.
 		{

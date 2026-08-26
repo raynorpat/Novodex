@@ -774,6 +774,37 @@ void*					nxActorGetCMassLocalPose(void* self, void* out);
 void*					nxActorGetCMassLocalOrientation(void* self,
 							void* out);
 
+//! The static-actor / dynamic-required warning literals for slate 7.
+extern const char* const	nxMsgCMassLocalPositionStatic;
+extern const char* const	nxMsgMassSpaceInertiaStatic;
+extern const char* const	nxMsgLinearVelocityDynamic;
+extern const char* const	nxMsgAngularVelocityDynamic;
+extern const char* const	nxMsgLinearMomentumStatic;
+
+//! phys_fn_000098 (slot 30): getCMassLocalPosition -- [+0x100..108] under
+//! the read guard; zeros from the .data triple after a kind-1 warning
+//! (line 0x2fa) on a static actor.
+void					nxActorGetCMassLocalPosition(void* self,
+							void* out);
+
+//! phys_fn_000102 (slot 44): getMassSpaceInertiaTensorVal -- the inertia
+//! diagonal [+0x18c], line 0x328.
+void					nxActorGetMassSpaceInertia(void* self,
+							void* out);
+
+//! phys_fn_000104 (slot 47): getLinearVelocity -- [+0x6c], inline zeros,
+//! line 0x343.
+void					nxActorGetLinearVelocity(void* self, void* out);
+
+//! phys_fn_000106 (slot 48): getAngularVelocity -- [+0x78], inline zeros,
+//! line 0x34a.
+void					nxActorGetAngularVelocity(void* self, void* out);
+
+//! phys_fn_000108 (slot 52): getLinearMomentumVal -- mass [+0x188] times
+//! the velocity words in REVERSED component order ([+0x74],[+0x70],
+//! [+0x6c]); .data zeros, line 0x353.
+void					nxActorGetLinearMomentum(void* self, void* out);
+
 //! The image's own literal pair, exposed so tests can pin against them.
 extern const char* const	nxSourceFileSphereShapeCpp;
 extern const char* const	nxMsgSetRadiusPositive;

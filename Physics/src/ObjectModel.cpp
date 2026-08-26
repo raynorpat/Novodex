@@ -1084,6 +1084,123 @@ void* nxActorGetCMassLocalOrientation(void* self, void* out)
 	}
 
 // ---------------------------------------------------------------------------
+// Actor slate 7: five guarded three-word readers sharing one shape -- read
+// guard, record+offset into `out` when a record backs the actor, otherwise
+// report kind 1 and fill from defaults. The .data-backed defaults copy the
+// triple at 0x10123c1c, zero-initialized in a fresh image; the C++
+// transcribes those zeros directly rather than dereferencing an image
+// absolute that only means something inside the oracle's own mapping.
+const char* const	nxMsgCMassLocalPositionStatic =
+	"Actor::getCMassLocalPosition: Cannot be called on a static actor!";
+const char* const	nxMsgMassSpaceInertiaStatic =
+	"Actor::getMassSpaceInertiaTensorVal: Cannot be called on a static actor!";
+const char* const	nxMsgLinearVelocityDynamic =
+	"Actor::getLinearVelocity: Actor must be dynamic!";
+const char* const	nxMsgAngularVelocityDynamic =
+	"Actor::getAngularVelocity: Actor must be dynamic!";
+const char* const	nxMsgLinearMomentumStatic =
+	"Actor::getLinearMomentumVal: Cannot be called on a static actor!";
+
+static void nxActorFillThreeWords(void* self, unsigned base, int line,
+	const char* msg, bool defaultsFromData, void* out)
+	{
+	unsigned a = reinterpret_cast<unsigned>(self);
+	void* scene = *reinterpret_cast<void**>(a + 0x10);
+	nxSceneGuardEnter(scene);
+	unsigned body = *reinterpret_cast<unsigned*>(a + 0x14);
+	unsigned rec = *reinterpret_cast<unsigned*>(body + 8);
+	unsigned* o = reinterpret_cast<unsigned*>(out);
+	if(rec == 0)
+		{
+		nxReport(1, nxSourceFileNpActorCpp, line, 0, msg);
+		if(defaultsFromData)
+			{
+			o[0] = 0;						// [.data 0x10123c1c] triple:
+			o[1] = 0;						// zero-initialized in any
+			o[2] = 0;						// fresh image
+			}
+		else
+			{
+			o[0] = 0;
+			o[1] = 0;
+			o[2] = 0;
+			}
+		nxSceneGuardLeave(scene);
+		return;
+		}
+	o[0] = *reinterpret_cast<const unsigned*>(rec + base);
+	o[1] = *reinterpret_cast<const unsigned*>(rec + base + 4);
+	o[2] = *reinterpret_cast<const unsigned*>(rec + base + 8);
+	nxSceneGuardLeave(scene);
+	}
+
+// phys_fn_000098 (slot 30, 0x3200): getCMassLocalPosition -- [+0x100].
+void nxActorGetCMassLocalPosition(void* self, void* out)
+	{
+	nxActorFillThreeWords(self, 0x100, 0x2fa,
+		nxMsgCMassLocalPositionStatic, true, out);
+	}
+
+// phys_fn_000102 (slot 44, 0x3310): getMassSpaceInertiaTensorVal --
+// the inertia diagonal at [+0x18c], line 0x328.
+void nxActorGetMassSpaceInertia(void* self, void* out)
+	{
+	nxActorFillThreeWords(self, 0x18c, 0x328,
+		nxMsgMassSpaceInertiaStatic, true, out);
+	}
+
+// phys_fn_000104 (slot 47, 0x33b0): getLinearVelocity -- [+0x6c], inline
+// zeros on the static arm, line 0x343.
+void nxActorGetLinearVelocity(void* self, void* out)
+	{
+	nxActorFillThreeWords(self, 0x6c, 0x343,
+		nxMsgLinearVelocityDynamic, false, out);
+	}
+
+// phys_fn_000106 (slot 48, 0x3440): getAngularVelocity -- [+0x78], inline
+// zeros, line 0x34a.
+void nxActorGetAngularVelocity(void* self, void* out)
+	{
+	nxActorFillThreeWords(self, 0x78, 0x34a,
+		nxMsgAngularVelocityDynamic, false, out);
+	}
+
+// phys_fn_000108 (slot 52, 0x34d0): getLinearMomentumVal -- mass at
+// [+0x188] times the velocity words [+0x6c/70/74] in natural order; zeros
+// from .data on the static arm, line 0x353.
+void nxActorGetLinearMomentum(void* self, void* out)
+	{
+	unsigned a = reinterpret_cast<unsigned>(self);
+	void* scene = *reinterpret_cast<void**>(a + 0x10);
+	nxSceneGuardEnter(scene);
+	unsigned body = *reinterpret_cast<unsigned*>(a + 0x14);
+	unsigned rec = *reinterpret_cast<unsigned*>(body + 8);
+	unsigned* o = reinterpret_cast<unsigned*>(out);
+	if(rec == 0)
+		{
+		nxReport(1, nxSourceFileNpActorCpp, 0x353, 0,
+			nxMsgLinearMomentumStatic);
+		o[0] = 0;
+		o[1] = 0;
+		o[2] = 0;
+		nxSceneGuardLeave(scene);
+		return;
+		}
+	float m = *reinterpret_cast<const float*>(rec + 0x188);
+	float v6c = *reinterpret_cast<const float*>(rec + 0x6c);
+	float v70 = *reinterpret_cast<const float*>(rec + 0x70);
+	float v74 = *reinterpret_cast<const float*>(rec + 0x74);
+	double dm = m;
+	float r0 = static_cast<float>(dm * v6c);
+	float r1 = static_cast<float>(dm * v70);
+	float r2 = static_cast<float>(dm * v74);
+	memcpy(o, &r0, 4);
+	memcpy(o + 1, &r1, 4);
+	memcpy(o + 2, &r2, 4);
+	nxSceneGuardLeave(scene);
+	}
+
+// ---------------------------------------------------------------------------
 // BoxShape. See ObjectModel.h for the row map.
 
 BoxShape::BoxShape(void* owner, unsigned argument)
