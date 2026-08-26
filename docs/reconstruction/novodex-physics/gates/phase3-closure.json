@@ -55,10 +55,10 @@
   "counts": {
     "deferred_blocked_on_later_phase": 19,
     "deferred_data_object_not_dispositioned": 102,
-    "deferred_not_reconstructed_in_phase": 311,
+    "deferred_not_reconstructed_in_phase": 310,
     "deferred_reconstructed_not_falsified": 1,
     "differential_falsified": 31,
-    "oracle_differential_falsified": 30
+    "oracle_differential_falsified": 31
   },
   "closed": [
     {
@@ -669,6 +669,16 @@
       "falsification": {
         "mutation": "the continuous-collision guard: the guard's equality inverted -- 8,000 of 16,000. Closed on its reachable arm only; the other arm tails into `phys_fn_002264`, which NX_CONTINUOUS_CD's shipped 0.0f default closes off and which this ledger defers",
         "detected": "mismatches=8000"
+      }
+    },
+    {
+      "id": "phys_fn_002344",
+      "rva": "0x0005aae0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "falsification": {
+        "mutation": "the pair remover's match test keeps only the second half of each stride-8 record -- begin[i*2]==self, the first-half arm, is dropped. Detected on pairrm, whose five sub-drives include two first-half matches; the family digest moves f0bdae43 -> 2df229f4 against the unchanged oracle transcript. Control run of the unmutated tree reads mismatches=1, this run mismatches=2",
+        "detected": "mismatches=2"
       }
     }
   ],
@@ -4326,14 +4336,6 @@
       "blocked_on_type": "Shape",
       "vtable_slot": 7,
       "note": "the continuous-collision sweep and what only it reaches, 3,802 bytes behind phys_fn_002266's guard. NX_CONTINUOUS_CD is parameter 11 and its shipped default is 0.0f -- measured three ways against the oracle's own live array rather than read off the disassembly -- so the guard closes and this arm runs in no configuration the shipped SDK produces. Driving it needs vtable slot 7, which no phase has resolved for any shape type, a second pose at Shape+0x3c..+0x68 and the sink past +0x44; it also reaches phys_fn_000754, a 1,027-byte Phase 7 row nothing else reaches, and phys_fn_005191, a Phase 4 row"
-    },
-    {
-      "id": "phys_fn_002344",
-      "rva": "0x0005aae0",
-      "size": 104,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "callers",
-      "driving_phases": []
     },
     {
       "id": "phys_fn_002413",

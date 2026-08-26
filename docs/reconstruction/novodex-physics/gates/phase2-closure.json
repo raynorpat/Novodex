@@ -59,11 +59,11 @@
   "counts": {
     "deferred_blocked_on_later_phase": 19,
     "deferred_data_object_not_dispositioned": 1051,
-    "deferred_homeless_shared_code": 61,
+    "deferred_homeless_shared_code": 60,
     "deferred_not_independently_falsifiable": 1,
     "deferred_unreachable_in_phase_2": 6,
     "differential_falsified": 49,
-    "oracle_differential_falsified": 1,
+    "oracle_differential_falsified": 2,
     "static_proof_falsified": 6
   },
   "closed": [
@@ -630,6 +630,21 @@
       "falsification": {
         "mutation": "the accessor hands back null instead of installing the built-in default",
         "detected": "check_failed accessor installs a default when nothing is registered"
+      }
+    },
+    {
+      "id": "phys_fn_002410",
+      "rva": "0x0005bac0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        3,
+        5
+      ],
+      "falsification": {
+        "mutation": "the release arm's unlink stores the mirror partner's index where the image writes the 0xD00BEED0 poison (mir[idx] = u instead of the sentinel constant). Detected on relgrow, whose poison predicate reads false; the same transcription sits inside nxBaseDtorOwnerArms, so owndtor's chain drive moves with it -- which is what makes the row load-bearing rather than incidentally observed. Control run of the unmutated tree reads mismatches=1, this run mismatches=3",
+        "detected": "mismatches=3"
       }
     }
   ],
@@ -1826,20 +1841,6 @@
         7
       ],
       "callers": 21
-    },
-    {
-      "id": "phys_fn_002410",
-      "rva": "0x0005bac0",
-      "size": 240,
-      "reason": "homeless_shared_code",
-      "phase_provenance": "shared_by_callers",
-      "translation_unit_zone": "gap Controller.cpp .. fluids/Fluid.cpp",
-      "reachability": "reachable_via_other_phase",
-      "driving_phases": [
-        3,
-        5
-      ],
-      "callers": 2
     },
     {
       "id": "phys_fn_002417",
