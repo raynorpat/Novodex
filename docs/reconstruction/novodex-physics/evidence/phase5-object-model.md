@@ -1434,6 +1434,29 @@ control 1).
 **Census.** Registrations +2, floor 110 -> 112, oracle digest re-pinned
 98f55439 -> 1efebac8.
 
+## 3z10. Slate 7: five three-word readers, one shape
+
+Five rows close (000098, 000102, 000104, 000106, 000108) -- getCMassLocal-
+Position, getMassSpaceInertiaTensorVal, getLinearVelocity, getAngular-
+Velocity and getLinearMomentumVal. All five share one shape: read guard,
+record+offset triple into `out` when a record backs the actor, otherwise
+report KIND 1 with each row's own literal ("Actor must be dynamic!" on the
+velocity pair, "Cannot be called on a static actor!" on the other three)
+and fill defaults -- the zero TRIPLE at .data 0x10123c1c for position/
+inertia/momentum, inline zeros for the two velocities. The momentum row
+multiplies mass [+0x188] by the velocity words in natural component order
+at full precision; the first transcription had the order reversed because
+the x87 stack stores its LAST product first. The shared transcription
+helper folds per-arm captures across all five rows; the falsification
+probe misread the helper's middle word (+4 dropped) and moved the
+transcript to mismatches=2 against control 1. With this slate the record's
+field map is fully named from +0x6c through +0x194: velocity, angular
+velocity, flags at +0x14, group word at +0x1c, sleep words +0x84/+0x10c,
+inertia diagonal +0x18c..194, mass +0x188, CMass frame +0xdc/+0x100.
+
+**Census.** Registrations +2, floor 112 -> 114, oracle digest re-pinned
+1efebac8 -> 7b7cd8d7.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is
