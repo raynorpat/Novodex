@@ -1316,6 +1316,46 @@ already listed phases [3, 5, 6, 7]), closing 59 of Phase 2's 143 rows.
 Registrations +4, floor 98 -> 102, oracle digest re-pinned e7114361 ->
 a969c85b.
 
+## 3z5. Slate 2: the energy word's squared scales, and the write side
+
+Five more actor rows close (000060, 000064, 000074, 000076 and the helper
+000742), driven by the actorsm2 family.
+
+**The energy word.** Slot 62 wraps a pure-x87 record helper, phys_fn_000742,
+and the first transcription exposed how easy a faithful-looking formula is
+to misread: the fxch/faddp ladder multiplies EACH cross product by its
+second word TWICE, so the function computes 0.5 * (([+0x74]^2 + [+0x70]^2 +
+[+0x6c]^2)*[+0x188] + [+0x194]*[+0x80]^2 + [+0x190]*[+0x7c]^2 +
+[+0x18c]*[+0x78]^2) -- an inertial-energy shape over the record's velocity
+at +0x6c..+0x74 against three squared scale words. The single-product
+reading passed nothing loudly: oracle said 52.0f where the transcription
+said 40.75f on marked inputs, and two one-term experiments (only
+{+0x18c=4, +0x78=2} -> exactly 8; only {+0x74=2, +0x188=6} -> exactly 12)
+pinned which terms halve before the squared-factor reading fell out of a
+byte-exact stack simulation. All intermediates stay at full precision with
+one rounding at st(0)'s fstp -- computed in double, cast once.
+
+**Slot 68** guards the same nested record and answers true when it is null
+or its word at +0x84 reads zero.
+
+**The write side.** Slots 75/76 are the first MUTATING actor rows: they
+upgrade through 0x5b730 -- EnterCriticalSection unless another thread holds
+the +0x18 writer flag, in which case fail WITHOUT entering -- then mutate
+body+0x14 (`|= mask` at line 0x1bb, `&= ~mask` at 0x1c1), then leave. The
+failure arm reports kind 2 through the error stream from NpActor.cpp:
+"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a
+deadlock!" -- the family drives both arms, capturing the oracle side with
+the errstream family's VirtualProtect dance over [.rdata 0x101041b4] (the
+first attempt installed only the candidate-side sink and the shipped fatal
+reporter killed the run from inside FoundationSDK::errorImpl).
+
+**Falsification**: dropping the squared factors in the throwaway tree moves
+the energy word to 41.5f and the transcript to mismatches=2 against a
+control of 1.
+
+**Census.** Registrations +2, floor 102 -> 104, oracle digest re-pinned
+a969c85b -> 729c9651.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is
