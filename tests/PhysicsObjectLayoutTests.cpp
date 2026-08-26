@@ -33,6 +33,9 @@
 
 // The reconstruction under test (Phase 5 Task 1/2 rows).
 #include "ObjectModel.h"
+// nxSetSdkAllocatorBridge: the candidate's growth arms must allocate from
+// the same emulator arena the oracle's shim serves (see NxTestArenaAllocator).
+#include "PhysicsInternal.h"
 
 // ---------------------------------------------------------------------------
 // Addresses, all censused and image-relative like every other address in this
@@ -127,6 +130,17 @@ struct NxFreeEnt { unsigned off; unsigned sz; };
 static NxFreeEnt g_free[2048];
 static unsigned g_freeN = 0;
 
+// Allocation-stream accounting. The growth-arm differentials fold the
+// DELTA of these four counters across one drive on each side: equal deltas
+// pin that both sides performed the same number of allocations of the same
+// total size and released the same number of blocks of the same total size.
+// Deltas -- not absolute values -- because every earlier family's traffic
+// is still in these totals and differs between the drives' positions.
+static unsigned g_heapMallocOps = 0;
+static unsigned g_heapMallocBytes = 0;
+static unsigned g_heapFreeOps = 0;
+static unsigned g_heapFreeBytes = 0;
+
 static void nxHeapInit()
 	{
 	g_free[0].off = 0;
@@ -154,6 +168,8 @@ static void* nxHeapAlloc(unsigned size)
 				g_free[i].sz -= need;
 				}
 			*reinterpret_cast<unsigned*>(g_arena + off) = need;
+			g_heapMallocOps += 1;
+			g_heapMallocBytes += need;
 			return g_arena + off + 4;
 			}
 	return nullptr;
@@ -166,6 +182,8 @@ static void nxHeapFree(void* p)
 		reinterpret_cast<unsigned char*>(p) - 4 - g_arena);
 	if(off >= sizeof(g_arena)) return;
 	unsigned sz = *reinterpret_cast<unsigned*>(g_arena + off);
+	g_heapFreeOps += 1;
+	g_heapFreeBytes += sz;
 	unsigned i = 0;
 	while(i < g_freeN && g_free[i].off < off) ++i;
 	for(unsigned j = g_freeN; j > i; --j) g_free[j] = g_free[j - 1];
@@ -247,6 +265,62 @@ static int nxFail(const char* message)
 	fprintf(stderr, "FAIL %s\n", message);
 	return 1;
 	}
+
+// Allocation-stream snapshots for the growth-arm differentials: read one
+// before a drive, fold the delta after, and both sides must agree on how
+// many allocations of what total size -- and how many releases of what
+// total size -- the drive performed.
+struct NxHeapMark { unsigned mo; unsigned mb; unsigned fo; unsigned fb; };
+
+static NxHeapMark nxHeapMarkNow()
+	{
+	NxHeapMark m;
+	m.mo = g_heapMallocOps;
+	m.mb = g_heapMallocBytes;
+	m.fo = g_heapFreeOps;
+	m.fb = g_heapFreeBytes;
+	return m;
+	}
+
+static unsigned nxFoldHeapDelta(unsigned digest, const NxHeapMark& before)
+	{
+	digest = nxFold(digest, g_heapMallocOps - before.mo);
+	digest = nxFold(digest, g_heapMallocBytes - before.mb);
+	digest = nxFold(digest, g_heapFreeOps - before.fo);
+	digest = nxFold(digest, g_heapFreeBytes - before.fb);
+	return digest;
+	}
+
+// The candidate-side allocator. The transcriptions reach
+// nxGetSdkAllocator(), which falls back to the CRT when nothing is
+// registered -- CRT blocks do not answer for the oracle's arena and their
+// traffic never touches the counters above. Registering this bridge at boot
+// routes every candidate allocation through the same emulator the shim
+// serves the oracle through, so both sides of a growth differential drive
+// one heap.
+class NxTestArenaAllocator : public SdkAllocator
+	{
+	public:
+	void* malloc(size_t size, NxMemoryType)
+		{ return nxHeapAlloc(static_cast<unsigned>(size)); }
+	void* mallocDEBUG(size_t size, const char*, int, const char*, NxMemoryType)
+		{ return nxHeapAlloc(static_cast<unsigned>(size)); }
+	void* realloc(void* memory, size_t size)
+		{
+		void* fresh = nxHeapAlloc(static_cast<unsigned>(size));
+		if(fresh != nullptr && memory != nullptr)
+			{
+			unsigned oldNeed = *reinterpret_cast<unsigned*>(
+				static_cast<unsigned char*>(memory) - 4) - 4;
+			memcpy(fresh, memory, oldNeed < size ? oldNeed : size);
+			}
+		nxHeapFree(memory);
+		return fresh;
+		}
+	void free(void* memory)
+		{ nxHeapFree(memory); }
+	};
+static NxTestArenaAllocator g_arenaAllocator;
 
 // ---------------------------------------------------------------------------
 // Error-stream capture, shared by the oracle and candidate errstream drives
@@ -369,6 +443,11 @@ int wmain(int argc, wchar_t** argv)
 	fflush(stdout);
 	setvbuf(stdout, 0, _IONBF, 0);	// probe crashes must not eat the transcript
 
+	// Candidate-side allocations join the oracle's arena before any family
+	// runs, so no CRT block can ever be handed to the emulator's free.
+	nxSetSdkAllocatorBridge(&g_arenaAllocator);
+	printf("layout arena-bridge=installed\n");
+
 	const unsigned char* base = (const unsigned char*) physics;
 
 	unsigned oracleDigest = 2166136261u;
@@ -425,6 +504,10 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oMaterialBootedDigest = 0;
 	unsigned oOwnDigest = 0;
 	unsigned oOwnDtorDigest = 0;
+	unsigned oVecGrowDigest = 0;
+	unsigned oVecGrowReservedDigest = 0;
+	unsigned oRelGrowDigest = 0;
+	unsigned oPairRmDigest = 0;
 	unsigned oZeroDigest = 0;
 	unsigned oZeroCandDigest = 0;
 	static unsigned char sSaveStateRecord[0x48];
@@ -2351,6 +2434,230 @@ int wmain(int argc, wchar_t** argv)
 	}
 
 	// -----------------------------------------------------------------------
+	// phys_fn_000028: dword-vector push_back driven through both reallocs.
+	// Eight pushes from an empty VC9 header -- p0 allocates capacity 2,
+	// p2 grows 2 -> 6, p6 grows 6 -> 14 (new capacity 2*size + 2 dwords
+	// through the shim's arena) -- then a second drive pushes once into a
+	// pre-reserved header and must not touch the heap at all. The proxy word
+	// is folded untouched because this row never reads it.
+	{
+	unsigned vecO[8];
+	memset(vecO, 0xcd, sizeof(vecO));
+	vecO[0] = 0xC0C0C0C0u;					// _Myproxy marker
+	vecO[1] = 0;							// _Myfirst: empty
+	vecO[2] = 0;							// _Mylast
+	vecO[3] = 0;							// _Myend
+	typedef void (__thiscall* NxPushFnOD)(void* self, unsigned value);
+	NxPushFnOD pushOD = (NxPushFnOD) (base + 0x00001b90);
+
+	NxHeapMark mgD = nxHeapMarkNow();
+	for(unsigned k = 0; k < 8; ++k)
+		pushOD(vecO, 0x51510000u + k);
+	int proxyUntouched = (vecO[0] == 0xC0C0C0C0u);
+	const unsigned* vecElemsO = reinterpret_cast<const unsigned*>(vecO[1]);
+	unsigned cnt = (vecO[2] - vecO[1]) >> 2;
+	unsigned cap = (vecO[3] - vecO[1]) >> 2;
+	int elemsOk = (cnt == 8);
+	for(unsigned k = 0; k < cnt && k < 8; ++k)
+		if(vecElemsO[k] != 0x51510000u + k)
+			elemsOk = 0;
+
+	unsigned dv = 2166136261u;
+	dv = nxFold(dv, proxyUntouched ? 1u : 0u);
+	dv = nxFold(dv, cnt);
+	dv = nxFold(dv, cap);
+	for(unsigned k = 0; k < cnt && k < 8; ++k)
+		dv = nxFold(dv, vecElemsO[k]);
+	dv = nxFoldHeapDelta(dv, mgD);
+	oVecGrowDigest = dv;
+	oracleDigest = nxFold(oracleDigest, dv);
+	printf("vecgrow row=oracle proxy=%08x count=%u cap=%u elems=%u mops=%u mbytes=%u fops=%u fbytes=%u digest=%08x\n",
+		vecO[0], cnt, cap, elemsOk,
+		g_heapMallocOps - mgD.mo, g_heapMallocBytes - mgD.mb,
+		g_heapFreeOps - mgD.fo, g_heapFreeBytes - mgD.fb, dv);
+
+	static unsigned rsvStoreO[16];
+	unsigned rsvO[8];
+	memset(rsvO, 0, sizeof(rsvO));
+	rsvO[1] = reinterpret_cast<unsigned>(rsvStoreO);
+	rsvO[2] = reinterpret_cast<unsigned>(rsvStoreO + 1);
+	rsvO[3] = reinterpret_cast<unsigned>(rsvStoreO + 16);
+	NxHeapMark mrD = nxHeapMarkNow();
+	pushOD(rsvO, 0x5E5E0001u);
+	int rsvNoAlloc = (g_heapMallocOps == mrD.mo && g_heapFreeOps == mrD.fo &&
+		rsvO[2] == reinterpret_cast<unsigned>(rsvStoreO + 2));
+	int rsvStored = (rsvStoreO[1] == 0x5E5E0001u);
+	unsigned dr = 2166136261u;
+	dr = nxFold(dr, rsvNoAlloc ? 1u : 0u);
+	dr = nxFold(dr, rsvStored ? 1u : 0u);
+	oVecGrowReservedDigest = dr;
+	oracleDigest = nxFold(oracleDigest, dr);
+	printf("vecgrow2 row=oracle noalloc=%u stored=%u digest=%08x\n",
+		rsvNoAlloc, rsvStored, dr);
+	}
+
+	// -----------------------------------------------------------------------
+	// phys_fn_002410 direct: the release arm with the free vector AT
+	// capacity, so its inlined push_back must realloc mid-release and leave
+	// the unlink intact behind it. Three indices cover the real arm
+	// structure -- sentinel != -1 gates ONLY the push, sentinel == 0 gates
+	// only the unlink:
+	//   idx 3 live (0xA5A50003): push grows 8 -> 18, then unlink pops.
+	//   idx 5 released (0):      duplicate push, no unlink.
+	//   idx 7 virgin (-1):       NO push, but the unlink still runs --
+	//                            cntA[3] is rewritten to 6 and the cursor
+	//                            pops a second time. The quirk this family
+	//                            exists to pin.
+	//
+	// The initial free-vector block comes FROM the emulator arena, not from
+	// a static array: growth releases the old block through the shim, and a
+	// foreign block turns that release into a silent no-op whose offset
+	// arithmetic is only guarded by luck.
+	{
+	typedef void (__thiscall* NxRelFnOD)(void* self, unsigned idx);
+	NxRelFnOD relOD = (NxRelFnOD) (base + 0x0005bac0);
+
+	static unsigned rSent[64];
+	static unsigned rCntA[64];
+	static unsigned rCntB[64];
+	static unsigned* rCntBEnd = rCntB + 8;
+	static unsigned rMir[64];
+	static unsigned rHdr[64];
+	memset(rHdr, 0, sizeof(rHdr));
+	for(int i = 0; i < 64; ++i)
+		{
+		rSent[i] = 0xFFFFFFFFu;
+		rCntA[i] = 0xB0000000u + static_cast<unsigned>(i);
+		rMir[i] = static_cast<unsigned>(i);
+		}
+	rCntB[7] = 7u;
+	rSent[3] = 0xA5A50003u;					// live
+	rSent[5] = 0u;							// released once already
+
+	unsigned* rFl = static_cast<unsigned*>(nxHeapAlloc(8 * sizeof(unsigned)));
+	for(int i = 0; i < 8; ++i)
+		rFl[i] = 0x11110000u + static_cast<unsigned>(i);
+
+	rHdr[0x00 / 4] = reinterpret_cast<unsigned>(rSent);
+	rHdr[0x10 / 4] = reinterpret_cast<unsigned>(rCntA);
+	rHdr[0x14 / 4] = reinterpret_cast<unsigned>(rCntBEnd);
+	rHdr[0x20 / 4] = reinterpret_cast<unsigned>(rMir);
+	rHdr[0x30 / 4] = reinterpret_cast<unsigned>(rFl);
+	rHdr[0x34 / 4] = reinterpret_cast<unsigned>(rFl + 8);
+	rHdr[0x38 / 4] = reinterpret_cast<unsigned>(rFl + 8);
+
+	NxHeapMark mhD = nxHeapMarkNow();
+	relOD(rHdr, 3);							// grow + unlink
+	relOD(rHdr, 5);							// duplicate push only
+	NxHeapMark mAfterDup = nxHeapMarkNow();
+	relOD(rHdr, 7);							// virgin: no push, unlink runs
+
+	int virginNoPush = (g_heapMallocOps == mAfterDup.mo &&
+		g_heapFreeOps == mAfterDup.fo);
+	int sent3Zeroed = (rSent[3] == 0u && rSent[7] == 0u);
+	int mirPoisoned = (rMir[3] == 0xD00BEED0u && rMir[7] == 0xD00BEED0u);
+	int secondUnlinkMoved = (rCntA[3] == 0u && rMir[0] == 3u &&
+		*reinterpret_cast<unsigned**>(reinterpret_cast<unsigned char*>(rHdr) + 0x14)
+			== rCntB + 6);
+	unsigned flCount = (rHdr[0x34 / 4] - rHdr[0x30 / 4]) >> 2;
+	unsigned flCap = (rHdr[0x38 / 4] - rHdr[0x30 / 4]) >> 2;
+	const unsigned* flLive = *reinterpret_cast<unsigned* const*>(
+		reinterpret_cast<unsigned char*>(rHdr) + 0x30);
+	int dupPresent = (flCount >= 10 && flLive[9] == 5u);
+
+	unsigned dq = 2166136261u;
+	dq = nxFold(dq, virginNoPush ? 1u : 0u);
+	dq = nxFold(dq, sent3Zeroed ? 1u : 0u);
+	dq = nxFold(dq, mirPoisoned ? 1u : 0u);
+	dq = nxFold(dq, secondUnlinkMoved ? 1u : 0u);
+	dq = nxFold(dq, flCount);
+	dq = nxFold(dq, flCap);
+	for(unsigned k = 0; k < flCount && k < 18; ++k)
+		dq = nxFold(dq, flLive[k]);
+	dq = nxFold(dq, dupPresent ? 1u : 0u);
+	dq = nxFoldHeapDelta(dq, mhD);
+	oRelGrowDigest = dq;
+	oracleDigest = nxFold(oracleDigest, dq);
+	printf("relgrow row=oracle nopush=%u s37zero=%u poison=%u mv2=%u fl=%u/%u dup=%u mops=%u mbytes=%u fops=%u fbytes=%u digest=%08x\n",
+		virginNoPush, sent3Zeroed, mirPoisoned, secondUnlinkMoved,
+		flCount, flCap, dupPresent,
+		g_heapMallocOps - mhD.mo, g_heapMallocBytes - mhD.mb,
+		g_heapFreeOps - mhD.fo, g_heapFreeBytes - mhD.fb, dq);
+	}
+
+	// -----------------------------------------------------------------------
+	// phys_fn_002344 direct: pair-list swap-remove over five sub-drives --
+	// middle removal (swap-with-last moves real words), matched-last
+	// (shrink without copy), duplicate matches in one call (the loop
+	// re-scans the slot a swap just filled), no match, empty list.
+	//
+	// Contract from the call site (0x00026c13): `this` is the address of
+	// the scene's +0x5d4 FIELD; *[this] names the {begin,end} header of
+	// the stride-8 array. The drives reproduce both levels.
+	{
+	typedef void (__thiscall* NxPairRmFnOD)(void* self, unsigned value);
+	NxPairRmFnOD pairRmOD = (NxPairRmFnOD) (base + 0x0005aae0);
+
+	static unsigned pwO[5][16];				// five pair arrays
+	static unsigned phO[5][4];				// {begin, end} each
+	static unsigned pcO[5];					// *[this] -> header
+	memset(pwO, 0, sizeof(pwO));
+	memset(phO, 0, sizeof(phO));
+
+	for(int cs = 0; cs < 5; ++cs)
+		pcO[cs] = reinterpret_cast<unsigned>(phO[cs]);
+
+	// c0: {(a,b),(c,d),(e,f)} remove c -- the LAST pair swaps into slot 1.
+	pwO[0][0] = 0x7A010001u; pwO[0][1] = 0x7A010002u;
+	pwO[0][2] = 0x7A020001u; pwO[0][3] = 0x7A020002u;
+	pwO[0][4] = 0x7A030001u; pwO[0][5] = 0x7A030002u;
+	phO[0][0] = reinterpret_cast<unsigned>(pwO[0]);
+	phO[0][1] = reinterpret_cast<unsigned>(pwO[0] + 6);
+	pairRmOD(&pcO[0], 0x7A020001u);
+
+	// c1: remove by SECOND half at matched-last: shrink with no move.
+	pwO[1][0] = 0x7B110001u; pwO[1][1] = 0x7B110002u;
+	pwO[1][2] = 0x7B120001u; pwO[1][3] = 0x7B120002u;
+	phO[1][0] = reinterpret_cast<unsigned>(pwO[1]);
+	phO[1][1] = reinterpret_cast<unsigned>(pwO[1] + 4);
+	pairRmOD(&pcO[1], 0x7B120002u);
+
+	// c2: duplicates -- two records share an exact first-half value; one
+	// call removes both through the swap chain and leaves the unrelated
+	// survivor intact at slot 0 (the loop rescans the slot a swap just
+	// filled, which is what makes duplicates fall in one pass).
+	const unsigned DUP_V = 0x7C220000u;
+	pwO[2][0] = DUP_V;			pwO[2][1] = 0x7C200002u;
+	pwO[2][2] = 0x7C210001u;	pwO[2][3] = 0x7C210002u;
+	pwO[2][4] = DUP_V;			pwO[2][5] = 0x7C200004u;
+	phO[2][0] = reinterpret_cast<unsigned>(pwO[2]);
+	phO[2][1] = reinterpret_cast<unsigned>(pwO[2] + 6);
+	pairRmOD(&pcO[2], DUP_V);
+
+	// c3: no match -- nothing moves.
+	pwO[3][0] = 0x7D310001u; pwO[3][1] = 0x7D310002u;
+	phO[3][0] = reinterpret_cast<unsigned>(pwO[3]);
+	phO[3][1] = reinterpret_cast<unsigned>(pwO[3] + 2);
+	pairRmOD(&pcO[3], 0xDEADBEEFu);
+
+	// c4: empty list -- begin == end, the loop never runs.
+	phO[4][0] = reinterpret_cast<unsigned>(pwO[4]);
+	phO[4][1] = reinterpret_cast<unsigned>(pwO[4]);
+	pairRmOD(&pcO[4], 0x7A010001u);
+
+	unsigned dp = 2166136261u;
+	for(int cs = 0; cs < 5; ++cs)
+		{
+		dp = nxFold(dp, phO[cs][1] - phO[cs][0]);	// end offset rel begin
+		for(int w = 0; w < 16; ++w)
+			dp = nxFold(dp, pwO[cs][w]);
+		}
+	oPairRmDigest = dp;
+	oracleDigest = nxFold(oracleDigest, dp);
+	printf("pairrm row=oracle cases=5 digest=%08x\n", dp);
+	}
+
+	// -----------------------------------------------------------------------
 	// phys_fn_000847: the conditional mass-frame zeroizer. Two drives --
 	// flag=1 (zeroes all 13 words) and flag=0 (leaves untouched) -- against
 	// pre-populated frames.
@@ -4244,6 +4551,193 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 50u);
+		}
+
+		// -- vecgrow: the transcription's push_back through both reallocs,
+		// then the pre-reserved no-alloc drive. Twin of the oracle family.
+		{
+		unsigned vecC[8];
+		memset(vecC, 0xcd, sizeof(vecC));
+		vecC[0] = 0xC0C0C0C0u;
+		vecC[1] = 0;
+		vecC[2] = 0;
+		vecC[3] = 0;
+
+		NxHeapMark mgC = nxHeapMarkNow();
+		for(unsigned k = 0; k < 8; ++k)
+			nxU32VectorPushBack(vecC, 0x51510000u + k);
+		int proxyUntouched = (vecC[0] == 0xC0C0C0C0u);
+		const unsigned* vecElemsC = reinterpret_cast<const unsigned*>(vecC[1]);
+		unsigned cnt = (vecC[2] - vecC[1]) >> 2;
+		unsigned cap = (vecC[3] - vecC[1]) >> 2;
+		int elemsOk = (cnt == 8);
+		for(unsigned k = 0; k < cnt && k < 8; ++k)
+			if(vecElemsC[k] != 0x51510000u + k)
+				elemsOk = 0;
+
+		unsigned dvC = 2166136261u;
+		dvC = nxFold(dvC, proxyUntouched ? 1u : 0u);
+		dvC = nxFold(dvC, cnt);
+		dvC = nxFold(dvC, cap);
+		for(unsigned k = 0; k < cnt && k < 8; ++k)
+			dvC = nxFold(dvC, vecElemsC[k]);
+		dvC = nxFoldHeapDelta(dvC, mgC);
+
+		static unsigned rsvStoreC[16];
+		unsigned rsvC[8];
+		memset(rsvC, 0, sizeof(rsvC));
+		rsvC[1] = reinterpret_cast<unsigned>(rsvStoreC);
+		rsvC[2] = reinterpret_cast<unsigned>(rsvStoreC + 1);
+		rsvC[3] = reinterpret_cast<unsigned>(rsvStoreC + 16);
+		NxHeapMark mrC = nxHeapMarkNow();
+		nxU32VectorPushBack(rsvC, 0x5E5E0001u);
+		int rsvNoAlloc = (g_heapMallocOps == mrC.mo && g_heapFreeOps == mrC.fo &&
+			rsvC[2] == reinterpret_cast<unsigned>(rsvStoreC + 2));
+		int rsvStored = (rsvStoreC[1] == 0x5E5E0001u);
+		unsigned drC = 2166136261u;
+		drC = nxFold(drC, rsvNoAlloc ? 1u : 0u);
+		drC = nxFold(drC, rsvStored ? 1u : 0u);
+
+		bool okVG = dvC == oVecGrowDigest && drC == oVecGrowReservedDigest;
+		printf("vecgrow candidate ok=%u count=%u cap=%u elems=%u digest=%08x/%08x\n",
+			okVG ? 1u : 0u, cnt, cap, elemsOk, dvC, drC);
+		if(!okVG)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 51u);
+		}
+
+		// -- relgrow: nxSceneReleaseIndex with the free vector at capacity.
+		// Twin of the oracle family: grow mid-release, duplicate push on a
+		// released slot, virgin sentinel skips the push but still unlinks.
+		// Initial block from the arena, like the oracle drive.
+		{
+		static unsigned rSentC[64];
+		static unsigned rCntAC[64];
+		static unsigned rCntBC[64];
+		static unsigned* rCntBEndC = rCntBC + 8;
+		static unsigned rMirC[64];
+		static unsigned rHdrC[64];
+		memset(rHdrC, 0, sizeof(rHdrC));
+		for(int i = 0; i < 64; ++i)
+			{
+			rSentC[i] = 0xFFFFFFFFu;
+			rCntAC[i] = 0xB0000000u + static_cast<unsigned>(i);
+			rMirC[i] = static_cast<unsigned>(i);
+			}
+		rCntBC[7] = 7u;
+		rSentC[3] = 0xA5A50003u;
+		rSentC[5] = 0u;
+
+		unsigned* rFlC = static_cast<unsigned*>(nxHeapAlloc(8 * sizeof(unsigned)));
+		for(int i = 0; i < 8; ++i)
+			rFlC[i] = 0x11110000u + static_cast<unsigned>(i);
+
+		rHdrC[0x00 / 4] = reinterpret_cast<unsigned>(rSentC);
+		rHdrC[0x10 / 4] = reinterpret_cast<unsigned>(rCntAC);
+		rHdrC[0x14 / 4] = reinterpret_cast<unsigned>(rCntBEndC);
+		rHdrC[0x20 / 4] = reinterpret_cast<unsigned>(rMirC);
+		rHdrC[0x30 / 4] = reinterpret_cast<unsigned>(rFlC);
+		rHdrC[0x34 / 4] = reinterpret_cast<unsigned>(rFlC + 8);
+		rHdrC[0x38 / 4] = reinterpret_cast<unsigned>(rFlC + 8);
+
+		NxHeapMark mhC = nxHeapMarkNow();
+		nxSceneReleaseIndex(rHdrC, 3);
+		nxSceneReleaseIndex(rHdrC, 5);
+		NxHeapMark mAfterDupC = nxHeapMarkNow();
+		nxSceneReleaseIndex(rHdrC, 7);
+
+		int virginNoPush = (g_heapMallocOps == mAfterDupC.mo &&
+			g_heapFreeOps == mAfterDupC.fo);
+		int sent3Zeroed = (rSentC[3] == 0u && rSentC[7] == 0u);
+		int mirPoisoned = (rMirC[3] == 0xD00BEED0u && rMirC[7] == 0xD00BEED0u);
+		int secondUnlinkMoved = (rCntAC[3] == 0u && rMirC[0] == 3u &&
+			*reinterpret_cast<unsigned**>(
+				reinterpret_cast<unsigned char*>(rHdrC) + 0x14) == rCntBC + 6);
+		unsigned flCount = (rHdrC[0x34 / 4] - rHdrC[0x30 / 4]) >> 2;
+		unsigned flCap = (rHdrC[0x38 / 4] - rHdrC[0x30 / 4]) >> 2;
+		const unsigned* flLiveC = *reinterpret_cast<unsigned* const*>(
+			reinterpret_cast<unsigned char*>(rHdrC) + 0x30);
+		int dupPresent = (flCount >= 10 && flLiveC[9] == 5u);
+
+		unsigned dqC = 2166136261u;
+		dqC = nxFold(dqC, virginNoPush ? 1u : 0u);
+		dqC = nxFold(dqC, sent3Zeroed ? 1u : 0u);
+		dqC = nxFold(dqC, mirPoisoned ? 1u : 0u);
+		dqC = nxFold(dqC, secondUnlinkMoved ? 1u : 0u);
+		dqC = nxFold(dqC, flCount);
+		dqC = nxFold(dqC, flCap);
+		for(unsigned k = 0; k < flCount && k < 18; ++k)
+			dqC = nxFold(dqC, flLiveC[k]);
+		dqC = nxFold(dqC, dupPresent ? 1u : 0u);
+		dqC = nxFoldHeapDelta(dqC, mhC);
+
+		bool okRG = dqC == oRelGrowDigest;
+		printf("relgrow candidate ok=%u nopush=%u s37zero=%u poison=%u mv2=%u fl=%u/%u dup=%u digest=%08x\n",
+			okRG ? 1u : 0u, virginNoPush, sent3Zeroed, mirPoisoned,
+			secondUnlinkMoved, flCount, flCap, dupPresent, dqC);
+		if(!okRG)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 52u);
+		}
+
+		// -- pairrm: nxSceneRemovePairs over the five twin sub-drives,
+		// through the same field-address contract as the oracle drive.
+		{
+		static unsigned pwC[5][16];
+		static unsigned phC[5][4];
+		static unsigned pcC[5];
+		memset(pwC, 0, sizeof(pwC));
+		memset(phC, 0, sizeof(phC));
+
+		for(int cs = 0; cs < 5; ++cs)
+			pcC[cs] = reinterpret_cast<unsigned>(phC[cs]);
+
+		pwC[0][0] = 0x7A010001u; pwC[0][1] = 0x7A010002u;
+		pwC[0][2] = 0x7A020001u; pwC[0][3] = 0x7A020002u;
+		pwC[0][4] = 0x7A030001u; pwC[0][5] = 0x7A030002u;
+		phC[0][0] = reinterpret_cast<unsigned>(pwC[0]);
+		phC[0][1] = reinterpret_cast<unsigned>(pwC[0] + 6);
+		nxSceneRemovePairs(&pcC[0], reinterpret_cast<void*>(0x7A020001u));
+
+		pwC[1][0] = 0x7B110001u; pwC[1][1] = 0x7B110002u;
+		pwC[1][2] = 0x7B120001u; pwC[1][3] = 0x7B120002u;
+		phC[1][0] = reinterpret_cast<unsigned>(pwC[1]);
+		phC[1][1] = reinterpret_cast<unsigned>(pwC[1] + 4);
+		nxSceneRemovePairs(&pcC[1], reinterpret_cast<void*>(0x7B120002u));
+
+		const unsigned DUP_VC = 0x7C220000u;
+		pwC[2][0] = DUP_VC;			pwC[2][1] = 0x7C200002u;
+		pwC[2][2] = 0x7C210001u;	pwC[2][3] = 0x7C210002u;
+		pwC[2][4] = DUP_VC;			pwC[2][5] = 0x7C200004u;
+		phC[2][0] = reinterpret_cast<unsigned>(pwC[2]);
+		phC[2][1] = reinterpret_cast<unsigned>(pwC[2] + 6);
+		nxSceneRemovePairs(&pcC[2], reinterpret_cast<void*>(DUP_VC));
+
+		pwC[3][0] = 0x7D310001u; pwC[3][1] = 0x7D310002u;
+		phC[3][0] = reinterpret_cast<unsigned>(pwC[3]);
+		phC[3][1] = reinterpret_cast<unsigned>(pwC[3] + 2);
+		nxSceneRemovePairs(&pcC[3], reinterpret_cast<void*>(0xDEADBEEFu));
+
+		phC[4][0] = reinterpret_cast<unsigned>(pwC[4]);
+		phC[4][1] = reinterpret_cast<unsigned>(pwC[4]);
+		nxSceneRemovePairs(&pcC[4], reinterpret_cast<void*>(0x7A010001u));
+
+		unsigned dpC = 2166136261u;
+		for(int cs = 0; cs < 5; ++cs)
+			{
+			dpC = nxFold(dpC, phC[cs][1] - phC[cs][0]);
+			for(int w = 0; w < 16; ++w)
+				dpC = nxFold(dpC, pwC[cs][w]);
+			}
+
+		bool okPR = dpC == oPairRmDigest;
+		printf("pairrm candidate ok=%u digest=%08x\n", okPR ? 1u : 0u, dpC);
+		if(!okPR)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 53u);
 		}
 		// -- post-creation template state: fresh record + internal bit31.
 		{

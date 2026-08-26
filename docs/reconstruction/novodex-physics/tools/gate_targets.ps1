@@ -648,12 +648,26 @@ $NxRequiredCoverageLines = [ordered] @{
         'materialboot row=template flags=00000000 digest=dcc6a675',
         'mzero row=phys_fn_000847 zA=00000000 zB=42424242 digest=23206019',
         'owndtor row=oracle flag=00000002 clr=1/1/1 pop=0 mv=0 fl=1 pair=0 freed=0 digest=6d133744',
+        # The remover chain decoded to its growth arms. vecgrow drives
+        # phys_fn_000028 through both reallocs (capacity 2 -> 6 -> 14); the
+        # allocation-stream deltas are over the emulator's need sizes.
+        'vecgrow row=oracle proxy=c0c0c0c0 count=8 cap=14 elems=1 mops=3 mbytes=100 fops=2 fbytes=40 digest=6f1d9bd7',
+        'vecgrow2 row=oracle noalloc=1 stored=1 digest=8eac5155',
+        # phys_fn_002410 with the free vector AT capacity: grow mid-release,
+        # duplicate push on a released slot, virgin sentinel (-1) skips the
+        # push but STILL runs the unlink -- cntA[3] is rewritten and the
+        # cursor pops twice. That quirk is this family's reason to exist.
+        'relgrow row=oracle nopush=1 s37zero=1 poison=1 mv2=1 fl=10/18 dup=1 mops=1 mbytes=76 fops=1 fbytes=36 digest=dc548b5a',
+        # phys_fn_002344 driven at the field-address contract the real dtor
+        # uses (0x00026c13): middle removal, matched-last shrink, duplicates
+        # falling in one pass, no-match, empty list.
+        'pairrm row=oracle cases=5 digest=f0bdae43',
         'ownctor row=oracle d4=00000003 sent_ok=1 mirror_ok=1 shp_ok=1 digest=641beb67',
         'material row=template flags=00000000 digest=527814f5',
         'capdtor row=phys_fn_001014 digest=7a376673',
         'capaabb row=phys_fn_001004 minmax=80000000.80000000.80000000.00000000.00000000.00000000',
         'layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1',
-        'layout oracle digest=f9691824',
+        'layout oracle digest=e7114361',
         'hull support candidate ok=1 min_bits=c19c0000 max_bits=4eada5a5',
         'hull sharedhook candidate ok=1 stable=1',
         'basevt candidate ok=1 ret4=0 ret5=00000000 ret7=0',
@@ -685,7 +699,10 @@ $NxRequiredCoverageLines = [ordered] @{
         'ownctor candidate ok=1 digest=641beb67',
         'mzero candidate ok=1 digest=23206019'
         'materialboot candidate ok=1 digest=dcc6a675',
-        'owndtor candidate ok=1 digest=6d133744'
+        'owndtor candidate ok=1 digest=6d133744',
+        'vecgrow candidate ok=1 count=8 cap=14 elems=1 digest=6f1d9bd7/8eac5155',
+        'relgrow candidate ok=1 nopush=1 s37zero=1 poison=1 mv2=1 fl=10/18 dup=1 digest=dc548b5a'
+        'pairrm candidate ok=1 digest=f0bdae43'
     )
 
     # The vendored third-party differential. Phase 4 vendors qhull 2003.1 and
@@ -843,7 +860,9 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 100  # 34 for NxPhysicsAssetTests, 66 for NxPhysicsThirdPartyTests
-    '5' = 91   # fifty-nine for NxPhysicsObjectLayoutTests (RED on purpose: vtables family open)
+    '5' = 98   # was 91: +7 for the remover-chain growth families (vecgrow,
+               # vecgrow2, relgrow, pairrm rows and their candidate drives)
+               # (RED on purpose: vtables family open)
     '6' = 0
     '7' = 0
     '8' = 0

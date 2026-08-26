@@ -593,19 +593,38 @@ void					nxInstallReportSink(NxReportFn sink);
 void					nxSceneInsertShape(void* container, void* shape,
 							NxU32 slot);
 
-//! Task 4 scaffolding: remover #1 (phys_fn_002418's guard 0x5bac0 + clear
-//! 0x5bbe0). Freelist push of the scene slot when not already freed, then
-//! swap-remove across the sentinel/count/mirror arrays with the
-//! 0xD00BEED0 poison, then shapes[slot] = 0. Pre-sized containers only.
+//! Task 4 scaffolding: remover #1 (phys_fn_002410's release arm + the
+//! 0x5bbe0 clear). Freelist push of the scene slot when not already freed,
+//! then swap-remove across the sentinel/count/mirror arrays with the
+//! 0xD00BEED0 poison, then shapes[slot] = 0.
 void					nxSceneRemoveShape(void* container, void* shape);
 
-//! Task 4 scaffolding: remover #2 (0x5aae0). Removes every {a,b} pair of
-//! the stride-8 array referencing `shape` from either half via swap-with-
-//! last. Pre-sized containers only.
+//! phys_fn_002410 (0x5bac0) alone, without the shapes-array clear its
+//! callers add: sentinel != -1 gates ONLY the free-vector push at +0x30
+//! (full growth arm), and sentinel == 0 gates only the unlink -- so a
+//! virgin index skips the push but still unlinks, and a released index
+//! pushes a duplicate while skipping the unlink. The unlink swaps the count
+//! vector's last value across the +0x10/+0x14/+0x20 arrays and poisons the
+//! mirror word with 0xD00BEED0.
+void					nxSceneReleaseIndex(void* hdr, NxU32 idx);
+
+//! Task 4 scaffolding: remover #2 (0x5aae0). `container` is the ADDRESS OF
+//! THE SCENE'S +0x5d4 FIELD (0x00026c13 add ecx,0x5d4); *[container] names
+//! the {begin,end} header of the stride-8 pair array. Removes every pair
+//! referencing `shape` from either half via swap-with-last.
 void					nxSceneRemovePairs(void* container, void* shape);
 
-//! Task 4 scaffolding: remover #3 (0x1b90). Pushes the scene slot onto the
-//! container's free list at its capacity cursor (cap >= end assumed).
+//! phys_fn_000028 (0x1b90): dword-vector push_back over the VC9 layout
+//! {_Myproxy@+0x00 untouched by this row, _Myfirst@+0x04, _Mylast@+0x08,
+//! _Myend@+0x0c}. Full fidelity including the growth arm -- new capacity
+//! 2*size + 2 dwords allocated through nxGetSdkAllocator, elements copied,
+//! old block released -- so the differential can drive both sides into
+//! realloc and fold the allocation stream.
+void					nxU32VectorPushBack(void* vecHeader, NxU32 value);
+
+//! Task 4 scaffolding: remover #3 = nxU32VectorPushBack on the container's
+//! own header; kept as a name because the deregistration chain reads in
+//! terms of it.
 void					nxSceneSlotFree(void* container, NxU32 slot);
 
 //! The image's own literal pair, exposed so tests can pin against them.

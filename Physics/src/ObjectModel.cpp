@@ -323,84 +323,144 @@ void ShapeBase::nxBaseDtorOwnerArms(void)
 	void* c1 = *reinterpret_cast<void* const*>(sc + 0x48);
 	nxSceneRemoveShape(c1, this);
 
-	void* c2 = *reinterpret_cast<void* const*>(sc + 0x5d4);
-	nxSceneRemovePairs(c2, this);
+	// 0x00026c0f..19: ecx = scene + 0x5d4 -- the ADDRESS OF THE FIELD, so
+	// remover #2's [this] dereference lands on the field's {begin,end}
+	// header. Not the field's value.
+	nxSceneRemovePairs(reinterpret_cast<unsigned char*>(scene) + 0x5d4, this);
 
 	void* c3 = *reinterpret_cast<void* const*>(sc + 0x6e4);
 	nxSceneSlotFree(c3, mArgumentD4);
 	}
 
-// Task 4 scaffolding: remover chain. Guard semantics from 0x0005bac0's
-// tail: freelist push of the slot (skipped when the sentinel already reads
-// -1), then a swap-remove across three parallel arrays -- cntA gets the
-// count vector's last value at the mirror-indexed position, the mirror
-// cross-updates, the count vector pops, and the slot's mirror word takes
-// the 0xD00BEED0 poison -- then 0x5bbe0 clears shapes[slot].
+// Task 4 scaffolding: remover chain, decoded in full this round.
+//
+// phys_fn_002410 (0x5bac0) is the release arm, and both guards are
+// narrower than they look: sentinel != -1 gates ONLY the free-vector push,
+// and sentinel == 0 gates only the unlink -- so a virgin index (-1) skips
+// the push but still runs the unlink against whatever the mirror word
+// names, and an already-released index pushes a duplicate while skipping
+// the unlink. The push itself is the same growth arm phys_fn_000028
+// carries, inlined (malloc/copy/free through adapter slots +8/+0x14 when
+// the cursor sits at capacity). The unlink swaps the count vector's last
+// value into the released slot's mirror position across the +0x10 counts /
+// +0x14 end cursor / +0x20 mirrors arrays, pops the cursor, zeroes the
+// sentinel and poisons the mirror word with 0xD00BEED0. The shapes-array
+// clear its callers perform lives in 0x5bbe0 and stays in
+// nxSceneRemoveShape below.
+void nxSceneReleaseIndex(void* hdr, NxU32 idx)
+	{
+	unsigned h = reinterpret_cast<unsigned>(hdr);
+	unsigned* sent = *reinterpret_cast<unsigned**>(h);
+	if(sent[idx] != 0xFFFFFFFFu)
+		nxU32VectorPushBack(reinterpret_cast<unsigned*>(h + 0x2c), idx);
+	if(sent[idx] == 0)
+		return;
+	unsigned* cntA = *reinterpret_cast<unsigned**>(h + 0x10);
+	unsigned* cntBEnd = *reinterpret_cast<unsigned**>(h + 0x14);
+	unsigned* mir = *reinterpret_cast<unsigned**>(h + 0x20);
+	unsigned lastVal = *(cntBEnd - 1);
+	NxU32 u = mir[idx];
+	cntA[u] = lastVal;
+	mir[lastVal] = u;
+	*reinterpret_cast<unsigned**>(h + 0x14) = cntBEnd - 1;
+	sent[idx] = 0;
+	mir[idx] = 0xD00BEED0u;
+	}
+
+// Remover #1: the deregistration chain's shape-side wrapper -- the slot
+// read off Shape+0xd4, released through phys_fn_002410, then the
+// shapes-array clear that lives one call over at 0x5bbe0.
 void nxSceneRemoveShape(void* container, void* shape)
 	{
 	unsigned c = reinterpret_cast<unsigned>(container);
 	const unsigned char* sh = static_cast<const unsigned char*>(shape);
 	NxU32 slot = *reinterpret_cast<const NxU32*>(sh + 0xd4);
 
-	unsigned* sent = *reinterpret_cast<unsigned**>(c + 0x00);
-	unsigned* flEnd = *reinterpret_cast<unsigned**>(c + 0x34);
-	unsigned* flBegin = *reinterpret_cast<unsigned**>(c + 0x30);
-	if(sent[slot] != 0xFFFFFFFFu)
-		{
-		*flEnd = slot;							// freelist push
-		*reinterpret_cast<unsigned**>(c + 0x34) = flEnd + 1;
-		}
-	if(sent[slot] == 0)
-		return;
-
-	unsigned* cntA = *reinterpret_cast<unsigned**>(c + 0x10);
-	unsigned* cntBEnd = *reinterpret_cast<unsigned**>(c + 0x14);
-	unsigned* mir = *reinterpret_cast<unsigned**>(c + 0x20);
-	unsigned lastVal = *(cntBEnd - 1);
-	NxU32 idx = mir[slot];
-	cntA[idx] = lastVal;
-	mir[lastVal] = idx;
-	*reinterpret_cast<unsigned**>(c + 0x14) = cntBEnd - 1;
-	sent[slot] = 0;
-	mir[slot] = 0xD00BEED0u;
+	nxSceneReleaseIndex(container, slot);
 
 	unsigned* shapes = *reinterpret_cast<unsigned**>(c + 0x90);
 	shapes[slot] = 0;							// 0x5bbe0's clear
 	}
 
-// Remover #2 (0x5aae0): pair-list swap-remove.
+// Remover #2 (phys_fn_002344, 0x5aae0): pair-list swap-remove. The caller
+// hands the ADDRESS OF THE SCENE'S +0x5d4 FIELD (0x00026c13 add ecx,0x5d4),
+// so [this] names a second header whose two words are {begin,end} of the
+// stride-8 pair array. The image re-reads that header each match, shrinks
+// its cursor by 8 per removal, and leaves a matched FINAL element in place
+// rather than copied over itself. A match is either half equal to the value.
 void nxSceneRemovePairs(void* container, void* shape)
 	{
 	unsigned c = reinterpret_cast<unsigned>(container);
 	unsigned self = reinterpret_cast<unsigned>(shape);
-	unsigned* begin = *reinterpret_cast<unsigned**>(c + 0x00);
-	unsigned* end = *reinterpret_cast<unsigned**>(c + 0x04);
+	unsigned* hdr = *reinterpret_cast<unsigned**>(c);
+	unsigned* begin = reinterpret_cast<unsigned*>(hdr[0]);
 	unsigned count = static_cast<NxU32>(
-		(reinterpret_cast<unsigned>(end) - reinterpret_cast<unsigned>(begin)) >> 3);
+		(hdr[1] - reinterpret_cast<unsigned>(begin)) >> 3);
 	unsigned i = 0;
 	while(i < count)
 		{
 		if(begin[i * 2] == self || begin[i * 2 + 1] == self)
 			{
-			begin[i * 2] = begin[(count - 1) * 2];
-			begin[i * 2 + 1] = begin[(count - 1) * 2 + 1];
+			if(i != count - 1)					// the image skips a self-copy
+				{
+				begin[i * 2] = begin[(count - 1) * 2];
+				begin[i * 2 + 1] = begin[(count - 1) * 2 + 1];
+				}
 			count -= 1;
 			}
 		else
 			i += 1;
 		}
-	*reinterpret_cast<unsigned**>(c + 0x04) =
-		reinterpret_cast<unsigned*>(reinterpret_cast<unsigned>(begin) + count * 8);
+	hdr[1] = reinterpret_cast<unsigned>(begin) + count * 8;
 	}
 
-// Remover #3 (0x1b90): free-list push at the capacity cursor. With
-// cap >= end the image skips its growth block and simply stores.
+// phys_fn_000028 (0x1b90): dword-vector push_back over the VC9 layout
+// {_Myproxy@+0x00 untouched by this row, _Myfirst@+0x04, _Mylast@+0x08,
+// _Myend@+0x0c}. The growth arm allocates 2*size + 2 dwords through the SDK
+// allocator (adapter vtable slot +8 with flag word 0), copies the live
+// elements dword-wise, releases the old block (slot +0x14) and repoints all
+// three cursors; the compiler's own escape (`jae` over the arm when the old
+// capacity already reads >= the new one) is arithmetically unreachable
+// while the vector is full but is transcribed for faithfulness.
+void nxU32VectorPushBack(void* vecHeader, NxU32 value)
+	{
+	unsigned f = reinterpret_cast<unsigned>(vecHeader);
+	unsigned* begin = *reinterpret_cast<unsigned**>(f + 0x04);
+	unsigned* end = *reinterpret_cast<unsigned**>(f + 0x08);
+	unsigned* capEnd = *reinterpret_cast<unsigned**>(f + 0x0c);
+	if(capEnd > end)
+		{
+		*end = value;						// ja: room at the cursor
+		*reinterpret_cast<unsigned**>(f + 0x08) = end + 1;
+		return;
+		}
+	unsigned size = static_cast<unsigned>(
+		(reinterpret_cast<unsigned>(end) - reinterpret_cast<unsigned>(begin)) >> 2);
+	unsigned newCapDwords = size + size + 2;	// lea eax,[eax+eax+2]
+	unsigned oldCapDwords = begin == 0 ? 0u : static_cast<unsigned>(
+		(reinterpret_cast<unsigned>(capEnd) - reinterpret_cast<unsigned>(begin)) >> 2);
+	if(oldCapDwords < newCapDwords)
+		{
+		void* fresh = nxGetSdkAllocator()->malloc(
+			newCapDwords * sizeof(unsigned), NX_MEMORY_PERSISTENT);
+		unsigned* run = static_cast<unsigned*>(fresh);
+		for(unsigned i = 0; i < size; ++i)	// copy before release
+			run[i] = begin[i];
+		if(begin != 0)
+			nxGetSdkAllocator()->free(begin);
+		*reinterpret_cast<unsigned**>(f + 0x04) = run;
+		*reinterpret_cast<unsigned**>(f + 0x0c) = run + newCapDwords;
+		end = run + size;
+		}
+	*end = value;
+	*reinterpret_cast<unsigned**>(f + 0x08) = end + 1;
+	}
+
+// Remover #3: the deregistration chain's name for phys_fn_000028 applied to
+// the slot-free vector header.
 void nxSceneSlotFree(void* container, NxU32 slot)
 	{
-	unsigned c = reinterpret_cast<unsigned>(container);
-	unsigned* cap = *reinterpret_cast<unsigned**>(c + 0x08);
-	*cap = slot;
-	*reinterpret_cast<unsigned**>(c + 0x08) = cap + 1;
+	nxU32VectorPushBack(container, slot);
 	}
 
 // ---------------------------------------------------------------------------
