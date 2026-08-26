@@ -43461,11 +43461,11 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/905",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7455",
-      "static_proof": null,
+      "static_proof": "shapes-clear entry: releases slot=[arg+0x104] through the pool header at this+0x40 via the release arm (freelist push with growth, sentinel clear, mirror poison), then zeroes shapes[slot] in the array named by [this+0x80]",
       "dynamic_proof": null,
       "notes": ""
     },

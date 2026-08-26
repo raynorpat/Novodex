@@ -700,13 +700,13 @@ $NxRequiredCoverageLines = [ordered] @{
         # Slate 9: readBodyFlag (dynamic-required warning on the static arm),
         # the member deleting dtor (linked-CRT release), and two bound-pool
         # deleting dtors with adapter releases and post-free vptr folds.
-        'miscsm2 row=oracle digest=678bac35',
+        'miscsm2 row=oracle digest=c4bc7155',
         'ownctor row=oracle d4=00000003 sent_ok=1 mirror_ok=1 shp_ok=1 digest=641beb67',
         'material row=template flags=00000000 digest=527814f5',
         'capdtor row=phys_fn_001014 digest=7a376673',
         'capaabb row=phys_fn_001004 minmax=80000000.80000000.80000000.00000000.00000000.00000000',
         'layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1',
-        'layout oracle digest=a18e1d49',
+        'layout oracle digest=ecc2d29c',
         'hull support candidate ok=1 min_bits=c19c0000 max_bits=4eada5a5',
         'hull sharedhook candidate ok=1 stable=1',
         'basevt candidate ok=1 ret4=0 ret5=00000000 ret7=0',
@@ -751,7 +751,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'actorsm6 candidate ok=1 digest=6f47ea3d'
         'actorsm7 candidate ok=1 digest=0b4b17e4'
         'miscsm candidate ok=1 digest=9460eb64'
-        'miscsm2 candidate ok=1 digest=678bac35'
+        'miscsm2 candidate ok=1 digest=c4bc7155'
     )
 
     # The vendored third-party differential. Phase 4 vendors qhull 2003.1 and

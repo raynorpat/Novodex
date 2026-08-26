@@ -3555,12 +3555,57 @@ int wmain(int argc, wchar_t** argv)
 	memDelOD(stackMem, 0);
 	int memVt = (stackMem[0] == 0x101088b8u);
 
-	// NOTE: the shapes-clear entry phys_fn_002411 is transcribed but NOT
-	// driven this round -- its synthetic pool-header fixture faults inside
-	// the release arm for reasons a quick debugger pass did not settle;
-	// the row stays open until that fixture is built properly.
+	// shapes-clear entry: THIS is the pool base; its +0x40 byte offset is
+	// the release-arm header (sentinel/counts/mirrors/free vector), and
+	// +0x80 names the shapes array. Freelist AT capacity so the release
+	// reallocs through the arena; slot 3 live.
+	static unsigned sR9Sent[64];
+	static unsigned sR9CntA[64];
+	static unsigned sR9CntB[64];
+	static unsigned* sR9CntBEnd = sR9CntB + 8;
+	static unsigned sR9Mir[64];
+	static unsigned sR9Fl[8];
+	static unsigned sR9Hdr[128];			// pool base: hdr at +0x40 bytes
+	static unsigned sR9Shapes[64];
+	memset(sR9Hdr, 0, sizeof(sR9Hdr));
+	for(int i = 0; i < 64; ++i)
+		{
+		sR9Sent[i] = 0xFFFFFFFFu;
+		sR9CntA[i] = 0xC0000000u + static_cast<unsigned>(i);
+		sR9CntB[i] = 0;
+		sR9Mir[i] = static_cast<unsigned>(i);
+		sR9Shapes[i] = 0x13572468u;
+		}
+	sR9CntB[7] = 7u;
+	unsigned* r9Fl = static_cast<unsigned*>(nxHeapAlloc(8 * sizeof(unsigned)));
+	for(int i = 0; i < 8; ++i)
+		r9Fl[i] = 0x22220000u + static_cast<unsigned>(i);
+	sR9Hdr[0x10] = reinterpret_cast<unsigned>(sR9Sent);		// hdr+0x00
+	sR9Hdr[0x14] = reinterpret_cast<unsigned>(sR9CntA);		// hdr+0x10
+	sR9Hdr[0x15] = reinterpret_cast<unsigned>(sR9CntBEnd);	// hdr+0x14
+	sR9Hdr[0x18] = reinterpret_cast<unsigned>(sR9Mir);		// hdr+0x20
+	sR9Hdr[0x1c] = reinterpret_cast<unsigned>(r9Fl);		// hdr+0x30
+	sR9Hdr[0x1d] = reinterpret_cast<unsigned>(r9Fl + 8);	// hdr+0x34
+	sR9Hdr[0x1e] = reinterpret_cast<unsigned>(r9Fl + 8);	// hdr+0x38
+	sR9Hdr[0x20] = reinterpret_cast<unsigned>(sR9Shapes);	// +0x80 array
+	sR9Sent[3] = 0x00C0FFEEu;					// live slot 3
+
+	static unsigned sR9ShapeArg[0x42];
+	memset(sR9ShapeArg, 0, sizeof(sR9ShapeArg));
+	sR9ShapeArg[0x41] = 3u;						// +0x104: slot index
+
+	NxHeapMark m9 = nxHeapMarkNow();
+	clearOD(sR9Hdr, sR9ShapeArg);
+	int slotFreed = (sR9Sent[3] == 0u && sR9Mir[3] == 0xD00BEED0u);
+	int shapeCleared = (sR9Shapes[3] == 0u);
+	int flGrew = ((sR9Hdr[0x1d] - sR9Hdr[0x1c]) >> 2) == 9;
+	int heapMoved = (g_heapMallocOps == m9.mo + 1);
 
 	d9 = nxFold(d9, memVt ? 1u : 0u);
+	d9 = nxFold(d9, slotFreed ? 1u : 0u);
+	d9 = nxFold(d9, shapeCleared ? 1u : 0u);
+	d9 = nxFold(d9, flGrew ? 1u : 0u);
+	d9 = nxFold(d9, heapMoved ? 1u : 0u);
 
 	// bound-pool deleting dtors: arena blocks, adapter release, post-free
 	// third-table vptr reads
@@ -6352,10 +6397,54 @@ int wmain(int argc, wchar_t** argv)
 		nxMemberDeletingDtor(stackMemC, 0);
 		int memVt = (stackMemC[0] == 0x101088b8u);
 
-		// NOTE: the shapes-clear entry (002411) is transcribed but not
-		// driven yet -- same open fixture as the oracle side.
+		static unsigned sR9SentC[64];
+		static unsigned sR9CntAC[64];
+		static unsigned sR9CntBC[64];
+		static unsigned* sR9CntBEndC = sR9CntBC + 8;
+		static unsigned sR9MirC[64];
+		static unsigned sR9FlC[8];
+		static unsigned sR9HdrC[128];		// pool base: hdr at +0x40 bytes
+		static unsigned sR9ShapesC[64];
+		memset(sR9HdrC, 0, sizeof(sR9HdrC));
+		for(int i = 0; i < 64; ++i)
+			{
+			sR9SentC[i] = 0xFFFFFFFFu;
+			sR9CntAC[i] = 0xC0000000u + static_cast<unsigned>(i);
+			sR9CntBC[i] = 0;
+			sR9MirC[i] = static_cast<unsigned>(i);
+			sR9ShapesC[i] = 0x13572468u;
+			}
+		sR9CntBC[7] = 7u;
+		unsigned* r9FlC = static_cast<unsigned*>(
+			nxHeapAlloc(8 * sizeof(unsigned)));
+		for(int i = 0; i < 8; ++i)
+			r9FlC[i] = 0x22220000u + static_cast<unsigned>(i);
+		sR9HdrC[0x10] = reinterpret_cast<unsigned>(sR9SentC);
+		sR9HdrC[0x14] = reinterpret_cast<unsigned>(sR9CntAC);
+		sR9HdrC[0x15] = reinterpret_cast<unsigned>(sR9CntBEndC);
+		sR9HdrC[0x18] = reinterpret_cast<unsigned>(sR9MirC);
+		sR9HdrC[0x1c] = reinterpret_cast<unsigned>(r9FlC);
+		sR9HdrC[0x1d] = reinterpret_cast<unsigned>(r9FlC + 8);
+		sR9HdrC[0x1e] = reinterpret_cast<unsigned>(r9FlC + 8);
+		sR9HdrC[0x20] = reinterpret_cast<unsigned>(sR9ShapesC);
+		sR9SentC[3] = 0x00C0FFEEu;
+
+		static unsigned sR9ShapeArgC[0x42];
+		memset(sR9ShapeArgC, 0, sizeof(sR9ShapeArgC));
+		sR9ShapeArgC[0x41] = 3u;
+
+		NxHeapMark m9C = nxHeapMarkNow();
+		nxSceneClearShapeSlot(sR9HdrC, sR9ShapeArgC);
+		int slotFreed = (sR9SentC[3] == 0u && sR9MirC[3] == 0xD00BEED0u);
+		int shapeCleared = (sR9ShapesC[3] == 0u);
+		int flGrew = ((sR9HdrC[0x1d] - sR9HdrC[0x1c]) >> 2) == 9;
+		int heapMoved = (g_heapMallocOps == m9C.mo + 1);
 
 		d9C = nxFold(d9C, memVt ? 1u : 0u);
+		d9C = nxFold(d9C, slotFreed ? 1u : 0u);
+		d9C = nxFold(d9C, shapeCleared ? 1u : 0u);
+		d9C = nxFold(d9C, flGrew ? 1u : 0u);
+		d9C = nxFold(d9C, heapMoved ? 1u : 0u);
 
 		// bound-pool dtors: arena blocks, adapter release, post-free vptr
 		unsigned* bA = static_cast<unsigned*>(nxHeapAlloc(sizeof(unsigned) * 4));
