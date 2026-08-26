@@ -963,6 +963,64 @@ void* nxActorGetPoseWords(void* self, void* out)
 	}
 
 // ---------------------------------------------------------------------------
+// Actor slate 5: the sleep-chain readers.
+
+// phys_fn_000713 (0x15d50): recursive path compression over the record
+// chain -- each record caches its group root at +0x1e8, a self-pointing
+// cache naming the root. Recursion terminates on the self-parented node.
+unsigned nxBodyRecordFixRoot(void* rec)
+	{
+	unsigned r = reinterpret_cast<unsigned>(rec);
+	unsigned c = *reinterpret_cast<unsigned*>(r + 0x1e8);
+	if(r != c)
+		{
+		unsigned root = nxBodyRecordFixRoot(reinterpret_cast<void*>(c));
+		*reinterpret_cast<unsigned*>(r + 0x1e8) = root;
+		}
+	return *reinterpret_cast<unsigned*>(r + 0x1e8);
+	}
+
+// phys_fn_000744 (0x16e30): compress the record's chain to its root, then
+// walk the +0x1fc list answering whether EVERY node's word at +0x84 reads
+// zero -- the group-wide sleep test. A null root also answers true.
+bool nxBodyRecordChainSettled(void* rec)
+	{
+	unsigned d = reinterpret_cast<unsigned>(rec);
+	unsigned cache = *reinterpret_cast<unsigned*>(d + 0x1e8);
+	if(d != cache)
+		{
+		unsigned root = nxBodyRecordFixRoot(reinterpret_cast<void*>(cache));
+		*reinterpret_cast<unsigned*>(d + 0x1e8) = root;
+		}
+	unsigned node = *reinterpret_cast<unsigned*>(d + 0x1e8);
+	while(node != 0)
+		{
+		float v = *reinterpret_cast<const float*>(node + 0x84);
+		double dv = v;
+		if(dv > 0.0)
+			return false;
+		node = *reinterpret_cast<unsigned*>(node + 0x1fc);
+		}
+	return true;
+	}
+
+// phys_fn_000062 (slot 67, 0x2950): guarded; the group sleep test over the
+// body's nested record; TRUE when the record itself is null.
+bool nxActorChainSettled(void* self)
+	{
+	unsigned a = reinterpret_cast<unsigned>(self);
+	void* scene = *reinterpret_cast<void**>(a + 0x10);
+	nxSceneGuardEnter(scene);
+	unsigned body = *reinterpret_cast<unsigned*>(a + 0x14);
+	unsigned rec = *reinterpret_cast<unsigned*>(body + 8);
+	bool r = rec == 0
+		? true
+		: nxBodyRecordChainSettled(reinterpret_cast<void*>(rec));
+	nxSceneGuardLeave(scene);
+	return r;
+	}
+
+// ---------------------------------------------------------------------------
 // BoxShape. See ObjectModel.h for the row map.
 
 BoxShape::BoxShape(void* owner, unsigned argument)

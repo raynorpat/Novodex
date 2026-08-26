@@ -748,6 +748,18 @@ void					nxActorSetBoundTarget(void* self, void* value);
 //! the out pointer.
 void*					nxActorGetPoseWords(void* self, void* out);
 
+//! phys_fn_000713: recursive path compression over the record chain -- each
+//! record caches its group root at +0x1e8, self-parented at the root.
+unsigned				nxBodyRecordFixRoot(void* rec);
+
+//! phys_fn_000744: compress the record's chain, then walk +0x1fc links
+//! answering whether every node's word at +0x84 reads zero.
+bool					nxBodyRecordChainSettled(void* rec);
+
+//! phys_fn_000062 (slot 67): guarded group sleep test over the body's
+//! nested record; true when the record itself is null.
+bool					nxActorChainSettled(void* self);
+
 //! The image's own literal pair, exposed so tests can pin against them.
 extern const char* const	nxSourceFileSphereShapeCpp;
 extern const char* const	nxMsgSetRadiusPositive;

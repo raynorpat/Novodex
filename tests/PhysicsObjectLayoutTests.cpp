@@ -513,6 +513,7 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oActorsm2Digest = 0;
 	unsigned oActorsm3Digest = 0;
 	unsigned oActorsm4Digest = 0;
+	unsigned oActorsm5Digest = 0;
 	unsigned oZeroDigest = 0;
 	unsigned oZeroCandDigest = 0;
 	static unsigned char sSaveStateRecord[0x48];
@@ -3118,6 +3119,70 @@ int wmain(int argc, wchar_t** argv)
 	}
 
 	// -----------------------------------------------------------------------
+	// Actor slate 5: the sleep chain. phys_fn_000713 path-compresses the
+	// +0x1e8 caches recursively; phys_fn_000744 compresses then walks the
+	// +0x1fc list over the +0x84 words; slot 67 wraps both under the read
+	// guard with a null-record true. The compression itself is folded via
+	// post-drive cache reads.
+	{
+	typedef unsigned (__thiscall* NxFixFn)(void* rec);
+	NxFixFn fixOD = (NxFixFn)(base + 0x00015d50);			// 000713
+	typedef bool (__thiscall* NxSettledFn)(void* rec);
+	NxSettledFn settledOD = (NxSettledFn)(base + 0x00016e30);	// 000744
+	typedef bool (__thiscall* NxActorBoolFn5)(void* self);
+	NxActorBoolFn5 hasChainOD = (NxActorBoolFn5)(base + 0x0002950); // slot 67
+
+	static unsigned sR5Cs[16];
+	static unsigned sR5Scene[4];
+	static unsigned sR5Body[64];
+	static unsigned sR5RecA[0x90];
+	static unsigned sR5RecM[0x90];
+	static unsigned sR5RecR[0x90];
+	InitializeCriticalSection((LPCRITICAL_SECTION)sR5Cs);
+	sR5Scene[0] = reinterpret_cast<unsigned>(sR5Cs);
+	memset(sR5Body, 0, sizeof(sR5Body));
+	memset(sR5RecA, 0, sizeof(sR5RecA));
+	memset(sR5RecM, 0, sizeof(sR5RecM));
+	memset(sR5RecR, 0, sizeof(sR5RecR));
+	unsigned rA = reinterpret_cast<unsigned>(sR5RecA);
+	unsigned rM = reinterpret_cast<unsigned>(sR5RecM);
+	unsigned rR = reinterpret_cast<unsigned>(sR5RecR);
+	// chain A -> M -> R(self-rooted)
+	sR5RecA[0x7a] = rM;						// +0x1e8
+	sR5RecM[0x7a] = rR;
+	sR5RecR[0x7a] = rR;						// self-parented root
+	float awake = 4.0f;
+
+	unsigned char actI[0x20];
+	memset(actI, 0xcd, sizeof(actI));
+	unsigned* i5 = reinterpret_cast<unsigned*>(actI);
+	i5[4] = reinterpret_cast<unsigned>(sR5Scene);
+	i5[5] = reinterpret_cast<unsigned>(sR5Body);
+
+	unsigned d5 = 2166136261u;
+	// direct fix over the two-hop chain: returns the root, compresses A
+	unsigned fixed = fixOD(sR5RecA);
+	d5 = nxFold(d5, fixed == rR ? 1u : 0u);
+	d5 = nxFold(d5, sR5RecA[0x7a] == rR ? 1u : 0u);
+
+	sR5Body[2] = rA;
+	d5 = nxFold(d5, hasChainOD(actI) ? 1u : 0u);	// all zero -> settled
+
+	// one awake node in the group
+	sR5RecM[0x21] = *reinterpret_cast<unsigned*>(&awake);
+	d5 = nxFold(d5, hasChainOD(actI) ? 1u : 0u);
+	sR5RecM[0x21] = 0;
+
+	// null-record arm of the wrapper
+	sR5Body[2] = 0;
+	d5 = nxFold(d5, hasChainOD(actI) ? 1u : 0u);
+
+	oActorsm5Digest = d5;
+	oracleDigest = nxFold(oracleDigest, d5);
+	printf("actorsm5 row=oracle digest=%08x\n", d5);
+	}
+
+	// -----------------------------------------------------------------------
 	// phys_fn_000847: the conditional mass-frame zeroizer. Two drives --
 	// flag=1 (zeroes all 13 words) and flag=0 (leaves untouched) -- against
 	// pre-populated frames.
@@ -5558,6 +5623,58 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 58u);
+		}
+
+		// -- actorsm5: the sleep chain through the transcriptions. Twin of
+		// the oracle family.
+		{
+		static unsigned sR5CsC[16];
+		static unsigned sR5SceneC[4];
+		static unsigned sR5BodyC[64];
+		static unsigned sR5RecAC[0x90];
+		static unsigned sR5RecMC[0x90];
+		static unsigned sR5RecRC[0x90];
+		InitializeCriticalSection((LPCRITICAL_SECTION)sR5CsC);
+		sR5SceneC[0] = reinterpret_cast<unsigned>(sR5CsC);
+		memset(sR5BodyC, 0, sizeof(sR5BodyC));
+		memset(sR5RecAC, 0, sizeof(sR5RecAC));
+		memset(sR5RecMC, 0, sizeof(sR5RecMC));
+		memset(sR5RecRC, 0, sizeof(sR5RecRC));
+		unsigned rAC = reinterpret_cast<unsigned>(sR5RecAC);
+		unsigned rMC = reinterpret_cast<unsigned>(sR5RecMC);
+		unsigned rRC = reinterpret_cast<unsigned>(sR5RecRC);
+		sR5RecAC[0x7a] = rMC;
+		sR5RecMC[0x7a] = rRC;
+		sR5RecRC[0x7a] = rRC;
+		float awake = 4.0f;
+
+		unsigned char actI2[0x20];
+		memset(actI2, 0xcd, sizeof(actI2));
+		unsigned* i6 = reinterpret_cast<unsigned*>(actI2);
+		i6[4] = reinterpret_cast<unsigned>(sR5SceneC);
+		i6[5] = reinterpret_cast<unsigned>(sR5BodyC);
+
+		unsigned d5C = 2166136261u;
+		unsigned fixed = nxBodyRecordFixRoot(sR5RecAC);
+		d5C = nxFold(d5C, fixed == rRC ? 1u : 0u);
+		d5C = nxFold(d5C, sR5RecAC[0x7a] == rRC ? 1u : 0u);
+
+		sR5BodyC[2] = rAC;
+		d5C = nxFold(d5C, nxActorChainSettled(actI2) ? 1u : 0u);
+
+		sR5RecMC[0x21] = *reinterpret_cast<unsigned*>(&awake);
+		d5C = nxFold(d5C, nxActorChainSettled(actI2) ? 1u : 0u);
+		sR5RecMC[0x21] = 0;
+
+		sR5BodyC[2] = 0;
+		d5C = nxFold(d5C, nxActorChainSettled(actI2) ? 1u : 0u);
+
+		bool okA5 = d5C == oActorsm5Digest;
+		printf("actorsm5 candidate ok=%u digest=%08x\n", okA5 ? 1u : 0u, d5C);
+		if(!okA5)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 59u);
 		}
 		// -- post-creation template state: fresh record + internal bit31.
 		{
