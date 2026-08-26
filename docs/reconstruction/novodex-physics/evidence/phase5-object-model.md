@@ -1380,6 +1380,23 @@ here to report-capture sequencing rather than to gate lists.
 **Census.** Registrations +2, floor 104 -> 106, oracle digest re-pinned
 729c9651 -> a3636235.
 
+## 3z7. Slate 4: the binding write and the pose fallback
+
+Two rows close (000088, 000092). Slot 83 is the WRITE half of the binding
+pair: phys_fn_000480 keyed on the body pointer, under the write guard,
+reporting line 0x1ff on a failed upgrade. Together with the slate-1 read
+accessor the binding table is now proven from both sides -- and since the
+key is each side's own body pointer, the family folds value-equality
+predicates rather than addresses. Slot 6 is a guarded three-word pose read
+with a FALLBACK: record+0x50/54/58 when the nested record exists, otherwise
+the BODY defaults at +0x44/48/4c -- the first evidence that the actor
+answers pose questions from its own storage when no body record backs it.
+The falsification probe shifted the fallback's first word (+0x44 -> +0x40)
+and moved the transcript to mismatches=2 against control 1.
+
+**Census.** Registrations +2, floor 106 -> 108, oracle digest re-pinned
+a3636235 -> 0e64d9fc.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is
