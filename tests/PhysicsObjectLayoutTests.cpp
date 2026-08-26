@@ -516,6 +516,7 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oActorsm5Digest = 0;
 	unsigned oActorsm6Digest = 0;
 	unsigned oActorsm7Digest = 0;
+	unsigned oMiscsmDigest = 0;
 	unsigned oZeroDigest = 0;
 	unsigned oZeroCandDigest = 0;
 	static unsigned char sSaveStateRecord[0x48];
@@ -3356,6 +3357,137 @@ int wmain(int argc, wchar_t** argv)
 	}
 
 	// -----------------------------------------------------------------------
+	// Actor slate 8: the group WRITER (slot 85, with its contended line
+	// 0x3cd report), the sub-object virtual forwarder (000004) driven
+	// through a planted vtable sentinel, and the id-allocator primitive
+	// (000012) over both arms.
+	{
+	typedef void (__thiscall* NxActorSetGrpFn)(void* self, unsigned g);
+	NxActorSetGrpFn setGrpOD = (NxActorSetGrpFn)(base + 0x00035b0);
+	typedef unsigned (__thiscall* NxFwdFn)(void* self, void* arg);
+	NxFwdFn fwdOD = (NxFwdFn)(base + 0x0001070);
+	typedef unsigned (__thiscall* NxAllocFn2)(void* container);
+	NxAllocFn2 allocOD = (NxAllocFn2)(base + 0x0001430);
+
+	static unsigned sR8Cs[16];
+	static unsigned sR8Scene[4];
+	static unsigned sR8Body[64];
+	InitializeCriticalSection((LPCRITICAL_SECTION)sR8Cs);
+	sR8Scene[0] = reinterpret_cast<unsigned>(sR8Cs);
+	memset(sR8Body, 0, sizeof(sR8Body));
+
+	unsigned char actL[0x20];
+	memset(actL, 0xcd, sizeof(actL));
+	unsigned* lf = reinterpret_cast<unsigned*>(actL);
+	lf[3] = reinterpret_cast<unsigned>(sR8Scene);
+	lf[4] = reinterpret_cast<unsigned>(sR8Scene);
+	lf[5] = reinterpret_cast<unsigned>(sR8Body);
+
+	unsigned d8 = 2166136261u;
+
+	// setGroup: write under guard, read back through slot 86's oracle
+	setGrpOD(actL, 0x0007u);
+	static unsigned sR8ReadScene[4];
+	static unsigned sR8ReadCs[16];
+	InitializeCriticalSection((LPCRITICAL_SECTION)sR8ReadCs);
+	sR8ReadScene[0] = reinterpret_cast<unsigned>(sR8ReadCs);
+	unsigned char actR[0x20];
+	memset(actR, 0xcd, sizeof(actR));
+	unsigned* rf = reinterpret_cast<unsigned*>(actR);
+	rf[4] = reinterpret_cast<unsigned>(sR8ReadScene);
+	rf[5] = reinterpret_cast<unsigned>(sR8Body);
+	typedef unsigned short (__thiscall* NxActorWordFn2)(void*);
+	NxActorWordFn2 grpReadOD = (NxActorWordFn2)(base + 0x0003610);
+	d8 = nxFold(d8, grpReadOD(actR));
+	d8 = nxFold(d8, sR8Cs[6]);				// writer flag released
+
+	// contended setGroup: kind-2 report at line 0x3cd, group unchanged
+	setGrpOD(actL, 0x0009u);				// group now 9
+	memset(&g_errCap, 0, sizeof(g_errCap));
+	unsigned* slot8 = (unsigned*) (base + 0x001041b4);
+	unsigned* guard8Ptr = (unsigned*) (base + 0x001041b0);
+	typedef void(__cdecl* NxReportFnO8)(int, const char*, int, int,
+		const char*);
+	NxReportFnO8 savedSink8 = reinterpret_cast<NxReportFnO8>(*slot8);
+	DWORD oldProt8 = 0;
+	if(!VirtualProtect(slot8, 8, PAGE_READWRITE, &oldProt8))
+		return nxFail("actorsm8: VirtualProtect over the report slot failed");
+	if(*guard8Ptr != 0 && *reinterpret_cast<unsigned*>(*guard8Ptr) == 0)
+		*reinterpret_cast<unsigned*>(*guard8Ptr) = 1;
+	*slot8 = reinterpret_cast<unsigned>(&g_errSink);
+	sR8Cs[6] = 1;
+	sR8Cs[7] = ::GetCurrentThreadId() + 1u;
+	setGrpOD(actL, 0x000Bu);
+	nxInstallReportSink(nullptr);
+	*slot8 = reinterpret_cast<unsigned>(savedSink8);
+	VirtualProtect(slot8, 8, oldProt8, &oldProt8);
+	d8 = nxFoldErrCap(d8);
+	d8 = nxFold(d8, grpReadOD(actR));		// unchanged 9
+
+	// sub-object forwarder through a planted sentinel. The planted target
+	// is a member function so its calling convention really is __thiscall,
+	// matching the oracle's tail-jump with this=sub and one stack argument.
+	static unsigned g_fwdGotSub;
+	static unsigned g_fwdGotArg;
+	static unsigned g_fwdRetMark;
+	struct NxFwdTarget
+		{
+		unsigned __thiscall slot18(void* arg)
+			{
+			g_fwdGotSub = reinterpret_cast<unsigned>(this);
+			g_fwdGotArg = reinterpret_cast<unsigned>(arg);
+			return g_fwdRetMark;
+			}
+		};
+	g_fwdGotSub = 0;
+	g_fwdGotArg = 0;
+	g_fwdRetMark = 0x12340005u;
+	static unsigned sFwdSubVt[8];
+	static unsigned sFwdSub[4];
+	union NxFwdAddr
+		{
+		unsigned (NxFwdTarget::* pmf)(void*);
+		unsigned addr;
+		};
+	NxFwdAddr fa;
+	fa.pmf = &NxFwdTarget::slot18;
+	sFwdSubVt[0x18 / 4] = fa.addr;
+	sFwdSub[0] = reinterpret_cast<unsigned>(sFwdSubVt);
+	unsigned fwdSelf[8];
+	memset(fwdSelf, 0xcd, sizeof(fwdSelf));
+	fwdSelf[4] = reinterpret_cast<unsigned>(sFwdSub);	// +0x10 sub-object
+	unsigned retFwd = fwdOD(fwdSelf,
+		reinterpret_cast<void*>(0x00BEEF00u));
+	int fwdOk = (g_fwdGotSub == reinterpret_cast<unsigned>(sFwdSub)
+		&& g_fwdGotArg == 0x00BEEF00u
+		&& retFwd == g_fwdRetMark);
+	d8 = nxFold(d8, fwdOk ? 1u : 0u);
+	// NOTE: the null sub-object path returns whatever eax already held
+	// (the image just does ret 4), so it is deliberately not driven -- a
+	// nondeterministic value cannot be pinned on either side.
+
+	// id allocator: counter arm then freelist pop arm
+	static unsigned sIdC[8];				// {counter, begin, cursor}
+	static unsigned sIdFree[4];
+	memset(sIdC, 0, sizeof(sIdC));
+	memset(sIdFree, 0, sizeof(sIdFree));
+	d8 = nxFold(d8, allocOD(sIdC));			// counter arm: 0, bumps to 1
+	d8 = nxFold(d8, allocOD(sIdC));			// 1 -> 2
+	sIdC[1] = reinterpret_cast<unsigned>(sIdFree);
+	sIdC[2] = reinterpret_cast<unsigned>(sIdFree + 2);
+	sIdFree[0] = 0x000000AAu;
+	sIdFree[1] = 0x000000BBu;
+	unsigned popped = allocOD(sIdC);		// pops BB, cursor shrinks
+	d8 = nxFold(d8, popped);
+	d8 = nxFold(d8, allocOD(sIdC));			// pops AA
+	d8 = nxFold(d8, sIdC[2] == reinterpret_cast<unsigned>(sIdFree) ? 1u : 0u);
+
+	oMiscsmDigest = d8;
+	oracleDigest = nxFold(oracleDigest, d8);
+	printf("miscsm row=oracle digest=%08x\n", d8);
+	}
+
+	// -----------------------------------------------------------------------
 	// phys_fn_000847: the conditional mass-frame zeroizer. Two drives --
 	// flag=1 (zeroes all 13 words) and flag=0 (leaves untouched) -- against
 	// pre-populated frames.
@@ -5983,6 +6115,108 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 61u);
+		}
+
+		// -- miscsm: setGroup with contended report, sub-object forwarder
+		// through the planted __thiscall sentinel, id allocator both arms.
+		// Twin of the oracle family.
+		{
+		static unsigned sR8CsC[16];
+		static unsigned sR8SceneC[4];
+		static unsigned sR8BodyC[64];
+		InitializeCriticalSection((LPCRITICAL_SECTION)sR8CsC);
+		sR8SceneC[0] = reinterpret_cast<unsigned>(sR8CsC);
+		memset(sR8BodyC, 0, sizeof(sR8BodyC));
+
+		unsigned char actL2[0x20];
+		memset(actL2, 0xcd, sizeof(actL2));
+		unsigned* lf2 = reinterpret_cast<unsigned*>(actL2);
+		lf2[3] = reinterpret_cast<unsigned>(sR8SceneC);
+		lf2[4] = reinterpret_cast<unsigned>(sR8SceneC);
+		lf2[5] = reinterpret_cast<unsigned>(sR8BodyC);
+
+		unsigned d8C = 2166136261u;
+
+		nxActorSetGroupWord(actL2, 0x0007u);
+		static unsigned sR8ReadCsC[16];
+		static unsigned sR8ReadSceneC[4];
+		InitializeCriticalSection((LPCRITICAL_SECTION)sR8ReadCsC);
+		sR8ReadSceneC[0] = reinterpret_cast<unsigned>(sR8ReadCsC);
+		unsigned char actR2[0x20];
+		memset(actR2, 0xcd, sizeof(actR2));
+		unsigned* rf2 = reinterpret_cast<unsigned*>(actR2);
+		rf2[4] = reinterpret_cast<unsigned>(sR8ReadSceneC);
+		rf2[5] = reinterpret_cast<unsigned>(sR8BodyC);
+		d8C = nxFold(d8C, nxActorGetGroupWord(actR2));
+		d8C = nxFold(d8C, sR8CsC[6]);
+
+		nxActorSetGroupWord(actL2, 0x0009u);
+		memset(&g_errCap, 0, sizeof(g_errCap));
+		nxInstallReportSink(&g_errSink);
+		sR8CsC[6] = 1;
+		sR8CsC[7] = ::GetCurrentThreadId() + 1u;
+		nxActorSetGroupWord(actL2, 0x000Bu);
+		nxInstallReportSink(nullptr);
+		d8C = nxFoldErrCap(d8C);
+		d8C = nxFold(d8C, nxActorGetGroupWord(actR2));
+
+		static unsigned g_fwdGotSubC;
+		static unsigned g_fwdGotArgC;
+		static unsigned g_fwdRetMarkC;
+		struct NxFwdTargetC
+			{
+			unsigned __thiscall slot18(void* arg)
+				{
+				g_fwdGotSubC = reinterpret_cast<unsigned>(this);
+				g_fwdGotArgC = reinterpret_cast<unsigned>(arg);
+				return g_fwdRetMarkC;
+				}
+			};
+		g_fwdGotSubC = 0;
+		g_fwdGotArgC = 0;
+		g_fwdRetMarkC = 0x12340005u;
+		static unsigned sFwdSubVtC[8];
+		static unsigned sFwdSubC[4];
+		union NxFwdAddrC
+			{
+			unsigned (NxFwdTargetC::* pmf)(void*);
+			unsigned addr;
+			};
+		NxFwdAddrC faC;
+		faC.pmf = &NxFwdTargetC::slot18;
+		sFwdSubVtC[0x18 / 4] = faC.addr;
+		sFwdSubC[0] = reinterpret_cast<unsigned>(sFwdSubVtC);
+		unsigned fwdSelfC[8];
+		memset(fwdSelfC, 0xcd, sizeof(fwdSelfC));
+		fwdSelfC[4] = reinterpret_cast<unsigned>(sFwdSubC);
+		unsigned retFwdC = nxForwardSubobjectCall(fwdSelfC,
+			reinterpret_cast<void*>(0x00BEEF00u));
+		int fwdOk = (g_fwdGotSubC == reinterpret_cast<unsigned>(sFwdSubC)
+			&& g_fwdGotArgC == 0x00BEEF00u
+			&& retFwdC == g_fwdRetMarkC);
+		d8C = nxFold(d8C, fwdOk ? 1u : 0u);
+
+		static unsigned sIdCC[8];
+		static unsigned sIdFreeC[4];
+		memset(sIdCC, 0, sizeof(sIdCC));
+		memset(sIdFreeC, 0, sizeof(sIdFreeC));
+		d8C = nxFold(d8C, nxIdAllocNext(sIdCC));
+		d8C = nxFold(d8C, nxIdAllocNext(sIdCC));
+		sIdCC[1] = reinterpret_cast<unsigned>(sIdFreeC);
+		sIdCC[2] = reinterpret_cast<unsigned>(sIdFreeC + 2);
+		sIdFreeC[0] = 0x000000AAu;
+		sIdFreeC[1] = 0x000000BBu;
+		d8C = nxFold(d8C, nxIdAllocNext(sIdCC));
+		d8C = nxFold(d8C, nxIdAllocNext(sIdCC));
+		d8C = nxFold(d8C, sIdCC[2] == reinterpret_cast<unsigned>(sIdFreeC)
+			? 1u : 0u);
+
+		bool okM8 = d8C == oMiscsmDigest;
+		printf("miscsm candidate ok=%u digest=%08x\n", okM8 ? 1u : 0u, d8C);
+		if(!okM8)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 62u);
 		}
 		// -- post-creation template state: fresh record + internal bit31.
 		{

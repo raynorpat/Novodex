@@ -805,6 +805,20 @@ void					nxActorGetAngularVelocity(void* self, void* out);
 //! [+0x6c]); .data zeros, line 0x353.
 void					nxActorGetLinearMomentum(void* self, void* out);
 
+//! phys_fn_000112 (slot 85): setGroup -- the word argument into body+0x1c
+//! under the write guard; line 0x3cd on a failed upgrade.
+void					nxActorSetGroupWord(void* self, unsigned group);
+
+//! phys_fn_000004: sub-object virtual forwarder -- [this+0x10] names a
+//! sub-object whose vtable slot +0x18 receives (sub, arg); null returns
+//! zero without observable effect.
+unsigned				nxForwardSubobjectCall(void* self, void* arg);
+
+//! phys_fn_000012: id-allocation primitive over {counter, freelist begin,
+//! cursor} -- pops the freelist's last dword when non-empty, else returns
+//! and increments the counter.
+unsigned				nxIdAllocNext(void* container);
+
 //! The image's own literal pair, exposed so tests can pin against them.
 extern const char* const	nxSourceFileSphereShapeCpp;
 extern const char* const	nxMsgSetRadiusPositive;

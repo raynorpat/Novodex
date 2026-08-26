@@ -1201,6 +1201,65 @@ void nxActorGetLinearMomentum(void* self, void* out)
 	}
 
 // ---------------------------------------------------------------------------
+// Actor slate 8: the group WRITER and two primitives.
+
+// phys_fn_000112 (slot 85, 0x35b0): setGroup -- the word argument into
+// body+0x1c under the write guard; line 0x3cd on a failed upgrade. The
+// write counterpart to slate 1's group reader.
+void nxActorSetGroupWord(void* self, unsigned group)
+	{
+	unsigned a = reinterpret_cast<unsigned>(self);
+	void* ctx = *reinterpret_cast<void**>(a + 0xc);
+	if(!nxSceneGuardWriteTry(ctx))
+		{
+		nxReport(2, nxSourceFileNpActorCpp, 0x3cd, 0,
+			nxMsgWriteLockStillAcquired);
+		return;
+		}
+	unsigned body = *reinterpret_cast<unsigned*>(a + 0x14);
+	*reinterpret_cast<NxU16*>(body + 0x1c) = static_cast<NxU16>(group);
+	nxSceneGuardLeave(ctx);
+	}
+
+// phys_fn_000004 (0x1070): sub-object virtual forwarder -- [this+0x10]
+// names a sub-object whose vtable slot +0x18 receives the call with the
+// original stack argument; a null sub-object pointer returns without
+// touching anything observable.
+unsigned nxForwardSubobjectCall(void* self, void* arg)
+	{
+	unsigned a = reinterpret_cast<unsigned>(self);
+	unsigned sub = *reinterpret_cast<unsigned*>(a + 0x10);
+	if(sub == 0)
+		return 0;
+	unsigned vtable = *reinterpret_cast<unsigned*>(sub);
+	typedef unsigned (__thiscall* NxSlot18Fn)(void* sub, void* arg);
+	NxSlot18Fn fn = reinterpret_cast<NxSlot18Fn>(
+		*reinterpret_cast<unsigned*>(vtable + 0x18));
+	return fn(reinterpret_cast<void*>(sub), arg);
+	}
+
+// phys_fn_000012 (0x1430): id-allocation primitive over {counter@+0x00,
+// freelist begin@+0x04, cursor@+0x08}: a non-empty list pops its LAST
+// dword and shrinks the cursor; an exhausted list returns the counter and
+// increments it.
+unsigned nxIdAllocNext(void* container)
+	{
+	unsigned c = reinterpret_cast<unsigned>(container);
+	unsigned count = (*reinterpret_cast<const unsigned*>(c + 8)
+		- *reinterpret_cast<const unsigned*>(c + 4)) >> 2;
+	if(count != 0)
+		{
+		unsigned v = *reinterpret_cast<const unsigned*>(
+			*reinterpret_cast<const unsigned*>(c + 4) + count * 4 - 4);
+		*reinterpret_cast<unsigned*>(c + 8) += -4u;
+		return v;
+		}
+	unsigned old = *reinterpret_cast<const unsigned*>(c);
+	*reinterpret_cast<unsigned*>(c) = old + 1;
+	return old;
+	}
+
+// ---------------------------------------------------------------------------
 // BoxShape. See ObjectModel.h for the row map.
 
 BoxShape::BoxShape(void* owner, unsigned argument)
