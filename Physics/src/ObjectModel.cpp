@@ -10,6 +10,11 @@
 #include <math.h>
 #include <string.h>
 
+// The scene guard pair runs real Foundation-side primitives -- the image
+// reaches them through kernel32 import slots (0x10104010/14/2c/44).
+#define NOMINMAX
+#include <windows.h>
+
 // phys_fn_002404 (0x0005ba70) is the shared member constructor; the oracle's
 // collision-object ctor calls it at 0x000247d7 and then overwrites the vptr
 // with the container's final table. The transcription constructs the member
@@ -461,6 +466,261 @@ void nxU32VectorPushBack(void* vecHeader, NxU32 value)
 void nxSceneSlotFree(void* container, NxU32 slot)
 	{
 	nxU32VectorPushBack(container, slot);
+	}
+
+// ---------------------------------------------------------------------------
+// NxActor scaffolding. The actor body reads decode as a uniform shape:
+// edi = [this+0x10] (the scene lock context), enter guard, read through
+// [this+0x14] (the body pointer), leave guard, return. The guard pair
+// (0x5b700 / 0x5b790) runs Foundation primitives over the critical section
+// POINTER at *[scene]: Enter/LeaveCriticalSection, an InterlockedCompare-
+// Exchange writer flag at block+0x18, and the owning thread id at +0x1c.
+
+void nxSceneGuardEnter(void* scene)
+	{
+	CRITICAL_SECTION* cs =
+		*reinterpret_cast<CRITICAL_SECTION**>(scene);
+	unsigned* flag = reinterpret_cast<unsigned*>(cs) + 6;
+	::EnterCriticalSection(cs);
+	::InterlockedCompareExchange(reinterpret_cast<volatile long*>(flag),
+		1, 0);
+	flag[1] = ::GetCurrentThreadId();
+	}
+
+void nxSceneGuardLeave(void* scene)
+	{
+	CRITICAL_SECTION* cs =
+		*reinterpret_cast<CRITICAL_SECTION**>(scene);
+	unsigned* flag = reinterpret_cast<unsigned*>(cs) + 6;
+	::InterlockedCompareExchange(reinterpret_cast<volatile long*>(flag),
+		0, 1);
+	::LeaveCriticalSection(cs);
+	}
+
+// phys_fn_000110 (slot 19, 0x3580): guard; bool of [body+8]; unguard.
+bool nxActorBodyPresent(void* self)
+	{
+	unsigned a = reinterpret_cast<unsigned>(self);
+	void* scene = *reinterpret_cast<void**>(a + 0x10);
+	nxSceneGuardEnter(scene);
+	unsigned body = *reinterpret_cast<unsigned*>(a + 0x14);
+	unsigned r = *reinterpret_cast<unsigned*>(body + 8);
+	nxSceneGuardLeave(scene);
+	return r != 0;
+	}
+
+// phys_fn_000114 (slot 86, 0x3610): guard; the WORD at [body+0x1c]; unguard.
+NxU16 nxActorGetGroupWord(void* self)
+	{
+	unsigned a = reinterpret_cast<unsigned>(self);
+	void* scene = *reinterpret_cast<void**>(a + 0x10);
+	nxSceneGuardEnter(scene);
+	unsigned body = *reinterpret_cast<unsigned*>(a + 0x14);
+	NxU16 r = *reinterpret_cast<NxU16*>(body + 0x1c);
+	nxSceneGuardLeave(scene);
+	return r;
+	}
+
+// phys_fn_000078 (slot 77, 0x2c60): guard; ([body+0x14] & mask) != 0 --
+// the actor flag word tested against the caller's mask; unguard.
+bool nxActorFlagsMasked(void* self, unsigned mask)
+	{
+	unsigned a = reinterpret_cast<unsigned>(self);
+	void* scene = *reinterpret_cast<void**>(a + 0x10);
+	nxSceneGuardEnter(scene);
+	unsigned body = *reinterpret_cast<unsigned*>(a + 0x14);
+	unsigned flags = *reinterpret_cast<unsigned*>(body + 0x14);
+	nxSceneGuardLeave(scene);
+	return (flags & mask) != 0;
+	}
+
+// phys_fn_000066 (slot 69, 0x29e0): guard; [body+8] names a nested record;
+// fsqrt of its float at +0xd0, or 0.0f when that record is null (the only
+// guard the image carries -- a null body would fault it); unguard. x87
+// fsqrt computes at full precision and the fstp m32 narrows -- typed as
+// double here for the same rounding shape.
+float nxActorSqrtFieldD0(void* self)
+	{
+	unsigned a = reinterpret_cast<unsigned>(self);
+	void* scene = *reinterpret_cast<void**>(a + 0x10);
+	nxSceneGuardEnter(scene);
+	unsigned body = *reinterpret_cast<unsigned*>(a + 0x14);
+	unsigned rec = body != 0
+		? *reinterpret_cast<unsigned*>(body + 8) : 0u;
+	unsigned bits = 0;
+	if(rec != 0)
+		bits = *reinterpret_cast<unsigned*>(rec + 0xd0);
+	nxSceneGuardLeave(scene);
+	float v;
+	memcpy(&v, &bits, 4);
+	double d = v;
+	float r = static_cast<float>(::sqrt(d));
+	return rec != 0 ? r : 0.0f;
+	}
+
+// phys_fn_000068 (slot 71, 0x2a30): same shape over [record+0xd4].
+float nxActorSqrtFieldD4(void* self)
+	{
+	unsigned a = reinterpret_cast<unsigned>(self);
+	void* scene = *reinterpret_cast<void**>(a + 0x10);
+	nxSceneGuardEnter(scene);
+	unsigned body = *reinterpret_cast<unsigned*>(a + 0x14);
+	unsigned rec = body != 0
+		? *reinterpret_cast<unsigned*>(body + 8) : 0u;
+	unsigned bits = 0;
+	if(rec != 0)
+		bits = *reinterpret_cast<unsigned*>(rec + 0xd4);
+	nxSceneGuardLeave(scene);
+	float v;
+	memcpy(&v, &bits, 4);
+	double d = v;
+	float r = static_cast<float>(::sqrt(d));
+	return rec != 0 ? r : 0.0f;
+	}
+
+// phys_fn_000015 (0x14f0): body helper. [body+0x10] names the shape list
+// head; null yields 0, a non-mesh shape (type word at +0xd0 != 5) yields 1,
+// and a mesh yields its triangle-array span ([+0xe4]-[+0xe0])>>2.
+unsigned nxBodyShapeRecordCount(void* body)
+	{
+	unsigned sh = *reinterpret_cast<unsigned*>(
+		reinterpret_cast<unsigned>(body) + 0x10);
+	if(sh == 0)
+		return 0;
+	if(*reinterpret_cast<unsigned*>(sh + 0xd0) != 5)
+		return 1;
+	return (*reinterpret_cast<unsigned*>(sh + 0xe4)
+		- *reinterpret_cast<unsigned*>(sh + 0xe0)) >> 2;
+	}
+
+// phys_fn_000019 (0x1540): body helper. Null shape list yields null; a mesh
+// yields [+0xf0]; anything else yields shape+0x9c -- the collision object
+// the Shape layout names.
+void* nxBodyCollisionObject(void* body)
+	{
+	unsigned sh = *reinterpret_cast<unsigned*>(
+		reinterpret_cast<unsigned>(body) + 0x10);
+	if(sh == 0)
+		return nullptr;
+	if(*reinterpret_cast<unsigned*>(sh + 0xd0) == 5)
+		return reinterpret_cast<void*>(*reinterpret_cast<unsigned*>(sh + 0xf0));
+	return reinterpret_cast<void*>(sh + 0x9c);
+	}
+
+// phys_fn_000082 (slot 15, 0x2d00): guard; nxBodyShapeRecordCount(body);
+// unguard.
+unsigned nxActorShapeRecordCount(void* self)
+	{
+	unsigned a = reinterpret_cast<unsigned>(self);
+	void* scene = *reinterpret_cast<void**>(a + 0x10);
+	nxSceneGuardEnter(scene);
+	unsigned body = *reinterpret_cast<unsigned*>(a + 0x14);
+	unsigned r = nxBodyShapeRecordCount(
+		reinterpret_cast<void*>(body));
+	nxSceneGuardLeave(scene);
+	return r;
+	}
+
+// phys_fn_000084 (slot 16, 0x2d30): guard; nxBodyCollisionObject(body);
+// unguard.
+void* nxActorCollisionObject(void* self)
+	{
+	unsigned a = reinterpret_cast<unsigned>(self);
+	void* scene = *reinterpret_cast<void**>(a + 0x10);
+	nxSceneGuardEnter(scene);
+	unsigned body = *reinterpret_cast<unsigned*>(a + 0x14);
+	void* r = nxBodyCollisionObject(reinterpret_cast<void*>(body));
+	nxSceneGuardLeave(scene);
+	return r;
+	}
+
+// phys_fn_000086 (slot 84, 0x2d60): guard; the SDK pointer binding keyed on
+// the body pointer (phys_fn_000454, closed in Phase 2); unguard.
+void* nxActorBoundTarget(void* self)
+	{
+	unsigned a = reinterpret_cast<unsigned>(self);
+	void* scene = *reinterpret_cast<void**>(a + 0x10);
+	nxSceneGuardEnter(scene);
+	unsigned body = *reinterpret_cast<unsigned*>(a + 0x14);
+	void* r = nxGetSdkPointerBinding(reinterpret_cast<void*>(body));
+	nxSceneGuardLeave(scene);
+	return r;
+	}
+
+// The +0x08 member subobject. Its pre-member state lives under a third
+// table (0x101088b8) that both the constructor (phys_fn_002404) and the
+// destructor (phys_fn_002406) install -- the dtor RESTORES it rather than
+// leaving the one-slot member table behind.
+void nxActorMemberInit(void* memberAtPlus8)
+	{
+	unsigned m = reinterpret_cast<unsigned>(memberAtPlus8);
+	*reinterpret_cast<unsigned**>(m) =
+		reinterpret_cast<unsigned*>(0x101088b8u);
+	*reinterpret_cast<unsigned*>(m + 4) = 0;
+	*reinterpret_cast<unsigned*>(m + 8) = 0;
+	}
+
+void nxActorMemberReset(void* memberAtPlus8)
+	{
+	*reinterpret_cast<unsigned**>(memberAtPlus8) =
+		reinterpret_cast<unsigned*>(0x101088b8u);
+	}
+
+// phys_fn_000044 (0x2480): the actor constructor chain tail. Chained-
+// construction intermediates are observable here only as order: wall vptr,
+// owner zero, member init over +0x08..+0x13, the one-slot member table over
+// +0x08, the body pointer at +0x14, then the dynamic final over +0x00.
+void nxActorConstruct(void* self, void* body)
+	{
+	unsigned a = reinterpret_cast<unsigned>(self);
+	*reinterpret_cast<unsigned**>(a) =
+		reinterpret_cast<unsigned*>(0x101043d0u);
+	*reinterpret_cast<unsigned*>(a + 4) = 0;
+	nxActorMemberInit(reinterpret_cast<unsigned char*>(self) + 8);
+	*reinterpret_cast<unsigned**>(a + 8) =
+		reinterpret_cast<unsigned*>(0x1010468cu);
+	*reinterpret_cast<unsigned*>(a + 0x14) =
+		reinterpret_cast<unsigned>(body);
+	*reinterpret_cast<unsigned**>(a) =
+		reinterpret_cast<unsigned*>(0x10104530u);
+	}
+
+// phys_fn_000042 (0x2460): the interface-wall scalar-deleting destructor:
+// install the wall table, then release through the linked CRT -- 0x0002471
+// calls 0x100f41f0 directly, NOT the SDK allocator adapter its sibling at
+// slot 0 uses.
+void nxActorInterfaceDtor(void* self, unsigned flags)
+	{
+	*reinterpret_cast<unsigned**>(self) =
+		reinterpret_cast<unsigned*>(0x101043d0u);
+	if(flags & 1)
+		::free(self);
+	}
+
+// phys_fn_000118 (slot 0, 0x3650): the actor scalar-deleting destructor:
+// final tables again, member reset to the third table, allocator release
+// through slot +0x14 when flagged.
+void nxActorDeletingDtor(void* self, unsigned flags)
+	{
+	unsigned a = reinterpret_cast<unsigned>(self);
+	*reinterpret_cast<unsigned**>(a) =
+		reinterpret_cast<unsigned*>(0x10104530u);
+	*reinterpret_cast<unsigned**>(a + 8) =
+		reinterpret_cast<unsigned*>(0x1010468cu);
+	nxActorMemberReset(reinterpret_cast<unsigned char*>(self) + 8);
+	*reinterpret_cast<unsigned**>(a) =
+		reinterpret_cast<unsigned*>(0x101043d0u);
+	if(flags & 1)
+		nxGetSdkAllocator()->free(self);
+	}
+
+// phys_fn_000116 (slot 87, 0x3640): the member table's this-adjustor
+// thunk -- `sub ecx,8` onto the actor base, then the deleting dtor. Eight
+// bytes because that is where the member subobject sits.
+void nxActorDeletingDtorThunk(void* memberThis, unsigned flags)
+	{
+	nxActorDeletingDtor(
+		reinterpret_cast<unsigned char*>(memberThis) - 8, flags);
 	}
 
 // ---------------------------------------------------------------------------

@@ -508,6 +508,8 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oVecGrowReservedDigest = 0;
 	unsigned oRelGrowDigest = 0;
 	unsigned oPairRmDigest = 0;
+	unsigned oActorsmDigest = 0;
+	unsigned oActorCtorDigest = 0;
 	unsigned oZeroDigest = 0;
 	unsigned oZeroCandDigest = 0;
 	static unsigned char sSaveStateRecord[0x48];
@@ -2658,6 +2660,202 @@ int wmain(int argc, wchar_t** argv)
 	}
 
 	// -----------------------------------------------------------------------
+	// Task 4, actor small slots: guarded body reads driven on a fake actor
+	// {+0x10 scene lock context, +0x14 body} with marked fields. The guards
+	// run real kernel32 primitives over a real CRITICAL_SECTION, so both
+	// sides execute identical locking; the fold covers every return value,
+	// the negative arms through their own sub-actors, and the lock block's
+	// writer flag and tid after the drives.
+	{
+	typedef bool (__thiscall* NxActorBoolFn)(void* self);
+	typedef bool (__thiscall* NxActorMaskFn)(void* self, unsigned mask);
+	typedef unsigned short (__thiscall* NxActorWordFn)(void* self);
+	typedef float (__thiscall* NxActorFloatFn)(void* self);
+	typedef unsigned (__thiscall* NxActorUintFn)(void* self);
+	typedef void* (__thiscall* NxActorPtrFn)(void* self);
+	NxActorBoolFn hasBodyOD = (NxActorBoolFn)(base + 0x0003580);	// slot 19
+	NxActorWordFn grpWordOD = (NxActorWordFn)(base + 0x0003610);	// slot 86
+	NxActorMaskFn flagsMaskOD = (NxActorMaskFn)(base + 0x0002c60);	// slot 77
+	NxActorFloatFn sqrtD0OD = (NxActorFloatFn)(base + 0x00029e0);	// slot 69
+	NxActorFloatFn sqrtD4OD = (NxActorFloatFn)(base + 0x0002a30);	// slot 71
+	NxActorUintFn recCountOD = (NxActorUintFn)(base + 0x0002d00);	// slot 15
+	NxActorPtrFn colObjOD = (NxActorPtrFn)(base + 0x0002d30);		// slot 16
+	NxActorPtrFn boundOD = (NxActorPtrFn)(base + 0x0002d60);		// slot 84
+
+	static unsigned sCs[16];				// CS (6 words) + flag + tid
+	static unsigned sScene[4];				// [0] -> CS
+	static unsigned sBody[64];
+	static unsigned sRec[0x40];				// [body+8]: the nested record
+	static unsigned sShapeMesh[0x40];
+	static unsigned sShapeBox[0x40];
+	static unsigned sMeshArr[8];
+	InitializeCriticalSection((LPCRITICAL_SECTION)sCs);
+	sScene[0] = reinterpret_cast<unsigned>(sCs);
+	memset(sBody, 0, sizeof(sBody));
+	memset(sRec, 0, sizeof(sRec));
+	memset(sShapeMesh, 0, sizeof(sShapeMesh));
+	memset(sShapeBox, 0, sizeof(sShapeBox));
+	sBody[2] = reinterpret_cast<unsigned>(sRec);	// +8: record pointer
+	sBody[5] = 0x00000030u;					// +0x14: flag word
+	sBody[7] = 0x0000BEEFu;					// +0x1c: group word
+	sRec[0x34] = 0x41E8909Bu;				// +0xd0: sqrt input
+	sRec[0x35] = 0x42F00000u;				// +0xd4: 120.0f
+	sBody[4] = reinterpret_cast<unsigned>(sShapeMesh);
+	sShapeMesh[0x34] = 5;					// +0xd0: NX_SHAPE_MESH
+	sShapeMesh[0x38] = reinterpret_cast<unsigned>(sMeshArr);
+	sShapeMesh[0x39] = reinterpret_cast<unsigned>(sMeshArr + 12);
+	sShapeMesh[0x3c] = 0x0BADF00Du;			// +0xf0: hull pointer mark
+	sShapeBox[0x34] = 0;					// non-mesh type
+
+	unsigned char actO[0x20];
+	memset(actO, 0xcd, sizeof(actO));
+	unsigned* actFields = reinterpret_cast<unsigned*>(actO);
+	actFields[4] = reinterpret_cast<unsigned>(sScene);		// +0x10
+	actFields[5] = reinterpret_cast<unsigned>(sBody);		// +0x14
+
+	unsigned da = 2166136261u;
+	da = nxFold(da, hasBodyOD(actO) ? 1u : 0u);
+	da = nxFold(da, grpWordOD(actO));
+	da = nxFold(da, flagsMaskOD(actO, 0x10u) ? 1u : 0u);
+	da = nxFold(da, flagsMaskOD(actO, 0xC0u) ? 1u : 0u);
+	float s0v = sqrtD0OD(actO);
+	float s4v = sqrtD4OD(actO);
+	unsigned b0, b4;
+	memcpy(&b0, &s0v, 4);
+	memcpy(&b4, &s4v, 4);
+	da = nxFold(da, b0);
+	da = nxFold(da, b4);
+	da = nxFold(da, recCountOD(actO));
+
+	unsigned coMesh = reinterpret_cast<unsigned>(colObjOD(actO));
+	da = nxFold(da, coMesh == 0x0BADF00Du ? 1u : 0u);
+
+	// negative arms: a non-mesh shape and an absent shape list
+	unsigned char actNegO[0x20];
+	memset(actNegO, 0xcd, sizeof(actNegO));
+	unsigned* negFields = reinterpret_cast<unsigned*>(actNegO);
+	negFields[4] = reinterpret_cast<unsigned>(sScene);
+	negFields[5] = reinterpret_cast<unsigned>(sBody);
+	sBody[4] = reinterpret_cast<unsigned>(sShapeBox);
+	da = nxFold(da, recCountOD(actNegO));
+	unsigned boxBase = reinterpret_cast<unsigned>(sShapeBox);
+	da = nxFold(da,
+		reinterpret_cast<unsigned>(colObjOD(actNegO)) == boxBase + 0x9c
+			? 1u : 0u);
+	sBody[4] = 0;
+	da = nxFold(da, recCountOD(actNegO));
+	da = nxFold(da, colObjOD(actNegO) == nullptr ? 1u : 0u);
+
+	// null-record arm: body present, [body+8] null -- the exact guard the
+	// image carries -- returns an exact float zero
+	unsigned char actNoBodyO[0x20];
+	memset(actNoBodyO, 0xcd, sizeof(actNoBodyO));
+	unsigned* nbFields = reinterpret_cast<unsigned*>(actNoBodyO);
+	nbFields[4] = reinterpret_cast<unsigned>(sScene);
+	nbFields[5] = reinterpret_cast<unsigned>(sBody);
+	sBody[2] = 0;
+	float nb = sqrtD0OD(actNoBodyO);
+	unsigned nbBits;
+	memcpy(&nbBits, &nb, 4);
+	da = nxFold(da, nbBits);
+	sBody[2] = reinterpret_cast<unsigned>(sRec);
+
+	// SDK pointer binding keyed on the body: unbound, then bound through
+	// each side's own setter (phys_fn_000480 is cdecl), then removed again.
+	da = nxFold(da, boundOD(actO) == nullptr ? 1u : 0u);
+	typedef int (__cdecl* NxBindSetFn)(void*, void*);
+	NxBindSetFn bindSetOD = (NxBindSetFn)(base + 0x000edc0);
+	bindSetOD(reinterpret_cast<void*>(0x13570001u),
+		reinterpret_cast<void*>(0x5A5A1000u));
+	da = nxFold(da, reinterpret_cast<unsigned>(boundOD(actO)) == 0x5A5A1000u
+		? 1u : 0u);
+	bindSetOD(reinterpret_cast<void*>(0x13570001u), nullptr);
+	da = nxFold(da, boundOD(actO) == nullptr ? 1u : 0u);
+
+	da = nxFold(da, sCs[6]);
+	da = nxFold(da, sCs[7] != 0 ? 1u : 0u);	// tid is live state; pin only
+	oActorsmDigest = da;					// that it was recorded
+	oracleDigest = nxFold(oracleDigest, da);
+	printf("actorsm row=oracle digest=%08x\n", da);
+	}
+
+	// -----------------------------------------------------------------------
+	// phys_fn_000044 / 000118 / 000116 / 000042 / 002404 / 002406: the actor
+	// construction and destruction trio plus the +8 adjustor thunk. The
+	// destructors release through the emulator arena, so post-free vtable
+	// words are read back deterministically and folded.
+	{
+	typedef void (__thiscall* NxCtor1Fn)(void* self, void* body);
+	typedef void (__thiscall* NxDtor1Fn)(void* self, unsigned flags);
+	NxCtor1Fn ctorOD = (NxCtor1Fn)(base + 0x0002480);		// 000044
+	NxDtor1Fn delDtorOD = (NxDtor1Fn)(base + 0x0003650);	// 000118
+	NxDtor1Fn adjDtorOD = (NxDtor1Fn)(base + 0x0003640);	// 000116 (+8)
+	NxDtor1Fn wallDtorOD = (NxDtor1Fn)(base + 0x0002460);	// 000042
+
+	unsigned fakeBodyMark = 0x0B0DF00Du;
+	unsigned actCtorO[8];
+	memset(actCtorO, 0xcd, sizeof(actCtorO));
+	ctorOD(actCtorO, reinterpret_cast<void*>(fakeBodyMark));
+	int ctVptr = (actCtorO[0] == 0x10104530u);
+	int ctOwner = (actCtorO[1] == 0);
+	int ctMember = (actCtorO[2] == 0x1010468cu);
+	int ctMemberZeroed = (actCtorO[3] == 0 && actCtorO[4] == 0);
+	int ctBody = (actCtorO[5] == fakeBodyMark);
+
+	unsigned* dynA = static_cast<unsigned*>(
+		nxHeapAlloc(sizeof(unsigned) * 8));
+	for(int i = 0; i < 8; ++i)
+		dynA[i] = 0xFEEDF00Du;
+	NxHeapMark mdD = nxHeapMarkNow();
+	delDtorOD(dynA, 1);
+	int ddWall = (dynA[0] == 0x101043d0u);
+	int ddMember = (dynA[2] == 0x101088b8u);
+	int ddFreed = (g_heapFreeOps == mdD.fo + 1 &&
+		g_heapMallocOps == mdD.mo);
+
+	unsigned* dynB = static_cast<unsigned*>(
+		nxHeapAlloc(sizeof(unsigned) * 8));
+	for(int i = 0; i < 8; ++i)
+		dynB[i] = 0xFEEDF00Du;
+	adjDtorOD(dynB + 2, 1);					// this = actor + 8
+	int adjWall = (dynB[0] == 0x101043d0u);
+	int adjMember = (dynB[2] == 0x101088b8u);
+	int adjFreed = (g_heapFreeOps == mdD.fo + 2);
+
+	// phys_fn_000042 frees through ITS OWN linked CRT (0x0002471 ->
+	// 0x100f41f0), not through the adapter -- hand it a block from that
+	// same CRT's malloc (0x000f4722) and do not read past the free. The
+	// flags=0 arm folds its vtable store from a stack buffer.
+	typedef void* (__cdecl* NxCrtMallocFn)(unsigned);
+	NxCrtMallocFn crtMallocOD = (NxCrtMallocFn)(base + 0x000f4722);
+	unsigned* dynW = static_cast<unsigned*>(crtMallocOD(sizeof(unsigned) * 8));
+	for(int i = 0; i < 8; ++i)
+		dynW[i] = 0xFEEDF00Du;
+	wallDtorOD(dynW, 1);
+	int wFreed = 1;
+	unsigned stackW[8];
+	memset(stackW, 0xcd, sizeof(stackW));
+	wallDtorOD(stackW, 0);
+	int wWall = (stackW[0] == 0x101043d0u);
+	int wUntouched = (stackW[2] == 0xCDCDCDCDu);
+	int wNoFree = (g_heapFreeOps == mdD.fo + 2);
+
+	unsigned dc = 2166136261u;
+	const int checks[] = { ctVptr, ctOwner, ctMember, ctMemberZeroed,
+		ctBody, ddWall, ddMember, ddFreed, adjWall, adjMember, adjFreed,
+		wWall, wUntouched, wFreed };
+	for(int k = 0; k < 14; ++k)
+		dc = nxFold(dc, static_cast<unsigned>(checks[k]));
+	dc = nxFoldHeapDelta(dc, mdD);
+	oActorCtorDigest = dc;
+	oracleDigest = nxFold(oracleDigest, dc);
+	printf("actorctor row=oracle ct=%u/%u/%u/%u/%u dd=%u/%u/%u adj=%u/%u/%u w=%u/%u/%u digest=%08x\n",
+		ctVptr, ctOwner, ctMember, ctMemberZeroed, ctBody,
+		ddWall, ddMember, ddFreed, adjWall, adjMember, adjFreed,
+		wWall, wUntouched, wFreed, dc);
+	}
+
+	// -----------------------------------------------------------------------
 	// phys_fn_000847: the conditional mass-frame zeroizer. Two drives --
 	// flag=1 (zeroes all 13 words) and flag=0 (leaves untouched) -- against
 	// pre-populated frames.
@@ -4738,6 +4936,170 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 53u);
+		}
+
+		// -- actorsm: the eight guarded actor accessors through the
+		// transcriptions. Twin of the oracle family, same marks.
+		{
+		static unsigned sCsC[16];
+		static unsigned sSceneC[4];
+		static unsigned sBodyC[64];
+		static unsigned sRecC[0x40];
+		static unsigned sShapeMeshC[0x40];
+		static unsigned sShapeBoxC[0x40];
+		static unsigned sMeshArrC[8];
+		InitializeCriticalSection((LPCRITICAL_SECTION)sCsC);
+		sSceneC[0] = reinterpret_cast<unsigned>(sCsC);
+		memset(sBodyC, 0, sizeof(sBodyC));
+		memset(sRecC, 0, sizeof(sRecC));
+		memset(sShapeMeshC, 0, sizeof(sShapeMeshC));
+		memset(sShapeBoxC, 0, sizeof(sShapeBoxC));
+		sBodyC[2] = reinterpret_cast<unsigned>(sRecC);
+		sBodyC[5] = 0x00000030u;
+		sBodyC[7] = 0x0000BEEFu;
+		sRecC[0x34] = 0x41E8909Bu;
+		sRecC[0x35] = 0x42F00000u;
+		sBodyC[4] = reinterpret_cast<unsigned>(sShapeMeshC);
+		sShapeMeshC[0x34] = 5;
+		sShapeMeshC[0x38] = reinterpret_cast<unsigned>(sMeshArrC);
+		sShapeMeshC[0x39] = reinterpret_cast<unsigned>(sMeshArrC + 12);
+		sShapeMeshC[0x3c] = 0x0BADF00Du;
+		sShapeBoxC[0x34] = 0;
+
+		unsigned char actC[0x20];
+		memset(actC, 0xcd, sizeof(actC));
+		unsigned* actFieldsC = reinterpret_cast<unsigned*>(actC);
+		actFieldsC[4] = reinterpret_cast<unsigned>(sSceneC);
+		actFieldsC[5] = reinterpret_cast<unsigned>(sBodyC);
+
+		unsigned daC = 2166136261u;
+		daC = nxFold(daC, nxActorBodyPresent(actC) ? 1u : 0u);
+		daC = nxFold(daC, nxActorGetGroupWord(actC));
+		daC = nxFold(daC, nxActorFlagsMasked(actC, 0x10u) ? 1u : 0u);
+		daC = nxFold(daC, nxActorFlagsMasked(actC, 0xC0u) ? 1u : 0u);
+		float s0c = nxActorSqrtFieldD0(actC);
+		float s4c = nxActorSqrtFieldD4(actC);
+		unsigned c0, c4;
+		memcpy(&c0, &s0c, 4);
+		memcpy(&c4, &s4c, 4);
+		daC = nxFold(daC, c0);
+		daC = nxFold(daC, c4);
+		daC = nxFold(daC, nxActorShapeRecordCount(actC));
+		unsigned coMeshC = reinterpret_cast<unsigned>(nxActorCollisionObject(actC));
+		daC = nxFold(daC, coMeshC == 0x0BADF00Du ? 1u : 0u);
+
+		unsigned char actNegC[0x20];
+		memset(actNegC, 0xcd, sizeof(actNegC));
+		unsigned* negFieldsC = reinterpret_cast<unsigned*>(actNegC);
+		negFieldsC[4] = reinterpret_cast<unsigned>(sSceneC);
+		negFieldsC[5] = reinterpret_cast<unsigned>(sBodyC);
+		sBodyC[4] = reinterpret_cast<unsigned>(sShapeBoxC);
+		daC = nxFold(daC, nxActorShapeRecordCount(actNegC));
+		unsigned boxBaseC = reinterpret_cast<unsigned>(sShapeBoxC);
+		daC = nxFold(daC,
+			reinterpret_cast<unsigned>(nxActorCollisionObject(actNegC))
+				== boxBaseC + 0x9c ? 1u : 0u);
+		sBodyC[4] = 0;
+		daC = nxFold(daC, nxActorShapeRecordCount(actNegC));
+		daC = nxFold(daC, nxActorCollisionObject(actNegC) == nullptr ? 1u : 0u);
+
+		// null-record arm: body present, [body+8] null
+		unsigned char actNoBodyC[0x20];
+		memset(actNoBodyC, 0xcd, sizeof(actNoBodyC));
+		unsigned* nbFieldsC = reinterpret_cast<unsigned*>(actNoBodyC);
+		nbFieldsC[4] = reinterpret_cast<unsigned>(sSceneC);
+		nbFieldsC[5] = reinterpret_cast<unsigned>(sBodyC);
+		sBodyC[2] = 0;
+		float nbC = nxActorSqrtFieldD0(actNoBodyC);
+		unsigned nbBitsC;
+		memcpy(&nbBitsC, &nbC, 4);
+		daC = nxFold(daC, nbBitsC);
+		sBodyC[2] = reinterpret_cast<unsigned>(sRecC);
+
+		daC = nxFold(daC, nxActorBoundTarget(actC) == nullptr ? 1u : 0u);
+		nxSetSdkPointerBinding(reinterpret_cast<void*>(0x13570001u),
+			reinterpret_cast<void*>(0x5A5A1000u));
+		daC = nxFold(daC,
+			reinterpret_cast<unsigned>(nxActorBoundTarget(actC)) == 0x5A5A1000u
+				? 1u : 0u);
+		nxSetSdkPointerBinding(reinterpret_cast<void*>(0x13570001u), nullptr);
+		daC = nxFold(daC, nxActorBoundTarget(actC) == nullptr ? 1u : 0u);
+
+		daC = nxFold(daC, sCsC[6]);
+		daC = nxFold(daC, sCsC[7] != 0 ? 1u : 0u);
+		bool okAS = daC == oActorsmDigest;
+		printf("actorsm candidate ok=%u digest=%08x\n", okAS ? 1u : 0u, daC);
+		if(!okAS)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 54u);
+		}
+
+		// -- actorctor: construction tail, deleting dtor with arena release,
+		// +8 adjustor thunk, wall dtor, member init/reset.
+		{
+		unsigned fakeBodyMarkC = 0x0B0DF00Du;
+		unsigned actCtorC[8];
+		memset(actCtorC, 0xcd, sizeof(actCtorC));
+		nxActorConstruct(actCtorC, reinterpret_cast<void*>(fakeBodyMarkC));
+		int ctVptr = (actCtorC[0] == 0x10104530u);
+		int ctOwner = (actCtorC[1] == 0);
+		int ctMember = (actCtorC[2] == 0x1010468cu);
+		int ctMemberZeroed = (actCtorC[3] == 0 && actCtorC[4] == 0);
+		int ctBody = (actCtorC[5] == fakeBodyMarkC);
+
+		unsigned* dynAC = static_cast<unsigned*>(
+			nxHeapAlloc(sizeof(unsigned) * 8));
+		for(int i = 0; i < 8; ++i)
+			dynAC[i] = 0xFEEDF00Du;
+		NxHeapMark mdDC = nxHeapMarkNow();
+		nxActorDeletingDtor(dynAC, 1);
+		int ddWall = (dynAC[0] == 0x101043d0u);
+		int ddMember = (dynAC[2] == 0x101088b8u);
+		int ddFreed = (g_heapFreeOps == mdDC.fo + 1 &&
+			g_heapMallocOps == mdDC.mo);
+
+		unsigned* dynBC = static_cast<unsigned*>(
+			nxHeapAlloc(sizeof(unsigned) * 8));
+		for(int i = 0; i < 8; ++i)
+			dynBC[i] = 0xFEEDF00Du;
+		// the thunk's own body: sub ecx,8 then the same deleting dtor
+		nxActorDeletingDtorThunk(
+			reinterpret_cast<unsigned char*>(dynBC) + 8, 1);
+		int adjWall = (dynBC[0] == 0x101043d0u);
+		int adjMember = (dynBC[2] == 0x101088b8u);
+		int adjFreed = (g_heapFreeOps == mdDC.fo + 2);
+
+		unsigned* dynWC = static_cast<unsigned*>(::malloc(sizeof(unsigned) * 8));
+		for(int i = 0; i < 8; ++i)
+			dynWC[i] = 0xFEEDF00Du;
+		nxActorInterfaceDtor(dynWC, 1);
+		int wFreed = 1;
+		unsigned stackWC[8];
+		memset(stackWC, 0xcd, sizeof(stackWC));
+		nxActorInterfaceDtor(stackWC, 0);
+		int wWall = (stackWC[0] == 0x101043d0u);
+		int wUntouched = (stackWC[2] == 0xCDCDCDCDu);
+		int wNoFree = (g_heapFreeOps == mdDC.fo + 2);
+
+		unsigned dcC = 2166136261u;
+		const int checksC[] = { ctVptr, ctOwner, ctMember, ctMemberZeroed,
+			ctBody, ddWall, ddMember, ddFreed, adjWall, adjMember, adjFreed,
+			wWall, wUntouched, wFreed };
+		for(int k = 0; k < 14; ++k)
+			dcC = nxFold(dcC, static_cast<unsigned>(checksC[k]));
+		dcC = nxFoldHeapDelta(dcC, mdDC);
+
+		bool okAC = dcC == oActorCtorDigest;
+		printf("actorctor candidate ok=%u ct=%u/%u/%u/%u/%u dd=%u/%u/%u adj=%u/%u/%u w=%u/%u/%u digest=%08x\n",
+			okAC ? 1u : 0u,
+			ctVptr, ctOwner, ctMember, ctMemberZeroed, ctBody,
+			ddWall, ddMember, ddFreed, adjWall, adjMember, adjFreed,
+			wWall, wUntouched, wFreed, dcC);
+		if(!okAC)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 55u);
 		}
 		// -- post-creation template state: fresh record + internal bit31.
 		{

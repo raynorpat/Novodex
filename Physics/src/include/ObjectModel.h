@@ -627,6 +627,76 @@ void					nxU32VectorPushBack(void* vecHeader, NxU32 value);
 //! terms of it.
 void					nxSceneSlotFree(void* container, NxU32 slot);
 
+// -----------------------------------------------------------------------
+// NxActor scaffolding (Task 4). The actor reads its body through a scene
+// guard pair; layout so far: +0x00 vptr, +0x04 owner, +0x08 the 12-byte
+// member subobject (third table 0x101088b8 before/after life, one-slot
+// member table 0x1010468c during), +0x10 the scene lock context,
+// +0x14 the body pointer.
+
+//! Guard entry (0x5b700): EnterCriticalSection on *[scene], writer flag
+//! swap-in at block+0x18, thread id at +0x1c.
+void					nxSceneGuardEnter(void* scene);
+
+//! Guard leave (0x5b790): flag release, LeaveCriticalSection.
+void					nxSceneGuardLeave(void* scene);
+
+//! phys_fn_000110 (slot 19): bool of [body+8] under guard.
+bool					nxActorBodyPresent(void* self);
+
+//! phys_fn_000114 (slot 86): the group word at [body+0x1c] under guard.
+NxU16					nxActorGetGroupWord(void* self);
+
+//! phys_fn_000078 (slot 77): ([body+0x14] & mask) != 0 under guard.
+bool					nxActorFlagsMasked(void* self, unsigned mask);
+
+//! phys_fn_000066 (slot 69): fsqrt([body+0xd0]), 0.0f with no body.
+float					nxActorSqrtFieldD0(void* self);
+
+//! phys_fn_000068 (slot 71): fsqrt([body+0xd4]), 0.0f with no body.
+float					nxActorSqrtFieldD4(void* self);
+
+//! phys_fn_000015: body helper -- 0 with no shape list, 1 for non-mesh
+//! shapes, the mesh triangle-array span for meshes.
+unsigned				nxBodyShapeRecordCount(void* body);
+
+//! phys_fn_000019: body helper -- null, [+0xf0] for meshes, else
+//! shape+0x9c.
+void*					nxBodyCollisionObject(void* body);
+
+//! phys_fn_000082 (slot 15): nxBodyShapeRecordCount(body) under guard.
+unsigned				nxActorShapeRecordCount(void* self);
+
+//! phys_fn_000084 (slot 16): nxBodyCollisionObject(body) under guard.
+void*					nxActorCollisionObject(void* self);
+
+//! phys_fn_000086 (slot 84): the SDK pointer binding keyed on the body,
+//! under guard.
+void*					nxActorBoundTarget(void* self);
+
+//! phys_fn_002404 / phys_fn_002406: the member subobject's constructor and
+//! destructor -- both install the third table; the ctor also zeroes the two
+//! fields after it.
+void					nxActorMemberInit(void* memberAtPlus8);
+void					nxActorMemberReset(void* memberAtPlus8);
+
+//! phys_fn_000044 (0x2480): the actor construction tail -- wall vptr, zero
+//! owner, member init, member table, body pointer at +0x14, final vptr.
+void					nxActorConstruct(void* self, void* body);
+
+//! phys_fn_000042 (0x2460): interface-wall deleting destructor; frees when
+//! flags&1.
+void					nxActorInterfaceDtor(void* self, unsigned flags);
+
+//! phys_fn_000118 (slot 0): actor scalar-deleting destructor; allocator
+//! release through slot +0x14 when flags&1.
+void					nxActorDeletingDtor(void* self, unsigned flags);
+
+//! phys_fn_000116 (slot 87): the member table's this-adjustor thunk --
+//! `sub ecx,8` onto the actor base, then the deleting dtor.
+void					nxActorDeletingDtorThunk(void* memberThis,
+							unsigned flags);
+
 //! The image's own literal pair, exposed so tests can pin against them.
 extern const char* const	nxSourceFileSphereShapeCpp;
 extern const char* const	nxMsgSetRadiusPositive;
