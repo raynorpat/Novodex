@@ -59,11 +59,11 @@
   "counts": {
     "deferred_blocked_on_later_phase": 19,
     "deferred_data_object_not_dispositioned": 1051,
-    "deferred_homeless_shared_code": 60,
+    "deferred_homeless_shared_code": 58,
     "deferred_not_independently_falsifiable": 1,
     "deferred_unreachable_in_phase_2": 6,
     "differential_falsified": 49,
-    "oracle_differential_falsified": 2,
+    "oracle_differential_falsified": 4,
     "static_proof_falsified": 6
   },
   "closed": [
@@ -645,6 +645,40 @@
       "falsification": {
         "mutation": "the release arm's unlink stores the mirror partner's index where the image writes the 0xD00BEED0 poison (mir[idx] = u instead of the sentinel constant). Detected on relgrow, whose poison predicate reads false; the same transcription sits inside nxBaseDtorOwnerArms, so owndtor's chain drive moves with it -- which is what makes the row load-bearing rather than incidentally observed. Control run of the unmutated tree reads mismatches=1, this run mismatches=3",
         "detected": "mismatches=3"
+      }
+    },
+    {
+      "id": "phys_fn_002404",
+      "rva": "0x0005ba70",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        3,
+        5,
+        6,
+        7
+      ],
+      "falsification": {
+        "mutation": "the +0x08 member subobject constructor stops zeroing its two fields after the third-table vptr store. Detected on actorctor: the construction-tail drive reads 0xcdcdcdcd where the image leaves zeros. Control run of the unmutated tree reads mismatches=1 (the designed vtables RED), this run mismatches=2",
+        "detected": "mismatches=2"
+      }
+    },
+    {
+      "id": "phys_fn_002406",
+      "rva": "0x0005ba90",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsObjectLayoutTests",
+      "discharged_by_phase": 5,
+      "driving_phases": [
+        3,
+        5,
+        6,
+        7
+      ],
+      "falsification": {
+        "mutation": "the member destructor restores a null instead of the third-table vptr 0x101088b8. Detected on actorctor through BOTH post-free reads -- the deleting dtor's own block and the +8 adjustor thunk's -- which is what makes the seven-byte row load-bearing. Control mismatches=1, this run mismatches=2",
+        "detected": "mismatches=2"
       }
     }
   ],
@@ -1809,38 +1843,6 @@
         7
       ],
       "callers": 3
-    },
-    {
-      "id": "phys_fn_002404",
-      "rva": "0x0005ba70",
-      "size": 17,
-      "reason": "homeless_shared_code",
-      "phase_provenance": "shared_by_callers",
-      "translation_unit_zone": "gap Controller.cpp .. fluids/Fluid.cpp",
-      "reachability": "reachable_via_other_phase",
-      "driving_phases": [
-        3,
-        5,
-        6,
-        7
-      ],
-      "callers": 21
-    },
-    {
-      "id": "phys_fn_002406",
-      "rva": "0x0005ba90",
-      "size": 7,
-      "reason": "homeless_shared_code",
-      "phase_provenance": "shared_by_callers",
-      "translation_unit_zone": "gap Controller.cpp .. fluids/Fluid.cpp",
-      "reachability": "unreachable_from_phase_2",
-      "driving_phases": [
-        3,
-        5,
-        6,
-        7
-      ],
-      "callers": 21
     },
     {
       "id": "phys_fn_002417",
