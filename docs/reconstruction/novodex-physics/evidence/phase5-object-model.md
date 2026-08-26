@@ -1417,6 +1417,23 @@ two directions; that reading stays open until the body ctor lands.
 **Census.** Registrations +2, floor 108 -> 110, oracle digest re-pinned
 0e64d9fc -> 98f55439.
 
+## 3z9. Slate 6: the CMass local frame
+
+Two rows close (000096, 000100). Slots 29 and 31 are the CMass getters:
+twelve words (nine-word rotation from record+0xdc, translation from
++0x100) and nine words respectively. Their STATIC arms -- null record --
+report kind 1 from NpActor.cpp with shipped copy-paste literals again
+("getCMassLocalPose" warning inside the pose getter) and answer from
+DEFAULTS: identity-plus-zero written field-wise for the pose, and the
+shipped identity TABLE at .rdata 0x10122078 copied wholesale for the
+orientation. The family folds present-record marks, both warnings per arm,
+and memcmp predicates against the identity defaults. Falsified by dropping
+the pose identity's middle diagonal (candidate ok=0, mismatches=2 against
+control 1).
+
+**Census.** Registrations +2, floor 110 -> 112, oracle digest re-pinned
+98f55439 -> 1efebac8.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is
