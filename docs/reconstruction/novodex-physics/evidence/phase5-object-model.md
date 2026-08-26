@@ -1356,6 +1356,30 @@ control of 1.
 **Census.** Registrations +2, floor 102 -> 104, oracle digest re-pinned
 a969c85b -> 729c9651.
 
+## 3z6. Slate 3: the damping getters, and a family that could not fail
+
+Three rows close (000048, 000050, 000052). Slots 42/44 are the damping
+getters -- getLinearDamping ([record+0xb8], NpActor.cpp line 0xd9) and
+getAngularDamping ([+0xbc], line 0xe8) -- whose null-record arm reports
+KIND 1 (warning, not the write side's kind 2) with shipped copy-paste
+literals ("Actor::setLinearDamping: Actor must be dynamic!" inside the
+getter) and then returns the zero constant parked at 0x101041f0. Slot 36
+reads [+0x188] with no report at all.
+
+The first actorsm3 structure had a defect worth its own paragraph: both
+null arms shared one capture, and nxFoldErrCap ran once AFTER both drives
+-- so only the SECOND report (angular, line 232) was pinned and the linear
+warning was structurally unable to influence any digest. The falsification
+attempt proved it: mutating the linear report's line literal moved nothing.
+The fix folds the capture after EACH arm; only then does the line-literal
+mutation move the transcript (candidate ok=0, mismatches=2 against control
+1), which is what registered. The broader lesson is the programme's oldest
+one in new clothes -- a check that cannot fail is not coverage -- applied
+here to report-capture sequencing rather than to gate lists.
+
+**Census.** Registrations +2, floor 104 -> 106, oracle digest re-pinned
+729c9651 -> a3636235.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is
