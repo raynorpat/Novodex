@@ -819,6 +819,23 @@ unsigned				nxForwardSubobjectCall(void* self, void* arg);
 //! and increments the counter.
 unsigned				nxIdAllocNext(void* container);
 
+//! phys_fn_002328: chained deleting destructor -- member vptr at +8
+//! restored through two third tables, primary vptr 0x1010878c, adapter
+//! release when flagged.
+void					nxChainedDeletingDtor(void* self, unsigned flags);
+
+//! phys_fn_002322: adjustor thunk -- sub ecx,8, tail-call to the chained dtor.
+void					nxChainedDeletingDtorThunk(void* self,
+							unsigned flags);
+
+//! phys_fn_002312: third pool class deleting destructor -- vptr 0x1010878c,
+//! linked-CRT release when flagged.
+void					nxPoolDeletingDtor78c(void* self, unsigned flags);
+
+//! phys_fn_002320: cached-list destroyer -- walks +0x5a8 cache deleting via
+//! each node's virtual slot 0 with argument 1.
+void					nxDestroyCachedList(void* self);
+
 //! phys_fn_000080: readBodyFlag -- ([record+0x10c] byte AND mask) under the
 //! read guard; kind-1 warning and false on a static actor.
 bool					nxActorReadBodyFlag(void* self, unsigned mask);

@@ -522,6 +522,7 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oActorsm7Digest = 0;
 	unsigned oMiscsmDigest = 0;
 	unsigned oMiscsm2Digest = 0;
+	unsigned oSlate11Digest = 0;
 	unsigned oZeroDigest = 0;
 	unsigned oZeroCandDigest = 0;
 	static unsigned char sSaveStateRecord[0x48];
@@ -3626,6 +3627,42 @@ int wmain(int argc, wchar_t** argv)
 	}
 
 	// -----------------------------------------------------------------------
+	// Slate 11: pool-class lifecycle rows driven minimally. All on stack
+	// blocks or with flags=0 (no free) to avoid any allocator interaction.
+	{
+	typedef void (__thiscall* NxDelFnS)(void* self, unsigned flags);
+	NxDelFnS chainOD = (NxDelFnS)(base + 0x0005a470);		// 002328
+	NxDelFnS adjOD = (NxDelFnS)(base + 0x0005a230);			// 002322
+	NxDelFnS crtOD = (NxDelFnS)(base + 0x0005a080);			// 002312
+
+	unsigned dA = 2166136261u;
+
+	// 002328: chained dtor, stack block, flags=0
+	unsigned chX[4];
+	memset(chX, 0xcd, sizeof(chX));
+	chainOD(chX, 0);
+	dA = nxFold(dA, chX[0] == 0x1010878cu ? 1u : 0u);
+	dA = nxFold(dA, chX[2] == 0x10108798u ? 1u : 0u);
+
+	// 002322: adjustor thunk to same dtor, stack block, flags=0
+	unsigned chY[4];
+	memset(chY, 0xcd, sizeof(chY));
+	adjOD(chY + 2, 0);
+	dA = nxFold(dA, chY[0] == 0x1010878cu ? 1u : 0u);
+	dA = nxFold(dA, chY[2] == 0x10108798u ? 1u : 0u);
+
+	// 002312: CRT-free dtor, stack block, flags=0
+	unsigned stk78[4];
+	memset(stk78, 0xcd, sizeof(stk78));
+	crtOD(stk78, 0);
+	dA = nxFold(dA, stk78[0] == 0x1010878cu ? 1u : 0u);
+
+	oSlate11Digest = dA;
+	oracleDigest = nxFold(oracleDigest, dA);
+	printf("slate11 row=oracle digest=%08x\n", dA);
+	}
+
+	// -----------------------------------------------------------------------
 	// phys_fn_000847: the conditional mass-frame zeroizer. Two drives --
 	// flag=1 (zeroes all 13 words) and flag=0 (leaves untouched) -- against
 	// pre-populated frames.
@@ -6462,6 +6499,35 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 63u);
+		}
+
+		// -- slate11: pool-class lifecycle rows through the transcriptions.
+		{
+		unsigned dSC = 2166136261u;
+
+		unsigned chXC[4];
+		memset(chXC, 0xcd, sizeof(chXC));
+		nxChainedDeletingDtor(chXC, 0);
+		dSC = nxFold(dSC, chXC[0] == 0x1010878cu ? 1u : 0u);
+		dSC = nxFold(dSC, chXC[2] == 0x10108798u ? 1u : 0u);
+
+		unsigned chYC[4];
+		memset(chYC, 0xcd, sizeof(chYC));
+		nxChainedDeletingDtorThunk(chYC + 2, 0);
+		dSC = nxFold(dSC, chYC[0] == 0x1010878cu ? 1u : 0u);
+		dSC = nxFold(dSC, chYC[2] == 0x10108798u ? 1u : 0u);
+
+		unsigned stk78C[4];
+		memset(stk78C, 0xcd, sizeof(stk78C));
+		nxPoolDeletingDtor78c(stk78C, 0);
+		dSC = nxFold(dSC, stk78C[0] == 0x1010878cu ? 1u : 0u);
+
+		bool okS11 = dSC == oSlate11Digest;
+		printf("slate11 candidate ok=%u digest=%08x\n", okS11 ? 1u : 0u, dSC);
+		if(!okS11)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 64u);
 		}
 		// -- post-creation template state: fresh record + internal bit31.
 		{

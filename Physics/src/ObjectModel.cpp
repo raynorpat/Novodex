@@ -1286,6 +1286,16 @@ void nxChainedDeletingDtorThunk(void* memberThis, unsigned flags)
 		reinterpret_cast<unsigned char*>(memberThis) - 8, flags);
 	}
 
+// phys_fn_002312 (0x5a080): third pool class deleting destructor -- vptr
+// 0x1010878c installed, then LINKED-CRT release when flagged.
+void nxPoolDeletingDtor78c(void* self, unsigned flags)
+	{
+	*reinterpret_cast<unsigned**>(self) =
+		reinterpret_cast<unsigned*>(0x1010878cu);
+	if(flags & 1)
+		::free(self);
+	}
+
 // phys_fn_002320 (0x5a1e0): destroys the node LIST cached at this+0x5a8.
 // Per iteration: cache's +0x30 link is read and zeroed, the cache node is
 // deleted through its OWN virtual slot 0 with argument 1, the cache field
