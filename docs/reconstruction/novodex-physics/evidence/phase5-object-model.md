@@ -1477,6 +1477,29 @@ mismatches=2 against control 1).
 **Census.** Registrations +2, floor 114 -> 116, oracle digest re-pinned
 7b7cd8d7 -> 3f37c9a2.
 
+## 3z12. Slate 9: readBodyFlag and three deleting destructors
+
+Four rows close (000080, 002408, 002326, 002340). Slot 80 is readBodyFlag:
+([record+0x10c] byte AND mask) under the READ guard, kind-1 warning
+("readBodyFlag: Actor must be dynamic!") and false on a static actor -- the
+write-side sibling of this test lives in the slate-2 cluster. phys_fn_002408
+is the member subobject's own deleting destructor: third-table vptr then a
+LINKED-CRT release (the CRT twin of phys_fn_000042), driven on a stack
+block with flags=0 so only the vtable install is folded. phys_fn_002326 and
+phys_fn_002340 are two bound-pool deleting destructors (vptrs 0x10108798 /
+0x1010884c) releasing through ADAPTER slot +0x14; driven on arena blocks
+with post-free vptr reads. Falsified earlier in the round by an offset
+mutation of the group writer (mismatches=2 vs control 1).
+
+One row stays open DELIBERATELY: phys_fn_002411 (the shapes-clear entry,
+slot=[arg+0x104] released through the pool header at this+0x40 then
+shapes[slot]=0) is transcribed but its synthetic pool fixture faults inside
+the release arm for reasons a first debugger pass did not settle; it stays
+discovered until that fixture is built properly.
+
+**Census.** Registrations +2, floor 116 -> 118, oracle digest re-pinned
+3f37c9a2 -> a18e1d49.
+
 ## 4. The census merge resolved
 
 The census flagged its 41-slot row at `0x106a58` as overrunning BOX. It is
