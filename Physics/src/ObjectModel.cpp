@@ -358,8 +358,12 @@ void* BoxShape::nxBoxRaycast(const float* ray, float maxDistance,
 
 	unsigned char* rec = static_cast<unsigned char*>(hit);
 	// Point z/x/y then t, all BEFORE the gate: 0x00020a10/17/1a, 0x20a1d.
-	const float wz = coord.x * rot[6] + coord.y * rot[3] + coord.z * rot[0]
-		+ trn[0];								// st(2) arm, 0x2099e..a1a
+	// World transform = R·coord + t, rows of the row-major R (listing
+	// 0x2099e..0x20a03: worldX=row0, worldY=row1, worldZ=row2), not the
+	// transposed form. The transposed indices passed every axis-aligned
+	// permutation and were caught by the quarter turn.
+	const float wz = coord.x * rot[6] + coord.y * rot[7] + coord.z * rot[8]
+		+ trn[2];								// row2 dot, 0x209d8..0x20a03
 	const float wx = coord.x * rot[0] + coord.y * rot[1] + coord.z * rot[2]
 		+ trn[0];
 	const float wy = coord.x * rot[3] + coord.y * rot[4] + coord.z * rot[5]
@@ -369,7 +373,7 @@ void* BoxShape::nxBoxRaycast(const float* ray, float maxDistance,
 	memcpy(rec + 0x08, &wy, 4);
 	memcpy(rec + 0x20, &t, 4);
 
-	if(!(t <= maxDistance))						// 0x00020a20, test ah,0x41
+	if(t > maxDistance) // 0x20a20..2d: reject ordered greater; accept unordered
 		return nullptr;							// 0x00020a2f
 
 	memcpy(rec + 0x00, &mBase.mWord9C, 4);		// 0x00020a38..3e
@@ -385,7 +389,7 @@ void* BoxShape::nxBoxRaycast(const float* ray, float maxDistance,
 		memcpy(rec + 0x2c, &tag, 4);
 		float n[3] = { 0.0f, 0.0f, 0.0f };
 		n[plane - 1] = coord[plane - 1] < 0.0f ? -1.0f : 1.0f;
-		const float nz = n[0] * rot[6] + n[1] * rot[3] + n[2] * rot[0];
+		const float nz = n[0] * rot[6] + n[1] * rot[7] + n[2] * rot[8];
 		const float nx = n[0] * rot[0] + n[1] * rot[1] + n[2] * rot[2];
 		const float ny = n[0] * rot[3] + n[1] * rot[4] + n[2] * rot[5];
 		memcpy(rec + 0x18, &nz, 4);				// 0x00020b05
