@@ -2040,6 +2040,52 @@ a LIVE candidate bug found red and fixed green, not an expectation
 mutation. Remaining open: x87 extended-precision association against
 non-unit dims, the unused third argument, arbitrary poses.
 
+## 3z26. phys_fn_001305 transcribed: candidate matches the binary at 5 masks
+
+The candidate `BoxShape::nxDebugRender` (ObjectModel.cpp) is transcribed
+from build/slot3dep-full.txt: block 1 draws three axis lines (K-scaled
+rotation column + translation, colors 0xCF0000/0xCF00/0xCF) through
+renderer vtable +0x20 when guard A (.data 0x123bc8) differs from the
+reference word (0x1041f0, bound to live storage via
+nxBindDebugRenderGuards -- the drive mutates exactly what the candidate
+reads); block 2 draws three column-cyclic 48-byte poses through slot
++0x38 (args: 0x14, pose, 0xFFFF00FF, radius-by-value, 0) with
+center/diagonal from the slot-10 member. Equality (including -0.0,
+mask 4) skips both blocks -- the executed semantics from 3z24.
+
+TDD shape: the empty stub failed the candidate lens at mask 1 with
+c(0,0) expected(3,0) (build/r9-red4.log); the transcription turned all
+five masks green with raw counts visible (r9-close-gate.log lines
+133-143). Harness defects found red and fixed along the way: the stub
+differential first compared stub-to-stub instead of against oracle
+literals; the candidate first ran OUTSIDE the mutated guard window and
+behind a wrong bit-gate (wrongly "agreeing" at masks 1-3); a mistyped
+absolute VA (0x101041f0) in the bind crashed at mask 0 (fail-fast
+0xC0000409, fixed to RVA 0x1041f0); and the first restructure let
+candidate recorder state overwrite oracle bytes before the contract
+lens read them -- diagnosed because the guard-inversion mutant was
+caught through the WRONG lens (contract mask=0 n20=3) and re-caught
+through the right one after separation (candidate lens: c(3,0)
+expected(0,0), build/r9-lens.log), then restored green.
+
+FALSIFICATION (candidate mutation test): inverting block 1's guard to
+`guardA == ref` failed the candidate lens at mask 0 (c(3,0) under zero
+guards) while the oracle lens stayed green -- the correct lens caught
+it; restored to green.
+
+OPEN (recorded, undriven): scale semantics. Driving scale=2.0 (guardA=1)
+made the shipped binary draw three +0x20 lines with ALL-ZERO payloads --
+start, end AND colors (build/r9-dump.log lines 65-67) -- unpredicted by
+any K=scale*guardA reading of 0x25985..0x25a28. Every prior capture used
+scale 1.0, so this region was never established; the mask-5 fixture was
+reverted (its oracle semantics could not be stated) and the candidate
+asserts scale=1.0 behavior only. Next round owns a block-1 x87 decode
+with a trace before re-attempting a scale drive.
+
+Census: phys_fn_001305 STAYS `discovered` (no family registration); the
+candidate is driven only through the rendercap differential on an
+oracle-layout fixture. The vtables RED remains byte-pinned per 3z18.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
