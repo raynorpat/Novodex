@@ -1844,6 +1844,51 @@ blocks execute) then phys_fn_001279 (whose callees 001955/001945 are
 still discovered), then slot 3 itself; slot 4's callee (phys_fn_000849)
 is already reconstructed.
 
+## 3z21. Slot-5 provisional decode recorded, transcription reverted before a drive
+
+BOX slot 5 (phys_fn_000949, 0x20880, 663 B) was decoded END TO END this
+round from the capstone listing (202 instructions, written in full to the
+scratchpad): a local-space raycast whose slab kernel is NxRayAABBIntersect2
+(phys_fn_001726/001728 -- already transcribed and 13/13 against its own
+Phase 3 differential, so the kernel dependency slot 5 needs is CLOSED).
+The wrapper: carries origin and direction into the shape frame by R^T with
+the image's association (dz*R2c + dy*R1c) + dx*R0c per column; slabs run
+over [-dims, +dims]; the kernel returns the plane index (1..3); a
+below-or-equal fcomp against a max-distance argument gates the record
+(0x20a20..2f, test ah,0x41); the hit arm rotates the kernel coord back
+through R, adds the translation, and stores colobj/point/t/zeroed face
+words/tag 0x13 into the 0x30-byte record; flags&4 extends the tag to 0x17
+and rotates a +-1 plane normal through R. Returns null on miss or gated
+t, this on hit.
+
+The first transcription FAILED the decode twice while open -- the t-gate
+fcomp was omitted entirely, and the normal arm's third component row read
+one rotation word twice -- and the drive block carried unresolved stack
+accounting for the kernel call (the descriptor layout, the two float
+arguments, and the flag position are INFERRED, not pinned; the kernel
+itself was reached with a wrong stack height in the first spelling).
+Following the round-4 precedent, the transcription and drive were
+reverted BEFORE any registration: tree verified clean, build green. What
+stands is this decode record -- NOT a reconstructed row.
+
+The round ended with a byte-capture instead of a transcription: an
+ORACLE-ONLY probe (no candidate side, no digest, no registration) drove
+the real binary's 0x20880 on a constructed box across six cases and
+printed every record word. The capture pins the record layout byte-level:
+colobj@+0x00, world point@+0x04..+0x0c, plane normal@+0x10..+0x18 ONLY
+when flags&4, +0x1c/+0x24/+0x28 zeroed, t@+0x20, tag@+0x2c (0x13 plain,
+0x17 with the normal), miss and inside-origin leave the record fully
+poisoned, return null on miss, this on hit. Two argument facts pinned
+against the binary: the t-gate fcomp's maximum is the SECOND stack
+argument (case D: a3=0.5 did NOT gate t=1.0; a2=111.0 passes), and the
+third stack dword is unused in all six cases (role unpinned). Diagonal
+case: t=sqrt(2) bits 3fb504f3, point (1,1,0), normal (1,0,0).
+
+Next round: transcribe with this capture as the per-word arbiter, fit the
+five stack arguments against the kernel call at 0x2098c (push order and
+the add esp,0x18 purge), then drive, mutate, and register. Slot 5 stays
+`discovered`; the vtables RED remains byte-pinned per 3z18.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
