@@ -2937,12 +2937,34 @@ int wmain(int argc, wchar_t** argv)
 	oracleCtor(oracleShape, 0, 0);
 	BoxShape& candidate = *new(candidateShape) BoxShape(0, 0);
 	const float dims[3] = { 1, 2, 3 };
-	const float poses[3][12] = {
+	float poses[4][12] = {
 		{ 1,0,0, 0,1,0, 0,0,1, 0,0,0 },
 		{ 0,1,0, 0,0,1, 1,0,0, 0,0,0 },
 		{ 1,0,0, 0,1,0, 0,0,1, 2,-3,4 } };
+	// Combined non-identity rotation + non-axis translation (a proper
+	// 30-degree rotation about z, then a general translation), which
+	// exercises the full rotation+translation pose path rather than each
+	// alone. Values are not axis-aligned, so a transpose/association error
+	// in nxBoxComputeMassFrame's pose arm is exposed.
+	memcpy(poses[3], poses[2], sizeof(poses[2]));
+	{
+	const float c30 = 0.866025403784f, s30 = 0.5f;
+	// Proper 30-degree rotation about z, row-major (3 rows x 3 cols):
+	// row0 = (c, -s, 0), row1 = (s, c, 0), row2 = (0, 0, 1). The
+	// rotation+translation pose is not axis-aligned, so a transpose or
+	// association error in the mass arm is exposed. NOTE: the box-mass
+	// pose path reads the rotation through nxMassFrameFoldPayload, which
+	// treats the nine words as a SYMMETRIC matrix k00..k22 -- a general
+	// 30-degree-about-z rotation is asymmetric, so this fixture verifies
+	// how (or whether) the fold degrades a non-symmetric input against the
+	// oracle's identical read.
+	poses[3][0]=c30; poses[3][1]=-s30; poses[3][2]=0;
+	poses[3][3]=s30; poses[3][4]=c30; poses[3][5]=0;
+	poses[3][6]=0; poses[3][7]=0; poses[3][8]=1;
+	poses[3][9]=2; poses[3][10]=-3; poses[3][11]=4;
+	}
 	unsigned caseCount = 0;
-	for(unsigned pose = 0; pose < 3; ++pose)
+	for(unsigned pose = 0; pose < 4; ++pose)
 	for(unsigned low = 0; low < 8; ++low)
 	for(unsigned densityCase = 0; densityCase < 2; ++densityCase)
 		{
