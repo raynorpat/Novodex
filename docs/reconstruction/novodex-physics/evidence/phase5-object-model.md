@@ -2247,6 +2247,63 @@ by this cleanup. Independent read-only review confirmed the layout,
 signature and probe defects and the oracle-buffer virtual-dispatch
 false-pass risk documented in the audit.
 
+## 3z31. Actual BOX slot-4 wrapper and centered-pose path; merge precision defect
+
+Round 14 scoped the path without edits; round 15 implements the provisional
+nonvirtual `BoxShape::nxBoxAccumulateMass` for phys_fn_000947, 0x20850
+(39 bytes, 12 instructions). The three stack DWORDs are destination,
+density, ignored/reserved. From the full listing: test byte[this+0xde]&7;
+if zero push this+0x6c, this+0xe4, density; use destination as ECX for
+000849; return AL=1 and ret 12. No vtable is installed and no layout changes.
+
+RED: build/r15-red-build.log builds the true-return/no-op stub;
+r15-red.log fails pose=0, low=0, density=0 with four differing words.
+The wrapper and existing rotation helper then pass identity and cyclic-axis
+poses but fail translated pose (r15-rotate.log). The previously omitted
+non-null pose path now invokes 000831 and a centered-box specialization of
+000833: add m*(|t|^2 I - t*t^T) to inertia and t to center. It stores each
+correction to float, then its mass product to float before inertia addition.
+General 000833 is NOT implemented or claimed closed. Independent Capstone
+review confirmed the centered formula and final stores, and identified
+asymmetric square rounding for arbitrary floats not yet reproduced here.
+
+The 48 cases cover dimensions (1,2,3), densities 1/2, low flag masks 0..7,
+and identity/cyclic/translated (2,-3,4) third poses. Oracle and candidate
+construct separate objects; the candidate is called directly, never via an
+oracle vptr. All 13 output words and both boolean results are compared.
+Final fixtures seed destination inertia (2,3,5) and mass 1, and assert that
+suppressed calls leave the destination untouched. They are finite, exact
+fixtures, not a numerical-completeness claim.
+
+Mutation: reverse the xy correction sign -> r15-mut.log fails translated
+pose at mass[1], oracle=43900000 vs candidate=c3900000; restored before
+final verification. This falsifies the translation lens, not table dispatch.
+
+The nonzero destination exposed a second real defect in existing
+`MassFrame::nxMassFrameMerge` (000839). r15-final-gate.log differs by one
+bit in center x/z for density 2. The old candidate comment claimed a
+full-precision reciprocal, but listing 0x1c695 is fstp m32: reciprocal
+MUST round before multiplication. The fix also reproduces explicit m32
+stores of weighted components and y/z sums at 0x1c64a..0x1c689, while
+other-x stays register-held. A separate 13-word merge regression uses
+mass 1 plus incoming mass 96, center (2,-3,4), isolating this dependency
+from wrapper/rotation/translation code.
+
+Final build/r15-reviewed-gate.log: build_physics exit=0, inventory=pass,
+boxslot4 cases=48 failures=0 provisional=1, merge reciprocal regression
+agrees, fractional merge centers agree (16 cases, all 13 words), existing
+massframe/boxmass/capmass digests remain green, coverage 126/126. Review
+(after r15-merge-gate.log) confirmed no critical defect in the provisional
+scope but flagged that integer/zero-center fixtures underused merge
+rounding: fractional reciprocal-store and separate fractional merge cases
+verify the listing-derived reciprocal round and the shared numeric form.
+Pose 9 (combined non-identity rotation + non-axis translation) remains
+outside the driven fixtures. Phase 5 exit=1 remains the missing-vtables
+RED. No gate-target, coverage-floor, inventory-state, or pointer-mask
+changes. Slot 4 stays `discovered`: general poses/dimensions, FP
+exceptional/rounding, aliasing, and provenance checks through a real
+candidate table remain open.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
