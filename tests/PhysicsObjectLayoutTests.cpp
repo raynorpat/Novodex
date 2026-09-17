@@ -1593,6 +1593,51 @@ int wmain(int argc, wchar_t** argv)
 	}
 
 	// -----------------------------------------------------------------------
+	// ORACLE CAPTURE ONLY -- BOX slot 5 (phys_fn_000949 at 0x20880). Not a
+	// family: no digest, no registration. The transcript pins the five
+	// stack arguments and the full 0x30-byte hit record per case; the next
+	// round's transcription reads its reference from here.
+	{
+	typedef void* (__thiscall* NxBoxRayCapFn)(void* self, const float* ray,
+		float a2, float a3, unsigned flags, void* hit);
+	NxBoxRayCapFn boxRay5Cap = (NxBoxRayCapFn) (base + 0x00020880);
+	unsigned char shapeCap[0x228];
+	memset(shapeCap, 0xcd, sizeof(shapeCap));
+	typedef void (__thiscall* NxBoxCtorCapFn)(void* self, void* owner, unsigned argument);
+	NxBoxCtorCapFn boxCtorCap = (NxBoxCtorCapFn) (base + 0x00021870);
+	boxCtorCap(shapeCap, 0, 0);
+
+	struct RayCapCase { float ray[6]; float a2; float a3; unsigned flags; };
+	// o = origin triple, d = direction triple. A: +x into the box.
+	// B: same with normal arm. C: away. D: gate probe. E: inside origin.
+	// F: diagonal.
+	const RayCapCase capCases[] =
+		{
+		{ { 2, 0, 0, -1, 0, 0 }, 111.0f, 10.0f, 0 },
+		{ { 2, 0, 0, -1, 0, 0 }, 111.0f, 10.0f, 4 },
+		{ { 2, 0, 0, 1, 0, 0 }, 111.0f, 10.0f, 4 },
+		{ { 2, 0, 0, -1, 0, 0 }, 111.0f, 0.5f, 0 },
+		{ { 0, 0, 0, -1, 0, 0 }, 111.0f, 10.0f, 0 },
+		{ { 2, 2, 0, -0.70710677f, -0.70710677f, 0 }, 111.0f, 10.0f, 4 },
+		};
+	for(unsigned c = 0; c < 6; ++c)
+		{
+		unsigned char rec[0x30];
+		memset(rec, 0xcd, sizeof(rec));
+		void* okc = boxRay5Cap(shapeCap, capCases[c].ray, capCases[c].a2,
+			capCases[c].a3, capCases[c].flags, rec);
+		unsigned rw[12];
+		for(unsigned w = 0; w < 12; ++w)
+			memcpy(&rw[w], rec + w * 4, 4);
+		printf("boxraycap case=%u ret=%u rec=%08x %08x %08x %08x %08x %08x "
+			"%08x %08x %08x %08x %08x %08x\n",
+			c, okc != 0 ? 1u : 0u,
+			rw[0], rw[1], rw[2], rw[3], rw[4], rw[5],
+			rw[6], rw[7], rw[8], rw[9], rw[10], rw[11]);
+		}
+	}
+
+	// -----------------------------------------------------------------------
 	// BOX-table slots 11 and 13, phys_fn_000939 and phys_fn_000927. Slot 11
 	// zeroes the vec3 and writes the diagonal; slot 13 writes dims into a
 	// descriptor record at +0x4c then reuses the BASE save-state row.
