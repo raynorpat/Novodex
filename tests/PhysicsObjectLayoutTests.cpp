@@ -1593,10 +1593,10 @@ int wmain(int argc, wchar_t** argv)
 	}
 
 	// -----------------------------------------------------------------------
-	// ORACLE CAPTURE ONLY -- BOX slot 5 (phys_fn_000949 at 0x20880). Not a
-	// family: no digest, no registration. The transcript pins the five
-	// stack arguments and the full 0x30-byte hit record per case; the next
-	// round's transcription reads its reference from here.
+	// ORACLE CONTRACT ONLY -- BOX slot 5 (phys_fn_000949 at 0x20880).
+	// Not candidate coverage: no family digest/registration. Eight cases
+	// assert exact returns, all hit-record words and boundary canaries.
+	// These reject moving the distance test before the point/t stores.
 	{
 	typedef void* (__thiscall* NxBoxRayCapFn)(void* self, const float* ray,
 		float a2, float a3, unsigned flags, void* hit);
@@ -1606,6 +1606,12 @@ int wmain(int argc, wchar_t** argv)
 	typedef void (__thiscall* NxBoxCtorCapFn)(void* self, void* owner, unsigned argument);
 	NxBoxCtorCapFn boxCtorCap = (NxBoxCtorCapFn) (base + 0x00021870);
 	boxCtorCap(shapeCap, 0, 0);
+	unsigned* tableCap = *reinterpret_cast<unsigned**>(shapeCap);
+	const unsigned imageBaseCap = reinterpret_cast<unsigned>(base);
+	if(tableCap[4] - imageBaseCap != 0x20850
+		|| tableCap[5] - imageBaseCap != 0x20880)
+		return nxFail("BOX oracle slot-4/5 mapping changed");
+	printf("boxray oracle slots4-5=00020850,00020880\n");
 
 	struct RayCapCase { float ray[6]; float a2; float a3; unsigned flags; };
 	// o = origin triple, d = direction triple. A: +x into the box.
@@ -1619,11 +1625,15 @@ int wmain(int argc, wchar_t** argv)
 		{ { 2, 0, 0, -1, 0, 0 }, 111.0f, 0.5f, 0 },
 		{ { 0, 0, 0, -1, 0, 0 }, 111.0f, 10.0f, 0 },
 		{ { 2, 2, 0, -0.70710677f, -0.70710677f, 0 }, 111.0f, 10.0f, 4 },
+		// Real max-distance rejection and equality; a3 remains distinct.
+		{ { 2, 0, 0, -1, 0, 0 }, 0.5f, 111.0f, 4 },
+		{ { 2, 0, 0, -1, 0, 0 }, 1.0f, 111.0f, 4 },
 		};
-	for(unsigned c = 0; c < 6; ++c)
+	for(unsigned c = 0; c < sizeof(capCases) / sizeof(capCases[0]); ++c)
 		{
-		unsigned char rec[0x30];
-		memset(rec, 0xcd, sizeof(rec));
+		unsigned guarded[14];
+		memset(guarded, 0xcd, sizeof(guarded));
+		unsigned char* rec = reinterpret_cast<unsigned char*>(guarded + 1);
 		void* okc = boxRay5Cap(shapeCap, capCases[c].ray, capCases[c].a2,
 			capCases[c].a3, capCases[c].flags, rec);
 		unsigned rw[12];
@@ -1634,7 +1644,42 @@ int wmain(int argc, wchar_t** argv)
 			c, okc != 0 ? 1u : 0u,
 			rw[0], rw[1], rw[2], rw[3], rw[4], rw[5],
 			rw[6], rw[7], rw[8], rw[9], rw[10], rw[11]);
+
+		// Literal reference values for this identity-pose fixture. In
+		// particular, distance rejection writes point/t but NOT colobj,
+		// normal, face words or tag (stores 0x20a10..1d precede 0x20a2f).
+		unsigned expected[12];
+		memset(expected, 0xcd, sizeof(expected));
+		const bool kernelHit = c != 2 && c != 4;
+		const bool accepted = kernelHit && c != 6;
+		if(kernelHit)
+			{
+			expected[1] = 0x3f800000u;
+			expected[2] = c == 5 ? 0x3f800000u : 0u;
+			expected[3] = 0;
+			expected[8] = c == 5 ? 0x3fb504f3u : 0x3f800000u;
+			}
+		if(accepted)
+			{
+			memcpy(&expected[0], shapeCap + 0x9c, 4);
+			expected[7] = expected[9] = expected[10] = 0;
+			expected[11] = 0x13;
+			if(capCases[c].flags & 4)
+				{
+				expected[4] = 0x3f800000u;
+				expected[5] = expected[6] = 0;
+				expected[11] = 0x17;
+				}
+			}
+		if(okc != (accepted ? static_cast<void*>(shapeCap) : nullptr)
+			|| memcmp(rw, expected, sizeof(expected)) != 0
+			|| guarded[0] != 0xcdcdcdcdu || guarded[13] != 0xcdcdcdcdu)
+			{
+			fprintf(stderr, "FAIL boxray contract case=%u return/record/canary mismatch\n", c);
+			return 1;
+			}
 		}
+	printf("boxray contract cases=8 failures=0 mode=oracle-only\n");
 	}
 
 	// -----------------------------------------------------------------------

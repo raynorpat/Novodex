@@ -1828,21 +1828,25 @@ phys_fn_000947 is the 39-byte wrapper at 0x20850; the merged run at
 ctor's slot-4 comment is off by one function. The transform decode read
 from 0x20750 (`out = rot0*(dims o float(arg)) + t`, three fild ints,
 row-major rotation, ret 0x10) belongs to **phys_fn_000943** and is
-recorded here for its owner: the 48 bytes 0x20750..0x207d7 sit inside
-phys_fn_000943's 139-byte body (0x20750..0x207da), and slot 4's row
-`ret 0x10` at 0x207d8 (`83 c2 10 00`) is the tail of that body — slot 4
-and 0x20750 are the same code reached through one inventory row, not two.
+recorded here for its owner: the complete body is 139 bytes,
+[0x20750, 0x207db). Its `ret 0x10` at 0x207d8 encodes `c2 10 00`.
+It is NOT BOX slot 4; that slot targets the distinct 39-byte wrapper
+phys_fn_000947 at 0x20850. The earlier 48-byte claim, encoding and
+conflation of these two rows were incorrect.
 
 Consequences: the mis-attributed transcription was reverted BEFORE any
 drive (tree verified byte-identical to HEAD; build green; addthunk family
 green), so no false registration exists. `dynamically_gated` is a real
-census state (115 rows) — Phase 3 rows whose bodies decode but whose
-drives wait on runtime gates; phys_fn_000943 stays exactly there. The
-leaf-first path to BOX slot 3 is unchanged: phys_fn_001305 (685 B, both
-guard constants read 0.0 from the shipped image, so both debug-render
-blocks execute) then phys_fn_001279 (whose callees 001955/001945 are
-still discovered), then slot 3 itself; slot 4's callee (phys_fn_000849)
-is already reconstructed.
+census state; its name alone does not establish missing implementation or
+pending runtime gates. For example, 001726/001728 already have candidate
+code and differential evidence in phase3-leaf-kernels.md.
+BOX slot 3 directly calls 001287, 001305 and 000931; 001279 is NOT a
+callee on this path. The 001305 guards at 0x10123bc8 and 0x10123bd8
+skip their blocks when zero: `test ah,0x44; jnp` is taken on equality.
+The earlier claim that zero makes both blocks execute was inverted.
+Slot 4 calls 000849, but its non-null pose argument activates a payload
+path currently omitted from that reconstruction; a closed census label
+alone does not establish coverage of this caller's behavior.
 
 ## 3z21. Slot-5 provisional decode recorded, transcription reverted before a drive
 
@@ -1865,8 +1869,9 @@ The first transcription FAILED the decode twice while open -- the t-gate
 fcomp was omitted entirely, and the normal arm's third component row read
 one rotation word twice -- and the drive block carried unresolved stack
 accounting for the kernel call (the descriptor layout, the two float
-arguments, and the flag position are INFERRED, not pinned; the kernel
-itself was reached with a wrong stack height in the first spelling).
+arguments, and the flag position were not yet verified. That provisional
+candidate was never run: the earlier claim that it reached the kernel
+with a wrong stack height was unsupported).
 Following the round-4 precedent, the transcription and drive were
 reverted BEFORE any registration: tree verified clean, build green. What
 stands is this decode record -- NOT a reconstructed row.
@@ -1888,6 +1893,48 @@ Next round: transcribe with this capture as the per-word arbiter, fit the
 five stack arguments against the kernel call at 0x2098c (push order and
 the add esp,0x18 purge), then drive, mutate, and register. Slot 5 stays
 `discovered`; the vtables RED remains byte-pinned per 3z18.
+
+## 3z22. Executable raycast contract: distance rejection is a partial write
+
+The oracle capture is now an assertion-bearing contract over eight
+identity-box cases. It checks the exact returned pointer, all twelve
+record words, and leading/trailing canaries. The constructed oracle
+vtable is checked at runtime: slot 4 -> 0x20850, slot 5 -> 0x20880.
+This remains ORACLE-ONLY evidence, not a candidate closure or coverage
+registration. phys_fn_000949 remains discovered.
+
+New case 6 uses ray (2,0,0)->(-1,0,0), maximum 0.5, third argument 111,
+flags 4: it returns NULL but writes point (1,0,0) and t=1.0. All other
+record words remain 0xcdcdcdcd. Case 7 sets maximum exactly 1.0 and
+returns the original shape pointer with the normal/tag populated.
+Thus the prior shorthand 'rejection leaves output untouched' is wrong
+for distance rejection (it remains true for the driven kernel-miss and
+inside-origin cases). The point stores z/x/y at 0x20a10/17/1a and t
+store at 0x20a1d PRECEDE the comparison and null return at 0x20a2f.
+The test catches moving that comparison before those writes.
+
+Falsification: changing only case 6's expected t to poison caused
+`FAIL boxray contract case=6 return/record/canary mismatch` in
+build/r6-contract-mut.log. Restoring the expectation gives eight cases,
+zero failures. This is a falsified oracle-contract assumption, NOT a
+candidate mutation test; no candidate wrapper has been implemented.
+
+Independent stack review agrees with the capture. Let B be ESP after
+sub esp,0x30 and push esi. Args at B+38/3c/40/44/48 are packed ray,
+maximum float, unread dword, flags (mask 0x04), output. The six kernel
+pushes resolve to (negative dims, positive dims, local origin, local
+direction, coord, t); t reuses the arg1 slot B+38. The caller pops 0x18,
+wrapper returns with ret 0x14. Under masked FP exceptions the
+`test ah,0x41` gate also accepts unordered comparison; that NaN arm and
+non-identity numerical fidelity are not established by these eight cases.
+Kernel declaration: Physics/include/NxIntersectionSegmentBox.h:24;
+implementation: Physics/src/Geometry.cpp:447. No guessed prototype is
+needed. The unused provisional candidate declaration was removed.
+
+This review also corrects 3z20/3z21 above: the 0x20750 extent/encoding,
+001279's phantom dependency, inverted zero-debug-guard branch, and the
+unsupported assertion that an unexecuted candidate reached a kernel with
+bad stack height. Preserving an incorrect narrative is not evidence.
 
 ## 6. What this task did not do
 
