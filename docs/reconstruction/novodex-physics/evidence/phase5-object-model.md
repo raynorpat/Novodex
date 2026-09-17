@@ -2267,6 +2267,17 @@ General 000833 is NOT implemented or claimed closed. Independent Capstone
 review confirmed the centered formula and final stores, and identified
 asymmetric square rounding for arbitrary floats not yet reproduced here.
 
+Round 18 (3z34) adds a fourth pose: a proper 30-degree rotation about z
+plus the general translation (2,-3,4), giving the combined non-identity
+rotation + non-axis translation case the round-15 review flagged as absent.
+All 13 words and both returns still agree byte-exactly across the 8 low
+masks and both densities -- the box-mass pose arm reads the rotation
+through nxMassFrameFoldPayload's SYMMETRIC-matrix access, and both the
+oracle and the candidate degrade an asymmetric rotation identically, so
+the differential stays green (boxslot4 cases 48 -> 64). This pins that the
+pose arm's transpose/association is correct even when the input is not a
+valid symmetric tensor.
+
 The 48 cases cover dimensions (1,2,3), densities 1/2, low flag masks 0..7,
 and identity/cyclic/translated (2,-3,4) third poses. Oracle and candidate
 construct separate objects; the candidate is called directly, never via an
