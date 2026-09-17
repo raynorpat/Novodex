@@ -1817,6 +1817,33 @@ stays 111 (both closures are phase-2/3 rows). The vtables RED remains
 byte-pinned per 3z18; next slate: 001305 -> 001279 -> 000945, then the
 BOX table can carry its first real dispatch.
 
+## 3z20. Mapping correction: 0x00020750 is phys_fn_000943 (139 B, dynamically_gated), not phys_fn_000947
+
+Aiming at "BOX slot 4" this round, the ctor-comment assumption ("slot 4 =
+phys_fn_000947 at 0x20750, 48 bytes") was checked against the census
+before driving and FAILED: the inventory row at 0x20750 is
+**phys_fn_000943, 139 bytes, phase 3, state `dynamically_gated`**;
+phys_fn_000947 is the 39-byte wrapper at 0x20850; the merged run at
+0x106a58 maps BOX slot 4 to phys_fn_000947@0x20850 (run index 28) and the
+ctor's slot-4 comment is off by one function. The transform decode read
+from 0x20750 (`out = rot0*(dims o float(arg)) + t`, three fild ints,
+row-major rotation, ret 0x10) belongs to **phys_fn_000943** and is
+recorded here for its owner: the 48 bytes 0x20750..0x207d7 sit inside
+phys_fn_000943's 139-byte body (0x20750..0x207da), and slot 4's row
+`ret 0x10` at 0x207d8 (`83 c2 10 00`) is the tail of that body — slot 4
+and 0x20750 are the same code reached through one inventory row, not two.
+
+Consequences: the mis-attributed transcription was reverted BEFORE any
+drive (tree verified byte-identical to HEAD; build green; addthunk family
+green), so no false registration exists. `dynamically_gated` is a real
+census state (115 rows) — Phase 3 rows whose bodies decode but whose
+drives wait on runtime gates; phys_fn_000943 stays exactly there. The
+leaf-first path to BOX slot 3 is unchanged: phys_fn_001305 (685 B, both
+guard constants read 0.0 from the shipped image, so both debug-render
+blocks execute) then phys_fn_001279 (whose callees 001955/001945 are
+still discovered), then slot 3 itself; slot 4's callee (phys_fn_000849)
+is already reconstructed.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
