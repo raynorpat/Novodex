@@ -2924,7 +2924,106 @@ int wmain(int argc, wchar_t** argv)
 	}
 
 	// -----------------------------------------------------------------------
-	// BOX slot 4, phys_fn_000849: the compute-mass row over three
+	// Actual BOX slot 4, phys_fn_000947: distinct from its mass helper.
+	// Separate objects prevent accidental oracle dispatch on candidate side.
+	{
+	typedef bool (__thiscall* Slot4MassFn)(void*, void*, float, unsigned);
+	Slot4MassFn oracleSlot4 = reinterpret_cast<Slot4MassFn>(base + 0x20850);
+	typedef void (__thiscall* BoxCtorMassFn)(void*, void*, unsigned);
+	BoxCtorMassFn oracleCtor = reinterpret_cast<BoxCtorMassFn>(base + 0x21870);
+	unsigned char oracleShape[0x228], candidateShape[0x228];
+	memset(oracleShape, 0xcd, sizeof(oracleShape));
+	memset(candidateShape, 0xcd, sizeof(candidateShape));
+	oracleCtor(oracleShape, 0, 0);
+	BoxShape& candidate = *new(candidateShape) BoxShape(0, 0);
+	const float dims[3] = { 1, 2, 3 };
+	const float poses[3][12] = {
+		{ 1,0,0, 0,1,0, 0,0,1, 0,0,0 },
+		{ 0,1,0, 0,0,1, 1,0,0, 0,0,0 },
+		{ 1,0,0, 0,1,0, 0,0,1, 2,-3,4 } };
+	unsigned caseCount = 0;
+	for(unsigned pose = 0; pose < 3; ++pose)
+	for(unsigned low = 0; low < 8; ++low)
+	for(unsigned densityCase = 0; densityCase < 2; ++densityCase)
+		{
+		memcpy(oracleShape + 0xe4, dims, sizeof(dims));
+		memcpy(candidateShape + 0xe4, dims, sizeof(dims));
+		memcpy(oracleShape + 0x6c, poses[pose], sizeof(poses[pose]));
+		memcpy(candidateShape + 0x6c, poses[pose], sizeof(poses[pose]));
+		const unsigned short flags = static_cast<unsigned short>(8 | low);
+		memcpy(oracleShape + 0xde, &flags, 2);
+		memcpy(candidateShape + 0xde, &flags, 2);
+		MassFrame oFrame, cFrame;
+		memset(&oFrame, 0, sizeof(oFrame));
+		memset(&cFrame, 0, sizeof(cFrame));
+		// Nonzero destination catches overwrite-instead-of-merge and
+		// destructive flag-suppression paths that zero-filled fixtures hide.
+		oFrame.mInertia[0] = cFrame.mInertia[0] = 2.0f;
+		oFrame.mInertia[4] = cFrame.mInertia[4] = 3.0f;
+		oFrame.mInertia[8] = cFrame.mInertia[8] = 5.0f;
+		oFrame.mMass = cFrame.mMass = 1.0f;
+		MassFrame untouched = oFrame;
+		const float density = densityCase ? 2.0f : 1.0f;
+		const bool oRet = oracleSlot4(oracleShape, &oFrame, density, 0xdeadbeefu);
+		const bool cRet = candidate.nxBoxAccumulateMass(&cFrame, density, 0xdeadbeefu);
+		if(!oRet || !cRet || memcmp(&oFrame, &cFrame, sizeof(oFrame)) != 0
+			|| (low != 0 && memcmp(&oFrame, &untouched, sizeof(oFrame)) != 0))
+			{
+			fprintf(stderr, "FAIL boxslot4 pose=%u low=%u density=%u returns=%u/%u\n",
+				pose, low, densityCase, oRet, cRet);
+			unsigned ow[13], cw[13];
+			memcpy(ow, &oFrame, sizeof(ow)); memcpy(cw, &cFrame, sizeof(cw));
+			for(unsigned i=0; i<13; ++i)
+				if(ow[i] != cw[i]) fprintf(stderr, " mass[%u] oracle=%08x candidate=%08x\n", i, ow[i], cw[i]);
+			return 1;
+			}
+		++caseCount;
+		}
+	printf("boxslot4 candidate cases=%u failures=0 provisional=1\n", caseCount);
+	// Isolate the merge precision regression from all wrapper/pose code.
+	// 1c695 stores reciprocal 1/(1+96) to float before center scaling.
+	MassFrame incoming, oracleMerge, candidateMerge;
+	memset(&incoming, 0, sizeof(incoming));
+	memset(&oracleMerge, 0, sizeof(oracleMerge));
+	incoming.mMass = 96.0f;
+	incoming.mOffset.x = 2.0f; incoming.mOffset.y = -3.0f; incoming.mOffset.z = 4.0f;
+	oracleMerge.mMass = 1.0f;
+	candidateMerge = oracleMerge;
+	typedef void (__thiscall* MergeRegressionFn)(void*, const void*);
+	(reinterpret_cast<MergeRegressionFn>(base + 0x1c630))(&oracleMerge, &incoming);
+	candidateMerge.nxMassFrameMerge(incoming);
+	if(memcmp(&oracleMerge, &candidateMerge, sizeof(oracleMerge)) != 0)
+		{
+		fprintf(stderr, "FAIL massmerge reciprocal-store regression\n");
+		return 1;
+		}
+	printf("massmerge reciprocal-store regression agree words=13\n");
+	for(unsigned n = 1; n <= 16; ++n)
+		{
+		memset(&incoming, 0, sizeof(incoming));
+		memset(&oracleMerge, 0, sizeof(oracleMerge));
+		incoming.mMass = 0.137f * n;
+		oracleMerge.mMass = 1.019f + n * 0.073f;
+		incoming.mOffset.x = 2.031f * n;
+		incoming.mOffset.y = -3.071f / n;
+		incoming.mOffset.z = 0.119f + n;
+		oracleMerge.mOffset.x = -1.023f / n;
+		oracleMerge.mOffset.y = 0.017f * n;
+		oracleMerge.mOffset.z = -4.073f * n;
+		candidateMerge = oracleMerge;
+		(reinterpret_cast<MergeRegressionFn>(base + 0x1c630))(&oracleMerge, &incoming);
+		candidateMerge.nxMassFrameMerge(incoming);
+		if(memcmp(&oracleMerge, &candidateMerge, sizeof(oracleMerge)) != 0)
+			{
+			fprintf(stderr, "FAIL massmerge fractional case=%u\n", n);
+			return 1;
+			}
+		}
+	printf("massmerge fractional centers agree cases=16 words=13\n");
+	}
+
+	// -----------------------------------------------------------------------
+	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
 	// exact 1.0f sentinel -- folded over all thirteen words of each frame.
 	// Extra payload pointer stays null (parallel-axis pair undecoded).
