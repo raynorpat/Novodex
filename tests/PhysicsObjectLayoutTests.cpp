@@ -1728,9 +1728,9 @@ int wmain(int argc, wchar_t** argv)
 			capCases[c].flags, recC);
 		unsigned char recO[0x30];
 		memset(recO, 0xcd, sizeof(recO));
-		boxRay5Cap(shapeCap, capCases[c].ray, capCases[c].a2,
+		void* okO = boxRay5Cap(shapeCap, capCases[c].ray, capCases[c].a2,
 			capCases[c].a3, capCases[c].flags, recO);
-		if(okC != (recO[0] == 0xcd ? nullptr : shapeCap)
+		if(okC != okO
 			|| memcmp(recC, recO, sizeof(recC)) != 0)
 			{
 			fprintf(stderr, "FAIL boxray candidate case=%u disagrees\n", c);
@@ -1738,6 +1738,59 @@ int wmain(int argc, wchar_t** argv)
 			}
 		}
 	printf("boxray candidate8 mode=provisional\n");
+
+	// Six faces under identity, translation, and a cyclic rotation. Compare
+	// actual return pointers, every output word, and canaries on both sides.
+	// Direct member invocation tests candidate code on an oracle-layout fixture;
+	// it does not establish candidate construction or virtual dispatch.
+	unsigned sweepFailures = 0, sweepCases = 0;
+	for(unsigned pose = 0; pose < 4; ++pose)
+		{
+		float rotation[9] = { 0 };
+		for(unsigned row = 0; row < 3; ++row)
+			rotation[row * 3 + (row + (pose == 2 ? 1 : 0)) % 3] = 1.0f;
+		if(pose == 3)
+			{
+			const float quarterTurn[9] = { 0, -1, 0, 1, 0, 0, 0, 0, 1 };
+			memcpy(rotation, quarterTurn, sizeof(rotation));
+			}
+		float translation[3] = { 0, 0, 0 };
+		if(pose) { translation[0] = 3; translation[1] = -5; translation[2] = 7; }
+		memcpy(shapeCap + 0x0c, rotation, sizeof(rotation));
+		memcpy(shapeCap + 0x30, translation, sizeof(translation));
+		for(unsigned face = 0; face < 6; ++face)
+		for(unsigned distance = 0; distance < 3; ++distance)
+			{
+			float ray[6];
+			const unsigned axis = face / 2;
+			const float sign = (face & 1) ? -1.0f : 1.0f;
+			for(unsigned row = 0; row < 3; ++row)
+				{
+				ray[row] = translation[row] + rotation[row * 3 + axis] * sign * 2;
+				ray[3 + row] = -rotation[row * 3 + axis] * sign;
+				}
+			float maximum = distance == 0 ? 10.0f : 0.5f;
+			if(distance == 2) { const unsigned nan = 0x7fc00000u; memcpy(&maximum, &nan, 4); }
+			unsigned candidate[14], oracle[14];
+			memset(candidate, 0xcd, sizeof(candidate));
+			memset(oracle, 0xcd, sizeof(oracle));
+			void* retO = boxRay5Cap(shapeCap, ray, maximum, 111.0f, 4, oracle + 1);
+			void* retC = shapeRef.nxBoxRaycast(ray, maximum, 0, 4, candidate + 1);
+			bool match = retO == retC && memcmp(candidate, oracle, sizeof(candidate)) == 0
+				&& candidate[0] == 0xcdcdcdcdu && candidate[13] == 0xcdcdcdcdu;
+			++sweepCases;
+			if(!match)
+				{
+				++sweepFailures;
+				fprintf(stderr, "boxray sweep mismatch pose=%u face=%u distance=%u returns=%u/%u\n",
+					pose, face, distance, retO != 0, retC != 0);
+				for(unsigned w = 0; w < 14; ++w)
+					if(candidate[w] != oracle[w]) fprintf(stderr, " word=%u oracle=%08x candidate=%08x\n", w, oracle[w], candidate[w]);
+				}
+			}
+		}
+	printf("boxray sweep cases=%u failures=%u mode=provisional\n", sweepCases, sweepFailures);
+	if(sweepFailures) return nxFail("boxray six-face differential mismatch");
 	}
 
 	// -----------------------------------------------------------------------
