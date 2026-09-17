@@ -2304,6 +2304,39 @@ changes. Slot 4 stays `discovered`: general poses/dimensions, FP
 exceptional/rounding, aliasing, and provenance checks through a real
 candidate table remain open.
 
+## 3z32. Slot-5 raycast independently re-decoded; implementation cross-checked
+
+Round 15 closed the slot-4 mass path. Round 16 re-decoded the BOX slot-5
+raycast (phys_fn_000949 @0x20880, 663 B, 202 ins) from scratch across
+capstone + ghidra (`FUN_10020880`) + the `NxRayAABBIntersect2` kernel, to
+double-check the provisional `BoxShape::nxBoxRaycast` already in the tree.
+
+ABI confirmed: __thiscall, ECX receiver + 5 stack DWORDs (two `ret 0x14`):
+`(world ray float*, maxDistance float, unused, flags byte, out-record*)`.
+Stages: S1/S3 transform origin + negated dims into box-canonical space via
+R^T; S2 transform direction; S4 `NxRayAABBIntersect2(&minCorner, dims,
+localOrigin, localDir, coord, t)` returning 0/1/2/3 hit axis; S5 world hit
+point into record[1..3]; S6 `param_5[8]=t` then gate `HIT iff t <=
+maxDistance` (x87 `fcomp`, `test ah,0x41`, `jne` to hit continuation --
+an early description inverted this and the correction holds); S7 baseline
+record: `rec[0]=[this+0x9c]` plane/box id, `rec[7]=rec[9]=rec[10]=0`,
+`rec[11]=0x13`; if `flags&4` S8 sets `rec[11]=0x17`, writes the signed
+normal (±1 on the dominant axis, `fild`-to-`fstp m32` sign) into
+rec[4..6]; S9 returns `this`. Float stores at 0x20895/208e6/20960/209d4/
+20a17/20a1a/20aac/20b08 etc.
+
+The existing `nxBoxRaycast` matches this contract exactly (R^T per column,
+kernel, `if(t > maxDistance) return nullptr` == the corrected gate, record
+layout, optional normal arm). The eight-case oracle contract (boxray
+contract) and the 72-case six-face differential (4 poses x 6 faces x 3
+distances incl. NaN) in the harness pass. This independent decode therefore
+does NOT change the implementation: it pins the ABI and the corrected
+t-gate direction as evidence. phys_fn_000949 STAYS `discovered` per the
+policy that the vtable family closes only as a unit once the actor tables
+(Task 4) and every final's rows are differential-closed; the provisional
+label on boxray candidate8 / six-face sweep is retained. No census,
+registration, or gate-policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
