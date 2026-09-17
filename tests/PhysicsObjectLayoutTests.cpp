@@ -1863,9 +1863,10 @@ int wmain(int argc, wchar_t** argv)
 		return nxFail("rendercap shipped guards are not zero");
 	const unsigned one = 0x3f800000u;
 	const unsigned colors[3] = { 0xcf0000u, 0xcf00u, 0xcfu };
-	for(unsigned mask = 0; mask < 5; ++mask)
+	for(unsigned mask = 0; mask < 6; ++mask)
 		{
-		unsigned bits[3] = { (mask & 1) ? one : 0u, (mask & 2) ? one : 0u, one };
+		unsigned bits[3] = { (mask & 1) ? one : 0u, (mask & 2) ? one : 0u,
+			mask == 5 ? 0x40000000u : one };
 		if(mask == 4) bits[0] = bits[1] = 0x80000000u;
 		DWORD oldProt = 0, ignored = 0;
 		if(!VirtualProtect(wbase + 0x123b4c, 0x90, PAGE_READWRITE, &oldProt))
@@ -1897,12 +1898,21 @@ int wmain(int argc, wchar_t** argv)
 		if(!VirtualProtect(wbase + 0x123b4c, 0x90, oldProt, &ignored))
 			return nxFail("cannot restore guard page protection");
 		// Lens 1: the ORACLE contract, over the captured oracle bytes.
+		// The mask-5 endpoint literal derives K = scale * guardA = 2.0
+		// (0x25985..0x2598e, single scaling), established by the oracle
+		// itself in r10-scale.log; scale-1 masks keep the byte-identical
+		// literals verified in 3z26.
+		const unsigned kBits = 0x40000000u;	// 2.0f bits
 		bool matches = oN20 == ((mask & 1) ? 3u : 0u)
 			&& oN38 == ((mask & 2) ? 3u : 0u);
 		for(unsigned i = 0; i < oN20 && i < 8; ++i)
 			{
 			unsigned expected[7] = { 0, 0, 0, 0, 0, 0, 0 };
-			if(i < 3) { expected[3 + i] = one; expected[6] = colors[i]; }
+			if(i < 3)
+				{
+				expected[3 + i] = mask == 5 ? kBits : one;
+				expected[6] = colors[i];
+				}
 			matches = matches && memcmp(expected, oLine[i], sizeof(expected)) == 0;
 			}
 		for(unsigned i = 0; i < oN38 && i < 8; ++i)
@@ -1920,6 +1930,7 @@ int wmain(int argc, wchar_t** argv)
 			{
 			fprintf(stderr, "FAIL rendercap contract mask=%u n20=%u n38=%u\n",
 				mask, oN20, oN38);
+			// Row dwords, not bytes: oLine rows are 28 bytes of 7 dwords.
 			for(unsigned i = 0; i < oN20 && i < 8; ++i)
 				fprintf(stderr, " oracle line %u: %08x %08x %08x %08x %08x %08x c=%08x\n",
 					i, oLine[i][0], oLine[i][1], oLine[i][2],
@@ -1949,7 +1960,7 @@ int wmain(int argc, wchar_t** argv)
 		printf("rendercap candidate mask=%u agree n20=%u n38=%u\n",
 			mask, cN20, cN38);
 		}
-	printf("rendercap candidate masks=5 agree\n");
+	printf("rendercap candidate masks=6 agree\n");
 	}
 
 	// -----------------------------------------------------------------------
