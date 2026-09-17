@@ -1669,6 +1669,41 @@ shape/actor classes). Census: ten facade rows stand at `reconstructed`;
 slots 9/10 (`phys_fn_000957/000959`) remain `discovered` until their
 listings are transcribed and falsified.
 
+## 3z16. Slate 11 extended: the virtual slot-1 wrapper closes
+
+phys_fn_002379 (0x5b860, 14 bytes) now has its dispatch drive and closes
+bitwise. The disassembly names the whole row: `mov ecx,[esp+4]` (the
+argument arrives on the stack, `__stdcall`, `ret 4`), `mov eax,[ecx]` (the
+receiver's vtable), `call [eax+4]` (slot 1, receiver as this), `xor
+eax,eax` (the callee's return is discarded), `ret 4`. The transcription had
+existed since 3z14; what was missing was any drive — the row closed on
+reading, not on measurement.
+
+The drive plants two stack receivers with distinct two-slot vtables — slot 1
+sentinels that differ in both tag and return value, one returning nonzero,
+one returning zero — and runs four drives in alternating order. Folded per
+drive: the wrapper's return (0), slot-1 calls (exactly 1), slot-0 calls (0 —
+distinguishing slot 1 from slot 0), receiver identity, the sentinel's own
+tag, and two no-side-effect predicates over the receiver block and the
+vtables. Oracle and candidate fold to the same digest (05167dcd) over all
+28 words.
+
+**The mutation check.** Pointing the transcription at slot 0 instead of
+slot 1 produced 12 mismatches and exit 1 (`slot1wrapper candidate
+failures=12 mismatches=12 digest=60dd4c05`) — wrong slot, wrong receiver
+identity, wrong tag, and the wrapper's return still matching, which is why
+the call-count and identity folds matter rather than return-value agreement
+alone. Restored, the row is green again.
+
+**Census.** miscsm2/slate11 digests re-pinned; oracle digest re-pinned
+8a423adf -> 0395afa0 (+2 registrations, coverage floor 120 -> 122).
+phys_fn_002379 closes reconstructed; Phase 5 reconstructed count rises to
+107. One transcription note: the registration's first commit omitted the
+`slot1wrapper=1` key from the harness's own `layout coverage` line, which
+the phase gate caught on the next run (0 occurrences against its
+registration) — the count guard doing its job on a real defect, not only
+in its test suite.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
