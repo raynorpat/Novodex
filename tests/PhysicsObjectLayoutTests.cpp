@@ -1825,6 +1825,14 @@ int wmain(int argc, wchar_t** argv)
 	typedef void (__thiscall* NxDebugRenderFn)(void* self, void* renderer);
 	NxDebugRenderFn debugRender = (NxDebugRenderFn) (base + 0x00025960);
 
+	// Bind the candidate to the SAME live storage the drive mutates.
+	nxBindDebugRenderGuards(
+		reinterpret_cast<float*>(const_cast<unsigned char*>(base) + 0x123bc8),
+		reinterpret_cast<float*>(const_cast<unsigned char*>(base) + 0x123bd8),
+		reinterpret_cast<float*>(const_cast<unsigned char*>(base) + 0x123b4c),
+		reinterpret_cast<float*>(const_cast<unsigned char*>(base) + 0x1041f0));
+	BoxShape& shapeRender = *reinterpret_cast<BoxShape*>(shapeR);
+
 	// Row 1: shipped guards (0.0) -- the poisoned renderer object proves
 	// the no-op: any vtable dispatch faults on the 0xcd fill.
 	gRenderN20 = 0;
@@ -1867,18 +1875,37 @@ int wmain(int argc, wchar_t** argv)
 		memset(gRenderLine, 0xcd, sizeof(gRenderLine));
 		memset(gRenderCircle, 0xcd, sizeof(gRenderCircle));
 		debugRender(shapeR, renderer);
+		// Capture the ORACLE output before anything can overwrite it.
+		const unsigned oN20 = gRenderN20, oN38 = gRenderN38;
+		unsigned char oLine[8][7 * 4], oCircle[8][16 * 4];
+		memcpy(oLine, gRenderLine, sizeof(oLine));
+		memcpy(oCircle, gRenderCircle, sizeof(oCircle));
+		// Candidate differential inside the SAME mutated window: the
+		// candidate reads the bound live guards, so it must run before the
+		// restore below. Unconditional call; each block self-gates.
+		unsigned cN20 = 0, cN38 = 0;
+		unsigned char cLine[8][7 * 4], cCircle[8][16 * 4];
+		memset(cLine, 0xcd, sizeof(cLine));
+		memset(cCircle, 0xcd, sizeof(cCircle));
+		gRenderN20 = gRenderN38 = 0;
+		shapeRender.nxDebugRender(renderer);
+		cN20 = gRenderN20;
+		cN38 = gRenderN38;
+		memcpy(cLine, gRenderLine, sizeof(cLine));
+		memcpy(cCircle, gRenderCircle, sizeof(cCircle));
 		for(unsigned i = 0; i < 3; ++i) memcpy(wbase + guardRvas[i], saved + i, 4);
 		if(!VirtualProtect(wbase + 0x123b4c, 0x90, oldProt, &ignored))
 			return nxFail("cannot restore guard page protection");
-		bool matches = gRenderN20 == ((mask & 1) ? 3u : 0u)
-			&& gRenderN38 == ((mask & 2) ? 3u : 0u);
-		for(unsigned i = 0; i < gRenderN20 && i < 8; ++i)
+		// Lens 1: the ORACLE contract, over the captured oracle bytes.
+		bool matches = oN20 == ((mask & 1) ? 3u : 0u)
+			&& oN38 == ((mask & 2) ? 3u : 0u);
+		for(unsigned i = 0; i < oN20 && i < 8; ++i)
 			{
 			unsigned expected[7] = { 0, 0, 0, 0, 0, 0, 0 };
 			if(i < 3) { expected[3 + i] = one; expected[6] = colors[i]; }
-			matches = matches && memcmp(expected, gRenderLine[i], sizeof(expected)) == 0;
+			matches = matches && memcmp(expected, oLine[i], sizeof(expected)) == 0;
 			}
-		for(unsigned i = 0; i < gRenderN38 && i < 8; ++i)
+		for(unsigned i = 0; i < oN38 && i < 8; ++i)
 			{
 			unsigned expected[16] = { 0x14 };
 			// Cyclic columns: identity, (y,z,x), (z,x,y), then zero center.
@@ -1887,17 +1914,42 @@ int wmain(int argc, wchar_t** argv)
 					expected[1 + row * 3 + col] = row == (col + i) % 3 ? one : 0u;
 			expected[13] = 0xffff00ffu;
 			expected[14] = 0x3fddb3d7u; // sqrt(1+1+1), slot-10 fourth word
-			matches = matches && memcmp(expected, gRenderCircle[i], sizeof(expected)) == 0;
+			matches = matches && memcmp(expected, oCircle[i], sizeof(expected)) == 0;
 			}
 		if(!matches)
 			{
 			fprintf(stderr, "FAIL rendercap contract mask=%u n20=%u n38=%u\n",
-				mask, gRenderN20, gRenderN38);
+				mask, oN20, oN38);
+			for(unsigned i = 0; i < oN20 && i < 8; ++i)
+				fprintf(stderr, " oracle line %u: %08x %08x %08x %08x %08x %08x c=%08x\n",
+					i, oLine[i][0], oLine[i][1], oLine[i][2],
+					oLine[i][3], oLine[i][4], oLine[i][5], oLine[i][6]);
 			return 1;
 			}
 		printf("rendercap contract mask=%u n20=%u n38=%u payloads=match\n",
-			mask, gRenderN20, gRenderN38);
+			mask, oN20, oN38);
+
+		// Lens 2: candidate-vs-oracle, byte-exact on counts and payloads.
+		bool candMatches = cN20 == oN20 && cN38 == oN38;
+		if(candMatches)
+			{
+			for(unsigned i = 0; i < oN20 && i < 8; ++i)
+				candMatches = candMatches
+					&& memcmp(oLine[i], cLine[i], sizeof(oLine[i])) == 0;
+			for(unsigned i = 0; i < oN38 && i < 8; ++i)
+				candMatches = candMatches
+					&& memcmp(oCircle[i], cCircle[i], sizeof(oCircle[i])) == 0;
+			}
+		if(!candMatches)
+			{
+			fprintf(stderr, "FAIL rendercap candidate mask=%u c(%u,%u) expected(%u,%u)\n",
+				mask, cN20, cN38, oN20, oN38);
+			return 1;
+			}
+		printf("rendercap candidate mask=%u agree n20=%u n38=%u\n",
+			mask, cN20, cN38);
 		}
+	printf("rendercap candidate masks=5 agree\n");
 	}
 
 	// -----------------------------------------------------------------------
