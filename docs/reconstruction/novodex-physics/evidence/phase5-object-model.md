@@ -2337,6 +2337,30 @@ policy that the vtable family closes only as a unit once the actor tables
 label on boxray candidate8 / six-face sweep is retained. No census,
 registration, or gate-policy change.
 
+## 3z33. Slot-7 sweep scoped as the genuine open row; concave decoding begun
+
+Round 16 identifies slot 7 (phys_fn_000951 @0x20b20, 507 B, 153 ins) as the
+one BOX body with NO candidate implementation: BoxShape has no
+`nxBoxSweep` (only a stale ctor comment names the sweep entry). The helper
+it calls, 0x00038050, is phys_fn_001730 (Phase 2, `discovered`, shared by
+callers) -- a 6-arg __cdecl bounds fold that seeds min=FLT_MAX,
+max=-FLT_MAX (the `0x7f7fffff`/`0xff7fffff` stores at its head) and returns
+-1 on no-overlap. Against the recursion expectations, 0x00038050 is NOT the
+same helper the screenshot ASCII decoded; it is its own row, and slot 7's
+only callee.
+
+Slot-7 frame (body ESP = entry - 0xac): negated-dims block at esp+0x58..0x6c
+(fchs of the three dims from this+0xe4), the third-pose translation copied
+to esp+0x74, the 3x3 pose rotation rep-to esp+0x1c..0x3f; the constant
+0x1010687c == -1.0f negates the translation three times (0x20b8b/95/9f);
+the store map is fstp sites 0x20b91/0x20bbd/0x20bd9/0x20c25/0x20c4d/0x20c63/
+0x20c95/0x20cb1/0x20cdd. The 0x20cc9..0x20ce1 push block passes six AABB
+corners to 001730; `cmp eax,-1; je 0x20d10` then write `fabs(esp+0xc)` to
+record `[e+8]` (hit, `mov al,1`) or `xor al,al` (miss). Both paths `ret 8`
+= ECX receiver + 2 stack DWORDs. A faithful transcription of the swept-
+AABB extent accumulation is in progress; it is NOT yet implemented or
+driven, and phys_fn_000951 STAYS `discovered`. No census or gate change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
