@@ -2410,15 +2410,23 @@ concluded with the same contract. The swept-AABB row (phys_fn_000951
   at 0x20cf6/0x20cfa esp=B+8 (six arg pushes reclaimed by `add esp,0x18`
   + the two prologue `pop edi/esi`), so `[esp+0xc]`=B+0x14 and
   `[esp+0xa8]`=B+0xb0=arg1.
-- The helper 001730 is itself ~137 instructions (0x38050..0x381b7): a
-  swept-AABB overlap fold seeded to min=+FLT_MAX-derived epsilon
-  (1.1920929e-07, [0x10107a0c]) / max=-1.1920929e-07 ([0x10107a10]) that
-  returns the hit axis index or, via `or eax,-1`, -1 on miss. It is a
-  Phase-2 discovered row NOT yet transcribed or driven: slot-7 actually
-  closes only together with 001730, so phys_fn_000951 STAYS `discovered`.
-  This section pins the two-frame corrections and the six-arg contract
-  that the upcoming transcription + differential will hold; no
-  implementation, census, or gate change this round.
+- The helper 001730 is itself ~118 instructions (0x38050..0x381b7): a
+  swept-AABB/slab-fold overlap predicate. Its six cdecl args are POINTERS
+  to float slots in the sweep's frame (the sweep passes &B+0x78 etc.), not
+  bare scalars -- confirmed by 0x38069/0x3806f storing into their pointees:
+  `mov [eax],0xff7fffff` (=-FLT_MAX) into arg4 (&B+0x18) and
+  `mov [ecx],0x7f7fffff` (=+FLT_MAX) into the ecx pointee, then the
+  register deltas `sub ebx/ebp/edx,ecx` and the `rep`-style `cmp esi,3; jl`
+  loop iterate the frame's float slots as an AABB-array, folding a
+  parametric overlap with the epsilon tests `fcomp [0x10107a0c]`
+  (=+1.1920929e-07) / `[0x10107a10]` (=-1.1920929e-07) and the `1.0f /
+  [ecx]` division at 0x380df. It returns the hit axis index (nonzero) or,
+  via `or eax,0xffffffff`, -1 on miss, which slot-7's `cmp eax,-1; je`
+  consumes. It is a Phase-2 discovered row NOT yet transcribed or driven:
+  slot-7 actually closes only together with 001730, so phys_fn_000951
+  STAYS `discovered`. The exact per-axis formula is being finalized for the
+  transcription + differential; no implementation, census, or gate change
+  this round.
 
 ## 6. What this task did not do
 
