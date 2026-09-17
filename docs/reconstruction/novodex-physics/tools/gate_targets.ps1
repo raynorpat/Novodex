@@ -705,12 +705,16 @@ $NxRequiredCoverageLines = [ordered] @{
         # thunk, and the CRT-free dtor; all on stack blocks with flags=0
         # (no allocator interaction).
         'slate11 row=oracle digest=2a145f64',
+        # phys_fn_002379: virtual slot-1 wrapper -- four drives over two
+        # receivers with distinct vtables: slot-1 dispatch (slot 0 silent),
+        # receiver identity, exactly-once, discarded callback result.
+        'slot1wrapper row=oracle cases=4 failures=0 digest=05167dcd',
         'ownctor row=oracle d4=00000003 sent_ok=1 mirror_ok=1 shp_ok=1 digest=641beb67',
         'material row=template flags=00000000 digest=527814f5',
         'capdtor row=phys_fn_001014 digest=7a376673',
         'capaabb row=phys_fn_001004 minmax=80000000.80000000.80000000.00000000.00000000.00000000',
-        'layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1',
-        'layout oracle digest=8a423adf',
+        'layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1 slot1wrapper=1',
+        'layout oracle digest=0395afa0',
         'hull support candidate ok=1 min_bits=c19c0000 max_bits=4eada5a5',
         'hull sharedhook candidate ok=1 stable=1',
         'basevt candidate ok=1 ret4=0 ret5=00000000 ret7=0',
@@ -757,6 +761,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'miscsm candidate ok=1 digest=9460eb64'
         'miscsm2 candidate ok=1 digest=c4bc7155'
         'slate11 candidate ok=1 digest=2a145f64'
+        'slot1wrapper candidate cases=4 failures=0 mismatches=0 digest=05167dcd'
     )
 
     # The vendored third-party differential. Phase 4 vendors qhull 2003.1 and
@@ -914,7 +919,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 100  # 34 for NxPhysicsAssetTests, 66 for NxPhysicsThirdPartyTests
-    '5' = 120  # was 118: +2 for the slate11 family (row + candidate drive)
+    '5' = 122  # was 120: +2 for the slot1wrapper family (row + candidate drive)
                # (RED on purpose: vtables family open)
     '6' = 0
     '7' = 0

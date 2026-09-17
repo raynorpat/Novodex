@@ -42885,11 +42885,11 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/890",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7421",
-      "static_proof": null,
+      "static_proof": "virtual slot-1 wrapper: loads the argument from [esp+4], reads the receiver's vtable, calls [vtable+4] (slot 1) with the receiver as this, discards the callee's return, and returns 0; ret 4, __stdcall",
       "dynamic_proof": null,
       "notes": ""
     },
