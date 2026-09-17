@@ -95,41 +95,36 @@ static void nxGuardedBoxDtor(NxBoxDtorFn fn, void* object, unsigned flags)
 static unsigned gFaultCode;
 static unsigned gFaultAddr;
 
-// Capture buffers for the phys_fn_001305 oracle probe (a local class may
-// not hold static data members, so they live at file scope beside the
-// other harness state).
-static void* gRenderP20[8];
-static unsigned gRenderC20[8];
-static unsigned gRenderD20[8];
+// phys_fn_001305 capture. Copy borrowed stack payloads DURING each call;
+// storing their addresses cannot preserve the data after the callback.
+static unsigned gRenderLine[8][7]; // start xyz, end xyz, color
+static unsigned gRenderCircle[8][16]; // count, pose[12], color, radius bits, reserved
 static unsigned gRenderN20;
-static void* gRenderP38[8];
-static unsigned gRenderC38[8];
-static unsigned gRenderD38[8];
 static unsigned gRenderN38;
-static void __fastcall nxRenderOn20(void*, void*, const unsigned* points,
-	unsigned color, unsigned pad)
+static void __fastcall nxRenderOn20(void*, void*, const unsigned* start,
+	const unsigned* end, unsigned color)
 	{
 	if(gRenderN20 < 8)
 		{
-		gRenderP20[gRenderN20] = const_cast<unsigned*>(points);
-		gRenderC20[gRenderN20] = color;
-		gRenderD20[gRenderN20] = pad;
+		memcpy(gRenderLine[gRenderN20], start, 12);
+		memcpy(gRenderLine[gRenderN20] + 3, end, 12);
+		gRenderLine[gRenderN20][6] = color;
 		}
 	++gRenderN20;
 	}
-// The +0x38 row receives FIVE stack dwords (0x25b02..0x25b39 push: 0,
-// buffer2, 0xffff00ff, buffer, 0x14) and must pop them all -- the wrapper
-// pops nothing after the call; a 4-arg fastcall left the stack imbalanced
-// and the process died on the security-cookie check (0xC0000409).
+// Five stack DWORDs, callee pops 20 bytes. Argument 4 is the raw radius
+// from shape slot 10's fourth result word, NOT a second buffer pointer.
 static void __fastcall nxRenderOn38(void*, void*, unsigned count,
-	const unsigned* points, unsigned color, const unsigned* points2,
-	unsigned reserved)
+	const unsigned* pose, unsigned color, unsigned radiusBits, unsigned reserved)
 	{
 	if(gRenderN38 < 8)
 		{
-		gRenderP38[gRenderN38] = const_cast<unsigned*>(points);
-		gRenderC38[gRenderN38] = color;
-		gRenderD38[gRenderN38] = count;
+		unsigned* row = gRenderCircle[gRenderN38];
+		row[0] = count;
+		memcpy(row + 1, pose, 48);
+		row[13] = color;
+		row[14] = radiusBits;
+		row[15] = reserved;
 		}
 	++gRenderN38;
 	}
@@ -1777,48 +1772,79 @@ int wmain(int argc, wchar_t** argv)
 	typedef void (__thiscall* NxDebugRenderFn)(void* self, void* renderer);
 	NxDebugRenderFn debugRender = (NxDebugRenderFn) (base + 0x00025960);
 
-	// Row 1: shipped guards (0.0) -- the poisoned table proves no call.
+	// Row 1: shipped guards (0.0) -- the poisoned renderer object proves
+	// the no-op: any vtable dispatch faults on the 0xcd fill.
+	gRenderN20 = 0;
+	gRenderN38 = 0;
 	{
 	unsigned char recPoison[0x40];
 	memset(recPoison, 0xcd, sizeof(recPoison));
 	void* poisoned[16];
 	for(unsigned i = 0; i < 16; ++i)
-		poisoned[i] = recPoison;			// any call faults or corrupts
-	unsigned fpuBefore = 0;
-	__asm { fnstsw fpuBefore }
-	(void) fpuBefore;
+		poisoned[i] = recPoison;			// *[ *[obj] + 0x20 ] faults on call
 	debugRender(shapeR, poisoned);
-	printf("rendercap row1 guards-zero returned\n");
 	}
+	if(gRenderN20 != 0 || gRenderN38 != 0)
+		{
+		fprintf(stderr, "FAIL rendercap row1 guards-zero drew n20=%u n38=%u\n",
+			gRenderN20, gRenderN38);
+		return 1;
+		}
+	printf("rendercap row1 guards-zero calls=0\n");
 
-	// Row 2: guards 1.0, scale 1.0; restore after.
+	// Independently drive both guards, including negative-zero equality.
+	// All three globals share this page. Restore exact bits before assertions.
 	unsigned char* wbase = const_cast<unsigned char*>(base);
-	float savedA, savedB, savedS;
-	memcpy(&savedA, base + 0x123bc8, 4);
-	memcpy(&savedB, base + 0x123bd8, 4);
-	memcpy(&savedS, base + 0x123b4c, 4);
-	unsigned long oldProt = 0;
-	if(!VirtualProtect(wbase + 0x123b4c, 8, PAGE_READWRITE, &oldProt))
-		return nxFail("cannot unlock the guard constants");
-	const float kOne = 1.0f;
-	memcpy(wbase + 0x123bc8, &kOne, 4);
-	memcpy(wbase + 0x123bd8, &kOne, 4);
-	memcpy(wbase + 0x123b4c, &kOne, 4);
-	debugRender(shapeR, renderer);
-	memcpy(wbase + 0x123bc8, &savedA, 4);
-	memcpy(wbase + 0x123bd8, &savedB, 4);
-	memcpy(wbase + 0x123b4c, &savedS, 4);
-	VirtualProtect(wbase + 0x123b4c, 8, oldProt, &oldProt);
-
-	printf("rendercap row2 n20=%u n38=%u\n", gRenderN20, gRenderN38);
-	for(unsigned i = 0; i < gRenderN20 && i < 8; ++i)
-		printf("render20 rec=%u pts=%08x color=%08x pad=%u\n", i,
-			reinterpret_cast<unsigned>(gRenderP20[i]),
-			gRenderC20[i], gRenderD20[i]);
-	for(unsigned i = 0; i < gRenderN38 && i < 8; ++i)
-		printf("render38 rec=%u pts=%08x color=%08x count=%u\n", i,
-			reinterpret_cast<unsigned>(gRenderP38[i]),
-			gRenderC38[i], gRenderD38[i]);
+	unsigned saved[3];
+	const unsigned guardRvas[3] = { 0x123bc8, 0x123bd8, 0x123b4c };
+	for(unsigned i = 0; i < 3; ++i) memcpy(saved + i, base + guardRvas[i], 4);
+	if((saved[0] & 0x7fffffffu) || (saved[1] & 0x7fffffffu))
+		return nxFail("rendercap shipped guards are not zero");
+	const unsigned one = 0x3f800000u;
+	const unsigned colors[3] = { 0xcf0000u, 0xcf00u, 0xcfu };
+	for(unsigned mask = 0; mask < 5; ++mask)
+		{
+		unsigned bits[3] = { (mask & 1) ? one : 0u, (mask & 2) ? one : 0u, one };
+		if(mask == 4) bits[0] = bits[1] = 0x80000000u;
+		DWORD oldProt = 0, ignored = 0;
+		if(!VirtualProtect(wbase + 0x123b4c, 0x90, PAGE_READWRITE, &oldProt))
+			return nxFail("cannot unlock the guard constants");
+		for(unsigned i = 0; i < 3; ++i) memcpy(wbase + guardRvas[i], bits + i, 4);
+		gRenderN20 = gRenderN38 = 0;
+		memset(gRenderLine, 0xcd, sizeof(gRenderLine));
+		memset(gRenderCircle, 0xcd, sizeof(gRenderCircle));
+		debugRender(shapeR, renderer);
+		for(unsigned i = 0; i < 3; ++i) memcpy(wbase + guardRvas[i], saved + i, 4);
+		if(!VirtualProtect(wbase + 0x123b4c, 0x90, oldProt, &ignored))
+			return nxFail("cannot restore guard page protection");
+		bool matches = gRenderN20 == ((mask & 1) ? 3u : 0u)
+			&& gRenderN38 == ((mask & 2) ? 3u : 0u);
+		for(unsigned i = 0; i < gRenderN20 && i < 8; ++i)
+			{
+			unsigned expected[7] = { 0, 0, 0, 0, 0, 0, 0 };
+			if(i < 3) { expected[3 + i] = one; expected[6] = colors[i]; }
+			matches = matches && memcmp(expected, gRenderLine[i], sizeof(expected)) == 0;
+			}
+		for(unsigned i = 0; i < gRenderN38 && i < 8; ++i)
+			{
+			unsigned expected[16] = { 0x14 };
+			// Cyclic columns: identity, (y,z,x), (z,x,y), then zero center.
+			for(unsigned row = 0; row < 3; ++row)
+				for(unsigned col = 0; col < 3; ++col)
+					expected[1 + row * 3 + col] = row == (col + i) % 3 ? one : 0u;
+			expected[13] = 0xffff00ffu;
+			expected[14] = 0x3fddb3d7u; // sqrt(1+1+1), slot-10 fourth word
+			matches = matches && memcmp(expected, gRenderCircle[i], sizeof(expected)) == 0;
+			}
+		if(!matches)
+			{
+			fprintf(stderr, "FAIL rendercap contract mask=%u n20=%u n38=%u\n",
+				mask, gRenderN20, gRenderN38);
+			return 1;
+			}
+		printf("rendercap contract mask=%u n20=%u n38=%u payloads=match\n",
+			mask, gRenderN20, gRenderN38);
+		}
 	}
 
 	// -----------------------------------------------------------------------
