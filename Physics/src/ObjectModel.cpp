@@ -498,6 +498,49 @@ void nxBindDebugRenderGuards(float* guardA, float* guardB,
 	g_nxGuardRef = guardRef;
 	}
 
+static float* g_nxGuardC = nullptr;		// 0x10123bc4 (slot-3 guard)
+
+void nxBindDebugRenderGuardC(float* guardC)
+	{
+	g_nxGuardC = guardC;
+	}
+
+// Provisional phys_fn_000945 (0x207e0, 104 B): debug-render dispatcher,
+// `ret 4`. Stage order and gates per build/slot3-full.txt:
+// 0x207e4  gate: word[+0xde] & 8 (call 0x257d0 with mask 8), zero exits;
+// 0x207f9  call 001305 (nxDebugRender) unconditionally after the gate;
+// 0x207fe  guard C (0x123bc4) vs ref (0x1041f0): equality skips, unordered
+//          executes (test ah,0x44; jnp skip -- same pattern as 001305);
+// 0x2081a  nxFillShapeDescriptor fills a 60-byte local;
+// 0x2081f..39  color = ((+0xde & 7) == 0 ? 0xffffffff : 0xffff00ff) --
+//          `and al,7; neg al; sbb eax,eax; and eax,0xffff0100; dec eax`;
+// 0x2083d  renderer vtable slot +0x28 with (descriptor, color, 0).
+// Driven by the 64-case slot3cap differential (3z28); census closure
+// awaits a family registration.
+void BoxShape::nxDebugRenderDispatch(const void* renderer) const
+	{
+	if(!mBase.nxFlagBitsDE(8))
+		return;
+	nxDebugRender(renderer);
+	if(!g_nxGuardC || !g_nxGuardRef || !renderer)
+		return;
+	const float ref = *g_nxGuardRef;
+	const float guardC = *g_nxGuardC;
+	if(guardC == ref && guardC == guardC)
+		return;
+	unsigned descriptor[15];
+	nxFillShapeDescriptor(descriptor);
+	void** table = *reinterpret_cast<void** const*>(renderer);
+	typedef void (__fastcall* NxDrawShapeFn)(void*, void*, const unsigned*,
+		unsigned, unsigned);
+	const NxDrawShapeFn drawShape = reinterpret_cast<NxDrawShapeFn>(table[10]);
+	// mov al,[esi+0xde] addresses the flag halfword directly (the +0xde
+	// byte offset, not an aligned dword index); nxFlagBitsDE reads it.
+	const unsigned lowBits = mBase.nxFlagBitsDE(7);
+	const unsigned color = lowBits == 0 ? 0xffffffffu : 0xffff00ffu;
+	drawShape(const_cast<void*>(renderer), nullptr, descriptor, color, 0);
+	}
+
 // Task 4 scaffolding: the scene shape-array insert. Write order follows the
 // image -- registrar's shape store first (0x5c5a4), then the notify helper's
 // free-list sentinel (0x5c093) and count mirror (0x5c0a8). Slot must be

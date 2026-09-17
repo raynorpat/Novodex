@@ -403,6 +403,15 @@ class BoxShape
 	//! the candidate must read the same live storage the drive mutates.
 	void				nxDebugRender(const void* renderer) const;
 
+	//! phys_fn_000945 (0x000207e0): debug-render dispatcher, `ret 4`.
+	//! Exits unless word[+0xde] & 8; always invokes nxDebugRender with the
+	//! renderer; then, only when the bound guard C (0x123bc4) differs from
+	//! the reference word (unordered executes too), fills the 60-byte
+	//! descriptor (translation, dimensions, rotation) and dispatches
+	//! renderer vtable slot +0x28 with (descriptor, color, 0) where color
+	//! is 0xffffffff when (+0xde & 7) == 0 and 0xffff00ff otherwise.
+	void				nxDebugRenderDispatch(const void* renderer) const;
+
 	//! BOX-table slot 11, phys_fn_000939 (0x000206c0): zeroes out[0..2] and
 	//! writes the same sqrt-of-squared-dims value to out[3].
 	void				nxBoxZeroCenterAndDiagonal(float* out) const;
@@ -616,6 +625,11 @@ void					nxInstallReportSink(NxReportFn sink);
 //! reference (0x101041f0). Null restores the unbound state.
 void					nxBindDebugRenderGuards(float* guardA, float* guardB,
 							float* renderScale, float* guardRef);
+
+//! Bind the 000945 dispatcher's guard C word to live storage (oracle
+//! .data 0x123bc4 in the slot3cap probe). Null restores the unbound
+//! state, in which the descriptor arm never executes.
+void					nxBindDebugRenderGuardC(float* guardC);
 
 //! Task 4 scaffolding: the scene shape-array insert the base ctor's owned
 //! arm performs. Reproduces the three observable writes -- shape pointer
