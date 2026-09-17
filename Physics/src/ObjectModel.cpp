@@ -293,6 +293,29 @@ ShapeBase::ShapeBase(void* owner, unsigned argument)
 		}
 	}
 
+// phys_fn_001287 (0x000257d0, 14 bytes): the +0xde halfword under a mask.
+unsigned ShapeBase::nxFlagBitsDE(unsigned mask) const
+	{
+	return static_cast<unsigned>(mHalfwordDE) & mask;
+	}
+
+// phys_fn_000931 (0x00020490, 70 bytes): translation, forward rotation
+// copy, THEN dimensions. Word-wise volatile accesses retain the image's
+// load/store order when out aliases this (including forward rep movsd).
+// A bulk memcpy/memmove or dimensions-first copy is not equivalent.
+void BoxShape::nxFillShapeDescriptor(unsigned* out) const
+	{
+	const volatile unsigned* self =
+		reinterpret_cast<const volatile unsigned*>(this);
+	volatile unsigned* dest = out;
+	for(unsigned i = 0; i < 3; ++i)
+		dest[i] = self[0x30 / 4 + i];		// 0x20496..a4
+	for(unsigned i = 0; i < 9; ++i)
+		dest[6 + i] = self[0x0c / 4 + i];	// 0x204a9..b4
+	for(unsigned i = 0; i < 3; ++i)
+		dest[3 + i] = self[0xe4 / 4 + i];	// 0x204b6..cf
+	}
+
 // Task 4 scaffolding: the scene shape-array insert. Write order follows the
 // image -- registrar's shape store first (0x5c5a4), then the notify helper's
 // free-list sentinel (0x5c093) and count mirror (0x5c0a8). Slot must be

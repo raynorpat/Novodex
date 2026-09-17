@@ -274,6 +274,11 @@ class ShapeBase
 	//! descriptor's name field.
 	bool				nxShapeNameRegistry(void* shape, void* name);
 
+	//! phys_fn_001287 (0x000257d0, 14 bytes): the +0xde halfword under a
+	//! mask -- movzx eax, word [ecx+0xde]; and eax, [esp+4]; ret 4. The
+	//! flag-bits reader used by BOX slot 3 with mask 8.
+	unsigned			nxFlagBitsDE(unsigned mask) const;
+
 	//! BASE-table slot 1, phys_fn_001347 (0x00027740): apply-from-descriptor.
 	//! Copies the twelve-word pose from record+8 into shape+0x6c, mirrors
 	//! halfwords record+0x38 -> +0xde, record+0x3e -> +0xda, writes
@@ -370,6 +375,12 @@ class BoxShape
 	public:
 	//! phys_fn_000977 (0x00021870). Same argument pair as the base ctor.
 					BoxShape(void* owner, unsigned argument);
+
+	//! phys_fn_000931 (0x00020490): write out[0..2] translation, then
+	//! out[6..14] rotation with a forward word copy, then out[3..5] dims.
+	//! Source ranges +0x30, +0x0c, +0xe4; aliasing preserves that order.
+	//! Used by the conditional debug-render arm of BOX slot 3.
+	void				nxFillShapeDescriptor(unsigned* out) const;
 
 	//! BOX-table slot 10, phys_fn_000937 (0x00020670): writes the pose-one
 	//! translation (+0x30/+0x34/+0x38) to out[0..2] and a sqrt-of-squared-

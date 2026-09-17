@@ -879,6 +879,7 @@ int wmain(int argc, wchar_t** argv)
 	unsigned oMiscsmDigest = 0;
 	unsigned oMiscsm2Digest = 0;
 	unsigned oSlate11Digest = 0;
+	unsigned oSlate12Digest = 0;
 	unsigned oZeroDigest = 0;
 	unsigned oZeroCandDigest = 0;
 	static unsigned char sSaveStateRecord[0x48];
@@ -1080,6 +1081,59 @@ int wmain(int argc, wchar_t** argv)
 		"hw_dc=%u hw_de=%u\n",
 		(unsigned) sizeof(object), digest, w08, pose00c, w9c, wa0, prun24, prun28,
 		sentinel, argD4, hwDC, hwDE);
+	}
+
+	// -----------------------------------------------------------------------
+	// Slate 12, two leaf rows off a marked ShapeBase record: the +0xde
+	// flag-bits reader (phys_fn_001287) and the descriptor getter
+	// (phys_fn_000931 -- translation, dims, rotation into a 15-word record).
+	{
+	// Rebuild the marked record: the getter reads dims at +0xe4..+0xef --
+	// PAST the 0xe0 base extent (they are the hull facade's first words on
+	// a real box) -- so the buffer is 0xf0 bytes; the first drive's 0xe0
+	// sizing made both sides read unrelated stack garbage, and the
+	// digests diverged nondeterministically.
+	unsigned char marked[0xf0];
+	memset(marked, 0xcd, sizeof(marked));
+	const unsigned kMark = 0x7e7e0000u;
+	for(unsigned i = 0; i < 12; ++i)
+		{
+		unsigned w = kMark + 0x1000u + i;
+		memcpy(marked + 0x30 + i * 4, &w, 4);
+		}
+	for(unsigned i = 0; i < 3; ++i)
+		{
+		unsigned w = kMark + 0x2000u + i;
+		memcpy(marked + 0xe4 + i * 4, &w, 4);
+		}
+	for(unsigned i = 0; i < 9; ++i)
+		{
+		unsigned w = kMark + 0x3000u + i;
+		memcpy(marked + 0x0c + i * 4, &w, 4);
+		}
+	unsigned short deBits = 0x0027u;
+	memcpy(marked + 0xde, &deBits, 2);
+
+	unsigned dL = 2166136261u;
+	typedef unsigned (__thiscall* FlagBitsFn)(const void*, unsigned);
+	FlagBitsFn flagBitsO =
+		reinterpret_cast<FlagBitsFn>(const_cast<unsigned char*>(base) + 0x257d0);
+	const unsigned masksL[] = { 0x00000007u, 0x000000ffu, 0x0000ffffu,
+		0x00000018u, 0xffffffffu };
+	for(unsigned m = 0; m < 5; ++m)
+		dL = nxFold(dL, flagBitsO(marked, masksL[m]));
+	unsigned recL[15];
+	memset(recL, 0, sizeof(recL));
+	typedef void (__thiscall* FillFn)(const void*, unsigned*);
+	FillFn fillO =
+		reinterpret_cast<FillFn>(const_cast<unsigned char*>(base) + 0x20490);
+	fillO(marked, recL);
+	for(unsigned w = 0; w < 15; ++w)
+		dL = nxFold(dL, recL[w]);
+
+	oSlate12Digest = dL;
+	oracleDigest = nxFold(oracleDigest, dL);
+	printf("shapeleaf row=oracle digest=%08x\n", dL);
 	}
 
 	// -----------------------------------------------------------------------
@@ -4450,7 +4504,7 @@ int wmain(int argc, wchar_t** argv)
 		ab[0], ab[1], ab[2], ab[3], ab[4], ab[5]);
 	}
 
-	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1 slot1wrapper=1 addthunk=1\n",
+	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1 slot1wrapper=1 addthunk=1 shapeleaf=1\n",
 		(unsigned) (sizeof(nxTables) / sizeof(nxTables[0])));
 	printf("layout oracle digest=%08x\n", oracleDigest);
 
@@ -4613,6 +4667,88 @@ int wmain(int argc, wchar_t** argv)
 			++candidateMissing;
 		else
 			candidateFold = nxFold(candidateFold, 6u);
+
+		// -- slate 12 candidate: the same marked record through the
+		// transcription, folded identically to the oracle drive.
+		{
+		unsigned char markedC[0xf0];
+		memset(markedC, 0xcd, sizeof(markedC));
+		const unsigned kMarkC = 0x7e7e0000u;
+		for(unsigned i = 0; i < 12; ++i)
+			{
+			unsigned w = kMarkC + 0x1000u + i;
+			memcpy(markedC + 0x30 + i * 4, &w, 4);
+			}
+		for(unsigned i = 0; i < 3; ++i)
+			{
+			unsigned w = kMarkC + 0x2000u + i;
+			memcpy(markedC + 0xe4 + i * 4, &w, 4);
+			}
+		for(unsigned i = 0; i < 9; ++i)
+			{
+			unsigned w = kMarkC + 0x3000u + i;
+			memcpy(markedC + 0x0c + i * 4, &w, 4);
+			}
+		unsigned short deBitsC = 0x0027u;
+		memcpy(markedC + 0xde, &deBitsC, 2);
+
+		unsigned dC = 2166136261u;
+		const unsigned masksC[] = { 0x00000007u, 0x000000ffu, 0x0000ffffu,
+			0x00000018u, 0xffffffffu };
+		for(unsigned m = 0; m < 5; ++m)
+			dC = nxFold(dC,
+				reinterpret_cast<const ShapeBase*>(markedC)
+					->nxFlagBitsDE(masksC[m]));
+		unsigned recC[15];
+		memset(recC, 0, sizeof(recC));
+		reinterpret_cast<const BoxShape*>(markedC)
+			->nxFillShapeDescriptor(recC);
+		for(unsigned w = 0; w < 15; ++w)
+			dC = nxFold(dC, recC[w]);
+
+		// Independent edge checks: high-bit zero extension and ordered
+		// transfers when the output aliases the source. A dimensions-first
+		// copy or snapshot/memmove of the rotation must fail these cases.
+		bool leafEdgesOk = true;
+		typedef unsigned (__thiscall* LeafFlagsFn)(const void*, unsigned);
+		LeafFlagsFn flagsOracle = reinterpret_cast<LeafFlagsFn>(
+			const_cast<unsigned char*>(base) + 0x257d0);
+		const unsigned short edgeBits[] = { 0, 0x8000, 0x80a7, 0xffff };
+		for(unsigned e = 0; e < 4; ++e)
+			{
+			memcpy(markedC + 0xde, &edgeBits[e], 2);
+			const ShapeBase* s = reinterpret_cast<const ShapeBase*>(markedC);
+			leafEdgesOk = leafEdgesOk
+				&& flagsOracle(markedC, 0xffffffffu) == edgeBits[e]
+				&& s->nxFlagBitsDE(0xffffffffu) == edgeBits[e]
+				&& flagsOracle(markedC, 0xffff0000u) == 0
+				&& s->nxFlagBitsDE(0xffff0000u) == 0;
+			}
+		typedef void (__thiscall* LeafFillFn)(const void*, unsigned*);
+		LeafFillFn fillOracle = reinterpret_cast<LeafFillFn>(
+			const_cast<unsigned char*>(base) + 0x20490);
+		const unsigned outputOffsets[] = { 0, 4, 0x0c, 0x24, 0xcc, 0xe4, 0x240 };
+		for(unsigned c = 0; c < 7; ++c)
+			{
+			unsigned twinO[176], twinC[176];
+			for(unsigned w = 0; w < 176; ++w)
+				twinO[w] = twinC[w] = 0x6d000000u + w;
+			fillOracle(twinO, twinO + outputOffsets[c] / 4);
+			reinterpret_cast<const BoxShape*>(twinC)->nxFillShapeDescriptor(
+				twinC + outputOffsets[c] / 4);
+			if(memcmp(twinO, twinC, sizeof(twinO)) != 0)
+				{
+				printf("shapeleaf overlap mismatch offset=%x\n", outputOffsets[c]);
+				leafEdgesOk = false;
+				}
+			}
+		bool okL = dC == oSlate12Digest && leafEdgesOk;
+		printf("shapeleaf candidate ok=%u digest=%08x\n", okL ? 1u : 0u, dC);
+		if(!okL)
+			++candidateMissing;
+		else
+			candidateFold = nxFold(candidateFold, 65u);
+		}
 		}
 
 		// -- box shape: the transcription's constructor over the same poisoned
