@@ -2203,6 +2203,50 @@ gate_targets row); the vtables RED remains byte-pinned per 3z18. Open
 region: non-identity poses, guard values outside the driven set, and
 descriptor-buffer aliasing the oracle's stack local cannot exhibit.
 
+## 3z30. BOX vtable transition attempt withdrawn; prerequisites corrected
+
+The bounded native-virtual transition proposed in round 13 was invalid:
+BoxShape COMPOSES ShapeBase. Adding virtual members to BoxShape shifts
+its data; changing ShapeBase too affects every composed shape. Duplicate
+member declarations and layout assertions failed the attempted header
+build (build/r13-poly-build.log). All partial-transition header/test changes were
+reverted; no partial vtable or guessed sweep stub remains. After review,
+the pre-existing malformed dormant slot-5 call was removed; boxvptr now
+prints `dispatch=unverified` without executing an unvalidated pointer.
+
+The preliminary boxvptr RED (r13-red3.log: word=cdcdcdcd, poly_ok=0)
+only showed the known missing constructor vptr. It did not validate the
+future probe: candidate table addresses were mistakenly bounded by the
+oracle DLL's image base, and a dormant pre-existing slot-5 call has the
+wrong pointer dereference and calling signature. Those must be repaired
+before any real table enables that path.
+
+The retained output is `box-vtable-transition-audit.md`: SHA-pinned
+17-slot target/ID/size/return audit using inventory function boundaries.
+It corrects arbitrary windows mistaken for function extents, wrong
+stable-ID/address associations, and stack-pop counts. In particular,
+slot 4 at 0x20850 is a 39-byte wrapper with three stack DWORDs, not the
+existing four-argument mass helper; slot 7 spans 153 instructions with
+TWO ret-8 exits. One virtual declaration does not generate three self
+slots. Slot 3 remains provisional/discovered, not closed.
+
+Restored baseline: build/r13-baseline-build.log builds both Release
+targets (exit 0); r13-baseline.log retains 64 slot-3 agreements, the
+7-call ordering case, and the documented missing-vtables RED. No
+census, registration, or gate-policy changes were made. A revised
+architectural design is required before a native hierarchy migration;
+the audit also outlines an explicit ABI-table alternative and the
+smaller slot-4-wrapper prerequisite.
+
+Final retained diagnostic cleanup was rebuilt and gated in
+build/r13-safe-build.log and build/r13-safe-gate.log: build exit=0,
+inventory=pass, slot-3 64-case differential and order case agree,
+coverage 126/126, gate exit=1 for the existing missing-vtables family.
+The clean round-12 baseline also had that RED; it was not introduced
+by this cleanup. Independent read-only review confirmed the layout,
+signature and probe defects and the oracle-buffer virtual-dispatch
+false-pass risk documented in the audit.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
