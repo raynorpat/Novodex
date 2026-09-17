@@ -5385,28 +5385,16 @@ int wmain(int argc, wchar_t** argv)
 		else
 			candidateFold = nxFold(candidateFold, 7u);
 
-		// -- vtable identity, byte-proven this session: the candidate ctor
-		// leaves +0x00 UNWRITTEN (ShapeBase writes no vptr and neither does
-		// the box's), so today the word is poison. The probe folds the raw
-		// word and tries the slot-5 call: against a garbage vptr the call
-		// must fault (SEH-guarded), which is the RED state; once the
-		// classes go polymorphic the same probe answers through the
-		// candidate's own compiled table -- no absolute address in play.
+		// Diagnostic only: +0x00 is excluded from the layout digest above.
+		// Do not dispatch an unvalidated pointer. The previous dormant slot-5
+		// probe dereferenced code bytes as a pointer and used the wrong ABI.
+		// A future table gate must establish candidate ownership and supply
+		// the full slot signature on a candidate-constructed object first.
 		{
 		unsigned vptr = 0;
 		memcpy(&vptr, bytes + 0x00, 4);
 		printf("boxvptr candidate word=%08x\n", vptr);
-		gFaultCode = 0;
-		gFaultAddr = 0;
-		if(vptr != 0xcdcdcdcdu)
-			{
-			void** table = *reinterpret_cast<void***>(bytes);
-			typedef void (__thiscall* Slot5Fn)(void*, void*, void*);
-			nxGuardedVoidCall(reinterpret_cast<void (*&)(void*)>(
-				*reinterpret_cast<void***>(table[5])), bytes);
-			}
-		printf("boxvptr candidate slot5 fault=%08x code=%08x\n",
-			gFaultAddr, gFaultCode);
+		printf("boxvptr candidate dispatch=unverified\n");
 		}
 		}
 
