@@ -2349,17 +2349,20 @@ max=-FLT_MAX (the `0x7f7fffff`/`0xff7fffff` stores at its head) and returns
 same helper the screenshot ASCII decoded; it is its own row, and slot 7's
 only callee.
 
-Slot-7 frame (body ESP = entry - 0xac): negated-dims block at esp+0x58..0x6c
-(fchs of the three dims from this+0xe4), the third-pose translation copied
-to esp+0x74, the 3x3 pose rotation rep-to esp+0x1c..0x3f; the constant
-0x1010687c == -1.0f negates the translation three times (0x20b8b/95/9f);
-the store map is fstp sites 0x20b91/0x20bbd/0x20bd9/0x20c25/0x20c4d/0x20c63/
-0x20c95/0x20cb1/0x20cdd. The 0x20cc9..0x20ce1 push block passes six AABB
-corners to 001730; `cmp eax,-1; je 0x20d10` then write `fabs(esp+0xc)` to
-record `[e+8]` (hit, `mov al,1`) or `xor al,al` (miss). Both paths `ret 8`
-= ECX receiver + 2 stack DWORDs. A faithful transcription of the swept-
-AABB extent accumulation is in progress; it is NOT yet implemented or
-driven, and phys_fn_000951 STAYS `discovered`. No census or gate change.
+Slot-7 frame (body ESP = entry - 0xac): the corner block at esp+0x58..0x6c
+holds [+H0, +H1, +H2, -H0, -H1, -H2] (x87: fstp to 0x58/0x5c/0x60 from the
+positive dims, then fchs to 0x64/0x68/0x6c -- the min/max AABB corners in
+box-canonical space), esp+0x74 = third-pose translation.z, a copy of +H2 at
+esp+0x84 (later fchs to -H2), and the 3x3 pose rotation rep-to
+esp+0x1c..0x3f; the constant 0x1010687c == -1.0f negates the translation
+three times (0x20b8b/95/9f); the store map is fstp sites 0x20b91/0x20bbd/
+0x20bd9/0x20c25/0x20c4d/0x20c63/0x20c95/0x20cb1/0x20cdd. The
+0x20cc9..0x20ce1 push block passes six AABB corners to 001730; `cmp eax,-1;
+je 0x20d10` then write `fabs(esp+0xc)` to record `[e+8]` (hit, `mov al,1`)
+or `xor al,al` (miss). Both paths `ret 8` = ECX receiver + 2 stack DWORDs.
+A faithful transcription of the swept-AABB extent accumulation is in
+progress; it is NOT yet implemented or driven, and phys_fn_000951 STAYS
+`discovered`. No census or gate change.
 
 ## 6. What this task did not do
 
