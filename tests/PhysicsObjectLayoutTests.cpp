@@ -128,6 +128,25 @@ static void __fastcall nxRenderOn38(void*, void*, unsigned count,
 		}
 	++gRenderN38;
 	}
+// BOX slot 3's renderer row +0x28 (index 10): the dispatcher calls it with
+// (descriptor pointer, computed word, 0) after nxFillShapeDescriptor fills
+// the local. Recorded during the call, before the callee's stack frame is
+// reused; the callee pops its own stack dwords per thiscall.
+static unsigned gRenderFill[16];
+static unsigned gRenderArg2;
+static unsigned gRenderArg3;
+static unsigned gRenderN28;
+static void __fastcall nxRenderOn28(void*, void*, const unsigned* fill,
+	unsigned arg2, unsigned arg3)
+	{
+	if(gRenderN28 == 0)
+		{
+		memcpy(gRenderFill, fill, 15 * 4);
+		gRenderArg2 = arg2;
+		gRenderArg3 = arg3;
+		}
+	++gRenderN28;
+	}
 static void nxGuardedCtor(NxShapeCtorFn fn, void* object, void* owner,
 	unsigned argument, unsigned& outCode, unsigned& outAddr)
 	{
@@ -1878,7 +1897,7 @@ int wmain(int argc, wchar_t** argv)
 		debugRender(shapeR, renderer);
 		// Capture the ORACLE output before anything can overwrite it.
 		const unsigned oN20 = gRenderN20, oN38 = gRenderN38;
-		unsigned char oLine[8][7 * 4], oCircle[8][16 * 4];
+		unsigned oLine[8][7], oCircle[8][16];
 		memcpy(oLine, gRenderLine, sizeof(oLine));
 		memcpy(oCircle, gRenderCircle, sizeof(oCircle));
 		// Candidate differential inside the SAME mutated window: the
@@ -1961,6 +1980,88 @@ int wmain(int argc, wchar_t** argv)
 			mask, cN20, cN38);
 		}
 	printf("rendercap candidate masks=6 agree\n");
+	}
+
+	// -----------------------------------------------------------------------
+	// ORACLE CAPTURE ONLY -- BOX slot 3, phys_fn_000945 (0x207e0, 104 B),
+	// the debug-render dispatcher. Not a family: no digest, no registration.
+	// Decode: (1) call 001287 -- zero return exits; (2) call 001305 with the
+	// renderer argument; (3) guard ref(0x1041f0) vs C(0x123bc4), equality
+	// skips the payload; (4) nxFillShapeDescriptor into a local, then
+	// renderer slot +0x28 with (descriptor, branchless-computed word, 0)
+	// -- color is 0xffffffff when (+0xde & 7)==0, otherwise 0xffff00ff.
+	// The 60-byte descriptor is translation[3], dimensions[3], rotation[9].
+	{
+	unsigned char shapeS[0x228];
+	memset(shapeS, 0xcd, sizeof(shapeS));
+	typedef void (__thiscall* NxBoxCtorSFn)(void* self, void* owner, unsigned argument);
+	NxBoxCtorSFn boxCtorS = (NxBoxCtorSFn) (base + 0x00021870);
+	boxCtorS(shapeS, 0, 0);
+
+	gRenderN28 = 0;
+	memset(gRenderFill, 0xcd, sizeof(gRenderFill));
+	gRenderArg2 = 0;
+	gRenderArg3 = 0;
+	void* rendererTableS[16];
+	for(unsigned i = 0; i < 16; ++i)
+		rendererTableS[i] = reinterpret_cast<void*>(0xdeadbe00u + i);
+	rendererTableS[8] = reinterpret_cast<void*>(&nxRenderOn20);
+	rendererTableS[14] = reinterpret_cast<void*>(&nxRenderOn38);
+	rendererTableS[10] = reinterpret_cast<void*>(&nxRenderOn28);
+	void* rendererObjectS[1] = { rendererTableS };
+	void** rendererS = rendererObjectS;
+
+	typedef void (__thiscall* NxSlot3Fn)(void* self, void* renderer);
+	NxSlot3Fn slot3 = (NxSlot3Fn) (base + 0x000207e0);
+
+	// Independent axes catch wrong enable-bit tests, bit-2-only colors,
+	// equality/unordered guard mistakes, and descriptor field-order errors.
+	// Guard A/B stay at their verified shipped zero values in this contract.
+	const unsigned guardCases[4] = { 0, 0x80000000u, 0x3f800000u, 0x7fc00000u };
+	const unsigned expectedColors[8] = { 0xffffffffu, 0xffff00ffu,
+		0xffff00ffu, 0xffff00ffu, 0xffff00ffu, 0xffff00ffu, 0xffff00ffu, 0xffff00ffu };
+	const unsigned expectedFill[15] = {
+		0x40800000u, 0xc0000000u, 0x41000000u, // translation: 4,-2,8
+		0x3f800000u, 0x40000000u, 0x40400000u, // dimensions: 1,2,3
+		0, 0x3f800000u, 0, 0, 0, 0x3f800000u, 0x3f800000u, 0, 0 };
+	memcpy(shapeS + 0x30, expectedFill, 12);
+	memcpy(shapeS + 0xe4, expectedFill + 3, 12);
+	memcpy(shapeS + 0x0c, expectedFill + 6, 36);
+	unsigned cases = 0;
+	for(unsigned enabled = 0; enabled < 2; ++enabled)
+	for(unsigned low = 0; low < 8; ++low)
+	for(unsigned guard = 0; guard < 4; ++guard)
+		{
+		const unsigned short flags = static_cast<unsigned short>((enabled ? 8 : 0) | low);
+		memcpy(shapeS + 0xde, &flags, 2);
+		unsigned char* wbaseS = const_cast<unsigned char*>(base);
+		unsigned savedC;
+		memcpy(&savedC, base + 0x123bc4, 4);
+		DWORD oldProtS = 0, ignoredS = 0;
+		if(!VirtualProtect(wbaseS + 0x123bc4, 8, PAGE_READWRITE, &oldProtS))
+			return nxFail("cannot unlock guard C");
+		memcpy(wbaseS + 0x123bc4, guardCases + guard, 4);
+		gRenderN20 = gRenderN38 = gRenderN28 = 0;
+		memset(gRenderFill, 0xcd, sizeof(gRenderFill));
+		gRenderArg2 = gRenderArg3 = 0;
+		slot3(shapeS, rendererS);
+		memcpy(wbaseS + 0x123bc4, &savedC, 4);
+		if(!VirtualProtect(wbaseS + 0x123bc4, 8, oldProtS, &ignoredS))
+			return nxFail("cannot restore guard C page");
+		const unsigned expectedCount = enabled && guard >= 2 ? 1u : 0u;
+		bool match = gRenderN28 == expectedCount && gRenderN20 == 0 && gRenderN38 == 0;
+		if(expectedCount)
+			match = match && gRenderArg2 == expectedColors[low] && gRenderArg3 == 0
+				&& memcmp(gRenderFill, expectedFill, sizeof(expectedFill)) == 0;
+		if(!match)
+			{
+			fprintf(stderr, "FAIL slot3 contract enabled=%u low=%u guard=%u n28=%u color=%08x\n",
+				enabled, low, guard, gRenderN28, gRenderArg2);
+			return 1;
+			}
+		++cases;
+		}
+	printf("slot3 contract cases=%u failures=0 mode=oracle-only\n", cases);
 	}
 
 	// -----------------------------------------------------------------------
