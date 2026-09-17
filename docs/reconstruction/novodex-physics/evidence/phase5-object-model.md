@@ -1957,6 +1957,35 @@ the unordered-comparison arm, non-identity poses) is unestablished, and
 no family registration was added. Closing this row wants a broader
 fixture sweep and a decision on the unlinked arg3, on a later round.
 
+## 3z24. The 001305 capture: the no-op row proven, the renderer contract pinned
+
+An ORACLE-ONLY capture (no candidate, no registration) drove the real
+binary's 0x25960 with a fake renderer across the guard truth table:
+
+- Row 1 (shipped guards 0.0): zero renderer calls -- the no-op decode is
+  now EXECUTED PROOF; the listing's parity analysis stands.
+- Row 2 (guards+scale = 1.0, writable .data, restored after): slot +0x20
+  fired 3x and slot +0x38 fired 3x. The +0x38 contract is pinned at five
+  stack dwords (0x14-word count, two distinct buffer pointers, color
+  0xffff00ff, then a reserved dword) -- matching the listing's five
+  pushes; the +0x20 rows recorded one slot shifted (pad = the actual
+  color: 0xCF0000/0xCF00/0xCF), pinning its shape as THREE stack args
+  (bufA, bufB, color) with per-axis colors red/green/blue.
+
+Two defects in MY fake renderer were caught by the oracle's own
+execution, not by reading: the renderer object must be the address OF
+the table (the oracle double-dereferences), and the +0x38 row pops FIVE
+stack dwords -- a 4-arg fastcall left the stack imbalanced and the
+process died on the security-cookie check (0xC0000409). Row 1's clean
+return with a poisoned object remains valid evidence.
+
+The listing decode (block 1: three scaled rotation columns + translation
+through slot +0x20 with colors 0xCF0000/0xCF00/0xCF; block 2: slot-10
+center+diagonal, 9 rotation words, three 0x14-word vertex buffers through
+slot +0x38 with 0xFFFF00FF) now has a byte reference for the
+transcription. phys_fn_001305 stays `discovered`; the vtables RED
+remains byte-pinned per 3z18.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
