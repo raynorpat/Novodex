@@ -392,6 +392,112 @@ static unsigned __fastcall NxS11KillThunk(void* ecxDummy, void*, unsigned arg)
 	return 0;
 	}
 
+// phys_fn_002379: discriminate slot 1 from slot 0, receiver identity,
+// exactly-once dispatch, and discarded callback results. The sentinels record
+// but never dereference their receiver, so a wrong receiver fails safely.
+static unsigned g_slot1Calls, g_slot0Calls, g_slot1Tag;
+static void* g_slot1Receiver;
+static unsigned __fastcall nxSlot0Sentinel(void* self, void*)
+	{
+	++g_slot0Calls;
+	g_slot1Receiver = self;
+	return 0xdeadbeefu;
+	}
+static unsigned __fastcall nxSlot1SentinelA(void* self, void*)
+	{
+	++g_slot1Calls;
+	g_slot1Receiver = self;
+	g_slot1Tag = 0x13579bdfu;
+	return 0xffffffffu;
+	}
+static unsigned __fastcall nxSlot1SentinelB(void* self, void*)
+	{
+	++g_slot1Calls;
+	g_slot1Receiver = self;
+	g_slot1Tag = 0x2468ace0u;
+	return 0;
+	}
+
+// Declaration is test-local until the existing transcription is exposed by
+// the private header. No public SDK interface is changed.
+bool nxVirtualSlot1Wrapper(void* arg);
+
+struct NxSlot1Result
+	{
+	unsigned words[4][7];
+	unsigned digest;
+	unsigned failures;
+	};
+
+template<class Wrapper>
+static NxSlot1Result nxDriveSlot1Wrapper(Wrapper wrapper)
+	{
+	unsigned vtA[] = { reinterpret_cast<unsigned>(&nxSlot0Sentinel),
+		reinterpret_cast<unsigned>(&nxSlot1SentinelA) };
+	unsigned vtB[] = { reinterpret_cast<unsigned>(&nxSlot0Sentinel),
+		reinterpret_cast<unsigned>(&nxSlot1SentinelB) };
+	unsigned objects[2][3] = {
+		{ reinterpret_cast<unsigned>(vtA), 0x11223344u, 0xaabbccddu },
+		{ reinterpret_cast<unsigned>(vtB), 0x55667788u, 0xeeff0011u } };
+	unsigned before[2][3];
+	unsigned vtBefore[2][2];
+	memcpy(before, objects, sizeof(before));
+	memcpy(vtBefore[0], vtA, sizeof(vtA));
+	memcpy(vtBefore[1], vtB, sizeof(vtB));
+	const unsigned order[] = { 0, 1, 1, 0 };
+	const unsigned tags[] = { 0x13579bdfu, 0x2468ace0u,
+		0x2468ace0u, 0x13579bdfu };
+	NxSlot1Result result = {};
+	result.digest = 2166136261u;
+	for(unsigned i = 0; i < 4; ++i)
+		{
+		g_slot1Calls = g_slot0Calls = g_slot1Tag = 0;
+		g_slot1Receiver = 0;
+		unsigned* object = objects[order[i]];
+		unsigned* words = result.words[i];
+		words[0] = static_cast<unsigned>(wrapper(object));
+		words[1] = g_slot1Calls;
+		words[2] = g_slot0Calls;
+		words[3] = g_slot1Receiver == object ? 1u : 0u;
+		words[4] = g_slot1Tag;
+		words[5] = memcmp(objects, before, sizeof(before)) == 0 ? 1u : 0u;
+		words[6] = memcmp(vtA, vtBefore[0], sizeof(vtA)) == 0
+			&& memcmp(vtB, vtBefore[1], sizeof(vtB)) == 0 ? 1u : 0u;
+		// Explicit expectations, not just agreement between two wrong runs.
+		const unsigned expected[] = { 0, 1, 0, 1, tags[i], 1, 1 };
+		for(unsigned j = 0; j < 7; ++j)
+			{
+			result.digest = nxFold(result.digest, words[j]);
+			if(words[j] != expected[j])
+				++result.failures;
+			}
+		}
+	return result;
+	}
+
+static unsigned nxTestSlot1Wrapper(const unsigned char* base, bool selfOnly,
+	unsigned& oracleDigest)
+	{
+	// mov ecx,[esp+4]; mov eax,[ecx]; call [eax+4]; xor eax,eax; ret 4.
+	typedef unsigned (__stdcall* OracleWrapper)(void*);
+	NxSlot1Result oracle = nxDriveSlot1Wrapper(
+		reinterpret_cast<OracleWrapper>(const_cast<unsigned char*>(base) + 0x5b860));
+	oracleDigest = nxFold(oracleDigest, oracle.digest);
+	printf("slot1wrapper row=oracle cases=4 failures=%u digest=%08x\n",
+		oracle.failures, oracle.digest);
+	if(selfOnly)
+		return oracle.failures;
+	NxSlot1Result candidate = nxDriveSlot1Wrapper(&nxVirtualSlot1Wrapper);
+	unsigned mismatches = 0;
+	for(unsigned i = 0; i < 4; ++i)
+		for(unsigned j = 0; j < 7; ++j)
+			if(oracle.words[i][j] != candidate.words[i][j])
+				++mismatches;
+	printf("slot1wrapper candidate cases=4 failures=%u mismatches=%u digest=%08x\n",
+		candidate.failures, mismatches, candidate.digest);
+	return oracle.failures + candidate.failures + mismatches;
+	}
+
 static bool nxSha256(const wchar_t* path, char* text)
 	{
 	HANDLE file = CreateFileW(path, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
@@ -418,11 +524,12 @@ static bool nxSha256(const wchar_t* path, char* text)
 int wmain(int argc, wchar_t** argv)
 	{
 	bool selfOnly = false;
+	bool slot1Only = argc == 4 && wcscmp(argv[3], L"--slot1-only") == 0;
 	if(argc == 4 && wcscmp(argv[3], L"--self") == 0)
 		selfOnly = true;
-	else if(argc != 3)
+	else if(argc != 3 && !slot1Only)
 		{
-		fprintf(stderr, "usage: NxPhysicsObjectLayoutTests <oracle directory> <NxPhysics.dll sha256> [--self]\n");
+		fprintf(stderr, "usage: NxPhysicsObjectLayoutTests <oracle directory> <NxPhysics.dll sha256> [--self|--slot1-only]\n");
 		return 2;
 		}
 
@@ -467,7 +574,10 @@ int wmain(int argc, wchar_t** argv)
 	const unsigned char* base = (const unsigned char*) physics;
 
 	unsigned oracleDigest = 2166136261u;
-	unsigned candidateMissing = 0;
+	unsigned slot1Failures = nxTestSlot1Wrapper(base, selfOnly, oracleDigest);
+	if(slot1Only)
+		return slot1Failures == 0 ? 0 : 1;
+	unsigned candidateMissing = slot1Failures != 0 ? 1u : 0u;
 	float oMin = 0.0f, oMax = 0.0f;
 	unsigned oMinBits = 0, oMaxBits = 0, cMinBits = 0, cMaxBits = 0;
 	unsigned oShapeBaseDigest = 0;
@@ -4106,7 +4216,7 @@ int wmain(int argc, wchar_t** argv)
 		ab[0], ab[1], ab[2], ab[3], ab[4], ab[5]);
 	}
 
-	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1\n",
+	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1 slot1wrapper=1\n",
 		(unsigned) (sizeof(nxTables) / sizeof(nxTables[0])));
 	printf("layout oracle digest=%08x\n", oracleDigest);
 
