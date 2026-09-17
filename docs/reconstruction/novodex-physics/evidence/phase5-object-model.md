@@ -1709,6 +1709,47 @@ the phase gate caught on the next run (0 occurrences against its
 registration) — the count guard doing its job on a real defect, not only
 in its test suite.
 
+## 3z17. Slate 11 extended: the container-add thunk closes
+
+phys_fn_002352 (0x5b610, 8 bytes) now has its allocator-path drive and
+closes bitwise. The row is `add ecx,0x28`, tail-jump to 0xb4f50 — the
+SdkContainer rows Phase 4 reconstructed. Three containers: an owned buffer
+(free fires through the adapter), an external buffer (factor -1.0f, buffer
+kept), null entries (no free); all three clear exactly {capacity, count}.
+
+**Two transcription defects, both caught by the drive.** The first spelling
+hard-coded the oracle's absolute `0x100b4f50`: in the candidate process
+that is oracle code reached with `ecx` invalid — the drive caught it as
+`c0000005` at 0xb4f53. The fixed transcription calls the reconstruction.
+Separately, the first decode expected the external-buffer arm to null the
+entries pointer; the oracle's own drive said otherwise (failures=1), and
+the listing confirms it: the shared tail at 0x000b4f81/87 clears ONLY
+capacity and count — entries survives, because 0xb4f7a's null-store runs
+only inside the owned arm, before the shared clear. `SdkContainer::empty`
+already had that shape.
+
+**Harness findings, two shims and a convention.** The SdkContainer rows
+reach the allocator through the Foundation global at .data 0x1012845c
+(helper 0x000b4000, defaulting to the static CRT adapter at 0x10122368) —
+NOT the SDK holder the shape ctors use. Driving with only the SDK holder
+repointed let empty() free arena blocks through the CRT heap: the
+0xc0000374 that killed the first three runs. A second adapter shim into
+0x1012845c (slot +0xc free, one pushed pointer — the 4-parameter spelling
+drifted the stack and faulted at ee5710dc) serves the emulator. The
+candidate thunk is a cdecl free function; driving it through a __thiscall
+pointer put the receiver in ecx and left the stack argument garbage, which
+the generic SEH guard then folded into a zero digest — the pointer's own
+type must name the convention.
+
+**The mutation check.** A mutant empty() that stores 1 into capacity
+failed the drive (candidate failures=3 mismatches=3, digest
+a1d421ae against control f9aac08b) and exited 1; restored, green.
+
+**Census.** Registrations +2, floor 122 -> 124, oracle digest re-pinned
+0395afa0 -> f4db035e. phys_fn_002352 closes reconstructed; the census
+query holds 111 reconstructed phase-5 rows (read out, not carried). Gate
+state unchanged otherwise: RED=1 (vtables).
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
