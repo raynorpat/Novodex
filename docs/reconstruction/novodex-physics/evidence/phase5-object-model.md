@@ -2364,6 +2364,51 @@ A faithful transcription of the swept-AABB extent accumulation is in
 progress; it is NOT yet implemented or driven, and phys_fn_000951 STAYS
 `discovered`. No census or gate change.
 
+## 3z34. Slot-7 sweep fully decoded; transcribed contract pinned
+
+Round 17 two independent attempts to re-decode the slot-7 body stalled, so
+round 18 re-derived it from the capstone listing with an exact ESP-tracked
+x87 tracer and cross-verified against a freshly-dispatched decode that
+concluded with the same contract. The swept-AABB row (phys_fn_000951
+@0x20b20, 153 ins, `ret 8`, ECX + 2 stack DWORDs) transcribes:
+
+- Frame B = entry-0xac. Pose-0 rotation R copied to B+0x1c..0x3f through
+  `rep movsd 9` from this+0x0c (reads this+0x30..0x38 = T, this+0xe4..0xec
+  = H). Two frame corrections from my round-17 note: the `mov [esp+0x74]`
+  at 0x20b38 runs BEFORE `push edi`, so it stores T2 at B+0x78 (not
+  B+0x74); and the args are arg1=[entry+4]=OUT record=B+0xb0 (written in
+  the tail), arg2=[entry+8]=SWEPT record=B+0xb4 (read in the middle).
+- Dims store: +H0/+H1/+H2 at B+0x58/0x5c/0x60, -H0/-H1/-H2 at B+0x64/
+  0x68/0x6c, +H2 at B+0x84; -T0 at B+0x08.
+- Products (R row-major, col_k·v = R[3k]/R[3k+1]/R[3k+2] dot v):
+  B+0x18 = col1·(-T) = -(R1T0+R4T1+R7T2); B+0x14 = col2·(-T) =
+  -(R2T0+R5T1+R8T2); col0·(-T) on stack. B+0x0c = col1·(+T), B+0x10 =
+  col2·(+T); the col·(+T)+col·(-T)=0 sums into dead B+0x4c/0x50/0x54/
+  B+0x10 are discarded; only B+0x14/B+0x18 survive as args.
+- Middle phase on the SWEPT record (eax=arg2): B+0x08 = col0·s
+  (R0*s0+R3*s1+R6*s2), B+0x0c = col1·s, B+0x20 = col2·s (third store at
+  B+0x20, not 0x10/0x14; B+0x0c is overwritten).
+- Six cdecl args to phys_fn_001730 @0x38050 (order param0..param5 = last
+  push .. first push): T2 (B+0x78), -H1 (B+0x68), +H0 (B+0x58), col0·s
+  (B+0x08), col1·(-T) (B+0x18), col2·(-T) (B+0x14). After `add esp,0x18`:
+  eax == -1 -> MISS (je B+0xd10), else HIT.
+- Tail (`eax`=arg1 OUT record; esp has returned to B+8 so `[esp+0xc]`
+  reads B+0x14): `fld [B+0x14]=col2·(-T); fabs; fstp [eax]` writes
+  |col2·(-T)| = |R2T0+R5T1+R8T2| to out[0]. Return al=1 (hit, writes) /
+  al=0 (miss). Verified against the listing with the esp-with-pops pinned:
+  at 0x20cf6/0x20cfa esp=B+8 (six arg pushes reclaimed by `add esp,0x18`
+  + the two prologue `pop edi/esi`), so `[esp+0xc]`=B+0x14 and
+  `[esp+0xa8]`=B+0xb0=arg1.
+- The helper 001730 is itself ~137 instructions (0x38050..0x381b7): a
+  swept-AABB overlap fold seeded to min=+FLT_MAX-derived epsilon
+  (1.1920929e-07, [0x10107a0c]) / max=-1.1920929e-07 ([0x10107a10]) that
+  returns the hit axis index or, via `or eax,-1`, -1 on miss. It is a
+  Phase-2 discovered row NOT yet transcribed or driven: slot-7 actually
+  closes only together with 001730, so phys_fn_000951 STAYS `discovered`.
+  This section pins the two-frame corrections and the six-arg contract
+  that the upcoming transcription + differential will hold; no
+  implementation, census, or gate change this round.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
