@@ -1776,6 +1776,47 @@ machinery Phase 3 owns), and slot 7 (phys_fn_000951, the sweep entry).
 The actor tables (0x1043d0/0x104530, 87/88 slots) are the deep half of
 the same family and belong to Task 4's scale.
 
+## 3z19. Slate 12: the slot-3 leaf pair closes (001287, 000931)
+
+Leaf-first toward the BOX vtable's slot 3 (phys_fn_000945, still open --
+its other callees 001305 and 001279 carry their own chains):
+
+- phys_fn_001287 (0x000257d0, 14 B): the +0xde halfword zero-extended and
+  ANDed with the stack mask -- `ShapeBase::nxFlagBitsDE`. Drive: five
+  masks off a marked record; edge bits 0x8000/0x80a7/0xffff with masks
+  0xffffffff/0xffff0000 assert the movzx zero extension. Mutant reading
+  +0xdc -> ae87d045 (red), restored -> green.
+- phys_fn_000931 (0x00020490, 70 B): ordered descriptor transfers --
+  out[0..2] translation from +0x30, out[6..14] rotation (forward copy,
+  rep movsd 9) from +0x0c, THEN out[3..5] dims from +0xe4 --
+  `BoxShape::nxFillShapeDescriptor`. Word-wise volatile transfers keep the
+  image's order when out aliases the shape; bulk memcpy/memmove and
+  dims-first orderings are not equivalent. Drive: aliasing twin buffers at
+  offsets 0/4/c/24/cc/e4/240, all bitwise-matching the oracle. Mutant
+  reading +0xe0 -> 7cd1b1e7 (red), restored -> green.
+
+Two independent defects caught by review + falsification before close:
+(1) the first transcription copied DIMS BEFORE ROTATION -- invisible to
+the non-aliased digest, caught by an aliasing fixture the review
+specified (rotation overwrites the dims source first); (2) the first
+drive sized its buffer 0xe0, so BOTH sides read stack garbage past 0xe0
+and the digests diverged nondeterministically (oracle rec[3..5] showed
+ASCII fragments of unrelated stack). The getter also reads past the 0xe0
+ShapeBase extent, so the receiver moved from ShapeBase to BoxShape.
+
+The Phase 5 gate caught its registration defect a second time
+(same class as 3z16): the harness's coverage printf did not emit
+shapeleaf=1. The count guard held; the key was added and the gate
+evaluates 126/126 (floor 122 -> 124 -> 126; composite oracle digest
+0395afa0 -> f4db035e -> 16dceb3c across slates 11/12).
+
+Census: phys_fn_001287 (phase 3) and phys_fn_000931 (phase 2) move to
+reconstructed with static + dynamic proof; the shapeleaf family
+registration is +2 (row + candidate drive). Phase 5 reconstructed count
+stays 111 (both closures are phase-2/3 rows). The vtables RED remains
+byte-pinned per 3z18; next slate: 001305 -> 001279 -> 000945, then the
+BOX table can carry its first real dispatch.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
