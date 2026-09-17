@@ -2086,6 +2086,41 @@ Census: phys_fn_001305 STAYS `discovered` (no family registration); the
 candidate is driven only through the rendercap differential on an
 oracle-layout fixture. The vtables RED remains byte-pinned per 3z18.
 
+## 3z27. Scale semantics decoded: the round-9 anomaly was a diagnostic bug
+
+The round-9 "all-zero payloads at scale 2.0" (3z26's open question) was
+MY diagnostic, not the binary: the mask-5 dump indexed
+`unsigned char oLine[8][28]` rows BYTES (`oLine[i][0..6]`), printing the
+low bytes of the stored dwords. Byte-level consistency confirms it:
+0x40000000 stores as bytes 00 00 00 40, so every printed offset read
+0x00. The oracle's true mask-5 payloads were never observed as zeros.
+
+With the diagnostic corrected to DWORD rows and the mask-5 endpoint
+literal derived from K = scale*guardA = 2.0 (0x25985..0x2598e), the
+ORACLE lens passed mask 5 first try (r10-scale.log): the shipped binary
+scales the rotation column ONCE, exactly as the listing states. The
+"Candidate lens" immediately failed c(3,0) expected(3,0) -- exposing a
+REAL live defect in the round-9 transcription: the candidate computed
+k * (rot*k) + t, scaling twice (rot*k^2 = 4.0 vs oracle 2.0). Fixed to
+a single K multiply (0x25a0e..0x25a28, one fmul per element).
+
+Scale-1 blindness: the double scale is invisible at scale 1.0 (k^2 = k)
+-- the same fixture-choice hazard as the round-8 transposed-index find.
+Scale-2 mask 5 was REQUIRED to expose it; masks 0-4 alone pass both
+forms. FALSIFICATION: the deliberate double-scale mutant
+(k = scale*guardA*2) failed the candidate lens at mask 1
+(c(3,0) expected(3,0), build/r10-mut.log) -- earliest drawn mask in the
+loop, since every scaled mask diverges -- and was restored green.
+
+Final state (r10-final-gate.log): masks 0-5 contract+candidate agree
+including scale-2 endpoints (mask=5 n20=3 n38=0), boxray sweep 72/72,
+inventory pass (6338 functions, 0 unexplained), coverage 126/126, sole
+RED the byte-pinned vtables gate. Census: phys_fn_001305 STAYS
+`discovered`; scale=2.0 is now a driven fixture, and the remaining open
+region narrows to non-unit guard values not in {0,1,2}, unordered guard
+comparisons, and non-identity poses (the sweep's pose coverage covers
+the lines arm's matrix read; the pose-draw arm remains identity-only).
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
