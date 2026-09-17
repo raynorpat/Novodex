@@ -112,6 +112,27 @@ static void nxGuardedCtor(NxShapeCtorFn fn, void* object, void* owner,
 	outAddr = gFaultAddr;
 	}
 
+// Guarded void(void*) call under SEH so a fault inside a driven row reports
+// through gFaultCode instead of killing the transcript. Convention-generic:
+// the function pointer's OWN type names the convention -- re-casting the
+// candidate's cdecl thunk to __thiscall here (the first spelling) put the
+// receiver in ecx and left the stack argument garbage.
+template<class Fn>
+static void nxGuardedVoidCall(Fn fn, void* object)
+	{
+	gFaultCode = 0;
+	gFaultAddr = 0;
+	__try
+		{
+		fn(object);
+		}
+	__except(gFaultAddr = (unsigned) GetExceptionInformation()->ExceptionRecord->ExceptionAddress,
+		gFaultCode = GetExceptionInformation()->ExceptionRecord->ExceptionCode,
+		EXCEPTION_EXECUTE_HANDLER)
+		{
+		}
+	}
+
 // Allocator shim, shared by every shape-ctor probe whose collision-object arm
 // allocates through the SDK allocator singleton ([.data 0x101041bc] ->
 // holder -> interface -> vtable slot +8). The shipped holder word is NULL
@@ -180,7 +201,10 @@ static void nxHeapFree(void* p)
 	if(p == nullptr) return;
 	unsigned off = static_cast<unsigned>(
 		reinterpret_cast<unsigned char*>(p) - 4 - g_arena);
-	if(off >= sizeof(g_arena)) return;
+	if(off >= sizeof(g_arena))
+		{
+		return;
+		}
 	unsigned sz = *reinterpret_cast<unsigned*>(g_arena + off);
 	g_heapFreeOps += 1;
 	g_heapFreeBytes += sz;
@@ -207,11 +231,13 @@ static void nxHeapFree(void* p)
 static bool nxInstallAllocatorShim(const unsigned char* base)
 	{
 	typedef void* (__fastcall* NxAllocFn)(void*, void*, unsigned, unsigned);
-	static NxAllocFn sTable[6];
+	typedef void* (__fastcall* NxAllocFn)(void*, void*, unsigned, unsigned);
+	// Adapter vtable layout, from the shipped tables: +0x00/+0x0c/+0x14 are
+	// free variants (one pushed pointer), +0x08 is malloc (two pushed args:
+	// size, flags). The SdkContainer helper at 0x000b4000 uses the same
+	// layout through the Foundation global at .data 0x1012845c.
 	struct NxShim
 		{
-		// Adapter vtable layout: +0x00/+0x0c/+0x14 are free variants (one
-		// pushed pointer), +0x08 is malloc (two pushed args: size, flags).
 		static void* __fastcall freeA(void*, void*, unsigned p)
 			{ nxHeapFree(reinterpret_cast<void*>(p)); return nullptr; }
 		static void* __fastcall freeB(void*, void*, unsigned p)
@@ -223,6 +249,7 @@ static bool nxInstallAllocatorShim(const unsigned char* base)
 		static void* __fastcall freeD(void*, void*, unsigned p)
 			{ nxHeapFree(reinterpret_cast<void*>(p)); return nullptr; }
 		};
+	static void* sTable[6];
 	sTable[0] = reinterpret_cast<NxAllocFn>(&NxShim::freeA);
 	sTable[2] = reinterpret_cast<NxAllocFn>(&NxShim::alloc);
 	sTable[3] = reinterpret_cast<NxAllocFn>(&NxShim::freeB);
@@ -234,6 +261,43 @@ static bool nxInstallAllocatorShim(const unsigned char* base)
 		return false;
 	void* iface = sIface;
 	memcpy((void*) holder, &iface, 4);
+	return true;
+	}
+
+// The SdkContainer rows (phys_fn_004846 and the 002352 thunk into it) reach
+// the allocator through the Foundation global at .data 0x1012845c -- the
+// helper at 0x000b4000 returns it and defaults it to the static CRT adapter
+// at 0x10122368. Repointing only the SDK holder left empty() freeing arena
+// blocks through the CRT heap: the 0xc0000374 that killed the first three
+// addthunk runs. Same adapter layout, same emulator.
+static bool nxInstallFoundationShim(const unsigned char* base)
+	{
+	typedef void* (__fastcall* NxFreeFn)(void*, void*, unsigned);
+	struct NxFShim
+		{
+		// The Foundation adapter's free slots take ONE pushed pointer --
+		// 0x000b4060 is pop ecx; ret 4 -- so these pop 4, not 8. The
+		// 4-parameter spelling made every oracle empty() drive drift the
+		// stack by four bytes: the wild c0000005 at ee5710dc.
+		static void* __fastcall freeA(void*, void*, unsigned p)
+			{ nxHeapFree(reinterpret_cast<void*>(p)); return nullptr; }
+		static void* __fastcall freeB(void*, void*, unsigned p)
+			{ nxHeapFree(reinterpret_cast<void*>(p)); return nullptr; }
+		static void* __fastcall alloc(void*, void*, unsigned size)
+			{ return nxHeapAlloc(size); }
+		static void* __fastcall freeC(void*, void*, unsigned p)
+			{ nxHeapFree(reinterpret_cast<void*>(p)); return nullptr; }
+		static void* __fastcall freeD(void*, void*, unsigned p)
+			{ nxHeapFree(reinterpret_cast<void*>(p)); return nullptr; }
+		};
+	static NxFreeFn fTable[6];
+	fTable[0] = &NxFShim::freeA;
+	fTable[2] = &NxFShim::alloc;
+	fTable[3] = &NxFShim::freeB;
+	fTable[5] = &NxFShim::freeC;
+	static void* fIface[1] = { fTable };
+	void* iface = fIface;
+	memcpy(const_cast<unsigned char*>(base) + 0x0012845c, &iface, 4);
 	return true;
 	}
 
@@ -498,6 +562,149 @@ static unsigned nxTestSlot1Wrapper(const unsigned char* base, bool selfOnly,
 	return oracle.failures + candidate.failures + mismatches;
 	}
 
+// phys_fn_002352: the +0x28 adjustor thunk into SdkContainer::empty
+// (0x000b4f50). Three containers: an owned buffer (factor 2.0f) whose free
+// must fire through the allocator, an external buffer (factor -1.0f, the
+// not-owned marker) whose buffer must be kept, and a null-entries container
+// (no free). The adjustor offset itself is pinned by field identity: the
+// thunk receives container-0x28, so a wrong offset clears the wrong words.
+struct NxAddThunkResult
+	{
+	unsigned words[3][7];
+	unsigned digest;
+	unsigned failures;
+	};
+
+template<class Thunk>
+static NxAddThunkResult nxDriveAddThunk(Thunk thunk)
+	{
+	NxAddThunkResult result = {};
+	result.digest = 2166136261u;
+
+	// -- case 0: owned buffer.
+	unsigned cOwned[4];
+	memset(cOwned, 0xcd, sizeof(cOwned));
+	cOwned[0] = 4;
+	cOwned[1] = 3;
+	unsigned* buf = static_cast<unsigned*>(nxHeapAlloc(4 * sizeof(unsigned)));
+	buf[0] = 0x5a5a0001u;
+	buf[1] = 0x5a5a0002u;
+	buf[2] = 0x5a5a0003u;
+	buf[3] = 0xcacacacau;
+	cOwned[2] = reinterpret_cast<unsigned>(buf);
+	cOwned[3] = 0x40000000u;			// 2.0f
+	const unsigned factorBits = cOwned[3];
+	NxHeapMark m0 = nxHeapMarkNow();
+	nxGuardedVoidCall(thunk,
+		reinterpret_cast<unsigned char*>(cOwned) - 0x28);
+	if(gFaultCode)
+		return result;
+	result.words[0][0] = g_heapFreeOps == m0.fo + 1 ? 1u : 0u;
+	result.words[0][1] = g_heapMallocOps == m0.mo ? 1u : 0u;
+	result.words[0][2] = cOwned[0] == 0 && cOwned[1] == 0 && cOwned[2] == 0
+		? 1u : 0u;
+	result.words[0][3] = cOwned[3] == factorBits ? 1u : 0u;
+	result.words[0][4] = buf[0];		// empty() must not write the buffer
+	result.words[0][5] = g_heapFreeBytes - m0.fb;	// the planted block's size
+	result.words[0][6] = 1u;
+
+	// -- case 1: external buffer, factor -1.0f.
+	unsigned cExt[4];
+	memset(cExt, 0xcd, sizeof(cExt));
+	static unsigned extBuf[4] = { 0x6b6b0001u, 0x6b6b0002u, 0, 0 };
+	cExt[0] = 4;
+	cExt[1] = 2;
+	cExt[2] = reinterpret_cast<unsigned>(extBuf);
+	cExt[3] = 0xbf800000u;				// -1.0f
+	NxHeapMark m1 = nxHeapMarkNow();
+	thunk(reinterpret_cast<unsigned char*>(cExt) - 0x28);
+	result.words[1][0] = g_heapFreeOps == m1.fo && g_heapMallocOps == m1.mo
+		? 1u : 0u;
+	// The listing's shared tail (0x000b4f81/87) clears ONLY capacity and
+	// count; the entries pointer survives the external-buffer arm -- it is
+	// nulled at 0x000b4f7a only inside the owned arm, before the shared
+	// clear. First decode had cExt[2]==0 here; the oracle's own drive
+	// corrected it.
+	result.words[1][1] = cExt[0] == 0 && cExt[1] == 0
+		&& cExt[2] == reinterpret_cast<unsigned>(extBuf) ? 1u : 0u;
+	result.words[1][2] = extBuf[0];
+	result.words[1][3] = 1u;
+
+	// -- case 2: null entries.
+	unsigned cNull[4];
+	memset(cNull, 0xcd, sizeof(cNull));
+	cNull[0] = 0;
+	cNull[1] = 0;
+	cNull[2] = 0;
+	cNull[3] = 0x40000000u;
+	NxHeapMark m2 = nxHeapMarkNow();
+	thunk(reinterpret_cast<unsigned char*>(cNull) - 0x28);
+	result.words[2][0] = g_heapFreeOps == m2.fo && g_heapMallocOps == m2.mo
+		? 1u : 0u;
+	result.words[2][1] = cNull[0] == 0 && cNull[1] == 0 && cNull[2] == 0
+		? 1u : 0u;
+	result.words[2][2] = 1u;
+
+	// Explicit expectations, hand-derived from the listing: free exactly the
+	// owned block, keep the external one, never touch the buffer bytes, and
+	// always clear capacity/count/entries.
+	result.digest = nxFold(result.digest, result.words[0][0]);
+	result.digest = nxFold(result.digest, result.words[0][1]);
+	result.digest = nxFold(result.digest, result.words[0][2]);
+	result.digest = nxFold(result.digest, result.words[0][3]);
+	result.digest = nxFold(result.digest, result.words[0][4]);
+	result.digest = nxFold(result.digest, result.words[0][5]);
+	if(result.words[0][0] != 1u) ++result.failures;
+	if(result.words[0][1] != 1u) ++result.failures;
+	if(result.words[0][2] != 1u) ++result.failures;
+	if(result.words[0][3] != 1u) ++result.failures;
+	if(result.words[0][4] != 0x5a5a0001u) ++result.failures;
+	if(result.words[0][5] != ((4 * sizeof(unsigned) + 7u) & ~7u) + 4u)
+		++result.failures;
+	result.digest = nxFold(result.digest, result.words[1][0]);
+	result.digest = nxFold(result.digest, result.words[1][1]);
+	result.digest = nxFold(result.digest, result.words[1][2]);
+	if(result.words[1][0] != 1u) ++result.failures;
+	if(result.words[1][1] != 1u) ++result.failures;
+	if(result.words[1][2] != 0x6b6b0001u) ++result.failures;
+	result.digest = nxFold(result.digest, result.words[2][0]);
+	result.digest = nxFold(result.digest, result.words[2][1]);
+	if(result.words[2][0] != 1u) ++result.failures;
+	if(result.words[2][1] != 1u) ++result.failures;
+	return result;
+	}
+
+// Declared in ObjectModel.h as void (the thunk's own return is whatever
+// empty() leaves in eax -- unpinned, like phys_fn_000004's null path).
+void nxContainerAddThunk(void* innerThis);
+
+static unsigned nxTestAddThunk(const unsigned char* base, bool selfOnly,
+	unsigned& oracleDigest)
+	{
+	typedef void (__thiscall* OracleThunk)(void*);
+	NxAddThunkResult oracle = nxDriveAddThunk(
+		reinterpret_cast<OracleThunk>(const_cast<unsigned char*>(base) + 0x5b610));
+	oracleDigest = nxFold(oracleDigest, oracle.digest);
+	printf("addthunk row=oracle failures=%u digest=%08x\n",
+		oracle.failures, oracle.digest);
+	if(selfOnly)
+		return oracle.failures;
+	// The candidate thunk is a cdecl free function (the transcript's own
+	// spelling), not __thiscall: driving it through a thiscall pointer put
+	// the receiver in ecx and left the stack argument garbage, and the
+	// guard ate the fault into a zero-folded digest.
+	NxAddThunkResult candidate = nxDriveAddThunk(
+		reinterpret_cast<void (__cdecl*)(void*)>(&nxContainerAddThunk));
+	unsigned mismatches = 0;
+	for(unsigned i = 0; i < 3; ++i)
+		for(unsigned j = 0; j < 7; ++j)
+			if(oracle.words[i][j] != candidate.words[i][j])
+				++mismatches;
+	printf("addthunk candidate failures=%u mismatches=%u digest=%08x\n",
+		candidate.failures, mismatches, candidate.digest);
+	return oracle.failures + candidate.failures + mismatches;
+	}
+
 static bool nxSha256(const wchar_t* path, char* text)
 	{
 	HANDLE file = CreateFileW(path, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
@@ -524,12 +731,13 @@ static bool nxSha256(const wchar_t* path, char* text)
 int wmain(int argc, wchar_t** argv)
 	{
 	bool selfOnly = false;
+	bool addThunkOnly = argc == 4 && wcscmp(argv[3], L"--addthunk-only") == 0;
 	bool slot1Only = argc == 4 && wcscmp(argv[3], L"--slot1-only") == 0;
 	if(argc == 4 && wcscmp(argv[3], L"--self") == 0)
 		selfOnly = true;
-	else if(argc != 3 && !slot1Only)
+	else if(argc != 3 && !slot1Only && !addThunkOnly)
 		{
-		fprintf(stderr, "usage: NxPhysicsObjectLayoutTests <oracle directory> <NxPhysics.dll sha256> [--self|--slot1-only]\n");
+		fprintf(stderr, "usage: NxPhysicsObjectLayoutTests <oracle directory> <NxPhysics.dll sha256> [--self|--slot1-only|--addthunk-only]\n");
 		return 2;
 		}
 
@@ -573,11 +781,37 @@ int wmain(int argc, wchar_t** argv)
 
 	const unsigned char* base = (const unsigned char*) physics;
 
+	// The oracle side must serve frees from the emulator before any family
+	// drives oracle code that releases memory: the addthunk drive was the
+	// first to hit this, crashing 0xc0000374 on the first run because its
+	// oracle empty() freed an arena block through the oracle's own adapter
+	// before the shim existed. Installing once here makes the allocator
+	// state uniform from the first drive; the per-block installs below are
+	// idempotent re-pins of the same holder word.
+	if(!nxInstallAllocatorShim(base))
+		return nxFail("the allocator holder word moved; re-pin the probe");
+	printf("layout allocator-shim=installed\n");
+
+	// The SdkContainer rows (phys_fn_004846/002352) reach the allocator
+	// through a DIFFERENT global: the helper at 0x000b4000 reads the
+	// Foundation instance pointer at .data 0x1012845c (defaulting to the
+	// static CRT adapter at 0x10122368 whose slot +0xc is a plain free).
+	// Repointing only the SDK holder left empty() freeing arena blocks
+	// through the CRT heap -- the 0xc0000374 that killed the first three
+	// addthunk runs. Same adapter layout, same emulator.
+	if(!nxInstallFoundationShim(base))
+		return nxFail("the Foundation allocator global is unwritable");
+	printf("layout foundation-shim=installed\n");
+
 	unsigned oracleDigest = 2166136261u;
+	unsigned addThunkFailures = nxTestAddThunk(base, selfOnly, oracleDigest);
+	if(addThunkOnly)
+		return addThunkFailures == 0 ? 0 : 1;
 	unsigned slot1Failures = nxTestSlot1Wrapper(base, selfOnly, oracleDigest);
 	if(slot1Only)
 		return slot1Failures == 0 ? 0 : 1;
-	unsigned candidateMissing = slot1Failures != 0 ? 1u : 0u;
+	unsigned candidateMissing = (slot1Failures != 0 || addThunkFailures != 0)
+		? 1u : 0u;
 	float oMin = 0.0f, oMax = 0.0f;
 	unsigned oMinBits = 0, oMaxBits = 0, cMinBits = 0, cMaxBits = 0;
 	unsigned oShapeBaseDigest = 0;
@@ -4216,7 +4450,7 @@ int wmain(int argc, wchar_t** argv)
 		ab[0], ab[1], ab[2], ab[3], ab[4], ab[5]);
 	}
 
-	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1 slot1wrapper=1\n",
+	printf("layout coverage tables=%u colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1 slot1wrapper=1 addthunk=1\n",
 		(unsigned) (sizeof(nxTables) / sizeof(nxTables[0])));
 	printf("layout oracle digest=%08x\n", oracleDigest);
 

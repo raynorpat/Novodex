@@ -258,7 +258,8 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# pinned DLL so the layouts Tasks 2 and 3 write already have something
 	# failing for them. See evidence/phase5-object-model.md.
 	add_executable(NxPhysicsObjectLayoutTests tests/PhysicsObjectLayoutTests.cpp
-		Physics/src/ObjectModel.cpp Physics/src/opcode/IcePrunable.cpp
+		Physics/src/ObjectModel.cpp Physics/src/Containers.cpp
+		Physics/src/opcode/IcePrunable.cpp
 		Physics/src/ThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp)
 	target_include_directories(NxPhysicsObjectLayoutTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include Physics/src/include

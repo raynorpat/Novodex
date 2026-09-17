@@ -6,6 +6,7 @@
 |
 \*----------------------------------------------------------------------------*/
 #include "ObjectModel.h"
+#include "Containers.h"
 
 #include <math.h>
 #include <string.h>
@@ -1321,13 +1322,15 @@ void nxDestroyCachedList(void* self)
 	}
 
 // phys_fn_002352 (0x5b610): adjustor thunk -- `add ecx,0x28`, tail-call to
-// phys_fn_004846 at 0xb4f50 (already reconstructed from vendored OPCODE).
-unsigned nxContainerAddThunk(void* innerThis)
+// phys_fn_004846 at 0xb4f50 (SdkContainer::empty). The thunk's return is
+// whatever empty() leaves in eax -- unpinned, like the null path of
+// phys_fn_000004. The first spelling hard-coded the oracle's absolute
+// 0x100b4f50: in the candidate process that is oracle code reached with
+// ecx invalid -- the differential caught it as c0000005 at 0xb4f53.
+void nxContainerAddThunk(void* innerThis)
 	{
-	typedef unsigned (__thiscall* NxContFn)(void* self);
-	NxContFn fn = reinterpret_cast<NxContFn>(0x100b4f50u);
-	return fn(reinterpret_cast<void*>(
-		reinterpret_cast<unsigned>(innerThis) + 0x28));
+	reinterpret_cast<SdkContainer*>(
+		reinterpret_cast<unsigned>(innerThis) + 0x28)->empty();
 	}
 
 // phys_fn_002379 (0x5b860): virtual slot-1 wrapper -- invokes arg's own

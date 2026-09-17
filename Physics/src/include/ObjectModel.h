@@ -836,6 +836,10 @@ void					nxPoolDeletingDtor78c(void* self, unsigned flags);
 //! each node's virtual slot 0 with argument 1.
 void					nxDestroyCachedList(void* self);
 
+//! phys_fn_002352 (0x5b610): adjustor thunk -- adds 0x28 to this and calls
+//! SdkContainer::empty (phys_fn_004846 at 0xb4f50).
+void					nxContainerAddThunk(void* innerThis);
+
 //! phys_fn_000080: readBodyFlag -- ([record+0x10c] byte AND mask) under the
 //! read guard; kind-1 warning and false on a static actor.
 bool					nxActorReadBodyFlag(void* self, unsigned mask);
