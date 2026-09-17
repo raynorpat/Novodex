@@ -2060,7 +2060,7 @@ void MassFrame::nxMassFrameScale(float s)
 
 // phys_fn_000839 (0x0001c630), __thiscall ret 4. The weights live at +0x30 on
 // both frames; the quotient divides the .rdata 1.0f literal by their sum (a
-// real fdiv, kept single-precision-source but full x87 precision). The
+// real fdiv, then rounded by fstp m32 at 0x1c695 before use). The
 // products are formed weight-times-offset per frame first, added pairwise --
 // x-side as other+this, y/z sides as this+other, matching the stack order --
 // scaled by the quotient and stored z, x, y. Then mass takes the raw sum and
@@ -2068,18 +2068,21 @@ void MassFrame::nxMassFrameScale(float s)
 void MassFrame::nxMassFrameMerge(const MassFrame& other)
 	{
 	double sum = static_cast<double>(mMass) + static_cast<double>(other.mMass);
-	double q = static_cast<double>(gMassDensitySentinel) / sum;
+	const NxF32 q = static_cast<NxF32>(static_cast<double>(gMassDensitySentinel) / sum);
 
 	double ax = static_cast<double>(other.mMass) * static_cast<double>(other.mOffset.x);
-	double ay = static_cast<double>(other.mMass) * static_cast<double>(other.mOffset.y);
-	double az = static_cast<double>(other.mMass) * static_cast<double>(other.mOffset.z);
-	double cx = static_cast<double>(mMass) * static_cast<double>(mOffset.x);
-	double cy = static_cast<double>(mMass) * static_cast<double>(mOffset.y);
-	double cz = static_cast<double>(mMass) * static_cast<double>(mOffset.z);
+	const NxF32 ay = static_cast<NxF32>(static_cast<double>(other.mMass) * other.mOffset.y);
+	const NxF32 az = static_cast<NxF32>(static_cast<double>(other.mMass) * other.mOffset.z);
+	const NxF32 cx = static_cast<NxF32>(static_cast<double>(mMass) * mOffset.x);
+	const NxF32 cy = static_cast<NxF32>(static_cast<double>(mMass) * mOffset.y);
+	const NxF32 cz = static_cast<NxF32>(static_cast<double>(mMass) * mOffset.z);
+	// Other-x stays in the FPU stack; y/z pairwise sums are stored m32.
+	const NxF32 sy = static_cast<NxF32>(static_cast<double>(cy) + ay);
+	const NxF32 sz = static_cast<NxF32>(static_cast<double>(cz) + az);
 
 	NxF32 zx = static_cast<NxF32>((ax + cx) * q);
-	NxF32 zz = static_cast<NxF32>((cz + az) * q);
-	NxF32 zy = static_cast<NxF32>((cy + ay) * q);
+	NxF32 zz = static_cast<NxF32>(static_cast<double>(sz) * q);
+	NxF32 zy = static_cast<NxF32>(static_cast<double>(sy) * q);
 	mOffset.x = zx;						// fstp [ecx+0x24]
 	mOffset.y = zy;						// fstp [ecx+0x28]
 	mOffset.z = zz;						// fstp [ecx+0x2c] (stored first in the image)
@@ -2304,7 +2307,18 @@ void MassFrame::nxMassFrameConditionalZero(unsigned flag)
 	mMass = 0.0f;
 	}
 
-// phys_fn_000849 (0x0001c8c0), __thiscall ret 0xc, BOX-table slot 4.
+// Provisional phys_fn_000947, ret 12: three stack DWORDs; the last is unused.
+bool BoxShape::nxBoxAccumulateMass(MassFrame* destination, float density, unsigned reserved)
+	{
+	(void) reserved;
+	if(!mBase.nxFlagBitsDE(7))
+		nxBoxComputeMassFrame(destination, density, mHull.mDims04, &mBase.mPose6C);
+	return true;
+	}
+
+// phys_fn_000849 (0x0001c8c0), __thiscall ret 0xc, helper of BOX slot 4.
+// Pose support is provisional: centered boxes and the driven finite poses;
+// general x87 staging, exceptional inputs and payload aliasing remain open.
 void BoxShape::nxBoxComputeMassFrame(MassFrame* dest, float density,
 	const float* halfExtents, const void* extra)
 	{
@@ -2312,9 +2326,25 @@ void BoxShape::nxBoxComputeMassFrame(MassFrame* dest, float density,
 	local.nxMassFrameBuildBox(halfExtents);
 	if(extra != nullptr)
 		{
-		// push extra; call 0x1bdc0 ; extra += 0x24 ; call 0x1c040 -- the
-		// parallel-axis pair, not yet transcribed; drives pass null.
-		(void) extra;
+		// 0x1c8dd: rotate the centered box frame by the first nine pose words.
+		local.nxMassFrameFoldPayload(extra);
+		// Centered-box specialization of 000833 (0x1c040): the local
+		// frame starts with zero center. Add m*(|t|^2 I - t*t^T), then
+		// center += t. The image stores mass-scaled terms to float before
+		// adding them to inertia (0x1c4a3..0x1c575).
+		const float* translation = static_cast<const float*>(extra) + 9;
+		const double x = translation[0], y = translation[1], z = translation[2];
+		const double terms[9] = { y*y+z*z, -x*y, -x*z,
+			-y*x, x*x+z*z, -y*z, -z*x, -z*y, x*x+y*y };
+		for(unsigned i = 0; i < 9; ++i)
+			{
+			const float term = static_cast<float>(terms[i]);
+			const float scaled = static_cast<float>(static_cast<double>(term) * local.mMass);
+			local.mInertia[i] = static_cast<float>(static_cast<double>(local.mInertia[i]) + scaled);
+			}
+		local.mOffset.x += translation[0];
+		local.mOffset.y += translation[1];
+		local.mOffset.z += translation[2];
 		}
 	if(density != gMassDensitySentinel)
 		local.nxMassFrameScale(density);

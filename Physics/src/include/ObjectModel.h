@@ -382,6 +382,11 @@ class BoxShape
 	//! Used by the conditional debug-render arm of BOX slot 3.
 	void				nxFillShapeDescriptor(unsigned* out) const;
 
+	//! Provisional BOX slot 4, phys_fn_000947 (0x20850), ret 12.
+	//! Uses this shape's dimensions and third pose; low flag bits suppress
+	//! accumulation. The third stack DWORD is ignored. Always returns true.
+	bool nxBoxAccumulateMass(MassFrame* destination, float density, unsigned reserved);
+
 	//! phys_fn_000949 (BOX slot 5). Point/t are written before distance
 	//! rejection; arg3 is unused. Numerical fidelity beyond driven fixtures
 	//! remains open; this is not yet a census-closed implementation.
@@ -443,7 +448,7 @@ class BoxShape
 	//! row fills all three slots.
 	BoxShape*			nxBoxSelf() const { return const_cast<BoxShape*>(this); }
 
-	//! BOX-table slot 4, phys_fn_000849 (0x0001c8c0), __thiscall
+	//! Mass helper called by BOX slot 4, phys_fn_000849 (0x0001c8c0), __thiscall
 	//! `ret 0xc`: the compute-mass row. Builds the unit-density solid-box
 	//! frame from the three half-extents into a local MassFrame, folds the
 	//! optional payload pair when `extra` is non-null, scales by `density`
