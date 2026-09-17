@@ -16818,13 +16818,13 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/383",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2962",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "word-wise ordered transfers out[0..2] from +0x30, out[6..14] forward from +0x0c, then out[3..5] from +0xe4 (BoxShape::nxFillShapeDescriptor); reads past the 0xe0 ShapeBase extent, so the receiver is the box",
+      "dynamic_proof": "shapeleaf drive cb0e48f9 on a marked 0xf0-byte record; aliasing twin checks at offsets 0/4/c/24/cc/e4/240 all match, dims-first and wrong-offset mutants fail",
+      "notes": "receiver moved to BoxShape after review; drive buffer sized 0xf0 after the first drive read stack garbage past 0xe0 on both sides"
     },
     {
       "id": "phys_fn_000932",
@@ -23226,13 +23226,13 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/521",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3421",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "movzx eax, word [ecx+0xde]; and eax, [esp+4]; ret 4 -- the +0xde halfword zero-extended, then ANDed with the stack mask (ShapeBase::nxFlagBitsDE)",
+      "dynamic_proof": "shapeleaf drive cb0e48f9: five masks off a marked record; edge bits 0x8000/0x80a7/0xffff with masks 0xffffffff/0xffff0000 match oracle; mutant reading +0xdc fails (ae87d045)",
+      "notes": "closed via the Phase 5 shapeleaf family; BOX slot 3's conditional arm uses it with mask 8"
     },
     {
       "id": "phys_fn_001288",

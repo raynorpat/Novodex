@@ -714,12 +714,18 @@ $NxRequiredCoverageLines = [ordered] @{
         # SDK holder), external buffer kept with entries surviving the shared
         # tail, null entries a no-op, all three clearing exactly {cap, count}.
         'addthunk row=oracle failures=0 digest=f9aac08b',
+        # Slate 12: two leaf rows off a marked record -- the +0xde flag-bits
+        # reader (phys_fn_001287) over five masks and the descriptor getter
+        # (phys_fn_000931): translation, rotation, dims-at-+0xe4 into a
+        # 15-word record. The getter's dims read is past the 0xe0 base
+        # extent; the drive's buffer is 0xf0 bytes so the read is defined.
+        'shapeleaf row=oracle digest=cb0e48f9',
         'ownctor row=oracle d4=00000003 sent_ok=1 mirror_ok=1 shp_ok=1 digest=641beb67',
         'material row=template flags=00000000 digest=527814f5',
         'capdtor row=phys_fn_001014 digest=7a376673',
         'capaabb row=phys_fn_001004 minmax=80000000.80000000.80000000.00000000.00000000.00000000',
-        'layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1 slot1wrapper=1 addthunk=1',
-        'layout oracle digest=f4db035e',
+        'layout coverage tables=8 colobj=1 owner=1 hull=1 shapebase=1 boxshape=1 sphere=1 capsule=1 plane=1 mesh=1 basevt=3 basesave=1 boxrow=6 planesave=1 sphererows=4 capsave=1 meshword=1 aabbrows=3 meshrows=2 sphlocal=1 setrad=1 capsetrad=1 planeext=1 sphdtor=1 capdtor=1 setgroup=1 dtors2=2 sphload=1 slot1wrapper=1 addthunk=1 shapeleaf=1',
+        'layout oracle digest=16dceb3c',
         'hull support candidate ok=1 min_bits=c19c0000 max_bits=4eada5a5',
         'hull sharedhook candidate ok=1 stable=1',
         'basevt candidate ok=1 ret4=0 ret5=00000000 ret7=0',
@@ -768,6 +774,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'slate11 candidate ok=1 digest=2a145f64'
         'slot1wrapper candidate cases=4 failures=0 mismatches=0 digest=05167dcd'
         'addthunk candidate failures=0 mismatches=0 digest=f9aac08b'
+        'shapeleaf candidate ok=1 digest=cb0e48f9'
     )
 
     # The vendored third-party differential. Phase 4 vendors qhull 2003.1 and
@@ -925,7 +932,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 100  # 34 for NxPhysicsAssetTests, 66 for NxPhysicsThirdPartyTests
-    '5' = 124  # was 122: +2 for the addthunk family (row + candidate drive)
+    '5' = 126  # was 124: +2 for the shapeleaf family (row + candidate drive)
                # (RED on purpose: vtables family open)
     '6' = 0
     '7' = 0
