@@ -1680,6 +1680,30 @@ int wmain(int argc, wchar_t** argv)
 			}
 		}
 	printf("boxray contract cases=8 failures=0 mode=oracle-only\n");
+
+	// Candidate-side check on the same eight cases. The reconstruction's
+	// wrapper is provisional; this only fails if it disagrees with the
+	// oracle contract above.
+	BoxShape& shapeRef = *reinterpret_cast<BoxShape*>(shapeCap);
+	for(unsigned c = 0; c < sizeof(capCases) / sizeof(capCases[0]); ++c)
+		{
+		unsigned char recC[0x30];
+		memset(recC, 0xcd, sizeof(recC));
+		void* okC = shapeRef.nxBoxRaycast(capCases[c].ray, capCases[c].a2,
+			reinterpret_cast<const unsigned&>(capCases[c].a3),
+			capCases[c].flags, recC);
+		unsigned char recO[0x30];
+		memset(recO, 0xcd, sizeof(recO));
+		boxRay5Cap(shapeCap, capCases[c].ray, capCases[c].a2,
+			capCases[c].a3, capCases[c].flags, recO);
+		if(okC != (recO[0] == 0xcd ? nullptr : shapeCap)
+			|| memcmp(recC, recO, sizeof(recC)) != 0)
+			{
+			fprintf(stderr, "FAIL boxray candidate case=%u disagrees\n", c);
+			return 1;
+			}
+		}
+	printf("boxray candidate8 mode=provisional\n");
 	}
 
 	// -----------------------------------------------------------------------

@@ -7,6 +7,7 @@
 \*----------------------------------------------------------------------------*/
 #include "ObjectModel.h"
 #include "Containers.h"
+#include "NxIntersectionSegmentBox.h"
 
 #include <math.h>
 #include <string.h>
@@ -314,6 +315,84 @@ void BoxShape::nxFillShapeDescriptor(unsigned* out) const
 		dest[6 + i] = self[0x0c / 4 + i];	// 0x204a9..b4
 	for(unsigned i = 0; i < 3; ++i)
 		dest[3 + i] = self[0xe4 / 4 + i];	// 0x204b6..cf
+	}
+
+// Provisional phys_fn_000949 (BOX slot 5): the local-space raycast wrapper.
+// Store order per the listing: point z/x/y (0x20a10/17/1a) and t (0x20a1d)
+// BEFORE the distance gate (0x20a2f); acceptance then writes colobj, the
+// three zero words and tag 0x13, and the flags&4 arm overwrites tag 0x17
+// and the normal z/x/y (0x20b05..0x20b0b). Driven coverage must precede
+// census closure.
+void* BoxShape::nxBoxRaycast(const float* ray, float maxDistance,
+	unsigned reserved, unsigned flags, void* hit) const
+	{
+	(void) reserved;
+	const float* rot = reinterpret_cast<const float*>(&mBase.mPose0C.mRotation);
+	const float* trn = reinterpret_cast<const float*>(&mBase.mPose0C.mTranslation);
+	const float dx = ray[0] - trn[0];			// 0x00020887..8c
+	const float dy = ray[1] - trn[1];			// 0x0002088f..92
+	const float dz = ray[2] - trn[2];			// 0x00020899..9c
+	// R^T per column with the image association (dz*R2c + dy*R1c) + dx*R0c.
+	const float lo[3] =
+		{
+		dz * rot[6] + dy * rot[3] + dx * rot[0],
+		dz * rot[7] + dy * rot[4] + dx * rot[1],
+		dz * rot[8] + dy * rot[5] + dx * rot[2]
+		};
+	const float ld[3] =
+		{
+		ray[5] * rot[6] + ray[4] * rot[3] + ray[3] * rot[0],
+		ray[5] * rot[7] + ray[4] * rot[4] + ray[3] * rot[1],
+		ray[5] * rot[8] + ray[4] * rot[5] + ray[3] * rot[2]
+		};
+	const NxVec3 negDims(-mHull.mDims04[0], -mHull.mDims04[1], -mHull.mDims04[2]);
+	const NxVec3 posDims(mHull.mDims04[0], mHull.mDims04[1], mHull.mDims04[2]);
+	NxVec3 coord(0.0f, 0.0f, 0.0f);
+	NxReal t = 0.0f;
+	// 0x0002098c: (negDims, posDims, localOrigin, localDirection, coord, t).
+	const NxU32 plane = NxRayAABBIntersect2(negDims, posDims,
+		*reinterpret_cast<const NxVec3*>(lo),
+		*reinterpret_cast<const NxVec3*>(ld), coord, t);
+	if(plane == 0)
+		return nullptr;							// 0x00020998
+
+	unsigned char* rec = static_cast<unsigned char*>(hit);
+	// Point z/x/y then t, all BEFORE the gate: 0x00020a10/17/1a, 0x20a1d.
+	const float wz = coord.x * rot[6] + coord.y * rot[3] + coord.z * rot[0]
+		+ trn[0];								// st(2) arm, 0x2099e..a1a
+	const float wx = coord.x * rot[0] + coord.y * rot[1] + coord.z * rot[2]
+		+ trn[0];
+	const float wy = coord.x * rot[3] + coord.y * rot[4] + coord.z * rot[5]
+		+ trn[1];
+	memcpy(rec + 0x0c, &wz, 4);
+	memcpy(rec + 0x04, &wx, 4);
+	memcpy(rec + 0x08, &wy, 4);
+	memcpy(rec + 0x20, &t, 4);
+
+	if(!(t <= maxDistance))						// 0x00020a20, test ah,0x41
+		return nullptr;							// 0x00020a2f
+
+	memcpy(rec + 0x00, &mBase.mWord9C, 4);		// 0x00020a38..3e
+	const unsigned zero = 0;
+	memcpy(rec + 0x1c, &zero, 4);				// 0x00020a45
+	memcpy(rec + 0x24, &zero, 4);				// 0x00020a4c
+	memcpy(rec + 0x28, &zero, 4);				// 0x00020a53
+	unsigned tag = 0x13;						// 0x00020a5a
+	memcpy(rec + 0x2c, &tag, 4);
+	if(flags & 4)								// 0x00020a40, mask 0x04
+		{
+		tag = 0x17;								// 0x00020a72
+		memcpy(rec + 0x2c, &tag, 4);
+		float n[3] = { 0.0f, 0.0f, 0.0f };
+		n[plane - 1] = coord[plane - 1] < 0.0f ? -1.0f : 1.0f;
+		const float nz = n[0] * rot[6] + n[1] * rot[3] + n[2] * rot[0];
+		const float nx = n[0] * rot[0] + n[1] * rot[1] + n[2] * rot[2];
+		const float ny = n[0] * rot[3] + n[1] * rot[4] + n[2] * rot[5];
+		memcpy(rec + 0x18, &nz, 4);				// 0x00020b05
+		memcpy(rec + 0x10, &nx, 4);				// 0x00020b08
+		memcpy(rec + 0x14, &ny, 4);				// 0x00020b0b
+		}
+	return const_cast<BoxShape*>(this);		// 0x00020b0e: eax = this
 	}
 
 // Task 4 scaffolding: the scene shape-array insert. Write order follows the

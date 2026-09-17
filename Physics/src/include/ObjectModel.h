@@ -382,6 +382,12 @@ class BoxShape
 	//! Used by the conditional debug-render arm of BOX slot 3.
 	void				nxFillShapeDescriptor(unsigned* out) const;
 
+	//! phys_fn_000949 (BOX slot 5). Point/t are written before distance
+	//! rejection; arg3 is unused. Numerical fidelity beyond driven fixtures
+	//! remains open; this is not yet a census-closed implementation.
+	void* nxBoxRaycast(const float* ray, float maxDistance,
+		unsigned reserved, unsigned flags, void* hit) const;
+
 	//! BOX-table slot 10, phys_fn_000937 (0x00020670): writes the pose-one
 	//! translation (+0x30/+0x34/+0x38) to out[0..2] and a sqrt-of-squared-
 	//! dims value to out[3]. The x87 association of the sum is unestablished
