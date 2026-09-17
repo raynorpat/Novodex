@@ -440,22 +440,17 @@ void BoxShape::nxDebugRender(const void* renderer) const
 		const float k = *g_nxRenderScale * guardA;	// 0x2598e
 		const float* rot = reinterpret_cast<const float*>(&mBase.mPose0C.mRotation);
 		const float* trn = reinterpret_cast<const float*>(&mBase.mPose0C.mTranslation);
-		const float kCol[3][3] =
-			{
-			{ rot[0] * k, rot[3] * k, rot[6] * k },	// column 0 * K
-			{ rot[1] * k, rot[4] * k, rot[7] * k },
-			{ rot[2] * k, rot[5] * k, rot[8] * k }
-			};
 		static const unsigned axisColors[3] = { 0xcf0000u, 0xcf00u, 0xcfu };
 		for(unsigned axis = 0; axis < 3; ++axis)
 			{
 			const float start[3] = { trn[0], trn[1], trn[2] };
-			// 0x25a0e..0x25a28: endpoint component c = K*col[axis][row] + t[row].
+			// 0x25a0e..0x25a28: endpoint = t + K * column(axis), scaled ONCE
+			// (each element fmul'd by st(2)=K exactly one time in the chain).
 			const float end[3] =
 				{
-				k * kCol[axis][0] + trn[0],
-				k * kCol[axis][1] + trn[1],
-				k * kCol[axis][2] + trn[2]
+				k * rot[axis] + trn[0],
+				k * rot[3 + axis] + trn[1],
+				k * rot[6 + axis] + trn[2]
 				};
 			drawLine(rendererArg, nullptr, start, end, axisColors[axis]);
 			}
