@@ -2003,6 +2003,43 @@ in build/r7-payload-mut.log. This is an oracle-contract expectation
 mutation, NOT a candidate mutation. General poses, non-unit scales,
 unordered guard values and callback side effects remain undriven.
 
+## 3z25. The 54/72-case sweep: three real wrapper defects found and fixed
+
+The round-6 drive was too weak in three ways: it inferred candidate
+returns from output bytes instead of comparing them, and its eight
+identity-frame cases could not see coordinate defects that are invisible
+when rotation and translation vanish. The differential now compares
+ACTUAL return pointers (candidate method return vs oracle return), all
+record words plus canaries, over 4 poses x 6 faces x 3 distances
+(hit / 0.5 reject / quiet-NaN maximum) = 72 cases, run against an
+oracle-layout fixture. Direct member invocation tests candidate code on
+that fixture; it does not establish candidate construction or virtual
+dispatch. Census: phys_fn_000949 STAYS `discovered`.
+
+RED first: the expanded sweep failed 42/54. Three defects, each fixed
+against the listing before rerunning:
+
+1. World Z added trn[0]; 0x20a03 adds [esi+0x38] (translation Z).
+2. The gate rejected unordered comparisons; 0x20a20..2d `test ah,0x41`
+   takes the reject branch ONLY on ordered-greater, so NaN maximum must
+   be ACCEPTED (0x7fc00000 fixture).
+3. World Z and normal Z dots used the transposed column-0 form
+   (rot[6],rot[3],rot[0]) where the listing computes row-2
+   (0x209d8..0x20a03: cx*[esi+0x24]+cy*[esi+0x28]+cz*[esi+0x2c], and
+   0x20ae2..0x20af9 likewise). The transposed form coincides with row 2
+   for every axis-aligned and cyclic permutation -- 54 cases green was a
+   consequence of fixture choice, not correctness. The quarter-turn pose
+   (r0=(0,-1,0), r1=(1,0,0), r2=(0,0,1)) exposed it in words 4 and 7.
+
+Result: 72/72 agreement on actual returns and every record word
+(build/r8-green2.log, r8-final-gate.log). Falsifications: expecting
+radius zero failed the rendercap contract at mask 2 (r7-payload-mut);
+reversing the distance gate failed at boxray candidate case 0
+(r8-mut.log) and was restored to green. The transposed-index defect was
+a LIVE candidate bug found red and fixed green, not an expectation
+mutation. Remaining open: x87 extended-precision association against
+non-unit dims, the unused third argument, arbitrary poses.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
