@@ -1698,7 +1698,12 @@ alone. Restored, the row is green again.
 **Census.** miscsm2/slate11 digests re-pinned; oracle digest re-pinned
 8a423adf -> 0395afa0 (+2 registrations, coverage floor 120 -> 122).
 phys_fn_002379 closes reconstructed; Phase 5 reconstructed count rises to
-107. One transcription note: the registration's first commit omitted the
+110. **A count correction, on the record:** 3z15 printed 106, which was
+already stale — the inventory held 109 reconstructed phase-5 rows after
+002320 closed, and this close made 110. The number in a close note should
+be read out of the census by query, not carried forward by arithmetic; the
+stale values trace to rows closing in a single commit being tallied against
+a snapshot taken before it. One transcription note: the registration's first commit omitted the
 `slot1wrapper=1` key from the harness's own `layout coverage` line, which
 the phase gate caught on the next run (0 occurrences against its
 registration) — the count guard doing its job on a real defect, not only
