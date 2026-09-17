@@ -2165,6 +2165,44 @@ still been byte-typed (only its comment changed), and the boxray pose
 sweep does not cover debug rendering. The oracle capture now uses DWORD
 rows so its seven-field failure printer reads the intended words.
 
+## 3z29. BOX slot 3 candidate: 64-case differential and order case green
+
+The dispatcher transcription `BoxShape::nxDebugRenderDispatch`
+(ObjectModel.cpp) implements the four stages decoded in 3z28: enable
+gate `nxFlagBitsDE(8)`, unconditional `nxDebugRender(renderer)`, guard-C
+equality skip (unordered executes), `nxFillShapeDescriptor` into a
+local, then vtable +0x28 with (descriptor, color, 0) where color is
+0xffffffff iff (+0xde & 7) == 0. Guard C binds to live storage via
+nxBindDebugRenderGuardC.
+
+TDD arc with named artifacts: stub RED at the first payload case
+(enabled=1 low=0 guard=2 n28=0, build/r12-red.log); first transcription
+GREEN on counts but RED on color -- the candidate read the flag through
+the aligned dword at +0xdc (upper half = the +0xde halfword), so its
+gate accidentally worked (bit 19) while its color mask read byte +0xdc
+(constant 2 -> stable ffff00ff instead of ffffffff). Root cause found by
+arithmetic on the printed payload (fill byte-exact, only arg2 wrong);
+the two symptom-chasing test edits (flags-restore rewrites) were
+reverted. Two compile rounds followed the real defect: unqualified and
+this-> lookup fail because BoxShape COMPOSES ShapeBase (mBase member,
+not inheritance); the correct path is mBase.nxFlagBitsDE, which matches
+the listing's direct [esi+0xde] addressing.
+
+GREEN: r12-green4.log / r12-final-gate.log lines 146-148 -- 64/64
+candidate agreement byte-exact (counts, color, reserved, all 15
+descriptor words), plus an ordering case with call-sequence stamps
+(A=B=1.0 + C=1.0: oracle and candidate each make 7 calls; the +0x28
+descriptor draw is stamped after both 001305 arms in both). FALSIFICATION:
+dropping the nxDebugRender call failed the order case cleanly
+(o(calls=7) vs c(calls=1), build/r12-mut.log) -- the stamps also proved
+the failing lens reads candidate-vs-oracle, not stale shared state;
+restored green.
+
+Census: phys_fn_000945 STAYS `discovered` (no family registration, no
+gate_targets row); the vtables RED remains byte-pinned per 3z18. Open
+region: non-identity poses, guard values outside the driven set, and
+descriptor-buffer aliasing the oracle's stack local cannot exhibit.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
