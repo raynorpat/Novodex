@@ -1966,8 +1966,8 @@ binary's 0x25960 with a fake renderer across the guard truth table:
   now EXECUTED PROOF; the listing's parity analysis stands.
 - Row 2 (guards+scale = 1.0, writable .data, restored after): slot +0x20
   fired 3x and slot +0x38 fired 3x. The +0x38 contract is pinned at five
-  stack dwords (0x14-word count, two distinct buffer pointers, color
-  0xffff00ff, then a reserved dword) -- matching the listing's five
+  stack dwords (integer 20, a 48-byte pose pointer, color 0xffff00ff,
+  radius bits passed by value, then zero) -- matching the listing's five
   pushes; the +0x20 rows recorded one slot shifted (pad = the actual
   color: 0xCF0000/0xCF00/0xCF), pinning its shape as THREE stack args
   (bufA, bufB, color) with per-axis colors red/green/blue.
@@ -1975,16 +1975,33 @@ binary's 0x25960 with a fake renderer across the guard truth table:
 Two defects in MY fake renderer were caught by the oracle's own
 execution, not by reading: the renderer object must be the address OF
 the table (the oracle double-dereferences), and the +0x38 row pops FIVE
-stack dwords -- a 4-arg fastcall left the stack imbalanced and the
-process died on the security-cookie check (0xC0000409). Row 1's clean
+stack dwords. The broken fake declared only three stack arguments and
+also passed the table instead of an object containing a vptr. The run
+terminated with 0xC0000409; that exit code alone does not isolate which
+defect triggered fail-fast or establish a security-cookie failure. Row 1's clean
 return with a poisoned object remains valid evidence.
 
 The listing decode (block 1: three scaled rotation columns + translation
 through slot +0x20 with colors 0xCF0000/0xCF00/0xCF; block 2: slot-10
-center+diagonal, 9 rotation words, three 0x14-word vertex buffers through
-slot +0x38 with 0xFFFF00FF) now has a byte reference for the
-transcription. phys_fn_001305 stays `discovered`; the vtables RED
-remains byte-pinned per 3z18.
+center+diagonal, 9 rotation words, three 48-byte poses through slot
++0x38 with 0xFFFF00FF) initially recorded only addresses, NOT a byte
+reference for the payloads. The earlier two-buffer-pointer and
+0x14-word-buffer claims were wrong: 20 is a separate scalar argument;
+the pose is 12 words and argument 4 is the slot-10 radius word.
+phys_fn_001305 stays `discovered`; no candidate was implemented.
+
+Follow-up contract hardening copies both 12-byte line endpoints and each
+48-byte pose inside the callbacks, before stack-buffer reuse. Five masks
+assert each guard independently, both enabled, both disabled, and both
+negative zero. Identity-box payloads assert the three unit axis endpoints,
+colors, cyclic column permutations of the pose, zero center, integer 20,
+color 0xffff00ff, radius 0x3fddb3d7, and final zero argument. Scale is 1.0.
+Global bits and page protection are restored before assertions.
+
+Falsification: changing expected radius to zero fails at mask 2 (B only)
+in build/r7-payload-mut.log. This is an oracle-contract expectation
+mutation, NOT a candidate mutation. General poses, non-unit scales,
+unordered guard values and callback side effects remain undriven.
 
 ## 6. What this task did not do
 
