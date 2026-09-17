@@ -1936,6 +1936,27 @@ This review also corrects 3z20/3z21 above: the 0x20750 extent/encoding,
 unsupported assertion that an unexecuted candidate reached a kernel with
 bad stack height. Preserving an incorrect narrative is not evidence.
 
+## 3z23. The slot-5 wrapper lands its first drive -- provisional, unregistered
+
+The candidate wrapper now exists and its first drive is green. TDD shape:
+the stub failed case 0 (RED), the real implementation passed all eight
+(BLIND PASS observed before the mutation check, then re-verified after
+restore), and the store-order mutant failed exactly case 6. The
+implementation calls the transcribed kernel NxRayAABBIntersect2
+(Physics/src/Geometry.cpp:447; declaration
+Physics/include/NxIntersectionSegmentBox.h:24, found by repository-wide
+search after two wrong include guesses -- the layout target now links
+Geometry.cpp). Both compile errors the first build produced (missing
+identifier; const this) are recorded in build/r6-real-build.log.
+
+The drive: the same eight identity-box cases assert oracle-vs-candidate
+agreement on the return pointer and all twelve record words. Census:
+phys_fn_000949 STAYS `discovered` -- the drive covers an identity pose
+and eight fixtures; numerical fidelity (extended-precision x87 chains,
+the unordered-comparison arm, non-identity poses) is unestablished, and
+no family registration was added. Closing this row wants a broader
+fixture sweep and a decision on the unlinked arg3, on a later round.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
