@@ -395,6 +395,14 @@ class BoxShape
 	//! association yields the same bits, which is what the gate drives.
 	void				nxBoxCenterAndDiagonal(float* out) const;
 
+	//! phys_fn_001305 (0x00025960): conditional debug render, `ret 4`.
+	//! The renderer argument is an object whose vtable slots +0x20 (draw
+	//! line: two 12-byte points + color) and +0x38 (pose + color + radius
+	//! + scalars) are invoked when SDK guard words differ from this
+	//! object's guard constants. Guard words are bound externally because
+	//! the candidate must read the same live storage the drive mutates.
+	void				nxDebugRender(const void* renderer) const;
+
 	//! BOX-table slot 11, phys_fn_000939 (0x000206c0): zeroes out[0..2] and
 	//! writes the same sqrt-of-squared-dims value to out[3].
 	void				nxBoxZeroCenterAndDiagonal(float* out) const;
@@ -601,6 +609,13 @@ typedef void(__cdecl* NxReportFn)(int kind, const char* file, int line,
 
 //! Install the reconstruction's report sink (null restores silence).
 void					nxInstallReportSink(NxReportFn sink);
+
+//! Bind the 001305 candidate's guard words to live storage so the drive
+//! can mutate exactly the values the candidate reads (oracle .data in the
+//! rendercap probe). Order: A (0x123bc8), B (0x123bd8), scale (0x123b4c),
+//! reference (0x101041f0). Null restores the unbound state.
+void					nxBindDebugRenderGuards(float* guardA, float* guardB,
+							float* renderScale, float* guardRef);
 
 //! Task 4 scaffolding: the scene shape-array insert the base ctor's owned
 //! arm performs. Reproduces the three observable writes -- shape pointer

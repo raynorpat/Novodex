@@ -399,6 +399,110 @@ void* BoxShape::nxBoxRaycast(const float* ray, float maxDistance,
 	return const_cast<BoxShape*>(this);		// 0x00020b0e: eax = this
 	}
 
+// Candidate guard bindings: the candidate reads the SAME live storage the
+// drive mutates (oracle .data via the rendercap driver), not its own copy.
+static float* g_nxGuardA = nullptr;		// 0x10123bc8
+static float* g_nxGuardB = nullptr;		// 0x10123bd8
+static float* g_nxRenderScale = nullptr;	// 0x10123b4c
+static float* g_nxGuardRef = nullptr;	// 0x101041f0 (SDK-side reference)
+
+// Provisional phys_fn_001305 (0x25960): conditional debug render, `ret 4`.
+// Both blocks SKIP when their guard equals the reference word (fucompp
+// equality -> jnp taken at 0x2597f/0x25aa6); they execute when the guard
+// differs or is unordered. Block 1 (guard A) draws three axis lines from
+// the pose-one translation to K*scaled-column endpoints, colors
+// 0xCF0000/0xCF00/0xCF, K = scale * guard A (0x25985..0x2598e). Block 2
+// (guard B) draws three circles: slot-10 center+diagonal, the 9 rotation
+// words, then per call a column-cyclically rotated 3x3 in a 48-byte pose
+// buffer, args (0x14, pose, 0xFFFF00FF, diagBits, 0) at vtable +0x38.
+// Driven by the 5-mask rendercap differential; census closure awaits a
+// family registration.
+void BoxShape::nxDebugRender(const void* renderer) const
+	{
+	if(!g_nxGuardRef || !renderer)
+		return;
+	const float ref = *g_nxGuardRef;
+	void** table = *reinterpret_cast<void** const*>(renderer);
+	typedef void (__fastcall* NxDrawLineFn)(void*, void*, const float*,
+		const float*, unsigned);
+	typedef void (__fastcall* NxDrawPoseFn)(void*, void*, unsigned count,
+		const void* pose, unsigned color, unsigned radiusBits, unsigned reserved);
+	typedef NxDrawLineFn NxDrawLine;
+	typedef NxDrawPoseFn NxDrawPose;
+	const NxDrawLine drawLine = reinterpret_cast<NxDrawLine>(table[8]);
+	const NxDrawPose drawPose = reinterpret_cast<NxDrawPose>(table[14]);
+	void* rendererArg = const_cast<void*>(renderer);
+
+	// Block 1 (0x25985..0x25a90): scaled axis lines, guard A.
+	const float guardA = *g_nxGuardA;
+	if(guardA != ref || guardA != guardA)
+		{
+		const float k = *g_nxRenderScale * guardA;	// 0x2598e
+		const float* rot = reinterpret_cast<const float*>(&mBase.mPose0C.mRotation);
+		const float* trn = reinterpret_cast<const float*>(&mBase.mPose0C.mTranslation);
+		const float kCol[3][3] =
+			{
+			{ rot[0] * k, rot[3] * k, rot[6] * k },	// column 0 * K
+			{ rot[1] * k, rot[4] * k, rot[7] * k },
+			{ rot[2] * k, rot[5] * k, rot[8] * k }
+			};
+		static const unsigned axisColors[3] = { 0xcf0000u, 0xcf00u, 0xcfu };
+		for(unsigned axis = 0; axis < 3; ++axis)
+			{
+			const float start[3] = { trn[0], trn[1], trn[2] };
+			// 0x25a0e..0x25a28: endpoint component c = K*col[axis][row] + t[row].
+			const float end[3] =
+				{
+				k * kCol[axis][0] + trn[0],
+				k * kCol[axis][1] + trn[1],
+				k * kCol[axis][2] + trn[2]
+				};
+			drawLine(rendererArg, nullptr, start, end, axisColors[axis]);
+			}
+		}
+
+	// Block 2 (0x25aac..0x25c01): slot-10 center+diagonal, 9 rotation
+	// words, three column-cyclic pose draws.
+	const float guardB = *g_nxGuardB;
+	if(guardB != ref || guardB != guardB)
+		{
+		float center[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+		nxBoxCenterAndDiagonal(center);
+		const float* rot = reinterpret_cast<const float*>(&mBase.mPose0C.mRotation);
+		float pose[12];
+		for(unsigned i = 0; i < 9; ++i)
+			pose[i] = rot[i];
+		pose[9] = center[0];
+		pose[10] = center[1];
+		pose[11] = center[2];
+		for(unsigned round = 0; round < 3; ++round)
+			{
+			drawPose(rendererArg, nullptr, 0x14, pose, 0xffff00ffu,
+				reinterpret_cast<const unsigned&>(center[3]), 0);
+			if(round < 2)
+				{
+				// Column-cyclic rotation of the 9 matrix words (0x25b40..0x25c01):
+				// each row rotates left by one, which cycles the COLUMNS of
+				// the frame between calls.
+				float next[9];
+				for(unsigned row = 0; row < 3; ++row)
+					for(unsigned col = 0; col < 3; ++col)
+						next[row * 3 + col] = pose[row * 3 + (col + 1) % 3];
+				memcpy(pose, next, 9 * sizeof(float));
+				}
+			}
+		}
+	}
+
+void nxBindDebugRenderGuards(float* guardA, float* guardB,
+	float* renderScale, float* guardRef)
+	{
+	g_nxGuardA = guardA;
+	g_nxGuardB = guardB;
+	g_nxRenderScale = renderScale;
+	g_nxGuardRef = guardRef;
+	}
+
 // Task 4 scaffolding: the scene shape-array insert. Write order follows the
 // image -- registrar's shape store first (0x5c5a4), then the notify helper's
 // free-list sentinel (0x5c093) and count mirror (0x5c0a8). Slot must be
