@@ -1750,6 +1750,32 @@ a1d421ae against control f9aac08b) and exited 1; restored, green.
 query holds 111 reconstructed phase-5 rows (read out, not carried). Gate
 state unchanged otherwise: RED=1 (vtables).
 
+## 3z18. The vtables RED, pinned at its byte: the shape classes are not yet polymorphic
+
+The `candidate CANDIDATE-MISSING family=vtables` line has named the open
+family since Task 1; this round pins WHERE it breaks. Reading the ctor
+chain: `ShapeBase::ShapeBase` writes no vptr (mVptrSlot is a plain data
+member), and `BoxShape::BoxShape` never touches +0x00 either — so the
+candidate's shapes are non-polymorphic today. The existing `boxshape
+candidate` byte-fold skipped +0x00 on BOTH sides (kPointerWords), which is
+why the family stayed broken silently: the one word that says "which table
+is this" was excluded from every digest.
+
+A compiled probe now pins it (`boxvptr` in the boxshape candidate block):
+the candidate's fresh box carries `word=cdcdcdcd` at +0x00, and the
+slot-5 dispatch is correctly skipped under the SEH guard while the vptr is
+poison. When the classes go polymorphic the same probe answers through the
+candidate's own compiled table — no absolute oracle address in play, the
+lesson 3z17's false-pass had taught.
+
+What the transition needs, from the census and the gate's own RED line:
+the BOX slot map is 17 rows, three of them untranscribed — slot 3
+(phys_fn_000945), slot 5 (phys_fn_000949, 663 bytes: the box raycast,
+Phase 3's identified partner, whose kernel call lands in 0x37e70 range
+machinery Phase 3 owns), and slot 7 (phys_fn_000951, the sweep entry).
+The actor tables (0x1043d0/0x104530, 87/88 slots) are the deep half of
+the same family and belong to Task 4's scale.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
