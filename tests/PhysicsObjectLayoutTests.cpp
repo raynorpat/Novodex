@@ -101,6 +101,12 @@ static unsigned gRenderLine[8][7]; // start xyz, end xyz, color
 static unsigned gRenderCircle[8][16]; // count, pose[12], color, radius bits, reserved
 static unsigned gRenderN20;
 static unsigned gRenderN38;
+// Call-order stamps: the slot-3 dispatcher must invoke 001305 BEFORE the
+// +0x28 descriptor draw; sequence numbers make that order assertable.
+static unsigned gRenderCallSeq;
+static unsigned gSeqLast20;
+static unsigned gSeqLast38;
+static unsigned gSeqN28First;
 static void __fastcall nxRenderOn20(void*, void*, const unsigned* start,
 	const unsigned* end, unsigned color)
 	{
@@ -110,6 +116,7 @@ static void __fastcall nxRenderOn20(void*, void*, const unsigned* start,
 		memcpy(gRenderLine[gRenderN20] + 3, end, 12);
 		gRenderLine[gRenderN20][6] = color;
 		}
+	gSeqLast20 = ++gRenderCallSeq;
 	++gRenderN20;
 	}
 // Five stack DWORDs, callee pops 20 bytes. Argument 4 is the raw radius
@@ -126,6 +133,7 @@ static void __fastcall nxRenderOn38(void*, void*, unsigned count,
 		row[14] = radiusBits;
 		row[15] = reserved;
 		}
+	gSeqLast38 = ++gRenderCallSeq;
 	++gRenderN38;
 	}
 // BOX slot 3's renderer row +0x28 (index 10): the dispatcher calls it with
@@ -144,6 +152,7 @@ static void __fastcall nxRenderOn28(void*, void*, const unsigned* fill,
 		memcpy(gRenderFill, fill, 15 * 4);
 		gRenderArg2 = arg2;
 		gRenderArg3 = arg3;
+		gSeqN28First = ++gRenderCallSeq;
 		}
 	++gRenderN28;
 	}
@@ -2027,7 +2036,11 @@ int wmain(int argc, wchar_t** argv)
 	memcpy(shapeS + 0x30, expectedFill, 12);
 	memcpy(shapeS + 0xe4, expectedFill + 3, 12);
 	memcpy(shapeS + 0x0c, expectedFill + 6, 36);
+	BoxShape& shapeS_obj = *reinterpret_cast<BoxShape*>(shapeS);
+	const float* guardCRva = reinterpret_cast<const float*>(base + 0x123bc4);
+	nxBindDebugRenderGuardC(const_cast<float*>(guardCRva));
 	unsigned cases = 0;
+	unsigned lastCandN28 = 0;
 	for(unsigned enabled = 0; enabled < 2; ++enabled)
 	for(unsigned low = 0; low < 8; ++low)
 	for(unsigned guard = 0; guard < 4; ++guard)
@@ -2045,23 +2058,109 @@ int wmain(int argc, wchar_t** argv)
 		memset(gRenderFill, 0xcd, sizeof(gRenderFill));
 		gRenderArg2 = gRenderArg3 = 0;
 		slot3(shapeS, rendererS);
+		// Capture the ORACLE output before anything can overwrite it.
+		const unsigned oN28 = gRenderN28;
+		const unsigned oArg2 = gRenderArg2, oArg3 = gRenderArg3;
+		unsigned oFill[15];
+		memcpy(oFill, gRenderFill, sizeof(oFill));
+		// Candidate differential inside the SAME mutated window: the
+		// candidate reads the bound live guard C, so it must run before
+		// the restore below.
+		gRenderN20 = gRenderN38 = gRenderN28 = 0;
+		memset(gRenderFill, 0xcd, sizeof(gRenderFill));
+		gRenderArg2 = gRenderArg3 = 0;
+		shapeS_obj.nxDebugRenderDispatch(rendererS);
+		const unsigned cN28 = gRenderN28;
+		const unsigned cArg2 = gRenderArg2, cArg3 = gRenderArg3;
+		unsigned cFill[15];
+		memcpy(cFill, gRenderFill, sizeof(cFill));
 		memcpy(wbaseS + 0x123bc4, &savedC, 4);
 		if(!VirtualProtect(wbaseS + 0x123bc4, 8, oldProtS, &ignoredS))
 			return nxFail("cannot restore guard C page");
 		const unsigned expectedCount = enabled && guard >= 2 ? 1u : 0u;
-		bool match = gRenderN28 == expectedCount && gRenderN20 == 0 && gRenderN38 == 0;
+		// Lens 1: the ORACLE contract (byte-exact literals, 3z28).
+		bool match = oN28 == expectedCount && gRenderN20 == 0 && gRenderN38 == 0;
 		if(expectedCount)
-			match = match && gRenderArg2 == expectedColors[low] && gRenderArg3 == 0
-				&& memcmp(gRenderFill, expectedFill, sizeof(expectedFill)) == 0;
+			match = match && oArg2 == expectedColors[low] && oArg3 == 0
+				&& memcmp(oFill, expectedFill, sizeof(expectedFill)) == 0;
 		if(!match)
 			{
 			fprintf(stderr, "FAIL slot3 contract enabled=%u low=%u guard=%u n28=%u color=%08x\n",
-				enabled, low, guard, gRenderN28, gRenderArg2);
+				enabled, low, guard, oN28, oArg2);
+			return 1;
+			}
+		// Lens 2: candidate-vs-oracle, byte-exact, with a local copy of the
+		// failure payload so the report cannot be clobbered before print.
+		bool candMatch = cN28 == oN28;
+		unsigned fArg2 = cArg2, fArg3 = cArg3;
+		unsigned fFill[15];
+		memcpy(fFill, cFill, sizeof(fFill));
+		if(candMatch && expectedCount)
+			candMatch = cArg2 == oArg2 && cArg3 == oArg3
+				&& memcmp(cFill, oFill, sizeof(cFill)) == 0;
+		if(!candMatch)
+			{
+			fprintf(stderr, "FAIL slot3 candidate enabled=%u low=%u guard=%u n28=%u arg2=%08x arg3=%08x\n",
+				enabled, low, guard, cN28, fArg2, fArg3);
+			for(unsigned i = 0; i < 15; ++i)
+				fprintf(stderr, " fill[%u]=%08x\n", i, fFill[i]);
 			return 1;
 			}
 		++cases;
+		lastCandN28 = cN28;
 		}
 	printf("slot3 contract cases=%u failures=0 mode=oracle-only\n", cases);
+	printf("slot3 candidate masks=%u agree n28-first=%u\n", cases, lastCandN28);
+
+	// Ordering + active-dependency case: with BOTH 001305 guards drawn
+	// (A=B=1.0, unequal ref) AND guard C unequal, the dependency's line
+	// draws must land BEFORE the descriptor draw. This is the case a
+	// mutant that drops the 001305 call would fail. The oracle pair runs
+	// first, then the candidate, both fully sequenced.
+	{
+	unsigned short* flagsDEo = reinterpret_cast<unsigned short*>(shapeS + 0xde);
+	*flagsDEo = 0x000fu;	// bit 3 enabled, low bits = 7
+	unsigned char* wbaseS = const_cast<unsigned char*>(base);
+	float savedA, savedB, savedC;
+	memcpy(&savedA, base + 0x123bc8, 4);
+	memcpy(&savedB, base + 0x123bd8, 4);
+	memcpy(&savedC, base + 0x123bc4, 4);
+	DWORD oldProtS = 0, ignoredS = 0;
+	if(!VirtualProtect(wbaseS + 0x123bc4, 0x90, PAGE_READWRITE, &oldProtS))
+		return nxFail("cannot unlock the guard block");
+	const unsigned drawn = 0x3f800000u;
+	memcpy(wbaseS + 0x123bc8, &drawn, 4);
+	memcpy(wbaseS + 0x123bd8, &drawn, 4);
+	memcpy(wbaseS + 0x123bc4, &drawn, 4);
+	gRenderN20 = gRenderN38 = gRenderN28 = 0;
+	gRenderCallSeq = 0;
+	slot3(shapeS, rendererS);
+	const unsigned oCalls = gRenderN20 + gRenderN38 + gRenderN28;
+	const unsigned oSeq28 = gSeqN28First;
+	const unsigned oSeq20 = gSeqLast20, oSeq38 = gSeqLast38;
+	gRenderN20 = gRenderN38 = gRenderN28 = 0;
+	gRenderCallSeq = 0;
+	shapeS_obj.nxDebugRenderDispatch(rendererS);
+	const unsigned cCalls = gRenderN20 + gRenderN38 + gRenderN28;
+	const unsigned cSeq28 = gSeqN28First;
+	const unsigned cSeq20 = gSeqLast20, cSeq38 = gSeqLast38;
+	memcpy(wbaseS + 0x123bc8, &savedA, 4);
+	memcpy(wbaseS + 0x123bd8, &savedB, 4);
+	memcpy(wbaseS + 0x123bc4, &savedC, 4);
+	if(!VirtualProtect(wbaseS + 0x123bc4, 0x90, oldProtS, &ignoredS))
+		return nxFail("cannot restore guard block page");
+	bool orderOk = oCalls == 7 && cCalls == 7
+		&& oSeq28 > oSeq20 && oSeq28 > oSeq38
+		&& cSeq28 > cSeq20 && cSeq28 > cSeq38;
+	if(!orderOk)
+		{
+		fprintf(stderr, "FAIL slot3 order o(calls=%u 20@%u 38=%u 28=%u) "
+			"c(calls=%u 20=%u 38=%u 28=%u)\n",
+			oCalls, oSeq20, oSeq38, oSeq28, cCalls, cSeq20, cSeq38, cSeq28);
+		return 1;
+		}
+	printf("slot3 order case agree calls=%u seq28>20/38 both\n", cCalls);
+	}
 	}
 
 	// -----------------------------------------------------------------------
