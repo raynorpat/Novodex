@@ -2073,14 +2073,12 @@ FALSIFICATION (candidate mutation test): inverting block 1's guard to
 guards) while the oracle lens stayed green -- the correct lens caught
 it; restored to green.
 
-OPEN (recorded, undriven): scale semantics. Driving scale=2.0 (guardA=1)
-made the shipped binary draw three +0x20 lines with ALL-ZERO payloads --
-start, end AND colors (build/r9-dump.log lines 65-67) -- unpredicted by
-any K=scale*guardA reading of 0x25985..0x25a28. Every prior capture used
-scale 1.0, so this region was never established; the mask-5 fixture was
-reverted (its oracle semantics could not be stated) and the candidate
-asserts scale=1.0 behavior only. Next round owns a block-1 x87 decode
-with a trace before re-attempting a scale drive.
+Historical open question (superseded by 3z27): the scale-2 fixture was
+reverted after a misleading diagnostic printed zeros. That diagnostic
+read only seven BYTES from the start of a 28-byte line record, not seven
+DWORDS; it did not observe the endpoint or color at all. No all-zero
+oracle payload claim is supported. Scale-2 agreement was established in
+round 10; the diagnostic's actual type correction landed in round 11.
 
 Census: phys_fn_001305 STAYS `discovered` (no family registration); the
 candidate is driven only through the rendercap differential on an
@@ -2090,12 +2088,14 @@ oracle-layout fixture. The vtables RED remains byte-pinned per 3z18.
 
 The round-9 "all-zero payloads at scale 2.0" (3z26's open question) was
 MY diagnostic, not the binary: the mask-5 dump indexed
-`unsigned char oLine[8][28]` rows BYTES (`oLine[i][0..6]`), printing the
-low bytes of the stored dwords. Byte-level consistency confirms it:
-0x40000000 stores as bytes 00 00 00 40, so every printed offset read
-0x00. The oracle's true mask-5 payloads were never observed as zeros.
+`unsigned char oLine[8][28]` rows BYTES (`oLine[i][0..6]`), printing only
+bytes 0..6 of the zero start vector. Endpoint bytes begin at offset 12
+and color bytes at offset 24: neither was printed. The oracle's true
+mask-5 payloads were never observed as zeros. Round 10 added a DWORD
+comment but did not change the declaration; round 11 fixes that omission
+with `unsigned oLine[8][7]` (the byte-exact comparisons are unchanged).
 
-With the diagnostic corrected to DWORD rows and the mask-5 endpoint
+With the mask-5 endpoint
 literal derived from K = scale*guardA = 2.0 (0x25985..0x2598e), the
 ORACLE lens passed mask 5 first try (r10-scale.log): the shipped binary
 scales the rotation column ONCE, exactly as the listing states. The
@@ -2117,9 +2117,53 @@ including scale-2 endpoints (mask=5 n20=3 n38=0), boxray sweep 72/72,
 inventory pass (6338 functions, 0 unexplained), coverage 126/126, sole
 RED the byte-pinned vtables gate. Census: phys_fn_001305 STAYS
 `discovered`; scale=2.0 is now a driven fixture, and the remaining open
-region narrows to non-unit guard values not in {0,1,2}, unordered guard
-comparisons, and non-identity poses (the sweep's pose coverage covers
-the lines arm's matrix read; the pose-draw arm remains identity-only).
+region includes guard values outside {0,1}, unordered guard comparisons,
+and non-identity poses in BOTH render arms. The 2.0 value was a scale,
+not a guard. The 72-case boxray sweep exercises a different function and
+provides no pose coverage for this render candidate.
+
+## 3z28. BOX slot 3: independent oracle contract, candidate still pending
+
+The 39-instruction listing for phys_fn_000945 (RVA 0x207e0, 104 bytes;
+build/slot3-full.txt, sourced from the capstone manifest) gives:
+
+- call 0x257d0 with mask 8: word[this+0xde] & 8; zero exits;
+- call 0x25960 with the renderer (001305 debug-render dependency);
+- compare guard C at RVA 0x123bc4 against ref at 0x1041f0; equality
+  skips, unordered falls through;
+- call 0x20490 to fill a 60-byte local descriptor, then renderer slot
+  +0x28 with (descriptor, color, 0), three callee-popped stack DWORDs.
+
+Color arithmetic is exact: let n = (byte[this+0xde] & 7) != 0.
+`neg al; sbb eax,eax` produces 0 or 0xffffffff. AND 0xffff0100,
+then DEC, produces 0xffffffff for n=false and 0xffff00ff for n=true.
+Earlier round-11 narration incorrectly subtracted this hexadecimal
+constant and inferred bit-2-only selection; neither claim is retained.
+
+The initial print-only sweeps coupled enable/low bits/guard and did not
+establish a complete truth table. They are replaced by an asserted
+64-case ORACLE-ONLY contract: enable {off,on} x low bits {0..7} x guard
+C {+0,-0,1,qNaN}. A/B remain shipped zero, so the dependency's drawing
+arms are intentionally inactive here. All 15 descriptor DWORDs are
+checked against a nontrivial fixture: translation (4,-2,8), dimensions
+(1,2,3), and cyclic rotation. The callback copies during the call; an
+unused renderer helper with a formerly dangling local was removed.
+
+build/r11-contract.log reports `slot3 contract cases=64 failures=0
+mode=oracle-only`; the same run retains six rendercap agreements and
+ends at the documented unfinished-vtables RED. No candidate, mutation
+proof, family registration, or census closure is claimed for 000945.
+Fresh full verification in build/r11-final-gate.log repeats the 64-case
+contract, six rendercap masks, and 72-case raycast sweep. Release build
+exit=0, inventory exit=0 (6338 functions, 0 unexplained), coverage
+126/126; gate exit=1 solely for the documented missing-vtables family.
+Next step is candidate-vs-oracle TDD, including enabled dependency arms
+and dispatch ordering; these are NOT covered by this contract.
+
+Round-10 evidence corrections are applied above: the diagnostic had
+still been byte-typed (only its comment changed), and the boxray pose
+sweep does not cover debug rendering. The oracle capture now uses DWORD
+rows so its seven-field failure printer reads the intended words.
 
 ## 6. What this task did not do
 
