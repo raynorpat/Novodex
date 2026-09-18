@@ -2894,6 +2894,17 @@ tmplinit failures=0):
 All 3 move to `reconstructed`. Independent (non-family) rows. No gate,
 coverage-floor, or policy change.
 
+## 3z66. Cross-product and bounded-push rows close (002465/003261)
+
+Round 50 drove two more pure no-call rows (build/r50b.log crossprod and
+boundedpush failures=0):
+- 002465 (0x5eac0): when the mode arg == 3, computes the 3D double cross
+  product A x B into C;
+- 003261 (0x7e4b0, ret 0xc): bounded push -- if [this+0x14] < [this+0x10],
+  stores 3 args at [this+0xc + count*12] and increments the count.
+Both move to `reconstructed`. Independent (non-family) rows. No gate,
+coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
