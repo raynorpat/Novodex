@@ -2827,6 +2827,17 @@ Round 44 drove four rows (build/r44b.log quadbatch failures=0):
 All 4 move to `reconstructed` with static + dynamic proof. Independent
 (non-family) rows. No gate, coverage-floor, or policy change.
 
+## 3z60. Multi-field copy + bit-get rows close (003975/000542/003483/004346/004350)
+
+Round 45 drove five rows (build/r45c.log multicopy failures=0):
+- 003975 (ret 0x10): copy [this+0x58..0x64] to 4 out args;
+- 000542 (ret 0xc): copy [this+0x52c..0x534] to 3 out args;
+- 003483 (ret 4): copy [this+0x5c..0x70] to one out arg;
+- 004346 (ret 4): copy [this+0x184..0x18c] + return ([+0x1a8]>>1)&1;
+- 004350 (ret 4): copy [this+0x190..0x198] + return ([+0x1a8]>>2)&1.
+All 5 move to `reconstructed` with static + dynamic proof. Independent
+(non-family) rows. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
