@@ -3249,7 +3249,16 @@ against candidate nxBoxAccumulateMass across 4 poses x 8 flag-lows x 2
 densities, failures=0); only the census marker was missing. Now recorded
 reconstructed. No gate, coverage-floor, or policy change.
 
-## 6. What this task did not do
+## 3z103. Facade ctor wrapper 001033 probed, non-isolatable
+
+Round 88 probed 001033 (0x22d60, wrapper over the reconstructed 001273
+vptr-ctor): driving the oracle trips the harness overrun guard (0xC0000409)
+before it returns. The callee 001273 is ret-style with an unbalanced
+sub-call ABI in this wrapper context, so the wrapper cannot be isolated as a
+standalone thiscall fixture without reconstructing the caller stack layout.
+The regression was fully reverted (all prior diodes pass; gate
+green-except-family). 001033 stays `discovered`. No gate, coverage-floor,
+or policy change.
 
 ## 6. What this task did not do
 
