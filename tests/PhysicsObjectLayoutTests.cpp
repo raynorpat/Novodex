@@ -3045,6 +3045,44 @@ int wmain(int argc, wchar_t** argv)
 	}
 
 	// -----------------------------------------------------------------------
+	// MassFrame translate, phys_fn_000833 (0x1c040): drive oracle vs
+	// candidate nxMassFrameTranslate over varied offset+translation inputs.
+	// PROVISIONAL; the displaced parallel-axis path is being transcribed.
+	{
+	typedef void (__thiscall* MfTranslateOracle)(void*, const void*);
+	MfTranslateOracle mfTrO = reinterpret_cast<MfTranslateOracle>(base + 0x1c040);
+	unsigned trFail = 0, trRun = 0;
+	const float dVectors[][3] = {
+		{0,0,0}, {1,0,0}, {0,2,0}, {0,0,3}, {1,2,3},
+		{-1,0.5f,-2}, {0.25f,-0.5f,4}, {-1.5f,2.75f,-6.25f}, {7,-3,0.1f} };
+	const float off[][3] = {
+		{0,0,0}, {1,0,0}, {0,2,0}, {-1,1,5}, {0.5f,-0.25f,1.75f}, {-3,4,-2} };
+	for(unsigned oi=0; oi<6; ++oi)
+	for(unsigned di=0; di<9; ++di)
+		{
+		MassFrame oF, cF;
+		memset(&oF,0xCD,sizeof(oF)); memset(&cF,0xCD,sizeof(cF));
+		for(int i=0;i<9;++i) oF.mInertia[i]=cF.mInertia[i]=(float)(i+1);
+		oF.mOffset.x=cF.mOffset.x=off[oi][0];
+		oF.mOffset.y=cF.mOffset.y=off[oi][1];
+		oF.mOffset.z=cF.mOffset.z=off[oi][2];
+		oF.mMass=cF.mMass=6.0f;
+		mfTrO(&oF, dVectors[di]);
+		cF.nxMassFrameTranslate(dVectors[di]);
+		++trRun;
+		if(memcmp(&oF,&cF,sizeof(oF)) != 0)
+			{
+			++trFail;
+			fprintf(stderr,"mftranslate oi=%u di=%u mismatch\n", oi, di);
+			for(int i=0;i<13;++i){
+				unsigned a,b; memcpy(&a,((float*)&oF)+i,4); memcpy(&b,((float*)&cF)+i,4);
+				if(a!=b) fprintf(stderr,"  word%u o=%08x c=%08x\n",i,a,b);}
+			}
+		}
+	printf("mftranslate candidate run=%u failures=%u provisional=1\n", trRun, trFail);
+	}
+
+	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
 	// exact 1.0f sentinel -- folded over all thirteen words of each frame.
