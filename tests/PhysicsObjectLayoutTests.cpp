@@ -3359,6 +3359,47 @@ int wmain(int argc, wchar_t** argv)
 	printf("tinygetters candidate failures=%u provisional=1\n", tf);
 	}
 
+	// -- Setter/getter batch: 000538(store +0x544) 000545(store +0x6ac)
+	//   000559(+0x6c8) 000561(+0x6c4) 002868(ptr-ptr) 004988(zero+and)
+	//   005212(inc+0x38) 005584(imul) 005640(lea) 004336(+0x1a8).
+	{
+	typedef void (__thiscall* Store1Oracle)(void*, unsigned);
+	Store1Oracle s544 = reinterpret_cast<Store1Oracle>(base + 0x106e0);
+	Store1Oracle s6ac = reinterpret_cast<Store1Oracle>(base + 0x107e0);
+	typedef unsigned (__thiscall* UGetOracle2)(void*);
+	UGetOracle2 g6c8 = reinterpret_cast<UGetOracle2>(base + 0x10860);
+	UGetOracle2 g6c4 = reinterpret_cast<UGetOracle2>(base + 0x10870);
+	UGetOracle2 g1a8 = reinterpret_cast<UGetOracle2>(base + 0xa8fb0);
+	typedef unsigned (__cdecl* DiffOracle)(const unsigned*, const unsigned*);
+	DiffOracle diff = reinterpret_cast<DiffOracle>(base + 0x6da40);
+	typedef void (__thiscall* ZeroAndOracle)(void*);
+	ZeroAndOracle za = reinterpret_cast<ZeroAndOracle>(base + 0xd14a0);
+	typedef unsigned (__thiscall* IncOracle)(void*, unsigned);
+	IncOracle inc38 = reinterpret_cast<IncOracle>(base + 0xe50f0);
+	UGetOracle2 g584 = reinterpret_cast<UGetOracle2>(base + 0xf2570);
+	UGetOracle2 g640 = reinterpret_cast<UGetOracle2>(base + 0xf3d30);
+	unsigned s2f = 0;
+	unsigned char s2[0x800]; memset(s2, 0, sizeof(s2));
+	s544(s2, 0xA1A1A1A1u); if(*(unsigned*)(s2+0x544)!=0xA1A1A1A1u){fprintf(stderr,"s544 fail\n");++s2f;}
+	s6ac(s2, 0xA2A2A2A2u); if(*(unsigned*)(s2+0x6ac)!=0xA2A2A2A2u){fprintf(stderr,"s6ac fail\n");++s2f;}
+	const unsigned w = 0x12345678u;
+	memcpy(s2+0x6c8,&w,4); memcpy(s2+0x6c4,&w,4); memcpy(s2+0x1a8,&w,4);
+	if(g6c8(s2)!=w){fprintf(stderr,"g6c8 fail\n");++s2f;}
+	if(g6c4(s2)!=w){fprintf(stderr,"g6c4 fail\n");++s2f;}
+	if(g1a8(s2)!=w){fprintf(stderr,"g1a8 fail\n");++s2f;}
+	unsigned pa=0x30u,pb=0x10u;
+	if(diff(&pa,&pb)!=0x20u){fprintf(stderr,"diff fail %u\n",diff(&pa,&pb));++s2f;}
+	memset(s2+0x2c,0xA5,8); s2[4]=0xFF;
+	za(s2);
+	if(*(unsigned*)(s2+0x2c)!=0 || *(unsigned*)(s2+0x30)!=0 || s2[4]!=((unsigned char)(0xFFu&0xFFFFFFF3u))){fprintf(stderr,"za fail\n");++s2f;}
+	*(unsigned*)(s2+0x38)=5; inc38(s2,0);
+	if(*(unsigned*)(s2+0x38)!=6){fprintf(stderr,"inc38 fail\n");++s2f;}
+	const unsigned v4=9; memcpy(s2+4,&v4,4);
+	if(g584(s2)!=(9u*0x1cu+8u)){fprintf(stderr,"g584 fail\n");++s2f;}
+	if(g640(s2)!=(9u*5u*4u+0x20u)){fprintf(stderr,"g640 fail %08x\n",g640(s2));++s2f;}
+	printf("setget2 candidate failures=%u provisional=1\n", s2f);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
