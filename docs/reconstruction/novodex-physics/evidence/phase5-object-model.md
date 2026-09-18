@@ -2948,6 +2948,16 @@ ctorlink failures=0):
 Both move to `reconstructed`. Independent (non-family) rows. No gate,
 coverage-floor, or policy change.
 
+## 3z71. Builder and 10-field-copy rows close (002166/004218)
+
+Round 55 drove two more pure no-call rows (build/r55b.log builder4
+failures=0):
+- 002166 (0x53c80, ret 4): builder/four-row -- copies field/tag data into the
+  out arg (0xc/2 type tags, 4 when [this+0xa0] non-null), returns 1;
+- 004218 (0x9e470, ret 4): copy [arg+0x6c..0x90] to [this+0x16c..0x190].
+Both move to `reconstructed`. Independent (non-family) rows. No gate,
+coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
