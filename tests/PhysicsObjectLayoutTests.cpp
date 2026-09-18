@@ -3148,6 +3148,31 @@ int wmain(int argc, wchar_t** argv)
 	printf("mfcombo candidate run=%u failures=%u provisional=1\n", cbRun, cbFail);
 	}
 
+	// -- phys_fn_000010 (0x1390): __thiscall ret 4 pure copy of 0x78 bytes
+	// from [esp+4] into this (rep movsd 9 + individual dwords through +0x74).
+	{
+	typedef void (__thiscall* PoseCopyOracle)(void*, const void*);
+	PoseCopyOracle poseCopyO = reinterpret_cast<PoseCopyOracle>(base + 0x1390);
+	unsigned pcFail = 0, pcRun = 0;
+	for(unsigned ci = 0; ci < 4; ++ci)
+		{
+		unsigned char src[0x80], dstO[0x80], dstC[0x80];
+		for(unsigned w = 0; w < 0x80/4; ++w)
+			{ unsigned v = 0xA0000000u + ci*0x1000u + w*4u; memcpy(src + w*4, &v, 4); }
+		memset(dstO, 0xCD, sizeof(dstO)); memset(dstC, 0xCD, sizeof(dstC));
+		poseCopyO(dstO, src);
+		memcpy(dstC, src, 0x78);
+		++pcRun;
+		if(memcmp(dstO, dstC, 0x78) != 0
+			|| memcmp(dstO+0x78, dstC+0x78, 8) != 0)	// canaries untouched past 0x78
+			{
+			++pcFail;
+			fprintf(stderr, "posecopy ci=%u mismatch (src %08x..)\n", ci, *reinterpret_cast<unsigned*>(src));
+			}
+		}
+	printf("posecopy candidate run=%u failures=%u provisional=1\n", pcRun, pcFail);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
