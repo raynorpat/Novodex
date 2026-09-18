@@ -3542,6 +3542,44 @@ int wmain(int argc, wchar_t** argv)
 	printf("zmix candidate failures=%u provisional=1\n", bf);
 	}
 
+	// -- Misc simple rows: 002152(sbb flag, ret 0xc) 004328(zero +1ac/1b0/1b4)
+	//   000557(link-insert, ret 4) 003565(copy3 fields, ret 4).
+	{
+	typedef int (__thiscall* SbbFn)(void*, unsigned, unsigned);
+	SbbFn sbb3 = reinterpret_cast<SbbFn>(base + 0x538a0);
+	typedef void (__thiscall* ZeroOracle3)(void*);
+	ZeroOracle3 z3 = reinterpret_cast<ZeroOracle3>(base + 0xa8d20);
+	typedef void (__thiscall* Link2Oracle)(void*, unsigned*);
+	Link2Oracle l2 = reinterpret_cast<Link2Oracle>(base + 0x10840);
+	typedef void (__thiscall* Copy3Oracle)(void*, float*);
+	Copy3Oracle c3 = reinterpret_cast<Copy3Oracle>(base + 0x87e50);
+	unsigned mf = 0;
+	// 002152: reads [esp+8] (2nd stack arg); returns 1 if [this+4] < arg else 0
+	unsigned char fs[0x40]; memset(fs,0,sizeof(fs));
+	const unsigned fv=10; memcpy(fs+4,&fv,4);
+	if(sbb3(fs,0,20)!=1){fprintf(stderr,"sbb fail\n");++mf;} // arg(E+8)=20; 10<20 -> 1
+	if(sbb3(fs,0,5)!=0){fprintf(stderr,"sbb2 fail\n");++mf;}  // arg(E+8)=5; 10<5? no -> 0
+	// 004328 zero
+	unsigned char zb[0x500]; memset(zb,0x55,sizeof(zb)); z3(zb);
+	if(*(unsigned*)(zb+0x1ac)+*(unsigned*)(zb+0x1b0)+*(unsigned*)(zb+0x1b4)!=0){fprintf(stderr,"z3 fail\n");++mf;}
+	// 000557: [arg+0x10]=old head; [this+0x5a0]=arg  (ret 4)
+	unsigned char lb[0x800]; memset(lb,0,sizeof(lb));
+	unsigned lhead=0xCAFEu; memcpy(lb+0x5a0,&lhead,4);
+	unsigned node2=0x1234u;
+	l2(lb,&node2);
+	if(*(unsigned*)(lb+0x5a0) != static_cast<unsigned>(reinterpret_cast<size_t>(&node2))){fprintf(stderr,"l2 head fail\n");++mf;}
+	if(*(unsigned*)((unsigned char*)&node2+0x10) != lhead){fprintf(stderr,"l2 next fail %08x\n",*(unsigned*)((unsigned char*)&node2+0x10));++mf;}
+	// 003565: copy [this+0x3c/40/44] to arg[0/4/8]  (ret 4)
+	unsigned char cb[0x100]; memset(cb,0,sizeof(cb));
+	const unsigned c3a=0x11111111u,c3b=0x22222222u,c3c=0x33333333u;
+	memcpy(cb+0x3c,&c3a,4); memcpy(cb+0x40,&c3b,4); memcpy(cb+0x44,&c3c,4);
+	float outc[3]={0,0,0};
+	c3(cb, outc);
+	unsigned oa,ob,oc; memcpy(&oa,outc+0,4); memcpy(&ob,outc+1,4); memcpy(&oc,outc+2,4);
+	if(oa!=c3a||ob!=c3b||oc!=c3c){fprintf(stderr,"c3 fail %08x/%08x/%08x\n",oa,ob,oc);++mf;}
+	printf("zmix2 candidate failures=%u provisional=1\n", mf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
