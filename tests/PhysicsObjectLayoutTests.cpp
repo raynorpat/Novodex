@@ -3323,6 +3323,42 @@ int wmain(int argc, wchar_t** argv)
 	printf("batchgetters candidate failures=%u provisional=1\n", bf);
 	}
 
+	// -- More tiny rows: constant-return / zero-store / bit-and.
+	//   002196(mov al,1;ret 8) 002198(mov eax,1;ret) 005533/535(xor al,al)
+	//   004214(zero this+0x1cc) 004186(ret [this+0x44]) 004897(and ~0xc)
+	//   003455(ret [this+0x58]&arg) 003595(ret [this+0x10]&arg).
+	{
+	typedef unsigned (__thiscall* TinyOracle)(void*, unsigned);
+	TinyOracle ret1 = reinterpret_cast<TinyOracle>(base + 0x54630);
+	TinyOracle retA1 = reinterpret_cast<TinyOracle>(base + 0x54620);
+	TinyOracle ret0_5 = reinterpret_cast<TinyOracle>(base + 0xf1580);
+	TinyOracle ret0_4 = reinterpret_cast<TinyOracle>(base + 0xf1590);
+	TinyOracle zero1cc = reinterpret_cast<TinyOracle>(base + 0x9e3c0);
+	TinyOracle g44 = reinterpret_cast<TinyOracle>(base + 0x9b5d0);
+	typedef unsigned (__thiscall* AndOracle)(void*, unsigned);
+	AndOracle andFlags = reinterpret_cast<AndOracle>(base + 0xb5710);
+	AndOracle g58a = reinterpret_cast<AndOracle>(base + 0x84f00);
+	AndOracle g10a = reinterpret_cast<AndOracle>(base + 0x88130);
+	unsigned tf = 0;
+	unsigned char t2[0x300]; memset(t2, 0xA5, sizeof(t2));
+	if(ret1(t2,0) != 1u){fprintf(stderr,"ret1 fail\n");++tf;}
+	// retA1/ret0_5/ret0_4 return byte in al (0 or 1); compare low byte.
+	if((retA1(t2,0)&0xFFu)!=1u){fprintf(stderr,"retA1 fail\n");++tf;}
+	if((ret0_5(t2,0)&0xFFu)!=0u){fprintf(stderr,"ret0_5 fail\n");++tf;}
+	if((ret0_4(t2,0)&0xFFu)!=0u){fprintf(stderr,"ret0_4 fail\n");++tf;}
+	t2[0x1cc]=0x7F; zero1cc(t2,0);
+	if(t2[0x1cc]!=0){fprintf(stderr,"zero1cc fail\n");++tf;}
+	unsigned v44=0x5A5A5A5Au; memcpy(t2+0x44,&v44,4);
+	if(g44(t2,0)!=v44){fprintf(stderr,"g44 fail\n");++tf;}
+	t2[4]=0xFF; andFlags(t2,0);
+	if(t2[4]!=((unsigned char)(0xFFu & 0xFFFFFFF3u))){fprintf(stderr,"andflags fail %02x\n",t2[4]);++tf;}
+	unsigned v58=0x3; memcpy(t2+0x58,&v58,4);
+	if(g58a(t2, 0x1u)!= (3u&1u)){fprintf(stderr,"g58a fail\n");++tf;}
+	unsigned v10=0xBC; memcpy(t2+0x10,&v10,4);
+	if(g10a(t2, 0x10u)!= (0xBCu&0x10u)){fprintf(stderr,"g10a fail\n");++tf;}
+	printf("tinygetters candidate failures=%u provisional=1\n", tf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
