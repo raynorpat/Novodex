@@ -2883,6 +2883,17 @@ All 3 move to `reconstructed`. Independent (non-family) rows. Note: the
 003274 static proof initially embedded `"JOHNRAT"` quotes that broke JSON --
 fixed by removing the quotes. No coverage-floor or gate change.
 
+## 3z65. Template-init rows close (000496/001455/002314)
+
+Round 49 drove three self-contained template-init rows (build/r49.log
+tmplinit failures=0):
+- 000496 (0xfd10): zeros several words, sets +0x8/0x18/0x28=1.0f, +0x38=8,
+  words +0x3c/0x3e=0, ret;
+- 001455 (0x2ace0): sets [this]=vptr 0x1010769c and zeros [this+4..0x48];
+- 002314 (0x5a0a0): same shape as 000496 extended through +0x54.
+All 3 move to `reconstructed`. Independent (non-family) rows. No gate,
+coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
