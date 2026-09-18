@@ -3119,6 +3119,14 @@ contains any delimiter char (space, quote, tab, comma, parens, =, [ ], { },
 #), else 0. Verified delimiter-present and absent inputs. 004002 moves to
 `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z91. Big-ctor row closes (003257)
+
+Round 75 drove the large init ctor (build/r75.log biginit failures=0):
+003257 (0x7e370, ret 4) sets [this]=vptr 0x10113614, stores the arg at
+[this+0x4048], zeros several control words, and rep-stosd zeroes 0x1000
+dwords at [this+0x34], returning this. 003257 moves to `reconstructed`.
+No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
