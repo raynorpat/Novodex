@@ -2937,6 +2937,17 @@ failures=0): 003987 (0x8fcb0), 003985 (0x8fc50, identity + FLT_MAX at
 All 3 move to `reconstructed`. Independent (non-family) rows. No gate,
 coverage-floor, or policy change.
 
+## 3z70. Buffer-pop and ctor-with-link rows close (001655/004407)
+
+Round 54 drove two more pure no-call rows (build/r54e.log bufpop and
+ctorlink failures=0):
+- 001655 (0x32410, ret 4): buffer-pop -- reads slot [this+8][idx] into the
+  arg, increments [this+0x10], resets at capacity, returns a byte flag;
+- 004407 (0xb0310, ret 0xc): ctor with list-link -- sets vptr 0x1011a648,
+  stores args, and links the new node into a doubly-linked list.
+Both move to `reconstructed`. Independent (non-family) rows. No gate,
+coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
