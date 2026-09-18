@@ -3048,6 +3048,13 @@ failures=0): 003296 (0x7f020) walks the pointer array at [list+4]
 (terminated by 0) and returns 1 if the key pointer appears, else 0.
 003296 moves to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z82. Lookup-by-field row closes (003105)
+
+Round 66 drove the node-array lookup row (build/r66.log lookupfield
+failures=0): 003105 (0x76200) walks the pointer array at [key+4]
+(0-terminated) and returns the node whose [node+8] == key, else 0.
+003105 moves to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
