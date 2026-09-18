@@ -15090,12 +15090,12 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "combination via nxMassFrameFoldPayload + nxMassFrameTranslate",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/343",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2550",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "two-record mass combo (0x1c5a0, __thiscall ret 4): pushes param and calls 000831 (payload fold over {d;K}), then adds 0x24 and calls 000833 (translate by the second record's d); both helpers already reconstructed",
+      "dynamic_proof": "differential 6/6 (build/r26-restore.log mfcombo run=6 failures=0) vs oracle 0x1c5a0 over varied two-record payloads",
       "notes": ""
     },
     {
@@ -15198,12 +15198,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "negated-offset translate via nxMassFrameTranslate",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/346",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2553",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "negated-offset translate wrapper (0x1c720, __thiscall ret 0): builds {-offset} on the stack by fchs of this+0x24/0x28/0x2c and calls 000833 (MassFrame translate), moving the frame center to the origin",
+      "dynamic_proof": "differential 5/5 (build/r26-restore.log negtrans run=5 failures=0) vs oracle 0x1c720; mutation of the negate sign -> 4/5 red (build/r26-mut.log), restored green",
       "notes": ""
     },
     {
