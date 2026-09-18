@@ -2793,6 +2793,16 @@ Round 41 drove five rows (build/r41c.log initbatch failures=0):
 All 5 move to `reconstructed` with static + dynamic proof. Independent
 (non-family) rows. No gate, coverage-floor, or policy change.
 
+## 3z57. Final small rows close (001645/002150/004147)
+
+Round 42 drove the last three simple mechanical rows (build/r42.log
+finalbatch failures=0):
+- 001645 (0x31680, ret 8): set [this+4]=arg1, [this]=arg2, zero +8/0xc/0x10;
+- 002150 (0x53880, ret 0x10): x87 average (arr[i+3]+arr[i])*0.5;
+- 004147 (0x9a4e0): zero [this+0..0x14], [this+0x18]=0xffffffff.
+All 3 move to `reconstructed` with static + dynamic proof. Independent
+(non-family) rows. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
