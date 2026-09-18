@@ -3062,6 +3062,15 @@ failures=0): 001962 (0x4bee0, ret 4) computes table = [this + [this+0x70]*4 +
 0x1c] and then the same 001958 double-deref, returning *(...)[idx]+4.
 001962 moves to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z84. Jump-table switch rows close (002202/002208)
+
+Round 68 drove two compact jump-table switches (build/r68.log switch
+failures=0): 002202 (0x546b0) and 002208 (0x547b0), both ret 8. Each returns
+0 when [esp+4]!=0 or [esp+8]>4, else dispatches via [key*4 + table] over the
+five cases: 002202 -> {4,1,1,[this+0xa0]!=0,[this+0xa0]?4:0} and 002208 ->
+{0xc,0xc,0xc,[this+0xa0]?0xc:0,0}. Fixtures covered every dispatch case.
+Both move to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
