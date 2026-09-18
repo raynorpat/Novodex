@@ -3224,6 +3224,42 @@ int wmain(int argc, wchar_t** argv)
 	printf("shapegetters2 candidate failures=%u provisional=1\n", g2f);
 	}
 
+	// -- Pointer-based getters/setters across later-phase rows:
+	//   002211 (0x54800) -> *[this+0x9c]+0x18; 002213 -> *[this+0x9c]+0xc;
+	//   002215 -> *[this+0x9c]+0x10; 002387 (0x5b8e0) -> byte *[this+4]+8;
+	//   002383 (0x5b8b0) sets byte *[this+4]+8 = 1; 002398 (0x5b9d0) ret 4
+	//   stores [esp+4] into this+0x10. Drive vs oracle.
+	{
+	typedef void* (__thiscall* PtrGetOracle)(void*);
+	PtrGetOracle pg0 = reinterpret_cast<PtrGetOracle>(base + 0x54800);
+	PtrGetOracle pg1 = reinterpret_cast<PtrGetOracle>(base + 0x54810);
+	PtrGetOracle pg2 = reinterpret_cast<PtrGetOracle>(base + 0x54820);
+	typedef void (__thiscall* ByteSetOracle)(void*);
+	ByteSetOracle bs = reinterpret_cast<ByteSetOracle>(base + 0x5b8b0);
+	typedef unsigned char (__thiscall* ByteGetOracle)(void*);
+	ByteGetOracle bg = reinterpret_cast<ByteGetOracle>(base + 0x5b8e0);
+	typedef void (__thiscall* StoreOracle)(void*, void*);
+	StoreOracle st = reinterpret_cast<StoreOracle>(base + 0x5b9d0);
+	unsigned pf = 0;
+	unsigned char inner[0x20], obj[0x130];
+	*(reinterpret_cast<void**>(inner + 0xc)) = reinterpret_cast<void*>(0x11111111u);
+	*(reinterpret_cast<void**>(inner + 0x10)) = reinterpret_cast<void*>(0x22222222u);
+	*(reinterpret_cast<void**>(obj + 0x9c)) = inner;
+	if(pg0(obj) != inner + 0x18) { fprintf(stderr,"ptrget0 fail\n"); ++pf; }
+	if(pg1(obj) != reinterpret_cast<void*>(0x11111111u)) { fprintf(stderr,"ptrget1 fail\n"); ++pf; }
+	if(pg2(obj) != reinterpret_cast<void*>(0x22222222u)) { fprintf(stderr,"ptrget2 fail\n"); ++pf; }
+	unsigned char* owned = obj + 0x14; *(reinterpret_cast<void**>(obj+0x4)) = owned;
+	owned[8] = 0xEE;
+	bg(obj);	// returns byte; verify value matches
+	if(bg(obj) != 0xEEu) { fprintf(stderr,"byteget fail %02x\n", bg(obj)); ++pf; }
+	memset(owned, 0, 16); owned[8] = 0x00;
+	bs(obj);
+	if(owned[8] != 1) { fprintf(stderr,"byteset fail\n"); ++pf; }
+	st(obj, reinterpret_cast<void*>(0x33333333u));
+	if(*(reinterpret_cast<unsigned*>(obj + 0x10)) != 0x33333333u) { fprintf(stderr,"store fail\n"); ++pf; }
+	printf("ptrgetters candidate failures=%u provisional=1\n", pf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
