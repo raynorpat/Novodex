@@ -4368,6 +4368,30 @@ int wmain(int argc, wchar_t** argv)
 	printf("switch candidate failures=%u provisional=1\n", swf);
 	}
 
+	// -- Adjacent-pair search (005189, 0xe41a0, ret 8): finds which element
+	//   pair of [this],[this+4],[this+8] equals (arg1,arg2) and returns its
+	//   index 0/1/2, or -1.
+	{
+	typedef unsigned char (__thiscall* PairSearchOracle)(void*, unsigned, unsigned);
+	PairSearchOracle ps = reinterpret_cast<PairSearchOracle>(base + 0xe41a0);
+	unsigned psf = 0;
+	unsigned char pr[0x20]; memset(pr,0,sizeof(pr));
+	const unsigned K1=11, K2=22;
+	// case 0: [this]=K1, [this+4]=K2
+	*(unsigned*)(pr+0)=K1; *(unsigned*)(pr+4)=K2; *(unsigned*)(pr+8)=0x99;
+	if(ps(pr,K1,K2)!=0){fprintf(stderr,"ps0 fail %u\n",ps(pr,K1,K2));++psf;}
+	// case 1: [this]=K1, [this+8]=K2
+	*(unsigned*)(pr+0)=K1; *(unsigned*)(pr+4)=0x99; *(unsigned*)(pr+8)=K2;
+	if(ps(pr,K1,K2)!=1){fprintf(stderr,"ps1 fail %u\n",ps(pr,K1,K2));++psf;}
+	// case 2: [this+4]=K1, [this+8]=K2
+	*(unsigned*)(pr+0)=0x99; *(unsigned*)(pr+4)=K1; *(unsigned*)(pr+8)=K2;
+	if(ps(pr,K1,K2)!=2){fprintf(stderr,"ps2 fail %u\n",ps(pr,K1,K2));++psf;}
+	// miss: none match
+	*(unsigned*)(pr+0)=1; *(unsigned*)(pr+4)=2; *(unsigned*)(pr+8)=3;
+	if(ps(pr,K1,K2)!=0xFF){fprintf(stderr,"ps miss fail %u\n",ps(pr,K1,K2));++psf;}
+	printf("pairsearch candidate failures=%u provisional=1\n", psf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
