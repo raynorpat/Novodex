@@ -4054,6 +4054,35 @@ int wmain(int argc, wchar_t** argv)
 	printf("ctorlink candidate failures=%u provisional=1\n", clf);
 	}
 
+	// -- Builder/four-copy rows: 002166 (0x53c80) and 004218 (0x9e470).
+	{
+	typedef unsigned char (__thiscall* BuilderOracle)(void*, unsigned*);
+	BuilderOracle bd = reinterpret_cast<BuilderOracle>(base + 0x53c80);
+	typedef void (__thiscall* Copy10Oracle)(void*, const unsigned*);
+	Copy10Oracle c10 = reinterpret_cast<Copy10Oracle>(base + 0x9e470);
+	unsigned bdf = 0;
+	unsigned char src4[0x100]; memset(src4, 0, sizeof(src4));
+	#define SET4(off,i) { unsigned _v=0x70000000u+i; memcpy(src4+(off),&_v,4); }
+	SET4(8,1); SET4(0xc,2); SET4(0x10,3); SET4(0x14,4);
+	SET4(0xa0,5); SET4(0x18,6); SET4(0x7c,7); SET4(0x80,8);
+	unsigned out4[0x40]; memset(out4, 0, sizeof(out4));
+	unsigned char br = bd(src4, out4);
+	if(br!=1u){fprintf(stderr,"bd ret fail %u\n",br);++bdf;}
+	if(out4[0]!=0x70000001u||out4[1]!=0x70000002u||out4[2]!=0xCu||out4[3]!=0xCu){fprintf(stderr,"bd front fail\n");++bdf;}
+	if(out4[4]!=0x70000003u||out4[5]!=0x70000004u||out4[6]!=4u||out4[7]!=2u||out4[8]!=0x70000006u){fprintf(stderr,"bd mid fail\n");++bdf;}
+	if(out4[9]!=0x70000007u||out4[10]!=0x70000008u||out4[11]!=0u){fprintf(stderr,"bd tail fail\n");++bdf;}
+	// 004218: copy [arg+0x6c..0x90] to [this+0x16c..0x190]
+	unsigned char c10b[0x200]; memset(c10b, 0, sizeof(c10b));
+	unsigned char c10in[0xa0]; memset(c10in, 0, sizeof(c10in));
+	for(int i=0;i<10;++i){ unsigned v=0x80000000u+i; memcpy(c10in+0x6c+i*4,&v,4); }
+	c10(c10b, reinterpret_cast<const unsigned*>(c10in));
+	unsigned okc=1;
+	for(int i=0;i<10;++i) if(*(unsigned*)(c10b+0x16c+i*4)!=0x80000000u+i) okc=0;
+	if(!okc){fprintf(stderr,"c10 fail\n");++bdf;}
+	#undef SET4
+	printf("builder4 candidate failures=%u provisional=1\n", bdf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
