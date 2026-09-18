@@ -2544,6 +2544,36 @@ candidate-transcribable in isolation, and that alone does not close the row.
 phys_fn_001315 STAYS `discovered`. This is a scoping boundary, not a
 regression: no implementation, census, coverage, or gate change.
 
+## 3z39. Phase-5 shape family status and the Task-4 actor-table gate-blocker
+
+Consolidation after rounds 15-24. The BOX table's 17 slots: 12 already
+`reconstructed` (ctor + BASE apply/save + AABB/center/saveState/self rows);
+the 5 former `discovered` slots are now addressed: slot 3 (debug-render
+dispatcher), slot 4 (mass wrapper + centered pose), slot 5 (raycast, fully
+re-documented), and slot 7 (swept-AABB box-side, differentially closed 48/48
+in 3z37) all have candidate transcriptions and differentials but STAY
+`discovered` pending the family unit-close; slot 6 (owner-update) is
+scene-coupled and not isolatable in this harness (3z38). The family gate RED
+(`layout candidate mismatches=1`) is STRUCTURAL: NxPhysicsObjectLayoutTests
+increments candidateMissing unconditionally for family=vtables with reason
+"shape finals/actor classes are Tasks 3-4", so no per-slot closure flips it.
+
+Phase 5 (Objects) owns 205 functions and its gate is "Actors, bodies,
+shapes, materials, descriptors, mass/inertia, and lifecycle close" -- so the
+actor tables (Task 4) ARE within Phase 5's scope. Assessment of the two
+primary actor tables @0x101043d0 / @0x10104530 (87 slots each): 0x101043d0 =
+1 reconstructed + 86 pointing at the purecall/abort stub 0x0f41dc
+(phys_fn_005667, a Foundation "fatal pure-call" handler); 0x10104530 = 28
+reconstructed + 59 purecall. Closing the family RED therefore requires
+resolving those actor slots (real bodies for the reconstructed set, and
+registering the purecall rows as intentional stubs) plus the body/lifecycle
+and materials/descriptor rows Phase 5 owns -- a Task-4-scale effort beyond
+the object-model shape harness. The shape-family transcriptions and their
+differentials (boxslot4 64, boxsweep 48, boxmass digests, massmerge) are
+locked in; no coverage-floor, census-state, or gate-policy change. This
+section records the boundary so the next phase starts from the correct
+actor-table scope.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
