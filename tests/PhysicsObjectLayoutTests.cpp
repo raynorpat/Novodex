@@ -3761,6 +3761,65 @@ int wmain(int argc, wchar_t** argv)
 	printf("multicopy candidate failures=%u provisional=1\n", rf);
 	}
 
+	// -- rep-movsd pose-copy rows (001289/001295/001301/003563) and the
+	//   clamp/LCG global rows (002515/002513).
+	{
+	typedef void (__thiscall* PoseCopy2Oracle)(void*, float*);
+	PoseCopy2Oracle pc6c = reinterpret_cast<PoseCopy2Oracle>(base + 0x257e0);
+	PoseCopy2Oracle pc6c2 = reinterpret_cast<PoseCopy2Oracle>(base + 0x25840);
+	PoseCopy2Oracle pc0c = reinterpret_cast<PoseCopy2Oracle>(base + 0x258c0);
+	PoseCopy2Oracle pc18 = reinterpret_cast<PoseCopy2Oracle>(base + 0x87e20);
+	unsigned zf = 0;
+	unsigned char pc[0x100]; memset(pc, 0, sizeof(pc));
+	// fill 0x6c..0x8f and 0xc..0x2f and 0x18..0x3b with distinct words
+	for(int i=0;i<12;++i){ unsigned v=0xA0000000u+i; memcpy(pc+0x6c+i*4,&v,4); }
+	for(int i=0;i<12;++i){ unsigned v=0xB0000000u+i; memcpy(pc+0xc+i*4,&v,4); }
+	for(int i=0;i<12;++i){ unsigned v=0xC0000000u+i; memcpy(pc+0x18+i*4,&v,4); }
+	float outA[12]={0}; pc6c(pc, outA);
+	if(memcmp(outA, pc+0x6c, 48)!=0){fprintf(stderr,"pc6c fail\n");++zf;}
+	float outB[12]={0}; pc6c2(pc, outB);
+	if(memcmp(outB, pc+0x6c, 48)!=0){fprintf(stderr,"pc6c2 fail\n");++zf;}
+	float outC[12]={0}; pc0c(pc, outC);
+	if(memcmp(outC, pc+0xc, 48)!=0){fprintf(stderr,"pc0c fail\n");++zf;}
+	float outD[12]={0}; pc18(pc, outD);
+	if(memcmp(outD, pc+0x18, 48)!=0){fprintf(stderr,"pc18 fail\n");++zf;}
+	printf("posecopy2 candidate failures=%u provisional=1\n", zf);
+	}
+
+	// -- Clamp (002515) and LCG step (002513) on the global .data[0x10122340].
+	{
+	typedef void (__cdecl* ClampOracle)(int);	// reads [esp+4] as the single cdecl arg
+	ClampOracle clampO = reinterpret_cast<ClampOracle>(base + 0x5fe50);
+	typedef void (__cdecl* LcgOracle)(void*);
+	LcgOracle lcgO = reinterpret_cast<LcgOracle>(base + 0x5fe20);
+	int* gclamp = reinterpret_cast<int*>(const_cast<unsigned char*>(base + 0x122340));
+	unsigned cf = 0;
+	// clamp cases
+	int cv[] = {-5, 0, 1, 2, 0x7ffffffe, 0x7fffffff};
+	for(unsigned ci=0; ci<sizeof(cv)/sizeof(cv[0]); ++ci) {
+		int v = cv[ci];
+		*gclamp = 0;
+		clampO(v);
+		int expV = v<1 ? 1 : (v>=0x7fffffff ? 0x7ffffffe : v);
+		if(*gclamp != expV){
+			fprintf(stderr,"clamp fail v=%d g=%d\n",v,*gclamp); ++cf;
+		}
+	}
+	// LCG step: seed, run 5 times, compare to oracle
+	// formula: a=0x1f31d; eax = x/a, edx=x%a; edx*0xb14 - eax*0x41a7... verify
+	*gclamp = 12345;
+	unsigned s0 = *gclamp;
+	// replicate: x -> ( (x%0x1f31d)*0xb14 ) - ( (x/0x1f31d)*0x41a7 )
+	int x = s0;
+	int q = x / 0x1f31d, r = x % 0x1f31d; // idiv: eax=q, edx=r
+	// imul eax,eax,0xb14; imul edx,edx,0x41a7; sub edx,eax -> r*0xb14 - q*0x41a7? listing: imul eax,eax,0xb14 (q*0xb14); imul edx,edx,0x41a7 (r*0x41a7); sub edx,eax -> r*0x41a7 - q*0xb14
+	long nx = (long)r*0x41a7 - (long)q*0xb14;
+	if(nx <= 0) nx += 0x7fffffff;
+	lcgO(0);
+	if(*gclamp != (int)nx){fprintf(stderr,"lcg fail got=%d exp=%d\n",*gclamp,(int)nx); ++cf;}
+	printf("clampfcg candidate failures=%u provisional=1\n", cf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
