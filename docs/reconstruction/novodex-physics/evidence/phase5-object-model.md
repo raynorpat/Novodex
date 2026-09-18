@@ -2667,6 +2667,17 @@ Round 30 drove six pure pointer-based getters/setters across phases 4 and 7
 All six move to `reconstructed` with static + dynamic proof. Independent
 (non-family) rows. No gate, coverage-floor, or policy change.
 
+## 3z46. Simple getter/constant rows close (004070/004078/005149/005151/005153)
+
+Round 31 drove five simple self-contained getters (build/r31.log
+simplegetters failures=0):
+- 005149/005151/005153 (@0xe3190/0xe31a0/0xe31b0): return the fixed rdata
+  addresses 0x10122370/0x101223d0/0x10122430.
+- 004070 (@0x95a80): returns [this+0x168].
+- 004078 (@0x95bb0): bit extract ((this+0x2c)>>3)&3.
+All five move to `reconstructed` with static + dynamic proof. Independent
+(non-family) rows. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
