@@ -3874,6 +3874,53 @@ int wmain(int argc, wchar_t** argv)
 	printf("tmplinit candidate failures=%u provisional=1\n", mf);
 	}
 
+	// -- Cross-product row (002465, 0x5eac0): when [esp+4]==3 computes the
+	//   3D double cross product A x B into C (arrays of doubles).
+	{
+	typedef void (__cdecl* CrossOracle)(void*, void*, void*, void*);
+	CrossOracle cr = reinterpret_cast<CrossOracle>(base + 0x5eac0);
+	unsigned cf2 = 0;
+	const double A[3] = { 1.0, 2.0, 3.0 };
+	const double B[3] = { 4.0, 5.0, 6.0 };
+	{
+	double outC[3];
+	// cross = { a1*b2-b1*a2, a2*b0-b2*a0, a0*b1-b0*a1 }
+	double expC[3] = { A[1]*B[2]-B[1]*A[2], A[2]*B[0]-B[2]*A[0], A[0]*B[1]-B[0]*A[1] };
+	// need to place 3 in [esp+4] as the mode; call with a dummy preceding arg
+	unsigned char aA[0x40], aB[0x40], aC[0x40];
+	memcpy(aA, A, sizeof(A)); memcpy(aB, B, sizeof(B));
+	// 002465 reads [esp+4](mode), [esp+8](A), [esp+0xc](B), [esp+0x10](C)
+	// as cdecl 4 args; mode must equal 3 as an integer.
+	cr(reinterpret_cast<void*>(3), aA, aB, aC);
+	double* oc = reinterpret_cast<double*>(aC);
+	for(int i=0;i<3;++i){
+		if(oc[i]!=expC[i]){ fprintf(stderr,"cross fail %d got=%.6f exp=%.6f\n",i,(double)oc[i],(double)expC[i]); ++cf2; }
+	}
+	(void)outC;
+	}
+	printf("crossprod candidate failures=%u provisional=1\n", cf2);
+	}
+
+	// -- Bounded push row (003261, 0x7e4b0, ret 0xc): if [this+0x14] <
+	//   [this+0x10], store 3 args into [this+0xc + [this+0x14]*12] and inc.
+	{
+	typedef void (__thiscall* BoundedPushOracle)(void*, unsigned, unsigned, unsigned);
+	BoundedPushOracle bp = reinterpret_cast<BoundedPushOracle>(base + 0x7e4b0);
+	unsigned pb = 0;
+	unsigned char bp1[0x100]; memset(bp1, 0, sizeof(bp1));
+	unsigned char* bpBase = bp1 + 0x40;		// writable scratch base
+	*(void**)(bp1+0xc) = bpBase;			// [this+0xc] = base pointer
+	unsigned cap=2; memcpy(bp1+0x10,&cap,4); *(unsigned*)(bp1+0x14)=0;
+	bp(bp1, 0x11, 0x22, 0x33);
+	if(*(unsigned*)(bpBase+0)!=0x11||*(unsigned*)(bpBase+4)!=0x22 || *(unsigned*)(bpBase+8)!=0x33){fprintf(stderr,"bp0 fail\n");++pb;}
+	if(*(unsigned*)(bp1+0x14)!=1){fprintf(stderr,"bp count fail=%u\n",*(unsigned*)(bp1+0x14));++pb;}
+	bp(bp1, 0x44, 0x55, 0x66);	// second into the next slot
+	if(*(unsigned*)(bpBase+0xc)!=0x44|| *(unsigned*)(bp1+0x14)!=2){fprintf(stderr,"bp1 fail\n");++pb;}
+	bp(bp1, 0x77, 0x88, 0x99);	// full now (0x14 >= cap 2) -> no write
+	if(*(unsigned*)(bpBase+0x18)!=0 || *(unsigned*)(bp1+0x14)!=2){fprintf(stderr,"bp full fail\n");++pb;}
+	printf("boundedpush candidate failures=%u provisional=1\n", pb);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
