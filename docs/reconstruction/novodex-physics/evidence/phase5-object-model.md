@@ -2574,6 +2574,34 @@ locked in; no coverage-floor, census-state, or gate-policy change. This
 section records the boundary so the next phase starts from the correct
 actor-table scope.
 
+## 3z40. MassFrame translate (phys_fn_000833) closed: I += m*(Q(c)-Q(o)), Q(r)=|r|^2 I - r r^T
+
+Round 24 drove the shared MassFrame-translation helper phys_fn_000833
+(@0x1c040, __thiscall ret 4) against a candidate `MassFrame::nxMassFrame
+Translate` over 54 cases (6 offsets x 9 translations, including negative and
+fractional values). The closed model:
+
+- early-out when the arg `{d}` is all-zero;
+- otherwise the reference center moves from old offset `o` to `c = d + o`,
+  and each of the nine inertia words gains `m*(Q(c) - Q(o))` where
+  `Q(r) = |r|^2 I - r r^T` (the symmetric parallel-axis matrix, with the
+  image's 0.0-literal multiplications at [0x101041f0] falling on the
+  off-diagonal-asymmetric positions);
+- the image's "centered" (0x1c0d7, c==0 -> -Q(o)) and "displaced" (0x1c26f,
+  generic) paths are the same Delta-Q with different x87 staging; the shared
+  tail (0x1c578) sets `offset = c`.
+
+The differential is byte-exact 54/54 (build/r25c.log, r25d-gate.log
+mftranslate run=54 failures=0). FALSIFICATION: flipping the Q off-diagonal
+sign makes 37/54 fail (build/r25-mut.log); restored green. phys_fn_000833
+(Phase 2) moves to `reconstructed` in the census with static + dynamic
+proof. It is NOT family-gated, so this is a real census closure (not a
+provisional shape drive). The previous inventory static_proof had deferred
+"formula-level decode"; that is now resolved. Coverage floor (126), the
+family gate, and gate policy are unchanged.
+
+## 6. What this task did not do
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
