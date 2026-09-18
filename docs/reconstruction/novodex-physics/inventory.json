@@ -9726,12 +9726,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "x87 control-word read (0x106d0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/199",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1443",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "pushes ecx, reads the x87 status word (fnstcw) into a local, stores it to [this+0]; pop; ret",
+      "dynamic_proof": "runs twice consistently producing the same valid control word (0x027f); static-proof fnstcw fetch (3z110)",
       "notes": ""
     },
     {
