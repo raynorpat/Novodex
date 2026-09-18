@@ -15054,12 +15054,12 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ObjectModel.cpp (MassFrame::nxMassFrameTranslate)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/342",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2545",
-      "static_proof": "partner fold step for the second {Vec3 d; SymMat3 K} payload record (extra+0x24): early-outs when d is all-zero; forms d+o per component against the negated frame offset and branches to a centered path (0x1c0d7, quadratic offset terms) or a displaced path (0x1c26f, parallel-axis cross terms with several terms multiplied by the .rdata 0x101041f0 = 0.0f literal); shared tail at 0x1c592; formula-level decode deferred",
-      "dynamic_proof": null,
+      "static_proof": "MassFrame translate (0x1c040, __thiscall ret 4): early-outs when the {d} arg is all-zero; else moves the reference center from old_offset o to c=d+o and adds the parallel-axis Delta-Q m*(Q(c)-Q(o)) to the nine inertia words, where Q(r)=|r|^2 I - r r^T; the image splits this into a centered path (0x1c0d7, c==0 -> -Q(o)) and a displaced path (0x1c26f, generic, with the 0.0-literal multiplications [0x101041f0] matching the symmetric Q structure), then the shared tail (0x1c578) sets offset=c. nxMassFrameTranslate reproduces Q(c)-Q(o); see 3z40.",
+      "dynamic_proof": "differential 54/54 (6 offsets x 9 translations, incl. negatives/fractionals) byte-exact vs oracle 0x1c040; mutation of the Q off-diagonal sign -> 37/54 red (build/r25-mut.log), restored green",
       "notes": ""
     },
     {
