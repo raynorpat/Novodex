@@ -3580,6 +3580,48 @@ int wmain(int argc, wchar_t** argv)
 	printf("zmix2 candidate failures=%u provisional=1\n", mf);
 	}
 
+	// -- Init/ptr-diff/pop rows: 005157(bbox-init) 005301(zero) 005475(zero)
+	//   002896(ptr-field diff) 004776(pop float from container).
+	{
+	typedef void (__thiscall* BBoxInitOracle)(void*);
+	BBoxInitOracle bb = reinterpret_cast<BBoxInitOracle>(base + 0xe32c0);
+	BBoxInitOracle zsec = reinterpret_cast<BBoxInitOracle>(base + 0xe7360);
+	BBoxInitOracle zpan = reinterpret_cast<BBoxInitOracle>(base + 0xefeb0);
+	typedef unsigned (__cdecl* PtrFieldDiffOracle)(void**, void**);
+	PtrFieldDiffOracle pfd = reinterpret_cast<PtrFieldDiffOracle>(base + 0x6e650);
+	typedef float (__thiscall* PopOracle)(void*);
+	PopOracle pop = reinterpret_cast<PopOracle>(base + 0xb3ae0);
+	unsigned nf = 0;
+	unsigned char bb1[0x40]; memset(bb1, 0x55, sizeof(bb1));
+	bb(bb1);
+	if(*(unsigned*)(bb1+0)!=0x80000000u || *(unsigned*)(bb1+4)!=0 || *(unsigned*)(bb1+8)!=0
+		|| *(unsigned*)(bb1+0xc)!=0 || *(unsigned*)(bb1+0x10)!=0 || bb1[0x14]!=1){
+		fprintf(stderr,"bb fail\n");++nf;}
+	unsigned char zs[0x60]; memset(zs,0x66,sizeof(zs));
+	zsec(zs);
+	if(*(unsigned*)(zs+0x18)+*(unsigned*)(zs+0x1c)+*(unsigned*)(zs+0x20)+*(unsigned*)(zs+0x24)
+		+*(unsigned*)(zs+0x44)+*(unsigned*)(zs+0x48)+*(unsigned*)(zs+0x4c)!=0){fprintf(stderr,"zsec fail\n");++nf;}
+	unsigned char zp[0x20]; memset(zp,0x77,sizeof(zp));
+	zpan(zp);
+	if(*(unsigned*)(zp+0)+*(unsigned*)(zp+4)+*(unsigned*)(zp+8)+*(unsigned short*)(zp+0xc)
+		+*(unsigned short*)(zp+0xe)+*(unsigned*)(zp+0x10)+*(unsigned*)(zp+0x14)!=0){fprintf(stderr,"zpan fail\n");++nf;}
+	// 002896: (*(void**)[E+4])[0x10] - (*(void**)[E+8])[0x10]
+	unsigned obA[8]={0}, obB[8]={0}; obA[4]=0xA0000000u; obB[4]=0x20000000u;
+	void* pA=&obA[0]; void* pB=&obB[0];
+	unsigned pdV = pfd(&pA, &pB);
+	if(pdV != 0xA0000000u - 0x20000000u){fprintf(stderr,"pfd fail %08x\n",pdV);++nf;}
+	// 004776: pop -- [this]=container ptr; (*[this])[0]=base data ptr,
+	// [*this+4]=byte offset; returns float at base+offset, increments offset by 4.
+	unsigned char ict[0x30]; memset(ict,0,sizeof(ict));
+	float data[8]; for(int k=0;k<8;++k) data[k]=(float)(k+1);
+	unsigned pool[2]; pool[0]=(unsigned)(size_t)data; pool[1]=0;
+	*(void**)(ict+0)=pool;
+	float of = pop(&ict[0]);
+	if(of != data[0] || *(unsigned*)(pool+1)!=4 || *(unsigned*)(ict+0x10)!=(unsigned)(size_t)data){
+		fprintf(stderr,"pop fail of=%08x newoff=%u\n", reinterpret_cast<unsigned&>(of), *(unsigned*)(pool+1));++nf;}
+	printf("initbatch candidate failures=%u provisional=1\n", nf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
