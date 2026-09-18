@@ -2803,6 +2803,19 @@ finalbatch failures=0):
 All 3 move to `reconstructed` with static + dynamic proof. Independent
 (non-family) rows. No gate, coverage-floor, or policy change.
 
+## 3z58. Triple-field copy/store rows close (000509/001297/003968/000540/000507/002686)
+
+Round 43 drove six triple-field copy/store rows (build/r43b.log
+triplecopy failures=0):
+- 000509 (ret 4): copy [this+0x520/524/528] to arg[0/4/8];
+- 001297 (ret 4): copy [this+0x90/94/98] to arg[0/4/8];
+- 003968 (ret 0x10): store 4 args to [this+0x58/5c/60/64];
+- 000540 (ret 0xc): store 3 args to [this+0x52c/530/534];
+- 000507 (ret 4): copy arg[0/4/8] to [this+0x520/524/528];
+- 002686: ptr-field masked diff ((*(a))[0x50]&0x1ff)-((*(b))[0x50]&0x1ff).
+All 6 move to `reconstructed` with static + dynamic proof. Independent
+(non-family) rows. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
