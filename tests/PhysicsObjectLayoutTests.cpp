@@ -3082,6 +3082,72 @@ int wmain(int argc, wchar_t** argv)
 	printf("mftranslate candidate run=%u failures=%u provisional=1\n", trRun, trFail);
 	}
 
+	// -- phys_fn_000841 (0x1c720): the negated-offset translate wrapper.
+	// __thiscall ret 0: builds { -offset } on the stack and calls 000833, so
+	// the frame is moved so its center lands at the origin. Drive against the
+	// oracle 000841 using the closed 000833 (nxMassFrameTranslate).
+	{
+	typedef void (__thiscall* NfNegOracle)(void*);
+	NfNegOracle negO = reinterpret_cast<NfNegOracle>(base + 0x1c720);
+	unsigned ngFail = 0, ngRun = 0;
+	const float ngOff[][3] = { {1,0,0}, {0,2,0}, {1,2,3}, {-1,0.5f,-2}, {0.25f,-0.5f,4} };
+	for(unsigned oi = 0; oi < 5; ++oi)
+		{
+		MassFrame oF, cF;
+		memset(&oF, 0xCD, sizeof(oF)); memset(&cF, 0xCD, sizeof(cF));
+		for(int i=0;i<9;++i) oF.mInertia[i]=cF.mInertia[i]=(float)(i+1);
+		oF.mOffset.x=cF.mOffset.x=ngOff[oi][0];
+		oF.mOffset.y=cF.mOffset.y=ngOff[oi][1];
+		oF.mOffset.z=cF.mOffset.z=ngOff[oi][2];
+		oF.mMass=cF.mMass=6.0f;
+		negO(&oF);
+		float neg[3] = { -cF.mOffset.x, -cF.mOffset.y, -cF.mOffset.z };
+		cF.nxMassFrameTranslate(neg);
+		++ngRun;
+		if(memcmp(&oF,&cF,sizeof(oF)) != 0)
+			{
+			++ngFail;
+			for(int i=0;i<13;++i){ unsigned a,b; memcpy(&a,((float*)&oF)+i,4); memcpy(&b,((float*)&cF)+i,4);
+			if(a!=b) fprintf(stderr,"negtrans oi=%u w%u o=%08x c=%08x\n",oi,i,a,b);}
+			}
+		}
+	printf("negtrans candidate run=%u failures=%u provisional=1\n", ngRun, ngFail);
+	}
+
+	// -- phys_fn_000835 (0x1c5a0): the two-record mass combo -- fold the
+	// {d;K} payload (000831) at param, then translate by the second record's
+	// d (000833) at param+0x24. Both helpers are closed; this is the thin
+	// combination. `ret 4` __thiscall.
+	{
+	typedef void (__thiscall* MFComboOracle)(void*, const void*);
+	MFComboOracle comboO = reinterpret_cast<MFComboOracle>(base + 0x1c5a0);
+	unsigned cbFail = 0, cbRun = 0;
+	for(unsigned ci = 0; ci < 6; ++ci)
+		{
+		float payload[0x30/4];
+		memset(payload, 0, sizeof(payload));
+		payload[0]=ci+1; payload[1]=-(ci+1)*0.5f; payload[2]=2.0f;
+		payload[3]=1.2f; payload[4]=0.1f; payload[5]=0.2f; payload[6]=3.3f;
+		payload[7]=0.4f; payload[8]=2.5f;					// first {d;K}
+		payload[12]=ci+1; payload[13]=-(ci+1); payload[14]=0.5f;	// second d
+		MassFrame oF, cF;
+		memset(&oF,0xCD,sizeof(oF)); memset(&cF,0xCD,sizeof(cF));
+		for(int i=0;i<9;++i) oF.mInertia[i]=cF.mInertia[i]=(float)(i+1);
+		oF.mMass=cF.mMass=6.0f;
+		comboO(&oF, payload);
+		cF.nxMassFrameFoldPayload(payload);
+		cF.nxMassFrameTranslate(payload + 9);			// param+0x24 = payload+9
+		++cbRun;
+		if(memcmp(&oF,&cF,sizeof(oF)) != 0)
+			{
+			++cbFail;
+			for(int i=0;i<13;++i){ unsigned a,b; memcpy(&a,((float*)&oF)+i,4); memcpy(&b,((float*)&cF)+i,4);
+			if(a!=b) fprintf(stderr,"mfcombo ci=%u w%u o=%08x c=%08x\n",ci,i,a,b);}
+			}
+		}
+	printf("mfcombo candidate run=%u failures=%u provisional=1\n", cbRun, cbFail);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
