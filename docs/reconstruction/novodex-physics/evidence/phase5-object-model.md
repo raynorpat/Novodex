@@ -2656,6 +2656,17 @@ failures=0):
 All four (phase 3) move to `reconstructed` with static + dynamic proof --
 independent (non-family) rows. No gate, coverage-floor, or policy change.
 
+## 3z45. Pointer-based getter/setter cluster closes (002211/002213/002215/002383/002387/002398)
+
+Round 30 drove six pure pointer-based getters/setters across phases 4 and 7
+(build/r30b.log ptrgetters failures=0):
+- 002211 (0x54800) -> `*[this+0x9c] + 0x18`; 002213 (0x54810) ->
+  `*[*[this+0x9c]+0xc]`; 002215 (0x54820) -> `*[*[this+0x9c]+0x10]`.
+- 002387 (0x5b8e0) -> byte `*[this+4]+8`; 002383 (0x5b8b0) sets that byte
+  to 1; 002398 (0x5b9d0, ret 4) stores `[esp+4]` into `this+0x10`.
+All six move to `reconstructed` with static + dynamic proof. Independent
+(non-family) rows. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
