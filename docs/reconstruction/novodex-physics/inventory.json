@@ -29886,12 +29886,12 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "array reverse (0x32460, ret 0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/654",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4588",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "reverses the first [esp+4] words of the [esp+8] array in place (count>>1 swaps); returns 1 (0 if either arg null)",
+      "dynamic_proof": "confirmed via reversearr drive (3z86): failures=0",
       "notes": ""
     },
     {
