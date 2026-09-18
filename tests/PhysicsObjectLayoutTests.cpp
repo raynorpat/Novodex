@@ -3992,6 +3992,29 @@ int wmain(int argc, wchar_t** argv)
 	printf("bufreset candidate failures=%u provisional=1\n", gr);
 	}
 
+	// -- Template/sentinel bbox init rows: 003987 (0x8fcb0), 003985
+	//   (0x8fc50), 002148 (0x53810).
+	{
+	typedef void (__thiscall* TmplFmiOracle)(void*);
+	TmplFmiOracle fm0 = reinterpret_cast<TmplFmiOracle>(base + 0x8fcb0);
+	TmplFmiOracle fm1 = reinterpret_cast<TmplFmiOracle>(base + 0x8fc50);
+	TmplFmiOracle fm2 = reinterpret_cast<TmplFmiOracle>(base + 0x53810);
+	unsigned fmf = 0;
+	unsigned char m0[0x60]; memset(m0, 0xA5, sizeof(m0));
+	fm0(m0);
+	if(*(unsigned*)(m0+8)+*(unsigned*)(m0+0x18)+*(unsigned*)(m0+0x28)!=3u*0x3f800000u){fprintf(stderr,"fm0 one fail\n");++fmf;}
+	if(*(unsigned*)(m0+0x38)!=8u||*(unsigned*)(m0+0xc)!=0||*(unsigned*)(m0+0x4c)+*(unsigned*)(m0+0x44)+*(unsigned*)(m0+0x40)!=0){fprintf(stderr,"fm0 zero fail\n");++fmf;}
+	unsigned char m1[0x80]; memset(m1, 0xA5, sizeof(m1));
+	fm1(m1);
+	if(*(unsigned*)(m1+0x58)+*(unsigned*)(m1+0x5c)!=2u*0x7f7fffffu||*(unsigned*)(m1+0x68)!=2u){fprintf(stderr,"fm1 sent fail\n");++fmf;}
+	if(*(unsigned*)(m1+0x30)!=0x3f800000u||*(unsigned*)(m1+0x30)!=*(unsigned*)(m1+0x10)||*(unsigned*)(m1+0x3c)!=0x3f800000u){fprintf(stderr,"fm1 id fail\n");++fmf;}
+	unsigned char m2[0x30]; memset(m2, 0xA5, sizeof(m2));
+	fm2(m2);
+	if(*(unsigned*)(m2+0)+*(unsigned*)(m2+4)+*(unsigned*)(m2+8)!=3u*0x7f7fffffu){fprintf(stderr,"fm2 max fail\n");++fmf;}
+	if(*(unsigned*)(m2+0xc)+*(unsigned*)(m2+0x10)+*(unsigned*)(m2+0x14)!=3u*0xFF7FFFFFu){fprintf(stderr,"fm2 min fail\n");++fmf;}
+	printf("tmplfm candidate failures=%u provisional=1\n", fmf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
