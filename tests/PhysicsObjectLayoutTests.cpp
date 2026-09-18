@@ -4256,6 +4256,35 @@ int wmain(int argc, wchar_t** argv)
 	printf("dcmp candidate failures=%u provisional=1\n", dcf);
 	}
 
+	// -- Indexed double-deref lookup (001958, 0x4be90, ret 4): if
+	//   [this+0x1c] nonzero, returns [*( [table+0x18] + [table+4]*4 ) [idx] ] + 4.
+	{
+	typedef unsigned (__thiscall* IndexedLookupOracle)(void*, unsigned);
+	IndexedLookupOracle il = reinterpret_cast<IndexedLookupOracle>(base + 0x4be90);
+	unsigned ilf = 0;
+	unsigned char tbl[0x20]; memset(tbl,0,sizeof(tbl));
+	unsigned subcount=1; memcpy(tbl+4,&subcount,4);
+	unsigned base=0x1000; memcpy(tbl+0x18,&base,4);	// base + subcount*4 points into an array
+	// array element array at 'base' (simulate with a buffer pointer)
+	unsigned char arr[0x40]; memset(arr,0,sizeof(arr));
+	unsigned elem0=0x2000; memcpy(arr+0, &elem0, 4);	// arr[0] = ptr to an object
+	unsigned objA=0x3000; // an object whose +4 field is the return
+	unsigned char objbuf[8]; memset(objbuf,0,sizeof(objbuf)); unsigned field=0xA5A5; memcpy(objbuf+4,&field,4);
+	// Need real addresses; rebuild with actual pointers
+	unsigned char ilo[0x100]; memset(ilo,0,sizeof(ilo));
+	unsigned sub=1; memcpy(ilo+4,&sub,4);
+	unsigned oxt = (unsigned)(size_t)(ilo+0x40); 		// table+0x18 -> a base
+	// The slot array is at base + sub*4 (i.e. oxt+4)
+	unsigned char* slotArr = reinterpret_cast<unsigned char*>(oxt + 4);
+	unsigned char obj[8]; unsigned fl=0x5A5Au; memcpy(obj+4,&fl,4);
+	*(unsigned*)(slotArr+0)= (unsigned)(size_t)obj;		// slot[0] = &obj
+	// [this+0x1c] points to the table
+	*(unsigned*)(ilo+0x18)= oxt;
+	*(void**)(ilo+0x1c)= ilo;							// [this+0x1c]=ilo (table)
+	if(il(ilo, 0)!=0x5A5Au){fprintf(stderr,"il0 fail %u\n",il(ilo,0));++ilf;}
+	printf("indexedlookup candidate failures=%u provisional=1\n", ilf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
