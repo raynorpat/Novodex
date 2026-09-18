@@ -3087,6 +3087,15 @@ array argument (count>>1 swaps) and returns 1 (0 if either arg is null).
 Verified both a full reverse (6) and a partial reverse (3). 001657 moves to
 `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z87. Flag-and-compare row closes (002684)
+
+Round 71 drove the fucompp flag-decision row (build/r71c.log flagcmp
+failures=0): 002684 (0x66270) derefs two objects; returns -1 if
+[a+0x50]&0x100000 is clear, +1 if [b+0x50]&0x100000 is clear, else compares
+the [a+0x20]/[b+0x20] doubles and returns 0/-1. Verified deterministically
+(-1/-1/+1 and A<=B -> -1). 002684 moves to `reconstructed`. No gate,
+coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
