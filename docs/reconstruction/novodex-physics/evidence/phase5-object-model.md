@@ -2630,6 +2630,20 @@ build/r27.log posecopy run=4 failures=0), including the 8-byte tail past
 independent (non-family) closure; it is a generic pose/buffer copy the
 object-model uses. No gate, coverage-floor, or policy change.
 
+## 3z43. Three shape-table getter/copy rows close
+
+Round 28 drove three tiny shape-table rows against the oracle in one
+shapegetters drive (failures=0, build/r28c.log):
+- phys_fn_000929 (@0x20480): `lea eax,[ecx+0xe4]` -- returns the hull-dims
+  pointer. 7 B.
+- phys_fn_001283 (@0x257b0): `mov eax,[ecx+0xd0]` -- returns the value at
+  this+0xd0 (the sentinel). 7 B.
+- phys_fn_001291 (@0x25810): `rep movsd 9` from this+0x6c into the out arg
+  (ret 4) -- copies the 36-byte third pose. 21 B.
+All three (phase 3) move to `reconstructed` with static + dynamic proof.
+These are independent (non-family) rows; no gate, coverage-floor, or policy
+change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
