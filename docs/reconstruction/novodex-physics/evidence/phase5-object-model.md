@@ -3164,6 +3164,15 @@ matching slots and the no-match path verify byte-exact (build/r78.log
 condsetb failures=0). 005187 moves to `reconstructed`. No gate,
 coverage-floor, or policy change.
 
+## 3z95. Six-float bounded-comparison row closes (005145)
+
+Round 79 drove the 6-float compare (build/r79.log vec6cmp failures=0):
+005145 (0xe2f70, ret 4) compares the source vector at [esp+4] against the
+reference [this] and returns a byte flag (1 for in-bounds, 0 for a clear
+mismatch). Another byte-return conversion (the oracle returns via `al`),
+and the same-vs-big fixture verifies both poles. 005145 moves to
+`reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
