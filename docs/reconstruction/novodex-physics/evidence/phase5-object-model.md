@@ -2600,7 +2600,24 @@ provisional shape drive). The previous inventory static_proof had deferred
 "formula-level decode"; that is now resolved. Coverage floor (126), the
 family gate, and gate policy are unchanged.
 
-## 6. What this task did not do
+## 3z41. Negated-offset wrapper (000841) and two-record combo (000835) close
+
+Round 25-26 closed two more mass-frame rows built on the 000833 translate:
+
+- phys_fn_000841 (@0x1c720, __thiscall ret 0): builds {-offset} (fchs of
+  this+0x24/28/2c) and calls 000833, moving the frame center to the origin.
+  Closed 5/5 (build/r26-restore.log negtrans run=5 failures=0); the
+  deliberate +x negate-sign mutation makes 4/5 fail (build/r26-mut.log),
+  restored green. Phase 5 -> reconstructed.
+- phys_fn_000835 (@0x1c5a0, __thiscall ret 4): the two-record combo -- fold
+  the {d;K} payload (000831) at param, then translate by the second record's
+  d (000833) at param+0x24. Closed 6/6 (mfcombo run=6 failures=0). Phase 3
+  -> reconstructed.
+
+Both are THIN compositions of already-closed helpers (000831 fold +
+000833 translate), confirmed byte-exact against the oracle on their own
+drives -- evidence the mass-helper family is a coherent closed cluster. No
+gate, coverage-floor, or policy change.
 
 ## 6. What this task did not do
 
