@@ -3433,6 +3433,29 @@ int wmain(int argc, wchar_t** argv)
 	printf("setget3 candidate failures=%u provisional=1\n", a2f);
 	}
 
+	// -- Zero/init/global-write batch: 001536(zero 0/4) 001012(zero arg,ret8)
+	//   001439(zero 0/2/4) 005328(vptr+0xffffffff) 004081(global write)
+	//   004805(global write, returns 1).
+	{
+	typedef void (__thiscall* ZeroInitOracle)(void*);
+	ZeroInitOracle z04 = reinterpret_cast<ZeroInitOracle>(base + 0x2dae0);
+	ZeroInitOracle z024 = reinterpret_cast<ZeroInitOracle>(base + 0x2a610);
+	ZeroInitOracle vf = reinterpret_cast<ZeroInitOracle>(base + 0xe82a0);
+	typedef void* (__thiscall* ArgInitOracle)(void*, void*);
+	ArgInitOracle az = reinterpret_cast<ArgInitOracle>(base + 0x225d0);
+	unsigned z2f = 0;
+	unsigned char z2[0x400]; memset(z2, 0xA5, sizeof(z2));
+	z04(z2); if(*(unsigned*)(z2+0)!=0 || *(unsigned*)(z2+4)!=0){fprintf(stderr,"z04 fail\n");++z2f;}
+	unsigned char zarg[8]; memset(zarg,0xA5,8);
+	az(z2, zarg); if(*(unsigned*)(zarg)!=0){fprintf(stderr,"az fail\n");++z2f;}
+	z024(z2);
+	if(*(unsigned short*)(z2+0)!=0 || *(unsigned short*)(z2+2)!=0 || *(unsigned*)(z2+4)!=0){fprintf(stderr,"z024 fail\n");++z2f;}
+	vf(z2); if(*(unsigned*)(z2+0)!=0x1011ba40u || *(unsigned*)(z2+0x38)!=0xFFFFFFFFu){fprintf(stderr,"vf fail\n");++z2f;}
+	// 004081/004805 write to static .data globals; proven by listing (static
+	// proof) rather than an in-process global read, which is relocation-fragile.
+	printf("zeroinit candidate failures=%u provisional=1\n", z2f);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
