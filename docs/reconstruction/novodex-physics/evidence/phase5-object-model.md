@@ -3000,6 +3000,15 @@ Verified three deterministic branches (0x1011b6ec, 0x1011b638, and 0 on the
 final and-al/neg/sbb path). 004903 moves to `reconstructed`. No gate,
 coverage-floor, or policy change.
 
+## 3z76. LCG-step-to-float row closes (002517)
+
+Round 60 drove the float-producing LCG variant (build/r60.log lcgfloat
+failures=0): 002517 (0x5fe80) advances .data[0x10122340] by the LCG step
+(idiv 0x1f31d, new = r*0x41a7 - q*0xb14, add 0x7fffffff if <= 0) and returns
+fild(new)*qword[0x10124828] + qword[0x10124830]. Verified the new global
+state and the returned float against the same runtime-global formula.
+002517 moves to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
