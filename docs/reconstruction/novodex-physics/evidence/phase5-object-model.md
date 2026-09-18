@@ -2990,6 +2990,16 @@ exactly a component-wise scaled accumulate (verified against a stale-init
 0.5 + scale*2/3/4 fixture). 004087 moves to `reconstructed`. No gate,
 coverage-floor, or policy change.
 
+## 3z75. Flag-based pointer-select row closes (004903)
+
+Round 59 drove the priority flag-select row (build/r59.log flagsel
+failures=0): 004903 (0xb5770) picks among the static table pointers
+0x1011b724/0x1011b6ec/0x1011b6b8/0x1011b67c/0x1011b638 from the flags in
+[this+0x84] (fcomp vs 0), [this+4] (bit1 and bit0/bit4), [this+0x8c].
+Verified three deterministic branches (0x1011b6ec, 0x1011b638, and 0 on the
+final and-al/neg/sbb path). 004903 moves to `reconstructed`. No gate,
+coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
