@@ -3400,6 +3400,39 @@ int wmain(int argc, wchar_t** argv)
 	printf("setget2 candidate failures=%u provisional=1\n", s2f);
 	}
 
+	// -- Setter/copy/vptr/noop batch: 000549/000553(stores) 000563/000565
+	//   (copy) 005329/001554(vptr store) 004248/004411/005242(bare retN)
+	//   005202(const 0x101224c0).
+	{
+	typedef void (__thiscall* Store4Oracle)(void*, unsigned);
+	Store4Oracle s6b0 = reinterpret_cast<Store4Oracle>(base + 0x10800);
+	Store4Oracle s6b4 = reinterpret_cast<Store4Oracle>(base + 0x10820);
+	typedef void (__thiscall* CopyOracle)(void*);
+	CopyOracle c59c = reinterpret_cast<CopyOracle>(base + 0x10880);
+	CopyOracle c5a4 = reinterpret_cast<CopyOracle>(base + 0x10890);
+	CopyOracle vptr1 = reinterpret_cast<CopyOracle>(base + 0xe82b0);
+	CopyOracle vptr2 = reinterpret_cast<CopyOracle>(base + 0x2e210);
+	typedef void* (__thiscall* ConstGetOracle2)(void*);
+	ConstGetOracle2 cg = reinterpret_cast<ConstGetOracle2>(base + 0xe4ca0);
+	typedef void (__thiscall* BareRetOracle)(void*);
+	BareRetOracle r4 = reinterpret_cast<BareRetOracle>(base + 0xa0f60);
+	BareRetOracle rc = reinterpret_cast<BareRetOracle>(base + 0xb03a0);
+	BareRetOracle r8 = reinterpret_cast<BareRetOracle>(base + 0xe5890);
+	unsigned a2f = 0;
+	unsigned char a2[0x800]; memset(a2, 0, sizeof(a2));
+	s6b0(a2, 0x11111111u); if(*(unsigned*)(a2+0x6b0)!=0x11111111u){fprintf(stderr,"s6b0 fail\n");++a2f;}
+	s6b4(a2, 0x22222222u); if(*(unsigned*)(a2+0x6b4)!=0x22222222u){fprintf(stderr,"s6b4 fail\n");++a2f;}
+	*(unsigned*)(a2+0x59c)=0x12121212u; *(unsigned*)(a2+0x6bc)=0;
+	c59c(a2); if(*(unsigned*)(a2+0x6bc)!=0x12121212u){fprintf(stderr,"c59c fail\n");++a2f;}
+	*(unsigned*)(a2+0x5a4)=0x34343434u; *(unsigned*)(a2+0x6c0)=0;
+	c5a4(a2); if(*(unsigned*)(a2+0x6c0)!=0x34343434u){fprintf(stderr,"c5a4 fail\n");++a2f;}
+	vptr1(a2); if(*(unsigned*)(a2)!=0x1011ba40u){fprintf(stderr,"vptr1 fail\n");++a2f;}
+	vptr2(a2); if(*(unsigned*)(a2)!=0x10107848u){fprintf(stderr,"vptr2 fail\n");++a2f;}
+	if(cg(a2)!=reinterpret_cast<void*>(0x101224c0u)){fprintf(stderr,"cg fail\n");++a2f;}
+	r4(a2); rc(a2); r8(a2);	// bare retN are no-ops; just confirm no fault
+	printf("setget3 candidate failures=%u provisional=1\n", a2f);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
