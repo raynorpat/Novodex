@@ -39699,12 +39699,12 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "jump-table switch (0x546b0, ret 8)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1074",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6937",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "if [esp+4]!=0 or [esp+8]>4 return 0; else case [esp+8]: {4,1,1,[this+0xa0]!=0,[this+0xa0]?4:0}",
+      "dynamic_proof": "confirmed via switch drive (3z84): failures=0",
       "notes": ""
     },
     {
@@ -39807,12 +39807,12 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "jump-table switch (0x547b0, ret 8)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1076",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6951",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "if [esp+4]!=0 or [esp+8]>4 return 0; else case [esp+8]: {0xc,0xc,0xc,[this+0xa0]?0xc:0,0}",
+      "dynamic_proof": "confirmed via switch drive (3z84): failures=0",
       "notes": ""
     },
     {
