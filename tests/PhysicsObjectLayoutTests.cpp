@@ -4546,6 +4546,26 @@ int wmain(int argc, wchar_t** argv)
 	printf("condsetb candidate failures=%u provisional=1\n", csf2);
 	}
 
+	// -- Six-float vector comparison (005145, 0xe2f70, ret 4): returns 1 when
+	//   the source vector at [esp+4] compares "within bounds" of the reference
+	//   [this], else 0.
+	{
+	typedef unsigned char (__thiscall* Vec6CmpOracle)(void*, const float*);
+	Vec6CmpOracle v6 = reinterpret_cast<Vec6CmpOracle>(base + 0xe2f70);
+	unsigned v6f = 0;
+	unsigned char ref6[0x20]; memset(ref6,0,sizeof(ref6));
+	float reff[6]={0,0,0,0,0,0};
+	memcpy(ref6, reff, sizeof(reff));
+	float srcSAME[6]={0,0,0,0,0,0};
+	float srcBIG[6]={100,100,100,100,100,100};
+	// Same -> all comparisons "equal"/pass; big mismatch -> some fail
+	unsigned rSame=v6(ref6, srcSAME), rBig=v6(ref6, srcBIG);
+	fprintf(stderr,"v6 same=%u big=%u\n",rSame,rBig);
+	if(rSame!=1u){++v6f;}
+	if(rBig!=0u){++v6f;}
+	printf("vec6cmp candidate failures=%u provisional=1\n", v6f);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
