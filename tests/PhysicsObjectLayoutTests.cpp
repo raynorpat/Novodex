@@ -3622,6 +3622,34 @@ int wmain(int argc, wchar_t** argv)
 	printf("initbatch candidate failures=%u provisional=1\n", nf);
 	}
 
+	// -- Final small batch: 001645(set3+zero,ret8) 002150(x87 avg,ret0x10)
+	//   004147(zero+0x18=-1).
+	{
+	typedef void (__thiscall* Set3Oracle)(void*, unsigned, unsigned);
+	Set3Oracle s3 = reinterpret_cast<Set3Oracle>(base + 0x31680);
+	typedef float (__thiscall* AvgOracle)(void*, void*, void*, float*, int);
+	AvgOracle avg = reinterpret_cast<AvgOracle>(base + 0x53880);
+	typedef void (__thiscall* ZeroEnOracle)(void*);
+	ZeroEnOracle ze = reinterpret_cast<ZeroEnOracle>(base + 0x9a4e0);
+	unsigned lf = 0;
+	unsigned char ls[0x20]; memset(ls,0x55,sizeof(ls));
+	s3(ls, 0xAAAAAAAAu, 0xBBBBBBBBu);
+	if(*(unsigned*)(ls+0)!=0xBBBBBBBBu || *(unsigned*)(ls+4)!=0xAAAAAAAAu
+		|| *(unsigned*)(ls+8)!=0 || *(unsigned*)(ls+0xc)!=0 || *(unsigned*)(ls+0x10)!=0){
+		fprintf(stderr,"s3 fail\n");++lf;}
+	// 002150: (arr[i+3]+arr[i])*0.5 ; arr=[E+0xc](3rd arg), i=[E+0x10](4th)
+	float av[8]; for(int k=0;k<8;++k) av[k]=(float)k;
+	float of = avg((void*)0, (void*)0, (void*)0, av, 2); // i=2: (5+2)*.5=3.5
+	if(of != 3.5f){fprintf(stderr,"avg fail %f\n",(double)of);++lf;}
+	// 004147: zero +0..0x14, +0x18=0xffffffff
+	unsigned char zs2[0x20]; memset(zs2,0x66,sizeof(zs2));
+	ze(zs2);
+	if(*(unsigned*)(zs2+0)+*(unsigned*)(zs2+4)+*(unsigned*)(zs2+8)+*(unsigned*)(zs2+0xc)
+		+*(unsigned*)(zs2+0x10)+*(unsigned*)(zs2+0x14)!=0 || *(unsigned*)(zs2+0x18)!=0xFFFFFFFFu){
+		fprintf(stderr,"ze fail\n");++lf;}
+	printf("finalbatch candidate failures=%u provisional=1\n", lf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
