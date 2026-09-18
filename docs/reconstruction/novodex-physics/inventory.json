@@ -35304,12 +35304,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "indexed double-deref lookup (0x4be90, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/766",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5921",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "if [this+0x1c] nonzero: slot = [table+0x18] + [table+4]*4; return *(slot[index])[0x4]; ret 4",
+      "dynamic_proof": "confirmed via indexedlookup drive (3z80): failures=0",
       "notes": ""
     },
     {
