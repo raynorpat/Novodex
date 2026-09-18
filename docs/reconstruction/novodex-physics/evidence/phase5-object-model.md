@@ -3096,6 +3096,14 @@ the [a+0x20]/[b+0x20] doubles and returns 0/-1. Verified deterministically
 (-1/-1/+1 and A<=B -> -1). 002684 moves to `reconstructed`. No gate,
 coverage-floor, or policy change.
 
+## 3z88. Chained-field copy row closes (004068)
+
+Round 72 drove the two-out chained copy (build/r72.log chaincopy
+failures=0): 004068 (0x95a40, ret 8) writes out1 = [this+8] ?
+[*[this+8]+0x19c] : 0 and likewise out2 from [this+0xc]. Verified both the
+populated and null branches. 004068 moves to `reconstructed`. No gate,
+coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
