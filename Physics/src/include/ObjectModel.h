@@ -571,6 +571,14 @@ class MassFrame
 	//! integer-zeroed; when it is zero the frame is left untouched.
 	void				nxMassFrameConditionalZero(unsigned flag);
 
+	//! phys_fn_000833 (0x0001c040), __thiscall `ret 4`: translate the frame
+	//! by a {Vec3 d} at param+0. Early-outs when d is all-zero; otherwise
+	//! forms d+offset; if the new center is at the origin uses the centered
+	//! quadratic path (0x1c0d7), else the displaced parallel-axis path
+	//! (0x1c26f), and finally adds d to the offset. PROVISIONAL transcription
+	//! being driven differentially (NOT yet census-closed).
+	void				nxMassFrameTranslate(const void* param);
+
 	//! +0x00..+0x20, stored row-major as three column triples.
 	NxF32				mInertia[9];
 	//! +0x24..+0x2c.

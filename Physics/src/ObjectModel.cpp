@@ -2343,6 +2343,43 @@ void MassFrame::nxMassFrameConditionalZero(unsigned flag)
 	mMass = 0.0f;
 	}
 
+// phys_fn_000833 (0x1c040), __thiscall ret 4: translate the frame by
+// {d.x,d.y,d.z} at param+0. PROVISIONAL: early-out when d all-zero; else
+// d+offset; centered path (new center at origin) vs displaced path.
+void MassFrame::nxMassFrameTranslate(const void* param)
+	{
+	const float* d = static_cast<const float*>(param);
+	unsigned w0,w1,w2;
+	memcpy(&w0,d+0,4); memcpy(&w1,d+1,4); memcpy(&w2,d+2,4);
+	if(w0==0 && w1==0 && w2==0)
+		return;								// 0x1c04e..0x1c05e all-zero early-out
+	// Move the reference center from old_offset (o) to c = d + o. The
+	// inertia about the new reference gains m*(Q(c) - Q(o)) where
+	// Q(r)=|r|^2 I - r r^T. The image splits this into a "centered" path
+	// (when c lands at the origin, Q(c)=0) and a "displaced" path
+	// (generic), but both are the same Delta-Q; we compute the plain delta.
+	const float ox = mOffset.x, oy = mOffset.y, oz = mOffset.z;
+	const float cx = d[0] + ox, cy = d[1] + oy, cz = d[2] + oz;
+	// Q(r) diagonals/off-diagonals as float products, matched to the image's
+	// m32 store points.
+	const float Qc[9] = {
+		cy*cy+cz*cz, -(cx*cy), -(cx*cz),
+		-(cx*cy), cx*cx+cz*cz, -(cy*cz),
+		-(cx*cz), -(cy*cz), cx*cx+cy*cy };
+	const float Qo[9] = {
+		oy*oy+oz*oz, -(ox*oy), -(ox*oz),
+		-(ox*oy), ox*ox+oz*oz, -(oy*oz),
+		-(ox*oz), -(oy*oz), ox*ox+oy*oy };
+	// Centered (c == 0) vs displaced path select the same Delta-Q.
+	for(unsigned i = 0; i < 9; ++i)
+		{
+		const float term = Qc[i] - Qo[i];
+		const float scaled = static_cast<float>(static_cast<double>(term) * mMass);
+		mInertia[i] = static_cast<float>(static_cast<double>(mInertia[i]) + scaled);
+		}
+	mOffset.x = cx; mOffset.y = cy; mOffset.z = cz;	// shared tail 0x1c578
+	}
+
 // Provisional phys_fn_000947, ret 12: three stack DWORDs; the last is unused.
 bool BoxShape::nxBoxAccumulateMass(MassFrame* destination, float density, unsigned reserved)
 	{
