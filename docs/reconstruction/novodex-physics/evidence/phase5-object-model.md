@@ -3143,6 +3143,17 @@ across this campaign (325 total), all differential-verified. Family RED on
 the Task-4 actor tables unchanged; coverage floor (126), inventory, and gate
 policy unchanged.
 
+## 3z93. Chain-field getter row closes (000017)
+
+Round 77 re-scanned outside the earlier heuristic and found a few small
+rows it had missed; drove 000017 (0x1520, a chain-field getter): if
+[this+0x10] is non-null and [*head+0xd0]==5 it returns [*head+0xe0], else
+it returns this+0x10 (a latent lea result), and a null head yields 0. All
+three paths verified byte-exact. 004072 and 002874 were probed but resist a
+deterministic fixture (multi-valued/reloc-sensitive returns) and were left
+discovered. 000017 moves to `reconstructed`. No gate, coverage-floor, or
+policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
