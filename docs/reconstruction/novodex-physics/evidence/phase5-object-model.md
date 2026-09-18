@@ -2914,6 +2914,21 @@ vptr/float-identity/zero pattern verified by sentinel checks. All 4 move to
 `reconstructed`. Independent (non-family) rows. No gate, coverage-floor, or
 policy change.
 
+## 3z68. Conditional-sum / buffer-reset / copy6 rows close (001668/000505/004342)
+
+Round 52 drove three pure no-call rows (build/r52c-d.log condsum and
+bufreset failures=0):
+- 001668 (0x32810): conditional dot-delta sum gated by flags at +8/+0xc/+0x10;
+- 000505 (0x10190): growable-buffer reset driven by a count underflow
+  (inc->0) -- rep stosd/stosb zeroes the [this+8] buffer, sets
+  [this+0x14]=[this+4], returns [this+0x14];
+- 004342 (0xa90c0, ret 4): copy [this+0x16c..0x180] to arg[0..0x14],
+  return [this+0x1a8]&1.
+All 3 move to `reconstructed`. Note: 005187/0xe4160 was probed but its ABI
+resisted a clean thiscall fixture, so it was NOT closed (left for a focused
+decode). Independent (non-family) rows. No gate, coverage-floor, or policy
+change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
