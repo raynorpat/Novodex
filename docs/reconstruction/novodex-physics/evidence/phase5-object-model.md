@@ -3055,6 +3055,13 @@ failures=0): 003105 (0x76200) walks the pointer array at [key+4]
 (0-terminated) and returns the node whose [node+8] == key, else 0.
 003105 moves to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z83. Nested indexed-deref row closes (001962)
+
+Round 67 drove the nested 2-level lookup (build/r67.log nestlookup
+failures=0): 001962 (0x4bee0, ret 4) computes table = [this + [this+0x70]*4 +
+0x1c] and then the same 001958 double-deref, returning *(...)[idx]+4.
+001962 moves to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
