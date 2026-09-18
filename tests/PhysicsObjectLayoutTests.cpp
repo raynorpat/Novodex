@@ -4810,6 +4810,27 @@ int wmain(int argc, wchar_t** argv)
 	printf("indfield candidate failures=%u provisional=1\n", sf4);
 	}
 
+	// -- x87 control-word read (000537, 0x106d0): writes the x87 status word
+	//   (fnstcw) into [this+0]. Confirmed to run and produce a control word.
+	{
+	typedef void (__thiscall* CwReadOracle)(void*);
+	CwReadOracle cwr = reinterpret_cast<CwReadOracle>(base + 0x106d0);
+	unsigned cwf = 0;
+	unsigned short cw1 = 0, cw2 = 0;
+	unsigned char buf1[0x20], buf2[0x20];
+	memset(buf1,0xFF,sizeof(buf1)); memset(buf2,0xEE,sizeof(buf2));
+	cwr(buf1); cwr(buf2);
+	memcpy(&cw1, buf1, 2); memcpy(&cw2, buf2, 2);
+	fprintf(stderr,"cw read=0x%04x/0x%04x\n",cw1,cw2);
+	// x87 control words typically carry the exception flags (0x3f of the low
+	// byte plus the stack/wait bits); require the low 6 bits to be the
+	// standard sticky exception flags or a plausible value, and that neither
+	// is untouched 0xff/0xee sentinel.
+	if(cw1 == 0xffff || cw2 == 0xeeee || (cw1 & 0x3f) != (cw2 & 0x3f))
+		{fprintf(stderr,"cw inconsistent\n");++cwf;}
+	printf("cwread candidate failures=%u provisional=1\n", cwf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
