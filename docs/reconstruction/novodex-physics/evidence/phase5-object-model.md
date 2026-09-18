@@ -3189,6 +3189,20 @@ safe independent closure stream is effectively exhausted; further progress
 requires Task-4 actor-table / caller-prologue reconstruction work. No gate,
 coverage-floor, or policy change.
 
+## 3z97. Deep-x87 rows confirmed non-isolatable (002505)
+
+Round 81 attempted the self-contained x87 distance-norm 002505 (0x5fb70,
+norm of a double difference vector). Driving it trips the harness
+stack-overrun guard (0xC0000409) before returning: its `faddp st(2)`/
+`fmul st(1)` sequence pops more x87-stack elements than the callee pushes,
+so it depends on the caller pre-seeding the FPU argument stack. This is the
+same class as the slot-7 sweep: the row is NOT isolatable as a standalone
+thiscall/cdecl fixture without reconstructing the caller's x87 staging.
+The regression was fully reverted (all prior diodes pass, gate green-except-
+family). This confirms the deep-x87 rows (002505/001500/002475/002676/
+003398/005404) are out of scope for isolated differential closure. No gate,
+coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
