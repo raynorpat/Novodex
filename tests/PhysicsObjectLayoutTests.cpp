@@ -3687,6 +3687,44 @@ int wmain(int argc, wchar_t** argv)
 	printf("triplecopy candidate failures=%u provisional=1\n", gb);
 	}
 
+	// -- Multi-zero / multi-store / push_at / lane-init batch:
+	//   005289(zero 0..28) 003966(store 5 args) 004778(cursor push) 002346(lane init).
+	{
+	typedef void (__thiscall* ZeroManyOracle)(void*);
+	ZeroManyOracle zm = reinterpret_cast<ZeroManyOracle>(base + 0xe7180);
+	typedef void (__thiscall* Store5Oracle)(void*, unsigned, unsigned, unsigned, unsigned, unsigned);
+	Store5Oracle s5o = reinterpret_cast<Store5Oracle>(base + 0x8f4f0);
+	typedef unsigned* (__thiscall* PushAtOracle)(void*, unsigned);
+	PushAtOracle pa = reinterpret_cast<PushAtOracle>(base + 0xb3b00);
+	typedef void (__thiscall* LaneInitOracle)(void*);
+	LaneInitOracle li2 = reinterpret_cast<LaneInitOracle>(base + 0x5ab50);
+	unsigned qb = 0;
+	unsigned char q[0x100]; memset(q, 0x77, sizeof(q));
+	zm(q);
+	{
+	size_t sum=0; for(int i=0;i<=0x28;i+=4) sum += *(unsigned*)(q+i) & 0xFF; (void)sum;
+	if(*(unsigned*)(q+0)+*(unsigned*)(q+4)+*(unsigned*)(q+8)+*(unsigned*)(q+0xc)+*(unsigned*)(q+0x10)
+		+*(unsigned*)(q+0x14)+*(unsigned*)(q+0x18)+*(unsigned*)(q+0x1c)+*(unsigned*)(q+0x20)+*(unsigned*)(q+0x24)+*(unsigned*)(q+0x28)!=0){fprintf(stderr,"zm fail\n");++qb;}
+	}
+	s5o(q,9,8,7,6,5);
+	if(*(unsigned*)(q+0x44)!=9||*(unsigned*)(q+0x48)!=8||*(unsigned*)(q+0x4c)!=7||*(unsigned*)(q+0x50)!=6||*(unsigned*)(q+0x54)!=5){fprintf(stderr,"s5o fail\n");++qb;}
+	// 004778: cursor push -- [this]=container, returns old cursor [this+0x10] and advances [ct+4]
+	unsigned char ct2[0x40]; memset(ct2,0,sizeof(ct2));
+	unsigned base2=(unsigned)(size_t)(q+0x80); // a base address
+	unsigned cpool[2]; cpool[0]=base2; cpool[1]=8;
+	*(void**)(ct2+0)=cpool;
+	unsigned* ocv = pa(&ct2[0], 4);
+	if(ocv != reinterpret_cast<unsigned*>(base2+8) || *(unsigned*)(cpool+1)!=12){fprintf(stderr,"pa fail ocv=%08x off=%u\n",(unsigned)(size_t)ocv,*(unsigned*)(cpool+1));++qb;}
+	// check [this+0x10] holds base2+8 too
+	if(*(unsigned*)(ct2+0x10) != base2+8){fprintf(stderr,"pa store fail\n");++qb;}
+	// 002346: two-lane list init
+	unsigned char lt[0x30]; memset(lt,0x55,sizeof(lt));
+	li2(lt);
+	if(*(unsigned*)(lt+0)!= (unsigned)(size_t)(lt+8) || *(unsigned*)(lt+4)!=(unsigned)(size_t)(lt+0x18)
+		|| *(unsigned*)(lt+8)+*(unsigned*)(lt+0xc)+*(unsigned*)(lt+0x10)+*(unsigned*)(lt+0x18)+*(unsigned*)(lt+0x1c)+*(unsigned*)(lt+0x20)!=0){fprintf(stderr,"li2 fail\n");++qb;}
+	printf("quadbatch candidate failures=%u provisional=1\n", qb);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
