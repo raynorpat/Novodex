@@ -240,12 +240,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "PoseCopy (memcpy 0x78 bytes)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/5",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "__thiscall ret 4 pure copy of 0x78 bytes from [esp+4] into this: rep movsd 9 dwords (+0x00..0x23) then individual dword moves through +0x74; the 8-byte tail past 0x78 is untouched (canary probe)",
+      "dynamic_proof": "differential 4/4 (build/r27.log posecopy run=4 failures=0) byte-exact vs oracle 0x1390 including untouched tail canaries",
       "notes": ""
     },
     {
