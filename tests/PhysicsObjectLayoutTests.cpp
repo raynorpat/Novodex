@@ -4285,6 +4285,22 @@ int wmain(int argc, wchar_t** argv)
 	printf("indexedlookup candidate failures=%u provisional=1\n", ilf);
 	}
 
+	// -- List-contains (003296, 0x7f020): walks the pointer array at
+	//   [list+4], returning 1 if key appears (terminator 0), else 0.
+	{
+	typedef unsigned (__cdecl* ContainsOracle)(void*, unsigned);
+	ContainsOracle ct = reinterpret_cast<ContainsOracle>(base + 0x7f020);
+	unsigned ctf = 0;
+	unsigned char chead[0x30]; memset(chead, 0, sizeof(chead));
+	unsigned char nA[4], nB[4], nC[4];
+	unsigned pA=(unsigned)(size_t)&nA, pB=(unsigned)(size_t)&nB, pC=(unsigned)(size_t)&nC;
+	unsigned* arr = reinterpret_cast<unsigned*>(chead+4);
+	arr[0]=pA; arr[1]=pB; arr[2]=pC; arr[3]=0;
+	if(ct(chead, pB)!=1u){fprintf(stderr,"ct found fail\n");++ctf;}
+	if(ct(chead, 0xF00DF00Du)!=0u){fprintf(stderr,"ct miss fail\n");++ctf;}
+	printf("containsf candidate failures=%u provisional=1\n", ctf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
