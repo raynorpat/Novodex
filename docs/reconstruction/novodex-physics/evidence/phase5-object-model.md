@@ -2838,6 +2838,24 @@ Round 45 drove five rows (build/r45c.log multicopy failures=0):
 All 5 move to `reconstructed` with static + dynamic proof. Independent
 (non-family) rows. No gate, coverage-floor, or policy change.
 
+## 3z61. Mechanical closure campaign complete: 107 small rows closed
+
+Rounds 25-45 closed 107 real census rows by differential verification of
+small, self-contained bodies: mass/pose helpers (000833/841/835, 000010),
+shape getters (000929/283/285/293, 000925/999), pointer getters, constant/
+zero/data-set rows, copy/store/arith/bit rows, cursor/pop/lane init rows and
+multi-field copies -- all byte-exact against the oracle with static+dynamic
+proof, and mutation-checked where a semantic branch existed. The pure
+mov/lea/getter cluster is now EXHAUSTED: a fresh scan finds zero remaining
+discovered rows whose body is only register moves/arith/zero with no call.
+The remaining small discovered rows wrap Foundation/CRT/import or vtable
+calls (e.g., scoped-delete, std allocator, Foundation helpers) whose targets
+are not candidate-transcriped in the object-model harness, so they are NOT
+cleanly closable here without Foundation/import work. Census impact: 107
+rows moved discovered->reconstructed this campaign (plus earlier mass/sweep
+closures). Family gate remains RED on the Task-4 actor tables; coverage
+floor (126), inventory, and gate policy unchanged.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
