@@ -366,12 +366,12 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "chain-field getter (0x1520)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/9",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/28",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "if [this+0x10] non-null and [*head+0xd0]==5 return [*head+0xe0]; else return this+0x10 (stale lea) or null-head -> 0; ret",
+      "dynamic_proof": "confirmed via smallclean drive (3z93): failures=0",
       "notes": ""
     },
     {
