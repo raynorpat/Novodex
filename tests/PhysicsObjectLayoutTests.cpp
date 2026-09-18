@@ -4566,6 +4566,38 @@ int wmain(int argc, wchar_t** argv)
 	printf("vec6cmp candidate failures=%u provisional=1\n", v6f);
 	}
 
+	// -- vptr-ctor wrappers (001565/001571/001575) vs candidate.
+	{
+	typedef void* (__thiscall* CtorWrapOracle)(void*, unsigned);
+	CtorWrapOracle cw565 = reinterpret_cast<CtorWrapOracle>(base + 0x2e5a0);
+	CtorWrapOracle cw571 = reinterpret_cast<CtorWrapOracle>(base + 0x2e640);
+	CtorWrapOracle cw575 = reinterpret_cast<CtorWrapOracle>(base + 0x2e7c0);
+	unsigned cwf = 0;
+	unsigned args[] = { 0, 1, 0x12345678u, 0xFFFF0000u };
+	for(unsigned pass = 0; pass < 3; ++pass)
+	for(unsigned ai = 0; ai < 4; ++ai)
+		{
+		unsigned o[0x40], c[0x40];
+		for(unsigned w = 0; w < 0x40; ++w) o[w] = c[w] = 0x7b000000u + w;
+		void* ro=0;
+		if(pass==0) ro=cw565(o, args[ai]);
+		else if(pass==1) ro=cw571(o, args[ai]);
+		else ro=cw575(o, args[ai]);
+		if(ro != o){fprintf(stderr,"cw ret fail pass=%u\n",pass);++cwf;}
+		if(pass==0) reinterpret_cast<BoxShape*>(c)->nxCtorWrap565(args[ai]);
+		else if(pass==1) reinterpret_cast<BoxShape*>(c)->nxCtorWrap571(args[ai]);
+		else reinterpret_cast<BoxShape*>(c)->nxCtorWrap575(args[ai]);
+		if(memcmp(o, c, 0x20) != 0)
+			{
+			fprintf(stderr,"ctorwrap fail pass=%u arg=%08x ai=%u\n", pass, args[ai], ai);
+			for(int w = 0; w < 8; ++w) if(o[w]!=c[w])
+				fprintf(stderr,"  w%u o=%08x c=%08x\n", w, o[w], c[w]);
+			++cwf;
+			}
+		}
+	printf("ctorwrap candidate failures=%u provisional=1\n", cwf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
