@@ -2723,6 +2723,20 @@ Round 35 drove 10 self-contained rows (build/r35.log setget3 failures=0):
 All 10 move to `reconstructed` with static + dynamic proof. Independent
 (non-family) rows. No gate, coverage-floor, or policy change.
 
+## 3z51. Zero-init/integer-init rows close (001536/001012/001439/005328)
+
+Round 36 drove four zero/integer-init rows (build/r36b.log zeroinit
+failures=0):
+- 001536 (0x2dae0): zero [this+0] and [this+4];
+- 001012 (0x225d0, ret 8): zero *[esp+4], returns false;
+- 001439 (0x2a610): zero word +0/+2 and dword +4;
+- 005328 (0xe82a0): set [this]=vptr 0x1011ba40 and [this+0x38]=0xffffffff.
+All 4 move to `reconstructed` with static + dynamic proof. Note: 004081/
+004805 write to static .data globals whose in-process read-back is
+relocation-fragile, so they were NOT closed here (kept discovered until a
+clean global side-effect proof). Independent (non-family) rows. No gate,
+coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
