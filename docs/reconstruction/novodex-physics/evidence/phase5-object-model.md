@@ -3071,6 +3071,14 @@ five cases: 002202 -> {4,1,1,[this+0xa0]!=0,[this+0xa0]?4:0} and 002208 ->
 {0xc,0xc,0xc,[this+0xa0]?0xc:0,0}. Fixtures covered every dispatch case.
 Both move to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z85. Adjacent-pair search row closes (005189)
+
+Round 69 drove the element-pair search (build/r69.log pairsearch
+failures=0): 005189 (0xe41a0, ret 8) returns the index 0/1/2 of the
+[this]/[this+4]/[this+8] adjacent-pair equal to (arg1,arg2), else 0xff.
+Fixtures covered every return (0, 1, 2, and 0xff miss). 005189 moves to
+`reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
