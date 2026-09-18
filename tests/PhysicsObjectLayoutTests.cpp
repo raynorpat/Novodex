@@ -4409,6 +4409,28 @@ int wmain(int argc, wchar_t** argv)
 	printf("reversearr candidate failures=%u provisional=1\n", rvf);
 	}
 
+	// -- Flag-and-compare row (002684, 0x66270): derefs two object pointers,
+	//   checks the 0x100000 flag in [+0x50], then compares the [+0x20] doubles.
+	{
+	typedef int (__cdecl* FlagCmpOracle)(void**, void**);
+	FlagCmpOracle fco = reinterpret_cast<FlagCmpOracle>(base + 0x66270);
+	unsigned fof = 0;
+	unsigned char oA[0x60], oB[0x60]; memset(oA,0,sizeof(oA)); memset(oB,0,sizeof(oB));
+	unsigned fa=0x100000u; memcpy(oA+0x50,&fa,4); memcpy(oB+0x50,&fa,4);
+	void* pA=&oA; void* pB=&oB;
+	// A flag clear -> -1
+	unsigned clr=0u; memcpy(oA+0x50,&clr,4);
+	if(fco(&pA,&pB)!=-1){fprintf(stderr,"fco0 fail %d\n",fco(&pA,&pB));++fof;}
+	// A set, B clear -> +1
+	memcpy(oA+0x50,&fa,4); memcpy(oB+0x50,&clr,4);
+	if(fco(&pA,&pB)!=1){fprintf(stderr,"fco1 fail %d\n",fco(&pA,&pB));++fof;}
+	// both set, A[+0x20]=1.0 B[+0x20]=2.0 (A<=B) -> -1
+	memcpy(oB+0x50,&fa,4);
+	double a1=1.0,b2=2.0; memcpy(oA+0x20,&a1,8); memcpy(oB+0x20,&b2,8);
+	if(fco(&pA,&pB)!=-1){fprintf(stderr,"fco2 fail %d\n",fco(&pA,&pB));++fof;}
+	printf("flagcmp candidate failures=%u provisional=1\n", fof);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
