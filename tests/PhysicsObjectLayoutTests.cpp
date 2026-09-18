@@ -3260,6 +3260,30 @@ int wmain(int argc, wchar_t** argv)
 	printf("ptrgetters candidate failures=%u provisional=1\n", pf);
 	}
 
+	// -- Simple non-pointer getters (constant-address + field-get)
+	//   005149/005151/005153 @0xe3190/... -> fixed rdata addresses;
+	//   004070 (0x95a80) -> [this+0x168]; 004078 (0x95bb0) -> ((this+0x2c)>>3)&3.
+	{
+	typedef void* (__thiscall* ConstGetOracle)(void*);
+	ConstGetOracle cg0 = reinterpret_cast<ConstGetOracle>(base + 0xe3190);
+	ConstGetOracle cg1 = reinterpret_cast<ConstGetOracle>(base + 0xe31a0);
+	ConstGetOracle cg2 = reinterpret_cast<ConstGetOracle>(base + 0xe31b0);
+	typedef unsigned (__thiscall* FieldGetOracle)(void*);
+	FieldGetOracle fg = reinterpret_cast<FieldGetOracle>(base + 0x95a80);
+	FieldGetOracle bitGet = reinterpret_cast<FieldGetOracle>(base + 0x95bb0);
+	unsigned gf = 0;
+	void* dummy = 0;
+	if(cg0(dummy) != reinterpret_cast<void*>(0x10122370u)) { fprintf(stderr,"const0 fail\n"); ++gf; }
+	if(cg1(dummy) != reinterpret_cast<void*>(0x101223d0u)) { fprintf(stderr,"const1 fail\n"); ++gf; }
+	if(cg2(dummy) != reinterpret_cast<void*>(0x10122430u)) { fprintf(stderr,"const2 fail\n"); ++gf; }
+	unsigned char cobj[0x200]; memset(cobj, 0, sizeof(cobj));
+	const unsigned fv = 0x5A5A5A5Au; memcpy(cobj + 0x168, &fv, 4);
+	if(fg(cobj) != fv) { fprintf(stderr,"fieldget fail %08x\n", (unsigned)fg(cobj)); ++gf; }
+	const unsigned bv = 0xA3u; memcpy(cobj + 0x2c, &bv, 4); // 0xA3>>3 & 3 = 0x14&3? 0xA3>>3=0x14, &3=0
+	if(bitGet(cobj) != 0u) { fprintf(stderr,"bitget fail %u\n", (unsigned)bitGet(cobj)); ++gf; }
+	printf("simplegetters candidate failures=%u provisional=1\n", gf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
