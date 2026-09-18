@@ -4240,6 +4240,22 @@ int wmain(int argc, wchar_t** argv)
 	printf("negdiff candidate failures=%u provisional=1\n", dbf);
 	}
 
+	// -- Double signed compare (002894, 0x6e620): returns +1 if *(*pa) <=
+	//   *(*pb), else -1.
+	{
+	typedef int (__cdecl* DCmpOracle)(double**, double**);
+	DCmpOracle dc = reinterpret_cast<DCmpOracle>(base + 0x6e620);
+	unsigned dcf = 0;
+	double va=2.0, vb=5.0;
+	double* pa2=&va; double* pb2=&vb;
+	if(dc(&pa2,&pb2)!=-1){fprintf(stderr,"dc0 fail\n");++dcf;}	// 2<=5 -> -1
+	va=9.0; vb=3.0;
+	if(dc(&pa2,&pb2)!=1){fprintf(stderr,"dc1 fail\n");++dcf;}		// 9>3 -> +1
+	va=4.0; vb=4.0;
+	if(dc(&pa2,&pb2)!=-1){fprintf(stderr,"dc2 fail\n");++dcf;}	// 4==4 -> -1
+	printf("dcmp candidate failures=%u provisional=1\n", dcf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
