@@ -74156,12 +74156,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "mark-degenerate loop (0x95d60)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1537",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13504",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "for i in [base, base+count), OR 0x20 into array[slot*0x50 + 0xc] where array = *[*[this+0x30] + 0x5b8]; base/count at +0x160/+0x164",
+      "dynamic_proof": "confirmed via markdeg drive (3z73): failures=0",
       "notes": ""
     },
     {
