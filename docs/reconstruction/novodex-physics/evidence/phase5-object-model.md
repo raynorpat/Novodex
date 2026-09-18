@@ -2689,6 +2689,18 @@ failures=0):
 All 11 move to `reconstructed` with static + dynamic proof. Independent
 (non-family) rows. No gate, coverage-floor, or policy change.
 
+## 3z48. Batch of 9 constant/zero/bit getters close
+
+Round 33 drove 9 self-contained tiny rows (build/r33.log tinygetters
+failures=0):
+- constant returns: 002196(mov al,1;ret 8), 002198(mov eax,1), 005533/
+  005535(xor al,al);
+- stores: 004214(zero this+0x1cc), 004897(and clear ~0xc on [this+4]);
+- getters: 004186([this+0x44]), 003455([this+0x58]&arg), 003595
+  ([this+0x10]&arg).
+All 9 move to `reconstructed` with static + dynamic proof. Independent
+(non-family) rows. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
