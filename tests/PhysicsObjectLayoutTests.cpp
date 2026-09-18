@@ -4598,6 +4598,28 @@ int wmain(int argc, wchar_t** argv)
 	printf("ctorwrap candidate failures=%u provisional=1\n", cwf);
 	}
 
+	// -- Zero-init wrapper (002065, 0x51ec0): zero [this+0..0x30].
+	{
+	typedef void* (__thiscall* ZeroWrapOracle)(void*);
+	ZeroWrapOracle zw = reinterpret_cast<ZeroWrapOracle>(base + 0x51ec0);
+	unsigned zwf = 0;
+	unsigned o[0x40], c[0x40];
+	for(unsigned tmp = 0; tmp < 10; ++tmp)
+		{
+		for(unsigned w = 0; w < 0x40; ++w) o[w] = c[w] = 0x7c000000u + w;
+		zw(o);
+		reinterpret_cast<BoxShape*>(c)->nxWrapZero2065();
+		if(memcmp(o, c, 0x3c) != 0)
+			{
+			fprintf(stderr,"zerowrap fail tmp=%u\n", tmp);
+			for(int w = 0; w < 0x10; ++w) if(o[w]!=c[w])
+				fprintf(stderr,"  w%u o=%08x c=%08x\n", w, o[w], c[w]);
+			++zwf;
+			}
+		}
+	printf("zerowrap candidate failures=%u provisional=1\n", zwf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
