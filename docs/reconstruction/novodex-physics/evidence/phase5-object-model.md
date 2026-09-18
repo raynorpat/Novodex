@@ -3215,6 +3215,15 @@ wrappers over 001552 (mem: 0x2e5a0 -> vptr 0x1010785c, 0x2e640 ->
 ctorwrap failures=0), byte-exact. All 3 move to `reconstructed`. No gate,
 coverage-floor, or policy change.
 
+## 3z99. Zero-init wrapper row closes (002065)
+
+Round 83 extended the wrapper differential to the zero-init wrapper: 002065
+(0x51ec0, ret 0) zeroes [this+0..0x20] and then the [this+0x24..0x30]
+sub-region via the reconstructed 005355 init, returning this. Added candidate
+nxWrapZero2065 and verified byte-exact against the oracle across 10 fills
+(build/r83.log zerowrap failures=0). 002065 moves to `reconstructed`. No
+gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
