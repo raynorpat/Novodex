@@ -3104,6 +3104,13 @@ failures=0): 004068 (0x95a40, ret 8) writes out1 = [this+8] ?
 populated and null branches. 004068 moves to `reconstructed`. No gate,
 coverage-floor, or policy change.
 
+## 3z89. List-index peek row closes (003300)
+
+Round 73 drove the slot-peek decision (build/r73.log listpeek failures=0):
+003300 (0x7f0a0, ret 0) returns a slot data word selected by the list header
+index and slot ref count, else 0. Verified three cases (refcount 0, >1, ==1).
+003300 moves to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
