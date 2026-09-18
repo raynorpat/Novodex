@@ -3289,6 +3289,18 @@ Round 90 second batch (build/r90.log smallflag2 failures=0): 000738
 byte-exact after correcting two test-side expectation/byte-width issues. All
 3 move to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z107. Systematic isolated-drive faults in some small rows
+
+Round 91 probed several more small candidates (001960, 002176, 003479,
+004072, 003390). Driving 001960 and the batch repeatedly trips the harness
+overrun guard (0xC0000409) regardless of fixture shape. This joins the
+earlier non-drivable set (002505, 001033, 004759) -- a systematic phenomenon
+where rows that use stack-relative frames (`sub esp`, `[esp+N]` reads with
+embedded frame adjustment) interact badly with the driver's own stack and
+fault under isolation. These rows are recorded `discovered`; the probes were
+fully reverted and the gate is green-except-family. No gate, coverage-floor,
+or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
