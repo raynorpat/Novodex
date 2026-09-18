@@ -3456,6 +3456,30 @@ int wmain(int argc, wchar_t** argv)
 	printf("zeroinit candidate failures=%u provisional=1\n", z2f);
 	}
 
+	// -- Global-write rows 004081 (0x95c90) and 004805 (0xb4020): each stores
+	// to a fixed .data global. Prove by first scribbling a sentinel at the
+	// relocated target, calling the oracle, then reading it back.
+	{
+	typedef void (__thiscall* GwOracle1)(void*);
+	GwOracle1 mo817180 = reinterpret_cast<GwOracle1>(base + 0x95c90);
+	typedef void (__thiscall* GwOracle2)(void*, void*);
+	GwOracle2 mo842845c = reinterpret_cast<GwOracle2>(base + 0xb4020);
+	unsigned g2f = 0;
+	unsigned char gsrc[0x40]; memset(gsrc, 0, sizeof(gsrc));
+	// RVA of globals: va - 0x10000000 = 0x127180 / 0x12845c.
+	unsigned* glb1 = reinterpret_cast<unsigned*>(const_cast<unsigned char*>(base + 0x127180));
+	unsigned* glb2 = reinterpret_cast<unsigned*>(const_cast<unsigned char*>(base + 0x12845c));
+	*glb1 = 0; *glb2 = 0;
+	unsigned v1 = 0x13579BDFu; memcpy(gsrc + 0x20, &v1, 4);
+	mo817180(gsrc);
+	if(*glb1 != v1){fprintf(stderr,"mo817180 fail glb=%08x\n",*glb1);++g2f;}
+	unsigned v2 = 0x2468ACE0u;
+	mo842845c(gsrc, &v2);
+	unsigned g2addr = static_cast<unsigned>(reinterpret_cast<size_t>(&v2));	// 004805 stores the ARG address
+	if(*glb2 != g2addr){fprintf(stderr,"mo842845c fail glb=%08x exp=%08x\n",*glb2,g2addr);++g2f;}
+	printf("globalwrite candidate failures=%u provisional=1\n", g2f);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
