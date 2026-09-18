@@ -3232,6 +3232,17 @@ and +0x64..0x7c, installs vptr 0x1010767c, and returns this. Added candidate
 nxWrap1409 and verified byte-exact across 6 fills. 001409 moves to
 `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z101. Container-index wrapper row closes (000240)
+
+Round 85 drove 000240 (0xb7c0, ret 4): it computes a slot via the index into
+the container at [this+4] (the 000450 bounds-commit: slot = *[*ctr+8 +
+idx*4] when idx < ([ctr+0xc]-[ctr+8])>>2, else 0) and returns [slot + 0x6cc].
+Added candidate nxWrap240 and verified both index lookups byte-exact
+(build/r85.log wrap240 failures=0). 000240 moves to `reconstructed`. No
+gate, coverage-floor, or policy change.
+
+## 6. What this task did not do
+
 - No behavioural reconstruction: every row here stays `discovered` until a
   differential drives it.
 - Actor +8 subobject semantics, TBL_87 slots 63/64 identity, third-pose role,
