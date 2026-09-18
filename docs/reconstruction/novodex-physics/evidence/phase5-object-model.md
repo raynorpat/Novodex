@@ -2428,6 +2428,23 @@ concluded with the same contract. The swept-AABB row (phys_fn_000951
   transcription + differential; no implementation, census, or gate change
   this round.
 
+## 3z35. Sweep RED differential pins the swept-record-structure uncertainty
+
+Round 20 transcribed a provisional `nxBoxSweep` + `nxSweptAABBFold` from 3z34
+and drove it against oracle slot-7 on separate fixtures (build/r20-sw2.log).
+The differential is RED in an informative way: the oracle returns HIT=1 for
+EVERY non-zero swept fixture (`{2,0,0}`, `{-2,0,0}`, `{0,3,0}`, `{4,4,0}`,
+`{0,0,5}`), each writing a distinct out[0]; only the all-zero swept case
+matches the candidate (both miss). A genuine swept-overlap test cannot hit
+for a far-offset `{4,4,0}`, so this RED does NOT implicate the fold arithmetic
+-- it exposes that the second arg to slot-7 is NOT the (s0,s1,s2) swept-extent
+triple the transcription presupposed. The tentative fold was therefore
+reverted (tree clean, build exits 0) rather than shipping a provisional
+body that cannot converge. phys_fn_000951 and phys_fn_001730 each STAY
+`discovered`. Next attempt must first establish the true record layout of
+slot-7's arg2 (and confirm arg1's written layout) by driving the oracle's
+return/out over controlled buffer contents before re-transcribing the fold.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
