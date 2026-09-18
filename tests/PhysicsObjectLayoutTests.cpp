@@ -4531,6 +4531,21 @@ int wmain(int argc, wchar_t** argv)
 	printf("smallclean candidate failures=%u provisional=1\n", sff);
 	}
 
+	// -- Conditional-set (005187, 0xe4160, ret 8): if [this]==arg1 set it to
+	//   arg2 return 1; try [this+4],[this+8]; else 0. Returns a byte.
+	{
+	typedef unsigned char (__thiscall* CondSetB)(void*, unsigned, unsigned);
+	CondSetB csB = reinterpret_cast<CondSetB>(base + 0xe4160);
+	unsigned csf2 = 0;
+	unsigned char s2b[0x40]; memset(s2b, 0, sizeof(s2b));
+	*(unsigned*)(s2b+0)=0x1111u; *(unsigned*)(s2b+4)=0x2222u; *(unsigned*)(s2b+8)=0x3333u;
+	if(csB(s2b,0x1111u,0xA0A0u)!=1 || *(unsigned*)(s2b+0)!=0xA0A0u){fprintf(stderr,"csB0 fail\n");++csf2;}
+	if(csB(s2b,0x2222u,0xB0B0u)!=1 || *(unsigned*)(s2b+4)!=0xB0B0u){fprintf(stderr,"csB1 fail\n");++csf2;}
+	if(csB(s2b,0x3333u,0xC0C0u)!=1 || *(unsigned*)(s2b+8)!=0xC0C0u){fprintf(stderr,"csB2 fail\n");++csf2;}
+	if(csB(s2b,0xFFFFu,0xDDDDu)!=0){fprintf(stderr,"csB3 fail\n");++csf2;}
+	printf("condsetb candidate failures=%u provisional=1\n", csf2);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
