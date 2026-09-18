@@ -4187,6 +4187,35 @@ int wmain(int argc, wchar_t** argv)
 	printf("lcgfloat candidate failures=%u provisional=1\n", lff);
 	}
 
+	// -- Compact decision rows: 003928 (cond zero-store), 005356 (all-nonzero),
+	//   002687 (neg-diff), 001457 (bit-sum).
+	{
+	typedef void (__thiscall* CondZeroOracle)(void*, unsigned, unsigned);
+	CondZeroOracle cz = reinterpret_cast<CondZeroOracle>(base + 0x8edb0);
+	typedef unsigned char (__thiscall* AllSetOracle)(void*);
+	AllSetOracle as = reinterpret_cast<AllSetOracle>(base + 0xe8fb0);
+	unsigned zf2 = 0;
+	// 003928: if [esp+4]==0x100 and [this+0x24]==[esp+8] -> [this+0x24]=0 else [this+0x28]=0 (ret 8)
+	unsigned char czb[0x40]; memset(czb,0,sizeof(czb));
+	unsigned v24=0x4242; memcpy(czb+0x24,&v24,4);
+	cz(czb, 0x100u, 0x4242u);
+	if(*(unsigned*)(czb+0x24)!=0){fprintf(stderr,"cz0 fail\n");++zf2;}
+	unsigned v243=0x4343u, v283=0x4444u; memcpy(czb+0x24,&v243,4); memcpy(czb+0x28,&v283,4);
+	cz(czb, 0x100u, 0xEEEEu); // [this+0x24]=0x4343 != 0xeeee -> zero [this+0x28]
+	if(*(unsigned*)(czb+0x28)!=0 || *(unsigned*)(czb+0x24)!=0x4343u){fprintf(stderr,"cz1 fail\n");++zf2;}
+	unsigned v242=0x4242u; memcpy(czb+0x24,&v242,4);
+	cz(czb, 0x200u, 0x4242u); // mode != 0x100 -> zero [this+0x28]
+	if(*(unsigned*)(czb+0x28)!=0){fprintf(stderr,"cz2 fail\n");++zf2;}
+	// 005356: 1 if all [this+0/4/8/0xc] nonzero
+	unsigned char asb[0x20]; memset(asb,0,sizeof(asb));
+	if(as(asb)!=0){fprintf(stderr,"as0 fail\n");++zf2;}
+	*(unsigned*)(asb+0)=1; *(unsigned*)(asb+4)=1; *(unsigned*)(asb+8)=1; *(unsigned*)(asb+0xc)=1;
+	if(as(asb)!=1){fprintf(stderr,"as1 fail\n");++zf2;}
+	*(unsigned*)(asb+0xc)=0;
+	if(as(asb)!=0){fprintf(stderr,"as2 fail\n");++zf2;}
+	printf("compact decisions failure=%u provisional=1\n", zf2);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
