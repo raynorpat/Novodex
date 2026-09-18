@@ -3725,6 +3725,42 @@ int wmain(int argc, wchar_t** argv)
 	printf("quadbatch candidate failures=%u provisional=1\n", qb);
 	}
 
+	// -- Multi-field copy + bit-get batch: 003975(copy4) 000542(copy3)
+	//   003483(copy7) 004346/004350(copy3 + bit get).
+	{
+	typedef unsigned (__thiscall* Copy4Oracle)(void*, unsigned*, unsigned*, unsigned*, unsigned*);
+	Copy4Oracle cp4 = reinterpret_cast<Copy4Oracle>(base + 0x8f690);
+	typedef unsigned (__thiscall* Copy3bOracle)(void*, unsigned*, unsigned*, unsigned*);
+	Copy3bOracle cp3 = reinterpret_cast<Copy3bOracle>(base + 0x10720);
+	typedef unsigned (__thiscall* CopyNOracle)(void*, unsigned*);
+	CopyNOracle cp7 = reinterpret_cast<CopyNOracle>(base + 0x85780);
+	typedef unsigned (__thiscall* Copy3BitOracle)(void*, float*);
+	Copy3BitOracle cb1 = reinterpret_cast<Copy3BitOracle>(base + 0xa91b0);
+	Copy3BitOracle cb2 = reinterpret_cast<Copy3BitOracle>(base + 0xa9290);
+	unsigned rf = 0;
+	unsigned char r0[0x800]; memset(r0, 0, sizeof(r0));
+	#define ST4(off,i) { unsigned _v=0x10000000u+i; memcpy(r0+(off),&_v,4); }
+	ST4(0x58,1); ST4(0x5c,2); ST4(0x60,3); ST4(0x64,4);
+	unsigned a0=0,a1=0,a2=0,a3=0; cp4(r0,&a0,&a1,&a2,&a3);
+	if(a0!=0x10000001u||a1!=0x10000002u||a2!=0x10000003u||a3!=0x10000004u){fprintf(stderr,"cp4 fail\n");++rf;}
+	ST4(0x52c,5); ST4(0x530,6); ST4(0x534,7);
+	unsigned b0=0,b1=0,b2=0; cp3(r0,&b0,&b1,&b2);
+	if(b0!=0x10000005u||b1!=0x10000006u||b2!=0x10000007u){fprintf(stderr,"cp3 fail\n");++rf;}
+	ST4(0x5c,0x11); ST4(0x60,0x12); ST4(0x64,0x13); ST4(0x68,0x14); ST4(0x6c,0x15); ST4(0x70,0x16);
+	unsigned o7[8]={0}; cp7(r0,o7);
+	if(o7[0]!=0x10000011u||o7[4]!=0x10000015u||o7[5]!=0x10000016u){fprintf(stderr,"cp7 fail\n");++rf;}
+	ST4(0x184,0x21); ST4(0x188,0x22); ST4(0x18c,0x23);
+	unsigned b1v=0x2u; memcpy(r0+0x1a8,&b1v,4); // >>1 &1 -> 1
+	unsigned f1[4]={0}; unsigned r1=cb1(r0,(float*)f1);
+	if(r1!=1u||f1[0]!=0x10000021u||f1[1]!=0x10000022u||f1[2]!=0x10000023u){fprintf(stderr,"cb1 fail\n");++rf;}
+	ST4(0x190,0x31); ST4(0x194,0x32); ST4(0x198,0x33);
+	unsigned b2v=0x4u; memcpy(r0+0x1a8,&b2v,4); // >>2 &1 -> 1
+	unsigned f2[4]={0}; unsigned r2=cb2(r0,(float*)f2);
+	if(r2!=1u||f2[0]!=0x10000031u||f2[1]!=0x10000032u||f2[2]!=0x10000033u){fprintf(stderr,"cb2 fail\n");++rf;}
+	#undef ST4
+	printf("multicopy candidate failures=%u provisional=1\n", rf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
