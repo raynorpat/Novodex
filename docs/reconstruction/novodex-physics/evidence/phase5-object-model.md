@@ -3127,6 +3127,22 @@ Round 75 drove the large init ctor (build/r75.log biginit failures=0):
 dwords at [this+0x34], returning this. 003257 moves to `reconstructed`.
 No gate, coverage-floor, or policy change.
 
+## 3z92. Self-contained thiscall closure stream complete
+
+Rounds 60-75 extended the closure stream past the strict-this store cluster
+(3z72) by driving the remaining independent thiscall decision/comparison/
+lookup/ctor rows (LCG-to-float, flag-select, double-compare, switch rows,
+pair-search, array-reverse, indexed lookups, list ops, delimiter-scan, big
+ctor, and others) -- verified byte-exact with definite proofs. The remaining
+~8 lightly-qualified rows (001542/001605/001637/003281/003283/003285/003522/
+002442) are all mid-function loop bodies whose operands (esi/edi/ebx/ebp)
+are set by an upstream caller prologue, so they are NOT clean thiscall
+fixtures and need caller-register-state reconstruction rather than an
+isolated drive. Census impact: 218 rows moved discovered->reconstructed
+across this campaign (325 total), all differential-verified. Family RED on
+the Task-4 actor tables unchanged; coverage floor (126), inventory, and gate
+policy unchanged.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
