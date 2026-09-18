@@ -3009,6 +3009,14 @@ fild(new)*qword[0x10124828] + qword[0x10124830]. Verified the new global
 state and the returned float against the same runtime-global formula.
 002517 moves to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z77. Compact decision rows close (003928/005356)
+
+Round 61 drove two compact thiscall decisions (build/r61b.log
+compact-decision failures=0): 003928 (0x8edb0, ret 8) conditionally zeroes
+[this+0x24] or [this+0x28] based on the mode/value args; 005356 (0xe8fb0)
+returns 1 iff all of [this+0/4/8/0xc] are non-zero else 0. Both move to
+`reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
