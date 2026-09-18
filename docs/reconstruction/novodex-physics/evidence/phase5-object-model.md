@@ -2781,6 +2781,18 @@ Round 40 drove four misc rows (build/r40b.log zmix2 failures=0):
 All 4 move to `reconstructed` with static + dynamic proof. Independent
 (non-family) rows. No gate, coverage-floor, or policy change.
 
+## 3z56. Init/ptr-diff/pop rows close (005157/005301/005475/002896/004776)
+
+Round 41 drove five rows (build/r41c.log initbatch failures=0):
+- 005157 (0xe32c0): bbox-init -- zero +4..0x10, byte+0x14=1, [this]=0x80000000;
+- 005301 (0xe7360): zero +0x18..0x24 and +0x44..0x4c;
+- 005475 (0xefeb0): zero +0..0x14 (incl. halfwords +0xc/+0xe);
+- 002896 (0x6e650): (*(void**)[esp+4])[0x10] - (*(void**)[esp+8])[0x10];
+- 004776 (0xb3ae0): container pop -- returns the float at base+offset and
+  advances the byte offset by 4.
+All 5 move to `reconstructed` with static + dynamic proof. Independent
+(non-family) rows. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
