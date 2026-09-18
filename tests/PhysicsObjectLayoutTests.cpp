@@ -4301,6 +4301,30 @@ int wmain(int argc, wchar_t** argv)
 	printf("containsf candidate failures=%u provisional=1\n", ctf);
 	}
 
+	// -- Lookup-by-field (003105, 0x76200) and indexed-deref variant
+	//   (001962, 0x4bee0, ret 4).
+	{
+	typedef unsigned (__cdecl* LookupFieldOracle)(void*, unsigned);
+	LookupFieldOracle lf2 = reinterpret_cast<LookupFieldOracle>(base + 0x76200);
+	unsigned l2f = 0;
+	unsigned char headb[0x20]; memset(headb,0,sizeof(headb));
+	unsigned char nodeX[0x20], nodeY[0x20]; memset(nodeX,0,0x20); memset(nodeY,0,0x20);
+	// [headb+8]=key (headb IS both base and key); [headb+4] = node array
+	unsigned* nArr = reinterpret_cast<unsigned*>(headb+4);
+	nArr[0]=(unsigned)(size_t)nodeX; nArr[1]=(unsigned)(size_t)nodeY; nArr[2]=0;
+	*(unsigned*)(nodeY+8)=(unsigned)(size_t)headb;	// nodeY[8]==headb -> found
+	// 003105: returns node whose [node+8]==[esp+8] (== headb)
+	unsigned r1 = lf2(headb, (unsigned)(size_t)headb);
+	if(r1!=(unsigned)(size_t)nodeY){fprintf(stderr,"lf found fail %08x\n",r1);++l2f;}
+	unsigned char nodeZ[0x20]; memset(nodeZ,0,0x20);
+	*(unsigned*)(nodeZ+8)=0x12345678u;	// no node[8]==[esp+8]=headb in [headb+4]? nodeY does match
+	// make all mismatch: clear nodeY[8]
+	*(unsigned*)(nodeY+8)=0x11111111u;
+	unsigned r2 = lf2(headb, (unsigned)(size_t)headb);
+	if(r2!=0u){fprintf(stderr,"lf miss fail %08x\n",r2);++l2f;}
+	printf("lookupfield candidate failures=%u provisional=1\n", l2f);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
