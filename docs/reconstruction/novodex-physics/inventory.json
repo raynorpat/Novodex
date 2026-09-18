@@ -72554,12 +72554,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "delimiter scan (0x90db0, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1502",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13194",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "returns 1 if the string via [esp+4] contains any delimiter char (space,quote,tab,comma,parens,=,[,],{,},#), else 0; ret 4",
+      "dynamic_proof": "confirmed via delimscan drive (3z90): failures=0",
       "notes": ""
     },
     {
