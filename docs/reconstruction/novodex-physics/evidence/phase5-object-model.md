@@ -3079,6 +3079,14 @@ failures=0): 005189 (0xe41a0, ret 8) returns the index 0/1/2 of the
 Fixtures covered every return (0, 1, 2, and 0xff miss). 005189 moves to
 `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z86. Array-reverse row closes (001657)
+
+Round 70 drove the in-place array reverse (build/r70.log reversearr
+failures=0): 001657 (0x32460, ret 0) reverses the first count words of the
+array argument (count>>1 swaps) and returns 1 (0 if either arg is null).
+Verified both a full reverse (6) and a partial reverse (3). 001657 moves to
+`reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
