@@ -3270,6 +3270,25 @@ internal layout, which is more than an isolated wrapper drive. The probe was
 fully reverted (all prior diodes pass; gate green-except-family). 004759
 stays `discovered`. No gate, coverage-floor, or policy change.
 
+## 3z105. Small flag/link-advance rows close (002170/004083/001957/000567/000569)
+
+Round 90 pivoted to the remaining tiny clean rows after exhausting the
+wrapper class. Drove 5 (build/r90.log smallflag failures=0): 002170 (setne
+[this+0x9c]), 004083 (setne the .data[0x10127180] global), 001957
+([obj+0xc]+[obj+8] when [this+0x1c] non-null), 000567 and 000569 (link
+advance storing [*ptr+0x10]/[*ptr+0x18] back to [this+0x6bc]/[this+0x6c0]).
+All byte-exact. All 5 move to `reconstructed`. No gate, coverage-floor, or
+policy change.
+
+## 3z106. More compact flag/getter rows close (000738/004942/003628)
+
+Round 90 second batch (build/r90.log smallflag2 failures=0): 000738
+([this+0x1e4]&0x200 -> this+0x244 else 0), 004942 (two-bit select returning
+0x1011b6ec when bit1 set & bit0 clear), 003628 (conditional byte store
+[this+0x28]=1 when [this+0x2b] non-zero and the arg is zero). All
+byte-exact after correcting two test-side expectation/byte-width issues. All
+3 move to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
