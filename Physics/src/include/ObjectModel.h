@@ -376,6 +376,17 @@ class BoxShape
 	//! phys_fn_000977 (0x00021870). Same argument pair as the base ctor.
 					BoxShape(void* owner, unsigned argument);
 
+	//! phys_fn_001565 (0x2e5a0, wrapper over the 001552 vptr-ctor): writes
+	//! arg to [+0x10], [+0xc]=0, and installs vptr 0x1010785c; returns this.
+	void*				nxCtorWrap565(unsigned argument);
+
+	//! phys_fn_001571 (0x2e640): same wrapper with vptr 0x1010786c.
+	void*				nxCtorWrap571(unsigned argument);
+
+	//! phys_fn_001575 (0x2e7c0): vptr-ctor wrapper writing arg to [+0x14],
+	//! vptr 0x10107890; returns this.
+	void*				nxCtorWrap575(unsigned argument);
+
 	//! phys_fn_000931 (0x00020490): write out[0..2] translation, then
 	//! out[6..14] rotation with a forward word copy, then out[3..5] dims.
 	//! Source ranges +0x30, +0x0c, +0xe4; aliasing preserves that order.

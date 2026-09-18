@@ -2389,6 +2389,38 @@ bool BoxShape::nxBoxAccumulateMass(MassFrame* destination, float density, unsign
 	return true;
 	}
 
+// phys_fn_001565 (0x2e5a0, wrapper over the 001552 vptr-ctor):
+// the callee installs vptr 0x10107848 and zeroes +0x4/+0x8, then the
+// wrapper overrides [+0x10]=arg, vptr 0x1010785c, [+0xc]=0.
+void* BoxShape::nxCtorWrap565(unsigned argument)
+	{
+	*(unsigned*)((unsigned char*)this + 0x00) = 0x1010785cu;
+	*(unsigned*)((unsigned char*)this + 0x04) = 0;
+	*(unsigned*)((unsigned char*)this + 0x08) = 0;
+	*(unsigned*)((unsigned char*)this + 0x0c) = 0;
+	*(unsigned*)((unsigned char*)this + 0x10) = argument;
+	return this;
+	}
+void* BoxShape::nxCtorWrap571(unsigned argument)
+	{
+	*(unsigned*)((unsigned char*)this + 0x00) = 0x1010786cu;
+	*(unsigned*)((unsigned char*)this + 0x04) = 0;
+	*(unsigned*)((unsigned char*)this + 0x08) = 0;
+	*(unsigned*)((unsigned char*)this + 0x0c) = 0;
+	*(unsigned*)((unsigned char*)this + 0x10) = argument;
+	return this;
+	}
+void* BoxShape::nxCtorWrap575(unsigned argument)
+	{
+	*(unsigned*)((unsigned char*)this + 0x00) = 0x10107890u;
+	*(unsigned*)((unsigned char*)this + 0x04) = 0;
+	*(unsigned*)((unsigned char*)this + 0x08) = 0;
+	*(unsigned*)((unsigned char*)this + 0x0c) = 0;
+	*(unsigned*)((unsigned char*)this + 0x10) = 0;
+	*(unsigned*)((unsigned char*)this + 0x14) = argument;
+	return this;
+	}
+
 // phys_fn_000849 (0x0001c8c0), __thiscall ret 0xc, helper of BOX slot 4.
 // Pose support is provisional: centered boxes and the driven finite poses;
 // general x87 staging, exceptional inputs and payload aliasing remain open.
