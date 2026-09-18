@@ -3017,6 +3017,14 @@ compact-decision failures=0): 003928 (0x8edb0, ret 8) conditionally zeroes
 returns 1 iff all of [this+0/4/8/0xc] are non-zero else 0. Both move to
 `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z78. Negating-difference and conditional-sum rows close (002687/001457)
+
+Round 62 drove two more self-contained rows (build/r62.log negdiff
+failures=0): 002687 (0x662e0) computes a = (*pa)[0x48] or its negated
+(*pa)[0x4c] if 0, and returns a-b; 001457 (0x2ad30) adds [this+4]*6 (if
+[this+8] non-null) and [this+0xc]*12 (if [this+0x10] non-null). Both move
+to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
