@@ -2770,6 +2770,17 @@ Round 39 drove six small rows (build/r39.log zmix failures=0):
 All 6 move to `reconstructed` with static + dynamic proof. Independent
 (non-family) rows. No gate, coverage-floor, or policy change.
 
+## 3z55. sbb/zero/link/copy rows close (002152/004328/000557/003565)
+
+Round 40 drove four misc rows (build/r40b.log zmix2 failures=0):
+- 002152 (0x538a0, ret 0xc): sbb/neg flag -- returns 1 if [this+4] < the
+  arg at [esp+8];
+- 004328 (0xa8d20): zero [this+0x1ac/1b0/1b4];
+- 000557 (0x10840, ret 4): link-insert [arg+0x10]=old head, this+0x5a0=arg;
+- 003565 (0x87e50, ret 4): copy [this+0x3c/40/44] to arg[0/4/8].
+All 4 move to `reconstructed` with static + dynamic proof. Independent
+(non-family) rows. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
