@@ -4165,6 +4165,28 @@ int wmain(int argc, wchar_t** argv)
 	printf("flagsel candidate failures=%u provisional=1\n", fsf);
 	}
 
+	// -- LCG-step-to-float row (002517, 0x5fe80): computes the LCG value on
+	//   .data[0x10122340], then converts to a float via fild * qword[0x10124828]
+	//   + qword[0x10124830].
+	{
+	typedef float (__cdecl* LcgFloatOracle)();
+	LcgFloatOracle lfo = reinterpret_cast<LcgFloatOracle>(base + 0x5fe80);
+	unsigned lff = 0;
+	int* gval = reinterpret_cast<int*>(const_cast<unsigned char*>(base + 0x122340));
+	double* gmult = reinterpret_cast<double*>(const_cast<unsigned char*>(base + 0x124828));
+	double* gadd = reinterpret_cast<double*>(const_cast<unsigned char*>(base + 0x124830));
+	*gval = 12345;
+	int x0 = *gval;
+	int q = x0 / 0x1f31d, r = x0 % 0x1f31d;
+	long nx = (long)r*0x41a7 - (long)q*0xb14;
+	if(nx <= 0) nx += 0x7fffffff;
+	float rf = lfo();
+	if(*gval != (int)nx){fprintf(stderr,"lfo state fail %d/%d\n",*gval,(int)nx);++lff;}
+	float ef = (float)((double)nx * (*gmult) + (*gadd));
+	if(rf != ef){fprintf(stderr,"lfo float fail %f/%f\n",(double)rf,(double)ef);++lff;}
+	printf("lcgfloat candidate failures=%u provisional=1\n", lff);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
