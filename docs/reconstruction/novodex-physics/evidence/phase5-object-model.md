@@ -2644,6 +2644,18 @@ All three (phase 3) move to `reconstructed` with static + dynamic proof.
 These are independent (non-family) rows; no gate, coverage-floor, or policy
 change.
 
+## 3z44. Four more pure shape rows close (000925/000999/001285/001293)
+
+Round 29 drove a second getter/init batch (build/r29c.log shapegetters2
+failures=0):
+- phys_fn_000925 (@0x20440): zeroes dwords at this+0,4,8, returns this.
+- phys_fn_000999 (@0x21c20): x87 single-precision 2x(the float at this+0xe4)
+  in st0.
+- phys_fn_001285 (@0x257c0): returns the halfword at this+0xd8.
+- phys_fn_001293 (@0x25830): returns the halfword at this+0xda.
+All four (phase 3) move to `reconstructed` with static + dynamic proof --
+independent (non-family) rows. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
