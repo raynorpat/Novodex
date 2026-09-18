@@ -2461,6 +2461,21 @@ triple the earlier transcription presupposed:
   swept[0], so swept[0] and swept[4] are two distinct axial fields; the
   exact per-field half-extent mapping needs one more correlated drive).
 
+CORRECTION (round 22): the round-21 probe wrote swept fields at BYTE offsets
+0..4, misaligning elements [1]/[2]. With element-aligned writes (byte
+offset = 4*element), swept[0], swept[1], swept[2] are each ACTIVE:
+swept[0]=2.0 -> out0=0.75, swept[1]=2.0 -> out0=0.5, swept[2]=2.0 ->
+out0=1.0; swept[3]=2.0 -> MISS. The verified per-axis model is
+`out0[for swept field k] = |col_k . H| / swept[k]` where col_k is column k
+of the pose-0 rotation and H the box half-extents:
+  base {1,1.5,2} rot=+90dz, swept0=2 -> (R03*H1)=1.5/2=0.75;
+  swept1=2 -> |R1x|H0/2 = 1/2=0.5; swept2=2 -> H2/2=2/2=1.0; and with alt
+  dims {4,65,7}: swept0=2 -> 65/2=32.5, swept1=2 -> 4/2=2.0. Every observed
+  output matches `|col_k . H| / swept[k]`; swept[k]==0/denormal/FLT_MAX ->
+  MISS. This pins slot-7's record as a per-axis swept field and the box-face
+  entry parameter on hit; it supersedes the round-20 misreading of the tail
+  writing a constant |col2 . (-T)|.
+
 Correlation (build/r21c.log): changing the shape's dims from {1,1.5,2} to
 {4,65,7} makes swept[0]=2.0 write out0=32.5 (=65/2) and swept[4]=2.0 write
 out0=2.0 (=4/2). Together with the base run (swept[0]: 1.5/1, 1.5/2, 1.5/6;
@@ -2480,6 +2495,36 @@ uncertainty. Re-transcribing must start from a record struct whose [0] and
 [4] float fields are the swept axis inputs and `out0 = |col2 dot (-T)|` /
 (axis-related) -- still to be pinned by a correlated probe. phys_fn_000951
 and 001730 STAY `discovered`; no implementation or gate change.
+
+## 3z37. Slot-7 box-side differential closed: out0 = min over axes of |col_k.H| * |1/swept[k]|
+
+Round 22 re-derived and DRIVEN closed the slot-7 box-side against the oracle.
+The corrected model (superseding the open-ended 3z36 conclusion):
+
+- record: swept[0..2] are the per-axis swept fields (swept[3]+ inert);
+  swept[k] of 0 / subnormal / FLT_MAX magnitude rejects that axis.
+- per-axis entry parameter `t_k = |col_k . H| * |1.0/swept[k]|` where col_k
+  is column k of the pose-0 rotation row-major (col_k = R[3k],R[3k+1],
+  R[3k+2]) -- NO absolute value is taken on swept (a negative swept gives
+  the same positive entry), and the reciprocal 1/swept is rounded to m32
+  (forced through memory) before the multiply. The one-ULP pin:
+  |col2.H|/swept[2] = 7/3 must be `7 * float(1/3)` = 0x40155556, NOT the
+  IEEE division 0x40155555 (build r22e/r22f logs).
+- hit/miss: 1 (hit) if any axis is valid, and out0 = the MINIMUM t_k over
+  valid axes (the earliest box-face entry). all-zero/invalid -> miss.
+- `|col_k . H|` projected with the box's own half-extents (this+0xe4).
+
+`BoxShape::nxBoxSweep` implements this; the 48-case differential (2 shapes
+x 3 poses x 8 swept records incl. negatives) matches the oracle
+byte-exactly (build r22i/r22j-gate.log: boxsweep-diff run=48 failures=0).
+FALSIFICATION: dropping the |col_k.H| absolute makes 24/48 fail
+(build/r22-mut.log), restored green (r22-restore-gate.log). This proves the
+box-side of slot 7 and registers fold 66; the family gate stays RED for the
+actor tables / remaining per-final rows, and 001730's internals -- re-derived
+here as the min-over-axes entry-parameter equivalence rather than its 137-
+instruction listing -- is NOT separately transcribed or census-registered.
+phys_fn_000951 STAYS `discovered` pending the family unit-close (Task 4);
+no census, coverage-floor, or gate-policy change.
 
 ## 6. What this task did not do
 
