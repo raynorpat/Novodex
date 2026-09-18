@@ -4510,6 +4510,27 @@ int wmain(int argc, wchar_t** argv)
 	printf("biginit candidate failures=%u provisional=1\n", bif);
 	}
 
+	// -- Clean small rows: 000017 (chain-field getter), 004072 (setne),
+	//   002874 (global zero + store).
+	{
+	typedef unsigned (__thiscall* ChainGetOracle)(void*);
+	ChainGetOracle cg = reinterpret_cast<ChainGetOracle>(base + 0x1520);
+	unsigned sff = 0;
+	// 000017: [this+0x10] -> head; if [*head+0xd0]==5 return [*head+0xe0];
+	//   else returns the head pointer (stale eax from lea).
+	unsigned char chn[0x20]; memset(chn,0,sizeof(chn));
+	unsigned char head[0x100]; memset(head,0,sizeof(head));
+	*(void**)(chn+0x10)=head;
+	unsigned d0=5; memcpy(head+0xd0,&d0,4); unsigned e0=0x1234; memcpy(head+0xe0,&e0,4);
+	if(cg(chn)!=0x1234u){fprintf(stderr,"cg match fail %u\n",cg(chn));++sff;}
+	*(unsigned*)(head+0xd0)=6;	// !=5 -> returns this+0x10 (stale eax from lea)
+	if(cg(chn)!=(unsigned)(size_t)(chn+0x10)){fprintf(stderr,"cg miss fail %u\n",cg(chn));++sff;}
+	// null head -> 0
+	*(void**)(chn+0x10)=0;
+	if(cg(chn)!=0u){fprintf(stderr,"cg null fail\n");++sff;}
+	printf("smallclean candidate failures=%u provisional=1\n", sff);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
