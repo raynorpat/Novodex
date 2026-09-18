@@ -35376,12 +35376,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "nested indexed deref (0x4bee0, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/768",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5925",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "table = [this + [this+0x70]*4 + 0x1c]; return *( *(table+0x18 + [table+4]*4)[idx] ) + 4; ret 4",
+      "dynamic_proof": "confirmed via nestlookup drive (3z83): failures=0",
       "notes": ""
     },
     {
