@@ -3921,6 +3921,32 @@ int wmain(int argc, wchar_t** argv)
 	printf("boundedpush candidate failures=%u provisional=1\n", pb);
 	}
 
+	// -- Template-init rows: 005360 (0xe9060), 003983 (0x8fc00),
+	//   003989 (0x8fd00), 000499 (0xfec0).
+	{
+	typedef void (__thiscall* TmplInit2Oracle)(void*);
+	TmplInit2Oracle tw0 = reinterpret_cast<TmplInit2Oracle>(base + 0xe9060);
+	TmplInit2Oracle tw1 = reinterpret_cast<TmplInit2Oracle>(base + 0x8fc00);
+	TmplInit2Oracle tw2 = reinterpret_cast<TmplInit2Oracle>(base + 0x8fd00);
+	TmplInit2Oracle tw3 = reinterpret_cast<TmplInit2Oracle>(base + 0xfec0);
+	unsigned ff = 0;
+	unsigned char u0[0x60]; memset(u0, 0xA5, sizeof(u0));
+	tw0(u0);
+	if(*(unsigned*)(u0+0)!=0x1011bab4u||*(unsigned*)(u0+4)!=1u||*(unsigned*)(u0+8)!=0x7FFFFFFFu||*(unsigned*)(u0+0x10)!=0xFFFFFFFFu
+		||*(unsigned*)(u0+0xc)+*(unsigned*)(u0+0x14)+*(unsigned*)(u0+0x18)+*(unsigned*)(u0+0x1c)+*(unsigned*)(u0+0x3c)+*(unsigned*)(u0+0x40)+*(unsigned*)(u0+0x44)!=0){fprintf(stderr,"tw0 fail\n");++ff;}
+	unsigned char u1[0x80]; memset(u1, 0xA5, sizeof(u1));
+	tw1(u1);
+	if(*(unsigned*)(u1+8)+*(unsigned*)(u1+0x18)+*(unsigned*)(u1+0x28)!=3u*0x3f800000u){fprintf(stderr,"tw1 one fail\n");++ff;}
+	if(*(unsigned*)(u1+0x38)!=8u||*(unsigned*)(u1+0x44)+*(unsigned*)(u1+0x4c)+*(unsigned*)(u1+0x50)+*(unsigned*)(u1+0x54)!=0){fprintf(stderr,"tw1 tail fail\n");++ff;}
+	unsigned char u2[0x80]; memset(u2, 0xA5, sizeof(u2));
+	tw2(u2);
+	if(*(unsigned*)(u2+8)!=0x3f800000u||*(unsigned*)(u2+0x4c)+*(unsigned*)(u2+0x50)!=0||*(unsigned*)(u2+0x38)!=8u){fprintf(stderr,"tw2 fail\n");++ff;}
+	unsigned char u3[0x80]; memset(u3, 0xA5, sizeof(u3));
+	tw3(u3);
+	if(*(unsigned*)(u3+0x50)!=0x3f800000u||*(unsigned*)(u3+0x54)+*(unsigned*)(u3+0x58)+*(unsigned*)(u3+0x4c)!=0){fprintf(stderr,"tw3 fail\n");++ff;}
+	printf("tmplinit2 candidate failures=%u provisional=1\n", ff);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
