@@ -4431,6 +4431,28 @@ int wmain(int argc, wchar_t** argv)
 	printf("flagcmp candidate failures=%u provisional=1\n", fof);
 	}
 
+	// -- Chained-field copy (004068, 0x95a40, ret 8): writes the +0x19c word
+	//   of [this+8] (or 0) to out1, and of [this+0xc] (or 0) to out2.
+	{
+	typedef void (__thiscall* ChainCopyOracle)(void*, unsigned*, unsigned*);
+	ChainCopyOracle cch = reinterpret_cast<ChainCopyOracle>(base + 0x95a40);
+	unsigned cgf = 0;
+	unsigned char nA[0x200], nB[0x200]; memset(nA,0,sizeof(nA)); memset(nB,0,sizeof(nB));
+	unsigned char cf[0x100]; memset(cf,0,sizeof(cf));
+	const unsigned aAi=0xAAAA, aBi=0xBBBB;
+	memcpy(nA+0x19c,&aAi,4); memcpy(nB+0x19c,&aBi,4);
+	*(void**)(cf+8)=nA; *(void**)(cf+0xc)=nB;
+	unsigned o1=0,o2=0;
+	cch(cf,&o1,&o2);
+	if(o1!=0xAAAAu||o2!=0xBBBBu){fprintf(stderr,"cch fail %u/%u\n",o1,o2);++cgf;}
+	// null branch
+	*(void**)(cf+8)=0; *(void**)(cf+0xc)=0;
+	o1=0x77;o2=0x77;
+	cch(cf,&o1,&o2);
+	if(o1!=0u||o2!=0u){fprintf(stderr,"cch null fail\n");++cgf;}
+	printf("chaincopy candidate failures=%u provisional=1\n", cgf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
