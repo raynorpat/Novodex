@@ -2431,6 +2431,20 @@ void* BoxShape::nxWrapZero2065()
 	return this;
 	}
 
+// phys_fn_001409 (0x29750): the 001455 sub-ctor sets [this]=0x1010769c and
+// zeroes +4..+0x48; the wrapper then overrides vptr to 0x1010767c and zeroes
+// +0x64..0x7c.
+void* BoxShape::nxWrap1409()
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(this);
+	for(unsigned o = 4; o <= 0x48; o += 4)
+		*(unsigned*)(p + o) = 0;
+	for(unsigned o = 0x64; o <= 0x7c; o += 4)
+		*(unsigned*)(p + o) = 0;
+	*(unsigned*)(p + 0x00) = 0x1010767cu;
+	return this;
+	}
+
 // phys_fn_000849 (0x0001c8c0), __thiscall ret 0xc, helper of BOX slot 4.
 // Pose support is provisional: centered boxes and the driven finite poses;
 // general x87 staging, exceptional inputs and payload aliasing remain open.
