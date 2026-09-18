@@ -39051,12 +39051,12 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "builder/four-row (0x53c80, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1056",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6854",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "copies [this+8]/[0xc]/[0x10]/[0x14] and tags 0xc/2 into the out arg, sets 4 when [this+0xa0] non-null, returns 1",
+      "dynamic_proof": "confirmed via builder4 drive (3z71): failures=0",
       "notes": ""
     },
     {
@@ -76442,12 +76442,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "copy 10 dwords to [this+0x16c..0x190] (0x9e470, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1591",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14045",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "copies [arg+0x6c..0x90] to [this+0x16c..0x190]; ret 4",
+      "dynamic_proof": "confirmed via builder4 drive (3z71): failures=0",
       "notes": ""
     },
     {
