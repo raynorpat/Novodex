@@ -2972,6 +2972,15 @@ fixture work rather than the batch pattern used for the mechanical rows.
 These are NOT cleanly batchable; the family RED on the Task-4 actor tables
 is unchanged. Coverage floor (126), inventory, and gate policy unchanged.
 
+## 3z73. Mark-degenerate loop row closes (004091)
+
+Round 57 drove the single remaining strict-this loop row (build/r57b.log
+markdeg failures=0): 004091 (0x95d60) ORs the 0x20 flag into
+array[slot*0x50 + 0xc] for a [base, base+count) range, where array =
+*[*[this+0x30] + 0x5b8] and base/count live at +0x160/+0x164. Verified the
+OR-merge (0x10->0x30) and that slots outside the range stay untouched.
+004091 moves to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
