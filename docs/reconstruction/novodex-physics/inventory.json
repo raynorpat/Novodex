@@ -39231,12 +39231,12 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "indirect field getter (0x53f20)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1061",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6869",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "if [this+0x9c] non-null return [*+0x5c] else 0; ret",
+      "dynamic_proof": "confirmed via indfield differential (3z109): failures=0",
       "notes": ""
     },
     {
@@ -63140,12 +63140,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "interval flag (0x85590)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1296",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12272",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "if ([this+0x18]-[this+0x14]) & ~3 == 0 return 0 else [this+0x14]; ret",
+      "dynamic_proof": "confirmed via indfield differential (3z109): failures=0",
       "notes": ""
     },
     {
