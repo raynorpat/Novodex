@@ -3203,6 +3203,18 @@ family). This confirms the deep-x87 rows (002505/001500/002475/002676/
 003398/005404) are out of scope for isolated differential closure. No gate,
 coverage-floor, or policy change.
 
+## 3z98. Ctor-wrapper rows close via reconstructed-helper differential (001565/001571/001575)
+
+Round 82 pivoted to the wrapper class: rows whose body is a single call into
+a reconstructed helper plus a few of their own writes. These are drivable by
+reproducing the callee's sub-behavior in a candidate method and
+differencing the full buffer against the oracle wrapper. Three vptr-ctor
+wrappers over 001552 (mem: 0x2e5a0 -> vptr 0x1010785c, 0x2e640 ->
+0x1010786c, 0x2e7c0 -> 0x10107890) were added as candidate methods
+(nxCtorWrap565/571/575) and driven 4 arguments each (build/r82.log
+ctorwrap failures=0), byte-exact. All 3 move to `reconstructed`. No gate,
+coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
