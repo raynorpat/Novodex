@@ -3310,6 +3310,16 @@ repcopy failures=0): 001299 (9 dwords [this+0x6c] -> out), 003425 (11 dwords
 frame adjustment, so they isolated cleanly (matching the round-90 pattern).
 All 4 move to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z109. Indirect-field and interval-flag rows close (002176/003479)
+
+Round 93 re-probed round-91's crashing batch one row at a time, confirming
+the systematic-fault hypothesis: 002176 ([this+0x9c] -> [*+0x5c] else 0)
+and 003479 (([this+0x18]-[this+0x14])&~3 ? [this+0x14] : 0) each isolate
+cleanly (build/r93.log indfield failures=0). The setne row 004072 faults
+under isolation (consistent with its earlier erratic behavior) and is left
+`discovered`. 002176 and 003479 move to `reconstructed`. No gate,
+coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
