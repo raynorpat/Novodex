@@ -2701,6 +2701,17 @@ failures=0):
 All 9 move to `reconstructed` with static + dynamic proof. Independent
 (non-family) rows. No gate, coverage-floor, or policy change.
 
+## 3z49. Batch of 10 setter/getter/arith rows close
+
+Round 34 drove 10 self-contained rows (build/r34.log setget2 failures=0):
+- stores: 000538([this+0x544]), 000545([this+0x6ac]);
+- getters: 000559(+0x6c8), 000561(+0x6c4), 004336(+0x1a8);
+- cdecl ptr difference: 002868(*p0 - *p1);
+- combined: 004988(zero 2c/30 + and ~0xc on [this+4]), 005212(inc+0x38);
+- arithmetic: 005584(([this+4]*0x1c)+8), 005640(([this+4]*5*4)+0x20).
+All 10 move to `reconstructed` with static + dynamic proof. Independent
+(non-family) rows. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
