@@ -29850,12 +29850,12 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "buffer-pop (0x32410, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/653",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4584",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "if [this+4] non-null: read slot [this+8][idx] into the arg, inc [this+0x10], reset to 0 when reaching capacity; returns a byte flag",
+      "dynamic_proof": "confirmed via bufp op drive (3z70): failures=0",
       "notes": ""
     },
     {
@@ -79844,12 +79844,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "ctor with list-link (0xb0310, ret 0xc)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1651",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15116",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "set [this]=vptr 0x1011a648; store args to +0x14/+0x18; if node arg non-null, link: [this+8]=node, [this+0x10]=node prev, [node+0xc]=this, [node+0x1c]=this",
+      "dynamic_proof": "confirmed via ctorlink drive (3z70): failures=0",
       "notes": ""
     },
     {
