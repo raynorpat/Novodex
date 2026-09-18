@@ -2445,6 +2445,42 @@ body that cannot converge. phys_fn_000951 and phys_fn_001730 each STAY
 slot-7's arg2 (and confirm arg1's written layout) by driving the oracle's
 return/out over controlled buffer contents before re-transcribing the fold.
 
+## 3z36. Slot-7 arg2 record layout established: axial fields drive the result
+
+Round 21 drove oracle slot-7 (0x20b20) over a fixed shape (dims {1,1.5,2},
+pose-0 rot = +90deg about z, translation {1,2,3}) with controlled arg2
+buffer contents (build/r21.log, r21b.log). KEY FINDING resolving the 3z35
+blocker -- arg2 is a structured record, NOT the (s0,s1,s2) swept-extent
+triple the earlier transcription presupposed:
+
+- With only `swept[0]` set: value 1.0f -> HIT, out0=1.5 ; 2.0f -> HIT,
+  out0=0.75 ; 6.0f -> HIT, out0=0.25. So `out0 = 1.5 / swept[0]` where 1.5
+  is the box's dim H[1]. Values 0.0 / denormal / FLT_MAX in swept[0] -> MISS.
+- Setting only swept[1]=2.0, swept[2]=2.0, swept[3]=2.0 each -> MISS.
+- Setting only swept[4]=2.0 -> HIT, out0=0.5  (a different half-extent than
+  swept[0], so swept[0] and swept[4] are two distinct axial fields; the
+  exact per-field half-extent mapping needs one more correlated drive).
+
+Correlation (build/r21c.log): changing the shape's dims from {1,1.5,2} to
+{4,65,7} makes swept[0]=2.0 write out0=32.5 (=65/2) and swept[4]=2.0 write
+out0=2.0 (=4/2). Together with the base run (swept[0]: 1.5/1, 1.5/2, 1.5/6;
+swept[4]: 1/2) the relationship is: swept[0] -> out0 = H[1]/swept[0] and
+swept[4] -> out0 = H[0]/swept[4]. The field-to-half-extent pairing is
+permuted (H[0] off swept[4], H[1] off swept[0]), which matches the +90deg
+about-z pose rotation permuting the axes: slot-7 returns the box-face entry
+parameter `halfExtent_permuted / sweptField` on a hit, and a large or zero
+swept field rejects. This is enough to re-derive the record layout for the
+re-transcription; the exact full struct (how many axial fields, arg1's
+written size) still needs one more correlated probe.
+
+Conclusion: slot-7's arg2 has meaningful float fields at offsets 0 and 4
+(3z35's all-nonzero fixtures hit because swept[0] was nonzero, not because
+any swept extent overlaps). The earlier fold was reverted on exactly this
+uncertainty. Re-transcribing must start from a record struct whose [0] and
+[4] float fields are the swept axis inputs and `out0 = |col2 dot (-T)|` /
+(axis-related) -- still to be pinned by a correlated probe. phys_fn_000951
+and 001730 STAY `discovered`; no implementation or gate change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
