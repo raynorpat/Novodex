@@ -74084,12 +74084,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "x87 scale-and-accumulate (0x95cc0, ret 0xc)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1535",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13500",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "scale = a/b; [this+0x154/0x158/0x15c] += scale * vec[0/1/2]; ret 0xc",
+      "dynamic_proof": "confirmed via xaccum drive (3z74): failures=0",
       "notes": ""
     },
     {
