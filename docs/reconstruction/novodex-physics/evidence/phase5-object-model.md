@@ -3025,6 +3025,14 @@ failures=0): 002687 (0x662e0) computes a = (*pa)[0x48] or its negated
 [this+8] non-null) and [this+0xc]*12 (if [this+0x10] non-null). Both move
 to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z79. Double signed-compare row closes (002894)
+
+Round 63 drove the fcomp signed-compare row (build/r63b.log dcmp
+failures=0): 002894 (0x6e620) fcomps the two dereferenced double pointers
+and returns -1 when *a <= *b, +1 when *a > *b (the initial polarity guess
+was inverted and corrected against the oracle). 002894 moves to
+`reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
