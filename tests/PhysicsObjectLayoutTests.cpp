@@ -5516,6 +5516,82 @@ int wmain(int argc, wchar_t** argv)
 		memcpy(&vptr, bytes + 0x00, 4);
 		printf("boxvptr candidate word=%08x\n", vptr);
 		printf("boxvptr candidate dispatch=unverified\n");
+
+		// Record-layout probe (3.5z): drive oracle slot-7 (0x20b20) over a
+		// fixed shape and varied ARG2 buffer contents to learn what arg2 is
+		// NOT the (s0,s1,s2) swept-extent triple the provisional transcription
+		// presupposed (3.24z RED: oracle hit for every non-zero fixture).
+		// This prints the oracle return and the written out[0] for each
+		// controlled arg2 so the true record semantics can be pinned before
+		// re-transcribing the fold. Diagnostic only; no candidate involvement.
+		typedef bool (__thiscall* BoxSweepOracleFn)(void*, void*, void*);
+		BoxSweepOracleFn oracleSweep2 = reinterpret_cast<BoxSweepOracleFn>(base + 0x20b20);
+		unsigned char shapeS2[0x228];
+		memset(shapeS2, 0xcd, sizeof(shapeS2));
+		typedef void (__thiscall* BoxCtorFn)(void*, void*, unsigned);
+		(reinterpret_cast<BoxCtorFn>(base + 0x21870))(shapeS2, 0, 0);
+		const float dimS2[3] = { 1.f, 1.5f, 2.f };
+		const float rotS2[9] = { 0,-1,0, 1,0,0, 0,0,1 };
+		const float trnS2[3] = { 1.f, 2.f, 3.f };
+		memcpy(shapeS2 + 0xe4, dimS2, sizeof(dimS2));
+		memcpy(shapeS2 + 0x0c, rotS2, sizeof(rotS2));
+		memcpy(shapeS2 + 0x30, trnS2, sizeof(trnS2));
+		static const unsigned char sweepCases[6][16] = {
+			{}, // all zeros
+			{ 1 }, // single +1
+			{ 0xFF,0xFF,0x7F,0x7F }, // one float (FLT_MAX-ish)
+			{ 0x00,0x00,0x80,0x3F }, // 1.0f
+			{ 0x00,0x00,0x00,0x40 }, // 2.0f
+			{ 0x00,0x00,0xC0,0x40 } };// 6.0f
+		printf("boxsweep-record probe:\n");
+		for(unsigned sc = 0; sc < 6; ++sc)
+			{
+			unsigned char swept[0x20];
+			memset(swept, 0, sizeof(swept));
+			memcpy(swept, sweepCases[sc], 4);
+			float out2 = 123.0f;
+			const bool ro = oracleSweep2(shapeS2, &out2, swept);
+			printf("  arg2first=%08x -> returns=%u out0=%08x\n",
+				*reinterpret_cast<unsigned*>(swept), ro ? 1u : 0u,
+				reinterpret_cast<unsigned&>(out2));
+			}
+		// Swept-field axis mapping: set only one of swept[0..2] = 2.0f at a
+		// time and read the hit/out0 to see which axis drives the result.
+		for(unsigned axis = 0; axis < 5; ++axis)
+			{
+			unsigned char swept[0x20];
+			memset(swept, 0, sizeof(swept));
+			const unsigned two = 0x40000000u;
+			unsigned pos = axis;	// 0,1,2 -> swept[0],[1],[2]; 3 -> swept[3]; 4 -> swept[4]
+			if(pos < 0x20) memcpy(swept + pos, &two, 4);
+			float out2 = 123.0f;
+			const bool ro = oracleSweep2(shapeS2, &out2, swept);
+			printf("  swept[%u]=2.0 -> returns=%u out0=%08x\n", pos,
+				ro ? 1u : 0u, reinterpret_cast<unsigned&>(out2));
+			}
+		printf("boxsweep-record probe done\n");
+		// Correlation: does out0 for swept[0]=2.0 track a half-extent? Vary
+		// only one dim at a time and re-read swept[0]/swept[4].
+		const float baseDims[3] = { 1.f, 1.5f, 2.f };
+		const float altDims[3] = { 4.f, 65.f, 7.f };
+		unsigned char shapeAlt[0x228];
+		memset(shapeAlt, 0xcd, sizeof(shapeAlt));
+		(reinterpret_cast<BoxCtorFn>(base + 0x21870))(shapeAlt, 0, 0);
+		memcpy(shapeAlt + 0xe4, altDims, sizeof(altDims));
+		memcpy(shapeAlt + 0x0c, rotS2, sizeof(rotS2));
+		memcpy(shapeAlt + 0x30, trnS2, sizeof(trnS2));
+		unsigned char sweptCorr[0x20];
+		memset(sweptCorr, 0, sizeof(sweptCorr));
+		const unsigned twoV = 0x40000000u, fiveV = 0x40a00000u;
+		{ memcpy(sweptCorr, &twoV, 4); float o=9.f;
+		  printf("  alt.dims swept[0]=2 -> ret=%u out0=%08x\n",
+		    oracleSweep2(shapeAlt,&o,sweptCorr)?1u:0u, reinterpret_cast<unsigned&>(o)); }
+		memset(sweptCorr,0,sizeof(sweptCorr));
+		{ memcpy(sweptCorr+4, &twoV, 4); float o=9.f;
+		  printf("  alt.dims swept[4]=2 -> ret=%u out0=%08x\n",
+		    oracleSweep2(shapeAlt,&o,sweptCorr)?1u:0u, reinterpret_cast<unsigned&>(o)); }
+		(void) baseDims; (void) fiveV;
+		printf("boxsweep-record corr done\n");
 		}
 		}
 
