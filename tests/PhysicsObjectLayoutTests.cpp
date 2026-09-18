@@ -4392,6 +4392,23 @@ int wmain(int argc, wchar_t** argv)
 	printf("pairsearch candidate failures=%u provisional=1\n", psf);
 	}
 
+	// -- Array reverse (001657, 0x32460, ret 0): reverses the first
+	//   [esp+4] words of the [esp+8] array (swaps in place). Returns 1.
+	{
+	typedef unsigned char (__cdecl* ReverseOracle)(unsigned, unsigned*);
+	ReverseOracle rev = reinterpret_cast<ReverseOracle>(base + 0x32460);
+	unsigned rvf = 0;
+	unsigned arr[6] = {1,2,3,4,5,6};
+	unsigned char r = rev(6u, arr);
+	if(r!=1u){fprintf(stderr,"rev ret fail %u\n",r);++rvf;}
+	if(arr[0]!=6||arr[1]!=5||arr[2]!=4||arr[3]!=3||arr[4]!=2||arr[5]!=1){fprintf(stderr,"rev order fail\n");++rvf;}
+	// reverse of just 3 leaves the rest
+	unsigned arr2[4] = {7,8,9,10};
+	rev(3u, arr2);
+	if(arr2[0]!=9||arr2[1]!=8||arr2[2]!=7||arr2[3]!=10){fprintf(stderr,"rev3 fail\n");++rvf;}
+	printf("reversearr candidate failures=%u provisional=1\n", rvf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
