@@ -2872,6 +2872,17 @@ clampfcg failures=0, read-back verified): 002515 clamps the arg to
 `reconstructed`. Independent (non-family) rows. No coverage-floor or gate
 change.
 
+## 3z64. Char-header/copy5/bit-set-clear rows close (003274/003974/003453)
+
+Round 48 drove three more pure no-call rows (build/r48.log misc3 failures=0):
+- 003274 (0x7e8f0, ret 8): writes the 7 magic chars "JOHNRAT" + NUL to
+  [this+0..7] and stores two args to [this+8/0xc];
+- 003974 (0x8f660, ret 0x14): copy [this+0x44..0x54] to 5 out args;
+- 003453 (0x84ed0, ret 8): bit set/clear on [this+0x58] by the byte flag.
+All 3 move to `reconstructed`. Independent (non-family) rows. Note: the
+003274 static proof initially embedded `"JOHNRAT"` quotes that broke JSON --
+fixed by removing the quotes. No coverage-floor or gate change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
