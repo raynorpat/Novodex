@@ -4788,6 +4788,28 @@ int wmain(int argc, wchar_t** argv)
 	printf("repcopy candidate failures=%u provisional=1\n", spf);
 	}
 
+	// -- 002176 (indirect field) and 003479 (interval flag).
+	{
+	typedef unsigned (__thiscall* IndFieldOracle)(void*);
+	IndFieldOracle ind = reinterpret_cast<IndFieldOracle>(base + 0x53f20);
+	typedef unsigned (__thiscall* Iv79Oracle)(void*);
+	Iv79Oracle iv79 = reinterpret_cast<Iv79Oracle>(base + 0x85590);
+	unsigned sf4 = 0;
+	unsigned char v1[0xa0]; memset(v1,0,sizeof(v1));
+	unsigned char o1[0x60]; memset(o1,0,sizeof(o1));
+	unsigned f5c=0x99; memcpy(o1+0x5c,&f5c,4);
+	*(void**)(v1+0x9c)=o1;
+	if(ind(v1)!=0x99u){fprintf(stderr,"ind set fail\n");++sf4;}
+	*(void**)(v1+0x9c)=0;
+	if(ind(v1)!=0u){fprintf(stderr,"ind null fail\n");++sf4;}
+	unsigned char v2[0x20]; memset(v2,0,sizeof(v2));
+	unsigned lo=0x100, hi=0x100; memcpy(v2+0x14,&lo,4); memcpy(v2+0x18,&hi,4);
+	if(iv79(v2)!=0u){fprintf(stderr,"iv79 zero fail\n");++sf4;}
+	hi=0x120; memcpy(v2+0x18,&hi,4);
+	if(iv79(v2)!=lo){fprintf(stderr,"iv79 nz fail %u\n",iv79(v2));++sf4;}
+	printf("indfield candidate failures=%u provisional=1\n", sf4);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
