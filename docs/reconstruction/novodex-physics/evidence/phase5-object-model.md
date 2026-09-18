@@ -3033,6 +3033,14 @@ and returns -1 when *a <= *b, +1 when *a > *b (the initial polarity guess
 was inverted and corrected against the oracle). 002894 moves to
 `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z80. Indexed double-deref lookup row closes (001958)
+
+Round 64 drove the indexed lookup row (build/r64.log indexedlookup
+failures=0): 001958 (0x4be90, ret 4) when [this+0x1c] is non-null computes
+slot = [table+0x18] + [table+4]*4 and returns the +4 word of
+slot[index]. 001958 moves to `reconstructed`. No gate, coverage-floor, or
+policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
