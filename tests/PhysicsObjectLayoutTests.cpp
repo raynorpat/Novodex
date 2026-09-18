@@ -3650,6 +3650,43 @@ int wmain(int argc, wchar_t** argv)
 	printf("finalbatch candidate failures=%u provisional=1\n", lf);
 	}
 
+	// -- Triple-field copy/store rows: 000509/001297(copy to arg)
+	//   003968/000540(store args to this) 000507(copy from arg) 002686(ptr diff).
+	{
+	typedef void (__thiscall* CopyToOracle)(void*, unsigned*);
+	CopyToOracle c520 = reinterpret_cast<CopyToOracle>(base + 0x10200);
+	CopyToOracle c90 = reinterpret_cast<CopyToOracle>(base + 0x25870);
+	typedef void (__thiscall* Store4Oracle)(void*, unsigned, unsigned, unsigned, unsigned);
+	Store4Oracle s4 = reinterpret_cast<Store4Oracle>(base + 0x8f520);
+	typedef void (__thiscall* Store3Oracle)(void*, unsigned, unsigned, unsigned);
+	Store3Oracle s3a = reinterpret_cast<Store3Oracle>(base + 0x106f0);
+	typedef void (__thiscall* CopyFromOracle)(void*, const unsigned*);
+	CopyFromOracle cfr = reinterpret_cast<CopyFromOracle>(base + 0x101d0);
+	typedef unsigned (__cdecl* PtrMaskDiffOracle)(void**, void**);
+	PtrMaskDiffOracle pmd = reinterpret_cast<PtrMaskDiffOracle>(base + 0x662c0);
+	unsigned gb = 0;
+	unsigned char go[0x800]; memset(go, 0, sizeof(go));
+	const unsigned a520=0x1111, a524=0x2222, a528=0x3333;
+	memcpy(go+0x520,&a520,4); memcpy(go+0x524,&a524,4); memcpy(go+0x528,&a528,4);
+	unsigned out1[3]={0,0,0}; c520(go,out1);
+	if(out1[0]!=a520||out1[1]!=a524||out1[2]!=a528){fprintf(stderr,"c520 fail\n");++gb;}
+	memcpy(go+0x90,&a520,4); memcpy(go+0x94,&a524,4); memcpy(go+0x98,&a528,4);
+	unsigned out2[3]={0,0,0}; c90(go,out2);
+	if(out2[0]!=a520||out2[1]!=a524||out2[2]!=a528){fprintf(stderr,"c90 fail\n");++gb;}
+	s4(go,0xA1,0xB2,0xC3,0xD4);
+	if(*(unsigned*)(go+0x58)!=0xA1||*(unsigned*)(go+0x5c)!=0xB2||*(unsigned*)(go+0x60)!=0xC3||*(unsigned*)(go+0x64)!=0xD4){fprintf(stderr,"s4 fail\n");++gb;}
+	s3a(go,0xE1,0xF2,0x13);
+	if(*(unsigned*)(go+0x52c)!=0xE1||*(unsigned*)(go+0x530)!=0xF2||*(unsigned*)(go+0x534)!=0x13){fprintf(stderr,"s3a fail\n");++gb;}
+	unsigned in3[3]={0x41,0x52,0x63}; cfr(go,in3);
+	if(*(unsigned*)(go+0x520)!=0x41||*(unsigned*)(go+0x524)!=0x52||*(unsigned*)(go+0x528)!=0x63){fprintf(stderr,"cfr fail\n");++gb;}
+	unsigned obC[0x40]={0}, obD[0x40]={0}; obC[0x50/4]=0x400; obD[0x50/4]=0x100;
+	void* pC=&obC[0]; void* pD=&obD[0];
+	unsigned pmd1=pmd(&pC,&pD);
+	// (0x400 & 0x1ff) - (0x100 & 0x1ff) = 0 - 0x100 = -256
+	if(pmd1 != static_cast<unsigned>(0 - 256)){fprintf(stderr,"pmd fail %08x\n",pmd1);++gb;}
+	printf("triplecopy candidate failures=%u provisional=1\n", gb);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
