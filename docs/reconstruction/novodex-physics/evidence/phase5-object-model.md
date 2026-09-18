@@ -2731,11 +2731,22 @@ failures=0):
 - 001012 (0x225d0, ret 8): zero *[esp+4], returns false;
 - 001439 (0x2a610): zero word +0/+2 and dword +4;
 - 005328 (0xe82a0): set [this]=vptr 0x1011ba40 and [this+0x38]=0xffffffff.
-All 4 move to `reconstructed` with static + dynamic proof. Note: 004081/
-004805 write to static .data globals whose in-process read-back is
-relocation-fragile, so they were NOT closed here (kept discovered until a
-clean global side-effect proof). Independent (non-family) rows. No gate,
+All 4 move to `reconstructed` with static + dynamic proof. The two static-
+.data writers, 004081/004805, were NOT closed here (their in-process
+read-back initially seemed relocation-fragile); they close in 3z52 with a
+clean sentinel-and-read-back proof. Independent (non-family) rows. No gate,
 coverage-floor, or policy change.
+
+## 3z52. Global-write rows close (004081/004805)
+
+Round 37 drove the two static-.data writers with a clean sentinel-and-
+read-back probe (build/r37c.log globalwrite failures=0):
+- 004081 (0x95c90): stores [this+0x20] into .data[0x10127180];
+- 004805 (0xb4020): stores the arg ADDRESS into .data[0x1012845c] and
+  returns 1 -- the earlier read-back "mismatch" was a test bug (it compared
+  the value instead of the stored pointer).
+Both move to `reconstructed` with static + dynamic proof. Independent
+(non-family) rows. No gate, coverage-floor, or policy change.
 
 ## 6. What this task did not do
 
