@@ -4135,6 +4135,36 @@ int wmain(int argc, wchar_t** argv)
 	printf("xaccum candidate failures=%u provisional=1\n", xaf);
 	}
 
+	// -- Flag-based pointer-select row (004903, 0xb5770): returns one of a
+	//   set of static table pointers from [this+0x84]/[this+4]/[this+0x8c].
+	{
+	typedef unsigned (__thiscall* FlagSelOracle)(void*);
+	FlagSelOracle fso = reinterpret_cast<FlagSelOracle>(base + 0xb5770);
+	unsigned fsf = 0;
+	{
+	unsigned char fr1[0x100]; memset(fr1,0,sizeof(fr1));
+	float v1=1.0f; memcpy(fr1+0x84,&v1,4); // ordered > 0 -> skip the fcomp return
+	unsigned b1=2u; memcpy(fr1+4,&b1,4); fr1[0x8c]=0x00;
+	// edx=2 nonzero; al&1 = 0 -> not jne -> return 0x1011b6ec
+	if(fso(fr1)!=0x1011b6ecu){fprintf(stderr,"fs1 fail %08x\n",fso(fr1));++fsf;}
+	}
+	{
+	unsigned char fr2[0x100]; memset(fr2,0,sizeof(fr2));
+	float v2=1.0f; memcpy(fr2+0x84,&v2,4);
+	unsigned b2=0x10u; memcpy(fr2+4,&b2,4); fr2[0x8c]=0x00;
+	// edx=0 and cl=0 -> L5: al&0x10 = 0x10 -> return 0x1011b638
+	if(fso(fr2)!=0x1011b638u){fprintf(stderr,"fs2 fail %08x\n",fso(fr2));++fsf;}
+	}
+	{
+	unsigned char fr3[0x100]; memset(fr3,0,sizeof(fr3));
+	float v3=1.0f; memcpy(fr3+0x84,&v3,4);
+	unsigned b3=0u; memcpy(fr3+4,&b3,4); fr3[0x8c]=0x00;
+	// L5 with al bit4 clear (0) -> returns 0
+	if(fso(fr3)!=0u){fprintf(stderr,"fs3 fail %08x\n",fso(fr3));++fsf;}
+	}
+	printf("flagsel candidate failures=%u provisional=1\n", fsf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
