@@ -4083,6 +4083,36 @@ int wmain(int argc, wchar_t** argv)
 	printf("builder4 candidate failures=%u provisional=1\n", bdf);
 	}
 
+	// -- Mark-degenerate loop (004091, 0x95d60): for i in [base, base+delta),
+	//   OR 0x20 into array[slot(i) + 0xc] where array = [*[this+0x30] + 0x5b8]
+	//   and slot stride is 0x50.
+	{
+	typedef void (__thiscall* MarkDegOracle)(void*);
+	MarkDegOracle md = reinterpret_cast<MarkDegOracle>(base + 0x95d60);
+	unsigned mdf = 0;
+	unsigned char inner[0x1000]; memset(inner, 0, sizeof(inner));	// the +0x30 target
+	unsigned char* cmpObj = inner + 0x200;						// the object [this+0x30] points to
+	unsigned char* arr = inner + 0x800;							// [*target + 0x5b8] points here
+	*(void**)(cmpObj + 0x5b8) = arr;							// target[0x5b8] -> array
+	unsigned char mdck[0x200]; memset(mdck, 0x00, sizeof(mdck));
+	*(void**)(mdck+0x30) = cmpObj;								// [this+0x30] -> obj
+	unsigned base=1, delta=3; memcpy(mdck+0x160,&base,4); memcpy(mdck+0x164,&delta,4);
+	// pre-mark base+2 with 0x10 to verify OR (0x10|0x20=0x30)
+	unsigned pre=0x10; memcpy(arr + 2*0x50 + 0xc, &pre, 4);
+	md(mdck);
+	unsigned f0=0, f1=0, f2=0;
+	memcpy(&f0, arr + 1*0x50 + 0xc, 4);
+	memcpy(&f1, arr + 2*0x50 + 0xc, 4);
+	memcpy(&f2, arr + 3*0x50 + 0xc, 4);
+	if(f0!=0x20u){fprintf(stderr,"md0 fail %08x\n",f0);++mdf;}
+	if(f1!=0x30u){fprintf(stderr,"md1 fail %08x\n",f1);++mdf;}
+	if(f2!=0x20u){fprintf(stderr,"md2 fail %08x\n",f2);++mdf;}
+	// outside range untouched
+	unsigned other=0; memcpy(&other, arr + 4*0x50 + 0xc, 4);
+	if(other!=0){fprintf(stderr,"md out fail\n");++mdf;}
+	printf("markdeg candidate failures=%u provisional=1\n", mdf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
