@@ -4347,6 +4347,27 @@ int wmain(int argc, wchar_t** argv)
 	printf("nestlookup candidate failures=%u provisional=1\n", nlf);
 	}
 
+	// -- Jump-table switch rows: 002202 (0x546b0) and 002208 (0x547b0),
+	//   both ret 8. When [esp+4]!=0 or [esp+8]>4 -> 0; else case 0..4.
+	{
+	typedef unsigned (__thiscall* SwitchOracle)(void*, unsigned, unsigned);
+	SwitchOracle sw22 = reinterpret_cast<SwitchOracle>(base + 0x546b0);
+	SwitchOracle sw28 = reinterpret_cast<SwitchOracle>(base + 0x547b0);
+	unsigned swf = 0;
+	unsigned char swb[0x100]; memset(swb,0,sizeof(swb));
+	unsigned a0=5; memcpy(swb+0xa0,&a0,4);
+	// 002202: cases {4,1,1,[a0]!=0,[a0]?4:0} for key 0..4
+	unsigned e22[] = {4,1,1,1,4};	// [a0]=5 nonzero
+	if(sw22(swb, 0u, 0u)!=e22[0]||sw22(swb,0u,1u)!=e22[1]||sw22(swb,0u,2u)!=e22[2]||sw22(swb,0u,3u)!=e22[3]||sw22(swb,0u,4u)!=e22[4]){fprintf(stderr,"sw22 case fail\n");++swf;}
+	if(sw22(swb, 0u, 5u)!=0u){fprintf(stderr,"sw22 oob fail\n");++swf;}
+	if(sw22(swb, 1u, 0u)!=0u){fprintf(stderr,"sw22 first fail\n");++swf;}
+	// 002208: cases {0xc,0xc,0xc,[a0]?0xc:0,0} for key 0..4; [a0]=5
+	unsigned e28[] = {0xc,0xc,0xc,0xc,0};
+	if(sw28(swb, 0u, 0u)!=e28[0]||sw28(swb,0u,1u)!=e28[1]||sw28(swb,0u,2u)!=e28[2]||sw28(swb,0u,3u)!=e28[3]||sw28(swb,0u,4u)!=e28[4]){fprintf(stderr,"sw28 case fail\n");++swf;}
+	if(sw28(swb, 0u, 5u)!=0u){fprintf(stderr,"sw28 oob fail\n");++swf;}
+	printf("switch candidate failures=%u provisional=1\n", swf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
