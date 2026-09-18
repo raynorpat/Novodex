@@ -4216,6 +4216,30 @@ int wmain(int argc, wchar_t** argv)
 	printf("compact decisions failure=%u provisional=1\n", zf2);
 	}
 
+	// -- Neg-diff (002687, 0x662e0) and conditional bit-sum (001457, 0x2ad30).
+	{
+	typedef int (__cdecl* NegDiffOracle)(void**, void**);
+	NegDiffOracle nd = reinterpret_cast<NegDiffOracle>(base + 0x662e0);
+	typedef unsigned (__thiscall* BitSumOracle)(void*);
+	BitSumOracle bs2 = reinterpret_cast<BitSumOracle>(base + 0x2ad30);
+	unsigned dbf = 0;
+	// 002687: a = (*ea)[0x48] or negate (*ea)[0x4c] if 0; same b; return a-b
+	unsigned ca[0x60]={0}, cb[0x60]={0};
+	ca[0x48/4]=0xA0u; cb[0x48/4]=0x20u;
+	void* pa=ca; void* pb=cb;
+	if(nd(&pa,&pb)!=0x80){fprintf(stderr,"nd0 fail %d\n",nd(&pa,&pb));++dbf;}
+	// a[0x48]=0 -> use neg a[0x4c]=0x5 -> -5 ; b[0x48]=0x20 -> 0x20 ; result -5-0x20
+	unsigned moc=0x5u; ca[0x48/4]=0; ca[0x4c/4]=moc; cb[0x48/4]=0x20;
+	if(nd(&pa,&pb)!=-5-0x20){fprintf(stderr,"nd1 fail %d\n",nd(&pa,&pb));++dbf;}
+	// 001457: if [this+8]!=0 add ([this+4]*6 to eax); if [this+0x10]!=0 add ([this+0xc]*12)
+	unsigned char dbs[0x20]; memset(dbs,0,sizeof(dbs));
+	unsigned sd=3, v8=1; memcpy(dbs+4,&sd,4); memcpy(dbs+8,&v8,4);
+	unsigned sc=4, v10=1; memcpy(dbs+0xc,&sc,4); memcpy(dbs+0x10,&v10,4);
+	// [this+4]=3 -> x3? lea eax,[eax+eax*2]; shl 1 -> x6 = 18; [this+0xc]=4 -> ecx*3 then *4 = 48
+	if(bs2(dbs)!=18u+48u){fprintf(stderr,"bs2 fail %u\n",bs2(dbs));++dbf;}
+	printf("negdiff candidate failures=%u provisional=1\n", dbf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
