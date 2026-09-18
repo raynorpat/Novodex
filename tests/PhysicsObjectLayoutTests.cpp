@@ -4325,6 +4325,28 @@ int wmain(int argc, wchar_t** argv)
 	printf("lookupfield candidate failures=%u provisional=1\n", l2f);
 	}
 
+	// -- Nested indexed deref (001962, 0x4bee0, ret 4): table =
+	//   [this + [this+0x70]*4 + 0x1c]; then returns *( *(table+0x18 +
+	//   [table+4]*4)[idx] ) + 4.
+	{
+	typedef unsigned (__thiscall* NestLookupOracle)(void*, unsigned);
+	NestLookupOracle nl = reinterpret_cast<NestLookupOracle>(base + 0x4bee0);
+	unsigned nlf = 0;
+	unsigned char nbase[0x100]; memset(nbase,0,sizeof(nbase));
+	// [this+0x1c] array; [this+0x70]=0 so table = *[this+0x1c]
+	unsigned char* tbl = nbase + 0x40;
+	*(void**)(nbase+0x1c) = tbl;
+	const unsigned idx0=0; memcpy(nbase+0x70,&idx0,4);
+	// inner table: [tbl+4]=sub, [tbl+0x18]=base, slots at base+sub*4
+	unsigned sub=1; memcpy(tbl+4,&sub,4);
+	unsigned char* oxt = nbase + 0x48; memcpy(tbl+0x18,&oxt,4);
+	unsigned char* slotArr = oxt + sub*4;			// oxt(0x48)+4 = nbase+0x4c
+	unsigned char obj7[8]; unsigned f7=0xBEEFu; memcpy(obj7+4,&f7,4);
+	*(unsigned*)(slotArr+0) = (unsigned)(size_t)obj7;
+	if(nl(nbase, 0)!=0xBEEFu){fprintf(stderr,"nl fail %u\n",nl(nbase,0));++nlf;}
+	printf("nestlookup candidate failures=%u provisional=1\n", nlf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
