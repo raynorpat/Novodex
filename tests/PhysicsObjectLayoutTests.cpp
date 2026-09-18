@@ -4620,6 +4620,29 @@ int wmain(int argc, wchar_t** argv)
 	printf("zerowrap candidate failures=%u provisional=1\n", zwf);
 	}
 
+	// -- vptr+zero wrapper (001409, 0x29750): vptr 0x1010767c, zero +4..0x48
+	//   and +0x64..0x7c.
+	{
+	typedef void* (__thiscall* VZOracle)(void*);
+	VZOracle vz = reinterpret_cast<VZOracle>(base + 0x29750);
+	unsigned vzf = 0;
+	for(unsigned tmp = 0; tmp < 6; ++tmp)
+		{
+		unsigned o[0x40], c[0x40];
+		for(unsigned w = 0; w < 0x40; ++w) o[w] = c[w] = 0x7d000000u + w;
+		vz(o);
+		reinterpret_cast<BoxShape*>(c)->nxWrap1409();
+		if(memcmp(o, c, 0x80) != 0)
+			{
+			fprintf(stderr,"vz fail tmp=%u\n", tmp);
+			for(int w = 0; w < 0x20; ++w) if(o[w]!=c[w])
+				fprintf(stderr,"  w%u o=%08x c=%08x\n", w, o[w], c[w]);
+			++vzf;
+			}
+		}
+	printf("vzwrap candidate failures=%u provisional=1\n", vzf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
