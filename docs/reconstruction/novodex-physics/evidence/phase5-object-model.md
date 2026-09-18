@@ -2526,6 +2526,24 @@ instruction listing -- is NOT separately transcribed or census-registered.
 phys_fn_000951 STAYS `discovered` pending the family unit-close (Task 4);
 no census, coverage-floor, or gate-policy change.
 
+## 3z38. Slot-6 owner-update is scene-coupled; not isolatable in this harness
+
+Round 23 attempted to drive BOX slot 6 (phys_fn_001315, owner-update) from a
+provisional decode: with an owner (this+4) present, a nonzero flags byte, and
+the owner's scene-slot ([owner+4]+0x540) differing from [this+8], the row
+copies pose0 (this+0xc) into pose2 (this+0x3c) and stamps [this+8]. A
+controlled fixture with a fake owner/scene (sceneBlk, [scene+8]=0 to skip the
+inertial-transform arm) built clean but the ORACLE slot-6 terminated with
+0xC0000409 (stack-buffer-overrun across the scene walk after the pose-sync):
+the post-sync path (0x266fe onwards) dereferences scene/owner transforms that
+a flat fake blob cannot satisfy. The probe was REVERTED (tree clean, gate
+green except the intentional family RED). Conclusion: slot-6's full body is
+scene/simulation-coupled and belongs with the Task-7 scene machinery, not the
+object-model harness; only the pose-sync slice (source 0x266d8..0x266fb) is
+candidate-transcribable in isolation, and that alone does not close the row.
+phys_fn_001315 STAYS `discovered`. This is a scoping boundary, not a
+regression: no implementation, census, coverage, or gate change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
