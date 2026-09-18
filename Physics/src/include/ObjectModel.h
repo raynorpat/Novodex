@@ -395,6 +395,10 @@ class BoxShape
 	//! 001455 sub-ctor) and +0x64..0x7c; returns this.
 	void*				nxWrap1409();
 
+	//! phys_fn_000240 (0xb7c0): returns [slot + 0x6cc] where slot is the
+	//! index into the container at [this+4] (000450 bounds-commit inlined).
+	unsigned			nxWrap240(unsigned index);
+
 	//! phys_fn_000931 (0x00020490): write out[0..2] translation, then
 	//! out[6..14] rotation with a forward word copy, then out[3..5] dims.
 	//! Source ranges +0x30, +0x0c, +0xe4; aliasing preserves that order.

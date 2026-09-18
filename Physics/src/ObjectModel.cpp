@@ -2445,6 +2445,25 @@ void* BoxShape::nxWrap1409()
 	return this;
 	}
 
+// phys_fn_000240 (0xb7c0): out = [*container + index*4] if
+//   index < ([container+0xc] - [container+8])>>2 else 0; return [out + 0x6cc].
+unsigned BoxShape::nxWrap240(unsigned index)
+	{
+	void* container = *reinterpret_cast<void**>(
+		reinterpret_cast<unsigned char*>(this) + 4);
+	const unsigned char* base = reinterpret_cast<const unsigned char*>(container);
+	unsigned lo, hi;
+	memcpy(&hi, base + 8, 4); memcpy(&lo, base + 0xc, 4);
+	signed delta = static_cast<signed>(lo - hi) >> 2;
+	unsigned char* hb = reinterpret_cast<unsigned char*>(static_cast<size_t>(hi));
+	unsigned char* slot;
+	if(index >= static_cast<unsigned>(delta))
+		slot = nullptr;
+	else
+		slot = *reinterpret_cast<unsigned char**>(hb + index*4);
+	return *reinterpret_cast<unsigned*>(slot + 0x6cc);
+	}
+
 // phys_fn_000849 (0x0001c8c0), __thiscall ret 0xc, helper of BOX slot 4.
 // Pose support is provisional: centered boxes and the driven finite poses;
 // general x87 staging, exceptional inputs and payload aliasing remain open.
