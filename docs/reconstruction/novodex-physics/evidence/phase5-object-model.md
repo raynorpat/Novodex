@@ -2958,6 +2958,20 @@ failures=0):
 Both move to `reconstructed`. Independent (non-family) rows. No gate,
 coverage-floor, or policy change.
 
+## 3z72. Strict-this pure-store closure stream complete
+
+Rounds 25-55 closed ~194 real census rows via differential verification,
+culminating in 303 reconstructed functions in the census (from 275 at the
+start of this campaign series). The strict-thiscall pure-store/getter/
+template-init cluster is now EXHAUSTED: a scan requiring only `mov [this+X]`
+stores, no stack-arg reads, no calls/jumps/loops finds just one remaining
+row (004091), which is a loop-based marker. The remaining discovered rows
+need either loop fixtures, upstream stack-arg conventions, or x87 compare
+semantics (e.g., 003514/004091/002505/005145) -- each focused per-row
+fixture work rather than the batch pattern used for the mechanical rows.
+These are NOT cleanly batchable; the family RED on the Task-4 actor tables
+is unchanged. Coverage floor (126), inventory, and gate policy unchanged.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
