@@ -3947,6 +3947,51 @@ int wmain(int argc, wchar_t** argv)
 	printf("tmplinit2 candidate failures=%u provisional=1\n", ff);
 	}
 
+	// -- Conditional dot-delta row (001668, 0x32810): sum of [this]<<2 etc
+	//   gated by non-zero flags at +8/+0xc/+0x10; ret 0.
+	{
+	typedef unsigned (__thiscall* CondSumOracle)(void*);
+	CondSumOracle csum = reinterpret_cast<CondSumOracle>(base + 0x32810);
+	unsigned sf2 = 0;
+	unsigned char s2[0x20]; memset(s2, 0, sizeof(s2));
+	const unsigned v0=3, v1=5; memcpy(s2+0,&v0,4); memcpy(s2+4,&v1,4);
+	unsigned f8=1,fc=0,f10=1; memcpy(s2+8,&f8,4); memcpy(s2+0xc,&fc,4); memcpy(s2+0x10,&f10,4);
+	// flag8 -> [this]=3<<2=12; flag10 -> [this+4]=5<<2=20; sum=32
+	unsigned r = csum(s2);
+	if(r != 12u+20u){fprintf(stderr,"csum0 fail %u\n",r);++sf2;}
+	memset(s2+0xc,0,4); f8=1;fc=0;f10=0; memcpy(s2+8,&f8,4); memcpy(s2+0x10,&f10,4);
+	r = csum(s2);
+	if(r != 12u){fprintf(stderr,"csum1 fail %u\n",r);++sf2;}
+	printf("condsum candidate failures=%u provisional=1\n", sf2);
+	}
+
+	// -- Buffer reset (000505) and copy6+bit (004342).
+	{
+	typedef unsigned (__thiscall* BufResetOracle)(void*);
+	BufResetOracle br = reinterpret_cast<BufResetOracle>(base + 0x10190);
+	typedef unsigned (__thiscall* Copy6BitOracle)(void*, unsigned*);
+	Copy6BitOracle c6b = reinterpret_cast<Copy6BitOracle>(base + 0xa90c0);
+	unsigned gr = 0;
+	// 000505: [this+8] points to a buffer, [this+4]=size to zero; then
+	// [this+14]=size; returns [this+14]
+	unsigned char brb[0x40]; memset(brb, 0, sizeof(brb));
+	unsigned char brbuf[16]; memset(brbuf, 0xEE, sizeof(brbuf));
+	*(void**)(brb+8)=brbuf; unsigned sz=7; memcpy(brb+4,&sz,4);
+	unsigned full = 0xFFFFFFFFu; memcpy(brb+0x14,&full,4);	// inc wraps to 0 -> reset path
+	unsigned szret = br(brb);
+	if(szret != 7u || *(unsigned*)(brb+0x14)!=7u){fprintf(stderr,"br ret fail\n");++gr;}
+	for(int i=0;i<7;++i) if(brbuf[i]!=0){fprintf(stderr,"br zero fail %d=%02x\n",i,brbuf[i]);++gr;}
+	// 004342: copy [this+0x16c..0x17c] (6 dwords incl +0x174) to arg[0..0x14]
+	unsigned char c6b8[0x800]; memset(c6b8, 0, sizeof(c6b8));
+	#define SET6(off,i) { unsigned _v=0x60000000u+i; memcpy(c6b8+(off),&_v,4); }
+	SET6(0x16c,1); SET6(0x170,2); SET6(0x174,3); SET6(0x178,4); SET6(0x17c,5); SET6(0x180,6);
+	unsigned out6[6]={0};
+	unsigned bitret = c6b(c6b8, out6);
+	if(out6[0]!=0x60000001u||out6[5]!=0x60000006u){fprintf(stderr,"c6b copy fail\n");++gr;}
+	#undef SET6
+	printf("bufreset candidate failures=%u provisional=1\n", gr);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
