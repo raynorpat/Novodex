@@ -4643,6 +4643,33 @@ int wmain(int argc, wchar_t** argv)
 	printf("vzwrap candidate failures=%u provisional=1\n", vzf);
 	}
 
+	// -- Container-index wrapper (000240, 0xb7c0).
+	{
+	typedef unsigned (__thiscall* Wrap240Oracle)(void*, unsigned);
+	Wrap240Oracle w240 = reinterpret_cast<Wrap240Oracle>(base + 0xb7c0);
+	unsigned wf = 0;
+	// container: [+8]=buf ptr, [+0xc]=byte size; slots point to objects with
+	// +0x6cc words.
+	unsigned char ctr[0x20]; memset(ctr,0,sizeof(ctr));
+	unsigned char slots[3][0x6e0];
+	for(int s=0;s<3;++s) memset(slots[s],0,sizeof(slots[s]));
+	*(unsigned*)(slots[0]+0x6cc)=0xA1111111u;
+	*(unsigned*)(slots[1]+0x6cc)=0xB2222222u;
+	unsigned char* buf[3]; buf[0]=slots[0]; buf[1]=slots[1];
+	unsigned bufp=(unsigned)(size_t)buf; memcpy(ctr+8,&bufp,4);
+	unsigned endp=bufp+2u*4u; memcpy(ctr+0xc,&endp,4);	// end = start + size
+	unsigned char own[0x20]; memset(own,0,sizeof(own));
+	*(void**)(own+4)=ctr;
+	// index 0 -> slots[0]+0x6cc = 0xA1111111; index 1 -> 0xB2222222
+	unsigned r0 = w240(own, 0u), e0 = *(unsigned*)(slots[0]+0x6cc);
+	unsigned r1 = w240(own, 1u), e1 = *(unsigned*)(slots[1]+0x6cc);
+	if(r0!=e0 || r1!=e1)
+		{fprintf(stderr,"w240 mismatch\n");++wf;}
+	unsigned rc = reinterpret_cast<BoxShape*>(own)->nxWrap240(0u);
+	if(rc != e0){fprintf(stderr,"w240 cand mismatch\n");++wf;}
+	printf("wrap240 candidate failures=%u provisional=1\n", wf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
