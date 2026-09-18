@@ -2421,6 +2421,16 @@ void* BoxShape::nxCtorWrap575(unsigned argument)
 	return this;
 	}
 
+// phys_fn_002065 (0x51ec0): zero the first 0x34 bytes (the 001655-ish init
+// zeroes [this+0..0x20], then the 005355 sub-call zeroes [this+0x24..0x30]).
+void* BoxShape::nxWrapZero2065()
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(this);
+	for(unsigned o = 0; o <= 0x30; o += 4)
+		*(unsigned*)(p + o) = 0;
+	return this;
+	}
+
 // phys_fn_000849 (0x0001c8c0), __thiscall ret 0xc, helper of BOX slot 4.
 // Pose support is provisional: centered boxes and the driven finite poses;
 // general x87 staging, exceptional inputs and payload aliasing remain open.

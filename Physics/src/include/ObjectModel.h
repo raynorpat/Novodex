@@ -387,6 +387,10 @@ class BoxShape
 	//! vptr 0x10107890; returns this.
 	void*				nxCtorWrap575(unsigned argument);
 
+	//! phys_fn_002065 (0x51ec0): zero [this+0..0x20] then [this+0x24..0x30]
+	//! (via the 005355 sub-init); returns this.
+	void*				nxWrapZero2065();
+
 	//! phys_fn_000931 (0x00020490): write out[0..2] translation, then
 	//! out[6..14] rotation with a forward word copy, then out[3..5] dims.
 	//! Source ranges +0x30, +0x0c, +0xe4; aliasing preserves that order.
