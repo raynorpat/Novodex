@@ -3173,6 +3173,30 @@ int wmain(int argc, wchar_t** argv)
 	printf("posecopy candidate run=%u failures=%u provisional=1\n", pcRun, pcFail);
 	}
 
+	// -- Small shape getters/copies (phys_fn_000929 / 001291 / 001283):
+	// drive each oracle row against a direct candidate to confirm the exact
+	// bytes moved / pointer returned.
+	{
+	typedef void* (__thiscall* DimsGetterOracle)(void*);		// 000929 -> this+0xe4
+	DimsGetterOracle dimsG = reinterpret_cast<DimsGetterOracle>(base + 0x20480);
+	typedef void* (__thiscall* D0GetterOracle)(void*);			// 001283 -> this+0xd0
+	D0GetterOracle d0G = reinterpret_cast<D0GetterOracle>(base + 0x257b0);
+	typedef void (__thiscall* Pose3CopyOracle)(void*, void*);	// 001291: copy 36B from this+0x6c
+	Pose3CopyOracle p3c = reinterpret_cast<Pose3CopyOracle>(base + 0x25810);
+	unsigned dg2 = 0;
+	unsigned char shapeG[0x130];
+	memset(shapeG, 0xAB, sizeof(shapeG));
+	unsigned f; unsigned dg = 0xb0b0b0b0u; memcpy(shapeG+0xd0,&dg,4);
+	if(dimsG(shapeG) != shapeG + 0xe4) { fprintf(stderr,"dimsgetter fail\n"); ++dg2; }
+	// 001283 returns *this+0xd0 (the DWORD value), not the address.
+	if(d0G(shapeG) != reinterpret_cast<void*>(0xb0b0b0b0u)) { fprintf(stderr,"d0getter fail\n"); ++dg2; }
+	unsigned char out3[36]; memset(out3, 0xCD, sizeof(out3));
+	for(unsigned w=0;w<9;++w){ unsigned v=0x12345678u+w; memcpy(shapeG+0x6c+w*4,&v,4); }
+	p3c(shapeG, out3);
+	if(memcmp(out3, shapeG+0x6c, 36) != 0) { fprintf(stderr,"pose3copy fail\n"); ++dg2; }
+	printf("shapegetters candidate failures=%u provisional=1\n", dg2);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
