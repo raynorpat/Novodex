@@ -3851,6 +3851,29 @@ int wmain(int argc, wchar_t** argv)
 	printf("misc3 candidate failures=%u provisional=1\n", hf);
 	}
 
+	// -- Template-init rows: 000496 (0xfd10), 001455 (0x2ace0), 002314 (0x5a0a0).
+	{
+	typedef void (__thiscall* TmplInitOracle)(void*);
+	TmplInitOracle ti0 = reinterpret_cast<TmplInitOracle>(base + 0xfd10);
+	TmplInitOracle ti1 = reinterpret_cast<TmplInitOracle>(base + 0x2ace0);
+	TmplInitOracle ti2 = reinterpret_cast<TmplInitOracle>(base + 0x5a0a0);
+	unsigned mf = 0;
+	unsigned char t0[0x100]; memset(t0, 0xA5, sizeof(t0));
+	ti0(t0);
+	if(*(unsigned*)(t0+0xc)+*(unsigned*)(t0+0x10)+*(unsigned*)(t0+0x14)+*(unsigned*)(t0+0x1c)
+		+*(unsigned*)(t0+0x20)+*(unsigned*)(t0+0x24)!=0){fprintf(stderr,"ti0 zero fail\n");++mf;}
+	if(*(unsigned*)(t0+8)!=0x3f800000u||*(unsigned*)(t0+0x18)!=0x3f800000u||*(unsigned*)(t0+0x28)!=0x3f800000u){fprintf(stderr,"ti0 one fail\n");++mf;}
+	if(*(unsigned*)(t0+0x38)!=8u||*(int*)(t0+0x44)!=0 || *(int*)(t0+0x40)!=0){fprintf(stderr,"ti0 tail fail\n");++mf;}
+	unsigned char t1[0x80]; memset(t1, 0xA5, sizeof(t1));
+	ti1(t1);
+	if(*(unsigned*)(t1+0)!=0x1010769cu){fprintf(stderr,"ti1 vptr fail\n");++mf;}
+	for(int k=4;k<=0x48;k+=4) if(*(unsigned*)(t1+k)!=0){fprintf(stderr,"ti1 zero fail\n");++mf;break;}
+	unsigned char t2[0x80]; memset(t2, 0xA5, sizeof(t2));
+	ti2(t2);
+	if(*(unsigned*)(t2+8)!=0x3f800000u||*(unsigned*)(t2+0x4c)+*(unsigned*)(t2+0x50)+*(unsigned*)(t2+0x54)!=0){fprintf(stderr,"ti2 fail\n");++mf;}
+	printf("tmplinit candidate failures=%u provisional=1\n", mf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
