@@ -4490,6 +4490,26 @@ int wmain(int argc, wchar_t** argv)
 	printf("delimscan candidate failures=%u provisional=1\n", dsf);
 	}
 
+	// -- Big ctor (003257, 0x7e370, ret 4): sets vptr, stores the arg, zeros
+	//   several words, and rep-stosd zeroes 0x1000 dwords at [+0x34].
+	{
+	typedef void* (__thiscall* BigInitOracle)(void*, unsigned);
+	BigInitOracle big = reinterpret_cast<BigInitOracle>(base + 0x7e370);
+	unsigned bif = 0;
+	unsigned char bb[0x1000*4 + 0x200]; memset(bb, 0xA5, sizeof(bb));
+	const unsigned argVal = 0x5A5Au;
+	void* r = big(bb, argVal);
+	if(r != bb){fprintf(stderr,"big ret fail\n");++bif;}
+	if(*(unsigned*)(bb+0)!=0x10113614u){fprintf(stderr,"big vptr fail\n");++bif;}
+	if(*(unsigned*)(bb+0x4048)!=argVal){fprintf(stderr,"big arg fail\n");++bif;}
+	if(*(unsigned*)(bb+0xc)+*(unsigned*)(bb+8)+*(unsigned*)(bb+0x24)+*(unsigned*)(bb+0x28)
+		+*(unsigned*)(bb+0x2c)+*(unsigned*)(bb+0x30)+*(unsigned*)(bb+0x4044)+*(unsigned*)(bb+0x4038)
+		+*(unsigned*)(bb+0x4034)+*(unsigned*)(bb+0x403c)+*(unsigned*)(bb+0x404c)+*(unsigned*)(bb+0x4050)!=0){fprintf(stderr,"big zero fail\n");++bif;}
+	// rep stosd zeroed [+0x34, +0x34+0x4000): sample at +0x34 and +0x34+0x3ffc
+	if(*(unsigned*)(bb+0x34)!=0 || *(unsigned*)(bb+0x34+0x3ffc)!=0){fprintf(stderr,"big stosd fail\n");++bif;}
+	printf("biginit candidate failures=%u provisional=1\n", bif);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
