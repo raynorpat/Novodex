@@ -2678,6 +2678,17 @@ simplegetters failures=0):
 All five move to `reconstructed` with static + dynamic proof. Independent
 (non-family) rows. No gate, coverage-floor, or policy change.
 
+## 3z47. Batch of 11 field/pointer/arith getters close
+
+Round 32 drove 11 self-contained getters (build/r32.log batchgetters
+failures=0):
+- field returns: 000287(+0x24), 000523(+0x3c), 000547/551/555(+0x6ac/6b0/
+  6b4), 003952(+0x14), 004290(+0x1d0);
+- pointer returns: 002334(lea this+0x28), 003661(lea this+8);
+- arithmetic: 005604(([this+4]<<5)+8), 005622(([this+4]+2)<<4).
+All 11 move to `reconstructed` with static + dynamic proof. Independent
+(non-family) rows. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
