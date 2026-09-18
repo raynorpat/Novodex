@@ -4453,6 +4453,32 @@ int wmain(int argc, wchar_t** argv)
 	printf("chaincopy candidate failures=%u provisional=1\n", cgf);
 	}
 
+	// -- List-index peek (003300, 0x7f0a0, ret 0): [esp+4]=list;
+	//   returns the slot data selected by [list] and the slot ref count.
+	{
+	typedef unsigned (__cdecl* ListPeekOracle)(void*);
+	ListPeekOracle lpk = reinterpret_cast<ListPeekOracle>(base + 0x7f0a0);
+	unsigned lpf = 0;
+	// case A: [list]=0 (index 0); slot0 = [list+4]=? ; [list+8]=0 -> slot[+4]=0
+	//   -> eax=[list] -> return 0
+	{
+	unsigned lst[8]={0};
+	if(lpk(lst)!=0u){fprintf(stderr,"lpkA fail %u\n",lpk(lst));++lpf;}
+	}
+	// case B: [list]=1, [list+8]=refcount=2 -> slot at list+1*4; ecx=[list+8]=2
+	//   >1 -> eax=[list + 2*4 - 4]=[list+4]; return [list+4]
+	{
+	unsigned lst[16]={0}; lst[0]=1; lst[2]=2; lst[1]=0x1234;
+	if(lpk(lst)!=0x1234u){fprintf(stderr,"lpkB fail %u\n",lpk(lst));++lpf;}
+	}
+	// case C: [list]=1, [list+8]=1 (refcount 1) -> cmp le -> return 0
+	{
+	unsigned lst[16]={0}; lst[0]=1; lst[1]=0xAAAA; lst[2]=1;
+	if(lpk(lst)!=0u){fprintf(stderr,"lpkC fail %u\n",lpk(lst));++lpf;}
+	}
+	printf("listpeek candidate failures=%u provisional=1\n", lpf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
