@@ -393,6 +393,13 @@ class BoxShape
 	void* nxBoxRaycast(const float* ray, float maxDistance,
 		unsigned reserved, unsigned flags, void* hit) const;
 
+	//! phys_fn_000951 (BOX slot 7, 0x20b20, ret 8): swept-AABB entry.
+	//! `out` (arg1) is written on a hit; `swept` (arg2) is a per-axis swept
+	//! field array whose elements [0],[1],[2] drive the result: out[0] =
+	//! |col_k dot H| / swept[k] (the box-face entry parameter). PROVISIONAL
+	//! transcription; NOT differentially closed yet; stays discovered.
+	bool nxBoxSweep(void* out, const float* swept) const;
+
 	//! BOX-table slot 10, phys_fn_000937 (0x00020670): writes the pose-one
 	//! translation (+0x30/+0x34/+0x38) to out[0..2] and a sqrt-of-squared-
 	//! dims value to out[3]. The x87 association of the sum is unestablished

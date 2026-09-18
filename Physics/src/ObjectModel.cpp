@@ -399,6 +399,42 @@ void* BoxShape::nxBoxRaycast(const float* ray, float maxDistance,
 	return const_cast<BoxShape*>(this);		// 0x00020b0e: eax = this
 	}
 
+// phys_fn_000951 (BOX slot 7) -- swept-AABB entry parameter. PROVISIONAL:
+// transcribed per the 3z36 verified model (out0 = min over valid axes of
+// |col_k . H| / swept[k]), NOT yet differentially closed. phys_fn_000951
+// stays `discovered`.
+bool BoxShape::nxBoxSweep(void* out, const float* swept) const
+	{
+	const NxF32* R = reinterpret_cast<const NxF32*>(mBase.mPose0C.mRotation);
+	const NxF32* H = mHull.mDims04;
+	float tmin = 3.4028235e38f;
+	bool any = false;
+	for(unsigned k = 0; k < 3; ++k)
+		{
+		// x87 stores the face projection to m32 (fstp), so the arithmetic
+		// is single-precision: (Rk0*H0 + Rk1*H1 + Rk2*H2) then /swept[k].
+		const float colDotH = R[3*k+0]*H[0] + R[3*k+1]*H[1] + R[3*k+2]*H[2];
+		const float s = swept[k];
+		// Valid swept: non-zero normal finite value (3z36). Degenerate
+		// (0/subnormal/FLT_MAX here) -> axis rejected.
+		unsigned sw; memcpy(&sw, &s, 4);
+		if(sw == 0 || sw == 0x7f7fffffu || sw == 0xff7fffffu)
+			continue;
+		// Entry parameter uses the swept MAGNITUDE (negative swept still
+		// gives a positive entry) with the reciprocal-forced rounding:
+		// |col_k.H| * |1.0/swept[k]|. Pin: sh0/p0/sw{-3,-2,-1} -> 0.5.
+		volatile float recip = 1.0f / (s < 0.0f ? -s : s);
+		const float t = (colDotH < 0.0f ? -colDotH : colDotH) * recip;
+		any = true;
+		if(t < tmin)
+			tmin = t;
+		}
+	if(!any)
+		return false;
+	*static_cast<float*>(out) = tmin;
+	return true;
+	}
+
 // Candidate guard bindings: the candidate reads the SAME live storage the
 // drive mutates (oracle .data via the rendercap driver), not its own copy.
 static float* g_nxGuardA = nullptr;		// 0x10123bc8
