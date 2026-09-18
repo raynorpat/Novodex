@@ -4113,6 +4113,28 @@ int wmain(int argc, wchar_t** argv)
 	printf("markdeg candidate failures=%u provisional=1\n", mdf);
 	}
 
+	// -- x87 accumulate row (004087, 0x95cc0, ret 0xc): scale = a/b,
+	//   accumulate scale*vec into [this+0x154/0x158/0x15c].
+	{
+	typedef void (__thiscall* XAccumOracle)(void*, float, const float*, float);
+	XAccumOracle xa = reinterpret_cast<XAccumOracle>(base + 0x95cc0);
+	unsigned xaf = 0;
+	unsigned char xb[0x180]; memset(xb, 0, sizeof(xb));
+	float iv[3] = { 2.0f, 3.0f, 4.0f };
+	float stale[3]={0.5f,0.5f,0.5f};
+	memcpy(xb+0x154,stale+0,4); memcpy(xb+0x158,stale+1,4); memcpy(xb+0x15c,stale+2,4);
+	xa(xb, 1.5f, iv, 1.0f);	// scale = 1.5/1.0
+	float p154, p158, p15c;
+	memcpy(&p154,xb+0x154,4); memcpy(&p158,xb+0x158,4); memcpy(&p15c,xb+0x15c,4);
+	float e154 = 0.5f + 1.5f*2.0f;	// 0.5 + 3 = 3.5
+	float e158 = 0.5f + 1.5f*3.0f;	// 0.5 + 4.5 = 5.0
+	float e15c = 0.5f + 1.5f*4.0f;	// 0.5 + 6 = 6.5
+	if(p154!=e154){fprintf(stderr,"xa154 fail %f/%f\n",(double)p154,(double)e154);++xaf;}
+	if(p158!=e158){fprintf(stderr,"xa158 fail %f/%f\n",(double)p158,(double)e158);++xaf;}
+	if(p15c!=e15c){fprintf(stderr,"xa15c fail %f/%f\n",(double)p15c,(double)e15c);++xaf;}
+	printf("xaccum candidate failures=%u provisional=1\n", xaf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
