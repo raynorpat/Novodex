@@ -3301,6 +3301,15 @@ fault under isolation. These rows are recorded `discovered`; the probes were
 fully reverted and the gate is green-except-family. No gate, coverage-floor,
 or policy change.
 
+## 3z108. rep-movsd structured copies close (001299/003425/003427/003567)
+
+Round 92 drove four stack-frame-free rep-movsd copies (build/r92.log
+repcopy failures=0): 001299 (9 dwords [this+0x6c] -> out), 003425 (11 dwords
+[this+0x28] -> out), 003427 (11 dwords arg -> [this+0x28]), 003567 (9 dwords
+[this+0x18] -> out). These use only register saves (push esi/edi) without
+frame adjustment, so they isolated cleanly (matching the round-90 pattern).
+All 4 move to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
