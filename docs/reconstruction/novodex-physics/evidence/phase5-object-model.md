@@ -3224,7 +3224,13 @@ nxWrapZero2065 and verified byte-exact against the oracle across 10 fills
 (build/r83.log zerowrap failures=0). 002065 moves to `reconstructed`. No
 gate, coverage-floor, or policy change.
 
-## 6. What this task did not do
+## 3z100. vptr+zero wrapper row closes (001409)
+
+Round 84 drove the 001455-based vptr ctor wrapper (build/r84.log vzwrap
+failures=0): 001409 (0x29750, ret 0) zeroes +4..0x48 (the 001455 sub-ctor)
+and +0x64..0x7c, installs vptr 0x1010767c, and returns this. Added candidate
+nxWrap1409 and verified byte-exact across 6 fills. 001409 moves to
+`reconstructed`. No gate, coverage-floor, or policy change.
 
 - No behavioural reconstruction: every row here stays `discovered` until a
   differential drives it.
