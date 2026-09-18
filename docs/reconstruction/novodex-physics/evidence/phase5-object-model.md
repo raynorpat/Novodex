@@ -2905,6 +2905,15 @@ boundedpush failures=0):
 Both move to `reconstructed`. Independent (non-family) rows. No gate,
 coverage-floor, or policy change.
 
+## 3z67. Template-init rows batch 2 (005360/003983/003989/000499)
+
+Round 51 drove four more self-contained template-init rows (build/r51.log
+tmplinit2 failures=0): 005360 (0xe9060), 003983 (0x8fc00), 003989
+(0x8fd00), 000499 (0xfec0) -- each a parameterized object template with a
+vptr/float-identity/zero pattern verified by sentinel checks. All 4 move to
+`reconstructed`. Independent (non-family) rows. No gate, coverage-floor, or
+policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
