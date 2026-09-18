@@ -2981,6 +2981,15 @@ array[slot*0x50 + 0xc] for a [base, base+count) range, where array =
 OR-merge (0x10->0x30) and that slots outside the range stay untouched.
 004091 moves to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z74. x87 scale-and-accumulate row closes (004087)
+
+Round 58 drove an x87 arithmetic row (build/r58b.log xaccum failures=0):
+004087 (0x95cc0, ret 0xc) computes scale = a/b and accumulates
+[this+0x154/0x158/0x15c] += scale * vec[0/1/2]. The fxch/st() ordering is
+exactly a component-wise scaled accumulate (verified against a stale-init
+0.5 + scale*2/3/4 fixture). 004087 moves to `reconstructed`. No gate,
+coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
