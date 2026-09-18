@@ -2929,6 +2929,14 @@ resisted a clean thiscall fixture, so it was NOT closed (left for a focused
 decode). Independent (non-family) rows. No gate, coverage-floor, or policy
 change.
 
+## 3z69. Template/FLT-MAX bbox-init rows close (003987/003985/002148)
+
+Round 53 drove three sentinel/template inits (build/r53.log tmplfm
+failures=0): 003987 (0x8fcb0), 003985 (0x8fc50, identity + FLT_MAX at
++0x58/+0x5c and +0x68=2), 002148 (0x53810, bbox FLT_MAX/FLT_MIN sentinels).
+All 3 move to `reconstructed`. Independent (non-family) rows. No gate,
+coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
