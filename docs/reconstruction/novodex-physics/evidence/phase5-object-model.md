@@ -3173,6 +3173,22 @@ mismatch). Another byte-return conversion (the oracle returns via `al`),
 and the same-vs-big fixture verifies both poles. 005145 moves to
 `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z96. Remaining-row survey and trampoline investigation
+
+Round 80 surveyed the remaining discovered set for any safe additional
+closures. The small `jmp <fixed>` trampolines (0x1d0b0, 0x1fda0, 0x235c0,
+etc., ~42 rows) were investigated as potential aliases, but most jump INTO
+larger function bodies (a loop/disassembly label at the target+0x10 or
+further), so declaring them reconstructed would misclassify them; they are
+NOT closed. The remaining non-trampoline rows are either mid-function loop
+bodies needing caller-register-state reconstruction (001542/001605/001637/
+002442/003281/003283/003285/003522/004946/005590/005610), x87 fuzzy-compare
+/accumulator fixtures (001500/002475/002505/002676/003398/005404), or
+diagonal sources such as global/reloc-sensitive rows (004072/002874). The
+safe independent closure stream is effectively exhausted; further progress
+requires Task-4 actor-table / caller-prologue reconstruction work. No gate,
+coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
