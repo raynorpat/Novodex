@@ -17106,12 +17106,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "BOX slot-4 mass wrapper (0x20850, ret 0xc)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/462",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2972",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "if [this+0xde]&7 open, call the 000849 mass helper on the facade pose/dims (this+0x6c/+0xe4) into the destination MassFrame; always returns true",
+      "dynamic_proof": "confirmed via boxslot4 differential (3z102): cases=pose4 x low8 x density2 failures=0; candidate nxBoxAccumulateMass",
       "notes": ""
     },
     {

@@ -3241,6 +3241,16 @@ Added candidate nxWrap240 and verified both index lookups byte-exact
 (build/r85.log wrap240 failures=0). 000240 moves to `reconstructed`. No
 gate, coverage-floor, or policy change.
 
+## 3z102. BOX slot-4 mass wrapper row closes (000947)
+
+000947 (0x20850, ret 0xc) was already differentially verified by the
+long-standing `boxslot4` block in the harness (oracle 0x20850 driven
+against candidate nxBoxAccumulateMass across 4 poses x 8 flag-lows x 2
+densities, failures=0); only the census marker was missing. Now recorded
+reconstructed. No gate, coverage-floor, or policy change.
+
+## 6. What this task did not do
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
