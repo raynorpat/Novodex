@@ -59085,12 +59085,12 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "big ctor (0x7e370, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1194",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/11738",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "set [this]=vptr 0x10113614; [this+0x4048]=arg; zero several words; rep stosd zero 0x1000 dwords at [this+0x34]; return this",
+      "dynamic_proof": "confirmed via biginit drive (3z91): failures=0",
       "notes": ""
     },
     {
