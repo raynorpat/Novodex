@@ -2748,6 +2748,18 @@ read-back probe (build/r37c.log globalwrite failures=0):
 Both move to `reconstructed` with static + dynamic proof. Independent
 (non-family) rows. No gate, coverage-floor, or policy change.
 
+## 3z53. Small ctor/vptr/init rows close (001373/001421/001552/002140/005355)
+
+Round 38 drove five small init/ctor rows (build/r38.log smallctor
+failures=0):
+- 001373 (0x27c10, ret 8): store [this+0xe0] to *out, return 1;
+- 001421 (0x29a10): zero [this+0x24..0x30];
+- 001552 (0x2e1f0): init vptr 0x10107848 + zero [this+4/8];
+- 002140 (0x53290, ret 4): ctor vptr 0x1010829c + [this+4]=arg;
+- 005355 (0xe8fa0): zero [this+0..0xc].
+All 5 move to `reconstructed` with static + dynamic proof. Independent
+(non-family) rows. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
