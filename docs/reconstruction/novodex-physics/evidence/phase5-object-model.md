@@ -3260,6 +3260,16 @@ The regression was fully reverted (all prior diodes pass; gate
 green-except-family). 001033 stays `discovered`. No gate, coverage-floor,
 or policy change.
 
+## 3z104. Ctor-with-link wrapper 004759 probed, non-isolatable
+
+Round 89 probed 004759 (0xb38a0, wrapper over the reconstructed 004407
+ctor-with-link): differential coverage showed the 004407 sub-ctor writes
+more of `this` than the link-only reading captured (words 2/3/4/7/8/9 get
+zeroed/filled), so a faithful candidate must reproduce 004407's full
+internal layout, which is more than an isolated wrapper drive. The probe was
+fully reverted (all prior diodes pass; gate green-except-family). 004759
+stays `discovered`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
