@@ -2847,14 +2847,30 @@ zero/data-set rows, copy/store/arith/bit rows, cursor/pop/lane init rows and
 multi-field copies -- all byte-exact against the oracle with static+dynamic
 proof, and mutation-checked where a semantic branch existed. The pure
 mov/lea/getter cluster is now EXHAUSTED: a fresh scan finds zero remaining
-discovered rows whose body is only register moves/arith/zero with no call.
-The remaining small discovered rows wrap Foundation/CRT/import or vtable
-calls (e.g., scoped-delete, std allocator, Foundation helpers) whose targets
-are not candidate-transcriped in the object-model harness, so they are NOT
-cleanly closable here without Foundation/import work. Census impact: 107
-rows moved discovered->reconstructed this campaign (plus earlier mass/sweep
-closures). Family gate remains RED on the Task-4 actor tables; coverage
-floor (126), inventory, and gate policy unchanged.
+zeros/copy/wrappers was exhausted (rounds 25-45); a thin trailing set of pure
+no-call rows (rep-movsd pose copies, clamp/LCG-on-global) was then closed in
+3z62/3z63. The remaining small discovered rows wrap Foundation/CRT/import or
+vtable calls whose targets are not candidate-transcriped in the object-model
+harness, so they are NOT cleanly closable here without Foundation/import
+work. Census impact: 107 rows in the main campaign + 6 more in rounds 46-47
+(plus earlier mass/sweep closures). Family gate remains RED on the Task-4
+actor tables; coverage floor (126), inventory, and gate policy unchanged.
+
+## 3z62. rep-movsd pose-copy rows close (001289/001295/001301/003563)
+
+Round 47 closed four `rep movsd 9` pose-copy rows (9 dwords + 3 translation
+dwords from a fixed this-offset to the out arg, ret 4) byte-exact
+(build/r47.log posecopy2 failures=0): 001289 (+0x6c), 001295 (+0x6c),
+001301 (+0xc), 003563 (+0x18). All 4 move to `reconstructed`.
+
+## 3z63. Clamp and LCG-on-global rows close (002515/002513)
+
+Two rows on the static global .data[0x10122340] closed (build/r47d.log
+clampfcg failures=0, read-back verified): 002515 clamps the arg to
+[1, 0x7ffffffe] and stores it; 002513 performs an LCG step
+`new = (r*0x41a7 - q*0xb14), add 0x7fffffff if <= 0`. Both move to
+`reconstructed`. Independent (non-family) rows. No coverage-floor or gate
+change.
 
 ## 6. What this task did not do
 
