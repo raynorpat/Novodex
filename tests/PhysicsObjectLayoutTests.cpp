@@ -4752,6 +4752,42 @@ int wmain(int argc, wchar_t** argv)
 	printf("smallflag2 candidate failures=%u provisional=1\n", sf2);
 	}
 
+	// -- rep-movsd structured copies (001299/003425/003427/003567) and the
+	//   x87 control-word read (000537).
+	{
+	typedef void (__thiscall* RepCopyOracle)(void*, unsigned*);
+	RepCopyOracle rc_6c = reinterpret_cast<RepCopyOracle>(base + 0x258a0);
+	RepCopyOracle rc_28 = reinterpret_cast<RepCopyOracle>(base + 0x84d10);
+	RepCopyOracle rc_18 = reinterpret_cast<RepCopyOracle>(base + 0x87e70);
+	RepCopyOracle rc_in = reinterpret_cast<RepCopyOracle>(base + 0x84d30);
+	unsigned spf = 0;
+	unsigned char sc[0x100]; memset(sc, 0, sizeof(sc));
+	for(unsigned w = 0; w < 12; ++w) *(unsigned*)(sc + 0x6c + w*4) = 0x11000000u + w;
+	for(unsigned w = 0; w < 12; ++w) *(unsigned*)(sc + 0x28 + w*4) = 0x13000000u + w;
+	for(unsigned w = 0; w < 12; ++w) *(unsigned*)(sc + 0x18 + w*4) = 0x14000000u + w;
+	unsigned out6c[12]; memset(out6c,0,sizeof(out6c));
+	rc_6c(sc, out6c);
+	for(unsigned i = 0; i < 9; ++i)
+		if(out6c[i] != 0x11000000u + i){fprintf(stderr,"rc_6c fail %u\n",i);++spf;}
+	// 003425: 11 dwords from [this+0x28]
+	unsigned out28[12]; memset(out28,0,sizeof(out28));
+	rc_28(sc, out28);
+	for(unsigned i = 0; i < 11; ++i)
+		if(out28[i] != *(unsigned*)(sc + 0x28 + i*4)){fprintf(stderr,"rc_28 fail %u\n",i);++spf;}
+	// 003567: 9 dwords from [this+0x18]
+	unsigned out18[12]; memset(out18,0,sizeof(out18));
+	rc_18(sc, out18);
+	for(unsigned i = 0; i < 9; ++i)
+		if(out18[i] != *(unsigned*)(sc + 0x18 + i*4)){fprintf(stderr,"rc_18 fail %u\n",i);++spf;}
+	// 003427: 11 dwords from [esp+8] (arg) into [this+0x28]
+	unsigned in11[12]; for(unsigned i=0;i<12;++i) in11[i]=0x22000000u+i;
+	unsigned char sc27[0x100]; memset(sc27,0,sizeof(sc27));
+	rc_in(sc27, in11);
+	for(unsigned i = 0; i < 11; ++i)
+		if(*(unsigned*)(sc27 + 0x28 + i*4) != 0x22000000u + i){fprintf(stderr,"rc_in fail %u\n",i);++spf;}
+	printf("repcopy candidate failures=%u provisional=1\n", spf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
