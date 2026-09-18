@@ -2619,6 +2619,17 @@ Both are THIN compositions of already-closed helpers (000831 fold +
 drives -- evidence the mass-helper family is a coherent closed cluster. No
 gate, coverage-floor, or policy change.
 
+## 3z42. Pose-buffer copy (phys_fn_000010) closes as a pure 0x78-byte copy
+
+Round 27 drove phys_fn_000010 (@0x1390, __thiscall ret 4): a pure copy of
+0x78 bytes from [esp+4] into `this` -- `rep movsd 9` dwords (+0x00..0x23)
+then individual dword moves through +0x74. The candidate `memcpy(this,
+src, 0x78)` matches the oracle byte-exactly over 4 patterns (4/4,
+build/r27.log posecopy run=4 failures=0), including the 8-byte tail past
+0x78 staying as canary (untouched). Phase 5 -> reconstructed. This is an
+independent (non-family) closure; it is a generic pose/buffer copy the
+object-model uses. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
