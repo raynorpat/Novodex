@@ -25422,12 +25422,12 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "vptr+zero wrapper (0x29750, ret 0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/565",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3612",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "zeroes +4..0x48 (001455 sub-ctor) and +0x64..0x7c, installs vptr 0x1010767c; returns this",
+      "dynamic_proof": "confirmed via vzwrap differential (3z100): failures=0",
       "notes": ""
     },
     {
