@@ -2712,6 +2712,17 @@ Round 34 drove 10 self-contained rows (build/r34.log setget2 failures=0):
 All 10 move to `reconstructed` with static + dynamic proof. Independent
 (non-family) rows. No gate, coverage-floor, or policy change.
 
+## 3z50. Batch of 10 setter/copy/vptr/noop rows close
+
+Round 35 drove 10 self-contained rows (build/r35.log setget3 failures=0):
+- stores: 000549(+0x6b0), 000553(+0x6b4);
+- intra-object copies: 000563(59c->6bc), 000565(5a4->6c0);
+- vptr stores: 005329([this]=0x1011ba40), 001554([this]=0x10107848);
+- constant: 005202(0x101224c0);
+- bare no-ops: 004248(ret 4), 004411(ret 0xc), 005242(ret 8).
+All 10 move to `reconstructed` with static + dynamic proof. Independent
+(non-family) rows. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
