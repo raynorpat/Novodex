@@ -3820,6 +3820,37 @@ int wmain(int argc, wchar_t** argv)
 	printf("clampfcg candidate failures=%u provisional=1\n", cf);
 	}
 
+	// -- Char-header init (003274), copy5 (003974), bit set/clear (003453).
+	{
+	typedef void (__thiscall* CharHeaderOracle)(void*, unsigned, unsigned);
+	CharHeaderOracle ch = reinterpret_cast<CharHeaderOracle>(base + 0x7e8f0);
+	typedef unsigned (__thiscall* Copy5Oracle)(void*, unsigned*, unsigned*, unsigned*, unsigned*, unsigned*);
+	Copy5Oracle c5 = reinterpret_cast<Copy5Oracle>(base + 0x8f660);
+	typedef void (__thiscall* BitSetClearOracle)(void*, unsigned, unsigned);	// reads [esp+4] and [esp+8]
+	BitSetClearOracle bsc = reinterpret_cast<BitSetClearOracle>(base + 0x84ed0);
+	unsigned hf = 0;
+	unsigned char ch1[0x20]; memset(ch1, 0xA5, sizeof(ch1));
+	ch(ch1, 0x11111111u, 0x22222222u);
+	if(memcmp(ch1, "JOHNRAT", 7)!=0 || ch1[7]!=0 || *(unsigned*)(ch1+8)!=0x11111111u || *(unsigned*)(ch1+0xc)!=0x22222222u){
+		fprintf(stderr,"ch fail bytes=%c%c%c%c\n",ch1[0],ch1[1],ch1[2],ch1[3]); ++hf;}
+	// 003974: copy [this+0x44..0x54] to 5 outs
+	unsigned char c5o[0x100]; memset(c5o,0,sizeof(c5o));
+	#define SET5(off,i) { unsigned _v=0x50000000u+i; memcpy(c5o+(off),&_v,4); }
+	SET5(0x44,1); SET5(0x48,2); SET5(0x4c,3); SET5(0x50,4); SET5(0x54,5);
+	unsigned rA=0,rB=0,rC=0,rD=0,rE=0; c5(c5o,&rA,&rB,&rC,&rD,&rE);
+	if(rA!=0x50000001u||rB!=0x50000002u||rC!=0x50000003u||rD!=0x50000004u||rE!=0x50000005u){fprintf(stderr,"c5 fail\n");++hf;}
+	// 003453: flag byte at [esp+8]; if nonzero OR [esp+4] into [this+0x58], else clear
+	unsigned char bs[0x80]; memset(bs,0,sizeof(bs));
+	bs[0x58]=0x0Fu;
+	bsc(bs, 0xA0u, 1u);	// flag=1, mask=0xA0 -> set
+	if(bs[0x58] != 0xAFu){fprintf(stderr,"bs set fail %02x\n",bs[0x58]); ++hf;}
+	bs[0x58]=0x0Fu;
+	bsc(bs, 0xA0u, 0u);	// flag=0 -> clear
+	if(bs[0x58] != 0x0Fu & ~0xA0u){fprintf(stderr,"bs clear fail %02x\n",bs[0x58]); ++hf;}
+	#undef SET5
+	printf("misc3 candidate failures=%u provisional=1\n", hf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
