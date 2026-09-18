@@ -2760,6 +2760,16 @@ failures=0):
 All 5 move to `reconstructed` with static + dynamic proof. Independent
 (non-family) rows. No gate, coverage-floor, or policy change.
 
+## 3z54. Zero/store/copy/link-init rows close (001663/002052/004282/003265/004076/000571)
+
+Round 39 drove six small rows (build/r39.log zmix failures=0):
+- zeros: 001663(+0..10), 002052(+0/4/0xc/10/14), 004282(+0x1f0..1f8);
+- store: 003265 (two args -> this+0x404c/0x4050, ret 8);
+- copy: 004076 ([+0x3c]/[+0x40] -> two out args, ret 8);
+- link-insert: 000571 ([arg+4]=old head, this+0x620=arg, ret 4).
+All 6 move to `reconstructed` with static + dynamic proof. Independent
+(non-family) rows. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
