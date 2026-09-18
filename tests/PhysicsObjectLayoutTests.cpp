@@ -3197,6 +3197,33 @@ int wmain(int argc, wchar_t** argv)
 	printf("shapegetters candidate failures=%u provisional=1\n", dg2);
 	}
 
+	// -- Second batch of pure shape-row getters/init:
+	//   000925 (0x20440) zero [this+0..8]; 001285 (0x257c0) -> word+d8;
+	//   001293 (0x25830) -> word+da; 000999 (0x21c20) -> 2*(float)+e4.
+	{
+	typedef void (__thiscall* Zero3Oracle)(void*);
+	Zero3Oracle z3 = reinterpret_cast<Zero3Oracle>(base + 0x20440);
+	typedef unsigned short (__thiscall* WordGetOracle)(void*);
+	WordGetOracle wd8 = reinterpret_cast<WordGetOracle>(base + 0x257c0);
+	WordGetOracle wda = reinterpret_cast<WordGetOracle>(base + 0x25830);
+	typedef float (__thiscall* D2Oracle)(void*);
+	D2Oracle d2 = reinterpret_cast<D2Oracle>(base + 0x21c20);
+	unsigned g2f = 0;
+	unsigned char shape2[0x100];
+	memset(shape2, 0x76, sizeof(shape2));
+	z3(shape2);
+	if(memcmp(shape2, "\0\0\0\0\0\0\0\0\0\0\0\0", 12) != 0) { fprintf(stderr,"zero3 fail\n"); ++g2f; }
+	const unsigned short d8v = 0x1234, dav = 0x5678;
+	memcpy(shape2+0xd8, &d8v, 2); memcpy(shape2+0xda, &dav, 2);
+	if(wd8(shape2) != d8v) { fprintf(stderr,"wordd8 fail\n"); ++g2f; }
+	if(wda(shape2) != dav) { fprintf(stderr,"wordda fail\n"); ++g2f; }
+	const unsigned e4v = 0x3f000000u; memcpy(shape2+0xe4, &e4v, 4); // 0.5
+	float d2r = d2(shape2);
+	unsigned dv; memcpy(&dv, &d2r, 4);
+	if(dv != 0x3f800000u) { fprintf(stderr,"dims2 fail got %08x\n", dv); ++g2f; } // 2*0.5=1.0
+	printf("shapegetters2 candidate failures=%u provisional=1\n", g2f);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
