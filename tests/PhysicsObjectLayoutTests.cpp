@@ -4670,6 +4670,88 @@ int wmain(int argc, wchar_t** argv)
 	printf("wrap240 candidate failures=%u provisional=1\n", wf);
 	}
 
+	// -- Small flag/link-advance rows: 002170 (setne +9c), 004083 (setne
+	//   global), 001957 (sum fields), 000567/000569 (link advance 6bc/6c0).
+	{
+	typedef unsigned char (__thiscall* SetNe9cOracle)(void*);
+	SetNe9cOracle sn9 = reinterpret_cast<SetNe9cOracle>(base + 0x53e10);
+	typedef unsigned char (__cdecl* SetNeGlbOracle)();
+	SetNeGlbOracle sng = reinterpret_cast<SetNeGlbOracle>(base + 0x95ca0);
+	typedef unsigned (__thiscall* SumFieldsOracle)(void*);
+	SumFieldsOracle sfm = reinterpret_cast<SumFieldsOracle>(base + 0x4be80);
+	typedef unsigned (__thiscall* LinkAdvOracle)(void*);
+	LinkAdvOracle la6bc = reinterpret_cast<LinkAdvOracle>(base + 0x108a0);
+	LinkAdvOracle la6c0 = reinterpret_cast<LinkAdvOracle>(base + 0x108c0);
+	unsigned sf = 0;
+	unsigned char a1[0xc0]; memset(a1,0,sizeof(a1));
+	if(sn9(a1)!=0){fprintf(stderr,"sn9 zero fail\n");++sf;}
+	unsigned v9c=7; memcpy(a1+0x9c,&v9c,4);
+	if(sn9(a1)!=1){fprintf(stderr,"sn9 set fail\n");++sf;}
+	// 004083: global [0x10127180]=0 at load; set it and check.
+	unsigned* g27180 = reinterpret_cast<unsigned*>(const_cast<unsigned char*>(base+0x127180));
+	unsigned save27180=*g27180;
+	unsigned z0=0; *g27180=0;
+	unsigned char s0=sng();
+	unsigned vv=5; *g27180=5;
+	unsigned char s1=sng();
+	*g27180=save27180;
+	if(s0!=0 || s1!=1){fprintf(stderr,"sng fail %u/%u\n",s0,s1);++sf;}
+	// 001957: [this+0x1c]=obj -> [obj+0xc]+[obj+8]
+	unsigned char t7[0x20]; memset(t7,0,sizeof(t7));
+	unsigned char obj7[0x20]; memset(obj7,0,sizeof(obj7));
+	unsigned f8=0x33, fc=0x44; memcpy(obj7+8,&f8,4); memcpy(obj7+0xc,&fc,4);
+	*(void**)(t7+0x1c)=obj7;
+	if(sfm(t7)!=0x77u){fprintf(stderr,"sfm fail %u\n",sfm(t7));++sf;}
+	memset(t7,0,sizeof(t7));
+	if(sfm(t7)!=0u){fprintf(stderr,"sfm null fail\n");++sf;}
+	// 000567/569: [this+6bc]->obj; [this+6bc]=[obj+0x10]; returns the same? check
+	unsigned char c1[0x700]; memset(c1,0,sizeof(c1));
+	unsigned char o1[0x20]; memset(o1,0,sizeof(o1));
+	unsigned o10=0x89; memcpy(o1+0x10,&o10,4);
+	*(void**)(c1+0x6bc)=o1;
+	la6bc(c1);
+	if(*(unsigned*)(c1+0x6bc)!=0x89u){fprintf(stderr,"la6bc fail\n");++sf;}
+	memset(c1+0x6bc,0,4);
+	la6bc(c1);
+	if(*(unsigned*)(c1+0x6bc)!=0u){fprintf(stderr,"la6bc null fail\n");++sf;}
+	printf("smallflag candidate failures=%u provisional=1\n", sf);
+	}
+
+	// -- More flag/getter rows: 000738 (flag->offset ptr), 004942 (2-bit
+	//   select), 003628 (cond store).
+	{
+	typedef unsigned (__thiscall* FlagOffOracle)(void*);
+	FlagOffOracle fo = reinterpret_cast<FlagOffOracle>(base + 0x16c00);
+	typedef unsigned (__thiscall* TwoBitSelOracle)(void*);
+	TwoBitSelOracle ts = reinterpret_cast<TwoBitSelOracle>(base + 0xbb570);
+	typedef void (__thiscall* CondStoreOracle)(void*, unsigned, unsigned);
+	CondStoreOracle cso = reinterpret_cast<CondStoreOracle>(base + 0x89bb0);
+	unsigned sf2 = 0;
+	// 000738: [this+0x1e4]&0x200 ? this+0x244 : 0
+	unsigned char f2[0x280]; memset(f2,0,sizeof(f2));
+	unsigned fl=0x200; memcpy(f2+0x1e4,&fl,4);
+	if(fo(f2)!=(unsigned)(size_t)(f2+0x244)){fprintf(stderr,"fo set fail\n");++sf2;}
+	*(unsigned*)(f2+0x1e4)=0;
+	if(fo(f2)!=0u){fprintf(stderr,"fo clr fail\n");++sf2;}
+	// 004942: bit1(2) set and bit0(1) clear -> 0x1011b6ec else 0
+	unsigned char t2[0x40]; memset(t2,0,sizeof(t2));
+	unsigned b=6u; memcpy(t2+4,&b,4);	// 6 = 110 -> bit1 set, bit0 CLEAR -> pointer
+	if(ts(t2)!=0x1011b6ecu){fprintf(stderr,"ts b1 fail\n");++sf2;}
+	unsigned b3=3u; memcpy(t2+4,&b3,4);	// 3 -> bit0 set -> 0
+	if(ts(t2)!=0u){fprintf(stderr,"ts b3 fail\n");++sf2;}
+	unsigned b2=0u; memcpy(t2+4,&b2,4);	// 0 -> bit1 clear -> 0
+	if(ts(t2)!=0u){fprintf(stderr,"ts b2 fail\n");++sf2;}
+	// 003628: if [this+0x2b]!=0 and [esp+8]==0 then [this+0x28]=1
+	unsigned char c3[0x40]; memset(c3,0,sizeof(c3));
+	c3[0x2b]=5;
+	cso(c3, 0u, 0u);
+	if(c3[0x28]!=1){fprintf(stderr,"cso set fail %02x\n",c3[0x28]);++sf2;}
+	c3[0x28]=0;
+	cso(c3, 0u, 1u);	// [esp+8]=1 -> no store
+	if(c3[0x28]!=0){fprintf(stderr,"cso arg1 fail %02x\n",c3[0x28]);++sf2;}
+	printf("smallflag2 candidate failures=%u provisional=1\n", sf2);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
