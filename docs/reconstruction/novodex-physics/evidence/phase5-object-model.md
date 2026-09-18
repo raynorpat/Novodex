@@ -3041,6 +3041,13 @@ slot = [table+0x18] + [table+4]*4 and returns the +4 word of
 slot[index]. 001958 moves to `reconstructed`. No gate, coverage-floor, or
 policy change.
 
+## 3z81. List-contains row closes (003296)
+
+Round 65 drove the pointer-array membership row (build/r65.log containsf
+failures=0): 003296 (0x7f020) walks the pointer array at [list+4]
+(terminated by 0) and returns 1 if the key pointer appears, else 0.
+003296 moves to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
