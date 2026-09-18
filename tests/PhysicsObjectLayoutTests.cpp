@@ -3480,6 +3480,34 @@ int wmain(int argc, wchar_t** argv)
 	printf("globalwrite candidate failures=%u provisional=1\n", g2f);
 	}
 
+	// -- Small ctor/vptr/init batch: 001373(store+return1,ret8)
+	//   001421(zero 24-30) 001552(vptr+zero4/8) 002140(vptr+arg,ret4)
+	//   005355(zero 0-c).
+	{
+	typedef bool (__thiscall* StoreE0Oracle)(void*, unsigned*);
+	StoreE0Oracle sE0 = reinterpret_cast<StoreE0Oracle>(base + 0x27c10);
+	typedef void (__thiscall* ZeroInitOracle4)(void*);
+	ZeroInitOracle4 zs24 = reinterpret_cast<ZeroInitOracle4>(base + 0x29a10);
+	ZeroInitOracle4 v2a = reinterpret_cast<ZeroInitOracle4>(base + 0x2e1f0);
+	ZeroInitOracle4 zs0 = reinterpret_cast<ZeroInitOracle4>(base + 0xe8fa0);
+	typedef void (__thiscall* CtorArgOracle)(void*, unsigned);
+	CtorArgOracle ctr = reinterpret_cast<CtorArgOracle>(base + 0x53290);
+	unsigned s5f = 0;
+	unsigned char s5[0x400]; memset(s5, 0, sizeof(s5));
+	const unsigned e0v = 0xABCDEF01u; memcpy(s5 + 0xe0, &e0v, 4);
+	unsigned outE0 = 0;
+	if(!sE0(s5, &outE0)){fprintf(stderr,"sE0 ret fail\n");++s5f;}
+	if(outE0 != e0v){fprintf(stderr,"sE0 val fail\n");++s5f;}
+	memset(s5+0x24,0x99,0x10);
+	zs24(s5); if(memcmp(s5+0x24,"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",16)!=0){fprintf(stderr,"zs24 fail\n");++s5f;}
+	memset(s5+4,0x77,8);
+	v2a(s5); if(*(unsigned*)(s5+0)!=0x10107848u || *(unsigned*)(s5+4)!=0 || *(unsigned*)(s5+8)!=0){fprintf(stderr,"v2a fail\n");++s5f;}
+	ctr(s5, 0x12345678u); if(*(unsigned*)(s5+0)!=0x1010829cu || *(unsigned*)(s5+4)!=0x12345678u){fprintf(stderr,"ctr fail\n");++s5f;}
+	memset(s5+0,0x55,0x10);
+	zs0(s5); if(memcmp(s5,"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",16)!=0){fprintf(stderr,"zs0 fail\n");++s5f;}
+	printf("smallctor candidate failures=%u provisional=1\n", s5f);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
