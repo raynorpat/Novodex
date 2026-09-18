@@ -3320,6 +3320,15 @@ under isolation (consistent with its earlier erratic behavior) and is left
 `discovered`. 002176 and 003479 move to `reconstructed`. No gate,
 coverage-floor, or policy change.
 
+## 3z110. x87 control-word row closes (000537)
+
+Round 94 drove 000537 (0x106d0), which reads the x87 status word via
+fnstcw into a local and stores it to [this+0]. It runs cleanly and twice
+produces the same valid control word (0x027f), confirming the fnstcw fetch
+(CW consistency probe). Given the row is a trivial fnstcw-store with fully
+determined behavior, it closes on static proof plus the consistency drive.
+000537 moves to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
