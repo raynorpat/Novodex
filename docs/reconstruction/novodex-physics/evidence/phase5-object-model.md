@@ -3154,6 +3154,16 @@ deterministic fixture (multi-valued/reloc-sensitive returns) and were left
 discovered. 000017 moves to `reconstructed`. No gate, coverage-floor, or
 policy change.
 
+## 3z94. Conditional-set row closes (005187)
+
+Round 78 re-drove 005187 (0xe4160, ret 8), which round 52 had left
+discovered after a 4/4 fixture failure. The failure was the byte-return
+convention: `mov al,1; ret 8` returns a low-byte flag, so the oracle type
+must be `unsigned char`, not `unsigned`. With the corrected type, all three
+matching slots and the no-match path verify byte-exact (build/r78.log
+condsetb failures=0). 005187 moves to `reconstructed`. No gate,
+coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
