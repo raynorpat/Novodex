@@ -3284,6 +3284,45 @@ int wmain(int argc, wchar_t** argv)
 	printf("simplegetters candidate failures=%u provisional=1\n", gf);
 	}
 
+	// -- Batch of field-return / pointer / constant getters:
+	//   000287(+0x24) 000523(+0x3c) 000547/551/555(+0x6ac/6b0/6b4)
+	//   002198(ret 1) 003952(+0x14) 004290(+0x1d0) 005604 005622
+	//   002334(lea+0x28) 003661(lea+8). Drive each vs oracle.
+	{
+	typedef unsigned (__thiscall* UGetOracle)(void*);
+	UGetOracle g24 = reinterpret_cast<UGetOracle>(base + 0xc3f0);
+	UGetOracle g3c = reinterpret_cast<UGetOracle>(base + 0x10400);
+	UGetOracle g6ac = reinterpret_cast<UGetOracle>(base + 0x107f0);
+	UGetOracle g6b0 = reinterpret_cast<UGetOracle>(base + 0x10810);
+	UGetOracle g6b4 = reinterpret_cast<UGetOracle>(base + 0x10830);
+	UGetOracle g14 = reinterpret_cast<UGetOracle>(base + 0x8f0f0);
+	UGetOracle g1d0 = reinterpret_cast<UGetOracle>(base + 0xa2f30);
+	UGetOracle g5604 = reinterpret_cast<UGetOracle>(base + 0xf2eb0);
+	UGetOracle g5622 = reinterpret_cast<UGetOracle>(base + 0xf3620);
+	typedef void* (__thiscall* PGetOracle)(void*);
+	PGetOracle p28 = reinterpret_cast<PGetOracle>(base + 0x5a870);
+	PGetOracle p8 = reinterpret_cast<PGetOracle>(base + 0x8ac40);
+	unsigned bf = 0;
+	unsigned char b2[0x800]; memset(b2, 0, sizeof(b2));
+	#define SETU(off,val) { unsigned _v=(val); memcpy(b2+(off),&_v,4); }
+	SETU(0x24,0x11111111); SETU(0x3c,0x22222222);
+	SETU(0x6ac,0x33333333); SETU(0x6b0,0x44444444); SETU(0x6b4,0x55555555);
+	SETU(0x14,0x66666666); SETU(0x1d0,0x77777777); SETU(0x4,8);
+	if(g24(b2)!=0x11111111u){fprintf(stderr,"g24 fail\n");++bf;}
+	if(g3c(b2)!=0x22222222u){fprintf(stderr,"g3c fail\n");++bf;}
+	if(g6ac(b2)!=0x33333333u){fprintf(stderr,"g6ac fail\n");++bf;}
+	if(g6b0(b2)!=0x44444444u){fprintf(stderr,"g6b0 fail\n");++bf;}
+	if(g6b4(b2)!=0x55555555u){fprintf(stderr,"g6b4 fail\n");++bf;}
+	if(g14(b2)!=0x66666666u){fprintf(stderr,"g14 fail\n");++bf;}
+	if(g1d0(b2)!=0x77777777u){fprintf(stderr,"g1d0 fail\n");++bf;}
+	if(g5604(b2)!=(8u<<5)+8u){fprintf(stderr,"g5604 fail %08x\n",g5604(b2));++bf;} // (8<<5)+8
+	if(g5622(b2)!=(8u+2u)<<4u){fprintf(stderr,"g5622 fail %08x\n",g5622(b2));++bf;} // (8+2)<<4
+	if(p28(b2)!=b2+0x28){fprintf(stderr,"p28 fail\n");++bf;}
+	if(p8(b2)!=b2+8){fprintf(stderr,"p8 fail\n");++bf;}
+	#undef SETU
+	printf("batchgetters candidate failures=%u provisional=1\n", bf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
