@@ -3111,6 +3111,14 @@ Round 73 drove the slot-peek decision (build/r73.log listpeek failures=0):
 index and slot ref count, else 0. Verified three cases (refcount 0, >1, ==1).
 003300 moves to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z90. Delimiter-scan row closes (004002)
+
+Round 74 drove the character-scan decision (build/r74.log delimscan
+failures=0): 004002 (0x90db0, ret 4) returns 1 if the string argument
+contains any delimiter char (space, quote, tab, comma, parens, =, [ ], { },
+#), else 0. Verified delimiter-present and absent inputs. 004002 moves to
+`reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
