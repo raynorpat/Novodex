@@ -4015,6 +4015,45 @@ int wmain(int argc, wchar_t** argv)
 	printf("tmplfm candidate failures=%u provisional=1\n", fmf);
 	}
 
+	// -- Buffer-pop row (001655, 0x32410, ret 4): read slot index into arg,
+	//   increment index, reset when reaching capacity. Returns a byte flag.
+	{
+	typedef unsigned char (__thiscall* BufPopOracle)(void*, unsigned*);
+	BufPopOracle bpop = reinterpret_cast<BufPopOracle>(base + 0x32410);
+	unsigned bpf = 0;
+	unsigned slots[4] = { 0xAAAA, 0xBBBB, 0xCCCC, 0xDDDD };
+	unsigned char bp2[0x40]; memset(bp2, 0, sizeof(bp2));
+	unsigned size=4; memcpy(bp2+4,&size,4);
+	*(void**)(bp2+8)=slots;
+	unsigned idx1=0; memcpy(bp2+0x10,&idx1,4);
+	unsigned out=0;
+	if(bpop(bp2,&out)!=1u || out!=0xAAAAu){fprintf(stderr,"bpop0 fail out=%08x\n",out);++bpf;}
+	if(*(unsigned*)(bp2+0x10)!=1){fprintf(stderr,"bpop idx fail\n");++bpf;}
+	bpop(bp2,&out); // slot1
+	if(out!=0xBBBBu){fprintf(stderr,"bpop1 fail\n");++bpf;}
+	printf("bufpop candidate failures=%u provisional=1\n", bpf);
+	}
+
+	// -- Ctor with list-link row (004407, 0xb0310, ret 0xc): sets vptr
+	//   0x1011a648, stores [esp+4]/[esp+8]/[esp+0xc] and links into a list.
+	{
+	typedef void (__thiscall* CtorLinkOracle)(void*, void*, unsigned, unsigned);
+	CtorLinkOracle crg = reinterpret_cast<CtorLinkOracle>(base + 0xb0310);
+	unsigned clf = 0;
+	unsigned char lc[0x40]; memset(lc, 0x00, sizeof(lc));
+	unsigned char node[0x30]; memset(node, 0x00, sizeof(node));
+	crg(lc, node, 0x1111u, 0x2222u);
+	if(*(unsigned*)(lc+0)!=0x1011a648u){fprintf(stderr,"crg vptr fail\n");++clf;}
+	// node != null -> link: [node+0xc]=lc, [lc+8]=node, [lc+0x10]=[node+0xc]? based on listing:
+	// mov esi,[ecx+0xc]; [eax+0x10]=esi; [ecx+0x1c]=eax; [ecx+0xc]=eax; [eax+8]=ecx
+	unsigned* nodeC = reinterpret_cast<unsigned*>(node);
+	if(*(void**)(lc+8)!=node){fprintf(stderr,"crg link fail\n");++clf;}
+	if(*(void**)(lc+0x10)!=0){fprintf(stderr,"crg oldprev fail mine=%p\n",*(void**)(lc+0x10));++clf;}
+	if(*(void**)(node+0xc)!=reinterpret_cast<void*>(lc)){fprintf(stderr,"crg newprev fail\n");++clf;}
+	if(*(unsigned*)(lc+0x14)!=0x1111u||*(unsigned*)(lc+0x18)!=0x2222u){fprintf(stderr,"crg args fail\n");++clf;}
+	printf("ctorlink candidate failures=%u provisional=1\n", clf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
