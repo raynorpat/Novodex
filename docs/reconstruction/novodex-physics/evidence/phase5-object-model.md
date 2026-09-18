@@ -2816,6 +2816,17 @@ triplecopy failures=0):
 All 6 move to `reconstructed` with static + dynamic proof. Independent
 (non-family) rows. No gate, coverage-floor, or policy change.
 
+## 3z59. Multi-zero/store/push/lane-init rows close (005289/003966/004778/002346)
+
+Round 44 drove four rows (build/r44b.log quadbatch failures=0):
+- 005289 (0xe7180): zero [this+0..0x28];
+- 003966 (0x8f4f0, ret 0x14): store 5 args to [this+0x44..0x54];
+- 004778 (0xb3b00, ret 4): cursor push -- returns the old cursor and
+  advances the container byte offset by arg;
+- 002346 (0x5ab50): two-lane list init ([this]=this+8, [this+4]=this+0x18).
+All 4 move to `reconstructed` with static + dynamic proof. Independent
+(non-family) rows. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
