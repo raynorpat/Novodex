@@ -3508,6 +3508,40 @@ int wmain(int argc, wchar_t** argv)
 	printf("smallctor candidate failures=%u provisional=1\n", s5f);
 	}
 
+	// -- Zero/store/copy/arith batch: 001663(zero 0-10) 003265(store 2 args)
+	//   004076(copy 2 fields) 004282(zero 1f0-1f8) 000571(link-insert).
+	{
+	typedef void (__thiscall* ZeroMultiOracle)(void*);
+	ZeroMultiOracle zm0 = reinterpret_cast<ZeroMultiOracle>(base + 0x32590);
+	ZeroMultiOracle zm1 = reinterpret_cast<ZeroMultiOracle>(base + 0x51060);
+	ZeroMultiOracle zm2 = reinterpret_cast<ZeroMultiOracle>(base + 0xa2bf0);
+	typedef void (__thiscall* StorePairOracle)(void*, unsigned, unsigned);
+	StorePairOracle sp = reinterpret_cast<StorePairOracle>(base + 0x7e520);
+	typedef void (__thiscall* CopyPairOracle)(void*, unsigned*, unsigned*);
+	CopyPairOracle cp = reinterpret_cast<CopyPairOracle>(base + 0x95b90);
+	typedef void (__thiscall* LinkInsertOracle)(void*, unsigned*);
+	LinkInsertOracle li = reinterpret_cast<LinkInsertOracle>(base + 0x108e0);
+	unsigned bf = 0;
+	unsigned char b[0x5000]; memset(b, 0, sizeof(b));
+	zm0(b);
+	if(*(unsigned*)(b+0)+*(unsigned*)(b+4)+*(unsigned*)(b+8)+*(unsigned*)(b+0xc)+*(unsigned*)(b+0x10)!=0){fprintf(stderr,"zm0 fail\n");++bf;}
+	zm1(b);
+	if(*(unsigned*)(b+0)+*(unsigned*)(b+4)+*(unsigned*)(b+0xc)+*(unsigned*)(b+0x10)+*(unsigned*)(b+0x14)!=0){fprintf(stderr,"zm1 fail\n");++bf;}
+	zm2(b);
+	if(*(unsigned*)(b+0x1f0)+*(unsigned*)(b+0x1f4)+*(unsigned*)(b+0x1f8)!=0){fprintf(stderr,"zm2 fail\n");++bf;}
+	sp(b, 0xA0A0A0A0u, 0xB0B0B0B0u);
+	if(*(unsigned*)(b+0x404c)!=0xA0A0A0A0u || *(unsigned*)(b+0x4050)!=0xB0B0B0B0u){fprintf(stderr,"sp fail\n");++bf;}
+	unsigned v3c=0x31313131u, v40=0x42424242u; memcpy(b+0x3c,&v3c,4); memcpy(b+0x40,&v40,4);
+	unsigned o1=0,o2=0; cp(b,&o1,&o2);
+	if(o1!=v3c||o2!=v40){fprintf(stderr,"cp fail %08x/%08x\n",o1,o2);++bf;}
+	unsigned node=0x12345678u;
+	unsigned oldHead = 0xCAFEBABEu; memcpy(b+0x620, &oldHead, 4);
+	li(b,&node);
+	if(*(unsigned*)(b+0x620) != static_cast<unsigned>(reinterpret_cast<size_t>(&node))){fprintf(stderr,"li head fail %08x\n",*(unsigned*)(b+0x620));++bf;}
+	if(*(unsigned*)((unsigned char*)&node + 4) != oldHead){fprintf(stderr,"li next fail %08x\n",*(unsigned*)((unsigned char*)&node+4));++bf;}
+	printf("zmix candidate failures=%u provisional=1\n", bf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
