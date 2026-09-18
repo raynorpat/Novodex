@@ -4479,6 +4479,17 @@ int wmain(int argc, wchar_t** argv)
 	printf("listpeek candidate failures=%u provisional=1\n", lpf);
 	}
 
+	// -- Delimiter scan (004002, 0x90db0, ret 4) and big ctor (003257).
+	{
+	typedef unsigned (__cdecl* DelimScanOracle)(const char*);
+	DelimScanOracle ds = reinterpret_cast<DelimScanOracle>(base + 0x90db0);
+	unsigned dsf = 0;
+	if(ds("hello")!=0u){fprintf(stderr,"ds0 fail\n");++dsf;}
+	if(ds("a,b")!=1u){fprintf(stderr,"ds1 fail\n");++dsf;}
+	if(ds("x")!=0u){fprintf(stderr,"ds2 fail\n");++dsf;}
+	printf("delimscan candidate failures=%u provisional=1\n", dsf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
