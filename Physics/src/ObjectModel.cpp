@@ -2103,6 +2103,28 @@ void nxMutexWorkEx(void* self, unsigned lockOff, unsigned objOff,
 		}
 	}
 
+// phys_fn_001024 (0x229b0, ret 0xc): the guarded three-argument dispatch loop.
+unsigned char nxArrayVtCall3Args1024(void* self, unsigned a1, unsigned a2,
+	unsigned a3)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	unsigned* begin = *reinterpret_cast<unsigned**>(p + 0xe0);
+	unsigned* end = *reinterpret_cast<unsigned**>(p + 0xe4);
+	const unsigned n = static_cast<unsigned>(
+		reinterpret_cast<unsigned char*>(end) - reinterpret_cast<unsigned char*>(begin)) >> 2;
+	for(unsigned i = 0; i < n; ++i)
+		{
+		unsigned char* elem = reinterpret_cast<unsigned char*>(begin[i]);
+		if(elem[0xde] & 7)
+			continue;
+		void** vt = *reinterpret_cast<void***>(elem);
+		typedef unsigned char (__stdcall* Fn)(unsigned, unsigned, unsigned);
+		if(reinterpret_cast<Fn>(vt[0x10 / 4])(a1, a2, a3) == 0)
+			return 0;
+		}
+	return 1;
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)

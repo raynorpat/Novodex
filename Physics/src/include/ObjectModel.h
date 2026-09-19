@@ -1055,6 +1055,14 @@ void*					nxDtorWithGlobal3938(void* self, unsigned flags);
 //!   2  store args[k] at [obj+baseOff+4k] for k < nwords (000540/003966/003968)
 //!   3  copy nwords dwords from *(unsigned*)args[0] to [obj+baseOff+4k] (000507/003427)
 //!   4  if args[1] then [obj+baseOff] |= args[0] else &= ~args[0] (003453)
+//! phys_fn_001024 (0x229b0, ret 0xc): walks the pointer array at
+//! [self+0xe0]..[self+0xe4], SKIPS any element whose byte at +0xde has any of
+//! the low three bits set, and calls vtable slot +0x10 of the rest with the
+//! three row arguments. Returns 1 when every dispatched element returned
+//! non-zero, and 0 as soon as one returns zero (an empty array returns 1).
+unsigned char			nxArrayVtCall3Args1024(void* self, unsigned a1, unsigned a2,
+							unsigned a3);
+
 void					nxMutexWorkEx(void* self, unsigned lockOff, unsigned objOff,
 							const unsigned* args, unsigned nargs, int workKind,
 							unsigned baseOff, unsigned nwords, unsigned code,
