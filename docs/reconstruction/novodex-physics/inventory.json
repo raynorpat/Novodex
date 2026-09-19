@@ -67406,12 +67406,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/fluids/NpFluid.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1794",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12774",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the reportonceF differential (3z193): failures=0 for all three rows in both gate states, comparing the float result bit-for-bit, the report tuple and the thunk hit count, with the report slot, lock API, gate byte and each global slot bound",
       "notes": ""
     },
     {
@@ -67478,12 +67478,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/fluids/NpFluid.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1796",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12784",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the reportonceF differential (3z193): failures=0 for all three rows in both gate states, comparing the float result bit-for-bit, the report tuple and the thunk hit count, with the report slot, lock API, gate byte and each global slot bound",
       "notes": ""
     },
     {
@@ -68378,12 +68378,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/fluids/NpFluid.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1821",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12855",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the reportonceF differential (3z193): failures=0 for all three rows in both gate states, comparing the float result bit-for-bit, the report tuple and the thunk hit count, with the report slot, lock API, gate byte and each global slot bound",
       "notes": ""
     },
     {
