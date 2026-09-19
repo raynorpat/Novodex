@@ -3591,6 +3591,23 @@ from arg1 into [this+0], arg2[0..2] into [this+0x24..0x2c] and arg3 into
 three cases (build/r110.log posecopy827 failures=0). 000827 moves to
 `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z127. The 44-row backlog is 43 fragments + 1 genuine entry
+
+Round 111 tested the round-109 backlog against a branch-target filter: for
+each candidate it asked whether the row's start address is the target of any
+`j*`/`call` from an earlier address. A row that IS such a target is a
+mid-function label the disassembler split out, not a function entry -- it
+cannot be driven in isolation because its operands (esi/edi/ebx/ebp/eax) are
+set by an upstream prologue outside the row. Result: of the 44 product rows
+with zero calls, <=4 x87 ops and <=220 bytes, **43 are branch targets**
+(fragments) and exactly ONE is a genuine entry: 003268 (0x7e560, 210 bytes,
+ret 8), a batch index/vertex append over seven arrays
+([this+8], +0xc, +0x10, +0x18, +0x1c, +0x20, +0x4034..0x4044). So the
+"fragment" class is now conclusively characterised: those census rows are
+disassembly artifacts of splitting at jump targets, not standalone
+functions, which is why their drives faulted. 003268 is the next and only
+remaining target in this band. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
