@@ -79484,12 +79484,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "six-byte global trampoline (0xaf2c4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2121",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15043",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the tailsmall differential (3z192): failures=0, with the global slot 0x10104198 bound to the same recorder the candidate is handed and the hit count compared",
       "notes": ""
     },
     {
