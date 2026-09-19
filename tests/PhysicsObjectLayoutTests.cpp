@@ -118,6 +118,13 @@ static unsigned __fastcall nxRecThis44(void* self)
 static float __fastcall nxRecThis3c(void* self)
 	{ gVtRec[0] = static_cast<unsigned>(reinterpret_cast<size_t>(self)); gVtRecN = 1; return 2.75f; }
 
+// The per-element loop passes one stack argument and leaves `this` in ecx; the
+// stub records the argument and the call count.
+static unsigned gLoopArg;
+static unsigned gLoopHits;
+static void __stdcall nxLoopStub(void* arg)
+	{ gLoopArg = static_cast<unsigned>(reinterpret_cast<size_t>(arg)); ++gLoopHits; }
+
 // Bind the 004886 callback slot [0x10128478] to the stub above.
 struct NxCallbackSaved { void* slot; void* page; DWORD prot; int ok; };
 
@@ -11965,6 +11972,38 @@ int wmain(int argc, wchar_t** argv)
 	}
 	nxUnbindLockApi(base, svLV);
 	printf("vtcall pair candidate failures=%u provisional=1\n", lvf);
+	}
+	// -- Per-element virtual dispatch loop 001022.
+	{
+	typedef void (__thiscall* T1022)(void*, void*);
+	T1022 fn = reinterpret_cast<T1022>(base + 0x22970);
+	unsigned lf = 0;
+	for(unsigned count = 0; count < 3; ++count)
+		{
+		void* vt[0x10 / 4 + 1]; memset(vt, 0, sizeof(vt));
+		vt[0xc / 4] = reinterpret_cast<void*>(&nxLoopStub);
+		unsigned char elems[3][0x20];
+		memset(elems, 0, sizeof(elems));
+		for(unsigned k = 0; k < 3; ++k) *(void**)(elems[k]) = vt;
+		unsigned char self[0x100]; memset(self, 0, sizeof(self));
+		unsigned* list = reinterpret_cast<unsigned*>(self + 0x40);
+		for(unsigned k = 0; k < count; ++k) list[k] = static_cast<unsigned>(reinterpret_cast<size_t>(elems[k]));
+		*(void**)(self + 0xe0) = list;
+		*(void**)(self + 0xe4) = list + count;
+		unsigned char selfC[0x100]; memcpy(selfC, self, sizeof(self));
+		gLoopHits = 0; gLoopArg = 0;
+		fn(self, reinterpret_cast<void*>(0xC0DE1234u));
+		unsigned hO = gLoopHits, aO = gLoopArg;
+		gLoopHits = 0; gLoopArg = 0;
+		nxArrayVtCall1022(selfC, reinterpret_cast<void*>(0xC0DE1234u));
+		unsigned hC = gLoopHits, aC = gLoopArg;
+		// with no elements there are no calls, so the argument is never recorded
+		const unsigned wantArg = (count == 0) ? 0u : 0xC0DE1234u;
+		if(hO != hC || aO != aC || hO != count || aO != wantArg)
+			{fprintf(stderr,"arrayloop count=%u hO=%u hC=%u aO=%08x aC=%08x\n",
+				count, hO, hC, aO, aC);++lf;}
+		}
+	printf("arrayloop candidate failures=%u provisional=1\n", lf);
 	}
 
 
