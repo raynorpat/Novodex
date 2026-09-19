@@ -1186,6 +1186,17 @@ unsigned				nxByteCountPlus18(void* self);
 //! calls 002375 on [self+0x14] with -1 or 0 depending on whether the second
 //! argument is non-zero, and returns the low bit of that result; when bit 0 is
 //! clear it returns without calling. The lock-API hook is passed in.
+//! The lock-bracketed helper-call rows: lock [self+lockOff], call a helper on
+//! [self+objOff], release, and return the helper's value. helperKind 0 is the
+//! registry lookup 004085 (zero while the registry is null, used by 001183 and
+//! 003860); helperKind 1 is a two-argument global-call thunk of the 003457
+//! family, whose hook and viaField4 flag are passed in (used by 003768,
+//! 003780 and 003892).
+typedef unsigned (__cdecl* NxGlobalFn2Ret)(unsigned, unsigned);
+unsigned				nxLockedHelperCall(void* self, unsigned lockOff,
+							unsigned objOff, int helperKind,
+							NxGlobalFn2Ret fn, int viaField4);
+
 unsigned char			nxLockApiDispatch0396(void* self, unsigned flags,
 							unsigned arg2, unsigned (__stdcall* fn)(unsigned, unsigned));
 

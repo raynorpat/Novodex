@@ -2511,6 +2511,32 @@ unsigned char nxLockApiDispatch0396(void* self, unsigned flags, unsigned arg2,
 	return static_cast<unsigned char>(nxLockApiTest2375(p, arg, fn) & 1u);
 	}
 
+// The lock-bracketed helper-call rows.
+unsigned nxLockedHelperCall(void* self, unsigned lockOff, unsigned objOff,
+	int helperKind, NxGlobalFn2Ret fn, int viaField4)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	unsigned char* obj = *reinterpret_cast<unsigned char**>(p + objOff);
+	if(helperKind == 0)
+		{
+		// the registry lookup returns zero while the registry is null
+		return nxRegistryLookupNull(obj);
+		}
+	unsigned char* q = obj;
+	if(viaField4 != 0)
+		{
+		unsigned inner;
+		memcpy(&inner, q + 4, 4);
+		q = reinterpret_cast<unsigned char*>(static_cast<size_t>(inner));
+		}
+	unsigned a, b;
+	memcpy(&a, q + 0x7c, 4);
+	memcpy(&b, q + 0x80, 4);
+	unsigned first;
+	memcpy(&first, reinterpret_cast<unsigned char*>(static_cast<size_t>(a)) + 0x30, 4);
+	return fn(first, b);
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)
