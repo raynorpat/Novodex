@@ -1023,6 +1023,15 @@ float					nxLockedVtCall1119(void* self);
 //! [self+0xe0]..[self+0xe4] and calls vtable slot +0xc of each element with the
 //! argument; the call site does not clean it, so the slot is __stdcall.
 void					nxArrayVtCall1022(void* self, void* arg);
+
+//! phys_fn_002142 (0x532b0, ret 4): scalar deleting destructor. Stores the
+//! vtable 0x1010829c at [self] and, when the low flag bit is set, frees self
+//! through the allocator slot [[[0x101041bc]][0]+0x14]; returns self either
+//! way. The free hook is settable so the harness can route the oracle's
+//! allocator slot into the same body.
+typedef void (__stdcall* NxAllocFreeFn)(void* block);
+void					nxSetAllocFree(NxAllocFreeFn fn);
+void*					nxScalarDeletingDtor2142(void* self, unsigned flags);
 unsigned char			nxLockProbe0392(void* self);
 
 //! The mutex-guarded virtual dispatch family (31 rows): when the acquire of

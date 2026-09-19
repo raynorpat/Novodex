@@ -1926,6 +1926,27 @@ void nxArrayVtCall1022(void* self, void* arg)
 		}
 	}
 
+// phys_fn_002142 (0x532b0, ret 4): the scalar deleting destructor. The free
+// arm goes through the allocator singleton's slot +0x14.
+static NxAllocFreeFn gNxAllocFree = nullptr;
+
+void nxSetAllocFree(NxAllocFreeFn fn)
+	{
+	gNxAllocFree = fn;
+	}
+
+void* nxScalarDeletingDtor2142(void* self, unsigned flags)
+	{
+	unsigned vtable = 0x1010829cu;
+	memcpy(self, &vtable, 4);
+	if(flags & 1u)
+		{
+		if(gNxAllocFree)
+			gNxAllocFree(self);
+		}
+	return self;
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)
