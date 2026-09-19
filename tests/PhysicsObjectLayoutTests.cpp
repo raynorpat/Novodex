@@ -224,6 +224,21 @@ static unsigned g2375A, g2375B, g2375Ret;
 static unsigned __stdcall nx2375Stub(unsigned a, unsigned b)
 	{ g2375A = a; g2375B = b; return g2375Ret; }
 
+// 004409 walks a chain calling vtable[0] of each node; giving every node its
+// own stub makes the VISIT ORDER observable without needing to see ecx.
+static unsigned gTdSeq[4];
+static unsigned gTdN;
+// the call site pushes the constant 1 and does not clean it, so each stub
+// takes (and pops) one argument
+static void __stdcall nxTd0(unsigned) { gTdSeq[gTdN++] = 0; }
+static void __stdcall nxTd1(unsigned) { gTdSeq[gTdN++] = 1; }
+static void __stdcall nxTd2(unsigned) { gTdSeq[gTdN++] = 2; }
+// 000443 builds its singleton through vtable slot +0x1c.
+static unsigned gSingletonHits;
+// the slot receives `this` in ecx and NO stack arguments, so __fastcall
+// with one parameter is the matching layout
+static unsigned __fastcall nxSingletonStub(void*) { ++gSingletonHits; return 0x51A61E00u; }
+
 struct NxFnPtrSaved { void* slot; void* page; DWORD prot; int ok; };
 
 static NxFnPtrSaved nxBindFnPtr(const void* imageBase, unsigned slotRva, void* value)
@@ -13312,6 +13327,114 @@ int wmain(int argc, wchar_t** argv)
 	nxUnbindAllocPtr(base, svAp3);
 	}
 	printf("blockers2 candidate failures=%u provisional=1\n", bb2);
+	}
+	// -- Blocker batch three: 004409 (list teardown), 001413 (byte count) and
+	//    000443 (lazy singleton).
+	{
+	unsigned bb3 = 0;
+	// 004409
+	{
+	typedef void (__thiscall* T4409)(void*);
+	T4409 fn = reinterpret_cast<T4409>(base + 0xb0360);
+	for(unsigned len = 0; len < 4; ++len)
+		{
+		void* stubs[3] = { reinterpret_cast<void*>(&nxTd0),
+			reinterpret_cast<void*>(&nxTd1), reinterpret_cast<void*>(&nxTd2) };
+		unsigned char nodes[3][0x40];
+		memset(nodes, 0, sizeof(nodes));
+		// each node needs its OWN persistent table: a loop-scoped one would be
+		// reused, leaving every node pointing at the last stub
+		void* vtbl[3][1];
+		memset(vtbl, 0, sizeof(vtbl));
+		for(unsigned k = 0; k < 3; ++k)
+			{
+			vtbl[k][0] = stubs[k];
+			*(void**)(nodes[k]) = vtbl[k];
+			}
+		// link only the first `len` nodes: linking all three made the walk
+		// visit three regardless of the requested length
+		for(unsigned k = 0; k + 1 < len; ++k)
+			*(void**)(nodes[k] + 0x10) = nodes[k + 1];
+		unsigned char self[0x40]; memset(self, 0xcd, sizeof(self));
+		*(void**)(self + 0xc) = (len == 0) ? nullptr : nodes[0];
+		unsigned char selfC[0x40]; memcpy(selfC, self, sizeof(selfC));
+		unsigned char nodesC[3][0x40]; memcpy(nodesC, nodes, sizeof(nodesC));
+		void* vtblC[3][1];
+		memset(vtblC, 0, sizeof(vtblC));
+		for(unsigned k = 0; k < 3; ++k)
+			{
+			vtblC[k][0] = stubs[k];
+			*(void**)(nodesC[k]) = vtblC[k];
+			}
+		for(unsigned k = 0; k + 1 < len; ++k)
+			*(void**)(nodesC[k] + 0x10) = nodesC[k + 1];
+		*(void**)(selfC + 0xc) = (len == 0) ? nullptr : nodesC[0];
+		gTdN = 0; memset(gTdSeq, 0, sizeof(gTdSeq));
+		fn(self);
+		unsigned nO = gTdN; unsigned seqO[4]; memcpy(seqO, gTdSeq, sizeof(seqO));
+		gTdN = 0; memset(gTdSeq, 0, sizeof(gTdSeq));
+		nxListTeardown4409(selfC);
+		unsigned nC = gTdN;
+		if(nO != nC || memcmp(seqO, gTdSeq, sizeof(seqO)) != 0
+			|| memcmp(self, selfC, sizeof(self)) != 0 || nO != len)
+			{fprintf(stderr,"bb3 004409 len=%u nO=%u nC=%u\n", len, nO, nC);++bb3;}
+		}
+	}
+	// 001413
+	{
+	typedef unsigned (__thiscall* T1413)(void*);
+	T1413 fn = reinterpret_cast<T1413>(base + 0x29920);
+	for(unsigned vi = 0; vi < 4; ++vi)
+		{
+		unsigned char self[0x80]; memset(self, 0, sizeof(self));
+		unsigned char inner[0x40]; memset(inner, 0, sizeof(inner));
+		unsigned a = 3, b = 5, c = 7, d = 11;
+		if(vi & 1) { memcpy(self + 8, &a, 4); memcpy(self + 4, &b, 4); }
+		if(vi & 2) { memcpy(self + 0x10, &c, 4); memcpy(self + 0xc, &d, 4); }
+		unsigned i0 = 2, i4 = 9;
+		memcpy(inner, &i0, 4); memcpy(inner + 4, &i4, 4);
+		inner[8] = 1; inner[0xc] = 1; inner[0x10] = 0;
+		if(vi == 3) *(void**)(self + 0x64) = inner;
+		unsigned char selfC[0x80]; memcpy(selfC, self, sizeof(selfC));
+		unsigned ro = fn(self);
+		unsigned rc = nxByteCount1413(selfC);
+		if(ro != rc) { fprintf(stderr,"bb3 001413 vi=%u ro=%u rc=%u\n", vi, ro, rc); ++bb3; }
+		}
+	}
+	// 000443
+	{
+	typedef unsigned (__thiscall* T0443)(void);
+	T0443 fn = reinterpret_cast<T0443>(base + 0xdeb0);
+	NxFnPtrSaved svC = nxBindFnPtr(base, 0x123c14, nullptr);
+	NxFnPtrSaved svO = nxBindFnPtr(base, 0x123c08, nullptr);
+	unsigned char obj[0x20]; memset(obj, 0, sizeof(obj));
+	void* vt[0x20 / 4 + 1]; memset(vt, 0, sizeof(vt));
+	vt[0x1c / 4] = reinterpret_cast<void*>(&nxSingletonStub);
+	*(void**)(obj) = vt;
+	for(unsigned cached = 0; cached < 2; ++cached)
+		{
+		unsigned cv = cached ? 0xCAC9E000u : 0u;
+		// re-bind the cache slot and the object slot for this arm
+		unsigned char* img = const_cast<unsigned char*>(
+			reinterpret_cast<const unsigned char*>(base));
+		*reinterpret_cast<void**>(img + 0x123c14) = reinterpret_cast<void*>(
+			static_cast<size_t>(cv));
+		*reinterpret_cast<void**>(img + 0x123c08) = obj;
+		gSingletonHits = 0;
+		unsigned ro = fn();
+		unsigned hO = gSingletonHits;
+		gSingletonHits = 0;
+		unsigned rc = nxLazySingleton0443(obj, cv, &nxSingletonStub);
+		unsigned hC = gSingletonHits;
+		if(ro != rc || hO != hC || (cached == 1 && hO != 0u)
+			|| (cached == 0 && hO != 1u))
+			{fprintf(stderr,"bb3 000443 cached=%u ro=%08x rc=%08x hO=%u hC=%u\n",
+				cached, ro, rc, hO, hC);++bb3;}
+		}
+	nxUnbindFnPtr(base, 0x123c08, svO);
+	nxUnbindFnPtr(base, 0x123c14, svC);
+	}
+	printf("blockers3 candidate failures=%u provisional=1\n", bb3);
 	}
 
 
