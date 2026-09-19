@@ -13880,6 +13880,90 @@ int wmain(int argc, wchar_t** argv)
 	}
 	printf("tailsmall candidate failures=%u provisional=1\n", tr);
 	}
+	// -- Report-once float rows: 003716, 003720, 003770. Both gate passes each.
+	{
+	struct RoRow { unsigned rva; unsigned slotRva; unsigned line; unsigned expr; const char* name; };
+	static const RoRow kRo[] = {
+		{ 0x8b610, 0x126600, 0x06d, 0x101161a4, "003716" },
+		{ 0x8b760, 0x1265d8, 0x080, 0x10116204, "003720" },
+		{ 0x8c080, 0x126514, 0x150, 0x1011659c, "003770" },
+	};
+	NxReportSaved svRo = nxBindReportSlot(base);
+	nxSetAssertReport(&nxReportRecorder);
+	NxLockApiSaved svRoL = nxBindLockApi(base);
+	unsigned char* img = const_cast<unsigned char*>(
+		reinterpret_cast<const unsigned char*>(base));
+	DWORD oldProt = 0;
+	void* gp = reinterpret_cast<void*>(
+		reinterpret_cast<size_t>(img + 0x126000) & ~static_cast<size_t>(0xFFF));
+	unsigned char gOrig = 0;
+	int gOk = VirtualProtect(gp, 0x2000, PAGE_READWRITE, &oldProt);
+	if(gOk) { gOrig = *(img + 0x1263ad); *(img + 0x1263ad) = 0; }
+	static unsigned char gGate;
+	unsigned rof = 0;
+	for(unsigned i = 0; i < sizeof(kRo) / sizeof(kRo[0]); ++i)
+	for(unsigned pass = 0; pass < 2; ++pass)
+		{
+		typedef float (__thiscall* RoOracle)(void*);
+		RoOracle fn = reinterpret_cast<RoOracle>(base + kRo[i].rva);
+		NxFnPtrSaved svF = nxBindFnPtr(base, kRo[i].slotRva,
+			reinterpret_cast<void*>(&nxGc2RetRecorderF));
+		// this row only READS the gate -- it does not set it -- so both sides
+		// are put into the same state for each pass
+		{
+		const unsigned char want = (pass == 0) ? 0u : 1u;
+		if(gOk) *(img + 0x1263ad) = want;
+		gGate = want;
+		nxSetGate3716(want);
+		}
+		unsigned char lockObj[0x40]; memset(lockObj, 0, sizeof(lockObj));
+		unsigned char subObj[0x40]; memset(subObj, 0, sizeof(subObj));
+		*(void**)(lockObj) = subObj;
+		unsigned char obj[0x100], objC[0x100];
+		memset(obj, 0, sizeof(obj)); memset(objC, 0, sizeof(objC));
+		unsigned tag = 0x7C7C0000u, v80 = 0x82820000u;
+		memcpy(obj + 0x30, &tag, 4); memcpy(obj + 0x80, &v80, 4);
+		memcpy(objC + 0x30, &tag, 4); memcpy(objC + 0x80, &v80, 4);
+		*(void**)(obj + 0x7c) = obj; *(void**)(objC + 0x7c) = objC;
+		unsigned char self[0x40]; memset(self, 0, sizeof(self));
+		*(void**)(self + 0x10) = lockObj;
+		*(void**)(self + 0x14) = obj;
+		unsigned char selfC[0x40]; memcpy(selfC, self, sizeof(selfC));
+		*(void**)(selfC + 0x14) = objC;
+		unsigned o[5];
+		gRepCount = 0; memset(gRepCap, 0, sizeof(gRepCap));
+		gGc2Hits = 0;
+		float rO = fn(self);
+		memcpy(o, gRepCap, sizeof(o));
+		unsigned nO = gRepCount, hO = gGc2Hits;
+		if(gOk) *(img + 0x1263ad) = (pass == 0) ? 0u : 1u;
+		nxSetGate3716((pass == 0) ? 0u : 1u);
+		gRepCount = 0; memset(gRepCap, 0, sizeof(gRepCap));
+		gGc2Hits = 0;
+		float rC = nxOnceReportThunkFloat(selfC, 0xceu, 0x101160ccu, kRo[i].line,
+			kRo[i].expr, &nxGc2RetRecorderF, 0);
+		unsigned c[5];
+		memcpy(c, gRepCap, sizeof(c));
+		unsigned nC = gRepCount, hC = gGc2Hits;
+		if(memcmp(&rO, &rC, 4) != 0 || nO != nC || hO != hC
+			|| memcmp(o, c, sizeof(o)) != 0 || nO != (pass == 0 ? 1u : 0u)
+			|| hO != (pass == 0 ? 0u : 1u))
+			{fprintf(stderr,"ro %s pass=%u rO=%08x rC=%08x nO=%u nC=%u hO=%u hC=%u\n",
+				kRo[i].name, pass, *(unsigned*)&rO, *(unsigned*)&rC, nO, nC, hO, hC);++rof;}
+		nxUnbindFnPtr(base, kRo[i].slotRva, svF);
+		}
+	if(gOk)
+		{
+		DWORD t2 = 0;
+		VirtualProtect(gp, 0x2000, PAGE_READWRITE, &t2);
+		*(img + 0x1263ad) = gOrig;
+		VirtualProtect(gp, 0x2000, oldProt, &t2);
+		}
+	nxUnbindLockApi(base, svRoL);
+	nxSetAssertReport(nullptr);
+	nxUnbindReportSlot(base, svRo);
+	printf("reportonceF candidate failures=%u provisional=1\n", rof);
+	}
 
 
 
