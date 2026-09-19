@@ -12389,6 +12389,55 @@ int wmain(int argc, wchar_t** argv)
 	nxUnbindGlobalSlot(base, svGl);
 	printf("dtor3938 candidate failures=%u provisional=1\n", gf3);
 	}
+	// -- Guarded store family: 004184, 004288, 004292, 004338. Both arms each.
+	{
+	struct GsRow { unsigned rva; unsigned fieldOff; unsigned file; unsigned line;
+		unsigned expr; const char* name; };
+	static const GsRow kGs[] = {
+		{ 0xa8f10, 0x1a8, 0x1011a204, 0x09d, 0x1011a290, "004334" },
+		{ 0x9b590, 0x044, 0x101195b0, 0x0b1, 0x10119628, "004184" },
+		{ 0xa2ee0, 0x1d0, 0x10119e64, 0x083, 0x10119ef0, "004288" },
+		{ 0xa2f40, 0x044, 0x10119e64, 0x08e, 0x10119f40, "004292" },
+		{ 0xa8fc0, 0x044, 0x1011a204, 0x0ae, 0x1011a2e0, "004338" },
+	};
+	NxReportSaved svGs = nxBindReportSlot(base);
+	nxSetAssertReport(&nxReportRecorder);
+	unsigned gsf = 0;
+	for(unsigned i = 0; i < sizeof(kGs) / sizeof(kGs[0]); ++i)
+	for(unsigned arm = 0; arm < 2; ++arm)
+		{
+		typedef void (__thiscall* GsOracle)(void*, unsigned);
+		GsOracle fn = reinterpret_cast<GsOracle>(base + kGs[i].rva);
+		unsigned char self[0x200], selfC[0x200];
+		memset(self, 0, sizeof(self)); memset(selfC, 0, sizeof(selfC));
+		// arm 0: the guard byte is clear -> store. arm 1: equal 0x10 -> report.
+		self[0x2c] = (arm == 0) ? 0x00 : 0x10;
+		selfC[0x2c] = self[0x2c];
+		unsigned o[5];
+		gRepCount = 0; memset(gRepCap, 0, sizeof(gRepCap));
+		fn(self, 0x11223344u);
+		memcpy(o, gRepCap, sizeof(o));
+		unsigned nO = gRepCount;
+		gRepCount = 0; memset(gRepCap, 0, sizeof(gRepCap));
+		nxGuardedStoreEx(selfC, 0x11223344u, kGs[i].fieldOff, 1u, kGs[i].file,
+			kGs[i].line, kGs[i].expr);
+		unsigned c[5];
+		memcpy(c, gRepCap, sizeof(c));
+		unsigned nC = gRepCount;
+		unsigned storedO = 0, storedC = 0;
+		memcpy(&storedO, self + kGs[i].fieldOff, 4);
+		memcpy(&storedC, selfC + kGs[i].fieldOff, 4);
+		if(nO != nC || memcmp(o, c, sizeof(o)) != 0
+			|| memcmp(self, selfC, sizeof(self)) != 0
+			|| nO != arm || storedO != storedC
+			|| (arm == 0 && storedO != 0x11223344u))
+			{fprintf(stderr,"guardedstore %s arm=%u nO=%u nC=%u storedO=%08x storedC=%08x\n",
+				kGs[i].name, arm, nO, nC, storedO, storedC);++gsf;}
+		}
+	nxSetAssertReport(nullptr);
+	nxUnbindReportSlot(base, svGs);
+	printf("guardedstore candidate failures=%u provisional=1\n", gsf);
+	}
 
 
 
