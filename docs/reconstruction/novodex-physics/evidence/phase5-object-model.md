@@ -5212,6 +5212,39 @@ wrong, and the differential caught both:
 
 All ten move to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z185. Blocker batch three: a teardown, a byte count and a singleton
+
+Round 168 closed three more small blockers (build/r168.log blockers3
+failures=0):
+
+- 004409 (0xb0360) is a LINKED-LIST TEARDOWN: store the vtable 0x1011a648,
+  walk the chain from [self+0xc] through +0x10 calling vtable slot +0x00 of
+  every node with the constant 1, then clear the fields;
+- 001413 (0x29920) sums two byte counts -- 001457 on `this` and, when
+  [self+0x64] is non-null, 001668 on that;
+- 000443 (0xdeb0) is a LAZY SINGLETON getter: return the cached pointer at
+  [0x10123c14], or build it through vtable slot +0x1c of the object at
+  [0x10123c08] and cache it.
+
+Getting 004409 to verify took FOUR fixture corrections, and each one is a
+mistake this harness can make again, so they are worth listing:
+
+1. my clear loop used a stride over +8..+0x20, which wrongly included +0x1c --
+   the oracle SKIPS that field;
+2. the recorder stubs took no argument, but the call site pushes the constant
+   1 and does not clean it, so the pushed word was never popped and the stack
+   drifted;
+3. each node's vtable pointer was taken from a LOOP-SCOPED array, so all three
+   nodes ended up pointing at the last stub and the visit order was lost -- the
+   tables must outlive the loop;
+4. the fixture linked all three nodes regardless of the requested length, so a
+   one-node chain still visited three.
+
+The visit ORDER is what the differential checks, and it does so without ever
+seeing ecx: every node gets its OWN recorder stub, so the sequence of hits
+identifies which node was reached in which order. All three move to
+`reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
