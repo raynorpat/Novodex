@@ -993,6 +993,15 @@ unsigned				nxGuardedField3708(void* self);
 void					nxSetLockOwner(unsigned id);
 unsigned char			nxLockProbe0392(void* self);
 
+//! The mutex-guarded virtual dispatch family (31 rows): when the acquire of
+//! [self+0x10] fails the row reports the given assertion tuple and returns;
+//! otherwise it calls vtable slot `slot` of the object at [self+0x18] with the
+//! argument and then releases the lock. 001115 (0x23b90) is slot +0x38 with
+//! (2, 0x10106f0c, 0x2b, 0, 0x10104760).
+void					nxMutexVirtualEx(void* self, void* arg, unsigned slot,
+							unsigned code, unsigned file, unsigned line,
+							unsigned expression);
+
 //! The six pure assert-report rows: each reports its own file/line/expression
 //! constants through the hook and returns void. The message strings are fixed
 //! image data, so they are passed through unchanged.

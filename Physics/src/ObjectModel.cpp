@@ -1808,6 +1808,38 @@ unsigned char nxLockProbe0392(void* self)
 	return 1;
 	}
 
+// The acquire test shared by the mutex family: the owner word is reached
+// through the lock's first word.
+static bool nxTryAcquireLock(unsigned char* lock)
+	{
+	unsigned char* inner = *reinterpret_cast<unsigned char**>(lock);
+	unsigned owner;
+	memcpy(&owner, inner + 0x1c, 4);
+	return owner == gNxLockOwner;
+	}
+
+// The mutex-guarded virtual dispatch family. The slot call site pushes one
+// argument and does not clean it, so the slot is a __stdcall one-argument
+// function with `this` in ecx.
+void nxMutexVirtualEx(void* self, void* arg, unsigned slot, unsigned code,
+	unsigned file, unsigned line, unsigned expression)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	unsigned char* lock = *reinterpret_cast<unsigned char**>(p + 0x10);
+	if(!nxTryAcquireLock(lock))
+		{
+		if(gNxAssertReport)
+			gNxAssertReport(code, file, line, 0u, expression);
+		return;
+		}
+	unsigned char* obj = *reinterpret_cast<unsigned char**>(p + 0x18);
+	void** vt = *reinterpret_cast<void***>(obj);
+	typedef void (__stdcall* SlotFn)(void*);
+	SlotFn fn = reinterpret_cast<SlotFn>(vt[slot / 4]);
+	fn(arg);
+	// the release is a no-op under the bound stubs
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)
