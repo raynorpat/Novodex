@@ -191,6 +191,39 @@ static void nxUnbindGlobalSlot(const void* imageBase, const NxGlobalSaved& sv)
 	VirtualProtect(sv.page, 0x2000, sv.prot, &t);
 	}
 
+// The 004491 flag lives at the data word [0x10127180]; binding it drives both
+// branches of the helper's test.
+struct NxFlagSaved { unsigned word; void* page; DWORD prot; int ok; };
+
+static NxFlagSaved nxBindFlagWord(const void* imageBase, unsigned value)
+	{
+	NxFlagSaved sv;
+	unsigned char* img = const_cast<unsigned char*>(
+		reinterpret_cast<const unsigned char*>(imageBase));
+	unsigned* slot = reinterpret_cast<unsigned*>(img + 0x127180);
+	sv.word = *slot;
+	sv.page = reinterpret_cast<void*>(
+		reinterpret_cast<size_t>(img + 0x127000) & ~static_cast<size_t>(0xFFF));
+	sv.prot = 0; sv.ok = 0;
+	if(!VirtualProtect(sv.page, 0x2000, PAGE_READWRITE, &sv.prot))
+		return sv;
+	sv.ok = 1;
+	*slot = value;
+	return sv;
+	}
+
+static void nxUnbindFlagWord(const void* imageBase, const NxFlagSaved& sv)
+	{
+	if(!sv.ok)
+		return;
+	unsigned char* img = const_cast<unsigned char*>(
+		reinterpret_cast<const unsigned char*>(imageBase));
+	DWORD t = 0;
+	VirtualProtect(sv.page, 0x2000, PAGE_READWRITE, &t);
+	*reinterpret_cast<unsigned*>(img + 0x127180) = sv.word;
+	VirtualProtect(sv.page, 0x2000, sv.prot, &t);
+	}
+
 struct NxAllocSaved { void* slot; void* page; DWORD prot; int ok; };
 
 static NxAllocSaved nxBindAllocSlot(const void* imageBase, void* holder)
@@ -12653,6 +12686,35 @@ int wmain(int argc, wchar_t** argv)
 				count, flag, retv, ro, rc, hO, hC);++lf3;}
 		}
 	printf("loop1024 candidate failures=%u provisional=1\n", lf3);
+	}
+	// -- Lock-bracketed global-flag read 004491: both flag values.
+	{
+	typedef unsigned char (__thiscall* T4491)(void*);
+	T4491 fn = reinterpret_cast<T4491>(base + 0xb0f10);
+	NxLockApiSaved svFl = nxBindLockApi(base);
+	unsigned flf = 0;
+	for(unsigned arm = 0; arm < 2; ++arm)
+		{
+		unsigned word = (arm == 0) ? 0x1234u : 0u;
+		NxFlagSaved svW = nxBindFlagWord(base, word);
+		nxSetGlobalFlag4491(word);
+		unsigned char lockObj[0x40]; memset(lockObj, 0, sizeof(lockObj));
+		unsigned char subObj[0x40]; memset(subObj, 0, sizeof(subObj));
+		*(void**)(lockObj) = subObj;
+		unsigned char obj[0x20]; memset(obj, 0, sizeof(obj));
+		unsigned char self[0x40]; memset(self, 0, sizeof(self));
+		*(void**)(self + 0x14) = lockObj;
+		*(void**)(self + 0x18) = obj;
+		unsigned char selfC[0x40]; memcpy(selfC, self, sizeof(self));
+		unsigned char ro = fn(self);
+		unsigned char rc = nxLockedGlobalFlag4491(selfC);
+		if(ro != rc || ro != static_cast<unsigned char>(arm == 0 ? 1 : 0))
+			{fprintf(stderr,"globalflag4491 arm=%u word=%08x ro=%u rc=%u\n", arm, word, ro, rc);++flf;}
+		nxUnbindFlagWord(base, svW);
+		}
+	nxSetGlobalFlag4491(0u);
+	nxUnbindLockApi(base, svFl);
+	printf("globalflag4491 candidate failures=%u provisional=1\n", flf);
 	}
 
 
