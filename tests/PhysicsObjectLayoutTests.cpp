@@ -4831,6 +4831,24 @@ int wmain(int argc, wchar_t** argv)
 	printf("cwread candidate failures=%u provisional=1\n", cwf);
 	}
 
+	// -- Indexed-sum probe 001960 (0x4bec0): [this+1c + [this+0x70]*4] -> sum.
+	{
+	typedef unsigned (__thiscall* IxSum2Oracle)(void*);
+	IxSum2Oracle ix2 = reinterpret_cast<IxSum2Oracle>(base + 0x4bec0);
+	unsigned char sb[0x100]; memset(sb,0,sizeof(sb));
+	unsigned char so[0x20]; memset(so,0,sizeof(so));
+	unsigned f8=0x11, fc=0x22; memcpy(so+8,&f8,4); memcpy(so+0xc,&fc,4);
+	unsigned zi=0; memcpy(sb+0x70,&zi,4);
+	*(void**)(sb+0x1c)=so;
+	unsigned r0 = ix2(sb);
+	fprintf(stderr,"ix2 r=%u\n",r0);
+	unsigned fail=0;
+	if(r0 != 0x33u)++fail;
+	memset(sb+0x1c,0,4);
+	if(ix2(sb) != 0)++fail;
+	printf("ixsum2 candidate failures=%u provisional=1\n", fail);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
