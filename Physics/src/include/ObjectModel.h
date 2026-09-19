@@ -935,6 +935,17 @@ void*					nxLockedCopy12_3872(void* self, unsigned* out);
 //! else zero.
 unsigned				nxLockedMatch4479(void* self, unsigned arg);
 
+//! The copy members of the locked accessor family: lock, call a helper that
+//! copies `count` dwords from [field+dataOff] into out, unlock. `field` comes
+//! from [self+fieldOff].
+void					nxLockedCopyOut(void* self, unsigned fieldOff,
+							unsigned dataOff, unsigned count, unsigned* out);
+
+//! The pose-copy member: nine dwords from [field+dataOff] then the three at
+//! [field+dataOff+0x24], i.e. a 0x30-byte pose.
+void					nxLockedCopyPose(void* self, unsigned fieldOff,
+							unsigned dataOff, unsigned* out);
+
 //! phys_fn_000713: recursive path compression over the record chain -- each
 //! record caches its group root at +0x1e8, self-parented at the root.
 unsigned				nxBodyRecordFixRoot(void* rec);

@@ -1437,6 +1437,27 @@ unsigned nxLockedMatch4479(void* self, unsigned arg)
 		: 0u;
 	}
 
+// The copy members of the family: the wrapped helper copies `count` dwords
+// from [field+dataOff] into out.
+void nxLockedCopyOut(void* self, unsigned fieldOff, unsigned dataOff,
+	unsigned count, unsigned* out)
+	{
+	const unsigned char* p = reinterpret_cast<const unsigned char*>(self);
+	const unsigned char* field = *reinterpret_cast<const unsigned char* const*>(p + fieldOff);
+	memcpy(out, field + dataOff, count * 4u);
+	}
+
+// The pose-copy member: nine dwords from [field+dataOff] followed by the three
+// at [field+dataOff+0x24].
+void nxLockedCopyPose(void* self, unsigned fieldOff, unsigned dataOff,
+	unsigned* out)
+	{
+	const unsigned char* p = reinterpret_cast<const unsigned char*>(self);
+	const unsigned char* field = *reinterpret_cast<const unsigned char* const*>(p + fieldOff);
+	memcpy(out, field + dataOff, 36);
+	memcpy(reinterpret_cast<unsigned char*>(out) + 0x24, field + dataOff + 0x24, 12);
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)
