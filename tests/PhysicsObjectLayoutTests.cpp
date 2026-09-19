@@ -5816,6 +5816,82 @@ int wmain(int argc, wchar_t** argv)
 	printf("lockacc3 candidate failures=%u provisional=1\n", b3f);
 	}
 
+	// -- Locked accessor fourth batch: count, flag, bit-extract, address.
+	{
+	NxLockApiSaved svB4 = nxBindLockApi(base);
+	unsigned b4f = 0;
+	unsigned char lockObjA[0x40]; memset(lockObjA, 0, sizeof(lockObjA));
+	unsigned char subObjA[0x40]; memset(subObjA, 0, sizeof(subObjA));
+	*(void**)(lockObjA) = subObjA;
+	unsigned char field[0x200];
+	unsigned char sh[0x40];
+	// 003700: element count from [field+8]-[field+4]
+	{
+	typedef int (__thiscall* CountOracle)(void*);
+	CountOracle fn = reinterpret_cast<CountOracle>(base + 0x8b1f0);
+	for(unsigned ci = 0; ci < 3; ++ci)
+		{
+		memset(field, 0, sizeof(field));
+		unsigned lo = 0x1000, hi = 0x1000 + 4u * ci;
+		memcpy(field + 4, &lo, 4); memcpy(field + 8, &hi, 4);
+		memset(sh, 0, sizeof(sh));
+		*(void**)(sh + 0x10) = lockObjA;
+		*(void**)(sh + 0x14) = field;
+		int o = fn(sh);
+		int c = nxLockedElementCount(sh, 0x14);
+		if(o != c){fprintf(stderr,"b4 count ci=%u o=%d c=%d\n", ci, o, c);++b4f;}
+		}
+	}
+	// 003702: interval flag
+	{
+	typedef unsigned (__thiscall* FlagOracle)(void*);
+	FlagOracle fn = reinterpret_cast<FlagOracle>(base + 0x8b220);
+	for(unsigned ci = 0; ci < 4; ++ci)
+		{
+		memset(field, 0, sizeof(field));
+		unsigned lo = 0x2000 + ci, hi = lo + (ci == 0 ? 0u : (ci == 1 ? 1u : (ci == 2 ? 3u : 4u)));
+		memcpy(field + 0x14, &lo, 4); memcpy(field + 0x18, &hi, 4);
+		memset(sh, 0, sizeof(sh));
+		*(void**)(sh + 0x10) = lockObjA;
+		*(void**)(sh + 0x14) = field;
+		unsigned o = fn(sh);
+		unsigned c = nxLockedIntervalFlag(sh, 0x14);
+		if(o != c){fprintf(stderr,"b4 flag ci=%u o=%08x c=%08x\n", ci, o, c);++b4f;}
+		}
+	}
+	// 004483: bit extract ([field+0x2c]>>3)&3
+	{
+	typedef unsigned (__thiscall* BitOracle)(void*);
+	BitOracle fn = reinterpret_cast<BitOracle>(base + 0xb0dc0);
+	for(unsigned ci = 0; ci < 4; ++ci)
+		{
+		memset(field, 0, sizeof(field));
+		unsigned v = 0xAB000000u | (ci * 8u + 2u);
+		memcpy(field + 0x2c, &v, 4);
+		memset(sh, 0, sizeof(sh));
+		*(void**)(sh + 0x14) = lockObjA;
+		*(void**)(sh + 0x18) = field;
+		unsigned o = fn(sh);
+		unsigned c = nxLockedBitExtract(sh, 0x18, 0x2c);
+		if(o != c){fprintf(stderr,"b4 bit ci=%u o=%08x c=%08x\n", ci, o, c);++b4f;}
+		}
+	}
+	// 001071: address getter (lea [field+0xe4])
+	{
+	typedef void* (__thiscall* AddrOracle)(void*);
+	AddrOracle fn = reinterpret_cast<AddrOracle>(base + 0x23520);
+	memset(field, 0, sizeof(field));
+	memset(sh, 0, sizeof(sh));
+	*(void**)(sh + 0x14) = lockObjA;
+	*(void**)(sh + 0x18) = field;
+	void* o = fn(sh);
+	void* c = nxLockedFieldAddress(sh, 0x18, 0xe4);
+	if(o != c || o != field + 0xe4){fprintf(stderr,"b4 addr o=%p c=%p\n", o, c);++b4f;}
+	}
+	nxUnbindLockApi(base, svB4);
+	printf("lockacc4 candidate failures=%u provisional=1\n", b4f);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
