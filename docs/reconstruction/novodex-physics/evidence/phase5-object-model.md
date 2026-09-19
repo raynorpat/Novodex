@@ -4430,6 +4430,34 @@ store the argument -- the most likely remaining explanation is a calling
 convention that differs from `__thiscall(ret 4)`, since `[esp+4]` is read with
 no preceding push. No gate, coverage-floor, or policy change.
 
+## 3z159. Gated locked reader closes (003708)
+
+Round 142 closed 003708 (0x8b420, 89 bytes), the gated locked reader. Its
+whole body is:
+
+    mov al, byte ptr [0x101263ac]     ; an image gate byte
+    test al, al
+    jne WORK
+    <report(0xce, 0x101160cc, 0x4c, 0, 0x10116170)>; xor eax,eax; ret
+WORK:
+    <lock [edi+0x10]>
+    ecx = [edi+0x14]; call 000287      ; mov eax,[ecx+0x24]; ret
+    edi = [eax+0x38]
+    <unlock [edi+0x10]>
+    mov eax, edi; ret
+
+The gate byte holds 0x3770372c in the image, so the SHIPPED path is the work
+arm; the harness binds [0x101263ac] both ways (nxBindGateSlot) and mirrors it
+into the candidate through nxSetGate3708, so BOTH arms are driven. The work
+helper 000287 is a plain field getter, already reconstructed, and the lock
+pair is bound as usual. Candidate nxGuardedField3708 matched on both arms
+(build/r142.log gate3708 failures=0): the gated arm returns the word at
+[that+0x38], the ungated arm returns zero after reporting the assertion.
+
+003708 moves to `reconstructed`. This is also the first row closed by binding
+a plain DATA byte rather than a function slot, which widens the binding
+technique beyond call targets. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
