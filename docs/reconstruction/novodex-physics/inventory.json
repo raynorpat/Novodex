@@ -63104,12 +63104,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "element-count (0x85580)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1295",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12271",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "returns ([this+8] - [this+4]) >> 2 (signed element count); ret",
+      "dynamic_proof": "confirmed via elemcount differential (3z112): failures=0",
       "notes": ""
     },
     {
