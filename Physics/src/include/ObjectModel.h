@@ -878,6 +878,12 @@ void					nxDoubleToFloat9_2156(void* self, float* out);
 //! floats at +0xd8/+0xd0/+0xd4. Returns true, or false when no record exists.
 bool					nxGatherDescriptor0046(void* self, unsigned* out);
 
+//! phys_fn_000132 (0x46c0, actor_dynamic slot, ret 4): writes the 3x3 rotation
+//! matrix for the quaternion at record+0x5c (x, y, z, w) into out[0..8], or
+//! copies the cached 36 bytes at [self+0x14]+0x20 when the record is null.
+//! Returns out either way.
+float*					nxQuatToMatrix0132(void* self, float* out);
+
 //! phys_fn_000713: recursive path compression over the record chain -- each
 //! record caches its group root at +0x1e8, self-parented at the root.
 unsigned				nxBodyRecordFixRoot(void* rec);

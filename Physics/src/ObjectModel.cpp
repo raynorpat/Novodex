@@ -1319,6 +1319,37 @@ void nxBatchAppend3268(void* self, unsigned count, const unsigned* indices)
 	++*reinterpret_cast<unsigned*>(p + 0x18);
 	}
 
+// phys_fn_000132 (0x46c0, ret 4): quaternion at record+0x5c (x, y, z, w) to a
+// 3x3 rotation matrix in out[0..8]; when the record pointer is null it copies
+// the cached 36 bytes at [self+0x14]+0x20 instead. Returns out.
+float* nxQuatToMatrix0132(void* self, float* out)
+	{
+	const unsigned char* p = reinterpret_cast<const unsigned char*>(self);
+	const unsigned char* body = *reinterpret_cast<const unsigned char* const*>(p + 0x14);
+	const unsigned char* rec = *reinterpret_cast<const unsigned char* const*>(body + 8);
+	if(rec == nullptr)
+		{
+		memcpy(out, body + 0x20, 36);
+		return out;
+		}
+	float q[4];
+	memcpy(&q[0], rec + 0x5c, 4);
+	memcpy(&q[1], rec + 0x60, 4);
+	memcpy(&q[2], rec + 0x64, 4);
+	memcpy(&q[3], rec + 0x68, 4);
+	const double x = q[0], y = q[1], z = q[2], w = q[3];
+	out[0] = static_cast<float>(1.0 - 2.0 * (y*y + z*z));
+	out[1] = static_cast<float>(2.0 * (x*y - z*w));
+	out[2] = static_cast<float>(2.0 * (x*z + y*w));
+	out[3] = static_cast<float>(2.0 * (x*y + z*w));
+	out[4] = static_cast<float>(1.0 - 2.0 * (x*x + z*z));
+	out[5] = static_cast<float>(2.0 * (y*z - x*w));
+	out[6] = static_cast<float>(2.0 * (x*z - y*w));
+	out[7] = static_cast<float>(2.0 * (y*z + x*w));
+	out[8] = static_cast<float>(1.0 - 2.0 * (x*x + y*y));
+	return out;
+	}
+
 // phys_fn_000046 (0x24c0, ret 4): gather the descriptor record at
 // [[self+0x14]+8] into out. Nine dwords come from record+0xdc, three more
 // from record+0x100, then the tail fields; out[25], out[27] and out[28] are
