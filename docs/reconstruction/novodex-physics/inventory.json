@@ -24738,12 +24738,12 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "SPHERE vtable slot 4 mass wrapper (0x27be0, ret 0xc)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/673",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3530",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "when [this+0xde]&7 is clear, computes the sphere mass frame into the destination from the facade radius [this+0xe0] and pose [this+0x6c] via the 000851 helper; always returns true",
+      "dynamic_proof": "confirmed via sphmass differential (3z118): 8 flag-lows x 2 densities failures=0 (needed the sphere builder payload-path fix)",
       "notes": ""
     },
     {
