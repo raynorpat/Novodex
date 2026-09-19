@@ -96,6 +96,11 @@ static unsigned gSlot38Hits;
 // __stdcall one-argument function; `this` arrives in ecx and is unused here.
 static void __stdcall nxSlot38Stub(void*) { ++gSlot38Hits; }
 
+// The constant-argument thunks dispatch to vtable slot +0x4c with one value.
+static unsigned gVtConstArg;
+static unsigned gVtConstHits;
+static void __stdcall nxVtConstStub(unsigned a) { gVtConstArg = a; ++gVtConstHits; }
+
 // Bind the 004886 callback slot [0x10128478] to the stub above.
 struct NxCallbackSaved { void* slot; void* page; DWORD prot; int ok; };
 
@@ -11789,6 +11794,39 @@ int wmain(int argc, wchar_t** argv)
 	nxSetAssertReport(nullptr);
 	nxUnbindReportSlot(base, svMv);
 	printf("mutexfamily candidate failures=%u provisional=1\n", mvf);
+	}
+	// -- Constant-argument virtual thunks (nine rows at 0xb0580..0xb0600).
+	{
+	struct VtRow { unsigned rva; unsigned slot; unsigned arg; const char* name; };
+	static const VtRow kVt[] = {
+		{ 0xb0580, 0x4c, 1, "004417" }, { 0xb0590, 0x4c, 5, "004419" },
+		{ 0xb05a0, 0x4c, 4, "004421" }, { 0xb05b0, 0x4c, 0, "004423" },
+		{ 0xb05c0, 0x4c, 2, "004425" }, { 0xb05d0, 0x4c, 3, "004427" },
+		{ 0xb05e0, 0x4c, 8, "004429" }, { 0xb05f0, 0x4c, 6, "004431" },
+		{ 0xb0600, 0x4c, 7, "004433" },
+	};
+	unsigned vtf = 0;
+	for(unsigned i = 0; i < sizeof(kVt) / sizeof(kVt[0]); ++i)
+		{
+		typedef void (__thiscall* VtOracle)(void*);
+		VtOracle fn = reinterpret_cast<VtOracle>(base + kVt[i].rva);
+		void* vt[0x60 / 4 + 1];
+		memset(vt, 0, sizeof(vt));
+		vt[kVt[i].slot / 4] = reinterpret_cast<void*>(&nxVtConstStub);
+		unsigned char self[0x20]; memset(self, 0, sizeof(self));
+		*(void**)(self) = vt;
+		unsigned char selfC[0x20]; memcpy(selfC, self, sizeof(self));
+		gVtConstHits = 0; gVtConstArg = 0xffffffffu;
+		fn(self);
+		unsigned hO = gVtConstHits, aO = gVtConstArg;
+		gVtConstHits = 0; gVtConstArg = 0xffffffffu;
+		nxVtConstEx(selfC, kVt[i].slot, kVt[i].arg);
+		unsigned hC = gVtConstHits, aC = gVtConstArg;
+		if(hO != hC || aO != aC || hO != 1u || aO != kVt[i].arg)
+			{fprintf(stderr,"vtconst %s hO=%u hC=%u aO=%u aC=%u\n",
+				kVt[i].name, hO, hC, aO, aC);++vtf;}
+		}
+	printf("vtconst candidate failures=%u provisional=1\n", vtf);
 	}
 
 
