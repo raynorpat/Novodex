@@ -3669,6 +3669,23 @@ target), a 3z129 class-(a) dispatch thunk over a non-null sentinel global, a
 callee, or now a register-dependent row like 005223. No gate, coverage-floor,
 or policy change.
 
+## 3z131. Double-to-float matrix row closes (002156)
+
+Round 114 began working back from the Task-3/4 slate by reconstructing its
+blocking callees. The MESH slot-4 row 001397 is now one dependency short:
+000827 closed in 3z126, 000835/000839 were already reconstructed, and its
+call to 001583 (0x2ea70) is a ONE-BYTE `ret` stub -- a no-op. Its remaining
+dependency 002241 (0x54bb0, 692 bytes) calls 005666 (0xf4140, 156 bytes)
+twelve times plus 002156 (0x538e0, 46 bytes). 002156 was driven and closed
+here: it converts the nine consecutive doubles at [self+0x18] (8-byte
+stride) into nine floats at out[0..8]. The image interleaves the fld/fstp
+schedule -- reading d0,d3,d6 / d1,d4,d7 / d2,d5,d8 and writing
++0,+0xc,+0x18 / +4,+0x10,+0x1c / +8,+0x14,+0x20 -- which is exactly
+dst[k] = (float)src[k]. Candidate nxDoubleToFloat9_2156 verified byte-exact
+across three magnitude classes (unit, ~1e120, ~1e-300), so the double->float
+staging matches even at extremes (build/r114.log d2f9 failures=0). 002156
+moves to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
