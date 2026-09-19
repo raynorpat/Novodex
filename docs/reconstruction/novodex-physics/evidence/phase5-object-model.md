@@ -3828,6 +3828,27 @@ analysis with the lock pair treated as bindable confirms only 000146 (579B)
 and 000148 (811B) remain reachable, both large quaternion-driven geometry
 functions. No gate, coverage-floor, or policy change.
 
+## 3z138. Lock binding exposes a 60-row accessor backlog; two close
+
+Round 121 re-ran the genuine-entry analysis with the 3z134 lock pair treated
+as BINDABLE rather than blocking. That changed the picture completely: 60
+product rows whose only callees are the lock pair and already-reconstructed
+helpers -- all previously written off as blocked by non-code global dispatch
+-- are drivable. They are the small locked accessor family (26-43 bytes), each
+shaped `lock [self+0x10]; <read or call>; unlock; return`.
+
+Two closed immediately:
+- 003950 (0x8f0d0, 26 bytes) takes the lock, releases it and returns self --
+  the lock pair brackets the whole body and has no other observable;
+- 000418 (0xda50, 35 bytes) reads the word at [[self+0x24]+0x55c] under the
+  lock.
+
+Both were driven with the lock API bound (build/r121.log lockacc
+failures=0). The remaining 58 span 36-43 bytes and come in repeated shapes --
+for example 000317 and 001071 lock, call one reconstructed helper on a field
+of self, unlock and return its value. No gate, coverage-floor, or policy
+change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
