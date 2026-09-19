@@ -5184,6 +5184,34 @@ bytes) gates ten rows but itself chains into 004089 and 000633, both still
 
 All seven move to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z184. Ten more blockers close (batch two)
+
+Round 167 kept working the ranking 3z183 produced and closed the next ten
+small blockers (build/r167.log blockers2 failures=0, blockers failures=0):
+
+- 001583 (0x2ea70) is a ONE-BYTE row -- a bare `ret` with no body at all;
+- 002371 (0x5b7e0) pushes [this] and calls the lock-API global [0x10104020];
+- 002375 (0x5b800, ret 4) calls the lock-API global [0x10104028];
+- 005320 (0xe7c10) frees ([self+0x4c] - 4) through the 004803 allocator and
+  clears both [self+0x4c] and [self+0x48];
+- 003429, 003433, 003445, 003459, 003463 and 003465 are six more 24-byte
+  two-argument global-call thunks (slots 0x10126600, 0x101265d8, 0x101263b4,
+  0x10126514, 0x1012649c, 0x10126570), which needed NO new candidate -- the
+  nxGlobalCall2 written in 3z183 already covers them, they only needed their
+  slots bound.
+
+Two things about 002375 are worth recording because the first drive got both
+wrong, and the differential caught both:
+
+1. the call site pushes [this] FIRST and the row argument second, so the slot
+   receives ([this], arg) -- the opposite of the reading that looks natural;
+2. the row does NOT test the result directly. It runs `neg eax; sbb al, al;
+   inc al`, which yields 1 when the slot returned ZERO and 0 when it returned
+   non-zero -- an INVERTED test, and the arm counts only line up once that is
+   modelled.
+
+All ten move to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
