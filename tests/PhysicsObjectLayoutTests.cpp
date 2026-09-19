@@ -4864,6 +4864,35 @@ int wmain(int argc, wchar_t** argv)
 	printf("elemcount candidate failures=%u provisional=1\n", ef);
 	}
 
+	// -- MESH vtable slot 4 transform-point (001403, 0x29190, ret 4).
+	{
+	typedef void (__thiscall* TransformPtOracle)(void*, float*);
+	TransformPtOracle tp = reinterpret_cast<TransformPtOracle>(base + 0x29190);
+	unsigned tpf = 0;
+	unsigned char body[0x60]; memset(body, 0, sizeof(body));
+	unsigned char own[0x100]; memset(own, 0, sizeof(own));
+	float vec[4] = { 1.0f, 2.0f, 3.0f, 7.0f };
+	memcpy(body + 0x5c, vec, sizeof(vec));
+	*(void**)(own + 0xe0) = body;
+	// matrix rows at +0xc..0x2c, translation at +0x30..0x38
+	float m[9] = { 1,2,3, 4,5,6, 7,8,9 };
+	float t[3] = { 10, 20, 30 };
+	memcpy(own + 0xc, m, sizeof(m));
+	memcpy(own + 0x30, t, sizeof(t));
+	float outO[4], outC[4];
+	memset(outO, 0, sizeof(outO)); memset(outC, 0, sizeof(outC));
+	tp(own, outO);
+	reinterpret_cast<BoxShape*>(own)->nxTransformPoint1403(outC);
+	if(memcmp(outO, outC, sizeof(outO)) != 0)
+		{
+		fprintf(stderr,"tp1403 fail: o=%.3f,%.3f,%.3f,%.3f c=%.3f,%.3f,%.3f,%.3f\n",
+			(double)outO[0],(double)outO[1],(double)outO[2],(double)outO[3],
+			(double)outC[0],(double)outC[1],(double)outC[2],(double)outC[3]);
+		++tpf;
+		}
+	printf("transpt1403 candidate failures=%u provisional=1\n", tpf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
