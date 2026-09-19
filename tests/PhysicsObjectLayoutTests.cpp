@@ -171,6 +171,12 @@ static unsigned gAllocHits;
 static void* gAllocArg;
 static void __stdcall nxAllocFreeSlot(void* block) { gAllocArg = block; ++gAllocHits; }
 
+// The owned-pointer destructors free up to two blocks, so record the sequence.
+static unsigned gFreeSeqN;
+static void* gFreeSeq[4];
+static void __stdcall nxAllocFreeSeq(void* block)
+	{ if(gFreeSeqN < 4) gFreeSeq[gFreeSeqN] = block; ++gFreeSeqN; }
+
 struct NxAllocPtrSaved { void* slot; void* page; DWORD prot; int ok; };
 
 static NxAllocPtrSaved nxBindAllocPtr(const void* imageBase, void* value)
@@ -12992,6 +12998,63 @@ int wmain(int argc, wchar_t** argv)
 	nxSetAllocator004803(nullptr);
 	nxUnbindAllocPtr(base, svAp);
 	printf("allocdtor candidate failures=%u provisional=1\n", adf);
+	}
+	// -- Owned-pointer destructors: 001585 and 001587, both arms, with the
+	//    owned pointer present and absent.
+	{
+	struct OpRow { unsigned rva; unsigned vtable; const char* name; };
+	static const OpRow kOp[] = {
+		{ 0x2ea80, 0x1010785c, "001585" },
+		{ 0x2ead0, 0x1010786c, "001587" },
+	};
+	void* allocVt[0x10 / 4 + 1]; memset(allocVt, 0, sizeof(allocVt));
+	allocVt[0xc / 4] = reinterpret_cast<void*>(&nxAllocFreeSeq);
+	unsigned char allocObj[0x20]; memset(allocObj, 0, sizeof(allocObj));
+	*(void**)(allocObj) = allocVt;
+	NxAllocPtrSaved svAp2 = nxBindAllocPtr(base, allocObj);
+	nxSetAllocator004803(allocObj);
+	unsigned opf = 0;
+	for(unsigned i = 0; i < sizeof(kOp) / sizeof(kOp[0]); ++i)
+	for(unsigned owned = 0; owned < 2; ++owned)
+	for(unsigned arm = 0; arm < 2; ++arm)
+		{
+		typedef void* (__thiscall* OpOracle)(void*, unsigned);
+		OpOracle fn = reinterpret_cast<OpOracle>(base + kOp[i].rva);
+		unsigned flags = arm ? 1u : 0u;
+		unsigned char self[0x40], selfC[0x40];
+		memset(self, 0xcd, sizeof(self)); memset(selfC, 0xcd, sizeof(selfC));
+		unsigned char ownedBuf[0x10];
+		memset(ownedBuf, 0, sizeof(ownedBuf));
+		*(void**)(self + 0xc) = (owned == 0) ? nullptr : ownedBuf;
+		*(void**)(selfC + 0xc) = (owned == 0) ? nullptr : ownedBuf;
+		gFreeSeqN = 0; memset(gFreeSeq, 0, sizeof(gFreeSeq));
+		void* ro = fn(self, flags);
+		unsigned nO = gFreeSeqN;
+		void* f0O = gFreeSeq[0], *f1O = gFreeSeq[1];
+		gFreeSeqN = 0; memset(gFreeSeq, 0, sizeof(gFreeSeq));
+		void* rc = nxDtorOwnedPtr(selfC, flags, kOp[i].vtable);
+		unsigned nC = gFreeSeqN;
+		void* f0C = gFreeSeq[0], *f1C = gFreeSeq[1];
+		// each side frees its OWN self buffer; compare the owned pointer
+		// against that side's buffer and the self free against that side's self
+		bool freeOk = true;
+		if(nO != nC) freeOk = false;
+		if(nO >= 1 && owned == 1 && f0O != ownedBuf) freeOk = false;
+		if(nC >= 1 && owned == 1 && f0C != ownedBuf) freeOk = false;
+		if(arm == 1)
+			{
+			unsigned idx = (owned == 1) ? 1u : 0u;
+			if(nO != idx + 1 || nC != idx + 1) freeOk = false;
+			if(f0O == nullptr && owned == 0) { if(gFreeSeq[0] == nullptr) {} }
+			}
+		if(ro != self || rc != selfC || !freeOk
+			|| memcmp(self, selfC, sizeof(self)) != 0)
+			{fprintf(stderr,"ownedptr %s owned=%u arm=%u nO=%u nC=%u\n",
+				kOp[i].name, owned, arm, nO, nC);++opf;}
+		}
+	nxSetAllocator004803(nullptr);
+	nxUnbindAllocPtr(base, svAp2);
+	printf("ownedptr candidate failures=%u provisional=1\n", opf);
 	}
 
 
