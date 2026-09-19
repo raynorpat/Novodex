@@ -1028,6 +1028,17 @@ unsigned				nxLockedVtCallNoArg(void* self, unsigned slot);
 //! (+0x24) passes the row argument through.
 void					nxLockedVtCallArg(void* self, unsigned slot, void* arg);
 
+//! The report-once dispatch rows: a gate byte is tested, the assertion is
+//! reported and the gate SET on the first call, and then the row dispatches
+//! through its own vtable slot with fixed arguments. 000335 (0xca40, ret 4)
+//! uses gate 0x101237c1, slot +0x100 and one argument; 000336 (0xca90) uses
+//! 0x101237c2, slot +0x108 and the arguments (1, 1); 000390 (0xd600, ret 8)
+//! uses 0x101237c4, slot +0x104 and (1, second argument).
+void					nxOnceReportVtEx(void* self, unsigned char* gate,
+							unsigned slot, unsigned nargs, unsigned a1,
+							unsigned a2, unsigned code, unsigned file,
+							unsigned line, unsigned expression);
+
 //! phys_fn_001022 (0x22970, ret 4): iterates the pointer array at
 //! [self+0xe0]..[self+0xe4] and calls vtable slot +0xc of each element with the
 //! argument; the call site does not clean it, so the slot is __stdcall.

@@ -1999,6 +1999,30 @@ void nxLockedVtCallArg(void* self, unsigned slot, void* arg)
 	fn(arg);
 	}
 
+// The report-once dispatch rows.
+void nxOnceReportVtEx(void* self, unsigned char* gate, unsigned slot,
+	unsigned nargs, unsigned a1, unsigned a2, unsigned code, unsigned file,
+	unsigned line, unsigned expression)
+	{
+	if(*gate == 0)
+		{
+		if(gNxAssertReport)
+			gNxAssertReport(code, file, line, 0u, expression);
+		*gate = 1;
+		}
+	void** vt = *reinterpret_cast<void***>(self);
+	if(nargs <= 1)
+		{
+		typedef void (__stdcall* Fn1)(unsigned);
+		reinterpret_cast<Fn1>(vt[slot / 4])(a1);
+		}
+	else
+		{
+		typedef void (__stdcall* Fn2)(unsigned, unsigned);
+		reinterpret_cast<Fn2>(vt[slot / 4])(a1, a2);
+		}
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)
