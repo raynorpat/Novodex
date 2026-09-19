@@ -4550,6 +4550,31 @@ vtables -- including the remaining `R+bind`, `bind+vt` and `global+vt` shapes
 -- so this is the shape of the next several slates. No gate, coverage-floor,
 or policy change.
 
+## 3z163. Three multi-argument dispatch thunks close
+
+Round 146 closed 002390 (0x5b910), 003924 (0x8ed50) and 001965 (0x4c000),
+three dispatch thunks that each forward to a different shape of target with a
+different argument count and a different cleanup convention:
+
+- 002390 reads the target from a PLAIN CALLBACK FIELD, not a vtable:
+  `call [[self+4]+0xc]([[self+4]+0x10])`, and the thunk pops the argument
+  itself, so the target is __cdecl. The first drive faulted precisely because
+  the fixture had built a vtable at [obj] and left [obj+0xc] zero -- read
+  literally, the target pointer lives at obj+0xc.
+- 003924 calls `vtable[+0xc](self, [self+0x24], [self+0x28])` and does not
+  clean the two arguments, so the slot is __stdcall.
+- 001965 takes its object from the SECOND argument and calls
+  `[[obj]+0x2c](arg1, 0xff00ffff, 0)` with three uncleaned arguments.
+
+Each was driven against a recorder stub of matching arity, comparing the
+argument COUNT and every recorded value (build/r146.log thunks3 failures=0).
+All three move to `reconstructed`.
+
+The lesson worth keeping: a `call [reg+off]` target is not necessarily a
+vtable entry -- 002390's is a callback stored directly in the object, and only
+reading the operand literally distinguishes the two. No gate, coverage-floor,
+or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
