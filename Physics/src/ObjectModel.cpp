@@ -2060,6 +2060,26 @@ void nxGuardedStoreEx(void* self, unsigned arg, unsigned fieldOff, unsigned code
 	memcpy(p + fieldOff, &arg, 4);
 	}
 
+// The lock-first direct-call family.
+void nxMutexWorkEx(void* self, unsigned lockOff, unsigned objOff, unsigned arg,
+	int workKind, unsigned storeOff, unsigned code, unsigned file, unsigned line,
+	unsigned expression)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	unsigned char* lock = *reinterpret_cast<unsigned char**>(p + lockOff);
+	if(!nxTryAcquireLock(lock))
+		{
+		if(gNxAssertReport)
+			gNxAssertReport(code, file, line, 0u, expression);
+		return;
+		}
+	if(workKind == 1)
+		{
+		unsigned char* obj = *reinterpret_cast<unsigned char**>(p + objOff);
+		memcpy(obj + storeOff, &arg, 4);
+		}
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)

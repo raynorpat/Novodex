@@ -1047,6 +1047,16 @@ void*					nxDtorWithGlobal3938(void* self, unsigned flags);
 //! own file/line/expression and returns; otherwise it stores the argument at
 //! the row's field and returns. The fields are +0x44 (004184, 004292, 004338)
 //! and +0x1d0 (004288).
+//! The lock-first direct-call family: these rows lock [self+lockOff] through
+//! 002364, report on failure, and on success call a direct helper on
+//! [self+objOff] before releasing. workKind selects the modelled work: 0 is a
+//! no-op helper (004248, used by 003870) and 1 stores the argument at
+//! [obj+storeOff] (000545/000549/000553, used by 000350/000354/000358).
+void					nxMutexWorkEx(void* self, unsigned lockOff, unsigned objOff,
+							unsigned arg, int workKind, unsigned storeOff,
+							unsigned code, unsigned file, unsigned line,
+							unsigned expression);
+
 void					nxGuardedStoreEx(void* self, unsigned arg, unsigned fieldOff,
 							unsigned code, unsigned file, unsigned line,
 							unsigned expression);
