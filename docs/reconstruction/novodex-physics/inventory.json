@@ -85892,12 +85892,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "lock-bracketed registry lookup (0xb3670)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1796",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15518",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via registry4743 differential (3z182): failures=0 for two object shapes, with the registry global 0x10123c0c bound null and the lock API bound",
       "notes": ""
     },
     {
