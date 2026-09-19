@@ -1019,6 +1019,15 @@ unsigned				nxLockedVtCall1237(void* self);
 //! is a float returned in st(0).
 float					nxLockedVtCall1119(void* self);
 
+//! The lock-bracketed vtable call with a caller-chosen slot: the slot receives
+//! `this` in ecx and no stack arguments and its value is returned. Covers
+//! 004703 (slot +0x30) alongside 001237 (+0x44).
+unsigned				nxLockedVtCallNoArg(void* self, unsigned slot);
+
+//! The same bracket where the slot also takes one argument: 001209
+//! (+0x24) passes the row argument through.
+void					nxLockedVtCallArg(void* self, unsigned slot, void* arg);
+
 //! phys_fn_001022 (0x22970, ret 4): iterates the pointer array at
 //! [self+0xe0]..[self+0xe4] and calls vtable slot +0xc of each element with the
 //! argument; the call site does not clean it, so the slot is __stdcall.

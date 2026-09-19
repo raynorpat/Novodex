@@ -1977,6 +1977,28 @@ void nxMutexNoopEx(void* self, unsigned code, unsigned file, unsigned line,
 	// release.
 	}
 
+// The lock-bracketed vtable call with a caller-chosen slot and no arguments.
+unsigned nxLockedVtCallNoArg(void* self, unsigned slot)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	unsigned char* obj = *reinterpret_cast<unsigned char**>(p + 0x18);
+	void** vt = *reinterpret_cast<void***>(obj);
+	typedef unsigned (__fastcall* SlotFn)(void*);
+	SlotFn fn = reinterpret_cast<SlotFn>(vt[slot / 4]);
+	return fn(obj);
+	}
+
+// The same bracket where the slot takes one argument as well.
+void nxLockedVtCallArg(void* self, unsigned slot, void* arg)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	unsigned char* obj = *reinterpret_cast<unsigned char**>(p + 0x18);
+	void** vt = *reinterpret_cast<void***>(obj);
+	typedef void (__stdcall* SlotFn)(void*);
+	SlotFn fn = reinterpret_cast<SlotFn>(vt[slot / 4]);
+	fn(arg);
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)
