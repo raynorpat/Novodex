@@ -996,6 +996,19 @@ void					nxSetLockOwner(unsigned id);
 //! each is `vtable[slot](this, constant)`. 004417 (0xb0580) passes 1 through
 //! slot +0x4c; the others pass 5, 4, 0, 2, 3, 8, 6 and 7.
 void					nxVtConstEx(void* self, unsigned slot, unsigned arg);
+
+//! phys_fn_002390 (0x5b910): dispatches [[self+4]+0xc]([self+4], [[self+4]+0x10])
+//! -- the thunk pops the argument itself, so the slot is __cdecl.
+void					nxVtCall2390(void* self);
+
+//! phys_fn_003924 (0x8ed50): dispatches [[self]+0xc](self, [self+0x24],
+//! [self+0x28]); two arguments and the thunk does not clean them, so the slot
+//! is __stdcall.
+void					nxVtCall3924(void* self);
+
+//! phys_fn_001965 (0x4c000): dispatches [[obj]+0x2c](obj, arg1, 0xff00ffff, 0)
+//! where obj is the second argument; three arguments, callee-cleaned.
+void					nxVtCall1965(void* unused, void* obj);
 unsigned char			nxLockProbe0392(void* self);
 
 //! The mutex-guarded virtual dispatch family (31 rows): when the acquire of

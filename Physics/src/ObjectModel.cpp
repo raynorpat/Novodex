@@ -1850,6 +1850,42 @@ void nxVtConstEx(void* self, unsigned slot, unsigned arg)
 	fn(arg);
 	}
 
+// phys_fn_002390 (0x5b910): the __cdecl slot takes one argument.
+void nxVtCall2390(void* self)
+	{
+	unsigned char* obj = *reinterpret_cast<unsigned char**>(
+		reinterpret_cast<unsigned char*>(self) + 4);
+	// the target is a plain callback field at +0xc, not a vtable entry
+	void* target;
+	memcpy(&target, obj + 0xc, 4);
+	unsigned arg;
+	memcpy(&arg, obj + 0x10, 4);
+	typedef void (__cdecl* Fn)(unsigned);
+	reinterpret_cast<Fn>(target)(arg);
+	}
+
+// phys_fn_003924 (0x8ed50): the __stdcall slot takes two arguments.
+void nxVtCall3924(void* self)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	void** vt = *reinterpret_cast<void***>(p);
+	unsigned a, b;
+	memcpy(&a, p + 0x24, 4);
+	memcpy(&b, p + 0x28, 4);
+	typedef void (__stdcall* Fn)(unsigned, unsigned);
+	reinterpret_cast<Fn>(vt[0xc / 4])(a, b);
+	}
+
+// phys_fn_001965 (0x4c000): three arguments, callee-cleaned.
+void nxVtCall1965(void* unused, void* obj)
+	{
+	(void) unused;
+	void** vt = *reinterpret_cast<void***>(obj);
+	typedef void (__stdcall* Fn)(unsigned, unsigned, unsigned);
+	reinterpret_cast<Fn>(vt[0x2c / 4])(static_cast<unsigned>(
+		reinterpret_cast<size_t>(unused)), 0xff00ffffu, 0u);
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)
