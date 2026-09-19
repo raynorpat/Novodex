@@ -4899,6 +4899,38 @@ families are now fully worked -- 3z160's probe, 3z161's thirty-one vtable
 dispatches, 3z167/3z168's two direct-call groups, and these ten. All six move
 to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z175. A slot sibling and a guarded three-argument loop (2 rows)
+
+Round 158 closed two more rows.
+
+**004707 (0xb31b0)** is the 3z169 shape through a third slot: lock
+[self+0x14], `vtable[+0x38]([self+0x18])` with `this` in ecx and no stack
+arguments, release, return the value. The existing nxLockedVtCallNoArg needed
+only a new arm -- no new candidate.
+
+**001024 (0x229b0, ret 0xc)** is a second dispatch loop, but unlike the 3z165
+one it is GUARDED and takes three arguments:
+
+    n = ([self+0xe4] - [self+0xe0]) >> 2
+    if (n == 0) return 1
+    loop:
+      elem = [edi]
+      al = [elem+0xde]
+      if (al & 7) != 0 then SKIP          ; the element is filtered out
+      call vtable[+0x10](elem, arg1, arg2, arg3)
+      if (result == 0) return 0           ; first failure short-circuits
+    SKIP: repeat while elements remain
+    return 1
+
+Two behaviours here are worth pinning and both are driven: the +0xde low-three-
+bit filter, and the SHORT-CIRCUIT -- the loop stops at the first slot that
+returns zero, so the hit count differs between the all-succeed and one-fails
+cases. The drive walks twelve combinations (element counts 0..2 x skip flag set
+and clear x slot returning 1 and 0), comparing the returned byte, the hit count
+AND all three arguments (build/r158.log loop1024 failures=0).
+
+Both rows move to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
