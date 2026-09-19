@@ -5910,12 +5910,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "locked list-advance accessor (0xc960)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/115",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1047",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via lockacc9 differential (3z153): failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
       "notes": ""
     },
     {
@@ -6018,12 +6018,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "locked list-advance accessor (0xc9f0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/118",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1051",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via lockacc9 differential (3z153): failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
       "notes": ""
     },
     {
@@ -20022,12 +20022,12 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "locked match-or-self accessor (0x23a90, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/447",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3222",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via lockacc9 differential (3z153): failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
       "notes": ""
     },
     {
