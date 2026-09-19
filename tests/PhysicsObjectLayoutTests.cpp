@@ -6014,6 +6014,86 @@ int wmain(int argc, wchar_t** argv)
 	printf("lockacc6 candidate failures=%u provisional=1\n", b6f);
 	}
 
+	// -- Locked accessor seventh batch: pure-field members.
+	{
+	NxLockApiSaved svB7 = nxBindLockApi(base);
+	unsigned b7f = 0;
+	unsigned char lockObjD[0x40]; memset(lockObjD, 0, sizeof(lockObjD));
+	unsigned char subObjD[0x40]; memset(subObjD, 0, sizeof(subObjD));
+	*(void**)(lockObjD) = subObjD;
+	unsigned char field[0x800];
+	unsigned char sh[0x40];
+	// 000416: element count ([field+0x560]-[field+0x55c])>>2
+	{
+	typedef int (__thiscall* Count2Oracle)(void*);
+	Count2Oracle fn = reinterpret_cast<Count2Oracle>(base + 0xda10);
+	for(unsigned ci = 0; ci < 3; ++ci)
+		{
+		memset(field, 0, sizeof(field));
+		unsigned lo = 0x3000, hi = 0x3000 + 4u * ci;
+		memcpy(field + 0x55c, &lo, 4); memcpy(field + 0x560, &hi, 4);
+		memset(sh, 0, sizeof(sh));
+		*(void**)(sh + 0x10) = lockObjD;
+		*(void**)(sh + 0x24) = field;
+		int o = fn(sh);
+		int c = nxLockedElementCountAt(sh, 0x24, 0x560, 0x55c);
+		if(o != c){fprintf(stderr,"b7 count ci=%u o=%d c=%d\n", ci, o, c);++b7f;}
+		}
+	}
+	// 003808: copy 9 dwords from field+0x48, returns out
+	{
+	typedef void* (__thiscall* Copy9Oracle)(void*, unsigned*);
+	Copy9Oracle fn = reinterpret_cast<Copy9Oracle>(base + 0x8c620);
+	memset(field, 0, sizeof(field));
+	for(unsigned w = 0; w < 0x800; w += 4) *(unsigned*)(field + w) = 0xE0000000u + w;
+	memset(sh, 0, sizeof(sh));
+	*(void**)(sh + 0x10) = lockObjD;
+	*(void**)(sh + 0x14) = field;
+	unsigned o[9], c[9];
+	memset(o, 0, sizeof(o)); memset(c, 0, sizeof(c));
+	void* ro = fn(sh, o);
+	nxLockedCopyOut(sh, 0x14, 0x48, 9, c);
+	if(memcmp(o, c, 36) != 0 || ro != o){fprintf(stderr,"b7 003808\n");++b7f;}
+	}
+	// 003806: copy 3 dwords from field+0x6c, returns out
+	{
+	typedef void* (__thiscall* Copy3bOracle)(void*, unsigned*);
+	Copy3bOracle fn = reinterpret_cast<Copy3bOracle>(base + 0x8c5e0);
+	memset(field, 0, sizeof(field));
+	for(unsigned w = 0; w < 0x800; w += 4) *(unsigned*)(field + w) = 0xF0000000u + w;
+	memset(sh, 0, sizeof(sh));
+	*(void**)(sh + 0x10) = lockObjD;
+	*(void**)(sh + 0x14) = field;
+	unsigned o[4], c[4];
+	memset(o, 0, sizeof(o)); memset(c, 0, sizeof(c));
+	void* ro = fn(sh, o);
+	nxLockedCopyOut(sh, 0x14, 0x6c, 3, c);
+	if(memcmp(o, c, 12) != 0 || ro != o){fprintf(stderr,"b7 003806\n");++b7f;}
+	}
+	// 000421: conditional deref of [field+0x61c]
+	{
+	typedef unsigned (__thiscall* DerefCondOracle)(void*);
+	DerefCondOracle fn = reinterpret_cast<DerefCondOracle>(base + 0xdac0);
+	unsigned target = 0x1234ABCDu;
+	unsigned char inner[0x40]; memset(inner, 0, sizeof(inner));
+	memcpy(inner + 0x14, &target, 4);
+	for(unsigned ci = 0; ci < 2; ++ci)
+		{
+		memset(field, 0, sizeof(field));
+		if(ci == 0) *(void**)(field + 0x61c) = inner;
+		memset(sh, 0, sizeof(sh));
+		*(void**)(sh + 0x10) = lockObjD;
+		*(void**)(sh + 0x24) = field;
+		unsigned o = fn(sh);
+		unsigned c = nxLockedDerefField(sh, 0x24, 0x61c, 0x14);
+		unsigned want = ci == 0 ? target : 0u;
+		if(o != c || o != want){fprintf(stderr,"b7 deref ci=%u o=%08x c=%08x\n", ci, o, c);++b7f;}
+		}
+	}
+	nxUnbindLockApi(base, svB7);
+	printf("lockacc7 candidate failures=%u provisional=1\n", b7f);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
