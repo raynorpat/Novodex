@@ -5386,6 +5386,40 @@ group blocked by 000480, and they close only because 3z185 and 3z186 closed
 their inner bodies first. All three move to `reconstructed`. No gate,
 coverage-floor, or policy change.
 
+## 3z191. The tail-jmp group closes (12 rows)
+
+Round 174 found a family the drivability filter had been rejecting for a
+structural reason: its filter requires a row to END in `ret`, and these rows
+end in a TAIL `jmp`. Relaxing that to accept a tail `jmp` whose target is
+already known produced 14 rows, twelve of which close
+(build/r174.log tailjmp failures=0):
+
+- ten 74-byte rows (004451, 004489, 004521, 004551, 004581, 004607, 004633,
+  004665, 004691, 004741) lock [self+0x10], call 004081 on [self+0x18] -- which
+  stores [obj+0x20] into the global word [0x10127180] -- and tail-jump into the
+  unlock;
+- 000323 and 000329 lock [self+0x10], call a link-advance helper on
+  [self+0x24], and tail-jump into the unlock.
+
+Two things about tail calls changed how the rows must be modelled, and the
+differential caught both:
+
+1. **The return value belongs to the CALLEE.** The row does not return what it
+   computed; it tail-jumps into 002366, whose `mov al, 1` is the last write to
+   eax. The success arm therefore returns 1, not the value it stored -- my
+   first model returned the stored value and failed every row.
+2. **On the report arm the return is unspecified.** There the row returns
+   whatever the report callee left in eax, which is a property of the harness's
+   recorder rather than of the row, so the drive compares only the report tuple
+   on that arm. Recording that distinction matters: asserting on that value
+   would make the check depend on the recorder's internals.
+
+One more detail: 000323 and 000329 look identical but call DIFFERENT helpers --
+000563 copies [obj+0x59c] to [obj+0x6bc] while 000565 copies [obj+0x5a4] to
+[obj+0x6c0] -- so the candidate takes the field pair as parameters.
+
+All twelve move to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
