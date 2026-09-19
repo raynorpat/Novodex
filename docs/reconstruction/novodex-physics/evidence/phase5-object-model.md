@@ -4986,6 +4986,44 @@ happened (build/r160.log once0342 failures=0). Both gate passes are driven, and
 the gate byte 0x101237c3 is bound and restored. 000342 moves to
 `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z178. Guarded dispatch plus chain walk closes (004763)
+
+Round 161 closed 004763 (0xb3920), the most branch-dense row of this slate: a
+guard chain that decides ONE dispatch, followed by a chain walk that runs
+whatever the guard decided.
+
+    eax = [esi+0x18]                       ; the object
+    if (eax == 0) goto TAIL
+    ecx = [eax+8]
+    if (ecx == 0) goto CHK_C
+      if ([ecx+0x10c] & 0x80) == 0 goto SKIP_A   ; NON-NULL without the bit
+                                                 ; SKIPS the +0xc test entirely
+    CHK_C:
+      ecx = [eax+0xc]
+      if (ecx == 0) goto TAIL
+      if ([ecx+0x10c] & 0x80) != 0 goto TAIL
+    SKIP_A:
+      if ([eax+0x44] == 0) goto TAIL
+      if (([eax+0x2c] >> 2) & 1) != 0 goto TAIL
+        call vtable[+0x20]([esi+0x18], [esi+0x14])
+    TAIL:
+      node = [esi+0xc]
+      while (node) { call vtable[+0x10](node); node = [node+0x10]; }
+
+The subtle part is the guard's THREE-way shape: a non-null [obj+8] whose bit is
+clear jumps PAST the [obj+0xc] test, while a null [obj+8] falls into it -- so
+the two conditions are not a simple AND. The drive exercises three guard arms
+(bit set and entry present; bit clear and entry present; the +0xc entry
+carrying the bit) across chain lengths 0..3, twelve cases in all
+(build/r161.log chain4763 failures=0).
+
+One recording detail mattered: the walk visits NODES, and the oracle and the
+candidate walk different copies, so recording raw pointers can never compare
+equal. The recorder stores each node's IDENTITY marker instead -- the same
+fixture-sharing lesson as 3z166/3z168, applied to a sequence rather than a
+field. 004763 moves to `reconstructed`. No gate, coverage-floor, or policy
+change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
