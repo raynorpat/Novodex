@@ -1510,6 +1510,38 @@ void* nxLockedFieldAddress(void* self, unsigned fieldOff, unsigned dataOff)
 	return const_cast<unsigned char*>(field + dataOff);
 	}
 
+// The word-mask member.
+unsigned nxLockedWordAndRead(void* self, unsigned fieldOff, unsigned dataOff,
+	unsigned arg)
+	{
+	const unsigned char* p = reinterpret_cast<const unsigned char*>(self);
+	const unsigned char* field = *reinterpret_cast<const unsigned char* const*>(p + fieldOff);
+	unsigned short w;
+	memcpy(&w, field + dataOff, 2);
+	return static_cast<unsigned>(w) & arg;
+	}
+
+// The two-pointer copy member.
+void nxLockedCopyTwoPointers(void* self, unsigned fieldOff, unsigned* out1,
+	unsigned* out2)
+	{
+	const unsigned char* p = reinterpret_cast<const unsigned char*>(self);
+	const unsigned char* field = *reinterpret_cast<const unsigned char* const*>(p + fieldOff);
+	memcpy(out1, field + 0x3c, 4);
+	memcpy(out2, field + 0x40, 4);
+	}
+
+// The float member: `fld [field+dataOff]; fadd st(0),st(0)`, stored to float
+// by the caller's fstp, so a double intermediate matches.
+float nxLockedDoubleField(void* self, unsigned fieldOff, unsigned dataOff)
+	{
+	const unsigned char* p = reinterpret_cast<const unsigned char*>(self);
+	const unsigned char* field = *reinterpret_cast<const unsigned char* const*>(p + fieldOff);
+	float v;
+	memcpy(&v, field + dataOff, 4);
+	return static_cast<float>(2.0 * static_cast<double>(v));
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)

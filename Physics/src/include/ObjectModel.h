@@ -970,6 +970,21 @@ unsigned				nxLockedIntervalFlag(void* self, unsigned fieldOff);
 void*					nxLockedFieldAddress(void* self, unsigned fieldOff,
 							unsigned dataOff);
 
+//! The word-mask member: helper 001287 is `movzx eax,word[ecx+dataOff]; and
+//! eax,arg`, so the row returns the zero-extended word ANDed with the arg.
+unsigned				nxLockedWordAndRead(void* self, unsigned fieldOff,
+							unsigned dataOff, unsigned arg);
+
+//! The two-pointer copy member: helper 004076 writes [field+0x3c] through the
+//! first out pointer and [field+0x40] through the second.
+void					nxLockedCopyTwoPointers(void* self, unsigned fieldOff,
+							unsigned* out1, unsigned* out2);
+
+//! The float member: helper 000999 is `fld [ecx+dataOff]; fadd st(0),st(0)`,
+//! so the row returns twice that field in st(0).
+float					nxLockedDoubleField(void* self, unsigned fieldOff,
+							unsigned dataOff);
+
 //! phys_fn_000713: recursive path compression over the record chain -- each
 //! record caches its group root at +0x1e8, self-parented at the root.
 unsigned				nxBodyRecordFixRoot(void* rec);
