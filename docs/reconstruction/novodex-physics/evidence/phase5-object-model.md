@@ -3361,6 +3361,32 @@ reverted (normal family-RED end; diff clean). These rows stay `discovered`;
 call-containing rows are not isolatable in this harness. No gate,
 coverage-floor, or policy change.
 
+## 3z114. Phase-5 gate RED cause isolated: candidate vtable identity (Task 3-4)
+
+Round 99 traced the Phase-5 gate's sole RED cause. Every candidate-side check
+in the harness passes: actorsm, actorctor, actorsm2..actorsm7 and planeext
+all report `candidate ok=1` with digests identical to the oracle, and the
+coverage table line shows every registered row at 1 (tables=8,
+colobj/owner/hull/shapebase/boxshape/sphere/capsule/plane/mesh/basevt/
+basesave/boxrow/planesave/sphererows/capsave/meshword/aabbrows/meshrows/
+sphlocal/setrad/capsetrad/planeext/sphdtor/capdtor/setgroup/dtors2/sphload/
+slot1wrapper/addthunk/shapeleaf). The only failure is the unconditional
+`candidate CANDIDATE-MISSING family=vtables` increment, whose reason string
+says "shape finals/actor classes are Tasks 3-4".
+
+The vtable-identity block (lines ~951-968) folds the EIGHT registered tables
+from the ORACLE image only -- actor_interface (0x1043d0, 87 slots),
+actor_dynamic (0x104530, 88 slots), shape_base (0x107494), box (0x106ab8),
+capsule (0x106b20), plane (0x107430), sphere (0x107528), mesh (0x107630),
+each 12 slots -- into oracleDigest. There is NO candidate-side counterpart,
+so the family is CANDIDATE-MISSING by construction. Because the folded words
+are absolute code pointers (the harness elsewhere notes pointers are
+ASLR-moved and "never folded"), the remaining work is a candidate-side
+vtable identity for the six shape finals plus the two actor tables,
+compared by RVA-normalized slot (not raw address). That is the definitive
+remaining Task-3/4 scope and the sole blocker to Phase-5 GREEN; the gate
+stays honestly RED until it lands. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
