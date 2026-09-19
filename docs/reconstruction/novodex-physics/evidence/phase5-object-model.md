@@ -4397,6 +4397,39 @@ failures=0): 001207 reads [field+0xd8] via helper 001285, 001061 reads
 field at [self+0x18]. Candidate nxLockedWordRead. Both move to
 `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z158. 004334 declined: its work path does not write the argument
+
+Round 141 took up the guarded-clamp setter 004334 (0xa8f10, ret 4, 147
+bytes), the cleanest of the larger remaining rows: its body is plain logic
+with a single assert-report branch, and it is a genuine entry (the preceding
+instruction is a `ret 4`). The decode looked complete --
+
+    mov eax, [ecx+0x2c]
+    and al, 0x18
+    cmp al, 0x10
+    jne WORK                       ; only an exact 0x10 falls through to report
+    <report(1, file 0x1011a204, line 0x9d, 0, expr 0x1011a290)>; ret 4
+WORK:
+    mov edx, [esp+4]
+    mov [ecx+0x1a8], edx           ; store the argument
+    ... clamp [obj+0x4c] up to 0.4f for [ecx+8] and [ecx+0xc] ...
+
+-- and the assert arm was pinned empirically: with `[self+0x2c] & 0x18` equal
+to 0x10 the oracle reports, and the candidate matched that exactly. But the
+WORK arm does not behave as written: the oracle leaves `[self+0x1a8]` at ZERO
+for every argument value tried (0x5EED0000 and 0x11223344), while `ecx` is
+demonstrably `self` -- the guard byte is read correctly from the fixture and
+the assert arm keys off it. The row neither reports nor stores on that path,
+which the listing does not explain.
+
+So the drive was withdrawn rather than forced: the candidate and its block
+were fully reverted and the tree is back to the committed green state
+(assertrows 0 failures, wordrows 0 failures, mismatches=1). 004334 stays
+`discovered`. The open question for a later round is why the work arm does not
+store the argument -- the most likely remaining explanation is a calling
+convention that differs from `__thiscall(ret 4)`, since `[esp+4]` is read with
+no preceding push. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
