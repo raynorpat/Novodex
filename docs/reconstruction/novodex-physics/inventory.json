@@ -19158,12 +19158,12 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "locked word accessor (0x233a0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/424",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3171",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via wordrows differential (3z157): both word values failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
       "notes": ""
     },
     {
@@ -21786,12 +21786,12 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "locked word accessor (0x24930)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/490",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3333",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via wordrows differential (3z157): both word values failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
       "notes": ""
     },
     {
