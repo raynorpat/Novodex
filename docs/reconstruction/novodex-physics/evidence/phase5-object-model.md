@@ -5338,6 +5338,30 @@ dereferenced null. Setting it self-referentially made both sides agree.
 
 All five move to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z189. The float-returning siblings close (5 rows)
+
+Round 172 closed the 42-byte siblings of 3z188's group (build/r172.log
+lockhelperF failures=0). They share the bracket but return a FLOAT:
+
+    push ecx                        ; a scratch dword for the result
+    <lock [esi+0x10]>
+    ecx = [esi+0x14]
+    call <thunk>                    ; returns the value in st(0)
+    fstp dword ptr [esp+8]          ; stage it
+    <unlock>
+    fld dword ptr [esp+8]           ; reload and return
+    pop edi; pop esi; pop ecx; ret
+
+The five are 003724, 003728, 003732, 003774 and 003776, calling thunks 003437,
+003441, 003445, 003463 and 003465 through slots 0x101265bc, 0x10126440,
+0x101263b4, 0x1012649c and 0x10126570. Candidate nxLockedHelperCallF is the
+float counterpart of 3z188's, and the recorder returns 3.5f so the comparison
+is bit-for-bit rather than a tolerance.
+
+All five move to `reconstructed`. With them the whole lock-bracketed
+helper-call family -- ten rows across 3z188 and 3z189 -- is closed. No gate,
+coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
