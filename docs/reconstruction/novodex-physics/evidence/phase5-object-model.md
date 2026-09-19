@@ -4025,6 +4025,27 @@ high-bits class as the 3z94 byte returns, and not safely reproducible.
 All three closed rows move to `reconstructed`. No gate, coverage-floor, or
 policy change.
 
+## 3z146. Sixth accessor batch: copy-and-flag and three pointers (4 rows)
+
+Round 129 closed four more members in one drive (build/r129.log lockacc6
+failures=0), adding two more return shapes:
+
+- 004711 (0xb3240, ret 4), 004715 (0xb3280, ret 4) and 004719 (0xb3310,
+  ret 4) are COPY-AND-FLAG members. Each locks [self+0x14], calls its helper
+  on [self+0x18], and the helper both copies into out and returns a bit of
+  [field+0x1a8] in al: 004342 copies six dwords from +0x16c and returns bit 0;
+  004346 copies three from +0x184 and returns bit 1; 004350 copies three from
+  +0x190 and returns bit 2. The row preserves that byte through bl and returns
+  it in al, so the oracle pointer type is unsigned char (the 3z94 lesson).
+  Candidate nxLockedCopyAndFlag, matched with the flag bit both set and clear.
+- 000340 (0xcb50, ret 0xc) wraps 000542, which writes [field+0x52c],
+  [field+0x530] and [field+0x534] through THREE separate out pointers -- the
+  widest out-argument member seen so far. Candidate
+  nxLockedCopyThreePointers, with the lock at [self+0x10] and field at
+  [self+0x24].
+
+All four move to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
