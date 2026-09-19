@@ -962,6 +962,23 @@ unsigned char			nxWrap5450(void* self, void* node);
 //! returns zero.
 unsigned char			nxWrap1787(void* unused, void* node);
 
+//! The assertion-report hook. The shipped rows report through the global slot
+//! [0x101041b4] holding a placeholder, so the candidate exposes its own
+//! report entry point and the harness binds the oracle slot to it.
+typedef void (__cdecl* NxAssertReportFn)(unsigned code, unsigned file,
+	unsigned line, unsigned zero, unsigned expression);
+void					nxSetAssertReport(NxAssertReportFn fn);
+
+//! The six pure assert-report rows: each reports its own file/line/expression
+//! constants through the hook and returns void. The message strings are fixed
+//! image data, so they are passed through unchanged.
+void					nxAssertReport0364();
+void					nxAssertReport0408();
+void					nxAssertReport0410();
+void					nxAssertReport3750();
+void					nxAssertReport3754();
+void					nxAssertReport3782();
+
 //! The copy members of the locked accessor family: lock, call a helper that
 //! copies `count` dwords from [field+dataOff] into out, unlock. `field` comes
 //! from [self+fieldOff].

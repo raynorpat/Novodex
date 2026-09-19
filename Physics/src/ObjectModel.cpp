@@ -1706,6 +1706,30 @@ unsigned char nxWrap1787(void* unused, void* node)
 	return 0;
 	}
 
+// The assertion-report hook and the six pure report rows. Each row's whole
+// body is `report(0xce, file, line, 0, expression)` behind the guarded int3,
+// and the guard dereferences the non-null [0x101041b0] word, so the hook is
+// the only observable.
+static NxAssertReportFn gNxAssertReport = nullptr;
+
+void nxSetAssertReport(NxAssertReportFn fn)
+	{
+	gNxAssertReport = fn;
+	}
+
+static void nxAssertReport(unsigned file, unsigned line, unsigned expression)
+	{
+	if(gNxAssertReport)
+		gNxAssertReport(0xceu, file, line, 0u, expression);
+	}
+
+void nxAssertReport0364() { nxAssertReport(0x10105ba8u, 0x17fu, 0x10105d4cu); }
+void nxAssertReport0408() { nxAssertReport(0x10105ba8u, 0x28du, 0x10106064u); }
+void nxAssertReport0410() { nxAssertReport(0x10105ba8u, 0x293u, 0x1010609cu); }
+void nxAssertReport3750() { nxAssertReport(0x101160ccu, 0x0f6u, 0x101163acu); }
+void nxAssertReport3754() { nxAssertReport(0x101160ccu, 0x106u, 0x10116418u); }
+void nxAssertReport3782() { nxAssertReport(0x101160ccu, 0x176u, 0x101165dcu); }
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)
