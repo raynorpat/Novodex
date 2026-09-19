@@ -1084,6 +1084,12 @@ unsigned char			nxLockedGlobalFlag4491(void* self);
 //! [self+0xc] through +0x10 and calls vtable +0x10 of every node.
 void					nxGuardedVtChain4763(void* self);
 
+//! phys_fn_005382 (0xe9440, ret 4): stores [self+8] into the MemoryStream
+//! passed as the argument (via 004797, MemoryStream::storeDword), then -- when
+//! [self+0x10] is non-null -- calls its vtable slot +0x14 with the stream and
+//! returns that result; otherwise it returns bit 1 of ([self+8] >> 2).
+unsigned				nxStoreOrDispatch5382(void* self, void* stream);
+
 void					nxOnceFourCalls0342(void* self, unsigned char* gate,
 							unsigned a1, unsigned a2, unsigned a3, unsigned a4);
 

@@ -7,6 +7,7 @@
 \*----------------------------------------------------------------------------*/
 #include "ObjectModel.h"
 #include "Containers.h"
+#include "MemoryStream.h"
 #include "NxIntersectionSegmentBox.h"
 
 #include <math.h>
@@ -2211,6 +2212,24 @@ void nxGuardedVtChain4763(void* self)
 		reinterpret_cast<FnThis>(vt[0x10 / 4])(node);
 		node = *reinterpret_cast<unsigned char**>(node + 0x10);
 		}
+	}
+
+// phys_fn_005382 (0xe9440, ret 4): the store-then-dispatch row. The stream
+// work is the already-reconstructed MemoryStream::storeDword.
+unsigned nxStoreOrDispatch5382(void* self, void* stream)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	unsigned value;
+	memcpy(&value, p + 8, 4);
+	reinterpret_cast<MemoryStream*>(stream)->storeDword(value);
+	unsigned char* obj = *reinterpret_cast<unsigned char**>(p + 0x10);
+	if(obj != nullptr)
+		{
+		void** vt = *reinterpret_cast<void***>(obj);
+		typedef unsigned (__stdcall* Fn1)(void*);
+		return reinterpret_cast<Fn1>(vt[0x14 / 4])(stream);
+		}
+	return (value >> 2) & 1u;
 	}
 
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
