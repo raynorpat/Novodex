@@ -4124,6 +4124,46 @@ State is back to `layout candidate mismatches=1` with boxrow3 ok=1, verified
 stable over three consecutive runs. The mechanism should be found before any
 of these rows is closed again. No gate, coverage-floor, or policy change.
 
+## 3z150. Mechanism found: wmain's digest locals are being clobbered
+
+Round 133 identified WHY the harness is layout-sensitive, and corrected a
+misreading of 3z148/3z149. An unconditional diagnostic printed every boxrow3
+condition at once and showed the check PASSING on all six
+(d8ok=1, d9ok=1, out8[0]=bf800000, out8[3]=3f800000, out9[0], out9[3]) while
+the harness still reported `mismatches=2`. Grepping the full log for a real
+failure then named it: `boxrow candidate ok=0 digest=2f2dc4eb` -- a DIFFERENT
+check. Comparing gate logs across rounds shows the failing check MOVES with
+the build:
+
+    round 125..129  boxrow ok=1  boxrow3 ok=1  mismatches=1
+    round 130       boxrow ok=1  boxrow3 ok=0  mismatches=2
+    round 131       boxrow ok=1  boxrow3 ok=1  mismatches=1
+    round 133       boxrow ok=0  boxrow3 ok=1  mismatches=2
+
+The mechanism follows from where those values live. `oBoxRowDigest` is a
+LOCAL of wmain (declared at line 939, recorded at 1701 and compared at 8863);
+`oBoxSlot8Digest`/`oBoxSlot9Digest` likewise (942/943, recorded at
+2301/2310, compared at 8980). The candidate digests are byte-identical in
+every build (boxrow 2f2dc4eb; boxrow3 d8=d9=8428d8b5), and the oracle locals
+are written thousands of lines earlier, so the ONLY way `ok` can flip is that
+one of those digest LOCALS IS CLOBBERED between its recording and its
+comparison -- an out-of-bounds write into wmain's frame, with the frame layout
+deciding which local dies. That also explains why adding or removing an
+unrelated diagnostic print, or a canary loop, is enough to move the failure
+from boxrow3 to boxrow.
+
+The obvious suspect was checked and cleared: the box slot-8 row 000941 writes
+exactly six dwords to its out pointer, and 000935 likewise, so neither
+overruns the test's `float out8[6]`. The overrun is therefore elsewhere in
+wmain, and the diagnostics used here are themselves layout perturbations --
+they were reverted so the harness sits at its committed, stable state
+(`boxrow ok=1`, `boxrow3 ok=1`, `mismatches=1`, three consecutive runs).
+
+Next step for whoever picks this up: find the out-of-bounds writer by
+auditing stack buffers passed to oracle functions against what those rows
+actually write, rather than by bisecting layout. No gate, coverage-floor, or
+policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
