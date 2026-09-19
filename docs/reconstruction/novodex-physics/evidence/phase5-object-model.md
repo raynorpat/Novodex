@@ -5451,6 +5451,40 @@ and the tree is green.
 
 004387 moves to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z193. Gate-reading float rows close (3 rows)
+
+Round 176 closed 003716 (0x8b610), 003720 (0x8b760) and 003770 (0x8c080), three
+rows that combine the gate byte with the lock-bracketed float thunk
+(build/r176.log reportonceF failures=0):
+
+    mov al, [0x101263ad]
+    if (al != 0) goto WORK
+      <report(0xce, 0x101160cc, <line>, 0, <expr>)>
+      fld dword ptr [0x101041f0]        ; the zero constant
+      ret                               ; -> returns 0.0f
+    WORK:
+      <lock [edi+0x10]>
+      call <thunk> on [edi+0x14]        ; 003429 / 003433 / 003459
+      fstp dword ptr [esp+8]
+      <unlock>
+      fld dword ptr [esp+8]; ret
+
+**The important difference from 3z170 is that these rows only READ the gate --
+they never store to it.** 3z170's rows set their gate to 1 on the reporting
+path, which is what made them one-shot; these have no such store, so the byte
+is somebody else's state and the row simply branches on it. That changes the
+drive: the correct test is the two gate STATES (zero and non-zero), not two
+successive calls, and the harness sets both the oracle's byte and the
+candidate's mirror to the same value for each pass.
+
+My first two attempts got this wrong in ways the differential exposed
+immediately -- first the candidate's mirror was never set at all, then both
+passes were driven with the gate cleared -- and in both cases the oracle
+reported on BOTH passes while the candidate never reported, which is exactly
+what "the row does not set the gate" looks like from the outside.
+
+All three move to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
