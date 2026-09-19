@@ -3716,6 +3716,36 @@ So the slate's remaining rows are blocked not only by size but by CRT
 artifacts and non-code global dispatch, both of which the harness cannot
 drive. No gate, coverage-floor, or policy change.
 
+## 3z133. Slate blocker census; the lock pair closes the last opening
+
+Round 116 classified all 71 remaining Task-3/4 slate rows by blocker type:
+16 are blocked by indirect calls + a non-code global + a product dependency,
+15 by a non-code global + a product dependency, 12 by an indirect call + a
+non-code global, 6 by indirect + product, 5 by a non-code global alone, 3 by
+a product row alone, 2 each by indirect alone and by gated + product, 1 by a
+gated row alone, 3 by CRT artifacts combined with the above, and 6 showed NO
+blocker at all.
+
+Those six -- 000046 (252B), 000132 (259B), 000130 (318B), 000094 (517B),
+000146 (579B) and 000148 (811B), all actor_dynamic slots -- were then
+examined directly. Each is a plain field-gather whose every explicit callee
+is already reconstructed, so they looked actionable. But they all bracket
+their body with the pair 002362 (0x5b700) and 002366 (0x5b790), and those two
+are mutex lock/unlock helpers that dispatch through the Foundation lock-API
+globals [0x10104010], [0x1010402c], [0x10104044] and [0x10104014]. Those
+slots hold NON-CODE placeholder RVAs in the image (0x120e14, 0x120df6,
+0x120de0, 0x120e2c), so calling them jumps into .data. A direct feasibility
+drive of the pair faulted, and the probe was reverted (tree clean, harness
+back to its normal family-RED end).
+
+So the earlier "no blocker" class was an artifact of the filter, which only
+flagged calls to rows in the discovered/compiler_artifact/gated states and
+did not treat the statically_reviewed lock pair as a blocker. With that
+closed, EVERY remaining slate row is blocked by at least one of: a CRT
+artifact (permanently out of scope per 3z132), a non-code global dispatch
+(lock API or callback), or a large product dependency that itself reaches one
+of the first two. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
