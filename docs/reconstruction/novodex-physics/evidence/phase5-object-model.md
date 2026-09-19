@@ -4458,6 +4458,34 @@ pair is bound as usual. Candidate nxGuardedField3708 matched on both arms
 a plain DATA byte rather than a function slot, which widens the binding
 technique beyond call targets. No gate, coverage-floor, or policy change.
 
+## 3z160. Lock probe closes (000392); the acquire's indirection pinned
+
+Round 143 closed the lock probe 000392 (0xd660, 31 bytes), the first of the
+mutex-family rows:
+
+    mov ecx, [esi+0xc]; call 002364     ; recursive acquire
+    test al, al
+    je  L                                ; failed -> return 0
+    mov ecx, [esi+0xc]; call 002366     ; release
+    mov al, 1; ret
+L:  xor al, al; ret
+
+So it reports whether the lock at [self+0xc] was acquirable, releasing it when
+it was. Driving it required pinning what 002364 actually tests, and the first
+attempt got that wrong in an instructive way: the candidate compared the owner
+word at [lock+0x1c], but the acquire reads it THROUGH the lock's first word --
+[[lock]+0x1c]. With that indirection the two arms fall out exactly as the
+listing implies (build/r143.log probe0392 failures=0): the owner word holding
+the id the query stub reports (0x2222) yields 1, any other value yields 0. The
+candidate takes that id from nxSetLockOwner so the harness can keep it in step
+with whatever the bound query stub returns.
+
+000392 moves to `reconstructed`. Its 84-byte siblings in the same family
+(001115 and friends) are the same probe plus an assert-report arm and a work
+arm that calls through the object's own vtable ([edx+0x38]), so they need a
+vtable fixture rather than new understanding. No gate, coverage-floor, or
+policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
