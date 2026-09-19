@@ -5135,6 +5135,66 @@ int wmain(int argc, wchar_t** argv)
 	printf("posecopy827 candidate failures=%u provisional=1\n", pcf);
 	}
 
+	// -- Batch index/vertex append 003268 (0x7e560, ret 8).
+	{
+	typedef void (__thiscall* BatchAppendOracle)(void*, unsigned, const unsigned*);
+	BatchAppendOracle ba = reinterpret_cast<BatchAppendOracle>(base + 0x7e560);
+	unsigned baf = 0;
+	for(unsigned ci = 0; ci < 3; ++ci)
+		{
+		unsigned verts[9];  for(unsigned i=0;i<9;++i)  verts[i]  = 0x31000000u + i;
+		unsigned map[4];    for(unsigned i=0;i<4;++i)  map[i]    = (ci==1 && i==1) ? 2u : 0u;
+		unsigned outArr[12]; memset(outArr, 0, sizeof(outArr));
+		unsigned aux[8];     memset(aux, 0, sizeof(aux));
+		unsigned mapC[4], outC[12], auxC[8];
+		memcpy(mapC, map, sizeof(map));
+		memset(outC, 0, sizeof(outC)); memset(auxC, 0, sizeof(auxC));
+		unsigned idxs[3] = { 1u, 2u, 1u };
+		unsigned char ob[0x5000], cb[0x5000];
+		memset(ob, 0, sizeof(ob)); memset(cb, 0, sizeof(cb));
+		unsigned* pO = reinterpret_cast<unsigned*>(ob);
+		unsigned* pC = reinterpret_cast<unsigned*>(cb);
+		// +0x18 count=0, +0x1c cap=2, +0x10 vertCount=4, +0x4040 auxCap=8
+		*(unsigned*)(ob+0x1c)=2u; *(unsigned*)(cb+0x1c)=2u;
+		*(unsigned*)(ob+0x10)=4u; *(unsigned*)(cb+0x10)=4u;
+		*(unsigned*)(ob+0x4040)=8u; *(unsigned*)(cb+0x4040)=8u;
+		*(void**)(ob+8)=map;   *(void**)(cb+8)=mapC;
+		*(void**)(ob+0xc)=verts; *(void**)(cb+0xc)=verts;
+		*(void**)(ob+0x4038)=outArr; *(void**)(cb+0x4038)=outC;
+		*(void**)(ob+0x4044)=aux; *(void**)(cb+0x4044)=auxC;
+		(void)pO; (void)pC;
+		ba(ob, 3u, idxs);
+		nxBatchAppend3268(cb, 3u, idxs);
+		// The fixture stores different array addresses in the four pointer
+		// slots (+8/+0xc/+0x4038/+0x4044); compare everything else, plus the
+		// three data arrays themselves.
+		bool ptrOnly = true;
+		for(unsigned i = 0; i < 0x4050; i += 4)
+			{
+			if(i == 8 || i == 0xc || i == 0x4038 || i == 0x4044) continue;
+			if(*(unsigned*)(ob+i) != *(unsigned*)(cb+i)) ptrOnly = false;
+			}
+		if(!ptrOnly || memcmp(outArr, outC, sizeof(outArr)) != 0
+			|| memcmp(aux, auxC, sizeof(aux)) != 0 || memcmp(map, mapC, sizeof(map)) != 0)
+			{
+			fprintf(stderr,"batch3268 ci=%u\n", ci);
+			for(unsigned i = 0; i < 0x4050; i += 4)
+				if(i != 8 && i != 0xc && i != 0x4038 && i != 0x4044
+					&& *(unsigned*)(ob+i)!=*(unsigned*)(cb+i))
+					fprintf(stderr,"  this+%04x o=%08x c=%08x\n", i,
+						*(unsigned*)(ob+i), *(unsigned*)(cb+i));
+			for(unsigned i = 0; i < 12; ++i) if(outArr[i]!=outC[i])
+				fprintf(stderr,"  out[%u] o=%08x c=%08x\n", i, outArr[i], outC[i]);
+			for(unsigned i = 0; i < 8; ++i) if(aux[i]!=auxC[i])
+				fprintf(stderr,"  aux[%u] o=%08x c=%08x\n", i, aux[i], auxC[i]);
+			for(unsigned i = 0; i < 4; ++i) if(map[i]!=mapC[i])
+				fprintf(stderr,"  map[%u] o=%08x c=%08x\n", i, map[i], mapC[i]);
+			++baf;
+			}
+		}
+	printf("batch3268 candidate failures=%u provisional=1\n", baf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
