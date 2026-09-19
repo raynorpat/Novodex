@@ -125,6 +125,45 @@ static unsigned gLoopHits;
 static void __stdcall nxLoopStub(void* arg)
 	{ gLoopArg = static_cast<unsigned>(reinterpret_cast<size_t>(arg)); ++gLoopHits; }
 
+// The deleting destructor frees through the allocator singleton at
+// [0x101041bc]: the slot is reached as [[[0x101041bc]][0]+0x14].
+static unsigned gFreeHits;
+static void* gFreeArg;
+// the call site pushes the block and does not clean it, so the slot is
+// a __stdcall one-argument function
+static void __stdcall nxFreeRecorder(void* block) { gFreeArg = block; ++gFreeHits; }
+
+struct NxAllocSaved { void* slot; void* page; DWORD prot; int ok; };
+
+static NxAllocSaved nxBindAllocSlot(const void* imageBase, void* holder)
+	{
+	NxAllocSaved sv;
+	unsigned char* img = const_cast<unsigned char*>(
+		reinterpret_cast<const unsigned char*>(imageBase));
+	void** slot = reinterpret_cast<void**>(img + 0x1041bc);
+	sv.slot = *slot;
+	sv.page = reinterpret_cast<void*>(
+		reinterpret_cast<size_t>(img + 0x104000) & ~static_cast<size_t>(0xFFF));
+	sv.prot = 0; sv.ok = 0;
+	if(!VirtualProtect(sv.page, 0x2000, PAGE_READWRITE, &sv.prot))
+		return sv;
+	sv.ok = 1;
+	*slot = holder;
+	return sv;
+	}
+
+static void nxUnbindAllocSlot(const void* imageBase, const NxAllocSaved& sv)
+	{
+	if(!sv.ok)
+		return;
+	unsigned char* img = const_cast<unsigned char*>(
+		reinterpret_cast<const unsigned char*>(imageBase));
+	DWORD t = 0;
+	VirtualProtect(sv.page, 0x2000, PAGE_READWRITE, &t);
+	*reinterpret_cast<void**>(img + 0x1041bc) = sv.slot;
+	VirtualProtect(sv.page, 0x2000, sv.prot, &t);
+	}
+
 // Bind the 004886 callback slot [0x10128478] to the stub above.
 struct NxCallbackSaved { void* slot; void* page; DWORD prot; int ok; };
 
@@ -12004,6 +12043,43 @@ int wmain(int argc, wchar_t** argv)
 				count, hO, hC, aO, aC);++lf;}
 		}
 	printf("arrayloop candidate failures=%u provisional=1\n", lf);
+	}
+	// -- Scalar deleting destructor 002142: both arms, allocator slot bound.
+	{
+	typedef void* (__thiscall* T2142)(void*, unsigned);
+	T2142 fn = reinterpret_cast<T2142>(base + 0x532b0);
+	// a fake allocator: holder -> object -> vtable[0x14]
+	void* allocVt[0x18 / 4 + 1]; memset(allocVt, 0, sizeof(allocVt));
+	allocVt[0x14 / 4] = reinterpret_cast<void*>(&nxFreeRecorder);
+	unsigned char allocObj[0x20]; memset(allocObj, 0, sizeof(allocObj));
+	*(void**)(allocObj) = allocVt;
+	unsigned char holder[0x10]; memset(holder, 0, sizeof(holder));
+	*(void**)(holder) = allocObj;
+	NxAllocSaved svAl = nxBindAllocSlot(base, holder);
+	nxSetAllocFree(&nxFreeRecorder);
+	unsigned df = 0;
+	for(unsigned arm = 0; arm < 2; ++arm)
+		{
+		unsigned flags = arm ? 1u : 0u;
+		unsigned char self[0x40], selfC[0x40];
+		memset(self, 0xcd, sizeof(self)); memset(selfC, 0xcd, sizeof(selfC));
+		gFreeHits = 0; gFreeArg = nullptr;
+		void* ro = fn(self, flags);
+		unsigned hO = gFreeHits; void* aO = gFreeArg;
+		gFreeHits = 0; gFreeArg = nullptr;
+		void* rc = nxScalarDeletingDtor2142(selfC, flags);
+		unsigned hC = gFreeHits; void* aC = gFreeArg;
+		// each side frees its OWN buffer, so compare the freed pointer against
+		// that side's self rather than against the other side's
+		if(ro != self || rc != selfC || hO != hC
+			|| memcmp(self, selfC, sizeof(self)) != 0 || hO != arm
+			|| (arm == 1 && (aO != self || aC != selfC)))
+			{fprintf(stderr,"dtor2142 arm=%u ro=%p rc=%p hO=%u hC=%u aO=%p aC=%p\n",
+				arm, ro, rc, hO, hC, aO, aC);++df;}
+		}
+	nxSetAllocFree(nullptr);
+	nxUnbindAllocSlot(base, svAl);
+	printf("dtor2142 candidate failures=%u provisional=1\n", df);
 	}
 
 
