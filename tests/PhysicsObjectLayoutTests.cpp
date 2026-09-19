@@ -83,6 +83,42 @@ static unsigned gDtorFaultAddr;
 extern "C" int __stdcall nxLockStub1(void*) { return 1; }
 extern "C" int __stdcall nxLockStub3(void*, int, int) { return 1; }
 extern "C" int __stdcall nxLockStubQuery() { return 0x2222; }
+// The 004886 callback slot holds a non-code sentinel in the image; binding it
+// to a no-op makes the 004886-calling rows drivable. The call site pushes two
+// arguments and cleans them itself, so this is __cdecl.
+extern "C" int __cdecl nxCallbackStub2(void*, void*) { return 0; }
+
+// Bind the 004886 callback slot [0x10128478] to the stub above.
+struct NxCallbackSaved { void* slot; void* page; DWORD prot; int ok; };
+
+static NxCallbackSaved nxBindCallbackSlot(const void* imageBase)
+	{
+	NxCallbackSaved sv;
+	unsigned char* img = const_cast<unsigned char*>(
+		reinterpret_cast<const unsigned char*>(imageBase));
+	void** slot = reinterpret_cast<void**>(img + 0x128478);
+	sv.slot = *slot;
+	sv.page = reinterpret_cast<void*>(
+		reinterpret_cast<size_t>(img + 0x128000) & ~static_cast<size_t>(0xFFF));
+	sv.prot = 0; sv.ok = 0;
+	if(!VirtualProtect(sv.page, 0x2000, PAGE_READWRITE, &sv.prot))
+		return sv;
+	sv.ok = 1;
+	*slot = reinterpret_cast<void*>(&nxCallbackStub2);
+	return sv;
+	}
+
+static void nxUnbindCallbackSlot(const void* imageBase, const NxCallbackSaved& sv)
+	{
+	if(!sv.ok)
+		return;
+	unsigned char* img = const_cast<unsigned char*>(
+		reinterpret_cast<const unsigned char*>(imageBase));
+	DWORD t = 0;
+	VirtualProtect(sv.page, 0x2000, PAGE_READWRITE, &t);
+	*reinterpret_cast<void**>(img + 0x128478) = sv.slot;
+	VirtualProtect(sv.page, 0x2000, sv.prot, &t);
+	}
 
 // Bind the four Foundation lock-API slots in the oracle image to the no-op
 // stubs above. The slots live in a read-only page, so the stores need the
@@ -6275,6 +6311,73 @@ int wmain(int argc, wchar_t** argv)
 	nxUnbindLockApi(base, svB9);
 	printf("lockacc9 candidate failures=%u provisional=1\n", b9f);
 	}
+	// -- 004886-calling wrapper 005450, with the callback slot bound.
+	{
+	typedef unsigned char (__thiscall* W5450Oracle)(void*, void*);
+	W5450Oracle w5450 = reinterpret_cast<W5450Oracle>(base + 0xef690);
+	NxCallbackSaved svCb = nxBindCallbackSlot(base);
+	unsigned w5f = 0;
+	for(unsigned ci = 0; ci < 3; ++ci)
+		{
+		unsigned char ob[0x80], cb[0x80];
+		memset(ob, 0, sizeof(ob)); memset(cb, 0, sizeof(cb));
+		unsigned char nodeO[0x40], nodeC[0x40];
+		memset(nodeO, 0, sizeof(nodeO)); memset(nodeC, 0, sizeof(nodeC));
+		unsigned char tgtO[0x40], tgtC[0x40];
+		memset(tgtO, 0, sizeof(tgtO)); memset(tgtC, 0, sizeof(tgtC));
+		*(void**)(ob + 0x14) = tgtO; *(void**)(cb + 0x14) = tgtC;
+		unsigned short w = 0x0000; if(ci == 1) w = 0xffff;
+		memcpy(nodeO + 0x28, &w, 2); memcpy(nodeC + 0x28, &w, 2);
+		if(ci == 2){ nodeO[8] = 2; nodeC[8] = 2; }
+		unsigned char rO = w5450(ob, nodeO);
+		unsigned char rC = nxWrap5450(cb, nodeC);
+		if(rO != rC || *(unsigned*)(ob+0x38) != *(unsigned*)(cb+0x38)
+			|| memcmp(nodeO, nodeC, 0x40) != 0)
+			{
+			fprintf(stderr,"wrap5450 ci=%u rO=%u rC=%u c38=%u/%u\n", ci, rO, rC,
+				*(unsigned*)(ob+0x38), *(unsigned*)(cb+0x38));
+			++w5f;
+			}
+		}
+	nxUnbindCallbackSlot(base, svCb);
+	printf("wrap5450 candidate failures=%u provisional=1\n", w5f);
+	}
+	// -- 004886-calling sibling 001787 (caller-cleaned, object is arg2).
+	{
+	typedef unsigned char (__cdecl* W1787Oracle)(void*, void*);
+	W1787Oracle w1787 = reinterpret_cast<W1787Oracle>(base + 0x3f570);
+	NxCallbackSaved svCb2 = nxBindCallbackSlot(base);
+	unsigned w7f = 0;
+	for(unsigned ci = 0; ci < 3; ++ci)
+		{
+		unsigned char nodeO[0x100], nodeC[0x100];
+		memset(nodeO, 0, sizeof(nodeO)); memset(nodeC, 0, sizeof(nodeC));
+		unsigned char innerO[0x40], innerC[0x40];
+		memset(innerO, 0, sizeof(innerO)); memset(innerC, 0, sizeof(innerC));
+		unsigned short w = 0x0000; if(ci == 1) w = 0xffff;
+		memcpy(nodeO + 0xcc, &w, 2); memcpy(nodeC + 0xcc, &w, 2);
+		if(ci == 2){ nodeO[0xa4 + 8] = 2; nodeC[0xa4 + 8] = 2; }
+		*(void**)(nodeO + 0xc4) = innerO + 0x14;
+		*(void**)(nodeC + 0xc4) = innerC + 0x14;
+		unsigned char rO = w1787(nullptr, nodeO);
+		unsigned char rC = nxWrap1787(nullptr, nodeC);
+		// the fixture puts a different inner pointer at +0xc4 on each side;
+		// clear it before comparing so only the row's own writes count.
+		*(void**)(nodeO + 0xc4) = nullptr;
+		*(void**)(nodeC + 0xc4) = nullptr;
+		if(rO != rC || memcmp(nodeO, nodeC, 0x100) != 0)
+			{
+			fprintf(stderr,"wrap1787 ci=%u rO=%u rC=%u\n", ci, rO, rC);
+			for(unsigned k = 0; k < 0x100; ++k)
+				if(nodeO[k] != nodeC[k]) fprintf(stderr,"  n[%02x] o=%02x c=%02x\n", k, nodeO[k], nodeC[k]);
+			++w7f;
+			}
+		}
+	nxUnbindCallbackSlot(base, svCb2);
+	printf("wrap1787 candidate failures=%u provisional=1\n", w7f);
+	}
+
+
 
 
 
