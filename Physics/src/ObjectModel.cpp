@@ -2464,6 +2464,29 @@ unsigned BoxShape::nxWrap240(unsigned index)
 	return *reinterpret_cast<unsigned*>(slot + 0x6cc);
 	}
 
+// phys_fn_001403 (0x29190, MESH vtable slot 4): copy [[this+0xe0]+0x5c][0..3]
+// into out[0..3], then out[0..2] = M * v + t, with the 3x3 matrix at
+// [this+0xc..0x2c] (rows) and the translation at [this+0x30..0x38]. The x87
+// body accumulates in extended precision and stores to float; a double
+// intermediate reproduces the staged rounding.
+void BoxShape::nxTransformPoint1403(float* out)
+	{
+	const unsigned char* p = reinterpret_cast<const unsigned char*>(this);
+	const unsigned char* src =
+		*reinterpret_cast<const unsigned char* const*>(p + 0xe0) + 0x5c;
+	float v[4];
+	memcpy(v, src, sizeof(v));
+	float mf[9];
+	memcpy(mf, p + 0xc, sizeof(mf));
+	float tf[3];
+	memcpy(tf, p + 0x30, sizeof(tf));
+	const float rx = static_cast<float>(static_cast<double>(mf[0])*v[0] + static_cast<double>(mf[1])*v[1] + static_cast<double>(mf[2])*v[2] + tf[0]);
+	const float ry = static_cast<float>(static_cast<double>(mf[3])*v[0] + static_cast<double>(mf[4])*v[1] + static_cast<double>(mf[5])*v[2] + tf[1]);
+	const float rz = static_cast<float>(static_cast<double>(mf[6])*v[0] + static_cast<double>(mf[7])*v[1] + static_cast<double>(mf[8])*v[2] + tf[2]);
+	out[0] = rx; out[1] = ry; out[2] = rz;
+	out[3] = v[3];
+	}
+
 // phys_fn_000849 (0x0001c8c0), __thiscall ret 0xc, helper of BOX slot 4.
 // Pose support is provisional: centered boxes and the driven finite poses;
 // general x87 staging, exceptional inputs and payload aliasing remain open.
