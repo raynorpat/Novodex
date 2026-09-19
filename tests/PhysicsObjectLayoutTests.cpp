@@ -5499,6 +5499,70 @@ int wmain(int argc, wchar_t** argv)
 	printf("poseq0130 candidate failures=%u provisional=1\n", pqf);
 	}
 
+	// -- Slate row 000094: orientation quaternion, lock API bound.
+	{
+	typedef float* (__thiscall* OrientOracle)(void*, float*);
+	OrientOracle orq = reinterpret_cast<OrientOracle>(base + 0x2f30);
+	NxLockApiSaved sv094 = nxBindLockApi(base);
+	unsigned orf = 0;
+	unsigned char lockObj4[0x40]; memset(lockObj4, 0, sizeof(lockObj4));
+	unsigned char subObj4[0x40]; memset(subObj4, 0, sizeof(subObj4));
+	*(void**)(lockObj4) = subObj4;
+	// present arm: stored quaternion at record+0x5c
+	unsigned char rec4[0x80]; memset(rec4, 0, sizeof(rec4));
+	float sv4[4] = { 0.25f, -0.5f, 0.75f, 0.625f };
+	memcpy(rec4 + 0x5c, sv4, sizeof(sv4));
+	unsigned char body4[0x60]; memset(body4, 0, sizeof(body4));
+	*(void**)(body4 + 8) = rec4;
+	unsigned char sh4[0x20]; memset(sh4, 0, sizeof(sh4));
+	*(void**)(sh4 + 0x10) = lockObj4;
+	*(void**)(sh4 + 0x14) = body4;
+	float p4O[4], p4C[4];
+	memset(p4O, 0, sizeof(p4O)); memset(p4C, 0, sizeof(p4C));
+	orq(sh4, p4O);
+	float* r4 = nxOrientation0094(sh4, p4C);
+	if(memcmp(p4O, p4C, sizeof(p4O)) != 0 || r4 != p4C)
+		{
+		fprintf(stderr,"orient0094 present arm\n");
+		for(unsigned i=0;i<4;++i) if(*(unsigned*)(p4O+i)!=*(unsigned*)(p4C+i))
+			fprintf(stderr,"  q[%u] o=%08x c=%08x\n", i,
+				*(unsigned*)(p4O+i), *(unsigned*)(p4C+i));
+		++orf;
+		}
+	// fallback arm: cached matrix at body+0x20, walked across all four
+	// diagonal branches (trace arm plus the three largest-diagonal cases)
+	float mats[4][9];
+	{
+	float r0[9] = { 1,2,3, 4,5,6, 7,8,9 };            memcpy(mats[0], r0, sizeof(r0));
+	float r1[9] = { -2,1,3, 4,-5,6, 7,8,9 };          memcpy(mats[1], r1, sizeof(r1));
+	float r2[9] = { -2,1,3, 4,-5,6, 7,8,12 };         memcpy(mats[2], r2, sizeof(r2));
+	float r3[9] = { 0.5f,0.25f,-0.125f, 0.75f,0.5f,0.375f, -0.25f,0.625f,0.5f };
+	memcpy(mats[3], r3, sizeof(r3));
+	}
+	for(unsigned mi = 0; mi < 4; ++mi)
+		{
+		unsigned char bodyF[0x60]; memset(bodyF, 0, sizeof(bodyF));
+		memcpy(bodyF + 0x20, mats[mi], 36);
+		unsigned char shF[0x20]; memset(shF, 0, sizeof(shF));
+		*(void**)(shF + 0x10) = lockObj4;
+		*(void**)(shF + 0x14) = bodyF;
+		float fO[4], fC[4];
+		memset(fO, 0, sizeof(fO)); memset(fC, 0, sizeof(fC));
+		orq(shF, fO);
+		nxOrientation0094(shF, fC);
+		if(memcmp(fO, fC, sizeof(fO)) != 0)
+			{
+			fprintf(stderr,"orient0094 fallback mi=%u\n", mi);
+			for(unsigned i=0;i<4;++i) if(*(unsigned*)(fO+i)!=*(unsigned*)(fC+i))
+				fprintf(stderr,"  q[%u] o=%08x c=%08x\n", i,
+					*(unsigned*)(fO+i), *(unsigned*)(fC+i));
+			++orf;
+			}
+		}
+	nxUnbindLockApi(base, sv094);
+	printf("orient0094 candidate failures=%u provisional=1\n", orf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
