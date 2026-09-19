@@ -1752,12 +1752,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "actor_dynamic vtable slot: orientation quaternion (0x2f30, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/36",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/199",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "writes the orientation quaternion (x,y,z,w) to out: the stored quaternion at record+0x5c when a record exists, otherwise derived from the cached matrix at [self+0x14]+0x20 by the largest-diagonal matrix-to-quaternion method (trace arm when the trace is non-negative, else the m00/m11/m22 case with stride 4); returns out",
+      "dynamic_proof": "confirmed via orient0094 differential (3z137): present arm + all four fallback diagonal branches failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
       "notes": ""
     },
     {
