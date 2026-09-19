@@ -4575,6 +4575,30 @@ vtable entry -- 002390's is a callback stored directly in the object, and only
 reading the operand literally distinguishes the two. No gate, coverage-floor,
 or policy change.
 
+## 3z164. Lock-bracketed vtable calls close (001237, 001119)
+
+Round 147 closed a pair that shares one shape but returns two different kinds
+of value:
+
+    <lock [self+0x14]>                     ; 002362, unconditional
+    ecx = [self+0x18]
+    eax = [ecx]
+    call [eax + <slot>]                    ; slot 0x44 for 001237, 0x3c for 001119
+    <unlock [self+0x14]>                   ; 002366
+    <return the slot result>
+
+The slot receives `this` in ecx and NO stack arguments. `__thiscall` is not
+available on a free function here, but `__fastcall` with one parameter is
+exactly that layout -- first argument in ecx, nothing to pop -- so the
+recorder stubs are declared that way. 001237's slot returns an unsigned, which
+the row returns in eax; 001119's returns a float, which the row stages through
+its frame and returns in st(0).
+
+Both were driven against recorders that capture the object they received and
+return a fixed value, comparing the result AND the recorded target
+(build/r147.log vtcall pair failures=0). Both move to `reconstructed`. No
+gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
