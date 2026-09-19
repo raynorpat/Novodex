@@ -1068,6 +1068,15 @@ void*					nxDtorWithGlobal3938(void* self, unsigned flags);
 void					nxSetGlobalFlag4491(unsigned value);
 unsigned char			nxLockedGlobalFlag4491(void* self);
 
+//! phys_fn_000342 (0xcb90, ret 0x10): report-once followed by a four-step
+//! dispatch on the same object. On the first call it reports assertion
+//! (0xd0, 0x10105ba8, 0x12e, 0, 0x10105c88) and sets gate byte 0x101237c3.
+//! Then, in order: vtable +0x70(this, arg2, arg3, arg4) -- the FIRST argument
+//! is unused by that call -- vtable +0x100(this, arg1), vtable +0x64(this) and
+//! vtable +0x108(this, 1, 1).
+void					nxOnceFourCalls0342(void* self, unsigned char* gate,
+							unsigned a1, unsigned a2, unsigned a3, unsigned a4);
+
 unsigned char			nxArrayVtCall3Args1024(void* self, unsigned a1, unsigned a2,
 							unsigned a3);
 

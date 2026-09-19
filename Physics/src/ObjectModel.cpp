@@ -2140,6 +2140,27 @@ unsigned char nxLockedGlobalFlag4491(void* self)
 	return gNxGlobalFlag4491 != 0u ? 1u : 0u;
 	}
 
+// phys_fn_000342 (0xcb90, ret 0x10): report-once then a four-step dispatch.
+void nxOnceFourCalls0342(void* self, unsigned char* gate, unsigned a1,
+	unsigned a2, unsigned a3, unsigned a4)
+	{
+	if(*gate == 0)
+		{
+		if(gNxAssertReport)
+			gNxAssertReport(0xd0u, 0x10105ba8u, 0x12eu, 0u, 0x10105c88u);
+		*gate = 1;
+		}
+	void** vt = *reinterpret_cast<void***>(self);
+	typedef void (__stdcall* Fn3)(unsigned, unsigned, unsigned);
+	typedef void (__stdcall* Fn1)(unsigned);
+	typedef void (__stdcall* Fn0)();
+	typedef void (__stdcall* Fn2)(unsigned, unsigned);
+	reinterpret_cast<Fn3>(vt[0x70 / 4])(a2, a3, a4);
+	reinterpret_cast<Fn1>(vt[0x100 / 4])(a1);
+	reinterpret_cast<Fn0>(vt[0x64 / 4])();
+	reinterpret_cast<Fn2>(vt[0x108 / 4])(1u, 1u);
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)
