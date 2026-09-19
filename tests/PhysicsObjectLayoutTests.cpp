@@ -125,6 +125,11 @@ static unsigned __fastcall nxRecThis30(void* self)
 static unsigned __stdcall nxRecArg24(void* arg)
 	{ gVtRec[0] = static_cast<unsigned>(reinterpret_cast<size_t>(arg)); ++gVtRecN; return 0; }
 
+// Report-once dispatch slots take one or two fixed arguments.
+static void __stdcall nxRecOnce1(unsigned a) { gVtRec[0] = a; gVtRecN = 1; }
+static void __stdcall nxRecOnce2(unsigned a, unsigned b)
+	{ gVtRec[0] = a; gVtRec[1] = b; gVtRecN = 2; }
+
 // The per-element loop passes one stack argument and leaves `this` in ecx; the
 // stub records the argument and the call count.
 static unsigned gLoopArg;
@@ -12246,6 +12251,70 @@ int wmain(int argc, wchar_t** argv)
 	}
 	nxUnbindLockApi(base, svLv);
 	printf("vtcall slots candidate failures=%u provisional=1\n", lvf2);
+	}
+	// -- Report-once dispatch rows: 000335, 000336, 000390. Each is driven on
+	//    the first call (gate clear -> report) and again with the gate set.
+	{
+	struct OnceRow { unsigned rva; unsigned gateRva; unsigned slot; unsigned nargs;
+		unsigned a1kind; unsigned a2kind; unsigned code; unsigned file; unsigned line;
+		unsigned expr; const char* name; };
+	// a1kind/a2kind: 0 = literal 1, 1 = the row's first argument, 2 = its second
+	static const OnceRow kOnce[] = {
+		{ 0xca40, 0x1237c1, 0x100, 1, 1, 0, 0xd0, 0x10105ba8, 0x114, 0x10105bd8, "000335" },
+		{ 0xca90, 0x1237c2, 0x108, 2, 0, 0, 0xd0, 0x10105ba8, 0x11a, 0x10105c30, "000336" },
+		{ 0xd600, 0x1237c4, 0x104, 2, 0, 2, 0xd0, 0x10105ba8, 0x204, 0x10105f68, "000390" },
+	};
+	NxReportSaved svOn = nxBindReportSlot(base);
+	nxSetAssertReport(&nxReportRecorder);
+	unsigned onf = 0;
+	static unsigned char gOnceGate[3];
+	for(unsigned i = 0; i < sizeof(kOnce) / sizeof(kOnce[0]); ++i)
+		{
+		NxGateSaved svG1 = nxBindGateSlot(base, 0);
+		gOnceGate[i] = 0;
+		void* vt[0x110 / 4 + 1]; memset(vt, 0, sizeof(vt));
+		vt[kOnce[i].slot / 4] = (kOnce[i].nargs <= 1)
+			? reinterpret_cast<void*>(&nxRecOnce1)
+			: reinterpret_cast<void*>(&nxRecOnce2);
+		unsigned char self[0x20]; memset(self, 0, sizeof(self));
+		*(void**)(self) = vt;
+		unsigned char selfC[0x20]; memcpy(selfC, self, sizeof(self));
+		for(unsigned pass = 0; pass < 2; ++pass)
+			{
+			unsigned o[5];
+			gRepCount = 0; memset(gRepCap, 0, sizeof(gRepCap));
+			gVtRecN = 0; memset(gVtRec, 0, sizeof(gVtRec));
+			unsigned nO, nC, rnO, rnC;
+			unsigned rO[2] = { 0, 0 }, rC[2] = { 0, 0 };
+			if(kOnce[i].rva == 0xca40)
+				{ reinterpret_cast<void (__thiscall*)(void*, unsigned)>(base + kOnce[i].rva)(self, 0x11u); }
+			else if(kOnce[i].rva == 0xca90)
+				{ reinterpret_cast<void (__thiscall*)(void*)>(base + kOnce[i].rva)(self); }
+			else
+				{ reinterpret_cast<void (__thiscall*)(void*, unsigned, unsigned)>(base + kOnce[i].rva)(self, 0x11u, 0x22u); }
+			memcpy(o, gRepCap, sizeof(o));
+			nO = gRepCount;
+			rnO = gVtRecN; rO[0] = gVtRec[0]; rO[1] = gVtRec[1];
+			unsigned a1 = (kOnce[i].a1kind == 1) ? 0x11u : ((kOnce[i].a1kind == 2) ? 0x22u : 1u);
+			unsigned a2 = (kOnce[i].a2kind == 1) ? 0x11u : ((kOnce[i].a2kind == 2) ? 0x22u : 1u);
+			gRepCount = 0; memset(gRepCap, 0, sizeof(gRepCap));
+			gVtRecN = 0; memset(gVtRec, 0, sizeof(gVtRec));
+			nxOnceReportVtEx(selfC, &gOnceGate[i], kOnce[i].slot, kOnce[i].nargs,
+				a1, a2, kOnce[i].code, kOnce[i].file, kOnce[i].line, kOnce[i].expr);
+			unsigned c[5];
+			memcpy(c, gRepCap, sizeof(c));
+			nC = gRepCount;
+			rnC = gVtRecN; rC[0] = gVtRec[0]; rC[1] = gVtRec[1];
+			if(nO != nC || memcmp(o, c, sizeof(o)) != 0 || rnO != rnC
+				|| rO[0] != rC[0] || rO[1] != rC[1])
+				{fprintf(stderr,"oncedispatch %s pass=%u nO=%u nC=%u rnO=%u rnC=%u\n",
+					kOnce[i].name, pass, nO, nC, rnO, rnC);++onf;}
+			}
+		nxUnbindGateSlot(base, svG1);
+		}
+	nxSetAssertReport(nullptr);
+	nxUnbindReportSlot(base, svOn);
+	printf("oncedispatch candidate failures=%u provisional=1\n", onf);
 	}
 
 
