@@ -3442,6 +3442,24 @@ fixture bug, not a row property, so the earlier "sub esp frame rows always
 fault" hypothesis is too broad. 001403 moves to `reconstructed`. No gate,
 coverage-floor, or policy change.
 
+## 3z117. Sphere mass helper payload path diverges (blocks 001371/001008)
+
+Round 102 attempted the SPHERE vtable slot-4 wrapper 001371 (0x27be0,
+ret 0xc), the sphere analogue of the closed 000947 (BOX slot 4): when the
+low flag bits are clear it runs the sphere mass helper 000851 on the facade
+radius [this+0xe0] and pose [this+0x6c]. The wrapper semantics are fully
+determined and the candidate nxSphereAccumulateMass was written, but the
+differential diverges: with a NON-null zero pose the oracle ZEROES the
+destination MassFrame while the candidate nxSphereComputeMassFrame computes
+the sphere inertia (e.g. 0x43239fe7 for density 2.0 / radius 2.5). The
+existing helper drive only ever passed extra=0, so 000851's non-null payload
+path was never verified -- this is a concrete, actionable gap in the
+nxSphereComputeMassFrame transcription. It blocks closing 001371 and its
+capsule twin 001008 (0x22440, also a facade mass wrapper over 000853). The
+probe, candidate method and header entry were fully reverted (normal
+family-RED end; diff clean). Both rows stay `discovered`. No gate,
+coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
