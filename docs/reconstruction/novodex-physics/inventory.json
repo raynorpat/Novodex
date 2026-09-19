@@ -8035,11 +8035,11 @@
       "phase": 2,
       "phase_provenance": "translation_unit",
       "state": "dynamically_gated",
-      "source": null,
+      "source": "lazy singleton getter (0xdeb0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/160",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1206",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the blockers3 differential (3z185): failures=0 for all three rows, with the chain lengths 0..3, the byte-count field combinations and both singleton arms all compared",
       "notes": ""
     },
     {
@@ -25494,12 +25494,12 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "summed byte count (0x29920)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/567",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3628",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the blockers3 differential (3z185): failures=0 for all three rows, with the chain lengths 0..3, the byte-count field combinations and both singleton arms all compared",
       "notes": ""
     },
     {
@@ -79880,12 +79880,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "linked-list teardown (0xb0360)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1652",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15118",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the blockers3 differential (3z185): failures=0 for all three rows, with the chain lengths 0..3, the byte-count field combinations and both singleton arms all compared",
       "notes": ""
     },
     {
