@@ -3809,6 +3809,25 @@ matched on both arms (build/r119.log poseq0130 failures=0). 000130 moves to
 `reconstructed`; 000094, 000146 and 000148 remain open behind the same
 binding. No gate, coverage-floor, or policy change.
 
+## 3z137. Orientation slate row closes (000094), a matrix-to-quaternion
+
+Round 120 closed the third lock-bracketed slate row. 000094 (0x2f30,
+actor_dynamic slot, ret 4, 517 bytes) returns the orientation quaternion
+(x, y, z, w). With a record it simply copies the stored quaternion at
+record+0x5c; without one it derives the quaternion from the cached matrix at
+[self+0x14]+0x20. The derivation is the largest-diagonal method, decoded from
+the listing: when the trace is non-negative the trace arm gives
+s = sqrt(trace+1) with x = (m21-m12)/2s, y = (m02-m20)/2s, z = (m10-m01)/2s
+and w = s/2; otherwise edx selects the largest of m00/m11/m22 (the second
+compare indexes the diagonal with a stride of 16 bytes) and the matching arm
+gives the other three components from the pairwise sums and differences.
+Candidate nxOrientation0094 matched on the present arm plus a matrix fixture
+chosen to walk ALL FOUR fallback branches (build/r120.log orient0094
+failures=0). 000094 moves to `reconstructed`. A re-run of the slate blocker
+analysis with the lock pair treated as bindable confirms only 000146 (579B)
+and 000148 (811B) remain reachable, both large quaternion-driven geometry
+functions. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
