@@ -3794,6 +3794,21 @@ rounding) matched on both arms (build/r118.log quatm0132 failures=0).
 000132 moves to `reconstructed`; 000130, 000094, 000146 and 000148 remain
 open behind the same binding. No gate, coverage-floor, or policy change.
 
+## 3z136. Full-pose slate row closes (000130); quaternion math factored
+
+Round 119 closed the second of the five newly-unblocked rows. 000130 (0x4580,
+actor_dynamic slot, ret 4, 318 bytes) is the full-pose sibling of 000132: it
+builds the SAME quaternion matrix from record+0x5c (x, y, z, w) but writes a
+0x30-byte pose -- the nine matrix floats followed by the translation at
+record+0x50/0x54/0x58 -- and copies the cached pose at [self+0x14]+0x20 when
+the record pointer is null. The listing confirms the shared math: its opening
+`1 - 2(y^2+z^2)` into the local at [esp+0x24] is the same expansion 3z135
+verified. The shared expansion was therefore factored into a single
+nxQuatToMatrix9 helper used by both rows. Candidate nxPoseFromQuat0130
+matched on both arms (build/r119.log poseq0130 failures=0). 000130 moves to
+`reconstructed`; 000094, 000146 and 000148 remain open behind the same
+binding. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
