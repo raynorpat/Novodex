@@ -1947,6 +1947,21 @@ void* nxScalarDeletingDtor2142(void* self, unsigned flags)
 	return self;
 	}
 
+void nxMutexNoopEx(void* self, unsigned code, unsigned file, unsigned line,
+	unsigned expression)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	unsigned char* lock = *reinterpret_cast<unsigned char**>(p + 0x10);
+	if(!nxTryAcquireLock(lock))
+		{
+		if(gNxAssertReport)
+			gNxAssertReport(code, file, line, 0u, expression);
+		return;
+		}
+	// 004248 is a bare `ret 4`, so the work arm has no observable beyond the
+	// release.
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)

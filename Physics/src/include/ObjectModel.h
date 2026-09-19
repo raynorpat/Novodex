@@ -1032,6 +1032,14 @@ void					nxArrayVtCall1022(void* self, void* arg);
 typedef void (__stdcall* NxAllocFreeFn)(void* block);
 void					nxSetAllocFree(NxAllocFreeFn fn);
 void*					nxScalarDeletingDtor2142(void* self, unsigned flags);
+
+//! The mutex-guarded direct-call family: both arms behave like the 3z161
+//! family except that the work arm calls a direct helper instead of a vtable
+//! slot. 004461/004463/004465/004467 call 004248, which is a bare `ret 4`
+//! no-op, so their work arm has no observable beyond the release. The sibling
+//! group that calls 001329 is NOT modelled here -- see evidence 3z167.
+void					nxMutexNoopEx(void* self, unsigned code, unsigned file,
+							unsigned line, unsigned expression);
 unsigned char			nxLockProbe0392(void* self);
 
 //! The mutex-guarded virtual dispatch family (31 rows): when the acquire of
