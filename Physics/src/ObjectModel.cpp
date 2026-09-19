@@ -1247,6 +1247,27 @@ void* nxActorGetPoseWords(void* self, void* out)
 	return out;
 	}
 
+// phys_fn_000038 (0x2400, ret 8) and phys_fn_000040 (0x2430, ret 8): the
+// actor vtable thunks. Dispatch through the object's own vtable slot +0x104
+// / +0x108 as (self, &local, arg1), then copy the first three words of the
+// returned record into out.
+static void* nxActorVtThunk(void* self, void* arg1, unsigned* out, unsigned slot)
+	{
+	void** vt = *reinterpret_cast<void***>(self);
+	typedef void* (__thiscall* SlotFn)(void*, void*, void*);
+	SlotFn fn = reinterpret_cast<SlotFn>(vt[slot / 4]);
+	unsigned local[3] = { 0, 0, 0 };
+	void* r = fn(self, local, arg1);
+	const unsigned* src = reinterpret_cast<const unsigned*>(r);
+	out[0] = src[0]; out[1] = src[1]; out[2] = src[2];
+	return out;
+	}
+
+void* nxActorVtThunk104(void* self, void* arg1, unsigned* out)
+	{ return nxActorVtThunk(self, arg1, out, 0x104u); }
+void* nxActorVtThunk108(void* self, void* arg1, unsigned* out)
+	{ return nxActorVtThunk(self, arg1, out, 0x108u); }
+
 // ---------------------------------------------------------------------------
 // Actor slate 5: the sleep-chain readers.
 

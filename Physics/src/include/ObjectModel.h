@@ -843,6 +843,13 @@ void					nxActorSetBoundTarget(void* self, void* value);
 //! the out pointer.
 void*					nxActorGetPoseWords(void* self, void* out);
 
+//! phys_fn_000038 (0x2400, ret 8) / phys_fn_000040 (0x2430, ret 8): the
+//! actor vtable thunks. Each dispatches through the object's own vtable
+//! slot +0x104 / +0x108 with (self, &local, arg1) and copies the first
+//! three words of the returned record to out.
+void*					nxActorVtThunk104(void* self, void* arg1, unsigned* out);
+void*					nxActorVtThunk108(void* self, void* arg1, unsigned* out);
+
 //! phys_fn_000713: recursive path compression over the record chain -- each
 //! record caches its group root at +0x1e8, self-parented at the root.
 unsigned				nxBodyRecordFixRoot(void* rec);
