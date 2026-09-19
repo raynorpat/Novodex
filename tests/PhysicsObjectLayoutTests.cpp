@@ -6434,47 +6434,6 @@ int wmain(int argc, wchar_t** argv)
 	nxUnbindCallbackSlot(base, svCb2);
 	printf("wrap1787 candidate failures=%u provisional=1\n", w7f);
 	}
-	// -- Pure assert-report rows: bind the report slot and compare the
-	//    captured (code, file, line, zero, expression) tuples.
-	{
-	struct RepRow { unsigned rva; void (*candidate)(); const char* name; };
-	static const RepRow kRep[] = {
-		{ 0xcea0,  &nxAssertReport0364, "000364" },
-		{ 0xd900,  &nxAssertReport0408, "000408" },
-		{ 0xd930,  &nxAssertReport0410, "000410" },
-		{ 0x8bea0, &nxAssertReport3750, "003750" },
-		{ 0x8bf00, &nxAssertReport3754, "003754" },
-		{ 0x8c1e0, &nxAssertReport3782, "003782" },
-	};
-	NxReportSaved svRep = nxBindReportSlot(base);
-	nxSetAssertReport(&nxReportRecorder);
-	unsigned rf = 0;
-	for(unsigned i = 0; i < sizeof(kRep) / sizeof(kRep[0]); ++i)
-		{
-		typedef void (__thiscall* RepOracle)(void*);
-		RepOracle fn = reinterpret_cast<RepOracle>(base + kRep[i].rva);
-		unsigned char self[0x20]; memset(self, 0, sizeof(self));
-		unsigned o[5];
-		gRepCount = 0; memset(gRepCap, 0, sizeof(gRepCap));
-		fn(self);
-		memcpy(o, gRepCap, sizeof(o));
-		unsigned nO = gRepCount;
-		gRepCount = 0; memset(gRepCap, 0, sizeof(gRepCap));
-		kRep[i].candidate();
-		unsigned c[5];
-		memcpy(c, gRepCap, sizeof(c));
-		unsigned nC = gRepCount;
-		if(nO != 1 || nC != 1 || memcmp(o, c, sizeof(o)) != 0)
-			{
-			fprintf(stderr,"assertrow %s nO=%u nC=%u O=%08x %08x %08x %08x %08x C=%08x %08x %08x %08x %08x\n",
-				kRep[i].name, nO, nC, o[0],o[1],o[2],o[3],o[4], c[0],c[1],c[2],c[3],c[4]);
-			++rf;
-			}
-		}
-	nxSetAssertReport(nullptr);
-	nxUnbindReportSlot(base, svRep);
-	printf("assertrows candidate failures=%u provisional=1\n", rf);
-	}
 
 
 
@@ -11529,6 +11488,70 @@ int wmain(int argc, wchar_t** argv)
 
 		printf("candidate CANDIDATE-MISSING family=vtables reason=shape finals/actor classes are Tasks 3-4\n");
 		++candidateMissing;
+
+	// -- Pure assert-report rows: bind the report slot and compare the
+	//    captured (code, file, line, zero, expression) tuples.
+	{
+	struct RepRow { unsigned rva; unsigned nargs; void (*candidate)(); const char* name; };
+	static const RepRow kRep[] = {
+		{ 0xcea0, 0u, &nxAssertReport0364, "000364" },
+		{ 0xd900, 0u, &nxAssertReport0408, "000408" },
+		{ 0xd930, 0u, &nxAssertReport0410, "000410" },
+		{ 0x8bea0, 0u, &nxAssertReport3750, "003750" },
+		{ 0x8bf00, 0u, &nxAssertReport3754, "003754" },
+		{ 0x8c1e0, 0u, &nxAssertReport3782, "003782" },
+		{ 0xce70, 1u, &nxAssertReport000362, "000362" },
+		{ 0xd8a0, 1u, &nxAssertReport000404, "000404" },
+		{ 0xd8d0, 1u, &nxAssertReport000406, "000406" },
+		{ 0x8bb50, 0u, &nxAssertReport003736, "003736" },
+		{ 0x8bc70, 0u, &nxAssertReport003740, "003740" },
+		{ 0x8be70, 1u, &nxAssertReport003748, "003748" },
+		{ 0x8bed0, 1u, &nxAssertReport003752, "003752" },
+		{ 0x8bf30, 2u, &nxAssertReport003756, "003756" },
+		{ 0x8bf60, 1u, &nxAssertReport003758, "003758" },
+		{ 0x8bf90, 2u, &nxAssertReport003760, "003760" },
+		{ 0x8bfc0, 1u, &nxAssertReport003762, "003762" },
+		{ 0x8bff0, 2u, &nxAssertReport003764, "003764" },
+		{ 0x8c020, 1u, &nxAssertReport003766, "003766" },
+		{ 0x8d4a0, 0u, &nxAssertReport003884, "003884" },
+	};
+	NxReportSaved svRep = nxBindReportSlot(base);
+	nxSetAssertReport(&nxReportRecorder);
+	unsigned rf = 0;
+	for(unsigned i = 0; i < sizeof(kRep) / sizeof(kRep[0]); ++i)
+		{
+		typedef void (__thiscall* RepOracle)(void*);
+		RepOracle fn = reinterpret_cast<RepOracle>(base + kRep[i].rva);
+		unsigned char self[0x40]; memset(self, 0, sizeof(self));
+		unsigned o[5];
+		gRepCount = 0; memset(gRepCap, 0, sizeof(gRepCap));
+		// the row pops its own argument count, so push exactly that many:
+		// mis-calling a ret-8 row with one argument shifts the stack and
+		// corrupts wmain's frame (the 3z156 mechanism).
+		if(kRep[i].nargs == 0)
+			reinterpret_cast<void (__thiscall*)(void*)>(fn)(self);
+		else if(kRep[i].nargs == 1)
+			reinterpret_cast<void (__thiscall*)(void*, unsigned)>(fn)(self, 0u);
+		else
+			reinterpret_cast<void (__thiscall*)(void*, unsigned, unsigned)>(fn)(self, 0u, 0u);
+		memcpy(o, gRepCap, sizeof(o));
+		unsigned nO = gRepCount;
+		gRepCount = 0; memset(gRepCap, 0, sizeof(gRepCap));
+		kRep[i].candidate();
+		unsigned c[5];
+		memcpy(c, gRepCap, sizeof(c));
+		unsigned nC = gRepCount;
+		if(nO != 1 || nC != 1 || memcmp(o, c, sizeof(o)) != 0)
+			{
+			fprintf(stderr,"assertrow %s nO=%u nC=%u O=%08x %08x %08x %08x %08x C=%08x %08x %08x %08x %08x\n",
+				kRep[i].name, nO, nC, o[0],o[1],o[2],o[3],o[4], c[0],c[1],c[2],c[3],c[4]);
+			++rf;
+			}
+		}
+	nxSetAssertReport(nullptr);
+	nxUnbindReportSlot(base, svRep);
+	printf("assertrows candidate failures=%u provisional=1\n", rf);
+	}
 
 		printf("layout candidate mismatches=%u mode=differential candidate_fold=%08x\n",
 			candidateMissing, candidateFold);
