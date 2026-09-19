@@ -18600,12 +18600,12 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "AABB aggregation over a shape list (0x22bf0, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/409",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3111",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "seeds out[0..5] to FLT_MAX/-FLT_MAX, then for each shape in [self+0xe0]..[self+0xe4] merges the 6-dword record selected by the PLANE slot-8 row (001267) with min on the low triple and max on the high triple; ret 4",
+      "dynamic_proof": "confirmed via aggaabb1030 differential (3z129): failures=0",
       "notes": ""
     },
     {
