@@ -143,6 +143,21 @@ static void __stdcall nxSeq64()
 static void __stdcall nxSeq108(unsigned a, unsigned b)
 	{ gSeq[gSeqN][0] = 0x108; gSeq[gSeqN][1] = a; gSeq[gSeqN][2] = b; ++gSeqN; }
 
+// 004763 records its guarded dispatch and each chain-walk visit into one
+// sequence so the order and the count are compared.
+static unsigned gChain[8];
+static unsigned gChainN;
+static unsigned gChainArg;
+static void __stdcall nxChain20(unsigned a) { gChain[gChainN++] = 0x20; gChainArg = a; }
+// record the node IDENTITY, not its address: the oracle and the candidate
+// walk different copies, so raw pointers would never compare equal.
+static void __fastcall nxChain10(void* node)
+	{
+	unsigned id;
+	memcpy(&id, reinterpret_cast<unsigned char*>(node) + 0x20, 4);
+	gChain[gChainN++] = id;
+	}
+
 // The per-element loop passes one stack argument and leaves `this` in ecx; the
 // stub records the argument and the call count.
 static unsigned gLoopArg;
@@ -12796,6 +12811,66 @@ int wmain(int argc, wchar_t** argv)
 	nxSetAssertReport(nullptr);
 	nxUnbindReportSlot(base, sv0342);
 	printf("once0342 candidate failures=%u provisional=1\n", f2);
+	}
+	// -- Guarded dispatch plus chain walk 004763: guard passes and fails, and
+	//    chain lengths 0..3, comparing the recorded sequence.
+	{
+	typedef void (__thiscall* T4763)(void*);
+	T4763 fn = reinterpret_cast<T4763>(base + 0xb3920);
+	unsigned chf = 0;
+	for(unsigned garm = 0; garm < 3; ++garm)
+	for(unsigned chainLen = 0; chainLen < 4; ++chainLen)
+		{
+		// the dispatch target object
+		void* vtObj[0x24 / 4 + 1]; memset(vtObj, 0, sizeof(vtObj));
+		vtObj[0x20 / 4] = reinterpret_cast<void*>(&nxChain20);
+		unsigned char obj[0x200]; memset(obj, 0, sizeof(obj));
+		*(void**)(obj) = vtObj;
+		unsigned char a[0x200], c[0x200], d[0x40];
+		memset(a, 0, sizeof(a)); memset(c, 0, sizeof(c)); memset(d, 0, sizeof(d));
+		unsigned v2c = 0;
+		if(garm == 0) { *(void**)(obj + 8) = a; a[0x10c] = 0x80; *(void**)(obj + 0xc) = c; *(void**)(obj + 0x44) = d; }
+		if(garm == 1) { *(void**)(obj + 8) = a; a[0x10c] = 0x00; *(void**)(obj + 0xc) = c; *(void**)(obj + 0x44) = d; }
+		if(garm == 2) { *(void**)(obj + 8) = a; a[0x10c] = 0x80; *(void**)(obj + 0xc) = c; c[0x10c] = 0x80; *(void**)(obj + 0x44) = d; }
+		memcpy(obj + 0x2c, &v2c, 4);
+		// the chain
+		void* vtNode[0x14 / 4 + 1]; memset(vtNode, 0, sizeof(vtNode));
+		vtNode[0x10 / 4] = reinterpret_cast<void*>(&nxChain10);
+		unsigned char nodes[3][0x40];
+		memset(nodes, 0, sizeof(nodes));
+		for(unsigned k = 0; k < 3; ++k)
+			{
+			*(void**)(nodes[k]) = vtNode;
+			unsigned id = 0xE000 + k;
+			memcpy(nodes[k] + 0x20, &id, 4);
+			}
+		for(unsigned k = 0; k + 1 < 3; ++k) *(void**)(nodes[k] + 0x10) = nodes[k + 1];
+		unsigned char self[0x40]; memset(self, 0, sizeof(self));
+		*(void**)(self + 0x18) = obj;
+		*(void**)(self + 0x14) = reinterpret_cast<void*>(0x4242u);
+		*(void**)(self + 0xc) = (chainLen == 0) ? nullptr : nodes[0];
+		unsigned char selfC[0x40]; memcpy(selfC, self, sizeof(self));
+		unsigned char objC[0x200]; memcpy(objC, obj, sizeof(objC));
+		unsigned char nodesC[3][0x40]; memcpy(nodesC, nodes, sizeof(nodesC));
+		// re-point every internal pointer at the candidate's copies
+		*(void**)(selfC + 0x18) = objC;
+		*(void**)(selfC + 0xc) = (chainLen == 0) ? nullptr : nodesC[0];
+		if(garm == 0) { *(void**)(objC + 8) = a; *(void**)(objC + 0xc) = c; *(void**)(objC + 0x44) = d; }
+		if(garm == 1) { *(void**)(objC + 8) = a; *(void**)(objC + 0xc) = c; *(void**)(objC + 0x44) = d; }
+		if(garm == 2) { *(void**)(objC + 8) = a; *(void**)(objC + 0xc) = c; *(void**)(objC + 0x44) = d; }
+		for(unsigned k = 0; k + 1 < 3; ++k) *(void**)(nodesC[k] + 0x10) = nodesC[k + 1];
+		gChainN = 0; memset(gChain, 0, sizeof(gChain)); gChainArg = 0;
+		fn(self);
+		unsigned nO = gChainN, aO = gChainArg;
+		unsigned seqO[8]; memcpy(seqO, gChain, sizeof(seqO));
+		gChainN = 0; memset(gChain, 0, sizeof(gChain)); gChainArg = 0;
+		nxGuardedVtChain4763(selfC);
+		unsigned nC = gChainN, aC = gChainArg;
+		if(nO != nC || aO != aC || memcmp(seqO, gChain, sizeof(seqO)) != 0)
+			{fprintf(stderr,"chain4763 garm=%u len=%u nO=%u nC=%u aO=%08x aC=%08x\n",
+				garm, chainLen, nO, nC, aO, aC);++chf;}
+		}
+	printf("chain4763 candidate failures=%u provisional=1\n", chf);
 	}
 
 
