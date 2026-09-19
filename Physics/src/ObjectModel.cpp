@@ -2635,6 +2635,17 @@ bool SphereShape::nxSphereAccumulateMass(MassFrame* destination, float density,
 	return true;
 	}
 
+// phys_fn_000827 (0x1bcc0, ret 0xc): rep-movsd 9 from arg1 into [this+0],
+// then arg2[0..2] into [this+0x24..0x2c] and arg3 into [this+0x30].
+void BoxShape::nxPoseCopyWithTail0827(const void* src, const unsigned* extra,
+	unsigned x)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(this);
+	memcpy(p + 0x00, src, 36);
+	memcpy(p + 0x24, extra, 12);
+	memcpy(p + 0x30, &x, 4);
+	}
+
 // phys_fn_001403 (0x29190, MESH vtable slot 4): copy [[this+0xe0]+0x5c][0..3]
 // into out[0..3], then out[0..2] = M * v + t, with the 3x3 matrix at
 // [this+0xc..0x2c] (rows) and the translation at [this+0x30..0x38]. The x87

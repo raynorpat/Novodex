@@ -399,6 +399,12 @@ class BoxShape
 	//! index into the container at [this+4] (000450 bounds-commit inlined).
 	unsigned			nxWrap240(unsigned index);
 
+	//! phys_fn_000827 (0x1bcc0, ret 0xc): copies nine dwords from the first
+	//! argument to [this+0], three dwords from the second to [this+0x24..2c],
+	//! and the third argument to [this+0x30].
+	void				nxPoseCopyWithTail0827(const void* src,
+							const unsigned* extra, unsigned x);
+
 	//! phys_fn_001403 (0x29190, MESH vtable slot 4, ret 4): copies the 4
 	//! dwords at [[this+0xe0]+0x5c] into out[0..3], then overwrites out[0..2]
 	//! with the 3x3 matrix ([this+0xc..0x2c]) times that vector plus the
