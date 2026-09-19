@@ -4872,6 +4872,33 @@ from a pointer argument, and one OR/AND bit-update -- which the same workKind
 mechanism can absorb one at a time. All four closed rows move to
 `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z174. Wide work kinds close the rest of the family (6 rows)
+
+Round 157 finished the lock-first direct-call family by widening the modelled
+work from a single store to the four shapes its helpers actually use. The
+helpers are all consecutive-dword stores, which is why one mechanism absorbs
+them:
+
+| row | object | work kind | helper |
+|---|---|---|---|
+| 000289 | +0x24 | 3 -- copy N dwords from a POINTER argument | 000507, 3 dwords to +0x520 |
+| 000338 | +0x24 | 2 -- N stack arguments to consecutive dwords | 000540, 3 to +0x52c |
+| 003942 | +0x14 | 2 | 003966, 5 to +0x44 |
+| 003944 | +0x14 | 2 | 003968, 4 to +0x58 |
+| 003714 | +0x14 | 3 | 003427, 11 dwords to +0x28 |
+| 003744 | +0x14 | 4 -- OR/AND bit update on one word | 003453, on +0x58 |
+
+workKind now reads: 0 no-op, 1 single store, 2 N stack-argument stores, 3 N
+dwords from a pointer argument, 4 the conditional OR/AND. All six verify on
+both arms with the whole 0x800-byte object buffer compared, and the four rows
+closed in 3z173 still pass unchanged under the widened candidate
+(build/r157.log mutexwide failures=0, mutexwork failures=0).
+
+That closes the whole family: ten rows across 3z173 and 3z174. The mutex
+families are now fully worked -- 3z160's probe, 3z161's thirty-one vtable
+dispatches, 3z167/3z168's two direct-call groups, and these ten. All six move
+to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
