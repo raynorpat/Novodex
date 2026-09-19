@@ -4599,6 +4599,34 @@ return a fixed value, comparing the result AND the recorded target
 (build/r147.log vtcall pair failures=0). Both move to `reconstructed`. No
 gate, coverage-floor, or policy change.
 
+## 3z165. Per-element dispatch loop closes (001022)
+
+Round 148 closed 001022 (0x22970, ret 4), the per-element virtual dispatch
+loop:
+
+    eax = [ecx+0xe4]; esi = [ecx+0xe0]
+    n = (eax - esi) >> 2                  ; element count
+    if (n == 0) return
+    loop:
+      ecx = [esi]                         ; the element
+      eax = [ecx]                         ; its vtable
+      push arg1
+      esi += 4
+      call [eax + 0xc]                    ; slot +0xc(element, arg1)
+      dec n
+      jne loop
+
+The count is the byte span of the pointer pair divided by four, exactly the
+shape the 3z112 element-count row computes, and the slot takes one uncleaned
+argument (__stdcall) with the element in ecx. The drive walks three element
+counts -- 0, 1 and 2 -- and compares BOTH the number of slot hits and the
+argument the slot received (build/r148.log arrayloop failures=0).
+
+One drive detail: with zero elements the slot never runs, so the argument is
+never recorded and the expectation for that case is zero rather than the
+sentinel -- the first run flagged exactly that. 001022 moves to
+`reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
