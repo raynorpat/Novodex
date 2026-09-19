@@ -3929,6 +3929,34 @@ helpers were fully reverted (tree clean, harness back to its normal
 family-RED end), so the copy members stay `discovered` with this analysis
 recorded for the next attempt. No gate, coverage-floor, or policy change.
 
+## 3z142. Copy members close (10 rows); 3z141's fault was the fixture
+
+Round 125 resolved the 3z141 open issue. The rows never had a problem: the
+FAULT was in the test fixture. Variant B reads its lock from [self+0x14] and
+its field from [self+0x18], but the fixture wrote the lock object at +0x10
+and the field at +0x14 for EVERY row. So variant-B rows called the lock
+helper with `ecx` pointing at the field buffer, whose first word was the fill
+pattern 0x9A000000; the lock helper then stored through it
+(`mov [edx+0x1c], eax`) and the drive faulted. Placing the lock at the row's
+own lock slot fixed all ten at once (build/r125.log lockedcopy failures=0).
+
+Ten rows closed, each locking [self+lockOff] and calling its copy helper on
+[self+fieldOff] to write into the out argument:
+
+- 001221 (0x24b40) and 001149 (0x24100): lock +0x14, field +0x18, helper
+  001297, three dwords from +0x90;
+- 003784 (0x8c210): lock +0x10, field +0x14, helper 003483, six from +0x5c;
+- 001223 (0x24b70) and 001187 (0x246d0): lock +0x14, field +0x18, helpers
+  001291/001299, nine from +0x6c;
+- 003712 (0x8b530): lock +0x10, field +0x14, helper 003425, eleven from +0x28;
+- 003820 (0x8c8d0): lock +0x10, field +0x14, helper 003567, nine from +0x18;
+- 001219 (0x24b10), 001107 (0x23a60) and 003816 (0x8c870): the 12-dword pose
+  copy (helpers 001289/001295/003563) from +0x6c (and +0x18 for 003816).
+
+All ten move to `reconstructed`. The general lesson is recorded: the family's
+lock and field slots vary per row and the fixture must honour each row's own
+offsets. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
