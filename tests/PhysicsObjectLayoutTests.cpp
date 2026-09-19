@@ -5445,6 +5445,60 @@ int wmain(int argc, wchar_t** argv)
 	printf("quatm0132 candidate failures=%u provisional=1\n", qf);
 	}
 
+	// -- Slate row 000130: full 0x30-byte pose, lock API bound.
+	{
+	typedef float* (__thiscall* PoseQuatOracle)(void*, float*);
+	PoseQuatOracle pq = reinterpret_cast<PoseQuatOracle>(base + 0x4580);
+	NxLockApiSaved sv130 = nxBindLockApi(base);
+	unsigned pqf = 0;
+	unsigned char lockObj3[0x40]; memset(lockObj3, 0, sizeof(lockObj3));
+	unsigned char subObj3[0x40]; memset(subObj3, 0, sizeof(subObj3));
+	*(void**)(lockObj3) = subObj3;
+	// null arm: cached pose at body+0x20
+	unsigned char bodyN3[0x60]; memset(bodyN3, 0, sizeof(bodyN3));
+	for(unsigned i = 0x20; i < 0x50; i += 4) *(unsigned*)(bodyN3 + i) = 0x44000000u + i;
+	unsigned char shN3[0x20]; memset(shN3, 0, sizeof(shN3));
+	*(void**)(shN3 + 0x10) = lockObj3;
+	*(void**)(shN3 + 0x14) = bodyN3;
+	float n3O[12], n3C[12];
+	memset(n3O, 0, sizeof(n3O)); memset(n3C, 0, sizeof(n3C));
+	pq(shN3, n3O);
+	float* n3Ret = nxPoseFromQuat0130(shN3, n3C);
+	if(memcmp(n3O, n3C, sizeof(n3O)) != 0 || n3Ret != n3C)
+		{
+		fprintf(stderr,"poseq0130 null arm ret=%u\n", n3Ret==n3C?1u:0u);
+		for(unsigned i=0;i<12;++i) if(*(unsigned*)(n3O+i)!=*(unsigned*)(n3C+i))
+			fprintf(stderr,"  p[%u] o=%08x c=%08x\n", i,
+				*(unsigned*)(n3O+i), *(unsigned*)(n3C+i));
+		++pqf;
+		}
+	// present arm: quaternion + translation
+	unsigned char rec3[0x80]; memset(rec3, 0, sizeof(rec3));
+	float qv3[4] = { 0.1825742f, 0.3651484f, 0.5477226f, 0.7302967f };
+	memcpy(rec3 + 0x5c, qv3, sizeof(qv3));
+	float tv[3] = { 1.5f, -2.25f, 3.75f };
+	memcpy(rec3 + 0x50, tv, sizeof(tv));
+	unsigned char body3[0x20]; memset(body3, 0, sizeof(body3));
+	*(void**)(body3 + 8) = rec3;
+	unsigned char sh3[0x20]; memset(sh3, 0, sizeof(sh3));
+	*(void**)(sh3 + 0x10) = lockObj3;
+	*(void**)(sh3 + 0x14) = body3;
+	float p3O[12], p3C[12];
+	memset(p3O, 0, sizeof(p3O)); memset(p3C, 0, sizeof(p3C));
+	pq(sh3, p3O);
+	nxPoseFromQuat0130(sh3, p3C);
+	if(memcmp(p3O, p3C, sizeof(p3O)) != 0)
+		{
+		fprintf(stderr,"poseq0130 present arm\n");
+		for(unsigned i=0;i<12;++i) if(*(unsigned*)(p3O+i)!=*(unsigned*)(p3C+i))
+			fprintf(stderr,"  p[%u] o=%08x c=%08x\n", i,
+				*(unsigned*)(p3O+i), *(unsigned*)(p3C+i));
+		++pqf;
+		}
+	nxUnbindLockApi(base, sv130);
+	printf("poseq0130 candidate failures=%u provisional=1\n", pqf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
