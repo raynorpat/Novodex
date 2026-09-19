@@ -4069,6 +4069,31 @@ copy members reuse nxLockedCopyOut unchanged. All four rows move to
 the large quaternion geometry functions. No gate, coverage-floor, or policy
 change.
 
+## 3z148. Round-130 regression found and repaired
+
+Round 131 opened by checking the harness's own mismatch count rather than
+just the gate exit, and found a REAL REGRESSION that 3z147 had introduced:
+the seventh accessor batch left `boxrow3` failing. The tell is `mismatches=`;
+round 129 logged `layout candidate mismatches=1` (the family gate alone) and
+`boxrow3 candidate ok=1`, while every run from round 130 on logged
+`mismatches=2` and `boxrow3 candidate ok=0`. The boxrow3 digests themselves
+were unchanged (d8=d9=8428d8b5), so what moved was the ORACLE-side digest the
+row compares against -- i.e. the batch perturbed oracle state that boxrow3
+later depends on, and the gate still exited 1 for the expected family reason,
+which is why the extra failure was invisible to a gate-exit-only check.
+
+Bisection pinned it: with the whole seventh batch removed, boxrow3 recovered;
+with only its two read-only rows (000416, 000421) restored, boxrow3 stayed
+green and both rows still verified; the corruption therefore comes from one
+of the two COPY rows (003808, 003806), which write through an out argument
+that the read-only rows never touch. Those two were re-opened to `discovered`
+(their closures were withdrawn) and the batch was reduced to the two safe
+rows, which still report lockacc7 failures=0. The state is back to
+`layout candidate mismatches=1` with boxrow3 ok=1.
+
+The standing lesson: every round must check the harness's mismatch COUNT, not
+only the gate exit code. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
