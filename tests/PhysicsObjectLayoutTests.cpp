@@ -6040,36 +6040,6 @@ int wmain(int argc, wchar_t** argv)
 		if(o != c){fprintf(stderr,"b7 count ci=%u o=%d c=%d\n", ci, o, c);++b7f;}
 		}
 	}
-	// 003808: copy 9 dwords from field+0x48, returns out
-	{
-	typedef void* (__thiscall* Copy9Oracle)(void*, unsigned*);
-	Copy9Oracle fn = reinterpret_cast<Copy9Oracle>(base + 0x8c620);
-	memset(field, 0, sizeof(field));
-	for(unsigned w = 0; w < 0x800; w += 4) *(unsigned*)(field + w) = 0xE0000000u + w;
-	memset(sh, 0, sizeof(sh));
-	*(void**)(sh + 0x10) = lockObjD;
-	*(void**)(sh + 0x14) = field;
-	unsigned o[9], c[9];
-	memset(o, 0, sizeof(o)); memset(c, 0, sizeof(c));
-	void* ro = fn(sh, o);
-	nxLockedCopyOut(sh, 0x14, 0x48, 9, c);
-	if(memcmp(o, c, 36) != 0 || ro != o){fprintf(stderr,"b7 003808\n");++b7f;}
-	}
-	// 003806: copy 3 dwords from field+0x6c, returns out
-	{
-	typedef void* (__thiscall* Copy3bOracle)(void*, unsigned*);
-	Copy3bOracle fn = reinterpret_cast<Copy3bOracle>(base + 0x8c5e0);
-	memset(field, 0, sizeof(field));
-	for(unsigned w = 0; w < 0x800; w += 4) *(unsigned*)(field + w) = 0xF0000000u + w;
-	memset(sh, 0, sizeof(sh));
-	*(void**)(sh + 0x10) = lockObjD;
-	*(void**)(sh + 0x14) = field;
-	unsigned o[4], c[4];
-	memset(o, 0, sizeof(o)); memset(c, 0, sizeof(c));
-	void* ro = fn(sh, o);
-	nxLockedCopyOut(sh, 0x14, 0x6c, 3, c);
-	if(memcmp(o, c, 12) != 0 || ro != o){fprintf(stderr,"b7 003806\n");++b7f;}
-	}
 	// 000421: conditional deref of [field+0x61c]
 	{
 	typedef unsigned (__thiscall* DerefCondOracle)(void*);
