@@ -3957,6 +3957,29 @@ All ten move to `reconstructed`. The general lesson is recorded: the family's
 lock and field slots vary per row and the fixture must honour each row's own
 offsets. No gate, coverage-floor, or policy change.
 
+## 3z143. Third accessor batch: copy, mask and bit-extract members (4 rows)
+
+Round 126 continued down the 3z138 backlog into three more member shapes,
+closing four rows in one drive (build/r126.log lockacc3 failures=0):
+
+- 000291 (0xc460, ret 4) locks [self+0x10] and calls helper 000509 on
+  [self+0x24] to write three dwords from [field+0x520] into the out argument
+  -- a copy member covered by nxLockedCopyOut;
+- 003818 (0x8c8a0, ret 4) is the same shape one variant over: lock
+  [self+0x10], helper 003565 on [self+0x14], three dwords from [field+0x3c],
+  and it additionally returns out;
+- 003746 (0x8be40) and 003852 (0x8cf20) are MASK members: helpers 003455 and
+  003595 are `mov eax,[ecx+dataOff]; and eax,[esp+4]; ret 4`, so the row
+  returns [field+0x58] & arg and [field+0x10] & arg respectively -- covered by
+  the new nxLockedAndRead.
+
+All four move to `reconstructed`. Two further member shapes were decoded in
+passing for a later round: helper 004078 is `mov eax,[ecx+0x2c]; shr eax,3;
+and eax,3` (nxLockedBitExtract), and helper 004083 is a global-flag read of
+[0x10127180] which is deliberately left open because it would couple the
+candidate to the oracle image's global. No gate, coverage-floor, or policy
+change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
