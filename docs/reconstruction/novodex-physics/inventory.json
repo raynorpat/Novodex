@@ -5874,12 +5874,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "tail-jmp mutex link advance",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/114",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1046",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the tailjmp differential (3z191): failures=0 for all twelve rows on both arms, comparing the report tuple, the global word written at 0x10127180 and the whole object buffer, with the lock API, report slot and that global bound",
       "notes": ""
     },
     {
@@ -5982,12 +5982,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "tail-jmp mutex link advance",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/117",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1050",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the tailjmp differential (3z191): failures=0 for all twelve rows on both arms, comparing the report tuple, the global word written at 0x10127180 and the whole object buffer, with the lock API, report slot and that global bound",
       "notes": ""
     },
     {
@@ -80636,12 +80636,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpD6Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1663",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15157",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the tailjmp differential (3z191): failures=0 for all twelve rows on both arms, comparing the report tuple, the global word written at 0x10127180 and the whole object buffer, with the lock API, report slot and that global bound",
       "notes": ""
     },
     {
@@ -81320,12 +81320,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpPulleyJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1681",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15205",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the tailjmp differential (3z191): failures=0 for all twelve rows on both arms, comparing the report tuple, the global word written at 0x10127180 and the whole object buffer, with the lock API, report slot and that global bound",
       "notes": ""
     },
     {
@@ -81896,12 +81896,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpDistanceJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1696",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15242",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the tailjmp differential (3z191): failures=0 for all twelve rows on both arms, comparing the report tuple, the global word written at 0x10127180 and the whole object buffer, with the lock API, report slot and that global bound",
       "notes": ""
     },
     {
@@ -82436,12 +82436,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpFixedJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1709",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15282",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the tailjmp differential (3z191): failures=0 for all twelve rows on both arms, comparing the report tuple, the global word written at 0x10127180 and the whole object buffer, with the lock API, report slot and that global bound",
       "notes": ""
     },
     {
@@ -82976,12 +82976,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpPointInPlaneJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1723",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15318",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the tailjmp differential (3z191): failures=0 for all twelve rows on both arms, comparing the report tuple, the global word written at 0x10127180 and the whole object buffer, with the lock API, report slot and that global bound",
       "notes": ""
     },
     {
@@ -83444,12 +83444,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpPointOnLineJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1735",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15352",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the tailjmp differential (3z191): failures=0 for all twelve rows on both arms, comparing the report tuple, the global word written at 0x10127180 and the whole object buffer, with the lock API, report slot and that global bound",
       "notes": ""
     },
     {
@@ -83912,12 +83912,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpSphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1747",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15386",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the tailjmp differential (3z191): failures=0 for all twelve rows on both arms, comparing the report tuple, the global word written at 0x10127180 and the whole object buffer, with the lock API, report slot and that global bound",
       "notes": ""
     },
     {
@@ -84488,12 +84488,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpCylindricalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1762",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15427",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the tailjmp differential (3z191): failures=0 for all twelve rows on both arms, comparing the report tuple, the global word written at 0x10127180 and the whole object buffer, with the lock API, report slot and that global bound",
       "notes": ""
     },
     {
@@ -84956,12 +84956,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpRevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1774",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15461",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the tailjmp differential (3z191): failures=0 for all twelve rows on both arms, comparing the report tuple, the global word written at 0x10127180 and the whole object buffer, with the lock API, report slot and that global bound",
       "notes": ""
     },
     {
@@ -85856,12 +85856,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpPrismaticJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1795",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15515",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the tailjmp differential (3z191): failures=0 for all twelve rows on both arms, comparing the report tuple, the global word written at 0x10127180 and the whole object buffer, with the lock API, report slot and that global bound",
       "notes": ""
     },
     {
