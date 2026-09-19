@@ -18348,12 +18348,12 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "CAPSULE vtable slot 9 world AABB (0x22620, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/404",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3077",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "expands the local-Y segment endpoints t +/- M[i][1]*halfHeight by +/- radius and merges into the caller out[0..5] (min on the low triple, max on the high triple); ret 4",
+      "dynamic_proof": "confirmed via capaabb2 differential (3z124): 4 poses x 2 halfHeights failures=0",
       "notes": ""
     },
     {
