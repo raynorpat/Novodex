@@ -4202,6 +4202,48 @@ This supersedes the "layout-sensitive harness defect" framing of 3z148/3z149:
 the defect was an ordinary out-of-bounds write in one test fixture. No gate,
 coverage-floor, or policy change.
 
+## 3z152. Second fixture overrun fixed; the eighth batch closes (5 rows)
+
+Round 135 finished clearing the overrun class and, with the frame sound,
+closed the batch that had faulted in 3z134.
+
+First the remaining overrun. 3z151 fixed row 000557 by giving its argument a
+real buffer; the same audit found row 000571 (0x108e0, 22 bytes) doing the
+same thing one word down:
+
+    mov edx, dword ptr [ecx + 0x620]
+    mov eax, dword ptr [esp + 4]
+    mov dword ptr [eax + 4], edx     <-- past a four-byte local
+    mov dword ptr [ecx + 0x620], eax
+    ret 4
+
+The zmix fixture passed it `&node` where node was a bare `unsigned`, so it
+wrote four bytes past a local and then read them back. node is now a 0x10-byte
+buffer. To bound the class, every short product row was scanned for stores of
+the form `[reg+N], _` where reg was loaded from [esp+4]: 30 such rows exist,
+writing up to [arg+0x54], but cross-checking the test's call sites shows the
+rest are given adequately sized arrays (for example 004407 writes up to
+[arg+0x1c] against a 0x30-byte node buffer). So exactly two fixtures were
+undersized, and both are now fixed.
+
+With the frame no longer being corrupted, the eighth accessor batch -- which
+faulted outright in 3z134 -- drives clean (build/r135.log lockacc8
+failures=0), and boxrow/boxrow3 both hold at ok=1 with mismatches=1, stable
+over three consecutive runs. Five rows close:
+
+- 003804 (0x8c590, ret 4) locks [self+0x10] and copies the 12-dword pose at
+  [field+0x48] into out (nxLockedCopyPose);
+- 000420 (0xda80) reads [field+0x61c] (field from [self+0x24]) and returns
+  ([ptr+8]-[ptr+4])>>2 or zero (nxLockedConditionalCount);
+- 004539 (0xb1600, ret 8) is a NESTED dereference: for each of [field+8] and
+  [field+0xc] it reads the pointer, dereferences [node+0x19c] and returns the
+  word that addresses -- the first drive faulted precisely because the fixture
+  put a value there instead of a pointer (nxLockedTwoNestedDerefs);
+- 003948 (0x8f090, ret 0x10) and 003946 (0x8f050, ret 0x14) write four and
+  five fields through as many out pointers (nxLockedCopyNPointers).
+
+All five move to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
