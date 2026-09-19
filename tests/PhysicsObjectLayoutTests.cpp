@@ -5708,6 +5708,58 @@ int wmain(int argc, wchar_t** argv)
 	printf("lockedget2 candidate failures=%u provisional=1\n", lg2f);
 	}
 
+	// -- Locked copy family: lock, helper copies from the field to out, unlock.
+	//    The lock slot differs by variant (0x14 vs 0x10); the first attempt
+	//    placed the field where variant B reads its lock, so the lock helper
+	//    wrote through the field's first word.
+	{
+	struct LockedCopy { unsigned rva; unsigned lockOff; unsigned fieldOff; unsigned dataOff; unsigned count; bool pose; const char* name; };
+	static const LockedCopy kCopy[] = {
+		{ 0x24b40, 0x14, 0x18, 0x90, 3,  false, "001221" },
+		{ 0x24100, 0x14, 0x18, 0x90, 3,  false, "001149" },
+		{ 0x8c210, 0x10, 0x14, 0x5c, 6,  false, "003784" },
+		{ 0x24b70, 0x14, 0x18, 0x6c, 9,  false, "001223" },
+		{ 0x246d0, 0x14, 0x18, 0x6c, 9,  false, "001187" },
+		{ 0x8b530, 0x10, 0x14, 0x28, 11, false, "003712" },
+		{ 0x8c8d0, 0x10, 0x14, 0x18, 9,  false, "003820" },
+		{ 0x24b10, 0x14, 0x18, 0x6c, 12, true,  "001219" },
+		{ 0x23a60, 0x14, 0x18, 0x6c, 12, true,  "001107" },
+		{ 0x8c870, 0x10, 0x14, 0x18, 12, true,  "003816" },
+	};
+	NxLockApiSaved svLC = nxBindLockApi(base);
+	unsigned lcf = 0;
+	unsigned char lockObj8[0x40]; memset(lockObj8, 0, sizeof(lockObj8));
+	unsigned char subObj8[0x40]; memset(subObj8, 0, sizeof(subObj8));
+	*(void**)(lockObj8) = subObj8;
+	for(unsigned i = 0; i < sizeof(kCopy) / sizeof(kCopy[0]); ++i)
+		{
+		typedef void (__thiscall* CopyOracle)(void*, unsigned*);
+		CopyOracle fn = reinterpret_cast<CopyOracle>(base + kCopy[i].rva);
+		unsigned char field[0x200]; memset(field, 0, sizeof(field));
+		for(unsigned w = 0; w < 0x200; w += 4) *(unsigned*)(field + w) = 0x9A000000u + w;
+		unsigned char sh[0x40]; memset(sh, 0, sizeof(sh));
+		*(void**)(sh + kCopy[i].lockOff) = lockObj8;
+		*(void**)(sh + kCopy[i].fieldOff) = field;
+		unsigned n = kCopy[i].pose ? 12u : kCopy[i].count;
+		unsigned o[12], c[12];
+		memset(o, 0, sizeof(o)); memset(c, 0, sizeof(c));
+		fn(sh, o);
+		if(kCopy[i].pose)
+			nxLockedCopyPose(sh, kCopy[i].fieldOff, kCopy[i].dataOff, c);
+		else
+			nxLockedCopyOut(sh, kCopy[i].fieldOff, kCopy[i].dataOff, n, c);
+		if(memcmp(o, c, n * 4u) != 0)
+			{
+			fprintf(stderr,"lockedcopy %s\n", kCopy[i].name);
+			for(unsigned w = 0; w < n; ++w) if(o[w]!=c[w])
+				fprintf(stderr,"  w%u o=%08x c=%08x\n", w, o[w], c[w]);
+			++lcf;
+			}
+		}
+	nxUnbindLockApi(base, svLC);
+	printf("lockedcopy candidate failures=%u provisional=1\n", lcf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
