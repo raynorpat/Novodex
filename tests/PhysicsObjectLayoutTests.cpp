@@ -145,6 +145,41 @@ static void* gFreeArg;
 // a __stdcall one-argument function
 static void __stdcall nxFreeRecorder(void* block) { gFreeArg = block; ++gFreeHits; }
 
+// The 003938 global slot [0x10104194] takes no arguments.
+static unsigned gGlobalHits;
+static void __cdecl nxGlobalRecorder(void) { ++gGlobalHits; }
+
+struct NxGlobalSaved { void* slot; void* page; DWORD prot; int ok; };
+
+static NxGlobalSaved nxBindGlobalSlot(const void* imageBase)
+	{
+	NxGlobalSaved sv;
+	unsigned char* img = const_cast<unsigned char*>(
+		reinterpret_cast<const unsigned char*>(imageBase));
+	void** slot = reinterpret_cast<void**>(img + 0x104194);
+	sv.slot = *slot;
+	sv.page = reinterpret_cast<void*>(
+		reinterpret_cast<size_t>(img + 0x104000) & ~static_cast<size_t>(0xFFF));
+	sv.prot = 0; sv.ok = 0;
+	if(!VirtualProtect(sv.page, 0x2000, PAGE_READWRITE, &sv.prot))
+		return sv;
+	sv.ok = 1;
+	*slot = reinterpret_cast<void*>(&nxGlobalRecorder);
+	return sv;
+	}
+
+static void nxUnbindGlobalSlot(const void* imageBase, const NxGlobalSaved& sv)
+	{
+	if(!sv.ok)
+		return;
+	unsigned char* img = const_cast<unsigned char*>(
+		reinterpret_cast<const unsigned char*>(imageBase));
+	DWORD t = 0;
+	VirtualProtect(sv.page, 0x2000, PAGE_READWRITE, &t);
+	*reinterpret_cast<void**>(img + 0x104194) = sv.slot;
+	VirtualProtect(sv.page, 0x2000, sv.prot, &t);
+	}
+
 struct NxAllocSaved { void* slot; void* page; DWORD prot; int ok; };
 
 static NxAllocSaved nxBindAllocSlot(const void* imageBase, void* holder)
@@ -12315,6 +12350,44 @@ int wmain(int argc, wchar_t** argv)
 	nxSetAssertReport(nullptr);
 	nxUnbindReportSlot(base, svOn);
 	printf("oncedispatch candidate failures=%u provisional=1\n", onf);
+	}
+	// -- Deleting destructor with a global call: 003938, both arms.
+	{
+	typedef void* (__thiscall* T3938)(void*, unsigned);
+	T3938 fn = reinterpret_cast<T3938>(base + 0x8eec0);
+	NxGlobalSaved svGl = nxBindGlobalSlot(base);
+	void* allocVt[0x18 / 4 + 1]; memset(allocVt, 0, sizeof(allocVt));
+	allocVt[0x14 / 4] = reinterpret_cast<void*>(&nxFreeRecorder);
+	unsigned char allocObj[0x20]; memset(allocObj, 0, sizeof(allocObj));
+	*(void**)(allocObj) = allocVt;
+	unsigned char holder[0x10]; memset(holder, 0, sizeof(holder));
+	*(void**)(holder) = allocObj;
+	NxAllocSaved svAl3 = nxBindAllocSlot(base, holder);
+	nxSetAllocFree(&nxFreeRecorder);
+	nxSetGlobalHook3938(&nxGlobalRecorder);
+	unsigned gf3 = 0;
+	for(unsigned arm = 0; arm < 2; ++arm)
+		{
+		unsigned flags = arm ? 1u : 0u;
+		unsigned char self[0x40], selfC[0x40];
+		memset(self, 0xcd, sizeof(self)); memset(selfC, 0xcd, sizeof(selfC));
+		gGlobalHits = 0; gFreeHits = 0; gFreeArg = nullptr;
+		void* ro = fn(self, flags);
+		unsigned gO = gGlobalHits, hO = gFreeHits; void* aO = gFreeArg;
+		gGlobalHits = 0; gFreeHits = 0; gFreeArg = nullptr;
+		void* rc = nxDtorWithGlobal3938(selfC, flags);
+		unsigned gC = gGlobalHits, hC = gFreeHits; void* aC = gFreeArg;
+		if(ro != self || rc != selfC || gO != gC || hO != hC
+			|| memcmp(self, selfC, sizeof(self)) != 0
+			|| gO != 1u || hO != arm
+			|| (arm == 1 && (aO != self || aC != selfC)))
+			{fprintf(stderr,"dtor3938 arm=%u gO=%u gC=%u hO=%u hC=%u\n", arm, gO, gC, hO, hC);++gf3;}
+		}
+	nxSetGlobalHook3938(nullptr);
+	nxSetAllocFree(nullptr);
+	nxUnbindAllocSlot(base, svAl3);
+	nxUnbindGlobalSlot(base, svGl);
+	printf("dtor3938 candidate failures=%u provisional=1\n", gf3);
 	}
 
 
