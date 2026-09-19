@@ -217,6 +217,10 @@ static unsigned gGc2A, gGc2B;
 static void __cdecl nxGc2Recorder(unsigned a, unsigned b)
 	{ gGc2A = a; gGc2B = b; ++gGc2Hits; }
 
+// the lock-bracketed helper rows RETURN the hook value, so this variant does too
+static unsigned __cdecl nxGc2RetRecorder(unsigned a, unsigned b)
+	{ gGc2A = a; gGc2B = b; ++gGc2Hits; return 0x2B2B0000u; }
+
 // Lock-API-global recorders for the second blocker batch.
 static unsigned g2371Arg;
 static void __stdcall nx2371Stub(unsigned a) { g2371Arg = a; }
@@ -13554,6 +13558,72 @@ int wmain(int argc, wchar_t** argv)
 	nxUnbindFnPtr(base, 0x104028, sv);
 	}
 	printf("newunlock candidate failures=%u provisional=1\n", nu);
+	}
+	// -- Lock-bracketed helper-call group: 001183, 003768, 003780, 003860,
+	//    003892. helperKind 0 is the registry lookup, 1 the global-call thunk.
+	{
+	struct LhRow { unsigned rva; unsigned lockOff; unsigned objOff; int kind;
+		unsigned slotRva; int viaField4; const char* name; };
+	static const LhRow kLh[] = {
+		{ 0x24640, 0x14, 0x18, 0, 0,        0, "001183" },
+		{ 0x8c050, 0x10, 0x14, 1, 0x126520, 0, "003768" },
+		{ 0x8c1b0, 0x10, 0x14, 1, 0x1263f4, 0, "003780" },
+		{ 0x8d060, 0x10, 0x14, 0, 0,        0, "003860" },
+		{ 0x8d680, 0x10, 0x14, 1, 0x1264a0, 1, "003892" },
+	};
+	NxLockApiSaved svLh = nxBindLockApi(base);
+	NxRegSaved svLhR = nxBindRegistry(base, nullptr);
+	nxSetRegistry4743(nullptr);
+	unsigned lhf = 0;
+	for(unsigned i = 0; i < sizeof(kLh) / sizeof(kLh[0]); ++i)
+		{
+		typedef unsigned (__thiscall* LhOracle)(void*);
+		LhOracle fn = reinterpret_cast<LhOracle>(base + kLh[i].rva);
+		NxFnPtrSaved svF = { nullptr, nullptr, 0, 0 };
+		if(kLh[i].kind == 1)
+			svF = nxBindFnPtr(base, kLh[i].slotRva,
+				reinterpret_cast<void*>(&nxGc2RetRecorder));
+		unsigned char lockObj[0x40]; memset(lockObj, 0, sizeof(lockObj));
+		unsigned char subObj[0x40]; memset(subObj, 0, sizeof(subObj));
+		*(void**)(lockObj) = subObj;
+		// one fixture object per side; for the viaField4 row the helper
+		// dereferences [obj+4], so make that self-referential
+		unsigned char obj[0x100], objC[0x100];
+		memset(obj, 0, sizeof(obj)); memset(objC, 0, sizeof(objC));
+		unsigned tag = 0x7A7A0000u, v80 = 0x80800000u;
+		memcpy(obj + 0x30, &tag, 4); memcpy(obj + 0x80, &v80, 4);
+		memcpy(objC + 0x30, &tag, 4); memcpy(objC + 0x80, &v80, 4);
+		*(void**)(obj + 4) = obj; *(void**)(objC + 4) = objC;
+		// the thunk reads [obj+0x7c] and then [that+0x30]: leaving +0x7c null
+		// made the oracle dereference null
+		*(void**)(obj + 0x7c) = obj; *(void**)(objC + 0x7c) = objC;
+		unsigned char self[0x80]; memset(self, 0, sizeof(self));
+		*(void**)(self + kLh[i].lockOff) = lockObj;
+		*(void**)(self + kLh[i].objOff) = obj;
+		unsigned char selfC[0x80]; memcpy(selfC, self, sizeof(selfC));
+		*(void**)(selfC + kLh[i].objOff) = objC;
+		gGc2Hits = 0; gGc2A = 0; gGc2B = 0;
+		unsigned ro = fn(self);
+		unsigned hO = gGc2Hits, aO = gGc2A, bO = gGc2B;
+		gGc2Hits = 0; gGc2A = 0; gGc2B = 0;
+		unsigned rc;
+		if(kLh[i].kind == 1)
+			rc = nxLockedHelperCall(selfC, kLh[i].lockOff, kLh[i].objOff, 1,
+				&nxGc2RetRecorder, kLh[i].viaField4);
+		else
+			rc = nxLockedHelperCall(selfC, kLh[i].lockOff, kLh[i].objOff, 0,
+				nullptr, 0);
+		unsigned hC = gGc2Hits, aC = gGc2A, bC = gGc2B;
+		if(ro != rc || hO != hC || aO != aC || bO != bC)
+			{fprintf(stderr,"lh %s ro=%08x rc=%08x hO=%u hC=%u\n",
+				kLh[i].name, ro, rc, hO, hC);++lhf;}
+		if(kLh[i].kind == 1)
+			nxUnbindFnPtr(base, kLh[i].slotRva, svF);
+		}
+	nxSetRegistry4743(nullptr);
+	nxUnbindRegistry(base, svLhR);
+	nxUnbindLockApi(base, svLh);
+	printf("lockhelper candidate failures=%u provisional=1\n", lhf);
 	}
 
 
