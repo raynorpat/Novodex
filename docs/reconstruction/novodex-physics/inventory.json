@@ -14946,12 +14946,12 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "pose copy with tail (0x1bcc0, ret 0xc)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/339",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2539",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "copies nine dwords from arg1 to [this+0], three dwords from arg2 to [this+0x24..0x2c], and arg3 to [this+0x30]; ret 0xc",
+      "dynamic_proof": "confirmed via posecopy827 differential (3z126): 3 cases failures=0",
       "notes": ""
     },
     {
