@@ -3608,6 +3608,20 @@ disassembly artifacts of splitting at jump targets, not standalone
 functions, which is why their drives faulted. 003268 is the next and only
 remaining target in this band. No gate, coverage-floor, or policy change.
 
+## 3z128. Batch index/vertex append closes (003268)
+
+Round 111 also drove that single genuine entry: 003268 (0x7e560, 210 bytes,
+ret 8). It bails when [this+0x18] >= [this+0x1c]; accumulates (count-2) into
+[this+0x20]; records the count in the [this+0x403c]/[this+0x4044] list when
+there is room; then for each index below [this+0x10] copies the 3-dword
+vertex record through the [this+8] map into the [this+0x4034]/[this+0x4038]
+output array -- assigning a fresh id when the map slot is zero -- and appends
+id-1 to the aux list. Candidate nxBatchAppend3268 verified byte-exact across
+three cases (build/r111.log batch3268 failures=0); the only initial
+"mismatches" were the four fixture pointer slots, which the drive now
+excludes (the three data arrays are compared in full). 003268 moves to
+`reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
