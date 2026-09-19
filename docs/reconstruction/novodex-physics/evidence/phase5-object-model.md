@@ -4804,6 +4804,47 @@ campaign has bound (report, lock API, and now a bare process-wide callback),
 which suggests the remaining `global`-classified rows may be reachable the same
 way. No gate, coverage-floor, or policy change.
 
+## 3z172. Guarded store family closes (5 rows) -- and 3z158 is superseded
+
+Round 155 closed five rows that share one body:
+
+    mov eax, [ecx+0x2c]
+    and al, 0x18
+    cmp al, 0x10
+    jne STORE
+    <report(1, <file>, <line>, 0, <expr>)>; ret 4
+STORE:
+    mov edx, [esp+4]
+    mov [ecx+<field>], edx
+    ret 4
+
+| row | field | report file / line / expression |
+|---|---|---|
+| 004184 | +0x44 | 0x101195b0 / 0xb1 / 0x10119628 |
+| 004288 | +0x1d0 | 0x10119e64 / 0x83 / 0x10119ef0 |
+| 004292 | +0x44 | 0x10119e64 / 0x8e / 0x10119f40 |
+| 004338 | +0x44 | 0x1011a204 / 0xae / 0x1011a2e0 |
+| 004334 | +0x1a8 | 0x1011a204 / 0x9d / 0x1011a290 |
+
+**This supersedes 3z158.** That section declined 004334 because its work arm
+"does not write the argument" -- the oracle left [self+0x1a8] at zero for every
+value tried. Re-driving it here, in the same table as its four siblings, the
+row behaves exactly as its listing says and BOTH arms verify: with the guard
+byte clear it stores 0x11223344 at +0x1a8, and with the guard equal to 0x10 it
+reports. The drive asserts both (`storedO != 0x11223344u` fails arm 0, and
+`nO != arm` pins the report), so it is genuinely exercising both paths. The
+3z158 failure was an artifact of that round's drive, not of the row.
+
+Candidate nxGuardedStoreEx(self, arg, fieldOff, code, file, line, expression)
+covers all five; each is driven on both arms and the whole 0x200-byte object is
+compared, not just the stored word (build/r155.log guardedstore failures=0).
+All five move to `reconstructed`.
+
+The lesson is the same one 3z168 drew and it keeps recurring: when a row
+"does not behave as written", suspect the drive before the decode. Three
+declines have now been reversed that way (001329's group, 004334 here, and the
+002390 callback-field misread). No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
