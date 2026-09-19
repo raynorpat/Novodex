@@ -88,6 +88,14 @@ extern "C" int __stdcall nxLockStubQuery() { return 0x2222; }
 // arguments and cleans them itself, so this is __cdecl.
 extern "C" int __cdecl nxCallbackStub2(void*, void*) { return 0; }
 
+// The mutex-family work arms dispatch through the object's own vtable slot
+// +0x38. The fixture supplies a table whose slot points here, so the oracle
+// and the candidate both reach the same body.
+static unsigned gSlot38Hits;
+// The call site pushes the argument and does not clean it, so the slot is a
+// __stdcall one-argument function; `this` arrives in ecx and is unused here.
+static void __stdcall nxSlot38Stub(void*) { ++gSlot38Hits; }
+
 // Bind the 004886 callback slot [0x10128478] to the stub above.
 struct NxCallbackSaved { void* slot; void* page; DWORD prot; int ok; };
 
@@ -11694,6 +11702,95 @@ int wmain(int argc, wchar_t** argv)
 	nxUnbindLockApi(base, svP);
 	printf("probe0392 candidate failures=%u provisional=1\n", pf);
 	}
+	// -- Mutex-guarded virtual dispatch family (31 rows): both arms each,
+	//    with the vtable slots bound through the fixture table.
+	{
+	struct MvRow { unsigned rva; unsigned slot; unsigned code; unsigned file; unsigned line; unsigned expr; const char* name; };
+	static const MvRow kMv[] = {
+		{ 0x23460, 0x34, 0x2u, 0x10106d94u, 0x017u, 0x10104760u, "001067" },
+		{ 0x23ad0, 0x34, 0x2u, 0x10106f0cu, 0x01au, 0x10104760u, "001111" },
+		{ 0x23b90, 0x38, 0x2u, 0x10106f0cu, 0x02bu, 0x10104760u, "001115" },
+		{ 0x24190, 0x34, 0x2u, 0x1010707cu, 0x020u, 0x10104760u, "001155" },
+		{ 0x24700, 0x34, 0x2u, 0x101071e0u, 0x021u, 0x10104760u, "001189" },
+		{ 0x24760, 0x38, 0x2u, 0x101071e0u, 0x029u, 0x10104760u, "001191" },
+		{ 0x24de0, 0x34, 0x2u, 0x1010734cu, 0x022u, 0x10104760u, "001239" },
+		{ 0xb0990, 0x24, 0x2u, 0x1011a794u, 0x015u, 0x10104760u, "004457" },
+		{ 0xb09f0, 0x28, 0x2u, 0x1011a794u, 0x020u, 0x10104760u, "004459" },
+		{ 0xb1050, 0x24, 0x2u, 0x1011a8fcu, 0x014u, 0x10104760u, "004501" },
+		{ 0xb10b0, 0x28, 0x2u, 0x1011a8fcu, 0x01fu, 0x10104760u, "004503" },
+		{ 0xb1490, 0x24, 0x2u, 0x1011aa5cu, 0x014u, 0x10104760u, "004527" },
+		{ 0xb14f0, 0x28, 0x2u, 0x1011aa5cu, 0x01fu, 0x10104760u, "004529" },
+		{ 0xb1960, 0x24, 0x2u, 0x1011abbcu, 0x014u, 0x10104760u, "004557" },
+		{ 0xb19c0, 0x28, 0x2u, 0x1011abbcu, 0x01fu, 0x10104760u, "004559" },
+		{ 0xb1e00, 0x24, 0x2u, 0x1011ad1cu, 0x013u, 0x10104760u, "004587" },
+		{ 0xb1e60, 0x28, 0x2u, 0x1011ad1cu, 0x01eu, 0x10104760u, "004589" },
+		{ 0xb2240, 0x24, 0x2u, 0x1011ae7cu, 0x014u, 0x10104760u, "004613" },
+		{ 0xb22a0, 0x28, 0x2u, 0x1011ae7cu, 0x01fu, 0x10104760u, "004615" },
+		{ 0xb26c0, 0x24, 0x2u, 0x1011afecu, 0x013u, 0x10104760u, "004641" },
+		{ 0xb2720, 0x28, 0x2u, 0x1011afecu, 0x01eu, 0x10104760u, "004643" },
+		{ 0xb2780, 0x2c, 0x2u, 0x1011afecu, 0x027u, 0x10104760u, "004645" },
+		{ 0xb27e0, 0x34, 0x2u, 0x1011afecu, 0x034u, 0x10104760u, "004647" },
+		{ 0xb2bc0, 0x24, 0x2u, 0x1011b15cu, 0x015u, 0x10104760u, "004671" },
+		{ 0xb2c20, 0x28, 0x2u, 0x1011b15cu, 0x020u, 0x10104760u, "004673" },
+		{ 0xb3000, 0x24, 0x2u, 0x1011b2ecu, 0x012u, 0x10104760u, "004697" },
+		{ 0xb3060, 0x28, 0x2u, 0x1011b2ecu, 0x01du, 0x10104760u, "004699" },
+		{ 0xb30c0, 0x2c, 0x2u, 0x1011b2ecu, 0x025u, 0x10104760u, "004701" },
+		{ 0xb3150, 0x34, 0x2u, 0x1011b2ecu, 0x032u, 0x10104760u, "004705" },
+		{ 0xb3750, 0x24, 0x2u, 0x1011b47cu, 0x013u, 0x10104760u, "004749" },
+		{ 0xb37b0, 0x28, 0x2u, 0x1011b47cu, 0x01eu, 0x10104760u, "004751" },
+	};
+	NxReportSaved svMv = nxBindReportSlot(base);
+	nxSetAssertReport(&nxReportRecorder);
+	NxLockApiSaved svMvL = nxBindLockApi(base);
+	nxSetLockOwner(0x2222u);
+	unsigned mvf = 0;
+	for(unsigned i = 0; i < sizeof(kMv) / sizeof(kMv[0]); ++i)
+	for(unsigned arm = 0; arm < 2; ++arm)
+		{
+		typedef void (__thiscall* MvOracle)(void*, void*);
+		MvOracle fn = reinterpret_cast<MvOracle>(base + kMv[i].rva);
+		unsigned char lockObj[0x40]; memset(lockObj, 0, sizeof(lockObj));
+		unsigned char subObj[0x40]; memset(subObj, 0, sizeof(subObj));
+		*(void**)(lockObj) = subObj;
+		unsigned owner = (arm == 0) ? 0x2222u : 0x1111u;
+		memcpy(subObj + 0x1c, &owner, 4);
+		void* vt[0x40 / 4 + 1];
+		memset(vt, 0, sizeof(vt));
+		for(unsigned s = 0x20; s <= 0x3c; s += 4)
+			vt[s / 4] = reinterpret_cast<void*>(&nxSlot38Stub);
+		unsigned char obj[0x20]; memset(obj, 0, sizeof(obj));
+		*(void**)(obj) = vt;
+		unsigned char self[0x40]; memset(self, 0, sizeof(self));
+		*(void**)(self + 0x10) = lockObj;
+		*(void**)(self + 0x18) = obj;
+		unsigned char selfC[0x40]; memcpy(selfC, self, sizeof(self));
+		unsigned o[5];
+		gRepCount = 0; memset(gRepCap, 0, sizeof(gRepCap));
+		gSlot38Hits = 0;
+		fn(self, reinterpret_cast<void*>(0x1234u));
+		memcpy(o, gRepCap, sizeof(o));
+		unsigned nO = gRepCount;
+		unsigned hO = gSlot38Hits;
+		gRepCount = 0; memset(gRepCap, 0, sizeof(gRepCap));
+		gSlot38Hits = 0;
+		nxMutexVirtualEx(selfC, reinterpret_cast<void*>(0x1234u), kMv[i].slot,
+			kMv[i].code, kMv[i].file, kMv[i].line, kMv[i].expr);
+		unsigned c[5];
+		memcpy(c, gRepCap, sizeof(c));
+		unsigned nC = gRepCount;
+		unsigned hC = gSlot38Hits;
+		if(nO != nC || memcmp(o, c, sizeof(o)) != 0 || hO != hC
+			|| memcmp(self, selfC, sizeof(self)) != 0)
+			{fprintf(stderr,"mutexfamily %s arm=%u nO=%u nC=%u hO=%u hC=%u\n",
+				kMv[i].name, arm, nO, nC, hO, hC);++mvf;}
+		}
+	nxSetLockOwner(0x2222u);
+	nxUnbindLockApi(base, svMvL);
+	nxSetAssertReport(nullptr);
+	nxUnbindReportSlot(base, svMv);
+	printf("mutexfamily candidate failures=%u provisional=1\n", mvf);
+	}
+
 
 
 
