@@ -1117,6 +1117,13 @@ class CapsuleShape
 							unsigned axisSelector, float radius,
 							float cylHalfHeight, const void* extra);
 
+	//! CAPSULE-table slot 4, phys_fn_001008 (0x22440, ret 0xc): when the low
+	//! flag bits are clear, computes the capsule mass frame with
+	//! axisSelector 1, radius [this+0xe0], cylHalfHeight [this+0xe0]+
+	//! [this+0xe4] and pose [this+0x6c]; always returns true.
+	bool				nxCapsuleAccumulateMass(MassFrame* destination,
+							float density, unsigned reserved);
+
 	//! CAPSULE-table slot 10, phys_fn_001001 (0x00021c30): pose-one
 	//! translation to out[0..2], halfHeight+radius to out[3].
 	void				nxCapsuleCenterRadius(float* out) const;

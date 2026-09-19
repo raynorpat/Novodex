@@ -2466,6 +2466,25 @@ unsigned BoxShape::nxWrap240(unsigned index)
 	return *reinterpret_cast<unsigned*>(slot + 0x6cc);
 	}
 
+// phys_fn_001008 (0x22440, CAPSULE vtable slot 4, ret 0xc): mirror of the
+// sphere slot-4 wrapper -- radius from [this+0xe0], cylHalfHeight from
+// [this+0xe0]+[this+0xe4], axisSelector 1, pose [this+0x6c].
+bool CapsuleShape::nxCapsuleAccumulateMass(MassFrame* destination, float density,
+	unsigned reserved)
+	{
+	(void) reserved;
+	if(!mBase.nxFlagBitsDE(7))
+		{
+		const unsigned char* p = reinterpret_cast<const unsigned char*>(this);
+		const float radius = *reinterpret_cast<const float*>(p + 0xe0);
+		const float halfHeight =
+			radius + *reinterpret_cast<const float*>(p + 0xe4);
+		nxCapsuleComputeMassFrame(destination, density, 1u, radius, halfHeight,
+			p + 0x6c);
+		}
+	return true;
+	}
+
 // phys_fn_001371 (0x27be0, SPHERE vtable slot 4, ret 0xc): mirror of the BOX
 // slot-4 wrapper -- when the low flag bits are clear, run the sphere mass
 // helper on the facade radius and pose, then return true.
