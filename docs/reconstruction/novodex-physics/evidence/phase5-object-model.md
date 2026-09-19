@@ -4656,6 +4656,39 @@ two fixtures live at different addresses -- the same class of artifact as
 3z128 and 3z154. 002142 moves to `reconstructed`. No gate, coverage-floor, or
 policy change.
 
+## 3z167. Mutex direct-call group closes (4 rows); a sibling group is held back
+
+Round 150 took the mutex-guarded family one step further: rows whose work arm
+calls a DIRECT helper rather than a vtable slot. Two such groups exist, and
+only one could be closed.
+
+**Closed (004461, 004463, 004465, 004467).** These call 004248, which is
+literally a three-byte `ret 4` -- a no-op -- so the work arm has no observable
+beyond the release. Both arms verify against candidate nxMutexNoopEx
+(build/r150.log mutexdirect failures=0), and the four rows move to
+`reconstructed`.
+
+**Held back (001043, 001081, 001129, 001165, 001205).** These call 001329,
+which is ShapeBase::nxApplyGroup -- already reconstructed. The report arms
+agree, but the object buffers diverge at exactly one byte: the oracle writes
+0x08 at [obj+0xc8] and the existing nxApplyGroup candidate writes nothing
+there. That is the field nxApplyGroup's own body assigns as
+`mPrunable.mPrunable24 = 1u << (group & 0x1f)` with group 3 -- the value the
+oracle produced -- so the call either is not reaching that assignment in the
+candidate or is writing it at a different absolute offset. ObjectModel.h pins
+`offsetof(ShapeBase, mPrunable) == 0xa4`, which puts mPrunable24 at +0xc8 if
+the member sits 0x24 into Prunable; mPrunable24 itself is declared outside
+that header, so the offset could not be confirmed from it.
+
+The group was withdrawn rather than forced: the candidate for it was removed,
+the drive now covers only the four verified rows, and the tree is green
+(mutexdirect and dtor2142 both 0 failures, mismatches=1). **This is a real
+open question about the earlier 001329 closure** -- its own differential did
+not compare this field -- and it is recorded here rather than papered over. A
+later round should confirm Prunable's layout and re-drive 001329 before
+closing the five rows that depend on it. No gate, coverage-floor, or policy
+change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
