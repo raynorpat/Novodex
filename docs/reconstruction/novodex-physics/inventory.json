@@ -7548,12 +7548,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
-      "source": "locked element-count accessor (0xda10)",
+      "state": "discovered",
+      "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/146",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1169",
       "static_proof": "locks [self+0x10] and returns ([field+0x560]-[field+0x55c])>>2 with field from [self+0x24], computed inline with no helper call",
-      "dynamic_proof": "confirmed via lockacc7 differential (3z147): three spans failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
+      "dynamic_proof": null,
       "notes": ""
     },
     {
@@ -7638,12 +7638,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "reconstructed",
-      "source": "locked conditional-deref accessor (0xdac0)",
+      "state": "discovered",
+      "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/149",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1173",
       "static_proof": "locks [self+0x10], reads the pointer at [field+0x61c] with field from [self+0x24]; returns the word at [that+0x14] when non-null and zero otherwise",
-      "dynamic_proof": "confirmed via lockacc7 differential (3z147): non-null and null arms failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
+      "dynamic_proof": null,
       "notes": ""
     },
     {
