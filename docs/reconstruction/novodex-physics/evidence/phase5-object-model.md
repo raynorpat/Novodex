@@ -3329,6 +3329,19 @@ produces the same valid control word (0x027f), confirming the fnstcw fetch
 determined behavior, it closes on static proof plus the consistency drive.
 000537 moves to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z111. Indexed-sum row 001960 closes; 004072 confirmed non-isolatable
+
+Round 95 re-probed the remaining faulty candidates one row at a time.
+001960 (0x4bec0: obj = [this + [this+0x70]*4 + 0x1c]; return [obj+0xc] +
+[obj+8] else 0) ISOLATES cleanly on its own (build/r95.log ixsum2
+failures=0) -- its round-91 fault was batch context, not the row. It moves to
+`reconstructed`. The setne row 004072 (0x95a90) was re-probed alone and
+crashes in isolation as well (no output, guard fault), so it is genuinely
+non-isolatable and stays `discovered`; its probe was reverted. This
+completes the per-row isolation triage of the round-91 faulty batch
+(001960 and 002176/003479 recovered; 004072 confirmed faulty). No gate,
+coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
