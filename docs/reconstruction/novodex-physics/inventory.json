@@ -71402,12 +71402,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "deleting destructor with a global call (0x8eec0, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1474",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13051",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via dtor3938 differential (3z171): both arms failures=0, with the global slot 0x10104194, the allocator slot 0x101041bc and the report slot all bound and the recorders shared by both sides",
       "notes": ""
     },
     {
