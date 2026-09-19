@@ -1179,6 +1179,16 @@ void					nxFreeOwnedFields(void* self, const unsigned* offsets,
 //! fixed vtable 0x10107848.
 void					nxDtorTwoOwned1577(void* self);
 
+//! phys_fn_001526 (0x2d970): 001413's byte count plus 0x18.
+unsigned				nxByteCountPlus18(void* self);
+
+//! phys_fn_000396 (0xd710, ret 8): when bit 0 of the first argument is set it
+//! calls 002375 on [self+0x14] with -1 or 0 depending on whether the second
+//! argument is non-zero, and returns the low bit of that result; when bit 0 is
+//! clear it returns without calling. The lock-API hook is passed in.
+unsigned char			nxLockApiDispatch0396(void* self, unsigned flags,
+							unsigned arg2, unsigned (__stdcall* fn)(unsigned, unsigned));
+
 unsigned				nxLazySingleton0443(void* obj, unsigned cached,
 							NxSingletonFn fn);
 

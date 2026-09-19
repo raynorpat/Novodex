@@ -2490,6 +2490,27 @@ void nxDtorTwoOwned1577(void* self)
 	memcpy(p, &fixed, 4);
 	}
 
+// phys_fn_001526 (0x2d970): the byte count plus a fixed 0x18.
+unsigned nxByteCountPlus18(void* self)
+	{
+	return nxByteCount1413(self) + 0x18u;
+	}
+
+// phys_fn_000396 (0xd710, ret 8): the conditional lock-API dispatch.
+unsigned char nxLockApiDispatch0396(void* self, unsigned flags, unsigned arg2,
+	unsigned (__stdcall* fn)(unsigned, unsigned))
+	{
+	// when bit 0 is clear the row jumps straight to its `ret 8`, and al still
+	// holds the 1 stored at the top -- so that arm returns 1, not 0
+	if((flags & 1u) == 0u)
+		return 1u;
+	unsigned char* p = reinterpret_cast<unsigned char*>(self) + 0x14;
+	unsigned v;
+	memcpy(&v, p, 4);
+	const unsigned arg = (arg2 != 0u) ? 0xffffffffu : 0u;
+	return static_cast<unsigned char>(nxLockApiTest2375(p, arg, fn) & 1u);
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)
