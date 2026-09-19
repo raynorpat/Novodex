@@ -2061,10 +2061,12 @@ void nxGuardedStoreEx(void* self, unsigned arg, unsigned fieldOff, unsigned code
 	}
 
 // The lock-first direct-call family.
-void nxMutexWorkEx(void* self, unsigned lockOff, unsigned objOff, unsigned arg,
-	int workKind, unsigned storeOff, unsigned code, unsigned file, unsigned line,
+void nxMutexWorkEx(void* self, unsigned lockOff, unsigned objOff,
+	const unsigned* args, unsigned nargs, int workKind, unsigned baseOff,
+	unsigned nwords, unsigned code, unsigned file, unsigned line,
 	unsigned expression)
 	{
+	(void) nargs;
 	unsigned char* p = reinterpret_cast<unsigned char*>(self);
 	unsigned char* lock = *reinterpret_cast<unsigned char**>(p + lockOff);
 	if(!nxTryAcquireLock(lock))
@@ -2073,10 +2075,31 @@ void nxMutexWorkEx(void* self, unsigned lockOff, unsigned objOff, unsigned arg,
 			gNxAssertReport(code, file, line, 0u, expression);
 		return;
 		}
+	if(workKind == 0)
+		return;
+	unsigned char* obj = *reinterpret_cast<unsigned char**>(p + objOff);
 	if(workKind == 1)
 		{
-		unsigned char* obj = *reinterpret_cast<unsigned char**>(p + objOff);
-		memcpy(obj + storeOff, &arg, 4);
+		memcpy(obj + baseOff, &args[0], 4);
+		}
+	else if(workKind == 2)
+		{
+		for(unsigned k = 0; k < nwords; ++k)
+			memcpy(obj + baseOff + 4u * k, &args[k], 4);
+		}
+	else if(workKind == 3)
+		{
+		const unsigned char* src = reinterpret_cast<const unsigned char*>(
+			static_cast<size_t>(args[0]));
+		for(unsigned k = 0; k < nwords; ++k)
+			memcpy(obj + baseOff + 4u * k, src + 4u * k, 4);
+		}
+	else if(workKind == 4)
+		{
+		unsigned v;
+		memcpy(&v, obj + baseOff, 4);
+		v = args[1] ? (v | args[0]) : (v & ~args[0]);
+		memcpy(obj + baseOff, &v, 4);
 		}
 	}
 
