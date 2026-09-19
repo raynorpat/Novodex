@@ -59283,12 +59283,12 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "batch index/vertex append (0x7e560, ret 8)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1577",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/11746",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "bails when [this+0x18]>=[this+0x1c]; accumulates (count-2) into [this+0x20]; records count in the [this+0x403c]/[this+0x4044] list when it has room; for each index below [this+0x10] copies the 3-dword vertex through the [this+8] map into the [this+0x4034]/[this+0x4038] output (fresh id when the slot is zero) and appends id-1 to the aux list; ret 8",
+      "dynamic_proof": "confirmed via batch3268 differential (3z128): 3 cases failures=0",
       "notes": ""
     },
     {
