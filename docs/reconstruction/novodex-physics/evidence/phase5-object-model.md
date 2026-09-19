@@ -3484,6 +3484,18 @@ coverage tables 1. 001371 moves to `reconstructed`; 001008 (capsule slot 4)
 is unblocked by the same fix and is next. No gate, coverage-floor, or policy
 change.
 
+## 3z119. Capsule slot-4 wrapper closes (001008)
+
+Round 103 also closed the capsule twin. 001008 (0x22440, CAPSULE vtable slot
+4, ret 0xc) runs the 000853 capsule helper when [this+0xde]&7 is clear, with
+axisSelector 1, radius [this+0xe0], cylHalfHeight [this+0xe0]+[this+0xe4]
+and pose [this+0x6c]. Candidate nxCapsuleAccumulateMass (declared in
+CapsuleShape) matches byte-exact across 8 flag-lows x 2 densities
+(build/r103.log capmass2 failures=0). Together with 001371 this closes both
+facade mass wrappers that 3z117 identified as blocked, bringing the Task-3/4
+vtable-slot slate to 3 rows closed (001403, 001371, 001008). No gate,
+coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
