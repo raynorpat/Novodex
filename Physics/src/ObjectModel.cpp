@@ -2524,6 +2524,56 @@ void PlaneShape::nxPlaneLocalAABB1255(float* out) const
 	memcpy(out, o, sizeof(o));
 	}
 
+// phys_fn_001016 (0x22620, CAPSULE vtable slot 9, ret 4): the capsule's world
+// AABB. The segment runs along local Y, so each world extent is
+// M[i][1]*halfHeight; the row expands the LOWER endpoint (t - e) by +/- radius
+// into out[0..2] / out[3..5], then merges the UPPER endpoint's +/- radius
+// (A/B below) with min on the low triple and max on the high triple. All
+// products accumulate in x87 extended precision and store to float, so a
+// double intermediate reproduces the staged rounding.
+void CapsuleShape::nxCapsuleWorldAABB1016(float* out) const
+	{
+	const unsigned char* p = reinterpret_cast<const unsigned char*>(this);
+	float m01, m11, m21, hh, r, t0, t1, t2;
+	memcpy(&m01, p + 0x10, 4);
+	memcpy(&m11, p + 0x1c, 4);
+	memcpy(&m21, p + 0x28, 4);
+	memcpy(&hh, p + 0xe4, 4);
+	memcpy(&r, p + 0xe0, 4);
+	memcpy(&t0, p + 0x30, 4);
+	memcpy(&t1, p + 0x34, 4);
+	memcpy(&t2, p + 0x38, 4);
+	const float e0 = static_cast<float>(static_cast<double>(m01)*hh);
+	const float e1 = static_cast<float>(static_cast<double>(m11)*hh);
+	const float e2 = static_cast<float>(static_cast<double>(m21)*hh);
+	const float mn0 = static_cast<float>(static_cast<double>(t0) - e0);
+	const float mn1 = static_cast<float>(static_cast<double>(t1) - e1);
+	const float mn2 = static_cast<float>(static_cast<double>(t2) - e2);
+	const float mx0 = static_cast<float>(static_cast<double>(t0) + e0);
+	const float mx1 = static_cast<float>(static_cast<double>(t1) + e1);
+	const float mx2 = static_cast<float>(static_cast<double>(t2) + e2);
+	const float a0 = static_cast<float>(static_cast<double>(mx0) - r);
+	const float a1 = static_cast<float>(static_cast<double>(mx1) - r);
+	const float a2 = static_cast<float>(static_cast<double>(mx2) - r);
+	const float b0 = static_cast<float>(static_cast<double>(mx0) + r);
+	const float b1 = static_cast<float>(static_cast<double>(mx1) + r);
+	const float b2 = static_cast<float>(static_cast<double>(mx2) + r);
+	out[0] = static_cast<float>(static_cast<double>(mn0) - r);
+	out[1] = static_cast<float>(static_cast<double>(mn1) - r);
+	out[2] = static_cast<float>(static_cast<double>(mn2) - r);
+	out[3] = static_cast<float>(static_cast<double>(r) + mn0);
+	out[4] = static_cast<float>(static_cast<double>(r) + mn1);
+	out[5] = static_cast<float>(static_cast<double>(r) + mn2);
+	if(!(out[0] <= a0)) out[0] = a0;
+	if(!(out[1] <= a1)) out[1] = a1;
+	if(!(out[2] <= a2)) out[2] = a2;
+	// The +0xc/+0x10 arms use `test ah,5 / jp`, which updates on out <= B
+	// (and skips the unordered case) -- a MAX, not an unconditional store.
+	if(out[3] <= b0) out[3] = b0;
+	if(out[4] <= b1) out[4] = b1;
+	if(b2 > out[5]) out[5] = b2;
+	}
+
 // phys_fn_001267 (0x25490, PLANE vtable slot 8, ret 4): selects a 6-dword
 // record from the table at *([this+0xc4]+0x14), indexed by
 // [this+0xa4+0x28], and copies it to out. When [this+0xcc] != 0xffff and

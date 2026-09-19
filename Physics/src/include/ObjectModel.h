@@ -1131,6 +1131,12 @@ class CapsuleShape
 	bool				nxCapsuleAccumulateMass(MassFrame* destination,
 							float density, unsigned reserved);
 
+	//! CAPSULE-table slot 9, phys_fn_001016 (0x00022620, ret 4): world AABB.
+	//! Expands the segment endpoints t +/- M[i][1]*halfHeight by +/- radius
+	//! and merges the result into the caller's out[0..5] with min on the low
+	//! triple and max on the high triple.
+	void				nxCapsuleWorldAABB1016(float* out) const;
+
 	//! CAPSULE-table slot 10, phys_fn_001001 (0x00021c30): pose-one
 	//! translation to out[0..2], halfHeight+radius to out[3].
 	void				nxCapsuleCenterRadius(float* out) const;
