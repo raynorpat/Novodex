@@ -3746,6 +3746,35 @@ artifact (permanently out of scope per 3z132), a non-code global dispatch
 (lock API or callback), or a large product dependency that itself reaches one
 of the first two. No gate, coverage-floor, or policy change.
 
+## 3z134. Lock-API binding unlocks the six "unblocked" slate rows (000046)
+
+Round 117 overturned the 3z133 conclusion that the six no-blocker slate rows
+were unreachable. The Foundation lock pair 002362/002366 dispatches through
+the four globals [0x10104010], [0x1010402c], [0x10104044] and [0x10104014],
+which hold placeholder RVAs in the file. Because the harness runs in the same
+process as the oracle image, those slots can be BOUND from the test, which is
+what makes the rows drivable:
+
+1. The pointer slots sit in a read-only page in the loaded image, so the
+   binding needs VirtualProtect(PAGE_READWRITE) around the store and back
+   afterwards (observed: the protect succeeds and the readback confirms the
+   new values land).
+2. The call sites push their arguments and NEVER clean them, so the slots are
+   __stdcall, not __cdecl. Binding __cdecl stubs corrupts the stack and the
+   drive faults; with `extern "C" int __stdcall` stubs the pair returns
+   cleanly. This was the single blocking detail -- the first three drives
+   faulted purely on calling convention, not on the row.
+
+With the pair bound, 000046 (0x24c0, actor_dynamic slot, ret 4) closes. It
+gathers the descriptor record at [[self+0x14]+8] into out -- nine dwords from
+record+0xdc, three from record+0x100, then thirteen tail fields, with fsqrt
+of the floats at record+0xd8, +0xd0 and +0xd4 -- and returns false without
+writing when the record pointer is null. Candidate nxGatherDescriptor0046
+(double-staged sqrt to match x87 fsqrt) matched on both arms (build/r117.log
+gather0046 failures=0). 000046 moves to `reconstructed`. The same binding
+unblocks 000132, 000130, 000094, 000146 and 000148. No gate, coverage-floor,
+or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
