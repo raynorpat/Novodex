@@ -86252,12 +86252,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "guarded dispatch plus chain walk (0xb3920)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1805",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15540",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via chain4763 differential (3z178): twelve combinations -- three guard arms by chain lengths 0..3 -- all failures=0, comparing the recorded dispatch-and-walk sequence by node identity, the visit count and the dispatch argument",
       "notes": ""
     },
     {
