@@ -38616,12 +38616,12 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "scalar deleting destructor (0x532b0, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1044",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6799",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via dtor2142 differential (3z166): both arms failures=0, with the allocator slot 0x101041bc bound to a fake allocator and the free recorder shared by both sides",
       "notes": ""
     },
     {
