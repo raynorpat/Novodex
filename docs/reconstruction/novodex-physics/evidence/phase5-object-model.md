@@ -4931,6 +4931,32 @@ AND all three arguments (build/r158.log loop1024 failures=0).
 
 Both rows move to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z176. The global-flag read closes (004491) -- a fourth decline reversed
+
+Round 159 closed 004491 (0xb0f10), which an earlier round had declined on the
+grounds that driving it "would couple the candidate to the oracle image":
+
+    <lock [self+0x14]>              ; 002362
+    call 004083                     ; reads the global data word [0x10127180]
+    <unlock [self+0x14]>            ; 002366
+    return the byte
+
+The helper 004083 is three instructions -- load [0x10127180], `test`, `setne`
+-- so the row's entire result is "is that data word non-zero". The earlier
+objection was that the candidate would have to read the ORACLE's data word.
+But a data word is bindable exactly like the slots this campaign has been
+binding since 3z134: nxBindFlagWord points [0x10127180] at 0 or non-zero, and
+the candidate takes the same value through nxSetGlobalFlag4491. Both arms
+verify (build/r159.log globalflag4491 failures=0): a non-zero word returns 1
+and a zero word returns 0.
+
+004491 moves to `reconstructed`. This is the FOURTH decline reversed once the
+harness grew the right capability (after 001329's group, 004334, and the
+002390 callback-field misread), and the distinction it draws is worth stating
+plainly: a row that READS image state is drivable when the harness can bind
+that state, and the candidate stays independent because it reads its own
+mirror rather than the image. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
