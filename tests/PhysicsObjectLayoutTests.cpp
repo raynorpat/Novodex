@@ -5628,6 +5628,86 @@ int wmain(int argc, wchar_t** argv)
 	printf("lockedget candidate failures=%u provisional=1\n", lgf);
 	}
 
+	// -- Second locked accessor batch: dword getters and one pointer getter.
+	{
+	struct LockedGet2 { unsigned rva; unsigned lockOff; unsigned fieldOff; unsigned dataOff; const char* name; };
+	static const LockedGet2 kLocked2[] = {
+		{ 0x248a0, 0x14, 0x18, 0xd0,  "001203" },
+		{ 0xb0730, 0x14, 0x18, 0x168, "004443" },
+	};
+	NxLockApiSaved svLG2 = nxBindLockApi(base);
+	unsigned lg2f = 0;
+	unsigned char lockObj7[0x40]; memset(lockObj7, 0, sizeof(lockObj7));
+	unsigned char subObj7[0x40]; memset(subObj7, 0, sizeof(subObj7));
+	*(void**)(lockObj7) = subObj7;
+	for(unsigned i = 0; i < sizeof(kLocked2) / sizeof(kLocked2[0]); ++i)
+		{
+		typedef unsigned (__thiscall* LockedGetOracle2)(void*);
+		LockedGetOracle2 fn = reinterpret_cast<LockedGetOracle2>(base + kLocked2[i].rva);
+		unsigned char field[0x200]; memset(field, 0, sizeof(field));
+		*(unsigned*)(field + kLocked2[i].dataOff) = 0x5A000000u + kLocked2[i].dataOff;
+		unsigned char sh[0x40]; memset(sh, 0, sizeof(sh));
+		*(void**)(sh + kLocked2[i].lockOff) = lockObj7;
+		*(void**)(sh + kLocked2[i].fieldOff) = field;
+		unsigned o = fn(sh);
+		unsigned c = nxLockedFieldReadEx(sh, kLocked2[i].lockOff,
+			kLocked2[i].fieldOff, kLocked2[i].dataOff);
+		if(o != c || o != 0x5A000000u + kLocked2[i].dataOff)
+			{
+			fprintf(stderr,"lockedget2 %s o=%08x c=%08x\n", kLocked2[i].name, o, c);
+			++lg2f;
+			}
+		}
+	// 003824: deref of a lea getter
+	{
+	typedef unsigned (__thiscall* DerefOracle)(void*);
+	DerefOracle fn = reinterpret_cast<DerefOracle>(base + 0x8c9c0);
+	unsigned char field[0x40]; memset(field, 0, sizeof(field));
+	unsigned target = 0x5B5B5B5Bu;
+	*(void**)(field + 0x14) = &target;		// the row dereferences this
+	unsigned char sh[0x40]; memset(sh, 0, sizeof(sh));
+	*(void**)(sh + 0x10) = lockObj7;
+	*(void**)(sh + 0x14) = field;
+	unsigned o = fn(sh);
+	unsigned c = nxLockedDeref3824(sh);
+	if(o != c || o != 0x5B5B5B5Bu){fprintf(stderr,"deref3824 o=%08x c=%08x\n", o, c);++lg2f;}
+	}
+	// 003872: twelve-dword copy to out
+	{
+	typedef void* (__thiscall* Copy12Oracle)(void*, unsigned*);
+	Copy12Oracle fn = reinterpret_cast<Copy12Oracle>(base + 0x8d1f0);
+	unsigned char field[0x60]; memset(field, 0, sizeof(field));
+	for(unsigned i = 0; i < 48; i += 4) *(unsigned*)(field + 8 + i) = 0x6C000000u + i;
+	unsigned char sh[0x40]; memset(sh, 0, sizeof(sh));
+	*(void**)(sh + 0x10) = lockObj7;
+	*(void**)(sh + 0x14) = field;
+	unsigned o12[12], c12[12];
+	memset(o12, 0, sizeof(o12)); memset(c12, 0, sizeof(c12));
+	void* ro = fn(sh, o12);
+	void* rc = nxLockedCopy12_3872(sh, c12);
+	if(memcmp(o12, c12, sizeof(o12)) != 0 || ro != o12 || rc != c12)
+		{fprintf(stderr,"copy12_3872 mismatch\n");++lg2f;}
+	}
+	// 004479: match-or-zero
+	{
+	typedef unsigned (__thiscall* MatchOracle)(void*, unsigned);
+	MatchOracle fn = reinterpret_cast<MatchOracle>(base + 0xb0d20);
+	unsigned char field[0x200]; memset(field, 0, sizeof(field));
+	*(unsigned*)(field + 0x168) = 0x7777AAAAu;
+	unsigned char sh[0x40]; memset(sh, 0, sizeof(sh));
+	*(void**)(sh + 0x14) = lockObj7;
+	*(void**)(sh + 0x18) = field;
+	unsigned o1 = fn(sh, 0x7777AAAAu);
+	unsigned c1 = nxLockedMatch4479(sh, 0x7777AAAAu);
+	unsigned o2 = fn(sh, 0x12345678u);
+	unsigned c2 = nxLockedMatch4479(sh, 0x12345678u);
+	if(o1 != c1 || o2 != c2 || o1 != static_cast<unsigned>(reinterpret_cast<size_t>(sh)) || o2 != 0u)
+		{fprintf(stderr,"match4479 o=%08x/%08x c=%08x/%08x\n", o1, o2, c1, c2);++lg2f;}
+	}
+	nxUnbindLockApi(base, svLG2);
+	printf("lockedget2 candidate failures=%u provisional=1\n", lg2f);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
