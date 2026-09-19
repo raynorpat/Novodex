@@ -38871,12 +38871,12 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "nine doubles to nine floats (0x538e0, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/821",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6831",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "converts the nine consecutive doubles at [self+0x18..0x60) into nine floats at out[0..8] (dst[k] = (float)src[k]); the image interleaves the read/write order; ret 4",
+      "dynamic_proof": "confirmed via d2f9 differential (3z131): 3 magnitude classes failures=0",
       "notes": ""
     },
     {
