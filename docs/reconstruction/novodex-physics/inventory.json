@@ -32226,12 +32226,12 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "004886-calling wrapper (0x3f570)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/874",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5232",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the wrap5450/wrap1787 differentials (3z154): failures=0, with callback slot 0x10128478 bound to a __cdecl no-op stub",
       "notes": ""
     },
     {
@@ -98827,12 +98827,12 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "004886-calling wrapper (0xef690, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/2087",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18848",
-      "static_proof": "reached: its address is the .rdata word at 0x0011bba4. The earlier proof -- no product translation unit reaches these bytes -- is false; P4 Task 3 re-derived it.",
-      "dynamic_proof": null,
+      "static_proof": "when [node+0x28] is not 0xffff and [node+8] lacks bit 2, calls 004886 on it -- observable [node+8] |= 2 once the callback slot is bound -- then increments [self+0x38] and returns 1; ret 4",
+      "dynamic_proof": "confirmed via the wrap5450/wrap1787 differentials (3z154): failures=0, with callback slot 0x10128478 bound to a __cdecl no-op stub",
       "notes": "P4 Task 3: retyped from compiler_artifact; see evidence/phase4-artifact-retype.csv."
     },
     {
