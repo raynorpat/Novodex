@@ -4265,6 +4265,35 @@ adding a second return shape and a stateful one:
 
 All three move to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z154. Callback-slot binding closes the 004886 wrappers (2 rows)
+
+Round 137 applied the 3z134 binding technique to a different global and
+closed a pair the campaign had written off twice. Rows 005450 (0xef690) and
+001787 (0x3f570) both call 004886, which runs the registered callback at
+[0x10128478] when that slot is non-null and then sets bit 2 of a node word.
+That slot holds a non-code sentinel in the image (0x35263501), which is why
+3z98 and 3z113 found these rows undrivable.
+
+The slot is bindable exactly like the lock API: nxBindCallbackSlot unlocks its
+page with VirtualProtect, stores a no-op stub, and nxUnbindCallbackSlot
+restores both. Its call site pushes two arguments and cleans them itself
+(`add esp, 8`), so the stub is __cdecl. With the callback neutralised, 004886
+reduces to its own write and both wrappers drive:
+
+- 005450 (ret 4) sets [node+8] bit 2 when [node+0x28] is not 0xffff and the
+  bit is clear, then increments [self+0x38] and returns 1;
+- 001787 is the same shape one sub-object over -- its object comes from the
+  SECOND stack argument because the row ends in a bare `ret`, so it is a
+  caller-cleaned two-argument function -- and it sets bit 2 of [node+0xa4+8]
+  when [node+0xcc] is not 0xffff, returning zero.
+
+Both verified on three cases each (build/r137.log wrap5450 failures=0,
+wrap1787 failures=0). One drive detail: the fixture parks a different inner
+pointer at +0xc4 on the two sides, so the node comparison clears that slot
+first -- otherwise the fixtures' own differing addresses read as a mismatch,
+the same artifact 3z128 hit. Both rows move to `reconstructed`. No gate,
+coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
