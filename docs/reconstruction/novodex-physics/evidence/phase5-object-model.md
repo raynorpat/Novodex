@@ -3849,6 +3849,29 @@ for example 000317 and 001071 lock, call one reconstructed helper on a field
 of self, unlock and return its value. No gate, coverage-floor, or policy
 change.
 
+## 3z139. Six-row locked accessor batch closes (000317/21/27, 000352/56/60)
+
+Round 122 worked the 3z138 backlog and found the family is even more uniform
+than it looked: every one of these rows is exactly `lock [self+0x10];
+result = HELPER([self+0x24]); unlock; return result`, and every HELPER is an
+already-reconstructed plain field getter. So the whole row reduces to one
+field read, which made a single parameterised candidate possible --
+nxLockedFieldRead(self, offset).
+
+Six closed in one drive (build/r122.log lockedget failures=0), each paired
+with the getter it wraps:
+
+- 000317 (0xc8a0) -> getter 000523 on +0x3c;
+- 000321 (0xc910) -> getter 000559 on +0x6c8;
+- 000327 (0xc9a0) -> getter 000561 on +0x6c4;
+- 000352 (0xcd20) -> getter 000547 on +0x6ac;
+- 000356 (0xcdb0) -> getter 000551 on +0x6b0;
+- 000360 (0xce40) -> getter 000555 on +0x6b4.
+
+All six move to `reconstructed`. The remaining 3z138 backlog rows have the
+same shape and differ only in the getter they wrap, so the same candidate
+covers them. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
