@@ -3587,11 +3587,16 @@ int wmain(int argc, wchar_t** argv)
 	unsigned v3c=0x31313131u, v40=0x42424242u; memcpy(b+0x3c,&v3c,4); memcpy(b+0x40,&v40,4);
 	unsigned o1=0,o2=0; cp(b,&o1,&o2);
 	if(o1!=v3c||o2!=v40){fprintf(stderr,"cp fail %08x/%08x\n",o1,o2);++bf;}
-	unsigned node=0x12345678u;
+	// 000571: [arg+4]=old head; [this+0x620]=arg (ret 4) -- the row writes past
+	// the argument, so it must be a buffer, not a bare local.
+	unsigned char node[0x10]; memset(node, 0, sizeof(node));
+	{
+	unsigned nv = 0x12345678u; memcpy(node, &nv, 4);
+	}
 	unsigned oldHead = 0xCAFEBABEu; memcpy(b+0x620, &oldHead, 4);
-	li(b,&node);
-	if(*(unsigned*)(b+0x620) != static_cast<unsigned>(reinterpret_cast<size_t>(&node))){fprintf(stderr,"li head fail %08x\n",*(unsigned*)(b+0x620));++bf;}
-	if(*(unsigned*)((unsigned char*)&node + 4) != oldHead){fprintf(stderr,"li next fail %08x\n",*(unsigned*)((unsigned char*)&node+4));++bf;}
+	li(b,(unsigned*)node);
+	if(*(unsigned*)(b+0x620) != static_cast<unsigned>(reinterpret_cast<size_t>(node))){fprintf(stderr,"li head fail %08x\n",*(unsigned*)(b+0x620));++bf;}
+	if(*(unsigned*)(node + 4) != oldHead){fprintf(stderr,"li next fail %08x\n",*(unsigned*)(node+4));++bf;}
 	printf("zmix candidate failures=%u provisional=1\n", bf);
 	}
 
@@ -6099,6 +6104,105 @@ int wmain(int argc, wchar_t** argv)
 	nxUnbindLockApi(base, svB7);
 	printf("lockacc7 candidate failures=%u provisional=1\n", b7f);
 	}
+	// -- Locked accessor eighth batch: pose copy, conditional count, nested
+	//    derefs, and N-pointer copies.
+	{
+	NxLockApiSaved svB8 = nxBindLockApi(base);
+	unsigned b8f = 0;
+	unsigned char lockObjE[0x40]; memset(lockObjE, 0, sizeof(lockObjE));
+	unsigned char subObjE[0x40]; memset(subObjE, 0, sizeof(subObjE));
+	*(void**)(lockObjE) = subObjE;
+	unsigned char field[0x800];
+	unsigned char sh[0x40];
+	for(unsigned w = 0; w < 0x800; w += 4) *(unsigned*)(field + w) = 0x2B000000u + w;
+	// 003804: pose copy (9 from field+0x48, then 3 at +0x24)
+	{
+	typedef void* (__thiscall* PoseCopyOracle)(void*, unsigned*);
+	PoseCopyOracle fn = reinterpret_cast<PoseCopyOracle>(base + 0x8c590);
+	memset(sh, 0, sizeof(sh));
+	*(void**)(sh + 0x10) = lockObjE;
+	*(void**)(sh + 0x14) = field;
+	unsigned o[12], c[12];
+	memset(o, 0, sizeof(o)); memset(c, 0, sizeof(c));
+	void* ro = fn(sh, o);
+	nxLockedCopyPose(sh, 0x14, 0x48, c);
+	if(memcmp(o, c, 48) != 0 || ro != o){fprintf(stderr,"b8 003804\n");++b8f;}
+	}
+	// 000420: conditional count through [field+0x61c]
+	{
+	typedef int (__thiscall* CondCountOracle)(void*);
+	CondCountOracle fn = reinterpret_cast<CondCountOracle>(base + 0xda80);
+	unsigned char inner[0x40]; memset(inner, 0, sizeof(inner));
+	unsigned lo = 0x5000, hi = 0x5000 + 8;
+	memcpy(inner + 4, &lo, 4); memcpy(inner + 8, &hi, 4);
+	for(unsigned ci = 0; ci < 2; ++ci)
+		{
+		memset(field, 0, sizeof(field));
+		if(ci == 0) *(void**)(field + 0x61c) = inner;
+		memset(sh, 0, sizeof(sh));
+		*(void**)(sh + 0x10) = lockObjE;
+		*(void**)(sh + 0x24) = field;
+		int o = fn(sh);
+		int c = nxLockedConditionalCount(sh, 0x24, 0x61c, 8, 4);
+		int want = ci == 0 ? 2 : 0;
+		if(o != c || o != want){fprintf(stderr,"b8 000420 ci=%u o=%d c=%d\n", ci, o, c);++b8f;}
+		}
+	}
+	// 004539: two nested derefs, two out args
+	{
+	typedef void (__thiscall* NestedOracle)(void*, unsigned*, unsigned*);
+	NestedOracle fn = reinterpret_cast<NestedOracle>(base + 0xb1600);
+	unsigned char in1[0x200], in2[0x200];
+	memset(in1, 0, sizeof(in1)); memset(in2, 0, sizeof(in2));
+	unsigned v1 = 0x0A0A0A0Au, v2 = 0x0B0B0B0Bu;
+	unsigned* pv1 = &v1; unsigned* pv2 = &v2;
+	// the row reads [node+0x19c] and then dereferences it, so the fixture must
+	// hold a pointer there rather than the value itself.
+	*(void**)(in1 + 0x19c) = pv1;
+	*(void**)(in2 + 0x19c) = pv2;
+	memset(field, 0, sizeof(field));
+	*(void**)(field + 8) = in1;
+	*(void**)(field + 0xc) = in2;
+	memset(sh, 0, sizeof(sh));
+	*(void**)(sh + 0x14) = lockObjE;
+	*(void**)(sh + 0x18) = field;
+	unsigned o1=0,o2=0,c1=0,c2=0;
+	fn(sh, &o1, &o2);
+	nxLockedTwoNestedDerefs(sh, 0x18, 8, 0xc, 0x19c, &c1, &c2);
+	if(o1!=c1 || o2!=c2 || o1!=v1 || o2!=v2)
+		{fprintf(stderr,"b8 004539 o=%08x/%08x c=%08x/%08x\n", o1,o2,c1,c2);++b8f;}
+	}
+	// 003948 (4 pointers from +0x58) and 003946 (5 pointers from +0x44)
+	{
+	struct NRow { unsigned rva; unsigned dataOff; unsigned count; const char* name; };
+	static const NRow kN[] = { { 0x8f090, 0x58, 4, "003948" }, { 0x8f050, 0x44, 5, "003946" } };
+	for(unsigned i = 0; i < 2; ++i)
+		{
+		void* fnp = const_cast<unsigned char*>(base) + kN[i].rva;
+		unsigned v[5] = { 0, 0, 0, 0, 0 };
+		unsigned* outs[5] = { &v[0], &v[1], &v[2], &v[3], &v[4] };
+		unsigned c[5] = { 0, 0, 0, 0, 0 };
+		unsigned* couts[5] = { &c[0], &c[1], &c[2], &c[3], &c[4] };
+		memset(field, 0, sizeof(field));
+		for(unsigned w = 0; w < 0x800; w += 4) *(unsigned*)(field + w) = 0x4C000000u + w;
+		memset(sh, 0, sizeof(sh));
+		*(void**)(sh + 0x10) = lockObjE;
+		*(void**)(sh + 0x14) = field;
+		if(kN[i].count == 4)
+			reinterpret_cast<void (__thiscall*)(void*, unsigned*, unsigned*, unsigned*, unsigned*)>(fnp)
+				(sh, outs[0], outs[1], outs[2], outs[3]);
+		else
+			reinterpret_cast<void (__thiscall*)(void*, unsigned*, unsigned*, unsigned*, unsigned*, unsigned*)>(fnp)
+				(sh, outs[0], outs[1], outs[2], outs[3], outs[4]);
+		nxLockedCopyNPointers(sh, 0x14, kN[i].dataOff, kN[i].count, couts);
+		if(memcmp(v, c, kN[i].count * 4u) != 0)
+			{fprintf(stderr,"b8 %s mismatch\n", kN[i].name);++b8f;}
+		}
+	}
+	nxUnbindLockApi(base, svB8);
+	printf("lockacc8 candidate failures=%u provisional=1\n", b8f);
+	}
+
 
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
