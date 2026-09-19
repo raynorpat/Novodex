@@ -1217,6 +1217,17 @@ unsigned				nxMutexGlobalStore(void* self, unsigned code, unsigned file,
 //! the whole row IS the global call, passing its own `this` and stack through.
 void					nxTrampoline4387(void (*fn)(void));
 
+//! The report-once float rows: 003716 (0x8b610), 003720 (0x8b760) and 003770
+//! (0x8c080) each test the gate byte [0x101263ad]; when it is clear they
+//! report assertion (0xce, 0x101160cc, <line>, 0, <expr>), set the gate and
+//! return 0.0f loaded from the zero constant [0x101041f0]; otherwise they lock
+//! [self+0x10], call a two-argument global-call thunk on [self+0x14] and return
+//! its float result. The gate is mirrored through nxSetGate3716.
+void					nxSetGate3716(unsigned char on);
+float					nxOnceReportThunkFloat(void* self, unsigned code,
+							unsigned file, unsigned line, unsigned expression,
+							NxGlobalFn2RetF fn, int viaField4);
+
 void					nxMutexLinkAdvance(void* self, unsigned objOff,
 							unsigned srcOff, unsigned dstOff);
 void*					nxDtorTeardownThenFree(void* self, unsigned flags,

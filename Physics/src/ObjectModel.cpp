@@ -2624,6 +2624,28 @@ void nxTrampoline4387(void (*fn)(void))
 	fn();
 	}
 
+// The report-once float rows.
+static unsigned char gNxGate3716 = 1u;
+
+void nxSetGate3716(unsigned char on)
+	{
+	gNxGate3716 = on;
+	}
+
+float nxOnceReportThunkFloat(void* self, unsigned code, unsigned file,
+	unsigned line, unsigned expression, NxGlobalFn2RetF fn, int viaField4)
+	{
+	if(gNxGate3716 == 0u)
+		{
+		if(gNxAssertReport)
+			gNxAssertReport(code, file, line, 0u, expression);
+		gNxGate3716 = 1u;
+		// the zero constant at [0x101041f0]
+		return 0.0f;
+		}
+	return nxLockedHelperCallF(self, 0x10, 0x14, fn, viaField4);
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)
