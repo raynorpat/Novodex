@@ -3581,6 +3581,16 @@ not this row (the same batch-vs-row confusion 3z109/3z111 resolved for
 globzero2 failures=0). 003390 moves to `reconstructed`. No gate,
 coverage-floor, or policy change.
 
+## 3z126. Pose-copy-with-tail row closes (000827)
+
+Round 110 worked the 44-row tractable backlog that round 109's RVA-indexed
+scan surfaced (product rows with zero calls, <=4 x87 ops and <=220 bytes).
+000827 (0x1bcc0, ret 0xc) is a clean three-argument __thiscall: rep-movsd 9
+from arg1 into [this+0], arg2[0..2] into [this+0x24..0x2c] and arg3 into
+[this+0x30]. Candidate nxPoseCopyWithTail0827 verified byte-exact across
+three cases (build/r110.log posecopy827 failures=0). 000827 moves to
+`reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
