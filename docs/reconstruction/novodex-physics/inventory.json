@@ -5262,12 +5262,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/99",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1006",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexwide differential (3z174): both arms failures=0 for all six rows, comparing the report tuple and the whole 0x800-byte object buffer, with the report slot and lock API bound",
       "notes": ""
     },
     {
@@ -6144,12 +6144,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/119",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1060",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexwide differential (3z174): both arms failures=0 for all six rows, comparing the report tuple and the whole 0x800-byte object buffer, with the report slot and lock API bound",
       "notes": ""
     },
     {
@@ -67370,12 +67370,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/fluids/NpFluid.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1406",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12769",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexwide differential (3z174): both arms failures=0 for all six rows, comparing the report tuple and the whole 0x800-byte object buffer, with the report slot and lock API bound",
       "notes": ""
     },
     {
@@ -67910,12 +67910,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/fluids/NpFluid.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1410",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12828",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexwide differential (3z174): both arms failures=0 for all six rows, comparing the report tuple and the whole 0x800-byte object buffer, with the report slot and lock API bound",
       "notes": ""
     },
     {
@@ -71474,12 +71474,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpSpringAndDamperEffector.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1476",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13060",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexwide differential (3z174): both arms failures=0 for all six rows, comparing the report tuple and the whole 0x800-byte object buffer, with the report slot and lock API bound",
       "notes": ""
     },
     {
@@ -71510,12 +71510,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpSpringAndDamperEffector.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1477",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13063",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexwide differential (3z174): both arms failures=0 for all six rows, comparing the report tuple and the whole 0x800-byte object buffer, with the report slot and lock API bound",
       "notes": ""
     },
     {
