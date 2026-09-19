@@ -1593,6 +1593,58 @@ unsigned nxLockedDerefField(void* self, unsigned fieldOff, unsigned dataOff,
 	return v;
 	}
 
+// The N-pointer copy member.
+void nxLockedCopyNPointers(void* self, unsigned fieldOff, unsigned dataOff,
+	unsigned count, unsigned** outs)
+	{
+	const unsigned char* p = reinterpret_cast<const unsigned char*>(self);
+	const unsigned char* field = *reinterpret_cast<const unsigned char* const*>(p + fieldOff);
+	for(unsigned k = 0; k < count; ++k)
+		memcpy(outs[k], field + dataOff + 4u * k, 4);
+	}
+
+// The conditional-count member.
+int nxLockedConditionalCount(void* self, unsigned fieldOff, unsigned dataOff,
+	unsigned hiOff, unsigned loOff)
+	{
+	const unsigned char* p = reinterpret_cast<const unsigned char*>(self);
+	const unsigned char* field = *reinterpret_cast<const unsigned char* const*>(p + fieldOff);
+	unsigned ptr;
+	memcpy(&ptr, field + dataOff, 4);
+	if(ptr == 0u)
+		return 0;
+	const unsigned char* q = reinterpret_cast<const unsigned char*>(static_cast<size_t>(ptr));
+	unsigned hi, lo;
+	memcpy(&hi, q + hiOff, 4);
+	memcpy(&lo, q + loOff, 4);
+	return static_cast<int>(static_cast<signed>(hi - lo) >> 2);
+	}
+
+// The nested-deref member.
+void nxLockedTwoNestedDerefs(void* self, unsigned fieldOff, unsigned off1,
+	unsigned off2, unsigned nested, unsigned* out1, unsigned* out2)
+	{
+	const unsigned char* p = reinterpret_cast<const unsigned char*>(self);
+	const unsigned char* field = *reinterpret_cast<const unsigned char* const*>(p + fieldOff);
+	const unsigned offs[2] = { off1, off2 };
+	unsigned* outs[2] = { out1, out2 };
+	for(unsigned k = 0; k < 2; ++k)
+		{
+		unsigned ptr;
+		memcpy(&ptr, field + offs[k], 4);
+		unsigned v = 0;
+		if(ptr != 0u)
+			{
+			// [ptr+nested] is itself a pointer, and the word at it is the value.
+			unsigned inner = 0;
+			memcpy(&inner, reinterpret_cast<const unsigned char*>(static_cast<size_t>(ptr)) + nested, 4);
+			if(inner != 0u)
+				memcpy(&v, reinterpret_cast<const unsigned char*>(static_cast<size_t>(inner)), 4);
+			}
+		memcpy(outs[k], &v, 4);
+		}
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)

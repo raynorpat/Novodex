@@ -1009,6 +1009,24 @@ void					nxLockedCopyThreePointers(void* self, unsigned fieldOff,
 unsigned				nxLockedDerefField(void* self, unsigned fieldOff,
 							unsigned dataOff, unsigned derefOff);
 
+//! The N-pointer copy member: writes [field+dataOff+4k] through outs[k] for
+//! k < count. Covers helper 003975 (four from +0x58) and 003974 (five from
+//! +0x44).
+void					nxLockedCopyNPointers(void* self, unsigned fieldOff,
+							unsigned dataOff, unsigned count, unsigned** outs);
+
+//! The conditional-count member: take the pointer at [field+dataOff]; when it
+//! is non-null return ([ptr+hiOff] - [ptr+loOff]) >> 2, else zero.
+int						nxLockedConditionalCount(void* self, unsigned fieldOff,
+							unsigned dataOff, unsigned hiOff, unsigned loOff);
+
+//! The nested-deref member: for each of off1 and off2, read the pointer at
+//! [field+off]; when non-null write the word at [ptr+nested] through the
+//! matching out pointer, else zero.
+void					nxLockedTwoNestedDerefs(void* self, unsigned fieldOff,
+							unsigned off1, unsigned off2, unsigned nested,
+							unsigned* out1, unsigned* out2);
+
 //! phys_fn_000713: recursive path compression over the record chain -- each
 //! record caches its group root at +0x1e8, self-parented at the root.
 unsigned				nxBodyRecordFixRoot(void* rec);
