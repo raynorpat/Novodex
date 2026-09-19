@@ -1840,6 +1840,16 @@ void nxMutexVirtualEx(void* self, void* arg, unsigned slot, unsigned code,
 	// the release is a no-op under the bound stubs
 	}
 
+// The constant-argument virtual thunk family: the thunk pushes its constant
+// and does not clean it, so the slot is a __stdcall one-argument function.
+void nxVtConstEx(void* self, unsigned slot, unsigned arg)
+	{
+	void** vt = *reinterpret_cast<void***>(self);
+	typedef void (__stdcall* SlotFn)(unsigned);
+	SlotFn fn = reinterpret_cast<SlotFn>(vt[slot / 4]);
+	fn(arg);
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)

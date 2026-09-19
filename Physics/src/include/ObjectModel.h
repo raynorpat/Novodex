@@ -991,6 +991,11 @@ unsigned				nxGuardedField3708(void* self);
 //! word at +0x1c already holds the id the query stub reports, so the candidate
 //! takes that id from nxSetLockOwner.
 void					nxSetLockOwner(unsigned id);
+
+//! The constant-argument virtual thunk family (nine rows at 0xb0580..0xb0600):
+//! each is `vtable[slot](this, constant)`. 004417 (0xb0580) passes 1 through
+//! slot +0x4c; the others pass 5, 4, 0, 2, 3, 8, 6 and 7.
+void					nxVtConstEx(void* self, unsigned slot, unsigned arg);
 unsigned char			nxLockProbe0392(void* self);
 
 //! The mutex-guarded virtual dispatch family (31 rows): when the acquire of
