@@ -4849,6 +4849,21 @@ int wmain(int argc, wchar_t** argv)
 	printf("ixsum2 candidate failures=%u provisional=1\n", fail);
 	}
 
+	// -- Element-count row 003477 (0x85580): ([this+8]-[this+4]) >> 2.
+	{
+	typedef int (__thiscall* ElemCountOracle)(void*);
+	ElemCountOracle ec = reinterpret_cast<ElemCountOracle>(base + 0x85580);
+	unsigned ef = 0;
+	unsigned char eb[0x20]; memset(eb,0,sizeof(eb));
+	unsigned lo=0x1000, hi=0x1000+12; memcpy(eb+4,&lo,4); memcpy(eb+8,&hi,4);
+	if(ec(eb)!=3){fprintf(stderr,"ec3 fail %d\n",ec(eb));++ef;}
+	hi=0x1000; memcpy(eb+8,&hi,4);
+	if(ec(eb)!=0){fprintf(stderr,"ec0 fail\n");++ef;}
+	lo=0x1000; hi=0x1000-8; memcpy(eb+4,&lo,4); memcpy(eb+8,&hi,4);
+	if(ec(eb)!=-2){fprintf(stderr,"ecneg fail %d\n",ec(eb));++ef;}
+	printf("elemcount candidate failures=%u provisional=1\n", ef);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
