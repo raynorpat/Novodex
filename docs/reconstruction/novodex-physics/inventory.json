@@ -35430,12 +35430,12 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "virtual dispatch thunk (0x4c000)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/959",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5942",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via thunks3 differential (3z163): argument count and every recorded argument failures=0 for all three, with the dispatch targets bound to recorder stubs",
       "notes": ""
     },
     {
@@ -43083,12 +43083,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "callback-field dispatch thunk (0x5b910)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/memory_blocks/1",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7429",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via thunks3 differential (3z163): argument count and every recorded argument failures=0 for all three, with the dispatch targets bound to recorder stubs",
       "notes": ""
     },
     {
@@ -71150,12 +71150,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "virtual dispatch thunk (0x8ed50)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1897",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13033",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via thunks3 differential (3z163): argument count and every recorded argument failures=0 for all three, with the dispatch targets bound to recorder stubs",
       "notes": ""
     },
     {
