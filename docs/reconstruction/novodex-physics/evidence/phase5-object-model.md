@@ -4486,6 +4486,43 @@ arm that calls through the object's own vtable ([edx+0x38]), so they need a
 vtable fixture rather than new understanding. No gate, coverage-floor, or
 policy change.
 
+## 3z161. The mutex-guarded virtual dispatch family closes (31 rows)
+
+Round 144 closed the whole 84/92-byte mutex family in one drive
+(build/r144.log mutexfamily failures=0) -- thirty-one rows, the largest single
+slate of the campaign so far. They are uniform:
+
+    <lock [esi+0x10]>            ; 002364, the recursive acquire
+    test al, al
+    jne WORK
+    <report(2, <file>, <line>, 0, 0x10104760)>; ret 4
+WORK:
+    ecx = [esi+0x18]             ; the target object
+    edx = [ecx]                  ; its vtable
+    <push the argument>
+    call [edx + <slot>]          ; slot varies: 0x24, 0x28, 0x2c, 0x34, 0x38
+    <release [esi+0x10]>         ; 002366
+    ret 4
+
+Two things made the batch cheap once 3z160 had pinned the acquire:
+
+1. The slot call site pushes its argument and does NOT clean it, so the slot
+   is a __stdcall one-argument function with `this` in ecx. (__thiscall is
+   rejected on a free function in this translation unit, so the fixture stub
+   is declared __stdcall and simply ignores ecx.) The fixture gives the target
+   object a table with every slot from 0x20 to 0x3c pointing at that stub, so
+   the oracle and the candidate reach the same body and the hit count is
+   comparable.
+2. The rows differ only in three numbers -- the vtable slot and the report
+   file/line (the code is 2 and the expression 0x10104760 throughout) -- so a
+   single parameterised candidate, nxMutexVirtualEx(self, arg, slot, code,
+   file, line, expression), covers all thirty-one, driven from a table.
+
+Each row is exercised on BOTH arms: the acquire-failing arm must report the
+same tuple, and the acquiring arm must hit the same vtable slot exactly once.
+All thirty-one move to `reconstructed`. No gate, coverage-floor, or policy
+change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
