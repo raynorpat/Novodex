@@ -1212,6 +1212,13 @@ class PlaneShape
 	//! carries the -0x7effffff sentinel unless the normal is -Z.
 	void				nxPlaneLocalAABB1255(float* out) const;
 
+	//! PLANE-table slot 8, phys_fn_001267 (0x00025490, ret 4): selects a
+	//! 6-dword record from the indexed table at *([this+0xc4]+0x14) -- the
+	//! index from [this+0xa4+0x28] -- and copies it to out. When
+	//! [this+0xcc] is not 0xffff and [this+0xa4+8] lacks bit 2, it first
+	//! runs the 004886 init on the [this+0xcc]-indexed record.
+	void				nxPlaneIndexed6_1267(unsigned* out) const;
+
 	//! PLANE-table slot 12, phys_fn_001265: loadFromDesc -- stores the
 	//! descriptor normal/D through helper 0x24fc0 then applies BASE fields.
 	void				nxPlaneLoadFromDesc(const void* record);

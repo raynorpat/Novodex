@@ -2524,6 +2524,31 @@ void PlaneShape::nxPlaneLocalAABB1255(float* out) const
 	memcpy(out, o, sizeof(o));
 	}
 
+// phys_fn_001267 (0x25490, PLANE vtable slot 8, ret 4): selects a 6-dword
+// record from the table at *([this+0xc4]+0x14), indexed by
+// [this+0xa4+0x28], and copies it to out. When [this+0xcc] != 0xffff and
+// [this+0xa4+8] lacks bit 2, the 004886 init runs first on the
+// [this+0xcc]-indexed record (its only observable being [rec+8] |= 2).
+void PlaneShape::nxPlaneIndexed6_1267(unsigned* out) const
+	{
+	const unsigned char* p = reinterpret_cast<const unsigned char*>(this);
+	unsigned short ax;
+	memcpy(&ax, p + 0xcc, 2);
+	if(ax != 0xffffu && !(p[0xa4 + 8] & 2))
+		{
+		unsigned char* inner = *reinterpret_cast<unsigned char* const*>(p + 0xc4);
+		unsigned char* base = *reinterpret_cast<unsigned char**>(inner + 0x14);
+		unsigned char* rec = base + static_cast<unsigned>(ax) * 24u;
+		*(unsigned*)(rec + 8) |= 2u;		// 004886 observable
+		}
+	unsigned short ax2;
+	memcpy(&ax2, p + 0xa4 + 0x28, 2);
+	const unsigned char* inner = *reinterpret_cast<unsigned char* const*>(p + 0xc4);
+	const unsigned char* base = *reinterpret_cast<const unsigned char* const*>(inner + 0x14);
+	const unsigned char* entry = base + static_cast<unsigned>(ax2) * 24u;
+	memcpy(out, entry, 24);
+	}
+
 // phys_fn_001008 (0x22440, CAPSULE vtable slot 4, ret 0xc): mirror of the
 // sphere slot-4 wrapper -- radius from [this+0xe0], cylHalfHeight from
 // [this+0xe0]+[this+0xe4], axisSelector 1, pose [this+0x6c].
