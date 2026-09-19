@@ -5563,6 +5563,37 @@ int wmain(int argc, wchar_t** argv)
 	printf("orient0094 candidate failures=%u provisional=1\n", orf);
 	}
 
+	// -- Locked accessor batch: 003950 (locked self) and 000418 (field read).
+	{
+	typedef void* (__thiscall* LockedSelfOracle)(void*);
+	typedef unsigned (__thiscall* FieldReadOracle)(void*);
+	LockedSelfOracle ls = reinterpret_cast<LockedSelfOracle>(base + 0x8f0d0);
+	FieldReadOracle fr = reinterpret_cast<FieldReadOracle>(base + 0xda50);
+	NxLockApiSaved svAcc = nxBindLockApi(base);
+	unsigned af = 0;
+	unsigned char lockObj5[0x40]; memset(lockObj5, 0, sizeof(lockObj5));
+	unsigned char subObj5[0x40]; memset(subObj5, 0, sizeof(subObj5));
+	*(void**)(lockObj5) = subObj5;
+	// 003950
+	unsigned char sh5[0x40]; memset(sh5, 0, sizeof(sh5));
+	*(void**)(sh5 + 0x10) = lockObj5;
+	void* rO = ls(sh5);
+	void* rC = nxLockedSelf3950(sh5);
+	if(rO != sh5 || rC != sh5){fprintf(stderr,"lockself o=%p c=%p\n", rO, rC);++af;}
+	// 000418
+	unsigned char owner[0x600]; memset(owner, 0, sizeof(owner));
+	*(unsigned*)(owner + 0x55c) = 0xC0DE1234u;
+	unsigned char sh6[0x40]; memset(sh6, 0, sizeof(sh6));
+	*(void**)(sh6 + 0x10) = lockObj5;
+	*(void**)(sh6 + 0x24) = owner;
+	unsigned fO = fr(sh6);
+	unsigned fC = nxFieldRead0418(sh6);
+	if(fO != fC || fO != 0xC0DE1234u)
+		{fprintf(stderr,"fieldread o=%08x c=%08x\n", fO, fC);++af;}
+	nxUnbindLockApi(base, svAcc);
+	printf("lockacc candidate failures=%u provisional=1\n", af);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
