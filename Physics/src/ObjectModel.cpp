@@ -1678,6 +1678,34 @@ unsigned nxLockedAdvanceRead(void* self, unsigned fieldOff, unsigned linkOff,
 	return v;
 	}
 
+// phys_fn_005450 (0xef690, ret 4): the 004886-calling wrapper. 004886 runs the
+// registered callback at [0x10128478] when set and then sets [node+8] bit 2;
+// with that slot bound to a no-op the whole call reduces to the bit set.
+unsigned char nxWrap5450(void* self, void* node)
+	{
+	unsigned char* n = reinterpret_cast<unsigned char*>(node);
+	unsigned short w;
+	memcpy(&w, n + 0x28, 2);
+	if(w != 0xffffu && !(n[8] & 2))
+		*(unsigned*)(n + 8) |= 2u;
+	++*reinterpret_cast<unsigned*>(reinterpret_cast<unsigned char*>(self) + 0x38);
+	return 1;
+	}
+
+// phys_fn_001787 (0x3f570): the sibling of 005450, reading its object from the
+// second stack argument (bare `ret`), calling 004886 on object+0xa4.
+unsigned char nxWrap1787(void* unused, void* node)
+	{
+	(void) unused;
+	unsigned char* n = reinterpret_cast<unsigned char*>(node);
+	unsigned short w;
+	memcpy(&w, n + 0xcc, 2);
+	unsigned char* sub = n + 0xa4;
+	if(w != 0xffffu && !(sub[8] & 2))
+		*(unsigned*)(sub + 8) |= 2u;
+	return 0;
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)

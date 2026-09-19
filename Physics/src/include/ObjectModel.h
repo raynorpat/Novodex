@@ -948,6 +948,20 @@ unsigned				nxLockedAdvanceRead(void* self, unsigned fieldOff,
 							unsigned linkOff, unsigned nextOff,
 							unsigned readOff);
 
+//! phys_fn_005450 (0xef690, ret 4): when the node's +0x28 word is not 0xffff
+//! and its +8 byte lacks bit 2, calls 004886 on it -- whose observable without
+//! a registered callback is [node+8] |= 2 -- then increments [self+0x38] and
+//! returns 1. Callback slot 0x10128478 must be bound first.
+unsigned char			nxWrap5450(void* self, void* node);
+
+//! phys_fn_001787 (0x3f570): the sibling wrapper. Its body reads its object
+//! from the SECOND stack argument and ends in a bare `ret`, so it is a
+//! caller-cleaned two-argument function whose first argument is unused. When
+//! [node+0xcc] is not 0xffff and [node+0xa4+8] lacks bit 2 it calls 004886 on
+//! node+0xa4, whose observable without a callback is [node+0xa4+8] |= 2, then
+//! returns zero.
+unsigned char			nxWrap1787(void* unused, void* node);
+
 //! The copy members of the locked accessor family: lock, call a helper that
 //! copies `count` dwords from [field+dataOff] into out, unlock. `field` comes
 //! from [self+fieldOff].
