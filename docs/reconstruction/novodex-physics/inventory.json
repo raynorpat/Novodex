@@ -20202,12 +20202,12 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "lock-bracketed vtable call, float result (0x23c50)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/547",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3235",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the vtcall pair differential (3z164): result and the recorded slot target failures=0 for both rows, with the Foundation lock API bound and each vtable slot pointed at a recorder",
       "notes": ""
     },
     {
@@ -22326,12 +22326,12 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "lock-bracketed vtable call (0x24db0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/505",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3366",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the vtcall pair differential (3z164): result and the recorded slot target failures=0 for both rows, with the Foundation lock API bound and each vtable slot pointed at a recorder",
       "notes": ""
     },
     {
