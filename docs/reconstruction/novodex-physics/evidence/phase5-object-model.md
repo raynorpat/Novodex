@@ -3460,6 +3460,30 @@ probe, candidate method and header entry were fully reverted (normal
 family-RED end; diff clean). Both rows stay `discovered`. No gate,
 coverage-floor, or policy change.
 
+## 3z118. Sphere/capsule builder payload paths reproduced; 001371 closes
+
+Round 103 fixed the gap 3z117 exposed. `nxMassFrameBuildSphere` and
+`nxMassFrameBuildCapsule` both carried a documented-but-unreproduced payload
+arm ("Neither helper is transcribed yet" / "(void) extra; see above"), even
+though the BOX builder had long since folded the pair via
+nxMassFrameFoldPayload + nxMassFrameTranslate. The 000852/000853 builders
+call exactly 0x1bdc0 then 0x1c040 at extra+0x24, so both arms now do the
+same:
+
+    nxMassFrameFoldPayload(extra);
+    nxMassFrameTranslate((const unsigned char*)extra + 0x24);
+
+This is what makes the oracle ZERO the inertia for a zero pose (a zero
+rotation folds the tensor to zero). With the fix, the SPHERE vtable slot-4
+wrapper 001371 (0x27be0, ret 0xc) -- which runs the 000851 helper on the
+facade radius [this+0xe0] and pose [this+0x6c] when the low flag bits are
+clear -- matches byte-exact across 8 flag-lows x 2 densities (build/r103.log
+sphmass failures=0). Candidate nxSphereAccumulateMass added. No regressions:
+massframe ok=1 (0bed6c36), capmass ok=1 (ab81bd0c), capsule ctor ok=1, all
+coverage tables 1. 001371 moves to `reconstructed`; 001008 (capsule slot 4)
+is unblocked by the same fix and is next. No gate, coverage-floor, or policy
+change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
