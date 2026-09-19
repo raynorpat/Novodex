@@ -81356,12 +81356,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "lock-bracketed global-flag read (0xb0f10)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1682",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15208",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via globalflag4491 differential (3z176): the non-zero and zero flag arms both failures=0, with the data word 0x10127180 bound and the lock API bound",
       "notes": ""
     },
     {
