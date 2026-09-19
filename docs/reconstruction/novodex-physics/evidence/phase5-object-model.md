@@ -5245,6 +5245,33 @@ seeing ecx: every node gets its OWN recorder stub, so the sequence of hits
 identifies which node was reached in which order. All three move to
 `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z186. Blocker batch four: the owned-free family (3 rows)
+
+Round 169 closed three more blockers that all free owned pointers through the
+004803 allocator -- the same pattern 3z184 modelled for 005320, widened from one
+field to many (build/r169.log blockers4 failures=0):
+
+- 005477 (0xefed0) frees [self+0x10] then [self+0x14];
+- 001665 (0x325b0) frees [self+8], [self+0xc] then [self+0x10];
+- 001577 (0x2e7f0) stores the vtable 0x10107890, frees [self+0x10] and
+  [self+0xc], then stores the fixed vtable 0x10107848 through 001554.
+
+Candidate nxFreeOwnedFields(self, offsets, count, minus4) covers the first two
+and is reused by the third; the minus4 flag exists because 005320 frees
+([field] - 4) while this batch frees the field directly -- a difference worth
+keeping visible rather than averaging away.
+
+Both arms are driven: every field null (nothing freed) and every field present
+(all freed in order), with the ordered free sequence compared against each
+side's OWN blocks, since the two fixtures live at different addresses.
+
+One fixture note, the same trap 3z185 hit: the 0xcd fill makes every field a
+non-null pointer, so each owned field AND the row's header word must be
+explicitly cleared before the oracle runs, or it tries to free garbage.
+
+All three move to `reconstructed`, and closing them unblocks 005537, 001415 and
+001528 among others. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
