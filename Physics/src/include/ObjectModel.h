@@ -1167,6 +1167,18 @@ unsigned				nxByteCount1413(void* self);
 //! slot +0x1c of the object at [0x10123c08] and caches the result. The harness
 //! binds both globals and the hook.
 typedef unsigned (__fastcall* NxSingletonFn)(void*);
+//! The multi-field owned-free rows: each frees every non-null pointer in a
+//! list of fields through the 004803 allocator and clears it. 005477 (0xefed0)
+//! frees +0x10 and +0x14; 001665 (0x325b0) frees +8, +0xc and +0x10. The
+//! minus4 flag covers 005320-style rows that free ([field] - 4).
+void					nxFreeOwnedFields(void* self, const unsigned* offsets,
+							unsigned count, int minus4);
+
+//! phys_fn_001577 (0x2e7f0): stores the vtable 0x10107890, frees [self+0x10]
+//! and [self+0xc] through the allocator, then calls 001554 which stores the
+//! fixed vtable 0x10107848.
+void					nxDtorTwoOwned1577(void* self);
+
 unsigned				nxLazySingleton0443(void* obj, unsigned cached,
 							NxSingletonFn fn);
 

@@ -2456,6 +2456,40 @@ unsigned nxLazySingleton0443(void* obj, unsigned cached, NxSingletonFn fn)
 	return fn(obj);
 	}
 
+// The multi-field owned-free rows.
+void nxFreeOwnedFields(void* self, const unsigned* offsets, unsigned count,
+	int minus4)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	for(unsigned k = 0; k < count; ++k)
+		{
+		unsigned owned;
+		memcpy(&owned, p + offsets[k], 4);
+		if(owned == 0u)
+			continue;
+		if(gNxAllocator004803 != nullptr)
+			{
+			void** vt = *reinterpret_cast<void***>(gNxAllocator004803);
+			typedef void (__stdcall* Fn1)(unsigned);
+			reinterpret_cast<Fn1>(vt[0xc / 4])(minus4 ? (owned - 4u) : owned);
+			}
+		unsigned zero = 0u;
+		memcpy(p + offsets[k], &zero, 4);
+		}
+	}
+
+// phys_fn_001577 (0x2e7f0): two owned frees then the fixed-vtable store.
+void nxDtorTwoOwned1577(void* self)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	unsigned vtable = 0x10107890u;
+	memcpy(p, &vtable, 4);
+	const unsigned offs[2] = { 0x10u, 0xcu };
+	nxFreeOwnedFields(self, offs, 2, 0);
+	unsigned fixed = 0x10107848u;
+	memcpy(p, &fixed, 4);
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)
