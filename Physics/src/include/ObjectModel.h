@@ -961,6 +961,11 @@ unsigned				nxLockedBitExtract(void* self, unsigned fieldOff,
 //! ([field+8] - [field+4]) >> 2, the signed element count of a buffer.
 int						nxLockedElementCount(void* self, unsigned fieldOff);
 
+//! The same element count over caller-chosen offsets: helper-free rows like
+//! 000416 compute ([field+hiOff] - [field+loOff]) >> 2 inline.
+int						nxLockedElementCountAt(void* self, unsigned fieldOff,
+							unsigned hiOff, unsigned loOff);
+
 //! The interval-flag member: helper 003479 returns [field+0x14] when the
 //! difference ([field+0x18] - [field+0x14]) has any bit above the low two,
 //! else zero.
@@ -997,6 +1002,12 @@ unsigned char			nxLockedCopyAndFlag(void* self, unsigned fieldOff,
 //! [field+0x530] and [field+0x534] through the three out pointers (ret 0xc).
 void					nxLockedCopyThreePointers(void* self, unsigned fieldOff,
 							unsigned* out1, unsigned* out2, unsigned* out3);
+
+//! phys_fn_000421 (0xda80-family): lock [self+0x10], take the pointer at
+//! [field+0x61c] with field from [self+0x24]; when non-null return the word at
+//! [that+0x14], else zero.
+unsigned				nxLockedDerefField(void* self, unsigned fieldOff,
+							unsigned dataOff, unsigned derefOff);
 
 //! phys_fn_000713: recursive path compression over the record chain -- each
 //! record caches its group root at +0x1e8, self-parented at the root.

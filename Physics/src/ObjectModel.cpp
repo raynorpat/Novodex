@@ -1490,6 +1490,18 @@ int nxLockedElementCount(void* self, unsigned fieldOff)
 	return static_cast<int>(static_cast<signed>(hi - lo) >> 2);
 	}
 
+// The same count over caller-chosen offsets (rows that compute it inline).
+int nxLockedElementCountAt(void* self, unsigned fieldOff, unsigned hiOff,
+	unsigned loOff)
+	{
+	const unsigned char* p = reinterpret_cast<const unsigned char*>(self);
+	const unsigned char* field = *reinterpret_cast<const unsigned char* const*>(p + fieldOff);
+	unsigned hi, lo;
+	memcpy(&hi, field + hiOff, 4);
+	memcpy(&lo, field + loOff, 4);
+	return static_cast<int>(static_cast<signed>(hi - lo) >> 2);
+	}
+
 // The interval-flag member: returns [field+0x14] when the span from it to
 // [field+0x18] carries any bit above the low two, else zero.
 unsigned nxLockedIntervalFlag(void* self, unsigned fieldOff)
@@ -1563,6 +1575,22 @@ void nxLockedCopyThreePointers(void* self, unsigned fieldOff, unsigned* out1,
 	memcpy(out1, field + 0x52c, 4);
 	memcpy(out2, field + 0x530, 4);
 	memcpy(out3, field + 0x534, 4);
+	}
+
+// The conditional-deref member: read the pointer at [field+dataOff]; when it
+// is non-null return the word at [that+derefOff], else zero.
+unsigned nxLockedDerefField(void* self, unsigned fieldOff, unsigned dataOff,
+	unsigned derefOff)
+	{
+	const unsigned char* p = reinterpret_cast<const unsigned char*>(self);
+	const unsigned char* field = *reinterpret_cast<const unsigned char* const*>(p + fieldOff);
+	unsigned ptr;
+	memcpy(&ptr, field + dataOff, 4);
+	if(ptr == 0u)
+		return 0u;
+	unsigned v;
+	memcpy(&v, reinterpret_cast<const unsigned char*>(static_cast<size_t>(ptr)) + derefOff, 4);
+	return v;
 	}
 
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
