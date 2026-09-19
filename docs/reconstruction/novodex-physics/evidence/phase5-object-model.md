@@ -5024,6 +5024,38 @@ fixture-sharing lesson as 3z166/3z168, applied to a sequence rather than a
 field. 004763 moves to `reconstructed`. No gate, coverage-floor, or policy
 change.
 
+## 3z179. Store-then-dispatch closes (005382) -- and the drivable backlog is empty
+
+Round 162 closed 005382 (0xe9440, ret 4), the last row on the drivability list:
+
+    storeDword([esi+8]) into the MemoryStream argument     ; via 004797
+    eax = [esi+0x10]
+    if (eax == 0) return ([esi+8] >> 2) & 1
+      return vtable[+0x14](eax, stream)
+
+The work helper 004797 is `MemoryStream::storeDword`, and MemoryStream is
+already reconstructed as a C++ class, so the drive does NOT need to fake a
+stream layout: it constructs a real MemoryStream on EACH side and lets the
+oracle's raw code and the candidate's C++ call run on their own objects. The
+comparison then covers the return value, the stream LENGTH and the full
+underlying buffer -- a far stronger check than the row's own return would allow
+(build/r162.log store5382 failures=0, two dispatch arms across two stored
+values).
+
+Two build changes were needed to reach it and are worth recording:
+
+- ObjectModel.cpp and the layout test both had to include MemoryStream.h;
+- MemoryStream.cpp had to be added to the NxPhysicsObjectLayoutTests source
+  list, which had carried only ObjectModel, Containers, Geometry, IcePrunable,
+  ThirdPartyHost and PhysicsInternal.
+
+005382 moves to `reconstructed`. **With it, every row the drivability filter
+could reach is closed.** The filter now reports nothing beyond the rows already
+closed, so the next slate has to come from somewhere other than this
+mechanism: the remaining `discovered` rows are compiler artifacts, fragments,
+rows blocked by large undiscovered dependencies, or rows behind the vtable
+identity gate. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
