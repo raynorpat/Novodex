@@ -4627,6 +4627,35 @@ never recorded and the expectation for that case is zero rather than the
 sentinel -- the first run flagged exactly that. 001022 moves to
 `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z166. Scalar deleting destructor closes (002142)
+
+Round 149 closed 002142 (0x532b0, ret 4), a scalar deleting destructor:
+
+    test byte ptr [esp+4], 1
+    mov dword ptr [esi], 0x1010829c        ; install the vtable
+    je  END
+    eax = [0x101041bc]                     ; the allocator singleton
+    ecx = [eax]; edx = [ecx]
+    push esi
+    call [edx + 0x14]                      ; free(this)
+END:
+    mov eax, esi; ret 4
+
+The free arm reaches the allocator through THREE levels --
+`[[[0x101041bc]][0]+0x14]` -- so the harness binds [0x101041bc] to a fake
+holder whose object's vtable slot +0x14 is a recorder, and the candidate
+exposes the same hook through nxSetAllocFree. The call site pushes the block
+and does not clean it, so the slot is __stdcall.
+
+Both arms verify (build/r149.log dtor2142 failures=0): the vtable word is
+installed and `this` returned either way, and only the flagged arm frees. Two
+drive details came up and are worth keeping: the recorder had to be __stdcall
+or the pushed argument was never popped, and the freed pointer must be
+compared against EACH side's own buffer rather than across sides, since the
+two fixtures live at different addresses -- the same class of artifact as
+3z128 and 3z154. 002142 moves to `reconstructed`. No gate, coverage-floor, or
+policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
