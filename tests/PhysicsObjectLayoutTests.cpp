@@ -217,6 +217,13 @@ static unsigned gGc2A, gGc2B;
 static void __cdecl nxGc2Recorder(unsigned a, unsigned b)
 	{ gGc2A = a; gGc2B = b; ++gGc2Hits; }
 
+// Lock-API-global recorders for the second blocker batch.
+static unsigned g2371Arg;
+static void __stdcall nx2371Stub(unsigned a) { g2371Arg = a; }
+static unsigned g2375A, g2375B, g2375Ret;
+static unsigned __stdcall nx2375Stub(unsigned a, unsigned b)
+	{ g2375A = a; g2375B = b; return g2375Ret; }
+
 struct NxFnPtrSaved { void* slot; void* page; DWORD prot; int ok; };
 
 static NxFnPtrSaved nxBindFnPtr(const void* imageBase, unsigned slotRva, void* value)
@@ -13188,6 +13195,12 @@ int wmain(int argc, wchar_t** argv)
 		{ 0x84e10, 0x126440, 0, "003441" },
 		{ 0x84fd0, 0x1263f4, 0, "003469" },
 		{ 0x8ae50, 0x1264a0, 1, "003679" },
+		{ 0x84d50, 0x126600, 0, "003429" },
+		{ 0x84d90, 0x1265d8, 0, "003433" },
+		{ 0x84e50, 0x1263b4, 0, "003445" },
+		{ 0x84f30, 0x126514, 0, "003459" },
+		{ 0x84f70, 0x12649c, 0, "003463" },
+		{ 0x84f90, 0x126570, 0, "003465" },
 	};
 	for(unsigned i = 0; i < sizeof(kGc) / sizeof(kGc[0]); ++i)
 		{
@@ -13219,6 +13232,86 @@ int wmain(int argc, wchar_t** argv)
 		}
 	}
 	printf("blockers candidate failures=%u provisional=1\n", blf);
+	}
+	// -- Blocker batch two: 001583 (no-op), 002371/002375 (lock-API globals)
+	//    and 005320 (owned-block free).
+	{
+	unsigned bb2 = 0;
+	{
+	typedef void (__thiscall* T1583)(void);
+	T1583 fn = reinterpret_cast<T1583>(base + 0x2ea70);
+	unsigned char self[0x10]; memset(self, 0, sizeof(self));
+	fn();
+	nxNoop1583();
+	}
+	{
+	typedef void (__thiscall* T2371)(void*);
+	T2371 fn = reinterpret_cast<T2371>(base + 0x5b7e0);
+	g2371Arg = 0;
+	NxFnPtrSaved sv1 = nxBindFnPtr(base, 0x104020,
+		reinterpret_cast<void*>(&nx2371Stub));
+	unsigned char self[0x20]; memset(self, 0, sizeof(self));
+	unsigned v = 0x9911AABBu; memcpy(self, &v, 4);
+	fn(self);
+	unsigned o = g2371Arg;
+	g2371Arg = 0;
+	nxLockApiCall2371(self, &nx2371Stub);
+	if(o != g2371Arg || o != v)
+		{fprintf(stderr,"bb2 002371 o=%08x c=%08x\n", o, g2371Arg); ++bb2; }
+	nxUnbindFnPtr(base, 0x104020, sv1);
+	}
+	{
+	typedef unsigned char (__thiscall* T2375)(void*, unsigned);
+	T2375 fn = reinterpret_cast<T2375>(base + 0x5b800);
+	NxFnPtrSaved sv2 = nxBindFnPtr(base, 0x104028,
+		reinterpret_cast<void*>(&nx2375Stub));
+	unsigned char self[0x20]; memset(self, 0, sizeof(self));
+	unsigned v = 0x1234u; memcpy(self, &v, 4);
+	for(unsigned rv = 0; rv < 2; ++rv)
+		{
+		g2375Ret = rv ? 0x77u : 0u; g2375A = 0; g2375B = 0;
+		unsigned char ro = fn(self, 0x5566u);
+		unsigned aO = g2375A, bO = g2375B;
+		g2375Ret = rv ? 0x77u : 0u; g2375A = 0; g2375B = 0;
+		unsigned char rc = nxLockApiTest2375(self, 0x5566u, &nx2375Stub);
+		if(ro != rc || ro != (rv ? 0 : 1) || aO != g2375A || bO != g2375B
+			|| aO != v || bO != 0x5566u)
+			{fprintf(stderr,"bb2 002375 rv=%u ro=%u rc=%u aO=%08x aC=%08x\n",
+				rv, ro, rc, aO, g2375A);++bb2;}
+		}
+	nxUnbindFnPtr(base, 0x104028, sv2);
+	}
+	{
+	typedef void (__thiscall* T5320)(void*);
+	T5320 fn = reinterpret_cast<T5320>(base + 0xe7c10);
+	void* allocVt[0x10 / 4 + 1]; memset(allocVt, 0, sizeof(allocVt));
+	allocVt[0xc / 4] = reinterpret_cast<void*>(&nxAllocFreeSeq);
+	unsigned char allocObj[0x20]; memset(allocObj, 0, sizeof(allocObj));
+	*(void**)(allocObj) = allocVt;
+	NxAllocPtrSaved svAp3 = nxBindAllocPtr(base, allocObj);
+	nxSetAllocator004803(allocObj);
+	for(unsigned own = 0; own < 2; ++own)
+		{
+		unsigned char self[0x80], selfC[0x80];
+		memset(self, 0, sizeof(self)); memset(selfC, 0, sizeof(selfC));
+		unsigned char block[0x20]; memset(block, 0, sizeof(block));
+		unsigned h48 = 0x48480000u;
+		memcpy(self + 0x48, &h48, 4); memcpy(selfC + 0x48, &h48, 4);
+		if(own == 1) { *(void**)(self + 0x4c) = block + 4; *(void**)(selfC + 0x4c) = block + 4; }
+		gFreeSeqN = 0; memset(gFreeSeq, 0, sizeof(gFreeSeq));
+		fn(self);
+		unsigned nO = gFreeSeqN; void* fO = gFreeSeq[0];
+		gFreeSeqN = 0; memset(gFreeSeq, 0, sizeof(gFreeSeq));
+		nxFreeOwnedBlock5320(selfC);
+		unsigned nC = gFreeSeqN; void* fC = gFreeSeq[0];
+		bool ok = (nO == nC) && (memcmp(self, selfC, sizeof(self)) == 0);
+		if(own == 1) ok = ok && (nO == 1u) && (fO == block) && (fC == block);
+		if(!ok) { fprintf(stderr,"bb2 005320 own=%u nO=%u nC=%u\n", own, nO, nC); ++bb2; }
+		}
+	nxSetAllocator004803(nullptr);
+	nxUnbindAllocPtr(base, svAp3);
+	}
+	printf("blockers2 candidate failures=%u provisional=1\n", bb2);
 	}
 
 
