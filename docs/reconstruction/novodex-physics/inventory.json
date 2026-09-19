@@ -7584,12 +7584,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "locked field read (0xda50)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/147",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1170",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "under the lock at [self+0x10], returns the word at [[self+0x24]+0x55c]",
+      "dynamic_proof": "confirmed via lockacc differential (3z138): failed=0 with the Foundation lock API bound to __stdcall no-op stubs",
       "notes": ""
     },
     {
@@ -71618,12 +71618,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "locked no-op accessor (0x8f0d0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1480",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13068",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "takes the lock at [self+0x10], releases it, and returns self; the lock pair brackets the whole body and has no other observable",
+      "dynamic_proof": "confirmed via lockacc differential (3z138): failed=0 with the Foundation lock API bound to __stdcall no-op stubs",
       "notes": ""
     },
     {
