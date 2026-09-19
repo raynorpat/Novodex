@@ -6216,12 +6216,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/168",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1064",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via once0342 differential (3z177): both gate passes failures=0, comparing the report tuple and the whole four-call slot sequence including every argument, with the report slot and gate byte bound",
       "notes": ""
     },
     {
