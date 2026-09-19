@@ -1909,6 +1909,23 @@ float nxLockedVtCall1119(void* self)
 	return fn(obj);
 	}
 
+// phys_fn_001022 (0x22970, ret 4): the per-element virtual dispatch loop.
+void nxArrayVtCall1022(void* self, void* arg)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	unsigned* begin = *reinterpret_cast<unsigned**>(p + 0xe0);
+	unsigned* end = *reinterpret_cast<unsigned**>(p + 0xe4);
+	const unsigned n = static_cast<unsigned>(
+		reinterpret_cast<unsigned char*>(end) - reinterpret_cast<unsigned char*>(begin)) >> 2;
+	for(unsigned i = 0; i < n; ++i)
+		{
+		unsigned char* elem = reinterpret_cast<unsigned char*>(begin[i]);
+		void** vt = *reinterpret_cast<void***>(elem);
+		typedef void (__stdcall* Fn)(void*);
+		reinterpret_cast<Fn>(vt[0xc / 4])(arg);
+		}
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)

@@ -1018,6 +1018,11 @@ unsigned				nxLockedVtCall1237(void* self);
 //! phys_fn_001119 (0x23c50): the same shape through slot +0x3c, whose result
 //! is a float returned in st(0).
 float					nxLockedVtCall1119(void* self);
+
+//! phys_fn_001022 (0x22970, ret 4): iterates the pointer array at
+//! [self+0xe0]..[self+0xe4] and calls vtable slot +0xc of each element with the
+//! argument; the call site does not clean it, so the slot is __stdcall.
+void					nxArrayVtCall1022(void* self, void* arg);
 unsigned char			nxLockProbe0392(void* self);
 
 //! The mutex-guarded virtual dispatch family (31 rows): when the acquire of
