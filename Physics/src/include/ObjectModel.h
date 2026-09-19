@@ -1090,6 +1090,15 @@ void					nxGuardedVtChain4763(void* self);
 //! returns that result; otherwise it returns bit 1 of ([self+8] >> 2).
 unsigned				nxStoreOrDispatch5382(void* self, void* stream);
 
+//! phys_fn_001563 (0x2e570, ret 4) and phys_fn_002154 (0x538b0, ret 4):
+//! deleting destructors that obtain the allocator from 004803 (which returns
+//! the pointer at [0x1012845c], or the static at 0x10122368 when that is
+//! null) rather than from a fixed global. Each stores its own vtable word and,
+//! when the low flag bit is set, calls allocator->vtable[+0xc](self).
+void					nxSetAllocator004803(void* allocator);
+void*					nxDtorViaAllocator(void* self, unsigned flags,
+							unsigned vtable);
+
 void					nxOnceFourCalls0342(void* self, unsigned char* gate,
 							unsigned a1, unsigned a2, unsigned a3, unsigned a4);
 

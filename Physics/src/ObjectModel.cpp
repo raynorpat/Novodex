@@ -2232,6 +2232,30 @@ unsigned nxStoreOrDispatch5382(void* self, void* stream)
 	return (value >> 2) & 1u;
 	}
 
+// phys_fn_001563 / phys_fn_002154: deleting destructors whose allocator comes
+// from 004803 instead of a fixed global slot.
+static void* gNxAllocator004803 = nullptr;
+
+void nxSetAllocator004803(void* allocator)
+	{
+	gNxAllocator004803 = allocator;
+	}
+
+void* nxDtorViaAllocator(void* self, unsigned flags, unsigned vtable)
+	{
+	memcpy(self, &vtable, 4);
+	if(flags & 1u)
+		{
+		if(gNxAllocator004803 != nullptr)
+			{
+			void** vt = *reinterpret_cast<void***>(gNxAllocator004803);
+			typedef void (__stdcall* Fn1)(void*);
+			reinterpret_cast<Fn1>(vt[0xc / 4])(self);
+			}
+		}
+	return self;
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)
