@@ -165,6 +165,43 @@ static void* gStore5382Arg;
 static unsigned __stdcall nxStore5382Slot(void* arg)
 	{ gStore5382Arg = arg; ++gStore5382Hits; return 0x5EED0000u; }
 
+// 004803 returns the allocator pointer from [0x1012845c]; binding that slot to
+// a fake allocator routes the free into a recorder.
+static unsigned gAllocHits;
+static void* gAllocArg;
+static void __stdcall nxAllocFreeSlot(void* block) { gAllocArg = block; ++gAllocHits; }
+
+struct NxAllocPtrSaved { void* slot; void* page; DWORD prot; int ok; };
+
+static NxAllocPtrSaved nxBindAllocPtr(const void* imageBase, void* value)
+	{
+	NxAllocPtrSaved sv;
+	unsigned char* img = const_cast<unsigned char*>(
+		reinterpret_cast<const unsigned char*>(imageBase));
+	void** slot = reinterpret_cast<void**>(img + 0x12845c);
+	sv.slot = *slot;
+	sv.page = reinterpret_cast<void*>(
+		reinterpret_cast<size_t>(img + 0x128000) & ~static_cast<size_t>(0xFFF));
+	sv.prot = 0; sv.ok = 0;
+	if(!VirtualProtect(sv.page, 0x2000, PAGE_READWRITE, &sv.prot))
+		return sv;
+	sv.ok = 1;
+	*slot = value;
+	return sv;
+	}
+
+static void nxUnbindAllocPtr(const void* imageBase, const NxAllocPtrSaved& sv)
+	{
+	if(!sv.ok)
+		return;
+	unsigned char* img = const_cast<unsigned char*>(
+		reinterpret_cast<const unsigned char*>(imageBase));
+	DWORD t = 0;
+	VirtualProtect(sv.page, 0x2000, PAGE_READWRITE, &t);
+	*reinterpret_cast<void**>(img + 0x12845c) = sv.slot;
+	VirtualProtect(sv.page, 0x2000, sv.prot, &t);
+	}
+
 // The per-element loop passes one stack argument and leaves `this` in ecx; the
 // stub records the argument and the call count.
 static unsigned gLoopArg;
@@ -12917,6 +12954,44 @@ int wmain(int argc, wchar_t** argv)
 				arm, vi, ro, rc, hO, hC, lenO, lenC);++sf;}
 		}
 	printf("store5382 candidate failures=%u provisional=1\n", sf);
+	}
+	// -- Allocator-via-004803 deleting destructors: 001563 and 002154, both arms.
+	{
+	struct AdRow { unsigned rva; unsigned vtable; const char* name; };
+	static const AdRow kAd[] = {
+		{ 0x2e570, 0x10107848, "001563" },
+		{ 0x538b0, 0x1010833c, "002154" },
+	};
+	// a fake allocator: object -> vtable[0xc]
+	void* allocVt[0x10 / 4 + 1]; memset(allocVt, 0, sizeof(allocVt));
+	allocVt[0xc / 4] = reinterpret_cast<void*>(&nxAllocFreeSlot);
+	unsigned char allocObj[0x20]; memset(allocObj, 0, sizeof(allocObj));
+	*(void**)(allocObj) = allocVt;
+	NxAllocPtrSaved svAp = nxBindAllocPtr(base, allocObj);
+	nxSetAllocator004803(allocObj);
+	unsigned adf = 0;
+	for(unsigned i = 0; i < sizeof(kAd) / sizeof(kAd[0]); ++i)
+	for(unsigned arm = 0; arm < 2; ++arm)
+		{
+		typedef void* (__thiscall* AdOracle)(void*, unsigned);
+		AdOracle fn = reinterpret_cast<AdOracle>(base + kAd[i].rva);
+		unsigned flags = arm ? 1u : 0u;
+		unsigned char self[0x40], selfC[0x40];
+		memset(self, 0xcd, sizeof(self)); memset(selfC, 0xcd, sizeof(selfC));
+		gAllocHits = 0; gAllocArg = nullptr;
+		void* ro = fn(self, flags);
+		unsigned hO = gAllocHits; void* aO = gAllocArg;
+		gAllocHits = 0; gAllocArg = nullptr;
+		void* rc = nxDtorViaAllocator(selfC, flags, kAd[i].vtable);
+		unsigned hC = gAllocHits; void* aC = gAllocArg;
+		if(ro != self || rc != selfC || hO != hC || hO != arm
+			|| memcmp(self, selfC, sizeof(self)) != 0
+			|| (arm == 1 && (aO != self || aC != selfC)))
+			{fprintf(stderr,"allocdtor %s arm=%u hO=%u hC=%u\n", kAd[i].name, arm, hO, hC);++adf;}
+		}
+	nxSetAllocator004803(nullptr);
+	nxUnbindAllocPtr(base, svAp);
+	printf("allocdtor candidate failures=%u provisional=1\n", adf);
 	}
 
 
