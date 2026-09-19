@@ -897,6 +897,14 @@ float*					nxPoseFromQuat0130(void* self, float* out);
 //! Returns out either way.
 float*					nxOrientation0094(void* self, float* out);
 
+//! phys_fn_003950 (0x8f0d0): takes the lock at [self+0x10], releases it, and
+//! returns self -- a locked no-op accessor.
+void*					nxLockedSelf3950(void* self);
+
+//! phys_fn_000418 (0xda50): under the lock at [self+0x10], returns the word at
+//! [[self+0x24]+0x55c].
+unsigned				nxFieldRead0418(void* self);
+
 //! phys_fn_000713: recursive path compression over the record chain -- each
 //! record caches its group root at +0x1e8, self-parented at the root.
 unsigned				nxBodyRecordFixRoot(void* rec);

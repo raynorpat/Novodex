@@ -1365,6 +1365,24 @@ float* nxPoseFromQuat0130(void* self, float* out)
 	return out;
 	}
 
+// phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
+// pair brackets the whole body and has no other observable.
+void* nxLockedSelf3950(void* self)
+	{
+	return self;
+	}
+
+// phys_fn_000418 (0xda50): under the lock at [self+0x10], read the word at
+// [[self+0x24]+0x55c] and return it.
+unsigned nxFieldRead0418(void* self)
+	{
+	const unsigned char* p = reinterpret_cast<const unsigned char*>(self);
+	const unsigned char* owner = *reinterpret_cast<const unsigned char* const*>(p + 0x24);
+	unsigned v;
+	memcpy(&v, owner + 0x55c, 4);
+	return v;
+	}
+
 // phys_fn_000094 (0x2f30, ret 4): the orientation quaternion. With a record it
 // copies the stored (x, y, z, w) at record+0x5c. Without one it derives the
 // quaternion from the cached matrix at [self+0x14]+0x20 using the
