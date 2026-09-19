@@ -4337,6 +4337,40 @@ All six move to `reconstructed`. The other 165 members of the family carry
 extra logic around the report and are the obvious next slate. No gate,
 coverage-floor, or policy change.
 
+## 3z156. Fourteen more pure report rows; binding drives must run LAST
+
+Round 139 finished the pure-assert slate and found a harness-ordering rule the
+hard way. 3z155 had filtered for a bare `ret`, which missed the rows that end
+in `ret 4` or `ret 8`; relaxing that found **14 more pure report rows** (20
+pure in total across both rounds). Their tuples are now recorded in the
+census, and all twenty verify together (build/r139.log assertrows
+failures=0).
+
+Two real problems surfaced while getting there, both instructive:
+
+1. The drive called every row through a `void (__thiscall*)(void*)`, but rows
+   ending in `ret 4` or `ret 8` pop more than one argument. Calling a ret-8
+   row with a single argument shifts the stack by four bytes on return and
+   corrupts wmain's frame. The table now carries each row's arity and the
+   drive casts accordingly -- the same discipline the 3z94 byte-return rows
+   needed on the value side.
+2. Even with the arity fixed, the paxis check started failing: its ORACLE-side
+   digest moved from 1d701701 to 17f85795 while the candidate stayed put. The
+   cause is ORDERING, not corruption in the row: the assert drive binds
+   [0x101041b4] and [0x101041b0], and it sat BEFORE the paxis block, so the
+   patched globals were live while the paxis oracle computed. Moving the whole
+   drive to the END of wmain -- after every other check -- restored paxis to
+   ok=1 and kept all twenty assert rows green.
+
+That last point is a standing rule for this harness: any block that binds a
+global must run after the checks that do not expect that binding. The
+lock/callback drives already happened to sit late enough; this one did not.
+
+All fourteen rows move to `reconstructed`. The remaining assert-family members
+carry a recursive-mutex acquire (helper 002364) around the report -- 31 rows
+of that shape alone -- and are the next slate. No gate, coverage-floor, or
+policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
