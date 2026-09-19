@@ -5140,6 +5140,50 @@ than the neighbouring rows make, and it is recorded as such rather than
 dressed up. 004743 moves to `reconstructed`. No gate, coverage-floor, or
 policy change.
 
+## 3z183. The small blockers close (7 rows) -- and the backlog is characterised
+
+Round 166 stopped chasing large rows and asked a different question: WHICH rows
+block the most others? Classifying every `discovered` code row by why it is
+unreachable gave the picture this campaign has been missing:
+
+| category | rows |
+|---|---|
+| branch-target fragments (not drivable by definition) | 1559 |
+| no `ret` / not at a function entry | 91 |
+| size <= 100 | 264 |
+| size 101-200 | 72 |
+| size 201-400 | 48 |
+| size 401-800 | 49 |
+| size > 800 | 47 |
+
+The 264 small rows are not small PROBLEMS -- each is blocked by a specific
+callee. Ranking those callees by how many rows they gate showed that the
+cheapest wins are the SMALLEST blockers, not the largest rows, so the round
+closed seven of them (build/r166.log blockers failures=0):
+
+- 001281 (4 bytes) is `mov eax,[ecx+4]; ret`;
+- 004085 (10 bytes) is the registry lookup 000454 with its own `this`, and is
+  inert while [0x10123c0c] is null -- the shipped state;
+- 003457, 003437, 003441 and 003469 (24 bytes each) read [this+0x7c] and
+  [this+0x80], take [that+0x30] as the first argument and call a GLOBAL
+  function pointer (0x10126520, 0x101265bc, 0x10126440, 0x101263f4);
+- 003679 (27 bytes) does the same but dereferences [self+4] first, through
+  0x101264a0.
+
+One candidate covers the five thunks -- nxGlobalCall2(self, fn, viaField4) --
+and the harness binds each image global to the same recorder the candidate is
+handed, which is what makes the comparison meaningful.
+
+Two things are now on record rather than rediscovered each round. First, the
+nine rows blocked by 005668 and the eight by 005666 are blocked by
+`compiler_artifact` rows (`_free` and `__fpclass`), so they are out of scope by
+the same rule that keeps CRT out of the census's product claims. Second,
+closing a blocker does not automatically free its dependents: 004095 (41
+bytes) gates ten rows but itself chains into 004089 and 000633, both still
+`discovered`.
+
+All seven move to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
