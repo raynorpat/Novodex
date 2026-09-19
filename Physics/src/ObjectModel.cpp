@@ -1377,6 +1377,66 @@ unsigned nxLockedFieldRead(void* self, unsigned offset)
 	return v;
 	}
 
+// The pointer-returning member of the family: the wrapped getter is
+// `lea eax,[field+offset]`, so the row returns that address.
+void* nxLockedPointerRead(void* self, unsigned offset)
+	{
+	const unsigned char* p = reinterpret_cast<const unsigned char*>(self);
+	const unsigned char* field = *reinterpret_cast<const unsigned char* const*>(p + 0x24);
+	return const_cast<unsigned char*>(field + offset);
+	}
+
+// Second variant of the family: lock at [self+lockOff], field at
+// [self+fieldOff], wrapped getter a plain dword read of [field+dataOff].
+unsigned nxLockedFieldReadEx(void* self, unsigned lockOff, unsigned fieldOff,
+	unsigned dataOff)
+	{
+	(void) lockOff;
+	const unsigned char* p = reinterpret_cast<const unsigned char*>(self);
+	const unsigned char* field = *reinterpret_cast<const unsigned char* const*>(p + fieldOff);
+	unsigned v;
+	memcpy(&v, field + dataOff, 4);
+	return v;
+	}
+
+// phys_fn_003824 (0x8c9c0): the getter is `lea eax,[field+0x14]` on
+// [self+0x14] -- wait, the getter reads [ecx+0x14] and the row then
+// dereferences the result, so the row returns *(*(field+0x14)).
+unsigned nxLockedDeref3824(void* self)
+	{
+	const unsigned char* p = reinterpret_cast<const unsigned char*>(self);
+	const unsigned char* field = *reinterpret_cast<const unsigned char* const*>(p + 0x14);
+	unsigned ptr;
+	memcpy(&ptr, field + 0x14, 4);
+	unsigned v;
+	memcpy(&v, reinterpret_cast<const unsigned char*>(static_cast<size_t>(ptr)), 4);
+	return v;
+	}
+
+// phys_fn_003872 (0x8d1f0, ret 4): the getter is `lea eax,[field+8]`; the row
+// copies twelve dwords from it into out and returns out.
+void* nxLockedCopy12_3872(void* self, unsigned* out)
+	{
+	const unsigned char* p = reinterpret_cast<const unsigned char*>(self);
+	const unsigned char* field = *reinterpret_cast<const unsigned char* const*>(p + 0x14);
+	memcpy(out, field + 8, 48);
+	return out;
+	}
+
+// phys_fn_004479 (0xb0d20, ret 4): compares arg with [field+0x168] (field from
+// [self+0x18]) and returns SELF when they are equal, else zero -- the mask is
+// `and esi, ecx` with esi still holding this.
+unsigned nxLockedMatch4479(void* self, unsigned arg)
+	{
+	const unsigned char* p = reinterpret_cast<const unsigned char*>(self);
+	const unsigned char* field = *reinterpret_cast<const unsigned char* const*>(p + 0x18);
+	unsigned v;
+	memcpy(&v, field + 0x168, 4);
+	return (arg == v)
+		? static_cast<unsigned>(reinterpret_cast<size_t>(self))
+		: 0u;
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)

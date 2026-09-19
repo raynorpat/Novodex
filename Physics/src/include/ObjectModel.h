@@ -911,6 +911,30 @@ unsigned				nxFieldRead0418(void* self);
 //! to this read. `offset` names the helper's field.
 unsigned				nxLockedFieldRead(void* self, unsigned offset);
 
+//! The pointer-returning member of the same family: lock [self+0x10], call a
+//! `lea eax,[field+offset]` getter on [self+0x24], unlock, return the pointer.
+void*					nxLockedPointerRead(void* self, unsigned offset);
+
+//! Second variant of the family: the lock sits at [self+lockOff] and the field
+//! at [self+fieldOff], and the wrapped getter is a plain dword read of
+//! [field+dataOff]. Returns that word.
+unsigned				nxLockedFieldReadEx(void* self, unsigned lockOff,
+							unsigned fieldOff, unsigned dataOff);
+
+//! phys_fn_003824 (0x8c9c0): lock [self+0x10], take `lea eax,[field+0x14]` on
+//! [self+0x14], unlock, and return the word that pointer addresses.
+unsigned				nxLockedDeref3824(void* self);
+
+//! phys_fn_003872 (0x8d1f0, ret 4): lock [self+0x10], take
+//! `lea eax,[field+8]` on [self+0x14], copy twelve dwords from it to out,
+//! unlock, and return out.
+void*					nxLockedCopy12_3872(void* self, unsigned* out);
+
+//! phys_fn_004479 (0xb0d20, ret 4): lock [self+0x14], read [field+0x168] with
+//! field from [self+0x18], unlock, and return arg when it equals that word,
+//! else zero.
+unsigned				nxLockedMatch4479(void* self, unsigned arg);
+
 //! phys_fn_000713: recursive path compression over the record chain -- each
 //! record caches its group root at +0x1e8, self-parented at the root.
 unsigned				nxBodyRecordFixRoot(void* rec);
