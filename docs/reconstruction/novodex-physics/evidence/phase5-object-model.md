@@ -3496,6 +3496,23 @@ facade mass wrappers that 3z117 identified as blocked, bringing the Task-3/4
 vtable-slot slate to 3 rows closed (001403, 001371, 001008). No gate,
 coverage-floor, or policy change.
 
+## 3z120. Plane slot-9 local AABB closes (001255)
+
+Round 104 profiled the slate for call-free rows and closed the largest of
+them: 001255 (0x25090, PLANE vtable slot 9, 315 bytes, ZERO calls). It is the
+plane's local AABB. After masking the normal's sign bits, an axis-aligned
+normal (|n| == 1.0f on exactly one axis) selects that axis: a non-positive
+component writes the distance into the MIN side ([esp+0x10]/[esp+0x14] or
+out[2]), a positive one writes the negated distance into the MAX side
+([esp+4]/[esp+8]/[esp+0xc]); the untouched axes keep the +/- 0x7effffff
+sentinel, and out[2] carries the -0x7effffff (0xfeffffff) const unless the
+normal is -Z, where the const is popped and the distance loaded instead.
+Candidate nxPlaneLocalAABB1255 verified byte-exact across 7 normals (all six
+axis directions plus an oblique one) x 2 distances (build/r104.log planeaabb
+failures=0). 001255 moves to `reconstructed` -- the fourth Task-3/4 vtable
+slot closed (001403, 001371, 001008, 001255). No gate, coverage-floor, or
+policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
