@@ -13679,6 +13679,71 @@ int wmain(int argc, wchar_t** argv)
 	nxUnbindLockApi(base, svLf);
 	printf("lockhelperF candidate failures=%u provisional=1\n", lff);
 	}
+	// -- Destructor-chain rows: 001589 (via 004803), 004415 and 004764 (via the
+	//    allocator singleton). Both flag arms each.
+	{
+	unsigned dc = 0;
+	// the 004803 allocator for 001589
+	void* allocVt[0x10 / 4 + 1]; memset(allocVt, 0, sizeof(allocVt));
+	allocVt[0xc / 4] = reinterpret_cast<void*>(&nxAllocFreeSeq);
+	unsigned char allocObj[0x20]; memset(allocObj, 0, sizeof(allocObj));
+	*(void**)(allocObj) = allocVt;
+	NxAllocPtrSaved svAp5 = nxBindAllocPtr(base, allocObj);
+	nxSetAllocator004803(allocObj);
+	// the allocator SINGLETON for 004415/004764
+	void* singleVt[0x18 / 4 + 1]; memset(singleVt, 0, sizeof(singleVt));
+	singleVt[0x14 / 4] = reinterpret_cast<void*>(&nxFreeRecorder);
+	unsigned char singleObj[0x20]; memset(singleObj, 0, sizeof(singleObj));
+	*(void**)(singleObj) = singleVt;
+	unsigned char holder[0x10]; memset(holder, 0, sizeof(holder));
+	*(void**)(holder) = singleObj;
+	NxAllocSaved svSing = nxBindAllocSlot(base, holder);
+	nxSetAllocFree(&nxFreeRecorder);
+
+	struct DcRow { unsigned rva; unsigned vtable; int viaSingleton; const char* name; };
+	static const DcRow kDc[] = {
+		{ 0x2eb20, 0,          0, "001589" },
+		{ 0xb0550, 0,          1, "004415" },
+		{ 0xb3980, 0x1011b558, 1, "004764" },
+	};
+	for(unsigned i = 0; i < sizeof(kDc) / sizeof(kDc[0]); ++i)
+	for(unsigned arm = 0; arm < 2; ++arm)
+		{
+		typedef void* (__thiscall* DcOracle)(void*, unsigned);
+		DcOracle fn = reinterpret_cast<DcOracle>(base + kDc[i].rva);
+		unsigned flags = arm ? 1u : 0u;
+		unsigned char self[0x80], selfC[0x80];
+		memset(self, 0, sizeof(self)); memset(selfC, 0, sizeof(selfC));
+		gFreeSeqN = 0; memset(gFreeSeq, 0, sizeof(gFreeSeq));
+		gFreeHits = 0; gFreeArg = nullptr;
+		void* ro = fn(self, flags);
+		unsigned nO = gFreeSeqN, hO = gFreeHits;
+		void* f0O = gFreeSeq[0];
+		gFreeSeqN = 0; memset(gFreeSeq, 0, sizeof(gFreeSeq));
+		gFreeHits = 0; gFreeArg = nullptr;
+		void* rc;
+		if(kDc[i].name[0] == '0' && kDc[i].rva == 0x2eb20)
+			rc = nxDtorOwnedThenFree1589(selfC, flags);
+		else
+			rc = nxDtorTeardownThenFree(selfC, flags, kDc[i].vtable);
+		unsigned nC = gFreeSeqN, hC = gFreeHits;
+		void* f0C = gFreeSeq[0];
+		unsigned freed = (kDc[i].viaSingleton != 0) ? hO : nO;
+		unsigned freedC = (kDc[i].viaSingleton != 0) ? hC : nC;
+		bool ok = (ro == self) && (rc == selfC)
+			&& (freed == freedC) && (freed == arm)
+			&& (memcmp(self, selfC, sizeof(self)) == 0);
+		if(!ok)
+			{fprintf(stderr,"dc %s arm=%u freed=%u freedC=%u\n",
+				kDc[i].name, arm, freed, freedC);++dc;}
+		(void) f0O; (void) f0C;
+		}
+	nxSetAllocFree(nullptr);
+	nxUnbindAllocSlot(base, svSing);
+	nxSetAllocator004803(nullptr);
+	nxUnbindAllocPtr(base, svAp5);
+	printf("dtorchain candidate failures=%u provisional=1\n", dc);
+	}
 
 
 
