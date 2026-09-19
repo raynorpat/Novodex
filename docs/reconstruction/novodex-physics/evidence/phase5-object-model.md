@@ -4164,6 +4164,44 @@ auditing stack buffers passed to oracle functions against what those rows
 actually write, rather than by bisecting layout. No gate, coverage-floor, or
 policy change.
 
+## 3z151. Root cause found and fixed: a test overrun, not a row property
+
+Round 134 found the out-of-bounds writer and fixed it, which both removed the
+layout sensitivity and un-blocked the four rows 3z149 had withdrawn.
+
+The diagnostic followed 3z150's plan exactly and was decisive. Printing the
+digest locals at the comparison site showed `boxrow locals od=0000cafe` --
+`oBoxRowDigest` held 0xCAFE, a marker value, instead of the recorded oracle
+digest 2f2dc4eb. Grepping for 0xCAFE led to line 3620, and the block there
+calls row 000557 (0x10840, 22 bytes) with `&node2` where `node2` was declared
+as a bare `unsigned`:
+
+    mov edx, dword ptr [ecx + 0x5a0]
+    mov eax, dword ptr [esp + 4]
+    mov dword ptr [eax + 0x10], edx     <-- writes 16 bytes past the argument
+    mov dword ptr [ecx + 0x5a0], eax
+    ret 4
+
+So the row writes `[arg+0x10]` while the test handed it a four-byte local,
+and the test even READ back `node2+0x10` expecting the old head. That is a
+16-byte out-of-bounds write straight into wmain's frame, landing on whichever
+of the digest locals happened to sit there -- which is precisely why the
+failure moved between `boxrow` and `boxrow3`, and why any unrelated edit
+(an added print, a canary loop, a whole new batch) could flip it.
+
+The fix is at the fixture, not the row: `node2` is now a 0x20-byte buffer, so
+the row's `[arg+0x10]` store and the test's read of it are both in bounds.
+With that in place the four withdrawn rows verify again AND boxrow/boxrow3
+both hold at ok=1 with `mismatches=1`, stable over three consecutive runs --
+including with the diagnostic print still present, which is the layout that
+previously provoked the failure. 000416, 000421, 003808 and 003806 are
+therefore re-closed on the 3z142/3z147 evidence, now backed by a harness whose
+frame is no longer being corrupted.
+
+This supersedes the "layout-sensitive harness defect" framing of 3z148/3z149:
+the defect was an ordinary out-of-bounds write in one test fixture. No gate,
+coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
