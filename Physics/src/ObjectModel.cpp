@@ -1886,6 +1886,29 @@ void nxVtCall1965(void* unused, void* obj)
 		reinterpret_cast<size_t>(unused)), 0xff00ffffu, 0u);
 	}
 
+// phys_fn_001237 (0x24db0): the slot takes `this` in ecx and no stack
+// arguments, which is the __fastcall layout for a one-argument function.
+unsigned nxLockedVtCall1237(void* self)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	unsigned char* obj = *reinterpret_cast<unsigned char**>(p + 0x18);
+	void** vt = *reinterpret_cast<void***>(obj);
+	typedef unsigned (__fastcall* SlotFn)(void*);
+	SlotFn fn = reinterpret_cast<SlotFn>(vt[0x44 / 4]);
+	return fn(obj);
+	}
+
+// phys_fn_001119 (0x23c50): the same dispatch through slot +0x3c, float result.
+float nxLockedVtCall1119(void* self)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	unsigned char* obj = *reinterpret_cast<unsigned char**>(p + 0x18);
+	void** vt = *reinterpret_cast<void***>(obj);
+	typedef float (__fastcall* SlotFn)(void*);
+	SlotFn fn = reinterpret_cast<SlotFn>(vt[0x3c / 4]);
+	return fn(obj);
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)

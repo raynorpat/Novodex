@@ -1009,6 +1009,15 @@ void					nxVtCall3924(void* self);
 //! phys_fn_001965 (0x4c000): dispatches [[obj]+0x2c](obj, arg1, 0xff00ffff, 0)
 //! where obj is the second argument; three arguments, callee-cleaned.
 void					nxVtCall1965(void* unused, void* obj);
+
+//! phys_fn_001237 (0x24db0): locks [self+0x14], calls vtable slot +0x44 of the
+//! object at [self+0x18] with `this` in ecx and no stack arguments, releases
+//! and returns the slot's value.
+unsigned				nxLockedVtCall1237(void* self);
+
+//! phys_fn_001119 (0x23c50): the same shape through slot +0x3c, whose result
+//! is a float returned in st(0).
+float					nxLockedVtCall1119(void* self);
 unsigned char			nxLockProbe0392(void* self);
 
 //! The mutex-guarded virtual dispatch family (31 rows): when the acquire of
