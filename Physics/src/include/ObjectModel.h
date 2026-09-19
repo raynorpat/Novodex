@@ -1060,6 +1060,14 @@ void*					nxDtorWithGlobal3938(void* self, unsigned flags);
 //! the low three bits set, and calls vtable slot +0x10 of the rest with the
 //! three row arguments. Returns 1 when every dispatched element returned
 //! non-zero, and 0 as soon as one returns zero (an empty array returns 1).
+//! phys_fn_004491 (0xb0f10): locks [self+0x14], calls the helper 004083 on
+//! [self+0x18] -- which reports whether the global word at [0x10127180] is
+//! non-zero -- releases, and returns that byte. The global is a plain data word
+//! the harness binds, so the candidate takes its value from
+//! nxSetGlobalFlag4491.
+void					nxSetGlobalFlag4491(unsigned value);
+unsigned char			nxLockedGlobalFlag4491(void* self);
+
 unsigned char			nxArrayVtCall3Args1024(void* self, unsigned a1, unsigned a2,
 							unsigned a3);
 

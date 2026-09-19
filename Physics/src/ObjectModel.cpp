@@ -2125,6 +2125,21 @@ unsigned char nxArrayVtCall3Args1024(void* self, unsigned a1, unsigned a2,
 	return 1;
 	}
 
+// phys_fn_004491 (0xb0f10): the lock-bracketed global-flag read. The helper
+// 004083 tests the data word at [0x10127180] and returns 0 or 1.
+static unsigned gNxGlobalFlag4491 = 0;
+
+void nxSetGlobalFlag4491(unsigned value)
+	{
+	gNxGlobalFlag4491 = value;
+	}
+
+unsigned char nxLockedGlobalFlag4491(void* self)
+	{
+	(void) self;
+	return gNxGlobalFlag4491 != 0u ? 1u : 0u;
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)
