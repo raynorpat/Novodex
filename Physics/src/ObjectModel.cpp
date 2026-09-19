@@ -2135,6 +2135,11 @@ void nxSetGlobalFlag4491(unsigned value)
 	gNxGlobalFlag4491 = value;
 	}
 
+unsigned nxGetGlobalFlag4491()
+	{
+	return gNxGlobalFlag4491;
+	}
+
 unsigned char nxLockedGlobalFlag4491(void* self)
 	{
 	(void) self;
@@ -2579,6 +2584,38 @@ void* nxDtorTeardownThenFree(void* self, unsigned flags, unsigned vtable)
 	if((flags & 1u) != 0u && gNxAllocFree != nullptr)
 		gNxAllocFree(self);
 	return self;
+	}
+
+// The tail-jmp mutex group.
+unsigned nxMutexGlobalStore(void* self, unsigned code, unsigned file,
+	unsigned line, unsigned expression)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	unsigned char* lock = *reinterpret_cast<unsigned char**>(p + 0x10);
+	if(!nxTryAcquireLock(lock))
+		{
+		if(gNxAssertReport)
+			gNxAssertReport(code, file, line, 0u, expression);
+		return 0u;
+		}
+	unsigned char* obj = *reinterpret_cast<unsigned char**>(p + 0x18);
+	unsigned v;
+	memcpy(&v, obj + 0x20, 4);
+	// 004081 stores it into the global word [0x10127180]
+	gNxGlobalFlag4491 = v;
+	// the row TAIL-JUMPS into the unlock, which ends `mov al, 1` -- so the
+	// success arm returns 1, not the value it stored
+	return 1u;
+	}
+
+void nxMutexLinkAdvance(void* self, unsigned objOff, unsigned srcOff,
+	unsigned dstOff)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	unsigned char* obj = *reinterpret_cast<unsigned char**>(p + objOff);
+	unsigned v;
+	memcpy(&v, obj + srcOff, 4);
+	memcpy(obj + dstOff, &v, 4);
 	}
 
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock

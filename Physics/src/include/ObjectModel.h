@@ -1066,6 +1066,7 @@ void*					nxDtorWithGlobal3938(void* self, unsigned flags);
 //! the harness binds, so the candidate takes its value from
 //! nxSetGlobalFlag4491.
 void					nxSetGlobalFlag4491(unsigned value);
+unsigned				nxGetGlobalFlag4491();
 unsigned char			nxLockedGlobalFlag4491(void* self);
 
 //! phys_fn_000342 (0xcb90, ret 0x10): report-once followed by a four-step
@@ -1205,6 +1206,15 @@ typedef float (__cdecl* NxGlobalFn2RetF)(unsigned, unsigned);
 //! through the allocator SINGLETON slot +0x14 -- 004764 stores the vtable
 //! 0x1011b558 first, 004415 stores none.
 void*					nxDtorOwnedThenFree1589(void* self, unsigned flags);
+//! The tail-jmp mutex group: these rows lock [self+0x10], do their work and
+//! TAIL-JUMP to the unlock helper 002366 rather than calling it. 004451 and
+//! its nine siblings call 004081 on [self+0x18], which stores [obj+0x20] into
+//! the global word [0x10127180]; 000323 and 000329 call 000563 on
+//! [self+0x24], which copies [obj+0x59c] to [obj+0x6bc].
+unsigned				nxMutexGlobalStore(void* self, unsigned code, unsigned file,
+							unsigned line, unsigned expression);
+void					nxMutexLinkAdvance(void* self, unsigned objOff,
+							unsigned srcOff, unsigned dstOff);
 void*					nxDtorTeardownThenFree(void* self, unsigned flags,
 							unsigned vtable);
 
