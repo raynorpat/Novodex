@@ -4371,6 +4371,32 @@ carry a recursive-mutex acquire (helper 002364) around the report -- 31 rows
 of that shape alone -- and are the next slate. No gate, coverage-floor, or
 policy change.
 
+## 3z157. Word-return accessors close (001207, 001061)
+
+Round 140 closed the two remaining lock-bracketed word accessors, which 3z145
+had deliberately left open as a "latent high-bits" risk. Re-reading the
+sequence shows the risk was not real:
+
+    mov ecx, dword ptr [esi + 0x18]
+    call 001285                 ; mov ax, word[ecx+0xd8]; ret
+    mov ecx, edi
+    mov esi, eax
+    call 002366                 ; the unlock helper
+    pop edi
+    mov ax, si                  ; masks to the low word
+    pop esi
+    ret
+
+The helper sets only ax, so eax's high half is whatever it was -- but the row
+calls the UNLOCK helper between capturing eax and masking it, and that helper
+ends in `mov al, 1` after its stub returns 1. eax is therefore 1 when the mask
+runs, so the high half is zero and the return is exactly the zero-extended
+word. Both rows verify on two word values each (build/r140.log wordrows
+failures=0): 001207 reads [field+0xd8] via helper 001285, 001061 reads
+[field+0xda] via helper 001293, both with the lock at [self+0x14] and the
+field at [self+0x18]. Candidate nxLockedWordRead. Both move to
+`reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
