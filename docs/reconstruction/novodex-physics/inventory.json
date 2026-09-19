@@ -67262,12 +67262,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/fluids/NpFluid.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1790",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12760",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via gate3708 differential (3z159): both arms failures=0, with the report slot, gate byte and lock API all bound",
       "notes": ""
     },
     {
