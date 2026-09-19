@@ -5055,6 +5055,44 @@ int wmain(int argc, wchar_t** argv)
 	printf("planeix6 candidate failures=%u provisional=1\n", pif);
 	}
 
+	// -- CAPSULE vtable slot 9 world AABB (001016, 0x22620, ret 4).
+	{
+	typedef void (__thiscall* CapAabbOracle)(void*, float*);
+	CapAabbOracle ca = reinterpret_cast<CapAabbOracle>(base + 0x22620);
+	unsigned caf = 0;
+	const float poses[4][3] = { {1,0,0}, {0,1,0}, {0,0,1}, {0.5f,-0.25f,0.75f} };
+	for(unsigned pi2 = 0; pi2 < 4; ++pi2)
+	for(unsigned vi = 0; vi < 2; ++vi)
+		{
+		unsigned char pb[0x120]; memset(pb, 0, sizeof(pb));
+		float hh = vi ? 1.25f : 2.0f, r = 0.5f;
+		float t[3] = { 1.0f, -2.0f, 0.75f };
+		// the row reads M[0][1] at +0x10, M[1][1] at +0x1c, M[2][1] at +0x28
+		memcpy(pb + 0x10, &poses[pi2][0], 4);
+		memcpy(pb + 0x1c, &poses[pi2][1], 4);
+		memcpy(pb + 0x28, &poses[pi2][2], 4);
+		memcpy(pb + 0xe0, &r, 4);
+		memcpy(pb + 0xe4, &hh, 4);
+		memcpy(pb + 0x30, &t[0], 4);
+		memcpy(pb + 0x34, &t[1], 4);
+		memcpy(pb + 0x38, &t[2], 4);
+		float outO[6], outC[6];
+		// seed both with the same existing AABB so the merge is exercised
+		for(unsigned i = 0; i < 6; ++i) { outO[i] = outC[i] = (i < 3) ? -10.0f : 10.0f; }
+		ca(pb, outO);
+		reinterpret_cast<CapsuleShape*>(pb)->nxCapsuleWorldAABB1016(outC);
+		if(memcmp(outO, outC, sizeof(outO)) != 0)
+			{
+			fprintf(stderr,"capaabb p=%u v=%u\n", pi2, vi);
+			for(unsigned i=0;i<6;++i) if(outO[i]!=outC[i])
+				fprintf(stderr,"  o[%u] o=%08x c=%08x\n", i,
+					*(unsigned*)(outO+i), *(unsigned*)(outC+i));
+			++caf;
+			}
+		}
+	printf("capaabb candidate failures=%u provisional=1\n", caf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
