@@ -153,6 +153,40 @@ static NxReportSaved nxBindReportSlot(const void* imageBase)
 	return sv;
 	}
 
+// The 003708 gate byte lives at [0x101263ac]; binding it lets the report arm
+// be driven as well as the shipped work arm.
+struct NxGateSaved { void* slot; void* page; DWORD prot; int ok; };
+
+static NxGateSaved nxBindGateSlot(const void* imageBase, unsigned char value)
+	{
+	NxGateSaved sv;
+	unsigned char* img = const_cast<unsigned char*>(
+		reinterpret_cast<const unsigned char*>(imageBase));
+	unsigned char* slot = img + 0x1263ac;
+	sv.slot = reinterpret_cast<void*>(*slot);
+	sv.page = reinterpret_cast<void*>(
+		reinterpret_cast<size_t>(img + 0x126000) & ~static_cast<size_t>(0xFFF));
+	sv.prot = 0; sv.ok = 0;
+	if(!VirtualProtect(sv.page, 0x2000, PAGE_READWRITE, &sv.prot))
+		return sv;
+	sv.ok = 1;
+	*slot = value;
+	return sv;
+	}
+
+static void nxUnbindGateSlot(const void* imageBase, const NxGateSaved& sv)
+	{
+	if(!sv.ok)
+		return;
+	unsigned char* img = const_cast<unsigned char*>(
+		reinterpret_cast<const unsigned char*>(imageBase));
+	DWORD t = 0;
+	VirtualProtect(sv.page, 0x2000, PAGE_READWRITE, &t);
+	*reinterpret_cast<unsigned char*>(img + 0x1263ac) = static_cast<unsigned char>(
+		reinterpret_cast<size_t>(sv.slot) & 0xffu);
+	VirtualProtect(sv.page, 0x2000, sv.prot, &t);
+	}
+
 static void nxUnbindReportSlot(const void* imageBase, const NxReportSaved& sv)
 	{
 	if(!sv.ok)
@@ -11589,6 +11623,52 @@ int wmain(int argc, wchar_t** argv)
 	nxUnbindLockApi(base, svW);
 	printf("wordrows candidate failures=%u provisional=1\n", wf_);
 	}
+	// -- Gated locked reader 003708: both arms, gate slot bound each way.
+	{
+	typedef unsigned (__thiscall* Gate3708Oracle)(void*);
+	Gate3708Oracle fn = reinterpret_cast<Gate3708Oracle>(base + 0x8b420);
+	NxReportSaved svG = nxBindReportSlot(base);
+	nxSetAssertReport(&nxReportRecorder);
+	NxLockApiSaved svGL = nxBindLockApi(base);
+	unsigned gf3708 = 0;
+	unsigned char lockObjG[0x40]; memset(lockObjG, 0, sizeof(lockObjG));
+	unsigned char subObjG[0x40]; memset(subObjG, 0, sizeof(subObjG));
+	*(void**)(lockObjG) = subObjG;
+	for(unsigned arm = 0; arm < 2; ++arm)
+		{
+		unsigned char value = (arm == 0) ? 1u : 0u;
+		NxGateSaved svGate = nxBindGateSlot(base, value);
+		nxSetGate3708(value);
+		unsigned char field[0x40]; memset(field, 0, sizeof(field));
+		unsigned char inner[0x60]; memset(inner, 0, sizeof(inner));
+		unsigned rv = 0x600D0000u + arm;
+		memcpy(inner + 0x38, &rv, 4);
+		*(void**)(field + 0x24) = inner;
+		unsigned char self[0x40]; memset(self, 0, sizeof(self));
+		*(void**)(self + 0x10) = lockObjG;
+		*(void**)(self + 0x14) = field;
+		unsigned char selfC[0x40]; memcpy(selfC, self, sizeof(self));
+		unsigned o[5];
+		gRepCount = 0; memset(gRepCap, 0, sizeof(gRepCap));
+		unsigned ro = fn(self);
+		memcpy(o, gRepCap, sizeof(o));
+		unsigned nO = gRepCount;
+		gRepCount = 0; memset(gRepCap, 0, sizeof(gRepCap));
+		unsigned rc = nxGuardedField3708(selfC);
+		unsigned c[5];
+		memcpy(c, gRepCap, sizeof(c));
+		unsigned nC = gRepCount;
+		if(ro != rc || nO != nC || memcmp(o, c, sizeof(o)) != 0)
+			{fprintf(stderr,"gate3708 arm=%u ro=%08x rc=%08x nO=%u nC=%u\n", arm, ro, rc, nO, nC);++gf3708;}
+		nxUnbindGateSlot(base, svGate);
+		}
+	nxSetGate3708(1u);
+	nxUnbindLockApi(base, svGL);
+	nxSetAssertReport(nullptr);
+	nxUnbindReportSlot(base, svG);
+	printf("gate3708 candidate failures=%u provisional=1\n", gf3708);
+	}
+
 
 
 		printf("layout candidate mismatches=%u mode=differential candidate_fold=%08x\n",
