@@ -4523,6 +4523,33 @@ same tuple, and the acquiring arm must hit the same vtable slot exactly once.
 All thirty-one move to `reconstructed`. No gate, coverage-floor, or policy
 change.
 
+## 3z162. Constant-argument virtual thunks close (9 rows)
+
+Round 145 re-ran the drivability filter with indirect `call [reg+off]` sites
+counted as bindable, which is now true because the 3z161 fixture supplies a
+vtable. That surfaced 52 rows, including a nine-row block of eight-byte
+thunks at 0xb0580..0xb0600, each of the form:
+
+    mov eax, dword ptr [ecx]
+    push <constant>
+    call dword ptr [eax + 0x4c]
+    ret
+
+The constants are 1, 5, 4, 0, 2, 3, 8, 6 and 7 -- one thunk per value, all
+dispatching through slot +0x4c. The call site pushes its argument and does not
+clean it, so the slot is a __stdcall one-argument function with `this` in ecx,
+exactly the shape 3z161 pinned.
+
+The drive gives the object a table whose +0x4c slot points at a recorder and
+compares, for each row, BOTH the hit count and the value the slot received.
+Candidate nxVtConstEx(self, slot, arg) covers all nine (build/r145.log vtconst
+failures=0). All nine move to `reconstructed`.
+
+The same scan lists roughly forty more rows now reachable through bound
+vtables -- including the remaining `R+bind`, `bind+vt` and `global+vt` shapes
+-- so this is the shape of the next several slates. No gate, coverage-floor,
+or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
