@@ -861,6 +861,12 @@ void*					nxActorVtThunk108(void* self, void* arg1, unsigned* out);
 void					nxBatchAppend3268(void* self, unsigned count,
 							const unsigned* indices);
 
+//! phys_fn_001030 (0x22bf0, ret 4): aggregates the local AABBs of the shape
+//! list at [self+0xe0]..[self+0xe4] into out[0..5] -- FLT_MAX/-FLT_MAX
+//! seeded, min on the low triple and max on the high triple, each shape
+//! contributing the 6-dword record selected by the PLANE slot-8 row.
+void					nxAggregateAABB1030(void* self, float* out);
+
 //! phys_fn_000713: recursive path compression over the record chain -- each
 //! record caches its group root at +0x1e8, self-parented at the root.
 unsigned				nxBodyRecordFixRoot(void* rec);

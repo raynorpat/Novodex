@@ -1319,6 +1319,39 @@ void nxBatchAppend3268(void* self, unsigned count, const unsigned* indices)
 	++*reinterpret_cast<unsigned*>(p + 0x18);
 	}
 
+// phys_fn_001030 (0x22bf0, ret 4): aggregate the local AABBs of the shape list
+// at [self+0xe0]..[self+0xe4] into out. Seeded FLT_MAX / -FLT_MAX; each shape
+// contributes the 6-dword record selected by the PLANE slot-8 row, merged
+// with min on the low triple and max on the high triple.
+void nxAggregateAABB1030(void* self, float* out)
+	{
+	const unsigned kMax = 0x7f7fffffu;		//  1.7014117e38
+	const unsigned kMin = 0xff7fffffu;		// -1.7014117e38
+	unsigned seed[6] = { kMax, kMax, kMax, kMin, kMin, kMin };
+	memcpy(out, seed, sizeof(seed));
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	unsigned* it = *reinterpret_cast<unsigned**>(p + 0xe0);
+	unsigned* end = *reinterpret_cast<unsigned**>(p + 0xe4);
+	const unsigned n = static_cast<unsigned>(
+		(reinterpret_cast<unsigned char*>(end) -
+		 reinterpret_cast<unsigned char*>(it)) >> 2);
+	for(unsigned i = 0; i < n; ++i)
+		{
+		unsigned char* shape = reinterpret_cast<unsigned char*>(it[i]);
+		unsigned rec[6];
+		memcpy(rec, seed, sizeof(rec));
+		reinterpret_cast<PlaneShape*>(shape)->nxPlaneIndexed6_1267(rec);
+		float f[6];
+		memcpy(f, rec, sizeof(f));
+		if(!(out[0] <= f[0])) out[0] = f[0];
+		if(!(out[1] <= f[1])) out[1] = f[1];
+		if(!(out[2] <= f[2])) out[2] = f[2];
+		if(out[3] <= f[3]) out[3] = f[3];
+		if(out[4] <= f[4]) out[4] = f[4];
+		if(out[5] <= f[5]) out[5] = f[5];
+		}
+	}
+
 // ---------------------------------------------------------------------------
 // Actor slate 5: the sleep-chain readers.
 
