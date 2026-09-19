@@ -3426,6 +3426,22 @@ CRT `_purecall` (handler global 0x1012851c, then abort), already tagged
 kind=compiler_artifact with a static proof. Gate stays honestly RED; no gate,
 coverage-floor, or policy change.
 
+## 3z116. First Task-3/4 vtable-slot row closes (001403, MESH slot 4)
+
+Round 101 began working the 86-row product vtable slate, profiling all 79
+unique slot rows by size and call count. The standout was 001403 (0x29190,
+MESH vtable slot 4, 152 bytes, ZERO calls): a fully self-contained
+transform-point that copies the 4 dwords at [[this+0xe0]+0x5c] into
+out[0..3], then overwrites out[0..2] with M*v + t (3x3 matrix at
+[this+0xc..0x2c], translation at [this+0x30..0x38]). Added candidate
+nxTransformPoint1403 (double-staged accumulation to reproduce the x87
+extended-precision rounding) and verified byte-exact (build/r101.log
+transpt1403 failures=0). Note: the initial drive faulted only because the
+test's `this` buffer was 0x40 bytes while the row reads [this+0xe0] -- a
+fixture bug, not a row property, so the earlier "sub esp frame rows always
+fault" hypothesis is too broad. 001403 moves to `reconstructed`. No gate,
+coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
