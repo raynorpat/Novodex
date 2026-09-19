@@ -13744,6 +13744,120 @@ int wmain(int argc, wchar_t** argv)
 	nxUnbindAllocPtr(base, svAp5);
 	printf("dtorchain candidate failures=%u provisional=1\n", dc);
 	}
+	// -- Tail-jmp mutex group: the ten 004081 rows plus 000323/000329.
+	{
+	NxReportSaved svTj = nxBindReportSlot(base);
+	nxSetAssertReport(&nxReportRecorder);
+	NxLockApiSaved svTjL = nxBindLockApi(base);
+	nxSetLockOwner(0x2222u);
+	// bind the global word the 004081 group writes
+	unsigned char* img = const_cast<unsigned char*>(
+		reinterpret_cast<const unsigned char*>(base));
+	DWORD oldP = 0;
+	void* gp = reinterpret_cast<void*>(
+		reinterpret_cast<size_t>(img + 0x127000) & ~static_cast<size_t>(0xFFF));
+	unsigned gOrig = 0;
+	int gOk = VirtualProtect(gp, 0x2000, PAGE_READWRITE, &oldP);
+	if(gOk) { gOrig = *reinterpret_cast<unsigned*>(img + 0x127180); }
+	unsigned tjf = 0;
+	struct TjRow { unsigned rva; unsigned file; unsigned line; const char* name; };
+	static const TjRow kTj[] = {
+		{ 0xb0890, 0x1011a794, 0x11, "004451" },
+		{ 0xb0ec0, 0x1011a8fc, 0x10, "004489" },
+		{ 0xb1390, 0x1011aa5c, 0x10, "004521" },
+		{ 0xb1860, 0x1011abbc, 0x10, "004551" },
+		{ 0xb1d00, 0x1011ad1c, 0x0f, "004581" },
+		{ 0xb2140, 0x1011ae7c, 0x10, "004607" },
+		{ 0xb2580, 0x1011afec, 0x0f, "004633" },
+		{ 0xb2ac0, 0x1011b15c, 0x10, "004665" },
+		{ 0xb2f00, 0x1011b2ec, 0x0e, "004691" },
+		{ 0xb3620, 0x1011b47c, 0x0f, "004741" },
+	};
+	for(unsigned i = 0; i < sizeof(kTj) / sizeof(kTj[0]); ++i)
+	for(unsigned arm = 0; arm < 2; ++arm)
+		{
+		typedef unsigned (__thiscall* TjOracle)(void*);
+		TjOracle fn = reinterpret_cast<TjOracle>(base + kTj[i].rva);
+		unsigned char lockObj[0x40]; memset(lockObj, 0, sizeof(lockObj));
+		unsigned char subObj[0x40]; memset(subObj, 0, sizeof(subObj));
+		*(void**)(lockObj) = subObj;
+		unsigned owner = (arm == 0) ? 0x2222u : 0x1111u;
+		memcpy(subObj + 0x1c, &owner, 4);
+		unsigned char obj[0x40]; memset(obj, 0, sizeof(obj));
+		unsigned v20 = 0x20200000u + i; memcpy(obj + 0x20, &v20, 4);
+		unsigned char self[0x40]; memset(self, 0, sizeof(self));
+		*(void**)(self + 0x10) = lockObj;
+		*(void**)(self + 0x18) = obj;
+		unsigned char selfC[0x40]; memcpy(selfC, self, sizeof(selfC));
+		unsigned char objC[0x40]; memcpy(objC, obj, sizeof(objC));
+		*(void**)(selfC + 0x18) = objC;
+		if(gOk) *reinterpret_cast<unsigned*>(img + 0x127180) = 0xDEAD0000u;
+		nxSetGlobalFlag4491(0xDEAD0000u);
+		unsigned o[5];
+		gRepCount = 0; memset(gRepCap, 0, sizeof(gRepCap));
+		unsigned ro = fn(self);
+		unsigned gO = gOk ? *reinterpret_cast<unsigned*>(img + 0x127180) : 0u;
+		memcpy(o, gRepCap, sizeof(o));
+		unsigned nO = gRepCount;
+		if(gOk) *reinterpret_cast<unsigned*>(img + 0x127180) = 0xDEAD0000u;
+		nxSetGlobalFlag4491(0xDEAD0000u);
+		gRepCount = 0; memset(gRepCap, 0, sizeof(gRepCap));
+		unsigned rc = nxMutexGlobalStore(selfC, 2u, kTj[i].file, kTj[i].line, 0x10104760u);
+		unsigned gC = nxGetGlobalFlag4491();
+		unsigned c[5];
+		memcpy(c, gRepCap, sizeof(c));
+		unsigned nC = gRepCount;
+		// on the report arm the row's return is whatever the report callee
+		// left in eax, so only the tuple is meaningful there
+		bool retOk = (arm == 0) ? (ro == rc && rc == 1u) : true;
+		if(!retOk || gO != gC || nO != nC || memcmp(o, c, sizeof(o)) != 0
+			|| nO != arm || (arm == 0 && gO != v20))
+			{fprintf(stderr,"tj %s arm=%u ro=%08x rc=%08x gO=%08x gC=%08x nO=%u nC=%u\n",
+				kTj[i].name, arm, ro, rc, gO, gC, nO, nC);++tjf;}
+		}
+	// 000323 / 000329
+	{
+	struct LaRow { unsigned rva; const char* name; };
+	struct LaRow2 { unsigned rva; unsigned srcOff; unsigned dstOff; const char* name; };
+	static const LaRow2 kLa[] = {
+		{ 0xc940, 0x59c, 0x6bc, "000323" },
+		{ 0xc9d0, 0x5a4, 0x6c0, "000329" },
+	};
+	for(unsigned i = 0; i < 2; ++i)
+		{
+		typedef void (__thiscall* LaOracle)(void*);
+		LaOracle fn = reinterpret_cast<LaOracle>(base + kLa[i].rva);
+		unsigned char lockObj[0x40]; memset(lockObj, 0, sizeof(lockObj));
+		unsigned char subObj[0x40]; memset(subObj, 0, sizeof(subObj));
+		*(void**)(lockObj) = subObj;
+		unsigned char obj[0x700]; memset(obj, 0, sizeof(obj));
+		unsigned vsrc = 0x59C00000u + i;
+		memcpy(obj + kLa[i].srcOff, &vsrc, 4);
+		unsigned char self[0x40]; memset(self, 0, sizeof(self));
+		*(void**)(self + 0x10) = lockObj;
+		*(void**)(self + 0x24) = obj;
+		unsigned char selfC[0x40]; memcpy(selfC, self, sizeof(selfC));
+		unsigned char objC[0x700]; memcpy(objC, obj, sizeof(objC));
+		*(void**)(selfC + 0x24) = objC;
+		fn(self);
+		nxMutexLinkAdvance(selfC, 0x24, kLa[i].srcOff, kLa[i].dstOff);
+		if(memcmp(obj, objC, sizeof(obj)) != 0)
+			{fprintf(stderr,"tj %s link mismatch\n", kLa[i].name);++tjf;}
+		}
+	}
+	if(gOk)
+		{
+		DWORD t2 = 0;
+		VirtualProtect(gp, 0x2000, PAGE_READWRITE, &t2);
+		*reinterpret_cast<unsigned*>(img + 0x127180) = gOrig;
+		VirtualProtect(gp, 0x2000, oldP, &t2);
+		}
+	nxSetLockOwner(0x2222u);
+	nxUnbindLockApi(base, svTjL);
+	nxSetAssertReport(nullptr);
+	nxUnbindReportSlot(base, svTj);
+	printf("tailjmp candidate failures=%u provisional=1\n", tjf);
+	}
 
 
 
