@@ -5021,6 +5021,40 @@ int wmain(int argc, wchar_t** argv)
 	printf("actorthunk candidate failures=%u provisional=1\n", atf);
 	}
 
+	// -- PLANE vtable slot 8 indexed-record copy (001267, 0x25490, ret 4).
+	{
+	typedef void (__thiscall* PlaneIx6Oracle)(void*, unsigned*);
+	PlaneIx6Oracle pi = reinterpret_cast<PlaneIx6Oracle>(base + 0x25490);
+	unsigned pif = 0;
+	// inner table: [this+0xc4] -> inner; inner+0x14 -> base array of 24-byte
+	// records; index from [this+0xa4+0x28].
+	unsigned char recs[3 * 24];
+	for(unsigned i = 0; i < 3 * 24; i += 4) *(unsigned*)(recs + i) = 0x55000000u + i;
+	unsigned char inner[0x20]; memset(inner, 0, sizeof(inner));
+	*(void**)(inner + 0x14) = recs;
+	unsigned char pb[0x100]; memset(pb, 0, sizeof(pb));
+	*(void**)(pb + 0xc4) = inner;
+	// skip the 004886 arm: set bit 2 at [0xa4+8]
+	pb[0xa4 + 8] = 2;
+	for(unsigned idx = 0; idx < 3; ++idx)
+		{
+		unsigned short w = static_cast<unsigned short>(idx);
+		memcpy(pb + 0xa4 + 0x28, &w, 2);
+		unsigned outO[8], outC[8];
+		memset(outO, 0, sizeof(outO)); memset(outC, 0, sizeof(outC));
+		pi(pb, outO);
+		reinterpret_cast<PlaneShape*>(pb)->nxPlaneIndexed6_1267(outC);
+		if(memcmp(outO, outC, 24) != 0)
+			{
+			fprintf(stderr,"planeix6 idx=%u\n", idx);
+			for(unsigned i=0;i<6;++i) if(outO[i]!=outC[i])
+				fprintf(stderr,"  o[%u] o=%08x c=%08x\n", i, outO[i], outC[i]);
+			++pif;
+			}
+		}
+	printf("planeix6 candidate failures=%u provisional=1\n", pif);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
