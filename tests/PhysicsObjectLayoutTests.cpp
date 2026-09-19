@@ -33,6 +33,7 @@
 
 // The reconstruction under test (Phase 5 Task 1/2 rows).
 #include "ObjectModel.h"
+#include "MemoryStream.h"
 // nxSetSdkAllocatorBridge: the candidate's growth arms must allocate from
 // the same emulator arena the oracle's shim serves (see NxTestArenaAllocator).
 #include "PhysicsInternal.h"
@@ -157,6 +158,12 @@ static void __fastcall nxChain10(void* node)
 	memcpy(&id, reinterpret_cast<unsigned char*>(node) + 0x20, 4);
 	gChain[gChainN++] = id;
 	}
+
+// 005382 dispatches to vtable +0x14 with the stream as its only argument.
+static unsigned gStore5382Hits;
+static void* gStore5382Arg;
+static unsigned __stdcall nxStore5382Slot(void* arg)
+	{ gStore5382Arg = arg; ++gStore5382Hits; return 0x5EED0000u; }
 
 // The per-element loop passes one stack argument and leaves `this` in ecx; the
 // stub records the argument and the call count.
@@ -12871,6 +12878,45 @@ int wmain(int argc, wchar_t** argv)
 				garm, chainLen, nO, nC, aO, aC);++chf;}
 		}
 	printf("chain4763 candidate failures=%u provisional=1\n", chf);
+	}
+	// -- Store-then-dispatch 005382: real MemoryStream objects on each side,
+	//    both the null and non-null dispatch arms, comparing the stream state.
+	{
+	typedef unsigned (__thiscall* T5382)(void*, void*);
+	T5382 fn = reinterpret_cast<T5382>(base + 0xe9440);
+	unsigned sf = 0;
+	for(unsigned arm = 0; arm < 2; ++arm)
+	for(unsigned vi = 0; vi < 2; ++vi)
+		{
+		unsigned value = (vi == 0) ? 0x00000004u : 0x00000006u;
+		unsigned char bufO[0x100], bufC[0x100];
+		memset(bufO, 0, sizeof(bufO)); memset(bufC, 0, sizeof(bufC));
+		MemoryStream msO(0x40, bufO);
+		MemoryStream msC(0x40, bufC);
+		void* vt[0x18 / 4 + 1]; memset(vt, 0, sizeof(vt));
+		vt[0x14 / 4] = reinterpret_cast<void*>(&nxStore5382Slot);
+		unsigned char obj[0x20]; memset(obj, 0, sizeof(obj));
+		*(void**)(obj) = vt;
+		unsigned char self[0x40]; memset(self, 0, sizeof(self));
+		memcpy(self + 8, &value, 4);
+		*(void**)(self + 0x10) = (arm == 0) ? nullptr : obj;
+		unsigned char selfC[0x40]; memcpy(selfC, self, sizeof(selfC));
+		gStore5382Hits = 0; gStore5382Arg = nullptr;
+		unsigned ro = fn(self, &msO);
+		unsigned hO = gStore5382Hits;
+		void* aO = gStore5382Arg;
+		gStore5382Hits = 0; gStore5382Arg = nullptr;
+		unsigned rc = nxStoreOrDispatch5382(selfC, &msC);
+		unsigned hC = gStore5382Hits;
+		void* aC = gStore5382Arg;
+		unsigned lenO = msO.getLength(), lenC = msC.getLength();
+		if(ro != rc || hO != hC || lenO != lenC
+			|| memcmp(bufO, bufC, sizeof(bufO)) != 0
+			|| (arm == 1 && (hO != 1u || aO != &msO || aC != &msC)))
+			{fprintf(stderr,"store5382 arm=%u vi=%u ro=%08x rc=%08x hO=%u hC=%u len=%u/%u\n",
+				arm, vi, ro, rc, hO, hC, lenO, lenC);++sf;}
+		}
+	printf("store5382 candidate failures=%u provisional=1\n", sf);
 	}
 
 

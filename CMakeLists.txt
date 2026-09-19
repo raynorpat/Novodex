@@ -259,6 +259,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# failing for them. See evidence/phase5-object-model.md.
 	add_executable(NxPhysicsObjectLayoutTests tests/PhysicsObjectLayoutTests.cpp
 		Physics/src/ObjectModel.cpp Physics/src/Containers.cpp
+		Physics/src/MemoryStream.cpp
 		Physics/src/Geometry.cpp
 		Physics/src/opcode/IcePrunable.cpp
 		Physics/src/ThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp)
