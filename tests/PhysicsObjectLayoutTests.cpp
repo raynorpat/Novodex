@@ -5108,6 +5108,33 @@ int wmain(int argc, wchar_t** argv)
 	printf("globzero2 candidate failures=%u provisional=1\n", gzf);
 	}
 
+	// -- Pose copy with tail 000827 (0x1bcc0, ret 0xc).
+	{
+	typedef void (__thiscall* PoseCopy827Oracle)(void*, const void*, const unsigned*, unsigned);
+	PoseCopy827Oracle pc827 = reinterpret_cast<PoseCopy827Oracle>(base + 0x1bcc0);
+	unsigned pcf = 0;
+	for(unsigned ci = 0; ci < 3; ++ci)
+		{
+		unsigned char ob[0x40], cb[0x40];
+		for(unsigned w = 0; w < 0x40; ++w) ob[w] = cb[w] = static_cast<unsigned char>(0x90u + w);
+		unsigned src[9];
+		for(unsigned i = 0; i < 9; ++i) src[i] = 0x66000000u + i + ci;
+		unsigned extra[3] = { 0x77000001u + ci, 0x77000002u + ci, 0x77000003u + ci };
+		unsigned xv = 0x88000000u + ci;
+		pc827(ob, src, extra, xv);
+		reinterpret_cast<BoxShape*>(cb)->nxPoseCopyWithTail0827(src, extra, xv);
+		if(memcmp(ob, cb, 0x34) != 0)
+			{
+			fprintf(stderr,"posecopy827 ci=%u\n", ci);
+			for(unsigned i = 0; i < 0x34; i += 4) if(*(unsigned*)(ob+i)!=*(unsigned*)(cb+i))
+				fprintf(stderr,"  w%02x o=%08x c=%08x\n", i,
+					*(unsigned*)(ob+i), *(unsigned*)(cb+i));
+			++pcf;
+			}
+		}
+	printf("posecopy827 candidate failures=%u provisional=1\n", pcf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
