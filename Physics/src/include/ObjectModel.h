@@ -872,6 +872,12 @@ void					nxAggregateAABB1030(void* self, float* out);
 //! read and write order; the mapping is simply dst[k] = (float)src[k].
 void					nxDoubleToFloat9_2156(void* self, float* out);
 
+//! phys_fn_000046 (0x24c0, actor_dynamic slot, ret 4): gathers the descriptor
+//! record at [[self+0x14]+8] into out -- nine dwords from record+0xdc, three
+//! from record+0x100, then the tail fields, with square roots of the three
+//! floats at +0xd8/+0xd0/+0xd4. Returns true, or false when no record exists.
+bool					nxGatherDescriptor0046(void* self, unsigned* out);
+
 //! phys_fn_000713: recursive path compression over the record chain -- each
 //! record caches its group root at +0x1e8, self-parented at the root.
 unsigned				nxBodyRecordFixRoot(void* rec);

@@ -1319,6 +1319,46 @@ void nxBatchAppend3268(void* self, unsigned count, const unsigned* indices)
 	++*reinterpret_cast<unsigned*>(p + 0x18);
 	}
 
+// phys_fn_000046 (0x24c0, ret 4): gather the descriptor record at
+// [[self+0x14]+8] into out. Nine dwords come from record+0xdc, three more
+// from record+0x100, then the tail fields; out[25], out[27] and out[28] are
+// the square roots of the floats at record+0xd8, +0xd0 and +0xd4. The row
+// returns false (and writes nothing) when the record pointer is null. The
+// lock pair it calls around the body is a no-op for this output.
+bool nxGatherDescriptor0046(void* self, unsigned* out)
+	{
+	const unsigned char* p = reinterpret_cast<const unsigned char*>(self);
+	const unsigned char* body = *reinterpret_cast<const unsigned char* const*>(p + 0x14);
+	const unsigned char* rec = *reinterpret_cast<const unsigned char* const*>(body + 8);
+	if(rec == nullptr)
+		return false;
+	unsigned char* o = reinterpret_cast<unsigned char*>(out);
+	memcpy(o + 0x00, rec + 0xdc, 36);		// out[0..8]
+	memcpy(o + 0x24, rec + 0x100, 12);		// out[9..11]
+	static const unsigned kFields[13] = {
+		0x18c, 0x190, 0x194, 0x188, 0x6c, 0x70, 0x74,
+		0x78, 0x7c, 0x80, 0x84, 0xb8, 0xbc };
+	for(unsigned i = 0; i < 13; ++i)
+		{
+		unsigned v; memcpy(&v, rec + kFields[i], 4);
+		memcpy(o + (12u + i) * 4u, &v, 4);		// out[12..24]
+		}
+	float d8; memcpy(&d8, rec + 0xd8, 4);
+	const float r8 = static_cast<float>(sqrt(static_cast<double>(d8)));
+	memcpy(o + 25u * 4u, &r8, 4);				// out[25]
+	unsigned f26; memcpy(&f26, rec + 0x10c, 4);
+	memcpy(o + 26u * 4u, &f26, 4);				// out[26]
+	float d0; memcpy(&d0, rec + 0xd0, 4);
+	const float r0 = static_cast<float>(sqrt(static_cast<double>(d0)));
+	memcpy(o + 27u * 4u, &r0, 4);				// out[27]
+	float d4; memcpy(&d4, rec + 0xd4, 4);
+	const float r4 = static_cast<float>(sqrt(static_cast<double>(d4)));
+	memcpy(o + 28u * 4u, &r4, 4);				// out[28]
+	unsigned f29; memcpy(&f29, rec + 0x110, 4);
+	memcpy(o + 29u * 4u, &f29, 4);				// out[29]
+	return true;
+	}
+
 // phys_fn_002156 (0x538e0, ret 4): nine doubles at [self+0x18] (8-byte stride)
 // to nine floats at out. The row's interleaved fld/fstp schedule reads
 // d0,d3,d6 / d1,d4,d7 / d2,d5,d8 and writes +0,+0xc,+0x18 / +4,+0x10,+0x1c /
