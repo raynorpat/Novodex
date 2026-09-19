@@ -3387,6 +3387,22 @@ compared by RVA-normalized slot (not raw address). That is the definitive
 remaining Task-3/4 scope and the sole blocker to Phase-5 GREEN; the gate
 stays honestly RED until it lands. No gate, coverage-floor, or policy change.
 
+Quantified slot-to-census breakdown (round 99): mapping each table slot's
+oracle word (minus the image base) to its census row shows the remaining
+work is dominated by non-reconstructed slot rows --
+- shape_base: 5 reconstructed / 7 discovered;
+- box: 8 reconstructed / 4 discovered;
+- capsule: 7 reconstructed / 4 discovered / 1 dynamically_gated;
+- plane: 7 reconstructed / 4 discovered / 1 dynamically_gated;
+- sphere: 8 reconstructed / 3 discovered / 1 dynamically_gated;
+- mesh: 5 reconstructed / 7 discovered;
+- actor_interface: 84 of 87 slots are the purecall stub 0x0f41dc (3 real);
+- actor_dynamic: 88 slots, all 88 distinct real methods.
+So Task 3-4 requires reconstructing ~29 shape-final slot rows plus the
+actor_dynamic 88-slot body (and the 3 real actor_interface slots) before a
+candidate vtable identity can match. This is a >100-row scope, which is why
+the Phase-5 gate is RED and must stay RED until that slate is worked.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
