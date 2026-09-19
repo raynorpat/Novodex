@@ -221,6 +221,10 @@ static void __cdecl nxGc2Recorder(unsigned a, unsigned b)
 static unsigned __cdecl nxGc2RetRecorder(unsigned a, unsigned b)
 	{ gGc2A = a; gGc2B = b; ++gGc2Hits; return 0x2B2B0000u; }
 
+// the float-returning variant for the 42-byte siblings
+static float __cdecl nxGc2RetRecorderF(unsigned a, unsigned b)
+	{ gGc2A = a; gGc2B = b; ++gGc2Hits; return 3.5f; }
+
 // Lock-API-global recorders for the second blocker batch.
 static unsigned g2371Arg;
 static void __stdcall nx2371Stub(unsigned a) { g2371Arg = a; }
@@ -13624,6 +13628,56 @@ int wmain(int argc, wchar_t** argv)
 	nxUnbindRegistry(base, svLhR);
 	nxUnbindLockApi(base, svLh);
 	printf("lockhelper candidate failures=%u provisional=1\n", lhf);
+	}
+	// -- Float-returning lock-bracketed helper rows: 003724, 003728, 003732,
+	//    003774, 003776.
+	{
+	struct LfRow { unsigned rva; unsigned slotRva; int viaField4; const char* name; };
+	static const LfRow kLf[] = {
+		{ 0x8b8b0, 0x1265bc, 0, "003724" },
+		{ 0x8b990, 0x126440, 0, "003728" },
+		{ 0x8ba70, 0x1263b4, 0, "003732" },
+		{ 0x8c120, 0x12649c, 0, "003774" },
+		{ 0x8c150, 0x126570, 0, "003776" },
+	};
+	NxLockApiSaved svLf = nxBindLockApi(base);
+	unsigned lff = 0;
+	for(unsigned i = 0; i < sizeof(kLf) / sizeof(kLf[0]); ++i)
+		{
+		typedef float (__thiscall* LfOracle)(void*);
+		LfOracle fn = reinterpret_cast<LfOracle>(base + kLf[i].rva);
+		NxFnPtrSaved svF = nxBindFnPtr(base, kLf[i].slotRva,
+			reinterpret_cast<void*>(&nxGc2RetRecorderF));
+		unsigned char lockObj[0x40]; memset(lockObj, 0, sizeof(lockObj));
+		unsigned char subObj[0x40]; memset(subObj, 0, sizeof(subObj));
+		*(void**)(lockObj) = subObj;
+		unsigned char obj[0x100], objC[0x100];
+		memset(obj, 0, sizeof(obj)); memset(objC, 0, sizeof(objC));
+		unsigned tag = 0x7B7B0000u, v80 = 0x81810000u;
+		memcpy(obj + 0x30, &tag, 4); memcpy(obj + 0x80, &v80, 4);
+		memcpy(objC + 0x30, &tag, 4); memcpy(objC + 0x80, &v80, 4);
+		*(void**)(obj + 4) = obj; *(void**)(objC + 4) = objC;
+		*(void**)(obj + 0x7c) = obj; *(void**)(objC + 0x7c) = objC;
+		unsigned char self[0x40]; memset(self, 0, sizeof(self));
+		*(void**)(self + 0x10) = lockObj;
+		*(void**)(self + 0x14) = obj;
+		unsigned char selfC[0x40]; memcpy(selfC, self, sizeof(selfC));
+		*(void**)(selfC + 0x14) = objC;
+		gGc2Hits = 0; gGc2A = 0; gGc2B = 0;
+		float ro = fn(self);
+		unsigned hO = gGc2Hits, aO = gGc2A, bO = gGc2B;
+		gGc2Hits = 0; gGc2A = 0; gGc2B = 0;
+		float rc = nxLockedHelperCallF(selfC, 0x10, 0x14, &nxGc2RetRecorderF,
+			kLf[i].viaField4);
+		unsigned hC = gGc2Hits, aC = gGc2A, bC = gGc2B;
+		if(memcmp(&ro, &rc, 4) != 0 || hO != hC || aO != aC || bO != bC
+			|| hO != 1u || aO != tag || bO != v80)
+			{fprintf(stderr,"lf %s ro=%08x rc=%08x hO=%u hC=%u aO=%08x aC=%08x\n",
+				kLf[i].name, *(unsigned*)&ro, *(unsigned*)&rc, hO, hC, aO, aC);++lff;}
+		nxUnbindFnPtr(base, kLf[i].slotRva, svF);
+		}
+	nxUnbindLockApi(base, svLf);
+	printf("lockhelperF candidate failures=%u provisional=1\n", lff);
 	}
 
 
