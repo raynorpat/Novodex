@@ -6576,12 +6576,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/178",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1084",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via assertrows differential (3z156): the captured (code, file, line, zero, expression) tuple matches failures=0, with report slot 0x101041b4 bound to a __cdecl recorder and guard slot 0x101041b0 pointed at non-zero memory",
       "notes": ""
     },
     {
@@ -7332,12 +7332,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/199",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1156",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via assertrows differential (3z156): the captured (code, file, line, zero, expression) tuple matches failures=0, with report slot 0x101041b4 bound to a __cdecl recorder and guard slot 0x101041b0 pointed at non-zero memory",
       "notes": ""
     },
     {
@@ -7368,12 +7368,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/200",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1158",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via assertrows differential (3z156): the captured (code, file, line, zero, expression) tuple matches failures=0, with report slot 0x101041b4 bound to a __cdecl recorder and guard slot 0x101041b0 pointed at non-zero memory",
       "notes": ""
     },
     {
@@ -67766,12 +67766,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/fluids/NpFluid.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1804",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12812",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via assertrows differential (3z156): the captured (code, file, line, zero, expression) tuple matches failures=0, with report slot 0x101041b4 bound to a __cdecl recorder and guard slot 0x101041b0 pointed at non-zero memory",
       "notes": ""
     },
     {
@@ -67838,12 +67838,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/fluids/NpFluid.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1806",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12820",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via assertrows differential (3z156): the captured (code, file, line, zero, expression) tuple matches failures=0, with report slot 0x101041b4 bound to a __cdecl recorder and guard slot 0x101041b0 pointed at non-zero memory",
       "notes": ""
     },
     {
@@ -67982,12 +67982,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/fluids/NpFluid.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1810",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12834",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via assertrows differential (3z156): the captured (code, file, line, zero, expression) tuple matches failures=0, with report slot 0x101041b4 bound to a __cdecl recorder and guard slot 0x101041b0 pointed at non-zero memory",
       "notes": ""
     },
     {
@@ -68054,12 +68054,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/fluids/NpFluid.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1812",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12838",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via assertrows differential (3z156): the captured (code, file, line, zero, expression) tuple matches failures=0, with report slot 0x101041b4 bound to a __cdecl recorder and guard slot 0x101041b0 pointed at non-zero memory",
       "notes": ""
     },
     {
@@ -68126,12 +68126,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/fluids/NpFluid.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1814",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12842",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via assertrows differential (3z156): the captured (code, file, line, zero, expression) tuple matches failures=0, with report slot 0x101041b4 bound to a __cdecl recorder and guard slot 0x101041b0 pointed at non-zero memory",
       "notes": ""
     },
     {
@@ -68162,12 +68162,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/fluids/NpFluid.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1815",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12844",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via assertrows differential (3z156): the captured (code, file, line, zero, expression) tuple matches failures=0, with report slot 0x101041b4 bound to a __cdecl recorder and guard slot 0x101041b0 pointed at non-zero memory",
       "notes": ""
     },
     {
@@ -68198,12 +68198,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/fluids/NpFluid.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1816",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12846",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via assertrows differential (3z156): the captured (code, file, line, zero, expression) tuple matches failures=0, with report slot 0x101041b4 bound to a __cdecl recorder and guard slot 0x101041b0 pointed at non-zero memory",
       "notes": ""
     },
     {
@@ -68234,12 +68234,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/fluids/NpFluid.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1817",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12848",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via assertrows differential (3z156): the captured (code, file, line, zero, expression) tuple matches failures=0, with report slot 0x101041b4 bound to a __cdecl recorder and guard slot 0x101041b0 pointed at non-zero memory",
       "notes": ""
     },
     {
@@ -68270,12 +68270,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/fluids/NpFluid.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1818",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12850",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via assertrows differential (3z156): the captured (code, file, line, zero, expression) tuple matches failures=0, with report slot 0x101041b4 bound to a __cdecl recorder and guard slot 0x101041b0 pointed at non-zero memory",
       "notes": ""
     },
     {
@@ -68306,12 +68306,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/fluids/NpFluid.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1819",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12852",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via assertrows differential (3z156): the captured (code, file, line, zero, expression) tuple matches failures=0, with report slot 0x101041b4 bound to a __cdecl recorder and guard slot 0x101041b0 pointed at non-zero memory",
       "notes": ""
     },
     {
@@ -70430,12 +70430,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/fluids/NpImplicitMesh.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1878",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12993",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via assertrows differential (3z156): the captured (code, file, line, zero, expression) tuple matches failures=0, with report slot 0x101041b4 bound to a __cdecl recorder and guard slot 0x101041b0 pointed at non-zero memory",
       "notes": ""
     },
     {
