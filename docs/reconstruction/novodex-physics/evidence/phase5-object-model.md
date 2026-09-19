@@ -5420,6 +5420,37 @@ One more detail: 000323 and 000329 look identical but call DIFFERENT helpers --
 
 All twelve move to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z192. A six-byte trampoline closes; two siblings are held back
+
+Round 175 re-ran the widened scan with tail-jmp rows accepted and closed one
+more (build/r175.log tailsmall failures=0):
+
+- 004387 (0xaf2c4) is six bytes: `jmp dword ptr [0x10104198]`. The whole row IS
+  the global call, forwarding its own `this` in ecx and its caller's stack
+  unchanged, so binding the slot to the same recorder the candidate is handed
+  makes the two indistinguishable -- and the hit count is what the drive
+  compares.
+
+Two siblings from the same scan were examined and DELIBERATELY held back, and
+the reason is worth recording because both look drivable at first glance:
+
+- 005111 (0xe1530) tests bits of [self+4] and, on the flag-passing arm, returns
+  a constant; otherwise it tail-calls 002134. My first model had the candidate
+  call a HOOK there, but 002134 is a FIXED row, not a bindable global -- so the
+  oracle runs the real body while the candidate runs the hook, and the
+  differential failed on three of four flag values (the arm that returns the
+  constant passed, which is exactly the misleading half-success that would
+  invite a wrong fix). Reaching it needs 002134's effect modelled.
+- 005214 (0xe5100) is `add ecx, 0x40; jmp 004847`, which needs 004847's effect
+  modelled for the same reason.
+
+The distinction is the one 3z182 drew: a tail call into a BINDABLE slot is
+free, a tail call into a FIXED row costs that row's semantics. The candidate
+and the recorder for both were removed rather than left in place unverified,
+and the tree is green.
+
+004387 moves to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
