@@ -4244,6 +4244,27 @@ over three consecutive runs. Five rows close:
 
 All five move to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z153. Ninth accessor batch: match-or-self and list advance (3 rows)
+
+Round 136 closed three more members (build/r136.log lockacc9 failures=0),
+adding a second return shape and a stateful one:
+
+- 001109 (0x23a90, ret 4) is the SAME match-or-self shape as 004479 but over
+  a different field: helper 001283 reads [field+0xd0] (field from
+  [self+0x18]) and the row returns SELF when the argument equals it, else
+  zero. Generalised into nxLockedMatchEx(fieldOff, dataOff, arg), which now
+  covers both +0x168 and +0xd0.
+- 000325 (0xc960) and 000331 (0xc9f0) are LIST-ADVANCE readers: helper 000567
+  pops the head at [field+0x6bc] and relinks it to [head+0x10] (000569 and
+  [field+0x6c0]/[head+0x18] for 000331), after which the row returns a field
+  of the popped head -- [head+0x48] and [head+0x20] respectively -- or zero
+  when the list is empty. Candidate nxLockedAdvanceRead. These are the first
+  members with a SIDE EFFECT on the field, so the drive checks both arms: the
+  empty-list arm returns zero, and the populated arm compares the returned
+  word AND the relinked head word on both sides.
+
+All three move to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
