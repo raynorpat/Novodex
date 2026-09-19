@@ -130,6 +130,19 @@ static void __stdcall nxRecOnce1(unsigned a) { gVtRec[0] = a; gVtRecN = 1; }
 static void __stdcall nxRecOnce2(unsigned a, unsigned b)
 	{ gVtRec[0] = a; gVtRec[1] = b; gVtRecN = 2; }
 
+// The four-step dispatch of 000342: each slot appends its id and arguments to
+// one sequence so the ORDER is compared as well as the arguments.
+static unsigned gSeq[4][4];
+static unsigned gSeqN;
+static void __stdcall nxSeq70(unsigned a, unsigned b, unsigned c)
+	{ gSeq[gSeqN][0] = 0x70; gSeq[gSeqN][1] = a; gSeq[gSeqN][2] = b; gSeq[gSeqN][3] = c; ++gSeqN; }
+static void __stdcall nxSeq100(unsigned a)
+	{ gSeq[gSeqN][0] = 0x100; gSeq[gSeqN][1] = a; ++gSeqN; }
+static void __stdcall nxSeq64()
+	{ gSeq[gSeqN][0] = 0x64; ++gSeqN; }
+static void __stdcall nxSeq108(unsigned a, unsigned b)
+	{ gSeq[gSeqN][0] = 0x108; gSeq[gSeqN][1] = a; gSeq[gSeqN][2] = b; ++gSeqN; }
+
 // The per-element loop passes one stack argument and leaves `this` in ecx; the
 // stub records the argument and the call count.
 static unsigned gLoopArg;
@@ -12715,6 +12728,74 @@ int wmain(int argc, wchar_t** argv)
 	nxSetGlobalFlag4491(0u);
 	nxUnbindLockApi(base, svFl);
 	printf("globalflag4491 candidate failures=%u provisional=1\n", flf);
+	}
+	// -- Report-once four-step dispatch 000342: both gate passes, comparing the
+	//    whole slot-call sequence and its arguments.
+	{
+	typedef void (__thiscall* T0342)(void*, unsigned, unsigned, unsigned, unsigned);
+	T0342 fn = reinterpret_cast<T0342>(base + 0xcb90);
+	NxReportSaved sv0342 = nxBindReportSlot(base);
+	nxSetAssertReport(&nxReportRecorder);
+	unsigned char* img = const_cast<unsigned char*>(
+		reinterpret_cast<const unsigned char*>(base));
+	DWORD oldProt = 0;
+	void* gatePage = reinterpret_cast<void*>(
+		reinterpret_cast<size_t>(img + 0x123000) & ~static_cast<size_t>(0xFFF));
+	unsigned char gateOrig = 0;
+	int gateOk = VirtualProtect(gatePage, 0x2000, PAGE_READWRITE, &oldProt);
+	if(gateOk)
+		{
+		gateOrig = *(img + 0x1237c3);
+		*(img + 0x1237c3) = 0;
+		}
+	static unsigned char gGate0342;
+	gGate0342 = 0;
+	void* vt[0x110 / 4 + 1]; memset(vt, 0, sizeof(vt));
+	vt[0x70 / 4] = reinterpret_cast<void*>(&nxSeq70);
+	vt[0x100 / 4] = reinterpret_cast<void*>(&nxSeq100);
+	vt[0x64 / 4] = reinterpret_cast<void*>(&nxSeq64);
+	vt[0x108 / 4] = reinterpret_cast<void*>(&nxSeq108);
+	unsigned char self[0x20]; memset(self, 0, sizeof(self));
+	*(void**)(self) = vt;
+	unsigned char selfC[0x20]; memcpy(selfC, self, sizeof(self));
+	unsigned f2 = 0;
+	for(unsigned pass = 0; pass < 2; ++pass)
+		{
+		unsigned o[5];
+		gRepCount = 0; memset(gRepCap, 0, sizeof(gRepCap));
+		gSeqN = 0; memset(gSeq, 0, sizeof(gSeq));
+		fn(self, 0x11u, 0x22u, 0x33u, 0x44u);
+		memcpy(o, gRepCap, sizeof(o));
+		unsigned nO = gRepCount, sO = gSeqN;
+		unsigned seqO[4][4];
+		memcpy(seqO, gSeq, sizeof(seqO));
+		gRepCount = 0; memset(gRepCap, 0, sizeof(gRepCap));
+		gSeqN = 0; memset(gSeq, 0, sizeof(gSeq));
+		nxOnceFourCalls0342(selfC, &gGate0342, 0x11u, 0x22u, 0x33u, 0x44u);
+		unsigned c[5];
+		memcpy(c, gRepCap, sizeof(c));
+		unsigned nC = gRepCount, sC = gSeqN;
+		if(nO != nC || memcmp(o, c, sizeof(o)) != 0 || sO != sC
+			|| memcmp(seqO, gSeq, sizeof(seqO)) != 0)
+			{
+			fprintf(stderr,"once0342 pass=%u nO=%u nC=%u sO=%u sC=%u\n", pass, nO, nC, sO, sC);
+			for(unsigned k = 0; k < 4; ++k)
+				fprintf(stderr,"  seq[%u] o=%03x %08x %08x %08x | c=%03x %08x %08x %08x\n", k,
+					seqO[k][0], seqO[k][1], seqO[k][2], seqO[k][3],
+					gSeq[k][0], gSeq[k][1], gSeq[k][2], gSeq[k][3]);
+			++f2;
+			}
+		}
+	if(gateOk)
+		{
+		DWORD t2 = 0;
+		VirtualProtect(gatePage, 0x2000, PAGE_READWRITE, &t2);
+		*(img + 0x1237c3) = gateOrig;
+		VirtualProtect(gatePage, 0x2000, oldProt, &t2);
+		}
+	nxSetAssertReport(nullptr);
+	nxUnbindReportSlot(base, sv0342);
+	printf("once0342 candidate failures=%u provisional=1\n", f2);
 	}
 
 
