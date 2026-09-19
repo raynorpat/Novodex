@@ -74,6 +74,16 @@ typedef void (__thiscall* NxBoxDtorFn)(void* self, unsigned flags);
 
 static unsigned gDtorFaultCode;
 static unsigned gDtorFaultAddr;
+
+// The Foundation lock API is reached through four globals in the oracle image
+// that hold placeholder RVAs at file time. Binding them to no-op stubs lets
+// the rows that bracket their bodies with the lock pair be driven; the locks
+// have no effect on those rows' outputs. The call sites push arguments and
+// never clean them, so the slots are __stdcall, not __cdecl.
+extern "C" int __stdcall nxLockStub1(void*) { return 1; }
+extern "C" int __stdcall nxLockStub3(void*, int, int) { return 1; }
+extern "C" int __stdcall nxLockStubQuery() { return 0x2222; }
+
 static void nxGuardedBoxDtor(NxBoxDtorFn fn, void* object, unsigned flags)
 	{
 	gDtorFaultCode = 0;
@@ -5270,6 +5280,74 @@ int wmain(int argc, wchar_t** argv)
 			}
 		}
 	printf("d2f9 candidate failures=%u provisional=1\n", d2fF);
+	}
+
+	// -- Slate row 000046: descriptor gather, with the Foundation lock API
+	//    bound to no-op stubs in the oracle image.
+	{
+	typedef bool (__thiscall* GatherOracle)(void*, unsigned*);
+	GatherOracle go = reinterpret_cast<GatherOracle>(base + 0x24c0);
+	unsigned char* img = const_cast<unsigned char*>(base);
+	void** g10 = reinterpret_cast<void**>(img + 0x104010);
+	void** g2c = reinterpret_cast<void**>(img + 0x10402c);
+	void** g44 = reinterpret_cast<void**>(img + 0x104044);
+	void** g14 = reinterpret_cast<void**>(img + 0x104014);
+	void* s10 = *g10, *s2c = *g2c, *s44 = *g44, *s14 = *g14;
+	// The pointer slots sit in a read-only page in the loaded image; the
+	// loader fills them before the page is protected, so unlocking is needed
+	// to bind them from here.
+	DWORD oldProt = 0;
+	void* pageBase = reinterpret_cast<void*>(
+		reinterpret_cast<size_t>(img + 0x104000) & ~static_cast<size_t>(0xFFF));
+	bool protOk = VirtualProtect(pageBase, 0x2000, PAGE_READWRITE, &oldProt) != 0;
+	*g10 = reinterpret_cast<void*>(&nxLockStub1);
+	*g2c = reinterpret_cast<void*>(&nxLockStub3);
+	*g44 = reinterpret_cast<void*>(&nxLockStubQuery);
+	*g14 = reinterpret_cast<void*>(&nxLockStub1);
+	DWORD tmp = 0;
+	if(protOk) VirtualProtect(pageBase, 0x2000, oldProt, &tmp);
+	unsigned gf046 = 0;
+	unsigned char rec[0x200]; memset(rec, 0, sizeof(rec));
+	for(unsigned i = 0; i < 0x200; i += 4) *(unsigned*)(rec + i) = 0x71000000u + i;
+	float sr[3] = { 4.0f, 9.0f, 16.0f };
+	memcpy(rec + 0xd0, &sr[0], 4); memcpy(rec + 0xd4, &sr[1], 4); memcpy(rec + 0xd8, &sr[2], 4);
+	// null-record arm must return false and write nothing
+	unsigned char lockObj[0x40]; memset(lockObj, 0, sizeof(lockObj));
+	unsigned char subObj[0x40]; memset(subObj, 0, sizeof(subObj));
+	*(void**)(lockObj) = subObj;
+	unsigned char shNull[0x20]; memset(shNull, 0, sizeof(shNull));
+	unsigned char bodyNull[0x20]; memset(bodyNull, 0, sizeof(bodyNull));
+	*(void**)(shNull + 0x10) = lockObj;
+	*(void**)(shNull + 0x14) = bodyNull;
+	unsigned probeOut[32]; memset(probeOut, 0xEE, sizeof(probeOut));
+	bool rNullO = go(shNull, probeOut);
+	bool rNullC = nxGatherDescriptor0046(shNull, probeOut);
+	if(rNullO || rNullC){fprintf(stderr,"gather0046 null arm o=%u c=%u\n", rNullO?1u:0u, rNullC?1u:0u);++gf046;}
+	// present arm
+	unsigned char sh[0x20]; memset(sh, 0, sizeof(sh));
+	unsigned char body[0x20]; memset(body, 0, sizeof(body));
+	*(void**)(body + 8) = rec;
+	*(void**)(sh + 0x10) = lockObj;
+	*(void**)(sh + 0x14) = body;
+	unsigned outO[32], outC[32];
+	memset(outO, 0, sizeof(outO)); memset(outC, 0, sizeof(outC));
+	bool rO = go(sh, outO);
+	bool rC = nxGatherDescriptor0046(sh, outC);
+	if(!rO || !rC || memcmp(outO, outC, sizeof(outO)) != 0)
+		{
+		fprintf(stderr,"gather0046 rO=%u rC=%u\n", rO?1u:0u, rC?1u:0u);
+		for(unsigned i = 0; i < 32; ++i) if(outO[i]!=outC[i])
+			fprintf(stderr,"  out[%u] o=%08x c=%08x\n", i, outO[i], outC[i]);
+		++gf046;
+		}
+	if(protOk)
+		{
+		DWORD t2 = 0;
+		VirtualProtect(pageBase, 0x2000, PAGE_READWRITE, &t2);
+		*g10 = s10; *g2c = s2c; *g44 = s44; *g14 = s14;
+		VirtualProtect(pageBase, 0x2000, oldProt, &t2);
+		}
+	printf("gather0046 candidate failures=%u provisional=1\n", gf046);
 	}
 
 	// -----------------------------------------------------------------------
