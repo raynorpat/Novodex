@@ -3686,6 +3686,36 @@ across three magnitude classes (unit, ~1e120, ~1e-300), so the double->float
 staging matches even at extremes (build/r114.log d2f9 failures=0). 002156
 moves to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z132. CRT artifacts cannot be promoted; 002241 is non-drivable
+
+Round 115 tried to close the chain that blocks the MESH slot-4 slate row
+001397. Two findings, one of them a convention correction:
+
+1. 005666 (0xf4140, 156 bytes) is the MSVC CRT `_dclass` floating-point
+   classifier, fully decoded: it masks the exponent field (0x7ff0) of the
+   double argument; the Inf/NaN arm defers to 0xf7f77 and maps its 1/2/3/4
+   result to 0x200/4/2/1; an exponent of zero with a non-zero mantissa yields
+   _FPCLASS_ND 0x10 or _FPCLASS_PD 0x80; otherwise the fucompp sign test
+   yields _FPCLASS_NN 0x20 / _FPCLASS_PZ 0x40 (not-greater) or _FPCLASS_NN
+   0x08 / _FPCLASS_PN 0x100 (greater or unordered). Its neighbour 005667 is
+   `_purecall`. Attempting to record either as `statically_reviewed` is
+   REJECTED by validate_inventory.py: "is a compiler artifact and must not
+   claim product source" and "nothing above 'reconstructed' is a claim a row
+   can make on its own". The change was reverted (inventory back to
+   unexplained=0 / data_objects=5138). So the 3554 compiler_artifact rows are
+   permanently out of scope by construction -- they are not reconstruction
+   backlog and cannot be promoted by hand.
+
+2. 002241 (0x54bb0, 692 bytes) is therefore NOT drivable either: besides its
+   twelve 005666 calls it makes two indirect calls, `call [0x10104164]` and
+   `call [0x101041b4]`, and those globals hold NON-CODE RVAs in the image
+   (0x1211f0 and 0x120f92, i.e. .data/.rdata addresses, not 0x100xxxxx code).
+   Driving it would jump outside .text. That blocks 001397 behind 002241.
+
+So the slate's remaining rows are blocked not only by size but by CRT
+artifacts and non-code global dispatch, both of which the harness cannot
+drive. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
