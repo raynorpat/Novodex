@@ -97577,12 +97577,12 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "store-then-dispatch row (0xe9440, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/2058",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18547",
-      "static_proof": "reached: its address is the .rdata word at 0x0011badc. The earlier proof -- no product translation unit reaches these bytes -- is false; P4 Task 3 re-derived it.",
-      "dynamic_proof": null,
+      "static_proof": "stores [self+8] into the MemoryStream passed as the argument through 004797 (MemoryStream::storeDword), then -- when [self+0x10] is non-null -- calls that object vtable slot +0x14 with the stream and returns the result; otherwise it returns bit 1 of ([self+8] >> 2); ret 4",
+      "dynamic_proof": "confirmed via store5382 differential (3z179): both dispatch arms across two stored values all failures=0, with real MemoryStream objects on each side and the return value, stream length and buffer contents all compared",
       "notes": "P4 Task 3: retyped from compiler_artifact; see evidence/phase4-artifact-retype.csv."
     },
     {
