@@ -1757,6 +1757,33 @@ unsigned nxLockedWordRead(void* self, unsigned lockOff, unsigned fieldOff,
 	return static_cast<unsigned>(w);
 	}
 
+// phys_fn_003708 (0x8b420): the gated locked reader. The image's gate byte is
+// non-zero, so the shipped path is the work arm; the mirror lets the harness
+// drive the report arm too.
+static unsigned char gNxGate3708 = 1u;
+
+void nxSetGate3708(unsigned char on)
+	{
+	gNxGate3708 = on;
+	}
+
+unsigned nxGuardedField3708(void* self)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	if(!gNxGate3708)
+		{
+		if(gNxAssertReport)
+			gNxAssertReport(0xceu, 0x101160ccu, 0x4cu, 0u, 0x10116170u);
+		return 0u;
+		}
+	unsigned char* field = *reinterpret_cast<unsigned char**>(p + 0x14);
+	unsigned r;
+	memcpy(&r, field + 0x24, 4);
+	unsigned v;
+	memcpy(&v, reinterpret_cast<const unsigned char*>(static_cast<size_t>(r)) + 0x38, 4);
+	return v;
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)

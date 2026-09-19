@@ -976,6 +976,15 @@ typedef void (__cdecl* NxAssertReportFn)(unsigned code, unsigned file,
 	unsigned line, unsigned zero, unsigned expression);
 void					nxSetAssertReport(NxAssertReportFn fn);
 
+//! phys_fn_003708 (0x8b420): gated locked reader. When the image gate byte
+//! [0x101263ac] is zero it reports assertion (0xce, 0x101160cc, 0x4c, 0,
+//! 0x10116170) and returns zero; otherwise it locks [self+0x10], reads
+//! [[self+0x14]+0x24], returns the word at [that+0x38] and unlocks. The
+//! candidate mirrors the gate through nxSetGate3708 so both arms can be
+//! driven against the same oracle slot.
+void					nxSetGate3708(unsigned char on);
+unsigned				nxGuardedField3708(void* self);
+
 //! The six pure assert-report rows: each reports its own file/line/expression
 //! constants through the hook and returns void. The message strings are fixed
 //! image data, so they are passed through unchanged.
