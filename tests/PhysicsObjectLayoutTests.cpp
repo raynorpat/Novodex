@@ -4926,6 +4926,40 @@ int wmain(int argc, wchar_t** argv)
 	printf("sphmass candidate failures=%u provisional=1\n", smf);
 	}
 
+	// -- CAPSULE vtable slot 4 mass wrapper (001008, 0x22440, ret 0xc).
+	{
+	typedef bool (__thiscall* CapMassOracle)(void*, void*, float, unsigned);
+	CapMassOracle cm = reinterpret_cast<CapMassOracle>(base + 0x22440);
+	unsigned cmf = 0;
+	for(unsigned low = 0; low < 8; ++low)
+	for(unsigned dc = 0; dc < 2; ++dc)
+		{
+		unsigned char sb[0x100]; memset(sb, 0, sizeof(sb));
+		unsigned short flags = static_cast<unsigned short>(8 | low);
+		memcpy(sb + 0xde, &flags, 2);
+		float r0 = 1.5f, r4 = 0.5f;
+		memcpy(sb + 0xe0, &r0, 4); memcpy(sb + 0xe4, &r4, 4);
+		unsigned char pose[0x24]; memset(pose, 0, sizeof(pose));
+		memcpy(sb + 0x6c, pose, sizeof(pose));
+		const float density = dc ? 2.0f : 1.0f;
+		MassFrame oF, cF;
+		memset(&oF, 0, sizeof(oF)); memset(&cF, 0, sizeof(cF));
+		bool oR = cm(sb, &oF, density, 0xdeadbeefu);
+		bool cR = reinterpret_cast<CapsuleShape*>(sb)->nxCapsuleAccumulateMass(
+			&cF, density, 0xdeadbeefu);
+		if(!oR || !cR || memcmp(&oF, &cF, sizeof(oF)) != 0)
+			{
+			fprintf(stderr,"capmass2 low=%u dc=%u oR=%u cR=%u\n", low, dc, oR?1u:0u, cR?1u:0u);
+			unsigned ow[13], cw[13];
+			memcpy(ow,&oF,sizeof(ow)); memcpy(cw,&cF,sizeof(cw));
+			for(unsigned i=0;i<13;++i) if(ow[i]!=cw[i])
+				fprintf(stderr,"  m[%u] o=%08x c=%08x\n", i, ow[i], cw[i]);
+			++cmf;
+			}
+		}
+	printf("capmass2 candidate failures=%u provisional=1\n", cmf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
