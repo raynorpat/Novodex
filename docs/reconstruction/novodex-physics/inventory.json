@@ -28590,12 +28590,12 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "owned-pointer deleting destructor (0x2ea80u, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/625",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4236",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via ownedptr differential (3z181): eight combinations -- both rows by owned-pointer present/absent by both flag arms -- all failures=0, comparing the return, the object and the ordered sequence of freed blocks",
       "notes": ""
     },
     {
@@ -28626,12 +28626,12 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "owned-pointer deleting destructor (0x2ead0u, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/626",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4239",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via ownedptr differential (3z181): eight combinations -- both rows by owned-pointer present/absent by both flag arms -- all failures=0, comparing the return, the object and the ordered sequence of freed blocks",
       "notes": ""
     },
     {
