@@ -3552,6 +3552,25 @@ documented outcome for a phase whose differential, static-proof and
 coverage-line registries are still empty rather than a pass. No gate,
 coverage-floor, or policy change.
 
+## 3z124. Capsule slot-9 world AABB closes (001016)
+
+Round 108 closed the hardest call-free slate row: 001016 (0x22620, CAPSULE
+vtable slot 9, 419 bytes / 129 instructions, ZERO calls). It is the capsule's
+world AABB. The segment runs along local Y, so each world extent is
+M[i][1]*halfHeight (read at +0x10/+0x1c/+0x28). The row expands the LOWER
+endpoint (t - e) by +/- radius into out[0..2] and out[3..5], then merges the
+UPPER endpoint's +/- radius (A = (t+e)-r, B = (t+e)+r) with min on the low
+triple and max on the high triple. Two subtleties pinned against the oracle:
+(a) the max side of the initial store is `r + (t - e)`, not `(t + e) + r`;
+(b) the +0xc/+0x10 merge arms use `test ah,5 / jp`, which updates on
+`out <= B` (skipping the unordered case) -- a MAX, not an unconditional
+store, which the first drive caught at out[4] for the oblique pose. Candidate
+nxCapsuleWorldAABB1016 (double-staged accumulation) verified byte-exact
+across 4 poses x 2 halfHeights with a seeded existing AABB (build/r108.log
+capaabb2 failures=0). 001016 moves to `reconstructed` -- the EIGHTH Task-3/4
+vtable slot (001403, 001371, 001008, 001255, 000038, 000040, 001267, 001016).
+No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
