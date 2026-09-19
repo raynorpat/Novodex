@@ -12081,6 +12081,68 @@ int wmain(int argc, wchar_t** argv)
 	nxUnbindAllocSlot(base, svAl);
 	printf("dtor2142 candidate failures=%u provisional=1\n", df);
 	}
+	// -- Mutex-guarded direct-call family: group A calls 001329, group B calls
+	//    the bare-ret no-op 004248. Both arms each.
+	{
+	struct MdRow { unsigned rva; unsigned code; unsigned file; unsigned line; const char* name; };
+	static const MdRow kMdB[] = {
+		{ 0xb0a50, 0x2u, 0x1011a794u, 0x028u, "004461" },
+		{ 0xb0ab0, 0x2u, 0x1011a794u, 0x02fu, "004463" },
+		{ 0xb0b10, 0x2u, 0x1011a794u, 0x036u, "004465" },
+		{ 0xb0b70, 0x2u, 0x1011a794u, 0x03du, "004467" },
+	};
+	NxReportSaved svMd = nxBindReportSlot(base);
+	nxSetAssertReport(&nxReportRecorder);
+	NxLockApiSaved svMdL = nxBindLockApi(base);
+	nxSetLockOwner(0x2222u);
+	unsigned mdf = 0;
+		{
+		const MdRow* rows = kMdB;
+		const unsigned n = sizeof(kMdB) / sizeof(kMdB[0]);
+		for(unsigned i = 0; i < n; ++i)
+		for(unsigned arm = 0; arm < 2; ++arm)
+			{
+			typedef void (__thiscall* MdOracle)(void*, unsigned);
+			MdOracle fn = reinterpret_cast<MdOracle>(base + rows[i].rva);
+			unsigned char lockObj[0x40]; memset(lockObj, 0, sizeof(lockObj));
+			unsigned char subObj[0x40]; memset(subObj, 0, sizeof(subObj));
+			*(void**)(lockObj) = subObj;
+			unsigned owner = (arm == 0) ? 0x2222u : 0x1111u;
+			memcpy(subObj + 0x1c, &owner, 4);
+			unsigned char obj[0x200]; memset(obj, 0, sizeof(obj));
+			unsigned char self[0x40]; memset(self, 0, sizeof(self));
+			*(void**)(self + 0x10) = lockObj;
+			*(void**)(self + 0x18) = obj;
+			unsigned char selfC[0x40]; memcpy(selfC, self, sizeof(self));
+			unsigned char objC[0x200]; memcpy(objC, obj, sizeof(objC));
+			unsigned o[5];
+			gRepCount = 0; memset(gRepCap, 0, sizeof(gRepCap));
+			fn(self, 0x00050003u);
+			memcpy(o, gRepCap, sizeof(o));
+			unsigned nO = gRepCount;
+			gRepCount = 0; memset(gRepCap, 0, sizeof(gRepCap));
+			nxMutexNoopEx(selfC, rows[i].code, rows[i].file, rows[i].line, 0x10104760u);
+			unsigned c[5];
+			memcpy(c, gRepCap, sizeof(c));
+			unsigned nC = gRepCount;
+			if(nO != nC || memcmp(o, c, sizeof(o)) != 0
+				|| memcmp(obj, objC, sizeof(obj)) != 0)
+				{
+				fprintf(stderr,"mutexdirect %s arm=%u nO=%u nC=%u\n",
+					rows[i].name, arm, nO, nC);
+				for(unsigned k = 0; k < sizeof(obj); ++k)
+					if(obj[k] != objC[k])
+						{ fprintf(stderr,"  obj[%03x] o=%02x c=%02x\n", k, obj[k], objC[k]); break; }
+				++mdf;
+			}
+			}
+		}
+	nxSetLockOwner(0x2222u);
+	nxUnbindLockApi(base, svMdL);
+	nxSetAssertReport(nullptr);
+	nxUnbindReportSlot(base, svMd);
+	printf("mutexdirect candidate failures=%u provisional=1\n", mdf);
+	}
 
 
 
