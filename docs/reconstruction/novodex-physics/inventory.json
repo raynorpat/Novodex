@@ -18834,12 +18834,12 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpBoxShape.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/415",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3144",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexdirect differential (3z168): both arms failures=0 for all five rows, with the report slot and lock API bound and the work helper 001329 driven through ShapeBase::nxApplyGroup",
       "notes": ""
     },
     {
@@ -19518,12 +19518,12 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpCapsuleShape.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/433",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3188",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexdirect differential (3z168): both arms failures=0 for all five rows, with the report slot and lock API bound and the work helper 001329 driven through ShapeBase::nxApplyGroup",
       "notes": ""
     },
     {
@@ -20382,12 +20382,12 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpPlaneShape.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/454",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3241",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexdirect differential (3z168): both arms failures=0 for all five rows, with the report slot and lock API bound and the work helper 001329 driven through ShapeBase::nxApplyGroup",
       "notes": ""
     },
     {
@@ -21030,12 +21030,12 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpSphereShape.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/471",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3284",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexdirect differential (3z168): both arms failures=0 for all five rows, with the report slot and lock API bound and the work helper 001329 driven through ShapeBase::nxApplyGroup",
       "notes": ""
     },
     {
@@ -21750,12 +21750,12 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpTriangleMeshShape.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/489",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3330",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexdirect differential (3z168): both arms failures=0 for all five rows, with the report slot and lock API bound and the work helper 001329 driven through ShapeBase::nxApplyGroup",
       "notes": ""
     },
     {
