@@ -22650,12 +22650,12 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "PLANE vtable slot 9 local AABB (0x25090, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/615",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3384",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "axis-aligned normal selects that axis and writes +/- distance there; other axes keep +/- 0x7effffff; out[2] carries the 0xfeffffff sentinel unless the normal is -Z, where it carries the distance",
+      "dynamic_proof": "confirmed via planeaabb differential (3z120): 7 normals x 2 distances failures=0",
       "notes": ""
     },
     {
