@@ -1479,6 +1479,37 @@ unsigned nxLockedBitExtract(void* self, unsigned fieldOff, unsigned dataOff)
 	return (v >> 3) & 3u;
 	}
 
+// The element-count member: `mov eax,[ecx+8]; sub eax,[ecx+4]; sar eax,2`.
+int nxLockedElementCount(void* self, unsigned fieldOff)
+	{
+	const unsigned char* p = reinterpret_cast<const unsigned char*>(self);
+	const unsigned char* field = *reinterpret_cast<const unsigned char* const*>(p + fieldOff);
+	unsigned hi, lo;
+	memcpy(&hi, field + 8, 4);
+	memcpy(&lo, field + 4, 4);
+	return static_cast<int>(static_cast<signed>(hi - lo) >> 2);
+	}
+
+// The interval-flag member: returns [field+0x14] when the span from it to
+// [field+0x18] carries any bit above the low two, else zero.
+unsigned nxLockedIntervalFlag(void* self, unsigned fieldOff)
+	{
+	const unsigned char* p = reinterpret_cast<const unsigned char*>(self);
+	const unsigned char* field = *reinterpret_cast<const unsigned char* const*>(p + fieldOff);
+	unsigned lo, hi;
+	memcpy(&lo, field + 0x14, 4);
+	memcpy(&hi, field + 0x18, 4);
+	return ((hi - lo) & 0xfffffffcu) ? lo : 0u;
+	}
+
+// The address-returning member.
+void* nxLockedFieldAddress(void* self, unsigned fieldOff, unsigned dataOff)
+	{
+	const unsigned char* p = reinterpret_cast<const unsigned char*>(self);
+	const unsigned char* field = *reinterpret_cast<const unsigned char* const*>(p + fieldOff);
+	return const_cast<unsigned char*>(field + dataOff);
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)

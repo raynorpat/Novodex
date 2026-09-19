@@ -957,6 +957,19 @@ unsigned				nxLockedAndRead(void* self, unsigned fieldOff,
 unsigned				nxLockedBitExtract(void* self, unsigned fieldOff,
 							unsigned dataOff);
 
+//! The element-count member: helper 003477 returns
+//! ([field+8] - [field+4]) >> 2, the signed element count of a buffer.
+int						nxLockedElementCount(void* self, unsigned fieldOff);
+
+//! The interval-flag member: helper 003479 returns [field+0x14] when the
+//! difference ([field+0x18] - [field+0x14]) has any bit above the low two,
+//! else zero.
+unsigned				nxLockedIntervalFlag(void* self, unsigned fieldOff);
+
+//! The address-returning member: helper 000929 is `lea eax,[ecx+0xe4]`.
+void*					nxLockedFieldAddress(void* self, unsigned fieldOff,
+							unsigned dataOff);
+
 //! phys_fn_000713: recursive path compression over the record chain -- each
 //! record caches its group root at +0x1e8, self-parented at the root.
 unsigned				nxBodyRecordFixRoot(void* rec);
