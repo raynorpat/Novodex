@@ -1268,6 +1268,57 @@ void* nxActorVtThunk104(void* self, void* arg1, unsigned* out)
 void* nxActorVtThunk108(void* self, void* arg1, unsigned* out)
 	{ return nxActorVtThunk(self, arg1, out, 0x108u); }
 
+// phys_fn_003268 (0x7e560, ret 8): batch index/vertex append. Bails when
+// [self+0x18] >= [self+0x1c]; accumulates (count-2) into [self+0x20]; records
+// the count in the [self+0x403c]/[self+0x4044] list when it has room; then for
+// each index below [self+0x10] copies the 3-dword vertex record through the
+// [self+8] map into the [self+0x4034]/[self+0x4038] output array (assigning a
+// fresh id when the map slot is zero) and appends id-1 to the aux list.
+void nxBatchAppend3268(void* self, unsigned count, const unsigned* indices)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	if(*reinterpret_cast<unsigned*>(p + 0x18) >=
+		*reinterpret_cast<unsigned*>(p + 0x1c))
+		return;
+	unsigned auxCount = *reinterpret_cast<unsigned*>(p + 0x403c);
+	*reinterpret_cast<unsigned*>(p + 0x20) += (count - 2);
+	if(auxCount < *reinterpret_cast<unsigned*>(p + 0x4040))
+		{
+		reinterpret_cast<unsigned*>(
+			*reinterpret_cast<void**>(p + 0x4044))[auxCount] = count;
+		++*reinterpret_cast<unsigned*>(p + 0x403c);
+		}
+	for(unsigned i = 0; i < count; ++i)
+		{
+		const unsigned idx = indices[i];
+		if(idx >= *reinterpret_cast<unsigned*>(p + 0x10))
+			continue;
+		unsigned* map = *reinterpret_cast<unsigned**>(p + 8);
+		unsigned slot = map[idx];
+		if(slot == 0)
+			{
+			const unsigned* verts = *reinterpret_cast<const unsigned**>(p + 0xc);
+			unsigned* outArr = *reinterpret_cast<unsigned**>(p + 0x4038);
+			unsigned outCount = *reinterpret_cast<unsigned*>(p + 0x4034);
+			const unsigned* src = verts + idx * 3u;
+			unsigned* dst = outArr + outCount * 3u;
+			dst[0] = src[0]; dst[1] = src[1]; dst[2] = src[2];
+			++outCount;
+			*reinterpret_cast<unsigned*>(p + 0x4034) = outCount;
+			map[idx] = outCount;
+			slot = outCount;
+			}
+		unsigned c2 = *reinterpret_cast<unsigned*>(p + 0x403c);
+		if(c2 < *reinterpret_cast<unsigned*>(p + 0x4040))
+			{
+			reinterpret_cast<unsigned*>(
+				*reinterpret_cast<void**>(p + 0x4044))[c2] = slot - 1u;
+			++*reinterpret_cast<unsigned*>(p + 0x403c);
+			}
+		}
+	++*reinterpret_cast<unsigned*>(p + 0x18);
+	}
+
 // ---------------------------------------------------------------------------
 // Actor slate 5: the sleep-chain readers.
 

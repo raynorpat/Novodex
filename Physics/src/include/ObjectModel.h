@@ -856,6 +856,11 @@ void*					nxActorGetPoseWords(void* self, void* out);
 void*					nxActorVtThunk104(void* self, void* arg1, unsigned* out);
 void*					nxActorVtThunk108(void* self, void* arg1, unsigned* out);
 
+//! phys_fn_003268 (0x7e560, ret 8): batch index/vertex append over the seven
+//! arrays at [self+8], +0xc, +0x10, +0x18, +0x1c, +0x20 and +0x4034..0x4044.
+void					nxBatchAppend3268(void* self, unsigned count,
+							const unsigned* indices);
+
 //! phys_fn_000713: recursive path compression over the record chain -- each
 //! record caches its group root at +0x1e8, self-parented at the root.
 unsigned				nxBodyRecordFixRoot(void* rec);
