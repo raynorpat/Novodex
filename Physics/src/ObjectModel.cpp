@@ -2078,9 +2078,11 @@ void MassFrame::nxMassFrameBuildSphere(float radius, const void* extra)
 	if(extra != nullptr)
 		{
 		// push extra; call 0x1bdc0 ; add extra,0x24 ; call 0x1c040 --
-		// the parallel-axis pair. Neither helper is transcribed yet; this
-		// arm is documented, not reproduced, and every drive passes null.
-		(void) extra;
+		// the parallel-axis pair, mirroring the BOX builder. A zero payload
+		// folds the inertia to zero, which is what the oracle's non-null
+		// arm produces (see 3z117/3z118).
+		nxMassFrameFoldPayload(extra);
+		nxMassFrameTranslate(reinterpret_cast<const unsigned char*>(extra) + 0x24);
 		}
 	}
 
@@ -2464,6 +2466,23 @@ unsigned BoxShape::nxWrap240(unsigned index)
 	return *reinterpret_cast<unsigned*>(slot + 0x6cc);
 	}
 
+// phys_fn_001371 (0x27be0, SPHERE vtable slot 4, ret 0xc): mirror of the BOX
+// slot-4 wrapper -- when the low flag bits are clear, run the sphere mass
+// helper on the facade radius and pose, then return true.
+bool SphereShape::nxSphereAccumulateMass(MassFrame* destination, float density,
+	unsigned reserved)
+	{
+	(void) reserved;
+	if(!mBase.nxFlagBitsDE(7))
+		{
+		const float radius = *reinterpret_cast<const float*>(
+			reinterpret_cast<const unsigned char*>(this) + 0xe0);
+		nxSphereComputeMassFrame(destination, density, radius,
+			reinterpret_cast<const unsigned char*>(this) + 0x6c);
+		}
+	return true;
+	}
+
 // phys_fn_001403 (0x29190, MESH vtable slot 4): copy [[this+0xe0]+0x5c][0..3]
 // into out[0..3], then out[0..2] = M * v + t, with the 3x3 matrix at
 // [this+0xc..0x2c] (rows) and the translation at [this+0x30..0x38]. The x87
@@ -2529,7 +2548,10 @@ void CapsuleShape::nxCapsuleComputeMassFrame(MassFrame* dest, float density,
 	local.nxMassFrameBuildCapsule(axisSelector, radius, cylHalfHeight);
 	if(extra != nullptr)
 		{
-		(void) extra;						// parallel-axis pair, see above
+		// Same parallel-axis pair as the sphere/box builders (see 3z118).
+		local.nxMassFrameFoldPayload(extra);
+		local.nxMassFrameTranslate(
+			reinterpret_cast<const unsigned char*>(extra) + 0x24);
 		}
 	if(density != gMassDensitySentinel)
 		local.nxMassFrameScale(density);

@@ -1027,6 +1027,13 @@ class SphereShape
 	void				nxSphereComputeMassFrame(MassFrame* dest, float density,
 							float radius, const void* extra);
 
+	//! SPHERE-table slot 4, phys_fn_001371 (0x27be0, ret 0xc): when the low
+	//! flag bits are clear, computes the sphere mass frame into the
+	//! destination from the facade radius [this+0xe0] and pose [this+0x6c];
+	//! always returns true.
+	bool				nxSphereAccumulateMass(MassFrame* destination,
+							float density, unsigned reserved);
+
 	//! SPHERE-table slot 11, phys_fn_001365 (0x000279b0): zeroes out[0..2],
 	//! radius to out[3].
 	void				nxSphereZeroCenterRadius(float* out) const;
