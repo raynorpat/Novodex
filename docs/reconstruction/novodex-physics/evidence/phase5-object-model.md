@@ -5083,6 +5083,37 @@ side-effect free -- too little to call a differential.
 Both closed rows move to `reconstructed`. No gate, coverage-floor, or policy
 change.
 
+## 3z181. Owned-pointer destructors close (001585, 001587)
+
+Round 164 closed the 72-byte pair 001585 (0x2ea80) and 001587 (0x2ead0).
+They are identical in shape and differ only in their vtable word and RVAs:
+
+    [esi] = <own vtable>                    ; 0x1010785c / 0x1010786c
+    eax = [esi+0xc]
+    if (eax == 0) goto SKIP
+      allocator = 004803()
+      allocator->vtable[+0xc]([esi+0xc])    ; free the OWNED pointer
+      [esi+0xc] = 0
+    SKIP:
+      call 001554(esi)                      ; stores the FIXED vtable 0x10107848
+    if ([esp+8] & 1)
+      allocator->vtable[+0xc](esi)          ; free self
+    mov eax, esi; ret 4
+
+Two details are easy to get wrong and both are pinned by the drive. First, the
+owned pointer is freed BEFORE the helper runs and the field is cleared, so a
+destructor run twice does not double-free -- and the helper 001554 then
+OVERWRITES the vtable stored at the top with the fixed 0x10107848, so the
+row's own vtable word is transient. Second, the row can free up to TWO blocks,
+so the recorder captures an ordered SEQUENCE rather than a single pointer, and
+the comparison covers the count and each element -- with the owned pointer and
+the self pointer each checked against THAT side's own buffer, since the two
+fixtures live at different addresses.
+
+Eight combinations verify (build/r164.log ownedptr failures=0): both rows, by
+owned pointer present and absent, by both flag arms. Both move to
+`reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
