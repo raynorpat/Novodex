@@ -5953,6 +5953,67 @@ int wmain(int argc, wchar_t** argv)
 	printf("lockacc5 candidate failures=%u provisional=1\n", b5f);
 	}
 
+	// -- Locked accessor sixth batch: copy+flag members and a three-pointer copy.
+	{
+	NxLockApiSaved svB6 = nxBindLockApi(base);
+	unsigned b6f = 0;
+	unsigned char lockObjC[0x40]; memset(lockObjC, 0, sizeof(lockObjC));
+	unsigned char subObjC[0x40]; memset(subObjC, 0, sizeof(subObjC));
+	*(void**)(lockObjC) = subObjC;
+	unsigned char field[0x800];
+	unsigned char sh[0x40];
+	struct CopyFlag { unsigned rva; unsigned dataOff; unsigned count; unsigned shift; const char* name; };
+	static const CopyFlag kCF[] = {
+		{ 0xb3240, 0x16c, 6, 0, "004711" },
+		{ 0xb3280, 0x184, 3, 1, "004715" },
+		{ 0xb3310, 0x190, 3, 2, "004719" },
+	};
+	for(unsigned ci = 0; ci < 3; ++ci)
+		{
+		typedef unsigned char (__thiscall* CopyFlagOracle)(void*, unsigned*);
+		CopyFlagOracle fn = reinterpret_cast<CopyFlagOracle>(base + kCF[ci].rva);
+		for(unsigned fl = 0; fl < 2; ++fl)
+			{
+			memset(field, 0, sizeof(field));
+			for(unsigned w = 0; w < 0x800; w += 4) *(unsigned*)(field + w) = 0xD0000000u + w;
+			unsigned flags = fl ? (1u << kCF[ci].shift) : 0u;
+			memcpy(field + 0x1a8, &flags, 4);
+			memset(sh, 0, sizeof(sh));
+			*(void**)(sh + 0x14) = lockObjC;
+			*(void**)(sh + 0x18) = field;
+			unsigned o[6], c[6];
+			memset(o, 0, sizeof(o)); memset(c, 0, sizeof(c));
+			unsigned char ro = fn(sh, o);
+			unsigned char rc = nxLockedCopyAndFlag(sh, 0x18, kCF[ci].dataOff,
+				kCF[ci].count, kCF[ci].shift, c);
+			if(memcmp(o, c, kCF[ci].count * 4u) != 0 || ro != rc
+				|| ro != static_cast<unsigned char>(fl))
+				{
+				fprintf(stderr,"b6 %s fl=%u ro=%u rc=%u\n", kCF[ci].name, fl, ro, rc);
+				++b6f;
+				}
+			}
+		}
+	// 000340: three out pointers
+	{
+	typedef void (__thiscall* ThreePtrOracle)(void*, unsigned*, unsigned*, unsigned*);
+	ThreePtrOracle fn = reinterpret_cast<ThreePtrOracle>(base + 0xcb50);
+	memset(field, 0, sizeof(field));
+	unsigned v1 = 0xA1A1A1A1u, v2 = 0xB2B2B2B2u, v3 = 0xC3C3C3C3u;
+	memcpy(field + 0x52c, &v1, 4); memcpy(field + 0x530, &v2, 4); memcpy(field + 0x534, &v3, 4);
+	memset(sh, 0, sizeof(sh));
+	*(void**)(sh + 0x10) = lockObjC;
+	*(void**)(sh + 0x24) = field;
+	unsigned o1=0,o2=0,o3=0,c1=0,c2=0,c3=0;
+	fn(sh, &o1, &o2, &o3);
+	nxLockedCopyThreePointers(sh, 0x24, &c1, &c2, &c3);
+	if(o1!=c1 || o2!=c2 || o3!=c3 || o1!=v1 || o2!=v2 || o3!=v3)
+		{fprintf(stderr,"b6 000340 o=%08x/%08x/%08x c=%08x/%08x/%08x\n", o1,o2,o3,c1,c2,c3);++b6f;}
+	}
+	nxUnbindLockApi(base, svB6);
+	printf("lockacc6 candidate failures=%u provisional=1\n", b6f);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
