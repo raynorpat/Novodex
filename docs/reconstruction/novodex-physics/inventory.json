@@ -18456,12 +18456,12 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "per-element virtual dispatch loop (0x22970, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/499",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3093",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via arrayloop differential (3z165): element counts 0, 1 and 2 all failures=0, comparing both the call count and the argument the slot received",
       "notes": ""
     },
     {
