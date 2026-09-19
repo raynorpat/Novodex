@@ -4725,6 +4725,22 @@ on comparison fields. The rule to carry forward: when copying a fixture for
 the candidate, re-point every internal pointer AT the copy, or both sides
 silently share one buffer. No gate, coverage-floor, or policy change.
 
+## 3z169. Two more lock-bracketed vtable rows close (004703, 001209)
+
+Round 152 generalised the 3z164 shape to a caller-chosen slot and closed two
+more rows of it:
+
+- 004703 (0xb3120) calls slot **+0x30** with `this` in ecx and no stack
+  arguments and returns the slot value -- the same shape as 001237 (+0x44),
+  which is why the dedicated candidate became the parameterised
+  nxLockedVtCallNoArg(self, slot).
+- 001209 (0x24960, ret 4) calls slot **+0x24** with `this` in ecx AND the row
+  argument on the stack, then releases -- nxLockedVtCallArg(self, slot, arg).
+
+Both verify against recorders that capture the object (or argument) they
+received and the hit count (build/r152.log vtcall slots failures=0). Both move
+to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
