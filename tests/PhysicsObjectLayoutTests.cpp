@@ -12085,6 +12085,13 @@ int wmain(int argc, wchar_t** argv)
 	//    the bare-ret no-op 004248. Both arms each.
 	{
 	struct MdRow { unsigned rva; unsigned code; unsigned file; unsigned line; const char* name; };
+	static const MdRow kMdA[] = {
+		{ 0x23040, 0x2u, 0x10106d94u, 0x00fu, "001043" },
+		{ 0x23610, 0x2u, 0x10106f0cu, 0x010u, "001081" },
+		{ 0x23d40, 0x2u, 0x1010707cu, 0x016u, "001129" },
+		{ 0x242e0, 0x2u, 0x101071e0u, 0x016u, "001165" },
+		{ 0x248d0, 0x2u, 0x1010734cu, 0x010u, "001205" },
+	};
 	static const MdRow kMdB[] = {
 		{ 0xb0a50, 0x2u, 0x1011a794u, 0x028u, "004461" },
 		{ 0xb0ab0, 0x2u, 0x1011a794u, 0x02fu, "004463" },
@@ -12096,9 +12103,11 @@ int wmain(int argc, wchar_t** argv)
 	NxLockApiSaved svMdL = nxBindLockApi(base);
 	nxSetLockOwner(0x2222u);
 	unsigned mdf = 0;
+	for(unsigned grp = 0; grp < 2; ++grp)
 		{
-		const MdRow* rows = kMdB;
-		const unsigned n = sizeof(kMdB) / sizeof(kMdB[0]);
+		const MdRow* rows = (grp == 0) ? kMdA : kMdB;
+		const unsigned n = (grp == 0) ? (sizeof(kMdA) / sizeof(kMdA[0]))
+			: (sizeof(kMdB) / sizeof(kMdB[0]));
 		for(unsigned i = 0; i < n; ++i)
 		for(unsigned arm = 0; arm < 2; ++arm)
 			{
@@ -12115,13 +12124,19 @@ int wmain(int argc, wchar_t** argv)
 			*(void**)(self + 0x18) = obj;
 			unsigned char selfC[0x40]; memcpy(selfC, self, sizeof(self));
 			unsigned char objC[0x200]; memcpy(objC, obj, sizeof(objC));
+			// selfC was copied AFTER self+0x18 was set, so it still points at
+			// obj -- re-point it at objC or both sides write the same buffer.
+			*(void**)(selfC + 0x18) = objC;
 			unsigned o[5];
 			gRepCount = 0; memset(gRepCap, 0, sizeof(gRepCap));
 			fn(self, 0x00050003u);
 			memcpy(o, gRepCap, sizeof(o));
 			unsigned nO = gRepCount;
 			gRepCount = 0; memset(gRepCap, 0, sizeof(gRepCap));
-			nxMutexNoopEx(selfC, rows[i].code, rows[i].file, rows[i].line, 0x10104760u);
+			if(grp == 0)
+				nxMutexApplyGroupEx(selfC, 0x00050003u, rows[i].code, rows[i].file, rows[i].line, 0x10104760u);
+			else
+				nxMutexNoopEx(selfC, rows[i].code, rows[i].file, rows[i].line, 0x10104760u);
 			unsigned c[5];
 			memcpy(c, gRepCap, sizeof(c));
 			unsigned nC = gRepCount;
@@ -12142,6 +12157,32 @@ int wmain(int argc, wchar_t** argv)
 	nxSetAssertReport(nullptr);
 	nxUnbindReportSlot(base, svMd);
 	printf("mutexdirect candidate failures=%u provisional=1\n", mdf);
+	}
+	// -- Direct probe of 001329 (ShapeBase::nxApplyGroup) against its
+	//    candidate: this is the field the 3z167 divergence pointed at.
+	{
+	typedef void (__thiscall* ApplyGroupOracle)(void*, unsigned short);
+	ApplyGroupOracle ag = reinterpret_cast<ApplyGroupOracle>(base + 0x26d90);
+	unsigned agf = 0;
+	for(unsigned gi = 0; gi < 3; ++gi)
+		{
+		unsigned short grp = (gi == 0) ? 3u : ((gi == 1) ? 0x21u : 0u);
+		unsigned char a[0x200], b[0x200];
+		memset(a, 0, sizeof(a)); memset(b, 0, sizeof(b));
+		unsigned char aCopy[0x200]; memcpy(aCopy, a, sizeof(a));
+		ag(a, grp);
+		((ShapeBase*)b)->nxApplyGroup(grp);
+		if(memcmp(a, b, sizeof(a)) != 0)
+			{
+			unsigned k = 0;
+			while(k < sizeof(a) && a[k] == b[k]) ++k;
+			fprintf(stderr,"applygroup grp=%04x first diff at %03x o=%02x c=%02x (d8 o=%02x c=%02x)\n",
+				grp, k, a[k], b[k], a[0xd8], b[0xd8]);
+			++agf;
+			}
+		(void)aCopy;
+		}
+	printf("applygroup probe failures=%u provisional=1\n", agf);
 	}
 
 
