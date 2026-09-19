@@ -1037,7 +1037,10 @@ void*					nxScalarDeletingDtor2142(void* self, unsigned flags);
 //! family except that the work arm calls a direct helper instead of a vtable
 //! slot. 004461/004463/004465/004467 call 004248, which is a bare `ret 4`
 //! no-op, so their work arm has no observable beyond the release. The sibling
-//! group that calls 001329 is NOT modelled here -- see evidence 3z167.
+//! group (001043/001081/001129/001165/001205) calls 001329, which is
+//! ShapeBase::nxApplyGroup.
+void					nxMutexApplyGroupEx(void* self, unsigned arg, unsigned code,
+							unsigned file, unsigned line, unsigned expression);
 void					nxMutexNoopEx(void* self, unsigned code, unsigned file,
 							unsigned line, unsigned expression);
 unsigned char			nxLockProbe0392(void* self);

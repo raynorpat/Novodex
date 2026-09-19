@@ -1947,6 +1947,21 @@ void* nxScalarDeletingDtor2142(void* self, unsigned flags)
 	return self;
 	}
 
+void nxMutexApplyGroupEx(void* self, unsigned arg, unsigned code, unsigned file,
+	unsigned line, unsigned expression)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	unsigned char* lock = *reinterpret_cast<unsigned char**>(p + 0x10);
+	if(!nxTryAcquireLock(lock))
+		{
+		if(gNxAssertReport)
+			gNxAssertReport(code, file, line, 0u, expression);
+		return;
+		}
+	ShapeBase* obj = reinterpret_cast<ShapeBase*>(*reinterpret_cast<void**>(p + 0x18));
+	obj->nxApplyGroup(static_cast<unsigned short>(arg));
+	}
+
 void nxMutexNoopEx(void* self, unsigned code, unsigned file, unsigned line,
 	unsigned expression)
 	{
