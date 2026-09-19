@@ -1744,6 +1744,19 @@ void nxAssertReport003764() { nxAssertReport(0x101160ccu, 0x134u, 0x1011652cu); 
 void nxAssertReport003766() { nxAssertReport(0x101160ccu, 0x13eu, 0x10116564u); }
 void nxAssertReport003884() { nxAssertReport(0x1011681cu, 0x03au, 0x10116858u); }
 
+// The word member: the row's return is the zero-extended word because the
+// unlock helper leaves eax at 1 before the `mov ax,si` mask.
+unsigned nxLockedWordRead(void* self, unsigned lockOff, unsigned fieldOff,
+	unsigned dataOff)
+	{
+	(void) lockOff;
+	const unsigned char* p = reinterpret_cast<const unsigned char*>(self);
+	const unsigned char* field = *reinterpret_cast<const unsigned char* const*>(p + fieldOff);
+	unsigned short w;
+	memcpy(&w, field + dataOff, 2);
+	return static_cast<unsigned>(w);
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)

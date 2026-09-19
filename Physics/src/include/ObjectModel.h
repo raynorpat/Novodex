@@ -921,6 +921,13 @@ void*					nxLockedPointerRead(void* self, unsigned offset);
 unsigned				nxLockedFieldReadEx(void* self, unsigned lockOff,
 							unsigned fieldOff, unsigned dataOff);
 
+//! The word member: the wrapped helper is `mov ax,word[ecx+dataOff]`, and the
+//! row masks its own result with `mov ax,si` after the unlock helper has left
+//! eax at 1 -- so the whole return is the zero-extended word. Covers helper
+//! 001285 (+0xd8) and helper 001293 (+0xda).
+unsigned				nxLockedWordRead(void* self, unsigned lockOff,
+							unsigned fieldOff, unsigned dataOff);
+
 //! phys_fn_003824 (0x8c9c0): lock [self+0x10], take `lea eax,[field+0x14]` on
 //! [self+0x14], unlock, and return the word that pointer addresses.
 unsigned				nxLockedDeref3824(void* self);
