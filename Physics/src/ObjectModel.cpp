@@ -2537,6 +2537,27 @@ unsigned nxLockedHelperCall(void* self, unsigned lockOff, unsigned objOff,
 	return fn(first, b);
 	}
 
+// The float-returning lock-bracketed helper rows.
+float nxLockedHelperCallF(void* self, unsigned lockOff, unsigned objOff,
+	NxGlobalFn2RetF fn, int viaField4)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	unsigned char* obj = *reinterpret_cast<unsigned char**>(p + objOff);
+	unsigned char* q = obj;
+	if(viaField4 != 0)
+		{
+		unsigned inner;
+		memcpy(&inner, q + 4, 4);
+		q = reinterpret_cast<unsigned char*>(static_cast<size_t>(inner));
+		}
+	unsigned a, b;
+	memcpy(&a, q + 0x7c, 4);
+	memcpy(&b, q + 0x80, 4);
+	unsigned first;
+	memcpy(&first, reinterpret_cast<unsigned char*>(static_cast<size_t>(a)) + 0x30, 4);
+	return fn(first, b);
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)

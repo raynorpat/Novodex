@@ -1193,6 +1193,14 @@ unsigned				nxByteCountPlus18(void* self);
 //! family, whose hook and viaField4 flag are passed in (used by 003768,
 //! 003780 and 003892).
 typedef unsigned (__cdecl* NxGlobalFn2Ret)(unsigned, unsigned);
+//! The FLOAT-returning siblings of the lock-bracketed helper group: 003724,
+//! 003728, 003732, 003774 and 003776 lock [self+0x10], call a two-argument
+//! global-call thunk on [self+0x14], release, and return the thunk's float
+//! result. The hook and its viaField4 flag are passed in.
+typedef float (__cdecl* NxGlobalFn2RetF)(unsigned, unsigned);
+float					nxLockedHelperCallF(void* self, unsigned lockOff,
+							unsigned objOff, NxGlobalFn2RetF fn, int viaField4);
+
 unsigned				nxLockedHelperCall(void* self, unsigned lockOff,
 							unsigned objOff, int helperKind,
 							NxGlobalFn2Ret fn, int viaField4);
