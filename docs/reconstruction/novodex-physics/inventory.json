@@ -69026,12 +69026,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
-      "source": "locked three-dword copy accessor (0x8c5e0, ret 4)",
+      "state": "discovered",
+      "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1423",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12892",
       "static_proof": "locks [self+0x10], copies three dwords from [field+0x6c] (field from [self+0x14]) into the out argument, unlocks and returns out; ret 4",
-      "dynamic_proof": "confirmed via lockacc7 differential (3z147): failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
+      "dynamic_proof": null,
       "notes": ""
     },
     {
@@ -69062,12 +69062,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
-      "source": "locked nine-dword copy accessor (0x8c620, ret 4)",
+      "state": "discovered",
+      "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1424",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12893",
       "static_proof": "locks [self+0x10], copies nine dwords from [field+0x48] (field from [self+0x14]) into the out argument, unlocks and returns out; ret 4",
-      "dynamic_proof": "confirmed via lockacc7 differential (3z147): failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
+      "dynamic_proof": null,
       "notes": ""
     },
     {
