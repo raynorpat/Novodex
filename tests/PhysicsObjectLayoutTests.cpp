@@ -108,6 +108,64 @@ static NxCallbackSaved nxBindCallbackSlot(const void* imageBase)
 	return sv;
 	}
 
+// The assert report slot [0x101041b4] also holds a placeholder. The recorder
+// is __cdecl -- the call sites push five arguments and do `add esp, 0x14`.
+static unsigned gRepCap[5];
+static unsigned gRepCount;
+
+static void __cdecl nxReportRecorder(unsigned a1, unsigned a2, unsigned a3,
+	unsigned a4, unsigned a5)
+	{
+	gRepCap[0] = a1; gRepCap[1] = a2; gRepCap[2] = a3; gRepCap[3] = a4; gRepCap[4] = a5;
+	++gRepCount;
+	}
+
+extern "C" void __cdecl nxReportStub5(unsigned a1, unsigned a2, unsigned a3,
+	unsigned a4, unsigned a5)
+	{
+	nxReportRecorder(a1, a2, a3, a4, a5);
+	}
+
+// The guarded rows dereference [0x101041b0] first; that slot holds an
+// unrelocated RVA in the image, so it must be pointed at real memory whose
+// first word is non-zero or the row's int3 path is taken.
+static unsigned gAssertGuard = 1u;
+
+struct NxReportSaved { void* slot; void* guard; void* page; DWORD prot; int ok; };
+
+static NxReportSaved nxBindReportSlot(const void* imageBase)
+	{
+	NxReportSaved sv;
+	unsigned char* img = const_cast<unsigned char*>(
+		reinterpret_cast<const unsigned char*>(imageBase));
+	void** slot = reinterpret_cast<void**>(img + 0x1041b4);
+	void** guard = reinterpret_cast<void**>(img + 0x1041b0);
+	sv.slot = *slot;
+	sv.guard = *guard;
+	sv.page = reinterpret_cast<void*>(
+		reinterpret_cast<size_t>(img + 0x104000) & ~static_cast<size_t>(0xFFF));
+	sv.prot = 0; sv.ok = 0;
+	if(!VirtualProtect(sv.page, 0x2000, PAGE_READWRITE, &sv.prot))
+		return sv;
+	sv.ok = 1;
+	*slot = reinterpret_cast<void*>(&nxReportStub5);
+	*guard = reinterpret_cast<void*>(&gAssertGuard);
+	return sv;
+	}
+
+static void nxUnbindReportSlot(const void* imageBase, const NxReportSaved& sv)
+	{
+	if(!sv.ok)
+		return;
+	unsigned char* img = const_cast<unsigned char*>(
+		reinterpret_cast<const unsigned char*>(imageBase));
+	DWORD t = 0;
+	VirtualProtect(sv.page, 0x2000, PAGE_READWRITE, &t);
+	*reinterpret_cast<void**>(img + 0x1041b4) = sv.slot;
+	*reinterpret_cast<void**>(img + 0x1041b0) = sv.guard;
+	VirtualProtect(sv.page, 0x2000, sv.prot, &t);
+	}
+
 static void nxUnbindCallbackSlot(const void* imageBase, const NxCallbackSaved& sv)
 	{
 	if(!sv.ok)
@@ -6376,6 +6434,48 @@ int wmain(int argc, wchar_t** argv)
 	nxUnbindCallbackSlot(base, svCb2);
 	printf("wrap1787 candidate failures=%u provisional=1\n", w7f);
 	}
+	// -- Pure assert-report rows: bind the report slot and compare the
+	//    captured (code, file, line, zero, expression) tuples.
+	{
+	struct RepRow { unsigned rva; void (*candidate)(); const char* name; };
+	static const RepRow kRep[] = {
+		{ 0xcea0,  &nxAssertReport0364, "000364" },
+		{ 0xd900,  &nxAssertReport0408, "000408" },
+		{ 0xd930,  &nxAssertReport0410, "000410" },
+		{ 0x8bea0, &nxAssertReport3750, "003750" },
+		{ 0x8bf00, &nxAssertReport3754, "003754" },
+		{ 0x8c1e0, &nxAssertReport3782, "003782" },
+	};
+	NxReportSaved svRep = nxBindReportSlot(base);
+	nxSetAssertReport(&nxReportRecorder);
+	unsigned rf = 0;
+	for(unsigned i = 0; i < sizeof(kRep) / sizeof(kRep[0]); ++i)
+		{
+		typedef void (__thiscall* RepOracle)(void*);
+		RepOracle fn = reinterpret_cast<RepOracle>(base + kRep[i].rva);
+		unsigned char self[0x20]; memset(self, 0, sizeof(self));
+		unsigned o[5];
+		gRepCount = 0; memset(gRepCap, 0, sizeof(gRepCap));
+		fn(self);
+		memcpy(o, gRepCap, sizeof(o));
+		unsigned nO = gRepCount;
+		gRepCount = 0; memset(gRepCap, 0, sizeof(gRepCap));
+		kRep[i].candidate();
+		unsigned c[5];
+		memcpy(c, gRepCap, sizeof(c));
+		unsigned nC = gRepCount;
+		if(nO != 1 || nC != 1 || memcmp(o, c, sizeof(o)) != 0)
+			{
+			fprintf(stderr,"assertrow %s nO=%u nC=%u O=%08x %08x %08x %08x %08x C=%08x %08x %08x %08x %08x\n",
+				kRep[i].name, nO, nC, o[0],o[1],o[2],o[3],o[4], c[0],c[1],c[2],c[3],c[4]);
+			++rf;
+			}
+		}
+	nxSetAssertReport(nullptr);
+	nxUnbindReportSlot(base, svRep);
+	printf("assertrows candidate failures=%u provisional=1\n", rf);
+	}
+
 
 
 
