@@ -221,6 +221,7 @@ static void __cdecl nxGc2Recorder(unsigned a, unsigned b)
 static unsigned __cdecl nxGc2RetRecorder(unsigned a, unsigned b)
 	{ gGc2A = a; gGc2B = b; ++gGc2Hits; return 0x2B2B0000u; }
 
+
 // the float-returning variant for the 42-byte siblings
 static float __cdecl nxGc2RetRecorderF(unsigned a, unsigned b)
 	{ gGc2A = a; gGc2B = b; ++gGc2Hits; return 3.5f; }
@@ -13857,6 +13858,27 @@ int wmain(int argc, wchar_t** argv)
 	nxSetAssertReport(nullptr);
 	nxUnbindReportSlot(base, svTj);
 	printf("tailjmp candidate failures=%u provisional=1\n", tjf);
+	}
+	// -- Three small tail rows: 004387 (global trampoline), 005214 (shifted
+	//    tail call) and 005111 (flag select then tail call).
+	{
+	unsigned tr = 0;
+	// 004387: the row IS the global call
+	{
+	typedef void (__cdecl* T4387)(void);
+	T4387 fn = reinterpret_cast<T4387>(base + 0xaf2c4);
+	NxFnPtrSaved sv = nxBindFnPtr(base, 0x104198,
+		reinterpret_cast<void*>(&nxGc2Recorder));
+	gGc2Hits = 0;
+	fn();
+	unsigned hO = gGc2Hits;
+	gGc2Hits = 0;
+	nxTrampoline4387(reinterpret_cast<void (*)(void)>(&nxGc2Recorder));
+	unsigned hC = gGc2Hits;
+	if(hO != hC || hO != 1u) { fprintf(stderr,"tr 004387 hO=%u hC=%u\n", hO, hC); ++tr; }
+	nxUnbindFnPtr(base, 0x104198, sv);
+	}
+	printf("tailsmall candidate failures=%u provisional=1\n", tr);
 	}
 
 
