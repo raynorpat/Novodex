@@ -4741,6 +4741,42 @@ Both verify against recorders that capture the object (or argument) they
 received and the hit count (build/r152.log vtcall slots failures=0). Both move
 to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z170. Report-once dispatch rows close (3 rows)
+
+Round 153 closed the three rows that pair a ONE-SHOT assertion with a vtable
+dispatch:
+
+    mov al, byte ptr [0x101237cX]      ; the gate byte
+    test al, al
+    jne WORK
+    <report(0xd0, 0x10105ba8, <line>, 0, <expr>)>
+    mov byte ptr [0x101237cX], 1       ; the gate is SET, so it fires once
+WORK:
+    edx = [esi]; <push the arguments>
+    mov ecx, esi
+    call [edx + <slot>]
+    ret <N>
+
+All three share code 0xd0, file 0x10105ba8 and the report-once gate pattern,
+and differ only in the gate address, the slot, the argument count and the
+line/expression:
+
+| row | gate | slot | slot arguments | ret |
+|---|---|---|---|---|
+| 000335 | 0x101237c1 | +0x100 | (row argument) | 4 |
+| 000336 | 0x101237c2 | +0x108 | (1, 1) | -- |
+| 000390 | 0x101237c4 | +0x104 | (1, second argument) | 8 |
+
+Candidate nxOnceReportVtEx takes the gate as a candidate-side byte the harness
+mirrors, so each row is driven TWICE: once with the gate clear (the report must
+fire and the gate must be set) and once with it set (no report). Both the
+report tuple and the slot's recorded arguments are compared on each pass
+(build/r153.log oncedispatch failures=0). All three move to `reconstructed`.
+
+Note the gate is WRITTEN, not merely read -- unlike the 3z159 reader -- so the
+two passes are what actually pin the one-shot behaviour. No gate,
+coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
