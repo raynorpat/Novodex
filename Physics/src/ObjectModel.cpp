@@ -2023,6 +2023,29 @@ void nxOnceReportVtEx(void* self, unsigned char* gate, unsigned slot,
 		}
 	}
 
+// phys_fn_003938 (0x8eec0, ret 4): the deleting destructor that also calls a
+// process-wide global slot with no arguments.
+static void (*gNxGlobalHook3938)(void) = nullptr;
+
+void nxSetGlobalHook3938(void (*fn)(void))
+	{
+	gNxGlobalHook3938 = fn;
+	}
+
+void* nxDtorWithGlobal3938(void* self, unsigned flags)
+	{
+	unsigned vtable = 0x10117920u;
+	memcpy(self, &vtable, 4);
+	if(gNxGlobalHook3938)
+		gNxGlobalHook3938();
+	if(flags & 1u)
+		{
+		if(gNxAllocFree)
+			gNxAllocFree(self);
+		}
+	return self;
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)

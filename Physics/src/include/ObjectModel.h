@@ -1034,6 +1034,14 @@ void					nxLockedVtCallArg(void* self, unsigned slot, void* arg);
 //! uses gate 0x101237c1, slot +0x100 and one argument; 000336 (0xca90) uses
 //! 0x101237c2, slot +0x108 and the arguments (1, 1); 000390 (0xd600, ret 8)
 //! uses 0x101237c4, slot +0x104 and (1, second argument).
+//! phys_fn_003938 (0x8eec0, ret 4): stores the vtable 0x10117920 at [self],
+//! calls the global slot [0x10104194] (no arguments), then -- when the low
+//! flag bit is set -- frees self through the allocator slot +0x14; returns
+//! self. The global slot and the free hook are both settable so the harness
+//! can route the oracle's into the candidate's.
+void					nxSetGlobalHook3938(void (*fn)(void));
+void*					nxDtorWithGlobal3938(void* self, unsigned flags);
+
 void					nxOnceReportVtEx(void* self, unsigned char* gate,
 							unsigned slot, unsigned nargs, unsigned a1,
 							unsigned a2, unsigned code, unsigned file,
