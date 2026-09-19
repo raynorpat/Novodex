@@ -5892,6 +5892,67 @@ int wmain(int argc, wchar_t** argv)
 	printf("lockacc4 candidate failures=%u provisional=1\n", b4f);
 	}
 
+	// -- Locked accessor fifth batch: word-mask, two-pointer copy, float.
+	{
+	NxLockApiSaved svB5 = nxBindLockApi(base);
+	unsigned b5f = 0;
+	unsigned char lockObjB[0x40]; memset(lockObjB, 0, sizeof(lockObjB));
+	unsigned char subObjB[0x40]; memset(subObjB, 0, sizeof(subObjB));
+	*(void**)(lockObjB) = subObjB;
+	unsigned char field[0x200];
+	unsigned char sh[0x40];
+	// 001085: (word [field+0xde]) & arg
+	{
+	typedef unsigned (__thiscall* WordOracle)(void*, unsigned);
+	WordOracle fn = reinterpret_cast<WordOracle>(base + 0x236d0);
+	memset(field, 0, sizeof(field));
+	unsigned short w = 0xBEEFu;
+	memcpy(field + 0xde, &w, 2);
+	memset(sh, 0, sizeof(sh));
+	*(void**)(sh + 0x14) = lockObjB;
+	*(void**)(sh + 0x18) = field;
+	unsigned o = fn(sh, 0x0F0Fu);
+	unsigned c = nxLockedWordAndRead(sh, 0x18, 0xde, 0x0F0Fu);
+	if(o != c || o != 0x0E0Fu){fprintf(stderr,"b5 word o=%08x c=%08x\n", o, c);++b5f;}
+	}
+	// 004573: two out pointers
+	{
+	typedef void (__thiscall* TwoPtrOracle)(void*, unsigned*, unsigned*);
+	TwoPtrOracle fn = reinterpret_cast<TwoPtrOracle>(base + 0xb1bd0);
+	memset(field, 0, sizeof(field));
+	unsigned v1 = 0x11112222u, v2 = 0x33334444u;
+	memcpy(field + 0x3c, &v1, 4); memcpy(field + 0x40, &v2, 4);
+	memset(sh, 0, sizeof(sh));
+	*(void**)(sh + 0x14) = lockObjB;
+	*(void**)(sh + 0x18) = field;
+	unsigned o1 = 0, o2 = 0, c1 = 0, c2 = 0;
+	fn(sh, &o1, &o2);
+	nxLockedCopyTwoPointers(sh, 0x18, &c1, &c2);
+	if(o1 != c1 || o2 != c2 || o1 != v1 || o2 != v2)
+		{fprintf(stderr,"b5 twoptr o=%08x/%08x c=%08x/%08x\n", o1, o2, c1, c2);++b5f;}
+	}
+	// 001121: float returned in st(0)
+	{
+	typedef float (__thiscall* FloatOracle)(void*);
+	FloatOracle fn = reinterpret_cast<FloatOracle>(base + 0x23c80);
+	for(unsigned ci = 0; ci < 3; ++ci)
+		{
+		memset(field, 0, sizeof(field));
+		float v = (ci == 0) ? 2.5f : (ci == 1) ? -0.75f : 1.0e20f;
+		memcpy(field + 0xe4, &v, 4);
+		memset(sh, 0, sizeof(sh));
+		*(void**)(sh + 0x14) = lockObjB;
+		*(void**)(sh + 0x18) = field;
+		float o = fn(sh);
+		float c = nxLockedDoubleField(sh, 0x18, 0xe4);
+		if(memcmp(&o, &c, 4) != 0){fprintf(stderr,"b5 float ci=%u o=%08x c=%08x\n", ci,
+			*(unsigned*)&o, *(unsigned*)&c);++b5f;}
+		}
+	}
+	nxUnbindLockApi(base, svB5);
+	printf("lockacc5 candidate failures=%u provisional=1\n", b5f);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
