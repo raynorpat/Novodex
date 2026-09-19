@@ -884,6 +884,12 @@ bool					nxGatherDescriptor0046(void* self, unsigned* out);
 //! Returns out either way.
 float*					nxQuatToMatrix0132(void* self, float* out);
 
+//! phys_fn_000130 (0x4580, actor_dynamic slot, ret 4): writes the full
+//! 0x30-byte pose to out -- the quaternion matrix from record+0x5c, then the
+//! translation at record+0x50/0x54/0x58 -- or copies the cached pose at
+//! [self+0x14]+0x20 when the record is null. Returns out.
+float*					nxPoseFromQuat0130(void* self, float* out);
+
 //! phys_fn_000713: recursive path compression over the record chain -- each
 //! record caches its group root at +0x1e8, self-parented at the root.
 unsigned				nxBodyRecordFixRoot(void* rec);

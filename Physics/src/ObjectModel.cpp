@@ -1319,6 +1319,52 @@ void nxBatchAppend3268(void* self, unsigned count, const unsigned* indices)
 	++*reinterpret_cast<unsigned*>(p + 0x18);
 	}
 
+namespace
+	{
+	// The shared quaternion -> 3x3 rotation expansion used by 000132 and
+	// 000130. The x87 body accumulates in extended precision and stores to
+	// float, so a double intermediate reproduces the staged rounding.
+	inline void nxQuatToMatrix9(const float* q, float* m)
+		{
+		const double x = q[0], y = q[1], z = q[2], w = q[3];
+		m[0] = static_cast<float>(1.0 - 2.0 * (y*y + z*z));
+		m[1] = static_cast<float>(2.0 * (x*y - z*w));
+		m[2] = static_cast<float>(2.0 * (x*z + y*w));
+		m[3] = static_cast<float>(2.0 * (x*y + z*w));
+		m[4] = static_cast<float>(1.0 - 2.0 * (x*x + z*z));
+		m[5] = static_cast<float>(2.0 * (y*z - x*w));
+		m[6] = static_cast<float>(2.0 * (x*z - y*w));
+		m[7] = static_cast<float>(2.0 * (y*z + x*w));
+		m[8] = static_cast<float>(1.0 - 2.0 * (x*x + y*y));
+		}
+	}
+
+// phys_fn_000130 (0x4580, ret 4): writes the full 0x30-byte pose to out -- the
+// quaternion matrix from record+0x5c, then the translation at
+// record+0x50/0x54/0x58 -- or copies the cached pose at [self+0x14]+0x20 when
+// the record pointer is null. Returns out.
+float* nxPoseFromQuat0130(void* self, float* out)
+	{
+	const unsigned char* p = reinterpret_cast<const unsigned char*>(self);
+	const unsigned char* body = *reinterpret_cast<const unsigned char* const*>(p + 0x14);
+	const unsigned char* rec = *reinterpret_cast<const unsigned char* const*>(body + 8);
+	if(rec == nullptr)
+		{
+		memcpy(out, body + 0x20, 0x30);
+		return out;
+		}
+	unsigned char pose[0x30];
+	float q[4];
+	memcpy(&q[0], rec + 0x5c, 4);
+	memcpy(&q[1], rec + 0x60, 4);
+	memcpy(&q[2], rec + 0x64, 4);
+	memcpy(&q[3], rec + 0x68, 4);
+	nxQuatToMatrix9(q, reinterpret_cast<float*>(pose));
+	memcpy(pose + 0x24, rec + 0x50, 12);
+	memcpy(out, pose, 0x30);
+	return out;
+	}
+
 // phys_fn_000132 (0x46c0, ret 4): quaternion at record+0x5c (x, y, z, w) to a
 // 3x3 rotation matrix in out[0..8]; when the record pointer is null it copies
 // the cached 36 bytes at [self+0x14]+0x20 instead. Returns out.
@@ -1337,16 +1383,7 @@ float* nxQuatToMatrix0132(void* self, float* out)
 	memcpy(&q[1], rec + 0x60, 4);
 	memcpy(&q[2], rec + 0x64, 4);
 	memcpy(&q[3], rec + 0x68, 4);
-	const double x = q[0], y = q[1], z = q[2], w = q[3];
-	out[0] = static_cast<float>(1.0 - 2.0 * (y*y + z*z));
-	out[1] = static_cast<float>(2.0 * (x*y - z*w));
-	out[2] = static_cast<float>(2.0 * (x*z + y*w));
-	out[3] = static_cast<float>(2.0 * (x*y + z*w));
-	out[4] = static_cast<float>(1.0 - 2.0 * (x*x + z*z));
-	out[5] = static_cast<float>(2.0 * (y*z - x*w));
-	out[6] = static_cast<float>(2.0 * (x*z - y*w));
-	out[7] = static_cast<float>(2.0 * (y*z + x*w));
-	out[8] = static_cast<float>(1.0 - 2.0 * (x*x + y*y));
+	nxQuatToMatrix9(q, out);
 	return out;
 	}
 
