@@ -5760,6 +5760,62 @@ int wmain(int argc, wchar_t** argv)
 	printf("lockedcopy candidate failures=%u provisional=1\n", lcf);
 	}
 
+	// -- Locked accessor third batch: copy-to-out, mask, bit-extract.
+	{
+	NxLockApiSaved svB3 = nxBindLockApi(base);
+	unsigned b3f = 0;
+	unsigned char lockObj9[0x40]; memset(lockObj9, 0, sizeof(lockObj9));
+	unsigned char subObj9[0x40]; memset(subObj9, 0, sizeof(subObj9));
+	*(void**)(lockObj9) = subObj9;
+	unsigned char field[0x800]; memset(field, 0, sizeof(field));
+	for(unsigned w = 0; w < 0x800; w += 4) *(unsigned*)(field + w) = 0x3C000000u + w;
+	unsigned char sh[0x40];
+	// 000291: copy 3 dwords from field+0x520 to out
+	{
+	typedef void (__thiscall* Copy3Oracle)(void*, unsigned*);
+	Copy3Oracle fn = reinterpret_cast<Copy3Oracle>(base + 0xc460);
+	memset(sh, 0, sizeof(sh));
+	*(void**)(sh + 0x10) = lockObj9;
+	*(void**)(sh + 0x24) = field;
+	unsigned o[4], c[4];
+	memset(o, 0, sizeof(o)); memset(c, 0, sizeof(c));
+	fn(sh, o);
+	nxLockedCopyOut(sh, 0x24, 0x520, 3, c);
+	if(memcmp(o, c, 12) != 0){fprintf(stderr,"b3 000291\n");++b3f;}
+	}
+	// 003818: copy 3 dwords from field+0x3c, returns out
+	{
+	typedef void* (__thiscall* Copy3RetOracle)(void*, unsigned*);
+	Copy3RetOracle fn = reinterpret_cast<Copy3RetOracle>(base + 0x8c8a0);
+	memset(sh, 0, sizeof(sh));
+	*(void**)(sh + 0x10) = lockObj9;
+	*(void**)(sh + 0x14) = field;
+	unsigned o[4], c[4];
+	memset(o, 0, sizeof(o)); memset(c, 0, sizeof(c));
+	void* ro = fn(sh, o);
+	nxLockedCopyOut(sh, 0x14, 0x3c, 3, c);
+	if(memcmp(o, c, 12) != 0 || ro != o){fprintf(stderr,"b3 003818\n");++b3f;}
+	}
+	// 003746 / 003852: mask getters
+	{
+	struct MaskRow { unsigned rva; unsigned dataOff; const char* name; };
+	static const MaskRow kMask[] = { { 0x8be40, 0x58, "003746" }, { 0x8cf20, 0x10, "003852" } };
+	for(unsigned i = 0; i < 2; ++i)
+		{
+		typedef unsigned (__thiscall* MaskOracle)(void*, unsigned);
+		MaskOracle fn = reinterpret_cast<MaskOracle>(base + kMask[i].rva);
+		memset(sh, 0, sizeof(sh));
+		*(void**)(sh + 0x10) = lockObj9;
+		*(void**)(sh + 0x14) = field;
+		unsigned o = fn(sh, 0x0F0F0F0Fu);
+		unsigned c = nxLockedAndRead(sh, 0x14, kMask[i].dataOff, 0x0F0F0F0Fu);
+		if(o != c){fprintf(stderr,"b3 mask %s o=%08x c=%08x\n", kMask[i].name, o, c);++b3f;}
+		}
+	}
+	nxUnbindLockApi(base, svB3);
+	printf("lockacc3 candidate failures=%u provisional=1\n", b3f);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
