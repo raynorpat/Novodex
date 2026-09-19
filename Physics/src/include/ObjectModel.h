@@ -1198,6 +1198,16 @@ typedef unsigned (__cdecl* NxGlobalFn2Ret)(unsigned, unsigned);
 //! global-call thunk on [self+0x14], release, and return the thunk's float
 //! result. The hook and its viaField4 flag are passed in.
 typedef float (__cdecl* NxGlobalFn2RetF)(unsigned, unsigned);
+//! The destructor-chain rows: each runs an inner destructor and then, when the
+//! low flag bit is set, frees self through an allocator. 001589 (0x2eb20,
+//! ret 4) runs 001577 and frees through the 004803 allocator; 004415 (0xb0550,
+//! ret 4) and 004764 (0xb3980, ret 4) run the 004409 list teardown and free
+//! through the allocator SINGLETON slot +0x14 -- 004764 stores the vtable
+//! 0x1011b558 first, 004415 stores none.
+void*					nxDtorOwnedThenFree1589(void* self, unsigned flags);
+void*					nxDtorTeardownThenFree(void* self, unsigned flags,
+							unsigned vtable);
+
 float					nxLockedHelperCallF(void* self, unsigned lockOff,
 							unsigned objOff, NxGlobalFn2RetF fn, int viaField4);
 

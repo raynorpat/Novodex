@@ -2558,6 +2558,29 @@ float nxLockedHelperCallF(void* self, unsigned lockOff, unsigned objOff,
 	return fn(first, b);
 	}
 
+// The destructor-chain rows.
+void* nxDtorOwnedThenFree1589(void* self, unsigned flags)
+	{
+	nxDtorTwoOwned1577(self);
+	if((flags & 1u) != 0u && gNxAllocator004803 != nullptr)
+		{
+		void** vt = *reinterpret_cast<void***>(gNxAllocator004803);
+		typedef void (__stdcall* Fn1)(void*);
+		reinterpret_cast<Fn1>(vt[0xc / 4])(self);
+		}
+	return self;
+	}
+
+void* nxDtorTeardownThenFree(void* self, unsigned flags, unsigned vtable)
+	{
+	if(vtable != 0u)
+		memcpy(self, &vtable, 4);
+	nxListTeardown4409(self);
+	if((flags & 1u) != 0u && gNxAllocFree != nullptr)
+		gNxAllocFree(self);
+	return self;
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)
