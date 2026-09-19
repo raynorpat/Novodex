@@ -3899,6 +3899,36 @@ All five move to `reconstructed`. The backlog's remaining rows include the
 same variants plus the pose/vector-copy members. No gate, coverage-floor, or
 policy change.
 
+## 3z141. Copy members decoded, but their rows do not drive
+
+Round 124 decoded the copy members of the locked accessor family -- the rows
+that lock, call a helper which copies fields into an out argument, and unlock
+-- and mapped every helper exactly:
+
+- 001297 (0x25870) and 000509 (0x10200): three dwords from +0x90 and +0x520;
+- 003565 (0x87e50) and 003483 (0x85780): three from +0x3c, six from +0x5c;
+- 001291 (0x25810), 001299 (0x258a0) and 003567 (0x87e70): nine from +0x6c
+  (and +0x18 for 003567);
+- 003425 (0x84d10): eleven from +0x28;
+- 001289 (0x257e0), 001295 (0x25840) and 003563 (0x87e20): the 12-dword pose
+  -- nine from the base then the three at base+0x24 (+0x6c/+0x18 bases).
+
+The row shapes were then mapped too: lock at +0x14 with field at +0x18
+(001221, 001149, 001223, 001187, 001107, 001219) or lock at +0x10 with field
+at +0x14 (003784, 003712, 003820, 003816).
+
+The helpers themselves drive correctly: calling 001297 directly on a field
+buffer returned the expected word (build/r124.log helper-ok h0=9a000090). But
+every ROW faults on its own drive, before any output, even with the lock API
+bound and confirmed active (the readback showed the stub in place), and even
+though the identical lock pair drives fine in the 3z139/3z140 rows. The row
+disassembly is consistent (thiscall, ret 4, out at [esp+0xc]) and the fixture
+sets both candidate lock/field slots plus +0x10/+0x14/+0x18/+0x24 to valid
+pointers. The cause is not yet identified; the probe and both candidate
+helpers were fully reverted (tree clean, harness back to its normal
+family-RED end), so the copy members stay `discovered` with this analysis
+recorded for the next attempt. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
