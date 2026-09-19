@@ -7188,12 +7188,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "conditional lock-API dispatch (0xd710, ret 8)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/195",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1143",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the newunlock differential (3z187): failures=0 for both rows across every field combination, the two flag arms, the two argument arms and both slot return values, with the lock-API global bound",
       "notes": ""
     },
     {
@@ -27528,12 +27528,12 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "byte count plus 0x18 (0x2d970)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/749",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4088",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the newunlock differential (3z187): failures=0 for both rows across every field combination, the two flag arms, the two argument arms and both slot return values, with the lock-API global bound",
       "notes": ""
     },
     {
