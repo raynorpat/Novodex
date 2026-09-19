@@ -3571,6 +3571,16 @@ capaabb2 failures=0). 001016 moves to `reconstructed` -- the EIGHTH Task-3/4
 vtable slot (001403, 001371, 001008, 001255, 000038, 000040, 001267, 001016).
 No gate, coverage-floor, or policy change.
 
+## 3z125. Global-region zero row closes (003390)
+
+Round 109 re-attempted 003390 (0x83a60, 17 bytes), which round 91 had dropped
+after its batch faulted. Driving it ALONE passes: the batch crash was 004072,
+not this row (the same batch-vs-row confusion 3z109/3z111 resolved for
+002176/003479/001960). 003390 zeroes the 0xdd bytes at .data[0x1012626b ..
++0xdc] via a dec-counter byte loop; read-back verified (build/r109.log
+globzero2 failures=0). 003390 moves to `reconstructed`. No gate,
+coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
