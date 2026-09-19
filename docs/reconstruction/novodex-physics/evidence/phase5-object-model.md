@@ -4689,6 +4689,42 @@ later round should confirm Prunable's layout and re-drive 001329 before
 closing the five rows that depend on it. No gate, coverage-floor, or policy
 change.
 
+## 3z168. The held-back group closes -- and 3z167's open question was a FIXTURE bug
+
+Round 151 resolved 3z167's open question, and the answer is that **there was
+never a defect in the 001329 closure**. Two steps settled it:
+
+1. `Prunable` is declared in IcePrunable.h, and its own comment puts
+   mPrunable24 at `+0x24` -- absolute +0xa4 + 0x24 = **+0xc8**, exactly where
+   the oracle wrote. The layout was right all along.
+2. A direct probe of 001329 against its candidate -- oracle buffer versus
+   `((ShapeBase*)b)->nxApplyGroup(grp)` for groups 3, 0x21 and 0, comparing the
+   whole 0x200-byte object -- reports **failures=0**. The candidate is
+   byte-identical to the oracle, so the earlier closure stands.
+
+The divergence 3z167 saw was in MY drive, not the candidate:
+
+    unsigned char self[0x40]; ...
+    *(void**)(self + 0x18) = obj;          // the object pointer goes into self
+    unsigned char selfC[0x40]; memcpy(selfC, self, sizeof(self));
+    unsigned char objC[0x200]; memcpy(objC, obj, sizeof(objC));
+
+selfC is copied AFTER self+0x18 was set, so selfC+0x18 still points at `obj`.
+Both sides therefore wrote the SAME buffer, and objC -- which only the
+comparison read -- stayed zero. Re-pointing `*(void**)(selfC + 0x18) = objC`
+fixes it, and the whole nine-row family then drives with both arms green
+(build/r151.log mutexdirect failures=0).
+
+So the five held-back rows close after all: 001043, 001081, 001129, 001165 and
+001205 move to `reconstructed`, joining the four 004248-group rows from 3z167.
+All nine now verify together.
+
+This is the second time a "candidate defect" turned out to be a fixture that
+shared a pointer between the two sides -- 3z128 and 3z154 were the same class
+on comparison fields. The rule to carry forward: when copying a fixture for
+the candidate, re-point every internal pointer AT the copy, or both sides
+silently share one buffer. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
