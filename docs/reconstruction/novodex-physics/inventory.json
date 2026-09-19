@@ -22866,12 +22866,12 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "PLANE vtable slot 8 indexed-record copy (0x25490, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/513",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3404",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "selects a 6-dword record from the table at *([this+0xc4]+0x14) indexed by [this+0xa4+0x28] and copies it to out; when [this+0xcc] is not 0xffff and [this+0xa4+8] lacks bit 2 it first runs the 004886 init on the [this+0xcc]-indexed record",
+      "dynamic_proof": "confirmed via planeix6 differential (3z122): 3 indices failures=0",
       "notes": ""
     },
     {
