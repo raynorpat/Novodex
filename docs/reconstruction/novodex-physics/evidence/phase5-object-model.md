@@ -5307,6 +5307,37 @@ the last call produced.
 
 Both rows move to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z188. The lock-bracketed helper group closes (5 rows)
+
+Round 171 closed five rows that share one shape and differ only in the helper
+they call (build/r171.log lockhelper failures=0):
+
+    <lock [self+lockOff]>
+    ecx = [self+objOff]
+    call <helper>
+    <unlock>
+    return the helper value
+
+| row | lock / object | helper |
+|---|---|---|
+| 001183 | +0x14 / +0x18 | 004085, the registry lookup (zero while the registry is null) |
+| 003768 | +0x10 / +0x14 | 003457, a global-call thunk through slot 0x10126520 |
+| 003780 | +0x10 / +0x14 | 003469, through 0x101263f4 |
+| 003860 | +0x10 / +0x14 | 004085 again |
+| 003892 | +0x10 / +0x14 | 003679, through 0x101264a0, dereferencing [obj+4] first |
+
+These are reachable only because 3z183/3z184 closed the thunks and 3z184 closed
+004085 -- the second dividend from the blocker campaign. Candidate
+nxLockedHelperCall(self, lockOff, objOff, helperKind, fn, viaField4) covers all
+five, with helperKind selecting the registry lookup or the thunk semantics.
+
+The first drive faulted, and the cause is worth recording because it is the
+kind of fixture gap that reads as a candidate bug: the thunk reads [obj+0x7c]
+and then [that+0x30], and the fixture never set +0x7c, so the ORACLE
+dereferenced null. Setting it self-referentially made both sides agree.
+
+All five move to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
