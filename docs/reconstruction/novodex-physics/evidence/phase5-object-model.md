@@ -4957,6 +4957,35 @@ plainly: a row that READS image state is drivable when the harness can bind
 that state, and the candidate stays independent because it reads its own
 mirror rather than the image. No gate, coverage-floor, or policy change.
 
+## 3z177. Report-once four-step dispatch closes (000342)
+
+Round 160 closed 000342 (0xcb90, ret 0x10), the largest single row of this
+slate: a one-shot assertion followed by FOUR sequential vtable calls on the
+same object.
+
+    mov al, [0x101237c3]
+    if (al != 0) goto WORK
+    <report(0xd0, 0x10105ba8, 0x12e, 0, 0x10105c88)>; [0x101237c3] = 1
+WORK:
+    vtable[+0x70](self, arg2, arg3, arg4)     ; arg1 is NOT used here
+    vtable[+0x100](self, arg1)
+    vtable[+0x64](self)                        ; no arguments
+    vtable[+0x108](self, 1, 1)
+    ret 0x10
+
+Working out WHICH argument each call receives took care with the stack, since
+esp moves under the pushes: after `push esi` the four arguments sit at
++0x10..+0x1c, and the three pushes before the first call re-read [esp+0x10]
+AFTER the first push, which lands on arg2 rather than arg3. The result is that
+the first call takes (arg2, arg3, arg4) and arg1 is not used until the second
+call -- a mapping the differential then confirmed.
+
+The drive records every slot call as (id, args...) into ONE sequence, so the
+comparison covers the call ORDER and all arguments, not just that four calls
+happened (build/r160.log once0342 failures=0). Both gate passes are driven, and
+the gate byte 0x101237c3 is bound and restored. 000342 moves to
+`reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
