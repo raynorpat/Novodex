@@ -84,6 +84,49 @@ extern "C" int __stdcall nxLockStub1(void*) { return 1; }
 extern "C" int __stdcall nxLockStub3(void*, int, int) { return 1; }
 extern "C" int __stdcall nxLockStubQuery() { return 0x2222; }
 
+// Bind the four Foundation lock-API slots in the oracle image to the no-op
+// stubs above. The slots live in a read-only page, so the stores need the
+// page unlocked first. Pass the saved values back to nxUnbindLockApi.
+struct NxLockApiSaved { void* s10; void* s2c; void* s44; void* s14; void* page; DWORD prot; int ok; };
+
+static NxLockApiSaved nxBindLockApi(const void* imageBase)
+	{
+	NxLockApiSaved sv;
+	unsigned char* img = const_cast<unsigned char*>(
+		reinterpret_cast<const unsigned char*>(imageBase));
+	void** g10 = reinterpret_cast<void**>(img + 0x104010);
+	void** g2c = reinterpret_cast<void**>(img + 0x10402c);
+	void** g44 = reinterpret_cast<void**>(img + 0x104044);
+	void** g14 = reinterpret_cast<void**>(img + 0x104014);
+	sv.s10 = *g10; sv.s2c = *g2c; sv.s44 = *g44; sv.s14 = *g14;
+	sv.page = reinterpret_cast<void*>(
+		reinterpret_cast<size_t>(img + 0x104000) & ~static_cast<size_t>(0xFFF));
+	sv.prot = 0; sv.ok = 0;
+	if(!VirtualProtect(sv.page, 0x2000, PAGE_READWRITE, &sv.prot))
+		return sv;
+	sv.ok = 1;
+	*g10 = reinterpret_cast<void*>(&nxLockStub1);
+	*g2c = reinterpret_cast<void*>(&nxLockStub3);
+	*g44 = reinterpret_cast<void*>(&nxLockStubQuery);
+	*g14 = reinterpret_cast<void*>(&nxLockStub1);
+	return sv;
+	}
+
+static void nxUnbindLockApi(const void* imageBase, const NxLockApiSaved& sv)
+	{
+	if(!sv.ok)
+		return;
+	unsigned char* img = const_cast<unsigned char*>(
+		reinterpret_cast<const unsigned char*>(imageBase));
+	DWORD t = 0;
+	VirtualProtect(sv.page, 0x2000, PAGE_READWRITE, &t);
+	*reinterpret_cast<void**>(img + 0x104010) = sv.s10;
+	*reinterpret_cast<void**>(img + 0x10402c) = sv.s2c;
+	*reinterpret_cast<void**>(img + 0x104044) = sv.s44;
+	*reinterpret_cast<void**>(img + 0x104014) = sv.s14;
+	VirtualProtect(sv.page, 0x2000, sv.prot, &t);
+	}
+
 static void nxGuardedBoxDtor(NxBoxDtorFn fn, void* object, unsigned flags)
 	{
 	gDtorFaultCode = 0;
@@ -5348,6 +5391,58 @@ int wmain(int argc, wchar_t** argv)
 		VirtualProtect(pageBase, 0x2000, oldProt, &t2);
 		}
 	printf("gather0046 candidate failures=%u provisional=1\n", gf046);
+	}
+
+	// -- Slate row 000132: quaternion to 3x3 matrix, lock API bound.
+	{
+	typedef float* (__thiscall* QuatMxOracle)(void*, float*);
+	QuatMxOracle qm = reinterpret_cast<QuatMxOracle>(base + 0x46c0);
+	NxLockApiSaved sv132 = nxBindLockApi(base);
+	unsigned qf = 0;
+	unsigned char lockObj2[0x40]; memset(lockObj2, 0, sizeof(lockObj2));
+	unsigned char subObj2[0x40]; memset(subObj2, 0, sizeof(subObj2));
+	*(void**)(lockObj2) = subObj2;
+	// null-record arm: copies the cached 36 bytes at body+0x20
+	unsigned char bodyN[0x60]; memset(bodyN, 0, sizeof(bodyN));
+	for(unsigned i = 0x20; i < 0x44; i += 4) *(unsigned*)(bodyN + i) = 0x33000000u + i;
+	unsigned char shN[0x20]; memset(shN, 0, sizeof(shN));
+	*(void**)(shN + 0x10) = lockObj2;
+	*(void**)(shN + 0x14) = bodyN;
+	float nO[9], nC[9];
+	memset(nO, 0, sizeof(nO)); memset(nC, 0, sizeof(nC));
+	qm(shN, nO);
+	float* nRet = nxQuatToMatrix0132(shN, nC);
+	if(memcmp(nO, nC, sizeof(nO)) != 0 || nRet != nC)
+		{
+		fprintf(stderr,"quatm0132 null arm\n");
+		for(unsigned i=0;i<9;++i) if(*(unsigned*)(nO+i)!=*(unsigned*)(nC+i))
+			fprintf(stderr,"  m[%u] o=%08x c=%08x\n", i,
+				*(unsigned*)(nO+i), *(unsigned*)(nC+i));
+		++qf;
+		}
+	// present arm: a unit quaternion at record+0x5c..0x68
+	unsigned char rec2[0x80]; memset(rec2, 0, sizeof(rec2));
+	float qv[4] = { 0.1825742f, 0.3651484f, 0.5477226f, 0.7302967f };
+	memcpy(rec2 + 0x5c, qv, sizeof(qv));
+	unsigned char body2[0x20]; memset(body2, 0, sizeof(body2));
+	*(void**)(body2 + 8) = rec2;
+	unsigned char sh2[0x20]; memset(sh2, 0, sizeof(sh2));
+	*(void**)(sh2 + 0x10) = lockObj2;
+	*(void**)(sh2 + 0x14) = body2;
+	float pO[9], pC[9];
+	memset(pO, 0, sizeof(pO)); memset(pC, 0, sizeof(pC));
+	qm(sh2, pO);
+	nxQuatToMatrix0132(sh2, pC);
+	if(memcmp(pO, pC, sizeof(pO)) != 0)
+		{
+		fprintf(stderr,"quatm0132 present arm\n");
+		for(unsigned i=0;i<9;++i) if(*(unsigned*)(pO+i)!=*(unsigned*)(pC+i))
+			fprintf(stderr,"  m[%u] o=%08x c=%08x\n", i,
+				*(unsigned*)(pO+i), *(unsigned*)(pC+i));
+		++qf;
+		}
+	nxUnbindLockApi(base, sv132);
+	printf("quatm0132 candidate failures=%u provisional=1\n", qf);
 	}
 
 	// -----------------------------------------------------------------------
