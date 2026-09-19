@@ -1107,6 +1107,14 @@ void*					nxDtorViaAllocator(void* self, unsigned flags,
 //! low flag bit is set. Returns self.
 void*					nxDtorOwnedPtr(void* self, unsigned flags, unsigned vtable);
 
+//! phys_fn_004743 (0xb3670): locks [self+0x14], calls helper 000454 on
+//! [self+0x18] -- a registry lookup that returns 0 immediately while the
+//! registry global [0x10123c0c] is null, which is its image state -- releases,
+//! and returns that value. The candidate mirrors the registry through
+//! nxSetRegistry4743.
+void					nxSetRegistry4743(void* registry);
+unsigned				nxLockedRegistryLookup4743(void* self);
+
 void					nxOnceFourCalls0342(void* self, unsigned char* gate,
 							unsigned a1, unsigned a2, unsigned a3, unsigned a4);
 

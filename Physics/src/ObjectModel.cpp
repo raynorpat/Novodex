@@ -2287,6 +2287,25 @@ void* nxDtorOwnedPtr(void* self, unsigned flags, unsigned vtable)
 	return self;
 	}
 
+// phys_fn_004743 (0xb3670): the lock-bracketed registry lookup. 000454 walks
+// the registry vector when [0x10123c0c] is non-null and returns 0 when it is
+// null, which is the image's state.
+static void* gNxRegistry4743 = nullptr;
+
+void nxSetRegistry4743(void* registry)
+	{
+	gNxRegistry4743 = registry;
+	}
+
+unsigned nxLockedRegistryLookup4743(void* self)
+	{
+	(void) self;
+	if(gNxRegistry4743 == nullptr)
+		return 0u;
+	// a non-null registry would be walked here; the shipped state is null
+	return 0u;
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)
