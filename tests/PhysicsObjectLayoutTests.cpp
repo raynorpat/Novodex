@@ -101,6 +101,16 @@ static unsigned gVtConstArg;
 static unsigned gVtConstHits;
 static void __stdcall nxVtConstStub(unsigned a) { gVtConstArg = a; ++gVtConstHits; }
 
+// Recorders for the multi-argument dispatch thunks. The argument counts differ
+// per row and so does who pops them, so each gets a stub with its own
+// convention.
+static unsigned gVtRec[4];
+static unsigned gVtRecN;
+static void __cdecl nxRec1C(unsigned a) { gVtRec[0] = a; gVtRecN = 1; }
+static void __stdcall nxRec2S(unsigned a, unsigned b) { gVtRec[0] = a; gVtRec[1] = b; gVtRecN = 2; }
+static void __stdcall nxRec3S(unsigned a, unsigned b, unsigned c)
+	{ gVtRec[0] = a; gVtRec[1] = b; gVtRec[2] = c; gVtRecN = 3; }
+
 // Bind the 004886 callback slot [0x10128478] to the stub above.
 struct NxCallbackSaved { void* slot; void* page; DWORD prot; int ok; };
 
@@ -11827,6 +11837,69 @@ int wmain(int argc, wchar_t** argv)
 				kVt[i].name, hO, hC, aO, aC);++vtf;}
 		}
 	printf("vtconst candidate failures=%u provisional=1\n", vtf);
+	}
+	// -- Multi-argument virtual dispatch thunks: 002390, 003924, 001965.
+	{
+	unsigned thf = 0;
+	// 002390: __cdecl slot, one argument from [obj+0x10]
+	{
+	typedef void (__thiscall* T2390)(void*);
+	T2390 fn = reinterpret_cast<T2390>(base + 0x5b910);
+	unsigned char obj[0x20]; memset(obj, 0, sizeof(obj));
+	*(void**)(obj + 0xc) = reinterpret_cast<void*>(&nxRec1C);
+	unsigned arg = 0xA1B2C3D4u; memcpy(obj + 0x10, &arg, 4);
+	unsigned char self[0x20]; memset(self, 0, sizeof(self));
+	*(void**)(self + 4) = obj;
+	unsigned char selfC[0x20]; memcpy(selfC, self, sizeof(self));
+	gVtRecN = 0; memset(gVtRec, 0, sizeof(gVtRec));
+	fn(self);
+	unsigned nO = gVtRecN, rO = gVtRec[0];
+	gVtRecN = 0; memset(gVtRec, 0, sizeof(gVtRec));
+	nxVtCall2390(selfC);
+	unsigned nC = gVtRecN, rC = gVtRec[0];
+	if(nO != nC || rO != rC || nO != 1u || rO != arg)
+		{fprintf(stderr,"thunk2390 nO=%u nC=%u rO=%08x rC=%08x\n", nO, nC, rO, rC);++thf;}
+	}
+	// 003924: __stdcall slot, two arguments from [self+0x24]/[self+0x28]
+	{
+	typedef void (__thiscall* T3924)(void*);
+	T3924 fn = reinterpret_cast<T3924>(base + 0x8ed50);
+	void* vt[0x10 / 4 + 1]; memset(vt, 0, sizeof(vt));
+	vt[0xc / 4] = reinterpret_cast<void*>(&nxRec2S);
+	unsigned char self[0x40]; memset(self, 0, sizeof(self));
+	*(void**)(self) = vt;
+	unsigned a = 0x11112222u, b = 0x33334444u;
+	memcpy(self + 0x24, &a, 4); memcpy(self + 0x28, &b, 4);
+	unsigned char selfC[0x40]; memcpy(selfC, self, sizeof(self));
+	gVtRecN = 0; memset(gVtRec, 0, sizeof(gVtRec));
+	fn(self);
+	unsigned nO = gVtRecN, rO0 = gVtRec[0], rO1 = gVtRec[1];
+	gVtRecN = 0; memset(gVtRec, 0, sizeof(gVtRec));
+	nxVtCall3924(selfC);
+	unsigned nC = gVtRecN, rC0 = gVtRec[0], rC1 = gVtRec[1];
+	if(nO != nC || rO0 != rC0 || rO1 != rC1 || nO != 2u || rO0 != a || rO1 != b)
+		{fprintf(stderr,"thunk3924 nO=%u nC=%u %08x/%08x vs %08x/%08x\n", nO, nC, rO0, rO1, rC0, rC1);++thf;}
+	}
+	// 001965: __stdcall slot, three arguments, object is the second arg
+	{
+	typedef void (__cdecl* T1965)(void*, void*);
+	T1965 fn = reinterpret_cast<T1965>(base + 0x4c000);
+	void* vt[0x30 / 4 + 1]; memset(vt, 0, sizeof(vt));
+	vt[0x2c / 4] = reinterpret_cast<void*>(&nxRec3S);
+	unsigned char obj[0x20]; memset(obj, 0, sizeof(obj));
+	*(void**)(obj) = vt;
+	unsigned char selfC[0x20]; memset(selfC, 0, sizeof(selfC));
+	gVtRecN = 0; memset(gVtRec, 0, sizeof(gVtRec));
+	fn(reinterpret_cast<void*>(0x55667788u), obj);
+	unsigned nO = gVtRecN, rO0 = gVtRec[0], rO1 = gVtRec[1], rO2 = gVtRec[2];
+	gVtRecN = 0; memset(gVtRec, 0, sizeof(gVtRec));
+	nxVtCall1965(reinterpret_cast<void*>(0x55667788u), obj);
+	unsigned nC = gVtRecN, rC0 = gVtRec[0], rC1 = gVtRec[1], rC2 = gVtRec[2];
+	if(nO != nC || rO0 != rC0 || rO1 != rC1 || rO2 != rC2 || nO != 3u)
+		{fprintf(stderr,"thunk1965 nO=%u nC=%u %08x/%08x/%08x vs %08x/%08x/%08x\n",
+			nO, nC, rO0, rO1, rO2, rC0, rC1, rC2);++thf;}
+	}
+	printf("thunks3 candidate failures=%u provisional=1\n", thf);
 	}
 
 
