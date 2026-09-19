@@ -177,6 +177,39 @@ static void* gFreeSeq[4];
 static void __stdcall nxAllocFreeSeq(void* block)
 	{ if(gFreeSeqN < 4) gFreeSeq[gFreeSeqN] = block; ++gFreeSeqN; }
 
+// 004743's helper reads the registry pointer at [0x10123c0c]; binding it to
+// null guarantees the inert early-out the image ships with.
+struct NxRegSaved { void* slot; void* page; DWORD prot; int ok; };
+
+static NxRegSaved nxBindRegistry(const void* imageBase, void* value)
+	{
+	NxRegSaved sv;
+	unsigned char* img = const_cast<unsigned char*>(
+		reinterpret_cast<const unsigned char*>(imageBase));
+	void** slot = reinterpret_cast<void**>(img + 0x123c0c);
+	sv.slot = *slot;
+	sv.page = reinterpret_cast<void*>(
+		reinterpret_cast<size_t>(img + 0x123000) & ~static_cast<size_t>(0xFFF));
+	sv.prot = 0; sv.ok = 0;
+	if(!VirtualProtect(sv.page, 0x2000, PAGE_READWRITE, &sv.prot))
+		return sv;
+	sv.ok = 1;
+	*slot = value;
+	return sv;
+	}
+
+static void nxUnbindRegistry(const void* imageBase, const NxRegSaved& sv)
+	{
+	if(!sv.ok)
+		return;
+	unsigned char* img = const_cast<unsigned char*>(
+		reinterpret_cast<const unsigned char*>(imageBase));
+	DWORD t = 0;
+	VirtualProtect(sv.page, 0x2000, PAGE_READWRITE, &t);
+	*reinterpret_cast<void**>(img + 0x123c0c) = sv.slot;
+	VirtualProtect(sv.page, 0x2000, sv.prot, &t);
+	}
+
 struct NxAllocPtrSaved { void* slot; void* page; DWORD prot; int ok; };
 
 static NxAllocPtrSaved nxBindAllocPtr(const void* imageBase, void* value)
@@ -13055,6 +13088,35 @@ int wmain(int argc, wchar_t** argv)
 	nxSetAllocator004803(nullptr);
 	nxUnbindAllocPtr(base, svAp2);
 	printf("ownedptr candidate failures=%u provisional=1\n", opf);
+	}
+	// -- Lock-bracketed registry lookup 004743, with the registry bound null.
+	{
+	typedef unsigned (__thiscall* T4743)(void*);
+	T4743 fn = reinterpret_cast<T4743>(base + 0xb3670);
+	NxRegSaved svReg = nxBindRegistry(base, nullptr);
+	NxLockApiSaved svRl = nxBindLockApi(base);
+	nxSetRegistry4743(nullptr);
+	unsigned rf2 = 0;
+	for(unsigned vi = 0; vi < 2; ++vi)
+		{
+		unsigned char lockObj[0x40]; memset(lockObj, 0, sizeof(lockObj));
+		unsigned char subObj[0x40]; memset(subObj, 0, sizeof(subObj));
+		*(void**)(lockObj) = subObj;
+		unsigned char obj[0x40]; memset(obj, 0, sizeof(obj));
+		if(vi == 1) { unsigned tag = 0xABCD; memcpy(obj, &tag, 4); }
+		unsigned char self[0x40]; memset(self, 0, sizeof(self));
+		*(void**)(self + 0x14) = lockObj;
+		*(void**)(self + 0x18) = obj;
+		unsigned char selfC[0x40]; memcpy(selfC, self, sizeof(self));
+		unsigned ro = fn(self);
+		unsigned rc = nxLockedRegistryLookup4743(selfC);
+		if(ro != rc || ro != 0u)
+			{fprintf(stderr,"registry4743 vi=%u ro=%08x rc=%08x\n", vi, ro, rc);++rf2;}
+		}
+	nxSetRegistry4743(nullptr);
+	nxUnbindLockApi(base, svRl);
+	nxUnbindRegistry(base, svReg);
+	printf("registry4743 candidate failures=%u provisional=1\n", rf2);
 	}
 
 
