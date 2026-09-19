@@ -5272,6 +5272,41 @@ explicitly cleared before the oracle runs, or it tries to free garbage.
 All three move to `reconstructed`, and closing them unblocks 005537, 001415 and
 001528 among others. No gate, coverage-floor, or policy change.
 
+## 3z187. Two newly-unlocked rows close (001526, 000396)
+
+Round 170 collected the first dividend from the blocker campaign: with 001413
+and 002375 closed, the rows that CALLED them became reachable. Two close
+(build/r170.log newunlock failures=0):
+
+- 001526 (0x2d970, 9 bytes) is 001413's byte count plus 0x18;
+- 000396 (0xd710, ret 8) is a conditional lock-API dispatch.
+
+000396 is the interesting one because its guard is a genuine three-way shape
+and its early arm does NOT return zero:
+
+    mov dl, [esp+4]
+    mov al, 1                  ; al is primed to 1 here
+    test al, dl
+    je  RET                    ; bit 0 clear -> straight to ret 8 with al == 1
+    mov al, [esp+8]
+    add ecx, 0x14
+    test al, al
+    je  ZERO
+      push -1; call 002375; and al,1; ret 8
+    ZERO:
+      push 0;  call 002375; and al,1; ret 8
+    RET:
+      ret 8                    ; returns the al primed at the top, i.e. 1
+
+So the flag-clear arm returns **1**, not 0 -- the row never stores a zero
+there, it just falls through to the return with `al` holding the value stored
+four instructions earlier. My first model returned 0 and the differential
+caught it on all four flag-clear cases. That is the same family of trap as
+3z184's inverted `neg`/`sbb`/`inc` test: the return value is not always what
+the last call produced.
+
+Both rows move to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
