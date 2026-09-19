@@ -5240,6 +5240,38 @@ int wmain(int argc, wchar_t** argv)
 	printf("aggaabb1030 candidate failures=%u provisional=1\n", agf);
 	}
 
+	// -- Nine doubles to nine floats 002156 (0x538e0, ret 4).
+	{
+	typedef void (__thiscall* D2F9Oracle)(void*, float*);
+	D2F9Oracle d2f = reinterpret_cast<D2F9Oracle>(base + 0x538e0);
+	unsigned d2fF = 0;
+	for(unsigned ci = 0; ci < 3; ++ci)
+		{
+		unsigned char sb[0x80]; memset(sb, 0, sizeof(sb));
+		double src[9];
+		for(unsigned k = 0; k < 9; ++k)
+			{
+			src[k] = (ci == 0) ? static_cast<double>(k) + 0.5
+				: (ci == 1) ? -1.0e120 * (k + 1)
+				: 1.0e-300 * (k + 1);
+			memcpy(sb + 0x18 + k * 8, &src[k], 8);
+			}
+		float outO[9], outC[9];
+		memset(outO, 0, sizeof(outO)); memset(outC, 0, sizeof(outC));
+		d2f(sb, outO);
+		nxDoubleToFloat9_2156(sb, outC);
+		if(memcmp(outO, outC, sizeof(outO)) != 0)
+			{
+			fprintf(stderr,"d2f9 ci=%u\n", ci);
+			for(unsigned k = 0; k < 9; ++k) if(*(unsigned*)(outO+k)!=*(unsigned*)(outC+k))
+				fprintf(stderr,"  k%u o=%08x c=%08x\n", k,
+					*(unsigned*)(outO+k), *(unsigned*)(outC+k));
+			++d2fF;
+			}
+		}
+	printf("d2f9 candidate failures=%u provisional=1\n", d2fF);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
