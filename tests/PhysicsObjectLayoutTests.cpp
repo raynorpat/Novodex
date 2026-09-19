@@ -12438,6 +12438,61 @@ int wmain(int argc, wchar_t** argv)
 	nxUnbindReportSlot(base, svGs);
 	printf("guardedstore candidate failures=%u provisional=1\n", gsf);
 	}
+	// -- Lock-first direct-call family: 000350/000354/000358 store the argument
+	//    through their helper, 003870's helper is a no-op. Both arms each.
+	{
+	struct MwRow { unsigned rva; unsigned lockOff; unsigned objOff; int workKind;
+		unsigned storeOff; unsigned file; unsigned line; unsigned expr; const char* name; };
+	static const MwRow kMw[] = {
+		{ 0xccc0, 0x0c, 0x24, 1, 0x6ac, 0x10105ba8, 0x150, 0x10104760, "000350" },
+		{ 0xcd50, 0x0c, 0x24, 1, 0x6b0, 0x10105ba8, 0x15d, 0x10104760, "000354" },
+		{ 0xcde0, 0x0c, 0x24, 1, 0x6b4, 0x10105ba8, 0x16a, 0x10104760, "000358" },
+		{ 0x8d140, 0x0c, 0x14, 0, 0, 0x1011681c, 0x00c, 0x10104760, "003870" },
+	};
+	NxReportSaved svMw = nxBindReportSlot(base);
+	nxSetAssertReport(&nxReportRecorder);
+	NxLockApiSaved svMwL = nxBindLockApi(base);
+	nxSetLockOwner(0x2222u);
+	unsigned mwf = 0;
+	for(unsigned i = 0; i < sizeof(kMw) / sizeof(kMw[0]); ++i)
+	for(unsigned arm = 0; arm < 2; ++arm)
+		{
+		typedef void (__thiscall* MwOracle)(void*, unsigned);
+		MwOracle fn = reinterpret_cast<MwOracle>(base + kMw[i].rva);
+		unsigned char lockObj[0x40]; memset(lockObj, 0, sizeof(lockObj));
+		unsigned char subObj[0x40]; memset(subObj, 0, sizeof(subObj));
+		*(void**)(lockObj) = subObj;
+		unsigned owner = (arm == 0) ? 0x2222u : 0x1111u;
+		memcpy(subObj + 0x1c, &owner, 4);
+		unsigned char obj[0x800]; memset(obj, 0, sizeof(obj));
+		unsigned char self[0x40]; memset(self, 0, sizeof(self));
+		*(void**)(self + kMw[i].lockOff) = lockObj;
+		*(void**)(self + kMw[i].objOff) = obj;
+		unsigned char selfC[0x40]; memcpy(selfC, self, sizeof(self));
+		unsigned char objC[0x800]; memcpy(objC, obj, sizeof(objC));
+		// re-point the candidate's fixture at its OWN object buffer
+		*(void**)(selfC + kMw[i].objOff) = objC;
+		unsigned o[5];
+		gRepCount = 0; memset(gRepCap, 0, sizeof(gRepCap));
+		fn(self, 0x0BADF00Du);
+		memcpy(o, gRepCap, sizeof(o));
+		unsigned nO = gRepCount;
+		gRepCount = 0; memset(gRepCap, 0, sizeof(gRepCap));
+		nxMutexWorkEx(selfC, kMw[i].lockOff, kMw[i].objOff, 0x0BADF00Du,
+			kMw[i].workKind, kMw[i].storeOff, 2u, kMw[i].file, kMw[i].line, kMw[i].expr);
+		unsigned c[5];
+		memcpy(c, gRepCap, sizeof(c));
+		unsigned nC = gRepCount;
+		if(nO != nC || memcmp(o, c, sizeof(o)) != 0
+			|| memcmp(obj, objC, sizeof(obj)) != 0 || nO != arm)
+			{fprintf(stderr,"mutexwork %s arm=%u nO=%u nC=%u\n", kMw[i].name, arm, nO, nC);++mwf;}
+		}
+	nxSetLockOwner(0x2222u);
+	nxUnbindLockApi(base, svMwL);
+	nxSetAssertReport(nullptr);
+	nxUnbindReportSlot(base, svMw);
+	printf("mutexwork candidate failures=%u provisional=1\n", mwf);
+	}
 
 
 
