@@ -5056,6 +5056,33 @@ mechanism: the remaining `discovered` rows are compiler artifacts, fragments,
 rows blocked by large undiscovered dependencies, or rows behind the vtable
 identity gate. No gate, coverage-floor, or policy change.
 
+## 3z180. Allocator-via-004803 destructors close (2 rows)
+
+Round 163 widened the drivability filter -- larger rows, and callees that are
+only `statically_reviewed` rather than reconstructed -- and closed two rows it
+surfaced.
+
+001563 (0x2e570, ret 4) and 002154 (0x538b0, ret 4) are scalar deleting
+destructors of the 3z166 family with one difference: the allocator does NOT
+come from a fixed global slot. Each stores its own vtable word (0x10107848 and
+0x1010833c) and, when the low flag bit is set, calls 004803 to obtain the
+allocator and then `allocator->vtable[+0xc](self)`. 004803 is twenty bytes --
+return the pointer at [0x1012845c], or the static at 0x10122368 when that is
+null -- so binding [0x1012845c] to a fake allocator routes the free into a
+recorder on both sides. Both arms verify (build/r163.log allocdtor
+failures=0).
+
+The widened filter also surfaced a TEN-row group (004453, 004493, 004523,
+004553, 004583, 004609, 004637, 004667, 004693, 004745) of the lock-first
+shape whose work calls 000480. That one is 388 bytes and is a registry
+lookup-and-insert over the global [0x10123c0c] using the allocator, so those
+rows stay `discovered`: driving them would mutate a global registry the
+candidate cannot reproduce, and only their null-argument early-out is
+side-effect free -- too little to call a differential.
+
+Both closed rows move to `reconstructed`. No gate, coverage-floor, or policy
+change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
