@@ -111,6 +111,13 @@ static void __stdcall nxRec2S(unsigned a, unsigned b) { gVtRec[0] = a; gVtRec[1]
 static void __stdcall nxRec3S(unsigned a, unsigned b, unsigned c)
 	{ gVtRec[0] = a; gVtRec[1] = b; gVtRec[2] = c; gVtRecN = 3; }
 
+// Slots reached with `this` in ecx and no stack arguments: __fastcall with one
+// parameter is exactly that layout.
+static unsigned __fastcall nxRecThis44(void* self)
+	{ gVtRec[0] = static_cast<unsigned>(reinterpret_cast<size_t>(self)); gVtRecN = 1; return 0x5A5A0000u; }
+static float __fastcall nxRecThis3c(void* self)
+	{ gVtRec[0] = static_cast<unsigned>(reinterpret_cast<size_t>(self)); gVtRecN = 1; return 2.75f; }
+
 // Bind the 004886 callback slot [0x10128478] to the stub above.
 struct NxCallbackSaved { void* slot; void* page; DWORD prot; int ok; };
 
@@ -11900,6 +11907,64 @@ int wmain(int argc, wchar_t** argv)
 			nO, nC, rO0, rO1, rO2, rC0, rC1, rC2);++thf;}
 	}
 	printf("thunks3 candidate failures=%u provisional=1\n", thf);
+	}
+	// -- Lock-bracketed vtable calls: 001237 (slot +0x44) and 001119 (+0x3c).
+	{
+	NxLockApiSaved svLV = nxBindLockApi(base);
+	unsigned lvf = 0;
+	// 001237: unsigned result
+	{
+	typedef unsigned (__thiscall* T1237)(void*);
+	T1237 fn = reinterpret_cast<T1237>(base + 0x24db0);
+	void* vt[0x48 / 4 + 1]; memset(vt, 0, sizeof(vt));
+	vt[0x44 / 4] = reinterpret_cast<void*>(&nxRecThis44);
+	unsigned char obj[0x20]; memset(obj, 0, sizeof(obj));
+	*(void**)(obj) = vt;
+	unsigned char lockObj[0x40]; memset(lockObj, 0, sizeof(lockObj));
+	unsigned char subObj[0x40]; memset(subObj, 0, sizeof(subObj));
+	*(void**)(lockObj) = subObj;
+	unsigned char self[0x40]; memset(self, 0, sizeof(self));
+	*(void**)(self + 0x14) = lockObj;
+	*(void**)(self + 0x18) = obj;
+	unsigned char selfC[0x40]; memcpy(selfC, self, sizeof(self));
+	gVtRecN = 0; memset(gVtRec, 0, sizeof(gVtRec));
+	unsigned ro = fn(self);
+	unsigned nO = gVtRecN, sO = gVtRec[0];
+	gVtRecN = 0; memset(gVtRec, 0, sizeof(gVtRec));
+	unsigned rc = nxLockedVtCall1237(selfC);
+	unsigned nC = gVtRecN, sC = gVtRec[0];
+	if(ro != rc || nO != nC || sO != sC || nO != 1u
+		|| sO != static_cast<unsigned>(reinterpret_cast<size_t>(obj)))
+		{fprintf(stderr,"vtcall1237 ro=%08x rc=%08x nO=%u nC=%u sO=%08x sC=%08x\n",
+			ro, rc, nO, nC, sO, sC);++lvf;}
+	}
+	// 001119: float result returned in st(0)
+	{
+	typedef float (__thiscall* T1119)(void*);
+	T1119 fn = reinterpret_cast<T1119>(base + 0x23c50);
+	void* vt[0x40 / 4 + 1]; memset(vt, 0, sizeof(vt));
+	vt[0x3c / 4] = reinterpret_cast<void*>(&nxRecThis3c);
+	unsigned char obj[0x20]; memset(obj, 0, sizeof(obj));
+	*(void**)(obj) = vt;
+	unsigned char lockObj[0x40]; memset(lockObj, 0, sizeof(lockObj));
+	unsigned char subObj[0x40]; memset(subObj, 0, sizeof(subObj));
+	*(void**)(lockObj) = subObj;
+	unsigned char self[0x40]; memset(self, 0, sizeof(self));
+	*(void**)(self + 0x14) = lockObj;
+	*(void**)(self + 0x18) = obj;
+	unsigned char selfC[0x40]; memcpy(selfC, self, sizeof(self));
+	gVtRecN = 0; memset(gVtRec, 0, sizeof(gVtRec));
+	float ro = fn(self);
+	unsigned nO = gVtRecN, sO = gVtRec[0];
+	gVtRecN = 0; memset(gVtRec, 0, sizeof(gVtRec));
+	float rc = nxLockedVtCall1119(selfC);
+	unsigned nC = gVtRecN, sC = gVtRec[0];
+	if(memcmp(&ro, &rc, 4) != 0 || nO != nC || sO != sC || nO != 1u)
+		{fprintf(stderr,"vtcall1119 ro=%08x rc=%08x nO=%u nC=%u\n",
+			*(unsigned*)&ro, *(unsigned*)&rc, nO, nC);++lvf;}
+	}
+	nxUnbindLockApi(base, svLV);
+	printf("vtcall pair candidate failures=%u provisional=1\n", lvf);
 	}
 
 
