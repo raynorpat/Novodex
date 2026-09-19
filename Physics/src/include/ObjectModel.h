@@ -1099,6 +1099,14 @@ void					nxSetAllocator004803(void* allocator);
 void*					nxDtorViaAllocator(void* self, unsigned flags,
 							unsigned vtable);
 
+//! phys_fn_001585 (0x2ea80, ret 4) and phys_fn_001587 (0x2ead0, ret 4):
+//! destructors that free an OWNED pointer first. Each stores its own vtable
+//! word, frees the pointer at [self+0xc] through the 004803 allocator when it
+//! is non-null and clears that field, then calls 001554 (which stores the
+//! fixed vtable 0x10107848), then frees self through the allocator when the
+//! low flag bit is set. Returns self.
+void*					nxDtorOwnedPtr(void* self, unsigned flags, unsigned vtable);
+
 void					nxOnceFourCalls0342(void* self, unsigned char* gate,
 							unsigned a1, unsigned a2, unsigned a3, unsigned a4);
 

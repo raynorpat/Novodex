@@ -2256,6 +2256,37 @@ void* nxDtorViaAllocator(void* self, unsigned flags, unsigned vtable)
 	return self;
 	}
 
+// phys_fn_001585 / phys_fn_001587: destructors that free an owned pointer and
+// then re-store the fixed vtable through 001554.
+void* nxDtorOwnedPtr(void* self, unsigned flags, unsigned vtable)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	unsigned owned;
+	memcpy(&owned, p + 0xc, 4);
+	memcpy(p, &vtable, 4);
+	if(owned != 0u && gNxAllocator004803 != nullptr)
+		{
+		void** vt = *reinterpret_cast<void***>(gNxAllocator004803);
+		typedef void (__stdcall* Fn1)(unsigned);
+		reinterpret_cast<Fn1>(vt[0xc / 4])(owned);
+		}
+	if(owned != 0u)
+		{
+		unsigned zero = 0u;
+		memcpy(p + 0xc, &zero, 4);
+		}
+	// 001554 stores the fixed vtable word
+	unsigned fixed = 0x10107848u;
+	memcpy(p, &fixed, 4);
+	if((flags & 1u) != 0u && gNxAllocator004803 != nullptr)
+		{
+		void** vt = *reinterpret_cast<void***>(gNxAllocator004803);
+		typedef void (__stdcall* Fn1)(void*);
+		reinterpret_cast<Fn1>(vt[0xc / 4])(self);
+		}
+	return self;
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)
