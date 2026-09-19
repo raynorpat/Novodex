@@ -18204,12 +18204,12 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "CAPSULE vtable slot 4 mass wrapper (0x22440, ret 0xc)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/492",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3066",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "when [this+0xde]&7 is clear, computes the capsule mass frame with axisSelector 1, radius [this+0xe0], cylHalfHeight [this+0xe0]+[this+0xe4] and pose [this+0x6c] via the 000853 helper; always returns true",
+      "dynamic_proof": "confirmed via capmass2 differential (3z119): 8 flag-lows x 2 densities failures=0 (needed the capsule builder payload-path fix)",
       "notes": ""
     },
     {
