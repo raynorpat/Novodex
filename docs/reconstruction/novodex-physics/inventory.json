@@ -35340,12 +35340,12 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "indexed-sum (0x4bec0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/767",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5923",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "obj = [this + [this+0x70]*4 + 0x1c]; if non-null return [obj+0xc] + [obj+8] else 0; ret",
+      "dynamic_proof": "confirmed via ixsum2 isolated probe (3z111): failures=0 (faults only when batched)",
       "notes": ""
     },
     {
