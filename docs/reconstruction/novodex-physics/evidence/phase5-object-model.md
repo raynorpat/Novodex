@@ -4294,6 +4294,49 @@ first -- otherwise the fixtures' own differing addresses read as a mismatch,
 the same artifact 3z128 hit. Both rows move to `reconstructed`. No gate,
 coverage-floor, or policy change.
 
+## 3z155. Assert-report rows: a 171-row family, first six close
+
+Round 138 re-ran the drivability filter with the lock pair, the 004886
+callback and non-code globals all treated as bindable. That surfaced 35 rows,
+of which about twenty share a body that turned out to be an ASSERTION REPORT:
+
+    mov eax, dword ptr [0x101041b0]     ; the assert object
+    cmp dword ptr [eax], 0
+    jne L
+    int3                                ; break when no handler is installed
+L:  push <expression string>
+    push 0
+    push <line>
+    push <file string>
+    push 0xce
+    call dword ptr [0x101041b4]         ; the report entry point
+    add esp, 0x14
+    ret
+
+Widening the net to every short product row containing that call found **171
+such rows** -- the compiler inlined the NX_ASSERT failure body into every
+function carrying an assertion. They are a genuine, previously unmapped
+family, and each one's entire behaviour is the tuple it reports.
+
+Two globals had to be handled, and both are bindable the 3z134 way:
+
+- [0x101041b4] holds a placeholder, so nxBindReportSlot points it at a
+  __cdecl recorder (the call sites push five arguments and clean them with
+  `add esp, 0x14`);
+- [0x101041b0] ALSO holds an unrelocated RVA, and the rows dereference it
+  BEFORE the int3 -- so the first drive faulted. The same binding now points
+  it at a static word holding 1, which keeps the guard non-zero and skips the
+  breakpoint.
+
+The candidate exposes its own entry point (nxSetAssertReport) so the harness
+can route the oracle's report slot into the same recorder and compare tuples
+directly. Six PURE report rows -- body exactly as above, with no other logic --
+closed in one drive (build/r138.log assertrows failures=0): 000364, 000408 and
+000410 (file 0x10105ba8), plus 003750, 003754 and 003782 (file 0x101160cc).
+All six move to `reconstructed`. The other 165 members of the family carry
+extra logic around the report and are the obvious next slate. No gate,
+coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
