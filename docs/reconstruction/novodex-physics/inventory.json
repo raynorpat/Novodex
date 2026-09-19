@@ -6090,12 +6090,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/165",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1054",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via oncedispatch differential (3z170): both the gate-clear and gate-set passes failures=0 for all three rows, with the report slot and each gate byte bound and the slots pointed at recorders",
       "notes": ""
     },
     {
@@ -6108,12 +6108,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/165",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1057",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via oncedispatch differential (3z170): both the gate-clear and gate-set passes failures=0 for all three rows, with the report slot and each gate byte bound and the slots pointed at recorders",
       "notes": ""
     },
     {
@@ -7080,12 +7080,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/192",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1134",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via oncedispatch differential (3z170): both the gate-clear and gate-set passes failures=0 for all three rows, with the report slot and each gate byte bound and the slots pointed at recorders",
       "notes": ""
     },
     {
