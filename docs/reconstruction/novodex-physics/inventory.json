@@ -18492,12 +18492,12 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "guarded three-argument dispatch loop (0x229b0, ret 0xc)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/406",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3096",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the loop1024 differential (3z175): twelve combinations -- element counts 0..2, skip flag set and clear, slot returning 1 and 0 -- all failures=0, comparing the result, the slot hit count and all three arguments",
       "notes": ""
     },
     {
@@ -85244,12 +85244,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "lock-bracketed vtable call, slot +0x38 (0xb31b0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1782",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15483",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the vtcall slots differential (3z175): result, slot target and hit count all failures=0, alongside the 004703 and 001209 arms",
       "notes": ""
     },
     {
