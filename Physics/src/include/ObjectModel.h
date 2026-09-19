@@ -1074,6 +1074,16 @@ unsigned char			nxLockedGlobalFlag4491(void* self);
 //! Then, in order: vtable +0x70(this, arg2, arg3, arg4) -- the FIRST argument
 //! is unused by that call -- vtable +0x100(this, arg1), vtable +0x64(this) and
 //! vtable +0x108(this, 1, 1).
+//! phys_fn_004763 (0xb3920): a guarded dispatch followed by an unconditional
+//! chain walk. When the guard chain passes it calls vtable +0x20 of the object
+//! at [self+0x18] with [self+0x14]. The guard is: [obj+8] is either null or
+//! has bit 0x80 set at +0x10c (a non-null WITHOUT the bit SKIPS the next test
+//! entirely); then [obj+0xc] must be non-null and lack that bit; then
+//! [obj+0x44] must be non-null and bit 1 of ([obj+0x2c] >> 2) must be clear.
+//! Whatever the guard decides, the row then walks the linked list from
+//! [self+0xc] through +0x10 and calls vtable +0x10 of every node.
+void					nxGuardedVtChain4763(void* self);
+
 void					nxOnceFourCalls0342(void* self, unsigned char* gate,
 							unsigned a1, unsigned a2, unsigned a3, unsigned a4);
 

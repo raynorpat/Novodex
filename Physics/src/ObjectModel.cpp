@@ -2161,6 +2161,58 @@ void nxOnceFourCalls0342(void* self, unsigned char* gate, unsigned a1,
 	reinterpret_cast<Fn2>(vt[0x108 / 4])(1u, 1u);
 	}
 
+// phys_fn_004763 (0xb3920): the guarded dispatch plus the chain walk.
+void nxGuardedVtChain4763(void* self)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	unsigned char* obj = *reinterpret_cast<unsigned char**>(p + 0x18);
+	if(obj != nullptr)
+		{
+		bool pass;
+		unsigned char* a = *reinterpret_cast<unsigned char**>(obj + 8);
+		if(a != nullptr && (a[0x10c] & 0x80) == 0)
+			{
+			// a non-null entry WITHOUT the bit skips the +0xc test entirely
+			pass = true;
+			}
+		else
+			{
+			unsigned char* c = *reinterpret_cast<unsigned char**>(obj + 0xc);
+			pass = (c != nullptr) && ((c[0x10c] & 0x80) == 0);
+			}
+		if(pass)
+			{
+			unsigned char* d = *reinterpret_cast<unsigned char**>(obj + 0x44);
+			if(d == nullptr)
+				pass = false;
+			else
+				{
+				unsigned v;
+				memcpy(&v, obj + 0x2c, 4);
+				if(((v >> 2) & 1u) != 0u)
+					pass = false;
+				}
+			}
+		if(pass)
+			{
+			void** vt = *reinterpret_cast<void***>(obj);
+			unsigned arg;
+			memcpy(&arg, p + 0x14, 4);
+			typedef void (__stdcall* Fn1)(unsigned);
+			reinterpret_cast<Fn1>(vt[0x20 / 4])(arg);
+			}
+		}
+	// the chain walk runs whatever the guard decided
+	unsigned char* node = *reinterpret_cast<unsigned char**>(p + 0xc);
+	while(node != nullptr)
+		{
+		void** vt = *reinterpret_cast<void***>(node);
+		typedef void (__fastcall* FnThis)(void*);
+		reinterpret_cast<FnThis>(vt[0x10 / 4])(node);
+		node = *reinterpret_cast<unsigned char**>(node + 0x10);
+		}
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)
