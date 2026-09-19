@@ -5195,6 +5195,51 @@ int wmain(int argc, wchar_t** argv)
 	printf("batch3268 candidate failures=%u provisional=1\n", baf);
 	}
 
+	// -- AABB aggregation over a shape list 001030 (0x22bf0, ret 4).
+	{
+	typedef void (__thiscall* AggAabbOracle)(void*, float*);
+	AggAabbOracle ag = reinterpret_cast<AggAabbOracle>(base + 0x22bf0);
+	unsigned agf = 0;
+	// two plane-like shapes whose slot-8 record selection yields known floats
+	unsigned char recs[2][3 * 24];
+	for(unsigned s = 0; s < 2; ++s)
+		for(unsigned i = 0; i < 3 * 24; i += 4)
+			*(unsigned*)(recs[s] + i) = 0x40000000u * (s + 1) + i;
+	unsigned char inner[2][0x20];
+	unsigned char shapes[2][0xc8];
+	unsigned char list[2];
+	memset(inner, 0, sizeof(inner)); memset(shapes, 0, sizeof(shapes));
+	for(unsigned s = 0; s < 2; ++s)
+		{
+		*(void**)(inner[s] + 0x14) = recs[s];
+		*(void**)(shapes[s] + 0xc4) = inner[s];
+		*(unsigned short*)(shapes[s] + 0xa4 + 0x28) = 1;	// index 1
+		shapes[s][0xa4 + 8] = 2;							// skip 004886
+		}
+	unsigned* lp = reinterpret_cast<unsigned*>(list);
+	(void)lp;
+	unsigned char ob[0x80], cb[0x80];
+	memset(ob, 0, sizeof(ob)); memset(cb, 0, sizeof(cb));
+	unsigned char sh1[0xc8], sh2[0xc8];
+	memcpy(sh1, shapes[0], 0xc8); memcpy(sh2, shapes[1], 0xc8);
+	void* lstO[2] = { sh1, sh2 };
+	void* lstC[2] = { sh1, sh2 };
+	*(void**)(ob + 0xe0) = lstO; *(void**)(ob + 0xe4) = lstO + 2;
+	*(void**)(cb + 0xe0) = lstC; *(void**)(cb + 0xe4) = lstC + 2;
+	float outO[6], outC[6];
+	ag(ob, outO);
+	nxAggregateAABB1030(cb, outC);
+	if(memcmp(outO, outC, sizeof(outO)) != 0)
+		{
+		fprintf(stderr,"aggaabb1030 mismatch\n");
+		for(unsigned i=0;i<6;++i) if(outO[i]!=outC[i])
+			fprintf(stderr,"  o[%u] o=%08x c=%08x\n", i,
+				*(unsigned*)(outO+i), *(unsigned*)(outC+i));
+		++agf;
+		}
+	printf("aggaabb1030 candidate failures=%u provisional=1\n", agf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
