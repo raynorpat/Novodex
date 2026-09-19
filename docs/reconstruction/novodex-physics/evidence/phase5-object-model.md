@@ -4046,6 +4046,29 @@ failures=0), adding two more return shapes:
 
 All four move to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z147. Seventh accessor batch: helper-free members (4 rows)
+
+Round 130 re-ran the 3z138 backlog filter and found 22 rows still drivable.
+Four closed in one drive (build/r130.log lockacc7 failures=0). Unlike every
+earlier batch, these do the work INLINE -- the only calls are the lock pair,
+so no helper needed decoding:
+
+- 000416 (0xda10) locks [self+0x10] and returns
+  ([field+0x560]-[field+0x55c])>>2 with field from [self+0x24];
+- 003808 (0x8c620, ret 4) copies nine dwords from [field+0x48] into out and
+  returns out, field from [self+0x14];
+- 003806 (0x8c5e0, ret 4) is the same with three dwords from [field+0x6c];
+- 000421 (0xdac0) reads the pointer at [field+0x61c] (field from [self+0x24])
+  and returns [that+0x14] when non-null, else zero -- a conditional deref.
+
+The first drive caught one real detail: 000416's count uses field offsets
++0x560/+0x55c, not the +8/+4 that helper 003477 used, so the count candidate
+was generalised into nxLockedElementCountAt(fieldOff, hiOff, loOff). The
+copy members reuse nxLockedCopyOut unchanged. All four rows move to
+`reconstructed`; 18 of the 22 remain, including the two 004886 callers and
+the large quaternion geometry functions. No gate, coverage-floor, or policy
+change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
