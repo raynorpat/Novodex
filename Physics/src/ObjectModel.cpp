@@ -1365,6 +1365,18 @@ float* nxPoseFromQuat0130(void* self, float* out)
 	return out;
 	}
 
+// The locked accessor family (see 3z138/3z139): lock [self+0x10], call a
+// plain field getter on [self+0x24], unlock, return the result. Since the
+// getter is a bare field read, the whole row reduces to this.
+unsigned nxLockedFieldRead(void* self, unsigned offset)
+	{
+	const unsigned char* p = reinterpret_cast<const unsigned char*>(self);
+	const unsigned char* field = *reinterpret_cast<const unsigned char* const*>(p + 0x24);
+	unsigned v;
+	memcpy(&v, field + offset, 4);
+	return v;
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)

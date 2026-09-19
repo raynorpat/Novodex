@@ -905,6 +905,12 @@ void*					nxLockedSelf3950(void* self);
 //! [[self+0x24]+0x55c].
 unsigned				nxFieldRead0418(void* self);
 
+//! The locked accessor family: lock [self+0x10], read the word at
+//! [field+offset] where field is [self+0x24], unlock, and return it. The
+//! helpers these rows call are plain field getters, so the whole row reduces
+//! to this read. `offset` names the helper's field.
+unsigned				nxLockedFieldRead(void* self, unsigned offset);
+
 //! phys_fn_000713: recursive path compression over the record chain -- each
 //! record caches its group root at +0x1e8, self-parented at the root.
 unsigned				nxBodyRecordFixRoot(void* rec);
