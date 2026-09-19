@@ -11552,6 +11552,44 @@ int wmain(int argc, wchar_t** argv)
 	nxUnbindReportSlot(base, svRep);
 	printf("assertrows candidate failures=%u provisional=1\n", rf);
 	}
+	// -- Word-return accessors: the high half is deterministic because the
+	//    unlock helper leaves eax at 1 before the row's `mov ax,si` mask.
+	{
+	struct WordRow { unsigned rva; unsigned lockOff; unsigned fieldOff; unsigned dataOff; const char* name; };
+	static const WordRow kW[] = {
+		{ 0x24930, 0x14, 0x18, 0xd8, "001207" },
+		{ 0x233a0, 0x14, 0x18, 0xda, "001061" },
+	};
+	NxLockApiSaved svW = nxBindLockApi(base);
+	unsigned wf_ = 0;
+	unsigned char lockObjW[0x40]; memset(lockObjW, 0, sizeof(lockObjW));
+	unsigned char subObjW[0x40]; memset(subObjW, 0, sizeof(subObjW));
+	*(void**)(lockObjW) = subObjW;
+	unsigned char field[0x200];
+	unsigned char sh[0x40];
+	for(unsigned i = 0; i < sizeof(kW) / sizeof(kW[0]); ++i)
+		{
+		typedef unsigned (__thiscall* WordOracle)(void*);
+		WordOracle fn = reinterpret_cast<WordOracle>(base + kW[i].rva);
+		for(unsigned ci = 0; ci < 2; ++ci)
+			{
+			memset(field, 0, sizeof(field));
+			unsigned short w = (ci == 0) ? 0xBEEFu : 0x0042u;
+			memcpy(field + kW[i].dataOff, &w, 2);
+			memset(sh, 0, sizeof(sh));
+			*(void**)(sh + kW[i].lockOff) = lockObjW;
+			*(void**)(sh + kW[i].fieldOff) = field;
+			unsigned o = fn(sh);
+			unsigned c = nxLockedWordRead(sh, kW[i].lockOff, kW[i].fieldOff, kW[i].dataOff);
+			if(o != c || o != static_cast<unsigned>(w))
+				{fprintf(stderr,"wordrow %s ci=%u o=%08x c=%08x want=%08x\n",
+					kW[i].name, ci, o, c, (unsigned)w);++wf_;}
+			}
+		}
+	nxUnbindLockApi(base, svW);
+	printf("wordrows candidate failures=%u provisional=1\n", wf_);
+	}
+
 
 		printf("layout candidate mismatches=%u mode=differential candidate_fold=%08x\n",
 			candidateMissing, candidateFold);
