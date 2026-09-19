@@ -3349,6 +3349,18 @@ failures=0): 003477 (0x85580) returns ([this+8] - [this+4]) >> 2, the signed
 element count of a contiguous buffer. Verified +3/0/-2. 003477 moves to
 `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z113. Call-wrapper rows confirmed non-isolatable
+
+Round 98 attempted the 004886-calling wrapper group (005450 0xef690, plus
+siblings 001787/001267): the body conditionally invokes the reconstructed
+004886 on an indexed pointer, whose observable is [node+8] |= 2 but whose
+global callback slot [0x10128478] is non-null in the harness environment, so
+driving the oracle faults. This matches the earlier non-isolatable
+call-wrapper rows (001033, 004759). The candidate method and test were fully
+reverted (normal family-RED end; diff clean). These rows stay `discovered`;
+call-containing rows are not isolatable in this harness. No gate,
+coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
