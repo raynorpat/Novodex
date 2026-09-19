@@ -1130,6 +1130,25 @@ unsigned				nxRegistryLookupNull(void* self);
 typedef void (__cdecl* NxGlobalFn2)(unsigned, unsigned);
 void					nxGlobalCall2(void* self, NxGlobalFn2 fn, int viaField4);
 
+//! phys_fn_001583 (0x2ea70): a bare `ret` -- a one-byte no-op.
+void					nxNoop1583(void);
+
+//! phys_fn_002371 (0x5b7e0): pushes [this] and calls the lock-API global
+//! [0x10104020] with it; the caller does NOT clean, so the target pops the
+//! argument itself.
+void					nxLockApiCall2371(void* self, void (__stdcall* fn)(unsigned));
+
+//! phys_fn_002375 (0x5b800, ret 4): calls the lock-API global [0x10104028]
+//! with the argument and [this], then returns 1 when the result is non-zero
+//! and 0 otherwise (`neg`/`sbb`/`inc`).
+unsigned char			nxLockApiTest2375(void* self, unsigned arg,
+							unsigned (__stdcall* fn)(unsigned, unsigned));
+
+//! phys_fn_005320 (0x7c10): when [self+0x4c] is non-null, frees
+//! ([self+0x4c] - 4) through the 004803 allocator and clears both [self+0x4c]
+//! and [self+0x48].
+void					nxFreeOwnedBlock5320(void* self);
+
 void					nxOnceFourCalls0342(void* self, unsigned char* gate,
 							unsigned a1, unsigned a2, unsigned a3, unsigned a4);
 

@@ -2343,6 +2343,49 @@ void nxGlobalCall2(void* self, NxGlobalFn2 fn, int viaField4)
 	fn(first, b);
 	}
 
+// phys_fn_001583 (0x2ea70): a one-byte no-op.
+void nxNoop1583(void)
+	{
+	}
+
+// phys_fn_002371 (0x5b7e0): the lock-API global call with [this].
+void nxLockApiCall2371(void* self, void (__stdcall* fn)(unsigned))
+	{
+	unsigned v;
+	memcpy(&v, self, 4);
+	fn(v);
+	}
+
+// phys_fn_002375 (0x5b800, ret 4): the lock-API test.
+unsigned char nxLockApiTest2375(void* self, unsigned arg,
+	unsigned (__stdcall* fn)(unsigned, unsigned))
+	{
+	unsigned v;
+	memcpy(&v, self, 4);
+	// the call site pushes [this] FIRST and the row argument second, so the
+	// slot receives ([this], arg); `neg`/`sbb`/`inc` then yield 1 when the
+	// slot returned ZERO and 0 when it returned non-zero.
+	const unsigned r = fn(v, arg);
+	return r == 0u ? 1u : 0u;
+	}
+
+// phys_fn_005320 (0x7c10): frees the owned block minus four bytes.
+void nxFreeOwnedBlock5320(void* self)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	unsigned owned;
+	memcpy(&owned, p + 0x4c, 4);
+	if(owned != 0u && gNxAllocator004803 != nullptr)
+		{
+		void** vt = *reinterpret_cast<void***>(gNxAllocator004803);
+		typedef void (__stdcall* Fn1)(unsigned);
+		reinterpret_cast<Fn1>(vt[0xc / 4])(owned - 4u);
+		}
+	unsigned zero = 0u;
+	memcpy(p + 0x4c, &zero, 4);
+	memcpy(p + 0x48, &zero, 4);
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)
