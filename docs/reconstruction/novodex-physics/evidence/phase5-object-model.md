@@ -3513,6 +3513,20 @@ failures=0). 001255 moves to `reconstructed` -- the fourth Task-3/4 vtable
 slot closed (001403, 001371, 001008, 001255). No gate, coverage-floor, or
 policy change.
 
+## 3z121. Actor vtable thunks close (000038/000040)
+
+Round 105 closed the two actor vtable thunks that fill both the
+actor_interface and actor_dynamic tables: 000038 (0x2400, ret 8, slot
+0x104) and 000040 (0x2430, ret 8, slot 0x108). Each dispatches through the
+object's OWN vtable at +0x104 / +0x108 with (self, &local, arg1) and copies
+the first three words of the returned record into out. The drive builds a
+fake object whose vtable slot points at a stub returning a known record, so
+the oracle and the candidate nxActorVtThunk104/108 dispatch to the same body
+and must agree on out[0..2] -- verified for both slots (build/r105.log
+actorthunk failures=0). Both rows move to `reconstructed` -- the Task-3/4
+vtable slate now stands at SIX closed (001403, 001371, 001008, 001255,
+000038, 000040). No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
