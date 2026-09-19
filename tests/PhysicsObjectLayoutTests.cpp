@@ -137,6 +137,17 @@ static unsigned gLoopHits;
 static void __stdcall nxLoopStub(void* arg)
 	{ gLoopArg = static_cast<unsigned>(reinterpret_cast<size_t>(arg)); ++gLoopHits; }
 
+// The three-argument dispatch loop's slot: returns a settable value so both
+// the all-succeed and one-fails paths can be driven.
+static unsigned gLoop3Ret;
+static unsigned gLoop3Hits;
+static unsigned gLoop3Arg0, gLoop3Arg1, gLoop3Arg2;
+static unsigned char __stdcall nxLoop3Stub(unsigned a, unsigned b, unsigned c)
+	{
+	gLoop3Arg0 = a; gLoop3Arg1 = b; gLoop3Arg2 = c; ++gLoop3Hits;
+	return static_cast<unsigned char>(gLoop3Ret);
+	}
+
 // The deleting destructor frees through the allocator singleton at
 // [0x101041bc]: the slot is reached as [[[0x101041bc]][0]+0x14].
 static unsigned gFreeHits;
@@ -12260,6 +12271,31 @@ int wmain(int argc, wchar_t** argv)
 		|| sO != static_cast<unsigned>(reinterpret_cast<size_t>(obj)))
 		{fprintf(stderr,"vtcall4703 ro=%08x rc=%08x nO=%u nC=%u\n", ro, rc, nO, nC);++lvf2;}
 	}
+	// 004707: the same shape through slot +0x38
+	{
+	typedef unsigned (__thiscall* T4707)(void*);
+	T4707 fn = reinterpret_cast<T4707>(base + 0xb31b0);
+	void* vt[0x3c / 4 + 1]; memset(vt, 0, sizeof(vt));
+	vt[0x38 / 4] = reinterpret_cast<void*>(&nxRecThis30);
+	unsigned char obj[0x20]; memset(obj, 0, sizeof(obj));
+	*(void**)(obj) = vt;
+	unsigned char lockObj[0x40]; memset(lockObj, 0, sizeof(lockObj));
+	unsigned char subObj[0x40]; memset(subObj, 0, sizeof(subObj));
+	*(void**)(lockObj) = subObj;
+	unsigned char self[0x40]; memset(self, 0, sizeof(self));
+	*(void**)(self + 0x14) = lockObj;
+	*(void**)(self + 0x18) = obj;
+	unsigned char selfC[0x40]; memcpy(selfC, self, sizeof(self));
+	gVtRecN = 0; memset(gVtRec, 0, sizeof(gVtRec));
+	unsigned ro = fn(self);
+	unsigned nO = gVtRecN, sO = gVtRec[0];
+	gVtRecN = 0; memset(gVtRec, 0, sizeof(gVtRec));
+	unsigned rc = nxLockedVtCallNoArg(selfC, 0x38);
+	unsigned nC = gVtRecN, sC = gVtRec[0];
+	if(ro != rc || nO != nC || sO != sC || nO != 1u
+		|| sO != static_cast<unsigned>(reinterpret_cast<size_t>(obj)))
+		{fprintf(stderr,"vtcall4707 ro=%08x rc=%08x nO=%u nC=%u\n", ro, rc, nO, nC);++lvf2;}
+	}
 	// 001209: slot +0x24, one argument, void result
 	{
 	typedef void (__thiscall* T1209)(void*, void*);
@@ -12575,6 +12611,48 @@ int wmain(int argc, wchar_t** argv)
 	nxSetAssertReport(nullptr);
 	nxUnbindReportSlot(base, svWw);
 	printf("mutexwide candidate failures=%u provisional=1\n", wwf);
+	}
+	// -- Guarded three-argument dispatch loop 001024: element counts, the
+	//    +0xde skip flag, and both slot return values.
+	{
+	typedef unsigned char (__thiscall* T1024)(void*, unsigned, unsigned, unsigned);
+	T1024 fn = reinterpret_cast<T1024>(base + 0x229b0);
+	unsigned lf3 = 0;
+	for(unsigned count = 0; count < 3; ++count)
+	for(unsigned flag = 0; flag < 2; ++flag)
+	for(unsigned retv = 0; retv < 2; ++retv)
+		{
+		void* vt[0x14 / 4 + 1]; memset(vt, 0, sizeof(vt));
+		vt[0x10 / 4] = reinterpret_cast<void*>(&nxLoop3Stub);
+		unsigned char elems[3][0x200];
+		memset(elems, 0, sizeof(elems));
+		for(unsigned k = 0; k < 3; ++k)
+			{
+			*(void**)(elems[k]) = vt;
+			// only the LAST element carries the skip flag, so the loop still
+			// dispatches the earlier ones when it is set
+			if(flag == 1 && k == count - 1) elems[k][0xde] = 0x07;
+			}
+		unsigned char self[0x100]; memset(self, 0, sizeof(self));
+		unsigned* list = reinterpret_cast<unsigned*>(self + 0x40);
+		for(unsigned k = 0; k < count; ++k)
+			list[k] = static_cast<unsigned>(reinterpret_cast<size_t>(elems[k]));
+		*(void**)(self + 0xe0) = list;
+		*(void**)(self + 0xe4) = list + count;
+		unsigned char selfC[0x100]; memcpy(selfC, self, sizeof(self));
+		gLoop3Ret = retv; gLoop3Hits = 0;
+		unsigned char ro = fn(self, 0xA1u, 0xB2u, 0xC3u);
+		unsigned hO = gLoop3Hits;
+		unsigned aO0 = gLoop3Arg0, aO1 = gLoop3Arg1, aO2 = gLoop3Arg2;
+		gLoop3Hits = 0;
+		unsigned char rc = nxArrayVtCall3Args1024(selfC, 0xA1u, 0xB2u, 0xC3u);
+		unsigned hC = gLoop3Hits;
+		unsigned aC0 = gLoop3Arg0, aC1 = gLoop3Arg1, aC2 = gLoop3Arg2;
+		if(ro != rc || hO != hC || aO0 != aC0 || aO1 != aC1 || aO2 != aC2)
+			{fprintf(stderr,"loop1024 cnt=%u flag=%u ret=%u ro=%u rc=%u hO=%u hC=%u\n",
+				count, flag, retv, ro, rc, hO, hC);++lf3;}
+		}
+	printf("loop1024 candidate failures=%u provisional=1\n", lf3);
 	}
 
 
