@@ -5114,6 +5114,32 @@ Eight combinations verify (build/r164.log ownedptr failures=0): both rows, by
 owned pointer present and absent, by both flag arms. Both move to
 `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z182. Lock-bracketed registry lookup closes (004743)
+
+Round 165 closed 004743 (0xb3670), the lock-first shape whose work calls
+helper 000454 rather than a vtable slot:
+
+    <lock [esi+0x14]>
+    push [esi+0x18]
+    call 000454                     ; the registry lookup
+    add esp, 4
+    <unlock [esi+0x14]>
+    return that value
+
+The question was whether 000454 is tractable. It reads the registry pointer at
+[0x10123c0c] and returns 0 immediately when that is null; the image ships it
+null -- its initialiser in the file is literally 0 -- so the helper is INERT in
+the shipped configuration and the row returns 0. The drive binds
+[0x10123c0c] to null explicitly rather than relying on no earlier drive having
+populated it, the same defensive move 3z155 made with the assert guard. Two
+object shapes verify (build/r165.log registry4743 failures=0).
+
+The census proof states the limit plainly: the non-null-registry walk is NOT
+modelled, because it does not occur in this image. That is a narrower claim
+than the neighbouring rows make, and it is recorded as such rather than
+dressed up. 004743 moves to `reconstructed`. No gate, coverage-floor, or
+policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
