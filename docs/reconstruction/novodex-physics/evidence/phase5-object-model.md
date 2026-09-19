@@ -4777,6 +4777,33 @@ Note the gate is WRITTEN, not merely read -- unlike the 3z159 reader -- so the
 two passes are what actually pin the one-shot behaviour. No gate,
 coverage-floor, or policy change.
 
+## 3z171. Deleting destructor with a global call closes (003938)
+
+Round 154 closed 003938 (0x8eec0, ret 4), which is the 3z166 deleting
+destructor plus one extra step:
+
+    mov dword ptr [esi], 0x10117920     ; install the vtable
+    call dword ptr [0x10104194]         ; a process-wide global, no arguments
+    test byte ptr [esp+8], 1            ; the flags argument
+    je  END
+    eax = [0x101041bc]                  ; the allocator singleton
+    ecx = [eax]; edx = [ecx]
+    push esi
+    call [edx + 0x14]                   ; free(this)
+END:
+    mov eax, esi; ret 4
+
+The global slot holds a placeholder (0x1210ce) like the report and lock slots,
+so nxBindGlobalSlot points it at a recorder and the candidate exposes the same
+body through nxSetGlobalHook3938. Both arms verify (build/r154.log dtor3938
+failures=0): the vtable word is installed, the global runs exactly ONCE on both
+arms, `this` is returned either way, and only the flagged arm frees.
+
+003938 moves to `reconstructed`. This is the third distinct global this
+campaign has bound (report, lock API, and now a bare process-wide callback),
+which suggests the remaining `global`-classified rows may be reachable the same
+way. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
