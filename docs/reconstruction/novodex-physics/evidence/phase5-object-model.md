@@ -3872,6 +3872,33 @@ All six move to `reconstructed`. The remaining 3z138 backlog rows have the
 same shape and differ only in the getter they wrap, so the same candidate
 covers them. No gate, coverage-floor, or policy change.
 
+## 3z140. Second locked accessor batch: the family has variants (5 rows)
+
+Round 123 worked further down the 3z138 backlog and found the family is NOT
+as uniform as 3z139 assumed -- the lock and field slots differ per row, and
+several rows do more than return the getter's value. Five closed in one drive
+(build/r123.log lockedget2 failures=0):
+
+- 001203 (0x248a0) and 004443 (0xb0730) are VARIANT B: the lock sits at
+  [self+0x14] and the field at [self+0x18] (variant A uses +0x10/+0x24). They
+  wrap the plain dword getters 001283 ([field+0xd0]) and 004070
+  ([field+0x168]) respectively, so they needed a lockOff/fieldOff-aware
+  candidate, nxLockedFieldReadEx.
+- 003824 (0x8c9c0) double-dereferences: the getter 003952 yields the VALUE at
+  [field+0x14] and the row then dereferences it, returning *(*(field+0x14)).
+  The first drive faulted precisely because the fixture held a scalar there
+  rather than a pointer.
+- 003872 (0x8d1f0, ret 4) wraps the pointer getter 003661 (field+8) and
+  copies twelve dwords from it into out before returning out.
+- 004479 (0xb0d20, ret 4) compares the argument with [field+0x168] and
+  returns SELF -- not the argument -- when they match: the mask is
+  `and esi, ecx` with esi still holding this. The first drive caught this
+  (oracle returned the buffer address, the candidate the field value).
+
+All five move to `reconstructed`. The backlog's remaining rows include the
+same variants plus the pose/vector-copy members. No gate, coverage-floor, or
+policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
