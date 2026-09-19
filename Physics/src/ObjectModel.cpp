@@ -2466,6 +2466,43 @@ unsigned BoxShape::nxWrap240(unsigned index)
 	return *reinterpret_cast<unsigned*>(slot + 0x6cc);
 	}
 
+// phys_fn_001255 (0x25090, PLANE vtable slot 9, ret 4): the plane's local
+// AABB. An axis-aligned normal selects that axis and writes +/- distance
+// there; the other axes keep +/- 0x7effffff. out[2] holds the -0x7effffff
+// sentinel (0xfeffffff) unless the normal is -Z, in which case it carries
+// the distance (the x87 const is popped and d loaded).
+void PlaneShape::nxPlaneLocalAABB1255(float* out) const
+	{
+	unsigned ax, ay, az, ad;
+	memcpy(&ax, &mNormalE0[0], 4);
+	memcpy(&ay, &mNormalE0[1], 4);
+	memcpy(&az, &mNormalE0[2], 4);
+	memcpy(&ad, &mDistanceEC, 4);
+	ax &= 0x7fffffffu; ay &= 0x7fffffffu; az &= 0x7fffffffu;
+	unsigned w4 = 0x7effffffu, w8 = 0x7effffffu, wc = 0x7effffffu;
+	unsigned w10 = 0xfeffffffu, w14 = 0xfeffffffu;
+	unsigned w2 = 0xfeffffffu;
+	const float negDistance = -mDistanceEC;
+	unsigned nd; memcpy(&nd, &negDistance, 4);
+	if(ax == 0x3f800000u && ay == 0u && az == 0u)
+		{
+		if(!(mNormalE0[0] > 0.0f)) w10 = ad;		// jne: nx <= 0 (or unordered)
+		else                       w4 = nd;
+		}
+	else if(ax == 0u && ay == 0x3f800000u && az == 0u)
+		{
+		if(!(mNormalE0[1] > 0.0f)) w14 = ad;
+		else                       w8 = nd;
+		}
+	else if(ax == 0u && ay == 0u && az == 0x3f800000u)
+		{
+		if(!(mNormalE0[2] > 0.0f)) w2 = ad;		// const popped, d loaded
+		else                       wc = nd;
+		}
+	unsigned o[6] = { w10, w14, w2, w4, w8, wc };
+	memcpy(out, o, sizeof(o));
+	}
+
 // phys_fn_001008 (0x22440, CAPSULE vtable slot 4, ret 0xc): mirror of the
 // sphere slot-4 wrapper -- radius from [this+0xe0], cylHalfHeight from
 // [this+0xe0]+[this+0xe4], axisSelector 1, pose [this+0x6c].

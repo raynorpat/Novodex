@@ -1199,6 +1199,12 @@ class PlaneShape
 	//! self-free through allocator slot +0x14 when flags&1.
 	void				nxPlaneScalarDeletingDtor(unsigned flags);
 
+	//! PLANE-table slot 9, phys_fn_001255 (0x00025090, ret 4): the plane's
+	//! local AABB -- an axis-aligned normal selects that axis and writes
+	//! +/- distance there, the other axes stay +/- 0x7effffff, and out[2]
+	//! carries the -0x7effffff sentinel unless the normal is -Z.
+	void				nxPlaneLocalAABB1255(float* out) const;
+
 	//! PLANE-table slot 12, phys_fn_001265: loadFromDesc -- stores the
 	//! descriptor normal/D through helper 0x24fc0 then applies BASE fields.
 	void				nxPlaneLoadFromDesc(const void* record);
