@@ -6612,12 +6612,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/179",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1086",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via assertrows differential (3z155): the captured (code, file, line, zero, expression) tuple matches failures=0, with report slot 0x101041b4 bound to a __cdecl recorder and guard slot 0x101041b0 pointed at non-zero memory",
       "notes": ""
     },
     {
@@ -7404,12 +7404,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/201",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1160",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via assertrows differential (3z155): the captured (code, file, line, zero, expression) tuple matches failures=0, with report slot 0x101041b4 bound to a __cdecl recorder and guard slot 0x101041b0 pointed at non-zero memory",
       "notes": ""
     },
     {
@@ -7440,12 +7440,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/202",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1162",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via assertrows differential (3z155): the captured (code, file, line, zero, expression) tuple matches failures=0, with report slot 0x101041b4 bound to a __cdecl recorder and guard slot 0x101041b0 pointed at non-zero memory",
       "notes": ""
     },
     {
@@ -68018,12 +68018,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/fluids/NpFluid.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1811",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12836",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via assertrows differential (3z155): the captured (code, file, line, zero, expression) tuple matches failures=0, with report slot 0x101041b4 bound to a __cdecl recorder and guard slot 0x101041b0 pointed at non-zero memory",
       "notes": ""
     },
     {
@@ -68090,12 +68090,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/fluids/NpFluid.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1813",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12840",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via assertrows differential (3z155): the captured (code, file, line, zero, expression) tuple matches failures=0, with report slot 0x101041b4 bound to a __cdecl recorder and guard slot 0x101041b0 pointed at non-zero memory",
       "notes": ""
     },
     {
@@ -68594,12 +68594,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/fluids/NpFluid.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1827",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12863",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via assertrows differential (3z155): the captured (code, file, line, zero, expression) tuple matches failures=0, with report slot 0x101041b4 bound to a __cdecl recorder and guard slot 0x101041b0 pointed at non-zero memory",
       "notes": ""
     },
     {
