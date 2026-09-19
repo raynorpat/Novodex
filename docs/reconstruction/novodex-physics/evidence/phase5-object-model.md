@@ -3622,6 +3622,32 @@ three cases (build/r111.log batch3268 failures=0); the only initial
 excludes (the three data arrays are compared in full). 003268 moves to
 `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z129. Genuine-entry band characterised; AABB aggregation closes (001030)
+
+Round 112 extended the branch-target filter past the small band. Of the
+genuine product entries (not fragments) with <=1 call, 69 were found, but
+they fall into three non-drivable classes: (a) physical dispatch thunks that
+`jmp eax` / `jmp [reg+off]` through a global or vtable -- 005380, 004872,
+004870, 002237, plus the vtable-dispatch pair 002390/003924; (b) callers of
+the CRT SEH/exception routine 005668 (a 5-byte `jmp` trampoline to 005692,
+which uses an [ebp+8] frame and calls the CRT _SEH helpers) -- nine rows
+including 000283/001199/003690/003790/003864/004025/004031/004537/005331;
+and (c) callers of large still-discovered callees. The blocking global for
+class (a) is real, not a fixture artifact: the callback slots hold non-null
+sentinels in the image ([0x10128478] = 0x35263501), which is exactly why
+driving 004886 and its callers faults.
+
+Filtering instead for genuine entries whose callees are ALL reconstructed
+yields six: 005450 and 001787 (both 004886 callers -- excluded by the above),
+005471 and 005466 (also 004886 callers), and two clean ones -- 001030 and
+005223. 001030 (0x22bf0, ret 4, 267 bytes) is the first: it seeds out[0..5]
+to FLT_MAX/-FLT_MAX, then for each shape in [self+0xe0]..[self+0xe4] merges
+the 6-dword record selected by the PLANE slot-8 row (001267, closed in 3z122)
+with min on the low triple and max on the high triple. Candidate
+nxAggregateAABB1030 verified byte-exact (build/r112.log aggaabb1030
+failures=0). 001030 moves to `reconstructed`; 005223 is the last remaining
+drivable entry in this band. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
