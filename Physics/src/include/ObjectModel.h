@@ -1115,6 +1115,21 @@ void*					nxDtorOwnedPtr(void* self, unsigned flags, unsigned vtable);
 void					nxSetRegistry4743(void* registry);
 unsigned				nxLockedRegistryLookup4743(void* self);
 
+//! phys_fn_001281 (0x257a0): `mov eax,[ecx+4]; ret` -- a bare field getter.
+unsigned				nxFieldRead4(void* self);
+
+//! phys_fn_004085 (0x95cb0): calls the registry lookup 000454 with its own
+//! `this` and returns the result, which is 0 while the registry is null.
+unsigned				nxRegistryLookupNull(void* self);
+
+//! The two-argument global-call thunks. Each reads a value and an argument out
+//! of the object and calls a GLOBAL function pointer with them, the caller
+//! cleaning both: 003457 (+0x10126520), 003437 (+0x101265bc), 003441
+//! (+0x10126440) and 003469 (+0x101263f4) read `this` directly, while 003679
+//! (+0x101264a0) dereferences [self+4] first.
+typedef void (__cdecl* NxGlobalFn2)(unsigned, unsigned);
+void					nxGlobalCall2(void* self, NxGlobalFn2 fn, int viaField4);
+
 void					nxOnceFourCalls0342(void* self, unsigned char* gate,
 							unsigned a1, unsigned a2, unsigned a3, unsigned a4);
 

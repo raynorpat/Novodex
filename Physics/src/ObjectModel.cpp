@@ -2306,6 +2306,43 @@ unsigned nxLockedRegistryLookup4743(void* self)
 	return 0u;
 	}
 
+// phys_fn_001281 (0x257a0): the bare field getter.
+unsigned nxFieldRead4(void* self)
+	{
+	unsigned v;
+	memcpy(&v, reinterpret_cast<unsigned char*>(self) + 4, 4);
+	return v;
+	}
+
+// phys_fn_004085 (0x95cb0): the registry lookup with its own `this`.
+unsigned nxRegistryLookupNull(void* self)
+	{
+	(void) self;
+	if(gNxRegistry4743 == nullptr)
+		return 0u;
+	return 0u;
+	}
+
+// The two-argument global-call thunks. The harness binds the image's global
+// function pointer to the same hook it passes here.
+void nxGlobalCall2(void* self, NxGlobalFn2 fn, int viaField4)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	if(viaField4 != 0)
+		{
+		unsigned inner;
+		memcpy(&inner, p + 4, 4);
+		p = reinterpret_cast<unsigned char*>(static_cast<size_t>(inner));
+		}
+	unsigned a, b;
+	memcpy(&a, p + 0x7c, 4);
+	memcpy(&b, p + 0x80, 4);
+	unsigned char* obj = reinterpret_cast<unsigned char*>(static_cast<size_t>(a));
+	unsigned first;
+	memcpy(&first, obj + 0x30, 4);
+	fn(first, b);
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)
