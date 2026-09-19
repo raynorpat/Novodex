@@ -1784,6 +1784,30 @@ unsigned nxGuardedField3708(void* self)
 	return v;
 	}
 
+// phys_fn_000392 (0xd660): the lock probe. The recursive acquire behind
+// 002364 succeeds when the lock's owner word already holds the id the query
+// stub reports; the acquire then re-stores the same id, and the release is a
+// no-op under the bound stubs.
+static unsigned gNxLockOwner = 0x2222u;
+
+void nxSetLockOwner(unsigned id)
+	{
+	gNxLockOwner = id;
+	}
+
+unsigned char nxLockProbe0392(void* self)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	unsigned char* lock = *reinterpret_cast<unsigned char**>(p + 0xc);
+	// the acquire reads the owner through the lock's first word
+	unsigned char* inner = *reinterpret_cast<unsigned char**>(lock);
+	unsigned owner;
+	memcpy(&owner, inner + 0x1c, 4);
+	if(owner != gNxLockOwner)
+		return 0;
+	return 1;
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)

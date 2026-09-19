@@ -985,6 +985,14 @@ void					nxSetAssertReport(NxAssertReportFn fn);
 void					nxSetGate3708(unsigned char on);
 unsigned				nxGuardedField3708(void* self);
 
+//! phys_fn_000392 (0xd660): a lock probe. It tries to acquire [self+0xc]; on
+//! success it releases it and returns 1, otherwise 0. Under the harness's
+//! bound no-op lock API the acquire succeeds exactly when the lock's owner
+//! word at +0x1c already holds the id the query stub reports, so the candidate
+//! takes that id from nxSetLockOwner.
+void					nxSetLockOwner(unsigned id);
+unsigned char			nxLockProbe0392(void* self);
+
 //! The six pure assert-report rows: each reports its own file/line/expression
 //! constants through the hook and returns void. The message strings are fixed
 //! image data, so they are passed through unchanged.
