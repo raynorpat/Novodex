@@ -210,6 +210,44 @@ static void nxUnbindRegistry(const void* imageBase, const NxRegSaved& sv)
 	VirtualProtect(sv.page, 0x2000, sv.prot, &t);
 	}
 
+// The two-argument global-call thunks read a GLOBAL function pointer; binding
+// it to a recorder lets both sides reach the same body.
+static unsigned gGc2Hits;
+static unsigned gGc2A, gGc2B;
+static void __cdecl nxGc2Recorder(unsigned a, unsigned b)
+	{ gGc2A = a; gGc2B = b; ++gGc2Hits; }
+
+struct NxFnPtrSaved { void* slot; void* page; DWORD prot; int ok; };
+
+static NxFnPtrSaved nxBindFnPtr(const void* imageBase, unsigned slotRva, void* value)
+	{
+	NxFnPtrSaved sv;
+	unsigned char* img = const_cast<unsigned char*>(
+		reinterpret_cast<const unsigned char*>(imageBase));
+	void** slot = reinterpret_cast<void**>(img + slotRva);
+	sv.slot = *slot;
+	sv.page = reinterpret_cast<void*>(
+		reinterpret_cast<size_t>(img + (slotRva & ~0xfffu)) & ~static_cast<size_t>(0xFFF));
+	sv.prot = 0; sv.ok = 0;
+	if(!VirtualProtect(sv.page, 0x2000, PAGE_READWRITE, &sv.prot))
+		return sv;
+	sv.ok = 1;
+	*slot = value;
+	return sv;
+	}
+
+static void nxUnbindFnPtr(const void* imageBase, unsigned slotRva, const NxFnPtrSaved& sv)
+	{
+	if(!sv.ok)
+		return;
+	unsigned char* img = const_cast<unsigned char*>(
+		reinterpret_cast<const unsigned char*>(imageBase));
+	DWORD t = 0;
+	VirtualProtect(sv.page, 0x2000, PAGE_READWRITE, &t);
+	*reinterpret_cast<void**>(img + slotRva) = sv.slot;
+	VirtualProtect(sv.page, 0x2000, sv.prot, &t);
+	}
+
 struct NxAllocPtrSaved { void* slot; void* page; DWORD prot; int ok; };
 
 static NxAllocPtrSaved nxBindAllocPtr(const void* imageBase, void* value)
@@ -13117,6 +13155,70 @@ int wmain(int argc, wchar_t** argv)
 	nxUnbindLockApi(base, svRl);
 	nxUnbindRegistry(base, svReg);
 	printf("registry4743 candidate failures=%u provisional=1\n", rf2);
+	}
+	// -- Small blocker rows: 001281, 004085 and the five two-argument
+	//    global-call thunks. Closing these unlocks their dependents.
+	{
+	unsigned blf = 0;
+	{
+	typedef unsigned (__thiscall* T1281)(void*);
+	T1281 fn = reinterpret_cast<T1281>(base + 0x257a0);
+	unsigned char self[0x20]; memset(self, 0, sizeof(self));
+	unsigned v = 0xDEADBEEFu; memcpy(self + 4, &v, 4);
+	unsigned ro = fn(self);
+	unsigned rc = nxFieldRead4(self);
+	if(ro != rc || ro != v) { fprintf(stderr,"blk1281 ro=%08x rc=%08x\n", ro, rc); ++blf; }
+	}
+	{
+	typedef unsigned (__thiscall* T4085)(void*);
+	T4085 fn = reinterpret_cast<T4085>(base + 0x95cb0);
+	NxRegSaved svR2 = nxBindRegistry(base, nullptr);
+	nxSetRegistry4743(nullptr);
+	unsigned char self[0x20]; memset(self, 0, sizeof(self));
+	unsigned ro = fn(self);
+	unsigned rc = nxRegistryLookupNull(self);
+	if(ro != rc || ro != 0u) { fprintf(stderr,"blk4085 ro=%08x rc=%08x\n", ro, rc); ++blf; }
+	nxUnbindRegistry(base, svR2);
+	}
+	{
+	struct GcRow { unsigned rva; unsigned slotRva; int viaField4; const char* name; };
+	static const GcRow kGc[] = {
+		{ 0x84f10, 0x126520, 0, "003457" },
+		{ 0x84dd0, 0x1265bc, 0, "003437" },
+		{ 0x84e10, 0x126440, 0, "003441" },
+		{ 0x84fd0, 0x1263f4, 0, "003469" },
+		{ 0x8ae50, 0x1264a0, 1, "003679" },
+	};
+	for(unsigned i = 0; i < sizeof(kGc) / sizeof(kGc[0]); ++i)
+		{
+		typedef void (__thiscall* GcOracle)(void*);
+		GcOracle fn = reinterpret_cast<GcOracle>(base + kGc[i].rva);
+		NxFnPtrSaved svFn = nxBindFnPtr(base, kGc[i].slotRva,
+			reinterpret_cast<void*>(&nxGc2Recorder));
+		unsigned char obj[0x40]; memset(obj, 0, sizeof(obj));
+		unsigned tag = 0x51510000u + i; memcpy(obj + 0x30, &tag, 4);
+		unsigned char self[0x100]; memset(self, 0, sizeof(self));
+		unsigned v80 = 0x80800000u + i;
+		if(kGc[i].viaField4) *(void**)(self + 4) = self + 0x40;
+		unsigned char* p = kGc[i].viaField4
+			? reinterpret_cast<unsigned char*>(self + 0x40) : self;
+		*(void**)(p + 0x7c) = obj;
+		memcpy(p + 0x80, &v80, 4);
+		unsigned char selfC[0x100]; memcpy(selfC, self, sizeof(selfC));
+		if(kGc[i].viaField4) *(void**)(selfC + 4) = selfC + 0x40;
+		gGc2Hits = 0; gGc2A = 0; gGc2B = 0;
+		fn(self);
+		unsigned hO = gGc2Hits, aO = gGc2A, bO = gGc2B;
+		gGc2Hits = 0; gGc2A = 0; gGc2B = 0;
+		nxGlobalCall2(selfC, &nxGc2Recorder, kGc[i].viaField4);
+		unsigned hC = gGc2Hits, aC = gGc2A, bC = gGc2B;
+		if(hO != hC || aO != aC || bO != bC || hO != 1u || aO != tag || bO != v80)
+			{fprintf(stderr,"blk%s hO=%u hC=%u aO=%08x aC=%08x bO=%08x bC=%08x\n",
+				kGc[i].name, hO, hC, aO, aC, bO, bC);++blf;}
+		nxUnbindFnPtr(base, kGc[i].slotRva, svFn);
+		}
+	}
+	printf("blockers candidate failures=%u provisional=1\n", blf);
 	}
 
 
