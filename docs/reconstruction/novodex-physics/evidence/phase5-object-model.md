@@ -3342,6 +3342,13 @@ completes the per-row isolation triage of the round-91 faulty batch
 (001960 and 002176/003479 recovered; 004072 confirmed faulty). No gate,
 coverage-floor, or policy change.
 
+## 3z112. Element-count row closes (003477)
+
+Round 96 drove the tiny element-count row (build/r96.log elemcount
+failures=0): 003477 (0x85580) returns ([this+8] - [this+4]) >> 2, the signed
+element count of a contiguous buffer. Verified +3/0/-2. 003477 moves to
+`reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
