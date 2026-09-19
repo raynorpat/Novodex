@@ -935,6 +935,19 @@ void*					nxLockedCopy12_3872(void* self, unsigned* out);
 //! else zero.
 unsigned				nxLockedMatch4479(void* self, unsigned arg);
 
+//! The same match-or-self shape over caller-chosen offsets: compares arg with
+//! [field+dataOff] (field from [self+fieldOff]) and returns self on equality,
+//! else zero. Covers 004479 (+0x168) and 001109 (+0xd0).
+unsigned				nxLockedMatchEx(void* self, unsigned fieldOff,
+							unsigned dataOff, unsigned arg);
+
+//! The list-advance reader: `p = [field+linkOff]; if null return 0; else
+//! [field+linkOff] = [p+nextOff] and return [p+readOff]`. Covers 000325
+//! (+0x6bc/+0x10/+0x48) and 000331 (+0x6c0/+0x18/+0x20).
+unsigned				nxLockedAdvanceRead(void* self, unsigned fieldOff,
+							unsigned linkOff, unsigned nextOff,
+							unsigned readOff);
+
 //! The copy members of the locked accessor family: lock, call a helper that
 //! copies `count` dwords from [field+dataOff] into out, unlock. `field` comes
 //! from [self+fieldOff].
