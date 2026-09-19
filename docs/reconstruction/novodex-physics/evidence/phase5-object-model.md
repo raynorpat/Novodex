@@ -4000,6 +4000,31 @@ Three new candidates were added (nxLockedElementCount, nxLockedIntervalFlag,
 nxLockedFieldAddress) alongside the existing nxLockedBitExtract. All four rows
 move to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z145. Fifth accessor batch: word-mask, two pointers, float (3 rows)
+
+Round 128 closed three more members, each introducing a return shape the
+earlier batches had not covered (build/r128.log lockacc5 failures=0):
+
+- 001085 (0x236d0, ret 4) wraps 001287, which is `movzx eax,word[ecx+0xde];
+  and eax,[esp+4]` -- a WORD read (not a dword), zero-extended, then masked by
+  the argument. Candidate nxLockedWordAndRead.
+- 004573 (0xb1bd0, ret 8) wraps 004076, which writes [field+0x3c] through the
+  first out pointer and [field+0x40] through the second -- the first member
+  seen with TWO out arguments. Candidate nxLockedCopyTwoPointers.
+- 001121 (0x23c80) wraps 000999, `fld [ecx+0xe4]; fadd st(0),st(0)`. The row
+  stores the result to its frame, unlocks, reloads and returns it in st(0) --
+  an x87 float return, driven through a float-returning pointer. Candidate
+  nxLockedDoubleField, matched across three magnitudes including 1.0e20.
+
+One further member was decoded and deliberately left open: 001061 (0x233a0)
+wraps 001293, which is `mov ax,word[ecx+0xda]` WITHOUT zeroing eax, and the
+row then does `mov ax,si`. Both leave eax's high half stale, so the observable
+return depends on register state the row does not establish -- the same latent
+high-bits class as the 3z94 byte returns, and not safely reproducible.
+
+All three closed rows move to `reconstructed`. No gate, coverage-floor, or
+policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
