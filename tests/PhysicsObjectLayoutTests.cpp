@@ -6202,6 +6202,80 @@ int wmain(int argc, wchar_t** argv)
 	nxUnbindLockApi(base, svB8);
 	printf("lockacc8 candidate failures=%u provisional=1\n", b8f);
 	}
+	// -- Locked accessor ninth batch: match-or-self and list advance.
+	{
+	NxLockApiSaved svB9 = nxBindLockApi(base);
+	unsigned b9f = 0;
+	unsigned char lockObjF[0x40]; memset(lockObjF, 0, sizeof(lockObjF));
+	unsigned char subObjF[0x40]; memset(subObjF, 0, sizeof(subObjF));
+	*(void**)(lockObjF) = subObjF;
+	unsigned char field[0x800];
+	unsigned char sh[0x40];
+	// 001109: match-or-self over [field+0xd0]
+	{
+	typedef unsigned (__thiscall* MatchOracle2)(void*, unsigned);
+	MatchOracle2 fn = reinterpret_cast<MatchOracle2>(base + 0x23a90);
+	memset(field, 0, sizeof(field));
+	unsigned fv = 0x7777AAAAu;
+	memcpy(field + 0xd0, &fv, 4);
+	memset(sh, 0, sizeof(sh));
+	*(void**)(sh + 0x14) = lockObjF;
+	*(void**)(sh + 0x18) = field;
+	unsigned o1 = fn(sh, fv);
+	unsigned c1 = nxLockedMatchEx(sh, 0x18, 0xd0, fv);
+	unsigned o2 = fn(sh, 0x12345678u);
+	unsigned c2 = nxLockedMatchEx(sh, 0x18, 0xd0, 0x12345678u);
+	if(o1 != c1 || o2 != c2 || o1 != static_cast<unsigned>(reinterpret_cast<size_t>(sh)) || o2 != 0u)
+		{fprintf(stderr,"b9 001109 o=%08x/%08x c=%08x/%08x\n", o1,o2,c1,c2);++b9f;}
+	}
+	// 000325 (+0x6bc/+0x10/+0x48) and 000331 (+0x6c0/+0x18/+0x20)
+	{
+	struct AdvRow { unsigned rva; unsigned linkOff; unsigned nextOff; unsigned readOff; const char* name; };
+	static const AdvRow kAdv[] = {
+		{ 0xc960, 0x6bc, 0x10, 0x48, "000325" },
+		{ 0xc9f0, 0x6c0, 0x18, 0x20, "000331" },
+	};
+	for(unsigned i = 0; i < 2; ++i)
+		{
+		typedef unsigned (__thiscall* AdvOracle)(void*);
+		AdvOracle fn = reinterpret_cast<AdvOracle>(base + kAdv[i].rva);
+		unsigned char node[0x80], node2[0x80];
+		memset(node, 0, sizeof(node)); memset(node2, 0, sizeof(node2));
+		unsigned rv = 0x5EED0000u + kAdv[i].readOff;
+		memcpy(node + kAdv[i].readOff, &rv, 4);
+		*(void**)(node + kAdv[i].nextOff) = node2;
+		// null-head arm
+		memset(field, 0, sizeof(field));
+		memset(sh, 0, sizeof(sh));
+		*(void**)(sh + 0x10) = lockObjF;
+		*(void**)(sh + 0x24) = field;
+		unsigned oN = fn(sh);
+		unsigned cN = nxLockedAdvanceRead(sh, 0x24, kAdv[i].linkOff, kAdv[i].nextOff, kAdv[i].readOff);
+		if(oN != 0u || cN != 0u){fprintf(stderr,"b9 %s null o=%08x c=%08x\n", kAdv[i].name, oN, cN);++b9f;}
+		// head-present arm: both sides must relink and read
+		memset(field, 0, sizeof(field));
+		*(void**)(field + kAdv[i].linkOff) = node;
+		unsigned char sh2[0x40]; memset(sh2, 0, sizeof(sh2));
+		*(void**)(sh2 + 0x10) = lockObjF;
+		*(void**)(sh2 + 0x24) = field;
+		unsigned oP = fn(sh2);
+		unsigned linkedO = 0;
+		memcpy(&linkedO, field + kAdv[i].linkOff, 4);
+		memset(field, 0, sizeof(field));
+		*(void**)(field + kAdv[i].linkOff) = node;
+		unsigned cP = nxLockedAdvanceRead(sh, 0x24, kAdv[i].linkOff, kAdv[i].nextOff, kAdv[i].readOff);
+		unsigned linkedC = 0;
+		memcpy(&linkedC, field + kAdv[i].linkOff, 4);
+		if(oP != cP || oP != rv || linkedO != linkedC
+			|| linkedO != static_cast<unsigned>(reinterpret_cast<size_t>(node2)))
+			{fprintf(stderr,"b9 %s head o=%08x c=%08x lo=%08x lc=%08x\n",
+				kAdv[i].name, oP, cP, linkedO, linkedC);++b9f;}
+		}
+	}
+	nxUnbindLockApi(base, svB9);
+	printf("lockacc9 candidate failures=%u provisional=1\n", b9f);
+	}
+
 
 
 	// -----------------------------------------------------------------------
