@@ -7116,12 +7116,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "lock probe (0xd660)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/142",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1137",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via probe0392 differential (3z160): owner-matching and owner-differing arms failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
       "notes": ""
     },
     {
