@@ -2046,6 +2046,20 @@ void* nxDtorWithGlobal3938(void* self, unsigned flags)
 	return self;
 	}
 
+// The guarded store family: the 004334 guard without the clamp tail.
+void nxGuardedStoreEx(void* self, unsigned arg, unsigned fieldOff, unsigned code,
+	unsigned file, unsigned line, unsigned expression)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	if((p[0x2c] & 0x18) == 0x10)
+		{
+		if(gNxAssertReport)
+			gNxAssertReport(code, file, line, 0u, expression);
+		return;
+		}
+	memcpy(p + fieldOff, &arg, 4);
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)

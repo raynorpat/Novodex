@@ -1042,6 +1042,15 @@ void					nxLockedVtCallArg(void* self, unsigned slot, void* arg);
 void					nxSetGlobalHook3938(void (*fn)(void));
 void*					nxDtorWithGlobal3938(void* self, unsigned flags);
 
+//! The guarded store family (004184, 004288, 004292, 004338): when
+//! ([self+0x2c] & 0x18) equals 0x10 the row reports assertion code 1 with its
+//! own file/line/expression and returns; otherwise it stores the argument at
+//! the row's field and returns. The fields are +0x44 (004184, 004292, 004338)
+//! and +0x1d0 (004288).
+void					nxGuardedStoreEx(void* self, unsigned arg, unsigned fieldOff,
+							unsigned code, unsigned file, unsigned line,
+							unsigned expression);
+
 void					nxOnceReportVtEx(void* self, unsigned char* gate,
 							unsigned slot, unsigned nargs, unsigned a1,
 							unsigned a2, unsigned code, unsigned file,
