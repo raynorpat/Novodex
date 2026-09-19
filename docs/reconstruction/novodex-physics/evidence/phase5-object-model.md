@@ -3527,6 +3527,21 @@ actorthunk failures=0). Both rows move to `reconstructed` -- the Task-3/4
 vtable slate now stands at SIX closed (001403, 001371, 001008, 001255,
 000038, 000040). No gate, coverage-floor, or policy change.
 
+## 3z122. Plane slot-8 indexed-record copy closes (001267)
+
+Round 106 closed the last slate row whose callee is already reconstructed but
+whose drive 3z117-style faults were previously blamed on the callee: 001267
+(0x25490, PLANE vtable slot 8, ret 4). It selects a 6-dword record from the
+table at *([this+0xc4]+0x14), indexed by [this+0xa4+0x28], and copies it to
+out. The 004886 init only runs when [this+0xcc] != 0xffff AND
+[this+0xa4+8] lacks bit 2, so setting that bit exercises the row WITHOUT the
+faulting callback path -- the earlier "004886 is non-isolatable" conclusion
+was about driving 004886 itself, not about rows that merely call it
+conditionally. Candidate nxPlaneIndexed6_1267 verified byte-exact for three
+indices (build/r106.log planeix6 failures=0). 001267 moves to
+`reconstructed` -- the SEVENTH Task-3/4 vtable slot (001403, 001371, 001008,
+001255, 000038, 000040, 001267). No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
