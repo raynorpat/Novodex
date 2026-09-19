@@ -1319,6 +1319,22 @@ void nxBatchAppend3268(void* self, unsigned count, const unsigned* indices)
 	++*reinterpret_cast<unsigned*>(p + 0x18);
 	}
 
+// phys_fn_002156 (0x538e0, ret 4): nine doubles at [self+0x18] (8-byte stride)
+// to nine floats at out. The row's interleaved fld/fstp schedule reads
+// d0,d3,d6 / d1,d4,d7 / d2,d5,d8 and writes +0,+0xc,+0x18 / +4,+0x10,+0x1c /
+// +8,+0x14,+0x20, which is exactly dst[k] = (float)src[k].
+void nxDoubleToFloat9_2156(void* self, float* out)
+	{
+	const unsigned char* p = reinterpret_cast<const unsigned char*>(self);
+	for(unsigned k = 0; k < 9; ++k)
+		{
+		double d;
+		memcpy(&d, p + 0x18 + k * 8u, sizeof(d));
+		const float f = static_cast<float>(d);
+		memcpy(reinterpret_cast<unsigned char*>(out) + k * 4u, &f, sizeof(f));
+		}
+	}
+
 // phys_fn_001030 (0x22bf0, ret 4): aggregate the local AABBs of the shape list
 // at [self+0xe0]..[self+0xe4] into out. Seeded FLT_MAX / -FLT_MAX; each shape
 // contributes the 6-dword record selected by the PLANE slot-8 row, merged

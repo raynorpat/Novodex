@@ -867,6 +867,11 @@ void					nxBatchAppend3268(void* self, unsigned count,
 //! contributing the 6-dword record selected by the PLANE slot-8 row.
 void					nxAggregateAABB1030(void* self, float* out);
 
+//! phys_fn_002156 (0x538e0, ret 4): converts the nine consecutive doubles at
+//! [self+0x18..0x60) into nine floats at out[0..8]. The image interleaves the
+//! read and write order; the mapping is simply dst[k] = (float)src[k].
+void					nxDoubleToFloat9_2156(void* self, float* out);
+
 //! phys_fn_000713: recursive path compression over the record chain -- each
 //! record caches its group root at +0x1e8, self-parented at the root.
 unsigned				nxBodyRecordFixRoot(void* rec);
