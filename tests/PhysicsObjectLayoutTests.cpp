@@ -13436,6 +13436,73 @@ int wmain(int argc, wchar_t** argv)
 	}
 	printf("blockers3 candidate failures=%u provisional=1\n", bb3);
 	}
+	// -- Blocker batch four: 005477, 001665 and 001577 (owned-pointer frees).
+	{
+	unsigned bb4 = 0;
+	// a fake allocator recording the free sequence
+	void* allocVt[0x10 / 4 + 1]; memset(allocVt, 0, sizeof(allocVt));
+	allocVt[0xc / 4] = reinterpret_cast<void*>(&nxAllocFreeSeq);
+	unsigned char allocObj[0x20]; memset(allocObj, 0, sizeof(allocObj));
+	*(void**)(allocObj) = allocVt;
+	NxAllocPtrSaved svAp4 = nxBindAllocPtr(base, allocObj);
+	nxSetAllocator004803(allocObj);
+	struct FreeRow { unsigned rva; unsigned offs[3]; unsigned count; int minus4;
+		unsigned vtable; const char* name; };
+	static const FreeRow kFr[] = {
+		{ 0xefed0, { 0x10, 0x14, 0 }, 2, 0, 0, "005477" },
+		{ 0x325b0, { 0x08, 0x0c, 0x10 }, 3, 0, 0, "001665" },
+		{ 0x2e7f0, { 0x10, 0x0c, 0 }, 2, 0, 0x10107890, "001577" },
+	};
+	for(unsigned i = 0; i < sizeof(kFr) / sizeof(kFr[0]); ++i)
+	for(unsigned present = 0; present < 2; ++present)
+		{
+		typedef void (__thiscall* FrOracle)(void*);
+		FrOracle fn = reinterpret_cast<FrOracle>(base + kFr[i].rva);
+		unsigned char self[0x80], selfC[0x80];
+		memset(self, 0xcd, sizeof(self)); memset(selfC, 0xcd, sizeof(selfC));
+		unsigned char blocks[3][0x20];
+		memset(blocks, 0, sizeof(blocks));
+		for(unsigned k = 0; k < kFr[i].count; ++k)
+			{
+			// clear every field first: the 0xcd fill would be a non-null
+			// pointer the oracle would try to free
+			*(void**)(self + kFr[i].offs[k]) = nullptr;
+			*(void**)(selfC + kFr[i].offs[k]) = nullptr;
+			}
+		// the row's own header fields must also be null before the row runs
+		*(void**)(self + 0) = nullptr; *(void**)(selfC + 0) = nullptr;
+		if(present == 1)
+			for(unsigned k = 0; k < kFr[i].count; ++k)
+				{
+				*(void**)(self + kFr[i].offs[k]) = blocks[k];
+				*(void**)(selfC + kFr[i].offs[k]) = blocks[k];
+				}
+		gFreeSeqN = 0; memset(gFreeSeq, 0, sizeof(gFreeSeq));
+		fn(self);
+		unsigned nO = gFreeSeqN;
+		void* fO[3] = { gFreeSeq[0], gFreeSeq[1], gFreeSeq[2] };
+		gFreeSeqN = 0; memset(gFreeSeq, 0, sizeof(gFreeSeq));
+		if(kFr[i].name[0] == '0' && kFr[i].vtable != 0)
+			nxDtorTwoOwned1577(selfC);
+		else
+			nxFreeOwnedFields(selfC, kFr[i].offs, kFr[i].count, kFr[i].minus4);
+		unsigned nC = gFreeSeqN;
+		void* fC[3] = { gFreeSeq[0], gFreeSeq[1], gFreeSeq[2] };
+		bool ok = (nO == nC) && (memcmp(self, selfC, sizeof(self)) == 0);
+		if(present == 1)
+			{
+			ok = ok && (nO == kFr[i].count);
+			for(unsigned k = 0; k < kFr[i].count; ++k)
+				ok = ok && (fO[k] == blocks[k]) && (fC[k] == blocks[k]);
+			}
+		if(!ok)
+			{fprintf(stderr,"bb4 %s present=%u nO=%u nC=%u\n",
+				kFr[i].name, present, nO, nC);++bb4;}
+		}
+	nxSetAllocator004803(nullptr);
+	nxUnbindAllocPtr(base, svAp4);
+	printf("blockers4 candidate failures=%u provisional=1\n", bb4);
+	}
 
 
 
