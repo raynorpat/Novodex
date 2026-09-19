@@ -985,6 +985,19 @@ void					nxLockedCopyTwoPointers(void* self, unsigned fieldOff,
 float					nxLockedDoubleField(void* self, unsigned fieldOff,
 							unsigned dataOff);
 
+//! The copy-and-flag member: helper copies `count` dwords from
+//! [field+dataOff] into out and returns bit `shift` of [field+0x1a8] in al.
+//! Covers 004342 (six from +0x16c, shift 0), 004346 (three from +0x184,
+//! shift 1) and 004350 (three from +0x190, shift 2).
+unsigned char			nxLockedCopyAndFlag(void* self, unsigned fieldOff,
+							unsigned dataOff, unsigned count, unsigned shift,
+							unsigned* out);
+
+//! The three-pointer copy member: helper 000542 writes [field+0x52c],
+//! [field+0x530] and [field+0x534] through the three out pointers (ret 0xc).
+void					nxLockedCopyThreePointers(void* self, unsigned fieldOff,
+							unsigned* out1, unsigned* out2, unsigned* out3);
+
 //! phys_fn_000713: recursive path compression over the record chain -- each
 //! record caches its group root at +0x1e8, self-parented at the root.
 unsigned				nxBodyRecordFixRoot(void* rec);
