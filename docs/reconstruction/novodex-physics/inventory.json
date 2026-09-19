@@ -28662,12 +28662,12 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "destructor chain via 004803 (0x2eb20, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/627",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4242",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the dtorchain differential (3z190): both flag arms failures=0 for all three rows, with the 004803 allocator, the allocator singleton and the free recorders all bound to the same bodies the candidates use",
       "notes": ""
     },
     {
@@ -79988,12 +79988,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "destructor chain via the allocator singleton (0xb0550, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1654",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15128",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the dtorchain differential (3z190): both flag arms failures=0 for all three rows, with the 004803 allocator, the allocator singleton and the free recorders all bound to the same bodies the candidates use",
       "notes": ""
     },
     {
@@ -86270,12 +86270,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "destructor chain with a vtable store (0xb3980, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1806",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15546",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the dtorchain differential (3z190): both flag arms failures=0 for all three rows, with the 004803 allocator, the allocator singleton and the free recorders all bound to the same bodies the candidates use",
       "notes": ""
     },
     {
