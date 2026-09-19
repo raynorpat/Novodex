@@ -12478,8 +12478,9 @@ int wmain(int argc, wchar_t** argv)
 		memcpy(o, gRepCap, sizeof(o));
 		unsigned nO = gRepCount;
 		gRepCount = 0; memset(gRepCap, 0, sizeof(gRepCap));
-		nxMutexWorkEx(selfC, kMw[i].lockOff, kMw[i].objOff, 0x0BADF00Du,
-			kMw[i].workKind, kMw[i].storeOff, 2u, kMw[i].file, kMw[i].line, kMw[i].expr);
+		unsigned wargs[3] = { 0x0BADF00Du, 0x0BADF00Du, 0x0BADF00Du };
+		nxMutexWorkEx(selfC, kMw[i].lockOff, kMw[i].objOff, wargs, 3u,
+			kMw[i].workKind, kMw[i].storeOff, 1u, 2u, kMw[i].file, kMw[i].line, kMw[i].expr);
 		unsigned c[5];
 		memcpy(c, gRepCap, sizeof(c));
 		unsigned nC = gRepCount;
@@ -12492,6 +12493,88 @@ int wmain(int argc, wchar_t** argv)
 	nxSetAssertReport(nullptr);
 	nxUnbindReportSlot(base, svMw);
 	printf("mutexwork candidate failures=%u provisional=1\n", mwf);
+	}
+	// -- Wide work kinds of the same family: 000289, 000338, 003942, 003944,
+	//    003714, 003744.
+	{
+	struct WwRow { unsigned rva; unsigned lockOff; unsigned objOff; int workKind;
+		unsigned baseOff; unsigned nwords; unsigned nargs; unsigned file;
+		unsigned line; unsigned expr; const char* name; };
+	static const WwRow kWw[] = {
+		{ 0x0c400, 0x0c, 0x24, 3, 0x520, 3,  1, 0x10105ba8, 0x05b, 0x10104760, "000289" },
+		{ 0x0cae0, 0x0c, 0x24, 2, 0x52c, 3,  3, 0x10105ba8, 0x120, 0x10104760, "000338" },
+		{ 0x8ef70, 0x0c, 0x14, 2, 0x044, 5,  5, 0x1011796c, 0x022, 0x10104760, "003942" },
+		{ 0x8efe0, 0x0c, 0x14, 2, 0x058, 4,  4, 0x1011796c, 0x029, 0x10104760, "003944" },
+		{ 0x8b560, 0x0c, 0x14, 3, 0x028, 11, 1, 0x101160cc, 0x064, 0x10104760, "003714" },
+		{ 0x8bd90, 0x0c, 0x14, 4, 0x058, 1,  2, 0x101160cc, 0x0dd, 0x10104760, "003744" },
+	};
+	NxReportSaved svWw = nxBindReportSlot(base);
+	nxSetAssertReport(&nxReportRecorder);
+	NxLockApiSaved svWwL = nxBindLockApi(base);
+	nxSetLockOwner(0x2222u);
+	unsigned wwf = 0;
+	for(unsigned i = 0; i < sizeof(kWw) / sizeof(kWw[0]); ++i)
+	for(unsigned arm = 0; arm < 2; ++arm)
+		{
+		typedef void (__thiscall* WwOracle)(void*);
+		WwOracle fn = reinterpret_cast<WwOracle>(base + kWw[i].rva);
+		unsigned char lockObj[0x40]; memset(lockObj, 0, sizeof(lockObj));
+		unsigned char subObj[0x40]; memset(subObj, 0, sizeof(subObj));
+		*(void**)(lockObj) = subObj;
+		unsigned owner = (arm == 0) ? 0x2222u : 0x1111u;
+		memcpy(subObj + 0x1c, &owner, 4);
+		unsigned char obj[0x800]; memset(obj, 0, sizeof(obj));
+		unsigned char self[0x40]; memset(self, 0, sizeof(self));
+		*(void**)(self + kWw[i].lockOff) = lockObj;
+		*(void**)(self + kWw[i].objOff) = obj;
+		unsigned char selfC[0x40]; memcpy(selfC, self, sizeof(self));
+		unsigned char objC[0x800]; memcpy(objC, obj, sizeof(objC));
+		*(void**)(selfC + kWw[i].objOff) = objC;
+		// the row is driven with its own arity; workKind 3 needs a pointer source
+		unsigned char src[0x80]; memset(src, 0, sizeof(src));
+		for(unsigned k = 0; k < 0x20; ++k) *(unsigned*)(src + 4 * k) = 0xC0DE0000u + k;
+		unsigned args[5] = { 0, 0, 0, 0, 0 };
+		if(kWw[i].workKind == 3)
+			args[0] = static_cast<unsigned>(reinterpret_cast<size_t>(src));
+		else
+			for(unsigned k = 0; k < kWw[i].nargs && k < 5; ++k)
+				args[k] = 0x11110000u + k;
+		if(kWw[i].workKind == 4) args[1] = (arm == 0) ? 1u : 0u;
+		unsigned o[5];
+		gRepCount = 0; memset(gRepCap, 0, sizeof(gRepCap));
+		switch(kWw[i].nargs)
+			{
+			case 1: reinterpret_cast<void (__thiscall*)(void*, unsigned)>(base + kWw[i].rva)(self, args[0]); break;
+			case 2: reinterpret_cast<void (__thiscall*)(void*, unsigned, unsigned)>(base + kWw[i].rva)(self, args[0], args[1]); break;
+			case 3: reinterpret_cast<void (__thiscall*)(void*, unsigned, unsigned, unsigned)>(base + kWw[i].rva)(self, args[0], args[1], args[2]); break;
+			case 4: reinterpret_cast<void (__thiscall*)(void*, unsigned, unsigned, unsigned, unsigned)>(base + kWw[i].rva)(self, args[0], args[1], args[2], args[3]); break;
+			default: reinterpret_cast<void (__thiscall*)(void*, unsigned, unsigned, unsigned, unsigned, unsigned)>(base + kWw[i].rva)(self, args[0], args[1], args[2], args[3], args[4]); break;
+			}
+		memcpy(o, gRepCap, sizeof(o));
+		unsigned nO = gRepCount;
+		(void) fn;
+		gRepCount = 0; memset(gRepCap, 0, sizeof(gRepCap));
+		nxMutexWorkEx(selfC, kWw[i].lockOff, kWw[i].objOff, args, kWw[i].nargs,
+			kWw[i].workKind, kWw[i].baseOff, kWw[i].nwords, 2u, kWw[i].file,
+			kWw[i].line, kWw[i].expr);
+		unsigned c[5];
+		memcpy(c, gRepCap, sizeof(c));
+		unsigned nC = gRepCount;
+		if(nO != nC || memcmp(o, c, sizeof(o)) != 0
+			|| memcmp(obj, objC, sizeof(obj)) != 0 || nO != arm)
+			{
+			unsigned k = 0;
+			while(k < sizeof(obj) && obj[k] == objC[k]) ++k;
+			fprintf(stderr,"mutexwide %s arm=%u nO=%u nC=%u firstdiff=%03x\n",
+				kWw[i].name, arm, nO, nC, k);
+			++wwf;
+			}
+		}
+	nxSetLockOwner(0x2222u);
+	nxUnbindLockApi(base, svWwL);
+	nxSetAssertReport(nullptr);
+	nxUnbindReportSlot(base, svWw);
+	printf("mutexwide candidate failures=%u provisional=1\n", wwf);
 	}
 
 
