@@ -1729,6 +1729,20 @@ void nxAssertReport0410() { nxAssertReport(0x10105ba8u, 0x293u, 0x1010609cu); }
 void nxAssertReport3750() { nxAssertReport(0x101160ccu, 0x0f6u, 0x101163acu); }
 void nxAssertReport3754() { nxAssertReport(0x101160ccu, 0x106u, 0x10116418u); }
 void nxAssertReport3782() { nxAssertReport(0x101160ccu, 0x176u, 0x101165dcu); }
+void nxAssertReport000362() { nxAssertReport(0x10105ba8u, 0x179u, 0x10105d0cu); }
+void nxAssertReport000404() { nxAssertReport(0x10105ba8u, 0x281u, 0x10105ff4u); }
+void nxAssertReport000406() { nxAssertReport(0x10105ba8u, 0x287u, 0x1010602cu); }
+void nxAssertReport003736() { nxAssertReport(0x101160ccu, 0x0bcu, 0x10116268u); }
+void nxAssertReport003740() { nxAssertReport(0x101160ccu, 0x0cbu, 0x101162f4u); }
+void nxAssertReport003748() { nxAssertReport(0x101160ccu, 0x0edu, 0x10116374u); }
+void nxAssertReport003752() { nxAssertReport(0x101160ccu, 0x0fdu, 0x101163e4u); }
+void nxAssertReport003756() { nxAssertReport(0x101160ccu, 0x111u, 0x1011644cu); }
+void nxAssertReport003758() { nxAssertReport(0x101160ccu, 0x11bu, 0x10116488u); }
+void nxAssertReport003760() { nxAssertReport(0x101160ccu, 0x123u, 0x101164c4u); }
+void nxAssertReport003762() { nxAssertReport(0x101160ccu, 0x12du, 0x101164f8u); }
+void nxAssertReport003764() { nxAssertReport(0x101160ccu, 0x134u, 0x1011652cu); }
+void nxAssertReport003766() { nxAssertReport(0x101160ccu, 0x13eu, 0x10116564u); }
+void nxAssertReport003884() { nxAssertReport(0x1011681cu, 0x03au, 0x10116858u); }
 
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.

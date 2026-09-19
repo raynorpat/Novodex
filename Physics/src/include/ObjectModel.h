@@ -978,6 +978,20 @@ void					nxAssertReport0410();
 void					nxAssertReport3750();
 void					nxAssertReport3754();
 void					nxAssertReport3782();
+void					nxAssertReport000362();
+void					nxAssertReport000404();
+void					nxAssertReport000406();
+void					nxAssertReport003736();
+void					nxAssertReport003740();
+void					nxAssertReport003748();
+void					nxAssertReport003752();
+void					nxAssertReport003756();
+void					nxAssertReport003758();
+void					nxAssertReport003760();
+void					nxAssertReport003762();
+void					nxAssertReport003764();
+void					nxAssertReport003766();
+void					nxAssertReport003884();
 
 //! The copy members of the locked accessor family: lock, call a helper that
 //! copies `count` dwords from [field+dataOff] into out, unlock. `field` comes
