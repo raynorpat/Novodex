@@ -3403,6 +3403,29 @@ actor_dynamic 88-slot body (and the 3 real actor_interface slots) before a
 candidate vtable identity can match. This is a >100-row scope, which is why
 the Phase-5 gate is RED and must stay RED until that slate is worked.
 
+## 3z115. Task-3/4 scope refined: 88 purecall slots are CRT, not methods
+
+Round 100 refined the 3z114 estimate by classifying all 247 vtable slots
+across the eight registered tables by their census row's kind and state:
+
+- compiler_artifact / discovered: 88 slots (the CRT `_purecall` filler
+  0x0f41dc -- 84 of actor_interface's 87 slots plus shape_base slots 8..11);
+- code / discovered: 86 slots (the REAL remaining product-method scope);
+- code / reconstructed: 70 slots (product methods already done);
+- code / dynamically_gated: 3 slots.
+
+So the true Task-3/4 method-reconstruction scope is **86 product rows**, not
+>100 -- and 88 of the "open" slots are CRT `_purecall` fillers that need no
+product reconstruction at all: a candidate vtable identity only has to map
+those slots to its own purecall stub. Independently, the census-wide kind
+distribution shows the raw discovered count is dominated by non-product rows:
+compiler_artifact/discovered = 3554 versus code/discovered = 2311, so the
+product backlog is roughly a third of the headline "discovered" number. The
+purecall row 005667 (0x0f41dc, 20 bytes) is itself a complete, self-contained
+CRT `_purecall` (handler global 0x1012851c, then abort), already tagged
+kind=compiler_artifact with a static proof. Gate stays honestly RED; no gate,
+coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
