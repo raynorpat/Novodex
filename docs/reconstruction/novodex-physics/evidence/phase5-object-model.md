@@ -5362,6 +5362,30 @@ All five move to `reconstructed`. With them the whole lock-bracketed
 helper-call family -- ten rows across 3z188 and 3z189 -- is closed. No gate,
 coverage-floor, or policy change.
 
+## 3z190. Destructor chains close (3 rows)
+
+Round 173 closed the three rows that run an inner destructor and then free self
+(build/r173.log dtorchain failures=0). They differ only in the inner body and
+in WHICH allocator does the free:
+
+- 001589 (0x2eb20, ret 4) runs 001577 -- the owned-free destructor closed in
+  3z186 -- and frees self through the **004803** allocator;
+- 004415 (0xb0550, ret 4) runs the 004409 list teardown (3z185) and frees self
+  through the **allocator singleton** slot [[[0x101041bc]][0]+0x14], storing no
+  vtable of its own;
+- 004764 (0xb3980, ret 4) is the same but stores the vtable 0x1011b558 first.
+
+Two different allocators reachable two different ways in one small family is
+exactly the sort of thing that would be averaged away by a careless
+generalisation, so the drive keeps them apart: 001589 is routed through the
+004803 pointer while the other two go through the singleton, and each arm
+counts frees in the channel it actually uses.
+
+These are the last rows the drivability filter could reach outside the 88-byte
+group blocked by 000480, and they close only because 3z185 and 3z186 closed
+their inner bodies first. All three move to `reconstructed`. No gate,
+coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
