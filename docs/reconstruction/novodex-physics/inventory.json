@@ -75830,12 +75830,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/D6Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2022",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13900",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via guardedstore differential (3z172): both arms failures=0 for all five rows, comparing the report tuple, the whole object and the stored word, with the report slot bound",
       "notes": ""
     },
     {
@@ -77702,12 +77702,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/SphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2072",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14390",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via guardedstore differential (3z172): both arms failures=0 for all five rows, comparing the report tuple, the whole object and the stored word, with the report slot bound",
       "notes": ""
     },
     {
@@ -77774,12 +77774,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/SphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2074",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14394",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via guardedstore differential (3z172): both arms failures=0 for all five rows, comparing the report tuple, the whole object and the stored word, with the report slot bound",
       "notes": ""
     },
     {
@@ -78530,12 +78530,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/RevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2095",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14713",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via guardedstore differential (3z172): both arms failures=0 for all five rows, comparing the report tuple, the whole object and the stored word, with the report slot bound",
       "notes": ""
     },
     {
@@ -78602,12 +78602,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/RevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2097",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14719",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via guardedstore differential (3z172): both arms failures=0 for all five rows, comparing the report tuple, the whole object and the stored word, with the report slot bound",
       "notes": ""
     },
     {
