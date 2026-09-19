@@ -1213,6 +1213,10 @@ void*					nxDtorOwnedThenFree1589(void* self, unsigned flags);
 //! [self+0x24], which copies [obj+0x59c] to [obj+0x6bc].
 unsigned				nxMutexGlobalStore(void* self, unsigned code, unsigned file,
 							unsigned line, unsigned expression);
+//! phys_fn_004387 (0xaf2c4): a six-byte trampoline -- `jmp [0x10104198]` -- so
+//! the whole row IS the global call, passing its own `this` and stack through.
+void					nxTrampoline4387(void (*fn)(void));
+
 void					nxMutexLinkAdvance(void* self, unsigned objOff,
 							unsigned srcOff, unsigned dstOff);
 void*					nxDtorTeardownThenFree(void* self, unsigned flags,

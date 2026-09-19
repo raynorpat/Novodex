@@ -2618,6 +2618,12 @@ void nxMutexLinkAdvance(void* self, unsigned objOff, unsigned srcOff,
 	memcpy(obj + dstOff, &v, 4);
 	}
 
+// phys_fn_004387 (0xaf2c4): the six-byte global trampoline.
+void nxTrampoline4387(void (*fn)(void))
+	{
+	fn();
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)
