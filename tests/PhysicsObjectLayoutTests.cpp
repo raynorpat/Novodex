@@ -4990,6 +4990,37 @@ int wmain(int argc, wchar_t** argv)
 	printf("planeaabb candidate failures=%u provisional=1\n", paf);
 	}
 
+	// -- Actor vtable thunks 000038 (slot 0x104) and 000040 (slot 0x108).
+	{
+	typedef void* (__thiscall* ActorThunkOracle)(void*, void*, unsigned*);
+	ActorThunkOracle t104 = reinterpret_cast<ActorThunkOracle>(base + 0x2400);
+	ActorThunkOracle t108 = reinterpret_cast<ActorThunkOracle>(base + 0x2430);
+	unsigned atf = 0;
+	for(unsigned si = 0; si < 2; ++si)
+		{
+		// stub record + stub slot body
+		unsigned rec[3] = { 0x11111111u + si, 0x22222222u + si, 0x33333333u + si };
+		void* vt[0x50 / 4 + 1];
+		memset(vt, 0, sizeof(vt));
+		// a __thiscall stub returning rec: implemented via a lambda-free fn ptr
+		struct Stub { static void* __thiscall call(void*, void*, void* r) { return r; } };
+		// pass rec through arg1 so the stub can return it
+		vt[(si ? 0x108 : 0x104) / 4] = reinterpret_cast<void*>(&Stub::call);
+		unsigned char ob[0x20]; memset(ob, 0, sizeof(ob));
+		*(void**)(ob) = vt;
+		unsigned outO[4] = {0,0,0,0}, outC[4] = {0,0,0,0};
+		if(si == 0) { t104(ob, rec, outO); nxActorVtThunk104(ob, rec, outC); }
+		else        { t108(ob, rec, outO); nxActorVtThunk108(ob, rec, outC); }
+		if(memcmp(outO, outC, 12) != 0)
+			{
+			fprintf(stderr,"actorthunk si=%u o=%08x,%08x,%08x c=%08x,%08x,%08x\n", si,
+				outO[0],outO[1],outO[2],outC[0],outC[1],outC[2]);
+			++atf;
+			}
+		}
+	printf("actorthunk candidate failures=%u provisional=1\n", atf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
