@@ -19266,12 +19266,12 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpBoxShape.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/427",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3176",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
       "notes": ""
     },
     {
@@ -20058,12 +20058,12 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpCapsuleShape.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/448",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3223",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
       "notes": ""
     },
     {
@@ -20130,12 +20130,12 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpCapsuleShape.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/450",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3229",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
       "notes": ""
     },
     {
@@ -20850,12 +20850,12 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpPlaneShape.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/467",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3274",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
       "notes": ""
     },
     {
@@ -21462,12 +21462,12 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpSphereShape.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/483",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3316",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
       "notes": ""
     },
     {
@@ -21498,12 +21498,12 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpSphereShape.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/484",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3319",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
       "notes": ""
     },
     {
@@ -22362,12 +22362,12 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpTriangleMeshShape.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/506",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3367",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
       "notes": ""
     },
     {
@@ -80744,12 +80744,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpD6Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1666",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15166",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
       "notes": ""
     },
     {
@@ -80780,12 +80780,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpD6Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1667",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15169",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
       "notes": ""
     },
     {
@@ -81536,12 +81536,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpPulleyJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1687",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15217",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
       "notes": ""
     },
     {
@@ -81572,12 +81572,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpPulleyJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1688",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15220",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
       "notes": ""
     },
     {
@@ -82004,12 +82004,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpDistanceJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1699",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15251",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
       "notes": ""
     },
     {
@@ -82040,12 +82040,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpDistanceJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1700",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15254",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
       "notes": ""
     },
     {
@@ -82544,12 +82544,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpFixedJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1712",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15291",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
       "notes": ""
     },
     {
@@ -82580,12 +82580,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpFixedJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1713",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15294",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
       "notes": ""
     },
     {
@@ -83084,12 +83084,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpPointInPlaneJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1726",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15327",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
       "notes": ""
     },
     {
@@ -83120,12 +83120,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpPointInPlaneJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1727",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15330",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
       "notes": ""
     },
     {
@@ -83552,12 +83552,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpPointOnLineJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1738",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15361",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
       "notes": ""
     },
     {
@@ -83588,12 +83588,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpPointOnLineJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1739",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15364",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
       "notes": ""
     },
     {
@@ -84056,12 +84056,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpSphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1751",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15396",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
       "notes": ""
     },
     {
@@ -84092,12 +84092,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpSphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1752",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15399",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
       "notes": ""
     },
     {
@@ -84128,12 +84128,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpSphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1753",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15402",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
       "notes": ""
     },
     {
@@ -84164,12 +84164,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpSphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1754",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15405",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
       "notes": ""
     },
     {
@@ -84596,12 +84596,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpCylindricalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1765",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15436",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
       "notes": ""
     },
     {
@@ -84632,12 +84632,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpCylindricalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1766",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15439",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
       "notes": ""
     },
     {
@@ -85064,12 +85064,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpRevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1777",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15470",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
       "notes": ""
     },
     {
@@ -85100,12 +85100,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpRevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1778",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15473",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
       "notes": ""
     },
     {
@@ -85136,12 +85136,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpRevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1779",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15476",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
       "notes": ""
     },
     {
@@ -85208,12 +85208,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpRevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1781",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15480",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
       "notes": ""
     },
     {
@@ -86000,12 +86000,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpPrismaticJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1799",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15525",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
       "notes": ""
     },
     {
@@ -86036,12 +86036,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpPrismaticJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1800",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15528",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
       "notes": ""
     },
     {
