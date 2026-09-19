@@ -3648,6 +3648,27 @@ nxAggregateAABB1030 verified byte-exact (build/r112.log aggaabb1030
 failures=0). 001030 moves to `reconstructed`; 005223 is the last remaining
 drivable entry in this band. No gate, coverage-floor, or policy change.
 
+## 3z130. 005223 is register-dependent; the genuine-entry band is exhausted
+
+Round 113 examined 005223 (0xe52d0, 270 bytes), the last candidate 3z129
+left open. It is a three-mode batch filter/append into a container
+([esi+0]=capacity, +4=count, +8=array) with a grow call to 004840 whenever
+the count reaches capacity. Its static proof rules it out as a standalone
+function: the row opens with `push ecx` and then READS the slot that push
+created ([esp+0x10]) three times -- at 0x000e5305, 0x000e5362 and 0x000e53a8
+-- as the base for its `[base + index*4]` lookups, and NEVER writes it. That
+slot therefore holds the caller's incoming ECX, i.e. 005223 takes a pointer
+argument in a register that its own body never establishes. It is
+register-dependent in exactly the way the 3z127 fragments are, so it cannot
+be driven in isolation either.
+
+With that, the genuine-entry band is exhausted: every product row outside the
+Task-3/4 vtable slate is either already closed, a 3z127 fragment (branch
+target), a 3z129 class-(a) dispatch thunk over a non-null sentinel global, a
+3z129 class-(b) CRT SEH/exception caller, a caller of a large still-discovered
+callee, or now a register-dependent row like 005223. No gate, coverage-floor,
+or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
