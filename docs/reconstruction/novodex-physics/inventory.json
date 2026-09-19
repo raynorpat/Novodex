@@ -80816,12 +80816,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpD6Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1668",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15172",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexdirect differential (3z167): both arms failures=0 for all four rows, with the report slot and lock API bound; the work helper 004248 is a bare ret-4 no-op",
       "notes": ""
     },
     {
@@ -80852,12 +80852,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpD6Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1669",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15175",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexdirect differential (3z167): both arms failures=0 for all four rows, with the report slot and lock API bound; the work helper 004248 is a bare ret-4 no-op",
       "notes": ""
     },
     {
@@ -80888,12 +80888,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpD6Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1670",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15178",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexdirect differential (3z167): both arms failures=0 for all four rows, with the report slot and lock API bound; the work helper 004248 is a bare ret-4 no-op",
       "notes": ""
     },
     {
@@ -80924,12 +80924,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpD6Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1671",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15181",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via mutexdirect differential (3z167): both arms failures=0 for all four rows, with the report slot and lock API bound; the work helper 004248 is a bare ret-4 no-op",
       "notes": ""
     },
     {
