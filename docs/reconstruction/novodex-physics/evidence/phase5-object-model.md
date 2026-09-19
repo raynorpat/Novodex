@@ -3980,6 +3980,26 @@ and eax,3` (nxLockedBitExtract), and helper 004083 is a global-flag read of
 candidate to the oracle image's global. No gate, coverage-floor, or policy
 change.
 
+## 3z144. Fourth accessor batch: count, flag, bit-extract, address (4 rows)
+
+Round 127 closed four more members of the 3z138 backlog in one drive
+(build/r127.log lockacc4 failures=0). Each is the usual
+`lock; result = HELPER(field); unlock; return result` with a different
+already-reconstructed helper:
+
+- 003700 (0x8b1f0) wraps 003477 -- the element-count row closed back in
+  3z112 -- so it returns ([field+8]-[field+4])>>2 for field at [self+0x14];
+- 003702 (0x8b220) wraps 003479, the interval flag: [field+0x14] when
+  ([field+0x18]-[field+0x14]) has any bit above the low two, else zero;
+- 004483 (0xb0dc0) wraps 004078, the bit extract ([field+0x2c]>>3)&3, with
+  the lock at [self+0x14] and field at [self+0x18] (variant B);
+- 001071 (0x23520) wraps 000929, which is `lea eax,[field+0xe4]` -- an
+  address-returning member, covered by the new nxLockedFieldAddress.
+
+Three new candidates were added (nxLockedElementCount, nxLockedIntervalFlag,
+nxLockedFieldAddress) alongside the existing nxLockedBitExtract. All four rows
+move to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
