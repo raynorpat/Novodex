@@ -13503,6 +13503,58 @@ int wmain(int argc, wchar_t** argv)
 	nxUnbindAllocPtr(base, svAp4);
 	printf("blockers4 candidate failures=%u provisional=1\n", bb4);
 	}
+	// -- Newly-unlocked rows: 001526 (byte count plus 0x18) and 000396 (the
+	//    conditional lock-API dispatch).
+	{
+	unsigned nu = 0;
+	// 001526
+	{
+	typedef unsigned (__thiscall* T1526)(void*);
+	T1526 fn = reinterpret_cast<T1526>(base + 0x2d970);
+	for(unsigned vi = 0; vi < 4; ++vi)
+		{
+		unsigned char self[0x80]; memset(self, 0, sizeof(self));
+		unsigned char inner[0x40]; memset(inner, 0, sizeof(inner));
+		unsigned a = 3, b = 5, c = 7, d = 11;
+		if(vi & 1) { memcpy(self + 8, &a, 4); memcpy(self + 4, &b, 4); }
+		if(vi & 2) { memcpy(self + 0x10, &c, 4); memcpy(self + 0xc, &d, 4); }
+		unsigned i0 = 2, i4 = 9;
+		memcpy(inner, &i0, 4); memcpy(inner + 4, &i4, 4);
+		inner[8] = 1; inner[0xc] = 1; inner[0x10] = 0;
+		if(vi == 3) *(void**)(self + 0x64) = inner;
+		unsigned char selfC[0x80]; memcpy(selfC, self, sizeof(selfC));
+		unsigned ro = fn(self);
+		unsigned rc = nxByteCountPlus18(selfC);
+		if(ro != rc || ro != nxByteCount1413(selfC) + 0x18u)
+			{fprintf(stderr,"nu 001526 vi=%u ro=%u rc=%u\n", vi, ro, rc); ++nu;}
+		}
+	}
+	// 000396
+	{
+	typedef unsigned char (__thiscall* T0396)(void*, unsigned, unsigned);
+	T0396 fn = reinterpret_cast<T0396>(base + 0xd710);
+	NxFnPtrSaved sv = nxBindFnPtr(base, 0x104028,
+		reinterpret_cast<void*>(&nx2375Stub));
+	for(unsigned fl = 0; fl < 2; ++fl)
+	for(unsigned a2 = 0; a2 < 2; ++a2)
+	for(unsigned rv = 0; rv < 2; ++rv)
+		{
+		g2375Ret = rv ? 0x33u : 0u; g2375A = 0; g2375B = 0;
+		unsigned char self[0x40]; memset(self, 0, sizeof(self));
+		unsigned v = 0x777u; memcpy(self + 0x14, &v, 4);
+		unsigned char selfC[0x40]; memcpy(selfC, self, sizeof(selfC));
+		unsigned char ro = fn(self, fl, a2);
+		unsigned aO = g2375A, bO = g2375B;
+		g2375Ret = rv ? 0x33u : 0u; g2375A = 0; g2375B = 0;
+		unsigned char rc = nxLockApiDispatch0396(selfC, fl, a2, &nx2375Stub);
+		if(ro != rc || aO != g2375A || bO != g2375B)
+			{fprintf(stderr,"nu 000396 fl=%u a2=%u rv=%u ro=%u rc=%u\n",
+				fl, a2, rv, ro, rc);++nu;}
+		}
+	nxUnbindFnPtr(base, 0x104028, sv);
+	}
+	printf("newunlock candidate failures=%u provisional=1\n", nu);
+	}
 
 
 
