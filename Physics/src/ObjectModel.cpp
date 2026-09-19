@@ -2386,6 +2386,76 @@ void nxFreeOwnedBlock5320(void* self)
 	memcpy(p + 0x48, &zero, 4);
 	}
 
+// phys_fn_004409 (0xb0360): the linked-list teardown.
+void nxListTeardown4409(void* self)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	unsigned char* node = *reinterpret_cast<unsigned char**>(p + 0xc);
+	unsigned vtable = 0x1011a648u;
+	memcpy(p, &vtable, 4);
+	while(node != nullptr)
+		{
+		void** vt = *reinterpret_cast<void***>(node);
+		unsigned char* next = *reinterpret_cast<unsigned char**>(node + 0x10);
+		typedef void (__stdcall* Fn1)(unsigned);
+		reinterpret_cast<Fn1>(vt[0])(1u);
+		node = next;
+		}
+	// the oracle clears +8, +0xc, +0x10, +0x14, +0x18 and +0x20 -- note it
+	// SKIPS +0x1c, which a plain stride would wrongly include
+	static const unsigned kClearOffs[6] = { 8u, 0xcu, 0x10u, 0x14u, 0x18u, 0x20u };
+	for(unsigned k = 0; k < 6; ++k)
+		{
+		unsigned zero = 0u;
+		memcpy(p + kClearOffs[k], &zero, 4);
+		}
+	}
+
+// phys_fn_001413 (0x29920): the summed byte count.
+unsigned nxByteCount1413(void* self)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	unsigned total = 0;
+	unsigned a, b, c, d;
+	memcpy(&a, p + 8, 4);
+	memcpy(&b, p + 4, 4);
+	memcpy(&c, p + 0x10, 4);
+	memcpy(&d, p + 0xc, 4);
+	// 001457
+	if(a != 0u)
+		total += b * 6u;
+	if(c != 0u)
+		total += d * 12u;
+	// 001668 on [self+0x64] when non-null
+	unsigned inner;
+	memcpy(&inner, p + 0x64, 4);
+	if(inner != 0u)
+		{
+		unsigned char* q = reinterpret_cast<unsigned char*>(static_cast<size_t>(inner));
+		unsigned q0, q4, q8, qc, q10;
+		memcpy(&q0, q, 4);
+		memcpy(&q4, q + 4, 4);
+		memcpy(&q8, q + 8, 4);
+		memcpy(&qc, q + 0xc, 4);
+		memcpy(&q10, q + 0x10, 4);
+		if(q8 != 0u)
+			total += q0 * 4u;
+		if(qc != 0u)
+			total += q0 * 4u;
+		if(q10 != 0u)
+			total += q4 * 4u;
+		}
+	return total;
+	}
+
+// phys_fn_000443 (0xdeb0): the lazy singleton getter.
+unsigned nxLazySingleton0443(void* obj, unsigned cached, NxSingletonFn fn)
+	{
+	if(cached != 0u)
+		return cached;
+	return fn(obj);
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)

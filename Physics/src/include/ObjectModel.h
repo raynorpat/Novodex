@@ -1149,6 +1149,27 @@ unsigned char			nxLockApiTest2375(void* self, unsigned arg,
 //! and [self+0x48].
 void					nxFreeOwnedBlock5320(void* self);
 
+//! phys_fn_004409 (0xb0360): a linked-list teardown. Stores the vtable
+//! 0x1011a648 at [self], then walks the chain from [self+0xc] through +0x10
+//! calling vtable slot +0x00 of every node with the constant 1 (the call site
+//! does not clean it, so the slot pops the argument itself), and finally clears
+//! [self+8] through [self+0x20].
+void					nxListTeardown4409(void* self);
+
+//! phys_fn_001413 (0x29920): 001457's byte count plus, when [self+0x64] is
+//! non-null, 001668's count on it. 001457 adds [this+4]*6 when [this+8] is set
+//! and [this+0xc]*12 when [this+0x10] is set; 001668 adds [this]*4 for each of
+//! [this+8] and [this+0xc] and [this+4]*4 for [this+0x10].
+unsigned				nxByteCount1413(void* self);
+
+//! phys_fn_000443 (0xdeb0): the lazy singleton getter. Returns the cached
+//! pointer at [0x10123c14] when non-null, otherwise builds it through vtable
+//! slot +0x1c of the object at [0x10123c08] and caches the result. The harness
+//! binds both globals and the hook.
+typedef unsigned (__fastcall* NxSingletonFn)(void*);
+unsigned				nxLazySingleton0443(void* obj, unsigned cached,
+							NxSingletonFn fn);
+
 void					nxOnceFourCalls0342(void* self, unsigned char* gate,
 							unsigned a1, unsigned a2, unsigned a3, unsigned a4);
 
