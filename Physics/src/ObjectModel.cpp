@@ -1458,6 +1458,27 @@ void nxLockedCopyPose(void* self, unsigned fieldOff, unsigned dataOff,
 	memcpy(reinterpret_cast<unsigned char*>(out) + 0x24, field + dataOff + 0x24, 12);
 	}
 
+// The mask member: the wrapped helper is `mov eax,[ecx+dataOff]; and eax,arg`.
+unsigned nxLockedAndRead(void* self, unsigned fieldOff, unsigned dataOff,
+	unsigned arg)
+	{
+	const unsigned char* p = reinterpret_cast<const unsigned char*>(self);
+	const unsigned char* field = *reinterpret_cast<const unsigned char* const*>(p + fieldOff);
+	unsigned v;
+	memcpy(&v, field + dataOff, 4);
+	return v & arg;
+	}
+
+// The bit-extract member: `mov eax,[ecx+dataOff]; shr eax,3; and eax,3`.
+unsigned nxLockedBitExtract(void* self, unsigned fieldOff, unsigned dataOff)
+	{
+	const unsigned char* p = reinterpret_cast<const unsigned char*>(self);
+	const unsigned char* field = *reinterpret_cast<const unsigned char* const*>(p + fieldOff);
+	unsigned v;
+	memcpy(&v, field + dataOff, 4);
+	return (v >> 3) & 3u;
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)

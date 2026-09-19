@@ -946,6 +946,17 @@ void					nxLockedCopyOut(void* self, unsigned fieldOff,
 void					nxLockedCopyPose(void* self, unsigned fieldOff,
 							unsigned dataOff, unsigned* out);
 
+//! The mask member: lock, read [field+dataOff] where field is [self+fieldOff],
+//! AND it with the argument, unlock, return. Wraps helpers like 003455
+//! ([field+0x58]) and 003595 ([field+0x10]).
+unsigned				nxLockedAndRead(void* self, unsigned fieldOff,
+							unsigned dataOff, unsigned arg);
+
+//! The bit-extract member: lock, return ([field+dataOff] >> 3) & 3. Wraps
+//! helper 004078 ([field+0x2c]).
+unsigned				nxLockedBitExtract(void* self, unsigned fieldOff,
+							unsigned dataOff);
+
 //! phys_fn_000713: recursive path compression over the record chain -- each
 //! record caches its group root at +0x1e8, self-parented at the root.
 unsigned				nxBodyRecordFixRoot(void* rec);
