@@ -5093,6 +5093,21 @@ int wmain(int argc, wchar_t** argv)
 	printf("capaabb candidate failures=%u provisional=1\n", caf);
 	}
 
+	// -- Global-region zero 003390 (0x83a60): zeroes the 0xdd bytes at
+	//   .data[0x1012626b .. +0xdc]. Read-back verified.
+	{
+	typedef void (__cdecl* GlobZeroRegion2Oracle)();
+	GlobZeroRegion2Oracle gz2 = reinterpret_cast<GlobZeroRegion2Oracle>(base + 0x83a60);
+	unsigned gzf = 0;
+	unsigned char* gbase = const_cast<unsigned char*>(base) + 0x12626b;
+	for(unsigned i = 0; i < 0xdd; ++i) gbase[i] = 0xA5;
+	gz2();
+	unsigned okz = 1;
+	for(unsigned i = 0; i < 0xdd; ++i) if(gbase[i] != 0) okz = 0;
+	if(!okz){fprintf(stderr,"gz2 fail\n");++gzf;}
+	printf("globzero2 candidate failures=%u provisional=1\n", gzf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
