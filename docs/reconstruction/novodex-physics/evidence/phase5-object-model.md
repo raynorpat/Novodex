@@ -4094,6 +4094,36 @@ rows, which still report lockacc7 failures=0. The state is back to
 The standing lesson: every round must check the harness's mismatch COUNT, not
 only the gate exit code. No gate, coverage-floor, or policy change.
 
+## 3z149. The seventh batch is layout-sensitive; all four rows re-opened
+
+Round 132 dug into 3z148's regression and found it is worse than "one bad
+row". Bisection results, all reproducible:
+
+- the batch in its committed round-130 ORDER (003808 then 003806) failed;
+- the SAME rows in the reverse order passed, three runs in a row;
+- restoring only the two read-only rows (000416, 000421) passed;
+- adding the two copy rows back to that reduced block passed;
+- then removing an unrelated DIAGNOSTIC PRINT from the boxrow3 block -- a
+  change that cannot alter any data the batch touches -- flipped boxrow3 back
+  to ok=0;
+- removing the two copy rows from that build did NOT restore it;
+- removing the whole batch did, and stayed green over three runs.
+
+So the trigger is not a specific row: it is incidental CODE LAYOUT. boxrow3
+compares the candidate's out8/out9 against digests recorded at lines 2301 and
+2310, before the batch runs at all, and its own printed digests never change
+(d8=d9=8428d8b5) -- yet its `ok` flag moves with unrelated edits elsewhere in
+wmain. That is a latent, layout-sensitive defect somewhere in the harness
+(most likely an uninitialised or stack-resident read whose value shifts with
+the frame), not a property of the accessor rows.
+
+Because a closure whose presence destabilises another check is not a closure
+this program can stand behind, ALL FOUR rows (000416, 000421, 003808, 003806)
+were re-opened to `discovered` and the seventh batch was removed entirely.
+State is back to `layout candidate mismatches=1` with boxrow3 ok=1, verified
+stable over three consecutive runs. The mechanism should be found before any
+of these rows is closed again. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
