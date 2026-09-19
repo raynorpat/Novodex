@@ -11668,6 +11668,33 @@ int wmain(int argc, wchar_t** argv)
 	nxUnbindReportSlot(base, svG);
 	printf("gate3708 candidate failures=%u provisional=1\n", gf3708);
 	}
+	// -- Lock probe 000392: both arms, owner word set to match the query stub.
+	{
+	typedef unsigned char (__thiscall* ProbeOracle)(void*);
+	ProbeOracle fn = reinterpret_cast<ProbeOracle>(base + 0xd660);
+	NxLockApiSaved svP = nxBindLockApi(base);
+	nxSetLockOwner(0x2222u);
+	unsigned pf = 0;
+	for(unsigned arm = 0; arm < 2; ++arm)
+		{
+		unsigned char lockObj[0x40]; memset(lockObj, 0, sizeof(lockObj));
+		unsigned char subObj[0x40]; memset(subObj, 0, sizeof(subObj));
+		*(void**)(lockObj) = subObj;
+		unsigned owner = (arm == 0) ? 0x2222u : 0x1111u;
+		memcpy(subObj + 0x1c, &owner, 4);
+		unsigned char self[0x40]; memset(self, 0, sizeof(self));
+		*(void**)(self + 0xc) = lockObj;
+		unsigned char selfC[0x40]; memcpy(selfC, self, sizeof(self));
+		unsigned char ro = fn(self);
+		unsigned char rc = nxLockProbe0392(selfC);
+		if(ro != rc || ro != static_cast<unsigned char>(arm == 0 ? 1 : 0))
+			{fprintf(stderr,"probe0392 arm=%u ro=%u rc=%u\n", arm, ro, rc);++pf;}
+		}
+	nxSetLockOwner(0x2222u);
+	nxUnbindLockApi(base, svP);
+	printf("probe0392 candidate failures=%u provisional=1\n", pf);
+	}
+
 
 
 
