@@ -3542,6 +3542,16 @@ indices (build/r106.log planeix6 failures=0). 001267 moves to
 `reconstructed` -- the SEVENTH Task-3/4 vtable slot (001403, 001371, 001008,
 001255, 000038, 000040, 001267). No gate, coverage-floor, or policy change.
 
+## 3z123. All phase gates verified honest (round 107)
+
+Round 107 ran every registered phase gate to confirm the global gate posture
+is honest. Result: phases 2, 3 and 4 report PASS (exit 0); phase 5 is RED on
+purpose (exit 1) with the single `family=vtables` CANDIDATE-MISSING row that
+3z114/3z115 scope; phases 6, 7 and 8 report UNGATED (exit 3), which is the
+documented outcome for a phase whose differential, static-proof and
+coverage-line registries are still empty rather than a pass. No gate,
+coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
