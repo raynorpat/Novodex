@@ -4845,6 +4845,33 @@ The lesson is the same one 3z168 drew and it keeps recurring: when a row
 declines have now been reversed that way (001329's group, 004334 here, and the
 002390 callback-field misread). No gate, coverage-floor, or policy change.
 
+## 3z173. Lock-first direct-call family closes (4 rows)
+
+Round 156 took the mutex shape to a family whose lock and object offsets differ
+from the earlier ones: the lock is at **[self+0xc]** and the object at
+**[self+0x24]** (or +0x14), not the +0x10/+0x18 pair 3z161 used. Four rows
+close:
+
+| row | object | work |
+|---|---|---|
+| 000350 | +0x24 | helper 000545 stores the argument at [obj+0x6ac] |
+| 000354 | +0x24 | helper 000549 stores it at [obj+0x6b0] |
+| 000358 | +0x24 | helper 000553 stores it at [obj+0x6b4] |
+| 003870 | +0x14 | helper 004248 is a bare ret-4 no-op |
+
+All four report (2, <file>, <line>, 0, 0x10104760) on the acquire-failing arm.
+Their helpers are already reconstructed, but only as census rows -- they have no
+C++ candidate of their own -- so the candidate models each helper's EFFECT
+directly: workKind 0 for the no-op, workKind 1 for the single store, with the
+store offset passed in. Both arms verify and the whole 0x800-byte object buffer
+is compared, not just the stored word (build/r156.log mutexwork failures=0).
+
+The remaining rows of this family (000289, 000338, 003714, 003744, 003942,
+003944) need helpers with wider effects -- 3, 4 and 5 stores, an 11-dword copy
+from a pointer argument, and one OR/AND bit-update -- which the same workKind
+mechanism can absorb one at a time. All four closed rows move to
+`reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
