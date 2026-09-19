@@ -1365,6 +1365,79 @@ float* nxPoseFromQuat0130(void* self, float* out)
 	return out;
 	}
 
+// phys_fn_000094 (0x2f30, ret 4): the orientation quaternion. With a record it
+// copies the stored (x, y, z, w) at record+0x5c. Without one it derives the
+// quaternion from the cached matrix at [self+0x14]+0x20 using the
+// largest-diagonal method: the trace arm when the trace is non-negative, else
+// the case selected by the largest of m00/m11/m22 (index stride 4 floats).
+float* nxOrientation0094(void* self, float* out)
+	{
+	const unsigned char* p = reinterpret_cast<const unsigned char*>(self);
+	const unsigned char* body = *reinterpret_cast<const unsigned char* const*>(p + 0x14);
+	const unsigned char* rec = *reinterpret_cast<const unsigned char* const*>(body + 8);
+	if(rec != nullptr)
+		{
+		memcpy(out, rec + 0x5c, 16);
+		return out;
+		}
+	const float* m = reinterpret_cast<const float*>(body + 0x20);
+	const double m00 = m[0], m01 = m[1], m02 = m[2];
+	const double m10 = m[3], m11 = m[4], m12 = m[5];
+	const double m20 = m[6], m21 = m[7], m22 = m[8];
+	double x, y, z, w;
+	const double trace = m00 + m11 + m22;
+	if(!(trace < 0.0))
+		{
+		const double s = sqrt(trace + 1.0);
+		const double inv = 0.5 / s;
+		x = (m21 - m12) * inv;
+		y = (m02 - m20) * inv;
+		z = (m10 - m01) * inv;
+		w = 0.5 * s;
+		}
+	else
+		{
+		unsigned edx = (m11 > m00) ? 1u : 0u;
+		if(m22 > m[edx * 4u]) edx = 2u;
+		if(edx == 0u)
+			{
+			const double s = sqrt(m00 - m11 - m22 + 1.0);
+			const double inv = 0.5 / s;
+			x = 0.5 * s;
+			y = (m10 + m01) * inv;
+			z = (m20 + m02) * inv;
+			w = (m21 - m12) * inv;
+			}
+		else if(edx == 1u)
+			{
+			const double s = sqrt(m11 - m00 - m22 + 1.0);
+			const double inv = 0.5 / s;
+			x = (m10 + m01) * inv;
+			y = 0.5 * s;
+			z = (m21 + m12) * inv;
+			w = (m02 - m20) * inv;
+			}
+		else if(edx == 2u)
+			{
+			const double s = sqrt(m22 - m00 - m11 + 1.0);
+			const double inv = 0.5 / s;
+			x = (m20 + m02) * inv;
+			y = (m21 + m12) * inv;
+			z = 0.5 * s;
+			w = (m10 - m01) * inv;
+			}
+		else
+			{
+			x = y = z = w = 0.0;
+			}
+		}
+	out[0] = static_cast<float>(x);
+	out[1] = static_cast<float>(y);
+	out[2] = static_cast<float>(z);
+	out[3] = static_cast<float>(w);
+	return out;
+	}
+
 // phys_fn_000132 (0x46c0, ret 4): quaternion at record+0x5c (x, y, z, w) to a
 // 3x3 rotation matrix in out[0..8]; when the record pointer is null it copies
 // the cached 36 bytes at [self+0x14]+0x20 instead. Returns out.

@@ -890,6 +890,13 @@ float*					nxQuatToMatrix0132(void* self, float* out);
 //! [self+0x14]+0x20 when the record is null. Returns out.
 float*					nxPoseFromQuat0130(void* self, float* out);
 
+//! phys_fn_000094 (0x2f30, actor_dynamic slot, ret 4): writes the orientation
+//! quaternion (x, y, z, w) to out -- the stored quaternion at record+0x5c when
+//! a record exists, otherwise derived from the cached matrix at
+//! [self+0x14]+0x20 by the largest-diagonal matrix-to-quaternion method.
+//! Returns out either way.
+float*					nxOrientation0094(void* self, float* out);
+
 //! phys_fn_000713: recursive path compression over the record chain -- each
 //! record caches its group root at +0x1e8, self-parented at the root.
 unsigned				nxBodyRecordFixRoot(void* rec);
