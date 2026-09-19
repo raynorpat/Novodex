@@ -4960,6 +4960,36 @@ int wmain(int argc, wchar_t** argv)
 	printf("capmass2 candidate failures=%u provisional=1\n", cmf);
 	}
 
+	// -- PLANE vtable slot 9 local AABB (001255, 0x25090, ret 4).
+	{
+	typedef void (__thiscall* PlaneAabbOracle)(void*, float*);
+	PlaneAabbOracle pa = reinterpret_cast<PlaneAabbOracle>(base + 0x25090);
+	unsigned paf = 0;
+	const float normals[7][3] = {
+		{1,0,0}, {-1,0,0}, {0,1,0}, {0,-1,0}, {0,0,1}, {0,0,-1}, {0.5f,0.5f,0.5f} };
+	for(unsigned ni = 0; ni < 7; ++ni)
+	for(unsigned di = 0; di < 2; ++di)
+		{
+		unsigned char pb[0x120]; memset(pb, 0, sizeof(pb));
+		float d = di ? -3.5f : 2.25f;
+		memcpy(pb + 0xe0, normals[ni], 12);
+		memcpy(pb + 0xec, &d, 4);
+		float outO[6], outC[6];
+		memset(outO, 0, sizeof(outO)); memset(outC, 0, sizeof(outC));
+		pa(pb, outO);
+		reinterpret_cast<PlaneShape*>(pb)->nxPlaneLocalAABB1255(outC);
+		if(memcmp(outO, outC, sizeof(outO)) != 0)
+			{
+			fprintf(stderr,"planeaabb n=%u d=%u\n", ni, di);
+			for(unsigned i=0;i<6;++i) if(outO[i]!=outC[i])
+				fprintf(stderr,"  o[%u] o=%08x c=%08x\n", i,
+					*(unsigned*)(outO+i), *(unsigned*)(outC+i));
+			++paf;
+			}
+		}
+	printf("planeaabb candidate failures=%u provisional=1\n", paf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
