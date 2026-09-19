@@ -5594,6 +5594,40 @@ int wmain(int argc, wchar_t** argv)
 	printf("lockacc candidate failures=%u provisional=1\n", af);
 	}
 
+	// -- Locked accessor family: lock, getter on [self+0x24], unlock, return.
+	{
+	struct LockedGetter { unsigned rva; unsigned offset; const char* name; };
+	static const LockedGetter kLocked[] = {
+		{ 0xc8a0, 0x3c,   "000317" }, { 0xc910, 0x6c8, "000321" },
+		{ 0xc9a0, 0x6c4,  "000327" }, { 0xcd20, 0x6ac, "000352" },
+		{ 0xcdb0, 0x6b0,  "000356" }, { 0xce40, 0x6b4, "000360" },
+	};
+	NxLockApiSaved svLG = nxBindLockApi(base);
+	unsigned lgf = 0;
+	unsigned char lockObj6[0x40]; memset(lockObj6, 0, sizeof(lockObj6));
+	unsigned char subObj6[0x40]; memset(subObj6, 0, sizeof(subObj6));
+	*(void**)(lockObj6) = subObj6;
+	for(unsigned i = 0; i < sizeof(kLocked) / sizeof(kLocked[0]); ++i)
+		{
+		typedef unsigned (__thiscall* LockedGetOracle)(void*);
+		LockedGetOracle fn = reinterpret_cast<LockedGetOracle>(base + kLocked[i].rva);
+		unsigned char field[0x800]; memset(field, 0, sizeof(field));
+		*(unsigned*)(field + kLocked[i].offset) = 0xB0000000u + kLocked[i].offset;
+		unsigned char sh[0x40]; memset(sh, 0, sizeof(sh));
+		*(void**)(sh + 0x10) = lockObj6;
+		*(void**)(sh + 0x24) = field;
+		unsigned o = fn(sh);
+		unsigned c = nxLockedFieldRead(sh, kLocked[i].offset);
+		if(o != c || o != 0xB0000000u + kLocked[i].offset)
+			{
+			fprintf(stderr,"lockedget %s o=%08x c=%08x\n", kLocked[i].name, o, c);
+			++lgf;
+			}
+		}
+	nxUnbindLockApi(base, svLG);
+	printf("lockedget candidate failures=%u provisional=1\n", lgf);
+	}
+
 	// -----------------------------------------------------------------------
 	// Mass helper phys_fn_000849: the compute-mass row over three
 	// half-extents {1.5, 2.0, 2.5}. Two drives -- density 2.0f and the
