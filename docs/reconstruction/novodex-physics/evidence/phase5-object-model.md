@@ -3775,6 +3775,25 @@ gather0046 failures=0). 000046 moves to `reconstructed`. The same binding
 unblocks 000132, 000130, 000094, 000146 and 000148. No gate, coverage-floor,
 or policy change.
 
+## 3z135. Quaternion-to-matrix slate row closes (000132)
+
+Round 118 used the 3z134 lock-API binding (now factored into reusable
+nxBindLockApi/nxUnbindLockApi helpers that VirtualProtect the slot page, store
+the __stdcall stubs, and restore both on the way out) to close the first of
+the five newly-unblocked rows. 000132 (0x46c0, actor_dynamic slot, ret 4,
+259 bytes) writes the 3x3 rotation matrix for the quaternion at record+0x5c
+(x, y, z, w) into out[0..8]; when the record pointer is null it instead copies
+the cached 36 bytes at [self+0x14]+0x20. Both arms were driven: the matrix
+matches the textbook quaternion expansion exactly --
+out[0] = 1-2(y^2+z^2), out[1] = 2(xy-zw), out[2] = 2(xz+yw),
+out[3] = 2(xy+zw), out[4] = 1-2(x^2+z^2), out[5] = 2(yz-xw),
+out[6] = 2(xz-yw), out[7] = 2(yz+xw), out[8] = 1-2(x^2+y^2) -- which the
+listing's opening `1 - 2(y^2+z^2)` into out[0] already predicted. Candidate
+nxQuatToMatrix0132 (double-staged accumulation for the x87 extended-precision
+rounding) matched on both arms (build/r118.log quatm0132 failures=0).
+000132 moves to `reconstructed`; 000130, 000094, 000146 and 000148 remain
+open behind the same binding. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
