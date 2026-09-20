@@ -7732,6 +7732,44 @@ unaffected.
 
 No rows move. No gate, coverage-floor, or policy change.
 
+## 3z257. Audit remediation: 146 static proofs backfilled
+
+Round 242 acted on 3z256's finding. Of the 308 `reconstructed` rows missing a
+`static_proof`, **146 had a genuinely descriptive `source` field** -- text like
+"tail-jmp mutex link advance", "locked list-advance accessor (0xc960)",
+"per-element virtual dispatch loop (0x22970, ret 4)" -- and for those the proof
+text was backfilled from the row's own recorded description:
+
+    static review of the recorded shape: <source>; the row was closed against
+    the differential harness and this proof text is backfilled from the row's
+    own recorded description (phase-8 audit, 3z257)
+
+**The backfill is deliberately attributed.** The text says where it came from, so
+a later reader can tell a backfilled proof from one written at closure time, and
+the audit trail is not laundered.
+
+**The remaining 162 are NOT backfilled, on purpose.** Their `source` field holds
+only a file path (`Physics/src/NpScene.cpp`), which is a location rather than a
+behaviour and cannot honestly serve as a proof of what the row does. Filling
+those would be fabricating evidence, which is worse than the gap. They stay
+flagged by 3z256.
+
+**Verified unchanged:**
+
+    functions=6338  data_objects=5138  unexplained=0        (inventory)
+    gate_exit=1  layout candidate mismatches=1  floor=126   (phase 5)
+    inventory=pass  gate_failure=oracle_differential        (phase 5)
+
+So the remediation improved the census's completeness without moving any gate,
+any count, or any state. No rows change state; only their evidence text does.
+
+**State of the Phase 8 audit after this round**: 778 closed code rows, of which
+146 had their proofs recovered here, 162 remain flagged for a written proof, and
+the rest already carried one. The harness defect that blocks new differential
+blocks (3z238-3z255) is unchanged and is still the gate on further closures.
+
+No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
