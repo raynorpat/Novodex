@@ -758,3 +758,70 @@ candidate (the `fdivr` division).
 NxMath::sqrt(a)` division reach `fdivr`, and if that does not close it, record the
 boundary as final and move to the nine undriven joint families -- which have a far
 larger surface than one bit.
+
+## 7e. AUDIT: 117 reconstructed rows name a source file that does not exist
+
+Found while scoping Phase 6's joint families, and it is wider than Phase 6.
+
+The census records a `source` for many rows. Of the 607 `reconstructed` rows that
+name one, 216 name a path. **Only 6 of those 29 distinct paths exist in the
+repository:**
+
+    Physics/src/ObjectModel.cpp                          63 rows   exists
+    Physics/src/opcode/IcePrunable.cpp                   15 rows   exists
+    Physics/src/MemoryStream.cpp                         13 rows   exists
+    Physics/src/PMap.cpp                                  5 rows   exists
+    Physics/src/TriangleMesh.cpp                          2 rows   exists
+    External/opcode/novodex/Ice/IceRevisitedRadix.cpp     1 rows   exists
+    -- and 23 further paths naming 117 rows, none of which exists --
+
+The missing ones are the production files a reader would expect the reconstruction
+to live in:
+
+    Physics/src/fluids/NpFluid.cpp                       19 rows
+    Physics/src/NpScene.cpp                              15 rows
+    Physics/src/NpActor.cpp                              14 rows
+    Physics/src/core/NpD6Joint.cpp                        8 rows
+    Physics/src/core/NpSphericalJoint.cpp                 6 rows
+    Physics/src/core/NpRevoluteJoint.cpp                  6 rows
+    Physics/src/core/NpPulleyJoint.cpp                    4 rows
+    ... and 16 more, one per shape, joint family and effector
+
+**What this does and does not mean.** It is *not* a claim that those 117 rows are
+unproven. Their `dynamic_proof` texts are present, they name real differentials,
+and the audit below shows every one of them is named in the harness. What it means
+is that the `source` field is **not a path to an implementation**. For the rows
+that name an existing file, the path is real; for the other 117 it names a file
+that was never created, which makes the field read as a planned location rather
+than a recorded one.
+
+**The mechanism, checked on one case rather than assumed.** The guardedstore
+differential's candidate side is `nxGuardedStoreEx`, which is defined once in
+`Physics/src/ObjectModel.cpp` and parameterised by `(fieldOff, code, line, expr)`
+-- so five rows at five different addresses share one implementation. Those five
+rows name `Physics/src/core/SphericalJoint.cpp`, `RevoluteJoint.cpp` and
+`D6Joint.cpp`, none of which exists, and none of which is where their candidate
+lives. The same shape holds for the other twelve differentials these 117 rows
+name: `mutexfamily` (31 rows), `assertrows` (20), `tailjmp` (10), `mutexlistfree`
+(10), `mutexdirect` (9), `mutexwide` (6) and the rest.
+
+**Two consequences worth stating.**
+
+1. **`validate_inventory.py` does not check it.** The validator reads `source` for
+   compiler artifacts (a `compiler_artifact` row "must not claim product source")
+   but never resolves a path, so a row can name a file that has never existed and
+   the census still passes. That is the shape of gate this programme has been
+   caught building before: a check that cannot fail.
+2. **For Phase 8 it matters.** That audit's gate requires every product source
+   function to map to one or more stable oracle IDs *and* every non-artifact oracle
+   function to map to a concrete source function. A `source` naming a
+   non-existent file cannot satisfy the second direction, so the 117 rows are a
+   known Phase 8 blocker regardless of their differential evidence.
+
+**Recorded, not corrected.** Moving the rows' `source` to `ObjectModel.cpp` would
+be a guess about intent for 117 rows, and creating the 23 files would be a
+production change that no evidence asks for. What is needed first is a decision
+about what the field means -- the path the reconstruction lives at, or the unit
+the linker placed the row in. That is a programme decision, not a row edit.
+
+No rows move. No gate, coverage-floor, or policy change.
