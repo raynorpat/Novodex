@@ -1349,6 +1349,12 @@ typedef void (NxSlotCtx::*NxSlotMfp2)(unsigned, unsigned);
 //! when [self+0xc] is NOT less than zero, and then zeroes three fields.
 void					nxReleaseOwnedFields(void* self, const unsigned* offsets,
 							unsigned count, void* singleton, NxSlotMfp1 slot);
+//! phys_fn_005159 (0xe32e0): guarded by the BYTE at [self+0x14]; when it is
+//! non-zero it releases [self+8] and [self+4] through 004803 and the singleton
+//! vtable slot +0xc, each cleared after release.
+void					nxByteGuardedRelease5159(void* self, void* singleton,
+							const unsigned* offsets, unsigned count, NxSlotMfp1 slot);
+
 void					nxReleaseGuarded4838(void* self, void* singleton,
 							NxSlotMfp1 slot);
 

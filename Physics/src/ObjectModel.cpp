@@ -3028,6 +3028,16 @@ void nxReleaseGuarded4838(void* self, void* singleton, NxSlotMfp1 slot)
 	memcpy(p + 4, &zero, 4);
 	}
 
+// phys_fn_005159 (0xe32e0): the byte-guarded release.
+void nxByteGuardedRelease5159(void* self, void* singleton,
+	const unsigned* offsets, unsigned count, NxSlotMfp1 slot)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	if(p[0x14] == 0)
+		return;
+	nxReleaseOwnedFields(self, offsets, count, singleton, slot);
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)
