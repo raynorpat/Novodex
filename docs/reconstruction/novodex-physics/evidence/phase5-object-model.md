@@ -6344,6 +6344,30 @@ listing does.
 
 002342 moves to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z224. 003238 closes first try, using 3z223's rule in advance
+
+Round 207 closed 003238 (build/r207.log ownvtable3238 failures=0, stable over
+three runs), and it passed on the first attempt because 3z223's rule was applied
+while WRITING the candidate rather than after a failure.
+
+The row releases FOUR owned fields -- [self+0xc], [self+8], [self+0x4038] and
+[self+0x4044] -- through the object's OWN vtable slot +0x18, each only when
+non-null, then clears the field and, for the two high groups, one companion
+field. It finishes by clearing [self+0x10].
+
+**The question that mattered was which clears are conditional.** Two rounds in a
+row (3z218, 3z223) had shown that a `je` which looks like "skip the whole group"
+often skips only the release, leaving the clears to run regardless. So the
+candidate was written with the per-group clears conditional and the final
+[self+0x10] clear unconditional, and the drive was given all sixteen occupancy
+pans so that a wrong guess about ANY of the five clears would show up as a
+diff at a named offset. It matched everywhere.
+
+That is the rule working as intended: knowing which pattern this compiler
+emits is what turned a likely three-attempt row into a one-attempt row.
+
+003238 moves to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
