@@ -8125,11 +8125,11 @@
       "phase": 2,
       "phase_provenance": "translation_unit",
       "state": "dynamically_gated",
-      "source": null,
+      "source": "pointer-pair element count (0xdef0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/163",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1211",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the pair0448 differential (3z195): five cases -- three elements, empty, one, and two REVERSED pairs -- all failures=0, which is what pins the arithmetic rather than logical shift",
       "notes": ""
     },
     {
@@ -74120,12 +74120,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "allocator-singleton list teardown (0x95d20)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1536",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13501",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the list4089 differential (3z195): chain lengths 0..3 all failures=0, comparing the ordered free sequence, the global word and the whole object, with the allocator singleton and that global bound",
       "notes": ""
     },
     {
