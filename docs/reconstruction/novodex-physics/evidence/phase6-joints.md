@@ -559,3 +559,46 @@ non-UTF8 byte (`0xF6`), which the Foundation project's own evidence documents an
 for which it records that a normalisation attempt was rejected. The edit here was
 made with a byte-preserving decode and the byte is still present and still the
 only non-UTF8 byte in the file.
+
+## 6w. The NaN sign is not in `NxVec3::normalize` -- it is in how the row builds its operands
+
+`tests/NxVec3NormalizeProbe.cpp` prints `NxVec3::magnitude` and
+`NxVec3::normalize` for the exact vectors the degenerate tangent path builds, run
+against both Foundations:
+
+    vector                     oracle Foundation            rebuilt Foundation
+    zero  (0,0,0)              mag 00000000  out 00000000   mag 00000000  out 00000000
+    t1    (NaN,NaN,0)          mag ffc00000  out ffc00000   mag ffc00000  out ffc00000
+    t2    (NaN,NaN,NaN)        mag ffc00000  out ffc00000   mag ffc00000  out ffc00000
+    negNaN(NaN,NaN,NaN)        mag ffc00000  out ffc00000   mag ffc00000  out ffc00000
+
+**Byte-identical on every row.** `magnitude` and `normalize` are not where the
+difference lives, and the round-9 and round-10 changes to them are not implicated.
+
+So the oracle's `localNormal` of `7fc00000` is produced from an input that is
+already positive. Since `NxNormalToTangents` normalises `t2`, the oracle's `t2`
+must be `+NaN` where the rebuilt one is `-NaN`, and the difference is in the
+products that build `t2` -- the `0 * inf` terms at `0x100062f3`-`0x1000632b`.
+
+**What is established about it.** The sign of `0 * inf` is the exclusive-or of the
+operand signs, so the oracle must be multiplying a `+0` where this transcription
+multiplies a `-0`, or the reverse, in at least one component. The oracle's own
+sequence is on the record from the disassembly in 6j: `fmul dword ptr [ecx+4]`,
+`fmul dword ptr [ecx+8]`, then `fchs` on one of them. Which component carries the
+`fchs` and in what order the two operands are loaded is what has to match, and the
+two spellings tried so far both give the oracle's sign on the finite path and the
+opposite on the degenerate one.
+
+**Recorded as open with its boundary narrowed to one expression.** It is a one-bit
+difference, on a degenerate input, in one product, and the probe that isolates it
+is checked in.
+
+## 6x. Round state
+
+- The finite path is **exact** for both rows against the whole candidate pair.
+- The degenerate path differs by one NaN sign bit, now localised to the operand
+  order inside `NxNormalToTangents`'s `t2` products.
+- Three Foundation functions (`NxVec3::magnitude`, `NxVec3::normalize`,
+  `NxNormalToTangents`) now follow the oracle's x87 width rule, with no gate
+  regression.
+- No row moves; `closed` remains the Phase 8 audit's to grant.

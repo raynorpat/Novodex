@@ -194,6 +194,11 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	add_executable(NxNormalToTangentsProbe tests/NxNormalToTangentsProbe.cpp)
 	target_include_directories(NxNormalToTangentsProbe PRIVATE Foundation/include Physics/include)
 	target_link_libraries(NxNormalToTangentsProbe bcrypt)
+	# Prints what NxVec3::magnitude and NxVec3::normalize do to the degenerate
+	# vectors the tangent path builds, so a NaN sign can be attributed to one call.
+	add_executable(NxVec3NormalizeProbe tests/NxVec3NormalizeProbe.cpp)
+	target_include_directories(NxVec3NormalizeProbe PRIVATE Foundation/include Physics/include)
+	target_link_libraries(NxVec3NormalizeProbe bcrypt)
 	add_executable(NxPhysicsCoreClusterTests tests/PhysicsCoreClusterTests.cpp)
 	target_include_directories(NxPhysicsCoreClusterTests PRIVATE Foundation/include Physics/include)
 	target_link_libraries(NxPhysicsCoreClusterTests bcrypt)
