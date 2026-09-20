@@ -6473,6 +6473,42 @@ in this round touched it.
 
 No rows move. No gate, coverage-floor, or policy change.
 
+## 3z228. The guard bind fault, confirmed by controlled comparison
+
+Round 212 re-ran 3z226a's experiment properly and it is now confirmed with a
+controlled comparison rather than an inference from silence.
+
+The probe reads the guard slot's image value, binds [0x101041b0], reads it back,
+unbinds it, and prints all four values **after** the bind. The result:
+
+- WITH the probe, the run stops before `adjusted2060`'s successor blocks and the
+  final `layout` summary never prints;
+- WITHOUT the probe -- same binary otherwise, same slot fixture, same rows --
+  the run completes and reports `adjusted2060 0 failures` followed by
+  `layout candidate mismatches=1`.
+
+So the fault is inside the `nxBindFnPtr(base, 0x1041b0, holder)` call itself.
+That is no longer an inference from a missing print: removing exactly one
+statement changes a crash into a clean run, which is the controlled form of the
+finding 3z226a could only state as "the probe never printed".
+
+**On reporting discipline**: the earlier attempt read the same silence as a
+conclusion, and that was the wrong thing to lean on -- stdout is buffered and a
+crash loses everything not yet flushed, which also explains why the tail of one
+run ended at `mutexwork` while another ended at the `layout` summary. The lesson
+is narrow but worth keeping: **when a test program dies, the last STDERR line is
+evidence and the last STDOUT line may be nothing at all.**
+
+**The second instance matters.** `nxBindFnPtr` now faults on two slots --
+0x101264e4 (the float-valued family, 3z199-3z200) and 0x101041b0 -- and both are
+in the 0x10104000-0x10126000 band whose initial contents are not code pointers.
+A third instance would make this a systematic limitation of the binder on that
+band rather than two unrelated rows, and that is the question the next attempt
+on 000579 should answer first.
+
+The probe was withdrawn and the tree is green. No rows move. No gate,
+coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
