@@ -1339,6 +1339,19 @@ typedef void (NxSlotCtx::*NxSlotMfp2)(unsigned, unsigned);
 //! and calls each non-null element's vtable slot +0x10 with the row's two
 //! arguments. The slot pops its own arguments (no `add esp`), so a
 //! member-function slot is the right shape.
+//! The singleton-release family: 001649 (0x31890) releases the two pointers at
+//! [self] and [self+4]; 001659 (0x324a0) releases [self+0x10] and [self+0xc].
+//! Each field is released only when non-null, by calling the
+//! statically-reviewed 004803 -- which returns the allocator singleton -- and
+//! then calling THAT object's vtable slot +0xc with the field as its one
+//! argument, then clearing the field. The slot pops its own argument.
+//! 004838 (0xb4d90) is the same release plus an FP guard: it proceeds only
+//! when [self+0xc] is NOT less than zero, and then zeroes three fields.
+void					nxReleaseOwnedFields(void* self, const unsigned* offsets,
+							unsigned count, void* singleton, NxSlotMfp1 slot);
+void					nxReleaseGuarded4838(void* self, void* singleton,
+							NxSlotMfp1 slot);
+
 void					nxFourSlotLoop4861(void* self, unsigned a, unsigned b,
 							NxSlotMfp2 slot);
 

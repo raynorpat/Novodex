@@ -2987,6 +2987,47 @@ void nxFourSlotLoop4861(void* self, unsigned a, unsigned b, NxSlotMfp2 slot)
 		}
 	}
 
+// The singleton-release family.
+void nxReleaseOwnedFields(void* self, const unsigned* offsets, unsigned count,
+	void* singleton, NxSlotMfp1 slot)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	for(unsigned k = 0; k < count; ++k)
+		{
+		unsigned field;
+		memcpy(&field, p + offsets[k], 4);
+		if(field == 0u)
+			continue;
+		(reinterpret_cast<NxSlotCtx*>(singleton)->*slot)(field);
+		unsigned zero = 0u;
+		memcpy(p + offsets[k], &zero, 4);
+		}
+	}
+
+void nxReleaseGuarded4838(void* self, void* singleton, NxSlotMfp1 slot)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	float guard;
+	memcpy(&guard, p + 0xc, 4);
+	// The row's TAIL block zeroes [self] and [self+4] UNCONDITIONALLY -- both
+	// guard failures jump past the release straight INTO it. Only [self+8] is
+	// cleared on the release path.
+	if(guard >= 0.0f)
+		{
+		unsigned field;
+		memcpy(&field, p + 8, 4);
+		if(field != 0u)
+			{
+			(reinterpret_cast<NxSlotCtx*>(singleton)->*slot)(field);
+			const unsigned z8 = 0u;
+			memcpy(p + 8, &z8, 4);
+			}
+		}
+	const unsigned zero = 0u;
+	memcpy(p, &zero, 4);
+	memcpy(p + 4, &zero, 4);
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)
