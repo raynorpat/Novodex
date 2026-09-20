@@ -5913,6 +5913,43 @@ slot is actually read from before rebuilding the fixture.
 The two closed rows move to `reconstructed`. No gate, coverage-floor, or policy
 change.
 
+## 3z209. The four-argument shape: extracted, and a grouping flaw found
+
+Round 192 ranked the remaining reachable shapes and picked the largest compact
+group, then found a flaw in the ranking itself.
+
+**The ranking grouped rows by their instruction-MNEMONIC signature**, which is
+too coarse: it put 002223 (0x54870) in the same bucket as 003577, and 002223 is
+a completely different row -- it reads [ecx+0x9c], calls 002b6f0, and scales an
+index by nine and then by four. Matching on mnemonics cannot tell those apart.
+The real group is 003577, 003581, 003585 and 003589, all 38 bytes.
+
+**That group's shape is a clean FOUR-argument thunk**, unlike the two- and
+three-argument ones closed earlier:
+
+    eax = [ecx+4]           ; the object
+    edx = [esp+4]           ; the row argument
+    ecx = [ecx+8]
+    push edx                ; row argument
+    edx = [eax+0x80]
+    eax = [eax+0x7c]
+    push ecx                ; [self+8]
+    ecx = [eax+0x30]
+    push edx                ; [obj+0x80]
+    push ecx                ; [[obj+0x7c]+0x30]
+    call <slot>             ; add esp, 0x10  -- four arguments, caller-cleaned
+
+with slots 0x10126598, 0x10126464, 0x101265c4 and 0x101264c4.
+
+**The drive is withdrawn.** It faulted, and with the round's budget spent the
+block, its candidate and its recorder were removed rather than left failing;
+the tree is green (extrarows and lockthunk2 both 0 failures, mismatches=1). The
+shape above is recorded because it is the useful product of the round: the
+argument list is fully determined, the slots are named, and the next attempt
+should start from this table and drive ONE row of the four before the group.
+
+No rows move. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
