@@ -88022,12 +88022,12 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "four-pointer vtable-slot loop (0xb52a0, ret 8)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1850",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15766",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the fourslot4861 differential (3z217): failures=0 over three consecutive runs for four occupancy patterns (none, the first and last only, the middle two only, and all four), comparing the hit count, both arguments and the whole object; the argument check applies only when at least one element was present",
       "notes": ""
     },
     {
