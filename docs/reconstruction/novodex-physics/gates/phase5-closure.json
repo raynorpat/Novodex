@@ -1,0 +1,2886 @@
+{
+  "schema_version": 1,
+  "phase": 5,
+  "note": "Phase 5 closes NOTHING, and says so rather than closing on a recorded differential. It owns 205 function rows and 122 data objects; 120 of the function rows are reconstructed with a proof, 85 are not reconstructed, and no data object is dispositioned. The schema accepts one thing as a closure -- a mutation aimed at the row that the gate catches -- and this phase has no per-row mutation evidence. The ledger is published so that every row the phase owns is accounted for rather than left in no list: before it existed, 327 rows were owned by a phase with no ledger at all.",
+  "proof_kinds": {
+    "differential_falsified": "a mutation aimed at this row in a throwaway archive copy, rebuilt, and run against the committed oracle transcript through a registered staged-pair target. This phase has none yet.",
+    "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. This phase has none yet."
+  },
+  "deferred_reasons": {
+    "not_reconstructed_in_phase": "this phase did not reconstruct this row and names nothing that blocks it. A debt, not an obstruction.",
+    "reconstructed_not_falsified": "the row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. This is the work the phase has left: 120 rows, each needing one mutation and one measured detection.",
+    "data_object_not_dispositioned": "no closure schema lets any phase close a data object, so the data half arrives here by construction."
+  },
+  "measured_from": {
+    "entry_points": [
+      "the census rows this phase owns, by rva"
+    ],
+    "differentials": []
+  },
+  "counts": {
+    "deferred_not_reconstructed_in_phase": 85,
+    "deferred_reconstructed_not_falsified": 120,
+    "deferred_data_object_not_dispositioned": 122
+  },
+  "closed": [],
+  "deferred": [
+    {
+      "id": "phys_fn_000002",
+      "rva": "0x00001030",
+      "size": 49,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000006",
+      "rva": "0x00001080",
+      "size": 30,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000008",
+      "rva": "0x000010a0",
+      "size": 751,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000024",
+      "rva": "0x00001860",
+      "size": 328,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000026",
+      "rva": "0x000019b0",
+      "size": 465,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000030",
+      "rva": "0x00001c40",
+      "size": 403,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000032",
+      "rva": "0x00001de0",
+      "size": 539,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000034",
+      "rva": "0x00002010",
+      "size": 565,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000036",
+      "rva": "0x00002250",
+      "size": 420,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000054",
+      "rva": "0x000026f0",
+      "size": 167,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000056",
+      "rva": "0x000027a0",
+      "size": 165,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000058",
+      "rva": "0x00002850",
+      "size": 165,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000070",
+      "rva": "0x00002a80",
+      "size": 185,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000072",
+      "rva": "0x00002b40",
+      "size": 90,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000090",
+      "rva": "0x00002df0",
+      "size": 211,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000120",
+      "rva": "0x00003690",
+      "size": 429,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000122",
+      "rva": "0x00003840",
+      "size": 761,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000124",
+      "rva": "0x00003b40",
+      "size": 1075,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000126",
+      "rva": "0x00003f80",
+      "size": 1192,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000128",
+      "rva": "0x00004430",
+      "size": 333,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000134",
+      "rva": "0x000047d0",
+      "size": 907,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000136",
+      "rva": "0x00004b60",
+      "size": 498,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000138",
+      "rva": "0x00004d60",
+      "size": 658,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000140",
+      "rva": "0x00005000",
+      "size": 706,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000142",
+      "rva": "0x000052d0",
+      "size": 691,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000144",
+      "rva": "0x00005590",
+      "size": 849,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000146",
+      "rva": "0x000058f0",
+      "size": 579,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000148",
+      "rva": "0x00005b40",
+      "size": 811,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000150",
+      "rva": "0x00005e70",
+      "size": 298,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000152",
+      "rva": "0x00005fa0",
+      "size": 346,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000154",
+      "rva": "0x00006100",
+      "size": 201,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000156",
+      "rva": "0x000061d0",
+      "size": 201,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000158",
+      "rva": "0x000062a0",
+      "size": 214,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000160",
+      "rva": "0x00006380",
+      "size": 198,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000162",
+      "rva": "0x00006450",
+      "size": 198,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000164",
+      "rva": "0x00006520",
+      "size": 1846,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000166",
+      "rva": "0x00006c60",
+      "size": 479,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000168",
+      "rva": "0x00006e40",
+      "size": 577,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000170",
+      "rva": "0x00007090",
+      "size": 431,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000172",
+      "rva": "0x00007240",
+      "size": 431,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000174",
+      "rva": "0x000073f0",
+      "size": 770,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000176",
+      "rva": "0x00007700",
+      "size": 786,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000178",
+      "rva": "0x00007a20",
+      "size": 385,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000180",
+      "rva": "0x00007bb0",
+      "size": 782,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000182",
+      "rva": "0x00007ec0",
+      "size": 867,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000184",
+      "rva": "0x00008230",
+      "size": 333,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000186",
+      "rva": "0x00008380",
+      "size": 333,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000188",
+      "rva": "0x000084d0",
+      "size": 407,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000190",
+      "rva": "0x00008670",
+      "size": 415,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000192",
+      "rva": "0x00008810",
+      "size": 371,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000194",
+      "rva": "0x00008990",
+      "size": 354,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000196",
+      "rva": "0x00008b00",
+      "size": 1114,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000198",
+      "rva": "0x00008f60",
+      "size": 418,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000200",
+      "rva": "0x00009110",
+      "size": 821,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000202",
+      "rva": "0x00009450",
+      "size": 611,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000204",
+      "rva": "0x000096c0",
+      "size": 520,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000206",
+      "rva": "0x000098d0",
+      "size": 504,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000208",
+      "rva": "0x00009ad0",
+      "size": 492,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000210",
+      "rva": "0x00009cc0",
+      "size": 998,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000212",
+      "rva": "0x0000a0b0",
+      "size": 739,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000214",
+      "rva": "0x0000a3a0",
+      "size": 557,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000216",
+      "rva": "0x0000a5d0",
+      "size": 163,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000218",
+      "rva": "0x0000a680",
+      "size": 1614,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000220",
+      "rva": "0x0000acd0",
+      "size": 1059,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000222",
+      "rva": "0x0000b100",
+      "size": 1187,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000748",
+      "rva": "0x00016f80",
+      "size": 47,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000768",
+      "rva": "0x00017f10",
+      "size": 1164,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000784",
+      "rva": "0x000194b0",
+      "size": 368,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000785",
+      "rva": "0x00019620",
+      "size": 1325,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000787",
+      "rva": "0x00019b50",
+      "size": 428,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000789",
+      "rva": "0x00019d00",
+      "size": 1461,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000793",
+      "rva": "0x0001a350",
+      "size": 1613,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000795",
+      "rva": "0x0001a9a0",
+      "size": 3090,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000797",
+      "rva": "0x0001b5c0",
+      "size": 402,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000801",
+      "rva": "0x0001b7a0",
+      "size": 741,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000945",
+      "rva": "0x000207e0",
+      "size": 104,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000949",
+      "rva": "0x00020880",
+      "size": 663,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000951",
+      "rva": "0x00020b20",
+      "size": 507,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000957",
+      "rva": "0x00020d40",
+      "size": 578,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000959",
+      "rva": "0x00020f90",
+      "size": 1062,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001941",
+      "rva": "0x0004ba80",
+      "size": 59,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_002318",
+      "rva": "0x0005a170",
+      "size": 106,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_002324",
+      "rva": "0x0005a240",
+      "size": 500,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_002330",
+      "rva": "0x0005a4b0",
+      "size": 100,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "translation_unit",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_002421",
+      "rva": "0x0005c160",
+      "size": 553,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_fn_000004",
+      "rva": "0x00001070",
+      "size": 15,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000010",
+      "rva": "0x00001390",
+      "size": 150,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000012",
+      "rva": "0x00001430",
+      "size": 32,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000019",
+      "rva": "0x00001540",
+      "size": 32,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000028",
+      "rva": "0x00001b90",
+      "size": 165,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000038",
+      "rva": "0x00002400",
+      "size": 47,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000040",
+      "rva": "0x00002430",
+      "size": 47,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000042",
+      "rva": "0x00002460",
+      "size": 31,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000044",
+      "rva": "0x00002480",
+      "size": 53,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000046",
+      "rva": "0x000024c0",
+      "size": 252,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000048",
+      "rva": "0x000025c0",
+      "size": 73,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000050",
+      "rva": "0x00002610",
+      "size": 107,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000052",
+      "rva": "0x00002680",
+      "size": 107,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000060",
+      "rva": "0x00002900",
+      "size": 72,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000062",
+      "rva": "0x00002950",
+      "size": 60,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000064",
+      "rva": "0x00002990",
+      "size": 73,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000066",
+      "rva": "0x000029e0",
+      "size": 75,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000068",
+      "rva": "0x00002a30",
+      "size": 75,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000074",
+      "rva": "0x00002ba0",
+      "size": 85,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000076",
+      "rva": "0x00002c00",
+      "size": 87,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000078",
+      "rva": "0x00002c60",
+      "size": 39,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000080",
+      "rva": "0x00002c90",
+      "size": 103,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000082",
+      "rva": "0x00002d00",
+      "size": 36,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000084",
+      "rva": "0x00002d30",
+      "size": 36,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000086",
+      "rva": "0x00002d60",
+      "size": 40,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000088",
+      "rva": "0x00002d90",
+      "size": 91,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000092",
+      "rva": "0x00002ed0",
+      "size": 90,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000094",
+      "rva": "0x00002f30",
+      "size": 517,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000096",
+      "rva": "0x00003140",
+      "size": 179,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000098",
+      "rva": "0x00003200",
+      "size": 151,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000100",
+      "rva": "0x000032a0",
+      "size": 108,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000102",
+      "rva": "0x00003310",
+      "size": 151,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000104",
+      "rva": "0x000033b0",
+      "size": 137,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000106",
+      "rva": "0x00003440",
+      "size": 140,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000108",
+      "rva": "0x000034d0",
+      "size": 173,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000110",
+      "rva": "0x00003580",
+      "size": 35,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000112",
+      "rva": "0x000035b0",
+      "size": 82,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000114",
+      "rva": "0x00003610",
+      "size": 34,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000116",
+      "rva": "0x00003640",
+      "size": 8,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000118",
+      "rva": "0x00003650",
+      "size": 55,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000130",
+      "rva": "0x00004580",
+      "size": 318,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000132",
+      "rva": "0x000046c0",
+      "size": 259,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000742",
+      "rva": "0x00016dd0",
+      "size": 89,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000744",
+      "rva": "0x00016e30",
+      "size": 68,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000829",
+      "rva": "0x0001bd00",
+      "size": 187,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000831",
+      "rva": "0x0001bdc0",
+      "size": 635,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000841",
+      "rva": "0x0001c720",
+      "size": 43,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000847",
+      "rva": "0x0001c880",
+      "size": 53,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000849",
+      "rva": "0x0001c8c0",
+      "size": 101,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000851",
+      "rva": "0x0001c930",
+      "size": 77,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000853",
+      "rva": "0x0001c980",
+      "size": 115,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000927",
+      "rva": "0x00020450",
+      "size": 40,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000935",
+      "rva": "0x000205a0",
+      "size": 198,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000939",
+      "rva": "0x000206c0",
+      "size": 62,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000937",
+      "rva": "0x00020670",
+      "size": 69,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000941",
+      "rva": "0x00020700",
+      "size": 68,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000947",
+      "rva": "0x00020850",
+      "size": 39,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000953",
+      "rva": "0x00020d20",
+      "size": 6,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000955",
+      "rva": "0x00020d30",
+      "size": 4,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000961",
+      "rva": "0x000213c0",
+      "size": 6,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000963",
+      "rva": "0x000213d0",
+      "size": 14,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000967",
+      "rva": "0x000213f0",
+      "size": 6,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000969",
+      "rva": "0x00021400",
+      "size": 6,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000971",
+      "rva": "0x00021410",
+      "size": 6,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000975",
+      "rva": "0x000217c0",
+      "size": 168,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000977",
+      "rva": "0x00021870",
+      "size": 207,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000979",
+      "rva": "0x00021940",
+      "size": 69,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000981",
+      "rva": "0x00021990",
+      "size": 55,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000985",
+      "rva": "0x00021a10",
+      "size": 78,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000987",
+      "rva": "0x00021a60",
+      "size": 101,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000989",
+      "rva": "0x00021ad0",
+      "size": 110,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000991",
+      "rva": "0x00021b40",
+      "size": 42,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000995",
+      "rva": "0x00021be0",
+      "size": 23,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_001001",
+      "rva": "0x00021c30",
+      "size": 39,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_001003",
+      "rva": "0x00021c60",
+      "size": 32,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_001004",
+      "rva": "0x00021c80",
+      "size": 78,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_001014",
+      "rva": "0x000225e0",
+      "size": 59,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_001035",
+      "rva": "0x00022dd0",
+      "size": 5,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_001075",
+      "rva": "0x00023580",
+      "size": 57,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_001247",
+      "rva": "0x00024ed0",
+      "size": 151,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_001249",
+      "rva": "0x00024f70",
+      "size": 5,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_001251",
+      "rva": "0x00024f80",
+      "size": 51,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_001257",
+      "rva": "0x000251d0",
+      "size": 24,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_001263",
+      "rva": "0x00025420",
+      "size": 59,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_001265",
+      "rva": "0x00025460",
+      "size": 36,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_001269",
+      "rva": "0x00025510",
+      "size": 15,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_001271",
+      "rva": "0x00025520",
+      "size": 15,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_001273",
+      "rva": "0x00025530",
+      "size": 424,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_001277",
+      "rva": "0x000256f0",
+      "size": 98,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_001329",
+      "rva": "0x00026d90",
+      "size": 94,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_001347",
+      "rva": "0x00027740",
+      "size": 119,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_001349",
+      "rva": "0x000277c0",
+      "size": 91,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_001353",
+      "rva": "0x00027850",
+      "size": 79,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_001355",
+      "rva": "0x000278a0",
+      "size": 22,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_001357",
+      "rva": "0x000278c0",
+      "size": 89,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_001359",
+      "rva": "0x00027920",
+      "size": 7,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_001361",
+      "rva": "0x00027930",
+      "size": 78,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_001363",
+      "rva": "0x00027980",
+      "size": 33,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_001365",
+      "rva": "0x000279b0",
+      "size": 26,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_001367",
+      "rva": "0x000279d0",
+      "size": 84,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_001375",
+      "rva": "0x00027c30",
+      "size": 59,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_001379",
+      "rva": "0x00027db0",
+      "size": 101,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_001381",
+      "rva": "0x00027e20",
+      "size": 13,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_001383",
+      "rva": "0x00027e30",
+      "size": 46,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_001385",
+      "rva": "0x00027e60",
+      "size": 37,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_001387",
+      "rva": "0x00027e90",
+      "size": 39,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_001389",
+      "rva": "0x00027ec0",
+      "size": 51,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_001391",
+      "rva": "0x00027f00",
+      "size": 3,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_001399",
+      "rva": "0x00028e80",
+      "size": 72,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_002312",
+      "rva": "0x0005a080",
+      "size": 31,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_002320",
+      "rva": "0x0005a1e0",
+      "size": 67,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_002322",
+      "rva": "0x0005a230",
+      "size": 8,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_002326",
+      "rva": "0x0005a440",
+      "size": 35,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_002328",
+      "rva": "0x0005a470",
+      "size": 49,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_002340",
+      "rva": "0x0005aa60",
+      "size": 35,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_002352",
+      "rva": "0x0005b610",
+      "size": 8,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_002379",
+      "rva": "0x0005b860",
+      "size": 14,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_002408",
+      "rva": "0x0005baa0",
+      "size": 31,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_002411",
+      "rva": "0x0005bbb0",
+      "size": 41,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "layout_adjacency",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_004812",
+      "rva": "0x000b4070",
+      "size": 5,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_data_000002",
+      "rva": "0x00001ffc",
+      "size": 20,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "translation_unit",
+      "type": "switch_table",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000672",
+      "rva": "0x001041f4",
+      "size": 38,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000673",
+      "rva": "0x00104220",
+      "size": 87,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000674",
+      "rva": "0x00104278",
+      "size": 41,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000675",
+      "rva": "0x001042a8",
+      "size": 103,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000676",
+      "rva": "0x00104310",
+      "size": 157,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000678",
+      "rva": "0x001043d0",
+      "size": 348,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "dispatch_table",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000679",
+      "rva": "0x00104530",
+      "size": 352,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "dispatch_table",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000680",
+      "rva": "0x00104690",
+      "size": 43,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000681",
+      "rva": "0x001046bc",
+      "size": 48,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000682",
+      "rva": "0x001046ec",
+      "size": 49,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000683",
+      "rva": "0x00104720",
+      "size": 61,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000685",
+      "rva": "0x001047b4",
+      "size": 56,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000686",
+      "rva": "0x001047ec",
+      "size": 57,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000687",
+      "rva": "0x00104828",
+      "size": 42,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000688",
+      "rva": "0x00104854",
+      "size": 44,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000689",
+      "rva": "0x00104880",
+      "size": 52,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000690",
+      "rva": "0x001048b4",
+      "size": 62,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000691",
+      "rva": "0x001048f8",
+      "size": 66,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000692",
+      "rva": "0x00104940",
+      "size": 69,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000693",
+      "rva": "0x00104988",
+      "size": 73,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000694",
+      "rva": "0x001049d4",
+      "size": 49,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000695",
+      "rva": "0x00104a08",
+      "size": 50,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000696",
+      "rva": "0x00104a40",
+      "size": 65,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000697",
+      "rva": "0x00104a88",
+      "size": 93,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000698",
+      "rva": "0x00104ae8",
+      "size": 147,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000699",
+      "rva": "0x00104b80",
+      "size": 80,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000700",
+      "rva": "0x00104bd0",
+      "size": 41,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000701",
+      "rva": "0x00104bfc",
+      "size": 48,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000702",
+      "rva": "0x00104c2c",
+      "size": 55,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000703",
+      "rva": "0x00104c68",
+      "size": 100,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000704",
+      "rva": "0x00104ccc",
+      "size": 63,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000705",
+      "rva": "0x00104d10",
+      "size": 67,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000706",
+      "rva": "0x00104d58",
+      "size": 70,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000707",
+      "rva": "0x00104da0",
+      "size": 70,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000708",
+      "rva": "0x00104de8",
+      "size": 77,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000709",
+      "rva": "0x00104e38",
+      "size": 66,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000710",
+      "rva": "0x00104e80",
+      "size": 66,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000711",
+      "rva": "0x00104ec8",
+      "size": 66,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000712",
+      "rva": "0x00104f10",
+      "size": 71,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000713",
+      "rva": "0x00104f58",
+      "size": 61,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000714",
+      "rva": "0x00104f98",
+      "size": 62,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000715",
+      "rva": "0x00104fd8",
+      "size": 87,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000716",
+      "rva": "0x00105030",
+      "size": 103,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000717",
+      "rva": "0x00105098",
+      "size": 157,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000718",
+      "rva": "0x00105138",
+      "size": 77,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000719",
+      "rva": "0x00105188",
+      "size": 68,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000720",
+      "rva": "0x001051cc",
+      "size": 53,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000721",
+      "rva": "0x00105204",
+      "size": 52,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000722",
+      "rva": "0x00105238",
+      "size": 47,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000723",
+      "rva": "0x00105268",
+      "size": 39,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000724",
+      "rva": "0x00105290",
+      "size": 57,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000725",
+      "rva": "0x001052d0",
+      "size": 65,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000726",
+      "rva": "0x00105314",
+      "size": 49,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000727",
+      "rva": "0x00105348",
+      "size": 67,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000728",
+      "rva": "0x00105390",
+      "size": 65,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000730",
+      "rva": "0x001053d7",
+      "size": 67,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000731",
+      "rva": "0x0010541c",
+      "size": 53,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000732",
+      "rva": "0x00105454",
+      "size": 49,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000733",
+      "rva": "0x00105488",
+      "size": 66,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000734",
+      "rva": "0x001054cc",
+      "size": 45,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000735",
+      "rva": "0x001054fc",
+      "size": 45,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000736",
+      "rva": "0x00105530",
+      "size": 66,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000737",
+      "rva": "0x00105578",
+      "size": 70,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000738",
+      "rva": "0x001055c0",
+      "size": 73,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000739",
+      "rva": "0x00105610",
+      "size": 71,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000740",
+      "rva": "0x00105658",
+      "size": 75,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000741",
+      "rva": "0x001056a8",
+      "size": 78,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000742",
+      "rva": "0x001056f8",
+      "size": 72,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000743",
+      "rva": "0x00105740",
+      "size": 76,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000744",
+      "rva": "0x00105790",
+      "size": 79,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000977",
+      "rva": "0x001087ac",
+      "size": 46,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_000978",
+      "rva": "0x001087dc",
+      "size": 57,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_001330",
+      "rva": "0x0010bea4",
+      "size": 56,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_001331",
+      "rva": "0x0010bedc",
+      "size": 52,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_001332",
+      "rva": "0x0010bf10",
+      "size": 48,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_001333",
+      "rva": "0x0010bf40",
+      "size": 40,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_001334",
+      "rva": "0x0010bf68",
+      "size": 64,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_001371",
+      "rva": "0x0010c2f0",
+      "size": 9,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "string",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003045",
+      "rva": "0x00122078",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003046",
+      "rva": "0x0012207c",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003067",
+      "rva": "0x001220f0",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003068",
+      "rva": "0x001220f4",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003069",
+      "rva": "0x001220f8",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003070",
+      "rva": "0x001220fc",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003071",
+      "rva": "0x00122100",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003072",
+      "rva": "0x00122104",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003073",
+      "rva": "0x00122108",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003074",
+      "rva": "0x0012210c",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003075",
+      "rva": "0x00122110",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003076",
+      "rva": "0x00122114",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003077",
+      "rva": "0x00122118",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003078",
+      "rva": "0x0012211c",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003079",
+      "rva": "0x00122120",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003080",
+      "rva": "0x00122124",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003081",
+      "rva": "0x00122128",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003082",
+      "rva": "0x0012212c",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003083",
+      "rva": "0x00122130",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003084",
+      "rva": "0x00122134",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003085",
+      "rva": "0x00122138",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003086",
+      "rva": "0x0012213c",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003087",
+      "rva": "0x00122140",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003088",
+      "rva": "0x00122144",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003089",
+      "rva": "0x0012214c",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003090",
+      "rva": "0x00122180",
+      "size": 96,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003091",
+      "rva": "0x001221e0",
+      "size": 96,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003092",
+      "rva": "0x00122240",
+      "size": 168,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003259",
+      "rva": "0x001237c0",
+      "size": 1,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003536",
+      "rva": "0x00123c64",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003537",
+      "rva": "0x00123c68",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003538",
+      "rva": "0x00123c6c",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_003539",
+      "rva": "0x00123c70",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_004025",
+      "rva": "0x00125a38",
+      "size": 8,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_004026",
+      "rva": "0x00125a40",
+      "size": 8,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_004027",
+      "rva": "0x00125a48",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_004028",
+      "rva": "0x00125a50",
+      "size": 8,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_004029",
+      "rva": "0x00125a58",
+      "size": 8,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_004031",
+      "rva": "0x00125a68",
+      "size": 8,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_004032",
+      "rva": "0x00125a70",
+      "size": 8,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_004033",
+      "rva": "0x00125a78",
+      "size": 4,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "ghidra_data",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_004034",
+      "rva": "0x00125a80",
+      "size": 8,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    },
+    {
+      "id": "phys_data_004035",
+      "rva": "0x00125a88",
+      "size": 8,
+      "reason": "data_object_not_dispositioned",
+      "phase_provenance": "reading_sites",
+      "type": "code_addressed_global",
+      "driving_phases": []
+    }
+  ]
+}

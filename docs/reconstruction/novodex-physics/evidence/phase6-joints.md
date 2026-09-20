@@ -2051,3 +2051,61 @@ question.
   names a transcription while its state is `discovered`. That is a row written up
   and not promoted, not a row claiming more than it has -- and it is recorded here
   rather than changed, because promoting it would need a proof the ledger accepts.
+
+## 8o. AUDIT: three phases owned 5,340 rows and published no ledger at all
+
+8n's audit came back clean, so the next question in the series was the other
+direction: not "is each claim backed" but "is each row accounted for at all".
+
+**The finding.** `validate_inventory.py` checks every closure ledger it finds and
+none it does not, in its own words: *"Each phase that has published a closure ledger
+must account for every row it owns."* A phase that publishes none therefore has
+every row it owns in **neither a closed nor a deferred list**, and nothing says so.
+Measured against the census:
+
+    phase  owns    ledger   accounts for
+    2      1194    yes      1194
+    3      494     yes      494
+    4      3950    NO       nobody
+    5      327     NO       nobody
+    6      964     yes      964     (published this session, 7m)
+    7      1063    NO       nobody
+    8      3484    NO       nobody
+
+**5,340 rows in phases 4, 5 and 7 were in no list at all** -- 47% of the census's
+11,476 rows. Phase 8 is excluded on purpose: its gate is "entire census closed" and
+its rows are that audit's own subject rather than a phase's slate.
+
+**What was done.** Ledgers for phases 4, 5 and 7, written from the census the same
+way phase 6's was (7m): every row deferred, none closed, because a closure needs a
+per-row mutation and none of the three has one. Each ledger's `note` says so and
+carries the count it is deferring.
+
+`program.json`'s counters for those phases were stale (`null` for all four fields)
+and are now the values the validator itself recomputes:
+
+    phase 4   closed_functions=0  remaining_functions=1137  remaining_data_objects=2813
+    phase 5   closed_functions=0  remaining_functions=205   remaining_data_objects=122
+    phase 7   closed_functions=0  remaining_functions=561   remaining_data_objects=502
+
+**The gate that was missing.** `validate_inventory.py` now requires every phase that
+owns rows to publish a ledger, exempting the full-census audit phase. Verified both
+ways: the committed census returns no errors, and removing one ledger returns
+
+    error: phase 7 owns rows but publishes no closure ledger; every row it owns is
+    in neither a closed nor a deferred list, and a row in no list is one nobody has
+    accounted for
+
+**This is the sixth audit finding of the session and the second of its kind.** 7i
+found 59 rows holding a state with no proof; this found 5,340 rows holding no state
+accounting at all. Both are the same defect at different scales: **the census's
+per-row claims are checked, and the census's completeness is not.** The validator
+checked that no row stood too high without a ledger; nothing checked that every row
+had one.
+
+**What this changes about the programme's numbers, and what it does not.** Phase 4's
+1,137 function rows and 2,813 data objects, phase 5's 205 and 122, and phase 7's 561
+and 502 are now formally deferred rather than unaccounted. That does not close
+anything and does not move any row's state -- but it converts "nobody has looked at
+these" into "these are deferred, with a named reason", which is what a ledger is
+for and what the next phase reads.

@@ -82,10 +82,10 @@
       "gate_artifact": null,
       "owned_functions": 1137,
       "owned_data_objects": 2813,
-      "closed_functions": null,
-      "closed_data_objects": null,
-      "remaining_functions": null,
-      "remaining_data_objects": null
+      "closed_functions": 0,
+      "closed_data_objects": 0,
+      "remaining_functions": 1137,
+      "remaining_data_objects": 2813
     },
     {
       "phase": 5,
@@ -98,10 +98,10 @@
       "gate_artifact": null,
       "owned_functions": 205,
       "owned_data_objects": 122,
-      "closed_functions": null,
-      "closed_data_objects": null,
-      "remaining_functions": null,
-      "remaining_data_objects": null
+      "closed_functions": 0,
+      "closed_data_objects": 0,
+      "remaining_functions": 205,
+      "remaining_data_objects": 122
     },
     {
       "phase": 6,
@@ -130,10 +130,10 @@
       "gate_artifact": null,
       "owned_functions": 561,
       "owned_data_objects": 502,
-      "closed_functions": null,
-      "closed_data_objects": null,
-      "remaining_functions": null,
-      "remaining_data_objects": null
+      "closed_functions": 0,
+      "closed_data_objects": 0,
+      "remaining_functions": 561,
+      "remaining_data_objects": 502
     },
     {
       "phase": 8,

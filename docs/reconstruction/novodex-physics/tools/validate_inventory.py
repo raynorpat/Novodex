@@ -1667,6 +1667,28 @@ def main():
         ledgers[int(named.group(1))] = closure
         errors += validate_closure(data, closure, int(named.group(1)), targets)
 
+    # Every phase that owns a row must publish a ledger. The loop above checks
+    # each ledger it finds and none it does not, so a phase without one had rows in
+    # no list -- neither closed nor deferred -- and nothing said so. Phases 4, 5
+    # and 7 were in exactly that state and owned 5,340 rows between them.
+    #
+    # The full-census audit phase is exempt: its gate is "entire census closed" and
+    # its rows are that audit's own subject rather than a phase's slate.
+    # Scoped to the committed census, like the other path checks: a test builds a
+    # synthetic inventory in a temporary directory with no gates beside it, and
+    # would otherwise report every phase as unaccounted for.
+    repo_root = Path(__file__).resolve().parents[4]
+    if path.resolve() == (repo_root / 'docs' / 'reconstruction' / 'novodex-physics'
+                          / 'inventory.json').resolve():
+        owning = {row["phase"] for row in data["functions"] + data["data_objects"]}
+        for phase in sorted(owning - set(ledgers)):
+            if phase >= FULL_CENSUS_AUDIT_PHASE:
+                continue
+            errors.append(
+                f"phase {phase} owns rows but publishes no closure ledger; every row "
+                f"it owns is in neither a closed nor a deferred list, and a row in no "
+                f"list is one nobody has accounted for")
+
     # program.json quotes the census and the ledgers back at the next phase, so
     # it is recomputed from both rather than read.
     try:
