@@ -2,7 +2,7 @@
 //
 // The rows reach an actor's world pose through raw pointer arithmetic:
 //
-//     actor + 0x10               -> NxActorDesc*
+//     actor + 0x14               -> NxActorDesc*
 //     actorDesc + 8              -> NxArray<NxShapeDesc*>::first
 //     *first                     -> NxShapeDesc*
 //     shape + 8                  -> NxBodyDesc*
@@ -76,8 +76,12 @@ struct SyntheticActor
 		memset(body, 0, sizeof(body));
 		memset(pose, 0, sizeof(pose));
 
-		// actor + 0x10 -> descriptor
-		*reinterpret_cast<void**>(buffer + 0x10) = desc;
+		// actor + 0x14 -> descriptor. The oracle reads this as `[actor+0x10]`
+		// (`mov eax,[eax+0x14]` after the vtable read), and a null here makes the
+		// row take its copy-through arm rather than fault -- which is how 7s
+		// showed the arm was unreachable. A non-null value that is not a
+		// descriptor faults instead.
+		*reinterpret_cast<void**>(buffer + 0x14) = desc;
 		// descriptor + 8 -> the shape array's `first`
 		*reinterpret_cast<void**>(desc + 8) = shape;
 		// shape + 8 -> the body
@@ -116,6 +120,19 @@ static void nxCase(JointDescSetGlobalAnchorFn setAnchor, JointDescSetGlobalAxisF
 	printf(" ");
 	nxPrintVec("in_axis", axis);
 	printf("\n");
+
+	// Re-read the synthetic buffer here, immediately before the row runs. The
+	// chain print at construction showed it correct; if this disagrees, something
+	// between the two is rewriting it.
+	if(a)
+		{
+		unsigned char* ab = reinterpret_cast<unsigned char*>(a);
+		printf("precall actor=%p userData14=%08x desc8=%08x\n", a,
+			*reinterpret_cast<unsigned*>(ab + 0x14),
+			*reinterpret_cast<unsigned*>(reinterpret_cast<unsigned char*>(
+				*reinterpret_cast<void**>(ab + 0x14)) + 8));
+		fflush(stdout);
+		}
 
 	setAnchor(desc, anchor);
 	nxPrintDesc("after_anchor", desc);
@@ -158,7 +175,22 @@ int wmain(int argc, wchar_t** argv)
 
 	SyntheticActor quatActor;
 	quatActor.build(true, t0, qId, 0);
-	printf("fixture=quaternion\n");
+	printf("fixture=quaternion\n"); fflush(stdout);
+	// The chain, printed so the first wrong level is visible rather than inferred.
+	{
+	unsigned char* a = quatActor.buffer;
+	void* d = *reinterpret_cast<void**>(a + 0x14);
+	void* s = *reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(d) + 8);
+	void* b = *reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(s) + 8);
+	void* p = *reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(b) + 0x19c);
+	printf("chain actor=%p desc=%p shape=%p body=%p pose=%p\n", a, d, s, b, p);
+	printf("chain userData14=%08x desc+8=%08x shape+8=%08x body+0x19c=%08x\n",
+		*reinterpret_cast<unsigned*>(a + 0x14),
+		*reinterpret_cast<unsigned*>(reinterpret_cast<unsigned char*>(d) + 8),
+		*reinterpret_cast<unsigned*>(reinterpret_cast<unsigned char*>(s) + 8),
+		*reinterpret_cast<unsigned*>(reinterpret_cast<unsigned char*>(b) + 0x19c));
+	fflush(stdout);
+	}
 	nxCase(setAnchor, setAxis, 0, quatActor.actor(), 0,
 		NxVec3(1.0f, 2.0f, 3.0f), NxVec3(0.0f, 1.0f, 0.0f));
 

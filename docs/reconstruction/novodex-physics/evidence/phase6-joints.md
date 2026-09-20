@@ -1421,3 +1421,57 @@ one: reachability, per row, rather than the closure apparatus. The three rounds
 since 7m have established that in order -- what a closure costs, that a target is
 needed, that a target now exists, and that the first two rows' arm cannot be
 reached without either a Scene or a correct synthetic layout.
+
+## 7x. The synthetic chain is nearly right: one offset fixed, one level left
+
+7v recorded that the synthetic-actor fixture faulted. This round narrowed it to a
+single wrong offset and then to a single remaining level, both by measurement.
+
+**The actor's userData offset is 0x14, not 0x10.** The row's actor walk is
+
+    0x100980c7  lea ebp,[eax+8]          ; ebp = &desc->actor[0]
+    0x100980d5  mov eax,[ebp]            ; eax = actor[0]
+    0x100980d8  test eax,eax / je ...    ; null -> the copy-through arm
+    0x100980e0  mov eax,[eax+0x14]       ; eax = actor->userData
+    0x100980e3  mov eax,[eax+8]          ; eax = actorDesc->shapes.first
+    0x100980e6  test eax,eax / je ...
+    0x100980ee  mov ecx,[eax+0x19c]      ; ecx = shape->body
+    0x100980f4  mov eax,[ecx+8]          ; eax = body->pose->cached
+
+The fixture had written the descriptor pointer at `+0x10` and the row read
+`+0x14`, so it saw a null descriptor while the buffer held a correct one eight
+bytes away. That is exactly the failure mode the round-19 mutation could not
+distinguish from an unreachable arm, and it is why the fixture is worth building
+rather than reasoning about.
+
+**With 0x14 corrected, the fault moved from `+0x33` to `+0x44`** -- from
+`mov eax,[eax+8]` with `eax=0` to `mov eax,[ecx+8]` with `ecx=0`. So the first two
+levels now resolve and the third does not:
+
+    actor+0x14 -> desc        resolves (the fixture prints a real pointer)
+    desc+8     -> shapes.first resolves
+    shape+8    -> body         resolves
+    body+0x19c -> pose         DOES NOT: ecx is null at +0x44
+
+**The instrument that located this is the one that will finish it.** The fixture
+prints the chain at construction and re-reads it immediately before the row call,
+and a debugger read of the fault gives the register that is null. The remaining
+question is one offset -- where `body+0x19c` actually is -- and it is answerable by
+the same two measurements rather than by another guess.
+
+**Recorded, not left as a failing target.** The fixture is a probe and is not
+registered; its own header says so. Nothing in the gate set moved:
+`validate_inventory` exit 0, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, `completed` exit 0, 587 tool tests OK.
+
+## 7y. Why this is worth the rounds it costs
+
+The alternative was to accept 7s's result -- "the transform arm is unreachable, so
+the row cannot close" -- and stop. This round shows that conclusion was one offset
+short of being wrong in the other direction: the arm is reachable, the fixture was
+wrong, and the two are indistinguishable from a transcript that does not move.
+
+That is the same lesson as 3z264 (a gate that summarises hides a failing block) and
+7i (a state held without evidence): **a measurement that cannot distinguish "the
+code is unreachable" from "my fixture is wrong" is not yet a measurement.** The
+debugger read of the faulting register is what separates them, and it is cheap.
