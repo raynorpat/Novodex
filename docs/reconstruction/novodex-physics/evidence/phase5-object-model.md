@@ -6184,6 +6184,30 @@ argument assertions are guarded by "at least one element was present".
 
 004861 moves to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z218. The singleton-release family: three rows, and an unconditional tail
+
+Round 201 closed three rows that share one pattern (build/r201.log singletonrel
+failures=0, stable over three runs): 001649, 001659 and 004838.
+
+The pattern is "release the owned pointers through the allocator singleton":
+for each field, if it is non-null, call the statically-reviewed 004803 (which
+returns the singleton), then call THAT object's vtable slot +0xc with the field
+as its one argument, then clear the field. 001649 does this for [self] and
+[self+4]; 001659 for [self+0x10] and [self+0xc].
+
+**004838 taught the round's real lesson.** It releases [self+8] only when
+[self+0xc] is NOT less than zero AND [self+8] is non-null -- an FP guard -- and
+my first candidate put the clearing of [self] and [self+4] INSIDE the release
+path, as the other two rows do. It failed on exactly the two guard-failure
+cases. Reading the row again showed why: both guard failures jump to a TAIL
+block, and that tail zeroes [self] and [self+4] **unconditionally**, before the
+`ret`. So those two fields are cleared even when NOTHING is released, and only
+[self+8] belongs to the release path. The differential caught it precisely
+because those two cases were driven at all -- a fixture with only a successful
+release would have passed.
+
+All three move to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
