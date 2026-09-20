@@ -2767,6 +2767,23 @@ void nxGlobalCallN(void* self, NxGlobalFn3 fn, int objSelf4, unsigned nargs,
 	fn(first, b, (nargs == 2u) ? 0u : extraArg);
 	}
 
+void nxGlobalCallN2(void* self, NxGlobalFn2 fn, int objSelf4)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	if(objSelf4 != 0)
+		{
+		unsigned inner;
+		memcpy(&inner, p + 4, 4);
+		p = reinterpret_cast<unsigned char*>(static_cast<size_t>(inner));
+		}
+	unsigned a, b;
+	memcpy(&a, p + 0x7c, 4);
+	memcpy(&b, p + 0x80, 4);
+	unsigned first;
+	memcpy(&first, reinterpret_cast<unsigned char*>(static_cast<size_t>(a)) + 0x30, 4);
+	fn(first, b);
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)

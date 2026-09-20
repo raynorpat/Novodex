@@ -1265,8 +1265,10 @@ void					nxLockApiPushSelf(void* self, void (__stdcall* fn)(unsigned));
 //! slots are NULL at runtime in this image, so binding them is what makes the
 //! rows drivable at all.
 typedef void (__cdecl* NxGlobalFn3)(unsigned, unsigned, unsigned);
+typedef void (__cdecl* NxGlobalFn2)(unsigned, unsigned);
 void					nxGlobalCallN(void* self, NxGlobalFn3 fn, int objSelf4,
 							unsigned nargs, unsigned extraArg);
+void					nxGlobalCallN2(void* self, NxGlobalFn2 fn, int objSelf4);
 
 void*					nxLockApiInit2367(void* self,
 							unsigned (__stdcall* fn)(unsigned, unsigned,
