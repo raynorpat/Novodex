@@ -14966,6 +14966,58 @@ int wmain(int argc, wchar_t** argv)
 		}
 	printf("slot1544 candidate failures=%u provisional=1\n", s1544);
 	}
+	// -- 004163: the same vector loop as 004165, with one argument, through a
+	//    member-function slot.
+	{
+	struct S4163Ctx { unsigned dummy; };
+	typedef void (S4163Ctx::*S4163Mfp)(unsigned);
+	S4163Mfp mfp;
+	{
+	const void* raw = reinterpret_cast<const void*>(base + 0x9aca0);
+	memcpy(&mfp, &raw, sizeof(mfp));
+	}
+	typedef void (NxSlotHost::*M1)(unsigned);
+	M1 slotM = &NxSlotHost::slot1;
+	unsigned s4163 = 0;
+	for(unsigned len = 0; len < 4; ++len)
+		{
+		void* vt[8]; memset(vt, 0, sizeof(vt));
+		{
+		void* raw = nullptr;
+		memcpy(&raw, &slotM, sizeof(raw));
+		memcpy(reinterpret_cast<unsigned char*>(vt) + 0x18, &raw, 4);
+		}
+		unsigned char elems[3][0x40];
+		memset(elems, 0, sizeof(elems));
+		void* vec[3] = { nullptr, nullptr, nullptr };
+		for(unsigned k = 0; k < len; ++k)
+			{ *(void**)(elems[k]) = vt; vec[k] = elems[k]; }
+		unsigned char self[0x20], selfC[0x20];
+		memset(self, 0, sizeof(self)); memset(selfC, 0, sizeof(selfC));
+		unsigned begin = static_cast<unsigned>(reinterpret_cast<size_t>(vec));
+		unsigned end = begin + 4u * len;
+		memcpy(self + 0x10, &begin, 4); memcpy(selfC + 0x10, &begin, 4);
+		memcpy(self + 0x14, &end, 4); memcpy(selfC + 0x14, &end, 4);
+		unsigned arg = 0x7A7A0000u + len;
+		gSlotHits = 0; gSlotA = 0;
+		(reinterpret_cast<S4163Ctx*>(self)->*mfp)(arg);
+		unsigned hO = gSlotHits, aO = gSlotA;
+		gSlotHits = 0; gSlotA = 0;
+		nxVectorVirtualLoop4163(selfC, arg,
+			*reinterpret_cast<NxSlotMfp1*>(&slotM));
+		unsigned hC = gSlotHits, aC = gSlotA;
+		// with an empty vector no call happens, so the argument check only
+		// applies when at least one element was visited
+		bool ok4163 = (hO == hC) && (hO == len) && (aO == aC)
+			&& (memcmp(self, selfC, sizeof(self)) == 0);
+		if(len > 0)
+			ok4163 = ok4163 && (aO == arg);
+		if(!ok4163)
+			{fprintf(stderr,"s4163 len=%u h=%u/%u a=%08x/%08x\n",
+				len, hO, hC, aO, aC); ++s4163;}
+		}
+	printf("vecloop4163 candidate failures=%u provisional=1\n", s4163);
+	}
 
 
 
