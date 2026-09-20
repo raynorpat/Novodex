@@ -5950,6 +5950,39 @@ should start from this table and drive ONE row of the four before the group.
 
 No rows move. No gate, coverage-floor, or policy change.
 
+## 3z210. The four-argument group closes, and the real reason for the faults
+
+Round 193 drove 3z209's four-argument group and closed all four rows
+(build/r193.log n4family failures=0, stable over three runs): 003577, 003581,
+003585 and 003589.
+
+**The fault was a calling-convention trap that the campaign had recorded but
+not fully characterised.** The oracle call used a `__thiscall` free-function
+typedef. On this compiler that typedef COMPILES -- no error, no warning that
+matters -- but it does **not** put `this` in ecx. So every one of these rows
+started by reading `[ecx+4]` with ecx holding whatever the caller left there,
+and faulted on the first dereference. 3z202/3z206 had noted "use __fastcall for
+a bare-ret row", which works when the row takes NO stack argument, but it does
+not cover a row that needs BOTH ecx and a stack argument -- and `__fastcall`
+cannot express that either, since its second parameter goes to edx.
+
+**The shape that works is a MEMBER FUNCTION POINTER.** Declaring the row as
+`void (Ctx::*)(unsigned)` and calling it through a `Ctx*` supplies ecx and
+pushes the argument, which is exactly the ABI these rows expect:
+
+    struct N4Ctx { unsigned dummy; };
+    typedef void (N4Ctx::*N4Mfp)(unsigned);
+    N4Mfp mfp;                       // bits copied, NOT reinterpret_cast:
+    { const void* raw = ...;         // a data pointer and a member pointer
+      memcpy(&mfp, &raw, sizeof(mfp)); }   // cannot be cast directly in C++
+    (reinterpret_cast<N4Ctx*>(self)->*mfp)(extra);
+
+This is the general fix for every row in this image that takes `this` in ecx
+plus stack arguments, so it should be the first thing tried for the rows still
+held back on that account -- including 003413 from 3z208.
+
+All four move to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
