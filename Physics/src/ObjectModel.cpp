@@ -2956,6 +2956,23 @@ void nxSlotCall1544(void* self, unsigned objOff, void* obj, NxSlotMfp1 slot)
 	memcpy(p + objOff, &zero, 4);
 	}
 
+// phys_fn_004163 (0x9aca0): the vector loop with one argument.
+void nxVectorVirtualLoop4163(void* self, unsigned arg, NxSlotMfp1 slot)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	unsigned begin, end;
+	memcpy(&begin, p + 0x10, 4);
+	memcpy(&end, p + 0x14, 4);
+	const int n = static_cast<int>(static_cast<signed>(end - begin)) >> 2;
+	for(int i = 0; i < n; ++i)
+		{
+		unsigned elem;
+		memcpy(&elem, reinterpret_cast<unsigned char*>(static_cast<size_t>(begin))
+			+ 4u * static_cast<unsigned>(i), 4);
+		(reinterpret_cast<NxSlotCtx*>(static_cast<size_t>(elem))->*slot)(arg);
+		}
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)

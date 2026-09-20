@@ -1329,6 +1329,13 @@ typedef void (NxSlotCtx::*NxSlotMfp1)(unsigned);
 //! own argument, so a member-function slot is the right shape. NOTE: 004803 is
 //! a direct call to CODE, so it must never be bound; the singleton pointer it
 //! reads is the bindable thing.
+//! phys_fn_004163 (0x9aca0, ret 4): the SAME vector loop as 004165, over the
+//! pair at [self+0x10]/[self+0x14], but calling the vtable slot +0x18 of every
+//! element WITH one argument -- the row argument. The slot pops its own
+//! argument (no `add esp`), so a member-function slot is the right shape.
+void					nxVectorVirtualLoop4163(void* self, unsigned arg,
+							NxSlotMfp1 slot);
+
 void					nxSlotCall1544(void* self, unsigned objOff, void* obj,
 							NxSlotMfp1 slot);
 
