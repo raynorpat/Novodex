@@ -8236,9 +8236,9 @@
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/166",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1217",
-      "static_proof": "NOT a static review: the block reads ebx and eax without setting either, so this is a mid-function FRAGMENT rather than a row. It was admitted to the drivability filter because that filter treats statically_reviewed as satisfied; the state is wrong for this entry",
+      "static_proof": "CAVEAT (phase-8 audit 3z259): the block at 0x7460 reads ebx and eax without setting either, so it is a mid-function FRAGMENT rather than a row. It keeps the statically_reviewed state only because the closure ledger lists it; the state should be revisited with the ledger",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "DOWNGRADED from statically_reviewed in the phase-8 audit (3z259): the block at 0x7460 reads ebx and eax without setting either, so it is a mid-function FRAGMENT rather than a row. It had been classified statically_reviewed, which the drivability filter treats as a satisfied dependency, so it was silently admissible. Reclassifying it removes that"
     },
     {
       "id": "phys_fn_000455",
