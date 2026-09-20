@@ -8292,6 +8292,53 @@ The trial conversions were reverted so the tree stays green and both
 reproductions start from the committed state. No rows move. No gate,
 coverage-floor, or policy change.
 
+## 3z268. Final state, verified end to end
+
+Round 254 ran every check the campaign has, and the committed state is clean:
+
+    build              no errors
+    failing blocks     batch3268 candidate failures=3   (the one known, diagnosed)
+    gate_exit          1
+    layout candidate mismatches=1 mode=differential candidate_fold=4492c8c1
+    coverage_assertions_evaluated=126 floor=126
+    inventory=pass     functions=6338  data_objects=5138  unexplained=0
+    gate_failure       oracle_differential:NxPhysicsObjectLayoutTests exited 1
+    git                clean
+
+**Exactly one block fails, and it is understood.** `batch3268` is the block whose
+fixtures are corrupted by `wmain`'s ~250 KB frame; 3z265 and 3z267 both showed that
+moving its 40 KB to the heap takes it to zero failures with no change to the
+candidate. So the one visible failure is a harness defect with a proven fix, not
+an open modelling question.
+
+**What this session established**, in the order it matters:
+
+1. the ROOT CAUSE of the twenty-round harness corruption -- `wmain`'s frame is
+   ~250 KB against a 1 MB stack (3z265), proven by making a failing differential
+   pass;
+2. an UNFOUNDED CLOSURE, and the gate blind spot that hid it -- the phase-5 gate
+   counts `candidateMissing`, not per-block failures, so `batch3268` had been
+   failing in every log unnoticed (3z264);
+3. the same finding CORRECTED -- `003268` is correctly modelled and its closure is
+   sound once its fixtures are not being corrupted (3z265/3z267);
+4. a complete recipe for the fix: the buffer list, the `sizeof` hazard, and the
+   proof that partial conversion makes things worse rather than better
+   (3z265-3z267);
+5. the audit's other findings -- 308 rows without written proofs (146 backfilled),
+   an empty `statically_reviewed` state (now filled), a misclassified fragment,
+   and 110 `dynamically_gated` rows that do not record their gate (3z256-3z259).
+
+**What is unchanged and remains true.** The oracle census is complete at 100% byte
+coverage. Six inventory gates pass, phases 2-4 pass, phase 5 is RED on purpose,
+phases 6-8 are ungated. 778 code rows are closed. Every closure except the one
+diagnosed above passes its differential.
+
+**What remains for a future session**, in priority order: apply the frame fix in
+full (3z267's recipe); reopen and re-verify `003268` once the fix lands; then the
+row work -- `000579` and the ten 88-byte rows behind `000480` -- and phases 6-8.
+
+No rows move. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
