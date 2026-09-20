@@ -2821,6 +2821,46 @@ float nxLockedThunkFloat(void* self, unsigned lockOff, unsigned objOff,
 	return fn(first, b, third);
 	}
 
+// The four small self-contained rows.
+void* nxInitRow3934(void* self, unsigned arg, NxPtrFn0 fn)
+	{
+	fn();
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	memcpy(p + 0x1c, &arg, 4);
+	unsigned vtable = 0x10117920u;
+	memcpy(p, &vtable, 4);
+	unsigned zero = 0u;
+	memcpy(p + 0x18, &zero, 4);
+	return self;
+	}
+
+unsigned char nxReportRow2160(unsigned a, unsigned b, unsigned c)
+	{
+	// the pushes are a, 0, c, b, 2 -- so the callee sees (2, b, c, 0, a)
+	if(gNxAssertReport)
+		gNxAssertReport(2u, b, c, 0u, a);
+	return 0u;
+	}
+
+unsigned char nxLockApiTest2385(void* self, unsigned (__stdcall* fn)(unsigned,
+	unsigned))
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	unsigned obj;
+	memcpy(&obj, p + 4, 4);
+	unsigned char* o = reinterpret_cast<unsigned char*>(static_cast<size_t>(obj));
+	unsigned inner;
+	memcpy(&inner, o + 4, 4);
+	if(inner == 0u)
+		return 0u;
+	unsigned v;
+	memcpy(&v, o, 4);
+	// the pushes are `push -1` then `push eax`, so the callee sees (v, -1)
+	fn(v, 0xffffffffu);
+	// the row sets al = 1 regardless of what the call returned
+	return 1u;
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)

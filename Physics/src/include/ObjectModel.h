@@ -1282,6 +1282,19 @@ typedef float* (__cdecl* NxFloatRet3Fn)(unsigned, unsigned, unsigned);
 //! [that+0x80] as the first two arguments and [obj+8] as the third. The hook
 //! returns the float the row stages through its frame.
 typedef float (__cdecl* NxFloatFn3)(unsigned, unsigned, unsigned);
+//! Three small self-contained rows from the recovered call-target set.
+//! 003934 (0x8ee80, ret 4) calls the global
+//! [0x10104190], then stores the argument at [self+0x1c], the vtable
+//! 0x10117920 at [self] and zero at [self+0x18], returning self; 002160
+//! (0x539b0) is a pure report row whose five arguments come from the stack;
+//! 002385 (0x5b8c0) tests a doubly-dereferenced field and, when non-zero,
+//! calls the lock-API global [0x10104028] and returns 1.
+typedef unsigned (__cdecl* NxPtrFn0)(void);
+void*					nxInitRow3934(void* self, unsigned arg, NxPtrFn0 fn);
+unsigned char			nxReportRow2160(unsigned a, unsigned b, unsigned c);
+unsigned char			nxLockApiTest2385(void* self,
+							unsigned (__stdcall* fn)(unsigned, unsigned));
+
 float					nxLockedThunkFloat(void* self, unsigned lockOff,
 							unsigned objOff, NxFloatFn3 fn);
 
