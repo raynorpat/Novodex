@@ -173,6 +173,15 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	add_executable(NxPhysicsSDKTests tests/PhysicsSDKTests.cpp)
 	target_include_directories(NxPhysicsSDKTests PRIVATE Foundation/include Physics/include)
 	target_link_libraries(NxPhysicsSDKTests bcrypt)
+	# The Phase 6 joint differential. A separate translation unit on purpose:
+	# PhysicsObjectLayoutTests.cpp's frame is ~250 KB and a 0xA5 poisoned jump
+	# follows any change to it (evidence/phase5-object-model.md 3z262-3z289), so
+	# the joint cases go in a file with no such history rather than being appended
+	# to that one. It loads the pair through PhysicsPairLoader.h and drives the
+	# exported SDK over the C++ interface, like NxPhysicsSDKTests does.
+	add_executable(NxPhysicsJointTests tests/PhysicsJointTests.cpp)
+	target_include_directories(NxPhysicsJointTests PRIVATE Foundation/include Physics/include)
+	target_link_libraries(NxPhysicsJointTests bcrypt)
 	add_executable(NxPhysicsCoreClusterTests tests/PhysicsCoreClusterTests.cpp)
 	target_include_directories(NxPhysicsCoreClusterTests PRIVATE Foundation/include Physics/include)
 	target_link_libraries(NxPhysicsCoreClusterTests bcrypt)

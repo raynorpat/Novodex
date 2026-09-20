@@ -1,0 +1,231 @@
+// The Phase 6 joint differential.
+//
+// It drives the exported SDK over a fixed matrix of joint cases and prints, for
+// every case, the input words it passed, the return value and every output word,
+// all as raw 32-bit hexadecimal. Nothing here decides whether a result is right:
+// the oracle decides, by run_differential.ps1 comparing this transcript from the
+// shipped pair against the same transcript from the rebuilt pair.
+//
+// WHAT THIS FILE IS AND IS NOT, as of its first version:
+//
+//   * it is the harness Phase 6 needs, and it exists because Phase 6's own plan
+//     calls for tests/PhysicsJointTests.cpp;
+//   * it is a TRANSCRIPT generator for the revolute family only. The other nine
+//     families in the plan -- spherical, prismatic, cylindrical, point-on-line,
+//     point-in-plane, D6, distance, fixed and pulley -- are not driven yet, and
+//     the file says so rather than reporting a coverage number that overstates;
+//   * it is registered as an oracle differential only when its transcript is
+//     judged stable, which is a separate step.
+//
+// The reason it is a new translation unit rather than more cases in
+// PhysicsObjectLayoutTests.cpp: that harness's frame is ~250 KB and a 0xA5
+// poisoned jump follows any change to it, which is recorded across
+// evidence/phase5-object-model.md 3z262-3z289. A new file has no such history.
+//
+// Every output value is printed as its IEEE-754 bit pattern rather than as a
+// decimal literal, because the comparison is bit-exact and decimal does not
+// round-trip.
+
+#include "PhysicsPairLoader.h"
+
+#include <string.h>
+
+#include "NxPhysicsSDK.h"
+#include "NxScene.h"
+#include "NxSceneDesc.h"
+#include "NxActorDesc.h"
+#include "NxBodyDesc.h"
+#include "NxBoxShapeDesc.h"
+#include "NxJoint.h"
+#include "NxJointDesc.h"
+#include "NxRevoluteJointDesc.h"
+
+typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(NxU32, NxUserAllocator*, NxUserOutputStream*);
+
+// NxJointDesc::setGlobalAnchor and setGlobalAxis are inline and call these two
+// exported rows, so using the inline methods would add an import for them. This
+// harness loads the pair by LoadLibraryEx and must not link against either side's
+// import library, so the two rows are resolved at runtime like every other
+// address it calls.
+typedef void (NX_CALL_CONV *JointDescSetGlobalAnchorFn)(NxJointDesc&, const NxVec3&);
+typedef void (NX_CALL_CONV *JointDescSetGlobalAxisFn)(NxJointDesc&, const NxVec3&);
+
+static JointDescSetGlobalAnchorFn nxSetGlobalAnchor = 0;
+static JointDescSetGlobalAxisFn nxSetGlobalAxis = 0;
+
+static NxU32 nxU(NxReal value)
+	{
+	NxU32 bits;
+	memcpy(&bits, &value, 4);
+	return bits;
+	}
+
+static NxReal nxF(NxU32 bits)
+	{
+	NxReal value;
+	memcpy(&value, &bits, 4);
+	return value;
+	}
+
+// A vector is printed as three raw words, never as decimal.
+static void nxPrintVec(const char* tag, const NxVec3& v)
+	{
+	printf("%s=%08x.%08x.%08x", tag, nxU(v.x), nxU(v.y), nxU(v.z));
+	}
+
+// Builds the two-actor fixture every joint case needs. The bodies are dynamic
+// because a joint needs at least one dynamic actor and neither may be static.
+//
+// The density matters: NxActorDesc::isValid() wants either a body with a mass
+// AND a mass-space inertia, or a non-zero density with at least one shape, and a
+// default NxBodyDesc carries mass 0 with a zero inertia. The first version of
+// this fixture set neither, so createActor returned null and the harness failed
+// before it reached a single joint. Density with shapes is the simpler of the two
+// validity routes and the one this fixture takes.
+static bool nxBuildFixture(NxScene& scene, NxActor** a, NxActor** b)
+	{
+	NxBoxShapeDesc box;
+	box.dimensions = NxVec3(1.0f, 1.0f, 1.0f);
+
+	NxBodyDesc body;
+
+	NxActorDesc da;
+	da.body = &body;
+	da.density = 1.0f;
+	da.shapes.pushBack(&box);
+	da.globalPose.t = NxVec3(0.0f, 0.0f, 0.0f);
+	*a = scene.createActor(da);
+	if(!*a)
+		return false;
+
+	NxBoxShapeDesc box2;
+	box2.dimensions = NxVec3(1.0f, 1.0f, 1.0f);
+	NxBodyDesc body2;
+	NxActorDesc db;
+	db.body = &body2;
+	db.density = 1.0f;
+	db.shapes.pushBack(&box2);
+	db.globalPose.t = NxVec3(4.0f, 0.0f, 0.0f);
+	*b = scene.createActor(db);
+	return *b != 0;
+	}
+
+// One revolute case: build the descriptor, create, read every value back, then
+// release. Nothing is asserted; everything is printed.
+static void nxRevoluteCase(NxScene& scene, NxActor* a, NxActor* b,
+	unsigned index, const NxVec3& anchor, const NxVec3& axis)
+	{
+	printf("case=revolute index=%u ", index);
+	nxPrintVec("in_anchor", anchor);
+	printf(" ");
+	nxPrintVec("in_axis", axis);
+	printf("\n");
+
+	NxRevoluteJointDesc desc;
+	desc.setToDefault();
+	desc.actor[0] = a;
+	desc.actor[1] = b;
+	nxSetGlobalAnchor(desc, anchor);
+	nxSetGlobalAxis(desc, axis);
+
+	NxJoint* joint = scene.createJoint(desc);
+	printf("case=revolute index=%u created=%s\n", index, joint ? "yes" : "no");
+	if(!joint)
+		return;
+
+	NxVec3 gotAnchor(0.0f, 0.0f, 0.0f);
+	NxVec3 gotAxis(0.0f, 0.0f, 0.0f);
+	joint->getGlobalAnchor(gotAnchor);
+	joint->getGlobalAxis(gotAxis);
+	printf("case=revolute index=%u ", index);
+	nxPrintVec("out_anchor", gotAnchor);
+	printf(" ");
+	nxPrintVec("out_axis", gotAxis);
+	printf(" state=%u\n", static_cast<unsigned>(joint->getState()));
+
+	NxActor* ra = 0;
+	NxActor* rb = 0;
+	joint->getActors(&ra, &rb);
+	printf("case=revolute index=%u actors a=%s b=%s\n", index,
+		ra == a ? "match" : (ra ? "other" : "null"),
+		rb == b ? "match" : (rb ? "other" : "null"));
+
+	scene.releaseJoint(*joint);
+	printf("case=revolute index=%u released=yes\n", index);
+	}
+
+int wmain(int argc, wchar_t** argv)
+	{
+	wchar_t pairDirectory[MAX_PATH];
+	HMODULE physics = 0;
+	int status = nxOpenPair(argc, argv, "NxPhysicsJointTests", pairDirectory, &physics);
+	if(status)
+		return status;
+
+	CreatePhysicsSDKFn createSDK =
+		reinterpret_cast<CreatePhysicsSDKFn>(GetProcAddress(physics, "NxCreatePhysicsSDK"));
+	printf("export=NxCreatePhysicsSDK present=%s\n", createSDK ? "yes" : "no");
+	if(!createSDK)
+		{
+		FreeLibrary(physics);
+		return nxFail("NxCreatePhysicsSDK missing; joint cases cannot be driven");
+		}
+
+	nxSetGlobalAnchor = reinterpret_cast<JointDescSetGlobalAnchorFn>(
+		GetProcAddress(physics, "NxJointDesc_SetGlobalAnchor"));
+	nxSetGlobalAxis = reinterpret_cast<JointDescSetGlobalAxisFn>(
+		GetProcAddress(physics, "NxJointDesc_SetGlobalAxis"));
+	printf("export=NxJointDesc_SetGlobalAnchor present=%s\n", nxSetGlobalAnchor ? "yes" : "no");
+	printf("export=NxJointDesc_SetGlobalAxis present=%s\n", nxSetGlobalAxis ? "yes" : "no");
+	if(!nxSetGlobalAnchor || !nxSetGlobalAxis)
+		{
+		FreeLibrary(physics);
+		return nxFail("the two exported joint-descriptor rows are missing");
+		}
+	printf("version=0x%08x\n", static_cast<unsigned>(NX_PHYSICS_SDK_VERSION));
+
+	NxPhysicsSDK* sdk = createSDK(NX_PHYSICS_SDK_VERSION, 0, 0);
+	printf("sdk=%s\n", sdk ? "created" : "null");
+	if(!sdk)
+		{
+		FreeLibrary(physics);
+		return nxFail("SDK creation failed");
+		}
+
+	NxSceneDesc sceneDesc;
+	sceneDesc.setToDefault();
+	sceneDesc.gravity = NxVec3(0.0f, 0.0f, 0.0f);
+	NxScene* scene = sdk->createScene(sceneDesc);
+	printf("scene=%s\n", scene ? "created" : "null");
+	if(!scene)
+		{
+		sdk->release();
+		FreeLibrary(physics);
+		return nxFail("scene creation failed");
+		}
+
+	NxActor* a = 0;
+	NxActor* b = 0;
+	if(!nxBuildFixture(*scene, &a, &b))
+		{
+		sdk->releaseScene(*scene);
+		sdk->release();
+		FreeLibrary(physics);
+		return nxFail("joint fixture actors could not be created");
+		}
+	printf("fixture=a,%s b,%s\n", a ? "created" : "null", b ? "created" : "null");
+
+	// The anchor and axis sweep. Four anchors and three axes, one word pattern
+	// each, so a reader can see which word moved.
+	nxRevoluteCase(*scene, a, b, 0, NxVec3(0.0f, 0.0f, 0.0f), NxVec3(1.0f, 0.0f, 0.0f));
+	nxRevoluteCase(*scene, a, b, 1, NxVec3(1.0f, 2.0f, 3.0f), NxVec3(0.0f, 1.0f, 0.0f));
+	nxRevoluteCase(*scene, a, b, 2, NxVec3(-1.5f, 0.25f, 8.0f), NxVec3(0.0f, 0.0f, 1.0f));
+	nxRevoluteCase(*scene, a, b, 3, NxVec3(2.0f, 4.0f, 0.0f), NxVec3(0.5f, 0.5f, 0.5f));
+
+	sdk->releaseScene(*scene);
+	printf("scene=released\n");
+	sdk->release();
+	printf("sdk=released\n");
+
+	return nxReportPairIdentity(pairDirectory);
+	}
