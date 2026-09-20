@@ -5837,6 +5837,37 @@ instrument must not assert on a value the code never defined.
 
 All nine move to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z206. Three small recovered rows close; the FPU row is held back
+
+Round 189 worked the small self-contained rows among the 113 the family
+closures had made reachable, and closed three of the four attempted
+(build/r189.log smallrows failures=0, stable over three runs):
+
+- 003934 (0x8ee80, ret 4) calls the ZERO-argument global [0x10104190], then
+  stores the argument at [self+0x1c], the vtable 0x10117920 at [self] and zero
+  at [self+0x18], and returns self;
+- 002160 (0x539b0) is a report-only row whose five arguments come from the
+  stack;
+- 002385 (0x5b8c0) tests a doubly-dereferenced field and, when it is non-zero,
+  calls the lock-API global [0x10104028] and returns 1.
+
+**Two calling-convention bugs surfaced, and both are the 3z202 lesson again.**
+002160 ends in a bare `ret`, so the CALLER cleans -- calling it through
+`__thiscall` made it pop three arguments that were never pushed. 002385 needs
+`this` in ecx but pops nothing, which is `__fastcall` with one parameter. And
+in 002385 the pushes are `push -1` then `push eax`, so the callee sees
+`(value, -1)` -- the value is the FIRST argument, the opposite of the reading
+that looks natural, and the differential caught it.
+
+**003900 is held back.** It brackets its global call with `fnstenv`/`fldenv`
+and caches the result at [0x10126654]; it faulted in every attempt, and its
+candidate and recorder were removed rather than left in place. It is the only
+one of the four that manipulates the FPU state around the call, so that is
+where the next attempt should look.
+
+The three closed rows move to `reconstructed`. No gate, coverage-floor, or
+policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
