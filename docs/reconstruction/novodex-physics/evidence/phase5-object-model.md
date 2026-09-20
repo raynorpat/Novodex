@@ -6862,6 +6862,52 @@ into a definite answer, and it is the first thing a future round should do.
 
 No rows move. No gate, coverage-floor, or policy change.
 
+## 3z238. Solved: the harness aborts with a stack-buffer overrun
+
+Round 222 implemented 3z237's recorded remedy and the whole six-round mystery
+resolved in one build.
+
+**The remedy was right and needed one correction.** `setvbuf(stdout, NULL,
+_IOLBF, 0)` does not merely fail to help -- it makes the program abort with
+
+    exit = -1073740791  =  0xC0000409  =  STATUS_STACK_BUFFER_OVERRUN
+
+so that form is itself unsafe here. `setvbuf(stdout, NULL, _IONBF, 0)` is the
+form that works, and with it the run prints far more than before, right up to
+
+    gather0046 candidate failures=0 provisional=1
+    exit = 0xC0000409
+
+**The exit code is the answer.** `0xC0000409` is the MSVC `/GS` cookie abort, and
+a `/GS` abort **discards everything still sitting in the stdout buffer**. That is
+the mechanism behind every silence this campaign has chased:
+
+- a block that "never ran" had usually run and printed;
+- the buffered lines were thrown away by the abort;
+- `registry4743`'s summary vanishing when a later block was added was the same
+  effect, not a structural one.
+
+So all six explanations from 3z228 to 3z237 were attempts to explain a
+**buffering artifact as if it were control flow or a bind fault** -- and the two
+that survived (3z229, 3z236) survived precisely because they checked a
+known-good case instead of reasoning from the silence.
+
+**Where the abort happens.** With unbuffered output the last line printed is
+`gather0046`, and the next thing in the file is an OLD block -- "Slate row
+000132: quaternion to 3x3 matrix" -- which is not one of the blocks added in this
+campaign. So the abort predates all the recent work and has been truncating this
+harness's visible output for a long time. It is almost certainly a write past a
+local array in that region, and `_IONBF` is what makes it visible.
+
+**The recorded next step**: re-apply `setvbuf(stdout, NULL, _IONBF, 0)` on a
+scratch build -- it must NOT be committed while the harness still aborts, since
+it turns a green exit of 1 into an abort -- and bisect the region after
+`gather0046` to find the overrun. Fixing it would make the tail of this harness
+observable for the first time.
+
+The tree is green at exit 1, with `gather0046` and `adjusted2060` both reporting
+zero failures. No rows move. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
