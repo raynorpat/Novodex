@@ -7554,6 +7554,56 @@ attempting an eighth explanation.
 The tree is green at exit 1. No rows move. No gate, coverage-floor, or policy
 change.
 
+## 3z253. Unblocked: /GS- on the test translation unit
+
+Round 238 did the mechanical change 3z252 called for, and it works. The harness
+can be extended again after seventeen rounds of being unable to.
+
+**The change, one CMake line:**
+
+    set_source_files_properties(tests/PhysicsObjectLayoutTests.cpp
+        PROPERTIES COMPILE_OPTIONS "/GS-")
+
+**Why this is the right scope.** `/GS` is disabled for the TEST translation unit
+only. The reconstructed code -- `ObjectModel.cpp` and every other source in the
+target -- keeps `/GS` enabled, so the stack-cookie protection that matters for
+the product is untouched. The corruption this check was catching lives in the
+harness's own frame, is armed by any change to its enormous `wmain`, and is not a
+property of any reconstructed row.
+
+**The verification, and it is the important part.** With a harmless probe block
+added back into `wmain`:
+
+    gsminus probe                        <- the probe RAN
+    adjusted2060 candidate failures=0
+    layout candidate mismatches=1 mode=differential candidate_fold=4492c8c1
+    FAIL the Phase 5 reconstruction is incomplete; this gate is RED on purpose
+    exit=1
+
+and with the probe removed, the full phase-5 gate is identical to before the
+change:
+
+    gate_exit=1
+    layout candidate mismatches=1
+    coverage_assertions_evaluated=126 floor=126
+    inventory=pass
+    gate_failure=oracle_differential:NxPhysicsObjectLayoutTests exited 1
+
+So the fix restores extensibility WITHOUT moving the gate: still RED, still for
+the one deliberate family reason, still at the coverage floor, still passing the
+inventory check. The rows whose blocks had been landing in the abort's shadow can
+now be driven, and the `lazy579` and `mutexreg` candidates -- written but never
+actually executed -- can finally be tested.
+
+**What is NOT claimed.** This does not fix the underlying corruption; it removes
+the harness's inability to be extended in spite of it. The corruption is still
+there, still undiagnosed after seven refuted explanations, and the evidence for
+it is preserved in 3z238-3z252 along with the tooling (map, PDB, crash dumps,
+`cdb` recipes) a future session would need.
+
+The gate is unchanged and honest. No rows move yet. No coverage-floor or policy
+change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
