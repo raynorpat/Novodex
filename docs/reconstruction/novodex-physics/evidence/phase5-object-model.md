@@ -8213,6 +8213,48 @@ The three trial conversions were reverted so the tree stays green and the
 `batch3268` result is reproducible from the committed state. No rows move. No
 gate, coverage-floor, or policy change.
 
+## 3z266. The wholesale conversion needs sizeof care, and is left for a fresh session
+
+Round 252 attempted 3z265's fix in full: a scripted pass converting every local of
+0x800 bytes or more to a heap allocation. It converted **22 declarations**, and
+the result is instructive about how much care the change needs.
+
+**The first pass broke the fixtures.** `memset(x, 0, sizeof(x))` is correct for an
+array and wrong for a pointer -- after the conversion `sizeof(x)` is 4, so every
+fixture was left uninitialised and the harness faulted immediately. That is a
+silent semantic change, not a compile error, and it is exactly the kind of thing a
+scripted refactor of 15,000 lines will do.
+
+**The second pass fixed 105 `sizeof` uses**, replacing each with the original
+literal size, and the harness still faulted. So the conversion is not merely a
+mechanical substitution: some of the converted buffers are used in ways the script
+could not see, and each needs checking against its own block.
+
+**Why it is left here rather than pushed further.** Two rounds remain, and a
+22-declaration refactor with a silent-failure mode is not something to land
+unverified. The tree is reverted to the committed state, which is green, and the
+`batch3268` proof from 3z265 stands as the evidence for what the fix does when it
+is done correctly -- one block at a time, with its `sizeof` uses checked.
+
+**What the next session should do, in order:**
+
+1. convert ONE of the 20 listed buffers, check every `sizeof` and every pointer
+   use in its block, and confirm the harness still reports
+   `batch3268 failures=3` (the baseline) with no new fault;
+2. repeat, and expect the `batch3268` count to reach 0 partway through, which is
+   the signal that the frame pressure is gone;
+3. only then re-enable `/GS` on the test translation unit (3z253 disabled it) and
+   confirm the cookie check passes -- which is the real end state, since `/GS`
+   was never the problem.
+
+**The finding of 3z265 is unaffected by this.** `wmain`'s frame is ~250 KB, the
+corruption follows from that, and moving `batch3268`'s 40 KB to the heap made its
+differential pass. What this round adds is that applying the fix everywhere is a
+careful edit, not a substitution.
+
+The tree is green at exit 1. No rows move. No gate, coverage-floor, or policy
+change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
