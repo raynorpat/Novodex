@@ -7365,6 +7365,55 @@ investigation.
 The tree is green at exit 1 and all eight gates are unchanged and honest. No rows
 move. No gate, coverage-floor, or policy change.
 
+## 3z249. dv works, and the overrun is LARGE
+
+Round 234 got the local listing, and it rules out the whole class of suspects the
+last five rounds were chasing.
+
+**Both obstacles from 3z248 are solved, and neither had the cause 3z248 guessed.**
+
+- `frame` was not being mangled by quoting: the correct command for a STACK frame
+  is `.frame N`, and `frame` is simply not it. `~~[N]s` is for THREADS and
+  returns "Illegal thread error".
+- the symbol failure was not a missing private stream. cdb said
+  `Unable to load image ... Win32 error 0n2` -- the executable it wanted no
+  longer existed at that path in the form the dump recorded, because **the binary
+  was rebuilt after the dump was taken**. Crash and read with no build in between
+  and the symbols resolve completely, CRT frames included.
+
+With `.frame 4; dv /t /v` the `wmain` frame enumerates. The locals, by address:
+
+    00bafeac  wchar_t ** argv
+    00bafea8  int argc
+    00baea24  unsigned char [64] sh          <- highest array
+    00bac3a0  unsigned char [64] lockObjC
+    00baa8cc  char [65] loadedHash
+    00ba7c74  unsigned char [64] subObjC
+    00b97904  wchar_t [260] loadedPath
+    00b94ad4  unsigned char [2048] field
+    00b946a4  wchar_t [260] physicsPath
+    00b94ad4 ... etc
+
+**The finding that matters: NO declared local reaches the cookie.** The highest
+array is `sh[64]` ending at `0x00baea64`, and `argc` sits at `0x00bafea8` -- a gap
+of about 0x1440 bytes, which is where the cookie and the saved registers live. So
+the corruption is a write of SEVERAL THOUSAND bytes past some local, not a few
+bytes past an array.
+
+**That eliminates every theory this investigation has held.** A one-past-the-end
+write, a short fixture buffer, a plane-save overflow, a two-level indirection --
+all of those are small. A multi-kilobyte overrun is the signature of a
+length-driven copy: a `memcpy`/`memset` whose length came out wrong, a `strcpy`
+or `sprintf` into a small buffer, or a loop bounded by a computed count.
+
+**The next step is therefore specific**: grep the harness for copies whose length
+is not a compile-time `sizeof` of the destination, and for `strcpy`/`sprintf`
+into the small buffers in the list above. `sh[64]`, `subObjC[64]`, `lockObjC[64]`
+and `loadedHash[65]` are the natural destinations for that class of bug.
+
+The tree is green at exit 1. No rows move. No gate, coverage-floor, or policy
+change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
