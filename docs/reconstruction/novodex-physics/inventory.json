@@ -64868,12 +64868,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "float-out three-argument global-call thunk (0x87f10, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1341",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12500",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the floatout3575 differential (3z204): failures=0 over three consecutive runs, comparing the hit count, all three arguments and the three floats written through the out pointer, with the slot bound to a stub returning a float triple",
       "notes": ""
     },
     {
