@@ -8100,7 +8100,7 @@
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/161",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1208",
-      "static_proof": null,
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase2-fluid-visualization.md: \"| `phys_fn_000445` | `0x0000ded0` | 16 | Visualization | `PhysicsSDK::clearDebugRenderable` |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": ""
     },
@@ -8190,7 +8190,7 @@
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/164",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1212",
-      "static_proof": null,
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase2-sdk.md: \"| `phys_fn_000450` | `0x0000df00` | 33 | `oracle/ghidra/manifest.json#/functions/164` | `oracle/capstone/manifest.json#/entries/1212` |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": ""
     },
@@ -8371,7 +8371,7 @@
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/226",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1227",
-      "static_proof": null,
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase2-sdk.md: \"| `phys_fn_000460` | `0x0000e050` | 29 | `oracle/ghidra/manifest.json#/instruction_ranges/226` | `oracle/capstone/manifest.json#/entries/1227` |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": ""
     },
@@ -8407,7 +8407,7 @@
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/227",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1230",
-      "static_proof": null,
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase2-factory-a.md: \"reaching `SdkAllocatorBridge::realloc` (`phys_fn_000462`, slot `+8` of the vtable\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": ""
     },
@@ -8443,7 +8443,7 @@
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/228",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1231",
-      "static_proof": null,
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase2-sdk.md: \"| `phys_fn_000464` | `0x0000e080` | 8 | `oracle/ghidra/manifest.json#/instruction_ranges/228` | `oracle/capstone/manifest.json#/entries/1231` |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": ""
     },
@@ -8479,7 +8479,7 @@
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/229",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1232",
-      "static_proof": null,
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase2-factory-a.md: \"(`phys_fn_000466`) remains unexercised, because nothing on a Release path calls\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": ""
     },
@@ -8625,7 +8625,7 @@
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/172",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1255",
-      "static_proof": null,
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase2-static-proof.md: \"two frees `phys_fn_000474` performs are asserted and the rebuild afterwards\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": ""
     },
@@ -15343,7 +15343,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/349",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2560",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "driven and gated: the transcript line 'mzero row=phys_fn_000847 zA=00000000 zB=42424242 digest=23206019', is a registered coverage assertion in tools/gate_targets.ps1, which run_phase_gate.ps1 requires to appear at least twice in the differential transcript and fails if it stops appearing. Backfilled from that registration (7i); the row was already driven, the proof field was never filled in.",
       "notes": ""
     },
     {
@@ -17259,7 +17259,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/465",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2981",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "driven and gated: the transcript line 'hull row=phys_fn_000953..71 vertexCount=8 faceCount=6 zero=0 face2_offset=0xb8 vertices_offset=0x10', is a registered coverage assertion in tools/gate_targets.ps1, which run_phase_gate.ps1 requires to appear at least twice in the differential transcript and fails if it stops appearing. Backfilled from that registration (7i); the row was already driven, the proof field was never filled in.",
       "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
@@ -17295,7 +17295,7 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/466",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2982",
-      "static_proof": null,
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 2 | `phys_fn_000955` | `lea eax,[ecx+0x10]` \u2014 the vertex array |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
       "implementation": "Physics/src/ObjectModel.cpp"
@@ -17404,7 +17404,7 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/469",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3018",
-      "static_proof": null,
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 3 | `phys_fn_000961` | `mov eax,6` \u2014 six faces |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
       "implementation": "Physics/src/ObjectModel.cpp"
@@ -17441,7 +17441,7 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/470",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3019",
-      "static_proof": null,
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 4 | `phys_fn_000963` | `index*36 + this+0x70` \u2014 face-record[k] |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
       "implementation": "Physics/src/ObjectModel.cpp"
@@ -17478,7 +17478,7 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/391",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3020",
-      "static_proof": null,
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"`.data 0x10128470/74/78` receive `phys_fn_000965` (the folded\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
       "implementation": "Physics/src/ObjectModel.cpp"
@@ -17516,7 +17516,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/472",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3021",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "driven by the Phase 5 layout gate and covered by a registered assertion: the harness calls the three hull-table accessors and folds the 12 dwords each returns into `hull static tables digest=f835c8c3`, which tools/gate_targets.ps1 registers as a coverage assertion for NxPhysicsObjectLayoutTests. evidence/phase5-object-model.md 5b names this row as one of the three static .rdata tables at 0x10122180/e0/240. Backfilled (7k) from that registration and that table; the row was driven, the proof field was never filled in.",
       "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
@@ -17553,7 +17553,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/473",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3022",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "driven by the Phase 5 layout gate and covered by a registered assertion: the harness calls the three hull-table accessors and folds the 12 dwords each returns into `hull static tables digest=f835c8c3`, which tools/gate_targets.ps1 registers as a coverage assertion for NxPhysicsObjectLayoutTests. evidence/phase5-object-model.md 5b names this row as one of the three static .rdata tables at 0x10122180/e0/240. Backfilled (7k) from that registration and that table; the row was driven, the proof field was never filled in.",
       "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
@@ -17590,7 +17590,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/474",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3023",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "driven by the Phase 5 layout gate and covered by a registered assertion: the harness calls the three hull-table accessors and folds the 12 dwords each returns into `hull static tables digest=f835c8c3`, which tools/gate_targets.ps1 registers as a coverage assertion for NxPhysicsObjectLayoutTests. evidence/phase5-object-model.md 5b names this row as one of the three static .rdata tables at 0x10122180/e0/240. Backfilled (7k) from that registration and that table; the row was driven, the proof field was never filled in.",
       "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
@@ -17663,7 +17663,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/476",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3032",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "driven and gated: the transcript line 'hull support row=phys_fn_000975 min_bits=c19c0000 max_bits=4eada5a5', is a registered coverage assertion in tools/gate_targets.ps1, which run_phase_gate.ps1 requires to appear at least twice in the differential transcript and fails if it stops appearing. Backfilled from that registration (7i); the row was already driven, the proof field was never filled in.",
       "notes": "P5: transcribed. Projects the eight vertices through a pose (column dots + translation) and folds them with a direction as A*dx + (C*dz + B*dy); min replaces strictly-less, max strictly-greater, NaN skips both (unordered sets C0 in both fnstsw masks). Frame: (this, a1 unread, a2=&min, a3=&max, a4=dir, a5=pose, a6 unread), ret 0x18. Driven by NxPhysicsObjectLayoutTests on twin buffers; bitwise match at oracle digest bfb698ec.",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
@@ -17847,7 +17847,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/481",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3045",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "driven and gated: the transcript line 'hull sharedhook row=phys_fn_000985 stable=1 words=00000000.00000000.00000000', is a registered coverage assertion in tools/gate_targets.ps1, which run_phase_gate.ps1 requires to appear at least twice in the differential transcript and fails if it stops appearing. Backfilled from that registration (7i); the row was already driven, the proof field was never filled in.",
       "notes": "P5: transcribed. Once-guarded lazy init of a twelve-byte .data global at 0x10123c64; the initializer array at .rdata 0x10103010 is twelve bare ret stubs, so the global stays all-zero and the row returns its address. Ignores this. Driven by NxPhysicsObjectLayoutTests: two calls return one stable pointer with zero words.",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
@@ -34388,7 +34388,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/744",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5722",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "driven and gated: the transcript line 'collision name=contact_plane_sphere index=1 rva=0x00048a70 owner=phys_fn_001901 checks=2596000 oracle=5d51a6ed6f586cda', is a registered coverage assertion in tools/gate_targets.ps1, which run_phase_gate.ps1 requires to appear at least twice in the differential transcript and fails if it stops appearing. Backfilled from that registration (7i); the row was already driven, the proof field was never filled in.",
       "notes": ""
     },
     {
@@ -36763,7 +36763,7 @@
       "source": "Physics/src/PMap.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/790",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6410",
-      "static_proof": null,
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase4-formats.md: \"`phys_fn_002033` at `0x0004ff80` derives everything else from the resolution\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P4 Task 3: reconstructed and driven by NxPhysicsAssetTests.",
       "implementation": "Physics/src/PMap.cpp"
@@ -36801,7 +36801,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/791",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6414",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "driven and gated: the transcript line 'asset rows pmap_create=phys_fn_002047 pmap_load=phys_fn_002035 mesh_header=phys_fn_002262 mesh_writer=phys_fn_002162 release_pmap=phys_fn_002051', is a registered coverage assertion in tools/gate_targets.ps1, which run_phase_gate.ps1 requires to appear at least twice in the differential transcript and fails if it stops appearing. Backfilled from that registration (7i); the row was already driven, the proof field was never filled in.",
       "notes": "P4 Task 3: the supplied-stream arm is reconstructed and driven by NxPhysicsAssetTests. The filename arm 0x00050123-0x0005014f and the build-your-own-stream arm at 0x0005017b are NOT reconstructed.",
       "implementation": "Physics/src/PMap.cpp"
     },
@@ -36981,7 +36981,7 @@
       "source": "Physics/src/PMap.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/793",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6466",
-      "static_proof": null,
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase4-formats.md: \"`0x0005073e`. The constructor `phys_fn_002045` at `0x000505f0` installs the\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P4 Task 3: reconstructed and driven by NxPhysicsAssetTests.",
       "implementation": "Physics/src/PMap.cpp"
@@ -37019,7 +37019,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/794",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6467",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "driven and gated: the transcript line 'asset rows pmap_create=phys_fn_002047 pmap_load=phys_fn_002035 mesh_header=phys_fn_002262 mesh_writer=phys_fn_002162 release_pmap=phys_fn_002051', is a registered coverage assertion in tools/gate_targets.ps1, which run_phase_gate.ps1 requires to appear at least twice in the differential transcript and fails if it stops appearing. Backfilled from that registration (7i); the row was already driven, the proof field was never filled in.",
       "notes": "P4 Task 3: the LOAD arm is reconstructed and driven by NxPhysicsAssetTests. The COMPUTE arm 0x00050768-0x00050f02 is NOT reconstructed.",
       "implementation": "Physics/src/PMap.cpp"
     },
@@ -37092,7 +37092,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/796",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6527",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "driven and gated: the transcript line 'asset rows pmap_create=phys_fn_002047 pmap_load=phys_fn_002035 mesh_header=phys_fn_002262 mesh_writer=phys_fn_002162 release_pmap=phys_fn_002051', is a registered coverage assertion in tools/gate_targets.ps1, which run_phase_gate.ps1 requires to appear at least twice in the differential transcript and fails if it stops appearing. Backfilled from that registration (7i); the row was already driven, the proof field was never filled in.",
       "notes": "P4 Task 3: reconstructed and driven by NxPhysicsAssetTests.",
       "implementation": "Physics/src/PMap.cpp"
     },
@@ -39097,7 +39097,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1054",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6838",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "driven and gated: the transcript line 'asset rows pmap_create=phys_fn_002047 pmap_load=phys_fn_002035 mesh_header=phys_fn_002262 mesh_writer=phys_fn_002162 release_pmap=phys_fn_002051', is a registered coverage assertion in tools/gate_targets.ps1, which run_phase_gate.ps1 requires to appear at least twice in the differential transcript and fails if it stops appearing. Backfilled from that registration (7i); the row was already driven, the proof field was never filled in.",
       "notes": "P4 Task 4: reconstructed in full -- fields 1-19 including the acceleration blob length and collapsed buffer -- and driven by NxPhysicsAssetTests over nine writer fixtures. The model at internal+0x20 is dispatched through BaseModel slot 5 (call [edx+0x14] at 0x00053b2f); the harness stands that virtual in on both sides, so the tree serialiser behind it stays unmapped census work.",
       "implementation": "Physics/src/TriangleMesh.cpp"
     },
@@ -40906,7 +40906,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/845",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7080",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "driven and gated: the transcript line 'asset rows pmap_create=phys_fn_002047 pmap_load=phys_fn_002035 mesh_header=phys_fn_002262 mesh_writer=phys_fn_002162 release_pmap=phys_fn_002051', is a registered coverage assertion in tools/gate_targets.ps1, which run_phase_gate.ps1 requires to appear at least twice in the differential transcript and fails if it stops appearing. Backfilled from that registration (7i); the row was already driven, the proof field was never filled in.",
       "notes": "P4 Task 3: reconstructed and driven by NxPhysicsAssetTests.",
       "implementation": "Physics/src/TriangleMesh.cpp"
     },
@@ -86468,7 +86468,7 @@
       "source": "Physics/src/MemoryStream.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1807",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15548",
-      "static_proof": null,
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase4-mesh-writer.md: \"| `phys_fn_004766` | `0x000b39b0` | appendBlock: doubling growth, linked through prev->next |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P4 Task 4: reconstructed; the growth-by-doubling shape the store half drives.",
       "implementation": "Physics/src/MemoryStream.cpp"
@@ -86505,7 +86505,7 @@
       "source": "Physics/src/MemoryStream.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1808",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15554",
-      "static_proof": null,
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase4-formats.md: \"then takes the stream's byte count from `phys_fn_004768` at `0x000b3a30`\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P4 Task 4: reconstructed; every non-last block is exactly full, so the sum of offsets is the byte count.",
       "implementation": "Physics/src/MemoryStream.cpp"
@@ -86542,7 +86542,7 @@
       "source": "Physics/src/MemoryStream.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1809",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15557",
-      "static_proof": null,
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase4-mesh-writer.md: \"| `phys_fn_004770` | `0x000b3a60` | storeByte |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P4 Task 4: reconstructed.",
       "implementation": "Physics/src/MemoryStream.cpp"
@@ -86579,7 +86579,7 @@
       "source": "Physics/src/MemoryStream.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1810",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15559",
-      "static_proof": null,
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase4-formats.md: \"The four tag bytes are read one at a time through `phys_fn_004772` at\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P4 Task 3: reconstructed and driven by NxPhysicsAssetTests. The bit-mask reset at 0x000b3aa2 is reconstructed but no fixture interleaves a bit read with a raw read, so it is unfalsified.",
       "implementation": "Physics/src/MemoryStream.cpp"
@@ -86616,7 +86616,7 @@
       "source": "Physics/src/MemoryStream.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1811",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15560",
-      "static_proof": null,
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase4-formats.md: \"wrong. The version and the resolution are read through `phys_fn_004774` at\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P4 Task 3: reconstructed and driven by NxPhysicsAssetTests.",
       "implementation": "Physics/src/MemoryStream.cpp"
@@ -86725,7 +86725,7 @@
       "source": "Physics/src/MemoryStream.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1814",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15563",
-      "static_proof": null,
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase4-mesh-writer.md: \"| `phys_fn_004780` | `0x000b3b30` | seek: current block only, strictly in bounds |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P4 Task 4: reconstructed; already driven as kStreamSeekRva by NxPhysicsAssetTests since Task 3.",
       "implementation": "Physics/src/MemoryStream.cpp"
@@ -86762,7 +86762,7 @@
       "source": "Physics/src/MemoryStream.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1815",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15565",
-      "static_proof": null,
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase4-mesh-writer.md: \"| `phys_fn_004782` | `0x000b3b50` | the block allocator, four stack args, `ret 0x10` |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P4 Task 4: reconstructed with the four-argument form (size, buffer, fill, initialOffset); both known callers pass fill=0 and initialOffset=size.",
       "implementation": "Physics/src/MemoryStream.cpp"
@@ -86799,7 +86799,7 @@
       "source": "Physics/src/MemoryStream.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1816",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15570",
-      "static_proof": null,
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase4-mesh-writer.md: \"| `phys_fn_004784` | `0x000b3bf0` | destructor body |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P4 Task 4: reconstructed.",
       "implementation": "Physics/src/MemoryStream.cpp"
@@ -86836,7 +86836,7 @@
       "source": "Physics/src/MemoryStream.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1817",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15576",
-      "static_proof": null,
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase4-mesh-writer.md: \"| `phys_fn_004786` | `0x000b3c70` | flushBits |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P4 Task 4: reconstructed; the self-call at 0x000b3c9e re-enters with the count cleared and returns at once.",
       "implementation": "Physics/src/MemoryStream.cpp"
@@ -86873,7 +86873,7 @@
       "source": "Physics/src/MemoryStream.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1818",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15581",
-      "static_proof": null,
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase4-mesh-writer.md: \"| `phys_fn_004788` | `0x000b3ce0` | constructor over phys_fn_004782 |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P4 Task 4: reconstructed in the image's own shape -- SDK-allocated blocks, born full over given bytes and rewound with seek(0). The Task 3 inline-block stand-in was replaced by this transcription; every pmap case stayed green across the swap.",
       "implementation": "Physics/src/MemoryStream.cpp"
@@ -86928,7 +86928,7 @@
       "source": "Physics/src/MemoryStream.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1820",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15586",
-      "static_proof": null,
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase4-mesh-writer.md: \"| `phys_fn_004791` | `0x000b3db0` | five-byte jmp alias of phys_fn_004784 |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P4 Task 4: reconstructed as a tail-call alias of phys_fn_004784.",
       "implementation": "Physics/src/MemoryStream.cpp"
@@ -87001,7 +87001,7 @@
       "source": "Physics/src/MemoryStream.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1822",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15593",
-      "static_proof": null,
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase4-mesh-writer.md: \"| `phys_fn_004795` | `0x000b3e30` | collapse, allocating and caller-buffer arms |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P4 Task 4: reconstructed for the allocating arm the writer uses (destination 0); the writer pushes the length as an unread second argument at 0x00053b47.",
       "implementation": "Physics/src/MemoryStream.cpp"
@@ -87038,7 +87038,7 @@
       "source": "Physics/src/MemoryStream.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1823",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15603",
-      "static_proof": null,
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase4-mesh-writer.md: \"| `phys_fn_004797` | `0x000b3f00` | storeDword -- the row Model::Save calls directly |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P4 Task 4: reconstructed; the stand-in model save writes through this row on the oracle side.",
       "implementation": "Physics/src/MemoryStream.cpp"
@@ -87743,7 +87743,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1837",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15725",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=container rva=0x000b4d70 owner=phys_fn_004836 source=Ice/IceContainer.cpp:40,81,97,153 words=3456 oracle=7abefb4c mismatches=0 worst_ulp=0 verd is a registered coverage assertion in tools/gate_targets.ps1, which run_phase_gate.ps1 requires to appear at least twice in the differential transcript and fails if it stops appearing. Backfilled from that registration (7i); the row was already driven, the proof field was never filled in.",
       "notes": "",
       "third_party": "opcode"
     },
@@ -87816,7 +87816,7 @@
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1839",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15728",
-      "static_proof": null,
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase2-static-proof.md: \"| `phys_fn_004840` `resize` | other phases only | 148 callers, none drivable |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "",
       "third_party": "opcode"
@@ -87927,7 +87927,7 @@
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1842",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15741",
-      "static_proof": null,
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase2-static-proof.md: \"| `phys_fn_004846` `empty` | other phases only | 47 callers, none drivable |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "",
       "third_party": "opcode"
@@ -87946,7 +87946,7 @@
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1843",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15743",
-      "static_proof": null,
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase2-static-proof.md: \"| `phys_fn_004847` `setExternalBuffer` | other phases only | 3 callers, none drivable |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": ""
     },
@@ -88433,7 +88433,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1855",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15790",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=prunable_ctor rva=0x000b54a0 owner=phys_fn_004874 source=IcePrunable.cpp words=42 oracle=676afd9a mismatches=0 worst_ulp=0 verdict=exact', is a registered coverage assertion in tools/gate_targets.ps1, which run_phase_gate.ps1 requires to appear at least twice in the differential transcript and fails if it stops appearing. Backfilled from that registration (7i); the row was already driven, the proof field was never filled in.",
       "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests.",
       "implementation": "Physics/src/opcode/IcePrunable.cpp"
     },
@@ -88470,7 +88470,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2362",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15791",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=prunable_flags rva=0x000b54f0 owner=phys_fn_004876 source=IcePrunable.cpp words=5760 oracle=849bed75 mismatches=0 worst_ulp=0 verdict=exact', is a registered coverage assertion in tools/gate_targets.ps1, which run_phase_gate.ps1 requires to appear at least twice in the differential transcript and fails if it stops appearing. Backfilled from that registration (7i); the row was already driven, the proof field was never filled in.",
       "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests.",
       "implementation": "Physics/src/opcode/IcePrunable.cpp"
     },
@@ -88506,7 +88506,7 @@
       "source": "Physics/src/opcode/IcePrunable.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2363",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15794",
-      "static_proof": null,
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase4-third-party.md: \"(`0x000b54f0`, ph3, 40 B), `phys_fn_004878` (`0x000b5520`, ph3, 45 B),\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests.",
       "implementation": "Physics/src/opcode/IcePrunable.cpp"
@@ -88543,7 +88543,7 @@
       "source": "Physics/src/opcode/IcePrunable.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2364",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15797",
-      "static_proof": null,
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase4-third-party.md: \"`phys_fn_004880` (`0x000b5550`, ph3, 25 B), `phys_fn_004882` (`0x000b5570`,\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests.",
       "implementation": "Physics/src/opcode/IcePrunable.cpp"
@@ -88580,7 +88580,7 @@
       "source": "Physics/src/opcode/IcePrunable.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2365",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15799",
-      "static_proof": null,
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase4-third-party.md: \"`phys_fn_004880` (`0x000b5550`, ph3, 25 B), `phys_fn_004882` (`0x000b5570`,\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests.",
       "implementation": "Physics/src/opcode/IcePrunable.cpp"
@@ -88618,7 +88618,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1856",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15801",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=prunable_pruner rva=0x000b5590 owner=phys_fn_004884 source=IcePrunable.cpp words=20900 oracle=75538179 mismatches=0 worst_ulp=0 verdict=exact', is a registered coverage assertion in tools/gate_targets.ps1, which run_phase_gate.ps1 requires to appear at least twice in the differential transcript and fails if it stops appearing. Backfilled from that registration (7i); the row was already driven, the proof field was never filled in.",
       "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests.",
       "implementation": "Physics/src/opcode/IcePrunable.cpp"
     },
@@ -88654,7 +88654,7 @@
       "source": "Physics/src/opcode/IcePrunable.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1857",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15803",
-      "static_proof": null,
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase4-third-party.md: \"ph3, 27 B), `phys_fn_004884` (`0x000b5590`, ph7, 29 B), `phys_fn_004886`\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests.",
       "implementation": "Physics/src/opcode/IcePrunable.cpp"
@@ -88692,7 +88692,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1858",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15805",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=prunable_ranges rva=0x000b55e0 owner=phys_fn_004888 source=IcePrunable.cpp:152,174 words=304 oracle=f3da15ff mismatches=0 worst_ulp=0 verdict=e is a registered coverage assertion in tools/gate_targets.ps1, which run_phase_gate.ps1 requires to appear at least twice in the differential transcript and fails if it stops appearing. Backfilled from that registration (7i); the row was already driven, the proof field was never filled in.",
       "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests.",
       "implementation": "Physics/src/opcode/IcePrunable.cpp"
     },
@@ -88728,7 +88728,7 @@
       "source": "Physics/src/opcode/IcePrunable.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1859",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15807",
-      "static_proof": null,
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase4-third-party.md: \"`phys_fn_004890` at `0x000b5610`). Its class vtable is `.rdata:0x0011b5a4`,\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests.",
       "implementation": "Physics/src/opcode/IcePrunable.cpp"
@@ -88765,7 +88765,7 @@
       "source": "Physics/src/opcode/IcePrunable.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1860",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15809",
-      "static_proof": null,
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase4-third-party.md: \"installed by `phys_fn_004874` at `0x000b54ac` and by `phys_fn_004892`\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests.",
       "implementation": "Physics/src/opcode/IcePrunable.cpp"
@@ -88802,7 +88802,7 @@
       "source": "Physics/src/opcode/IcePrunable.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1861",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15811",
-      "static_proof": null,
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase4-third-party.md: \"pointer as `phys_fn_004894` (`0x000b5670`, core); `phys_fn_004886` reads the same\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests.",
       "implementation": "Physics/src/opcode/IcePrunable.cpp"
@@ -88839,7 +88839,7 @@
       "source": "Physics/src/opcode/IcePrunable.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1862",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15815",
-      "static_proof": null,
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase4-third-party.md: \"(`0x000b5649`) and `phys_fn_004896` (`0x000b56d9`).\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests.",
       "implementation": "Physics/src/opcode/IcePrunable.cpp"
@@ -94042,7 +94042,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1973",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18019",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "driven and gated: the transcript line 'thirdparty name=radix_setrankbuffers rva=0x000e3ea0 owner=phys_fn_005177 source=Ice/IceRevisitedRadix.h words=56 oracle=d8046a75 mismatches=0 worst_ulp=0 verdi is a registered coverage assertion in tools/gate_targets.ps1, which run_phase_gate.ps1 requires to appear at least twice in the differential transcript and fails if it stops appearing. Backfilled from that registration (7i); the row was already driven, the proof field was never filled in.",
       "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests.",
       "implementation": "External/opcode/novodex/Ice/IceRevisitedRadix.cpp"
     },
@@ -96223,7 +96223,7 @@
       "source": "Physics/src/opcode/IcePrunable.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/2020",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18345",
-      "static_proof": null,
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase4-third-party-map/opcode_map.csv: \"0x000e7330,phys_fn_005297,23,unmapped,(NovodeX code inside the OPCODE address span),,,address range + call graph + vtable shape,\"NovodeX support code: containers, streams, and sweep/overlap dispatchers that switch over f\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests.",
       "implementation": "Physics/src/opcode/IcePrunable.cpp"
@@ -96260,7 +96260,7 @@
       "source": "Physics/src/opcode/IcePrunable.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/2021",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18346",
-      "static_proof": null,
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase4-third-party-map/opcode_map.csv: \"0x000e7350,phys_fn_005299,7,unmapped,(NovodeX code inside the OPCODE address span),,,address range + call graph + vtable shape,\"NovodeX support code: containers, streams, and sweep/overlap dispatchers that switch over fo\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests.",
       "implementation": "Physics/src/opcode/IcePrunable.cpp"
@@ -96477,7 +96477,7 @@
       "source": "Physics/src/opcode/IcePrunable.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2572",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18376",
-      "static_proof": null,
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase4-third-party-map/opcode_map.csv: \"0x000e7670,phys_fn_005311,31,unmapped,(NovodeX code inside the OPCODE address span),,,address range + call graph + vtable shape,\"NovodeX support code: containers, streams, and sweep/overlap dispatchers that switch over f\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests.",
       "implementation": "Physics/src/opcode/IcePrunable.cpp"

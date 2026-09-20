@@ -1000,3 +1000,83 @@ files. Moving those 4 into `implementation` and leaving `source` null for them i
 a small, safe follow-up; it was not done here because it is a change to rows whose
 `source` currently resolves, and the value of it is cosmetic until the other 510
 are resolved.
+
+## 7i. AUDIT: 59 rows held `reconstructed` with no proof, and no gate could say so
+
+Following the `implementation` split, the obvious next question was what the rows
+without one are backed by. That led to a larger finding.
+
+`reconstructed` is the rung below the terminal `closed`: it asserts the row's
+behaviour is written and checked. **Nothing required a proof for it.** Fifty-nine
+rows held that state with neither a `dynamic_proof` nor a `static_proof`:
+
+    by phase: {2: 10, 3: 1, 4: 38, 5: 10}
+
+**Every one of them turned out to be documented somewhere.** That is the good
+outcome and it was not a foregone one -- it had to be measured:
+
+    named in gate_targets.ps1                       19
+    named in an evidence document or a harness      40
+    named NOWHERE in the tree                        0
+
+The first case is the sharpest. `phys_fn_000847` (`0x0001c880`, phase 5) has an
+empty `dynamic_proof`, but the harness drives it at line 8657 and prints
+`mzero row=phys_fn_000847 zA=00000000 zB=00000042 digest=23206019`, and
+`gate_targets.ps1` line 649 registers that exact line as a coverage assertion --
+so the gate fails if the row stops being driven. The row was driven and gated; the
+proof field had simply never been filled in.
+
+## 7j. Backfilled from the evidence that already existed
+
+Three passes, each quoting its source rather than paraphrasing it:
+
+| pass | rows | source of the proof |
+| --- | ---: | --- |
+| 7i | 16 | the row's line in `tools/gate_targets.ps1` |
+| 7j | 40 | the evidence document or harness that names the row |
+| 7k | 3 | the registered `hull static tables digest` assertion |
+
+The three in the last pass are `phys_fn_000967/969/971`, the hull's static-table
+accessors. The harness calls them and folds the 12 dwords each returns into
+`hull static tables digest=f835c8c3`, which is a registered coverage assertion,
+and `evidence/phase5-object-model.md` 5b names them as the three static `.rdata`
+tables at `0x10122180/e0/240`.
+
+**Result:**
+
+    reconstructed rows                              663
+      with a dynamic_proof                          558
+      with a static_proof                           541
+      with NEITHER                                    0
+
+## 7k. The gate that was missing
+
+`validate_inventory.py` gained `_check_reconstructed_proofs`, which requires a
+`reconstructed` row to carry a dynamic or static proof. Verified both ways:
+
+    clean census   -> []
+    one stripped   -> ["function 'phys_fn_000004' is reconstructed with no proof;
+                        record a dynamic or static proof, or move it back to a
+                        lower state"]
+
+So the state can no longer be held without evidence, and the failure message names
+the two honest remedies rather than only the complaint.
+
+**Why this is the fourth audit finding of its kind.** 3z264 found a closure whose
+differential failed; 7e found 429 rows naming a source that does not exist; 7g
+found the field carrying two claims; this finds 59 rows holding a state with no
+proof. Each was invisible to every gate, and each was found by asking what a claim
+was actually backed by rather than by re-running the gates. The pattern is worth
+naming: **the census's states are checked for their vocabulary and their
+transitions, but not for their evidence.**
+
+## 7l. What is still not established
+
+- **`implementation` remains null for 510 reconstructed rows.** The census does not
+  record where their implementation lives, and the audit shows only 54 could be
+  attributed from proof text plus harness. That is the Phase 8 question and it is
+  not answerable by inference from what is on disk.
+- **105 reconstructed rows still have no `dynamic_proof`**, though all 105 have a
+  `static_proof`, so none is unbacked. They are static-only by evidence rather
+  than by declaration.
+- The nine joint families remain undriven.

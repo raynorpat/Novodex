@@ -474,6 +474,27 @@ def _check_functions(rows, declared_phases):
     return errors
 
 
+def _check_reconstructed_proofs(rows):
+    """A row one rung below `closed` must carry a proof.
+
+    `reconstructed` asserts the row's behaviour is written and checked. Nothing
+    required a proof for it, so 59 rows held that state with neither a dynamic nor
+    a static proof and no gate could say so -- and every one of them turned out to
+    be documented somewhere (7i-7k). The check exists so the next one cannot pass
+    silently.
+    """
+    errors = []
+    for row in rows:
+        if row.get('state') != 'reconstructed':
+            continue
+        if not (row.get('dynamic_proof') or '').strip() and \
+                not (row.get('static_proof') or '').strip():
+            errors.append(
+                f"function {row['id']!r} is reconstructed with no proof; record a "
+                f"dynamic or static proof, or move it back to a lower state")
+    return errors
+
+
 def _check_data_objects(rows, declared_phases):
     errors = []
     for row in rows:
@@ -1658,6 +1679,7 @@ def main():
     repo_root = Path(__file__).resolve().parents[4]
     if path.resolve() == (repo_root / 'docs' / 'reconstruction' / 'novodex-physics'
                           / 'inventory.json').resolve():
+        errors += _check_reconstructed_proofs(data['functions'])
         errors += _check_source_paths(data['functions'], path.parent)
         errors += _check_implementation_paths(data['functions'], path.parent)
     errors += validate_program(data, program, ledgers, path.parent)
