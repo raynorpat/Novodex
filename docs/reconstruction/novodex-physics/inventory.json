@@ -38943,12 +38943,12 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "pure report row (0x539b0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/823",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6837",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the smallrows differential (3z206): failures=0 over three consecutive runs for all three rows, comparing the report tuple, the whole object, the hook hit count and arguments, with the report slot and both globals bound",
       "notes": ""
     },
     {
@@ -42993,12 +42993,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "doubly-dereferenced lock-API test (0x5b8c0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/893",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7425",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the smallrows differential (3z206): failures=0 over three consecutive runs for all three rows, comparing the report tuple, the whole object, the hook hit count and arguments, with the report slot and both globals bound",
       "notes": ""
     },
     {
@@ -71330,12 +71330,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "global-call initializer (0x8ee80, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1472",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13049",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the smallrows differential (3z206): failures=0 over three consecutive runs for all three rows, comparing the report tuple, the whole object, the hook hit count and arguments, with the report slot and both globals bound",
       "notes": ""
     },
     {
