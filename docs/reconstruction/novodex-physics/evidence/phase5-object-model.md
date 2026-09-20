@@ -6032,6 +6032,41 @@ make several virtual calls in sequence.
 
 004165 moves to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z213. A vtable slot with ecx AND stack arguments: the ABI trap
+
+Round 196 attempted 003103, the composition row that calls a vtable slot and
+then the reconstructed 003413, and is reporting a withdrawal with a precise
+finding about the ABI.
+
+**`__thiscall` on a free-function typedef is not merely ignored here -- it is
+REJECTED**: `error C3865: __thiscall: can only be used on native member
+functions`. That closes the question 3z210 opened. The earlier `__thiscall`
+oracle typedefs that compiled must have been accepted in the
+pointer-to-function form only, and silently failed to load ecx, which is
+exactly the fault 3z210 diagnosed. **Neither `__thiscall` nor `__fastcall` can
+express a call that takes `this` in ecx AND arguments on the stack.**
+
+**A member function of a non-virtual, non-inheriting class is the shape that
+can**, and its pointer bits can be memcpy'd into a fixture vtable -- that much
+was built and works.
+
+**But 003103 needs the opposite of what a member function does.** The row
+pushes three arguments for the slot and one for 003413, then cleans all
+twenty-four bytes itself with a single `add esp, 0x18` before its bare `ret`.
+That only balances if NEITHER callee pops its own arguments -- and an MSVC
+`__thiscall` callee DOES pop, so the member-function slot over-pops and the
+frame is corrupted. The row therefore wants a callee that takes ecx but is
+caller-cleaned, which is not a shape C can express directly; it will need a
+hand-written assembly thunk.
+
+The block, its candidate and the slot machinery were removed and the tree is
+green. The next attempt at the seventeen vt-shaped rows should start by
+checking, for EACH row, whether it cleans the slot's arguments itself -- because
+that single detail decides whether a member-function slot works or corrupts the
+frame.
+
+No rows move. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
