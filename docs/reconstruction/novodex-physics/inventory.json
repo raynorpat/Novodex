@@ -68522,12 +68522,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "lock-bracketed float thunk row (0x8c180u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1825",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12861",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the lockthunk2 differential (3z207): failures=0 over three consecutive runs for all three rows, comparing the float result bit-for-bit, the hit count and every argument the thunk pushes, with the lock API and each slot bound",
       "notes": ""
     },
     {
@@ -69890,12 +69890,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "lock-bracketed float thunk row (0x8cf50u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1441",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12956",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the lockthunk2 differential (3z207): failures=0 over three consecutive runs for all three rows, comparing the float result bit-for-bit, the hit count and every argument the thunk pushes, with the lock API and each slot bound",
       "notes": ""
     },
     {
@@ -69926,12 +69926,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "lock-bracketed float thunk row (0x8cf80u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1442",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12957",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the lockthunk2 differential (3z207): failures=0 over three consecutive runs for all three rows, comparing the float result bit-for-bit, the hit count and every argument the thunk pushes, with the lock API and each slot bound",
       "notes": ""
     },
     {
