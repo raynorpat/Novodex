@@ -1257,6 +1257,17 @@ void					nxLockApiPushSelf(void* self, void (__stdcall* fn)(unsigned));
 //! phys_fn_002367 (0x5b7b0): calls the lock-API global [0x10104018] with the
 //! four constants (0, 1, 0, 0) -- pushed 0, 0, 1, 0 -- stores the result at
 //! [self] and returns self.
+//! The three-argument global-call thunk family (25 rows). Each reads
+//! [obj+0x7c] and [obj+0x80], takes [[obj+0x7c]+0x30] as the first argument
+//! and calls a GLOBAL function pointer through its slot. The object is either
+//! `self` itself or [self+4]; the third argument is either the row argument
+//! from [esp+4] or [self+8]; and some rows pass only two arguments. NOTE: those
+//! slots are NULL at runtime in this image, so binding them is what makes the
+//! rows drivable at all.
+typedef void (__cdecl* NxGlobalFn3)(unsigned, unsigned, unsigned);
+void					nxGlobalCallN(void* self, NxGlobalFn3 fn, int objSelf4,
+							unsigned nargs, unsigned extraArg);
+
 void*					nxLockApiInit2367(void* self,
 							unsigned (__stdcall* fn)(unsigned, unsigned,
 								unsigned, unsigned));
