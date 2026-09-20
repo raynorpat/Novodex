@@ -31,6 +31,8 @@ def main():
     eol = '\r\n' if '\r\n' in text else '\n'
     lines = text.split(eol)
 
+    # frame_locals.py names every converted declarator nxfb_<line>_<index>_<name>,
+    # in both its heap and its --pool form, so one pattern finds them all.
     names = set()
     for line in lines:
         names.update(re.findall(r'\b(nxfb_\d+_\d+_\w+)\b', line))

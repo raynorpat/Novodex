@@ -8631,6 +8631,101 @@ hand-edited file.
 
 No rows move. No gate, coverage-floor, or policy change.
 
+## 3z276. RETRACTION of 3z275's A/B: the two arms were not the same build
+
+3z275's table is withdrawn. Its "HEAD passes, the conversion crashes" comparison
+was not measuring the conversion. Three defects in this session's own driver made
+the arms differ in ways the table did not name:
+
+1. **The base was not the same bytes.** `git cat-file blob` returns the file with
+   LF line endings while the committed working tree carries CRLF. The two decode
+   to identical C++ text, and they do **not** build to the same program: an arm
+   built from one form completes the harness and an arm built from the other dies
+   at `delimscan`. Every arm in the table therefore compared a different input
+   from `HEAD`.
+2. **The build was stale.** MSBuild's up-to-date check compares timestamps, and
+   the timestamps in this tree are not ordered, so an arm could run the previous
+   arm's object. `--clean-first` fixes that and introduces the next defect.
+3. **`--clean-first` rebuilds `NxFoundation.dll`**, and a clean-rebuilt
+   `NxFoundation.dll` changes the harness's result. That is the deepest of the
+   three and is recorded on its own below.
+
+The driver has since been corrected: one captured base, stdout captured in
+memory rather than redirected to a file, and the pass test read from the whole
+transcript rather than its last line. None of that rescues the table, because the
+`NxFoundation.dll` dependence is not a driver bug.
+
+## 3z277. The harness's result depends on which `NxFoundation.dll` it loads
+
+Measured this round, on identical source bytes taken from the committed working
+tree:
+
+    build of the layout target, incremental      exit 1   353 lines   batch3268 failures=3
+    build of the layout target, --clean-first    exit -1073741819  last line `delimscan`
+
+The only difference is whether the Foundation DLL in `build\Release` was
+rebuilt. Three consecutive runs of the incremental binary all reported 353 lines
+and exit 1; the clean-rebuilt binary crashes in the same place every time.
+
+**Why this matters more than the frame fix.** `wmain`'s frame is not the only
+thing this harness is sensitive to: it is sensitive to the Foundation build it
+links against as well. Any measurement of this harness that does not name and
+pin the Foundation binary it ran against is not reproducible, and 3z275 is an
+example of exactly that failure.
+
+**What is not yet known.** Whether the clean-rebuilt Foundation is *wrong* in a
+way that matters, or whether the harness is merely chaotic across it, is not
+established. The rebuilt DLL is 57344 bytes and the pinned Foundation oracle
+(`Binaries/NxFoundation.dll`, SHA-256 `7e0596e4…ae0990`) is a different artifact
+in a different directory, so the two are not expected to be byte-identical; what
+is unexpected is that the harness's *behaviour* moves with the difference.
+
+**The next session's first measurement**, before any further conversion work:
+build the layout target incrementally and with `--clean-first` from the same
+committed bytes, record both `build\Release\NxFoundation.dll` hashes, and run
+each binary three times. Until that is on the record, no A/B on this harness is
+trustworthy.
+
+## 3z278. What survives about the conversion
+
+Only the measurements that held under every build arrangement tried, which are
+weaker but still real:
+
+- **The renaming and the `sizeof` rewriting are faithful.** Converting all 81
+  declarators with their storage left on the stack (`frame_locals.py --stack`)
+  completes the harness. So the identifier rewriting, the scope analysis, the
+  literal-`sizeof` substitution and the cast routing are not what breaks a run.
+- **Moving the storage off the stack is what changes behaviour**, and it does so
+  for both `malloc` (`--limit`) and a static pool (`--pool`), so the choice of
+  allocator is not the variable either.
+- **The crash point moves with the amount converted** -- `delimscan` at 81,
+  `posecopy827` at 1 -- which is the same shape 3z262 called chaotic sensitivity
+  and 3z267 called "partial reduction does not help".
+
+**The frame fix stays unlanded.** It is not landed because it is not shown to
+work, and the tooling that would show it work is the tooling this round found to
+be unreliable. Landing it now would put an unverified change into the
+translation unit that the gate's RED state depends on.
+
+## 3z279. Tooling state
+
+`tools/frame_locals.py` gained the controls this round needed and did not have:
+
+- `--limit N` converts only the first N declarators, in source order;
+- `--list` prints them in that order;
+- `--stack` renames and fixes `sizeof` but leaves the storage on the stack;
+- `--pool BYTES` takes the storage from one static pool instead of `malloc`;
+- a guard that refuses a second pass on an already-converted file.
+
+`tools/frame_casts.py` routes explicit casts through the wrapper's conversion for
+every form the harness uses.
+
+Both were re-run end to end after every change and produce a compiling
+translation unit. They are checked in because they are correct; they are not
+evidence that the conversion is safe to land.
+
+No rows move. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a

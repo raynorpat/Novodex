@@ -95,6 +95,67 @@ class NxFrameBuffer2D
 	};
 '''
 
+POOL_WRAPPER = r'''
+// A single static pool, used instead of the CRT heap by --pool. The harness
+// emulates the SDK allocator, so routing the relief buffers through malloc may
+// itself be what perturbed the run; this pool tests that separately.
+static bool gNxFramePoolExhausted = false;
+
+static void* nxFramePoolTake(unsigned long bytes)
+	{
+	static unsigned char pool[NXFRAME_POOL_BYTES];
+	static unsigned long used = 0;
+	unsigned long at = (used + 15ul) & ~15ul;
+	if(at + bytes > static_cast<unsigned long>(NXFRAME_POOL_BYTES))
+		{
+		if(!gNxFramePoolExhausted)
+			{
+			gNxFramePoolExhausted = true;
+			fprintf(stderr, "nxframe: static pool of %u bytes exhausted\n",
+				static_cast<unsigned>(NXFRAME_POOL_BYTES));
+			}
+		return 0;
+		}
+	used = at + bytes;
+	return pool + at;
+	}
+
+template<typename T, unsigned N>
+class NxFramePoolBuffer
+	{
+	public:
+	typedef T element_type;
+	NxFramePoolBuffer() : p(static_cast<T*>(nxFramePoolTake(N > 0 ? N : 1)))
+		{ if(p == 0) exit(70); }
+	T* data() const { return p; }
+	template<typename I> T& operator[](I i) const { return p[i]; }
+	operator T*() const { return p; }
+	T* operator&() const { return p; }
+	private:
+	NxFramePoolBuffer(const NxFramePoolBuffer&);
+	NxFramePoolBuffer& operator=(const NxFramePoolBuffer&);
+	T* p;
+	};
+
+template<typename T, unsigned SEG, unsigned CNT>
+class NxFramePoolBuffer2D
+	{
+	public:
+	typedef T element_type;
+	enum { SEGMENT = SEG, TOTAL = SEG * CNT };
+	NxFramePoolBuffer2D() : p(static_cast<T*>(nxFramePoolTake(sizeof(T) * TOTAL)))
+		{ if(p == 0) exit(70); }
+	T* data() const { return p; }
+	template<typename I> T* operator[](I i) const { return p + i * SEGMENT; }
+	operator T*() const { return p; }
+	T* operator&() const { return p; }
+	private:
+	NxFramePoolBuffer2D(const NxFramePoolBuffer2D&);
+	NxFramePoolBuffer2D& operator=(const NxFramePoolBuffer2D&);
+	T* p;
+	};
+'''
+
 
 def brace_delta(line):
     """Count braces outside string and character literals."""
@@ -158,6 +219,23 @@ def main():
     ap.add_argument('--path', default=PATH)
     ap.add_argument('--check', action='store_true',
                     help='report what would change without writing')
+    ap.add_argument('--limit', type=int, default=0, metavar='N',
+                    help='convert only the first N declarators, in source order. '
+                         'This is the bisect control: it localises a conversion '
+                         'that changes the meaning of its block down to one '
+                         'declaration, which is how 3z275 was left open.')
+    ap.add_argument('--list', action='store_true',
+                    help='print the declarators that would be converted, in order')
+    ap.add_argument('--stack', action='store_true',
+                    help='rename and fix sizeof, but leave the storage on the '
+                         'stack. This separates "the renaming and the layout shift '
+                         'broke it" from "moving the buffer to the heap broke it", '
+                         'which is the distinction 3z275 could not make.')
+    ap.add_argument('--pool', type=int, default=0, metavar='BYTES',
+                    help='take the storage from one static pool of the given size '
+                         'instead of the CRT heap. The harness emulates the SDK '
+                         'allocator, so this separates "the buffer left the stack" '
+                         'from "the buffer went through malloc".')
     args = ap.parse_args()
     threshold = int(args.threshold, 0)
 
@@ -211,6 +289,37 @@ def main():
         print('error: no declarations matched', file=sys.stderr)
         return 1
 
+    # Flatten to declarator order, then apply the bisect limit. Splitting a
+    # multi-declarator line is already handled per hit, so a limit that falls
+    # inside a line must keep the unconverted declarators of that line as they
+    # were written.
+    flat = [(ti, k) for ti, t in enumerate(targets) for k in range(len(t['hits']))]
+    if args.list:
+        for i, (ti, k) in enumerate(flat, 1):
+            t = targets[ti]
+            h = t['hits'][k]
+            print('%4d  line %-6d %-12s %-28s 0x%X' % (
+                i, t['line'] + 1, h['type'], h['name'], h['bytes']))
+        print('total %d declarators' % len(flat))
+        return 0
+    if args.limit:
+        keep_upto = set(flat[:args.limit])
+        pruned = []
+        for ti, t in enumerate(targets):
+            hits = [h for k, h in enumerate(t['hits']) if (ti, k) in keep_upto]
+            moved = [h for k, h in enumerate(t['hits']) if (ti, k) not in keep_upto]
+            if not hits:
+                continue
+            t['hits'] = hits
+            # a declarator that is not converted keeps its original spelling
+            t['keep'] = list(t['keep']) + ['%s %s;' % (h['type'], h['name'])
+                                           for h in moved]
+            pruned.append(t)
+        targets = pruned
+        if not targets:
+            print('error: --limit %d converts nothing' % args.limit, file=sys.stderr)
+            return 1
+
     depth = 0
     depth_at = []
     for line in lines:
@@ -240,13 +349,20 @@ def main():
                 for h in t['hits']:
                     h['new'] = 'nxfb_%d_%d_%s' % (i + 1, h['index'], h['name'])
                     renames.append((h['name'], h['new'], i, t['end']))
-                    if len(h['dims']) == 1:
-                        decls.append('typedef NxFrameBuffer<%s, 0x%Xu> NxFrameType_%d_%d;\n%sNxFrameType_%d_%d %s;' % (
-                            h['type'], h['dims'][0], i + 1, h['index'],
+                    dims = ''.join('[0x%X]' % d for d in h['dims'])
+                    base = 'NxFramePoolBuffer' if args.pool else 'NxFrameBuffer'
+                    wname = base + ('2D' if len(h['dims']) == 2 else '')
+                    if args.stack:
+                        # keep the storage exactly where it was; only the name and
+                        # the sizeof spellings change
+                        decls.append('%s %s%s;' % (h['type'], h['new'], dims))
+                    elif len(h['dims']) == 1:
+                        decls.append('typedef %s<%s, 0x%Xu> NxFrameType_%d_%d;\n%sNxFrameType_%d_%d %s;' % (
+                            wname, h['type'], h['dims'][0], i + 1, h['index'],
                             t['indent'], i + 1, h['index'], h['new']))
                     elif len(h['dims']) == 2:
-                        decls.append('typedef NxFrameBuffer2D<%s, 0x%Xu, 0x%Xu> NxFrameType_%d_%d;\n%sNxFrameType_%d_%d %s;' % (
-                            h['type'], h['dims'][0], h['dims'][1], i + 1, h['index'],
+                        decls.append('typedef %s<%s, 0x%Xu, 0x%Xu> NxFrameType_%d_%d;\n%sNxFrameType_%d_%d %s;' % (
+                            wname, h['type'], h['dims'][0], h['dims'][1], i + 1, h['index'],
                             t['indent'], i + 1, h['index'], h['new']))
                     else:
                         print('error: unsupported rank at line %d' % (i + 1), file=sys.stderr)
@@ -301,7 +417,12 @@ def main():
                     out[i] = n2
 
     wmain_at = next(i for i, l in enumerate(out) if re.match(r'^int wmain\(', l))
-    out[wmain_at:wmain_at] = WRAPPER.split('\n')
+    block = WRAPPER
+    if args.pool:
+        block = (block + '\n'
+                 + '#define NXFRAME_POOL_BYTES 0x%Xu\n' % args.pool
+                 + POOL_WRAPPER)
+    out[wmain_at:wmain_at] = block.split('\n')
 
     print('converted %d declarators on %d lines, %d bytes, %d renames' %
           (len(allhits), len(targets), sum(h['bytes'] for h in allhits), total))
