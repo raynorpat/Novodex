@@ -1421,7 +1421,11 @@ UNRESOLVED_SOURCE_PATHS = (
     'Physics/src/NpSpringAndDamperEffector.cpp',     # 3 rows
     'Physics/src/NpTriangleMesh.cpp',                # 6 rows
     'Physics/src/NpTriangleMeshShape.cpp',           # 11 rows
-    'Physics/src/Scene.cpp',                         # 14 rows
+    # 'Physics/src/Scene.cpp' was here with 14 rows against it. It is REMOVED
+    # rather than kept: the file now exists, so the row-level `implementation`
+    # field resolves and the allowlist entry would be a claim that a real file is
+    # missing. The validator says so itself -- "is on the allowlist but no longer
+    # unresolved; remove the entry" -- which is the check working.
     'Physics/src/SceneRaycast.cpp',                  # 6 rows
     'Physics/src/Shape.cpp',                         # 6 rows
     'Physics/src/core/CylindricalJoint.cpp',         # 2 rows

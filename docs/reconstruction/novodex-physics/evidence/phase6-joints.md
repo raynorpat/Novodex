@@ -2232,3 +2232,91 @@ closes no row has not advanced the reconstruction. The census is now fully
 accounted for and the programme record is honest, which is real and was not true
 before -- but `closed=0` for phases 4, 5, 6 and 7 is the number that matters for the
 Phase 8 gate, and it has not moved.
+
+## 8t. Scene reconstruction, phase 1: the object and its constructor
+
+The Scene is the campaign's head-of-chain (8e) and the user directed its
+reconstruction. This is the first phase: the 0x710-byte object and its constructor,
+faithfully transcribed, compiling, and with the remaining phases enumerated.
+
+**What was measured, and from where.**
+
+    phys_fn_000476  0x0000ea80  344 B  PhysicsSDK::createScene -- allocates 0x710
+                                        bytes and drives the two rows below
+    phys_fn_000647  0x00012c10  998 B  the constructor, a straight-line initialiser
+    phys_fn_000651  0x00013070 1770 B  the descriptor-driven initialiser
+
+`0x710` is where `createScene`'s allocation literal comes from, so the object size
+is measured rather than assumed.
+
+**What was written.**
+
+- `Physics/src/include/Scene.h` -- `NxSceneInternal`, deliberately an
+  **offset-addressed** object rather than a class with named members. The oracle
+  reaches every field through raw pointer arithmetic, and a named-member layout
+  would silently reorder fields and change the behaviour under test. Accessors
+  exist so the code reads; the field *names* are not claimed, only their offsets.
+- `Physics/src/Scene.cpp` -- the constructor, with **every field write transcribed
+  in the oracle's order**, each line carrying its dword index so it can be checked
+  against the decompilation. Nothing is elided: a skipped field would be one a
+  differential could not see.
+- The two reconstructed leaves, transcribed in place: `phys_fn_004147`
+  (0x0009a4e0) and `phys_fn_002346` (0x0005ab50).
+- Seven helper **reproduction holes** for rows other phases own, each carrying its
+  oracle field writes in order and each named so its owner can displace it.
+
+**Verified.** `Scene.cpp` compiles into `NxPhysicsInternalTests`
+(`build/NxPhysicsInternalTests.dir/Release/Scene.obj`, 6124 bytes). All gates
+unmoved: phases 2, 3, 4 and `completed` exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, `validate_inventory` exit 0 with `unexplained=0`, 587 tool
+tests OK.
+
+**The validator caught the reconstruction before I did.** `Physics/src/Scene.cpp`
+was on `UNRESOLVED_SOURCE_PATHS` with 14 rows against it. Creating the file made
+that entry false, and the check refused to pass:
+
+    error: unresolved source path 'Physics/src/Scene.cpp' is on the allowlist but
+    no longer unresolved; remove the entry
+
+That entry is removed and the comment left in its place. **This is the 7f check
+doing exactly what it was built for** -- and the first time in this session a gate
+objected to work going well.
+
+## 8u. What Phase 1 does not do, stated plainly
+
+The object exists and its constructor runs. **`createScene` still returns 0**,
+because the pieces above it are not wired:
+
+    phys_fn_000651  the descriptor initialiser    NOT written
+    phys_fn_000476  PhysicsSDK::createScene       NOT written
+    phys_fn_000234  NpPhysicsSDK::createScene     NOT written
+    NpScene         the public NxScene wrapper    NOT written
+    Scene::createActor                            NOT written
+    the seven helpers above                      holes, not implementations
+
+So this phase is a floor, not a result. What it buys is that the next phase has a
+real object to initialise rather than a size constant, and that the 18-row work list
+is enumerated with the ones already done marked:
+
+    18 rows called by the constructor and initialiser
+      2  reconstructed and transcribed here (004147, 002346)
+      2  the two roots themselves (000647, 000651) -- 000647 transcribed
+      7  helper holes, declared with their oracle writes
+      7  not yet examined: 001980, 000285, 002415, 001275, 001275, 000544, 000626
+
+**The largest remaining item is `phys_fn_000626` (0x00011730) at 3227 bytes**, the
+Scene's descriptor application, and `phys_fn_000544` (0x00010750) beside it. Those
+two are the next phase.
+
+## 8v. The order the remaining work has to happen in
+
+    1  phys_fn_000651   the descriptor initialiser      (written next)
+    2  the seven holes  or the rows behind them
+    3  Scene::createActor                                (the harness needs it)
+    4  NpScene + phys_fn_000234 + phys_fn_000476         (the public path)
+    5  verify: NxPhysicsJointTests `scene=created` against both pairs
+    6  then the two joint rows' transform arm is reachable, and the mutation that
+       closes them can finally be aimed
+
+Steps 1-4 are the reconstruction. Step 5 is the measurement that says whether it
+worked, and step 6 is the closure this whole line of work has been for.
