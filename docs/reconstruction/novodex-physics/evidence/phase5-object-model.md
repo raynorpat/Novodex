@@ -6413,6 +6413,25 @@ adjusted2060 both 0 failures, mismatches=1).
 before calling, exactly as 3z200 did for nxBindFnPtr -- the same technique that
 turned a three-round mystery into a one-round fix.
 
+### 3z226a. The probe ran, and its silence is the result
+
+Round 210 ran that experiment, and the probe never printed -- which is itself
+the finding. The probe's first statement is the guard bind and its first output
+is the read-back, so a run in which NO read-back appears means the fault is in
+the BIND of [0x101041b0], before the row is ever called. **That rules out the
+`int3` entirely: the row is not reached at all.**
+
+So 000579's blocker is neither the row nor the guard's sign; it is that
+`nxBindFnPtr` faults on THIS slot, exactly as 3z199 found it faulting on the
+float-valued family slots. Both are slots in the 0x10104000-0x10126000 band
+whose initial contents are not code pointers, and the pattern now has two
+independent instances -- enough to stop treating it as a one-off.
+
+The next attempt should read [0x101041b0]'s IMAGE value and its RUNTIME value
+side by side, as 3z200 eventually did for 0x1264e4, and should do that BEFORE
+writing any candidate. The candidate and recorder were removed and the tree is
+green (ownvtable3238 and adjusted2060 both 0 failures, mismatches=1).
+
 No rows move. No gate, coverage-floor, or policy change.
 
 ## 6. What this task did not do
