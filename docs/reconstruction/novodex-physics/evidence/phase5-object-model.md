@@ -8864,6 +8864,44 @@ interface. Until then this translation unit should be left as it is.
 
 No rows move. No gate, coverage-floor, or policy change.
 
+## 3z286. Two mechanisms for the heap defect tested and eliminated
+
+Both negative, both by measurement on the reproducible recipe (sha-pinned base,
+`--clean-first`, three runs).
+
+**An overflow past the buffer end is not the cause.** The theory was that an
+oracle row writes a few bytes past the storage it is handed -- harmless in a
+250 KB frame, fatal to heap metadata. `frame_locals.py --margin` allocates N extra
+bytes per buffer. At `--margin 0x1000` (4 KB of slack on a 552-byte buffer),
+`--limit 1` fails identically, three runs, at the same point. An overflow that
+4 KB of slack cannot absorb is not a few bytes.
+
+**The harness's allocator emulation is not intercepting the wrapper.** The theory
+was that `NxTestArenaAllocator` routes the wrapper's `malloc` and the buffers
+overlap. `--pool` takes the storage from one static byte array instead of
+`malloc`, bypassing any interception, and fails identically.
+
+So the defect is neither overflow slack nor the allocator: it is that the buffers
+are no longer **in the frame** at all. What that costs is not yet pinned down, but
+two of the three plausible mechanisms are now excluded rather than assumed.
+
+## 3z287. A marker instrument that does not fit this translation unit
+
+Two attempts to place an unbuffered stderr marker after each top-level block in
+`wmain` both produced code that does not compile:
+
+- anchoring on a one-tab closing brace hits the closing braces of namespace-scope
+  constructs later in the file (322 markers, `fprintf` redefined);
+- anchoring on brace depth 1 hits initialiser braces inside statements
+  (833 markers, `illegal else without matching if`).
+
+This is recorded because it is a limitation of the file, not of the attempt: the
+translation unit is a single 15,700-line function whose blocks cannot be
+enumerated by brace counting. The working localisation instrument for this file is
+`--limit` on a converted copy, which is why 3z284's bisect is the one that stands.
+
+No rows move. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a

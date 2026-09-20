@@ -224,6 +224,15 @@ def main():
                          'This is the bisect control: it localises a conversion '
                          'that changes the meaning of its block down to one '
                          'declaration, which is how 3z275 was left open.')
+    ap.add_argument('--margin', type=lambda s: int(s, 0), default=0, metavar='BYTES',
+                    help='allocate this many bytes beyond each buffer. The oracle '
+                         'rows are 2003 code that writes into caller storage, and a '
+                         'few bytes past a buffer is harmless in a 250 KB stack frame '
+                         'while it corrupts heap metadata. A margin tests that.')
+    ap.add_argument('--vm', action='store_true',
+                    help='allocate with VirtualAlloc instead of malloc. The harness '
+                         'emulates the SDK allocator, so this separates the storage '
+                         'move from any interception of malloc.')
     ap.add_argument('--list', action='store_true',
                     help='print the declarators that would be converted, in order')
     ap.add_argument('--stack', action='store_true',
@@ -354,7 +363,12 @@ def main():
                     h['new'] = 'nxfb_%d_%d_%s' % (i + 1, h['index'], h['name'])
                     renames.append((h['name'], h['new'], i, t['end']))
                     dims = ''.join('[0x%X]' % d for d in h['dims'])
-                    base = 'NxFramePoolBuffer' if args.pool else 'NxFrameBuffer'
+                    if args.vm:
+                        base = 'NxFrameVmBuffer'
+                    elif args.pool:
+                        base = 'NxFramePoolBuffer'
+                    else:
+                        base = 'NxFrameBuffer'
                     wname = base + ('2D' if len(h['dims']) == 2 else '')
                     if args.stack:
                         # keep the storage exactly where it was; only the name and
@@ -362,11 +376,12 @@ def main():
                         decls.append('%s %s%s;' % (h['type'], h['new'], dims))
                     elif len(h['dims']) == 1:
                         decls.append('typedef %s<%s, 0x%Xu> NxFrameType_%d_%d;\n%sNxFrameType_%d_%d %s;' % (
-                            wname, h['type'], h['dims'][0], i + 1, h['index'],
+                            wname, h['type'], h['dims'][0] + args.margin, i + 1, h['index'],
                             t['indent'], i + 1, h['index'], h['new']))
                     elif len(h['dims']) == 2:
                         decls.append('typedef %s<%s, 0x%Xu, 0x%Xu> NxFrameType_%d_%d;\n%sNxFrameType_%d_%d %s;' % (
-                            wname, h['type'], h['dims'][0], h['dims'][1], i + 1, h['index'],
+                            wname, h['type'], h['dims'][0] + args.margin, h['dims'][1],
+                            i + 1, h['index'],
                             t['indent'], i + 1, h['index'], h['new']))
                     else:
                         print('error: unsupported rank at line %d' % (i + 1), file=sys.stderr)
@@ -422,6 +437,8 @@ def main():
 
     wmain_at = next(i for i, l in enumerate(out) if re.match(r'^int wmain\(', l))
     block = WRAPPER
+    if args.vm:
+        block = block + '\n' + VM_WRAPPER
     if args.pool:
         block = (block + '\n'
                  + '#define NXFRAME_POOL_BYTES 0x%Xu\n' % args.pool
