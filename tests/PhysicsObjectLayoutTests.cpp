@@ -228,6 +228,10 @@ static float gN3RetBuf[8] = { 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f };
 static void* __cdecl nxN3StubRet(unsigned a, unsigned b, unsigned c)
 	{ gN3A = a; gN3B = b; gN3C = c; ++gN3Hits; return gN3RetBuf; }
 
+// the float-returning hook for the lock-bracketed thunk rows
+static float __cdecl nxN3StubF(unsigned a, unsigned b, unsigned c)
+	{ gN3A = a; gN3B = b; gN3C = c; ++gN3Hits; return 4.25f; }
+
 // the two-argument variant, for the rows that push only two
 static unsigned gN2Hits, gN2A, gN2B;
 static void __cdecl nxN2Stub(unsigned a, unsigned b)
@@ -14510,6 +14514,66 @@ int wmain(int argc, wchar_t** argv)
 			hO, hC, aO, aC, bO, bC, cO, cC, outO[0], outC[0]); ++f3575;}
 	nxUnbindFnPtr(base, 0x1264ec, sv);
 	printf("floatout3575 candidate failures=%u provisional=1\n", f3575);
+	}
+	// -- Lock-bracketed float thunk rows: lock [self+0x10], call the
+	//    three-argument thunk on [self+0x14], return its float.
+	{
+	struct LtRow { unsigned rva; unsigned slotRva; unsigned nargs; const char* name; };
+	static const LtRow kLt[] = {
+		{ 0x8c9f0, 0x1265cc, 3, "003826" },
+		{ 0x8ca20, 0x1265d4, 3, "003828" },
+		{ 0x8cbf0, 0x12662c, 3, "003836" },
+		{ 0x8ccd0, 0x1264f4, 3, "003840" },
+		{ 0x8cdb0, 0x1264c0, 3, "003844" },
+		{ 0x8ce90, 0x126540, 3, "003848" },
+		{ 0x8d2e0, 0x1265ec, 2, "003876" },
+		{ 0x8d3c0, 0x126548, 2, "003880" },
+		{ 0x8d5a0, 0x126444, 2, "003888" },
+	};
+	NxLockApiSaved svLt = nxBindLockApi(base);
+	unsigned ltf = 0;
+	for(unsigned i = 0; i < sizeof(kLt) / sizeof(kLt[0]); ++i)
+		{
+		typedef float (__thiscall* LtOracle)(void*);
+		LtOracle fn = reinterpret_cast<LtOracle>(base + kLt[i].rva);
+		NxFnPtrSaved sv = nxBindFnPtr(base, kLt[i].slotRva,
+			reinterpret_cast<void*>(&nxN3StubF));
+		unsigned char lockObj[0x40]; memset(lockObj, 0, sizeof(lockObj));
+		unsigned char subObj[0x40]; memset(subObj, 0, sizeof(subObj));
+		*(void**)(lockObj) = subObj;
+		unsigned char obj[0x100], objC[0x100];
+		memset(obj, 0, sizeof(obj)); memset(objC, 0, sizeof(objC));
+		unsigned tag = 0x82820000u + i, v80 = 0x87870000u + i, v8 = 0x87870001u + i;
+		memcpy(obj + 0x30, &tag, 4); memcpy(obj + 0x80, &v80, 4);
+		memcpy(objC + 0x30, &tag, 4); memcpy(objC + 0x80, &v80, 4);
+		*(void**)(obj + 0x7c) = obj; *(void**)(objC + 0x7c) = objC;
+		memcpy(obj + 8, &v8, 4); memcpy(objC + 8, &v8, 4);
+		*(void**)(obj + 4) = obj; *(void**)(objC + 4) = objC;
+		unsigned char self[0x40]; memset(self, 0, sizeof(self));
+		*(void**)(self + 0x10) = lockObj;
+		*(void**)(self + 0x14) = obj;
+		unsigned char selfC[0x40]; memcpy(selfC, self, sizeof(selfC));
+		*(void**)(selfC + 0x14) = objC;
+		gN3Hits = 0; gN3A = 0; gN3B = 0; gN3C = 0;
+		float ro = fn(self);
+		unsigned hO = gN3Hits, aO = gN3A, bO = gN3B, cO = gN3C;
+		gN3Hits = 0; gN3A = 0; gN3B = 0; gN3C = 0;
+		float rc = nxLockedThunkFloat(selfC, 0x10, 0x14, &nxN3StubF);
+		unsigned hC = gN3Hits, aC = gN3A, bC = gN3B, cC = gN3C;
+		// when the thunk pushes only TWO arguments the third reading is stack
+		// garbage on the oracle side, so only the first two are compared
+		bool ok = (memcmp(&ro, &rc, 4) == 0) && (hO == hC) && (hO == 1u)
+			&& (aO == aC) && (bO == bC) && (aO == tag) && (bO == v80);
+		if(kLt[i].nargs == 3u)
+			ok = ok && (cO == cC) && (cO == v8);
+		if(!ok)
+			{fprintf(stderr,"lt %s r=%08x/%08x h=%u/%u a=%08x/%08x b=%08x/%08x c=%08x/%08x\n",
+				kLt[i].name, *(unsigned*)&ro, *(unsigned*)&rc, hO, hC,
+				aO, aC, bO, bC, cO, cC);++ltf;}
+		nxUnbindFnPtr(base, kLt[i].slotRva, sv);
+		}
+	nxUnbindLockApi(base, svLt);
+	printf("lockthunkF candidate failures=%u provisional=1\n", ltf);
 	}
 
 
