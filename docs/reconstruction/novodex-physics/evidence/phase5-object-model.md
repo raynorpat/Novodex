@@ -6821,6 +6821,47 @@ uninterpretable.
 
 The tree is green and no rows move. No gate, coverage-floor, or policy change.
 
+## 3z237. The baseline probe also disappears -- instrumentation work is paused
+
+Round 221 built exactly the baseline 3z236 asked for: a block that does nothing
+but call `nxBindRegistry(base, nullptr)`, print one line to stderr and one to
+stdout, and unbind -- placed immediately after the `registry4743` summary, whose
+placement is known to work.
+
+The result is the most informative of the six attempts, and it is negative:
+
+- WITH the baseline block, `registry4743`'s own summary line **disappears** --
+  a line that appears in every gate log without it;
+- WITHOUT it, `registry4743` and `adjusted2060` both print, followed by the
+  usual `layout candidate mismatches=1`.
+
+A block placed AFTER a statement cannot prevent that statement from printing,
+unless the process dies and takes the unflushed stdout with it. So the run is
+dying somewhere that discards output produced BEFORE the new block -- and since
+the new block's own stderr line is also absent, the death is at or before its
+first statement, which is the same `nxBindRegistry` call that the preceding
+block makes successfully.
+
+**That combination is not explicable by any of the six hypotheses this campaign
+has proposed**, and each of the last four was refuted by a single check. Rather
+than propose a seventh, this round stops: the instrumentation question is real
+but it is no longer the highest-value thing to spend rounds on, and the honest
+position is that the harness's output in this region cannot currently be
+trusted as evidence.
+
+**What that costs.** The `lazy579` and `mutexreg` candidates remain untested
+rather than failed, and 000579 and the ten 000480-group rows stay `discovered`.
+Nothing about the ~545 closed rows is affected: every one of them was verified by
+a differential whose block prints its summary in the gate log, and all of those
+still pass in the same run that shows this anomaly.
+
+**What would resume it.** A build with stdout unbuffered (`setvbuf(stdout, NULL,
+_IOLBF, 0)` at the top of wmain), so that a crash cannot hide the lines that ran
+before it. That single change would turn every ambiguous silence in this campaign
+into a definite answer, and it is the first thing a future round should do.
+
+No rows move. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
