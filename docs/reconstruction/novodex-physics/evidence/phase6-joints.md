@@ -1638,3 +1638,58 @@ derived ones. The oracle's own SDK is available and does create scenes; it is th
 
 No row has closed. The campaign's three links -- mutation, target, reachability --
 have the first two in place and the third diagnosed rather than solved.
+
+## 8e. The root of the chain, read from the oracle: `createScene` needs the Scene
+
+8d recorded the campaign as blocked on reachability. This round traced that to its
+root, and the root is one function.
+
+The candidate's `createScene` returns 0 with a comment naming its dependency:
+
+    NxScene* NpPhysicsSDK::createScene(const NxSceneDesc&)
+        {
+        // phys_fn_000234 -> phys_fn_000476; needs Scene, Phase 3.
+        return 0;
+        }
+
+`phys_fn_000476` (`0x0000ea80`, 344 bytes, census state `discovered`) is the
+SDK-side row, and the oracle's decompilation shows what reconstructing it costs:
+
+    puVar5 = allocator->allocate(0x710, 0);      // the Scene object
+    puVar5 = FUN_10012c10(puVar5);               // construct it
+    uVar6  = FUN_10013070(puVar5, param_1);      // initialise from the desc
+    ...                                          // then push it onto the SDK's list
+    if (!desc.isValid()) error("createScene: desc.isValid() is false!")
+
+So `createScene` allocates a **0x710-byte Scene**, constructs it through
+`0x00012c10`, and initialises it from the descriptor through `0x00013070`. None of
+that exists in the reconstruction: `PhysicsInternal.h` declares `class Scene` with
+the comment "Phase 3 owns the internal scene", and the census records 57 rows
+naming a scene source, of which **42 are `discovered` and 15 `reconstructed`** --
+and the 15 reconstructed ones name `Physics/src/NpScene.cpp`, which does not exist
+(7e).
+
+**So the chain, complete:**
+
+    a Phase 6 closure needs a mutation the gate catches
+      -> a mutation needs a registered target           (7o, satisfied in 7r)
+      -> a target needs an arm that runs                (7s)
+      -> the joint rows' arm needs an actor             (8b)
+      -> an actor needs a Scene                         (this round)
+      -> the Scene is Phase 3's, and 42 of its rows are not reconstructed
+
+**Every link above the Scene is now in place.** The closure apparatus works, the
+target passes, the arm is reachable in principle, and the fixture is the only
+missing piece -- and the fixture cannot substitute for an actor whose pose the row
+must read through a real object graph.
+
+**What this says about priority, stated plainly.** Six rounds have gone to two
+Phase 6 rows, and the thing that would unblock them is not more Phase 6 work: it is
+**the Scene**. Reconstructing `phys_fn_000476` and the Scene rows behind it is a
+Phase 3/7 task with a much larger surface, and it is the same blocker for
+`NxPhysicsJointTests` (which reports `sdk=created` then `scene=null`), for every
+joint family the plan lists, and for any row whose arm needs an actor.
+
+**Recorded as the campaign's head-of-chain**, so the next session does not
+re-derive it: the highest-value unblocked work is not a Phase 6 row and not the
+synthetic fixture, it is the Scene lifecycle.
