@@ -5485,6 +5485,39 @@ what "the row does not set the gate" looks like from the outside.
 
 All three move to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z194. The frontier: a call-free accumulator closes, and what is left
+
+Round 177 asked where the reachable work now stands and found a gap in the
+filter itself: it required at least one known call, which silently excluded
+rows with NO calls at all -- pure computation. Exactly one such row exists
+under 150 bytes, and it closes (build/r177.log accum0867 failures=0):
+
+- 000867 (0x1d260, ret 0xc) is a kind-selected accumulator. Its x87 sequence
+  LOOKS daunting -- thirty instructions of `fld`/`fmul`/`fxch` -- but tracing
+  the register stack reduces it to three plain adds: with v = arg1 / arg3 and
+  kind = ([desc+0xc] & 0x1f), the row adds v to [self+0x64] unless the kind is
+  4 or 5, and otherwise adds v*[desc], v*[desc+4] and v*[desc+8] to
+  [self+0x58], [self+0x5c] and [self+0x60], setting [self+0x75] when bit 6 of
+  [desc+0xc] is set.
+
+Two things about it were worth the care. First, the ARGUMENT ORDER is
+(float, DESCRIPTOR, float) -- the descriptor sits in the middle, and my first
+drive passed it third, so the oracle read a float as a pointer and faulted
+immediately. Second, the drive seeds the accumulators with 0.5 rather than
+zero, so a missing add would show up rather than hide behind an identity.
+
+**What is left, stated plainly.** The reachable frontier is now:
+
+| remainder | why held back |
+|---|---|
+| 000146 (579), 000148 (811), 000134 (907), 000136 (498), 004021 (522), 004027 (730) | all x87-dominated (004021 alone is 90 x87 instructions of 165) -- transcription risk of the kind 3z94 warned about |
+| the ten 88-byte rows behind 000480 | 000480 is a 388-byte registry lookup-and-INSERT that mutates global state; only its zero-argument early-out is side-effect free, which is too little to call a differential |
+| 005111, 005214 | tail calls into FIXED rows rather than bindable slots (3z192) |
+| 1559 branch-target fragments, 91 non-entry rows | not drivable by definition |
+| the compiler-artifact block | out of scope by the same rule that keeps CRT out of product claims |
+
+000867 moves to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
