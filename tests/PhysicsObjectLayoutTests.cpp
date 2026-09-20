@@ -14094,6 +14094,105 @@ int wmain(int argc, wchar_t** argv)
 	nxUnbindAllocSlot(base, svS);
 	printf("list4089 candidate failures=%u provisional=1\n", lf);
 	}
+	// -- The ten 74-byte mutex list-free rows: lock, run 004089, tail-jump to
+	//    the unlock. Both arms each, with a two-node chain.
+	{
+	struct MlRow { unsigned rva; unsigned file; unsigned line; const char* name; };
+	static const MlRow kMl[] = {
+		{ 0xb0940, 0x1011a794, 0x11, "004455" },
+		{ 0xb0fa0, 0x1011a8fc, 0x10, "004495" },
+		{ 0xb1440, 0x1011aa5c, 0x10, "004525" },
+		{ 0xb1910, 0x1011abbc, 0x10, "004555" },
+		{ 0xb1db0, 0x1011ad1c, 0x0f, "004585" },
+		{ 0xb21f0, 0x1011ae7c, 0x10, "004611" },
+		{ 0xb2670, 0x1011afec, 0x0f, "004639" },
+		{ 0xb2b70, 0x1011b15c, 0x10, "004669" },
+		{ 0xb2fb0, 0x1011b2ec, 0x0e, "004695" },
+		{ 0xb3700, 0x1011b47c, 0x0f, "004747" },
+	};
+	NxReportSaved svMl = nxBindReportSlot(base);
+	nxSetAssertReport(&nxReportRecorder);
+	NxLockApiSaved svMlL = nxBindLockApi(base);
+	nxSetLockOwner(0x2222u);
+	void* singleVt2[0x18 / 4 + 1]; memset(singleVt2, 0, sizeof(singleVt2));
+	singleVt2[0x14 / 4] = reinterpret_cast<void*>(&nxAllocFreeSeq);
+	unsigned char singleObj2[0x20]; memset(singleObj2, 0, sizeof(singleObj2));
+	*(void**)(singleObj2) = singleVt2;
+	unsigned char holder2[0x10]; memset(holder2, 0, sizeof(holder2));
+	*(void**)(holder2) = singleObj2;
+	NxAllocSaved svS2 = nxBindAllocSlot(base, holder2);
+	nxSetAllocFree(&nxAllocFreeSeq);
+	unsigned char* img2 = const_cast<unsigned char*>(
+		reinterpret_cast<const unsigned char*>(base));
+	DWORD oldP2 = 0;
+	void* gp2 = reinterpret_cast<void*>(
+		reinterpret_cast<size_t>(img2 + 0x127000) & ~static_cast<size_t>(0xFFF));
+	int gOk2 = VirtualProtect(gp2, 0x2000, PAGE_READWRITE, &oldP2);
+	unsigned mlf = 0;
+	for(unsigned i = 0; i < sizeof(kMl) / sizeof(kMl[0]); ++i)
+	for(unsigned arm = 0; arm < 2; ++arm)
+		{
+		typedef unsigned (__thiscall* MlOracle)(void*);
+		MlOracle fn = reinterpret_cast<MlOracle>(base + kMl[i].rva);
+		unsigned char lockObj[0x40]; memset(lockObj, 0, sizeof(lockObj));
+		unsigned char subObj[0x40]; memset(subObj, 0, sizeof(subObj));
+		*(void**)(lockObj) = subObj;
+		unsigned owner = (arm == 0) ? 0x2222u : 0x1111u;
+		memcpy(subObj + 0x1c, &owner, 4);
+		unsigned char nodes[2][0x40];
+		memset(nodes, 0, sizeof(nodes));
+		*(void**)(nodes[0] + 0x10) = nodes[1];
+		unsigned char obj[0x40], objC[0x40];
+		memset(obj, 0, sizeof(obj)); memset(objC, 0, sizeof(objC));
+		*(void**)(obj + 0x20) = nodes[0];
+		unsigned char self[0x40]; memset(self, 0, sizeof(self));
+		*(void**)(self + 0x10) = lockObj;
+		*(void**)(self + 0x18) = obj;
+		unsigned char selfC[0x40]; memcpy(selfC, self, sizeof(selfC));
+		unsigned char nodesC[2][0x40]; memcpy(nodesC, nodes, sizeof(nodesC));
+		*(void**)(nodesC[0] + 0x10) = nodesC[1];
+		unsigned char objC2[0x40]; memcpy(objC2, obj, sizeof(objC2));
+		*(void**)(objC2 + 0x20) = nodesC[0];
+		*(void**)(selfC + 0x18) = objC2;
+		if(gOk2) *reinterpret_cast<unsigned*>(img2 + 0x127180) = 0xDEAD0000u;
+		nxSetGlobalFlag4491(0xDEAD0000u);
+		gFreeSeqN = 0; memset(gFreeSeq, 0, sizeof(gFreeSeq));
+		unsigned o[5];
+		gRepCount = 0; memset(gRepCap, 0, sizeof(gRepCap));
+		unsigned ro = fn(self);
+		memcpy(o, gRepCap, sizeof(o));
+		unsigned nO = gRepCount, fO = gFreeSeqN;
+		unsigned gO = gOk2 ? *reinterpret_cast<unsigned*>(img2 + 0x127180) : 0u;
+		if(gOk2) *reinterpret_cast<unsigned*>(img2 + 0x127180) = 0xDEAD0000u;
+		nxSetGlobalFlag4491(0xDEAD0000u);
+		gFreeSeqN = 0; memset(gFreeSeq, 0, sizeof(gFreeSeq));
+		gRepCount = 0; memset(gRepCap, 0, sizeof(gRepCap));
+		unsigned rc = nxMutexListFree(selfC, 2u, kMl[i].file, kMl[i].line, 0x10104760u);
+		unsigned c[5];
+		memcpy(c, gRepCap, sizeof(c));
+		unsigned nC = gRepCount, fC = gFreeSeqN;
+		unsigned gC = nxGetGlobalFlag4491();
+		bool retOk = (arm == 0) ? (ro == rc && rc == 1u) : true;
+		if(!retOk || nO != nC || memcmp(o, c, sizeof(o)) != 0
+			|| fO != fC || gO != gC || nO != arm
+			|| (arm == 0 && (fO != 2u || gO != 0u)))
+			{fprintf(stderr,"ml %s arm=%u ro=%08x rc=%08x nO=%u nC=%u fO=%u fC=%u\n",
+				kMl[i].name, arm, ro, rc, nO, nC, fO, fC);++mlf;}
+		}
+	if(gOk2)
+		{
+		DWORD t2 = 0;
+		VirtualProtect(gp2, 0x2000, PAGE_READWRITE, &t2);
+		VirtualProtect(gp2, 0x2000, oldP2, &t2);
+		}
+	nxSetAllocFree(nullptr);
+	nxUnbindAllocSlot(base, svS2);
+	nxSetLockOwner(0x2222u);
+	nxUnbindLockApi(base, svMlL);
+	nxSetAssertReport(nullptr);
+	nxUnbindReportSlot(base, svMl);
+	printf("mutexlistfree candidate failures=%u provisional=1\n", mlf);
+	}
 
 
 
