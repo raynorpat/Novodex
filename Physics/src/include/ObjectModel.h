@@ -1308,6 +1308,12 @@ typedef void (__cdecl* NxGlobalFn4)(unsigned, unsigned, unsigned, unsigned);
 void					nxGlobalCall4(void* self, unsigned objOff, unsigned extraOff,
 							NxGlobalFn4 fn, unsigned extraArg);
 
+//! phys_fn_003413 (0x84800): takes the object from the global [0x10125080] and
+//! calls ITS vtable slot +0x20 with the row argument. The caller does not
+//! clean, so the slot pops the argument itself.
+void					nxGlobalVirtualCall3413(unsigned arg,
+							void (__stdcall* fn)(unsigned));
+
 void					nxSetCache3902(unsigned value);
 unsigned				nxGetCache3902();
 unsigned char			nxConsumeFlag3902(unsigned (__stdcall* fn)(unsigned));

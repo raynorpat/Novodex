@@ -2920,6 +2920,12 @@ void nxGlobalCall4(void* self, unsigned objOff, unsigned extraOff, NxGlobalFn4 f
 	fn(first, b, c, extraArg);
 	}
 
+// phys_fn_003413 (0x84800): the virtual call on a global object.
+void nxGlobalVirtualCall3413(unsigned arg, void (__stdcall* fn)(unsigned))
+	{
+	fn(arg);
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)
