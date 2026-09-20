@@ -8255,6 +8255,43 @@ careful edit, not a substitution.
 The tree is green at exit 1. No rows move. No gate, coverage-floor, or policy
 change.
 
+## 3z267. Reproduced twice: the fix works, but only in full
+
+Round 253 reproduced 3z265's result and established the shape of the remaining
+work.
+
+**The proof, run twice.** `batch3268`'s `ob`/`cb` moved to the heap, with their
+`sizeof` uses replaced by literal `0x5000` and the frees placed at the end of each
+`ci` iteration:
+
+    batch3268 candidate failures=3   ->   batch3268 candidate failures=0
+
+The same result as 3z265, from a clean committed state, with no change to the
+candidate. **The row `003268` is correctly modelled; its differential was failing
+because its own fixtures were being corrupted by the frame.**
+
+**The shape of the remaining work.** Adding the next three largest locals
+(`b[0x5000]` at 80 KB, `slots[3][0x6e0]` at 21 KB, `inner[0x1000]` at 16 KB) kept
+`batch3268` at 0 failures but the harness then faulted elsewhere instead. **Partial
+reduction does not help**: it lowers the frame pressure without removing it, and
+the fault simply moves to whatever the new layout breaks. That is the same
+phenomenon as 3z262's chaotic sensitivity, now with its cause known.
+
+**So the fix is all-or-nothing, and that is the thing to record.** Convert all 20
+buffers of 0x800 or more, plus the smaller ones if the frame is still over, and
+verify at the end. Converting a subset is worse than converting none, because it
+moves the fault without fixing anything and makes the failure look new.
+
+**What the next session has**: the cause (3z265), the proof that the fix works
+(3z265 and this round), the exact list of buffers to convert (3z265), the
+`sizeof` hazard a scripted pass will hit (3z266), and the reason a partial pass
+fails (this round). That is a complete recipe; what it needs is one careful pass
+and one verification.
+
+The trial conversions were reverted so the tree stays green and both
+reproductions start from the committed state. No rows move. No gate,
+coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
