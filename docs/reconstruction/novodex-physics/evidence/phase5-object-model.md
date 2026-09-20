@@ -7819,6 +7819,58 @@ class of gap as 3z256 and is left flagged.
 
 No rows change state. No gate, coverage-floor, or policy change.
 
+## 3z259. The closure ledger overrides the row state, and the validator says so
+
+Round 244 tried to act on 3z258 by downgrading `000454` from
+`statically_reviewed` to `discovered`, and learned something about how the census
+is actually validated.
+
+**The downgrade was rejected, correctly.** With the row moved to `discovered` and
+its proof text still present, the validator reported:
+
+    error: closed entry 'phys_fn_000454' carries a static proof but the inventory
+    leaves it 'discovered'
+
+**Two things were learned from that single line.**
+
+First, the validator does not read `static_proof` or `dynamic_proof` at all. It
+reads a field called **`proof`**, whose value is one of a closed vocabulary
+(`differential_falsified`, `static_proof_falsified`,
+`oracle_differential_falsified`), and it checks that vocabulary against the row's
+STATE. So the census carries two parallel conventions -- a proof KIND that is
+validated, and proof TEXT that is not -- and 3z257/3z258 were backfilling the
+text.
+
+Second, and more important: the validator also consults a **closure ledger** (a
+`closed` list with `CLOSURE_KEYS`). `000454` is listed there. So a row's state
+cannot simply be changed in the entry: the ledger has to move with it, or the
+entry and the ledger disagree and the validator refuses -- which is exactly what
+happened.
+
+**What was done instead.** The downgrade was reverted and the finding recorded
+INLINE in the row's proof text, where it cannot be lost:
+
+    CAVEAT (phase-8 audit 3z259): the block at 0x7460 reads ebx and eax without
+    setting either, so it is a mid-function FRAGMENT rather than a row. It keeps
+    the statically_reviewed state only because the closure ledger lists it; the
+    state should be revisited with the ledger
+
+**Why not change the ledger too.** Moving a row out of `closed` would change the
+closure count, which is a claim the campaign has been making all along, and that
+is not a change to make in the last rounds of a session without re-verifying
+every dependent. The caveat records the defect without altering a count.
+
+**Verified after the revert:**
+
+    functions=6338  data_objects=5138  unexplained=0        (inventory)
+    gate_exit=1  layout candidate mismatches=1  floor=126   (phase 5)
+    inventory=pass  gate_failure=oracle_differential        (phase 5)
+
+So the honest position is: the fragment is documented, the count is untouched, and
+the ledger dependency is now known for whoever revisits it.
+
+No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
