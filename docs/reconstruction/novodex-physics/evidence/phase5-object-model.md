@@ -6136,6 +6136,29 @@ whole object.
 
 001544 moves to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z216. 004163 closes, and one check had to be scoped again
+
+Round 199 closed 004163, the second of 3z214's fifteen (build/r199.log
+vecloop4163 failures=0, stable over three runs).
+
+It is 004165's loop with one difference: it calls the vtable slot +0x18 rather
+than +0x10, and passes the ROW ARGUMENT. Because the slot pops its own argument
+(no `add esp`), a member-function slot is the right shape, and `ret 4` pops the
+row argument separately.
+
+**The first run failed on the EMPTY vector alone** -- length 0 matched on the
+hit count, the recorded argument and the whole object, and was still counted as
+a failure, because the check demanded `argument == the row argument`
+unconditionally. With no elements there is no call, so no argument was ever
+passed and the recorder still held its initial zero. The check now applies only
+when at least one element was visited. That is the third time in this campaign
+that an assertion about a value the code never produced had to be scoped --
+after the report arm's unspecified return (3z191) and the two-argument thunk's
+unpushed third argument (3z205) -- so it is worth treating as a standing rule:
+**compare only what the row actually produced.**
+
+004163 moves to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
