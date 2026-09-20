@@ -6577,6 +6577,45 @@ before or after the guard test.
 
 No rows move. No gate, coverage-floor, or policy change.
 
+## 3z231. 000579 is closed as a remainder, with an unexplained trace
+
+Round 215 made one more attempt at 000579 and is ending the investigation rather
+than continuing it, because the round produced evidence that CONTRADICTS the
+model the last three rounds were built on.
+
+**What was fixed.** 3z230's fixture was one level of indirection short. The row
+reads:
+
+    guard = [0x101041b0]     ; the guard object
+    obj   = [guard]          ; ITS first word -- must be non-zero
+    vt    = [obj + 0x14]     ; the subobject vtable
+    call  [vt + 0x1c]        ; with ecx = obj + 0x14, no stack arguments
+
+3z230 had put the vtable at guard+0x14 directly. The corrected fixture adds the
+missing level, and the corrected candidate takes `obj` and uses obj+0x14 as the
+`this` -- a straightforward reading of the four instructions.
+
+**What contradicts.** With that block in place, the run dies before the final
+`layout` summary -- but a drive instrumented with `fprintf(stderr)` at EVERY step
+(enter, fixtures, bind, pre-call, post-call, done) printed **nothing at all**,
+not even the first line, which is an `fprintf(stderr)` immediately on block
+entry. Since the preceding block's summary does print, and this block sits
+directly after it, "the block runs and crashes partway" cannot explain a
+completely silent block. Something about where the block is placed, or about
+when the process dies, is not what the last three rounds assumed.
+
+**So the honest state is**: the row's shape is fully recorded, the guard chain is
+now known to be three deep, and the fixture model is corrected -- but the drive
+fails in a way the instrumentation does not explain, and continuing to guess at
+it is not worth further rounds. 000579 stays `discovered` with everything known
+about it written down, and the binder hypothesis from 3z228 and the short-holder
+bug from 3z230 both stand as corrections to this campaign's own earlier
+reporting.
+
+The block was withdrawn and the tree is green (adjusted2060 and the ten
+vt-campaign blocks all at 0 failures, mismatches=1). No rows move. No gate,
+coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
