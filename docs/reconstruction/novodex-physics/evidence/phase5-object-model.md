@@ -8025,6 +8025,70 @@ knowledge rather than from the twenty rounds.
 The candidate was withdrawn and the tree is green at exit 1, gate unchanged. No
 rows move. No gate, coverage-floor, or policy change.
 
+## 3z263. Hand-off: what is done, what is blocked, and how to resume
+
+Round 249 closes this session's work with a hand-off. Twenty-five rounds have gone
+into the harness defect since 3z228 and the last cheap avenue closed in 3z262, so
+the useful thing now is a precise starting point rather than another attempt.
+
+**What is DONE and verified.**
+
+- **Oracle census: COMPLETE.** 1056977 of 1056977 executable bytes explained,
+  174443 referenced data bytes explained, 0 unexplained, 0 unresolved targets,
+  0 overlaps, 0 duplicate ownership.
+- **Gates: honest, and re-verified fresh in 3z261.** Six inventory gates pass;
+  phases 2, 3 and 4 exit 0; phase 5 exits 1 and is RED ON PURPOSE; phases 6, 7 and
+  8 exit 3 (ungated). The coverage floor is met exactly at 126 and the single
+  phase-5 mismatch is the deliberate family marker.
+- **Reconstruction: 778 closed code rows** (663 `reconstructed`, 115
+  `dynamically_gated`), every one verified by a differential that still passes.
+- **The census carries its own ledgers** -- `phases`, `gates`, `coverage` -- and
+  the validator checks a `proof` kind against a row's state plus a closure ledger.
+  That structure is described in 3z259/3z260 and is what a row change has to
+  respect.
+
+**What is BLOCKED, and exactly how.**
+
+New differential blocks cannot be added to `wmain`. The failure is a stack-frame
+corruption in that one function; `/GS` reported it as `0xC0000409` and discarded
+buffered stdout (3z238), `/GS-` on the test TU turns the same corruption into
+`0xC0000005` instead (3z253-3z254), and the sensitivity is CHAOTIC rather than
+size-driven (3z262) -- a heap-only block still crashes. Seven explanations were
+proposed and all seven were refuted: the binder (3z228/3z229), dead code
+(3z234/3z235), 41 phantom overruns (3z240/3z241), the plane-save buffers
+(3z242), harness copies (3z250), a row bug (3z250/3z251), and the epilogue
+(3z252).
+
+**How to resume, in the order worth trying.**
+
+1. **Refactor `wmain`.** It is one ~15,000-line function. Extract its blocks into
+   named functions. This shrinks the frame, gives each function its own cookie and
+   epilogue, and makes the fault localizable by bisection -- which no other
+   approach has achieved. This is the recorded fix from 3z255 and the most likely
+   to work.
+2. **Diagnose from the dump.** The tooling is committed and proven: `/MAP` and
+   `/DEBUG:FULL` on the test target, crash dumps in
+   `%LOCALAPPDATA%\CrashDumps` (FILTER BY PROCESS NAME -- 3z247), and `cdb -z
+   <dump> -y <build\Release> -cf <commands>` with `.lines`, `.frame 4`, `dv /t
+   /v` (3z249). Read `wmain`'s locals with their offsets and find the extent that
+   reaches the cookie.
+3. **Do NOT** disable `/GS` and call it fixed. 3z253 did that as a diagnostic and
+   it did restore extensibility for small blocks, but it converts a caught
+   corruption into an access violation and it is not a fix.
+
+**Evidence gaps that are recorded, not hidden** (all in the census, none affecting
+a count): 162 `reconstructed` rows without written proofs (3z256/3z257, the other
+146 were backfilled); `statically_reviewed` was empty until 3z258 wrote its six;
+`000454` is a misclassified fragment kept in place by the closure ledger (3z259);
+110 `dynamically_gated` rows do not record which gate holds them (3z258).
+
+**Next rows when the harness allows it**: `000579` (the last drivable vt row, its
+candidate written and its guard chain fully described in 3z230-3z231 and 3z254),
+and the ten 88-byte rows behind `000480`, which need its registry INSERT modelled
+with the allocator bound.
+
+No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
