@@ -15449,6 +15449,63 @@ int wmain(int argc, wchar_t** argv)
 		}
 	printf("allocrelease4149 candidate failures=%u provisional=1\n", s4149);
 	}
+	// -- 002342 retried: the three-field clears are UNCONDITIONAL, which is
+	//    what 3z219's located diff implied.
+	{
+	struct S234BCtx { unsigned dummy; };
+	typedef void (S234BCtx::*S234BMfp)();
+	S234BMfp mfp;
+	{
+	const void* raw = reinterpret_cast<const void*>(base + 0x5aa90);
+	memcpy(&mfp, &raw, sizeof(mfp));
+	}
+	typedef void (NxSlotHost::*M1)(unsigned);
+	M1 slotM = &NxSlotHost::slot1;
+	void* vt[8]; memset(vt, 0, sizeof(vt));
+	{
+	void* raw = nullptr;
+	memcpy(&raw, &slotM, sizeof(raw));
+	memcpy(reinterpret_cast<unsigned char*>(vt) + 0x14, &raw, 4);
+	}
+	unsigned char allocObj[0x10]; memset(allocObj, 0, sizeof(allocObj));
+	*(void**)(allocObj) = vt;
+	unsigned s234b = 0;
+	for(unsigned pan = 0; pan < 4; ++pan)
+		{
+		unsigned char self[0x40], selfC[0x40];
+		memset(self, 0xcd, sizeof(self)); memset(selfC, 0xcd, sizeof(selfC));
+		unsigned char b1[0x10], b2[0x10];
+		memset(b1, 0, sizeof(b1)); memset(b2, 0, sizeof(b2));
+		unsigned v18 = (pan & 1u) ? static_cast<unsigned>(
+			reinterpret_cast<size_t>(b1)) : 0u;
+		unsigned v8 = (pan & 2u) ? static_cast<unsigned>(
+			reinterpret_cast<size_t>(b2)) : 0u;
+		memcpy(self + 0x18, &v18, 4); memcpy(selfC + 0x18, &v18, 4);
+		memcpy(self + 8, &v8, 4); memcpy(selfC + 8, &v8, 4);
+		unsigned char holder[0x10]; memset(holder, 0, sizeof(holder));
+		*(void**)(holder) = allocObj;
+		NxAllocSaved svA = nxBindAllocSlot(base, holder);
+		gSlotHits = 0;
+		(reinterpret_cast<S234BCtx*>(self)->*mfp)();
+		unsigned hO = gSlotHits;
+		gSlotHits = 0;
+		nxAllocReleaseClear2342(selfC, allocObj,
+			*reinterpret_cast<NxSlotMfp1*>(&slotM));
+		unsigned hC = gSlotHits;
+		unsigned want = ((pan & 1u) ? 1u : 0u) + ((pan & 2u) ? 1u : 0u);
+		int dif = memcmp(self, selfC, sizeof(self));
+		if(hO != hC || hO != want || dif != 0)
+			{
+			int off = -1;
+			for(unsigned b = 0; b < sizeof(self); ++b)
+				if(self[b] != selfC[b]) { off = static_cast<int>(b); break; }
+			fprintf(stderr,"s234b pan=%u want=%u h=%u/%u dif=%d off=%d\n",
+				pan, want, hO, hC, dif, off); ++s234b;
+			}
+		nxUnbindAllocSlot(base, svA);
+		}
+	printf("allocclear2342 candidate failures=%u provisional=1\n", s234b);
+	}
 
 
 
