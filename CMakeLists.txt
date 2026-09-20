@@ -195,6 +195,12 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	add_executable(NxJointDescSyntheticTests tests/NxJointDescSyntheticTests.cpp)
 	target_include_directories(NxJointDescSyntheticTests PRIVATE Foundation/include Physics/include)
 	target_link_libraries(NxJointDescSyntheticTests bcrypt)
+	# Dumps the REAL actor object graph through the oracle's own SDK, so the
+	# synthetic fixture can be built to measured offsets rather than derived ones.
+	# Oracle-only: the candidate's createScene returns 0. See evidence 8e-8f.
+	add_executable(NxSceneGraphProbe tests/NxSceneGraphProbe.cpp)
+	target_include_directories(NxSceneGraphProbe PRIVATE Foundation/include Physics/include)
+	target_link_libraries(NxSceneGraphProbe bcrypt)
 	# A measurement probe, not a gate: it prints what the pinned
 	# NxNormalToTangents returns so a joint row's localNormal can be attributed
 	# to a specific output rather than guessed at.

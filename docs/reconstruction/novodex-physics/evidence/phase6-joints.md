@@ -1693,3 +1693,63 @@ joint family the plan lists, and for any row whose arm needs an actor.
 **Recorded as the campaign's head-of-chain**, so the next session does not
 re-derive it: the highest-value unblocked work is not a Phase 6 row and not the
 synthetic fixture, it is the Scene lifecycle.
+
+## 8f. The real object graph, measured through the oracle's own SDK
+
+8e traced the campaign's root to the Scene. This round took the cheaper instrument
+8c named: instead of deriving the actor layout from headers and correcting it one
+fault at a time, **dump the real graph once**. The oracle's SDK creates scenes and
+actors even though the candidate's does not, so
+`tests/NxSceneGraphProbe.cpp` drives it and prints the bytes at every level the
+joint-descriptor rows walk.
+
+**Measured, from a real actor created by the shipped DLL:**
+
+    actor   016E3DF8: 10104530 00000000 1010468c 016e3c30 016e3c68 016e3da0 ...
+    actor+0x14 = 016e3da0            <- the actor descriptor
+
+    desc    016E3DA0: 016e3df8 016e0e60 016e5240 00000000 016e1578 ...
+    desc+0x08 = 016e5240             <- the shape pointer
+    desc+0x0c = 00000000
+    desc+0x10 = 016e1578
+
+    shape   016E5240: 10106890 00000000 00000000 ...
+    shape+0x08 = 00000000
+
+**Three things this settles, all of which were wrong or unproven before:**
+
+1. **`actor+0x14` is the descriptor.** 7x fixed this by one fault; the measurement
+   confirms it against a real object, and it is `userData` because `NxActor`'s
+   vtable is at `+0` and its two members sit at `+0x10` and `+0x14`.
+2. **`desc+0x08` is the shape pointer, not `+0x0c`.** Round 21 changed the fixture
+   to `+0x0c` on the strength of a breakpoint read of a *synthetic* buffer, and the
+   real graph shows `+0x0c` is zero and `+0x08` holds the shape. So that change was
+   a correction in the wrong direction -- the breakpoint was reading a buffer the
+   fixture had itself mis-built.
+3. **`shape+0x08` is zero on a real actor.** The row reads `[shape+0x08]` as the
+   body and then `[body+0x19c]` as the pose, so either the body lives elsewhere in
+   the shape, or the object at `desc+0x08` is not what the row treats as a shape.
+
+**What that means for the fixture.** It is not one offset short; the third level is
+not where the fixture or 8b believed. The measurement gives the answer to two of
+the three levels and shows the third needs its own read -- the body pointer inside
+the shape object, at whatever offset the row's `mov eax,[eax+0x19c]` chain
+actually uses.
+
+**Recorded as the method that should have been used first.** 8c said a future
+session should dump the real graph rather than derive a layout, and this round did
+it in one probe and two builds, where the derive-and-correct method cost five
+rounds and produced one wrong correction. The probe is checked in and is
+oracle-only, because the candidate cannot create a scene.
+
+## 8g. State after this round
+
+    closure apparatus        complete and green
+    the two joint rows       reconstructed, proof and blocker recorded
+    real actor layout        MEASURED: actor+0x14 desc, desc+0x08 shape
+    shape -> body            still unknown; shape+0x08 is zero on a real actor
+    the synthetic fixture    still faulting, and 8b's +0x0c change was wrong
+    the Scene                the campaign's root, unreconstructed (8e)
+
+No row has closed. The fixture's next step is now a measurement rather than a
+guess, and the measurement is a one-line change to a probe that already exists.
