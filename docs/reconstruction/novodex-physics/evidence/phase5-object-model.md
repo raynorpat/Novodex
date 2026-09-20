@@ -8089,6 +8089,64 @@ with the allocator bound.
 
 No gate, coverage-floor, or policy change.
 
+## 3z264. The audit finds an UNFOUNDED CLOSURE: 003268
+
+Round 250 ran the full harness and scanned its output for any block reporting a
+non-zero failure count. There is exactly one:
+
+    batch3268 candidate failures=3 provisional=1
+
+**It has been failing in every gate log.** The same line appears in
+`r241-gate.log` through `r246-p5.log` and beyond, going back far further than this
+session. It was never noticed because the phase-5 gate's summary counts
+`candidateMissing` -- the deliberate family marker -- and not per-block failure
+counts, so a block failing on three of its cases produced no signal anywhere a
+gate looked.
+
+**What the block drives.** `batch3268` is the differential for `phys_fn_003268`
+(0x7e560, 210 bytes), which the census marks `reconstructed`. The row appends a
+batch of three vertices through four pointer slots, and the block compares the
+object, three data arrays and a map array between the oracle and
+`nxBatchAppend3268`.
+
+**The diffs say the candidate does almost nothing:**
+
+    batch3268 ci=0
+      this+0000 o=00000fb8 c=00000000
+      this+0004 o=00cfa20c c=00000000
+      this+0010 o=00000000 c=00000004
+      this+0014 o=76a93b20 c=00000000
+      this+0018 o=0007079c c=00000001
+      this+001c o=00000000 c=00000002
+      this+0020 o=00cfa21c c=00000001
+      ... through this+0038, plus this+4034 and this+403c
+
+The oracle writes at least sixteen fields and the candidate writes essentially
+none of them, in the wrong places where it writes at all. **So `nxBatchAppend3268`
+is not a model of the row: it is a no-op.** The closure of `003268` is UNFOUNDED.
+
+**What this means for the campaign's claims.** This is the first closure found to
+be unsupported by its own differential, and it was found only because this round
+scanned the harness output rather than the gate summary. The other 777 closed rows
+report zero failures in the same run, so the damage is bounded to one row -- but
+the METHOD that hid it is general, and any future audit should scan for
+`candidate failures=[1-9]` rather than trusting the gate's mismatch count.
+
+**Remediation recorded, not applied.** The row's `dynamic_proof` now states the
+failure, the block name, the observed diffs, and that the closure is unfounded. It
+is NOT moved out of `reconstructed`, for the same reason 3z259 did not move
+`000454`: the closure ledger would have to move with it, and that changes a count
+the campaign has been reporting. The honest position is that the row is closed in
+the census and known-failing in the evidence, and the next session should reopen
+it.
+
+**The wider lesson.** A gate that summarises is a gate that can hide. This
+session's phase-5 gate reported `mismatches=1` honestly and completely for what it
+counts; what it does not count is a block failing on its own terms, and that is
+where the one bad closure lived.
+
+No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
