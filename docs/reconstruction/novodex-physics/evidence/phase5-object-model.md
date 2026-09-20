@@ -6159,6 +6159,31 @@ unpushed third argument (3z205) -- so it is worth treating as a standing rule:
 
 004163 moves to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z217. 004861 closes: the four-pointer slot loop
+
+Round 200 -- the two-hundredth round of this campaign -- closed 004861, the
+third of 3z214's fifteen (build/r200.log fourslot4861 failures=0, stable over
+three runs).
+
+It walks the FOUR element pointers at [self+0x1c], [self+0x20], [self+0x24]
+and [self+0x28], SKIPS the null ones, and calls each non-null element's vtable
+slot +0x10 with the row's two arguments. The slot pops its own arguments (no
+`add esp`), so a member-function slot is the right shape and `ret 8` pops the
+row's arguments separately.
+
+**The drive varies WHICH of the four are occupied** -- none, the first and last
+only, the middle two only, and all four. That matters because a loop that
+forgot the null skip would still pass a fixture where every slot is filled, and
+a loop that stopped at the first null would still pass a fixture where the
+first one is filled. Only the mixed patterns separate those from the row's
+actual behaviour: it checks each pointer independently and continues.
+
+The scoping rule from 3z216 was applied here from the start rather than after a
+failure: with no elements present there is no call and no arguments, so the
+argument assertions are guarded by "at least one element was present".
+
+004861 moves to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
