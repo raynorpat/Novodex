@@ -258,6 +258,17 @@ static void __fastcall nxVtRecorder(void* self)
 	++gVtHits;
 	}
 
+// A reusable member-function slot host: the fixture vtable receives the bits of
+// this member pointer, so the slot gets `this` in ecx and pops its own argument
+// -- which is what vt rows WITHOUT an `add esp` expect.
+struct NxSlotHost
+	{
+	unsigned a;
+	void slot1(unsigned x);
+	};
+static unsigned gSlotHits, gSlotA;
+void NxSlotHost::slot1(unsigned x) { gSlotA = x; ++gSlotHits; }
+
 // the four-argument thunk recorder
 static unsigned gN4Hits, gN4A, gN4B, gN4C, gN4D;
 static void __cdecl nxN4Stub(unsigned a, unsigned b, unsigned c, unsigned d)
@@ -14910,6 +14921,50 @@ int wmain(int argc, wchar_t** argv)
 			{fprintf(stderr,"v1665 len=%u h=%u/%u\n", len, hO, hC); ++v1665;}
 		}
 	printf("vecloop4165 candidate failures=%u provisional=1\n", v1665);
+	}
+	// -- 001544: the singleton-slot row. 004803 is CODE and must not be bound;
+	//    what is bound is the singleton pointer it reads at [0x1012845c].
+	{
+	struct S1544Ctx { unsigned dummy; };
+	typedef void (S1544Ctx::*S1544Mfp)();
+	S1544Mfp mfp;
+	{
+	const void* raw = reinterpret_cast<const void*>(base + 0x2dec0);
+	memcpy(&mfp, &raw, sizeof(mfp));
+	}
+	typedef void (NxSlotHost::*M1)(unsigned);
+	M1 slotM = &NxSlotHost::slot1;
+	unsigned s1544 = 0;
+	for(unsigned present = 0; present < 2; ++present)
+		{
+		void* vt[8]; memset(vt, 0, sizeof(vt));
+		{
+		void* raw = nullptr;
+		memcpy(&raw, &slotM, sizeof(raw));
+		memcpy(reinterpret_cast<unsigned char*>(vt) + 0xc, &raw, 4);
+		}
+		unsigned char obj[0x20]; memset(obj, 0, sizeof(obj));
+		*(void**)(obj) = vt;
+		NxFnPtrSaved sv = nxBindFnPtr(base, 0x12845c, obj);
+		unsigned char self[0x20], selfC[0x20];
+		memset(self, 0, sizeof(self)); memset(selfC, 0, sizeof(selfC));
+		unsigned field = present ? (static_cast<unsigned>(
+			reinterpret_cast<size_t>(obj)) + 4u) : 0u;
+		memcpy(self + 4, &field, 4); memcpy(selfC + 4, &field, 4);
+		gSlotHits = 0; gSlotA = 0;
+		(reinterpret_cast<S1544Ctx*>(self)->*mfp)();
+		unsigned hO = gSlotHits, aO = gSlotA;
+		gSlotHits = 0; gSlotA = 0;
+		nxSlotCall1544(selfC, 4u, obj, *reinterpret_cast<NxSlotMfp1*>(&slotM));
+		unsigned hC = gSlotHits, aC = gSlotA;
+		if(hO != hC || aO != aC || memcmp(self, selfC, sizeof(self)) != 0
+			|| hO != (present ? 1u : 0u)
+			|| (present != 0 && aO != field - 4u))
+			{fprintf(stderr,"s1544 p=%u h=%u/%u a=%08x/%08x\n",
+				present, hO, hC, aO, aC); ++s1544;}
+		nxUnbindFnPtr(base, 0x12845c, sv);
+		}
+	printf("slot1544 candidate failures=%u provisional=1\n", s1544);
 	}
 
 
