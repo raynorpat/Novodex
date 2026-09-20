@@ -7087,6 +7087,55 @@ would have named the site in one session.
 The tree is green at exit 1. No rows move. No gate, coverage-floor, or policy
 change.
 
+## 3z243. The abort read from the OS: a /GS check in the startup frame
+
+Round 227 did what 3z241 said was overdue -- stopped inferring from the source
+and asked the operating system where the process dies.
+
+**The tooling now exists.** A linker map is generated for the harness (CMake
+`/MAP` on the test target), so a reported fault offset can be resolved to a
+symbol instead of guessed at. This is a permanent improvement and it is committed
+even though the investigation it serves is not finished.
+
+**The OS report.** Windows Error Reporting records the crash directly:
+
+    Faulting application: NxPhysicsObjectLayoutTests.exe
+    Exception code:       0xc0000409
+    Fault offset:         0x0004f895
+
+and crash dumps are already written to `%LOCALAPPDATA%\CrashDumps`, which the
+Windows SDK's `cdb` reads. From the dump:
+
+    (7270.1780): Security check failure or stack buffer overrun - code c0000409
+    eax=006ffc74 ebx=00000000 ecx=00000002 edx=006ffc68
+    eip=000af895  ->  cd29   int 29h
+
+**Three facts follow, and they are the first measured ones in this whole
+investigation:**
+
+1. the abort is a **/GS security-check failure**, and `int 29h` is the CRT's
+   fast-fail -- the mechanism 3z238 inferred is now confirmed from the process;
+2. at the moment of failure **eax and edx hold two stack addresses twelve bytes
+   apart** (`0x006ffc74` and `0x006ffc68`), the signature of a copy operation
+   running near the top of the thread stack -- i.e. in the startup frame, not in
+   a deep call;
+3. the module base is **0x600000**, so the calling frame sits at RVA **0x1d032**.
+
+**What is still missing** is a symbol for RVA 0x1d032. The map resolves the
+harness's own code (for example `_wmain` at RVA 0x3450) but has no entry for
+0x1d032, and cdb cannot unwind past the fast-fail because the build emits no PDB.
+**The next step is therefore narrow and cheap**: emit a PDB for the test target
+and re-read the existing dump. With symbols, the frames cdb currently marks "may
+be wrong" become trustworthy and the culprit is named directly.
+
+Four rounds of static analysis (3z239, 3z240, 3z242 and the binder theory of
+3z228) each produced a plausible cause and each was wrong. This round got further
+than all of them by asking the process itself, and the remaining gap is a build
+flag rather than a hypothesis.
+
+The tree is green at exit 1, with map generation committed. No rows move. No
+gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
