@@ -7677,6 +7677,61 @@ step; it is not something to attempt in the last rounds of this session.
 The candidate was withdrawn and the tree is green at exit 1, gate unchanged. No
 rows move. No coverage-floor or policy change.
 
+## 3z256. Phase-8 audit: 308 reconstructed rows carry no static_proof
+
+Round 241 audited the census the way the Phase 8 gate will, and found a real gap
+in the evidence fields rather than in the code.
+
+**The census as it stands:**
+
+    functions total      6338
+      code               2784
+      compiler_artifact  3554
+
+    code rows by state
+      discovered         2000
+      reconstructed       663
+      dynamically_gated   115
+      statically_reviewed   6
+
+    CLOSED (reconstructed + dynamically_gated)   778
+
+**The gap, broken down:**
+
+    state                 total   no static_proof   no dynamic_proof
+    reconstructed           663               308               124
+    dynamically_gated       115               111               110
+
+The `dynamically_gated` numbers are expected -- that state is defined by a gate
+rather than by a written proof -- but **308 `reconstructed` rows with no
+`static_proof` is not**. The campaign's convention is that every closure carries
+both a static proof and a driven differential, and these rows carry neither
+field. Their RVAs cluster in the early bands (`0x0c000` 14 rows, `0x0d000` 10,
+`0x23000` 9, `0x24000` 10, `0x21000` 8) with sizes of 31 to 84 bytes, which
+identifies them as closures from the campaign's early rounds -- before the
+`static_proof` field was being populated consistently.
+
+**What this does and does not mean.** The inventory validator still reports
+`unexplained=0`, so nothing here is *unexplained*; what is missing is the recorded
+proof text. Every one of these rows was closed against the differential harness
+and still passes it. So this is a **documentation-completeness gap, not a
+correctness one** -- but it is exactly the class of gap the Phase 8 full-audit
+gate exists to catch, and it would be dishonest to reach Phase 8 without recording
+it.
+
+**The remediation, which is mechanical.** Each of the 308 rows has a corresponding
+evidence section in this file (`3zNN`) that states what the row does; the
+`static_proof` field should be backfilled from those sections, and the 124 with no
+`dynamic_proof` should cite the block that drives them. Both are transcription
+from evidence already written, not new reconstruction.
+
+**Also worth recording for Phase 8**: the harness defect of 3z238-3z255 means new
+differential blocks cannot be added to `wmain` reliably, so any further row
+closures depend on first refactoring that function. The 778 closed rows are
+unaffected.
+
+No rows move. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
