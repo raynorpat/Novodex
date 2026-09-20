@@ -3075,6 +3075,26 @@ unsigned char nxMaskedFourSlotLoop4864(void* self, unsigned a1, unsigned a2,
 	return 1u;
 	}
 
+// phys_fn_002342 (0x5aa90): the allocator release with unconditional clears.
+void nxAllocReleaseClear2342(void* self, void* alloc, NxSlotMfp1 slot)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	static const unsigned kBase[2] = { 0x18u, 0x8u };
+	for(unsigned g = 0; g < 2u; ++g)
+		{
+		unsigned field;
+		memcpy(&field, p + kBase[g], 4);
+		if(field != 0u)
+			(reinterpret_cast<NxSlotCtx*>(alloc)->*slot)(field);
+		// the three fields are cleared whether or not anything was released
+		for(unsigned k = 0; k < 3u; ++k)
+			{
+			const unsigned zero = 0u;
+			memcpy(p + kBase[g] + 4u * k, &zero, 4);
+			}
+		}
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)

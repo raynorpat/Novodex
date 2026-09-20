@@ -1364,6 +1364,15 @@ void					nxReleaseOwnedFields(void* self, const unsigned* offsets,
 //! with a SIXTH row argument. The mask is arg3, consumed by the test, and the
 //! slot is +0x18 and receives FIVE arguments -- (arg1, arg2, arg4, arg5, arg6).
 //! It returns 1 always.
+//! phys_fn_002342 (0x5aa90): the allocator-singleton release with THREE-FIELD
+//! clearing. For each of the two groups -- the field at [self+0x18] then the
+//! field at [self+8] -- the field is released through [[0x101041bc]]'s vtable
+//! slot +0x14 ONLY when it is non-null, but the three fields are cleared
+//! REGARDLESS. That unconditional clearing is what 3z219's diff showed at
+//! offsets 0xc and 0x1c on pans where nothing was released.
+void					nxAllocReleaseClear2342(void* self, void* alloc,
+							NxSlotMfp1 slot);
+
 unsigned char			nxMaskedFourSlotLoop4864(void* self, unsigned a1,
 							unsigned a2, unsigned a3, unsigned a4, unsigned a5,
 							unsigned a6, NxSlotMfp5 slot);
