@@ -2109,3 +2109,50 @@ and 502 are now formally deferred rather than unaccounted. That does not close
 anything and does not move any row's state -- but it converts "nobody has looked at
 these" into "these are deferred, with a named reason", which is what a ledger is
 for and what the next phase reads.
+
+## 8p. AUDIT: the global gates all said `pending`, and nothing checked their status
+
+8o accounted for every row. This round asked the same question one level up: are
+the **global gates** honest about themselves?
+
+**The finding.** All four global gates in `program.json` said `pending`, and every
+one of them has been run and passes:
+
+    build_configure          cmake -S . -B build -A Win32            exit 0
+    build_physics            cmake --build ... --target NxPhysics     exit 0
+    validate_inventory       validate_inventory.py inventory.json     exit 0
+    phase_gate_completed     run_phase_gate.ps1 -Phase completed      exit 0
+
+**And the vocabulary nothing checked.** `validate_inventory.py` defines
+
+    PROGRAM_STATUSES = ("pending", "pass", "fail")
+
+and applies it to `program.phases[].status` -- but **never to
+`program.global_gates[].status`**. So a global gate could hold any string at all and
+the validator would accept it. That is the same shape as 7e's source paths, 7g's
+mixed field and 8o's missing ledgers: **a declared vocabulary with no check behind
+it.**
+
+**What was done, in both directions.**
+
+1. The four gates now record `pass`, which is what their own commands return. Each
+   was run this session; the evidence is the run, not the file.
+2. `validate_inventory.py` now applies `PROGRAM_STATUSES` to the global gates,
+   beside the phase-status check that already existed. Verified both ways: the
+   committed census returns no errors, and setting one gate's status to `greenish`
+   returns
+
+       error: program.global_gates[0] status 'greenish' is not one of
+       ['pending', 'pass', 'fail']
+
+**Why the statuses were wrong and what it cost.** Nothing read them, so nothing
+noticed. But `program.json` is, in the validator's own words, *"the document the
+next phase reads to decide what is already done"* -- and it said none of the four
+prerequisites was done. A session starting from it would have re-run four gates
+that were already green, or worse, assumed the build had never been configured.
+
+**The seventh audit finding, and the third of this shape.** 7e found 429 rows
+naming a file that does not exist; 7g found a field carrying two claims; 8o found
+5,340 rows in no list; this found a status field whose vocabulary was decorative.
+All four are the same defect at different places: **the census and the programme
+record are checked for the claims they make and not for the vocabulary they use.**

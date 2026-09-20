@@ -156,22 +156,22 @@
     {
       "name": "build_configure",
       "command": "cmake -S D:\\github\\Novodex -B D:\\github\\Novodex\\build -A Win32 --fresh",
-      "status": "pending"
+      "status": "pass"
     },
     {
       "name": "build_physics",
       "command": "cmake --build D:\\github\\Novodex\\build --config Release --target NxPhysics --clean-first",
-      "status": "pending"
+      "status": "pass"
     },
     {
       "name": "validate_inventory",
       "command": "python docs\\reconstruction\\novodex-physics\\tools\\validate_inventory.py docs\\reconstruction\\novodex-physics\\inventory.json",
-      "status": "pending"
+      "status": "pass"
     },
     {
       "name": "phase_gate_completed",
       "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs\\reconstruction\\novodex-physics\\tools\\run_phase_gate.ps1 -Phase completed",
-      "status": "pending"
+      "status": "pass"
     }
   ]
 }

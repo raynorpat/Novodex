@@ -1523,6 +1523,14 @@ def validate_program(inventory, program, closures, evidence_root):
         errors.append(f"program schema_version must be {SCHEMA_VERSION}")
     errors += _check_rows("program.phases", program["phases"], PROGRAM_PHASE_KEYS)
     errors += _check_rows("program.global_gates", program["global_gates"], PROGRAM_GATE_KEYS)
+    # PROGRAM_STATUSES was defined and never applied here, so a global gate could
+    # hold any string and the vocabulary nothing checked was decorative. The phase
+    # statuses beside these are checked against the same tuple.
+    for index, gate in enumerate(program["global_gates"]):
+        if isinstance(gate, dict) and gate.get("status") not in PROGRAM_STATUSES:
+            errors.append(
+                f"program.global_gates[{index}] status {gate.get('status')!r} is not "
+                f"one of {list(PROGRAM_STATUSES)}")
     # The pins are the identity of the thing being reconstructed. Two documents
     # naming two oracles is the one disagreement that invalidates everything else.
     for key, pin, fields in (("oracle", "oracle", ORACLE_PIN_KEYS),
