@@ -5868,6 +5868,26 @@ where the next attempt should look.
 The three closed rows move to `reconstructed`. No gate, coverage-floor, or
 policy change.
 
+## 3z207. Three more lock-bracketed thunk rows close
+
+Round 190 closed the remaining lock-bracketed thunk rows whose helpers were
+already reconstructed (build/r190.log lockthunk2 failures=0, stable over three
+runs): 003778, 003854 and 003856.
+
+- 003854 and 003856 call 003597 and 003599, the three-argument thunks closed in
+  3z203, and are covered by 3z205's candidate unchanged;
+- 003778 calls 003467 -- the two-argument thunk closed in 3z197 -- and needed
+  one new candidate, because that thunk takes its object from [self+0x14]
+  ITSELF rather than from [[self+0x14]+4]. Two sub-families that look identical
+  in the disassembly differ only in which pointer the object comes from, which
+  is the same distinction 3z197 had to draw for the thunks themselves.
+
+The four remaining rows of this shape -- 004497, 004499, 004577, 004635 and
+004721 -- stay `discovered` because their helpers (004137, 004139, 004080,
+004145, 004372) are still `discovered` in turn.
+
+All three move to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
