@@ -225,3 +225,119 @@ closure ledger records the proof.
    oracle's bit pattern, do not normalise it away.
 3. Only then drive the two rows from `NxPhysicsJointTests` as well, and only then
    extend to the other nine families.
+
+## 6j. The case-0 ULP is NOT in these rows -- it is in the Foundation
+
+The mixed-pair test settles it. `NxPhysicsJointDescTests` was run against a pair
+holding the **candidate's** `NxPhysics.dll` and the **oracle's**
+`NxFoundation.dll`:
+
+    NxPhysics.dll     3db731a68f527199   (build/Release, this round)
+    NxFoundation.dll  7e0596e45af2f1ab   (Binaries, the pinned oracle)
+
+    diff against the oracle transcript:  0 lines
+
+**Zero differences.** Every word of every case matches, so
+`NxJointDesc_SetGlobalAnchor` and `NxJointDesc_SetGlobalAxis` are transcribed
+correctly and 6h's "one ULP" is not their defect. The rows are right.
+
+**Where the difference actually is.** `tests/NxNormalToTangentsProbe.cpp` prints
+what `NxNormalToTangents` returns from whichever Foundation the pair carries, and
+the two builds disagree:
+
+    axis 3f13cd3a.3f13cd3a.3f13cd3a     t1                        t2
+    oracle Foundation                   bf3504f3.3f3504f3.00000000  bed105ec.bed105ec.3f5105ec
+    rebuilt Foundation                  bf3504f4.3f3504f4.00000000  bed105ed.bed105ed.3f5105ed
+
+    zero axis                           t1                        t2
+    oracle Foundation                   7fc00000.7fc00000.7fc00000  7fc00000.7fc00000.7fc00000
+    rebuilt Foundation                  ffc00000.ffc00000.ffc00000  ffc00000.ffc00000.ffc00000
+
+Both differences belong to the Foundation: one ULP on a finite input, and a
+negative NaN where the oracle produces a positive one.
+
+**The source formula is right.** `Foundation/src/Utilities.cpp` implements
+`NxNormalToTangents` with the standard two-branch construction, and evaluating
+that formula in double precision reproduces the oracle's words exactly:
+
+    t1 = bf3504f3.3f3504f3.00000000      t2 = bed105ec.bed105ec.3f5105ec
+
+So the defect is not the algebra. It is the last two lines, `t1.normalize()` and
+`t2.normalize()`: the oracle evaluates `NxVec3::normalize` with the x87 unit and
+keeps its intermediates wide, while the rebuilt Foundation's `normalize` is
+compiled to SSE and rounds each step to 32 bits. The `M_SQRT1_2` branch test is
+also involved -- `fabs(n.z) > M_SQRT1_2` compares `3f13cd3a` against `3f3504f3`,
+so a one-ULP move in either could flip the branch.
+
+**This is a Foundation finding, not a Phase 6 one, and it is wider than this
+row.** Any reconstructed row whose result passes through `NxVec3::normalize`
+inherits the same one-ULP difference, and Phase 3's contact work calls the same
+function. It belongs to `docs/novodex-foundation`'s own evidence, which this
+project references and never modifies, so it is recorded here as a finding
+handed across rather than as a change made there.
+
+## 6k. What this changes
+
+- The two Phase 6 rows are **implementation-complete and differentially
+  verified** in isolation. Their own transcript against the oracle's Foundation
+  is empty, which is the strongest statement available for a row.
+- They are **not yet `closed`**, and the reason is now external to them: the
+  candidate pair's Foundation moves the tangent words, so a whole-pair
+  differential is not green. `closed` is the Phase 8 audit's to grant and no row
+  moves here.
+- The next measurement is on the Foundation side: bring `NxVec3::normalize` (and
+  the `M_SQRT1_2` branch test) to the oracle's x87 behaviour, or record why it
+  cannot be. That is a `novodex-foundation` task.
+
+## 6l. The instrument that made this separable
+
+`tests/NxNormalToTangentsProbe.cpp` is not a gate and is not registered as one.
+It exists because "which Foundation is loaded" and "is the row right" were
+otherwise indistinguishable: the row differential moves when *either* changes.
+A probe that prints one function's outputs from a chosen pair separates them, and
+that separation is what turned a suspected row defect into a confirmed
+Foundation defect.
+
+## 6m. The Foundation defect is real, and no existing differential covers it
+
+The geometry differential (`NxPhysicsGeometryTests`, Phase 3) was run against both
+staged pairs and its transcripts compared with the pair-identity lines removed:
+
+    core lines   oracle 328   candidate 328
+    core diff    0
+
+So Phase 3's geometry differential passes, and it passes **without covering
+`NxNormalToTangents` at all** -- the word "tangent" does not appear in its
+transcript. The Foundation defect 6j records is therefore not a false pass in that
+gate; it is simply outside what that gate drives.
+
+**This is the shape of gap the programme has been caught building before.** A
+differential answers "do these two agree on what I asked them" and never "did I
+ask the right things" (README, green transcripts). Phase 3's matrix asks nothing
+about the tangent construction, so a one-ULP and a NaN-sign difference in it is
+invisible from every registered gate while being plainly measurable by a probe.
+
+**Recorded as a coverage gap, not as a failure.** The candidate pair is not
+shown to be wrong anywhere a gate looks; it is shown to differ somewhere no gate
+looks. Those are different claims and only the second is established.
+
+## 6n. Phase 6 state after this round
+
+- **`phys_fn_004115` and `phys_fn_004117` are implemented** in
+  `Physics/src/JointDesc.cpp`, and their own differential transcript against the
+  oracle's Foundation is **empty** (6j) and reproducible across three runs
+  (SHA-256 `f47ff8c12984ff69`). That is the strongest statement available for a
+  row short of the Phase 8 audit's `closed`.
+- **Neither row is `closed`**, and the reason is now external: the candidate
+  pair's `NxFoundation.dll` moves the tangent words, so a whole-pair differential
+  is not green. `closed` is Phase 8's to grant; no row moves.
+- The candidate's export set is 40 of the oracle's 41; `NxCreatePMap` remains.
+- `NxPhysicsJointDescTests` and `NxNormalToTangentsProbe` are built and usable
+  but **not registered** as gate targets, because a whole-pair run is not green
+  for a reason that belongs to the Foundation.
+
+**The next measurement is a Foundation one**, and it is specific: bring
+`NxVec3::normalize` and the `M_SQRT1_2` branch test in
+`Foundation/src/Utilities.cpp` to the oracle's x87 behaviour, or record why they
+cannot be. That is a `novodex-foundation` task, and this project references that
+evidence tree without modifying it.
