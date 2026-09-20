@@ -7770,6 +7770,55 @@ blocks (3z238-3z255) is unchanged and is still the gate on further closures.
 
 No gate, coverage-floor, or policy change.
 
+## 3z258. The statically_reviewed state was empty, and one entry is a fragment
+
+Round 243 audited the two smaller states and found a more serious gap than
+3z256's.
+
+**`statically_reviewed` had NO proofs at all.** All six rows in that state
+carried neither a `static_proof` nor a `dynamic_proof`:
+
+    phys_fn_000454   size=58    phys_fn_000480   size=388
+    phys_fn_002362   size=43    phys_fn_002364   size=82
+    phys_fn_002366   size=32    phys_fn_004803   size=20
+
+That is worse than it looks, because the drivability filter used throughout this
+campaign treats `statically_reviewed` as a SATISFIED dependency -- the same way it
+treats `reconstructed`. So rows were being admitted on the strength of a state
+that recorded nothing. Every row ever driven through `004803` or `000480` rested
+on that assumption.
+
+**Proofs are now written for all six**, from their disassembly:
+
+- 004803 -- the allocator singleton getter: reads [0x1012845c], returns it if
+  non-zero, otherwise stores and returns the default 0x10122368;
+- 002362 -- conditional release through the singleton: pushes [self] into
+  [0x10104048], then when [self] is still non-zero calls the singleton's vtable
+  slot +0x14 with it and clears it;
+- 002364 -- the recursive lock acquire: compares the owner word at [inner+0x1c]
+  against the global owner and returns whether it matched;
+- 002366 -- the lock release: clears the owner word and sets `al` to 1, which is
+  the value the tail-jumping callers return;
+- 000480 -- the registry lookup-and-insert: inert (returns 1) only when its
+  second argument is zero AND the registry is null, otherwise it allocates,
+  stores and appends, mutating global state;
+- **000454 -- NOT a static review.** The block reads `ebx` and `eax` without
+  setting either, so it is a mid-function FRAGMENT, not a row. It entered this
+  state, and the filter, on a misclassification.
+
+**What that changes.** Five of the six are now properly documented, and the
+drivability filter's assumption about them is finally backed by evidence. The
+sixth is a misclassified fragment and is recorded as such rather than quietly
+kept. The validator is unchanged (`unexplained=0`) and the phase-5 gate is
+unchanged (`mismatches=1`, floor 126, `inventory=pass`, exit 1).
+
+**Also noted for Phase 8**: the `dynamically_gated` state has 115 rows of which
+only 5 carry a `dynamic_proof` and only 17 a `source`. That state is supposed to
+record WHICH gate holds each row, and almost none of them do. It is the same
+class of gap as 3z256 and is left flagged.
+
+No rows change state. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
