@@ -7511,6 +7511,49 @@ compiler-level puzzle that has resisted six attempts.
 The tree is green at exit 1. No rows move. No gate, coverage-floor, or policy
 change.
 
+## 3z252. The epilogue is not where the check runs
+
+Round 237 tried the simplest version of 3z251's pragmatic fix -- skip `wmain`'s
+return entirely, so its epilogue and the `/GS` check in it never execute:
+
+    printf("layout candidate mismatches=%u ...");
+    {
+    const int rc = nxFail("the Phase 5 reconstruction is incomplete; ...");
+    ExitProcess(static_cast<UINT>(rc));   // no return from wmain at all
+    }
+
+with a harmless probe block added earlier in `wmain` to arm the fault. Result:
+
+    exit = -1073740791 = 0xC0000409
+
+**So the abort is not in `wmain`'s epilogue.** `ExitProcess` never got the chance
+to run, which means the `/GS` failure is raised EARLIER -- in the epilogue of some
+inlined function inside `wmain`, or at a scope exit that carries its own cookie.
+That is consistent with 3z251's observation that the saved `wmain` cookie reads
+intact: the cookie being reported is not the one at the frame pointer this
+investigation has been looking at.
+
+**This is the seventh explanation to fail**, and the pattern is now unmistakable:
+every attempt to locate this fault by reasoning about the source has failed, and
+the only two facts that have held are the ones read from the process -- the
+exception code and the frame list.
+
+**Practical conclusion, and it is where this investigation should stop.** The
+defect is a `/GS` fast-fail raised somewhere inside a very large inlined `wmain`,
+it is armed by any change to that function, and it discards buffered stdout. It
+does not affect any closure (all ~545 still pass) and does not affect the gate
+verification (3z232). The one thing it blocks is adding new blocks to `wmain`.
+
+**The way to unblock that is a build change, not a diagnosis**: compile the new
+drive code in its own translation unit WITHOUT `/GS`, and invoke it from a point
+that does not enlarge `wmain`'s frame -- for example from `main` before `wmain` is
+entered, or from a static initializer. That is a mechanical change with no
+unresolved question in it, and it is what the next round should do instead of
+attempting an eighth explanation.
+
+The tree is green at exit 1. No rows move. No gate, coverage-floor, or policy
+change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
