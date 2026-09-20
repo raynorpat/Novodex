@@ -5518,6 +5518,35 @@ zero, so a missing add would show up rather than hide behind an identity.
 
 000867 moves to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z195. Blocker ranking, corrected: two rows close and ten unlock
+
+Round 178 fixed a flaw in the blocker ranking itself. The earlier ranking
+counted a row as gated by whichever undiscovered callee came FIRST in its call
+list, which overstates the payoff: closing that one may simply expose the next.
+Ranking instead by **rows that need exactly ONE more closure** gives an honest
+number, and the top of that list is very different:
+
+| blocker | size | rows it actually unlocks |
+|---|---|---|
+| 004095 | 41 | 10 |
+| 004089 | 58 | 10 |
+| 004074 | 216 | 10 |
+| 003683 | 17 | 8 |
+
+Two rows closed (build/r178.log pair0448 failures=0, list4089 failures=0):
+
+- **000448 (0xdef0)** is ten bytes: `([self+0xc] - [self+8]) >> 2`. The drive
+  includes two REVERSED pairs precisely because the shift is ARITHMETIC -- a
+  logical shift would give a huge positive count where the row gives a negative
+  one, and only the reversed cases distinguish them.
+- **004089 (0x95d20)** is the allocator-singleton list teardown: it walks
+  [self+0x20], moves each node's [+0x10] into the field BEFORE freeing the
+  node, and clears the global word [0x10127180] once the list is empty.
+
+Closing 004089 is what unlocks ten rows, and 000448 was the first step of a
+longer chain for its own thirty-one. Both move to `reconstructed`. No gate,
+coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
