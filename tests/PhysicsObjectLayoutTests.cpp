@@ -15165,6 +15165,70 @@ int wmain(int argc, wchar_t** argv)
 		}
 	printf("singletonrel candidate failures=%u provisional=1\n", srel);
 	}
+	// -- 002342 (the allocator-singleton variant) and 005159 (byte-guarded).
+	{
+	struct S234Ctx { unsigned dummy; };
+	typedef void (S234Ctx::*S234Mfp)();
+	S234Mfp mfp342, mfp159;
+	{
+	const void* raw = reinterpret_cast<const void*>(base + 0x5aa90);
+	memcpy(&mfp342, &raw, sizeof(mfp342));
+	raw = reinterpret_cast<const void*>(base + 0xe32e0);
+	memcpy(&mfp159, &raw, sizeof(mfp159));
+	}
+	typedef void (NxSlotHost::*M1)(unsigned);
+	M1 slotM = &NxSlotHost::slot1;
+	void* vt[8]; memset(vt, 0, sizeof(vt));
+	{
+	void* raw = nullptr;
+	memcpy(&raw, &slotM, sizeof(raw));
+	memcpy(reinterpret_cast<unsigned char*>(vt) + 0x14, &raw, 4);
+	memcpy(reinterpret_cast<unsigned char*>(vt) + 0xc, &raw, 4);
+	}
+	unsigned char allocObj[0x10]; memset(allocObj, 0, sizeof(allocObj));
+	*(void**)(allocObj) = vt;
+	unsigned s234 = 0;
+	// 005159: byte guard on/off by two pans
+	for(unsigned pan = 0; pan < 4; ++pan)
+		{
+		unsigned char self[0x40], selfC[0x40];
+		memset(self, 0, sizeof(self)); memset(selfC, 0, sizeof(selfC));
+		unsigned char blk1[0x10], blk2[0x10];
+		memset(blk1, 0, sizeof(blk1)); memset(blk2, 0, sizeof(blk2));
+		unsigned v8 = (pan & 1u) ? static_cast<unsigned>(
+			reinterpret_cast<size_t>(blk1)) : 0u;
+		unsigned v4 = (pan & 2u) ? static_cast<unsigned>(
+			reinterpret_cast<size_t>(blk2)) : 0u;
+		memcpy(self + 8, &v8, 4); memcpy(selfC + 8, &v8, 4);
+		memcpy(self + 4, &v4, 4); memcpy(selfC + 4, &v4, 4);
+		unsigned char guard = (pan == 0) ? 0 : 1;
+		self[0x14] = guard; selfC[0x14] = guard;
+		unsigned char single[0x20]; memset(single, 0, sizeof(single));
+		*(void**)(single) = vt;
+		NxFnPtrSaved svS = nxBindFnPtr(base, 0x12845c, single);
+		gSlotHits = 0;
+		(reinterpret_cast<S234Ctx*>(self)->*mfp159)();
+		unsigned hO = gSlotHits;
+		gSlotHits = 0;
+		unsigned offs[2] = { 8u, 4u };
+		nxByteGuardedRelease5159(selfC, single, offs, 2u,
+			*reinterpret_cast<NxSlotMfp1*>(&slotM));
+		unsigned hC = gSlotHits;
+		unsigned want = guard
+			? (((v8 != 0u) ? 1u : 0u) + ((v4 != 0u) ? 1u : 0u)) : 0u;
+		int dif159 = memcmp(self, selfC, sizeof(self));
+		if(hO != hC || hO != want || dif159 != 0)
+			{
+			int off = -1;
+			for(unsigned b = 0; b < sizeof(self); ++b)
+				if(self[b] != selfC[b]) { off = static_cast<int>(b); break; }
+			fprintf(stderr,"s159 pan=%u want=%u h=%u/%u dif=%d off=%d\n",
+				pan, want, hO, hC, dif159, off); ++s234;
+			}
+		nxUnbindFnPtr(base, 0x12845c, svS);
+		}
+	printf("allocrel candidate failures=%u provisional=1\n", s234);
+	}
 
 
 
