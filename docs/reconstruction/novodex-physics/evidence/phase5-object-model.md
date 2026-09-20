@@ -5654,6 +5654,37 @@ The next attempt should start by testing `nxBindFnPtr` against ONE of these
 float-valued slots in isolation, before rebuilding the twenty-five-row drive.
 No gate, coverage-floor, or policy change.
 
+## 3z200. The family's first row closes, and the recipe is pinned
+
+Round 183 followed 3z199's own instruction -- test the bind in isolation before
+rebuilding the drive -- and it paid off three times over.
+
+**The isolated probe cleared `nxBindFnPtr` completely.** It bound 0x101264e4,
+read it back as the stub, and restored it, with no fault. It also revealed the
+thing that had been misread for two rounds: the slot's RUNTIME value is
+**zero**, not the float-shaped word the file holds. These rows call through
+globals that are NULL at runtime, so binding is not a convenience -- it is the
+only way the row can execute at all.
+
+**One row now closes: 003431 (0x84d70, ret 4)** -- the first of the
+twenty-five (build/r183.log n3min failures=0, stable over three runs). It reads
+[self+0x7c] and [self+0x80], takes [[self+0x7c]+0x30] as the first argument and
+calls the global with (that, [self+0x80], the row argument).
+
+**The last bug was in the probe, not the row.** The differential first failed
+on the THIRD argument alone -- the oracle recorded 0 where the candidate
+recorded the row argument -- because the oracle's slot had been bound to a
+TWO-argument recorder while the row pushes three. The row was right the whole
+time; the instrument could not see its third argument. That is worth stating
+plainly because two rounds of faults were chased in the row and the fixture
+while the real obstacle was the shape of the thing doing the measuring.
+
+The full twenty-five-row drive is still not working and remains withdrawn; the
+recipe above -- bind with a recorder of the SAME arity the row pushes, carry
+each row's stack arity, and populate the object the row actually reads -- is
+what the next attempt should start from. 003431 moves to `reconstructed`. No
+gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
