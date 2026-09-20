@@ -5740,6 +5740,42 @@ both dereferences the slot return and reads [self+8].
 
 All nine move to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z203. The family is finished except one: fourteen more close
+
+Round 186 lifted the scope limit 3z202 had set and drove the rest of the
+family, and **fourteen more rows close** (build/r186.log n3rest failures=0,
+stable over three runs): 003579, 003583, 003587, 003591, 003597, 003599,
+003665, 003667, 003669, 003671, 003673, 003675, 003677 and 003681.
+
+That leaves the family at **24 of 25 closed**, and the one exception is the
+interesting part.
+
+**003575 is a float-OUT variant**, and the drive now SKIPS it explicitly rather
+than mis-driving it. Its full 55 bytes are:
+
+    <read the object, the two descriptor words and [self+8]>
+    call [0x101264ec]
+    fld dword ptr [eax]
+    fld dword ptr [eax+4]
+    fld dword ptr [eax+8]
+    mov eax, dword ptr [esp+4]      ; the row ARGUMENT
+    fxch st(2)
+    fstp dword ptr [eax]            ; written THROUGH it
+    fstp dword ptr [eax+4]
+    fstp dword ptr [eax+8]
+    ret 4
+
+So its argument is an OUT POINTER, not a value: it reads three floats from the
+slot's return and stores them through the argument. The shared model passes a
+plain value there, which faults -- correctly, since the row then writes to
+whatever address that value happens to be. Note also that this row is 55 bytes,
+not the 34 the extraction table assumed, which is why its extra tail was not
+visible until the drive ran: the table had been built from a truncated
+instruction window.
+
+All fourteen move to `reconstructed`. 003575 stays `discovered` with its shape
+recorded above. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
