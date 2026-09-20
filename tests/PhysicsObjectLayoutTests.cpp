@@ -232,6 +232,10 @@ static void* __cdecl nxN3StubRet(unsigned a, unsigned b, unsigned c)
 static float __cdecl nxN3StubF(unsigned a, unsigned b, unsigned c)
 	{ gN3A = a; gN3B = b; gN3C = c; ++gN3Hits; return 4.25f; }
 
+// the two-argument float hook
+static float __cdecl nxN2StubF(unsigned a, unsigned b)
+	{ gN3A = a; gN3B = b; ++gN3Hits; return 5.5f; }
+
 // the zero-argument recorder for 003934
 static unsigned __cdecl nxRet0Recorder(void)
 	{ ++gGc2Hits; return 0x93939393u; }
@@ -14653,6 +14657,64 @@ int wmain(int argc, wchar_t** argv)
 	nxUnbindFnPtr(base, 0x104028, sv);
 	}
 	printf("smallrows candidate failures=%u provisional=1\n", sr);
+	}
+	// -- The remaining lock-bracketed thunk rows with reconstructed helpers:
+	//    003778 (two-argument thunk) and 003854/003856 (three-argument).
+	{
+	NxLockApiSaved svLt2 = nxBindLockApi(base);
+	unsigned lt2f = 0;
+	struct Lt2Row { unsigned rva; unsigned slotRva; unsigned nargs; const char* name; };
+	static const Lt2Row kLt2[] = {
+		{ 0x8c180, 0x126518, 2, "003778" },
+		{ 0x8cf50, 0x126530, 3, "003854" },
+		{ 0x8cf80, 0x1264f0, 3, "003856" },
+	};
+	for(unsigned i = 0; i < sizeof(kLt2) / sizeof(kLt2[0]); ++i)
+		{
+		typedef float (__thiscall* Lt2Oracle)(void*);
+		Lt2Oracle fn = reinterpret_cast<Lt2Oracle>(base + kLt2[i].rva);
+		void* stub = (kLt2[i].nargs == 2)
+			? reinterpret_cast<void*>(&nxN2StubF)
+			: reinterpret_cast<void*>(&nxN3StubF);
+		NxFnPtrSaved sv = nxBindFnPtr(base, kLt2[i].slotRva, stub);
+		unsigned char lockObj[0x40]; memset(lockObj, 0, sizeof(lockObj));
+		unsigned char subObj[0x40]; memset(subObj, 0, sizeof(subObj));
+		*(void**)(lockObj) = subObj;
+		unsigned char obj[0x100], objC[0x100];
+		memset(obj, 0, sizeof(obj)); memset(objC, 0, sizeof(objC));
+		unsigned tag = 0x83830000u + i, v80 = 0x88880000u + i, v8 = 0x88880001u + i;
+		memcpy(obj + 0x30, &tag, 4); memcpy(obj + 0x80, &v80, 4);
+		memcpy(objC + 0x30, &tag, 4); memcpy(objC + 0x80, &v80, 4);
+		*(void**)(obj + 0x7c) = obj; *(void**)(objC + 0x7c) = objC;
+		memcpy(obj + 8, &v8, 4); memcpy(objC + 8, &v8, 4);
+		*(void**)(obj + 4) = obj; *(void**)(objC + 4) = objC;
+		unsigned char self[0x40]; memset(self, 0, sizeof(self));
+		*(void**)(self + 0x10) = lockObj;
+		*(void**)(self + 0x14) = obj;
+		unsigned char selfC[0x40]; memcpy(selfC, self, sizeof(selfC));
+		*(void**)(selfC + 0x14) = objC;
+		gN3Hits = 0; gN3A = 0; gN3B = 0; gN3C = 0;
+		float ro = fn(self);
+		unsigned hO = gN3Hits, aO = gN3A, bO = gN3B, cO = gN3C;
+		gN3Hits = 0; gN3A = 0; gN3B = 0; gN3C = 0;
+		float rc;
+		if(kLt2[i].nargs == 2)
+			rc = nxLockedThunkFloat2(selfC, 0x10, 0x14, &nxN2StubF);
+		else
+			rc = nxLockedThunkFloat(selfC, 0x10, 0x14, &nxN3StubF);
+		unsigned hC = gN3Hits, aC = gN3A, bC = gN3B, cC = gN3C;
+		bool ok = (memcmp(&ro, &rc, 4) == 0) && (hO == hC) && (hO == 1u)
+			&& (aO == aC) && (bO == bC) && (aO == tag) && (bO == v80);
+		if(kLt2[i].nargs == 3u)
+			ok = ok && (cO == cC) && (cO == v8);
+		if(!ok)
+			{fprintf(stderr,"lt2 %s r=%08x/%08x h=%u/%u a=%08x/%08x b=%08x/%08x c=%08x/%08x\n",
+				kLt2[i].name, *(unsigned*)&ro, *(unsigned*)&rc, hO, hC,
+				aO, aC, bO, bC, cO, cC);++lt2f;}
+		nxUnbindFnPtr(base, kLt2[i].slotRva, sv);
+		}
+	nxUnbindLockApi(base, svLt2);
+	printf("lockthunk2 candidate failures=%u provisional=1\n", lt2f);
 	}
 
 
