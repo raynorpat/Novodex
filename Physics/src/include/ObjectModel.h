@@ -1295,6 +1295,13 @@ unsigned char			nxReportRow2160(unsigned a, unsigned b, unsigned c);
 unsigned char			nxLockApiTest2385(void* self,
 							unsigned (__stdcall* fn)(unsigned, unsigned));
 
+//! The same bracket around a TWO-argument thunk: lock [self+0x10], call the
+//! thunk on [self+0x14] whose object is [self+0x14] ITSELF (not [that+4]),
+//! reading [[obj+0x7c]+0x30] and [obj+0x80], and return its float result.
+typedef float (__cdecl* NxFloatFn2)(unsigned, unsigned);
+float					nxLockedThunkFloat2(void* self, unsigned lockOff,
+							unsigned objOff, NxFloatFn2 fn);
+
 float					nxLockedThunkFloat(void* self, unsigned lockOff,
 							unsigned objOff, NxFloatFn3 fn);
 

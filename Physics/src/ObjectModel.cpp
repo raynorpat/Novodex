@@ -2861,6 +2861,20 @@ unsigned char nxLockApiTest2385(void* self, unsigned (__stdcall* fn)(unsigned,
 	return 1u;
 	}
 
+// The two-argument variant of the lock-bracketed float thunk rows.
+float nxLockedThunkFloat2(void* self, unsigned lockOff, unsigned objOff,
+	NxFloatFn2 fn)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	unsigned char* obj = *reinterpret_cast<unsigned char**>(p + objOff);
+	unsigned a, b;
+	memcpy(&a, obj + 0x7c, 4);
+	memcpy(&b, obj + 0x80, 4);
+	unsigned first;
+	memcpy(&first, reinterpret_cast<unsigned char*>(static_cast<size_t>(a)) + 0x30, 4);
+	return fn(first, b);
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)
