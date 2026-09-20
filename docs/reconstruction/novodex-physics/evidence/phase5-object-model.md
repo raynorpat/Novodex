@@ -8446,6 +8446,143 @@ it.
 
 No rows move. No gate, coverage-floor, or policy change.
 
+
+## 3z271. The harness now dies at `delimscan`, and the block that kills it is localised
+
+Session 257 opened by running the committed layout harness exactly as the gate
+does, and it no longer reaches the state 3z270 recorded. This is a measurement,
+not an inference:
+
+    build                    no errors, NxPhysics and NxPhysicsObjectLayoutTests
+    committed harness        exit -1073741819 (0xC0000005)
+    stdout                  146 lines, last line `delimscan candidate failures=0`
+    blocks reached           ... listpeek, delimscan -- and no block after it
+    git                      docs/novodex-foundation/ untracked, everything else clean
+
+Every block that did run reported **zero** failures. `batch3268` was never
+reached, so 3z270's "one known-failing block" is no longer the failure a gate
+run would meet: the harness now dies earlier, in `delimscan`, and it dies
+**before printing any diagnostic**, because the block printf that follows it is
+never executed and stdout is block-buffered.
+
+**The fault is a jump through a fixture fill, not a bad read.**
+
+    eax=a5a5a5a5 eip=a5a5a5a5  ecx=00000010
+    edi=heap pointer          esp=heap region      ebp=frame base
+    kb:  <corrupt> a5a5a5a5 a5a5a5a5 a5a5a5a5 a5a5a5a5 0xa5a5a5a5
+    frame base +4 = invoke_main+0x1c (the caller of wmain)
+
+`0xA5` is the harness's own benign fill -- `memset(x, 0xA5, sizeof(x))` appears
+16 times in the translation unit -- so the value being executed is one of the
+harness's own fixture bytes, reached as a transfer target. The stack from `esp`
+to `ebp` is that fill across the whole frame, and **the frame size moves with
+whatever the build changed**: 0x202E8, 0x2032E8 and 0x202F4 were all measured
+across three builds of the same source. That is 3z262's chaotic sensitivity,
+reproduced, and it is why a smaller frame does not remove the fault.
+
+**What localises it.** Twelve independent runs bracket the failure to the
+`delimscan` block and to nothing else:
+
+| change | result |
+| --- | --- |
+| committed harness | dies before `delimscan`'s block printf |
+| the three `ds(...)` calls disabled | **completes**: 422 lines, exit 1, `RED on purpose` |
+| `ds0` alone disabled | dies, 145 lines |
+| `ds1` alone disabled | dies, 145 lines |
+| `ds2` alone disabled | dies, 145 lines |
+| all three disabled, frame converted | completes, and reports `batch3268 candidate failures=3` |
+
+The last row is the important one on two counts. It reproduces **3z270's exact
+`batch3268` result** from a clean build, so the row's closure state is unchanged;
+and it shows the failure is not `batch3268` at all but the block immediately
+before it in address order.
+
+**What that means for 3z270's claim.** 3z270 recorded `batch3268 candidate
+failures=3` as the single visible failure. That is still true of the row, and it
+is still invisible to the phase-5 gate for the reason 3z264 gave. What has
+changed is that the harness no longer gets far enough to print it: the process
+dies in `delimscan` first. A future session should treat "the layout harness
+exits 1 with `batch3268 failures=3`" as the *desired* state to restore, not the
+state on disk.
+
+## 3z272. Sixteen calling-convention mismatches, and the delim-scan one is real
+
+`DelimScanOracle` (RVA `0x90db0`) is declared
+
+    typedef unsigned (__cdecl* DelimScanOracle)(const char*);
+
+and the row itself ends in `ret 4`:
+
+    0x10090e04  c20400   ret 4
+
+A `ret 4` row pops its own single argument; a `__cdecl` call site pops it as
+well. The two together move `ESP` by `-4` on **every** call, and the block makes
+three of them, so the block is 12 bytes adrift by the time it reaches its own
+printf. The same shape appears 16 times in the translation unit. A new tool,
+`tools/audit_call_conventions.py`, reads each row's own terminating `ret N` from
+the pinned DLL and reports the disagreement:
+
+    typedefs=362  cast sites=276
+    --- calling-convention mismatches ---
+      DelimScanOracle      rva=0x90db0   __cdecl     row pops 4   convention implies 0
+      ... 15 more, all __thiscall against a row whose own `ret N` is not 4*(n-1)
+      total 16
+      plus 10 rows whose cleanup could not be read (an indirect tail)
+
+**Correction alone does not clear it, and that is recorded rather than hidden.**
+Changing the `delimscan` typedef to `__stdcall` -- the convention that agrees
+with `ret 4` -- was applied to the converted source, built and run:
+it still dies at `delimscan`. Disabling the three calls is what completes. So
+the mismatch is a real defect with a real fix, but it is **not yet shown to be
+the cause** of this crash; the localisation stands on the twelve runs above and
+nothing more. `TinyOracle` is the worst of the remainder: six call sites, six
+different row cleanups (`ret 0`, `ret 8`, `ret 20`, `ret 16`, `ret 0`, `ret 0`)
+behind one typedef, so at least two of them are provably wrong.
+
+## 3z273. The frame fix is mechanical, verifiable, and not sufficient
+
+The whole-unit conversion 3z265-3z267 called for was built and measured. The
+transformation is now scripted and reproducible rather than hand-edited:
+
+- each local declarator of a chosen size is renamed to a unique identifier and
+  becomes an `NxFrameBuffer<T, N>` (or `NxFrameBuffer2D`) object;
+- `sizeof(x)` becomes the **literal byte count**, which removes 3z266's silent
+  failure mode by construction rather than by care;
+- the object releases itself at scope exit, so the thirty-odd `return` statements
+  in `wmain` cannot leak and the earlier "free at the end of the `ci` loop" hand
+  edit is not needed;
+- element access, decay to a pointer, pointer arithmetic and `&x` keep working
+  through the wrapper's operators; explicit casts are routed through
+  `static_cast<unsigned char*>` because a user-defined conversion is not
+  available to `reinterpret_cast`.
+
+Measured at the 0x200 threshold: **81 declarators on 72 lines, 176 736 bytes**
+moved off the frame, clean compile, no warnings attributed to the change. At
+0x100 the same transformation converts more and still compiles.
+
+**It does not fix the crash.** At 0x200 the harness advances from `delimscan` to
+`batch3268`; with `bb[0x4200]` also moved to static storage it advances to
+`material`; with the three delim calls disabled it completes. Every one of those
+is a different point in the same 158 KB range, which is the signature 3z268
+described and not a fix. **The finding of this session is therefore negative and
+that is the honest record: the frame fix 3z265 recommended is correct, is now
+mechanical, and is not sufficient, because the corruption is not primarily
+frame-size driven.**
+
+**The one run that completes.** With the transformation applied and the three
+`delimscan` oracle calls disabled, the harness runs all 422 lines to its own
+end marker and exits 1 on purpose:
+
+    batch3268 candidate failures=3 provisional=1
+    FAIL the Phase 5 reconstruction is incomplete; this gate is RED on purpose
+
+That is 3z270's state, reproduced. It is the target to restore, and it is
+reachable today by one diagnostic edit, which is the actionable thing this
+session hands forward.
+
+No rows move. No gate, coverage-floor, or policy change.
+
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
