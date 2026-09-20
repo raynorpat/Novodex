@@ -15506,6 +15506,63 @@ int wmain(int argc, wchar_t** argv)
 		}
 	printf("allocclear2342 candidate failures=%u provisional=1\n", s234b);
 	}
+	// -- 003238: four owned fields released through the object's OWN vtable,
+	//    with two companion clears and an unconditional final clear.
+	{
+	struct S3238Ctx { unsigned dummy; };
+	typedef void (S3238Ctx::*S3238Mfp)();
+	S3238Mfp mfp;
+	{
+	const void* raw = reinterpret_cast<const void*>(base + 0x7d500);
+	memcpy(&mfp, &raw, sizeof(mfp));
+	}
+	typedef void (NxSlotHost::*M1)(unsigned);
+	M1 slotM = &NxSlotHost::slot1;
+	static const unsigned kOff3238[4] = { 0xcu, 0x8u, 0x4038u, 0x4044u };
+	static const unsigned kComp3238[2] = { 0x4034u, 0x403cu };
+	unsigned s3238 = 0;
+	for(unsigned pan = 0; pan < 16; ++pan)
+		{
+		unsigned char self[0x4060], selfC[0x4060];
+		memset(self, 0xcd, sizeof(self)); memset(selfC, 0xcd, sizeof(selfC));
+		unsigned char blk[4][0x10];
+		memset(blk, 0, sizeof(blk));
+		// the vtable pointer at [self]
+		void* vt[8]; memset(vt, 0, sizeof(vt));
+		{
+		void* raw = nullptr;
+		memcpy(&raw, &slotM, sizeof(raw));
+		memcpy(reinterpret_cast<unsigned char*>(vt) + 0x18, &raw, 4);
+		}
+		unsigned want = 0;
+		for(unsigned k = 0; k < 4; ++k)
+			{
+			unsigned v = ((pan >> k) & 1u) ? static_cast<unsigned>(
+				reinterpret_cast<size_t>(blk[k])) : 0u;
+			memcpy(self + kOff3238[k], &v, 4);
+			memcpy(selfC + kOff3238[k], &v, 4);
+			if(v) ++want;
+			}
+		*(void**)(self) = vt; *(void**)(selfC) = vt;
+		gSlotHits = 0;
+		(reinterpret_cast<S3238Ctx*>(self)->*mfp)();
+		unsigned hO = gSlotHits;
+		gSlotHits = 0;
+		nxOwnVtableRelease3238(selfC, *reinterpret_cast<NxSlotMfp1*>(&slotM));
+		unsigned hC = gSlotHits;
+		int dif = memcmp(self, selfC, sizeof(self));
+		if(hO != hC || hO != want || dif != 0)
+			{
+			int off = -1;
+			for(unsigned b = 0; b < sizeof(self); ++b)
+				if(self[b] != selfC[b]) { off = static_cast<int>(b); break; }
+			fprintf(stderr,"s3238 pan=%u want=%u h=%u/%u dif=%d off=%d\n",
+				pan, want, hO, hC, dif, off); ++s3238;
+			}
+		(void) kComp3238;
+		}
+	printf("ownvtable3238 candidate failures=%u provisional=1\n", s3238);
+	}
 
 
 
