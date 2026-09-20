@@ -5569,6 +5569,34 @@ than one.
 
 All ten move to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z197. The filter was over-excluding: 95 rows recovered, five close
+
+Round 180 found that the drivability filter had been rejecting rows for a
+reason that is not actually disqualifying. It excluded any row whose start RVA
+is the target of a branch, on the theory that such a row is a mid-function
+fragment. But 004089 -- closed in 3z195 and verified by its own differential --
+IS a branch target, and it drove perfectly. The exclusion was conflating two
+different things: a row reached by a `call` is a genuine function entry, while
+one reached only by a `j*` is the fragment the rule was meant to catch.
+
+Separating those two cases recovers **95 call-target rows** that are otherwise
+drivable (plus 16 jump-only rows, which stay excluded). Five of the smallest
+close (build/r180.log newreach failures=0):
+
+- 003509 (0x863f0) is another six-byte trampoline, `jmp [0x10126494]`;
+- 002369 (0x5b7d0) and 002373 (0x5b7f0) push [self] into the lock-API globals
+  0x1010401c and 0x10104024;
+- 002367 (0x5b7b0) calls the lock-API global 0x10104018 with the constants
+  (0, 1, 0, 0), stores the result at [self] and returns self;
+- 003467 (0x84fb0) is a two-argument global-call thunk -- but note it reads
+  [self+0x7c] and [self+0x80] with SELF as the object, unlike the 003429 family
+  which reads [self+0x10] first. My first fixture copied that family's shape and
+  left +0x7c null, so the oracle dereferenced null; the difference between the
+  two thunk families is exactly which pointer the object comes from.
+
+All five move to `reconstructed`, and the 90 remaining call-target rows are the
+next slates. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
