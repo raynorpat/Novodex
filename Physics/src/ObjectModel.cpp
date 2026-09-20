@@ -2731,6 +2731,23 @@ unsigned nxMutexListFree(void* self, unsigned code, unsigned file, unsigned line
 	return 1u;
 	}
 
+// The lock-API trampolines.
+void nxLockApiPushSelf(void* self, void (__stdcall* fn)(unsigned))
+	{
+	unsigned v;
+	memcpy(&v, self, 4);
+	fn(v);
+	}
+
+// phys_fn_002367 (0x5b7b0): the lock-API initializer.
+void* nxLockApiInit2367(void* self, unsigned (__stdcall* fn)(unsigned, unsigned,
+	unsigned, unsigned))
+	{
+	const unsigned r = fn(0u, 1u, 0u, 0u);
+	memcpy(self, &r, 4);
+	return self;
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)

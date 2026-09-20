@@ -1249,6 +1249,18 @@ void					nxListFreeViaSingleton4089(void* self);
 //! and TAIL-JUMP into the unlock: lock [self+0x10], report on failure, else
 //! call 004089 on [self+0x18]. Because the release is a tail jump, the success
 //! arm returns the unlock's `al`, i.e. 1.
+//! The lock-API trampolines 002369 (0x5b7d0) and 002373 (0x5b7f0): each pushes
+//! [self] and calls a lock-API global, then returns; the caller does not clean,
+//! so the target pops the argument itself.
+void					nxLockApiPushSelf(void* self, void (__stdcall* fn)(unsigned));
+
+//! phys_fn_002367 (0x5b7b0): calls the lock-API global [0x10104018] with the
+//! four constants (0, 1, 0, 0) -- pushed 0, 0, 1, 0 -- stores the result at
+//! [self] and returns self.
+void*					nxLockApiInit2367(void* self,
+							unsigned (__stdcall* fn)(unsigned, unsigned,
+								unsigned, unsigned));
+
 unsigned				nxMutexListFree(void* self, unsigned code, unsigned file,
 							unsigned line, unsigned expression);
 float					nxOnceReportThunkFloat(void* self, unsigned code,
