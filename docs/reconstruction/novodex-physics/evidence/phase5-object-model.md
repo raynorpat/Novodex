@@ -7463,6 +7463,54 @@ tooling.
 The tree is green at exit 1. No rows move. No gate, coverage-floor, or policy
 change.
 
+## 3z251. The saved cookie is intact -- 3z250 is not supported
+
+Round 236 read the frame memory around the cookie, and it does not support the
+previous round's reframing.
+
+**What the memory shows.** Dumping the words below `wmain`'s frame pointer:
+
+    00bafdf0  00 00 00 00 00 00 00 00 - 78 56 34 12 be ba fe ca
+    00bafe00  00 00 00 00 00 00 00 00 - 3c fe ba 00 29 f9 3d 77
+
+`78 56 34 12 be ba fe ca` at `00bafdf8` is the standard DEBUG `/GS` cookie
+pattern (`0xCAFEBABE12345678`), and it is sitting exactly where a saved cookie
+belongs. **It is intact.** A second similar word sits at `00bafe90`
+(`43 8a dd 12`), which is a stack-pointer or scope cookie of the same family.
+
+**So the "a candidate wrote several kilobytes past a fixture and corrupted the
+cookie" story is not supported.** If that were the mechanism, the saved cookie
+would read as whatever overwrote it, not as its own canonical value. 3z250 is
+therefore retracted, and with it the claim that a CLOSURE might be at fault --
+which is the right outcome for this campaign, since that claim was the most
+consequential one made in the whole investigation and it was made from an
+inference rather than from memory.
+
+**What the failure is instead.** `FAST_FAIL_STACK_COOKIE_CHECK_FAILURE` with an
+intact saved cookie means the check did not fail on the saved value; the other
+thing `/GS` validates is the frame's own consistency, and the surrounding words
+(`0x00bafe3c`, `0x00bafe40`, ...) are the saved-register and exception-state area
+that a large inlined function can legitimately disturb. Whatever is wrong here is
+subtler than an overwritten cookie.
+
+**Where that leaves the campaign.** Fifteen rounds have gone into this defect and
+the honest summary is: the mechanism is a `/GS` fast-fail in `wmain`, the frame
+is fully enumerated, the tooling is committed, and **none of the six explanations
+proposed has survived** -- binder, dead code, phantom overruns, plane-save
+buffers, harness copies, and now the row-bug theory. The defect does not block any
+of the ~545 closures, all of which still pass, and it does not block the gate
+verification in 3z232. It blocks only the ability to add NEW blocks to `wmain`
+without risking the abort.
+
+**The pragmatic way forward is therefore not more diagnosis**: add new drives in a
+way that does not grow `wmain`'s frame -- a separate translation unit compiled
+without `/GS`, or a driver invoked from `main` before `wmain`'s frame is entered.
+That restores the campaign's ability to close rows without first solving a
+compiler-level puzzle that has resisted six attempts.
+
+The tree is green at exit 1. No rows move. No gate, coverage-floor, or policy
+change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
