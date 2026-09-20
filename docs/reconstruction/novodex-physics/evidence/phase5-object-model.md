@@ -8726,6 +8726,74 @@ evidence that the conversion is safe to land.
 
 No rows move. No gate, coverage-floor, or policy change.
 
+## 3z280. The Foundation hypothesis is falsified, and the real defect was in my verdict
+
+Two of this round's own instruments were wrong. Both are named here because an
+evidence programme's instruments are evidence.
+
+**The `NxFoundation.dll` dependence does not exist.** 3z277 recorded that a
+clean-rebuilt Foundation changes the harness's result. Measured properly, it does
+not. Two different `build\Release\NxFoundation.dll` builds
+(`c5fac502d9152da3` and `793479c542d00a66`) and a hybrid arm that paired the
+clean-built executable with the incremental Foundation all produced the **same**
+result on the same source: exit 1, 353 lines, `batch3268 candidate failures=3`,
+three runs each. A Foundation-only rebuild is byte-reproducible
+(`c5fac502…` -> `c5fac502…`). 3z277 is withdrawn.
+
+**The verdict test looked for a marker this harness does not print.** Every arm
+was scored `DIES`, including arms that plainly reached the end, because the pass
+test required `RED on purpose` in the transcript and this build's end state is
+exit 1 plus the gate's own fold line. The test now requires the fold line and at
+least the harness's own line count, and a crashing arm scores differently from a
+working one. That single line is what made 3z276-3z279 read as a wall of
+reproducibility failures.
+
+## 3z281. The comparison, on the recipe that reproduces
+
+With one canonical base (the committed working-tree bytes, 1288360 bytes,
+sha256 `2a8593e292ab…`), a `--clean-first` rebuild per arm so no arm can run a
+stale object, and three runs per arm:
+
+    arm          exe sha        run1..3                                  verdict
+    HEAD         5e490e8b30fc   exit 1, 353 lines, batch3268=3, end=True   PASS
+    stack all    4ff3ce8999b8   exit 1, 353 lines, batch3268=3, end=True   PASS
+    heap all     457a1b2c0e89   exit -1073741819, 138 lines, delimscan     FAIL
+
+**The renaming is proved faithful.** The `stack all` arm converts all 81
+declarators -- every identifier renamed, every `sizeof` replaced with its literal
+byte count, every explicit cast routed through the wrapper -- while leaving the
+storage on the stack, and the harness behaves **identically to `HEAD`, run for
+run**. So the scope analysis, the rename map, the literal-`sizeof` substitution
+and the cast routing are all correct. That is a much stronger statement than
+3z278 could make, and it is now measured rather than argued.
+
+**The defect is isolated to moving the storage off the stack.** `heap all` deletes
+the harness at `delimscan` on all three runs, deterministically, from the same
+base and the same build settings. `malloc` is therefore the remaining variable,
+and the pool arm exists to separate it.
+
+**What this changes about the frame fix.** For the first time the failure is
+narrow enough to chase: 81 converted declarations, a reproducible pass/fail
+oracle, and `frame_locals.py --limit N` already in place as the bisect control.
+The previous rounds could not get a trustworthy reading at all.
+
+## 3z282. The recipe, stated once
+
+Every measurement of this harness must:
+
+1. take its base from the **committed working-tree bytes**, captured once and
+   sha-pinned -- not `git cat-file`, whose LF form builds to a different program;
+2. rebuild the layout target with `--clean-first`, because this tree's timestamps
+   are not ordered and MSBuild will otherwise run a previous arm's object;
+3. run **three times**, because a single run is not evidence;
+4. score a pass as exit 1 plus the gate's fold line, **not** a marker string;
+5. name the executable hash it measured.
+
+Anything less produced the last three rounds' retractions, and
+`build/compare_arm.py` implements the recipe.
+
+No rows move. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
