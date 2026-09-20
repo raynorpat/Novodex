@@ -5685,6 +5685,30 @@ each row's stack arity, and populate the object the row actually reads -- is
 what the next attempt should start from. 003431 moves to `reconstructed`. No
 gate, coverage-floor, or policy change.
 
+## 3z201. The remaining 24 rows: the bind faults on a second slot
+
+Round 184 applied 3z200's recipe to the other twenty-four rows and hit a wall
+that is now precisely located, so it is recorded rather than guessed at.
+
+The drive was rebuilt exactly to the recipe -- a recorder of the same arity the
+row pushes, each row's own stack arity, and the object the row actually reads
+-- and it faulted. A trace at the TOP of the loop shows the loop is entered
+(`i=0 003435`) and that execution stops before the next statement, which is the
+BIND. So the fault is in `nxBindFnPtr` for 0x10126638, while the same helper
+bound 0x101264e4 successfully in the immediately preceding block.
+
+That is a narrow, testable statement, and it is the whole of what this round
+established: the first slot binds, the second does not, and they are in the
+SAME page (both 0x126000-based), so the difference is not page protection in
+any obvious sense. The next attempt should bind 0x10126638 in isolation, before
+the 0x101264e4 bind has run, to see whether the failure depends on ORDER --
+that is, whether the first unbind leaves the page in a state the second bind
+cannot recover.
+
+The block, its two-argument candidate and its recorder were removed and the
+tree is green (n3min and newreach both 0 failures, mismatches=1). No rows move.
+No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
