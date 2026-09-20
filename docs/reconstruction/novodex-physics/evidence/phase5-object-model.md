@@ -5597,6 +5597,34 @@ close (build/r180.log newreach failures=0):
 All five move to `reconstructed`, and the 90 remaining call-target rows are the
 next slates. No gate, coverage-floor, or policy change.
 
+## 3z198. The three-argument thunk family: mapped, but the drive is withdrawn
+
+Round 181 took the largest group among the rows 3z197 recovered. Grouping them
+by instruction signature showed a clean family of **25 rows** that all read
+`[obj+0x7c]` and `[obj+0x80]`, take `[[obj+0x7c]+0x30]` as the first argument
+and call a global function pointer through their own slot -- differing only in
+three independent ways, all of which the extraction pinned:
+
+- the object is either `self` itself or `[self+4]` (7 rows take the first form,
+  18 the second);
+- the third argument is either the row argument from `[esp+4]` or `[self+8]`
+  (10 rows and 11 rows), and 4 rows pass only TWO arguments;
+- the slot ranges over 24 distinct globals.
+
+That map is recorded here because it is the useful part of the round, and it is
+what a later attempt should start from. **The drive itself is withdrawn**: it
+faulted through several fixture corrections -- the object buffer had to be
+populated for the `self`-as-object form, and then enlarged because those rows
+write their own `+0x80` past an 0x80-byte array -- and after those fixes it
+still faulted without producing a single comparison. Rather than leave a
+broken block in the harness, the block, its recorders and its two candidates
+were removed, and the tree is green again (newreach and mutexlistfree both 0
+failures, mismatches=1).
+
+No rows move. The honest state is that this family is UNDERSTOOD but not
+driven, and the next attempt should start from the parameter table above rather
+than from the disassembly. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
