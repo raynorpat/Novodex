@@ -5625,6 +5625,35 @@ No rows move. The honest state is that this family is UNDERSTOOD but not
 driven, and the next attempt should start from the parameter table above rather
 than from the disassembly. No gate, coverage-floor, or policy change.
 
+## 3z199. The three-argument family: a second attempt, and a narrower fault
+
+Round 182 retried 3z198's family with one real correction and one diagnostic,
+and is again reporting a withdrawal rather than a closure.
+
+**The correction was right and is worth keeping.** Several rows in the family
+end in a BARE `ret`, which means the row takes NO stack argument -- and the
+first attempt called every row through a one-argument typedef. For a bare-`ret`
+row that leaves the argument on the stack, so the row's own `add esp, 0xc`
+unbalances the frame. The retry carries each row's arity in the parameter table
+and casts accordingly, the same discipline 3z156 established for the assert
+slate.
+
+**The diagnostic narrows the fault to one call.** With a per-row trace, the
+FIRST row (003431) is where execution stops, and it stops BEFORE the
+post-bind probe prints -- that is, inside `nxBindFnPtr` itself, a helper that
+has bound dozens of slots successfully since 3z183. Reading the slots' image
+values explains why this family is unusual: 0x101264e4, 0x10126570 and
+0x101265cc hold 0x309a3027, 0x35ba3380 and 0x3c1a3c14 -- **float-shaped data,
+not code pointers**. These rows call through globals that are not function
+pointers at all, so binding them is the only way to drive them, and that bind
+is exactly the step that is failing.
+
+The block, its recorders and its candidates were removed again and the tree is
+green (newreach and mutexlistfree both 0 failures, mismatches=1). No rows move.
+The next attempt should start by testing `nxBindFnPtr` against ONE of these
+float-valued slots in isolation, before rebuilding the twenty-five-row drive.
+No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
