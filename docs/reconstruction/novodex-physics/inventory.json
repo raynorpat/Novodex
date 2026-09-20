@@ -58743,12 +58743,12 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "four-field release through the object own vtable (0x7d500)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1186",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/11658",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the ownvtable3238 differential (3z224): failures=0 over three consecutive runs across all sixteen occupancy pans of the four fields, comparing the slot hit count and the whole 0x4060-byte object, with the fixture vtable slot +0x18 holding the member-function recorder",
       "notes": ""
     },
     {
