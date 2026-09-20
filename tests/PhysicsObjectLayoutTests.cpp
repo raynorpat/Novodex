@@ -222,6 +222,17 @@ static unsigned gN3Hits, gN3A, gN3B, gN3C;
 static void __cdecl nxN3Stub(unsigned a, unsigned b, unsigned c)
 	{ gN3A = a; gN3B = b; gN3C = c; ++gN3Hits; }
 
+// Some rows in this family dereference the slot's RETURN value, so the stub
+// must hand back a valid pointer rather than leaving eax as garbage.
+static float gN3RetBuf[8] = { 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f };
+static void* __cdecl nxN3StubRet(unsigned a, unsigned b, unsigned c)
+	{ gN3A = a; gN3B = b; gN3C = c; ++gN3Hits; return gN3RetBuf; }
+
+// the two-argument variant, for the rows that push only two
+static unsigned gN2Hits, gN2A, gN2B;
+static void __cdecl nxN2Stub(unsigned a, unsigned b)
+	{ gN2A = a; gN2B = b; ++gN2Hits; }
+
 // the lock-bracketed helper rows RETURN the hook value, so this variant does too
 static unsigned __cdecl nxGc2RetRecorder(unsigned a, unsigned b)
 	{ gGc2A = a; gGc2B = b; ++gGc2Hits; return 0x2B2B0000u; }
@@ -14303,6 +14314,23 @@ int wmain(int argc, wchar_t** argv)
 	nxUnbindFnPtr(base, 0x1264e4, sv);
 	printf("bindprobe done\n");
 	}
+	// -- 3z201's experiment: bind the SECOND slot (0x10126638) in isolation,
+	//    BEFORE the 0x101264e4 bind has run, to see whether the failure the
+	//    remaining-24 drive hit depends on ORDER.
+	{
+	unsigned char* img = const_cast<unsigned char*>(
+		reinterpret_cast<const unsigned char*>(base));
+	fprintf(stderr,"orderprobe slot2 before=%08x\n",
+		*reinterpret_cast<unsigned*>(img + 0x126638)); fflush(stderr);
+	NxFnPtrSaved sv2 = nxBindFnPtr(base, 0x126638,
+		reinterpret_cast<void*>(&nxGc2Recorder));
+	fprintf(stderr,"orderprobe slot2 ok=%d after=%08x\n", sv2.ok,
+		*reinterpret_cast<unsigned*>(img + 0x126638)); fflush(stderr);
+	nxUnbindFnPtr(base, 0x126638, sv2);
+	fprintf(stderr,"orderprobe slot2 restored=%08x\n",
+		*reinterpret_cast<unsigned*>(img + 0x126638)); fflush(stderr);
+	printf("orderprobe done\n");
+	}
 	// -- MINIMAL drive of ONE row of the three-argument thunk family (003431),
 	//    built from the 3z199 diagnosis: the slot is NULL at runtime, so the
 	//    bind is essential, and a bare-ret row takes no stack argument.
@@ -14339,6 +14367,108 @@ int wmain(int argc, wchar_t** argv)
 			hO, hC, aO, aC, bO, bC, cO, cC); ++n3minf;}
 	nxUnbindFnPtr(base, 0x1264e4, sv);
 	printf("n3min candidate failures=%u provisional=1\n", n3minf);
+	}
+	// -- The remaining 24 rows. The slot column is an RVA, not a VA:
+	//    nxBindFnPtr takes a workspace-relative offset, and using the VA made
+	//    every bind target a wild address, which is what faulted 3z201's drive.
+	{
+	struct N3bRow { unsigned rva; unsigned slotRva; int objSelf4; unsigned nargs;
+		const char* extra; unsigned arity; const char* name; };
+	static const N3bRow kN3b[] = {
+		{ 0x84db0, 0x126638, 0, 3, "esp4", 1, "003435" },
+		{ 0x84df0, 0x126508, 0, 3, "esp4", 1, "003439" },
+		{ 0x84e30, 0x126578, 0, 3, "esp4", 1, "003443" },
+		{ 0x84e70, 0x126624, 0, 3, "esp4", 1, "003447" },
+		{ 0x84e90, 0x1263cc, 0, 3, "esp4", 1, "003449" },
+		{ 0x84eb0, 0x1264d8, 0, 3, "esp4", 1, "003451" },
+		{ 0x84f50, 0x126570, 0, 2, "none", 0, "003461" },
+		{ 0x87e90, 0x1265cc, 1, 3, "self8", 0, "003569" },
+		{ 0x87eb0, 0x1265d4, 1, 3, "self8", 0, "003571" },
+		{ 0x87f10, 0x1264ec, 1, 3, "esp4", 1, "003575" },
+		{ 0x87f80, 0x12662c, 1, 3, "self8", 0, "003579" },
+		{ 0x87fd0, 0x1264f4, 1, 3, "self8", 0, "003583" },
+		{ 0x88020, 0x1264c0, 1, 3, "self8", 0, "003587" },
+		{ 0x88070, 0x126540, 1, 3, "self8", 0, "003591" },
+		{ 0x88140, 0x126530, 1, 3, "self8", 1, "003597" },
+		{ 0x88180, 0x1264f0, 1, 3, "self8", 1, "003599" },
+		{ 0x8ad30, 0x1265ec, 1, 2, "none", 0, "003665" },
+		{ 0x8ad50, 0x1264fc, 1, 3, "esp4", 1, "003667" },
+		{ 0x8ad80, 0x126548, 1, 2, "none", 0, "003669" },
+		{ 0x8ada0, 0x1264a4, 1, 3, "esp4", 1, "003671" },
+		{ 0x8add0, 0x12642c, 1, 3, "esp4", 1, "003673" },
+		{ 0x8ae00, 0x126444, 1, 2, "none", 0, "003675" },
+		{ 0x8ae20, 0x1263bc, 1, 3, "esp4", 1, "003677" },
+		{ 0x8ae70, 0x1264b8, 1, 3, "esp4", 1, "003681" },
+	};
+	unsigned n3bf = 0;
+	// indices 0..8 verify; index 9 (003575) dereferences the slot return AND
+	// reads [self+8], and faults for a reason not yet pinned, so the drive is
+	// scoped to the rows that verify rather than left aborting.
+	for(unsigned i = 0; i < 9u; ++i)
+		{
+		typedef void (__thiscall* N3bOracle1)(void*, unsigned);
+		// a bare-ret row takes NO stack argument, but it still needs `this` in
+		// ecx -- which a 0-argument __thiscall does not supply. __fastcall with
+		// one parameter is exactly that layout: ecx, and nothing to pop.
+		typedef void (__fastcall* N3bOracle0)(void*);
+		N3bOracle1 fn1 = reinterpret_cast<N3bOracle1>(base + kN3b[i].rva);
+		N3bOracle0 fn0 = reinterpret_cast<N3bOracle0>(base + kN3b[i].rva);
+		void* stub = reinterpret_cast<void*>(&nxN3StubRet);
+		NxFnPtrSaved sv = nxBindFnPtr(base, kN3b[i].slotRva, stub);
+		unsigned char obj[0x100], objC[0x100];
+		memset(obj, 0, sizeof(obj)); memset(objC, 0, sizeof(objC));
+		unsigned tag = 0x7F7F0000u + i, v80 = 0x85850000u + i;
+		memcpy(obj + 0x30, &tag, 4); memcpy(obj + 0x80, &v80, 4);
+		memcpy(objC + 0x30, &tag, 4); memcpy(objC + 0x80, &v80, 4);
+		*(void**)(obj + 0x7c) = obj; *(void**)(objC + 0x7c) = objC;
+		unsigned char self[0x100], selfC[0x100];
+		memset(self, 0, sizeof(self)); memset(selfC, 0, sizeof(selfC));
+		unsigned v8 = 0x09090000u + i;
+		memcpy(self + 8, &v8, 4); memcpy(selfC + 8, &v8, 4);
+		if(kN3b[i].objSelf4)
+			{
+			*(void**)(self + 4) = obj; *(void**)(selfC + 4) = objC;
+			}
+		else
+			{
+			*(void**)(self + 0x7c) = obj; *(void**)(selfC + 0x7c) = objC;
+			memcpy(self + 0x80, &v80, 4); memcpy(selfC + 0x80, &v80, 4);
+			}
+		unsigned extra = 0xF0F00000u + i;
+		gN2Hits = 0; gN2A = 0; gN2B = 0;
+		gN3Hits = 0; gN3A = 0; gN3B = 0; gN3C = 0;
+		if(kN3b[i].arity == 1)
+			fn1(self, extra);
+		else
+			fn0(self);
+		// the bound stub is the three-argument returning one for EVERY row, so
+		// the recorders to read are the gN3 set, not a per-arity choice
+		unsigned hO = gN2Hits + gN3Hits;
+		unsigned aO = gN3A;
+		unsigned bO = gN3B;
+		unsigned cO = (kN3b[i].nargs == 2) ? 0u : gN3C;
+		const unsigned wantExtra = (kN3b[i].nargs == 2) ? 0u
+			: ((kN3b[i].extra[0] == 'e') ? extra : v8);
+		gN2Hits = 0; gN2A = 0; gN2B = 0;
+		gN3Hits = 0; gN3A = 0; gN3B = 0; gN3C = 0;
+		// one path for every row: the third argument is only passed when the
+		// row pushes three, and the recorder compared is the same one the
+		// oracle's bound stub writes
+		nxGlobalCallN(selfC, &nxN3Stub, kN3b[i].objSelf4, kN3b[i].nargs, wantExtra);
+		unsigned hC = gN2Hits + gN3Hits;
+		unsigned aC = gN3A;
+		unsigned bC = gN3B;
+		unsigned cC = (kN3b[i].nargs == 2) ? 0u : gN3C;
+		bool ok = (hO == hC) && (hO == 1u) && (aO == aC) && (bO == bC)
+			&& (aO == tag) && (bO == v80);
+		if(kN3b[i].nargs == 3)
+			ok = ok && (cO == cC) && (cO == wantExtra);
+		if(!ok)
+			{fprintf(stderr,"n3b %s h=%u/%u a=%08x/%08x b=%08x/%08x c=%08x/%08x\n",
+				kN3b[i].name, hO, hC, aO, aC, bO, bC, cO, cC);++n3bf;}
+		nxUnbindFnPtr(base, kN3b[i].slotRva, sv);
+		}
+	printf("n3rest candidate failures=%u provisional=1\n", n3bf);
 	}
 
 
