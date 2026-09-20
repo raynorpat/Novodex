@@ -197,6 +197,11 @@ int wmain(int argc, wchar_t** argv)
 	void* b = *reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(s) + 8);
 	void* p = *reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(b) + 0x19c);
 	printf("chain actor=%p desc=%p shape=%p body=%p pose=%p\n", a, d, s, b, p);
+	printf("field actor+0x14=%p desc+0x0c=%p shape+8=%p body+0x19c=%p\n",
+		*reinterpret_cast<void**>(a + 0x14),
+		*reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(d) + 0x0c),
+		*reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(s) + 8),
+		*reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(b) + 0x19c));
 	printf("chain userData14=%08x desc+8=%08x shape+8=%08x body+0x19c=%08x\n",
 		*reinterpret_cast<unsigned*>(a + 0x14),
 		*reinterpret_cast<unsigned*>(reinterpret_cast<unsigned char*>(d) + 8),

@@ -1576,3 +1576,65 @@ and the question has narrowed at every step -- from "what does a closure cost" t
 "is the arm reachable" to "which offset is wrong" to "which of two readers is
 reading what it thinks". Each answer was a measurement, and each corrected the
 previous round's reading. No row has closed.
+
+## 8c. The synthetic fixture is recorded as BLOCKED, and this line of work stops
+
+Round 21 said the next measurement was one breakpoint and that if it did not close
+the fixture, the line should stop and be recorded as known-blocked. It did not
+close it, so it stops.
+
+**What five rounds established, in order, each by measurement:**
+
+    7m  a closure is "aim a mutation at the row and have the gate catch it"
+    7o  a mutation needs a registered target
+    7r  a target exists and passes: NxPhysicsJointDescTests, floor 3
+    7s  the first mutation was not caught -- the transform arm did not run
+    7v  a synthetic actor is the route to the arm
+    7x  the actor's userData offset is 0x14, not 0x10
+    7z  the fixture's chain resolves and the row's does not, at one address
+    8b  a breakpoint showed the row reading [eax+0x19c] as zero where the fixture
+        held a non-null pose, and correcting the shape array to +0x0c moved the
+        fault out of NxPhysics and into the harness image
+    8c  the fixture still faults before its own field print
+
+**What is secured and what is not.**
+
+- **Secured:** the transform arm is *reachable* in principle. Round 19's conclusion
+  -- "the arm is unreachable, so the row cannot close" -- was wrong, and that is
+  the finding worth keeping. The blocker is fixture layout, not the closure
+  apparatus and not the row.
+- **Secured:** the closure apparatus itself works. A green registered target
+  exists, its coverage assertions evaluate, and its gate passes.
+- **Not secured:** a working synthetic fixture. Two offsets were found and fixed by
+  measurement (0x14, 0x0c) and at least one more level is still wrong, with the
+  fixture now faulting inside the test binary rather than inside the row.
+
+**Why it stops here rather than continuing.** Five rounds have gone to two rows,
+and each round's question has been narrower but the fixture has not worked. The
+marginal value of a sixth round on the same fixture is lower than the value of the
+finding already in hand, and the programme's own idiom is to name a boundary rather
+than to keep spending builds against it. **This is a named boundary, not an
+abandoned row:** the two rows stay `reconstructed` with their proof and their
+recorded blocker, and the fixture stays checked in as a probe with the two offsets
+it has established.
+
+**What a future session should do differently**, and this is the actionable part:
+the fixture was built by deriving a layout from headers and then correcting it one
+fault at a time, which costs a build per level. The cheaper instrument is to
+**dump the real object graph once** -- create a real actor through the oracle's own
+SDK against the shipped DLL, where `createScene` works, and print the bytes at each
+level -- and then build the synthetic fixture to match measured offsets rather than
+derived ones. The oracle's own SDK is available and does create scenes; it is the
+*candidate's* that does not.
+
+## 8d. State of the closure campaign, stated once
+
+    closure apparatus        complete and green (7r)
+    the two joint rows       reconstructed, proof recorded, blocker recorded
+    their transform arm      reachable in principle, not yet reached in practice
+    the synthetic fixture    checked in, two offsets established, still faulting
+    the other 127 rows       still need a target that drives them
+    rows closed by this work 0
+
+No row has closed. The campaign's three links -- mutation, target, reachability --
+have the first two in place and the third diagnosed rather than solved.
