@@ -88112,12 +88112,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "masked four-slot loop (0xb53c0u, ret 0x14)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1853",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15780",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the masked4866 differential (3z220): failures=0 over three consecutive runs, covering all sixteen live-pointer by mask combinations for EACH row (32 cases total), comparing the return value, the hit count, the ordered sequence of elements visited, all four slot arguments and the whole object",
       "notes": ""
     },
     {
@@ -88148,12 +88148,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "masked four-slot loop (0xb5410u, ret 0x14)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1854",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15783",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the masked4866 differential (3z220): failures=0 over three consecutive runs, covering all sixteen live-pointer by mask combinations for EACH row (32 cases total), comparing the return value, the hit count, the ordered sequence of elements visited, all four slot arguments and the whole object",
       "notes": ""
     },
     {
