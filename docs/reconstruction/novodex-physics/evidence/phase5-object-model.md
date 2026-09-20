@@ -7320,6 +7320,51 @@ rounds add is that the step must be attempted against the right dump, and that t
 The tree is green at exit 1, and all eight gates are unchanged and honest. No rows
 move. No gate, coverage-floor, or policy change.
 
+## 3z248. The two obstacles to the last step, named exactly
+
+Round 233 ran the corrected `dv` step and hit two concrete obstacles, both
+recorded here because together they are the whole distance between the current
+state and the answer.
+
+**Obstacle 1: `frame` loses its first character.** Driving cdb from a command
+file, the output shows
+
+    0:000> frame 3
+    Couldn't resolve error at 'rame 3'
+
+The command arrived as `rame 3`. The leading `f` is consumed somewhere between the
+command file and the parser, so the frame is never selected and `dv` runs against
+the exception frame -- which has no locals to enumerate. The same effect appeared
+in 3z247's inline `-c` attempt ("Couldn't resolve error at 'rame 3; dv ...'").
+
+**Obstacle 2: locals need PRIVATE symbols.** With the frame never selected, `dv`
+reported
+
+    Unable to enumerate locals, Win32 error 0n318
+    Private symbols (symbols.pri) are required for locals.
+
+That message is the important one, because it applies even once the frame IS
+selected: `/DEBUG:FULL` produces a PDB, but a PDB is not automatically the private
+symbol stream `dv` wants for local names and offsets. The frame list already
+resolves to a function AND a source line (3z245), so the public symbols are
+present -- what is missing is the local-variable detail.
+
+**What that means for the last step.** It is still "select the wmain frame and run
+`dv`", but it now has two prerequisites that are each a small, specific fix:
+write the frame selection in a form the parser accepts (`~~[3]s`, or `.frame 3`
+if the shorthand is the problem), and confirm the private symbol stream is
+available to cdb before expecting locals.
+
+**And a fallback that needs neither.** The `wmain` frame's locals are laid out
+contiguously, so the array that reaches the cookie can also be found from the
+frame's base address and the map alone: the cookie is a known value at a known
+offset from the frame, and any array whose `[base+offset]` extent crosses it is
+the culprit. That is arithmetic on data already in hand rather than a new
+investigation.
+
+The tree is green at exit 1 and all eight gates are unchanged and honest. No rows
+move. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
