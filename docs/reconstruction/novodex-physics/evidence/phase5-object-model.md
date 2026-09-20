@@ -6951,6 +6951,50 @@ ten 000480-group rows at once.**
 The tree is green at exit 1. No rows move. No gate, coverage-floor, or policy
 change.
 
+## 3z240. The 41 overruns, and why the harness cannot be extended
+
+Round 224 ran a static scan for local arrays written past their size, and found
+the defect 3z239 predicted: **41 write-context overruns** in wmain. Representative
+cases, all of the form "a local array written at or past its own size":
+
+    line  5336   unsigned char o1[0x20]        memcpy dst at +0x5c
+    line 13355   unsigned char self[0x10]      memcpy dst at +0x10
+    line 12238   unsigned char self[0x20]      memcpy dst at +0x24 and +0x28
+    line 12972   unsigned char obj[0x20]       memcpy dst at +0x2c
+    line 12651   unsigned char self[0x20]      index store at 0x2c
+
+The scan only counts WRITE contexts -- `memcpy`/`memset` destinations, cast
+stores and index stores -- which is why the earlier count of 1091 collapsed to
+41: the rest were `sizeof` and length arguments, not writes.
+
+**Why the harness still passes.** These writes land in the padding the compiler
+places between locals. The `/GS` cookie sits at a specific place in the frame; as
+long as no overrun reaches it, the harness exits 1 as intended. That is the
+shipped layout, and it is why the gate has been green about the WORK while the
+code underneath it is unsound.
+
+**Why an edit arms it.** Any change to wmain's frame -- a new block, a single
+`setvbuf` call, or even a one-line call to a helper defined outside wmain, which
+this round tried -- re-rolls that padding, and then an existing overrun reaches
+the cookie. The abort discards buffered stdout, so the block that "never ran"
+had run and printed.
+
+**So the harness cannot be extended as it stands.** Every block added in this
+campaign was a gamble on the layout, and the ones that "passed" did so by
+accident of padding rather than because the code was safe. Two consequences
+follow:
+
+- the honest fix is to correct the 41 writes -- each is a genuine bug, and the
+  `self[0x10]` ones are worst because the write starts exactly at the end of the
+  array;
+- until then, the reliable way to add a block is to RAISE the frame margin first
+  -- shrink wmain by moving existing blocks out, or grow the padding -- so that
+  new code has somewhere to land.
+
+The `lazy579` and `mutexreg` candidates are unblocked by either fix and remain
+untested rather than failed. No rows move. No gate, coverage-floor, or policy
+change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
