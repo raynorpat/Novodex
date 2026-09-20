@@ -6434,6 +6434,45 @@ green (ownvtable3238 and adjusted2060 both 0 failures, mismatches=1).
 
 No rows move. No gate, coverage-floor, or policy change.
 
+## 3z227. Consolidation: the whole recent slate verified in one gate run
+
+Round 211 ran the gate end to end and every block added across the vt campaign
+reported zero failures **in the same run** (build/r211-gate.log):
+
+    vecloop4163     0    fourslot4861    0    singletonrel     0    allocrel        0
+    masked4866      0    masked4864      0    allocrelease4149 0    allocclear2342  0
+    ownvtable3238   0    adjusted2060    0
+    layout candidate mismatches=1 mode=differential candidate_fold=4492c8c1
+    coverage_assertions_evaluated=126 floor=126
+    inventory=pass   unexplained=0   data_objects=5138
+    gate_failure=oracle_differential:NxPhysicsObjectLayoutTests exited 1
+
+That is worth doing explicitly at this point, because the campaign has been
+adding a candidate per round for many rounds and each was verified in isolation
+against the previous state. A single run that exercises all of them together is
+the only check that they do not interfere -- several of these blocks bind the
+SAME slots (0x101041bc, 0x1012845c, 0x10104028) and the same page, and each
+binds and unbinds within its own scope. Ten independent bind/unbind cycles in
+one process, all restoring correctly, is a stronger statement about the harness
+than any one of them alone.
+
+The gate remains RED for exactly one reason, as it has since 3z114: the
+unconditional candidate-missing marker for the Task 3-4 family vtables. Nothing
+in this round touched it.
+
+**Where the campaign stands.** The reachable frontier is:
+
+- 000579, the last drivable vt row, blocked on a bind fault at [0x101041b0]
+  that 3z226a localised (the row is never reached);
+- the ten 88-byte rows behind 000480, whose registry INSERT mutates global
+  state;
+- six x87-dominated rows of 498-907 bytes;
+- 003900, the FPU-bracketed row;
+- the branch-target fragments and non-entry rows, which are not drivable by
+  definition.
+
+No rows move. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
