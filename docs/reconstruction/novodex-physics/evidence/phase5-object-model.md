@@ -6316,6 +6316,34 @@ is exercised independently.
 
 004149 moves to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z223. 002342 closes, by acting on the located diff instead of re-guessing
+
+Round 206 closed 002342 (build/r206.log allocclear2342 failures=0, stable over
+three runs) -- the row 3z219 held back.
+
+The method is the point. 3z219 did not guess at the cause; it drove the row,
+recorded that the hit counts and expected counts matched on every pan while the
+objects differed at offsets 0xc and 0x1c, and noted that those are exactly the
+offsets each group would clear **if the clears belonged to the other group**.
+The correction that actually worked came from reading that record rather than
+the disassembly a fourth time: the clears are not the other group's, they are
+**UNCONDITIONAL**. Each group releases its field only when non-null, but clears
+its three fields either way -- so on the pans where nothing is released, the
+clears still run, which is precisely the difference the diff had bracketed.
+
+That also means the earlier reading of the two `je` instructions was subtly
+wrong: they skip the release and land BEFORE the clears, not after. A
+disassembly read as "jump past the whole group" was wrong twice in this
+campaign in the same way -- 3z218 found the unconditional tail block in 004838
+the same way, from a diff on the guard-failure cases.
+
+**The transferable rule**: when a differential reports matching counts and a
+disagreeing object, the disagreement is about which MEMORY changed, and the
+offending offsets name the block responsible better than another read of the
+listing does.
+
+002342 moves to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
