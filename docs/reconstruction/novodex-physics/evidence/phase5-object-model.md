@@ -7604,6 +7604,41 @@ it is preserved in 3z238-3z252 along with the tooling (map, PDB, crash dumps,
 The gate is unchanged and honest. No rows move yet. No coverage-floor or policy
 change.
 
+## 3z254. The unblock works, and lazy579 now fails differently
+
+Round 239 exercised the unblock by re-running the `lazy579` candidate that had
+been written in 3z230-3z231 and never actually executed.
+
+**The good news is the harness.** With the `/GS-` change in place, the block ran,
+the harness continued past it, and the run ended with a normal gate result rather
+than a `/GS` abort. The extensibility that 3z253 claimed is real: the abort that
+swallowed every block for seventeen rounds is gone.
+
+**The candidate fails, and for a new reason.** The exit code is now
+
+    exit = -1073741819 = 0xC0000005 = ACCESS VIOLATION
+
+not `0xC0000409`. So `lazy579` no longer dies in the harness's `/GS` check; it
+dereferences something invalid on its own. That is progress of a useful kind: the
+failure has moved from an unexplained harness fault to a specific bug in a
+specific fixture, and the dump tooling can name it.
+
+**What that says about the earlier work.** 3z230 and 3z231 both concluded that
+the candidate "still did not pass" and withdrew it. Both conclusions were drawn
+while the harness was aborting before the block could execute, so neither was
+evidence about the candidate at all -- the candidate was never run. The
+correction here is not that it passes, but that its failure is now its own.
+
+**The fixture to re-check.** The guard chain is three deep and every level is a
+pointer that must be non-null in turn: `[0x101041b0]` -> guard, `[guard]` -> obj,
+`[obj+0x14]` -> vtable, `[vtable+0x1c]` -> the slot. The row also has an `int3`
+path when `[[0x101041b0]]` is zero, so the fixture must both point the guard at
+real memory AND make its first word non-zero. A candidate/fixture pair that gets
+one of those four levels wrong produces exactly an access violation.
+
+The candidate was withdrawn again and the tree is green at exit 1, with the gate
+unchanged. No rows move. No coverage-floor or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
