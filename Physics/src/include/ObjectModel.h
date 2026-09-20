@@ -1292,6 +1292,18 @@ typedef float (__cdecl* NxFloatFn3)(unsigned, unsigned, unsigned);
 typedef unsigned (__cdecl* NxPtrFn0)(void);
 void*					nxInitRow3934(void* self, unsigned arg, NxPtrFn0 fn);
 unsigned char			nxReportRow2160(unsigned a, unsigned b, unsigned c);
+//! phys_fn_003936 (0x8eeb0): stores the vtable 0x10117920 at [self] and
+//! TAIL-JUMPS into the global [0x10104194], forwarding `this` and the caller
+//! stack unchanged.
+void					nxDtorTrampoline3936(void* self, void (*fn)(void*));
+
+//! phys_fn_003902 (0x8d850): reads the cached word [0x10126654], calls the
+//! global [0x1010403c] with it, CLEARS the cache, and returns whether the call
+//! returned non-zero. The cache is mirrored through the two helpers.
+void					nxSetCache3902(unsigned value);
+unsigned				nxGetCache3902();
+unsigned char			nxConsumeFlag3902(unsigned (__stdcall* fn)(unsigned));
+
 unsigned char			nxLockApiTest2385(void* self,
 							unsigned (__stdcall* fn)(unsigned, unsigned));
 

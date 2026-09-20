@@ -2875,6 +2875,34 @@ float nxLockedThunkFloat2(void* self, unsigned lockOff, unsigned objOff,
 	return fn(first, b);
 	}
 
+// phys_fn_003936 (0x8eeb0): the vtable store plus the global tail jump.
+void nxDtorTrampoline3936(void* self, void (*fn)(void*))
+	{
+	unsigned vtable = 0x10117920u;
+	memcpy(self, &vtable, 4);
+	fn(self);
+	}
+
+// phys_fn_003902 (0x8d850): the cached flag consumer.
+static unsigned gNxCache3902 = 0u;
+
+void nxSetCache3902(unsigned value)
+	{
+	gNxCache3902 = value;
+	}
+
+unsigned nxGetCache3902()
+	{
+	return gNxCache3902;
+	}
+
+unsigned char nxConsumeFlag3902(unsigned (__stdcall* fn)(unsigned))
+	{
+	const unsigned r = fn(gNxCache3902);
+	gNxCache3902 = 0u;
+	return r != 0u ? 1u : 0u;
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)
