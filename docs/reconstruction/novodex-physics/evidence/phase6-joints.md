@@ -341,3 +341,56 @@ looks. Those are different claims and only the second is established.
 `Foundation/src/Utilities.cpp` to the oracle's x87 behaviour, or record why they
 cannot be. That is a `novodex-foundation` task, and this project references that
 evidence tree without modifying it.
+
+## 6o. Why the Foundation project's own gate did not catch this
+
+The Foundation project's evidence records the tangent row as covered:
+
+    evidence.md:  "tangents cover both oracle branches and orthonormal invariants"
+    dumps/util_differential.txt:
+      "util exports=5 ... tangents=both_branches_orthonormal ..."
+      "NxNormalToTangents: both |z| branches; unit and mutual/normal
+       orthogonality invariants."
+
+**The gate asserts invariants, not words.** "Both branches" is coverage of the
+control flow and "orthonormal invariants" is a property check. Neither compares
+the tangent output bit for bit, so a one-ULP difference and a NaN sign difference
+both satisfy every assertion the gate makes. That is why the Foundation project's
+record and this round's probe are not in conflict: they measured different things,
+and the weaker one passed.
+
+This is the README's green-transcript lesson in a new place. A differential is a
+filter with a shape, and a gate that asserts an invariant answers "is this still
+orthonormal" rather than "are these the same words". The invariant is true of both
+builds; the words are not equal.
+
+**What a fix would need to assert**, and this is the actionable part: the exact
+tangent words for a fixed set of inputs, on both branches, including a zero axis
+and a non-finite axis. The probe in `tests/NxNormalToTangentsProbe.cpp` already
+prints exactly that and can be lifted.
+
+## 6p. Round summary
+
+Established this round, each by measurement:
+
+- the two Phase 6 rows are **implementation-complete and verified in isolation**
+  -- a candidate-physics + oracle-foundation pair produces a transcript with zero
+  differences against the oracle, reproducible three runs
+  (SHA-256 `f47ff8c12984ff69`);
+- the residual difference belongs to `NxNormalToTangents` in the reconstructed
+  Foundation, and it is a one-ULP difference on a finite input plus a NaN sign
+  difference on a zero axis;
+- the Foundation source formula is correct; the defect is `NxVec3::normalize`,
+  which the oracle evaluates with x87 and the rebuilt Foundation with SSE;
+- no registered differential covers it, and the Foundation project's own tangent
+  gate asserts invariants rather than words.
+
+**What is not claimed.** The candidate pair is not shown wrong anywhere a gate
+looks. It is shown to differ somewhere no gate looks. No row moves, no gate
+changes, and `closed` remains the Phase 8 audit's to grant.
+
+**The next task, and it is now a Foundation one**: make `NxVec3::normalize` (and
+the `M_SQRT1_2` branch test) match the oracle's x87 behaviour, and add a
+word-level tangent assertion to the Foundation's utility gate. Both are
+`docs/novodex-foundation` work; this project references that evidence tree and
+does not modify it.
