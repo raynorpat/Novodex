@@ -6260,6 +6260,36 @@ including that a skip does not stop the loop.
 
 Both rows move to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z221. 004864 closes: the same masked loop, derived rather than guessed
+
+Round 204 closed 004864 (build/r204.log masked4864 failures=0, stable over
+three runs), the third member of the masked-loop family.
+
+It is 004866's loop with a SIXTH row argument: the mask is arg3, consumed by the
+test, and the slot is +0x18 receiving FIVE arguments. The whole difficulty is
+working out WHICH row argument each of the five slot arguments is, because the
+six pushes happen in a scattered order with `mov eax, [esp+N]` reads interleaved
+among them, so the offsets shift as the stack grows.
+
+The derivation is worth recording because it is the reusable part. With the row
+taking six arguments and four pushes already outstanding when the slot's
+arguments are assembled:
+
+    push ebx            ; ebx was loaded as a6
+    push a5
+    mov eax, [esp+0x20] ; = a2, NOT a4 -- ebp is now on the stack
+    push ebp            ; ebp was loaded as a4
+    push eax            ; a2
+    mov eax, [esp+0x24] ; = a1
+    push eax            ; a1
+
+so the callee sees (a1, a2, a4, a5, a6), and arg3 is consumed by the mask test
+alone. The drive confirmed that reading on the first run -- it compares all five
+slot arguments individually, so a single mis-assigned argument could not have
+passed.
+
+004864 moves to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
