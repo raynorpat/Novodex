@@ -7871,6 +7871,63 @@ the ledger dependency is now known for whoever revisits it.
 
 No gate, coverage-floor, or policy change.
 
+## 3z260. Phase-8 readiness: the census is complete, the phases are not
+
+Round 245 read the inventory's own ledgers rather than the row entries, and got
+the definitive readiness picture.
+
+**Phases:**
+
+    phase 1  Oracle census                 closed
+    phase 2  SDK core                      closed
+    phase 3  Geometry and collision        closed
+    phase 4  Mesh and spatial assets       pending
+    phase 5  Objects                       pending
+    phase 6  Joints and effectors          pending
+    phase 7  Scenes and simulation         pending
+    phase 8  Full semantic audit           pending
+
+**Gates: six, all passing** -- `toolchain_pinned`, `public_headers_pinned`,
+`pe_manifest`, `ghidra_semantics`, `capstone_corpus`, `phase_1_oracle_census`.
+
+**Coverage, and this is the strongest claim in the campaign:**
+
+    executable_bytes                   1056977
+    explained_executable_bytes         1056977     <- 100%
+    unexplained_executable_bytes             0
+    unresolved_executable_targets            0
+    referenced_data_bytes               174443
+    unexplained_referenced_data_bytes        0
+    overlaps                                 0
+    duplicate_ownership                      0
+
+Every executable byte in the image is accounted for, every referenced data byte
+is accounted for, there are no unresolved targets, no overlapping claims and no
+duplicate ownership. The census is COMPLETE. What is not complete is the
+SEMANTIC work: phases 4 through 8 are all still `pending`, and phase 5 is the one
+this file has been working through.
+
+**How that squares with 3z256-3z259.** Those rounds found gaps in the row-level
+EVIDENCE fields -- missing `static_proof` text, an empty `statically_reviewed`
+state, a misclassified fragment. None of that contradicts the coverage numbers:
+coverage says every byte has an OWNER, while the evidence fields say how
+confidently that owner's behaviour is known. Both can be true at once, and the
+distinction is the one that matters for the Phase 8 gate.
+
+**Also established this round**: the validator's `proof` field is `None` on every
+one of the 2784 code rows, so the `proof`-versus-state check of 3z259 never fires
+from the entries -- the ledger it consults lives in the `phases`/`gates` blocks,
+not in a top-level `closed` list. That is worth knowing before anyone tries to
+move a row between states again.
+
+**Readiness verdict.** The oracle side is done and provably complete. The
+reconstruction side has 778 closed code rows, all gates honest, and four phases
+still to work. The harness defect of 3z238-3z255 blocks new differential blocks
+until `wmain` is refactored, and the evidence-field gaps of 3z256-3z259 are
+recorded rather than papered over.
+
+No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
