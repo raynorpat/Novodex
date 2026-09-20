@@ -1233,6 +1233,17 @@ void					nxSetGate3716(unsigned char on);
 //! sets [self+0x75] to 1 when bit 6 of [desc+0xc] is set.
 void					nxAccumulateByKind0867(void* self, float a, void* desc,
 							float b);
+
+//! phys_fn_000448 (0xdef0): the element count of the pointer pair at
+//! [self+8] and [self+0xc] -- `([self+0xc] - [self+8]) >> 2` with an
+//! ARITHMETIC shift, so a reversed pair yields a negative count.
+int						nxCountFromPair0448(void* self);
+
+//! phys_fn_004089 (0x95d20): a list teardown that frees every node through
+//! the allocator SINGLETON slot +0x14. It walks [self+0x20], moving each node's
+//! [+0x10] into the field before freeing the node, and clears the global word
+//! [0x10127180] once the list is empty. The free hook is settable.
+void					nxListFreeViaSingleton4089(void* self);
 float					nxOnceReportThunkFloat(void* self, unsigned code,
 							unsigned file, unsigned line, unsigned expression,
 							NxGlobalFn2RetF fn, int viaField4);

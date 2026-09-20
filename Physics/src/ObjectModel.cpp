@@ -2682,6 +2682,37 @@ void nxAccumulateByKind0867(void* self, float a, void* desc, float b)
 		p[0x75] = 1;
 	}
 
+// phys_fn_000448 (0xdef0): the pair count with an arithmetic shift.
+int nxCountFromPair0448(void* self)
+	{
+	unsigned a, b;
+	const unsigned char* p = reinterpret_cast<const unsigned char*>(self);
+	memcpy(&a, p + 0xc, 4);
+	memcpy(&b, p + 8, 4);
+	return static_cast<int>(static_cast<signed>(a - b)) >> 2;
+	}
+
+// phys_fn_004089 (0x95d20): the list teardown that frees through the
+// allocator singleton.
+void nxListFreeViaSingleton4089(void* self)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	unsigned node;
+	memcpy(&node, p + 0x20, 4);
+	while(node != 0u)
+		{
+		unsigned char* n = reinterpret_cast<unsigned char*>(static_cast<size_t>(node));
+		unsigned next;
+		memcpy(&next, n + 0x10, 4);
+		memcpy(p + 0x20, &next, 4);
+		if(gNxAllocFree != nullptr)
+			gNxAllocFree(n);
+		memcpy(&node, p + 0x20, 4);
+		}
+	// the row clears the global word once the list is empty
+	gNxGlobalFlag4491 = 0u;
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)
