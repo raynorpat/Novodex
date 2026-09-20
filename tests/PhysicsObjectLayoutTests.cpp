@@ -217,6 +217,11 @@ static unsigned gGc2A, gGc2B;
 static void __cdecl nxGc2Recorder(unsigned a, unsigned b)
 	{ gGc2A = a; gGc2B = b; ++gGc2Hits; }
 
+// the three-argument thunk family recorder
+static unsigned gN3Hits, gN3A, gN3B, gN3C;
+static void __cdecl nxN3Stub(unsigned a, unsigned b, unsigned c)
+	{ gN3A = a; gN3B = b; gN3C = c; ++gN3Hits; }
+
 // the lock-bracketed helper rows RETURN the hook value, so this variant does too
 static unsigned __cdecl nxGc2RetRecorder(unsigned a, unsigned b)
 	{ gGc2A = a; gGc2B = b; ++gGc2Hits; return 0x2B2B0000u; }
@@ -14287,6 +14292,53 @@ int wmain(int argc, wchar_t** argv)
 	nxUnbindFnPtr(base, 0x126518, sv);
 	}
 	printf("newreach candidate failures=%u provisional=1\n", nr);
+	}
+	// -- ISOLATED probe of nxBindFnPtr against a float-valued slot. 3z199
+	//    narrowed the family fault to this helper, so test it alone first.
+	{
+	unsigned char* img = const_cast<unsigned char*>(
+		reinterpret_cast<const unsigned char*>(base));
+	NxFnPtrSaved sv = nxBindFnPtr(base, 0x1264e4,
+		reinterpret_cast<void*>(&nxGc2Recorder));
+	nxUnbindFnPtr(base, 0x1264e4, sv);
+	printf("bindprobe done\n");
+	}
+	// -- MINIMAL drive of ONE row of the three-argument thunk family (003431),
+	//    built from the 3z199 diagnosis: the slot is NULL at runtime, so the
+	//    bind is essential, and a bare-ret row takes no stack argument.
+	{
+	typedef void (__thiscall* T3431)(void*, unsigned);
+	T3431 fn = reinterpret_cast<T3431>(base + 0x84d70);
+	// the row pushes THREE arguments, so the oracle's stub must take three or
+	// the third is never recorded
+	NxFnPtrSaved sv = nxBindFnPtr(base, 0x1264e4,
+		reinterpret_cast<void*>(&nxN3Stub));
+	unsigned char obj[0x100], objC[0x100];
+	memset(obj, 0, sizeof(obj)); memset(objC, 0, sizeof(objC));
+	unsigned tag = 0x7E7E0001u, v80 = 0x84840001u;
+	memcpy(obj + 0x30, &tag, 4); memcpy(obj + 0x80, &v80, 4);
+	memcpy(objC + 0x30, &tag, 4); memcpy(objC + 0x80, &v80, 4);
+	*(void**)(obj + 0x7c) = obj; *(void**)(objC + 0x7c) = objC;
+	unsigned char self[0x100], selfC[0x100];
+	memset(self, 0, sizeof(self)); memset(selfC, 0, sizeof(selfC));
+	*(void**)(self + 0x7c) = obj; *(void**)(selfC + 0x7c) = objC;
+	memcpy(self + 0x80, &v80, 4); memcpy(selfC + 0x80, &v80, 4);
+	unsigned extra = 0xE0E00001u;
+	gGc2Hits = 0; gGc2A = 0; gGc2B = 0; gN3Hits = 0; gN3A = 0; gN3B = 0; gN3C = 0;
+	fn(self, extra);
+	unsigned hO = gGc2Hits + gN3Hits, aO = gGc2A + gN3A, bO = gGc2B + gN3B;
+	unsigned cO = gN3C;
+	gGc2Hits = 0; gGc2A = 0; gGc2B = 0; gN3Hits = 0; gN3A = 0; gN3B = 0; gN3C = 0;
+	nxGlobalCallN(selfC, &nxN3Stub, 0, 3u, extra);
+	unsigned hC = gGc2Hits + gN3Hits, aC = gGc2A + gN3A, bC = gGc2B + gN3B;
+	unsigned cC = gN3C;
+	unsigned n3minf = 0;
+	if(hO != hC || hO != 1u || aO != aC || bO != bC || cO != cC
+		|| aO != tag || bO != v80 || cO != extra)
+		{fprintf(stderr,"n3min h=%u/%u a=%08x/%08x b=%08x/%08x c=%08x/%08x\n",
+			hO, hC, aO, aC, bO, bC, cO, cC); ++n3minf;}
+	nxUnbindFnPtr(base, 0x1264e4, sv);
+	printf("n3min candidate failures=%u provisional=1\n", n3minf);
 	}
 
 
