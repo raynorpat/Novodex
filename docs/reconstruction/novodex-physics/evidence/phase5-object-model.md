@@ -7979,6 +7979,52 @@ the structural refactor it requires.
 
 No gate, coverage-floor, or policy change.
 
+## 3z262. Heap buffers do not help: the sensitivity is chaotic, not size-driven
+
+Rounds 247-248 tested the most promising remaining idea for extending the harness
+without touching the corruption. 3z238 had shown that a TINY probe block ran
+successfully while a large one crashed, which suggested the trigger was frame
+GROWTH -- so `lazy579` was rewritten with every buffer moved to the heap:
+
+    unsigned char* obj    = malloc(0x40);
+    unsigned char* guard  = malloc(0x20);
+    unsigned char* holder = malloc(0x20);
+    unsigned char* self   = malloc(0x800);
+    unsigned char* selfC  = malloc(0x800);
+    void**         vt     = malloc(0x24);
+
+leaving the block itself with only a handful of scalars in the frame.
+
+**It still crashes**, with the same `0xC0000005`, before its first output. So the
+trigger is not the size of what a block adds to the frame. Combined with the
+earlier observations -- a 0x40-byte probe ran, a differently-shaped 0x40-byte
+probe did not -- the sensitivity is best described as CHAOTIC: a small layout
+change can arm the fault or not, and which one it is cannot be predicted from the
+size or the shape of the change.
+
+**That closes the last cheap avenue.** The options that remain are the two already
+recorded, and both are real work:
+
+1. refactor `wmain` so it is not one enormous function (3z255) -- this both shrinks
+   the frame and localizes the fault, because each extracted function gets its own
+   cookie and epilogue;
+2. diagnose the corruption directly from a dump with the tooling in place
+   (3z243-3z249) -- `dv` on the `wmain` frame, comparing each local's extent
+   against the cookie.
+
+Neither is a thing to attempt with single-digit rounds remaining in a session that
+has already spent twenty on this defect.
+
+**What the campaign should be judged on.** The harness defect does not touch any
+of the 778 closed rows, any of the six inventory gates, or the four phase gates
+that pass. It costs one capability: adding new differential blocks. The census is
+complete at 100% byte coverage, and every closure is verified by a differential
+that still passes. This section exists so the next session starts from the
+knowledge rather than from the twenty rounds.
+
+The candidate was withdrawn and the tree is green at exit 1, gate unchanged. No
+rows move. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
