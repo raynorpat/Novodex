@@ -6733,6 +6733,47 @@ the file instead of writing a twenty-first probe.
 
 No rows move. No gate, coverage-floor, or policy change.
 
+## 3z235. The probe kills the run wherever it goes, and that is the answer
+
+Round 219 tested 3z234's structural explanation by moving the probe to a
+location that certainly executes -- immediately after the `newreach` summary,
+which prints in every gate run -- and the result refutes it.
+
+- WITH the probe there: `newreach` itself disappears from the output, and the
+  probe's own first line, a bare `fprintf(stderr)` reading [base+0x123c0c],
+  never appears either;
+- WITHOUT it: `newreach` and `adjusted2060` both print, followed by the usual
+  `layout candidate mismatches=1`.
+
+So the insertions are not in a dead region. They run, and the very first
+statement of the block is where the process dies. That statement is a `fprintf`
+whose only work before the call is `*reinterpret_cast<unsigned*>(img +
+0x123c0c)`, and stdout buffering (3z228) explains the loss of `newreach`'s line
+but not the loss of the stderr line -- so **the fault is in that read**.
+
+**Which is the useful part.** The harness reads `[base + 0x123c0c]` in its own
+registry block and that works, so the address is mapped; this probe's read of
+the same address does not. The difference must be in what `base` is at each
+point, or in when the read happens relative to that block. That is a concrete,
+checkable next step, and a better question than any of the last four rounds
+asked.
+
+**This round also retracts 3z234.** The "dead region after the RED return"
+explanation was attractive because it accounted for every silence at once, but
+it predicted that a probe placed earlier would work -- and it does not. What
+actually explains the silences is the same thing that explained 3z228: a fault
+in the probe itself, with stdout buffering hiding the lines that ran before it.
+
+The probe was withdrawn and the tree is green. No rows move. No gate,
+coverage-floor, or policy change.
+
+**State of the campaign**: ~545 real census rows closed; all eight phase gates
+verified honest in 3z232 (2/3/4 PASS, 5 RED on purpose, 6/7/8 UNGATED); the
+reachable frontier is 000579, the ten 000480-group rows, six large x87 rows, and
+003900. The recent `lazy579` and `mutexreg` candidates are now known to have been
+blocked by the probe fault rather than by their own models, so they remain
+**untested rather than failed**.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
