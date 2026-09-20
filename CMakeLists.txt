@@ -182,6 +182,18 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	add_executable(NxPhysicsJointTests tests/PhysicsJointTests.cpp)
 	target_include_directories(NxPhysicsJointTests PRIVATE Foundation/include Physics/include)
 	target_link_libraries(NxPhysicsJointTests bcrypt)
+	# The two exported joint-descriptor rows on their own. Separate from
+	# NxPhysicsJointTests because that one drives the whole SDK lifecycle, which
+	# makes it sensitive to rows these two do not depend on.
+	add_executable(NxPhysicsJointDescTests tests/PhysicsJointDescTests.cpp)
+	target_include_directories(NxPhysicsJointDescTests PRIVATE Foundation/include Physics/include)
+	target_link_libraries(NxPhysicsJointDescTests bcrypt)
+	# A measurement probe, not a gate: it prints what the pinned
+	# NxNormalToTangents returns so a joint row's localNormal can be attributed
+	# to a specific output rather than guessed at.
+	add_executable(NxNormalToTangentsProbe tests/NxNormalToTangentsProbe.cpp)
+	target_include_directories(NxNormalToTangentsProbe PRIVATE Foundation/include Physics/include)
+	target_link_libraries(NxNormalToTangentsProbe bcrypt)
 	add_executable(NxPhysicsCoreClusterTests tests/PhysicsCoreClusterTests.cpp)
 	target_include_directories(NxPhysicsCoreClusterTests PRIVATE Foundation/include Physics/include)
 	target_link_libraries(NxPhysicsCoreClusterTests bcrypt)
