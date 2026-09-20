@@ -1270,6 +1270,15 @@ void					nxGlobalCallN(void* self, NxGlobalFn3 fn, int objSelf4,
 							unsigned nargs, unsigned extraArg);
 void					nxGlobalCallN2(void* self, NxGlobalFn2 fn, int objSelf4);
 
+//! phys_fn_003575 (0x87f10, ret 4): the family's float-OUT variant. It reads
+//! the object from [self+4], takes [[obj+0x7c]+0x30] and [obj+0x80] as the
+//! first two arguments and [self+8] as the third, calls the global slot, and
+//! then copies the THREE floats at the slot's return THROUGH its own argument,
+//! which is therefore an out pointer rather than a value.
+typedef float* (__cdecl* NxFloatRet3Fn)(unsigned, unsigned, unsigned);
+void					nxThunkFloatOut3575(void* self, float* out,
+							NxFloatRet3Fn fn);
+
 void*					nxLockApiInit2367(void* self,
 							unsigned (__stdcall* fn)(unsigned, unsigned,
 								unsigned, unsigned));
