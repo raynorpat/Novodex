@@ -1276,6 +1276,15 @@ void					nxGlobalCallN2(void* self, NxGlobalFn2 fn, int objSelf4);
 //! then copies the THREE floats at the slot's return THROUGH its own argument,
 //! which is therefore an out pointer rather than a value.
 typedef float* (__cdecl* NxFloatRet3Fn)(unsigned, unsigned, unsigned);
+//! The lock-bracketed FLOAT thunk rows: lock [self+0x10], call a three-argument
+//! global-call thunk on [self+0x14] and return its float result. The thunk
+//! takes its object from [[self+0x14]+4], reads [[that+0x7c]+0x30] and
+//! [that+0x80] as the first two arguments and [obj+8] as the third. The hook
+//! returns the float the row stages through its frame.
+typedef float (__cdecl* NxFloatFn3)(unsigned, unsigned, unsigned);
+float					nxLockedThunkFloat(void* self, unsigned lockOff,
+							unsigned objOff, NxFloatFn3 fn);
+
 void					nxThunkFloatOut3575(void* self, float* out,
 							NxFloatRet3Fn fn);
 
