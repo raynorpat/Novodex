@@ -5878,7 +5878,7 @@
       "source": "tail-jmp mutex link advance",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/114",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1046",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: tail-jmp mutex link advance; the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the tailjmp differential (3z191): failures=0 for all twelve rows on both arms, comparing the report tuple, the global word written at 0x10127180 and the whole object buffer, with the lock API, report slot and that global bound",
       "notes": ""
     },
@@ -5914,7 +5914,7 @@
       "source": "locked list-advance accessor (0xc960)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/115",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1047",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: locked list-advance accessor (0xc960); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via lockacc9 differential (3z153): failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
       "notes": ""
     },
@@ -5986,7 +5986,7 @@
       "source": "tail-jmp mutex link advance",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/117",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1050",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: tail-jmp mutex link advance; the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the tailjmp differential (3z191): failures=0 for all twelve rows on both arms, comparing the report tuple, the global word written at 0x10127180 and the whole object buffer, with the lock API, report slot and that global bound",
       "notes": ""
     },
@@ -6022,7 +6022,7 @@
       "source": "locked list-advance accessor (0xc9f0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/118",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1051",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: locked list-advance accessor (0xc9f0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via lockacc9 differential (3z153): failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
       "notes": ""
     },
@@ -7120,7 +7120,7 @@
       "source": "lock probe (0xd660)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/142",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1137",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: lock probe (0xd660); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via probe0392 differential (3z160): owner-matching and owner-differing arms failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
       "notes": ""
     },
@@ -7192,7 +7192,7 @@
       "source": "conditional lock-API dispatch (0xd710, ret 8)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/195",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1143",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: conditional lock-API dispatch (0xd710, ret 8); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the newunlock differential (3z187): failures=0 for both rows across every field combination, the two flag arms, the two argument arms and both slot return values, with the lock-API global bound",
       "notes": ""
     },
@@ -7624,7 +7624,7 @@
       "source": "locked conditional-count accessor (0xda80)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/148",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1171",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: locked conditional-count accessor (0xda80); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via lockacc8 differential (3z152): failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
       "notes": ""
     },
@@ -15670,7 +15670,7 @@
       "source": "kind-selected accumulator (0x1d260, ret 0xc)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/422",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2637",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: kind-selected accumulator (0x1d260, ret 0xc); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the accum0867 differential (3z194): fifteen combinations -- five descriptor kinds including the 0x24 case that masks down to 4, by three value pairs including a zero numerator -- all failures=0 against the whole 0x100-byte object, with the accumulators seeded so the adds are not all from zero",
       "notes": ""
     },
@@ -18460,7 +18460,7 @@
       "source": "per-element virtual dispatch loop (0x22970, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/499",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3093",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: per-element virtual dispatch loop (0x22970, ret 4); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via arrayloop differential (3z165): element counts 0, 1 and 2 all failures=0, comparing both the call count and the argument the slot received",
       "notes": ""
     },
@@ -18496,7 +18496,7 @@
       "source": "guarded three-argument dispatch loop (0x229b0, ret 0xc)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/406",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3096",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: guarded three-argument dispatch loop (0x229b0, ret 0xc); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the loop1024 differential (3z175): twelve combinations -- element counts 0..2, skip flag set and clear, slot returning 1 and 0 -- all failures=0, comparing the result, the slot hit count and all three arguments",
       "notes": ""
     },
@@ -19162,7 +19162,7 @@
       "source": "locked word accessor (0x233a0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/424",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3171",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: locked word accessor (0x233a0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via wordrows differential (3z157): both word values failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
       "notes": ""
     },
@@ -20026,7 +20026,7 @@
       "source": "locked match-or-self accessor (0x23a90, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/447",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3222",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: locked match-or-self accessor (0x23a90, ret 4); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via lockacc9 differential (3z153): failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
       "notes": ""
     },
@@ -20206,7 +20206,7 @@
       "source": "lock-bracketed vtable call, float result (0x23c50)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/547",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3235",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: lock-bracketed vtable call, float result (0x23c50); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the vtcall pair differential (3z164): result and the recorded slot target failures=0 for both rows, with the Foundation lock API bound and each vtable slot pointed at a recorder",
       "notes": ""
     },
@@ -21358,7 +21358,7 @@
       "source": "lock-bracketed helper call (0x24640u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/480",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3311",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: lock-bracketed helper call (0x24640u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the lockhelper differential (3z188): failures=0 for all five rows, with the lock API, the registry global and each global function pointer bound to the same recorders the candidate uses",
       "notes": ""
     },
@@ -21790,7 +21790,7 @@
       "source": "locked word accessor (0x24930)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/490",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3333",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: locked word accessor (0x24930); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via wordrows differential (3z157): both word values failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
       "notes": ""
     },
@@ -21826,7 +21826,7 @@
       "source": "lock-bracketed vtable call with one argument, slot +0x24 (0x24960, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/491",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3334",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: lock-bracketed vtable call with one argument, slot +0x24 (0x24960, ret 4); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the vtcall slots differential (3z169): result, slot target and hit count all failures=0 for both rows, with the Foundation lock API bound and each slot pointed at a recorder",
       "notes": ""
     },
@@ -22330,7 +22330,7 @@
       "source": "lock-bracketed vtable call (0x24db0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/505",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3366",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: lock-bracketed vtable call (0x24db0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the vtcall pair differential (3z164): result and the recorded slot target failures=0 for both rows, with the Foundation lock API bound and each vtable slot pointed at a recorder",
       "notes": ""
     },
@@ -25498,7 +25498,7 @@
       "source": "summed byte count (0x29920)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/567",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3628",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: summed byte count (0x29920); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the blockers3 differential (3z185): failures=0 for all three rows, with the chain lengths 0..3, the byte-count field combinations and both singleton arms all compared",
       "notes": ""
     },
@@ -27532,7 +27532,7 @@
       "source": "byte count plus 0x18 (0x2d970)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/749",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4088",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: byte count plus 0x18 (0x2d970); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the newunlock differential (3z187): failures=0 for both rows across every field combination, the two flag arms, the two argument arms and both slot return values, with the lock-API global bound",
       "notes": ""
     },
@@ -27856,7 +27856,7 @@
       "source": "singleton vtable-slot call after 004803 (0x2dec0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/609",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4132",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: singleton vtable-slot call after 004803 (0x2dec0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the slot1544 differential (3z215): failures=0 over three consecutive runs for both the null and non-null [self+4] cases, comparing the slot hit count, its argument and the whole object, with the singleton pointer bound and the helper reached through its real code",
       "notes": ""
     },
@@ -28198,7 +28198,7 @@
       "source": "allocator-via-004803 deleting destructor (0x2e570u, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/766",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4197",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: allocator-via-004803 deleting destructor (0x2e570u, ret 4); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via allocdtor differential (3z180): both arms failures=0 for both rows, with the 004803 allocator pointer at [0x1012845c] bound to a fake allocator whose slot +0xc records the free",
       "notes": ""
     },
@@ -28450,7 +28450,7 @@
       "source": "two owned frees plus a vtable store (0x2e7f0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/621",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4214",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: two owned frees plus a vtable store (0x2e7f0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the blockers4 differential (3z186): failures=0 for all three rows on both the all-fields-null and all-fields-present arms, comparing the object and the ordered free sequence against each side own blocks",
       "notes": ""
     },
@@ -28594,7 +28594,7 @@
       "source": "owned-pointer deleting destructor (0x2ea80u, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/625",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4236",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: owned-pointer deleting destructor (0x2ea80u, ret 4); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via ownedptr differential (3z181): eight combinations -- both rows by owned-pointer present/absent by both flag arms -- all failures=0, comparing the return, the object and the ordered sequence of freed blocks",
       "notes": ""
     },
@@ -28630,7 +28630,7 @@
       "source": "owned-pointer deleting destructor (0x2ead0u, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/626",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4239",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: owned-pointer deleting destructor (0x2ead0u, ret 4); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via ownedptr differential (3z181): eight combinations -- both rows by owned-pointer present/absent by both flag arms -- all failures=0, comparing the return, the object and the ordered sequence of freed blocks",
       "notes": ""
     },
@@ -28666,7 +28666,7 @@
       "source": "destructor chain via 004803 (0x2eb20, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/627",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4242",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: destructor chain via 004803 (0x2eb20, ret 4); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the dtorchain differential (3z190): both flag arms failures=0 for all three rows, with the 004803 allocator, the allocator singleton and the free recorders all bound to the same bodies the candidates use",
       "notes": ""
     },
@@ -29746,7 +29746,7 @@
       "source": "singleton release of two owned pointers (0x31890)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/650",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4528",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: singleton release of two owned pointers (0x31890); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the singletonrel differential (3z218): failures=0 over three consecutive runs, covering all four occupancy pans of each two-field row (8 cases) and all three guard states of 004838 (positive, negative and zero guard, with and without a live pointer), comparing the slot hit count and the whole object, with the singleton pointer bound",
       "notes": ""
     },
@@ -29926,7 +29926,7 @@
       "source": "singleton release of two owned pointers (0x324a0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/655",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4592",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: singleton release of two owned pointers (0x324a0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the singletonrel differential (3z218): failures=0 over three consecutive runs, covering all four occupancy pans of each two-field row (8 cases) and all three guard states of 004838 (positive, negative and zero guard, with and without a live pointer), comparing the slot hit count and the whole object, with the singleton pointer bound",
       "notes": ""
     },
@@ -30034,7 +30034,7 @@
       "source": "three-field owned free (0x325b0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/658",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4601",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: three-field owned free (0x325b0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the blockers4 differential (3z186): failures=0 for all three rows on both the all-fields-null and all-fields-present arms, comparing the object and the ordered free sequence against each side own blocks",
       "notes": ""
     },
@@ -32230,7 +32230,7 @@
       "source": "004886-calling wrapper (0x3f570)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/874",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5232",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: 004886-calling wrapper (0x3f570); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the wrap5450/wrap1787 differentials (3z154): failures=0, with callback slot 0x10128478 bound to a __cdecl no-op stub",
       "notes": ""
     },
@@ -35434,7 +35434,7 @@
       "source": "virtual dispatch thunk (0x4c000)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/959",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5942",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: virtual dispatch thunk (0x4c000); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via thunks3 differential (3z163): argument count and every recorded argument failures=0 for all three, with the dispatch targets bound to recorder stubs",
       "notes": ""
     },
@@ -37144,7 +37144,7 @@
       "source": "singleton release of four fields with two adjusted by minus four (0x515d0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/800",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6571",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: singleton release of four fields with two adjusted by minus four (0x515d0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the adjusted2060 differential (3z225): failures=0 over three consecutive runs across all sixteen occupancy pans, comparing the hit count, the ORDERED sequence of adjusted arguments each call received, and the whole object -- so a model that skipped the minus-four adjustment could not have passed",
       "notes": ""
     },
@@ -38620,7 +38620,7 @@
       "source": "scalar deleting destructor (0x532b0, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1044",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6799",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: scalar deleting destructor (0x532b0, ret 4); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via dtor2142 differential (3z166): both arms failures=0, with the allocator slot 0x101041bc bound to a fake allocator and the free recorder shared by both sides",
       "notes": ""
     },
@@ -38838,7 +38838,7 @@
       "source": "allocator-via-004803 deleting destructor (0x538b0u, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1050",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6829",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: allocator-via-004803 deleting destructor (0x538b0u, ret 4); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via allocdtor differential (3z180): both arms failures=0 for both rows, with the 004803 allocator pointer at [0x1012845c] bound to a fake allocator whose slot +0xc records the free",
       "notes": "",
       "third_party": "opcode"
@@ -38947,7 +38947,7 @@
       "source": "pure report row (0x539b0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/823",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6837",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: pure report row (0x539b0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the smallrows differential (3z206): failures=0 over three consecutive runs for all three rows, comparing the report tuple, the whole object, the hook hit count and arguments, with the report slot and both globals bound",
       "notes": ""
     },
@@ -42223,7 +42223,7 @@
       "source": "allocator-singleton release with unconditional three-field clears (0x5aa90)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/871",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7317",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: allocator-singleton release with unconditional three-field clears (0x5aa90); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the allocclear2342 differential (3z223): failures=0 over three consecutive runs for all four occupancy pans, comparing the slot hit count and the whole object, with the allocator singleton bound. This is the row held back in 3z219, closed by acting on that round located diff rather than re-guessing",
       "notes": ""
     },
@@ -42673,7 +42673,7 @@
       "source": "lock-API initializer (0x5b7b0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/884",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7414",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: lock-API initializer (0x5b7b0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the newreach differential (3z197): failures=0 for all five rows, with each global slot bound to the same recorder the candidate is handed and the hit count, arguments and stored word all compared",
       "notes": ""
     },
@@ -42709,7 +42709,7 @@
       "source": "lock-API trampoline (0x5b7d0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/885",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7415",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: lock-API trampoline (0x5b7d0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the newreach differential (3z197): failures=0 for all five rows, with each global slot bound to the same recorder the candidate is handed and the hit count, arguments and stored word all compared",
       "notes": ""
     },
@@ -42745,7 +42745,7 @@
       "source": "lock-API global call (0x5b7e0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/886",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7416",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: lock-API global call (0x5b7e0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the blockers and blockers2 differentials (3z184): failures=0 for all ten rows, with each global function pointer, the lock-API globals and the allocator pointer bound to the same recorders the candidates use",
       "notes": ""
     },
@@ -42781,7 +42781,7 @@
       "source": "lock-API trampoline (0x5b7f0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/887",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7417",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: lock-API trampoline (0x5b7f0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the newreach differential (3z197): failures=0 for all five rows, with each global slot bound to the same recorder the candidate is handed and the hit count, arguments and stored word all compared",
       "notes": ""
     },
@@ -42817,7 +42817,7 @@
       "source": "lock-API global test (0x5b800, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/888",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7418",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: lock-API global test (0x5b800, ret 4); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the blockers and blockers2 differentials (3z184): failures=0 for all ten rows, with each global function pointer, the lock-API globals and the allocator pointer bound to the same recorders the candidates use",
       "notes": ""
     },
@@ -42997,7 +42997,7 @@
       "source": "doubly-dereferenced lock-API test (0x5b8c0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/893",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7425",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: doubly-dereferenced lock-API test (0x5b8c0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the smallrows differential (3z206): failures=0 over three consecutive runs for all three rows, comparing the report tuple, the whole object, the hook hit count and arguments, with the report slot and both globals bound",
       "notes": ""
     },
@@ -43087,7 +43087,7 @@
       "source": "callback-field dispatch thunk (0x5b910)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/memory_blocks/1",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7429",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: callback-field dispatch thunk (0x5b910); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via thunks3 differential (3z163): argument count and every recorded argument failures=0 for all three, with the dispatch targets bound to recorder stubs",
       "notes": ""
     },
@@ -58747,7 +58747,7 @@
       "source": "four-field release through the object own vtable (0x7d500)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1186",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/11658",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: four-field release through the object own vtable (0x7d500); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the ownvtable3238 differential (3z224): failures=0 over three consecutive runs across all sixteen occupancy pans of the four fields, comparing the slot hit count and the whole 0x4060-byte object, with the fixture vtable slot +0x18 holding the member-function recorder",
       "notes": ""
     },
@@ -61953,7 +61953,7 @@
       "source": "virtual call through the global object (0x84800)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1264",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12203",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: virtual call through the global object (0x84800); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the vcall413 differential (3z211): failures=0 over three consecutive runs, comparing the hook hit count and argument, with the global bound to a fixture object whose vtable slot +0x20 is the recorder",
       "notes": "",
       "third_party": "qhull"
@@ -62244,7 +62244,7 @@
       "source": "two-argument global-call thunk (0x84d50)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1272",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12238",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: two-argument global-call thunk (0x84d50); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the blockers and blockers2 differentials (3z184): failures=0 for all ten rows, with each global function pointer, the lock-API globals and the allocator pointer bound to the same recorders the candidates use",
       "notes": ""
     },
@@ -62280,7 +62280,7 @@
       "source": "three-argument global-call thunk (0x84d70, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1273",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12239",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: three-argument global-call thunk (0x84d70, ret 4); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the n3min differential (3z200): failures=0 over three consecutive runs, comparing the hit count and all THREE recorded arguments with the slot bound to the same 3-argument recorder the candidate is handed",
       "notes": ""
     },
@@ -62316,7 +62316,7 @@
       "source": "two-argument global-call thunk (0x84d90)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1274",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12240",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: two-argument global-call thunk (0x84d90); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the blockers and blockers2 differentials (3z184): failures=0 for all ten rows, with each global function pointer, the lock-API globals and the allocator pointer bound to the same recorders the candidates use",
       "notes": ""
     },
@@ -62352,7 +62352,7 @@
       "source": "three-argument global-call thunk (0x84db0u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1275",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12241",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: three-argument global-call thunk (0x84db0u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the n3rest differential (3z202): failures=0 over three consecutive runs for all nine rows, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes",
       "notes": ""
     },
@@ -62388,7 +62388,7 @@
       "source": "two-argument global-call thunk (0x84dd0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1276",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12242",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: two-argument global-call thunk (0x84dd0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the blockers differential (3z183): failures=0 for all seven rows, with each global function pointer and the registry global bound to the same recorders the candidate uses",
       "notes": ""
     },
@@ -62424,7 +62424,7 @@
       "source": "three-argument global-call thunk (0x84df0u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1277",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12243",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: three-argument global-call thunk (0x84df0u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the n3rest differential (3z202): failures=0 over three consecutive runs for all nine rows, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes",
       "notes": ""
     },
@@ -62460,7 +62460,7 @@
       "source": "two-argument global-call thunk (0x84e10)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1278",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12244",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: two-argument global-call thunk (0x84e10); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the blockers differential (3z183): failures=0 for all seven rows, with each global function pointer and the registry global bound to the same recorders the candidate uses",
       "notes": ""
     },
@@ -62496,7 +62496,7 @@
       "source": "three-argument global-call thunk (0x84e30u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1279",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12245",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: three-argument global-call thunk (0x84e30u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the n3rest differential (3z202): failures=0 over three consecutive runs for all nine rows, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes",
       "notes": ""
     },
@@ -62532,7 +62532,7 @@
       "source": "two-argument global-call thunk (0x84e50)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1280",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12246",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: two-argument global-call thunk (0x84e50); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the blockers and blockers2 differentials (3z184): failures=0 for all ten rows, with each global function pointer, the lock-API globals and the allocator pointer bound to the same recorders the candidates use",
       "notes": ""
     },
@@ -62568,7 +62568,7 @@
       "source": "three-argument global-call thunk (0x84e70u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1281",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12247",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: three-argument global-call thunk (0x84e70u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the n3rest differential (3z202): failures=0 over three consecutive runs for all nine rows, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes",
       "notes": ""
     },
@@ -62604,7 +62604,7 @@
       "source": "three-argument global-call thunk (0x84e90u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1282",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12248",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: three-argument global-call thunk (0x84e90u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the n3rest differential (3z202): failures=0 over three consecutive runs for all nine rows, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes",
       "notes": ""
     },
@@ -62640,7 +62640,7 @@
       "source": "three-argument global-call thunk (0x84eb0u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1283",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12249",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: three-argument global-call thunk (0x84eb0u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the n3rest differential (3z202): failures=0 over three consecutive runs for all nine rows, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes",
       "notes": ""
     },
@@ -62748,7 +62748,7 @@
       "source": "two-argument global-call thunk (0x84f10)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1286",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12253",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: two-argument global-call thunk (0x84f10); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the blockers differential (3z183): failures=0 for all seven rows, with each global function pointer and the registry global bound to the same recorders the candidate uses",
       "notes": ""
     },
@@ -62784,7 +62784,7 @@
       "source": "two-argument global-call thunk (0x84f30)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1287",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12254",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: two-argument global-call thunk (0x84f30); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the blockers and blockers2 differentials (3z184): failures=0 for all ten rows, with each global function pointer, the lock-API globals and the allocator pointer bound to the same recorders the candidates use",
       "notes": ""
     },
@@ -62820,7 +62820,7 @@
       "source": "three-argument global-call thunk (0x84f50u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1288",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12255",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: three-argument global-call thunk (0x84f50u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the n3rest differential (3z202): failures=0 over three consecutive runs for all nine rows, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes",
       "notes": ""
     },
@@ -62856,7 +62856,7 @@
       "source": "two-argument global-call thunk (0x84f70)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1289",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12256",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: two-argument global-call thunk (0x84f70); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the blockers and blockers2 differentials (3z184): failures=0 for all ten rows, with each global function pointer, the lock-API globals and the allocator pointer bound to the same recorders the candidates use",
       "notes": ""
     },
@@ -62892,7 +62892,7 @@
       "source": "two-argument global-call thunk (0x84f90)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1290",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12257",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: two-argument global-call thunk (0x84f90); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the blockers and blockers2 differentials (3z184): failures=0 for all ten rows, with each global function pointer, the lock-API globals and the allocator pointer bound to the same recorders the candidates use",
       "notes": ""
     },
@@ -62928,7 +62928,7 @@
       "source": "two-argument global-call thunk (0x84fb0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1291",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12258",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: two-argument global-call thunk (0x84fb0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the newreach differential (3z197): failures=0 for all five rows, with each global slot bound to the same recorder the candidate is handed and the hit count, arguments and stored word all compared",
       "notes": ""
     },
@@ -62964,7 +62964,7 @@
       "source": "two-argument global-call thunk (0x84fd0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1292",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12259",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: two-argument global-call thunk (0x84fd0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the blockers differential (3z183): failures=0 for all seven rows, with each global function pointer and the registry global bound to the same recorders the candidate uses",
       "notes": ""
     },
@@ -63684,7 +63684,7 @@
       "source": "six-byte global trampoline (0x863f0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1309",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12362",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: six-byte global trampoline (0x863f0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the newreach differential (3z197): failures=0 for all five rows, with each global slot bound to the same recorder the candidate is handed and the hit count, arguments and stored word all compared",
       "notes": ""
     },
@@ -64764,7 +64764,7 @@
       "source": "three-argument global-call thunk (0x87e90u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1338",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12497",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: three-argument global-call thunk (0x87e90u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the n3rest differential (3z202): failures=0 over three consecutive runs for all nine rows, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes",
       "notes": ""
     },
@@ -64800,7 +64800,7 @@
       "source": "three-argument global-call thunk (0x87eb0u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1339",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12498",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: three-argument global-call thunk (0x87eb0u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the n3rest differential (3z202): failures=0 over three consecutive runs for all nine rows, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes",
       "notes": ""
     },
@@ -64872,7 +64872,7 @@
       "source": "float-out three-argument global-call thunk (0x87f10, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1341",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12500",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: float-out three-argument global-call thunk (0x87f10, ret 4); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the floatout3575 differential (3z204): failures=0 over three consecutive runs, comparing the hit count, all three arguments and the three floats written through the out pointer, with the slot bound to a stub returning a float triple",
       "notes": ""
     },
@@ -64908,7 +64908,7 @@
       "source": "four-argument global-call thunk (0x87f50u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1342",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12501",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: four-argument global-call thunk (0x87f50u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the n4family differential (3z210): failures=0 over three consecutive runs for all four rows, comparing the hit count and ALL FOUR recorded arguments, with each NULL-at-runtime slot bound to a four-argument recorder",
       "notes": ""
     },
@@ -64944,7 +64944,7 @@
       "source": "three-argument global-call thunk (0x87f80u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1343",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12502",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: three-argument global-call thunk (0x87f80u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the n3rest differential (3z203): failures=0 over three consecutive runs for every row in the drive, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes",
       "notes": ""
     },
@@ -64980,7 +64980,7 @@
       "source": "four-argument global-call thunk (0x87fa0u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1344",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12503",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: four-argument global-call thunk (0x87fa0u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the n4family differential (3z210): failures=0 over three consecutive runs for all four rows, comparing the hit count and ALL FOUR recorded arguments, with each NULL-at-runtime slot bound to a four-argument recorder",
       "notes": ""
     },
@@ -65016,7 +65016,7 @@
       "source": "three-argument global-call thunk (0x87fd0u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1345",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12504",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: three-argument global-call thunk (0x87fd0u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the n3rest differential (3z203): failures=0 over three consecutive runs for every row in the drive, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes",
       "notes": ""
     },
@@ -65052,7 +65052,7 @@
       "source": "four-argument global-call thunk (0x87ff0u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1346",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12505",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: four-argument global-call thunk (0x87ff0u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the n4family differential (3z210): failures=0 over three consecutive runs for all four rows, comparing the hit count and ALL FOUR recorded arguments, with each NULL-at-runtime slot bound to a four-argument recorder",
       "notes": ""
     },
@@ -65088,7 +65088,7 @@
       "source": "three-argument global-call thunk (0x88020u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1347",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12506",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: three-argument global-call thunk (0x88020u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the n3rest differential (3z203): failures=0 over three consecutive runs for every row in the drive, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes",
       "notes": ""
     },
@@ -65124,7 +65124,7 @@
       "source": "four-argument global-call thunk (0x88040u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1348",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12507",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: four-argument global-call thunk (0x88040u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the n4family differential (3z210): failures=0 over three consecutive runs for all four rows, comparing the hit count and ALL FOUR recorded arguments, with each NULL-at-runtime slot bound to a four-argument recorder",
       "notes": ""
     },
@@ -65160,7 +65160,7 @@
       "source": "three-argument global-call thunk (0x88070u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1349",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12508",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: three-argument global-call thunk (0x88070u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the n3rest differential (3z203): failures=0 over three consecutive runs for every row in the drive, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes",
       "notes": ""
     },
@@ -65268,7 +65268,7 @@
       "source": "three-argument global-call thunk (0x88140u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1352",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12516",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: three-argument global-call thunk (0x88140u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the n3rest differential (3z203): failures=0 over three consecutive runs for every row in the drive, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes",
       "notes": ""
     },
@@ -65304,7 +65304,7 @@
       "source": "three-argument global-call thunk (0x88180u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1353",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12518",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: three-argument global-call thunk (0x88180u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the n3rest differential (3z203): failures=0 over three consecutive runs for every row in the drive, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes",
       "notes": ""
     },
@@ -66492,7 +66492,7 @@
       "source": "three-argument global-call thunk (0x8ad30u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1385",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12710",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: three-argument global-call thunk (0x8ad30u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the n3rest differential (3z203): failures=0 over three consecutive runs for every row in the drive, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes",
       "notes": ""
     },
@@ -66528,7 +66528,7 @@
       "source": "three-argument global-call thunk (0x8ad50u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1386",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12711",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: three-argument global-call thunk (0x8ad50u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the n3rest differential (3z203): failures=0 over three consecutive runs for every row in the drive, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes",
       "notes": ""
     },
@@ -66564,7 +66564,7 @@
       "source": "three-argument global-call thunk (0x8ad80u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1387",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12712",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: three-argument global-call thunk (0x8ad80u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the n3rest differential (3z203): failures=0 over three consecutive runs for every row in the drive, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes",
       "notes": ""
     },
@@ -66600,7 +66600,7 @@
       "source": "three-argument global-call thunk (0x8ada0u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1388",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12713",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: three-argument global-call thunk (0x8ada0u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the n3rest differential (3z203): failures=0 over three consecutive runs for every row in the drive, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes",
       "notes": ""
     },
@@ -66636,7 +66636,7 @@
       "source": "three-argument global-call thunk (0x8add0u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1389",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12714",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: three-argument global-call thunk (0x8add0u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the n3rest differential (3z203): failures=0 over three consecutive runs for every row in the drive, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes",
       "notes": ""
     },
@@ -66672,7 +66672,7 @@
       "source": "three-argument global-call thunk (0x8ae00u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1390",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12715",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: three-argument global-call thunk (0x8ae00u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the n3rest differential (3z203): failures=0 over three consecutive runs for every row in the drive, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes",
       "notes": ""
     },
@@ -66708,7 +66708,7 @@
       "source": "three-argument global-call thunk (0x8ae20u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1391",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12716",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: three-argument global-call thunk (0x8ae20u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the n3rest differential (3z203): failures=0 over three consecutive runs for every row in the drive, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes",
       "notes": ""
     },
@@ -66744,7 +66744,7 @@
       "source": "two-argument global-call thunk via [self+4] (0x8ae50)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1392",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12717",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: two-argument global-call thunk via [self+4] (0x8ae50); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the blockers differential (3z183): failures=0 for all seven rows, with each global function pointer and the registry global bound to the same recorders the candidate uses",
       "notes": ""
     },
@@ -66780,7 +66780,7 @@
       "source": "three-argument global-call thunk (0x8ae70u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1393",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12718",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: three-argument global-call thunk (0x8ae70u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the n3rest differential (3z203): failures=0 over three consecutive runs for every row in the drive, comparing the hit count and every recorded argument, with each NULL-at-runtime slot bound to a recorder of the same arity the row pushes",
       "notes": ""
     },
@@ -67554,7 +67554,7 @@
       "source": "float-returning lock-bracketed helper call (0x8b8b0u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1798",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12794",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: float-returning lock-bracketed helper call (0x8b8b0u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the lockhelperF differential (3z189): failures=0 for all five rows, comparing the float result bit-for-bit, the hook hit count and both hook arguments, with the lock API and each global function pointer bound",
       "notes": ""
     },
@@ -67626,7 +67626,7 @@
       "source": "float-returning lock-bracketed helper call (0x8b990u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1800",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12800",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: float-returning lock-bracketed helper call (0x8b990u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the lockhelperF differential (3z189): failures=0 for all five rows, comparing the float result bit-for-bit, the hook hit count and both hook arguments, with the lock API and each global function pointer bound",
       "notes": ""
     },
@@ -67698,7 +67698,7 @@
       "source": "float-returning lock-bracketed helper call (0x8ba70u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1802",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12806",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: float-returning lock-bracketed helper call (0x8ba70u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the lockhelperF differential (3z189): failures=0 for all five rows, comparing the float result bit-for-bit, the hook hit count and both hook arguments, with the lock API and each global function pointer bound",
       "notes": ""
     },
@@ -68346,7 +68346,7 @@
       "source": "lock-bracketed helper call (0x8c050u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1412",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12854",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: lock-bracketed helper call (0x8c050u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the lockhelper differential (3z188): failures=0 for all five rows, with the lock API, the registry global and each global function pointer bound to the same recorders the candidate uses",
       "notes": ""
     },
@@ -68454,7 +68454,7 @@
       "source": "float-returning lock-bracketed helper call (0x8c120u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1823",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12859",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: float-returning lock-bracketed helper call (0x8c120u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the lockhelperF differential (3z189): failures=0 for all five rows, comparing the float result bit-for-bit, the hook hit count and both hook arguments, with the lock API and each global function pointer bound",
       "notes": ""
     },
@@ -68490,7 +68490,7 @@
       "source": "float-returning lock-bracketed helper call (0x8c150u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1824",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12860",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: float-returning lock-bracketed helper call (0x8c150u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the lockhelperF differential (3z189): failures=0 for all five rows, comparing the float result bit-for-bit, the hook hit count and both hook arguments, with the lock API and each global function pointer bound",
       "notes": ""
     },
@@ -68526,7 +68526,7 @@
       "source": "lock-bracketed float thunk row (0x8c180u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1825",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12861",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: lock-bracketed float thunk row (0x8c180u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the lockthunk2 differential (3z207): failures=0 over three consecutive runs for all three rows, comparing the float result bit-for-bit, the hit count and every argument the thunk pushes, with the lock API and each slot bound",
       "notes": ""
     },
@@ -68562,7 +68562,7 @@
       "source": "lock-bracketed helper call (0x8c1b0u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1413",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12862",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: lock-bracketed helper call (0x8c1b0u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the lockhelper differential (3z188): failures=0 for all five rows, with the lock API, the registry global and each global function pointer bound to the same recorders the candidate uses",
       "notes": ""
     },
@@ -68994,7 +68994,7 @@
       "source": "locked pose-copy accessor (0x8c590, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1422",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12891",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: locked pose-copy accessor (0x8c590, ret 4); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via lockacc8 differential (3z152): failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
       "notes": ""
     },
@@ -69390,7 +69390,7 @@
       "source": "lock-bracketed float thunk row (0x8c9f0u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1849",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12920",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: lock-bracketed float thunk row (0x8c9f0u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the lockthunkF differential (3z205): failures=0 over three consecutive runs for all nine rows, comparing the float result bit-for-bit, the hit count and every argument the thunk actually pushes, with the lock API and each NULL-at-runtime slot bound",
       "notes": ""
     },
@@ -69426,7 +69426,7 @@
       "source": "lock-bracketed float thunk row (0x8ca20u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1850",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12921",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: lock-bracketed float thunk row (0x8ca20u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the lockthunkF differential (3z205): failures=0 over three consecutive runs for all nine rows, comparing the float result bit-for-bit, the hit count and every argument the thunk actually pushes, with the lock API and each NULL-at-runtime slot bound",
       "notes": ""
     },
@@ -69570,7 +69570,7 @@
       "source": "lock-bracketed float thunk row (0x8cbf0u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1854",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12933",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: lock-bracketed float thunk row (0x8cbf0u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the lockthunkF differential (3z205): failures=0 over three consecutive runs for all nine rows, comparing the float result bit-for-bit, the hit count and every argument the thunk actually pushes, with the lock API and each NULL-at-runtime slot bound",
       "notes": ""
     },
@@ -69642,7 +69642,7 @@
       "source": "lock-bracketed float thunk row (0x8ccd0u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1856",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12939",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: lock-bracketed float thunk row (0x8ccd0u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the lockthunkF differential (3z205): failures=0 over three consecutive runs for all nine rows, comparing the float result bit-for-bit, the hit count and every argument the thunk actually pushes, with the lock API and each NULL-at-runtime slot bound",
       "notes": ""
     },
@@ -69714,7 +69714,7 @@
       "source": "lock-bracketed float thunk row (0x8cdb0u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1858",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12945",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: lock-bracketed float thunk row (0x8cdb0u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the lockthunkF differential (3z205): failures=0 over three consecutive runs for all nine rows, comparing the float result bit-for-bit, the hit count and every argument the thunk actually pushes, with the lock API and each NULL-at-runtime slot bound",
       "notes": ""
     },
@@ -69786,7 +69786,7 @@
       "source": "lock-bracketed float thunk row (0x8ce90u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1860",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12951",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: lock-bracketed float thunk row (0x8ce90u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the lockthunkF differential (3z205): failures=0 over three consecutive runs for all nine rows, comparing the float result bit-for-bit, the hit count and every argument the thunk actually pushes, with the lock API and each NULL-at-runtime slot bound",
       "notes": ""
     },
@@ -69894,7 +69894,7 @@
       "source": "lock-bracketed float thunk row (0x8cf50u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1441",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12956",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: lock-bracketed float thunk row (0x8cf50u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the lockthunk2 differential (3z207): failures=0 over three consecutive runs for all three rows, comparing the float result bit-for-bit, the hit count and every argument the thunk pushes, with the lock API and each slot bound",
       "notes": ""
     },
@@ -69930,7 +69930,7 @@
       "source": "lock-bracketed float thunk row (0x8cf80u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1442",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12957",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: lock-bracketed float thunk row (0x8cf80u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the lockthunk2 differential (3z207): failures=0 over three consecutive runs for all three rows, comparing the float result bit-for-bit, the hit count and every argument the thunk pushes, with the lock API and each slot bound",
       "notes": ""
     },
@@ -70002,7 +70002,7 @@
       "source": "lock-bracketed helper call (0x8d060u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1444",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12963",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: lock-bracketed helper call (0x8d060u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the lockhelper differential (3z188): failures=0 for all five rows, with the lock API, the registry global and each global function pointer bound to the same recorders the candidate uses",
       "notes": ""
     },
@@ -70290,7 +70290,7 @@
       "source": "lock-bracketed float thunk row (0x8d2e0u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1874",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12981",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: lock-bracketed float thunk row (0x8d2e0u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the lockthunkF differential (3z205): failures=0 over three consecutive runs for all nine rows, comparing the float result bit-for-bit, the hit count and every argument the thunk actually pushes, with the lock API and each NULL-at-runtime slot bound",
       "notes": ""
     },
@@ -70362,7 +70362,7 @@
       "source": "lock-bracketed float thunk row (0x8d3c0u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1876",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12987",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: lock-bracketed float thunk row (0x8d3c0u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the lockthunkF differential (3z205): failures=0 over three consecutive runs for all nine rows, comparing the float result bit-for-bit, the hit count and every argument the thunk actually pushes, with the lock API and each NULL-at-runtime slot bound",
       "notes": ""
     },
@@ -70506,7 +70506,7 @@
       "source": "lock-bracketed float thunk row (0x8d5a0u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1880",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13001",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: lock-bracketed float thunk row (0x8d5a0u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the lockthunkF differential (3z205): failures=0 over three consecutive runs for all nine rows, comparing the float result bit-for-bit, the hit count and every argument the thunk actually pushes, with the lock API and each NULL-at-runtime slot bound",
       "notes": ""
     },
@@ -70578,7 +70578,7 @@
       "source": "lock-bracketed helper call (0x8d680u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1453",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13007",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: lock-bracketed helper call (0x8d680u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the lockhelper differential (3z188): failures=0 for all five rows, with the lock API, the registry global and each global function pointer bound to the same recorders the candidate uses",
       "notes": ""
     },
@@ -70758,7 +70758,7 @@
       "source": "cached flag consumer (0x8d850)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1457",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13020",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: cached flag consumer (0x8d850); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the extrarows differential (3z208): failures=0 over three consecutive runs for both rows, comparing the object, the hook hit count and argument, the returned flag and the cleared cache, with both globals bound",
       "notes": ""
     },
@@ -71154,7 +71154,7 @@
       "source": "virtual dispatch thunk (0x8ed50)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1897",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13033",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: virtual dispatch thunk (0x8ed50); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via thunks3 differential (3z163): argument count and every recorded argument failures=0 for all three, with the dispatch targets bound to recorder stubs",
       "notes": ""
     },
@@ -71334,7 +71334,7 @@
       "source": "global-call initializer (0x8ee80, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1472",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13049",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: global-call initializer (0x8ee80, ret 4); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the smallrows differential (3z206): failures=0 over three consecutive runs for all three rows, comparing the report tuple, the whole object, the hook hit count and arguments, with the report slot and both globals bound",
       "notes": ""
     },
@@ -71370,7 +71370,7 @@
       "source": "vtable store plus global tail jump (0x8eeb0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1473",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13050",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: vtable store plus global tail jump (0x8eeb0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the extrarows differential (3z208): failures=0 over three consecutive runs for both rows, comparing the object, the hook hit count and argument, the returned flag and the cleared cache, with both globals bound",
       "notes": ""
     },
@@ -71406,7 +71406,7 @@
       "source": "deleting destructor with a global call (0x8eec0, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1474",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13051",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: deleting destructor with a global call (0x8eec0, ret 4); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via dtor3938 differential (3z171): both arms failures=0, with the global slot 0x10104194, the allocator slot 0x101041bc and the report slot all bound and the recorders shared by both sides",
       "notes": ""
     },
@@ -71550,7 +71550,7 @@
       "source": "locked five-pointer copy accessor (0x8f050, ret 0x14)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1478",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13066",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: locked five-pointer copy accessor (0x8f050, ret 0x14); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via lockacc8 differential (3z152): failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
       "notes": ""
     },
@@ -71586,7 +71586,7 @@
       "source": "locked four-pointer copy accessor (0x8f090, ret 0x10)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1479",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13067",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: locked four-pointer copy accessor (0x8f090, ret 0x10); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via lockacc8 differential (3z152): failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
       "notes": ""
     },
@@ -74052,7 +74052,7 @@
       "source": "registry lookup with its own this (0x95cb0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1534",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13499",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: registry lookup with its own this (0x95cb0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the blockers differential (3z183): failures=0 for all seven rows, with each global function pointer and the registry global bound to the same recorders the candidate uses",
       "notes": ""
     },
@@ -74124,7 +74124,7 @@
       "source": "allocator-singleton list teardown (0x95d20)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1536",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13501",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: allocator-singleton list teardown (0x95d20); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the list4089 differential (3z195): chain lengths 0..3 all failures=0, comparing the ordered free sequence, the global word and the whole object, with the allocator singleton and that global bound",
       "notes": ""
     },
@@ -75204,7 +75204,7 @@
       "source": "three-field allocator-singleton release (0x9a500)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1565",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13766",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: three-field allocator-singleton release (0x9a500); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the allocrelease4149 differential (3z222): failures=0 over three consecutive runs across all eight occupancy pans of the three fields, comparing the slot hit count and the whole object, with the allocator singleton bound",
       "notes": ""
     },
@@ -75456,7 +75456,7 @@
       "source": "vector virtual-call loop with an argument (0x9aca0, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1572",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13826",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: vector virtual-call loop with an argument (0x9aca0, ret 4); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the vecloop4163 differential (3z216): failures=0 over three consecutive runs for vector lengths 0 to 3, comparing the hit count, the argument the slot received and the whole object; with an empty vector no call happens, so the argument check applies only when at least one element was visited",
       "notes": ""
     },
@@ -75492,7 +75492,7 @@
       "source": "vector virtual-call loop (0x9ace0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1573",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13829",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: vector virtual-call loop (0x9ace0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the vecloop4165 differential (3z212): failures=0 over three consecutive runs for vector lengths 0, 1, 2 and 3, comparing the hit count, the ordered sequence of elements actually visited and the whole object",
       "notes": ""
     },
@@ -79488,7 +79488,7 @@
       "source": "six-byte global trampoline (0xaf2c4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2121",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15043",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: six-byte global trampoline (0xaf2c4); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the tailsmall differential (3z192): failures=0, with the global slot 0x10104198 bound to the same recorder the candidate is handed and the hit count compared",
       "notes": ""
     },
@@ -79884,7 +79884,7 @@
       "source": "linked-list teardown (0xb0360)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1652",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15118",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: linked-list teardown (0xb0360); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the blockers3 differential (3z185): failures=0 for all three rows, with the chain lengths 0..3, the byte-count field combinations and both singleton arms all compared",
       "notes": ""
     },
@@ -79992,7 +79992,7 @@
       "source": "destructor chain via the allocator singleton (0xb0550, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1654",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15128",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: destructor chain via the allocator singleton (0xb0550, ret 4); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the dtorchain differential (3z190): both flag arms failures=0 for all three rows, with the 004803 allocator, the allocator singleton and the free recorders all bound to the same bodies the candidates use",
       "notes": ""
     },
@@ -80028,7 +80028,7 @@
       "source": "constant-argument virtual thunk (0x4417u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2136",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15130",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: constant-argument virtual thunk (0x4417u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via vtconst differential (3z162): slot hit count and argument both failures=0 for all nine rows, with vtable slot +0x4c bound to a __stdcall recorder",
       "notes": ""
     },
@@ -80064,7 +80064,7 @@
       "source": "constant-argument virtual thunk (0x4419u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2137",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15131",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: constant-argument virtual thunk (0x4419u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via vtconst differential (3z162): slot hit count and argument both failures=0 for all nine rows, with vtable slot +0x4c bound to a __stdcall recorder",
       "notes": ""
     },
@@ -80100,7 +80100,7 @@
       "source": "constant-argument virtual thunk (0x4421u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2138",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15132",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: constant-argument virtual thunk (0x4421u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via vtconst differential (3z162): slot hit count and argument both failures=0 for all nine rows, with vtable slot +0x4c bound to a __stdcall recorder",
       "notes": ""
     },
@@ -80136,7 +80136,7 @@
       "source": "constant-argument virtual thunk (0x4423u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2139",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15133",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: constant-argument virtual thunk (0x4423u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via vtconst differential (3z162): slot hit count and argument both failures=0 for all nine rows, with vtable slot +0x4c bound to a __stdcall recorder",
       "notes": ""
     },
@@ -80172,7 +80172,7 @@
       "source": "constant-argument virtual thunk (0x4425u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2140",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15134",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: constant-argument virtual thunk (0x4425u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via vtconst differential (3z162): slot hit count and argument both failures=0 for all nine rows, with vtable slot +0x4c bound to a __stdcall recorder",
       "notes": ""
     },
@@ -80208,7 +80208,7 @@
       "source": "constant-argument virtual thunk (0x4427u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2141",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15135",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: constant-argument virtual thunk (0x4427u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via vtconst differential (3z162): slot hit count and argument both failures=0 for all nine rows, with vtable slot +0x4c bound to a __stdcall recorder",
       "notes": ""
     },
@@ -80244,7 +80244,7 @@
       "source": "constant-argument virtual thunk (0x4429u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2142",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15136",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: constant-argument virtual thunk (0x4429u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via vtconst differential (3z162): slot hit count and argument both failures=0 for all nine rows, with vtable slot +0x4c bound to a __stdcall recorder",
       "notes": ""
     },
@@ -80280,7 +80280,7 @@
       "source": "constant-argument virtual thunk (0x4431u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2143",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15137",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: constant-argument virtual thunk (0x4431u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via vtconst differential (3z162): slot hit count and argument both failures=0 for all nine rows, with vtable slot +0x4c bound to a __stdcall recorder",
       "notes": ""
     },
@@ -80316,7 +80316,7 @@
       "source": "constant-argument virtual thunk (0x4433u)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2144",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15138",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: constant-argument virtual thunk (0x4433u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via vtconst differential (3z162): slot hit count and argument both failures=0 for all nine rows, with vtable slot +0x4c bound to a __stdcall recorder",
       "notes": ""
     },
@@ -81360,7 +81360,7 @@
       "source": "lock-bracketed global-flag read (0xb0f10)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1682",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15208",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: lock-bracketed global-flag read (0xb0f10); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via globalflag4491 differential (3z176): the non-zero and zero flag arms both failures=0, with the data word 0x10127180 bound and the lock API bound",
       "notes": ""
     },
@@ -82224,7 +82224,7 @@
       "source": "locked nested-deref accessor (0xb1600, ret 8)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1703",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15263",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: locked nested-deref accessor (0xb1600, ret 8); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via lockacc8 differential (3z152): failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
       "notes": ""
     },
@@ -85176,7 +85176,7 @@
       "source": "lock-bracketed vtable call, slot +0x30 (0xb3120)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1780",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15479",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: lock-bracketed vtable call, slot +0x30 (0xb3120); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the vtcall slots differential (3z169): result, slot target and hit count all failures=0 for both rows, with the Foundation lock API bound and each slot pointed at a recorder",
       "notes": ""
     },
@@ -85248,7 +85248,7 @@
       "source": "lock-bracketed vtable call, slot +0x38 (0xb31b0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1782",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15483",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: lock-bracketed vtable call, slot +0x38 (0xb31b0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the vtcall slots differential (3z175): result, slot target and hit count all failures=0, alongside the 004703 and 001209 arms",
       "notes": ""
     },
@@ -85896,7 +85896,7 @@
       "source": "lock-bracketed registry lookup (0xb3670)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1796",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15518",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: lock-bracketed registry lookup (0xb3670); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via registry4743 differential (3z182): failures=0 for two object shapes, with the registry global 0x10123c0c bound null and the lock API bound",
       "notes": ""
     },
@@ -86256,7 +86256,7 @@
       "source": "guarded dispatch plus chain walk (0xb3920)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1805",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15540",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: guarded dispatch plus chain walk (0xb3920); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via chain4763 differential (3z178): twelve combinations -- three guard arms by chain lengths 0..3 -- all failures=0, comparing the recorded dispatch-and-walk sequence by node identity, the visit count and the dispatch argument",
       "notes": ""
     },
@@ -86274,7 +86274,7 @@
       "source": "destructor chain with a vtable store (0xb3980, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1806",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15546",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: destructor chain with a vtable store (0xb3980, ret 4); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the dtorchain differential (3z190): both flag arms failures=0 for all three rows, with the 004803 allocator, the allocator singleton and the free recorders all bound to the same bodies the candidates use",
       "notes": ""
     },
@@ -87607,7 +87607,7 @@
       "source": "singleton release with an FP guard (0xb4d90)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1838",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15726",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: singleton release with an FP guard (0xb4d90); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the singletonrel differential (3z218): failures=0 over three consecutive runs, covering all four occupancy pans of each two-field row (8 cases) and all three guard states of 004838 (positive, negative and zero guard, with and without a live pointer), comparing the slot hit count and the whole object, with the singleton pointer bound",
       "notes": "",
       "third_party": "opcode"
@@ -88026,7 +88026,7 @@
       "source": "four-pointer vtable-slot loop (0xb52a0, ret 8)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1850",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15766",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: four-pointer vtable-slot loop (0xb52a0, ret 8); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the fourslot4861 differential (3z217): failures=0 over three consecutive runs for four occupancy patterns (none, the first and last only, the middle two only, and all four), comparing the hit count, both arguments and the whole object; the argument check applies only when at least one element was present",
       "notes": ""
     },
@@ -88080,7 +88080,7 @@
       "source": "masked four-slot loop with six row arguments (0xb5360, ret 0x18)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1852",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15777",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: masked four-slot loop with six row arguments (0xb5360, ret 0x18); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the masked4864 differential (3z221): failures=0 over three consecutive runs across all sixteen live-pointer by mask combinations, comparing the return value, the hit count, the ordered sequence of elements visited, all five slot arguments and the whole object",
       "notes": ""
     },
@@ -88116,7 +88116,7 @@
       "source": "masked four-slot loop (0xb53c0u, ret 0x14)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1853",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15780",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: masked four-slot loop (0xb53c0u, ret 0x14); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the masked4866 differential (3z220): failures=0 over three consecutive runs, covering all sixteen live-pointer by mask combinations for EACH row (32 cases total), comparing the return value, the hit count, the ordered sequence of elements visited, all four slot arguments and the whole object",
       "notes": ""
     },
@@ -88152,7 +88152,7 @@
       "source": "masked four-slot loop (0xb5410u, ret 0x14)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1854",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15783",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: masked four-slot loop (0xb5410u, ret 0x14); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the masked4866 differential (3z220): failures=0 over three consecutive runs, covering all sixteen live-pointer by mask combinations for EACH row (32 cases total), comparing the return value, the hit count, the ordered sequence of elements visited, all four slot arguments and the whole object",
       "notes": ""
     },
@@ -93523,7 +93523,7 @@
       "source": "byte-guarded singleton release of two owned pointers (0xe32e0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1969",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/17931",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: byte-guarded singleton release of two owned pointers (0xe32e0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the allocrel differential (3z219): failures=0 over three consecutive runs for all four pans -- guard off, and guard on with each combination of the two fields live -- comparing the slot hit count and the whole object, with the singleton bound",
       "notes": "",
       "third_party": "opcode"
@@ -96451,7 +96451,7 @@
       "source": "owned-block free (0xe7c10)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/2030",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18413",
-      "static_proof": null,
+      "static_proof": "static review of the recorded shape: owned-block free (0xe7c10); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the blockers and blockers2 differentials (3z184): failures=0 for all ten rows, with each global function pointer, the lock-API globals and the allocator pointer bound to the same recorders the candidates use",
       "notes": ""
     },
