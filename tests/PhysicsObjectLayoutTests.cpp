@@ -232,6 +232,10 @@ static void* __cdecl nxN3StubRet(unsigned a, unsigned b, unsigned c)
 static float __cdecl nxN3StubF(unsigned a, unsigned b, unsigned c)
 	{ gN3A = a; gN3B = b; gN3C = c; ++gN3Hits; return 4.25f; }
 
+// the zero-argument recorder for 003934
+static unsigned __cdecl nxRet0Recorder(void)
+	{ ++gGc2Hits; return 0x93939393u; }
+
 // the two-argument variant, for the rows that push only two
 static unsigned gN2Hits, gN2A, gN2B;
 static void __cdecl nxN2Stub(unsigned a, unsigned b)
@@ -14574,6 +14578,81 @@ int wmain(int argc, wchar_t** argv)
 		}
 	nxUnbindLockApi(base, svLt);
 	printf("lockthunkF candidate failures=%u provisional=1\n", ltf);
+	}
+	// -- Four small recovered rows: 003900, 003934, 002160 and 002385.
+	{
+	unsigned sr = 0;
+	// 003934: the global call then the field stores
+	{
+	typedef void* (__thiscall* T3934)(void*, unsigned);
+	T3934 fn = reinterpret_cast<T3934>(base + 0x8ee80);
+	NxFnPtrSaved sv = nxBindFnPtr(base, 0x104190,
+		reinterpret_cast<void*>(&nxRet0Recorder));
+	unsigned char self[0x40], selfC[0x40];
+	memset(self, 0xcd, sizeof(self)); memset(selfC, 0xcd, sizeof(selfC));
+	gGc2Hits = 0;
+	void* ro = fn(self, 0x1234u);
+	unsigned hO = gGc2Hits;
+	gGc2Hits = 0;
+	void* rc = nxInitRow3934(selfC, 0x1234u, &nxRet0Recorder);
+	unsigned hC = gGc2Hits;
+	if(ro != self || rc != selfC || hO != hC || hO != 1u
+		|| memcmp(self, selfC, sizeof(self)) != 0)
+		{fprintf(stderr,"sr 003934 h=%u/%u\n", hO, hC); ++sr;}
+	nxUnbindFnPtr(base, 0x104190, sv);
+	}
+	// 002160: the pure report row
+	{
+	// the row ends in a bare `ret`, so the CALLER cleans: __cdecl with the
+		// three stack arguments is the matching shape
+		typedef unsigned char (__cdecl* T2160)(unsigned, unsigned, unsigned);
+	T2160 fn = reinterpret_cast<T2160>(base + 0x539b0);
+	NxReportSaved sv = nxBindReportSlot(base);
+	nxSetAssertReport(&nxReportRecorder);
+	unsigned o[5];
+	gRepCount = 0; memset(gRepCap, 0, sizeof(gRepCap));
+	unsigned char ro = fn(0xAAu, 0xBBu, 0xCCu);
+	memcpy(o, gRepCap, sizeof(o));
+	unsigned nO = gRepCount;
+	gRepCount = 0; memset(gRepCap, 0, sizeof(gRepCap));
+	unsigned char rc = nxReportRow2160(0xAAu, 0xBBu, 0xCCu);
+	unsigned c[5];
+	memcpy(c, gRepCap, sizeof(c));
+	unsigned nC = gRepCount;
+	if(ro != rc || nO != nC || memcmp(o, c, sizeof(o)) != 0 || nO != 1u)
+		{fprintf(stderr,"sr 002160 ro=%u rc=%u n=%u/%u\n", ro, rc, nO, nC); ++sr;}
+	nxSetAssertReport(nullptr);
+	nxUnbindReportSlot(base, sv);
+	}
+	// 002385: the doubly-dereferenced field test
+	{
+	// this one needs `this` in ecx but pops nothing, so __fastcall with one
+		// parameter is the layout
+		typedef unsigned char (__fastcall* T2385)(void*);
+	T2385 fn = reinterpret_cast<T2385>(base + 0x5b8c0);
+	NxFnPtrSaved sv = nxBindFnPtr(base, 0x104028,
+		reinterpret_cast<void*>(&nx2375Stub));
+	for(unsigned present = 0; present < 2; ++present)
+		{
+		unsigned char obj[0x20]; memset(obj, 0, sizeof(obj));
+		if(present) { unsigned v = 0x5151u; memcpy(obj + 4, &v, 4); }
+		unsigned char self[0x20]; memset(self, 0, sizeof(self));
+		*(void**)(self + 4) = obj;
+		unsigned char selfC[0x20]; memcpy(selfC, self, sizeof(selfC));
+		// the row calls the two-argument lock-API stub, so read ITS recorders
+		g2375A = 0; g2375B = 0;
+		unsigned char ro = fn(self);
+		unsigned aO = g2375A, bO = g2375B;
+		g2375A = 0; g2375B = 0;
+		unsigned char rc = nxLockApiTest2385(selfC, &nx2375Stub);
+		unsigned aC = g2375A, bC = g2375B;
+		if(ro != rc || aO != aC || bO != bC || ro != (present ? 1 : 0))
+			{fprintf(stderr,"sr 002385 p=%u ro=%u rc=%u a=%08x/%08x\n",
+				present, ro, rc, aO, aC); ++sr;}
+		}
+	nxUnbindFnPtr(base, 0x104028, sv);
+	}
+	printf("smallrows candidate failures=%u provisional=1\n", sr);
 	}
 
 
