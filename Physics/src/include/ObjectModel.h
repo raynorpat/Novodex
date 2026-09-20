@@ -1370,6 +1370,14 @@ void					nxReleaseOwnedFields(void* self, const unsigned* offsets,
 //! slot +0x14 ONLY when it is non-null, but the three fields are cleared
 //! REGARDLESS. That unconditional clearing is what 3z219's diff showed at
 //! offsets 0xc and 0x1c on pans where nothing was released.
+//! phys_fn_003238 (0x7d500): releases FOUR owned fields -- [self+0xc], [self+8],
+//! [self+0x4038] and [self+0x4044] -- through the object's OWN vtable slot
+//! +0x18, each only when non-null, then clears the field and, for the two high
+//! groups, one companion field ([self+0x4034] and [self+0x403c]). It finishes
+//! by clearing [self+0x10] UNCONDITIONALLY. The slot pops its own argument, so
+//! a MEMBER-FUNCTION slot is the shape.
+void					nxOwnVtableRelease3238(void* self, NxSlotMfp1 slot);
+
 void					nxAllocReleaseClear2342(void* self, void* alloc,
 							NxSlotMfp1 slot);
 

@@ -3095,6 +3095,29 @@ void nxAllocReleaseClear2342(void* self, void* alloc, NxSlotMfp1 slot)
 		}
 	}
 
+// phys_fn_003238 (0x7d500): the own-vtable four-field release.
+void nxOwnVtableRelease3238(void* self, NxSlotMfp1 slot)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	static const unsigned kField[4] = { 0xcu, 0x8u, 0x4038u, 0x4044u };
+	static const unsigned kCompanion[4] = { 0u, 0u, 0x4034u, 0x403cu };
+	for(unsigned g = 0; g < 4u; ++g)
+		{
+		unsigned field;
+		memcpy(&field, p + kField[g], 4);
+		if(field != 0u)
+			{
+			(reinterpret_cast<NxSlotCtx*>(self)->*slot)(field);
+			const unsigned zero = 0u;
+			memcpy(p + kField[g], &zero, 4);
+			if(kCompanion[g] != 0u)
+				memcpy(p + kCompanion[g], &zero, 4);
+			}
+		}
+	const unsigned zero = 0u;
+	memcpy(p + 0x10, &zero, 4);
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)
