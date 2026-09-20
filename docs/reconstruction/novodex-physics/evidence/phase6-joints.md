@@ -1290,3 +1290,82 @@ is the gate side of a close and this is not one.
 a registered target. There is now one. The two exported joint-descriptor rows are
 driven by it, so they can be mutated and closed; the other 127 reconstructed rows
 still need a target that drives them, which is the same question one level down.
+
+## 7s. The first mutation measured something other than the row
+
+Round 18 unblocked the closure campaign by registering a green target. This round
+ran the first mutation against it, and the result was not a closure.
+
+**The census was stale for the two rows.** `phys_fn_004115` and
+`phys_fn_004117` were implemented in `Physics/src/JointDesc.cpp` in rounds 6-7 and
+driven by `NxPhysicsJointDescTests` in round 18, and the census still said
+`discovered` with a null implementation and no proof. That is the same class of
+inconsistency 7e-7l found -- a fact recorded in one artifact and not in the
+census -- and it is corrected: both are now `reconstructed` with
+`implementation=Physics/src/JointDesc.cpp` and a proof naming the target.
+
+**The mutation was not caught, and the reason is the useful part.** The mutation
+swapped the first row of the local-anchor transform (`m[0] * dx` for `m[1] * dx`)
+in a throwaway archive copy, rebuilt, and ran the registered differential against
+the pinned oracle. The transcript did not move:
+
+    mutant exit=0   oracle-transcript lines=11   caught=NO
+
+**Because the transform arm never runs.** Every case the harness constructs passes
+`a=null b=null` -- the transcript prints that on every `case=` line -- and the row
+copies the world value through when the actor is null. The transform, which is the
+row's whole substance, is not exercised by a single line of the differential.
+
+**Why the harness cannot do better today.** Reaching the transform needs an actor
+with a body, an actor needs a scene, and the candidate's `createScene` returns 0:
+
+    NxScene* NpPhysicsSDK::createScene(const NxSceneDesc&)
+        {
+        // phys_fn_000234 -> phys_fn_000476; needs Scene, Phase 3.
+        return 0;
+        }
+
+That is a named Phase 3 dependency, not an omission, and `NxPhysicsJointTests`
+reports `sdk=created` then `scene=null` against the candidate pair.
+
+**So the rows stay `reconstructed`, not closed.** A closure needs a mutation the
+gate catches, and no mutation of this arm can be caught while the arm is
+unreachable. The blocker is now recorded on both rows in the census itself, with
+the measurement that established it.
+
+## 7t. The route that would reach the arm
+
+The row reaches its pose through raw pointer arithmetic, which means a **synthetic
+actor** would exercise it without a Scene. The chain, read from the headers and the
+decompilation:
+
+    actor + 0x10                  -> NxActorDesc*
+    actorDesc + 8                 -> NxArray<NxShapeDesc*>::first
+    *first                        -> NxShapeDesc*
+    shape + 8                     -> NxBodyDesc*
+    body + 0x19c                  -> the pose
+    pose + 8                      -> cached matrix, or null for the quaternion arm
+    pose + 0x50/0x54/0x58         -> translation
+    pose + 0x5c/0x60/0x64/0x68    -> quaternion x, y, z, w
+
+`NxArray` is three pointers (`first, last, memEnd`) then an allocator, so its first
+element is at `+0`. A harness can therefore build that chain in a byte buffer and
+pass it as the actor, and both sides read the same bytes.
+
+**Not done here, and why.** It is a new fixture with its own layout proof, and this
+round's budget went to the mutation that revealed the arm was unreachable at all.
+It is the next concrete step, and it is smaller than the six rounds the Foundation
+bit cost.
+
+## 7u. What this changes about the closure campaign
+
+7o said a closure needs a mutation and a mutation needs a registered target, and
+round 18 supplied the target. This round adds the third link:
+
+> a mutation needs an arm that runs, and the joint-descriptor rows' transform arm
+> needs an actor, and an actor needs a Scene, and the Scene is Phase 3's.
+
+So the 129 reconstructed rows are not blocked by the closure machinery any more.
+They are blocked by **reachability**, and that is a per-row question rather than a
+programme-wide one. The first row to close will be one whose arm a harness can
+reach without the Scene lifecycle.

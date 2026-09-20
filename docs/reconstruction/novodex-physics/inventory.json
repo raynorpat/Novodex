@@ -74719,13 +74719,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "export_pin",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1548",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13617",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "driven by NxPhysicsJointDescTests, a registered Phase 6 oracle differential (tools/gate_targets.ps1, floor 3, three coverage assertions). The harness calls this row through its exported address with the descriptor and the world value, and prints the whole descriptor surface before and after the call: localNormal[2], localAxis[2], localAnchor[2] and jointFlags, as raw 32-bit words. Two cases are driven -- a generic anchor/axis and an already-unit axis -- and the transcript is identical between the pinned oracle and the rebuilt pair, diff 0 after the runner normalises the pair-identity lines. The degenerate zero and NaN axes are quarantined in the harness with the reason recorded there (evidence/phase6-joints.md 7p): the rebuilt Foundation differs from the oracle by one NaN sign bit on those inputs, across six mechanisms tried. The finite path, which is what this row is closed on, is exact. NOT CLOSABLE TODAY, and the reason is measured rather than assumed: the row's transform arm runs only for an actor with a body, and every case the harness can construct passes a null actor because the candidate's createScene returns 0 (NpPhysicsSDK.cpp: \"phys_fn_000234 -> phys_fn_000476; needs Scene, Phase 3\"). A mutation aimed at the transform was applied in a throwaway archive copy and the transcript did not move, which is the measurement that proves the arm is unobservable. The row therefore stays reconstructed rather than closed: a closure needs a mutation the gate catches, and no mutation of this arm can be caught until the Scene lifecycle exists.",
+      "notes": "",
+      "implementation": "Physics/src/JointDesc.cpp"
     },
     {
       "id": "phys_fn_004116",
@@ -74755,13 +74756,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "export_pin",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1549",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13624",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "driven by NxPhysicsJointDescTests, a registered Phase 6 oracle differential (tools/gate_targets.ps1, floor 3, three coverage assertions). The harness calls this row through its exported address with the descriptor and the world value, and prints the whole descriptor surface before and after the call: localNormal[2], localAxis[2], localAnchor[2] and jointFlags, as raw 32-bit words. Two cases are driven -- a generic anchor/axis and an already-unit axis -- and the transcript is identical between the pinned oracle and the rebuilt pair, diff 0 after the runner normalises the pair-identity lines. The degenerate zero and NaN axes are quarantined in the harness with the reason recorded there (evidence/phase6-joints.md 7p): the rebuilt Foundation differs from the oracle by one NaN sign bit on those inputs, across six mechanisms tried. The finite path, which is what this row is closed on, is exact. NOT CLOSABLE TODAY, and the reason is measured rather than assumed: the row's transform arm runs only for an actor with a body, and every case the harness can construct passes a null actor because the candidate's createScene returns 0 (NpPhysicsSDK.cpp: \"phys_fn_000234 -> phys_fn_000476; needs Scene, Phase 3\"). A mutation aimed at the transform was applied in a throwaway archive copy and the transcript did not move, which is the measurement that proves the arm is unobservable. The row therefore stays reconstructed rather than closed: a closure needs a mutation the gate catches, and no mutation of this arm can be caught until the Scene lifecycle exists.",
+      "notes": "",
+      "implementation": "Physics/src/JointDesc.cpp"
     },
     {
       "id": "phys_fn_004118",
