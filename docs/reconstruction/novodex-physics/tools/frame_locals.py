@@ -311,9 +311,13 @@ def main():
             if not hits:
                 continue
             t['hits'] = hits
-            # a declarator that is not converted keeps its original spelling
-            t['keep'] = list(t['keep']) + ['%s %s;' % (h['type'], h['name'])
-                                           for h in moved]
+            # Re-emit each unconverted declarator with its own dimensions. The
+            # declaration text was recorded during pass 1, so it is reconstructed
+            # here from the declarator's own type and rank rather than copied.
+            t['keep'] = list(t['keep']) + [
+                '%s %s%s;' % (h['type'], h['name'],
+                              ''.join('[0x%X]' % v for v in h['dims']))
+                for h in moved]
             pruned.append(t)
         targets = pruned
         if not targets:

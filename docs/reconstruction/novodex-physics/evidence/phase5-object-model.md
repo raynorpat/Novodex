@@ -8794,6 +8794,76 @@ Anything less produced the last three rounds' retractions, and
 
 No rows move. No gate, coverage-floor, or policy change.
 
+## 3z283. A third instrument defect: `--limit` dropped declarator dimensions
+
+`frame_locals.py --limit N` re-emitted an unconverted declarator from its bare
+name, so `unsigned char selfC[0x4060];` became `unsigned char selfC;` and the
+build failed with `cannot convert argument 1 from 'unsigned char' to 'void *'`.
+The `keep` list and the `hits` list are different lists, and truncating by index
+across them is not a substitution. Fixed: each unconverted declarator is
+re-emitted from its own type and rank. `--limit 80` now compiles, and the guard
+that refuses a second pass caught the one arm this defect had corrupted.
+
+This is the third instrument defect this round (after the verdict marker in 3z280
+and the LF base in 3z276). All three are in tooling written by this session, and
+all three were found by measurement rather than by review.
+
+## 3z284. The heap bisect, on the corrected controls
+
+Base 1288360 bytes, sha256 `2a8593e292ab…`, `--clean-first` per arm, three runs
+each. `--limit N` converts the first N declarators and leaves the rest on the
+stack.
+
+    limit   verdict   runs (exit / lines)            last block reached
+    0       FAIL      3221225477 / 138 x3            delimscan
+    1       FAIL      3221225477 / 162 x3            posecopy827
+    20      FAIL      3221225477 / 162 x3            posecopy827
+    40      FAIL      3221225477 / 350 x3            (deeper)
+    60      FAIL      3221225477 / 350 x3            (deeper)
+    80      build     --                             (was the --limit defect; now fixed)
+    81      FAIL      3221225477 / 138 x3            delimscan
+
+**Every non-zero prefix fails, deterministically.** No prefix of the heap
+conversion is safe: converting one declarator is as fatal as converting all 81.
+The crash point is not monotone in the prefix length -- 138, 162, 350, then 138
+again at 81 -- which is the same shape 3z262 called chaotic sensitivity.
+
+**This closes the question the frame fix needed answered, negatively.** There is
+no partial conversion that lands: `--limit` cannot be used to walk the change in,
+and 3z267's "convert in full" and 3z262's "convert one at a time" are both
+answered the same way. The conversion as designed does not produce a working
+harness, at any scale.
+
+**What is now known about the cause, and what is not.** The renaming is proved
+faithful (3z281: `--stack` all-81 is byte-identical in behaviour to `HEAD`), so
+the defect is in the storage move. The pool arm (`--pool`, storage from a static
+array rather than `malloc`) fails identically, so it is not the allocator choice.
+What remains is that some block depends on its buffers being *in the frame* --
+most plausibly an address relationship, since the harness compares fixture
+pointers against buffers and the oracle writes through pointers it is handed.
+That is a hypothesis and is recorded as one.
+
+## 3z285. Where the frame work stands after three rounds
+
+- The conversion tooling is correct and its controls are now trustworthy
+  (`--limit`, `--list`, `--stack`, `--pool`, the second-pass guard, and the
+  recipe in `tools/compare_layout_arms.py`).
+- The conversion itself does not work, at any prefix length, for two different
+  storage mechanisms.
+- The frame fix is therefore **not landable**, and the gate does not need it:
+  `HEAD` is stable at 353 lines, exit 1, `batch3268 candidate failures=3`, which
+  is the state the phase-5 gate is RED for.
+- `phys_fn_003268`'s closure stands unchanged: it is correctly modelled and its
+  differential fails only because its fixtures are corrupted, exactly as 3z264 and
+  3z265 recorded.
+
+The next honest step is not more conversion. It is to find the block that depends
+on frame placement, using `--limit` as the bisect control that now works, and
+decide whether that dependence is a harness defect or a property of the oracle's
+interface. Until then this translation unit should be left as it is.
+
+No rows move. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
