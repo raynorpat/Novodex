@@ -14404,8 +14404,14 @@ int wmain(int argc, wchar_t** argv)
 	// indices 0..8 verify; index 9 (003575) dereferences the slot return AND
 	// reads [self+8], and faults for a reason not yet pinned, so the drive is
 	// scoped to the rows that verify rather than left aborting.
-	for(unsigned i = 0; i < 9u; ++i)
+	for(unsigned i = 0; i < sizeof(kN3b) / sizeof(kN3b[0]); ++i)
 		{
+		// 003575 is a float-OUT variant: it reads three floats from the slot's
+		// return and writes them through its argument as an OUT POINTER, so a
+		// plain value argument faults. It needs its own model and is skipped
+		// here rather than mis-driven.
+		if(kN3b[i].rva == 0x87f10u)
+			continue;
 		typedef void (__thiscall* N3bOracle1)(void*, unsigned);
 		// a bare-ret row takes NO stack argument, but it still needs `this` in
 		// ecx -- which a 0-argument __thiscall does not supply. __fastcall with
