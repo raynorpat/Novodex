@@ -15395,6 +15395,60 @@ int wmain(int argc, wchar_t** argv)
 		}
 	printf("masked4864 candidate failures=%u provisional=1\n", s4864);
 	}
+	// -- 004149: THREE owned pointers released through the allocator singleton,
+	//    one field per group, so the existing nxReleaseOwnedFields covers it.
+	{
+	struct S4149Ctx { unsigned dummy; };
+	typedef void (S4149Ctx::*S4149Mfp)();
+	S4149Mfp mfp;
+	{
+	const void* raw = reinterpret_cast<const void*>(base + 0x9a500);
+	memcpy(&mfp, &raw, sizeof(mfp));
+	}
+	typedef void (NxSlotHost::*M1)(unsigned);
+	M1 slotM = &NxSlotHost::slot1;
+	void* vt[8]; memset(vt, 0, sizeof(vt));
+	{
+	void* raw = nullptr;
+	memcpy(&raw, &slotM, sizeof(raw));
+	memcpy(reinterpret_cast<unsigned char*>(vt) + 0x14, &raw, 4);
+	}
+	unsigned char allocObj[0x10]; memset(allocObj, 0, sizeof(allocObj));
+	*(void**)(allocObj) = vt;
+	static const unsigned kOff4149[3] = { 0xcu, 0x14u, 0x8u };
+	unsigned s4149 = 0;
+	for(unsigned pan = 0; pan < 8; ++pan)
+		{
+		unsigned char self[0x40], selfC[0x40];
+		memset(self, 0xcd, sizeof(self)); memset(selfC, 0xcd, sizeof(selfC));
+		unsigned char blk[3][0x10];
+		memset(blk, 0, sizeof(blk));
+		unsigned want = 0;
+		for(unsigned k = 0; k < 3; ++k)
+			{
+			unsigned v = ((pan >> k) & 1u) ? static_cast<unsigned>(
+				reinterpret_cast<size_t>(blk[k])) : 0u;
+			memcpy(self + kOff4149[k], &v, 4);
+			memcpy(selfC + kOff4149[k], &v, 4);
+			if(v) ++want;
+			}
+		unsigned char holder[0x10]; memset(holder, 0, sizeof(holder));
+		*(void**)(holder) = allocObj;
+		NxAllocSaved svA = nxBindAllocSlot(base, holder);
+		gSlotHits = 0; gSlotA = 0;
+		(reinterpret_cast<S4149Ctx*>(self)->*mfp)();
+		unsigned hO = gSlotHits;
+		gSlotHits = 0; gSlotA = 0;
+		nxReleaseOwnedFields(selfC, kOff4149, 3u, allocObj,
+			*reinterpret_cast<NxSlotMfp1*>(&slotM));
+		unsigned hC = gSlotHits;
+		if(hO != hC || hO != want || memcmp(self, selfC, sizeof(self)) != 0)
+			{fprintf(stderr,"s4149 pan=%u want=%u h=%u/%u\n",
+				pan, want, hO, hC); ++s4149;}
+		nxUnbindAllocSlot(base, svA);
+		}
+	printf("allocrelease4149 candidate failures=%u provisional=1\n", s4149);
+	}
 
 
 
