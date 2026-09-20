@@ -1369,3 +1369,55 @@ So the 129 reconstructed rows are not blocked by the closure machinery any more.
 They are blocked by **reachability**, and that is a per-row question rather than a
 programme-wide one. The first row to close will be one whose arm a harness can
 reach without the Scene lifecycle.
+
+## 7v. The synthetic-actor fixture is written and it does not yet work
+
+7t proposed a synthetic actor to reach the transform arm without a Scene. The
+fixture is written (`tests/NxJointDescSyntheticTests.cpp`, target
+`NxJointDescSyntheticTests`) and **it faults**:
+
+    NxJointDescSyntheticTests <oracle> <sha256>   exit -1073741819
+
+**What that means and does not mean.** It means the chain I built is not the chain
+the row walks. It does **not** mean the approach is wrong: the row reads its pose
+through raw pointer arithmetic, so *some* byte layout satisfies it, and the fault
+is evidence that the layout in 7t is incomplete rather than that no layout exists.
+
+**Where the chain is probably wrong.** 7t derived it from the headers and the
+decompilation, and the weakest link is the actor-descriptor offset. The
+decompilation reads
+
+    *(int *)((int)(*ppNVar16)[2].userData + 8)
+
+and I read that as `actor + 0x10 -> descriptor`, then `descriptor + 8 -> the shape
+array's first`. Both halves are plausible in isolation and at least one is wrong,
+because a null anywhere in the chain makes the row take its copy-through arm
+rather than fault, so the fault is a **dereference of a value that is non-null but
+not a pointer** -- most likely the shape array's `first` being read at the wrong
+offset, or the body pointer being taken from the wrong field of the shape
+descriptor.
+
+**The instrument that would settle it** is not another guess: it is to build the
+chain one level at a time and read back what the row dereferences, which the
+existing `NxVec3NormalizeProbe` pattern does for a different function. That is the
+next step.
+
+**Recorded rather than left as a failing target.** The target is built and
+**not registered**, because a target that faults cannot be a gate. It is a probe,
+and the file says so in its own header. Nothing in the gate set moved:
+`validate_inventory` exit 0, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, `completed` exit 0, 587 tool tests OK.
+
+## 7w. The state of the closure campaign after this round
+
+    closure machinery        in place: a green registered target exists
+    the two joint rows       reconstructed, proof recorded, blocker recorded
+    their transform arm      unreachable today; a synthetic fixture is the route
+    the synthetic fixture    written, faults, layout not yet correct
+    other 127 rows           still need a target that drives them
+
+**No row has closed.** That is the honest state, and the reason is now a specific
+one: reachability, per row, rather than the closure apparatus. The three rounds
+since 7m have established that in order -- what a closure costs, that a target is
+needed, that a target now exists, and that the first two rows' arm cannot be
+reached without either a Scene or a correct synthetic layout.

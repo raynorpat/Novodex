@@ -188,6 +188,13 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	add_executable(NxPhysicsJointDescTests tests/PhysicsJointDescTests.cpp)
 	target_include_directories(NxPhysicsJointDescTests PRIVATE Foundation/include Physics/include)
 	target_link_libraries(NxPhysicsJointDescTests bcrypt)
+	# The synthetic-actor fixture for the two joint-descriptor rows. A measurement
+	# probe: the rows reach their pose through raw pointer arithmetic, so a byte
+	# buffer with the chain built into it exercises the transform arm without the
+	# Scene the candidate does not have. See evidence/phase6-joints.md 7t.
+	add_executable(NxJointDescSyntheticTests tests/NxJointDescSyntheticTests.cpp)
+	target_include_directories(NxJointDescSyntheticTests PRIVATE Foundation/include Physics/include)
+	target_link_libraries(NxJointDescSyntheticTests bcrypt)
 	# A measurement probe, not a gate: it prints what the pinned
 	# NxNormalToTangents returns so a joint row's localNormal can be attributed
 	# to a specific output rather than guessed at.
