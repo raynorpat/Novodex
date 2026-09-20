@@ -271,8 +271,11 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		target_compile_options(NxPhysicsObjectLayoutTests PRIVATE /arch:IA32 /GR- /wd4996)
 		# Emit a linker map so that a fault offset reported by the OS -- the
 		# 0xC0000409 aborts this harness produces -- can be resolved to a
-		# function instead of being guessed at from the source.
-		target_link_options(NxPhysicsObjectLayoutTests PRIVATE /MAP)
+		# function instead of being guessed at from the source. The PDB is what
+		# lets a crash dump unwind past the CRT fast-fail and name the frame
+		# that tripped the /GS check.
+		target_link_options(NxPhysicsObjectLayoutTests PRIVATE /MAP /DEBUG:FULL)
+		target_compile_options(NxPhysicsObjectLayoutTests PRIVATE /Zi)
 	endif()
 
 	# The narrow-phase differential. Neither a staged-pair differential nor a
