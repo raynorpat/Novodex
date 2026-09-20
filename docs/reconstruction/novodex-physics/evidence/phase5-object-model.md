@@ -6658,6 +6658,44 @@ exactly the reason it has been since 3z114.
 
 No rows move. No gate, coverage-floor, or policy change.
 
+## 3z233. The 000480 group: the inert-path plan, and why it is not enough
+
+Round 217 attacked the ten 88-byte rows behind 000480, the last substantial
+batch, and is reporting a withdrawal with a plan that is now much better
+specified than before.
+
+**What the rows are.** All ten are identical in shape and differ only in their
+report tuple (two line/file pairs per row):
+
+    if (tryAcquire([self+0x10]))
+        { 000480([self+0x18], <row ARGUMENT>); <tail into the unlock> }
+    else
+        { <report(2, <file>, <line>, 0, 0x10104760)> }
+
+**The unlock problem has a precedent.** The release is a TAIL JUMP into the
+bindable unlock row, so the candidate cannot model it as a plain call -- but
+3z196's mutexlistfree already established that this is fine, because the oracle's
+unlock goes through the BOUND lock-API global, which the drive does not compare.
+The same reasoning applies here, and the drive was written that way.
+
+**The registry problem is the real one, and it is now pinned.** The row's
+argument is passed as 000480's SECOND parameter, so driving with arg = 0 looks
+like the way to reach the inert path -- but that is only half the condition.
+000480 returns 1 without side effects only when its second parameter is zero
+**AND the registry pointer [0x10123c0c] is null**. Because a single process runs
+every block, an earlier block can leave that registry non-null, and then the
+row falls through to the INSERT regardless of the argument. The retry bound
+[0x10123c0c] to null for the duration of the drive to close exactly that hole.
+
+It still faulted, and it is withdrawn again rather than left in place; the tree
+is green. **The next attempt should verify -- before running any row -- that
+[0x10123c0c] really reads back as zero after the bind**, the same read-back that
+3z229 showed is worth one command and saves rounds. If it does not, the binder
+is not the tool for this and the registry needs a fixture with its own storage,
+not a null.
+
+No rows move. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
