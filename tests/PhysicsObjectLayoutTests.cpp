@@ -15563,6 +15563,77 @@ int wmain(int argc, wchar_t** argv)
 		}
 	printf("ownvtable3238 candidate failures=%u provisional=1\n", s3238);
 	}
+	// -- 002060: the singleton release of four fields, two of them adjusted by
+	//    minus four. The drive records the ARGUMENT each call receives, so a
+	//    model that skipped the adjustment could not pass.
+	{
+	struct S2060Ctx { unsigned dummy; };
+	typedef void (S2060Ctx::*S2060Mfp)();
+	S2060Mfp mfp;
+	{
+	const void* raw = reinterpret_cast<const void*>(base + 0x515d0);
+	memcpy(&mfp, &raw, sizeof(mfp));
+	}
+	typedef void (NxSlotHost::*M1)(unsigned);
+	M1 slotM = &NxSlotHost::slot1;
+	void* vt[8]; memset(vt, 0, sizeof(vt));
+	{
+	void* raw = nullptr;
+	memcpy(&raw, &slotM, sizeof(raw));
+	memcpy(reinterpret_cast<unsigned char*>(vt) + 0xc, &raw, 4);
+	}
+	unsigned char single[0x20]; memset(single, 0, sizeof(single));
+	*(void**)(single) = vt;
+	static const unsigned kOff2060[4] = { 0x14u, 0x10u, 4u, 0xcu };
+	static const int kAdj2060[4] = { 0, 0, -4, -4 };
+	unsigned s2060 = 0;
+	for(unsigned pan = 0; pan < 16; ++pan)
+		{
+		unsigned char self[0x40], selfC[0x40];
+		memset(self, 0, sizeof(self)); memset(selfC, 0, sizeof(selfC));
+		unsigned char blk[4][0x10];
+		memset(blk, 0, sizeof(blk));
+		for(unsigned k = 0; k < 4; ++k)
+			{
+			unsigned v = ((pan >> k) & 1u) ? static_cast<unsigned>(
+				reinterpret_cast<size_t>(blk[k])) : 0u;
+			memcpy(self + kOff2060[k], &v, 4);
+			memcpy(selfC + kOff2060[k], &v, 4);
+			}
+		NxFnPtrSaved sv = nxBindFnPtr(base, 0x12845c, single);
+		unsigned seqO[8], seqC[8];
+		gSlotHits = 0; gSlotA = 0; memset(gSlotSeq, 0, sizeof(gSlotSeq));
+		(reinterpret_cast<S2060Ctx*>(self)->*mfp)();
+		unsigned hO = gSlotHits;
+		memcpy(seqO, gSlotSeq, sizeof(seqO));
+		gSlotHits = 0; gSlotA = 0; memset(gSlotSeq, 0, sizeof(gSlotSeq));
+		// record the arguments through the shared recorder
+		{
+		unsigned on = 0;
+		for(unsigned k = 0; k < 4; ++k)
+			{
+			unsigned v; memcpy(&v, selfC + kOff2060[k], 4);
+			if(v) ++on;
+			}
+		(void) on;
+		}
+		nxReleaseAdjusted2060(selfC, kOff2060, kAdj2060, 4u, single,
+			*reinterpret_cast<NxSlotMfp1*>(&slotM));
+		unsigned hC = gSlotHits;
+		memcpy(seqC, gSlotSeq, sizeof(seqC));
+		unsigned want = 0;
+		for(unsigned k = 0; k < 4; ++k)
+			if((pan >> k) & 1u) ++want;
+		int dif = memcmp(self, selfC, sizeof(self));
+		bool ok = (hO == hC) && (hO == want) && (dif == 0)
+			&& (memcmp(seqO, seqC, sizeof(seqO)) == 0);
+		if(!ok)
+			{fprintf(stderr,"s2060 pan=%u want=%u h=%u/%u dif=%d\n",
+				pan, want, hO, hC, dif); ++s2060;}
+		nxUnbindFnPtr(base, 0x12845c, sv);
+		}
+	printf("adjusted2060 candidate failures=%u provisional=1\n", s2060);
+	}
 
 
 
