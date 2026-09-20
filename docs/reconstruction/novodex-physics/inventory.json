@@ -75488,12 +75488,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "vector virtual-call loop (0x9ace0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1573",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13829",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the vecloop4165 differential (3z212): failures=0 over three consecutive runs for vector lengths 0, 1, 2 and 3, comparing the hit count, the ordered sequence of elements actually visited and the whole object",
       "notes": ""
     },
     {
