@@ -6368,6 +6368,27 @@ emits is what turned a likely three-attempt row into a one-attempt row.
 
 003238 moves to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z225. 002060 closes: the same release with two adjusted pointers
+
+Round 208 closed 002060 (build/r208.log adjusted2060 failures=0, stable over
+three runs), the last but one of the vt-shaped rows.
+
+It is the singleton-release family again -- four fields, [self+0x14], [self+0x10],
+[self+4] and [self+0xc], each released only when non-null through 004803's
+singleton and its vtable slot +0xc, each cleared afterwards. The one difference
+from 004149 is that the LAST TWO groups pass **the field minus four** rather
+than the field itself, so the offset and the adjustment had to become separate
+columns of the model.
+
+**The drive compares the ordered sequence of ARGUMENTS each call received**, not
+just the hit count, which is what makes the adjustment checkable at all: a model
+that released the right number of fields at the right times but passed the
+unadjusted pointer would match on count and on the object and fail only here.
+The four fields' occupancy is crossed over all sixteen pans so each null skip is
+exercised independently as well.
+
+002060 moves to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
