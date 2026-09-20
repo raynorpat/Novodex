@@ -7136,6 +7136,50 @@ flag rather than a hypothesis.
 The tree is green at exit 1, with map generation committed. No rows move. No
 gate, coverage-floor, or policy change.
 
+## 3z244. The culprit function is wmain, and the subcode is the proof
+
+Round 228 emitted a PDB for the test target and re-read a fresh crash dump with
+symbols. That produced the first DEFINITIVE localization in this investigation.
+
+**The dump now unwinds.** With `/DEBUG:FULL` and `/Zi` on the test target:
+
+    Subcode: 0x2 FAST_FAIL_STACK_COOKIE_CHECK_FAILURE
+    ExceptionAddress: __report_gsfailure+0x5   (int 29h)
+
+    ChildEBP  RetAddr   Frame
+    01344318  00632af2  NxPhysicsObjectLayoutTests!__report_gsfailure+0x5
+    01344340  778b5bb4  NxPhysicsObjectLayoutTests!__scrt_stub_for_is_c_termination_complete+0x62
+    013448e4  005fd2d2  ntdll!KiUserExceptionDispatcher+0xf
+    0138fcf4  006317a1  NxPhysicsObjectLayoutTests!wmain+0x18be2
+    0138fd3c  76ad5d49  NxPhysicsObjectLayoutTests!__scrt_common_main_seh+0x141
+
+**The /GS cookie that failed belongs to `wmain`.** The frame that tripped the
+check is `wmain+0x18be2`, and the frame below it is the CRT's `main` -- so the
+corruption is a write past one of wmain's OWN locals, not a deep callee's. That
+is exactly the shape 3z239 predicted, now measured rather than inferred, and it
+also explains why every previous static scan failed to find it: the scans looked
+for writes through an array's name or an alias, and the actual write is evidently
+something they do not model -- a computed-length copy, a struct-typed local, or a
+write through a pointer the block computed itself.
+
+**What is still open.** cdb's line-number command needs different syntax than the
+one tried here, so the exact source line is not yet named; the PDB that would
+give it now exists. Two follow-ups are cheap and should be done before any
+further theorising:
+
+1. re-read the dump with `.lines` used correctly (or `dt`/`dv` on the wmain frame)
+   to name the line;
+2. run `!analyze -v` with the Microsoft symbol server configured, which is what
+   resolves the CRT frames that are still misattributed.
+
+**What this round settles.** The mechanism (3z238), the affected frame (here),
+and the tooling (map + PDB + dumps) are all now established. Four earlier
+theories are formally dead: the binder, dead code, the phantom overruns, and the
+plane-save buffers. The remaining question is a source line, not a hypothesis.
+
+The tree is green at exit 1, with `/MAP` and `/DEBUG:FULL` committed. No rows
+move. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
