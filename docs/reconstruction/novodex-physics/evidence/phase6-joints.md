@@ -947,3 +947,56 @@ blast radius.
 are recorded in the validator, and the check fails on any *new* unresolvable path.
 What is now also on the record is that those 51 are the oracle's names rather than
 missing files, so a future session does not spend time looking for them.
+
+## 7h. The split is done, for the rows where it is verifiable
+
+7g diagnosed that `source` carries two claims. The census now separates them.
+
+**`source` is unchanged.** It keeps the oracle's `__FILE__` attribution, and it is
+no longer asked to resolve -- 49 of its 51 unresolvable values have basenames that
+exist nowhere in the repository, so they are the oracle's names and not misplaced
+files.
+
+**`implementation` is new**, optional, and set only where it is verifiable:
+
+    rows with an implementation: 189 of 6338
+      Physics/src/ObjectModel.cpp                  117
+      Physics/src/NpPhysicsSDK.cpp                  16
+      Physics/src/opcode/IcePrunable.cpp            15
+      Physics/src/MemoryStream.cpp                  13
+      Physics/src/TriangleMesh.cpp                  11
+      Physics/src/PhysicsSDK.cpp                    10
+      Physics/src/PMap.cpp                           5
+      Physics/src/NarrowPhase.cpp                    1
+      External/.../IceRevisitedRadix.cpp             1
+
+It is populated from two sources only, both checkable: a `source` that already
+resolved, and a reconstructed row whose differential names a candidate helper the
+harness calls and whose definition names a file in this repository.
+
+**`validate_inventory.py` gained `_check_implementation_paths`**, which requires
+every `implementation` to name a file that exists. Verified both ways by calling it
+on the committed census:
+
+    clean inventory -> []
+    one invented path -> ["function 'phys_fn_000230' implementation
+                           'Physics/src/NoSuchFile.cpp' does not exist"]
+
+So there is now a path check that can fail, on the field where a path claim is
+actually made -- which is what `source` could never be.
+
+**What is left null, and why that is the honest answer.** 510 reconstructed rows
+have no `implementation`. They are not unproven -- their differentials are present
+-- but **the census does not record where their implementation lives**, and the
+audit above shows that: only 54 of 663 reconstructed rows could be attributed from
+their proof text and the harness, so the remaining 456 name a differential that
+does not map to a candidate helper this tool can find. Supplying those values is
+the same question the Phase 8 audit asks, and it is not answerable by inference
+from what is on disk. They are left null rather than guessed at.
+
+**Interim state, stated plainly.** `source` still holds the oracle's names, which
+is correct for 56 of its 60 values and wrong for the 4 that name reconstruction
+files. Moving those 4 into `implementation` and leaving `source` null for them is
+a small, safe follow-up; it was not done here because it is a change to rows whose
+`source` currently resolves, and the value of it is cosmetic until the other 510
+are resolved.

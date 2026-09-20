@@ -4206,7 +4206,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/864",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/NpPhysicsSDK.cpp"
     },
     {
       "id": "phys_fn_000231",
@@ -4386,7 +4387,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/882",
       "static_proof": "slot = the index into the container at [this+4] (000450 bounds-commit: slot = *[*ctr+8 + idx*4] if idx < ([ctr+0xc]-[ctr+8])>>2 else 0); return [slot + 0x6cc]",
       "dynamic_proof": "confirmed via wrap240 differential (3z101): failures=0",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000241",
@@ -4422,7 +4424,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/883",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/NpPhysicsSDK.cpp"
     },
     {
       "id": "phys_fn_000243",
@@ -4458,7 +4461,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/893",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/NpPhysicsSDK.cpp"
     },
     {
       "id": "phys_fn_000245",
@@ -4494,7 +4498,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/896",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0000b8c0"
+      "notes": "continuation of the entry at 0x0000b8c0",
+      "implementation": "Physics/src/NpPhysicsSDK.cpp"
     },
     {
       "id": "phys_fn_000247",
@@ -4530,7 +4535,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/902",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/NpPhysicsSDK.cpp"
     },
     {
       "id": "phys_fn_000249",
@@ -4638,7 +4644,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/921",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/NpPhysicsSDK.cpp"
     },
     {
       "id": "phys_fn_000255",
@@ -4674,7 +4681,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/924",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0000bb90"
+      "notes": "continuation of the entry at 0x0000bb90",
+      "implementation": "Physics/src/NpPhysicsSDK.cpp"
     },
     {
       "id": "phys_fn_000257",
@@ -4710,7 +4718,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/930",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/NpPhysicsSDK.cpp"
     },
     {
       "id": "phys_fn_000259",
@@ -4800,7 +4809,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/949",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/NpPhysicsSDK.cpp"
     },
     {
       "id": "phys_fn_000264",
@@ -4836,7 +4846,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/955",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0000be50"
+      "notes": "continuation of the entry at 0x0000be50",
+      "implementation": "Physics/src/NpPhysicsSDK.cpp"
     },
     {
       "id": "phys_fn_000266",
@@ -4872,7 +4883,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/958",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/NpPhysicsSDK.cpp"
     },
     {
       "id": "phys_fn_000268",
@@ -4908,7 +4920,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/967",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/NpPhysicsSDK.cpp"
     },
     {
       "id": "phys_fn_000270",
@@ -4980,7 +4993,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/981",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/NpPhysicsSDK.cpp"
     },
     {
       "id": "phys_fn_000274",
@@ -5016,7 +5030,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/983",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/NpPhysicsSDK.cpp"
     },
     {
       "id": "phys_fn_000276",
@@ -5052,7 +5067,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/985",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/NpPhysicsSDK.cpp"
     },
     {
       "id": "phys_fn_000278",
@@ -5088,7 +5104,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/988",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0000c1d0"
+      "notes": "continuation of the entry at 0x0000c1d0",
+      "implementation": "Physics/src/NpPhysicsSDK.cpp"
     },
     {
       "id": "phys_fn_000280",
@@ -6366,7 +6383,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1072",
       "static_proof": null,
       "dynamic_proof": "confirmed via mutexwork differential (3z173): both arms failures=0 for all four rows, comparing the report tuple and the whole object buffer, with the report slot and lock API bound",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000351",
@@ -6438,7 +6456,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1076",
       "static_proof": null,
       "dynamic_proof": "confirmed via mutexwork differential (3z173): both arms failures=0 for all four rows, comparing the report tuple and the whole object buffer, with the report slot and lock API bound",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000355",
@@ -6510,7 +6529,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1080",
       "static_proof": null,
       "dynamic_proof": "confirmed via mutexwork differential (3z173): both arms failures=0 for all four rows, comparing the report tuple and the whole object buffer, with the report slot and lock API bound",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000359",
@@ -7122,7 +7142,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1137",
       "static_proof": "static review of the recorded shape: lock probe (0xd660); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via probe0392 differential (3z160): owner-matching and owner-differing arms failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000393",
@@ -7752,7 +7773,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1179",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/PhysicsSDK.cpp"
     },
     {
       "id": "phys_fn_000428",
@@ -7788,7 +7810,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1187",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/PhysicsSDK.cpp"
     },
     {
       "id": "phys_fn_000430",
@@ -7824,7 +7847,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1190",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/PhysicsSDK.cpp"
     },
     {
       "id": "phys_fn_000432",
@@ -7860,7 +7884,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1194",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/PhysicsSDK.cpp"
     },
     {
       "id": "phys_fn_000434",
@@ -7896,7 +7921,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1197",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/PhysicsSDK.cpp"
     },
     {
       "id": "phys_fn_000436",
@@ -8202,7 +8228,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1214",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/PhysicsSDK.cpp"
     },
     {
       "id": "phys_fn_000453",
@@ -8490,7 +8517,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1235",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/PhysicsSDK.cpp"
     },
     {
       "id": "phys_fn_000469",
@@ -8526,7 +8554,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1240",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/PhysicsSDK.cpp"
     },
     {
       "id": "phys_fn_000471",
@@ -8634,7 +8663,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1258",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/PhysicsSDK.cpp"
     },
     {
       "id": "phys_fn_000477",
@@ -8670,7 +8700,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1271",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/PhysicsSDK.cpp"
     },
     {
       "id": "phys_fn_000479",
@@ -15024,7 +15055,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2544",
       "static_proof": "payload fold step over {Vec3 d; SymMat3 K} records (0x24-byte stride): nine faddp-chain intermediates each rounded to float32 by their fstp m32 stores, then all nine inertia words overwritten from d/K products of the old inertia, COM offset replaced by {o.d, o^T K col0, o^T K col1}; mass untouched; driven bitwise by the paxis family through two crafted frame/payload pairs",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000832",
@@ -15348,7 +15380,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2562",
       "static_proof": "BOX slot-4 compute-mass row: builds a unit-density solid-box mass frame from three half-extents through 0x0001bd00, folds the optional payload pair through 0x1bdc0/0x1c040 when non-null, scales by density through 0x0001c5c0 unless a fucompp finds it equal to the .rdata 0x101041ec 1.0f literal, then merges into the destination through 0x0001c630; __thiscall ret 0xc",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000850",
@@ -15384,7 +15417,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2565",
       "static_proof": "SPHERE slot-4 compute-mass row: builds a unit-density solid-sphere mass frame {inertia 3x3 @+0x00, COM offset @+0x24, mass @+0x30} through 0x0001c750, scales it by density through 0x0001c5c0 unless a fucompp finds it equal to the .rdata 0x101041ec literal (1.0f sentinel; an unordered density still scales), then merges into the destination through 0x0001c630; __thiscall ret 0xc, args (density, radius, extra)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000852",
@@ -15420,7 +15454,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2567",
       "static_proof": "CAPSULE slot-4 compute-mass row: builds a unit-density cylinder mass frame (axisSelector routes the axial diagonal; selector 1 never writes +0x00) through 0x0001c7c5..87f, folds the optional payload pair through 0x1bdc0/0x1c040 when non-null, scales by density through 0x0001c5c0 unless a fucompp finds it equal to the .rdata 0x101041ec 1.0f literal, then merges into the destination through 0x0001c630; __thiscall ret 0x14",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000854",
@@ -16752,7 +16787,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2960",
       "static_proof": "__thiscall: writes facade dims (+0xe4/e8/ec) to record+0x4c/50/54 then TAIL-JUMPS to the BASE save-to-descriptor row 0x000256f0 (the jump sits in the adjacent phys_fn_000928 artifact span); the dims slot is exactly where the box ctor read desc+0x4c",
       "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests boxrow family on a real constructed box: oracle record digest 853c971d equals candidate bitwise over the poisoned 0x58-byte record, dims word at +0x4c asserted",
-      "notes": "P5 Task 3: slot reuse -- the final composes the base row rather than duplicating it."
+      "notes": "P5 Task 3: slot reuse -- the final composes the base row rather than duplicating it.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000928",
@@ -16896,7 +16932,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2964",
       "static_proof": "__thiscall: per-axis extents |rot-row . dims| over pose one (rot words +0x0c..+0x2c, dims +0xe4/e8/ec; axis0 r0/r2/r1, axis1 r3/r5/r4, axis2 r6/r8/r7) then min=t-ext, max=t+ext into a caller record; BOX vtable slot 9",
       "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests boxrow family on a real constructed identity-pose box: minmax bf800000 x3 / 3f800000 x3 equal candidate bitwise; mixed single/extended rounding of partial sums left open for general poses",
-      "notes": "P5 Task 3: the OBB world-bounds helper."
+      "notes": "P5 Task 3: the OBB world-bounds helper.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000936",
@@ -16932,7 +16969,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2966",
       "static_proof": "__thiscall ret 4: zeroes out[0..2] (three dword stores, 0x000206c4..cc) then writes sqrt(dx*dx+dy*dy+dz*dz) over the facade dims to out[3] (0x000206ce..f8); BOX vtable .rdata 0x10106ab8 slot 11 (merged-run index 35)",
       "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests boxrow family on a real constructed box with default dims: oracle words 00000000.00000000.00000000.3fddb3d7 equal candidate bitwise",
-      "notes": "P5 Task 3: same diagonal arithmetic as slot 10 but a zeroed center."
+      "notes": "P5 Task 3: same diagonal arithmetic as slot 10 but a zeroed center.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000937",
@@ -16950,7 +16988,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2965",
       "static_proof": "__thiscall ret 4: writes pose-one translation (+0x30/+0x34/+0x38) to out[0..2] and sqrt(dx*dx+dy*dy+dz*dz) over the facade dims (+0xe4/e8/ec) to out[3]; BOX vtable .rdata 0x10106ab8 slot 10 (merged-run index 34)",
       "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests boxrow family on a real constructed box with default dims: oracle words 00000000.00000000.00000000.3fddb3d7 equal candidate bitwise (sqrt(3) is association-exact at these inputs); general-dims x87 association left open in evidence",
-      "notes": "P5 Task 3: first BOX-final behavior row closed."
+      "notes": "P5 Task 3: first BOX-final behavior row closed.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000938",
@@ -17004,7 +17043,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2967",
       "static_proof": "__thiscall: negated dims to out[0..2] (fld/fchs/fxch chain 0x00020700..23), raw dims to out[3..5] (0x00020726..41); BOX vtable .rdata 0x10106ab8 slot 8 (merged-run index 32)",
       "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests boxrow family on a real constructed box with default dims: minmax bf800000.bf800000.bf800000.3f800000.3f800000.3f800000 equal candidate bitwise",
-      "notes": "P5 Task 3: the box around its own center."
+      "notes": "P5 Task 3: the box around its own center.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000942",
@@ -17220,7 +17260,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2981",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer."
+      "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000954",
@@ -17256,7 +17297,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2982",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer."
+      "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000956",
@@ -17364,7 +17406,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3018",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer."
+      "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000962",
@@ -17400,7 +17443,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3019",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer."
+      "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000964",
@@ -17436,7 +17480,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3020",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer."
+      "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000966",
@@ -17472,7 +17517,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3021",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer."
+      "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000968",
@@ -17508,7 +17554,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3022",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer."
+      "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000970",
@@ -17544,7 +17591,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3023",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer."
+      "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000972",
@@ -17616,7 +17664,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3032",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P5: transcribed. Projects the eight vertices through a pose (column dots + translation) and folds them with a direction as A*dx + (C*dz + B*dy); min replaces strictly-less, max strictly-greater, NaN skips both (unordered sets C0 in both fnstsw masks). Frame: (this, a1 unread, a2=&min, a3=&max, a4=dir, a5=pose, a6 unread), ret 0x18. Driven by NxPhysicsObjectLayoutTests on twin buffers; bitwise match at oracle digest bfb698ec."
+      "notes": "P5: transcribed. Projects the eight vertices through a pose (column dots + translation) and folds them with a direction as A*dx + (C*dz + B*dy); min replaces strictly-less, max strictly-greater, NaN skips both (unordered sets C0 in both fnstsw masks). Frame: (this, a1 unread, a2=&min, a3=&max, a4=dir, a5=pose, a6 unread), ret 0x18. Driven by NxPhysicsObjectLayoutTests on twin buffers; bitwise match at oracle digest bfb698ec.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000976",
@@ -17652,7 +17701,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3037",
       "static_proof": "__thiscall ret 8, both args forwarded to phys_fn_001273 (0x2187c..80); primary BOX vptr 0x10106ab8 (0x2188f); facade final 0x10106a88 at +0xe0 after wall intermediate (0x21885/0x21895); six face records' first three words zeroed (0x218a1..ee); 0x1c-byte collision object via SDK allocator malloc(0x1c,0) (0x218f1..fe) built by phys_fn_001075 and stored at +0x9c (0x21911); sentinel +0xd0 overwritten to 2 (0x2191c); dims +0xe4/e8/ec = 1.0f (0x21926..36)",
       "dynamic_proof": "poisoned-0x228-buffer differential NxPhysicsObjectLayoutTests boxshape family with a shim allocator interface installed at the SDK holder: oracle digest ac5ed12f equals candidate under a seven-pointer mask; poison preservation, face zeroing, sentinel overwrite and back-pointing colobj all asserted",
-      "notes": "P5 Task 3: the BOX final's constructor. sizeof(BoxShape)==0xe0+0x148; vertices and face float data stay untouched until the face builder runs."
+      "notes": "P5 Task 3: the BOX final's constructor. sizeof(BoxShape)==0xe0+0x148; vertices and face float data stay untouched until the face builder runs.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000978",
@@ -17688,7 +17738,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3040",
       "static_proof": "__thiscall ret 4: destroys the embedded collision object through [colobj-vtbl+0] with flag 1 UNCONDITIONALLY (0x2195b..61), runs the base-dtor chain 0x26bd0 (owner arms null-safe, +0xa0 arms, Prunable tail), then frees this through SDK-allocator slot +0x14 when flag&1; BOX vtable .rdata 0x10106ab8 slot 0",
       "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests boxdtor family on a real constructed box, flag=0 path: post-dtor oracle digest a29800b7 equals candidate bitwise under the seven-pointer mask (destruction-time vptr restorations carried opaque)",
-      "notes": "P5 Task 3: the colobj's own deleting-dtor row (0x235d0) remains its own census row; discovery of the allocator free ABI (callee pops one pushed argument, no caller cleanup) recorded in evidence."
+      "notes": "P5 Task 3: the colobj's own deleting-dtor row (0x235d0) remains its own census row; discovery of the allocator free ABI (callee pops one pushed argument, no caller cleanup) recorded in evidence.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000980",
@@ -17724,7 +17775,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3043",
       "static_proof": "stores dims from desc+0x4c/50/54 into facade +0xe4/e8/ec; calls hull-recompute helper 0x21420 then BASE slot 1",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000982",
@@ -17796,7 +17848,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3045",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P5: transcribed. Once-guarded lazy init of a twelve-byte .data global at 0x10123c64; the initializer array at .rdata 0x10103010 is twelve bare ret stubs, so the global stays all-zero and the row returns its address. Ignores this. Driven by NxPhysicsObjectLayoutTests: two calls return one stable pointer with zero words."
+      "notes": "P5: transcribed. Once-guarded lazy init of a twelve-byte .data global at 0x10123c64; the initializer array at .rdata 0x10103010 is twelve bare ret stubs, so the global stays all-zero and the row returns its address. Ignores this. Driven by NxPhysicsObjectLayoutTests: two calls return one stable pointer with zero words.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000986",
@@ -17832,7 +17885,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3047",
       "static_proof": "__thiscall ret 8, both args forwarded to phys_fn_001273 (0x21a67..6f); CAPSULE vptr 0x10106b20 (0x21a74); +0xe0/+0xe4 zeroed (0x21a7a/84); 0x1c-byte collision object via SDK malloc(0x1c,0) built by phys_fn_001123 (0x23cb0 at 0x21aa6) and stored at +0x9c (0x21aaf); sentinel +0xd0 overwritten to 3 = NX_SHAPE_CAPSULE (0x21ab5)",
       "dynamic_proof": "poisoned-0xe8-buffer differential NxPhysicsObjectLayoutTests capsule family: oracle digest 9b0768d7 equals candidate under a six-pointer mask; zeroed data words, sentinel 3 and back-pointing colobj asserted",
-      "notes": "P5 Task 3: per-shape sentinel +0xd0 proven to be the NxShapeType tag by the pinned NxShape.h enumeration."
+      "notes": "P5 Task 3: per-shape sentinel +0xd0 proven to be the NxShapeType tag by the pinned NxShape.h enumeration.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000988",
@@ -17868,7 +17922,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3050",
       "static_proof": "reads radius/half-height/third word from desc into +0xe0/e4/e8 (height halved), then applies BASE slot 1; the validation arm is also transcribed and driven: an invalid radius is stored unconditionally (with height halved into +0xe4 regardless), reported through the error stream (1, CapsuleShape.cpp, line 0x37, 0, \"radius should be positive!\"), and the BASE apply-desc tail runs anyway (loaderr family)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000990",
@@ -17904,7 +17959,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3053",
       "static_proof": "__thiscall: radius (+0xe0) to record+0x4c, TWICE the stored half-height (fld; fadd st(0),st(0) over +0xe4) to record+0x50, third word (+0xe8) raw to record+0x54, then TAIL-JUMPS to the BASE save-to-descriptor row 0x000256f0; CAPSULE vtable .rdata 0x106b20 slot 13",
       "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests capsave family on a real constructed capsule: oracle record digest bf079f3c equals candidate bitwise over the poisoned 0x58-byte record",
-      "notes": "P5 Task 3: descriptor height is the FULL height -- the stored word is the half-height."
+      "notes": "P5 Task 3: descriptor height is the FULL height -- the stored word is the half-height.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000992",
@@ -17976,7 +18032,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3057",
       "static_proof": "__thiscall: stores the argument to +0xe0 (0x00021be6) then TAIL-JUMPS through BASE slot 6 with the flag forced to 1 -- a null-owner no-op on a detached shape",
       "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests capsetrad family on a real constructed capsule with radius 1.5f: stored word 3fc00000 equal candidate",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000996",
@@ -18084,7 +18141,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3060",
       "static_proof": "copies pose-one translation (+0x30/+34/+38) to out[0..2] then halfHeight+radius (+0xe4 + +0xe0) to out[3]; CAPSULE vtable .rdata 0x106b20 slot 10",
       "dynamic_proof": "driven by the aabbrows family on a real constructed capsule: all four words bitwise-equal candidate",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001002",
@@ -18120,7 +18178,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3061",
       "static_proof": "zeroes out[0..2] (xor edx,edx; three stores) then halfHeight+radius (+0xe4 + +0xe0) to out[3]; CAPSULE vtable .rdata 0x106b20 slot 11",
       "dynamic_proof": "driven by the aabbrows family on a real constructed capsule: all four words bitwise-equal candidate",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001004",
@@ -18138,7 +18197,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3062",
       "static_proof": "__thiscall: negated radius to out[0..2], raw radius to out[3..5]; computes reach = halfHeight + radius; CAPSULE vtable .rdata 0x106b20 slot 8",
       "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests capaabb family on a fresh capsule: minmax=80000000 x3 / 00000000 x3 equal candidate bitwise",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001005",
@@ -18318,7 +18378,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3074",
       "static_proof": "__thiscall: destroys colobj through [colobj-vtbl+0] flag 1 UNCONDITIONALLY (0x000225f3..f7), base-dtor chain, self-free through allocator slot +0x14 when flag&1; CAPSULE vtable .rdata 0x106b20 slot 0",
       "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests capdtor family on a real constructed capsule, flag=0 path: post-dtor oracle digest 7a376673 equals candidate bitwise",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001015",
@@ -18696,7 +18757,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3125",
       "static_proof": "xor al,al; ret 8 -- one stack argument, always false; BASE vtable .rdata 0x10107494 slot 7 (pe.json pointer record). Phase 3's unresolved continuous-collision sweep entry: the base cannot sweep, finals override it (box phys_fn_000951 etc.)",
       "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests basevt family against the transcription ShapeBase::nxBaseSlot7",
-      "notes": "P5 Task 3: the sweep itself remains the owning phase's row; this closes only the base-shape stub."
+      "notes": "P5 Task 3: the sweep itself remains the owning phase's row; this closes only the base-shape stub.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001036",
@@ -19416,7 +19478,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3184",
       "static_proof": "same body as phys_fn_001193: +4/+8 zeroed (0x2358b/8e), wall vptr 0x10106d08 (0x23591), member ctor phys_fn_002404 at +0xc (0x23597), argument stored at BOTH +8 and +0x18 (0x235a6/a9), member vptr 0x10106e54 (0x235a0), final vptr 0x10106dc8 (0x235ad)",
       "dynamic_proof": "driven inside the NxPhysicsObjectLayoutTests boxshape family through phys_fn_000977; the constructed object's +8/+0x18 point back at the shape and its member slot is non-null on both sides",
-      "notes": "P5 Task 3: the box-family instance of the shared collision-object constructor family."
+      "notes": "P5 Task 3: the box-family instance of the shared collision-object constructor family.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001076",
@@ -19992,7 +20055,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3221",
       "static_proof": "locks [self+0x14], calls the copy helper 001295 on [self+0x18] to write the 12-dword pose at [field+0x6c] into the out argument, then unlocks; ret 4",
       "dynamic_proof": "confirmed via lockedcopy differential (3z142): failures=0, with the Foundation lock API bound to __stdcall no-op stubs (the first attempt faulted because the fixture put the field where variant B reads its lock)",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001108",
@@ -20748,7 +20812,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3271",
       "static_proof": "locks [self+0x14], calls the copy helper 001297 on [self+0x18] to write three dwords from [field+0x90] into the out argument, then unlocks; ret 4",
       "dynamic_proof": "confirmed via lockedcopy differential (3z142): failures=0, with the Foundation lock API bound to __stdcall no-op stubs (the first attempt faulted because the fixture put the field where variant B reads its lock)",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001150",
@@ -21432,7 +21497,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3315",
       "static_proof": "locks [self+0x14], calls the copy helper 001299 on [self+0x18] to write nine dwords from [field+0x6c] into the out argument, then unlocks; ret 4",
       "dynamic_proof": "confirmed via lockedcopy differential (3z142): failures=0, with the Foundation lock API bound to __stdcall no-op stubs (the first attempt faulted because the fixture put the field where variant B reads its lock)",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001188",
@@ -22008,7 +22074,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3347",
       "static_proof": "locks [self+0x14], calls the copy helper 001289 on [self+0x18] to write the 12-dword pose at [field+0x6c] into the out argument, then unlocks; ret 4",
       "dynamic_proof": "confirmed via lockedcopy differential (3z142): failures=0, with the Foundation lock API bound to __stdcall no-op stubs (the first attempt faulted because the fixture put the field where variant B reads its lock)",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001220",
@@ -22044,7 +22111,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3348",
       "static_proof": "locks [self+0x14], calls the copy helper 001297 on [self+0x18] to write three dwords from [field+0x90] into the out argument, then unlocks; ret 4",
       "dynamic_proof": "confirmed via lockedcopy differential (3z142): failures=0, with the Foundation lock API bound to __stdcall no-op stubs (the first attempt faulted because the fixture put the field where variant B reads its lock)",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001222",
@@ -22080,7 +22148,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3349",
       "static_proof": "locks [self+0x14], calls the copy helper 001291 on [self+0x18] to write nine dwords from [field+0x6c] into the out argument, then unlocks; ret 4",
       "dynamic_proof": "confirmed via lockedcopy differential (3z142): failures=0, with the Foundation lock API bound to __stdcall no-op stubs (the first attempt faulted because the fixture put the field where variant B reads its lock)",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001224",
@@ -22512,7 +22581,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3374",
       "static_proof": "__thiscall ret 8, both args forwarded to phys_fn_001273 (0x24edb..df); PLANE vptr 0x10107430 (0x24ee4); 0x1c-byte collision object via SDK malloc(0x1c,0) built by phys_fn_001159 (0x24250 at 0x24f02) and stored at +0x9c (0x24f0b); sentinel +0xd0 overwritten to 0 = NX_SHAPE_PLANE (0x24f24); plane equation normal(0,1,0),D=0 at +0xe0..+0xec (0x24f2f..44); tangents filled by NxFoundation!NxNormalToTangents through import 0x1010418c (call 0x24f4e); +0x108 = 1 (0x24f57)",
       "dynamic_proof": "poisoned-0x10c-buffer differential NxPhysicsObjectLayoutTests plane family: oracle digest abed37e0 equals candidate under a six-pointer mask with the tangents folded IN (exact arithmetic for the default normal); sentinel 0, default equation and back-pointing colobj asserted",
-      "notes": "P5 Task 3: the census PLANE table 0x107430 is vindicated; the compound shape's table is 0x106c2c instead. Per-shape sentinels complete for five types."
+      "notes": "P5 Task 3: the census PLANE table 0x107430 is vindicated; the compound shape's table is 0x106c2c instead. Per-shape sentinels complete for five types.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001248",
@@ -22548,7 +22618,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3377",
       "static_proof": "xor al,al; ret 0xc -- two stack arguments, always false; BASE vtable .rdata 0x10107494 slot 4 (pe.json pointer record)",
       "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests basevt family against the transcription ShapeBase::nxBaseSlot4",
-      "notes": "P5 Task 3: consumer unestablished."
+      "notes": "P5 Task 3: consumer unestablished.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001250",
@@ -22584,7 +22655,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3378",
       "static_proof": "__thiscall: writes normal (+0xe0/e4/e8) to record+0x4c/50/54 and the NEGATED distance (fld [+0xec]; fchs) to record+0x58, then TAIL-JUMPS to the BASE save-to-descriptor row 0x000256f0; PLANE vtable .rdata 0x107430 slot 13",
       "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests planesave family on a real constructed plane: oracle record digest 7629841d equals candidate bitwise over the poisoned 0x58-byte record; neg_d word asserted 80000000",
-      "notes": "P5 Task 3: descriptor stores -D -- the ctor load path inverts it back."
+      "notes": "P5 Task 3: descriptor stores -D -- the ctor load path inverts it back.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001252",
@@ -22692,7 +22764,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3391",
       "static_proof": "__thiscall: zeroes out[0..2] (xor ecx,ecx; three stores) then writes +FLT_MAX (0x7f7fffff) to out[3] -- the plane's unbounded reach; ONE row filling BOTH slots 9 and 11 of PLANE vtable .rdata 0x107430",
       "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests planeext family on a real constructed plane: out=00000000 x3 then 7f7fffff, bitwise-equal candidate",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001258",
@@ -22800,7 +22873,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3400",
       "static_proof": "__thiscall: destroys the embedded collision object through [colobj-vtbl+0] with flag 1 UNCONDITIONALLY (0x00025433..37), runs the base-dtor chain 0x26bd0, frees this through SDK-allocator slot +0x14 when flag&1; PLANE vtable .rdata 0x107430 slot 0",
       "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests dtors2 family on a real constructed plane, flag=0 path: post-dtor oracle digest 7ac6fe28 equals candidate bitwise under the six-pointer mask",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001264",
@@ -22836,7 +22910,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3403",
       "static_proof": "calls normal-setter helper 0x24fc0 then tail-applies BASE slot 1; driven bitwise on default normal",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001266",
@@ -22908,7 +22983,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3408",
       "static_proof": "mov ecx,[esp+4]; mov edx,[esp+8]; mov eax,[ecx]; push edx; call [eax+0x24]; ret -- cdecl, owner first, vtable slot 9, no null test",
       "dynamic_proof": "installed into .data 0x10128478 by the ShapeBase ctor differential (NxPhysicsObjectLayoutTests shapebase family)",
-      "notes": "P5 Task 3: the owner-recompute arm Prunable::UpdateWorldAABB dispatches; installed by phys_fn_001273 at 0x0002562b."
+      "notes": "P5 Task 3: the owner-recompute arm Prunable::UpdateWorldAABB dispatches; installed by phys_fn_001273 at 0x0002562b.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001270",
@@ -22944,7 +23020,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3409",
       "static_proof": "same frame as phys_fn_001269 through [eax+0x28] -- vtable slot 10",
       "dynamic_proof": "installed into .data 0x10128474 by the ShapeBase ctor differential (NxPhysicsObjectLayoutTests shapebase family)",
-      "notes": "P5 Task 3: the owner-notify arm; installed by phys_fn_001273 at 0x00025635."
+      "notes": "P5 Task 3: the owner-notify arm; installed by phys_fn_001273 at 0x00025635.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001272",
@@ -22980,7 +23057,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3410",
       "static_proof": "__thiscall ret 8: vptr 0x10107494 (0x2553d); arg1->+4 (0x25543); +8 zeroed; three identity poses +0x0c/+0x3c/+0x6c written twice; +0x9c/+0xa0 zeroed; Prunable ctor at 0xa4 (0x255df->0xb54a0) then mOwner=this (0x25649); +0xd0=0x7fffffff (0x255ed); +0xd4=arg2 ([esp+0x14]==entry [esp+8], 0x255f7); halfwords +0xd8/+0xda zero, +0xdc=6, +0xde=8; hook stores to .data 0x128470/74/78 (0x2562b..3f)",
       "dynamic_proof": "poisoned-0xe0-buffer differential NxPhysicsObjectLayoutTests shapebase family: oracle digest de5f5000 equals candidate under a five-pointer mask; owner_self registration asserted",
-      "notes": "P5 Task 3: base-shape constructor; sizeof(ShapeBase)==0xe0 with the box hull embedding at +0xe0. Owner-registration arm ([owner+4]+0x48 -> phys_fn_002423) awaits Task 4 actors."
+      "notes": "P5 Task 3: base-shape constructor; sizeof(ShapeBase)==0xe0 with the box hull embedding at +0xe0. Owner-registration arm ([owner+4]+0x48 -> phys_fn_002423) awaits Task 4 actors.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001274",
@@ -23052,7 +23130,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3414",
       "static_proof": "__thiscall ret 4: copies pose3 (12 words from +0x6c) to record+8, movzx halfword +0xde -> dword record+0x38, halfwords +0xd8/+0xda -> record+0x3c/0x3e, [colobj+4] -> record+0x40 UNCONDITIONALLY (no null test), returns al=1; BASE vtable .rdata 0x10107494 slot 2",
       "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests basesave family on a real constructed sphere: oracle digest bc9dc964 equals candidate bitwise over the whole 0x48-byte record including untouched poison bytes",
-      "notes": "P5 Task 3: the differential caught a first-draft transcription bug ([colobj] read instead of [colobj+4]) before it could ship -- the gate is doing its job."
+      "notes": "P5 Task 3: the differential caught a first-draft transcription bug ([colobj] read instead of [colobj+4]) before it could ship -- the gate is doing its job.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001278",
@@ -23988,7 +24067,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3480",
       "static_proof": "BASE-level apply-group: group >= 0x20 reports (1, Shape.cpp, line 0xe0, 0, \"group ID must be < 32!\") through the guarded error-stream slot -- int3 when the flag word is zero -- then JOINS the valid path, skipping only the store; valid groups store at +0xd8; BOTH paths run the dirty-flag 0x04 helper 0x26c90 and rewrite the prunable unidentified dword mPrunable24 (abs +0xc8) as the group mask 1 << low-byte(group), shift count masked to five bits. Report arm and mask driven bitwise by the grouperr family",
       "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests setgroup family on a fresh sphere with group 7: +0xd8 word 0007 equal candidate",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001330",
@@ -24312,7 +24392,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3508",
       "static_proof": "__thiscall ret 4: copies descriptor pose3 (12 words from +0x08) to shape+0x6c, halfword +0x38 -> +0xde, halfword +0x3e -> +0xda, [desc+0x40] -> [colobj+4] when colobj non-null, calls registry phys_fn_000480(shape, name) and validated group-setter phys_fn_001329(group), returns al=1; BASE vtable .rdata 0x10107494 slot 1, inherited by ALL five finals",
       "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests applydesc family on a real constructed sphere with a crafted NULL-name record: oracle digest bfd22e48 equals candidate bitwise over the shape tail",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001348",
@@ -24348,7 +24429,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3510",
       "static_proof": "__thiscall ret 8, both args forwarded to phys_fn_001273 (0x277bb..cf); SPHERE vptr 0x10107528 (0x277d4); +0xe0 radius zeroed (0x277da); 0x1c-byte collision object via SDK malloc(0x1c,0) (0x27de4..f2) built by phys_fn_001193 itself (0x277fc) and stored at +0x9c (0x27805); sentinel +0xd0 overwritten to 1 (0x2780b)",
       "dynamic_proof": "poisoned-0xe4-buffer differential NxPhysicsObjectLayoutTests sphere family: oracle digest 37ea7205 equals candidate under a six-pointer mask; radius zero, sentinel 1 and back-pointing colobj asserted",
-      "notes": "P5 Task 3: the sphere has NO secondary base -- +0xe0 is plain radius data. Per-shape sentinels so far: box 2, sphere 1."
+      "notes": "P5 Task 3: the sphere has NO secondary base -- +0xe0 is plain radius data. Per-shape sentinels so far: box 2, sphere 1.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001350",
@@ -24420,7 +24502,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3515",
       "static_proof": "reads radius from record+0x4c through the error stream, stores at +0xe0, tail-applies BASE slot 1; driven bitwise by the sphload family; the validation arm is also transcribed and driven: an invalid radius is STORED unconditionally, reported through the error stream (1, SphereShape.cpp, line 0x35, 0, \"radius should be positive!\"), and the BASE apply-desc tail runs anyway (loaderr family)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001354",
@@ -24456,7 +24539,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3518",
       "static_proof": "writes radius (+0xe0) to record+0x4c then TAIL-JUMPS to the BASE save-to-descriptor row 0x000256f0; PLANE/BOX slot-13 pattern",
       "dynamic_proof": "driven by the sphererows family on a real constructed sphere: oracle record digest f9280a78 equals candidate bitwise over the poisoned 0x58-byte record",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001356",
@@ -24492,7 +24576,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3519",
       "static_proof": "SPHERE slot-14 set-radius: stores unconditionally at +0xe0, fcomps against the .rdata 0x101041f0 zero literal (report fires unless strictly positive), then BASE slot 6 owner notify and dirty-flag 0x20 via 0x26c90; the report arm is transcribed through the error stream -- indirect cdecl five-arg call (kind,file,line=0x4a,code,message) behind the guarded slot at 0x101041b4/0x101041b4 -- and driven bitwise by the errstream family",
       "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests setrad family on a real constructed sphere with radius 1.25f: stored word 3fa00000 equal candidate",
-      "notes": "P5 Task 3: the invalid-radius report arm needs Task 2's error stream; recorded, not modeled."
+      "notes": "P5 Task 3: the invalid-radius report arm needs Task 2's error stream; recorded, not modeled.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001358",
@@ -24528,7 +24613,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3522",
       "static_proof": "fld [+0xe0]; ret -- returns the radius in st0; SPHERE vtable .rdata 0x107528 slot 15",
       "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests sphererows family: radius bits equal candidate on a fresh sphere (zero)",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001360",
@@ -24564,7 +24650,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3523",
       "static_proof": "__thiscall: min = t - r and max = t + r per axis over pose-one translation (+0x30/+34/+38) and radius (+0xe0), six floats to a caller record; SPHERE vtable .rdata 0x107528 slot 9",
       "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests aabbrows family on a real constructed sphere: all six words bitwise-equal candidate (zeros on the fresh object)",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001362",
@@ -24600,7 +24687,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3524",
       "static_proof": "copies pose-one translation (+0x30/+34/+38) to out[0..2] and radius (+0xe0) to out[3]; SPHERE vtable slot 10",
       "dynamic_proof": "driven by the sphererows family: all four words bitwise-equal candidate on a fresh sphere",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001364",
@@ -24636,7 +24724,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3525",
       "static_proof": "zeroes out[0..2] (xor edx,edx; three stores) then radius to out[3]; SPHERE vtable slot 11",
       "dynamic_proof": "driven by the sphererows family: all four words bitwise-equal candidate on a fresh sphere",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001366",
@@ -24672,7 +24761,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3526",
       "static_proof": "__thiscall: negated radius to out[0..2] (fchs/dup/fxch dance 0x000279d0..a1), raw radius to out[3..5]; SPHERE vtable .rdata 0x107528 slot 8",
       "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests sphlocal family on a fresh sphere: mins are -0.0f sign bits (80000000 x3), maxes +0.0f -- oracle digest 33c61825 equal candidate bitwise",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001368",
@@ -24816,7 +24906,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3533",
       "static_proof": "__thiscall: destroys the embedded collision object through [colobj-vtbl+0] with flag 1 UNCONDITIONALLY (0x00027c43..47), runs the base-dtor chain 0x26bd0, frees this through SDK-allocator slot +0x14 when flag&1; SPHERE vtable .rdata 0x107528 slot 0",
       "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests sphdtor family on a real constructed sphere, flag=0 path: post-dtor oracle digest c4a35d15 equals candidate bitwise under the six-pointer mask",
-      "notes": "P5 Task 3: the colobj deleting-dtor row stays its own census row."
+      "notes": "P5 Task 3: the colobj deleting-dtor row stays its own census row.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001376",
@@ -24888,7 +24979,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3541",
       "static_proof": "__thiscall ret 8, both args forwarded to phys_fn_001273 (0x27dbb..bf); MESH vptr 0x10107630 (0x27dc4); +0xe0/+0xe4 zeroed (0x27dca/dd4); 0x1c-byte collision object via SDK malloc(0x1c,0) built by phys_fn_001241 (0x24e40 at 0x27df6) and stored at +0x9c (0x27dff); sentinel +0xd0 overwritten to 4 = NX_SHAPE_MESH (0x27e05)",
       "dynamic_proof": "poisoned-0xe8-buffer differential NxPhysicsObjectLayoutTests mesh family: oracle digest 422a1f78 equals candidate under a six-pointer mask; zeroed data words, sentinel 4 and back-pointing colobj asserted",
-      "notes": "P5 Task 3: completes the six shape-family constructors; compound (phys_fn_001033, sentinel 5) decoded but untranscribed."
+      "notes": "P5 Task 3: completes the six shape-family constructors; compound (phys_fn_001033, sentinel 5) decoded but untranscribed.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001380",
@@ -24924,7 +25016,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3544",
       "static_proof": "mov eax,[ecx+0xe0]; mov eax,[eax+0xe4]; ret -- dereferences the mesh-data pointer and returns its +0xe4 word; MESH vtable .rdata 0x107630 slot 17 (the tail row beyond the shared identity triple)",
       "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests meshword family with a planted record: both sides return the marked word",
-      "notes": "P5 Task 3: real +0xe0 assignment arrives with NxTriangleMesh wiring."
+      "notes": "P5 Task 3: real +0xe0 assignment arrives with NxTriangleMesh wiring.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001382",
@@ -24960,7 +25053,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3545",
       "static_proof": "wrapper indirection: stores *(wrapper+4) at +0xe0, increments inner refcount +0x74, stores flags, tail-jumps to BASE slot 1",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001384",
@@ -24996,7 +25090,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3547",
       "static_proof": "__thiscall: the mesh's +0xe4 word (via [+0xe0] deref) to record+0x4c and mWordE4 (+0xe4) to record+0x50, then TAIL-JUMPS to the BASE save-to-descriptor row 0x000256f0; MESH vtable .rdata 0x107630 slot 13",
       "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests meshrows family with a planted mesh record: oracle record digest 0ccd08b4 equals candidate bitwise over the poisoned 0x58-byte record",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001386",
@@ -25032,7 +25127,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3548",
       "static_proof": "copies four dwords from [meshptr+0x5c..0x68] to a caller record; SPHERE-style small getter; MESH vtable .rdata 0x107630 slot 11",
       "dynamic_proof": "driven by the meshrows family with the planted record: all four marked words bitwise-equal candidate",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001388",
@@ -25068,7 +25164,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3549",
       "static_proof": "copies six dwords from mesh+0x44 to the out array; driven bitwise by the meshwords44 family",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001390",
@@ -25104,7 +25201,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3550",
       "static_proof": "mov eax,ecx; ret -- returns this, ignores every argument; fills BOX vtable .rdata 0x10106ab8 slots 14, 15 AND 16",
       "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests boxrow family: all three slots return the constructed object address on both sides (pointer equality; never folded)",
-      "notes": "P5 Task 3: one row serving three slots."
+      "notes": "P5 Task 3: one row serving three slots.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001392",
@@ -25248,7 +25346,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3590",
       "static_proof": "__thiscall: destroys the embedded collision object through [colobj-vtbl+0] with flag 1 UNCONDITIONALLY (0x00028e93..97), DECREMENTS the bound mesh refcount at mesh+0x74 when non-null (0x00028e99..a6), runs the base-dtor chain, frees this through allocator slot +0x14 when flag&1; MESH vtable .rdata 0x107630 slot 0",
       "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests dtors2 family on a real constructed mesh with no bound mesh: post-dtor oracle digest b3c6ab70 equals candidate bitwise",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001400",
@@ -28236,7 +28335,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4199",
       "static_proof": "calls the 001552 vptr-ctor, sets [+0x10]=arg, [+0xc]=0, installs vptr 0x1010785c; returns this",
       "dynamic_proof": "confirmed via ctorwrap differential (3z98): failures=0",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001566",
@@ -28344,7 +28444,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4204",
       "static_proof": "calls the 001552 vptr-ctor, sets [+0x10]=arg, [+0xc]=0, installs vptr 0x1010786c; returns this",
       "dynamic_proof": "confirmed via ctorwrap differential (3z98): failures=0",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001572",
@@ -28416,7 +28517,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4213",
       "static_proof": "calls the 001552 vptr-ctor, sets [+0xc]=0, [+0x10]=0, [+0x14]=arg, installs vptr 0x10107890; returns this",
       "dynamic_proof": "confirmed via ctorwrap differential (3z98): failures=0",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001576",
@@ -28596,7 +28698,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4236",
       "static_proof": "static review of the recorded shape: owned-pointer deleting destructor (0x2ea80u, ret 4); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via ownedptr differential (3z181): eight combinations -- both rows by owned-pointer present/absent by both flag arms -- all failures=0, comparing the return, the object and the ordered sequence of freed blocks",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001586",
@@ -28632,7 +28735,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4239",
       "static_proof": "static review of the recorded shape: owned-pointer deleting destructor (0x2ead0u, ret 4); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via ownedptr differential (3z181): eight combinations -- both rows by owned-pointer present/absent by both flag arms -- all failures=0, comparing the return, the object and the ordered sequence of freed blocks",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001588",
@@ -30486,7 +30590,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4720",
       "static_proof": null,
       "dynamic_proof": "NxPhysicsCollisionTests segment_segment, oracle differential against base+0x00033e80 under both control words; see evidence/phase3-narrow-phase.md",
-      "notes": "Phase 2 deferred this row homeless_shared_code; Phase 3 discharged the deferral, and gates/phase2-closure.json records it."
+      "notes": "Phase 2 deferred this row homeless_shared_code; Phase 3 discharged the deferral, and gates/phase2-closure.json records it.",
+      "implementation": "Physics/src/NarrowPhase.cpp"
     },
     {
       "id": "phys_fn_001691",
@@ -36660,7 +36765,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6410",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P4 Task 3: reconstructed and driven by NxPhysicsAssetTests."
+      "notes": "P4 Task 3: reconstructed and driven by NxPhysicsAssetTests.",
+      "implementation": "Physics/src/PMap.cpp"
     },
     {
       "id": "phys_fn_002034",
@@ -36696,7 +36802,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6414",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P4 Task 3: the supplied-stream arm is reconstructed and driven by NxPhysicsAssetTests. The filename arm 0x00050123-0x0005014f and the build-your-own-stream arm at 0x0005017b are NOT reconstructed."
+      "notes": "P4 Task 3: the supplied-stream arm is reconstructed and driven by NxPhysicsAssetTests. The filename arm 0x00050123-0x0005014f and the build-your-own-stream arm at 0x0005017b are NOT reconstructed.",
+      "implementation": "Physics/src/PMap.cpp"
     },
     {
       "id": "phys_fn_002036",
@@ -36876,7 +36983,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6466",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P4 Task 3: reconstructed and driven by NxPhysicsAssetTests."
+      "notes": "P4 Task 3: reconstructed and driven by NxPhysicsAssetTests.",
+      "implementation": "Physics/src/PMap.cpp"
     },
     {
       "id": "phys_fn_002046",
@@ -36912,7 +37020,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6467",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P4 Task 3: the LOAD arm is reconstructed and driven by NxPhysicsAssetTests. The COMPUTE arm 0x00050768-0x00050f02 is NOT reconstructed."
+      "notes": "P4 Task 3: the LOAD arm is reconstructed and driven by NxPhysicsAssetTests. The COMPUTE arm 0x00050768-0x00050f02 is NOT reconstructed.",
+      "implementation": "Physics/src/PMap.cpp"
     },
     {
       "id": "phys_fn_002048",
@@ -36984,7 +37093,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6527",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P4 Task 3: reconstructed and driven by NxPhysicsAssetTests."
+      "notes": "P4 Task 3: reconstructed and driven by NxPhysicsAssetTests.",
+      "implementation": "Physics/src/PMap.cpp"
     },
     {
       "id": "phys_fn_002052",
@@ -37146,7 +37256,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6571",
       "static_proof": "static review of the recorded shape: singleton release of four fields with two adjusted by minus four (0x515d0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the adjusted2060 differential (3z225): failures=0 over three consecutive runs across all sixteen occupancy pans, comparing the hit count, the ORDERED sequence of adjusted arguments each call received, and the whole object -- so a model that skipped the minus-four adjustment could not have passed",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_002061",
@@ -38622,7 +38733,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6799",
       "static_proof": "static review of the recorded shape: scalar deleting destructor (0x532b0, ret 4); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via dtor2142 differential (3z166): both arms failures=0, with the allocator slot 0x101041bc bound to a fake allocator and the free recorder shared by both sides",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_002143",
@@ -38913,7 +39025,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6833",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/TriangleMesh.cpp"
     },
     {
       "id": "phys_fn_002159",
@@ -38985,7 +39098,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6838",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P4 Task 4: reconstructed in full -- fields 1-19 including the acceleration blob length and collapsed buffer -- and driven by NxPhysicsAssetTests over nine writer fixtures. The model at internal+0x20 is dispatched through BaseModel slot 5 (call [edx+0x14] at 0x00053b2f); the harness stands that virtual in on both sides, so the tree serialiser behind it stays unmapped census work."
+      "notes": "P4 Task 4: reconstructed in full -- fields 1-19 including the acceleration blob length and collapsed buffer -- and driven by NxPhysicsAssetTests over nine writer fixtures. The model at internal+0x20 is dispatched through BaseModel slot 5 (call [edx+0x14] at 0x00053b2f); the harness stands that virtual in on both sides, so the tree serialiser behind it stays unmapped census work.",
+      "implementation": "Physics/src/TriangleMesh.cpp"
     },
     {
       "id": "phys_fn_002163",
@@ -39021,7 +39135,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6847",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/TriangleMesh.cpp"
     },
     {
       "id": "phys_fn_002165",
@@ -39093,7 +39208,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6856",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/TriangleMesh.cpp"
     },
     {
       "id": "phys_fn_002169",
@@ -39273,7 +39389,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6871",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/TriangleMesh.cpp"
     },
     {
       "id": "phys_fn_002179",
@@ -40407,7 +40524,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6988",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/TriangleMesh.cpp"
     },
     {
       "id": "phys_fn_002242",
@@ -40443,7 +40561,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6992",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/TriangleMesh.cpp"
     },
     {
       "id": "phys_fn_002244",
@@ -40479,7 +40598,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6997",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00054e70"
+      "notes": "continuation of the entry at 0x00054e70",
+      "implementation": "Physics/src/TriangleMesh.cpp"
     },
     {
       "id": "phys_fn_002246",
@@ -40713,7 +40833,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7049",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/TriangleMesh.cpp"
     },
     {
       "id": "phys_fn_002259",
@@ -40749,7 +40870,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7052",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/TriangleMesh.cpp"
     },
     {
       "id": "phys_fn_002261",
@@ -40785,7 +40907,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7080",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P4 Task 3: reconstructed and driven by NxPhysicsAssetTests."
+      "notes": "P4 Task 3: reconstructed and driven by NxPhysicsAssetTests.",
+      "implementation": "Physics/src/TriangleMesh.cpp"
     },
     {
       "id": "phys_fn_002263",
@@ -64874,7 +64997,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12500",
       "static_proof": "static review of the recorded shape: float-out three-argument global-call thunk (0x87f10, ret 4); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the floatout3575 differential (3z204): failures=0 over three consecutive runs, comparing the hit count, all three arguments and the three floats written through the out pointer, with the slot bound to a stub returning a float triple",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_003576",
@@ -67268,7 +67392,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12760",
       "static_proof": null,
       "dynamic_proof": "confirmed via gate3708 differential (3z159): both arms failures=0, with the report slot, gate byte and lock API all bound",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_003709",
@@ -67340,7 +67465,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12768",
       "static_proof": "locks [self+0x10], calls the copy helper 003425 on [self+0x14] to write eleven dwords from [field+0x28] into the out argument, then unlocks; ret 4",
       "dynamic_proof": "confirmed via lockedcopy differential (3z142): failures=0, with the Foundation lock API bound to __stdcall no-op stubs (the first attempt faulted because the fixture put the field where variant B reads its lock)",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_003713",
@@ -68636,7 +68762,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12865",
       "static_proof": "locks [self+0x10], calls the copy helper 003483 on [self+0x14] to write six dwords from [field+0x5c] into the out argument, then unlocks; ret 4",
       "dynamic_proof": "confirmed via lockedcopy differential (3z142): failures=0, with the Foundation lock API bound to __stdcall no-op stubs (the first attempt faulted because the fixture put the field where variant B reads its lock)",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_003785",
@@ -69212,7 +69339,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12909",
       "static_proof": "locks [self+0x10], calls the copy helper 003563 on [self+0x14] to write the 12-dword pose at [field+0x18] into the out argument, then unlocks; ret 4",
       "dynamic_proof": "confirmed via lockedcopy differential (3z142): failures=0, with the Foundation lock API bound to __stdcall no-op stubs (the first attempt faulted because the fixture put the field where variant B reads its lock)",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_003817",
@@ -69284,7 +69412,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12911",
       "static_proof": "locks [self+0x10], calls the copy helper 003567 on [self+0x14] to write nine dwords from [field+0x18] into the out argument, then unlocks; ret 4",
       "dynamic_proof": "confirmed via lockedcopy differential (3z142): failures=0, with the Foundation lock API bound to __stdcall no-op stubs (the first attempt faulted because the fixture put the field where variant B reads its lock)",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_003821",
@@ -70184,7 +70313,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/12970",
       "static_proof": null,
       "dynamic_proof": "confirmed via mutexwork differential (3z173): both arms failures=0 for all four rows, comparing the report tuple and the whole object buffer, with the report slot and lock API bound",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_003871",
@@ -74090,7 +74220,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13500",
       "static_proof": "scale = a/b; [this+0x154/0x158/0x15c] += scale * vec[0/1/2]; ret 0xc",
       "dynamic_proof": "confirmed via xaccum drive (3z74): failures=0",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_004088",
@@ -75836,7 +75967,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13900",
       "static_proof": null,
       "dynamic_proof": "confirmed via guardedstore differential (3z172): both arms failures=0 for all five rows, comparing the report tuple, the whole object and the stored word, with the report slot bound",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_004185",
@@ -77708,7 +77840,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14390",
       "static_proof": null,
       "dynamic_proof": "confirmed via guardedstore differential (3z172): both arms failures=0 for all five rows, comparing the report tuple, the whole object and the stored word, with the report slot bound",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_004289",
@@ -77780,7 +77913,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14394",
       "static_proof": null,
       "dynamic_proof": "confirmed via guardedstore differential (3z172): both arms failures=0 for all five rows, comparing the report tuple, the whole object and the stored word, with the report slot bound",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_004293",
@@ -78536,7 +78670,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14713",
       "static_proof": null,
       "dynamic_proof": "confirmed via guardedstore differential (3z172): both arms failures=0 for all five rows, comparing the report tuple, the whole object and the stored word, with the report slot bound",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_004335",
@@ -78608,7 +78743,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14719",
       "static_proof": null,
       "dynamic_proof": "confirmed via guardedstore differential (3z172): both arms failures=0 for all five rows, comparing the report tuple, the whole object and the stored word, with the report slot bound",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_004339",
@@ -80030,7 +80166,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15130",
       "static_proof": "static review of the recorded shape: constant-argument virtual thunk (0x4417u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via vtconst differential (3z162): slot hit count and argument both failures=0 for all nine rows, with vtable slot +0x4c bound to a __stdcall recorder",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_004418",
@@ -80066,7 +80203,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15131",
       "static_proof": "static review of the recorded shape: constant-argument virtual thunk (0x4419u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via vtconst differential (3z162): slot hit count and argument both failures=0 for all nine rows, with vtable slot +0x4c bound to a __stdcall recorder",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_004420",
@@ -80102,7 +80240,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15132",
       "static_proof": "static review of the recorded shape: constant-argument virtual thunk (0x4421u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via vtconst differential (3z162): slot hit count and argument both failures=0 for all nine rows, with vtable slot +0x4c bound to a __stdcall recorder",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_004422",
@@ -80138,7 +80277,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15133",
       "static_proof": "static review of the recorded shape: constant-argument virtual thunk (0x4423u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via vtconst differential (3z162): slot hit count and argument both failures=0 for all nine rows, with vtable slot +0x4c bound to a __stdcall recorder",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_004424",
@@ -80174,7 +80314,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15134",
       "static_proof": "static review of the recorded shape: constant-argument virtual thunk (0x4425u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via vtconst differential (3z162): slot hit count and argument both failures=0 for all nine rows, with vtable slot +0x4c bound to a __stdcall recorder",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_004426",
@@ -80210,7 +80351,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15135",
       "static_proof": "static review of the recorded shape: constant-argument virtual thunk (0x4427u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via vtconst differential (3z162): slot hit count and argument both failures=0 for all nine rows, with vtable slot +0x4c bound to a __stdcall recorder",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_004428",
@@ -80246,7 +80388,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15136",
       "static_proof": "static review of the recorded shape: constant-argument virtual thunk (0x4429u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via vtconst differential (3z162): slot hit count and argument both failures=0 for all nine rows, with vtable slot +0x4c bound to a __stdcall recorder",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_004430",
@@ -80282,7 +80425,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15137",
       "static_proof": "static review of the recorded shape: constant-argument virtual thunk (0x4431u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via vtconst differential (3z162): slot hit count and argument both failures=0 for all nine rows, with vtable slot +0x4c bound to a __stdcall recorder",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_004432",
@@ -80318,7 +80462,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15138",
       "static_proof": "static review of the recorded shape: constant-argument virtual thunk (0x4433u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via vtconst differential (3z162): slot hit count and argument both failures=0 for all nine rows, with vtable slot +0x4c bound to a __stdcall recorder",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_004434",
@@ -80714,7 +80859,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15163",
       "static_proof": null,
       "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_004456",
@@ -81362,7 +81508,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15208",
       "static_proof": "static review of the recorded shape: lock-bracketed global-flag read (0xb0f10); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via globalflag4491 differential (3z176): the non-zero and zero flag arms both failures=0, with the data word 0x10127180 bound and the lock API bound",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_004492",
@@ -81434,7 +81581,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15212",
       "static_proof": null,
       "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_004496",
@@ -81974,7 +82122,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15248",
       "static_proof": null,
       "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_004526",
@@ -82514,7 +82663,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15288",
       "static_proof": null,
       "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_004556",
@@ -83054,7 +83204,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15324",
       "static_proof": null,
       "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_004586",
@@ -83522,7 +83673,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15358",
       "static_proof": null,
       "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_004612",
@@ -84026,7 +84178,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15393",
       "static_proof": null,
       "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_004640",
@@ -84566,7 +84719,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15433",
       "static_proof": null,
       "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_004670",
@@ -85034,7 +85188,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15467",
       "static_proof": null,
       "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_004696",
@@ -85898,7 +86053,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15518",
       "static_proof": "static review of the recorded shape: lock-bracketed registry lookup (0xb3670); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via registry4743 differential (3z182): failures=0 for two object shapes, with the registry global 0x10123c0c bound null and the lock API bound",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_004744",
@@ -85970,7 +86126,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15522",
       "static_proof": null,
       "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_004748",
@@ -86258,7 +86415,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15540",
       "static_proof": "static review of the recorded shape: guarded dispatch plus chain walk (0xb3920); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via chain4763 differential (3z178): twelve combinations -- three guard arms by chain lengths 0..3 -- all failures=0, comparing the recorded dispatch-and-walk sequence by node identity, the visit count and the dispatch argument",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_004764",
@@ -86312,7 +86470,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15548",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P4 Task 4: reconstructed; the growth-by-doubling shape the store half drives."
+      "notes": "P4 Task 4: reconstructed; the growth-by-doubling shape the store half drives.",
+      "implementation": "Physics/src/MemoryStream.cpp"
     },
     {
       "id": "phys_fn_004767",
@@ -86348,7 +86507,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15554",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P4 Task 4: reconstructed; every non-last block is exactly full, so the sum of offsets is the byte count."
+      "notes": "P4 Task 4: reconstructed; every non-last block is exactly full, so the sum of offsets is the byte count.",
+      "implementation": "Physics/src/MemoryStream.cpp"
     },
     {
       "id": "phys_fn_004769",
@@ -86384,7 +86544,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15557",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P4 Task 4: reconstructed."
+      "notes": "P4 Task 4: reconstructed.",
+      "implementation": "Physics/src/MemoryStream.cpp"
     },
     {
       "id": "phys_fn_004771",
@@ -86420,7 +86581,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15559",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P4 Task 3: reconstructed and driven by NxPhysicsAssetTests. The bit-mask reset at 0x000b3aa2 is reconstructed but no fixture interleaves a bit read with a raw read, so it is unfalsified."
+      "notes": "P4 Task 3: reconstructed and driven by NxPhysicsAssetTests. The bit-mask reset at 0x000b3aa2 is reconstructed but no fixture interleaves a bit read with a raw read, so it is unfalsified.",
+      "implementation": "Physics/src/MemoryStream.cpp"
     },
     {
       "id": "phys_fn_004773",
@@ -86456,7 +86618,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15560",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P4 Task 3: reconstructed and driven by NxPhysicsAssetTests."
+      "notes": "P4 Task 3: reconstructed and driven by NxPhysicsAssetTests.",
+      "implementation": "Physics/src/MemoryStream.cpp"
     },
     {
       "id": "phys_fn_004775",
@@ -86564,7 +86727,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15563",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P4 Task 4: reconstructed; already driven as kStreamSeekRva by NxPhysicsAssetTests since Task 3."
+      "notes": "P4 Task 4: reconstructed; already driven as kStreamSeekRva by NxPhysicsAssetTests since Task 3.",
+      "implementation": "Physics/src/MemoryStream.cpp"
     },
     {
       "id": "phys_fn_004781",
@@ -86600,7 +86764,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15565",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P4 Task 4: reconstructed with the four-argument form (size, buffer, fill, initialOffset); both known callers pass fill=0 and initialOffset=size."
+      "notes": "P4 Task 4: reconstructed with the four-argument form (size, buffer, fill, initialOffset); both known callers pass fill=0 and initialOffset=size.",
+      "implementation": "Physics/src/MemoryStream.cpp"
     },
     {
       "id": "phys_fn_004783",
@@ -86636,7 +86801,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15570",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P4 Task 4: reconstructed."
+      "notes": "P4 Task 4: reconstructed.",
+      "implementation": "Physics/src/MemoryStream.cpp"
     },
     {
       "id": "phys_fn_004785",
@@ -86672,7 +86838,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15576",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P4 Task 4: reconstructed; the self-call at 0x000b3c9e re-enters with the count cleared and returns at once."
+      "notes": "P4 Task 4: reconstructed; the self-call at 0x000b3c9e re-enters with the count cleared and returns at once.",
+      "implementation": "Physics/src/MemoryStream.cpp"
     },
     {
       "id": "phys_fn_004787",
@@ -86708,7 +86875,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15581",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P4 Task 4: reconstructed in the image's own shape -- SDK-allocated blocks, born full over given bytes and rewound with seek(0). The Task 3 inline-block stand-in was replaced by this transcription; every pmap case stayed green across the swap."
+      "notes": "P4 Task 4: reconstructed in the image's own shape -- SDK-allocated blocks, born full over given bytes and rewound with seek(0). The Task 3 inline-block stand-in was replaced by this transcription; every pmap case stayed green across the swap.",
+      "implementation": "Physics/src/MemoryStream.cpp"
     },
     {
       "id": "phys_fn_004789",
@@ -86762,7 +86930,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15586",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P4 Task 4: reconstructed as a tail-call alias of phys_fn_004784."
+      "notes": "P4 Task 4: reconstructed as a tail-call alias of phys_fn_004784.",
+      "implementation": "Physics/src/MemoryStream.cpp"
     },
     {
       "id": "phys_fn_004792",
@@ -86834,7 +87003,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15593",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P4 Task 4: reconstructed for the allocating arm the writer uses (destination 0); the writer pushes the length as an unread second argument at 0x00053b47."
+      "notes": "P4 Task 4: reconstructed for the allocating arm the writer uses (destination 0); the writer pushes the length as an unread second argument at 0x00053b47.",
+      "implementation": "Physics/src/MemoryStream.cpp"
     },
     {
       "id": "phys_fn_004796",
@@ -86870,7 +87040,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15603",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P4 Task 4: reconstructed; the stand-in model save writes through this row on the oracle side."
+      "notes": "P4 Task 4: reconstructed; the stand-in model save writes through this row on the oracle side.",
+      "implementation": "Physics/src/MemoryStream.cpp"
     },
     {
       "id": "phys_fn_004798",
@@ -87140,7 +87311,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15619",
       "static_proof": "xor eax,eax; ret 0x14 -- four stack arguments, always null; BASE vtable .rdata 0x10107494 slot 5 (pe.json pointer record)",
       "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests basevt family against the transcription ShapeBase::nxBaseSlot5",
-      "notes": "P5 Task 3: consumer unestablished."
+      "notes": "P5 Task 3: consumer unestablished.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_004813",
@@ -88262,7 +88434,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15790",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests."
+      "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests.",
+      "implementation": "Physics/src/opcode/IcePrunable.cpp"
     },
     {
       "id": "phys_fn_004875",
@@ -88298,7 +88471,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15791",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests."
+      "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests.",
+      "implementation": "Physics/src/opcode/IcePrunable.cpp"
     },
     {
       "id": "phys_fn_004877",
@@ -88334,7 +88508,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15794",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests."
+      "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests.",
+      "implementation": "Physics/src/opcode/IcePrunable.cpp"
     },
     {
       "id": "phys_fn_004879",
@@ -88370,7 +88545,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15797",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests."
+      "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests.",
+      "implementation": "Physics/src/opcode/IcePrunable.cpp"
     },
     {
       "id": "phys_fn_004881",
@@ -88406,7 +88582,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15799",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests."
+      "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests.",
+      "implementation": "Physics/src/opcode/IcePrunable.cpp"
     },
     {
       "id": "phys_fn_004883",
@@ -88442,7 +88619,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15801",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests."
+      "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests.",
+      "implementation": "Physics/src/opcode/IcePrunable.cpp"
     },
     {
       "id": "phys_fn_004885",
@@ -88478,7 +88656,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15803",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests."
+      "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests.",
+      "implementation": "Physics/src/opcode/IcePrunable.cpp"
     },
     {
       "id": "phys_fn_004887",
@@ -88514,7 +88693,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15805",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests."
+      "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests.",
+      "implementation": "Physics/src/opcode/IcePrunable.cpp"
     },
     {
       "id": "phys_fn_004889",
@@ -88550,7 +88730,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15807",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests."
+      "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests.",
+      "implementation": "Physics/src/opcode/IcePrunable.cpp"
     },
     {
       "id": "phys_fn_004891",
@@ -88586,7 +88767,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15809",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests."
+      "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests.",
+      "implementation": "Physics/src/opcode/IcePrunable.cpp"
     },
     {
       "id": "phys_fn_004893",
@@ -88622,7 +88804,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15811",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests."
+      "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests.",
+      "implementation": "Physics/src/opcode/IcePrunable.cpp"
     },
     {
       "id": "phys_fn_004895",
@@ -88658,7 +88841,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15815",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests."
+      "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests.",
+      "implementation": "Physics/src/opcode/IcePrunable.cpp"
     },
     {
       "id": "phys_fn_004897",
@@ -93526,7 +93710,8 @@
       "static_proof": "static review of the recorded shape: byte-guarded singleton release of two owned pointers (0xe32e0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the allocrel differential (3z219): failures=0 over three consecutive runs for all four pans -- guard off, and guard on with each combination of the two fields live -- comparing the slot hit count and the whole object, with the singleton bound",
       "notes": "",
-      "third_party": "opcode"
+      "third_party": "opcode",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_005160",
@@ -93858,7 +94043,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18019",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests."
+      "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests.",
+      "implementation": "External/opcode/novodex/Ice/IceRevisitedRadix.cpp"
     },
     {
       "id": "phys_fn_005178",
@@ -96039,7 +96225,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18345",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests."
+      "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests.",
+      "implementation": "Physics/src/opcode/IcePrunable.cpp"
     },
     {
       "id": "phys_fn_005298",
@@ -96075,7 +96262,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18346",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests."
+      "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests.",
+      "implementation": "Physics/src/opcode/IcePrunable.cpp"
     },
     {
       "id": "phys_fn_005300",
@@ -96291,7 +96479,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18376",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests."
+      "notes": "P4 Task 2b: reconstructed and driven by NxPhysicsThirdPartyTests.",
+      "implementation": "Physics/src/opcode/IcePrunable.cpp"
     },
     {
       "id": "phys_fn_005312",

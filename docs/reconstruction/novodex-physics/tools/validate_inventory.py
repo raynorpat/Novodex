@@ -63,7 +63,15 @@ FUNCTION_KEYS = (
 # so. Optional because absence is the common case and the common case must stay
 # cheap to read; it is not a free-text note, and validate_third_party checks it
 # against the correspondence map in both directions.
-FUNCTION_OPTIONAL_KEYS = ("third_party",)
+# `implementation` is the reconstruction's OWN file, as distinct from `source`,
+# which is the oracle's __FILE__ attribution (7g). Optional because a row with no
+# implementation has nothing to record, and absence is the common case.
+#
+# It is the field a path check belongs on. `source` is never expected to resolve:
+# it names a file the oracle was built from, and the reconstruction deliberately
+# does not recreate the oracle's directory layout -- 49 of the 51 unresolvable
+# source paths have basenames that exist nowhere in the repository.
+FUNCTION_OPTIONAL_KEYS = ("third_party", "implementation")
 DATA_KEYS = (
     "id",
     "rva",
@@ -1425,6 +1433,30 @@ UNRESOLVED_SOURCE_PATHS = (
 )
 
 
+def _check_implementation_paths(functions, evidence_root):
+    """Every `implementation` resolves, or the row has none.
+
+    This is the check `source` cannot carry. A row that names an implementation
+    file is claiming the reconstruction lives there, and that claim is either true
+    or it is not.
+    """
+    repo = Path(__file__).resolve().parents[4]
+    if not (repo / 'Physics' / 'src').is_dir():
+        return []
+    errors = []
+    for row in functions:
+        impl = row.get('implementation')
+        if impl is None:
+            continue
+        if not isinstance(impl, str) or not impl:
+            errors.append(f"function {row['id']!r} implementation is not a path")
+            continue
+        if not (repo / impl).is_file():
+            errors.append(
+                f"function {row['id']!r} implementation {impl!r} does not exist")
+    return errors
+
+
 def _check_source_paths(functions, evidence_root):
     """Every path-shaped `source` either resolves or is on the allowlist.
 
@@ -1627,6 +1659,7 @@ def main():
     if path.resolve() == (repo_root / 'docs' / 'reconstruction' / 'novodex-physics'
                           / 'inventory.json').resolve():
         errors += _check_source_paths(data['functions'], path.parent)
+        errors += _check_implementation_paths(data['functions'], path.parent)
     errors += validate_program(data, program, ledgers, path.parent)
     errors += validate_row_states(data, ledgers)
     stated = {row.get("phase"): row for row in program.get("phases", [])
