@@ -70,9 +70,16 @@ void NxNormalToTangents(const NxVec3 & n, NxVec3 & t1, NxVec3 & t2)
 		const NxF64 k = 1.0 / NxMath::sqrt(a);
 		t1.set(0.0f, static_cast<NxReal>(-static_cast<NxF64>(n.z) * k),
 			static_cast<NxReal>(static_cast<NxF64>(n.y) * k));
+		// The negation is applied to the product, not to an operand, because that
+		// is the order the oracle's x87 stream uses (`fmul` then `fchs` at
+		// 0x10006311-0x1000631d). With `k` infinite and `n.x` zero the product is
+		// `0 * inf`, whose sign is the exclusive-or of the operand signs, so
+		// negating after the multiply and negating before it give different NaN
+		// signs -- which is the one-bit difference the joint differential sees.
+		const NxF64 px = static_cast<NxF64>(n.x) * k;
 		t2.set(static_cast<NxReal>(a * k),
-			static_cast<NxReal>(-static_cast<NxF64>(n.x) * static_cast<NxF64>(t1.z)),
-			static_cast<NxReal>(static_cast<NxF64>(n.x) * static_cast<NxF64>(t1.y)));
+			static_cast<NxReal>(-(px * static_cast<NxF64>(t1.z))),
+			static_cast<NxReal>(px * static_cast<NxF64>(t1.y)));
 		}
 	else
 		{

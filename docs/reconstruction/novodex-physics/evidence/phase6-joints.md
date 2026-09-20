@@ -602,3 +602,49 @@ is checked in.
   `NxNormalToTangents`) now follow the oracle's x87 width rule, with no gate
   regression.
 - No row moves; `closed` remains the Phase 8 audit's to grant.
+
+## 6y. Matching the oracle's operand order did not move the sign
+
+6w narrowed the NaN sign to the products that build `t2`. The disassembly at
+`0x10006311`-`0x1000631d` shows the oracle's shape for `t2.x` as `fmul` and then
+`fchs` -- the negation applied to the **product**, not folded into an operand --
+so the transcription was changed to match: `k * n.x` is formed first and negated
+after.
+
+**It did not move the sign.** `t1` and `t2` for the zero axis are still
+`ffc00000` where the oracle gives `7fc00000`, and the finite cases are still
+exact. Three things have now been tried against this bit, all of which leave the
+finite path exact and the degenerate path one sign bit apart:
+
+| tried | finite | degenerate |
+| --- | --- | --- |
+| `float` products | one ULP off | sign differs |
+| `double` products, operand negated | exact | sign differs |
+| `double` products, product negated | exact | sign differs |
+
+**What that says.** The sign is not determined by the width of the products nor
+by which side of the multiply the negation sits. It is determined by something
+this transcription has not yet matched -- most likely the *value* of `k` itself
+in the degenerate case, since `k = 1/sqrt(0)` passes through `NxMath::sqrt` and
+the CRT's `sqrt` is not the `fsqrt` the oracle calls. The README already records
+that distinction for Phase 3: "`fsqrt` follows the x87 control word and the CRT's
+`sqrt()` does not."
+
+**The next step is therefore specific and different from the last three**: make
+`NxMath::sqrt` reach an `fsqrt` rather than the CRT, for the Foundation's
+translation units, and re-measure. That is a larger change than a width cast and
+is not attempted here.
+
+**The change is kept** because it matches the oracle's own instruction order and
+regresses nothing: the finite cases stay exact, phases 2, 3, 4 and `completed`
+all exit 0, and the Foundation's `util` gate still diffs 0 against both DLLs.
+
+## 6z. Round state
+
+- Both Phase 6 rows: **finite path exact against the whole candidate pair**;
+  degenerate path one NaN sign bit apart.
+- Three Foundation functions now follow the oracle's x87 width rule; a fourth
+  ordering detail matched; no regression anywhere.
+- The remaining bit is localised to `NxMath::sqrt` reaching the CRT rather than
+  `fsqrt`, which is the next concrete task.
+- No row moves; `closed` remains the Phase 8 audit's to grant.
