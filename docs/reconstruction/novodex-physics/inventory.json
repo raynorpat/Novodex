@@ -8236,7 +8236,7 @@
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/166",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1217",
-      "static_proof": null,
+      "static_proof": "NOT a static review: the block reads ebx and eax without setting either, so this is a mid-function FRAGMENT rather than a row. It was admitted to the drivability filter because that filter treats statically_reviewed as satisfied; the state is wrong for this entry",
       "dynamic_proof": null,
       "notes": ""
     },
@@ -8704,7 +8704,7 @@
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/175",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1290",
-      "static_proof": null,
+      "static_proof": "the registry lookup-and-insert at [0x10123c0c]: with a zero second argument AND a null registry it returns 1 inertly; otherwise it allocates a 0x10-byte entry through the allocator allocate slot, zeroes its three words, stores it as the registry and appends. The INSERT path mutates global state, which is why the rows that call it are driven with a zero argument",
       "dynamic_proof": null,
       "notes": ""
     },
@@ -42583,7 +42583,7 @@
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/881",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7410",
-      "static_proof": null,
+      "static_proof": "conditional release through the allocator singleton: pushes [self] into the global [0x10104048], then when [self] is still non-zero takes the singleton [[0x101041bc]] and calls ITS vtable slot +0x14 with [self] as the argument, and clears [self]. The slot pops its own argument",
       "dynamic_proof": null,
       "notes": ""
     },
@@ -42619,7 +42619,7 @@
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/882",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7411",
-      "static_proof": null,
+      "static_proof": "the recursive lock acquire: reads the lock at [self+0x10], compares the owner word at [inner+0x1c] against the global owner, and returns whether it matched; a mismatch takes the report path. The rows that call it are the mutex-guarded family",
       "dynamic_proof": null,
       "notes": ""
     },
@@ -42655,7 +42655,7 @@
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/883",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7413",
-      "static_proof": null,
+      "static_proof": "the lock release: clears the owner word at [inner+0x1c] and sets `al` to 1, which is the value the tail-jumping callers return",
       "dynamic_proof": null,
       "notes": ""
     },
@@ -86976,7 +86976,7 @@
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1826",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15613",
-      "static_proof": null,
+      "static_proof": "the allocator singleton getter: reads [0x1012845c]; if non-zero returns it; otherwise stores the default 0x10122368 into it and returns that. `ret` with no arguments",
       "dynamic_proof": null,
       "notes": ""
     },
