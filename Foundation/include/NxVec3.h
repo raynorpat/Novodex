@@ -563,10 +563,14 @@ NX_INLINE NxReal NxVec3::normalize()
 	NxReal m = magnitude();
 	if (m)
 		{
-		const NxReal il =  NxReal(1.0) / m;
-		x *= il;
-		y *= il;
-		z *= il;
+		// Same rule as magnitude(): the oracle divides 1.0 by the 80-bit
+		// magnitude and multiplies each component before any rounding to 32 bits,
+		// so the reciprocal and the three products are typed `double` here. A
+		// `float` reciprocal rounds first and moves the result by one ULP.
+		const NxF64 il = 1.0 / static_cast<NxF64>(m);
+		x = static_cast<NxReal>(static_cast<NxF64>(x) * il);
+		y = static_cast<NxReal>(static_cast<NxF64>(y) * il);
+		z = static_cast<NxReal>(static_cast<NxF64>(z) * il);
 		}
 	return m;
 	}
@@ -630,7 +634,20 @@ NX_INLINE bool NxVec3::sameDirection(const NxVec3 &v) const
  
 NX_INLINE NxReal NxVec3::magnitude() const
 	{
-	return NxMath::sqrt(x * x + y * y + z * z);
+	// The oracle evaluates this dot product with the x87 unit and hands the
+	// result to `fsqrt` while it is still an 80-bit register, so the square root
+	// sees the unrounded sum. Compiling `x * x + y * y + z * z` as `float` makes
+	// the compiler keep it in an SSE register and round to 32 bits first, which
+	// moves the result by one ULP on inputs like (0.5, 0.5, 0.5)/|.|.
+	//
+	// Typing the products and the running sums `double` is how this project
+	// expresses that register lifetime; CMakeLists.txt records the same rule for
+	// the mass and geometry kernels. `NxMath::sqrt` is overloaded on `double`, so
+	// the square root is taken before any rounding to `NxReal`.
+	const NxF64 xx = static_cast<NxF64>(x) * static_cast<NxF64>(x);
+	const NxF64 yy = static_cast<NxF64>(y) * static_cast<NxF64>(y);
+	const NxF64 zz = static_cast<NxF64>(z) * static_cast<NxF64>(z);
+	return static_cast<NxReal>(NxMath::sqrt(xx + yy + zz));
 	}
 
  

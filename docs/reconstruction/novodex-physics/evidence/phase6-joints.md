@@ -394,3 +394,71 @@ the `M_SQRT1_2` branch test) match the oracle's x87 behaviour, and add a
 word-level tangent assertion to the Foundation's utility gate. Both are
 `docs/novodex-foundation` work; this project references that evidence tree and
 does not modify it.
+
+## 6q. The Foundation precision fix, and what it closed
+
+Two functions in `Foundation/include/NxVec3.h` were changed to keep their
+intermediates wide, using the technique this project already records for the mass
+and geometry kernels (CMakeLists.txt: "The C++ expresses the first by typing
+register lifetimes `double`").
+
+**`NxVec3::magnitude()`** -- the dot product was compiled as `float`, so the
+compiler kept it in an SSE register and rounded to 32 bits before `NxMath::sqrt`.
+The oracle hands `fsqrt` an 80-bit register. The products and the running sums are
+now `NxF64`, and `NxMath::sqrt` is overloaded on `double`, so the square root is
+taken before any rounding to `NxReal`.
+
+**`NxVec3::normalize()`** -- the reciprocal and the three products were `float`.
+The oracle divides 1.0 by the 80-bit magnitude and multiplies each component
+before any 32-bit rounding. Both are now `NxF64`.
+
+**Measured effect**, on the probe that isolates the function:
+
+    axis 3f13cd3a.3f13cd3a.3f13cd3a   t1                        t2
+    oracle Foundation                 bf3504f3.3f3504f3.00000000  bed105ec.bed105ec.3f5105ec
+    rebuilt, before                   bf3504f4.3f3504f4.00000000  bed105ed.bed105ed.3f5105ed
+    rebuilt, after                    bf3504f3.3f3504f3.00000000  bed105ec.bed105ec.3f5105ec
+
+`t1` and `t2` are now **exact**. The joint-descriptor differential against the
+whole candidate pair went from four differing case lines to two, and the two that
+remain are both the NaN sign.
+
+**No regression.** Every gate that could have moved was re-run: phase 2, 3 and 4
+all still exit 0, the 587 tool tests still pass, and the Phase 5 layout harness
+still reports 441 lines, exit 1, `batch3268 candidate failures=3` -- its recorded
+baseline.
+
+## 6r. What is still open: the NaN sign, and why it is a different problem
+
+Two cases remain, and neither is a finite-input rounding question:
+
+    zero axis    oracle 7fc00000   candidate ffc00000
+    NaN axis     oracle 7fc00000   candidate ffc00000 in the x lane
+
+Both are the same sign difference on a quiet NaN. It arises where `a == 0` makes
+`k = 1/sqrt(0)` infinite and the products that follow are `0 * inf`, so the result
+is a NaN whose sign comes from which operand the hardware picks -- exactly the
+class the README's generator warning describes, and the class Phase 3 met when
+SSE and x87 disagreed on which of two NaN operands to propagate.
+
+**The fix does not belong in `NxVec3`.** `magnitude()` and `normalize()` now agree
+on every finite input; the remaining difference is inside `NxNormalToTangents`'s
+own arithmetic on a degenerate input, and it needs the same treatment that
+function's translation unit got. This is a `novodex-foundation` task and is handed
+across as one.
+
+**What this costs the rows.** Nothing about their correctness: the mixed-pair test
+(6j) already showed zero differences with the oracle's Foundation, and the finite
+cases now agree against the candidate's Foundation too. What it costs is the
+whole-pair differential being green, which is what a registered gate would need.
+
+## 6s. Round state
+
+- Two Phase 6 rows implemented, and now verified against the **whole candidate
+  pair** on every finite case.
+- Two cases differ only in a NaN sign, from a Foundation-side degenerate-input
+  path.
+- The Foundation's `magnitude`/`normalize` precision is fixed, with no gate
+  regression.
+- Candidate exports 40 of 41; `NxCreatePMap` remains.
+- No row moves, no gate changes, `closed` still Phase 8's to grant.
