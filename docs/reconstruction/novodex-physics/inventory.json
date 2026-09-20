@@ -80708,12 +80708,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpD6Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1665",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15163",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
       "notes": ""
     },
     {
@@ -81428,12 +81428,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpPulleyJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1684",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15212",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
       "notes": ""
     },
     {
@@ -81968,12 +81968,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpDistanceJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1698",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15248",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
       "notes": ""
     },
     {
@@ -82508,12 +82508,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpFixedJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1711",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15288",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
       "notes": ""
     },
     {
@@ -83048,12 +83048,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpPointInPlaneJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1725",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15324",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
       "notes": ""
     },
     {
@@ -83516,12 +83516,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpPointOnLineJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1737",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15358",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
       "notes": ""
     },
     {
@@ -84020,12 +84020,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpSphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1750",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15393",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
       "notes": ""
     },
     {
@@ -84560,12 +84560,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpCylindricalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1764",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15433",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
       "notes": ""
     },
     {
@@ -85028,12 +85028,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpRevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1776",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15467",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
       "notes": ""
     },
     {
@@ -85964,12 +85964,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpPrismaticJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1798",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15522",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
       "notes": ""
     },
     {
