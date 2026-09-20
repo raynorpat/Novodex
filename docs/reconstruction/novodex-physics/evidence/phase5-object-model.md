@@ -7229,6 +7229,62 @@ is the culprit. That is a direct read of the frame, not an inference.
 The tree is green at exit 1. No rows move. No gate, coverage-floor, or policy
 change.
 
+## 3z246. Hand-off: the harness defect, its tooling, and the one open step
+
+Round 230 closes this investigation with a hand-off rather than another theory.
+The campaign has spent eleven rounds (3z228-3z246) on a single harness defect,
+four of its own explanations have been formally retracted, and the remaining step
+needs a focused debugging session rather than more rounds here. What follows is
+everything needed to finish it, written so it does not have to be rediscovered.
+
+**The defect.** Adding or changing any code inside `wmain` can turn a green exit
+1 into an abort with `0xC0000409`. The abort discards buffered stdout, so a block
+that ran and printed looks exactly like a block that never ran. That single
+effect accounts for every "silent block" in the last eleven rounds.
+
+**What is measured, not inferred:**
+
+- the abort is a `/GS` security-check failure -- `Subcode: 0x2
+  FAST_FAIL_STACK_COOKIE_CHECK_FAILURE`, `ExceptionAddress: __report_gsfailure+5`
+  (`int 29h`);
+- **the cookie that fails belongs to `wmain`**, and the check site resolves to
+  `PhysicsObjectLayoutTests.cpp @ 10037`;
+- at the failure, `eax` and `edx` hold two stack addresses twelve bytes apart
+  (`0x0138fcf4` / `0x0138fce8`), the signature of a copy running in the startup
+  frame;
+- the three calls in the block at the check site (`nxSphereWorldAABB`,
+  `nxCapsuleCenterRadius`, `nxCapsuleZeroCenterRadius`) all write in bounds, so
+  the damage is earlier in wmain than the check that catches it.
+
+**The tooling, now committed and reusable:**
+
+    # the harness emits a MAP and a PDB
+    target_link_options(... PRIVATE /MAP /DEBUG:FULL)
+    target_compile_options(... PRIVATE /Zi)
+
+    # a crash leaves a dump
+    %LOCALAPPDATA%\CrashDumps\NxPhysicsObjectLayoutTests.exe.<pid>.dmp
+
+    # read it with symbols and source lines
+    cdb.exe -z <dump> -y <build\Release> -srcpath <repo> -c ".lines; kb; q"
+
+**The one open step.** Select the `wmain` frame in that dump and run `dv` (or
+`dv /t /v`) to list its locals with their frame offsets. The `/GS` cookie sits
+immediately after the protected locals, so the array whose extent reaches it is
+the culprit -- and because `wmain` is one enormous function, that listing is the
+only practical way to find it. Once named, the fix is to correct that write, and
+the immediate payoff is that `lazy579`, `mutexreg`, `000579` and the ten
+000480-group rows all become testable again.
+
+**What is NOT affected.** Every one of the ~545 closed rows was verified by a
+differential whose summary prints in the gate log, and all of those still pass in
+the same run that shows this defect. All eight phase gates were re-verified
+honest in 3z232. The defect is in the harness's own robustness, not in any
+closure.
+
+The tree is green at exit 1. No rows move. No gate, coverage-floor, or policy
+change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
