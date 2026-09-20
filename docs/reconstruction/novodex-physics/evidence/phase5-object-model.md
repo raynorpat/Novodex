@@ -5709,6 +5709,37 @@ The block, its two-argument candidate and its recorder were removed and the
 tree is green (n3min and newreach both 0 failures, mismatches=1). No rows move.
 No gate, coverage-floor, or policy change.
 
+## 3z202. Nine more of the family close, and 3z201's fault is explained
+
+Round 185 ran the experiment 3z201 recorded and it resolved the whole thing.
+
+**The bind was never the problem.** Binding 0x10126638 in isolation, before
+0x101264e4 had ever been bound, worked exactly as the first one did -- so the
+fault was not order-dependent and 3z201's hypothesis was wrong. What was wrong
+was the TABLE: it stored each slot as a VA (0x10126638) while `nxBindFnPtr`
+takes an RVA (0x126638). Every bind in those drives therefore targeted a wild
+address. That is a one-character-per-row class of error, and it cost three
+rounds.
+
+**With that fixed, three more faults surfaced in sequence, each a real lesson:**
+
+1. rows ending in a BARE `ret` were called through a 0-argument `__thiscall`
+   typedef, which does NOT put `this` in ecx -- so the row read
+   `[garbage+0x7c]`. `__fastcall` with one parameter is the layout that
+   supplies ecx and pops nothing;
+2. some rows dereference the slot's RETURN value, so the bound stub must hand
+   back a valid pointer rather than leave eax as garbage;
+3. the comparison read the wrong recorder for the two-argument rows, because
+   the bound stub is the three-argument one for every row.
+
+**Nine rows now close** (build/r185.log n3rest failures=0, stable over three
+runs): 003435, 003439, 003443, 003447, 003449, 003451, 003461, 003569 and
+003571. Fifteen remain in the family; the drive is scoped to the nine that
+verify rather than left aborting, and index 9 (003575) is the next to pin -- it
+both dereferences the slot return and reads [self+8].
+
+All nine move to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
