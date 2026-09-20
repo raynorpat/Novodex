@@ -14476,6 +14476,41 @@ int wmain(int argc, wchar_t** argv)
 		}
 	printf("n3rest candidate failures=%u provisional=1\n", n3bf);
 	}
+	// -- The family's float-OUT variant, 003575, with its own model: its
+	//    argument is an out pointer and the slot returns a float triple.
+	{
+	typedef void (__thiscall* T3575)(void*, float*);
+	T3575 fn = reinterpret_cast<T3575>(base + 0x87f10);
+	NxFnPtrSaved sv = nxBindFnPtr(base, 0x1264ec,
+		reinterpret_cast<void*>(&nxN3StubRet));
+	unsigned char obj[0x100], objC[0x100];
+	memset(obj, 0, sizeof(obj)); memset(objC, 0, sizeof(objC));
+	unsigned tag = 0x81810000u, v80 = 0x86860000u, v8 = 0x86860001u;
+	memcpy(obj + 0x30, &tag, 4); memcpy(obj + 0x80, &v80, 4);
+	memcpy(objC + 0x30, &tag, 4); memcpy(objC + 0x80, &v80, 4);
+	*(void**)(obj + 0x7c) = obj; *(void**)(objC + 0x7c) = objC;
+	unsigned char self[0x100], selfC[0x100];
+	memset(self, 0, sizeof(self)); memset(selfC, 0, sizeof(selfC));
+	*(void**)(self + 4) = obj; *(void**)(selfC + 4) = objC;
+	memcpy(self + 8, &v8, 4); memcpy(selfC + 8, &v8, 4);
+	float outO[4] = { -1.0f, -2.0f, -3.0f, -4.0f };
+	float outC[4] = { -1.0f, -2.0f, -3.0f, -4.0f };
+	gGc2Hits = 0; gGc2A = 0; gGc2B = 0; gN3Hits = 0; gN3A = 0; gN3B = 0; gN3C = 0;
+	fn(self, outO);
+	unsigned hO = gN3Hits, aO = gN3A, bO = gN3B, cO = gN3C;
+	gGc2Hits = 0; gGc2A = 0; gGc2B = 0; gN3Hits = 0; gN3A = 0; gN3B = 0; gN3C = 0;
+	nxThunkFloatOut3575(selfC, outC,
+		reinterpret_cast<NxFloatRet3Fn>(&nxN3StubRet));
+	unsigned hC = gN3Hits, aC = gN3A, bC = gN3B, cC = gN3C;
+	unsigned f3575 = 0;
+	if(hO != hC || hO != 1u || aO != aC || bO != bC || cO != cC
+		|| aO != tag || bO != v80 || cO != v8
+		|| memcmp(outO, outC, sizeof(outO)) != 0)
+		{fprintf(stderr,"f3575 h=%u/%u a=%08x/%08x b=%08x/%08x c=%08x/%08x out=%g/%g\n",
+			hO, hC, aO, aC, bO, bC, cO, cC, outO[0], outC[0]); ++f3575;}
+	nxUnbindFnPtr(base, 0x1264ec, sv);
+	printf("floatout3575 candidate failures=%u provisional=1\n", f3575);
+	}
 
 
 
