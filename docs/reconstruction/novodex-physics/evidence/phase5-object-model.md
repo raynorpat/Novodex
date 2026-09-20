@@ -7414,6 +7414,55 @@ and `loadedHash[65]` are the natural destinations for that class of bug.
 The tree is green at exit 1. No rows move. No gate, coverage-floor, or policy
 change.
 
+## 3z250. The overrun is not in the harness's own copies
+
+Round 235 tested 3z249's hypothesis -- a length-driven copy in the harness -- and
+it does not hold.
+
+**No copy exceeds its destination.** A scan pairing every local array declaration
+with its byte size and then checking every `memcpy(dst, src, sizeof(x))` and every
+`memcpy(dst, src, N)` found:
+
+    copies that EXCEED the destination: 0
+
+`memset` is the same story: every instance in the file is `memset(x, v,
+sizeof(x))`. So the multi-kilobyte write that reaches `wmain`'s cookie is NOT one
+of the harness's own buffer operations.
+
+**That reframes the defect, and the reframing matters for this campaign's
+honesty.** The harness's blocks call the reconstructed code in `ObjectModel.cpp`
+-- hundreds of my own candidates -- and they call it with fixtures the harness
+allocates. If a candidate writes several kilobytes past a fixture, the damage
+lands in `wmain`'s frame, and the `/GS` abort fires at `wmain`'s exit. **Under
+that reading the defect is not harness fragility at all: it is a real bug in one
+of the reconstructed rows**, and the abort has been correctly reporting it all
+along.
+
+That also fits the shape of the evidence better than any earlier theory:
+
+- a multi-kilobyte write is far more natural for a container or loop in
+  reconstructed code than for a hand-written fixture;
+- the abort is layout-sensitive, which is what a bounded-but-wrong write into
+  adjacent frame memory looks like;
+- and it explains why nothing in the test file's own copies is at fault.
+
+**What to do with it.** The harness defect and the reconstruction share a root
+cause, so the search is now over `ObjectModel.cpp` rather than over the test
+file: a candidate that writes past a fixture buffer it was handed. The
+crash-dump tooling already in place (3z243-3z249) can name the row directly --
+break on the `/GS` failure, walk back through the frames, and the reconstructed
+function whose write is in flight is the one to check against its census
+`static_proof`.
+
+**Until that is done, no claim about the ~545 closures is retracted**, because
+every one of them still passes its differential; but this is now the first
+candidate explanation that would affect a CLOSURE rather than only the harness,
+and it should be resolved before the campaign claims the frontier is blocked by
+tooling.
+
+The tree is green at exit 1. No rows move. No gate, coverage-floor, or policy
+change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
