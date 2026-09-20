@@ -1936,3 +1936,65 @@ measured was never verified.
 treat the actor-graph question as open until someone can measure the row's own
 `eax` at each step, which the probe can do in one run. That is the only remaining
 measurement worth its cost here, and it is one build.
+
+## 8l. The step measurement did not execute, and that is itself the result
+
+8k said the remaining question was one line: print the row's own `eax` at each step
+of its chain, which distinguishes "the probe reads the wrong field" from "the row
+walks a different object". The measurement was attempted and **it did not produce a
+reading**, which is worth recording as a boundary rather than as a step.
+
+**What was run.** Three breakpoints, one per chain instruction:
+
+    bp 0x100980e0    ; mov eax,[eax+0x14]   actor -> userData
+    bp 0x100980e3    ; mov eax,[eax+8]      -> ?
+    bp 0x100980ee    ; mov ecx,[eax+0x19c]  -> ?
+
+**What came back.** At all three, `eax` was the same value
+(`0057eee4`, then `00fcf2e0` on a later run) and `ecx` was the same. A breakpoint
+placed on `0x100980e0` should fire *before* that instruction executes, so `eax`
+should differ at `0x100980e3`; it did not. Either the breakpoints after the first
+never fired, or the row never reaches them -- and the debugger's `dd` output for
+the descriptor's `actor[0]` field did not print either, so the command file itself
+did not complete as written.
+
+**What that means for the question.** The one-line measurement 8k proposed needs a
+working breakpoint sequence before it can answer anything, and this round did not
+establish one. That is a tooling result, not a fact about the row, and it is
+recorded as such rather than being read as evidence either way.
+
+**What is unchanged by it.** Every finding from 8f, 8h, 8j and 8k stands as
+measured: the real actor's `+0x14` is its descriptor, `desc+0x08` holds a pointer
+to something whose first dword is `0x10106890`, and that address is a
+`pointer_slot` whose bytes are one code pointer followed by the doubles 1.0, pi and
+pi/2 -- not a run of virtual methods.
+
+## 8m. The fixture line is closed, and this is the last round on it
+
+8c closed the line, 8f reopened it with a cheaper method, 8i closed it again, and
+8k reopened it for one measurement. That measurement did not execute. **It closes
+here and does not reopen.**
+
+The reason is not that the question is uninteresting -- it is that six rounds have
+gone to two rows and produced:
+
+    7r  a green registered Phase 6 target            (real, reusable)
+    7s  a mutation aimed at the arm was not caught    (real, decisive)
+    8e  the Scene is a large task, not a small unblock (corrected 8j)
+    8f  the real actor layout, measured               (real)
+    8h  the object at desc+0x08 has no body pointer   (real)
+    8k  0x10106890 is a constant block, not a vtable  (real)
+    8l  the step measurement did not execute          (tooling)
+
+**Six findings and no closure.** Three of the six are corrections of earlier rounds
+in the same line. That ratio is the honest summary, and the correct disposition is
+to leave the two rows `reconstructed` with their proof and their blocker recorded,
+keep the probes checked in, and spend no further rounds on this fixture.
+
+**What the programme should do instead, stated once more and finally:** the two
+joint-descriptor rows are blocked on an object-graph question that has now resisted
+four measurement methods, and the 127 other reconstructed rows are blocked on
+targets that do not exist. Neither is served by more fixture work. The
+highest-value work in this programme is elsewhere -- the census audits of 7e-7l
+each found a defect no gate could see, and there are 5,554 `discovered` rows whose
+slates nobody has walked.
