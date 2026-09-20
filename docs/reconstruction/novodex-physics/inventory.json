@@ -75452,12 +75452,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "vector virtual-call loop with an argument (0x9aca0, ret 4)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1572",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13826",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the vecloop4163 differential (3z216): failures=0 over three consecutive runs for vector lengths 0 to 3, comparing the hit count, the argument the slot received and the whole object; with an empty vector no call happens, so the argument check applies only when at least one element was visited",
       "notes": ""
     },
     {
