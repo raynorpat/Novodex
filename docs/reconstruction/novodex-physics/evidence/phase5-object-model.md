@@ -6005,6 +6005,33 @@ clean, so the slot pops the argument itself.
 
 It moves to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z212. The virtual-call loop closes; eighteen vt-shaped rows mapped
+
+Round 195 surveyed the reachable rows that call through a vtable and found
+**eighteen** of them, then closed the cleanest one (build/r195.log vecloop4165
+failures=0, stable over three runs).
+
+**004165 (0x9ace0)** walks the pointer vector at [self+0x10]/[self+0x14] -- the
+SAME pair that 000448 counts, which is a nice cross-check on 3z195 -- and calls
+the vtable slot +0x10 of EVERY element with NO stack arguments. The drive runs
+vector lengths 0, 1, 2 and 3 and compares the hit count, the ORDERED sequence of
+elements actually visited, and the whole object; the ordered sequence is what
+distinguishes "visits each element once" from "visits the first one n times",
+which a bare count could not.
+
+It needed the 3z202 lesson once more -- a bare-`ret` row with no stack arguments
+takes `this` in ecx, which is `__fastcall` with one parameter, not a
+zero-argument `__thiscall`.
+
+The remaining seventeen vt-shaped reachable rows are 001544, 003103, 004163,
+004838, 004861, 004864, 004866, 004868, 000579, 001649, 001659, 002342, 005159,
+004149, 003238, 002060 and 001805, and each is its own shape: 001544 calls a
+helper then a slot on the result, 003103 touches three globals and calls the
+now-reconstructed 003413, and the larger ones (89 to 117 bytes, vt=3 and vt=4)
+make several virtual calls in sequence.
+
+004165 moves to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
