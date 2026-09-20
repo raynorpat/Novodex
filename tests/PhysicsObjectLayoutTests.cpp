@@ -248,6 +248,16 @@ static unsigned __stdcall nxEx1RetStub(unsigned a)
 static unsigned gEx0Hits;
 static void __cdecl nxEx0Stub(void) { ++gEx0Hits; }
 
+// the no-stack-argument virtual recorder for 004165: __fastcall supplies this
+// in ecx and pops nothing, which is what a vtable slot with no arguments needs
+static unsigned gVtHits, gVtLast, gVtSeq[8];
+static void __fastcall nxVtRecorder(void* self)
+	{
+	gVtLast = static_cast<unsigned>(reinterpret_cast<size_t>(self));
+	if(gVtHits < 8) gVtSeq[gVtHits] = gVtLast;
+	++gVtHits;
+	}
+
 // the four-argument thunk recorder
 static unsigned gN4Hits, gN4A, gN4B, gN4C, gN4D;
 static void __cdecl nxN4Stub(unsigned a, unsigned b, unsigned c, unsigned d)
@@ -14862,6 +14872,44 @@ int wmain(int argc, wchar_t** argv)
 		{fprintf(stderr,"v413 h=%u/%u a=%08x/%08x\n", hO, hC, aO, aC); ++v413f;}
 	nxUnbindFnPtr(base, 0x125080, sv);
 	printf("vcall413 candidate failures=%u provisional=1\n", v413f);
+	}
+	// -- 004165: the vector virtual-call loop, for lengths 0..3.
+	{
+	// ecx plus NO stack arguments: __fastcall with one parameter is that layout
+	typedef void (__fastcall* T4165)(void*);
+	T4165 fn = reinterpret_cast<T4165>(base + 0x9ace0);
+	unsigned v1665 = 0;
+	for(unsigned len = 0; len < 4; ++len)
+		{
+		void* vt[0x14 / 4 + 1]; memset(vt, 0, sizeof(vt));
+		vt[0x10 / 4] = reinterpret_cast<void*>(&nxVtRecorder);
+		unsigned char elems[3][0x40];
+		memset(elems, 0, sizeof(elems));
+		void* vec[3] = { nullptr, nullptr, nullptr };
+		for(unsigned k = 0; k < len; ++k)
+			{
+			*(void**)(elems[k]) = vt;
+			vec[k] = elems[k];
+			}
+		unsigned char self[0x20], selfC[0x20];
+		memset(self, 0, sizeof(self)); memset(selfC, 0, sizeof(selfC));
+		unsigned begin = static_cast<unsigned>(reinterpret_cast<size_t>(vec));
+		unsigned end = begin + 4u * len;
+		memcpy(self + 0x10, &begin, 4); memcpy(selfC + 0x10, &begin, 4);
+		memcpy(self + 0x14, &end, 4); memcpy(selfC + 0x14, &end, 4);
+		gVtHits = 0; gVtLast = 0; memset(gVtSeq, 0, sizeof(gVtSeq));
+		fn(self);
+		unsigned hO = gVtHits;
+		unsigned seqO[8]; memcpy(seqO, gVtSeq, sizeof(seqO));
+		gVtHits = 0; gVtLast = 0; memset(gVtSeq, 0, sizeof(gVtSeq));
+		nxVectorVirtualLoop4165(selfC, &nxVtRecorder);
+		unsigned hC = gVtHits;
+		unsigned seqC[8]; memcpy(seqC, gVtSeq, sizeof(seqC));
+		if(hO != hC || hO != len || memcmp(seqO, seqC, sizeof(seqO)) != 0
+			|| memcmp(self, selfC, sizeof(self)) != 0)
+			{fprintf(stderr,"v1665 len=%u h=%u/%u\n", len, hO, hC); ++v1665;}
+		}
+	printf("vecloop4165 candidate failures=%u provisional=1\n", v1665);
 	}
 
 
