@@ -5983,6 +5983,28 @@ held back on that account -- including 003413 from 3z208.
 
 All four move to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z211. The fix pays off immediately: 003413 closes
+
+Round 194 applied 3z210's member-function-pointer shape to the row that 3z208
+had set aside for exactly this reason, and 003413 closed on the first attempt
+(build/r194.log vcall413 failures=0, stable over three runs).
+
+That is the point worth recording: 3z208 diagnosed the symptom -- "the
+recorder received the fixture's fill pattern rather than the argument, so the
+call is reaching a different target than the fixture's table supplies" -- and
+proposed checking where the slot was read from. The real cause was one level
+up: the call never reached the fixture's table at all, because ecx was never
+loaded with the object, so `mov eax, [ecx]` read a vtable pointer out of
+uninitialised stack and the row called through THAT. A wrong diagnosis, but a
+useful one -- it narrowed the failure to the object selection, which is what
+made the calling convention the obvious suspect.
+
+003413 reads the object from the global [0x10125080], takes its vtable pointer
+at [obj], and calls slot +0x20 with the row argument; the caller does not
+clean, so the slot pops the argument itself.
+
+It moves to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
