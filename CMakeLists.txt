@@ -269,6 +269,10 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_link_libraries(NxPhysicsObjectLayoutTests NxFoundation NxOpcode bcrypt)
 	if(MSVC)
 		target_compile_options(NxPhysicsObjectLayoutTests PRIVATE /arch:IA32 /GR- /wd4996)
+		# Emit a linker map so that a fault offset reported by the OS -- the
+		# 0xC0000409 aborts this harness produces -- can be resolved to a
+		# function instead of being guessed at from the source.
+		target_link_options(NxPhysicsObjectLayoutTests PRIVATE /MAP)
 	endif()
 
 	# The narrow-phase differential. Neither a staged-pair differential nor a
