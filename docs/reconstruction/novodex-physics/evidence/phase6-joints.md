@@ -462,3 +462,61 @@ whole-pair differential being green, which is what a registered gate would need.
   regression.
 - Candidate exports 40 of 41; `NxCreatePMap` remains.
 - No row moves, no gate changes, `closed` still Phase 8's to grant.
+
+## 6t. Full regression sweep after the Foundation change
+
+Round 9 changed `Foundation/include/NxVec3.h`, which every phase links against, so
+the whole gate set was re-run rather than the three phases that seemed closest to
+it. All match the recorded baseline:
+
+    phase 1        exit 3   skipped: no_registered_test_targets
+    phase 2        exit 0   PASS
+    phase 3        exit 0   PASS
+    phase 4        exit 0   PASS
+    phase 5        exit 1   RED on purpose
+    phase 6        exit 3   skipped: no_registered_test_targets
+    phase 7        exit 3   skipped: no_registered_test_targets
+    phase 8        exit 3   skipped: no_registered_test_targets
+    completed      exit 0   PASS
+    validate_inventory  exit 0, unexplained=0
+    tool unit tests     587 tests, OK
+    layout harness      441 lines, exit 1, batch3268 candidate failures=3
+
+**The Foundation's own `util` gate also passes**, and this is informative rather
+than reassuring:
+
+    NxFoundationClusterTests util <oracle NxFoundation.dll>    exit 0
+    NxFoundationClusterTests util <rebuilt NxFoundation.dll>   exit 0
+    transcript diff between the two: 0 lines
+
+Both runs report `tangents=both_branches_orthonormal` and neither moved. So the
+Foundation's gate is **not sensitive to the one-ULP difference this round fixed**
+-- which is exactly what 6o predicted: it asserts an invariant, and the invariant
+held on both the rounded and the unrounded build. The fix is therefore a
+precision improvement that no existing gate could have detected and none now
+regresses.
+
+## 6u. `NxCreatePMap` is not a gap to fill -- it is a recorded decision
+
+The candidate's export set is 40 of the oracle's 41, and `NxCreatePMap`
+(`phys_fn_002049`, `0x00050f70`, 198 bytes) is the missing one. Reading the row
+and the phase-4 evidence shows it is not an omission:
+
+    evidence/phase4-pmap-reconstruction.md §6:
+      "The COMPUTE arm of phys_fn_002047, 0x00050768-0x00050f02 -- roughly 2,000
+       of that row's bytes"
+      "NxCreatePMap (phys_fn_002049, 0x00050f70, 198 bytes) -- its whole body is
+       that arm. It is not exported by the reconstruction, because an export that
+       cannot compute is worse than an absent one."
+
+`NxCreatePMap`'s entire body is the compute arm, and that arm is a named,
+deliberate hole: `PenetrationMap::create` reaches it and returns through an
+`NX_ASSERT(!"PenetrationMap compute path is not reconstructed")` rather than
+pretending. Exporting a wrapper now would put a name in the export table whose
+body cannot compute, which is the facade the phase-4 decision already refused.
+
+**So the 41st export is gated on the ~2,000-byte compute arm, not on the 198-byte
+wrapper.** That is the real task, and it is a phase-4 one. It is recorded here
+because from the outside the export table looks like a one-row gap, and it is not.
+
+No rows move. No gate, coverage-floor, or policy change.
