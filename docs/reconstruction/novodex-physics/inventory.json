@@ -75200,12 +75200,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "three-field allocator-singleton release (0x9a500)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1565",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13766",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the allocrelease4149 differential (3z222): failures=0 over three consecutive runs across all eight occupancy pans of the three fields, comparing the slot hit count and the whole object, with the allocator singleton bound",
       "notes": ""
     },
     {
