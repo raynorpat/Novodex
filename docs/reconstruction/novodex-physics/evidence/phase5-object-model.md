@@ -6908,6 +6908,49 @@ observable for the first time.
 The tree is green at exit 1, with `gather0046` and `adjusted2060` both reporting
 zero failures. No rows move. No gate, coverage-floor, or policy change.
 
+## 3z239. Root cause: a PRE-EXISTING /GS overrun in wmain
+
+Round 223 ran the decisive test and it changes the conclusion of 3z238 in an
+important way.
+
+**The test.** A block was added to wmain that does nothing but declare a
+0x40-byte array, write ONE byte at its LAST VALID offset (0x3f), print to stderr
+and stdout. That is provably not an overrun -- the write is in bounds by
+construction. Result:
+
+    exit = -1073740791 = 0xC0000409 = STATUS_STACK_BUFFER_OVERRUN
+    (and no output at all, not even the stderr line)
+
+**So the abort is not caused by the added block's own memory use.** Any change to
+wmain -- a harmless block, or even the single `setvbuf` call from 3z238 -- flips
+a green exit of 1 into a `/GS` abort. That is only possible if wmain ALREADY has
+a write past a local array, and whether the cookie is clobbered depends on the
+exact stack layout. Adding or changing anything re-rolls that layout.
+
+**This completes the explanation.** The chain is:
+
+1. wmain contains a pre-existing out-of-bounds write to a local;
+2. the `/GS` cookie is clobbered only for some stack layouts;
+3. any edit perturbs the layout, so an edit can arm the abort;
+4. the abort **discards buffered stdout**;
+5. so a block that ran and printed looks like a block that never ran.
+
+Every one of the six earlier explanations was a guess about steps 3-5, and none
+could be right because the cause is at step 1 -- a defect that predates this
+campaign's recent work entirely.
+
+**Where to look.** 3z238's unbuffered run stopped printing at `gather0046`, whose
+neighbour is the "Slate row 000132" block. That is a hint about where the layout
+broke, not proof about where the write is. The productive search is for a local
+array whose size is smaller than an offset the block writes to -- exactly the
+class of bug found in my own 000579 fixture in 3z230, where a 0x10-byte holder
+was read at +0x14. **Fixing that write would make the tail of this harness
+observable for the first time and unblock `lazy579`, `mutexreg`, 000579 and the
+ten 000480-group rows at once.**
+
+The tree is green at exit 1. No rows move. No gate, coverage-floor, or policy
+change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
