@@ -240,6 +240,14 @@ static float __cdecl nxN2StubF(unsigned a, unsigned b)
 static unsigned __cdecl nxRet0Recorder(void)
 	{ ++gGc2Hits; return 0x93939393u; }
 
+// recorders for the three extra small rows
+static unsigned gEx1Hits, gEx1Arg, gEx1Ret;
+static void __stdcall nxEx1Stub(unsigned a) { gEx1Arg = a; ++gEx1Hits; }
+static unsigned __stdcall nxEx1RetStub(unsigned a)
+	{ gEx1Arg = a; ++gEx1Hits; return gEx1Ret; }
+static unsigned gEx0Hits;
+static void __cdecl nxEx0Stub(void) { ++gEx0Hits; }
+
 // the two-argument variant, for the rows that push only two
 static unsigned gN2Hits, gN2A, gN2B;
 static void __cdecl nxN2Stub(unsigned a, unsigned b)
@@ -14715,6 +14723,59 @@ int wmain(int argc, wchar_t** argv)
 		}
 	nxUnbindLockApi(base, svLt2);
 	printf("lockthunk2 candidate failures=%u provisional=1\n", lt2f);
+	}
+	// -- Three more small rows: 003936, 003413 and 003902.
+	{
+	unsigned ex = 0;
+	// 003936: the vtable store plus the global tail jump
+	{
+	typedef void (__thiscall* T3936)(void*);
+	T3936 fn = reinterpret_cast<T3936>(base + 0x8eeb0);
+	NxFnPtrSaved sv = nxBindFnPtr(base, 0x104194,
+		reinterpret_cast<void*>(&nxEx0Stub));
+	unsigned char self[0x20], selfC[0x20];
+	memset(self, 0xcd, sizeof(self)); memset(selfC, 0xcd, sizeof(selfC));
+	gEx0Hits = 0;
+	fn(self);
+	unsigned hO = gEx0Hits;
+	gEx0Hits = 0;
+	nxDtorTrampoline3936(selfC, reinterpret_cast<void (*)(void*)>(&nxEx0Stub));
+	unsigned hC = gEx0Hits;
+	if(hO != hC || hO != 1u || memcmp(self, selfC, sizeof(self)) != 0)
+		{fprintf(stderr,"ex 003936 h=%u/%u\n", hO, hC); ++ex;}
+	nxUnbindFnPtr(base, 0x104194, sv);
+	}
+	// 003902: the cached flag consumer
+	{
+	typedef unsigned char (__cdecl* T3902)(void);
+	T3902 fn = reinterpret_cast<T3902>(base + 0x8d850);
+	NxFnPtrSaved sv = nxBindFnPtr(base, 0x10403c,
+		reinterpret_cast<void*>(&nxEx1RetStub));
+	unsigned char* img = const_cast<unsigned char*>(
+		reinterpret_cast<const unsigned char*>(base));
+	for(unsigned rv = 0; rv < 2; ++rv)
+		{
+		gEx1Ret = rv ? 0x77u : 0u;
+		*reinterpret_cast<unsigned*>(img + 0x126654) = 0xCAFEu;
+		nxSetCache3902(0xCAFEu);
+		gEx1Hits = 0; gEx1Arg = 0;
+		unsigned char ro = fn();
+		unsigned hO = gEx1Hits, aO = gEx1Arg;
+		unsigned cacheO = *reinterpret_cast<unsigned*>(img + 0x126654);
+		*reinterpret_cast<unsigned*>(img + 0x126654) = 0xCAFEu;
+		nxSetCache3902(0xCAFEu);
+		gEx1Hits = 0; gEx1Arg = 0;
+		unsigned char rc = nxConsumeFlag3902(&nxEx1RetStub);
+		unsigned hC = gEx1Hits, aC = gEx1Arg;
+		unsigned cacheC = nxGetCache3902();
+		if(ro != rc || hO != hC || hO != 1u || aO != aC
+			|| aO != 0xCAFEu || cacheO != cacheC || cacheO != 0u)
+			{fprintf(stderr,"ex 003902 rv=%u r=%u/%u h=%u/%u a=%08x/%08x c=%08x/%08x\n",
+				rv, ro, rc, hO, hC, aO, aC, cacheO, cacheC); ++ex;}
+		}
+	nxUnbindFnPtr(base, 0x10403c, sv);
+	}
+	printf("extrarows candidate failures=%u provisional=1\n", ex);
 	}
 
 
