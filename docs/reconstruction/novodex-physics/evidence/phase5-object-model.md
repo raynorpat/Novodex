@@ -6696,6 +6696,43 @@ not a null.
 
 No rows move. No gate, coverage-floor, or policy change.
 
+## 3z234. Why the late insertions never ran: the RED path returns early
+
+Round 218 ran 3z233's recorded read-back experiment and, by reading the file's
+own tail rather than adding another probe, found why the last several blocks
+were silent. The answer is structural and has nothing to do with binders,
+fixtures, or the rows.
+
+The end of wmain reads:
+
+    15635:  printf("adjusted2060 candidate failures=%u ...");   // block summary
+    15636:  }
+    ...     <my insertions have been landing here>
+    15656:      printf("layout candidate mismatches=%u mode=differential ...");
+    15658:      return nxFail("the Phase 5 reconstruction is incomplete; this gate is RED on purpose");
+    15659:      }
+    15660:  printf("layout candidate mismatches=0 mode=self");
+    15662:  return 0;
+
+The phase-5 gate is RED on purpose, so the run takes the branch at 15656 and
+**returns from wmain at 15658**. Anything appended after that point is dead code
+in every gate run -- and a probe placed immediately before the final `return 0`,
+which is what this round tried, is the deadest of all, because reaching it
+requires the gate to be GREEN.
+
+That explains every silence since 3z228: the probes were not crashing, they were
+**never reached**, and the same is true of the `lazy579` and `mutexreg` blocks
+inserted in the same region. It also means those two attempts were never actually
+tested at all -- their candidates may be right or wrong, and nothing observed so
+far says either way.
+
+**The rule**: when a test program's gate is RED BY DESIGN, its tail is not a
+place to put a probe. Instrumentation belongs BEFORE the branch that reports the
+failure -- and the way to find that branch is to read the last twenty lines of
+the file instead of writing a twenty-first probe.
+
+No rows move. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
