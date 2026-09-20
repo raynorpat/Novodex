@@ -7180,6 +7180,55 @@ plane-save buffers. The remaining question is a source line, not a hypothesis.
 The tree is green at exit 1, with `/MAP` and `/DEBUG:FULL` committed. No rows
 move. No gate, coverage-floor, or policy change.
 
+## 3z245. The check site named: line 10037, and the calls there are clean
+
+Round 229 finished the tooling and got the source line.
+
+**The dump now reports a line.** With `.lines` enabled and the source path set:
+
+    NxPhysicsObjectLayoutTests!wmain+0x18be2
+        [D:\github\Novodex\tests\PhysicsObjectLayoutTests.cpp @ 10037]
+
+So the `/GS` check that failed sits in wmain at source line 10037. **This is the
+first time in the whole investigation that a source location has come out of the
+process rather than out of a reading of the file.**
+
+**What line 10037 is.** It is inside the "aabb rows" fixture, a block that builds
+a sphere and a capsule in local buffers and calls three accessors:
+
+    10026  unsigned char sbytes[0xe4];   ... SphereShape(0, 0)
+    10030  unsigned char cbytes2[0xec];  ... CapsuleShape(0, 0)
+    10034  float so[6]  = { 0,0,0,0,0,0 };  sph.nxSphereWorldAABB(so);
+    10036  float c10[4] = { 0,0,0,0 };      cap.nxCapsuleCenterRadius(c10);
+    10038  float c11[4] = { 0,0,0,0 };      cap.nxCapsuleZeroCenterRadius(c11);
+
+**All three candidate implementations were checked and all three are in bounds**:
+`nxSphereWorldAABB` writes exactly six floats into a six-float buffer, and both
+capsule accessors write exactly four into four-float buffers. So the three calls
+at the check site are not the corruption.
+
+**Which is the useful shape of the answer.** A `/GS` check is emitted at the end
+of a function, and the line attached to it is where the compiler placed the
+probe -- not where the damage happened. So line 10037 locates the check, and the
+block containing it is the natural place to look next, but the corruption itself
+is a write somewhere earlier in wmain that reaches wmain's cookie.
+
+**Where that leaves the search, concretely.** Everything needed to finish is now
+in place and none of it requires another guess:
+
+- `%LOCALAPPDATA%\CrashDumps` holds a dump per crash;
+- the harness emits a MAP and a PDB, so any frame resolves to a function and a
+  line;
+- `.lines` plus `kb` gives the frame list with source lines.
+
+The next step is to make the dump's `wmain` frame reveal which local was
+clobbered -- `dv` on the frame lists the locals with their offsets, and the
+cookie sits immediately after them, so the array whose extent reaches the cookie
+is the culprit. That is a direct read of the frame, not an inference.
+
+The tree is green at exit 1. No rows move. No gate, coverage-floor, or policy
+change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
