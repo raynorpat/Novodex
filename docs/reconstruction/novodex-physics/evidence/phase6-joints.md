@@ -1753,3 +1753,81 @@ oracle-only, because the candidate cannot create a scene.
 
 No row has closed. The fixture's next step is now a measurement rather than a
 guess, and the measurement is a one-line change to a probe that already exists.
+
+## 8h. The shape scan, and why the third level is not an offset problem
+
+8f measured two levels and left the third open. This round scanned the real shape
+object for the body pointer, and the result closes the question in a different way
+than expected.
+
+**The scan.** Every pointer-looking dword in the first 0x40 bytes of the real shape,
+with the dword at `+0x19c` of whatever it points to, because that is where the rows
+expect the pose:
+
+    shape   019C5240: 10106890 00000000 00000000 00000000 ...
+    shape scan:
+      shape+0x00 = 10106890   [+0x19c] = 00000003
+      shape+0x30 = 3f800000   [+0x19c] = ffffffff (the read faulted)
+    shape+0x08 = 00000000
+
+**What that says.** The only pointer in the object is its vtable at `+0x00`; every
+other dword in the first 0x40 bytes is zero, and `+0x19c` of the vtable's target is
+the small integer `3`. So **the object at `desc+0x08` carries no body pointer at
+all**, and the row's `[shape+0x08] -> [body+0x19c]` chain does not describe it.
+
+**Three readings are now excluded by measurement**, where before they were
+assumptions:
+
+1. `desc+0x08` is not the shape array's `first` in the sense the fixture assumed --
+   it holds a pointer to a vtable-only object;
+2. the body is not at `shape+0x08`, on a real actor, at any depth the scan reached;
+3. `+0x19c` is not a pose offset within that object.
+
+**What is left.** The row's own chain, read from the binary, is unambiguous:
+
+    0x100980e0  mov eax,[eax+0x14]   ; actor -> userData
+    0x100980e3  mov eax,[eax+8]      ; -> ?
+    0x100980ee  mov ecx,[eax+0x19c]  ; -> ?
+    0x100980f4  mov eax,[ecx+8]      ; -> ?
+
+and 8f confirmed the first is the actor descriptor on a real object. So the second
+dereference lands on an object the scan says is vtable-only -- which means either
+the descriptor's `+8` is not what the row walks on this build, or the object it
+points to is a **facade** whose body is reached through its vtable rather than
+through a member.
+
+**Recorded as a boundary, not a next step.** Two rounds of measurement have taken
+this from "derive and fault" to "two levels measured, the third not an offset", and
+the remaining question is structural rather than numeric: *what object is at
+`desc+0x08`, and how does the row reach a body from it*. Answering it needs the
+vtable at `10106890` resolved, which is a different instrument than the byte scan
+and belongs to whichever phase owns that table.
+
+## 8i. Stopping the fixture line for good, and what stands
+
+8c stopped the fixture line once and 8f/8h reopened it with a cheaper method. That
+method has now answered what it could and the question that remains is structural,
+so the line stops here rather than being reopened a third time.
+
+**What stands, as evidence, in the order it was established:**
+
+    7r  a green registered Phase 6 target exists and passes (floor 3)
+    7s  a mutation aimed at the transform arm was not caught
+    8e  the campaign's root is the Scene: createScene needs a 0x710-byte Scene
+        that is not reconstructed, and 42 of the 57 scene rows are discovered
+    8f  the real actor layout, MEASURED: actor+0x14 is the descriptor, desc+0x08
+        holds a pointer to a vtable-only object
+    8h  that object carries no body pointer in its first 0x40 bytes, so the row's
+        shape -> body -> pose chain is not a member walk
+
+**What does not stand:** a working synthetic fixture, and therefore a closure for
+either joint-descriptor row.
+
+**The single highest-value unblocked task remains the Scene (8e).** Every
+actor-dependent row in the programme -- the two joint-descriptor rows, the ten
+joint families the plan lists, and `NxPhysicsJointTests` -- needs it, and it is
+Phase 3/7 work rather than Phase 6. Two rounds of fixture work have now confirmed
+that from two directions: the candidate cannot create a scene, and the object graph
+a scene would give the rows is not the one the fixture can fake.
+
+No rows move. No gate, coverage-floor, or policy change.

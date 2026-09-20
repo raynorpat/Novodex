@@ -18,6 +18,40 @@
 
 typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(NxU32, NxUserAllocator*, NxUserOutputStream*);
 
+
+// Reads a dword at an arbitrary address, or 0xffffffff if that faults. MSVC allows
+// __try only where nothing needs unwinding, so this is its own function.
+static unsigned nxSafeRead(const unsigned char* base, unsigned offset)
+	{
+	__try
+		{
+		unsigned v;
+		memcpy(&v, base + offset, 4);
+		return v;
+		}
+	__except(EXCEPTION_EXECUTE_HANDLER)
+		{
+		return 0xffffffffu;
+		}
+	}
+
+// Prints every pointer-looking dword in the first 0x40 bytes of a shape, with the
+// dword at +0x19c of whatever it points to -- which is where the joint-descriptor
+// rows expect the pose.
+static void nxScanShape(const unsigned char* s)
+	{
+	printf("shape scan:\n");
+	for(unsigned off = 0; off < 0x40; off += 4)
+		{
+		unsigned v = nxSafeRead(s, off);
+		if(v < 0x00010000u || v > 0x7fffffffu)
+			continue;
+		unsigned at19c = nxSafeRead(reinterpret_cast<const unsigned char*>(
+			static_cast<size_t>(v)), 0x19c);
+		printf("  shape+0x%02x=%08x  [+0x19c]=%08x\n", off, v, at19c);
+		}
+	}
+
 static void nxDump(const char* tag, const unsigned char* base, unsigned words)
 	{
 	printf("%s %p:", tag, base);
@@ -122,6 +156,13 @@ int wmain(int argc, wchar_t** argv)
 			const unsigned char* s = reinterpret_cast<const unsigned char*>(
 				static_cast<size_t>(shapePtr));
 			nxDump("shape  ", s, 12);
+			// The row reads [shape+8] as the body and then [body+0x19c] as the pose,
+			// but on a real actor [shape+8] is zero. Scan the object for a plausible
+			// body pointer instead of assuming the offset: print every dword in the
+			// first 0x40 bytes and, for each pointer-looking one, the dword at
+			// +0x19c, which is where the row expects the pose.
+			nxScanShape(s);
+
 			unsigned bodyPtr;
 			memcpy(&bodyPtr, s + 8, 4);
 			printf("shape+8=%08x\n", bodyPtr);
