@@ -6067,6 +6067,47 @@ frame.
 
 No rows move. No gate, coverage-floor, or policy change.
 
+## 3z214. The vt rows split cleanly on one instruction
+
+Round 197 applied 3z213's own rule -- check whether each row cleans the slot's
+arguments itself -- to all seventeen remaining vt-shaped rows, and the answer
+splits them into two groups on the presence of a single `add esp`:
+
+| row | size | vt | `add esp` | shape |
+|---|---|---|---|---|
+| 001544 | 37 | 1 | none | helper then slot, callee pops |
+| 000579 | 55 | 1 | none | callee pops |
+| 001649 | 61 | 2 | none | callee pops |
+| 001659 | 65 | 2 | none | callee pops |
+| 004838 | 66 | 1 | none | callee pops |
+| 002342 | 69 | 2 | none | callee pops |
+| 005159 | 72 | 2 | none | callee pops |
+| 004149 | 89 | 3 | none | callee pops |
+| 003238 | 106 | 4 | none | callee pops |
+| 002060 | 112 | 4 | none | callee pops |
+| 004163 | 56 | 1 | none, ret 4 | callee pops |
+| 004861 | 48 | 1 | none, ret 8 | callee pops |
+| 004866 | 76 | 1 | none, ret 0x14 | callee pops |
+| 004868 | 76 | 1 | none, ret 0x14 | callee pops |
+| 004864 | 81 | 1 | none, ret 0x18 | callee pops |
+| 003103 | 41 | 1 | **0x18** | CALLER cleans -- needs an assembly thunk |
+| 001805 | 117 | 1 | **8, 8** | CALLER cleans -- needs an assembly thunk |
+
+So **fifteen of the seventeen take a member-function slot** and only 003103 and
+001805 need the hand-written thunk 3z213 identified. That is a much better
+position than 3z213 left it: the group is not blocked, it is *mostly* drivable
+and the two exceptions are named.
+
+**The attempt on 001544 is still withdrawn.** It is the first of the fifteen,
+it faulted, and with the round's budget spent the candidate and the reusable
+member-function slot host were removed rather than left failing; the tree is
+green (vcall413 and vecloop4165 both 0 failures, mismatches=1). The next
+attempt starts with the table above and one row, and should instrument the
+helper call and the slot call separately, since 001544 is the only row here
+whose slot target comes from a HELPER's return rather than from the object.
+
+No rows move. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
