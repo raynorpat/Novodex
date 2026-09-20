@@ -15666,12 +15666,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "kind-selected accumulator (0x1d260, ret 0xc)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/422",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2637",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the accum0867 differential (3z194): fifteen combinations -- five descriptor kinds including the 0x24 case that masks down to 4, by three value pairs including a zero numerator -- all failures=0 against the whole 0x100-byte object, with the accumulators seeded so the adds are not all from zero",
       "notes": ""
     },
     {
