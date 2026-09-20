@@ -6290,6 +6290,32 @@ passed.
 
 004864 moves to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z222. 004149 closes with no new candidate -- and it cross-checks 002342
+
+Round 205 closed 004149 (build/r205.log allocrelease4149 failures=0, stable
+over three runs), and the useful thing about it is that **it needed no new
+model at all**: it is the allocator-singleton release, and 3z218's
+nxReleaseOwnedFields already expresses it exactly, with the singleton passed in.
+
+That is a genuine cross-check on 3z219's held-back 002342, because the two rows
+use the SAME release mechanism -- the allocator singleton [[0x101041bc]] and its
+vtable slot +0x14 -- and differ only in what they clear:
+
+- 004149 releases three fields at [self+0xc], [self+0x14] and [self+8], each in
+  its own group, and clears ONLY the field it just released;
+- 002342 releases two fields, [self+0x18] and [self+8], and after each release
+  clears THREE fields -- the field plus the two that follow it.
+
+So the release mechanism is now confirmed working against the same singleton,
+and 002342's located diff is isolated to the multi-field clearing, exactly as
+3z219 suspected. That narrows the next attempt on 002342 to one question: which
+fields each of its two groups clears.
+
+The drive covers all eight occupancy pans of the three fields, so each null skip
+is exercised independently.
+
+004149 moves to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
