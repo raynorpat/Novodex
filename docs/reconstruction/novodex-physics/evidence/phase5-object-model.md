@@ -7040,6 +7040,53 @@ session would.
 The tree is green at exit 1. No rows move. No gate, coverage-floor, or policy
 change.
 
+## 3z242. The alias-aware scan, and a negative result worth keeping
+
+Round 226 closed the gap 3z241 identified. The previous scan only tracked writes
+through an array's OWN name, so it could not see a write through a pointer that
+aliases it -- the most natural way for a fixture to be overrun. Re-running with
+alias tracking (`TYPE* p = ARRAY;` inside the same block, then writes through
+`p`) narrowed the candidates to **two**:
+
+    unsigned char record[0x58];     line 2992  (plane-save fixture, round ~60)
+    unsigned char record[0x58];     line 9907  (plane-save fixture, round ~60)
+
+Both are in OLD blocks, which matches the observation that the abort predates
+this campaign's recent work. Both are the natural shape for the fault: an oracle
+call is handed a fixed-size stack buffer --
+
+    unsigned char record[0x58];
+    memset(record, 0xcd, sizeof(record));
+    bool saved = planeSave(shape, record);
+
+-- and if the oracle writes more than 0x58 bytes it walks straight into whatever
+the compiler placed after it.
+
+**The test was run and the answer is no.** Enlarging those buffers (11 sites in
+all, since the pattern repeats) and bounding their digest loops to the original
+0x58 bytes, then re-adding a harmless perturbation block, still gives
+
+    exit = -1073740791 = 0xC0000409
+
+So the plane-save buffers are not the culprit either -- and that is a real result
+rather than a dead end: it eliminates the single most plausible candidate, by
+direct experiment rather than by inference from the file.
+
+**Where this leaves the investigation.** Four candidate causes have now been
+proposed and eliminated, each by experiment or by a check against a known-good
+case: the binder (3z228), dead code (3z234), the 41 phantom overruns (3z240), and
+the plane-save buffers (3z242). What remains established is only what was
+measured directly -- an abort code of `0xC0000409` that appears when wmain's
+frame changes, and that discards buffered stdout.
+
+**The recorded next step is unchanged and is now overdue**: stop inferring from
+the source and take a stack trace at the abort. Four rounds of static analysis
+have each produced a plausible cause and each has been wrong, and a debugger
+would have named the site in one session.
+
+The tree is green at exit 1. No rows move. No gate, coverage-floor, or policy
+change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
