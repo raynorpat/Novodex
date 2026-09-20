@@ -88076,12 +88076,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "masked four-slot loop with six row arguments (0xb5360, ret 0x18)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1852",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15777",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the masked4864 differential (3z221): failures=0 over three consecutive runs across all sixteen live-pointer by mask combinations, comparing the return value, the hit count, the ordered sequence of elements visited, all five slot arguments and the whole object",
       "notes": ""
     },
     {
