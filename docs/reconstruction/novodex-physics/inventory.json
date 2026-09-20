@@ -37140,12 +37140,12 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "singleton release of four fields with two adjusted by minus four (0x515d0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/800",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6571",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the adjusted2060 differential (3z225): failures=0 over three consecutive runs across all sixteen occupancy pans, comparing the hit count, the ORDERED sequence of adjusted arguments each call received, and the whole object -- so a model that skipped the minus-four adjustment could not have passed",
       "notes": ""
     },
     {
