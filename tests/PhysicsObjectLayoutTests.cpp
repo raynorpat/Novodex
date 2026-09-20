@@ -14005,6 +14005,95 @@ int wmain(int argc, wchar_t** argv)
 		}
 	printf("accum0867 candidate failures=%u provisional=1\n", cf);
 	}
+	// -- Pair-count getter 000448: forward, empty and REVERSED pairs, since the
+	//    shift is arithmetic and a reversed pair must yield a negative count.
+	{
+	typedef int (__thiscall* T0448)(void*);
+	T0448 fn = reinterpret_cast<T0448>(base + 0xdef0);
+	unsigned pf = 0;
+	struct PairCase { unsigned lo; unsigned hi; const char* name; };
+	static const PairCase kPc[] = {
+		{ 0x1000, 0x1010, "3 elements" },
+		{ 0x1000, 0x1000, "empty" },
+		{ 0x1010, 0x1000, "reversed" },
+		{ 0x1000, 0x1004, "one" },
+		{ 0x1000, 0x0ff0, "reversed 4" },
+	};
+	for(unsigned i = 0; i < sizeof(kPc) / sizeof(kPc[0]); ++i)
+		{
+		unsigned char self[0x20]; memset(self, 0, sizeof(self));
+		unsigned lo = kPc[i].lo, hi = kPc[i].hi;
+		memcpy(self + 8, &lo, 4);
+		memcpy(self + 0xc, &hi, 4);
+		unsigned char selfC[0x20]; memcpy(selfC, self, sizeof(selfC));
+		int ro = fn(self);
+		int rc = nxCountFromPair0448(selfC);
+		if(ro != rc)
+			{fprintf(stderr,"pair0448 %s ro=%d rc=%d\n", kPc[i].name, ro, rc); ++pf;}
+		}
+	printf("pair0448 candidate failures=%u provisional=1\n", pf);
+	}
+	// -- List teardown 004089: chain lengths 0..3, with the allocator singleton
+	//    and the global word bound.
+	{
+	typedef void (__thiscall* T4089)(void*);
+	T4089 fn = reinterpret_cast<T4089>(base + 0x95d20);
+	// the allocator singleton, as in 3z166
+	void* singleVt[0x18 / 4 + 1]; memset(singleVt, 0, sizeof(singleVt));
+	singleVt[0x14 / 4] = reinterpret_cast<void*>(&nxAllocFreeSeq);
+	unsigned char singleObj[0x20]; memset(singleObj, 0, sizeof(singleObj));
+	*(void**)(singleObj) = singleVt;
+	unsigned char holder[0x10]; memset(holder, 0, sizeof(holder));
+	*(void**)(holder) = singleObj;
+	NxAllocSaved svS = nxBindAllocSlot(base, holder);
+	nxSetAllocFree(&nxAllocFreeSeq);
+	unsigned char* img = const_cast<unsigned char*>(
+		reinterpret_cast<const unsigned char*>(base));
+	DWORD oldP = 0;
+	void* gp = reinterpret_cast<void*>(
+		reinterpret_cast<size_t>(img + 0x127000) & ~static_cast<size_t>(0xFFF));
+	unsigned gOrig = 0;
+	int gOk = VirtualProtect(gp, 0x2000, PAGE_READWRITE, &oldP);
+	if(gOk) gOrig = *reinterpret_cast<unsigned*>(img + 0x127180);
+	unsigned lf = 0;
+	for(unsigned len = 0; len < 4; ++len)
+		{
+		unsigned char nodes[3][0x40];
+		memset(nodes, 0, sizeof(nodes));
+		for(unsigned k = 0; k + 1 < len; ++k)
+			*(void**)(nodes[k] + 0x10) = nodes[k + 1];
+		unsigned char self[0x40], selfC[0x40];
+		memset(self, 0, sizeof(self)); memset(selfC, 0, sizeof(selfC));
+		*(void**)(self + 0x20) = (len == 0) ? nullptr : nodes[0];
+		*(void**)(selfC + 0x20) = (len == 0) ? nullptr : nodes[0];
+		if(gOk) *reinterpret_cast<unsigned*>(img + 0x127180) = 0xDEAD0000u;
+		nxSetGlobalFlag4491(0xDEAD0000u);
+		gFreeSeqN = 0; memset(gFreeSeq, 0, sizeof(gFreeSeq));
+		fn(self);
+		unsigned nO = gFreeSeqN;
+		unsigned gO = gOk ? *reinterpret_cast<unsigned*>(img + 0x127180) : 0u;
+		if(gOk) *reinterpret_cast<unsigned*>(img + 0x127180) = 0xDEAD0000u;
+		nxSetGlobalFlag4491(0xDEAD0000u);
+		gFreeSeqN = 0; memset(gFreeSeq, 0, sizeof(gFreeSeq));
+		nxListFreeViaSingleton4089(selfC);
+		unsigned nC = gFreeSeqN;
+		unsigned gC = nxGetGlobalFlag4491();
+		if(nO != nC || nO != len || gO != gC || gO != 0u
+			|| memcmp(self, selfC, sizeof(self)) != 0)
+			{fprintf(stderr,"list4089 len=%u nO=%u nC=%u gO=%08x gC=%08x\n",
+				len, nO, nC, gO, gC); ++lf;}
+		}
+	if(gOk)
+		{
+		DWORD t2 = 0;
+		VirtualProtect(gp, 0x2000, PAGE_READWRITE, &t2);
+		*reinterpret_cast<unsigned*>(img + 0x127180) = gOrig;
+		VirtualProtect(gp, 0x2000, oldP, &t2);
+		}
+	nxSetAllocFree(nullptr);
+	nxUnbindAllocSlot(base, svS);
+	printf("list4089 candidate failures=%u provisional=1\n", lf);
+	}
 
 
 
