@@ -6108,6 +6108,34 @@ whose slot target comes from a HELPER's return rather than from the object.
 
 No rows move. No gate, coverage-floor, or policy change.
 
+## 3z215. 001544 closes, and the fault was binding CODE
+
+Round 198 closed 001544, the first of 3z214's fifteen, and the cause of the
+repeated fault is a rule that should have been written down many rounds ago.
+
+**001544 calls 004803 as a DIRECT call to code** -- `call 0x100b4000` -- and
+004803 is `statically_reviewed`, which is why the drivability filter counted it
+as satisfied and why the row looked drivable all along. My drive then bound
+`base + 0xb4000`, a CODE address, to redirect that call. `nxBindFnPtr` happily
+VirtualProtects the page and overwrites the first four bytes of a function with
+a data pointer, and the row then jumps into garbage. **Binding is for DATA slots
+only.** A direct call to a reconstructed or statically-reviewed row must be
+reached through its real code, and the thing to bind is whatever DATA that code
+reads -- here the allocator pointer global at [0x1012845c].
+
+That distinction is worth stating plainly because the alternative explanation
+was much more attractive: 3z213 had just established a calling-convention trap,
+so a fault in the very next row of that group looked like more of the same. It
+was not.
+
+The row itself: when [self+4] is non-null it calls 004803, which returns the
+allocator pointer, then calls the vtable slot +0xc of THAT object with one
+argument, [self+4] minus four, and clears [self+4]. The drive covers both the
+null and non-null cases and compares the slot hit count, its argument and the
+whole object.
+
+001544 moves to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
