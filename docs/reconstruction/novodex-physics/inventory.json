@@ -59288,7 +59288,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1577",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/11746",
       "static_proof": "bails when [this+0x18]>=[this+0x1c]; accumulates (count-2) into [this+0x20]; records count in the [this+0x403c]/[this+0x4044] list when it has room; for each index below [this+0x10] copies the 3-dword vertex through the [this+8] map into the [this+0x4034]/[this+0x4038] output (fresh id when the slot is zero) and appends id-1 to the aux list; ret 8",
-      "dynamic_proof": "confirmed via batch3268 differential (3z128): 3 cases failures=0",
+      "dynamic_proof": "FAILING DIFFERENTIAL (phase-8 audit 3z264): the block batch3268 reports 3 failures and has done so in EVERY gate log. The diffs show the candidate writing NOTHING while the oracle writes this+0000, this+0004, this+0010 through this+0038, this+4034 and this+403c, so nxBatchAppend3268 is effectively a no-op against the row. This closure is UNFOUNDED and the row should be reopened when the harness allows it; the failure was invisible because the phase-5 gate counts only candidateMissing, not per-block failures",
       "notes": ""
     },
     {
