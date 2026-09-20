@@ -1155,3 +1155,78 @@ same Foundation-side degenerate-input bit 7a-7d left open.
 closure needs a mutation, a mutation needs a registered target, a registered target
 needs a green whole-pair differential, and the joint differential is one NaN sign
 bit short of green.
+
+## 7p. The `fdivr` candidate is tried, and the boundary is now final
+
+7d named the division as the last untried candidate for the one NaN sign bit. It
+is now tried, and it is not the cause.
+
+**What was done.** `NxNormalToTangents`'s `k = 1.0 / sqrt(a)` now reaches the x87
+unit through a helper rather than the C++ `/` operator, because the oracle divides
+with `fdivr` at `0x10006345` and the rebuilt Foundation's `.text` had **zero**
+`fdivr`/`fdiv` memory encodings. The change is verified to have taken effect, by
+opcode count in the built DLL:
+
+    opcode            rebuilt before   rebuilt after   oracle
+    fsqrt  d9 fa                  15              15       28
+    fdivp  de f9                   0               1        8
+    fdivr  d8/3d                   0               0       13
+    fdiv   d8/35                   0               1        0
+    fld1   d9 e8                   0               1       10
+
+**The sign did not move.**
+
+    case   oracle                          rebuilt
+    0      t1 bf3504f3...  t2 bed105ec...  identical
+    1      t1/t2 7fc00000                  t1/t2 ffc00000
+    3      t1 bf800000...  t2 80000000...  identical
+
+**Six attempts have now been made against this one bit**, and the table is the
+result of the whole line of work:
+
+| change | finite path | degenerate path |
+| --- | --- | --- |
+| `float` products (as found) | one ULP off | sign differs |
+| `double` products, operand negated | exact | sign differs |
+| `double` products, product negated | exact | sign differs |
+| `NxMath::sqrt` reaching `fsqrt` | exact | sign differs |
+| `NxVec3::magnitude` and `normalize` wide | exact | sign differs |
+| the division reaching x87 | exact | sign differs |
+
+**The boundary is declared final here, as 7d said it would be.** The finite path is
+exact; the degenerate path is one sign bit apart; six independent mechanisms have
+been eliminated by measurement rather than by argument; and the probes that
+established each elimination are checked in
+(`NxNormalToTangentsProbe`, `NxVec3NormalizeProbe`, `NxMathSqrtProbe`). The
+remaining difference is inside `NxNormalToTangents`'s own `0 * inf` products on a
+zero axis, where the sign depends on which operand the hardware picks, and no
+spelling tried so far controls it.
+
+**Recorded as shipped-behaviour-to-reproduce, not as a defect to fix.** The
+programme's rule is to reproduce the oracle rather than normalise it away, and the
+honest state is that this one bit is not reproduced. What a future session should
+not do is spend a seventh mechanism on it without a new instrument.
+
+**The change is kept** because it is faithful to the oracle's instruction stream
+and regresses nothing: phases 2, 3, 4 and `completed` all still exit 0, and the
+Foundation's `util` gate still diffs 0 against both DLLs.
+
+## 7q. The chain, after this round
+
+7o recorded the dependency: a closure needs a mutation, a mutation needs a
+registered target, a registered target needs a green whole-pair differential, and
+the joint differential is one bit short of green.
+
+**That last link is now closed as "will not be closed by this route".** So the
+route to Phase 6's 129 closures is not the joint differential. It is a target that
+is already green and registered, or a new one built to be green from the start.
+`NxPhysicsObjectLayoutTests` is Phase 5's oracle differential and is RED on
+purpose, so it cannot serve; the honest next move is a **new** Phase 6 target
+whose differential avoids the degenerate axis, which is a legitimate thing for a
+differential to do as long as it says so -- the four-case matrix in
+`NxPhysicsJointDescTests` already isolates the axis and could drop or quarantine
+the zero case with the exclusion recorded in `run_differential.ps1`, which has a
+mechanism for exactly that.
+
+That is the next session's first task, and it is a smaller one than the six rounds
+this bit has cost.

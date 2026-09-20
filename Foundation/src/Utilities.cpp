@@ -52,6 +52,26 @@ void NxComputeBounds(NxVec3& min, NxVec3& max, NxU32 nbVerts, const NxVec3* vert
 		}
 	}
 
+// 1.0 / x through the x87 unit, because the oracle divides with `fdivr` and an
+// SSE divide differs on a degenerate input's NaN sign.
+static NxF64 nxDivideOne(NxF64 x)
+	{
+#if defined(_M_IX86) && defined(_MSC_VER)
+	NxF64 value = x;
+	__asm
+		{
+		fld1
+		fld qword ptr [value]
+		fdivp st(1), st(0)
+		fstp qword ptr [value]
+		}
+	return value;
+#else
+	return 1.0 / x;
+#endif
+	}
+
+
 void NxNormalToTangents(const NxVec3 & n, NxVec3 & t1, NxVec3 & t2)
 	{
 	// The oracle evaluates every product here with the x87 unit and rounds only
@@ -84,7 +104,13 @@ void NxNormalToTangents(const NxVec3 & n, NxVec3 & t1, NxVec3 & t2)
 	else
 		{
 		const NxF64 a = static_cast<NxF64>(n.x) * n.x + static_cast<NxF64>(n.y) * n.y;
-		const NxF64 k = 1.0 / NxMath::sqrt(a);
+		// The oracle divides with `fdivr` (`0x10006345`), and the rebuilt
+		// Foundation's .text contained zero `fdivr dword ptr` encodings, so the
+		// division was compiled as an SSE divide. On a degenerate input the two
+		// disagree about the NaN they produce, which is the sign the joint
+		// differential sees. Reaching the instruction rather than the operator is
+		// the same move NxMath::sqrt needed.
+		const NxF64 k = nxDivideOne(NxMath::sqrt(a));
 		t1.set(static_cast<NxReal>(-static_cast<NxF64>(n.y) * k),
 			static_cast<NxReal>(static_cast<NxF64>(n.x) * k), 0.0f);
 		t2.set(static_cast<NxReal>(-static_cast<NxF64>(n.z) * static_cast<NxF64>(t1.y)),
