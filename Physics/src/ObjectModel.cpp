@@ -3056,6 +3056,25 @@ unsigned char nxMaskedFourSlotLoop4866(void* self, unsigned a1, unsigned a2,
 	return 1u;
 	}
 
+// phys_fn_004864 (0xb5360): the masked four-slot loop with a sixth argument.
+unsigned char nxMaskedFourSlotLoop4864(void* self, unsigned a1, unsigned a2,
+	unsigned a3, unsigned a4, unsigned a5, unsigned a6, NxSlotMfp5 slot)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	for(unsigned k = 0; k < 4u; ++k)
+		{
+		unsigned elem;
+		memcpy(&elem, p + 0x1c + 4u * k, 4);
+		if(elem == 0u)
+			continue;
+		if((a3 & (1u << k)) == 0u)
+			continue;
+		(reinterpret_cast<NxSlotCtx*>(static_cast<size_t>(elem))->*slot)(a1, a2, a4,
+			a5, a6);
+		}
+	return 1u;
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)
