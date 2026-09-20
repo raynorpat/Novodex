@@ -6208,6 +6208,31 @@ release would have passed.
 
 All three move to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z219. 005159 closes; 002342 is held back with its diff located
+
+Round 202 closed 005159, the byte-guarded member of the singleton-release family
+(build/r202.log allocrel failures=0, stable over three runs). It is guarded by
+the BYTE at [self+0x14]: when non-zero it releases [self+8] and [self+4] through
+004803 and the singleton slot +0xc, clearing each after release. The drive
+covers all four pans -- guard off, and guard on with each combination of the two
+fields live -- so both the guard and the per-field null skip are exercised.
+
+**002342 is held back, and the diff is located rather than guessed.** It is the
+ALLOCATOR-singleton variant: it takes [[0x101041bc]] and calls ITS slot +0x14
+for [self+0x18] and again for [self+8], clearing three fields after each
+release. The drive reported matching hit counts and matching expected counts for
+every pan, yet the objects differed -- at offset 0xc for the pans where only the
+first group is live, and at offset 0x1c for the pan where only the second is.
+That is the signature of the CLEARED RANGES being misattributed: the row clears
+0x18/0x1c/0x20 and 8/0xc/0x10, and the two offsets that differ are exactly the
+ones each group would clear if the groups were swapped. So the next attempt
+should check which field each group actually READS, not which it clears -- the
+disassembly says 0x18 then 8, and something about that reading is wrong.
+
+The candidate and its sub-block were removed rather than left failing; the tree
+is green. 005159 moves to `reconstructed`. No gate, coverage-floor, or policy
+change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
