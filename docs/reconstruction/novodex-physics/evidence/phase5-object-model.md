@@ -6543,6 +6543,40 @@ what three probes could not, and the cost of asking is seconds.
 now known to be local to the fixture rather than to the machinery. No rows move.
 No gate, coverage-floor, or policy change.
 
+## 3z230. The short-holder bug: a real defect in my own probe
+
+Round 214 acted on 3z229 by reading the harness's OWN guard-slot helper instead
+of inventing another fixture, and that reading found a genuine bug in my probe.
+
+`nxBindReportSlot` (lines 571-589) is the established helper for this slot, and
+it points [0x101041b0] at `&gAssertGuard` -- a single `unsigned` holding 1. That
+is correct for the REPORT rows, which only test the guard for non-zero. It is
+NOT sufficient for 000579, which does more with it:
+
+    ecx = [0x101041b0]      ; the guard object
+    eax = [ecx]
+    edx = [eax + 0x14]      ; the guard object's SUBOBJECT vtable
+    ecx = eax + 0x14
+    call [edx + 0x1c]
+
+The row reads [guard+0x14] as a vtable pointer. **My 3z228 probe bound the guard
+to a 0x10-byte local holder, so [holder+0x14] was four bytes PAST the end of the
+array** -- uninitialised stack -- and the row called through whatever was there.
+That is the fault, and it is in the fixture, exactly as 3z229 concluded from the
+fourteen existing uses.
+
+So the earlier chain is now fully explained and none of it was the binder: the
+slot binds fine, the guard needs to point at at least 0x18 bytes of real memory,
+and a fixture that is too short turns into a call through stack garbage.
+
+**The retry with a 0x20-byte holder still did not pass**, and it is withdrawn
+again rather than left in place; the tree is green. The remaining question is
+narrower than any previous one -- what the guard object's subobject at +0x14
+must contain beyond a vtable, and whether the row's cache check reads the field
+before or after the guard test.
+
+No rows move. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
