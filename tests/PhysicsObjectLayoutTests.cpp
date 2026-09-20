@@ -267,6 +267,7 @@ struct NxSlotHost
 	void slot1(unsigned x);
 	void slot2(unsigned x, unsigned y);
 	void slot4(unsigned w, unsigned x, unsigned y, unsigned z);
+	void slot5(unsigned v, unsigned w, unsigned x, unsigned y, unsigned z);
 	};
 static unsigned gSlotHits, gSlotA;
 void NxSlotHost::slot1(unsigned x) { gSlotA = x; ++gSlotHits; }
@@ -274,6 +275,13 @@ static unsigned gSlotB;
 void NxSlotHost::slot2(unsigned x, unsigned y)
 	{ gSlotA = x; gSlotB = y; ++gSlotHits; }
 static unsigned gSlotC, gSlotD, gSlotSeq[8];
+static unsigned gSlotE;
+void NxSlotHost::slot5(unsigned v, unsigned w, unsigned x, unsigned y, unsigned z)
+	{
+	gSlotA = v; gSlotB = w; gSlotC = x; gSlotD = y; gSlotE = z;
+	if(gSlotHits < 8) gSlotSeq[gSlotHits] = v;
+	++gSlotHits;
+	}
 void NxSlotHost::slot4(unsigned w, unsigned x, unsigned y, unsigned z)
 	{
 	gSlotA = w; gSlotB = x; gSlotC = y; gSlotD = z;
@@ -15315,6 +15323,77 @@ int wmain(int argc, wchar_t** argv)
 				kRowName[ri], li, mi, want, hO, hC, ro, rc); ++s4866;}
 		}
 	printf("masked4866 candidate failures=%u provisional=1\n", s4866);
+	}
+	// -- 004864: the same masked loop with a sixth row argument and five slot
+	//    arguments. The crossed pans are reused, since either gate alone would
+	//    hide a wrong model.
+	{
+	struct S4864Ctx { unsigned dummy; };
+	typedef unsigned char (S4864Ctx::*S4864Mfp)(unsigned, unsigned, unsigned,
+		unsigned, unsigned, unsigned);
+	S4864Mfp mfp;
+	{
+	const void* raw = reinterpret_cast<const void*>(base + 0xb5360);
+	memcpy(&mfp, &raw, sizeof(mfp));
+	}
+	typedef void (NxSlotHost::*M5)(unsigned, unsigned, unsigned, unsigned,
+		unsigned);
+	M5 slotM = &NxSlotHost::slot5;
+	unsigned s4864 = 0;
+	static const unsigned kLive4[4] = { 0x0u, 0xFu, 0x9u, 0x6u };
+	static const unsigned kMask4[4] = { 0x0u, 0xFu, 0x5u, 0xAu };
+	for(unsigned li = 0; li < 4; ++li)
+	for(unsigned mi = 0; mi < 4; ++mi)
+		{
+		void* vt[8]; memset(vt, 0, sizeof(vt));
+		{
+		void* raw = nullptr;
+		memcpy(&raw, &slotM, sizeof(raw));
+		memcpy(reinterpret_cast<unsigned char*>(vt) + 0x18, &raw, 4);
+		}
+		unsigned char elems[4][0x20];
+		memset(elems, 0, sizeof(elems));
+		for(unsigned k = 0; k < 4; ++k)
+			*(void**)(elems[k]) = vt;
+		unsigned char self[0x40], selfC[0x40];
+		memset(self, 0, sizeof(self)); memset(selfC, 0, sizeof(selfC));
+		for(unsigned k = 0; k < 4; ++k)
+			{
+			unsigned v = ((kLive4[li] >> k) & 1u) ? static_cast<unsigned>(
+				reinterpret_cast<size_t>(elems[k])) : 0u;
+			memcpy(self + 0x1c + 4 * k, &v, 4);
+			memcpy(selfC + 0x1c + 4 * k, &v, 4);
+			}
+		unsigned a1 = 0x11110000u + li, a2 = 0x22220000u + mi;
+		unsigned a4 = 0x44440000u + li, a5 = 0x55550000u + mi;
+		unsigned a6 = 0x66660000u + li, mask = kMask4[mi];
+		gSlotHits = 0; gSlotA = 0; gSlotB = 0; gSlotC = 0; gSlotD = 0; gSlotE = 0;
+		memset(gSlotSeq, 0, sizeof(gSlotSeq));
+		unsigned char ro = (reinterpret_cast<S4864Ctx*>(self)->*mfp)(
+			a1, a2, mask, a4, a5, a6);
+		unsigned hO = gSlotHits;
+		unsigned seqO[8]; memcpy(seqO, gSlotSeq, sizeof(seqO));
+		unsigned aO = gSlotA, bO = gSlotB, cO = gSlotC, dO = gSlotD, eO = gSlotE;
+		gSlotHits = 0; gSlotA = 0; gSlotB = 0; gSlotC = 0; gSlotD = 0; gSlotE = 0;
+		memset(gSlotSeq, 0, sizeof(gSlotSeq));
+		unsigned char rc = nxMaskedFourSlotLoop4864(selfC, a1, a2, mask, a4, a5,
+			a6, *reinterpret_cast<NxSlotMfp5*>(&slotM));
+		unsigned hC = gSlotHits;
+		unsigned seqC[8]; memcpy(seqC, gSlotSeq, sizeof(seqC));
+		unsigned want = 0;
+		for(unsigned k = 0; k < 4; ++k)
+			if(((kLive4[li] >> k) & 1u) && ((mask >> k) & 1u)) ++want;
+		bool ok = (ro == rc) && (ro == 1u) && (hO == hC) && (hO == want)
+			&& (memcmp(seqO, seqC, sizeof(seqO)) == 0)
+			&& (memcmp(self, selfC, sizeof(self)) == 0);
+		if(want > 0)
+			ok = ok && (aO == a1) && (bO == a2) && (cO == a4) && (dO == a5)
+				&& (eO == a6);
+		if(!ok)
+			{fprintf(stderr,"s4864 li=%u mi=%u want=%u h=%u/%u r=%u/%u\n",
+				li, mi, want, hO, hC, ro, rc); ++s4864;}
+		}
+	printf("masked4864 candidate failures=%u provisional=1\n", s4864);
 	}
 
 
