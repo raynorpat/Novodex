@@ -6509,6 +6509,40 @@ on 000579 should answer first.
 The probe was withdrawn and the tree is green. No rows move. No gate,
 coverage-floor, or policy change.
 
+## 3z229. The binder hypothesis is disproven -- the slot was never the problem
+
+Round 213 asked 3z228's recorded question -- whether `nxBindFnPtr` has a
+systematic limitation on the 0x10104000-0x10126000 band -- and answered it
+**no**, decisively, by checking the harness instead of writing another probe.
+
+`0x101041b0` is already accessed in **fourteen places** in this test file,
+including a dedicated save/restore pair built for exactly this slot:
+
+    564:  // The guarded rows dereference [0x101041b0] first; that slot holds an ...
+    576:  void** slot  = reinterpret_cast<void**>(img + 0x1041b4);
+    577:  void** guard = reinterpret_cast<void**>(img + 0x1041b0);
+    633:  *reinterpret_cast<void**>(img + 0x1041b4) = sv.slot;
+    634:  *reinterpret_cast<void**>(img + 0x1041b0) = sv.guard;
+
+and every block that uses them passes, in the same gate run that reports all ten
+vt-campaign blocks at zero failures. So binding this slot is not merely possible
+-- it is long-established practice in this harness, with its own helper.
+
+**That kills both earlier readings at once.** The fault in 3z228's probe is not
+in `nxBindFnPtr` and not in the slot: it is in that PROBE. Which also means
+3z199-3z200's "float-valued slots cannot be bound" framing was too broad -- the
+slot there was fine too, and what actually mattered was the RVA-versus-VA table
+error fixed in 3z202. Two rounds of this campaign have now attributed a fault to
+the binder, and both attributions were wrong.
+
+**The rule that follows**: before suspecting a shared helper, grep the harness
+for OTHER uses of the same slot. Fourteen existing uses settle in one command
+what three probes could not, and the cost of asking is seconds.
+
+000579 stays `discovered`. Its shape is fully recorded (3z226) and its blocker is
+now known to be local to the fixture rather than to the machinery. No rows move.
+No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
