@@ -5547,6 +5547,28 @@ Closing 004089 is what unlocks ten rows, and 000448 was the first step of a
 longer chain for its own thirty-one. Both move to `reconstructed`. No gate,
 coverage-floor, or policy change.
 
+## 3z196. The 004089 payoff: ten mutex list-free rows close
+
+Round 179 collected the dividend 3z195 predicted. Closing 004089 unlocked a
+group of ten 74-byte rows that had been blocked on it
+(build/r179.log mutexlistfree failures=0):
+
+    <lock [self+0x10]>
+    if (acquire failed) { <report(2, <file>, <line>, 0, 0x10104760)>; ret }
+    ecx = [self+0x18]
+    call 004089                     ; the list teardown closed in 3z195
+    <tail-jump into the unlock 002366>
+
+They are 004455, 004495, 004525, 004555, 004585, 004611, 004639, 004669,
+004695 and 004747, and one candidate covers all ten. Everything in them had
+already been modelled separately -- the recursive acquire (3z160), the report
+slot (3z155), the allocator-singleton teardown (3z195) and the tail-jump
+return-ownership rule (3z191) -- so this batch is really a composition check:
+if any one of those models were wrong, ten rows would fail together rather
+than one.
+
+All ten move to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
