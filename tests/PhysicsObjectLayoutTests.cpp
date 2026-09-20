@@ -14835,6 +14835,34 @@ int wmain(int argc, wchar_t** argv)
 		}
 	printf("n4family candidate failures=%u provisional=1\n", n4f);
 	}
+	// -- 003413, retried with the member-function-pointer shape 3z210 found:
+	//    the row needs ecx AND a stack argument, which __thiscall on a free
+	//    function does not supply.
+	{
+	struct V413Ctx { unsigned dummy; };
+	typedef void (V413Ctx::*V413Mfp)(unsigned);
+	V413Mfp mfp;
+	{
+	const void* raw = reinterpret_cast<const void*>(base + 0x84800);
+	memcpy(&mfp, &raw, sizeof(mfp));
+	}
+	void* vt[0x24 / 4 + 1]; memset(vt, 0, sizeof(vt));
+	vt[0x20 / 4] = reinterpret_cast<void*>(&nxEx1Stub);
+	unsigned char obj[0x20]; memset(obj, 0, sizeof(obj));
+	*(void**)(obj) = vt;
+	NxFnPtrSaved sv = nxBindFnPtr(base, 0x125080, obj);
+	unsigned v413f = 0;
+	gEx1Hits = 0; gEx1Arg = 0;
+	(reinterpret_cast<V413Ctx*>(obj)->*mfp)(0x4242u);
+	unsigned hO = gEx1Hits, aO = gEx1Arg;
+	gEx1Hits = 0; gEx1Arg = 0;
+	nxGlobalVirtualCall3413(0x4242u, &nxEx1Stub);
+	unsigned hC = gEx1Hits, aC = gEx1Arg;
+	if(hO != hC || hO != 1u || aO != aC || aO != 0x4242u)
+		{fprintf(stderr,"v413 h=%u/%u a=%08x/%08x\n", hO, hC, aO, aC); ++v413f;}
+	nxUnbindFnPtr(base, 0x125080, sv);
+	printf("vcall413 candidate failures=%u provisional=1\n", v413f);
+	}
 
 
 
