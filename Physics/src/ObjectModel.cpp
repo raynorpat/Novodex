@@ -3118,6 +3118,24 @@ void nxOwnVtableRelease3238(void* self, NxSlotMfp1 slot)
 	memcpy(p + 0x10, &zero, 4);
 	}
 
+// phys_fn_002060 (0x515d0): the release with per-field adjustments.
+void nxReleaseAdjusted2060(void* self, const unsigned* offsets, const int* adjust,
+	unsigned count, void* singleton, NxSlotMfp1 slot)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	for(unsigned k = 0; k < count; ++k)
+		{
+		unsigned field;
+		memcpy(&field, p + offsets[k], 4);
+		if(field == 0u)
+			continue;
+		(reinterpret_cast<NxSlotCtx*>(singleton)->*slot)(
+			field + static_cast<unsigned>(adjust[k]));
+		const unsigned zero = 0u;
+		memcpy(p + offsets[k], &zero, 4);
+		}
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)

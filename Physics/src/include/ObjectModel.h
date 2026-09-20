@@ -1376,6 +1376,15 @@ void					nxReleaseOwnedFields(void* self, const unsigned* offsets,
 //! groups, one companion field ([self+0x4034] and [self+0x403c]). It finishes
 //! by clearing [self+0x10] UNCONDITIONALLY. The slot pops its own argument, so
 //! a MEMBER-FUNCTION slot is the shape.
+//! phys_fn_002060 (0x515d0): releases FOUR owned fields -- [self+0x14],
+//! [self+0x10], [self+4] and [self+0xc] -- through 004803's singleton and ITS
+//! vtable slot +0xc, each only when non-null and each cleared afterwards. The
+//! LAST TWO pass the field MINUS FOUR, an adjustment the other two do not make,
+//! so the offset and the adjustment are separate columns here.
+void					nxReleaseAdjusted2060(void* self, const unsigned* offsets,
+							const int* adjust, unsigned count, void* singleton,
+							NxSlotMfp1 slot);
+
 void					nxOwnVtableRelease3238(void* self, NxSlotMfp1 slot);
 
 void					nxAllocReleaseClear2342(void* self, void* alloc,
