@@ -6389,6 +6389,32 @@ exercised independently as well.
 
 002060 moves to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z226. 000579: the last vt row is held back, with the suspect named
+
+Round 209 attempted 000579, the last of 3z214's fifteen drivable vt rows, and is
+reporting a withdrawal.
+
+The row is a LAZY GETTER: when [self+0x6b8] is already non-zero it returns it
+unchanged; otherwise it takes the assert-guard object [[0x101041b0]], calls the
+vtable slot +0x1c of that object's SUBOBJECT at +0x14 -- with the subobject as
+`this` in ecx and NO stack arguments, which is the __fastcall shape -- then
+caches the result at [self+0x6b8] and returns it.
+
+**The suspect is the `int3`.** The row's guard check reads [[0x101041b0]] and,
+if that is zero, executes `int3` before the call. The drive bound [0x101041b0]
+to a fixture holder, which should keep the guard non-zero -- but the fixture puts
+the vtable at guard+0x14 and the row then reads the slot out of THAT, so there
+are two places the fixture could be wrong, and a fault on an `int3` and a fault
+on a bad slot look the same from outside. The candidate and its recorder were
+removed rather than left failing, and the tree is green (ownvtable3238 and
+adjusted2060 both 0 failures, mismatches=1).
+
+**The next attempt should separate those two**: bind the guard and read it back
+before calling, exactly as 3z200 did for nxBindFnPtr -- the same technique that
+turned a three-round mystery into a one-round fix.
+
+No rows move. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
