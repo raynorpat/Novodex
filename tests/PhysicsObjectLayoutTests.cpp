@@ -265,9 +265,13 @@ struct NxSlotHost
 	{
 	unsigned a;
 	void slot1(unsigned x);
+	void slot2(unsigned x, unsigned y);
 	};
 static unsigned gSlotHits, gSlotA;
 void NxSlotHost::slot1(unsigned x) { gSlotA = x; ++gSlotHits; }
+static unsigned gSlotB;
+void NxSlotHost::slot2(unsigned x, unsigned y)
+	{ gSlotA = x; gSlotB = y; ++gSlotHits; }
 
 // the four-argument thunk recorder
 static unsigned gN4Hits, gN4A, gN4B, gN4C, gN4D;
@@ -15017,6 +15021,60 @@ int wmain(int argc, wchar_t** argv)
 				len, hO, hC, aO, aC); ++s4163;}
 		}
 	printf("vecloop4163 candidate failures=%u provisional=1\n", s4163);
+	}
+	// -- 004861: the four-pointer slot loop, with pans that vary which of the
+	//    four element slots are occupied.
+	{
+	struct S4861Ctx { unsigned dummy; };
+	typedef void (S4861Ctx::*S4861Mfp)(unsigned, unsigned);
+	S4861Mfp mfp;
+	{
+	const void* raw = reinterpret_cast<const void*>(base + 0xb52a0);
+	memcpy(&mfp, &raw, sizeof(mfp));
+	}
+	typedef void (NxSlotHost::*M2)(unsigned, unsigned);
+	M2 slotM = &NxSlotHost::slot2;
+	unsigned s4861 = 0;
+	static const unsigned kPans[4] = { 0x0u, 0x9u, 0x6u, 0xFu };
+	for(unsigned pi = 0; pi < 4; ++pi)
+		{
+		void* vt[8]; memset(vt, 0, sizeof(vt));
+		{
+		void* raw = nullptr;
+		memcpy(&raw, &slotM, sizeof(raw));
+		memcpy(reinterpret_cast<unsigned char*>(vt) + 0x10, &raw, 4);
+		}
+		unsigned char elems[4][0x20];
+		memset(elems, 0, sizeof(elems));
+		for(unsigned k = 0; k < 4; ++k)
+			*(void**)(elems[k]) = vt;
+		unsigned char self[0x40], selfC[0x40];
+		memset(self, 0, sizeof(self)); memset(selfC, 0, sizeof(selfC));
+		unsigned want = 0;
+		for(unsigned k = 0; k < 4; ++k)
+			{
+			unsigned v = ((kPans[pi] >> k) & 1u) ? static_cast<unsigned>(
+				reinterpret_cast<size_t>(elems[k])) : 0u;
+			memcpy(self + 0x1c + 4 * k, &v, 4);
+			memcpy(selfC + 0x1c + 4 * k, &v, 4);
+			if(v) ++want;
+			}
+		unsigned a = 0x6A6A0000u + pi, b = 0x6B6B0000u + pi;
+		gSlotHits = 0; gSlotA = 0; gSlotB = 0;
+		(reinterpret_cast<S4861Ctx*>(self)->*mfp)(a, b);
+		unsigned hO = gSlotHits, aO = gSlotA, bO = gSlotB;
+		gSlotHits = 0; gSlotA = 0; gSlotB = 0;
+		nxFourSlotLoop4861(selfC, a, b, *reinterpret_cast<NxSlotMfp2*>(&slotM));
+		unsigned hC = gSlotHits, aC = gSlotA, bC = gSlotB;
+		bool ok = (hO == hC) && (hO == want) && (aO == aC) && (bO == bC)
+			&& (memcmp(self, selfC, sizeof(self)) == 0);
+		if(want > 0)
+			ok = ok && (aO == a) && (bO == b);
+		if(!ok)
+			{fprintf(stderr,"s4861 pi=%u pan=%x want=%u h=%u/%u a=%08x/%08x b=%08x/%08x\n",
+				pi, kPans[pi], want, hO, hC, aO, aC, bO, bC); ++s4861;}
+		}
+	printf("fourslot4861 candidate failures=%u provisional=1\n", s4861);
 	}
 
 
