@@ -7928,6 +7928,57 @@ recorded rather than papered over.
 
 No gate, coverage-floor, or policy change.
 
+## 3z261. Final integrity verification, all phases re-run fresh
+
+Round 246 re-ran every phase gate from scratch and confirmed the campaign's
+integrity has not drifted. The result is identical to the 3z232 baseline and to
+3z123 before it:
+
+    phase2 = exit 0     PASS
+    phase3 = exit 0     PASS
+    phase4 = exit 0     PASS
+    phase5 = exit 1     RED on purpose
+    phase6 = exit 3     UNGATED
+    phase7 = exit 3     UNGATED
+    phase8 = exit 3     UNGATED
+
+and phase 5, in the same run:
+
+    inventory=pass
+    FAIL the Phase 5 reconstruction is incomplete; this gate is RED on purpose
+    layout candidate mismatches=1 mode=differential candidate_fold=4492c8c1
+    coverage_assertions_evaluated=126 floor=126
+    gate_failure=oracle_differential:NxPhysicsObjectLayoutTests exited 1
+
+**Why this round is worth a section of its own.** Between 3z232 and here the
+campaign changed the build twice -- adding `/MAP` and `/DEBUG:FULL`, then
+disabling `/GS` for the test translation unit -- and backfilled evidence fields
+in 152 rows. Any of those could have moved a gate. None did: the coverage floor is
+still met exactly at 126, the single mismatch is still the deliberate family
+marker, the inventory still passes, and the RED state is still RED for the same
+reason it has been since 3z114.
+
+**The one thing that did change** is not visible in these numbers: the harness can
+now be extended again (3z253), so the frontier is no longer blocked by a `/GS`
+abort but by the underlying frame corruption, which remains undiagnosed, and by
+the structural refactor it requires.
+
+**Campaign state at this point**, stated once and completely:
+
+- oracle side: census COMPLETE -- 1056977 of 1056977 executable bytes explained,
+  174443 referenced data bytes explained, 0 unexplained, 0 unresolved targets,
+  0 overlaps, 0 duplicate ownership;
+- reconstruction side: 778 closed code rows, phases 4-8 still `pending`;
+- gates: 6 inventory gates pass, phases 2-4 pass, phase 5 RED on purpose, 6-8
+  ungated;
+- known defects recorded rather than hidden: the `wmain` frame corruption
+  (3z238-3z255), 162 reconstructed rows without written proofs (3z256/3z257), an
+  empty-then-filled `statically_reviewed` state (3z258), one misclassified
+  fragment (3z259), and 110 `dynamically_gated` rows that do not record their
+  gate (3z258).
+
+No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
