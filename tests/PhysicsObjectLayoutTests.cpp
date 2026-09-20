@@ -13964,6 +13964,47 @@ int wmain(int argc, wchar_t** argv)
 	nxUnbindReportSlot(base, svRo);
 	printf("reportonceF candidate failures=%u provisional=1\n", rof);
 	}
+	// -- Call-free accumulator 000867: both kind paths, several descriptors.
+	{
+	typedef void (__thiscall* T0867)(void*, float, void*, float);
+	T0867 fn = reinterpret_cast<T0867>(base + 0x1d260);
+	unsigned cf = 0;
+	struct DescCase { unsigned kind; unsigned flags; float c[3]; const char* name; };
+	static const DescCase kDc2[] = {
+		{ 4, 0x00, { 1.5f, -2.0f, 0.25f }, "kind4" },
+		{ 5, 0x40, { -0.5f, 3.0f, 1.0f }, "kind5+bit6" },
+		{ 5, 0x00, { 2.0f, 2.0f, 2.0f }, "kind5" },
+		{ 7, 0x00, { 1.0f, 1.0f, 1.0f }, "kind7" },
+		{ 0x24, 0x00, { 1.0f, 1.0f, 1.0f }, "kind36-masked4" },
+	};
+	for(unsigned i = 0; i < sizeof(kDc2) / sizeof(kDc2[0]); ++i)
+	for(unsigned vi = 0; vi < 3; ++vi)
+		{
+		float a = 1.0f, b = 2.0f;
+		if(vi == 1) { a = -3.0f; b = 4.0f; }
+		if(vi == 2) { a = 0.0f; b = 1.0f; }
+		unsigned char desc[0x20], descC[0x20];
+		memset(desc, 0, sizeof(desc)); memset(descC, 0, sizeof(descC));
+		unsigned k = kDc2[i].kind, fl = kDc2[i].flags;
+		memcpy(desc + 0xc, &k, 4); memcpy(descC + 0xc, &k, 4);
+		memcpy(desc + 0xc, &fl, 4); memcpy(descC + 0xc, &fl, 4);
+		for(unsigned j = 0; j < 3; ++j)
+			{ memcpy(desc + 4 * j, &kDc2[i].c[j], 4); memcpy(descC + 4 * j, &kDc2[i].c[j], 4); }
+		unsigned char self[0x100], selfC[0x100];
+		memset(self, 0, sizeof(self)); memset(selfC, 0, sizeof(selfC));
+		// seed the accumulators so the adds are not all from zero
+		float seed = 0.5f;
+		memcpy(self + 0x58, &seed, 4); memcpy(selfC + 0x58, &seed, 4);
+		memcpy(self + 0x5c, &seed, 4); memcpy(selfC + 0x5c, &seed, 4);
+		memcpy(self + 0x60, &seed, 4); memcpy(selfC + 0x60, &seed, 4);
+		memcpy(self + 0x64, &seed, 4); memcpy(selfC + 0x64, &seed, 4);
+		fn(self, a, desc, b);
+		nxAccumulateByKind0867(selfC, a, descC, b);
+		if(memcmp(self, selfC, sizeof(self)) != 0)
+			{fprintf(stderr,"acc0867 %s vi=%u mismatch\n", kDc2[i].name, vi); ++cf;}
+		}
+	printf("accum0867 candidate failures=%u provisional=1\n", cf);
+	}
 
 
 
