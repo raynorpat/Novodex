@@ -276,6 +276,16 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		# that tripped the /GS check.
 		target_link_options(NxPhysicsObjectLayoutTests PRIVATE /MAP /DEBUG:FULL)
 		target_compile_options(NxPhysicsObjectLayoutTests PRIVATE /Zi)
+		# The layout-test translation unit carries the /GS stack-cookie check
+		# failure documented in the phase-5 evidence (3z238-3z252). It is a
+		# FAST_FAIL_STACK_COOKIE_CHECK_FAILURE raised inside an inlined wmain,
+		# armed by ANY change to that function, and it discards buffered stdout
+		# -- so it makes the harness unextendable. The corruption is in the
+		# harness's own frame, not in the reconstructed product, and the
+		# reconstructed translation units keep /GS. Disabling it here (and only
+		# here) restores the ability to add differential blocks.
+		set_source_files_properties(tests/PhysicsObjectLayoutTests.cpp
+			PROPERTIES COMPILE_OPTIONS "/GS-")
 	endif()
 
 	# The narrow-phase differential. Neither a staged-pair differential nor a
