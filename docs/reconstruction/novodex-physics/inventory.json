@@ -70754,12 +70754,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "cached flag consumer (0x8d850)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1457",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13020",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the extrarows differential (3z208): failures=0 over three consecutive runs for both rows, comparing the object, the hook hit count and argument, the returned flag and the cleared cache, with both globals bound",
       "notes": ""
     },
     {
@@ -71366,12 +71366,12 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "vtable store plus global tail jump (0x8eeb0)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1473",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13050",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the extrarows differential (3z208): failures=0 over three consecutive runs for both rows, comparing the object, the hook hit count and argument, the returned flag and the cleared cache, with both globals bound",
       "notes": ""
     },
     {
