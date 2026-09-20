@@ -5805,6 +5805,38 @@ family's four lessons are worth keeping together, because each cost real time:
 
 003575 moves to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z205. The family's first dividend: nine lock-bracketed float rows close
+
+Round 188 re-ran the drivability filter and found the reachable set had jumped
+from 26 rows to **113** -- the twenty-five family closures had unblocked their
+callers. Nine of the newly reachable rows close
+(build/r188.log lockthunkF failures=0, stable over three runs): 003826, 003828,
+003836, 003840, 003844, 003848, 003876, 003880 and 003888.
+
+Each is the same bracket around a family thunk:
+
+    <lock [self+0x10]>
+    ecx = [self+0x14]
+    call <family thunk>          ; which calls the bound global
+    fstp dword ptr [esp+8]       ; stage the float
+    <unlock>
+    fld dword ptr [esp+8]; ret
+
+They close only because the thunks they call were reconstructed in 3z202/3z203:
+the oracle now runs the real thunk bodies, while the candidate models the same
+argument derivation and calls the same bound hook. Candidate nxLockedThunkFloat.
+
+**One comparison had to be scoped, and the reason is worth recording.** Six of
+the nine thunks push three arguments, but three push only TWO -- and for those
+the oracle's three-argument recorder reads whatever happens to sit at
+`[esp+0xc]`, which is a stale CODE address (0x1008d2f7 and friends) rather than
+a meaningful value. Comparing it would fail on stack noise, so the third
+argument is compared only for the rows whose thunk actually pushes it. That is
+the same principle 3z191 applied to the report arm's unspecified return: an
+instrument must not assert on a value the code never defined.
+
+All nine move to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
