@@ -127,10 +127,20 @@ static void nxCase(JointDescSetGlobalAnchorFn setAnchor, JointDescSetGlobalAxisF
 	if(a)
 		{
 		unsigned char* ab = reinterpret_cast<unsigned char*>(a);
-		printf("precall actor=%p userData14=%08x desc8=%08x\n", a,
+		{
+		unsigned char* d = reinterpret_cast<unsigned char*>(
+			*reinterpret_cast<void**>(ab + 0x14));
+		unsigned char* s = reinterpret_cast<unsigned char*>(
+			*reinterpret_cast<void**>(d + 8));
+		unsigned char* bd = reinterpret_cast<unsigned char*>(
+			*reinterpret_cast<void**>(s + 8));
+		printf("precall actor=%p userData14=%08x desc8=%08x shape8=%08x "
+			"body19c=%08x\n", a,
 			*reinterpret_cast<unsigned*>(ab + 0x14),
-			*reinterpret_cast<unsigned*>(reinterpret_cast<unsigned char*>(
-				*reinterpret_cast<void**>(ab + 0x14)) + 8));
+			*reinterpret_cast<unsigned*>(d + 8),
+			*reinterpret_cast<unsigned*>(s + 8),
+			*reinterpret_cast<unsigned*>(bd + 0x19c));
+		}
 		fflush(stdout);
 		}
 

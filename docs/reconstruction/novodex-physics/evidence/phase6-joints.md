@@ -1475,3 +1475,62 @@ That is the same lesson as 3z264 (a gate that summarises hides a failing block) 
 7i (a state held without evidence): **a measurement that cannot distinguish "the
 code is unreachable" from "my fixture is wrong" is not yet a measurement.** The
 debugger read of the faulting register is what separates them, and it is cheap.
+
+## 7z. The chain resolves in the fixture and not in the row -- the next question
+
+7x fixed the `userData` offset and moved the fault to `+0x44`. This round printed
+the **whole** chain immediately before the row call, and the result is a
+contradiction worth recording rather than a step:
+
+    chain actor=003EF0F0 desc=003EF2F0 shape=003EF330 body=003EF370 pose=003EF570
+    chain userData14=003ef2f0 desc+8=003ef330 shape+8=003ef370 body+0x19c=003ef570
+    precall actor=003EF0F0 userData14=003ef2f0 desc8=003ef330 shape8=003ef370 body19c=003ef570
+
+Every level resolves, from the actor pointer the descriptor carries through to the
+pose. And the row still faults at `0x100980f4` with `ecx = 0`, where the preceding
+instruction is
+
+    0x100980ee  mov ecx,[eax+0x19c]      ; ecx = shape->body
+
+so the row read **null at `shape+0x19c`** while the fixture had just read
+`003ef570` from the same address.
+
+**The two readings are of the same address and disagree, which means one of the
+two is not reading what it thinks it is.** The candidates, in the order worth
+testing:
+
+1. the fixture's `shape` buffer is not the buffer the row reaches -- a different
+   pointer resolves at `desc+8` in the row than in the fixture;
+2. the row's `[eax+0x19c]` is not `shape+0x19c` -- the shape pointer in `eax` at
+   that instruction is not the shape the fixture built;
+3. the fault register read was taken at a different iteration or arm than the print.
+
+**What settles it** is the same instrument that settled the last one: a debugger
+read of `eax` at `0x100980ee` and of the memory at `[eax+0x19c]` in the same
+break, compared with the fixture's own print. One breakpoint, one address, two
+readings. That is the next step and it is small.
+
+**Recorded, not concluded.** What this round establishes is that the fixture is
+*not* simply missing an offset any more: the chain it builds is correct by its own
+reading, and the disagreement is between two readers of one address. That is a
+different and more specific question than 7x's, and stating it that way is what
+stops the next round from re-deriving it.
+
+The fixture remains a probe and is not registered. All gates unmoved:
+`validate_inventory` exit 0, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, `completed` exit 0, 587 tool tests OK.
+
+## 8a. Where the closure campaign stands after four rounds on these two rows
+
+    7m  what a closure costs: a mutation the gate catches
+    7o  a mutation needs a registered target
+    7r  a target now exists and passes
+    7s  the first mutation was not caught: the transform arm did not run
+    7v  a synthetic fixture is the route to the arm
+    7x  the fixture's userData offset was 0x14, not 0x10
+    7z  the chain now resolves in the fixture; the row still sees null
+
+**No row has closed, and the reason is a two-reader disagreement at one address.**
+The work is converging rather than wandering -- each round's question is narrower
+than the last -- but four rounds have gone to two rows, and the honest summary is
+that the fixture is one breakpoint short of working rather than one design short.
