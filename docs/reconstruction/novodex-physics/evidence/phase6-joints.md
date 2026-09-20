@@ -825,3 +825,57 @@ about what the field means -- the path the reconstruction lives at, or the unit
 the linker placed the row in. That is a programme decision, not a row edit.
 
 No rows move. No gate, coverage-floor, or policy change.
+
+## 7f. The check is now in the validator, and the figure is larger than 7e said
+
+7e counted only `reconstructed` rows. Widening the count to every function row
+that names a path -- because the field is read the same way whatever the state --
+gives the real figure:
+
+    unresolved source paths: 51
+    rows naming one of them: 429
+
+against 6 paths that do exist. So the gap is 429 rows, not 117, and the paths are
+the production files across every phase: `Actor.cpp`, `NpScene.cpp`, `NpActor.cpp`,
+`ConvexHull.cpp`, `EdgeList.cpp`, the twelve `Np*Joint.cpp` files, the fluids
+tree, the OPCODE interfaces, and the shape and contact files.
+
+**The validator now checks it.** `validate_inventory.py` gained
+`_check_source_paths`, which resolves every path-shaped `source` and requires it
+either to exist or to appear in an explicit `UNRESOLVED_SOURCE_PATHS` allowlist.
+It is deliberately a two-sided check:
+
+- a path that exists is evidence;
+- a path on the allowlist is a **recorded** gap;
+- a path that is neither **fails** the census;
+- and an allowlist entry that has since started resolving **also fails**, so the
+  list cannot rot into a place where resolved gaps are still claimed as open.
+
+Verified in all three branches by calling it directly on the committed census:
+
+    clean inventory              -> []
+    one invented path            -> ['function source ... does not exist and is
+                                     not a recorded unresolved path']
+    one allowlist entry resolved -> ['unresolved source path ... is on the
+                                     allowlist but no longer unresolved']
+
+**Why an allowlist rather than a fix.** The 429 rows are not unproven -- their
+differentials are present and the harness names every one of them. What is wrong
+is the field: it reads as a path to an implementation, and for 429 rows it is not
+one. Repointing them would be a guess about intent at that scale, and creating 51
+production files would be a change no evidence asks for. Recording the gap makes
+it visible to every run, which is what the check that could not fail was missing.
+
+**Two scoping details, recorded because both were bugs first.** The repository
+root is derived from the validator's own location rather than from the inventory
+it was handed, because a test builds a synthetic inventory in a temporary
+directory and resolving against that reported every real path as unresolved. And
+the check runs only for the committed census path, because the allowlist describes
+this census and not a fixture's.
+
+**This is a Phase 8 blocker, stated plainly.** That audit's gate requires every
+non-artifact oracle function to map to a concrete source function. A `source`
+naming a file that has never existed cannot satisfy it, so the 429 rows are a
+known Phase 8 blocker independent of their differential evidence -- and the
+decision needed is what the field means: the path the reconstruction lives at, or
+the unit the linker placed the row in.

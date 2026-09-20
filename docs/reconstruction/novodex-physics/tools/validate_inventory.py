@@ -1357,6 +1357,105 @@ def plan_path(evidence_root, plan):
     return evidence_root.parents[2] / plan
 
 
+# A `source` naming a path is a claim that the reconstruction lives there. Nothing
+# resolved those paths, so a row could name a file that has never existed and the
+# census still passed -- a check that cannot fail, which is the shape of gate this
+# programme has been caught building before.
+#
+# The paths below do not exist. They are listed rather than silently skipped so
+# the gap is visible to every run. Each is a production file a reader would expect
+# the reconstruction to live in; the rows naming them are proven by their
+# differentials but their candidate is a shared helper in ObjectModel.cpp, so the
+# path records where the row belongs rather than where its implementation is.
+#
+# Removing an entry from this list is the act of creating the file or repointing
+# the row. Adding one is a regression that has to be argued.
+UNRESOLVED_SOURCE_PATHS = (
+    'Physics/src/Actor.cpp',                         # 3 rows
+    'Physics/src/CapsuleShape.cpp',                  # 1 rows
+    'Physics/src/ContactConvexHeightfield.cpp',      # 2 rows
+    'Physics/src/ContactMeshMesh.cpp',               # 1 rows
+    'Physics/src/ContactPlaneMesh.cpp',              # 2 rows
+    'Physics/src/Controller.cpp',                    # 2 rows
+    'Physics/src/ConvexHull.cpp',                    # 1 rows
+    'Physics/src/D6Joint.cpp',                       # 3 rows
+    'Physics/src/EdgeList.cpp',                      # 3 rows
+    'Physics/src/IceAdjacencies.cpp',                # 2 rows
+    'Physics/src/InternalTriangleMesh.cpp',          # 1 rows
+    'Physics/src/Joint.cpp',                         # 6 rows
+    'Physics/src/NpActor.cpp',                       # 66 rows
+    'Physics/src/NpBoxShape.cpp',                    # 12 rows
+    'Physics/src/NpCapsuleShape.cpp',                # 14 rows
+    'Physics/src/NpPlaneShape.cpp',                  # 12 rows
+    'Physics/src/NpScene.cpp',                       # 37 rows
+    'Physics/src/NpSphereShape.cpp',                 # 12 rows
+    'Physics/src/NpSpringAndDamperEffector.cpp',     # 3 rows
+    'Physics/src/NpTriangleMesh.cpp',                # 6 rows
+    'Physics/src/NpTriangleMeshShape.cpp',           # 11 rows
+    'Physics/src/Scene.cpp',                         # 14 rows
+    'Physics/src/SceneRaycast.cpp',                  # 6 rows
+    'Physics/src/Shape.cpp',                         # 6 rows
+    'Physics/src/core/CylindricalJoint.cpp',         # 2 rows
+    'Physics/src/core/DistanceJoint.cpp',            # 2 rows
+    'Physics/src/core/FixedJoint.cpp',               # 2 rows
+    'Physics/src/core/NpCylindricalJoint.cpp',       # 10 rows
+    'Physics/src/core/NpD6Joint.cpp',                # 14 rows
+    'Physics/src/core/NpDistanceJoint.cpp',          # 10 rows
+    'Physics/src/core/NpFixedJoint.cpp',             # 10 rows
+    'Physics/src/core/NpPointInPlaneJoint.cpp',      # 10 rows
+    'Physics/src/core/NpPointOnLineJoint.cpp',       # 10 rows
+    'Physics/src/core/NpPrismaticJoint.cpp',         # 10 rows
+    'Physics/src/core/NpPulleyJoint.cpp',            # 10 rows
+    'Physics/src/core/NpRevoluteJoint.cpp',          # 14 rows
+    'Physics/src/core/NpSphericalJoint.cpp',         # 12 rows
+    'Physics/src/core/PointInPlaneJoint.cpp',        # 2 rows
+    'Physics/src/core/PointOnLineJoint.cpp',         # 2 rows
+    'Physics/src/core/PrismaticJoint.cpp',           # 2 rows
+    'Physics/src/core/PulleyJoint.cpp',              # 2 rows
+    'Physics/src/core/RevoluteJoint.cpp',            # 7 rows
+    'Physics/src/core/SphericalJoint.cpp',           # 4 rows
+    'Physics/src/fluids/Fluid.cpp',                  # 3 rows
+    'Physics/src/fluids/FluidManager.cpp',           # 7 rows
+    'Physics/src/fluids/ImplicitMesh.cpp',           # 1 rows
+    'Physics/src/fluids/NpFluid.cpp',                # 32 rows
+    'Physics/src/fluids/NpFluidEmitter.cpp',         # 14 rows
+    'Physics/src/fluids/NpImplicitMesh.cpp',         # 9 rows
+    'Physics/src/opcode/OPC_MeshInterface.cpp',      # 1 rows
+    'Physics/src/opcode/OPC_Model.cpp',              # 1 rows
+)
+
+
+def _check_source_paths(functions, evidence_root):
+    """Every path-shaped `source` either resolves or is on the allowlist.
+
+    A path that resolves is evidence. A path on the allowlist is a recorded gap.
+    A path that does neither is a new claim nothing backs, and fails.
+
+    The repository root is derived from THIS FILE's location, not from the
+    inventory it was handed. A test builds a synthetic inventory in a temporary
+    directory, and resolving against that directory would report every real path
+    as unresolved -- which is what an earlier version of this check did.
+    """
+    repo = Path(__file__).resolve().parents[4]
+    if not (repo / 'Physics' / 'src').is_dir():
+        return []
+    errors = []
+    unresolved = sorted({row['source'] for row in functions
+                         if row.get('source') and row['source'].endswith(('.cpp', '.h'))
+                         and not (repo / row['source']).exists()})
+    for path in unresolved:
+        if path not in UNRESOLVED_SOURCE_PATHS:
+            errors.append(
+                f"function source {path!r} does not exist and is not a recorded "
+                f"unresolved path; create the file or record the gap")
+    stale = sorted(set(UNRESOLVED_SOURCE_PATHS) - set(unresolved))
+    for path in stale:
+        errors.append(
+            f"unresolved source path {path!r} is on the allowlist but no longer "
+            f"unresolved; remove the entry")
+    return errors
+
+
 def validate_program(inventory, program, closures, evidence_root):
     """Recompute every count program.json states about a phase from the census.
 
@@ -1521,6 +1620,13 @@ def main():
         program = json.loads((path.parent / "program.json").read_text(encoding="utf-8"))
     except (OSError, ValueError) as error:
         parser.exit(2, f"error: {error}\n")
+    # The check applies to the committed census only. A test builds a synthetic
+    # inventory whose rows name real-looking paths, and the allowlist describes
+    # this census, so running it over a fixture reports the fixture's own gaps.
+    repo_root = Path(__file__).resolve().parents[4]
+    if path.resolve() == (repo_root / 'docs' / 'reconstruction' / 'novodex-physics'
+                          / 'inventory.json').resolve():
+        errors += _check_source_paths(data['functions'], path.parent)
     errors += validate_program(data, program, ledgers, path.parent)
     errors += validate_row_states(data, ledgers)
     stated = {row.get("phase"): row for row in program.get("phases", [])
