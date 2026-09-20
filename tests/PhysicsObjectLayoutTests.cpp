@@ -229,6 +229,12 @@ static float __cdecl nxGc2RetRecorderF(unsigned a, unsigned b)
 // Lock-API-global recorders for the second blocker batch.
 static unsigned g2371Arg;
 static void __stdcall nx2371Stub(unsigned a) { g2371Arg = a; }
+
+// the lock-API initializer returns a value the row stores
+static unsigned g2367Ret;
+static unsigned g2367A, g2367B, g2367C, g2367D;
+static unsigned __stdcall nx2367Stub(unsigned a, unsigned b, unsigned c, unsigned d)
+	{ g2367A = a; g2367B = b; g2367C = c; g2367D = d; return g2367Ret; }
 static unsigned g2375A, g2375B, g2375Ret;
 static unsigned __stdcall nx2375Stub(unsigned a, unsigned b)
 	{ g2375A = a; g2375B = b; return g2375Ret; }
@@ -14192,6 +14198,95 @@ int wmain(int argc, wchar_t** argv)
 	nxSetAssertReport(nullptr);
 	nxUnbindReportSlot(base, svMl);
 	printf("mutexlistfree candidate failures=%u provisional=1\n", mlf);
+	}
+	// -- Newly-reachable call-target rows: 003509, 002369, 002373, 002367 and
+	//    the 003467 thunk.
+	{
+	unsigned nr = 0;
+	// 003509: the six-byte trampoline through 0x10126494
+	{
+	typedef void (__cdecl* T3509)(void);
+	T3509 fn = reinterpret_cast<T3509>(base + 0x863f0);
+	NxFnPtrSaved sv = nxBindFnPtr(base, 0x126494,
+		reinterpret_cast<void*>(&nxGc2Recorder));
+	gGc2Hits = 0;
+	fn();
+	unsigned hO = gGc2Hits;
+	gGc2Hits = 0;
+	nxTrampoline4387(reinterpret_cast<void (*)(void)>(&nxGc2Recorder));
+	unsigned hC = gGc2Hits;
+	if(hO != hC || hO != 1u) { fprintf(stderr,"nr 003509 hO=%u hC=%u\n", hO, hC); ++nr; }
+	nxUnbindFnPtr(base, 0x126494, sv);
+	}
+	// 002369 and 002373: push [self] into a lock-API global
+	{
+	struct LpRow { unsigned rva; unsigned slotRva; const char* name; };
+	static const LpRow kLp[] = { { 0x5b7d0, 0x10401c, "002369" },
+		{ 0x5b7f0, 0x104024, "002373" } };
+	for(unsigned i = 0; i < 2; ++i)
+		{
+		typedef void (__thiscall* Tlp)(void*);
+		Tlp fn = reinterpret_cast<Tlp>(base + kLp[i].rva);
+		NxFnPtrSaved sv = nxBindFnPtr(base, kLp[i].slotRva,
+			reinterpret_cast<void*>(&nx2371Stub));
+		unsigned char self[0x20]; memset(self, 0, sizeof(self));
+		unsigned v = 0x51510000u; memcpy(self, &v, 4);
+		g2371Arg = 0;
+		fn(self);
+		unsigned o = g2371Arg;
+		g2371Arg = 0;
+		nxLockApiPushSelf(self, &nx2371Stub);
+		if(o != g2371Arg || o != v)
+			{fprintf(stderr,"nr %s o=%08x c=%08x\n", kLp[i].name, o, g2371Arg); ++nr;}
+		nxUnbindFnPtr(base, kLp[i].slotRva, sv);
+		}
+	}
+	// 002367: the lock-API initializer
+	{
+	typedef void* (__thiscall* T2367)(void*);
+	T2367 fn = reinterpret_cast<T2367>(base + 0x5b7b0);
+	NxFnPtrSaved sv = nxBindFnPtr(base, 0x104018,
+		reinterpret_cast<void*>(&nx2367Stub));
+	unsigned char self[0x20], selfC[0x20];
+	memset(self, 0xcd, sizeof(self)); memset(selfC, 0xcd, sizeof(selfC));
+	g2367Ret = 0x60600000u; g2367A = 0; g2367B = 0; g2367C = 0; g2367D = 0;
+	void* ro = fn(self);
+	unsigned aO = g2367A, bO = g2367B, cO = g2367C, dO = g2367D;
+	g2367A = 0; g2367B = 0; g2367C = 0; g2367D = 0;
+	void* rc = nxLockApiInit2367(selfC, &nx2367Stub);
+	unsigned aC = g2367A, bC = g2367B, cC = g2367C, dC = g2367D;
+	if(ro != self || rc != selfC || aO != aC || bO != bC || cO != cC || dO != dC
+		|| memcmp(self, selfC, sizeof(self)) != 0
+		|| aO != 0u || bO != 1u || cO != 0u || dO != 0u)
+		{fprintf(stderr,"nr 002367 a=%u/%u b=%u/%u c=%u/%u d=%u/%u\n",
+			aO, aC, bO, bC, cO, cC, dO, dC); ++nr;}
+	nxUnbindFnPtr(base, 0x104018, sv);
+	}
+	// 003467: the two-argument thunk through 0x10126518
+	{
+	typedef void (__thiscall* T3467)(void*);
+	T3467 fn = reinterpret_cast<T3467>(base + 0x84fb0);
+	NxFnPtrSaved sv = nxBindFnPtr(base, 0x126518,
+		reinterpret_cast<void*>(&nxGc2Recorder));
+	// 003467 reads [ecx+0x7c] and [ecx+0x80] with ecx = SELF, not [self+0x10]:
+	// leaving +0x7c null made the oracle dereference null
+	unsigned tag = 0x7D7D0000u, v80 = 0x83830000u;
+	unsigned char self[0x100], selfC[0x100];
+	memset(self, 0, sizeof(self)); memset(selfC, 0, sizeof(selfC));
+	memcpy(self + 0x30, &tag, 4); memcpy(self + 0x80, &v80, 4);
+	memcpy(selfC + 0x30, &tag, 4); memcpy(selfC + 0x80, &v80, 4);
+	*(void**)(self + 0x7c) = self; *(void**)(selfC + 0x7c) = selfC;
+	gGc2Hits = 0; gGc2A = 0; gGc2B = 0;
+	fn(self);
+	unsigned hO = gGc2Hits, aO = gGc2A, bO = gGc2B;
+	gGc2Hits = 0; gGc2A = 0; gGc2B = 0;
+	nxGlobalCall2(selfC, &nxGc2Recorder, 0);
+	unsigned hC = gGc2Hits, aC = gGc2A, bC = gGc2B;
+	if(hO != hC || aO != aC || bO != bC || hO != 1u || aO != tag || bO != v80)
+		{fprintf(stderr,"nr 003467 hO=%u hC=%u\n", hO, hC); ++nr;}
+	nxUnbindFnPtr(base, 0x126518, sv);
+	}
+	printf("newreach candidate failures=%u provisional=1\n", nr);
 	}
 
 
