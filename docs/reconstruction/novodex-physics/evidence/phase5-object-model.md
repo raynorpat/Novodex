@@ -6233,6 +6233,33 @@ The candidate and its sub-block were removed rather than left failing; the tree
 is green. 005159 moves to `reconstructed`. No gate, coverage-floor, or policy
 change.
 
+## 3z220. The masked four-slot loop closes twice over
+
+Round 203 closed TWO rows with one model (build/r203.log masked4866 failures=0,
+stable over three runs): 004866 and 004868.
+
+Each walks the four element pointers at [self+0x1c]..[self+0x28] and, for each,
+requires BOTH that the pointer is non-null AND that bit k of the MASK argument
+is set, then calls that element's vtable slot with four arguments --
+(arg1, arg2, arg4, arg5), the mask argument being consumed by the test. It
+returns 1 always.
+
+**The two rows are instruction-for-instruction identical except one operand**:
+004866 calls slot +0x20 and 004868 calls slot +0x1c. Comparing the two
+disassemblies directly made that a one-line difference rather than a second
+investigation, and the drive was generalised to run both with the slot offset
+as its only variable.
+
+**The pan set is the point.** Sixteen combinations of which pointers are live
+crossed with which mask bits are set, per row, because either condition alone
+gates the call: a model that ignored the mask would pass every fixture with the
+mask all-ones, and a model that ignored the null check would pass every fixture
+with all four pointers live. Only crossing them -- and comparing the ORDERED
+sequence of elements visited rather than just the count -- pins the behaviour,
+including that a skip does not stop the loop.
+
+Both rows move to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
