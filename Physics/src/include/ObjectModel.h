@@ -1322,6 +1322,7 @@ void					nxGlobalCall4(void* self, unsigned objOff, unsigned extraOff,
 struct					NxSlotCtx { };
 typedef void (NxSlotCtx::*NxSlotMfp1)(unsigned);
 typedef void (NxSlotCtx::*NxSlotMfp2)(unsigned, unsigned);
+typedef void (NxSlotCtx::*NxSlotMfp4)(unsigned, unsigned, unsigned, unsigned);
 
 //! phys_fn_001544 (0x2dec0): when [self+4] is non-null it calls the
 //! statically-reviewed helper 004803, which returns the allocator pointer from
@@ -1352,6 +1353,15 @@ void					nxReleaseOwnedFields(void* self, const unsigned* offsets,
 //! phys_fn_005159 (0xe32e0): guarded by the BYTE at [self+0x14]; when it is
 //! non-zero it releases [self+8] and [self+4] through 004803 and the singleton
 //! vtable slot +0xc, each cleared after release.
+//! phys_fn_004866 (0xb53c0, ret 0x14): walks the FOUR element pointers at
+//! [self+0x1c]..[self+0x28] and, for each, requires BOTH that the pointer is
+//! non-null AND that bit k of the MASK argument is set, then calls that
+//! element vtable slot +0x20 with four arguments -- (arg1, arg2, arg4, arg5),
+//! the mask argument arg3 being consumed by the test. It returns 1 always.
+unsigned char			nxMaskedFourSlotLoop4866(void* self, unsigned a1,
+							unsigned a2, unsigned a3, unsigned a4, unsigned a5,
+							NxSlotMfp4 slot);
+
 void					nxByteGuardedRelease5159(void* self, void* singleton,
 							const unsigned* offsets, unsigned count, NxSlotMfp1 slot);
 

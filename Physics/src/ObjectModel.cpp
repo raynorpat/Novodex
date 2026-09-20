@@ -3038,6 +3038,24 @@ void nxByteGuardedRelease5159(void* self, void* singleton,
 	nxReleaseOwnedFields(self, offsets, count, singleton, slot);
 	}
 
+// phys_fn_004866 (0xb53c0): the masked four-slot loop.
+unsigned char nxMaskedFourSlotLoop4866(void* self, unsigned a1, unsigned a2,
+	unsigned a3, unsigned a4, unsigned a5, NxSlotMfp4 slot)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	for(unsigned k = 0; k < 4u; ++k)
+		{
+		unsigned elem;
+		memcpy(&elem, p + 0x1c + 4u * k, 4);
+		if(elem == 0u)
+			continue;
+		if((a3 & (1u << k)) == 0u)
+			continue;
+		(reinterpret_cast<NxSlotCtx*>(static_cast<size_t>(elem))->*slot)(a1, a2, a4, a5);
+		}
+	return 1u;
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)
