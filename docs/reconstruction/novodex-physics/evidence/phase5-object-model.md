@@ -7285,6 +7285,41 @@ closure.
 The tree is green at exit 1. No rows move. No gate, coverage-floor, or policy
 change.
 
+## 3z247. Hand-off correction: filter the dump directory by process name
+
+Rounds 231-232 attempted the hand-off's own next step -- `frame` plus `dv` on the
+`wmain` frame -- and hit a trap worth recording, because it silently sends the
+investigation to the wrong process.
+
+**The trap.** `%LOCALAPPDATA%\CrashDumps` is shared by every crashing process on
+the machine, not just this harness. Taking the NEWEST dump there returned
+
+    (6aac.7ec8): CLR exception - code e0434352
+    Windows 10 Version 26100 MP (24 procs) Free x64
+
+-- a 64-bit managed crash from something else entirely. Reading it produced a
+64-bit context that no amount of `frame`/`dv` navigation could reconcile with the
+32-bit frames the harness actually has, and the session degraded into "Couldn't
+resolve error" rather than an answer.
+
+**The fix, and it is one glob:**
+
+    Get-ChildItem "$env:LOCALAPPDATA\CrashDumps\NxPhysicsObjectLayoutTests.exe.*.dmp" |
+        Sort-Object LastWriteTime -Descending | Select-Object -First 1
+
+The earlier rounds happened to get the right file because nothing else had
+crashed in between; that is luck, not procedure. **3z246's hand-off should be read
+with this correction: always filter by process name before reading a dump.**
+
+**Status of the open step.** It remains exactly as 3z246 described -- select the
+`wmain` frame and run `dv` -- and it is still the one thing needed. What these two
+rounds add is that the step must be attempted against the right dump, and that the
+`cdb` invocation needs `.lines` for source-line resolution and should NOT use
+`.ecxr`, whose stored context is the fast-fail rather than the fault.
+
+The tree is green at exit 1, and all eight gates are unchanged and honest. No rows
+move. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
