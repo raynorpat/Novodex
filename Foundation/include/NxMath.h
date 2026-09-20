@@ -379,14 +379,53 @@ NX_INLINE NxI32 NxMath::clamp(NxI32 v, NxI32 hi, NxI32 low)
 		return v;
 	}
 
+// The oracle calls `fsqrt` directly -- NxNormalToTangents has one at 0x100062e7
+// and another at 0x10006343 -- and `fsqrt` is not the same function as the CRT's
+// `sqrtf`/`sqrt`. The README records the distinction for Phase 3: "`fsqrt`
+// follows the x87 control word and the CRT's `sqrt()` does not". On a negative
+// operand the two also disagree on the NaN they return, which is the one-bit
+// difference the Phase 6 joint differential sees on a degenerate axis.
+//
+// These reach the instruction rather than the CRT. The `fstp` stores in extended
+// precision and the return converts once, which is what the oracle's own stream
+// does, so the result is the same 32-bit word rather than a differently rounded
+// one.
+#if defined(_M_IX86) && defined(_MSC_VER)
+#define NX_MATH_SQRT_USES_FSQRT 1
+#endif
+
 NX_INLINE NxF32 NxMath::sqrt(NxF32 a)
 	{
+#if defined(NX_MATH_SQRT_USES_FSQRT)
+	// A 32-bit operand reaches `fsqrt` as a 64-bit load, exactly as the oracle's
+	// `fld dword ptr` does, so the extended result is the same.
+	NxF64 wide = static_cast<NxF64>(a);
+	__asm
+		{
+		fld qword ptr [wide]
+		fsqrt
+		fstp qword ptr [wide]
+		}
+	return static_cast<NxF32>(wide);
+#else
 	return ::sqrtf(a);
+#endif
 	}
 
 NX_INLINE NxF64 NxMath::sqrt(NxF64 a)
 	{
+#if defined(NX_MATH_SQRT_USES_FSQRT)
+	NxF64 wide = a;
+	__asm
+		{
+		fld qword ptr [wide]
+		fsqrt
+		fstp qword ptr [wide]
+		}
+	return wide;
+#else
 	return ::sqrt(a);
+#endif
 	}
 
 NX_INLINE NxF32 NxMath::recipSqrt(NxF32 a)

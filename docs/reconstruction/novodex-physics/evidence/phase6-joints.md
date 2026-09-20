@@ -648,3 +648,60 @@ all exit 0, and the Foundation's `util` gate still diffs 0 against both DLLs.
 - The remaining bit is localised to `NxMath::sqrt` reaching the CRT rather than
   `fsqrt`, which is the next concrete task.
 - No row moves; `closed` remains the Phase 8 audit's to grant.
+
+## 7a. `NxMath::sqrt` now reaches `fsqrt`, and the sign still does not move
+
+6y localised the remaining bit to `NxMath::sqrt` reaching the CRT rather than the
+`fsqrt` the oracle calls. That change is now made: on x86 MSVC the two
+`NxMath::sqrt` overloads load the operand, issue `fsqrt`, and store in extended
+precision, which is what the oracle's own stream does at `0x100062e7` and
+`0x10006343`. On any other target they still call the CRT.
+
+**It did not move the sign.** The probe is unchanged:
+
+    case   oracle                          rebuilt after
+    0      t1 bf3504f3...  t2 bed105ec...  identical
+    1      t1/t2 7fc00000                  t1/t2 ffc00000
+    3      t1 bf800000...  t2 80000000...  identical
+
+**Four attempts have now been made against this one bit**, and the table is worth
+stating in full because it rules out four plausible causes rather than one:
+
+| change | finite path | degenerate path |
+| --- | --- | --- |
+| `float` products (as found) | one ULP off | sign differs |
+| `double` products, operand negated | exact | sign differs |
+| `double` products, product negated | exact | sign differs |
+| `NxMath::sqrt` reaching `fsqrt` | exact | sign differs |
+
+**What that leaves.** The sign is not the width of the products, not which side of
+the multiply the negation sits, and not the square root. The remaining candidate
+is the *value* `k` takes, which is `1.0 / sqrt(0)` -- so it depends on the sign of
+the zero `sqrt` returns and on the division, and `fdivr` is the oracle's
+instruction there. `recipSqrt`, which is `1.0/sqrt(a)` written as one expression,
+is the same arithmetic in a different spelling and is the next thing to try.
+
+**The change is kept** because it is faithful to the oracle's instruction stream
+and regresses nothing: the finite cases stay exact, phases 2, 3, 4 and `completed`
+all exit 0, and the Foundation's `util` gate still diffs 0 against both DLLs.
+
+## 7b. An honest statement of this line of work
+
+Five rounds have now been spent on one NaN sign bit, and each has narrowed it
+without closing it. The narrowing is real and every probe is checked in, but the
+ratio of effort to progress has become poor, and it is worth naming that plainly.
+
+**What it is worth.** The bit is a genuine difference between the reconstruction
+and the oracle on a degenerate input, and the programme's own rule is to reproduce
+shipped behaviour rather than normalise it away -- so it should not simply be
+dropped. It is also the only thing between two implemented, finite-exact Phase 6
+rows and a green whole-pair differential.
+
+**What it is not worth.** It is one bit, on an input no consumer of a penetration
+map or a joint descriptor is likely to construct, and it has now absorbed five
+rounds that could have gone to the nine undriven joint families, the export
+contract, or phase 7. A future session should time-box it: try `recipSqrt`, and if
+that does not close it, record the boundary and move on to work with a larger
+surface.
+
+No rows move. No gate, coverage-floor, or policy change.
