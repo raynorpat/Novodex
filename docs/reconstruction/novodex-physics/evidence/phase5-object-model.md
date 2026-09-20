@@ -6995,6 +6995,51 @@ The `lazy579` and `mutexreg` candidates are unblocked by either fix and remain
 untested rather than failed. No rows move. No gate, coverage-floor, or policy
 change.
 
+## 3z241. The 41 overruns were an artifact -- the scan's own window
+
+Round 225 set out to fix the overruns 3z240 reported and found, first, that they
+do not exist.
+
+**The scan was wrong in the same way as everything it was meant to explain.**
+3z240 searched a fixed 150-line window after each array declaration. This file is
+one gigantic `wmain` with hundreds of small `{ ... }` blocks back to back, so that
+window runs straight through the ends of neighbouring blocks and matches writes
+belonging to entirely different fixtures. Re-running the scan with the search
+bounded to each declaration's ENCLOSING block -- computed by brace depth -- gives:
+
+    WRITE overruns within the ENCLOSING block: 0
+
+Zero. Every one of the 41 was a false positive. The example 3z240 quoted as
+"worst" -- `unsigned char self[0x10]` written at +0x10 -- is not written at all in
+its own block; the +0x10 write belongs to a different fixture further down.
+
+**So 3z240 is retracted, and so is the part of 3z239 that depended on it.** The
+`0xC0000409` abort is real and reproducible, and it does discard buffered stdout
+-- that much is established. But its cause is NOT a local-array overrun in wmain,
+because there are none.
+
+**The pattern continues.** This is the third time in this investigation that a
+confident conclusion came from a tool that was measuring the wrong thing: the
+binder suspicion (3z228), the dead-region theory (3z234), and now the overrun
+scan (3z240). Each was refuted by one cheap check against a known-good case. The
+thing that has NOT been refuted is the only thing measured directly: an abort
+code, `0xC0000409`, observed from the process itself.
+
+**What is actually known, and nothing more:**
+
+- adding any code to wmain can turn a green exit 1 into `0xC0000409`;
+- that abort discards buffered stdout, which is why blocks look like they never
+  ran;
+- the harness has no local-array overrun, so the usual cause is out.
+
+The next step is to get a stack trace at the abort -- run the harness under a
+debugger, or attach a handler for the fast-fail -- rather than to infer the cause
+from the file. Three rounds of inference have now cost more than one debugger
+session would.
+
+The tree is green at exit 1. No rows move. No gate, coverage-floor, or policy
+change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
