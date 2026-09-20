@@ -248,6 +248,11 @@ static unsigned __stdcall nxEx1RetStub(unsigned a)
 static unsigned gEx0Hits;
 static void __cdecl nxEx0Stub(void) { ++gEx0Hits; }
 
+// the four-argument thunk recorder
+static unsigned gN4Hits, gN4A, gN4B, gN4C, gN4D;
+static void __cdecl nxN4Stub(unsigned a, unsigned b, unsigned c, unsigned d)
+	{ gN4A = a; gN4B = b; gN4C = c; gN4D = d; ++gN4Hits; }
+
 // the two-argument variant, for the rows that push only two
 static unsigned gN2Hits, gN2A, gN2B;
 static void __cdecl nxN2Stub(unsigned a, unsigned b)
@@ -14776,6 +14781,59 @@ int wmain(int argc, wchar_t** argv)
 	nxUnbindFnPtr(base, 0x10403c, sv);
 	}
 	printf("extrarows candidate failures=%u provisional=1\n", ex);
+	}
+	// -- The four-argument thunk rows: four pushed arguments, caller-cleaned.
+	{
+	struct N4Row { unsigned rva; unsigned slotRva; const char* name; };
+	static const N4Row kN4[] = {
+		{ 0x87f50, 0x126598, "003577" },
+		{ 0x87fa0, 0x126464, "003581" },
+		{ 0x87ff0, 0x1265c4, "003585" },
+		{ 0x88040, 0x1264c4, "003589" },
+	};
+	unsigned n4f = 0;
+	for(unsigned i = 0; i < sizeof(kN4) / sizeof(kN4[0]); ++i)
+		{
+		// __thiscall on a free-function typedef compiles but does NOT put
+		// `this` in ecx here -- the campaign hit this before. A MEMBER function
+		// pointer is the shape that really supplies ecx and pushes the
+		// argument, which is exactly what these rows expect.
+		struct N4Ctx { unsigned dummy; };
+		typedef void (N4Ctx::*N4Mfp)(unsigned);
+		N4Mfp mfp;
+		{
+		// a data pointer and a member pointer cannot be reinterpret_cast
+		// directly; they are the same size here, so copy the bits
+		const void* raw = reinterpret_cast<const void*>(base + kN4[i].rva);
+		memcpy(&mfp, &raw, sizeof(mfp));
+		}
+		NxFnPtrSaved sv = nxBindFnPtr(base, kN4[i].slotRva,
+			reinterpret_cast<void*>(&nxN4Stub));
+		unsigned char obj[0x100], objC[0x100];
+		memset(obj, 0, sizeof(obj)); memset(objC, 0, sizeof(objC));
+		unsigned tag = 0x84840000u + i, v80 = 0x89890000u + i, v8 = 0x89890001u + i;
+		memcpy(obj + 0x30, &tag, 4); memcpy(obj + 0x80, &v80, 4);
+		memcpy(objC + 0x30, &tag, 4); memcpy(objC + 0x80, &v80, 4);
+		*(void**)(obj + 0x7c) = obj; *(void**)(objC + 0x7c) = objC;
+		unsigned char self[0x20], selfC[0x20];
+		memset(self, 0, sizeof(self)); memset(selfC, 0, sizeof(selfC));
+		*(void**)(self + 4) = obj; *(void**)(selfC + 4) = objC;
+		memcpy(self + 8, &v8, 4); memcpy(selfC + 8, &v8, 4);
+		unsigned extra = 0xF1F10000u + i;
+		N4Ctx* ctx = reinterpret_cast<N4Ctx*>(self);
+		gN4Hits = 0; gN4A = 0; gN4B = 0; gN4C = 0; gN4D = 0;
+		(ctx->*mfp)(extra);
+		unsigned hO = gN4Hits, aO = gN4A, bO = gN4B, cO = gN4C, dO = gN4D;
+		gN4Hits = 0; gN4A = 0; gN4B = 0; gN4C = 0; gN4D = 0;
+		nxGlobalCall4(selfC, 4u, 8u, &nxN4Stub, extra);
+		unsigned hC = gN4Hits, aC = gN4A, bC = gN4B, cC = gN4C, dC = gN4D;
+		if(hO != hC || hO != 1u || aO != aC || bO != bC || cO != cC || dO != dC
+			|| aO != tag || bO != v80 || cO != v8 || dO != extra)
+			{fprintf(stderr,"n4 %s h=%u/%u a=%08x/%08x b=%08x/%08x c=%08x/%08x d=%08x/%08x\n",
+				kN4[i].name, hO, hC, aO, aC, bO, bC, cO, cC, dO, dC);++n4f;}
+		nxUnbindFnPtr(base, kN4[i].slotRva, sv);
+		}
+	printf("n4family candidate failures=%u provisional=1\n", n4f);
 	}
 
 
