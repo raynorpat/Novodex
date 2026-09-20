@@ -266,12 +266,20 @@ struct NxSlotHost
 	unsigned a;
 	void slot1(unsigned x);
 	void slot2(unsigned x, unsigned y);
+	void slot4(unsigned w, unsigned x, unsigned y, unsigned z);
 	};
 static unsigned gSlotHits, gSlotA;
 void NxSlotHost::slot1(unsigned x) { gSlotA = x; ++gSlotHits; }
 static unsigned gSlotB;
 void NxSlotHost::slot2(unsigned x, unsigned y)
 	{ gSlotA = x; gSlotB = y; ++gSlotHits; }
+static unsigned gSlotC, gSlotD, gSlotSeq[8];
+void NxSlotHost::slot4(unsigned w, unsigned x, unsigned y, unsigned z)
+	{
+	gSlotA = w; gSlotB = x; gSlotC = y; gSlotD = z;
+	if(gSlotHits < 8) gSlotSeq[gSlotHits] = w;
+	++gSlotHits;
+	}
 
 // the four-argument thunk recorder
 static unsigned gN4Hits, gN4A, gN4B, gN4C, gN4D;
@@ -15228,6 +15236,85 @@ int wmain(int argc, wchar_t** argv)
 		nxUnbindFnPtr(base, 0x12845c, svS);
 		}
 	printf("allocrel candidate failures=%u provisional=1\n", s234);
+	}
+	// -- 004866: the masked four-slot loop. Pans vary BOTH which pointers are
+	//    live AND which mask bits are set, since either alone gates the call.
+	{
+	struct S4866Ctx { unsigned dummy; };
+	typedef unsigned char (S4866Ctx::*S4866Mfp)(unsigned, unsigned, unsigned,
+		unsigned, unsigned);
+	S4866Mfp mfp;
+	{
+	const void* raw = reinterpret_cast<const void*>(base + 0xb53c0);
+	memcpy(&mfp, &raw, sizeof(mfp));
+	}
+	typedef void (NxSlotHost::*M4)(unsigned, unsigned, unsigned, unsigned);
+	M4 slotM = &NxSlotHost::slot4;
+	unsigned s4866 = 0;
+	static const unsigned kLive[4] = { 0x0u, 0xFu, 0x9u, 0x6u };
+	static const unsigned kMask[4] = { 0x0u, 0xFu, 0x5u, 0xAu };
+	// 004868 is IDENTICAL to 004866 except that its slot is +0x1c rather than
+	// +0x20, so both are driven here with the offset as the only difference
+	static const unsigned kRowRva[2] = { 0xb53c0u, 0xb5410u };
+	static const unsigned kSlotOff[2] = { 0x20u, 0x1cu };
+	static const char* const kRowName[2] = { "004866", "004868" };
+	for(unsigned ri = 0; ri < 2; ++ri)
+	for(unsigned li = 0; li < 4; ++li)
+	for(unsigned mi = 0; mi < 4; ++mi)
+		{
+		S4866Mfp mfpRow;
+		{
+		const void* raw = reinterpret_cast<const void*>(base + kRowRva[ri]);
+		memcpy(&mfpRow, &raw, sizeof(mfpRow));
+		}
+		void* vt[0x24 / 4 + 1]; memset(vt, 0, sizeof(vt));
+		{
+		void* raw = nullptr;
+		memcpy(&raw, &slotM, sizeof(raw));
+		memcpy(reinterpret_cast<unsigned char*>(vt) + kSlotOff[ri], &raw, 4);
+		}
+		unsigned char elems[4][0x20];
+		memset(elems, 0, sizeof(elems));
+		for(unsigned k = 0; k < 4; ++k)
+			*(void**)(elems[k]) = vt;
+		unsigned char self[0x40], selfC[0x40];
+		memset(self, 0, sizeof(self)); memset(selfC, 0, sizeof(selfC));
+		for(unsigned k = 0; k < 4; ++k)
+			{
+			unsigned v = ((kLive[li] >> k) & 1u) ? static_cast<unsigned>(
+				reinterpret_cast<size_t>(elems[k])) : 0u;
+			memcpy(self + 0x1c + 4 * k, &v, 4);
+			memcpy(selfC + 0x1c + 4 * k, &v, 4);
+			}
+		unsigned a1 = 0x11110000u + li, a2 = 0x22220000u + mi;
+		unsigned a4 = 0x44440000u + li, a5 = 0x55550000u + mi;
+		unsigned mask = kMask[mi];
+		gSlotHits = 0; gSlotA = 0; gSlotB = 0; gSlotC = 0; gSlotD = 0;
+		memset(gSlotSeq, 0, sizeof(gSlotSeq));
+		unsigned char ro = (reinterpret_cast<S4866Ctx*>(self)->*mfpRow)(
+			a1, a2, mask, a4, a5);
+		unsigned hO = gSlotHits;
+		unsigned seqO[8]; memcpy(seqO, gSlotSeq, sizeof(seqO));
+		gSlotHits = 0; gSlotA = 0; gSlotB = 0; gSlotC = 0; gSlotD = 0;
+		memset(gSlotSeq, 0, sizeof(gSlotSeq));
+		unsigned char rc = nxMaskedFourSlotLoop4866(selfC, a1, a2, mask, a4, a5,
+			*reinterpret_cast<NxSlotMfp4*>(&slotM));
+		unsigned hC = gSlotHits;
+		unsigned seqC[8]; memcpy(seqC, gSlotSeq, sizeof(seqC));
+		unsigned want = 0;
+		for(unsigned k = 0; k < 4; ++k)
+			if(((kLive[li] >> k) & 1u) && ((mask >> k) & 1u)) ++want;
+		bool ok = (ro == rc) && (ro == 1u) && (hO == hC) && (hO == want)
+			&& (memcmp(seqO, seqC, sizeof(seqO)) == 0)
+			&& (memcmp(self, selfC, sizeof(self)) == 0);
+		if(want > 0)
+			ok = ok && (gSlotA == a1) && (gSlotB == a2)
+				&& (gSlotC == a4) && (gSlotD == a5);
+		if(!ok)
+			{fprintf(stderr,"s4866 %s li=%u mi=%u want=%u h=%u/%u r=%u/%u\n",
+				kRowName[ri], li, mi, want, hO, hC, ro, rc); ++s4866;}
+		}
+	printf("masked4866 candidate failures=%u provisional=1\n", s4866);
 	}
 
 
