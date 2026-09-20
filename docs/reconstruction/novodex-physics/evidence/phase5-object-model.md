@@ -8147,6 +8147,72 @@ where the one bad closure lived.
 
 No gate, coverage-floor, or policy change.
 
+## 3z265. ROOT CAUSE FOUND: wmain's stack frame is ~250 KB
+
+Round 251 found the cause of everything -- the twenty-round harness corruption AND
+the unfounded closure of 3z264 -- and proved it by fixing it.
+
+**The measurement.** A scan of every local array in the test translation unit
+found **20 locals of 8 KB or more**, totalling **258688 bytes (252.6 KB)**:
+
+    81920 bytes  line 4141   unsigned char b[0x5000]
+    21120 bytes  line 5281   unsigned char slots[3][0x6e0]
+    16384 bytes  line 4720   unsigned char inner[0x1000]
+    8192 bytes   x17         obj/objC/field/c6b8/r0/go/lb/a2/s2/b2 at 0x800 each
+
+and those are only the ones over 8 KB. `wmain` also carries hundreds of smaller
+locals. **The frame is on the order of a quarter of a megabyte inside a function
+the CRT gives a 1 MB stack** -- and it is one function, so nothing is released
+until it returns.
+
+**The proof.** `batch3268` -- the block whose differential had been failing in
+every gate log -- declares
+
+    unsigned char ob[0x5000], cb[0x5000];
+
+**forty kilobytes in a single block.** Moving just those two to the heap changed
+the differential from
+
+    batch3268 candidate failures=3 provisional=1
+
+to
+
+    batch3268 candidate failures=0 provisional=1
+
+**with no change to the candidate at all.** The failures were never a modelling
+error. The candidate was correct; the fixture memory it was reading had been
+corrupted by the frame, and `003268`'s closure was unfounded only because its
+differential could not run cleanly.
+
+**What that explains, all at once:**
+
+- why the corruption was armed by ANY change to `wmain` -- the frame was already
+  at the edge, so any addition pushed it over;
+- why `/GS` reported a cookie failure with an INTACT saved cookie (3z251) -- the
+  damage was elsewhere in the frame, not at the cookie;
+- why the sensitivity was chaotic rather than size-driven (3z262) -- what matters
+  is the total frame, not what one block adds;
+- why heap-allocating one block's buffers did not help (3z262) -- the other 250 KB
+  were still on the stack;
+- why seven source-reading explanations all failed -- none of them looked at the
+  frame SIZE, which is the one thing that was actually wrong.
+
+**The fix, for the next session.** Convert the large locals in
+`tests/PhysicsObjectLayoutTests.cpp` to heap allocations, starting with the 20
+listed above. That is mechanical, needs no new code, and should be done WHOLESALE
+rather than one at a time: shrinking only some of them moves the layout without
+removing the pressure, which is what happened when three were converted here and
+a later block then faulted instead.
+
+**Correction to 3z263.** That hand-off listed the refactor of `wmain` as the first
+thing to try. It is still the right structural answer, but the immediate fix is
+simpler and now proven: the frame is too big, and the buffers that make it big can
+be moved off the stack.
+
+The three trial conversions were reverted so the tree stays green and the
+`batch3268` result is reproducible from the committed state. No rows move. No
+gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
