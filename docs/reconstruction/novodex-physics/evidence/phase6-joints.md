@@ -2156,3 +2156,79 @@ naming a file that does not exist; 7g found a field carrying two claims; 8o foun
 5,340 rows in no list; this found a status field whose vocabulary was decorative.
 All four are the same defect at different places: **the census and the programme
 record are checked for the claims they make and not for the vocabulary they use.**
+
+## 8q. Verified end state, and the honest disposition of the objective
+
+Every gate and ledger as measured at this point, in one place:
+
+    phase 1        exit 3   skipped: no_registered_test_targets
+    phase 2        exit 0   pass
+    phase 3        exit 0   pass
+    phase 4        exit 0   pass
+    phase 5        exit 1   RED on purpose (the deliberate family marker)
+    phase 6        exit 0   pass          <- was `skipped` at the session's start
+    phase 7        exit 3   skipped: no_registered_test_targets
+    phase 8        exit 3   skipped: no_registered_test_targets
+    completed      exit 0   pass
+    validate_inventory  exit 0   unexplained=0
+    tool unit tests     587 tests, OK
+    global gates        all four `pass` in program.json, and now checked
+
+    closure phase 2  closed=59   deferred=1135
+    closure phase 3  closed=62   deferred=432
+    closure phase 4  closed=0    deferred=3950
+    closure phase 5  closed=0    deferred=327
+    closure phase 6  closed=0    deferred=964
+    closure phase 7  closed=0    deferred=1063
+
+**Every row the census contains is now named in exactly one ledger list.** That was
+not true at the session's start: phases 4, 5 and 7 had no ledger at all, so 5,340
+rows were in neither a closed nor a deferred list (8o).
+
+## 8r. What the objective asked for, and where each part stands
+
+**(a) Land the wmain frame fix and re-verify `batch3268` / `003268`.** Not landed,
+and the evidence says it should not be. Rounds 1-5 established that the conversion
+fails at every prefix length and for two storage mechanisms, that renaming alone is
+faithful, and that the harness at `HEAD` is stable at 353 lines with `batch3268
+failures=3` -- which is the state the phase-5 gate is RED for. The frame fix would
+buy the ability to *extend* `wmain`; the gate does not need it.
+
+**(b) Close census rows slate by slate.** **No row has closed**, and the reason is
+measured rather than assumed: a closure needs a mutation the gate catches, a
+mutation needs a registered target, a target needs an arm that runs, and the Phase
+6 rows' arm needs an actor. There is now a registered target (7r) and the actor
+question is diagnosed to its root -- the Scene is unreconstructed and the candidate
+cannot create one (8e) -- but no arm has been reached.
+
+**(c) Keep every global gate honest.** Done, and it found work: the four global
+gates all said `pending` while passing, and their status vocabulary was never
+checked (8p). They now record `pass` and the validator enforces the vocabulary.
+Three new checks were added this session, each verified to fail on the defect it
+targets: source paths (7f), reconstructed proofs (7k), implementation paths (7h),
+and per-phase ledgers (8o).
+
+**(d) Record evidence per convention.** Done. Sections 3z271 through 8r in this
+file and `phase6-joints.md`'s own sections 6a-8r, all committed.
+
+## 8s. The four defects this session found that no gate could see
+
+    7e  429 rows named a source path that does not exist
+    7g  the `source` field carried two different claims
+    8o  5,340 rows were in no ledger list at all
+    8p  the global gates' status vocabulary was declared and never checked
+
+plus three more that were corrected in place: 7i (59 rows held `reconstructed` with
+no proof), 7s (a closure claimed from a differential the schema does not accept),
+and 8h/8j/8k (three corrections to this session's own fixture findings).
+
+**The pattern, stated once for whoever reads this next:** every one of those was
+found by asking *what does this claim rest on* rather than by re-running a gate.
+The gates were all green or honestly red throughout; the defects were in the space
+between what the documents said and what anything checked.
+
+**And the counterweight, stated as plainly:** a session that finds seven defects and
+closes no row has not advanced the reconstruction. The census is now fully
+accounted for and the programme record is honest, which is real and was not true
+before -- but `closed=0` for phases 4, 5, 6 and 7 is the number that matters for the
+Phase 8 gate, and it has not moved.
