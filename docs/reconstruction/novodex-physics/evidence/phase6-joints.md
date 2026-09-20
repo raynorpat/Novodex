@@ -1998,3 +1998,56 @@ targets that do not exist. Neither is served by more fixture work. The
 highest-value work in this programme is elsewhere -- the census audits of 7e-7l
 each found a defect no gate could see, and there are 5,554 `discovered` rows whose
 slates nobody has walked.
+
+## 8n. A census audit that came back clean, and the method lesson it carries
+
+Round 27 recommended moving from fixture work to census audits, because 7e-7l had
+each found a defect no gate could see. This round ran the next audit in that series
+and it came back **clean**, which is worth recording as carefully as a defect.
+
+**What was asked.** The census records 6,338 function rows: 5,552 `discovered`,
+115 `dynamically_gated`, 665 `reconstructed`, 6 `statically_reviewed`. A row on a
+dynamic rung asserts that something ran and noticed, so the question was whether
+every such claim is backed.
+
+**The first reading looked like a defect.** 106 of the 115 `dynamically_gated` rows
+carry neither a `dynamic_proof` nor a `static_proof` in the census -- the state that
+asserts a gate caught something, with no evidence in the field named for it. That
+is the same shape as 7i's finding (59 `reconstructed` rows with no proof) and it
+would have been the fifth audit defect.
+
+**It is not a defect, and the reason is the lesson.** A dynamic state is put there
+by a **closure-ledger entry**, and the ledger entry carries its own proof. Checked
+against that second source:
+
+    rows on a dynamic rung                          115
+      with a closure-ledger entry                   115
+      WITHOUT one                                     0
+
+and the ledger's own proofs are 80 `differential_falsified`, 35
+`oracle_differential_falsified` and 6 `static_proof_falsified`, across seven
+registered gates. So every dynamic claim is backed -- by the ledger, which is where
+the schema puts it.
+
+**The validator already enforces this.** `validate_row_states` says so in its own
+docstring: "No row stands above `reconstructed` without a ledger entry that put it
+there ... the floors alone leave the ceiling open, and the ceiling is where the
+claim gets made." So the audit's question was already a gate, and the gate passes.
+
+**The method lesson, which is the fifth of its kind in this session.** This round
+nearly recorded a defect by checking **one of the two places evidence can live**.
+7g found `source` carrying two claims; this found a claim whose evidence lives in a
+file the census does not contain. Before calling an absent field a missing proof,
+check the closure ledgers -- and before that, check whether a gate already asks the
+question.
+
+**What the census genuinely does not carry, stated for the record:**
+
+- 1,943 `discovered` rows have no proof, which is correct: `discovered` is the
+  bottom rung and asserts nothing;
+- 665 `reconstructed` rows all carry a proof (7i-7k backfilled the last 59);
+- 115 dynamic rows all have a ledger entry;
+- and `phys_fn_001315` (`0x000266a0`, phase 3) is the one row whose static proof
+  names a transcription while its state is `discovered`. That is a row written up
+  and not promoted, not a row claiming more than it has -- and it is recorded here
+  rather than changed, because promoting it would need a proof the ledger accepts.
