@@ -42219,12 +42219,12 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "allocator-singleton release with unconditional three-field clears (0x5aa90)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/871",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7317",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "confirmed via the allocclear2342 differential (3z223): failures=0 over three consecutive runs for all four occupancy pans, comparing the slot hit count and the whole object, with the allocator singleton bound. This is the row held back in 3z219, closed by acting on that round located diff rather than re-guessing",
       "notes": ""
     },
     {
