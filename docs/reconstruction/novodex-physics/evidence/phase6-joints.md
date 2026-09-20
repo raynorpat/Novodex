@@ -1831,3 +1831,108 @@ that from two directions: the candidate cannot create a scene, and the object gr
 a scene would give the rows is not the one the fixture can fake.
 
 No rows move. No gate, coverage-floor, or policy change.
+
+## 8j. The Scene is not a small unblock, and the row does not walk it
+
+8e called the Scene "the campaign's root" and the single highest-value unblocked
+task. Reading the Scene constructor this round says that framing needs correcting,
+and the correction matters more than the finding it replaces.
+
+**The Scene constructor is not a reconstructable unit in one sitting.**
+`phys_fn_000647` (`0x00012c10`, 998 bytes) is a straight-line initialiser that
+writes **several hundred** fields of a `0x710`-byte object and calls roughly twenty
+helper constructors in sequence:
+
+    *param_1 = &PTR_FUN_101066f4;        // the vtable
+    param_1[1] .. param_1[10] = 0;
+    FUN_1009a4e0(param_1 + 0xb);
+    FUN_100b4d70(param_1 + 0x14);
+    FUN_100e1510(param_1 + 0x18);
+    ... through param_1[0x175] and beyond
+
+`phys_fn_000651` (`0x00013070`, 1770 bytes) is the descriptor-driven initialiser
+that follows it, and both are `discovered`. So "reconstruct the Scene" is not one
+task: it is a 0x710-byte layout, two large initialisers, and every helper they
+call, before `createScene` can return anything a joint row could use.
+
+**And the row does not walk the Scene anyway.** The Scene constructor's vtable is
+`0x101066f4`; the object the row reaches at `desc+0x08` has vtable `0x10106890`.
+They are different objects. So 8h's open question -- "what is at `desc+0x08`" -- is
+**not** answered by reconstructing the Scene, and 8e's claim that the Scene is this
+campaign's root was too strong.
+
+**What is actually established about the row's chain**, with the measured actor:
+
+    actor+0x14 = desc        measured (8f)
+    desc+0x00  = the actor   points back
+    desc+0x08  = 016e5240    the object the row reads as shapes.first
+    desc+0x10  = 016e1578    a third pointer
+
+and the object at `desc+0x08` is vtable-only in its first 0x40 bytes (8h).
+
+**So the honest state of the head-of-chain is:**
+
+- the Scene **is** required for `NxPhysicsJointTests` (the candidate's
+  `createScene` returns 0) and for any row reached through the public SDK;
+- the Scene is **not** required for the joint-descriptor rows' transform arm,
+  because that arm reads an object graph the row reaches directly from the actor;
+- and the Scene is a **large** task, not a small unblock -- correcting 8e.
+
+**Recorded rather than acted on.** Two rounds of measurement have moved the
+campaign's stated root twice (the fixture, then the Scene), and both times the
+correction came from reading rather than from building. The next step that is worth
+its cost is neither: it is to identify what object sits at `desc+0x08` by resolving
+its vtable `0x10106890` against the census, which is a lookup rather than a
+reconstruction.
+
+## 8k. `0x10106890` is not a vtable, so the object at `desc+0x08` is unidentified
+
+8j assumed the dword at the object's `+0` was a vtable and that identifying it was
+a census lookup. The lookup was done, and it says otherwise.
+
+**What the address actually is.** `0x10106890` is the census row
+`phys_data_000813`, a 4-byte `pointer_slot` inside a run of
+`code_addressed_global` rows in `.rdata`. Its dword is `0x100af2c4`, and the bytes
+after it are:
+
+    +0x00  100af2c4   <- one code pointer
+    +0x04  00000000
+    +0x08  00000000
+    +0x0c  3ff00000   <- the high half of the double 1.0
+    +0x10  54442d18       +0x14  400921fb   /  the double pi
+    +0x18  54442d18       +0x1c  3ff921fb   /  the double pi/2
+
+A vtable is a run of function pointers. This is **one code pointer followed by
+floating-point constants** -- a code-addressed constant block, not a table of
+virtual methods.
+
+**What that means.** The dword at the object's `+0` is `0x10106890` only if the
+object's first field is a pointer to that constant block, which no object's vtable
+would be. So either
+
+- the object the row reaches at `desc+0x08` is not an object at all -- the pointer
+  is to a constant block, and the row's walk is reading something the fixture and
+  the probe both mis-identified; or
+- the read of `desc+0x08` in the probe is not the field the row reads, because the
+  row's `[eax+8]` is applied to the **actor**, not to the descriptor, on this build.
+
+**The second reading is now the more likely one, and it is testable in one line.**
+8f measured `actor+0x14 = desc` and then read `desc+0x08`. But the row's two
+instructions are `mov eax,[eax+0x14]` then `mov eax,[eax+8]` -- if the first does
+not land on what the probe calls `desc`, the second is reading a different field of
+a different object, and every offset after it is off by one level. The probe can
+print `[actor+0x08]` and `[actor+0x14]` and the row's own `eax` at each step in one
+run, which distinguishes the two.
+
+**Recorded, not resolved.** Three rounds have now moved this question by reading
+rather than building, and each reading has invalidated the previous round's
+assumption: 8b's `+0x0c` correction was wrong, 8e's Scene-as-root was too strong,
+and 8j's vtable assumption was wrong. The pattern is worth naming: **the fixture
+line has produced four rounds of corrections and no working fixture**, and the
+measurements that keep invalidating it are cheap precisely because the thing being
+measured was never verified.
+
+**The recommendation stands and is now stronger.** Stop the fixture line (8i) and
+treat the actor-graph question as open until someone can measure the row's own
+`eax` at each step, which the probe can do in one run. That is the only remaining
+measurement worth its cost here, and it is one build.
