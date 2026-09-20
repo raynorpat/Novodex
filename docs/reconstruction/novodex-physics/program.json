@@ -114,10 +114,10 @@
       "gate_artifact": null,
       "owned_functions": 433,
       "owned_data_objects": 531,
-      "closed_functions": null,
-      "closed_data_objects": null,
-      "remaining_functions": null,
-      "remaining_data_objects": null
+      "closed_functions": 0,
+      "closed_data_objects": 0,
+      "remaining_functions": 433,
+      "remaining_data_objects": 531
     },
     {
       "phase": 7,

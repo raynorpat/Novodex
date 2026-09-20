@@ -1080,3 +1080,78 @@ transitions, but not for their evidence.**
   `static_proof`, so none is unbacked. They are static-only by evidence rather
   than by declaration.
 - The nine joint families remain undriven.
+
+## 7m. What closing a row actually requires, read from the schema
+
+Seven rounds had passed without a row moving, so this round asked what a closure
+costs rather than assuming it was a bookkeeping step. The answer is in the
+validator, and it is strict:
+
+    # There is one way to close a row: aim a mutation at it and have the gate catch
+    # it. An earlier schema had an "observed" kind resting on a free-text field
+    # nobody could check, and every error found in review was one of those rows, so
+    # the kind is gone. A token can be real and the row still not entered; only a
+    # mutation measures entry.
+
+Three things follow, and each is enforced:
+
+- the proof must be one of `differential_falsified`, `static_proof_falsified` or
+  `oracle_differential_falsified`;
+- the entry must carry a `falsification` with both a `mutation` and a `detected`;
+- the `gate` it names must be a **registered** target of the right class;
+- and the inventory's own row must be at `dynamically_gated` or above, because
+  `differential_falsified` asserts a gate ran and caught something, and
+  `reconstructed` is the ceiling for a row with only a reconstruction behind it.
+
+**So a recorded differential is not a closure.** The `dynamic_proof` fields
+backfilled in 7i-7k are real evidence, and they are still not enough: a proof text
+is a free-text field, and the schema deliberately stopped accepting free text.
+
+## 7n. Phase 6 now has a closure ledger, and it closes nothing
+
+There was no `gates/phase6-closure.json` at all, which is why
+`run_phase_gate.ps1 -Phase 6` reports `skipped` and no ledger had to account for
+the phase's rows. One now exists:
+
+    phase 6 owns            433 function rows, 531 data objects
+      deferred, not reconstructed        304
+      deferred, reconstructed but not falsified  129
+      deferred, data object not dispositioned    531
+      closed                               0
+
+**It closes nothing on purpose.** The 129 reconstructed rows have recorded proofs,
+and closing them on those would be exactly the unfounded closure 3z264 found -- a
+row entered in the census as closed on evidence the schema does not accept. The
+ledger says so in its `note` and in a named deferral reason,
+`reconstructed_not_falsified`, rather than leaving the rows unaccounted.
+
+`program.json`'s phase 6 counters were stale (`null` for all four) and are now
+recomputed from the census and the ledger: `closed_functions=0`,
+`closed_data_objects=0`, `remaining_functions=433`, `remaining_data_objects=531`.
+The validator recomputes them independently and now agrees.
+
+## 7o. The work Phase 6 has left, stated as a number
+
+**129 rows each need one mutation and one measured detection.** That is the
+closure campaign, and it is the first time in this session it has been stated as a
+count rather than as "the rows are still open".
+
+The mutation method is the one Phase 3 used and the ledger documents: perturb the
+row's reconstruction in a throwaway `git archive` copy, rebuild, and run it against
+the committed oracle transcript through a registered staged-pair target, recording
+the differing line count. The archive copy must be touched after extraction --
+the README's required step -- or MSBuild links the previous variant's object and
+the measurement is wrong.
+
+**What blocks it today.** The target that would carry most of these rows,
+`NxPhysicsObjectLayoutTests`, is not a registered differential: it is Phase 5's
+oracle differential and it is RED on purpose, so it cannot serve as the gate a
+Phase 6 closure names. `NxPhysicsJointDescTests` is built and drives the two
+exported joint-descriptor rows but is not green against the whole candidate pair.
+So the closure campaign needs a green registered target first, and that is the
+same Foundation-side degenerate-input bit 7a-7d left open.
+
+**That is the dependency chain, and it is worth writing down once**: a Phase 6
+closure needs a mutation, a mutation needs a registered target, a registered target
+needs a green whole-pair differential, and the joint differential is one NaN sign
+bit short of green.
