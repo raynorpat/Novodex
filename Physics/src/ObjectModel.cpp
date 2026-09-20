@@ -2943,6 +2943,19 @@ void nxVectorVirtualLoop4165(void* self, void (__fastcall* fn)(void*))
 		}
 	}
 
+// phys_fn_001544 (0x2dec0): the singleton-slot row.
+void nxSlotCall1544(void* self, unsigned objOff, void* obj, NxSlotMfp1 slot)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	unsigned field;
+	memcpy(&field, p + objOff, 4);
+	if(field == 0u)
+		return;
+	(reinterpret_cast<NxSlotCtx*>(obj)->*slot)(field - 4u);
+	unsigned zero = 0u;
+	memcpy(p + objOff, &zero, 4);
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)

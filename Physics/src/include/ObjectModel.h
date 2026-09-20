@@ -1314,6 +1314,24 @@ void					nxGlobalCall4(void* self, unsigned objOff, unsigned extraOff,
 //! phys_fn_004165 (0x9ace0): walks the pointer vector at [self+0x10]/[self+0x14]
 //! -- the pair 000448 counts -- and calls the vtable slot +0x10 of EVERY
 //! element with no stack arguments.
+//! A reusable MEMBER-FUNCTION slot host. This compiler rejects __thiscall on
+//! a free-function typedef (`C3865`) and __fastcall cannot put an argument on
+//! the stack, so a vtable slot that needs `this` in ecx AND stack arguments is
+//! expressed as a member function of a non-virtual, non-inheriting class; its
+//! pointer bits are copied into a fixture vtable.
+struct					NxSlotCtx { };
+typedef void (NxSlotCtx::*NxSlotMfp1)(unsigned);
+
+//! phys_fn_001544 (0x2dec0): when [self+4] is non-null it calls the
+//! statically-reviewed helper 004803, which returns the allocator pointer from
+//! [0x1012845c], then calls the vtable slot +0xc of THAT object with one
+//! argument -- [self+4] minus four -- and clears [self+4]. The slot pops its
+//! own argument, so a member-function slot is the right shape. NOTE: 004803 is
+//! a direct call to CODE, so it must never be bound; the singleton pointer it
+//! reads is the bindable thing.
+void					nxSlotCall1544(void* self, unsigned objOff, void* obj,
+							NxSlotMfp1 slot);
+
 void					nxVectorVirtualLoop4165(void* self,
 							void (__fastcall* fn)(void*));
 
