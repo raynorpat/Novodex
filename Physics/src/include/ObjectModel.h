@@ -1311,6 +1311,12 @@ void					nxGlobalCall4(void* self, unsigned objOff, unsigned extraOff,
 //! phys_fn_003413 (0x84800): takes the object from the global [0x10125080] and
 //! calls ITS vtable slot +0x20 with the row argument. The caller does not
 //! clean, so the slot pops the argument itself.
+//! phys_fn_004165 (0x9ace0): walks the pointer vector at [self+0x10]/[self+0x14]
+//! -- the pair 000448 counts -- and calls the vtable slot +0x10 of EVERY
+//! element with no stack arguments.
+void					nxVectorVirtualLoop4165(void* self,
+							void (__fastcall* fn)(void*));
+
 void					nxGlobalVirtualCall3413(unsigned arg,
 							void (__stdcall* fn)(unsigned));
 

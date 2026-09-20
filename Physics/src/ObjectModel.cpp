@@ -2926,6 +2926,23 @@ void nxGlobalVirtualCall3413(unsigned arg, void (__stdcall* fn)(unsigned))
 	fn(arg);
 	}
 
+// phys_fn_004165 (0x9ace0): the vector virtual-call loop.
+void nxVectorVirtualLoop4165(void* self, void (__fastcall* fn)(void*))
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	unsigned begin, end;
+	memcpy(&begin, p + 0x10, 4);
+	memcpy(&end, p + 0x14, 4);
+	const int n = static_cast<int>(static_cast<signed>(end - begin)) >> 2;
+	for(int i = 0; i < n; ++i)
+		{
+		unsigned elem;
+		memcpy(&elem, reinterpret_cast<unsigned char*>(static_cast<size_t>(begin))
+			+ 4u * static_cast<unsigned>(i), 4);
+		fn(reinterpret_cast<void*>(static_cast<size_t>(elem)));
+		}
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)
