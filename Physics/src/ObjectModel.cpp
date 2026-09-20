@@ -2903,6 +2903,23 @@ unsigned char nxConsumeFlag3902(unsigned (__stdcall* fn)(unsigned))
 	return r != 0u ? 1u : 0u;
 	}
 
+// The four-argument global-call thunk rows.
+void nxGlobalCall4(void* self, unsigned objOff, unsigned extraOff, NxGlobalFn4 fn,
+	unsigned extraArg)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	unsigned inner;
+	memcpy(&inner, p + objOff, 4);
+	unsigned char* obj = reinterpret_cast<unsigned char*>(static_cast<size_t>(inner));
+	unsigned a, b, c;
+	memcpy(&a, obj + 0x7c, 4);
+	memcpy(&b, obj + 0x80, 4);
+	memcpy(&c, p + extraOff, 4);
+	unsigned first;
+	memcpy(&first, reinterpret_cast<unsigned char*>(static_cast<size_t>(a)) + 0x30, 4);
+	fn(first, b, c, extraArg);
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)

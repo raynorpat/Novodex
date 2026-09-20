@@ -1300,6 +1300,14 @@ void					nxDtorTrampoline3936(void* self, void (*fn)(void*));
 //! phys_fn_003902 (0x8d850): reads the cached word [0x10126654], calls the
 //! global [0x1010403c] with it, CLEARS the cache, and returns whether the call
 //! returned non-zero. The cache is mirrored through the two helpers.
+//! The FOUR-argument global-call thunk rows (003577, 003581, 003585, 003589).
+//! Each takes the object from [self+4], reads [[obj+0x7c]+0x30], [obj+0x80]
+//! and [self+8], and pushes them plus the ROW ARGUMENT -- four arguments,
+//! caller-cleaned. The slots are NULL at runtime.
+typedef void (__cdecl* NxGlobalFn4)(unsigned, unsigned, unsigned, unsigned);
+void					nxGlobalCall4(void* self, unsigned objOff, unsigned extraOff,
+							NxGlobalFn4 fn, unsigned extraArg);
+
 void					nxSetCache3902(unsigned value);
 unsigned				nxGetCache3902();
 unsigned char			nxConsumeFlag3902(unsigned (__stdcall* fn)(unsigned));
