@@ -113,3 +113,37 @@ belongs to an earlier state.
   failure without adding evidence.
 
 No rows move. No gate, coverage-floor, or policy change.
+## 6e. The two missing rows are substantial, and that bounds the next step
+
+`NxJointDesc_SetGlobalAnchor` is not a setter. At RVA `0x980b0` it is a 460-byte
+routine that, for each of the descriptor's two actors, reconstructs the actor's
+world pose from its stored position and orientation, composes a rotation matrix
+from the quaternion terms with the usual doubled products (the
+`fadd st(0), st(0)` / `fsub` sequence at `0x1009811e`-`0x10098138`), and
+transforms the passed world anchor into that actor's local frame, writing
+`localAnchor[0]` and `localAnchor[1]`. It walks `desc->actor[i]`, dereferences the
+actor's shape/pose chain, and bails to a common exit when either side is absent.
+
+`NxJointDesc_SetGlobalAxis` at `0x982e0` is the same shape over the axis.
+
+So Phase 6's first implementation task is not a two-line setter but a
+world-to-local transform whose float behaviour must match the oracle exactly, and
+the joint harness's `out_anchor` / `out_axis` lines already pin the normalisation
+the oracle applies (revolute case index 3). Implementation has not started, and no
+row moves.
+
+## 6f. What the next session should do, in order
+
+1. Refresh the staged candidate pair from `build/Release`, because the current
+   one predates `NxReleasePMap` and any differential against it measures an older
+   candidate.
+2. Transcribe the two exported rows from their disassembly and drive them through
+   `NxPhysicsJointTests`. The four revolute cases already produce `out_anchor` and
+   `out_axis` words that move if the transform is wrong, so this is a real
+   differential rather than a smoke test.
+3. Only then extend the harness to the other nine families, and only then
+   register `NxPhysicsJointTests` as a phase-6 differential target.
+
+Registering it before step 2 would turn phase 6 from `skipped` into a failure
+without adding evidence, which is the shape of gate this programme has already
+been caught building.
