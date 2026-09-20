@@ -5888,6 +5888,31 @@ The four remaining rows of this shape -- 004497, 004499, 004577, 004635 and
 
 All three move to `reconstructed`. No gate, coverage-floor, or policy change.
 
+## 3z208. Two more small rows close; the global virtual call is held back
+
+Round 191 attempted three more small rows from the recovered set and closed two
+(build/r191.log extrarows failures=0, stable over three runs):
+
+- 003936 (0x8eeb0) stores the vtable 0x10117920 at [self] and TAIL-JUMPS into
+  the global [0x10104194], forwarding `this` in ecx and the caller stack
+  unchanged;
+- 003902 (0x8d850) reads the cached word [0x10126654], calls the global
+  [0x1010403c] with it, CLEARS the cache, and returns whether the call returned
+  non-zero. The drive checks all four observables -- the flag, the hook hit
+  count and argument, and that the cache really is cleared -- because a row that
+  consumes a cache is only modelled correctly if the clearing is too.
+
+**003413 is held back.** It takes its object from the global [0x10125080] and
+calls that object's vtable slot +0x20 with the row argument. The oracle's
+recorder received the fixture's fill pattern rather than the argument, so the
+call is reaching a different target than the fixture's table supplies; the
+candidate and its sub-block were removed rather than left failing. It is the
+one remaining row of the three, and the next attempt should check where the
+slot is actually read from before rebuilding the fixture.
+
+The two closed rows move to `reconstructed`. No gate, coverage-floor, or policy
+change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
