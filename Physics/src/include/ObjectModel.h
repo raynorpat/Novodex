@@ -1321,6 +1321,7 @@ void					nxGlobalCall4(void* self, unsigned objOff, unsigned extraOff,
 //! pointer bits are copied into a fixture vtable.
 struct					NxSlotCtx { };
 typedef void (NxSlotCtx::*NxSlotMfp1)(unsigned);
+typedef void (NxSlotCtx::*NxSlotMfp2)(unsigned, unsigned);
 
 //! phys_fn_001544 (0x2dec0): when [self+4] is non-null it calls the
 //! statically-reviewed helper 004803, which returns the allocator pointer from
@@ -1333,6 +1334,14 @@ typedef void (NxSlotCtx::*NxSlotMfp1)(unsigned);
 //! pair at [self+0x10]/[self+0x14], but calling the vtable slot +0x18 of every
 //! element WITH one argument -- the row argument. The slot pops its own
 //! argument (no `add esp`), so a member-function slot is the right shape.
+//! phys_fn_004861 (0xb52a0, ret 8): walks the FOUR element pointers at
+//! [self+0x1c], [self+0x20], [self+0x24] and [self+0x28], SKIPS the null ones,
+//! and calls each non-null element's vtable slot +0x10 with the row's two
+//! arguments. The slot pops its own arguments (no `add esp`), so a
+//! member-function slot is the right shape.
+void					nxFourSlotLoop4861(void* self, unsigned a, unsigned b,
+							NxSlotMfp2 slot);
+
 void					nxVectorVirtualLoop4163(void* self, unsigned arg,
 							NxSlotMfp1 slot);
 

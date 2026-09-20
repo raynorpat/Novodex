@@ -2973,6 +2973,20 @@ void nxVectorVirtualLoop4163(void* self, unsigned arg, NxSlotMfp1 slot)
 		}
 	}
 
+// phys_fn_004861 (0xb52a0): the four-pointer slot loop.
+void nxFourSlotLoop4861(void* self, unsigned a, unsigned b, NxSlotMfp2 slot)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	for(unsigned k = 0; k < 4u; ++k)
+		{
+		unsigned elem;
+		memcpy(&elem, p + 0x1c + 4u * k, 4);
+		if(elem == 0u)
+			continue;
+		(reinterpret_cast<NxSlotCtx*>(static_cast<size_t>(elem))->*slot)(a, b);
+		}
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)
