@@ -6774,6 +6774,53 @@ reachable frontier is 000579, the ten 000480-group rows, six large x87 rows, and
 blocked by the probe fault rather than by their own models, so they remain
 **untested rather than failed**.
 
+## 3z236. The registry read is not the fault -- checked against a passing block
+
+Round 220 tested 3z235's conclusion -- that the probe dies in its first read of
+[base+0x123c0c] -- and it is wrong, by a check that took one command.
+
+The harness has its own helper for that exact slot (lines 180-209), used by the
+`registry4743` block, and it does the same `img + 0x123c0c` read. The gate log
+shows:
+
+    registry4743 candidate failures=0 provisional=1
+
+So that block runs, reads the same address, binds the same slot and passes -- in
+the same run whose tail is
+
+    allocclear2342 candidate failures=0
+    ownvtable3238  candidate failures=0
+    adjusted2060   candidate failures=0
+
+with `newreach` and `mutexlistfree` earlier still. **The address is readable and
+the bind is sound.** The probe fault is therefore NOT in its first read, and
+3z235's conclusion joins 3z234's as retracted.
+
+**What this leaves.** Four consecutive rounds have now produced four different
+explanations for the same silence, and each was refuted by the next:
+
+| round | explanation | refuted by |
+|---|---|---|
+| 3z228 | the bind helper faults on this slot | 3z229 -- 14 existing uses pass |
+| 3z230 | the fixture is one level short | 3z231 -- corrected, still silent |
+| 3z234 | the insertions are in dead code after the RED return | 3z235 -- an earlier insertion is silent too |
+| 3z235 | the probe dies in its first read | 3z236 -- that read is exercised by a passing block |
+
+That pattern is itself the finding, and it is worth stating plainly: **the
+instrumentation is being changed faster than it is being understood**, and each
+new explanation has been accepted because it fit the one observation at hand
+rather than because it was tested against a case known to work. 3z229 and 3z236
+are the two that DID test against a known-good case, and both are the ones that
+survived.
+
+**The next step is not another probe.** It is to establish, once, a minimal
+block that is known to print from the region in question -- by copying the
+`registry4743` block's exact placement and confirming one line of output -- and
+only then to vary it. Until that baseline exists, every silence in this region is
+uninterpretable.
+
+The tree is green and no rows move. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
