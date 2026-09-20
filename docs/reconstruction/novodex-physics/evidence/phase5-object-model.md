@@ -7639,6 +7639,44 @@ one of those four levels wrong produces exactly an access violation.
 The candidate was withdrawn again and the tree is green at exit 1, with the gate
 unchanged. No rows move. No coverage-floor or policy change.
 
+## 3z255. The access violation is before the block, not in it
+
+Round 240 instrumented `lazy579` at every step -- enter, fixture construction,
+bind, pre-call, post-call, done -- now that the `/GS-` unblock makes stderr
+traces actually reachable. **Not one of the seven traces printed.**
+
+**So the access violation happens BEFORE the block's first statement.** That rules
+out the four-level guard chain entirely: the fixture is never built, the bind is
+never attempted, and the row is never called. Whatever faults does so earlier in
+`wmain`, at the point the new block is inserted.
+
+**What that means.** Disabling `/GS` removed the cookie check, and with it the
+`0xC0000409` abort that discarded stdout. It did NOT remove the underlying
+corruption -- 3z253 said so explicitly -- and the corruption is still there. What
+changed is the SYMPTOM: with the cookie no longer checked, the same bad write now
+lands somewhere that faults as an access violation instead, and because the write
+happens before the inserted block runs, the block's own instrumentation cannot
+see it.
+
+**This is the cleanest statement of the situation the campaign has produced:**
+
+- the harness cannot be extended by adding blocks to `wmain`;
+- the reason is a bad write whose position depends on `wmain`'s frame layout;
+- `/GS` turned that write into a fast-fail with lost output;
+- `/GS-` turns it into an access violation at the same place;
+- either way the failure is upstream of any new code, so no instrumentation
+  placed IN the new code can observe it.
+
+**The remaining fix is therefore structural, not diagnostic**: `wmain` has to stop
+being one enormous function. Moving the existing blocks into separate functions
+would both shrink the frame (removing the layout sensitivity) and make the fault
+localizable, because each function would get its own cookie and its own epilogue.
+That is a mechanical refactor of a 15,000-line function and is the right next
+step; it is not something to attempt in the last rounds of this session.
+
+The candidate was withdrawn and the tree is green at exit 1, gate unchanged. No
+rows move. No coverage-floor or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
