@@ -5776,6 +5776,35 @@ instruction window.
 All fourteen move to `reconstructed`. 003575 stays `discovered` with its shape
 recorded above. No gate, coverage-floor, or policy change.
 
+## 3z204. The family closes at 25 of 25
+
+Round 187 gave 003575 the model its shape called for, and it closes
+(build/r187.log floatout3575 failures=0, stable over three runs).
+
+The row needed exactly what 3z203 identified and nothing more: its argument is
+an OUT POINTER, and the slot returns a float TRIPLE rather than a single value.
+The candidate therefore takes `(self, float* out, fn)` where `fn` returns
+`float*`, and copies the three floats at that return through `out`. The drive
+gives the slot a stub backed by a real float array -- so the three `fld`s read
+valid memory -- and compares the three written floats as well as the hit count
+and all three arguments.
+
+**The whole twenty-five-row family is now closed**, across four rounds: 3z200
+pinned the recipe on the first row, 3z202 fixed the RVA-slot table error and
+closed nine, 3z203 closed fourteen, and this one closes the exception. The
+family's four lessons are worth keeping together, because each cost real time:
+
+1. `nxBindFnPtr` takes an RVA, not a VA -- a VA makes every bind target a wild
+   address;
+2. a bare-`ret` row still needs `this` in ecx, which a 0-argument `__thiscall`
+   does not supply -- `__fastcall` with one parameter is that layout;
+3. the bound stub must match the ARITY the row pushes, and some rows
+   dereference its return value, so it must return something valid;
+4. an argument can be an OUT POINTER, and driving it with a plain value writes
+   to whatever address that value happens to be.
+
+003575 moves to `reconstructed`. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
