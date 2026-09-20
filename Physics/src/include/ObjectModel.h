@@ -1224,6 +1224,15 @@ void					nxTrampoline4387(void (*fn)(void));
 //! [self+0x10], call a two-argument global-call thunk on [self+0x14] and return
 //! its float result. The gate is mirrored through nxSetGate3716.
 void					nxSetGate3716(unsigned char on);
+
+//! phys_fn_000867 (0x1d260, ret 0xc): accumulates a scaled value into one of
+//! two field groups depending on the descriptor's kind. It computes
+//! v = arg1 / arg2 and reads kind = ([desc+0xc] & 0x1f); unless the kind is 4
+//! or 5 it adds v to [self+0x64]. Otherwise it adds v*[desc], v*[desc+4] and
+//! v*[desc+8] to [self+0x58], [self+0x5c] and [self+0x60] respectively, and
+//! sets [self+0x75] to 1 when bit 6 of [desc+0xc] is set.
+void					nxAccumulateByKind0867(void* self, float a, void* desc,
+							float b);
 float					nxOnceReportThunkFloat(void* self, unsigned code,
 							unsigned file, unsigned line, unsigned expression,
 							NxGlobalFn2RetF fn, int viaField4);

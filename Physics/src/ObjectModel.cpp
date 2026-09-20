@@ -2646,6 +2646,42 @@ float nxOnceReportThunkFloat(void* self, unsigned code, unsigned file,
 	return nxLockedHelperCallF(self, 0x10, 0x14, fn, viaField4);
 	}
 
+// phys_fn_000867 (0x1d260, ret 0xc): the kind-selected accumulator. The x87
+// sequence reduces to plain adds of v times each descriptor component. Note
+// the argument order: the DESCRIPTOR is the second argument and the divisor
+// the third, which the first drive got wrong by reading the divisor as a
+// pointer.
+void nxAccumulateByKind0867(void* self, float a, void* desc, float b)
+	{
+	const float v = a / b;
+	unsigned char* d = reinterpret_cast<unsigned char*>(desc);
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	unsigned kind;
+	memcpy(&kind, d + 0xc, 4);
+	kind &= 0x1fu;
+	if(kind != 4u && kind != 5u)
+		{
+		float t;
+		memcpy(&t, p + 0x64, 4);
+		t += v;
+		memcpy(p + 0x64, &t, 4);
+		return;
+		}
+	for(unsigned k = 0; k < 3; ++k)
+		{
+		float c;
+		memcpy(&c, d + 4u * k, 4);
+		float t;
+		memcpy(&t, p + 0x58 + 4u * k, 4);
+		t += v * c;
+		memcpy(p + 0x58 + 4u * k, &t, 4);
+		}
+	unsigned flags;
+	memcpy(&flags, d + 0xc, 4);
+	if(((flags >> 6) & 1u) != 0u)
+		p[0x75] = 1;
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)
