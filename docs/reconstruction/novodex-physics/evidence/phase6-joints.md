@@ -705,3 +705,56 @@ that does not close it, record the boundary and move on to work with a larger
 surface.
 
 No rows move. No gate, coverage-floor, or policy change.
+
+## 7c. The `fsqrt` change is not on the path this difference runs through
+
+7a recorded that routing `NxMath::sqrt` to `fsqrt` did not move the sign, and left
+"the value `k` takes" as the remaining candidate. `tests/NxMathSqrtProbe.cpp`
+tests that directly, and the answer is more useful than another failed attempt:
+
+    sqrt32(+0)  = 00000000   crt_sqrtf(+0)  = 00000000
+    sqrt32(-0)  = 80000000   crt_sqrtf(-0)  = 80000000
+    sqrt64(+0)  = 00000000   crt_sqrt(+0)   = 00000000
+    sqrt32(-1)  = ffc00000   crt_sqrtf(-1)  = ffc00000
+    1/sqrt64(+0) = 00000000  1/crt_sqrt(+0) = 00000000
+
+**`NxMath::sqrt` and the CRT's `sqrtf`/`sqrt` agree on every operand tried,
+including the negative one where `fsqrt` and the CRT are documented to disagree.**
+So the change in 7a, while faithful to the oracle's instruction stream, is **not
+on the path this difference runs through**: whatever `k` is in the rebuilt build,
+it is not being computed by a call to `NxMath::sqrt` at all. The compiler is
+folding or reaching the CRT for the call sites that matter, and the 15 `fsqrt`
+opcodes present in the rebuilt `.text` (against the oracle's 28) are not where
+this arithmetic happens.
+
+**That closes the `sqrt` hypothesis rather than leaving it open**, and it is the
+fifth candidate eliminated:
+
+| candidate | result |
+| --- | --- |
+| product width (`float` vs `double`) | finite path fixed, sign unchanged |
+| which side of the multiply the negation sits | sign unchanged |
+| `NxMath::sqrt` reaching `fsqrt` | not on the path |
+
+**What is left is the division.** The oracle uses `fdivr` at `0x100062e9` and
+`0x10006345`; the rebuilt `.text` contains **zero** `fdivr dword ptr` encodings,
+so that division is being compiled as an SSE divide. That is the next and
+probably last candidate for this bit.
+
+## 7d. Stopping this line of work here
+
+Five rounds have gone into one NaN sign bit. The five eliminations above are real
+and each is backed by a checked-in probe, so the boundary is genuinely narrower
+than it was. But 7b's judgement stands and is now acted on: **the ratio of effort
+to progress is poor, and the work moves on.**
+
+The bit is not dropped and not normalised away. It is recorded, with:
+its two symptoms (cases 1 and 2 of the joint-descriptor differential), the probe
+that isolates it (`tests/NxNormalToTangentsProbe.cpp`), the probe that eliminated
+the sqrt hypothesis (`tests/NxMathSqrtProbe.cpp`), and the one remaining
+candidate (the `fdivr` division).
+
+**The next session's first action on it** should be to make the `k = 1.0 /
+NxMath::sqrt(a)` division reach `fdivr`, and if that does not close it, record the
+boundary as final and move to the nine undriven joint families -- which have a far
+larger surface than one bit.

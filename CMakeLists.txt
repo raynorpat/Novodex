@@ -199,6 +199,11 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	add_executable(NxVec3NormalizeProbe tests/NxVec3NormalizeProbe.cpp)
 	target_include_directories(NxVec3NormalizeProbe PRIVATE Foundation/include Physics/include)
 	target_link_libraries(NxVec3NormalizeProbe bcrypt)
+	# Shows whether NxMath::sqrt reaches fsqrt or the CRT, so a change to it can
+	# be shown to have taken effect rather than merely to have compiled.
+	add_executable(NxMathSqrtProbe tests/NxMathSqrtProbe.cpp)
+	target_include_directories(NxMathSqrtProbe PRIVATE Foundation/include Physics/include)
+	target_link_libraries(NxMathSqrtProbe bcrypt)
 	add_executable(NxPhysicsCoreClusterTests tests/PhysicsCoreClusterTests.cpp)
 	target_include_directories(NxPhysicsCoreClusterTests PRIVATE Foundation/include Physics/include)
 	target_link_libraries(NxPhysicsCoreClusterTests bcrypt)
