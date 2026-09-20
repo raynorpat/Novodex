@@ -66,7 +66,7 @@ $NxPhaseOracleDifferentialTargets = [ordered] @{
     '3' = @('NxPhysicsCollisionTests')
     '4' = @('NxPhysicsAssetTests', 'NxPhysicsThirdPartyTests')
     '5' = @('NxPhysicsObjectLayoutTests')
-    '6' = @()
+    '6' = @('NxPhysicsJointDescTests')
     '7' = @()
     '8' = @()
 }
@@ -87,6 +87,16 @@ $NxPhaseOracleDifferentialTargets = [ordered] @{
 # from 89978 to 3521 and leaves stdout_delta at 0, and this is what turns that
 # from a silent pass into a failure.
 $NxRequiredCoverageLines = [ordered] @{
+    # The Phase 6 joint-descriptor differential. Two cases over the two exported
+    # rows, printing the whole descriptor surface before and after each call. The
+    # degenerate zero and NaN axes are quarantined in the harness with the reason
+    # recorded there (evidence/phase6-joints.md 7p); these three lines pin the
+    # finite path, which is exact.
+    'NxPhysicsJointDescTests' = @(
+        'case=0 actors a=null b=null in_anchor=3f800000.40000000.40400000 in_axis=3f000000.3f000000.3f000000',
+        'after_axis localNormal0=bed105ec.bed105ec.3f5105ec localNormal1=bed105ec.bed105ec.3f5105ec localAxis0=3f13cd3a.3f13cd3a.3f13cd3a localAxis1=3f13cd3a.3f13cd3a.3f13cd3a localAnchor0=3f800000.40000000.40400000 localAnchor1=3f800000.40000000.40400000 flags=00000002',
+        'after_axis localNormal0=80000000.80000000.3f800000 localNormal1=80000000.80000000.3f800000 localAxis0=00000000.3f800000.00000000 localAxis1=00000000.3f800000.00000000 localAnchor0=3f800000.00000000.00000000 localAnchor1=3f800000.00000000.00000000 flags=00000002'
+    )
     'NxPhysicsKernelFuzzTests' = @(
         'fuzz generator=xorshift32 scalar_iterations=120000 vector_iterations=40000 aimed_iterations=60000',
         'fuzz seeds scalar=13579bdf vector=02468ace aimed=feedface',
@@ -934,7 +944,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '4' = 100  # 34 for NxPhysicsAssetTests, 66 for NxPhysicsThirdPartyTests
     '5' = 126  # was 124: +2 for the shapeleaf family (row + candidate drive)
                # (RED on purpose: vtables family open)
-    '6' = 0
+    '6' = 3   # the Phase 6 joint-descriptor differential's three lines
     '7' = 0
     '8' = 0
 }
@@ -966,6 +976,7 @@ $NxRegisteredStaticProofTargets = @(
 $NxRegisteredOracleDifferentialTargets = @(
     'NxPhysicsAssetTests',
     'NxPhysicsCollisionTests',
+    'NxPhysicsJointDescTests',
     'NxPhysicsObjectLayoutTests',
     'NxPhysicsThirdPartyTests'
 )

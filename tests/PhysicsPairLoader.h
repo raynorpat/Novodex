@@ -31,7 +31,11 @@ static const wchar_t* const nxTrustedSystemModules[] =
 	L"apphelp.dll",
 	L"ucrtbase.dll",
 	L"VCRUNTIME140.dll",
-	L"bcrypt.dll"
+	L"bcrypt.dll",
+	// Loaded by BCryptHash on this workstation; it is a Windows system module and
+	// was measured as the one rejection the joint-descriptor oracle differential
+	// reported, so it is named rather than left to fail the audit.
+	L"bcryptprimitives.dll"
 	};
 
 static int nxFail(const char* message)
