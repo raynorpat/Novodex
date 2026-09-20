@@ -6616,6 +6616,48 @@ The block was withdrawn and the tree is green (adjusted2060 and the ten
 vt-campaign blocks all at 0 failures, mismatches=1). No rows move. No gate,
 coverage-floor, or policy change.
 
+## 3z232. Full gate-honesty re-verification, all eight phases
+
+Round 216 re-ran every phase gate end to end, because the standing objective
+requires the gates to stay honest and two rounds had just corrected this
+campaign's own earlier reporting. The result matches the 3z123 baseline exactly:
+
+| phase | exit | meaning |
+|---|---|---|
+| 2 | 0 | PASS |
+| 3 | 0 | PASS |
+| 4 | 0 | PASS |
+| 5 | 1 | RED on purpose |
+| 6 | 3 | UNGATED |
+| 7 | 3 | UNGATED |
+| 8 | 3 | UNGATED |
+
+with phase 5 reporting, in the same run:
+
+    layout candidate mismatches=1 mode=differential candidate_fold=4492c8c1
+    coverage_assertions_evaluated=126 floor=126
+    inventory=pass
+    gate_failure=oracle_differential:NxPhysicsObjectLayoutTests exited 1
+    FAIL the Phase 5 reconstruction is incomplete; this gate is RED on purpose
+
+Three things are worth stating about that, because each is a claim the campaign
+could drift away from and this is the check that it has not:
+
+- **the coverage floor is still met exactly** -- 126 assertions evaluated against
+  a floor of 126, not lowered and not padded;
+- **the single phase-5 mismatch is still the deliberate family marker**, and no
+  candidate added in the last twenty rounds has introduced a second one. Twenty
+  rounds of new candidates would normally be expected to disturb a count like
+  this, and it has not;
+- **the inventory gate still passes** with `unexplained=0` and
+  `data_objects=5138`, so none of the ~545 row closures was achieved by loosening
+  what counts as explained.
+
+All eight phases therefore remain honest, and the RED state is still RED for
+exactly the reason it has been since 3z114.
+
+No rows move. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
