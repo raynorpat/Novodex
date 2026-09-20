@@ -879,3 +879,71 @@ naming a file that has never existed cannot satisfy it, so the 429 rows are a
 known Phase 8 blocker independent of their differential evidence -- and the
 decision needed is what the field means: the path the reconstruction lives at, or
 the unit the linker placed the row in.
+
+## 7g. The `source` field means TWO things, and that is why it cannot resolve
+
+7f recorded the gap and the check. This round settles what the field *is*, by
+reading where it comes from rather than by choosing a convention.
+
+**It is built from the oracle's own `__FILE__` names.**
+`reconcile_analysis.py` has:
+
+    def _source_of(owner, files):
+        name = files.get(owner)
+        return "Physics/src/" + name.replace("\\", "/") if name else None
+
+`files` is the per-owner map derived from the `NX_ASSERT` `__FILE__` strings the
+image carries, which the README describes as naming 57 translation units. So the
+name half of the field comes from the oracle, and the `Physics/src/` prefix is
+added by the tool.
+
+**Confirmed against the string table.** Of the 60 distinct path-shaped `source`
+values, **56 appear in the Ghidra string table** -- they are the image's own
+`__FILE__` strings. The four that do not are:
+
+    Physics/src/ObjectModel.cpp                         63 rows
+    Physics/src/MemoryStream.cpp                        13 rows
+    Physics/src/NarrowPhase.cpp                          1 row
+    External/opcode/novodex/Ice/IceRevisitedRadix.cpp     1 row
+
+and those four are the reconstruction's own files -- three of them exist in the
+repository and the fourth is a vendored third-party path.
+
+**So the field is mixed.** For 56 of its 60 values it records *where the oracle
+attributed the code*; for the other four it records *where the reconstruction put
+it*. That is the whole of the problem, and it is why no single resolution rule
+works:
+
+- Reading it as "where the reconstruction lives" fails for the 56, because the
+  reconstruction deliberately did not recreate the oracle's directory layout --
+  49 of the 51 missing paths have basenames that exist **nowhere** in the
+  repository, so they are the oracle's names and not misplaced files;
+- Reading it as "where the oracle attributed it" fails for the four, which name
+  reconstruction files the oracle never had.
+
+**This is a schema defect, not a data-entry defect.** 429 rows are not wrong; the
+one field is carrying two claims, and a reader cannot tell which a given row
+makes. The fix is a split, not a repoint:
+
+    source            -> the oracle's __FILE__ attribution, always present when the
+                         image named one, never expected to resolve
+    implementation    -> the reconstruction's own file, expected to resolve, null
+                         while the row has no implementation
+
+**What that would change.** The 51-path allowlist added in 7f would disappear,
+because none of those paths is a claim that a file exists -- they are the oracle's
+names. The check would move to the new `implementation` field, where it belongs
+and where it can be a real gate. And the four reconstruction names would move out
+of `source` into `implementation`, resolving the mixture.
+
+**Not done here, and why.** Splitting a schema field across 6,338 rows is a
+change every phase's ledger reads, and it needs the `implementation` values
+supplied for the 663 reconstructed rows -- which is the same question the Phase 8
+audit asks and which no evidence currently answers. Recording the diagnosis is
+what this round can do honestly; the split is a programme decision with a real
+blast radius.
+
+**The interim state is honest.** `source` is unchanged, the 51 unresolved paths
+are recorded in the validator, and the check fails on any *new* unresolvable path.
+What is now also on the record is that those 51 are the oracle's names rather than
+missing files, so a future session does not spend time looking for them.
