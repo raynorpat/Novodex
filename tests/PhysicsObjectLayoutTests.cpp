@@ -15076,6 +15076,95 @@ int wmain(int argc, wchar_t** argv)
 		}
 	printf("fourslot4861 candidate failures=%u provisional=1\n", s4861);
 	}
+	// -- The singleton-release family: 001649, 001659 and 004838.
+	{
+	struct SRelCtx { unsigned dummy; };
+	typedef void (SRelCtx::*SRelMfp)();
+	SRelMfp mfp649, mfp659, mfp838;
+	{
+	const void* raw = reinterpret_cast<const void*>(base + 0x31890);
+	memcpy(&mfp649, &raw, sizeof(mfp649));
+	raw = reinterpret_cast<const void*>(base + 0x324a0);
+	memcpy(&mfp659, &raw, sizeof(mfp659));
+	raw = reinterpret_cast<const void*>(base + 0xb4d90);
+	memcpy(&mfp838, &raw, sizeof(mfp838));
+	}
+	typedef void (NxSlotHost::*M1)(unsigned);
+	M1 slotM = &NxSlotHost::slot1;
+	void* vt[8]; memset(vt, 0, sizeof(vt));
+	{
+	void* raw = nullptr;
+	memcpy(&raw, &slotM, sizeof(raw));
+	memcpy(reinterpret_cast<unsigned char*>(vt) + 0xc, &raw, 4);
+	}
+	unsigned char single[0x20]; memset(single, 0, sizeof(single));
+	*(void**)(single) = vt;
+	unsigned srel = 0;
+	// 001649 and 001659: for each, present/absent combinations of the two fields
+	struct RelRow { SRelMfp mfp; unsigned o1; unsigned o2; const char* name; };
+	static const RelRow kRel[2] = {
+		{ nullptr, 0x0u, 0x4u, "001649" }, { nullptr, 0x10u, 0xcu, "001659" } };
+	// populate the member pointers into a mutable table
+	RelRow rel[2] = { { mfp649, 0x0u, 0x4u, "001649" },
+		{ mfp659, 0x10u, 0xcu, "001659" } };
+	(void) kRel;
+	for(unsigned r = 0; r < 2; ++r)
+	for(unsigned pan = 0; pan < 4; ++pan)
+		{
+		NxFnPtrSaved sv = nxBindFnPtr(base, 0x12845c, single);
+		unsigned char self[0x40], selfC[0x40];
+		memset(self, 0, sizeof(self)); memset(selfC, 0, sizeof(selfC));
+		unsigned char blk1[0x10], blk2[0x10];
+		memset(blk1, 0, sizeof(blk1)); memset(blk2, 0, sizeof(blk2));
+		unsigned v1 = (pan & 1u) ? static_cast<unsigned>(
+			reinterpret_cast<size_t>(blk1)) : 0u;
+		unsigned v2 = (pan & 2u) ? static_cast<unsigned>(
+			reinterpret_cast<size_t>(blk2)) : 0u;
+		memcpy(self + rel[r].o1, &v1, 4); memcpy(selfC + rel[r].o1, &v1, 4);
+		memcpy(self + rel[r].o2, &v2, 4); memcpy(selfC + rel[r].o2, &v2, 4);
+		gSlotHits = 0; gSlotA = 0;
+		(reinterpret_cast<SRelCtx*>(self)->*rel[r].mfp)();
+		unsigned hO = gSlotHits;
+		gSlotHits = 0; gSlotA = 0;
+		unsigned offs[2] = { rel[r].o1, rel[r].o2 };
+		nxReleaseOwnedFields(selfC, offs, 2u, single,
+			*reinterpret_cast<NxSlotMfp1*>(&slotM));
+		unsigned hC = gSlotHits;
+		unsigned want = ((pan & 1u) ? 1u : 0u) + ((pan & 2u) ? 1u : 0u);
+		if(hO != hC || hO != want || memcmp(self, selfC, sizeof(self)) != 0)
+			{fprintf(stderr,"srel %s pan=%u want=%u h=%u/%u\n",
+				rel[r].name, pan, want, hO, hC); ++srel;}
+		nxUnbindFnPtr(base, 0x12845c, sv);
+		}
+	// 004838: the FP-guarded release
+	for(unsigned g = 0; g < 3; ++g)
+		{
+		NxFnPtrSaved sv = nxBindFnPtr(base, 0x12845c, single);
+		unsigned char self[0x40], selfC[0x40];
+		memset(self, 0, sizeof(self)); memset(selfC, 0, sizeof(selfC));
+		unsigned char blk[0x10]; memset(blk, 0, sizeof(blk));
+		float guard = (g == 0) ? 1.0f : ((g == 1) ? -1.0f : 0.0f);
+		unsigned v = (g == 2) ? 0u : static_cast<unsigned>(
+			reinterpret_cast<size_t>(blk));
+		memcpy(self + 0xc, &guard, 4); memcpy(selfC + 0xc, &guard, 4);
+		memcpy(self + 8, &v, 4); memcpy(selfC + 8, &v, 4);
+		unsigned seed = 0x9A9A0000u;
+		memcpy(self, &seed, 4); memcpy(selfC, &seed, 4);
+		memcpy(self + 4, &seed, 4); memcpy(selfC + 4, &seed, 4);
+		gSlotHits = 0;
+		(reinterpret_cast<SRelCtx*>(self)->*mfp838)();
+		unsigned hO = gSlotHits;
+		gSlotHits = 0;
+		nxReleaseGuarded4838(selfC, single, *reinterpret_cast<NxSlotMfp1*>(&slotM));
+		unsigned hC = gSlotHits;
+		unsigned want = (g == 0) ? 1u : 0u;
+		if(hO != hC || hO != want || memcmp(self, selfC, sizeof(self)) != 0)
+			{fprintf(stderr,"srel 004838 g=%u want=%u h=%u/%u\n",
+				g, want, hO, hC); ++srel;}
+		nxUnbindFnPtr(base, 0x12845c, sv);
+		}
+	printf("singletonrel candidate failures=%u provisional=1\n", srel);
+	}
 
 
 
