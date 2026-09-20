@@ -54,19 +54,35 @@ void NxComputeBounds(NxVec3& min, NxVec3& max, NxU32 nbVerts, const NxVec3* vert
 
 void NxNormalToTangents(const NxVec3 & n, NxVec3 & t1, NxVec3 & t2)
 	{
-	if (fabs(n.z) > M_SQRT1_2) 
+	// The oracle evaluates every product here with the x87 unit and rounds only
+	// where it stores to a 32-bit slot (`fld`/`fmul`/`fstp dword` throughout
+	// 0x100062b0-0x1000637e). Typing the running value `a`, the reciprocal `k`
+	// and the products `double` reproduces that: the intermediates stay wide and
+	// each component rounds once, at its store.
+	//
+	// This is the rule CMakeLists.txt records for the mass and geometry kernels,
+	// and the one NxVec3::magnitude and NxVec3::normalize now follow. It is also
+	// what fixes the finite-input ULP: with `a` computed in `float` the rounding
+	// happens before the square root, and the tangent lands one ULP away.
+	if (fabs(n.z) > M_SQRT1_2)
 		{
-		NxReal a = n.y*n.y + n.z*n.z;
-		NxReal k = NxReal(1.0)/NxMath::sqrt(a);
-		t1.set(0,-n.z*k,n.y*k);
-		t2.set(a*k,-n.x*t1.z,n.x*t1.y);
+		const NxF64 a = static_cast<NxF64>(n.y) * n.y + static_cast<NxF64>(n.z) * n.z;
+		const NxF64 k = 1.0 / NxMath::sqrt(a);
+		t1.set(0.0f, static_cast<NxReal>(-static_cast<NxF64>(n.z) * k),
+			static_cast<NxReal>(static_cast<NxF64>(n.y) * k));
+		t2.set(static_cast<NxReal>(a * k),
+			static_cast<NxReal>(-static_cast<NxF64>(n.x) * static_cast<NxF64>(t1.z)),
+			static_cast<NxReal>(static_cast<NxF64>(n.x) * static_cast<NxF64>(t1.y)));
 		}
-	else 
+	else
 		{
-		NxReal a = n.x*n.x + n.y*n.y;
-		NxReal k = NxReal(1.0)/NxMath::sqrt(a);
-		t1.set(-n.y*k,n.x*k,0);
-		t2.set(-n.z*t1.y,n.z*t1.x,a*k);
+		const NxF64 a = static_cast<NxF64>(n.x) * n.x + static_cast<NxF64>(n.y) * n.y;
+		const NxF64 k = 1.0 / NxMath::sqrt(a);
+		t1.set(static_cast<NxReal>(-static_cast<NxF64>(n.y) * k),
+			static_cast<NxReal>(static_cast<NxF64>(n.x) * k), 0.0f);
+		t2.set(static_cast<NxReal>(-static_cast<NxF64>(n.z) * static_cast<NxF64>(t1.y)),
+			static_cast<NxReal>(static_cast<NxF64>(n.z) * static_cast<NxF64>(t1.x)),
+			static_cast<NxReal>(a * k));
 		}
 	t1.normalize();
 	t2.normalize();

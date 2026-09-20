@@ -520,3 +520,42 @@ wrapper.** That is the real task, and it is a phase-4 one. It is recorded here
 because from the outside the export table looks like a one-row gap, and it is not.
 
 No rows move. No gate, coverage-floor, or policy change.
+
+## 6v. `NxNormalToTangents` itself now keeps its products wide
+
+Round 9 fixed `NxVec3::magnitude` and `NxVec3::normalize`. The finite cases became
+exact, and the remaining difference was a NaN sign on degenerate input. The
+function's own arithmetic was the last place still rounding early, so it was
+brought to the same rule: `a`, the reciprocal `k` and the component products are
+now `NxF64`, each component rounding once at its store.
+
+This is what the oracle does. Between `0x100062b0` and `0x1000637e` every value
+lives in an x87 register (`fld`, `fmul`, `fsqrt`, `fdivr`) and is rounded only by
+`fstp dword` / `fst dword` at the point it is written to a 32-bit slot.
+
+**Measured:**
+
+    case   oracle                        rebuilt after
+    0      t1 bf3504f3...  t2 bed105ec...  identical
+    1      t1/t2 7fc00000                 t1/t2 ffc00000    <-- still differs
+    3      t1 bf800000...  t2 80000000...  identical
+
+So the finite cases remain exact and the **NaN sign on a zero axis survives the
+change**. It is not a rounding-width problem: with `a == 0`, `k` is infinite and
+the products are `0 * inf`, and which sign the hardware gives that depends on the
+operand order the compiler chose, not on the width. Two spellings of the same
+expression were tried and both give the oracle's sign on the finite path and the
+opposite sign on the degenerate one.
+
+**This is recorded as open with its boundary named**, in the programme's own
+idiom: it is a one-bit difference on a degenerate input, it is a Foundation-side
+path, and no construct tried so far controls it.
+
+**No regression.** The Foundation's own `util` gate still passes against both
+DLLs with a 0-line diff, and phases 2, 3, 4 and `completed` all still exit 0.
+
+**The legacy byte is preserved.** `Foundation/src/Utilities.cpp` carries one
+non-UTF8 byte (`0xF6`), which the Foundation project's own evidence documents and
+for which it records that a normalisation attempt was rejected. The edit here was
+made with a byte-preserving decode and the byte is still present and still the
+only non-UTF8 byte in the file.
