@@ -1534,3 +1534,45 @@ phase 6 exit 0 PASS, `completed` exit 0, 587 tool tests OK.
 The work is converging rather than wandering -- each round's question is narrower
 than the last -- but four rounds have gone to two rows, and the honest summary is
 that the fixture is one breakpoint short of working rather than one design short.
+
+## 8b. The breakpoint answered it, and the answer is that two readers see two buffers
+
+7z left a two-reader disagreement. One breakpoint at `0x100980ee` settles what it
+is:
+
+    at 0x100980ee:  eax = 008feff8   ecx = 00000000
+    db eax L40:     008feff8  00 00 00 00 00 00 00 00-38 f0 8f 00 ...
+    dd eax+0x19c:   008ff194  00000000 00000000 00000000 00000000
+
+**`eax` at that instruction is the actor DESCRIPTOR, not the shape.** The row
+reached `mov ecx,[eax+0x19c]` with `eax` pointing at a block whose `+8` is zero and
+whose `+0x0c` holds `008ff038`, and whose `+0x19c` is zero. So the row read
+`[descriptor+0x19c]`, got null, and faulted at `[ecx+8]`.
+
+That means the level the fixture believes is the shape is, to the row, still the
+descriptor. The two readers are walking different buffers, which is why 7z's print
+and the row's read of "the same address" disagreed.
+
+**What was tried this round and what it showed.** Correcting the shape array's
+`first` to `+0x0c` (which is where the breakpoint shows the shape pointer) moved the
+fault out of the row entirely:
+
+    eip=003d2225 (the harness image, not NxPhysics)
+    mov esi,dword ptr [edi+8]   with edi = 0
+
+so the row's own walk now gets further and the fixture faults inside the test
+binary. That is a **different** fault and it is progress: the row is no longer the
+thing failing.
+
+**The next measurement, and it is one breakpoint again.** Break at `0x100980ee` and
+read `[eax]` -- the descriptor's first dword -- together with the fixture's own
+`desc` pointer. If they differ, the fixture's `desc` is not the pointer the row
+followed, and the level to fix is the one above. The address the fixture prints
+(`chain desc=...`) and the address the breakpoint reports are both on the record,
+so the comparison is a lookup rather than a guess.
+
+**Recorded as converging, not concluded.** Four rounds have gone to these two rows
+and the question has narrowed at every step -- from "what does a closure cost" to
+"is the arm reachable" to "which offset is wrong" to "which of two readers is
+reading what it thinks". Each answer was a measurement, and each corrected the
+previous round's reading. No row has closed.

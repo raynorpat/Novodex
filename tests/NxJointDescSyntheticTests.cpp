@@ -82,8 +82,11 @@ struct SyntheticActor
 		// showed the arm was unreachable. A non-null value that is not a
 		// descriptor faults instead.
 		*reinterpret_cast<void**>(buffer + 0x14) = desc;
-		// descriptor + 8 -> the shape array's `first`
-		*reinterpret_cast<void**>(desc + 8) = shape;
+		// descriptor + 0x0c -> the shape array's `first`. NxArray carries a
+		// vftable before its three pointers, so `first` sits at +0x0c and not at
+		// +8 -- the debugger read at 0x100980ee showed [eax+8] zero and
+		// [eax+0x0c] holding the shape.
+		*reinterpret_cast<void**>(desc + 0x0c) = shape;
 		// shape + 8 -> the body
 		*reinterpret_cast<void**>(shape + 8) = body;
 		// body + 0x19c -> the pose
@@ -131,13 +134,13 @@ static void nxCase(JointDescSetGlobalAnchorFn setAnchor, JointDescSetGlobalAxisF
 		unsigned char* d = reinterpret_cast<unsigned char*>(
 			*reinterpret_cast<void**>(ab + 0x14));
 		unsigned char* s = reinterpret_cast<unsigned char*>(
-			*reinterpret_cast<void**>(d + 8));
+			*reinterpret_cast<void**>(d + 0x0c));
 		unsigned char* bd = reinterpret_cast<unsigned char*>(
 			*reinterpret_cast<void**>(s + 8));
 		printf("precall actor=%p userData14=%08x desc8=%08x shape8=%08x "
 			"body19c=%08x\n", a,
 			*reinterpret_cast<unsigned*>(ab + 0x14),
-			*reinterpret_cast<unsigned*>(d + 8),
+			*reinterpret_cast<unsigned*>(d + 0x0c),
 			*reinterpret_cast<unsigned*>(s + 8),
 			*reinterpret_cast<unsigned*>(bd + 0x19c));
 		}
