@@ -1244,6 +1244,13 @@ int						nxCountFromPair0448(void* self);
 //! [+0x10] into the field before freeing the node, and clears the global word
 //! [0x10127180] once the list is empty. The free hook is settable.
 void					nxListFreeViaSingleton4089(void* self);
+
+//! The ten 74-byte mutex rows that run the 004089 list teardown under the lock
+//! and TAIL-JUMP into the unlock: lock [self+0x10], report on failure, else
+//! call 004089 on [self+0x18]. Because the release is a tail jump, the success
+//! arm returns the unlock's `al`, i.e. 1.
+unsigned				nxMutexListFree(void* self, unsigned code, unsigned file,
+							unsigned line, unsigned expression);
 float					nxOnceReportThunkFloat(void* self, unsigned code,
 							unsigned file, unsigned line, unsigned expression,
 							NxGlobalFn2RetF fn, int viaField4);

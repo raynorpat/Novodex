@@ -2713,6 +2713,24 @@ void nxListFreeViaSingleton4089(void* self)
 	gNxGlobalFlag4491 = 0u;
 	}
 
+// The ten 74-byte mutex rows that run the 004089 teardown under the lock.
+unsigned nxMutexListFree(void* self, unsigned code, unsigned file, unsigned line,
+	unsigned expression)
+	{
+	unsigned char* p = reinterpret_cast<unsigned char*>(self);
+	unsigned char* lock = *reinterpret_cast<unsigned char**>(p + 0x10);
+	if(!nxTryAcquireLock(lock))
+		{
+		if(gNxAssertReport)
+			gNxAssertReport(code, file, line, 0u, expression);
+		return 0u;
+		}
+	unsigned char* obj = *reinterpret_cast<unsigned char**>(p + 0x18);
+	nxListFreeViaSingleton4089(obj);
+	// the release is a TAIL JUMP into 002366, whose `mov al, 1` is the return
+	return 1u;
+	}
+
 // phys_fn_003950 (0x8f0d0): lock [self+0x10], unlock, return self. The lock
 // pair brackets the whole body and has no other observable.
 void* nxLockedSelf3950(void* self)
