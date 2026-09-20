@@ -8902,6 +8902,62 @@ enumerated by brace counting. The working localisation instrument for this file 
 
 No rows move. No gate, coverage-floor, or policy change.
 
+## 3z288. The converted harness does not corrupt fixtures -- it calls null
+
+The heap arm's fault, read from the debugger rather than inferred from the last
+buffered line:
+
+    eax=00000000  eip=00000000  ecx=00000018
+    edi=007ad4f4  esi=007b8998  esp=007747c0  ebp=007bf94c
+    kb:  <no frame>  RetAddr 00000000
+
+**A call through a null pointer**, not a jump through a poisoned return address
+and not a corrupted fixture. That distinction matters, because 3z264/3z265
+explained `batch3268` as corrupted fixture memory, and this is a different
+failure: the converted harness reaches the block's oracle call and calls null.
+
+`stderr` is unbuffered and ends at `ix2 r=51`, the marker immediately before
+`batch3268`, with no wrapper diagnostic (`nxframe: out of memory`) among its four
+lines. So the wrapper allocated successfully and the null is a value the block
+loaded, not a failed allocation.
+
+**The 2D conversions are clean.** An audit of the only two multi-dimensional
+declarators (`slots[3][0x6e0]`, `elems[3][0x200]`) finds nine uses with exactly
+one subscript, and all nine are of the form `x[i]` used as a byte pointer or as an
+address -- `memset(x[s], ...)`, `*(unsigned*)(x[s]+0x6cc)`, `void* p = x[k]` --
+which `NxFrameBuffer2D::operator[]` returning `T*` satisfies. No row is used as an
+array reference, so the 2D wrapper's contract is not violated.
+
+**What is left.** Some value the `batch3268` block loads is null after the
+conversion and non-null before it. The block loads its four fixture pointers from
+its own storage, so the most likely reader is the code that fills them; that has
+not been pinned down, and it is recorded as the open question rather than as a
+finding.
+
+## 3z289. Where the frame work now stands
+
+Five rounds have tested the frame conversion and it has not been made to work:
+
+| tested | result |
+| --- | --- |
+| renaming, `sizeof` rewriting, cast routing alone (`--stack`, all 81) | identical to `HEAD`, run for run |
+| storage moved to `malloc` | fails, every prefix length |
+| storage from a static pool (`--pool`) | fails identically |
+| extra overflow slack (`--margin 0x1000`) | fails identically |
+| 2D wrapper contract | clean |
+
+The conversion tooling is correct and its controls are trustworthy. The
+conversion itself is not, and the failure is now a single well-defined shape: a
+null call in the `batch3268` block.
+
+**The frame fix stays unlanded**, and the phase-5 gate does not need it: `HEAD`
+is stable at 353 lines, exit 1, `batch3268 candidate failures=3`, which is exactly
+the state the gate is RED for. What the frame fix would buy is the ability to
+*extend* `wmain` with new differential blocks for phases 6-8; it buys nothing for
+the gate as it stands.
+
+No rows move. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
