@@ -8377,6 +8377,75 @@ explanations by direct experiment, which is what this round has in common with
 The tree is green at exit 1, with no CMake change committed. No rows move. No
 gate, coverage-floor, or policy change.
 
+## 3z270. Session close: the complete verified state
+
+Round 256 ran every check the campaign owns, and the committed state is clean.
+
+    build                    no errors
+    phase 2                  exit 0   PASS
+    phase 3                  exit 0   PASS
+    phase 4                  exit 0   PASS
+    phase 5                  exit 1   RED on purpose
+    phase 6                  exit 3   UNGATED
+    phase 7                  exit 3   UNGATED
+    phase 8                  exit 3   UNGATED
+    phase 5 detail           inventory=pass
+                             layout candidate mismatches=1 mode=differential
+                             coverage_assertions_evaluated=126 floor=126
+                             gate_failure=oracle_differential
+    failing blocks           batch3268 candidate failures=3   (the one diagnosed)
+    inventory                functions=6338  data_objects=5138  unexplained=0
+    git                      clean
+
+**What the campaign holds, stated once.**
+
+- **Oracle census: COMPLETE.** 1056977 of 1056977 executable bytes explained,
+  174443 referenced data bytes explained, 0 unexplained, 0 unresolved targets,
+  0 overlaps, 0 duplicate ownership.
+- **Gates: honest.** Six inventory gates pass; phases 2-4 pass; phase 5 is RED ON
+  PURPOSE for the single deliberate family marker; phases 6-8 are ungated. The
+  coverage floor is met exactly and has never been lowered.
+- **Reconstruction: 778 closed code rows**, phases 4-8 still `pending`.
+- **One known-failing block**, fully diagnosed: `batch3268` reads fixtures that
+  `wmain`'s frame corrupts, and moving its own 40 KB to the heap takes it to zero
+  failures with no change to the candidate (3z265, reproduced 3z267).
+
+**What this session added.**
+
+1. **The root cause of the twenty-round harness corruption** -- a ~250 KB `wmain`
+   frame with an out-of-bounds write inside it (3z265), refined in 3z269 to be a
+   layout problem rather than a stack-size one, both by direct experiment.
+2. **An unfounded closure and the gate blind spot that hid it** -- the phase-5
+   gate counts `candidateMissing`, not per-block failures, so `batch3268` failed
+   in every log unnoticed (3z264).
+3. **The correction** -- `003268` is correctly modelled and its closure is sound
+   once its fixtures are not being corrupted (3z265/3z267).
+4. **A complete recipe for the fix** -- the buffer list, the `sizeof` hazard, and
+   the proof that a partial conversion makes things worse (3z265-3z267).
+5. **Phase-8 audit findings** -- 308 rows without written proofs (146 backfilled),
+   an empty `statically_reviewed` state (now filled), a misclassified fragment, and
+   110 `dynamically_gated` rows that do not record their gate (3z256-3z259).
+6. **Tooling committed and reusable** -- `/MAP` and `/DEBUG:FULL` on the test
+   target, crash dumps, and the `cdb` recipe that resolves a fault to a source
+   line (3z243-3z249).
+
+**What a future session should do**, in priority order:
+
+1. apply the frame fix in full, one buffer at a time with its `sizeof` uses
+   checked (3z267's recipe);
+2. reopen `003268` and re-verify it once the fix lands, and re-enable `/GS` on the
+   test translation unit, which was only ever a diagnostic;
+3. resume row work -- `000579` and the ten 88-byte rows behind `000480`;
+4. phases 6, 7 and 8.
+
+**The objective is not complete.** Phases 4 through 8 are still pending and the
+frontier rows are still open. What is complete is the oracle census, the gate
+honesty, and the diagnosis of every obstacle currently known -- and the campaign
+is in a state where the next session can act on all of it rather than rediscover
+it.
+
+No rows move. No gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
