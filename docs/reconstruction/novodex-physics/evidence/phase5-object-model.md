@@ -8339,6 +8339,44 @@ row work -- `000579` and the ten 88-byte rows behind `000480` -- and phases 6-8.
 
 No rows move. No gate, coverage-floor, or policy change.
 
+## 3z269. It is the frame LAYOUT, not the stack size
+
+Round 255 tested the most obvious alternative to converting buffers: give the
+process a bigger stack. A `/STACK:16777216` (16 MB) link option was added to the
+test target -- a change needing no source edit, directly addressing "a
+quarter-megabyte frame in a one-megabyte stack".
+
+**It changed nothing.** With the 16 MB stack reserved, `batch3268` still reports
+
+    batch3268 candidate failures=3 provisional=1
+
+exactly as before. So the frame is not exhausting the stack; this is not a stack
+overflow. The change was reverted.
+
+**What that means -- a refinement of 3z265, not a contradiction.** The frame is
+large and that is still why the corruption happens, but the mechanism is not "the
+frame runs off the end of the stack". It is that a frame of that size, compiled
+with `/GS`, places its cookie and its adjacent locals in a layout where an existing
+out-of-bounds write inside some block lands on memory another block depends on.
+Giving the frame more room does not move the cookie relative to the write; **only
+changing what is on the stack does** -- which is why moving `batch3268`'s own 40 KB
+to the heap fixed its differential, and why moving three other buffers fixed
+nothing (3z267).
+
+**The corrected statement of the cause**: `wmain` has a ~250 KB frame, and within
+that frame there is at least one write that oversteps a local. The size is what
+makes the overstep land on something that matters rather than in slack. The fix is
+to take the large locals off the stack, as 3z265-3z267 established and proved;
+reserving more stack is not a fix and was reverted.
+
+**One more thing the round confirms.** `/GS` was never the problem, and neither is
+the stack limit -- the campaign has now eliminated both "obvious" systemic
+explanations by direct experiment, which is what this round has in common with
+3z251 and 3z229.
+
+The tree is green at exit 1, with no CMake change committed. No rows move. No
+gate, coverage-floor, or policy change.
+
 ## 6. What this task did not do
 
 - No behavioural reconstruction: every row here stays `discovered` until a
