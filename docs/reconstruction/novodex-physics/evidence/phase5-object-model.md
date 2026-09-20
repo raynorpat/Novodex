@@ -8447,141 +8447,189 @@ it.
 No rows move. No gate, coverage-floor, or policy change.
 
 
-## 3z271. The harness now dies at `delimscan`, and the block that kills it is localised
+## 3z271. CORRECTION: the harness was never broken -- this session's build was
 
-Session 257 opened by running the committed layout harness exactly as the gate
-does, and it no longer reaches the state 3z270 recorded. This is a measurement,
-not an inference:
+The first three sections of this round are retracted. They reported that the
+committed layout harness "now dies at `delimscan`" with `0xC0000005`. **That was
+wrong, and the error was mine, not the harness's.**
 
-    build                    no errors, NxPhysics and NxPhysicsObjectLayoutTests
-    committed harness        exit -1073741819 (0xC0000005)
-    stdout                  146 lines, last line `delimscan candidate failures=0`
-    blocks reached           ... listpeek, delimscan -- and no block after it
-    git                      docs/novodex-foundation/ untracked, everything else clean
+**What actually happened.** The layout translation unit is committed as
+UTF-16LE, so the tools that edit it cannot read it with a plain UTF-8 open. To
+get an editable base this session wrote a "pre-frame-fix" copy of the file --
+but wrote it *after* a first round of edits, not from `HEAD`. Every experiment
+after that read the copy instead of `HEAD`, applied the conversion tools to an
+already-converted file, and re-ran the same tools again on the result. Each pass
+renamed identifiers that were already renamed and rewrote `sizeof` uses that were
+already literals. The builds that came out of that chain were not the harness;
+they were an accumulation of the tools' own output, and the `0xA5`-poisoned
+crash was a genuine consequence of *those* builds only.
 
-Every block that did run reported **zero** failures. `batch3268` was never
-reached, so 3z270's "one known-failing block" is no longer the failure a gate
-run would meet: the harness now dies earlier, in `delimscan`, and it dies
-**before printing any diagnostic**, because the block printf that follows it is
-never executed and stdout is block-buffered.
+**The measurement that settles it.** With the source restored byte-for-byte from
+`HEAD` and one clean build, the harness runs to its own end:
 
-**The fault is a jump through a fixture fill, not a bad read.**
+    exit                    1
+    stdout                  441 lines
+    last line               FAIL the Phase 5 reconstruction is incomplete;
+                            this gate is RED on purpose
+    the one failing block   batch3268 candidate failures=3 provisional=1
 
-    eax=a5a5a5a5 eip=a5a5a5a5  ecx=00000010
-    edi=heap pointer          esp=heap region      ebp=frame base
-    kb:  <corrupt> a5a5a5a5 a5a5a5a5 a5a5a5a5 a5a5a5a5 0xa5a5a5a5
-    frame base +4 = invoke_main+0x1c (the caller of wmain)
+and the phase-5 gate on that same tree reports exactly what 3z270 recorded:
 
-`0xA5` is the harness's own benign fill -- `memset(x, 0xA5, sizeof(x))` appears
-16 times in the translation unit -- so the value being executed is one of the
-harness's own fixture bytes, reached as a transfer target. The stack from `esp`
-to `ebp` is that fill across the whole frame, and **the frame size moves with
-whatever the build changed**: 0x202E8, 0x2032E8 and 0x202F4 were all measured
-across three builds of the same source. That is 3z262's chaotic sensitivity,
-reproduced, and it is why a smaller frame does not remove the fault.
+    gate_failure            oracle_differential:NxPhysicsObjectLayoutTests exited 1
+    layout candidate mismatches=1 mode=differential candidate_fold=4492c8c1
+    coverage_assertions_evaluated=126 floor=126
+    batch3268               ci=0, ci=1, ci=2, then failures=3
 
-**What localises it.** Twelve independent runs bracket the failure to the
-`delimscan` block and to nothing else:
+So the committed harness is healthy, `003268` is still the single known-failing
+block, and the gate is RED on purpose for exactly the reason 3z264 named. Nothing
+in 3z270 is disturbed.
 
-| change | result |
-| --- | --- |
-| committed harness | dies before `delimscan`'s block printf |
-| the three `ds(...)` calls disabled | **completes**: 422 lines, exit 1, `RED on purpose` |
-| `ds0` alone disabled | dies, 145 lines |
-| `ds1` alone disabled | dies, 145 lines |
-| `ds2` alone disabled | dies, 145 lines |
-| all three disabled, frame converted | completes, and reports `batch3268 candidate failures=3` |
+**The retracted claims, named.** For the record, since they were committed:
 
-The last row is the important one on two counts. It reproduces **3z270's exact
-`batch3268` result** from a clean build, so the row's closure state is unchanged;
-and it shows the failure is not `batch3268` at all but the block immediately
-before it in address order.
+- "the harness dies at `delimscan`" -- false; the harness completes;
+- "`batch3268` is never reached" -- false; it is reached and reports 3;
+- "twelve runs localise the fault to the delimscan block" -- the twelve runs
+  were on polluted builds, so the localisation is void;
+- "the frame fix is not sufficient" -- void, because the builds it was measured
+  on were not the harness.
 
-**What that means for 3z270's claim.** 3z270 recorded `batch3268 candidate
-failures=3` as the single visible failure. That is still true of the row, and it
-is still invisible to the phase-5 gate for the reason 3z264 gave. What has
-changed is that the harness no longer gets far enough to print it: the process
-dies in `delimscan` first. A future session should treat "the layout harness
-exits 1 with `batch3268 failures=3`" as the *desired* state to restore, not the
-state on disk.
+**The lesson, and it is the same shape as 3z266's.** 3z266 recorded that a
+scripted refactor of this file has a silent-failure mode: `sizeof` on a converted
+pointer is not an error, it is a different program. This round found the same
+hazard one level up, in the *harness that drives the refactor*: a base copy taken
+after an edit rather than from `HEAD` is not an error either, and every
+subsequent measurement inherits it silently. **A mutation experiment on this
+translation unit must take its base from `git show HEAD:<path>`, never from a
+file that a previous pass wrote, and must rebuild from a clean object state.**
+That belongs next to 3z266's `sizeof` warning and is the durable result of this
+round.
 
-## 3z272. Sixteen calling-convention mismatches, and the delim-scan one is real
+## 3z272. Sixteen calling-convention mismatches, verified against the pinned DLL
 
-`DelimScanOracle` (RVA `0x90db0`) is declared
+Kept, because it was measured against the row bytes and not against a build.
+`tools/audit_call_conventions.py` reads each oracle row's own terminating
+`ret N` from the pinned DLL and compares it with the convention the harness's
+typedef implies. It reports 16 disagreements, of which the delim-scan row is the
+cleanest:
 
-    typedef unsigned (__cdecl* DelimScanOracle)(const char*);
+    DelimScanOracle      rva=0x90db0   __cdecl     row pops 4   convention implies 0
 
-and the row itself ends in `ret 4`:
+`phys_fn_004002` (0x90db0, 92 bytes) really does end in `ret 4`:
 
     0x10090e04  c20400   ret 4
 
 A `ret 4` row pops its own single argument; a `__cdecl` call site pops it as
-well. The two together move `ESP` by `-4` on **every** call, and the block makes
-three of them, so the block is 12 bytes adrift by the time it reaches its own
-printf. The same shape appears 16 times in the translation unit. A new tool,
-`tools/audit_call_conventions.py`, reads each row's own terminating `ret N` from
-the pinned DLL and reports the disagreement:
+well, so every call moves `ESP` by -4 and the delim-scan block makes three of
+them. The block is inside `wmain`'s frame, so the drift lands in `wmain`'s own
+locals.
 
-    typedefs=362  cast sites=276
-    --- calling-convention mismatches ---
-      DelimScanOracle      rva=0x90db0   __cdecl     row pops 4   convention implies 0
-      ... 15 more, all __thiscall against a row whose own `ret N` is not 4*(n-1)
-      total 16
-      plus 10 rows whose cleanup could not be read (an indirect tail)
+**What is NOT claimed.** Correcting the convention was tried and did not change
+the harness's result -- but every build in which that was tried was one of the
+polluted builds named above, so **the correction has not been validly tested**.
+What stands is the mismatch itself, which is a fact about the source and the
+pinned row and does not depend on any build. `TinyOracle` is the worst of the
+remainder: six call sites, six different row cleanups (`ret 0`, `ret 8`,
+`ret 20`, `ret 16`, `ret 0`, `ret 0`) behind one typedef, so at least two of them
+are provably wrong.
 
-**Correction alone does not clear it, and that is recorded rather than hidden.**
-Changing the `delimscan` typedef to `__stdcall` -- the convention that agrees
-with `ret 4` -- was applied to the converted source, built and run:
-it still dies at `delimscan`. Disabling the three calls is what completes. So
-the mismatch is a real defect with a real fix, but it is **not yet shown to be
-the cause** of this crash; the localisation stands on the twelve runs above and
-nothing more. `TinyOracle` is the worst of the remainder: six call sites, six
-different row cleanups (`ret 0`, `ret 8`, `ret 20`, `ret 16`, `ret 0`, `ret 0`)
-behind one typedef, so at least two of them are provably wrong.
+The tool is committed and read-only. Running it against `HEAD` is a defensible
+next step; acting on its output is not, until a clean-base experiment shows the
+behaviour changing.
 
-## 3z273. The frame fix is mechanical, verifiable, and not sufficient
+## 3z273. What the frame conversion is, with the measurements that survive
 
-The whole-unit conversion 3z265-3z267 called for was built and measured. The
-transformation is now scripted and reproducible rather than hand-edited:
+Kept, because it is a property of the transformation and of the compiler, not of
+any run:
 
 - each local declarator of a chosen size is renamed to a unique identifier and
   becomes an `NxFrameBuffer<T, N>` (or `NxFrameBuffer2D`) object;
 - `sizeof(x)` becomes the **literal byte count**, which removes 3z266's silent
   failure mode by construction rather than by care;
 - the object releases itself at scope exit, so the thirty-odd `return` statements
-  in `wmain` cannot leak and the earlier "free at the end of the `ci` loop" hand
-  edit is not needed;
+  in `wmain` cannot leak and 3z265's "free at the end of the `ci` loop" hand edit
+  is not needed;
 - element access, decay to a pointer, pointer arithmetic and `&x` keep working
-  through the wrapper's operators; explicit casts are routed through
+  through the wrapper's operators; explicit casts route through
   `static_cast<unsigned char*>` because a user-defined conversion is not
   available to `reinterpret_cast`.
 
-Measured at the 0x200 threshold: **81 declarators on 72 lines, 176 736 bytes**
-moved off the frame, clean compile, no warnings attributed to the change. At
-0x100 the same transformation converts more and still compiles.
+Measured at the 0x200 threshold from a `HEAD` base: **81 declarators on 72
+lines, 176 736 bytes**, and the translation unit compiles with no error. At 0x100
+it converts more and still compiles. At 0x80 the pattern starts matching
+non-local declarations and the build fails, so 0x100 is the practical floor for
+this script and the script must be run exactly once.
 
-**It does not fix the crash.** At 0x200 the harness advances from `delimscan` to
-`batch3268`; with `bb[0x4200]` also moved to static storage it advances to
-`material`; with the three delim calls disabled it completes. Every one of those
-is a different point in the same 158 KB range, which is the signature 3z268
-described and not a fix. **The finding of this session is therefore negative and
-that is the honest record: the frame fix 3z265 recommended is correct, is now
-mechanical, and is not sufficient, because the corruption is not primarily
-frame-size driven.**
-
-**The one run that completes.** With the transformation applied and the three
-`delimscan` oracle calls disabled, the harness runs all 422 lines to its own
-end marker and exits 1 on purpose:
-
-    batch3268 candidate failures=3 provisional=1
-    FAIL the Phase 5 reconstruction is incomplete; this gate is RED on purpose
-
-That is 3z270's state, reproduced. It is the target to restore, and it is
-reachable today by one diagnostic edit, which is the actionable thing this
-session hands forward.
+**The frame fix has still not been landed**, and this round did not validly test
+whether it helps. That test is the next session's first task, and it now has a
+method: `git show HEAD:tests/PhysicsObjectLayoutTests.cpp` into a scratch copy,
+one conversion pass, one clean build, one run, compared against the 441-line /
+`batch3268 failures=3` baseline recorded above.
 
 No rows move. No gate, coverage-floor, or policy change.
 
+## 3z274. The conversion is now a checked-in tool, and one A/B against `HEAD`
+
+Landed this round, purely additive:
+
+- `tools/frame_locals.py` -- the whole-unit conversion, with BOM-safe decoding
+  of the UTF-16 translation unit, a `--check` mode, and a guard that **refuses a
+  second pass** (`error: this file already carries the wrapper`). That guard is
+  3z271's correction turned into code: the failure mode was a second pass, so a
+  second pass now fails loudly instead of silently producing a different program.
+- `tools/frame_casts.py` -- routes the harness's explicit casts through the
+  wrapper's `operator unsigned char*`, which `reinterpret_cast` cannot reach.
+
+Both were re-derived from the pristine base and re-run end to end: **81
+declarators on 72 lines, 176 736 bytes, 711 renames, 138 cast sites**, clean
+compile.
+
+## 3z275. A/B, same base and same build: `HEAD` runs, the conversion does not
+
+This is the measurement 3z273 could not validly make. Both arms take their base
+from `git show HEAD:tests/PhysicsObjectLayoutTests.cpp`, run one conversion pass
+at most, and build in the same tree.
+
+    base                          lines  exit      last line
+    HEAD, no conversion           441    1         FAIL ... RED on purpose
+    conversion + wrapper release  144    -1073741819  delimscan candidate failures=0
+    conversion, release disabled  139    -1073741819  delimscan candidate failures=0
+
+The `HEAD` arm reproduces 3z270 exactly: 441 lines, exit 1, last line
+`FAIL the Phase 5 reconstruction is incomplete; this gate is RED on purpose`, and
+`batch3268 candidate failures=3` as the only failing block. Both conversion arms
+die before the harness reaches its own end marker.
+
+**The leak probe is the informative one.** Disabling the wrapper's `free()`
+entirely -- so a use-after-free cannot be the cause -- does not change the
+result. The conversion therefore corrupts the harness through something other
+than the destructor, and the corruption lands in `delimscan`, the block that
+sits immediately before the first fixture the harness fills with `0xA5`.
+
+**What that rules out**, each by direct measurement rather than by argument:
+
+- a missed `sizeof`: an audit of the converted source finds **zero** `sizeof`
+  forms still naming a converted buffer, in any spelling;
+- a use-after-free or double-free: the leak probe above;
+- a frame-size effect: the 0x200 and 0x100 thresholds produce the same crash,
+  so removing more of the frame does not move it;
+- a calling-convention effect: the `__cdecl` / `__stdcall` / explicit-typedef
+  arms all behave identically (3z272's tool output is a fact about the source,
+  but it is not this crash's cause).
+
+**What is still open, stated precisely.** One of 81 converted declarations
+changes the meaning of the block it is in, and the harness compiles and runs
+far enough to be plausible either way. Bisecting the 81 by converting a prefix
+of them is the obvious next step and was not taken here.
+
+**The frame fix is therefore still not landed, on purpose.** The gate does not
+need it: `HEAD` already reaches `batch3268 failures=3`, which is the state the
+phase-5 gate is RED for. Landing a conversion that demonstrably breaks the
+harness in exchange for frame headroom nothing currently needs would be a
+regression dressed as progress. The two tools are checked in so that the next
+session starts from a correct base and a loud guard rather than from a
+hand-edited file.
+
+No rows move. No gate, coverage-floor, or policy change.
 
 ## 6. What this task did not do
 
