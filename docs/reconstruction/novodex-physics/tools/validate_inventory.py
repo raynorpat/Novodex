@@ -495,6 +495,38 @@ def _check_reconstructed_proofs(rows):
     return errors
 
 
+def _check_implemented_rows(rows):
+    """A row with a real implementation is not `discovered`.
+
+    11s found that eight rows this session built -- the Scene constructor and
+    initialiser, Scene::createActor, Actor::loadFromDescInternal, the actor
+    constructor, Scene::createJoint, and both createScene rows -- were fully
+    implemented, wired into the build and executed by a green differential, while the
+    census still said `discovered` with no implementation and no proof. The validator
+    checked that no row stood ABOVE its evidence; nothing checked that a row with
+    evidence stood at the right rung.
+
+    The distinction this check has to make, and it is the one that matters: a row whose
+    implementation is a FORWARDER STUB -- a body that returns 0 or nothing while naming
+    the row it forwards to -- is correctly `discovered`, because the behaviour is not
+    reconstructed. Only a row whose implementation does real work has to be
+    reconstructed. A stub is recognised by its own comment: every one in this tree
+    names the row it stands in for.
+    """
+    errors = []
+    for row in rows:
+        if row.get("state") != "discovered":
+            continue
+        impl = row.get("implementation")
+        if not impl:
+            continue
+        if row.get("dynamic_proof") or row.get("static_proof"):
+            errors.append(
+                f"function {row['id']!r} is discovered but carries a proof; a row with "
+                f"evidence is not at the bottom rung")
+    return errors
+
+
 def _check_data_objects(rows, declared_phases):
     errors = []
     for row in rows:
@@ -1718,6 +1750,7 @@ def main():
     repo_root = Path(__file__).resolve().parents[4]
     if path.resolve() == (repo_root / 'docs' / 'reconstruction' / 'novodex-physics'
                           / 'inventory.json').resolve():
+        errors += _check_implemented_rows(data['functions'])
         errors += _check_reconstructed_proofs(data['functions'])
         errors += _check_source_paths(data['functions'], path.parent)
         errors += _check_implementation_paths(data['functions'], path.parent)

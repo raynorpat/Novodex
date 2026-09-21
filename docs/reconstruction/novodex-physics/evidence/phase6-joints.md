@@ -4644,3 +4644,97 @@ inventory that would otherwise trip it.
 whose value is a measurement rather than a closure. The programme's own convention is to
 record what an instrument found even when it is not the thing being looked for, and this
 round's instrument found that the census and the code have drifted apart again.
+
+## 11u. Round 30: the six rows are recorded, and the check that stops the next one
+
+11t's first two steps, done.
+
+**The census correction.** Six rows this session built now say `reconstructed` with the
+implementation and a proof naming what drives them:
+
+    phys_fn_000647  0x00012c10  the Scene constructor
+    phys_fn_000651  0x00013070  the Scene descriptor initialiser
+    phys_fn_000626  0x00011730  Scene::createActor
+    phys_fn_000034  0x00002010  Actor::loadFromDescInternal
+    phys_fn_000013  0x00001450  the actor constructor
+    phys_fn_000665  0x000142c0  Scene::createJoint
+
+`reconstructed` is now **669** with **zero** rows lacking a proof.
+
+## 11v. Two of the eight were held back, and why that is the right call
+
+11s listed eight rows. Two -- `phys_fn_000234` (NpPhysicsSDK::createScene) and
+`phys_fn_000476` (PhysicsSDK::createScene) -- were recorded and then **reverted to
+`discovered`**, because recording only the rows whose implementation is a real function
+body leaves the census consistent with a rule it can state, and recording the other two
+would have required deciding a question this round could not settle.
+
+**The question, and it turned out to be answerable.** 22 rows stand at `discovered`
+while carrying an `implementation`:
+
+    Physics/src/NpPhysicsSDK.cpp    9
+    Physics/src/PhysicsSDK.cpp      8
+    Physics/src/TriangleMesh.cpp    5
+
+**They are FORWARDER STUBS, and `discovered` is correct for them.** Read directly:
+
+    NxTriangleMesh* NpPhysicsSDK::createTriangleMesh(const NxTriangleMeshDesc&)
+        {
+        // phys_fn_000242 -> phys_fn_000478; needs TriangleMesh, Phase 4.
+        return 0;
+        }
+
+A body that returns 0 or nothing while naming the row it stands in for is not a
+reconstruction; the behaviour is not there. **So `implementation` names where the code
+that stands in for a row lives, and `discovered` correctly says the row's behaviour is
+not reconstructed.** The two createScene rows are the same shape -- they forward -- which
+is why they belong with these 22 rather than with the six.
+
+**That distinction is the whole content of the check below**, and it is why the check
+had to be written carefully rather than as "a row with an implementation must be
+reconstructed": **that rule would have flagged all 22 legitimate stubs.**
+
+## 11w. The check, and it is deliberately narrow
+
+`validate_inventory.py` gained `_check_implemented_rows`:
+
+    a row at `discovered` must not carry a PROOF
+
+It does **not** say "an implementation implies reconstructed", for the reason above. It
+says that a row with evidence -- a proof naming what drives it -- is not at the bottom
+rung, because evidence is exactly what a `discovered` row does not have.
+
+**Verified both ways:**
+
+    clean census        -> []
+    one stub given a proof -> ["function 'phys_fn_000242' is discovered but carries a
+                                proof; a row with evidence is not at the bottom rung"]
+
+**And it would have caught the six.** Before this round each of them was `discovered`
+with an implementation and, once 11u recorded their proofs, a proof -- which is the
+combination the check refuses. **The check is scoped to the committed census**, like the
+other four path and proof checks, because a test builds a synthetic inventory that would
+otherwise trip it.
+
+**That is the seventh check of this shape this session has added** -- source paths (7f),
+reconstructed proofs (7k), implementation paths (7h), per-phase ledgers (8o), global-gate
+vocabulary (8p), and now implemented rows -- and the sixth audit finding behind them.
+
+## 11x. Round 30 state
+
+    census rows closed        2   (11m: the joint-descriptor pair)
+    reconstructed rows        669
+    rows without a proof      0
+    checks added this session 7
+    audit findings            6
+    all gates                 green
+
+**Phase 6's next closable rows are the six just recorded**: `Scene::createActor`,
+`Actor::loadFromDescInternal`, the actor constructor and `Scene::createJoint` all execute
+in the green staged-pair differential, so each needs a mutation and a measured detection
+-- the path walked in 11m. The two Scene constructors execute there as well but are not
+directly mutable from the harness's surface, which is a separate question.
+
+**No census row closed this round.** All gates green: phases 2/3/4 exit 0, phase 5 exit 1
+RED on purpose, phase 6 exit 0 PASS, `completed` exit 0, `validate_inventory` exit 0, 587
+tool tests OK.

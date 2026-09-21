@@ -294,13 +294,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/7",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/21",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "the actor constructor; executed for every actor. driven on BOTH pairs by NxPhysicsJointStagedPairTests, a registered Phase 6 staged-pair differential (tools/gate_targets.ps1, floor 11, four coverage assertions). The harness creates the SDK, a scene, two actors with bodies and four revolute joints, reads each joint's anchor, axis, actors and state back, and releases everything; the oracle and candidate transcripts are identical after the runner normalises the pair-identity lines, and the gate runs the differential as part of phase 6. This row executes on that path. Recorded in round 30, after 11s found that the work was done and the census still said `discovered`.",
+      "notes": "",
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_000014",
@@ -672,13 +673,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/Actor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/18",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/96",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "Actor::loadFromDescInternal; executed for every actor. driven on BOTH pairs by NxPhysicsJointStagedPairTests, a registered Phase 6 staged-pair differential (tools/gate_targets.ps1, floor 11, four coverage assertions). The harness creates the SDK, a scene, two actors with bodies and four revolute joints, reads each joint's anchor, axis, actors and state back, and releases everything; the oracle and candidate transcripts are identical after the runner normalises the pair-identity lines, and the gate runs the differential as part of phase 6. This row executes on that path. Recorded in round 30, after 11s found that the work was done and the census still said `discovered`.",
+      "notes": "",
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_000035",
@@ -4279,7 +4281,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/878",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": null
     },
     {
       "id": "phys_fn_000235",
@@ -8664,7 +8667,7 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/src/PhysicsSDK.cpp"
+      "implementation": null
     },
     {
       "id": "phys_fn_000477",
@@ -11359,13 +11362,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/243",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1589",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "Scene::createActor; executed for every actor, and its transform arm by the joint rows it drives. driven on BOTH pairs by NxPhysicsJointStagedPairTests, a registered Phase 6 staged-pair differential (tools/gate_targets.ps1, floor 11, four coverage assertions). The harness creates the SDK, a scene, two actors with bodies and four revolute joints, reads each joint's anchor, axis, actors and state back, and releases everything; the oracle and candidate transcripts are identical after the runner normalises the pair-identity lines, and the gate runs the differential as part of phase 6. This row executes on that path. Recorded in round 30, after 11s found that the work was done and the census still said `discovered`.",
+      "notes": "",
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_000627",
@@ -11737,13 +11741,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/253",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1717",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "the Scene constructor; executed by every scene the harness creates. driven on BOTH pairs by NxPhysicsJointStagedPairTests, a registered Phase 6 staged-pair differential (tools/gate_targets.ps1, floor 11, four coverage assertions). The harness creates the SDK, a scene, two actors with bodies and four revolute joints, reads each joint's anchor, axis, actors and state back, and releases everything; the oracle and candidate transcripts are identical after the runner normalises the pair-identity lines, and the gate runs the differential as part of phase 6. This row executes on that path. Recorded in round 30, after 11s found that the work was done and the census still said `discovered`.",
+      "notes": "",
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_000648",
@@ -11809,13 +11814,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/255",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1724",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "the Scene descriptor initialiser; executed by createScene. driven on BOTH pairs by NxPhysicsJointStagedPairTests, a registered Phase 6 staged-pair differential (tools/gate_targets.ps1, floor 11, four coverage assertions). The harness creates the SDK, a scene, two actors with bodies and four revolute joints, reads each joint's anchor, axis, actors and state back, and releases everything; the oracle and candidate transcripts are identical after the runner normalises the pair-identity lines, and the gate runs the differential as part of phase 6. This row executes on that path. Recorded in round 30, after 11s found that the work was done and the census still said `discovered`.",
+      "notes": "",
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_000652",
@@ -12061,13 +12067,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/262",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1824",
       "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "dynamic_proof": "Scene::createJoint; executed for all four revolute cases. driven on BOTH pairs by NxPhysicsJointStagedPairTests, a registered Phase 6 staged-pair differential (tools/gate_targets.ps1, floor 11, four coverage assertions). The harness creates the SDK, a scene, two actors with bodies and four revolute joints, reads each joint's anchor, axis, actors and state back, and releases everything; the oracle and candidate transcripts are identical after the runner normalises the pair-identity lines, and the gate runs the differential as part of phase 6. This row executes on that path. Recorded in round 30, after 11s found that the work was done and the census still said `discovered`.",
+      "notes": "",
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_000666",
