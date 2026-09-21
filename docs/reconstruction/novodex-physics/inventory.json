@@ -674,14 +674,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "reconstructed",
+      "state": "discovered",
       "source": "Physics/src/Actor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/18",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/96",
       "static_proof": null,
-      "dynamic_proof": "Actor::loadFromDescInternal; executed for every actor. driven on BOTH pairs by NxPhysicsJointStagedPairTests, a registered Phase 6 staged-pair differential (tools/gate_targets.ps1, floor 11, four coverage assertions). The harness creates the SDK, a scene, two actors with bodies and four revolute joints, reads each joint's anchor, axis, actors and state back, and releases everything; the oracle and candidate transcripts are identical after the runner normalises the pair-identity lines, and the gate runs the differential as part of phase 6. This row executes on that path. Recorded in round 30, after 11s found that the work was done and the census still said `discovered`.",
-      "notes": "",
-      "implementation": "Physics/src/Scene.cpp"
+      "dynamic_proof": null,
+      "notes": "Round 54: the reconstruction named here was nxSceneActorInitialise, a function declared and defined in Scene.cpp and called by nothing. The dynamic proof added in round 30 claimed the row executes on the staged-pair differential path; it does not, because no code invokes it. Both fields are cleared rather than corrected, because this session has not established where the row is actually reconstructed.",
+      "implementation": null
     },
     {
       "id": "phys_fn_000035",

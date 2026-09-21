@@ -6726,3 +6726,50 @@ than sampled**, so the group is now characterised rather than merely unresolved.
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 587 tool tests OK.
+
+## 14o. Round 54: a row stood at `reconstructed` on code nothing calls
+
+Round 54 went back to closing rows and found one that **should not have been standing where it was.**
+
+**`phys_fn_000034`** is phase 5's `Actor::loadFromDescInternal`. Its record said:
+
+    state            reconstructed
+    implementation   Physics/src/Scene.cpp
+    dynamic_proof    "Actor::loadFromDescInternal; executed for every actor. driven on BOTH pairs
+                      by NxPhysicsJointStagedPairTests ... This row executes on that path.
+                      Recorded in round 30 ..."
+
+**Its reconstruction in `Scene.cpp` is a function named `nxSceneActorInitialise`.** Checked across
+every `.cpp` and `.h` in the reconstruction, that name appears **exactly twice**:
+
+    Scene.cpp:312   void* nxSceneActorInitialise(NxActor* actor, const void* desc);   DECL
+    Scene.cpp:1101  void* nxSceneActorInitialise(NxActor* actor, const void* desc)    DEF
+
+**Nothing calls it.**
+
+**So the row stood at `reconstructed` on code that is never invoked, and its `dynamic_proof` -- added
+in round 30 -- asserted a path the row does not execute on.** Round 30 was right that eight rows
+needed recording; **this was the one whose evidence was not checked before it was written.**
+
+**Corrected**: state `discovered`, `implementation` cleared, `dynamic_proof` cleared, and a note
+recording why rather than a corrected value, **because this session has not established where the row
+is actually reconstructed.** It left `IMPLEMENTATION_MISMATCHES` too, since with no implementation
+there is no mismatch to record.
+
+## 14p. The correction is narrow, and that was checked rather than assumed
+
+    reconstructed rows in the lifecycle files after the fix   1  (before: 2, this one)
+    reconstructed rows whose file defines an nx helper nothing calls   0
+    rows still `discovered` with an implementation   7  (the round-30 forwarder stubs, correct)
+
+**The fourteenth finding, and it is the first in this session where a PROOF was the false part.**
+The other thirteen were about a field, a state, a flag, a ledger or a check; **this one is a
+`dynamic_proof` asserting execution that does not happen.** It was found by asking **whether the
+row's code is called**, which no gate asks.
+
+**And that is the check this finding implies:** a row whose `implementation` is a function nothing
+calls is not reconstructed behaviour. It is cheap to ask and nothing asks it.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 587 tool tests OK.
