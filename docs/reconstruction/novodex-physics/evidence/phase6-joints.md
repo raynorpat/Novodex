@@ -7912,3 +7912,56 @@ rows. **That is worth recording as the outcome of a measurement rather than a ru
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 601 tool tests OK.
+
+## 16m. Round 69: the asset harness still faults, and the fault is now located exactly
+
+16l expected the link fix to make phase 4's rows drivable. **This round tested that, and the harness
+still faults -- with zero output, so before its own first line.** The debugger gives the loaded modules
+and the fault in one reading:
+
+    start    end        module
+    00900000 0090c000   NxPhysicsAssetTests      the harness
+    6dbd0000 6dbe5000   NxFoundation
+    6dbf0000 6dc19000   NxPhysics                <- the candidate, loaded
+    6dc20000 6dc3d000   VCRUNTIME140
+
+    eip = 6dca3ce0     "Frame IP not in any known module"
+
+**`6dca3ce0` is outside every mapped range.** It sits below the candidate's base `6dbf0000`, and the
+module under it would be `6dc20000`-sized if it existed -- **it is not a module, it is an address.**
+
+**So the harness jumped to an address that is not code**, and the frame beneath it is
+`NxPhysicsAssetTests+0x1ecc`, which is the harness's own call site. **The candidate loaded, so the flag
+and the RVA check are behind it, and what remains is that a call went somewhere unmapped.**
+
+## 16n. What that rules out, and what it leaves
+
+**Ruled out by this reading:**
+
+    the module failing to load      NxPhysics is mapped at 6dbf0000
+    the pin check                   passed, since --self is now guarded
+    the RVA comparison              guarded in round 63
+    the discarded code              150 objects' functions are in the module as of round 68
+
+**What is left is a call through an address the harness computed.** The harness binds nine of its ten
+targets as `base + kSomeRva` -- **oracle offsets added to the candidate's base** -- and that is what
+16w established as the obstacle. **The candidate's base is `6dbf0000` and the oracle's image is a
+different shape**, so `base + kPMapCtorRva` lands wherever the arithmetic falls, and the fault address
+is consistent with that: `6dbf0000 + 0x000b3ce0` is `6dca3ce0`, **which is exactly `eip`.**
+
+**The arithmetic is checked rather than inferred**: `kStreamCtorRva` is `0x000b3ce0`, the candidate's
+base is `6dbf0000`, and their sum is the fault address. **So the harness called the candidate at the
+offset the ORACLE puts that function at, and the candidate has nothing there.**
+
+**That is 16w's finding reproduced with the arithmetic shown**, and it means the fix is the one 16w
+named: **resolve the nine by symbol through the translation table rather than by adding an oracle
+offset.** The table exists (16a) and the candidate's map now carries 1,245 symbols (16j), so both halves
+are in place.
+
+**This round did not make that change.** It located the fault to an address rather than to a region,
+which is what makes the fix unambiguous: **the harness is not calling a wrong function, it is calling
+no function at all.**
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 601 tool tests OK.
