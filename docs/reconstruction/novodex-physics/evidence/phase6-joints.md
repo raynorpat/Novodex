@@ -8448,37 +8448,42 @@ harness's `/GS`-instrumented frames turn the null call into a cookie report on t
 the exit code pointed at a stack overrun. **The debugger's `eip` is the evidence and the exit code was
 the symptom** -- worth recording, because three rounds have been spent on the exit code.
 
-## 17i. What that means, and it is a defect in the candidate rather than in the harness
+## 17i. RETRACTED: the slot was never identified, and the argument was untrustworthy
 
-    the harness resolved a target to an address in the candidate
-    the candidate's data at that offset holds zero
-    and the harness called it
+17h read the fault as `eip = 0` plus a first argument of `0x6dc06330`, and concluded the harness called a
+slot in the candidate at `+0x6330`. **Round 79 tested that against the two artifacts that could support
+it, and neither does:**
 
-**So the candidate has a NULL where the oracle has a function pointer.** That is a reconstruction gap of
-the kind the census is supposed to record and cannot see: **a vtable or function-table slot that was
-never filled.** The oracle fills `+0x6330` and the rebuild does not.
+    the translation table has 37 entries and NONE resolves to 0x10006330
+    the harness's ten targets resolve to
+        0x10016330  0x10016410  0x100165a0  0x1000a240  0x1000a710
+        0x1000a2f0  0x1001c830  0x10016e10  0x1001c860  0x1000a7c0
 
-**And this is the first fault in this whole sequence that is a defect in the DLL rather than in a
-harness's view of it.** Rounds 74 to 77 were all about how the harness loaded and resolved things; this
-one is about what the module contains, which is what 17g predicted the remaining difference would be.
+**So `0x6330` is not a resolved target at all.** And the argument it came from was read out of a stack
+frame **the debugger itself flagged**:
 
-**And the slot is nameable, which is what this round adds:**
+    WARNING: Frame IP not in any known module. Following frames may be wrong.
+    00aee00c 001b218e 00000000 6dc06330 00000000 0x0
 
-    the candidate's nearest symbol at or below 0x10006330
-        0x10006320   ?empty@SdkContainer@@QAEXXZ   Containers.obj   f
-        delta        +0x10
+**"Following frames may be wrong" is the debugger saying the arguments below that point are not
+trustworthy**, and 17h built its conclusion on them. **The `+0x6330` offset, the "slot", the `+0x10` past
+`SdkContainer::empty`, and the vtable identification in 17i are all unsupported and are retracted.**
 
-**So the null slot sits exactly `0x10` bytes past the start of `SdkContainer::empty`** -- **a vtable or
-function-table slot in the candidate's data**, not a function. **The oracle fills it and the rebuild does
-not**, and the harness called it because the table said the slot was there.
+**What survives is smaller, and it is the only thing the debugger established:**
 
-**No census row has that exact address**: no function and no data object lies at `0x10006330` or within
-`0x40` of it. **So the slot is inside a row the census does describe, and the census's granularity does
-not reach a single vtable entry** -- which is why no check has ever asked whether it is filled.
+    eip = 00000000    the instruction pointer is zero, so a call went to address zero
 
-**The next round should find which row's data covers that address and whether the reconstruction writes
-the slot.** That is a row to reconstruct rather than a harness to adjust, and it is the first such fault
-this sequence has produced.
+**Everything about WHICH pointer was null came from the frame the debugger warned about.** The candidate's
+fault is located to an instruction pointer of zero and to the harness's own `+0x218e`, and not to a
+target.
+
+**And this is the seventh time this session has recorded a conclusion its instrument could not support**
+-- the pattern 14t named -- **with the debugger's own warning as the thing that was skipped.** The warning
+was in the output both times the frame was read, and it was read past.
+
+**The next round should establish which pointer is null by a means that does not depend on unwinding a
+frame with no module**: the harness has ten targets and each can be checked against zero directly, which
+is a few lines rather than an inference.
 
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
