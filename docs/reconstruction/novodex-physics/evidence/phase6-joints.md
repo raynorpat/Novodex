@@ -2999,3 +2999,81 @@ wrapper and every allocation size as the cause. The remaining candidates are a w
 into memory this reconstruction does not own -- most plausibly the `Scene`'s `+0x6cc`
 holder, which `createActor` and `createJoint` both write through, or the stubs that
 store into objects whose layouts are not reconstructed.
+
+## 9s. Round 5: the +0x6cc holder is valid, and its writes match the oracle
+
+9r named the Scene's `+0x6cc` holder as the leading corruption candidate because both
+`createActor` and `createJoint` write through it. This round measured it and it is
+**not** the cause.
+
+**The holder is non-null and stable:**
+
+    TRACE createActor holder=00AC6378
+    TRACE createActor holder=00AC6378      <- both actors, same wrapper
+
+**And the writes through it are the oracle's, offset for offset.** The two rows were
+read side by side with the reconstruction:
+
+    oracle createActor:  actor+0x10 = holder[+0x10];  actor+0x0c = holder[+0x0c]
+    oracle createJoint:  joint+0x10 = holder[+0x0c];  joint+0x14 = holder[+0x10]
+    reconstruction:      identical in both
+
+So the holder, its value, and both dereferences are correct. The write lands at
+`holder+0x10`, which is inside the 0x28-byte `NpScene` (its `mReadLock` field), so it
+is in bounds as well.
+
+**What that leaves.** The corruption is not the wrapper size (9q), not any
+reconstruction allocation size (9q), and not the `+0x6cc` holder (this round). The
+remaining candidates are the stubs that store into objects whose layouts this
+reconstruction does not know:
+
+- `nxSceneAddActorObject` and `nxSceneAddJoint`, which the oracle uses to register
+  objects and which here do nothing -- so they cannot corrupt, but they also cannot
+  be the fix;
+- `nxSceneArrayReserve`, which **does** allocate and free, and which the descriptor
+  initialiser calls with `p[0x18]` and `p[0x1c]` -- the descriptor's
+  `maxNbActors` and `maxNbBodies`. If the descriptor's limits pointer is not where
+  this transcription reads it, that reserve is growing an array at an offset that is
+  not an array, which is a write into the middle of the Scene object;
+- `nxShapeFactory` and `nxShapeGroupConstruct`, which allocate 0x40 and 0x110 bytes
+  and write only their own blocks.
+
+**`nxSceneArrayReserve` is the strongest remaining candidate** and it is testable in
+one step: print `p[0x18]` and `p[0x1c]` at the descriptor initialiser and see whether
+they are the counts the harness's descriptor implies (zero, for a descriptor built
+with `setToDefault`). A non-zero value there means the limits pointer is being read
+at the wrong offset and the reserve is the corruption.
+
+## 9t. Round 5 state, and a recommendation
+
+    scene=created, both actors, both bodies        held from rounds 2-3
+    NpScene 0x28 and Scene 0x710                    asserted (9q, 9s)
+    the +0x6cc holder                               measured valid (9s)
+    the crash                                       still in a CRT CPU detector
+    createJoint                                     still not reached
+
+**Five rounds have gone into this crash and it is not found.** What has been ruled
+out is substantial -- the wrapper, every allocation size, and the holder -- but the
+harness still faults and no census row has closed in any of those rounds.
+
+**The recommendation is to stop chasing the crash and change tack**, and this is
+recorded as a recommendation rather than acted on because it is a judgement about
+where the programme's value is:
+
+1. **The crash is in stubbed territory.** Eleven holes sit in the scene path and
+   every one is a stub. A heap corruption that appears only when stubs run is a
+   property of the stubs, and finding it by elimination costs a round per candidate.
+2. **The reconstruction's own value does not depend on the harness passing.** Eight
+   transcribed oracle rows, the measured Scene and NpScene layouts, and two
+   `static_assert`s that pin those sizes are durable regardless.
+3. **The programme's other work has a better return.** The census audits of 7e-7l
+   each found a defect no gate could see, in one round each, and 5,552 rows are still
+   `discovered`. Five rounds on one crash has produced three eliminations.
+
+**So the next round should either test `nxSceneArrayReserve` -- one print, one build,
+the strongest remaining candidate -- or leave the crash recorded and return to the
+census.** Both are honest; the second is better value if the first does not settle it.
+
+**No census row closed.** All gates green: phases 2/3/4 exit 0, phase 5 exit 1 RED on
+purpose, phase 6 exit 0 PASS, `completed` exit 0, `validate_inventory` exit 0, 587
+tool tests OK.

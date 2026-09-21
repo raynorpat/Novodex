@@ -104,4 +104,12 @@ class NxSceneInternal
 	unsigned char mBytes[SIZE];
 	};
 
+// The oracle allocates 0x710 bytes for this object (phys_fn_000476's literal) and
+// the highest field the reconstruction writes is +0x70c. A different size means the
+// allocation and the object disagree, and a write past the end lands in whatever the
+// allocator put next -- which is what the round-4 crash in an unrelated CRT helper
+// looks like from a distance.
+static_assert(sizeof(NxSceneInternal) == NxSceneInternal::SIZE,
+              "the Scene object is 0x710 bytes in the oracle");
+
 #endif
