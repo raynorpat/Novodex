@@ -8826,3 +8826,43 @@ state the gap then reads:
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 601 tool tests OK.
+
+## 17t. Round 87: every gap statement completes, and the fault is after them
+
+17s said the fault was in the case body between the two calls, in a four-statement gap. **Marked, and all
+four complete:**
+
+    step streamDtor done
+    gap fold1 done
+    gap fold2 done cells=1
+    gap fold3 done grid=e3160fb1
+    gap counters done
+    <fault>
+
+**So the fault is not in the gap either** -- it is after it, in what the case does next: **the `printf`
+that prints the case line, and the expect-mismatch comparison that follows it.**
+
+**And the two are distinguishable, which is the next mark.** But there is a better observation available
+first, and it is about the pattern rather than the position:
+
+    the previous case printed its line and its `oracle-done` line
+    this case completes every fold and counter and then faults BEFORE printing its line
+
+**The case line is printed with `fixture->name` and `fixture->dimension`**, and every previous case
+printed it. **So the fault is in the one thing about this case that differs at that point: its own
+data.** And the fixture is `pmap.bad_version_00000005` -- a name and a hex string, both static.
+
+**That means the fault is in reading `fixture`'s fields, or in the comparison against `fixture`'s
+expectations** -- which is a statement about the FIXTURE rather than about the module, and the first such
+in this sequence.
+
+**And a check clears the obvious candidate**: the fixtures are static arrays and the previous fifteen were
+read without fault, so `fixture` itself is valid. **What remains is the comparison's operands**, which
+are `fixture->expectAccepted` and the rest -- all read from the same static record.
+
+**So this round has narrowed the fault to two statements and cleared the fixture record.** The next round
+marks those two, which is the last split available before the fault is a single expression.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 601 tool tests OK.

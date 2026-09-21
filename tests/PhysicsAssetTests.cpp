@@ -1277,14 +1277,18 @@ int wmain(int argc, wchar_t** argv)
 		nxRunPMapOracle(&oracle, storage, length, &actual);
 
 		oracleDigest = nxFold(oracleDigest, actual.accepted);
+		printf("  gap fold1 done\n"); fflush(stdout);
 		oracleDigest = nxFold(oracleDigest, actual.errors);
 		oracleDigest = nxFold(oracleDigest, actual.errorLine);
 		oracleDigest = nxFold(oracleDigest, actual.cells);
+		printf("  gap fold2 done cells=%u\n", actual.cells); fflush(stdout);
 		oracleDigest = nxFold(oracleDigest, actual.grid);
+		printf("  gap fold3 done grid=%08x\n", actual.grid); fflush(stdout);
 		if(actual.accepted)
 			++drivenAccepted;
 		else
 			++drivenRejected;
+		printf("  gap counters done\n"); fflush(stdout);
 		drivenErrors += actual.errors;
 
 		printf("pmap case=%s dimension=%s bytes=%u accepted=%u errors=%u line=0x%03x "
