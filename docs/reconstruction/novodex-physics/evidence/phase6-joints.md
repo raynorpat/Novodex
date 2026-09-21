@@ -7965,3 +7965,50 @@ no function at all.**
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 601 tool tests OK.
+
+## 16o. Round 70: the table is at 33 of 36, and getting there took four matcher corrections
+
+16n said the fix was to resolve the harness's nine targets by symbol through the translation table.
+**The table is now regenerated against the rebuilt module and resolves 33 of the 36 rows that carry a
+symbol:**
+
+    candidate symbols in the map     1,704   (1,245 after the link fix, 456 before it)
+    rows carrying a symbol              36
+    translated uniquely                 33
+    unresolved                           3
+
+**And reaching 33 took four corrections to the matcher**, each of which was the same failure this
+session has recorded seven times -- a rule right about its shape and wrong about the forms it applies to:
+
+1. **Tail-substring matching** resolved 5 of 36, because `release` is a substring of many names. Fixed
+   by matching the qualified name.
+2. **The C-linkage form** `_Name` was not accepted, so `NxReleasePMap` -- the one export the harness
+   already resolves, and which the map contains -- was reported absent from the map.
+3. **The constructor form** `??0Class@@` was not accepted, so `PenetrationMap::PenetrationMap` and
+   `NpPhysicsSDK::NpPhysicsSDK` were reported absent while the map carried them.
+4. **An over-broad fallback** then added `??0Class@@` as a candidate for EVERY member of that class, so
+   `NpPhysicsSDK::release` matched both its own symbol and the class's constructor, became ambiguous, and
+   dropped out -- **which took the table from 27 translations to 9.** Removed, and it went to 33.
+
+**Correction four is worth its own line**: it was introduced while fixing three, it made the result
+worse, and **the count is what showed it** -- 27 becoming 9 is not a small regression that a reader
+would miss.
+
+## 16p. The three that remain, and each is a different reason
+
+    phys_fn_000013  Scene::createJoint          no candidate symbol
+    phys_fn_000665  PhysicsSDK::createJoint     no candidate symbol
+    phys_fn_004791  MemoryStream                no candidate symbol
+
+**`Scene::createJoint` and `PhysicsSDK::createJoint` have no symbol of those names**; the map carries
+`?createJoint@NpScene@@` and `?createScene@PhysicsSDK@@`, so the census's name for those two rows is not
+the name they were compiled under. **That is the 13c finding at a finer grain** -- the recorded symbol
+is a *description* of the row and not always the symbol the compiler emitted.
+
+**`phys_fn_004791`'s recorded symbol is `MemoryStream` alone**, which is a class name rather than a
+function, so nothing can match it. **That is 14f's failure mode again**: a value written into the symbol
+field that is not a symbol.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 601 tool tests OK.
