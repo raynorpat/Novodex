@@ -8159,8 +8159,14 @@ itself.** And the harness now takes a pair directory alone, because that is how
 rather than assumed**, since the first attempt required an explicit `--self` and the runner does not
 pass one.
 
-**So `NxPhysicsAssetTests` is registered as phase 4's staged-pair target**, the first that phase has ever
-had, and it leaves the oracle-differential list because the two classes must stay disjoint.
+**16w first registered `NxPhysicsAssetTests` as phase 4's staged-pair target, and that was reverted.** The
+harness drives the candidate by hand and agrees with the oracle, but **the gate invokes it with the
+oracle pair directory and it faults there** -- exit `-1073741819`, no output -- so the differential
+cannot pass and the registration put a target on phase 4 that failed its gate. **A target that cannot
+complete is worse than no target**, which is 16t's own reasoning. **The registration and the coverage
+floor are back to what they were, the code changes stay** -- they are what made the harness drive the
+candidate at all -- **and phase 4 has no staged-pair target again** until the oracle-side invocation is
+understood.
 
 ## 16x. What is left, and it is one invocation
 
@@ -8178,3 +8184,22 @@ right**, after the destructor, and both were found by the tool refusing the chan
 **All gates green except phase 4**: phase 1 exit 3 skipped, phases 2/3 exit 0, **phase 4 exit 1 on the
 invocation above**, phase 5 exit 1 RED on purpose, phases 6/7 exit 0 PASS, phase 8 exit 3 skipped,
 `completed` exit 0, `validate_inventory` exit 0, 601 tool tests OK.
+
+## 16y. And the difference between the pairs is measured rather than guessed
+
+    candidate pair   exit 0    asset result=pass
+    oracle pair      exit -1073741819    no output
+
+**The same binary, the same argument shape, two directories, two outcomes.** That is the next thing to
+investigate, and it is a difference the harness sees in the modules rather than in its own logic -- the
+candidate is driven correctly, so the resolver and the rebasing are right.
+
+**And re-registering is what the tests caught.** Four failed when the target moved classes: two
+gate-command fixtures that record phase 4 as having no targets, the coverage floor, and the rule that
+every registered name must be on a phase list. **Reversing the registration put all of them back**,
+which is the fixtures doing their job -- and it is the third time this round that a change had to be
+undone because the tool refused it.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 601 tool tests OK.
