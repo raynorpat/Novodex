@@ -95,7 +95,21 @@ static int nxAuditModules(const wchar_t* pairDirectory)
 	if(!GetSystemDirectoryW(systemDirectory, MAX_PATH) || !GetModuleFileNameW(0, self, MAX_PATH))
 		return nxFail("cannot resolve system directory or test executable");
 
-	HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, 0);
+	// The snapshot call fails intermittently on this machine -- a process that has
+	// just loaded two DLLs and run a dozen allocations can get
+	// ERROR_PARTIAL_COPY from the first attempt. That is environmental, not a
+	// property of the code under test, and an intermittent loader failure is
+	// indistinguishable from an intermittent fault in the library when both are
+	// reported as a non-zero exit. Retried a bounded number of times so the
+	// measurement is about the library and not about the loader.
+	HANDLE snapshot = INVALID_HANDLE_VALUE;
+	for(int attempt = 0; attempt < 16; ++attempt)
+		{
+		snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, 0);
+		if(snapshot != INVALID_HANDLE_VALUE)
+			break;
+		Sleep(1);
+		}
 	if(snapshot == INVALID_HANDLE_VALUE)
 		return nxFail("module snapshot unavailable");
 

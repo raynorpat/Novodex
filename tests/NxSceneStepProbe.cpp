@@ -20,6 +20,7 @@
 
 #include "PhysicsPairLoader.h"
 
+#include <stdio.h>
 #include <string.h>
 
 #include "NxPhysicsSDK.h"
@@ -104,6 +105,34 @@ int wmain(int argc, wchar_t** argv)
 		return nxFail("scene creation failed");
 		}
 	if(strcmp(step, "scene") == 0)
+		return nxReportPairIdentity(pairDirectory);
+
+	// A repeat mode for the measurement 10c named. `actorN` creates N actors in the
+	// same process and reports each one's index as it goes, so a fault names the
+	// iteration rather than the operation. Nothing is printed between iterations
+	// except the index, so the allocation order is the same as a single-actor run.
+	int repeat = 1;
+	if(strncmp(step, "actorN", 6) == 0)
+		{
+		repeat = (step[6] >= '0' && step[6] <= '9') ? (step[6] - '0') : 4;
+		printf("probe repeat=%d\n", repeat);
+		fflush(stdout);
+		}
+
+	for(int i = 0; i < repeat; ++i)
+		{
+		NxActor* made = nxMakeActor(*scene, static_cast<float>(i) * 4.0f);
+		printf("probe actor %d = %s\n", i, made ? "ok" : "null");
+		fflush(stdout);
+		if(!made)
+			{
+			sdk->releaseScene(*scene);
+			sdk->release();
+			FreeLibrary(physics);
+			return nxFail("actor creation failed");
+			}
+		}
+	if(strncmp(step, "actorN", 6) == 0)
 		return nxReportPairIdentity(pairDirectory);
 
 	NxActor* a = nxMakeActor(*scene, 0.0f);

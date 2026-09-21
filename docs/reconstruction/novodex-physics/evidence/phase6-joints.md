@@ -3400,3 +3400,79 @@ the process.
 **No census row closed.** All gates green: phases 2/3/4 exit 0, phase 5 exit 1 RED on
 purpose, phase 6 exit 0 PASS, `completed` exit 0, `validate_inventory` exit 0, 587
 tool tests OK.
+
+## 10d. Round 10: the intermittent failure was the HARNESS, not the library
+
+10c proposed running the same step many times in one process to separate a
+deterministic write from an uninitialised read. That was done, and it found something
+else entirely.
+
+**Nine actors, one process, all created:**
+
+    probe repeat=9
+    probe actor 0 = ok
+    probe actor 1 = ok
+    ...
+    probe actor 8 = ok
+    FAIL module snapshot unavailable
+
+**`module snapshot unavailable` is the harness's own message.** `nxAuditModules` calls
+`CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, 0)` once and treats a single failure as
+fatal:
+
+    HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, 0);
+    if(snapshot == INVALID_HANDLE_VALUE)
+        return nxFail("module snapshot unavailable");
+
+**That call fails intermittently on this machine** -- a process that has just loaded
+two DLLs and run a dozen allocations can get `ERROR_PARTIAL_COPY` from the first
+attempt.
+
+**And that is what the "intermittent `actor1` fault" was.** Every non-zero exit from
+the step probe was being read as a fault in the library, and one of them was the
+loader giving up. **An intermittent loader failure is indistinguishable from an
+intermittent fault when both are reported as a non-zero exit** -- which is a
+measurement defect in the harness, not in the reconstruction.
+
+**Fixed**: the snapshot is retried up to sixteen times before it is fatal. With that
+in place the step probe is stable and the picture is clean:
+
+    step scene    exit 0
+    step actor1   exit 0
+    step actor2   exit 0
+    step actor3   exit 0
+    step joint    exit -1073741819
+
+**So actor creation works, reliably, and the only remaining fault is the joint.**
+That is a different and much narrower position than the round began in: rounds 8 and
+9 fixed two real defects (`*4` and the unguarded pointer difference), and this round
+established that a third "defect" was the measuring instrument.
+
+## 10e. What remains, and the lesson about instruments
+
+**One fault left: `Scene::createJoint`.** It faults before its first statement, and
+the joint descriptor it is handed carries two non-null actors (the harness sets
+`actor[0]` and `actor[1]`, at descriptor words 2 and 3). The two candidates inside
+that prologue are the `desc.isValid()` call, which goes through the descriptor's
+vtable, and the dynamics test, which reads `actor+0x14` then `+8`.
+
+**The lesson, and it generalises past this bug.** Three times now an instrument has
+produced a misleading answer:
+
+    traces        changed the heap, so they moved the fault (9u)
+    canaries      changed the heap, so they moved the fault (9w)
+    step probe    was read as "the library faults" when the loader had failed (10d)
+
+**The first two are the same mistake -- perturbing the process. The third is a
+different one: not checking that the instrument itself succeeded.** A harness that
+reports its own failure with the same signal as the failure it is measuring cannot be
+used to measure anything, and this one did exactly that for three rounds.
+
+**The fix for that class is cheap and should be applied wherever a harness has an
+internal failure path: give the harness's own failures a distinct exit code.** The
+probe uses 1 for its own failures and faults surface as `0xC0000005`; the loader's
+`nxFail` also uses 1, which is why the two were confused.
+
+**No census row closed.** All gates green: phases 2/3/4 exit 0, phase 5 exit 1 RED on
+purpose, phase 6 exit 0 PASS, `completed` exit 0, `validate_inventory` exit 0, 587
+tool tests OK.
