@@ -7591,3 +7591,90 @@ implementation and two because the derivation did not reach them.
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 601 tool tests OK.
+
+## 16a. Round 65: the translation table is generated, and the join is thin
+
+15z said the table was blocked on being written. It is written -- `build/make_translation_table.py`
+emits `oracle_rva_to_candidate.h` from the census's recorded symbols joined to the candidate's map.
+**And building it measured how thin the join is:**
+
+    rows carrying a symbol                                  36
+    matched to exactly one candidate symbol                 23
+    matched to nothing                                      13
+    ambiguous                                                0
+
+**`NxReleasePMap` resolves**, and it is the one the harness already resolves by name:
+
+    kReleasePMapRva  0x00051040 -> 0x100052b0  _NxReleasePMap
+
+**So the table works where a symbol exists, and it does not exist for most of the ten the harness
+needs.** Which produced the finding below.
+
+## 16b. The member functions in PMap.cpp are not in the rebuilt module at all
+
+**`PMap.cpp` defines eight functions.** Its object in the candidate's map carries **eight symbols, and
+one of them is a function**:
+
+    0001:000042b0   _NxReleasePMap                              100052b0 f   PMap.obj     <- the export
+    0002:00000f20   ??_C@_0DO@...PenetrationMap?3?3Create...    1000af20     PMap.obj     <- a literal
+    0002:00000f60   ??_C@_0EG@...PenetrationMap?3?3Create...    1000af60     PMap.obj     <- a literal
+    0002:00000fa8   ??_C@_0CJ@...PenetrationMap?3?3Create...    1000afa8     PMap.obj     <- a literal
+    ... and four more literals
+
+**And searched across the whole map, public and static sections together:**
+
+    PenetrationMap::PenetrationMap   0
+    PenetrationMap::~PenetrationMap  0
+    PenetrationMap::setup            0
+    PenetrationMap::buildSpreadTable 0
+    PenetrationMap::decodeCellRun    0
+    PenetrationMap::loadPayload      0
+    PenetrationMap::finish           0
+
+**`MemoryStream.obj` has zero symbols of any kind.** `TriangleMesh.obj` has one, a global.
+
+**And a correction this round made to its own measurement.** A first pass reported `ObjectModel.obj` --
+which holds 117 of the rows -- as absent from the map. **It is present.** The pass took the fourth
+whitespace-separated field of a symbol line as the object name, and the line is
+`seg:off  name  addr  flags  object` with the flags field **sometimes empty and sometimes two letters**,
+so the object is sometimes the fourth field and sometimes the fifth. **Reading the tail of the line
+instead of a fixed column changed the answer**, and the PMap and MemoryStream findings above were then
+re-verified by searching the name set directly rather than by counting lines.
+
+**And a correction this round made to its own measurement.** A first pass reported `ObjectModel.obj` --
+which holds 117 of the rows -- as absent from the map. **It is present.** The pass took the fourth
+whitespace-separated field of a symbol line as the object name, and the line is
+`seg:off  name  addr  flags  object` with the flags field **sometimes empty and sometimes two letters**,
+so the object is sometimes the fourth field and sometimes the fifth. **Reading the tail of the line
+instead of a fixed column changed the answer**, and the PMap and MemoryStream findings above were then
+re-verified by searching the name set directly rather than by counting lines.
+
+**So those functions are not in the rebuilt DLL.** They are in the source, the source is in the
+build, and the linker did not emit them -- because nothing references them, so their COMDATs were
+discarded (`/OPT:REF` is the default). **The only reason `NxReleasePMap` survives is that it is
+exported, which makes it a root.**
+
+## 16c. What that means, and it is not what the census says
+
+    the census says      reconstructed, implementation Physics/src/PMap.cpp
+    the map says         PMap.cpp contributes one function to the module, and it is the export
+    the harness said     "no reconstruction of phys_fn_002047"
+    the harness said     "no reconstruction of phys_fn_002051"
+
+**The harness was right and 15q called its message a failure branch.** It is a failure branch, and the
+failure is real: **`nxCandidatePMapLoad` returns false because the code it would call is not in the
+module.**
+
+**This is 15f's shape in a new place.** 15f found `type` and `structural_proof` were required keys whose
+values nothing checked; **this is `implementation`, a field that says where a row was reconstructed,
+naming a file whose code is not in the module the row belongs to.** And **the harness's
+`CANDIDATE-MISSING` line is the check that would catch it -- it has been reporting it, and 15q read it
+as scaffolding.**
+
+**This round did not correct the census.** Recording "the code exists but is not linked" is a
+different state from anything the ladder has, and the honest move is to measure how many rows are
+affected before proposing a state for them.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 601 tool tests OK.
