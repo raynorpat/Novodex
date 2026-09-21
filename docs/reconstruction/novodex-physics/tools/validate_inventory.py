@@ -512,18 +512,11 @@ def _check_reconstructed_proofs(rows):
 # would let the check fail on a known set. So the set is named, the check stays
 # active, and the next row added to the census cannot join it silently.
 IMPLEMENTATION_MISMATCHES = frozenset((
-    'phys_fn_000230', 'phys_fn_000350', 'phys_fn_000354', 'phys_fn_000358', 'phys_fn_000427',
-    'phys_fn_000429', 'phys_fn_000433', 'phys_fn_000435', 'phys_fn_000468', 'phys_fn_000470', 'phys_fn_000937',
-    'phys_fn_000953', 'phys_fn_000955', 'phys_fn_000961', 'phys_fn_000963', 'phys_fn_000967', 'phys_fn_000969',
-    'phys_fn_000971', 'phys_fn_000977', 'phys_fn_000987', 'phys_fn_001107', 'phys_fn_001149', 'phys_fn_001187',
-    'phys_fn_001219', 'phys_fn_001221', 'phys_fn_001223', 'phys_fn_001247', 'phys_fn_001273', 'phys_fn_001349',
-    'phys_fn_001359', 'phys_fn_001379', 'phys_fn_001381', 'phys_fn_001391', 'phys_fn_001571', 'phys_fn_001575',
-    'phys_fn_002164', 'phys_fn_002262', 'phys_fn_003712', 'phys_fn_003784',
-    'phys_fn_003816', 'phys_fn_003820', 'phys_fn_003870', 'phys_fn_004087', 'phys_fn_004184', 'phys_fn_004288',
-    'phys_fn_004292', 'phys_fn_004334', 'phys_fn_004338', 'phys_fn_004417', 'phys_fn_004419', 'phys_fn_004421',
-    'phys_fn_004423', 'phys_fn_004425', 'phys_fn_004427', 'phys_fn_004429', 'phys_fn_004431', 'phys_fn_004433',
-    'phys_fn_004455', 'phys_fn_004495', 'phys_fn_004525', 'phys_fn_004555', 'phys_fn_004585', 'phys_fn_004611',
-    'phys_fn_004639', 'phys_fn_004669', 'phys_fn_004695', 'phys_fn_004747', 'phys_fn_004772', 'phys_fn_004774',
+    'phys_fn_000230', 'phys_fn_000427', 'phys_fn_000429', 'phys_fn_000937', 'phys_fn_000953', 'phys_fn_000955',
+    'phys_fn_000961', 'phys_fn_000963', 'phys_fn_000967', 'phys_fn_000969', 'phys_fn_000971', 'phys_fn_000977',
+    'phys_fn_000987', 'phys_fn_001247', 'phys_fn_001273', 'phys_fn_001349', 'phys_fn_001359', 'phys_fn_001379',
+    'phys_fn_001381', 'phys_fn_001391', 'phys_fn_001571', 'phys_fn_001575', 'phys_fn_002262', 'phys_fn_004772',
+    'phys_fn_004774',
     ))
 
 
@@ -553,6 +546,13 @@ def _check_implementation_contains_row(rows, root):
     for row in rows:
         impl = row.get("implementation")
         if not impl:
+            continue
+        # A recorded symbol establishes the correspondence, so the implementation file not
+        # writing the stable ID is no longer a gap. Round 46 recovered the symbol for 42 rows
+        # from the harness's dispatch tables and from one row's own drive, and the check looked
+        # only in the implementation file -- so it reported those 42 as mismatches when the
+        # correspondence was recorded all along.
+        if row.get("implementation_symbol"):
             continue
         path = root / impl.replace("/", os.sep)
         if not path.exists():

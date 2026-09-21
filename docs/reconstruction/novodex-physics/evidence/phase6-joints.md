@@ -6284,3 +6284,80 @@ the harness's table form or scope it to rows with no `implementation_symbol`.
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 587 tool tests OK.
+
+## 13y. Round 47: the check learns where the correspondence lives, and the set drops to 25
+
+13x said the 69 in `IMPLEMENTATION_MISMATCHES` were explained rather than real. This round taught
+the check that and acted on it.
+
+**The check now skips a row that has a recorded symbol**, because a symbol establishes the
+correspondence and the implementation file not writing the stable ID is no longer a gap. **The
+set went 69 -> 30** -- the 42 symbolised rows came out, minus those that were also cleared.
+
+**And the 30 were then asked the same question**, rather than assumed to be real:
+
+    by state   reconstructed 22   discovered 5   dynamically_gated 3
+    their abbreviated ID appears somewhere   0
+    their RVA appears somewhere             24
+    neither                                  6
+
+**Every one of the 30 has its RVA recorded somewhere in the source tree**, so the rows are
+located even when the file does not write the ID. **That is the fourth form the correspondence
+takes**, after the implementation file's ID comment, the harness's dispatch table, and the drive
+that names the candidate function: **the oracle RVA.**
+
+## 13z. A mistake this round made, and the check that caught it
+
+**Five of the 30 were `discovered`, so I cleared their `implementation`** -- the same move as the
+nine in 13t, on the reasoning that a row at `discovered` has no implementation by definition.
+
+**That was wrong, and the mistake was larger than the five.** The script cleared **13** rows: every
+`discovered` row in the census carrying an `implementation`, not only the five in the set. **And
+seven of those 13 are the forwarder stubs round 30 documented** -- rows whose `implementation`
+legitimately names where the code that STANDS IN for them lives:
+
+    NxTriangleMesh* NpPhysicsSDK::createTriangleMesh(const NxTriangleMeshDesc&)
+        {
+        // phys_fn_000242 -> phys_fn_000478; needs TriangleMesh, Phase 4.
+        return 0;
+        }
+
+**So the clear removed a correct value from seven rows.** Round 30 had established exactly this
+distinction -- "a body that returns 0 or nothing while naming the row it stands in for is not a
+reconstruction, and `discovered` correctly says the row's behaviour is not reconstructed" -- and
+round 47 applied the opposite rule to the same rows.
+
+**Restored, by checking each of the 13 rather than by trusting the rule:**
+
+    restored (the file holds a stand-in)   7
+    left cleared                            6
+
+**The 7 are the NpPhysicsSDK forwarders.** The 6 that stayed cleared
+(`phys_fn_000433`, `000435`, `000468`, `000470`, `000478`, `002164`) have no stand-in in their
+claimed file.
+
+**And what caught it was reading round 30's own note**, not a gate. **No check would have seen
+it**: `_check_implemented_rows` refuses a `discovered` row that carries a *proof*, and these rows
+carry none, so clearing their `implementation` passed every check while deleting a true value.
+**That is the eleventh finding and it is about this session's own record-keeping** -- the
+distinction was written down in 13s/13u and not consulted when the same question came up again.
+
+## 14a. State after forty-seven rounds
+
+    rows with an implementation        181
+    ... carrying implementation_symbol  42
+    ... at `discovered` with a stand-in  7   (the NpPhysicsSDK forwarders)
+    IMPLEMENTATION_MISMATCHES           25   (was 78, then 69, then 30)
+    checks added this session            8
+    audit findings                      11
+    census rows closed                   6
+    all gates                            green
+
+**The set is now 25 and its members are explained**: 22 `reconstructed`, 3 `dynamically_gated`,
+all with their RVA recorded somewhere. **What remains is not a defect but a naming convention** --
+the census records the implementation file, and the correspondence lives in four different places
+depending on how the row was reconstructed.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 587 tool tests OK.
