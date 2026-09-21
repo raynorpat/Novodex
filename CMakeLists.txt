@@ -286,6 +286,13 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# nxFoundationSDKAllocator in NxFoundation.dll. NX_PHYSICS_STATICLIB would
 	# clear both and break that import.
 	target_compile_definitions(NxPhysicsAssetTests PRIVATE NX_PHYSICS_DLL=1)
+	# NxFoundation stays linked FOR NOW. Removing it was tried in round 76 and fails at link time on one
+	# imported variable, `nxFoundationSDKAllocator`, reached through the local nxGetSdkAllocator helper
+	# by MemoryStream.cpp, ThirdPartyHost.cpp and PhysicsInternal.cpp. The dependency is one symbol and
+	# the fix is to define it locally and bridge it, which is what the other harnesses here do through
+	# nxSetSdkAllocatorBridge -- but the definition has to be in place before the link comes out, or the
+	# tree stops building. Round 75 measured why it matters: linking the Foundation makes the loader
+	# resolve it as an import before any harness code runs, so the PAIR's copy is never the one loaded.
 	target_link_libraries(NxPhysicsAssetTests NxFoundation NxOpcode bcrypt)
 
 	# The vendored third-party differential. Same shape as the two above: it

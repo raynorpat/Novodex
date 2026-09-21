@@ -8336,3 +8336,49 @@ build is part of the system under change.**
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 601 tool tests OK.
+
+## 17d. Round 76: the link cannot simply be removed, and the dependency is one symbol
+
+17c said the fix was to remove `NxFoundation` from the target's link libraries, because an explicit load
+cannot beat a static import the loader resolves first. **Removing it fails at link time, and the failure
+names the whole dependency:**
+
+    PhysicsInternal.obj : error LNK2019: unresolved external symbol
+        "__declspec(dllimport) class NxUserAllocator * nxFoundationSDKAllocator"
+        referenced in function ReadWriteLock::ReadWriteLock(void)
+
+**One symbol.** And measured across the five sources the target compiles:
+
+    Physics/src/PMap.cpp             (no Foundation symbol)
+    Physics/src/MemoryStream.cpp     nxGetSdkAllocator x6
+    Physics/src/TriangleMesh.cpp     (no Foundation symbol)
+    Physics/src/ThirdPartyHost.cpp   nxGetSdkAllocator x5
+    Physics/src/PhysicsInternal.cpp  nxGetSdkAllocator x1
+
+**So the direct dependency is one imported VARIABLE, `nxFoundationSDKAllocator`, reached through
+`nxGetSdkAllocator` -- which is a local helper, not a Foundation function.** `NxAllocateable.h` declares
+the variable as `NX_C_EXPORT NXF_DLL_EXPORT` and its inline accessors dereference it, so any source that
+allocates through it carries the import.
+
+## 17e. Which makes the fix a different one, and smaller
+
+**Three ways out, and the choice matters:**
+
+1. **Define the variable locally** in the harness. `NxAllocateable.h` says "the SDK defines this", and the
+   harness compiles these sources itself, so it can provide the definition and point it at an allocator of
+   its own -- which is what the other harnesses in this tree already do through
+   `nxSetSdkAllocatorBridge`. **That removes the import without changing which code runs.**
+2. **Load the pair's Foundation before `NxPhysics`**, so the import resolves to it. **This does not work
+   as stated**: the import is resolved when the process starts, before `wmain`, so no code of this harness
+   can intervene.
+3. **Keep the link and accept that the pair's Foundation is never loaded**, which is the state the
+   harness is in and is why the candidate identity check fails.
+
+**Option one is the one the diagnosis points at**, and it is small: a definition and a bridge, not a
+loader. **And this round did not make it** -- the link removal is reverted, because a tree that does not
+link is worse than a tree whose harness reports the wrong Foundation path, and the change needs the
+definition in place before the link comes out.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 601 tool tests OK.
