@@ -8729,3 +8729,55 @@ case than anything looked at so far -- and the same instrument (a mark and a flu
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 601 tool tests OK.
+
+## 17r. Round 85: the fault is inside the candidate's own constructor, before its first mark
+
+17q said the fault was after `nxRunPMapOracle` returned. **That was one level too far out**, and the
+candidate chain's own marks say so:
+
+    step streamDtor done            <- the oracle half completes
+    <fault>                         <- and the candidate half prints NOTHING
+
+**`nxCandidatePMapLoad` is instrumented with five marks and not one of them appears**, so the fault is
+before its first -- which is inside its very first statement:
+
+    MemoryStream stream(length, storage);
+    printf("  cand streamCtor done\n"); fflush(stdout);
+
+**`MemoryStream`'s constructor is what runs before that print**, so the fault is in the candidate's own
+constructor, called with the fixture's bytes.
+
+**And the constructor is readable, which makes the next step exact:**
+
+    MemoryStream::MemoryStream(NxU32 size, const void* buffer, NxU32 fill, NxU32 initialOffset)
+        {
+        mOwned08 = 0; ... mPad1B = 0;
+        initBlock(size, buffer, fill, initialOffset);
+        }
+
+**and `initBlock` allocates a block and copies the buffer into it:**
+
+    mHead = block;
+    if(buffer)
+        {
+        memcpy(data, buffer, size);
+        block->mOffset = initialOffset;
+        }
+
+**`size` is the fixture's decoded length and `buffer` is the case's `storage`** -- so the copy is bounded
+by the fixture, which this round measured at 4 to 8 bytes for every pmap case. **So the copy is not the
+overflow**, and what remains is the allocation `initBlock` makes or a field the constructor writes.
+
+**Two rules this round also checked and cleared, because they were the obvious candidates:**
+
+    every pmap fixture's hex is 4 to 8 bytes, against a 256-byte storage buffer   not an overflow
+    kStreamObjectSize 0x1c and kPMapObjectSize 0x78 are the ORACLE side's buffers,
+    and the candidate path constructs the real classes instead                    not a size mismatch
+
+**So the fault is a defect in `MemoryStream`'s construction from a given buffer** -- `phys_fn_004788`,
+which is one of the ten targets and is in the translation table. **That is a named row to read**, and it
+is the fifth relocation in five rounds, each one correct and each one closer.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 601 tool tests OK.

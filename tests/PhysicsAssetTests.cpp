@@ -906,10 +906,18 @@ static bool nxCandidatePMapLoad(const unsigned char* storage, unsigned length, N
 	// at offset = size), so the rewind is part of the construction sequence,
 	// exactly as it is on the oracle side above.
 	MemoryStream stream(length, storage);
+	printf("  cand streamCtor done\n"); fflush(stdout);
 	stream.seek(0);
+	printf("  cand streamSeek done\n"); fflush(stdout);
 	PenetrationMap pmap;
+	printf("  cand pmapCtor done\n"); fflush(stdout);
 
 	bool accepted = pmap.create(mesh, 0, 0, &stream, true, &sink);
+	printf("  cand pmapCreate done accepted=%d\n", (int) accepted); fflush(stdout);
+
+	printf("  cand state resolution=%u cells=%u grid=%p\n",
+		pmap.getResolution(), pmap.getCellCount(), (void*) pmap.getGrid());
+	fflush(stdout);
 
 	result->accepted = accepted ? 1u : 0u;
 	result->errors = sink.calls;
@@ -924,6 +932,7 @@ static bool nxCandidatePMapLoad(const unsigned char* storage, unsigned length, N
 			digest = nxFold(digest, pmap.getGrid()[i]);
 		result->grid = digest;
 		}
+	printf("  cand digest done\n"); fflush(stdout);
 	return true;
 	}
 
