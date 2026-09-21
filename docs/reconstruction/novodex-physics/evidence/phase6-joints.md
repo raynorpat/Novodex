@@ -7369,3 +7369,75 @@ is what a staged-pair registration needs and what the round before would have ha
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 601 tool tests OK.
+
+## 15r. Round 62: the asset harness's `--self` was decorative too, and the next blocker is the RVAs
+
+15q found that phase 4 has a harness driving its rows and that the harness is pair-aware in shape.
+This round tried to register it and found **the same decorative flag the layout harness had**, then the
+same RVA problem 12v measured.
+
+**The flag.** `NxPhysicsAssetTests` accepts `--self` and prints `mode=self`, and then ran the pin check
+unconditionally:
+
+    printf("oracle base=%p mode=%s\n", physics, selfOnly ? "self" : "differential");
+    if(strcmp(loadedHash, expected) != 0)      // <-- no selfOnly guard
+        { fprintf(stderr, "FAIL loaded oracle is not the pinned one..."); return 1; }
+
+**Fixed**, with the guard and the reason written where it applies. **This is the second instance of
+this exact defect** -- 12s found it in the layout harness -- which makes it a pattern rather than a
+slip: **a flag that changes a printed mode and nothing else.**
+
+**And with the flag fixed the harness got further**, which is how the next blocker was measured:
+
+    before:  FAIL loaded oracle is not the pinned one
+    after:   FAIL NxReleasePMap is not at the censused RVA
+
+## 15s. The next blocker is the one 12v measured, and the harness shows why it matters
+
+**The harness resolves its targets by hardcoded oracle RVA:**
+
+    oracle.base = (unsigned char*) physics;
+    oracle.pmapCtor    = (NxPMapCtorFn)    (oracle.base + kPMapCtorRva);
+    oracle.pmapDtor    = (NxPMapDtorFn)    (oracle.base + kPMapDtorRva);
+    oracle.pmapCreate  = (NxPMapCreateFn)  (oracle.base + kPMapCreateRva);
+    oracle.streamCtor  = (NxStreamCtorFn)  (oracle.base + kStreamCtorRva);
+    oracle.meshHeader  = (NxMeshHeaderFn)  (oracle.base + kMeshHeaderRva);
+    oracle.meshWriter  = (NxMeshWriterFn)  (oracle.base + kMeshWriterRva);
+
+**So loading the candidate gives it the candidate's base and the ORACLE's offsets**, which is 12v's
+finding exactly -- the layout harness's RVAs assume the oracle's `0x138000` image and the candidate's
+is `0x10000`.
+
+**And the harness itself shows the way out, in one line:**
+
+    oracle.releasePMap = (NxReleasePMapFn) GetProcAddress(physics, "NxReleasePMap");
+    if((unsigned char*) oracle.releasePMap - oracle.base != kReleasePMapRva)
+        return nxFail("NxReleasePMap is not at the censused RVA");
+
+**`NxReleasePMap` is resolved BY NAME** -- it is an export -- and the RVA comparison beside it is a
+*consistency check between the two*, not the resolution. **That check is what fails**, and it fails
+because it compares the candidate's layout against the oracle's census.
+
+**So the harness is one check away from working on `NxReleasePMap` and several away from working on the
+rest.** For the exported rows the fix is to resolve by name and drop the RVA comparison in `--self`
+mode, because the census's RVA is a fact about the shipped DLL and `--self` is not asking about it.
+**For the six internal rows there is no name to resolve**, and those need the translation table 13b
+described -- the one 13c found could not be built until a row's symbol is recorded.
+
+## 15t. What this leaves, stated plainly
+
+    the asset harness's --self flag        fixed (the second instance of the defect)
+    the exported rows                       resolvable by name; the RVA check is the only obstacle
+    the six internal rows                   need the translation table, which needs a recorded symbol
+    phase 4 still has no registered target   because a target that cannot drive the candidate
+                                             catches nothing, and registering one would put a
+                                             target on the phase that passes without measuring
+
+**Registering `NxPhysicsAssetTests` as a staged-pair target today would be a gate that reports a
+pass without having driven the reconstruction** -- the differential would fail, or worse, pass on a
+transcript that never touched the candidate. **So it is not registered**, and the reason is recorded
+rather than the registration made and the failure explained afterwards.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 601 tool tests OK.

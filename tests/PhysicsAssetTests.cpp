@@ -1018,12 +1018,20 @@ int wmain(int argc, wchar_t** argv)
 
 	printf("oracle module path=%S sha256=%s\n", loadedPath, loadedHash);
 	printf("oracle base=%p mode=%s\n", (void*) physics, selfOnly ? "self" : "differential");
-	if(strcmp(loadedHash, expected) != 0)
+	// The pin is checked in DIFFERENTIAL mode only. `--self` means the harness drives whatever module
+	// it was given and compares its own candidate-side calls against it, so the pin is not its
+	// subject. Before this guard the check ran unconditionally and `--self` could not be used on any
+	// file but the pinned one, which made the flag decorative -- the same defect the layout harness
+	// had, found in round 37.
+	if(!selfOnly)
 		{
-		fprintf(stderr, "FAIL loaded oracle is not the pinned one: expected %s\n", expected);
-		return 1;
+		if(strcmp(loadedHash, expected) != 0)
+			{
+			fprintf(stderr, "FAIL loaded oracle is not the pinned one: expected %s\n", expected);
+			return 1;
+			}
+		printf("oracle pin=matched\n");
 		}
-	printf("oracle pin=matched\n");
 
 	NxOracle oracle;
 	oracle.base = (unsigned char*) physics;
