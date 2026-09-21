@@ -5268,3 +5268,60 @@ constructor (`phys_fn_000647`, phase 7).
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on
 purpose, phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed`
 exit 0, `validate_inventory` exit 0, 587 tool tests OK.
+
+## 12p. Round 36: the Scene constructor's fields have no readers, measured two ways
+
+12o left `phys_fn_000647` (the Scene constructor) open with a missed anchor. The anchor
+was corrected and the row was tested twice more -- **both invisible**, and for a reason
+that closes the question rather than leaving it open:
+
+    sceneCtor_selfrefs   the four self-references zeroed   mutant exit 0, 29 lines  not caught
+    sceneCtor_vtable     the vtable word zeroed            mutant exit 0, 29 lines  not caught
+
+**The vtable one is the informative one.** Zeroing the Scene's vtable means
+`createScene`'s failure path -- which calls `(**(code**)*puVar5)(1)` -- would fault, and
+`releaseScene` would too. **Neither runs**: the initialiser never fails on the harness's
+descriptor, and `NpScene::release` is a stub that returns. **So the Scene's vtable is
+written and never called on any path the harness walks.**
+
+**Together with 12i and 12n that completes the picture for this row:** its slot handout
+has no reader, its self-references have no reader, and its vtable has no *caller*. **The
+harness reads only whether the Scene is non-null**, and this row has no return value -- so
+**`phys_fn_000647` is not closable through the joint harness at all**, and that is now
+measured rather than assumed.
+
+## 12q. The phase 5 row, and the decision it needs
+
+`phys_fn_000034` (`Actor::loadFromDescInternal`) is **phase 5's**, and phase 5 is the
+**RED-on-purpose** phase. Closing it needs `NxPhysicsJointStagedPairTests` registered on
+phase 5, and that is not a measurement:
+
+- phase 5's gate is RED **on purpose**, and its RED is the object-layout family;
+- registering a GREEN staged-pair target on the same phase means the gate's exit code
+  becomes the *combination* of a passing differential and the deliberate layout RED --
+  which is what phase 5 is for, but it changes what the gate reports;
+- **that is a decision about the programme's gate structure, and this session's convention
+  has been to record such a question rather than settle it unilaterally.**
+
+**So the row stays open with the reason recorded**, and the question goes to the user:
+whether phase 5 should carry a passing staged-pair target alongside its deliberate RED.
+
+## 12r. State after thirty-six rounds
+
+    census rows closed        6 of 6,338
+    phase 6 gate              pass, differential=pass, 11/11, closed=2
+    phase 7 gate              pass, differential=pass,  4/4, closed=4
+    phase 5 gate              RED on purpose, exit 1
+    phase 8 gate              skipped
+    reconstructed rows        669
+    checks added              7
+    audit findings            6
+    all gates                 green
+
+**Six closures, in the five rounds since 11m, after twenty-eight with none.** The two
+recorded rows that remain open are both **closed questions now**: one is unclosable
+through this target, and one needs a gate-structure decision.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on
+purpose, phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed`
+exit 0, `validate_inventory` exit 0, 587 tool tests OK.
