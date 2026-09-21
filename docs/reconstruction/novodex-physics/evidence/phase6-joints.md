@@ -3866,3 +3866,53 @@ informative than building a new one.
 **No census row closed.** All gates green: phases 2/3/4 exit 0, phase 5 exit 1 RED on
 purpose, phase 6 exit 0 PASS, `completed` exit 0, `validate_inventory` exit 0, 587
 tool tests OK.
+
+## 10n. Round 18: the fault is not step-dependent, it is layout-dependent
+
+10m concluded that the joint step's fault was in actor creation because the probe
+printed `probe actor 0 = ok` and then faulted. **That conclusion was wrong**, and
+running every step side by side is what shows it.
+
+**The same step run twice, and three steps that should behave alike:**
+
+    actor1     exit 0            probe actor 0 = ok
+    actor2     exit 0            probe actor 0 = ok
+    actorN2    exit 0            probe actor 0 = ok, probe actor 1 = ok
+    actorN4    exit -1073741819  (nothing after the step line)
+    actorN9    exit 1            probe actor 0..8 all ok, then the loader failed
+    joint      exit -1073741819  (nothing after the step line)
+
+**`actorN4` faults before its first actor and `actorN2` creates two.** `actorN9`
+creates nine and then fails in the loader. **The same code, the same build, and the
+outcome is not a function of the step.** It is a function of the heap layout at the
+moment of the fault -- which is the property round 6 established and round 8 worked
+around by varying the work, and which has now returned because the actor class changed
+every allocation in the path.
+
+**So 10m's relocation was a misreading.** The `joint` step's blank output does not mean
+"the fault is in actor creation rather than joint creation"; it means the fault landed
+before the first print in that particular run. `actorN4`'s blank output, with no joint
+anywhere in it, proves the same thing from the other direction: **a blank output is not
+evidence about which operation failed.**
+
+**What that costs, stated plainly.** Rounds 17 and 18 both drew a conclusion from a
+step probe's partial output, and both conclusions were wrong for the same reason: the
+probe prints at operation boundaries, and a layout-dependent fault can land between any
+two of them, including before the first. **A probe whose output is a sequence of
+markers cannot localise a fault that moves relative to the markers.**
+
+**The instrument that would**, and it is the one 10e named and 10w tried and abandoned:
+a **page-guarded allocator**, which makes an out-of-bounds write fault at the write
+rather than at a later victim. It needs the allocator seam, which the harness does not
+control because it passes a null allocator and the oracle's default is used. That is
+the real blocker, and it has not changed since round 7.
+
+**What has changed since round 7**, and it is why this is worth recording rather than
+repeating: **three real defects have been fixed** (`*4` in 9z, the unguarded pointer
+difference in 10b, the null vtable in 10k) and **one false one was identified** (the
+loader in 10d). The fault that remains is the same class as before and the same
+instrument is still missing.
+
+**No census row closed.** All gates green: phases 2/3/4 exit 0, phase 5 exit 1 RED on
+purpose, phase 6 exit 0 PASS, `completed` exit 0, `validate_inventory` exit 0, 587
+tool tests OK.
