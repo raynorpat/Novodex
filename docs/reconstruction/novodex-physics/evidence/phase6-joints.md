@@ -8866,3 +8866,65 @@ marks those two, which is the last split available before the fault is a single 
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 601 tool tests OK.
+
+## 17u. Round 88: the fault is IN the printf, and that says the fixture pointer is bad
+
+17t narrowed the fault to two statements and said a mark either side of each would name it. **The mark
+before the first one does not print:**
+
+    gap counters done
+    <fault>                        <- "case-line about to print" never appears
+
+**So the fault is inside the `printf` that prints the case line** -- and that is a strong statement,
+because the statement *before* it printed with a flush.
+
+**And the `printf`'s own arguments say what is wrong with it.** It reads, in order:
+
+    fixture->name        a const char*
+    fixture->dimension   a const char*
+    strlen(fixture->bytes)
+    actual.<six fields>
+
+**Every one of those was read successfully for the previous fifteen cases**, and `actual` is a stack
+struct this case just filled. **So the argument that can have become unreadable is `fixture`'s** -- and
+`fixture` is `&nxPMapFixtures[i]`, a pointer into a static array.
+
+**Which means the static array is being read through a bad pointer, or the array's memory has been
+overwritten.** And **the previous case passed `fixture->name` to a `printf` and printed it**, so the array
+was reachable one case ago.
+
+**That relocates the fault to the STATIC DATA rather than to the module**, which is the first time in this
+sequence -- and it gives two candidates:
+
+    something wrote over the fixture array between the two cases
+    or `i` is out of range and the read is past the array
+
+**And the second is checkable immediately**: the loop bound is `kPMapFixtureCount` and the fixtures
+measured 29 entries earlier in this session, **so a count larger than the array would read past it** --
+and that is the same class of defect as 17o, where a count was set before the thing it counted existed.
+
+**And 17u then over-read its own evidence, which this note corrects.** "The mark did not print"
+bounds the fault to a REGION, not to a statement -- **the compiler may reorder or merge the adjacent
+format strings**, and the same lesson was recorded in 17s one round ago and applied to a different pair.
+**So the fault is in the region that begins at the mark and ends after the printf, and not proven to be
+inside the printf.**
+
+**There is also a better candidate than the fixture array**, and it is the case's own stack frame:
+
+    unsigned char object[kPMapObjectSize];     // 0x78
+
+**The module writes that object through `pmapCtor` and `pmapCreate`**, so **a write past `kPMapObjectSize`
+lands on the case's stack** -- and **the first thing to notice a broken stack is a library call**, which
+is exactly the pattern: the gap's folds and counters run (no library call), and the printf does not.
+
+**And `object` is 0x78 bytes while the oracle's own object is `kPMapObjectSize` too**, so the buffer is the
+size the harness believes; **what is unchecked is whether the module writes past it.**
+
+**The next round should print `i`, the fixture's address, and `sizeof(object)`'s canary** -- or, more
+directly, place a canary around `object` and read it after `pmapCreate` returns. **A canary answers "does
+the module write past the buffer" without a debugger and without unwinding a frame**, which is the
+instrument that has worked every time this sequence has moved.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 601 tool tests OK.

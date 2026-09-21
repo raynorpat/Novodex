@@ -588,13 +588,32 @@ static void nxRunPMapOracle(const NxOracle* oracle, const unsigned char* storage
 	oracle->streamSeek(stream, 0);
 	printf("  step streamSeek done\n"); fflush(stdout);
 
+	// The object sits in a fixed stack buffer of kPMapObjectSize, and the module writes it through the
+	// two calls below. A canary either side says whether the module wrote past the buffer, which is the
+	// question round 88 narrowed to and the one a canary answers without a debugger.
+	unsigned char objectGuard[16];
+	memset(objectGuard, 0xA5, sizeof(objectGuard));
 	unsigned char object[kPMapObjectSize];
 	memset(object, 0, sizeof(object));
+	unsigned char objectCanary[16];
+	memset(objectCanary, 0x5A, sizeof(objectCanary));
+
 	oracle->pmapCtor(object);
 	printf("  step pmapCtor done\n"); fflush(stdout);
 
 	char accepted = oracle->pmapCreate(object, &mesh, 0, 0, stream, 1, &sink);
 	printf("  step pmapCreate done\n"); fflush(stdout);
+
+	{
+	unsigned before = 0, after = 0;
+	for(unsigned i = 0; i < sizeof(objectGuard); ++i)
+		if(objectGuard[i] != 0xA5) ++before;
+	for(unsigned i = 0; i < sizeof(objectCanary); ++i)
+		if(objectCanary[i] != 0x5A) ++after;
+	printf("  canary before=%u after=%u sizeof(object)=%u\n",
+		before, after, (unsigned) sizeof(object));
+	fflush(stdout);
+	}
 
 	result->accepted = accepted ? 1u : 0u;
 	result->errors = sink.calls;
@@ -1291,12 +1310,15 @@ int wmain(int argc, wchar_t** argv)
 		printf("  gap counters done\n"); fflush(stdout);
 		drivenErrors += actual.errors;
 
+		printf("  case-line about to print name=%s\n", fixture->name); fflush(stdout);
 		printf("pmap case=%s dimension=%s bytes=%u accepted=%u errors=%u line=0x%03x "
 			"resolution=%u cells=%u grid=%08x\n",
 			fixture->name, fixture->dimension, (unsigned) (strlen(fixture->bytes) / 2),
 			actual.accepted, actual.errors, actual.errorLine,
 			actual.resolution, actual.cells, actual.grid);
+		printf("  case-line printed\n"); fflush(stdout);
 
+		printf("  comparison about to run\n"); fflush(stdout);
 		if(actual.accepted != fixture->expectAccepted
 			|| actual.errors != fixture->expectErrors
 			|| actual.errorLine != fixture->expectErrorLine
