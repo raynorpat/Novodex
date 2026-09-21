@@ -3535,3 +3535,56 @@ crash at a large round offset in a class with virtuals should be read that way f
 **No census row closed.** All gates green: phases 2/3/4 exit 0, phase 5 exit 1 RED on
 purpose, phase 6 exit 0 PASS, `completed` exit 0, `validate_inventory` exit 0, 587
 tool tests OK.
+
+## 10g. Round 12: the concrete actor class, and the size that does not match
+
+10f identified the fault as a virtual call through a null vtable. This round wrote the
+concrete class, in the same shape as `NpScene`, and it surfaced a second problem that
+is worth recording before the first is finished.
+
+**What was written.** `Physics/src/include/NpActor.h` and `Physics/src/NpActor.cpp`:
+a concrete `NpActor : public NxActor, public NxAllocateable` with **82 virtual bodies
+generated from the pinned `NxActor.h`**, every one an empty default headed
+`(unimplemented)`, and `isDynamic()` implemented to return true -- which is the one
+virtual a reconstructed path calls, and the answer the harness's descriptors ask for,
+since they set `body` and `density`.
+
+**The size assertion failed.** `NpActor` is pinned the same way `NpScene` and the
+Scene are:
+
+    static_assert(sizeof(NpActor) == 0x50, "NpActor is 0x50 bytes in the oracle");
+
+**and it does not hold.** The oracle allocates `0x50` bytes in `Scene::createActor`,
+and `NxActor` declares **no data members** -- every member-like line in its class body
+is a virtual or an inline function. So a concrete subclass with no fields should be
+one vtable pointer, four bytes, not `0x50`.
+
+**Which means one of two things, and this is the finding:**
+
+1. the `0x50` in `Scene::createActor` is not the actor's size but a size that happens
+   to fit it, or
+2. `NxActor`'s reconstructed layout is missing data members that the oracle's has.
+
+**Neither is resolved here.** What is established is that the assertion refuses to
+pass, so the allocation and the class disagree, and writing the class into the
+`0x50` block would be wrong in one direction or the other.
+
+**A second, mechanical obstacle**: the generated stubs return `0` for every non-void
+return type, and several of `NxActor`'s virtuals return **by value** -- `NxMat34`,
+`NxMat33`, `NxVec3`. `return 0` does not convert to those, so 82 bodies is not enough;
+the generator needs a default-constructed value per return type, which means including
+the type's header in `NpActor.cpp`.
+
+**State of the fix**: the class exists, it is not yet correct, and it is **not wired
+into the build** -- `Scene.cpp` does not construct it and `CMakeLists.txt` does not
+compile it. The tree builds and all gates are green.
+
+**The honest position after twelve rounds.** The fault is understood exactly (10f: a
+null vtable read as `[0+0x1c30]`), the fix is identified, and the fix has hit a second
+question -- the actor's true size -- that has to be answered before it can be written
+correctly. That is a better position than round 7, where the fault was not understood
+at all, but it is not a fix.
+
+**No census row closed.** All gates green: phases 2/3/4 exit 0, phase 5 exit 1 RED on
+purpose, phase 6 exit 0 PASS, `completed` exit 0, `validate_inventory` exit 0, 587
+tool tests OK.

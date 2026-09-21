@@ -726,7 +726,19 @@ NxActor* NxSceneInternal::createActor(const NxActorDescBase& desc)
 		return 0;
 
 	// phys_fn_00001450 (0x00001450): constructs the actor over the block, taking the
-	// Scene pointer. Reproduction hole.
+	// Scene pointer.
+	//
+	// This is a REPRODUCTION HOLE and it leaves actor[0] -- the vtable word -- at
+	// whatever the allocator left. The oracle's actor HAS a vtable and
+	// NxJointDesc::isValid() calls through it (isDynamic), so the first joint
+	// creation reads [0 + 0x1c30] and faults. That is the fault 10f identified.
+	//
+	// The fix is a concrete NpActor class; it is written (Physics/src/include/NpActor.h,
+	// Physics/src/NpActor.cpp) and NOT yet correct: its size does not match the 0x50
+	// the oracle allocates, and its generated stubs cannot return the by-value types
+	// NxActor's virtuals use. Both are recorded in 10g. It is deliberately left
+	// unwired until they are resolved, because a class that does not compile takes
+	// every phase gate down with it.
 	NxActor* actor = static_cast<NxActor*>(nxActorConstruct(actorMemory, this));
 	if(!actor)
 		{
