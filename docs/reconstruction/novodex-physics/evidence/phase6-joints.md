@@ -5991,3 +5991,94 @@ named IDs is the derivation that would settle it, and it is the same shape as ro
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on
 purpose, phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed`
 exit 0, `validate_inventory` exit 0, 587 tool tests OK.
+
+## 13o. Round 44: the 78 split into two different problems, and one is 50 rows wide
+
+13n said not to guess where the 78 rows are. This round asked a question that does not require
+guessing: **is each row named by ANY source file?** The answer separates two fixes.
+
+    claimed file does not name it, but ANOTHER file does   29
+    no source file names it at all                          49
+    ------------------------------------------------------------
+                                                            78
+
+**Checked against every `.cpp` and `.h` in the repository except build output -- 445 files.**
+A first pass walked only `Physics/` and `Foundation/` and reported 50 nowhere and 79 total,
+which double-counted one row that an `External/` file names; the whole-repo scan removes the
+ambiguity and the figures above are the ones the whole-repo scan produces.
+
+### The 29: the field names the wrong artifact
+
+**Twelve are named in a HEADER only and seventeen in a `.cpp`** -- the whole-repo scan's
+figures, which differ from the `Physics/`-only pass that reported 24 and 5 because a row can be
+named in both a header and a translation unit. For example:
+
+    phys_fn_000427  claimed Physics/src/PhysicsSDK.cpp  named in Physics/src/include/PhysicsSDK.h
+    phys_fn_000433  claimed Physics/src/PhysicsSDK.cpp  named in Physics/src/NpPhysicsSDK.cpp
+    phys_fn_000937  claimed Physics/src/ObjectModel.cpp named in Physics/src/include/ObjectModel.h
+
+**These are a declaration, not an implementation.** The row's ID appears in a header where the
+function is declared, or in a different translation unit where it is called. **So for these the
+`implementation` field names a file that neither declares nor defines the row**, and the honest
+value would be the header or the calling unit -- or, better, the symbol, which 13c showed is
+what the field needs and does not carry.
+
+### The 49: `reconstructed` with a proof, and no source file naming them
+
+**This is the serious half.** All 49 claim an `implementation`, and none appears in any source
+file. By state:
+
+    reconstructed       40
+    discovered           9
+
+    phases             2: 2   3: 6   4: 9   6: 24   7: 8
+    claimed files      ObjectModel.cpp 39   TriangleMesh.cpp 8
+                       NpPhysicsSDK.cpp 2
+    proofs             40 carry a dynamic_proof
+
+**And their proofs name real drives**, read rather than inferred:
+
+    phys_fn_004087  "confirmed via xaccum drive (3z74): failures=0"
+    phys_fn_004763  "confirmed via chain4763 differential (3z178): twelve combinations --
+                     three guard arms by chain lengths 0..3 -- all failures=0, comparing the
+                     recorded dispatch-and-walk sequence by node identity"
+    phys_fn_003712  "confirmed via lockedcopy differential (3z142): failures=0, with the
+                     Foundation lock API bound to __stdcall no-op stubs"
+
+**So these rows were confirmed by drives that this session did not run, and their code is
+somewhere the census does not name.** That is a different statement from "the row is not
+implemented": the proof is evidence that a differential ran and passed for this row, and the
+census's `implementation` value is the part that is wrong.
+
+**`phys_fn_003712` names `ObjectModel.cpp` and is named by no file -- but its proof describes
+binding the Foundation lock API, which is not an object-model operation at all.** So at least
+some of the 49 have an `implementation` that is not merely imprecise but unrelated.
+
+## 13p. What this means, and what the next round should do
+
+    the 78 are two problems                     the field names the wrong artifact  29
+                                               the row is named by no source file   49
+    the 49 are the serious half                 40 of them stand at reconstructed
+                                               and 40 carry a dynamic proof
+
+**Neither is a parser gap and neither is a missing field.** The 29 are a field naming a
+declaration instead of an implementation. **The 50 are rows the census says were reconstructed
+and confirmed, whose code no source file contains.**
+
+**And no gate can see either**, because `_check_implementation_contains_row` (13m) reports them
+into a named set and `IMPLEMENTATION_MISMATCHES` is what stops it failing. **The set is doing
+its job -- it is recording a known gap -- but 78 rows in it is 78 rows of debt, and 50 of them
+are debt with a proof attached that says the work was done.**
+
+**The next round should NOT delete their `implementation` values**, because the proofs show the
+work was done and deleting the field would leave a confirmed row with no location at all. It
+should **search for the drives the proofs name** -- `xaccum`, `chain4763`, `lockedcopy` -- since
+a named drive is a searchable artifact and the code it drove must be somewhere this repository
+can reach.
+
+**That is a bounded search with 40 targets, and it is the first step this session has had toward
+the 49 that does not require a decision from the user.**
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 587 tool tests OK.
