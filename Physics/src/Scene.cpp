@@ -27,7 +27,10 @@
 
 #include "Containers.h"
 #include "NxSceneDesc.h"
+#include "NxActorDesc.h"
+#include "NxActor.h"
 
+#include <stdio.h>
 #include <string.h>
 #include <new>
 
@@ -239,6 +242,27 @@ void* NxSceneInternal::vtable()
 	return &table;
 	}
 
+// ---------------------------------------------------------------------------
+// The callees Scene::createActor needs. Every one is a REPRODUCTION HOLE: a named
+// function standing in for a row another phase owns and has not reconstructed.
+// ---------------------------------------------------------------------------
+
+// phys_fn_00001450 (0x00001450, phase 2): constructs the actor over a 0x50-byte
+// block with a Scene pointer. Modelled only as far as storing the Scene so the
+// object has the shape the caller expects.
+NxActor* nxSceneActorConstruct(void* memory, void* scene);
+// phys_fn_00002010 (0x00002010, phase 2): applies the descriptor to the actor and
+// returns the actor's vtable word. Modelled as "applied, non-null".
+void* nxSceneActorInitialise(NxActor* actor, const void* desc);
+// phys_fn_00001c40 (0x00001c40, phase 2): destroys an actor built by the two above.
+void nxSceneActorDestroy(NxActor* actor);
+// phys_fn_000100a0 (0x000100a0, phase 7): refreshes a cached count from an array.
+void nxSceneUpdateActorCount(void* scene, unsigned count);
+// phys_fn_00089d50 (0x00089d50, phase 6): the scene's notification hook.
+void nxSceneNotifyActorCreated(void* hook);
+// The scene's error reporter.
+void nxSceneReportError(const char* message);
+
 NxSceneInternal::NxSceneInternal()
 	{
 	unsigned* p = reinterpret_cast<unsigned*>(mBytes);
@@ -433,6 +457,93 @@ void nxSceneArrayReserve(void* arrayHeader, unsigned needed)
 	a[2] = reinterpret_cast<unsigned>(grown + capacity);
 	}
 
+
+// ---------------------------------------------------------------------------
+// phys_fn_000626 (0x00011730) is Scene::createActor.
+//
+// It was listed in 8w as "the ground-plane expansion" because createScene drives
+// it. Reading it shows it is the actor factory: its own error strings are
+// "Supplied NxActorDesc is not valid. createActor returns NULL." and
+// "Actor Initialisation failed: returned NULL.", and it ends by pushing the new
+// actor onto the Scene's actor array at +0x55c. createScene reaches it because the
+// ground plane is created by calling createActor.
+//
+// The validation half is NxActorDescBase::isValid(), which is the pinned public
+// header's own inline code, so it is called rather than transcribed. The creation
+// half is transcribed. The callees below are REPRODUCTION HOLES: each is a named
+// function belonging to a phase that has not reconstructed it, and the evidence
+// records what each does not model.
+// ---------------------------------------------------------------------------
+
+NxActor* NxSceneInternal::createActor(const NxActorDescBase& desc)
+	{
+	unsigned* p = reinterpret_cast<unsigned*>(mBytes);
+
+	// The oracle inlines isValid() here as a long chain of __fpclass tests over the
+	// twelve globalPose floats and the body's twelve, plus a shape validity loop.
+	// The public header's isValid() is the same predicate, so it is used directly.
+	if(!desc.isValid())
+		{
+		nxSceneReportError("Supplied NxActorDesc is not valid. createActor returns NULL.");
+		return 0;
+		}
+
+	// The actor object: 0x50 bytes from the SDK allocator.
+	void* actorMemory = nxGetSdkAllocator()->malloc(0x50, NX_MEMORY_PERSISTENT);
+	if(!actorMemory)
+		return 0;
+
+	// phys_fn_00001450 (0x00001450): constructs the actor over the block, taking the
+	// Scene pointer. Reproduction hole.
+	NxActor* actor = nxSceneActorConstruct(actorMemory, this);
+	if(!actor)
+		{
+		nxGetSdkAllocator()->free(actorMemory);
+		return 0;
+		}
+
+	// phys_fn_00002010 (0x00002010): applies the descriptor to the actor. Its return
+	// is the actor's own vtable word at +0, which the oracle tests against zero to
+	// decide the actor was built. Reproduction hole.
+	if(!nxSceneActorInitialise(actor, &desc))
+		{
+		nxSceneActorDestroy(actor);
+		nxGetSdkAllocator()->free(actor);
+		nxSceneReportError("Actor Initialisation failed: returned NULL.");
+		return 0;
+		}
+
+	// Push onto the Scene's actor array at +0x55c, growing it exactly as the
+	// descriptor initialiser's reserve does. The oracle's sequence here is the same
+	// capacity-compare-then-grow shape, inlined.
+	nxSceneArrayReserve(p + 0x55c, 1);
+	unsigned* first = reinterpret_cast<unsigned*>(p[0x55c / 4]);
+	unsigned* last = reinterpret_cast<unsigned*>(p[0x560 / 4]);
+	if(last)
+		{
+		*last = reinterpret_cast<unsigned>(actor);
+		p[0x560 / 4] = reinterpret_cast<unsigned>(last + 1);
+		}
+
+	// The two words copied out of the Scene's +0x6cc holder into the actor.
+	unsigned* holder = reinterpret_cast<unsigned*>(p[0x6cc / 4]);
+	if(holder)
+		{
+		reinterpret_cast<unsigned*>(actor)[4] = holder[4];		// actor+0x10
+		reinterpret_cast<unsigned*>(actor)[3] = holder[3];		// actor+0x0c
+		}
+
+	// phys_fn_000100a0 (0x000100a0): updates the Scene's cached actor count from the
+	// array the push just extended. Reproduction hole.
+	nxSceneUpdateActorCount(this, static_cast<unsigned>(last - first) + 1);
+
+	// The notification hook, when the Scene has one at +0x61c.
+	if(p[0x61c / 4])
+		nxSceneNotifyActorCreated(reinterpret_cast<void*>(p[0x61c / 4]));
+
+	return actor;
+	}
+
 // ---------------------------------------------------------------------------
 // phys_fn_000651 (0x00013070): the descriptor-driven initialiser.
 //
@@ -553,4 +664,57 @@ static void nxSceneDelete(void* self, int flags)
 void NxSceneInternal::scalarDeletingDestructor(int flags)
 	{
 	nxSceneDelete(this, flags);
+	}
+
+// ---------------------------------------------------------------------------
+// Reproduction holes for Scene::createActor's callees. Each reproduces the call
+// shape and the state the Scene reads back, and nothing else. Every one is
+// recorded in the evidence with what it does not model.
+// ---------------------------------------------------------------------------
+
+NxActor* nxSceneActorConstruct(void* memory, void* scene)
+	{
+	// The actor's +0x14 is its userData, which the joint-descriptor rows read and
+	// which the descriptor initialiser sets -- not this function. The only state
+	// this hole has to establish is that the block is non-null and remembers its
+	// Scene, so the caller's zero test behaves as the oracle's does.
+	reinterpret_cast<unsigned*>(memory)[0x24 / 4] = reinterpret_cast<unsigned>(scene);
+	return reinterpret_cast<NxActor*>(memory);
+	}
+
+void* nxSceneActorInitialise(NxActor* actor, const void* desc)
+	{
+	(void)actor;
+	(void)desc;
+	// The oracle returns the actor's vtable word here and the caller tests it
+	// against zero. Returning a non-null constant reproduces that decision.
+	return const_cast<void*>(desc);
+	}
+
+void nxSceneActorDestroy(NxActor* actor)
+	{
+	(void)actor;
+	}
+
+void nxSceneUpdateActorCount(void* scene, unsigned count)
+	{
+	// The oracle stores the array length into a Scene cache. The field is not one
+	// this reconstruction has identified, so the call is reproduced and the store
+	// is not.
+	(void)scene;
+	(void)count;
+	}
+
+void nxSceneNotifyActorCreated(void* hook)
+	{
+	(void)hook;
+	}
+
+void nxSceneReportError(const char* message)
+	{
+	// The oracle routes this through NxFoundation::FoundationSDK::error with its own
+	// __FILE__ and line. The message is kept so the behaviour is greppable; the
+	// Foundation error route is not called because the pinned line number is not
+	// recovered for this row.
+	printf("NxPhysics: %s\n", message);
 	}

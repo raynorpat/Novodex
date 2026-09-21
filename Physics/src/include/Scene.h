@@ -35,6 +35,8 @@
 
 class Scene;
 class NxSceneDesc;
+class NxActor;
+class NxActorDescBase;
 
 /**
 The 0x710-byte scene object.
@@ -53,6 +55,10 @@ class NxSceneInternal
 	// phys_fn_000651 (0x00013070). Applies a descriptor. Returns true on success;
 	// on false the caller destroys the object it just built.
 	bool initialise(const NxSceneDesc& desc);
+
+	// phys_fn_000626 (0x00011730). The actor factory. createScene reaches it too,
+	// because the ground plane is made by calling this.
+	NxActor* createActor(const NxActorDescBase& desc);
 
 	// The raw object. `at` is the only sanctioned way to reach a field whose name
 	// is not recovered.

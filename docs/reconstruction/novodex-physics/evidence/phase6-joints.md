@@ -2383,3 +2383,80 @@ in place -- the harness passes a descriptor with `groundPlane` unset -- and the
 next steps in cost order are `Scene::createActor`, then `NpScene` with
 `phys_fn_000234` and `phys_fn_000476`. That is the order the next session should
 take, and the ground-plane hole is recorded so it is not mistaken for done.
+
+## 8y. The 3227-byte "hole" is `Scene::createActor`, and it is the critical path
+
+8x listed `phys_fn_000626` (0x00011730, 3227 B) as "the ground-plane expansion"
+and recommended leaving it in place, on the ground that the harness passes a
+descriptor with `groundPlane` unset. **That recommendation was wrong, and reading
+the function is what showed it.**
+
+`phys_fn_000626` is **`Scene::createActor`**. Three things say so, and none of them
+is an inference:
+
+- its own error strings are *"Supplied NxActorDesc is not valid. createActor returns
+  NULL."* and *"Actor Initialisation failed: returned NULL."*;
+- its head is `NxActorDescBase::isValid()` inlined -- a long chain of `__fpclass`
+  tests over the descriptor's twelve `globalPose` floats, the body's twelve, and a
+  per-shape validity loop;
+- it ends by pushing the new actor onto the Scene's actor array at `+0x55c`, the
+  same array the descriptor initialiser reserves.
+
+`createScene` reaches it **because the ground plane is made by calling
+`createActor`** -- not because it is ground-plane code. So the function 8x proposed
+to skip is the one the harness's very next call, `scene.createActor(da)`, goes
+through. **The cheap route 8x described does not exist**, and the correction cost
+one read of the function.
+
+## 8z. `Scene::createActor` written
+
+The validation half is `NxActorDescBase::isValid()` -- the pinned public header's
+own inline code -- so it is **called, not transcribed**: re-typing a predicate the
+pinned header already provides would create a second copy that could drift.
+
+The creation half is transcribed:
+
+    malloc(0x50)                     the actor block
+    phys_fn_00001450                 construct it over the block
+    phys_fn_00002010                 apply the descriptor; non-null = built
+    push onto the Scene's +0x55c array, growing it as the initialiser does
+    copy holder[3], holder[4] into actor+0x0c and actor+0x10
+    phys_fn_000100a0                 refresh the Scene's cached count
+    phys_fn_00089d50                 the notification hook, when +0x61c is set
+
+**Five callees are named reproduction holes**, each with what it does not model
+recorded in the file:
+
+    phys_fn_00001450  constructs the actor over the block
+    phys_fn_00002010  applies the descriptor to the actor
+    phys_fn_00001c40  destroys an actor built by those two
+    phys_fn_000100a0  refreshes a cached count
+    phys_fn_00089d50  the scene's notification hook
+
+**The honest statement of what that leaves wrong:** the holes reproduce the call
+shape and the state the Scene reads back, and nothing else. In particular
+`phys_fn_00002010` is where the descriptor is applied to the actor -- including the
+`userData` the joint-descriptor rows read -- so **a scene built through this path
+produces an actor whose descriptor chain is not yet correct.** `createActor` will
+return a non-null actor; that actor will not yet be the oracle's actor.
+
+**Verified.** `Scene.cpp` compiles into `NxPhysicsInternalTests`; `Scene.obj` grew
+from 6124 to 14546 bytes; phases 2, 3, 4, 6 and `completed` all exit 0;
+`validate_inventory` exit 0.
+
+## 9a. Corrected remaining path
+
+    144 B  phys_fn_000544  0x00010750  descriptor flags              phase 7
+    344 B  phys_fn_000476  0x0000ea80  PhysicsSDK::createScene       phase 2
+     31 B  phys_fn_000234  0x0000b770  NpPhysicsSDK::createScene     phase 2
+      ?    NpScene                       the public NxScene wrapper
+      ?    phys_fn_00001450             the actor's constructor        phase 2
+      ?    phys_fn_00002010             applying the descriptor        phase 2
+      ?    the seven constructor helpers
+    3227 B phys_fn_000626  Scene::createActor                   DONE, 5 holes
+
+**`phys_fn_00002010` is now the highest-value row on this path**, because it is
+where the actor's `userData` and its descriptor chain are established -- the exact
+structure the joint-descriptor rows walk and the reason six rounds of synthetic
+fixture work failed to fake it (8f-8k). Filling that hole is the shortest route to
+the mutation that closes those two rows.
