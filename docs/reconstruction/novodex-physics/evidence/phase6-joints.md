@@ -7532,3 +7532,62 @@ than leaving two explanations standing.**
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 601 tool tests OK.
+
+## 15x. Round 64: the candidate publishes its own symbols now, and seven of the ten bind
+
+15w established that the asset harness calls the wrong functions on the candidate because it binds ten
+ORACLE offsets by addition. Resolving by symbol needs the candidate's own symbol names, and it had no
+way to publish them -- **the layout harness emits a linker map and the library did not.** That is
+changed:
+
+    if(MSVC)
+        target_link_options(NxPhysics PRIVATE /MAP)
+    endif()
+
+**`build/Release/NxPhysics.map` now exists**, 88,647 bytes and **456 symbols**. **That is the artifact
+13b's translation table needed and could not have**: a table mapping an oracle RVA to a candidate
+address needs the candidate to say where its symbols are, and nothing was saying.
+
+## 15y. All ten constants resolve to a census row, and seven now to a symbol
+
+    constant            oracle      census row       file                  derived symbol
+    kPMapCtorRva        0x000505f0  phys_fn_002045   PMap.cpp              PenetrationMap::PenetrationMap
+    kPMapDtorRva        0x0004cae0  phys_fn_001984   -- no implementation --
+    kPMapCreateRva      0x00050640  phys_fn_002047   PMap.cpp              PenetrationMap::create
+    kStreamCtorRva      0x000b3ce0  phys_fn_004788   MemoryStream.cpp      MemoryStream::MemoryStream
+    kStreamSeekRva      0x000b3b30  phys_fn_004780   MemoryStream.cpp      MemoryStream::seek
+    kStreamDtorRva      0x000b3db0  phys_fn_004791   MemoryStream.cpp      MemoryStream
+    kMeshHeaderRva      0x00055cb0  phys_fn_002262   TriangleMesh.cpp      -- not derived --
+    kReleasePMapRva     0x00051040  phys_fn_002051   PMap.cpp              NxReleasePMap
+    kMeshWriterRva      0x000539d0  phys_fn_002162   TriangleMesh.cpp      -- not derived --
+    kStoreDwordRva      0x000b3f00  phys_fn_004797   MemoryStream.cpp      MemoryStream::storeDword
+
+**All ten resolve to a census row**, and **seven now carry a symbol**, recovered by round 42's
+derivation -- the implementation file names the stable ID in a comment beside the function. They are
+recorded on the census, taking `implementation_symbol` from 70 to **77**.
+
+**The three that did not:**
+
+- **`phys_fn_001984`** (`kPMapDtorRva`) is `discovered` with **no implementation at all** -- so there is
+  no file to read a symbol from, which is a fact about the row rather than about the derivation.
+- **`phys_fn_002262`** and **`phys_fn_002162`** are in `TriangleMesh.cpp` and the derivation did not
+  reach them, which is the same parser gap 13i recorded and not a different problem.
+
+## 15z. Why a map is needed at all, and it is the point 13c made
+
+**Only one of the ten is exported.** `NxReleasePMap` is resolved by `GetProcAddress` today; the other
+nine -- `PenetrationMap::create`, the stream constructor, `MemoryStream::seek` and the rest -- **are
+internal, so no harness can ask the module for them by name.** That is why the harness binds offsets,
+and it is why the fix cannot be "resolve them by name" alone.
+
+**What a name-based binding needs is the map plus the recorded symbol**: the symbol says which
+function is meant, and the map says where the candidate put it. **Both halves now exist for these
+seven rows**, and neither existed a round ago.
+
+**So 13b's translation table is no longer blocked on the join 13c could not find.** It is blocked on
+being written, and on the three rows that still have no symbol -- one because it has no
+implementation and two because the derivation did not reach them.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 601 tool tests OK.

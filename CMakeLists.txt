@@ -73,6 +73,13 @@ if(WIN32)
 endif()
 
 add_library(NxPhysics SHARED ${PHYSICS_HEADERS} ${PHYSICS_SOURCES} ${PHYSICS_RESOURCES})
+# Emit a linker map for the rebuilt module, the same way the layout harness publishes its own. The
+# harnesses that drive this library bind ORACLE RVAs by addition -- `base + kSomeRva` -- which is
+# correct only when the loaded module IS the shipped one. Reading the candidate's own symbol names is
+# what lets a target resolve by name instead, and the map is where they are written.
+if(MSVC)
+	target_link_options(NxPhysics PRIVATE /MAP)
+endif()
 target_link_libraries(NxPhysics NxFoundation NxQhull NxOpcode)
 set_target_properties(NxPhysics PROPERTIES LINKER_LANGUAGE CXX)
 

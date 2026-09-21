@@ -37123,7 +37123,8 @@
       "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase4-formats.md: \"`0x0005073e`. The constructor `phys_fn_002045` at `0x000505f0` installs the\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P4 Task 3: reconstructed and driven by NxPhysicsAssetTests.",
-      "implementation": "Physics/src/PMap.cpp"
+      "implementation": "Physics/src/PMap.cpp",
+      "implementation_symbol": "PenetrationMap::PenetrationMap"
     },
     {
       "id": "phys_fn_002046",
@@ -37160,7 +37161,8 @@
       "static_proof": null,
       "dynamic_proof": "driven and gated: the transcript line 'asset rows pmap_create=phys_fn_002047 pmap_load=phys_fn_002035 mesh_header=phys_fn_002262 mesh_writer=phys_fn_002162 release_pmap=phys_fn_002051', is a registered coverage assertion in tools/gate_targets.ps1, which run_phase_gate.ps1 requires to appear at least twice in the differential transcript and fails if it stops appearing. Backfilled from that registration (7i); the row was already driven, the proof field was never filled in.",
       "notes": "P4 Task 3: the LOAD arm is reconstructed and driven by NxPhysicsAssetTests. The COMPUTE arm 0x00050768-0x00050f02 is NOT reconstructed.",
-      "implementation": "Physics/src/PMap.cpp"
+      "implementation": "Physics/src/PMap.cpp",
+      "implementation_symbol": "PenetrationMap::create"
     },
     {
       "id": "phys_fn_002048",
@@ -37233,7 +37235,8 @@
       "static_proof": null,
       "dynamic_proof": "driven and gated: the transcript line 'asset rows pmap_create=phys_fn_002047 pmap_load=phys_fn_002035 mesh_header=phys_fn_002262 mesh_writer=phys_fn_002162 release_pmap=phys_fn_002051', is a registered coverage assertion in tools/gate_targets.ps1, which run_phase_gate.ps1 requires to appear at least twice in the differential transcript and fails if it stops appearing. Backfilled from that registration (7i); the row was already driven, the proof field was never filled in.",
       "notes": "P4 Task 3: reconstructed and driven by NxPhysicsAssetTests.",
-      "implementation": "Physics/src/PMap.cpp"
+      "implementation": "Physics/src/PMap.cpp",
+      "implementation_symbol": "NxReleasePMap"
     },
     {
       "id": "phys_fn_002052",
@@ -86914,7 +86917,8 @@
       "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase4-mesh-writer.md: \"| `phys_fn_004780` | `0x000b3b30` | seek: current block only, strictly in bounds |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P4 Task 4: reconstructed; already driven as kStreamSeekRva by NxPhysicsAssetTests since Task 3.",
-      "implementation": "Physics/src/MemoryStream.cpp"
+      "implementation": "Physics/src/MemoryStream.cpp",
+      "implementation_symbol": "MemoryStream::seek"
     },
     {
       "id": "phys_fn_004781",
@@ -87062,7 +87066,8 @@
       "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase4-mesh-writer.md: \"| `phys_fn_004788` | `0x000b3ce0` | constructor over phys_fn_004782 |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P4 Task 4: reconstructed in the image's own shape -- SDK-allocated blocks, born full over given bytes and rewound with seek(0). The Task 3 inline-block stand-in was replaced by this transcription; every pmap case stayed green across the swap.",
-      "implementation": "Physics/src/MemoryStream.cpp"
+      "implementation": "Physics/src/MemoryStream.cpp",
+      "implementation_symbol": "MemoryStream::MemoryStream"
     },
     {
       "id": "phys_fn_004789",
@@ -87117,7 +87122,8 @@
       "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase4-mesh-writer.md: \"| `phys_fn_004791` | `0x000b3db0` | five-byte jmp alias of phys_fn_004784 |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P4 Task 4: reconstructed as a tail-call alias of phys_fn_004784.",
-      "implementation": "Physics/src/MemoryStream.cpp"
+      "implementation": "Physics/src/MemoryStream.cpp",
+      "implementation_symbol": "MemoryStream"
     },
     {
       "id": "phys_fn_004792",
@@ -87227,7 +87233,8 @@
       "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase4-mesh-writer.md: \"| `phys_fn_004797` | `0x000b3f00` | storeDword -- the row Model::Save calls directly |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P4 Task 4: reconstructed; the stand-in model save writes through this row on the oracle side.",
-      "implementation": "Physics/src/MemoryStream.cpp"
+      "implementation": "Physics/src/MemoryStream.cpp",
+      "implementation_symbol": "MemoryStream::storeDword"
     },
     {
       "id": "phys_fn_004798",
