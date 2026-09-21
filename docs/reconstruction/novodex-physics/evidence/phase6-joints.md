@@ -4508,3 +4508,139 @@ now been walked once, on two rows, with every step measured.**
 **The next rows should be cheaper than these two.** The scene, actor, joint and
 descriptor machinery is built; the closure path is proven; and each new family needs a
 target and a mutation rather than twenty-eight rounds of diagnosis.
+
+## 11r. Round 29: which rows are reachable, and the one obstacle to the next batch
+
+The closure path is proven (11m-11q), so this round asked which rows can take it next.
+
+**The candidate set.** 663 rows stand at `reconstructed`; **153 carry an
+`implementation`**, which is the precondition for a mutation -- a mutation has to be
+aimed at code. They cluster in four files:
+
+    Physics/src/ObjectModel.cpp                     117
+    Physics/src/opcode/IcePrunable.cpp               15
+    Physics/src/MemoryStream.cpp                     13
+    Physics/src/PMap.cpp                              5
+    Physics/src/TriangleMesh.cpp                      2
+    External/.../IceRevisitedRadix.cpp                1
+
+and **28 of them are Phase 6's own**, all in `ObjectModel.cpp`.
+
+**The obstacle, and it is one obstacle rather than 28.** A row can only be closed if a
+registered STAGED-PAIR target drives it -- the target must load the rebuilt module, or
+no mutation to the row can be caught (11l). The joint pair got there because a harness
+already drove those two rows. For the 28 object-model rows, the harness that drives
+them is `NxPhysicsObjectLayoutTests`, and **it refuses to run against the candidate
+pair at all**:
+
+    FAIL loaded oracle is not the pinned one: expected 4b7db3e1...
+    layout module path=...\pairs\candidate\NxPhysics.dll sha256=865a288f...
+    layout base=6E850000 mode=differential
+
+**That is a pin guard, not a failure.** The harness asserts that the module it loaded is
+the pinned oracle -- it is the Phase 5 oracle differential, and its own design is to
+compare the pinned DLL against the reconstruction's *recorded* expectations rather than
+against a second loaded module. **It is not a staged-pair target and cannot be made one
+by registration**, because the check that stops it is exactly what makes it useful as an
+oracle differential.
+
+**So the next batch needs one of two things, and both are bounded:**
+
+1. **A staged-pair harness for the object model.** The rows are in `ObjectModel.cpp`
+   and the layout harness already reaches them against the pinned DLL; what is missing
+   is a target that loads both modules and compares. That is the same shape as
+   `NxPhysicsJointTests`, which was already a pair-aware harness when round 24 registered
+   it -- so this is new work rather than a registration change.
+2. **Rows that an existing pair-aware harness already drives.** `NxPhysicsJointTests`
+   drives the whole SDK lifecycle: it creates a scene, actors with bodies, and joints,
+   and reads their state back. **Every row that path executes is already driven on both
+   pairs**, and its transcript is green. Those rows are closable by mutation with no new
+   target at all -- the question is only which census rows that path enters.
+
+**The second is the cheaper next step and this round did not take it.** It requires
+mapping the harness's executed path onto census rows, which is a lookup rather than
+new code.
+
+**No census row closed this round.** All gates green: phases 2/3/4 exit 0, phase 5 exit
+1 RED on purpose, phase 6 exit 0 PASS, `completed` exit 0, `validate_inventory` exit 0,
+closure phase 6 closed=2 deferred=962, 587 tool tests OK.
+
+## 11s. The census does not know about nine rows this session built
+
+11r proposed the cheaper next step: find the rows the joint harness already drives and
+close them. That lookup produced something else first.
+
+**Every row this session actually implemented is still marked `discovered`:**
+
+    rva          row              census state   implementation
+    0x00012c10   phys_fn_000647   discovered     none     the Scene constructor
+    0x00013070   phys_fn_000651   discovered     none     the Scene initialiser
+    0x00011730   phys_fn_000626   discovered     none     Scene::createActor
+    0x00002010   phys_fn_000034   discovered     none     Actor::loadFromDescInternal
+    0x00001450   phys_fn_000013   discovered     none     the actor constructor
+    0x000142c0   phys_fn_000665   discovered     none     Scene::createJoint
+    0x0000b770   phys_fn_000234   discovered     none     NpPhysicsSDK::createScene
+    0x0000ea80   phys_fn_000476   discovered     PhysicsSDK.cpp   PhysicsSDK::createScene
+
+**Eight rows, and one more beside them.** `Scene::createActor` is `phys_fn_000626`, which
+this session transcribed as a 3227-byte function with five reproduction holes; the
+census still calls it `discovered`. `Scene::createJoint` is `phys_fn_000665`, transcribed
+in round 22; also `discovered`.
+
+**Four of them have a registered target that drives them on both pairs right now** --
+`NxPhysicsJointStagedPairTests` creates a scene, actors with bodies and joints, and reads
+their state back, so `Scene::createActor`, `Actor::loadFromDescInternal`, the actor
+constructor and `Scene::createJoint` all execute in the green differential. **They are
+closable by mutation today, and the census does not even record them as reconstructed.**
+
+**This is the same defect class as 7e, 7h, 7i and 8o**, and it is the sixth instance:
+**a fact recorded in one artifact -- the code and the evidence -- and not in the
+census.** The earlier instances were rows naming a source that did not exist (7e), a
+field carrying two claims (7h), rows holding a state with no proof (7i), and rows in no
+ledger list at all (8o). This one is different in direction: **the work was done and the
+census never learned about it.**
+
+**And the validator did not object, for a reason that is structural rather than an
+oversight.** It checks that no row stands **above** `reconstructed` without a ledger
+entry, and that a `reconstructed` row has a proof. **Nothing checks that a row which
+has an implementation is at least `reconstructed`** -- so a row can be fully built and
+wired and still be recorded as untouched, and no gate says so.
+
+**The fix is a check, not a correction.** Correcting these eight rows by hand would fix
+this instance and leave the next one invisible. The check is:
+
+    a row whose `implementation` resolves, or which a registered target drives,
+    must not stand at `discovered`
+
+with the same shape as the others this session added -- verified to fail on the defect
+it targets and scoped to the committed census, because a test builds a synthetic
+inventory that would otherwise trip it.
+
+**No census row closed this round.** All gates green: phases 2/3/4 exit 0, phase 5 exit
+1 RED on purpose, phase 6 exit 0 PASS, `completed` exit 0, `validate_inventory` exit 0,
+587 tool tests OK.
+
+## 11t. What round 29 actually found, and what the next round should do
+
+**Two findings, neither of them a closure:**
+
+1. **The 28 Phase 6 object-model rows are not reachable by registration.** Their harness,
+   `NxPhysicsObjectLayoutTests`, refuses to load the candidate pair -- it asserts that the
+   module it loaded is the pinned oracle, which is what makes it an oracle differential.
+   Closing them needs a staged-pair harness for the object model.
+2. **Eight rows this session built are still `discovered`** -- four of them driven by the
+   green joint differential and therefore closable today.
+
+**The next round, in order:**
+
+1. **Fix the census for the eight rows** -- state `reconstructed`, the implementation
+   path, and the proof naming what drives them. That is bookkeeping for work already
+   done.
+2. **Add the check** so the next row cannot be built and left unrecorded.
+3. **Close the four the joint differential drives** by mutation, which is the proven path
+   from 11m and needs no new target.
+
+**And the honest note**: round 29 closed nothing, and it is the second round in a row
+whose value is a measurement rather than a closure. The programme's own convention is to
+record what an instrument found even when it is not the thing being looked for, and this
+round's instrument found that the census and the code have drifted apart again.
