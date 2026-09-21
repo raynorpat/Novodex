@@ -8781,3 +8781,48 @@ is the fifth relocation in five rounds, each one correct and each one closer.
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 601 tool tests OK.
+
+## 17s. Round 86: the candidate path is never entered, so the fault is in the CASE BODY
+
+17r concluded the fault was inside `MemoryStream`'s construction, **from the absence of a mark placed
+after it.** That inference is sound but incomplete: **a mark that does not appear does not distinguish
+"entered and faulted here" from "never entered".** So this round put a mark **before** the constructor,
+and it does not appear either:
+
+    step streamDtor done
+    <fault>
+
+**`nxCandidatePMapLoad` is never entered.** Round 85 was one level too far out for the second round
+running, and the lesson is specific rather than general: **an absent mark locates a fault to a region, not
+to a statement, and a second mark on the other side of the suspect is what turns a region into a
+statement.**
+
+**So the fault is in the case body, between the two calls:**
+
+    nxRunPMapOracle(&oracle, storage, length, &actual);          <- completes, marks say so
+    ...                                                          <- THE FAULT IS HERE
+    if(!selfOnly) { NxPMapResult candidate; ... nxCandidatePMapLoad(...); }
+
+**And what is in that gap is short:** the `oracleDigest` folds, the `drivenAccepted`/`drivenRejected`
+counters, the `printf` of the case line, the expect-mismatch comparison, and the `pmap oracle-done` line
+with its flush. **All of those ran for the previous case**, which printed and completed, so the gap is
+not inherently fatal -- it is fatal for this case's data.
+
+**That is a different kind of statement from every previous relocation**, and it is the sixth: the fault
+is in code that works for fifteen cases and not for the sixteenth, **which means the difference is in the
+CASE rather than in the path.** The sixteenth case is `pmap.bad_version_00000005`.
+
+**And it points back at the object the oracle half left**, which this case is the first to leave in a
+state the gap then reads:
+
+    object accepted=1 resolution=1 cells=1 grid=0137B300
+
+**That line is printed BY the oracle half for this case, and it is the first case to print a non-zero
+`accepted`.** So the gap's folds and comparisons run on a result that is accepted for the first time, and
+**`accepted` is what the digest folds first.**
+
+**The next round should mark the gap**, which is four statements, and the same instrument will name it.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 601 tool tests OK.

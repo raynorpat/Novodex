@@ -902,6 +902,10 @@ static bool nxCandidatePMapLoad(const unsigned char* storage, unsigned length, N
 	memcpy(mesh + 0x44, bounds, sizeof(bounds));
 
 	NxCandidateSink sink;
+	// A mark BEFORE the constructor, so its absence-or-presence says whether this function was entered
+	// at all. Round 85 inferred the constructor from a mark placed after it, which is sound but does not
+	// distinguish "entered and faulted here" from "never entered".
+	printf("  cand entered length=%u\n", length); fflush(stdout);
 	// phys_fn_004788 builds the stream FULL over given bytes (the block starts
 	// at offset = size), so the rewind is part of the construction sequence,
 	// exactly as it is on the oracle side above.
