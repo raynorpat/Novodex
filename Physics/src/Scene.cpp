@@ -739,6 +739,17 @@ NxActor* NxSceneInternal::createActor(const NxActorDescBase& desc)
 	// NxActor's virtuals use. Both are recorded in 10g. It is deliberately left
 	// unwired until they are resolved, because a class that does not compile takes
 	// every phase gate down with it.
+	// The vtable is NOT installed here. The oracle's actor has one and
+	// NxJointDesc::isValid() calls through it (isDynamic), so a raw block leaves
+	// actor[0] at whatever the allocator left and the first virtual call reads
+	// [0 + slot] -- the fault 10f identified.
+	//
+	// The fix is written and staged at
+	// docs/reconstruction/novodex-physics/staged/NpActor.{h,cpp}: the OBJECT is now
+	// 0x50 bytes with the vtable word at +0 and all 84 of NxActor's pure virtuals
+	// declared, which is real progress from 10h. It is still abstract -- one
+	// declaration is not reaching the class -- and Physics/src/*.cpp is globbed, so
+	// leaving it there takes every phase gate down. Staged until it compiles.
 	NxActor* actor = static_cast<NxActor*>(nxActorConstruct(actorMemory, this));
 	if(!actor)
 		{

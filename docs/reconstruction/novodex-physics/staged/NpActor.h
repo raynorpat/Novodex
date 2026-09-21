@@ -19,16 +19,55 @@
 #include "PhysicsInternal.h"
 #include "NxActor.h"
 
-class NpActor : public NxActor, public NxAllocateable
+/**
+The actor OBJECT: 0x50 bytes, offset-addressed.
+
+The oracle allocates 0x50 bytes in Scene::createActor and writes it through raw
+pointer arithmetic -- the shape list at +0x10, the body at +0x14, the body descriptor
+at +0x18, the body's flags at +0x1c, a word from the Scene's +0x6cc holder at +0x0c,
+and the 3x3 and translation at +0x20..+0x4c. None of those fields is declared by
+NxActor, which has no data members at all (10h), so the layout is written here by
+offset rather than guessed as member names -- the same construction as
+NxSceneInternal (8t).
+*/
+struct NpActorObject
+	{
+	static const NxU32 SIZE = 0x50;
+
+	unsigned char mBytes[SIZE];
+
+	// The offset is a BYTE offset and the pointer is char*, which is the rule the
+	// nxAt helper in Scene.cpp makes explicit.
+	unsigned char* at(NxU32 byteOffset) { return mBytes + byteOffset; }
+	const unsigned char* at(NxU32 byteOffset) const { return mBytes + byteOffset; }
+
+	// The vtable word, at +0. Installing it is what makes the oracle's virtual calls
+	// dispatch instead of reading [0 + slot], which was the fault from round 4 to 11.
+	void installVtable();
+	};
+
+static_assert(sizeof(NpActorObject) == NpActorObject::SIZE,
+              "the actor object is 0x50 bytes in the oracle");
+
+/**
+The concrete class the vtable points at. It is deliberately NOT the object: its own
+size is irrelevant, because only its vtable is used. Every body except isDynamic is an
+UNIMPLEMENTED default, present so the class is concrete; none is claimed as
+reconstructed and none is gated.
+*/
+class NpActorVtable : public NxActor
 	{
 	public:
-	NpActor();
-	~NpActor();
+	NpActorVtable() {}
+	~NpActorVtable() {}
 
-	// The one virtual a reconstructed path calls, and it answers what the
-	// harness asks: a descriptor with a body and a density is dynamic.
+	// The one virtual a reconstructed path calls. NxJointDesc::isValid() asks it, and
+	// a descriptor with a body and a density describes a dynamic actor.
 	virtual bool isDynamic() const;
 
+	// Declared in NxActor with an inline sibling that confused the generator;
+	// listed here so the class is concrete.
+	virtual NxVec3 getPointVelocityVal(const NxVec3& point) const;
 	virtual void setGlobalPosition(const NxVec3&);
 	virtual void setGlobalOrientation(const NxMat33&);
 	virtual void setGlobalOrientationQuat(const NxQuat&);
@@ -111,10 +150,5 @@ class NpActor : public NxActor, public NxAllocateable
 	virtual void setGroup(NxActorGroup);
 	virtual NxActorGroup getGroup() const;
 	};
-
-// The oracle allocates 0x50 bytes for the actor object (Scene::createActor's
-// literal). A class of a different size would write past its allocation, so the
-// size is pinned rather than assumed -- the same guard NpScene has.
-static_assert(sizeof(NpActor) == 0x50, "NpActor is 0x50 bytes in the oracle");
 
 #endif

@@ -3636,3 +3636,57 @@ green. **No census row closed.**
 
 All gates green: phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose, phase 6 exit 0
 PASS, `completed` exit 0, `validate_inventory` exit 0, 587 tool tests OK.
+
+## 10i. Round 14: the object is right, the class is still abstract
+
+10h derived the shape the fix needs: an offset-addressed 0x50-byte OBJECT plus a
+CONCRETE class whose vtable is installed in the object's first word. This round built
+that shape, and got the first half right.
+
+**Written, and this is real progress:**
+
+- **`NpActorObject`**, an offset-addressed 0x50-byte struct, pinned by
+  `static_assert(sizeof(NpActorObject) == 0x50)`. The assertion **passes** -- which is
+  the size question 10g raised and 10h answered, now discharged: the object is the
+  oracle's size, and its field names are not claimed, only its offsets, exactly as
+  `NxSceneInternal` does it.
+- **`installVtable()`**, which writes the vtable word at `+0` from a static instance
+  of the concrete class. That is the fix for 10f's null-vtable fault.
+- **`NpActorVtable`**, a concrete class declaring **all 84 of `NxActor`'s pure
+  virtuals**, with `isDynamic()` returning true and every other body an
+  `(unimplemented)` default. The by-value returns are handled properly this time:
+  a default-constructed value for `NxMat34`/`NxMat33`/`NxVec3`, a static for reference
+  returns, and null for pointers -- the obstacle 10g recorded.
+
+**What is still wrong: the class is abstract.** `NpActorVtable` cannot be
+instantiated, so the static instance that supplies the vtable cannot exist and the
+object cannot install one. The generator's deduplication is the cause and it has been
+caught twice:
+
+    isDynamic            declared twice (once explicitly, once generated)
+    getPointVelocityVal  dropped, because its inline sibling getPointVelocity
+                         confused the brace-stripping parser
+    setGlobalPose        dropped as a "duplicate" by a filter that compared NAMES
+                         rather than signatures -- NxActor declares it twice
+
+Two of those are fixed; the third is still not reaching the class, and the error is
+now `setGlobalPose: member function not declared in NpActorVtable` while the class is
+still reported abstract.
+
+**The tree is green and the work is staged.** `Physics/src/*.cpp` is globbed into the
+build, so a class that does not compile takes every phase gate down; the corrected
+files are at `docs/reconstruction/novodex-physics/staged/NpActor.{h,cpp}` and
+`Scene::createActor` still leaves the vtable uninstalled, with a comment saying so.
+
+**The lesson about the generator, which is the reusable part.** Three separate
+failures all came from the same place: **parsing C++ declarations with regular
+expressions.** Brace-stripping ate an inline body and its neighbour; a name-based
+deduplication filter cannot see overloads; and a regex over `virtual` declarations
+does not understand default arguments or inline bodies. **A generator for a class this
+large should be driven by the compiler** -- declare the class, let the compiler list
+the unimplemented pure virtuals in its own error text, and add them -- rather than by
+a regex over the header.
+
+**No census row closed.** All gates green: phases 2/3/4 exit 0, phase 5 exit 1 RED on
+purpose, phase 6 exit 0 PASS, `completed` exit 0, `validate_inventory` exit 0, 587
+tool tests OK.

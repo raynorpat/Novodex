@@ -5,504 +5,527 @@
 |							     www.novodex.com
 |
 \*----------------------------------------------------------------------------*/
+// The actor object and the concrete class its vtable points at. See NpActor.h for
+// why they are two things rather than one.
+
 #include "NpActor.h"
 
-NpActor::NpActor() {}
-NpActor::~NpActor() {}
+#include "NxMat34.h"
+#include "NxMat33.h"
+#include "NxVec3.h"
+#include "NxActorDesc.h"
+#include "NxBodyDesc.h"
 
-// The virtual NxJointDesc::isValid() calls. A descriptor with a body and a
-// density describes a dynamic actor, which is what the harness builds.
-bool NpActor::isDynamic() const { return true; }
+// The vtable word. A single static instance of the concrete class supplies it: the
+// object needs a vtable POINTER, not a class instance, so one instance is enough for
+// every actor the reconstruction builds.
+static NpActorVtable gNpActorVtable;
+
+void NpActorObject::installVtable()
+	{
+	*reinterpret_cast<void**>(mBytes) = *reinterpret_cast<void**>(&gNpActorVtable);
+	}
+
+
+// The one virtual a reconstructed path calls. A descriptor with a body and a density
+// describes a dynamic actor, which is what the harness builds.
+bool NpActorVtable::isDynamic() const { return true; }
+
+// (unimplemented) setGlobalPose
+void NpActorVtable::setGlobalPose(const NxMat34&)
+	{
+	}
+
+// (unimplemented) getPointVelocityVal
+NxVec3 NpActorVtable::getPointVelocityVal(const NxVec3& point) const
+	{
+	(void)point;
+	return NxVec3(0.0f, 0.0f, 0.0f);
+	}
 
 // (unimplemented) setGlobalPosition
-void NpActor::setGlobalPosition(const NxVec3&)
+void NpActorVtable::setGlobalPosition(const NxVec3&)
 	{
 	
 	}
 
 // (unimplemented) setGlobalOrientation
-void NpActor::setGlobalOrientation(const NxMat33&)
+void NpActorVtable::setGlobalOrientation(const NxMat33&)
 	{
 	
 	}
 
 // (unimplemented) setGlobalOrientationQuat
-void NpActor::setGlobalOrientationQuat(const NxQuat&)
+void NpActorVtable::setGlobalOrientationQuat(const NxQuat&)
 	{
 	
 	}
 
 // (unimplemented) getGlobalPoseVal
-NxMat34 NpActor::getGlobalPoseVal() const
+NxMat34 NpActorVtable::getGlobalPoseVal() const
 	{
-	return 0;
+	return NxMat34();
 	}
 
 // (unimplemented) getGlobalPositionVal
-NxVec3 NpActor::getGlobalPositionVal() const
+NxVec3 NpActorVtable::getGlobalPositionVal() const
 	{
-	return 0;
+	return NxVec3();
 	}
 
 // (unimplemented) getGlobalOrientationVal
-NxMat33 NpActor::getGlobalOrientationVal() const
+NxMat33 NpActorVtable::getGlobalOrientationVal() const
 	{
-	return 0;
+	return NxMat33();
 	}
 
 // (unimplemented) getGlobalOrientationQuatVal
-NxQuat NpActor::getGlobalOrientationQuatVal() const
+NxQuat NpActorVtable::getGlobalOrientationQuatVal() const
 	{
-	return 0;
+	return NxQuat();
 	}
 
 // (unimplemented) getGlobalPoseReference
-const NxMat34 & NpActor::getGlobalPoseReference() const
+const NxMat34 & NpActorVtable::getGlobalPoseReference() const
 	{
-	return 0;
+	static NxMat34 sValue; return sValue;
 	}
 
 // (unimplemented) moveGlobalPose
-void NpActor::moveGlobalPose(const NxMat34&)
+void NpActorVtable::moveGlobalPose(const NxMat34&)
 	{
 	
 	}
 
 // (unimplemented) moveGlobalPosition
-void NpActor::moveGlobalPosition(const NxVec3&)
+void NpActorVtable::moveGlobalPosition(const NxVec3&)
 	{
 	
 	}
 
 // (unimplemented) moveGlobalOrientation
-void NpActor::moveGlobalOrientation(const NxMat33&)
+void NpActorVtable::moveGlobalOrientation(const NxMat33&)
 	{
 	
 	}
 
 // (unimplemented) createShape
-NxShape* NpActor::createShape(const NxShapeDesc&)
+NxShape* NpActorVtable::createShape(const NxShapeDesc&)
 	{
 	return 0;
 	}
 
 // (unimplemented) releaseShape
-void NpActor::releaseShape(NxShape&)
+void NpActorVtable::releaseShape(NxShape&)
 	{
 	
 	}
 
 // (unimplemented) getNbShapes
-NxU32 NpActor::getNbShapes() const
+NxU32 NpActorVtable::getNbShapes() const
 	{
-	return 0;
+	return NxU32();
 	}
 
 // (unimplemented) getShapes
-NxShape** NpActor::getShapes() const
+NxShape** NpActorVtable::getShapes() const
 	{
 	return 0;
 	}
 
 // (unimplemented) updateMassFromShapes
-void NpActor::updateMassFromShapes(NxReal density, NxReal totalMass)
+void NpActorVtable::updateMassFromShapes(NxReal density, NxReal totalMass)
 	{
 	
 	}
 
 // (unimplemented) setDynamic
-void NpActor::setDynamic(const NxBodyDesc&)
+void NpActorVtable::setDynamic(const NxBodyDesc&)
 	{
 	
 	}
 
 // (unimplemented) setCMassOffsetLocalPose
-void NpActor::setCMassOffsetLocalPose(const NxMat34&)
+void NpActorVtable::setCMassOffsetLocalPose(const NxMat34&)
 	{
 	
 	}
 
 // (unimplemented) setCMassOffsetLocalPosition
-void NpActor::setCMassOffsetLocalPosition(const NxVec3&)
+void NpActorVtable::setCMassOffsetLocalPosition(const NxVec3&)
 	{
 	
 	}
 
 // (unimplemented) setCMassOffsetLocalOrientation
-void NpActor::setCMassOffsetLocalOrientation(const NxMat33&)
+void NpActorVtable::setCMassOffsetLocalOrientation(const NxMat33&)
 	{
 	
 	}
 
 // (unimplemented) setCMassOffsetGlobalPose
-void NpActor::setCMassOffsetGlobalPose(const NxMat34&)
+void NpActorVtable::setCMassOffsetGlobalPose(const NxMat34&)
 	{
 	
 	}
 
 // (unimplemented) setCMassOffsetGlobalPosition
-void NpActor::setCMassOffsetGlobalPosition(const NxVec3&)
+void NpActorVtable::setCMassOffsetGlobalPosition(const NxVec3&)
 	{
 	
 	}
 
 // (unimplemented) setCMassOffsetGlobalOrientation
-void NpActor::setCMassOffsetGlobalOrientation(const NxMat33&)
+void NpActorVtable::setCMassOffsetGlobalOrientation(const NxMat33&)
 	{
 	
 	}
 
 // (unimplemented) setCMassGlobalPose
-void NpActor::setCMassGlobalPose(const NxMat34&)
+void NpActorVtable::setCMassGlobalPose(const NxMat34&)
 	{
 	
 	}
 
 // (unimplemented) setCMassGlobalPosition
-void NpActor::setCMassGlobalPosition(const NxVec3&)
+void NpActorVtable::setCMassGlobalPosition(const NxVec3&)
 	{
 	
 	}
 
 // (unimplemented) setCMassGlobalOrientation
-void NpActor::setCMassGlobalOrientation(const NxMat33&)
+void NpActorVtable::setCMassGlobalOrientation(const NxMat33&)
 	{
 	
 	}
 
 // (unimplemented) getCMassLocalPoseVal
-NxMat34 NpActor::getCMassLocalPoseVal() const
+NxMat34 NpActorVtable::getCMassLocalPoseVal() const
 	{
-	return 0;
+	return NxMat34();
 	}
 
 // (unimplemented) getCMassLocalPositionVal
-NxVec3 NpActor::getCMassLocalPositionVal() const
+NxVec3 NpActorVtable::getCMassLocalPositionVal() const
 	{
-	return 0;
+	return NxVec3();
 	}
 
 // (unimplemented) getCMassLocalOrientationVal
-NxMat33 NpActor::getCMassLocalOrientationVal() const
+NxMat33 NpActorVtable::getCMassLocalOrientationVal() const
 	{
-	return 0;
+	return NxMat33();
 	}
 
 // (unimplemented) getCMassGlobalPoseVal
-NxMat34 NpActor::getCMassGlobalPoseVal() const
+NxMat34 NpActorVtable::getCMassGlobalPoseVal() const
 	{
-	return 0;
+	return NxMat34();
 	}
 
 // (unimplemented) getCMassGlobalPositionVal
-NxVec3 NpActor::getCMassGlobalPositionVal() const
+NxVec3 NpActorVtable::getCMassGlobalPositionVal() const
 	{
-	return 0;
+	return NxVec3();
 	}
 
 // (unimplemented) getCMassGlobalOrientationVal
-NxMat33 NpActor::getCMassGlobalOrientationVal() const
+NxMat33 NpActorVtable::getCMassGlobalOrientationVal() const
 	{
-	return 0;
+	return NxMat33();
 	}
 
 // (unimplemented) setMass
-void NpActor::setMass(NxReal)
+void NpActorVtable::setMass(NxReal)
 	{
 	
 	}
 
 // (unimplemented) getMass
-NxReal NpActor::getMass() const
+NxReal NpActorVtable::getMass() const
 	{
-	return 0;
+	return NxReal();
 	}
 
 // (unimplemented) setMassSpaceInertiaTensor
-void NpActor::setMassSpaceInertiaTensor(const NxVec3& m)
+void NpActorVtable::setMassSpaceInertiaTensor(const NxVec3& m)
 	{
 	
 	}
 
 // (unimplemented) getMassSpaceInertiaTensorVal
-NxVec3 NpActor::getMassSpaceInertiaTensorVal() const
+NxVec3 NpActorVtable::getMassSpaceInertiaTensorVal() const
 	{
-	return 0;
+	return NxVec3();
 	}
 
 // (unimplemented) getGlobalInertiaTensorVal
-NxMat33 NpActor::getGlobalInertiaTensorVal() const
+NxMat33 NpActorVtable::getGlobalInertiaTensorVal() const
 	{
-	return 0;
+	return NxMat33();
 	}
 
 // (unimplemented) getGlobalInertiaTensorInverseVal
-NxMat33 NpActor::getGlobalInertiaTensorInverseVal() const
+NxMat33 NpActorVtable::getGlobalInertiaTensorInverseVal() const
 	{
-	return 0;
+	return NxMat33();
 	}
 
 // (unimplemented) setLinearDamping
-void NpActor::setLinearDamping(NxReal)
+void NpActorVtable::setLinearDamping(NxReal)
 	{
 	
 	}
 
 // (unimplemented) getLinearDamping
-NxReal NpActor::getLinearDamping() const
+NxReal NpActorVtable::getLinearDamping() const
 	{
-	return 0;
+	return NxReal();
 	}
 
 // (unimplemented) setAngularDamping
-void NpActor::setAngularDamping(NxReal)
+void NpActorVtable::setAngularDamping(NxReal)
 	{
 	
 	}
 
 // (unimplemented) getAngularDamping
-NxReal NpActor::getAngularDamping() const
+NxReal NpActorVtable::getAngularDamping() const
 	{
-	return 0;
+	return NxReal();
 	}
 
 // (unimplemented) setLinearVelocity
-void NpActor::setLinearVelocity(const NxVec3&)
+void NpActorVtable::setLinearVelocity(const NxVec3&)
 	{
 	
 	}
 
 // (unimplemented) setAngularVelocity
-void NpActor::setAngularVelocity(const NxVec3&)
+void NpActorVtable::setAngularVelocity(const NxVec3&)
 	{
 	
 	}
 
 // (unimplemented) getLinearVelocityVal
-NxVec3 NpActor::getLinearVelocityVal() const
+NxVec3 NpActorVtable::getLinearVelocityVal() const
 	{
-	return 0;
+	return NxVec3();
 	}
 
 // (unimplemented) getAngularVelocityVal
-NxVec3 NpActor::getAngularVelocityVal() const
+NxVec3 NpActorVtable::getAngularVelocityVal() const
 	{
-	return 0;
+	return NxVec3();
 	}
 
 // (unimplemented) setMaxAngularVelocity
-void NpActor::setMaxAngularVelocity(NxReal)
+void NpActorVtable::setMaxAngularVelocity(NxReal)
 	{
 	
 	}
 
 // (unimplemented) setLinearMomentum
-void NpActor::setLinearMomentum(const NxVec3&)
+void NpActorVtable::setLinearMomentum(const NxVec3&)
 	{
 	
 	}
 
 // (unimplemented) setAngularMomentum
-void NpActor::setAngularMomentum(const NxVec3&)
+void NpActorVtable::setAngularMomentum(const NxVec3&)
 	{
 	
 	}
 
 // (unimplemented) getLinearMomentumVal
-NxVec3 NpActor::getLinearMomentumVal() const
+NxVec3 NpActorVtable::getLinearMomentumVal() const
 	{
-	return 0;
+	return NxVec3();
 	}
 
 // (unimplemented) getAngularMomentumVal
-NxVec3 NpActor::getAngularMomentumVal() const
+NxVec3 NpActorVtable::getAngularMomentumVal() const
 	{
-	return 0;
+	return NxVec3();
 	}
 
 // (unimplemented) addForceAtPos
-void NpActor::addForceAtPos(const NxVec3& force, const NxVec3& pos, NxForceMode mode )
+void NpActorVtable::addForceAtPos(const NxVec3& force, const NxVec3& pos, NxForceMode mode )
 	{
 	
 	}
 
 // (unimplemented) addForceAtLocalPos
-void NpActor::addForceAtLocalPos(const NxVec3& force, const NxVec3& pos, NxForceMode mode )
+void NpActorVtable::addForceAtLocalPos(const NxVec3& force, const NxVec3& pos, NxForceMode mode )
 	{
 	
 	}
 
 // (unimplemented) addLocalForceAtPos
-void NpActor::addLocalForceAtPos(const NxVec3& force, const NxVec3& pos, NxForceMode mode )
+void NpActorVtable::addLocalForceAtPos(const NxVec3& force, const NxVec3& pos, NxForceMode mode )
 	{
 	
 	}
 
 // (unimplemented) addLocalForceAtLocalPos
-void NpActor::addLocalForceAtLocalPos(const NxVec3& force, const NxVec3& pos, NxForceMode mode )
+void NpActorVtable::addLocalForceAtLocalPos(const NxVec3& force, const NxVec3& pos, NxForceMode mode )
 	{
 	
 	}
 
 // (unimplemented) addForce
-void NpActor::addForce(const NxVec3&, NxForceMode mode )
+void NpActorVtable::addForce(const NxVec3&, NxForceMode mode )
 	{
 	
 	}
 
 // (unimplemented) addLocalForce
-void NpActor::addLocalForce(const NxVec3&, NxForceMode mode )
+void NpActorVtable::addLocalForce(const NxVec3&, NxForceMode mode )
 	{
 	
 	}
 
 // (unimplemented) addTorque
-void NpActor::addTorque(const NxVec3&, NxForceMode mode )
+void NpActorVtable::addTorque(const NxVec3&, NxForceMode mode )
 	{
 	
 	}
 
 // (unimplemented) addLocalTorque
-void NpActor::addLocalTorque(const NxVec3&, NxForceMode mode )
+void NpActorVtable::addLocalTorque(const NxVec3&, NxForceMode mode )
 	{
 	
 	}
 
 // (unimplemented) computeKineticEnergy
-NxReal NpActor::computeKineticEnergy() const
+NxReal NpActorVtable::computeKineticEnergy() const
 	{
-	return 0;
-	}
-
-// (unimplemented) getPointVelocity
-void NpActor::getPointVelocity(const NxVec3& point, NxVec3& result) const { result ) const
-	{
-	
+	return NxReal();
 	}
 
 // (unimplemented) getLocalPointVelocityVal
-NxVec3 NpActor::getLocalPointVelocityVal(const NxVec3& point) const
+NxVec3 NpActorVtable::getLocalPointVelocityVal(const NxVec3& point) const
 	{
-	return 0;
+	return NxVec3();
 	}
 
 // (unimplemented) isGroupSleeping
-bool NpActor::isGroupSleeping() const
+bool NpActorVtable::isGroupSleeping() const
 	{
-	return 0;
+	return bool();
 	}
 
 // (unimplemented) isSleeping
-bool NpActor::isSleeping() const
+bool NpActorVtable::isSleeping() const
 	{
-	return 0;
+	return bool();
 	}
 
 // (unimplemented) getSleepLinearVelocity
-NxReal NpActor::getSleepLinearVelocity() const
+NxReal NpActorVtable::getSleepLinearVelocity() const
 	{
-	return 0;
+	return NxReal();
 	}
 
 // (unimplemented) setSleepLinearVelocity
-void NpActor::setSleepLinearVelocity(NxReal threshold)
+void NpActorVtable::setSleepLinearVelocity(NxReal threshold)
 	{
 	
 	}
 
 // (unimplemented) getSleepAngularVelocity
-NxReal NpActor::getSleepAngularVelocity() const
+NxReal NpActorVtable::getSleepAngularVelocity() const
 	{
-	return 0;
+	return NxReal();
 	}
 
 // (unimplemented) setSleepAngularVelocity
-void NpActor::setSleepAngularVelocity(NxReal threshold)
+void NpActorVtable::setSleepAngularVelocity(NxReal threshold)
 	{
 	
 	}
 
 // (unimplemented) wakeUp
-void NpActor::wakeUp(NxReal wakeCounterValue)
+void NpActorVtable::wakeUp(NxReal wakeCounterValue)
 	{
 	
 	}
 
 // (unimplemented) putToSleep
-void NpActor::putToSleep()
+void NpActorVtable::putToSleep()
 	{
 	
 	}
 
 // (unimplemented) raiseActorFlag
-void NpActor::raiseActorFlag(NxActorFlag)
+void NpActorVtable::raiseActorFlag(NxActorFlag)
 	{
 	
 	}
 
 // (unimplemented) clearActorFlag
-void NpActor::clearActorFlag(NxActorFlag)
+void NpActorVtable::clearActorFlag(NxActorFlag)
 	{
 	
 	}
 
 // (unimplemented) readActorFlag
-bool NpActor::readActorFlag(NxActorFlag) const
+bool NpActorVtable::readActorFlag(NxActorFlag) const
 	{
-	return 0;
+	return bool();
 	}
 
 // (unimplemented) raiseBodyFlag
-void NpActor::raiseBodyFlag(NxBodyFlag)
+void NpActorVtable::raiseBodyFlag(NxBodyFlag)
 	{
 	
 	}
 
 // (unimplemented) clearBodyFlag
-void NpActor::clearBodyFlag(NxBodyFlag)
+void NpActorVtable::clearBodyFlag(NxBodyFlag)
 	{
 	
 	}
 
 // (unimplemented) readBodyFlag
-bool NpActor::readBodyFlag(NxBodyFlag) const
+bool NpActorVtable::readBodyFlag(NxBodyFlag) const
 	{
-	return 0;
+	return bool();
 	}
 
 // (unimplemented) saveBodyToDesc
-bool NpActor::saveBodyToDesc(NxBodyDesc&)
+bool NpActorVtable::saveBodyToDesc(NxBodyDesc&)
 	{
-	return 0;
+	return bool();
 	}
 
 // (unimplemented) saveToDesc
-void NpActor::saveToDesc(NxActorDescBase&)
+void NpActorVtable::saveToDesc(NxActorDescBase&)
 	{
 	
 	}
 
 // (unimplemented) setName
-void NpActor::setName(const char*)
+void NpActorVtable::setName(const char*)
 	{
 	
 	}
 
 // (unimplemented) getName
-const char* NpActor::getName() const
+const char* NpActorVtable::getName() const
 	{
 	return 0;
 	}
 
 // (unimplemented) setGroup
-void NpActor::setGroup(NxActorGroup)
+void NpActorVtable::setGroup(NxActorGroup)
 	{
 	
 	}
 
 // (unimplemented) getGroup
-NxActorGroup NpActor::getGroup() const
+NxActorGroup NpActorVtable::getGroup() const
 	{
-	return 0;
+	return NxActorGroup();
 	}
 
