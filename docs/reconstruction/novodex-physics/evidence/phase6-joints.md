@@ -2694,3 +2694,97 @@ of seven oracle rows and a wrapper class, about 5,300 bytes of decompiled code. 
 census row closed, no joint row closed, and the harness it was all for now crashes
 instead of refusing cleanly.** The structure is real and the gates are green; the
 outcome the work was for -- `scene=created` -- has not been reached.
+
+## 9i. The crash was an allocation overrun in the NpScene locks, and scene=created works
+
+9g recorded the harness regression and listed the candidates. The fault is found,
+and it was none of the three guessed there.
+
+**Method: trace, not guess.** Print statements were added to the candidate's
+`createScene` path, and that immediately separated the two halves that 9g could not
+tell apart. The traces showed the Scene side completing:
+
+    TRACE np-createScene enter mSdk=...
+    TRACE sdk-createScene enter
+    TRACE isValid passed
+    TRACE malloc=...
+    TRACE before Scene ctor
+    TRACE after Scene ctor
+    TRACE before initialise
+    TRACE initialise ok, pushing
+    TRACE pushed
+    TRACE np-createScene sdk returned scene=...
+    TRACE before NpScene ctor
+    <fault>
+
+**So the Scene constructor and initialiser both run, and the fault is in the
+`NpScene` constructor.** And the constructor's own fault was an **allocation
+overrun**, not a bad pointer:
+
+> `PhysicsInternal.h` documents the oracle's lock block: phys_fn_0005b6a0
+> *"allocates a 32 byte block through the SDK allocator and holds only that
+> pointer, so the lock object itself is one word"*. The `NpScene` **field** holds
+> the pointer; the **block** is 32 bytes -- a `CRITICAL_SECTION` followed by the
+> interlocked owner flag at `+0x18` and the owning thread id at `+0x1c`.
+
+The reconstruction allocated **four** bytes for each of the two locks and then
+constructed a lock into it. Four bytes cannot hold a 32-byte object, so the second
+allocation's header was overwritten -- which is exactly the `[esi+0x1c30]` read 9g
+measured, a small base plus a large offset.
+
+**One detail worth recording**: the traces *masked* the fault rather than revealing
+it, because adding them shifted the heap layout enough that the overrun landed on
+slack. That is why 9g's "traces show the Scene is fine, the crash is in NpScene"
+and the clean build's "crash" looked like different bugs. A heap overrun is
+sensitive to allocation order, and that sensitivity is itself evidence of an
+overrun rather than a bad pointer.
+
+**The fix**, in `NpScene.cpp`: the locks are allocated `0x20` bytes through a named
+constant, `nxLockConstruct` clears all eight dwords rather than the first, and the
+comment carries the `PhysicsInternal.h` quotation so the number is traceable to a
+measurement rather than to a guess.
+
+## 9j. The harness now reports scene=created
+
+    NxPhysicsJointTests <candidate pair>
+      sdk=created
+      scene=created
+      NxPhysics: Actor Initialisation failed: returned NULL.
+      exit=1
+
+**This is the first time the candidate has created a scene.** The regression 9g
+recorded is gone: the harness no longer crashes, and it is strictly better than the
+`scene=null` it printed before this work.
+
+**The remaining blocker is actor creation**, and the trace narrows it to one place.
+`Actor::loadFromDescInternal` is entered with the descriptor the harness builds, and
+the words it receives are all present:
+
+    d[0..8]  = 3f800000 00000000 00000000 00000000 3f800000 00000000 00000000
+               00000000 3f800000     <- the identity globalPose
+    d[0x0c]  = 3f800000               <- density 1.0
+    d[0x12]  = 00000001               <- the shape path selector
+    d[0x13]  = 013828d0               <- the shape array's first
+
+so the descriptor is well formed and the failure is inside the shape path. **The
+function returns 0 before its first post-validation trace fires**, which is the next
+thing to instrument -- one print per `return 0` in the shape path, compared against
+which leaf stub ran.
+
+## 9k. What is established, and what is not
+
+**Established:** the candidate creates a scene. The Scene object is allocated at the
+right size, constructed, initialised from the descriptor, pushed onto the SDK's
+scene list, and wrapped in an `NpScene` that the caller receives. Seven transcribed
+oracle rows and the wrapper class are executing, and the harness runs to completion
+without faulting.
+
+**Not established:** that the scene is the oracle's scene. Eleven reproduction holes
+sit in that path and every one is a stub. `Actor::loadFromDescInternal` then fails
+inside the shape path, so no actor is created and the joint rows still cannot be
+driven.
+
+**And the honest count:** no census row has closed. The value of this round is that
+the harness went from *crashing* to *reporting*, that a real 4-byte/32-byte
+allocation bug was found and fixed, and that `scene=created` -- the measurement six
+phases of Scene work were for -- has been reached.

@@ -10,6 +10,7 @@
 #include "NpScene.h"
 
 #include <stddef.h>
+#include <stdio.h>
 #include <new>
 #include "Scene.h"
 

@@ -30,12 +30,11 @@
 //     return 0;
 
 #include "NpScene.h"
+#include <stdio.h>
 
 #include "Scene.h"
 #include "NxActor.h"
 #include "NxActorDesc.h"
-
-#include <stdio.h>
 
 // ---------------------------------------------------------------------------
 // Reproduction holes: the lock protocol Phase 3 owns.
@@ -55,14 +54,26 @@ NpScene::NpScene(NxSceneInternal* scene)
 	mFlag = 0;
 	mScene = scene;
 
-	// The oracle builds the inner lock at +8, then the two 4-byte locks at +0xc and
-	// +0x10 through phys_fn_0005b6a0, then the two at +0x14 and +0x18, then the
-	// 0x18-byte object at +0x1c linked to them.
-	mWriteLock = nxGetSdkAllocator()->malloc(4, NX_MEMORY_PERSISTENT);
+	// The inner lock at +8, then the two locks at +0xc and +0x10 through
+	// phys_fn_0005b6a0, then the two at +0x14 and +0x18, then the 0x18-byte object
+	// at +0x1c linked to them.
+	//
+	// The locks are allocated 0x20 bytes, not 4. PhysicsInternal.h records the
+	// oracle's block: phys_fn_0005b6a0 "allocates a 32 byte block through the SDK
+	// allocator and holds only that pointer, so the lock object itself is one
+	// word". The NpScene field holds the pointer, but the BLOCK is 32 bytes -- it is
+	// a CRITICAL_SECTION followed by the interlocked owner flag at +0x18 and the
+	// owning thread id at +0x1c. Allocating four bytes and then storing a lock into
+	// it overruns the block, and that overrun was the crash: with a 4-byte
+	// allocation the harness faulted at the NpScene constructor, and the traces
+	// masked it by shifting the heap layout.
+	static const NxU32 kNpSceneLockBlock = 0x20;
+
+	mWriteLock = nxGetSdkAllocator()->malloc(kNpSceneLockBlock, NX_MEMORY_PERSISTENT);
 	if(mWriteLock)
 		mWriteLock = nxLockConstruct(mWriteLock);
 
-	mReadLock = nxGetSdkAllocator()->malloc(4, NX_MEMORY_PERSISTENT);
+	mReadLock = nxGetSdkAllocator()->malloc(kNpSceneLockBlock, NX_MEMORY_PERSISTENT);
 	if(mReadLock)
 		mReadLock = nxLockConstruct(mReadLock);
 
@@ -122,10 +133,11 @@ void NpScene::release()
 
 static void* nxLockConstruct(void* memory)
 	{
-	// phys_fn_0005b6a0 allocates a 32-byte CRITICAL_SECTION block and holds only
-	// the pointer, so the lock object itself is one word.
-	unsigned* p = static_cast<unsigned*>(memory);
-	*p = 0;
+	// phys_fn_0005b6a0: the block is the CRITICAL_SECTION plus the owner flag at
+	// +0x18 and the owning thread id at +0x1c, so the whole 0x20 bytes belong to the
+	// lock even though the NpScene field holds only the pointer.
+	for(int i = 0; i < 8; ++i)
+		static_cast<unsigned*>(memory)[i] = 0;
 	return memory;
 	}
 

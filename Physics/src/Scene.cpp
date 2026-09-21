@@ -257,6 +257,12 @@ void nxSceneDeadlockReport();
 // Rows Actor::loadFromDescInternal and the actor constructor call. REPRODUCTION
 // HOLES, as above.
 // ---------------------------------------------------------------------------
+// phys_fn_00001de0 (0x00001de0, phase 5): the shape factory. REPRODUCTION HOLE;
+// it returns a non-null shape object, which is what the caller tests.
+void* nxShapeFactory(void* shapeDesc, void* actor);
+// The multi-shape group builder (0x110 bytes). REPRODUCTION HOLE.
+void* nxShapeGroupConstruct(void* actor, unsigned count);
+
 void nxActorSetName(void* actor, unsigned name);
 void nxActorBuildBody(void* actor, const unsigned* desc);
 int nxActorComputeMass(void* actor, const unsigned* bodyWord);
@@ -498,6 +504,7 @@ int nxActorLoadFromDescInternal(void* actor, const unsigned* d)
 	{
 	unsigned* a = static_cast<unsigned*>(actor);
 
+
 	// Nine dwords of global pose, copied from descriptor words 0..8 to actor+0x20.
 	for(int i = 0; i < 9; ++i)
 		a[(0x20 / 4) + i] = d[i];
@@ -521,8 +528,37 @@ int nxActorLoadFromDescInternal(void* actor, const unsigned* d)
 		}
 
 	// The shape list. The descriptor carries {first, last} at words 0x13 and 0x14,
-	// and the count decides which path is taken.
-	const unsigned count = d[0x14] - d[0x13];
+	// so the count is (last - first). Word 0x12 selects the path: 1 builds a
+	// flexible body's shapes, 2 a static actor's.
+	//
+	// For both, the single-shape case is
+	//     piVar4 = phys_fn_00001de0(*piVar4, this);
+	//     actor+0x10 = piVar4;
+	//     if (piVar4 == 0) return 0;
+	// and the multi-shape case allocates a 0x110-byte group instead. The factory is
+	// a REPRODUCTION HOLE; what matters for the caller is that actor+0x10 is
+	// non-null, because the oracle returns 0 from here when it is not.
+	const unsigned shapeCount = (d[0x14] - d[0x13]) >> 2;
+	if(d[0x12] == 1 || d[0x12] == 2)
+		{
+		if(shapeCount == 1)
+			{
+			void* shape = nxShapeFactory(reinterpret_cast<void*>(d[0x13]), actor);
+			a[0x10 / 4] = reinterpret_cast<unsigned>(shape);
+			if(!shape)
+					return 0;
+			}
+		else if(shapeCount > 1)
+			{
+			// The multi-shape group. The oracle allocates 0x110 bytes and links each
+			// shape into it; the group is a hole and only its head is stored.
+			void* group = nxShapeGroupConstruct(actor, shapeCount);
+			a[0x10 / 4] = reinterpret_cast<unsigned>(group);
+			if(!group)
+					return 0;
+			}
+		}
+
 	if(d[0x0c] == 0 && a[0x10 / 4])
 		{
 		// No body: register the actor with the scene and succeed.
@@ -541,7 +577,9 @@ int nxActorLoadFromDescInternal(void* actor, const unsigned* d)
 	if(mass == 0)
 		{
 		if(!a[0x10 / 4])
+			{
 			return 1;
+			}
 		nxSceneAddActorObject(reinterpret_cast<void*>(a[1]), reinterpret_cast<void*>(a[0x10 / 4]));
 		return 1;
 		}
@@ -901,4 +939,43 @@ void nxSceneDeadlockReport()
 	{
 	printf("NxPhysics: PhysicsSDK: WriteLock is still aquired. Procedure call skipped "
 		"to avoid a deadlock!\n");
+	}
+
+// phys_fn_00001de0 (0x00001de0, phase 5): the shape factory. REPRODUCTION HOLE.
+//
+// The oracle builds a shape object from the descriptor and links it into the actor.
+// What the caller of this function checks is that it returned something, so this
+// returns a small allocation through the SDK allocator rather than null -- an actor
+// whose shape list is empty cannot be created, and every downstream path in this
+// reconstruction needs creation to succeed before it can be measured.
+//
+// What is NOT modelled: the shape's own layout, its vtable, and its back link to
+// the actor. An actor built through this path therefore has a shape list whose
+// contents are not the oracle's.
+void* nxShapeFactory(void* shapeDesc, void* actor)
+	{
+	(void)shapeDesc;
+	unsigned char* shape = static_cast<unsigned char*>(
+		nxGetSdkAllocator()->malloc(0x40, NX_MEMORY_PERSISTENT));
+	if(!shape)
+		return 0;
+	for(int i = 0; i < 0x40; ++i)
+		shape[i] = 0;
+	// The actor back-pointer, which the oracle stores in the shape.
+	*reinterpret_cast<void**>(shape + 4) = actor;
+	return shape;
+	}
+
+// The multi-shape group builder. REPRODUCTION HOLE, as above.
+void* nxShapeGroupConstruct(void* actor, unsigned count)
+	{
+	(void)count;
+	unsigned char* group = static_cast<unsigned char*>(
+		nxGetSdkAllocator()->malloc(0x110, NX_MEMORY_PERSISTENT));
+	if(!group)
+		return 0;
+	for(int i = 0; i < 0x110; ++i)
+		group[i] = 0;
+	*reinterpret_cast<void**>(group + 4) = actor;
+	return group;
 	}
