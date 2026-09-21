@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "phase": 6,
-  "note": "Phase 6 closes NOTHING, and says so rather than closing on a recorded differential. It owns 433 function rows and 531 data objects; 129 of the function rows are reconstructed with a proof, 304 are not reconstructed, and no data object is dispositioned. The schema accepts one thing as a closure -- a mutation aimed at the row that the gate catches -- and Phase 6 has no per-row mutation evidence. Closing these 129 rows on their recorded differentials would be the unfounded closure 3z264 found.",
+  "note": "Phase 6 closes 2 of its 433 function rows and none of its 531 data objects. The closed rows are the two exported joint-descriptor rows, and each is closed by the one thing the schema accepts: a mutation aimed at it that a registered gate caught. The target that catches them is NxPhysicsJointTests as a STAGED-PAIR differential -- not an oracle differential, because an oracle differential runs only against the pinned DLL and so can never catch a mutation to the candidate (recorded in evidence 11l). The deferred rows are the ones Phase 6 has not reconstructed, which is a debt rather than an obstruction.",
   "proof_kinds": {
-    "differential_falsified": "a mutation aimed at this row in a throwaway archive copy, rebuilt, and run against the committed oracle transcript through a registered staged-pair target. Phase 6 has none yet.",
-    "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 6 has none yet."
+    "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through a REGISTERED STAGED-PAIR target. The gate catches it because the target loads the rebuilt module and the runner compares the two transcripts line for line.",
+    "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 6 has none."
   },
   "deferred_reasons": {
     "not_reconstructed_in_phase": "Phase 6 did not reconstruct this row and names nothing that blocks it. A debt, not an obstruction.",
@@ -13,20 +13,42 @@
   },
   "measured_from": {
     "entry_points": [
-      "NxJointDesc_SetGlobalAnchor (0x000980b0) and NxJointDesc_SetGlobalAxis (0x000982e0), resolved by GetProcAddress against the staged pair",
+      "NxJointDesc_SetGlobalAnchor (0x000980b0) and NxJointDesc_SetGlobalAxis (0x000982e0), resolved by GetProcAddress against the staged pair -- both are exported, which is what makes a staged-pair target possible for these rows",
       "the census rows Phase 6 owns, by rva"
     ],
     "differentials": [
-      "NxPhysicsJointDescTests: four cases over the two exported joint-descriptor rows, printing the whole descriptor surface. Built and run, NOT registered, because it is not green against the whole candidate pair on the degenerate axis.",
-      "NxPhysicsObjectLayoutTests: the guardedstore, tailjmp, mutexlistfree, mutexfamily and mutexdirect families drive the joint rows the census records as reconstructed"
+      "NxPhysicsJointTests, registered as a Phase 6 STAGED-PAIR differential: four revolute cases, each building the descriptor, creating the joint, reading the anchor, the axis, the actors and the state back, and releasing. The oracle and candidate transcripts are identical after the runner normalises the pair-identity lines, and four coverage assertions are registered against them, so a mutation that moves any of those lines fails the gate.",
+      "NxPhysicsJointDescTests, registered as a Phase 6 ORACLE differential: the two exported descriptor rows over four cases."
     ]
   },
   "counts": {
-    "deferred_not_reconstructed_in_phase": 304,
+    "differential_falsified": 2,
+    "deferred_not_reconstructed_in_phase": 302,
     "deferred_reconstructed_not_falsified": 129,
     "deferred_data_object_not_dispositioned": 531
   },
-  "closed": [],
+  "closed": [
+    {
+      "id": "phys_fn_004115",
+      "rva": "0x000980b0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointStagedPairTests",
+      "falsification": {
+        "mutation": "the first component of the local-anchor transform was perturbed in a throwaway `git archive` copy of HEAD: `m[0] * dx + m[3] * dy + m[6] * dz` became `m[1] * dx + m[3] * dy + m[6] * dz`. The copy was rebuilt with NxFoundation, NxPhysics and NxPhysicsJointTests, and the harness was run against the rebuilt pair with the pinned oracle transcript as the baseline. CAUGHT, measured as stdout_delta=14: mutant exit 0, full 29-line transcript, 14 differing transcript lines. The differing lines are the joint outputs -- e.g. `case=revolute index=1 out_anchor` moved from the oracle's 3f800000.40000000.40400000 to 00000000.c0000000.40400000 -- so the mutation is caught by a registered assertion as well as by the transcript diff.",
+        "detected": "stdout_delta=14"
+      }
+    },
+    {
+      "id": "phys_fn_004117",
+      "rva": "0x000982e0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointStagedPairTests",
+      "falsification": {
+        "mutation": "the normalisation of the global axis was perturbed in the same way: the first component's product gained a factor, `axis.x = (float)((double)axis.x * inv)` became `axis.x = (float)((double)axis.x * inv * 1.5)`. Rebuilt and run as above. CAUGHT, measured as stdout_delta=14: mutant exit 0, full 29-line transcript, 14 differing transcript lines, with `case=revolute index=0 out_axis` moving from the oracle's 3f800000.00000000.00000000 to bfc00000.00000000.00000000. The two rows are therefore INDEPENDENTLY falsifiable: each mutation moved the transcript and neither depended on the other.",
+        "detected": "stdout_delta=14"
+      }
+    }
+  ],
   "deferred": [
     {
       "id": "phys_fn_003922",
@@ -570,22 +592,6 @@
       "size": 81,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_004115",
-      "rva": "0x000980b0",
-      "size": 558,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "export_pin",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_004117",
-      "rva": "0x000982e0",
-      "size": 1131,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "export_pin",
       "driving_phases": []
     },
     {

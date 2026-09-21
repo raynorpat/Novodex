@@ -127,15 +127,27 @@ inline const float* nxJointWorldMatrix(NxActor* actor, const float*& t)
 	// The composed matrix lives in the same per-actor workspace the caller
 	// already owns; it is written and consumed inside one call.
 	float* m = nxJointMatrixWorkspace();
-	m[0] = (1.0f - (qz * qz + qz * qz)) - (qw * qw + qw * qw);
-	m[1] = (qz * qy + qz * qy) - (qw * qx + qw * qx);
-	m[2] = (qw * qy + qw * qy) + (qz * qx + qz * qx);
-	m[3] = (qw * qx + qw * qx) + (qz * qy + qz * qy);
-	m[4] = (1.0f - (qy * qy + qy * qy)) - (qw * qw + qw * qw);
-	m[5] = (qw * qz + qw * qz) - (qy * qx + qy * qx);
-	m[6] = (qz * qx + qz * qx) - (qw * qy + qw * qy);
-	m[7] = (qy * qx + qy * qx) + (qw * qz + qw * qz);
-	m[8] = (1.0f - (qy * qy + qy * qy)) - (qz * qz + qz * qz);
+
+	// The doubled products are spelled `a * a + a * a` because that is the order the
+	// oracle's x87 stream evaluates, and the differential compares bits.
+	const float fVar10 = qy * qy + qy * qy;		// y*y + y*y
+	const float fVar7 = qz * qz + qz * qz;		// z*z + z*z
+	const float fVar6 = qy * qx + qy * qx;		// y*x + y*x
+	const float fVar8 = qz * qw + qz * qw;		// z*w + z*w
+	const float fVar9 = qz * qx + qz * qx;		// z*x + z*x
+	const float fVar11 = qy * qw + qy * qw;		// y*w + y*w
+	const float fVar3b = qz * qy + qz * qy;		// z*y + z*y
+	const float fVar1b = qx * qw + qx * qw;		// x*w + x*w
+
+	m[0] = 1.0f - (qx * qx + qx * qx);
+	m[1] = fVar6 - fVar8;
+	m[2] = fVar11 + fVar9;
+	m[3] = fVar1b + fVar3b;
+	m[4] = 1.0f - (fVar10 + fVar7);
+	m[5] = fVar9 - fVar11;
+	m[6] = fVar8 - fVar6;
+	m[7] = fVar3b + fVar1b;
+	m[8] = 1.0f - (fVar10 + fVar7);
 	m[9] = q->tx;
 	m[10] = q->ty;
 	m[11] = q->tz;

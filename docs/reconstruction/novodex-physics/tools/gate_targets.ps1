@@ -15,7 +15,7 @@ $NxPhaseTestTargets = [ordered] @{
     '3' = @('NxPhysicsGeometryTests', 'NxPhysicsKernelFuzzTests')
     '4' = @()
     '5' = @()
-    '6' = @()
+    '6' = @('NxPhysicsJointStagedPairTests')
     '7' = @()
     '8' = @()
 }
@@ -97,6 +97,15 @@ $NxRequiredCoverageLines = [ordered] @{
     # pinned oracle's after the runner normalises the pair-identity lines (diff 0), so
     # these four lines pin the whole surface: the two actors surviving the round trip,
     # the anchor and axis the descriptor carried, the state, and the release.
+    # The staged-pair joint differential: the same harness built as its own target so
+    # the closure schema has a target that loads the rebuilt module. Four assertions,
+    # quoted from the transcript.
+    'NxPhysicsJointStagedPairTests' = @(
+        'case=revolute index=0 created=yes',
+        'case=revolute index=0 out_anchor=00000000.00000000.00000000 out_axis=3f800000.00000000.00000000 state=0',
+        'case=revolute index=0 actors a=match b=match',
+        'case=revolute index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0'
+    )
     'NxPhysicsJointTests' = @(
         'case=revolute index=0 created=yes',
         'case=revolute index=0 out_anchor=00000000.00000000.00000000 out_axis=3f800000.00000000.00000000 state=0',
@@ -955,7 +964,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '4' = 100  # 34 for NxPhysicsAssetTests, 66 for NxPhysicsThirdPartyTests
     '5' = 126  # was 124: +2 for the shapeleaf family (row + candidate drive)
                # (RED on purpose: vtables family open)
-    '6' = 7   # 3 for the joint-descriptor differential, 4 for the joint differential
+    '6' = 11  # 3 oracle-descriptor + 4 oracle-joint + 4 staged-pair-joint
     '7' = 0
     '8' = 0
 }
@@ -978,6 +987,7 @@ $NxRegisteredTestTargets = @(
     'NxPhysicsCoreClusterTests',
     'NxPhysicsExportTests',
     'NxPhysicsGeometryTests',
+    'NxPhysicsJointStagedPairTests',
     'NxPhysicsKernelFuzzTests',
     'NxPhysicsSDKTests'
 )
@@ -988,6 +998,7 @@ $NxRegisteredOracleDifferentialTargets = @(
     'NxPhysicsAssetTests',
     'NxPhysicsCollisionTests',
     'NxPhysicsJointDescTests',
+    'NxPhysicsJointTests',
     'NxPhysicsJointTests',
     'NxPhysicsObjectLayoutTests',
     'NxPhysicsThirdPartyTests'

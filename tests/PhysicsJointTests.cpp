@@ -163,14 +163,17 @@ int wmain(int argc, wchar_t** argv)
 	// its expected sha256, because the addresses it calls are only meaningful against
 	// that exact file. nxOpenPair takes the directory alone, so the second argument is
 	// consumed here and checked against what was actually loaded.
-	if(argc != 3)
+	if(argc != 2 && argc != 3)
 		{
-		fprintf(stderr, "usage: %s <absolute oracle directory> <NxPhysics.dll sha256>\n",
+		fprintf(stderr, "usage: %s <absolute pair directory> [NxPhysics.dll sha256]\n",
 			"NxPhysicsJointTests");
 		return 2;
 		}
 
-	int status = nxOpenPair(argc - 1, argv, "NxPhysicsJointTests", pairDirectory, &physics);
+	// The optional second argument is the expected sha256, supplied when this runs as
+	// an oracle differential. A staged-pair run passes the directory alone.
+	int status = nxOpenPair(argc == 3 ? argc - 1 : argc, argv,
+		"NxPhysicsJointTests", pairDirectory, &physics);
 	if(status)
 		return status;
 

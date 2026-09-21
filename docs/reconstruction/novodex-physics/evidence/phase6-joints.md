@@ -4406,3 +4406,105 @@ tests that claim.
 **No census row closed.** All gates green: phases 2/3/4 exit 0, phase 5 exit 1 RED on
 purpose, phase 6 exit 0 PASS, `completed` exit 0, `validate_inventory` exit 0, 587 tool
 tests OK.
+
+## 11m. Round 26/27/28: THE FIRST TWO CENSUS ROWS CLOSED
+
+The objective has been "close census rows" since the session began, and **two rows
+closed this round**:
+
+    phys_fn_004115  0x000980b0  NxJointDesc_SetGlobalAnchor  closed  dynamically_gated
+    phys_fn_004117  0x000982e0  NxJointDesc_SetGlobalAxis    closed  dynamically_gated
+
+Each is closed by the one thing the schema accepts -- a mutation aimed at the row that
+a registered gate caught -- and both were measured, not assumed:
+
+    mutation anchor_row   m[0]*dx -> m[1]*dx   mutant exit 0, 29-line transcript,
+                                              14 differing lines   CAUGHT
+    mutation axis_row     inv -> inv * 1.5     mutant exit 0, 29-line transcript,
+                                              14 differing lines   CAUGHT
+
+**Both rows are independently falsifiable**: each mutation moved the transcript, and
+neither depended on the other.
+
+## 11n. The instrument had to be fixed three times before it measured anything
+
+The mutation campaign took three rounds because the driver was wrong in three separate
+ways, and each wrong version produced a confident-looking answer:
+
+1. **Both arms ran against the oracle directory**, so both loaded the pinned DLL and no
+   mutation could ever show. It reported `caught=NO` -- which read as "the row is not
+   falsifiable" rather than "the instrument is broken".
+2. **The scratch build only asked for `NxPhysicsJointTests`**, so `NxPhysics.dll` and
+   `NxFoundation.dll` were never produced and `LoadLibraryEx` failed with 126. The
+   mutant's empty transcript then **looked like a caught mutation** (32 differing
+   lines), because an empty output differs from everything.
+3. **The scratch build had no pair directory**, because the modules are not emitted
+   beside the harness. Fixed by staging them into `SCRATCH/pair`.
+
+**Both failure modes are the same defect this session has recorded five times now**: an
+instrument whose failure is indistinguishable from its measurement. A driver that runs
+the wrong DLL reports "not caught"; a driver that fails to load reports "caught".
+
+## 11o. The target class had to change, and the reason is structural
+
+Round 24 registered `NxPhysicsJointTests` as an **oracle differential**. Round 25
+established, by checking rather than assuming, that **an oracle differential can never
+catch a mutation to the candidate**: it runs only against the pinned DLL, because
+`run_phase_gate.ps1` gathers oracle differentials separately for exactly that reason.
+
+**So a staged-pair target had to exist.** Phase 6 now has three registrations, and the
+unit tests pinned two of the constraints that made this fiddly:
+
+    $NxPhaseTestTargets['6']              NxPhysicsJointStagedPairTests
+    $NxPhaseOracleDifferentialTargets['6'] NxPhysicsJointDescTests, NxPhysicsJointTests
+    $NxPhaseCoverageFloor['6']            11   (3 + 4 + 4)
+    $NxRegisteredTestTargets              ... NxPhysicsJointStagedPairTests ...
+    $NxRegisteredOracleDifferentialTargets ... NxPhysicsJointTests ...
+
+`NxPhysicsJointStagedPairTests` is the same harness built as its own target. The two
+classes must stay disjoint -- `run_phase_gate.ps1` asserts it by name -- and every
+registered name must appear on a phase list, which is what
+`test_every_registered_name_is_on_a_phase_list` checks.
+
+**Two unit tests had to be updated**, and it is worth being explicit that they were
+fixtures rather than failures: `PHASE_TARGETS["6"]` and `UNREGISTERED_PHASES` both
+recorded phase 6 as having **no** targets, and phase 6 now registers one.
+`test_unregistered_phase_skips_rather_than_passing` exists to catch a target reaching
+the gate unreviewed; moving phase 6 out of that set is the change it is designed to make
+visible.
+
+## 11p. Measured result
+
+    Phase 6 gate                 exit 0   status=pass
+      differential=pass                   the staged-pair run is green on both pairs
+      coverage_assertions_evaluated=11 floor=11
+    closure phase=6              closed=2 deferred=962
+    census                       functions=6338  unexplained=0
+    validate_inventory           exit 0
+
+**Full suite unmoved**: phase 1 exit 3 skipped, phases 2, 3, 4 exit 0, phase 5 exit 1
+RED on purpose, phase 6 exit 0 PASS, phases 7 and 8 exit 3 skipped, `completed` exit 0,
+587 tool tests OK.
+
+## 11q. What this means for the programme, stated without inflation
+
+**Two rows out of 6,338 are closed.** The remaining 6,336 are untouched, 431 of them
+Phase 6's own. The rate is two rows per twenty-eight rounds, and no honest reading of
+that makes the programme near the Phase 8 gate.
+
+**What is different now is that the machinery is proven end to end.** Before this round
+the programme had never closed a row; the closure path was theory -- a mutation, a
+registered target, a measured detection -- and every attempt to reach it had failed for
+a reason that turned out to be an instrument defect or a missing target. **The path has
+now been walked once, on two rows, with every step measured.**
+
+**And the three things that made it possible are reusable:**
+
+    the page-guarded allocator   faults at the write instead of at a victim
+    the step probe               varies the work rather than the process
+    the compiler-driven class    names the missing virtual instead of guessing
+    the staged-pair target       loads the rebuilt module, so a closure can exist
+
+**The next rows should be cheaper than these two.** The scene, actor, joint and
+descriptor machinery is built; the closure path is proven; and each new family needs a
+target and a mutation rather than twenty-eight rounds of diagnosis.

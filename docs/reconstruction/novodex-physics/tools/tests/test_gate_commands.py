@@ -33,10 +33,14 @@ PHASE_TARGETS = {
     "3": "NxPhysicsGeometryTests,NxPhysicsKernelFuzzTests",
     "4": "",
     "5": "",
-    "6": "",
+    # Phase 6 has a registered STAGED-PAIR target: a closure is a mutation to a row's
+    # implementation, and only a staged-pair target loads the rebuilt module, so the
+    # closure schema needs one (evidence 11l).
+    "6": "NxPhysicsJointStagedPairTests",
     "7": "",
 }
-UNREGISTERED_PHASES = ("4", "5", "6", "7")
+# Phase 6 moved out of this set when NxPhysicsJointStagedPairTests was registered.
+UNREGISTERED_PHASES = ("4", "5", "7")
 SKIPPED_EXIT = 3
 
 BINDING_FAILURES = (

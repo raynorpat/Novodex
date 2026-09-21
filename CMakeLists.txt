@@ -180,6 +180,16 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# to that one. It loads the pair through PhysicsPairLoader.h and drives the
 	# exported SDK over the C++ interface, like NxPhysicsSDKTests does.
 	add_executable(NxPhysicsJointTests tests/PhysicsJointTests.cpp)
+	# The same harness as its own STAGED-PAIR target: the closure schema needs a target
+	# that loads the rebuilt module, and an oracle differential runs only against the
+	# pinned DLL (evidence 11l). Same source, distinct target name and class.
+	add_executable(NxPhysicsJointStagedPairTests tests/PhysicsJointTests.cpp)
+	# The same include set as the oracle target above; the harness includes the
+	# Foundation's allocator interface for the page-guarded allocator, and Physics'
+	# public headers for the descriptors.
+	target_include_directories(NxPhysicsJointStagedPairTests PRIVATE
+		Foundation/include Foundation/src/include Physics/include)
+	target_link_libraries(NxPhysicsJointStagedPairTests bcrypt)
 	target_include_directories(NxPhysicsJointTests PRIVATE Foundation/include Physics/include)
 	target_link_libraries(NxPhysicsJointTests bcrypt)
 	# The two exported joint-descriptor rows on their own. Separate from
