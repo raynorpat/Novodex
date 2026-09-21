@@ -5061,3 +5061,66 @@ the identity inputs defeat; control-flow mutations are not.**
 validity check, \loadFromDescInternal\'s shape-count branch, the actor constructor\'s
 slot handout, \createJoint\'s type switch (done here) -- and write a closure for each.
 This round ran the first and did not write the closures.
+
+## 12i. Round 33: two more invisible mutations, and the third row closed
+
+12h's rule was applied to three rows and **one of the three is observable**:
+
+    createActor_valid      if(!desc.isValid())  ->  if(desc.isValid())
+                           mutant exit 1, 7-line transcript against the oracle's 29,
+                           27 differing lines                                  CAUGHT
+    loadFromDesc_shape     d[0x12] == 1 || == 2  ->  == 9 || == 2
+                           mutant exit 0, 29-line transcript                   not caught
+    actorCtor_slot         a[0xc/4] = slot  ->  a[0xc/4] = slot; a[8/4] = 1
+                           mutant exit 0, 29-line transcript                   not caught
+
+**`phys_fn_000626` (Scene::createActor) is closed** on the first: the mutant loses
+`fixture=a,created b,created` and every case's `created=yes`, `out_anchor`, `actors` and
+`released` line, so the registered assertion `case=revolute index=0 created=yes` fails as
+well as the diff. **Three rows are now closed** -- two in 11m, one here.
+
+**The other two are invisible, and each says something specific:**
+
+- **`loadFromDesc_shape`** skips the shape list entirely, and the transcript does not
+  move. **So the harness never observes the actor's shapes** -- which is consistent with
+  `nxShapeFactory` being a reproduction hole that returns a bare block: nothing reads it,
+  so nothing can see it change.
+- **`actorCtor_slot`** sets a field the transcript never prints. **The actor's slot id is
+  internal state with no reader on this path.**
+
+**So the count is now: of five control-flow mutations tried, one was caught.** The rule
+from 12h holds -- a construction failure is observable -- but **it applies only where the
+harness checks the construction**, and the joint harness checks the *joint* and the
+*fixture actors* and nothing else.
+
+## 12j. What is left, and it is now a question about the harness rather than the rows
+
+    Scene::createActor         CLOSED (this round)
+    Scene::createJoint         mutation CAUGHT (12h), closure NOT yet written
+    Scene::createScene roots   not closable -- forwarders/stubs, not reconstructions
+    Actor::loadFromDescInternal  no observable control flow found yet
+    the actor constructor      no observable control flow found yet
+    the Scene ctor/initialiser   no observable control flow found yet
+
+**`Scene::createJoint` was caught in 12h and its closure has not been written.** That is
+the next row, and it needs nothing new -- the mutation is recorded and the target is
+registered.
+
+**And the honest reading of the last three rounds.** 11r, 12b and 12i have each ended
+with fewer closable rows than the round before claimed:
+
+    12a claimed   the six recorded rows are closable by mutation
+    12g corrected they are not closable by ARITHMETIC mutation
+    12h found     they are closable by CONTROL-FLOW mutation
+    12i measured  of three control-flow mutations, one is observable
+
+**The claims have been narrowing toward the truth rather than away from it**, and each
+narrowing was a measurement. **The remaining truth is that this harness observes the
+joint it builds and the fixture it creates, so it can falsify the rows that BUILD those
+and not the rows inside them.** Closing the rest needs either a harness that reads more,
+or mutations to the branches that decide whether the build happens at all.
+
+**No census row closed this round beyond `phys_fn_000626`.** All gates green: phase 1
+exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose, phase 6 exit 0 PASS,
+phase 7 exit 0 PASS with `closed=1`, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 587 tool tests OK.

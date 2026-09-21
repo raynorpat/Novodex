@@ -3,8 +3,8 @@
   "phase": 7,
   "note": "Phase 7 closes NOTHING, and says so rather than closing on a recorded differential. It owns 561 function rows and 502 data objects; 187 of the function rows are reconstructed with a proof, 374 are not reconstructed, and no data object is dispositioned. The schema accepts one thing as a closure -- a mutation aimed at the row that the gate catches -- and this phase has no per-row mutation evidence. The ledger is published so that every row the phase owns is accounted for rather than left in no list: before it existed, 1063 rows were owned by a phase with no ledger at all.",
   "proof_kinds": {
-    "differential_falsified": "a mutation aimed at this row in a throwaway archive copy, rebuilt, and run against the committed oracle transcript through a registered staged-pair target. This phase has none yet.",
-    "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. This phase has none yet."
+    "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through NxPhysicsJointStagedPairTests, a REGISTERED Phase 7 STAGED-PAIR target. The mutation is to the row's CONTROL FLOW, because the harness drives identity poses and identity quaternions -- arithmetic mutations cancel on those inputs (evidence 12d) -- while a mutation that breaks a construction moves the `created=yes` line the harness prints (12h).",
+    "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. Phase 7 has none."
   },
   "deferred_reasons": {
     "not_reconstructed_in_phase": "this phase did not reconstruct this row and names nothing that blocks it. A debt, not an obstruction.",
@@ -18,11 +18,23 @@
     "differentials": []
   },
   "counts": {
-    "deferred_not_reconstructed_in_phase": 374,
+    "differential_falsified": 1,
+    "deferred_not_reconstructed_in_phase": 373,
     "deferred_reconstructed_not_falsified": 187,
     "deferred_data_object_not_dispositioned": 502
   },
-  "closed": [],
+  "closed": [
+    {
+      "id": "phys_fn_000626",
+      "rva": "0x00011730",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointStagedPairTests",
+      "falsification": {
+        "mutation": "the actor-validity guard was inverted in a throwaway `git archive` copy of HEAD: `if(!desc.isValid())` became `if(desc.isValid())`, so every valid descriptor took the failure path and `createActor` returned 0. The copy was rebuilt with NxFoundation, NxPhysics and NxPhysicsJointTests, and the harness was run against the rebuilt pair with the pinned oracle transcript as the baseline. CAUGHT, measured as stdout_delta=27: the mutant exit=1 with a 7-line transcript against the oracle's 29, and the lines it loses are `fixture=a,created b,created` and all four cases' `created=yes`, `out_anchor`, `actors` and `released` lines -- so the mutation is caught by the registered assertion `case=revolute index=0 created=yes` as well as by the diff.",
+        "detected": "stdout_delta=27"
+      }
+    }
+  ],
   "deferred": [
     {
       "id": "phys_fn_000013",
@@ -700,14 +712,6 @@
       "id": "phys_fn_000624",
       "rva": "0x000116b0",
       "size": 127,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_000626",
-      "rva": "0x00011730",
-      "size": 3227,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
       "driving_phases": []
