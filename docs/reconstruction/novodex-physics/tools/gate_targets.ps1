@@ -13,7 +13,7 @@ $NxPhaseTestTargets = [ordered] @{
     '1' = @()
     '2' = @('NxPhysicsExportTests', 'NxPhysicsSDKTests', 'NxPhysicsCoreClusterTests')
     '3' = @('NxPhysicsGeometryTests', 'NxPhysicsKernelFuzzTests')
-    '4' = @()
+    '4' = @('NxPhysicsAssetTests')
     '5' = @()
     '6' = @('NxPhysicsJointStagedPairTests')
     '7' = @('NxPhysicsJointStagedPairTests')
@@ -64,7 +64,7 @@ $NxPhaseOracleDifferentialTargets = [ordered] @{
     '1' = @()
     '2' = @()
     '3' = @('NxPhysicsCollisionTests')
-    '4' = @('NxPhysicsAssetTests', 'NxPhysicsThirdPartyTests')
+    '4' = @('NxPhysicsThirdPartyTests')
     '5' = @('NxPhysicsObjectLayoutTests')
     '6' = @('NxPhysicsJointDescTests', 'NxPhysicsJointTests')
     '7' = @()
@@ -961,7 +961,8 @@ $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
-    '4' = 100  # 34 for NxPhysicsAssetTests, 66 for NxPhysicsThirdPartyTests
+    '4' = 71  # 5 for the staged-pair asset harness (NxPhysicsAssetTests runs as a staged pair now),
+               # 66 for NxPhysicsThirdPartyTests
     '5' = 126  # was 124: +2 for the shapeleaf family (row + candidate drive)
                # (RED on purpose: vtables family open)
     '6' = 11  # 3 oracle-descriptor + 4 oracle-joint + 4 staged-pair-joint
@@ -987,6 +988,7 @@ $NxPhaseCoverageFloor = [ordered] @{
 # the list of names this programme knows. A typo in either one fails.
 $NxRegisteredTestTargets = @(
     'NxPhysicsCoreClusterTests',
+    'NxPhysicsAssetTests',
     'NxPhysicsExportTests',
     'NxPhysicsGeometryTests',
     'NxPhysicsJointStagedPairTests',
@@ -997,7 +999,6 @@ $NxRegisteredStaticProofTargets = @(
     'NxPhysicsInternalTests'
 )
 $NxRegisteredOracleDifferentialTargets = @(
-    'NxPhysicsAssetTests',
     'NxPhysicsCollisionTests',
     'NxPhysicsJointDescTests',
     'NxPhysicsJointTests',

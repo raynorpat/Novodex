@@ -1006,7 +1006,14 @@ static const unsigned char* nxOracleTarget(bool selfOnly, const unsigned char* b
 	for(unsigned i = 0; i < kNxRvaTranslationCount; ++i)
 		{
 		if(kNxRvaTranslations[i].oracleRva == rva)
-			return reinterpret_cast<const unsigned char*>(kNxRvaTranslations[i].candidateAddress);
+			{
+			// The table's address is in the module's PREFERRED layout, because that is what the
+			// linker map records. The loader relocates the module, so the address has to be rebased:
+			// `actualBase + (preferredAddress - preferredBase)`. Returning it unchanged was the fault
+			// this fixes -- `1000a240` is not in any loaded module when the module sits at 6dbf0000.
+			const unsigned offset = kNxRvaTranslations[i].candidateAddress - kNxRvaPreferredImageBase;
+			return base + offset;
+			}
 		}
 	fprintf(stderr, "WARNING: no translation for %s at oracle rva 0x%08x; "
 		"this target is not in the rebuilt module's map\n", what, rva);
@@ -1015,12 +1022,34 @@ static const unsigned char* nxOracleTarget(bool selfOnly, const unsigned char* b
 
 int wmain(int argc, wchar_t** argv)
 	{
+	// Two invocation conventions, and this harness is called both ways:
+	//   * as an ORACLE differential, `run_phase_gate.ps1` passes the pinned directory AND its
+	//     expected sha256;
+	//   * as a STAGED-PAIR differential, `run_differential.ps1` passes the pair directory ALONE,
+	//     because it has already verified the pair's identity itself.
+	// So the hash is optional and the pin is checked only when one was given.
+	// A single argument means a staged-pair run. `run_differential.ps1` invokes a target as
+	// `<exe> <pair directory>` and nothing else -- no hash, because it verified the pair's identity
+	// itself, and no `--self`, because driving the given module is what a staged-pair target IS. The
+	// explicit `--self` is accepted as the same thing, which is how this harness has been tested by
+	// hand.
 	bool selfOnly = false;
-	if(argc == 4 && wcscmp(argv[3], L"--self") == 0)
+	bool haveHash = false;
+	if(argc == 3 && wcscmp(argv[2], L"--self") == 0)
 		selfOnly = true;
-	else if(argc != 3)
+	else if(argc == 4 && wcscmp(argv[3], L"--self") == 0)
 		{
-		fprintf(stderr, "usage: NxPhysicsAssetTests <oracle directory> <NxPhysics.dll sha256> [--self]\n");
+		selfOnly = true;
+		haveHash = true;
+		}
+	else if(argc == 3)
+		haveHash = true;
+	else if(argc == 2)
+		selfOnly = true;
+	else
+		{
+		fprintf(stderr, "usage: NxPhysicsAssetTests <pair directory> "
+			"[NxPhysics.dll sha256] [--self]\n");
 		return 2;
 		}
 
@@ -1044,8 +1073,13 @@ int wmain(int argc, wchar_t** argv)
 
 	char expected[65];
 	size_t converted = 0;
-	if(wcstombs_s(&converted, expected, sizeof(expected), argv[2], _TRUNCATE) != 0)
-		return nxFail("cannot read the expected hash argument");
+	if(haveHash)
+		{
+		if(wcstombs_s(&converted, expected, sizeof(expected), argv[2], _TRUNCATE) != 0)
+			return nxFail("cannot read the expected hash argument");
+		}
+	else
+		expected[0] = '\0';
 
 	printf("oracle module path=%S sha256=%s\n", loadedPath, loadedHash);
 	printf("oracle base=%p mode=%s\n", (void*) physics, selfOnly ? "self" : "differential");
@@ -1054,7 +1088,7 @@ int wmain(int argc, wchar_t** argv)
 	// subject. Before this guard the check ran unconditionally and `--self` could not be used on any
 	// file but the pinned one, which made the flag decorative -- the same defect the layout harness
 	// had, found in round 37.
-	if(!selfOnly)
+	if(!selfOnly && haveHash)
 		{
 		if(strcmp(loadedHash, expected) != 0)
 			{

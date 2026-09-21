@@ -8107,3 +8107,74 @@ guess this session has spent forty rounds refusing to make.
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 601 tool tests OK.
+
+## 16u. Round 73: the asset harness DRIVES THE CANDIDATE, and the missing row was already written
+
+16t left one target unresolvable: `phys_fn_001984`, `PenetrationMap::~PenetrationMap`, reported absent
+from the rebuilt module's map. **This round went to write it and found it already written.**
+
+    // phys_fn_001984 at 0x0004cae0. The grid first, the spread table second, both
+    // through the CRT free at 0x000f48bb, and both pointers nulled after.
+    PenetrationMap::~PenetrationMap()
+        {
+        if(mGrid)  { free(mGrid);  mGrid = 0;  }
+        if(mSpread){ free(mSpread); mSpread = 0; }
+        }
+
+**In `Physics/src/PMap.cpp`, behind a comment naming the row and its RVA**, and the rebuilt module
+emits it: `??1PenetrationMap@@UAE@XZ` at `0x10016410` in `PMap.obj`, as a function symbol. **The census
+recorded the row as `discovered` with no implementation and no symbol**, so the harness was asking for a
+function that had been written and never recorded -- **11s's finding again, on a row this session had
+itself reported as unreached.**
+
+**Recorded**: implementation `Physics/src/PMap.cpp`, symbol `PenetrationMap::~PenetrationMap`, state
+`reconstructed`, with a proof that names what was checked rather than what was assumed. **The table went
+to 37 of 39.**
+
+## 16v. And then the harness faulted on an address in the map
+
+With every target resolved the harness faulted again, and **the address was the answer**:
+
+    eip = 1000a240    "Frame IP not in any known module"
+
+**`1000a240` is `??0MemoryStream@@QAE@IPBXII@Z`'s address in the map** -- a real address, in the module's
+**preferred** layout. **The linker map records preferred-image-base addresses, and the loader relocates
+the module**, so a table address has to be rebased:
+
+    actualBase + (preferredAddress - preferredBase)
+
+**The generator now emits `kNxRvaPreferredImageBase` and the harness rebases**, and the reason is
+written where the arithmetic is. **That is the fifth matcher-or-address correction this session has
+made, and the first where the value was right and its FRAME was wrong.**
+
+## 16w. The harness drives the candidate, and the differential is green
+
+    candidate --self    exit 0    asset result=pass
+    oracle              exit 0    asset result=pass
+    normalized diff     1 line    `mode=differential` against `mode=self`, the harness's own label
+
+**36 transcript lines from each pair, agreeing on everything except the label the harness prints for
+itself.** And the harness now takes a pair directory alone, because that is how
+`run_differential.ps1` invokes a staged-pair target -- **measured from the joint harness's convention
+rather than assumed**, since the first attempt required an explicit `--self` and the runner does not
+pass one.
+
+**So `NxPhysicsAssetTests` is registered as phase 4's staged-pair target**, the first that phase has ever
+had, and it leaves the oracle-differential list because the two classes must stay disjoint.
+
+## 16x. What is left, and it is one invocation
+
+**The gate fails on the oracle-side staged run reporting no coverage**: the runner invokes the target
+with the oracle pair directory and the harness produces nothing there, while it produces a full
+transcript against the candidate. **That is a difference between the two pair directories from the
+harness's side, and it is the next thing to measure** -- not a defect in the target's logic, which is
+green on both pairs when invoked by hand.
+
+**And one correction worth recording**: the coverage assertions for this target were **already
+registered** and I added a second block without checking, which produced a duplicate-key parse error.
+The duplicate is removed. **That is the second time this round I changed something that was already
+right**, after the destructor, and both were found by the tool refusing the change.
+
+**All gates green except phase 4**: phase 1 exit 3 skipped, phases 2/3 exit 0, **phase 4 exit 1 on the
+invocation above**, phase 5 exit 1 RED on purpose, phases 6/7 exit 0 PASS, phase 8 exit 3 skipped,
+`completed` exit 0, `validate_inventory` exit 0, 601 tool tests OK.

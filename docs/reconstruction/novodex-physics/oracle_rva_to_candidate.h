@@ -13,6 +13,11 @@
 
 struct NxRvaTranslation { unsigned oracleRva; unsigned candidateAddress; };
 
+// The image base the map recorded those addresses against. A loaded module is relocated,
+// so a table address has to be rebased onto the base the loader actually used: the value
+// below is an address in that preferred layout, not a runtime address.
+static const unsigned kNxRvaPreferredImageBase = 0x10000000u;
+
 static const NxRvaTranslation kNxRvaTranslations[] = {
 	{ 0x0000b5d0, 0x1000c5f0u },  // phys_fn_000226  NpPhysicsSDK::NpPhysicsSDK
 	{ 0x0000b5f0, 0x1000c910u },  // phys_fn_000228  NpPhysicsSDK::release
@@ -38,6 +43,7 @@ static const NxRvaTranslation kNxRvaTranslations[] = {
 	{ 0x0000e030, 0x10018c60u },  // phys_fn_000458  PhysicsSDK::getNbMaterials
 	{ 0x0000e1b0, 0x10017a50u },  // phys_fn_000472  PhysicsSDK::PhysicsSDK
 	{ 0x00013070, 0x1001b060u },  // phys_fn_000651  NxSceneInternal::initialise
+	{ 0x0004cae0, 0x10016410u },  // phys_fn_001984  PenetrationMap::~PenetrationMap
 	{ 0x000505f0, 0x10016330u },  // phys_fn_002045  PenetrationMap::PenetrationMap
 	{ 0x00050640, 0x100165a0u },  // phys_fn_002047  PenetrationMap::create
 	{ 0x00051040, 0x10016e10u },  // phys_fn_002051  NxReleasePMap

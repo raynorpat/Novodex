@@ -36016,13 +36016,15 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/779",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6046",
-      "static_proof": null,
+      "static_proof": "reconstructed in Physics/src/PMap.cpp as PenetrationMap::~PenetrationMap, behind a comment that names this row and its RVA: \"phys_fn_001984 at 0x0004cae0. The grid first, the spread table second, both through the CRT free at 0x000f48bb, and both pointers nulled after.\" The body frees mGrid then mSpread, nulling each. Confirmed to be IN the rebuilt module rather than only in the source: the candidate's linker map records ??1PenetrationMap@@UAE@XZ as a function symbol in PMap.obj at 0x10016410, so the object contributes it and the linker did not discard it. Recorded in round 73, after the asset harness reported this row as an unresolvable target and the implementation turned out to have been written already.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Round 73: the destructor is implemented in PMap.cpp behind a comment naming this row and its RVA, and the rebuilt module emits it as ??1PenetrationMap@@UAE@XZ in PMap.obj at 0x10016410. The census recorded the row as `discovered` with no implementation and no symbol, so the asset harness asked for a function that had already been written. Recorded from the code and the map rather than recomputed.",
+      "implementation": "Physics/src/PMap.cpp",
+      "implementation_symbol": "PenetrationMap::~PenetrationMap"
     },
     {
       "id": "phys_fn_001985",
