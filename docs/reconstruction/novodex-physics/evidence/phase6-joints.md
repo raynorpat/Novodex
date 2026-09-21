@@ -3690,3 +3690,57 @@ a regex over the header.
 **No census row closed.** All gates green: phases 2/3/4 exit 0, phase 5 exit 1 RED on
 purpose, phase 6 exit 0 PASS, `completed` exit 0, `validate_inventory` exit 0, 587
 tool tests OK.
+
+## 10j. Round 15: the compiler confirms NxActor is abstract, and the probe taught a
+## lesson about probes
+
+10i named the method fix: drive the generator from the compiler rather than a regex
+over the header. This round tried it and learned something about how to ask.
+
+**What was tried.** A probe target that compiled an empty `class NpActorProbe :
+public NxActor {}`, on the theory that the compiler would list the pure virtuals it
+had not implemented.
+
+**It compiled cleanly.** The immediate reading was that `NxActor` has no pure virtuals
+and every generated body was unnecessary. **That reading was wrong**, and the way it
+was wrong is the finding:
+
+**A class that is never instantiated is never checked for abstractness.** An empty
+subclass compiles whether or not it is abstract, because the compiler only rejects an
+abstract class at the point something constructs it. The probe compiled *and proved
+nothing* -- it could not have failed.
+
+**The corrected probe uses MSVC's own intrinsic**:
+
+    static_assert(!__is_abstract(NxActor), "NxActor itself is abstract");
+    static_assert(!__is_abstract(NpActorProbe), "an empty NxActor subclass is abstract");
+
+**Both assertions fail**, so:
+
+    NxActor is abstract, and an empty subclass of it is abstract.
+
+That is a direct, compiler-reported answer, and it settles the question 10g raised:
+**`NxActor` does declare pure virtuals, 84 of them, and a concrete subclass must
+implement all of them.** The generated class in 10i was therefore necessary, not
+superfluous.
+
+**The method fix, now precise.** To get the compiler's list rather than a regex's
+guess, the probe must **instantiate** the class:
+
+    NpActorVtable probe;      // C2259, naming what is still pure
+
+and read the error. The empty-subclass form cannot work, for the reason above.
+
+**And a general lesson worth keeping.** Two probes in this reconstruction have now
+been built on a wrong assumption about what a compiler checks:
+
+    round 12   placed a static_assert inside a class, where the type is incomplete
+    round 15   compiled an abstract class without instantiating it
+
+**Both looked like successful measurements and neither measured anything.** A probe
+that cannot fail is not a probe; the first question about any instrument is what
+result would contradict the hypothesis.
+
+**No census row closed.** All gates green: phases 2/3/4 exit 0, phase 5 exit 1 RED on
+purpose, phase 6 exit 0 PASS, `completed` exit 0, `validate_inventory` exit 0, 587
+tool tests OK.
