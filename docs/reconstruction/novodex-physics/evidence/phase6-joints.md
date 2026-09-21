@@ -6494,3 +6494,70 @@ this round closed 66 of them from the ledger that did.
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 587 tool tests OK.
+
+## 14f. Round 50: a permissive rule wrote prose into the census, twice
+
+14e said the next step was to record the symbol for the nine bare-name rows. **Doing it produced a
+lesson instead, and it is the thirteenth finding.**
+
+**The first pass** took the first lower-case word of six letters or more from the mutation text:
+
+    phys_fn_000224  ->  "enters"
+    phys_fn_000437  ->  "written"
+
+**The second pass** added an existence test -- the candidate had to appear as an identifier
+somewhere in the reconstruction's trees -- and produced:
+
+    phys_fn_000224  ->  "removed"
+    phys_fn_000437  ->  "written"
+
+**because `removed` and `written` occur in comments and strings**, so an existence test does not
+reject prose. **At its widest the census carried 101 symbols, 42 of them bare words** --
+`removed`, `written`, `sixteen`, `getGroupCollisionFlag`, `purgeMaterials`.
+
+**The corrected rule accepts only the two forms the mutation text uses reliably:**
+
+    "at the entry of QUALIFIED"     e.g. NpPhysicsSDK::setParameter
+    a qualified A::B                e.g. PhysicsSDK::setGroupCollisionFlag
+
+**It cleared the 42 and left what the census can stand behind:**
+
+    qualified names                28
+    harness dispatch table (46)    41
+    named by its drive (46)         1
+    --------------------------------
+                                   70
+
+**And the narrow rule then over-cleared one legitimate value.** `phys_fn_004087`'s symbol is
+`nxAccumulateByKind0867`, recorded in round 46 from the `xaccum` drive that calls the candidate
+function by name -- **a third legitimate form**. The rule kept only qualified names and cleared it,
+so **the rule was too narrow rather than the value wrong**, and it was restored.
+
+## 14g. Why this is the finding worth recording
+
+**Every bad value was written by a rule that looked reasonable, and no gate could tell `written`
+from a real symbol** -- both are strings. **And the check added in 13m skips a row that has a
+symbol**, so a garbage symbol would have **silenced that check on 42 rows**.
+
+**That is the failure mode this session keeps meeting from a new side:** a rule that is right about
+its shape and wrong about its inputs, producing output no gate can distinguish from the real thing.
+**It was avoided by asking what each recorded value actually is** rather than by trusting the rule
+that wrote it -- the same move as 7e, 7h, 7i, 8o, 8p, 10d, 11s, 12s, 13c, 13j, 13m, 14b.
+
+## 14h. State after fifty rounds
+
+    rows with an implementation        247
+    ... carrying implementation_symbol  70   (28 qualified, 41 dispatch table, 1 by drive)
+    ... in IMPLEMENTATION_MISMATCHES    66
+    checks added this session            8
+    audit findings                      13
+    census rows closed                   6
+    all gates                            green
+
+**Fifty rounds, six closures, thirteen findings and eight checks.** The closures are the objective
+and there are six; **the findings and the checks are what the fifty rounds actually produced**, and
+the last four of them were found in the instruments the preceding rounds had just added.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 587 tool tests OK.

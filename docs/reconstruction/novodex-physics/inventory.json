@@ -301,7 +301,8 @@
       "static_proof": null,
       "dynamic_proof": "the actor constructor; executed for every actor. driven on BOTH pairs by NxPhysicsJointStagedPairTests, a registered Phase 6 staged-pair differential (tools/gate_targets.ps1, floor 11, four coverage assertions). The harness creates the SDK, a scene, two actors with bodies and four revolute joints, reads each joint's anchor, axis, actors and state back, and releases everything; the oracle and candidate transcripts are identical after the runner normalises the pair-identity lines, and the gate runs the differential as part of phase 6. This row executes on that path. Recorded in round 30, after 11s found that the work was done and the census still said `discovered`.",
       "notes": "",
-      "implementation": "Physics/src/Scene.cpp"
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "Scene::createJoint"
     },
     {
       "id": "phys_fn_000014",
@@ -4101,7 +4102,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/src/PhysicsInternal.cpp"
+      "implementation": "Physics/src/PhysicsInternal.cpp",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_000225",
@@ -4214,7 +4216,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/src/NpPhysicsSDK.cpp"
+      "implementation": "Physics/src/NpPhysicsSDK.cpp",
+      "implementation_symbol": "NpPhysicsSDK::setParameter"
     },
     {
       "id": "phys_fn_000231",
@@ -4548,7 +4551,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/src/NpPhysicsSDK.cpp"
+      "implementation": "Physics/src/NpPhysicsSDK.cpp",
+      "implementation_symbol": "NpPhysicsSDK::setGroupCollisionFlag"
     },
     {
       "id": "phys_fn_000249",
@@ -4585,7 +4589,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/include/NxPhysicsSDK.h"
+      "implementation": "Physics/include/NxPhysicsSDK.h",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_000251",
@@ -4734,7 +4739,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/src/NpPhysicsSDK.cpp"
+      "implementation": "Physics/src/NpPhysicsSDK.cpp",
+      "implementation_symbol": "NpPhysicsSDK::setMaterialAtIndex"
     },
     {
       "id": "phys_fn_000259",
@@ -4829,7 +4835,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/src/NpPhysicsSDK.cpp"
+      "implementation": "Physics/src/NpPhysicsSDK.cpp",
+      "implementation_symbol": "NpPhysicsSDK::purgeMaterials"
     },
     {
       "id": "phys_fn_000264",
@@ -5013,7 +5020,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/src/NpPhysicsSDK.cpp"
+      "implementation": "Physics/src/NpPhysicsSDK.cpp",
+      "implementation_symbol": "NpPhysicsSDK::setFluidGroupPairFlags"
     },
     {
       "id": "phys_fn_000274",
@@ -5050,7 +5058,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/src/NpPhysicsSDK.cpp"
+      "implementation": "Physics/src/NpPhysicsSDK.cpp",
+      "implementation_symbol": "NpPhysicsSDK::getFluidGroupPairFlags"
     },
     {
       "id": "phys_fn_000276",
@@ -5087,7 +5096,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/src/NpPhysicsSDK.cpp"
+      "implementation": "Physics/src/NpPhysicsSDK.cpp",
+      "implementation_symbol": "NpPhysicsSDK::setPerformanceInspector"
     },
     {
       "id": "phys_fn_000278",
@@ -7798,7 +7808,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/src/PhysicsSDK.cpp"
+      "implementation": "Physics/src/PhysicsSDK.cpp",
+      "implementation_symbol": "PhysicsSDK::setParameter"
     },
     {
       "id": "phys_fn_000428",
@@ -7835,7 +7846,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/src/PhysicsSDK.cpp"
+      "implementation": "Physics/src/PhysicsSDK.cpp",
+      "implementation_symbol": "PhysicsSDK::getParameter"
     },
     {
       "id": "phys_fn_000430",
@@ -7983,7 +7995,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/include/NxScene.h"
+      "implementation": "Physics/include/NxScene.h",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_000438",
@@ -8058,7 +8071,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/include/NxPhysicsSDK.h"
+      "implementation": "Physics/include/NxPhysicsSDK.h",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_000442",
@@ -8151,7 +8165,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/include/NxPhysicsSDK.h"
+      "implementation": "Physics/include/NxPhysicsSDK.h",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_000447",
@@ -8262,7 +8277,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/src/PhysicsSDK.cpp"
+      "implementation": "Physics/src/PhysicsSDK.cpp",
+      "implementation_symbol": "PhysicsSDK::setGroupCollisionFlag"
     },
     {
       "id": "phys_fn_000453",
@@ -8335,7 +8351,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/include/NxPhysicsSDK.h"
+      "implementation": "Physics/include/NxPhysicsSDK.h",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_000457",
@@ -8812,7 +8829,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/include/NxPhysicsSDK.h"
+      "implementation": "Physics/include/NxPhysicsSDK.h",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_000483",
@@ -8849,7 +8867,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/include/NxPhysicsSDK.h"
+      "implementation": "Physics/include/NxPhysicsSDK.h",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_000485",
@@ -8886,7 +8905,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/include/NxPhysicsSDK.h"
+      "implementation": "Physics/include/NxPhysicsSDK.h",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_000487",
@@ -8923,7 +8943,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "continuation of the entry at 0x0000f690",
-      "implementation": "Physics/include/NxPhysicsSDK.h"
+      "implementation": "Physics/include/NxPhysicsSDK.h",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_000489",
@@ -8960,7 +8981,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/include/Nxp.h"
+      "implementation": "Physics/include/Nxp.h",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_000491",
@@ -11861,7 +11883,8 @@
       "static_proof": null,
       "dynamic_proof": "the Scene descriptor initialiser; executed by createScene. driven on BOTH pairs by NxPhysicsJointStagedPairTests, a registered Phase 6 staged-pair differential (tools/gate_targets.ps1, floor 11, four coverage assertions). The harness creates the SDK, a scene, two actors with bodies and four revolute joints, reads each joint's anchor, axis, actors and state back, and releases everything; the oracle and candidate transcripts are identical after the runner normalises the pair-identity lines, and the gate runs the differential as part of phase 6. This row executes on that path. Recorded in round 30, after 11s found that the work was done and the census still said `discovered`.",
       "notes": "",
-      "implementation": "Physics/src/Scene.cpp"
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "NxSceneInternal::initialise"
     },
     {
       "id": "phys_fn_000652",
@@ -12114,7 +12137,8 @@
       "static_proof": null,
       "dynamic_proof": "Scene::createJoint; executed for all four revolute cases. driven on BOTH pairs by NxPhysicsJointStagedPairTests, a registered Phase 6 staged-pair differential (tools/gate_targets.ps1, floor 11, four coverage assertions). The harness creates the SDK, a scene, two actors with bodies and four revolute joints, reads each joint's anchor, axis, actors and state back, and releases everything; the oracle and candidate transcripts are identical after the runner normalises the pair-identity lines, and the gate runs the differential as part of phase 6. This row executes on that path. Recorded in round 30, after 11s found that the work was done and the census still said `discovered`.",
       "notes": "",
-      "implementation": "Physics/src/Scene.cpp"
+      "implementation": "Physics/src/Scene.cpp",
+      "implementation_symbol": "PhysicsSDK::createJoint"
     },
     {
       "id": "phys_fn_000666",
@@ -14599,7 +14623,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/src/ContactGeneration.cpp"
+      "implementation": "Physics/src/ContactGeneration.cpp",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_000804",
@@ -14636,7 +14661,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/src/ContactGeneration.cpp"
+      "implementation": "Physics/src/ContactGeneration.cpp",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_000806",
@@ -14673,7 +14699,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/src/ContactGeneration.cpp"
+      "implementation": "Physics/src/ContactGeneration.cpp",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_000808",
@@ -14710,7 +14737,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/src/ContactGeneration.cpp"
+      "implementation": "Physics/src/ContactGeneration.cpp",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_000810",
@@ -14747,7 +14775,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/src/ContactGeneration.cpp"
+      "implementation": "Physics/src/ContactGeneration.cpp",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_000812",
@@ -14784,7 +14813,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/src/ContactGeneration.cpp"
+      "implementation": "Physics/src/ContactGeneration.cpp",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_000814",
@@ -14821,7 +14851,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/src/ContactGeneration.cpp"
+      "implementation": "Physics/src/ContactGeneration.cpp",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_000816",
@@ -14858,7 +14889,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/src/ContactGeneration.cpp"
+      "implementation": "Physics/src/ContactGeneration.cpp",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_000818",
@@ -14895,7 +14927,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/src/ContactGeneration.cpp"
+      "implementation": "Physics/src/ContactGeneration.cpp",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_000820",
@@ -14932,7 +14965,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/src/ContactGeneration.cpp"
+      "implementation": "Physics/src/ContactGeneration.cpp",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_000822",
@@ -14969,7 +15003,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/src/ContactGeneration.cpp"
+      "implementation": "Physics/src/ContactGeneration.cpp",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_000824",
@@ -15006,7 +15041,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/src/ContactGeneration.cpp"
+      "implementation": "Physics/src/ContactGeneration.cpp",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_000826",
@@ -30768,7 +30804,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/include/NxIntersectionBoxBox.h"
+      "implementation": "Physics/include/NxIntersectionBoxBox.h",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_001697",
@@ -30805,7 +30842,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "continuation of the entry at 0x000360e0",
-      "implementation": "Physics/include/NxIntersectionBoxBox.h"
+      "implementation": "Physics/include/NxIntersectionBoxBox.h",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_001699",
@@ -30842,7 +30880,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "continuation of the entry at 0x000360e0",
-      "implementation": "Physics/include/NxIntersectionBoxBox.h"
+      "implementation": "Physics/include/NxIntersectionBoxBox.h",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_001701",
@@ -30879,7 +30918,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/include/NxIntersectionBoxBox.h"
+      "implementation": "Physics/include/NxIntersectionBoxBox.h",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_001703",
@@ -30916,7 +30956,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/src/ContactGeneration.cpp"
+      "implementation": "Physics/src/ContactGeneration.cpp",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_001705",
@@ -30953,7 +30994,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/src/ContactGeneration.cpp"
+      "implementation": "Physics/src/ContactGeneration.cpp",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_001707",
@@ -31063,7 +31105,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/src/ContactGeneration.cpp"
+      "implementation": "Physics/src/ContactGeneration.cpp",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_001713",
@@ -31100,7 +31143,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/include/NxIntersectionSegmentBox.h"
+      "implementation": "Physics/include/NxIntersectionSegmentBox.h",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_001715",
@@ -31137,7 +31181,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/include/NxIntersectionSegmentBox.h"
+      "implementation": "Physics/include/NxIntersectionSegmentBox.h",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_001717",
@@ -31174,7 +31219,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/include/NxIntersectionSegmentBox.h"
+      "implementation": "Physics/include/NxIntersectionSegmentBox.h",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_001719",
@@ -31211,7 +31257,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/include/NxIntersectionSegmentBox.h"
+      "implementation": "Physics/include/NxIntersectionSegmentBox.h",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_001721",
@@ -31248,7 +31295,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/include/NxIntersectionSegmentBox.h"
+      "implementation": "Physics/include/NxIntersectionSegmentBox.h",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_001723",
@@ -31285,7 +31333,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "continuation of the entry at 0x00037c80",
-      "implementation": "Physics/include/NxIntersectionSegmentBox.h"
+      "implementation": "Physics/include/NxIntersectionSegmentBox.h",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_001725",
@@ -31322,7 +31371,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/include/NxIntersectionSegmentBox.h"
+      "implementation": "Physics/include/NxIntersectionSegmentBox.h",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_001727",
@@ -31359,7 +31409,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "continuation of the entry at 0x00037e70",
-      "implementation": "Physics/include/NxIntersectionSegmentBox.h"
+      "implementation": "Physics/include/NxIntersectionSegmentBox.h",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_001729",
@@ -31468,7 +31519,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/include/NxIntersectionSegmentCapsule.h"
+      "implementation": "Physics/include/NxIntersectionSegmentCapsule.h",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_001735",
@@ -31505,7 +31557,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/include/NxIntersectionSweptSpheres.h"
+      "implementation": "Physics/include/NxIntersectionSweptSpheres.h",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_001737",
@@ -38893,7 +38946,8 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/include/NxSmoothNormals.h"
+      "implementation": "Physics/include/NxSmoothNormals.h",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_002147",
