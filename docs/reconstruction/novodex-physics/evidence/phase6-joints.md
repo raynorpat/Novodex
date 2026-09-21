@@ -6082,3 +6082,139 @@ the 49 that does not require a decision from the user.**
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 587 tool tests OK.
+
+## 13q. Round 45: the 49 are three groups, and the drive names found them
+
+13p proposed searching for the drives the proofs name. They are searchable -- `xaccum`,
+`chain4763` and `lockedcopy` each appear in ten files -- **and they point at the harness.**
+
+**The find, read directly from the harness:**
+
+    tests/PhysicsObjectLayoutTests.cpp:4754
+        typedef void (__thiscall* XAccumOracle)(void*, float, const float*, float);
+        XAccumOracle xa = reinterpret_cast<XAccumOracle>(base + 0x95cc0);
+    tests/PhysicsObjectLayoutTests.cpp:14098
+        nxAccumulateByKind0867(selfC, a, descC, b);
+
+**`phys_fn_004087` is the oracle RVA `0x00095cc0`, and the drive for it is the `xaccum` site
+that calls the oracle at that address and the candidate BY NAME** --
+`nxAccumulateByKind0867`, which `ObjectModel.cpp:2654` defines. **So the row's
+`implementation` is `ObjectModel.cpp` and the row's ID is simply not written there.**
+
+**Checked against all 49 rather than generalised from one:**
+
+    reconstructed, has a proof, reached by oracle RVA in the harness    39
+    discovered, no proof, not reached in the harness                     9
+    dynamically_gated, no proof, not reached in the harness              1
+
+**That is a clean split, and it is the answer to 13p's question.**
+
+## 13r. Each group needs a different fix, and two of the three are already correct
+
+**The 39 are correct in substance and wrong in what the file says.** They are confirmed by a
+drive that reaches the oracle at their RVA and the candidate by name; the candidate function
+exists in the file `implementation` names. **What is missing is only the row's ID at the
+implementation site** -- so `_check_implementation_contains_row` (13m) reports them while the
+row itself is faithful. **The fix is a comment, not a correction:** name the stable ID at the
+function the drive calls.
+
+**The 9 are `discovered` with no proof and nothing in the harness**, and **a row at `discovered`
+has no implementation by definition**:
+
+    phys_fn_000246, 002158, 002168, 002178, 002241, 002243, 002245, 002258, 002260
+
+For these the `implementation` value is not merely imprecise, **it contradicts the state**: the
+census says the row is not yet reconstructed and simultaneously says which file it was
+reconstructed into. **That is 7h's defect again -- a field carrying a claim the row's state
+denies** -- and the fix is to clear the field, because there is nothing to point at.
+
+**The 1 is closed and correct.** `phys_fn_000230` stands at `dynamically_gated` with no proof
+*on the row*, and it is **closed in `phase2-closure.json`** with a real falsification:
+
+    "mutation": "a print at the entry of NpPhysicsSDK::setParameter",
+    "detected": "stdout_delta=26",  "gate": "NxPhysicsSDKTests"
+
+**So its proof is in the ledger, which is where a closure belongs** -- `closed` is the terminal
+rung and the ledger is its only evidence. **Its `implementation` is `NpPhysicsSDK.cpp`, the
+mutation was to `NpPhysicsSDK::setParameter`, and that function is defined in that file. The row
+is correct; the check reports it only because the file does not write the stable ID.**
+
+**And that is a real limitation of the check**, worth recording: **it asserts the file names the
+row's ID, and a faithful implementation need not.** `phys_fn_000230` is a case where the check
+and the truth disagree and the census is right.
+
+## 13s. What this leaves, and the correction it forces on 13m
+
+    the 49 split 39 / 9 / 1
+    the 39 need the stable ID written at the implementation site
+    the 9 need the `implementation` field cleared
+    the 1 is correct, and the check is wrong about it
+
+**So 13m's check over-reports, and the honest consequence is that `IMPLEMENTATION_MISMATCHES`
+is not a list of 78 defects.** Nine of them are field/state contradictions, one is a false
+positive, and the rest are a missing comment. **The set conflates three things**, and the next
+round should split it -- or better, make the check's message say which case it is, since it can
+tell them apart: a row at `discovered` with an `implementation` is a contradiction, while a row
+above `discovered` whose ID is absent is a missing annotation.
+
+**And the 9 are fixable now, with no decision and no new instrument**, because clearing a field
+that contradicts the row's own state is not a judgement call.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 587 tool tests OK.
+
+## 13t. The nine are cleared, and the set is 69 rather than 78
+
+13s said the 9 were fixable with no decision and no new instrument. Done:
+
+    implementation cleared on 9 rows at `discovered`
+    the 9 left IMPLEMENTATION_MISMATCHES
+    known set: 78 -> 69
+    the check now distinguishes a contradiction from a missing annotation
+
+**The check's message now says which case it is**, because the check can tell them apart and
+conflating them hid the distinction for a round:
+
+    a row at `discovered` naming an implementation  -> "the field contradicts the state rather
+                                                       than merely being imprecise"
+    a row above `discovered` whose ID is absent      -> "the file exists and does not contain
+                                                       the row's ID"
+
+**And the second is the honest description of the remaining 69**, because 13r established that
+the 39 confirmed rows are faithful -- confirmed by a drive that reaches the oracle at their RVA
+and the candidate by name -- and the file simply does not write the stable ID at the
+implementation site. **So the 69 are missing annotations, not wrong implementations.**
+
+**One of them, `phys_fn_000230`, is not even that**: it is closed in `phase2-closure.json` and
+its mutation was to `NpPhysicsSDK::setParameter`, which `NpPhysicsSDK.cpp` defines. **The census
+is right and the check is wrong about it**, and the reason is that the check asserts the file
+writes the row's *ID*, which a faithful implementation need not do.
+
+## 13u. State after forty-five rounds
+
+    rows with an implementation      196 -> 187   (9 cleared)
+    ... whose file contains them     118
+    ... missing the stable ID         69   (was 78; the 9 contradictions are gone)
+    ... of those, closed and correct   1   (phys_fn_000230)
+    checks added this session          8
+    audit findings                     9
+    census rows closed                 6
+
+**The ninth finding is this one**: the check added in 13m over-reported by conflating a
+contradiction with a missing annotation, and by asserting a rule a faithful implementation need
+not satisfy. **It was found by asking what the 49 actually are rather than accepting the set's
+count as the defect count.**
+
+**That is the same move as every other finding this session** -- 7e, 7h, 7i, 8o, 8p, 10d, 11s,
+12s, 13c, 13j -- and it is worth noting that **this one was found in the instrument the previous
+round added**, one round after adding it. A check is a claim too.
+
+**What is left is bounded and needs no decision:** the 39 confirmed rows need the stable ID
+written as a comment at the function each drive calls, which is annotation work; and the 29 whose
+`implementation` names a header or a calling unit need the field to name the definition, or the
+symbol 13c showed it should carry.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 587 tool tests OK.

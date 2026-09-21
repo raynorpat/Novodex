@@ -505,14 +505,13 @@ def _check_reconstructed_proofs(rows):
 # would let the check fail on a known set. So the set is named, the check stays
 # active, and the next row added to the census cannot join it silently.
 IMPLEMENTATION_MISMATCHES = frozenset((
-    'phys_fn_000230', 'phys_fn_000246', 'phys_fn_000350', 'phys_fn_000354', 'phys_fn_000358', 'phys_fn_000427',
+    'phys_fn_000230', 'phys_fn_000350', 'phys_fn_000354', 'phys_fn_000358', 'phys_fn_000427',
     'phys_fn_000429', 'phys_fn_000433', 'phys_fn_000435', 'phys_fn_000468', 'phys_fn_000470', 'phys_fn_000937',
     'phys_fn_000953', 'phys_fn_000955', 'phys_fn_000961', 'phys_fn_000963', 'phys_fn_000967', 'phys_fn_000969',
     'phys_fn_000971', 'phys_fn_000977', 'phys_fn_000987', 'phys_fn_001107', 'phys_fn_001149', 'phys_fn_001187',
     'phys_fn_001219', 'phys_fn_001221', 'phys_fn_001223', 'phys_fn_001247', 'phys_fn_001273', 'phys_fn_001349',
     'phys_fn_001359', 'phys_fn_001379', 'phys_fn_001381', 'phys_fn_001391', 'phys_fn_001571', 'phys_fn_001575',
-    'phys_fn_002158', 'phys_fn_002164', 'phys_fn_002168', 'phys_fn_002178', 'phys_fn_002241', 'phys_fn_002243',
-    'phys_fn_002245', 'phys_fn_002258', 'phys_fn_002260', 'phys_fn_002262', 'phys_fn_003712', 'phys_fn_003784',
+    'phys_fn_002164', 'phys_fn_002262', 'phys_fn_003712', 'phys_fn_003784',
     'phys_fn_003816', 'phys_fn_003820', 'phys_fn_003870', 'phys_fn_004087', 'phys_fn_004184', 'phys_fn_004288',
     'phys_fn_004292', 'phys_fn_004334', 'phys_fn_004338', 'phys_fn_004417', 'phys_fn_004419', 'phys_fn_004421',
     'phys_fn_004423', 'phys_fn_004425', 'phys_fn_004427', 'phys_fn_004429', 'phys_fn_004431', 'phys_fn_004433',
@@ -556,10 +555,22 @@ def _check_implementation_contains_row(rows, root):
             raw = path.read_bytes()
             cache[key] = (raw.decode("utf-16") if raw[:2] in (b"\xff\xfe", b"\xfe\xff")
                           else raw.decode("latin-1"))
-        if row["id"] not in cache[key] and row["id"] not in IMPLEMENTATION_MISMATCHES:
+        if row["id"] in cache[key] or row["id"] in IMPLEMENTATION_MISMATCHES:
+            continue
+        # The two cases are not the same defect and the message says which one this is,
+        # because the check can tell them apart and conflating them hid it for a round: a row
+        # at `discovered` that names an implementation contradicts its own state, while a row
+        # above `discovered` is faithful and its file simply does not write the stable ID at
+        # the implementation site.
+        if row.get("state") == "discovered":
+            errors.append(
+                f"function {row['id']!r} is 'discovered' and names implementation {impl!r}; "
+                f"a row that is not reconstructed has no implementation, so the field "
+                f"contradicts the state rather than merely being imprecise")
+        else:
             errors.append(
                 f"function {row['id']!r} names implementation {impl!r}, which never "
-                f"mentions it; the file exists and does not contain the row")
+                f"mentions it; the file exists and does not contain the row's ID")
     return errors
 
 
