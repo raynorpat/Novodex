@@ -7165,3 +7165,77 @@ rows rather than obscured by a gate that could not be satisfied.**
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, **600 tool tests OK**.
+
+## 15j. Round 59: 5,121 deferrals now contradict the state they defer
+
+15i closed the artifact and data halves of the census. This round went looking for the code rows and
+found, on the way, that **the two rulings left 5,121 ledger entries saying something the census now
+denies.**
+
+**The measurement:**
+
+    deferrals with reason `data_object_not_dispositioned`   5,121
+    ... whose row is now `classified`                       5,121   (all of them)
+
+**And the validator permits the pair**, which is why nothing reported it:
+
+    DYNAMIC_STATES = ("dynamically_gated", "closed")
+    a deferral is rejected only when the row stands in one of those, because that state claims
+    a gate caught it -- and `classified` is not among them
+
+**So the rule is about `closed`, and the new rung slipped past it.** Nothing compares **a reason
+against the state it defers**, and the two now disagree about the same object:
+
+    the reason says   the object is not dispositioned
+    the state says    its terminal evidence is recorded, resting on the structural proof its
+                      type determines, which the validator now checks
+
+## 15k. What that reason was FOR, and why it is now the wrong shape
+
+**`data_object_not_dispositioned` is the only reason a data object may give**, and the validator
+polices that in both directions -- a function row borrowing it is "one hidden inside the data debt",
+and a data object borrowing a code reason is "a reachability argument nobody made about it".
+
+**The reason exists because data objects had no terminal state.** Before the ruling, the data half
+of the census could not be closed, so it was carried as a **debt** -- a list of rows nobody could
+finish. **Now that they have a terminal rung with checked evidence, the debt is paid, and a list of
+paid debts is not a debt list.**
+
+**So the fix is not to reword the reason.** It is that **a data object at `classified` is not
+deferred at all**: its terminal evidence is recorded and checked, and the phase ledger's partition
+should treat it as accounted for the way a closed row is. **What remains deferred in the data half
+is then nothing, and what remains deferred in the code half is the code rows.**
+
+**This round did not make that change.** It established the contradiction, the rule that let it
+through, and what the reason was for -- and the change touches the partition every ledger is checked
+against, which is worth doing deliberately rather than at the end of a round.
+
+## 15l. The code-row worklist, which is what the objective is now
+
+    phase  code   closed  remaining  staged-pair target
+    2      143    59      84         NxPhysicsExportTests, NxPhysicsSDKTests, NxPhysicsCoreClusterTests
+    3      392    62      330        NxPhysicsGeometryTests, NxPhysicsKernelFuzzTests
+    4      1050   0       1050       -- none --
+    5      205    0       205        -- none --
+    6      433    2       431        NxPhysicsJointStagedPairTests
+    7      561    4       557        NxPhysicsJointStagedPairTests
+    ------------------------------------------------------------------
+    2784   127     2657
+
+**1,529 code rows sit on a phase with a staged-pair target and 1,255 do not.** And by deferral
+reason, **564 rows are `reconstructed_not_falsified`** -- code that exists with no mutation aimed at
+it, which is exactly the closure worklist:
+
+    phase 3       1
+    phase 4     127
+    phase 5     120
+    phase 6     129
+    phase 7     187
+
+**Phase 4's 127 have no target at all**, and phase 4 is where the `ObjectModel.cpp` rows live -- the
+batch 13a established needs a target that does not exist. **So the worklist splits the same way the
+targets do**, and the rows on phases with targets are the ones a campaign can reach.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 600 tool tests OK.
