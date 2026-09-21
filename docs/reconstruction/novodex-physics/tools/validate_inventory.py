@@ -72,7 +72,14 @@ FUNCTION_KEYS = (
 # it names a file the oracle was built from, and the reconstruction deliberately
 # does not recreate the oracle's directory layout -- 49 of the 51 unresolvable
 # source paths have basenames that exist nowhere in the repository.
-FUNCTION_OPTIONAL_KEYS = ("third_party", "implementation")
+# `implementation_symbol` is the symbol a row was reconstructed INTO, which
+# `implementation` cannot express: it names a file, and a file is not a function
+# (13c). Round 42 showed the candidate's map carries symbols with addresses and the
+# census could not be joined to it; round 46 recovered the value for the rows whose
+# symbol the harness names -- its dispatch tables carry the row's oracle RVA and its
+# abbreviated stable ID, and one drive names the candidate function outright.
+FUNCTION_OPTIONAL_KEYS = ("third_party", "implementation",
+                         "implementation_symbol")
 DATA_KEYS = (
     "id",
     "rva",

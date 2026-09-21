@@ -6387,7 +6387,8 @@
       "static_proof": null,
       "dynamic_proof": "confirmed via mutexwork differential (3z173): both arms failures=0 for all four rows, comparing the report tuple and the whole object buffer, with the report slot and lock API bound",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "phys_fn_000350 (harness dispatch table)"
     },
     {
       "id": "phys_fn_000351",
@@ -6460,7 +6461,8 @@
       "static_proof": null,
       "dynamic_proof": "confirmed via mutexwork differential (3z173): both arms failures=0 for all four rows, comparing the report tuple and the whole object buffer, with the report slot and lock API bound",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "phys_fn_000354 (harness dispatch table)"
     },
     {
       "id": "phys_fn_000355",
@@ -6533,7 +6535,8 @@
       "static_proof": null,
       "dynamic_proof": "confirmed via mutexwork differential (3z173): both arms failures=0 for all four rows, comparing the report tuple and the whole object buffer, with the report slot and lock API bound",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "phys_fn_000358 (harness dispatch table)"
     },
     {
       "id": "phys_fn_000359",
@@ -20063,7 +20066,8 @@
       "static_proof": "locks [self+0x14], calls the copy helper 001295 on [self+0x18] to write the 12-dword pose at [field+0x6c] into the out argument, then unlocks; ret 4",
       "dynamic_proof": "confirmed via lockedcopy differential (3z142): failures=0, with the Foundation lock API bound to __stdcall no-op stubs (the first attempt faulted because the fixture put the field where variant B reads its lock)",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "phys_fn_001107 (harness dispatch table)"
     },
     {
       "id": "phys_fn_001108",
@@ -20820,7 +20824,8 @@
       "static_proof": "locks [self+0x14], calls the copy helper 001297 on [self+0x18] to write three dwords from [field+0x90] into the out argument, then unlocks; ret 4",
       "dynamic_proof": "confirmed via lockedcopy differential (3z142): failures=0, with the Foundation lock API bound to __stdcall no-op stubs (the first attempt faulted because the fixture put the field where variant B reads its lock)",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "phys_fn_001149 (harness dispatch table)"
     },
     {
       "id": "phys_fn_001150",
@@ -21505,7 +21510,8 @@
       "static_proof": "locks [self+0x14], calls the copy helper 001299 on [self+0x18] to write nine dwords from [field+0x6c] into the out argument, then unlocks; ret 4",
       "dynamic_proof": "confirmed via lockedcopy differential (3z142): failures=0, with the Foundation lock API bound to __stdcall no-op stubs (the first attempt faulted because the fixture put the field where variant B reads its lock)",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "phys_fn_001187 (harness dispatch table)"
     },
     {
       "id": "phys_fn_001188",
@@ -22082,7 +22088,8 @@
       "static_proof": "locks [self+0x14], calls the copy helper 001289 on [self+0x18] to write the 12-dword pose at [field+0x6c] into the out argument, then unlocks; ret 4",
       "dynamic_proof": "confirmed via lockedcopy differential (3z142): failures=0, with the Foundation lock API bound to __stdcall no-op stubs (the first attempt faulted because the fixture put the field where variant B reads its lock)",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "phys_fn_001219 (harness dispatch table)"
     },
     {
       "id": "phys_fn_001220",
@@ -22119,7 +22126,8 @@
       "static_proof": "locks [self+0x14], calls the copy helper 001297 on [self+0x18] to write three dwords from [field+0x90] into the out argument, then unlocks; ret 4",
       "dynamic_proof": "confirmed via lockedcopy differential (3z142): failures=0, with the Foundation lock API bound to __stdcall no-op stubs (the first attempt faulted because the fixture put the field where variant B reads its lock)",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "phys_fn_001221 (harness dispatch table)"
     },
     {
       "id": "phys_fn_001222",
@@ -22156,7 +22164,8 @@
       "static_proof": "locks [self+0x14], calls the copy helper 001291 on [self+0x18] to write nine dwords from [field+0x6c] into the out argument, then unlocks; ret 4",
       "dynamic_proof": "confirmed via lockedcopy differential (3z142): failures=0, with the Foundation lock API bound to __stdcall no-op stubs (the first attempt faulted because the fixture put the field where variant B reads its lock)",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "phys_fn_001223 (harness dispatch table)"
     },
     {
       "id": "phys_fn_001224",
@@ -28706,7 +28715,8 @@
       "static_proof": "static review of the recorded shape: owned-pointer deleting destructor (0x2ea80u, ret 4); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via ownedptr differential (3z181): eight combinations -- both rows by owned-pointer present/absent by both flag arms -- all failures=0, comparing the return, the object and the ordered sequence of freed blocks",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "phys_fn_001585 (harness dispatch table)"
     },
     {
       "id": "phys_fn_001586",
@@ -28743,7 +28753,8 @@
       "static_proof": "static review of the recorded shape: owned-pointer deleting destructor (0x2ead0u, ret 4); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via ownedptr differential (3z181): eight combinations -- both rows by owned-pointer present/absent by both flag arms -- all failures=0, comparing the return, the object and the ordered sequence of freed blocks",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "phys_fn_001587 (harness dispatch table)"
     },
     {
       "id": "phys_fn_001588",
@@ -65005,7 +65016,8 @@
       "static_proof": "static review of the recorded shape: float-out three-argument global-call thunk (0x87f10, ret 4); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the floatout3575 differential (3z204): failures=0 over three consecutive runs, comparing the hit count, all three arguments and the three floats written through the out pointer, with the slot bound to a stub returning a float triple",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "phys_fn_003575 (harness dispatch table)"
     },
     {
       "id": "phys_fn_003576",
@@ -67473,7 +67485,8 @@
       "static_proof": "locks [self+0x10], calls the copy helper 003425 on [self+0x14] to write eleven dwords from [field+0x28] into the out argument, then unlocks; ret 4",
       "dynamic_proof": "confirmed via lockedcopy differential (3z142): failures=0, with the Foundation lock API bound to __stdcall no-op stubs (the first attempt faulted because the fixture put the field where variant B reads its lock)",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "phys_fn_003712 (harness dispatch table)"
     },
     {
       "id": "phys_fn_003713",
@@ -68770,7 +68783,8 @@
       "static_proof": "locks [self+0x10], calls the copy helper 003483 on [self+0x14] to write six dwords from [field+0x5c] into the out argument, then unlocks; ret 4",
       "dynamic_proof": "confirmed via lockedcopy differential (3z142): failures=0, with the Foundation lock API bound to __stdcall no-op stubs (the first attempt faulted because the fixture put the field where variant B reads its lock)",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "phys_fn_003784 (harness dispatch table)"
     },
     {
       "id": "phys_fn_003785",
@@ -69347,7 +69361,8 @@
       "static_proof": "locks [self+0x10], calls the copy helper 003563 on [self+0x14] to write the 12-dword pose at [field+0x18] into the out argument, then unlocks; ret 4",
       "dynamic_proof": "confirmed via lockedcopy differential (3z142): failures=0, with the Foundation lock API bound to __stdcall no-op stubs (the first attempt faulted because the fixture put the field where variant B reads its lock)",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "phys_fn_003816 (harness dispatch table)"
     },
     {
       "id": "phys_fn_003817",
@@ -69420,7 +69435,8 @@
       "static_proof": "locks [self+0x10], calls the copy helper 003567 on [self+0x14] to write nine dwords from [field+0x18] into the out argument, then unlocks; ret 4",
       "dynamic_proof": "confirmed via lockedcopy differential (3z142): failures=0, with the Foundation lock API bound to __stdcall no-op stubs (the first attempt faulted because the fixture put the field where variant B reads its lock)",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "phys_fn_003820 (harness dispatch table)"
     },
     {
       "id": "phys_fn_003821",
@@ -70321,7 +70337,8 @@
       "static_proof": null,
       "dynamic_proof": "confirmed via mutexwork differential (3z173): both arms failures=0 for all four rows, comparing the report tuple and the whole object buffer, with the report slot and lock API bound",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "phys_fn_003870 (harness dispatch table)"
     },
     {
       "id": "phys_fn_003871",
@@ -74228,7 +74245,8 @@
       "static_proof": "scale = a/b; [this+0x154/0x158/0x15c] += scale * vec[0/1/2]; ret 0xc",
       "dynamic_proof": "confirmed via xaccum drive (3z74): failures=0",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "nxAccumulateByKind0867"
     },
     {
       "id": "phys_fn_004088",
@@ -75977,7 +75995,8 @@
       "static_proof": null,
       "dynamic_proof": "confirmed via guardedstore differential (3z172): both arms failures=0 for all five rows, comparing the report tuple, the whole object and the stored word, with the report slot bound",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "phys_fn_004184 (harness dispatch table)"
     },
     {
       "id": "phys_fn_004185",
@@ -77850,7 +77869,8 @@
       "static_proof": null,
       "dynamic_proof": "confirmed via guardedstore differential (3z172): both arms failures=0 for all five rows, comparing the report tuple, the whole object and the stored word, with the report slot bound",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "phys_fn_004288 (harness dispatch table)"
     },
     {
       "id": "phys_fn_004289",
@@ -77923,7 +77943,8 @@
       "static_proof": null,
       "dynamic_proof": "confirmed via guardedstore differential (3z172): both arms failures=0 for all five rows, comparing the report tuple, the whole object and the stored word, with the report slot bound",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "phys_fn_004292 (harness dispatch table)"
     },
     {
       "id": "phys_fn_004293",
@@ -78680,7 +78701,8 @@
       "static_proof": null,
       "dynamic_proof": "confirmed via guardedstore differential (3z172): both arms failures=0 for all five rows, comparing the report tuple, the whole object and the stored word, with the report slot bound",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "phys_fn_004334 (harness dispatch table)"
     },
     {
       "id": "phys_fn_004335",
@@ -78753,7 +78775,8 @@
       "static_proof": null,
       "dynamic_proof": "confirmed via guardedstore differential (3z172): both arms failures=0 for all five rows, comparing the report tuple, the whole object and the stored word, with the report slot bound",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "phys_fn_004338 (harness dispatch table)"
     },
     {
       "id": "phys_fn_004339",
@@ -80176,7 +80199,8 @@
       "static_proof": "static review of the recorded shape: constant-argument virtual thunk (0x4417u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via vtconst differential (3z162): slot hit count and argument both failures=0 for all nine rows, with vtable slot +0x4c bound to a __stdcall recorder",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "phys_fn_004417 (harness dispatch table)"
     },
     {
       "id": "phys_fn_004418",
@@ -80213,7 +80237,8 @@
       "static_proof": "static review of the recorded shape: constant-argument virtual thunk (0x4419u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via vtconst differential (3z162): slot hit count and argument both failures=0 for all nine rows, with vtable slot +0x4c bound to a __stdcall recorder",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "phys_fn_004419 (harness dispatch table)"
     },
     {
       "id": "phys_fn_004420",
@@ -80250,7 +80275,8 @@
       "static_proof": "static review of the recorded shape: constant-argument virtual thunk (0x4421u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via vtconst differential (3z162): slot hit count and argument both failures=0 for all nine rows, with vtable slot +0x4c bound to a __stdcall recorder",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "phys_fn_004421 (harness dispatch table)"
     },
     {
       "id": "phys_fn_004422",
@@ -80287,7 +80313,8 @@
       "static_proof": "static review of the recorded shape: constant-argument virtual thunk (0x4423u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via vtconst differential (3z162): slot hit count and argument both failures=0 for all nine rows, with vtable slot +0x4c bound to a __stdcall recorder",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "phys_fn_004423 (harness dispatch table)"
     },
     {
       "id": "phys_fn_004424",
@@ -80324,7 +80351,8 @@
       "static_proof": "static review of the recorded shape: constant-argument virtual thunk (0x4425u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via vtconst differential (3z162): slot hit count and argument both failures=0 for all nine rows, with vtable slot +0x4c bound to a __stdcall recorder",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "phys_fn_004425 (harness dispatch table)"
     },
     {
       "id": "phys_fn_004426",
@@ -80361,7 +80389,8 @@
       "static_proof": "static review of the recorded shape: constant-argument virtual thunk (0x4427u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via vtconst differential (3z162): slot hit count and argument both failures=0 for all nine rows, with vtable slot +0x4c bound to a __stdcall recorder",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "phys_fn_004427 (harness dispatch table)"
     },
     {
       "id": "phys_fn_004428",
@@ -80398,7 +80427,8 @@
       "static_proof": "static review of the recorded shape: constant-argument virtual thunk (0x4429u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via vtconst differential (3z162): slot hit count and argument both failures=0 for all nine rows, with vtable slot +0x4c bound to a __stdcall recorder",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "phys_fn_004429 (harness dispatch table)"
     },
     {
       "id": "phys_fn_004430",
@@ -80435,7 +80465,8 @@
       "static_proof": "static review of the recorded shape: constant-argument virtual thunk (0x4431u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via vtconst differential (3z162): slot hit count and argument both failures=0 for all nine rows, with vtable slot +0x4c bound to a __stdcall recorder",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "phys_fn_004431 (harness dispatch table)"
     },
     {
       "id": "phys_fn_004432",
@@ -80472,7 +80503,8 @@
       "static_proof": "static review of the recorded shape: constant-argument virtual thunk (0x4433u); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via vtconst differential (3z162): slot hit count and argument both failures=0 for all nine rows, with vtable slot +0x4c bound to a __stdcall recorder",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "phys_fn_004433 (harness dispatch table)"
     },
     {
       "id": "phys_fn_004434",
@@ -80869,7 +80901,8 @@
       "static_proof": null,
       "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "phys_fn_004455 (harness dispatch table)"
     },
     {
       "id": "phys_fn_004456",
@@ -81591,7 +81624,8 @@
       "static_proof": null,
       "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "phys_fn_004495 (harness dispatch table)"
     },
     {
       "id": "phys_fn_004496",
@@ -82132,7 +82166,8 @@
       "static_proof": null,
       "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "phys_fn_004525 (harness dispatch table)"
     },
     {
       "id": "phys_fn_004526",
@@ -82673,7 +82708,8 @@
       "static_proof": null,
       "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "phys_fn_004555 (harness dispatch table)"
     },
     {
       "id": "phys_fn_004556",
@@ -83214,7 +83250,8 @@
       "static_proof": null,
       "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "phys_fn_004585 (harness dispatch table)"
     },
     {
       "id": "phys_fn_004586",
@@ -83683,7 +83720,8 @@
       "static_proof": null,
       "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "phys_fn_004611 (harness dispatch table)"
     },
     {
       "id": "phys_fn_004612",
@@ -84188,7 +84226,8 @@
       "static_proof": null,
       "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "phys_fn_004639 (harness dispatch table)"
     },
     {
       "id": "phys_fn_004640",
@@ -84729,7 +84768,8 @@
       "static_proof": null,
       "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "phys_fn_004669 (harness dispatch table)"
     },
     {
       "id": "phys_fn_004670",
@@ -85198,7 +85238,8 @@
       "static_proof": null,
       "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "phys_fn_004695 (harness dispatch table)"
     },
     {
       "id": "phys_fn_004696",
@@ -86136,7 +86177,8 @@
       "static_proof": null,
       "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "phys_fn_004747 (harness dispatch table)"
     },
     {
       "id": "phys_fn_004748",

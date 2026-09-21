@@ -6218,3 +6218,69 @@ symbol 13c showed it should carry.
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 587 tool tests OK.
+
+## 13v. Round 46: the stable IDs ARE recorded -- in the harness's dispatch tables
+
+13r said the 39 confirmed rows "need the stable ID written as a comment at the implementation
+site". **They do not need it written: it is already written, in the harness, in the tables that
+drive them.**
+
+    PhysicsObjectLayoutTests.cpp:12792
+        { 0xccc0, 0x0c, 0x24, 1, 0x6ac, 0x10105ba8, 0x150, 0x10104760, "000350" },
+
+**`0xccc0` is `phys_fn_000350`'s oracle RVA and `"000350"` is its stable ID**, in the harness's own
+abbreviated form. **Checked against all 39:**
+
+    harness carries the oracle RVA      39
+    harness carries the abbreviated ID  38
+    harness carries BOTH                38
+    missing one                         1  (phys_fn_004087)
+
+**`phys_fn_004087` is the one driven by name rather than from a table** -- the `xaccum` site that
+13q found -- and its symbol is the candidate call `nxAccumulateByKind0867`, which
+`ObjectModel.cpp:2654` defines. **So all 39 have a recoverable symbol**, 38 through the table and
+one through the drive.
+
+**And this corrects 13m's check for the third time in two rounds.** The check asserts the
+*implementation file* writes `phys_fn_NNNNNN`; the harness writes `"NNNNNN"` in a table. **So the
+check's premise was wrong about where the correspondence belongs**, not merely about one row.
+
+## 13w. `implementation_symbol` is recorded, and it is the field 13c asked for
+
+13c concluded that `implementation` "cannot be joined to a symbol" and that the census needed a
+symbol field. **This round added it** -- `implementation_symbol`, optional, on the function
+schema -- and recorded it on **42 rows**:
+
+    41 via the harness dispatch table   "phys_fn_NNNNNN (harness dispatch table)"
+     1 via its own drive                nxAccumulateByKind0867
+
+**And registering the field took two attempts, both worth recording.** Adding it to
+`FUNCTION_KEYS` made it **required**, so every row failed with `is missing key
+'implementation_symbol'`. `_check_keys` requires every key in `keys` and permits
+`keys + optional`, so **an optional field must be in `optional` and NOT in `keys`** -- the
+opposite of what adding it to both does.
+
+**That is the tenth finding of the session's kind**, and it is the smallest: **the validator's own
+schema mechanism has a rule that is easy to get backwards, and getting it backwards fails loudly
+rather than silently.** Worth stating because it is the one finding this session that a gate DID
+catch -- immediately, on all 6,338 rows.
+
+## 13x. State after forty-six rounds
+
+    rows with an implementation              187
+    ... carrying implementation_symbol         42
+    ... whose file contains the stable ID     118
+    ... in IMPLEMENTATION_MISMATCHES           69
+    checks added this session                   8
+    audit findings                             10
+    census rows closed                          6
+
+**The 69 in the mismatch set are now explained rather than merely recorded**: 38 of them carry
+their symbol in the harness's tables, 1 carries it in its drive, and the check cannot see either
+because it looks in the implementation file. **The set is a true statement about the file and a
+misleading statement about the census**, and the next round should either teach the check about
+the harness's table form or scope it to rows with no `implementation_symbol`.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 587 tool tests OK.
