@@ -6773,3 +6773,46 @@ calls is not reconstructed behaviour. It is cheap to ask and nothing asks it.
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 587 tool tests OK.
+
+## 14q. Round 55: the dead-code dimension is measured, and the check is not the right shape
+
+14p said the finding implied a check -- *a row whose implementation is a function nothing calls is
+not reconstructed behaviour* -- and that it is cheap to ask. **This round measured how many rows it
+would report before adding it**, because a check that fires on hundreds of rows is one nobody can act
+on, and one that fires on legitimate callbacks is worse than none.
+
+**Across every `.cpp` and `.h` in the reconstruction:**
+
+    nx* helpers defined          547
+    nx* helpers nothing calls      3
+    census rows naming a file that defines an uncalled helper   0
+
+**And all three are test scaffolding, not a census implementation:**
+
+    nxN2Stub        tests/PhysicsObjectLayoutTests.cpp
+    nxFoldDouble    tests/PhysicsThirdPartyTests.cpp
+    nxFoldFloat     tests/PhysicsThirdPartyTests.cpp
+
+**So the census is clean on this dimension now** -- and it was not clean before round 54: the one row
+the check would have caught was `phys_fn_000034`, which stood at `reconstructed` on
+`nxSceneActorInitialise`, a function nothing calls. **That row is corrected, so the check would be
+quiet on the current census** -- the right state to add a check in, and also why it **cannot be
+verified against the defect it targets** without restoring that defect.
+
+## 14r. Why the check as stated is wrong, and what the right one is
+
+**A check that flagged those three would be wrong** -- they are test scaffolding. So *"an uncalled
+implementation"* is not quite the shape.
+
+**What round 54 actually found** was a row whose implementation is uncalled **and whose
+`dynamic_proof` asserts that it executes.** **The proof is the part no artifact supported**, and the
+check that would catch it is **a consistency test between the proof's claim and the call graph**,
+not a dead-code test alone.
+
+**That refinement is recorded rather than implemented.** Adding a check that fires on test
+scaffolding would be **the fifth time this session added a rule that looked reasonable and was wrong
+about its inputs** (13m, 13x, 13y, 14f), and **the measurement above is what stops it.**
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 587 tool tests OK.
