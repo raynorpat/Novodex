@@ -6816,3 +6816,61 @@ about its inputs** (13m, 13x, 13y, 14f), and **the measurement above is what sto
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 587 tool tests OK.
+
+## 14s. Round 56: the refined check is wrong about its inputs too
+
+14r said the right check was **a consistency test between a proof's claim and the call graph**, and
+that recording the refinement rather than implementing it was the honest move. **This round measured
+the refined version before adding it, and it fails the same way.**
+
+**The measurement** (with the use counts computed once -- the first attempt re-scanned every source
+per row and timed out):
+
+    rows with an implementation and a dynamic_proof   124
+    ... whose proof claims execution                  115
+    ... with a callable nx* helper in that file       108
+    ... with NONE                                       7
+
+**The 7:**
+
+    phys_fn_000443  dynamically_gated  Physics/src/FluidSupport.cpp
+    phys_fn_000448  dynamically_gated  Physics/include/NxPhysicsSDK.h
+    phys_fn_001583  dynamically_gated  Physics/src/FluidSupport.cpp
+    phys_fn_002035  reconstructed      Physics/src/PMap.cpp
+    phys_fn_002047  reconstructed      Physics/src/PMap.cpp
+    phys_fn_002051  reconstructed      Physics/src/PMap.cpp
+    phys_fn_005177  reconstructed      External/opcode/novodex/Ice/IceRevisitedRadix.cpp
+
+**And they are false positives.** Checked directly rather than inferred:
+
+    PMap.cpp defines no nx* helper at all -- it implements class methods,
+    PenetrationMap::loadPayload among them
+
+    phys_fn_002035's proof names a real transcript line: "asset rows
+    pmap_create=phys_fn_002047 pmap_load=phys_fn_002035 mesh_header=phys_fn_002262
+    mesh_writer=phys_fn_002162 release_pmap=..."
+
+**So the row is driven, gated, and its code is in the file the census names** -- **the check simply
+cannot see it because it looks only for helpers named `nx*`.**
+
+## 14t. The fourth time, and the pattern is now the finding
+
+    13m  looked in the implementation file; the correspondence was in the harness
+    13x  looked at the whole ID; the harness writes six digits
+    13y  looked at every `discovered` row; seven were forwarder stubs
+    14f  took the first long lowercase word; it recorded prose
+    14s  looked for `nx*` helpers; the reconstruction also writes class methods
+
+**Every one was right about its shape and wrong about the population it applied to**, and **the only
+defence this session has found is to measure the rule's output before trusting it.** **That is now
+five instances and it is the finding**, more than any individual rule.
+
+**What would work, if it is worth building:** the proof names a harness, and **reachability from that
+harness is the property**. That needs the harness's executed path, which **the harness itself would
+have to report** -- **a change to the instrument rather than to the census, and larger than a check.**
+
+**The check is not added, and the reason is the measurement rather than a judgement.**
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 587 tool tests OK.
