@@ -4178,3 +4178,84 @@ each fix has revealed the next, but the instruments are now good enough that the
 one is found by running the guard and reading the instruction rather than by reasoning
 about crashes. **The next step is the guard on the joint harness**: it will name the
 write, and the last three times it was run it named the defect directly.
+
+## 11b. Round 23 continued: the joint harness RUNS TO COMPLETION
+
+10z recorded that the guard had been pointed at the step probe and not the joint
+harness. This round pointed it at the harness -- one `createSDK` call changed, exactly
+as 10z said -- and the result is the milestone this whole path was for.
+
+**The harness runs to completion:**
+
+    exit = 0
+    sdk=created
+    scene=created
+    fixture=a,created b,created
+    case=revolute index=0 created=yes   released=yes
+    case=revolute index=1 created=yes   released=yes
+    case=revolute index=2 created=yes   released=yes
+    case=revolute index=3 created=yes   released=yes
+    scene=released
+    sdk=released
+
+**All four revolute cases create and release a joint, where every run since round 4
+failed to create a single one.** The oracle's transcript is the same shape and the same
+exit code.
+
+**And the guard was not needed to get there.** The harness stopped faulting once the
+allocator was guarded -- which means the fault 10z measured (`mov [ecx+4], eax` with
+`ecx = 0xbaadf00d`) was **an uninitialised pointer being written through, and the write
+was landing inside an allocation's slack rather than past it.** Guarding the allocations
+turned that silent corruption into either a fault or a clean run, and it ran clean.
+
+**That is worth stating carefully, because it is not the same as "fixed".** The
+uninitialised pointer is still there. The guard changed which memory it reached, and
+this run happened to be harmless. **The defect 10z identified is not repaired**; what
+changed is that it no longer produces a crash on this path.
+
+## 11c. What still differs from the oracle, measured
+
+A normalised diff of the two transcripts -- excluding only the pair-identity lines the
+runner already excludes -- is **22 lines**, and every one is in the joint's own values:
+
+    oracle      out_anchor=3f800000.40000000.40400000  out_axis=00000000.3f800000.00000000
+    candidate   out_anchor=00000000.00000000.00000000  out_axis=00000000.00000000.3f800000
+    oracle      actors a=match b=match
+    candidate   actors a=null b=null
+
+**Both are the vtable stubs, and both are recorded in the code as unimplemented:**
+
+- `getGlobalAnchor` and `getGlobalAxis` return fixed values rather than the joint's own
+  anchor and axis, because `nxJointConstruct` does not apply the descriptor and the
+  stub has nothing to return. The oracle's values are the ones the harness set through
+  `NxJointDesc_SetGlobalAnchor` / `SetGlobalAxis`, so the real fix is for the joint to
+  store what the descriptor carried.
+- `getActors` writes nothing, so the harness reads nulls.
+
+**So the harness runs and the joint is created; the joint's state is not the oracle's.**
+That distinction matters for the Phase 6 closure ledger, which requires a mutation the
+gate catches -- and a target whose transcript differs from the oracle in 22 lines cannot
+be registered as an oracle differential until those lines are either fixed or excluded
+with the reason recorded.
+
+**No census row closed.** All gates green: phases 2/3/4 exit 0, phase 5 exit 1 RED on
+purpose, phase 6 exit 0 PASS, `completed` exit 0, `validate_inventory` exit 0, 587
+tool tests OK.
+
+## 11d. What the next round should do, in order
+
+1. **Make the joint store the descriptor.** `nxJointConstruct` should apply
+   `NxJointDesc`'s `localAnchor`, `localAxis` and `localNormal` so `getGlobalAnchor`
+   and `getGlobalAxis` can return them, and `getActors` should return the two actors
+   from the descriptor. That closes the 22-line diff and is transcription work rather
+   than defect-hunting.
+2. **Then register `NxPhysicsJointTests` as a Phase 6 oracle differential**, with
+   coverage assertions on its lines, which is what round 18 did for the descriptor
+   harness and what the closure ledger needs.
+3. **Only then the mutations** that close the two joint rows.
+
+**And the honest note**: this is the first round in which the thing being built works
+end to end. It took twenty-three rounds, seven fixed defects, one false defect, three
+instruments, and several rounds lost to measurement errors. The reconstruction now
+creates a scene, creates actors with bodies and vtables, creates joints with vtables,
+and releases all of it without faulting.

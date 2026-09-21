@@ -27,6 +27,7 @@
 // round-trip.
 
 #include "PhysicsPairLoader.h"
+#include "NxPageGuardedAllocator.h"
 
 #include <string.h>
 
@@ -184,7 +185,10 @@ int wmain(int argc, wchar_t** argv)
 		}
 	printf("version=0x%08x\n", static_cast<unsigned>(NX_PHYSICS_SDK_VERSION));
 
-	NxPhysicsSDK* sdk = createSDK(NX_PHYSICS_SDK_VERSION, 0, 0);
+	// Every SDK allocation goes through a page-guarded allocator, so a write past
+	// the end of any block faults AT THE WRITE rather than corrupting a later one.
+	static NxPageGuardedAllocator guardedAllocator;
+	NxPhysicsSDK* sdk = createSDK(NX_PHYSICS_SDK_VERSION, &guardedAllocator, 0);
 	printf("sdk=%s\n", sdk ? "created" : "null");
 	if(!sdk)
 		{
