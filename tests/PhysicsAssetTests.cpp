@@ -1279,6 +1279,11 @@ int wmain(int argc, wchar_t** argv)
 				fixture->name, fixture->expectAccepted, fixture->expectErrors,
 				fixture->expectErrorLine, fixture->expectCells, fixture->expectGrid);
 			}
+		// One flush per case, so a fault in the candidate half below names the case that produced it
+		// rather than leaving the transcript short by an unknown amount. Round 80 did this for the
+		// ten targets and it turned a null call into "all ten are fine".
+		printf("pmap oracle-done case=%s\n", fixture->name);
+		fflush(stdout);
 
 		if(!selfOnly)
 			{

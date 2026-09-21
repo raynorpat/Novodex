@@ -8529,3 +8529,51 @@ turned "a call went to zero" into "all ten targets are fine".
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 601 tool tests OK.
+
+## 17l. Round 81: the faulting case is named, and it is in the ORACLE half
+
+17k said to instrument the case loop the way round 80 instrumented the bindings. **Done, and it names the
+case:**
+
+    pmap case=pmap.bad_version_00000000 ...   pmap oracle-done case=pmap.bad_version_00000000
+    pmap case=pmap.bad_version_00000003 ...   pmap oracle-done case=pmap.bad_version_00000003
+    <fault>
+
+**The candidate completes the oracle half of `pmap.bad_version_00000003` and faults before the next case
+prints anything.** So the fault is in the **sixteenth** case's oracle call -- `nxRunPMapOracle` -- not in a
+candidate half, and not in a target.
+
+**And the count is informative**: 27 lines printed, against the oracle's 39. **The candidate reaches about
+15 of the 30 cases and dies on the next one**, which is a long way from the "zero output" of two rounds
+ago.
+
+**What the oracle half does, read from the loop:**
+
+    nxDecodeHex(fixture->bytes, storage, sizeof(storage))
+    nxRunPMapOracle(&oracle, storage, length, &actual)
+
+**And `nxRunPMapOracle` is short enough to read, which makes the conclusion exact. It makes five calls,
+all through the struct round 80 checked:**
+
+    oracle->streamCtor(stream, length, storage)
+    oracle->streamSeek(stream, 0)
+    oracle->pmapCtor(object)
+    oracle->pmapCreate(object, &mesh, 0, 0, stream, 1, &sink)     <- the deep one
+    oracle->pmapDtor(object)
+
+**All five are bound and non-null**, so **the null call is not to a target -- it is made BY the
+candidate's code that `pmapCreate` runs.** That is `PenetrationMap::create`, and what it calls:
+`PenetrationMap::setup`, `loadPayload`, `finish`, and the stream reads.
+
+**So the chain is: the harness calls a target, the target is valid, and the candidate's own
+reconstruction dereferences a null inside it.** That is a defect in the DLL at a named row, reached
+through a valid call -- and it is the first time this sequence has located one to a row rather than to a
+harness's resolution.
+
+**And `pmap.bad_version_00000005` is the case that does it**, since the previous case completes its oracle
+half and this one prints nothing: a malformed version, which is a path where the reconstruction reads a
+field it has not validated.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 601 tool tests OK.
