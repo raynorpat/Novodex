@@ -250,6 +250,23 @@ void* NxSceneInternal::vtable()
 // phys_fn_00001450 (0x00001450, phase 2): constructs the actor over a 0x50-byte
 // block with a Scene pointer. Modelled only as far as storing the Scene so the
 // object has the shape the caller expects.
+// ---------------------------------------------------------------------------
+// Rows Actor::loadFromDescInternal and the actor constructor call. REPRODUCTION
+// HOLES, as above.
+// ---------------------------------------------------------------------------
+void nxActorSetName(void* actor, unsigned name);
+void nxActorBuildBody(void* actor, const unsigned* desc);
+int nxActorComputeMass(void* actor, const unsigned* bodyWord);
+void nxSceneAddActorObject(void* scene, void* object);
+void nxActorBuildUserDataObject(void* actor);
+void nxSceneReportErrorA(const char* message);
+
+// phys_fn_000034 (0x00002010), Actor::loadFromDescInternal. Returns 0 on failure
+// and 1 on success, matching the oracle's return contract.
+int nxActorLoadFromDescInternal(void* actor, const unsigned* descWords);
+// phys_fn_000013 (0x00001450), the actor constructor.
+void* nxActorConstruct(void* memory, void* scene);
+
 NxActor* nxSceneActorConstruct(void* memory, void* scene);
 // phys_fn_00002010 (0x00002010, phase 2): applies the descriptor to the actor and
 // returns the actor's vtable word. Modelled as "applied, non-null".
@@ -458,6 +475,123 @@ void nxSceneArrayReserve(void* arrayHeader, unsigned needed)
 	}
 
 
+
+// ---------------------------------------------------------------------------
+// phys_fn_000034 (0x00002010) is Actor::loadFromDescInternal.
+//
+// Its error strings name it: "Actor::loadFromDescInternal: Compute mesh inertia
+// tensor failed...", "...Can't compute mass from shapes: must have at least one
+// non-trigger shape!", and its __FILE__ is ".../Physics/src/Actor.cpp".
+//
+// It is where the descriptor reaches the actor, and therefore where the actor's
+// +0x14 (userData) and its shape list at +0x10 come from.
+//
+// The descriptor offsets below are NxActorDescBase fields, not inferred:
+//   0x20..0x44  globalPose (9 dwords = the 3x3, the translation is word 9..0xb)
+//   0x0c density?  -- words are named where the public header names them
+// ---------------------------------------------------------------------------
+
+int nxActorLoadFromDescInternal(void* actor, const unsigned* d)
+	{
+	unsigned* a = static_cast<unsigned*>(actor);
+
+	// Nine dwords of global pose, copied from descriptor words 0..8 to actor+0x20.
+	for(int i = 0; i < 9; ++i)
+		a[(0x20 / 4) + i] = d[i];
+
+	a[0x44 / 4] = d[9];				// globalPose.t.x
+	a[0x48 / 4] = d[10];			// globalPose.t.y
+	a[0x4c / 4] = d[0x0b];			// globalPose.t.z
+	a[0x18 / 4] = d[0x0d];			// the body descriptor pointer
+	a[0x1c / 4] = d[0x0e];			// the body descriptor's flags word
+	a[0x14 / 4] = d[0x0f];			// userData
+
+	// The name, through phys_fn_0000edc0.
+	nxActorSetName(actor, d[0x11]);
+
+	// A flexible body builds a body object first.
+	if(d[0x12] == 1)
+		{
+		nxActorBuildBody(actor, d);
+		if(!a[0x10 / 4])
+			return 0;
+		}
+
+	// The shape list. The descriptor carries {first, last} at words 0x13 and 0x14,
+	// and the count decides which path is taken.
+	const unsigned count = d[0x14] - d[0x13];
+	if(d[0x0c] == 0 && a[0x10 / 4])
+		{
+		// No body: register the actor with the scene and succeed.
+		nxSceneAddActorObject(reinterpret_cast<void*>(a[1]), reinterpret_cast<void*>(a[0x10 / 4]));
+		return 1;
+		}
+
+	const int mass = nxActorComputeMass(actor, &d[0x0c]);
+	if(mass == 1)
+		{
+		nxSceneReportErrorA("Actor::loadFromDescInternal: Compute mesh inertia tensor "
+			"failed for one of the actor's mesh shapes! Please change mesh geometry or "
+			"supply a tensor manually!");
+		return 0;
+		}
+	if(mass == 0)
+		{
+		if(!a[0x10 / 4])
+			return 1;
+		nxSceneAddActorObject(reinterpret_cast<void*>(a[1]), reinterpret_cast<void*>(a[0x10 / 4]));
+		return 1;
+		}
+	nxSceneReportErrorA("Actor::loadFromDescInternal: Can't compute mass from shapes: "
+		"must have at least one non-trigger shape!");
+	return 0;
+	}
+
+// phys_fn_000013 (0x00001450) is the actor constructor.
+void* nxActorConstruct(void* memory, void* scene)
+	{
+	unsigned* a = static_cast<unsigned*>(memory);
+	unsigned* s = static_cast<unsigned*>(scene);
+
+	a[1] = reinterpret_cast<unsigned>(scene);
+	a[0x10 / 4] = 0;				// shape list empty
+	a[0x4c / 4] = 0;
+	a[0x48 / 4] = 0;
+	a[0x44 / 4] = 0;
+
+	// The identity 3x3 at +0x20..+0x40.
+	a[0x20 / 4] = 0x3f800000u;
+	a[0x30 / 4] = 0x3f800000u;
+	a[0x40 / 4] = 0x3f800000u;
+	a[0x24 / 4] = 0;
+	a[0x28 / 4] = 0;
+	a[0x2c / 4] = 0;
+	a[0x34 / 4] = 0;
+	a[0x38 / 4] = 0;
+	a[0x3c / 4] = 0;
+	a[8 / 4] = 0;
+
+	// The scene hands out a slot id: either the counter at +0x6d0 is incremented, or
+	// the free list at +0x6d4..+0x6d8 is popped.
+	unsigned slot;
+	const unsigned freeCount = (s[0x6d8 / 4] - s[0x6d4 / 4]) >> 2;
+	if(freeCount == 0)
+		{
+		slot = s[0x6d0 / 4];
+		s[0x6d0 / 4] = slot + 1;
+		}
+	else
+		{
+		slot = *reinterpret_cast<unsigned*>(s[0x6d4 / 4] + (freeCount - 1) * 4);
+		s[0x6d8 / 4] = s[0x6d8 / 4] - 4;
+		}
+	a[0xc / 4] = slot;
+
+	// The 0x18-byte sub-object the oracle allocates next. Reproduction hole.
+	nxActorBuildUserDataObject(memory);
+	return memory;
+	}
+
 // ---------------------------------------------------------------------------
 // phys_fn_000626 (0x00011730) is Scene::createActor.
 //
@@ -495,7 +629,7 @@ NxActor* NxSceneInternal::createActor(const NxActorDescBase& desc)
 
 	// phys_fn_00001450 (0x00001450): constructs the actor over the block, taking the
 	// Scene pointer. Reproduction hole.
-	NxActor* actor = nxSceneActorConstruct(actorMemory, this);
+	NxActor* actor = static_cast<NxActor*>(nxActorConstruct(actorMemory, this));
 	if(!actor)
 		{
 		nxGetSdkAllocator()->free(actorMemory);
@@ -505,7 +639,7 @@ NxActor* NxSceneInternal::createActor(const NxActorDescBase& desc)
 	// phys_fn_00002010 (0x00002010): applies the descriptor to the actor. Its return
 	// is the actor's own vtable word at +0, which the oracle tests against zero to
 	// decide the actor was built. Reproduction hole.
-	if(!nxSceneActorInitialise(actor, &desc))
+	if(!nxActorLoadFromDescInternal(actor, reinterpret_cast<const unsigned*>(&desc)))
 		{
 		nxSceneActorDestroy(actor);
 		nxGetSdkAllocator()->free(actor);
@@ -716,5 +850,45 @@ void nxSceneReportError(const char* message)
 	// __FILE__ and line. The message is kept so the behaviour is greppable; the
 	// Foundation error route is not called because the pinned line number is not
 	// recovered for this row.
+	printf("NxPhysics: %s\n", message);
+	}
+
+// Reproduction holes for Actor::loadFromDescInternal's callees.
+void nxActorSetName(void* actor, unsigned name)
+	{
+	// The oracle (phys_fn_0000edc0) releases any previous name block and stores the
+	// new one. The actor field is not one this reconstruction has identified.
+	(void)actor; (void)name;
+	}
+
+void nxActorBuildBody(void* actor, const unsigned* desc)
+	{
+	// The oracle builds the body object and links it at actor+0x10. Not modelled.
+	(void)actor; (void)desc;
+	}
+
+int nxActorComputeMass(void* actor, const unsigned* bodyWord)
+	{
+	// The oracle (phys_fn_000019b0) computes the mass from the shapes and returns
+	// 1 for a mesh-inertia failure, 0 for success, and something else for "no
+	// non-trigger shape". Returning 0 reproduces the success path.
+	(void)actor; (void)bodyWord;
+	return 0;
+	}
+
+void nxSceneAddActorObject(void* scene, void* object)
+	{
+	// The oracle (phys_fn_00010600) registers the object with the scene. Not
+	// modelled.
+	(void)scene; (void)object;
+	}
+
+void nxActorBuildUserDataObject(void* actor)
+	{
+	(void)actor;
+	}
+
+void nxSceneReportErrorA(const char* message)
+	{
 	printf("NxPhysics: %s\n", message);
 	}

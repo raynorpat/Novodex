@@ -2460,3 +2460,77 @@ where the actor's `userData` and its descriptor chain are established -- the exa
 structure the joint-descriptor rows walk and the reason six rounds of synthetic
 fixture work failed to fake it (8f-8k). Filling that hole is the shortest route to
 the mutation that closes those two rows.
+
+## 9b. `Actor::loadFromDescInternal` and the actor constructor, written
+
+9a named `phys_fn_00002010` as the highest-value row on the path. It is now written,
+together with the actor constructor.
+
+**`phys_fn_000034` (0x00002010, 565 B, phase 5) is
+`Actor::loadFromDescInternal`.** Again the function names itself: its error strings
+are *"Actor::loadFromDescInternal: Compute mesh inertia tensor failed for one of the
+actor's mesh shapes!..."* and *"...Can't compute mass from shapes: must have at
+least one non-trigger shape!"*, and its `__FILE__` is
+`.../Physics/src/Actor.cpp`.
+
+Transcribed, in the oracle's order:
+
+    descriptor words 0..8   -> actor+0x20, nine dwords of globalPose
+    words 9, 10, 0x0b       -> actor+0x44, +0x48, +0x4c   (globalPose.t)
+    word 0x0d               -> actor+0x18                 (the body descriptor)
+    word 0x0e               -> actor+0x1c                 (the body's flags word)
+    word 0x0f               -> actor+0x14                 (userData)
+    word 0x11               -> the name, via phys_fn_0000edc0
+    word 0x12 == 1          -> build a body, then test actor+0x10
+    the shape count from words 0x13/0x14 decides the remaining path
+    the mass pass returns 1 (mesh-inertia failure), 0 (success) or other
+
+**`phys_fn_000013` (0x00001450, 157 B, phase 7) is the actor constructor.**
+Transcribed: the Scene back-pointer at +4, an empty shape list at +0x10, the
+identity 3x3 at +0x20..+0x40, and the scene's slot handout -- either the counter at
+`+0x6d0` is incremented or the free list at `+0x6d4..+0x6d8` is popped.
+
+**Six callees are named reproduction holes**, each with what it does not model
+recorded in the file:
+
+    phys_fn_0000edc0  sets the actor's name
+    the body builder  constructs and links the body object at actor+0x10
+    phys_fn_000019b0  computes mass from the shapes
+    phys_fn_00010600  registers the object with the scene
+    the +0x18 sub-object the constructor allocates
+    the Actor.cpp error route
+
+**What is now correct that was not, and what is still not.** The actor's
+`userData` at `+0x14` is now written from descriptor word 0x0f, and its body
+pointer, group and flags from words 0x0d, 0x0e, 0x0f -- which is the part of the
+chain the joint-descriptor rows read. What is still missing is everything the holes
+cover: the body object itself, the shape objects, and the scene registration. **An
+actor built through this path now carries the right descriptor fields and no body
+or shapes.**
+
+**Verified.** `Scene.cpp` compiles into `NxPhysicsInternalTests`; `Scene.obj` grew
+from 14546 to 17047 bytes; phases 2, 3, 4, 6 and `completed` all exit 0;
+`validate_inventory` exit 0.
+
+## 9c. Scene reconstruction, state after four phases
+
+    DONE   phys_fn_000647  0x00012c10   the 0x710-byte constructor
+    DONE   phys_fn_000651  0x00013070   the descriptor initialiser (2 holes)
+    DONE   phys_fn_000626  0x00011730   Scene::createActor (5 holes)
+    DONE   phys_fn_000034  0x00002010   Actor::loadFromDescInternal (6 holes)
+    DONE   phys_fn_000013  0x00001450   the actor constructor
+    TODO   phys_fn_000544  0x00010750   descriptor flags              144 B
+    TODO   phys_fn_000476  0x0000ea80   PhysicsSDK::createScene       344 B
+    TODO   phys_fn_000234  0x0000b770   NpPhysicsSDK::createScene      31 B
+    TODO   NpScene                      the public NxScene wrapper
+    TODO   the body builder and the shape factory, behind the holes
+
+**Five rows and about 5,000 bytes of oracle code are transcribed and compiling.**
+`createScene` still returns 0, because the wiring above the Scene -- `NpScene`,
+`phys_fn_000234`, `phys_fn_000476` -- is the next phase and nothing has been
+written for it yet.
+
+**The next smallest step is `phys_fn_000476` plus `phys_fn_000234` and an `NpScene`
+whose `createActor` forwards**, which is a few hundred bytes rather than thousands.
+That is what turns `NxPhysicsJointTests` from `scene=null` into `scene=created`, and
+it is the measurement that says whether four phases of this work are right.
