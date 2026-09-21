@@ -5473,3 +5473,91 @@ module.
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on
 purpose, phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed`
 exit 0, `validate_inventory` exit 0, 587 tool tests OK.
+
+## 12y. Round 39: the distance to the Phase 8 gate, measured
+
+Thirty-nine rounds in, the objective is "up to the phase 8 audit tasks". This round
+measured what that distance actually is, because the last six rounds have been closing
+rows one or two at a time and it is worth stating the scale rather than inferring it.
+
+**What Phase 8 requires.** `program.json` states its gate exactly:
+
+    phase 8  Full semantic audit   Entire census closed; full ABI/static/differential/
+                                   trajectory/consumer gates pass
+
+and `validate_inventory.py` makes `closed` the terminal rung that **only** the full-census
+audit may grant, because no earlier phase's ledger can establish that a row is *finished*
+rather than merely *entered*.
+
+**What "entire census" is:**
+
+    functions       6,338
+    data objects    5,138
+    total          11,476
+
+**What is closed:**
+
+    phase 2       59        (pre-existing, from before this session)
+    phase 3       62        (pre-existing)
+    phase 4        0
+    phase 5        0
+    phase 6        2        (this session)
+    phase 7        4        (this session)
+    ----------------
+    total        127        of which 6 are this session's
+
+**And the states behind them:**
+
+    discovered          5,546
+    dynamically_gated     121
+    reconstructed         665
+    statically_reviewed     6
+
+## 12z. Why the remaining distance is not a matter of more rounds
+
+**A closure is one mutation per row that a registered gate catches.** That is the only
+thing the schema accepts, and this session has now walked that path seven times. At the
+rate of six per thirty-nine rounds, closing 11,476 rows is on the order of **seventy
+thousand rounds** -- and that arithmetic understates it, because the last six were the
+rows a working harness already drove.
+
+**Three structural obstacles stand between here and there, and none is a row:**
+
+1. **Most rows are compiler artifacts.** 3,554 of the 6,338 function rows are
+   `compiler_artifact` -- alignment padding, jump tables, thunks. **They have no behaviour
+   to mutate**, so the schema's closure cannot apply to them at all, and `closed` is
+   defined as behaviour verified. Phase 2 reached 59 closures against rows that are code;
+   the artifact half needs a different terminal state or an explicit exemption, and that
+   is a **schema question**, not a reconstruction one.
+2. **510 reconstructed rows carry no `implementation`**, so there is nothing to mutate.
+   Making them mutable is transcription work, not verification work.
+3. **The instruments each cover one surface.** The joint harness closed six rows and is
+   now exhausted for this purpose (12p, 12q); the layout harness cannot drive the candidate
+   at all (12v); and the object-model batch -- 117 rows in one file -- **needs a target that
+   drives the object model through its public interface, which does not exist.**
+
+**So the honest statement of the objective's state**, and it is the one I would have wanted
+at round 1:
+
+    the closure MACHINERY is proven          7 closures, every step measured
+    the closure SCHEMA is not applicable     to the 3,554 artifact rows
+    the TARGETS needed for the bulk          do not exist
+    the REMAINING ROWS mostly need           transcription before they can be mutated
+    the Phase 8 gate                         is not reachable by closing rows one at a time
+
+**What this does not say.** It does not say the work was wasted. The session has produced
+four reusable instruments (the page-guarded allocator, the step probe, the compiler-driven
+class generator, the staged-pair target), seven checks that can fail, eight audit findings
+including a decorative flag and a census that had drifted from the code, and a
+reconstruction that now creates a scene, actors with bodies and vtables, and joints -- end
+to end and without faulting. **What it says is that those are the deliverables, and the
+Phase 8 gate is not among them.**
+
+**The recommendation, stated once.** The next round should either (a) take the
+**compiler-artifact question to the user**, because no amount of reconstruction answers it,
+or (b) begin the object-model target -- the one instrument that would open the largest
+batch -- accepting that it is new construction rather than a repair.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on
+purpose, phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed`
+exit 0, `validate_inventory` exit 0, 587 tool tests OK.
