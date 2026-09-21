@@ -4117,3 +4117,64 @@ round 16's method: declare, instantiate, read the compiler's `C2259`.
 **No census row closed.** All gates green: phases 2/3/4 exit 0, phase 5 exit 1 RED on
 purpose, phase 6 exit 0 PASS, `completed` exit 0, `validate_inventory` exit 0, 587
 tool tests OK.
+
+## 10x. Round 22: the joint has a vtable now, and the harness moved on
+
+10w named the next step: apply the actor's fix to `NxJoint`. This round did it, and it
+took four attempts because the generator kept mangling a different line.
+
+**Written.** `Physics/src/include/NpJoint.h` and `Physics/src/NpJoint.cpp`, in the same
+two-part shape as `NpActor`:
+
+- **`NpJointObject`**, offset-addressed, `0x17c` bytes -- the allocation literal for a
+  revolute joint in `Scene::createJoint`;
+- **`NpJointVtable`**, a concrete class over `NxJoint`'s 21 pure virtuals, with
+  `getGlobalAnchor`, `getGlobalAxis` and `getState` implemented (the three the harness
+  calls) and every other body an `(unimplemented)` default;
+- **`installVtable()`**, called from `nxJointConstruct`, so the joint the harness gets
+  back has a vtable at `+0`.
+
+**Four generator failures, all the same root cause.** The regex-based generator produced
+a merged line in the header, then a merged line in the source, then lost `getActors`,
+then lost `getName`. Each was fixed by hand. **This is the third round in which
+regex-over-C++ has cost more than it saved** (10i, 10j, and now), and the method that
+works is the one 10j established: **declare, instantiate, read the compiler's `C2259`**
+-- which named `getActors` and would have named `getName` if the class had been
+instantiated at that point.
+
+**Measured effect:**
+
+    step actorN9   exit 0
+    step joint     exit 0
+    the joint harness   still faults
+
+**And the harness moved on**, which is the informative part: with the joint's vtable
+installed and `createJoint` returning the joint, the fault is no longer a null vtable
+read. It is a new place, and this round did not reach it.
+
+**What is now built and working**, cumulative:
+
+    NpActorObject + NpActorVtable    the actor has a vtable (10k)
+    NpJointObject + NpJointVtable    the joint has a vtable (this round)
+    the page-guarded allocator       faults at the write (10o-10p)
+    the step probe                   five of six steps exit 0
+
+**No census row closed.** All gates green: phases 2/3/4 exit 0, phase 5 exit 1 RED on
+purpose, phase 6 exit 0 PASS, `completed` exit 0, `validate_inventory` exit 0, 587
+tool tests OK.
+
+## 10y. State after twenty-two rounds, and what the next step is
+
+    defects fixed        9z (*4), 10b (pointer difference), 10k (actor vtable),
+                         10q (166 dword-vs-byte offsets), 10t (reserve growth
+                         condition), 10v (joint hole's marker), 10x (joint vtable)
+    false defect         10d (the loader)
+    instruments built    the step probe, the page-guarded allocator, the
+                         compiler-driven class generator
+    census rows closed   0
+
+**Seven defects fixed and the joint harness still does not pass.** The chain is long and
+each fix has revealed the next, but the instruments are now good enough that the next
+one is found by running the guard and reading the instruction rather than by reasoning
+about crashes. **The next step is the guard on the joint harness**: it will name the
+write, and the last three times it was run it named the defect directly.

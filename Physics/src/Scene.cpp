@@ -32,6 +32,7 @@
 #include "NpActor.h"
 #include "NxJointDesc.h"
 #include "NxJoint.h"
+#include "NpJoint.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -944,17 +945,11 @@ NxJoint* NxSceneInternal::createJoint(const NxJointDesc& desc)
 		// and RETURNS THE JOINT it built. Destroying the marker is not destroying the
 		// joint, so this returns it too.
 		//
-		// It returns 0 instead, for now, and the reason is measured: returning the
-		// joint makes the harness fault, because the next thing it does is call
-		// joint->getGlobalAnchor and joint->getGlobalAxis, which are VIRTUAL, and a
-		// joint built by nxJointConstruct has no vtable -- the same defect the actor
-		// had (10f, 10k). Returning a joint with no vtable trades a clean "created=no"
-		// for a crash, which is worse.
-		//
-		// The fix is the actor's fix, applied to the joint: a concrete class with
-		// NxJoint's virtuals, and the vtable installed at joint+0.
+		// The joint is returned with its vtable installed, so the harness's virtual
+		// calls -- getGlobalAnchor, getGlobalAxis, getState -- dispatch. The marker
+		// word at +0x12 stays null, which is what the oracle's own guard expects for a
+		// joint that has no marker (10u).
 		nxJointDestroy(joint);
-		joint = 0;
 		}
 
 	gCreateJointReentry = false;
@@ -1307,6 +1302,13 @@ NxJoint* nxJointConstruct(void* memory, const void* desc, unsigned type)
 	unsigned char* joint = static_cast<unsigned char*>(memory);
 	for(int i = 0; i < 0x80; ++i)
 		joint[i] = 0;
+
+	// The vtable. The oracle's joint HAS one and the harness calls three of its
+	// virtuals on what createJoint returns -- getGlobalAnchor, getGlobalAxis and
+	// getState -- so a raw block leaves joint[0] at whatever the allocator left and
+	// the first virtual call reads through it. That is the actor's defect (10f, 10k)
+	// one class down, found in 10v.
+	static_cast<NpJointObject*>(memory)->installVtable();
 
 	// The marker at +0x12 is left NULL, deliberately. The oracle's createJoint tests
 	// it and skips the two-word copy out of the Scene's +0x6cc holder when it is null;
