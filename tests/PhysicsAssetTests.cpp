@@ -58,6 +58,39 @@ class NxTriangleMesh;
 // the rebuilt module's linker map. It is what lets this harness drive a module that is not the pinned
 // one: the census records where the ORACLE put each row and the map records where the rebuild did.
 #include "oracle_rva_to_candidate.h"
+#include "NxUserAllocator.h"
+
+// The SDK defines this variable, and this harness compiles the SDK's own sources -- so it provides the
+// definition rather than importing it. Importing it is what made the loader resolve NxFoundation.dll
+// before any code here ran, from the ordinary search path rather than the pair directory, so the PAIR's
+// copy was never the one loaded (round 75). The dependency is exactly one variable, reached through
+// NX_ALLOC in ReadWriteLock's constructor (round 76).
+//
+// The allocator behind it is the CRT heap: nothing on this harness's paths needs the Foundation's own,
+// and nxGetSdkAllocator already falls back to a local allocator of its own.
+namespace
+	{
+	struct NxAssetAllocator : public NxUserAllocator
+		{
+		// The four pure virtuals, and the two that carry default bodies are left alone. Named by
+		// C2259 on the first attempt, then read from the header.
+		void* malloc(size_t size) override
+			{ return ::malloc(size); }
+		void* malloc(size_t size, NxMemoryType type) override
+			{ (void)type; return ::malloc(size); }
+		void* mallocDEBUG(size_t size, const char* fileName, int line) override
+			{ (void)fileName; (void)line; return ::malloc(size); }
+		void* realloc(void* memory, size_t size) override
+			{ return ::realloc(memory, size); }
+		void free(void* memory) override
+			{ ::free(memory); }
+		};
+
+	NxAssetAllocator gAssetAllocator;
+	}
+
+// The definition the Foundation would otherwise provide.
+NxUserAllocator* nxFoundationSDKAllocator = &gAssetAllocator;
 
 // ---------------------------------------------------------------------------
 // The recovered addresses. Every one is an inventory row this phase owns; the

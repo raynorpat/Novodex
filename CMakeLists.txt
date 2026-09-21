@@ -293,7 +293,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# nxSetSdkAllocatorBridge -- but the definition has to be in place before the link comes out, or the
 	# tree stops building. Round 75 measured why it matters: linking the Foundation makes the loader
 	# resolve it as an import before any harness code runs, so the PAIR's copy is never the one loaded.
-	target_link_libraries(NxPhysicsAssetTests NxFoundation NxOpcode bcrypt)
+	target_link_libraries(NxPhysicsAssetTests NxOpcode bcrypt)
 
 	# The vendored third-party differential. Same shape as the two above: it
 	# holds the pinned oracle in its own process and calls qhull and OPCODE rows

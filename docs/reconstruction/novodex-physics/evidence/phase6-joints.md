@@ -8382,3 +8382,46 @@ definition in place before the link comes out.
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 601 tool tests OK.
+
+## 17f. Round 77: the Foundation import is GONE, and the candidate still fails for another reason
+
+17e said the fix was to define the one imported variable locally and then remove the link. **Both are
+done, and the import is measurably gone:**
+
+    dumpbin /dependents build/Release/NxPhysicsAssetTests.exe
+        bcrypt.dll, KERNEL32.dll, VCRUNTIME140.dll, and the api-ms-win-crt-* set
+        NxFoundation.dll  --  ABSENT
+
+**The harness no longer imports the Foundation at all**, so nothing resolves it at process start and
+`LoadLibraryExW` on the pair directory is now the only thing that can bring it in. **That is 17c's
+mechanism removed rather than worked around**, and it is the change two rounds were spent reaching.
+
+**The local definition** is in `tests/PhysicsAssetTests.cpp`: an `NxAssetAllocator` over the CRT heap,
+and `NxUserAllocator* nxFoundationSDKAllocator = &gAssetAllocator` -- the definition `FoundationSDK.cpp`
+would otherwise provide. **It took two attempts and the compiler named the gap**: `C2259: cannot
+instantiate abstract class`, because `NxUserAllocator` has four pure virtuals and I had implemented two.
+**That is the compiler-driven shape round 30 recorded** -- declare, instantiate, and let the compiler name
+what is missing rather than reading the header by eye.
+
+## 17g. And the candidate pair still fails, which is now a different question
+
+    oracle pair directory      exit 0             no identity line printed, and it completes
+    candidate pair directory   exit -1073740791   zero output
+
+**`0xC0000409` again, and it is no longer attributable to the import** -- that is gone. **So the fault
+that remains is not the one this round removed**, and the honest statement is that the import removal was
+necessary and is not sufficient.
+
+**And one detail is worth recording because it changes what to look at next:** the oracle pair completes
+with exit 0 and **prints no identity line**, because the harness only prints those after
+`nxSha256(loadedPath)` succeeds and it reaches that code path -- so the harness's own progress is further
+along than the log suggests, and the candidate's zero output means it fails before the first print, which
+is the same place round 63 found the original fault.
+
+**The remaining difference is therefore in what the two DLLs contain, not in how they are loaded.**
+**This round did not investigate it**, and the next one should start from the `0xC0000409` with the import
+question closed.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 601 tool tests OK.
