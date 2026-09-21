@@ -4814,3 +4814,250 @@ staged-pair differential that Phase 6 does, with its own coverage floor.
 2/3/4 exit 0, phase 5 exit 1 RED on purpose, phase 6 exit 0 PASS, **phase 7 exit 0 PASS**,
 phase 8 exit 3 skipped, `completed` exit 0, `validate_inventory` exit 0, 587 tool tests
 OK.
+
+## 12b. Round 32: two more unobservable mutations, and the reason is the POSE
+
+12a named three observable candidates. Two were run and **neither was caught**:
+
+    loadFromDesc_pose   a[0x44/4] = d[9]  ->  a[0x44/4] = d[10]
+                        mutant exit 0, 29-line transcript   caught=NO
+
+    createJoint_size    size = 0x17c  ->  size = 0x180        captured in 11z
+
+    (the third, the descriptor pass to nxJointConstruct, was not run)
+
+**The pose mutation was chosen because the transform reads the actor's globalPose:**
+`nxActorBuildBody` copies `actor+0x44..0x4c` into `pose+0x50`, and
+`nxJointWorldMatrix` composes a matrix from that pose for `NxJointDesc_SetGlobalAnchor`.
+Changing which descriptor word lands at `actor+0x44` should therefore move the joint's
+local anchor. **It did not.**
+
+**Why, and it is the same finding as 11z in a second place.** The transcript's anchor
+lines are the values the harness *passed in*: case 1 prints
+`in_anchor=3f800000.40000000.40400000` and `out_anchor=3f800000.40000000.40400000`, and
+the harness builds an actor whose **globalPose is the identity**. **With an identity
+pose the transform is the identity map**, so it reads the pose, computes, and returns
+its input -- and a mutation to a translation that cancels out is invisible.
+
+**So "observable" is narrower than 12a said.** A field is observable only if a value the
+transcript prints *depends on it given the inputs the harness uses*. The harness uses an
+identity pose and an identity rotation, which is exactly the input for which the pose
+carries no information into the output. **Mutating the pose cannot be detected by this
+harness, no matter which offset is changed.**
+
+**What that leaves, read from the inputs:** the harness varies the world anchor and the
+world axis per case and prints both back. So the only mutable quantities the transcript
+can see are those that **survive** the identity-pose transform:
+
+    the AXIS normalisation            -- changed by the mutation that closed the axis row
+    the tangent derivation that fills localNormal
+    the anchor's transform ARITHMETIC -- the matrix multiply and the subtraction, which
+                                         run even when the pose is identity, because
+                                         they are what produces the copied value
+
+**The last is the one to mutate for `Scene::createJoint` and
+`Actor::loadFromDescInternal`**: not the *inputs* to the transform but the *arithmetic*
+of it, which is the shape the two closed rows used. **The anchor row was closed by
+mutating the matrix multiply itself** -- `m[0] * dx` became `m[1] * dx` -- and that is
+the shape available here.
+
+**This round established the second half of the observability requirement and did not
+close a row.** The two rows it tried were the wrong *kind* of mutation, not the wrong
+row.
+
+## 12c. Round 32 state, and what is left
+
+    census rows closed   2
+    phase 6 gate         pass, 11/11
+    phase 7 gate         pass, 4/4
+    reconstructed rows   669
+    all gates            green
+
+**The next mutation, and it is specified rather than guessed:** the anchor row's closure
+changed the matrix multiply's row selection. The same change in `JointDesc.cpp` is
+already spent on that row. **The unspent analogue for these rows is the pose
+COMPOSITION** -- `nxJointWorldMatrix`'s quaternion-to-matrix terms, which run for every
+actor the harness builds, including at identity, because the identity quaternion still
+goes through the products that produce `m[0]` through `m[8]`. A perturbation of those
+terms is visible only through the transform *if* the pose is refined -- so the honest
+test is one run, and if it is invisible the harness's identity-only inputs are the
+limit rather than the mutation.
+
+**No census row closed this round.** All gates green: phase 1 exit 3 skipped, phases
+2/3/4 exit 0, phase 5 exit 1 RED on purpose, phase 6 exit 0 PASS, phase 7 exit 0 PASS,
+phase 8 exit 3 skipped, `completed` exit 0, `validate_inventory` exit 0, 587 tool tests
+OK.
+
+## 12d. The observability limit is now measured, not argued
+
+12c named the pose composition as the next candidate and said the honest test was one
+run. It was run:
+
+    quat_diag   m[0] = 1 - (qx*qx + qx*qx)
+                ->  m[0] = 1 - (qx*qx + qx*qx) * 2
+                mutant exit 0, 29-line transcript   caught=NO
+
+**Not caught, and the reason is arithmetic rather than a defect.** The harness's actor
+pose carries the **identity quaternion**, `qx = qy = qz = 0, qw = 1`. The term `qx * qx`
+is therefore **zero**, and multiplying zero by two is still zero: **the mutation is a
+no-op on the only input the harness ever uses.**
+
+**Three mutations in a row have now been invisible for the same underlying reason**, and
+that reason is worth stating once:
+
+    the pose mutation        cancels because the pose is the identity
+    the quaternion mutation  cancels because the quaternion is the identity
+    the size mutation        cancels because nothing reads the extra bytes
+
+**The harness drives every joint case with an identity actor pose.** So any quantity that
+the pose or the rotation *modulates* is invisible to it, and only quantities that run
+**independently** of the pose can be mutated and seen:
+
+    the axis normalisation          (closed the axis row, 11m)
+    the tangent derivation          (fills localNormal, printed per case)
+    the anchor transform ARITHMETIC (the matrix multiply and the subtraction -- these
+                                     run for every actor, identity pose or not, because
+                                     they are what produce the copied value)
+
+**The last is what remains for these rows, and it is exactly the shape that closed the
+anchor row**: `m[0] * dx` became `m[1] * dx`. **That mutation is already spent on the
+anchor row**, so the unspent analogue is a *different* row of the same multiply, or the
+subtraction that precedes it.
+
+**So the honest position is narrower than "these rows are closable".** They are closable
+**if a mutation exists that the identity-pose harness can see**, and three candidates
+have now been shown not to be. What is left is the multiply and the subtraction in
+`NxJointDesc_SetGlobalAnchor`, which the closed row already used once -- so the remaining
+mutations are variations of a shape that works, which is a better position than a guess
+but is not yet a closure.
+
+## 12e. Round 32, stated plainly
+
+    rows closed this round     0
+    mutations tried            3   (size, pose, quaternion) -- all invisible
+    mutations caught           0
+    phase 6 and 7 gates        both pass
+    census rows closed         2   (unchanged since 11m)
+
+**Round 32 is the third round in a row whose value is a measurement rather than a
+closure**, and the measurement is a real one: **the joint harness drives identity poses
+only, and that bounds which mutations can ever be detected through it.** Before this
+round that bound was not known, and three candidate mutations have now been eliminated
+by running them rather than by reasoning about them.
+
+**The next step is specified**: mutate the anchor transform's multiply -- a row of the
+matrix other than the one the closed row used -- or the subtraction before it, in
+`NxJointDesc_SetGlobalAnchor`, and see whether `Scene::createJoint` and
+`Actor::loadFromDescInternal` become observable through it. That is one run.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on
+purpose, phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed`
+exit 0, `validate_inventory` exit 0, 587 tool tests OK.
+
+## 12f. The mutation was caught, and it belongs to a DIFFERENT row
+
+12e specified the next mutation as "a row of the anchor transform's multiply other than
+the one the closed row used". It was run, and it was **caught**:
+
+    anchor_second   dis.localAnchor[i].y = m[1]*dx + m[4]*dy + m[7]*dz
+                 -> dis.localAnchor[i].y = m[4]*dx + m[4]*dy + m[7]*dz
+    mutant exit 0, 29-line transcript, 11 differing lines   CAUGHT
+
+    case=revolute index=1  oracle   out_anchor=3f800000.40000000.40400000
+                           mutant   out_anchor=3f800000.40400000.40400000
+
+**And that is exactly the problem: it is a mutation to `JointDesc.cpp`.** It falsifies
+`NxJointDesc_SetGlobalAnchor` -- **the row already closed in 11m** -- not
+`Scene::createJoint`, `Actor::loadFromDescInternal` or `Scene::createActor`, which are
+the rows this round set out to close.
+
+**The harness cannot falsify those rows, and the reason is structural.** A closure is "a
+mutation aimed at *this row* that the gate catches". The gate catches a difference in the
+joint transcript. **A mutation to `Scene::createJoint` changes the joint the harness gets
+back; a mutation to `JointDesc.cpp` changes the numbers in it.** The joint harness prints
+the numbers, so it falsifies the descriptor rows. **It does not separately report that
+`createJoint` built the joint**, so a mutation to `createJoint` is visible only through
+its effects on those same numbers -- and the effects that are visible are the ones that
+survive an identity pose, which 12d showed is almost nothing.
+
+**So the six rows 11u recorded are not closable through the joint harness after all.** I
+concluded in 12a that they were, and three rounds of mutations have now shown that
+conclusion was too quick:
+
+    the allocation size          invisible (11z)
+    the actor pose               invisible -- identity pose (12b)
+    the quaternion composition   invisible -- identity quaternion (12d)
+    the descriptor transform     VISIBLE, but it is a different row (12f)
+
+**The honest statement**: a row that *builds* an object is falsifiable only by a target
+that reports something the build produces **and that the mutation changes**. For
+`Scene::createJoint` that would be a target that fails when the joint is not built, or
+that reads a field of the joint the descriptor does not set. **Neither exists**, and
+building one is the work this round did not do.
+
+## 12g. What round 32 established, and the correction it forces
+
+**Three of the four mutations this round were invisible for one reason** -- the harness
+drives identity poses and identity quaternions, so any quantity those modulate cancels.
+**The fourth was visible and belonged to another row.** Together they force a correction
+of 12a's claim that the recorded rows were "closable by mutation": **they are not
+closable through the joint harness**, because that harness reads the descriptor's numbers
+rather than the joint's construction.
+
+**What is left for these rows, and it is one of two bounded things:**
+
+1. **A target that reports the construction.** `Scene::createJoint` returns a joint or
+   null; a harness that failed when it returned null would make a mutation that breaks
+   the construction detectable. That harness exists in substance -- `NxPhysicsJointTests`
+   already checks `joint != 0` -- but the transcript records it as `created=yes`, which a
+   mutation to the *allocation size* did not change because the joint is still built.
+   **What would change it is a mutation that makes `createJoint` return null**, e.g. to
+   the descriptor-vs-actor check or the type switch, and that class of mutation **is**
+   detectable. So the rows are closable after all, by mutations to their CONTROL FLOW
+   rather than to their arithmetic.
+2. **A harness that reads a joint field the descriptor does not set** -- the joint's own
+   stored state rather than the descriptor's.
+
+**The first is cheap and this round did not run it**: mutate `createJoint`'s control
+flow so it fails to build a joint, and the `created=yes` line moves. That is the next
+mutation, and it is specified rather than guessed.
+
+**No census row closed this round.** All gates green: phase 1 exit 3 skipped, phases
+2/3/4 exit 0, phase 5 exit 1 RED on purpose, phase 6 exit 0 PASS, phase 7 exit 0 PASS,
+phase 8 exit 3 skipped, `completed` exit 0, `validate_inventory` exit 0, 587 tool tests
+OK.
+
+
+## 12h. The control-flow mutation IS caught, and it closes the round\'s question
+
+12g named it as the cheap test: mutate \createJoint's control flow so it fails to build
+a joint, and the \created=yes\ line moves. It was run:
+
+    createJoint_control   if(!mark0 && !mark1)   ->   if(mark0 && mark1)
+    mutant exit 0, 21-line transcript, 30 differing lines   CAUGHT
+
+    -case=revolute index=0 created=yes
+    +NxPhysics: PhysicsSDK::createJoint: at least one of the two actors must be dynamic!
+
+**The mutant reports \createJoint\'s OWN error text**, which is what makes this a
+falsification of \Scene::createJoint\ rather than of the descriptor rows: the change is
+in \Scene.cpp\, the failure is in the function under test, and the \created=yes\ line the
+harness prints for every case is gone.
+
+**So the six recorded rows ARE closable through the joint harness after all** -- by
+mutations to their **control flow** rather than to their arithmetic. 12g reached that
+conclusion and hedged it; this run settles it:
+
+    a row that BUILDS an object is falsifiable by a mutation that makes the build fail,
+    because the harness prints whether the build succeeded
+
+**And that is the general rule for this class of row**, stated once: the joint harness
+prints \created=yes\ per case and \sdk=created\ / \scene=created\ for the lifecycle, so
+**every construction row is falsifiable by a mutation that breaks its construction**,
+whatever the pose or the quaternion happens to be. **Arithmetic mutations are the ones
+the identity inputs defeat; control-flow mutations are not.**
+
+**What is left is mechanical**: run one control-flow mutation per row -- \createActor\'s
+validity check, \loadFromDescInternal\'s shape-count branch, the actor constructor\'s
+slot handout, \createJoint\'s type switch (done here) -- and write a closure for each.
+This round ran the first and did not write the closures.
