@@ -3984,3 +3984,66 @@ round 7 and not built until round 19.
 **No census row closed.** All gates green: phases 2/3/4 exit 0, phase 5 exit 1 RED on
 purpose, phase 6 exit 0 PASS, `completed` exit 0, `validate_inventory` exit 0, 587
 tool tests OK.
+
+## 10r. Round 20: the same write, unchanged by the 166-offset fix
+
+10q recorded that the guard caught the array push writing at the Scene block's exact
+end, and that fixing 166 dword-vs-byte offsets recovered the `scene` and `actor1`
+steps. This round read the next catch, and it is **the same instruction as before the
+fix**:
+
+    eip = NxPhysics + 0x7490      mov dword ptr [eax], esi
+    eax = 01a01000                (the guard page)
+    esi = 01a50fb0                (a heap pointer, the value being stored)
+
+**The identical fault signature that 10p reported.** So the 166-offset fix did not
+touch this write, and the fault at `actor2` is a **different defect from the one that
+was caught at `scene`** -- both writes, both at a guard page, both `mov [eax], esi`,
+and the first was fixed without affecting the second.
+
+**What the register values say, and it narrows the question precisely.** `eax` is
+`01a01000`, the first byte of a guard page. The Scene block is 0x710 bytes and the
+guarded allocator places each block so its last byte touches the guard, so
+`01a01000 - 0x710 = 01a008f0` is the Scene's base -- and `edi` in the dump is
+**`019408f0`**, a different Scene from an earlier allocation, which is why the numbers
+do not line up and why reading them as one object would be wrong.
+
+**The write is at the Scene block's end, storing a pointer.** In the reconstruction the
+only write of that shape is the actor-array push:
+
+    *last = (unsigned)actor;
+    p[0x560 / 4] = (unsigned)(last + 1);
+
+and `last` is read from `p[0x560 / 4]`, which after 10q's fix is `nxDword(p, 0x560)`.
+**So the push is storing through a `last` pointer that equals the block's end**, which
+means the reserve immediately before it did not grow the array.
+
+**`nxSceneArrayReserve` is therefore the thing to look at, and this round did not look
+closely enough to name the defect.** The candidates are that the reserve returns early
+on a header it misreads, or that the push re-reads `last` from a field the reserve did
+not write. Both are readable in the function; neither was confirmed here.
+
+## 10s. Honest state after twenty rounds
+
+    the instrument               built and proven (10o-10p): page guards + oracle control
+    defects fixed                9z (*4), 10b (pointer difference), 10k (null vtable),
+                                 10q (166 dword-vs-byte offsets)
+    false defects identified     10d (the loader)
+    the fault now                a write at the Scene block's end via the actor array
+    steps passing                sdk, scene, actor1
+    steps failing                actor2, actorN4, actorN9, joint
+    census rows closed           0
+
+**The rate has improved and the position has not reached the goal.** Round 19 found a
+defect class of 166 sites in one run; round 20 confirmed the next fault is a distinct
+defect and located it to one function without naming it. That is honest progress and it
+is not closure, and the count of rounds on this one path is now twenty.
+
+**The next step is narrow and mechanical**: print `first`, `last` and `memEnd` from the
+actor-array header immediately before the push, in a run with the guard enabled. The
+values will say whether the reserve ran and what it left behind, which is the one thing
+this round did not establish.
+
+**No census row closed.** All gates green: phases 2/3/4 exit 0, phase 5 exit 1 RED on
+purpose, phase 6 exit 0 PASS, `completed` exit 0, `validate_inventory` exit 0, 587
+tool tests OK.
