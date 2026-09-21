@@ -8425,3 +8425,61 @@ question closed.
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 601 tool tests OK.
+
+## 17h. Round 78: the candidate's fault is a NULL CALL, through a slot the oracle fills
+
+17g left the candidate pair failing with `0xC0000409` and zero output, with the import question closed.
+**This round traced it, and the fault is not a stack overrun at all -- it is a call through null:**
+
+    eip = 00000000      "??"      -- the instruction pointer IS zero
+    kb   NxPhysicsAssetTests+0x218e
+         NxPhysicsAssetTests!NxReleasePMap+0x1351
+         KERNEL32!BaseThreadInitThunk
+
+    the frame's first argument is 0x6dc06330
+
+**`eip = 0` means the call went to address zero**, so a function pointer the harness used was null. **And
+the argument is the interesting part**: `0x6dc06330` is inside the candidate's image -- the module loads
+at `0x6dbf0000` -- at offset **`0x6330`**. **So the harness called a slot in the candidate's own data at
+`+0x6330`, and that slot holds zero.**
+
+**`0xC0000409` is the status the process exits with, and it is not what happened at the fault.** The
+harness's `/GS`-instrumented frames turn the null call into a cookie report on the way out, which is why
+the exit code pointed at a stack overrun. **The debugger's `eip` is the evidence and the exit code was
+the symptom** -- worth recording, because three rounds have been spent on the exit code.
+
+## 17i. What that means, and it is a defect in the candidate rather than in the harness
+
+    the harness resolved a target to an address in the candidate
+    the candidate's data at that offset holds zero
+    and the harness called it
+
+**So the candidate has a NULL where the oracle has a function pointer.** That is a reconstruction gap of
+the kind the census is supposed to record and cannot see: **a vtable or function-table slot that was
+never filled.** The oracle fills `+0x6330` and the rebuild does not.
+
+**And this is the first fault in this whole sequence that is a defect in the DLL rather than in a
+harness's view of it.** Rounds 74 to 77 were all about how the harness loaded and resolved things; this
+one is about what the module contains, which is what 17g predicted the remaining difference would be.
+
+**And the slot is nameable, which is what this round adds:**
+
+    the candidate's nearest symbol at or below 0x10006330
+        0x10006320   ?empty@SdkContainer@@QAEXXZ   Containers.obj   f
+        delta        +0x10
+
+**So the null slot sits exactly `0x10` bytes past the start of `SdkContainer::empty`** -- **a vtable or
+function-table slot in the candidate's data**, not a function. **The oracle fills it and the rebuild does
+not**, and the harness called it because the table said the slot was there.
+
+**No census row has that exact address**: no function and no data object lies at `0x10006330` or within
+`0x40` of it. **So the slot is inside a row the census does describe, and the census's granularity does
+not reach a single vtable entry** -- which is why no check has ever asked whether it is filled.
+
+**The next round should find which row's data covers that address and whether the reconstruction writes
+the slot.** That is a row to reconstruct rather than a harness to adjust, and it is the first such fault
+this sequence has produced.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 601 tool tests OK.
