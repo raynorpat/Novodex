@@ -48,6 +48,14 @@
 // row; none of these helpers is reachable from a joint-descriptor differential, so
 // the gap does not affect the closure these rows are being built for.
 
+// phys_fn_000544 (0x00010750, phase 7): applies the descriptor's flags.
+void nxSceneApplyDescriptorFlags(void* scene, const unsigned* descWords, unsigned debug);
+// phys_fn_000626 (0x00011730, phase 7) with phys_fn_000501 (0x0000ff10, phase 7):
+// the ground-plane expansion.
+void nxSceneBuildGroundPlane(void* scene);
+// phys_fn_000651's array reserve, above.
+void nxSceneArrayReserve(void* arrayHeader, unsigned needed);
+
 // phys_fn_005109 (0x000e1510, phase 4).
 //   FUN_100f0660(this); dword[0xd]=0; dword[0xe]=0; *this=&PTR_FUN_1011b794;
 static void nxSceneArrayHeaderInit(void* self);
@@ -391,6 +399,138 @@ NxSceneInternal::NxSceneInternal()
 	// phys_fn_002415, allocated 0xa8 bytes.
 	void* aux = nxGetSdkAllocator()->malloc(0xa8, NX_MEMORY_PERSISTENT);
 	p[0x12] = aux ? reinterpret_cast<unsigned>(nxSceneAuxConstruct(aux, p)) : 0;
+	}
+
+
+
+// Reserves an embedded NxArraySDK<T> to `needed` entries using the Foundation
+// allocator, which is what the oracle's capacity-compare-then-grow sequence at
+// 0x00013070 does: it tests `last` against `memEnd`, doubles when it must, copies
+// the live entries and releases the old block. The array is {first, last, memEnd,
+// allocator}, so its three pointers are at +0, +4 and +8.
+void nxSceneArrayReserve(void* arrayHeader, unsigned needed)
+	{
+	unsigned* a = static_cast<unsigned*>(arrayHeader);
+	unsigned* first = reinterpret_cast<unsigned*>(a[0]);
+	unsigned* last = reinterpret_cast<unsigned*>(a[1]);
+	unsigned* memEnd = reinterpret_cast<unsigned*>(a[2]);
+	const unsigned count = static_cast<unsigned>(last - first);
+
+	if(static_cast<unsigned>(memEnd - last) >= needed - count && needed > count)
+		return;
+
+	const unsigned capacity = (needed > (count ? count * 2 : 2)) ? needed : (count ? count * 2 : 2);
+	unsigned* grown = static_cast<unsigned*>(
+		nxGetSdkAllocator()->malloc(capacity * sizeof(unsigned), NX_MEMORY_PERSISTENT));
+	if(!grown)
+		return;
+	for(unsigned i = 0; i < count; ++i)
+		grown[i] = first[i];
+	if(first)
+		nxGetSdkAllocator()->free(first);
+	a[0] = reinterpret_cast<unsigned>(grown);
+	a[1] = reinterpret_cast<unsigned>(grown + count);
+	a[2] = reinterpret_cast<unsigned>(grown + capacity);
+	}
+
+// ---------------------------------------------------------------------------
+// phys_fn_000651 (0x00013070): the descriptor-driven initialiser.
+//
+// The oracle reads the descriptor at these offsets, all of which are NxSceneDesc
+// fields rather than guesses:
+//   0x00 vtable   0x04 userData   0x08 gravity   0x14 userContactReport
+//   0x18 maxTimestep   0x1c maxIter   0x20 solverType   0x2c limits
+//   0x30 groundPlane   0x31 upAxis   0x34 flags
+//
+// One block is a REPRODUCTION HOLE and is named as such below: the ground-plane
+// expansion, which calls phys_fn_000626 (0x00011730, 3227 bytes) and
+// phys_fn_000501 (0x0000ff10, 393 bytes). Both belong to phase 7 and neither is
+// reconstructed. Everything outside that block is transcribed.
+// ---------------------------------------------------------------------------
+
+bool NxSceneInternal::initialise(const NxSceneDesc& desc)
+	{
+	const unsigned* d = reinterpret_cast<const unsigned*>(&desc);
+	unsigned* p = reinterpret_cast<unsigned*>(mBytes);
+
+	// The limits pointer is stored as five counts at dwords 6, 7, 8, 9 and 10 of
+	// the descriptor, and the oracle copies them to +0x18..+0x28. It then reserves
+	// two embedded arrays to the new actor and body counts, which is the
+	// capacity-compare-then-grow sequence at 0x00013070's head.
+	const unsigned* limits = reinterpret_cast<const unsigned*>(d[0x0b]);
+	if(limits)
+		{
+		p[0x18] = limits[0];		// maxNbActors
+		p[0x1c] = limits[1];		// maxNbBodies
+		p[0x20] = limits[2];		// maxNbStaticShapes
+		p[0x24] = limits[3];		// maxNbDynamicShapes
+		p[0x28] = limits[4];		// maxNbJoints
+
+		nxSceneArrayReserve(p + 0x55c, p[0x18]);
+		nxSceneArrayReserve(p + 0x56c, p[0x1c]);
+		}
+
+	// +0x52c is written through the pointer at +0x6cc, then the three descriptor
+	// words land at +0x52c, +0x530 and +0x534.
+	unsigned* holder = reinterpret_cast<unsigned*>(p[0x6cc / 4]);
+	if(holder)
+		holder[1] = d[0x0d];
+	p[0x52c] = d[7];				// maxTimestep
+	p[0x530] = d[8];				// maxIter
+	p[0x534] = d[9];				// solverType
+
+	// phys_fn_000544 (0x00010750, phase 7) applies the flags and the debug word.
+	// It is a reproduction hole.
+	nxSceneApplyDescriptorFlags(this, d, d[0x0a]);
+
+	// The ground-plane expansion. REPRODUCTION HOLE: the oracle builds a default
+	// ground-plane shape descriptor on the stack, feeds it to phys_fn_000626 and
+	// writes the resulting bounds back through phys_fn_000501. Neither row is
+	// reconstructed, so this block reproduces the call and the byte flag it is
+	// gated on, and nothing else. It is recorded in the evidence against this row.
+	if(reinterpret_cast<const unsigned char*>(&desc)[0x30] != 0)
+		nxSceneBuildGroundPlane(this);
+
+	// The second ground-plane path, gated on upAxis != 0 and a non-null pointer at
+	// descriptor word 0x0a. Same hole, six iterations in the oracle.
+	if(reinterpret_cast<const unsigned char*>(&desc)[0x31] != 0 && d[0x0a] != 0)
+		nxSceneBuildGroundPlane(this);
+
+	p[0x520] = d[1];				// userData
+	p[0x524] = d[2];
+	p[0x528] = d[3];
+
+	// Bit 0 of +0x70c is the ground-plane enable, set or cleared from descriptor
+	// byte 0x32.
+	if(reinterpret_cast<const unsigned char*>(&desc)[0x32] == 0)
+		p[0x70c] = p[0x70c] & 0xfffffffeu;
+	else
+		p[0x70c] = p[0x70c] | 1u;
+
+	p[0x6ac] = d[4];
+	p[0x6b0] = d[5];
+	p[0x538] = 0;
+	p[0x6b4] = d[6];
+	return true;
+	}
+
+
+// phys_fn_000544 (0x00010750, phase 7). REPRODUCTION HOLE. The oracle's body
+// applies the descriptor's flag words and its debug value; it is 144 bytes and is
+// not reconstructed. This reproduces the call and nothing else.
+void nxSceneApplyDescriptorFlags(void* scene, const unsigned* descWords, unsigned debug)
+	{
+	(void)scene; (void)descWords; (void)debug;
+	}
+
+// phys_fn_000626 (0x00011730, phase 7) and phys_fn_000501 (0x0000ff10, phase 7).
+// REPRODUCTION HOLE. The oracle builds a default ground-plane shape descriptor on
+// the stack, calls 000626 with it, and feeds the result to 000501; 000626 is 3227
+// bytes. This reproduces the call and nothing else, so a scene built with
+// groundPlane set does NOT get a ground plane from this reconstruction.
+void nxSceneBuildGroundPlane(void* scene)
+	{
+	(void)scene;
 	}
 
 // The scalar deleting destructor the vtable's slot 0 points at. The oracle's is

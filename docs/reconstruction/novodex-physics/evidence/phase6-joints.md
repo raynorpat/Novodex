@@ -2320,3 +2320,66 @@ two are the next phase.
 
 Steps 1-4 are the reconstruction. Step 5 is the measurement that says whether it
 worked, and step 6 is the closure this whole line of work has been for.
+
+## 8w. Scene reconstruction, phase 2: the descriptor initialiser
+
+`phys_fn_000651` (0x00013070) is written, with **two blocks named as reproduction
+holes** rather than quietly guessed.
+
+**The descriptor offsets are read, and they are NxSceneDesc fields.** Every word the
+oracle loads is a named member of the pinned public header, so the mapping is not
+an inference:
+
+    0x00 vtable      0x04 userData     0x08 gravity    0x14 userContactReport
+    0x18 maxTimestep 0x1c maxIter      0x20 solverType 0x2c limits
+    0x30 groundPlane 0x31 upAxis       0x34 flags
+
+**Written and transcribed:**
+
+- the limits pointer (descriptor word 0x0b) copied to five Scene fields at
+  `+0x18..+0x28` -- `maxNbActors`, `maxNbBodies`, `maxNbStaticShapes`,
+  `maxNbDynamicShapes`, `maxNbJoins`;
+- the two embedded array reserves that follow it, at `+0x55c` and `+0x56c`, whose
+  layout `{first, last, memEnd, allocator}` is the one the oracle's
+  capacity-compare-then-grow sequence manipulates;
+- `+0x52c`, `+0x530`, `+0x534` from descriptor words 7, 8, 9 -- `maxTimestep`,
+  `maxIter`, `solverType`;
+- `+0x520..+0x528` from descriptor words 1, 2, 3;
+- bit 0 of `+0x70c` set or cleared from descriptor byte 0x32;
+- `+0x6ac`, `+0x6b0`, `+0x6b4` from descriptor words 4, 5, 6;
+- `+0x538 = 0`, and `true` returned.
+
+**The two holes, named:**
+
+- `phys_fn_000544` (0x00010750, 144 B, phase 7) -- applies the descriptor's flag
+  words. Called, not modelled.
+- `phys_fn_000626` (0x00011730, **3227 B**, phase 7) with `phys_fn_000501`
+  (0x0000ff10, 393 B) -- the ground-plane expansion, which the oracle drives from a
+  stack-built shape descriptor across six iterations, twice, gated on descriptor
+  byte 0x30 and on byte 0x31 with a non-null word 0x0a.
+
+**What that means, stated so it cannot be misread:** a scene built with
+`groundPlane` set does **not** get a ground plane from this reconstruction. The
+flag at `+0x70c` is set correctly, and the shape is not built. `createScene` still
+returns 0 regardless, because the rows above it are not written.
+
+**Verified.** `Scene.cpp` compiles into `NxPhysicsInternalTests`; phases 2, 3, 4, 6
+and `completed` all exit 0; `validate_inventory` exit 0.
+
+## 8x. The remaining path, with sizes
+
+    3227 B  phys_fn_000626  0x00011730  the ground-plane expansion   phase 7
+     393 B  phys_fn_000501  0x0000ff10  its bounds consumer           phase 7
+     144 B  phys_fn_000544  0x00010750  descriptor flags              phase 7
+     344 B  phys_fn_000476  0x0000ea80  PhysicsSDK::createScene       phase 2
+      31 B  phys_fn_000234  0x0000b770  NpPhysicsSDK::createScene     phase 2
+       ?    NpScene                       the public NxScene wrapper
+       ?    Scene::createActor            the harness's next call
+       ?    the seven constructor helpers  phase 4 and 7
+
+**The smallest route to a working harness does not go through 3227 bytes of
+ground-plane code.** `createScene` can be wired up with the ground-plane hole left
+in place -- the harness passes a descriptor with `groundPlane` unset -- and the
+next steps in cost order are `Scene::createActor`, then `NpScene` with
+`phys_fn_000234` and `phys_fn_000476`. That is the order the next session should
+take, and the ground-plane hole is recorded so it is not mistaken for done.
