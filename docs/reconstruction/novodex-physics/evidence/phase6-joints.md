@@ -6675,3 +6675,54 @@ rather than for a sample**, so the next attempt does not repeat them.
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 587 tool tests OK.
+
+## 14m. Round 53: size cannot match the last 38, and the reason closes the derivation
+
+14l named behaviour-matching against the file's named IDs as the remaining derivation. This round
+tried the one fingerprint both sides carry -- **size** -- and it does not work.
+
+**Both sides have one:**
+
+    census          each row's oracle `size`
+    candidate map   consecutive symbol addresses, whose difference is the function's size
+                    (796 symbols, 673 with a derivable size, 317 of them in ObjectModel.obj)
+
+**Matching the 19 rows in the set that claim `ObjectModel.cpp`:**
+
+    unique size match       0
+    several candidates      2
+    no symbol of that size 17
+
+**And the 17 are not close misses.** Their oracle sizes are **4, 6 and 14 bytes**:
+
+    phys_fn_000955  "box hull getVertices"     4 bytes
+    phys_fn_000953  "box hull getVertexCount"  6 bytes
+    phys_fn_000961  "box hull getFaceCount"    6 bytes
+
+**The candidate has no symbol of those sizes because a 4-byte accessor is exactly what a compiler
+inlines rather than emits.** So **the rows are reconstructed as behaviour the candidate expresses
+inlined, and a size fingerprint cannot see an inlined function at all.**
+
+**That closes the derivation 14l proposed**: behaviour-matching needs a fingerprint that **survives
+inlining**, and size does not. **What might -- the row's `static_proof` text against the file's
+comments -- is the same kind of prose matching that produced `entered` and `written` as symbols in
+round 50**, and this session has already recorded where that leads.
+
+## 14n. The honest position on the last 38, and it is that they stay
+
+**The set exists to record rows whose correspondence the census does not carry.** For these 38 the
+correspondence **may not exist in any artifact**: a 4-byte accessor that the candidate inlines has
+no symbol to point at, and its `implementation` naming the file that defines the class **is as much
+as can be said**.
+
+**So the 38 stay in `IMPLEMENTATION_MISMATCHES`**, which is a true statement about them -- their
+`.cpp` implementation does not write their ID -- and the set's size is not a defect count, which
+this session has now established four times.
+
+**Three derivations were tried on this group and all three failed**: the implementation file's
+comments (14k), the closures (14k), and size (14m). **Each failure was measured across all 38 rather
+than sampled**, so the group is now characterised rather than merely unresolved.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 587 tool tests OK.
