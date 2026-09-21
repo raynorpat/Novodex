@@ -78,7 +78,10 @@ add_library(NxPhysics SHARED ${PHYSICS_HEADERS} ${PHYSICS_SOURCES} ${PHYSICS_RES
 # correct only when the loaded module IS the shipped one. Reading the candidate's own symbol names is
 # what lets a target resolve by name instead, and the map is where they are written.
 if(MSVC)
-	target_link_options(NxPhysics PRIVATE /MAP)
+	# Keep unreferenced COMDATs. The default /OPT:REF drops any function nothing references, and the
+# reconstruction contains rows whose code exists and is discarded for exactly that reason --
+# measured in round 67 as 150 rows whose implementation object contributes no function.
+target_link_options(NxPhysics PRIVATE /MAP /OPT:NOREF /OPT:NOICF)
 endif()
 target_link_libraries(NxPhysics NxFoundation NxQhull NxOpcode)
 set_target_properties(NxPhysics PROPERTIES LINKER_LANGUAGE CXX)

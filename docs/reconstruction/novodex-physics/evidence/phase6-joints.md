@@ -7847,3 +7847,68 @@ lint of rounds 15f and 12z says is what a schema question is for.
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 601 tool tests OK.
+
+## 16j. Round 68: THE FIX -- the code was being discarded, and it is now in the module
+
+16i measured 150 rows whose implementation file is in the build and whose object contributes no
+function, and named the mechanism: nothing references those COMDATs, so the linker drops them. **This
+round tested that by removing the cause rather than reasoning about it:**
+
+    target_link_options(NxPhysics PRIVATE /MAP /OPT:NOREF /OPT:NOICF)
+
+**`/OPT:REF` is the default and it discards any COMDAT nothing references. `/OPT:NOREF` keeps them.**
+
+**And the measurement, before against after, on the same parse:**
+
+    object                   before        after
+    ObjectModel.obj          61 /   0      415 / 323    <- 323 functions appeared
+    ContactGeneration.obj     6 /   0       65 /  48
+    IcePrunable.obj           5 /   0       42 /  18
+    TriangleMesh.obj          1 /   0        7 /   4
+    MemoryStream.obj          0 /   0       16 /  15
+    Scene.obj                18 /   8       55 /  44
+    PMap.obj                  8 /   1       36 /  16
+    NpActor.obj             105 /  89      105 /  89    <- unchanged, already linked
+    ------------------------------------------------------------------
+    totals                  889 / 399     1815 / 1025
+
+**So the code was there the whole time and the linker was throwing it away.** 399 functions became
+1,025, and **`ObjectModel.obj` went from contributing nothing but error strings to contributing 323
+functions** -- which is what 117 rows needed and what the census was claiming without the module having
+it.
+
+## 16k. The population after the fix, and it is one row rather than 150
+
+    rows whose implementation is a SOURCE file        210
+      ... linked (object contributes a function)      209
+      ... object contributes NO function                0
+      ... object absent from the module                 1
+    rows whose implementation is a HEADER              36
+
+**The 150 are gone.** The single remaining absent object is `IceRevisitedRadix.obj`, one row, in
+`External/opcode/novodex/Ice/` -- a file outside the reconstruction's own trees, which is a different
+question from the 150 and is left named rather than folded into them.
+
+**And nothing broke.** 601 tool tests pass and every gate is green, which is the check that matters:
+the module now contains more code and the differentials that drive it still agree.
+
+## 16l. What the fix was worth, and what it was not
+
+**It was worth 150 rows of the census becoming true.** Before it, `implementation` named a file whose
+code the module did not contain -- **the field said where a row was reconstructed and the module
+disagreed.** After it, the code is in the module for 209 of the 210 source rows.
+
+**It was not a closure, and it is worth being exact about that.** A closure is *a mutation aimed at a
+row that a registered gate caught*. **What this changed is that the rows are now reachable at all** --
+before it, a harness calling the candidate at that row's address would have reached whatever the
+linker left, or nothing. **The closures still have to be earned**, and this is what makes earning them
+possible.
+
+**And it was a repair rather than a state.** 16i said a row compiled but not linked "is not described by
+any rung the ladder has" and put three options to the user. **The first option -- a rung for it -- is
+now unnecessary**, because the condition it would have described no longer exists for 150 of the 151
+rows. **That is worth recording as the outcome of a measurement rather than a ruling.**
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 601 tool tests OK.

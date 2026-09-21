@@ -15,11 +15,13 @@
 struct NxRvaTranslation { unsigned oracleRva; unsigned candidateAddress; };
 
 static const NxRvaTranslation kNxRvaTranslations[] = {
-	{ 0x0000c170, 0x10004f50u },  // phys_fn_000273  NpPhysicsSDK::setFluidGroupPairFlags
-	{ 0x0000c1a0, 0x10004eb0u },  // phys_fn_000275  NpPhysicsSDK::getFluidGroupPairFlags
-	{ 0x0000deb0, 0x10005f20u },  // phys_fn_000443  PhysicsSDK::getDebugRenderable
-	{ 0x00013070, 0x10007800u },  // phys_fn_000651  NxSceneInternal::initialise
-	{ 0x00051040, 0x100052b0u },  // phys_fn_002051  NxReleasePMap
+	{ 0x0000c170, 0x1000c950u },  // phys_fn_000273  NpPhysicsSDK::setFluidGroupPairFlags
+	{ 0x0000c1a0, 0x1000c870u },  // phys_fn_000275  NpPhysicsSDK::getFluidGroupPairFlags
+	{ 0x00013070, 0x1001b060u },  // phys_fn_000651  NxSceneInternal::initialise
+	{ 0x00051040, 0x10016e10u },  // phys_fn_002051  NxReleasePMap
+	{ 0x00095cc0, 0x1000d8a0u },  // phys_fn_004087  nxAccumulateByKind0867
+	{ 0x000b3b30, 0x1000a710u },  // phys_fn_004780  MemoryStream::seek
+	{ 0x000b3f00, 0x1000a7c0u },  // phys_fn_004797  MemoryStream::storeDword
 };
 
 static const unsigned kNxRvaTranslationCount =
