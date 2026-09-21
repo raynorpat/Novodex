@@ -7102,3 +7102,66 @@ are known, and the one template has one parameter.
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 591 tool tests OK.
+
+## 15g. Round 59: the vocabulary pinned, and the data rung added on it
+
+15f put the data-object question to the user with the recommendation to **pin the vocabulary first**
+so the state would rest on a check rather than on prose. **That was chosen, and both halves are
+done.**
+
+**Half one: the vocabulary is pinned.** `DATA_PROOF_BY_TYPE` holds the type-to-proof mapping and
+`_check_data_vocabulary` enforces it. **It is a value check, not a presence check**, which is the
+difference between a rule that can fail and a field that reads as evidence:
+
+    clean census             -> no errors
+    type "whatever"          -> "has type 'whatever', which is not one of [...]; the type is what
+                                 determines the structural proof and an unknown type determines
+                                 nothing"
+    proof "because I said so"-> "has type 'string' whose structural proof is 'a NUL-terminated
+                                 printable run the PE string scan recorded', but the row records
+                                 'because I said so'"
+    a mangled template       -> rejected on the pattern
+
+**Half two: the data objects are `classified`**, and `validate_classification` was **extended**
+rather than duplicated, so the two populations cannot drift:
+
+    a data object has no behaviour to mutate, so its terminal state is 'classified',
+    resting on the structural proof its type determines
+
+## 15h. Two corrections this round made to its own measurement
+
+**`ghidra_data` is a template, not two alternatives.** 15e measured the vocabulary from the
+committed census and found that type with exactly two proof values, so it was written down as two
+literals. **That was a sample rather than the set.** The generator builds
+`"Ghidra typed these bytes as {data_type}"` from whatever Ghidra recorded, and the reconcile fixture
+emits **`/float`**, which the census does not happen to contain. **The two values the census carries
+were the two it uses, not the two that exist.** It is now a pattern beside `switch_table`, and the
+census's own rows still pass.
+
+**The generator's own vocabulary had drifted from the validator's, in both directions.** Its
+`_DATA_PROOFS` **carried a `resource` type the census never uses** and was **missing `switch_table`
+and `ascii_blob` entirely** -- so its own lookup would have raised `KeyError` on the first switch
+table it emitted. **Two write-ups of one vocabulary, disagreeing.** The generator now imports the
+validator's, so **it cannot emit a row its own validator rejects** -- which is 15c's lesson in its
+second form, and the third defect of that shape this round found.
+
+## 15i. The census, by terminal story
+
+    code rows           2784   closed 0         remaining 2784
+    compiler artifacts  3554   classified 3554  remaining 0
+    data objects        5138   classified 5138  remaining 0
+    ------------------------------------------------------------
+    total              11476   terminal 8692    remaining 2784
+
+**75.7% of the census now has a terminal state, where before this ruling it had none** -- because
+before it, `closed` was the only terminal rung and **3,554 artifacts and 5,138 data objects could
+not reach it.** Phase 8's gate was restated to name all three populations, since the wording that
+said "every COMPILER_ARTIFACT classified" would read as the whole of the non-code census.
+
+**What remains is exactly the code rows**: 2,784 of them, of which 127 are already closed across the
+programme and 6 are this session's. **That is the honest remaining distance, and it is now stated in
+rows rather than obscured by a gate that could not be satisfied.**
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, **600 tool tests OK**.

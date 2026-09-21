@@ -1286,7 +1286,7 @@ def emit(pe, ghidra, capstone, inventory, extent, rows, edges, phases,
             "references": [f"jump at {detail['jump']}"] if detail.get("jump") else [],
             "section": ".text", "phase": phases.get(row["owner"], ARTIFACT_PHASE),
             "phase_provenance": provenance.get(row["owner"], "padding"),
-            "state": "discovered", "source": None,
+            "state": "classified", "source": None,
             "structural_proof": _data_proof(detail), "notes": detail.get("value", "")})
     for row in data_rows:
         data_objects.append({
@@ -1301,8 +1301,8 @@ def emit(pe, ghidra, capstone, inventory, extent, rows, edges, phases,
                      if row["type"] in PE_STRUCTURAL_CLASSES
                      or _section_of(pe, row["rva"]) == "headers"
                      else "reading_sites",
-            "state": "discovered", "source": None,
-            "structural_proof": _DATA_PROOFS[row["type"]],
+            "state": "classified", "source": None,
+            "structural_proof": _data_structural_proof(row),
             "notes": json.dumps(row["detail"], separators=(",", ":"))
                      if row["detail"] else ""})
 
@@ -1372,20 +1372,29 @@ def emit(pe, ghidra, capstone, inventory, extent, rows, edges, phases,
     }
 
 
-_DATA_PROOFS = {
-    "relocation_metadata": "the PE base relocation directory covers these bytes",
-    "export_directory": "the PE export directory covers these bytes",
-    "resource": "the PE resource directory covers these bytes",
-    "import_address_table": "an import address table slot the PE oracle names",
-    "string": "a NUL-terminated printable run the PE string scan recorded",
-    "ghidra_data": "Ghidra typed these bytes as data",
-    "dispatch_table": "consecutive relocated slots that all name a function "
-                      "entry: the vtable-shaped dispatch this image builds "
-                      "without RTTI",
-    "pointer_slot": "a four-byte slot the PE relocation table fixes up",
-    "code_addressed_global": "a reference names this address and the next anchor "
-                             "in the same section bounds it",
-}
+# The data-object vocabulary lives in the validator, which is what has to accept this tool's
+# output, and is imported here rather than written a second time. Two write-ups of one vocabulary
+# drifted: this map carried a `resource` type the census never uses and was missing `switch_table`
+# and `ascii_blob` entirely, so it disagreed with the validator in both directions.
+import validate_inventory
+
+_DATA_PROOFS = dict(validate_inventory.DATA_PROOF_BY_TYPE)
+_DATA_PROOFS["ghidra_data"] = "Ghidra typed these bytes as data"
+# `resource` is a PE structure class this tool can emit; its entry is in the validator's
+# vocabulary rather than grafted on here, because a type the tool can emit has to be a type the
+# validator accepts.
+
+
+def _data_structural_proof(row):
+    """A data object's structural proof: the literal its type determines, or the template.
+
+    A switch table's proof names the jump that decoded it, so it is built here rather than looked up.
+    """
+    kind = row["type"]
+    if kind == "switch_table":
+        return ("a decoded jmp at %s names this table and the PE oracle relocates "
+                "every slot it walks" % hexa(row["jump"]))
+    return _DATA_PROOFS[kind]
 
 
 def _gates(inventory, ghidra, capstone):

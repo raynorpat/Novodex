@@ -92,17 +92,18 @@ def minimal_inventory():
                 "id": "phys_data_000001",
                 "rva": "0x00003000",
                 "size": 8,
-                "type": "vtable",
+                "type": "string",
                 "owner": "phys_fn_000002",
                 "references": ["0x00001010"],
                 "section": ".rdata",
                 "phase": 2,
                 "phase_provenance": "reading_sites",
-                "state": "discovered",
+                "state": "classified",
                 "source": None,
                 "label": "phys_data_000001",
                 "label_confidence": "stable-id",
-                "structural_proof": "ghidra/vtables/phys_data_000001.json",
+                "structural_proof":
+                    "a NUL-terminated printable run the PE string scan recorded",
                 "notes": "",
             }
         ],
@@ -460,6 +461,73 @@ class ValidateInventoryTests(unittest.TestCase):
         closures = {1: {"schema_version": 1, "phase": 1, "counts": {"closed": 0, "deferred": []},
                         "closed": [], "deferred": [
                             {"id": data["functions"][0]["id"], "reason": "not_reconstructed_in_phase",
+                             "phase_provenance": "pe_structure", "driving_phases": []}]}}
+        self.assertEqual(validate_inventory.validate_row_states(data, closures), [])
+
+    def test_accepts_a_data_object_whose_proof_matches_its_type(self):
+        data = minimal_inventory()
+        data["data_objects"][0]["type"] = "string"
+        data["data_objects"][0]["structural_proof"] = (
+            "a NUL-terminated printable run the PE string scan recorded")
+        self.assertEqual(validate_inventory.validate_inventory(data), [])
+
+    def test_rejects_a_data_object_type_outside_the_vocabulary(self):
+        """The type determines the proof, so an unknown type determines nothing."""
+        data = minimal_inventory()
+        data["data_objects"][0]["type"] = "whatever"
+        self.assertRejects(data, "which is not one of")
+
+    def test_rejects_a_data_object_proof_its_type_does_not_determine(self):
+        """A value check, not a presence check: the proof must be the one the type gives."""
+        data = minimal_inventory()
+        data["data_objects"][0]["type"] = "string"
+        data["data_objects"][0]["structural_proof"] = "because I said so"
+        self.assertRejects(data, "but the row records")
+
+    def test_rejects_a_templated_proof_whose_parameter_is_malformed(self):
+        """The one templated family: its address is checked for shape."""
+        data = minimal_inventory()
+        data["data_objects"][0]["type"] = "switch_table"
+        data["data_objects"][0]["structural_proof"] = (
+            "a decoded jmp at 0xNOTHEX names this table and the PE oracle relocates every "
+            "slot it walks")
+        self.assertRejects(data, "whose structural proof is the template")
+
+    def test_accepts_a_templated_proof_with_a_well_formed_parameter(self):
+        data = minimal_inventory()
+        data["data_objects"][0]["type"] = "switch_table"
+        data["data_objects"][0]["structural_proof"] = (
+            "a decoded jmp at 0x00001e2c names this table and the PE oracle relocates every "
+            "slot it walks")
+        self.assertEqual(validate_inventory.validate_inventory(data), [])
+
+    def test_the_data_vocabulary_is_closed_over_every_type(self):
+        """Every type the census can carry has a proof rule, and the two sets agree."""
+        types = (set(validate_inventory.DATA_PROOF_BY_TYPE)
+                 | set(validate_inventory.DATA_PROOF_ALTERNATIVES)
+                 | set(validate_inventory.DATA_PROOF_TEMPLATE))
+        self.assertEqual(types, set(validate_inventory.DATA_TYPES))
+        self.assertEqual(len(types), len(validate_inventory.DATA_TYPES))
+
+    def test_accepts_a_classified_data_object(self):
+        data = minimal_inventory()
+        data["data_objects"][0]["state"] = "classified"
+        self.assertEqual(validate_inventory.validate_inventory(data), [])
+
+    def test_rejects_a_data_object_left_below_the_terminal_rung(self):
+        """A data object has no behaviour to mutate, so it never passes through the code ladder."""
+        data = minimal_inventory()
+        data["data_objects"][0]["state"] = "discovered"
+        self.assertRejects(data, "its terminal state is 'classified'")
+
+    def test_accepts_a_classified_data_object_without_a_closure_ledger(self):
+        """Its evidence is the structural proof, not a mutation a gate caught."""
+        data = minimal_inventory()
+        data["data_objects"][0]["state"] = "classified"
+        closures = {1: {"schema_version": 1, "phase": 1, "counts": {"closed": 0, "deferred": []},
+                        "closed": [], "deferred": [
+                            {"id": data["data_objects"][0]["id"],
+                             "reason": "data_object_not_dispositioned",
                              "phase_provenance": "pe_structure", "driving_phases": []}]}}
         self.assertEqual(validate_inventory.validate_row_states(data, closures), [])
 

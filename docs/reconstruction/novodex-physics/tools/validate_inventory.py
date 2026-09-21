@@ -631,6 +631,92 @@ def _check_implemented_rows(rows):
     return errors
 
 
+# The data-object vocabulary. `type` and `structural_proof` were both required keys and neither
+# value was ever checked, so any string passed and every gate stayed green (round 58). The two are
+# not independent: `reconcile_analysis.py` derives the proof from the type, and this is that mapping
+# written down. Ten types determine one literal proof each; `switch_table` is a template whose one
+# parameter is the row's own decoded jump, which is why it is a pattern rather than 42 literals.
+DATA_PROOF_BY_TYPE = {
+    "ascii_blob":
+        "a printable ASCII run inside the executable extent",
+    "code_addressed_global":
+        "a reference names this address and the next anchor in the same section bounds it",
+    "derived_switch_table":
+        "consecutive relocated slots the corpus published as unresolved: its walk stopped at a "
+        "dead slot 0 that carries no relocation",
+    "dispatch_table":
+        "consecutive relocated slots that all name a function entry: the vtable-shaped dispatch "
+        "this image builds without RTTI",
+    "export_directory":
+        "the PE export directory covers these bytes",
+    "import_address_table":
+        "an import address table slot the PE oracle names",
+    "pointer_slot":
+        "a four-byte slot the PE relocation table fixes up",
+    "relocation_metadata":
+        "the PE base relocation directory covers these bytes",
+    # A PE structure class the generator can emit; the committed census carries no resource
+    # directory today, so the entry is exercised by the fixture rather than by a row.
+    "resource":
+        "the PE resource directory covers these bytes",
+    "string":
+        "a NUL-terminated printable run the PE string scan recorded",
+}
+# The templated families. Each has one parameter that is checked for SHAPE rather than against a
+# value, because the row does not carry a second copy of it:
+#   switch_table  the address of the jump that decoded the table
+#   ghidra_data   Ghidra's own type name for the bytes
+# `ghidra_data` was first written down as two literal alternatives, from the two values the committed
+# census uses. That was a sample rather than the set: the generator builds the proof from whatever
+# Ghidra recorded, and it emits `/float` among others.
+DATA_PROOF_ALTERNATIVES = {
+    "ghidra_data": re.compile(r"^Ghidra typed these bytes as \S+$"),
+}
+# The switch-table family, whose parameter is the address of the jump that decoded the table.
+DATA_PROOF_TEMPLATE = {
+    "switch_table": re.compile(
+        r"^a decoded jmp at 0x[0-9a-f]{8} names this table and the PE oracle relocates every "
+        r"slot it walks$"),
+}
+DATA_TYPES = tuple(sorted(set(DATA_PROOF_BY_TYPE) | set(DATA_PROOF_ALTERNATIVES)
+                          | set(DATA_PROOF_TEMPLATE)))
+
+
+def _check_data_vocabulary(rows):
+    """A data object's type and its structural proof must agree, and both must be known.
+
+    This is the check round 58 found missing. Without it the terminal story for a data object would
+    rest on prose nothing reads -- which is how this session once recorded the words `entered` and
+    `written` as symbols (14f).
+    """
+    errors = []
+    for row in rows:
+        where = f"data object {row['id']!r}"
+        kind = row.get("type")
+        proof = row.get("structural_proof") or ""
+        if kind not in DATA_TYPES:
+            errors.append(f"{where} has type {kind!r}, which is not one of {list(DATA_TYPES)}; the "
+                          f"type is what determines the structural proof and an unknown type "
+                          f"determines nothing")
+            continue
+        if kind in DATA_PROOF_BY_TYPE:
+            expected = DATA_PROOF_BY_TYPE[kind]
+            if proof != expected:
+                errors.append(f"{where} has type {kind!r} whose structural proof is {expected!r}, "
+                              f"but the row records {proof!r}")
+        elif kind in DATA_PROOF_ALTERNATIVES:
+            pattern = DATA_PROOF_ALTERNATIVES[kind]
+            if not pattern.match(proof):
+                errors.append(f"{where} has type {kind!r} whose structural proof is the template "
+                              f"{pattern.pattern!r}, but the row records {proof!r}")
+        else:
+            if not DATA_PROOF_TEMPLATE[kind].match(proof):
+                errors.append(f"{where} has type {kind!r} whose structural proof is the template "
+                              f"{DATA_PROOF_TEMPLATE[kind].pattern!r}, but the row records "
+                              f"{proof!r}")
+    return errors
+
+
 def _check_data_objects(rows, declared_phases):
     errors = []
     for row in rows:
@@ -805,6 +891,7 @@ def validate_inventory(data: dict) -> list[str]:
     errors += _check_stable_ids(data["functions"], data["data_objects"])
     errors += _check_functions(data["functions"], declared_phases)
     errors += _check_data_objects(data["data_objects"], declared_phases)
+    errors += _check_data_vocabulary(data["data_objects"])
     coverage_errors = _check_coverage(data["coverage"])
     census_passing = _claimed_census_status(data["coverage"]) == "pass"
 
@@ -1352,7 +1439,7 @@ def validate_classification(inventory):
     state agrees with the kind rather than replacing that proof.
     """
     errors = []
-    for row in inventory["functions"] + inventory["data_objects"]:
+    for row in inventory["functions"]:
         kind = row.get("kind")
         state = row.get("state")
         where = f"row {row['id']!r}"
@@ -1365,6 +1452,16 @@ def validate_classification(inventory):
                 f"{where} is a compiler_artifact at {state!r}; an artifact has no behaviour to "
                 f"mutate, so its terminal state is 'classified' and it is not reached through the "
                 f"closure the code rows use")
+    # A data object has no behaviour to mutate either, and its terminal state rests on the
+    # structural proof its type determines -- the vocabulary pinned above. The same rung serves
+    # both populations deliberately: extending this check rather than writing a second one is what
+    # stops the two drifting apart.
+    for row in inventory["data_objects"]:
+        if row.get("state") != "classified":
+            errors.append(
+                f"data object {row['id']!r} is at {row.get('state')!r}; a data object has no "
+                f"behaviour to mutate, so its terminal state is 'classified', resting on the "
+                f"structural proof its type determines")
     return errors
 
 
@@ -1905,6 +2002,7 @@ def main():
         errors += _check_implementation_paths(data['functions'], path.parent)
         errors += _check_implementation_contains_row(data['functions'], repo_root)
     errors += validate_program(data, program, ledgers, path.parent)
+    errors += _check_data_vocabulary(data['data_objects'])
     errors += validate_classification(data)
     errors += validate_row_states(data, ledgers)
     stated = {row.get("phase"): row for row in program.get("phases", [])
