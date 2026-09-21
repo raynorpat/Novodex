@@ -5523,12 +5523,19 @@ rows a working harness already drove.
 
 **Three structural obstacles stand between here and there, and none is a row:**
 
-1. **Most rows are compiler artifacts.** 3,554 of the 6,338 function rows are
-   `compiler_artifact` -- alignment padding, jump tables, thunks. **They have no behaviour
-   to mutate**, so the schema's closure cannot apply to them at all, and `closed` is
-   defined as behaviour verified. Phase 2 reached 59 closures against rows that are code;
-   the artifact half needs a different terminal state or an explicit exemption, and that
-   is a **schema question**, not a reconstruction one.
+1. **Most rows are compiler artifacts, and NONE has ever been closed.** Measured, not
+   inferred:
+
+       kinds                 code 2,784   compiler_artifact 3,554
+       closed rows by kind   code   127   compiler_artifact     0
+       artifact rows with an implementation                     0
+
+   **All 127 closures in the programme are against `code` rows; not one artifact has ever
+   been closed, and not one carries an implementation to mutate.** 3,554 artifact rows --
+   alignment padding, jump tables, thunks -- **have no behaviour to mutate**, so the
+   schema's closure cannot apply to them, and `closed` is defined as behaviour verified.
+   **The artifact half needs a different terminal state or an explicit exemption, and that
+   is a schema question rather than a reconstruction one.**
 2. **510 reconstructed rows carry no `implementation`**, so there is nothing to mutate.
    Making them mutable is transcription work, not verification work.
 3. **The instruments each cover one surface.** The joint harness closed six rows and is
