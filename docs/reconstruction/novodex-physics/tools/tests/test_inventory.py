@@ -427,7 +427,41 @@ class ValidateInventoryTests(unittest.TestCase):
         data = minimal_inventory()
         data["functions"][0]["kind"] = "compiler_artifact"
         data["functions"][0]["static_proof"] = "capstone/crt_stub.json"
+        # An artifact's terminal state is `classified`: it has no behaviour to mutate, so it is
+        # not reached through the closure a code row uses.
+        data["functions"][0]["state"] = "classified"
         self.assertEqual(validate_inventory.validate_inventory(data), [])
+
+    def test_rejects_artifact_left_at_a_non_terminal_state(self):
+        """Without this half an artifact could sit at `discovered` forever."""
+        data = minimal_inventory()
+        data["functions"][0]["kind"] = "compiler_artifact"
+        data["functions"][0]["static_proof"] = "capstone/crt_stub.json"
+        data["functions"][0]["state"] = "discovered"
+        self.assertRejects(data, "its terminal state is 'classified'")
+
+    def test_rejects_code_row_claiming_classified(self):
+        """Without this half a code row could escape the closure requirement."""
+        data = minimal_inventory()
+        data["functions"][0]["state"] = "classified"
+        self.assertRejects(data, "which is true only of a compiler_artifact")
+
+    def test_classified_ranks_level_with_closed(self):
+        """They are two terminal states, not one below the other."""
+        self.assertEqual(validate_inventory.STATE_RANK["classified"],
+                         validate_inventory.STATE_RANK["closed"])
+
+    def test_accepts_classified_artifact_without_a_closure_ledger(self):
+        """An artifact's evidence is its classification proof, not a mutation a gate caught."""
+        data = minimal_inventory()
+        data["functions"][0]["kind"] = "compiler_artifact"
+        data["functions"][0]["static_proof"] = "capstone/crt_stub.json"
+        data["functions"][0]["state"] = "classified"
+        closures = {1: {"schema_version": 1, "phase": 1, "counts": {"closed": 0, "deferred": []},
+                        "closed": [], "deferred": [
+                            {"id": data["functions"][0]["id"], "reason": "not_reconstructed_in_phase",
+                             "phase_provenance": "pe_structure", "driving_phases": []}]}}
+        self.assertEqual(validate_inventory.validate_row_states(data, closures), [])
 
     def test_rejects_duplicate_export_ownership(self):
         data = minimal_inventory()

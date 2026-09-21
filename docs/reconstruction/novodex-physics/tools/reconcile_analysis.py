@@ -1418,10 +1418,15 @@ def _phase_of_sites(sites, owners, phases):
 
 def _row(identifier, row, kind, phase, why, source, ghidra_ref, capstone_ref,
          proof, notes):
+    # An artifact has no behaviour to mutate, so it never passes through the code rows' ladder
+    # and never reaches `closed`: it is `classified` from the moment its classification proof is
+    # recorded, which is here. Emitting it as `discovered` would produce an inventory its own
+    # validator rejects.
+    state = "classified" if kind == "compiler_artifact" else "discovered"
     return {"id": identifier, "rva": hexa(row["rva"]), "size": row["size"],
             "kind": kind, "label": identifier, "label_confidence": "stable-id",
             "section": ".text", "phase": phase, "phase_provenance": why,
-            "state": "discovered",
+            "state": state,
             "source": source, "ghidra_ref": ghidra_ref, "capstone_ref": capstone_ref,
             "static_proof": proof, "dynamic_proof": None, "notes": notes}
 

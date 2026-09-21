@@ -110,12 +110,18 @@ STATES = (
     "reconstructed",
     "statically_reviewed",
     "dynamically_gated",
+    "classified",
     "closed",
 )
 # The states are a ladder, and the rung a row stands on is a claim about the kind
 # of evidence behind it. Only the two dynamic rungs assert that something ran and
 # noticed: that is the distinction the closure ledger is checked against below.
 STATE_RANK = {name: index for index, name in enumerate(STATES)}
+# `classified` shares the terminal rank with `closed`. They are not ordered against each other
+# because they are not the same kind of claim: `closed` says a mutation was aimed at a code row and
+# a gate caught it, `classified` says an artifact's form has been established and it has no
+# behaviour to mutate. Ordering them would invite reading one as incomplete relative to the other.
+STATE_RANK["classified"] = STATE_RANK["closed"]
 DYNAMIC_STATES = ("dynamically_gated", "closed")
 # The highest rung a row may stand on with nothing but a reconstruction behind
 # it. Everything above is a claim that a gate ran and caught something, which
@@ -807,6 +813,10 @@ def validate_inventory(data: dict) -> list[str]:
         data["exports"], function_ids, data["pins"]["oracle"]["named_exports"], census_passing
     )
     errors += _check_overlaps(data["functions"] + data["data_objects"])
+    # The state ladder's classification rule. It belongs here as well as on the CLI path:
+    # the CLI validates the committed census, and this function is what every fixture and every
+    # direct caller goes through, so a rule on one entry point only is a rule with a hole.
+    errors += validate_classification(data)
     errors += coverage_errors
     if not coverage_errors:
         errors += _check_gates(data["gates"], data["coverage"])
@@ -1323,6 +1333,41 @@ def validate_closure(inventory, closure, phase, targets):
     return errors
 
 
+def validate_classification(inventory):
+    """`classified` is the terminal rung for compiler artifacts, and only for them.
+
+    Round 39 measured that an artifact cannot be `closed`: closing a row means a
+    mutation aimed at it that a registered gate caught, and an artifact -- alignment
+    padding, a jump table, a thunk -- has no behaviour to mutate. Not one of the
+    programme's 127 closures is against an artifact.
+
+    So the census needs a second terminal state, and the two halves below are what
+    stop it being decorative. Without the first, a code row could be `classified` to
+    escape the closure requirement. Without the second, an artifact could sit at
+    `discovered` forever and Phase 8's gate -- which reads as "entire census closed"
+    -- would have no term for it.
+
+    `classified` is given no exemption from evidence: every artifact already carries
+    the classification proof that `_check_artifacts` demands, and this asserts the
+    state agrees with the kind rather than replacing that proof.
+    """
+    errors = []
+    for row in inventory["functions"] + inventory["data_objects"]:
+        kind = row.get("kind")
+        state = row.get("state")
+        where = f"row {row['id']!r}"
+        if state == "classified" and kind != "compiler_artifact":
+            errors.append(
+                f"{where} stands at 'classified' but its kind is {kind!r}; the state says the "
+                f"row has no behaviour to mutate, which is true only of a compiler_artifact")
+        elif kind == "compiler_artifact" and state != "classified":
+            errors.append(
+                f"{where} is a compiler_artifact at {state!r}; an artifact has no behaviour to "
+                f"mutate, so its terminal state is 'classified' and it is not reached through the "
+                f"closure the code rows use")
+    return errors
+
+
 def validate_row_states(inventory, closures):
     """No row stands above `reconstructed` without a ledger entry that put it there.
 
@@ -1349,6 +1394,12 @@ def validate_row_states(inventory, closures):
     for row in inventory["functions"] + inventory["data_objects"]:
         state = row["state"]
         if STATE_RANK.get(state, -1) <= STATE_RANK[UNGATED_CEILING]:
+            continue
+        # A classified artifact is not standing above its evidence: its evidence is the
+        # classification proof it carries, and the closure ledger -- a ledger of mutations a gate
+        # caught -- is not a claim an artifact can make. The exemption is stated here rather than
+        # taken by lowering the ceiling, so it applies to this one rung and not to `closed`.
+        if state == "classified":
             continue
         where = f"row {row['id']!r}"
         if row["id"] not in closed_by:
@@ -1854,6 +1905,7 @@ def main():
         errors += _check_implementation_paths(data['functions'], path.parent)
         errors += _check_implementation_contains_row(data['functions'], repo_root)
     errors += validate_program(data, program, ledgers, path.parent)
+    errors += validate_classification(data)
     errors += validate_row_states(data, ledgers)
     stated = {row.get("phase"): row for row in program.get("phases", [])
               if isinstance(row, dict)}

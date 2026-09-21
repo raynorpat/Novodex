@@ -6927,3 +6927,100 @@ this session does, and the ruling that would change that is the user's.
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 587 tool tests OK.
+
+## 15a. THE RULING: compiler artifacts get a terminal state of their own
+
+12z put a question to the user and it has been answered: **the `compiler_artifact` rows should get a
+state of their own.** This section records what was decided, what it changes, and what it does not.
+
+**Why it was needed.** Phase 8's gate was *"entire census closed"*, and closing a row means **a
+mutation aimed at it that a registered gate caught**. **3,554 of the 6,338 function rows are
+`compiler_artifact`** -- alignment padding, jump tables, thunks -- and **have no behaviour to
+mutate.** Measured: **all 127 closures in the programme are against `code` rows, and not one
+artifact has ever been closed.** So the gate could not be satisfied by any amount of work.
+
+**What was decided.** An artifact is not an unfinished code row; **it is a row whose review is
+complete and whose form of completion is classification.** So the census now has **two terminal
+rungs**, and `classified` is the one artifacts reach.
+
+## 15b. What changed
+
+**The ladder** gained a rung, ranked **level with `closed`**:
+
+    discovered, typed, decompiled, reconstructed, statically_reviewed,
+    dynamically_gated, classified, closed
+
+**`classified` is deliberately not below `closed`.** They are not ordered against each other because
+**they are not the same kind of claim**: `closed` says a mutation was aimed at a code row and a gate
+caught it; `classified` says an artifact's form has been established and it has no behaviour to
+mutate. Ordering them would invite reading one as incomplete relative to the other. **The rank is set
+explicitly rather than by position**, so moving the tuple cannot silently change the meaning.
+
+**The rule**, `validate_classification`, has **two halves, and both are needed or the state is
+decorative**:
+
+    only a compiler_artifact may stand at `classified`   -- or a code row escapes the closure
+                                                            requirement by renaming its state
+    every compiler_artifact must stand at `classified`   -- or an artifact sits at `discovered`
+                                                            forever and the gate has no term for it
+
+**Verified in both directions**, which is what makes it a rule rather than a field:
+
+    clean census                      -> []
+    a code row set to classified      -> "stands at 'classified' but its kind is 'code'; the state
+                                          says the row has no behaviour to mutate, which is true
+                                          only of a compiler_artifact"
+    an artifact set to discovered     -> "is a compiler_artifact at 'discovered'; an artifact has no
+                                          behaviour to mutate, so its terminal state is 'classified'"
+
+**The 3,554 artifacts are now `classified`**, and **none of them was asserted to be something it was
+not**: every one already carried the classification proof `_check_artifacts` has demanded since the
+beginning, and **the state change names that review rather than replacing it.**
+
+**`validate_row_states` exempts `classified` from the closure-ledger rule**, and the exemption is
+written where it applies rather than taken by lowering the ceiling: **a classified artifact is not
+standing above its evidence**, because its evidence **is** the classification proof, and the closure
+ledger is **a ledger of mutations a gate caught, which is not a claim an artifact can make.**
+
+**Phase 8's gate was restated** so that "entire census" has a term for both populations:
+
+    Entire census terminal: every CODE row `closed` (a mutation aimed at it that a registered gate
+    caught) and every COMPILER_ARTIFACT `classified` (its form established; it has no behaviour to
+    mutate). Full ABI/static/differential/trajectory/consumer gates pass
+
+## 15c. Two defects this change found in its own implementation
+
+**The rule ran on one of two entry points.** `validate_classification` was added to the CLI path and
+not to the module-level `validate_inventory(data)`, so **it was enforced when the committed census
+was validated and skipped by every test and every fixture.** Two of this round's five new tests
+failed for that reason, which is what surfaced it. **A rule on one entry point is a rule with a
+hole**, and it is the **fourth time this session has found a check weaker than it read** (13x, 13y,
+13m).
+
+**The generating tool emitted an inventory its own validator rejects.** `reconcile_analysis.py`
+emitted every function row at `discovered`, so after the ruling **a fresh run produced 3,554 rows the
+validator refuses.** The tool now emits an artifact at `classified`, because **an artifact is
+classified the moment its proof is recorded and never passes through the code ladder at all.** That
+is the shape the ruling implies, and emitting `discovered` would have meant 3,554 corrections after
+every run.
+
+## 15d. State after the ruling
+
+    code rows           2784   closed 0      remaining 2784
+    compiler artifacts  3554   classified 3554   remaining 0
+    data objects        5138   terminal 0
+    total               11476
+
+    phase 8's gate      now names both populations
+    tests               591   (587 before; 4 net new for the rung)
+    all gates           green
+
+**The artifact half of the census is closed.** The gate is now **reachable in principle** where
+before it was not: what remains is **2,784 code rows and 5,138 data objects**, and **the data
+objects have no terminal story at all** -- they are all `discovered`, none carries a `kind`, and
+`validate_classification` does not speak to them. **That is the next question the same ruling
+raises**, and this round did not assume an answer to it.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 591 tool tests OK.

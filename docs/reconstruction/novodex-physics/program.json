@@ -139,7 +139,7 @@
       "phase": 8,
       "name": "Full semantic audit",
       "plan": "docs/superpowers/plans/2026-08-09-novodex-physics-phase8-full-audit.md",
-      "gate": "Entire census closed; full ABI/static/differential/trajectory/consumer gates pass",
+      "gate": "Entire census terminal: every CODE row `closed` (a mutation aimed at it that a registered gate caught) and every COMPILER_ARTIFACT `classified` (its form established; it has no behaviour to mutate). Full ABI/static/differential/trajectory/consumer gates pass",
       "status": "pending",
       "implementation_commit": null,
       "evidence_commit": null,
