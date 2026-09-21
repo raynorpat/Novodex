@@ -45,6 +45,17 @@
 // ---------------------------------------------------------------------------
 
 // Declared before the helpers that use it; defined above the constructor.
+
+// `p` is an `unsigned*`, so `p[N]` is byte 4N. Every offset in this file is a BYTE
+// offset taken from the decompilation, so a bare `p[0x52c]` addresses byte 0x14B0 --
+// the same confusion as the `p + 0x55c` slip, in a different spelling. This accessor
+// takes the byte offset and does the division, so the two forms cannot be mixed up.
+static inline unsigned& nxDword(unsigned* p, unsigned byteOffset)
+	{
+	return *reinterpret_cast<unsigned*>(
+		reinterpret_cast<unsigned char*>(p) + byteOffset);
+	}
+
 static inline unsigned char* nxAt(unsigned* p, unsigned byteOffset);
 
 // Each function below is a REPRODUCTION HOLE for a helper another phase owns.
@@ -72,8 +83,8 @@ static void nxSceneArrayHeaderInit(void* self);
 void nxSceneMemberE1510(void* self)
 	{
 	unsigned* p = static_cast<unsigned*>(self);
-	p[0x0d] = 0;
-	p[0x0e] = 0;
+	nxDword(p, 0x0d) = 0;
+	nxDword(p, 0x0e) = 0;
 	}
 
 // phys_fn_005071 (0x000de7e0, phase 4).
@@ -81,10 +92,10 @@ void nxSceneMemberE1510(void* self)
 void nxSceneMemberDE7E0(void* self)
 	{
 	unsigned* p = static_cast<unsigned*>(self);
-	p[0x0d] = 0;
-	p[0x0e] = 0;
-	p[0x0f] = 0;
-	p[0x10] = 0;
+	nxDword(p, 0x0d) = 0;
+	nxDword(p, 0x0e) = 0;
+	nxDword(p, 0x0f) = 0;
+	nxDword(p, 0x10) = 0;
 	}
 
 // phys_fn_005029 (0x000d4d00, phase 4).
@@ -111,8 +122,8 @@ void nxSceneMemberBB510(void* self)
 	p[8] = 0;
 	p[9] = 0;
 	p[10] = 0;
-	p[0x0b] = 0;
-	p[0x0c] = 0;
+	nxDword(p, 0x0b) = 0;
+	nxDword(p, 0x0c) = 0;
 	reinterpret_cast<unsigned char*>(self)[0x44] = 1;
 	reinterpret_cast<unsigned char*>(self)[0x111] = 1;
 	}
@@ -123,12 +134,12 @@ void nxSceneMemberBB510(void* self)
 void nxSceneMemberB5720(void* self)
 	{
 	unsigned* p = static_cast<unsigned*>(self);
-	p[0x17] = 0;
-	p[0x18] = 0;
-	p[0x19] = 0;
-	p[0x1a] = 0;
-	p[0x21] = 0x7f7fffffu;								// FLT_MAX
-	p[0x22] = 0;
+	nxDword(p, 0x17) = 0;
+	nxDword(p, 0x18) = 0;
+	nxDword(p, 0x19) = 0;
+	nxDword(p, 0x1a) = 0;
+	nxDword(p, 0x21) = 0x7f7fffffu;								// FLT_MAX
+	nxDword(p, 0x22) = 0;
 	reinterpret_cast<unsigned char*>(self)[0x23] = 0;
 	reinterpret_cast<unsigned char*>(self)[0x8d] = 1;
 	}
@@ -140,17 +151,17 @@ void nxSceneMemberB5720(void* self)
 void nxSceneMember4CA30(void* self)
 	{
 	unsigned* p = static_cast<unsigned*>(self);
-	p[0x0b] = 0;
-	p[0x0c] = 0;
+	nxDword(p, 0x0b) = 0;
+	nxDword(p, 0x0c) = 0;
 	nxSceneArrayHeaderInit(nxAt(p, 0x0d));					// phys_fn_004147
-	p[0x16] = 0x7f7fffffu;
-	p[0x17] = 0x7f7fffffu;
-	p[0x18] = 0x7f7fffffu;
-	p[0x19] = 0xff7fffffu;
-	p[0x1a] = 0xff7fffffu;
-	p[0x1b] = 0xff7fffffu;
-	p[0x1c] = 2;
-	p[0x1d] = 0;
+	nxDword(p, 0x16) = 0x7f7fffffu;
+	nxDword(p, 0x17) = 0x7f7fffffu;
+	nxDword(p, 0x18) = 0x7f7fffffu;
+	nxDword(p, 0x19) = 0xff7fffffu;
+	nxDword(p, 0x1a) = 0xff7fffffu;
+	nxDword(p, 0x1b) = 0xff7fffffu;
+	nxDword(p, 0x1c) = 2;
+	nxDword(p, 0x1d) = 0;
 	new (nxAt(p, 0x1e)) SdkContainer();						// phys_fn_004836
 	}
 
@@ -173,7 +184,7 @@ void* nxSceneCollectorConstruct(void* self, void* owner)
 	p[8] = 0;
 	p[9] = 0;
 	reinterpret_cast<unsigned char*>(self)[0x20] = 0;
-	p[0x09] = reinterpret_cast<unsigned>(owner);		// +0x24
+	nxDword(p, 0x09) = reinterpret_cast<unsigned>(owner);		// +0x24
 	return self;
 	}
 
@@ -184,7 +195,7 @@ void* nxSceneAuxConstruct(void* self, void* owner)
 	unsigned* p = static_cast<unsigned*>(self);
 	for(int i = 0; i <= 0x28; ++i)
 		p[i] = 0;
-	p[0x29] = reinterpret_cast<unsigned>(owner);		// +0xa4
+	nxDword(p, 0x29) = reinterpret_cast<unsigned>(owner);		// +0xa4
 	return self;
 	}
 
@@ -326,7 +337,7 @@ NxSceneInternal::NxSceneInternal()
 	const unsigned base = reinterpret_cast<unsigned>(this);
 
 	// The vtable the oracle installs.
-	p[0x00] = reinterpret_cast<unsigned>(vtable());
+	nxDword(p, 0x00) = reinterpret_cast<unsigned>(vtable());
 
 	// dwords 1..10 are zeroed individually by the oracle.
 	for(int i = 1; i <= 10; ++i)
@@ -336,150 +347,150 @@ NxSceneInternal::NxSceneInternal()
 	new (nxAt(p, 0x14)) SdkContainer();						// phys_fn_004836
 	nxSceneMemberE1510(nxAt(p, 0x18));						// phys_fn_005109
 
-	p[0x2a] = 0;
-	p[0x2b] = 0;
+	nxDword(p, 0x2a) = 0;
+	nxDword(p, 0x2b) = 0;
 	nxSceneMemberDE7E0(nxAt(p, 0x2c));						// phys_fn_005071
 
-	p[0x3d] = 0;
-	p[0x3e] = 0;
-	p[0x3f] = 0;
-	p[0x40] = 0;
-	p[0x41] = 0;
-	p[0x42] = 0;
-	p[0x43] = 0x3f8ccccdu;								// 1.1f
+	nxDword(p, 0x3d) = 0;
+	nxDword(p, 0x3e) = 0;
+	nxDword(p, 0x3f) = 0;
+	nxDword(p, 0x40) = 0;
+	nxDword(p, 0x41) = 0;
+	nxDword(p, 0x42) = 0;
+	nxDword(p, 0x43) = 0x3f8ccccdu;								// 1.1f
 	nxSceneMemberD4D00(nxAt(p, 0x44));						// phys_fn_005029
 
-	p[0x91] = 0;
-	p[0x92] = 0;
-	p[0xa2] = 0x3f8ccccdu;								// 1.1f
-	p[0x95] = 0;
-	p[0x94] = 0;
-	p[0x93] = 0;
-	p[0x98] = 0;
-	p[0x97] = 0;
-	p[0x96] = 0;
-	p[0x99] = 0;
-	p[0x9a] = 0;
-	p[0x9b] = 0;
-	p[0x9c] = 0;
-	p[0x9d] = 0;
-	p[0x9e] = 0;
-	p[0x9f] = 0;
-	p[0xa0] = 0;
-	p[0xa1] = 0;
-	p[0xa1] = 0x3f800000u;								// 1.0f
-	p[0x9d] = 0x3f800000u;								// 1.0f
-	p[0x99] = 0x3f800000u;								// 1.0f
+	nxDword(p, 0x91) = 0;
+	nxDword(p, 0x92) = 0;
+	nxDword(p, 0xa2) = 0x3f8ccccdu;								// 1.1f
+	nxDword(p, 0x95) = 0;
+	nxDword(p, 0x94) = 0;
+	nxDword(p, 0x93) = 0;
+	nxDword(p, 0x98) = 0;
+	nxDword(p, 0x97) = 0;
+	nxDword(p, 0x96) = 0;
+	nxDword(p, 0x99) = 0;
+	nxDword(p, 0x9a) = 0;
+	nxDword(p, 0x9b) = 0;
+	nxDword(p, 0x9c) = 0;
+	nxDword(p, 0x9d) = 0;
+	nxDword(p, 0x9e) = 0;
+	nxDword(p, 0x9f) = 0;
+	nxDword(p, 0xa0) = 0;
+	nxDword(p, 0xa1) = 0;
+	nxDword(p, 0xa1) = 0x3f800000u;								// 1.0f
+	nxDword(p, 0x9d) = 0x3f800000u;								// 1.0f
+	nxDword(p, 0x99) = 0x3f800000u;								// 1.0f
 	nxSceneMemberD3490(nxAt(p, 0xa3));						// phys_fn_004996
 
-	p[0xc3] = 0;
-	p[0xc4] = 0;
-	p[0xc5] = 0;
-	p[0xc1] = 0;
-	p[0xc2] = 0;
-	p[0xc6] = 0;
+	nxDword(p, 0xc3) = 0;
+	nxDword(p, 0xc4) = 0;
+	nxDword(p, 0xc5) = 0;
+	nxDword(p, 0xc1) = 0;
+	nxDword(p, 0xc2) = 0;
+	nxDword(p, 0xc6) = 0;
 	p[199] = 0;											// 0xc7
 	p[200] = 0;											// 0xc8
-	p[0xc9] = 0;
-	p[0xca] = 0x3f8ccccdu;								// 1.1f
+	nxDword(p, 0xc9) = 0;
+	nxDword(p, 0xca) = 0x3f8ccccdu;								// 1.1f
 	nxSceneMemberBB510(nxAt(p, 0xcb));						// phys_fn_004938
 
-	p[0x112] = 0;
-	p[0x113] = 0;
-	p[0x110] = 0;
-	p[0x111] = 1;
+	nxDword(p, 0x112) = 0;
+	nxDword(p, 0x113) = 0;
+	nxDword(p, 0x110) = 0;
+	nxDword(p, 0x111) = 1;
 	nxSceneMemberB5720(nxAt(p, 0x114));						// phys_fn_004899
 	new (nxAt(p, 0x138)) SdkContainer();
 	new (nxAt(p, 0x13c)) SdkContainer();
 	new (nxAt(p, 0x140)) SdkContainer();
 	new (nxAt(p, 0x144)) SdkContainer();
 
-	p[0x14b] = 0x3dcccccdu;								// 0.1f
-	p[0x14c] = 10;
-	p[0x14d] = 0;
-	p[0x14e] = 0;
-	p[0x14f] = 0;
-	p[0x150] = 0;
-	p[0x151] = 0;
-	p[0x157] = 0;
-	p[0x158] = 0;
-	p[0x159] = 0;
-	p[0x15b] = 0;
-	p[0x15c] = 0;
-	p[0x15d] = 0;
-	p[0x15f] = 0;
-	p[0x160] = 0;
-	p[0x161] = 0;
-	p[0x163] = 0;
-	p[0x164] = 0;
-	p[0x165] = 0;
-	p[0x167] = 0;
-	p[0x168] = 0;
-	p[0x169] = 0;
-	p[0x16a] = 0;
-	p[0x16b] = 0;
-	p[0x16c] = 0;
-	p[0x16d] = 0;
-	p[0x16e] = 0;
-	p[0x16f] = 0;
-	p[0x170] = 0;
-	p[0x171] = 0;
-	p[0x172] = 0;
-	p[0x173] = 0;
-	p[0x174] = 0xffffffffu;
+	nxDword(p, 0x14b) = 0x3dcccccdu;								// 0.1f
+	nxDword(p, 0x14c) = 10;
+	nxDword(p, 0x14d) = 0;
+	nxDword(p, 0x14e) = 0;
+	nxDword(p, 0x14f) = 0;
+	nxDword(p, 0x150) = 0;
+	nxDword(p, 0x151) = 0;
+	nxDword(p, 0x157) = 0;
+	nxDword(p, 0x158) = 0;
+	nxDword(p, 0x159) = 0;
+	nxDword(p, 0x15b) = 0;
+	nxDword(p, 0x15c) = 0;
+	nxDword(p, 0x15d) = 0;
+	nxDword(p, 0x15f) = 0;
+	nxDword(p, 0x160) = 0;
+	nxDword(p, 0x161) = 0;
+	nxDword(p, 0x163) = 0;
+	nxDword(p, 0x164) = 0;
+	nxDword(p, 0x165) = 0;
+	nxDword(p, 0x167) = 0;
+	nxDword(p, 0x168) = 0;
+	nxDword(p, 0x169) = 0;
+	nxDword(p, 0x16a) = 0;
+	nxDword(p, 0x16b) = 0;
+	nxDword(p, 0x16c) = 0;
+	nxDword(p, 0x16d) = 0;
+	nxDword(p, 0x16e) = 0;
+	nxDword(p, 0x16f) = 0;
+	nxDword(p, 0x170) = 0;
+	nxDword(p, 0x171) = 0;
+	nxDword(p, 0x172) = 0;
+	nxDword(p, 0x173) = 0;
+	nxDword(p, 0x174) = 0xffffffffu;
 	nxSceneListInit(nxAt(p, 0x175));							// phys_fn_002346
 
-	p[0x17f] = 0;
-	p[0x180] = 0;
-	p[0x181] = 0;
-	p[0x183] = 0;
-	p[0x184] = 0;
-	p[0x185] = 0;
-	p[0x187] = 0;
-	p[0x188] = 0;
+	nxDword(p, 0x17f) = 0;
+	nxDword(p, 0x180) = 0;
+	nxDword(p, 0x181) = 0;
+	nxDword(p, 0x183) = 0;
+	nxDword(p, 0x184) = 0;
+	nxDword(p, 0x185) = 0;
+	nxDword(p, 0x187) = 0;
+	nxDword(p, 0x188) = 0;
 	nxSceneMember4CA30(nxAt(p, 0x189));						// phys_fn_001980
 
-	p[0x1ab] = 0;
-	p[0x1ac] = 0;
-	p[0x1ad] = 0;
-	p[0x1ae] = 0;
-	p[0x1af] = 0;
-	p[0x1b0] = 0;
-	p[0x1b1] = 0;
-	p[0x1b2] = 0;
-	p[0x1b3] = 0;
-	p[0x1b4] = 0;
-	p[0x1b5] = 0;
-	p[0x1b6] = 0;
-	p[0x1b7] = 0;
-	p[0x1b9] = 0;
-	p[0x1ba] = 0;
-	p[0x1bb] = 0;
-	p[0x1bc] = 0;
-	p[0x1be] = 0;
-	p[0x1bf] = 0;
-	p[0x1c0] = 0;
-	p[0x1c1] = 0;
-	p[0x1c3] = 1;
+	nxDword(p, 0x1ab) = 0;
+	nxDword(p, 0x1ac) = 0;
+	nxDword(p, 0x1ad) = 0;
+	nxDword(p, 0x1ae) = 0;
+	nxDword(p, 0x1af) = 0;
+	nxDword(p, 0x1b0) = 0;
+	nxDword(p, 0x1b1) = 0;
+	nxDword(p, 0x1b2) = 0;
+	nxDword(p, 0x1b3) = 0;
+	nxDword(p, 0x1b4) = 0;
+	nxDword(p, 0x1b5) = 0;
+	nxDword(p, 0x1b6) = 0;
+	nxDword(p, 0x1b7) = 0;
+	nxDword(p, 0x1b9) = 0;
+	nxDword(p, 0x1ba) = 0;
+	nxDword(p, 0x1bb) = 0;
+	nxDword(p, 0x1bc) = 0;
+	nxDword(p, 0x1be) = 0;
+	nxDword(p, 0x1bf) = 0;
+	nxDword(p, 0x1c0) = 0;
+	nxDword(p, 0x1c1) = 0;
+	nxDword(p, 0x1c3) = 1;
 
 	// The four self-references. The oracle stores the block it was handed, which is
 	// this object.
-	p[0x14a] = 0;
-	p[0x149] = 0;
-	p[0x148] = 0;
-	p[0x2a] = base;
-	p[0x3d] = base;
-	p[0x91] = base;
-	p[0xc1] = base;
+	nxDword(p, 0x14a) = 0;
+	nxDword(p, 0x149) = 0;
+	nxDword(p, 0x148) = 0;
+	nxDword(p, 0x2a) = base;
+	nxDword(p, 0x3d) = base;
+	nxDword(p, 0x91) = base;
+	nxDword(p, 0xc1) = base;
 
 	// phys_fn_000285, allocated 0x28 bytes.
 	void* collector = nxGetSdkAllocator()->malloc(0x28, NX_MEMORY_PERSISTENT);
-	p[0x1b3] = collector ? reinterpret_cast<unsigned>(nxSceneCollectorConstruct(collector, p))
+	nxDword(p, 0x1b3) = collector ? reinterpret_cast<unsigned>(nxSceneCollectorConstruct(collector, p))
 						 : 0;
 
 	// phys_fn_002415, allocated 0xa8 bytes.
 	void* aux = nxGetSdkAllocator()->malloc(0xa8, NX_MEMORY_PERSISTENT);
-	p[0x12] = aux ? reinterpret_cast<unsigned>(nxSceneAuxConstruct(aux, p)) : 0;
+	nxDword(p, 0x12) = aux ? reinterpret_cast<unsigned>(nxSceneAuxConstruct(aux, p)) : 0;
 	}
 
 
@@ -954,18 +965,18 @@ bool NxSceneInternal::initialise(const NxSceneDesc& desc)
 	const unsigned* limits = reinterpret_cast<const unsigned*>(d[0x0b]);
 	if(limits)
 		{
-		p[0x18] = limits[0];		// maxNbActors
-		p[0x1c] = limits[1];		// maxNbBodies
-		p[0x20] = limits[2];		// maxNbStaticShapes
-		p[0x24] = limits[3];		// maxNbDynamicShapes
-		p[0x28] = limits[4];		// maxNbJoints
+		nxDword(p, 0x18) = limits[0];		// maxNbActors
+		nxDword(p, 0x1c) = limits[1];		// maxNbBodies
+		nxDword(p, 0x20) = limits[2];		// maxNbStaticShapes
+		nxDword(p, 0x24) = limits[3];		// maxNbDynamicShapes
+		nxDword(p, 0x28) = limits[4];		// maxNbJoints
 
 		// `p` is an `unsigned*`, so these are byte offsets 0x55c and 0x56c only with
 		// the cast. Without it they are 0x1570 and 0x15b0, past the end of the
 		// 0x710-byte Scene -- the same slip as in createActor, dormant here only
 		// because the harness's descriptor has no limits pointer.
-		nxSceneArrayReserve(reinterpret_cast<unsigned char*>(p) + 0x55c, p[0x18]);
-		nxSceneArrayReserve(reinterpret_cast<unsigned char*>(p) + 0x56c, p[0x1c]);
+		nxSceneArrayReserve(reinterpret_cast<unsigned char*>(p) + 0x55c, nxDword(p, 0x18));
+		nxSceneArrayReserve(reinterpret_cast<unsigned char*>(p) + 0x56c, nxDword(p, 0x1c));
 		}
 
 	// +0x52c is written through the pointer at +0x6cc, then the three descriptor
@@ -973,9 +984,9 @@ bool NxSceneInternal::initialise(const NxSceneDesc& desc)
 	unsigned* holder = reinterpret_cast<unsigned*>(p[0x6cc / 4]);
 	if(holder)
 		holder[1] = d[0x0d];
-	p[0x52c] = d[7];				// maxTimestep
-	p[0x530] = d[8];				// maxIter
-	p[0x534] = d[9];				// solverType
+	nxDword(p, 0x52c) = d[7];				// maxTimestep
+	nxDword(p, 0x530) = d[8];				// maxIter
+	nxDword(p, 0x534) = d[9];				// solverType
 
 	// phys_fn_000544 (0x00010750, phase 7) applies the flags and the debug word.
 	// It is a reproduction hole.
@@ -994,21 +1005,21 @@ bool NxSceneInternal::initialise(const NxSceneDesc& desc)
 	if(reinterpret_cast<const unsigned char*>(&desc)[0x31] != 0 && d[0x0a] != 0)
 		nxSceneBuildGroundPlane(this);
 
-	p[0x520] = d[1];				// userData
-	p[0x524] = d[2];
-	p[0x528] = d[3];
+	nxDword(p, 0x520) = d[1];				// userData
+	nxDword(p, 0x524) = d[2];
+	nxDword(p, 0x528) = d[3];
 
 	// Bit 0 of +0x70c is the ground-plane enable, set or cleared from descriptor
 	// byte 0x32.
 	if(reinterpret_cast<const unsigned char*>(&desc)[0x32] == 0)
-		p[0x70c] = p[0x70c] & 0xfffffffeu;
+		nxDword(p, 0x70c) = nxDword(p, 0x70c) & 0xfffffffeu;
 	else
-		p[0x70c] = p[0x70c] | 1u;
+		nxDword(p, 0x70c) = nxDword(p, 0x70c) | 1u;
 
-	p[0x6ac] = d[4];
-	p[0x6b0] = d[5];
-	p[0x538] = 0;
-	p[0x6b4] = d[6];
+	nxDword(p, 0x6ac) = d[4];
+	nxDword(p, 0x6b0) = d[5];
+	nxDword(p, 0x538) = 0;
+	nxDword(p, 0x6b4) = d[6];
 	return true;
 	}
 
@@ -1040,10 +1051,10 @@ void nxSceneBuildGroundPlane(void* scene)
 static void nxSceneDelete(void* self, int flags)
 	{
 	unsigned* p = static_cast<unsigned*>(self);
-	if(p[0x1b3])
-		nxGetSdkAllocator()->free(reinterpret_cast<void*>(p[0x1b3]));
-	if(p[0x12])
-		nxGetSdkAllocator()->free(reinterpret_cast<void*>(p[0x12]));
+	if(nxDword(p, 0x1b3))
+		nxGetSdkAllocator()->free(reinterpret_cast<void*>(nxDword(p, 0x1b3)));
+	if(nxDword(p, 0x12))
+		nxGetSdkAllocator()->free(reinterpret_cast<void*>(nxDword(p, 0x12)));
 	if(flags & 1)
 		nxGetSdkAllocator()->free(self);
 	}

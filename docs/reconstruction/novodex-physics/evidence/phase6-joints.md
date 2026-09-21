@@ -3916,3 +3916,71 @@ instrument is still missing.
 **No census row closed.** All gates green: phases 2/3/4 exit 0, phase 5 exit 1 RED on
 purpose, phase 6 exit 0 PASS, `completed` exit 0, `validate_inventory` exit 0, 587
 tool tests OK.
+
+## 10p. Round 19, continued: the guard works, and it caught 166 more of the same bug
+
+10o's ambiguity is resolved, and the instrument turned out to be right.
+
+**The disambiguating run: the oracle under the same guards.**
+
+    ORACLE   step scene    exit 0
+    ORACLE   step actor1   exit 0
+    CANDIDATE step scene   exit -1073741819
+    CANDIDATE step actor1  exit -1073741819
+
+**The oracle passes cleanly under the guards**, so the allocator is correct and the
+candidate is overrunning. The guards were never "too strict"; they were catching
+something the default allocator had been absorbing.
+
+**And the first catch was the write, at the instruction:**
+
+    mov dword ptr [esi+14B0h], eax      esi = the Scene
+
+`0x14B0` is `p[0x52c]` on an `unsigned*` -- **the same dword-index-versus-byte-offset
+confusion as the `*4` slip, in the other spelling.** The `p + 0x55c` form was fixed in
+9z; the `p[0x52c]` form was not, and there were **166 of them**:
+
+    p[0x520] p[0x52c] p[0x6ac] p[0x70c] p[0x110] p[0x1c3] ... every field write
+
+Each was addressing four times its intended offset. They did not fault under the
+default allocator because the writes landed inside the Scene object's own 0x710 bytes
+-- the same reason the sixteen constructor placements in 9z did not fault. **They were
+writing the right values to the wrong fields.**
+
+**Fixed**: every `p[0xNNN]` now goes through an `nxDword(p, byteOffset)` accessor that
+does the division, beside `nxAt` for byte addresses. Two accessors, one for each
+addressing form, so the two spellings cannot be mixed again.
+
+**Measured effect, step probe:**
+
+    step scene     exit 0     (was -1073741819 under the guards)
+    step actor1    exit 0
+    step actor2    exit -1073741819     still
+    step actorN4   exit -1073741819     still
+    step joint     exit -1073741819     still
+
+**Two steps recovered and the fault has moved again**, to the second actor. The guard
+is still enabled, so the next catch will name the instruction.
+
+## 10q. What this round actually established
+
+**The instrument that was missing for eleven rounds now exists and works.** A
+page-guarded `NxUserAllocator`, passed to `NxCreatePhysicsSDK`, faults at the write
+instead of at a later victim, and the oracle is the control that proves it is the
+reconstruction and not the tooling.
+
+**And it immediately found a defect class that eleven rounds of crash-chasing had
+missed**: 166 field writes at four times their intended offset. That is the same bug as
+9z, in the spelling that was not fixed then, and it was invisible until an instrument
+existed that could see a write rather than its victim.
+
+**The lesson, and it is the strongest one in this session.** Rounds 4 through 18 tried
+to find the fault by reading crashes, and a crash shows the *victim* of a write. The
+two defects actually fixed before this round (`*4` in 9z, the null vtable in 10k) were
+found by *reasoning* about the code, not by instrumenting it. **The 166 were found in
+one run by an instrument that faults at the write.** The right instrument was named in
+round 7 and not built until round 19.
+
+**No census row closed.** All gates green: phases 2/3/4 exit 0, phase 5 exit 1 RED on
+purpose, phase 6 exit 0 PASS, `completed` exit 0, `validate_inventory` exit 0, 587
+tool tests OK.

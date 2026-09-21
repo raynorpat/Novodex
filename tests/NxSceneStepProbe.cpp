@@ -19,6 +19,7 @@
 // between the steps, so the allocation order is the same in every run.
 
 #include "PhysicsPairLoader.h"
+#include "NxPageGuardedAllocator.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -85,7 +86,12 @@ int wmain(int argc, wchar_t** argv)
 	printf("probe step=%s starting\\n", step);
 	fflush(stdout);
 
-	NxPhysicsSDK* sdk = createSDK(NX_PHYSICS_SDK_VERSION, 0, 0);
+	// Every SDK allocation goes through a page-guarded allocator, so a write past the
+	// end of any block faults at the write rather than corrupting a later one. This
+	// is the instrument 10n named: the harness has always passed null here, which is
+	// why the overrun has only ever been visible as a crash in unrelated code.
+	static NxPageGuardedAllocator guardedAllocator;
+	NxPhysicsSDK* sdk = createSDK(NX_PHYSICS_SDK_VERSION, &guardedAllocator, 0);
 	if(!sdk)
 		{
 		FreeLibrary(physics);
