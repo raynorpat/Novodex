@@ -5124,3 +5124,73 @@ or mutations to the branches that decide whether the build happens at all.
 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose, phase 6 exit 0 PASS,
 phase 7 exit 0 PASS with `closed=1`, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 587 tool tests OK.
+
+## 12k. Round 34: two more rows closed, and FIVE is now the total
+
+Two of the six rows 11u recorded are closed this round, both on control-flow mutations
+the gate catches:
+
+    phys_fn_000665  Scene::createJoint        if(!mark0 && !mark1) -> if(mark0 && mark1)
+                   mutant exit 0, 21-line transcript, 30 differing lines
+                   stdout_delta=30   CAUGHT
+
+    phys_fn_000651  the Scene initialiser     return true -> return false
+                   mutant exit 1, 6-line transcript, 28 differing lines
+                   stdout_delta=28   CAUGHT
+
+**The initialiser's mutation is the strongest of the five closures**, because it removes
+`scene=created` itself: with the initialiser refusing every descriptor, `createScene`
+destroys the object it built and returns 0, so the whole transcript after the SDK line
+disappears.
+
+**Five census rows are now closed:**
+
+    phase 6   phys_fn_004115  NxJointDesc_SetGlobalAnchor   11m
+    phase 6   phys_fn_004117  NxJointDesc_SetGlobalAxis     11m
+    phase 7   phys_fn_000626  Scene::createActor            12i
+    phase 7   phys_fn_000665  Scene::createJoint            this round
+    phase 7   phys_fn_000651  the Scene descriptor initialiser  this round
+
+**And phase 7's ledger now stands at `closed=3`, with its gate still passing at 4/4.**
+
+## 12l. What the six rows' outcomes were, in full
+
+    11u recorded six rows
+    closable and closed      3   createActor, createJoint, the Scene initialiser
+    not closable             3   the Scene constructor, Actor::loadFromDescInternal,
+                                 the actor constructor
+    of which
+      Actor::loadFromDescInternal   its validity branch is not observable, its shape
+                                    branch is not observable (12i), and its pose is
+                                    identity so its arithmetic cancels (12b)
+      the actor constructor         its slot handout has no reader on this path (12i)
+      the Scene constructor         its writes are fields the transcript never prints
+
+**So three of six closed, and the three that did not are the ones whose work the harness
+does not check.** That is the same conclusion 12j reached, now with the count attached.
+
+## 12m. State after thirty-four rounds
+
+    census rows closed        5
+    phase 6 gate              pass, differential=pass, 11/11, closed=2
+    phase 7 gate              pass, differential=pass, 4/4, closed=3
+    phase 8 gate              skipped
+    reconstructed rows        669
+    checks added this session 7
+    audit findings            6
+    all gates                 green
+
+**Five rows out of 6,338**, and every one of the five was closed by a mutation the gate
+caught -- which is the only thing the schema accepts. **The rate is five rows in
+thirty-four rounds**, and the three rounds since 11m have each produced one or two
+closures rather than none, which is the first sustained run of closures in the session.
+
+**What made the last three rounds possible** was 12h's rule, and it is worth restating
+because it is the reusable part: **a row that BUILDS an object is falsifiable by a
+mutation that makes the build fail**, whatever the pose or the quaternion happens to be,
+because the harness prints whether the build succeeded. **The rows inside a build are the
+ones this harness cannot reach.**
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on
+purpose, phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed`
+exit 0, `validate_inventory` exit 0, 587 tool tests OK.

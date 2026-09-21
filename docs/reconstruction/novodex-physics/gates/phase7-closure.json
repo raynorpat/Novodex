@@ -18,8 +18,8 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 1,
-    "deferred_not_reconstructed_in_phase": 373,
+    "differential_falsified": 3,
+    "deferred_not_reconstructed_in_phase": 371,
     "deferred_reconstructed_not_falsified": 187,
     "deferred_data_object_not_dispositioned": 502
   },
@@ -32,6 +32,26 @@
       "falsification": {
         "mutation": "the actor-validity guard was inverted in a throwaway `git archive` copy of HEAD: `if(!desc.isValid())` became `if(desc.isValid())`, so every valid descriptor took the failure path and `createActor` returned 0. The copy was rebuilt with NxFoundation, NxPhysics and NxPhysicsJointTests, and the harness was run against the rebuilt pair with the pinned oracle transcript as the baseline. CAUGHT, measured as stdout_delta=27: the mutant exit=1 with a 7-line transcript against the oracle's 29, and the lines it loses are `fixture=a,created b,created` and all four cases' `created=yes`, `out_anchor`, `actors` and `released` lines -- so the mutation is caught by the registered assertion `case=revolute index=0 created=yes` as well as by the diff.",
         "detected": "stdout_delta=27"
+      }
+    },
+    {
+      "id": "phys_fn_000665",
+      "rva": "0x000142c0",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointStagedPairTests",
+      "falsification": {
+        "mutation": "the dynamics guard was inverted in a throwaway `git archive` copy of HEAD: `if(!mark0 && !mark1)` became `if(mark0 && mark1)`, so a pair of actors that ARE dynamic was reported as having none and `createJoint` returned null. The copy was rebuilt with NxFoundation, NxPhysics and NxPhysicsJointTests, and the harness was run against the rebuilt pair with the pinned oracle transcript as the baseline. CAUGHT, measured as stdout_delta=30: the mutant exit=0 with a 21-line transcript against the oracle's 29, and every case loses its `created=yes`, `out_anchor`, `actors` and `released` lines while gaining the row's OWN error text -- \"PhysicsSDK::createJoint: at least one of the two actors must be dynamic!\". That the failure is reported by the row under test, and that the transcript loses the lines the row produces, is what makes this a falsification of this row rather than of the descriptor rows it drives.",
+        "detected": "stdout_delta=30"
+      }
+    },
+    {
+      "id": "phys_fn_000651",
+      "rva": "0x00013070",
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointStagedPairTests",
+      "falsification": {
+        "mutation": "the initialiser was made to refuse every descriptor in a throwaway `git archive` copy of HEAD: `return true;` at the end of `NxSceneInternal::initialise` became `return false;`, so `createScene` destroyed the object it had just built and returned 0. The copy was rebuilt with NxFoundation, NxPhysics and NxPhysicsJointTests, and the harness was run against the rebuilt pair with the pinned oracle transcript as the baseline. CAUGHT, measured as stdout_delta=28: the mutant exit=1 with a 6-line transcript against the oracle's 29, and the lines it loses are `scene=created` and everything after it -- the fixture, all four cases' created/out_anchor/actors/released lines, and both release lines.",
+        "detected": "stdout_delta=28"
       }
     }
   ],
@@ -821,14 +841,6 @@
       "driving_phases": []
     },
     {
-      "id": "phys_fn_000651",
-      "rva": "0x00013070",
-      "size": 1770,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
       "id": "phys_fn_000653",
       "rva": "0x00013760",
       "size": 126,
@@ -872,14 +884,6 @@
       "id": "phys_fn_000663",
       "rva": "0x00013f30",
       "size": 906,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "translation_unit",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_000665",
-      "rva": "0x000142c0",
-      "size": 718,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
       "driving_phases": []
