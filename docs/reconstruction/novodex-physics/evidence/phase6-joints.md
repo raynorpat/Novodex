@@ -6622,3 +6622,56 @@ defect at all.**
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 587 tool tests OK.
+
+## 14k. Round 52: neither cheap source yields a symbol for any of the 38
+
+14j left 38 `.cpp` locations whose symbol is not recorded. This round tried the two sources that
+worked for the earlier rows, and **neither yields a symbol for any of the 38.**
+
+**The closures.** 22 of the 38 have **no closure entry at all**, and the 16 that do carry a
+**templated** mutation:
+
+    phys_fn_000803  "one of sixteen mutations built one per row in a `git archive` copy at
+                     a18e48a, each perturbing this kernel alone; evidence/phase3-leaf-kernels.md
+                     records the sixteen collectively rather than naming this one, and the delta
+                     is this row's own differing cases of the 157 the sixteen rows own"
+
+**So the closure deliberately records the batch rather than the row, and names no function.** That
+is a **third legitimate closure form** -- after the per-row mutation and the drive name -- and it is
+the one that **cannot** yield a symbol.
+
+**The files.** The 22 `reconstructed` rows claim `Physics/src/ObjectModel.cpp`, and round 42 showed
+that file names its stable IDs in comments, so the same derivation should apply. **It yields
+nothing.** Checked directly rather than inferred:
+
+    not one of the 38 IDs appears anywhere in ObjectModel.cpp
+
+## 14l. What the 38 are, and it is the first group this session cannot locate at all
+
+**The 38 are rows whose correspondence the census does not record in any form this session has
+found:**
+
+    the implementation file's ID comment      no
+    the harness's dispatch table              no
+    a drive naming the candidate function     no
+    the oracle RVA in a source file           no
+    the closure                               no
+
+**Every earlier group had at least one form.** 13c's 50 were found in the implementation file's
+comments; 13q's 39 in the harness's tables and one drive; 14b's 68 in their closures; 13o's 29 in a
+header or a calling unit. **These 38 have none**, and that is a different statement from "the
+correspondence is recorded in a form the census lacks".
+
+**What that means for the check.** It reports these 38 because their `.cpp` implementation does not
+write the row's ID and there is no symbol to record instead. **The two honest options are to leave
+them in the named set**, which is what the set is for, **or to establish the correspondence by
+matching the row's behaviour against the file's named IDs** -- the derivation round 42 used,
+extended to rows whose ID the file does not carry. **The second is real work and this round did not
+do it.**
+
+**And the round's result is negative but useful**: it rules out both cheap sources **for all 38
+rather than for a sample**, so the next attempt does not repeat them.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 587 tool tests OK.
