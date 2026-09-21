@@ -5847,3 +5847,147 @@ to respect.
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on
 purpose, phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed`
 exit 0, `validate_inventory` exit 0, 587 tool tests OK.
+
+## 13j. AUDIT: 77 rows claim an implementation whose file does not contain them
+
+Round 43 set out to extend the mapping to the 58 unmapped rows. It found why they do not map,
+and the reason is a defect rather than a parser gap.
+
+**`phys_fn_000953` and `phys_fn_000955` are not in `ObjectModel.cpp` at all** -- not by
+stable ID, not by rva. They are vtable slots the census attributes to that file, and the file
+never mentions them. Measuring that across every row with an implementation:
+
+    Physics/src/ObjectModel.cpp     117 rows    absent from the file: 57
+    Physics/src/TriangleMesh.cpp     11 rows    absent from the file: 10
+    Physics/src/PhysicsSDK.cpp        9 rows    absent from the file:  6
+    Physics/src/NpPhysicsSDK.cpp     16 rows    absent from the file:  2
+    Physics/src/MemoryStream.cpp     13 rows    absent from the file:  2
+    Physics/src/opcode/IcePrunable.cpp 15 rows  absent:                0
+    Physics/src/Scene.cpp             6 rows    absent:                0
+    Physics/src/PMap.cpp              5 rows    absent:                0
+    Physics/src/JointDesc.cpp         2 rows    absent:                0
+    Physics/src/NarrowPhase.cpp       1 row     absent:                0
+    ----------------------------------------------------------------
+    195 rows                                    77 absent, 118 present
+
+**Seventy-seven rows name an implementation that does not contain them.** And
+`TriangleMesh.cpp` is the sharpest case: it is a real 110-line file, and **ten of the eleven
+rows attributed to it are not in it.**
+
+**`implementation` is the field a mutation campaign uses to find code to mutate.** 7h added
+it, 7h's check verifies that the path **resolves**, and nothing verifies that the file
+**contains the row**. So the field can name a real file that has nothing to do with the row,
+and every gate passes.
+
+## 13k. The eighth finding, and it is the same defect class again
+
+    7e   rows naming a source that does not exist
+    7h   a field carrying two claims
+    7i   rows holding a state with no proof
+    8o   rows in no ledger list
+    8p   a status vocabulary nothing checked
+    10d  a harness reporting its own failure as a measurement
+    11s  rows built and never recorded
+    12s  a flag that changed a printed mode and nothing else
+    13c  the row-to-symbol correspondence exists and is not recorded
+    13j  a field naming a file that does not contain the row
+
+**And it is the fourth in this session that is specifically about `implementation`** -- 7h
+split the field, 11s found rows built without it, 13c found the field cannot be joined to a
+symbol, and now 77 rows carry a value the file contradicts.
+
+**The check that would stop it** is the same shape as the other seven and is cheap: **a row's
+`implementation` file must mention the row -- by stable ID or by rva.** 118 of 195 already
+satisfy it, so the check would be quiet on the majority and would name the 77.
+
+**What it would NOT establish.** A file mentioning a row's ID in a comment is not proof the
+row is implemented there -- 13c's derivation depends on exactly those comments and needed
+verification against the map. **So this check catches the contradiction, not the absence**,
+and that is the right scope for it: it is the same relationship 7f has to a path that
+resolves versus a path that is correct.
+
+## 13l. What round 43 leaves
+
+    rows with an implementation      195
+    ... whose file contains them     118
+    ... whose file does NOT           77
+    the mapping derivation           59 of 117 ObjectModel rows, 202 IDs associated
+    the 58 unmapped rows             57 of them are not in the file at all
+
+**So the derivation was never going to reach 117**: 57 of the 117 rows attributed to
+`ObjectModel.cpp` are not in it. **The parser was not the obstacle; the census is.** That is
+why extending it from 50 to 59 changed so little, and it is the measurement that turns "the
+parser is missing associations" into "the field is wrong for half the rows".
+
+**The next round should add the check**, then decide what the 77 rows' `implementation` should
+say -- which requires knowing where they actually are, and that is a question about the
+reconstruction rather than about the census.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on
+purpose, phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed`
+exit 0, `validate_inventory` exit 0, 587 tool tests OK.
+
+## 13m. The check is added, and the 78 are recorded rather than deleted
+
+13j measured the contradiction. This round added the check that catches it, and had to decide
+what to do with the 78 rows it names.
+
+**The check**, `_check_implementation_contains_row`:
+
+    a row's `implementation` file must mention the row, by STABLE ID
+
+**Verified both ways:**
+
+    clean census                                   0 errors
+    one row moved to a file that does not name it  ["function 'phys_fn_004115' names
+                                                    implementation 'Physics/src/Scene.cpp',
+                                                    which never mentions it; the file exists
+                                                    and does not contain the row"]
+
+**The match is on the stable ID alone**, deliberately. The rva is not used as a second key: a
+four-digit hex tail is short enough to occur in an unrelated constant, and a check that fires
+on coincidence is worse than one that fires on nothing. **118 of the 196 rows carrying an
+implementation already satisfy the ID rule**, so it is quiet on the majority and names the
+rest.
+
+**And the 78 are named in an `IMPLEMENTATION_MISMATCHES` set rather than removed.** That is a
+deliberate choice and worth stating:
+
+- **removing the entry would delete the claim** -- the census would stop saying where those
+  rows were reconstructed, and this session has not established where they actually are;
+- **leaving them unrecorded would make the check fail on a known set**, which is a gate that
+  cannot pass rather than a gate that reports;
+- **naming the set keeps the check active** -- a row added to the census tomorrow cannot join
+  the set silently, because the set is a literal in the tool and a new row would have to be
+  written into it.
+
+**This is the same instrument as 7f's `UNRESOLVED_SOURCE_PATHS`**, which records the 51 source
+paths that genuinely do not exist rather than deleting the rows that name them. **The
+programme's convention is to record a known gap where a check can see it**, and this follows
+it.
+
+## 13n. State after forty-three rounds
+
+    rows with an implementation              196
+    ... whose file contains them             118
+    ... whose file does NOT                   78   (recorded as a named set)
+    checks added this session                  8
+    audit findings                             8
+    census rows closed                         6
+    all gates                                  green
+
+**The 78 rows are the largest open question in the census**, larger than the two rows 12o left
+open and larger than the 117-row object-model batch that contains 57 of them. **They are rows
+whose `implementation` is wrong and whose actual location is unknown**, and that is a
+reconstruction question rather than a census one.
+
+**The next round should not guess their location.** What it can do is **use the check's own
+output as the work list**: 57 are attributed to `ObjectModel.cpp` and absent from it, and the
+round-42 derivation shows that file names its rows in comments -- so **a row absent from the
+file is one the file does not implement, and the file's 202 named IDs are the candidates for
+where those rows actually are.** Matching the absent rows' *behaviour* against the file's
+named IDs is the derivation that would settle it, and it is the same shape as round 42's.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on
+purpose, phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed`
+exit 0, `validate_inventory` exit 0, 587 tool tests OK.

@@ -7,6 +7,7 @@ import collections
 import csv
 import io
 import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -492,6 +493,73 @@ def _check_reconstructed_proofs(rows):
             errors.append(
                 f"function {row['id']!r} is reconstructed with no proof; record a "
                 f"dynamic or static proof, or move it back to a lower state")
+    return errors
+
+
+# Rows whose `implementation` names a file that exists and never mentions them.
+# Measured in round 43: 78 of the 196 rows carrying an implementation. They are
+# recorded here rather than removed from the census, because the census value is a
+# claim about where the row was reconstructed and this session has not established
+# where these 78 actually are -- 57 of them are attributed to ObjectModel.cpp and
+# are not in it. Removing the entry would delete the claim; keeping it unrecorded
+# would let the check fail on a known set. So the set is named, the check stays
+# active, and the next row added to the census cannot join it silently.
+IMPLEMENTATION_MISMATCHES = frozenset((
+    'phys_fn_000230', 'phys_fn_000246', 'phys_fn_000350', 'phys_fn_000354', 'phys_fn_000358', 'phys_fn_000427',
+    'phys_fn_000429', 'phys_fn_000433', 'phys_fn_000435', 'phys_fn_000468', 'phys_fn_000470', 'phys_fn_000937',
+    'phys_fn_000953', 'phys_fn_000955', 'phys_fn_000961', 'phys_fn_000963', 'phys_fn_000967', 'phys_fn_000969',
+    'phys_fn_000971', 'phys_fn_000977', 'phys_fn_000987', 'phys_fn_001107', 'phys_fn_001149', 'phys_fn_001187',
+    'phys_fn_001219', 'phys_fn_001221', 'phys_fn_001223', 'phys_fn_001247', 'phys_fn_001273', 'phys_fn_001349',
+    'phys_fn_001359', 'phys_fn_001379', 'phys_fn_001381', 'phys_fn_001391', 'phys_fn_001571', 'phys_fn_001575',
+    'phys_fn_002158', 'phys_fn_002164', 'phys_fn_002168', 'phys_fn_002178', 'phys_fn_002241', 'phys_fn_002243',
+    'phys_fn_002245', 'phys_fn_002258', 'phys_fn_002260', 'phys_fn_002262', 'phys_fn_003712', 'phys_fn_003784',
+    'phys_fn_003816', 'phys_fn_003820', 'phys_fn_003870', 'phys_fn_004087', 'phys_fn_004184', 'phys_fn_004288',
+    'phys_fn_004292', 'phys_fn_004334', 'phys_fn_004338', 'phys_fn_004417', 'phys_fn_004419', 'phys_fn_004421',
+    'phys_fn_004423', 'phys_fn_004425', 'phys_fn_004427', 'phys_fn_004429', 'phys_fn_004431', 'phys_fn_004433',
+    'phys_fn_004455', 'phys_fn_004495', 'phys_fn_004525', 'phys_fn_004555', 'phys_fn_004585', 'phys_fn_004611',
+    'phys_fn_004639', 'phys_fn_004669', 'phys_fn_004695', 'phys_fn_004747', 'phys_fn_004772', 'phys_fn_004774',
+    ))
+
+
+def _check_implementation_contains_row(rows, root):
+    """A row's implementation file must mention the row.
+
+    7h added `implementation` and its check verifies the path RESOLVES. Nothing verified
+    that the file contains the row, so the field can name a real file that has nothing to
+    do with it and every gate passes. Measured in round 43: 77 of the 195 rows carrying an
+    implementation name a file that never mentions them, and TriangleMesh.cpp is the
+    sharpest case -- a real 110-line file, with ten of the eleven rows attributed to it
+    absent from it.
+
+    The match is on the STABLE ID alone. The rva is not used as a second key: a four-digit
+    hex tail is short enough to occur in an unrelated constant, and a check that fires on
+    coincidence is worse than one that fires on nothing. 118 of the 195 already satisfy the
+    ID rule, so it is quiet on the majority and names the 77.
+
+    What this does NOT establish: a file mentioning a row's ID in a comment is not proof the
+    row is implemented there -- the round-42 derivation depends on exactly those comments and
+    needed verification against the candidate's map. This catches the contradiction, not the
+    absence, which is the same relationship 7f has to a path that resolves versus a path that
+    is correct.
+    """
+    errors = []
+    cache = {}
+    for row in rows:
+        impl = row.get("implementation")
+        if not impl:
+            continue
+        path = root / impl.replace("/", os.sep)
+        if not path.exists():
+            continue        # _check_implementation_paths reports this
+        key = str(path)
+        if key not in cache:
+            raw = path.read_bytes()
+            cache[key] = (raw.decode("utf-16") if raw[:2] in (b"\xff\xfe", b"\xfe\xff")
+                          else raw.decode("latin-1"))
+        if row["id"] not in cache[key] and row["id"] not in IMPLEMENTATION_MISMATCHES:
+            errors.append(
+                f"function {row['id']!r} names implementation {impl!r}, which never "
+                f"mentions it; the file exists and does not contain the row")
     return errors
 
 
@@ -1754,6 +1822,7 @@ def main():
         errors += _check_reconstructed_proofs(data['functions'])
         errors += _check_source_paths(data['functions'], path.parent)
         errors += _check_implementation_paths(data['functions'], path.parent)
+        errors += _check_implementation_contains_row(data['functions'], repo_root)
     errors += validate_program(data, program, ledgers, path.parent)
     errors += validate_row_states(data, ledgers)
     stated = {row.get("phase"): row for row in program.get("phases", [])
