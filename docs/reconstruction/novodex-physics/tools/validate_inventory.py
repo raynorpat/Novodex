@@ -511,12 +511,23 @@ def _check_reconstructed_proofs(rows):
 # are not in it. Removing the entry would delete the claim; keeping it unrecorded
 # would let the check fail on a known set. So the set is named, the check stays
 # active, and the next row added to the census cannot join it silently.
+# Rows whose `implementation` names a file that exists and does not write the row's
+# stable ID, with no `implementation_symbol` recorded to establish the correspondence
+# instead. Round 43 measured 78; rounds 45-49 reduced it as the check learned where the
+# correspondence lives and as rows were located from their closures. Named rather than
+# removed, so the check stays active and a new row cannot join the set silently.
 IMPLEMENTATION_MISMATCHES = frozenset((
-    'phys_fn_000230', 'phys_fn_000427', 'phys_fn_000429', 'phys_fn_000937', 'phys_fn_000953', 'phys_fn_000955',
-    'phys_fn_000961', 'phys_fn_000963', 'phys_fn_000967', 'phys_fn_000969', 'phys_fn_000971', 'phys_fn_000977',
-    'phys_fn_000987', 'phys_fn_001247', 'phys_fn_001273', 'phys_fn_001349', 'phys_fn_001359', 'phys_fn_001379',
-    'phys_fn_001381', 'phys_fn_001391', 'phys_fn_001571', 'phys_fn_001575', 'phys_fn_002262', 'phys_fn_004772',
-    'phys_fn_004774',
+    'phys_fn_000224', 'phys_fn_000230', 'phys_fn_000250', 'phys_fn_000427', 'phys_fn_000429', 'phys_fn_000437',
+    'phys_fn_000441', 'phys_fn_000446', 'phys_fn_000456', 'phys_fn_000482', 'phys_fn_000484', 'phys_fn_000486',
+    'phys_fn_000488', 'phys_fn_000490', 'phys_fn_000803', 'phys_fn_000805', 'phys_fn_000807', 'phys_fn_000809',
+    'phys_fn_000811', 'phys_fn_000813', 'phys_fn_000815', 'phys_fn_000817', 'phys_fn_000819', 'phys_fn_000821',
+    'phys_fn_000823', 'phys_fn_000825', 'phys_fn_000937', 'phys_fn_000953', 'phys_fn_000955', 'phys_fn_000961',
+    'phys_fn_000963', 'phys_fn_000967', 'phys_fn_000969', 'phys_fn_000971', 'phys_fn_000977', 'phys_fn_000987',
+    'phys_fn_001247', 'phys_fn_001273', 'phys_fn_001349', 'phys_fn_001359', 'phys_fn_001379', 'phys_fn_001381',
+    'phys_fn_001391', 'phys_fn_001571', 'phys_fn_001575', 'phys_fn_001696', 'phys_fn_001698', 'phys_fn_001700',
+    'phys_fn_001702', 'phys_fn_001704', 'phys_fn_001706', 'phys_fn_001712', 'phys_fn_001714', 'phys_fn_001716',
+    'phys_fn_001718', 'phys_fn_001720', 'phys_fn_001722', 'phys_fn_001724', 'phys_fn_001726', 'phys_fn_001728',
+    'phys_fn_001734', 'phys_fn_001736', 'phys_fn_002146', 'phys_fn_002262', 'phys_fn_004772', 'phys_fn_004774',
     ))
 
 

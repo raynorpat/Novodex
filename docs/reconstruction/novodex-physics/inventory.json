@@ -4100,7 +4100,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/860",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/PhysicsInternal.cpp"
     },
     {
       "id": "phys_fn_000225",
@@ -4136,7 +4137,9 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/862",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/NpPhysicsSDK.cpp",
+      "implementation_symbol": "NpPhysicsSDK::NpPhysicsSDK"
     },
     {
       "id": "phys_fn_000227",
@@ -4172,7 +4175,9 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/863",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/include/NxActorDesc.h",
+      "implementation_symbol": "NpPhysicsSDK::release"
     },
     {
       "id": "phys_fn_000229",
@@ -4245,7 +4250,9 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/873",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/include/NxPhysicsSDK.h",
+      "implementation_symbol": "NpPhysicsSDK::getParameter"
     },
     {
       "id": "phys_fn_000233",
@@ -4354,7 +4361,9 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/881",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/include/NxPhysicsSDK.h",
+      "implementation_symbol": "NpPhysicsSDK::getNbScenes"
     },
     {
       "id": "phys_fn_000239",
@@ -4575,7 +4584,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/911",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/include/NxPhysicsSDK.h"
     },
     {
       "id": "phys_fn_000251",
@@ -4611,7 +4621,9 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/916",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/include/NxPhysicsSDK.h",
+      "implementation_symbol": "NpPhysicsSDK::visualize"
     },
     {
       "id": "phys_fn_000253",
@@ -4758,7 +4770,9 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/939",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/include/NxPhysicsSDK.h",
+      "implementation_symbol": "NpPhysicsSDK::getMaterial"
     },
     {
       "id": "phys_fn_000261",
@@ -4776,7 +4790,9 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/944",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/include/NxPhysicsSDK.h",
+      "implementation_symbol": "NpPhysicsSDK::getNbMaterials"
     },
     {
       "id": "phys_fn_000262",
@@ -7743,7 +7759,9 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1177",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/include/NxActorDesc.h",
+      "implementation_symbol": "PhysicsSDK::release"
     },
     {
       "id": "phys_fn_000426",
@@ -7964,7 +7982,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1201",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/include/NxScene.h"
     },
     {
       "id": "phys_fn_000438",
@@ -8000,7 +8019,9 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1203",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/include/NxPhysicsSDK.h",
+      "implementation_symbol": "PhysicsSDK::visualize"
     },
     {
       "id": "phys_fn_000440",
@@ -8036,7 +8057,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1205",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/include/NxPhysicsSDK.h"
     },
     {
       "id": "phys_fn_000442",
@@ -8072,7 +8094,9 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1206",
       "static_proof": null,
       "dynamic_proof": "confirmed via the blockers3 differential (3z185): failures=0 for all three rows, with the chain lengths 0..3, the byte-count field combinations and both singleton arms all compared",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/FluidSupport.cpp",
+      "implementation_symbol": "PhysicsSDK::getDebugRenderable"
     },
     {
       "id": "phys_fn_000444",
@@ -8126,7 +8150,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1210",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/include/NxPhysicsSDK.h"
     },
     {
       "id": "phys_fn_000447",
@@ -8162,7 +8187,9 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1211",
       "static_proof": null,
       "dynamic_proof": "confirmed via the pair0448 differential (3z195): five cases -- three elements, empty, one, and two REVERSED pairs -- all failures=0, which is what pins the arithmetic rather than logical shift",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/include/NxPhysicsSDK.h",
+      "implementation_symbol": "PhysicsSDK::getNbScenes"
     },
     {
       "id": "phys_fn_000449",
@@ -8307,7 +8334,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1222",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/include/NxPhysicsSDK.h"
     },
     {
       "id": "phys_fn_000457",
@@ -8343,7 +8371,9 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1226",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/include/NxPhysicsSDK.h",
+      "implementation_symbol": "PhysicsSDK::getNbMaterials"
     },
     {
       "id": "phys_fn_000459",
@@ -8597,7 +8627,9 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1245",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/include/NxScene.h",
+      "implementation_symbol": "PhysicsSDK::PhysicsSDK"
     },
     {
       "id": "phys_fn_000473",
@@ -8779,7 +8811,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1308",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/include/NxPhysicsSDK.h"
     },
     {
       "id": "phys_fn_000483",
@@ -8815,7 +8848,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1315",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/include/NxPhysicsSDK.h"
     },
     {
       "id": "phys_fn_000485",
@@ -8851,7 +8885,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1343",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/include/NxPhysicsSDK.h"
     },
     {
       "id": "phys_fn_000487",
@@ -8887,7 +8922,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1354",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0000f690"
+      "notes": "continuation of the entry at 0x0000f690",
+      "implementation": "Physics/include/NxPhysicsSDK.h"
     },
     {
       "id": "phys_fn_000489",
@@ -8923,7 +8959,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1362",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/include/Nxp.h"
     },
     {
       "id": "phys_fn_000491",
@@ -14561,7 +14598,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2514",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ContactGeneration.cpp"
     },
     {
       "id": "phys_fn_000804",
@@ -14597,7 +14635,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2515",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ContactGeneration.cpp"
     },
     {
       "id": "phys_fn_000806",
@@ -14633,7 +14672,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2516",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ContactGeneration.cpp"
     },
     {
       "id": "phys_fn_000808",
@@ -14669,7 +14709,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2520",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ContactGeneration.cpp"
     },
     {
       "id": "phys_fn_000810",
@@ -14705,7 +14746,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2524",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ContactGeneration.cpp"
     },
     {
       "id": "phys_fn_000812",
@@ -14741,7 +14783,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2528",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ContactGeneration.cpp"
     },
     {
       "id": "phys_fn_000814",
@@ -14777,7 +14820,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2532",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ContactGeneration.cpp"
     },
     {
       "id": "phys_fn_000816",
@@ -14813,7 +14857,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2533",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ContactGeneration.cpp"
     },
     {
       "id": "phys_fn_000818",
@@ -14849,7 +14894,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2534",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ContactGeneration.cpp"
     },
     {
       "id": "phys_fn_000820",
@@ -14885,7 +14931,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2535",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ContactGeneration.cpp"
     },
     {
       "id": "phys_fn_000822",
@@ -14921,7 +14968,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2536",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ContactGeneration.cpp"
     },
     {
       "id": "phys_fn_000824",
@@ -14957,7 +15005,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2537",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ContactGeneration.cpp"
     },
     {
       "id": "phys_fn_000826",
@@ -28678,7 +28727,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4235",
       "static_proof": null,
       "dynamic_proof": "confirmed via the blockers and blockers2 differentials (3z184): failures=0 for all ten rows, with each global function pointer, the lock-API globals and the allocator pointer bound to the same recorders the candidates use",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/FluidSupport.cpp"
     },
     {
       "id": "phys_fn_001584",
@@ -30717,7 +30767,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4816",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/include/NxIntersectionBoxBox.h"
     },
     {
       "id": "phys_fn_001697",
@@ -30753,7 +30804,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4817",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x000360e0"
+      "notes": "continuation of the entry at 0x000360e0",
+      "implementation": "Physics/include/NxIntersectionBoxBox.h"
     },
     {
       "id": "phys_fn_001699",
@@ -30789,7 +30841,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4820",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x000360e0"
+      "notes": "continuation of the entry at 0x000360e0",
+      "implementation": "Physics/include/NxIntersectionBoxBox.h"
     },
     {
       "id": "phys_fn_001701",
@@ -30825,7 +30878,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4827",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/include/NxIntersectionBoxBox.h"
     },
     {
       "id": "phys_fn_001703",
@@ -30861,7 +30915,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4833",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ContactGeneration.cpp"
     },
     {
       "id": "phys_fn_001705",
@@ -30897,7 +30952,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4835",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ContactGeneration.cpp"
     },
     {
       "id": "phys_fn_001707",
@@ -30969,7 +31025,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4842",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ContactGeneration.cpp"
     },
     {
       "id": "phys_fn_001711",
@@ -31005,7 +31062,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4845",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/ContactGeneration.cpp"
     },
     {
       "id": "phys_fn_001713",
@@ -31041,7 +31099,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4850",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/include/NxIntersectionSegmentBox.h"
     },
     {
       "id": "phys_fn_001715",
@@ -31077,7 +31136,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4875",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/include/NxIntersectionSegmentBox.h"
     },
     {
       "id": "phys_fn_001717",
@@ -31113,7 +31173,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4878",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/include/NxIntersectionSegmentBox.h"
     },
     {
       "id": "phys_fn_001719",
@@ -31149,7 +31210,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4886",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/include/NxIntersectionSegmentBox.h"
     },
     {
       "id": "phys_fn_001721",
@@ -31185,7 +31247,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4889",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/include/NxIntersectionSegmentBox.h"
     },
     {
       "id": "phys_fn_001723",
@@ -31221,7 +31284,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4900",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00037c80"
+      "notes": "continuation of the entry at 0x00037c80",
+      "implementation": "Physics/include/NxIntersectionSegmentBox.h"
     },
     {
       "id": "phys_fn_001725",
@@ -31257,7 +31321,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4905",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/include/NxIntersectionSegmentBox.h"
     },
     {
       "id": "phys_fn_001727",
@@ -31293,7 +31358,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4916",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00037e70"
+      "notes": "continuation of the entry at 0x00037e70",
+      "implementation": "Physics/include/NxIntersectionSegmentBox.h"
     },
     {
       "id": "phys_fn_001729",
@@ -31401,7 +31467,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4930",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/include/NxIntersectionSegmentCapsule.h"
     },
     {
       "id": "phys_fn_001735",
@@ -31437,7 +31504,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4957",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/include/NxIntersectionSweptSpheres.h"
     },
     {
       "id": "phys_fn_001737",
@@ -38824,7 +38892,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6806",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/include/NxSmoothNormals.h"
     },
     {
       "id": "phys_fn_002147",
@@ -42294,7 +42363,9 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7314",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/PhysicsInternal.cpp",
+      "implementation_symbol": "ShapePairFunctionTable::ShapePairFunctionTable"
     },
     {
       "id": "phys_fn_002339",
@@ -42654,7 +42725,9 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7407",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/PhysicsInternal.cpp",
+      "implementation_symbol": "ReadWriteLock::ReadWriteLock"
     },
     {
       "id": "phys_fn_002359",
@@ -71004,7 +71077,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13024",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/FluidSupport.cpp"
     },
     {
       "id": "phys_fn_003908",
@@ -71040,7 +71114,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13025",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/FluidSupport.cpp"
     },
     {
       "id": "phys_fn_003910",
@@ -71076,7 +71151,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13026",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/FluidSupport.cpp"
     },
     {
       "id": "phys_fn_003912",
@@ -71112,7 +71188,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13027",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/FluidSupport.cpp"
     },
     {
       "id": "phys_fn_003914",
@@ -71148,7 +71225,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13028",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/FluidSupport.cpp"
     },
     {
       "id": "phys_fn_003916",
@@ -71184,7 +71262,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13029",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/FluidSupport.cpp"
     },
     {
       "id": "phys_fn_003918",
@@ -71220,7 +71299,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13030",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/FluidSupport.cpp"
     },
     {
       "id": "phys_fn_003920",
@@ -71256,7 +71336,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13031",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/FluidSupport.cpp"
     },
     {
       "id": "phys_fn_003922",

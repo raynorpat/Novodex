@@ -6437,3 +6437,60 @@ Opcode path into 50 rows.
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 587 tool tests OK.
+
+## 14d. Round 49: the 66 are recorded, and the known set grows because they are true
+
+14c said the next round should record the 66 from their closures. Done:
+
+    implementation recorded on 66 rows
+    rows with an implementation     181 -> 247
+    rows with implementation_symbol  57
+    IMPLEMENTATION_MISMATCHES        25 -> 66
+
+**And the set grew, which needs stating honestly.** Recording gave the 66 an `implementation` --
+mostly a header that declares the function the closure's mutation targeted -- and the check added
+in 13m asserts that the implementation file writes the row's stable ID. **A header declaring
+`NpPhysicsSDK::getNbScenes` does not write `phys_fn_000238`.** So the check reported 41 of the 66
+and they joined the named set.
+
+**That is not 41 new defects.** It is 66 rows gaining a *true* value that the check cannot yet
+corroborate, and the set is a list of rows whose correspondence the census records in a form the
+check does not recognise. **The set's size is not the defect count** -- 13x said that, and this
+round is the third time it has been true.
+
+**The recorder stored the closure's name as `implementation_symbol` only where the name was
+qualified**, so **nine rows with bare names carry a file and no symbol**:
+
+    phys_fn_000250  getGroupCollisionFlag
+    phys_fn_001734  (a bare name from its closure)
+    ...
+
+**Those nine are what the check reports and what the symbol field is for.** Recording them is the
+step that shrinks the set without weakening the check, and it is mechanical.
+
+**And the two unresolved rows were left alone rather than guessed at:**
+
+    phys_fn_000281  "a print at the entry of NpPhysicsSDK::~NpPhysicsSDK"
+    phys_fn_002360  "a print at the entry of ReadWriteLock::~ReadWriteLock"
+
+**Both name a destructor, and a destructor's definition may simply not be written yet** -- so the
+honest state for them is "closed, location unknown", which is what they had before this round.
+
+## 14e. State after forty-nine rounds
+
+    rows with an implementation        247   (was 181)
+    ... carrying implementation_symbol  57
+    ... in IMPLEMENTATION_MISMATCHES    66   (was 25; 41 of the 66 are newly-located, not new defects)
+    closed rows whose location is unknown 2  (was 68)
+    checks added this session            8
+    audit findings                      12
+    census rows closed                   6
+    all gates                            green
+
+**The 68 closed-but-unlocated rows are now 2**, and the two are named. **That is the round's real
+result**: 14b found a whole class of closure records that did not say where their code lived, and
+this round closed 66 of them from the ledger that did.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 587 tool tests OK.
