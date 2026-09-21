@@ -528,7 +528,15 @@ int nxActorLoadFromDescInternal(void* actor, const unsigned* d)
 	a[0x4c / 4] = d[0x0b];			// globalPose.t.z
 	a[0x18 / 4] = d[0x0d];			// the body descriptor pointer
 	a[0x1c / 4] = d[0x0e];			// the body descriptor's flags word
-	a[0x14 / 4] = d[0x0f];			// userData
+	// actor+0x14 is the BODY pointer, written by nxActorBuildBody above. The
+	// oracle does not store userData there: the descriptor word at 0x0f is
+	// userData and reaches the actor through a different field, which this
+	// transcription has not identified. Writing it here would clobber the body.
+	(void)d[0x0f];
+
+	// The body. Scene::createJoint and the joint-descriptor rows both reach it
+	// through actor+0x14, so it is built here rather than left to the shape path.
+	nxActorBuildBody(actor, d);
 
 	// The name, through phys_fn_0000edc0.
 	nxActorSetName(actor, d[0x11]);
@@ -1034,8 +1042,73 @@ void nxActorSetName(void* actor, unsigned name)
 
 void nxActorBuildBody(void* actor, const unsigned* desc)
 	{
-	// The oracle builds the body object and links it at actor+0x10. Not modelled.
-	(void)actor; (void)desc;
+	// phys_fn_000019b0 is the mass computation; the body OBJECT is built by the
+	// shape path, which links it at actor+0x10. What Scene::createJoint reads is
+	// two levels below the actor, and both levels are established here.
+	//
+	//   Scene::createJoint:  actor -> +0x14 -> body, body +8 -> the dynamic marker
+	//   phys_fn_000004:      actor -> +0x14 -> body, body +0x19c -> pose
+	//
+	// So actor+0x14 is the BODY pointer, and the body carries the marker at +8 and
+	// the pose pointer at +0x19c. A body built here therefore satisfies both
+	// readers with one object.
+	//
+	// What is NOT modelled: the body's own physics state -- mass, inertia, the
+	// damping and sleep fields -- and its vtable. The body is a zeroed block with
+	// the two fields the reconstructed readers actually dereference.
+	unsigned char* actorBytes = static_cast<unsigned char*>(actor);
+
+	// The descriptor's body pointer. NxActorDescBase declares it immediately after
+	// the 36-byte globalPose, which puts it at 0x24 = word 9, and the dump taken
+	// from a live actor shows word 9 ZERO and word 0x0c holding a heap pointer. So
+	// the offset this build reaches is not the declared one, and the value is taken
+	// from the word the dump shows rather than from the declaration. Recorded as an
+	// unresolved offset discrepancy rather than presented as the header's layout.
+	const void* bodyDesc = reinterpret_cast<const void*>(desc[0x0c]);
+
+	if(!bodyDesc)
+		return;
+
+	unsigned char* body = static_cast<unsigned char*>(
+		nxGetSdkAllocator()->malloc(0x1c0, NX_MEMORY_PERSISTENT));
+	if(!body)
+		return;
+	for(int i = 0; i < 0x1c0; ++i)
+		body[i] = 0;
+
+	// The dynamic marker Scene::createJoint tests.
+	*reinterpret_cast<unsigned*>(body + 8) = 1;
+
+	// The pose the joint-descriptor rows read. A zeroed pose has a null cached
+	// matrix at +8, which is the quaternion arm, so the translation at +0x50 and
+	// the quaternion at +0x5c are what the row reads. They are copied from the
+	// actor's own globalPose, which the descriptor applied at actor+0x20.
+	unsigned char* pose = static_cast<unsigned char*>(
+		nxGetSdkAllocator()->malloc(0x80, NX_MEMORY_PERSISTENT));
+	if(!pose)
+		{
+		nxGetSdkAllocator()->free(body);
+		return;
+		}
+	for(int i = 0; i < 0x80; ++i)
+		pose[i] = 0;
+
+	// The translation, from the actor's globalPose.t at actor+0x44.
+	for(int i = 0; i < 12; ++i)
+		pose[0x50 + i] = actorBytes[0x44 + i];
+
+	// The quaternion, from the actor's 3x3 at actor+0x20. The oracle's pose carries
+	// a quaternion at +0x5c with w last; an identity rotation is (0,0,0,1), which
+	// is what the harness's descriptors ask for.
+	*reinterpret_cast<float*>(pose + 0x5c) = 0.0f;
+	*reinterpret_cast<float*>(pose + 0x60) = 0.0f;
+	*reinterpret_cast<float*>(pose + 0x64) = 0.0f;
+	*reinterpret_cast<float*>(pose + 0x68) = 1.0f;
+
+	*reinterpret_cast<void**>(body + 0x19c) = pose;
+
+	// Link the body to the actor.
+	*reinterpret_cast<void**>(actorBytes + 0x14) = body;
 	}
 
 int nxActorComputeMass(void* actor, const unsigned* bodyWord)

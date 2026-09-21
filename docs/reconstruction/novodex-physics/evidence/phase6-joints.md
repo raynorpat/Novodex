@@ -2865,3 +2865,72 @@ created -- are both strictly better than the state this work inherited.
 **Still no census row closed.** All gates green: phases 2/3/4 exit 0, phase 5 exit 1
 RED on purpose, phase 6 exit 0 PASS, `completed` exit 0, `validate_inventory` exit 0,
 587 tool tests OK.
+
+## 9o. The actors now carry bodies, and the body pointer is not at the declared offset
+
+9n named `nxActorBuildBody` as the blocker. It is implemented and it runs.
+
+**What it builds.** One body object per actor, 0x1c0 bytes, carrying exactly the two
+fields the reconstructed readers dereference:
+
+    body + 8      = 1          the dynamic marker Scene::createJoint tests
+    body + 0x19c  = pose       the pose pointer phys_fn_000004 reads
+
+and it links the body at `actor+0x14`, which is where `Scene::createJoint` reads it.
+The pose is a separate 0x80-byte block whose `+8` is null (the quaternion arm), with
+the translation copied from the actor's own `globalPose.t` at `actor+0x44` and an
+identity quaternion at `+0x5c`.
+
+**The trace confirms it on both actors:**
+
+    TRACE buildBody actor=00979B48 desc=006FF538 bodyDesc=006FF468
+    TRACE buildBody linked body=00979BA0 at actor+0x14
+    TRACE buildBody actor=00979DF0 desc=006FF594 bodyDesc=006FF3F0
+    TRACE buildBody linked body=00979E48 at actor+0x14
+
+**And it exposed a real discrepancy.** `NxActorDescBase` declares `body` immediately
+after the 36-byte `globalPose`, which puts it at `0x24` = **word 9**. The dump taken
+from a live actor shows:
+
+    word 09 = 00000000        <- where the header says the body pointer is
+    word 0c = 006FF468        <- where a heap pointer actually is
+    word 0d = 3f800000        <- density 1.0
+    word 12 = 00000001        <- the shape path selector
+    word 13 = 00970098        <- the shape array's first
+
+So the offset this build reaches is **not** the declared one, and the value is taken
+from the word the dump shows rather than from the declaration. **This is recorded as
+an unresolved offset discrepancy, not presented as the header's layout** -- either
+`NxActorDescBase` has a member this reconstruction has not accounted for between
+`globalPose` and `body`, or the descriptor the harness builds is not laid out as the
+pinned header declares. That is a question for the next session and it is written
+down rather than smoothed over.
+
+**One more correction of my own earlier claim.** 9b said "the actor's `userData` at
+`+0x14` is written from descriptor word 0x0f". That was wrong: `actor+0x14` is the
+**body** pointer, and writing userData there clobbered it. The assignment is removed
+with a comment saying why, and the `userData` field is left unidentified rather than
+put somewhere it does not belong.
+
+## 9p. Where the harness stands, and the next measurement
+
+    scene=created                       reached
+    both actors created                 reached
+    both actors carry a linked body     reached (9o)
+    createJoint reached                 NO -- the crash precedes its first statement
+    the harness                         exit -1073741819, no output
+
+**The `createJoint` entry trace never fired**, and the bodies are built before the
+crash, so the fault is between the actor creation and the joint creation -- in the
+harness's own fixture code or in `NpScene::createJoint`'s write-lock step, which runs
+*before* the forward to the Scene.
+
+**The next measurement is one breakpoint, and it is now well defined:** break on the
+candidate's `NpScene::createJoint` and see whether it is entered at all. If it is,
+the fault is in the lock step; if it is not, the fault is in the harness's fixture
+between the two `createActor` calls and the joint, which would be the harness's own
+code rather than the reconstruction's.
+
+**Still no census row closed.** All gates green: phases 2/3/4 exit 0, phase 5 exit 1
+RED on purpose, phase 6 exit 0 PASS, `completed` exit 0, `validate_inventory` exit 0,
+587 tool tests OK.
