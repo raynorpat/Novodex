@@ -5568,3 +5568,74 @@ batch -- accepting that it is new construction rather than a repair.
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on
 purpose, phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed`
 exit 0, `validate_inventory` exit 0, 587 tool tests OK.
+
+## 13a. Round 40: the object-model rows are ADDRESS-driven, so the target is a translation
+## table rather than a new harness
+
+12z recommended either taking the artifact question to the user or beginning the
+object-model target. This round began it, and the first measurement changes what "the
+target" means.
+
+**The 117 `ObjectModel.cpp` rows are not exported.**
+
+    ObjectModel.cpp rows     117
+    exported among them        0
+    by phase                  phase 5: 62, phase 6: 28, phase 7: 11,
+                              phase 4: 8, phase 3: 6, phase 2: 2
+
+**And they are not reachable through the public API either** -- they are vtable slots and
+internal helpers: `NxBoxShape compute-mass row (slot 4)`, `NxBox save-to-descriptor (slot
+13)`, the mass-frame payload fold step. **A target that drives the public interface, the
+way `NxPhysicsJointTests` drives the scene and joint lifecycle, cannot reach them**, because
+nothing public calls a shape's mass row directly.
+
+**But the harness that CAN reach them already exists.** `NxPhysicsObjectLayoutTests` drives
+54 `row=` sites against hardcoded oracle RVAs, mentions `vtable` 50 times, and already
+contains the vtable-driving infrastructure for exactly these slots -- `0x0001c8c0` and
+`0x00020450` among them. **It reaches them by address, which is the only way to reach
+them.**
+
+**So the obstacle is one layer down from where 12v left it.** The harness is not wrong
+about how to drive the object model; it is wrong about *which module's addresses to drive*.
+12v measured that its RVAs assume the oracle's `0x138000` image, and the candidate's is
+`0x10000`.
+
+**And the reconstruction already holds the correspondence.** The census records, for every
+row, both its **oracle RVA** and the **implementation** it was reconstructed into -- 117 of
+these rows name `Physics/src/ObjectModel.cpp` and their own `rva`. **So an oracle RVA can be
+translated to a candidate address through the census**, which is what the harness needs and
+what it does not currently do.
+
+## 13b. The plan, and why it is not the rewrite 12v feared
+
+12v estimated the honest fix as "a large rewrite of a 441-line, 117-row harness". **It is
+smaller than that**, because the harness does not need to stop using RVAs -- it needs to
+translate them:
+
+    for each row the harness drives by oracle RVA
+        look up that RVA in a table emitted from the census
+        drive the candidate at the translated address instead
+
+**The table is generated, not written by hand**: the census has 117 rows naming
+`ObjectModel.cpp` with both their oracle RVA and their implementation, and the candidate
+build's own symbol map gives the corresponding address. **Emitting the table is a script
+over `inventory.json` plus the candidate's map**, and consuming it is one indirection at
+each `row=` site.
+
+**What that would open, if it works:**
+
+    ObjectModel.cpp rows        117, of which 28 are phase 6's and 62 phase 5's
+    every other row the harness drives   the other 54 row= sites
+
+**And what it would not.** The artifact question is untouched -- those rows have no
+behaviour to mutate whatever drives them -- and the rows the harness does not already
+drive remain out of reach. **So this opens the largest single batch, not the census.**
+
+**This round did not build it.** It measured that the rows are address-driven (which
+changes the target's shape), that the harness already has the infrastructure to drive them,
+and that the census already holds the correspondence the translation needs. **The next
+round writes the table and the indirection**, which is bounded work rather than a rewrite.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on
+purpose, phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed`
+exit 0, `validate_inventory` exit 0, 587 tool tests OK.
