@@ -217,8 +217,18 @@ bool PenetrationMap::loadPayload(MemoryStream& stream)
 	// 0x00050157: the grid is refilled with 0xffffffff before the payload runs,
 	// even though setup() has just done it. Reproduced because it is what the
 	// row does, not because anything depends on it.
-	for(NxU32 i = 0; i < mCellCount; ++i)
-		mGrid[i] = 0xffffffffu;
+	//
+	// GUARDED ON THE GRID, because setup() can return with a null one and a
+	// non-zero count: its own comment records that the count is stored BEFORE the
+	// allocation, so a failed malloc leaves `mCellCount` set and `mGrid` null, and
+	// it returns `mGrid != 0` to say so. `create` ignores that return and comes
+	// here, so the guard has to be the pointer. A count test would not do: the
+	// count is exactly what is set when the allocation failed.
+	if(mGrid)
+		{
+		for(NxU32 i = 0; i < mCellCount; ++i)
+			mGrid[i] = 0xffffffffu;
+		}
 
 	// The value loop from 0x000501b0. `next` is the running previous-plus-one:
 	// `mov ebp,edi; inc edi` at 0x0005020a, with edi zeroed once at 0x000501b0

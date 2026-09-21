@@ -584,13 +584,17 @@ static void nxRunPMapOracle(const NxOracle* oracle, const unsigned char* storage
 	unsigned char stream[kStreamObjectSize];
 	memset(stream, 0, sizeof(stream));
 	oracle->streamCtor(stream, length, storage);
+	printf("  step streamCtor done\n"); fflush(stdout);
 	oracle->streamSeek(stream, 0);
+	printf("  step streamSeek done\n"); fflush(stdout);
 
 	unsigned char object[kPMapObjectSize];
 	memset(object, 0, sizeof(object));
 	oracle->pmapCtor(object);
+	printf("  step pmapCtor done\n"); fflush(stdout);
 
 	char accepted = oracle->pmapCreate(object, &mesh, 0, 0, stream, 1, &sink);
+	printf("  step pmapCreate done\n"); fflush(stdout);
 
 	result->accepted = accepted ? 1u : 0u;
 	result->errors = sink.calls;

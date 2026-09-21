@@ -8632,3 +8632,64 @@ to come from.
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 601 tool tests OK.
+
+## 17o. Round 83: the unguarded write is real, the guard is right, and the fault moved past the chain
+
+17n said to read `setup` for `mGrid`'s assignment. **Read, and `setup` states the defect in its own
+comment:**
+
+    // `imul edi,ecx` at 0x000500b6 makes the third power out of the square, and
+    // the store at 0x000500ca happens BEFORE the allocation, so a failed malloc
+    // leaves the cell count set and the grid null.
+    mCellCount = mResolutionSquared * resolution;
+    mGrid = static_cast<NxU32*>(malloc(mCellCount * 4));
+    ...
+    return mGrid != 0;
+
+**So `setup` can return false with `mCellCount` set and `mGrid` null, and it says so by returning
+`mGrid != 0`.** And `create` **ignores that return**:
+
+    setup(resolution, reinterpret_cast<const NxF32*>(...));
+    mMesh = mesh;
+    if(load && loadPayload(*stream))
+
+**and `loadPayload` writes the grid on its first statement**, unguarded. **Guarded on the pointer rather
+than on the count, because the count is exactly what is set when the allocation failed** -- a count test
+would not catch it.
+
+## 17p. And the fault moved past the entire chain, which is progress of a specific kind
+
+    before the guard   exit -1073740791   0xC0000409   the fault inside the case
+    after  the guard   exit -1073741819   0xC0000005   a DIFFERENT status
+
+**And the chain is now instrumented per call, which puts the fault past all five:**
+
+    step streamCtor done
+    step streamSeek done
+    step pmapCtor done
+    step pmapCreate done
+    <fault>
+
+**So the fault is no longer inside `create` at all -- it is after the whole call chain returns**, in what
+`nxRunPMapOracle` does with the result:
+
+    result->cells = *(unsigned*) (object + kPMapCellCount);
+    unsigned* grid = *(unsigned**) (object + kPMapGrid);
+    if(accepted && grid)
+        for(unsigned i = 0; i < result->cells; ++i)
+            digest = nxFold(digest, grid[i]);
+    oracle->pmapDtor(object);
+    oracle->streamDtor(stream);
+
+**Two candidates, and they are distinguishable**: the digest loop reads `result->cells` entries of `grid`,
+**and `result->cells` comes out of the object the candidate wrote** -- so a cell count the reconstruction
+left larger than the grid it allocated would read past it. Or `pmapDtor`/`streamDtor` frees something the
+candidate allocated wrongly.
+
+**This round did not distinguish them**, and the round's result is that the guard is correct, the write it
+guards is a real defect, and the fault now sits one level further out with a different status -- **which is
+what a fix that is right but not the whole story looks like.**
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 601 tool tests OK.
