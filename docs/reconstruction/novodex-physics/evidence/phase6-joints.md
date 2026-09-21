@@ -7024,3 +7024,81 @@ raises**, and this round did not assume an answer to it.
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 591 tool tests OK.
+
+## 15e. Round 58: the data objects, measured, before any ruling about them
+
+15d ended by noting that the 5,138 data objects have no terminal story, and said this round would
+measure what a ruling about them would rest on rather than assume one. This is that measurement.
+
+**What they carry**, which is more than the artifact case had before its ruling:
+
+    id, rva, size, type, section, phase, phase_provenance, state,
+    label, label_confidence, structural_proof      all 5,138
+    references                                     4,605
+    notes                                          4,469
+    owner                                            558
+
+    states   discovered 5,138   -- all of them, one state
+    phase    2: 1051   3: 102   4: 2813   5: 122   6: 531   7: 502   8: 17
+
+**Every data object carries a `structural_proof`**, which is the direct analogue of the
+classification proof that carried the artifact ruling. **And the proofs are not free prose**:
+
+    distinct structural proofs   53, over 11 types
+    types with exactly ONE proof  9 of 11
+    ghidra_data                   799 "Ghidra typed these bytes as data"
+                                  509 "Ghidra typed these bytes as /byte"
+    switch_table                  42 distinct, one per row
+
+**So the vocabulary is closed for nine types and bounded for the other two.** The `switch_table`
+exception is not prose either -- it is a template:
+
+    "a decoded jmp at 0x00001e2c names this table and the PE oracle relocates every slot it walks"
+
+**42 of those, each naming the row's own `jmp`.** The proof is `_data_proof(detail)` in
+`reconcile_analysis.py`, which builds every one of the 53 from the row's `type` and, for switch
+tables, its decoded jump.
+
+## 15f. What the ruling WOULD rest on, and the one thing that is missing
+
+**A terminal state for data objects would rest on evidence that already exists and is already
+structured** -- the `type` plus the `structural_proof` it determines. That is a stronger position
+than the artifacts were in before their ruling, because **the artifact proofs were validated and
+these proofs are not.**
+
+**And that is the gap, stated exactly:**
+
+    `type`                is a required KEY with no value validation -- the validator does not
+                          check it against any vocabulary, so any string would pass
+    `structural_proof`    is a required KEY that no check reads; the string appears in
+                          validate_inventory.py only inside DATA_KEYS
+    DATA_TYPES            does not exist in the validator
+    DATA_ROW_CLASSES      and `_DATA_PROOFS` exist only in reconcile_analysis.py
+
+**So the vocabulary is enforced by the GENERATOR and not by the validator.** A data object could
+carry `"type": "whatever"` and `"structural_proof": "because I said so"` today, and every gate would
+pass. **That is 7h's defect and 13j's defect again**: a required field whose value nothing checks.
+
+**This is why the ruling is not assumed.** The artifact state was safe to add because its evidence
+was already checked; a data-object state built on unchecked prose would be **the fifth instance of
+this session's recurring failure -- a rule right about its shape and wrong about its population**
+(13m, 13x, 13y, 14f, 14s).
+
+**What the ruling needs, and it is one of two things:**
+
+1. **Pin the vocabulary first**, then give the data objects a terminal state resting on it. The
+   vocabulary exists and is measurable: **11 types, 53 proofs, nine of them one-to-one**, and the
+   `switch_table` family is a template over the row's own jump address. Pinning it means the
+   validator holds the type list and the proof list, and checks that each row's proof is the one its
+   type determines -- **which is a check that can fail**, unlike reading presence.
+2. **Order it the other way**: give them the state and treat the proof as their evidence unvalidated,
+   on the argument that the generator is the only writer and its output is committed. **This session
+   has recorded what that argument is worth** -- 14f recorded the words `entered` and `written` as
+   symbols through exactly that reasoning.
+
+**The recommendation is the first, and the measurement above is what makes it cheap**: the two lists
+are known, and the one template has one parameter.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 591 tool tests OK.
