@@ -494,12 +494,29 @@ void nxSceneArrayReserve(void* arrayHeader, unsigned needed)
 	unsigned* first = reinterpret_cast<unsigned*>(a[0]);
 	unsigned* last = reinterpret_cast<unsigned*>(a[1]);
 	unsigned* memEnd = reinterpret_cast<unsigned*>(a[2]);
-	const unsigned count = static_cast<unsigned>(last - first);
 
-	if(static_cast<unsigned>(memEnd - last) >= needed - count && needed > count)
+	// The oracle guards every one of these, and the guards are not decoration: on a
+	// freshly zeroed header all three pointers are null, and `last - first` on two
+	// null pointers is undefined -- in practice it yields 0, but a `count` derived
+	// from uninitialised pointers is exactly the kind of value that turns into a
+	// huge unsigned and then into a write past the end. The oracle's own shape, from
+	// the descriptor initialiser's inline growth, is:
+	//
+	//     if (first == 0) count = 0; else count = (last - first) >> 2;
+	//
+	// and the capacity is `count * 2 + 2` or the literal 2 when count is zero. Both
+	// are reproduced here.
+	const unsigned count = first ? static_cast<unsigned>(last - first) : 0;
+
+	// Room already available past `last`, counted only when the pointers are real.
+	const unsigned spare = (first && memEnd) ? static_cast<unsigned>(memEnd - last) : 0;
+	if(needed <= count || spare >= (needed - count))
 		return;
 
-	const unsigned capacity = (needed > (count ? count * 2 : 2)) ? needed : (count ? count * 2 : 2);
+	// `count * 2 + 2`, or 2 for an empty array -- the oracle's literal at 0x1000eae8's
+	// sibling in the initialiser.
+	const unsigned doubled = count * 2 + 2;
+	const unsigned capacity = (needed > doubled) ? needed : doubled;
 	unsigned* grown = static_cast<unsigned*>(
 		nxGetSdkAllocator()->malloc(capacity * sizeof(unsigned), NX_MEMORY_PERSISTENT));
 	if(!grown)

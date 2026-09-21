@@ -3333,3 +3333,70 @@ reconstruction of a byte-addressed object should use it from the start.
 
 All gates green: phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose, phase 6 exit 0
 PASS, `completed` exit 0, `validate_inventory` exit 0, 587 tool tests OK.
+
+## 10b. Round 9: the reserve was reading uninitialised pointers, and the fault is now
+## intermittent
+
+9z fixed the `*4` slip and the step probe went from `actor1` faulting to `actor1` and
+`actor2` both passing. Re-running it this round gives a **different** answer on the
+same build:
+
+    step scene    exit 0
+    step actor1   exit -1073741819
+    step actor2   exit 0
+    step actor3   exit 0
+    step joint    exit -1073741819
+
+**`actor1` faults and `actor2` does not, on the same code and the same build.** That
+is not a location; it is a **read of an uninitialised pointer**, and the difference
+between the two runs is which garbage value happened to be there.
+
+**The candidate, found by reading rather than by instrumenting**, is
+`nxSceneArrayReserve`:
+
+    unsigned* first = (unsigned*)a[0];
+    unsigned* last  = (unsigned*)a[1];
+    unsigned* memEnd= (unsigned*)a[2];
+    const unsigned count = (unsigned)(last - first);        // UB on two null pointers
+
+On a freshly zeroed array header all three are null, and `last - first` on two null
+pointers is undefined behaviour -- in practice zero, but the value is not guaranteed,
+and a `count` derived from it feeds `needed - count` in an unsigned expression that
+wraps to a huge number and then to an allocation and a copy of that size.
+
+**The oracle guards every one of those reads**, and the guards are visible in its own
+inline growth in the descriptor initialiser:
+
+    if (first == 0) count = 0; else count = (last - first) >> 2;
+    capacity = count * 2 + 2      // or the literal 2 when count is zero
+
+The reconstruction had the arithmetic but not the guards. **Fixed**: `count` is zero
+when `first` is null, the spare-capacity term is zero unless both `first` and `memEnd`
+are real, and the capacity is the oracle's `count * 2 + 2`.
+
+**The fault did not go away.** `actor1` still faults after the fix, so this was a
+second real defect and not the only one. What it does mean is that the reserve can no
+longer produce a huge allocation from a garbage count.
+
+## 10c. The method is now the instrument that works, and it needs a different form
+
+**The step probe is the right instrument and the wrong granularity.** It varies the
+work rather than the process -- which is what 10a established -- but its steps are
+whole operations, and `createActor` contains six. A fault inside one of them shows as
+"the actor step faults" and says nothing about which.
+
+**The form that would settle it**, and it is a change to the probe rather than to the
+reconstruction: **run the same step many times in one process** and see whether it
+faults consistently. A fault that happens on run 1 but not run 2 is a read of
+uninitialised memory, and its address can then be found by breaking on the
+allocation. That is one probe change and no rebuild of the library.
+
+**The honest state of this bug after nine rounds:** it is now known to be at least two
+defects, one fixed (`*4`, 9z) and one fixed this round (unguarded pointer difference),
+with a third still present that makes `actor1` fault intermittently. The instruments
+that work are those that vary the work; the ones that failed were those that varied
+the process.
+
+**No census row closed.** All gates green: phases 2/3/4 exit 0, phase 5 exit 1 RED on
+purpose, phase 6 exit 0 PASS, `completed` exit 0, `validate_inventory` exit 0, 587
+tool tests OK.

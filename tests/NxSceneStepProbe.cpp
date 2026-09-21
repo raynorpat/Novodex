@@ -117,6 +117,19 @@ int wmain(int argc, wchar_t** argv)
 	if(strcmp(step, "actor1") == 0)
 		return nxReportPairIdentity(pairDirectory);
 
+	// A third actor, to distinguish a fault that needs a particular allocation
+	// order from one that happens on the first actor but not the second.
+	NxActor* c = nxMakeActor(*scene, 8.0f);
+	if(strcmp(step, "actor3") == 0)
+		return nxReportPairIdentity(pairDirectory);
+	if(!c)
+		{
+		sdk->releaseScene(*scene);
+		sdk->release();
+		FreeLibrary(physics);
+		return nxFail("actor 3 creation failed");
+		}
+
 	NxActor* b = nxMakeActor(*scene, 4.0f);
 	if(!b)
 		{
