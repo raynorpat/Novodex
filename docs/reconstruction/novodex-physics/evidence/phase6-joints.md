@@ -6561,3 +6561,64 @@ the last four of them were found in the instruments the preceding rounds had jus
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 587 tool tests OK.
+
+## 14i. Round 51: the 66 have two reasons, and one of them is the check's premise
+
+14h left the set at 66 with no breakdown. This round asked why each row is in it, and the answer is
+that **they are there for two different reasons and only one is about the rows.**
+
+    closed  header    25
+    closed  source    19
+    source            22
+    ----------------------
+                      66
+
+    by state   dynamically_gated 44   reconstructed 22
+    by file    .cpp 41   .h 25
+
+**Twenty-five are HEADERS**, and a header declaring a function is a legitimate place for a row's
+implementation to be named -- **but a header declares `NpPhysicsSDK::getNbScenes`, it does not write
+`phys_fn_000238`.** So the check's premise -- *the implementation file must write the row's stable
+ID* -- **is satisfied by what a `.cpp` definition looks like and not by what a declaration looks
+like.**
+
+**That is 13m's check being wrong about its own rule for the third time**, after 13x and 13y: it
+looked in the wrong place, then at the wrong field, and now it asserts a property that **declarations
+cannot have**. **And the position is coherent rather than accidental** -- `implementation` for these
+rows names where the function is *declared*, which is true, and the check demands more than the field
+claims.
+
+**The other 41 are `.cpp` locations** (`PhysicsSDK.cpp`, `PhysicsInternal.cpp`, `NpPhysicsSDK.cpp`
+and the intersection headers' `.cpp` siblings), and those are the rows the check is right about.
+
+## 14j. Both corrections are made, and the set is 38
+
+**The header half is the check's premise, not a gap**, and the fix is to scope the check to source
+implementations:
+
+    a HEADER declares the function and cannot write the row's stable ID, so demanding one there is
+    a rule the artifact cannot satisfy
+
+**Applied, with the symbolised rows removed at the same time:**
+
+    set: 66 -> 38   (25 header rows, 3 symbolised rows)
+
+    by state   dynamically_gated 16   reconstructed 22
+
+**And one claim in this section was wrong before it was written.** I expected nineteen of the set's
+rows to carry a symbol, on the reasoning that the symbol pass ran before the check learned to skip
+symbolised rows. **Measured, it was three.** The other forty-one `.cpp` locations in the set do not
+carry one -- which is what the check reports and what remains to record.
+
+**So the remaining 38 are `.cpp` locations whose symbol is not recorded**, and their closures may
+name one. **That is the honest statement, and it differs from the estimate this section was about to
+make.**
+
+**What this round established is the thing missing from every count since 13j: the set had a
+structural half** -- 25 rows that could never leave it because the check demanded something a header
+cannot provide. **The set has been read as a defect count while containing a category that was not a
+defect at all.**
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 587 tool tests OK.
