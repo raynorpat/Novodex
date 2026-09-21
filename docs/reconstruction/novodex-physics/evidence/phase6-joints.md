@@ -7302,3 +7302,70 @@ being special-cased at each site.
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, **601 tool tests OK**.
+
+## 15p. Round 61: what a target can reach, measured, and it is smaller than the worklist
+
+The worklist is 564 rows that are `reconstructed_not_falsified` -- code with no mutation aimed at it.
+This round asked which of them a registered target can actually drive, and the answer reframes the
+campaign.
+
+**A closure needs a target that drives the row.** The targets are differentials over **named
+exports**:
+
+    NxPhysicsGeometryTests       "calls each of the 27 named exports Phase 3 owns over a fixed
+                                  matrix of cases ... Nothing here decides whether a result is
+                                  right: the oracle decides, by run_differential.ps1 comparing
+                                  this transcript from the shipped pair against the same
+                                  transcript from the rebuilt pair"
+
+**So the reachable population is the exported rows, and the measurement is blunt:**
+
+    named exports                          41
+    ... already closed                     39
+    ... open                                2
+
+**Both open exports are phase 4's**, and both are pmap rows:
+
+    phys_fn_002049  NxCreatePMap    discovered      phase 4  impl none
+    phys_fn_002051  NxReleasePMap   reconstructed   phase 4  impl Physics/src/PMap.cpp
+
+**So the 564-row worklist is, with two exceptions, rows no target can name.** They are internal
+helpers and vtable slots, which is the same conclusion 13a reached about the object-model batch and
+14u reached about the lifecycle path. **The worklist is real work, but it is not reachable work**, and
+saying so is more useful than starting on it.
+
+## 15q. The phase-4 path, and it is a real one
+
+**Phase 4 has 1,050 code rows, none closed, and no registered target** -- and it owns the pmap rows,
+the mesh rows and the `ObjectModel.cpp` batch. **A harness that drives its rows already exists and is
+already built:**
+
+    NxPhysicsAssetTests   1,305 lines, mentions pmap 49 times and PMap 80,
+                          and names phys_fn_002035, 002047 and 002051
+
+**And it is registered as an ORACLE differential**, which runs only against the shipped DLL -- so
+**no mutation to the candidate can be caught by it**, which is 11l's structural point.
+
+**Its candidate side is real rather than a stub.** Read directly:
+
+    static bool nxCandidateReleasePMap(void* pmap, unsigned char* returned)
+        {
+        *returned = NxReleasePMap(*(NxPMap*) pmap) ? 1u : 0u;
+        return true;
+        }
+
+**It calls the reconstruction.** The four `CANDIDATE-MISSING` messages are the *failure branches* of
+candidate-side functions, not statements that the reconstruction is absent -- and telling those two
+apart is why this round read the bodies rather than the strings.
+
+**And it takes a pair directory plus a hash and supports `--self`**, like the joint harness did before
+round 26 registered it as a staged-pair target. **So registering it on phase 4 is the same move that
+opened the joint rows**, and it would be the first target phase 4 has ever had.
+
+**This round did not register it.** It established that phase 4 has a harness that drives its rows,
+that the harness is pair-aware in shape, and that its candidate side calls the reconstruction -- which
+is what a staged-pair registration needs and what the round before would have had to assume.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 601 tool tests OK.
