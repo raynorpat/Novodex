@@ -8295,3 +8295,44 @@ with a harness whose own stack layout is being disturbed by a change to its impo
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 601 tool tests OK.
+
+## 17c. Round 75: the mechanism is the LINK, and the identity line is only where it shows
+
+17b named the hypothesis -- that the harness links `NxFoundation`, so the Foundation it resolves is the
+build's rather than the pair's. **This round confirms the mechanism by reading the build rather than by
+reasoning about it.**
+
+**What the target links**, from `CMakeLists.txt`:
+
+    target_link_libraries(NxPhysicsAssetTests NxFoundation ...)
+
+**and the harness uses nothing from the Foundation at all.** Its includes are `windows.h`, `bcrypt.h`,
+the three C headers, four Physics public headers and the generated table. **It calls `nxSha256` and
+`nxFail`, which are its own statics** -- `nxGetSdkAllocator`, `SdkAllocator`, `NxAlloc`, `nxHeap` appear
+**zero times**.
+
+**So the link is unnecessary**, and it is what makes the loader resolve `NxFoundation.dll` as an IMPORT:
+**the loader satisfies the import when `NxPhysics.dll` is loaded, before any code of this harness runs**,
+and it satisfies it from the ordinary search path rather than from the pair directory -- `LoadLibraryExW`
+with `LOAD_LIBRARY_SEARCH_USER_DIRS` does not redirect an already-loaded module.
+
+**Two consequences, and the second is the fault:**
+
+    the reported Foundation path is the build's, not the pair's   -> the candidate identity check fails
+    and the harness's own Foundation import binds to that copy     -> which is what the cookie trip
+                                                                      accompanies
+
+**The fix is therefore to remove the link, not to add a load.** An explicit `LoadLibraryExW` for the pair's
+Foundation cannot beat a static import that the loader resolves first; **taking the import away is what
+lets the pair's copy be the one that loads.** That is a build change of the same kind as 16j's
+`/OPT:NOREF` -- it alters what the module contains rather than what a harness says about it.
+
+**And it is worth noting what this round did NOT do.** It did not add a Foundation load, because the
+diagnosis says a load cannot win; and it did not register the target, because the candidate still cannot
+complete. **Two rounds have now produced correct fixes and a target that still fails**, and the pattern
+in both is that **the harness has been treated as something to adjust rather than as something whose own
+build is part of the system under change.**
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 601 tool tests OK.
