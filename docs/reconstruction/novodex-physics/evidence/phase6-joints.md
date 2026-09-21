@@ -7784,3 +7784,66 @@ recorded six times, and the first time it has caught the round in the act rather
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 601 tool tests OK.
+
+## 16g. Round 67: the parser is fixed, and the population is measured
+
+16f said to fix the parse first and measure second. **The parse is fixed** by reading the map's columns
+rather than splitting on whitespace, and **cross-checked against the pass round 65 wrote independently**:
+
+    object            round 65      round 67      agreement
+    NpActor.obj       105 / 89      105 / 89      yes
+    NpScene.obj        87 / 70       87 / 70      yes
+    ObjectModel.obj    61 /  0       61 /  0      yes
+    PMap.obj            8 /  1        8 /  1      yes
+
+**Two independently written parsers agreeing on four objects is what makes the numbers readable**, and
+it is the check 16f asked for. The parser finds **809 symbols over 57 objects**, and handles the empty
+flags column by matching the record's shape rather than counting fields.
+
+## 16h. And the flag itself was verified before the finding was recorded
+
+**117 rows rest on `ObjectModel.obj` contributing no function**, so the evidence has to be the flag
+rather than a name pattern. Checked directly:
+
+    ?getNbScenes@NpPhysicsSDK@@    f      a function
+    _NxReleasePMap                 f      a function
+    ??__EgNpActorVtable@@YAXXZ     f      a function
+    flags across the map           f: 399   (none): 490
+    ObjectModel.obj's 61 symbols   0 carry f, and the names are string literals
+                                   ??_C@_0DO@...Actor?3?3getCMassLocalPose?3?5Cannot...
+
+**`__EgNpActorVtable` is the compiler's dynamic initialiser for a vtable, which is code, and it carries
+`f`** -- so the flag marks emitted code rather than something narrower, and its absence is meaningful.
+
+## 16i. The population, and it is one finding in three sizes
+
+    rows whose implementation is a SOURCE file        210
+      ... object contributes at least one function      45   linked
+      ... object contributes NO function               150   compiled, not linked
+      ... object is absent from the module              15   not built at all
+    rows whose implementation is a HEADER               36   a declaration, not a definition
+
+**The 150 are the finding.** Their source defines the functions, the file is in the build, and **the
+object in the module carries no function at all**:
+
+    ObjectModel.obj              117 rows   61 symbols, all string literals
+    ContactGeneration.obj         16 rows    6 symbols, no function
+    IcePrunable.obj               15 rows    5 symbols, no function
+    TriangleMesh.obj               2 rows    1 symbol,  no function
+
+**And `ObjectModel.obj`'s 61 symbols are `Actor::getCMassLocalPose` and its siblings -- the error
+message strings**, which is exactly what a translation unit contributes when the linker keeps its
+literals because another unit references them and discards its code because nothing does.
+
+**So the mechanism is `implementation` naming a file whose code the linker discarded**, and it is 150
+rows rather than the 18 round 65 established. **The three sizes are different problems**: an object with
+no function is code that was discarded; an absent object is a file not built; a header is a declaration
+where the census's own check cannot demand a definition.
+
+**This round did not correct the census.** A row whose code is compiled but not linked is not described
+by any rung the ladder has, and the honest move is to put the measurement to the user -- which the
+lint of rounds 15f and 12z says is what a schema question is for.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 601 tool tests OK.
