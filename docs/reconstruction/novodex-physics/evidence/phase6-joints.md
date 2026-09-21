@@ -5394,3 +5394,82 @@ or a flag or an instrument actually does rather than what it says it does.
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on
 purpose, phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed`
 exit 0, `validate_inventory` exit 0, 587 tool tests OK.
+
+## 12v. Round 38: the layout harness cannot drive the candidate, and the reason is the
+## module's SIZE
+
+12s fixed the decorative `--self` flag and the harness got as far as
+`arena-bridge=installed`. This round diagnosed the fault.
+
+**The fault, from the debugger:**
+
+    eip = NxPhysicsObjectLayoutTests!nxInstallAllocatorShim+0x2e
+    mov eax,[eax+1041BCh]        eax = 6dbf0000
+    ds:002b:6dcf41bc=????         <- unreadable
+
+`base + 0x001041bc` is an **oracle RVA**, and the shim reads the SDK allocator holder
+through it. The module is loaded at `6dbf0000`, so the read lands at `6dcf41bc`, which
+does not exist.
+
+**Both DLLs declare `ImageBase = 10000000`, so that is not the difference. The difference
+is the image SIZE:**
+
+    oracle      ImageBase=10000000  SizeOfImage=00138000
+    candidate   ImageBase=10000000  SizeOfImage=00010000
+
+**The oracle's image is `0x138000` bytes; the candidate's is `0x10000` -- sixteen pages
+against one hundred and thirty-six.** A read at RVA `0x1041bc` is inside the oracle's
+mapped range and **far outside the candidate's**, so it faults.
+
+**So the obstacle is not the base address and not the flag. It is that the harness is
+written against an address space the reconstruction does not have.** Every RVA it uses --
+`0x1041bc` for the SDK allocator holder, `0x12626b` for the Foundation global, and the row
+addresses throughout -- assumes a module of the oracle's size with the oracle's sections,
+because that is the module it was built to drive.
+
+## 12w. What that means for the object-model batch, stated plainly
+
+**The 117 `ObjectModel.cpp` rows and the 438 reconstructed rows across phases 5, 6 and 7
+are not closable by making this harness pair-aware.** Making it run against the candidate
+would mean either:
+
+1. **Loading the candidate at the oracle's size** -- reserving `0x138000` at
+   `0x10000000` and mapping the candidate's sections into it, so the RVAs resolve. That is
+   a loader, not a harness change, and it would let the harness's hardcoded RVAs read
+   *something* -- though not necessarily the right thing, since the sections would not be
+   the oracle's; or
+2. **Rewriting the harness to resolve every address it uses through the loaded module's
+   own headers** rather than hardcoded RVAs. That is the honest fix and it is a large
+   rewrite of a 441-line, 117-row harness.
+
+**Neither was done, and neither should be done without deciding it is worth the cost.**
+The alternative -- which is what this session has actually been doing -- is **closing rows
+through targets that drive the reconstruction's own API** rather than the oracle's address
+space. That is what closed six rows: the joint harness calls `GetProcAddress` for the two
+exported rows and drives the scene, actor and joint lifecycle through the public
+interface, so it needs no oracle layout at all.
+
+**So the answer to "how do we close the object-model rows" is not "fix the layout harness".
+It is "build a target that drives the object model through its public interface"**, which
+is what `NxPhysicsJointTests` is for the scene, actor and joint lifecycle. **That target
+does not exist**, and writing it is the real next step -- not repairing an oracle-shaped
+harness to run on a different module.
+
+## 12x. State after thirty-eight rounds
+
+    census rows closed        6 of 6,338
+    the layout harness        cannot drive the candidate -- its RVAs assume a 0x138000 image
+    the joint harness         drives the candidate through GetProcAddress and the public API
+    phase 6 gate              pass, 11/11, closed=2
+    phase 7 gate              pass,  4/4, closed=4
+    all gates                 green
+
+**Two rounds have now been spent on the layout harness** -- 12s found the decorative flag and
+12v found the size mismatch -- and the conclusion is that **the object-model batch needs a
+different instrument, not a repaired one.** That is a real conclusion and it cost two
+rounds; the alternative would have been an unbounded repair of a harness built for another
+module.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on
+purpose, phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed`
+exit 0, `validate_inventory` exit 0, 587 tool tests OK.
