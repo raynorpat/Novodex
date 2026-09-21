@@ -3164,3 +3164,80 @@ recorded. **No census row closed.**
 All gates green: phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose, phase 6 exit 0
 PASS, `completed` exit 0, `validate_inventory` exit 0 with `unexplained=0`, 587 tool
 tests OK.
+
+## 9w. Round 7: the canary guard was tried and it masks the fault too
+
+9v named a canary guard as the measurement that catches the write rather than its
+victim. It was implemented -- one extra word past each guarded block, set to
+`0xA5A5A5A5`, checked after the writes that follow -- and it **failed for the same
+reason every trace failed.**
+
+**The guard changes the thing it measures.** Each guarded block is four bytes larger
+than the original allocation, so every block after it moves. Round 6 established that
+the fault's visible victim depends on the heap layout; a guard that shifts the layout
+therefore shifts the fault, and the canary is never the word that gets overwritten.
+
+**The evidence is the same as round 6's**: with the guards in place the harness
+produced **no output at all** -- not even `sdk=created`, which had printed in every
+previous round -- so the fault moved earlier again. The guard printed nothing,
+because it was not the overrun block.
+
+**What that means for the method, and it is the important part.** Three separate
+instruments have now been tried against this fault and all three share one property:
+
+    traces        change the stack and the heap; the fault moves
+    disabled code changes the heap; the fault moves
+    canaries      change the heap; the fault moves
+
+**Every instrument that perturbs allocation order perturbs the fault.** That is not a
+coincidence about this bug; it is a property of layout-sensitive heap corruption, and
+it means the fault cannot be located by adding anything to the process.
+
+**The instruments that do NOT perturb layout, and why each is unavailable here:**
+
+- a **page-guarded allocator**, which puts the block at the end of a page so a write
+  past it faults immediately. It needs the allocator seam to be replaced, which this
+  reconstruction does not control -- the harness passes a null allocator and the
+  oracle's default is used.
+- **Application Verifier** or PageHeap, which do the same from outside the process.
+  They are Windows tooling rather than anything this repository drives, and they were
+  not tried.
+- **removing the stubs one at a time** until the fault disappears. That is the
+  elimination method the last six rounds used, and each step costs a round.
+
+## 9x. The tack change is now complete, and this line stops
+
+9v said the tack would change. 9w is the third instrument in a row to fail for the
+same structural reason, so the line stops here rather than trying a fourth.
+
+**The honest statement of what is known about the crash:**
+
+    it is a write into memory this reconstruction does not own
+    its visible victim depends on the heap layout
+    it is not the wrapper size, the Scene size, any allocation size, the +0x6cc
+      holder, or nxSceneArrayReserve
+    it cannot be located by traces, by disabled code, or by canaries
+    the instruments that could locate it are a page-guarded allocator or
+      Application Verifier, neither of which this repository drives
+
+**And the honest statement of what it costs:** seven rounds. What those rounds
+produced is a complete elimination list, a correct diagnosis of the fault's class, and
+three instruments ruled out with the reason -- which is knowledge a future session
+will not have to re-derive. What they did not produce is a fix.
+
+**The named next step for whoever picks this up**, in the order worth trying:
+
+1. **Application Verifier with PageHeap on `NxPhysicsJointTests.exe`.** It needs no
+   code change, so it does not perturb the layout, and it would name the exact write.
+   This is the cheapest untried instrument and it is external to the repository.
+2. If that is unavailable, **replace the allocator seam** so the harness passes an
+   allocator this reconstruction owns, and put page guards in it. That is more work
+   but it makes the class of fault findable for every future row.
+3. Only then, if neither is possible, return to elimination.
+
+**What the programme should do with the rounds it has:** the census audits of 7e-7l
+each found a defect no gate could see, in one round each, and 5,552 rows remain
+`discovered`. That is where the return is, and this line has been paid for.
+
+All gates green: phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose, phase 6 exit 0
+PASS, `completed` exit 0, `validate_inventory` exit 0, 587 tool tests OK.

@@ -303,6 +303,7 @@ void nxSceneNotifyActorCreated(void* hook);
 // The scene's error reporter.
 void nxSceneReportError(const char* message);
 
+
 NxSceneInternal::NxSceneInternal()
 	{
 	unsigned* p = reinterpret_cast<unsigned*>(mBytes);
@@ -1109,6 +1110,7 @@ void nxActorBuildBody(void* actor, const unsigned* desc)
 
 	// Link the body to the actor.
 	*reinterpret_cast<void**>(actorBytes + 0x14) = body;
+
 	}
 
 int nxActorComputeMass(void* actor, const unsigned* bodyWord)
