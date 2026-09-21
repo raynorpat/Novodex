@@ -1194,6 +1194,38 @@ int wmain(int argc, wchar_t** argv)
 	nxOracleStoreDword = (NxStoreDwordFn) nxOracleTarget(selfOnly, oracle.base, kStoreDwordRva,
 		"phys_fn_004797 MemoryStream::storeDword");
 
+	// Every target, against zero, before any is called. Round 78's fault was a call to address zero and
+	// round 79 retracted the reading that named WHICH pointer, because it came from a frame the debugger
+	// had flagged as unreliable. This answers it directly: each target is tested here, by name, and the
+	// harness reports the null ones itself rather than a debugger having to infer them.
+	{
+	struct { const char* name; const void* value; } targets[] = {
+		{ "pmapCtor     phys_fn_002045 PenetrationMap::PenetrationMap", oracle.pmapCtor },
+		{ "pmapDtor     phys_fn_001984 PenetrationMap::~PenetrationMap", oracle.pmapDtor },
+		{ "pmapCreate   phys_fn_002047 PenetrationMap::create", oracle.pmapCreate },
+		{ "streamCtor   phys_fn_004788 MemoryStream::MemoryStream", oracle.streamCtor },
+		{ "streamSeek   phys_fn_004780 MemoryStream::seek", oracle.streamSeek },
+		{ "streamDtor   phys_fn_004791 MemoryStream::~MemoryStream", oracle.streamDtor },
+		{ "meshHeader   phys_fn_002262 the NxStream mesh loader", oracle.meshHeader },
+		{ "meshWriter   phys_fn_002162 the TriangleMesh writer", oracle.meshWriter },
+		{ "releasePMap  phys_fn_002051 NxReleasePMap", oracle.releasePMap },
+		{ "storeDword   phys_fn_004797 MemoryStream::storeDword", nxOracleStoreDword },
+	};
+	unsigned nulls = 0;
+	for(unsigned i = 0; i < sizeof(targets) / sizeof(targets[0]); ++i)
+		{
+		if(targets[i].value == 0)
+			{
+			printf("target NULL  %s\n", targets[i].name);
+			++nulls;
+			}
+		}
+	printf("targets bound=%u null=%u mode=%s\n",
+		(unsigned) (sizeof(targets) / sizeof(targets[0])), nulls,
+		selfOnly ? "self" : "differential");
+	fflush(stdout);
+	}
+
 	printf("asset fixtures pmap=%u mesh=%u writer=%u release=1\n",
 		kPMapFixtureCount, kMeshFixtureCount, kWriterFixtureCount);
 	printf("asset rows pmap_create=phys_fn_002047 pmap_load=phys_fn_002035 "

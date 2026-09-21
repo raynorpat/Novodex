@@ -8488,3 +8488,44 @@ is a few lines rather than an inference.
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 601 tool tests OK.
+
+## 17j. Round 80: the null pointer is NOT a target, and the candidate gets much further
+
+17i's retraction said to establish which pointer is null by checking the ten targets directly rather than
+by unwinding a frame. **That is done, and the answer is that it is none of them.**
+
+    targets bound=10 null=0 mode=self
+
+**And three other things are established by the same run**, each of which was an open question a round
+ago:
+
+    loaded module=NxPhysics.dll    path=...\pairs\candidate\NxPhysics.dll    sha256=3a5b99ee...
+    loaded module=NxFoundation.dll path=...\pairs\candidate\NxFoundation.dll sha256=944e4d80...
+    oracle base=6E850000 mode=self
+
+**The Foundation line now reports the PAIR's path and the pair's hash.** Rounds 75 to 77 removed the
+import so that `LoadLibraryExW` on the pair directory is what brings the Foundation in, and **this is the
+first run where the candidate's own Foundation is the one loaded** -- which is what that work was for.
+
+**And the candidate now prints five lines instead of none.** Before this round it produced zero output and
+the debugger was needed; now it reports its own state and **the fault is after the bindings**, in the first
+case that runs.
+
+## 17k. What that leaves, and it is narrower than any previous round
+
+    the ten targets are all non-null
+    both modules load from the pair, with the pair's hashes
+    the oracle pair completes and passes
+    the candidate faults in the first case after the target check
+
+**So the null call is inside the case machinery rather than in a target the harness resolved** -- a
+different place from where three rounds were spent looking. **And it is the case machinery the oracle
+completes and the candidate does not**, which is what a differential is for.
+
+**The next round should instrument the case loop the way this round instrumented the bindings**: the
+harness has 30 cases and one flush per case would name the one that faults, which is the same move that
+turned "a call went to zero" into "all ten targets are fine".
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 601 tool tests OK.
