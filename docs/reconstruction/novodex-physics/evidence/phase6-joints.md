@@ -2934,3 +2934,68 @@ code rather than the reconstruction's.
 **Still no census row closed.** All gates green: phases 2/3/4 exit 0, phase 5 exit 1
 RED on purpose, phase 6 exit 0 PASS, `completed` exit 0, `validate_inventory` exit 0,
 587 tool tests OK.
+
+## 9q. Round 4: the crash is in CRT code, and the wrapper size is now pinned
+
+9p asked for one breakpoint on `NpScene::createJoint`. That was not reached; this
+round got a different and still useful measurement.
+
+**The fault, read from the debugger:**
+
+    eip = NxPhysics + 0x763c      mov eax,[esi+0x1c30]   esi = 00a25990
+    stack: ... -> NxPhysics!NxReleasePMap+0xb97 -> image00310000+0x2c28 (the harness)
+           -> KERNEL32!BaseThreadInitThunk
+
+Disassembling back from the fault to the enclosing function's entry gives
+**rva 0x7360**, whose first instructions are:
+
+    push ebp / mov ebp,esp / or dword ptr [0x1000c0d0],1 / sub esp,0x2c
+    push 0xa / call [0x1000901c] / test eax,eax
+    cpuid, twice, comparing against "GenuineIntel" and "Intel"
+
+**That is a CRT CPU-feature detector, not this reconstruction's code.** So the fault
+is not a bad pointer this reconstruction computed; it is a helper reading a large
+offset off a heap pointer, which is what heap corruption looks like from a distance.
+
+**The wrapper size is now pinned.** The oracle allocates 0x28 bytes for `NpScene`
+(`phys_fn_000476`'s literal). A class whose size differs would write past its
+allocation, which is exactly the signature above -- so the size is now a
+compile-time assertion rather than an assumption:
+
+    static_assert(sizeof(NpScene) == 0x28, "NpScene is 40 bytes in the oracle");
+
+**It passes.** The reconstructed class is 0x28 bytes and its field offsets
+(`+0x08` lock object, `+0x0c` and `+0x10` locks, `+0x14` and `+0x18` locks, `+0x1c`
+condition, `+0x20` flag, `+0x24` Scene) match the oracle's measured layout. So the
+wrapper is not the overrun.
+
+**All the other allocations were re-checked and are in bounds**: Scene 0x710 with
+writes to `+0x70c`; actor 0x50 with writes to `+0x4c`; body 0x1c0 with writes to
+`+0x19c`; pose 0x80 with writes to `+0x68`; joint 0x17c with writes to `+0x12`; the
+locks 0x20 each with eight dwords cleared. Every one fits.
+
+**So the overrun is not in the sizes this round could check**, and the next step is
+the same one 9p named, now with more information: break on the candidate's
+`NpScene::createJoint` entry. If it is entered, the fault is in the lock step or the
+forward; if it is not, the corruption happens earlier and the harness's own fixture
+is the place to look.
+
+## 9r. Round 4 state
+
+    scene=created, both actors created, both bodies linked    held from rounds 2-3
+    NpScene size                                              0x28, now asserted
+    every reconstructed allocation                            in bounds
+    the crash                                                 in a CRT CPU detector
+    createJoint reached                                       still unknown
+    the harness                                               exit -1073741819
+
+**No census row closed.** All gates green: phases 2/3/4 exit 0, phase 5 exit 1 RED on
+purpose, phase 6 exit 0 PASS, `completed` exit 0, `validate_inventory` exit 0 with
+`unexplained=0`, 587 tool tests OK.
+
+**One thing this round did buy beyond the assertion:** it moved the crash from "some
+reconstruction bug" to "a CRT helper reading a corrupt heap", which rules out the
+wrapper and every allocation size as the cause. The remaining candidates are a write
+into memory this reconstruction does not own -- most plausibly the `Scene`'s `+0x6cc`
+holder, which `createActor` and `createJoint` both write through, or the stubs that
+store into objects whose layouts are not reconstructed.

@@ -139,4 +139,10 @@ class NpScene : public NxScene, public NxAllocateable
 	NxSceneInternal* mScene;				// +0x24
 	};
 
+// The oracle allocates 0x28 bytes for this class (phys_fn_000476's literal). A
+// different size means the allocation and the object disagree, and every field
+// past the difference is written out of bounds -- which is what a heap overrun
+// looks like from a crash in an unrelated helper.
+static_assert(sizeof(NpScene) == 0x28, "NpScene is 40 bytes in the oracle");
+
 #endif
