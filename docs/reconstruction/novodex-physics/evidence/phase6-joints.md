@@ -2534,3 +2534,103 @@ written for it yet.
 whose `createActor` forwards**, which is a few hundred bytes rather than thousands.
 That is what turns `NxPhysicsJointTests` from `scene=null` into `scene=created`, and
 it is the measurement that says whether four phases of this work are right.
+
+## 9d. The public path is wired: NpScene, and both createScene rows
+
+9c named the next step as a few hundred bytes rather than thousands. It is written.
+
+**`NpScene`** (`Physics/src/include/NpScene.h`, `Physics/src/NpScene.cpp`), the
+public `NxScene` the user is handed, is 0x28 bytes and its layout is measured from
+`phys_fn_000285` (0x0000c310):
+
+    +0x00 vtable   +0x08 a lock object   +0x0c and +0x10 4-byte locks
+    +0x14, +0x18 locks   +0x1c a 0x18-byte object   +0x20 a byte   +0x24 the Scene
+
+Its forwarding shape is `phys_fn_000293`: try the write lock at `+0xc`, forward,
+release the lock, or report *"PhysicsSDK: WriteLock is still aquired. Procedure call
+skipped to avoid a deadlock!"*. `createActor` and `releaseActor` follow it.
+
+**`PhysicsSDK::createScene`** (`phys_fn_000476`, 0x0000ea80) is written in
+`PhysicsSDK.cpp`: validate, `malloc(0x710)`, construct, `initialise`, and push onto
+`mScenes` -- whose `+8/+0xc/+0x10` quadruple is exactly what the oracle's inline
+growth reads. The validation is the pinned `NxSceneDesc::isValid()`; the four tests
+the oracle inlines beside it (`maxIter >= 1`, `solverType <= 2`, `maxTimestep != 0`,
+`upAxis == 0 || flags != 0`) are recorded in the comments.
+
+**`NpPhysicsSDK::createScene`** (`phys_fn_000234`, 0x0000b770) is written in
+`NpPhysicsSDK.cpp`: forward, wrap the Scene in an `NpScene`, and store the wrapper
+back at the Scene's `+0x6cc`.
+
+**Two mechanical obstacles, both recorded because both are traps:**
+
+- `NpScene` must be concrete and `NxScene` declares **66 pure virtuals**. 63 bodies
+  were generated from the pinned header by script rather than typed, each an empty
+  body returning a default, and the generated block says **UNIMPLEMENTED** in its
+  own heading. Only `createActor` and `releaseActor` are reconstructed.
+- `NxAllocateable` declares `operator new(size_t, NxMemoryType)`, which **hides the
+  placement form**, so `new (pointer) NpScene(...)` does not compile. The wrapper is
+  allocated with `new (NX_MEMORY_PERSISTENT) NpScene(...)`, which is also what the
+  oracle does.
+
+**The validator caught the second file too.** Creating `Physics/src/NpScene.cpp`
+made the allowlist entry that named it (37 rows) false, and the check refused
+again: *"is on the allowlist but no longer unresolved; remove the entry"*. Removed,
+comment left behind. Two files this reconstruction created have now been flagged by
+the 7f check, which is it working exactly as designed.
+
+**One gate broke and was repaired, not papered over.** `NxPhysicsCollisionTests`
+links `PhysicsSDK.cpp`, so it now needs `Scene.cpp` and `NpScene.cpp`; it failed to
+link until they were added. That is a real dependency the reconstruction created,
+recorded rather than worked around.
+
+**Verified.** All gates green: phase 1 exit 3 skipped (no registered targets),
+phases 2, 3, 4 exit 0, phase 5 exit 1 RED on purpose, phase 6 exit 0 PASS, phases 7
+and 8 exit 3 skipped, `completed` exit 0, `validate_inventory` exit 0 with
+`unexplained=0`, 587 tool tests OK. `NxPhysics.dll` builds.
+
+## 9e. The harness now runs the path, and faults where the stubs are
+
+The measurement 9c asked for:
+
+    NxPhysicsJointTests <candidate pair>        BEFORE:  sdk=created, scene=null
+                                                AFTER:   exit -1073741819, fault
+
+**This is the first time the harness has executed the scene path at all.** Before
+this round `createScene` returned 0 and the harness printed `scene=null` and stopped;
+now it enters the reconstruction and faults. The fault is in `NxPhysics.dll` with
+`eax = 0` dereferencing `[esi + 0x1c30]`, inside the SDK-creation region.
+
+**Why that is expected rather than surprising.** The path runs through eleven
+reproduction holes -- the body builder, the shape factory, the scene registration,
+the mass computation, the lock protocol, the collector object, the name setter --
+and every one of them is an empty or minimal stub. A scene built through stubs that
+do nothing is not a scene the oracle would produce. **The fault is the honest
+consequence of the holes, and it is the measurement that shows the path is now
+live.**
+
+**What this does not establish.** It does not establish that any of the five
+transcribed rows is correct, and it does not put `NxPhysicsJointTests` any closer to
+`scene=created` than it was. What it establishes is that the wiring is reachable and
+that the next failure is in the holes rather than in the structure.
+
+## 9f. State after six phases, and what the next one is
+
+    DONE   phys_fn_000647  0x00012c10  the 0x710-byte constructor
+    DONE   phys_fn_000651  0x00013070  the descriptor initialiser (2 holes)
+    DONE   phys_fn_000626  0x00011730  Scene::createActor (5 holes)
+    DONE   phys_fn_000034  0x00002010  Actor::loadFromDescInternal (6 holes)
+    DONE   phys_fn_000013  0x00001450  the actor constructor
+    DONE   phys_fn_000476  0x0000ea80  PhysicsSDK::createScene
+    DONE   phys_fn_000234  0x0000b770  NpPhysicsSDK::createScene
+    DONE   NpScene                      the public wrapper (63 unimplemented virtuals)
+    DONE   the wiring                  the harness now enters the path
+
+**Seven oracle rows and about 5,300 bytes transcribed, plus the wrapper class.**
+`createScene` no longer returns 0. The harness faults in the holes.
+
+**The next phase is not more transcription -- it is narrowing the fault.** The
+crash is at `NxPhysics!NxCreatePhysicsSDK+0xd0c` with `eax = 0` reading
+`[esi+0x1c30]`, and `esi` holds the object being built. The step to run is a
+debugger break on that frame with `esi` printed, to see which object is null and
+therefore which hole is being relied on at that moment. That is one breakpoint, and
+it is smaller than any row in the list above.

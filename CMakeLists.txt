@@ -292,7 +292,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# public API. Same shape as NxFoundationCustomArrayTests above.
 	add_executable(NxPhysicsInternalTests tests/PhysicsInternalTests.cpp
 		Physics/src/PhysicsInternal.cpp Physics/src/Containers.cpp
-		Physics/src/Scene.cpp)
+		Physics/src/Scene.cpp Physics/src/NpScene.cpp)
 	target_include_directories(NxPhysicsInternalTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include Physics/src/include)
 	target_link_libraries(NxPhysicsInternalTests NxFoundation)
@@ -352,7 +352,8 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/NarrowPhase.cpp Physics/src/ContactGeneration.cpp
 		Physics/src/Geometry.cpp Physics/src/SmoothNormals.cpp
 		Physics/src/PhysicsSDK.cpp Physics/src/NpPhysicsSDK.cpp
-		Physics/src/PhysicsInternal.cpp Physics/src/Containers.cpp)
+		Physics/src/PhysicsInternal.cpp Physics/src/Containers.cpp
+		Physics/src/Scene.cpp Physics/src/NpScene.cpp)
 	target_include_directories(NxPhysicsCollisionTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include Physics/src/include)
 	# Geometry.cpp defines exports, so it has to be compiled with the same

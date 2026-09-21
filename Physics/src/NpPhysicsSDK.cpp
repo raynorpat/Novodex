@@ -7,8 +7,11 @@
 \*----------------------------------------------------------------------------*/
 #include "NpPhysicsSDK.h"
 #include "PhysicsSDK.h"
+#include "NpScene.h"
 
 #include <stddef.h>
+#include <new>
+#include "Scene.h"
 
 // 0x0000ea05 allocates 0xc bytes for this object, phys_fn_000226 stores the SDK
 // pointer at +4 and constructs the lock at +8.
@@ -79,10 +82,27 @@ void NpPhysicsSDK::visualize(const NxUserDebugRenderer& renderer)
 // Everything below stands in for an oracle row this component does not own. The
 // stable IDs are the wrapper row and the SDK-side row it forwards to.
 
-NxScene* NpPhysicsSDK::createScene(const NxSceneDesc&)
+// phys_fn_000234 (0x0000b770), 31 bytes: forwards to the SDK-side row and wraps
+// what comes back in an NpScene. The wrapper is 0x28 bytes, which is the size
+// phys_fn_000476 allocates for it.
+NxScene* NpPhysicsSDK::createScene(const NxSceneDesc& desc)
 	{
-	// phys_fn_000234 -> phys_fn_000476; needs Scene, Phase 3.
-	return 0;
+	NxSceneInternal* scene = mSdk->createScene(desc);
+	if(!scene)
+		return 0;
+
+	// NpScene derives from NxAllocateable, whose operator new takes a memory type
+	// rather than a placement pointer, so the wrapper is allocated through it --
+	// which is also what the oracle does: phys_fn_000476 allocates the 0x28-byte
+	// wrapper through the same allocator seam.
+	NpScene* wrapper = new (NX_MEMORY_PERSISTENT) NpScene(scene);
+	if(!wrapper)
+		return 0;
+
+	// The Scene keeps the public wrapper at +0x6cc, which getScene reads back
+	// and which createActor copies into the actor.
+	scene->setPublicScene(wrapper);
+	return wrapper;
 	}
 
 void NpPhysicsSDK::releaseScene(NxScene&)

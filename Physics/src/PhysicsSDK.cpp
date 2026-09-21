@@ -6,11 +6,15 @@
 |
 \*----------------------------------------------------------------------------*/
 #include "PhysicsSDK.h"
+#include "Scene.h"
+#include "NxSceneDesc.h"
 #include "NpPhysicsSDK.h"
 #include "NxDebugRenderable.h"
 #include "NxUserOutputStream.h"
 
 #include <stddef.h>
+#include <new>
+#include <stdio.h>
 
 // The oracle's line numbers for the two error sites in this file and the one in
 // getParameter, taken from the immediates at 0x0000db6b, 0x0000dbe5 and
@@ -226,6 +230,53 @@ NxReal PhysicsSDK::getParameter(NxParameter paramEnum) const
 		return 0.0f;
 		}
 	return gParameter[paramEnum];
+	}
+
+
+// phys_fn_000476 (0x0000ea80), PhysicsSDK::createScene.
+//
+// The validation is the pinned public NxSceneDesc's own validity predicate, reached
+// through the four tests the oracle compiles inline:
+//
+//     maxIter >= 1        (0x1000ea98: cmp [edi+0x20],1 / jb fail)
+//     solverType <= 2     (0x1000eaa2: cmp [edi+0x24],2 / jg fail)
+//     maxTimestep != 0    (0x1000ea8b: fcomp against the 0.0f at .rdata 0x101041f0,
+//                          with the `test ah,0x41 / jnp` pair that follows)
+//     upAxis == 0 || flags != 0
+//
+// The allocation, construction and registration are transcribed. The failure path
+// calls the Scene's scalar deleting destructor through `(**(code**)*puVar5)(1)`.
+NxSceneInternal* PhysicsSDK::createScene(const NxSceneDesc& desc)
+	{
+	if(!desc.isValid())
+		{
+		// The oracle routes this through NxFoundation::FoundationSDK::error with its
+		// own __FILE__ and line 0x13a.
+		printf("NxPhysics: PhysicsSDK::createScene: desc.isValid() is false!\n");
+		return 0;
+		}
+
+	// 0x710 bytes from the SDK allocator.
+	void* memory = nxGetSdkAllocator()->malloc(NxSceneInternal::SIZE, NX_MEMORY_PERSISTENT);
+	if(!memory)
+		return 0;
+
+	// phys_fn_000647: construct in place.
+	NxSceneInternal* scene = new (memory) NxSceneInternal();
+
+	// phys_fn_000651: apply the descriptor. On false the destructor runs and the
+	// object is gone, which is the oracle's `(**(code**)*puVar5)(1)`.
+	if(!scene->initialise(desc))
+		{
+		scene->~NxSceneInternal();
+		nxGetSdkAllocator()->free(memory);
+		return 0;
+		}
+
+	// Push onto mScenes, whose (first, last, memEnd) quadruple is at +8, +0xc and
+	// +0x10 -- the offsets the oracle's inline growth reads.
+	mScenes.pushBack(reinterpret_cast<Scene*>(scene));
+	return scene;
 	}
 
 NxU32 PhysicsSDK::getNbScenes() const

@@ -85,6 +85,11 @@ class NxSceneInternal
 	// phys_fn_000647 writes it as its first action (`*param_1 = &PTR_FUN_101066f4`).
 	// Only the first slot is modelled -- the scalar deleting destructor the
 	// createScene failure path calls through `(**(code**)*puVar5)(1)`.
+	// The public NxScene wrapper, kept at +0x6cc. getScene reads it back and
+	// createActor copies it into each actor. Measured in createScene's decompilation.
+	void setPublicScene(void* wrapper) { at<void*>(0x6cc) = wrapper; }
+	void* publicScene() const { return at<void*>(0x6cc); }
+
 	static void* vtable();
 	// The scalar deleting destructor at the vtable's slot 0.
 	void scalarDeletingDestructor(int flags);

@@ -247,6 +247,9 @@ void* NxSceneInternal::vtable()
 // function standing in for a row another phase owns and has not reconstructed.
 // ---------------------------------------------------------------------------
 
+// The deadlock report the wrapper slots print when a scene lock cannot be taken.
+void nxSceneDeadlockReport();
+
 // phys_fn_00001450 (0x00001450, phase 2): constructs the actor over a 0x50-byte
 // block with a Scene pointer. Modelled only as far as storing the Scene so the
 // object has the shape the caller expects.
@@ -891,4 +894,11 @@ void nxActorBuildUserDataObject(void* actor)
 void nxSceneReportErrorA(const char* message)
 	{
 	printf("NxPhysics: %s\n", message);
+	}
+
+// The wrapper slots' deadlock report, with the oracle's own text.
+void nxSceneDeadlockReport()
+	{
+	printf("NxPhysics: PhysicsSDK: WriteLock is still aquired. Procedure call skipped "
+		"to avoid a deadlock!\n");
 	}

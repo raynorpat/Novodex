@@ -13,6 +13,9 @@
 #include "NxPhysicsSDK.h"
 
 class NpPhysicsSDK;
+class NxSceneInternal;
+class Scene;
+class NxSceneDesc;
 class NxDebugRenderable;
 class NxUserDebugRenderer;
 
@@ -39,6 +42,9 @@ class PhysicsSDK : public NxAllocateable
 	bool setParameter(NxParameter paramEnum, NxReal paramValue);
 	// phys_fn_000429 (0x0000dc00)
 	NxReal getParameter(NxParameter paramEnum) const;
+	// phys_fn_000476 (0x0000ea80). Builds the internal Scene and pushes it onto
+	// mScenes; returns the Scene, which NpPhysicsSDK wraps.
+	NxSceneInternal* createScene(const NxSceneDesc& desc);
 	// phys_fn_000448 (0x0000def0)
 	NxU32 getNbScenes() const;
 	// phys_fn_000450 (0x0000df00)
