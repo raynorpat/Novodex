@@ -6361,3 +6361,79 @@ depending on how the row was reconstructed.
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 587 tool tests OK.
+
+## 14b. Round 48: the INVERSE of 11s -- 68 rows are closed and the census does not say where
+
+11s found eight rows that were built and never recorded. This round found the mirror image, and
+it is ten times larger.
+
+**Every row closed by a differential was mutated**, so its code exists somewhere. **Sixty-eight
+of them carry no `implementation`:**
+
+    closed rows                              127
+    by proof   differential_falsified         86
+               oracle_differential_falsified  35
+               static_proof_falsified          6
+    differential-closed WITHOUT an implementation   68
+    by phase of those                          2: 37   3: 31
+
+**And the location is written down -- in the closure.** Read directly:
+
+    phys_fn_000224  "NX_DELETE_SINGLE(mNp) removed from ~PhysicsSDK, the only construct that
+                     emits and enters NpPhysicsSDK's scalar deleting destructor"
+    phys_fn_000226  "a print at the entry of NpPhysicsSDK::NpPhysicsSDK"
+    phys_fn_000250  "getGroupCollisionFlag returns the old placeholder false"
+
+**So the mutation text names the code, and the census has no field carrying it.** That is 11s
+inverted: instead of work done and unrecorded, **closure done and unlocated**.
+
+**A first attempt to locate them was wrong and worth recording.** It matched bare identifiers from
+the mutation text against every source file and reported `.analysis/novodex-physics/thirdparty/
+opcode13/Opcode/OPC_AABBCollider.cpp` for 50 of the 68. **That tree is vendored oracle-side
+material**, and a bare identifier like `mNp` occurs in it as readily as in the reconstruction --
+so the match was a coincidence, and it would have written a vendored third-party path into 50
+rows as their implementation.
+
+**The corrected pass extracts the QUALIFIED name** (`NpPhysicsSDK::getNbScenes`) and looks for
+the function it names, over the reconstruction's own trees only:
+
+    resolved to a reconstruction file   66 of 68
+      Physics/include/NxPhysicsSDK.h            16
+      Physics/src/ContactGeneration.cpp         16
+      Physics/src/FluidSupport.cpp              10
+      Physics/include/NxIntersectionSegmentBox.h 8
+      Physics/include/NxIntersectionBoxBox.h     4
+      Physics/src/PhysicsInternal.cpp            3
+      ... and six more files
+    unresolved                            2
+      phys_fn_000281  "a print at the entry of NpPhysicsSDK::~NpPhysicsSDK"
+      phys_fn_002360  "a print at the entry of ReadWriteLock::~ReadWriteLock"
+
+**So 66 of the 68 have a locatable implementation and the census does not carry it.**
+
+## 14c. The twelfth finding, and what it says about the closure record
+
+**The closure ledger is the only artifact that records where a mutated row's code lives**, and it
+records it as prose inside a mutation description. **That is a fifth form of the correspondence**,
+after the implementation file's ID comment, the harness's dispatch table, the drive naming the
+candidate function, and the oracle RVA -- and it is the form that exists for the 68 rows the
+census leaves blank.
+
+**And it is the same defect class as the other eleven**, in the direction this session has now
+seen three times:
+
+    11s  rows built and never recorded
+    13j  a field naming a file that does not contain the row
+    14b  rows closed and never located
+
+**All three are the census and the artifacts disagreeing about where a row's code is**, and each
+was found by reading what the artifacts say rather than what the census claims.
+
+**The next round should record the 66 from their closures** -- the extraction is written and
+verified against 66 rows, and the two unresolved ones name functions whose definitions may simply
+not be written yet. **It should NOT use the first pass's result**, which would have put a vendored
+Opcode path into 50 rows.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 587 tool tests OK.
