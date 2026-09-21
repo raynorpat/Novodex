@@ -3588,3 +3588,51 @@ at all, but it is not a fix.
 **No census row closed.** All gates green: phases 2/3/4 exit 0, phase 5 exit 1 RED on
 purpose, phase 6 exit 0 PASS, `completed` exit 0, `validate_inventory` exit 0, 587
 tool tests OK.
+
+## 10h. Round 13: the assertion is correctly placed, so the size really is not 0x50
+
+10g recorded that `static_assert(sizeof(NpActor) == 0x50)` fails and left open whether
+the assertion or the size was wrong. This round settled that first question.
+
+**The assertion is correctly placed** -- after the class's closing brace, where
+`NpActor` is a complete type, unlike the `NpScene` assertion in round 4 which had to be
+moved out of the class for exactly that reason. So the failure is real: **the concrete
+class is not 0x50 bytes.**
+
+**What that means, and it is the useful part.** `NxActor` declares **no data members**:
+every member-like line in its class body is a virtual or an inline function, and its
+84 pure virtuals put a single vtable pointer at `+0`. So a concrete subclass with no
+fields of its own is four bytes. The oracle's actor occupies **0x50**, which is the
+allocation literal in `Scene::createActor`.
+
+**Therefore the oracle's actor is not merely `NxActor` plus a vtable.** It carries
+`0x50 - 4` bytes of state that `NxActor` does not declare -- the actor's own fields,
+which is exactly what `Actor::loadFromDescInternal` writes:
+
+    actor+0x10  the shape list           actor+0x18  the body descriptor
+    actor+0x14  the body                 actor+0x1c  the body's flags word
+    actor+0x0c  a word copied from the Scene's +0x6cc holder
+    actor+0x20..0x4c  the 3x3 and the translation
+
+**So the size question is answered in the direction that matters**: the reconstruction
+is not missing a header declaration -- `NxActor` genuinely has no members -- it is
+missing the **concrete actor's own field layout**, which the reconstruction has been
+writing at measured offsets without ever declaring. That is consistent with how this
+whole component was built: `Scene` is an offset-addressed object for the same reason
+(8t).
+
+**The fix that follows, and it is now well defined.** `NpActor` needs the oracle's
+field layout, not just the vtable: a `0x50`-byte class whose members are the offsets
+`Actor::loadFromDescInternal` writes, with `NxActor`'s virtuals implemented over it.
+That is the same construction as `NxSceneInternal` -- an offset-addressed object with
+a vtable -- and the two can share the `nxAt` helper.
+
+**The second obstacle from 10g is unchanged**: the generated stubs cannot return
+`NxMat34`, `NxMat33` and `NxVec3` by value with `return 0`, so the generator needs a
+default-constructed value per return type.
+
+**State**: the staged class is still not correct and still not wired. The tree is
+green. **No census row closed.**
+
+All gates green: phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose, phase 6 exit 0
+PASS, `completed` exit 0, `validate_inventory` exit 0, 587 tool tests OK.
