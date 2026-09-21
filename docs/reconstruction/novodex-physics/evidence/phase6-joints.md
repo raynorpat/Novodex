@@ -8577,3 +8577,58 @@ field it has not validated.
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 601 tool tests OK.
+
+## 17m. Round 82: the reconstruction guards the payload read differently from the oracle
+
+17l located the fault inside `PenetrationMap::create`, reached through a valid target. **Reading the
+oracle's own decompilation beside the reconstruction gives the difference:**
+
+    the oracle
+        if ((param_5 != '\0') && (uVar12 = FUN_10050110(this,param_3,param_4), (char)uVar12 != '\0')) {
+            uVar12 = FUN_100502d0((int)this);
+            return CONCAT31(...,1);
+        }
+
+    the reconstruction
+        if(load && loadPayload(*stream))
+            return finish();
+
+**`param_5` is the load flag and `FUN_10050110` is `loadPayload`.** And **the two conditions are the
+SAME test**: both put the load flag first and the payload read second, and `&&` short-circuits in both, so
+neither reaches the read when the flag is clear. **17m first called this a difference and it is not one** --
+recorded here rather than quietly dropped, because a guard difference was the natural thing to look for and
+finding none is the result.
+
+**What the reconstruction does differently is only the argument**: the oracle passes `param_3`, a pointer
+it already holds, while the reconstruction forms a reference with `*stream` -- which requires `stream` to
+be non-null exactly where the oracle's call would dereference it anyway. **The same requirement, written
+two ways.**
+
+**So the guard is not the defect, and what stands from this round is what `loadPayload` does first:**
+
+    for(NxU32 i = 0; i < mCellCount; ++i)
+        mGrid[i] = 0xffffffffu;
+
+**It dereferences `mGrid` on its first statement.** `mGrid` is set by `setup`, which `create` calls
+immediately above -- **so the null is either `mGrid` or something `setup` failed to leave behind on the
+path this case takes.**
+
+## 17n. And the case is a malformed version, which is the path that would skip the setup
+
+**`pmap.bad_version_00000005` is the case that faults**, and a bad version returns early from the header
+block -- **before the resolution is read out of the file and before `setup` is called with it.**
+
+**So the shape is: a bad version takes the early return, and the payload read is reached anyway.** That is
+consistent with the guard difference above and with `mGrid` being null when it is.
+
+**This round did not change the code, and it did not find the guard difference it went looking for.** It
+found that the guards agree, and that `loadPayload` dereferences `mGrid` on its first statement -- so the
+question is now whether `setup` leaves `mGrid` null on the path a bad version takes.
+
+**The next round should read `setup` for the resolution that reaches it and check `mGrid`'s assignment
+against it** -- which is the row `phys_fn_002033` at `0x0004ff80`, and is where a null `mGrid` would have
+to come from.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 601 tool tests OK.
