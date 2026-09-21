@@ -39243,7 +39243,8 @@
       "static_proof": null,
       "dynamic_proof": "driven and gated: the transcript line 'asset rows pmap_create=phys_fn_002047 pmap_load=phys_fn_002035 mesh_header=phys_fn_002262 mesh_writer=phys_fn_002162 release_pmap=phys_fn_002051', is a registered coverage assertion in tools/gate_targets.ps1, which run_phase_gate.ps1 requires to appear at least twice in the differential transcript and fails if it stops appearing. Backfilled from that registration (7i); the row was already driven, the proof field was never filled in.",
       "notes": "P4 Task 4: reconstructed in full -- fields 1-19 including the acceleration blob length and collapsed buffer -- and driven by NxPhysicsAssetTests over nine writer fixtures. The model at internal+0x20 is dispatched through BaseModel slot 5 (call [edx+0x14] at 0x00053b2f); the harness stands that virtual in on both sides, so the tree serialiser behind it stays unmapped census work.",
-      "implementation": "Physics/src/TriangleMesh.cpp"
+      "implementation": "Physics/src/TriangleMesh.cpp",
+      "implementation_symbol": "TriangleMesh::save"
     },
     {
       "id": "phys_fn_002163",
@@ -41052,7 +41053,8 @@
       "static_proof": null,
       "dynamic_proof": "driven and gated: the transcript line 'asset rows pmap_create=phys_fn_002047 pmap_load=phys_fn_002035 mesh_header=phys_fn_002262 mesh_writer=phys_fn_002162 release_pmap=phys_fn_002051', is a registered coverage assertion in tools/gate_targets.ps1, which run_phase_gate.ps1 requires to appear at least twice in the differential transcript and fails if it stops appearing. Backfilled from that registration (7i); the row was already driven, the proof field was never filled in.",
       "notes": "P4 Task 3: reconstructed and driven by NxPhysicsAssetTests.",
-      "implementation": "Physics/src/TriangleMesh.cpp"
+      "implementation": "Physics/src/TriangleMesh.cpp",
+      "implementation_symbol": "nxTriangleMeshReadHeader"
     },
     {
       "id": "phys_fn_002263",
@@ -87123,7 +87125,7 @@
       "dynamic_proof": null,
       "notes": "P4 Task 4: reconstructed as a tail-call alias of phys_fn_004784.",
       "implementation": "Physics/src/MemoryStream.cpp",
-      "implementation_symbol": "MemoryStream"
+      "implementation_symbol": "MemoryStream::~MemoryStream"
     },
     {
       "id": "phys_fn_004792",

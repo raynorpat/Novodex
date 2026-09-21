@@ -41,11 +41,14 @@ static const NxRvaTranslation kNxRvaTranslations[] = {
 	{ 0x000505f0, 0x10016330u },  // phys_fn_002045  PenetrationMap::PenetrationMap
 	{ 0x00050640, 0x100165a0u },  // phys_fn_002047  PenetrationMap::create
 	{ 0x00051040, 0x10016e10u },  // phys_fn_002051  NxReleasePMap
+	{ 0x000539d0, 0x1001c860u },  // phys_fn_002162  TriangleMesh::save
+	{ 0x00055cb0, 0x1001c830u },  // phys_fn_002262  nxTriangleMeshReadHeader
 	{ 0x0005a8e0, 0x10016f40u },  // phys_fn_002338  ShapePairFunctionTable::ShapePairFunctionTable
 	{ 0x0005b6a0, 0x10016f10u },  // phys_fn_002358  ReadWriteLock::ReadWriteLock
 	{ 0x00095cc0, 0x1000d8a0u },  // phys_fn_004087  nxAccumulateByKind0867
 	{ 0x000b3b30, 0x1000a710u },  // phys_fn_004780  MemoryStream::seek
 	{ 0x000b3ce0, 0x1000a240u },  // phys_fn_004788  MemoryStream::MemoryStream
+	{ 0x000b3db0, 0x1000a2f0u },  // phys_fn_004791  MemoryStream::~MemoryStream
 	{ 0x000b3f00, 0x1000a7c0u },  // phys_fn_004797  MemoryStream::storeDword
 };
 

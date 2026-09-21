@@ -8063,3 +8063,47 @@ needs**, and there is no longer a debugger in the loop.
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 601 tool tests OK.
+
+## 16s. Round 72: three of the four resolved, and the fourth is a row that was never reconstructed
+
+16r named three rows the translation table could not resolve and said two of them were the same gap.
+**All three are resolved, and each was established from the code rather than from its label:**
+
+    phys_fn_004791  ->  MemoryStream::~MemoryStream   ??1MemoryStream@@QAE@XZ
+    phys_fn_002162  ->  TriangleMesh::save            ?save@TriangleMesh@@QBE_NAAVNxStream@@@Z
+    phys_fn_002262  ->  nxTriangleMeshReadHeader      ?nxTriangleMeshReadHeader@@YA?AW4...@@@Z
+
+**The third is the one worth the line.** Its census label is **`TriangleMesh::load`**, and the map has
+**no such method** -- what it has is `nxTriangleMeshReadHeader`, a free function taking an `NxStream`.
+**The constant's own comment in the harness calls that row "the NxStream mesh loader"**, and the file's
+code is what it is, so **the label is a description and the symbol is what the compiler emitted.** Only
+one of the two can be resolved, and 16p recorded the same thing about the two `createJoint` rows.
+
+**The table is now 36 of 38**, and the harness's warning list went from three names to one:
+
+    phys_fn_001984  PenetrationMap::~PenetrationMap   not in the rebuilt module's map
+
+## 16t. And the last one is not a symbol problem
+
+**`phys_fn_001984` is `discovered` with no `implementation` at all.** The census has never claimed it was
+reconstructed -- it is one of the rows the programme has not reached, and its state says so.
+
+**So the harness is asking for a function nobody has written**, and the warning is correct. **That is a
+different situation from the three this round resolved**, where the code existed and the name was
+recorded wrongly or not at all.
+
+**And the harness's own comment describes what is missing**, in the file the row would live in:
+
+    // phys_fn_001984 is a five-byte jmp to phys_fn_004784 (0x000b3bf0): the two
+    // owned allocations first, then every block's data and the block itself.
+    MemoryStream::~MemoryStream()
+
+**Wait -- that comment is on `MemoryStream::~MemoryStream`, and this row is `PenetrationMap`'s
+destructor.** The row's `implementation` is null and its label is its own stable ID, so **nothing in the
+census says where it would go**; the comment above belongs to another row entirely. **This is recorded as
+the state it is rather than resolved**, because inventing an implementation for it would be the kind of
+guess this session has spent forty rounds refusing to make.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 601 tool tests OK.
