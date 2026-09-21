@@ -3813,3 +3813,56 @@ worked twice.
 **No census row closed.** All gates green: phases 2/3/4 exit 0, phase 5 exit 1 RED on
 purpose, phase 6 exit 0 PASS, `completed` exit 0, `validate_inventory` exit 0, 587
 tool tests OK.
+
+## 10m. Round 17: the joint step's fault is in ACTOR creation, not joint creation
+
+10l recorded that the joint step still faults and named subdividing it as the next
+measurement. Running the step probe with its own output visible relocated the fault
+before that subdivision was needed.
+
+**What the probe prints for the joint step:**
+
+    probe step=joint starting
+    probe actor 0 = ok
+    <fault>
+
+**The joint step creates two actors and then a joint.** It prints `probe actor N = ok`
+for each actor as it makes them, so the output shows **actor 0 created and the fault
+before actor 1 was reported**. The joint has not been reached at all.
+
+**So the fault is in the second `createActor` call, not in `createJoint`.** That is a
+different place from where every round since 10e has been looking, and it is
+consistent with the one measurement that has been stable throughout:
+
+    step actor1   exit 0      (one actor, in a run that stops there)
+    step actor2   exit 0      (two actors, in a run that stops there)
+    step actorN9  exit 0      (nine actors, in one process)
+
+**Three actor-creating steps pass and the joint step's actor creation fails.** The
+difference between them is not the actor code -- it is what happens *after*, and the
+only thing the joint step does differently is that it does not stop. A fault that
+appears only when the run continues past the point where the other steps return is the
+same shape as 10d's loader finding: **a failure in a path the other steps never
+execute.**
+
+**What that leaves as candidates, and they are now narrow:**
+
+- the probe's own cleanup path for the joint step, which the passing steps skip
+- `nxSceneArrayReserve` on the **second** actor, where the array is no longer empty and
+  the grow path runs for the first time -- the `count * 2 + 2` branch, which the
+  first-actor run never reaches because `count` is zero there
+
+**The second is the stronger candidate and it is testable in one run**: the `actorN9`
+step creates nine actors and passes, which means the grow path *does* run there. So if
+the grow path were broken, `actorN9` would fail too -- and it does not. That leaves the
+probe's own path.
+
+**The honest position.** Round 17 did not fix anything. It relocated the fault from
+`createJoint` to the joint step's actor creation, and it did so by reading the probe's
+own output rather than by adding instrumentation -- which is the third time in this
+session that simply looking at what an existing instrument already printed was more
+informative than building a new one.
+
+**No census row closed.** All gates green: phases 2/3/4 exit 0, phase 5 exit 1 RED on
+purpose, phase 6 exit 0 PASS, `completed` exit 0, `validate_inventory` exit 0, 587
+tool tests OK.
