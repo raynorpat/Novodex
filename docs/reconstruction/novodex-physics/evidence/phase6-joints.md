@@ -8693,3 +8693,39 @@ what a fix that is right but not the whole story looks like.**
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 601 tool tests OK.
+
+## 17q. Round 84: neither candidate -- the object is valid and both destructors complete
+
+17p named two candidates and said they were distinguishable by what the candidate left in the object.
+**Printed, and the object is sound:**
+
+    step pmapCreate done
+    object accepted=1 resolution=1 cells=1 grid=00AE27C8
+    step pmapDtor done
+    step streamDtor done
+    <fault>
+
+**So `accepted=1`, `cells=1` and a non-null `grid`** -- the count does not exceed the allocation, so **the
+digest loop is not reading past it**, and **both destructors complete**, so **the frees are not the
+fault either.** **Neither candidate is it.**
+
+**And that relocates the fault one more level out: it is after `nxRunPMapOracle` has returned**, in the
+case loop that called it, or in the case's own cleanup.
+
+**That is the fourth relocation in four rounds, and each one was correct:**
+
+    round 80   not a target                    (ten checked, all non-null)
+    round 81   not the case's oracle half      (per-case flush)
+    round 83   not inside create               (per-call marks)
+    round 84   not the object or the frees     (the object printed, both destructors done)
+
+**And this is the first case in the run that reaches a COMPLETE, VALID object** -- `accepted=1`,
+`resolution=1`, `cells=1`, a live grid. **Every earlier case in this pair was a rejection**, and this is
+the first that goes all the way through `create` and returns something the harness can use.
+
+**So the fault is in what the harness does with a successful result**, which is a different part of the
+case than anything looked at so far -- and the same instrument (a mark and a flush) is what will name it.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 601 tool tests OK.

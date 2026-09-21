@@ -603,6 +603,12 @@ static void nxRunPMapOracle(const NxOracle* oracle, const unsigned char* storage
 	result->cells = *(unsigned*) (object + kPMapCellCount);
 	result->grid = 0;
 	unsigned* grid = *(unsigned**) (object + kPMapGrid);
+	// What the CANDIDATE left in the object, printed before the digest loop reads it. The loop folds
+	// `result->cells` entries of `grid`, so a count larger than the allocation reads past it -- and
+	// these four values are what distinguishes that from a bad free in the destructors below.
+	printf("  object accepted=%d resolution=%u cells=%u grid=%p\n",
+		(int) accepted, result->resolution, result->cells, (void*) grid);
+	fflush(stdout);
 	if(accepted && grid)
 		{
 		unsigned digest = 2166136261u;
@@ -612,7 +618,9 @@ static void nxRunPMapOracle(const NxOracle* oracle, const unsigned char* storage
 		}
 
 	oracle->pmapDtor(object);
+	printf("  step pmapDtor done\n"); fflush(stdout);
 	oracle->streamDtor(stream);
+	printf("  step streamDtor done\n"); fflush(stdout);
 	}
 
 static void nxRunMeshOracle(const NxOracle* oracle, const unsigned char* storage, unsigned length,
