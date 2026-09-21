@@ -4047,3 +4047,73 @@ this round did not establish.
 **No census row closed.** All gates green: phases 2/3/4 exit 0, phase 5 exit 1 RED on
 purpose, phase 6 exit 0 PASS, `completed` exit 0, `validate_inventory` exit 0, 587
 tool tests OK.
+
+## 10v. Round 21 continued: the joint hole, and the same vtable defect one level down
+
+10u identified the joint fault as the hole storing a sentinel marker. Fixing that made
+the joint step pass -- and then exposed the **next** defect, which is the actor's
+defect again on a different class.
+
+**Fix 1: the hole no longer invents a marker.** `nxJointConstruct` left
+`joint+0x12 = 1`; the oracle's `createJoint` tests that word and, when it is non-null,
+copies two words from the Scene's `+0x6cc` holder through it. A marker of 1 therefore
+produced a write to address `0x11`, which is exactly what the guard caught. The hole
+now leaves it **null** -- the faithful choice, because the oracle's guard exists for a
+joint that has no marker and a hole that invents one is claiming state it does not
+have.
+
+**That fixed the fault:**
+
+    step joint   exit -1073741819  ->  exit 0
+
+**And the harness then showed the next thing, in its own output:**
+
+    candidate:  case=revolute index=0 created=no    (all four cases)
+    oracle:     case=revolute index=0 created=yes   (all four cases)
+
+**`createJoint` was returning 0 while the oracle returns the joint.** The oracle's
+decompilation falls through to the switch's default after destroying the marker, and
+returns what it built. The reconstruction set `joint = 0` there. **Corrected** -- and
+that made the harness fault, which is the informative part:
+
+**Fix 2 exposed a vtable defect.** With a non-null joint returned, the harness calls
+`joint->getGlobalAnchor(gotAnchor)` and `joint->getGlobalAxis(gotAxis)` -- both
+**virtual** -- and a joint built by `nxJointConstruct` is a raw zeroed block with **no
+vtable**. That is precisely the actor's defect (10f, 10k), one class down.
+
+**So the return is left at 0 for now**, with the reason recorded in the code: returning
+a joint with no vtable trades a clean `created=no` for a crash, which is worse. The fix
+is the actor's fix applied to `NxJoint`: a concrete class implementing `NxJoint`'s
+virtuals, with the vtable installed at `joint+0`.
+
+## 10w. State after twenty-one rounds
+
+    step scene     exit 0
+    step actor1    exit 0
+    step actor2    exit 0
+    step actorN9   exit 0        nine actors, one process, clean
+    step joint     exit 0        the joint is built
+    the joint harness            still faults, on joint->getGlobalAnchor
+    census rows closed           0
+
+**Five defects fixed this session**: `*4` (9z), the unguarded pointer difference (10b),
+the null actor vtable (10k), 166 dword-vs-byte offsets (10q), the reserve's growth
+condition (10t), and the joint hole's invented marker (10v). One false defect
+identified (10d, the loader). The instrument that made most of them findable is the
+page-guarded allocator (10o-10p).
+
+**The pattern that is now unmistakable**, and it is the honest summary of this path:
+**every defect has been hidden behind the one before it, and each fix has revealed the
+next.** The reserve's growth condition was invisible until the offsets were right; the
+joint's marker was invisible until the reserve worked; the joint's missing vtable was
+invisible until the marker was null. There is no reason to think the joint vtable is the
+last one.
+
+**The next step is the actor's fix, applied to `NxJoint`**: a concrete class with
+`NxJoint`'s virtuals implemented -- `getGlobalAnchor` and `getGlobalAxis` among them --
+and the vtable installed at `joint+0`. The generator that worked for `NpActor` is in
+round 16's method: declare, instantiate, read the compiler's `C2259`.
+
+**No census row closed.** All gates green: phases 2/3/4 exit 0, phase 5 exit 1 RED on
+purpose, phase 6 exit 0 PASS, `completed` exit 0, `validate_inventory` exit 0, 587
+tool tests OK.

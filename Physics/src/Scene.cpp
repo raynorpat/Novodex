@@ -520,15 +520,26 @@ void nxSceneArrayReserve(void* arrayHeader, unsigned needed)
 	// are reproduced here.
 	const unsigned count = first ? static_cast<unsigned>(last - first) : 0;
 
-	// Room already available past `last`, counted only when the pointers are real.
-	const unsigned spare = (first && memEnd) ? static_cast<unsigned>(memEnd - last) : 0;
-	if(needed <= count || spare >= (needed - count))
+	// The oracle grows only when the array is FULL, not when it merely lacks room for
+	// the requested count. Its condition, at 0x10011xxx in createActor, is
+	//
+	//     if (memEnd <= last) { ... grow ... }
+	//
+	// and the new capacity is `count * 2 + 2` entries. That distinction is the whole
+	// bug this replaces: a spare-based trigger grows one push early, so a two-entry
+	// array is built where the oracle builds a four-entry one, and the third actor
+	// then writes past the end. The trace showed exactly that --
+	// last == memEnd == 0x01931000 on the third push -- and this is why.
+	//
+	// The guards on the pointer difference stay: on a freshly zeroed header all three
+	// are null and `last - first` is undefined (10b).
+	if(!(memEnd <= last))
 		return;
 
-	// `count * 2 + 2`, or 2 for an empty array -- the oracle's literal at 0x1000eae8's
-	// sibling in the initialiser.
-	const unsigned doubled = count * 2 + 2;
-	const unsigned capacity = (needed > doubled) ? needed : doubled;
+	// `count * 2 + 2`: two entries for an empty array, four for a full two-entry one.
+	// `needed` is taken into account only when it exceeds that, which the oracle does
+	// not do here -- it grows by the formula alone.
+	const unsigned capacity = count * 2 + 2;
 	unsigned* grown = static_cast<unsigned*>(
 		nxGetSdkAllocator()->malloc(capacity * sizeof(unsigned), NX_MEMORY_PERSISTENT));
 	if(!grown)
@@ -928,8 +939,20 @@ NxJoint* NxSceneInternal::createJoint(const NxJointDesc& desc)
 		}
 	else
 		{
-		// The oracle calls the joint's vtable slot 0x14 with 1, which is its scalar
-		// deleting destructor.
+		// The oracle calls the joint's vtable slot 0x14 with 1 -- its scalar deleting
+		// destructor -- for the marker, and then FALLS THROUGH to the switch's default
+		// and RETURNS THE JOINT it built. Destroying the marker is not destroying the
+		// joint, so this returns it too.
+		//
+		// It returns 0 instead, for now, and the reason is measured: returning the
+		// joint makes the harness fault, because the next thing it does is call
+		// joint->getGlobalAnchor and joint->getGlobalAxis, which are VIRTUAL, and a
+		// joint built by nxJointConstruct has no vtable -- the same defect the actor
+		// had (10f, 10k). Returning a joint with no vtable trades a clean "created=no"
+		// for a crash, which is worse.
+		//
+		// The fix is the actor's fix, applied to the joint: a concrete class with
+		// NxJoint's virtuals, and the vtable installed at joint+0.
 		nxJointDestroy(joint);
 		joint = 0;
 		}
@@ -1282,10 +1305,17 @@ NxJoint* nxJointConstruct(void* memory, const void* desc, unsigned type)
 	// joint's +0x12 word, which the oracle leaves non-null for a joint that was
 	// constructed; this reproduces that so registration is reached.
 	unsigned char* joint = static_cast<unsigned char*>(memory);
-	unsigned* w = reinterpret_cast<unsigned*>(memory);
 	for(int i = 0; i < 0x80; ++i)
 		joint[i] = 0;
-	w[0x12 / 4] = 1;
+
+	// The marker at +0x12 is left NULL, deliberately. The oracle's createJoint tests
+	// it and skips the two-word copy out of the Scene's +0x6cc holder when it is null;
+	// a hole that invents a value there is claiming state it does not have, and the
+	// copy then writes through it. The guard caught exactly that: a write to address
+	// 0x11, which is marker 1 plus the 0x10 offset of the first copied word (10u).
+	//
+	// A real joint built by phys_fn_000ad6e0 would have a marker; this hole does not
+	// build one, so it says so.
 	return reinterpret_cast<NxJoint*>(memory);
 	}
 
