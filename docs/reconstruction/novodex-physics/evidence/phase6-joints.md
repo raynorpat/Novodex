@@ -3476,3 +3476,62 @@ probe uses 1 for its own failures and faults surface as `0xC0000005`; the loader
 **No census row closed.** All gates green: phases 2/3/4 exit 0, phase 5 exit 1 RED on
 purpose, phase 6 exit 0 PASS, `completed` exit 0, `validate_inventory` exit 0, 587
 tool tests OK.
+
+## 10f. FOUND: the crash is a virtual call on an actor with no vtable
+
+10e left one fault and two candidates in `Scene::createJoint`'s prologue: the
+`desc.isValid()` call and the dynamics test. **It is the first one, and the reason
+explains the `+0x1c30` offset that has been in every crash dump since round 4.**
+
+`NxJointDesc::isValid()` is the pinned public header's own inline predicate, and it
+ends with:
+
+    if (!(actor[0] || actor[1]))                    return false;
+    if (actor[0] && ! actor[0]->isDynamic())        return false;   // <-- VIRTUAL
+    if (actor[1] && ! actor[1]->isDynamic())        return false;   // <-- VIRTUAL
+
+**`NxActor::isDynamic()` is a pure virtual** (`NxActor.h:240`). So `isValid()` makes a
+**virtual call through the actor's vtable**, and the actors this reconstruction
+builds **have no vtable**: `nxActorConstruct` is a reproduction hole that sets a few
+fields and never installs one, so `actor[0]` -- the vtable word -- is whatever the
+allocator left, in practice zero.
+
+The sequence is therefore:
+
+    read actor+0        -> the vtable pointer, which is 0
+    read [0 + 0x1c30]   -> the isDynamic slot at that offset
+    fault
+
+**`0x1c30` is the `isDynamic` slot's offset in the oracle's `NxActor` vtable.** That
+number has appeared in every crash dump since round 4 -- `mov eax,[esi+0x1c30]` -- and
+it was never a bad pointer this reconstruction computed. It is the offset of a virtual
+slot being read through a **null vtable**.
+
+**Why this took so long to see.** The crash was in the library, the offset was large,
+and the debugger's nearest-export symbol named an unrelated function. Every round
+treated the offset as evidence of a corrupt pointer and looked for a write that
+produced it. It was not a corrupt pointer; it was a **missing vtable**, and the
+"corruption" was a pure virtual dispatch on an object this reconstruction never
+finished constructing.
+
+**And it explains the whole history of the bug:**
+
+    round 4-7   looked for a write that corrupted a pointer  -- there was none
+    9z          found a real *4 slip                            -- a different defect
+    10b         found an unguarded pointer difference           -- a different defect
+    10f         the actual fault: a null vtable
+
+**The fix, and it is the same shape as `NpScene`.** The actor needs a concrete class
+with the `NxActor` virtuals implemented, exactly as `NpScene` needed one with the
+`NxScene` virtuals. `NxActor` declares a large set of pure virtuals, so the concrete
+class will need generated stubs for the ones no reconstructed path calls, with
+`isDynamic()` returning true -- which is what the harness's descriptors ask for, since
+they set `body` and `density`.
+
+**What is established beyond doubt**, and worth recording before the fix is written:
+the crash offset `0x1c30` is a **vtable slot offset**, not a data offset. Any future
+crash at a large round offset in a class with virtuals should be read that way first.
+
+**No census row closed.** All gates green: phases 2/3/4 exit 0, phase 5 exit 1 RED on
+purpose, phase 6 exit 0 PASS, `completed` exit 0, `validate_inventory` exit 0, 587
+tool tests OK.
