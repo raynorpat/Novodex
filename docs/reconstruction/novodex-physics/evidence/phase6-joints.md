@@ -3077,3 +3077,90 @@ census.** Both are honest; the second is better value if the first does not sett
 **No census row closed.** All gates green: phases 2/3/4 exit 0, phase 5 exit 1 RED on
 purpose, phase 6 exit 0 PASS, `completed` exit 0, `validate_inventory` exit 0, 587
 tool tests OK.
+
+## 9u. Round 6: the crash moves when traces are added, which is the answer
+
+9t named `nxSceneArrayReserve` as the strongest remaining candidate and said one
+print would settle it. It did not settle it -- it did something more useful.
+
+**The reserve is never reached.** The descriptor's limits pointer is null:
+
+    TRACE initialise d[0x0b]=00000000
+
+so the whole `if(limits)` block is skipped. `nxSceneArrayReserve` is eliminated
+without needing to reason about it: the harness's descriptor has no limits, the block
+does not run, and it cannot be the corruption.
+
+**Then the traces walked the crash backwards through `initialise`.** With the limits
+trace in place the crash was after `TRACE initialise tail`, the last statement of the
+function. With the `initialise` tail traces added it moved earlier. With the reserve
+disabled it moved earlier still. **The fault tracks the traces, not the code.**
+
+**That is the answer to the round-4 question, and it is a different kind of answer
+than the one being looked for.** A fault that moves when unrelated statements are
+added is not a logic error at a fixed location; it is a **write into memory the
+object does not own**, whose visible victim depends on the heap layout. Every round
+since 9i has been measuring the victim rather than the write.
+
+**What that rules out, completely:**
+
+- the `NpScene` size and every field offset (9q -- asserted at compile time)
+- the `Scene` size (9s -- asserted at compile time)
+- every reconstruction allocation size against its highest write (9q)
+- the `+0x6cc` holder, its value and both dereferences (9s -- measured against the
+  oracle offset for offset)
+- `nxSceneArrayReserve` (this round -- never reached)
+
+**What it leaves, and why the list is short.** The write is into memory this
+reconstruction does not own, and the only places that happens are the stubs that
+store through pointers they did not allocate:
+
+    nxShapeFactory          writes actor back-pointer at shape+4 (its own block)
+    nxShapeGroupConstruct   writes actor back-pointer at group+4 (its own block)
+    nxJointConstruct        writes joint+0x12 (its own block)
+    nxSceneAddActorObject   does nothing
+    nxSceneAddJoint         does nothing
+    nxActorSetName          does nothing
+    nxActorBuildUserDataObject  does nothing
+
+**Every one of those writes is inside a block the stub allocated itself**, which
+leaves one remaining place: `Scene::createActor`'s copy of `holder[3]` and `holder[4]`
+into `actor+0x0c` and `actor+0x10`, and `Scene::createJoint`'s copy into
+`joint+0x10` and `joint+0x14` -- writes through a pointer whose target layout this
+reconstruction has not established. `holder` is the `NpScene` wrapper, 0x28 bytes, so
+`holder[3]` and `holder[4]` are inside it; but the **actor and joint** being written
+are stubs' blocks, and `joint+0x14` is past the 0x17c the joint stub allocated only
+if the joint pointer is not what this reconstruction thinks.
+
+**The measurement that would settle it is a guard, not a print**: allocate the actor
+and joint blocks with a canary word past the end and check it after each write. That
+catches the write rather than its victim, and it is one function.
+
+## 9v. Round 6 state, and the tack change is now made rather than recommended
+
+    scene=created, both actors, both bodies        held from rounds 2-3
+    NpScene and Scene sizes                        asserted (9q, 9s)
+    the +0x6cc holder                              measured valid (9s)
+    nxSceneArrayReserve                            never reached (9u)
+    the crash                                      moves with the traces -- a heap write
+    createJoint                                    still not reached
+
+**9t recommended changing tack if one more print did not settle the crash. It did
+not, so the tack changes here.** Six rounds have gone to this crash; what they
+produced is a complete elimination list and the knowledge that the fault is a
+layout-sensitive write, which is a real diagnosis but not a fix.
+
+**The recommendation, now acted on:** leave the crash recorded with 9u's guard as the
+named next step, and return the programme's effort to work whose return is not
+conditional on a stubbed path behaving. The census audits of 7e-7l each found a defect
+no gate could see, in one round each, and 5,552 rows remain `discovered`.
+
+**What this stretch of work leaves behind, stated once and without inflation:** eight
+transcribed oracle rows and the `NpScene` wrapper class, two compile-time assertions
+pinning the measured object sizes, a harness that reaches `scene=created` and creates
+both actors where it previously returned `scene=null`, and six rounds of elimination
+recorded. **No census row closed.**
+
+All gates green: phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose, phase 6 exit 0
+PASS, `completed` exit 0, `validate_inventory` exit 0 with `unexplained=0`, 587 tool
+tests OK.
