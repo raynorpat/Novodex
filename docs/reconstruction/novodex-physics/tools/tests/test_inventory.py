@@ -1086,11 +1086,14 @@ class ClosureLedgerTests(unittest.TestCase):
         ledger.update(overrides)
         return ledger
 
-    def inventory(self):
-        # The state on each row is the rung its ledger entry supports: a
-        # differential closure is dynamically gated, a static proof is not, and
-        # a deferred row has no gate that caught it at all.
-        return {"functions": [{"id": "phys_fn_000001", "phase": 2, "rva": "0x00001000",
+    def inventory(self, **states):
+        """The state on each row is the rung its ledger entry supports: a differential closure is
+        dynamically gated, a static proof is not, and a deferred row has no gate that caught it.
+
+        `states` overrides one row's state by stable ID, so a test can place a row on a terminal rung
+        without `errors()` building a fresh fixture and losing the change.
+        """
+        data = {"functions": [{"id": "phys_fn_000001", "phase": 2, "rva": "0x00001000",
                                "state": "dynamically_gated"},
                               {"id": "phys_fn_000002", "phase": 2, "rva": "0x00001030",
                                "state": "statically_reviewed"},
@@ -1102,13 +1105,17 @@ class ClosureLedgerTests(unittest.TestCase):
                                   "state": "discovered"},
                                  {"id": "phys_data_000002", "phase": 3, "rva": "0x00002010",
                                   "state": "discovered"}]}
+        for row in data["functions"] + data["data_objects"]:
+            if row["id"] in states:
+                row["state"] = states[row["id"]]
+        return data
 
-    def errors(self, ledger, phase=2):
+    def errors(self, ledger, phase=2, **states):
         return validate_inventory.validate_closure(
-            self.inventory(), ledger, phase, self.TARGETS)
+            self.inventory(**states), ledger, phase, self.TARGETS)
 
-    def assertRejects(self, ledger, message, phase=2):
-        errors = self.errors(ledger, phase)
+    def assertRejects(self, ledger, message, phase=2, **states):
+        errors = self.errors(ledger, phase, **states)
         self.assertTrue(any(re.search(message, error) for error in errors),
                         f"{message!r} not in {errors}")
 
@@ -1265,13 +1272,25 @@ class ClosureLedgerTests(unittest.TestCase):
         ledger = self.ledger()
         ledger["deferred"] = [ledger["deferred"][1]]
         del ledger["counts"]["deferred_blocked_on_later_phase"]
-        self.assertRejects(ledger, "neither closed nor deferred: phys_fn_000003")
+        self.assertRejects(ledger, "neither closed, deferred, nor terminal: phys_fn_000003")
 
     def test_a_data_object_is_inside_the_ledgers_jurisdiction(self):
         ledger = self.ledger()
         ledger["deferred"] = [ledger["deferred"][0]]
         del ledger["counts"]["deferred_data_object_not_dispositioned"]
-        self.assertRejects(ledger, "neither closed nor deferred: phys_data_000001")
+        # The row stays off its terminal rung, because a terminal row is now accounted for
+        # without appearing in either list and would prove nothing about the partition.
+        self.assertRejects(ledger, "neither closed, deferred, nor terminal: phys_data_000001")
+
+    def test_rejects_a_deferral_on_a_row_whose_evidence_is_complete(self):
+        """The contradiction 15j measured: the ledger says unfinished, the census says finished.
+
+        The fixture already defers the data object, so this changes nothing but the row's state --
+        which is the whole of the contradiction.
+        """
+        ledger = self.ledger()
+        self.assertRejects(ledger, "not unfinished, so the deferral and the state disagree",
+                           **{"phys_data_000001": "classified"})
 
     def test_rejects_a_row_that_is_both_closed_and_deferred(self):
         ledger = self.ledger()

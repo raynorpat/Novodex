@@ -123,6 +123,11 @@ STATE_RANK = {name: index for index, name in enumerate(STATES)}
 # behaviour to mutate. Ordering them would invite reading one as incomplete relative to the other.
 STATE_RANK["classified"] = STATE_RANK["closed"]
 DYNAMIC_STATES = ("dynamically_gated", "closed")
+# The rungs a row reaches when its evidence is complete: `closed` for a code row a gate caught,
+# `classified` for a row with no behaviour to mutate. A row here owes its phase nothing further, so
+# it need not appear in a closure ledger at all -- which is what stops the data half of the census
+# being carried as a debt now that it has somewhere to arrive.
+TERMINAL_STATES = ("closed", "classified")
 # The highest rung a row may stand on with nothing but a reconstruction behind
 # it. Everything above is a claim that a gate ran and caught something, which
 # only a closure ledger entry can establish.
@@ -1400,9 +1405,22 @@ def validate_closure(inventory, closure, phase, targets):
     both = sorted(set(closed) & set(deferred))
     if both:
         errors.append(f"phase {phase} rows are both closed and deferred: {', '.join(both)}")
-    unaccounted = sorted(owned - set(closed) - set(deferred))
+    # A row whose terminal evidence is recorded owes this phase nothing further, so it is accounted
+    # for without appearing in either list. Before the classification rung there was one terminal
+    # state and it was `closed`, so the two lists were exhaustive; a data object at `classified` had
+    # to be deferred as a debt, and the reason it gave -- `data_object_not_dispositioned` -- said so.
+    terminal = {row["id"] for row in census
+                if row["phase"] == phase and row["state"] in TERMINAL_STATES}
+    # And deferring one is the contradiction 15j measured: a ledger entry saying the row is
+    # unfinished while the census says its evidence is complete.
+    for identifier in sorted(set(deferred) & terminal):
+        errors.append(f"phase {phase} defers {identifier!r} with reason "
+                      f"{deferred[identifier].get('reason')!r}, but the inventory leaves it "
+                      f"{row_state.get(identifier)!r}; a row whose terminal evidence is recorded is "
+                      f"not unfinished, so the deferral and the state disagree")
+    unaccounted = sorted(owned - set(closed) - set(deferred) - terminal)
     if unaccounted:
-        errors.append(f"phase {phase} rows are neither closed nor deferred: "
+        errors.append(f"phase {phase} rows are neither closed, deferred, nor terminal: "
                       f"{', '.join(unaccounted[:8])}"
                       + (f" and {len(unaccounted) - 8} more" if len(unaccounted) > 8 else ""))
     stray = sorted((set(closed) | set(deferred)) - owned)

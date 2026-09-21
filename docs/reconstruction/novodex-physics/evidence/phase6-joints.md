@@ -7239,3 +7239,66 @@ targets do**, and the rows on phases with targets are the ones a campaign can re
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 600 tool tests OK.
+
+## 15m. Round 60: the partition gains a third disposition, and the debt list becomes true
+
+15k concluded that a data object at `classified` should not be deferred at all. **That is done**, and
+the change is one rule in two halves:
+
+    a row whose terminal evidence is recorded is ACCOUNTED FOR without appearing in either list
+    deferring such a row is an ERROR, because the ledger says unfinished while the census says
+    finished
+
+**The partition rule is stated rather than loosened**, which is what the rung needed:
+
+    closed    a code row a gate caught
+    deferred  a row that is not finished
+    terminal  a row whose evidence is complete and which owes its phase nothing further
+
+**Before the classification rung there was one terminal state and it was `closed`**, so the two lists
+were exhaustive and a data object **had** to be deferred as a debt -- which is exactly why
+`data_object_not_dispositioned` existed. **A row that could not arrive anywhere needed a list to wait
+in.**
+
+## 15n. The numbers, before and after
+
+    phase   deferred before   after   removed
+    2            1135           84     1051
+    3             432          330      102
+    4            3950         1050     2900   (2813 data + 87 not_reconstructed that were terminal)
+    5             327          205      122
+    6             962          431      531
+    7            1059          557      502
+    ------------------------------------------
+                7865         2657     5208
+
+**And the deferred total is now exactly the remaining code rows**: 2,657, against 2,657 code rows not
+closed. **The two halves of the census now have lists that describe them** -- the code half is
+deferred because it is unfinished, and the artifact and data halves are absent from the ledgers
+because they are finished.
+
+**The phase records quote their ledgers, so their counts moved with them** (phase 2 from 1,135 to 84,
+phase 3 from 432 to 330), and the two cannot be updated separately -- which is why the count is
+recomputed from the ledger rather than read.
+
+## 15o. What the round found on the way, and it is the same shape again
+
+**The rule that let the contradiction through was about `closed`.** A deferral is rejected when the
+row stands in a `DYNAMIC_STATE`, and that tuple is `("dynamically_gated", "closed")` -- **written when
+`closed` was the only terminal state.** Adding `classified` left it out, so **5,121 ledger entries
+said something the census denied and no check compared the two.**
+
+**That is the sixth time this session has found a rule right about its shape and wrong about its
+population** (13m, 13x, 13y, 14f, 14s, and now this), and it is the second time **a rule about
+`closed` failed to cover the new rung** -- `validate_row_states` needed the same exemption in 15a.
+**Both were written when `closed` was the only terminal state**, and both had to be revisited when it
+stopped being.
+
+**The lesson is now specific rather than general**: **a rule keyed on "terminal" has to be keyed on
+the set of terminal rungs, not on the one that existed when it was written.** That is what
+`TERMINAL_STATES` is for, and it is why the new rung is defined once beside the old one instead of
+being special-cased at each site.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, **601 tool tests OK**.
