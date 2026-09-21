@@ -6874,3 +6874,56 @@ have to report** -- **a change to the instrument rather than to the census, and 
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 587 tool tests OK.
+
+## 14u. Round 57: the lifecycle path has no closable row left, measured
+
+Round 54 went back to row work and found a defect. This round went back to **closing** rows and
+established that **the path the one working instrument drives has no closable row left.**
+
+**The instrument is `NxPhysicsJointStagedPairTests`**, the only registered staged-pair target. It
+drives the SDK lifecycle: create SDK, create scene, create actors, create joints, read joint state,
+release. **Twenty-eight census rows are implemented in the files on that path**, and their state is:
+
+    closed                 18
+    discovered              8   (the round-30 forwarder stubs, correct for them)
+    reconstructed           2
+
+**And both reconstructed rows are now accounted for:**
+
+    phys_fn_000034  corrected to `discovered` in round 54 -- its code is never called
+    phys_fn_000647  the Scene constructor
+
+**`phys_fn_000647` was tested again this round**, with the shape that closed the other construction
+rows -- a mutation that makes the build fail:
+
+    sceneCtor_earlyout   the constructor returns before initialising anything
+                         mutant exit 0, 29-line transcript   NOT CAUGHT
+
+**Not caught, and the reason is the harness's reader.** `createScene` returns the object and the
+harness tests it against null; **a Scene that was never initialised is still non-null**, and nothing
+on the harness's path reads the Scene's fields. **So the row is confirmed unclosable through this
+target**, which is what round 36 concluded from three other mutations and this round confirms from a
+fourth of a different shape.
+
+## 14v. What is left, and each part is blocked on something this session cannot decide
+
+    closable rows on the one working instrument's path    0
+    the 3,554 compiler-artifact rows                      need a schema ruling (12z)
+    the object-model batch, 117 rows                      needs a target that does not exist (13a)
+    the layout harness                                     cannot drive the candidate at all (12v)
+    the remaining 6,332 rows                              need instruments that do not exist
+
+**Six rows closed in fifty-seven rounds, and the last closure was round 34.** The rounds since have
+produced fourteen audit findings and eight checks -- real work, and not the objective.
+
+**The blocker is concrete and it is not difficulty.** Phase 8's gate is *"entire census closed"*, and
+**`validate_inventory.py` makes `closed` the terminal rung that only the full-census audit may
+grant.** Closing a row requires **a mutation aimed at it that a registered gate catches**. **3,554 of
+the 6,338 function rows are `compiler_artifact`** -- alignment padding, jump tables, thunks -- and
+**not one of the 127 closures in the programme is against an artifact**, because **an artifact has no
+behaviour to mutate.** **So the census cannot be closed under the schema as it stands**, whatever
+this session does, and the ruling that would change that is the user's.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 587 tool tests OK.
