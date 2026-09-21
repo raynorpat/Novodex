@@ -7638,16 +7638,42 @@ which holds 117 of the rows -- as absent from the map. **It is present.** The pa
 whitespace-separated field of a symbol line as the object name, and the line is
 `seg:off  name  addr  flags  object` with the flags field **sometimes empty and sometimes two letters**,
 so the object is sometimes the fourth field and sometimes the fifth. **Reading the tail of the line
-instead of a fixed column changed the answer**, and the PMap and MemoryStream findings above were then
-re-verified by searching the name set directly rather than by counting lines.
+instead of a fixed column changed the answer**: `ObjectModel.obj` carries **61 symbols**, not zero.
+
+**And the PMap and MemoryStream findings were then re-verified by searching the name set directly**
+rather than by counting lines, and they hold:
+
+    PenetrationMap        3 symbols, all of them string literals
+    loadPayload           0
+    buildSpreadTable      0
+    decodeCellRun         0
+    MemoryStream          0
+    PMap.obj              8 symbols, one of them a function: _NxReleasePMap
+    MemoryStream.obj      0 symbols of any kind
+
+**So the largest implementation file is linked and the two others are not**, which is the finding and
+is narrower than a first reading of it would have been.
 
 **And a correction this round made to its own measurement.** A first pass reported `ObjectModel.obj` --
 which holds 117 of the rows -- as absent from the map. **It is present.** The pass took the fourth
 whitespace-separated field of a symbol line as the object name, and the line is
 `seg:off  name  addr  flags  object` with the flags field **sometimes empty and sometimes two letters**,
 so the object is sometimes the fourth field and sometimes the fifth. **Reading the tail of the line
-instead of a fixed column changed the answer**, and the PMap and MemoryStream findings above were then
-re-verified by searching the name set directly rather than by counting lines.
+instead of a fixed column changed the answer**: `ObjectModel.obj` carries **61 symbols**, not zero.
+
+**And the PMap and MemoryStream findings were then re-verified by searching the name set directly**
+rather than by counting lines, and they hold:
+
+    PenetrationMap        3 symbols, all of them string literals
+    loadPayload           0
+    buildSpreadTable      0
+    decodeCellRun         0
+    MemoryStream          0
+    PMap.obj              8 symbols, one of them a function: _NxReleasePMap
+    MemoryStream.obj      0 symbols of any kind
+
+**So the largest implementation file is linked and the two others are not**, which is the finding and
+is narrower than a first reading of it would have been.
 
 **So those functions are not in the rebuilt DLL.** They are in the source, the source is in the
 build, and the linker did not emit them -- because nothing references them, so their COMDATs were
@@ -7674,6 +7700,32 @@ as scaffolding.**
 **This round did not correct the census.** Recording "the code exists but is not linked" is a
 different state from anything the ladder has, and the honest move is to measure how many rows are
 affected before proposing a state for them.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 601 tool tests OK.
+
+## 16d. What round 65 leaves, stated plainly
+
+    the translation table        generated; 23 of the 36 rows with a symbol resolve
+    NxReleasePMap                resolves: 0x00051040 -> 0x100052b0
+    PMap.cpp's member functions  not in the module; the object contributes one function
+    MemoryStream.obj             contributes no symbols at all
+    ObjectModel.obj              linked, 61 symbols
+    the harness's ten           one resolves, and the other nine name code that is not there
+
+**The finding is real and its size is not yet known.** It is established for `PMap.cpp` and
+`MemoryStream.cpp` -- two files, 18 rows with implementations between them -- and **not** established
+for the rest: `ObjectModel.obj` is linked, so the question does not arise for its 117.
+
+**And the harness's own message was the evidence.** 15q called `CANDIDATE-MISSING` a failure branch and
+read it as scaffolding; **it is a failure branch, and the failure is that the code it would call is not
+in the module.** That line has been reporting this the whole time.
+
+**The next round should measure it across every implementation file** -- object present, symbols
+present, and whether the symbols include a function rather than only literals -- **because that turns
+one file's finding into a population**, and it is what a state for "compiled but not linked" would have
+to be sized against.
 
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
