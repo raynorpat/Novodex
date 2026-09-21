@@ -16,7 +16,7 @@ $NxPhaseTestTargets = [ordered] @{
     '4' = @()
     '5' = @()
     '6' = @('NxPhysicsJointStagedPairTests')
-    '7' = @()
+    '7' = @('NxPhysicsJointStagedPairTests')
     '8' = @()
 }
 
@@ -965,7 +965,9 @@ $NxPhaseCoverageFloor = [ordered] @{
     '5' = 126  # was 124: +2 for the shapeleaf family (row + candidate drive)
                # (RED on purpose: vtables family open)
     '6' = 11  # 3 oracle-descriptor + 4 oracle-joint + 4 staged-pair-joint
-    '7' = 0
+    '7' = 4   # the four STAGED-PAIR assertions; the oracle-differential assertions
+               # belong to NxPhysicsJointDescTests and NxPhysicsJointTests, which phase 7
+               # does not run
     '8' = 0
 }
 

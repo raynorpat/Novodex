@@ -4738,3 +4738,79 @@ directly mutable from the harness's surface, which is a separate question.
 **No census row closed this round.** All gates green: phases 2/3/4 exit 0, phase 5 exit 1
 RED on purpose, phase 6 exit 0 PASS, `completed` exit 0, `validate_inventory` exit 0, 587
 tool tests OK.
+
+## 11y. Round 31: Phase 7's gate now runs and passes, and a closure needs an OBSERVABLE mutation
+
+Five of the six rows 11u recorded are Phase 7's own -- the Scene constructor and
+initialiser, `Scene::createActor`, `Scene::createJoint` and the actor constructor -- and
+all of them execute in the joint harness. Registering that harness as a Phase 7
+staged-pair target is what makes them closable, so it was registered:
+
+    $NxPhaseTestTargets['7']    = @('NxPhysicsJointStagedPairTests')
+    $NxPhaseCoverageFloor['7']  = 4
+
+**Phase 7's gate went from `skipped` to PASS:**
+
+    differential=pass
+    coverage_assertions_evaluated=4 floor=4
+    phase_gate=7 status=pass
+
+**The floor is 4 and not 11, and the difference matters.** Phase 6's floor counts three
+sets of assertions -- three for the oracle descriptor differential, four for the oracle
+joint differential, four for the staged-pair one. **Phase 7 runs only the staged-pair
+target**, so its floor is that target's four. Setting it to 11 failed with
+`4 of 11` -- a coverage floor that counts assertions a phase does not run is a floor
+that cannot be met.
+
+## 11z. A mutation has to be OBSERVABLE, and the first one was not
+
+The first Phase 7 mutation was aimed at `Scene::createJoint`'s allocation:
+
+    case 0: size = 0x17c;   ->   size = 0x180;
+
+    mutant exit 0, 29-line transcript, caught=NO
+
+**Not caught, and correctly so**: a joint that is four bytes larger produces the same
+values, because nothing reads past 0x17c. **A mutation the transcript cannot see is not
+a falsification**, and the schema would be right to reject it.
+
+**That is a new requirement the joint pair did not have to meet.** The two rows closed in
+11m were mutated at values the transcript prints -- the anchor's first component and the
+axis normalisation -- so detection followed from the mutation. **For these rows the
+mutation must be chosen for observability, not merely for being aimed at the row.**
+
+**Which rows are observable, read from what the harness prints:**
+
+    the transcript prints   each joint's anchor, axis, actors and state
+    so observable are       Scene::createJoint's descriptor application -- the anchor,
+                            the axis and the actors it stores
+                            Actor::loadFromDescInternal's globalPose copy, which the
+                            joint transform reads
+                            Scene::createActor's body link, which is what makes the
+                            transform run at all
+    not observable are      the allocation sizes
+                            the Scene constructor's constants, none of which is printed
+                            the initialiser's counters
+
+**So `Scene::createJoint` is closable by a mutation to its descriptor application rather
+than to its allocation, and `Actor::loadFromDescInternal` and `Scene::createActor` are
+closable by mutations to the fields the transform reads.** This round established the
+requirement and did not carry it out.
+
+## 12a. Round 31 state
+
+    census rows closed        2
+    phase 6 gate              pass, differential=pass, 11/11
+    phase 7 gate              pass, differential=pass, 4/4   (was skipped)
+    phase 8 gate              skipped
+    reconstructed rows        669
+    all gates                 green
+
+**Phase 7's gate passing is itself a result**: it was `skipped` for the whole session,
+which means the phase had no way to be measured at all. It now runs the same
+staged-pair differential that Phase 6 does, with its own coverage floor.
+
+**No census row closed this round.** All gates green: phase 1 exit 3 skipped, phases
+2/3/4 exit 0, phase 5 exit 1 RED on purpose, phase 6 exit 0 PASS, **phase 7 exit 0 PASS**,
+phase 8 exit 3 skipped, `completed` exit 0, `validate_inventory` exit 0, 587 tool tests
+OK.
