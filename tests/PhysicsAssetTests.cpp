@@ -1001,7 +1001,17 @@ static bool nxSha256(const wchar_t* path, char* text)
 static const unsigned char* nxOracleTarget(bool selfOnly, const unsigned char* base,
                                            unsigned rva, const char* what)
 	{
-	if(!selfOnly)
+	// The decision is the MODULE's, not the flag's. A module loaded at its preferred image base is
+	// the one the census describes, so the censused RVA is its offset and the arithmetic is exact --
+	// whether it was named as the "oracle" or handed over as a staged pair. A module the loader
+	// relocated is a rebuild, and the table is what says where the rebuild put each row.
+	//
+	// Measuring this rather than trusting the flag is what round 74 found: the oracle pair directory
+	// passes exactly the same argument shape as a staged-pair run, and applying the table to the
+	// oracle put the CANDIDATE's offset into the ORACLE's image, which faulted at NxPhysics+0xa240.
+	const bool atPreferredBase =
+		(reinterpret_cast<unsigned>(base) == kNxRvaPreferredImageBase);
+	if(!selfOnly || atPreferredBase)
 		return base + rva;
 	for(unsigned i = 0; i < kNxRvaTranslationCount; ++i)
 		{
@@ -1082,6 +1092,26 @@ int wmain(int argc, wchar_t** argv)
 		expected[0] = '\0';
 
 	printf("oracle module path=%S sha256=%s\n", loadedPath, loadedHash);
+	// The staged-pair runner asserts this exact shape for each module it stages -- read from its own
+	// `$expected` construction -- so a target it drives has to report the identity it was given. The
+	// line above is this harness's own form and is kept for the oracle-differential transcript.
+	printf("loaded module=NxPhysics.dll path=%S sha256=%s\n", loadedPath, loadedHash);
+
+	// The Foundation comes in as NxPhysics's dependency, so it is loaded by now and its handle can be
+	// asked for. The runner asserts the identity of every module it staged, and this harness had only
+	// ever named the one it loads by name.
+	{
+	HMODULE foundation = GetModuleHandleW(L"NxFoundation.dll");
+	if(foundation)
+		{
+		wchar_t foundationPath[MAX_PATH];
+		char foundationHash[65];
+		if(GetModuleFileNameW(foundation, foundationPath, MAX_PATH)
+			&& nxSha256(foundationPath, foundationHash))
+			printf("loaded module=NxFoundation.dll path=%S sha256=%s\n",
+				foundationPath, foundationHash);
+		}
+	}
 	printf("oracle base=%p mode=%s\n", (void*) physics, selfOnly ? "self" : "differential");
 	// The pin is checked in DIFFERENTIAL mode only. `--self` means the harness drives whatever module
 	// it was given and compares its own candidate-side calls against it, so the pin is not its

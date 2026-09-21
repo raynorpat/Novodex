@@ -8203,3 +8203,95 @@ undone because the tool refused it.
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 601 tool tests OK.
+
+## 16z. Round 74: the pair difference was the RESOLVER deciding by the flag, and that is fixed
+
+16y measured that the same harness faults with the oracle pair and passes with the candidate pair. **The
+difference is now found, and the debugger named it exactly:**
+
+    eip = 1000a240    NxPhysics+0xa240
+
+**`1000a240` is the CANDIDATE's offset for that function, and `NxPhysics` is loaded at
+`0x10000000`** -- the oracle's preferred base. So **the harness applied the candidate's translation to
+the ORACLE module**: a single argument was taken to mean a staged-pair run, and **an oracle pair
+directory has exactly the same shape**, so the resolver used the table on a module it does not describe.
+
+**The fix is that the decision belongs to the MODULE, not to the flag:**
+
+    // A module loaded at its preferred image base is the one the census describes, so the censused
+    // RVA is its offset and the arithmetic is exact -- whether it was named as the "oracle" or handed
+    // over as a staged pair. A module the loader relocated is a rebuild, and the table says where the
+    // rebuild put each row.
+    const bool atPreferredBase = (reinterpret_cast<unsigned>(base) == kNxRvaPreferredImageBase);
+    if(!selfOnly || atPreferredBase)
+        return base + rva;
+
+**And both pairs now agree:**
+
+    oracle pair directory      exit 0    asset result=pass
+    candidate pair directory   exit 0    asset result=pass
+    normalized diff            0 lines   (36 lines each)
+
+**That is the first time phase 4's rows have been driven on both pairs with an identical transcript.**
+
+## 17a. Two more gate requirements, each found by the gate refusing rather than by guessing
+
+**The staged identity.** `run_differential.ps1` asserts that a target reports
+
+    loaded module=<name> path=<pair directory>\<name> sha256=<hash>
+
+for **each** module it staged, and this harness printed only its own `oracle module path=...` form. **Read
+from the runner's own `$expected` construction rather than guessed at**, and now reported for both.
+
+**And the candidate pair now fails differently, which is its own finding and not the identity's:**
+
+    oracle pair directory      exit 0             the round left it here, both identities reported
+    candidate pair directory   exit -1073740791   no output at all
+
+**`0xC0000409` is not an access violation** -- it is `STATUS_STACK_BUFFER_OVERRUN`, the `/GS` cookie
+check, and it replaces the earlier `0xC0000005`. **So the change altered the candidate's failure mode
+rather than fixing it**, and the new one is a stack-cookie trip with no output, which discards buffered
+stdout -- the same symptom the layout harness's own note records for this class of abort.
+
+**And the identity is still a real gap for the candidate**, because the harness LINKS `NxFoundation`: the
+Foundation it reports is the one its own import resolved to, which for the candidate pair is the build's
+copy beside the executable rather than the pair's. **The oracle pair passes because both copies are the
+same file there.** So the harness has to load the Foundation by the pair's path rather than inherit its
+import -- **and doing part of that is what moved the failure from an access violation to a cookie trip.**
+
+**Neither the identity nor the cookie trip is diagnosed**, and the honest position is that the
+candidate pair went from one fault to another rather than to green.
+
+**All gates except phase 4 green**: phase 1 exit 3 skipped, phases 2/3 exit 0, **phase 4 exit 1 on the
+identity above**, phase 5 exit 1 RED on purpose, phases 6/7 exit 0 PASS, phase 8 exit 3 skipped,
+`completed` exit 0, `validate_inventory` exit 0, 601 tool tests OK.
+
+## 17b. The registration is reverted again, and the resolver fix is what this round leaves
+
+**The phase-4 registration came out**, for the same reason as round 73: the candidate pair cannot
+complete, so the differential cannot pass, and a target that fails its gate is worse than no target.
+Four unit tests said so a second time -- two gate-command fixtures, the coverage floor, and the
+registered-name rule -- **and the fixtures were right both times.**
+
+**What this round leaves that is durable:**
+
+    the resolver decides by the MODULE's base, not by the flag
+    the oracle pair is driven again           exit 0, asset result=pass
+    the harness reports the staged identity   the shape run_differential.ps1 asserts
+    and reports it for BOTH modules
+    601 tool tests pass, every gate green
+
+**And what it leaves broken:** the candidate pair aborts with `0xC0000409` and no output, having
+aborted with `0xC0000005` before. **The failure mode changed rather than went away**, which is the
+honest description: the resolver fix is correct and is not sufficient, and the identity work moved the
+fault rather than clearing it.
+
+**Two rounds have now been spent on this pair difference, and each left a correct fix and a target that
+still cannot complete.** The pattern worth naming: **every change so far has been to the harness's view
+of the modules, and the remaining fault is in how the harness is BUILT** -- it links `NxFoundation`, so
+the Foundation it resolves is the build's rather than the pair's, and the `/GS` cookie trip is consistent
+with a harness whose own stack layout is being disturbed by a change to its imports.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 601 tool tests OK.
