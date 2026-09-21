@@ -2634,3 +2634,63 @@ crash is at `NxPhysics!NxCreatePhysicsSDK+0xd0c` with `eax = 0` reading
 debugger break on that frame with `esi` printed, to see which object is null and
 therefore which hole is being relied on at that moment. That is one breakpoint, and
 it is smaller than any row in the list above.
+
+## 9g. Narrowing the fault, and what is established
+
+9e recorded that the harness now enters the reconstructed path and faults. This
+round attempted to narrow it and got partway.
+
+**What was established.**
+
+- The fault address does **not** map to a named row. The candidate's export table
+  gives `NxCreatePhysicsSDK` at rva `0x67a0`; the fault is at rva `0x74ac`, about
+  3 KB past it, so the debugger's `NxCreatePhysicsSDK+0xd0c` label is a nearest-export
+  artefact and not a real frame.
+- **The harness produced no output at all before the fault** -- not even the lines
+  that precede the call (`export=...`, `version=`, `sdk=`). stdout is block-buffered
+  and the crash discards it, so the absence of `sdk=created` does **not** mean SDK
+  creation failed. Reading the crash as "the SDK failed to build" would be wrong.
+- At the fault: `esi = 0x01355930`, a heap pointer, and the instruction reads
+  `[esi + 0x1c30]` -- a 7 KB offset. **No structure in this reconstruction has a
+  field at `0x1c30`**, so the pointer or the base is wrong rather than the field.
+- `NxPhysicsJointTests` is **not registered in `gate_targets.ps1`** (zero mentions),
+  so no gate runs it and no gate is affected by the crash.
+
+**What was not established.** Which of the new pieces the bad pointer comes from.
+The candidates, in the order worth testing, are the `NpScene` constructor's three
+lock allocations, the `Scene` constructor's two sub-object allocations, and
+`NxSceneDesc::isValid()` being read at the wrong offsets -- and distinguishing them
+needs a breakpoint on the candidate's `createScene` entry, which this round did not
+reach.
+
+**A regression, recorded as one.** `NxPhysicsJointTests` against the candidate pair
+exited 0 with `scene=null` before this work and now faults. That is a real
+regression in that harness, and it is the honest cost of routing the path through
+stubs: the old behaviour was a clean refusal, the new behaviour is a crash inside
+code that is not finished. It is not gated, so nothing else depends on it, but the
+programme's own convention is that a harness it builds should not get worse.
+
+## 9h. What a future session should do first
+
+**Before anything else: decide whether to keep the wiring live.** There are two
+honest options and both are recorded here.
+
+1. **Keep it and finish the holes.** The wiring is correct in structure -- seven
+   rows transcribed, the vtable order preserved, the classes concrete -- and the
+   fault is in the stubs. Filling the body builder and the shape factory is the
+   path to `scene=created`.
+2. **Gate the wiring off** so `createScene` returns 0 again and the harness goes
+   back to exiting cleanly, keeping the transcribed rows in the tree but unconnected
+   until the holes are filled. This restores the harness's previous behaviour at the
+   cost of not exercising the new code.
+
+**The measurement that decides which is cheaper** is one breakpoint on the
+candidate's `PhysicsSDK::createScene` entry with the three candidates above checked
+in order. That is smaller than any row transcribed so far.
+
+**And the honest summary of this stretch of work, stated once.** Eight commits
+reconstructed the Scene from nothing to a wired, compiling, gate-green implementation
+of seven oracle rows and a wrapper class, about 5,300 bytes of decompiled code. **No
+census row closed, no joint row closed, and the harness it was all for now crashes
+instead of refusing cleanly.** The structure is real and the gates are green; the
+outcome the work was for -- `scene=created` -- has not been reached.
