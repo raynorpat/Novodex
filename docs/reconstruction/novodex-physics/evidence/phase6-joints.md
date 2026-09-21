@@ -7730,3 +7730,57 @@ to be sized against.
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 601 tool tests OK.
+
+## 16e. Round 66: the population measurement is NOT reliable, and the numbers are withheld
+
+16d said the next round should measure the finding across every implementation file, so one file's
+result becomes a population. **This round tried, and the measurement does not hold up.** It is recorded
+as a failure rather than reported as a result, because the numbers it produced are contradictory.
+
+**Two passes over the same file disagree:**
+
+    pass one (round 65)   Scene.obj   110 symbols    NpActor.obj   89 symbols
+    pass two (round 66)   Scene.obj    18 symbols    NpActor.obj  absent
+
+**Both cannot be right, and the same parse produced both.** So the parse is wrong, and every count it
+produced -- including the population split `51 absent / 150 data-only / 45 linked` -- is unusable.
+
+**The cause is the map's field layout, read rather than assumed this time.** A symbol line is
+
+    0001:00000000       ??__EgNpActorVtable@@YAXXZ 10001000 f   NpActor.obj
+    0001:000067d0       $LN58                      100077d0     Scene.obj
+
+**with the flags column empty on some lines and one or two letters on others, and the columns are
+fixed-width rather than delimited.** Splitting on whitespace and taking a fixed field therefore
+attributes a line to the wrong object whenever the flags column is empty -- which is exactly the error
+16b made and corrected once, and which the second pass made again in a different direction.
+
+**And the map has more than one symbol section.** `Publics by Value` is a header on line 54 and
+`Static symbols` on line 825, so a parse that reads the whole file as one table mixes two sections with
+different layouts.
+
+**So the honest position on the population is: not measured.** What is established is narrower and was
+checked by searching the symbol name set directly rather than by counting lines:
+
+    PenetrationMap's constructor, destructor, setup, buildSpreadTable, decodeCellRun,
+    loadPayload and finish     absent from the symbol set entirely
+    _NxReleasePMap             present
+    MemoryStream               absent from the symbol set entirely
+
+**That is a fact about names, not about columns**, and it is what 16b's finding rests on.
+
+## 16f. What the round does leave
+
+    the translation table      generated, and 23 of 36 symbolised rows resolve
+    the PMap finding           established by name, not by column
+    the population             NOT measured, and the attempted numbers are withheld
+    the parse                  needs the map's sections and fixed-width columns, not a field split
+
+**The next round should fix the parse first and measure second.** A parser that reads the section
+headers and the column positions is a bounded piece of work, and **until it exists every count about
+what is linked is a guess with a number attached** -- which is the failure mode this session has now
+recorded six times, and the first time it has caught the round in the act rather than after the fact.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 601 tool tests OK.
