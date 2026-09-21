@@ -5639,3 +5639,84 @@ round writes the table and the indirection**, which is bounded work rather than 
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on
 purpose, phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed`
 exit 0, `validate_inventory` exit 0, 587 tool tests OK.
+
+## 13c. Round 41: the translation table needs a join key, and the census does not carry one
+
+13b's plan was to emit a table mapping each row's oracle RVA to its candidate address,
+joining the census to the candidate's map file. This round tried to build it and found the
+join has no key.
+
+**What the map file provides.** `build/Release/NxPhysicsObjectLayoutTests.map` carries
+2,823 symbol lines and **418 naming `ObjectModel.obj`**, each with both an offset and a
+resolved address:
+
+    0001:0002ca80       ??0BoxShape@@QAE@PAXI@Z    0042da80 f   ObjectModel.obj
+    0001:0002cbe0       ??0CapsuleShape@@QAE@PAXI@Z 0042dbe0 f   ObjectModel.obj
+    0001:0002cc80       ??0CollisionObject@@QAE@PAX@Z 0042dc80 f   ObjectModel.obj
+
+**So the candidate's addresses are available and the object file is named.** The table
+needs one thing more: **for each census row, which symbol it became.**
+
+**And the census does not say.** A row carries:
+
+    id                 phys_fn_000831
+    label              Mass-frame payload fold step
+    rva                0x0001c8c0
+    implementation     Physics/src/ObjectModel.cpp
+    static_proof       payload fold step over {Vec3 d; SymMat3 K} records (0x24-byte
+                       stride): nine faddp-chain intermediates each rou...
+
+**No C++ name, and no symbol.** The `label` is prose -- "Mass-frame payload fold step" --
+and the map's symbols are mangled names -- `??0BoxShape@@QAE@PAXI@Z`. **Nothing joins them.**
+The `implementation` field says which *file* the row was reconstructed into; it does not say
+which *function* in that file it became.
+
+**Checked rather than assumed: the census does carry mangled names, and not for rows.** Ten
+appear, and every one is a Foundation *import* the image links against rather than a name
+for a row in it:
+
+    ?dbMessage@FoundationSDK@NxFoundation@@SAXW4NxErrorCode@@PBDH1ZZ
+    ?removeObserver@Observable@NxFoundation@@QAEXAAV12@@Z
+    ??0Observable@NxFoundation@@QAE@XZ
+
+**So the census has a place for a mangled name and uses it only for what the module imports,
+not for what it defines.** The 117 object-model rows have none.
+
+**So the translation is blocked on one field.** Every row in this census names its file and
+its oracle RVA, and the candidate names its symbols and addresses -- **the correspondence
+between a row and its symbol exists in the reconstruction, and is not recorded.**
+
+## 13d. What that means, and it is the same defect class a fourth time
+
+**The information needed is not missing from the world; it is missing from the census.**
+Whoever wrote `ObjectModel.cpp` chose a function for each of those 117 rows, and that choice
+is nowhere in the record. **This is 11s again** -- eight rows built and never recorded --
+and 7e, 7h and 8o before it:
+
+    7e   rows naming a source that does not exist
+    7h   a field carrying two claims
+    7i   rows holding a state with no proof
+    8o   rows in no ledger list
+    8p   a status vocabulary nothing checked
+    10d  a harness reporting its own failure as a measurement
+    11s  rows built and never recorded
+    12s  a flag that changed a printed mode and nothing else
+    13c  the row-to-symbol correspondence exists and is not recorded
+
+**Each was found by asking what a record actually contains rather than what it appears to
+say.** `implementation` appears to say where a row lives; it says which *file*, and a file
+is not a function.
+
+**The fix is a field, not a script.** A row needs the symbol it was reconstructed into --
+`implementation_symbol`, or the mangled name -- and then the table 13b described can be
+emitted by joining that to the map. **Recording it for 117 rows is bounded transcription
+work**, and the check that would stop the next instance is the same shape as the other
+seven: *a row with an `implementation` naming a `.cpp` must also name the symbol it became.*
+
+**This round did not build the table.** It established that the table cannot be built from
+what is recorded, which is a smaller and more useful result than a table built on a guessed
+join.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on
+purpose, phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed`
+exit 0, `validate_inventory` exit 0, 587 tool tests OK.
