@@ -18,8 +18,8 @@
     "differentials": []
   },
   "counts": {
-    "differential_falsified": 3,
-    "deferred_not_reconstructed_in_phase": 371,
+    "differential_falsified": 4,
+    "deferred_not_reconstructed_in_phase": 370,
     "deferred_reconstructed_not_falsified": 187,
     "deferred_data_object_not_dispositioned": 502
   },
@@ -53,17 +53,19 @@
         "mutation": "the initialiser was made to refuse every descriptor in a throwaway `git archive` copy of HEAD: `return true;` at the end of `NxSceneInternal::initialise` became `return false;`, so `createScene` destroyed the object it had just built and returned 0. The copy was rebuilt with NxFoundation, NxPhysics and NxPhysicsJointTests, and the harness was run against the rebuilt pair with the pinned oracle transcript as the baseline. CAUGHT, measured as stdout_delta=28: the mutant exit=1 with a 6-line transcript against the oracle's 29, and the lines it loses are `scene=created` and everything after it -- the fixture, all four cases' created/out_anchor/actors/released lines, and both release lines.",
         "detected": "stdout_delta=28"
       }
-    }
-  ],
-  "deferred": [
+    },
     {
       "id": "phys_fn_000013",
       "rva": "0x00001450",
-      "size": 157,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "callers",
-      "driving_phases": []
-    },
+      "proof": "differential_falsified",
+      "gate": "NxPhysicsJointStagedPairTests",
+      "falsification": {
+        "mutation": "the body link was short-circuited in a throwaway `git archive` copy of HEAD: `nxActorBuildBody` returns before linking the body at actor+0x14, so every actor the harness builds is static. `Scene::createJoint` then refuses the pair -- \"at least one of the two actors must be dynamic\" -- and every case fails to create its joint. The copy was rebuilt with NxFoundation, NxPhysics and NxPhysicsJointTests, and the harness was run against the rebuilt pair with the pinned oracle transcript as the baseline. CAUGHT, measured as stdout_delta=30: the mutant exit=0 with a 21-line transcript against the oracle's 29, losing every case's `created=yes`, `out_anchor`, `actors` and `released` lines.",
+        "detected": "stdout_delta=30"
+      }
+    }
+  ],
+  "deferred": [
     {
       "id": "phys_fn_000020",
       "rva": "0x00001560",

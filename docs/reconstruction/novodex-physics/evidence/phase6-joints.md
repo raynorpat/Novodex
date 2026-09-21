@@ -5194,3 +5194,77 @@ ones this harness cannot reach.**
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on
 purpose, phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed`
 exit 0, `validate_inventory` exit 0, 587 tool tests OK.
+
+## 12n. Round 35: a SIXTH row closed, and the rule that found it
+
+12l recorded three of the six rows as not closable. **One of those three is now closed**,
+and finding it needed the right mutation rather than a new harness.
+
+**`phys_fn_000013`, the actor constructor:**
+
+    actorCtor_nobody   nxActorBuildBody returns before linking the body at actor+0x14
+                       mutant exit 0, 21-line transcript, 30 differing lines
+                       stdout_delta=30   CAUGHT
+
+**Every actor becomes static**, because the body link is what makes one dynamic;
+`Scene::createJoint` then refuses the pair with its own message -- *"at least one of the
+two actors must be dynamic"* -- and every case loses its `created=yes`. **The mutation is
+in `Scene.cpp`, the failure is the joint harness rejecting what the actor constructor
+failed to build, and that is a falsification of this row.**
+
+**Why 12l missed it.** 12l said the actor constructor's *slot handout* has no reader --
+which is true (12i tested it and it was invisible). **But the constructor also does the
+body link, and the body link has a reader**: `Scene::createJoint` reads it to decide
+whether the pair is dynamic, and round 25 established that the joint rows' own transform
+depends on it. **The mutation had to target the part of the row the harness reads, not the
+part it does not.**
+
+**That sharpens 12h's rule rather than replacing it:**
+
+    a row that BUILDS an object is falsifiable by a mutation that makes the build fail
+
+and now, with the qualifier this row supplied:
+
+    the failure has to be one the harness CHECKS. The actor constructor's body link is
+    checked, because createJoint tests it. Its slot handout is not, because nothing
+    reads it.
+
+**Both are the same row.** So "is this row closable" is not a property of the row; **it is
+a property of the row's fields and the harness's readers**, and a row with one read field
+and one unread field is closable by the first and not the second.
+
+## 12o. Six rows closed, and the state after thirty-five rounds
+
+    phase 6   phys_fn_004115  NxJointDesc_SetGlobalAnchor          11m
+    phase 6   phys_fn_004117  NxJointDesc_SetGlobalAxis            11m
+    phase 7   phys_fn_000626  Scene::createActor                   12i
+    phase 7   phys_fn_000665  Scene::createJoint                   12k
+    phase 7   phys_fn_000651  the Scene descriptor initialiser     12k
+    phase 7   phys_fn_000013  the actor constructor                this round
+
+    census rows closed   6 of 6,338
+    phase 6 gate         pass, differential=pass, 11/11, closed=2
+    phase 7 gate         pass, differential=pass,  4/4, closed=4
+    phase 8 gate         skipped
+    reconstructed rows   669
+    all gates            green
+
+**Six closures in the four rounds since 11m**, after twenty-eight rounds with none. The
+last four rounds each closed one or two rows.
+
+**Two of the six recorded rows remain open**, and both are in row-fields the harness does
+not read: `Actor::loadFromDescInternal` (`phys_fn_000034`, phase 5) and the Scene
+constructor (`phys_fn_000647`, phase 7).
+
+- **`phys_fn_000034` is phase 5's**, and phase 5 is the RED-on-purpose phase. It cannot be
+  closed through the joint harness without registering that harness on phase 5, which is
+  a change to a phase whose gate is deliberately failing -- **a decision rather than a
+  measurement**, and one this round did not make.
+- **`phys_fn_000647`'s** writes are the Scene's fields, and the harness prints none of
+  them. **Its self-references could not be mutated** -- the anchor for them missed, which
+  is a fact about the source rather than about the row, and the mutation was not retried
+  with a corrected anchor.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on
+purpose, phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed`
+exit 0, `validate_inventory` exit 0, 587 tool tests OK.
