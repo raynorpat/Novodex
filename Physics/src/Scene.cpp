@@ -43,6 +43,9 @@
 // and the evidence records that its body is not modelled.
 // ---------------------------------------------------------------------------
 
+// Declared before the helpers that use it; defined above the constructor.
+static inline unsigned char* nxAt(unsigned* p, unsigned byteOffset);
+
 // Each function below is a REPRODUCTION HOLE for a helper another phase owns.
 //
 // The oracle's body is transcribed as far as its own field writes go, in the order
@@ -138,7 +141,7 @@ void nxSceneMember4CA30(void* self)
 	unsigned* p = static_cast<unsigned*>(self);
 	p[0x0b] = 0;
 	p[0x0c] = 0;
-	nxSceneArrayHeaderInit(p + 0x0d);					// phys_fn_004147
+	nxSceneArrayHeaderInit(nxAt(p, 0x0d));					// phys_fn_004147
 	p[0x16] = 0x7f7fffffu;
 	p[0x17] = 0x7f7fffffu;
 	p[0x18] = 0x7f7fffffu;
@@ -147,7 +150,7 @@ void nxSceneMember4CA30(void* self)
 	p[0x1b] = 0xff7fffffu;
 	p[0x1c] = 2;
 	p[0x1d] = 0;
-	new (p + 0x1e) SdkContainer();						// phys_fn_004836
+	new (nxAt(p, 0x1e)) SdkContainer();						// phys_fn_004836
 	}
 
 // phys_fn_000285 (0x0000c310, phase 7). The 0x28-byte collector. The oracle
@@ -304,6 +307,18 @@ void nxSceneNotifyActorCreated(void* hook);
 void nxSceneReportError(const char* message);
 
 
+
+// `p` is an `unsigned*` throughout this file, so `p + N` is byte 4N. Every offset
+// below is a BYTE offset read from the oracle, and one round of this reconstruction
+// was lost to writing `p + 0x55c` where `bytes(p) + 0x55c` was meant -- a write at
+// byte 0x1570, past the end of the 0x710-byte Scene, which corrupted the heap and
+// moved its visible victim whenever anything changed the allocation order. This
+// helper exists so the distinction is made once and cannot be got wrong again.
+static inline unsigned char* nxAt(unsigned* p, unsigned byteOffset)
+	{
+	return reinterpret_cast<unsigned char*>(p) + byteOffset;
+	}
+
 NxSceneInternal::NxSceneInternal()
 	{
 	unsigned* p = reinterpret_cast<unsigned*>(mBytes);
@@ -316,13 +331,13 @@ NxSceneInternal::NxSceneInternal()
 	for(int i = 1; i <= 10; ++i)
 		p[i] = 0;
 
-	nxSceneArrayHeaderInit(p + 0x0b);					// phys_fn_004147
-	new (p + 0x14) SdkContainer();						// phys_fn_004836
-	nxSceneMemberE1510(p + 0x18);						// phys_fn_005109
+	nxSceneArrayHeaderInit(nxAt(p, 0x0b));					// phys_fn_004147
+	new (nxAt(p, 0x14)) SdkContainer();						// phys_fn_004836
+	nxSceneMemberE1510(nxAt(p, 0x18));						// phys_fn_005109
 
 	p[0x2a] = 0;
 	p[0x2b] = 0;
-	nxSceneMemberDE7E0(p + 0x2c);						// phys_fn_005071
+	nxSceneMemberDE7E0(nxAt(p, 0x2c));						// phys_fn_005071
 
 	p[0x3d] = 0;
 	p[0x3e] = 0;
@@ -331,7 +346,7 @@ NxSceneInternal::NxSceneInternal()
 	p[0x41] = 0;
 	p[0x42] = 0;
 	p[0x43] = 0x3f8ccccdu;								// 1.1f
-	nxSceneMemberD4D00(p + 0x44);						// phys_fn_005029
+	nxSceneMemberD4D00(nxAt(p, 0x44));						// phys_fn_005029
 
 	p[0x91] = 0;
 	p[0x92] = 0;
@@ -354,7 +369,7 @@ NxSceneInternal::NxSceneInternal()
 	p[0xa1] = 0x3f800000u;								// 1.0f
 	p[0x9d] = 0x3f800000u;								// 1.0f
 	p[0x99] = 0x3f800000u;								// 1.0f
-	nxSceneMemberD3490(p + 0xa3);						// phys_fn_004996
+	nxSceneMemberD3490(nxAt(p, 0xa3));						// phys_fn_004996
 
 	p[0xc3] = 0;
 	p[0xc4] = 0;
@@ -366,17 +381,17 @@ NxSceneInternal::NxSceneInternal()
 	p[200] = 0;											// 0xc8
 	p[0xc9] = 0;
 	p[0xca] = 0x3f8ccccdu;								// 1.1f
-	nxSceneMemberBB510(p + 0xcb);						// phys_fn_004938
+	nxSceneMemberBB510(nxAt(p, 0xcb));						// phys_fn_004938
 
 	p[0x112] = 0;
 	p[0x113] = 0;
 	p[0x110] = 0;
 	p[0x111] = 1;
-	nxSceneMemberB5720(p + 0x114);						// phys_fn_004899
-	new (p + 0x138) SdkContainer();
-	new (p + 0x13c) SdkContainer();
-	new (p + 0x140) SdkContainer();
-	new (p + 0x144) SdkContainer();
+	nxSceneMemberB5720(nxAt(p, 0x114));						// phys_fn_004899
+	new (nxAt(p, 0x138)) SdkContainer();
+	new (nxAt(p, 0x13c)) SdkContainer();
+	new (nxAt(p, 0x140)) SdkContainer();
+	new (nxAt(p, 0x144)) SdkContainer();
 
 	p[0x14b] = 0x3dcccccdu;								// 0.1f
 	p[0x14c] = 10;
@@ -411,7 +426,7 @@ NxSceneInternal::NxSceneInternal()
 	p[0x172] = 0;
 	p[0x173] = 0;
 	p[0x174] = 0xffffffffu;
-	nxSceneListInit(p + 0x175);							// phys_fn_002346
+	nxSceneListInit(nxAt(p, 0x175));							// phys_fn_002346
 
 	p[0x17f] = 0;
 	p[0x180] = 0;
@@ -421,7 +436,7 @@ NxSceneInternal::NxSceneInternal()
 	p[0x185] = 0;
 	p[0x187] = 0;
 	p[0x188] = 0;
-	nxSceneMember4CA30(p + 0x189);						// phys_fn_001980
+	nxSceneMember4CA30(nxAt(p, 0x189));						// phys_fn_001980
 
 	p[0x1ab] = 0;
 	p[0x1ac] = 0;
@@ -716,7 +731,15 @@ NxActor* NxSceneInternal::createActor(const NxActorDescBase& desc)
 	// Push onto the Scene's actor array at +0x55c, growing it exactly as the
 	// descriptor initialiser's reserve does. The oracle's sequence here is the same
 	// capacity-compare-then-grow shape, inlined.
-	nxSceneArrayReserve(p + 0x55c, 1);
+	//
+	// `p` is an `unsigned*`, so the array's address is `p + 0x55c / 4` and NOT
+	// `p + 0x55c`. The latter is byte offset 0x1570, which is past the end of the
+	// 0x710-byte Scene -- and that single arithmetic slip was the heap corruption
+	// seven rounds chased: a write into whatever the allocator put after the Scene,
+	// whose visible victim therefore moved whenever anything changed the heap
+	// layout. The `Scene` initialiser's own reserves below use the correct form,
+	// which is why only the actor path corrupted.
+	nxSceneArrayReserve(reinterpret_cast<unsigned char*>(p) + 0x55c, 1);
 	unsigned* first = reinterpret_cast<unsigned*>(p[0x55c / 4]);
 	unsigned* last = reinterpret_cast<unsigned*>(p[0x560 / 4]);
 	if(last)
@@ -891,8 +914,12 @@ bool NxSceneInternal::initialise(const NxSceneDesc& desc)
 		p[0x24] = limits[3];		// maxNbDynamicShapes
 		p[0x28] = limits[4];		// maxNbJoints
 
-		nxSceneArrayReserve(p + 0x55c, p[0x18]);
-		nxSceneArrayReserve(p + 0x56c, p[0x1c]);
+		// `p` is an `unsigned*`, so these are byte offsets 0x55c and 0x56c only with
+		// the cast. Without it they are 0x1570 and 0x15b0, past the end of the
+		// 0x710-byte Scene -- the same slip as in createActor, dormant here only
+		// because the harness's descriptor has no limits pointer.
+		nxSceneArrayReserve(reinterpret_cast<unsigned char*>(p) + 0x55c, p[0x18]);
+		nxSceneArrayReserve(reinterpret_cast<unsigned char*>(p) + 0x56c, p[0x1c]);
 		}
 
 	// +0x52c is written through the pointer at +0x6cc, then the three descriptor

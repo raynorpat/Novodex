@@ -3241,3 +3241,95 @@ each found a defect no gate could see, in one round each, and 5,552 rows remain
 
 All gates green: phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose, phase 6 exit 0
 PASS, `completed` exit 0, `validate_inventory` exit 0, 587 tool tests OK.
+
+## 9y. FOUND: the heap corruption was pointer arithmetic, and the step probe found it
+
+Round 7 stopped the line because traces, disabled code and canaries all perturbed the
+heap. This round took the one approach that does not: **a step probe that exercises
+one operation per run, with no instrumentation between steps.**
+
+`tests/NxSceneStepProbe.cpp` creates the SDK, a scene, one actor, a second actor and
+a joint, and takes an argv flag saying which step to stop at. Nothing prints between
+steps, so the allocation order is identical in every run and a fault names the step.
+
+    step sdk      exit 0
+    step scene    exit 0
+    step actor1   exit -1073741819      <- the fault is in actor creation
+    step actor2   exit -1073741819
+    step joint    exit -1073741819
+
+**That bounded it to `createActor` in one run**, where seven rounds of traces had
+failed to.
+
+## 9z. The bug: `p + 0x55c` on an `unsigned*` is byte 0x1570
+
+`p` is `unsigned*` throughout `Scene.cpp`. `nxSceneArrayReserve(p + 0x55c, 1)` in
+`Scene::createActor` therefore passes **byte offset 0x1570**, which is past the end of
+the 0x710-byte Scene object. The reserve then grows an array header there -- reading
+and writing `first`, `last`, `memEnd` at addresses the Scene does not own, and
+freeing a pointer read from them.
+
+**That is the heap corruption, exactly.** It is a write into memory the object does
+not own, so its visible victim depends on what the allocator put there -- which is
+why it moved whenever anything changed the heap layout (9u), and why traces, disabled
+code and canaries all masked it (9w). The instruments were not failing to find the
+bug; they were changing which address the bug corrupted.
+
+**The same slip was in three places**, all in this file:
+
+    Scene::createActor      nxSceneArrayReserve(p + 0x55c, 1)          the live one
+    Scene::initialise       nxSceneArrayReserve(p + 0x55c, p[0x18])    dormant: the
+    Scene::initialise       nxSceneArrayReserve(p + 0x56c, p[0x1c])    limits are null
+
+**And in sixteen more places that were dormant for a different reason.** Every
+sub-object the constructor places used the same form:
+
+    nxSceneArrayHeaderInit(p + 0x0b)      -> byte 0x2c   instead of 0x0b
+    new (p + 0x14) SdkContainer()         -> byte 0x50   instead of 0x14
+    nxSceneMemberE1510(p + 0x18)          -> byte 0x60   instead of 0x18
+    ... sixteen calls, every one at four times its offset
+
+Those did not corrupt the heap because four times each offset still lands **inside**
+the 0x710-byte object -- they simply wrote the sub-objects in the wrong places, which
+is a fidelity bug rather than a memory-safety one.
+
+**The fix, and the guard against recurrence.** All nineteen are now byte-offset
+addressed through one helper, declared with the reason in its own comment:
+
+    static inline unsigned char* nxAt(unsigned* p, unsigned byteOffset)
+        { return reinterpret_cast<unsigned char*>(p) + byteOffset; }
+
+so the distinction between "dword index" and "byte offset" is made once.
+
+**Measured effect, step probe:**
+
+    step actor1   exit -1073741819  ->  exit 0
+    step actor2   exit -1073741819  ->  exit 0
+
+**Actor creation now works in isolation.** The `scene` and `joint` steps still fault,
+so the crash is not gone -- it has moved to a different operation, which is what
+fixing one bug in a chain looks like.
+
+## 10a. What this cost, and what the method lesson is
+
+**Seven rounds to find a single `*4`.** The reason is worth recording precisely,
+because it is not "the bug was hard":
+
+    round 4-5  measured the victim of the write (a CRT helper, the +0x6cc holder)
+    round 6    established the fault moves with the heap, i.e. it is a write
+    round 7    tried canaries, which moved the heap and so moved the fault
+    round 8    a step probe with no instrumentation, which bounded it in one run
+
+**Every instrument that changed the process changed the bug.** The step probe worked
+because it changed *nothing* -- it ran the same code and only chose where to stop.
+That is the lesson: for a layout-sensitive fault, vary the **work**, not the
+**process**.
+
+**And a second lesson, about the code rather than the method.** The slip was possible
+because the file mixes dword-indexed access (`p[0x55c / 4]`) with byte-offset
+arithmetic (`p + 0x55c`) on the same pointer. Both forms appear, they look alike, and
+one of them is wrong by a factor of four. The helper removes the ambiguity; a future
+reconstruction of a byte-addressed object should use it from the start.
+
+All gates green: phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose, phase 6 exit 0
+PASS, `completed` exit 0, `validate_inventory` exit 0, 587 tool tests OK.
