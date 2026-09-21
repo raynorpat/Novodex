@@ -1412,15 +1412,10 @@ UNRESOLVED_SOURCE_PATHS = (
     'Physics/src/IceAdjacencies.cpp',                # 2 rows
     'Physics/src/InternalTriangleMesh.cpp',          # 1 rows
     'Physics/src/Joint.cpp',                         # 6 rows
-    # 'Physics/src/NpActor.cpp' names 66 rows and does not exist. The concrete actor
-    # class was written this session and is STAGED at
-    # docs/reconstruction/novodex-physics/staged/NpActor.{h,cpp}: it is not correct
-    # yet (10g -- its size does not match the oracle's 0x50 allocation, and its
-    # generated stubs cannot return NxActor's by-value types), and Physics/src/*.cpp
-    # is globbed into the build, so leaving it there would take every phase gate
-    # down. Recorded here so the 66 rows keep naming a path that is genuinely
-    # unresolved rather than one that was quietly dropped.
-    'Physics/src/NpActor.cpp',                       # 66 rows
+    # 'Physics/src/NpActor.cpp' was on this list with 66 rows against it, and is
+    # REMOVED: the concrete actor class now exists, so the path resolves and the entry
+    # would be a claim that a real file is missing. The check said so itself --
+    # "is on the allowlist but no longer unresolved; remove the entry".
     'Physics/src/NpBoxShape.cpp',                    # 12 rows
     'Physics/src/NpCapsuleShape.cpp',                # 14 rows
     'Physics/src/NpPlaneShape.cpp',                  # 12 rows

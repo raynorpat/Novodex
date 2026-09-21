@@ -3744,3 +3744,72 @@ result would contradict the hypothesis.
 **No census row closed.** All gates green: phases 2/3/4 exit 0, phase 5 exit 1 RED on
 purpose, phase 6 exit 0 PASS, `completed` exit 0, `validate_inventory` exit 0, 587
 tool tests OK.
+
+## 10k. Round 16: the compiler-driven probe worked, and the class is concrete
+
+10j established that the probe must **instantiate** the class. This round did that, and
+it worked exactly as intended.
+
+**The probe** was a single global definition of the class:
+
+    NpActorVtable gProbeInstance;
+
+and the compiler's answer was precise:
+
+    error C2259: 'NpActorVtable': cannot instantiate abstract class
+        'void NxActor::setGlobalPose(const NxMat34 &)': is abstract
+
+**One virtual, named exactly, with its signature.** Three rounds of regex over the
+header had failed to find it -- twice by dropping it as a "duplicate" because the
+filter compared names, and once by mis-parsing its neighbour. **The compiler named it
+in one build.** That is the method fix 10i proposed and 10j corrected, and it is worth
+recording that it worked on the first attempt once the probe was the right shape.
+
+**`NxActor` declares `setGlobalPose` twice** -- `(const NxMat34&)` and
+`(const NxVec3&, const NxMat33&)` -- which is exactly the overload case a name-based
+filter cannot see. Both are now declared and defined.
+
+**The class is concrete.** `NpActorVtable` instantiates, `NpActorObject` is asserted at
+`0x50`, `installVtable()` writes the vtable word at `+0`, and `Scene::createActor`
+calls it. The build is clean and all gates are green.
+
+**And it is installed into the build**, not staged: `Physics/src/NpActor.cpp` and
+`Physics/src/include/NpActor.h` are real files now, the `Physics/src/*.cpp` glob picks
+the source up, and the two targets that build `Scene.cpp` were given it explicitly
+because they do not use the glob. The census's `Physics/src/NpActor.cpp` allowlist
+entry -- 66 rows -- is **removed**, because the path resolves now and the entry would
+be a claim that a real file is missing. **The check said so itself for the third time
+this session**: *"is on the allowlist but no longer unresolved; remove the entry"*.
+
+## 10l. What the fix did and did not do
+
+**The joint step still faults.** With the vtable installed and the class concrete:
+
+    step scene    exit 0
+    step actor1   exit 0
+    step joint    exit -1073741819
+
+**So the null vtable was a real defect and it was not the only one.** 10f identified it
+correctly -- the offset `0x1c30` is the `isDynamic` slot read through a null vtable --
+and fixing it did not make the joint path work. That is the third time a correctly
+identified defect has not been the last one:
+
+    9z   the *4 pointer slip            fixed, actor1 still faulted
+    10b  the unguarded pointer diff     fixed, actor1 still faulted
+    10f  the null vtable                fixed, joint still faults
+
+**What that pattern means, and it is the honest summary of sixteen rounds.** This path
+is a chain of defects, each real, each correctly diagnosed, and each hidden behind the
+one before it. The instruments that find them are now known and cheap -- the step
+probe for locating, the compiler for the class -- but the chain is longer than any
+single round's diagnosis suggested, and every estimate in this stretch has been too
+low.
+
+**The next measurement** is the same step probe with the joint step subdivided, since
+`Scene::createJoint` now has a working actor to dereference and faults somewhere after
+that. That is a probe change, not a library change, and it is the instrument that has
+worked twice.
+
+**No census row closed.** All gates green: phases 2/3/4 exit 0, phase 5 exit 1 RED on
+purpose, phase 6 exit 0 PASS, `completed` exit 0, `validate_inventory` exit 0, 587
+tool tests OK.

@@ -29,6 +29,7 @@
 #include "NxSceneDesc.h"
 #include "NxActorDesc.h"
 #include "NxActor.h"
+#include "NpActor.h"
 #include "NxJointDesc.h"
 #include "NxJoint.h"
 
@@ -750,6 +751,11 @@ NxActor* NxSceneInternal::createActor(const NxActorDescBase& desc)
 	// declared, which is real progress from 10h. It is still abstract -- one
 	// declaration is not reaching the class -- and Physics/src/*.cpp is globbed, so
 	// leaving it there takes every phase gate down. Staged until it compiles.
+	// The vtable. The oracle's actor HAS one and NxJointDesc::isValid() calls through
+	// it (isDynamic), so a raw block leaves actor[0] -- the vtable word -- at whatever
+	// the allocator left and the first virtual call reads [0 + slot]. That was the
+	// fault 10f identified; installing the vtable is the fix.
+	static_cast<NpActorObject*>(actorMemory)->installVtable();
 	NxActor* actor = static_cast<NxActor*>(nxActorConstruct(actorMemory, this));
 	if(!actor)
 		{
