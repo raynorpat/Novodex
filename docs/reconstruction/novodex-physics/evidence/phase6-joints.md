@@ -5325,3 +5325,72 @@ through this target, and one needs a gate-structure decision.
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on
 purpose, phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed`
 exit 0, `validate_inventory` exit 0, 587 tool tests OK.
+
+## 12s. Round 37: `--self` was a decorative flag, and fixing it opens the largest batch
+
+12r left the programme with six rows closed and two open. This round went looking for the
+next batch, and found that the instrument which could close the most rows **had a flag
+that did nothing**.
+
+**The layout harness already has a self mode.** `NxPhysicsObjectLayoutTests` accepts
+`--self`, and its own mode line prints `mode=self`. **But the pin check ran
+unconditionally:**
+
+    printf("layout base=%p mode=%s\n", physics, selfOnly ? "self" : "differential");
+    if(strcmp(loadedHash, expected) != 0)      // <-- no selfOnly guard
+        { fprintf(stderr, "FAIL loaded oracle is not the pinned one..."); return 1; }
+
+**So `--self` could not be used on any file but the pinned one, which is exactly what it
+exists to avoid.** The flag was decorative: it changed the printed mode and nothing else.
+
+**Fixed**, and the guard is now explicit:
+
+    if(!selfOnly) { ...pin check... }
+
+**And the harness immediately got further.** Before, the candidate run stopped at the pin
+after 9 lines. Now:
+
+    layout module path=...candidate\NxPhysics.dll sha256=865a288f...
+    layout base=6E850000 mode=self
+    layout arena-bridge=installed
+    <fault>
+
+**It reaches `arena-bridge=installed` and then faults.** That is a real change: the pin was
+the first obstacle and it is gone, and the next one is the harness's own arena bridge --
+which is where the candidate's object model is exercised.
+
+## 12t. Why this matters more than one row
+
+**117 reconstructed rows carry `Physics/src/ObjectModel.cpp`**, and 121 of phase 5's, 129
+of phase 6's and 188 of phase 7's rows stand at `reconstructed`. **The layout harness is
+the one instrument that drives the object model**, and until this round it could not load
+the candidate at all.
+
+**So the largest available batch is gated on one thing**: making the harness run against
+the rebuilt module. The pin is fixed; the arena-bridge fault is next. **If that is
+surmountable, the object-model rows become closable in the same way the six already closed
+ones were** -- a registered staged-pair target, a mutation, a measured detection.
+
+**This round did not get there.** It found the decorative flag, fixed it, and measured the
+next obstacle.
+
+## 12u. The flag-fix is a finding in its own right, and it is the seventh of a kind
+
+**A flag that changes a printed mode and nothing else is the same defect class as the six
+audit findings and the seven checks this session has recorded:**
+
+    7e   429 rows named a source that does not exist
+    7h   a field carrying two claims
+    7i   59 rows holding a state with no proof
+    8o   5,340 rows in no ledger list at all
+    8p   a status vocabulary nothing checked
+    10d  a harness reporting its own failure as a measurement
+    11s  eight rows built and never recorded
+    12s  a flag that changed a printed mode and nothing else
+
+**Every one was invisible to every gate**, and every one was found by asking what a claim
+or a flag or an instrument actually does rather than what it says it does.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on
+purpose, phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed`
+exit 0, `validate_inventory` exit 0, 587 tool tests OK.
