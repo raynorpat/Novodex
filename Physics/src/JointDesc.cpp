@@ -92,18 +92,21 @@ inline float* nxJointMatrixWorkspace()
 inline const float* nxJointWorldMatrix(NxActor* actor, const float*& t)
 	{
 	unsigned char* p = reinterpret_cast<unsigned char*>(actor);
-	void* actorDesc = *reinterpret_cast<void**>(p + 0x10);
-	if(actorDesc == 0)
-		return 0;
-	void* shape = *reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(actorDesc) + 8);
-	if(shape == 0)
-		return 0;
-	void* body = *reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(shape) + 8);
+
+	// actor+0x14 is the actor's BODY, which is the chain the oracle itself uses:
+	// Scene::createJoint reads the same word to test whether an actor is dynamic, and
+	// nxActorBuildBody is what links it here. The previous version walked
+	// actor+0x10 -> descriptor -> shape -> body, which is a chain nothing in this
+	// reconstruction builds -- it found null at the first level and returned 0, so
+	// every actor took the copy-through arm and the transform never executed.
+	void* body = *reinterpret_cast<void**>(p + 0x14);
 	if(body == 0)
 		return 0;
 
 	NxJointBodyView* bodyView = reinterpret_cast<NxJointBodyView*>(body);
 	NxJointPoseView* pose = bodyView->pose;
+	if(pose == 0)
+		return 0;
 	void* cached = *reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(pose) + 8);
 	if(cached != 0)
 		{

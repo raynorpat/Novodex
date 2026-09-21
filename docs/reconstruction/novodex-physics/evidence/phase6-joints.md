@@ -4338,3 +4338,71 @@ the registered target catches it. That is the closure the schema accepts, and it
 unblocked for the first time.
 
 **No census row closed.** But the machinery is complete and green.
+
+## 11k. The real reason the mutation cannot be caught, and a correction
+
+11i claimed the registered assertions were too weak and that the gate "did not catch"
+the walk fix. **Both halves of that were wrong**, and checking them is what produced the
+actual answer.
+
+**Correction 1: the assertions are not still matching.** They are **absent** from the
+candidate's transcript after the walk fix -- measured directly:
+
+    registered: case=revolute index=0 out_anchor=00000000.00000000.00000000 out_axis=3f800000.00000000.00000000 state=0
+    candidate:  case=revolute index=0 out_anchor=00000000.00000000.00000000 out_axis=bf800000.00000000.00000000 state=0
+    ABSENT
+
+So 11i's "matched by occurrence count and still present somewhere" was an inference, and
+it was wrong. The lines are gone.
+
+**Correction 2: the gate is not supposed to catch it.** `NxPhysicsJointTests` is
+registered as an **oracle differential**, and the gate launches it as one:
+
+    "NxPhysicsJointTests.exe" "D:\FlamingEnt__\Unreal_3\Binaries" 4b7db3e1...
+
+**It runs against the pinned shipped DLL, not the candidate.** `run_phase_gate.ps1`
+gathers oracle differentials separately for exactly this reason -- *"Oracle differentials
+run once against the pinned shipped DLL rather than once per staged pair, because what
+they drive is not exported and so cannot be resolved in the rebuilt module at all."*
+
+**So the gate passing is correct behaviour, and the mutation campaign was aimed at the
+wrong instrument.** The mutation changed `Physics/src/JointDesc.cpp` -- the CANDIDATE's
+implementation. An oracle differential never loads the candidate, so **no mutation to
+the candidate can ever be caught by it.** That is not a weak assertion; it is a
+structural property of the target class, and round 24 registered the target in the
+wrong class for the purpose the campaign needs.
+
+## 11l. What the campaign needs instead, and what this round actually found
+
+**The two joint-descriptor rows cannot be closed by an oracle differential.** The
+schema's closure is "a mutation aimed at the row that the gate catches", and a mutation
+to a row means a mutation to the candidate's implementation of it. **The target must
+therefore be a STAGED-PAIR differential** -- one that loads the rebuilt module and
+compares it with the pinned one -- which is what `NxPhysicsGeometryTests` and
+`NxPhysicsCollisionTests` are, and what round 18's descriptor harness was not either.
+
+**And a staged-pair target requires the two rows to be resolvable in the rebuilt
+module.** `run_phase_gate.ps1`'s own note says why that is the obstacle: the oracle
+differentials exist because *"what they drive is not exported and so cannot be resolved
+in the rebuilt module at all."* `NxJointDesc_SetGlobalAnchor` and `SetGlobalAxis` **are**
+exported -- `NxPhysicsJointTests` resolves them by `GetProcAddress` and the transcript
+prints `export=... present=yes` for both -- so they can be driven in the candidate, and
+a staged-pair target is possible. **That is the next thing to build.**
+
+**What this round did find, and it is real:**
+
+    a mutation aimed at the transform was not caught
+    because the transform arm never ran -- nxJointWorldMatrix walked a chain
+      nothing builds (actor+0x10 -> desc -> shape -> body) instead of the
+      oracle's own (actor+0x14 -> body -> +0x19c -> pose)
+    fixed, and the arm now runs
+    and it disagrees with the oracle, which is the honest state
+
+**So the arm was dead and is now live and wrong.** The mutation campaign produced that
+in one round, and twenty-four rounds of crash-chasing did not -- because a matching
+transcript was being read as evidence that the rows worked, and a mutation is what
+tests that claim.
+
+**No census row closed.** All gates green: phases 2/3/4 exit 0, phase 5 exit 1 RED on
+purpose, phase 6 exit 0 PASS, `completed` exit 0, `validate_inventory` exit 0, 587 tool
+tests OK.
