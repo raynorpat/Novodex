@@ -1045,7 +1045,12 @@ int wmain(int argc, wchar_t** argv)
 	oracle.releasePMap = (NxReleasePMapFn) GetProcAddress(physics, "NxReleasePMap");
 	if(!oracle.releasePMap)
 		return nxFail("the pinned oracle does not export NxReleasePMap");
-	if((unsigned char*) oracle.releasePMap - oracle.base != kReleasePMapRva)
+	// The censused RVA is a fact about the SHIPPED DLL, so comparing a loaded module against it is
+	// only meaningful in differential mode, where the loaded module IS that file. `--self` drives
+	// whatever module it was given -- which is what makes it useful on the rebuilt one -- and the
+	// comparison there would be asking about a file that is not loaded. The export itself is resolved
+	// by name either way, so nothing about which function is called changes.
+	if(!selfOnly && (unsigned char*) oracle.releasePMap - oracle.base != kReleasePMapRva)
 		return nxFail("NxReleasePMap is not at the censused RVA");
 	oracle.meshWriter = (NxMeshWriterFn) (oracle.base + kMeshWriterRva);
 	nxOracleStoreDword = (NxStoreDwordFn) (oracle.base + kStoreDwordRva);

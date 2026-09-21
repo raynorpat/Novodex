@@ -7441,3 +7441,94 @@ rather than the registration made and the failure explained afterwards.
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 601 tool tests OK.
+
+## 15u. Round 63: the RVA check made differential-only, and the fault that replaced it
+
+15t said the exported rows were "one check away" from working, because `NxReleasePMap` is resolved by
+name and the RVA comparison beside it is a consistency check rather than the resolution. **The check is
+now conditional on differential mode, with the reason written where it applies:**
+
+    // The censused RVA is a fact about the SHIPPED DLL, so comparing a loaded module against it is
+    // only meaningful in differential mode, where the loaded module IS that file. `--self` drives
+    // whatever module it was given ... and the comparison there would be asking about a file that is
+    // not loaded. The export itself is resolved by name either way, so nothing about which function
+    // is called changes.
+
+**The oracle run still passes** -- 39 lines, `asset result=pass`, exit 0 -- so the change is inert
+where it was doing its job.
+
+## 15v. And `--self` on the candidate now faults, which is a different finding
+
+    exit = -1073741819 (STATUS_ACCESS_VIOLATION), zero output
+
+**Zero output is the informative part**: the harness prints the module path and the mode before
+anything else, so **it faulted before its own first line** -- the fault is not in the pmap work.
+
+**The debugger is precise about where:**
+
+    eip = 6dcc3ce0     "Frame IP not in any known module"
+    kb  NxPhysicsAssetTests+0x1ecc
+        NxPhysicsAssetTests!NxReleasePMap+0x13b1
+        KERNEL32!BaseThreadInitThunk
+
+**`eip` is not in any loaded module.** So the harness **called an address that is not code** -- and
+`GetProcAddress(physics, "NxReleasePMap")` returned it, on the candidate, after the null check that
+would have caught a missing export. **The export resolved to something that is not a function.**
+
+**That is a different failure from the two 15s described.** The flag no longer stops the harness, and
+the RVA comparison no longer stops it; **what stops it now is that the candidate's export resolves to
+an address outside every mapped image.**
+
+## 15w. What that means, and what it does not
+
+**It is not yet established whether this is a defect in the reconstruction or in the harness's reading
+of it**, and this round did not conflate the two. What is established:
+
+    the oracle run passes, so the harness and the file are intact
+    --self reaches past the pin and past the RVA check
+    and then calls an address that is in no loaded module
+
+**Two candidate explanations were named, and the mechanical check ran and settled it:**
+
+    dumpbin /exports build/Release/NxPhysics.dll
+        NxReleasePMap    000052B0
+        NxCreatePhysicsSDK 00006B90
+    dumpbin /exports <the shipped DLL>
+        NxReleasePMap    00051040
+        NxCreatePhysicsSDK 0000FAE0
+
+**The exports resolve correctly.** The candidate's `NxReleasePMap` is at RVA `0x52B0` and the oracle's
+at `0x51040`, and **those are different because the two DLLs were linked independently** -- an export
+table names an RVA, and two builds of the same source do not have to place a function at the same one.
+The census records the oracle's, which is correct for the oracle.
+
+**So explanation one is eliminated, and with it the idea that this is a defect in the rebuilt
+module.** The harness resolves `NxReleasePMap` by name and gets a real address; the address in the
+debugger's register is not that one.
+
+**And explanation two is now precise rather than vague.** The harness binds six ORACLE RVAs by
+addition:
+
+    oracle.pmapCtor    = base + kPMapCtorRva      // phys_fn_002047  PenetrationMap::Create
+    oracle.pmapDtor    = base + kPMapDtorRva
+    oracle.pmapCreate  = base + kPMapCreateRva
+    oracle.streamCtor  = base + kStreamCtorRva
+    oracle.streamSeek  = base + kStreamSeekRva
+    oracle.streamDtor  = base + kStreamDtorRva
+    oracle.meshHeader  = base + kMeshHeaderRva
+    oracle.meshWriter  = base + kMeshWriterRva
+
+**None of those is exported, so none can be resolved by name, and the candidate does not place them at
+the oracle's offsets.** `base + kPMapCtorRva` on the candidate is therefore **an address that is not
+the function the harness means, and may not be code at all** -- which is what "in no known module"
+describes.
+
+**So the exported-rows fix is not a fix for the harness.** Making the RVA comparison differential-only
+removes an obstacle and leaves the harness calling the wrong functions, because **its work depends on
+the internal rows, not only the exported ones.** 15s's "one check away" was right about the check and
+too optimistic about what lay behind it -- **and this round corrected it by running the command rather
+than leaving two explanations standing.**
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 601 tool tests OK.
