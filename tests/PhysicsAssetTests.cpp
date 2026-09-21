@@ -54,6 +54,11 @@
 class NxTriangleMesh;
 #include "NxPMap.h"
 
+// The oracle-RVA to candidate-address table, generated from the census's recorded symbols joined to
+// the rebuilt module's linker map. It is what lets this harness drive a module that is not the pinned
+// one: the census records where the ORACLE put each row and the map records where the rebuild did.
+#include "oracle_rva_to_candidate.h"
+
 // ---------------------------------------------------------------------------
 // The recovered addresses. Every one is an inventory row this phase owns; the
 // evidence for what each does is evidence/phase4-formats.md.
@@ -982,6 +987,32 @@ static bool nxSha256(const wchar_t* path, char* text)
 	return true;
 	}
 
+// Where a target lives in the module that was loaded.
+//
+// In DIFFERENTIAL mode the loaded module IS the pinned one, so the censused RVA is its offset and the
+// arithmetic is exact. In `--self` mode the module is whatever was given -- which is the whole point of
+// the flag -- and the censused RVA is an offset into a DIFFERENT file, so adding it to this module's
+// base lands wherever the arithmetic falls. Round 69 measured that landing: the fault address was
+// exactly `base + kStreamCtorRva`, which is an address with no code at it.
+//
+// The table carries the rows whose symbol the census records AND whose candidate address the map
+// knows. An RVA it does not carry keeps the old arithmetic, and that is reported once rather than
+// silently, because a silent fallback is the fault this resolves.
+static const unsigned char* nxOracleTarget(bool selfOnly, const unsigned char* base,
+                                           unsigned rva, const char* what)
+	{
+	if(!selfOnly)
+		return base + rva;
+	for(unsigned i = 0; i < kNxRvaTranslationCount; ++i)
+		{
+		if(kNxRvaTranslations[i].oracleRva == rva)
+			return reinterpret_cast<const unsigned char*>(kNxRvaTranslations[i].candidateAddress);
+		}
+	fprintf(stderr, "WARNING: no translation for %s at oracle rva 0x%08x; "
+		"this target is not in the rebuilt module's map\n", what, rva);
+	return base + rva;
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	bool selfOnly = false;
@@ -1035,13 +1066,22 @@ int wmain(int argc, wchar_t** argv)
 
 	NxOracle oracle;
 	oracle.base = (unsigned char*) physics;
-	oracle.pmapCtor = (NxPMapCtorFn) (oracle.base + kPMapCtorRva);
-	oracle.pmapDtor = (NxPMapDtorFn) (oracle.base + kPMapDtorRva);
-	oracle.pmapCreate = (NxPMapCreateFn) (oracle.base + kPMapCreateRva);
-	oracle.streamCtor = (NxStreamCtorFn) (oracle.base + kStreamCtorRva);
-	oracle.streamSeek = (NxStreamSeekFn) (oracle.base + kStreamSeekRva);
-	oracle.streamDtor = (NxStreamDtorFn) (oracle.base + kStreamDtorRva);
-	oracle.meshHeader = (NxMeshHeaderFn) (oracle.base + kMeshHeaderRva);
+	// Every one of these is a row the census names, so each is a translation-table lookup rather
+	// than an addition. `selfOnly` is what decides which the resolver does.
+	oracle.pmapCtor = (NxPMapCtorFn) nxOracleTarget(selfOnly, oracle.base, kPMapCtorRva,
+		"phys_fn_002045 PenetrationMap::PenetrationMap");
+	oracle.pmapDtor = (NxPMapDtorFn) nxOracleTarget(selfOnly, oracle.base, kPMapDtorRva,
+		"phys_fn_001984 PenetrationMap::~PenetrationMap");
+	oracle.pmapCreate = (NxPMapCreateFn) nxOracleTarget(selfOnly, oracle.base, kPMapCreateRva,
+		"phys_fn_002047 PenetrationMap::create");
+	oracle.streamCtor = (NxStreamCtorFn) nxOracleTarget(selfOnly, oracle.base, kStreamCtorRva,
+		"phys_fn_004788 MemoryStream::MemoryStream");
+	oracle.streamSeek = (NxStreamSeekFn) nxOracleTarget(selfOnly, oracle.base, kStreamSeekRva,
+		"phys_fn_004780 MemoryStream::seek");
+	oracle.streamDtor = (NxStreamDtorFn) nxOracleTarget(selfOnly, oracle.base, kStreamDtorRva,
+		"phys_fn_004791 MemoryStream::~MemoryStream");
+	oracle.meshHeader = (NxMeshHeaderFn) nxOracleTarget(selfOnly, oracle.base, kMeshHeaderRva,
+		"phys_fn_002262 the NxStream mesh loader");
 	oracle.releasePMap = (NxReleasePMapFn) GetProcAddress(physics, "NxReleasePMap");
 	if(!oracle.releasePMap)
 		return nxFail("the pinned oracle does not export NxReleasePMap");
@@ -1052,8 +1092,10 @@ int wmain(int argc, wchar_t** argv)
 	// by name either way, so nothing about which function is called changes.
 	if(!selfOnly && (unsigned char*) oracle.releasePMap - oracle.base != kReleasePMapRva)
 		return nxFail("NxReleasePMap is not at the censused RVA");
-	oracle.meshWriter = (NxMeshWriterFn) (oracle.base + kMeshWriterRva);
-	nxOracleStoreDword = (NxStoreDwordFn) (oracle.base + kStoreDwordRva);
+	oracle.meshWriter = (NxMeshWriterFn) nxOracleTarget(selfOnly, oracle.base, kMeshWriterRva,
+		"phys_fn_002162 the TriangleMesh writer");
+	nxOracleStoreDword = (NxStoreDwordFn) nxOracleTarget(selfOnly, oracle.base, kStoreDwordRva,
+		"phys_fn_004797 MemoryStream::storeDword");
 
 	printf("asset fixtures pmap=%u mesh=%u writer=%u release=1\n",
 		kPMapFixtureCount, kMeshFixtureCount, kWriterFixtureCount);

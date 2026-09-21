@@ -275,7 +275,10 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/PMap.cpp Physics/src/MemoryStream.cpp Physics/src/TriangleMesh.cpp
 		Physics/src/ThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp)
 	target_include_directories(NxPhysicsAssetTests PRIVATE
-		Foundation/include Foundation/src/include Physics/include Physics/src/include)
+		Foundation/include Foundation/src/include Physics/include Physics/src/include
+		# The generated oracle-RVA to candidate-address table. It is built from the census and the
+		# rebuild's linker map, and this target is the one that drives rows through it.
+		docs/reconstruction/novodex-physics)
 	# NxReleasePMap is declared NXP_DLL_EXPORT in the pinned public NxPMap.h and
 	# this target links PMap.cpp directly, so the declaration must not come out
 	# dllimport. NX_PHYSICS_DLL is the arm of Nxp.h's chain that gives NXP export

@@ -8012,3 +8012,54 @@ field that is not a symbol.
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 601 tool tests OK.
+
+## 16q. Round 71: the harness resolves through the table, and says which rows it cannot
+
+16n said the fix was to resolve the harness's targets by symbol through the translation table. **It is
+bound**, and the shape is deliberate:
+
+    static const unsigned char* nxOracleTarget(bool selfOnly, const unsigned char* base,
+                                               unsigned rva, const char* what)
+        {
+        if(!selfOnly)
+            return base + rva;                 // the loaded module IS the pinned one
+        for(...) if(kNxRvaTranslations[i].oracleRva == rva)
+            return kNxRvaTranslations[i].candidateAddress;
+        fprintf(stderr, "WARNING: no translation for %s at oracle rva 0x%08x; "
+            "this target is not in the rebuilt module's map\n", what, rva);
+        return base + rva;
+        }
+
+**Differential mode keeps the arithmetic**, because there the censused RVA *is* the offset. **`--self`
+uses the table** and **reports the rows it cannot translate rather than falling back silently** -- a
+silent fallback would be the exact fault 16n measured.
+
+**And the harness now gets past the bindings and says which three it could not resolve:**
+
+    WARNING: no translation for phys_fn_004791 MemoryStream::~MemoryStream at oracle rva 0x000b3db0
+    WARNING: no translation for phys_fn_002262 the NxStream mesh loader at oracle rva 0x00055cb0
+    WARNING: no translation for phys_fn_002162 the TriangleMesh writer at oracle rva 0x000539d0
+
+**Three warnings, three names, and no guess.** Before this round the harness called an address with no
+code at it and the debugger was needed to find out; **now it names the rows it is missing**, which is
+what the warning is for.
+
+## 16r. What the three need, and two of them are the same gap
+
+    phys_fn_004791  its recorded symbol is `MemoryStream` -- a class name, not a function
+    phys_fn_002262  in TriangleMesh.cpp; the derivation did not reach it
+    phys_fn_002162  in TriangleMesh.cpp; the derivation did not reach it
+
+**The first is 16p's third case and needs its symbol corrected**, since `MemoryStream` matches nothing.
+
+**The other two are 13i's parser gap**, in the same file, and are the rows the derivation has now failed
+to reach three times -- which is a signal that the parser needs the file read more carefully rather than
+that the rows are unnameable.
+
+**This round did not reach a driving harness.** It replaced an address fault with three named warnings,
+which is progress of the kind that makes the next step mechanical: **the harness says exactly what it
+needs**, and there is no longer a debugger in the loop.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 601 tool tests OK.
