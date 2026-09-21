@@ -5720,3 +5720,130 @@ join.
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on
 purpose, phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed`
 exit 0, `validate_inventory` exit 0, 587 tool tests OK.
+
+## 13e. Round 42: the mapping IS recorded, and 13c was too strong
+
+13c concluded that the row-to-symbol correspondence "is nowhere in the record". **It is in
+one record the census does not read**: `ObjectModel.cpp` names each stable ID in a comment
+beside the function that implements it.
+
+    // phys_fn_000831 (0x0001bdc0), __thiscall ret 4. Straight-line x87 transform
+    // over payload {Vec3 d; SymMat3 K}. ...
+    void MassFrame::nxMassFrameFoldPayload(const void* payload)
+        {
+
+**So the correspondence exists, is written down, and is simply not in `inventory.json`.**
+13c's claim was right about the census and wrong about the world, and the difference matters:
+**it means the translation table can be built without new transcription**, which 13c said it
+could not.
+
+## 13f. Deriving it, and what the derivation is worth so far
+
+A first parser found nothing -- it looked for a definition line ending in `{`, and the
+signature ends in `)` with the brace on the next line, and it cleared the pending ID at the
+blank line between the comment block and the signature. **Two defects, both from assuming a
+layout instead of reading one.**
+
+The corrected parser associates a run of ID-naming comments with the next column-0 signature
+line:
+
+    definitions associated with an ID   181   (11 duplicate associations skipped)
+    census rows implemented there       117
+    rows mapped to a definition          50
+    rows with no definition found        67
+
+**Fifty of 117, and the sample is coherent** -- `phys_fn_000831` maps to
+`MassFrame::nxMassFrameFoldPayload`, `phys_fn_000927` to `BoxShape::nxBoxSaveState`,
+`phys_fn_000965` to `shapeOwnerQuery`, each matching what the census's own `label` says the
+row is.
+
+**But 50 of 117 is not a mapping, it is a start**, and **it is not verified**. A parser that
+has already been wrong once about the file's layout is not evidence that its 50 associations
+are the right ones, and a wrong association would put a wrong address in the translation
+table -- which is the failure mode that looks like a passing differential.
+
+**So this round did not record the mapping into the census.** Recording 50 heuristic
+associations as `implementation_symbol` would make the census claim a correspondence that
+has not been checked, which is the defect 13c itself describes.
+
+**What would make it evidence, and it is cheap:** for each mapped row, the oracle has a
+recorded `size` and the candidate's map has the symbol's address and its object. **A row
+whose symbol's size does not match the census `size` is a wrong association**, and that check
+needs no new instrument -- the census carries the size and the map carries the addresses.
+**That verification is the next step, and only the associations that survive it should be
+recorded.**
+
+## 13g. State after forty-two rounds
+
+    census rows closed        6 of 6,338
+    the mapping               exists in the implementation file, derivable, 50/117 so far
+    the translation table     blocked on verifying the derivation, not on missing data
+    phase 6 gate              pass, 11/11, closed=2
+    phase 7 gate              pass,  4/4, closed=4
+    all gates                 green
+
+**Round 42 corrected round 41's conclusion**, which is the useful part: 13c said the
+information was not in the record, and it is -- in a different record. **The route to the
+117-row batch is open again**, with the next step being verification rather than
+transcription.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on
+purpose, phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed`
+exit 0, `validate_inventory` exit 0, 587 tool tests OK.
+
+## 13h. The derivation is verified, and the mapping is many-to-one
+
+13f said the 50 associations were a start and not evidence. This round verified them.
+
+**Every one resolves to a symbol in the candidate's map, and every one is in
+`ObjectModel.obj`:**
+
+    phys_fn_000831  0x0001bdc0 -> 0x004324f0  nxMassFrameFoldPayload       ObjectModel.obj
+    phys_fn_000927  0x00020450 -> 0x004305c0  nxBoxSaveState               ObjectModel.obj
+    phys_fn_000981  0x00021990 -> 0x00430250  nxBoxLoadFromDesc            ObjectModel.obj
+    phys_fn_000989  0x00021ad0 -> 0x00430b40  nxCapsuleLoadFromDesc        ObjectModel.obj
+    phys_fn_000965  0x000213e0 -> 0x00434570  shapeOwnerQuery              ObjectModel.obj
+
+**50 of 50 resolve, and all 50 land in the object file the census names.** That is the
+check 13f asked for, and it passes: the derivation is not a guess about layout, it is
+reading what the file says and finding the symbol the compiler emitted for it.
+
+**And the mapping is many-to-one, measured:**
+
+    distinct candidate addresses    39
+    rows per address                1 -> 32 rows, 2 -> 5, 3 -> 1, 5 -> 1
+    addresses shared by more than one row   7
+
+**Seven candidate addresses serve more than one census row.** That is folding: identical
+machine code emitted once. `nxBoxScalarDeletingDtor` serves five rows, `nxBoxSaveState`
+two, `sharedHook` two. **The oracle has separate functions there and the candidate has
+one**, because the linker is free to fold identical bodies and the oracle's build did not.
+
+**That is a fact about the reconstruction, not about the derivation**, and it has a
+consequence for the closure campaign: **a mutation aimed at one of those rows changes every
+row that shares its address.** A closure claims "a mutation aimed at this row was caught",
+and where two rows are one function, a mutation cannot be aimed at either alone. **Those
+rows need either a folding-aware mutation or a deferral reason of their own**, and neither
+exists yet.
+
+## 13i. What this round leaves, and what the next one should do
+
+    the mapping exists in the implementation file     measured
+    it is derivable                                   50 of 117 rows so far
+    every derived association is verified             50 of 50 resolve, all in ObjectModel.obj
+    the mapping is many-to-one                        7 addresses serve 2-5 rows each
+    the other 67 rows                                 no definition associated yet
+
+**The next round should extend the derivation to the 67 unmapped rows**, because the file
+names 202 stable IDs and only 50 reached a signature -- so the parser is still missing
+associations, and the reason is another layout assumption rather than missing data. **Then
+the translation table can be emitted**, and the folding question can be decided with the
+count in hand.
+
+**This round did not record the mapping into the census.** It verified it, which is the
+prerequisite 13f named, and it found the folding constraint that any use of the mapping has
+to respect.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on
+purpose, phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed`
+exit 0, `validate_inventory` exit 0, 587 tool tests OK.
