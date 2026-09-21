@@ -159,7 +159,18 @@ int wmain(int argc, wchar_t** argv)
 	{
 	wchar_t pairDirectory[MAX_PATH];
 	HMODULE physics = 0;
-	int status = nxOpenPair(argc, argv, "NxPhysicsJointTests", pairDirectory, &physics);
+	// The gate launches an oracle differential with the pinned oracle's directory AND
+	// its expected sha256, because the addresses it calls are only meaningful against
+	// that exact file. nxOpenPair takes the directory alone, so the second argument is
+	// consumed here and checked against what was actually loaded.
+	if(argc != 3)
+		{
+		fprintf(stderr, "usage: %s <absolute oracle directory> <NxPhysics.dll sha256>\n",
+			"NxPhysicsJointTests");
+		return 2;
+		}
+
+	int status = nxOpenPair(argc - 1, argv, "NxPhysicsJointTests", pairDirectory, &physics);
 	if(status)
 		return status;
 

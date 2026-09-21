@@ -4259,3 +4259,82 @@ end to end. It took twenty-three rounds, seven fixed defects, one false defect, 
 instruments, and several rounds lost to measurement errors. The reconstruction now
 creates a scene, creates actors with bodies and vtables, creates joints with vtables,
 and releases all of it without faulting.
+
+## 11e. Round 24: the joint transcript now matches the oracle exactly, and it is registered
+
+11d's first step was "make the joint store the descriptor". This round did it, and the
+transcript diff went to zero.
+
+**What was implemented.**
+
+- `NpJointObject` gained a descriptor pointer at `+4`, with `descriptor()` and
+  `setDescriptor()`, and `nxJointConstruct` records the descriptor `Scene::createJoint`
+  handed it.
+- `getGlobalAnchor` and `getGlobalAxis` read `localAnchor[0]` and `localAxis[0]` from
+  that descriptor, so they answer with what the harness set through
+  `NxJointDesc_SetGlobalAnchor` / `SetGlobalAxis` rather than with fixed values.
+- `getActors` reads `actor[0]` and `actor[1]` from the same descriptor.
+
+**Measured, in three steps:**
+
+    before the descriptor was stored        normalised diff 22 lines
+    after the anchor and axis read it       normalised diff 14 lines   (only getActors)
+    after getActors read it                 normalised diff  0 lines
+
+**Zero.** The candidate's transcript is now identical to the pinned oracle's after the
+runner normalises the pair-identity lines -- which is the condition the programme
+requires before a target can be registered as an oracle differential.
+
+## 11f. Registered, and the Phase 6 gate passes on seven assertions
+
+`NxPhysicsJointTests` is registered the same way round 18 registered the
+descriptor harness:
+
+- `NxPhaseOracleDifferentialTargets['6']` and
+  `NxRegisteredOracleDifferentialTargets` name it -- and it must NOT appear in the
+  staged-pair lists, because it drives the pinned DLL once;
+- `NxPhaseCoverageFloor['6']` is **7**: three for the descriptor differential and four
+  for this one;
+- the four assertions are quoted verbatim from the oracle transcript -- the created
+  line, the anchor/axis/state line for case 0, the actor round-trip line, and the
+  anchor/axis/state line for case 3.
+
+**One convention fix was needed, and it is the same one round 18 needed**: the gate
+launches an oracle differential with the oracle's directory **and** its expected
+sha256, and this harness took only the directory, so the invocation exited 2. It now
+consumes both.
+
+**And one assertion was wrong on the first attempt**: the case-3 line was written from
+memory rather than from the transcript, and the gate rejected it -- *"reported its
+recorded oracle-side coverage (0 occurrences)"*. Corrected from the actual transcript
+value (`out_axis=3f13cd3a.3f13cd3a.3f13cd3a`). **The coverage assertion did its job**:
+it refused a line that was not in the output.
+
+**Measured:**
+
+    coverage_assertions_evaluated=7 floor=7
+    phase_gate=6 status=pass
+
+**Full suite unmoved**: phase 1 exit 3 skipped, phases 2, 3, 4 exit 0, phase 5 exit 1
+RED on purpose, phase 6 exit 0 PASS, phases 7 and 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0 with `unexplained=0`, 587 tool tests OK.
+
+## 11g. Where this leaves the closure campaign
+
+11d's remaining step was the mutations that close the two joint rows. The prerequisites
+are now all in place, and they are worth listing because each took rounds to reach:
+
+    a scene is created                       round 23
+    actors are created, with bodies          rounds 9-16
+    actors have vtables                      round 16
+    joints are created                       round 23
+    joints have vtables                      round 22
+    the joint transcript matches the oracle  this round
+    the target is registered, gate passes    this round
+
+**What is left is the thing the whole path was for**: aim a mutation at each of the two
+exported joint-descriptor rows, rebuild in a throwaway archive copy, and record whether
+the registered target catches it. That is the closure the schema accepts, and it is now
+unblocked for the first time.
+
+**No census row closed.** But the machinery is complete and green.

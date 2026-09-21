@@ -1309,6 +1309,9 @@ NxJoint* nxJointConstruct(void* memory, const void* desc, unsigned type)
 	// the first virtual call reads through it. That is the actor's defect (10f, 10k)
 	// one class down, found in 10v.
 	static_cast<NpJointObject*>(memory)->installVtable();
+	// The descriptor, so the joint's virtuals can answer from what it carried.
+	static_cast<NpJointObject*>(memory)->setDescriptor(
+		static_cast<const NxJointDesc*>(desc));
 
 	// The marker at +0x12 is left NULL, deliberately. The oracle's createJoint tests
 	// it and skips the two-word copy out of the Scene's +0x6cc holder when it is null;

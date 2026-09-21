@@ -15,6 +15,7 @@
 #include "Nxp.h"
 #include "PhysicsInternal.h"
 #include "NxJoint.h"
+#include "NxJointDesc.h"
 
 /**
 The joint OBJECT: 0x17c bytes for a revolute joint, offset-addressed. The size is the
@@ -31,6 +32,19 @@ struct NpJointObject
 
 	// The vtable word at +0, which is what makes the harness's virtual calls dispatch.
 	void installVtable();
+
+	// The descriptor the joint was built from, at +4. The three virtuals the harness
+	// calls read their answers from it, because the oracle's joint stores what its
+	// descriptor carried and this object has nowhere else to keep it.
+	static const NxU32 DESCRIPTOR_OFFSET = 4;
+	const NxJointDesc* descriptor() const
+		{
+		return *reinterpret_cast<const NxJointDesc* const*>(mBytes + DESCRIPTOR_OFFSET);
+		}
+	void setDescriptor(const NxJointDesc* desc)
+		{
+		*reinterpret_cast<const NxJointDesc**>(mBytes + DESCRIPTOR_OFFSET) = desc;
+		}
 	};
 
 /**

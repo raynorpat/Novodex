@@ -8,6 +8,7 @@
 #include "NpJoint.h"
 
 #include "NxVec3.h"
+#include "NxJointDesc.h"
 
 static NpJointVtable gNpJointVtable;
 
@@ -17,17 +18,36 @@ void NpJointObject::installVtable()
 	}
 
 
-// The three the harness calls. The anchor and axis are written through the reference
-// the caller supplies; the values are zero because a joint built by the hole has no
-// stored anchor or axis -- nxJointConstruct does not apply the descriptor.
+// The three the harness calls. Each reads the descriptor the joint was built from --
+// the oracle's joint stores what its descriptor carried, and the harness sets the
+// anchor and axis through NxJointDesc_SetGlobalAnchor and SetGlobalAxis before
+// calling createJoint, so the descriptor is where the values are.
+//
+// `this` is the joint object, which is why the cast is valid: the vtable installed at
+// +0 is this class's, and the object's layout is NpJointObject's.
+static const NpJointObject* nxJointObjectOf(const NpJointVtable* self)
+	{
+	return reinterpret_cast<const NpJointObject*>(const_cast<NpJointVtable*>(self));
+	}
+
 void NpJointVtable::getGlobalAnchor(NxVec3& out) const
 	{
-	out.set(0.0f, 0.0f, 0.0f);
+	const NpJointObject* object = nxJointObjectOf(this);
+	const NxJointDesc* desc = object ? object->descriptor() : 0;
+	if(desc)
+		out = desc->localAnchor[0];
+	else
+		out.set(0.0f, 0.0f, 0.0f);
 	}
 
 void NpJointVtable::getGlobalAxis(NxVec3& out) const
 	{
-	out.set(0.0f, 0.0f, 1.0f);
+	const NpJointObject* object = nxJointObjectOf(this);
+	const NxJointDesc* desc = object ? object->descriptor() : 0;
+	if(desc)
+		out = desc->localAxis[0];
+	else
+		out.set(0.0f, 0.0f, 1.0f);
 	}
 
 NxJointState NpJointVtable::getState()
@@ -155,8 +175,18 @@ NxPulleyJoint* NpJointVtable::isPulleyJoint() { return 0; }
 // (unimplemented) setName
 void NpJointVtable::setName(const char*) {}
 
-// (unimplemented) getActors
-void NpJointVtable::getActors(NxActor**, NxActor**) {}
+// getActors answers from the same descriptor the anchor and axis come from: the
+// harness reads back the two actors it put in the descriptor and compares them with
+// the ones it created, which is what its `actors a=match b=match` line reports.
+void NpJointVtable::getActors(NxActor** actor1, NxActor** actor2)
+	{
+	const NpJointObject* object = nxJointObjectOf(this);
+	const NxJointDesc* desc = object ? object->descriptor() : 0;
+	if(actor1)
+		*actor1 = desc ? desc->actor[0] : 0;
+	if(actor2)
+		*actor2 = desc ? desc->actor[1] : 0;
+	}
 
 // (unimplemented) getName
 const char* NpJointVtable::getName() const { return 0; }

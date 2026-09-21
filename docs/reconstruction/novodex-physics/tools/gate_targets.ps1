@@ -66,7 +66,7 @@ $NxPhaseOracleDifferentialTargets = [ordered] @{
     '3' = @('NxPhysicsCollisionTests')
     '4' = @('NxPhysicsAssetTests', 'NxPhysicsThirdPartyTests')
     '5' = @('NxPhysicsObjectLayoutTests')
-    '6' = @('NxPhysicsJointDescTests')
+    '6' = @('NxPhysicsJointDescTests', 'NxPhysicsJointTests')
     '7' = @()
     '8' = @()
 }
@@ -92,6 +92,17 @@ $NxRequiredCoverageLines = [ordered] @{
     # degenerate zero and NaN axes are quarantined in the harness with the reason
     # recorded there (evidence/phase6-joints.md 7p); these three lines pin the
     # finite path, which is exact.
+    # The Phase 6 joint differential. Four revolute cases: build the descriptor, create
+    # the joint, read every value back, release. The transcript is identical to the
+    # pinned oracle's after the runner normalises the pair-identity lines (diff 0), so
+    # these four lines pin the whole surface: the two actors surviving the round trip,
+    # the anchor and axis the descriptor carried, the state, and the release.
+    'NxPhysicsJointTests' = @(
+        'case=revolute index=0 created=yes',
+        'case=revolute index=0 out_anchor=00000000.00000000.00000000 out_axis=3f800000.00000000.00000000 state=0',
+        'case=revolute index=0 actors a=match b=match',
+        'case=revolute index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0'
+    )
     'NxPhysicsJointDescTests' = @(
         'case=0 actors a=null b=null in_anchor=3f800000.40000000.40400000 in_axis=3f000000.3f000000.3f000000',
         'after_axis localNormal0=bed105ec.bed105ec.3f5105ec localNormal1=bed105ec.bed105ec.3f5105ec localAxis0=3f13cd3a.3f13cd3a.3f13cd3a localAxis1=3f13cd3a.3f13cd3a.3f13cd3a localAnchor0=3f800000.40000000.40400000 localAnchor1=3f800000.40000000.40400000 flags=00000002',
@@ -944,7 +955,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '4' = 100  # 34 for NxPhysicsAssetTests, 66 for NxPhysicsThirdPartyTests
     '5' = 126  # was 124: +2 for the shapeleaf family (row + candidate drive)
                # (RED on purpose: vtables family open)
-    '6' = 3   # the Phase 6 joint-descriptor differential's three lines
+    '6' = 7   # 3 for the joint-descriptor differential, 4 for the joint differential
     '7' = 0
     '8' = 0
 }
@@ -977,6 +988,7 @@ $NxRegisteredOracleDifferentialTargets = @(
     'NxPhysicsAssetTests',
     'NxPhysicsCollisionTests',
     'NxPhysicsJointDescTests',
+    'NxPhysicsJointTests',
     'NxPhysicsObjectLayoutTests',
     'NxPhysicsThirdPartyTests'
 )
