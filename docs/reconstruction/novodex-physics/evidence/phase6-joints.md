@@ -2788,3 +2788,80 @@ driven.
 the harness went from *crashing* to *reporting*, that a real 4-byte/32-byte
 allocation bug was found and fixed, and that `scene=created` -- the measurement six
 phases of Scene work were for -- has been reached.
+
+## 9l. Actors are created: the premature body test was the blocker
+
+9j narrowed the actor failure to the shape path. The cause was a transcription
+error of mine, not a hole.
+
+**The error.** `Actor::loadFromDescInternal` had a body test placed **before** the
+shape path:
+
+    if(d[0x12] == 1)
+        {
+        nxActorBuildBody(actor, d);
+        if(!a[0x10 / 4])        // actor+0x10
+            return 0;           // <-- fires on every actor
+        }
+
+`actor+0x10` is written **by the shape path**, which the oracle runs *after* that
+point. Testing it first meant the test read a field nothing had written yet, so the
+function returned 0 for every actor the harness built. The oracle's structure, from
+its decompilation, is:
+
+    if (d[0x12] == 1) { single shape -> actor+0x10, or a group }   (flexible)
+    else if (d[0x12] == 2) { the same shape path }                 (static)
+    then the tail: body test, mass pass, scene registration
+
+**With that corrected, the harness reports `fixture=a,created b,created`.** Both
+actors are created, which is the first time this has happened. The scene and both
+actors now exist.
+
+## 9m. `Scene::createJoint` transcribed, and the harness reaches the joints
+
+With actors working, the harness's next call is `scene.createJoint(desc)`, which was
+one of the 63 unimplemented `NpScene` virtuals returning 0. The real row is
+`phys_fn_000665` (**0x000142c0**, 718 B, phase 7), and its own error strings name it:
+*"PhysicsSDK::createJoint: desc.isValid() fails!"* and *"PhysicsSDK::createJoint: at
+least one of the two actors must be dynamic!"*, both with
+`__FILE__ ".../Physics/src/Scene.cpp"`.
+
+Transcribed: the re-entry guard at the file-scope flag `.data 0x00123c10` with its
+own message; `desc.isValid()`; the **dynamics test**, which reads each actor's
+`+0x14` body and that body's `+8` marker; a switch on descriptor word 1 with the
+revolute case's `0x17c` allocation; and the tail, which reads the joint's `+0x12`
+word and either copies two words out of the Scene's `+0x6cc` holder and registers
+the joint, or calls the joint's deleting destructor.
+
+`NpScene::createJoint` now forwards through the write lock in the same shape as
+`createActor`.
+
+**The harness now crashes instead of completing.** It produced no output at all,
+which -- as 9g established -- means stdout was discarded by the fault rather than
+that nothing ran. The trace prints added to `createJoint` did not appear either,
+which places the fault **at or before `createJoint`'s first statement**: the
+dynamics test reads two pointer chains (`actor+0x14` then `+8`), and the actors this
+reconstruction builds have no body, because `nxActorBuildBody` is still a hole that
+does nothing.
+
+**So the next step is precise**: `nxActorBuildBody` must attach a real body object,
+because `Scene::createJoint` dereferences it. That is one hole, named, with a known
+caller -- and it is also what the joint-descriptor rows' pose chain needs, since
+`phys_fn_000004` reads `body+0x19c`.
+
+## 9n. State after this round
+
+    scene=created                  reached (9i)
+    fixture=a,created b,created    reached (9l)
+    Scene::createJoint             transcribed (9m)
+    the harness                    crashes at or before createJoint's first statement
+    nxActorBuildBody               the hole the crash points at
+
+**The blocker is now a single named hole with a single known caller**, rather than
+"somewhere in eleven stubs". That is a materially better position than the round
+started in, and the two steps that got here -- `scene=created` and both actors
+created -- are both strictly better than the state this work inherited.
+
+**Still no census row closed.** All gates green: phases 2/3/4 exit 0, phase 5 exit 1
+RED on purpose, phase 6 exit 0 PASS, `completed` exit 0, `validate_inventory` exit 0,
+587 tool tests OK.

@@ -35,6 +35,8 @@
 #include "Scene.h"
 #include "NxActor.h"
 #include "NxActorDesc.h"
+#include "NxJointDesc.h"
+#include "NxJoint.h"
 
 // ---------------------------------------------------------------------------
 // Reproduction holes: the lock protocol Phase 3 owns.
@@ -175,12 +177,6 @@ static void* nxConditionConstruct(void* memory, void* a, void* b, void* c)
 void NpScene::getGravity(NxVec3&)
 	{
 	
-	}
-
-// (unimplemented) createJoint
-NxJoint * NpScene::createJoint(const NxJointDesc &)
-	{
-	return 0;
 	}
 
 // (unimplemented) releaseJoint
@@ -553,6 +549,21 @@ bool NpScene::fetchResults(NxSimulationStatus, bool block )
 void NpScene::setGravity(const NxVec3&)
 	{
 	
+	}
+
+// phys_fn_000295's shape: the write lock, the forward, the release.
+NxJoint* NpScene::createJoint(const NxJointDesc& desc)
+	{
+	if(!mWriteLock || !nxLockTryLock(mWriteLock))
+		{
+		nxSceneDeadlockReport();
+		return 0;
+		}
+
+	NxJoint* joint = mScene->createJoint(desc);
+
+	nxLockUnlock(mWriteLock);
+	return joint;
 	}
 
 // nxSceneDeadlockReport is defined in Scene.cpp, beside the other scene diagnostics.

@@ -50,6 +50,8 @@ class NpScene : public NxScene, public NxAllocateable
 	// The lock walk itself is Phase 3's; the forward is in NpScene.cpp.
 	NxActor* createActor(const NxActorDescBase& desc);
 	void releaseActor(NxActor& actor);
+	// phys_fn_000295's shape, forwarded to the Scene.
+	virtual NxJoint* createJoint(const NxJointDesc& desc);
 	virtual void setGravity(const NxVec3&);
 
 	// The remaining virtuals are not reached by a reconstructed path and are
@@ -61,7 +63,6 @@ class NpScene : public NxScene, public NxAllocateable
 	// releaseActor above are reconstructed. Each body is empty and returns a default.
 	// None is claimed as reconstructed and none is gated.
 	virtual void getGravity(NxVec3&);
-	virtual NxJoint * createJoint(const NxJointDesc &);
 	virtual void releaseJoint(NxJoint &);
 	virtual NxSpringAndDamperEffector* createSpringAndDamperEffector(const NxSpringAndDamperEffectorDesc&);
 	virtual void releaseEffector(NxEffector&);

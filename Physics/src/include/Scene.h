@@ -37,6 +37,8 @@ class Scene;
 class NxSceneDesc;
 class NxActor;
 class NxActorDescBase;
+class NxJointDesc;
+class NxJoint;
 
 /**
 The 0x710-byte scene object.
@@ -59,6 +61,10 @@ class NxSceneInternal
 	// phys_fn_000626 (0x00011730). The actor factory. createScene reaches it too,
 	// because the ground plane is made by calling this.
 	NxActor* createActor(const NxActorDescBase& desc);
+
+	// phys_fn_000665 (0x000142c0). The joint factory. Needs at least one of the
+	// two actors dynamic, read through each actor's +0x14 body.
+	NxJoint* createJoint(const NxJointDesc& desc);
 
 	// The raw object. `at` is the only sanctioned way to reach a field whose name
 	// is not recovered.

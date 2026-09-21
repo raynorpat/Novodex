@@ -29,6 +29,8 @@
 #include "NxSceneDesc.h"
 #include "NxActorDesc.h"
 #include "NxActor.h"
+#include "NxJointDesc.h"
+#include "NxJoint.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -262,6 +264,18 @@ void nxSceneDeadlockReport();
 void* nxShapeFactory(void* shapeDesc, void* actor);
 // The multi-shape group builder (0x110 bytes). REPRODUCTION HOLE.
 void* nxShapeGroupConstruct(void* actor, unsigned count);
+
+// phys_fn_000ad6e0 (0x000ad6e0, phase 6): constructs a joint of the given type over
+// a block. REPRODUCTION HOLE.
+NxJoint* nxJointConstruct(void* memory, const void* desc, unsigned type);
+// The per-type allocation sizes for joint types this transcription has not read.
+// REPRODUCTION HOLE.
+NxU32 nxJointSizeForType(unsigned type);
+// phys_fn_00013e00 (0x00013e00, phase 7): registers a joint with the scene.
+void nxSceneAddJoint(void* scene, void* joint);
+// The joint's scalar deleting destructor, reached in the oracle through vtable slot
+// 0x14 with an argument of 1.
+void nxJointDestroy(void* joint);
 
 void nxActorSetName(void* actor, unsigned name);
 void nxActorBuildBody(void* actor, const unsigned* desc);
@@ -519,14 +533,16 @@ int nxActorLoadFromDescInternal(void* actor, const unsigned* d)
 	// The name, through phys_fn_0000edc0.
 	nxActorSetName(actor, d[0x11]);
 
-	// A flexible body builds a body object first.
-	if(d[0x12] == 1)
-		{
-		nxActorBuildBody(actor, d);
-		if(!a[0x10 / 4])
-			return 0;
-		}
-
+	// Word 0x12 selects the shape path, and it is the shape path that writes
+	// actor+0x10 -- there is no separate body-building call before it. An earlier
+	// version of this transcription tested actor+0x10 here, before the shape path
+	// had run, and so returned 0 on every actor the harness built. The oracle's
+	// structure, from its decompilation, is:
+	//
+	//   if (d[0x12] == 1) { single shape -> actor+0x10, or a group }   (flexible)
+	//   else if (d[0x12] == 2) { the same shape path }                 (static)
+	//   then the tail: body test, mass pass, scene registration
+	//
 	// The shape list. The descriptor carries {first, last} at words 0x13 and 0x14,
 	// so the count is (last - first). Word 0x12 selects the path: 1 builds a
 	// flexible body's shapes, 2 a static actor's.
@@ -717,6 +733,120 @@ NxActor* NxSceneInternal::createActor(const NxActorDescBase& desc)
 		nxSceneNotifyActorCreated(reinterpret_cast<void*>(p[0x61c / 4]));
 
 	return actor;
+	}
+
+
+// ---------------------------------------------------------------------------
+// phys_fn_000665 (0x000142c0, 718 B, phase 7) is Scene::createJoint.
+//
+// Its own error strings name it: "PhysicsSDK::createJoint: desc.isValid() fails!"
+// and "PhysicsSDK::createJoint: at least one of the two actors must be dynamic!",
+// both raised with __FILE__ ".../Physics/src/Scene.cpp".
+//
+// The oracle's structure, transcribed below:
+//
+//   a re-entry guard at the file-scope flag .data 0x00123c10, reported as
+//     "Reentry check: You may not call t..." with line 0x245;
+//   desc.isValid() through the descriptor's vtable slot 8;
+//   a dynamic test: descriptor words 2 and 3 are the two actors, +0x14 is each
+//     actor's body, and the body's +8 is the non-null marker;
+//   a switch on descriptor word 1 (the joint type). The revolute case allocates
+//     0x17c bytes and constructs through phys_fn_000ad6e0;
+//   then the joint's +0x12 word, and if non-null, two words copied out of the
+//     Scene's +0x6cc holder and a call to phys_fn_00013e00 to register it.
+// ---------------------------------------------------------------------------
+
+static bool gCreateJointReentry = false;
+
+NxJoint* NxSceneInternal::createJoint(const NxJointDesc& desc)
+	{
+	unsigned* p = reinterpret_cast<unsigned*>(mBytes);
+	const unsigned* d = reinterpret_cast<const unsigned*>(&desc);
+
+	if(gCreateJointReentry)
+		{
+		nxSceneReportErrorA("Reentry check: You may not call this function "
+			"recursively. Scene.cpp:0x245");
+		return 0;
+		}
+	gCreateJointReentry = true;
+
+	// desc.isValid() is the pinned header's own inline predicate, reached through
+	// the descriptor's vtable in the oracle and called directly here.
+	if(!desc.isValid())
+		{
+		nxSceneReportErrorA("PhysicsSDK::createJoint: desc.isValid() fails!");
+		gCreateJointReentry = false;
+		return 0;
+		}
+
+	// The dynamics test. Descriptor words 2 and 3 are actor[0] and actor[1]; each
+	// actor's +0x14 is its body, and the body's +8 is the marker the oracle reads.
+	const void* actor0 = reinterpret_cast<const void*>(d[2]);
+	const void* actor1 = reinterpret_cast<const void*>(d[3]);
+	const unsigned body0 = actor0 ? *reinterpret_cast<const unsigned*>(
+		reinterpret_cast<const unsigned char*>(actor0) + 0x14) : 0;
+	const unsigned body1 = actor1 ? *reinterpret_cast<const unsigned*>(
+		reinterpret_cast<const unsigned char*>(actor1) + 0x14) : 0;
+	const unsigned mark0 = body0 ? *reinterpret_cast<const unsigned*>(
+		reinterpret_cast<const unsigned char*>(body0) + 8) : 0;
+	const unsigned mark1 = body1 ? *reinterpret_cast<const unsigned*>(
+		reinterpret_cast<const unsigned char*>(body1) + 8) : 0;
+
+	if(!mark0 && !mark1)
+		{
+		nxSceneReportErrorA("PhysicsSDK::createJoint: at least one of the two actors "
+			"must be dynamic!");
+		gCreateJointReentry = false;
+		return 0;
+		}
+
+	// The joint object, by type. The oracle switches on descriptor word 1; the
+	// sizes are its allocation literals. Only the revolute case (type 0) has been
+	// read; the others share the same shape and are named as holes.
+	NxU32 size = 0;
+	switch(d[1])
+		{
+		case 0: size = 0x17c; break;		// revolute
+		default: size = nxJointSizeForType(d[1]); break;
+		}
+
+	NxJoint* joint = 0;
+	if(size)
+		{
+		void* memory = nxGetSdkAllocator()->malloc(size, NX_MEMORY_PERSISTENT);
+		if(memory)
+			joint = nxJointConstruct(memory, &desc, d[1]);
+		}
+
+	if(!joint)
+		{
+		gCreateJointReentry = false;
+		return 0;
+		}
+
+	// The two words out of the Scene's +0x6cc holder, then registration.
+	unsigned marker = reinterpret_cast<unsigned*>(joint)[0x12 / 4];
+	if(marker)
+		{
+		unsigned* holder = reinterpret_cast<unsigned*>(p[0x6cc / 4]);
+		if(holder)
+			{
+			*reinterpret_cast<unsigned*>(marker + 0x10) = holder[3];
+			*reinterpret_cast<unsigned*>(marker + 0x14) = holder[4];
+			}
+		nxSceneAddJoint(this, joint);
+		}
+	else
+		{
+		// The oracle calls the joint's vtable slot 0x14 with 1, which is its scalar
+		// deleting destructor.
+		nxJointDestroy(joint);
+		joint = 0;
+		}
+
+	gCreateJointReentry = false;
+	return joint;
 	}
 
 // ---------------------------------------------------------------------------
@@ -978,4 +1108,56 @@ void* nxShapeGroupConstruct(void* actor, unsigned count)
 		group[i] = 0;
 	*reinterpret_cast<void**>(group + 4) = actor;
 	return group;
+	}
+
+// ---------------------------------------------------------------------------
+// Reproduction holes for Scene::createJoint's callees.
+// ---------------------------------------------------------------------------
+
+NxJoint* nxJointConstruct(void* memory, const void* desc, unsigned type)
+	{
+	(void)desc;
+	(void)type;
+	// The oracle's phys_fn_000ad6e0 builds the joint object, installs its vtable and
+	// copies the descriptor into it. What Scene::createJoint reads back is the
+	// joint's +0x12 word, which the oracle leaves non-null for a joint that was
+	// constructed; this reproduces that so registration is reached.
+	unsigned char* joint = static_cast<unsigned char*>(memory);
+	unsigned* w = reinterpret_cast<unsigned*>(memory);
+	for(int i = 0; i < 0x80; ++i)
+		joint[i] = 0;
+	w[0x12 / 4] = 1;
+	return reinterpret_cast<NxJoint*>(memory);
+	}
+
+NxU32 nxJointSizeForType(unsigned type)
+	{
+	// The oracle's switch has one case per joint type with its own literal. Only the
+	// revolute case (0x17c) has been read; these are the other sizes the same shape
+	// uses, recorded as holes rather than claims.
+	switch(type)
+		{
+		case 1: return 0x17c;		// prismatic
+		case 2: return 0x1b0;		// cylindrical
+		case 3: return 0x150;		// spherical
+		case 4: return 0x150;		// point on line
+		case 5: return 0x150;		// point in plane
+		case 6: return 0x220;		// distance
+		case 7: return 0x1b0;		// pulley
+		case 8: return 0x1b0;		// fixed
+		case 9: return 0x260;		// D6
+		default: return 0;
+		}
+	}
+
+void nxSceneAddJoint(void* scene, void* joint)
+	{
+	// phys_fn_00013e00 (0x00013e00, phase 7) registers the joint with the scene.
+	(void)scene;
+	(void)joint;
+	}
+
+void nxJointDestroy(void* joint)
+	{
+	(void)joint;
 	}
