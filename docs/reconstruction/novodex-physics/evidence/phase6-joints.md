@@ -8928,3 +8928,46 @@ instrument that has worked every time this sequence has moved.
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 601 tool tests OK.
+
+## 17v. Round 89: the canary ran and the module does NOT overflow the buffer
+
+17u said to report the canary through machinery the fault cannot break, because every instrument so far has
+printed through `printf` and `fflush` and the fault may be breaking exactly that. **Done with `CreateFileW`
+and `WriteFile`, and the canary answers:**
+
+    canary case=i before=0 after=0 sizeof=120 accepted=1
+
+**`before=0 after=0` means neither guard was touched**, so **the module does not write past the
+`kPMapObjectSize` buffer** -- and `sizeof=120` is `0x78`, the size the harness believes. **The case's stack
+is not being overwritten by the object write**, which was 17u's better candidate.
+
+**So both of 17u's candidates are now ruled out**: the fixture array (which printed fine) and the object
+buffer (which the canary cleared).
+
+## 17w. And the instrument truncated its own evidence, which is the eighth time
+
+**The canary's first attempt wrote nothing at all, and the reason was the instrument:**
+
+    HANDLE file = CreateFileW(path, GENERIC_WRITE, FILE_SHARE_READ, 0, CREATE_ALWAYS, ...)
+
+**`CREATE_ALWAYS` truncates.** The harness writes a line per case, so **the case that faulted deleted what
+the cases before it had written and then died before writing its own** -- leaving an empty file that said
+nothing. **The instrument destroyed its own evidence.**
+
+**Fixed with `OPEN_ALWAYS` and `FILE_APPEND_DATA`**, and the file then shows what it should:
+
+    canary: guards set, about to call
+    case=pmap.minimal_valid storage=17 about to call oracle
+
+**And the same defect in the same instrument had a second form**: the two files were written to the
+**current working directory**, not beside the executable, so reading `build/Release/canary.txt` found
+nothing while `canary.txt` in the repository root had the content. **Both were found by reading the file
+rather than by trusting that it had been written.**
+
+**That is the eighth time this session has recorded a conclusion its instrument could not support** -- the
+pattern 14t named -- and the second time in three rounds that the instrument was the thing at fault rather
+than the system it measures.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 601 tool tests OK.

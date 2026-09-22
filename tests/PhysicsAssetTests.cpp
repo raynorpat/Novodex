@@ -570,6 +570,25 @@ struct NxMeshStandIn
 	unsigned char tail[0x20];
 	};
 
+// A line written straight to the OS, with no CRT buffer to lose. The instrument this sequence has used
+// everywhere else prints through printf and fflush, and round 88 found the canary's line absent in a way
+// that is consistent with the flush itself faulting once the stack is broken. This cannot be broken that
+// way: CreateFileW and WriteFile take the bytes to the file system.
+static void nxRawLine(const wchar_t* path, const char* text)
+	{
+	// OPEN_ALWAYS with FILE_APPEND_DATA, not CREATE_ALWAYS: the harness writes a line per case, and
+	// CREATE_ALWAYS truncated the file on every iteration -- so the case that faulted deleted what the
+	// cases before it had written and left an empty file that said nothing. The instrument destroyed its
+	// own evidence, which is the failure this sequence has recorded seven times now.
+	HANDLE file = CreateFileW(path, FILE_APPEND_DATA, FILE_SHARE_READ, 0, OPEN_ALWAYS,
+		FILE_ATTRIBUTE_NORMAL, 0);
+	if(file == INVALID_HANDLE_VALUE)
+		return;
+	DWORD written = 0;
+	WriteFile(file, text, (DWORD) strlen(text), &written, 0);
+	CloseHandle(file);
+	}
+
 static void nxRunPMapOracle(const NxOracle* oracle, const unsigned char* storage, unsigned length,
 	NxPMapResult* result)
 	{
@@ -597,6 +616,8 @@ static void nxRunPMapOracle(const NxOracle* oracle, const unsigned char* storage
 	memset(object, 0, sizeof(object));
 	unsigned char objectCanary[16];
 	memset(objectCanary, 0x5A, sizeof(objectCanary));
+	// One line before the calls and one after, so an absent file, a one-line file and a two-line file are
+	// three different readings.
 
 	oracle->pmapCtor(object);
 	printf("  step pmapCtor done\n"); fflush(stdout);
@@ -606,10 +627,16 @@ static void nxRunPMapOracle(const NxOracle* oracle, const unsigned char* storage
 
 	{
 	unsigned before = 0, after = 0;
+	char line[128];
 	for(unsigned i = 0; i < sizeof(objectGuard); ++i)
 		if(objectGuard[i] != 0xA5) ++before;
 	for(unsigned i = 0; i < sizeof(objectCanary); ++i)
 		if(objectCanary[i] != 0x5A) ++after;
+	_snprintf_s(line, sizeof(line), _TRUNCATE,
+		"canary case=i before=%u after=%u sizeof=%u accepted=%d\n",
+		before, after, (unsigned) sizeof(object), (int) accepted);
+	// Straight to the OS, so the report survives a broken CRT buffer.
+	nxRawLine(L"canary.txt", line);
 	printf("  canary before=%u after=%u sizeof(object)=%u\n",
 		before, after, (unsigned) sizeof(object));
 	fflush(stdout);
@@ -1290,6 +1317,15 @@ int wmain(int argc, wchar_t** argv)
 		unsigned char storage[256];
 		memset(storage, 0, sizeof(storage));
 		unsigned length = nxDecodeHex(fixture->bytes, storage, sizeof(storage));
+
+		// Named and appended, so the last line identifies the case that got furthest -- the instrument
+		// that CREATE_ALWAYS destroyed, corrected.
+		{
+		char mark[160];
+		_snprintf_s(mark, sizeof(mark), _TRUNCATE, "case=%s storage=%u about to call oracle\n",
+			fixture->name, length);
+		nxRawLine(L"canary-before.txt", mark);
+		}
 
 		NxPMapResult actual;
 		memset(&actual, 0, sizeof(actual));
