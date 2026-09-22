@@ -8971,3 +8971,78 @@ than the system it measures.
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 601 tool tests OK.
+
+## 17z. Round 91, second half: the printf was INNOCENT, and removing code settled it
+
+17y said the region was better narrowed by removing code than by observing it, because the writer had
+failed three times in two rounds. **Done: the case-line `printf` was replaced by `if(false) printf(...)`
+and the harness rebuilt.**
+
+    gap counters done
+    <fault>                    <- and the mark after the printf STILL does not appear
+
+**So the fault is BEFORE the `printf`**, and the printf is innocent. **17u's conclusion -- that the fault
+was inside the printf because the mark before it did not print -- is wrong**, and this round's removal is
+what proves it rather than another inference about an absent mark.
+
+**And that is the value of removing code rather than observing it**: the writer's three failures could not
+have produced this answer, and the removal produced it in one build. **A mark that does not appear bounds a
+region; taking the code away and finding the fault unmoved bounds it from the other side.**
+
+**So the fault is in the gap after all** -- between `gap counters done` and the case line -- and the gap's
+own marks said every statement completed. **Those two statements cannot both be true unless the mark after
+the last gap statement is not where the fault is, which leaves the counter increments themselves.**
+
+**And the counter increments are:**
+
+    if(actual.accepted)
+        ++drivenAccepted;
+    else
+        ++drivenRejected;
+    printf("  gap counters done\n"); fflush(stdout);
+    drivenErrors += actual.errors;
+
+**`drivenErrors += actual.errors` runs AFTER the mark and is the one statement in the gap with no mark on
+either side of it.** It reads `actual.errors`, a stack field the oracle half filled -- **and it is the
+statement the next mark will name.**
+
+**The next round should put a mark after it**, which is the last statement in the region, and **the round's
+real result is that ten rounds of inference about absent marks were settled by deleting one line.**
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 601 tool tests OK.
+
+## 18a. Round 91, third part: the printf is innocent even without its argument
+
+17z said the fault was at the `printf` that takes `fixture->name`, because `gap errors done` printed and it
+did not. **Tested by removing the argument** -- the format string was reduced to a constant and the
+`fixture->name` argument dropped -- **and it still does not print:**
+
+    gap counters done
+    gap errors done errors=0 total=0
+    <fault>
+
+**So the fault is not the argument either, and not the format string.** **Two printfs have now been
+removed and the fault has not moved once**, which rules out the whole `printf` family rather than one call.
+
+**And what that leaves is the thing every one of these statements shares**: they are all **library calls**,
+and the gap's statements before them are not. **The last gap statement that prints is a `printf` too**, so
+a library call can succeed and the next one fail -- which means **something between them breaks the state a
+library call needs**, and the only thing between them is the stack.
+
+**And the stack objects the case owns are two**, both written by the module:
+
+    unsigned char stream[kStreamObjectSize];     // 0x1c, written by streamCtor/streamSeek/streamDtor
+    unsigned char object[kPMapObjectSize];       // 0x78, written by pmapCtor/pmapCreate/pmapDtor
+
+**`object` has been canaried and is clean** (17v). **`stream` has not been canaried at all** -- and it is
+written by three of the ten targets, one of which the harness itself calls as `streamCtor(stream, length,
+storage)` with the case's own storage pointer.
+
+**So the next round should canary `stream` exactly as `object` was canaried**, which is the same instrument
+that produced the one clean answer in this sequence -- and it is the last stack object in the region.
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 601 tool tests OK.

@@ -600,10 +600,25 @@ static void nxRunPMapOracle(const NxOracle* oracle, const unsigned char* storage
 	NxErrorSink sink;
 	nxResetSink(&sink);
 
+	// The stream is the other stack object the case owns, and the only one never canaried. `object` was
+	// checked in 17v and is clean; this is the same instrument in the same place.
+	unsigned char streamGuard[16];
+	memset(streamGuard, 0xA5, sizeof(streamGuard));
 	unsigned char stream[kStreamObjectSize];
 	memset(stream, 0, sizeof(stream));
+	unsigned char streamCanary[16];
+	memset(streamCanary, 0x5A, sizeof(streamCanary));
 	oracle->streamCtor(stream, length, storage);
 	printf("  step streamCtor done\n"); fflush(stdout);
+	{
+	unsigned gb = 0, ga = 0;
+	for(unsigned i = 0; i < sizeof(streamGuard); ++i)
+		if(streamGuard[i] != 0xA5) ++gb;
+	for(unsigned i = 0; i < sizeof(streamCanary); ++i)
+		if(streamCanary[i] != 0x5A) ++ga;
+	printf("  streamCanary before=%u after=%u sizeof=%u\n", gb, ga, (unsigned) sizeof(stream));
+	fflush(stdout);
+	}
 	oracle->streamSeek(stream, 0);
 	printf("  step streamSeek done\n"); fflush(stdout);
 
@@ -1345,14 +1360,34 @@ int wmain(int argc, wchar_t** argv)
 			++drivenRejected;
 		printf("  gap counters done\n"); fflush(stdout);
 		drivenErrors += actual.errors;
+		printf("  gap errors done errors=%u total=%u\n", actual.errors, drivenErrors);
+		fflush(stdout);
 
-		printf("  case-line about to print name=%s\n", fixture->name); fflush(stdout);
-		printf("pmap case=%s dimension=%s bytes=%u accepted=%u errors=%u line=0x%03x "
-			"resolution=%u cells=%u grid=%08x\n",
-			fixture->name, fixture->dimension, (unsigned) (strlen(fixture->bytes) / 2),
+		// The case-line's own arguments, read through the OS before the printf uses them. If these read
+		// fine and the printf still faults, the fault is in the CRT's formatting rather than in the data.
+		{
+		char values[256];
+		unsigned bytes = (unsigned) strlen(fixture->bytes);
+		_snprintf_s(values, sizeof(values), _TRUNCATE,
+			"values case=%s dim=%s bytes=%u accepted=%u errors=%u line=0x%03x res=%u cells=%u grid=%08x\n",
+			fixture->name, fixture->dimension, bytes,
 			actual.accepted, actual.errors, actual.errorLine,
 			actual.resolution, actual.cells, actual.grid);
-		printf("  case-line printed\n"); fflush(stdout);
+		nxRawLine(L"canary-values.txt", values);
+		}
+		// REMOVED, like the case line below it: `gap errors done` prints and this does not, so this printf
+		// is where the fault sits -- and it takes `fixture->name` as its only argument.
+		printf("  case-line about to print\n"); fflush(stdout);
+		// The case line is REMOVED, not observed. The writer used to observe it failed three times in two
+		// rounds, twice silently, so the region is narrowed by taking code away instead: if the next mark
+		// appears, this printf is the fault; if it does not, the printf was innocent and the fault is after.
+		if(false)
+			printf("pmap case=%s dimension=%s bytes=%u accepted=%u errors=%u line=0x%03x "
+				"resolution=%u cells=%u grid=%08x\n",
+				fixture->name, fixture->dimension, (unsigned) (strlen(fixture->bytes) / 2),
+				actual.accepted, actual.errors, actual.errorLine,
+				actual.resolution, actual.cells, actual.grid);
+		printf("  case-line skipped\n"); fflush(stdout);
 
 		printf("  comparison about to run\n"); fflush(stdout);
 		if(actual.accepted != fixture->expectAccepted
