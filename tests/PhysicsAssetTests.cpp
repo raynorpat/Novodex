@@ -1375,19 +1375,15 @@ int wmain(int argc, wchar_t** argv)
 			actual.resolution, actual.cells, actual.grid);
 		nxRawLine(L"canary-values.txt", values);
 		}
-		// REMOVED, like the case line below it: `gap errors done` prints and this does not, so this printf
-		// is where the fault sits -- and it takes `fixture->name` as its only argument.
-		printf("  case-line about to print\n"); fflush(stdout);
-		// The case line is REMOVED, not observed. The writer used to observe it failed three times in two
-		// rounds, twice silently, so the region is narrowed by taking code away instead: if the next mark
-		// appears, this printf is the fault; if it does not, the printf was innocent and the fault is after.
-		if(false)
-			printf("pmap case=%s dimension=%s bytes=%u accepted=%u errors=%u line=0x%03x "
-				"resolution=%u cells=%u grid=%08x\n",
-				fixture->name, fixture->dimension, (unsigned) (strlen(fixture->bytes) / 2),
-				actual.accepted, actual.errors, actual.errorLine,
-				actual.resolution, actual.cells, actual.grid);
-		printf("  case-line skipped\n"); fflush(stdout);
+		// RESTORED. The removal narrowed the fault -- it did not move -- but it also took phase 4's gate
+		// RED, because this line is part of the coverage the oracle differential asserts. A harness that
+		// does not print its cases is not a differential, so the region is narrowed another way.
+		printf("pmap case=%s dimension=%s bytes=%u accepted=%u errors=%u line=0x%03x "
+			"resolution=%u cells=%u grid=%08x\n",
+			fixture->name, fixture->dimension, (unsigned) (strlen(fixture->bytes) / 2),
+			actual.accepted, actual.errors, actual.errorLine,
+			actual.resolution, actual.cells, actual.grid);
+		printf("  case-line printed\n"); fflush(stdout);
 
 		printf("  comparison about to run\n"); fflush(stdout);
 		if(actual.accepted != fixture->expectAccepted

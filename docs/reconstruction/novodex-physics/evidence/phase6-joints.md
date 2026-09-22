@@ -9046,3 +9046,23 @@ that produced the one clean answer in this sequence -- and it is the last stack 
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 601 tool tests OK.
+
+docs: the removal took phase 4 RED, and that is why the instrument had to be restored (18a corrected)
+
+The case-line printf was removed to narrow the fault by subtraction rather than by observation, and the
+removal worked: the fault did not move, so the printf was innocent. But it also took phase 4's gate RED,
+because that line is part of the coverage the oracle differential asserts -- a harness that does not print
+its cases is not a differential. So the line is restored, with the reason beside it, and phase 4 is green
+again.
+
+That is worth recording as a constraint on this whole sequence rather than as an incident: the asset
+harness is an ORACLE differential for phase 4, so its transcript is asserted, and any instrument placed
+inside it changes what the gate measures. Every mark, flush and canary this sequence has added has been
+inside a target whose transcript the gate compares -- which is why the instrumentation has had to be
+removed or tolerated rather than left in place, and why the oracle's line count has grown from 39 to 279
+while the candidate has not.
+
+State after the restore: the oracle pair exits 0 with 279 lines; the candidate pair still exits
+-1073741819 with 21. All gates green: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on
+purpose, phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, completed exit 0,
+validate_inventory exit 0, 601 tool tests OK.
