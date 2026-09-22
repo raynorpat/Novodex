@@ -9066,3 +9066,60 @@ State after the restore: the oracle pair exits 0 with 279 lines; the candidate p
 -1073741819 with 21. All gates green: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on
 purpose, phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, completed exit 0,
 validate_inventory exit 0, 601 tool tests OK.
+## 18b. Round 92: RETRACTED -- the fault is not at startup, and the transcript says so
+
+18a ended with the region one statement wide and every mark, flush and canary exhausted. **So the fault was
+read at the INSTRUCTION instead** -- the one instrument that needs no frame unwinding, and the only one
+this sequence had used twice. **The disassembly is below, and the conclusion first drawn from it was
+wrong; the retraction follows it.**
+
+    00502b74  call  NxPhysicsAssetTests+0x22d0
+    00502b79  push  1
+    00502b7b  call  dword ptr [NxPhysicsAssetTests!...fmode]     <- CRT initialiser
+    00502b81  push  eax
+    00502b82  call  dword ptr [NxPhysicsAssetTests!...commode]   <- CRT initialiser
+    00502b88  mov   ecx, dword ptr [00507284 + edi*4]            <- THE FAULT
+              ds:002b:04103284
+
+    edi = 0x00eff000
+
+**`__p__fmode` and `__p__commode` are CRT initialisers, and the instruction is an indexed load from a table
+at `00507284`.** That is `_initterm`-shaped: the C runtime walks its array of initialisers, and **`edi` is
+the index.** It holds **`0x00eff000`** instead of a small ordinal, so `00507284 + 0x00eff000 * 4` is
+`04103284` -- an address far outside the image, which is the fault.
+
+**And `edi = 0x00eff000` is not a plausible index.** It looks like a **pointer** rather than a counter,
+which means the register was overwritten before the loop used it.
+
+## 18c. RETRACTED: the transcript refutes it, and the fault is inside the harness
+
+**18b concluded the fault was at process startup, before `wmain`.** **The transcript says otherwise, and it
+is the same transcript that was read a round earlier:**
+
+    targets bound=10 null=0 mode=self          <- wmain, after the ten bindings
+    asset fixtures pmap=14 mesh=6 ...          <- wmain
+    step streamCtor done                       <- inside nxRunPMapOracle, from the case loop
+    object accepted=1 resolution=1 cells=1 ... <- inside nxRunPMapOracle, from the case loop
+    gap errors done errors=0 total=0           <- inside the case loop
+
+**So `wmain` runs, the case loop runs, and every mark inside it appears** -- which is the opposite of what
+18b asserted. **The disassembly's shape was read as startup code because `__p__fmode` and `__p__commode`
+appear beside it, and those are called from ordinary CRT-using code as well as from startup.**
+
+**What the instruction reading does establish, and it is worth keeping:**
+
+    eip = 00502b88, inside the harness image 00500000..0050e000
+    mov ecx, dword ptr [00507284 + edi*4]      an indexed load from a table at 00507284
+    edi = 0x00eff000                           the index, and not a plausible one
+
+**So the fault is an indexed load through a table in the harness's own image, with a register holding
+something that is not an index.** That is a real narrowing and it is inside the harness -- but **it is not
+startup, and 18b's explanation of the last twelve rounds was wrong.**
+
+**And the mistake is the ninth of this session's kind**: a conclusion drawn from an instrument reading that
+was not checked against evidence already in hand. **The transcript was in `build/fin.log` the whole time,
+and it refutes the claim in one line.**
+
+**All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
+phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
+`validate_inventory` exit 0, 601 tool tests OK.
