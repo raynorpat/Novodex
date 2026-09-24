@@ -848,6 +848,45 @@ class SlotRulingPhaseTests(unittest.TestCase):
                          ["callers", "enclosed_by_one_phase", "translation_unit"])
 
 
+class ThirdPartyAndPinLayerTests(unittest.TestCase):
+    """The correspondence maps and the pins are the last layers, and reach function rows only."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.plain = reconcile()
+        rows = {row["rva"]: row for row in cls.plain["inventory"]["functions"]}
+        cls.h = rows[hexa(0x1098)]["id"]
+        cls.pin = {"id": rows[hexa(0x1040)]["id"], "rva": hexa(0x1040), "phase": 6,
+                   "phase_provenance": "callers", "reason": "fixture", "decided_by": "0000000"}
+        cls.layered = reconcile_analysis.reconcile(
+            pe=make_pe(), ghidra=make_ghidra(), capstone=make_capstone(),
+            inventory=make_inventory(), third_party={0x1098: "qhull"},
+            pins={cls.pin["id"]: cls.pin})
+        cls.rows = {row["id"]: row for row in cls.layered["inventory"]["functions"]}
+
+    def test_a_third_party_row_is_phase_4_on_its_upstream_unit(self):
+        # H sits between two Phase 5 spans; the map says it is qhull's.
+        row = self.rows[self.h]
+        self.assertEqual((row["phase"], row["phase_provenance"]), (4, "translation_unit"))
+
+    def test_a_pin_replaces_the_row_and_records_what_it_replaced(self):
+        row = self.rows[self.pin["id"]]
+        self.assertEqual((row["phase"], row["phase_provenance"]), (6, "callers"))
+        plain = next(row for row in self.plain["inventory"]["functions"]
+                     if row["id"] == self.pin["id"])
+        self.assertEqual(self.layered["unpinned"],
+                         {self.pin["id"]: (plain["phase"], plain["phase_provenance"])})
+
+    def test_neither_layer_reaches_another_row_or_a_data_object(self):
+        changed = [row["id"] for row, before in zip(self.layered["inventory"]["functions"],
+                                                     self.plain["inventory"]["functions"])
+                   if (row["phase"], row["phase_provenance"])
+                   != (before["phase"], before["phase_provenance"])]
+        self.assertEqual(sorted(changed), sorted([self.h, self.pin["id"]]))
+        self.assertEqual(self.layered["inventory"]["data_objects"],
+                         self.plain["inventory"]["data_objects"])
+
+
 class InputRejectionTests(unittest.TestCase):
     """One field moves on a fixture the tests above prove valid."""
 
@@ -864,6 +903,24 @@ class InputRejectionTests(unittest.TestCase):
             ("object_model", "collision", "collision", "collision"))),
             "the shape ruling does not resolve against the PE oracle: shape ruling "
             "table FIXTURE slot 3 at 0x0000202c is not a relocated pointer")
+
+    def test_rejects_a_pin_on_a_row_the_generator_emits_elsewhere(self):
+        self.rejects(lambda o: o.__setitem__("pins", {"phys_fn_000001": {
+            "id": "phys_fn_000001", "rva": "0x00009999", "phase": 4,
+            "phase_provenance": "callers", "reason": "x", "decided_by": "0000000"}}),
+            "phase_pins.json pins phys_fn_000001 at 0x00009999, and the generator emits it at "
+            "0x00001000")
+
+    def test_rejects_a_ruling_the_collision_pipeline_does_not_bear_out(self):
+        # The matrix row stores nothing, so nothing is dispatched and the two
+        # collision slots rest on no dispatch at all.
+        def mutate(oracles):
+            ruling = fixture_ruling()
+            ruling["pipeline"] = {"matrix": "phys_fn_000001", "phases": [3, 4]}
+            oracles["ruling"] = ruling
+        self.rejects(mutate, "the shape ruling disagrees with the collision pipeline the generated "
+                             "census walks: shape ruling rules FIXTURE slot 1 collision, but the "
+                             "collision pipeline never dispatches it")
 
     def test_rejects_a_pe_oracle_written_against_another_schema(self):
         self.rejects(lambda o: o["pe"].__setitem__("schema_version", 2),
@@ -1097,6 +1154,10 @@ RAISE_SITES = {
         "test_rejects_a_function_entry_no_row_owns",
     "the shape ruling does not resolve against the PE oracle: {}":
         "test_rejects_a_shape_ruling_that_does_not_resolve",
+    "phase_pins.json pins {} at {}, and the generator emits it at {}":
+        "test_rejects_a_pin_on_a_row_the_generator_emits_elsewhere",
+    "the shape ruling disagrees with the collision pipeline the generated census walks: {}":
+        "test_rejects_a_ruling_the_collision_pipeline_does_not_bear_out",
 }
 
 

@@ -1,0 +1,582 @@
+{
+  "schema_version": 1,
+  "note": "The census rows whose phase the evidence reconcile_analysis.py reads cannot derive, each pinned to the phase and provenance the census carries. The generator applies a pin last and to its row alone, and records what it would have emitted without it; validate_inventory.py regenerates the census and requires every row to equal the generator's output, and strikes any pin the generator already agrees with, so the list is exact. All 72 are Phase 4 rows P4 Task 1c moved on per-row source correspondence rather than address range, and are the rows of that correction the third-party correspondence maps cannot re-derive: the 119 rows the maps grade mapped or probable are derived by the generator's third-party layer and are not pinned. The 52 pinned to translation_unit are the rows that claim it with no __FILE__ span around them. decided_by names the commit that decided each row's phase and provenance: cc37f94e is P4 Task 1c's census commit on the programme's first repository, the Unreal_3 novodex-physics-reconstruction-plan line; this repository's history begins at 1337106, which landed the census already corrected.",
+  "pins": [
+    {
+      "id": "phys_fn_004847",
+      "rva": "0x000b4f90",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX's own member of OPCODE's Container class (Ice/IceContainer.cpp): it adopts an external buffer and sets the marker. P4 Task 1c moved it to Phase 4 with the class's five OPCODE members, which the correspondence map now derives; the evidence the generator reads places this one in shared runtime by its callers.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_004874",
+      "rva": "0x000b54a0",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "IcePrunable.cpp: NovodeX's Prunable class, whose bytes lie inside the OPCODE span and which no pinned OPCODE tree contains. P4 Task 1c moved the whole unit to Phase 4 so that one class is not split across phases (evidence/phase4-third-party.md 3.5(c)); the evidence the generator reads places it by its callers, which split it across Phases 2, 5 and 7.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_004876",
+      "rva": "0x000b54f0",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "IcePrunable.cpp: NovodeX's Prunable class, whose bytes lie inside the OPCODE span and which no pinned OPCODE tree contains. P4 Task 1c moved the whole unit to Phase 4 so that one class is not split across phases (evidence/phase4-third-party.md 3.5(c)); the evidence the generator reads places it by its callers, which split it across Phases 2, 5 and 7.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_004878",
+      "rva": "0x000b5520",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "IcePrunable.cpp: NovodeX's Prunable class, whose bytes lie inside the OPCODE span and which no pinned OPCODE tree contains. P4 Task 1c moved the whole unit to Phase 4 so that one class is not split across phases (evidence/phase4-third-party.md 3.5(c)); the evidence the generator reads places it by its callers, which split it across Phases 2, 5 and 7.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_004880",
+      "rva": "0x000b5550",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "IcePrunable.cpp: NovodeX's Prunable class, whose bytes lie inside the OPCODE span and which no pinned OPCODE tree contains. P4 Task 1c moved the whole unit to Phase 4 so that one class is not split across phases (evidence/phase4-third-party.md 3.5(c)); the evidence the generator reads places it by its callers, which split it across Phases 2, 5 and 7.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_004882",
+      "rva": "0x000b5570",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "IcePrunable.cpp: NovodeX's Prunable class, whose bytes lie inside the OPCODE span and which no pinned OPCODE tree contains. P4 Task 1c moved the whole unit to Phase 4 so that one class is not split across phases (evidence/phase4-third-party.md 3.5(c)); the evidence the generator reads places it by its callers, which split it across Phases 2, 5 and 7.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_004884",
+      "rva": "0x000b5590",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "IcePrunable.cpp: NovodeX's Prunable class, whose bytes lie inside the OPCODE span and which no pinned OPCODE tree contains. P4 Task 1c moved the whole unit to Phase 4 so that one class is not split across phases (evidence/phase4-third-party.md 3.5(c)); the evidence the generator reads places it by its callers, which split it across Phases 2, 5 and 7.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_004886",
+      "rva": "0x000b55b0",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "IcePrunable.cpp: NovodeX's Prunable class, whose bytes lie inside the OPCODE span and which no pinned OPCODE tree contains. P4 Task 1c moved the whole unit to Phase 4 so that one class is not split across phases (evidence/phase4-third-party.md 3.5(c)); the evidence the generator reads places it by its callers, which split it across Phases 2, 5 and 7.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005322",
+      "rva": "0x000e7c40",
+      "phase": 4,
+      "phase_provenance": "callers",
+      "reason": "A compiler artifact inside the OPCODE span that P4 Task 1c placed in Phase 4 on a direct Phase 4 caller; the evidence the generator reads calls it an artifact of the runtime.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005380",
+      "rva": "0x000e9420",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005382",
+      "rva": "0x000e9440",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005386",
+      "rva": "0x000e94c0",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005404",
+      "rva": "0x000e9b20",
+      "phase": 4,
+      "phase_provenance": "callers",
+      "reason": "NovodeX code inside the OPCODE span, which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 on a direct Phase 4 caller, and P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). The evidence the generator reads still ends at the runtime floor below it.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005438",
+      "rva": "0x000ef270",
+      "phase": 4,
+      "phase_provenance": "callers",
+      "reason": "NovodeX code inside the OPCODE span, which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 on a direct Phase 4 caller, and P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). The evidence the generator reads still ends at the runtime floor below it.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005440",
+      "rva": "0x000ef330",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005442",
+      "rva": "0x000ef3d0",
+      "phase": 4,
+      "phase_provenance": "callers",
+      "reason": "NovodeX code inside the OPCODE span, which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 on a direct Phase 4 caller, and P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). The evidence the generator reads still ends at the runtime floor below it.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005444",
+      "rva": "0x000ef5c0",
+      "phase": 4,
+      "phase_provenance": "callers",
+      "reason": "NovodeX code inside the OPCODE span, which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 on a direct Phase 4 caller, and P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). The evidence the generator reads still ends at the runtime floor below it.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005446",
+      "rva": "0x000ef660",
+      "phase": 4,
+      "phase_provenance": "callers",
+      "reason": "NovodeX code inside the OPCODE span, which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 on a direct Phase 4 caller, and P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). The evidence the generator reads still ends at the runtime floor below it.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005448",
+      "rva": "0x000ef670",
+      "phase": 4,
+      "phase_provenance": "callers",
+      "reason": "NovodeX code inside the OPCODE span, which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 on a direct Phase 4 caller, and P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). The evidence the generator reads still ends at the runtime floor below it.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005450",
+      "rva": "0x000ef690",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005452",
+      "rva": "0x000ef6d0",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005454",
+      "rva": "0x000ef750",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005456",
+      "rva": "0x000ef790",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005458",
+      "rva": "0x000ef7c0",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005460",
+      "rva": "0x000ef7f0",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005462",
+      "rva": "0x000ef820",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005464",
+      "rva": "0x000ef850",
+      "phase": 4,
+      "phase_provenance": "callers",
+      "reason": "NovodeX code inside the OPCODE span, which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 on a direct Phase 4 caller, and P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). The evidence the generator reads still ends at the runtime floor below it.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005466",
+      "rva": "0x000ef870",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005468",
+      "rva": "0x000efa90",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005470",
+      "rva": "0x000efc90",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005471",
+      "rva": "0x000efd60",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005473",
+      "rva": "0x000efe80",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005475",
+      "rva": "0x000efeb0",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005477",
+      "rva": "0x000efed0",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005479",
+      "rva": "0x000eff20",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005481",
+      "rva": "0x000effc0",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005483",
+      "rva": "0x000f00c0",
+      "phase": 4,
+      "phase_provenance": "callers",
+      "reason": "NovodeX code inside the OPCODE span, which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 on a direct Phase 4 caller, and P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). The evidence the generator reads still ends at the runtime floor below it.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005485",
+      "rva": "0x000f02a0",
+      "phase": 4,
+      "phase_provenance": "callers",
+      "reason": "NovodeX code inside the OPCODE span, which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 on a direct Phase 4 caller, and P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). The evidence the generator reads still ends at the runtime floor below it.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005531",
+      "rva": "0x000f1550",
+      "phase": 4,
+      "phase_provenance": "callers",
+      "reason": "NovodeX code inside the OPCODE span, which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 on a direct Phase 4 caller, and P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). The evidence the generator reads still ends at the runtime floor below it.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005533",
+      "rva": "0x000f1580",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005535",
+      "rva": "0x000f1590",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005537",
+      "rva": "0x000f15a0",
+      "phase": 4,
+      "phase_provenance": "callers",
+      "reason": "NovodeX code inside the OPCODE span, which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 on a direct Phase 4 caller, and P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). The evidence the generator reads still ends at the runtime floor below it.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005539",
+      "rva": "0x000f15c0",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005541",
+      "rva": "0x000f1600",
+      "phase": 4,
+      "phase_provenance": "callers",
+      "reason": "NovodeX code inside the OPCODE span, which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 on a direct Phase 4 caller, and P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). The evidence the generator reads still ends at the runtime floor below it.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005543",
+      "rva": "0x000f17c0",
+      "phase": 4,
+      "phase_provenance": "callers",
+      "reason": "NovodeX code inside the OPCODE span, which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 on a direct Phase 4 caller, and P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). The evidence the generator reads still ends at the runtime floor below it.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005545",
+      "rva": "0x000f1970",
+      "phase": 4,
+      "phase_provenance": "callers",
+      "reason": "NovodeX code inside the OPCODE span, which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 on a direct Phase 4 caller, and P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). The evidence the generator reads still ends at the runtime floor below it.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005547",
+      "rva": "0x000f1a30",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005549",
+      "rva": "0x000f1a70",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005550",
+      "rva": "0x000f1ac0",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005552",
+      "rva": "0x000f1c60",
+      "phase": 4,
+      "phase_provenance": "callers",
+      "reason": "NovodeX code inside the OPCODE span, which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 on a direct Phase 4 caller, and P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). The evidence the generator reads still ends at the runtime floor below it.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005554",
+      "rva": "0x000f1cb0",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005556",
+      "rva": "0x000f1d10",
+      "phase": 4,
+      "phase_provenance": "callers",
+      "reason": "NovodeX code inside the OPCODE span, which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 on a direct Phase 4 caller, and P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). The evidence the generator reads still ends at the runtime floor below it.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005558",
+      "rva": "0x000f1d50",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005560",
+      "rva": "0x000f1db0",
+      "phase": 4,
+      "phase_provenance": "callers",
+      "reason": "NovodeX code inside the OPCODE span, which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 on a direct Phase 4 caller, and P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). The evidence the generator reads still ends at the runtime floor below it.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005562",
+      "rva": "0x000f1df0",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005564",
+      "rva": "0x000f2050",
+      "phase": 4,
+      "phase_provenance": "callers",
+      "reason": "NovodeX code inside the OPCODE span, which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 on a direct Phase 4 caller, and P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). The evidence the generator reads still ends at the runtime floor below it.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005566",
+      "rva": "0x000f2090",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005568",
+      "rva": "0x000f2160",
+      "phase": 4,
+      "phase_provenance": "callers",
+      "reason": "NovodeX code inside the OPCODE span, which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 on a direct Phase 4 caller, and P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). The evidence the generator reads still ends at the runtime floor below it.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005584",
+      "rva": "0x000f2570",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005586",
+      "rva": "0x000f2580",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005588",
+      "rva": "0x000f25b0",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005590",
+      "rva": "0x000f2660",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005604",
+      "rva": "0x000f2eb0",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005606",
+      "rva": "0x000f2ec0",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005608",
+      "rva": "0x000f2ef0",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005610",
+      "rva": "0x000f2fa0",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005622",
+      "rva": "0x000f3620",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005624",
+      "rva": "0x000f3630",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005640",
+      "rva": "0x000f3d30",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005642",
+      "rva": "0x000f3d40",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005644",
+      "rva": "0x000f3dc0",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    },
+    {
+      "id": "phys_fn_005646",
+      "rva": "0x000f3e70",
+      "phase": 4,
+      "phase_provenance": "translation_unit",
+      "reason": "NovodeX code inside the OPCODE span -- the optimized-tree and BaseModel serialization slots and the pruner family -- which the census had placed in the runtime tail as a Phase 8 compiler artifact. P4 Task 1c placed it in Phase 4 with its class and labelled it translation_unit, although no __FILE__ span encloses it; P4 Task 3 later retyped it to code (evidence/phase4-artifact-retype.csv). Its attribution is the open retyped_opcode_rows_lack_attribution escalation, so the label is pinned, not relabelled.",
+      "decided_by": "cc37f94e"
+    }
+  ]
+}

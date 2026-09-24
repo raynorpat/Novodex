@@ -541,7 +541,7 @@
       "slot10/001403",
       "slot12 loadFromDesc/001383"
     ],
-    "note": "Reconciled with shape_slot_ruling.json: only object-model slots are listed. The raycast (slot 5), sweep (slot 7) and world-AABB (slot 9) rows this list used to carry are collision slots and Phase 3's -- phys_fn_001377, phys_fn_001010 and phys_fn_001261 are closed there -- and PLANE slot 8, phys_fn_001267, is ruled with them by name. BOX slot 3 was listed as phys_fn_001003 and slot 4 as phys_fn_000941; the pointers at 0x10106ac4 and 0x10106ac8 name phys_fn_000945 and phys_fn_000947. Slot 4 is the mass row, not a cached-bounds update (evidence/phase5-object-model.md 3p/3q)."
+    "note": "Reconciled with shape_slot_ruling.json: only object-model slots are listed. The raycast (slot 5), sweep (slot 7) and world-AABB (slot 9) rows this list used to carry are collision slots and Phase 3's -- phys_fn_001377, phys_fn_001010 and phys_fn_001261 are closed there -- and PLANE slot 8, phys_fn_001267, goes with them as a named exception: no virtual call dispatches PLANE slot 8, and its only direct caller is COMPOUND slot 9 (phys_fn_001030) at 0x00022c6a. BOX slot 3 was listed as phys_fn_001003 and slot 4 as phys_fn_000941; the pointers at 0x10106ac4 and 0x10106ac8 name phys_fn_000945 and phys_fn_000947. Slot 4 is the mass row, not a cached-bounds update (evidence/phase5-object-model.md 3p/3q)."
   },
   "blocked_on": {
     "registry_fixture": "phys_fn_000480 decode complete; needs transcription + drive",

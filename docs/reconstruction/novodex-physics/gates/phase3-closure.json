@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "phase": 3,
-  "note": "Phase 3 closes on an exception list, the same shape Phase 2 closed on, and it is a partial close: 61 of its 376 function rows are closed. Its 112 data objects stand at `classified`, the terminal rung a data object's structural proof gives it, so they are accounted for by that state and appear in neither list. Every Phase 3 function row in inventory.json appears exactly once below and validate_inventory.py enforces that, recomputes the counts from these entries, checks every gate against the real target registry and rejects a closure claiming a falsification it does not carry. What the 61 amount to: the 27 named exports and the four continuation rows the census splits them into, closed by the staged-pair differentials; the contact emitter, the primitive half of matrix B, and eight of the nine non-mesh matrix A entries with the vtable slot-5 partners they dispatch into, closed by NxPhysicsCollisionTests, which loads the pinned DLL in its own process, re-hashes it and calls the recorded RVAs directly. What they do not amount to is the phase: the mesh column, the compound entries, the rest of matrix B's primitive half, the broad phase and the continuous-collision subtree are all still open, and 285 rows below say only that Phase 3 ran out of dispatches -- 62 of which the census has since raised to `reconstructed` through later work that recorded a proof and aimed no mutation at them; their reason predates that and is carried as written. Three limits are in the numbers themselves. First, the sixteen first-dispatch export rows record the measurement completely and the edit not at all, and the two have to be separated because they are not the same weakness. The measurement is traceable: evidence/phase3-leaf-kernels.md carries a per-row `mutation delta` column for all sixteen, those sixteen deltas sum to the 67 differing cases its own totals block states, the positive control in the same run read 142, and every one of the sixteen is a leaf whose Ghidra `called` list is empty -- so no delta there can have been produced by a callee, which is the misattribution that later reassigned `phys_fn_001010`'s 242 to NxRayCapsuleIntersect. The edit is not reproducible: the evidence records the sixteen mutations collectively -- one per row, each perturbing that kernel alone -- and never names the line any one of them changed, so the mutation field paraphrases the collective statement and re-running a single row means deriving its edit again. That is a reproducibility gap, and it is the smaller of the two this ledger has to declare. The sharper one is `phys_fn_001741`/`phys_fn_001743`, now the only place here where a delta is published without the site that produced it: evidence/phase3-narrow-phase.md tables all eight of that row's mutations, but only the closing one -- the corner depth test written as a float compare -- is recorded against a site, and the three further non-zero counts (557,830, 120 + 57,942 and 3,053) are carried by every committed record as bare numbers. The row closes on the one that names its site; the other three are published as counts, because choosing a site for them now would be a reconstruction rather than a reading. Second, `phys_fn_001901` is deferred rather than closed although Phase 3's own record calls it closed, because every mutation recorded for its dispatch changes the emitter it calls; its deferral entry says so. Third, two rows here are closed on algorithmic agreement under a control word they do not execute under, with the divergence pinned -- `phys_fn_001775` at 43 words and `phys_fn_001010` at 242, and the 242 has since been shown to belong to its callee NxRayCapsuleIntersect, a Phase 2-era Task 2 export. gates/phase3.json carries that as an escalation. Where the guarantee ends is where Phase 2 left it and one step further. Recomputed counts and a required non-zero delta make the strongest claim the costly one; they do not make a false one impossible, because the probe transcripts are not committed artifacts. And Phase 3 itself demonstrated the deeper limit: evidence in this programme is relative to the reachability graph known at the time, and recovering the dispatch matrix moved five rows Task 2 had already closed into a different floating-point environment. That is why nothing here is `closed` in the inventory: these rows are `dynamically_gated`, which says a gate entered them and caught a mutation, and the terminal rung stays Phase 8's to grant. P4 Task 1c removed seven rows from this ledger because the census no longer gives them to Phase 3: five IcePrunable.cpp rows and phys_fn_004842/004844, which the source correspondence map identifies as OPCODE Ice/IceContainer.cpp members. All seven were deferred not_reconstructed_in_phase, so no closure left with them and the 61 is unchanged. After the close the canonical line gave 42 of this phase's rows to Phase 5 as a side effect of transcribing them, with no ownership evidence behind the moves and provenance the oracle contradicted, and none of them closed here. Those moves are replaced by shape_slot_ruling.json, the shape-class vtable ruling validate_inventory.py recomputes: a slot the collision pipeline dispatches through is Phase 3's and every other slot of the shape classes is Phase 5's. Under it 29 function rows left this ledger for Phase 5 -- the shape classes' object-model slots, their constructors and destructors, and the helpers only those call -- three left for shared runtime (phys_fn_001945, 001947 and 001955, whose callers now disagree) and one for Phase 4 (phys_fn_004859); 17 came in -- thirteen rows the ruling places with collision (BOX slots 5, 7 and 9 and the box hull facade's seven collision slots, which the generator had given Phase 5 through the box constructor's installer edge, and SPHERE slot 9, the base sweep stub and the slot-9 Prunable adapter, which the canonical line had moved), phys_fn_001075 and phys_fn_001329, whose Phase 5 translation_unit claims no __FILE__ span supported, and phys_fn_001730 with its continuation, whose callers now agree on this phase. The eleven reconstructed arrivals are deferred reconstructed_not_falsified: no Phase 3 gate ever aimed a mutation at them. phys_fn_001753 is deferred not_reconstructed_in_phase rather than blocked, because its slot-5 partner is now this phase's own row. None of the 61 closed rows moved, which is why the function count is 376 and the closed count is still 61. And the port of the Phase 4 close re-deferred phys_fn_002344, which the Phase 5 remover-chain round had closed here on Phase 5's NxPhysicsObjectLayoutTests: that gate does not run when this phase is gated, so the closure rested on nothing this phase's gate executes. Its deferral carries the mutation, both readings and the dirty control, and the 61 closed rows are the same 61 described above.",
+  "note": "Phase 3 closes on an exception list, the same shape Phase 2 closed on, and it is a partial close: 61 of its 376 function rows are closed. Its 114 data objects stand at `classified`, the terminal rung a data object's structural proof gives it, so they are accounted for by that state and appear in neither list. Every Phase 3 function row in inventory.json appears exactly once below and validate_inventory.py enforces that, recomputes the counts from these entries, checks every gate against the real target registry and rejects a closure claiming a falsification it does not carry. What the 61 amount to: the 27 named exports and the four continuation rows the census splits them into, closed by the staged-pair differentials; the contact emitter, the primitive half of matrix B, and eight of the nine non-mesh matrix A entries with the vtable slot-5 partners they dispatch into, closed by NxPhysicsCollisionTests, which loads the pinned DLL in its own process, re-hashes it and calls the recorded RVAs directly. What they do not amount to is the phase: the mesh column, the compound entries, the rest of matrix B's primitive half, the broad phase and the continuous-collision subtree are all still open, and 282 rows below say only that Phase 3 ran out of dispatches -- 62 of which the census has since raised to `reconstructed` through later work that recorded a proof and aimed no mutation at them; their reason predates that and is carried as written. Three limits are in the numbers themselves. First, the sixteen first-dispatch export rows record the measurement completely and the edit not at all, and the two have to be separated because they are not the same weakness. The measurement is traceable: evidence/phase3-leaf-kernels.md carries a per-row `mutation delta` column for all sixteen, those sixteen deltas sum to the 67 differing cases its own totals block states, the positive control in the same run read 142, and every one of the sixteen is a leaf whose Ghidra `called` list is empty -- so no delta there can have been produced by a callee, which is the misattribution that later reassigned `phys_fn_001010`'s 242 to NxRayCapsuleIntersect. The edit is not reproducible: the evidence records the sixteen mutations collectively -- one per row, each perturbing that kernel alone -- and never names the line any one of them changed, so the mutation field paraphrases the collective statement and re-running a single row means deriving its edit again. That is a reproducibility gap, and it is the smaller of the two this ledger has to declare. The sharper one is `phys_fn_001741`/`phys_fn_001743`, now the only place here where a delta is published without the site that produced it: evidence/phase3-narrow-phase.md tables all eight of that row's mutations, but only the closing one -- the corner depth test written as a float compare -- is recorded against a site, and the three further non-zero counts (557,830, 120 + 57,942 and 3,053) are carried by every committed record as bare numbers. The row closes on the one that names its site; the other three are published as counts, because choosing a site for them now would be a reconstruction rather than a reading. Second, `phys_fn_001901` is deferred rather than closed although Phase 3's own record calls it closed, because every mutation recorded for its dispatch changes the emitter it calls; its deferral entry says so. Third, two rows here are closed on algorithmic agreement under a control word they do not execute under, with the divergence pinned -- `phys_fn_001775` at 43 words and `phys_fn_001010` at 242, and the 242 has since been shown to belong to its callee NxRayCapsuleIntersect, a Phase 2-era Task 2 export. gates/phase3.json carries that as an escalation. Where the guarantee ends is where Phase 2 left it and one step further. Recomputed counts and a required non-zero delta make the strongest claim the costly one; they do not make a false one impossible, because the probe transcripts are not committed artifacts. And Phase 3 itself demonstrated the deeper limit: evidence in this programme is relative to the reachability graph known at the time, and recovering the dispatch matrix moved five rows Task 2 had already closed into a different floating-point environment. That is why nothing here is `closed` in the inventory: these rows are `dynamically_gated`, which says a gate entered them and caught a mutation, and the terminal rung stays Phase 8's to grant. P4 Task 1c removed seven rows from this ledger because the census no longer gives them to Phase 3: five IcePrunable.cpp rows and phys_fn_004842/004844, which the source correspondence map identifies as OPCODE Ice/IceContainer.cpp members. All seven were deferred not_reconstructed_in_phase, so no closure left with them and the 61 is unchanged. After the close the canonical line gave 42 of this phase's rows to Phase 5 as a side effect of transcribing them, with no ownership evidence behind the moves and provenance the oracle contradicted, and none of them closed here. Those moves are replaced by shape_slot_ruling.json, the shape-class vtable ruling validate_inventory.py recomputes: a slot the collision pipeline dispatches through is Phase 3's and every other slot of the shape classes is Phase 5's. Under it 29 function rows left this ledger for Phase 5 -- the shape classes' object-model slots, their constructors and destructors, and the helpers only those call -- three left for shared runtime (phys_fn_001945, 001947 and 001955, whose callers now disagree) and one for Phase 4 (phys_fn_004859); 17 came in -- thirteen rows the ruling places with collision (BOX slots 5, 7 and 9 and the box hull facade's seven collision slots, which the generator had given Phase 5 through the box constructor's installer edge, and SPHERE slot 9, the base sweep stub and the slot-9 Prunable adapter, which the canonical line had moved), phys_fn_001075 and phys_fn_001329, whose Phase 5 translation_unit claims no __FILE__ span supported, and phys_fn_001730 with its continuation, whose callers now agree on this phase. The eleven reconstructed arrivals are deferred reconstructed_not_falsified: no Phase 3 gate ever aimed a mutation at them. phys_fn_001753 is deferred not_reconstructed_in_phase rather than blocked, because its slot-5 partner is now this phase's own row. None of the 61 closed rows moved, which is why the function count is 376 and the closed count is still 61. And the port of the Phase 4 close re-deferred phys_fn_002344, which the Phase 5 remover-chain round had closed here on Phase 5's NxPhysicsObjectLayoutTests: that gate does not run when this phase is gated, so the closure rested on nothing this phase's gate executes. Its deferral, which carries the mutation, both readings and the dirty control, went to Phase 5 with the row when the shape slot ruling made it a helper of ShapeBase's destructor; the 61 closed rows are the same 61 described above. The review of the ruling moved six more function rows, none of them closed: phys_fn_000967, phys_fn_000969 and phys_fn_000971, BOX_HULL slots 6, 7 and 8, arrive from Phase 5 deferred reconstructed_not_falsified, because phys_fn_000959, BOX_HULL slot 10, dispatches all three on its own this; and phys_fn_000887, phys_fn_000889 and phys_fn_000903 leave for Phase 7, where the census regeneration check places them by their callers. The function count stays 376 and the closed count 61. The three data objects the box-hull rows read arrive with them and phys_data_005007 leaves for Phase 5, so the phase owns 114 data objects.",
   "proof_kinds": {
     "differential_falsified": "a mutation was aimed at this row's reconstruction in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through a Phase 3 staged-pair target. NxPhysicsGeometryTests prints one line per case and NxPhysicsKernelFuzzTests one digest per export, so what a per-row probe reports is a count of differing cases or differing digests rather than the whole-target `stdout_delta` run_differential.ps1 prints; the detection records the unit it was measured in rather than converting it, and the gate is the target that produced it. Every one of these runs was accompanied by an un-mutated copy of the same tree built and run in the same session reading zero",
     "static_proof_falsified": "a mutation was aimed at this row and the static-proof gate failed the named check; there is no oracle side, so this is weaker than any differential. Phase 3 closes no row this way",
@@ -12,8 +12,8 @@
     "unreachable_in_phase_2": "Phase 2's reason, unused here",
     "not_independently_falsifiable": "the row has no counterpart in the candidate that can be mutated on its own. Unused here",
     "homeless_shared_code": "Phase 2's reason for shared code with no translation unit span. Unused here",
-    "not_reconstructed_in_phase": "Phase 3 did not reconstruct this row and names nothing that blocks it. This is a debt, not an obstruction, and it is the largest single category in this ledger. No per-row reachability claim is made for these 285 rows, and that is deliberate: this component dispatches through function-pointer tables and vtable slots and the census splits functions at their internal alignment padding, so a call-edge closure over them systematically undercounts -- four separate counting methods in this programme have each answered a narrower question than the one asked, the last of them a call-edge walk that could not see a continuation row. Some of these rows will turn out to be blocked on Phase 4 mesh data once someone walks them properly; asserting which ones without walking them is the claim this reason refuses to make. Where the evidence does say something specific about a row -- the six compound entries, matrix B's [CAPSULE][CAPSULE] -- the entry carries a note",
-    "reconstructed_not_falsified": "the row is reconstructed and driven against the pinned oracle, and no mutation aimed at its own body is recorded. Twelve rows: `phys_fn_001901`, and eleven the shape slot ruling brought in after the close, reconstructed on the Phase 5 line and never aimed at by a Phase 3 mutation. This is not `unreachable` and not `blocked`: the instrument exists and runs, and what is missing is one mutation",
+    "not_reconstructed_in_phase": "Phase 3 did not reconstruct this row and names nothing that blocks it. This is a debt, not an obstruction, and it is the largest single category in this ledger. No per-row reachability claim is made for these 282 rows, and that is deliberate: this component dispatches through function-pointer tables and vtable slots and the census splits functions at their internal alignment padding, so a call-edge closure over them systematically undercounts -- four separate counting methods in this programme have each answered a narrower question than the one asked, the last of them a call-edge walk that could not see a continuation row. Some of these rows will turn out to be blocked on Phase 4 mesh data once someone walks them properly; asserting which ones without walking them is the claim this reason refuses to make. Where the evidence does say something specific about a row -- the six compound entries, matrix B's [CAPSULE][CAPSULE] -- the entry carries a note",
+    "reconstructed_not_falsified": "the row is reconstructed and driven against the pinned oracle, and no mutation aimed at its own body is recorded. Fifteen rows: `phys_fn_001901`, and fourteen the shape slot ruling and its review brought in after the close, reconstructed on the Phase 5 line and never aimed at by a Phase 3 mutation. This is not `unreachable` and not `blocked`: the instrument exists and runs, and what is missing is one mutation",
     "data_object_not_dispositioned": "a Phase 3 data object that no Phase 3 task dispositioned. A data object has no body to mutate and no transcript of its own, so it cannot carry a code proof kind; Phase 2 left its 1,055 in the same state and this list makes the same debt countable rather than silent. One of the 112 is load-bearing and named in the evidence: phys_data_000006 at 0x0003acc0, the 24-byte switch table phys_fn_001745's `jmp dword ptr [ecx*4+0x1003acc0]` walks, whose six slots were all resolved when that row was closed"
   },
   "measured_from": {
@@ -55,9 +55,9 @@
   "counts": {
     "differential_falsified": 31,
     "oracle_differential_falsified": 30,
-    "deferred_not_reconstructed_in_phase": 285,
+    "deferred_not_reconstructed_in_phase": 282,
     "deferred_blocked_on_later_phase": 18,
-    "deferred_reconstructed_not_falsified": 12
+    "deferred_reconstructed_not_falsified": 15
   },
   "closed": [
     {
@@ -727,30 +727,6 @@
       "driving_phases": []
     },
     {
-      "id": "phys_fn_000887",
-      "rva": "0x0001e910",
-      "size": 41,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "layout_adjacency",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_000889",
-      "rva": "0x0001e940",
-      "size": 99,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "layout_adjacency",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_000903",
-      "rva": "0x0001fb30",
-      "size": 120,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "layout_adjacency",
-      "driving_phases": []
-    },
-    {
       "id": "phys_fn_000925",
       "rva": "0x00020440",
       "size": 13,
@@ -775,6 +751,15 @@
       "driving_phases": []
     },
     {
+      "id": "phys_fn_000935",
+      "rva": "0x000205a0",
+      "size": 198,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "slot_ruling",
+      "driving_phases": [],
+      "note": "Moved from Phase 5 to Phase 3 by the shape slot ruling: the target of BOX slot 9 (collision) in shape_slot_ruling.json. It arrives after Phase 3 passed, so no Phase 3 gate ever aimed a mutation at it. Deferred on the Phase 5 ledger as reconstructed_not_falsified, with this note: reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
       "id": "phys_fn_000949",
       "rva": "0x00020880",
       "size": 663,
@@ -791,6 +776,15 @@
       "phase_provenance": "slot_ruling",
       "driving_phases": [],
       "note": "Moved from Phase 5 to Phase 3 by the shape slot ruling: the target of BOX slot 7 (collision) in shape_slot_ruling.json. It arrives after Phase 3 passed, so no Phase 3 gate ever aimed a mutation at it."
+    },
+    {
+      "id": "phys_fn_000955",
+      "rva": "0x00020d30",
+      "size": 4,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "slot_ruling",
+      "driving_phases": [],
+      "note": "Moved from Phase 5 to Phase 3 by the shape slot ruling: the target of BOX_HULL slot 2 (collision) in shape_slot_ruling.json. It arrives after Phase 3 passed, so no Phase 3 gate ever aimed a mutation at it. Deferred on the Phase 5 ledger as reconstructed_not_falsified, with this note: reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000957",
@@ -811,6 +805,60 @@
       "note": "Moved from Phase 5 to Phase 3 by the shape slot ruling: the target of BOX_HULL slot 10 (collision) in shape_slot_ruling.json. It arrives after Phase 3 passed, so no Phase 3 gate ever aimed a mutation at it."
     },
     {
+      "id": "phys_fn_000961",
+      "rva": "0x000213c0",
+      "size": 6,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "slot_ruling",
+      "driving_phases": [],
+      "note": "Moved from Phase 5 to Phase 3 by the shape slot ruling: the target of BOX_HULL slot 3 (collision) in shape_slot_ruling.json. It arrives after Phase 3 passed, so no Phase 3 gate ever aimed a mutation at it. Deferred on the Phase 5 ledger as reconstructed_not_falsified, with this note: reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000963",
+      "rva": "0x000213d0",
+      "size": 14,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "slot_ruling",
+      "driving_phases": [],
+      "note": "Moved from Phase 5 to Phase 3 by the shape slot ruling: the target of BOX_HULL slot 4 (collision) in shape_slot_ruling.json. It arrives after Phase 3 passed, so no Phase 3 gate ever aimed a mutation at it. Deferred on the Phase 5 ledger as reconstructed_not_falsified, with this note: reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000967",
+      "rva": "0x000213f0",
+      "size": 6,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "slot_ruling",
+      "driving_phases": [],
+      "note": "Moved from Phase 5 to Phase 3 by the fix to the shape slot ruling: the target of BOX_HULL slot 6, which phys_fn_000959 (BOX_HULL slot 10, collision) calls on its own this at 0x0002131c, so the slot is a collision slot. It arrives after Phase 3 passed, so no Phase 3 gate ever aimed a mutation at it: reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000969",
+      "rva": "0x00021400",
+      "size": 6,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "slot_ruling",
+      "driving_phases": [],
+      "note": "Moved from Phase 5 to Phase 3 by the fix to the shape slot ruling: the target of BOX_HULL slot 7, which phys_fn_000959 (BOX_HULL slot 10, collision) calls on its own this at 0x00021323, so the slot is a collision slot. It arrives after Phase 3 passed, so no Phase 3 gate ever aimed a mutation at it: reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000971",
+      "rva": "0x00021410",
+      "size": 6,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "slot_ruling",
+      "driving_phases": [],
+      "note": "Moved from Phase 5 to Phase 3 by the fix to the shape slot ruling: the target of BOX_HULL slot 8, which phys_fn_000959 (BOX_HULL slot 10, collision) calls on its own this at 0x0002132c, so the slot is a collision slot. It arrives after Phase 3 passed, so no Phase 3 gate ever aimed a mutation at it: reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
+      "id": "phys_fn_000975",
+      "rva": "0x000217c0",
+      "size": 168,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "slot_ruling",
+      "driving_phases": [],
+      "note": "Moved from Phase 5 to Phase 3 by the shape slot ruling: the target of BOX_HULL slot 11 (collision) in shape_slot_ruling.json. It arrives after Phase 3 passed, so no Phase 3 gate ever aimed a mutation at it. Deferred on the Phase 5 ledger as reconstructed_not_falsified, with this note: reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
       "id": "phys_fn_000983",
       "rva": "0x000219d0",
       "size": 62,
@@ -819,12 +867,22 @@
       "driving_phases": []
     },
     {
+      "id": "phys_fn_000985",
+      "rva": "0x00021a10",
+      "size": 78,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "slot_ruling",
+      "driving_phases": [],
+      "note": "Moved from Phase 5 to Phase 3 by the shape slot ruling: the target of BOX_HULL slot 0 (collision) in shape_slot_ruling.json. It arrives after Phase 3 passed, so no Phase 3 gate ever aimed a mutation at it. Deferred on the Phase 5 ledger as reconstructed_not_falsified, with this note: reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
       "id": "phys_fn_000993",
       "rva": "0x00021b70",
       "size": 108,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "Capsule object-model code left here by its translation unit: it sets the capsule's radius and half height and calls slot 6 on its own this. Carried to Phase 5 by the capsule_dimension_setter_is_object_model escalation in gates/phase3.json, not moved."
     },
     {
       "id": "phys_fn_000997",
@@ -881,6 +939,15 @@
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "slot_ruling",
       "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001035",
+      "rva": "0x00022dd0",
+      "size": 5,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "slot_ruling",
+      "driving_phases": [],
+      "note": "Moved from Phase 5 to Phase 3 by the shape slot ruling: the target of BASE slot 7 (collision), COMPOUND slot 7 (collision), PLANE slot 7 (collision) in shape_slot_ruling.json. It arrives after Phase 3 passed, so no Phase 3 gate ever aimed a mutation at it. Deferred on the Phase 5 ledger as reconstructed_not_falsified, with this note: reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_001041",
@@ -1017,6 +1084,15 @@
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001075",
+      "rva": "0x00023580",
+      "size": 57,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "enclosed_by_one_phase",
+      "driving_phases": [],
+      "note": "Moved from Phase 5 to Phase 3 by the shape slot ruling: NpBoxShape's constructor, which stores its own table 0x10106dc8 at 0x000235ad: a row of the public NpShape wrapper and not of the shape classes the ruling covers. The canonical line moved it to Phase 5 claiming translation_unit, and no __FILE__ span encloses 0x00023580; the generator's rule, enclosed_by_one_phase between NpBoxShape.cpp and NpCapsuleShape.cpp, places it with the other four NpShape constructors in Phase 3. It arrives after Phase 3 passed, so no Phase 3 gate ever aimed a mutation at it. Deferred on the Phase 5 ledger as reconstructed_not_falsified, with this note: reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_001077",
@@ -1723,6 +1799,15 @@
       "driving_phases": []
     },
     {
+      "id": "phys_fn_001269",
+      "rva": "0x00025510",
+      "size": 15,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "slot_ruling",
+      "driving_phases": [],
+      "note": "Moved from Phase 5 to Phase 3 by the shape slot ruling: a adapter of the shape classes (0x0002562b), ruled collision. It arrives after Phase 3 passed, so no Phase 3 gate ever aimed a mutation at it. Deferred on the Phase 5 ledger as reconstructed_not_falsified, with this note: reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
       "id": "phys_fn_001275",
       "rva": "0x000256e0",
       "size": 11,
@@ -1899,6 +1984,15 @@
       "driving_phases": []
     },
     {
+      "id": "phys_fn_001329",
+      "rva": "0x00026d90",
+      "size": 94,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "translation_unit",
+      "driving_phases": [],
+      "note": "Moved from Phase 5 to Phase 3 by the shape slot ruling: Shape::setGroup inside the Shape.cpp span: five NpShape setGroup wrappers call it as well as BASE slot 1, so it is no helper the ruling places, and the canonical line's Phase 5 translation_unit claim contradicted the Shape.cpp span it sits in (Phase 3). It returns to that span's phase. It arrives after Phase 3 passed, so no Phase 3 gate ever aimed a mutation at it. Deferred on the Phase 5 ledger as reconstructed_not_falsified, with this note: reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
+    },
+    {
       "id": "phys_fn_001331",
       "rva": "0x00026df0",
       "size": 53,
@@ -1953,6 +2047,15 @@
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": []
+    },
+    {
+      "id": "phys_fn_001361",
+      "rva": "0x00027930",
+      "size": 78,
+      "reason": "reconstructed_not_falsified",
+      "phase_provenance": "slot_ruling",
+      "driving_phases": [],
+      "note": "Moved from Phase 5 to Phase 3 by the shape slot ruling: the target of SPHERE slot 9 (collision) in shape_slot_ruling.json. It arrives after Phase 3 passed, so no Phase 3 gate ever aimed a mutation at it. Deferred on the Phase 5 ledger as reconstructed_not_falsified, with this note: reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_001373",
@@ -2454,6 +2557,24 @@
       "driving_phases": []
     },
     {
+      "id": "phys_fn_001730",
+      "rva": "0x00038050",
+      "size": 61,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "Moved from Phase 2 to Phase 3 by the shape slot ruling: not a shape-block row, but its callers are BOX slot 7, phys_fn_000951, which the ruling places with collision, and phys_fn_001766 on Phase 3, so they agree on Phase 3 and it is no longer shared. It arrives after Phase 3 passed, so no Phase 3 gate ever aimed a mutation at it. Deferred on the Phase 2 ledger as homeless_shared_code."
+    },
+    {
+      "id": "phys_fn_001732",
+      "rva": "0x00038090",
+      "size": 296,
+      "reason": "not_reconstructed_in_phase",
+      "phase_provenance": "callers",
+      "driving_phases": [],
+      "note": "Moved from Phase 2 to Phase 3 by the shape slot ruling: a continuation of phys_fn_001730, which moves with it. It arrives after Phase 3 passed, so no Phase 3 gate ever aimed a mutation at it. Deferred on the Phase 2 ledger as homeless_shared_code."
+    },
+    {
       "id": "phys_fn_001751",
       "rva": "0x0003b0e0",
       "size": 370,
@@ -2476,25 +2597,7 @@
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "layout_adjacency",
       "driving_phases": [],
-      "note": "matrix A [BOX][CAPSULE], the ninth of the nine non-mesh entries and the only one Phase 3 did not close. Its partner's vtable slot 5 resolves to phys_fn_000949 at 0x00020880, a 663-byte Phase 5 row; the other four capsule pairs' slot-5 partners are all Phase 3 rows and were closed alongside their entries. Re-deferred by the shape slot ruling: BOX slot 5 is a collision slot (shape_slot_ruling.json cites this row's own call through it at 0x0003b3da), so its target phys_fn_000949 is a Phase 3 row and this entry no longer waits on a later phase. It was blocked_on_later_phase, driving_phases [5], blocked_on phys_fn_000949, blocked_on_type Shape, vtable_slot 5; the partner is Phase 3's own unreconstructed row, which is a debt of this phase and not an obstruction"
-    },
-    {
-      "id": "phys_fn_001730",
-      "rva": "0x00038050",
-      "size": 61,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "Moved from Phase 2 to Phase 3 by the shape slot ruling: not a shape-block row, but its callers are BOX slot 7, phys_fn_000951, which the ruling places with collision, and phys_fn_001766 on Phase 3, so they agree on Phase 3 and it is no longer shared. It arrives after Phase 3 passed, so no Phase 3 gate ever aimed a mutation at it. Deferred on the Phase 2 ledger as homeless_shared_code."
-    },
-    {
-      "id": "phys_fn_001732",
-      "rva": "0x00038090",
-      "size": 296,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "callers",
-      "driving_phases": [],
-      "note": "Moved from Phase 2 to Phase 3 by the shape slot ruling: a continuation of phys_fn_001730, which moves with it. It arrives after Phase 3 passed, so no Phase 3 gate ever aimed a mutation at it. Deferred on the Phase 2 ledger as homeless_shared_code."
+      "note": "matrix A [BOX][CAPSULE], the ninth of the nine non-mesh entries and the only one Phase 3 did not close. Its partner's vtable slot 5 resolves to phys_fn_000949 at 0x00020880, a 663-byte row that was Phase 5's when this entry was written; the other four capsule pairs' slot-5 partners are all Phase 3 rows and were closed alongside their entries. Re-deferred by the shape slot ruling: BOX slot 5 is a collision slot (the collision pipeline dispatches it at this row's own call through it at 0x0003b3da), so its target phys_fn_000949 is a Phase 3 row and this entry no longer waits on a later phase. It was blocked_on_later_phase, driving_phases [5], blocked_on phys_fn_000949, blocked_on_type Shape, vtable_slot 5; the partner is Phase 3's own unreconstructed row, which is a debt of this phase and not an obstruction"
     },
     {
       "id": "phys_fn_001755",
@@ -3098,105 +3201,6 @@
       ],
       "blocked_on_type": "TriangleMesh",
       "note": "continuation at 0x000488f0 of matrix A [PLANE][MESH] -- the mesh column of the recovered dispatch matrix. It needs the triangle mesh, its acceleration structure and the vertex and index data behind them, which are Phase 4's rows and do not exist, so no Phase 3 harness can drive it"
-    },
-    {
-      "id": "phys_fn_000935",
-      "rva": "0x000205a0",
-      "size": 198,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
-      "driving_phases": [],
-      "note": "Moved from Phase 5 to Phase 3 by the shape slot ruling: the target of BOX slot 9 (collision) in shape_slot_ruling.json. It arrives after Phase 3 passed, so no Phase 3 gate ever aimed a mutation at it. Deferred on the Phase 5 ledger as reconstructed_not_falsified, with this note: reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000955",
-      "rva": "0x00020d30",
-      "size": 4,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
-      "driving_phases": [],
-      "note": "Moved from Phase 5 to Phase 3 by the shape slot ruling: the target of BOX_HULL slot 2 (collision) in shape_slot_ruling.json. It arrives after Phase 3 passed, so no Phase 3 gate ever aimed a mutation at it. Deferred on the Phase 5 ledger as reconstructed_not_falsified, with this note: reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000961",
-      "rva": "0x000213c0",
-      "size": 6,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
-      "driving_phases": [],
-      "note": "Moved from Phase 5 to Phase 3 by the shape slot ruling: the target of BOX_HULL slot 3 (collision) in shape_slot_ruling.json. It arrives after Phase 3 passed, so no Phase 3 gate ever aimed a mutation at it. Deferred on the Phase 5 ledger as reconstructed_not_falsified, with this note: reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000963",
-      "rva": "0x000213d0",
-      "size": 14,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
-      "driving_phases": [],
-      "note": "Moved from Phase 5 to Phase 3 by the shape slot ruling: the target of BOX_HULL slot 4 (collision) in shape_slot_ruling.json. It arrives after Phase 3 passed, so no Phase 3 gate ever aimed a mutation at it. Deferred on the Phase 5 ledger as reconstructed_not_falsified, with this note: reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000975",
-      "rva": "0x000217c0",
-      "size": 168,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
-      "driving_phases": [],
-      "note": "Moved from Phase 5 to Phase 3 by the shape slot ruling: the target of BOX_HULL slot 11 (collision) in shape_slot_ruling.json. It arrives after Phase 3 passed, so no Phase 3 gate ever aimed a mutation at it. Deferred on the Phase 5 ledger as reconstructed_not_falsified, with this note: reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000985",
-      "rva": "0x00021a10",
-      "size": 78,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
-      "driving_phases": [],
-      "note": "Moved from Phase 5 to Phase 3 by the shape slot ruling: the target of BOX_HULL slot 0 (collision) in shape_slot_ruling.json. It arrives after Phase 3 passed, so no Phase 3 gate ever aimed a mutation at it. Deferred on the Phase 5 ledger as reconstructed_not_falsified, with this note: reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_001035",
-      "rva": "0x00022dd0",
-      "size": 5,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
-      "driving_phases": [],
-      "note": "Moved from Phase 5 to Phase 3 by the shape slot ruling: the target of BASE slot 7 (collision), COMPOUND slot 7 (collision), PLANE slot 7 (collision) in shape_slot_ruling.json. It arrives after Phase 3 passed, so no Phase 3 gate ever aimed a mutation at it. Deferred on the Phase 5 ledger as reconstructed_not_falsified, with this note: reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_001075",
-      "rva": "0x00023580",
-      "size": 57,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": [],
-      "note": "Moved from Phase 5 to Phase 3 by the shape slot ruling: NpBoxShape's constructor, which stores its own table 0x10106dc8 at 0x000235ad: a row of the public NpShape wrapper and not of the shape classes the ruling covers. The canonical line moved it to Phase 5 claiming translation_unit, and no __FILE__ span encloses 0x00023580; the generator's rule, enclosed_by_one_phase between NpBoxShape.cpp and NpCapsuleShape.cpp, places it with the other four NpShape constructors in Phase 3. It arrives after Phase 3 passed, so no Phase 3 gate ever aimed a mutation at it. Deferred on the Phase 5 ledger as reconstructed_not_falsified, with this note: reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_001269",
-      "rva": "0x00025510",
-      "size": 15,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
-      "driving_phases": [],
-      "note": "Moved from Phase 5 to Phase 3 by the shape slot ruling: a adapter of the shape classes (0x0002562b), ruled collision. It arrives after Phase 3 passed, so no Phase 3 gate ever aimed a mutation at it. Deferred on the Phase 5 ledger as reconstructed_not_falsified, with this note: reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_001329",
-      "rva": "0x00026d90",
-      "size": 94,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "translation_unit",
-      "driving_phases": [],
-      "note": "Moved from Phase 5 to Phase 3 by the shape slot ruling: Shape::setGroup inside the Shape.cpp span: five NpShape setGroup wrappers call it as well as BASE slot 1, so it is no helper the ruling places, and the canonical line's Phase 5 translation_unit claim contradicted the Shape.cpp span it sits in (Phase 3). It returns to that span's phase. It arrives after Phase 3 passed, so no Phase 3 gate ever aimed a mutation at it. Deferred on the Phase 5 ledger as reconstructed_not_falsified, with this note: reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_001361",
-      "rva": "0x00027930",
-      "size": 78,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
-      "driving_phases": [],
-      "note": "Moved from Phase 5 to Phase 3 by the shape slot ruling: the target of SPHERE slot 9 (collision) in shape_slot_ruling.json. It arrives after Phase 3 passed, so no Phase 3 gate ever aimed a mutation at it. Deferred on the Phase 5 ledger as reconstructed_not_falsified, with this note: reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_001901",

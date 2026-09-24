@@ -980,11 +980,35 @@ def oracle_independence(ghidra, capstone, extent):
     }
 
 
-def reconcile(pe, ghidra, capstone, inventory, ruling=None):
+def third_party_rvas(correspondence):
+    """The rows a correspondence map grades `mapped` or `probable`, by rva, with their library.
+
+    `correspondence` is what validate_inventory.read_source_correspondence returns.
+    """
+    return {int(rva_text, 16): library
+            for library, grade, rva_text, _, _ in correspondence.values()
+            if grade in validate_inventory.CORRESPONDING_GRADES and rva_text}
+
+
+def reconcile(pe, ghidra, capstone, inventory, ruling=None, third_party=None, pins=None):
     """Return the inventory, ledger, coverage reports and dependency graph.
 
     `ruling` is shape_slot_ruling.json, read through the same resolver the
-    validator uses, so the rows it places are placed identically by both.
+    validator uses, so the rows it places are placed identically by both; the
+    generated census is then walked by the validator's own collision_pipeline, and
+    a table verdict the pipeline does not bear out stops the run. A ruling with no
+    `pipeline` is not walked; the validator rejects one as incomplete.
+
+    `third_party` maps a row's rva to the library the correspondence maps say it was
+    compiled from (third_party_rvas). Such a row is Phase 4's, which vendors the
+    library: where no layer already placed it there it is placed with
+    `translation_unit`, naming the upstream unit. `pins` is phase_pins.json's pins by
+    stable ID: the rows the evidence here cannot derive, set to the phase and
+    provenance pinned for them. Both apply to the function row alone, last, like the
+    export pin, and neither reaches the data objects, which are phased from the
+    evidence as before. The result's `unpinned` records what each pinned row would
+    have been without its pin, so a pin that has become the generator's own answer
+    can be struck.
     """
     for kind, document in (("pe", pe), ("ghidra", ghidra), ("capstone", capstone)):
         check_schema(kind, document)
@@ -1181,10 +1205,22 @@ def reconcile(pe, ghidra, capstone, inventory, ruling=None):
                                "and none is named above the last one that does, "
                                "at " + hexa(runtime_floor))
 
-    return emit(pe, ghidra, capstone, inventory, extent, rows, edges, phases,
-                artifacts, files, seeds, exports, layers, gaps,
-                unmapped, discovery, derived, ghidra_only, tables,
-                provenance, owners, seed_census, lone_sites, independence)
+    result = emit(pe, ghidra, capstone, inventory, extent, rows, edges, phases,
+                  artifacts, files, seeds, exports, layers, gaps,
+                  unmapped, discovery, derived, ghidra_only, tables,
+                  provenance, owners, seed_census, lone_sites, independence,
+                  third_party or {}, pins or {})
+    if ruling is not None and "pipeline" in ruling:
+        _, _, dispatched, _, problems = validate_inventory.collision_pipeline(
+            ruling, result["inventory"]["functions"],
+            {rva(instruction["rva"]): instruction for instruction in capstone["instructions"]},
+            capstone["tail_calls"], pointers, {entry["iat_rva"] for entry in pe["imports"]},
+            pe["image"]["image_base"])
+        problems += validate_inventory.slot_verdict_errors(ruling, dispatched)
+        if problems:
+            raise ValueError(f"the shape ruling disagrees with the collision pipeline the "
+                             f"generated census walks: {problems[0]}")
+    return result
 
 
 def references(capstone, ghidra, extent):
@@ -1228,8 +1264,9 @@ def references(capstone, ghidra, extent):
 def emit(pe, ghidra, capstone, inventory, extent, rows, edges, phases,
          artifacts, files, seeds, exports, layers, gaps, unmapped,
          discovery, derived, ghidra_only, tables, provenance, owners, seed_census,
-         lone_sites, independence):
+         lone_sites, independence, third_party, pins):
     capstone_ref, ghidra_ref = references(capstone, ghidra, extent)
+    unpinned = {}
     names = {rva(function["rva"]): function["name"] for function in ghidra["functions"]}
     export_rvas = set(exports.values())
     functions, data_objects, ledger = [], [], []
@@ -1273,6 +1310,16 @@ def emit(pe, ghidra, capstone, inventory, extent, rows, edges, phases,
                       reference, capstone_ref(row["rva"]), proof,
                       "" if row["entry"] else
                       f"continuation of the entry at {hexa(owner)}")
+        if row["rva"] in third_party and record["phase"] != validate_inventory.THIRD_PARTY_PHASE:
+            record["phase"] = validate_inventory.THIRD_PARTY_PHASE
+            record["phase_provenance"] = "translation_unit"
+        pin = pins.get(identifier)
+        if pin is not None:
+            if pin["rva"] != record["rva"]:
+                raise ValueError(f"phase_pins.json pins {identifier} at {pin['rva']}, and the "
+                                 f"generator emits it at {record['rva']}")
+            unpinned[identifier] = (record["phase"], record["phase_provenance"])
+            record["phase"], record["phase_provenance"] = pin["phase"], pin["phase_provenance"]
         name = names.get(row["rva"])
         if row["entry"] and name and not name.startswith(("FUN_", "thunk_FUN_")):
             record["label"], record["label_confidence"] = name, "semantic"
@@ -1393,6 +1440,7 @@ def emit(pe, ghidra, capstone, inventory, extent, rows, edges, phases,
         "data_coverage": _data_report(data_report, data_objects, ghidra, tables,
                                       overlaps),
         "dependencies": _dot(identifiers, edges, phases),
+        "unpinned": unpinned,
     }
 
 
@@ -1616,15 +1664,26 @@ def main():
     inventory_path = Path(args.inventory)
     ruling_path = (Path(args.ruling) if args.ruling else
                    inventory_path.parent / validate_inventory.SHAPE_RULING_NAME)
+    pins_path = inventory_path.parent / validate_inventory.PHASE_PINS_NAME
     try:
         inventory = json.loads(inventory_path.read_text(encoding="utf-8"))
         ruling = (json.loads(ruling_path.read_text(encoding="utf-8"))
                   if args.ruling or ruling_path.is_file() else None)
+        # The third-party layer and the pins sit beside the inventory like the ruling.
+        # A map this run cannot read is absent from the layer; whether it may be is the
+        # validator's question, and it asks it.
+        correspondence, _ = validate_inventory.read_source_correspondence(inventory_path.parent)
+        pins = {}
+        if pins_path.is_file():
+            pins, problems = validate_inventory.read_phase_pins(
+                json.loads(pins_path.read_text(encoding="utf-8")))
+            if problems:
+                parser.exit(2, f"error: {problems[0]}\n")
         result = reconcile(
             json.loads(Path(args.pe).read_text(encoding="utf-8")),
             json.loads(Path(args.ghidra).read_text(encoding="utf-8")),
             json.loads(Path(args.capstone).read_text(encoding="utf-8")),
-            inventory, ruling)
+            inventory, ruling, third_party_rvas(correspondence), pins)
         census = result["inventory"]["coverage"]["census"]
         reports = inventory_path.parent
         (reports / census["code_report"]).parent.mkdir(parents=True, exist_ok=True)

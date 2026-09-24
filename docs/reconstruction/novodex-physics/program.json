@@ -48,11 +48,11 @@
       "implementation_commit": "ac739543956cc4ea22bff832f17c66d07666b9da",
       "evidence_commit": "dcaa8391de0ae5ef45a00d5007d55aa4a19aef1c",
       "gate_artifact": "gates/phase2.json",
-      "owned_functions": 140,
+      "owned_functions": 139,
       "owned_data_objects": 1055,
       "closed_functions": 56,
       "closed_data_objects": 0,
-      "remaining_functions": 84,
+      "remaining_functions": 83,
       "remaining_data_objects": 1055
     },
     {
@@ -65,11 +65,11 @@
       "evidence_commit": "5f7628e44d2e153bb2b3d92c16ba8a7b14f1578f",
       "gate_artifact": "gates/phase3.json",
       "owned_functions": 376,
-      "owned_data_objects": 112,
+      "owned_data_objects": 114,
       "closed_functions": 61,
       "closed_data_objects": 0,
       "remaining_functions": 315,
-      "remaining_data_objects": 112
+      "remaining_data_objects": 114
     },
     {
       "phase": 4,
@@ -96,12 +96,12 @@
       "implementation_commit": null,
       "evidence_commit": null,
       "gate_artifact": null,
-      "owned_functions": 223,
-      "owned_data_objects": 108,
+      "owned_functions": 219,
+      "owned_data_objects": 106,
       "closed_functions": 0,
       "closed_data_objects": 0,
-      "remaining_functions": 223,
-      "remaining_data_objects": 108
+      "remaining_functions": 219,
+      "remaining_data_objects": 106
     },
     {
       "phase": 6,
@@ -128,11 +128,11 @@
       "implementation_commit": null,
       "evidence_commit": null,
       "gate_artifact": null,
-      "owned_functions": 561,
+      "owned_functions": 566,
       "owned_data_objects": 502,
       "closed_functions": 4,
       "closed_data_objects": 0,
-      "remaining_functions": 557,
+      "remaining_functions": 562,
       "remaining_data_objects": 502
     },
     {

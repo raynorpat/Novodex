@@ -476,7 +476,10 @@ which one that was:
 - `slot_ruling` — named by `shape_slot_ruling.json`, the shape-class vtable
   ruling: a slot the collision pipeline dispatches through is Phase 3's, every
   other slot of the shape classes is Phase 5's, and the file says which rows
-  follow which slot, with the call site that establishes each collision slot.
+  follow which slot. The verdicts are not taken from the file: the collision
+  pipeline is walked from the dispatch matrices over the rows Phases 3 and 4
+  own (`collision_pipeline`, which the generator and the validator both run),
+  and a table whose verdicts disagree with what it dispatches stops both.
   It outranks a span because the shape classes' own units are split by slot
   rather than owned whole, and it seeds the caller layer. Unlike the
   propagation rules it is recomputed: `validate_inventory.py` checks the file
@@ -509,6 +512,24 @@ override what the layers decided:
 - `export_pin` — the umbrella plan locks this export's owner. Applied last and to
   the export alone, because a pin is a plan decision rather than evidence about
   the code, and propagating it would launder it into the neighbours.
+
+Two more are applied to the finished function rows alone, like the export pin,
+and never reach a data object:
+
+- The third-party layer. A row the correspondence maps in
+  `evidence/phase4-third-party-map/` grade `mapped` or `probable` is compiled from
+  qhull or OPCODE, so it is Phase 4's; where no rule above already put it there it
+  is placed with `translation_unit`, naming its upstream unit. This re-derives 119
+  of the 191 rows P4 Task 1c moved to Phase 4.
+- `phase_pins.json`. The other 72 are rows this evidence cannot derive, each pinned
+  to the phase and provenance the census carries, with the reason and the commit
+  that decided it. The generator records what each pinned row would have been
+  without its pin.
+
+`validate_inventory.py` regenerates the committed census with the ruling, the
+maps and the pins, and requires every function row and data object to carry the
+generator's phase and provenance; a pin the generator already agrees with has to
+be struck, so the list stays exact.
 
 **The caveat on `callers`.** Because `shared_by_callers` runs afterwards, an
 entry can hold a phase it inherited from a caller that the override then moved to

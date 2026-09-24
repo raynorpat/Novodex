@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
   "phase": 5,
-  "note": "Phase 5 closes NOTHING, and says so rather than closing on a recorded differential. It owns 223 function rows and 108 data objects; 122 of the function rows are reconstructed with a proof, 101 are not reconstructed, and no data object is dispositioned. The schema accepts one thing as a closure -- a mutation aimed at the row that the gate catches -- and this phase has no per-row mutation evidence. The ledger is published so that every row the phase owns is accounted for rather than left in no list: before it existed, 327 rows were owned by a phase with no ledger at all. Amendment, shape slot ruling (shape_slot_ruling.json, the shape-class vtable ruling validate_inventory.py recomputes: a slot the collision pipeline dispatches through is Phase 3's and every other slot of the shape classes is Phase 5's): 35 function rows arrive -- 29 from Phase 3 and six from Phase 2, among them phys_fn_002344 and phys_fn_002410, each carrying the measurement it was re-deferred with -- and 17 leave: thirteen the ruling places with collision for Phase 3 (twelve slot targets and the slot-9 Prunable adapter), phys_fn_001075 and phys_fn_001329 back to the phase the generator gives them, and the folded stubs phys_fn_001391 and phys_fn_004812 to shared runtime. Before the ruling the phase owned 205 function rows and 122 data objects.",
+  "note": "Phase 5 closes NOTHING, and says so rather than closing on a recorded differential. It owns 219 function rows and 106 data objects; 118 of the function rows are reconstructed with a proof, 101 are not reconstructed, and no data object is dispositioned. The schema accepts one thing as a closure -- a mutation aimed at the row that the gate catches -- and this phase has no per-row mutation evidence. The ledger is published so that every row the phase owns is accounted for rather than left in no list: before it existed, 327 rows were owned by a phase with no ledger at all. Amendment, shape slot ruling (shape_slot_ruling.json, the shape-class vtable ruling validate_inventory.py recomputes: a slot the collision pipeline dispatches through is Phase 3's and every other slot of the shape classes is Phase 5's): 35 function rows arrive -- 29 from Phase 3 and six from Phase 2, among them phys_fn_002344 and phys_fn_002410, each carrying the measurement it was re-deferred with -- and 17 leave: thirteen the ruling places with collision for Phase 3 (twelve slot targets and the slot-9 Prunable adapter), phys_fn_001075 and phys_fn_001329 back to the phase the generator gives them, and the folded stubs phys_fn_001391 and phys_fn_004812 to shared runtime. Before the ruling the phase owned 205 function rows and 122 data objects. Amendment, review of the shape slot ruling: four function rows leave and none arrive. phys_fn_000967, phys_fn_000969 and phys_fn_000971, BOX_HULL slots 6, 7 and 8, go to Phase 3, because phys_fn_000959, BOX_HULL slot 10, dispatches them on its own this; and phys_fn_002352 goes to Phase 7, where the census regeneration check places it by its callers. Three data objects leave with the box-hull rows and phys_data_005007 arrives. Before this review the phase owned 223 function rows and 108 data objects.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway archive copy, rebuilt, and run against the committed oracle transcript through a registered staged-pair target. This phase has none yet.",
     "static_proof_falsified": "a mutation aimed at the row and caught by a static check rather than a differential. This phase has none yet."
   },
   "deferred_reasons": {
     "not_reconstructed_in_phase": "this phase did not reconstruct this row and names nothing that blocks it. A debt, not an obstruction.",
-    "reconstructed_not_falsified": "the row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. This is the work the phase has left: 122 rows, each needing one mutation and one measured detection.",
+    "reconstructed_not_falsified": "the row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. This is the work the phase has left: 118 rows, each needing one mutation and one measured detection.",
     "data_object_not_dispositioned": "no closure schema lets any phase close a data object, so the data half arrives here by construction."
   },
   "measured_from": {
@@ -19,7 +19,7 @@
   },
   "counts": {
     "deferred_not_reconstructed_in_phase": 101,
-    "deferred_reconstructed_not_falsified": 122
+    "deferred_reconstructed_not_falsified": 118
   },
   "closed": [],
   "deferred": [
@@ -1428,33 +1428,6 @@
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
-      "id": "phys_fn_000967",
-      "rva": "0x000213f0",
-      "size": 6,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000969",
-      "rva": "0x00021400",
-      "size": 6,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
-      "id": "phys_fn_000971",
-      "rva": "0x00021410",
-      "size": 6,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "slot_ruling",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
-    },
-    {
       "id": "phys_fn_000977",
       "rva": "0x00021870",
       "size": 207,
@@ -1894,15 +1867,6 @@
       "phase_provenance": "slot_ruling",
       "driving_phases": [],
       "note": "Moved from Phase 3 to Phase 5 by the shape slot ruling: a helper every direct caller of which is a ruled row (phys_fn_001323 at 0x00026c19), ruled object model. Deferred on the Phase 3 ledger as blocked_on_later_phase, with this note: RE-DEFERRED at the port of the Phase 4 close (branch p4-close-port). Canonical commit c962ffa closed this row outright on NxPhysicsObjectLayoutTests with no discharge fields, because its not_reconstructed_in_phase deferral had named no driving phases. The gate-to-phase binding ported with the Phase 4 close rejects that closure: NxPhysicsObjectLayoutTests is registered to phase 5 only, so it does not run when phase 3 is gated -- `run_phase_gate.ps1 -Phase 3` prints `selected_targets=NxPhysicsGeometryTests,NxPhysicsKernelFuzzTests` and `selected_oracle_differential_targets=NxPhysicsCollisionTests` -- and it does not run under `-Phase completed` while Phase 5 is pending either, which prints `highest_passing_phase=4 differential_phases=1,2,3,4` and `selected_oracle_differential_targets=NxPhysicsAssetTests,NxPhysicsCollisionTests,NxPhysicsThirdPartyTests`. No passing gate executes this row's proof. The measurement is carried here unchanged so that a Phase 5 close can discharge the row through the legitimate form, `discharged_by_phase: 5` with `driving_phases: [5]`. MUTATION, from c962ffa: the pair remover's match test keeps only the second half of each stride-8 record -- begin[i*2]==self, the first-half arm, is dropped. Detected on pairrm, whose five sub-drives include two first-half matches; the family digest moves f0bdae43 -> 2df229f4 against the unchanged oracle transcript. Control run of the unmutated tree reads mismatches=1, this run mismatches=2. DETECTED, from c962ffa: mismatches=2. RE-MEASURED on this branch in a `git archive` copy of de56592, control / mutant / control: `layout candidate mismatches=1`, then `2`, then `1`, with `layout oracle digest=16dceb3c` in all three and the pairrm family reading `candidate ok=1 digest=f0bdae43`, then `ok=0 digest=2df229f4`, then `ok=1 digest=f0bdae43` against `pairrm row=oracle cases=5 digest=f0bdae43`. THE CONTROL IS NOT CLEAN: its one mismatch is `candidate CANDIDATE-MISSING family=vtables`, the target's designed RED, so the recorded mismatches=2 is a target-level count over a baseline of 1 and the part of it this row owns is the pairrm family alone. A discharge must re-establish a control in which the count it spends starts at zero, or spend the family-level reading, rather than inherit a target-level baseline that was already off. The blocking type is the Scene because the row's receiver is the ADDRESS of the scene's +0x5d4 field (`add ecx,0x5d4` at 0x00026c13 in phys_fn_001323), and the only harness that supplies that contract is Phase 5's pairrm fixture"
-    },
-    {
-      "id": "phys_fn_002352",
-      "rva": "0x0005b610",
-      "size": 8,
-      "reason": "reconstructed_not_falsified",
-      "phase_provenance": "layout_adjacency",
-      "driving_phases": [],
-      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002379",

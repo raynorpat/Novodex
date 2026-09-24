@@ -2317,14 +2317,16 @@ class ShapeRulingTests(unittest.TestCase):
     """The shape ruling is checked against the oracle, then the census against it.
 
     One table T at 0x3000 holds A (object model) and B (collision). C constructs
-    it, X is a pipeline row that calls through slot 1, and H is a helper only A
-    calls. A2 is a continuation of A.
+    it. M is the matrix row: it stores X, a pipeline row that calls through slot 1
+    on a receiver `receivers` types as a T. H is a helper only A calls, and A2 is a
+    continuation of A. B's slot is collision because X dispatches it; A's is object
+    model because nothing in the pipeline does.
     """
 
     SHA = "4b" + "0" * 62
 
     def fixture(self):
-        inventory = {"pins": {"oracle": {"sha256": self.SHA}}, "functions": [
+        inventory = {"pins": {"oracle": {"sha256": self.SHA}}, "exports": [], "functions": [
             ruling_row("phys_fn_000001", 0x1000, 8, 5, "slot_ruling"),
             ruling_row("phys_fn_000002", 0x1008, 8, 5, "slot_ruling",
                        "continuation of the entry at 0x00001000"),
@@ -2332,14 +2334,17 @@ class ShapeRulingTests(unittest.TestCase):
             ruling_row("phys_fn_000004", 0x1020, 16, 5, "slot_ruling"),
             ruling_row("phys_fn_000005", 0x1030, 16, 3, "callers"),
             ruling_row("phys_fn_000006", 0x1040, 16, 5, "slot_ruling"),
+            ruling_row("phys_fn_000007", 0x1050, 16, 2, "callers"),
         ]}
         ruling = {
             "schema_version": 1, "oracle_sha256": self.SHA, "rule": "by slot",
             "phase_of": {"collision": 3, "object_model": 5},
+            "pipeline": {"matrix": "phys_fn_000007", "phases": [3, 4], "bound": "3 and 4",
+                         "worked_examples": []},
             "tables": [{"class": "T", "rva": "0x00003000", "constructor": "phys_fn_000004",
                         "vptr_store": "0x00001024", "slots": ["object_model", "collision"]}],
-            "slot_evidence": [{"ruling": "collision", "slot": 1, "classes": ["T"],
-                               "sites": [{"site": "0x00001034", "row": "phys_fn_000005"}]}],
+            "receivers": [{"site": "0x00001034", "row": "phys_fn_000005", "receiver": ["T"],
+                           "note": "the fixture's T"}],
             "members": [
                 {"id": "phys_fn_000004", "rva": "0x00001020", "basis": "constructor",
                  "ruling": "object_model", "site": "0x00001024"},
@@ -2351,19 +2356,21 @@ class ShapeRulingTests(unittest.TestCase):
         instructions = {
             0x1004: ruling_instruction(0x1004, "call", "0x10001040", target=0x1040),
             0x1024: ruling_instruction(0x1024, "mov", "dword ptr [esi], 0x10003000"),
+            0x1032: ruling_instruction(0x1032, "mov", "eax, dword ptr [ecx]"),
             0x1034: ruling_instruction(0x1034, "call", "dword ptr [eax + 4]", indirect=True),
+            0x1054: ruling_instruction(0x1054, "mov", "dword ptr [edx + 8], 0x10001030"),
         }
         return inventory, ruling, pointers, instructions
 
-    def errors(self, mutate=None):
+    def errors(self, mutate=None, spans=None):
         inventory, ruling, pointers, instructions = self.fixture()
         if mutate:
             mutate(inventory, ruling, pointers, instructions)
         return validate_inventory.validate_shape_ruling(inventory, ruling, pointers, instructions,
-                                                        [], 0x10000000)
+                                                        [], 0x10000000, frozenset(), spans)
 
-    def assertRejects(self, mutate, pattern):
-        errors = self.errors(mutate)
+    def assertRejects(self, mutate, pattern, spans=None):
+        errors = self.errors(mutate, spans)
         self.assertTrue(any(re.search(pattern, error) for error in errors),
                         f"{pattern!r} not in {errors}")
 
@@ -2380,6 +2387,16 @@ class ShapeRulingTests(unittest.TestCase):
         self.assertEqual(errors, [])
         self.assertEqual(phases, {0x1000: 5, 0x1010: 3, 0x1020: 5, 0x1040: 5})
 
+    def test_the_pipeline_is_walked_from_the_matrix(self):
+        inventory, ruling, pointers, instructions = self.fixture()
+        closure, dispatches, dispatched, interfaces, errors = validate_inventory.collision_pipeline(
+            ruling, inventory["functions"], instructions, [], pointers, frozenset(), 0x10000000)
+        self.assertEqual(errors, [])
+        self.assertEqual(sorted(closure), [0x1010, 0x1030])
+        self.assertEqual(dispatches, {0x1034: (0x1030, 1, ("T",), "site", None)})
+        self.assertEqual(dict(dispatched), {("T", 1): {0x1034}})
+        self.assertEqual(interfaces, {"T": "T"})
+
     def test_rejects_a_ruled_row_moved_to_another_phase(self):
         self.assertRejects(lambda i, r, p, s: self.row(i, "phys_fn_000001").__setitem__("phase", 3),
                            r"'phys_fn_000001' is placed by the shape ruling at phase 5")
@@ -2395,20 +2412,98 @@ class ShapeRulingTests(unittest.TestCase):
         self.assertRejects(lambda i, r, p, s: self.row(i, "phys_fn_000002").__setitem__("phase", 3),
                            r"'phys_fn_000002' is placed by the shape ruling")
 
+    def test_a_continuation_with_a_note_appended_is_still_a_continuation(self):
+        # The review found three continuation rows validated as entries because text
+        # had been appended to their notes and the pattern was anchored at the end.
+        self.assertRejects(
+            lambda i, r, p, s: self.row(i, "phys_fn_000002").update(
+                phase=3, notes="continuation of the entry at 0x00001000 P4 Task 3: retyped"),
+            r"'phys_fn_000002' is placed by the shape ruling")
+        self.assertEqual(validate_inventory._entry_rva(
+            {"rva": "0x00001008", "notes": "continuation of the entry at 0x00001000 later text"}),
+            0x1000)
+
     def test_rejects_an_unruled_row_claiming_the_ruling(self):
         self.assertRejects(
             lambda i, r, p, s: self.row(i, "phys_fn_000005").__setitem__(
                 "phase_provenance", "slot_ruling"),
             r"'phys_fn_000005' claims 'slot_ruling', but the shape ruling does not place it")
 
-    def test_rejects_a_collision_slot_resting_on_no_virtual_call(self):
-        self.assertRejects(lambda i, r, p, s: r["slot_evidence"][0].__setitem__("sites", []),
-                           r"calls T slot 1 a collision slot and cites no virtual call")
+    def test_rejects_a_collision_slot_the_pipeline_never_dispatches(self):
+        # The receiver is typed as nothing the tables hold, so X dispatches no T slot.
+        self.assertRejects(lambda i, r, p, s: r["receivers"][0].__setitem__("receiver", []),
+                           r"rules T slot 1 collision, but the collision pipeline never "
+                           r"dispatches it")
 
-    def test_rejects_evidence_that_calls_through_another_slot(self):
+    def test_rejects_an_object_model_slot_the_pipeline_dispatches(self):
+        # The shape of the box-hull finding: the pipeline calls through a slot the
+        # table calls object model.
         self.assertRejects(
-            lambda i, r, p, s: s[0x1034].__setitem__("operands", "dword ptr [eax + 8]"),
-            r"cites 0x00001034, which is call dword ptr \[eax \+ 8\] and not a call through slot 1")
+            lambda i, r, p, s: s[0x1034].__setitem__("operands", "dword ptr [eax]"),
+            r"rules T slot 0 object_model, but the collision pipeline dispatches it at 0x00001034")
+
+    def test_rejects_a_dispatch_on_an_untyped_receiver(self):
+        self.assertRejects(lambda i, r, p, s: r.__setitem__("receivers", []),
+                           r"dispatches slot 1 at 0x00001034 in 'phys_fn_000005' on a receiver "
+                           r"the ruling does not type")
+
+    def test_rejects_typing_a_site_the_pipeline_does_not_reach(self):
+        def mutate(i, r, p, s):
+            r["receivers"].append({"site": "0x00001038", "row": "phys_fn_000005",
+                                   "receiver": ["T"], "note": "not a dispatch"})
+        self.assertRejects(mutate, r"types the receiver at 0x00001038, which is not a dispatch")
+
+    def test_a_slot_targets_this_is_typed_from_the_tables(self):
+        # B dispatches slot 1 on its own this; B is T's slot 1, so the receiver is a T
+        # with no declaration, and a declaration for it is refused.
+        def mutate(i, r, p, s):
+            s[0x1012] = ruling_instruction(0x1012, "mov", "eax, dword ptr [ecx]")
+            s[0x1014] = ruling_instruction(0x1014, "call", "dword ptr [eax]", indirect=True)
+        self.assertRejects(mutate, r"rules T slot 0 object_model, but the collision pipeline "
+                                   r"dispatches it at 0x00001014")
+
+        def declared(i, r, p, s):
+            mutate(i, r, p, s)
+            s[0x1014]["operands"] = "dword ptr [eax + 4]"
+            r["receivers"].append({"site": "0x00001014", "row": "phys_fn_000003",
+                                   "receiver": [], "note": "wrong"})
+        self.assertRejects(declared, r"types 0x00001014, whose receiver is the incoming this")
+
+    def test_a_receiver_can_be_typed_by_the_row_that_returns_it(self):
+        def mutate(i, r, p, s):
+            i["functions"].append(ruling_row("phys_fn_000008", 0x1060, 16, 2, "callers"))
+            s[0x1036] = ruling_instruction(0x1036, "call", "0x10001060", target=0x1060)
+            s[0x1038] = ruling_instruction(0x1038, "mov", "edx, dword ptr [eax]")
+            s[0x103a] = ruling_instruction(0x103a, "call", "dword ptr [edx]", indirect=True)
+            r["receivers"].append({"returned_by": "phys_fn_000008", "receiver": [],
+                                   "note": "an allocator"})
+        self.assertEqual(self.errors(mutate), [])
+
+        def unused(i, r, p, s):
+            mutate(i, r, p, s)
+            del s[0x103a]
+        self.assertRejects(unused, r"types what 0x00001060 returns, and no dispatch")
+
+    def test_the_bound_ends_the_pipeline_at_another_phases_row(self):
+        # X on Phase 5 is outside the pipeline, so nothing dispatches slot 1.
+        self.assertRejects(lambda i, r, p, s: self.row(i, "phys_fn_000005").__setitem__("phase", 5),
+                           r"rules T slot 1 collision, but the collision pipeline never dispatches")
+
+    def test_rejects_a_bound_that_is_not_the_decision(self):
+        self.assertRejects(lambda i, r, p, s: r["pipeline"].__setitem__("phases", [3]),
+                           r"pipeline phases \[3\] are not the decision")
+
+    def test_a_worked_example_is_checked_against_the_pipeline(self):
+        def example(in_pipeline):
+            def mutate(i, r, p, s):
+                r["pipeline"]["worked_examples"] = [
+                    {"class": "T", "slot": 1, "verdict": "collision", "note": "x",
+                     "path": [{"row": "phys_fn_000005", "site": "0x00001034",
+                               "in_pipeline": in_pipeline}]}]
+            return mutate
+        self.assertEqual(self.errors(example(True)), [])
+        self.assertRejects(example(False), r"says 'phys_fn_000005' is not in the collision "
+                                           r"pipeline, and it is")
 
     def test_rejects_a_row_two_slots_rule_differently(self):
         self.assertRejects(lambda i, r, p, s: p.__setitem__(0x3004, 0x1000),
@@ -2431,10 +2526,54 @@ class ShapeRulingTests(unittest.TestCase):
             r["members"][1]["callers"] = [{"site": "0x00001038", "row": "phys_fn_000005"}]
         self.assertRejects(mutate, r"is called from 'phys_fn_000005', which the ruling does not place")
 
+    def test_rejects_a_helper_that_names_no_caller(self):
+        # X13 and X14: an empty caller list passed the "every direct caller" check.
+        def mutate(i, r, p, s):
+            s.pop(0x1004)
+            r["members"][1]["callers"] = []
+        self.assertRejects(mutate, r"'phys_fn_000006' is a helper that records no caller")
+
+    def test_rejects_a_member_at_a_slot_target(self):
+        # X13: a member line re-ruling a collision slot's target outvoted its slot.
+        def mutate(i, r, p, s):
+            r["members"].append({"id": "phys_fn_000003", "rva": "0x00001010", "basis": "helper",
+                                 "ruling": "object_model", "callers": []})
+            self.row(i, "phys_fn_000003")["phase"] = 5
+        self.assertRejects(mutate, r"member 'phys_fn_000003' is the target of T slot 1")
+
+    def test_rejects_a_helper_whose_address_is_taken(self):
+        self.assertRejects(lambda i, r, p, s: p.__setitem__(0x3100, 0x1040),
+                           r"'phys_fn_000006' has its address taken at 0x00003100")
+
+    def test_rejects_a_helper_inside_a_translation_unit_span(self):
+        # X14 and X6b: a row a span places is not a helper.
+        self.assertRejects(None, r"'phys_fn_000006' is inside Unit.cpp's span",
+                           spans=[(0x1040, 0x1048, "Unit.cpp")])
+
+    def test_rejects_a_helper_the_plan_pins_as_an_export(self):
+        # X6: phys_fn_001704 is NxRayPlaneIntersect, pinned to Phase 3 by the plan.
+        self.assertRejects(
+            lambda i, r, p, s: i["exports"].append({"name": "NxRayPlaneIntersect",
+                                                    "function_id": "phys_fn_000006"}),
+            r"'phys_fn_000006' is an export the plan pins")
+
+    def test_rejects_a_helper_that_stores_a_shape_table(self):
+        self.assertRejects(
+            lambda i, r, p, s: s.__setitem__(0x1044, ruling_instruction(
+                0x1044, "mov", "dword ptr [esi], 0x10003000")),
+            r"'phys_fn_000006' stores a shape table at 0x00001044")
+
     def test_rejects_a_constructor_that_stores_no_shape_table(self):
         self.assertRejects(
             lambda i, r, p, s: s[0x1024].__setitem__("operands", "dword ptr [esi], 0x10004000"),
             r"'phys_fn_000004' is a constructor because 0x00001024 stores a shape table")
+
+    def test_rejects_a_collision_exception_no_collision_row_calls(self):
+        def mutate(i, r, p, s):
+            r["exceptions"] = [{"id": "phys_fn_000001", "rva": "0x00001000",
+                                "disposition": "collision", "note": "x"}]
+        self.assertRejects(mutate, r"exception 'phys_fn_000001' is ruled collision, and its direct "
+                                   r"callers none are not all ruled rows of that phase")
 
     def test_rejects_a_phase_of_that_is_not_the_decision(self):
         self.assertRejects(
@@ -2496,7 +2635,7 @@ class TranslationUnitSpanTests(unittest.TestCase):
         self.assertEqual(self.check(row, gaps={"phys_fn_000001"}), [])
         errors = self.check(ruling_row("phys_fn_000001", 0x1010, 8, 3, "translation_unit"),
                             gaps={"phys_fn_000001"})
-        self.assertIn("strike it from TRANSLATION_UNIT_WITHOUT_SPAN", errors[0])
+        self.assertIn("strike its pin from phase_pins.json", errors[0])
 
 
 class OrphanedDeferralTests(unittest.TestCase):
@@ -2583,8 +2722,8 @@ class CommittedOrphanTests(unittest.TestCase):
 class CommittedShapeRulingTests(unittest.TestCase):
     """The committed census against its ruling and its spans, and the review's experiments.
 
-    The review showed four wrong moves the validator accepted. Each is replayed here
-    on a copy of the committed census, so the check that rejects them cannot be
+    Each wrong move a review showed the validator accepting is replayed here on a
+    copy of the committed census or ruling, so the check that rejects it cannot be
     loosened without a test saying so.
     """
 
@@ -2604,45 +2743,256 @@ class CommittedShapeRulingTests(unittest.TestCase):
         cls.instructions = {int(entry["rva"], 16): entry for entry in corpus["instructions"]}
         cls.tail_calls = corpus["tail_calls"]
         cls.image_base = pe["image"]["image_base"]
+        cls.imports = {entry["iat_rva"] for entry in pe["imports"]}
         cls.spans, cls.phases = validate_inventory.translation_unit_spans_of(
             cls.inventory["functions"], ghidra["strings"], ghidra["references"])
+        pins, _ = validate_inventory.read_phase_pins(read(validate_inventory.PHASE_PINS_NAME))
+        cls.without_span = frozenset(identifier for identifier, pin in pins.items()
+                                     if pin["phase_provenance"] == "translation_unit")
 
-    def errors(self, mutate=None):
-        inventory = copy.deepcopy(self.inventory)
+    def errors(self, mutate=None, rule=None):
+        inventory, ruling = copy.deepcopy(self.inventory), copy.deepcopy(self.ruling)
         rows = {row["id"]: row for row in inventory["functions"]}
         if mutate:
             mutate(rows)
+        if rule:
+            rule(ruling)
         return (validate_inventory.validate_shape_ruling(
-                    inventory, self.ruling, self.pointers, self.instructions, self.tail_calls,
-                    self.image_base)
+                    inventory, ruling, self.pointers, self.instructions, self.tail_calls,
+                    self.image_base, self.imports, self.spans)
                 + validate_inventory.validate_translation_unit_spans(
-                    inventory["functions"], self.spans, self.phases))
+                    inventory["functions"], self.spans, self.phases, self.without_span))
+
+    def assertRejects(self, pattern, mutate=None, rule=None):
+        errors = self.errors(mutate, rule)
+        self.assertTrue(any(re.search(pattern, error) for error in errors), errors)
+
+    @staticmethod
+    def table(ruling, cls):
+        return next(table for table in ruling["tables"] if table["class"] == cls)
 
     def test_the_committed_census_agrees_with_its_ruling_and_spans(self):
         self.assertEqual(self.errors(), [])
 
+    def test_the_pipeline_derives_every_committed_verdict(self):
+        _, _, dispatched, interfaces, errors = validate_inventory.collision_pipeline(
+            self.ruling, self.inventory["functions"], self.instructions, self.tail_calls,
+            self.pointers, self.imports, self.image_base)
+        self.assertEqual(errors, [])
+        self.assertEqual(validate_inventory.slot_verdict_errors(self.ruling, dispatched), [])
+        self.assertEqual({cls for cls, name in interfaces.items() if name != "BASE"}, {"BOX_HULL"})
+
+    def test_rejects_the_box_hull_slots_that_were_ruled_object_model(self):
+        # Critical 1: phys_fn_000959, BOX_HULL slot 10, calls slots 6, 7 and 8 on its
+        # own this at 0x0002131c, 0x00021323 and 0x0002132c.
+        def rule(ruling):
+            for index in (6, 7, 8):
+                self.table(ruling, "BOX_HULL")["slots"][index] = "object_model"
+        for site in ("0x0002131c", "0x00021323", "0x0002132c"):
+            self.assertRejects(rf"object_model, but the collision pipeline dispatches it at {site}",
+                               rule=rule)
+
+    def test_rejects_x1_a_coordinated_flip_of_a_box_hull_collision_slot(self):
+        def rule(ruling):
+            self.table(ruling, "BOX_HULL")["slots"][3] = "object_model"
+        self.assertRejects(r"rules BOX_HULL slot 3 object_model, but the collision pipeline "
+                           r"dispatches it", lambda rows: rows["phys_fn_000961"].update(phase=5),
+                           rule)
+
+    def test_rejects_x2_a_slot_flipped_on_a_call_that_is_not_the_pipelines(self):
+        # X2 cited an allocator free in phys_fn_001461 as BOX slot 3. The receiver there
+        # is what phys_fn_004803 returns, typed once for all its call sites.
+        def rule(ruling):
+            self.table(ruling, "BOX")["slots"][3] = "collision"
+        self.assertRejects(r"rules BOX slot 3 collision, but the collision pipeline never "
+                           r"dispatches it", lambda rows: rows["phys_fn_000945"].update(phase=3),
+                           rule)
+
+        def retyped(ruling):
+            rule(ruling)
+            ruling["receivers"].append({"site": "0x0002ae7a", "row": "phys_fn_001461",
+                                        "receiver": ["BOX"], "note": "fabricated"})
+        self.assertRejects(r"types 0x0002ae7a twice", rule=retyped)
+
+    def test_rejects_x13_an_empty_helper_re_ruling_a_collision_slot(self):
+        def rule(ruling):
+            ruling["members"].append({"id": "phys_fn_000949", "rva": "0x00020880",
+                                      "basis": "helper", "ruling": "object_model", "callers": []})
+        self.assertRejects(r"member 'phys_fn_000949' is the target of BOX slot 5",
+                           lambda rows: rows["phys_fn_000949"].update(phase=5), rule)
+
+    def test_rejects_x14_a_phase_6_unit_row_claimed_as_a_helper(self):
+        def rule(ruling):
+            ruling["members"].append({"id": "phys_fn_003940", "rva": "0x0008eef0",
+                                      "basis": "helper", "ruling": "object_model", "callers": []})
+        self.assertRejects(r"'phys_fn_003940' is a helper that records no caller",
+                           lambda rows: rows["phys_fn_003940"].update(
+                               phase=5, phase_provenance="slot_ruling"), rule)
+        self.assertRejects(r"'phys_fn_003940' is inside .* span",
+                           lambda rows: rows["phys_fn_003940"].update(
+                               phase=5, phase_provenance="slot_ruling"), rule)
+
+    def test_rejects_x6_an_export_pin_claimed_as_a_helper(self):
+        def rule(ruling):
+            ruling["members"].append({"id": "phys_fn_001704", "rva": "0x00036bb0",
+                                      "basis": "helper", "ruling": "collision",
+                                      "callers": [{"site": "0x0002539d", "row": "phys_fn_001261"},
+                                                  {"site": "0x00029724", "row": "phys_fn_001407"}]})
+        self.assertRejects(r"'phys_fn_001704' is an export the plan pins",
+                           lambda rows: rows["phys_fn_001704"].update(phase_provenance="slot_ruling"),
+                           rule)
+
+    def test_rejects_x6b_a_phase_4_unit_row_claimed_as_a_helper(self):
+        caller = sorted(address for address, found in self.instructions.items()
+                        if found.get("target_rva") == "0x" + self.inventory_rva("phys_fn_002241")
+                        and not found["indirect"])[0]
+
+        def rule(ruling):
+            ruling["members"].append({"id": "phys_fn_002241",
+                                      "rva": "0x" + self.inventory_rva("phys_fn_002241"),
+                                      "basis": "helper", "ruling": "object_model",
+                                      "callers": [{"site": f"0x{caller:08x}",
+                                                   "row": "phys_fn_001397"}]})
+        self.assertRejects(r"'phys_fn_002241' is inside .* span",
+                           lambda rows: rows["phys_fn_002241"].update(
+                               phase=5, phase_provenance="slot_ruling"), rule)
+
+    def inventory_rva(self, identifier):
+        return next(row["rva"] for row in self.inventory["functions"]
+                    if row["id"] == identifier)[2:]
+
+    def test_the_worked_examples_hold(self):
+        examples = {(example["class"], example["slot"]): example
+                    for example in self.ruling["pipeline"]["worked_examples"]}
+        self.assertEqual(sorted(examples), [("BOX", 9), ("COMPOUND", 6)])
+        self.assertEqual(examples[("COMPOUND", 6)]["path"][4],
+                         {"row": "phys_fn_000022", "site": "0x00001855", "in_pipeline": False})
+
+        def rule(ruling):
+            ruling["pipeline"]["worked_examples"][0]["path"][4]["in_pipeline"] = True
+        self.assertRejects(r"says 'phys_fn_000022' is in the collision pipeline, and it is not",
+                           rule=rule)
+
     def test_rejects_moving_a_contact_row_out_of_its_phase_3_unit(self):
         # phys_fn_001847 sits inside ContactConvexHeightfield.cpp.
-        errors = self.errors(lambda rows: rows["phys_fn_001847"].__setitem__("phase", 5))
-        self.assertTrue(any("'phys_fn_001847'" in error and "ContactConvexHeightfield.cpp" in error
-                            for error in errors), errors)
+        self.assertRejects(r"'phys_fn_001847'.*ContactConvexHeightfield.cpp",
+                           lambda rows: rows["phys_fn_001847"].__setitem__("phase", 5))
 
     def test_rejects_moving_shapebase_back_to_phase_3(self):
-        errors = self.errors(lambda rows: rows["phys_fn_001273"].__setitem__("phase", 3))
-        self.assertTrue(any("'phys_fn_001273' is placed by the shape ruling at phase 5" in error
-                            for error in errors), errors)
+        self.assertRejects(r"'phys_fn_001273' is placed by the shape ruling at phase 5",
+                           lambda rows: rows["phys_fn_001273"].__setitem__("phase", 3))
 
     def test_rejects_relabelling_shapebase_to_layout_adjacency(self):
-        errors = self.errors(lambda rows: rows["phys_fn_001273"].__setitem__(
-            "phase_provenance", "layout_adjacency"))
-        self.assertTrue(any("'phys_fn_001273' is placed by the shape ruling" in error
-                            for error in errors), errors)
+        self.assertRejects(r"'phys_fn_001273' is placed by the shape ruling",
+                           lambda rows: rows["phys_fn_001273"].__setitem__(
+                               "phase_provenance", "layout_adjacency"))
 
     def test_rejects_moving_a_closed_slot_5_row_to_phase_5(self):
         # phys_fn_001377 is SPHERE slot 5, a collision slot, closed by Phase 3.
-        errors = self.errors(lambda rows: rows["phys_fn_001377"].__setitem__("phase", 5))
-        self.assertTrue(any("'phys_fn_001377' is placed by the shape ruling at phase 3" in error
-                            for error in errors), errors)
+        self.assertRejects(r"'phys_fn_001377' is placed by the shape ruling at phase 3",
+                           lambda rows: rows["phys_fn_001377"].__setitem__("phase", 5))
+
+    def test_the_three_annotated_continuations_resolve_to_their_entries(self):
+        rows = {row["id"]: row for row in self.inventory["functions"]}
+        self.assertEqual({identifier: validate_inventory._entry_rva(rows[identifier])
+                          for identifier in ("phys_fn_005590", "phys_fn_005610", "phys_fn_005646")},
+                         {"phys_fn_005590": 0xF25B0, "phys_fn_005610": 0xF2EF0,
+                          "phys_fn_005646": 0xF3DC0})
+
+
+class CommittedRegenerationTests(unittest.TestCase):
+    """The committed phase column is the generator's output, except exactly the pins."""
+
+    ROOT = TOOLS_DIR.parent
+
+    @classmethod
+    def setUpClass(cls):
+        import reconcile_analysis
+
+        def read(*parts):
+            return json.loads(cls.ROOT.joinpath(*parts).read_text(encoding="utf-8"))
+        cls.inventory = read("inventory.json")
+        cls.pins, errors = validate_inventory.read_phase_pins(read(validate_inventory.PHASE_PINS_NAME))
+        assert not errors, errors
+        correspondence, _ = validate_inventory.read_source_correspondence(cls.ROOT)
+        result = reconcile_analysis.reconcile(
+            read("oracle", "pe.json"), read("oracle", "ghidra", "manifest.json"),
+            read("oracle", "capstone", "manifest.json"), cls.inventory,
+            read(validate_inventory.SHAPE_RULING_NAME),
+            reconcile_analysis.third_party_rvas(correspondence), cls.pins)
+        cls.regenerated, cls.unpinned = result["inventory"], result["unpinned"]
+
+    def errors(self, mutate=None, pins=None):
+        inventory = copy.deepcopy(self.inventory)
+        rows = {row["id"]: row for kind in ("functions", "data_objects") for row in inventory[kind]}
+        if mutate:
+            mutate(rows)
+        return validate_inventory.validate_regeneration(inventory, self.regenerated,
+                                                        pins or self.pins, self.unpinned)
+
+    def test_the_committed_census_is_the_generators_output(self):
+        self.assertEqual(self.errors(), [])
+        self.assertEqual(len(self.pins), 72)
+        self.assertEqual(sum(pin["phase_provenance"] == "translation_unit"
+                             for pin in self.pins.values()), 52)
+
+    def test_fires_on_the_six_rows_the_committed_census_held_against_the_generator(self):
+        before = {"phys_fn_000887": (3, "layout_adjacency"), "phys_fn_000889": (3, "layout_adjacency"),
+                  "phys_fn_000903": (3, "layout_adjacency"), "phys_fn_002352": (5, "layout_adjacency"),
+                  "phys_fn_002354": (2, "shared_by_callers"), "phys_data_005007": (3, "reading_sites")}
+
+        def mutate(rows):
+            for identifier, (phase, provenance) in before.items():
+                rows[identifier].update(phase=phase, phase_provenance=provenance)
+        errors = self.errors(mutate)
+        self.assertEqual(sorted(error.split()[0] for error in errors), sorted(before))
+
+    def test_fires_on_a_knock_on_row_moved_against_its_callers(self):
+        # phys_fn_000915's callers are Phase 7 and shared runtime; moving the row it
+        # places, phys_fn_000903, back to Phase 3 is the shape of the committed error.
+        errors = self.errors(lambda rows: rows["phys_fn_000903"].update(phase=3))
+        self.assertEqual(len(errors), 1)
+        self.assertIn("phys_fn_000903 is phase 3 'callers' in the census, and the generator places "
+                      "it at phase 7 'callers'", errors[0])
+
+    def test_fires_on_x3_a_pinned_row_moved_off_its_pin(self):
+        # X3: phys_fn_005440, a translation_unit row with no span, moved 4 -> 3.
+        errors = self.errors(lambda rows: rows["phys_fn_005440"].update(phase=3))
+        self.assertIn("phys_fn_005440 is phase 3 'translation_unit' in the census, and the "
+                      "generator places it at phase 4 'translation_unit', which is its pin", errors[0])
+
+    def test_strikes_a_pin_the_generator_already_agrees_with(self):
+        pins = dict(self.pins, phys_fn_000887={
+            "id": "phys_fn_000887", "rva": "0x0001e910", "phase": 7, "phase_provenance": "callers",
+            "reason": "x", "decided_by": "0000000"})
+        unpinned = dict(self.unpinned, phys_fn_000887=(7, "callers"))
+        errors = validate_inventory.validate_regeneration(self.inventory, self.regenerated, pins,
+                                                          unpinned)
+        self.assertEqual(errors, ["phase_pins.json pins phys_fn_000887 to what the generator already "
+                                  "gives it; strike the pin"])
+
+
+class PhasePinTests(unittest.TestCase):
+    """phase_pins.json's entries are checked for what each one must say."""
+
+    PIN = {"id": "phys_fn_000001", "rva": "0x00001000", "phase": 4,
+           "phase_provenance": "translation_unit", "reason": "why", "decided_by": "cc37f94e"}
+
+    def read(self, **change):
+        return validate_inventory.read_phase_pins({"pins": [dict(self.PIN, **change)]})
+
+    def test_reads_a_pin(self):
+        self.assertEqual(self.read(), ({"phys_fn_000001": self.PIN}, []))
+
+    def test_rejects_a_pin_with_no_reason_or_commit(self):
+        self.assertIn("with no reason", self.read(reason=" ")[1][0])
+        self.assertIn("without naming the commit", self.read(decided_by="P4 Task 1c")[1][0])
+
+    def test_rejects_a_pin_the_census_cannot_record(self):
+        self.assertIn("which the census cannot record", self.read(phase_provenance="vibes")[1][0])
+
+    def test_rejects_a_pin_on_a_data_object(self):
+        self.assertIn("not a function stable ID", self.read(id="phys_data_000001")[1][0])
 
 
 if __name__ == "__main__":
