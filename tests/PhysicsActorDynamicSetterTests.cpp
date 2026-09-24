@@ -15,6 +15,7 @@
 #include "NxSphereShape.h"
 #include "NxCapsuleShape.h"
 #include "NxPlaneShape.h"
+#include "NxBoxShape.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -75,6 +76,7 @@ int wmain(int argc, wchar_t** argv)
 		const_cast<unsigned char*>(initialShape));
 	typedef void* (__thiscall* ShapeSelfFn)(void*);
 	typedef void (__thiscall* ShapeCenterFn)(void*, float*);
+	typedef void (__thiscall* ShapeAABBFn)(void*, float*);
 	printf("setter initial_shape_vtable=%u", internalTable ? 1u : 0u);
 	for(unsigned slot = 14; slot <= 16; ++slot)
 		printf(".%u", internalTable &&
@@ -467,6 +469,27 @@ int wmain(int argc, wchar_t** argv)
 	for(unsigned i = 0; i < 12; ++i)
 		printf("%s%x", i ? "." : "", word(posedShape, 0x3c + 4 * i));
 	printf("\n");
+	NxBoxShape* posedPublicBox = posedActor->getShapes()[0]->isBox();
+	const unsigned char* posedPruner = *reinterpret_cast<unsigned char* const*>(
+		posedShape + 0xc4);
+	const unsigned beforeBoxEpoch = posedPruner ? word(posedPruner, 0x38) : 0u;
+	posedPublicBox->setDimensions(NxVec3(2.0f, 3.0f, 4.0f));
+	const NxVec3& updatedBoxDimensions = posedPublicBox->getDimensions();
+	printf("setter box_changed=%x.%x.%x.%x.%x.%x.%x.%u\n",
+		bits(updatedBoxDimensions.x), bits(updatedBoxDimensions.y),
+		bits(updatedBoxDimensions.z), word(posedShape, 0xe4),
+		word(posedShape, 0xe8), word(posedShape, 0xec),
+		word(posedShape, 0xdc),
+		posedPruner ? word(posedPruner, 0x38) - beforeBoxEpoch : 0u);
+	float changedBoxAABB[6] = {};
+	void** posedBoxTable = *reinterpret_cast<void***>(
+		const_cast<unsigned char*>(posedShape));
+	reinterpret_cast<ShapeAABBFn>(posedBoxTable[8])(
+		const_cast<unsigned char*>(posedShape), changedBoxAABB);
+	printf("setter box_changed_aabb=");
+	for(unsigned i = 0; i < 6; ++i)
+		printf("%s%x", i ? "." : "", bits(changedBoxAABB[i]));
+	printf("\n");
 	scene->releaseActor(*posedActor);
 	NxSphereShapeDesc sphereDesc;
 	NxCapsuleShapeDesc capsuleDesc;
@@ -558,6 +581,21 @@ int wmain(int argc, wchar_t** argv)
 					word(familyShape, 0xe0), word(familyShape, 0xe4),
 					word(familyShape, 0xdc),
 					familyPruner ? word(familyPruner, 0x38) - beforeEpoch : 0u);
+				const unsigned beforeDimensionsEpoch = familyPruner
+					? word(familyPruner, 0x38) : 0u;
+				capsule->setDimensions(1.0f, 3.0f);
+				printf("setter capsule_set_dimensions=%x.%x.%x.%x.%x.%u\n",
+					bits(capsule->getRadius()), bits(capsule->getHeight()),
+					word(familyShape, 0xe0), word(familyShape, 0xe4),
+					word(familyShape, 0xdc),
+					familyPruner ? word(familyPruner, 0x38) - beforeDimensionsEpoch : 0u);
+				float capsuleAABB[6] = {};
+				reinterpret_cast<ShapeAABBFn>(familyTable[8])(
+					const_cast<unsigned char*>(familyShape), capsuleAABB);
+				printf("setter capsule_changed_aabb=");
+				for(unsigned i = 0; i < 6; ++i)
+					printf("%s%x", i ? "." : "", bits(capsuleAABB[i]));
+				printf("\n");
 				}
 			}
 		else
