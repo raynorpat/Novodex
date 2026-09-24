@@ -63,3 +63,22 @@ as float but retains all three transformed point coordinates on the x87 stack.
 It spills only the first two cross-product terms before adding linear velocity.
 The candidate now follows that sequence; all 16 triples match bit for bit.
 Those 16 cases raise the Phase 5 assertion floor to 699.
+
+## World point velocity
+
+The neighboring actor dynamic slot 65, RVA `0x58f0`
+(`phys_fn_000146`), computes velocity at a world-space point. It rotates the
+mass-frame offset at record `+0x100` by the body quaternion, adds record
+translation at `+0x50` to obtain the world mass center, subtracts that center
+from the input point, and adds angular velocity cross the resulting radius to
+linear velocity. The no-record arm returns zero.
+
+Ghidra did not recognize this 579-byte body as a function, so the Capstone
+instruction range was used directly. An initial scalar transcription differed
+in 13 of 16 varied cases. The shipped x87 sequence spills center X, the
+second and third rotation dot products, radius X/Y and cross-product X/Y to
+float. It retains radius Z and the third cross-product term in extended
+precision. Matching those store points made all 16 grid triples agree exactly.
+Four actor cases also cover the static/null path and normal dynamic dispatch.
+These 20 public comparisons raise the Phase 5 assertion floor to 719;
+`phys_fn_000146` moves to `reconstructed`.

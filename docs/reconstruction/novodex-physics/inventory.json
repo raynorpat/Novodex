@@ -2691,12 +2691,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "actor_dynamic vtable slot 65 getPointVelocityVal (Physics/src/NpActor.cpp)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/71",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/316",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "RVA 0x58f0 constructs rotation from record+0x5c, transforms the mass-frame offset at +0x100 and adds record+0x50 translation to find the world mass center, subtracts that center from the input world point, then adds angular velocity cross the radius to linear velocity. The no-record arm returns zero. Disassembly at 0x59d6..0x5ae9 identifies the exact x87 float spills: center X, row-one/two dot products, radius X/Y and cross X/Y.",
+      "dynamic_proof": "NxPhysicsActorLifecycleTests compares public dispatch for static, identity, half-turn and quarter-turn actors plus a 16-case quaternion/mass-offset/point/velocity grid; all 20 output triples agree bit-for-bit with the oracle.",
       "notes": ""
     },
     {

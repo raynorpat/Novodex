@@ -128,8 +128,13 @@ static void nxProbeLocalPointVelocity(const char* label, NxActor* actor,
 		}
 	const NxVec3 velocity = actor->getLocalPointVelocityVal(
 		NxVec3(2.0f, -1.0f, 0.75f));
+	const NxVec3 worldVelocity = actor->getPointVelocityVal(
+		NxVec3(2.0f, -1.0f, 0.75f));
 	printf("actor %s local_point_velocity=%08x.%08x.%08x\n", label,
 		nxBits(velocity.x), nxBits(velocity.y), nxBits(velocity.z));
+	printf("actor %s world_point_velocity=%08x.%08x.%08x\n", label,
+		nxBits(worldVelocity.x), nxBits(worldVelocity.y),
+		nxBits(worldVelocity.z));
 	if(seedRecord && record)
 		{
 		memcpy(record + 0x6c, originalMotion, sizeof(originalMotion));
@@ -143,9 +148,11 @@ static void nxProbeLocalPointVelocityGrid(NxActor* actor)
 		reinterpret_cast<unsigned char*>(actor) + 0x14);
 	unsigned char* record = *reinterpret_cast<unsigned char**>(body + 8);
 	unsigned char originalMotion[0x18], originalQuaternion[0x10], originalFrame[0x24];
+	unsigned char originalMassOffset[0x0c];
 	memcpy(originalMotion, record + 0x6c, sizeof(originalMotion));
 	memcpy(originalQuaternion, record + 0x5c, sizeof(originalQuaternion));
 	memcpy(originalFrame, record + 0xdc, sizeof(originalFrame));
+	memcpy(originalMassOffset, record + 0x100, sizeof(originalMassOffset));
 	const float quaternions[4][4] = {
 		{0.0f, 0.0f, 0.0f, 1.0f},
 		{0.0f, 0.0f, 0.70710677f, 0.70710677f},
@@ -166,15 +173,23 @@ static void nxProbeLocalPointVelocityGrid(NxActor* actor)
 		memcpy(record + 0x5c, quaternions[i / 4], sizeof(originalQuaternion));
 		memcpy(record + 0x6c, motion, sizeof(motion));
 		memcpy(record + 0xdc, frames[i % 4], sizeof(originalFrame));
+		const float massOffset[3] = {0.13f * (i + 1),
+			-0.07f * (i + 2), 0.19f * (i + 3)};
+		memcpy(record + 0x100, massOffset, sizeof(massOffset));
 		const NxVec3 point(0.23f * (i + 1), -0.41f * (i + 2),
 			0.17f * (i + 3));
 		const NxVec3 velocity = actor->getLocalPointVelocityVal(point);
+		const NxVec3 worldVelocity = actor->getPointVelocityVal(point);
 		printf("actor local_velocity_grid_%u=%08x.%08x.%08x\n", i,
 			nxBits(velocity.x), nxBits(velocity.y), nxBits(velocity.z));
+		printf("actor world_velocity_grid_%u=%08x.%08x.%08x\n", i,
+			nxBits(worldVelocity.x), nxBits(worldVelocity.y),
+			nxBits(worldVelocity.z));
 		}
 	memcpy(record + 0x5c, originalQuaternion, sizeof(originalQuaternion));
 	memcpy(record + 0x6c, originalMotion, sizeof(originalMotion));
 	memcpy(record + 0xdc, originalFrame, sizeof(originalFrame));
+	memcpy(record + 0x100, originalMassOffset, sizeof(originalMassOffset));
 }
 
 static void nxPrintDynamicQuaternion(const char* label, const NxActor* actor)

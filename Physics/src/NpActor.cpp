@@ -39,6 +39,8 @@ static unsigned char* nxNpActorRecord(void* actor)
 	return body ? *reinterpret_cast<unsigned char**>(body + 8) : 0;
 	}
 
+static void nxNpActorRotationFromQuaternionGetter(const float* q, float* rows);
+
 static NxMat33 nxNpActorInstantTensor(const unsigned char* record,
 	unsigned diagonalOffset, bool roundedQuaternionProducts)
 	{
@@ -384,11 +386,122 @@ void NpActorVtable::setGlobalPose(const NxMat34&)
 	{
 	}
 
-// (unimplemented) getPointVelocityVal
+// phys_fn_000146, actor dynamic slot 65 at 0x000058f0. The world-space
+// point is measured from the transformed mass-frame center.
 NxVec3 NpActorVtable::getPointVelocityVal(const NxVec3& point) const
 	{
-	(void)point;
-	return NxVec3(0.0f, 0.0f, 0.0f);
+	void* self = const_cast<NpActorVtable*>(this);
+	void* ctx = nxNpActorContext(self, 0x10);
+	nxNpSceneGuardEnter(ctx);
+	const unsigned char* record = nxNpActorRecord(self);
+	NxVec3 out(0.0f, 0.0f, 0.0f);
+	if(record)
+		{
+		float rotation[9];
+		nxNpActorRotationFromQuaternionGetter(
+			reinterpret_cast<const float*>(record + 0x5c), rotation);
+		const float* mass = reinterpret_cast<const float*>(record + 0x100);
+		const float* position = reinterpret_cast<const float*>(record + 0x50);
+		const float* velocity = reinterpret_cast<const float*>(record + 0x6c);
+		const float* angular = reinterpret_cast<const float*>(record + 0x78);
+#if defined(_MSC_VER) && defined(_M_IX86)
+		const float* r = rotation;
+		const float* worldPoint = &point.x;
+		float* destination = &out.x;
+		float dot1, dot2, centerX, radiusX, radiusY, crossX, crossY;
+		__asm {
+			mov eax, r
+			mov edx, mass
+			fld dword ptr [eax]
+			fmul dword ptr [edx]
+			fld dword ptr [eax+4]
+			fmul dword ptr [edx+4]
+			faddp st(1), st(0)
+			fld dword ptr [eax+8]
+			fmul dword ptr [edx+8]
+			faddp st(1), st(0)
+			mov ecx, position
+			fadd dword ptr [ecx]
+			fstp dword ptr [centerX]
+			fld dword ptr [eax+16]
+			fmul dword ptr [edx+4]
+			fld dword ptr [eax+20]
+			fmul dword ptr [edx+8]
+			faddp st(1), st(0)
+			fld dword ptr [eax+12]
+			fmul dword ptr [edx]
+			faddp st(1), st(0)
+			fstp dword ptr [dot1]
+			fld dword ptr [eax+28]
+			fmul dword ptr [edx+4]
+			fld dword ptr [eax+32]
+			fmul dword ptr [edx+8]
+			faddp st(1), st(0)
+			fld dword ptr [eax+24]
+			fmul dword ptr [edx]
+			faddp st(1), st(0)
+			fstp dword ptr [dot2]
+			mov eax, worldPoint
+			fld dword ptr [eax+8]
+			fld dword ptr [dot2]
+			fadd dword ptr [ecx+8]
+			fsubp st(1), st(0)
+			fld dword ptr [eax+4]
+			fld dword ptr [dot1]
+			fadd dword ptr [ecx+4]
+			fsubp st(1), st(0)
+			fstp dword ptr [radiusY]
+			fld dword ptr [eax]
+			fsub dword ptr [centerX]
+			fstp dword ptr [radiusX]
+			mov ecx, angular
+			fld st(0)
+			fmul dword ptr [ecx+4]
+			fld dword ptr [radiusY]
+			fmul dword ptr [ecx+8]
+			fsubp st(1), st(0)
+			fstp dword ptr [crossX]
+			fld dword ptr [radiusX]
+			fmul dword ptr [ecx+8]
+			fxch st(1)
+			fmul dword ptr [ecx]
+			fsubp st(1), st(0)
+			fstp dword ptr [crossY]
+			fld dword ptr [radiusY]
+			fmul dword ptr [ecx]
+			fld dword ptr [radiusX]
+			fmul dword ptr [ecx+4]
+			fsubp st(1), st(0)
+			mov ecx, velocity
+			fadd dword ptr [ecx+8]
+			fld dword ptr [crossY]
+			fadd dword ptr [ecx+4]
+			fld dword ptr [crossX]
+			fadd dword ptr [ecx]
+			mov ecx, destination
+			fstp dword ptr [ecx]
+			fstp dword ptr [ecx+4]
+			fstp dword ptr [ecx+8]
+		}
+#else
+		float center[3];
+		for(unsigned row = 0; row < 3; ++row)
+			center[row] = static_cast<float>(
+				static_cast<double>(rotation[row * 3]) * mass[0] +
+				static_cast<double>(rotation[row * 3 + 1]) * mass[1] +
+				static_cast<double>(rotation[row * 3 + 2]) * mass[2] + position[row]);
+		const float radius[3] = { point.x - center[0],
+			point.y - center[1], point.z - center[2] };
+		out.x = static_cast<float>(static_cast<double>(radius[2]) * angular[1] -
+			static_cast<double>(radius[1]) * angular[2] + velocity[0]);
+		out.y = static_cast<float>(static_cast<double>(radius[0]) * angular[2] -
+			static_cast<double>(radius[2]) * angular[0] + velocity[1]);
+		out.z = static_cast<float>(static_cast<double>(radius[1]) * angular[0] -
+			static_cast<double>(radius[0]) * angular[1] + velocity[2]);
+#endif
+		}
+	nxNpSceneGuardLeave(ctx);
+	return out;
 	}
 
 // (unimplemented) setGlobalPosition
