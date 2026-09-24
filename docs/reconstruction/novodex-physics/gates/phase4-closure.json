@@ -786,7 +786,7 @@
       "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [],
-      "note": "the 256-entry bit-spreading table. Mutation S spreads two bits apart instead of three and comes out GREEN, re-measured on this branch: the table's only consumer is the Morton sort and sorting a uniform array is the identity. Every accepted fixture leaves a grid of nothing but 0xffffffff, so this row is structurally unfalsifiable by this harness. evidence/phase4-pmap-reconstruction.md section 5"
+      "note": "the 256-entry bit-spreading table. Mutation S spreads two bits apart instead of three and comes out GREEN, re-measured on this branch: the table's only consumer is the Morton sort and sorting a uniform array is the identity. Every accepted fixture leaves a grid of nothing but 0xffffffff, so this row is structurally unfalsifiable by this harness. The candidate carried an `if(!mSpread) return;` after the allocation that the image does not have -- it stores through the table pointer at 0x0004cb85 with no test -- and nothing depended on it, so the port's review removed it: NxPhysicsAssetTests reads `asset coverage driven=30 accepted=13 rejected=16 errors=10`, `asset oracle digest=eaefc573` and `asset candidate mismatches=0` before and after, with transcripts identical once heap addresses are masked. evidence/phase4-pmap-reconstruction.md section 5"
     },
     {
       "id": "phys_fn_001988",

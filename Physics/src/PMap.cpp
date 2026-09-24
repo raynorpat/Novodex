@@ -85,12 +85,12 @@ PenetrationMap::PenetrationMap()
 // phys_fn_001986 at 0x0004cb20. 256 dwords from the CRT heap, each entry the
 // eight bits of its index spread three apart: bit i of the index lands at bit
 // 3i. The seven `shl eax,2` and eight `and` pairs at 0x0004cb37..0x0004cb80 are
-// that and nothing else, and the sort in finish() is the only reader.
+// that and nothing else, and the sort in finish() is the only reader. The image
+// stores through the table pointer at 0x0004cb85 with no test after the
+// allocation, so neither does this.
 void PenetrationMap::buildSpreadTable()
 	{
 	mSpread = static_cast<NxU32*>(malloc(0x400));
-	if(!mSpread)
-		return;
 
 	for(NxU32 i = 0; i < 0x100; ++i)
 		{
