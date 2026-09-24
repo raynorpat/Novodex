@@ -1825,6 +1825,8 @@ int nxActorComputeMass(void* actor, const unsigned* bodyWord)
 		static_cast<double>(pose[8]) * massTranslation.z +
 		static_cast<double>(pose[7]) * massTranslation.y);
 	*reinterpret_cast<unsigned*>(record + 0x10c) = bodyDesc->flags;
+	*reinterpret_cast<unsigned*>(record + 0x110) =
+		bodyDesc->solverIterationCount;
 	*reinterpret_cast<unsigned char**>(record + 0x120) =
 		scene->at<unsigned char*>(0x48);
 	*reinterpret_cast<unsigned*>(record + 0x11c) = nxSceneTakeRecordId(scene);

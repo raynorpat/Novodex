@@ -11,6 +11,7 @@
 #include "NpActor.h"
 #include "NpActorDynamicMath.h"
 #include "NpSceneGuard.h"
+#include "ObjectModel.h"
 #include "FoundationSDK.h"
 
 #include "NxMat34.h"
@@ -1805,10 +1806,16 @@ bool NpActorVtable::readBodyFlag(NxBodyFlag flag) const
 	return out;
 	}
 
-// (unimplemented) saveBodyToDesc
-bool NpActorVtable::saveBodyToDesc(NxBodyDesc&)
+// phys_fn_000046 at 0x000024c0, actor dynamic vtable slot 81. The
+// descriptor gather is shared with the direct object-layout differential.
+bool NpActorVtable::saveBodyToDesc(NxBodyDesc& desc)
 	{
-	return bool();
+	void* ctx = nxNpActorContext(this, 0x10);
+	nxNpSceneGuardEnter(ctx);
+	const bool result = nxGatherDescriptor0046(this,
+		reinterpret_cast<unsigned*>(&desc));
+	nxNpSceneGuardLeave(ctx);
+	return result;
 	}
 
 // phys_fn_000120 at 0x00003690, actor vtable slot 82. The oracle writes
