@@ -174,6 +174,8 @@ static unsigned char* nxBoxHandleInternal(void* self)
 	return shape;
 	}
 
+static NxActor* __fastcall nxBoxHandleGetActor(void* self, void*);
+
 // phys_fn_10026c90: mark the internal shape for the Scene's deferred update.
 void nxSceneMarkShapeDirty(void* shape, unsigned flag);
 
@@ -212,6 +214,56 @@ static void __fastcall nxShapeHandleGetLocalOrientation(void* self, void*,
 	{
 	memcpy(&orientation, nxBoxHandleInternal(self) + 0x6c,
 		sizeof(orientation));
+	}
+
+static void __fastcall nxShapeHandleSetLocalPosition(void* self, void*,
+	const NxVec3& position)
+	{
+	unsigned char* shape = nxBoxHandleInternal(self);
+	memcpy(shape + 0x90, &position, sizeof(position));
+	static_cast<ShapeBase*>(static_cast<void*>(shape))->nxApplyOwnerUpdate(1);
+	}
+
+static void __fastcall nxShapeHandleSetLocalOrientation(void* self, void*,
+	const NxMat33& orientation)
+	{
+	unsigned char* shape = nxBoxHandleInternal(self);
+	memcpy(shape + 0x6c, &orientation, sizeof(orientation));
+	static_cast<ShapeBase*>(static_cast<void*>(shape))->nxApplyOwnerUpdate(1);
+	}
+
+static void __fastcall nxShapeHandleSetLocalPose(void* self, void*,
+	const NxMat34& pose)
+	{
+	unsigned char* shape = nxBoxHandleInternal(self);
+	memcpy(shape + 0x6c, &pose, sizeof(pose));
+	static_cast<ShapeBase*>(static_cast<void*>(shape))->nxApplyOwnerUpdate(1);
+	}
+
+static void __fastcall nxShapeHandleSetGlobalPosition(void* self, void*,
+	const NxVec3& position)
+	{
+	NxActor* actor = nxBoxHandleGetActor(self, 0);
+	NxVec3 local = actor->getGlobalPose() % position;
+	nxShapeHandleSetLocalPosition(self, 0, local);
+	}
+
+static void __fastcall nxShapeHandleSetGlobalOrientation(void* self, void*,
+	const NxMat33& orientation)
+	{
+	NxActor* actor = nxBoxHandleGetActor(self, 0);
+	NxMat33 local;
+	local.multiplyTransposeLeft(actor->getGlobalOrientation(), orientation);
+	nxShapeHandleSetLocalOrientation(self, 0, local);
+	}
+
+static void __fastcall nxShapeHandleSetGlobalPose(void* self, void*,
+	const NxMat34& pose)
+	{
+	NxActor* actor = nxBoxHandleGetActor(self, 0);
+	NxMat34 local;
+	local.multiplyInverseRTLeft(actor->getGlobalPose(), pose);
+	nxShapeHandleSetLocalPose(self, 0, local);
 	}
 
 static void __fastcall nxShapeHandleGetGlobalPose(void* self, void*,
@@ -506,12 +558,18 @@ void* nxBoxShapePublicVtable()
 			slots[4] = reinterpret_cast<void*>(&nxShapeHandleGetWorldBounds);
 			slots[5] = reinterpret_cast<void*>(&nxBoxHandleSetFlag);
 			slots[6] = reinterpret_cast<void*>(&nxBoxHandleGetFlag);
+			slots[7] = reinterpret_cast<void*>(&nxShapeHandleSetLocalPose);
+			slots[8] = reinterpret_cast<void*>(&nxShapeHandleSetLocalPosition);
+			slots[9] = reinterpret_cast<void*>(&nxShapeHandleSetLocalOrientation);
 			slots[10] = reinterpret_cast<void*>(&nxShapeHandleGetLocalPose);
 			slots[11] = reinterpret_cast<void*>(&nxShapeHandleGetLocalPosition);
 			slots[12] = reinterpret_cast<void*>(&nxShapeHandleGetLocalOrientation);
 			slots[13] = reinterpret_cast<void*>(&nxShapeHandleGetLocalPoseVal);
 			slots[14] = reinterpret_cast<void*>(&nxShapeHandleGetLocalPositionVal);
 			slots[15] = reinterpret_cast<void*>(&nxShapeHandleGetLocalOrientationVal);
+			slots[16] = reinterpret_cast<void*>(&nxShapeHandleSetGlobalPose);
+			slots[17] = reinterpret_cast<void*>(&nxShapeHandleSetGlobalPosition);
+			slots[18] = reinterpret_cast<void*>(&nxShapeHandleSetGlobalOrientation);
 			slots[19] = reinterpret_cast<void*>(&nxShapeHandleGetGlobalPose);
 			slots[20] = reinterpret_cast<void*>(&nxShapeHandleGetGlobalPosition);
 			slots[21] = reinterpret_cast<void*>(&nxShapeHandleGetGlobalOrientation);

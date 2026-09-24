@@ -568,6 +568,74 @@ int wmain(int argc, wchar_t** argv)
 	for(unsigned i = 0; i < 6; ++i)
 		printf("%s%x", i ? "." : "", bits(changedBoxAABB[i]));
 	printf("\n");
+	const unsigned beforeLocalPositionEpoch = posedPruner
+		? word(posedPruner, 0x38) : 0u;
+	posedPublicBox->setLocalPosition(NxVec3(-2.0f, 1.0f, 3.0f));
+	const NxVec3 movedLocal = posedPublicBox->getLocalPosition();
+	printf("setter box_local_position=%x.%x.%x.%x.%x.%x.%x.%x.%x.%x.%u\n",
+		bits(movedLocal.x), bits(movedLocal.y), bits(movedLocal.z),
+		word(posedShape, 0x90), word(posedShape, 0x94), word(posedShape, 0x98),
+		word(posedShape, 0x30), word(posedShape, 0x34), word(posedShape, 0x38),
+		word(posedShape, 0xdc), posedPruner
+			? word(posedPruner, 0x38) - beforeLocalPositionEpoch : 0u);
+	NxMat33 changedLocalOrientation;
+	changedLocalOrientation.setRowMajor(actorRotation);
+	const unsigned beforeLocalOrientationEpoch = posedPruner
+		? word(posedPruner, 0x38) : 0u;
+	posedPublicBox->setLocalOrientation(changedLocalOrientation);
+	printf("setter box_local_orientation=");
+	for(unsigned i = 0; i < 9; ++i)
+		printf("%s%x", i ? "." : "", word(posedShape, 0x6c + 4 * i));
+	for(unsigned i = 0; i < 9; ++i)
+		printf(".%x", word(posedShape, 0x0c + 4 * i));
+	printf(".%x.%u\n", word(posedShape, 0xdc), posedPruner
+		? word(posedPruner, 0x38) - beforeLocalOrientationEpoch : 0u);
+	NxMat34 changedLocalPose;
+	changedLocalPose.M.setRowMajor(localRotation);
+	changedLocalPose.t = NxVec3(0.25f, -1.5f, 2.5f);
+	const unsigned beforeLocalPoseEpoch = posedPruner
+		? word(posedPruner, 0x38) : 0u;
+	posedPublicBox->setLocalPose(changedLocalPose);
+	printf("setter box_local_pose=");
+	for(unsigned i = 0; i < 12; ++i)
+		printf("%s%x", i ? "." : "", word(posedShape, 0x6c + 4 * i));
+	for(unsigned i = 0; i < 12; ++i)
+		printf(".%x", word(posedShape, 0x0c + 4 * i));
+	printf(".%x.%u\n", word(posedShape, 0xdc), posedPruner
+		? word(posedPruner, 0x38) - beforeLocalPoseEpoch : 0u);
+	const unsigned beforeGlobalPositionEpoch = posedPruner
+		? word(posedPruner, 0x38) : 0u;
+	posedPublicBox->setGlobalPosition(NxVec3(4.0f, 5.0f, -6.0f));
+	printf("setter box_global_position=");
+	for(unsigned i = 0; i < 3; ++i)
+		printf("%s%x", i ? "." : "", word(posedShape, 0x90 + 4 * i));
+	for(unsigned i = 0; i < 3; ++i)
+		printf(".%x", word(posedShape, 0x30 + 4 * i));
+	printf(".%x.%u\n", word(posedShape, 0xdc), posedPruner
+		? word(posedPruner, 0x38) - beforeGlobalPositionEpoch : 0u);
+	const unsigned beforeGlobalOrientationEpoch = posedPruner
+		? word(posedPruner, 0x38) : 0u;
+	posedPublicBox->setGlobalOrientation(changedLocalOrientation);
+	printf("setter box_global_orientation=");
+	for(unsigned i = 0; i < 9; ++i)
+		printf("%s%x", i ? "." : "", word(posedShape, 0x6c + 4 * i));
+	for(unsigned i = 0; i < 9; ++i)
+		printf(".%x", word(posedShape, 0x0c + 4 * i));
+	printf(".%x.%u\n", word(posedShape, 0xdc), posedPruner
+		? word(posedPruner, 0x38) - beforeGlobalOrientationEpoch : 0u);
+	NxMat34 changedGlobalPose;
+	changedGlobalPose.M.setRowMajor(localRotation);
+	changedGlobalPose.t = NxVec3(1.0f, -3.0f, 2.0f);
+	const unsigned beforeGlobalPoseEpoch = posedPruner
+		? word(posedPruner, 0x38) : 0u;
+	posedPublicBox->setGlobalPose(changedGlobalPose);
+	printf("setter box_global_pose=");
+	for(unsigned i = 0; i < 12; ++i)
+		printf("%s%x", i ? "." : "", word(posedShape, 0x6c + 4 * i));
+	for(unsigned i = 0; i < 12; ++i)
+		printf(".%x", word(posedShape, 0x0c + 4 * i));
+	printf(".%x.%u\n", word(posedShape, 0xdc), posedPruner
+		? word(posedPruner, 0x38) - beforeGlobalPoseEpoch : 0u);
 	scene->releaseActor(*posedActor);
 	NxSphereShapeDesc sphereDesc;
 	NxCapsuleShapeDesc capsuleDesc;
