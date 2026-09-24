@@ -2499,6 +2499,87 @@ class TranslationUnitSpanTests(unittest.TestCase):
         self.assertIn("strike it from TRANSLATION_UNIT_WITHOUT_SPAN", errors[0])
 
 
+class OrphanedDeferralTests(unittest.TestCase):
+    """A deferral whose driving phases have all passed is carried by an escalation's rows."""
+
+    PROGRAM = {"phases": [{"phase": 2, "status": "pass"}, {"phase": 3, "status": "pass"},
+                          {"phase": 5, "status": "pending"}, {"phase": 8, "status": "pending"}]}
+
+    def check(self, driving, rows=None, inherited_by=(8,), deferred=True):
+        ledgers = {2: {"deferred": [{"id": "phys_fn_000001", "driving_phases": list(driving)}]
+                       if deferred else []}}
+        escalation = {"id": "carried", "inherited_by": list(inherited_by)}
+        if rows is not None:
+            escalation["rows"] = rows
+        return validate_inventory.validate_orphaned_deferrals(
+            ledgers, {3: {"escalations": [escalation]}}, self.PROGRAM)
+
+    def test_fires_on_a_deferral_every_driving_phase_of_which_has_passed(self):
+        errors = self.check([3])
+        self.assertEqual(len(errors), 1)
+        self.assertIn("'phys_fn_000001' on driving phases 3, every one of which has passed", errors[0])
+
+    def test_accepts_the_deferral_once_an_escalation_carries_it(self):
+        self.assertEqual(self.check([3], rows=["phys_fn_000001"]), [])
+
+    def test_an_escalation_only_passed_phases_inherit_carries_nothing(self):
+        self.assertEqual(len(self.check([3], rows=["phys_fn_000001"], inherited_by=(3,))), 1)
+
+    def test_a_deferral_naming_a_phase_still_to_run_is_not_orphaned(self):
+        self.assertEqual(self.check([3, 5]), [])
+
+    def test_a_deferral_naming_no_phase_is_not_orphaned(self):
+        self.assertEqual(self.check([]), [])
+
+    def test_rejects_carrying_a_row_no_ledger_defers(self):
+        errors = self.check([3], rows=["phys_fn_000001"], deferred=False)
+        self.assertIn("carries 'phys_fn_000001', which no ledger defers", errors[0])
+
+    def test_rejects_escalation_rows_that_are_not_stable_ids(self):
+        record = PhaseRecordTests().record()
+        record["escalations"][0]["rows"] = ["phys_fn_1"]
+        errors = validate_inventory.validate_phase_record(
+            record, 2, PhaseRecordTests().program_phase(), PhaseRecordTests().totals(),
+            list(PhaseRecordTests.EXCLUSIONS))
+        self.assertTrue(any("which are not function stable IDs" in error for error in errors), errors)
+
+
+class CommittedOrphanTests(unittest.TestCase):
+    """The committed ledgers against the orphan rule: every one of the 38 is carried."""
+
+    ROOT = TOOLS_DIR.parent
+
+    def read(self):
+        ledgers = {n: json.loads((self.ROOT / "gates" / f"phase{n}-closure.json").read_text(encoding="utf-8"))
+                   for n in range(2, 8)}
+        records = {n: json.loads((self.ROOT / "gates" / f"phase{n}.json").read_text(encoding="utf-8"))
+                   for n in (2, 3, 4)}
+        program = json.loads((self.ROOT / "program.json").read_text(encoding="utf-8"))
+        return ledgers, records, program
+
+    def carried(self, records, name):
+        return next(e for e in records[4]["escalations"] if e["id"] == name)
+
+    def test_every_orphan_is_carried(self):
+        ledgers, records, program = self.read()
+        self.assertEqual(validate_inventory.validate_orphaned_deferrals(ledgers, records, program), [])
+        self.assertEqual([len(self.carried(records, name)["rows"]) for name in (
+            "mesh_column_blocks_phase3_mesh_deferrals", "deferrals_left_on_passed_phase_4",
+            "deferrals_left_on_passed_phases_3_and_4")], [13, 7, 18])
+
+    def test_the_rule_fires_when_a_carried_row_is_dropped(self):
+        ledgers, records, program = self.read()
+        self.carried(records, "mesh_column_blocks_phase3_mesh_deferrals")["rows"].remove("phys_fn_001757")
+        errors = validate_inventory.validate_orphaned_deferrals(ledgers, records, program)
+        self.assertEqual(len(errors), 1)
+        self.assertIn("'phys_fn_001757'", errors[0])
+
+    def test_the_rule_fires_on_all_eighteen_without_their_escalation(self):
+        ledgers, records, program = self.read()
+        records[4]["escalations"].remove(self.carried(records, "deferrals_left_on_passed_phases_3_and_4"))
+        self.assertEqual(len(validate_inventory.validate_orphaned_deferrals(ledgers, records, program)), 18)
+
+
 class CommittedShapeRulingTests(unittest.TestCase):
     """The committed census against its ruling and its spans, and the review's experiments.
 

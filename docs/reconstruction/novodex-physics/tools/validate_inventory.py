@@ -347,6 +347,10 @@ PHASE_RECORD_KEYS = ("schema_version", "phase", "name", "status", "closure_ledge
 PHASE_RECORD_COUNT_KEYS = ("closed", "deferred")
 GATE_SEQUENCE_KEYS = ("name", "command", "result")
 ESCALATION_KEYS = ("id", "summary", "reproduction", "evidence", "inherited_by")
+# The deferrals an escalation carries forward, by stable ID. Optional because most
+# escalations carry a finding rather than rows; required, in effect, of any that
+# carries a deferral whose driving phases have all passed (validate_orphaned_deferrals).
+ESCALATION_OPTIONAL_KEYS = ("rows",)
 
 GATES = (
     "toolchain_pinned",
@@ -1318,6 +1322,53 @@ def validate_discharge_passed(ledgers, program):
     return errors
 
 
+def validate_orphaned_deferrals(ledgers, records, program):
+    """A deferral whose driving phases have all passed must be carried by an escalation.
+
+    `driving_phases` names the phases that can discharge a deferral. Once every one
+    of them has passed, the ledger no longer says who inherits the row: a finished
+    phase owns it and finished phases were waiting on it. Thirty-eight deferrals
+    were in that state, and the twenty that escalations did carry were carried in
+    prose nothing read. An escalation carries a row by listing its stable ID in
+    `rows`, and it must be inherited by a phase that has not passed, or it has only
+    moved the orphan. A row an escalation lists has to still be deferred somewhere,
+    so a discharged row is struck from the list rather than carried forever.
+
+    A deferral with no driving phases names nobody and is not orphaned by anyone
+    passing; the debt it records is the full audit's by construction.
+    """
+    statuses = {row.get("phase"): row.get("status") for row in program.get("phases", [])
+                if isinstance(row, dict)}
+    passed = {phase for phase, status in statuses.items() if status == "pass"}
+    deferred = {}
+    for phase, ledger in ledgers.items():
+        for entry in ledger.get("deferred", []):
+            if isinstance(entry, dict) and isinstance(entry.get("id"), str):
+                deferred[entry["id"]] = (phase, entry)
+    errors, carried = [], set()
+    for phase, record in sorted(records.items()):
+        for escalation in record.get("escalations", []):
+            if not isinstance(escalation, dict) or not isinstance(escalation.get("rows"), list):
+                continue
+            live = [value for value in escalation.get("inherited_by") or []
+                    if isinstance(value, int) and value not in passed]
+            for identifier in escalation["rows"]:
+                if identifier not in deferred:
+                    errors.append(f"phase {phase} escalation {escalation.get('id')!r} carries "
+                                  f"{identifier!r}, which no ledger defers; strike it from rows")
+                elif live:
+                    carried.add(identifier)
+    for identifier, (phase, entry) in sorted(deferred.items()):
+        driving = entry.get("driving_phases") or []
+        if (isinstance(driving, list) and driving and all(value in passed for value in driving)
+                and identifier not in carried):
+            errors.append(f"phase {phase} defers {identifier!r} on driving phases "
+                          f"{', '.join(str(value) for value in driving)}, every one of which has "
+                          f"passed, and no escalation inherited by a phase that has not passed "
+                          f"carries it in its rows; say who inherits it")
+    return errors
+
+
 def validate_closure(inventory, closure, phase, targets):
     """Every row of a phase is closed with a proof that can fail, or deferred.
 
@@ -2268,7 +2319,7 @@ def validate_phase_record(record, phase, program_phase, closure_totals, exclusio
                       f"{record['excluded_from_comparison']!r} but run_differential.ps1 excludes "
                       f"{exclusions!r}")
     errors += _check_rows(f"phase {phase} record escalations", record["escalations"],
-                          ESCALATION_KEYS)
+                          ESCALATION_KEYS, ESCALATION_OPTIONAL_KEYS)
     for index, escalation in enumerate(record["escalations"]):
         if not isinstance(escalation, dict):
             continue
@@ -2278,6 +2329,10 @@ def validate_phase_record(record, phase, program_phase, closure_totals, exclusio
         for field in ("reproduction", "evidence"):
             if not isinstance(escalation.get(field), str) or not escalation[field].strip():
                 errors.append(f"{where} records no {field}")
+        rows = escalation.get("rows", [])
+        if not isinstance(rows, list) or not all(
+                isinstance(value, str) and FUNCTION_ID_PATTERN.match(value) for value in rows):
+            errors.append(f"{where} carries rows {rows!r}, which are not function stable IDs")
         phases = escalation.get("inherited_by")
         if not isinstance(phases, list) or not phases or any(
                 isinstance(value, bool) or not isinstance(value, int) or not 1 <= value <= 8
@@ -2712,6 +2767,7 @@ def main():
         if plan is not None and plan.is_file():
             plans[phase] = read_plan_escalations(plan)
     errors += validate_escalations(records, plans)
+    errors += validate_orphaned_deferrals(ledgers, records, program)
 
     if errors:
         for error in errors:
