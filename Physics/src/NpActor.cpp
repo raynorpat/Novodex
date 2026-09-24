@@ -11,6 +11,7 @@
 #include "NpActor.h"
 #include "NpActorDynamicMath.h"
 #include "NpSceneGuard.h"
+#include "FoundationSDK.h"
 
 #include "NxMat34.h"
 #include "NxMat33.h"
@@ -23,6 +24,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
+
 
 static unsigned char* nxNpActorBody(void* actor)
 	{
@@ -565,10 +567,32 @@ NxQuat NpActorVtable::getGlobalOrientationQuatVal() const
 	return NxQuat(orientation);
 	}
 
-// (unimplemented) getGlobalPoseReference
 const NxMat34 & NpActorVtable::getGlobalPoseReference() const
 	{
-	static NxMat34 sValue; return sValue;
+	void* self = const_cast<NpActorVtable*>(this);
+	void* ctx = nxNpActorContext(self, 0x10);
+	nxNpSceneGuardEnter(ctx);
+	static bool warningIssued = false;
+	if(!warningIssued)
+		{
+		warningIssued = true;
+		NxFoundation::FoundationSDK::error(static_cast<NxErrorCode>(0xd0),
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpActor.cpp", 0x2c0, 0,
+			"Warning: deprecated method: Actor::getGlobalPoseReference().  Please use getGlobalPose() instead.\n");
+		}
+	unsigned char* body = nxNpActorBody(self);
+	unsigned char* record = body
+		? *reinterpret_cast<unsigned char**>(body + 8) : 0;
+	if(record)
+		{
+		float rotation[9];
+		nxNpActorRotationFromQuaternionGetter(
+			reinterpret_cast<const float*>(record + 0x5c), rotation);
+		memcpy(body + 0x20, rotation, sizeof(rotation));
+		memcpy(body + 0x44, record + 0x50, sizeof(NxVec3));
+		}
+	nxNpSceneGuardLeave(ctx);
+	return *reinterpret_cast<const NxMat34*>(body + 0x20);
 	}
 
 // (unimplemented) moveGlobalPose

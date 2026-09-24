@@ -181,6 +181,10 @@ int wmain(int argc, wchar_t** argv)
 				word(movedBody, 0x20), word(movedBody, 0x24), word(movedBody, 0x28),
 				word(movedBody, 0x2c), word(movedBody, 0x30), word(movedBody, 0x34),
 				word(movedBody, 0x38), word(movedBody, 0x3c), word(movedBody, 0x40));
+			const NxMat34& reference = actor->getGlobalPoseReference();
+			pose("set_global_mass_pose", "pose_reference", reference);
+			printf("cmass set_global_mass_pose reference_identity=%u\n",
+				&reference == reinterpret_cast<const NxMat34*>(movedBody + 0x20) ? 1u : 0u);
 		}
 		scene->releaseActor(*actor);
 	}
@@ -190,6 +194,8 @@ int wmain(int argc, wchar_t** argv)
 	printf("cmass static_created=%u\n", staticActor ? 1u : 0u);
 	if(!staticActor) return nxFail("static actor creation failed");
 	probe("static", staticActor);
+	const NxMat34& staticReference = staticActor->getGlobalPoseReference();
+	pose("static", "pose_reference", staticReference);
 	scene->releaseActor(*staticActor);
 	sdk->releaseScene(*scene); sdk->release();
 	return nxReportPairIdentity(pairDirectory);

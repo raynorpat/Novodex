@@ -185,6 +185,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'cmass set_global_mass_pose record=0.0.3f3504f3.3f3504f3.a.3ecccccc.ffffffff',
         'cmass set_global_mass_pose transform=41600000.41700000.41000000.b24fe779.3f3504f3.bf3504f3.b24fe779.41600000.41700000.41000000.b24fe779.3f3504f3.bf3504f3.b24fe779.40800000.c07ffffe.40800000.41200000.41300000.41400000',
         'cmass set_global_mass_pose body_rotation=0.bf800000.0.3f800000.0.0.0.0.3f800000',
+        'cmass set_global_mass_pose pose_reference=bf7ffffe.b31302ae.2678c84a.0.331302ae.bf7fffff.331302ae.bf7fffff.33800000.41600000.41700000.41000000',
+        'cmass set_global_mass_pose reference_identity=1',
         'cmass variant=2 created=1',
         'cmass rotated local_pose=3f800000.0.0.0.0.bf800000.0.3f800000.0.3f800000.40000000.40400000',
         'cmass rotated local_position=3f800000.40000000.40400000',
@@ -198,7 +200,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'cmass static local_orientation=3f800000.0.0.0.3f800000.0.0.0.3f800000',
         'cmass static global_pose=3f800000.0.0.0.3f800000.0.0.0.3f800000.0.0.0',
         'cmass static global_position=0.0.0',
-        'cmass static global_orientation=3f800000.0.0.0.3f800000.0.0.0.3f800000'
+        'cmass static global_orientation=3f800000.0.0.0.3f800000.0.0.0.3f800000',
+        'cmass static pose_reference=3f800000.0.0.0.3f800000.0.0.0.3f800000.0.0.0'
     )
     'NxPhysicsActorForceTests' = @(
         'force mode=0 created=1',
@@ -1523,7 +1526,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 101  # 34 for NxPhysicsAssetTests, 67 for NxPhysicsThirdPartyTests
-    '5' = 663  # 126 object-layout assertions plus 537 public actor/pruner/box/scene lines
+    '5' = 666  # 126 object-layout assertions plus 540 public actor/pruner/box/scene lines
                # (RED on purpose: vtables family open)
     '6' = 11  # 3 oracle-descriptor + 4 oracle-joint + 4 staged-pair-joint
     '7' = 4   # the four STAGED-PAIR assertions; the oracle-differential assertions
