@@ -68,6 +68,8 @@
 
 **M2 dynamic mass and kinematic follow-up, 2026-09-24:** Explicit-mass dynamic descriptor fields, public mass/damping/velocity getters, one identity-box density mass/inertia computation, and the unshared record's kinematic allocate/restore transition now match the pinned oracle. The new staged differential adds thirteen assertions, raising the Phase 5 floor to 419; four mutations separately falsify mass, density, kinematic allocation, and dirty-bit behavior. See `docs/reconstruction/novodex-physics/evidence/phase5-dynamic-record-and-kinematic.md`. General mass properties, shared-record kinematic transitions, and the other dynamic actor slots remain open.
 
+**M2 dynamic setter follow-up, 2026-09-24:** Public mass, inertia, damping, and velocity setters now match the pinned oracle for valid dynamic inputs, including reciprocal fields, shadow velocities, wake initialization, and six dirty-queue masks. A fresh-process staged differential adds seventeen assertions and raises the Phase 5 floor to 436. A deliberate dirty-mask mutation failed the gate; after restoration the staged pair and Phases 2, 3, 4, 6, and 7 pass. The full Phase 5 gate remains red only on the existing final-vtable marker. See `docs/reconstruction/novodex-physics/evidence/phase5-public-dynamic-setters.md`. Invalid inputs and diagnostics, general wake/sleep behavior, and remaining actor virtuals are open.
+
 ## 1. Inputs and boundaries
 
 - Repository: `D:\github\Novodex`, inspected at `0df8821f1c5e3668e566ad4182b1e8e568f632d6`.

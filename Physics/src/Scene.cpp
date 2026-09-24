@@ -1807,6 +1807,18 @@ int nxActorComputeMass(void* actor, const unsigned* bodyWord)
 	*reinterpret_cast<unsigned char**>(record + 0x1bc) = record;
 	*reinterpret_cast<float*>(record + 0xb8) = bodyDesc->linearDamping;
 	*reinterpret_cast<float*>(record + 0xbc) = bodyDesc->angularDamping;
+	*reinterpret_cast<float*>(record + 0x84) = bodyDesc->wakeUpCounter;
+	*reinterpret_cast<float*>(record + 0x4c) = bodyDesc->wakeUpCounter;
+	// FUN_1001a350 uses pinned SDK defaults when descriptor thresholds are
+	// negative. These are 0.15^2 and 0.14^2 in the shipped binary.
+	*reinterpret_cast<unsigned*>(record + 0xd0) = 0x3cb851ecu;
+	*reinterpret_cast<unsigned*>(record + 0xd4) = 0x3ca0902eu;
+	if(bodyDesc->sleepLinearVelocity > 0.0f)
+		*reinterpret_cast<float*>(record + 0xd0) =
+			bodyDesc->sleepLinearVelocity * bodyDesc->sleepLinearVelocity;
+	if(bodyDesc->sleepAngularVelocity > 0.0f)
+		*reinterpret_cast<float*>(record + 0xd4) =
+			bodyDesc->sleepAngularVelocity * bodyDesc->sleepAngularVelocity;
 	memcpy(record + 0x6c, &bodyDesc->linearVelocity, sizeof(NxVec3));
 	memcpy(record + 0x34, &bodyDesc->linearVelocity, sizeof(NxVec3));
 	memcpy(record + 0x78, &bodyDesc->angularVelocity, sizeof(NxVec3));

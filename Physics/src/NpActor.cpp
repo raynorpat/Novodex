@@ -624,10 +624,18 @@ NxMat33 NpActorVtable::getCMassGlobalOrientationVal() const
 	return NxMat33();
 	}
 
-// (unimplemented) setMass
-void NpActorVtable::setMass(NxReal)
+void NpActorVtable::setMass(NxReal mass)
 	{
-	
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	unsigned char* record = nxNpActorRecord(this);
+	if(record && mass > 0.0f)
+		{
+		*reinterpret_cast<float*>(record + 0x188) = mass;
+		*reinterpret_cast<float*>(record + 0xc0) = 1.0f / mass;
+		nxNpActorMarkRecordDirty(record, 0x10000);
+		}
+	nxNpSceneGuardLeave(ctx);
 	}
 
 NxReal NpActorVtable::getMass() const
@@ -642,16 +650,38 @@ NxReal NpActorVtable::getMass() const
 	return out;
 	}
 
-// (unimplemented) setMassSpaceInertiaTensor
 void NpActorVtable::setMassSpaceInertiaTensor(const NxVec3& m)
 	{
-	
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	unsigned char* record = nxNpActorRecord(this);
+	if(record)
+		{
+		memcpy(record + 0x18c, &m, sizeof(m));
+		float* inverse = reinterpret_cast<float*>(record + 0xc4);
+		if(m.x > 0.0f && m.y > 0.0f && m.z > 0.0f)
+			{
+			inverse[0] = 1.0f / m.x;
+			inverse[1] = 1.0f / m.y;
+			inverse[2] = 1.0f / m.z;
+			}
+		else
+			memset(inverse, 0, sizeof(NxVec3));
+		nxNpActorMarkRecordDirty(record, 0x20000);
+		}
+	nxNpSceneGuardLeave(ctx);
 	}
 
-// (unimplemented) getMassSpaceInertiaTensorVal
 NxVec3 NpActorVtable::getMassSpaceInertiaTensorVal() const
 	{
-	return NxVec3();
+	void* self = const_cast<NpActorVtable*>(this);
+	void* ctx = nxNpActorContext(self, 0x10);
+	nxNpSceneGuardEnter(ctx);
+	unsigned char* record = nxNpActorRecord(self);
+	NxVec3 out(0.0f, 0.0f, 0.0f);
+	if(record) memcpy(&out, record + 0x18c, sizeof(out));
+	nxNpSceneGuardLeave(ctx);
+	return out;
 	}
 
 // (unimplemented) getGlobalInertiaTensorVal
@@ -666,10 +696,17 @@ NxMat33 NpActorVtable::getGlobalInertiaTensorInverseVal() const
 	return NxMat33();
 	}
 
-// (unimplemented) setLinearDamping
-void NpActorVtable::setLinearDamping(NxReal)
+void NpActorVtable::setLinearDamping(NxReal damping)
 	{
-	
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	unsigned char* record = nxNpActorRecord(this);
+	if(record && damping >= 0.0f)
+		{
+		*reinterpret_cast<float*>(record + 0xb8) = damping;
+		nxNpActorMarkRecordDirty(record, 0x800);
+		}
+	nxNpSceneGuardLeave(ctx);
 	}
 
 NxReal NpActorVtable::getLinearDamping() const
@@ -684,10 +721,17 @@ NxReal NpActorVtable::getLinearDamping() const
 	return out;
 	}
 
-// (unimplemented) setAngularDamping
-void NpActorVtable::setAngularDamping(NxReal)
+void NpActorVtable::setAngularDamping(NxReal damping)
 	{
-	
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	unsigned char* record = nxNpActorRecord(this);
+	if(record && damping >= 0.0f)
+		{
+		*reinterpret_cast<float*>(record + 0xbc) = damping;
+		nxNpActorMarkRecordDirty(record, 0x1000);
+		}
+	nxNpSceneGuardLeave(ctx);
 	}
 
 NxReal NpActorVtable::getAngularDamping() const
@@ -702,16 +746,32 @@ NxReal NpActorVtable::getAngularDamping() const
 	return out;
 	}
 
-// (unimplemented) setLinearVelocity
-void NpActorVtable::setLinearVelocity(const NxVec3&)
+void NpActorVtable::setLinearVelocity(const NxVec3& velocity)
 	{
-	
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	unsigned char* record = nxNpActorRecord(this);
+	if(record && (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u) == 0)
+		{
+		memcpy(record + 0x6c, &velocity, sizeof(velocity));
+		memcpy(record + 0x34, &velocity, sizeof(velocity));
+		nxNpActorMarkRecordDirty(record, 4);
+		}
+	nxNpSceneGuardLeave(ctx);
 	}
 
-// (unimplemented) setAngularVelocity
-void NpActorVtable::setAngularVelocity(const NxVec3&)
+void NpActorVtable::setAngularVelocity(const NxVec3& velocity)
 	{
-	
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	unsigned char* record = nxNpActorRecord(this);
+	if(record && (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u) == 0)
+		{
+		memcpy(record + 0x78, &velocity, sizeof(velocity));
+		memcpy(record + 0x40, &velocity, sizeof(velocity));
+		nxNpActorMarkRecordDirty(record, 8);
+		}
+	nxNpSceneGuardLeave(ctx);
 	}
 
 NxVec3 NpActorVtable::getLinearVelocityVal() const
