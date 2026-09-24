@@ -16,6 +16,10 @@
 
 **Pruning/AABB note, 2026-09-24:** Recovered the oracle's `0x000b4530` NovodeX complete-box-pruning helper and its `0x000b46b0` continuation, then switched `NxOpcode` and its consumers to the oracle's min/max AABB representation. A fresh whole-archive Win32 DLL link now succeeds. The new direct-link helper differential is exact on 730 oracle words and separately falsifies the sorting and pair-output portions; Phase 2, 3 and 4 gates pass, with Phase 4 at 101 of 101 coverage assertions. These are intermediate closures: actual-DLL public routing, lifecycle behavior, and the remaining census remain open. The earlier whole-archive failure recorded above is historical and has been resolved. See `docs/reconstruction/novodex-physics/evidence/phase4-falsification.md` §11.
 
+**Phase 5 reproduction, 2026-09-24:** On the current whole-archive Win32 build, the Phase 5 gate runs to completion and reports `layout candidate mismatches=1`, then exits 1 as designed. The single current failure is an explicit `candidate CANDIDATE-MISSING family=vtables reason=shape finals/actor classes are Tasks 3-4` line in `tests/PhysicsObjectLayoutTests.cpp`; it is not the earlier three-failure crash described by historical notes. All printed candidate provisional families before that line report `failures=0`. The next object-model packet should drive real final shape/actor vtables through the candidate DLL and replace this synthetic missing marker only once the relevant behavior is tested.
+
+**Current gate matrix, 2026-09-24:** Phases 2, 3, 4, 6, and 7 pass from the isolated worktree. Phase 5 remains intentionally red on the vtable marker above. These are intermediate phase gates with substantial deferred census rows, not a claim that the DLL is complete.
+
 ## 1. Inputs and boundaries
 
 - Repository: `D:\github\Novodex`, inspected at `0df8821f1c5e3668e566ad4182b1e8e568f632d6`.
