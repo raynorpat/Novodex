@@ -1380,6 +1380,59 @@ int wmain(int argc, wchar_t** argv)
         }
         ++cases;
     }
+    // MESH slot 9's no-tree branch reads six local bound words and applies
+    // the shape pose. Keep the mesh record's +0xa0 tree pointer null.
+    typedef void (__thiscall* MeshBoundsSlot)(void*, float*);
+    for(unsigned sample = 0; sample < 64; ++sample) {
+        unsigned char oracleMeshShape[0xe8] = {}, candidateMeshShape[0xe8] = {};
+        unsigned char meshRecord[0xb0] = {};
+        const float lo[3] = {
+            -2.2f - sample * 0.113f, -0.53f * (sample + 1),
+            0.77f - sample * 0.161f
+        };
+        const float hi[3] = {
+            3.51f + sample * 0.137f, 1.27f * (sample + 1),
+            4.03f + sample * 0.173f
+        };
+        memcpy(meshRecord + 0x44, lo, sizeof(lo));
+        memcpy(meshRecord + 0x50, hi, sizeof(hi));
+        for(unsigned row = 0; row < 3; ++row) {
+            for(unsigned col = 0; col < 3; ++col) {
+                const float value = row == col ? 0.73f + 0.013f * sample :
+                    ((row + col + sample) % 2 ? -1.0f : 1.0f) *
+                    0.117f * (row + col + 1);
+                memcpy(oracleMeshShape + 0x0c + 12*row + 4*col,
+                    &value, 4);
+                memcpy(candidateMeshShape + 0x0c + 12*row + 4*col,
+                    &value, 4);
+            }
+            const float translation = (row + 1) * (sample + 1) * -0.373f;
+            memcpy(oracleMeshShape + 0x30 + 4*row, &translation, 4);
+            memcpy(candidateMeshShape + 0x30 + 4*row, &translation, 4);
+        }
+        void* meshPointer = meshRecord;
+        memcpy(oracleMeshShape + 0xe0, &meshPointer, 4);
+        memcpy(candidateMeshShape + 0xe0, &meshPointer, 4);
+        float oracleBounds[6] = {}, candidateBounds[6] = {};
+        reinterpret_cast<MeshBoundsSlot>(const_cast<unsigned char*>(base) +
+            0x28ed0)(oracleMeshShape, oracleBounds);
+        reinterpret_cast<MeshShape*>(candidateMeshShape)->nxMeshWorldAABBNoTree(
+            candidateBounds);
+        oracleDigest = foldOracle(oracleDigest, oracleBounds,
+            sizeof(oracleBounds));
+        if(memcmp(oracleBounds, candidateBounds, sizeof(oracleBounds)) != 0) {
+            fprintf(stderr, "mesh slot 9 no-tree sample=%u differs\n", sample);
+            if(sample < 2) for(unsigned k = 0; k < 6; ++k) {
+                unsigned ow, cw;
+                memcpy(&ow, oracleBounds + k, 4);
+                memcpy(&cw, candidateBounds + k, 4);
+                fprintf(stderr, "  word%u oracle=%08x candidate=%08x\n",
+                    k, ow, cw);
+            }
+            ++failures;
+        }
+        ++cases;
+    }
     nxSetSdkAllocatorBridge(0);
     printf("shape vtable oracle_digest=%08x cases=%u failures=%u\n",
         oracleDigest, cases, failures);

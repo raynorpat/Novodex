@@ -5635,6 +5635,63 @@ void MeshShape::nxMeshGetWords44(unsigned* out) const
 	memcpy(out, mesh + 0x44, 24);						// six dwords, 0x00027ec0..ef
 	}
 
+// phys_fn_001401 (0x00028ed0), MESH-table slot 9: the branch at 0x28fe4
+// taken when mesh+0xa0 holds no acceleration tree. The tree-backed branch
+// will need its own reconstruction before this can be used as the full slot.
+void MeshShape::nxMeshWorldAABBNoTree(float* out) const
+	{
+	const unsigned char* mesh = reinterpret_cast<const unsigned char*>(mWordE0);
+	float bounds[6];
+	memcpy(bounds, mesh + 0x44, sizeof(bounds));
+	// The x87 listing rounds these intermediates at different points: the
+	// z sum and z difference before halving, the x center and all extents
+	// after halving, while the y/z centers remain in registers.
+	const float cx = static_cast<float>(
+		(static_cast<double>(bounds[0]) + bounds[3]) * 0.5);
+	const double cy = (static_cast<double>(bounds[1]) + bounds[4]) * 0.5;
+	const float zsum = static_cast<float>(
+		static_cast<double>(bounds[2]) + bounds[5]);
+	const double cz = static_cast<double>(zsum) * 0.5;
+	const float ex = static_cast<float>(
+		(static_cast<double>(bounds[3]) - bounds[0]) * 0.5);
+	const float ey = static_cast<float>(
+		(static_cast<double>(bounds[4]) - bounds[1]) * 0.5);
+	const float zdifference = static_cast<float>(
+		static_cast<double>(bounds[5]) - bounds[2]);
+	const float ez = static_cast<float>(static_cast<double>(zdifference) * 0.5);
+	const float* r = reinterpret_cast<const float*>(mBase.mPose0C.mRotation);
+	const float* t = mBase.mPose0C.mTranslation;
+	for(unsigned row = 0; row < 3; ++row)
+		{
+		const unsigned j = row * 3;
+		const double transformed =
+			cz * r[j + 2] + cy * r[j + 1] +
+			static_cast<double>(cx) * r[j];
+		const double extent =
+			fabs(static_cast<double>(ey) * r[j + 1]) +
+			fabs(static_cast<double>(ez) * r[j + 2]) +
+			fabs(static_cast<double>(ex) * r[j]);
+		if(row == 0)
+			{
+			const double world = static_cast<double>(
+				static_cast<float>(transformed)) + t[row];
+			out[row] = static_cast<float>(world - extent);
+			out[row + 3] = static_cast<float>(world + extent);
+			}
+		else
+			{
+			const float world = static_cast<float>(
+				(row == 1 ? static_cast<double>(static_cast<float>(transformed))
+					: transformed) + t[row]);
+			const float roundedExtent = static_cast<float>(extent);
+			out[row] = static_cast<float>(
+				static_cast<double>(world) - roundedExtent);
+			out[row + 3] = static_cast<float>(
+				static_cast<double>(world) + roundedExtent);
+			}
+		}
+	}
+
 // ---------------------------------------------------------------------------
 // The BASE vtable's stub rows. See ObjectModel.h for the slot map.
 

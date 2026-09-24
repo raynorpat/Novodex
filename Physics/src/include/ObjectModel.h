@@ -2126,6 +2126,11 @@ class MeshShape
 	//! and leaves the fourth word unchanged.
 	void				nxMeshTransformCenter(float* out) const;
 
+	//! MESH-table slot 9, phys_fn_001401 (0x00028ed0), no-tree arm only:
+	//! transform the six local bound words at mesh+0x44 through the pose.
+	//! Requires the acceleration-tree pointer at mesh+0xa0 to be null.
+	void				nxMeshWorldAABBNoTree(float* out) const;
+
 	//! MESH-table slot 12, phys_fn_001383: loadFromDesc. The record holds
 	//! a wrapper pointer; stores *(wrapper+4) at +0xe0 and increments the
 	//! inner object refcount at +0x74.
