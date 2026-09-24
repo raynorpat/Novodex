@@ -12,6 +12,8 @@
 
 **Execution note, 2026-09-24:** The three known OPCODE artifact misclassifications have been corrected in the working inventory. A local `Segment::SquareDistance` overlay now passes both registered oracle families exactly (100,000 compared words); the rebuilt DLL retains that symbol and `qh_pointdist` through explicit link options. The current DLL remains a partial reconstruction. A whole-archive trial failed on stock `SweepAndPrune::Init` because the oracle uses NovodeX helper `phys_fn_004816` at `0x000b4530` instead of the absent `OPC_BoxPruning.cpp` dependency. See `docs/reconstruction/novodex-physics/evidence/phase4-falsification.md` §10. Continue with helper recovery, archive linkage, actual-DLL driving, and the rest of M0/M1 before advancing closure.
 
+**Gate note, 2026-09-24:** Both PowerShell runners now accept explicit repository, build, oracle, and pair-output roots. In the isolated worktree, the Phase 4 gate passes with 100 of 100 coverage assertions and the Phase 2 staged-pair gate passes. A Phase 4-only process previously printed `status=pass` but returned the differential runner's intentional skip code 3; the gate now returns 0 on successful completion.
+
 ## 1. Inputs and boundaries
 
 - Repository: `D:\github\Novodex`, inspected at `0df8821f1c5e3668e566ad4182b1e8e568f632d6`.

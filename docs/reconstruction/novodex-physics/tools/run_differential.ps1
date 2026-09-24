@@ -9,7 +9,12 @@ param(
     [string] $Phase,
 
     [Parameter(Mandatory = $true, ParameterSetName = 'Targets')]
-    [string[]] $Targets
+    [string[]] $Targets,
+
+    [string] $RepoRoot = 'D:\github\Novodex',
+    [string] $BuildRoot,
+    [string] $OracleRoot = 'D:\FlamingEnt__\Unreal_3',
+    [string] $PairsRoot = 'D:\FlamingEnt__\novodex-analysis\pairs'
 )
 
 # Stages the pinned shipped Physics/Foundation pair and the current rebuilt pair
@@ -23,11 +28,12 @@ $ProgressPreference = 'SilentlyContinue'
 $toolsRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $evidenceRoot = Split-Path -Parent $toolsRoot
 $programPath = Join-Path $evidenceRoot 'program.json'
-$ue3Root = 'D:\FlamingEnt__\Unreal_3'
-$releaseRoot = 'D:\github\Novodex\build\Release'
+$ue3Root = $OracleRoot
+if (-not $BuildRoot) { $BuildRoot = Join-Path $RepoRoot 'build' }
+$releaseRoot = Join-Path $BuildRoot 'Release'
 # Phase 1 established this external root because Ghidra rejects path elements
 # beginning with a dot; the program keeps a single external mutable root.
-$pairsRoot = 'D:\FlamingEnt__\novodex-analysis\pairs'
+$pairsRoot = $PairsRoot
 
 function Get-FileSha256([string] $Path) {
     return (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant()

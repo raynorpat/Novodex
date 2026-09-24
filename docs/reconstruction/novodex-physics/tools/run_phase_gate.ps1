@@ -2,7 +2,12 @@
 param(
     [Parameter(Mandatory = $true)]
     [ValidateSet('1', '2', '3', '4', '5', '6', '7', '8', 'completed')]
-    [string] $Phase
+    [string] $Phase,
+
+    [string] $RepoRoot = 'D:\github\Novodex',
+    [string] $BuildRoot,
+    [string] $OracleRoot = 'D:\FlamingEnt__\Unreal_3',
+    [string] $PairsRoot
 )
 
 # Runs the reconstruction gates. Immutable-header, inventory and build always
@@ -18,8 +23,10 @@ $evidenceRoot = Split-Path -Parent $toolsRoot
 $programPath = Join-Path $evidenceRoot 'program.json'
 $inventoryPath = Join-Path $evidenceRoot 'inventory.json'
 $headerManifestPath = Join-Path $evidenceRoot 'public_header_hashes.json'
-$novodexRepo = 'D:\github\Novodex'
-$buildRoot = Join-Path $novodexRepo 'build'
+$novodexRepo = $RepoRoot
+if (-not $BuildRoot) { $BuildRoot = Join-Path $novodexRepo 'build' }
+$buildRoot = $BuildRoot
+if (-not $PairsRoot) { $PairsRoot = Join-Path $buildRoot 'pairs' }
 $releaseRoot = Join-Path $buildRoot 'Release'
 # The installed toolchain is a property of this workstation, not of the oracle,
 # so this runner is the only place it is named. program.json must not pin one.
@@ -28,7 +35,7 @@ $generator = 'Visual Studio 18 2026'
 # The transplanted implementation tree must stay byte-identical to the UE3 tree
 # the census was taken from.
 $headerRoots = @(
-    'D:\FlamingEnt__\Unreal_3\Development\External\Novodex\Physics\include',
+    (Join-Path $OracleRoot 'Development\External\Novodex\Physics\include'),
     (Join-Path $novodexRepo 'Physics\include')
 )
 
@@ -201,7 +208,7 @@ $oracleTranscript = [Collections.Generic.List[string]]::new()
 # the end of this file reading a variable nobody had written.
 $oracleDifferentialFailures = @()
 if ($oracleDifferentialTargets.Count -gt 0) {
-    $ue3Root = 'D:\FlamingEnt__\Unreal_3'
+    $ue3Root = $OracleRoot
     $oraclePhysics = Join-Path $ue3Root $program.oracle.path
     $oracleDirectory = Split-Path -Parent $oraclePhysics
     Assert-True (Test-Path -LiteralPath $oraclePhysics -PathType Leaf) "the pinned oracle is present: $oraclePhysics"
@@ -271,7 +278,7 @@ $differentialThrew = $false
 try {
     if ($Phase -ceq 'completed') {
         Write-Host "gate=run_differential targets=$($targets -join ',')"
-        & $differential -Targets $targets *>&1 | ForEach-Object {
+        & $differential -Targets $targets -RepoRoot $novodexRepo -BuildRoot $buildRoot -OracleRoot $OracleRoot -PairsRoot $PairsRoot *>&1 | ForEach-Object {
             $text = [string] $_
             [void] $differentialTranscript.Add($text)
             Write-Host $text
@@ -279,7 +286,7 @@ try {
     }
     else {
         Write-Host "gate=run_differential phase=$Phase"
-        & $differential -Phase $Phase *>&1 | ForEach-Object {
+        & $differential -Phase $Phase -RepoRoot $novodexRepo -BuildRoot $buildRoot -OracleRoot $OracleRoot -PairsRoot $PairsRoot *>&1 | ForEach-Object {
             $text = [string] $_
             [void] $differentialTranscript.Add($text)
             Write-Host $text
@@ -382,3 +389,7 @@ if ($differentialExit -ne 0) {
 
 Write-Host ''
 Write-Host "phase_gate=$Phase status=pass"
+# A phase with only oracle differentials invokes run_differential.ps1's
+# intentional skip (exit 3). That stale child LASTEXITCODE must not become the
+# status of a gate that completed all of its own assertions successfully.
+exit 0
