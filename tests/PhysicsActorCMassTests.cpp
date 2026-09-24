@@ -56,6 +56,19 @@ static void recordState(const char* tag, NxActor* actor)
 		word(record, 0x12c), word(record, 0x130),
 		word(record, 0x198), word(record, 0x84), flags[id]);
 }
+static void transformState(const char* tag, NxActor* actor)
+{
+	unsigned char* body = *reinterpret_cast<unsigned char**>(
+		reinterpret_cast<unsigned char*>(actor) + 0x14);
+	unsigned char* record = *reinterpret_cast<unsigned char**>(body + 8);
+	printf("cmass %s transform=%x.%x.%x.%x.%x.%x.%x.%x.%x.%x.%x.%x.%x.%x.%x.%x.%x.%x.%x.%x\n",
+		tag, word(record, 0x18), word(record, 0x1c), word(record, 0x20),
+		word(record, 0x24), word(record, 0x28), word(record, 0x2c), word(record, 0x30),
+		word(record, 0x50), word(record, 0x54), word(record, 0x58),
+		word(record, 0x5c), word(record, 0x60), word(record, 0x64), word(record, 0x68),
+		word(record, 0x100), word(record, 0x104), word(record, 0x108),
+		word(record, 0x158), word(record, 0x15c), word(record, 0x160));
+}
 int wmain(int argc, wchar_t** argv)
 {
 	setvbuf(stdout, 0, _IONBF, 0);
@@ -124,6 +137,24 @@ int wmain(int argc, wchar_t** argv)
 			actor->setCMassOffsetLocalPose(localPose);
 			probe("set_local_pose", actor);
 			recordState("set_local_pose", actor);
+			actor->setCMassOffsetGlobalPosition(NxVec3(7.0f, 8.0f, 9.0f));
+			probe("set_global_offset_position", actor);
+			pose("set_global_offset_position", "actor_pose", actor->getGlobalPose());
+			recordState("set_global_offset_position", actor);
+			transformState("set_global_offset_position", actor);
+			actor->setCMassOffsetGlobalOrientation(xRotation);
+			probe("set_global_offset_orientation", actor);
+			pose("set_global_offset_orientation", "actor_pose", actor->getGlobalPose());
+			recordState("set_global_offset_orientation", actor);
+			NxMat34 worldPose;
+			worldPose.id();
+			worldPose.M.setRow(0, NxVec3(0.0f, 0.0f, 1.0f));
+			worldPose.M.setRow(2, NxVec3(-1.0f, 0.0f, 0.0f));
+			worldPose.t = NxVec3(8.0f, 9.0f, 10.0f);
+			actor->setCMassOffsetGlobalPose(worldPose);
+			probe("set_global_offset_pose", actor);
+			pose("set_global_offset_pose", "actor_pose", actor->getGlobalPose());
+			recordState("set_global_offset_pose", actor);
 		}
 		scene->releaseActor(*actor);
 	}

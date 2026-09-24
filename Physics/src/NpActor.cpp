@@ -572,16 +572,23 @@ void NpActorVtable::setDynamic(const NxBodyDesc&)
 static void nxNpActorRefreshCMass(unsigned char* record)
 	{
 	float rotation[9];
-	nxNpActorRotationFromQuaternion(record, rotation);
+	nxNpActorRotationFromQuaternionAt(record, 0x24, rotation);
 	const float* local = reinterpret_cast<const float*>(record + 0x100);
-	const float* actorPosition = reinterpret_cast<const float*>(record + 0x50);
+	const float* actorPosition = reinterpret_cast<const float*>(record + 0x18);
 	float* world = reinterpret_cast<float*>(record + 0x158);
-	for(unsigned row = 0; row < 3; ++row)
-		world[row] = static_cast<float>(
-			static_cast<double>(rotation[row * 3 + 2]) * local[2] +
-			static_cast<double>(rotation[row * 3 + 1]) * local[1] +
-			static_cast<double>(rotation[row * 3]) * local[0] +
-			actorPosition[row]);
+	world[0] = static_cast<float>(
+		static_cast<double>(rotation[2]) * local[2] +
+		static_cast<double>(rotation[1]) * local[1] +
+		static_cast<double>(rotation[0]) * local[0] + actorPosition[0]);
+	const volatile float yTranslationAndX = static_cast<float>(actorPosition[1] +
+		static_cast<double>(rotation[3]) * local[0]);
+	world[1] = static_cast<float>(static_cast<double>(yTranslationAndX) +
+		static_cast<double>(rotation[5]) * local[2] +
+		static_cast<double>(rotation[4]) * local[1]);
+	world[2] = static_cast<float>(actorPosition[2] +
+		static_cast<double>(rotation[6]) * local[0] +
+		static_cast<double>(rotation[8]) * local[2] +
+		static_cast<double>(rotation[7]) * local[1]);
 	nxNpActorUpdateInertiaMatrices(record);
 	nxNpActorUpdateCMassQuaternion(record);
 	}
@@ -648,22 +655,84 @@ void NpActorVtable::setCMassOffsetLocalOrientation(const NxMat33& orientation)
 	nxNpSceneGuardLeave(ctx);
 	}
 
-// (unimplemented) setCMassOffsetGlobalPose
-void NpActorVtable::setCMassOffsetGlobalPose(const NxMat34&)
+static void nxNpActorStoreGlobalMassPosition(unsigned char* record,
+	const NxVec3& worldPosition)
 	{
-	
+	float rotation[9];
+	nxNpActorRotationFromQuaternion(record, rotation);
+	const float* actorPosition = reinterpret_cast<const float*>(record + 0x50);
+	const float delta[3] = {worldPosition.x - actorPosition[0],
+		worldPosition.y - actorPosition[1],
+		worldPosition.z - actorPosition[2]};
+	float* local = reinterpret_cast<float*>(record + 0x100);
+	for(unsigned col = 0; col < 3; ++col)
+		local[col] = static_cast<float>(
+			static_cast<double>(rotation[col]) * delta[0] +
+			static_cast<double>(rotation[3 + col]) * delta[1] +
+			static_cast<double>(rotation[6 + col]) * delta[2]);
+	nxNpActorMarkRecordDirty(record, 0x200);
+	++*reinterpret_cast<unsigned*>(record + 0x198);
 	}
 
-// (unimplemented) setCMassOffsetGlobalPosition
-void NpActorVtable::setCMassOffsetGlobalPosition(const NxVec3&)
+static void nxNpActorStoreGlobalMassOrientation(unsigned char* record,
+	const NxMat33& worldOrientation)
 	{
-	
+	float rotation[9];
+	float requested[9];
+	nxNpActorRotationFromQuaternion(record, rotation);
+	worldOrientation.getRowMajor(requested);
+	float* local = reinterpret_cast<float*>(record + 0xdc);
+	for(unsigned row = 0; row < 3; ++row)
+		for(unsigned col = 0; col < 3; ++col)
+			local[row * 3 + col] = static_cast<float>(
+				static_cast<double>(rotation[6 + row]) * requested[6 + col] +
+				static_cast<double>(rotation[3 + row]) * requested[3 + col] +
+				static_cast<double>(rotation[row]) * requested[col]);
+	nxNpActorMarkRecordDirty(record, 0x400);
+	++*reinterpret_cast<unsigned*>(record + 0x198);
 	}
 
-// (unimplemented) setCMassOffsetGlobalOrientation
-void NpActorVtable::setCMassOffsetGlobalOrientation(const NxMat33&)
+void NpActorVtable::setCMassOffsetGlobalPose(const NxMat34& pose)
 	{
-	
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	unsigned char* record = nxNpActorRecord(this);
+	if(record && (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u) == 0)
+		{
+		nxNpActorStoreGlobalMassPosition(record, pose.t);
+		nxNpActorStoreGlobalMassOrientation(record, pose.M);
+		nxNpActorRefreshCMass(record);
+		nxNpActorWakeAfterCMassWrite(record);
+		}
+	nxNpSceneGuardLeave(ctx);
+	}
+
+void NpActorVtable::setCMassOffsetGlobalPosition(const NxVec3& position)
+	{
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	unsigned char* record = nxNpActorRecord(this);
+	if(record && (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u) == 0)
+		{
+		nxNpActorStoreGlobalMassPosition(record, position);
+		nxNpActorRefreshCMass(record);
+		nxNpActorWakeAfterCMassWrite(record);
+		}
+	nxNpSceneGuardLeave(ctx);
+	}
+
+void NpActorVtable::setCMassOffsetGlobalOrientation(const NxMat33& orientation)
+	{
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	unsigned char* record = nxNpActorRecord(this);
+	if(record && (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u) == 0)
+		{
+		nxNpActorStoreGlobalMassOrientation(record, orientation);
+		nxNpActorRefreshCMass(record);
+		nxNpActorWakeAfterCMassWrite(record);
+		}
+	nxNpSceneGuardLeave(ctx);
 	}
 
 // (unimplemented) setCMassGlobalPose

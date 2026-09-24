@@ -1785,6 +1785,7 @@ int nxActorComputeMass(void* actor, const unsigned* bodyWord)
 
 	// The translation and matrix were copied from the descriptor into body.
 	memcpy(record + 0x50, body + 0x44, 12);
+	memcpy(record + 0x18, body + 0x44, 12);
 
 	// The dynamic record carries a quaternion at +0x5c with w last. Convert
 	// the descriptor's matrix already copied to body+0x20. The shipped path
@@ -1796,6 +1797,7 @@ int nxActorComputeMass(void* actor, const unsigned* bodyWord)
 	*reinterpret_cast<float*>(record + 0x60) = quaternion.y;
 	*reinterpret_cast<float*>(record + 0x64) = quaternion.z;
 	*reinterpret_cast<float*>(record + 0x68) = quaternion.w;
+	memcpy(record + 0x24, record + 0x5c, sizeof(quaternion));
 
 	*reinterpret_cast<void**>(record + 0x19c) = body;
 	*reinterpret_cast<void**>(body + 0x08) = record;
@@ -1808,12 +1810,18 @@ int nxActorComputeMass(void* actor, const unsigned* bodyWord)
 	nxNpActorRotationFromQuaternion(record, pose);
 	const float* translation = reinterpret_cast<const float*>(body + 0x44);
 	float* worldCenter = reinterpret_cast<float*>(record + 0x158);
-	for(unsigned row = 0; row < 3; ++row)
-		worldCenter[row] = static_cast<float>(
-			static_cast<double>(pose[row * 3 + 2]) * massTranslation.z +
-			static_cast<double>(pose[row * 3 + 1]) * massTranslation.y +
-			static_cast<double>(pose[row * 3]) * massTranslation.x +
-			translation[row]);
+	worldCenter[0] = static_cast<float>(
+		static_cast<double>(pose[2]) * massTranslation.z +
+		static_cast<double>(pose[1]) * massTranslation.y +
+		static_cast<double>(pose[0]) * massTranslation.x + translation[0]);
+	worldCenter[1] = static_cast<float>(translation[1] +
+		static_cast<double>(pose[3]) * massTranslation.x +
+		static_cast<double>(pose[5]) * massTranslation.z +
+		static_cast<double>(pose[4]) * massTranslation.y);
+	worldCenter[2] = static_cast<float>(translation[2] +
+		static_cast<double>(pose[6]) * massTranslation.x +
+		static_cast<double>(pose[8]) * massTranslation.z +
+		static_cast<double>(pose[7]) * massTranslation.y);
 	*reinterpret_cast<unsigned*>(record + 0x10c) = bodyDesc->flags;
 	*reinterpret_cast<unsigned char**>(record + 0x120) =
 		scene->at<unsigned char*>(0x48);
