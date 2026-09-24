@@ -52,7 +52,7 @@
 
 **M2 dynamic-first OPCODE pruner, 2026-09-24:** A separate fresh-process target now matches the oracle's 34-allocation, six-scratch-free first dynamic actor path, including the Scene cache arrays before the `0x3c` dynamic pruner, the shared OPCODE pool, the pending buffer, and the shape/pruner link. Five registered checks raise the Phase 5 floor to 337. See `docs/reconstruction/novodex-physics/evidence/phase5-dynamic-first-pruner.md`. The previous note's dynamic-first initialization gap is resolved for one box; spatial payloads, growth, multi-shape removal, internal virtuals, and teardown remain open.
 
-**M2 box group/material packet, 2026-09-24:** The public box final now routes `setGroup`, `getGroup`, `setMaterial`, and `getMaterial` through the internal shape, with group bitmask and scene dirty marking. A staged pair checks the default and a group-5/material-1 mutation; two registered lines raise the Phase 5 floor to 339. See `docs/reconstruction/novodex-physics/evidence/phase5-box-group-material.md`. This is a bounded slice of the final table, not closure of the box or shape family.
+**M2 box group/material packet, 2026-09-24:** The public box final now routes `setGroup`, `getGroup`, `setMaterial`, and `getMaterial` through the internal shape, with group bitmask and scene dirty marking. A staged pair checks the default, a group-5/material-1 mutation, and a second box created directly from group-7/material-2 descriptor values; four registered lines raise the Phase 5 floor to 341. See `docs/reconstruction/novodex-physics/evidence/phase5-box-group-material.md`. This is a bounded slice of the final table, not closure of the box or shape family.
 
 ## 1. Inputs and boundaries
 

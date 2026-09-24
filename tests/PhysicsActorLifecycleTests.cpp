@@ -885,6 +885,26 @@ int wmain(int argc, wchar_t** argv)
 			}
 		}
 
+	// A second creation proves descriptor values reach the internal shape before
+	// any public setter runs.
+	{
+		box.group = 7;
+		box.materialIndex = 2;
+		NxActor* descriptorActor = scene->createActor(dynamicDesc);
+		printf("actor box descriptor_created=%u\n", descriptorActor ? 1u : 0u);
+		if(descriptorActor)
+		{
+			NxShape* shape = descriptorActor->getShapes()[0];
+			const unsigned char* internalShape = *reinterpret_cast<unsigned char* const*>(
+				reinterpret_cast<const unsigned char*>(shape) + 0x18);
+			printf("actor box descriptor=%u.%u.%x.%x\n",
+				static_cast<unsigned>(shape->getGroup()),
+				static_cast<unsigned>(shape->getMaterial()),
+				*reinterpret_cast<const unsigned*>(internalShape + 0xc8),
+				*reinterpret_cast<const unsigned*>(internalShape + 0xd8));
+			}
+		}
+
 	sdk->releaseScene(*scene);
 	sdk->release();
 	return nxReportPairIdentity(pairDirectory);
