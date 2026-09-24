@@ -33,6 +33,7 @@
 #include "NxBoxShapeDesc.h"
 #include "NxActor.h"
 #include "NpActor.h"
+#include "NpActorDynamicMath.h"
 #include "NpScene.h"
 #include "NxJointDesc.h"
 #include "NxJoint.h"
@@ -1795,6 +1796,9 @@ int nxActorComputeMass(void* actor, const unsigned* bodyWord)
 	*reinterpret_cast<float*>(record + 0x60) = quaternion.y;
 	*reinterpret_cast<float*>(record + 0x64) = quaternion.z;
 	*reinterpret_cast<float*>(record + 0x68) = quaternion.w;
+	*reinterpret_cast<float*>(record + 0xdc) = 1.0f;
+	*reinterpret_cast<float*>(record + 0xec) = 1.0f;
+	*reinterpret_cast<float*>(record + 0xfc) = 1.0f;
 
 	*reinterpret_cast<void**>(record + 0x19c) = body;
 	*reinterpret_cast<void**>(body + 0x08) = record;
@@ -1814,6 +1818,10 @@ int nxActorComputeMass(void* actor, const unsigned* bodyWord)
 	// negative. These are 0.15^2 and 0.14^2 in the shipped binary.
 	*reinterpret_cast<unsigned*>(record + 0xd0) = 0x3cb851ecu;
 	*reinterpret_cast<unsigned*>(record + 0xd4) = 0x3ca0902eu;
+	const float maxAngularVelocity = bodyDesc->maxAngularVelocity > 0.0f
+		? bodyDesc->maxAngularVelocity : 7.0f;
+	*reinterpret_cast<float*>(record + 0xd8) =
+		maxAngularVelocity * maxAngularVelocity;
 	if(bodyDesc->sleepLinearVelocity > 0.0f)
 		*reinterpret_cast<float*>(record + 0xd0) =
 			bodyDesc->sleepLinearVelocity * bodyDesc->sleepLinearVelocity;
@@ -1862,6 +1870,7 @@ int nxActorComputeMass(void* actor, const unsigned* bodyWord)
 		*reinterpret_cast<float*>(record + 0xcc) =
 			1.0f / inertia.z;
 		}
+	nxNpActorUpdateInertiaMatrices(record);
 	nxSceneAuxRegisterRecord(scene, record);
 
 	return 0;

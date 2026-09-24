@@ -242,6 +242,10 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_include_directories(NxPhysicsActorDynamicSetterTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include)
 	target_link_libraries(NxPhysicsActorDynamicSetterTests bcrypt)
+	add_executable(NxPhysicsActorMomentumTests tests/PhysicsActorMomentumTests.cpp)
+	target_include_directories(NxPhysicsActorMomentumTests PRIVATE
+		Foundation/include Foundation/src/include Physics/include)
+	target_link_libraries(NxPhysicsActorMomentumTests bcrypt)
 	# The same include set as the oracle target above; the harness includes the
 	# Foundation's allocator interface for the page-guarded allocator, and Physics'
 	# public headers for the descriptors.

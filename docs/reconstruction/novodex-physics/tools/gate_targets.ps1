@@ -14,7 +14,7 @@ $NxPhaseTestTargets = [ordered] @{
     '2' = @('NxPhysicsExportTests', 'NxPhysicsSDKTests', 'NxPhysicsCoreClusterTests')
     '3' = @('NxPhysicsGeometryTests', 'NxPhysicsKernelFuzzTests')
     '4' = @()
-    '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests')
+    '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests')
     '6' = @('NxPhysicsJointStagedPairTests')
     '7' = @('NxPhysicsJointStagedPairTests')
     '8' = @()
@@ -87,6 +87,42 @@ $NxPhaseOracleDifferentialTargets = [ordered] @{
 # from 89978 to 3521 and leaves stdout_delta at 0, and this is what turns that
 # from a silent pass into a failure.
 $NxRequiredCoverageLines = [ordered] @{
+    'NxPhysicsActorMomentumTests' = @(
+        'momentum created=1',
+        'momentum inverse_tensor=3f000000.0.0.0.3eaaaaab.0.0.0.3e800000',
+        'momentum rotation_matrix=3f800000.0.0.0.3f800000.0.0.0.3f800000',
+        'momentum inertia_frame=3f800000.0.0.0.3f800000.0.0.0.3f800000',
+        'momentum initial_limit=42440000',
+        'momentum linear_initial=40a00000.41200000.41700000',
+        'momentum angular_initial=41000000.41700000.41c00000',
+        'momentum energy_initial=43208000',
+        'momentum max_angular=42a20000',
+        'momentum linear_set=41200000.41700000.41a00000',
+        'momentum linear_velocity=40000000.40400000.40800000',
+        'momentum linear_record=40000000.40400000.40800000.40000000.40400000.40800000',
+        'momentum angular_set=41200000.41900000.41e00000',
+        'momentum angular_velocity=40a00000.40c00000.40e00000',
+        'momentum angular_record=40a00000.40c00000.40e00000.40a00000.40c00000.40e00000',
+        'momentum energy_set=43798000',
+        'momentum mutation_allocs=0.0',
+        'momentum dirty_limit=8000.2.1',
+        'momentum dirty_linear=4.2.1',
+        'momentum dirty_angular=8.2.1',
+        'momentum kinematic_angular=40c00000.40e00000.41000000.40c00000.40e00000.41000000',
+        'momentum kinematic_linear=0.0.0',
+        'momentum rotated_created=1',
+        'momentum rotated_quaternion=0.0.3f3504f3.3f3504f3',
+        'momentum rotated_inverse=3eaaaaa9.31c40392.0.31c40392.3efffffe.0.0.0.3e800000',
+        'momentum rotated_rotation=331302ae.bf7fffff.0.3f7fffff.331302ae.0.0.0.3f800000',
+        'momentum rotated_frame=3f800000.0.0.0.3f800000.0.0.0.3f800000',
+        'momentum rotated_angular_initial=413ffffe.411fffff.41c00000',
+        'momentum rotated_angular_set=418ffffd.419ffffe.41e00000',
+        'momentum rotated_angular_velocity=40bffffe.411fffff.40e00000',
+        'momentum rotated_energy=439f7fff',
+        'momentum rotated_changed_inverse=3eaaaaa9.31c40392.0.31c40392.3efffffe.0.0.0.3e800000',
+        'momentum rotated_changed_angular=41effffa.41effffc.42440000',
+        'momentum rotated_changed_velocity=40d55554.4127ffff.40e00000'
+    )
     'NxPhysicsActorDynamicSetterTests' = @(
         'setter created=1',
         'setter initial_wake=3ecccccc.3ecccccc.3cb851ec.3ca0902e',
@@ -1313,7 +1349,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 101  # 34 for NxPhysicsAssetTests, 67 for NxPhysicsThirdPartyTests
-    '5' = 459  # 126 object-layout assertions plus 333 public actor/pruner/box/scene lines
+    '5' = 493  # 126 object-layout assertions plus 367 public actor/pruner/box/scene lines
                # (RED on purpose: vtables family open)
     '6' = 11  # 3 oracle-descriptor + 4 oracle-joint + 4 staged-pair-joint
     '7' = 4   # the four STAGED-PAIR assertions; the oracle-differential assertions
@@ -1343,6 +1379,7 @@ $NxRegisteredTestTargets = @(
     'NxPhysicsActorBodyFlagTests',
     'NxPhysicsActorDynamicsTests',
     'NxPhysicsActorDynamicSetterTests',
+    'NxPhysicsActorMomentumTests',
     'NxPhysicsDynamicFirstTests',
     'NxPhysicsEmptySceneTests',
     'NxPhysicsCoreClusterTests',

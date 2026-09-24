@@ -9,10 +9,12 @@
 // why they are two things rather than one.
 
 #include "NpActor.h"
+#include "NpActorDynamicMath.h"
 #include "NpSceneGuard.h"
 
 #include "NxMat34.h"
 #include "NxMat33.h"
+#include "NxQuat.h"
 #include "NxVec3.h"
 #include "NxActorDesc.h"
 #include "NxBodyDesc.h"
@@ -799,34 +801,107 @@ NxVec3 NpActorVtable::getAngularVelocityVal() const
 	return out;
 	}
 
-// (unimplemented) setMaxAngularVelocity
-void NpActorVtable::setMaxAngularVelocity(NxReal)
+void NpActorVtable::setMaxAngularVelocity(NxReal limit)
 	{
-	
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	unsigned char* record = nxNpActorRecord(this);
+	if(record)
+		{
+		*reinterpret_cast<NxReal*>(record + 0xd8) = limit * limit;
+		nxNpActorMarkRecordDirty(record, 0x8000);
+		}
+	nxNpSceneGuardLeave(ctx);
 	}
 
-// (unimplemented) setLinearMomentum
-void NpActorVtable::setLinearMomentum(const NxVec3&)
+void NpActorVtable::setLinearMomentum(const NxVec3& momentum)
 	{
-	
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	unsigned char* record = nxNpActorRecord(this);
+	if(record)
+		{
+		const NxReal inverseMass = *reinterpret_cast<NxReal*>(record + 0xc0);
+		NxVec3 velocity(inverseMass * momentum.x,
+			inverseMass * momentum.y, inverseMass * momentum.z);
+		memcpy(record + 0x6c, &velocity, sizeof(velocity));
+		memcpy(record + 0x34, &velocity, sizeof(velocity));
+		nxNpActorMarkRecordDirty(record, 4);
+		}
+	nxNpSceneGuardLeave(ctx);
 	}
 
-// (unimplemented) setAngularMomentum
-void NpActorVtable::setAngularMomentum(const NxVec3&)
+void NpActorVtable::setAngularMomentum(const NxVec3& momentum)
 	{
-	
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	unsigned char* record = nxNpActorRecord(this);
+	if(record && (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u) == 0)
+		{
+		const NxReal* inverse = reinterpret_cast<const NxReal*>(record + 0x164);
+		NxVec3 velocity(
+			static_cast<NxReal>(static_cast<double>(inverse[0]) * momentum.x +
+				static_cast<double>(inverse[2]) * momentum.z +
+				static_cast<double>(inverse[1]) * momentum.y),
+			static_cast<NxReal>(static_cast<double>(inverse[5]) * momentum.z +
+				static_cast<double>(inverse[3]) * momentum.x +
+				static_cast<double>(inverse[4]) * momentum.y),
+			static_cast<NxReal>(static_cast<double>(inverse[8]) * momentum.z +
+				static_cast<double>(inverse[6]) * momentum.x +
+				static_cast<double>(inverse[7]) * momentum.y));
+		memcpy(record + 0x78, &velocity, sizeof(velocity));
+		memcpy(record + 0x40, &velocity, sizeof(velocity));
+		nxNpActorMarkRecordDirty(record, 8);
+		}
+	nxNpSceneGuardLeave(ctx);
 	}
 
-// (unimplemented) getLinearMomentumVal
 NxVec3 NpActorVtable::getLinearMomentumVal() const
 	{
-	return NxVec3();
+	void* self = const_cast<NpActorVtable*>(this);
+	void* ctx = nxNpActorContext(self, 0x10);
+	nxNpSceneGuardEnter(ctx);
+	unsigned char* record = nxNpActorRecord(self);
+	NxVec3 out(0.0f, 0.0f, 0.0f);
+	if(record)
+		{
+		const NxReal mass = *reinterpret_cast<NxReal*>(record + 0x188);
+		const NxReal* velocity = reinterpret_cast<const NxReal*>(record + 0x6c);
+		out = NxVec3(mass * velocity[0], mass * velocity[1], mass * velocity[2]);
+		}
+	nxNpSceneGuardLeave(ctx);
+	return out;
 	}
 
-// (unimplemented) getAngularMomentumVal
 NxVec3 NpActorVtable::getAngularMomentumVal() const
 	{
-	return NxVec3();
+	void* self = const_cast<NpActorVtable*>(this);
+	void* ctx = nxNpActorContext(self, 0x10);
+	nxNpSceneGuardEnter(ctx);
+	unsigned char* record = nxNpActorRecord(self);
+	NxVec3 out(0.0f, 0.0f, 0.0f);
+	if(record)
+		{
+		float tensor[9];
+		NxQuat quaternion;
+		memcpy(&quaternion, record + 0x5c, sizeof(quaternion));
+		NxMat33 bodyRotation(quaternion);
+		NxMat33 inertiaFrame;
+		inertiaFrame.setRowMajor(reinterpret_cast<const float*>(record + 0xdc));
+		NxMat33 worldRotation;
+		worldRotation.multiply(bodyRotation, inertiaFrame);
+		float rotation[9];
+		worldRotation.getRowMajor(rotation);
+		nxNpActorWorldTensor(reinterpret_cast<const float*>(record + 0x18c),
+			rotation, tensor);
+		const float* v = reinterpret_cast<const float*>(record + 0x78);
+		out = NxVec3(
+			tensor[0] * v[0] + tensor[1] * v[1] + tensor[2] * v[2],
+			tensor[3] * v[0] + tensor[4] * v[1] + tensor[5] * v[2],
+			tensor[6] * v[0] + tensor[7] * v[1] + tensor[8] * v[2]);
+		}
+	nxNpSceneGuardLeave(ctx);
+	return out;
 	}
 
 // (unimplemented) addForceAtPos
@@ -877,10 +952,31 @@ void NpActorVtable::addLocalTorque(const NxVec3&, NxForceMode mode )
 	
 	}
 
-// (unimplemented) computeKineticEnergy
 NxReal NpActorVtable::computeKineticEnergy() const
 	{
-	return NxReal();
+	void* self = const_cast<NpActorVtable*>(this);
+	void* ctx = nxNpActorContext(self, 0x10);
+	nxNpSceneGuardEnter(ctx);
+	unsigned char* record = nxNpActorRecord(self);
+	NxReal energy = 0.0f;
+	if(record)
+		{
+		const float* linear = reinterpret_cast<const float*>(record + 0x6c);
+		const float* angular = reinterpret_cast<const float*>(record + 0x78);
+		const float mass = *reinterpret_cast<const float*>(record + 0x188);
+		const float* inertia = reinterpret_cast<const float*>(record + 0x18c);
+		const double rotational =
+			static_cast<double>(inertia[0]) * angular[0] * angular[0] +
+			static_cast<double>(inertia[1]) * angular[1] * angular[1] +
+			static_cast<double>(inertia[2]) * angular[2] * angular[2];
+		const double translational =
+			(static_cast<double>(linear[0]) * linear[0] +
+			static_cast<double>(linear[1]) * linear[1] +
+			static_cast<double>(linear[2]) * linear[2]) * mass;
+		energy = static_cast<NxReal>((rotational + translational) * 0.5);
+		}
+	nxNpSceneGuardLeave(ctx);
+	return energy;
 	}
 
 // (unimplemented) getLocalPointVelocityVal
