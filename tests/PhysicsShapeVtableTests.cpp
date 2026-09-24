@@ -1533,6 +1533,89 @@ int wmain(int argc, wchar_t** argv)
         }
         ++cases;
     }
+    // MESH slot 7: no classifier returns the mesh's +0x68 word and false.
+    // A classifier with a prepared plane table transforms the input point,
+    // selects a plane, and writes the ray/plane distance before returning true.
+    typedef bool (__thiscall* MeshSweepSlot)(void*, float*, const float*);
+    for(unsigned sample = 0; sample < 24; ++sample) {
+        const bool prepared = sample >= 4;
+        unsigned char oracleShape[0xe8] = {}, candidateShape[0xe8] = {};
+        unsigned char oracleMesh[0xb0] = {}, candidateMesh[0xb0] = {};
+        unsigned char oracleTree[0x40] = {}, candidateTree[0x40] = {};
+        unsigned char oracleClassifier[0x20] = {}, candidateClassifier[0x20] = {};
+        unsigned char oraclePlanes[0xb0] = {}, candidatePlanes[0xb0] = {};
+        unsigned char map[54] = {};
+        for(unsigned k = 0; k < 54; ++k)
+            map[k] = static_cast<unsigned char>(k % 3);
+        const unsigned meshWord = 0x3f400000u + sample;
+        memcpy(oracleMesh + 0x68, &meshWord, 4);
+        memcpy(candidateMesh + 0x68, &meshWord, 4);
+        for(unsigned side = 0; side < 2; ++side) {
+            unsigned char* shape = side ? candidateShape : oracleShape;
+            unsigned char* mesh = side ? candidateMesh : oracleMesh;
+            unsigned char* tree = side ? candidateTree : oracleTree;
+            unsigned char* classifier = side ? candidateClassifier : oracleClassifier;
+            unsigned char* planes = side ? candidatePlanes : oraclePlanes;
+            void* pointer = mesh;
+            memcpy(shape + 0xe0, &pointer, 4);
+            if(prepared) {
+                pointer = tree;
+                memcpy(mesh + 0xa0, &pointer, 4);
+                pointer = classifier;
+                memcpy(mesh + 0xac, &pointer, 4);
+                const unsigned bins = 1 + sample % 3;
+                memcpy(classifier + 4, &bins, 4);
+                pointer = map;
+                memcpy(classifier + 0x0c, &pointer, 4);
+                pointer = planes;
+                memcpy(tree + 0x28, &pointer, 4);
+                for(unsigned p = 0; p < 3; ++p) {
+                    const float normal[3] = {
+                        0.13f * (p + 1), -0.21f + 0.04f * p,
+                        1.07f - 0.05f * p
+                    };
+                    const float planeD = -1.37f + 0.19f * p;
+                    memcpy(planes + 0x0c + p*0x24, normal,
+                        sizeof(normal));
+                    memcpy(planes + 0x18 + p*0x24, &planeD, 4);
+                }
+                const float origin[3] = {0.11f, -0.23f, 0.37f};
+                memcpy(tree + 0x18, origin, sizeof(origin));
+                for(unsigned row = 0; row < 3; ++row) {
+                    for(unsigned col = 0; col < 3; ++col) {
+                        const float value = row == col ?
+                            0.81f + 0.017f * sample :
+                            ((row + col + sample) % 2 ? -1.0f : 1.0f) *
+                            0.047f * (row + col + 1);
+                        memcpy(shape + 0x0c + 12*row + 4*col, &value, 4);
+                    }
+                    const float translation =
+                        (row + 1) * (sample + 1) * 0.083f;
+                    memcpy(shape + 0x30 + 4*row, &translation, 4);
+                }
+            }
+        }
+        const float input[3] = {
+            1.1f + 0.091f * sample, -0.6f + 0.071f * sample,
+            2.3f + 0.047f * sample
+        };
+        unsigned oracleOut[2] = {0xcdcdcdcdu, 0xa5a5a5a5u};
+        unsigned candidateOut[2] = {0xcdcdcdcdu, 0xa5a5a5a5u};
+        const bool ro = reinterpret_cast<MeshSweepSlot>(
+            const_cast<unsigned char*>(base) + 0x29610)(
+            oracleShape, reinterpret_cast<float*>(oracleOut), input);
+        const bool rc = reinterpret_cast<MeshShape*>(candidateShape)->
+            nxMeshSweepPrepared(reinterpret_cast<float*>(candidateOut), input);
+        oracleDigest = foldOracle(oracleDigest, &ro, sizeof(ro));
+        oracleDigest = foldOracle(oracleDigest, oracleOut, sizeof(oracleOut));
+        if(ro != rc || memcmp(oracleOut, candidateOut,
+                sizeof(oracleOut)) != 0) {
+            fprintf(stderr, "mesh slot 7 prepared=%u sample=%u differs\n",
+                prepared ? 1u : 0u, sample);
+            ++failures;
+        }
+        ++cases;
+    }
     nxSetSdkAllocatorBridge(0);
     printf("shape vtable oracle_digest=%08x cases=%u failures=%u\n",
         oracleDigest, cases, failures);

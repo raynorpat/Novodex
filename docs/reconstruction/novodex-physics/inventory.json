@@ -25602,7 +25602,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3609",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Null-classifier and prepared-plane arms are differentially checked in MeshShape::nxMeshSweepPrepared; lazy plane-table builder 0x2b6f0 is not reconstructed."
     },
     {
       "id": "phys_fn_001408",

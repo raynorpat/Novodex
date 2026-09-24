@@ -2135,6 +2135,10 @@ class MeshShape
 	//! the mesh's neighbor graph when present, otherwise the local bounds.
 	void				nxMeshWorldAABB(float* out) const;
 
+	//! MESH-table slot 7, phys_fn_001407 (0x00029610), for a null
+	//! classifier or a classifier whose tree plane table is already built.
+	bool				nxMeshSweepPrepared(float* out, const float* point) const;
+
 	//! MESH-table slot 12, phys_fn_001383: loadFromDesc. The record holds
 	//! a wrapper pointer; stores *(wrapper+4) at +0xe0 and increments the
 	//! inner object refcount at +0x74.

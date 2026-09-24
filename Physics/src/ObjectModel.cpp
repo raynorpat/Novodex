@@ -9,6 +9,9 @@
 #include "Containers.h"
 #include "MemoryStream.h"
 #include "NxIntersectionSegmentBox.h"
+#include "NxIntersectionRayPlane.h"
+#include "NxRay.h"
+#include "NxPlane.h"
 #include "ContactGeneration.h"
 #include "NxUtilities.h"
 
@@ -5778,6 +5781,75 @@ void MeshShape::nxMeshWorldAABB(float* out) const
 			static_cast<double>(vertex[1]) * row[1] +
 			static_cast<double>(vertex[0]) * row[0] + t[axis]);
 		}
+	}
+
+// phys_fn_001407 (0x00029610), MESH-table slot 7. The prepared-tree arm
+// chooses a plane from the direction lattice at mesh+0xac and computes a
+// ray/plane distance. The separate lazy plane-table builder at 0x2b6f0 is
+// not part of this member yet; callers must supply tree+0x28 when the
+// classifier is non-null.
+bool MeshShape::nxMeshSweepPrepared(float* out, const float* point) const
+	{
+	const unsigned char* mesh = reinterpret_cast<const unsigned char*>(mWordE0);
+	const unsigned char* classifier =
+		*reinterpret_cast<const unsigned char* const*>(mesh + 0xac);
+	if(classifier == nullptr)
+		{
+		memcpy(out, mesh + 0x68, 4);
+		return false;
+		}
+	const float* r = reinterpret_cast<const float*>(mBase.mPose0C.mRotation);
+	const float* t = mBase.mPose0C.mTranslation;
+	const double dx = static_cast<double>(point[0]) - t[0];
+	const float dy = static_cast<float>(static_cast<double>(point[1]) - t[1]);
+	const float dz = static_cast<float>(static_cast<double>(point[2]) - t[2]);
+	float direction[3];
+	direction[0] = static_cast<float>(
+		static_cast<double>(dz) * r[6] +
+		static_cast<double>(dy) * r[3] + dx * r[0]);
+	direction[1] = static_cast<float>(
+		static_cast<double>(dz) * r[7] + dx * r[1] +
+		static_cast<double>(dy) * r[4]);
+	direction[2] = static_cast<float>(
+		static_cast<double>(dz) * r[8] + dx * r[2] +
+		static_cast<double>(dy) * r[5]);
+	unsigned axis = 0;
+	if(fabsf(direction[axis]) < fabsf(direction[1]))
+		axis = 1;
+	if(fabsf(direction[axis]) < fabsf(direction[2]))
+		axis = 2;
+	const unsigned face = axis * 2 + (signbit(direction[axis]) ? 1u : 0u);
+	const unsigned first = (axis + 1) % 3;
+	const unsigned second = (axis + 2) % 3;
+	const unsigned bins = *reinterpret_cast<const unsigned*>(classifier + 4);
+	const double scale = static_cast<double>(bins - 1u) * 0.5;
+	const double inv = 1.0 / fabs(static_cast<double>(direction[axis]));
+	const float a = static_cast<float>(direction[first] * inv);
+	const float b = static_cast<float>(direction[second] * inv);
+	const float scaledA = static_cast<float>((static_cast<double>(a) + 1.0) * scale);
+	const float scaledB = static_cast<float>((static_cast<double>(b) + 1.0) * scale);
+	unsigned bucketA = static_cast<unsigned>(nearbyintf(scaledA));
+	unsigned bucketB = static_cast<unsigned>(nearbyintf(scaledB));
+	if(static_cast<double>(scaledA) - bucketA > 0.5)
+		++bucketA;
+	if(static_cast<double>(scaledB) - bucketB > 0.5)
+		++bucketB;
+	const unsigned index = (face * bins + bucketA) * bins + bucketB;
+	const unsigned char* map =
+		*reinterpret_cast<const unsigned char* const*>(classifier + 0x0c);
+	const unsigned planeIndex = map[index];
+	const unsigned char* tree =
+		*reinterpret_cast<const unsigned char* const*>(mesh + 0xa0);
+	const unsigned char* planes =
+		*reinterpret_cast<const unsigned char* const*>(tree + 0x28);
+	const NxPlane& plane = *reinterpret_cast<const NxPlane*>(
+		planes + planeIndex * 0x24 + 0x0c);
+	NxRay ray;
+	memcpy(&ray.orig, tree + 0x18, 12);
+	ray.dir.set(direction[0], direction[1], direction[2]);
+	NxVec3 impact;
+	NxRayPlaneIntersect(ray, plane, *out, impact);
+	return true;
 	}
 
 // ---------------------------------------------------------------------------
