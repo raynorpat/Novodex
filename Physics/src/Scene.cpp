@@ -1796,14 +1796,12 @@ int nxActorComputeMass(void* actor, const unsigned* bodyWord)
 	*reinterpret_cast<float*>(record + 0x60) = quaternion.y;
 	*reinterpret_cast<float*>(record + 0x64) = quaternion.z;
 	*reinterpret_cast<float*>(record + 0x68) = quaternion.w;
-	*reinterpret_cast<float*>(record + 0xdc) = 1.0f;
-	*reinterpret_cast<float*>(record + 0xec) = 1.0f;
-	*reinterpret_cast<float*>(record + 0xfc) = 1.0f;
 
 	*reinterpret_cast<void**>(record + 0x19c) = body;
 	*reinterpret_cast<void**>(body + 0x08) = record;
 	NxSceneInternal* scene = *reinterpret_cast<NxSceneInternal**>(actorBytes + 4);
 	const NxBodyDesc* bodyDesc = reinterpret_cast<const NxBodyDesc*>(*bodyWord);
+	bodyDesc->massLocalPose.M.getRowMajor(reinterpret_cast<float*>(record + 0xdc));
 	*reinterpret_cast<unsigned*>(record + 0x10c) = bodyDesc->flags;
 	*reinterpret_cast<unsigned char**>(record + 0x120) =
 		scene->at<unsigned char*>(0x48);

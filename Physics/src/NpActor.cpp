@@ -36,6 +36,38 @@ static unsigned char* nxNpActorRecord(void* actor)
 	return body ? *reinterpret_cast<unsigned char**>(body + 8) : 0;
 	}
 
+static NxMat33 nxNpActorInstantTensor(const unsigned char* record,
+	unsigned diagonalOffset, bool roundedQuaternionProducts)
+	{
+	// The momentum getter stores quaternion products as floats before its
+	// matrix multiply; the public tensor getters retain x87 precision longer.
+	NxMat33 out(NX_IDENTITY_MATRIX);
+	if(!record) return out;
+	float bodyElements[9];
+	if(roundedQuaternionProducts)
+		{
+		NxQuat quaternion;
+		memcpy(&quaternion, record + 0x5c, sizeof(quaternion));
+		NxMat33 fromQuaternion(quaternion);
+		fromQuaternion.getRowMajor(bodyElements);
+		}
+	else
+		nxNpActorRotationFromQuaternion(record, bodyElements);
+	NxMat33 bodyRotation;
+	bodyRotation.setRowMajor(bodyElements);
+	NxMat33 inertiaFrame;
+	inertiaFrame.setRowMajor(reinterpret_cast<const float*>(record + 0xdc));
+	NxMat33 worldRotation;
+	worldRotation.multiply(bodyRotation, inertiaFrame);
+	float rotation[9];
+	worldRotation.getRowMajor(rotation);
+	float tensor[9];
+	nxNpActorWorldTensor(reinterpret_cast<const float*>(record + diagonalOffset),
+		rotation, tensor);
+	out.setRowMajor(tensor);
+	return out;
+	}
+
 static void* nxNpActorContext(void* actor, unsigned offset)
 	{
 	return *reinterpret_cast<void**>(static_cast<unsigned char*>(actor) + offset);
@@ -687,16 +719,24 @@ NxVec3 NpActorVtable::getMassSpaceInertiaTensorVal() const
 	return out;
 	}
 
-// (unimplemented) getGlobalInertiaTensorVal
 NxMat33 NpActorVtable::getGlobalInertiaTensorVal() const
 	{
-	return NxMat33();
+	void* self = const_cast<NpActorVtable*>(this);
+	void* ctx = nxNpActorContext(self, 0x10);
+	nxNpSceneGuardEnter(ctx);
+	NxMat33 out = nxNpActorInstantTensor(nxNpActorRecord(self), 0x18c, false);
+	nxNpSceneGuardLeave(ctx);
+	return out;
 	}
 
-// (unimplemented) getGlobalInertiaTensorInverseVal
 NxMat33 NpActorVtable::getGlobalInertiaTensorInverseVal() const
 	{
-	return NxMat33();
+	void* self = const_cast<NpActorVtable*>(this);
+	void* ctx = nxNpActorContext(self, 0x10);
+	nxNpSceneGuardEnter(ctx);
+	NxMat33 out = nxNpActorInstantTensor(nxNpActorRecord(self), 0xc4, false);
+	nxNpSceneGuardLeave(ctx);
+	return out;
 	}
 
 void NpActorVtable::setLinearDamping(NxReal damping)
@@ -882,18 +922,9 @@ NxVec3 NpActorVtable::getAngularMomentumVal() const
 	NxVec3 out(0.0f, 0.0f, 0.0f);
 	if(record)
 		{
+		NxMat33 world = nxNpActorInstantTensor(record, 0x18c, true);
 		float tensor[9];
-		NxQuat quaternion;
-		memcpy(&quaternion, record + 0x5c, sizeof(quaternion));
-		NxMat33 bodyRotation(quaternion);
-		NxMat33 inertiaFrame;
-		inertiaFrame.setRowMajor(reinterpret_cast<const float*>(record + 0xdc));
-		NxMat33 worldRotation;
-		worldRotation.multiply(bodyRotation, inertiaFrame);
-		float rotation[9];
-		worldRotation.getRowMajor(rotation);
-		nxNpActorWorldTensor(reinterpret_cast<const float*>(record + 0x18c),
-			rotation, tensor);
+		world.getRowMajor(tensor);
 		const float* v = reinterpret_cast<const float*>(record + 0x78);
 		out = NxVec3(
 			tensor[0] * v[0] + tensor[1] * v[1] + tensor[2] * v[2],

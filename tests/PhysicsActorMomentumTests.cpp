@@ -8,6 +8,7 @@
 #include "NxActor.h"
 #include "NxBodyDesc.h"
 #include "NxBoxShapeDesc.h"
+#include "NxMat33.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -33,6 +34,16 @@ static void printVector(const char* name, const NxVec3& value)
 {
 	printf("momentum %s=%x.%x.%x\n", name,
 		bits(value.x), bits(value.y), bits(value.z));
+}
+
+static void printMatrix(const char* name, const NxMat33& matrix)
+{
+	float values[9];
+	matrix.getRowMajor(values);
+	printf("momentum %s=%x.%x.%x.%x.%x.%x.%x.%x.%x\n", name,
+		bits(values[0]), bits(values[1]), bits(values[2]),
+		bits(values[3]), bits(values[4]), bits(values[5]),
+		bits(values[6]), bits(values[7]), bits(values[8]));
 }
 
 int wmain(int argc, wchar_t** argv)
@@ -84,6 +95,8 @@ int wmain(int argc, wchar_t** argv)
 	printf("momentum initial_limit=%x\n", word(record, 0xd8));
 	printVector("linear_initial", actor->getLinearMomentumVal());
 	printVector("angular_initial", actor->getAngularMomentumVal());
+	printMatrix("global_inertia_initial", actor->getGlobalInertiaTensorVal());
+	printMatrix("global_inverse_initial", actor->getGlobalInertiaTensorInverseVal());
 	printf("momentum energy_initial=%x\n", bits(actor->computeKineticEnergy()));
 	const unsigned beforeAlloc = allocator.allocations();
 	const unsigned beforeFree = allocator.frees();
@@ -163,6 +176,8 @@ int wmain(int argc, wchar_t** argv)
 		word(rotatedRecord, 0xe8), word(rotatedRecord, 0xec), word(rotatedRecord, 0xf0),
 		word(rotatedRecord, 0xf4), word(rotatedRecord, 0xf8), word(rotatedRecord, 0xfc));
 	printVector("rotated_angular_initial", rotated->getAngularMomentumVal());
+	printMatrix("rotated_global_inertia", rotated->getGlobalInertiaTensorVal());
+	printMatrix("rotated_global_inverse", rotated->getGlobalInertiaTensorInverseVal());
 	rotated->setAngularMomentum(NxVec3(18.0f, 20.0f, 28.0f));
 	printVector("rotated_angular_set", rotated->getAngularMomentumVal());
 	printVector("rotated_angular_velocity", rotated->getAngularVelocityVal());
@@ -173,9 +188,52 @@ int wmain(int argc, wchar_t** argv)
 		word(rotatedRecord, 0x170), word(rotatedRecord, 0x174), word(rotatedRecord, 0x178),
 		word(rotatedRecord, 0x17c), word(rotatedRecord, 0x180), word(rotatedRecord, 0x184));
 	printVector("rotated_changed_angular", rotated->getAngularMomentumVal());
+	printMatrix("rotated_changed_inertia", rotated->getGlobalInertiaTensorVal());
+	printMatrix("rotated_changed_global_inverse", rotated->getGlobalInertiaTensorInverseVal());
 	rotated->setAngularMomentum(NxVec3(20.0f, 21.0f, 28.0f));
 	printVector("rotated_changed_velocity", rotated->getAngularVelocityVal());
 	scene->releaseActor(*rotated);
+	actorDesc.globalPose.M.id();
+	bodyDesc.massLocalPose.M.setRow(0, NxVec3(1.0f, 0.0f, 0.0f));
+	bodyDesc.massLocalPose.M.setRow(1, NxVec3(0.0f, 0.0f, -1.0f));
+	bodyDesc.massLocalPose.M.setRow(2, NxVec3(0.0f, 1.0f, 0.0f));
+	NxActor* offset = scene->createActor(actorDesc);
+	printf("momentum offset_created=%u\n", offset ? 1u : 0u);
+	if(!offset) return nxFail("offset actor creation failed");
+	unsigned char* offsetBody = *reinterpret_cast<unsigned char**>(
+		reinterpret_cast<unsigned char*>(offset) + 0x14);
+	unsigned char* offsetRecord = *reinterpret_cast<unsigned char**>(offsetBody + 8);
+	printf("momentum offset_quaternion=%x.%x.%x.%x\n",
+		word(offsetRecord, 0x5c), word(offsetRecord, 0x60),
+		word(offsetRecord, 0x64), word(offsetRecord, 0x68));
+	printf("momentum offset_frame=%x.%x.%x.%x.%x.%x.%x.%x.%x\n",
+		word(offsetRecord, 0xdc), word(offsetRecord, 0xe0), word(offsetRecord, 0xe4),
+		word(offsetRecord, 0xe8), word(offsetRecord, 0xec), word(offsetRecord, 0xf0),
+		word(offsetRecord, 0xf4), word(offsetRecord, 0xf8), word(offsetRecord, 0xfc));
+	printf("momentum offset_rotation=%x.%x.%x.%x.%x.%x.%x.%x.%x\n",
+		word(offsetRecord, 0x134), word(offsetRecord, 0x138), word(offsetRecord, 0x13c),
+		word(offsetRecord, 0x140), word(offsetRecord, 0x144), word(offsetRecord, 0x148),
+		word(offsetRecord, 0x14c), word(offsetRecord, 0x150), word(offsetRecord, 0x154));
+	printf("momentum offset_inverse=%x.%x.%x.%x.%x.%x.%x.%x.%x\n",
+		word(offsetRecord, 0x164), word(offsetRecord, 0x168), word(offsetRecord, 0x16c),
+		word(offsetRecord, 0x170), word(offsetRecord, 0x174), word(offsetRecord, 0x178),
+		word(offsetRecord, 0x17c), word(offsetRecord, 0x180), word(offsetRecord, 0x184));
+	printMatrix("offset_global_inertia", offset->getGlobalInertiaTensorVal());
+	printMatrix("offset_global_inverse", offset->getGlobalInertiaTensorInverseVal());
+	printVector("offset_angular_initial", offset->getAngularMomentumVal());
+	offset->setAngularMomentum(NxVec3(8.0f, 15.0f, 24.0f));
+	printVector("offset_angular_velocity", offset->getAngularVelocityVal());
+	printf("momentum offset_energy=%x\n", bits(offset->computeKineticEnergy()));
+	scene->releaseActor(*offset);
+	NxActorDesc staticDesc;
+	staticDesc.shapes.pushBack(&box);
+	NxActor* staticActor = scene->createActor(staticDesc);
+	printf("momentum static_created=%u\n", staticActor ? 1u : 0u);
+	if(!staticActor) return nxFail("static actor creation failed");
+	printMatrix("static_global_inertia", staticActor->getGlobalInertiaTensorVal());
+	printMatrix("static_global_inverse", staticActor->getGlobalInertiaTensorInverseVal());
+	printf("momentum static_energy=%x\n", bits(staticActor->computeKineticEnergy()));
+	scene->releaseActor(*staticActor);
 	sdk->releaseScene(*scene);
 	sdk->release();
 	return nxReportPairIdentity(pairDirectory);

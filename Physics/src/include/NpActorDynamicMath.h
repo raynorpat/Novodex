@@ -49,7 +49,15 @@ static inline void nxNpActorUpdateInertiaMatrices(unsigned char* record)
 	{
 	float* rotation = reinterpret_cast<float*>(record + 0x134);
 	float* inverse = reinterpret_cast<float*>(record + 0x164);
-	nxNpActorRotationFromQuaternion(record, rotation);
+	float bodyRotation[9];
+	nxNpActorRotationFromQuaternion(record, bodyRotation);
+	const float* frame = reinterpret_cast<const float*>(record + 0xdc);
+	for(unsigned row = 0; row < 3; ++row)
+		for(unsigned col = 0; col < 3; ++col)
+			rotation[row * 3 + col] = static_cast<float>(
+				static_cast<double>(bodyRotation[row * 3]) * frame[col] +
+				static_cast<double>(bodyRotation[row * 3 + 1]) * frame[3 + col] +
+				static_cast<double>(bodyRotation[row * 3 + 2]) * frame[6 + col]);
 	nxNpActorWorldTensor(reinterpret_cast<const float*>(record + 0xc4),
 		rotation, inverse);
 	}
