@@ -90,16 +90,62 @@ NxVec3 NpActorVtable::getGlobalPositionVal() const
 	return result;
 	}
 
-// (unimplemented) getGlobalOrientationVal
+// phys_fn_000132 at 0x000046c0, actor vtable slot 7. The dynamic arm
+// converts the quaternion in the nested record; the static arm copies the
+// outer body's matrix at +0x20. Lock behavior remains a separate dependency.
 NxMat33 NpActorVtable::getGlobalOrientationVal() const
 	{
-	return NxMat33();
+	const unsigned char* actor = reinterpret_cast<const unsigned char*>(this);
+	const unsigned char* body = *reinterpret_cast<unsigned char* const*>(actor + 0x14);
+	const unsigned char* record = body
+		? *reinterpret_cast<unsigned char* const*>(body + 0x08) : 0;
+	NxMat33 orientation;
+	if(record)
+		{
+		NxQuat quaternion;
+		memcpy(&quaternion, record + 0x5c, sizeof(quaternion));
+		// phys_fn_000132 evaluates the products on the x87 stack before
+		// storing each float. Float intermediates in NxMat33::fromQuat move
+		// the quarter-turn diagonal by several ULPs.
+		const double x = quaternion.x, y = quaternion.y;
+		const double z = quaternion.z, w = quaternion.w;
+		float rows[9] = {
+			static_cast<float>(1.0 - 2.0 * (y*y + z*z)),
+			static_cast<float>(2.0 * (x*y - w*z)),
+			static_cast<float>(2.0 * (x*z + w*y)),
+			static_cast<float>(2.0 * (x*y + w*z)),
+			static_cast<float>(1.0 - 2.0 * (x*x + z*z)),
+			static_cast<float>(2.0 * (y*z - w*x)),
+			static_cast<float>(2.0 * (x*z - w*y)),
+			static_cast<float>(2.0 * (y*z + w*x)),
+			static_cast<float>(1.0 - 2.0 * (x*x + y*y))
+		};
+		orientation.setRowMajor(rows);
+		}
+	else
+		memcpy(&orientation, body ? body + 0x20 : actor + 0x20,
+			sizeof(orientation));
+	return orientation;
 	}
 
-// (unimplemented) getGlobalOrientationQuatVal
+// phys_fn_000094 at 0x00002f30, actor vtable slot 8. The dynamic arm
+// copies the record's quaternion; the static arm converts the outer matrix.
 NxQuat NpActorVtable::getGlobalOrientationQuatVal() const
 	{
-	return NxQuat();
+	const unsigned char* actor = reinterpret_cast<const unsigned char*>(this);
+	const unsigned char* body = *reinterpret_cast<unsigned char* const*>(actor + 0x14);
+	const unsigned char* record = body
+		? *reinterpret_cast<unsigned char* const*>(body + 0x08) : 0;
+	if(record)
+		{
+		NxQuat quaternion;
+		memcpy(&quaternion, record + 0x5c, sizeof(quaternion));
+		return quaternion;
+		}
+	NxMat33 orientation;
+	memcpy(&orientation, body ? body + 0x20 : actor + 0x20,
+		sizeof(orientation));
+	return NxQuat(orientation);
 	}
 
 // (unimplemented) getGlobalPoseReference

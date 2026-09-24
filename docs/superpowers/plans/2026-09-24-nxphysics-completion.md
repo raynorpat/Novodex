@@ -24,6 +24,8 @@
 
 **M2 dynamic graph follow-up, 2026-09-24:** The candidate now matches the oracle's outer 0x50, dynamic record 0x260, and pose 0x50 allocation sizes, plus the record/pose backlink, through the staged DLL test. The exported joint-descriptor row disassembly confirms the graph, and its staged pair remains exact after updating the traversal. Record state and cleanup are still open; the Phase 5 vtable marker remains red.
 
+**M2 rotation follow-up, 2026-09-24:** Static identity and dynamic half/quarter-turn cases now match oracle quaternion storage and public orientation getters byte for byte through staged DLL pairs. The quarter-turn exposed x87 intermediate precision, and separate matrix/quaternion getter mutations failed the differential. See `docs/reconstruction/novodex-physics/evidence/phase5-actor-rotation.md`. Other rotation contexts and actor mutations remain open.
+
 ## 1. Inputs and boundaries
 
 - Repository: `D:\github\Novodex`, inspected at `0df8821f1c5e3668e566ad4182b1e8e568f632d6`.

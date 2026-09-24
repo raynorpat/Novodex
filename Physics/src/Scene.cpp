@@ -33,6 +33,8 @@
 #include "NxJointDesc.h"
 #include "NxJoint.h"
 #include "NpJoint.h"
+#include "NxMat33.h"
+#include "NxQuat.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -1172,6 +1174,7 @@ void nxActorBuildBody(void* actor, const unsigned* desc)
 		if(!staticBody)
 			return;
 		memset(staticBody, 0, 0x50);
+		memcpy(staticBody + 0x20, actorBytes + 0x20, sizeof(NxMat33));
 		memcpy(staticBody + 0x44, actorBytes + 0x44, 12);
 		*reinterpret_cast<void**>(actorBytes + 0x14) = staticBody;
 		return;
@@ -1182,6 +1185,7 @@ void nxActorBuildBody(void* actor, const unsigned* desc)
 	if(!body)
 		return;
 	memset(body, 0, 0x50);
+	memcpy(body + 0x20, actorBytes + 0x20, sizeof(NxMat33));
 	memcpy(body + 0x44, actorBytes + 0x44, 12);
 
 	unsigned char* record = static_cast<unsigned char*>(
@@ -1210,13 +1214,16 @@ void nxActorBuildBody(void* actor, const unsigned* desc)
 	// The translation, from the actor's globalPose.t at actor+0x44.
 	memcpy(record + 0x50, actorBytes + 0x44, 12);
 
-	// The dynamic record carries a quaternion at +0x5c with w last. This path
-	// currently handles the identity rotation used by the staged actor and joint
-	// descriptors; nonidentity orientation recovery remains open.
-	*reinterpret_cast<float*>(record + 0x5c) = 0.0f;
-	*reinterpret_cast<float*>(record + 0x60) = 0.0f;
-	*reinterpret_cast<float*>(record + 0x64) = 0.0f;
-	*reinterpret_cast<float*>(record + 0x68) = 1.0f;
+	// The dynamic record carries a quaternion at +0x5c with w last. Convert
+	// the descriptor's matrix already copied to actor+0x20. The shipped path
+	// uses the same Foundation matrix-to-quaternion convention.
+	NxMat33 orientation;
+	memcpy(&orientation, actorBytes + 0x20, sizeof(orientation));
+	NxQuat quaternion(orientation);
+	*reinterpret_cast<float*>(record + 0x5c) = quaternion.x;
+	*reinterpret_cast<float*>(record + 0x60) = quaternion.y;
+	*reinterpret_cast<float*>(record + 0x64) = quaternion.z;
+	*reinterpret_cast<float*>(record + 0x68) = quaternion.w;
 
 	*reinterpret_cast<void**>(record + 0x19c) = pose;
 	*reinterpret_cast<void**>(body + 0x08) = record;

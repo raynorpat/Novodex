@@ -93,13 +93,23 @@ $NxRequiredCoverageLines = [ordered] @{
         'actor static body=1 nested=0',
         'actor static body_alloc=50',
         'actor static position=40000000.bf800000.40800000',
+        'actor static orientation=3f800000.00000000.00000000.00000000.3f800000.00000000.00000000.00000000.3f800000',
+        'actor static public_quaternion=00000000.00000000.00000000.3f800000',
         'actor dynamic created=1',
         'actor dynamic dynamic=1',
         'actor dynamic body=1 nested=1',
         'actor dynamic body_alloc=50',
         'actor dynamic nested_alloc=260',
         'actor dynamic pose_alloc=50 cached=1 cached_nested=1',
-        'actor dynamic position=c0400000.40000000.3f800000'
+        'actor dynamic position=c0400000.40000000.3f800000',
+        'actor rotated created=1',
+        'actor rotated quaternion=00000000.00000000.3f800000.00000000',
+        'actor rotated orientation=bf800000.00000000.00000000.00000000.bf800000.00000000.00000000.00000000.3f800000',
+        'actor rotated public_quaternion=00000000.00000000.3f800000.00000000',
+        'actor quarter created=1',
+        'actor quarter quaternion=00000000.00000000.3f3504f3.3f3504f3',
+        'actor quarter orientation=331302ae.bf7fffff.00000000.3f7fffff.331302ae.00000000.00000000.00000000.3f800000',
+        'actor quarter public_quaternion=00000000.00000000.3f3504f3.3f3504f3'
     )
     # The Phase 6 joint-descriptor differential. Two cases over the two exported
     # rows, printing the whole descriptor surface before and after each call. The
@@ -977,7 +987,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 101  # 34 for NxPhysicsAssetTests, 67 for NxPhysicsThirdPartyTests
-    '5' = 138  # 126 object-layout assertions plus twelve public actor lifecycle lines
+    '5' = 148  # 126 object-layout assertions plus 22 public actor lifecycle lines
                # (RED on purpose: vtables family open)
     '6' = 11  # 3 oracle-descriptor + 4 oracle-joint + 4 staged-pair-joint
     '7' = 4   # the four STAGED-PAIR assertions; the oracle-differential assertions

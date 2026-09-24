@@ -12,7 +12,7 @@
 // makes a virtual call through it (isDynamic, slot 19), which is the fault that
 // ran from round 4 to round 11: a null vtable read as [0 + 0x1c30].
 //
-// isDynamic() and getGlobalPositionVal() read the body graph. Most other
+// isDynamic() and the position/orientation getters read the body graph. Most other
 // virtuals still have UNIMPLEMENTED defaults so the class compiles.
 
 #include "Nxp.h"
@@ -52,7 +52,7 @@ static_assert(sizeof(NpActorObject) == NpActorObject::SIZE,
 /**
 The concrete class the vtable points at. It is deliberately NOT the object: its own
 size is irrelevant, because only its vtable is used. Most virtuals still have
-UNIMPLEMENTED defaults; isDynamic and getGlobalPositionVal are driven through
+UNIMPLEMENTED defaults; isDynamic and the position/orientation getters run through
 the actual DLL by PhysicsActorLifecycleTests.
 */
 class NpActorVtable : public NxActor

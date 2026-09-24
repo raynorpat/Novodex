@@ -27,6 +27,36 @@ static void nxPrintPosition(const char* label, const NxVec3& position)
 		nxBits(position.x), nxBits(position.y), nxBits(position.z));
 }
 
+static void nxPrintOrientation(const char* label, const NxMat33& orientation)
+{
+	float rowMajor[9];
+	orientation.getRowMajor(rowMajor);
+	printf("actor %s orientation=", label);
+	for(unsigned i = 0; i < 9; ++i)
+		printf("%s%08x", i ? "." : "", nxBits(rowMajor[i]));
+	printf("\n");
+}
+
+static void nxPrintPublicQuaternion(const char* label, const NxQuat& quaternion)
+{
+	printf("actor %s public_quaternion=%08x.%08x.%08x.%08x\n", label,
+		nxBits(quaternion.x), nxBits(quaternion.y),
+		nxBits(quaternion.z), nxBits(quaternion.w));
+}
+
+static void nxPrintDynamicQuaternion(const char* label, const NxActor* actor)
+{
+	const unsigned char* bytes = reinterpret_cast<const unsigned char*>(actor);
+	const unsigned char* body = *reinterpret_cast<unsigned char* const*>(bytes + 0x14);
+	const unsigned char* record = body
+		? *reinterpret_cast<unsigned char* const*>(body + 8) : 0;
+	if(!record) return;
+	unsigned words[4];
+	memcpy(words, record + 0x5c, sizeof(words));
+	printf("actor %s quaternion=%08x.%08x.%08x.%08x\n", label,
+		words[0], words[1], words[2], words[3]);
+}
+
 static void nxPrintBodyLink(const char* label, const NxActor* actor)
 {
 	const unsigned char* bytes = reinterpret_cast<const unsigned char*>(actor);
@@ -90,6 +120,8 @@ int wmain(int argc, wchar_t** argv)
 	printf("actor static dynamic=%u\n", staticActor->isDynamic() ? 1u : 0u);
 	nxPrintBodyLink("static", staticActor);
 	nxPrintPosition("static", staticActor->getGlobalPositionVal());
+	nxPrintOrientation("static", staticActor->getGlobalOrientationVal());
+	nxPrintPublicQuaternion("static", staticActor->getGlobalOrientationQuatVal());
 
 	NxBodyDesc body;
 	NxActorDesc dynamicDesc;
@@ -103,6 +135,27 @@ int wmain(int argc, wchar_t** argv)
 	printf("actor dynamic dynamic=%u\n", dynamicActor->isDynamic() ? 1u : 0u);
 	nxPrintBodyLink("dynamic", dynamicActor);
 	nxPrintPosition("dynamic", dynamicActor->getGlobalPositionVal());
+
+	NxActorDesc rotatedDesc = dynamicDesc;
+	rotatedDesc.globalPose.M.setRow(0, NxVec3(-1.0f, 0.0f, 0.0f));
+	rotatedDesc.globalPose.M.setRow(1, NxVec3(0.0f, -1.0f, 0.0f));
+	rotatedDesc.globalPose.M.setRow(2, NxVec3(0.0f, 0.0f, 1.0f));
+	rotatedDesc.globalPose.t = NxVec3(5.0f, -2.0f, 3.0f);
+	NxActor* rotatedActor = scene->createActor(rotatedDesc);
+	printf("actor rotated created=%u\n", rotatedActor ? 1u : 0u);
+	if(!rotatedActor) return nxFail("rotated actor creation failed");
+	nxPrintDynamicQuaternion("rotated", rotatedActor);
+	nxPrintOrientation("rotated", rotatedActor->getGlobalOrientationVal());
+	nxPrintPublicQuaternion("rotated", rotatedActor->getGlobalOrientationQuatVal());
+
+	rotatedDesc.globalPose.M.setRow(0, NxVec3(0.0f, -1.0f, 0.0f));
+	rotatedDesc.globalPose.M.setRow(1, NxVec3(1.0f, 0.0f, 0.0f));
+	NxActor* quarterActor = scene->createActor(rotatedDesc);
+	printf("actor quarter created=%u\n", quarterActor ? 1u : 0u);
+	if(!quarterActor) return nxFail("quarter-turn actor creation failed");
+	nxPrintDynamicQuaternion("quarter", quarterActor);
+	nxPrintOrientation("quarter", quarterActor->getGlobalOrientationVal());
+	nxPrintPublicQuaternion("quarter", quarterActor->getGlobalOrientationQuatVal());
 
 	sdk->releaseScene(*scene);
 	sdk->release();
