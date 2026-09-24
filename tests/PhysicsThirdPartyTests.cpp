@@ -81,6 +81,7 @@ static const unsigned kContainerResize		= 0x000b4de0;	// :114
 static const unsigned kContainerSetSize		= 0x000b4e90;	// :153
 static const unsigned kContainerCopyCtor	= 0x000b4f00;	// :67
 static const unsigned kContainerDtor		= 0x000b4f50;	// :81
+static const unsigned kCompletePruning		= 0x000b4530;	// phys_fn_004816
 
 // OPCODE -- Ice/IceRevisitedRadix.cpp
 static const unsigned kRadixCtor			= 0x000e32c0;	// :170
@@ -152,6 +153,7 @@ typedef void*	(__thiscall* RadixSortFloatsFn)(void*, const float*, unsigned);
 typedef float	(__thiscall* SegmentSqrDistFn)(const void*, const void*, float*);
 typedef unsigned (__thiscall* MeshCheckTopologyFn)(const void*);
 typedef bool	(__thiscall* MeshSetPointersFn)(void*, const void*, const void*);
+typedef bool	(__cdecl* CompletePruningFn)(unsigned, const AABB**, void*, const Axes*);
 
 // P4 Task 2b.
 typedef bool	(__thiscall* RadixSetRankBuffersFn)(void*, unsigned*, unsigned*);
@@ -182,6 +184,7 @@ struct NxOracleRows
 	BoolThisUdwordFn	containerSetSize;
 	CopyCtorFn			containerCopyCtor;
 	VoidThisFn			containerDtor;
+	CompletePruningFn	completePruning;
 
 	VoidThisFn			radixCtor;
 	VoidThisFn			radixDtor;
@@ -809,6 +812,69 @@ static void nxDriveRadix(const NxOracleRows& o, bool selfOnly)
 
 //////////////////////////////////////////////////////////////////////////////
 // OPCODE -- Segment::SquareDistance and MeshInterface::CheckTopology.
+
+// The oracle's NovodeX pruning helper at 0x000b4530 supplies the starting
+// pairs for SweepAndPrune::Init. Its first three arguments are the count, AABB
+// pointer array, and Pairs (an Ice Container); the fourth is the axis order.
+static void nxDriveCompletePruning(const NxOracleRows& o, bool selfOnly)
+	{
+	gOracleTape.reset();
+	gCandidateTape.reset();
+	gState = 0x45b30a11;
+	static const AxisOrder kOrders[] = { AXES_XZY, AXES_XYZ, AXES_ZXY };
+	for(unsigned trial = 0; trial < 257; ++trial)
+		{
+		const unsigned count = trial == 0 ? 0u : 1u + (nxNext() % 8u);
+		AABB boxes[8];
+		const AABB* boxPointers[8];
+		for(unsigned i = 0; i < count; ++i)
+			{
+			const float x = (float)((int)(nxNext() % 17u) - 8);
+			const float y = (float)((int)(nxNext() % 17u) - 8);
+			const float z = (float)((int)(nxNext() % 17u) - 8);
+			const Point low(x, y, z);
+			const Point high(x + (float)(nxNext() % 7u),
+				y + (float)(nxNext() % 7u), z + (float)(nxNext() % 7u));
+			boxes[i].SetMinMax(low, high);
+			boxPointers[i] = &boxes[i];
+			}
+		const Axes axes(kOrders[trial % 3u]);
+		unsigned char oraclePairs[32];
+		memset(oraclePairs, 0xcd, sizeof(oraclePairs));
+		o.containerCtor(oraclePairs);
+		const bool oracleResult = o.completePruning(count, boxPointers, oraclePairs, &axes);
+		const unsigned oracleWords = ((unsigned*)oraclePairs)[1];
+		const unsigned* oracleEntries = ((const unsigned**)oraclePairs)[2];
+		gOracleTape.push(oracleResult ? 1u : 0u);
+		gOracleTape.push(oracleWords);
+		if(oracleWords > 64u)
+			{
+			fprintf(stderr, "FAIL pruning oracle emitted %u words\n", oracleWords);
+			++gMismatches;
+			}
+		else for(unsigned i = 0; i < oracleWords; ++i)
+			gOracleTape.push(oracleEntries[i]);
+		o.containerDtor(oraclePairs);
+
+		if(!selfOnly)
+			{
+			Pairs candidatePairs;
+			const bool candidateResult = Opcode::CompleteBoxPruning(count, boxPointers, candidatePairs, axes);
+			const unsigned candidateWords = candidatePairs.GetNbPairs() * 2u;
+			const unsigned* candidateEntries = (const unsigned*)candidatePairs.GetPairs();
+			gCandidateTape.push(candidateResult ? 1u : 0u);
+			gCandidateTape.push(candidateWords);
+			if(candidateWords > 64u)
+				{
+				fprintf(stderr, "FAIL pruning candidate emitted %u words\n", candidateWords);
+				++gMismatches;
+				}
+			else for(unsigned i = 0; i < candidateWords; ++i)
+				gCandidateTape.push(candidateEntries[i]);
+			}
+		}
+	nxReport("complete_pruning", "0x000b4530", "phys_fn_004816", "NovodexBoxPruning.cpp", selfOnly);
+	}
 
 static void nxDriveSegment(const NxOracleRows& o, bool selfOnly)
 	{
@@ -1870,6 +1936,7 @@ int wmain(int argc, wchar_t** argv)
 	o.containerSetSize	= (BoolThisUdwordFn)	(o.base + kContainerSetSize);
 	o.containerCopyCtor	= (CopyCtorFn)			(o.base + kContainerCopyCtor);
 	o.containerDtor		= (VoidThisFn)			(o.base + kContainerDtor);
+	o.completePruning	= (CompletePruningFn)	(o.base + kCompletePruning);
 	o.radixCtor			= (VoidThisFn)			(o.base + kRadixCtor);
 	o.radixDtor			= (VoidThisFn)			(o.base + kRadixDtor);
 	o.radixSortDwords	= (RadixSortDwordsFn)	(o.base + kRadixSortDwords);
@@ -1898,6 +1965,7 @@ int wmain(int argc, wchar_t** argv)
 	nxDriveContainer(o, selfOnly);
 	nxDriveContainerCopy(o, selfOnly);
 	nxDriveRadix(o, selfOnly);
+	nxDriveCompletePruning(o, selfOnly);
 	nxDriveSegment(o, selfOnly);
 	nxDriveMeshInterface(o, selfOnly);
 

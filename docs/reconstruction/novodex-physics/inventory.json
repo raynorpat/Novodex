@@ -17390,7 +17390,7 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/466",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2982",
-      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 2 | `phys_fn_000955` | `lea eax,[ecx+0x10]` \u2014 the vertex array |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 2 | `phys_fn_000955` | `lea eax,[ecx+0x10]` — the vertex array |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
       "implementation": "Physics/src/ObjectModel.cpp"
@@ -17499,7 +17499,7 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/469",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3018",
-      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 3 | `phys_fn_000961` | `mov eax,6` \u2014 six faces |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 3 | `phys_fn_000961` | `mov eax,6` — six faces |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
       "implementation": "Physics/src/ObjectModel.cpp"
@@ -17536,7 +17536,7 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/470",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3019",
-      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 4 | `phys_fn_000963` | `index*36 + this+0x70` \u2014 face-record[k] |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
+      "static_proof": "recorded in docs/reconstruction/novodex-physics/evidence/phase5-object-model.md: \"| 4 | `phys_fn_000963` | `index*36 + this+0x70` — face-record[k] |\" (backfilled 7j from that document; the row was already written up there, the proof field was never filled in).",
       "dynamic_proof": null,
       "notes": "P5 Task 3 opened early: transcribed with the BoxHullFacade class; constants and pointer arithmetic driven by NxPhysicsObjectLayoutTests against the pinned oracle on a twin buffer.",
       "implementation": "Physics/src/ObjectModel.cpp"
@@ -87587,13 +87587,13 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/opcode/NovodexBoxPruning.cpp: Opcode::CompleteBoxPruning",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1829",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15659",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Oracle 0x000b4530-0x000b46af sorts box minima with a MAX_FLOAT sentinel through the persistent RadixSort, then sweeps rank pairs; the helper is called from SweepAndPrune::Init at 0x000e70a2.",
+      "dynamic_proof": "NxPhysicsThirdPartyTests complete_pruning oracle differential: 257 deterministic box sets, three axis orders, 730 return/count/pair words exact; the helper is retained in the whole-archive DLL build.",
+      "notes": "The oracle stores AABB min/max points. A red-test stub returned no pairs; the recovered helper and USE_MINMAX build match the registered direct-link drive. An isolated direct-link mutation is recorded in evidence/phase4-falsification.md section 11; a public-DLL drive remains open."
     },
     {
       "id": "phys_fn_004817",
@@ -87623,13 +87623,13 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "dynamically_gated",
+      "source": "Physics/src/opcode/NovodexBoxPruning.cpp: Opcode::CompleteBoxPruning continuation",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1829",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15670",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x000b4530"
+      "static_proof": "Oracle 0x000b46b0-0x000b478e is the pair-overlap and append continuation of the same CompleteBoxPruning entry at 0x000b4530.",
+      "dynamic_proof": "NxPhysicsThirdPartyTests complete_pruning compares return/count/ordered pair words on 257 oracle box sets with exact agreement; the pair loop executes on overlapping cases.",
+      "notes": "Continuation of phys_fn_004816; isolated direct-link falsification is recorded in evidence/phase4-falsification.md section 11; a public-DLL drive remains open."
     },
     {
       "id": "phys_fn_004819",

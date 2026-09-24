@@ -848,6 +848,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty name=container rva=0x000b4d70 owner=phys_fn_004836 source=Ice/IceContainer.cpp:40,81,97,153 words=3456 oracle=7abefb4c mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=container_copy rva=0x000b4f00 owner=phys_fn_004844 source=Ice/IceContainer.cpp:67 words=56 oracle=ea2f4a34 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=radixsort rva=0x000e32c0 owner=phys_fn_005157 source=Ice/IceRevisitedRadix.cpp:170,186,238,350 words=1254 oracle=469ea556 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=complete_pruning rva=0x000b4530 owner=phys_fn_004816 source=NovodexBoxPruning.cpp words=730 oracle=39d67cbd mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=segment_sqrdist.grid rva=0x000f0560 owner=phys_fn_005493 source=Ice/IceSegment.cpp:29 words=60000 oracle=e2c89342 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=segment_sqrdist.wide rva=0x000f0560 owner=phys_fn_005493 source=Ice/IceSegment.cpp:29 words=40000 oracle=4dbf889d mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=mesh_topology rva=0x000e8fd0 owner=phys_fn_005357 source=OPC_MeshInterface.cpp:178,228 words=1200 oracle=936f761e mismatches=0 worst_ulp=0 verdict=exact',
@@ -937,8 +938,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'layout sizeof_Prunable0C=20 expected=20 rva=0x000e7330,0x000b54a9 ok',
         'layout Pruner.mWorldBoxes=20 expected=20 rva=0x000b55a0 ok',
 
-        'thirdparty coverage driven=16 divergent=0 words=193028 layout_checks=47',
-        'thirdparty oracle digest=b87c3219'
+        'thirdparty coverage driven=17 divergent=0 words=193758 layout_checks=47',
+        'thirdparty oracle digest=74ebc669'
     )
 }
 
@@ -961,7 +962,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
-    '4' = 100  # 34 for NxPhysicsAssetTests, 66 for NxPhysicsThirdPartyTests
+    '4' = 101  # 34 for NxPhysicsAssetTests, 67 for NxPhysicsThirdPartyTests
     '5' = 126  # was 124: +2 for the shapeleaf family (row + candidate drive)
                # (RED on purpose: vtables family open)
     '6' = 11  # 3 oracle-descriptor + 4 oracle-joint + 4 staged-pair-joint

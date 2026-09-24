@@ -110,7 +110,11 @@ target_include_directories(NxOpcode PUBLIC ${OPCODE_TREE})
 # inside NxPhysics.dll and exports nothing of its own, which is also what the
 # oracle's export table says. OPCODE_EXPORTS additionally suppresses Opcode.h's
 # `#pragma comment(lib, "Opcode.lib")` autolink.
-target_compile_definitions(NxOpcode PUBLIC ICE_NO_DLL OPCODE_EXPORTS)
+# The image's AABB stores min/max points (AABB::Add at 0x000e2d20 and
+# _BuildHierarchy at 0x000f0f8e). This is part of the private binary ABI: the
+# NovodeX pruning helper reads those six floats directly. Propagate it to every
+# consumer compiling Opcode.h, including the direct-link oracle harness.
+target_compile_definitions(NxOpcode PUBLIC ICE_NO_DLL OPCODE_EXPORTS USE_MINMAX)
 
 #### BUILD FLAGS FOR BOTH ####
 

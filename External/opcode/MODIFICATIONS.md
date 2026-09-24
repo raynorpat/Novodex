@@ -92,16 +92,16 @@ above *was* applied at the `new` sites (`0x000e919e` is `new AABBTree` in the
 same compiler-generated shape); that is not re-opened here, because those files
 carry green differentials and re-deriving the seam is its own task.
 
-**`IceAABB.h`'s representation is min/max in the image and centre/extents in
-this build.** `USE_MINMAX` is defined nowhere in the pinned tree and nowhere in
-`External/CMakeLists.txt`, so `NxOpcode` compiles the centre/extents `AABB`.
-The image compiles the other one: `AABB::Add` at `0x000e2d20` reads `[this+0]`,
+**`IceAABB.h`'s representation is min/max in the image and in this build.**
+`External/CMakeLists.txt` now defines `USE_MINMAX` on `NxOpcode` and propagates
+it to direct consumers of `Opcode.h`. The image's `AABB::Add` at `0x000e2d20` reads `[this+0]`,
 `[this+4]`, `[this+8]` straight into the min with no subtraction, where
 centre/extents would emit `mCenter[i] - mExtents[i]`, and
 `_BuildHierarchy`'s inflate at `0x000f0f8e` subtracts the margin from the first
 `Point` and adds it to the second, which is meaningless on a centre. `sizeof` is
-24 either way, so the registered `sizeof_AABB` check cannot see it. Not applied:
-it is one `target_compile_definitions` line, but it changes the storage of every
-box in 34 translation units and the float results that follow, and switching it
-belongs with a differential that can tell whether the results moved the right
-way.
+24 either way, so the registered `sizeof_AABB` check cannot see it. The
+`complete_pruning` oracle differential at `0x000b4530` revealed the mismatch:
+its first min/max direct-field drive differed when both sides received a
+centre/extents object, then matched exactly after `USE_MINMAX` was propagated.
+This changes all Opcode AABBs, so other object and asset gates still require
+regression checks; the single helper's exact result is not proof of them.

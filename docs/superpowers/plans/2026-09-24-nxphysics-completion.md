@@ -14,6 +14,8 @@
 
 **Gate note, 2026-09-24:** Both PowerShell runners now accept explicit repository, build, oracle, and pair-output roots. In the isolated worktree, the Phase 4 gate passes with 100 of 100 coverage assertions and the Phase 2 staged-pair gate passes. A Phase 4-only process previously printed `status=pass` but returned the differential runner's intentional skip code 3; the gate now returns 0 on successful completion.
 
+**Pruning/AABB note, 2026-09-24:** Recovered the oracle's `0x000b4530` NovodeX complete-box-pruning helper and its `0x000b46b0` continuation, then switched `NxOpcode` and its consumers to the oracle's min/max AABB representation. A fresh whole-archive Win32 DLL link now succeeds. The new direct-link helper differential is exact on 730 oracle words and separately falsifies the sorting and pair-output portions; Phase 2, 3 and 4 gates pass, with Phase 4 at 101 of 101 coverage assertions. These are intermediate closures: actual-DLL public routing, lifecycle behavior, and the remaining census remain open. The earlier whole-archive failure recorded above is historical and has been resolved. See `docs/reconstruction/novodex-physics/evidence/phase4-falsification.md` §11.
+
 ## 1. Inputs and boundaries
 
 - Repository: `D:\github\Novodex`, inspected at `0df8821f1c5e3668e566ad4182b1e8e568f632d6`.

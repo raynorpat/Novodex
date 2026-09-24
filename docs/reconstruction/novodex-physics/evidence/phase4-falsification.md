@@ -330,3 +330,47 @@ Whole-archive linking remains open. It reaches stock `SweepAndPrune::Init`, whic
 (`phys_fn_004816`, with continuation `phys_fn_004818`). That helper and the wider archive
 retention policy need reconstruction and a DLL-level drive before declaring the embedded
 libraries complete.
+
+---
+
+## 11. 2026-09-24 follow-up: NovodeX pruning helper and AABB storage
+
+`SweepAndPrune::Init` at `0x000e6db0` calls `phys_fn_004816` (`0x000b4530`),
+whose continuation `phys_fn_004818` starts at `0x000b46b0`. The helper sorts
+primary-axis box minima plus a `MAX_FLOAT` sentinel through a persistent
+`RadixSort`, then emits ordered overlapping pairs into an Ice `Container`.
+`Physics/src/opcode/NovodexBoxPruning.cpp` reconstructs that behavior and
+supplies the stock sweep-and-prune object's unresolved dependency without
+compiling `OPC_BoxPruning.cpp`, whose other routines are absent from the image.
+
+The first oracle drive exposed a representation mismatch, not a pruning-loop
+discrepancy. The oracle reads the first three AABB floats as minima and the
+next three as maxima, while the unmodified OPCODE build used centre/extents.
+`USE_MINMAX` is now PUBLIC on `NxOpcode`, so its library and consumers compile
+the same private AABB layout. After a fresh Win32 Release build, the registered
+`complete_pruning` family compares 257 deterministic box sets, counts 0–8,
+three axis orders, return values, pair counts and ordered pair IDs: 730 words,
+`oracle=39d67cbd`, `mismatches=0`. The complete third-party run reports
+`driven=17 divergent=0 words=193758 layout_checks=47` and
+`oracle digest=74ebc669`. Phase 2, 3 and 4 gates pass in the isolated worktree;
+Phase 4 evaluates 101 of 101 registered coverage assertions.
+
+Two direct-link mutations establish that the new family can fail for errors in
+both portions of the oracle helper. Changing the primary sorting axis from
+`axes.mAxis0` to `axes.mAxis1` made the 730-word oracle tape disagree with a
+1,138-word candidate tape and exited 1. Changing the pair append from
+`(first, second)` to `(first, first)` preserved the word count but yielded 108
+mismatched words and exited 1. The oracle digest stayed `74ebc669` in both
+mutants. Restoring each edit returned the family to `mismatches=0`. These
+mutations support the intermediate Phase 4 closures for both stable IDs; they
+do not prove a public SDK path reaches the rebuilt DLL implementation.
+
+The registered harness reports `phys_fn_004816 mismatches=1` for the sorting
+mutation because its tapes have different lengths, and
+`phys_fn_004818 mismatches=108` for the pair-output mutation with equal lengths.
+
+With this helper present, `/WHOLEARCHIVE` linkage of both `NxOpcode` and
+`NxQhull` succeeds. The rebuilt `NxPhysics.map` contains the helper,
+`Segment::SquareDistance`, `qh_pointdist`, and `SweepAndPrune` symbols. This
+proves archive membership, while object lifecycle and public routing remain
+work for the full reconstruction.

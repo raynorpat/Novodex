@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": 4,
   "evidence_file": "evidence/phase4-falsification.md",
-  "note": "Post-close census correction: Phase 4 still owns 1,137 function rows and closes 26, but three OPCODE functions previously classified as compiler artifacts are now code. Its code ledger has 1,053 rows: 26 closed and 1,027 deferred. The 84 remaining compiler artifacts and 2,813 data objects stand at classified. phys_fn_005493 is reached from LSSCollider::InitQuery; its stock-source divergence was resolved by the local IceSegment.cpp overlay and exact registered direct-link oracle families, but no mutation isolated the row, so it defers reconstructed_not_falsified. phys_fn_005517 and phys_fn_005523 are represented by the OPC_AABBTree.cpp overlay and defer reconstructed_not_falsified: deleting the shared overlay fails five layout assertions, but no mutation isolated either row. These corrections change accounting, not the historical Phase 4 gate results. The original measurements and limitations are in evidence/phase4-falsification.md sections 3 and 7 and gates/phase4.json.",
+  "note": "Phase 4 owns 1,137 function rows; its code ledger has 1,053 rows: 28 closed and 1,025 deferred. The 84 compiler artifacts and 2,813 data objects stand at classified. Three OPCODE functions formerly misclassified as compiler artifacts are now code. The 2026-09-24 NovodeX pruning helper at phys_fn_004816 and continuation phys_fn_004818 add two closures through exact direct-link oracle cases and row-specific falsifying mutations. phys_fn_005493 has exact direct-link Segment behavior but no isolated mutation, while phys_fn_005517 and phys_fn_005523 have shared-overlay layout evidence but no isolated per-row falsification. These Phase 4 closures remain intermediate; public-DLL routing and final full-image closure are separate work. See evidence/phase4-falsification.md sections 3, 7, 10 and 11.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row's reconstruction in a throwaway `git archive` copy, rebuilt and run through a staged-pair differential. Phase 4 registers no staged-pair target -- `run_differential.ps1 -Phase 4` resolves none and exits the skip code -- so it closes no row this way",
     "static_proof_falsified": "a mutation aimed at this row and caught by a static check rather than a differential. Phase 4 registers no static-proof target and closes no row this way",
@@ -53,8 +53,8 @@
     "control_words": "every block in both targets runs under the CRT default 0x027f and nothing in Phase 4 runs under 0x0f7f, the _PC_64 | _RC_CHOP word Scene::simulate installs. All 26 closed rows execute under 0x027f in the measurement. Escalated in gates/phase4.json"
   },
   "counts": {
-    "oracle_differential_falsified": 26,
-    "deferred_not_reconstructed_in_phase": 315,
+    "oracle_differential_falsified": 28,
+    "deferred_not_reconstructed_in_phase": 313,
     "deferred_reconstructed_not_falsified": 111,
     "deferred_vendored_not_falsified": 601
   },
@@ -147,6 +147,26 @@
       "falsification": {
         "mutation": "mutation Q: readDword decodes big-endian. All four accepted pmap fixtures differ, line=0x3da/0x000. The bit-mask reset in this row is unfalsified for the same reason as phys_fn_004772's. Re-measured on branch p4-close-port in a `git archive` copy of de56592: control `asset candidate mismatches=0` before and after, `asset oracle digest=eaefc573 expect_mismatches=0` in every run. evidence/phase4-falsification.md section 5",
         "detected": "mismatches=4"
+      }
+    },
+    {
+      "id": "phys_fn_004816",
+      "rva": "0x000b4530",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsThirdPartyTests",
+      "falsification": {
+        "mutation": "Changed the primary sorting axis from axes.mAxis0 to axes.mAxis1 in NovodexBoxPruning.cpp. Direct-linked NxPhysicsThirdPartyTests changed complete_pruning from 730 exact oracle words to oracle=730/candidate=1138 words, with exit 1. The pinned oracle digest stayed 74ebc669; restored control returned mismatches=0. evidence/phase4-falsification.md section 11",
+        "detected": "mismatches=1"
+      }
+    },
+    {
+      "id": "phys_fn_004818",
+      "rva": "0x000b46b0",
+      "proof": "oracle_differential_falsified",
+      "gate": "NxPhysicsThirdPartyTests",
+      "falsification": {
+        "mutation": "Changed pair append from (first, second) to (first, first) in the pair-emission continuation of NovodexBoxPruning.cpp. Direct-linked NxPhysicsThirdPartyTests reported 108 mismatched ordered-pair words, exit 1, while the pinned oracle digest stayed 74ebc669; restored control returned mismatches=0. evidence/phase4-falsification.md section 11",
+        "detected": "mismatches=108"
       }
     },
     {
@@ -5456,22 +5476,6 @@
       "id": "phys_fn_004801",
       "rva": "0x000b3fb0",
       "size": 79,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "callers",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_004816",
-      "rva": "0x000b4530",
-      "size": 381,
-      "reason": "not_reconstructed_in_phase",
-      "phase_provenance": "callers",
-      "driving_phases": []
-    },
-    {
-      "id": "phys_fn_004818",
-      "rva": "0x000b46b0",
-      "size": 223,
       "reason": "not_reconstructed_in_phase",
       "phase_provenance": "callers",
       "driving_phases": []
