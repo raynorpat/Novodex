@@ -68,10 +68,15 @@ void NpActorVtable::setGlobalOrientationQuat(const NxQuat&)
 	
 	}
 
-// (unimplemented) getGlobalPoseVal
+// phys_fn_000130 at 0x00004580, actor vtable slot 5. It returns the same
+// matrix and translation exposed by slots 7 and 6, respectively. The public
+// drive checks all twelve words, including the quarter-turn precision case.
 NxMat34 NpActorVtable::getGlobalPoseVal() const
 	{
-	return NxMat34();
+	NxMat34 pose;
+	pose.M = getGlobalOrientationVal();
+	pose.t = getGlobalPositionVal();
+	return pose;
 	}
 
 // phys_fn_000092 at 0x00002ed0, actor vtable slot 6. The oracle reads the

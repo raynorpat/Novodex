@@ -29,6 +29,17 @@ A separate mutation that set the public quaternion's X to 1 likewise failed
 with `stdout_delta=4`; both were restored and the clean build retested. Ten
 new transcript lines are registered, raising the Phase 5 floor to 148.
 
+## Combined pose return
+
+Slot 5 at RVA `0x00004580` returns the 3x3 orientation and translation in a
+single `NxMat34`. The staged test now compares all twelve words for static,
+identity dynamic, half-turn dynamic, and quarter-turn dynamic actors. Combining
+the two reconstructed getters matches each pinned-oracle result exactly. A
+temporary mutation zeroing the pose return's X translation failed the staged
+differential with `stdout_delta=8`; restoring it returned the comparison to
+zero. Four pose lines bring the Phase 5 floor to 152. This validates those
+single-threaded results; it does not yet reproduce the oracle's lock behavior.
+
 These cases establish the tested rotations and ABI paths, not every numeric
 context, nonorthonormal descriptor, or mutation method. Phase 5 still fails on
 the independent final-vtable placeholder.

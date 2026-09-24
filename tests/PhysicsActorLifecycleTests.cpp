@@ -44,6 +44,17 @@ static void nxPrintPublicQuaternion(const char* label, const NxQuat& quaternion)
 		nxBits(quaternion.z), nxBits(quaternion.w));
 }
 
+static void nxPrintPose(const char* label, const NxMat34& pose)
+{
+	float rowMajor[9];
+	pose.M.getRowMajor(rowMajor);
+	printf("actor %s pose=", label);
+	for(unsigned i = 0; i < 9; ++i)
+		printf("%s%08x", i ? "." : "", nxBits(rowMajor[i]));
+	printf(".%08x.%08x.%08x\n", nxBits(pose.t.x),
+		nxBits(pose.t.y), nxBits(pose.t.z));
+}
+
 static void nxPrintDynamicQuaternion(const char* label, const NxActor* actor)
 {
 	const unsigned char* bytes = reinterpret_cast<const unsigned char*>(actor);
@@ -122,6 +133,7 @@ int wmain(int argc, wchar_t** argv)
 	nxPrintPosition("static", staticActor->getGlobalPositionVal());
 	nxPrintOrientation("static", staticActor->getGlobalOrientationVal());
 	nxPrintPublicQuaternion("static", staticActor->getGlobalOrientationQuatVal());
+	nxPrintPose("static", staticActor->getGlobalPoseVal());
 
 	NxBodyDesc body;
 	NxActorDesc dynamicDesc;
@@ -135,6 +147,7 @@ int wmain(int argc, wchar_t** argv)
 	printf("actor dynamic dynamic=%u\n", dynamicActor->isDynamic() ? 1u : 0u);
 	nxPrintBodyLink("dynamic", dynamicActor);
 	nxPrintPosition("dynamic", dynamicActor->getGlobalPositionVal());
+	nxPrintPose("dynamic", dynamicActor->getGlobalPoseVal());
 
 	NxActorDesc rotatedDesc = dynamicDesc;
 	rotatedDesc.globalPose.M.setRow(0, NxVec3(-1.0f, 0.0f, 0.0f));
@@ -147,6 +160,7 @@ int wmain(int argc, wchar_t** argv)
 	nxPrintDynamicQuaternion("rotated", rotatedActor);
 	nxPrintOrientation("rotated", rotatedActor->getGlobalOrientationVal());
 	nxPrintPublicQuaternion("rotated", rotatedActor->getGlobalOrientationQuatVal());
+	nxPrintPose("rotated", rotatedActor->getGlobalPoseVal());
 
 	rotatedDesc.globalPose.M.setRow(0, NxVec3(0.0f, -1.0f, 0.0f));
 	rotatedDesc.globalPose.M.setRow(1, NxVec3(1.0f, 0.0f, 0.0f));
@@ -156,6 +170,7 @@ int wmain(int argc, wchar_t** argv)
 	nxPrintDynamicQuaternion("quarter", quarterActor);
 	nxPrintOrientation("quarter", quarterActor->getGlobalOrientationVal());
 	nxPrintPublicQuaternion("quarter", quarterActor->getGlobalOrientationQuatVal());
+	nxPrintPose("quarter", quarterActor->getGlobalPoseVal());
 
 	sdk->releaseScene(*scene);
 	sdk->release();

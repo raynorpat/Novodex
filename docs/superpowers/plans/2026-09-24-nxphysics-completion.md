@@ -26,6 +26,8 @@
 
 **M2 rotation follow-up, 2026-09-24:** Static identity and dynamic half/quarter-turn cases now match oracle quaternion storage and public orientation getters byte for byte through staged DLL pairs. The quarter-turn exposed x87 intermediate precision, and separate matrix/quaternion getter mutations failed the differential. See `docs/reconstruction/novodex-physics/evidence/phase5-actor-rotation.md`. Other rotation contexts and actor mutations remain open.
 
+**M2 pose follow-up, 2026-09-24:** Slot 5's full `NxMat34` return matches all twelve oracle words for four actor cases, and an aimed pose-translation mutation failed the staged differential. The Phase 5 coverage floor is 152; lock behavior and other pose contexts remain open.
+
 ## 1. Inputs and boundaries
 
 - Repository: `D:\github\Novodex`, inspected at `0df8821f1c5e3668e566ad4182b1e8e568f632d6`.
