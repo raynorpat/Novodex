@@ -78,7 +78,7 @@
       "gate": "Meshes, convex data, PMaps, acceleration data, ownership, and runtime queries close",
       "status": "pass",
       "implementation_commit": "de565924ad85cba85490c54ebc99db37593833a3",
-      "evidence_commit": "d8a5333eac4942f2c959eb50f183a99744c1d799",
+      "evidence_commit": "ec41abb1b18110d00643dbf784eff4cf694a411f",
       "gate_artifact": "gates/phase4.json",
       "owned_functions": 1137,
       "owned_data_objects": 2813,
