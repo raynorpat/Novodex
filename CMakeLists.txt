@@ -204,6 +204,14 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_include_directories(NxPhysicsActorLifecycleTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include)
 	target_link_libraries(NxPhysicsActorLifecycleTests bcrypt)
+	# A second process starts with a dynamic box, so OPCODE's shared first-use
+	# allocations are measured independently of the static-first lifecycle drive.
+	add_executable(NxPhysicsDynamicFirstTests tests/PhysicsActorLifecycleTests.cpp)
+	target_compile_definitions(NxPhysicsDynamicFirstTests PRIVATE
+		NX_PHYSICS_DYNAMIC_FIRST_ONLY)
+	target_include_directories(NxPhysicsDynamicFirstTests PRIVATE
+		Foundation/include Foundation/src/include Physics/include)
+	target_link_libraries(NxPhysicsDynamicFirstTests bcrypt)
 	# The same include set as the oracle target above; the harness includes the
 	# Foundation's allocator interface for the page-guarded allocator, and Physics'
 	# public headers for the descriptors.

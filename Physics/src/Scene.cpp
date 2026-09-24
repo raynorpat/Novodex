@@ -775,6 +775,31 @@ void nxSceneAuxUnregisterRecord(NxSceneInternal* scene, void* recordPointer)
 	*reinterpret_cast<unsigned**>(aux + 0x54) = activeEnd - 1;
 	}
 
+// OPCODE's pool is initialized by the first pruning object, whether static or
+// dynamic. Its process-wide header owns four initial buffers.
+static unsigned char* gNxOpcodePool = 0;
+
+static bool nxOpcodeEnsurePool()
+	{
+	if(gNxOpcodePool) return true;
+	gNxOpcodePool = static_cast<unsigned char*>(nxGetSdkAllocator()->malloc(
+		0x1c, NX_MEMORY_PERSISTENT));
+	if(!gNxOpcodePool) return false;
+	memset(gNxOpcodePool, 0, 0x1c);
+	const unsigned sizes[4] = {8, 4, 4, 4};
+	const unsigned offsets[4] = {0, 0xc, 0x10, 0x14};
+	for(unsigned i = 0; i < 4; ++i)
+		{
+		void* block = nxGetSdkAllocator()->malloc(sizes[i],
+			NX_MEMORY_PERSISTENT);
+		if(!block) return false;
+		memset(block, i == 1 || i == 2 ? 0xff : 0, sizes[i]);
+		*reinterpret_cast<void**>(gNxOpcodePool + offsets[i]) = block;
+		}
+	*reinterpret_cast<unsigned*>(gNxOpcodePool + 8) = 2;
+	return true;
+	}
+
 // The oracle's dynamic broadphase table is a 0x3c-byte object stored at
 // Scene+0x648. Its subcontainer begins at +4: count and capacity are the
 // 16-bit words at +0x10/+0x12, followed by parallel 0x18-byte-entry and
@@ -799,6 +824,7 @@ void nxSceneBroadphaseRegister(NxSceneInternal* scene, void* bodyPointer)
 			nxGetSdkAllocator()->malloc(0x3c, NX_MEMORY_PERSISTENT));
 		if(!table) return;
 		memset(table, 0, 0x3c);
+		if(!nxOpcodeEnsurePool()) return;
 		}
 	unsigned short& count = *reinterpret_cast<unsigned short*>(table + 0x10);
 	unsigned short& capacity = *reinterpret_cast<unsigned short*>(table + 0x12);
@@ -840,9 +866,23 @@ void nxSceneBroadphaseRegister(NxSceneInternal* scene, void* bodyPointer)
 		unsigned char* object = static_cast<unsigned char*>(
 			(*reinterpret_cast<void***>(shape + 0xe0))[i]);
 		references[i] = object + 0xa4;
+		*reinterpret_cast<void**>(object + 0xc4) = table;
+		*reinterpret_cast<unsigned short*>(object + 0xcc) =
+			static_cast<unsigned short>(i);
+		*reinterpret_cast<unsigned char*>(object + 0xce) = 2;
 		}
 	references[count + childCount] = shape + 0xa4;
+	*reinterpret_cast<void**>(shape + 0xc4) = table;
+	*reinterpret_cast<unsigned short*>(shape + 0xcc) =
+		static_cast<unsigned short>(count + childCount);
+	*reinterpret_cast<unsigned char*>(shape + 0xce) = 2;
 	count = static_cast<unsigned short>(count + added);
+	if(!scene->at<void*>(0x6a4))
+		{
+		void* pending = nxGetSdkAllocator()->malloc(8, NX_MEMORY_PERSISTENT);
+		if(pending) memset(pending, 0, 8);
+		scene->at<void*>(0x6a4) = pending;
+		}
 	}
 
 void nxSceneBroadphaseUnregister(NxSceneInternal* scene, void* bodyPointer)
@@ -1125,8 +1165,6 @@ NxActor* NxSceneInternal::createActor(const NxActorDescBase& desc)
 	// The notification hook, when the Scene has one at +0x61c.
 	if(p[0x61c / 4])
 		nxSceneNotifyActorCreated(reinterpret_cast<void*>(p[0x61c / 4]));
-
-	nxSceneBroadphaseRegister(this, outerMemory);
 
 	return actor;
 	}
@@ -1583,8 +1621,6 @@ int nxActorComputeMass(void* actor, const unsigned* bodyWord)
 // gives it four 0x18-byte entries and four pointer references. These allocations
 // occur in Actor::loadFromDescInternal, before Scene::createActor grows its
 // public actor list.
-static unsigned char* gNxOpcodePool = 0;
-
 static void nxSceneStaticPrunerRegister(NxSceneInternal* scene, unsigned char* shape)
 	{
 	if(!scene || !shape) return;
@@ -1595,24 +1631,7 @@ static void nxSceneStaticPrunerRegister(NxSceneInternal* scene, unsigned char* s
 			0x90, NX_MEMORY_PERSISTENT));
 		if(!manager) return;
 		memset(manager, 0, 0x90);
-		if(!gNxOpcodePool)
-			{
-			gNxOpcodePool = static_cast<unsigned char*>(nxGetSdkAllocator()->malloc(
-				0x1c, NX_MEMORY_PERSISTENT));
-			if(!gNxOpcodePool) return;
-			memset(gNxOpcodePool, 0, 0x1c);
-			const unsigned sizes[4] = {8, 4, 4, 4};
-			const unsigned offsets[4] = {0, 0xc, 0x10, 0x14};
-			for(unsigned i = 0; i < 4; ++i)
-				{
-				void* block = nxGetSdkAllocator()->malloc(sizes[i],
-					NX_MEMORY_PERSISTENT);
-				if(!block) return;
-				memset(block, i == 1 || i == 2 ? 0xff : 0, sizes[i]);
-				*reinterpret_cast<void**>(gNxOpcodePool + offsets[i]) = block;
-				}
-			*reinterpret_cast<unsigned*>(gNxOpcodePool + 8) = 2;
-			}
+		if(!nxOpcodeEnsurePool()) return;
 		void* entries = nxGetSdkAllocator()->malloc(0x60, NX_MEMORY_PERSISTENT);
 		void* references = nxGetSdkAllocator()->malloc(0x10, NX_MEMORY_PERSISTENT);
 		if(!entries || !references) return;
@@ -1704,7 +1723,11 @@ void nxSceneAddActorObject(void* scene, void* object, void* actorPointer)
 		{
 		*last = record;
 		*reinterpret_cast<void***>(bytes + 0x570) = last + 1;
+		nxSceneUpdateActorCount(scene, static_cast<unsigned>(
+			*reinterpret_cast<void***>(bytes + 0x570) -
+			*reinterpret_cast<void***>(bytes + 0x56c)));
 		}
+	nxSceneBroadphaseRegister(static_cast<NxSceneInternal*>(scene), body);
 	}
 
 void nxActorBuildUserDataObject(void* actor)

@@ -14,7 +14,7 @@ $NxPhaseTestTargets = [ordered] @{
     '2' = @('NxPhysicsExportTests', 'NxPhysicsSDKTests', 'NxPhysicsCoreClusterTests')
     '3' = @('NxPhysicsGeometryTests', 'NxPhysicsKernelFuzzTests')
     '4' = @()
-    '5' = @('NxPhysicsActorLifecycleTests')
+    '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests')
     '6' = @('NxPhysicsJointStagedPairTests')
     '7' = @('NxPhysicsJointStagedPairTests')
     '8' = @()
@@ -87,6 +87,13 @@ $NxPhaseOracleDifferentialTargets = [ordered] @{
 # from 89978 to 3521 and leaves stdout_delta at 0, and this is what turns that
 # from a silent pass into a failure.
 $NxRequiredCoverageLines = [ordered] @{
+    'NxPhysicsDynamicFirstTests' = @(
+        'actor dynamic_first created=1 allocs=34 frees=6',
+        'actor dynamic_first sizes=50.18.228.800.400.800.400.800.400.400.400.1c.260.800.400.800.400.800.400.400.400.8.400.400.3c.1c.8.4.4.4.60.10.8.8',
+        'actor dynamic_first free_sizes=800.800.800.800.800.800',
+        'actor dynamic_first scene=256.1.1.0.1',
+        'actor dynamic_first prune=1/4.1.1.256'
+    )
     'NxPhysicsActorLifecycleTests' = @(
         # Static-shape auxiliary registration and slot reuse through group release.
         'actor static init_aux_prefix=50.18.228.800.400.800.400.800.400.400.400',
@@ -1172,7 +1179,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 101  # 34 for NxPhysicsAssetTests, 67 for NxPhysicsThirdPartyTests
-    '5' = 332  # 126 object-layout assertions plus 206 public actor lifecycle lines
+    '5' = 337  # 126 object-layout assertions plus 211 public actor/pruner lines
                # (RED on purpose: vtables family open)
     '6' = 11  # 3 oracle-descriptor + 4 oracle-joint + 4 staged-pair-joint
     '7' = 4   # the four STAGED-PAIR assertions; the oracle-differential assertions
@@ -1197,6 +1204,7 @@ $NxPhaseCoverageFloor = [ordered] @{
 # the list of names this programme knows. A typo in either one fails.
 $NxRegisteredTestTargets = @(
     'NxPhysicsActorLifecycleTests',
+    'NxPhysicsDynamicFirstTests',
     'NxPhysicsCoreClusterTests',
     'NxPhysicsExportTests',
     'NxPhysicsGeometryTests',

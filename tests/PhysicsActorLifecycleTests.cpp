@@ -390,6 +390,59 @@ int wmain(int argc, wchar_t** argv)
 	sceneDesc.gravity = NxVec3(0.0f, 0.0f, 0.0f);
 	NxScene* scene = sdk->createScene(sceneDesc);
 	if(!scene) return nxFail("scene creation failed");
+	#ifdef NX_PHYSICS_DYNAMIC_FIRST_ONLY
+		{
+		NxBoxShapeDesc firstBox;
+		firstBox.dimensions = NxVec3(1.0f, 2.0f, 3.0f);
+		NxBodyDesc firstBody;
+		NxActorDesc firstDesc;
+		firstDesc.body = &firstBody;
+		firstDesc.density = 1.0f;
+		firstDesc.shapes.pushBack(&firstBox);
+		const unsigned beforeAllocations = allocator.allocations();
+		const unsigned beforeFrees = allocator.frees();
+		NxActor* firstActor = scene->createActor(firstDesc);
+		printf("actor dynamic_first created=%u allocs=%u frees=%u\n",
+			firstActor ? 1u : 0u, allocator.allocations() - beforeAllocations,
+			allocator.frees() - beforeFrees);
+		printf("actor dynamic_first sizes=");
+		for(unsigned i = 0; i < allocator.allocations() - beforeAllocations; ++i)
+			printf("%s%x", i ? "." : "", allocator.allocSizeFromEnd(
+				allocator.allocations() - beforeAllocations - 1 - i));
+		printf("\n");
+		printf("actor dynamic_first free_sizes=");
+		for(unsigned i = 0; i < allocator.frees() - beforeFrees; ++i)
+			printf("%s%x", i ? "." : "", allocator.freedSizeFromEnd(
+				allocator.frees() - beforeFrees - 1 - i));
+		printf("\n");
+		const unsigned char* internal = *reinterpret_cast<unsigned char* const*>(
+			reinterpret_cast<const unsigned char*>(scene) + 0x24);
+		printf("actor dynamic_first scene=%u.%u.%u.%u.%u\n",
+			*reinterpret_cast<const unsigned*>(internal + 4),
+			*reinterpret_cast<void* const*>(internal + 8) ? 1u : 0u,
+			*reinterpret_cast<void* const*>(internal + 0xc) ? 1u : 0u,
+			*reinterpret_cast<void* const*>(internal + 0x640) ? 1u : 0u,
+			*reinterpret_cast<void* const*>(internal + 0x648) ? 1u : 0u);
+		const unsigned char* manager = *reinterpret_cast<unsigned char* const*>(
+			internal + 0x648);
+		const unsigned char* firstActorBody = firstActor
+			? *reinterpret_cast<unsigned char* const*>(
+				reinterpret_cast<const unsigned char*>(firstActor) + 0x14) : 0;
+		const unsigned char* shape = firstActorBody
+			? *reinterpret_cast<unsigned char* const*>(firstActorBody + 0x10) : 0;
+		printf("actor dynamic_first prune=%u/%u.%u.%u.%u\n",
+			manager ? *reinterpret_cast<const unsigned short*>(manager + 0x10) : 0u,
+			manager ? *reinterpret_cast<const unsigned short*>(manager + 0x12) : 0u,
+			manager && shape && manager == *reinterpret_cast<unsigned char* const*>(
+				shape + 0xc4) ? 1u : 0u,
+			*reinterpret_cast<void* const*>(internal + 0x6a4) ? 1u : 0u,
+			*reinterpret_cast<const unsigned*>(internal + 0x14));
+		if(!firstActor) return nxFail("dynamic-first actor creation failed");
+		sdk->releaseScene(*scene);
+		sdk->release();
+		return nxReportPairIdentity(pairDirectory);
+		}
+	#endif
 	if(getenv("NX_PHYSICS_PROBE_MULTI"))
 		{ nxPrintBroadphase("initial", scene); nxPrintSceneArray6e8("initial", scene); }
 	nxPrintAuxArrays("initial", scene);

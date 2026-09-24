@@ -50,6 +50,8 @@
 
 **M2 first static OPCODE pruner, 2026-09-24:** The remaining eleven first-static-actor allocations now match, completing that path's 24-allocation sequence and three scratch frees. The Scene/shape pruner links, initial capacity/count, and static release state also match. Six more registered checks raise the Phase 5 floor to 332. See `docs/reconstruction/novodex-physics/evidence/phase5-static-pruner-initialization.md`. The previous note's allocation gap is resolved for this exact drive; dynamic-first, pruner growth, spatial payloads, internal virtuals, and teardown remain open.
 
+**M2 dynamic-first OPCODE pruner, 2026-09-24:** A separate fresh-process target now matches the oracle's 34-allocation, six-scratch-free first dynamic actor path, including the Scene cache arrays before the `0x3c` dynamic pruner, the shared OPCODE pool, the pending buffer, and the shape/pruner link. Five registered checks raise the Phase 5 floor to 337. See `docs/reconstruction/novodex-physics/evidence/phase5-dynamic-first-pruner.md`. The previous note's dynamic-first initialization gap is resolved for one box; spatial payloads, growth, multi-shape removal, internal virtuals, and teardown remain open.
+
 ## 1. Inputs and boundaries
 
 - Repository: `D:\github\Novodex`, inspected at `0df8821f1c5e3668e566ad4182b1e8e568f632d6`.
