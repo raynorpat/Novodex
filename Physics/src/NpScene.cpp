@@ -31,6 +31,7 @@
 
 #include "NpScene.h"
 #include <stdio.h>
+#include <string.h>
 
 #include "Scene.h"
 #include "NxActor.h"
@@ -89,7 +90,11 @@ NpScene::NpScene(NxSceneInternal* scene)
 NpScene::~NpScene()
 	{
 	if(mCondition)
+		{
+		nxGetSdkAllocator()->free(*reinterpret_cast<void**>(
+			static_cast<unsigned char*>(mCondition) + 4));
 		nxGetSdkAllocator()->free(mCondition);
+		}
 	if(mReadLock)
 		{
 		nxGetSdkAllocator()->free(*static_cast<void**>(mReadLock));
@@ -171,7 +176,11 @@ static bool nxLockUnlock(void* lock)
 
 static void* nxConditionConstruct(void* memory, void* a, void* b, void* c)
 	{
-	(void)memory; (void)a; (void)b; (void)c;
+	(void)a; (void)b; (void)c;
+	memset(memory, 0, 0x18);
+	void* state = nxGetSdkAllocator()->malloc(0x14, NX_MEMORY_PERSISTENT);
+	if(state) memset(state, 0, 0x14);
+	*reinterpret_cast<void**>(static_cast<unsigned char*>(memory) + 4) = state;
 	return memory;
 	}
 

@@ -1,0 +1,9 @@
+# Phase 5: empty Scene ownership and release
+
+The oracle's `NpPhysicsSDK::createScene` (`0xb770`) returns the public wrapper already constructed by the internal `Scene` constructor (`0x12c10 → 0xc310`). The candidate previously constructed that wrapper after the auxiliary manager and SDK array, overwriting Scene+`0x6cc` and leaving the earlier 0x28-byte allocation unreachable. The oracle's condition constructor (`0x5b820`) also allocates a separate 0x14-byte state block.
+
+A fresh-process staged target now checks the full empty-scene allocation sequence `710.28.4.20.4.20.18.14.a8.8` and `releaseScene` free sequence `14.18.20.4.20.4.28.a8.710`. Both oracle and candidate then free `20.c.38.124.90.8.38` on SDK release. The public wrapper is constructed inside the Scene constructor, and SDK release removes the internal Scene from its unsorted array before calling its scalar deleting destructor. The candidate's two existing actor targets still match the oracle. Six registered lines raise the Phase 5 coverage floor from 357 to 363.
+
+An aimed mutation omitted the Scene destructor call. The staged target then printed `actor empty_scene_frees=0` against the oracle's `9` and failed with `stdout_delta=4`; the call was restored.
+
+The populated-scene path remains open. The current actor lifecycle's opt-in teardown drive measures 45 Scene-release frees in the oracle and only nine in the candidate. The oracle releases live actors, auxiliary arrays, pruning caches, and other Scene-owned structures before the final `0xa8` and `0x710` blocks. SDK release then frees 14 oracle blocks and seven candidate blocks because the candidate still lacks several destructor paths, including later name-table cleanup. This packet proves only the empty-scene contract; it does not claim full Scene teardown or full-DLL completion.

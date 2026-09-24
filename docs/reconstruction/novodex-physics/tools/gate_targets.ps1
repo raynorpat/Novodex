@@ -14,7 +14,7 @@ $NxPhaseTestTargets = [ordered] @{
     '2' = @('NxPhysicsExportTests', 'NxPhysicsSDKTests', 'NxPhysicsCoreClusterTests')
     '3' = @('NxPhysicsGeometryTests', 'NxPhysicsKernelFuzzTests')
     '4' = @()
-    '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests')
+    '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests')
     '6' = @('NxPhysicsJointStagedPairTests')
     '7' = @('NxPhysicsJointStagedPairTests')
     '8' = @()
@@ -87,6 +87,14 @@ $NxPhaseOracleDifferentialTargets = [ordered] @{
 # from 89978 to 3521 and leaves stdout_delta at 0, and this is what turns that
 # from a silent pass into a failure.
 $NxRequiredCoverageLines = [ordered] @{
+    'NxPhysicsEmptySceneTests' = @(
+        'actor empty_scene_allocs=10',
+        'actor empty_scene_alloc_sizes=710.28.4.20.4.20.18.14.a8.8',
+        'actor empty_scene_frees=9',
+        'actor empty_scene_sizes=14.18.20.4.20.4.28.a8.710',
+        'actor empty_sdk_frees=7',
+        'actor empty_sdk_sizes=20.c.38.124.90.8.38'
+    )
     'NxPhysicsDynamicFirstTests' = @(
         'actor dynamic_first created=1 allocs=34 frees=6',
         'actor dynamic_first sizes=50.18.228.800.400.800.400.800.400.400.400.1c.260.800.400.800.400.800.400.400.400.8.400.400.3c.1c.8.4.4.4.60.10.8.8',
@@ -1199,7 +1207,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 101  # 34 for NxPhysicsAssetTests, 67 for NxPhysicsThirdPartyTests
-    '5' = 357  # 126 object-layout assertions plus 231 public actor/pruner/box lines
+    '5' = 363  # 126 object-layout assertions plus 237 public actor/pruner/box/scene lines
                # (RED on purpose: vtables family open)
     '6' = 11  # 3 oracle-descriptor + 4 oracle-joint + 4 staged-pair-joint
     '7' = 4   # the four STAGED-PAIR assertions; the oracle-differential assertions
@@ -1225,6 +1233,7 @@ $NxPhaseCoverageFloor = [ordered] @{
 $NxRegisteredTestTargets = @(
     'NxPhysicsActorLifecycleTests',
     'NxPhysicsDynamicFirstTests',
+    'NxPhysicsEmptySceneTests',
     'NxPhysicsCoreClusterTests',
     'NxPhysicsExportTests',
     'NxPhysicsGeometryTests',

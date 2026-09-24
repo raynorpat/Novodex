@@ -58,6 +58,8 @@
 
 **M2 box name packet, 2026-09-24:** Public box slots 29 and 30 now use a pointer-preserving global name table. First insert, replacement, clear, descriptor name loading, the 0x10/0x10 allocation pair, and the named actor's five-block release match the pinned oracle. Twelve registered checks raise the Phase 5 floor to 357. An aimed replacement mutation failed the staged differential. See `docs/reconstruction/novodex-physics/evidence/phase5-box-name-registry.md`. Registry growth, stale entries, SDK teardown, other shape finals, and the final-vtable marker remain open.
 
+**M2 empty Scene release, 2026-09-24:** The internal Scene constructor now owns and builds its 0x28-byte public wrapper and the condition's 0x14-byte state block in oracle order. `releaseScene` removes the internal Scene from the SDK array and frees the empty Scene's nine blocks in exact order; SDK release's seven-block tail is also exact. A separate fresh-process target adds six registered checks and raises the Phase 5 floor to 363. See `docs/reconstruction/novodex-physics/evidence/phase5-empty-scene-release.md`. Populated Scene teardown is much larger: 45 oracle frees versus nine candidate frees in the current actor drive, with 14 versus seven SDK-release frees. This is the next ownership dependency, not a claim of Scene closure.
+
 ## 1. Inputs and boundaries
 
 - Repository: `D:\github\Novodex`, inspected at `0df8821f1c5e3668e566ad4182b1e8e568f632d6`.

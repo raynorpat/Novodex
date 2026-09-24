@@ -45,6 +45,7 @@ class PhysicsSDK : public NxAllocateable
 	// phys_fn_000476 (0x0000ea80). Builds the internal Scene and pushes it onto
 	// mScenes; returns the Scene, which NpPhysicsSDK wraps.
 	NxSceneInternal* createScene(const NxSceneDesc& desc);
+	void releaseScene(NxSceneInternal* scene);
 	// phys_fn_000448 (0x0000def0)
 	NxU32 getNbScenes() const;
 	// phys_fn_000450 (0x0000df00)

@@ -212,6 +212,14 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_include_directories(NxPhysicsDynamicFirstTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include)
 	target_link_libraries(NxPhysicsDynamicFirstTests bcrypt)
+	# Fresh-process empty Scene creation and release pins the wrapper's ownership
+	# order independently of actor teardown, which remains a separate phase-5 path.
+	add_executable(NxPhysicsEmptySceneTests tests/PhysicsActorLifecycleTests.cpp)
+	target_compile_definitions(NxPhysicsEmptySceneTests PRIVATE
+		NX_PHYSICS_EMPTY_SCENE_ONLY)
+	target_include_directories(NxPhysicsEmptySceneTests PRIVATE
+		Foundation/include Foundation/src/include Physics/include)
+	target_link_libraries(NxPhysicsEmptySceneTests bcrypt)
 	# The same include set as the oracle target above; the harness includes the
 	# Foundation's allocator interface for the page-guarded allocator, and Physics'
 	# public headers for the descriptors.

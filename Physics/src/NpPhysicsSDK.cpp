@@ -83,32 +83,17 @@ void NpPhysicsSDK::visualize(const NxUserDebugRenderer& renderer)
 // Everything below stands in for an oracle row this component does not own. The
 // stable IDs are the wrapper row and the SDK-side row it forwards to.
 
-// phys_fn_000234 (0x0000b770), 31 bytes: forwards to the SDK-side row and wraps
-// what comes back in an NpScene. The wrapper is 0x28 bytes, which is the size
-// phys_fn_000476 allocates for it.
+// phys_fn_000234 (0x0000b770): forwards to the SDK-side row and returns the
+// public wrapper built inside the internal Scene constructor.
 NxScene* NpPhysicsSDK::createScene(const NxSceneDesc& desc)
 	{
 	NxSceneInternal* scene = mSdk->createScene(desc);
-	if(!scene)
-		return 0;
-
-	// NpScene derives from NxAllocateable, whose operator new takes a memory type
-	// rather than a placement pointer, so the wrapper is allocated through it --
-	// which is also what the oracle does: phys_fn_000476 allocates the 0x28-byte
-	// wrapper through the same allocator seam.
-	NpScene* wrapper = new (NX_MEMORY_PERSISTENT) NpScene(scene);
-	if(!wrapper)
-		return 0;
-
-	// The Scene keeps the public wrapper at +0x6cc, which getScene reads back
-	// and which createActor copies into the actor.
-	scene->setPublicScene(wrapper);
-	return wrapper;
+	return scene ? static_cast<NxScene*>(scene->publicScene()) : 0;
 	}
 
-void NpPhysicsSDK::releaseScene(NxScene&)
+void NpPhysicsSDK::releaseScene(NxScene& scene)
 	{
-	// phys_fn_000236 -> phys_fn_000468; needs Scene, Phase 3.
+	mSdk->releaseScene(static_cast<NpScene&>(scene).scene());
 	}
 
 NxScene* NpPhysicsSDK::getScene(NxU32)

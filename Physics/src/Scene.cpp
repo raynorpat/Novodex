@@ -32,6 +32,7 @@
 #include "NxBoxShapeDesc.h"
 #include "NxActor.h"
 #include "NpActor.h"
+#include "NpScene.h"
 #include "NxJointDesc.h"
 #include "NxJoint.h"
 #include "NpJoint.h"
@@ -180,29 +181,6 @@ void nxSceneMember4CA30(void* self)
 	nxDword(p, 0x1c) = 2;
 	nxDword(p, 0x1d) = 0;
 	new (nxAt(p, 0x1e)) SdkContainer();						// phys_fn_004836
-	}
-
-// phys_fn_000285 (0x0000c310, phase 7). The 0x28-byte collector. The oracle
-// installs three vtables, builds two ReadWriteLocks at +0x14 and +0x18 and a third
-// at +0xc... +0x10, and stores `owner` at +0x24. The vtables are .rdata in the
-// oracle and are left unmodelled; the owner write is what the Scene's own field
-// 0x1b3 is read for.
-void* nxSceneCollectorConstruct(void* self, void* owner)
-	{
-	unsigned* p = static_cast<unsigned*>(self);
-	p[0] = 0;
-	p[1] = 0;
-	p[2] = 0;
-	p[3] = 0;
-	p[4] = 0;
-	p[5] = 0;
-	p[6] = 0;
-	p[7] = 0;
-	p[8] = 0;
-	p[9] = 0;
-	reinterpret_cast<unsigned char*>(self)[0x20] = 0;
-	nxDword(p, 0x09) = reinterpret_cast<unsigned>(owner);		// +0x24
-	return self;
 	}
 
 // phys_fn_002415 (0x0005bc10, phase 7). The 0xa8-byte auxiliary object. The oracle
@@ -500,10 +478,9 @@ NxSceneInternal::NxSceneInternal()
 	nxDword(p, 0x91) = base;
 	nxDword(p, 0xc1) = base;
 
-	// phys_fn_000285, allocated 0x28 bytes.
-	void* collector = nxGetSdkAllocator()->malloc(0x28, NX_MEMORY_PERSISTENT);
-	p[0x1b3] = collector ? reinterpret_cast<unsigned>(nxSceneCollectorConstruct(collector, p))
-						 : 0;
+	// phys_fn_000285: the Scene constructs and owns its public wrapper.
+	NpScene* wrapper = new (NX_MEMORY_PERSISTENT) NpScene(this);
+	p[0x1b3] = reinterpret_cast<unsigned>(wrapper);
 
 	// phys_fn_002415, allocated 0xa8 bytes.
 	void* aux = nxGetSdkAllocator()->malloc(0xa8, NX_MEMORY_PERSISTENT);
@@ -1518,17 +1495,14 @@ void nxSceneBuildGroundPlane(void* scene)
 	(void)scene;
 	}
 
-// The scalar deleting destructor the vtable's slot 0 points at. The oracle's is
-// phys_fn_000647's sibling in the vtable; the only caller a reconstructed path
-// reaches is createScene's failure path, which calls it with flags = 1 after
-// phys_fn_000651 returns false. The body releases the two blocks the constructor
-// allocated and then the object, matching the oracle's two-argument
-// destructor-then-free shape.
+// The scalar deleting destructor the vtable's slot 0 points at. Empty-scene
+// release now follows the oracle's wrapper, auxiliary-manager, Scene free order.
+// Populated-scene actor and cache teardown is a separate open path.
 static void nxSceneDelete(void* self, int flags)
 	{
 	unsigned* p = static_cast<unsigned*>(self);
 	if(p[0x1b3])
-		nxGetSdkAllocator()->free(reinterpret_cast<void*>(p[0x1b3]));
+		delete reinterpret_cast<NpScene*>(p[0x1b3]);
 	if(p[0x12])
 		nxGetSdkAllocator()->free(reinterpret_cast<void*>(p[0x12]));
 	if(flags & 1)

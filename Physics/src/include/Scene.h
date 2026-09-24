@@ -90,8 +90,8 @@ class NxSceneInternal
 
 	// The vtable the constructor installs, at .rdata 0x001066f4. The oracle's
 	// phys_fn_000647 writes it as its first action (`*param_1 = &PTR_FUN_101066f4`).
-	// Only the first slot is modelled -- the scalar deleting destructor the
-	// createScene failure path calls through `(**(code**)*puVar5)(1)`.
+	// Only the first slot is modelled -- the scalar deleting destructor reached
+	// by failed creation and by public SDK scene release.
 	// The public NxScene wrapper, kept at +0x6cc. getScene reads it back and
 	// createActor copies it into each actor. Measured in createScene's decompilation.
 	void setPublicScene(void* wrapper) { at<void*>(0x6cc) = wrapper; }

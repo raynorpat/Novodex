@@ -388,8 +388,40 @@ int wmain(int argc, wchar_t** argv)
 	NxSceneDesc sceneDesc;
 	sceneDesc.setToDefault();
 	sceneDesc.gravity = NxVec3(0.0f, 0.0f, 0.0f);
+	const unsigned beforeSceneCreateAlloc = allocator.allocations();
 	NxScene* scene = sdk->createScene(sceneDesc);
 	if(!scene) return nxFail("scene creation failed");
+	#ifdef NX_PHYSICS_EMPTY_SCENE_ONLY
+	const bool emptySceneOnly = true;
+	#else
+	const bool emptySceneOnly = getenv("NX_PHYSICS_PROBE_EMPTY_SCENE_RELEASE") != 0;
+	#endif
+	if(emptySceneOnly)
+		{
+		printf("actor empty_scene_allocs=%u\n", allocator.allocations() - beforeSceneCreateAlloc);
+		printf("actor empty_scene_alloc_sizes=");
+		for(unsigned i = 0; i < allocator.allocations() - beforeSceneCreateAlloc; ++i)
+			printf("%s%x", i ? "." : "", allocator.allocSizeFromEnd(
+				allocator.allocations() - beforeSceneCreateAlloc - 1 - i));
+		printf("\n");
+		const unsigned beforeSceneFree = allocator.frees();
+		sdk->releaseScene(*scene);
+		printf("actor empty_scene_frees=%u\n", allocator.frees() - beforeSceneFree);
+		printf("actor empty_scene_sizes=");
+		for(unsigned i = 0; i < allocator.frees() - beforeSceneFree; ++i)
+			printf("%s%x", i ? "." : "", allocator.freedSizeFromEnd(
+				allocator.frees() - beforeSceneFree - 1 - i));
+		printf("\n");
+		const unsigned beforeSdkFree = allocator.frees();
+		sdk->release();
+		printf("actor empty_sdk_frees=%u\n", allocator.frees() - beforeSdkFree);
+		printf("actor empty_sdk_sizes=");
+		for(unsigned i = 0; i < allocator.frees() - beforeSdkFree; ++i)
+			printf("%s%x", i ? "." : "", allocator.freedSizeFromEnd(
+				allocator.frees() - beforeSdkFree - 1 - i));
+		printf("\n");
+		return nxReportPairIdentity(pairDirectory);
+		}
 	#ifdef NX_PHYSICS_DYNAMIC_FIRST_ONLY
 		{
 		NxBoxShapeDesc firstBox;
@@ -971,7 +1003,29 @@ int wmain(int argc, wchar_t** argv)
 			}
 		}
 
+	const unsigned beforeSceneReleaseFrees = allocator.frees();
 	sdk->releaseScene(*scene);
+	if(getenv("NX_PHYSICS_PROBE_SCENE_TEARDOWN"))
+		{
+		printf("actor scene_teardown_frees=%u\n",
+			allocator.frees() - beforeSceneReleaseFrees);
+		printf("actor scene_teardown_sizes=");
+		for(unsigned i = 0; i < allocator.frees() - beforeSceneReleaseFrees; ++i)
+			printf("%s%x", i ? "." : "", allocator.freedSizeFromEnd(
+				allocator.frees() - beforeSceneReleaseFrees - 1 - i));
+		printf("\n");
+		}
+	const unsigned beforeSdkReleaseFrees = allocator.frees();
 	sdk->release();
+	if(getenv("NX_PHYSICS_PROBE_SDK_TEARDOWN"))
+		{
+		printf("actor sdk_teardown_frees=%u\n",
+			allocator.frees() - beforeSdkReleaseFrees);
+		printf("actor sdk_teardown_sizes=");
+		for(unsigned i = 0; i < allocator.frees() - beforeSdkReleaseFrees; ++i)
+			printf("%s%x", i ? "." : "", allocator.freedSizeFromEnd(
+				allocator.frees() - beforeSdkReleaseFrees - 1 - i));
+		printf("\n");
+		}
 	return nxReportPairIdentity(pairDirectory);
 }

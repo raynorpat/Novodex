@@ -279,6 +279,19 @@ NxSceneInternal* PhysicsSDK::createScene(const NxSceneDesc& desc)
 	return scene;
 	}
 
+// phys_fn_000468: remove the internal Scene from the SDK's unsorted array,
+// then invoke its scalar deleting destructor.
+void PhysicsSDK::releaseScene(NxSceneInternal* scene)
+	{
+	for(NxU32 i = 0; i < mScenes.size(); ++i)
+		if(mScenes[i] == reinterpret_cast<Scene*>(scene))
+			{
+			mScenes.replaceWithLast(i);
+			scene->scalarDeletingDestructor(1);
+			return;
+			}
+	}
+
 NxU32 PhysicsSDK::getNbScenes() const
 	{
 	return mScenes.size();
