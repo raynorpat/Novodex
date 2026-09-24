@@ -545,10 +545,30 @@ void NpActorVtable::setGlobalPosition(const NxVec3& position)
 	nxNpSceneGuardLeave(ctx);
 	}
 
-// (unimplemented) setGlobalOrientation
-void NpActorVtable::setGlobalOrientation(const NxMat33&)
+// phys_fn_000200 at 0x00009110, actor dynamic slot 3. The static body
+// retains the nine matrix words; a dynamic record stores the SDK's
+// matrix-to-quaternion conversion in its current and shadow poses.
+void NpActorVtable::setGlobalOrientation(const NxMat33& orientation)
 	{
-	
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	unsigned char* body = nxNpActorBody(this);
+	if(body)
+		{
+		unsigned char* record = *reinterpret_cast<unsigned char**>(body + 8);
+		if(record)
+			{
+			const NxQuat quaternion(orientation);
+			memcpy(record + 0x5c, &quaternion, sizeof(quaternion));
+			memcpy(record + 0x24, record + 0x5c, sizeof(quaternion));
+			nxNpActorMarkRecordDirty(record, 2);
+			nxNpActorRefreshCMass(record);
+			}
+		else
+			memcpy(body + 0x20, &orientation, sizeof(orientation));
+		nxNpActorNotifyOwnedShapes(body);
+		}
+	nxNpSceneGuardLeave(ctx);
 	}
 
 // phys_fn_000202 at 0x00009450, actor dynamic slot 4. Dynamic actors

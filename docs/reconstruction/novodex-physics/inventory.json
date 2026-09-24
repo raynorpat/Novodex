@@ -3667,9 +3667,9 @@
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/68",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/656",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Partial: Ghidra at RVA 0x9110 copies nine matrix words to static body+0x20. Its dynamic arm chooses trace or largest diagonal for matrix-to-quaternion conversion, stores current/shadow quaternions at record+0x5c/+0x24, marks dirty bit 2, refreshes mass-frame data, and invokes owned-shape update.",
+      "dynamic_proof": "Public actor probes match the pinned DLL for positive-trace and all three negative-trace matrix branches, including dirty bit, current/shadow quaternion words and shape pose words; a static case matches the body matrix and owned shape matrix.",
+      "notes": "Candidate implementation is partial pending error/scene/group and shape-family closure."
     },
     {
       "id": "phys_fn_000201",

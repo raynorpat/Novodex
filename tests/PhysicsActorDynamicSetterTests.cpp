@@ -290,6 +290,31 @@ int wmain(int argc, wchar_t** argv)
 	for(unsigned i = 0; i < 12; ++i)
 		printf("%s%x", i ? "." : "", word(movedShape, 0x0c + 4 * i));
 	printf(".%x\n", word(movedShape, 0xdc));
+	const float matrixRows[4][9] = {
+		{0.0f,-1.0f,0.0f,1.0f,0.0f,0.0f,0.0f,0.0f,1.0f},
+		{1.0f,0.0f,0.0f,0.0f,-1.0f,0.0f,0.0f,0.0f,-1.0f},
+		{-1.0f,0.0f,0.0f,0.0f,1.0f,0.0f,0.0f,0.0f,-1.0f},
+		{-1.0f,0.0f,0.0f,0.0f,-1.0f,0.0f,0.0f,0.0f,1.0f}
+	};
+	for(unsigned caseIndex = 0; caseIndex < 4; ++caseIndex)
+		{
+		NxMat33 matrix;
+		matrix.setRowMajor(matrixRows[caseIndex]);
+		managerFlags[id] = 0;
+		actor->setGlobalOrientation(matrix);
+		printf("setter matrix_case%u=%x.%u.%u.%x.%x.%x.%x.%x.%x.%x.%x.%x.%x.%x\n",
+			caseIndex, managerFlags[id],
+			static_cast<unsigned>(*activeEnd - activeBegin), managerIndex[id],
+			word(record, 0x5c), word(record, 0x60),
+			word(record, 0x64), word(record, 0x68),
+			word(record, 0x24), word(record, 0x28),
+			word(record, 0x2c), word(record, 0x30),
+			word(movedShape, 0x0c), word(movedShape, 0x10),
+			word(movedShape, 0x14));
+		managerFlags[id] = 0xffffffffu;
+		*activeEnd = savedEnd;
+		managerIndex[id] = savedIndex;
+		}
 #undef PROBE_DIRTY
 	scene->releaseActor(*actor);
 	NxActorDesc staticDesc;
@@ -322,6 +347,19 @@ int wmain(int argc, wchar_t** argv)
 	printf("setter static_orientation_quat=");
 	for(unsigned i = 0; i < 9; ++i)
 		printf("%s%x", i ? "." : "", word(staticBody, 0x20 + 4 * i));
+	printf("\n");
+	NxMat33 staticMatrix;
+	staticMatrix.setRowMajor(matrixRows[1]);
+	staticActor->setGlobalOrientation(staticMatrix);
+	printf("setter static_orientation_matrix=");
+	for(unsigned i = 0; i < 9; ++i)
+		printf("%s%x", i ? "." : "", word(staticBody, 0x20 + 4 * i));
+	printf("\n");
+	const unsigned char* staticShape = *reinterpret_cast<unsigned char* const*>(
+		staticBody + 0x10);
+	printf("setter static_shape_orientation_matrix=");
+	for(unsigned i = 0; i < 9; ++i)
+		printf("%s%x", i ? "." : "", word(staticShape, 0x0c + 4 * i));
 	printf("\n");
 	scene->releaseActor(*staticActor);
 	NxBoxShapeDesc secondBox;
