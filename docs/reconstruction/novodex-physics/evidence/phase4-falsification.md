@@ -276,3 +276,31 @@ control / mutant / control:
 The control is **not** clean: its one mismatch is `candidate CANDIDATE-MISSING family=vtables`, the
 target's designed RED. The row's own family moves from agreeing to disagreeing; the target-level
 `mismatches=2` that `c962ffa` recorded is a count over a baseline of 1.
+
+---
+
+## 9. Three Phase 2 rows the review re-deferred, and their measurements
+
+`phys_fn_002410` (`0x0005bac0`+240, the pool release arm), `phys_fn_002404` (`0x0005ba70`+17) and
+`phys_fn_002406` (`0x0005ba90`+7), the actor's `+0x08` member subobject's constructor and destructor,
+were closed on the Phase 2 ledger by canonical commits `c962ffa` and `e7094e9` on Phase 5's
+`NxPhysicsObjectLayoutTests`, with `discharged_by_phase: 5`. The port's review added a rule the
+validator did not have -- a discharge counts only once the discharging phase is `pass` in
+`program.json`, the objection that re-deferred `phys_fn_002344` (§8) -- and Phase 5 is pending, so all
+three are deferred `blocked_on_later_phase` for a Phase 5 close to discharge. Phase 2 closes 56. Each recorded mutation
+was re-applied to `Physics/src/ObjectModel.cpp` in a `git archive` copy of `d9a459b` and
+`NxPhysicsObjectLayoutTests` rebuilt, control / mutants / control:
+
+| run | `layout candidate mismatches` | families that move | `layout oracle digest` |
+| --- | ---: | --- | --- |
+| control | 1 | none | `16dceb3c` |
+| `phys_fn_002410`, `mir[idx] = u` for the poison | 4 | `relgrow`, `owndtor`, `miscsm2` | `16dceb3c` |
+| `phys_fn_002404`, the two field zeroes dropped | 2 | `actorctor`, `ct=1/1/1/0/1` | `16dceb3c` |
+| `phys_fn_002406`, a null restored for the third table | 2 | `actorctor`, `dd=1/0/1 adj=1/0/1` | `16dceb3c` |
+| control | 1 | none | `16dceb3c` |
+
+`c962ffa` recorded 3 for `phys_fn_002410`; the branch reads 4 because `miscsm2`, the shapes-clear drive
+of `phys_fn_002411` added after that measurement, reaches the same release arm through the image's own
+call. The two `e7094e9` counts reproduce. Every control is **dirty** in the same way as §8's: its one
+mismatch is `candidate CANDIDATE-MISSING family=vtables`, the target's designed RED, so each count is
+over a baseline of 1 and what a row owns is its family reading.
