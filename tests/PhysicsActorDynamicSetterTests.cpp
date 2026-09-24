@@ -14,6 +14,7 @@
 #include "NxPlaneShapeDesc.h"
 #include "NxSphereShape.h"
 #include "NxCapsuleShape.h"
+#include "NxPlaneShape.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -523,9 +524,15 @@ int wmain(int argc, wchar_t** argv)
 			printf("setter capsule_dimensions=%x.%x\n",
 				word(familyShape, 0xe0), word(familyShape, 0xe4));
 		else
+			{
 			printf("setter plane_equation=%x.%x.%x.%x\n",
 				word(familyShape, 0xe0), word(familyShape, 0xe4),
 				word(familyShape, 0xe8), word(familyShape, 0xec));
+			printf("setter plane_basis=");
+			for(unsigned i = 0; i < 7; ++i)
+				printf("%s%x", i ? "." : "", word(familyShape, 0xf0 + i * 4));
+			printf("\n");
+			}
 		if(family < 2)
 			{
 			const unsigned char* familyPruner =
@@ -552,6 +559,20 @@ int wmain(int argc, wchar_t** argv)
 					word(familyShape, 0xdc),
 					familyPruner ? word(familyPruner, 0x38) - beforeEpoch : 0u);
 				}
+			}
+		else
+			{
+			const unsigned char* planePruner =
+				*reinterpret_cast<unsigned char* const*>(familyShape + 0xc4);
+			const unsigned beforeEpoch = planePruner
+				? word(planePruner, 0x38) : 0u;
+			static_cast<NxPlaneShape*>(publicShape)->setPlane(
+				NxVec3(0.0f, 0.0f, 1.0f), 2.5f);
+			printf("setter plane_changed=");
+			for(unsigned i = 0; i < 11; ++i)
+				printf("%s%x", i ? "." : "", word(familyShape, 0xe0 + i * 4));
+			printf(".%x.%u\n", word(familyShape, 0xdc),
+				planePruner ? word(planePruner, 0x38) - beforeEpoch : 0u);
 			}
 		scene->releaseActor(*familyActor);
 		}

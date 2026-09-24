@@ -373,6 +373,15 @@ static void __fastcall nxCapsuleHandleSetHeight(void* self, void*, NxReal height
 	static_cast<ShapeBase*>(static_cast<void*>(shape))->nxApplyOwnerUpdate(1);
 	}
 
+static void __fastcall nxPlaneHandleSetPlane(void* self, void*,
+	const NxVec3& normal, NxReal distance)
+	{
+	unsigned char* shape = nxBoxHandleInternal(self);
+	static_cast<PlaneShape*>(static_cast<void*>(shape))->nxPlaneSetEquation(
+		&normal.x, distance);
+	nxSceneMarkShapeDirty(shape, 0x80);
+	}
+
 void* nxBoxShapePublicVtable()
 	{
 	struct Table
@@ -419,6 +428,7 @@ void* nxShapePublicVtable(unsigned type)
 						slot < 31 ? box[slot]
 						: reinterpret_cast<void*>(&nxUnsupportedBoxMethod);
 				}
+			slots[0][31] = reinterpret_cast<void*>(&nxPlaneHandleSetPlane);
 			slots[1][31] = reinterpret_cast<void*>(&nxSphereHandleSetRadius);
 			slots[1][32] = reinterpret_cast<void*>(&nxShapeHandleGetRadius);
 			slots[2][32] = reinterpret_cast<void*>(&nxCapsuleHandleSetRadius);

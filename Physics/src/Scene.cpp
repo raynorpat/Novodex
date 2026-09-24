@@ -53,6 +53,8 @@ void nxShapeSetName(void* shape, const char* name);
 void nxShapeFactoryInitializePose(void* shape, const void* localPose);
 void nxShapeFactoryRefreshPose(void* shape);
 void nxShapeFactoryInstallVtable(void* shape, unsigned type);
+void nxShapeFactoryInitializePlane(void* shape, const float* normal,
+	float distance);
 
 // ---------------------------------------------------------------------------
 // Reproduction holes. The oracle calls these; the phases that own them have not
@@ -2110,8 +2112,7 @@ void* nxShapeFactory(void* shapeDesc, void* actor)
 			{
 			const NxPlaneShapeDesc* plane =
 				static_cast<const NxPlaneShapeDesc*>(descriptor);
-			memcpy(shape + 0xe0, &plane->normal, sizeof(NxVec3));
-			*reinterpret_cast<float*>(shape + 0xec) = -plane->d;
+			nxShapeFactoryInitializePlane(shape, &plane->normal.x, plane->d);
 			}
 		}
 	NxSceneInternal* scene = *reinterpret_cast<NxSceneInternal**>(

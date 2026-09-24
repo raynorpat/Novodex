@@ -394,7 +394,9 @@ $NxRequiredCoverageLines = [ordered] @{
         'setter plane_vtable=1.1.1.1',
         'setter plane_public=1.0.1.0.0',
         'setter plane_center=0.0.0.7f7fffff',
-        'setter plane_equation=0.3f800000.0.80000000'
+        'setter plane_equation=0.3f800000.0.80000000',
+        'setter plane_basis=bf800000.0.0.80000000.80000000.3f800000.1',
+        'setter plane_changed=0.0.3f800000.c0200000.0.bf800000.0.3f800000.80000000.80000000.2.80002.1'
     )
     'NxPhysicsActorDynamicsTests' = @(
         'dynamics created=1',
@@ -1632,7 +1634,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 101  # 34 for NxPhysicsAssetTests, 67 for NxPhysicsThirdPartyTests
-    '5' = 770  # 126 object-layout, 1 shape-vtable and 643 public actor/pruner/box/scene lines
+    '5' = 772  # 126 object-layout, 1 shape-vtable and 645 public actor/pruner/box/scene lines
                # (RED on purpose: vtables family open)
     '6' = 11  # 3 oracle-descriptor + 4 oracle-joint + 4 staged-pair-joint
     '7' = 4   # the four STAGED-PAIR assertions; the oracle-differential assertions

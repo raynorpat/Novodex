@@ -4386,6 +4386,28 @@ void nxShapeFactoryRefreshPose(void* shape)
 	memcpy(bytes + 0x3c, bytes + 0x0c, 0x30);
 	}
 
+void nxShapeFactoryInitializePlane(void* shape, const float* normal,
+	float distance)
+	{
+	PlaneShape* plane = static_cast<PlaneShape*>(shape);
+	memcpy(plane->mNormalE0, normal, sizeof(plane->mNormalE0));
+	plane->mDistanceEC = -distance;
+	unsigned x, y, z;
+	memcpy(&x, normal, 4);
+	memcpy(&y, normal + 1, 4);
+	memcpy(&z, normal + 2, 4);
+	x &= 0x7fffffffu;
+	y &= 0x7fffffffu;
+	z &= 0x7fffffffu;
+	plane->mWord108 = x == 0x3f800000u && y == 0 && z == 0 ? 0u
+		: x == 0 && y == 0x3f800000u && z == 0 ? 1u
+		: x == 0 && y == 0 && z == 0x3f800000u ? 2u : 3u;
+	NxNormalToTangents(
+		*reinterpret_cast<const NxVec3*>(plane->mNormalE0),
+		*reinterpret_cast<NxVec3*>(plane->mTangentF0),
+		*reinterpret_cast<NxVec3*>(plane->mBinormalFC));
+	}
+
 // ---------------------------------------------------------------------------
 // Shape-to-name registry. See evidence section 3o for the full decode.
 
