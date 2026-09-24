@@ -2017,12 +2017,12 @@ class ClosureEvidenceTests(unittest.TestCase):
         ledger.update(overrides)
         return ledger
 
-    def errors(self, ledger, published):
+    def errors(self, ledger, published, phase=4):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / "evidence").mkdir()
             (root / self.EVIDENCE).write_text(published, encoding="utf-8")
-            return validate_inventory.validate_closure_evidence(ledger, 4, root)
+            return validate_inventory.validate_closure_evidence(ledger, phase, root)
 
     def test_accepts_a_row_whose_count_is_on_its_own_line(self):
         self.assertEqual(self.errors(
@@ -2048,12 +2048,25 @@ class ClosureEvidenceTests(unittest.TestCase):
         self.assertEqual(self.errors(self.ledger("check_failed the guard holds"),
                                      "`phys_fn_002045` drops the guard\n"), [])
 
-    def test_a_ledger_naming_no_evidence_file_is_unchanged(self):
+    def test_a_phase_2_or_3_ledger_naming_no_evidence_file_is_unchanged(self):
         # Phases 2 and 3 published their measurements before stable IDs were
         # written into the evidence, so they name no file and bind nothing.
         ledger = self.ledger()
         del ledger["evidence_file"]
-        self.assertEqual(self.errors(ledger, ""), [])
+        for phase in (2, 3):
+            self.assertEqual(self.errors(ledger, "", phase=phase), [])
+
+    def test_rejects_a_later_ledger_that_drops_its_evidence_file(self):
+        # The deletion attack: drop the key and move a row onto an invented
+        # count in the same edit. With the key optional that validated.
+        ledger = self.ledger("mismatches=7")
+        del ledger["evidence_file"]
+        for phase in (4, 6, 7):
+            self.assertIn("names no evidence_file",
+                          "\n".join(self.errors(ledger, "", phase=phase)))
+
+    def test_a_later_ledger_that_closes_nothing_needs_no_evidence_file(self):
+        self.assertEqual(self.errors({"phase": 5, "closed": []}, "", phase=5), [])
 
     def test_rejects_an_evidence_file_that_is_not_there(self):
         ledger = self.ledger(evidence_file="evidence/nothing.md")

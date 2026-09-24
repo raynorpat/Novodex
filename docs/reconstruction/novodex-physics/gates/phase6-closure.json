@@ -1,6 +1,7 @@
 {
   "schema_version": 1,
   "phase": 6,
+  "evidence_file": "evidence/phase6-joints.md",
   "note": "Phase 6 closes 2 of its 433 function rows and none of its 531 data objects. The closed rows are the two exported joint-descriptor rows, and each is closed by the one thing the schema accepts: a mutation aimed at it that a registered gate caught. The target that catches them is NxPhysicsJointTests as a STAGED-PAIR differential -- not an oracle differential, because an oracle differential runs only against the pinned DLL and so can never catch a mutation to the candidate (recorded in evidence 11l). The deferred rows are the ones Phase 6 has not reconstructed, which is a debt rather than an obstruction.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy, rebuilt, and run against the committed oracle transcript through a REGISTERED STAGED-PAIR target. The gate catches it because the target loads the rebuilt module and the runner compares the two transcripts line for line.",

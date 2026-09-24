@@ -9123,3 +9123,19 @@ and it refutes the claim in one line.**
 **All gates green**: phase 1 exit 3 skipped, phases 2/3/4 exit 0, phase 5 exit 1 RED on purpose,
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 601 tool tests OK.
+
+## Closure binding: the six rows the Phase 6 and Phase 7 ledgers close
+
+`gates/phase6-closure.json` and `gates/phase7-closure.json` name this file as their `evidence_file`,
+and `validate_inventory.py` requires each closed row's stable ID on a line that also carries the count
+its ledger spends. At the port of the Phase 4 close (branch `p4-close-port`) that binding became
+mandatory for every ledger from Phase 4 on that closes a row; until then these six closures were bound
+to nothing. Each line below names the section above that published the measurement. Nothing was
+re-measured to write this table.
+
+    phys_fn_004115  phase 6  NxJointDesc_SetGlobalAnchor       stdout_delta=14  section 11m, anchor_row
+    phys_fn_004117  phase 6  NxJointDesc_SetGlobalAxis         stdout_delta=14  section 11m, axis_row
+    phys_fn_000626  phase 7  Scene::createActor                stdout_delta=27  section 12i, createActor_valid
+    phys_fn_000665  phase 7  Scene::createJoint                stdout_delta=30  sections 12h and 12k
+    phys_fn_000651  phase 7  the Scene descriptor initialiser  stdout_delta=28  section 12k
+    phys_fn_000013  phase 7  the actor constructor             stdout_delta=30  section 12n, actorCtor_nobody

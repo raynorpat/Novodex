@@ -245,6 +245,11 @@ DEFERRED_REASONS = ("blocked_on_later_phase", "unreachable_in_phase_2",
 # would shrink the code half of the split, and a data object borrowing a code
 # reason would claim a reachability argument nobody made about it.
 DATA_DEFERRAL_REASONS = ("data_object_not_dispositioned",)
+# From this phase on a closure ledger that closes a row must name the evidence file
+# its counts are published in. Phases 2 and 3 published before stable IDs were
+# written into their evidence; every later ledger has no such excuse, and an
+# optional key would let the binding be switched off from inside the file it guards.
+EVIDENCE_FILE_FROM_PHASE = 4
 CLOSURE_NAME = re.compile(r"^phase([0-9]+)-closure[.]json$")
 PHASE_RECORD_NAME = re.compile(r"^phase([0-9]+)[.]json$")
 # Canonical decimal only: `stdout_delta=007` used to parse as 7 and pass, so a
@@ -1572,8 +1577,10 @@ def validate_closure_evidence(closure, phase, evidence_root):
 
     Where a ledger names the evidence file its measurements are published in,
     this requires every closed row's stable ID to appear in that file on a line
-    that also carries the count the ledger spends. A ledger that names no such
-    file is unchanged, which is how the Phase 2 and Phase 3 ledgers stay valid:
+    that also carries the count the ledger spends. From EVIDENCE_FILE_FROM_PHASE
+    on, a ledger that closes any row MUST name one: while the key was optional,
+    deleting it and moving a row onto an invented count in the same edit
+    validated. The Phase 2 and Phase 3 ledgers name none and stay valid, because
     their evidence predates stable IDs being written into it.
 
     It does not make the count true and cannot: the probe transcripts are still
@@ -1584,6 +1591,12 @@ def validate_closure_evidence(closure, phase, evidence_root):
     """
     name = closure.get("evidence_file")
     if name is None:
+        closing = [row for row in closure.get("closed", []) if isinstance(row, dict)]
+        if phase >= EVIDENCE_FILE_FROM_PHASE and closing:
+            return [f"the phase {phase} closure ledger closes {len(closing)} rows and names no "
+                    f"evidence_file; from phase {EVIDENCE_FILE_FROM_PHASE} on every closed row's "
+                    f"count is bound to the file that publishes it, and dropping the key would "
+                    f"switch that binding off from inside the ledger it guards"]
         return []
     if not isinstance(name, str) or not name.strip():
         return [f"the phase {phase} closure ledger records evidence_file {name!r}, which is "
