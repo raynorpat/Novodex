@@ -40,6 +40,7 @@ static unsigned char* nxNpActorRecord(void* actor)
 	}
 
 static void nxNpActorRotationFromQuaternionGetter(const float* q, float* rows);
+static void nxNpActorRefreshCMass(unsigned char* record);
 
 static NxMat33 nxNpActorInstantTensor(const unsigned char* record,
 	unsigned diagonalOffset, bool roundedQuaternionProducts)
@@ -504,10 +505,41 @@ NxVec3 NpActorVtable::getPointVelocityVal(const NxVec3& point) const
 	return out;
 	}
 
-// (unimplemented) setGlobalPosition
-void NpActorVtable::setGlobalPosition(const NxVec3&)
+// phys_fn_000198 at 0x00008f60, actor dynamic slot 2. The body stores a
+// cached pose for static actors; dynamic records keep a current and shadow
+// translation and refresh their mass-frame center after position changes.
+void NpActorVtable::setGlobalPosition(const NxVec3& position)
 	{
-	
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	unsigned char* body = nxNpActorBody(this);
+	if(body)
+		{
+		unsigned char* record = *reinterpret_cast<unsigned char**>(body + 8);
+		if(record)
+			{
+			memcpy(record + 0x50, &position, sizeof(position));
+			memcpy(record + 0x18, record + 0x50, sizeof(position));
+			nxNpActorMarkRecordDirty(record, 1);
+			nxNpActorRefreshCMass(record);
+			}
+		else
+			memcpy(body + 0x44, &position, sizeof(position));
+		unsigned char* shape = *reinterpret_cast<unsigned char**>(body + 0x10);
+		if(shape)
+			{
+			if(*reinterpret_cast<unsigned*>(shape + 0xd0) == 5u)
+				{
+				void** first = *reinterpret_cast<void***>(shape + 0xe0);
+				void** last = *reinterpret_cast<void***>(shape + 0xe4);
+				for(void** child = first; child && child != last; ++child)
+					static_cast<ShapeBase*>(*child)->nxApplyOwnerUpdate(1);
+				}
+			else
+				static_cast<ShapeBase*>(static_cast<void*>(shape))->nxApplyOwnerUpdate(1);
+			}
+		}
+	nxNpSceneGuardLeave(ctx);
 	}
 
 // (unimplemented) setGlobalOrientation

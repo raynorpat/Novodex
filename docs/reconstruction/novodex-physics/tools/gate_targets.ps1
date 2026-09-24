@@ -305,6 +305,7 @@ $NxRequiredCoverageLines = [ordered] @{
     )
     'NxPhysicsActorDynamicSetterTests' = @(
         'setter created=1',
+        'setter initial_pruner=1.1.7f7fffff.7f7fffff.7f7fffff.ff7fffff.ff7fffff.ff7fffff',
         'setter initial_wake=3ecccccc.3ecccccc.3cb851ec.3ca0902e',
         'setter group_initial=0.1.1',
         'setter mass=41000000.3e000000.41000000.40a00000.40c00000.40e00000.3e4ccccd.3e2aaaab.3e124925',
@@ -341,9 +342,19 @@ $NxRequiredCoverageLines = [ordered] @{
         'setter group_one_asleep=0.0',
         'setter group_both_asleep=1.1',
         'setter group_one_rewoke=0.0',
+        'setter dirty_position=1.2.1',
+        'setter position=40400000.c0000000.40a00000.40400000.c0000000.40a00000.40400000.c0000000.40a00000.40400000.c0000000.40a00000',
+        'setter shape_position=40400000.c0000000.40a00000.0.0.0.0.0.0.80002',
+        'setter rotated_center=3fc00000.c0300000.40300000',
+        'setter shape_rotated_pose=331302ae.0.3f7fffff.3f7fffff.0.b31302ae.0.3f800000.0.3fa00000.c0200000.40300000.80002',
+        'setter shape_pruner_state=0.1.1020000.2.0',
+        'setter pruner_update=1.1.0.2.7f7fffff.7f7fffff.7f7fffff.ff7fffff.ff7fffff.ff7fffff',
         'setter static_created=1',
         'setter static_sleep=1.1.0.0',
-        'setter static_after=1.1.0.0'
+        'setter static_after=1.1.0.0',
+        'setter static_position=c0800000.40c00000.c1000000.c0800000.40c00000.c1000000',
+        'setter multi_created=1',
+        'setter multi_position=2.40000000.40400000.c0800000.40000000.40400000.c0800000'
     )
     'NxPhysicsActorDynamicsTests' = @(
         'dynamics created=1',
@@ -1581,7 +1592,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 101  # 34 for NxPhysicsAssetTests, 67 for NxPhysicsThirdPartyTests
-    '5' = 719  # 126 object-layout, 1 shape-vtable and 592 public actor/pruner/box/scene lines
+    '5' = 730  # 126 object-layout, 1 shape-vtable and 603 public actor/pruner/box/scene lines
                # (RED on purpose: vtables family open)
     '6' = 11  # 3 oracle-descriptor + 4 oracle-joint + 4 staged-pair-joint
     '7' = 4   # the four STAGED-PAIR assertions; the oracle-differential assertions

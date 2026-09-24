@@ -910,6 +910,17 @@ static void nxSceneUntrackShape(NxSceneInternal* scene, unsigned char* shape)
 			}
 	}
 
+static void nxSceneInvalidateBroadphaseEntry(unsigned char* table,
+	unsigned char* entries, unsigned index, unsigned char* shape)
+	{
+	static const unsigned emptyBounds[6] = {
+		0x7f7fffffu, 0x7f7fffffu, 0x7f7fffffu,
+		0xff7fffffu, 0xff7fffffu, 0xff7fffffu };
+	memcpy(entries + index * 0x18, emptyBounds, sizeof(emptyBounds));
+	*reinterpret_cast<unsigned char*>(shape + 0xcf) = 1;
+	++*reinterpret_cast<unsigned*>(table + 0x38);
+	}
+
 void nxSceneBroadphaseRegister(NxSceneInternal* scene, void* bodyPointer)
 	{
 	unsigned char* body = static_cast<unsigned char*>(bodyPointer);
@@ -974,12 +985,14 @@ void nxSceneBroadphaseRegister(NxSceneInternal* scene, void* bodyPointer)
 		*reinterpret_cast<unsigned short*>(object + 0xcc) =
 			static_cast<unsigned short>(i);
 		*reinterpret_cast<unsigned char*>(object + 0xce) = 2;
+		nxSceneInvalidateBroadphaseEntry(table, entries, i, object);
 		}
 	references[count + childCount] = shape + 0xa4;
 	*reinterpret_cast<void**>(shape + 0xc4) = table;
 	*reinterpret_cast<unsigned short*>(shape + 0xcc) =
 		static_cast<unsigned short>(count + childCount);
 	*reinterpret_cast<unsigned char*>(shape + 0xce) = 2;
+	nxSceneInvalidateBroadphaseEntry(table, entries, count + childCount, shape);
 	count = static_cast<unsigned short>(count + added);
 	nxSceneTrackShape(scene, shape);
 	}

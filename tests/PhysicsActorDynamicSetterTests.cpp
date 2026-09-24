@@ -63,6 +63,19 @@ int wmain(int argc, wchar_t** argv)
 	const unsigned char* body = *reinterpret_cast<unsigned char* const*>(
 		reinterpret_cast<const unsigned char*>(actor) + 0x14);
 	const unsigned char* record = *reinterpret_cast<unsigned char* const*>(body + 8);
+	const unsigned char* initialShape = *reinterpret_cast<unsigned char* const*>(body + 0x10);
+	const unsigned char* initialPruner = *reinterpret_cast<unsigned char* const*>(initialShape + 0xc4);
+	const unsigned char* initialEntries = initialPruner
+		? *reinterpret_cast<unsigned char* const*>(initialPruner + 0x14) : 0;
+	printf("setter initial_pruner=%u.%x.%x.%x.%x.%x.%x.%x\n",
+		*reinterpret_cast<const unsigned char*>(initialShape + 0xcf),
+		initialPruner ? word(initialPruner, 0x38) : 0u,
+		initialEntries ? word(initialEntries, 0) : 0u,
+		initialEntries ? word(initialEntries, 4) : 0u,
+		initialEntries ? word(initialEntries, 8) : 0u,
+		initialEntries ? word(initialEntries, 12) : 0u,
+		initialEntries ? word(initialEntries, 16) : 0u,
+		initialEntries ? word(initialEntries, 20) : 0u);
 	printf("setter initial_wake=%x.%x.%x.%x\n",
 		word(record, 0x84), word(record, 0x4c),
 		word(record, 0xd0), word(record, 0xd4));
@@ -189,6 +202,72 @@ int wmain(int argc, wchar_t** argv)
 	*reinterpret_cast<unsigned char**>(otherRecord + 0x1e8) = otherRecord;
 	*reinterpret_cast<unsigned char**>(mutableRecord + 0x1fc) = 0;
 	scene->releaseActor(*other);
+	const unsigned char* positionShape = *reinterpret_cast<unsigned char* const*>(body + 0x10);
+	const unsigned char* positionPruner = *reinterpret_cast<unsigned char* const*>(
+		positionShape + 0xc4);
+	const unsigned beforePositionPrunerEpoch = positionPruner
+		? word(positionPruner, 0x38) : 0u;
+	PROBE_DIRTY("position", actor->setGlobalPosition(NxVec3(3.0f, -2.0f, 5.0f)));
+	const NxVec3 updatedPosition = actor->getGlobalPositionVal();
+	printf("setter position=%x.%x.%x.%x.%x.%x.%x.%x.%x.%x.%x.%x\n",
+		bits(updatedPosition.x), bits(updatedPosition.y), bits(updatedPosition.z),
+		word(record, 0x50), word(record, 0x54), word(record, 0x58),
+		word(record, 0x18), word(record, 0x1c), word(record, 0x20),
+		word(record, 0x158), word(record, 0x15c), word(record, 0x160));
+	const unsigned char* movedShape = *reinterpret_cast<unsigned char* const*>(body + 0x10);
+	printf("setter shape_position=%x.%x.%x.%x.%x.%x.%x.%x.%x.%x\n",
+		word(movedShape, 0x30), word(movedShape, 0x34), word(movedShape, 0x38),
+		word(movedShape, 0x60), word(movedShape, 0x64), word(movedShape, 0x68),
+		word(movedShape, 0x90), word(movedShape, 0x94), word(movedShape, 0x98),
+		word(movedShape, 0xdc));
+	unsigned char* mutableShape = const_cast<unsigned char*>(movedShape);
+	unsigned char oldCurrentQuaternion[16], oldShadowQuaternion[16], oldLocalPose[0x30];
+	unsigned char oldMassOffset[12];
+	memcpy(oldCurrentQuaternion, record + 0x5c, sizeof(oldCurrentQuaternion));
+	memcpy(oldShadowQuaternion, record + 0x24, sizeof(oldShadowQuaternion));
+	memcpy(oldLocalPose, mutableShape + 0x6c, sizeof(oldLocalPose));
+	memcpy(oldMassOffset, record + 0x100, sizeof(oldMassOffset));
+	const float quarterQuaternion[4] = {0.0f, 0.0f, 0.70710677f, 0.70710677f};
+	const float localPose[12] = {1.0f,0.0f,0.0f,0.0f,0.0f,-1.0f,
+		0.0f,1.0f,0.0f,0.5f,-0.25f,0.75f};
+	const float massOffset[3] = {0.25f, -0.5f, 0.75f};
+	memcpy(mutableRecord + 0x5c, quarterQuaternion, sizeof(quarterQuaternion));
+	memcpy(mutableRecord + 0x24, quarterQuaternion, sizeof(quarterQuaternion));
+	memcpy(mutableShape + 0x6c, localPose, sizeof(localPose));
+	memcpy(mutableRecord + 0x100, massOffset, sizeof(massOffset));
+	actor->setGlobalPosition(NxVec3(1.0f, -3.0f, 2.0f));
+	printf("setter rotated_center=%x.%x.%x\n", word(record, 0x158),
+		word(record, 0x15c), word(record, 0x160));
+	printf("setter shape_rotated_pose=");
+	for(unsigned i = 0; i < 12; ++i)
+		printf("%s%x", i ? "." : "", word(movedShape, 0x0c + 4 * i));
+	printf(".%x\n", word(movedShape, 0xdc));
+	printf("setter shape_pruner_state=%x.%x.%x.%x.%x\n",
+		word(movedShape, 0xac), word(movedShape, 0xc8),
+		word(movedShape, 0xcc), word(movedShape, 0xd0),
+		word(movedShape, 0xd4));
+	const unsigned char* broadphase = *reinterpret_cast<unsigned char* const*>(
+		movedShape + 0xc4);
+	const unsigned char* broadphaseEntry = broadphase
+		? *reinterpret_cast<unsigned char* const*>(broadphase + 0x14) : 0;
+	const unsigned shapeIndex = *reinterpret_cast<const unsigned short*>(
+		movedShape + 0xcc);
+	printf("setter pruner_update=%u.%u.%u.%u.%x.%x.%x.%x.%x.%x\n",
+		broadphase ? 1u : 0u,
+		*reinterpret_cast<const unsigned char*>(movedShape + 0xcf),
+		shapeIndex,
+		broadphase ? word(broadphase, 0x38) - beforePositionPrunerEpoch : 0u,
+		broadphaseEntry ? word(broadphaseEntry + shapeIndex * 0x18, 0) : 0u,
+		broadphaseEntry ? word(broadphaseEntry + shapeIndex * 0x18, 4) : 0u,
+		broadphaseEntry ? word(broadphaseEntry + shapeIndex * 0x18, 8) : 0u,
+		broadphaseEntry ? word(broadphaseEntry + shapeIndex * 0x18, 12) : 0u,
+		broadphaseEntry ? word(broadphaseEntry + shapeIndex * 0x18, 16) : 0u,
+		broadphaseEntry ? word(broadphaseEntry + shapeIndex * 0x18, 20) : 0u);
+	memcpy(mutableRecord + 0x5c, oldCurrentQuaternion, sizeof(oldCurrentQuaternion));
+	memcpy(mutableRecord + 0x24, oldShadowQuaternion, sizeof(oldShadowQuaternion));
+	memcpy(mutableShape + 0x6c, oldLocalPose, sizeof(oldLocalPose));
+	memcpy(mutableRecord + 0x100, oldMassOffset, sizeof(oldMassOffset));
+	actor->setGlobalPosition(NxVec3(3.0f, -2.0f, 5.0f));
 #undef PROBE_DIRTY
 	scene->releaseActor(*actor);
 	NxActorDesc staticDesc;
@@ -210,7 +289,36 @@ int wmain(int argc, wchar_t** argv)
 		staticActor->isGroupSleeping() ? 1u : 0u,
 		bits(staticActor->getSleepLinearVelocity()),
 		bits(staticActor->getSleepAngularVelocity()));
+	staticActor->setGlobalPosition(NxVec3(-4.0f, 6.0f, -8.0f));
+	const unsigned char* staticBody = *reinterpret_cast<unsigned char* const*>(
+		reinterpret_cast<const unsigned char*>(staticActor) + 0x14);
+	const NxVec3 staticPosition = staticActor->getGlobalPositionVal();
+	printf("setter static_position=%x.%x.%x.%x.%x.%x\n",
+		bits(staticPosition.x), bits(staticPosition.y), bits(staticPosition.z),
+		word(staticBody, 0x44), word(staticBody, 0x48), word(staticBody, 0x4c));
 	scene->releaseActor(*staticActor);
+	NxBoxShapeDesc secondBox;
+	secondBox.dimensions = NxVec3(0.5f, 1.0f, 1.5f);
+	NxActorDesc multiDesc = actorDesc;
+	multiDesc.shapes.pushBack(&secondBox);
+	NxActor* multiActor = scene->createActor(multiDesc);
+	printf("setter multi_created=%u\n", multiActor ? 1u : 0u);
+	if(!multiActor) return nxFail("multi-shape actor creation failed");
+	multiActor->setGlobalPosition(NxVec3(2.0f, 3.0f, -4.0f));
+	const unsigned char* multiBody = *reinterpret_cast<unsigned char* const*>(
+		reinterpret_cast<const unsigned char*>(multiActor) + 0x14);
+	const unsigned char* multiGroup = *reinterpret_cast<unsigned char* const*>(
+		multiBody + 0x10);
+	const unsigned char* const* firstChild = *reinterpret_cast<unsigned char* const* const*>(
+		multiGroup + 0xe0);
+	const unsigned char* const* lastChild = *reinterpret_cast<unsigned char* const* const*>(
+		multiGroup + 0xe4);
+	printf("setter multi_position=%u", static_cast<unsigned>(lastChild - firstChild));
+	for(const unsigned char* const* child = firstChild; child != lastChild; ++child)
+		printf(".%x.%x.%x", word(*child, 0x30), word(*child, 0x34),
+			word(*child, 0x38));
+	printf("\n");
+	scene->releaseActor(*multiActor);
 	sdk->releaseScene(*scene);
 	sdk->release();
 	return nxReportPairIdentity(pairDirectory);

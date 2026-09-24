@@ -4284,7 +4284,62 @@ void ShapeBase::nxApplyOwnerUpdate(unsigned flags)
 	{
 	if(mOwner04 == nullptr)
 		return;
-	(void) flags;
+	unsigned char* body = static_cast<unsigned char*>(mOwner04);
+	unsigned char* scene = *reinterpret_cast<unsigned char**>(body + 4);
+	if((flags & 1u) != 0 && scene)
+		{
+		const unsigned stamp = *reinterpret_cast<unsigned*>(scene + 0x540);
+		if(mWord08 != stamp)
+			{
+			mPose3C = mPose0C;
+			mWord08 = stamp;
+			}
+		}
+	unsigned char* record = *reinterpret_cast<unsigned char**>(body + 8);
+	float ownerRotation[9];
+	float ownerTranslation[3];
+	if(record)
+		{
+		nxQuatToMatrix9(reinterpret_cast<const float*>(record + 0x5c),
+			ownerRotation);
+		memcpy(ownerTranslation, record + 0x18, sizeof(ownerTranslation));
+		}
+	else
+		{
+		memcpy(ownerRotation, body + 0x20, sizeof(ownerRotation));
+		memcpy(ownerTranslation, body + 0x44, sizeof(ownerTranslation));
+		}
+	const float* local = reinterpret_cast<const float*>(mPose6C.mRotation);
+	float* world = reinterpret_cast<float*>(mPose0C.mRotation);
+	for(unsigned row = 0; row < 3; ++row)
+		for(unsigned col = 0; col < 3; ++col)
+			world[row * 3 + col] = static_cast<float>(
+				static_cast<double>(ownerRotation[row * 3]) * local[col] +
+				static_cast<double>(ownerRotation[row * 3 + 1]) * local[3 + col] +
+				static_cast<double>(ownerRotation[row * 3 + 2]) * local[6 + col]);
+	for(unsigned row = 0; row < 3; ++row)
+		mPose0C.mTranslation[row] = static_cast<float>(
+			static_cast<double>(ownerRotation[row * 3]) * mPose6C.mTranslation[0] +
+			static_cast<double>(ownerRotation[row * 3 + 1]) * mPose6C.mTranslation[1] +
+			static_cast<double>(ownerRotation[row * 3 + 2]) * mPose6C.mTranslation[2] +
+			ownerTranslation[row]);
+	if((mHalfwordDC & 4u) != 0)
+		{
+		mHalfwordDC &= static_cast<NxU16>(~4u);
+		mPose3C = mPose0C;
+		}
+	if(flags)
+		{
+		mHalfwordDC |= 2u;
+		if(scene && mPrunable.mHandle != 0xffffu &&
+			mPrunable.mPruningType < 4u)
+			{
+			mPrunable.mFlags &= ~2u;
+			unsigned char* manager = *reinterpret_cast<unsigned char**>(
+				scene + 0x640 + mPrunable.mPruningType * 4);
+			if(manager) ++*reinterpret_cast<unsigned*>(manager + 0x38);
+			}
+		}
 	}
 
 // ---------------------------------------------------------------------------

@@ -3631,9 +3631,9 @@
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/67",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/644",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Partial: Ghidra shows the static body+0x44 translation copy and the dynamic record+0x50/+0x18 copies, dirty bit 1 and call to record refresh at 0x17f10, followed by body shape slot-6 owner update with flag 1. Candidate covers these arms; full error/scene/group closure remains.",
+      "dynamic_proof": "Public actor setter probes match static and dynamic positions, mass center, shape world pose, dirty bit, pruner invalidation, and two-child group translation. The row remains discovered pending complete scene and shape-family coverage.",
+      "notes": "Owned shape slot-6 and broadphase initialization are transcribed in ObjectModel.cpp and Scene.cpp."
     },
     {
       "id": "phys_fn_000199",
@@ -23916,12 +23916,12 @@
       "phase": 3,
       "phase_provenance": "translation_unit",
       "state": "discovered",
-      "source": null,
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/535",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3451",
-      "static_proof": "BASE-table slot 6 owner update (1061 B): the DETACHED arm (owner == null) is a proven no-op through the early exit at 0x00026abb and is what the transcription covers; the owned arm reads [owner+4]+0x540 and needs Task 4 actor infrastructure, so the row stays discovered while the ownerupd family drives the detached arm bitwise on both sides",
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "BASE slot 6 owner update: detached no-op, owned static/dynamic pose composition from body pose and shape+0x6c local pose, scene timestamp snapshot at +0x540, flag-4 pose mirror, flag-2 setting and pruner generation increment are transcribed. The optional +0xa0 list and other pruner paths remain open.",
+      "dynamic_proof": "Public setGlobalPosition probes match box world translation and a quarter-turn actor with a rotated/translated local shape pose, plus static and two-child group calls; row remains discovered for the untested owned branches.",
+      "notes": "Owned arms are partially reconstructed; do not close this row until optional list and pruner cases are driven."
     },
     {
       "id": "phys_fn_001316",
