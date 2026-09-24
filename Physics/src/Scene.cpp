@@ -31,6 +31,9 @@
 #include "NxBodyDesc.h"
 #include "NxShapeDesc.h"
 #include "NxBoxShapeDesc.h"
+#include "NxSphereShapeDesc.h"
+#include "NxCapsuleShapeDesc.h"
+#include "NxPlaneShapeDesc.h"
 #include "NxActor.h"
 #include "NpActor.h"
 #include "NpActorDynamicMath.h"
@@ -49,6 +52,7 @@
 void nxShapeSetName(void* shape, const char* name);
 void nxShapeFactoryInitializePose(void* shape, const void* localPose);
 void nxShapeFactoryRefreshPose(void* shape);
+void nxShapeFactoryInstallVtable(void* shape, unsigned type);
 
 // ---------------------------------------------------------------------------
 // Reproduction holes. The oracle calls these; the phases that own them have not
@@ -929,7 +933,7 @@ void nxSceneBroadphaseRegister(NxSceneInternal* scene, void* bodyPointer)
 	if(!body || !*reinterpret_cast<void**>(body + 8)) return;
 	unsigned char* shape = *reinterpret_cast<unsigned char**>(body + 0x10);
 	if(!shape) return;
-	const bool group = *reinterpret_cast<void**>(shape + 0xe0) != 0;
+	const bool group = *reinterpret_cast<unsigned*>(shape + 0xd0) == 5u;
 	const unsigned childCount = group ? static_cast<unsigned>(
 		*reinterpret_cast<void***>(shape + 0xe4) -
 		*reinterpret_cast<void***>(shape + 0xe0)) : 0;
@@ -1014,7 +1018,7 @@ void nxSceneBroadphaseUnregister(NxSceneInternal* scene, void* bodyPointer)
 	unsigned char* shape = *reinterpret_cast<unsigned char**>(body + 0x10);
 	if(!shape) return;
 	nxSceneUntrackShape(scene, shape);
-	const bool group = *reinterpret_cast<void**>(shape + 0xe0) != 0;
+	const bool group = *reinterpret_cast<unsigned*>(shape + 0xd0) == 5u;
 	const unsigned childCount = group ? static_cast<unsigned>(
 		*reinterpret_cast<void***>(shape + 0xe4) -
 		*reinterpret_cast<void***>(shape + 0xe0)) : 0;
@@ -1345,7 +1349,7 @@ void NxSceneInternal::releaseActor(void* bodyPointer)
 		}
 	nxSceneRecycleActorId(this, actorId);
 	unsigned char* shape = *reinterpret_cast<unsigned char**>(body + 0x10);
-	if(shape && *reinterpret_cast<void**>(shape + 0xe0))
+	if(shape && *reinterpret_cast<unsigned*>(shape + 0xd0) == 5u)
 		{
 		void** shapes = *reinterpret_cast<void***>(shape + 0xe0);
 		void** shapesEnd = *reinterpret_cast<void***>(shape + 0xe4);
@@ -2076,6 +2080,8 @@ void* nxShapeFactory(void* shapeDesc, void* actor)
 	const NxShapeDesc* descriptor = static_cast<const NxShapeDesc*>(shapeDesc);
 	if(descriptor)
 		{
+		nxShapeFactoryInstallVtable(shape,
+			static_cast<unsigned>(descriptor->getType()));
 		*reinterpret_cast<unsigned*>(shape + 0xd0) =
 			static_cast<unsigned>(descriptor->getType());
 		*reinterpret_cast<NxCollisionGroup*>(shape + 0xd8) = descriptor->group;
@@ -2087,6 +2093,25 @@ void* nxShapeFactory(void* shapeDesc, void* actor)
 			memcpy(shape + 0xe4,
 				&static_cast<const NxBoxShapeDesc*>(descriptor)->dimensions,
 				sizeof(NxVec3));
+		else if(descriptor->getType() == NX_SHAPE_SPHERE)
+			memcpy(shape + 0xe0,
+				&static_cast<const NxSphereShapeDesc*>(descriptor)->radius,
+				sizeof(float));
+		else if(descriptor->getType() == NX_SHAPE_CAPSULE)
+			{
+			const NxCapsuleShapeDesc* capsule =
+				static_cast<const NxCapsuleShapeDesc*>(descriptor);
+			memcpy(shape + 0xe0, &capsule->radius, sizeof(float));
+			const float halfHeight = capsule->height * 0.5f;
+			memcpy(shape + 0xe4, &halfHeight, sizeof(float));
+			}
+		else if(descriptor->getType() == NX_SHAPE_PLANE)
+			{
+			const NxPlaneShapeDesc* plane =
+				static_cast<const NxPlaneShapeDesc*>(descriptor);
+			memcpy(shape + 0xe0, &plane->normal, sizeof(NxVec3));
+			*reinterpret_cast<float*>(shape + 0xec) = -plane->d;
+			}
 		}
 	NxSceneInternal* scene = *reinterpret_cast<NxSceneInternal**>(
 		static_cast<unsigned char*>(actor) + 4);

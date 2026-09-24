@@ -8,6 +8,9 @@
 #include "NxActor.h"
 #include "NxBodyDesc.h"
 #include "NxBoxShapeDesc.h"
+#include "NxSphereShapeDesc.h"
+#include "NxCapsuleShapeDesc.h"
+#include "NxPlaneShapeDesc.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -64,6 +67,15 @@ int wmain(int argc, wchar_t** argv)
 		reinterpret_cast<const unsigned char*>(actor) + 0x14);
 	const unsigned char* record = *reinterpret_cast<unsigned char* const*>(body + 8);
 	const unsigned char* initialShape = *reinterpret_cast<unsigned char* const*>(body + 0x10);
+	void** internalTable = *reinterpret_cast<void***>(
+		const_cast<unsigned char*>(initialShape));
+	typedef void* (__thiscall* ShapeSelfFn)(void*);
+	printf("setter initial_shape_vtable=%u", internalTable ? 1u : 0u);
+	for(unsigned slot = 14; slot <= 16; ++slot)
+		printf(".%u", internalTable &&
+			reinterpret_cast<ShapeSelfFn>(internalTable[slot])(
+				const_cast<unsigned char*>(initialShape)) == initialShape ? 1u : 0u);
+	printf("\n");
 	printf("setter initial_shape_local=");
 	for(unsigned i = 0; i < 12; ++i)
 		printf("%s%x", i ? "." : "", word(initialShape, 0x6c + 4 * i));
@@ -444,6 +456,46 @@ int wmain(int argc, wchar_t** argv)
 		printf("%s%x", i ? "." : "", word(posedShape, 0x3c + 4 * i));
 	printf("\n");
 	scene->releaseActor(*posedActor);
+	NxSphereShapeDesc sphereDesc;
+	NxCapsuleShapeDesc capsuleDesc;
+	NxPlaneShapeDesc planeDesc;
+	sphereDesc.radius = 1.0f;
+	capsuleDesc.radius = 0.5f;
+	capsuleDesc.height = 1.0f;
+	NxShapeDesc* familyDescs[3] = {&sphereDesc, &capsuleDesc, &planeDesc};
+	const char* familyNames[3] = {"sphere", "capsule", "plane"};
+	const unsigned familySelfSlot[3] = {16, 16, 14};
+	for(unsigned family = 0; family < 3; ++family)
+		{
+		NxActorDesc familyActorDesc;
+		familyActorDesc.shapes.pushBack(familyDescs[family]);
+		NxActor* familyActor = scene->createActor(familyActorDesc);
+		printf("setter %s_vtable=%u", familyNames[family],
+			familyActor ? 1u : 0u);
+		if(!familyActor) return nxFail("family actor creation failed");
+		const unsigned char* familyBody = *reinterpret_cast<unsigned char* const*>(
+			reinterpret_cast<const unsigned char*>(familyActor) + 0x14);
+		const unsigned char* familyShape = *reinterpret_cast<unsigned char* const*>(
+			familyBody + 0x10);
+		void** familyTable = *reinterpret_cast<void***>(
+			const_cast<unsigned char*>(familyShape));
+		for(unsigned slot = familySelfSlot[family];
+			slot < familySelfSlot[family] + 3; ++slot)
+			printf(".%u", familyTable &&
+				reinterpret_cast<ShapeSelfFn>(familyTable[slot])(
+					const_cast<unsigned char*>(familyShape)) == familyShape ? 1u : 0u);
+		printf("\n");
+		if(family == 0)
+			printf("setter sphere_radius=%x\n", word(familyShape, 0xe0));
+		else if(family == 1)
+			printf("setter capsule_dimensions=%x.%x\n",
+				word(familyShape, 0xe0), word(familyShape, 0xe4));
+		else
+			printf("setter plane_equation=%x.%x.%x.%x\n",
+				word(familyShape, 0xe0), word(familyShape, 0xe4),
+				word(familyShape, 0xe8), word(familyShape, 0xec));
+		scene->releaseActor(*familyActor);
+		}
 	sdk->releaseScene(*scene);
 	sdk->release();
 	return nxReportPairIdentity(pairDirectory);

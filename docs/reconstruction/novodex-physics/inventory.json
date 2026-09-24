@@ -642,9 +642,9 @@
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/17",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/78",
-      "static_proof": "Partial: Ghidra shows the per-shape-type constructor, descriptor load and public handle allocation. The candidate's factory now initializes local pose from NxShapeDesc, composes owner world pose, and refreshes it after dynamic record construction; final class allocation and full descriptor branches remain open.",
-      "dynamic_proof": "Public actor creation probes compare the shape's default identity local/world matrices and a rotated, translated descriptor's local, world and mirrored poses word for word on the pinned oracle and candidate.",
-      "notes": "Partial factory transcription; the final shape-family vtables remain a Phase 5 gate blocker."
+      "static_proof": "Partial: Ghidra shows the per-shape-type constructor, descriptor load and public handle allocation. The candidate's factory initializes local pose, composes owner world pose, refreshes it after dynamic record construction, installs reconstructed internal final tables for plane/sphere/box/capsule, and copies their basic descriptor fields. Full constructor and descriptor branches remain open.",
+      "dynamic_proof": "Public actor creation probes compare default and rotated shape poses, box/sphere/capsule/plane internal vtable self-return slots, sphere radius, capsule radius and half-height, and plane equation on the pinned oracle and candidate.",
+      "notes": "Partial factory transcription; mesh and compound vtables and full shape-family behavior remain a Phase 5 gate blocker."
     },
     {
       "id": "phys_fn_000033",

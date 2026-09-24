@@ -3949,6 +3949,24 @@ static void** nxPlaneShapeInternalVtable()
 	return table.slot;
 	}
 
+// Install the reconstructed final table on Scene's raw shape allocation.
+// The factory's full per-family constructor and descriptor path remain open;
+// this makes the already reconstructed virtual dispatch reachable on the
+// objects handed to actors.
+void nxShapeFactoryInstallVtable(void* shape, unsigned type)
+	{
+	void** table = nullptr;
+	switch(type)
+		{
+		case 0: table = nxPlaneShapeInternalVtable(); break;
+		case 1: table = nxSphereShapeInternalVtable(); break;
+		case 2: table = nxBoxShapeInternalVtable(); break;
+		case 3: table = nxCapsuleShapeInternalVtable(); break;
+		default: break;
+		}
+	if(table) *reinterpret_cast<void***>(shape) = table;
+	}
+
 BoxShape::BoxShape(void* owner, unsigned argument)
 	: mBase(owner, argument)				// forwarded unchanged: 0x0002187c..80
 	{
