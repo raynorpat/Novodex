@@ -268,6 +268,25 @@ int wmain(int argc, wchar_t** argv)
 	memcpy(mutableShape + 0x6c, oldLocalPose, sizeof(oldLocalPose));
 	memcpy(mutableRecord + 0x100, oldMassOffset, sizeof(oldMassOffset));
 	actor->setGlobalPosition(NxVec3(3.0f, -2.0f, 5.0f));
+	// The actor setter is driven with a known local pose. Shape creation's
+	// default local-pose initialization is tracked separately in Phase 4.
+	const float identityLocalPose[12] = {1.0f,0.0f,0.0f,
+		0.0f,1.0f,0.0f,0.0f,0.0f,1.0f,0.0f,0.0f,0.0f};
+	memcpy(mutableShape + 0x6c, identityLocalPose, sizeof(identityLocalPose));
+	NxQuat rotation;
+	rotation.x = 0.0f;
+	rotation.y = 0.0f;
+	rotation.z = 0.70710677f;
+	rotation.w = 0.70710677f;
+	PROBE_DIRTY("orientation_quat", actor->setGlobalOrientationQuat(rotation));
+	printf("setter orientation_quat=%x.%x.%x.%x.%x.%x.%x.%x.%x.%x.%x\n",
+		word(record, 0x5c), word(record, 0x60), word(record, 0x64), word(record, 0x68),
+		word(record, 0x24), word(record, 0x28), word(record, 0x2c), word(record, 0x30),
+		word(record, 0x158), word(record, 0x15c), word(record, 0x160));
+	printf("setter shape_orientation_quat=");
+	for(unsigned i = 0; i < 12; ++i)
+		printf("%s%x", i ? "." : "", word(movedShape, 0x0c + 4 * i));
+	printf(".%x\n", word(movedShape, 0xdc));
 #undef PROBE_DIRTY
 	scene->releaseActor(*actor);
 	NxActorDesc staticDesc;
@@ -296,6 +315,11 @@ int wmain(int argc, wchar_t** argv)
 	printf("setter static_position=%x.%x.%x.%x.%x.%x\n",
 		bits(staticPosition.x), bits(staticPosition.y), bits(staticPosition.z),
 		word(staticBody, 0x44), word(staticBody, 0x48), word(staticBody, 0x4c));
+	staticActor->setGlobalOrientationQuat(rotation);
+	printf("setter static_orientation_quat=");
+	for(unsigned i = 0; i < 9; ++i)
+		printf("%s%x", i ? "." : "", word(staticBody, 0x20 + 4 * i));
+	printf("\n");
 	scene->releaseActor(*staticActor);
 	NxBoxShapeDesc secondBox;
 	secondBox.dimensions = NxVec3(0.5f, 1.0f, 1.5f);

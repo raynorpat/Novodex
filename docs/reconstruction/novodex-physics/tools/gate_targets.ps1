@@ -349,10 +349,14 @@ $NxRequiredCoverageLines = [ordered] @{
         'setter shape_rotated_pose=331302ae.0.3f7fffff.3f7fffff.0.b31302ae.0.3f800000.0.3fa00000.c0200000.40300000.80002',
         'setter shape_pruner_state=0.1.1020000.2.0',
         'setter pruner_update=1.1.0.2.7f7fffff.7f7fffff.7f7fffff.ff7fffff.ff7fffff.ff7fffff',
+        'setter dirty_orientation_quat=2.2.1',
+        'setter orientation_quat=0.0.3f3504f3.3f3504f3.0.0.3f3504f3.3f3504f3.40400000.c0000000.40a00000',
+        'setter shape_orientation_quat=331302ae.bf7fffff.0.3f7fffff.331302ae.0.0.0.3f800000.40400000.c0000000.40a00000.80002',
         'setter static_created=1',
         'setter static_sleep=1.1.0.0',
         'setter static_after=1.1.0.0',
         'setter static_position=c0800000.40c00000.c1000000.c0800000.40c00000.c1000000',
+        'setter static_orientation_quat=331302ae.bf7fffff.0.3f7fffff.331302ae.0.0.0.3f800000',
         'setter multi_created=1',
         'setter multi_position=2.40000000.40400000.c0800000.40000000.40400000.c0800000'
     )
@@ -1592,7 +1596,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 101  # 34 for NxPhysicsAssetTests, 67 for NxPhysicsThirdPartyTests
-    '5' = 730  # 126 object-layout, 1 shape-vtable and 603 public actor/pruner/box/scene lines
+    '5' = 734  # 126 object-layout, 1 shape-vtable and 607 public actor/pruner/box/scene lines
                # (RED on purpose: vtables family open)
     '6' = 11  # 3 oracle-descriptor + 4 oracle-joint + 4 staged-pair-joint
     '7' = 4   # the four STAGED-PAIR assertions; the oracle-differential assertions

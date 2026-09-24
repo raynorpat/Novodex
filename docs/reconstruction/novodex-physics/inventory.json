@@ -3703,9 +3703,9 @@
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/69",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/675",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Partial: Ghidra at RVA 0x9450 shows the static quaternion-to-matrix copy into body+0x20 and the dynamic current/shadow quaternion writes at record+0x5c/+0x24, dirty bit 2, mass-frame refresh, then body shape owner update with flag 1.",
+      "dynamic_proof": "Public actor probes match the oracle for dynamic current/shadow quaternion words, dirty bit 2, mass center and owned-shape world pose, and for the static body's nine matrix words. A known local shape pose isolates this setter from a separate shape-creation initialization gap.",
+      "notes": "Candidate implementation is partial pending error/scene/group and shape-family closure."
     },
     {
       "id": "phys_fn_000203",

@@ -508,6 +508,21 @@ NxVec3 NpActorVtable::getPointVelocityVal(const NxVec3& point) const
 // phys_fn_000198 at 0x00008f60, actor dynamic slot 2. The body stores a
 // cached pose for static actors; dynamic records keep a current and shadow
 // translation and refresh their mass-frame center after position changes.
+static void nxNpActorNotifyOwnedShapes(unsigned char* body)
+	{
+	unsigned char* shape = *reinterpret_cast<unsigned char**>(body + 0x10);
+	if(!shape) return;
+	if(*reinterpret_cast<unsigned*>(shape + 0xd0) == 5u)
+		{
+		void** first = *reinterpret_cast<void***>(shape + 0xe0);
+		void** last = *reinterpret_cast<void***>(shape + 0xe4);
+		for(void** child = first; child && child != last; ++child)
+			static_cast<ShapeBase*>(*child)->nxApplyOwnerUpdate(1);
+		}
+	else
+		static_cast<ShapeBase*>(static_cast<void*>(shape))->nxApplyOwnerUpdate(1);
+	}
+
 void NpActorVtable::setGlobalPosition(const NxVec3& position)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
@@ -525,19 +540,7 @@ void NpActorVtable::setGlobalPosition(const NxVec3& position)
 			}
 		else
 			memcpy(body + 0x44, &position, sizeof(position));
-		unsigned char* shape = *reinterpret_cast<unsigned char**>(body + 0x10);
-		if(shape)
-			{
-			if(*reinterpret_cast<unsigned*>(shape + 0xd0) == 5u)
-				{
-				void** first = *reinterpret_cast<void***>(shape + 0xe0);
-				void** last = *reinterpret_cast<void***>(shape + 0xe4);
-				for(void** child = first; child && child != last; ++child)
-					static_cast<ShapeBase*>(*child)->nxApplyOwnerUpdate(1);
-				}
-			else
-				static_cast<ShapeBase*>(static_cast<void*>(shape))->nxApplyOwnerUpdate(1);
-			}
+		nxNpActorNotifyOwnedShapes(body);
 		}
 	nxNpSceneGuardLeave(ctx);
 	}
@@ -548,10 +551,33 @@ void NpActorVtable::setGlobalOrientation(const NxMat33&)
 	
 	}
 
-// (unimplemented) setGlobalOrientationQuat
-void NpActorVtable::setGlobalOrientationQuat(const NxQuat&)
+// phys_fn_000202 at 0x00009450, actor dynamic slot 4. Dynamic actors
+// mirror the input quaternion into the current and shadow records; static
+// actors store a row-major matrix on the outer body.
+void NpActorVtable::setGlobalOrientationQuat(const NxQuat& orientation)
 	{
-	
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	unsigned char* body = nxNpActorBody(this);
+	if(body)
+		{
+		unsigned char* record = *reinterpret_cast<unsigned char**>(body + 8);
+		if(record)
+			{
+			memcpy(record + 0x5c, &orientation, sizeof(orientation));
+			memcpy(record + 0x24, record + 0x5c, sizeof(orientation));
+			nxNpActorMarkRecordDirty(record, 2);
+			nxNpActorRefreshCMass(record);
+			}
+		else
+			{
+			float rows[9];
+			nxNpActorRotationFromQuaternionGetter(&orientation.x, rows);
+			memcpy(body + 0x20, rows, sizeof(rows));
+			}
+		nxNpActorNotifyOwnedShapes(body);
+		}
+	nxNpSceneGuardLeave(ctx);
 	}
 
 // phys_fn_000130 at 0x00004580, actor vtable slot 5. It returns the same
