@@ -46,3 +46,17 @@ swap made the staged differential fail with `stdout_delta=4`. Restoring the
 write returned the clean comparison to zero, so the public count and removed
 actor checks exercise the release implementation rather than only actor
 creation.
+
+## Static release
+
+The same staged drive then releases its static box actor. The oracle and
+candidate both free four blocks, in size order `18.1c.228.50`, leaving the
+dynamic-record array untouched. Public actor count drops from three to two,
+and the static actor is absent from the returned list. Four more registered
+lines raise the Phase 5 floor to 180. This covers a single static box shape;
+multi-shape teardown and error paths remain open.
+
+Temporarily requiring a dynamic record before freeing the shape made the
+static path free only two blocks. The staged differential failed with
+`stdout_delta=4`; restoring the unconditional shape cleanup returned it to
+zero.

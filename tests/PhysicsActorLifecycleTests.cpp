@@ -330,6 +330,19 @@ int wmain(int argc, wchar_t** argv)
 		if(actorsAfter[i] == quarterActor) quarterStillListed = 1;
 	printf("scene quarter_still_listed=%u\n", quarterStillListed);
 
+	const unsigned freesBeforeStatic = allocator.frees();
+	scene->releaseActor(*staticActor);
+	printf("scene static_release_frees=%u\n", allocator.frees() - freesBeforeStatic);
+	printf("scene static_release_sizes=%x.%x.%x.%x\n",
+		allocator.freedSizeFromEnd(3), allocator.freedSizeFromEnd(2),
+		allocator.freedSizeFromEnd(1), allocator.freedSizeFromEnd(0));
+	printf("scene actors_after_static=%u\n", scene->getNbActors());
+	NxActor** afterStatic = scene->getActors();
+	unsigned staticStillListed = 0;
+	for(NxU32 i = 0; afterStatic && i < scene->getNbActors(); ++i)
+		if(afterStatic[i] == staticActor) staticStillListed = 1;
+	printf("scene static_still_listed=%u\n", staticStillListed);
+
 	sdk->releaseScene(*scene);
 	sdk->release();
 	return nxReportPairIdentity(pairDirectory);

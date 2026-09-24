@@ -30,6 +30,8 @@
 
 **M2 ownership follow-up, 2026-09-24:** The public actor wrapper is 0x18 bytes, and the 0x50-byte outer body is also the pose object. The candidate now matches the guarded oracle's fourth-actor allocation order, shared scene lock aliases, dynamic record array growth, and five-block release sequence. Actor count changes from four to three and the released actor disappears from the public list. See `docs/reconstruction/novodex-physics/evidence/phase5-actor-ownership.md`. The tested box lifecycle is not the full shape/body teardown matrix; the Phase 5 floor is now 176.
 
+**M2 static release follow-up, 2026-09-24:** A static box release now matches the oracle's four-block free sequence and public count/list transition. The Phase 5 floor is 180. Multi-shape and other teardown paths remain open.
+
 ## 1. Inputs and boundaries
 
 - Repository: `D:\github\Novodex`, inspected at `0df8821f1c5e3668e566ad4182b1e8e568f632d6`.

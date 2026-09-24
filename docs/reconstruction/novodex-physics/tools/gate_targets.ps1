@@ -137,7 +137,11 @@ $NxRequiredCoverageLines = [ordered] @{
         'scene release_sizes=18.260.1c.228.50',
         'scene release_creation_mask=3e',
         'scene actors_after=3',
-        'scene quarter_still_listed=0'
+        'scene quarter_still_listed=0',
+        'scene static_release_frees=4',
+        'scene static_release_sizes=18.1c.228.50',
+        'scene actors_after_static=2',
+        'scene static_still_listed=0'
     )
     # The Phase 6 joint-descriptor differential. Two cases over the two exported
     # rows, printing the whole descriptor surface before and after each call. The
@@ -1015,7 +1019,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 101  # 34 for NxPhysicsAssetTests, 67 for NxPhysicsThirdPartyTests
-    '5' = 176  # 126 object-layout assertions plus 50 public actor lifecycle lines
+    '5' = 180  # 126 object-layout assertions plus 54 public actor lifecycle lines
                # (RED on purpose: vtables family open)
     '6' = 11  # 3 oracle-descriptor + 4 oracle-joint + 4 staged-pair-joint
     '7' = 4   # the four STAGED-PAIR assertions; the oracle-differential assertions
