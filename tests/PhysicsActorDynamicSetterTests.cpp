@@ -6,11 +6,14 @@
 #include "NxSceneDesc.h"
 #include "NxActorDesc.h"
 #include "NxActor.h"
+#include "NxShape.h"
 #include "NxBodyDesc.h"
 #include "NxBoxShapeDesc.h"
 #include "NxSphereShapeDesc.h"
 #include "NxCapsuleShapeDesc.h"
 #include "NxPlaneShapeDesc.h"
+#include "NxSphereShape.h"
+#include "NxCapsuleShape.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -70,12 +73,20 @@ int wmain(int argc, wchar_t** argv)
 	void** internalTable = *reinterpret_cast<void***>(
 		const_cast<unsigned char*>(initialShape));
 	typedef void* (__thiscall* ShapeSelfFn)(void*);
+	typedef void (__thiscall* ShapeCenterFn)(void*, float*);
 	printf("setter initial_shape_vtable=%u", internalTable ? 1u : 0u);
 	for(unsigned slot = 14; slot <= 16; ++slot)
 		printf(".%u", internalTable &&
 			reinterpret_cast<ShapeSelfFn>(internalTable[slot])(
 				const_cast<unsigned char*>(initialShape)) == initialShape ? 1u : 0u);
 	printf("\n");
+	float initialCenter[4] = {};
+	if(internalTable)
+		reinterpret_cast<ShapeCenterFn>(internalTable[10])(
+			const_cast<unsigned char*>(initialShape), initialCenter);
+	printf("setter initial_shape_center=%x.%x.%x.%x\n",
+		bits(initialCenter[0]), bits(initialCenter[1]),
+		bits(initialCenter[2]), bits(initialCenter[3]));
 	printf("setter initial_shape_local=");
 	for(unsigned i = 0; i < 12; ++i)
 		printf("%s%x", i ? "." : "", word(initialShape, 0x6c + 4 * i));
@@ -485,6 +496,27 @@ int wmain(int argc, wchar_t** argv)
 				reinterpret_cast<ShapeSelfFn>(familyTable[slot])(
 					const_cast<unsigned char*>(familyShape)) == familyShape ? 1u : 0u);
 		printf("\n");
+		NxShape* publicShape = familyActor->getShapes()[0];
+		printf("setter %s_public=%u.%u.%u.%u.%u\n", familyNames[family],
+			publicShape ? 1u : 0u,
+			publicShape ? static_cast<unsigned>(publicShape->getType()) : 0u,
+			publicShape && &publicShape->getActor() == familyActor ? 1u : 0u,
+			publicShape ? static_cast<unsigned>(publicShape->getGroup()) : 0u,
+			publicShape ? static_cast<unsigned>(publicShape->getMaterial()) : 0u);
+		if(family == 0)
+			printf("setter sphere_public_radius=%x\n", bits(
+				static_cast<NxSphereShape*>(publicShape)->getRadius()));
+		else if(family == 1)
+			printf("setter capsule_public_dimensions=%x.%x\n",
+				bits(static_cast<NxCapsuleShape*>(publicShape)->getRadius()),
+				bits(static_cast<NxCapsuleShape*>(publicShape)->getHeight()));
+		float familyCenter[4] = {};
+		if(familyTable)
+			reinterpret_cast<ShapeCenterFn>(familyTable[10])(
+				const_cast<unsigned char*>(familyShape), familyCenter);
+		printf("setter %s_center=%x.%x.%x.%x\n", familyNames[family],
+			bits(familyCenter[0]), bits(familyCenter[1]),
+			bits(familyCenter[2]), bits(familyCenter[3]));
 		if(family == 0)
 			printf("setter sphere_radius=%x\n", word(familyShape, 0xe0));
 		else if(family == 1)

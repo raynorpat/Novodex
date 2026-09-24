@@ -340,6 +340,17 @@ static const NxVec3* __fastcall nxBoxHandleGetDimensions(void* self, void*)
 	return reinterpret_cast<const NxVec3*>(nxBoxHandleInternal(self) + 0xe4);
 	}
 
+static NxReal __fastcall nxShapeHandleGetRadius(void* self, void*)
+	{
+	return *reinterpret_cast<const NxReal*>(nxBoxHandleInternal(self) + 0xe0);
+	}
+
+static NxReal __fastcall nxCapsuleHandleGetHeight(void* self, void*)
+	{
+	return 2.0f * *reinterpret_cast<const NxReal*>(
+		nxBoxHandleInternal(self) + 0xe4);
+	}
+
 void* nxBoxShapePublicVtable()
 	{
 	struct Table
@@ -365,6 +376,40 @@ void* nxBoxShapePublicVtable()
 		};
 	static Table table;
 	return table.slots;
+	}
+
+// Public shape handles share the NxShape prefix through slot 30. The final
+// geometry slots differ by family and remain explicit unsupported entries
+// until their individual implementations are reconstructed.
+void* nxShapePublicVtable(unsigned type)
+	{
+	if(type == 2u) return nxBoxShapePublicVtable();
+	struct Tables
+		{
+		void* slots[3][37];
+		Tables()
+			{
+			void** box = static_cast<void**>(nxBoxShapePublicVtable());
+			for(unsigned family = 0; family < 3; ++family)
+				{
+				for(unsigned slot = 0; slot < 37; ++slot)
+					slots[family][slot] =
+						slot < 31 ? box[slot]
+						: reinterpret_cast<void*>(&nxUnsupportedBoxMethod);
+				}
+			slots[1][32] = reinterpret_cast<void*>(&nxShapeHandleGetRadius);
+			slots[2][33] = reinterpret_cast<void*>(&nxShapeHandleGetRadius);
+			slots[2][35] = reinterpret_cast<void*>(&nxCapsuleHandleGetHeight);
+			}
+		};
+	static Tables tables;
+	switch(type)
+		{
+		case 0u: return tables.slots[0];
+		case 1u: return tables.slots[1];
+		case 3u: return tables.slots[2];
+		default: return nullptr;
+		}
 	}
 
 void NpActorObject::installVtable()

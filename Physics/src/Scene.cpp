@@ -94,6 +94,7 @@ void nxSceneBuildGroundPlane(void* scene);
 void nxSceneArrayReserve(void* arrayHeader, unsigned needed);
 void nxSceneRecycleActorId(NxSceneInternal* scene, unsigned id);
 void* nxBoxShapePublicVtable();
+void* nxShapePublicVtable(unsigned type);
 void nxSceneBroadphaseRegister(NxSceneInternal* scene, void* body);
 void nxSceneBroadphaseUnregister(NxSceneInternal* scene, void* body);
 static void nxSceneStaticPrunerUnregister(NxSceneInternal* scene, unsigned char* shape);
@@ -2127,8 +2128,9 @@ void* nxShapeFactory(void* shapeDesc, void* actor)
 		return 0;
 		}
 	memset(helper, 0, 0x1c);
-	if(descriptor && descriptor->getType() == NX_SHAPE_BOX)
-		*reinterpret_cast<void**>(helper) = nxBoxShapePublicVtable();
+	if(descriptor)
+		*reinterpret_cast<void**>(helper) = nxShapePublicVtable(
+			static_cast<unsigned>(descriptor->getType()));
 	*reinterpret_cast<void**>(shape + 0x9c) = helper;
 	*reinterpret_cast<void**>(static_cast<unsigned char*>(helper) + 8) = shape;
 	*reinterpret_cast<void**>(static_cast<unsigned char*>(helper) + 0x18) = shape;
