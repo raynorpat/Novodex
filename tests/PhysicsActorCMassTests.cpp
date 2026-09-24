@@ -160,6 +160,27 @@ int wmain(int argc, wchar_t** argv)
 			pose("set_global_mass_position", "actor_pose", actor->getGlobalPose());
 			recordState("set_global_mass_position", actor);
 			transformState("set_global_mass_position", actor);
+			actor->setCMassGlobalOrientation(xRotation);
+			probe("set_global_mass_orientation", actor);
+			pose("set_global_mass_orientation", "actor_pose", actor->getGlobalPose());
+			recordState("set_global_mass_orientation", actor);
+			transformState("set_global_mass_orientation", actor);
+			NxMat34 movedPose;
+			movedPose.id();
+			movedPose.M.setRow(0, NxVec3(0.0f, -1.0f, 0.0f));
+			movedPose.M.setRow(1, NxVec3(1.0f, 0.0f, 0.0f));
+			movedPose.t = NxVec3(10.0f, 11.0f, 12.0f);
+			actor->setCMassGlobalPose(movedPose);
+			probe("set_global_mass_pose", actor);
+			pose("set_global_mass_pose", "actor_pose", actor->getGlobalPose());
+			recordState("set_global_mass_pose", actor);
+			transformState("set_global_mass_pose", actor);
+			unsigned char* movedBody = *reinterpret_cast<unsigned char**>(
+				reinterpret_cast<unsigned char*>(actor) + 0x14);
+			printf("cmass set_global_mass_pose body_rotation=%x.%x.%x.%x.%x.%x.%x.%x.%x\n",
+				word(movedBody, 0x20), word(movedBody, 0x24), word(movedBody, 0x28),
+				word(movedBody, 0x2c), word(movedBody, 0x30), word(movedBody, 0x34),
+				word(movedBody, 0x38), word(movedBody, 0x3c), word(movedBody, 0x40));
 		}
 		scene->releaseActor(*actor);
 	}
