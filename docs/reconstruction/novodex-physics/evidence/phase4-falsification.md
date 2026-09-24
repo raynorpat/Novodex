@@ -62,7 +62,7 @@ counted a control row.)
 
 | # | census row the edit sits in | mutation | count spent | re-measured on this branch |
 | --- | --- | --- | ---: | --- |
-| A | `phys_fn_004838` `0x000b4d90`+66, guard at `0x000b4d93` | `Container::Empty()`'s guard `mGrowthFactor >= 0.0f` weakened to `> 0.0f` | **10** | `container` mismatches=20 as first published: 10 read after `Empty()`, this row's, and 10 read after `~Container()` |
+| A | `phys_fn_004838` `0x000b4d90`+66, guard at `0x000b4d93` | `Container::Empty()`'s guard `mGrowthFactor >= 0.0f` weakened to `> 0.0f` | **10** | the `container` family's count as first published, split in the table below: 10 read after `Empty()`, this row's, and 10 read after `~Container()` |
 | B | `phys_fn_004840` `0x000b4de0`+174, guard at `0x000b4de4`-`0x000b4df2` | `Container::Resize()`'s guard `<= 0.0f` narrowed to `< 0.0f` | **36** | `container` mismatches=36, as first published |
 | G | `phys_fn_005157` `0x000e32c0`+27, store at `0x000e32d0` | `RadixSort::RadixSort` initialises `mDeleteRanks` false | **42** | `radixsort` mismatches=42 as first published, and `radix_setrankbuffers` 6 more -- a family P4 Task 2b added after G was first run -- for a target total of 48 |
 | C | header; no row | `mDeleteRanks` deleted from `IceRevisitedRadix.h` | -- | carried: red at compile |
