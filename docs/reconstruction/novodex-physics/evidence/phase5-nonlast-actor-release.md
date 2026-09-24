@@ -31,7 +31,11 @@ passed 628 tests, and the Phase 5 gate evaluated 241/241 registered checks;
 its only remaining candidate layout mismatch is the explicit final-vtable
 marker.
 
-This closes the measured two-dynamic-actor removal path. It does not yet
-establish arbitrary removal order across shape classes, subsequent reuse of
-the vacated auxiliary slot, or Scene destruction. The Phase 5 final-vtable
-marker remains an explicit gate failure.
+The next dynamic actor also takes the vacated physical auxiliary slot 0,
+while the compacted active list becomes `[1,0]` and the reverse indices
+become `[1,0]`. It reuses actor ID 1 and shape ID 1, restores broadphase
+count 2/8, and creates its body graph with the five allocations
+`50.18.228.1c.260`. Eleven further registered lines raise the Phase 5 floor
+to 252. This closes the measured remove-then-reuse path. Arbitrary removal
+order across shape classes and Scene destruction remain open. The Phase 5
+final-vtable marker remains an explicit gate failure.

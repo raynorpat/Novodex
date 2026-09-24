@@ -42,6 +42,8 @@
 
 **M2 non-last actor release, 2026-09-24:** Releasing the first of two dynamic actors now preserves auxiliary physical slots while compacting the active-index list, recycles the body-held actor ID through Scene+0x6d4, and matches the oracle's 0x18 allocation plus six-block free order. The ordinary staged-pair transcript is exact. Eighteen new assertions raise the Phase 5 floor to 241. See `docs/reconstruction/novodex-physics/evidence/phase5-nonlast-actor-release.md`. The previous note's non-last release gap is resolved for this tested case; subsequent vacant-slot reuse and other actor classes remain open.
 
+**M2 vacant-slot reuse, 2026-09-24:** The following dynamic actor takes auxiliary slot 0, appends that slot after surviving slot 1 in the active list, and reuses actor/shape ID 1. Its five allocations and broadphase transition match the staged oracle. Eleven more registered checks raise the Phase 5 floor to 252. The preceding note's reuse gap is resolved for this measured path; different shape classes, capacity growth, and Scene destruction remain open.
+
 ## 1. Inputs and boundaries
 
 - Repository: `D:\github\Novodex`, inspected at `0df8821f1c5e3668e566ad4182b1e8e568f632d6`.

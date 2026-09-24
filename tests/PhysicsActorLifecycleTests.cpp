@@ -633,6 +633,29 @@ int wmain(int argc, wchar_t** argv)
 		printf("\n");
 		printf("actor nonlast actors=%u\n", scene->getNbActors());
 		}
+		{
+		const unsigned beforeReuseAllocations = allocator.allocations();
+		NxActor* reusedActor = scene->createActor(dynamicDesc);
+		printf("actor reuse created=%u\n", reusedActor ? 1u : 0u);
+		printf("actor reuse creation_allocs=%u\n", allocator.allocations() - beforeReuseAllocations);
+		printf("actor reuse creation_sizes=");
+		for(unsigned i = 0; i < allocator.allocations() - beforeReuseAllocations; ++i)
+			printf("%s%x", i ? "." : "", allocator.allocSizeFromEnd(
+				allocator.allocations() - beforeReuseAllocations - 1 - i));
+		printf("\n");
+		nxPrintAuxArrays("reuse", scene);
+		nxPrintAuxIndexSamples("reuse", scene);
+		nxPrintSceneArray6d4("reuse", scene);
+		nxPrintSceneArray6e8("reuse", scene);
+		nxPrintBroadphase("reuse", scene);
+		if(reusedActor)
+			{
+			const unsigned char* body = *reinterpret_cast<unsigned char* const*>(
+				reinterpret_cast<const unsigned char*>(reusedActor) + 0x14);
+			printf("actor reuse body_c=%x\n", *reinterpret_cast<const unsigned*>(body + 0xc));
+			nxPrintShapeIndex("reuse", reusedActor);
+			}
+		}
 
 	sdk->releaseScene(*scene);
 	sdk->release();
