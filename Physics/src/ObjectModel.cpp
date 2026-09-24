@@ -32,6 +32,16 @@ CollisionObject::CollisionObject(void* argument)
 	mArgument18 = argument;					// 0x000247e6
 	}
 
+// phys_fn_001079 (0x000235d0): the box-family collision-object deleting
+// row. The embedded hook teardown at 0x5ba90 changes only its vptr, then
+// flag bit zero selects the SDK allocator's +0x14 free operation.
+void CollisionObject::nxScalarDeletingDtor(unsigned flags)
+	{
+	mMember.~EmbeddedHookBase();
+	if(flags & 1u)
+		nxGetSdkAllocator()->free(this);
+	}
+
 // phys_fn_001281 (0x000257a0): mov eax,[ecx+4]; ret. The whole row -- note
 // the offset is FOUR bytes past the shape's vptr.
 const void* nxShapeOwner(const void* shape)
@@ -5015,13 +5025,14 @@ void BoxShape::nxBoxScalarDeletingDtor(unsigned flags)
 	{
 	if(mBase.mWord9C)
 		{
-		// mov ecx,[esi+0x9c]; test; push 1; call [eax] at 0x0002195b..61 --
-		// destroyed through its own vtable by the image.
+		// mov ecx,[esi+0x9c]; test; push 1; call [eax] at 0x0002195b..61.
+		reinterpret_cast<CollisionObject*>(mBase.mWord9C)->nxScalarDeletingDtor(1);
 		}
 	mBase.nxBaseDtorOwnerArms();		// owner arms, 0x26be1..c35
 	mBase.mPrunable.~Prunable();			// tail of 0x00026bd0: jmp 0xb5640
-	(void) flags;							// flags&1 self-free arm: operator
-	}										// delete territory, not modeled
+	if(flags & 1u)
+		nxGetSdkAllocator()->free(this);
+	}
 
 // phys_fn_001399 (0x00028e80), MESH-table slot 0.
 void MeshShape::nxMeshScalarDeletingDtor(unsigned flags)

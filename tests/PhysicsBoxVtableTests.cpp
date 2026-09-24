@@ -7,9 +7,23 @@
 #include <cstdlib>
 #include "ObjectModel.h"
 
+static unsigned oracleFreeCount;
 struct OracleAllocator {
-    static void* __fastcall release(void*, void*, void* p) { free(p); return 0; }
+    static void* __fastcall release(void*, void*, void* p) {
+        ++oracleFreeCount;
+        free(p);
+        return 0;
+    }
     static void* __fastcall allocate(void*, void*, unsigned size, unsigned) { return malloc(size); }
+};
+struct CandidateAllocator : SdkAllocator {
+    unsigned freeCount = 0;
+    void* malloc(size_t size, NxMemoryType) override { return ::malloc(size); }
+    void* mallocDEBUG(size_t size, const char*, int, const char*, NxMemoryType) override {
+        return ::malloc(size);
+    }
+    void* realloc(void* p, size_t size) override { return ::realloc(p, size); }
+    void free(void* p) override { ++freeCount; ::free(p); }
 };
 static bool installAllocator(const unsigned char* base) {
     static void* table[6] = {
@@ -78,6 +92,8 @@ int wmain(int argc, wchar_t** argv)
     }
     const unsigned char* base = reinterpret_cast<const unsigned char*>(module);
     if(!installAllocator(base)) return 2;
+    CandidateAllocator candidateAllocator;
+    nxSetSdkAllocatorBridge(&candidateAllocator);
     typedef void (__thiscall* BoxCtor)(void*, void*, unsigned);
     typedef void (__thiscall* BoundsSlot)(void*, float*);
     typedef void* (__thiscall* SelfSlot)(void*);
@@ -124,6 +140,28 @@ int wmain(int argc, wchar_t** argv)
        reinterpret_cast<SelfSlot>(candidateTable[14])(candidateBytes) != candidateBytes)
         ++failures;
     ++cases;
+    typedef void (__thiscall* DtorSlot)(void*, unsigned);
+    reinterpret_cast<DtorSlot>(oracleTable[0])(oracleBytes, 0);
+    reinterpret_cast<DtorSlot>(candidateTable[0])(candidateBytes, 0);
+    if(oracleFreeCount != 1 || candidateAllocator.freeCount != 1)
+        ++failures;
+    ++cases;
+
+    unsigned char* oracleHeap = static_cast<unsigned char*>(malloc(0x228));
+    unsigned char* candidateHeap = static_cast<unsigned char*>(malloc(0x228));
+    if(!oracleHeap || !candidateHeap) return 2;
+    memset(oracleHeap, 0xcd, 0x228);
+    memset(candidateHeap, 0xcd, 0x228);
+    reinterpret_cast<BoxCtor>(const_cast<unsigned char*>(base) + 0x21870)(oracleHeap, 0, 0);
+    new(candidateHeap) BoxShape(0, 0);
+    void** oracleHeapTable = *reinterpret_cast<void***>(oracleHeap);
+    void** candidateHeapTable = *reinterpret_cast<void***>(candidateHeap);
+    reinterpret_cast<DtorSlot>(oracleHeapTable[0])(oracleHeap, 1);
+    reinterpret_cast<DtorSlot>(candidateHeapTable[0])(candidateHeap, 1);
+    if(oracleFreeCount != 3 || candidateAllocator.freeCount != 3)
+        ++failures;
+    ++cases;
+    nxSetSdkAllocatorBridge(0);
     printf("box vtable cases=%u failures=%u\n", cases, failures);
     return failures ? 1 : 0;
 }

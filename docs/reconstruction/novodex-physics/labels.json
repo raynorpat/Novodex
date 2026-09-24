@@ -2697,6 +2697,13 @@
       "reason": "SPHERE vtable slot 10; copies pose-one translation and the radius into a caller record; driven bitwise by the sphererows family"
     },
     {
+      "id": "phys_fn_001079",
+      "label": "Box collision-object scalar deleting destructor",
+      "confidence": "semantic",
+      "evidence": "oracle/capstone/manifest.json#/entries/3186",
+      "reason": "BOX collision-object vtable slot 0 at 0x235d0; destroys its embedded hook and conditionally frees the collision object through SDK allocator slot +0x14. The box primary slot-0 differential checks the oracle and candidate free deltas for both deleting flags."
+    },
+    {
       "id": "phys_fn_001263",
       "label": "NxPlane scalar deleting destructor (slot 0)",
       "confidence": "semantic",

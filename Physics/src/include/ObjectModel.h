@@ -60,6 +60,11 @@ class CollisionObject
 	//! phys_fn_001193 (0x000247c0). The argument is stored twice (+8/+0x18)
 	//! and handed nowhere else; what it means is unestablished.
 	explicit			CollisionObject(void* argument);
+	//! phys_fn_001079 (0x000235d0), the box-family slot-0 deleting row:
+	//! destroys the embedded hook, then frees this through the SDK allocator
+	//! when flags&1. The member's final vptr is an intermediate destructor
+	//! detail; callers observe the allocator operation.
+	void				nxScalarDeletingDtor(unsigned flags);
 
 	//! +0x00, the vtable slot, carried opaque like TriangleMesh's.
 	void*				mVptrSlot;
