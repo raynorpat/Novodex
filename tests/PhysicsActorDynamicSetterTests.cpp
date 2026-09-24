@@ -16,6 +16,7 @@
 #include "NxCapsuleShape.h"
 #include "NxPlaneShape.h"
 #include "NxBoxShape.h"
+#include "NxBounds3.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -470,6 +471,12 @@ int wmain(int argc, wchar_t** argv)
 		printf("%s%x", i ? "." : "", word(posedShape, 0x3c + 4 * i));
 	printf("\n");
 	NxBoxShape* posedPublicBox = posedActor->getShapes()[0]->isBox();
+	NxBounds3 posedBounds;
+	posedPublicBox->getWorldBounds(posedBounds);
+	printf("setter posed_box_bounds=%x.%x.%x.%x.%x.%x\n",
+		bits(posedBounds.getMin().x), bits(posedBounds.getMin().y),
+		bits(posedBounds.getMin().z), bits(posedBounds.getMax().x),
+		bits(posedBounds.getMax().y), bits(posedBounds.getMax().z));
 	const unsigned char* posedPruner = *reinterpret_cast<unsigned char* const*>(
 		posedShape + 0xc4);
 	const unsigned beforeBoxEpoch = posedPruner ? word(posedPruner, 0x38) : 0u;
@@ -481,6 +488,11 @@ int wmain(int argc, wchar_t** argv)
 		word(posedShape, 0xe8), word(posedShape, 0xec),
 		word(posedShape, 0xdc),
 		posedPruner ? word(posedPruner, 0x38) - beforeBoxEpoch : 0u);
+	posedPublicBox->getWorldBounds(posedBounds);
+	printf("setter box_changed_world_bounds=%x.%x.%x.%x.%x.%x\n",
+		bits(posedBounds.getMin().x), bits(posedBounds.getMin().y),
+		bits(posedBounds.getMin().z), bits(posedBounds.getMax().x),
+		bits(posedBounds.getMax().y), bits(posedBounds.getMax().z));
 	float changedBoxAABB[6] = {};
 	void** posedBoxTable = *reinterpret_cast<void***>(
 		const_cast<unsigned char*>(posedShape));
@@ -521,6 +533,13 @@ int wmain(int argc, wchar_t** argv)
 					const_cast<unsigned char*>(familyShape)) == familyShape ? 1u : 0u);
 		printf("\n");
 		NxShape* publicShape = familyActor->getShapes()[0];
+		NxBounds3 familyBounds;
+		publicShape->getWorldBounds(familyBounds);
+		printf("setter %s_world_bounds=%x.%x.%x.%x.%x.%x\n",
+			familyNames[family], bits(familyBounds.getMin().x),
+			bits(familyBounds.getMin().y), bits(familyBounds.getMin().z),
+			bits(familyBounds.getMax().x), bits(familyBounds.getMax().y),
+			bits(familyBounds.getMax().z));
 		printf("setter %s_public=%u.%u.%u.%u.%u\n", familyNames[family],
 			publicShape ? 1u : 0u,
 			publicShape ? static_cast<unsigned>(publicShape->getType()) : 0u,
@@ -589,6 +608,11 @@ int wmain(int argc, wchar_t** argv)
 					word(familyShape, 0xe0), word(familyShape, 0xe4),
 					word(familyShape, 0xdc),
 					familyPruner ? word(familyPruner, 0x38) - beforeDimensionsEpoch : 0u);
+				capsule->getWorldBounds(familyBounds);
+				printf("setter capsule_changed_world_bounds=%x.%x.%x.%x.%x.%x\n",
+					bits(familyBounds.getMin().x), bits(familyBounds.getMin().y),
+					bits(familyBounds.getMin().z), bits(familyBounds.getMax().x),
+					bits(familyBounds.getMax().y), bits(familyBounds.getMax().z));
 				float capsuleAABB[6] = {};
 				reinterpret_cast<ShapeAABBFn>(familyTable[8])(
 					const_cast<unsigned char*>(familyShape), capsuleAABB);

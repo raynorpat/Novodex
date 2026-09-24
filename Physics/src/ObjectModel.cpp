@@ -5530,17 +5530,16 @@ void BoxShape::nxBoxLocalAABB(float* out) const
 	}
 
 // phys_fn_000935 (0x000205a0), BOX-table slot 9. Extent rows of pose one's
-// rotation: axis 0 uses r0/r2/r1, axis 1 r3/r5/r4, axis 2 r6/r7/r8 -- the
-// same |row . dims| pattern as every OBB bounds helper.
+// rotation: each row uses its three columns in order for |row . dims|.
 void BoxShape::nxBoxWorldAABB(float* out) const
 	{
 	const float* r = reinterpret_cast<const float*>(&mBase.mPose0C.mRotation[0]);
 	const float dx = mHull.mDims04[0];
 	const float dy = mHull.mDims04[1];
 	const float dz = mHull.mDims04[2];
-	const float e0 = fabsf(dx * r[0]) + fabsf(dy * r[2]) + fabsf(dz * r[1]);
-	const float e1 = fabsf(dx * r[3]) + fabsf(dy * r[5]) + fabsf(dz * r[4]);
-	const float e2 = fabsf(dx * r[6]) + fabsf(dy * r[8]) + fabsf(dz * r[7]);
+	const float e0 = fabsf(dx * r[0]) + fabsf(dy * r[1]) + fabsf(dz * r[2]);
+	const float e1 = fabsf(dx * r[3]) + fabsf(dy * r[4]) + fabsf(dz * r[5]);
+	const float e2 = fabsf(dx * r[6]) + fabsf(dy * r[7]) + fabsf(dz * r[8]);
 	const float* t = mBase.mPose0C.mTranslation;
 	out[0] = t[0] - e0;						// fsub [esp+4], 0x00020639
 	out[1] = t[1] - e1;

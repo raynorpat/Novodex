@@ -22,6 +22,7 @@
 #include "NxBodyDesc.h"
 #include "NxShape.h"
 #include "NxBoxShape.h"
+#include "NxBounds3.h"
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
@@ -183,6 +184,15 @@ static void __fastcall nxBoxHandleSetGroup(void* self, void*, NxCollisionGroup g
 	*reinterpret_cast<NxCollisionGroup*>(shape + 0xd8) = group;
 	nxSceneMarkShapeDirty(shape, 4);
 	*reinterpret_cast<unsigned*>(shape + 0xc8) = 1u << group;
+	}
+
+static void __fastcall nxShapeHandleGetWorldBounds(void* self, void*,
+	NxBounds3& bounds)
+	{
+	unsigned char* shape = nxBoxHandleInternal(self);
+	void** table = *reinterpret_cast<void***>(shape);
+	typedef void (__thiscall* BoundsFn)(void*, float*);
+	reinterpret_cast<BoundsFn>(table[9])(shape, &bounds.getMin().x);
 	}
 
 static NxCollisionGroup __fastcall nxBoxHandleGetGroup(void* self, void*)
@@ -413,6 +423,7 @@ void* nxBoxShapePublicVtable()
 			slots[1] = reinterpret_cast<void*>(&nxBoxHandleGetActor);
 			slots[2] = reinterpret_cast<void*>(&nxBoxHandleSetGroup);
 			slots[3] = reinterpret_cast<void*>(&nxBoxHandleGetGroup);
+			slots[4] = reinterpret_cast<void*>(&nxShapeHandleGetWorldBounds);
 			slots[5] = reinterpret_cast<void*>(&nxBoxHandleSetFlag);
 			slots[6] = reinterpret_cast<void*>(&nxBoxHandleGetFlag);
 			slots[25] = reinterpret_cast<void*>(&nxBoxHandleSetMaterial);
