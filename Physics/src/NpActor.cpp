@@ -935,52 +935,203 @@ NxVec3 NpActorVtable::getAngularMomentumVal() const
 	return out;
 	}
 
-// (unimplemented) addForceAtPos
+static void nxNpActorAccumulateForce(unsigned char* record,
+	const NxVec3& value, NxForceMode mode, bool angular);
+static NxVec3 nxNpActorRotateLocalForce(const unsigned char* record,
+	const NxVec3& local);
+
+static void nxNpActorForceAtPos(unsigned char* record, const NxVec3& force,
+	const NxVec3& worldPosition, NxForceMode mode)
+	{
+	const float* center = reinterpret_cast<const float*>(record + 0x158);
+	const NxVec3 lever(worldPosition.x - center[0],
+		worldPosition.y - center[1], worldPosition.z - center[2]);
+	const NxVec3 torque(lever.y * force.z - lever.z * force.y,
+		lever.z * force.x - lever.x * force.z,
+		lever.x * force.y - lever.y * force.x);
+	nxNpActorAccumulateForce(record, force, mode, false);
+	nxNpActorAccumulateForce(record, torque, mode, true);
+	}
+
+static NxVec3 nxNpActorLocalPosition(const unsigned char* record,
+	const NxVec3& position)
+	{
+	float rotation[9];
+	nxNpActorRotationFromQuaternion(record, rotation);
+	const float* translation = reinterpret_cast<const float*>(record + 0x50);
+	return NxVec3(
+		static_cast<float>(static_cast<double>(rotation[0]) * position.x +
+			static_cast<double>(rotation[2]) * position.z +
+			static_cast<double>(rotation[1]) * position.y + translation[0]),
+		static_cast<float>(static_cast<double>(rotation[3]) * position.x +
+			static_cast<double>(rotation[5]) * position.z +
+			static_cast<double>(rotation[4]) * position.y + translation[1]),
+		static_cast<float>(static_cast<double>(rotation[6]) * position.x +
+			static_cast<double>(rotation[8]) * position.z +
+			static_cast<double>(rotation[7]) * position.y + translation[2]));
+	}
+
 void NpActorVtable::addForceAtPos(const NxVec3& force, const NxVec3& pos, NxForceMode mode )
 	{
-	
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	unsigned char* record = nxNpActorRecord(this);
+	if(record && (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u) == 0)
+		nxNpActorForceAtPos(record, force, pos, mode);
+	nxNpSceneGuardLeave(ctx);
 	}
 
-// (unimplemented) addForceAtLocalPos
 void NpActorVtable::addForceAtLocalPos(const NxVec3& force, const NxVec3& pos, NxForceMode mode )
 	{
-	
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	unsigned char* record = nxNpActorRecord(this);
+	if(record && (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u) == 0)
+		nxNpActorForceAtPos(record, force,
+			nxNpActorLocalPosition(record, pos), mode);
+	nxNpSceneGuardLeave(ctx);
 	}
 
-// (unimplemented) addLocalForceAtPos
 void NpActorVtable::addLocalForceAtPos(const NxVec3& force, const NxVec3& pos, NxForceMode mode )
 	{
-	
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	unsigned char* record = nxNpActorRecord(this);
+	if(record && (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u) == 0)
+		nxNpActorForceAtPos(record,
+			nxNpActorRotateLocalForce(record, force), pos, mode);
+	nxNpSceneGuardLeave(ctx);
 	}
 
-// (unimplemented) addLocalForceAtLocalPos
 void NpActorVtable::addLocalForceAtLocalPos(const NxVec3& force, const NxVec3& pos, NxForceMode mode )
 	{
-	
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	unsigned char* record = nxNpActorRecord(this);
+	if(record && (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u) == 0)
+		nxNpActorForceAtPos(record,
+			nxNpActorRotateLocalForce(record, force),
+			nxNpActorLocalPosition(record, pos), mode);
+	nxNpSceneGuardLeave(ctx);
 	}
 
-// (unimplemented) addForce
-void NpActorVtable::addForce(const NxVec3&, NxForceMode mode )
+static void nxNpActorAccumulateForce(unsigned char* record,
+	const NxVec3& value, NxForceMode mode, bool angular)
 	{
-	
+	unsigned target;
+	unsigned mask;
+	switch(mode)
+		{
+		case NX_FORCE:
+			target = angular ? 0x94 : 0x88;
+			mask = angular ? 0x40 : 0x20;
+			break;
+		case NX_IMPULSE:
+		case NX_VELOCITY_CHANGE:
+			target = angular ? 0x78 : 0x6c;
+			mask = angular ? 8 : 4;
+			break;
+		case NX_SMOOTH_IMPULSE:
+		case NX_SMOOTH_VELOCITY_CHANGE:
+			target = angular ? 0xac : 0xa0;
+			mask = angular ? 0x100 : 0x80;
+			break;
+		default:
+			return;
+		}
+	const float input[3] = { value.x, value.y, value.z };
+	float increment[3];
+	if(mode == NX_VELOCITY_CHANGE || mode == NX_SMOOTH_VELOCITY_CHANGE)
+		memcpy(increment, input, sizeof(increment));
+	else if(!angular)
+		{
+		const float inverseMass = *reinterpret_cast<float*>(record + 0xc0);
+		for(unsigned i = 0; i < 3; ++i) increment[i] = inverseMass * input[i];
+		}
+	else
+		{
+		const float* inverse = reinterpret_cast<const float*>(record + 0x164);
+		for(unsigned i = 0; i < 3; ++i)
+			increment[i] = static_cast<float>(
+				static_cast<double>(inverse[i * 3]) * input[0] +
+				static_cast<double>(inverse[i * 3 + 1]) * input[1] +
+				static_cast<double>(inverse[i * 3 + 2]) * input[2]);
+		}
+	float* destination = reinterpret_cast<float*>(record + target);
+	for(unsigned i = 0; i < 3; ++i)
+		destination[i] += increment[i];
+	if(target == 0x6c || target == 0x78)
+		memcpy(record + (angular ? 0x40 : 0x34), destination, sizeof(NxVec3));
+	nxNpActorMarkRecordDirty(record, mask);
+	if((*reinterpret_cast<unsigned*>(record + 0x114) & 0x100u) == 0 &&
+		*reinterpret_cast<float*>(record + 0x84) < 0.39999998f)
+		{
+		*reinterpret_cast<unsigned*>(record + 0x84) = 0x3eccccccu;
+		*reinterpret_cast<unsigned*>(record + 0x4c) = 0x3eccccccu;
+		nxNpActorMarkRecordDirty(record, 0x10);
+		}
 	}
 
-// (unimplemented) addLocalForce
-void NpActorVtable::addLocalForce(const NxVec3&, NxForceMode mode )
+void NpActorVtable::addForce(const NxVec3& force, NxForceMode mode )
 	{
-	
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	unsigned char* record = nxNpActorRecord(this);
+	if(record && (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u) == 0)
+		nxNpActorAccumulateForce(record, force, mode, false);
+	nxNpSceneGuardLeave(ctx);
 	}
 
-// (unimplemented) addTorque
-void NpActorVtable::addTorque(const NxVec3&, NxForceMode mode )
+static NxVec3 nxNpActorRotateLocalForce(const unsigned char* record,
+	const NxVec3& local)
 	{
-	
+	NxQuat quaternion;
+	memcpy(&quaternion, record + 0x5c, sizeof(quaternion));
+	NxMat33 rotation(quaternion);
+	float m[9];
+	rotation.getRowMajor(m);
+	return NxVec3(
+		static_cast<float>(static_cast<double>(m[0]) * local.x +
+			static_cast<double>(m[2]) * local.z +
+			static_cast<double>(m[1]) * local.y),
+		static_cast<float>(static_cast<double>(m[3]) * local.x +
+			static_cast<double>(m[5]) * local.z +
+			static_cast<double>(m[4]) * local.y),
+		static_cast<float>(static_cast<double>(m[6]) * local.x +
+			static_cast<double>(m[8]) * local.z +
+			static_cast<double>(m[7]) * local.y));
 	}
 
-// (unimplemented) addLocalTorque
-void NpActorVtable::addLocalTorque(const NxVec3&, NxForceMode mode )
+void NpActorVtable::addLocalForce(const NxVec3& force, NxForceMode mode )
 	{
-	
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	unsigned char* record = nxNpActorRecord(this);
+	if(record && (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u) == 0)
+		nxNpActorAccumulateForce(record,
+			nxNpActorRotateLocalForce(record, force), mode, false);
+	nxNpSceneGuardLeave(ctx);
+	}
+
+void NpActorVtable::addTorque(const NxVec3& torque, NxForceMode mode )
+	{
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	unsigned char* record = nxNpActorRecord(this);
+	if(record && (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u) == 0)
+		nxNpActorAccumulateForce(record, torque, mode, true);
+	nxNpSceneGuardLeave(ctx);
+	}
+
+void NpActorVtable::addLocalTorque(const NxVec3& torque, NxForceMode mode )
+	{
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	unsigned char* record = nxNpActorRecord(this);
+	if(record && (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u) == 0)
+		nxNpActorAccumulateForce(record,
+			nxNpActorRotateLocalForce(record, torque), mode, true);
+	nxNpSceneGuardLeave(ctx);
 	}
 
 NxReal NpActorVtable::computeKineticEnergy() const

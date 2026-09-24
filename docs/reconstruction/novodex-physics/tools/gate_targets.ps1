@@ -14,7 +14,7 @@ $NxPhaseTestTargets = [ordered] @{
     '2' = @('NxPhysicsExportTests', 'NxPhysicsSDKTests', 'NxPhysicsCoreClusterTests')
     '3' = @('NxPhysicsGeometryTests', 'NxPhysicsKernelFuzzTests')
     '4' = @()
-    '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests')
+    '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests', 'NxPhysicsActorForceTests')
     '6' = @('NxPhysicsJointStagedPairTests')
     '7' = @('NxPhysicsJointStagedPairTests')
     '8' = @()
@@ -87,6 +87,47 @@ $NxPhaseOracleDifferentialTargets = [ordered] @{
 # from 89978 to 3521 and leaves stdout_delta at 0, and this is what turns that
 # from a silent pass into a failure.
 $NxRequiredCoverageLines = [ordered] @{
+    'NxPhysicsActorForceTests' = @(
+        'force mode=0 created=1',
+        'force mode=0 stage=after_force dirty=20.2 linear=0.0.0 angular=0.0.0 force=40000000.40666667.40b33333 torque=0.0.0 smooth_force=0.0.0 smooth_torque=0.0.0',
+        'force mode=0 stage=after_torque dirty=40.2 linear=0.0.0 angular=0.0.0 force=40000000.40666667.40b33333 torque=40800000.40a00000.40c00000 smooth_force=0.0.0 smooth_torque=0.0.0',
+        'force mode=0 stage=repeated dirty=60.2 linear=0.0.0 angular=0.0.0 force=40800000.40e66667.41333333 torque=41000000.41200000.41400000 smooth_force=0.0.0 smooth_torque=0.0.0',
+        'force mode=1 created=1',
+        'force mode=1 stage=after_force dirty=4.2 linear=40000000.40666667.40b33333 angular=0.0.0 force=0.0.0 torque=0.0.0 smooth_force=0.0.0 smooth_torque=0.0.0',
+        'force mode=1 stage=after_torque dirty=8.2 linear=40000000.40666667.40b33333 angular=40800000.40a00000.40c00000 force=0.0.0 torque=0.0.0 smooth_force=0.0.0 smooth_torque=0.0.0',
+        'force mode=2 created=1',
+        'force mode=2 stage=after_force dirty=4.2 linear=41200000.41900000.41e00000 angular=0.0.0 force=0.0.0 torque=0.0.0 smooth_force=0.0.0 smooth_torque=0.0.0',
+        'force mode=2 stage=after_torque dirty=8.2 linear=41200000.41900000.41e00000 angular=41000000.41700000.41c00000 force=0.0.0 torque=0.0.0 smooth_force=0.0.0 smooth_torque=0.0.0',
+        'force mode=3 created=1',
+        'force mode=3 stage=after_force dirty=80.2 linear=0.0.0 angular=0.0.0 force=0.0.0 torque=0.0.0 smooth_force=40000000.40666667.40b33333 smooth_torque=0.0.0',
+        'force mode=3 stage=after_torque dirty=100.2 linear=0.0.0 angular=0.0.0 force=0.0.0 torque=0.0.0 smooth_force=40000000.40666667.40b33333 smooth_torque=40800000.40a00000.40c00000',
+        'force mode=4 created=1',
+        'force mode=4 stage=after_force dirty=80.2 linear=0.0.0 angular=0.0.0 force=0.0.0 torque=0.0.0 smooth_force=41200000.41900000.41e00000 smooth_torque=0.0.0',
+        'force mode=4 stage=after_torque dirty=100.2 linear=0.0.0 angular=0.0.0 force=0.0.0 torque=0.0.0 smooth_force=41200000.41900000.41e00000 smooth_torque=41000000.41700000.41c00000',
+        'force sleepy_created=1',
+        'force low_wake_initial=3dcccccd.3dcccccd.0',
+        'force low_wake_after=3ecccccc.3ecccccc.0.30.2',
+        'force forced_sleep_after=0.0.100.40.2',
+        'force rotated_created=1',
+        'force rotated_inverse=3eaaaaa9.31c40392.0.31c40392.3efffffe.0.0.0.3e800000',
+        'force rotated_accel=402aaaa9.40effffe.40c00000',
+        'force rotated_velocity=402aaaa9.40effffe.40c00000',
+        'force local_created=1',
+        'force local_accel=c0666665.40000000.40b33333.c09ffffe.407ffffe.40c00000',
+        'force local_velocity=c0666665.40000000.40b33333.c09ffffe.407ffffe.40c00000',
+        'force atpos_created=1',
+        'force atpos_cmass=40800000.40a00000.40c00000',
+        'force atpos global_force linear=0.0.0 angular=0.0.0 force=40000000.40666667.40b33333 torque=3f800000.3f2aaaab.bf000000 smooth_force=0.0.0 smooth_torque=0.0.0',
+        'force atpos local_position linear=40000000.40666667.40b33333 angular=3f800000.3f2aaaab.bf000000 force=40000000.40666667.40b33333 torque=3f800000.3f2aaaab.bf000000 smooth_force=0.0.0 smooth_torque=0.0.0',
+        'force atpos local_force linear=40000000.40666667.40b33333 angular=3f800000.3f2aaaab.bf000000 force=40000000.40666667.40b33333 torque=3f800000.3f2aaaab.bf000000 smooth_force=40000000.40666667.40b33333 smooth_torque=3f800000.3f2aaaab.bf000000',
+        'force atpos both_local linear=41400000.41accccd.42066666 angular=40400000.402aaaab.c0200000 force=40000000.40666667.40b33333 torque=3f800000.3f2aaaab.bf000000 smooth_force=40000000.40666667.40b33333 smooth_torque=3f800000.3f2aaaab.bf000000',
+        'force offset_created=1',
+        'force offset_cmass=40000001.40c00000.41100000',
+        'force atpos offset_local_position linear=0.0.0 angular=0.0.0 force=40000000.40666667.40b33333 torque=0.0.0 smooth_force=0.0.0 smooth_torque=0.0.0',
+        'force atpos offset_both_local linear=c0666665.40000000.40b33333 angular=40bffffe.40a00001.3ffffffc force=40000000.40666667.40b33333 torque=0.0.0 smooth_force=0.0.0 smooth_torque=0.0.0',
+        'force kinematic_created=1',
+        'force kinematic_unchanged=0.0.0.0.0.0.0.0'
+    )
     'NxPhysicsActorMomentumTests' = @(
         'momentum created=1',
         'momentum inverse_tensor=3f000000.0.0.0.3eaaaaab.0.0.0.3e800000',
@@ -1369,7 +1410,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 101  # 34 for NxPhysicsAssetTests, 67 for NxPhysicsThirdPartyTests
-    '5' = 513  # 126 object-layout assertions plus 387 public actor/pruner/box/scene lines
+    '5' = 552  # 126 object-layout assertions plus 426 public actor/pruner/box/scene lines
                # (RED on purpose: vtables family open)
     '6' = 11  # 3 oracle-descriptor + 4 oracle-joint + 4 staged-pair-joint
     '7' = 4   # the four STAGED-PAIR assertions; the oracle-differential assertions
@@ -1400,6 +1441,7 @@ $NxRegisteredTestTargets = @(
     'NxPhysicsActorDynamicsTests',
     'NxPhysicsActorDynamicSetterTests',
     'NxPhysicsActorMomentumTests',
+    'NxPhysicsActorForceTests',
     'NxPhysicsDynamicFirstTests',
     'NxPhysicsEmptySceneTests',
     'NxPhysicsCoreClusterTests',

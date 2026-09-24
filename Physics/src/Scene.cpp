@@ -1802,6 +1802,17 @@ int nxActorComputeMass(void* actor, const unsigned* bodyWord)
 	NxSceneInternal* scene = *reinterpret_cast<NxSceneInternal**>(actorBytes + 4);
 	const NxBodyDesc* bodyDesc = reinterpret_cast<const NxBodyDesc*>(*bodyWord);
 	bodyDesc->massLocalPose.M.getRowMajor(reinterpret_cast<float*>(record + 0xdc));
+	const NxVec3 massTranslation = bodyDesc->massLocalPose.t;
+	float pose[9];
+	nxNpActorRotationFromQuaternion(record, pose);
+	const float* translation = reinterpret_cast<const float*>(body + 0x44);
+	float* worldCenter = reinterpret_cast<float*>(record + 0x158);
+	for(unsigned row = 0; row < 3; ++row)
+		worldCenter[row] = static_cast<float>(
+			static_cast<double>(pose[row * 3 + 2]) * massTranslation.z +
+			static_cast<double>(pose[row * 3 + 1]) * massTranslation.y +
+			static_cast<double>(pose[row * 3]) * massTranslation.x +
+			translation[row]);
 	*reinterpret_cast<unsigned*>(record + 0x10c) = bodyDesc->flags;
 	*reinterpret_cast<unsigned char**>(record + 0x120) =
 		scene->at<unsigned char*>(0x48);
