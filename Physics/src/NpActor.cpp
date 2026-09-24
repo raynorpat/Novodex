@@ -38,7 +38,7 @@ static void* nxNpActorContext(void* actor, unsigned offset)
 	return *reinterpret_cast<void**>(static_cast<unsigned char*>(actor) + offset);
 	}
 
-static void nxNpActorMarkRecordDirty(unsigned char* record)
+static void nxNpActorMarkRecordDirty(unsigned char* record, unsigned mask)
 	{
 	if(!record) return;
 	unsigned char* aux = *reinterpret_cast<unsigned char**>(record + 0x120);
@@ -71,7 +71,45 @@ static void nxNpActorMarkRecordDirty(unsigned char* record)
 		*reinterpret_cast<unsigned**>(aux + 0x54) = end + 1;
 		(*reinterpret_cast<unsigned**>(aux + 0x60))[id] = index;
 		}
-	flags[id] |= 0x80000;
+	flags[id] |= mask;
+	}
+
+// The kinematic branch at 0x19620 runs before the ordinary body-flag OR/AND.
+// The explicit-mass path keeps inverse mass/inertia at +0xc0..+0xcc and a
+// 0x20-byte transition block at +0x118. Scene dirties are independent bits.
+static void nxNpActorTransitionKinematic(unsigned char* record, bool enable)
+	{
+	unsigned& flags = *reinterpret_cast<unsigned*>(record + 0x10c);
+	if(enable ? (flags & 0x80u) != 0 : (flags & 0x80u) == 0)
+		return;
+	if(enable)
+		{
+		flags |= 0x80u;
+		memset(record + 0xc0, 0, 4 * sizeof(float));
+		void*& state = *reinterpret_cast<void**>(record + 0x118);
+		if(!state)
+			state = nxGetSdkAllocator()->malloc(0x20, NX_MEMORY_PERSISTENT);
+		if(state) *reinterpret_cast<unsigned*>(
+			static_cast<unsigned char*>(state) + 0xc) = 0;
+		}
+	else
+		{
+		flags &= ~0x80u;
+		const unsigned massOffsets[4] = {0x188, 0x18c, 0x190, 0x194};
+		for(unsigned i = 0; i < 4; ++i)
+			{
+			const float mass = *reinterpret_cast<float*>(record + massOffsets[i]);
+			*reinterpret_cast<float*>(record + 0xc0 + i * 4) =
+				mass > 0.0f ? 1.0f / mass : 0.0f;
+			}
+		void*& state = *reinterpret_cast<void**>(record + 0x118);
+		if(state)
+			{
+			nxGetSdkAllocator()->free(state);
+			state = 0;
+			}
+		}
+	nxNpActorMarkRecordDirty(record, 0x80000u | 0x10000u | 0x20000u);
 	}
 
 // The vtable word. A single static instance of the concrete class supplies it: the
@@ -592,10 +630,16 @@ void NpActorVtable::setMass(NxReal)
 	
 	}
 
-// (unimplemented) getMass
 NxReal NpActorVtable::getMass() const
 	{
-	return NxReal();
+	void* self = const_cast<NpActorVtable*>(this);
+	void* ctx = nxNpActorContext(self, 0x10);
+	nxNpSceneGuardEnter(ctx);
+	unsigned char* record = nxNpActorRecord(self);
+	const NxReal out = record
+		? *reinterpret_cast<NxReal*>(record + 0x188) : NxReal();
+	nxNpSceneGuardLeave(ctx);
+	return out;
 	}
 
 // (unimplemented) setMassSpaceInertiaTensor
@@ -628,10 +672,16 @@ void NpActorVtable::setLinearDamping(NxReal)
 	
 	}
 
-// (unimplemented) getLinearDamping
 NxReal NpActorVtable::getLinearDamping() const
 	{
-	return NxReal();
+	void* self = const_cast<NpActorVtable*>(this);
+	void* ctx = nxNpActorContext(self, 0x10);
+	nxNpSceneGuardEnter(ctx);
+	unsigned char* record = nxNpActorRecord(self);
+	const NxReal out = record
+		? *reinterpret_cast<NxReal*>(record + 0xb8) : NxReal();
+	nxNpSceneGuardLeave(ctx);
+	return out;
 	}
 
 // (unimplemented) setAngularDamping
@@ -640,10 +690,16 @@ void NpActorVtable::setAngularDamping(NxReal)
 	
 	}
 
-// (unimplemented) getAngularDamping
 NxReal NpActorVtable::getAngularDamping() const
 	{
-	return NxReal();
+	void* self = const_cast<NpActorVtable*>(this);
+	void* ctx = nxNpActorContext(self, 0x10);
+	nxNpSceneGuardEnter(ctx);
+	unsigned char* record = nxNpActorRecord(self);
+	const NxReal out = record
+		? *reinterpret_cast<NxReal*>(record + 0xbc) : NxReal();
+	nxNpSceneGuardLeave(ctx);
+	return out;
 	}
 
 // (unimplemented) setLinearVelocity
@@ -658,16 +714,28 @@ void NpActorVtable::setAngularVelocity(const NxVec3&)
 	
 	}
 
-// (unimplemented) getLinearVelocityVal
 NxVec3 NpActorVtable::getLinearVelocityVal() const
 	{
-	return NxVec3();
+	void* self = const_cast<NpActorVtable*>(this);
+	void* ctx = nxNpActorContext(self, 0x10);
+	nxNpSceneGuardEnter(ctx);
+	unsigned char* record = nxNpActorRecord(self);
+	NxVec3 out(0.0f, 0.0f, 0.0f);
+	if(record) memcpy(&out, record + 0x6c, sizeof(out));
+	nxNpSceneGuardLeave(ctx);
+	return out;
 	}
 
-// (unimplemented) getAngularVelocityVal
 NxVec3 NpActorVtable::getAngularVelocityVal() const
 	{
-	return NxVec3();
+	void* self = const_cast<NpActorVtable*>(this);
+	void* ctx = nxNpActorContext(self, 0x10);
+	nxNpSceneGuardEnter(ctx);
+	unsigned char* record = nxNpActorRecord(self);
+	NxVec3 out(0.0f, 0.0f, 0.0f);
+	if(record) memcpy(&out, record + 0x78, sizeof(out));
+	nxNpSceneGuardLeave(ctx);
+	return out;
 	}
 
 // (unimplemented) setMaxAngularVelocity
@@ -848,9 +916,11 @@ void NpActorVtable::raiseBodyFlag(NxBodyFlag flag)
 	unsigned char* record = nxNpActorRecord(this);
 	if(record)
 		{
+		if(static_cast<unsigned>(flag) & 0x80u)
+			nxNpActorTransitionKinematic(record, true);
 		*reinterpret_cast<unsigned*>(record + 0x10c) |=
 			static_cast<unsigned>(flag);
-		nxNpActorMarkRecordDirty(record);
+		nxNpActorMarkRecordDirty(record, 0x80000);
 		}
 	nxNpSceneGuardLeave(ctx);
 	}
@@ -862,9 +932,11 @@ void NpActorVtable::clearBodyFlag(NxBodyFlag flag)
 	unsigned char* record = nxNpActorRecord(this);
 	if(record)
 		{
+		if(static_cast<unsigned>(flag) & 0x80u)
+			nxNpActorTransitionKinematic(record, false);
 		*reinterpret_cast<unsigned*>(record + 0x10c) &=
 			~static_cast<unsigned>(flag);
-		nxNpActorMarkRecordDirty(record);
+		nxNpActorMarkRecordDirty(record, 0x80000);
 		}
 	nxNpSceneGuardLeave(ctx);
 	}

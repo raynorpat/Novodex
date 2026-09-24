@@ -66,6 +66,8 @@
 
 **M2 actor body flags and locks, 2026-09-24:** Dynamic record flags, public body-flag slots 78–80, and the record's Scene auxiliary dirty queue now match a fresh-process oracle drive. This exposed and fixed uninitialized public Scene critical sections and a one-byte read of the record's 32-bit flag word. Ten registered lines raise the Phase 5 floor to 406; reader and dirty-bit mutations both fail the differential. See `docs/reconstruction/novodex-physics/evidence/phase5-public-actor-body-flags.md`. Kinematic mode, lock contention, and the remaining actor virtuals remain open.
 
+**M2 dynamic mass and kinematic follow-up, 2026-09-24:** Explicit-mass dynamic descriptor fields, public mass/damping/velocity getters, one identity-box density mass/inertia computation, and the unshared record's kinematic allocate/restore transition now match the pinned oracle. The new staged differential adds thirteen assertions, raising the Phase 5 floor to 419; four mutations separately falsify mass, density, kinematic allocation, and dirty-bit behavior. See `docs/reconstruction/novodex-physics/evidence/phase5-dynamic-record-and-kinematic.md`. General mass properties, shared-record kinematic transitions, and the other dynamic actor slots remain open.
+
 ## 1. Inputs and boundaries
 
 - Repository: `D:\github\Novodex`, inspected at `0df8821f1c5e3668e566ad4182b1e8e568f632d6`.

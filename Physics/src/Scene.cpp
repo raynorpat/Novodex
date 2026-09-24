@@ -1804,6 +1804,51 @@ int nxActorComputeMass(void* actor, const unsigned* bodyWord)
 	*reinterpret_cast<unsigned char**>(record + 0x120) =
 		scene->at<unsigned char*>(0x48);
 	*reinterpret_cast<unsigned*>(record + 0x11c) = nxSceneTakeRecordId(scene);
+	*reinterpret_cast<unsigned char**>(record + 0x1bc) = record;
+	*reinterpret_cast<float*>(record + 0xb8) = bodyDesc->linearDamping;
+	*reinterpret_cast<float*>(record + 0xbc) = bodyDesc->angularDamping;
+	memcpy(record + 0x6c, &bodyDesc->linearVelocity, sizeof(NxVec3));
+	memcpy(record + 0x34, &bodyDesc->linearVelocity, sizeof(NxVec3));
+	memcpy(record + 0x78, &bodyDesc->angularVelocity, sizeof(NxVec3));
+	memcpy(record + 0x40, &bodyDesc->angularVelocity, sizeof(NxVec3));
+	float mass = bodyDesc->mass;
+	NxVec3 inertia = bodyDesc->massSpaceInertia;
+	// The one-box density path in FUN_100019b0/FUN_1001a350 derives mass
+	// from the full box extents and diagonal inertia from their squared radii.
+	// Rotated/translated and compound geometry still need the full tensor path.
+	const unsigned* actorDesc = bodyWord - 0x0c;
+	float density;
+	memcpy(&density, actorDesc + 0x0d, sizeof(density));
+	if(mass == 0.0f && density > 0.0f &&
+		actorDesc[0x14] - actorDesc[0x13] == sizeof(void*))
+		{
+		const NxShapeDesc* shape = *reinterpret_cast<const NxShapeDesc* const*>(
+			actorDesc[0x13]);
+		if(shape && shape->getType() == NX_SHAPE_BOX)
+			{
+			const NxVec3& radii = static_cast<const NxBoxShapeDesc*>(shape)->dimensions;
+			mass = 8.0f * density * radii.x * radii.y * radii.z;
+			const float thirdMass = mass / 3.0f;
+			inertia.x = thirdMass * (radii.y * radii.y + radii.z * radii.z);
+			inertia.y = thirdMass * (radii.x * radii.x + radii.z * radii.z);
+			inertia.z = thirdMass * (radii.x * radii.x + radii.y * radii.y);
+			}
+		}
+	if(mass > 0.0f)
+		{
+		*reinterpret_cast<float*>(record + 0x188) = mass;
+		*reinterpret_cast<float*>(record + 0xc0) = 1.0f / mass;
+		}
+	if(inertia.x > 0.0f && inertia.y > 0.0f && inertia.z > 0.0f)
+		{
+		memcpy(record + 0x18c, &inertia, sizeof(NxVec3));
+		*reinterpret_cast<float*>(record + 0xc4) =
+			1.0f / inertia.x;
+		*reinterpret_cast<float*>(record + 0xc8) =
+			1.0f / inertia.y;
+		*reinterpret_cast<float*>(record + 0xcc) =
+			1.0f / inertia.z;
+		}
 	nxSceneAuxRegisterRecord(scene, record);
 
 	return 0;
