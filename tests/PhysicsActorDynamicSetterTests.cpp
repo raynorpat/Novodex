@@ -526,6 +526,33 @@ int wmain(int argc, wchar_t** argv)
 			printf("setter plane_equation=%x.%x.%x.%x\n",
 				word(familyShape, 0xe0), word(familyShape, 0xe4),
 				word(familyShape, 0xe8), word(familyShape, 0xec));
+		if(family < 2)
+			{
+			const unsigned char* familyPruner =
+				*reinterpret_cast<unsigned char* const*>(familyShape + 0xc4);
+			const unsigned beforeEpoch = familyPruner
+				? word(familyPruner, 0x38) : 0u;
+			if(family == 0)
+				{
+				NxSphereShape* sphere = static_cast<NxSphereShape*>(publicShape);
+				sphere->setRadius(1.5f);
+				printf("setter sphere_changed=%x.%x.%x.%u\n",
+					bits(sphere->getRadius()), word(familyShape, 0xe0),
+					word(familyShape, 0xdc),
+					familyPruner ? word(familyPruner, 0x38) - beforeEpoch : 0u);
+				}
+			else
+				{
+				NxCapsuleShape* capsule = static_cast<NxCapsuleShape*>(publicShape);
+				capsule->setRadius(0.75f);
+				capsule->setHeight(2.0f);
+				printf("setter capsule_changed=%x.%x.%x.%x.%x.%u\n",
+					bits(capsule->getRadius()), bits(capsule->getHeight()),
+					word(familyShape, 0xe0), word(familyShape, 0xe4),
+					word(familyShape, 0xdc),
+					familyPruner ? word(familyPruner, 0x38) - beforeEpoch : 0u);
+				}
+			}
 		scene->releaseActor(*familyActor);
 		}
 	sdk->releaseScene(*scene);

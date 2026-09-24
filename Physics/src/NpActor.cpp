@@ -351,6 +351,28 @@ static NxReal __fastcall nxCapsuleHandleGetHeight(void* self, void*)
 		nxBoxHandleInternal(self) + 0xe4);
 	}
 
+static void __fastcall nxSphereHandleSetRadius(void* self, void*, NxReal radius)
+	{
+	unsigned char* shape = nxBoxHandleInternal(self);
+	*reinterpret_cast<NxReal*>(shape + 0xe0) = radius;
+	static_cast<ShapeBase*>(static_cast<void*>(shape))->nxApplyOwnerUpdate(1);
+	nxSceneMarkShapeDirty(shape, 0x20);
+	}
+
+static void __fastcall nxCapsuleHandleSetRadius(void* self, void*, NxReal radius)
+	{
+	unsigned char* shape = nxBoxHandleInternal(self);
+	*reinterpret_cast<NxReal*>(shape + 0xe0) = radius;
+	static_cast<ShapeBase*>(static_cast<void*>(shape))->nxApplyOwnerUpdate(1);
+	}
+
+static void __fastcall nxCapsuleHandleSetHeight(void* self, void*, NxReal height)
+	{
+	unsigned char* shape = nxBoxHandleInternal(self);
+	*reinterpret_cast<NxReal*>(shape + 0xe4) = height * 0.5f;
+	static_cast<ShapeBase*>(static_cast<void*>(shape))->nxApplyOwnerUpdate(1);
+	}
+
 void* nxBoxShapePublicVtable()
 	{
 	struct Table
@@ -397,8 +419,11 @@ void* nxShapePublicVtable(unsigned type)
 						slot < 31 ? box[slot]
 						: reinterpret_cast<void*>(&nxUnsupportedBoxMethod);
 				}
+			slots[1][31] = reinterpret_cast<void*>(&nxSphereHandleSetRadius);
 			slots[1][32] = reinterpret_cast<void*>(&nxShapeHandleGetRadius);
+			slots[2][32] = reinterpret_cast<void*>(&nxCapsuleHandleSetRadius);
 			slots[2][33] = reinterpret_cast<void*>(&nxShapeHandleGetRadius);
+			slots[2][34] = reinterpret_cast<void*>(&nxCapsuleHandleSetHeight);
 			slots[2][35] = reinterpret_cast<void*>(&nxCapsuleHandleGetHeight);
 			}
 		};
