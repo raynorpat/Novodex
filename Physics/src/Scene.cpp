@@ -28,6 +28,8 @@
 #include "Containers.h"
 #include "NxSceneDesc.h"
 #include "NxActorDesc.h"
+#include "NxShapeDesc.h"
+#include "NxBoxShapeDesc.h"
 #include "NxActor.h"
 #include "NpActor.h"
 #include "NxJointDesc.h"
@@ -79,6 +81,7 @@ void nxSceneBuildGroundPlane(void* scene);
 // phys_fn_000651's array reserve, above.
 void nxSceneArrayReserve(void* arrayHeader, unsigned needed);
 void nxSceneRecycleActorId(NxSceneInternal* scene, unsigned id);
+void* nxBoxShapePublicVtable();
 void nxSceneBroadphaseRegister(NxSceneInternal* scene, void* body);
 void nxSceneBroadphaseUnregister(NxSceneInternal* scene, void* body);
 void nxSceneAuxRegisterRecord(NxSceneInternal* scene, void* record);
@@ -855,7 +858,8 @@ int nxActorLoadFromDescInternal(void* actor, const unsigned* d)
 		{
 		if(shapeCount == 1)
 			{
-			void* shape = nxShapeFactory(reinterpret_cast<void*>(d[0x13]), actor);
+			void* shape = nxShapeFactory(
+				reinterpret_cast<void*>(*reinterpret_cast<const unsigned*>(d[0x13])), actor);
 			a[0x10 / 4] = reinterpret_cast<unsigned>(shape);
 			if(!shape)
 					return 0;
@@ -1525,16 +1529,26 @@ void nxSceneDeadlockReport()
 // whose shape list is empty cannot be created, and every downstream path in this
 // reconstruction needs creation to succeed before it can be measured.
 //
-// What is NOT modelled: the shape's own layout and vtable. The body points to
-// the measured 0x228-byte shape; its +0x9c word reaches a 0x1c-byte helper.
+// The body points to the measured 0x228-byte internal shape; its +0x9c word
+// reaches a separate 0x1c-byte public handle. Most internal fields and public
+// virtual methods remain to be reconstructed.
 void* nxShapeFactory(void* shapeDesc, void* actor)
 	{
-	(void)shapeDesc;
 	unsigned char* shape = static_cast<unsigned char*>(
 		nxGetSdkAllocator()->malloc(0x228, NX_MEMORY_PERSISTENT));
 	if(!shape)
 		return 0;
 	memset(shape, 0, 0x228);
+	const NxShapeDesc* descriptor = static_cast<const NxShapeDesc*>(shapeDesc);
+	if(descriptor)
+		{
+		*reinterpret_cast<unsigned*>(shape + 0xd0) =
+			static_cast<unsigned>(descriptor->getType());
+		if(descriptor->getType() == NX_SHAPE_BOX)
+			memcpy(shape + 0xe4,
+				&static_cast<const NxBoxShapeDesc*>(descriptor)->dimensions,
+				sizeof(NxVec3));
+		}
 	// The oracle shape does not point at the public 0x18-byte actor wrapper.
 	void* helper = nxGetSdkAllocator()->malloc(0x1c, NX_MEMORY_PERSISTENT);
 	if(!helper)
@@ -1543,14 +1557,21 @@ void* nxShapeFactory(void* shapeDesc, void* actor)
 		return 0;
 		}
 	memset(helper, 0, 0x1c);
+	if(descriptor && descriptor->getType() == NX_SHAPE_BOX)
+		*reinterpret_cast<void**>(helper) = nxBoxShapePublicVtable();
 	*reinterpret_cast<void**>(shape + 0x9c) = helper;
+	*reinterpret_cast<void**>(static_cast<unsigned char*>(helper) + 8) = shape;
+	*reinterpret_cast<void**>(static_cast<unsigned char*>(helper) + 0x18) = shape;
 	NxSceneInternal* scene = *reinterpret_cast<NxSceneInternal**>(
 		static_cast<unsigned char*>(actor) + 4);
 	*reinterpret_cast<unsigned*>(shape + 0xd4) = nxSceneTakeShapeId(scene);
 	unsigned char* body = *reinterpret_cast<unsigned char**>(
 		static_cast<unsigned char*>(actor) + 0x14);
 	if(body)
+		{
 		*reinterpret_cast<void**>(body + 0x10) = shape;
+		*reinterpret_cast<void**>(shape + 4) = body;
+		}
 	return shape;
 	}
 
@@ -1564,6 +1585,7 @@ void* nxShapeGroupConstruct(void* actor, const unsigned* shapeDescriptions, unsi
 	if(!group)
 		return 0;
 	memset(group, 0, 0x110);
+	*reinterpret_cast<unsigned*>(group + 0xd0) = 5;
 	// Like the oracle, the group retains its 0x50-byte outer body at +4.
 	// Its owned children are reached through the two arrays near the end.
 	unsigned char* body = *reinterpret_cast<unsigned char**>(

@@ -15,12 +15,71 @@
 #include "NxVec3.h"
 #include "NxActorDesc.h"
 #include "NxBodyDesc.h"
+#include "NxShape.h"
+#include "NxBoxShape.h"
 #include <string.h>
+#include <stdlib.h>
 
 // The vtable word. A single static instance of the concrete class supplies it: the
 // object needs a vtable POINTER, not a class instance, so one instance is enough for
 // every actor the reconstruction builds.
 static NpActorVtable gNpActorVtable;
+
+// The public 0x1c-byte box handle is separate from its 0x228-byte internal
+// shape. Its final table has 35 entries in the shipped x86 image; only the
+// four entries below are reconstructed here. An unimplemented entry aborts
+// instead of returning a plausible but false result.
+static void __fastcall nxUnsupportedBoxMethod(void*, void*) { abort(); }
+
+static unsigned char* nxBoxHandleInternal(void* self)
+	{
+	unsigned char* shape = *reinterpret_cast<unsigned char**>(
+		static_cast<unsigned char*>(self) + 0x18);
+	if(!shape) abort();
+	return shape;
+	}
+
+static NxActor* __fastcall nxBoxHandleGetActor(void* self, void*)
+	{
+	unsigned char* body = *reinterpret_cast<unsigned char**>(nxBoxHandleInternal(self) + 4);
+	if(!body) abort();
+	return *reinterpret_cast<NxActor**>(body);
+	}
+
+static NxShapeType __fastcall nxBoxHandleGetType(void* self, void*)
+	{
+	return static_cast<NxShapeType>(*reinterpret_cast<unsigned*>(
+		nxBoxHandleInternal(self) + 0xd0));
+	}
+
+static void* __fastcall nxBoxHandleIs(void* self, void*, NxShapeType requested)
+	{
+	return requested == nxBoxHandleGetType(self, 0) ? self : 0;
+	}
+
+static const NxVec3* __fastcall nxBoxHandleGetDimensions(void* self, void*)
+	{
+	return reinterpret_cast<const NxVec3*>(nxBoxHandleInternal(self) + 0xe4);
+	}
+
+void* nxBoxShapePublicVtable()
+	{
+	struct Table
+		{
+		void* slots[35];
+		Table()
+			{
+			for(unsigned i = 0; i < 35; ++i)
+				slots[i] = reinterpret_cast<void*>(&nxUnsupportedBoxMethod);
+			slots[1] = reinterpret_cast<void*>(&nxBoxHandleGetActor);
+			slots[27] = reinterpret_cast<void*>(&nxBoxHandleGetType);
+			slots[28] = reinterpret_cast<void*>(&nxBoxHandleIs);
+			slots[32] = reinterpret_cast<void*>(&nxBoxHandleGetDimensions);
+			}
+		};
+	static Table table;
+	return table.slots;
+	}
 
 void NpActorObject::installVtable()
 	{
@@ -189,16 +248,34 @@ void NpActorVtable::releaseShape(NxShape&)
 	
 	}
 
-// (unimplemented) getNbShapes
+// phys_fn_000082 (0x00002d00) delegates to the outer body's shape holder.
+// A single shape contributes one public handle; kind 5 is the group whose
+// child array at +0xe0/+0xe4 determines the count.
 NxU32 NpActorVtable::getNbShapes() const
 	{
-	return NxU32();
+	const unsigned char* actor = reinterpret_cast<const unsigned char*>(this);
+	const unsigned char* body = *reinterpret_cast<unsigned char* const*>(actor + 0x14);
+	const unsigned char* shape = body
+		? *reinterpret_cast<unsigned char* const*>(body + 0x10) : 0;
+	if(!shape) return 0;
+	if(*reinterpret_cast<const unsigned*>(shape + 0xd0) != 5) return 1;
+	const void* const* first = *reinterpret_cast<void* const* const*>(shape + 0xe0);
+	const void* const* last = *reinterpret_cast<void* const* const*>(shape + 0xe4);
+	return first ? static_cast<NxU32>(last - first) : 0;
 	}
 
-// (unimplemented) getShapes
+// phys_fn_000084 (0x00002d30) returns the address of the single helper
+// pointer, or the group's parallel array of public helper pointers.
 NxShape** NpActorVtable::getShapes() const
 	{
-	return 0;
+	const unsigned char* actor = reinterpret_cast<const unsigned char*>(this);
+	const unsigned char* body = *reinterpret_cast<unsigned char* const*>(actor + 0x14);
+	const unsigned char* shape = body
+		? *reinterpret_cast<unsigned char* const*>(body + 0x10) : 0;
+	if(!shape) return 0;
+	if(*reinterpret_cast<const unsigned*>(shape + 0xd0) == 5)
+		return *reinterpret_cast<NxShape** const*>(shape + 0xf0);
+	return reinterpret_cast<NxShape**>(const_cast<unsigned char*>(shape + 0x9c));
 	}
 
 // (unimplemented) updateMassFromShapes

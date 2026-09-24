@@ -44,6 +44,8 @@
 
 **M2 vacant-slot reuse, 2026-09-24:** The following dynamic actor takes auxiliary slot 0, appends that slot after surviving slot 1 in the active list, and reuses actor/shape ID 1. Its five allocations and broadphase transition match the staged oracle. Eleven more registered checks raise the Phase 5 floor to 252. The preceding note's reuse gap is resolved for this measured path; different shape classes, capacity growth, and Scene destruction remain open.
 
+**M2 public box handles, 2026-09-24:** `getNbShapes()`/`getShapes()` now expose separate 0x1c-byte public handles for single and two-box actors. Four box-handle virtuals (`getActor`, `getType`, `is`, `getDimensions`) match the staged oracle and each has an aimed failing mutation; negative type-casting and reference aliasing are also checked. Thirty-seven new assertions raise the Phase 5 floor to 289. See `docs/reconstruction/novodex-physics/evidence/phase5-public-box-shape-handles.md`. The other 31 box slots and all other shape finals remain open; the Phase 5 final-vtable marker is intentionally still red.
+
 ## 1. Inputs and boundaries
 
 - Repository: `D:\github\Novodex`, inspected at `0df8821f1c5e3668e566ad4182b1e8e568f632d6`.

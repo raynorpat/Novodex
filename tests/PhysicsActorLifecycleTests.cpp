@@ -10,6 +10,7 @@
 #include "NxActor.h"
 #include "NxBodyDesc.h"
 #include "NxBoxShapeDesc.h"
+#include "NxBoxShape.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -277,6 +278,73 @@ static void nxPrintAuxIndexSamples(const char* label, const NxScene* scene)
 	printf("\n");
 }
 
+static void nxProbePublicShapes(const char* label, const NxActor* actor)
+{
+	const NxU32 count = actor->getNbShapes();
+	NxShape** shapes = actor->getShapes();
+	const unsigned char* body = *reinterpret_cast<unsigned char* const*>(
+		reinterpret_cast<const unsigned char*>(actor) + 0x14);
+	const unsigned char* shapeObject = *reinterpret_cast<unsigned char* const*>(body + 0x10);
+	const unsigned kind = shapeObject ? *reinterpret_cast<const unsigned*>(shapeObject + 0xd0) : 0;
+	const unsigned char* const* children = shapeObject && kind == 5
+		? *reinterpret_cast<unsigned char* const* const*>(shapeObject + 0xe0) : 0;
+	printf("actor shape_kind_%s=%u\n", label, kind);
+	const void* actorLink = *reinterpret_cast<void* const*>(
+		reinterpret_cast<const unsigned char*>(actor) + 0x10);
+	printf("actor shape_link_%s=%u.%u\n", label, actorLink ? 1u : 0u,
+		shapes == actorLink ? 1u : 0u);
+	NxShape** expectedArray = children
+		? *reinterpret_cast<NxShape***>(const_cast<unsigned char*>(shapeObject + 0xf0))
+		: reinterpret_cast<NxShape**>(const_cast<unsigned char*>(shapeObject + 0x9c));
+	printf("actor shape_public_%s=%u.%u.%u\n", label, count, shapes ? 1u : 0u,
+		shapes == expectedArray ? 1u : 0u);
+	if(shapes && count <= 3)
+		for(NxU32 i = 0; i < count; ++i)
+			{
+			const uintptr_t page = reinterpret_cast<uintptr_t>(shapes[i]) & ~static_cast<uintptr_t>(0xfff);
+			const unsigned size = *reinterpret_cast<const unsigned*>(page);
+			printf("actor shape_public_item_%s_%u=%u.%u.%u\n", label, i,
+				shapes[i] ? 1u : 0u,
+				shapes[i] == reinterpret_cast<const NxShape*>(shapeObject) ? 1u : 0u,
+				children && shapes[i] == reinterpret_cast<const NxShape*>(children[i]) ? 1u : 0u);
+			const unsigned char* expectedShape = children ? children[i] : shapeObject;
+			printf("actor shape_public_handle_%s_%u=%x.%u.%u.%u\n", label, i,
+				size,
+				*reinterpret_cast<void* const*>(shapes[i]) ? 1u : 0u,
+				*reinterpret_cast<const unsigned*>(reinterpret_cast<const unsigned char*>(shapes[i]) + 4),
+				*reinterpret_cast<unsigned char* const*>(reinterpret_cast<const unsigned char*>(shapes[i]) + 8)
+					== expectedShape ? 1u : 0u);
+			const unsigned char* handle = reinterpret_cast<const unsigned char*>(shapes[i]);
+			printf("actor shape_handle_links_%s_%u=%u.%u.%u.%u.%u\n", label, i,
+				*reinterpret_cast<unsigned char* const*>(handle + 8) == expectedShape ? 1u : 0u,
+				*reinterpret_cast<unsigned char* const*>(handle + 0xc) == expectedShape ? 1u : 0u,
+				*reinterpret_cast<unsigned char* const*>(handle + 0x10) == expectedShape ? 1u : 0u,
+				*reinterpret_cast<unsigned char* const*>(handle + 0x14) == expectedShape ? 1u : 0u,
+				*reinterpret_cast<unsigned char* const*>(handle + 0x18) == expectedShape ? 1u : 0u);
+			if(*reinterpret_cast<void* const*>(shapes[i]))
+				{
+				NxBoxShape* boxShape = shapes[i]->isBox();
+				printf("actor shape_methods_%s_%u=%u.%u.%u\n", label, i,
+					static_cast<unsigned>(shapes[i]->getType()),
+					&shapes[i]->getActor() == actor ? 1u : 0u,
+					boxShape == shapes[i] ? 1u : 0u);
+				printf("actor shape_is_sphere_%s_%u=%u\n", label, i,
+					shapes[i]->isSphere() ? 1u : 0u);
+				if(boxShape)
+					{
+					const NxVec3& dimensions = boxShape->getDimensions();
+					printf("actor shape_dimensions_alias_%s_%u=%u\n", label, i,
+						&dimensions == reinterpret_cast<const NxVec3*>(expectedShape + 0xe4)
+							? 1u : 0u);
+					printf("actor shape_dimensions_%s_%u=%08x.%08x.%08x\n", label, i,
+						*reinterpret_cast<const unsigned*>(&dimensions.x),
+						*reinterpret_cast<const unsigned*>(&dimensions.y),
+						*reinterpret_cast<const unsigned*>(&dimensions.z));
+					}
+				}
+			}
+}
+
 int wmain(int argc, wchar_t** argv)
 {
 	wchar_t pairDirectory[MAX_PATH];
@@ -312,6 +380,7 @@ int wmain(int argc, wchar_t** argv)
 	nxPrintAuxArrays("static", scene);
 	printf("actor static created=%u\n", staticActor ? 1u : 0u);
 	if(!staticActor) return nxFail("static actor creation failed");
+	nxProbePublicShapes("static", staticActor);
 	printf("actor static dynamic=%u\n", staticActor->isDynamic() ? 1u : 0u);
 	nxPrintBodyLink("static", staticActor);
 	nxPrintPosition("static", staticActor->getGlobalPositionVal());
@@ -349,6 +418,7 @@ int wmain(int argc, wchar_t** argv)
 		}
 	printf("actor dynamic created=%u\n", dynamicActor ? 1u : 0u);
 	if(!dynamicActor) return nxFail("dynamic actor creation failed");
+	nxProbePublicShapes("dynamic", dynamicActor);
 	printf("actor dynamic dynamic=%u\n", dynamicActor->isDynamic() ? 1u : 0u);
 	nxPrintBodyLink("dynamic", dynamicActor);
 	nxPrintPosition("dynamic", dynamicActor->getGlobalPositionVal());
@@ -498,6 +568,7 @@ int wmain(int argc, wchar_t** argv)
 		NxActor* multiActor = scene->createActor(multiDesc);
 		nxPrintAuxArrays("multi", scene);
 		if(!multiActor) return nxFail("multi-shape actor creation failed");
+		nxProbePublicShapes("multi", multiActor);
 		printf("actor multi creation_allocs=%u\n", allocator.allocations() - beforeAllocations);
 		nxPrintBroadphase("after", scene);
 		printf("actor multi creation_frees=%u\n", allocator.frees() - beforeCreationFrees);
