@@ -80,6 +80,8 @@ void nxSceneBuildGroundPlane(void* scene);
 void nxSceneArrayReserve(void* arrayHeader, unsigned needed);
 void nxSceneBroadphaseRegister(NxSceneInternal* scene, void* body);
 void nxSceneBroadphaseUnregister(NxSceneInternal* scene, void* body);
+void nxSceneAuxRegisterRecord(NxSceneInternal* scene, void* record);
+void nxSceneAuxUnregisterRecord(NxSceneInternal* scene, void* record);
 unsigned nxSceneTakeShapeId(NxSceneInternal* scene);
 void nxSceneRecycleShapeId(NxSceneInternal* scene, unsigned id);
 
@@ -585,6 +587,103 @@ void nxSceneRecycleShapeId(NxSceneInternal* scene, unsigned id)
 	scene->at<unsigned*>(0x6ec) = last + 1;
 	}
 
+// The first dynamic record initializes five 256-slot arrays in the Scene's
+// 0xa8-byte auxiliary manager. Three are prepared through a temporary 0x800
+// staging buffer, then copied to retained 0x400-byte arrays. This follows
+// the oracle's allocation/free sequence and measured array headers. The
+// per-record slots at +0x40/+0x50/+0x60/+0x80 are updated below.
+static bool nxSceneAuxPrepareStagedArray(unsigned char* aux, unsigned offset,
+	unsigned fill, unsigned firstValue)
+	{
+	unsigned* staging = static_cast<unsigned*>(
+		nxGetSdkAllocator()->malloc(0x800, NX_MEMORY_PERSISTENT));
+	if(!staging) return false;
+	for(unsigned i = 0; i < 512; ++i) staging[i] = fill;
+	staging[0] = firstValue;
+	unsigned* retained = static_cast<unsigned*>(
+		nxGetSdkAllocator()->malloc(0x400, NX_MEMORY_PERSISTENT));
+	if(!retained)
+		{
+		nxGetSdkAllocator()->free(staging);
+		return false;
+		}
+	memcpy(retained, staging, 0x400);
+	nxGetSdkAllocator()->free(staging);
+	*reinterpret_cast<unsigned**>(aux + offset) = retained;
+	*reinterpret_cast<unsigned**>(aux + offset + 4) = retained + 256;
+	*reinterpret_cast<unsigned**>(aux + offset + 8) = retained + 256;
+	return true;
+	}
+
+void nxSceneAuxRegisterRecord(NxSceneInternal* scene, void* recordPointer)
+	{
+	unsigned char* aux = scene->at<unsigned char*>(0x48);
+	unsigned char* record = static_cast<unsigned char*>(recordPointer);
+	if(!aux || !record) return;
+	if(!*reinterpret_cast<void**>(aux + 0x80))
+		{
+		if(!nxSceneAuxPrepareStagedArray(aux, 0x80, 0,
+			reinterpret_cast<unsigned>(record + 0x18))) return;
+		if(!nxSceneAuxPrepareStagedArray(aux, 0x40, 0, 0xffffffffu)) return;
+		if(!nxSceneAuxPrepareStagedArray(aux, 0x60, 0xd00beed0u, 0)) return;
+		unsigned* active = static_cast<unsigned*>(
+			nxGetSdkAllocator()->malloc(0x400, NX_MEMORY_PERSISTENT));
+		if(!active) return;
+		memset(active, 0, 0x400);
+		*reinterpret_cast<unsigned**>(aux + 0x50) = active;
+		*reinterpret_cast<unsigned**>(aux + 0x54) = active + 1;
+		*reinterpret_cast<unsigned**>(aux + 0x58) = active + 256;
+		unsigned* vacant = static_cast<unsigned*>(
+			nxGetSdkAllocator()->malloc(0x400, NX_MEMORY_PERSISTENT));
+		if(!vacant) return;
+		memset(vacant, 0, 0x400);
+		*reinterpret_cast<unsigned**>(aux + 0x70) = vacant;
+		*reinterpret_cast<unsigned**>(aux + 0x74) = vacant;
+		*reinterpret_cast<unsigned**>(aux + 0x78) = vacant + 256;
+		return;
+		}
+	unsigned* active = *reinterpret_cast<unsigned**>(aux + 0x50);
+	unsigned* activeEnd = *reinterpret_cast<unsigned**>(aux + 0x54);
+	if(!active || !activeEnd || activeEnd - active >= 256) return;
+	const unsigned slot = static_cast<unsigned>(activeEnd - active);
+	(*reinterpret_cast<unsigned**>(aux + 0x40))[slot] = 0xffffffffu;
+	active[slot] = slot;
+	(*reinterpret_cast<unsigned**>(aux + 0x60))[slot] = slot;
+	(*reinterpret_cast<unsigned**>(aux + 0x80))[slot] =
+		reinterpret_cast<unsigned>(record + 0x18);
+	*reinterpret_cast<unsigned**>(aux + 0x54) = activeEnd + 1;
+	}
+
+void nxSceneAuxUnregisterRecord(NxSceneInternal* scene, void* recordPointer)
+	{
+	unsigned char* aux = scene->at<unsigned char*>(0x48);
+	unsigned char* record = static_cast<unsigned char*>(recordPointer);
+	if(!aux || !record) return;
+	unsigned* active = *reinterpret_cast<unsigned**>(aux + 0x50);
+	unsigned* activeEnd = *reinterpret_cast<unsigned**>(aux + 0x54);
+	unsigned* records = *reinterpret_cast<unsigned**>(aux + 0x80);
+	if(!active || !activeEnd || !records || active == activeEnd) return;
+	const unsigned count = static_cast<unsigned>(activeEnd - active);
+	unsigned slot = 0;
+	while(slot < count && records[slot] != reinterpret_cast<unsigned>(record + 0x18))
+		++slot;
+	if(slot == count) return;
+	const unsigned last = count - 1;
+	unsigned* occupied = *reinterpret_cast<unsigned**>(aux + 0x40);
+	unsigned* indices = *reinterpret_cast<unsigned**>(aux + 0x60);
+	if(slot != last)
+		{
+		occupied[slot] = occupied[last];
+		active[slot] = active[last];
+		indices[slot] = indices[last];
+		records[slot] = records[last];
+		}
+	occupied[last] = 0;
+	indices[last] = 0xd00beed0u;
+	records[last] = 0;
+	*reinterpret_cast<unsigned**>(aux + 0x54) = activeEnd - 1;
+	}
+
 // The oracle's dynamic broadphase table is a 0x3c-byte object stored at
 // Scene+0x648. Its subcontainer begins at +4: count and capacity are the
 // 16-bit words at +0x10/+0x12, followed by parallel 0x18-byte-entry and
@@ -958,6 +1057,7 @@ void NxSceneInternal::releaseActor(void* bodyPointer)
 	unsigned char* record = *reinterpret_cast<unsigned char**>(body + 8);
 	if(record)
 		{
+		nxSceneAuxUnregisterRecord(this, record);
 		void** objects = at<void**>(0x56c);
 		void** objectsEnd = at<void**>(0x570);
 		for(void** it = objects; it && it != objectsEnd; ++it)
@@ -1355,6 +1455,8 @@ int nxActorComputeMass(void* actor, const unsigned* bodyWord)
 
 	*reinterpret_cast<void**>(record + 0x19c) = body;
 	*reinterpret_cast<void**>(body + 0x08) = record;
+	NxSceneInternal* scene = *reinterpret_cast<NxSceneInternal**>(actorBytes + 4);
+	nxSceneAuxRegisterRecord(scene, record);
 
 	return 0;
 	}

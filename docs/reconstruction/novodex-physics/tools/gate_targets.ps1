@@ -88,6 +88,20 @@ $NxPhaseOracleDifferentialTargets = [ordered] @{
 # from a silent pass into a failure.
 $NxRequiredCoverageLines = [ordered] @{
     'NxPhysicsActorLifecycleTests' = @(
+        'actor multi aux_arrays_initial=0/0.0/0.0/0.0/0.0/0',
+        'actor multi aux_arrays_static=0/0.0/0.0/0.0/0.0/0',
+        'actor multi first_dynamic_allocs=17',
+        'actor multi first_dynamic_sizes=50.18.228.1c.260.800.400.800.400.800.400.400.400.8.3c.60.10',
+        'actor multi first_dynamic_frees=3',
+        'actor multi first_dynamic_free_sizes=800.800.800',
+        'actor multi aux_arrays_dynamic=256/256.1/256.256/256.0/256.256/256',
+        'actor multi aux_indices_dynamic=ffffffff,0,0,0:0,0,0,0:0,d00beed0,d00beed0,d00beed0:0,0,0,0',
+        'actor multi aux_arrays_rotated=256/256.2/256.256/256.0/256.256/256',
+        'actor multi aux_arrays_quarter=256/256.3/256.256/256.0/256.256/256',
+        'actor multi aux_indices_quarter=ffffffff,ffffffff,ffffffff,0:0,1,2,0:0,1,2,d00beed0:0,0,0,0',
+        'actor multi aux_arrays_quarter_released=256/256.2/256.256/256.0/256.256/256',
+        'actor multi aux_indices_quarter_released=ffffffff,ffffffff,0,0:0,1,2,0:0,1,d00beed0,d00beed0:0,0,0,0',
+        'actor multi aux_arrays_multi=256/256.3/256.256/256.0/256.256/256',
         'actor static created=1',
         'actor static dynamic=0',
         'actor static body=1 nested=0',
@@ -1048,7 +1062,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 101  # 34 for NxPhysicsAssetTests, 67 for NxPhysicsThirdPartyTests
-    '5' = 209  # 126 object-layout assertions plus 83 public actor lifecycle lines
+    '5' = 223  # 126 object-layout assertions plus 97 public actor lifecycle lines
                # (RED on purpose: vtables family open)
     '6' = 11  # 3 oracle-descriptor + 4 oracle-joint + 4 staged-pair-joint
     '7' = 4   # the four STAGED-PAIR assertions; the oracle-differential assertions

@@ -225,6 +225,43 @@ static void nxPrintShapeIndex(const char* label, const NxActor* actor)
 		*reinterpret_cast<const unsigned short*>(shape + 0xd8));
 }
 
+static void nxPrintAuxArrays(const char* label, const NxScene* scene)
+{
+	const unsigned char* wrapper = reinterpret_cast<const unsigned char*>(scene);
+	const unsigned char* internal = *reinterpret_cast<unsigned char* const*>(wrapper + 0x24);
+	const unsigned char* aux = *reinterpret_cast<unsigned char* const*>(internal + 0x48);
+	printf("actor multi aux_arrays_%s=", label);
+	for(unsigned offset = 0x40; offset <= 0x80; offset += 0x10)
+		{
+		const void* const* first = aux
+			? *reinterpret_cast<void* const* const*>(aux + offset) : 0;
+		const void* const* last = aux
+			? *reinterpret_cast<void* const* const*>(aux + offset + 4) : 0;
+		const void* const* end = aux
+			? *reinterpret_cast<void* const* const*>(aux + offset + 8) : 0;
+		printf("%s%u/%u", offset == 0x40 ? "" : ".",
+			first ? static_cast<unsigned>(last - first) : 0u,
+			first ? static_cast<unsigned>(end - first) : 0u);
+		}
+	printf("\n");
+}
+
+static void nxPrintAuxIndexSamples(const char* label, const NxScene* scene)
+{
+	const unsigned char* wrapper = reinterpret_cast<const unsigned char*>(scene);
+	const unsigned char* internal = *reinterpret_cast<unsigned char* const*>(wrapper + 0x24);
+	const unsigned char* aux = *reinterpret_cast<unsigned char* const*>(internal + 0x48);
+	printf("actor multi aux_indices_%s=", label);
+	const unsigned offsets[4] = {0x40u, 0x50u, 0x60u, 0x70u};
+	for(unsigned i = 0; i < 4; ++i)
+		{
+		const unsigned* first = *reinterpret_cast<unsigned* const*>(aux + offsets[i]);
+		printf("%s%x,%x,%x,%x", i ? ":" : "", first ? first[0] : 0,
+			first ? first[1] : 0, first ? first[2] : 0, first ? first[3] : 0);
+		}
+	printf("\n");
+}
+
 int wmain(int argc, wchar_t** argv)
 {
 	wchar_t pairDirectory[MAX_PATH];
@@ -244,6 +281,7 @@ int wmain(int argc, wchar_t** argv)
 	if(!scene) return nxFail("scene creation failed");
 	if(getenv("NX_PHYSICS_PROBE_MULTI"))
 		{ nxPrintBroadphase("initial", scene); nxPrintSceneArray6e8("initial", scene); }
+	nxPrintAuxArrays("initial", scene);
 
 	NxBoxShapeDesc box;
 	box.dimensions = NxVec3(1.0f, 2.0f, 3.0f);
@@ -256,6 +294,7 @@ int wmain(int argc, wchar_t** argv)
 		nxPrintBroadphase("first", scene);
 		nxPrintSceneArray6e8("first", scene);
 		}
+	nxPrintAuxArrays("static", scene);
 	printf("actor static created=%u\n", staticActor ? 1u : 0u);
 	if(!staticActor) return nxFail("static actor creation failed");
 	printf("actor static dynamic=%u\n", staticActor->isDynamic() ? 1u : 0u);
@@ -272,13 +311,26 @@ int wmain(int argc, wchar_t** argv)
 	dynamicDesc.shapes.pushBack(&box);
 	dynamicDesc.globalPose.t = NxVec3(-3.0f, 2.0f, 1.0f);
 	const unsigned beforeDynamicAllocations = allocator.allocations();
+	const unsigned beforeDynamicFrees = allocator.frees();
 	NxActor* dynamicActor = scene->createActor(dynamicDesc);
-	if(getenv("NX_PHYSICS_PROBE_DYNAMIC_INIT"))
 		{
 		printf("actor multi first_dynamic_allocs=%u\n",
 			allocator.allocations() - beforeDynamicAllocations);
+		printf("actor multi first_dynamic_sizes=");
+		for(unsigned i = 0; i < allocator.allocations() - beforeDynamicAllocations; ++i)
+			printf("%s%x", i ? "." : "", allocator.allocSizeFromEnd(
+				allocator.allocations() - beforeDynamicAllocations - 1 - i));
+		printf("\n");
+		printf("actor multi first_dynamic_frees=%u\n", allocator.frees() - beforeDynamicFrees);
+		printf("actor multi first_dynamic_free_sizes=");
+		for(unsigned i = 0; i < allocator.frees() - beforeDynamicFrees; ++i)
+			printf("%s%x", i ? "." : "", allocator.freedSizeFromEnd(
+				allocator.frees() - beforeDynamicFrees - 1 - i));
+		printf("\n");
 		nxPrintBroadphase("dynamic", scene);
 		nxPrintSceneArray6e8("dynamic", scene);
+		nxPrintAuxArrays("dynamic", scene);
+		nxPrintAuxIndexSamples("dynamic", scene);
 		}
 	printf("actor dynamic created=%u\n", dynamicActor ? 1u : 0u);
 	if(!dynamicActor) return nxFail("dynamic actor creation failed");
@@ -294,6 +346,7 @@ int wmain(int argc, wchar_t** argv)
 	rotatedDesc.globalPose.t = NxVec3(5.0f, -2.0f, 3.0f);
 	NxActor* rotatedActor = scene->createActor(rotatedDesc);
 	if(getenv("NX_PHYSICS_PROBE_MULTI")) nxPrintBroadphase("rotated", scene);
+	nxPrintAuxArrays("rotated", scene);
 	printf("actor rotated created=%u\n", rotatedActor ? 1u : 0u);
 	if(!rotatedActor) return nxFail("rotated actor creation failed");
 	nxPrintDynamicQuaternion("rotated", rotatedActor);
@@ -307,6 +360,8 @@ int wmain(int argc, wchar_t** argv)
 	const unsigned allocationsBeforeQuarter = allocator.allocations();
 	NxActor* quarterActor = scene->createActor(rotatedDesc);
 	if(getenv("NX_PHYSICS_PROBE_MULTI")) nxPrintBroadphase("quarter", scene);
+	nxPrintAuxArrays("quarter", scene);
+	nxPrintAuxIndexSamples("quarter", scene);
 	if(getenv("NX_PHYSICS_PROBE_MULTI")) nxPrintShapeIndex("quarter", quarterActor);
 	printf("actor quarter created=%u\n", quarterActor ? 1u : 0u);
 	printf("actor quarter creation_allocs=%u\n",
@@ -379,6 +434,8 @@ int wmain(int argc, wchar_t** argv)
 	for(unsigned i = 0; i < 6; ++i) creationBlocks[i] = allocator.allocPointerFromEnd(i);
 	scene->releaseActor(*quarterActor);
 	if(getenv("NX_PHYSICS_PROBE_MULTI")) nxPrintSceneArray6e8("quarter_released", scene);
+	nxPrintAuxArrays("quarter_released", scene);
+	nxPrintAuxIndexSamples("quarter_released", scene);
 	printf("scene release_frees=%u\n", allocator.frees() - freesBefore);
 	printf("scene release_sizes=%x.%x.%x.%x.%x\n",
 		allocator.freedSizeFromEnd(4), allocator.freedSizeFromEnd(3),
@@ -424,6 +481,7 @@ int wmain(int argc, wchar_t** argv)
 		const unsigned beforeAllocations = allocator.allocations();
 		const unsigned beforeCreationFrees = allocator.frees();
 		NxActor* multiActor = scene->createActor(multiDesc);
+		nxPrintAuxArrays("multi", scene);
 		if(!multiActor) return nxFail("multi-shape actor creation failed");
 		printf("actor multi creation_allocs=%u\n", allocator.allocations() - beforeAllocations);
 		nxPrintBroadphase("after", scene);

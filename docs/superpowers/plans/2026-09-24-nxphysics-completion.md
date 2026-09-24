@@ -38,6 +38,8 @@
 
 **M2 dynamic initialization gap, 2026-09-24:** The separate opt-in `NX_PHYSICS_PROBE_DYNAMIC_INIT=1` drive counts 17 oracle allocations and nine candidate allocations on the first dynamic box actor. The registered two-box lifecycle is exact, but its preceding Scene setup is not closed. Trace the missing initial structures before claiming the actor factory complete.
 
+**M2 dynamic Scene auxiliary initialization, 2026-09-24:** The first dynamic box actor now initializes the Scene's five 256-slot auxiliary arrays with the oracle's 17 allocation and three scratch-buffer free sizes in exact order. Registered staged-pair checks also match array counts and sampled indices through subsequent dynamic actors and a release. Fourteen new assertions raise the Phase 5 floor to 223; the gate remains red only on the explicit final-vtable marker. See `docs/reconstruction/novodex-physics/evidence/phase5-dynamic-auxiliary-manager.md`. The earlier nine-allocation observation above is historical and resolved for this path; untested capacity growth, non-last release, and full teardown remain open.
+
 ## 1. Inputs and boundaries
 
 - Repository: `D:\github\Novodex`, inspected at `0df8821f1c5e3668e566ad4182b1e8e568f632d6`.

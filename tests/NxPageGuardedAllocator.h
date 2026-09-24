@@ -30,6 +30,7 @@
 class NxPageGuardedAllocator : public NxUserAllocator
 	{
 	public:
+	enum { HISTORY = 128 };
 	NxPageGuardedAllocator() : mAllocations(0), mFellBack(0), mFrees(0)
 		{ memset(mFreedSizes, 0, sizeof(mFreedSizes)); memset(mAllocSizes, 0, sizeof(mAllocSizes));
 		  memset(mAllocPtrs, 0, sizeof(mAllocPtrs)); memset(mFreedPtrs, 0, sizeof(mFreedPtrs)); }
@@ -79,8 +80,8 @@ class NxPageGuardedAllocator : public NxUserAllocator
 		const unsigned releasedSize = static_cast<unsigned>(sizeOf(memory));
 		if(VirtualFree(baseOf(memory), 0, MEM_RELEASE))
 			{
-			mFreedSizes[mFrees % 16] = releasedSize;
-			mFreedPtrs[mFrees % 16] = memory;
+			mFreedSizes[mFrees % HISTORY] = releasedSize;
+			mFreedPtrs[mFrees % HISTORY] = memory;
 			++mFrees;
 			}
 		}
@@ -89,13 +90,13 @@ class NxPageGuardedAllocator : public NxUserAllocator
 	unsigned fellBack() const { return mFellBack; }
 	unsigned frees() const { return mFrees; }
 	unsigned freedSizeFromEnd(unsigned n) const
-		{ return n < mFrees && n < 16 ? mFreedSizes[(mFrees - 1 - n) % 16] : 0; }
+		{ return n < mFrees && n < HISTORY ? mFreedSizes[(mFrees - 1 - n) % HISTORY] : 0; }
 	unsigned allocSizeFromEnd(unsigned n) const
-		{ return n < mAllocations && n < 16 ? mAllocSizes[(mAllocations - 1 - n) % 16] : 0; }
+		{ return n < mAllocations && n < HISTORY ? mAllocSizes[(mAllocations - 1 - n) % HISTORY] : 0; }
 	void* allocPointerFromEnd(unsigned n) const
-		{ return n < mAllocations && n < 16 ? mAllocPtrs[(mAllocations - 1 - n) % 16] : 0; }
+		{ return n < mAllocations && n < HISTORY ? mAllocPtrs[(mAllocations - 1 - n) % HISTORY] : 0; }
 	void* freedPointerFromEnd(unsigned n) const
-		{ return n < mFrees && n < 16 ? mFreedPtrs[(mFrees - 1 - n) % 16] : 0; }
+		{ return n < mFrees && n < HISTORY ? mFreedPtrs[(mFrees - 1 - n) % HISTORY] : 0; }
 
 	private:
 	static unsigned char* baseOf(void* memory)
@@ -143,8 +144,8 @@ class NxPageGuardedAllocator : public NxUserAllocator
 
 		*reinterpret_cast<unsigned*>(base) = static_cast<unsigned>(size);
 		unsigned char* block = base + page - size;
-		mAllocSizes[mAllocations % 16] = static_cast<unsigned>(size);
-		mAllocPtrs[mAllocations % 16] = block;
+		mAllocSizes[mAllocations % HISTORY] = static_cast<unsigned>(size);
+		mAllocPtrs[mAllocations % HISTORY] = block;
 		++mAllocations;
 		return block;
 		}
@@ -152,8 +153,8 @@ class NxPageGuardedAllocator : public NxUserAllocator
 	unsigned mAllocations;
 	unsigned mFellBack;
 	unsigned mFrees;
-	unsigned mFreedSizes[16];
-	unsigned mAllocSizes[16];
-	void* mAllocPtrs[16];
-	void* mFreedPtrs[16];
+	unsigned mFreedSizes[HISTORY];
+	unsigned mAllocSizes[HISTORY];
+	void* mAllocPtrs[HISTORY];
+	void* mFreedPtrs[HISTORY];
 	};
