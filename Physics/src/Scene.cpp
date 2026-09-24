@@ -78,6 +78,7 @@ void nxSceneApplyDescriptorFlags(void* scene, const unsigned* descWords, unsigne
 void nxSceneBuildGroundPlane(void* scene);
 // phys_fn_000651's array reserve, above.
 void nxSceneArrayReserve(void* arrayHeader, unsigned needed);
+void nxSceneRecycleActorId(NxSceneInternal* scene, unsigned id);
 void nxSceneBroadphaseRegister(NxSceneInternal* scene, void* body);
 void nxSceneBroadphaseUnregister(NxSceneInternal* scene, void* body);
 void nxSceneAuxRegisterRecord(NxSceneInternal* scene, void* record);
@@ -587,6 +588,16 @@ void nxSceneRecycleShapeId(NxSceneInternal* scene, unsigned id)
 	scene->at<unsigned*>(0x6ec) = last + 1;
 	}
 
+void nxSceneRecycleActorId(NxSceneInternal* scene, unsigned id)
+	{
+	unsigned char* header = scene->bytes() + 0x6d4;
+	nxSceneArrayReserve(header, 1);
+	unsigned* last = scene->at<unsigned*>(0x6d8);
+	if(!last) return;
+	*last = id;
+	scene->at<unsigned*>(0x6d8) = last + 1;
+	}
+
 // The first dynamic record initializes five 256-slot arrays in the Scene's
 // 0xa8-byte auxiliary manager. Three are prepared through a temporary 0x800
 // staging buffer, then copied to retained 0x400-byte arrays. This follows
@@ -645,10 +656,14 @@ void nxSceneAuxRegisterRecord(NxSceneInternal* scene, void* recordPointer)
 	unsigned* active = *reinterpret_cast<unsigned**>(aux + 0x50);
 	unsigned* activeEnd = *reinterpret_cast<unsigned**>(aux + 0x54);
 	if(!active || !activeEnd || activeEnd - active >= 256) return;
-	const unsigned slot = static_cast<unsigned>(activeEnd - active);
+	unsigned* occupied = *reinterpret_cast<unsigned**>(aux + 0x40);
+	unsigned slot = 0;
+	while(slot < 256 && occupied[slot]) ++slot;
+	if(slot == 256) return;
+	const unsigned activeIndex = static_cast<unsigned>(activeEnd - active);
 	(*reinterpret_cast<unsigned**>(aux + 0x40))[slot] = 0xffffffffu;
-	active[slot] = slot;
-	(*reinterpret_cast<unsigned**>(aux + 0x60))[slot] = slot;
+	active[activeIndex] = slot;
+	(*reinterpret_cast<unsigned**>(aux + 0x60))[slot] = activeIndex;
 	(*reinterpret_cast<unsigned**>(aux + 0x80))[slot] =
 		reinterpret_cast<unsigned>(record + 0x18);
 	*reinterpret_cast<unsigned**>(aux + 0x54) = activeEnd + 1;
@@ -664,23 +679,22 @@ void nxSceneAuxUnregisterRecord(NxSceneInternal* scene, void* recordPointer)
 	unsigned* records = *reinterpret_cast<unsigned**>(aux + 0x80);
 	if(!active || !activeEnd || !records || active == activeEnd) return;
 	const unsigned count = static_cast<unsigned>(activeEnd - active);
-	unsigned slot = 0;
-	while(slot < count && records[slot] != reinterpret_cast<unsigned>(record + 0x18))
-		++slot;
-	if(slot == count) return;
+	unsigned activeIndex = 0;
+	while(activeIndex < count && records[active[activeIndex]] !=
+		reinterpret_cast<unsigned>(record + 0x18)) ++activeIndex;
+	if(activeIndex == count) return;
+	const unsigned slot = active[activeIndex];
 	const unsigned last = count - 1;
 	unsigned* occupied = *reinterpret_cast<unsigned**>(aux + 0x40);
 	unsigned* indices = *reinterpret_cast<unsigned**>(aux + 0x60);
-	if(slot != last)
+	if(activeIndex != last)
 		{
-		occupied[slot] = occupied[last];
-		active[slot] = active[last];
-		indices[slot] = indices[last];
-		records[slot] = records[last];
+		active[activeIndex] = active[last];
+		indices[active[activeIndex]] = activeIndex;
 		}
-	occupied[last] = 0;
-	indices[last] = 0xd00beed0u;
-	records[last] = 0;
+	occupied[slot] = 0;
+	indices[slot] = 0xd00beed0u;
+	records[slot] = 0;
 	*reinterpret_cast<unsigned**>(aux + 0x54) = activeEnd - 1;
 	}
 
@@ -1035,7 +1049,7 @@ NxActor* NxSceneInternal::createActor(const NxActorDescBase& desc)
 // phys_fn_000628 at 0x000123d0: the public wrapper passes the actor's 0x50-byte
 // body, whose first word points back to the 0x18-byte public actor. The Scene
 // removes that actor by swapping in the last entry, then tears down the owned
-// body graph. Callback, name, and slot-reuse paths are separate gaps.
+// body graph. Callback and name paths remain separate gaps.
 void NxSceneInternal::releaseActor(void* bodyPointer)
 	{
 	unsigned char* body = static_cast<unsigned char*>(bodyPointer);
@@ -1072,9 +1086,11 @@ void NxSceneInternal::releaseActor(void* bodyPointer)
 
 	// The observed free order for a dynamic box actor: public wrapper,
 	// dynamic record, shape helper, shape, then the outer body.
+	const unsigned actorId = *reinterpret_cast<unsigned*>(body + 0xc);
 	nxGetSdkAllocator()->free(actor);
 	if(record)
 		nxGetSdkAllocator()->free(record);
+	nxSceneRecycleActorId(this, actorId);
 	unsigned char* shape = *reinterpret_cast<unsigned char**>(body + 0x10);
 	if(shape && *reinterpret_cast<void**>(shape + 0xe0))
 		{
@@ -1416,6 +1432,7 @@ void nxActorBuildBody(void* actor, const unsigned* desc)
 	memset(body, 0, 0x50);
 	*reinterpret_cast<void**>(body) = actor;
 	*reinterpret_cast<void**>(body + 4) = *reinterpret_cast<void**>(actorBytes + 4);
+	*reinterpret_cast<unsigned*>(body + 0xc) = *reinterpret_cast<unsigned*>(actorBytes + 0xc);
 	memcpy(body + 0x20, desc, sizeof(NxMat34));
 	}
 

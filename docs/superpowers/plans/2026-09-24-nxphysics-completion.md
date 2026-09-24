@@ -40,6 +40,8 @@
 
 **M2 dynamic Scene auxiliary initialization, 2026-09-24:** The first dynamic box actor now initializes the Scene's five 256-slot auxiliary arrays with the oracle's 17 allocation and three scratch-buffer free sizes in exact order. Registered staged-pair checks also match array counts and sampled indices through subsequent dynamic actors and a release. Fourteen new assertions raise the Phase 5 floor to 223; the gate remains red only on the explicit final-vtable marker. See `docs/reconstruction/novodex-physics/evidence/phase5-dynamic-auxiliary-manager.md`. The earlier nine-allocation observation above is historical and resolved for this path; untested capacity growth, non-last release, and full teardown remain open.
 
+**M2 non-last actor release, 2026-09-24:** Releasing the first of two dynamic actors now preserves auxiliary physical slots while compacting the active-index list, recycles the body-held actor ID through Scene+0x6d4, and matches the oracle's 0x18 allocation plus six-block free order. The ordinary staged-pair transcript is exact. Eighteen new assertions raise the Phase 5 floor to 241. See `docs/reconstruction/novodex-physics/evidence/phase5-nonlast-actor-release.md`. The previous note's non-last release gap is resolved for this tested case; subsequent vacant-slot reuse and other actor classes remain open.
+
 ## 1. Inputs and boundaries
 
 - Repository: `D:\github\Novodex`, inspected at `0df8821f1c5e3668e566ad4182b1e8e568f632d6`.

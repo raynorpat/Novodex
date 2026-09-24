@@ -184,7 +184,25 @@ $NxRequiredCoverageLines = [ordered] @{
         'actor multi broadphase_released=3c.2/8.1.1',
         'actor multi release_allocs=1',
         'actor multi release_frees=11',
-        'actor multi release_sizes=18.260.1c.228.1c.228.8.8.8.110.50'
+        'actor multi release_sizes=18.260.1c.228.1c.228.8.8.8.110.50',
+        'actor multi aux_arrays_before_nonlast=256/256.2/256.256/256.0/256.256/256',
+        'actor multi aux_indices_before_nonlast=ffffffff,ffffffff,0,0:0,1,2,0:0,1,d00beed0,d00beed0:0,0,0,0',
+        'actor multi broadphase_before_nonlast=3c.2/8.1.1',
+        'actor multi scene_array6e8_before_nonlast=3/6',
+        'actor multi scene_array6e8_values_before_nonlast=3.4.0',
+        'actor nonlast actor_ids_before=2/2.3.0',
+        'actor nonlast body_c=1',
+        'actor multi aux_arrays_after_nonlast=256/256.1/256.256/256.0/256.256/256',
+        'actor multi aux_indices_after_nonlast=0,ffffffff,0,0:1,1,2,0:d00beed0,0,d00beed0,d00beed0:0,0,0,0',
+        'actor multi broadphase_after_nonlast=3c.1/8.1.1',
+        'actor multi scene_array6e8_after_nonlast=4/6',
+        'actor multi scene_array6e8_values_after_nonlast=3.4.0.1',
+        'actor nonlast actor_ids_after=3/6.3.0.1',
+        'actor nonlast release_allocs=1',
+        'actor nonlast release_alloc_sizes=18',
+        'actor nonlast release_frees=6',
+        'actor nonlast release_sizes=18.260.8.1c.228.50',
+        'actor nonlast actors=1'
     )
     # The Phase 6 joint-descriptor differential. Two cases over the two exported
     # rows, printing the whole descriptor surface before and after each call. The
@@ -1062,7 +1080,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 101  # 34 for NxPhysicsAssetTests, 67 for NxPhysicsThirdPartyTests
-    '5' = 223  # 126 object-layout assertions plus 97 public actor lifecycle lines
+    '5' = 241  # 126 object-layout assertions plus 115 public actor lifecycle lines
                # (RED on purpose: vtables family open)
     '6' = 11  # 3 oracle-descriptor + 4 oracle-joint + 4 staged-pair-joint
     '7' = 4   # the four STAGED-PAIR assertions; the oracle-differential assertions

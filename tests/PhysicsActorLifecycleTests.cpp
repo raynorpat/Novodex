@@ -215,6 +215,21 @@ static void nxPrintSceneArray6e8(const char* label, const NxScene* scene)
 		}
 }
 
+static void nxPrintSceneArray6d4(const char* label, const NxScene* scene)
+{
+	const unsigned char* wrapper = reinterpret_cast<const unsigned char*>(scene);
+	const unsigned char* internal = *reinterpret_cast<unsigned char* const*>(wrapper + 0x24);
+	const unsigned* first = *reinterpret_cast<unsigned* const*>(internal + 0x6d4);
+	const unsigned* last = *reinterpret_cast<unsigned* const*>(internal + 0x6d8);
+	const unsigned* end = *reinterpret_cast<unsigned* const*>(internal + 0x6dc);
+	printf("actor nonlast actor_ids_%s=%u/%u", label,
+		first ? static_cast<unsigned>(last - first) : 0u,
+		first ? static_cast<unsigned>(end - first) : 0u);
+	for(const unsigned* it = first; it && it != last && it - first < 6; ++it)
+		printf(".%x", *it);
+	printf("\n");
+}
+
 static void nxPrintShapeIndex(const char* label, const NxActor* actor)
 {
 	const unsigned char* bytes = reinterpret_cast<const unsigned char*>(actor);
@@ -469,8 +484,8 @@ int wmain(int argc, wchar_t** argv)
 		if(afterStatic[i] == staticActor) staticStillListed = 1;
 	printf("scene static_still_listed=%u\n", staticStillListed);
 
-	// The two-box path is part of the normal staged-pair differential. The
-	// first dynamic actor's wider Scene setup has a separate opt-in probe.
+	// The two-box lifecycle and the following non-last actor release are both
+	// part of the normal staged-pair differential.
 		{
 		nxPrintBroadphase("before", scene);
 		NxBoxShapeDesc secondBox;
@@ -586,6 +601,37 @@ int wmain(int argc, wchar_t** argv)
 			printf("%s%x", i ? "." : "", allocator.freedSizeFromEnd(
 				allocator.frees() - beforeFrees - 1 - i));
 		printf("\n");
+		}
+		{
+		nxPrintAuxArrays("before_nonlast", scene);
+		nxPrintAuxIndexSamples("before_nonlast", scene);
+		nxPrintBroadphase("before_nonlast", scene);
+		nxPrintSceneArray6e8("before_nonlast", scene);
+		nxPrintSceneArray6d4("before", scene);
+		const unsigned char* nonlastBody = *reinterpret_cast<unsigned char* const*>(
+			reinterpret_cast<const unsigned char*>(dynamicActor) + 0x14);
+		printf("actor nonlast body_c=%x\n", *reinterpret_cast<const unsigned*>(nonlastBody + 0xc));
+		const unsigned allocationsBeforeNonlast = allocator.allocations();
+		const unsigned freesBeforeNonlast = allocator.frees();
+		scene->releaseActor(*dynamicActor);
+		nxPrintAuxArrays("after_nonlast", scene);
+		nxPrintAuxIndexSamples("after_nonlast", scene);
+		nxPrintBroadphase("after_nonlast", scene);
+		nxPrintSceneArray6e8("after_nonlast", scene);
+		nxPrintSceneArray6d4("after", scene);
+		printf("actor nonlast release_allocs=%u\n", allocator.allocations() - allocationsBeforeNonlast);
+		printf("actor nonlast release_alloc_sizes=");
+		for(unsigned i = 0; i < allocator.allocations() - allocationsBeforeNonlast; ++i)
+			printf("%s%x", i ? "." : "", allocator.allocSizeFromEnd(
+				allocator.allocations() - allocationsBeforeNonlast - 1 - i));
+		printf("\n");
+		printf("actor nonlast release_frees=%u\n", allocator.frees() - freesBeforeNonlast);
+		printf("actor nonlast release_sizes=");
+		for(unsigned i = 0; i < allocator.frees() - freesBeforeNonlast; ++i)
+			printf("%s%x", i ? "." : "", allocator.freedSizeFromEnd(
+				allocator.frees() - freesBeforeNonlast - 1 - i));
+		printf("\n");
+		printf("actor nonlast actors=%u\n", scene->getNbActors());
 		}
 
 	sdk->releaseScene(*scene);
