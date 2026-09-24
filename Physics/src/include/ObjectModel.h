@@ -2131,6 +2131,10 @@ class MeshShape
 	//! Requires the acceleration-tree pointer at mesh+0xa0 to be null.
 	void				nxMeshWorldAABBNoTree(float* out) const;
 
+	//! MESH-table slot 9, phys_fn_001401 (0x00028ed0): world AABB from
+	//! the mesh's neighbor graph when present, otherwise the local bounds.
+	void				nxMeshWorldAABB(float* out) const;
+
 	//! MESH-table slot 12, phys_fn_001383: loadFromDesc. The record holds
 	//! a wrapper pointer; stores *(wrapper+4) at +0xe0 and increments the
 	//! inner object refcount at +0x74.

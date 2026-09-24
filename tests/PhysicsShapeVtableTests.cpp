@@ -1433,6 +1433,106 @@ int wmain(int argc, wchar_t** argv)
         }
         ++cases;
     }
+    // MESH slot 9's tree-backed branch uses a neighbor graph to find the
+    // support vertex for each of the six signed pose axes. Every vertex in
+    // this tetrahedron neighbors the other three, so the climb is complete.
+    const float meshVertices[12] = {
+        -1.3f, 0.2f, 0.4f,  2.1f, -0.6f, 0.3f,
+        0.5f, 2.3f, -0.7f,  -0.4f, 0.8f, 2.4f
+    };
+    const unsigned meshCounts[4] = {3, 3, 3, 3};
+    const unsigned meshNoNeighbors[4] = {0, 0, 0, 0};
+    const unsigned meshOffsets[4] = {0, 3, 6, 9};
+    const unsigned meshChainCounts[4] = {1, 2, 2, 1};
+    const unsigned meshChainOffsets[4] = {0, 1, 3, 5};
+    const unsigned meshChainNeighbors[6] = {1, 0, 2, 1, 3, 2};
+    const unsigned meshNeighbors[12] = {
+        1, 2, 3,  0, 2, 3,  0, 1, 3,  0, 1, 2
+    };
+    for(unsigned sample = 0; sample < 84; ++sample) {
+        const unsigned mode = sample % 7;
+        unsigned char oracleMeshShape[0xe8] = {}, candidateMeshShape[0xe8] = {};
+        unsigned char oracleMesh[0xb0] = {}, candidateMesh[0xb0] = {};
+        unsigned char oracleTree[0x80] = {}, candidateTree[0x80] = {};
+        unsigned char oracleGraph[0x20] = {}, candidateGraph[0x20] = {};
+        unsigned char oracleOwner[0x10] = {}, candidateOwner[0x10] = {};
+        unsigned char oracleScratch[0x20] = {}, candidateScratch[0x20] = {};
+        unsigned oracleVisited[4] = {}, candidateVisited[4] = {};
+        for(unsigned side = 0; side < 2; ++side) {
+            unsigned char* shape = side ? candidateMeshShape : oracleMeshShape;
+            unsigned char* mesh = side ? candidateMesh : oracleMesh;
+            unsigned char* tree = side ? candidateTree : oracleTree;
+            unsigned char* graph = side ? candidateGraph : oracleGraph;
+            unsigned char* owner = side ? candidateOwner : oracleOwner;
+            unsigned char* scratch = side ? candidateScratch : oracleScratch;
+            unsigned* visited = side ? candidateVisited : oracleVisited;
+            void* pointer = owner;
+            memcpy(shape + 4, &pointer, 4);
+            pointer = mesh;
+            memcpy(shape + 0xe0, &pointer, 4);
+            pointer = tree;
+            memcpy(mesh + 0xa0, &pointer, 4);
+            pointer = const_cast<float*>(meshVertices);
+            memcpy(tree + 0x10, &pointer, 4);
+            pointer = mode == 1 ? nullptr : graph;
+            memcpy(tree + 0x64, &pointer, 4);
+            for(unsigned k = 0; k < 6; ++k) {
+                const unsigned start = (sample + k) % 4;
+                memcpy(tree + 0x68 + 4*k, &start, 4);
+            }
+            pointer = mode == 2 ? nullptr :
+                mode == 5 ? const_cast<unsigned*>(meshNoNeighbors) :
+                mode == 6 ? const_cast<unsigned*>(meshChainCounts) :
+                const_cast<unsigned*>(meshCounts);
+            memcpy(graph + 8, &pointer, 4);
+            pointer = mode == 3 ? nullptr :
+                mode == 6 ? const_cast<unsigned*>(meshChainOffsets) :
+                const_cast<unsigned*>(meshOffsets);
+            memcpy(graph + 0x0c, &pointer, 4);
+            pointer = mode == 4 ? nullptr :
+                mode == 6 ? const_cast<unsigned*>(meshChainNeighbors) :
+                const_cast<unsigned*>(meshNeighbors);
+            memcpy(graph + 0x10, &pointer, 4);
+            pointer = scratch;
+            memcpy(owner + 4, &pointer, 4);
+            const unsigned count = 4;
+            memcpy(scratch + 4, &count, 4);
+            pointer = visited;
+            memcpy(scratch + 8, &pointer, 4);
+            if(sample >= 70) {
+                const unsigned nearWrap = 0xfffffffcu;
+                memcpy(scratch + 0x14, &nearWrap, 4);
+                for(unsigned k = 0; k < 4; ++k)
+                    visited[k] = 0xdead0000u + k;
+            }
+            for(unsigned row = 0; row < 3; ++row) {
+                for(unsigned col = 0; col < 3; ++col) {
+                    const float value = row == col ?
+                        0.91f + 0.019f * sample :
+                        ((row + col + sample) % 2 ? -1.0f : 1.0f) *
+                        0.071f * (row + col + 1);
+                    memcpy(shape + 0x0c + 12*row + 4*col, &value, 4);
+                }
+                const float translation = (row + 1) * (sample + 1) * 0.233f;
+                memcpy(shape + 0x30 + 4*row, &translation, 4);
+            }
+        }
+        float oracleBounds[6] = {}, candidateBounds[6] = {};
+        reinterpret_cast<MeshBoundsSlot>(const_cast<unsigned char*>(base) +
+            0x28ed0)(oracleMeshShape, oracleBounds);
+        reinterpret_cast<MeshShape*>(candidateMeshShape)->nxMeshWorldAABB(
+            candidateBounds);
+        oracleDigest = foldOracle(oracleDigest, oracleBounds,
+            sizeof(oracleBounds));
+        if(memcmp(oracleBounds, candidateBounds, sizeof(oracleBounds)) != 0 ||
+           memcmp(oracleTree + 0x68, candidateTree + 0x68, 24) != 0 ||
+           memcmp(oracleVisited, candidateVisited, sizeof(oracleVisited)) != 0 ||
+           memcmp(oracleScratch + 0x14, candidateScratch + 0x14, 4) != 0) {
+            fprintf(stderr, "mesh slot 9 tree sample=%u differs\n", sample);
+            ++failures;
+        }
+        ++cases;
+    }
     nxSetSdkAllocatorBridge(0);
     printf("shape vtable oracle_digest=%08x cases=%u failures=%u\n",
         oracleDigest, cases, failures);

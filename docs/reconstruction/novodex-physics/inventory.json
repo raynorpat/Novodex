@@ -25486,13 +25486,15 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "MESH vtable slot 9 world AABB; no-tree transform and graph-backed six-direction support search",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/561",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3594",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "0x28ed0 selects mesh+0xa0 tree; no-tree path transforms mesh+0x44 bounds with x87 store order; tree path calls 0x2d9b0 for six signed pose axes and dots chosen vertices with pose rows",
+      "dynamic_proof": "64 fractional no-tree and 84 tree-backed differential cases compare output and tree/scratch mutations; NxPhysicsShapeVtableTests digest 7617ea14 failures=0",
+      "notes": "Support helper 0x2d9b0 is inlined for this caller; its separate caller at 0x552c0 remains pending. NaNs and output aliasing not yet probed.",
+      "implementation": "Physics/src/ObjectModel.cpp",
+      "implementation_symbol": "MeshShape::nxMeshWorldAABB"
     },
     {
       "id": "phys_fn_001402",

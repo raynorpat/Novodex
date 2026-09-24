@@ -5692,6 +5692,94 @@ void MeshShape::nxMeshWorldAABBNoTree(float* out) const
 		}
 	}
 
+// phys_fn_001401 (0x00028ed0), MESH-table slot 9. With a support graph,
+// run phys_fn_001530's stamped neighbor climb for each signed pose axis.
+// The graph stores a vertex count, offset, and neighbor list for each vertex;
+// six cached start indices live at tree+0x68. The owner scratch record supplies
+// the visited array and a monotonically increasing stamp.
+void MeshShape::nxMeshWorldAABB(float* out) const
+	{
+	unsigned char* mesh = reinterpret_cast<unsigned char*>(mWordE0);
+	unsigned char* tree = *reinterpret_cast<unsigned char**>(mesh + 0xa0);
+	if(tree == nullptr)
+		{
+		nxMeshWorldAABBNoTree(out);
+		return;
+		}
+	const float* vertices = *reinterpret_cast<const float* const*>(tree + 0x10);
+	unsigned char* graph = *reinterpret_cast<unsigned char**>(tree + 0x64);
+	unsigned* cached = reinterpret_cast<unsigned*>(tree + 0x68);
+	const unsigned* counts = graph
+		? *reinterpret_cast<const unsigned* const*>(graph + 8) : nullptr;
+	const unsigned* offsets = graph
+		? *reinterpret_cast<const unsigned* const*>(graph + 0x0c) : nullptr;
+	const unsigned* neighbors = graph
+		? *reinterpret_cast<const unsigned* const*>(graph + 0x10) : nullptr;
+	unsigned char* scratch = *reinterpret_cast<unsigned char**>(
+		reinterpret_cast<unsigned char*>(mBase.mOwner04) + 4);
+	unsigned* visited = *reinterpret_cast<unsigned**>(scratch + 8);
+	unsigned& stamp = *reinterpret_cast<unsigned*>(scratch + 0x14);
+	const float* r = reinterpret_cast<const float*>(mBase.mPose0C.mRotation);
+	const float* t = mBase.mPose0C.mTranslation;
+	for(unsigned slot = 0; slot < 6; ++slot)
+		{
+		const unsigned axis = slot % 3;
+		const float* row = r + axis * 3;
+		float direction[3] = {row[0], row[1], row[2]};
+		if(slot < 3)
+			for(unsigned j = 0; j < 3; ++j)
+				direction[j] = -direction[j];
+		++stamp;
+		if(stamp == 0)
+			{
+			const unsigned count = *reinterpret_cast<unsigned*>(scratch + 4);
+			if(visited)
+				memset(visited, 0, (count & 0x3fffffffu) * sizeof(unsigned));
+			stamp = count;
+			}
+		unsigned current = cached[slot];
+		if(graph && visited && counts && offsets && neighbors)
+			{
+			visited[current] = stamp;
+			const float* initial = vertices + current * 3;
+			float best = static_cast<float>(
+				static_cast<double>(initial[1]) * direction[1] +
+				static_cast<double>(initial[2]) * direction[2] +
+				static_cast<double>(initial[0]) * direction[0]);
+			for(;;)
+				{
+				const unsigned previous = current;
+				cached[slot] = previous;
+				const unsigned start = offsets[previous];
+				for(unsigned j = 0; j < counts[previous]; ++j)
+					{
+					const unsigned neighbor = neighbors[start + j];
+					if(visited[neighbor] == stamp)
+						continue;
+					visited[neighbor] = stamp;
+					const float* vertex = vertices + neighbor * 3;
+					const double score =
+						static_cast<double>(vertex[1]) * direction[1] +
+						static_cast<double>(vertex[2]) * direction[2] +
+						static_cast<double>(vertex[0]) * direction[0];
+					if(score > best)
+						{
+						current = neighbor;
+						best = static_cast<float>(score);
+						}
+					}
+				if(current == previous)
+					break;
+				}
+			}
+		const float* vertex = vertices + cached[slot] * 3;
+		out[slot] = static_cast<float>(
+			static_cast<double>(vertex[2]) * row[2] +
+			static_cast<double>(vertex[1]) * row[1] +
+			static_cast<double>(vertex[0]) * row[0] + t[axis]);
+		}
+	}
+
 // ---------------------------------------------------------------------------
 // The BASE vtable's stub rows. See ObjectModel.h for the slot map.
 
