@@ -298,7 +298,7 @@ void nxJointDestroy(void* joint);
 void nxActorSetName(void* actor, unsigned name);
 void nxActorBuildBody(void* actor, const unsigned* desc);
 int nxActorComputeMass(void* actor, const unsigned* bodyWord);
-void nxSceneAddActorObject(void* scene, void* object);
+void nxSceneAddActorObject(void* scene, void* object, void* actor);
 void nxActorBuildUserDataObject(void* actor);
 void nxSceneReportErrorA(const char* message);
 
@@ -578,15 +578,8 @@ int nxActorLoadFromDescInternal(void* actor, const unsigned* d)
 	unsigned* a = static_cast<unsigned*>(actor);
 
 
-	// Nine dwords of global pose, copied from descriptor words 0..8 to actor+0x20.
-	for(int i = 0; i < 9; ++i)
-		a[(0x20 / 4) + i] = d[i];
-
-	a[0x44 / 4] = d[9];				// globalPose.t.x
-	a[0x48 / 4] = d[10];			// globalPose.t.y
-	a[0x4c / 4] = d[0x0b];			// globalPose.t.z
-	a[0x18 / 4] = d[0x0d];			// the body descriptor pointer
-	a[0x1c / 4] = d[0x0e];			// the body descriptor's flags word
+	// The 0x18-byte actor wrapper has no inline pose. nxActorBuildBody copies
+	// the descriptor's 0x30-byte pose into the separate body at +0x20.
 	// actor+0x14 is the BODY pointer, written by nxActorBuildBody above. The
 	// oracle does not store userData there: the descriptor word at 0x0f is
 	// userData and reaches the actor through a different field, which this
@@ -645,7 +638,8 @@ int nxActorLoadFromDescInternal(void* actor, const unsigned* d)
 	if(d[0x0c] == 0 && a[0x10 / 4])
 		{
 		// No body: register the actor with the scene and succeed.
-		nxSceneAddActorObject(reinterpret_cast<void*>(a[1]), reinterpret_cast<void*>(a[0x10 / 4]));
+		nxSceneAddActorObject(reinterpret_cast<void*>(a[1]),
+			reinterpret_cast<void*>(a[0x10 / 4]), actor);
 		return 1;
 		}
 
@@ -663,7 +657,8 @@ int nxActorLoadFromDescInternal(void* actor, const unsigned* d)
 			{
 			return 1;
 			}
-		nxSceneAddActorObject(reinterpret_cast<void*>(a[1]), reinterpret_cast<void*>(a[0x10 / 4]));
+		nxSceneAddActorObject(reinterpret_cast<void*>(a[1]),
+			reinterpret_cast<void*>(a[0x10 / 4]), actor);
 		return 1;
 		}
 	nxSceneReportErrorA("Actor::loadFromDescInternal: Can't compute mass from shapes: "
@@ -679,20 +674,7 @@ void* nxActorConstruct(void* memory, void* scene)
 
 	a[1] = reinterpret_cast<unsigned>(scene);
 	a[0x10 / 4] = 0;				// shape list empty
-	a[0x4c / 4] = 0;
-	a[0x48 / 4] = 0;
-	a[0x44 / 4] = 0;
-
-	// The identity 3x3 at +0x20..+0x40.
-	a[0x20 / 4] = 0x3f800000u;
-	a[0x30 / 4] = 0x3f800000u;
-	a[0x40 / 4] = 0x3f800000u;
-	a[0x24 / 4] = 0;
-	a[0x28 / 4] = 0;
-	a[0x2c / 4] = 0;
-	a[0x34 / 4] = 0;
-	a[0x38 / 4] = 0;
-	a[0x3c / 4] = 0;
+	a[0x14 / 4] = 0;
 	a[8 / 4] = 0;
 
 	// The scene hands out a slot id: either the counter at +0x6d0 is incremented, or
@@ -746,47 +728,31 @@ NxActor* NxSceneInternal::createActor(const NxActorDescBase& desc)
 		return 0;
 		}
 
-	// The actor object: 0x50 bytes from the SDK allocator.
-	void* actorMemory = nxGetSdkAllocator()->malloc(0x50, NX_MEMORY_PERSISTENT);
-	if(!actorMemory)
+	// The oracle allocates the 0x50-byte body before the public 0x18-byte
+	// actor wrapper. Keep that order; the guarded allocator records it.
+	void* outerMemory = nxGetSdkAllocator()->malloc(0x50, NX_MEMORY_PERSISTENT);
+	if(!outerMemory)
 		return 0;
+	void* actorMemory = nxGetSdkAllocator()->malloc(0x18, NX_MEMORY_PERSISTENT);
+	if(!actorMemory)
+		{
+		nxGetSdkAllocator()->free(outerMemory);
+		return 0;
+		}
 
-	// phys_fn_00001450 (0x00001450): constructs the actor over the block, taking the
-	// Scene pointer.
-	//
-	// This is a REPRODUCTION HOLE and it leaves actor[0] -- the vtable word -- at
-	// whatever the allocator left. The oracle's actor HAS a vtable and
-	// NxJointDesc::isValid() calls through it (isDynamic), so the first joint
-	// creation reads [0 + 0x1c30] and faults. That is the fault 10f identified.
-	//
-	// The fix is a concrete NpActor class; it is written (Physics/src/include/NpActor.h,
-	// Physics/src/NpActor.cpp) and NOT yet correct: its size does not match the 0x50
-	// the oracle allocates, and its generated stubs cannot return the by-value types
-	// NxActor's virtuals use. Both are recorded in 10g. It is deliberately left
-	// unwired until they are resolved, because a class that does not compile takes
-	// every phase gate down with it.
-	// The vtable is NOT installed here. The oracle's actor has one and
-	// NxJointDesc::isValid() calls through it (isDynamic), so a raw block leaves
-	// actor[0] at whatever the allocator left and the first virtual call reads
-	// [0 + slot] -- the fault 10f identified.
-	//
-	// The fix is written and staged at
-	// docs/reconstruction/novodex-physics/staged/NpActor.{h,cpp}: the OBJECT is now
-	// 0x50 bytes with the vtable word at +0 and all 84 of NxActor's pure virtuals
-	// declared, which is real progress from 10h. It is still abstract -- one
-	// declaration is not reaching the class -- and Physics/src/*.cpp is globbed, so
-	// leaving it there takes every phase gate down. Staged until it compiles.
-	// The vtable. The oracle's actor HAS one and NxJointDesc::isValid() calls through
-	// it (isDynamic), so a raw block leaves actor[0] -- the vtable word -- at whatever
-	// the allocator left and the first virtual call reads [0 + slot]. That was the
-	// fault 10f identified; installing the vtable is the fix.
+	// phys_fn_00001450 constructs the public wrapper. It still has an incomplete
+	// vtable, but the slots driven by the actor and joint staged pairs are wired.
+	// The earlier 0x50-byte actor assumption was wrong: the guarded oracle probe
+	// measured 0x18 for this wrapper and 0x50 for its outer body.
 	static_cast<NpActorObject*>(actorMemory)->installVtable();
 	NxActor* actor = static_cast<NxActor*>(nxActorConstruct(actorMemory, this));
 	if(!actor)
 		{
 		nxGetSdkAllocator()->free(actorMemory);
+		nxGetSdkAllocator()->free(outerMemory);
 		return 0;
 		}
+	*reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(actor) + 0x14) = outerMemory;
 
 	// phys_fn_00002010 (0x00002010): applies the descriptor to the actor. Its return
 	// is the actor's own vtable word at +0, which the oracle tests against zero to
@@ -795,6 +761,7 @@ NxActor* NxSceneInternal::createActor(const NxActorDescBase& desc)
 		{
 		nxSceneActorDestroy(actor);
 		nxGetSdkAllocator()->free(actor);
+		nxGetSdkAllocator()->free(outerMemory);
 		nxSceneReportError("Actor Initialisation failed: returned NULL.");
 		return 0;
 		}
@@ -819,12 +786,14 @@ NxActor* NxSceneInternal::createActor(const NxActorDescBase& desc)
 		p[0x560 / 4] = reinterpret_cast<unsigned>(last + 1);
 		}
 
-	// The two words copied out of the Scene's +0x6cc holder into the actor.
+	// The wrapper overwrites the actor's +0x0c and +0x10 words with its two
+	// lock links. The public-DLL probe confirmed both aliases: actor+0x0c equals
+	// NpScene+0x0c, actor+0x10 equals NpScene+0x10, shared across actors.
 	unsigned* holder = reinterpret_cast<unsigned*>(p[0x6cc / 4]);
 	if(holder)
 		{
-		reinterpret_cast<unsigned*>(actor)[4] = holder[4];		// actor+0x10
-		reinterpret_cast<unsigned*>(actor)[3] = holder[3];		// actor+0x0c
+		reinterpret_cast<unsigned*>(actor)[4] = holder[4];
+		reinterpret_cast<unsigned*>(actor)[3] = holder[3];
 		}
 
 	// phys_fn_000100a0 (0x000100a0): updates the Scene's cached actor count from the
@@ -836,6 +805,57 @@ NxActor* NxSceneInternal::createActor(const NxActorDescBase& desc)
 		nxSceneNotifyActorCreated(reinterpret_cast<void*>(p[0x61c / 4]));
 
 	return actor;
+	}
+
+// phys_fn_000628 at 0x000123d0: the public wrapper passes the actor's 0x50-byte
+// body, whose first word points back to the 0x18-byte public actor. The Scene
+// removes that actor by swapping in the last entry, then tears down the owned
+// body graph. Callback, name, and slot-reuse paths are separate gaps.
+void NxSceneInternal::releaseActor(void* bodyPointer)
+	{
+	unsigned char* body = static_cast<unsigned char*>(bodyPointer);
+	NxActor* actor = *reinterpret_cast<NxActor**>(body);
+	NxActor** first = at<NxActor**>(0x55c);
+	NxActor** last = at<NxActor**>(0x560);
+	if(!first || !last || first == last)
+		return;
+	NxActor** found = first;
+	while(found != last && *found != actor)
+		++found;
+	if(found == last)
+		return;
+	--last;
+	*found = *last;
+	at<NxActor**>(0x560) = last;
+
+	unsigned char* record = *reinterpret_cast<unsigned char**>(body + 8);
+	if(record)
+		{
+		void** objects = at<void**>(0x56c);
+		void** objectsEnd = at<void**>(0x570);
+		for(void** it = objects; it && it != objectsEnd; ++it)
+			if(*it == record)
+				{
+				--objectsEnd;
+				*it = *objectsEnd;
+				at<void**>(0x570) = objectsEnd;
+				break;
+				}
+		}
+
+	// The observed free order for a dynamic box actor: public wrapper,
+	// dynamic record, shape helper, shape, then the outer body.
+	nxGetSdkAllocator()->free(actor);
+	if(record)
+		nxGetSdkAllocator()->free(record);
+	unsigned char* shape = *reinterpret_cast<unsigned char**>(body + 0x10);
+	if(shape)
+		{
+		void* helper = *reinterpret_cast<void**>(shape + 0x9c);
+		if(helper) nxGetSdkAllocator()->free(helper);
+		nxGetSdkAllocator()->free(shape);
+		}
+	nxGetSdkAllocator()->free(body);
 	}
 
 
@@ -1092,12 +1112,7 @@ void NxSceneInternal::scalarDeletingDestructor(int flags)
 
 NxActor* nxSceneActorConstruct(void* memory, void* scene)
 	{
-	// The actor's +0x14 is its userData, which the joint-descriptor rows read and
-	// which the descriptor initialiser sets -- not this function. The only state
-	// this hole has to establish is that the block is non-null and remembers its
-	// Scene, so the caller's zero test behaves as the oracle's does.
-	reinterpret_cast<unsigned*>(memory)[0x24 / 4] = reinterpret_cast<unsigned>(scene);
-	return reinterpret_cast<NxActor*>(memory);
+	return reinterpret_cast<NxActor*>(nxActorConstruct(memory, scene));
 	}
 
 void* nxSceneActorInitialise(NxActor* actor, const void* desc)
@@ -1147,106 +1162,76 @@ void nxActorSetName(void* actor, unsigned name)
 
 void nxActorBuildBody(void* actor, const unsigned* desc)
 	{
-	// actor+0x14 names a separate outer body holder. The oracle allocates 0x50
-	// bytes for it for both static and dynamic actors. Its +8 is null for a
-	// static actor and points to a 0x260-byte nested object for a dynamic actor;
-	// the global-position getter reads the nested translation at +0x50 or the
-	// outer holder's fallback translation at +0x44. The static holder below is
-	// reconstructed. The dynamic path below now reproduces the three observed
-	// allocation sizes and links, but most of its physical state remains unknown.
 	unsigned char* actorBytes = static_cast<unsigned char*>(actor);
-
-	// The descriptor's body pointer. NxActorDescBase declares it immediately after
-	// the 36-byte globalPose, which puts it at 0x24 = word 9, and the dump taken
-	// from a live actor shows word 9 ZERO and word 0x0c holding a heap pointer. So
-	// the offset this build reaches is not the declared one, and the value is taken
-	// from the word the dump shows rather than from the declaration. Recorded as an
-	// unresolved offset discrepancy rather than presented as the header's layout.
-	const void* bodyDesc = reinterpret_cast<const void*>(desc[0x0c]);
-
-	if(!bodyDesc)
-		{
-		// The oracle still allocates an outer 0x50-byte holder for a static
-		// actor. Its nested pointer at +8 is null and its translation occupies
-		// the last three words, +0x44..+0x4c.
-		unsigned char* staticBody = static_cast<unsigned char*>(
-			nxGetSdkAllocator()->malloc(0x50, NX_MEMORY_PERSISTENT));
-		if(!staticBody)
-			return;
-		memset(staticBody, 0, 0x50);
-		memcpy(staticBody + 0x20, actorBytes + 0x20, sizeof(NxMat33));
-		memcpy(staticBody + 0x44, actorBytes + 0x44, 12);
-		*reinterpret_cast<void**>(actorBytes + 0x14) = staticBody;
-		return;
-		}
-
-	unsigned char* body = static_cast<unsigned char*>(
-		nxGetSdkAllocator()->malloc(0x50, NX_MEMORY_PERSISTENT));
+	unsigned char* body = *reinterpret_cast<unsigned char**>(actorBytes + 0x14);
 	if(!body)
 		return;
 	memset(body, 0, 0x50);
-	memcpy(body + 0x20, actorBytes + 0x20, sizeof(NxMat33));
-	memcpy(body + 0x44, actorBytes + 0x44, 12);
+	*reinterpret_cast<void**>(body) = actor;
+	*reinterpret_cast<void**>(body + 4) = *reinterpret_cast<void**>(actorBytes + 4);
+	memcpy(body + 0x20, desc, sizeof(NxMat34));
+	}
 
+
+int nxActorComputeMass(void* actor, const unsigned* bodyWord)
+	{
+	// The dynamic record is built after the shape and its helper, in the
+	// order the guarded oracle allocator reports. Static actors skip this row.
+	(void)bodyWord;
+	unsigned char* actorBytes = static_cast<unsigned char*>(actor);
+	unsigned char* body = *reinterpret_cast<unsigned char**>(actorBytes + 0x14);
+	if(!body)
+		return 1;
 	unsigned char* record = static_cast<unsigned char*>(
 		nxGetSdkAllocator()->malloc(0x260, NX_MEMORY_PERSISTENT));
 	if(!record)
-		{
-		nxGetSdkAllocator()->free(body);
-		return;
-		}
+		return 1;
 	memset(record, 0, 0x260);
 
 	// The joint-descriptor exports walk actor+0x14 -> body+8 -> record+0x19c.
-	// The 0x50-byte pose object links back to the dynamic record at +8; that
-	// record carries the quaternion/translation used by the transform arm.
-	unsigned char* pose = static_cast<unsigned char*>(
-		nxGetSdkAllocator()->malloc(0x50, NX_MEMORY_PERSISTENT));
-	if(!pose)
-		{
-		nxGetSdkAllocator()->free(record);
-		nxGetSdkAllocator()->free(body);
-		return;
-		}
-	memset(pose, 0, 0x50);
-	*reinterpret_cast<void**>(pose + 8) = record;
+	// The last link points BACK to this same 0x50-byte body, whose +8 in turn
+	// points to the record. The earlier candidate allocated an extra pose here.
 
-	// The translation, from the actor's globalPose.t at actor+0x44.
-	memcpy(record + 0x50, actorBytes + 0x44, 12);
+	// The translation and matrix were copied from the descriptor into body.
+	memcpy(record + 0x50, body + 0x44, 12);
 
 	// The dynamic record carries a quaternion at +0x5c with w last. Convert
-	// the descriptor's matrix already copied to actor+0x20. The shipped path
+	// the descriptor's matrix already copied to body+0x20. The shipped path
 	// uses the same Foundation matrix-to-quaternion convention.
 	NxMat33 orientation;
-	memcpy(&orientation, actorBytes + 0x20, sizeof(orientation));
+	memcpy(&orientation, body + 0x20, sizeof(orientation));
 	NxQuat quaternion(orientation);
 	*reinterpret_cast<float*>(record + 0x5c) = quaternion.x;
 	*reinterpret_cast<float*>(record + 0x60) = quaternion.y;
 	*reinterpret_cast<float*>(record + 0x64) = quaternion.z;
 	*reinterpret_cast<float*>(record + 0x68) = quaternion.w;
 
-	*reinterpret_cast<void**>(record + 0x19c) = pose;
+	*reinterpret_cast<void**>(record + 0x19c) = body;
 	*reinterpret_cast<void**>(body + 0x08) = record;
 
-	// Link the body to the actor.
-	*reinterpret_cast<void**>(actorBytes + 0x14) = body;
-
-	}
-
-int nxActorComputeMass(void* actor, const unsigned* bodyWord)
-	{
-	// The oracle (phys_fn_000019b0) computes the mass from the shapes and returns
-	// 1 for a mesh-inertia failure, 0 for success, and something else for "no
-	// non-trigger shape". Returning 0 reproduces the success path.
-	(void)actor; (void)bodyWord;
 	return 0;
 	}
 
-void nxSceneAddActorObject(void* scene, void* object)
+void nxSceneAddActorObject(void* scene, void* object, void* actorPointer)
 	{
-	// The oracle (phys_fn_00010600) registers the object with the scene. Not
-	// modelled.
-	(void)scene; (void)object;
+	// Register the dynamic record in the Scene's +0x56c array. Static actors
+	// have no record and do not enter this array; the fourth box actor grows
+	// its capacity from two entries to six, matching the pinned DLL.
+	if(!object) return;
+	unsigned char* actor = static_cast<unsigned char*>(actorPointer);
+	if(!actor) return;
+	unsigned char* body = *reinterpret_cast<unsigned char**>(actor + 0x14);
+	unsigned char* record = body
+		? *reinterpret_cast<unsigned char**>(body + 8) : 0;
+	if(!record) return;
+	unsigned char* bytes = static_cast<unsigned char*>(scene);
+	nxSceneArrayReserve(bytes + 0x56c, 1);
+	void** last = *reinterpret_cast<void***>(bytes + 0x570);
+	if(last)
+		{
+		*last = record;
+		*reinterpret_cast<void***>(bytes + 0x570) = last + 1;
+		}
 	}
 
 void nxActorBuildUserDataObject(void* actor)
@@ -1274,20 +1259,29 @@ void nxSceneDeadlockReport()
 // whose shape list is empty cannot be created, and every downstream path in this
 // reconstruction needs creation to succeed before it can be measured.
 //
-// What is NOT modelled: the shape's own layout, its vtable, and its back link to
-// the actor. An actor built through this path therefore has a shape list whose
-// contents are not the oracle's.
+// What is NOT modelled: the shape's own layout and vtable. The body points to
+// the measured 0x228-byte shape; its +0x9c word reaches a 0x1c-byte helper.
 void* nxShapeFactory(void* shapeDesc, void* actor)
 	{
 	(void)shapeDesc;
 	unsigned char* shape = static_cast<unsigned char*>(
-		nxGetSdkAllocator()->malloc(0x40, NX_MEMORY_PERSISTENT));
+		nxGetSdkAllocator()->malloc(0x228, NX_MEMORY_PERSISTENT));
 	if(!shape)
 		return 0;
-	for(int i = 0; i < 0x40; ++i)
-		shape[i] = 0;
-	// The actor back-pointer, which the oracle stores in the shape.
-	*reinterpret_cast<void**>(shape + 4) = actor;
+	memset(shape, 0, 0x228);
+	// The oracle shape does not point at the public 0x18-byte actor wrapper.
+	void* helper = nxGetSdkAllocator()->malloc(0x1c, NX_MEMORY_PERSISTENT);
+	if(!helper)
+		{
+		nxGetSdkAllocator()->free(shape);
+		return 0;
+		}
+	memset(helper, 0, 0x1c);
+	*reinterpret_cast<void**>(shape + 0x9c) = helper;
+	unsigned char* body = *reinterpret_cast<unsigned char**>(
+		static_cast<unsigned char*>(actor) + 0x14);
+	if(body)
+		*reinterpret_cast<void**>(body + 0x10) = shape;
 	return shape;
 	}
 

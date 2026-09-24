@@ -113,7 +113,31 @@ $NxRequiredCoverageLines = [ordered] @{
         'actor quarter quaternion=00000000.00000000.3f3504f3.3f3504f3',
         'actor quarter orientation=331302ae.bf7fffff.00000000.3f7fffff.331302ae.00000000.00000000.00000000.3f800000',
         'actor quarter public_quaternion=00000000.00000000.3f3504f3.3f3504f3',
-        'actor quarter pose=331302ae.bf7fffff.00000000.3f7fffff.331302ae.00000000.00000000.00000000.3f800000.40a00000.c0000000.40400000'
+        'actor quarter pose=331302ae.bf7fffff.00000000.3f7fffff.331302ae.00000000.00000000.00000000.3f800000.40a00000.c0000000.40400000',
+        'actor static actor_alloc=18',
+        'actor static linked_alloc=4',
+        'actor static linked_child_alloc=20',
+        'actor static body_actor=1 body_shape=1',
+        'actor static body_shape_alloc=228',
+        'actor static shape_helper_offset=9c',
+        'actor dynamic actor_alloc=18',
+        'actor dynamic pose_is_body=1',
+        'scene objects_before_quarter=2/2',
+        'scene objects_after_quarter=3/6',
+        'actor quarter creation_allocs=6',
+        'actor quarter creation_sizes=50.18.228.1c.260.18',
+        'actor quarter creation_roles=2.1.0.0.4.0',
+        'actor quarter retained_refs=ffff.ffff.ffff.56c',
+        'actor links_alias=1.1.1',
+        'actor link_scene_mask=010',
+        'actor slot_scene_mask=008 slot_small=0',
+        'scene actors_before=4',
+        'scene actors_before_list=1',
+        'scene release_frees=5',
+        'scene release_sizes=18.260.1c.228.50',
+        'scene release_creation_mask=3e',
+        'scene actors_after=3',
+        'scene quarter_still_listed=0'
     )
     # The Phase 6 joint-descriptor differential. Two cases over the two exported
     # rows, printing the whole descriptor surface before and after each call. The
@@ -991,7 +1015,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 101  # 34 for NxPhysicsAssetTests, 67 for NxPhysicsThirdPartyTests
-    '5' = 152  # 126 object-layout assertions plus 26 public actor lifecycle lines
+    '5' = 176  # 126 object-layout assertions plus 50 public actor lifecycle lines
                # (RED on purpose: vtables family open)
     '6' = 11  # 3 oracle-descriptor + 4 oracle-joint + 4 staged-pair-joint
     '7' = 4   # the four STAGED-PAIR assertions; the oracle-differential assertions

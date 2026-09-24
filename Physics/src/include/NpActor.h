@@ -20,19 +20,17 @@
 #include "NxActor.h"
 
 /**
-The actor OBJECT: 0x50 bytes, offset-addressed.
+The public actor wrapper: 0x18 bytes, offset-addressed.
 
-The oracle allocates 0x50 bytes in Scene::createActor and writes it through raw
-pointer arithmetic -- the shape list at +0x10, the body at +0x14, the body descriptor
-at +0x18, the body's flags at +0x1c, a word from the Scene's +0x6cc holder at +0x0c,
-and the 3x3 and translation at +0x20..+0x4c. None of those fields is declared by
-NxActor, which has no data members at all (10h), so the layout is written here by
-offset rather than guessed as member names -- the same construction as
-NxSceneInternal (8t).
+The page-guarded public-DLL probe measured a 0x18-byte allocation for each
+NxActor. Its +0x10 points to a shape-link allocation and +0x14 points to a
+separate 0x50-byte pose/body. The latter contains the matrix at +0x20 and
+translation at +0x44. NxActor declares no data members, so this wrapper is
+written by offsets rather than guessed as member names.
 */
 struct NpActorObject
 	{
-	static const NxU32 SIZE = 0x50;
+	static const NxU32 SIZE = 0x18;
 
 	unsigned char mBytes[SIZE];
 
@@ -47,7 +45,7 @@ struct NpActorObject
 	};
 
 static_assert(sizeof(NpActorObject) == NpActorObject::SIZE,
-              "the actor object is 0x50 bytes in the oracle");
+              "the actor wrapper is 0x18 bytes in the oracle");
 
 /**
 The concrete class the vtable points at. It is deliberately NOT the object: its own

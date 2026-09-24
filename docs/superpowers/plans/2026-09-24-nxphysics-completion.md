@@ -22,11 +22,13 @@
 
 **M2 actor packet, 2026-09-24:** `NxPhysicsActorLifecycleTests` now drives static and dynamic box actors through both staged DLL pairs. The candidate matches the oracle's `isDynamic()` and position words; a static actor owns the oracle's 0x50-byte outer body. Deliberate mutations of each virtual result failed the staged differential. See `docs/reconstruction/novodex-physics/evidence/phase5-actor-lifecycle.md`.
 
-**M2 dynamic graph follow-up, 2026-09-24:** The candidate now matches the oracle's outer 0x50, dynamic record 0x260, and pose 0x50 allocation sizes, plus the record/pose backlink, through the staged DLL test. The exported joint-descriptor row disassembly confirms the graph, and its staged pair remains exact after updating the traversal. Record state and cleanup are still open; the Phase 5 vtable marker remains red.
+**M2 dynamic graph follow-up, 2026-09-24:** The candidate now matches the oracle's outer 0x50 and dynamic record 0x260 sizes and their backlink through the staged DLL test. A later ownership probe established that record+0x19c points back to that same outer body; it is not a third pose allocation. The exported joint-descriptor row disassembly confirms the graph, and its staged pair remains exact after updating the traversal. Record state remains open; the Phase 5 vtable marker remains red.
 
 **M2 rotation follow-up, 2026-09-24:** Static identity and dynamic half/quarter-turn cases now match oracle quaternion storage and public orientation getters byte for byte through staged DLL pairs. The quarter-turn exposed x87 intermediate precision, and separate matrix/quaternion getter mutations failed the differential. See `docs/reconstruction/novodex-physics/evidence/phase5-actor-rotation.md`. Other rotation contexts and actor mutations remain open.
 
 **M2 pose follow-up, 2026-09-24:** Slot 5's full `NxMat34` return matches all twelve oracle words for four actor cases, and an aimed pose-translation mutation failed the staged differential. The Phase 5 coverage floor is 152; lock behavior and other pose contexts remain open.
+
+**M2 ownership follow-up, 2026-09-24:** The public actor wrapper is 0x18 bytes, and the 0x50-byte outer body is also the pose object. The candidate now matches the guarded oracle's fourth-actor allocation order, shared scene lock aliases, dynamic record array growth, and five-block release sequence. Actor count changes from four to three and the released actor disappears from the public list. See `docs/reconstruction/novodex-physics/evidence/phase5-actor-ownership.md`. The tested box lifecycle is not the full shape/body teardown matrix; the Phase 5 floor is now 176.
 
 ## 1. Inputs and boundaries
 

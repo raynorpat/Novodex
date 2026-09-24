@@ -60,24 +60,26 @@ NpScene::NpScene(NxSceneInternal* scene)
 	// phys_fn_0005b6a0, then the two at +0x14 and +0x18, then the 0x18-byte object
 	// at +0x1c linked to them.
 	//
-	// The locks are allocated 0x20 bytes, not 4. PhysicsInternal.h records the
-	// oracle's block: phys_fn_0005b6a0 "allocates a 32 byte block through the SDK
-	// allocator and holds only that pointer, so the lock object itself is one
-	// word". The NpScene field holds the pointer, but the BLOCK is 32 bytes -- it is
-	// a CRITICAL_SECTION followed by the interlocked owner flag at +0x18 and the
-	// owning thread id at +0x1c. Allocating four bytes and then storing a lock into
-	// it overruns the block, and that overrun was the crash: with a 4-byte
-	// allocation the harness faulted at the NpScene constructor, and the traces
-	// masked it by shifting the heap layout.
+	// Each field points to a 4-byte link, whose word points to a 0x20-byte lock
+	// block. The actor wrapper copies these link pointers into +0x0c/+0x10.
+	// Allocating only the four-byte link without its inner block was the old
+	// constructor overrun; allocating only the block made the public alias's
+	// allocation size wrong.
 	static const NxU32 kNpSceneLockBlock = 0x20;
 
-	mWriteLock = nxGetSdkAllocator()->malloc(kNpSceneLockBlock, NX_MEMORY_PERSISTENT);
+	mWriteLock = nxGetSdkAllocator()->malloc(4, NX_MEMORY_PERSISTENT);
 	if(mWriteLock)
-		mWriteLock = nxLockConstruct(mWriteLock);
+		{
+		void* block = nxGetSdkAllocator()->malloc(kNpSceneLockBlock, NX_MEMORY_PERSISTENT);
+		*static_cast<void**>(mWriteLock) = block ? nxLockConstruct(block) : 0;
+		}
 
-	mReadLock = nxGetSdkAllocator()->malloc(kNpSceneLockBlock, NX_MEMORY_PERSISTENT);
+	mReadLock = nxGetSdkAllocator()->malloc(4, NX_MEMORY_PERSISTENT);
 	if(mReadLock)
-		mReadLock = nxLockConstruct(mReadLock);
+		{
+		void* block = nxGetSdkAllocator()->malloc(kNpSceneLockBlock, NX_MEMORY_PERSISTENT);
+		*static_cast<void**>(mReadLock) = block ? nxLockConstruct(block) : 0;
+		}
 
 	mCondition = nxGetSdkAllocator()->malloc(0x18, NX_MEMORY_PERSISTENT);
 	if(mCondition)
@@ -89,9 +91,15 @@ NpScene::~NpScene()
 	if(mCondition)
 		nxGetSdkAllocator()->free(mCondition);
 	if(mReadLock)
+		{
+		nxGetSdkAllocator()->free(*static_cast<void**>(mReadLock));
 		nxGetSdkAllocator()->free(mReadLock);
+		}
 	if(mWriteLock)
+		{
+		nxGetSdkAllocator()->free(*static_cast<void**>(mWriteLock));
 		nxGetSdkAllocator()->free(mWriteLock);
+		}
 	}
 
 // phys_fn_000293 (0x0000c490): the forwarding shape every slot in this class has.
@@ -110,7 +118,7 @@ NxActor* NpScene::createActor(const NxActorDescBase& desc)
 	return actor;
 	}
 
-// phys_fn_000295's shape: the same lock, then the Scene-side release.
+// phys_fn_000295 at 0x0000c500: the same lock, then Scene::releaseActor.
 void NpScene::releaseActor(NxActor& actor)
 	{
 	if(!mWriteLock || !nxLockTryLock(mWriteLock))
@@ -119,7 +127,10 @@ void NpScene::releaseActor(NxActor& actor)
 		return;
 		}
 
-	(void)actor;		// the Scene-side release is a reproduction hole
+	void* body = *reinterpret_cast<void**>(
+		reinterpret_cast<unsigned char*>(&actor) + 0x14);
+	if(body)
+		mScene->releaseActor(body);
 	nxLockUnlock(mWriteLock);
 	}
 
@@ -245,16 +256,19 @@ bool NpScene::getPairFlagArray(NxPairFlag* userArray, NxU32 numPairs) const
 	return 0;
 	}
 
-// (unimplemented) getNbActors
+// The Scene actor array begins at internal +0x55c. The wrapper forwards the
+// count as the distance from its first pointer to its last pointer.
 NxU32 NpScene::getNbActors() const
 	{
-	return 0;
+	const NxActor* const* first = mScene->at<NxActor**>(0x55c);
+	const NxActor* const* last = mScene->at<NxActor**>(0x560);
+	return first ? static_cast<NxU32>(last - first) : 0;
 	}
 
-// (unimplemented) getActors
+// The public pointer is the Scene's existing contiguous actor array.
 NxActor** NpScene::getActors()
 	{
-	return 0;
+	return mScene->at<NxActor**>(0x55c);
 	}
 
 // (unimplemented) getNbJoints

@@ -69,3 +69,9 @@ follows this graph. The Phase 6 staged joint differential remains exact.
 These observed links and allocation sizes do not complete the record's
 physical state, ownership, or cleanup. Phase 5 still fails on the final-vtable
 placeholder.
+
+**Later correction:** the `record+0x19c` pose is the same allocation as the
+outer body, not a separate 0x50-byte block. The public actor wrapper is 0x18
+bytes. The ownership probe and release evidence are in
+`phase5-actor-ownership.md`; the paragraphs above record what was known at
+their respective earlier checkpoints.

@@ -16,8 +16,8 @@
 //   +0x00  vtable            (the oracle installs PTR_FUN_10105a98 last)
 //   +0x04  --
 //   +0x08  an inner lock object, whose own vtable is PTR_LAB_10105ba4
-//   +0x0c  a 4-byte ReadWriteLock, allocated and constructed by phys_fn_0005b6a0
-//   +0x10  a 4-byte ReadWriteLock, allocated and constructed by phys_fn_0005b6a0
+//   +0x0c  a 4-byte lock link to a 0x20-byte block
+//   +0x10  a 4-byte lock link to a 0x20-byte block
 //   +0x14  a stack-shaped lock, initialised by phys_fn_0005b7b0
 //   +0x18  a stack-shaped lock, initialised by phys_fn_0005b7b0
 //   +0x1c  a 0x18-byte object from phys_fn_0005b9a0, linked to the two above
@@ -59,8 +59,8 @@ class NpScene : public NxScene, public NxAllocateable
 	void release();
 
 	// The remaining NxScene virtuals, UNIMPLEMENTED. NpScene must be concrete to
-	// be instantiated and NxScene declares 65 pure virtuals; only createActor and
-	// releaseActor above are reconstructed. Each body is empty and returns a default.
+	// be instantiated and NxScene declares 65 pure virtuals; actor creation,
+	// release, count, and list are reconstructed. Other bodies return defaults.
 	// None is claimed as reconstructed and none is gated.
 	virtual void getGravity(NxVec3&);
 	virtual void releaseJoint(NxJoint &);
