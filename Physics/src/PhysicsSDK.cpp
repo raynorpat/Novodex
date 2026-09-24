@@ -170,14 +170,15 @@ PhysicsSDK::PhysicsSDK()
 	}
 
 void nxShapeReleaseNameTable();
+void nxOpcodeReleasePool();
 
 PhysicsSDK::~PhysicsSDK()
 	{
 	NX_DELETE_SINGLE(mNp);
 	nxShapeReleaseNameTable();
 
-	// The global name map at .data 0x00123c0c is released above. Other
-	// ownership paths still need reconstruction here:
+	// The global name map at .data 0x00123c0c is released above, and the
+	// process-wide OPCODE pool below. Other ownership paths remain open:
 	//   - the scene release loop over mScenes (phys_fn_001275), Phase 3;
 	//   - the mesh release loop over mTriangleMeshes (phys_fn_002253), Phase 4;
 	//   - the three cache teardowns phys_fn_004834, phys_fn_004828 and
@@ -190,6 +191,7 @@ PhysicsSDK::~PhysicsSDK()
 		gFoundation = 0;
 		}
 	NX_DELETE_SINGLE(gShapePairFunctionTable);
+	nxOpcodeReleasePool();
 	}
 
 void PhysicsSDK::release()

@@ -1161,8 +1161,7 @@ int wmain(int argc, wchar_t** argv)
 		}
 	const unsigned beforeSdkReleaseFrees = allocator.frees();
 	sdk->release();
-	if(getenv("NX_PHYSICS_PROBE_SDK_TEARDOWN"))
-		{
+	{
 		printf("actor sdk_teardown_frees=%u\n",
 			allocator.frees() - beforeSdkReleaseFrees);
 		printf("actor sdk_teardown_sizes=");

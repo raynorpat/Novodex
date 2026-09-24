@@ -850,6 +850,23 @@ static bool nxOpcodeEnsurePool()
 	return true;
 	}
 
+void nxOpcodeReleasePool()
+	{
+	if(!gNxOpcodePool) return;
+	const unsigned offsets[4] = {0x14, 0x10, 0xc, 0};
+	for(unsigned offset : offsets)
+		{
+		void*& block = *reinterpret_cast<void**>(gNxOpcodePool + offset);
+		if(block)
+			{
+			nxGetSdkAllocator()->free(block);
+			block = 0;
+			}
+		}
+	nxGetSdkAllocator()->free(gNxOpcodePool);
+	gNxOpcodePool = 0;
+	}
+
 // The oracle's dynamic broadphase table is a 0x3c-byte object stored at
 // Scene+0x648. Its subcontainer begins at +4: count and capacity are the
 // 16-bit words at +0x10/+0x12, followed by parallel 0x18-byte-entry and
