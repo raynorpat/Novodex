@@ -32,9 +32,11 @@
 
 **M2 static release follow-up, 2026-09-24:** A static box release now matches the oracle's four-block free sequence and public count/list transition. The Phase 5 floor is 180. Multi-shape and other teardown paths remain open.
 
-**M2 two-shape probe, 2026-09-24:** A gated, opt-in public-DLL probe mapped the dynamic two-box actor's 0x110-byte shape group and its parallel `+0xe0`/`+0xf0` child arrays. The candidate now builds and frees that group with both child shapes and helpers. The oracle still has two creation allocations (0xc0, 0x20) and a release-time 0x18 array growth/old 0x8 free absent from the candidate. See `docs/reconstruction/novodex-physics/evidence/phase5-multi-shape-group.md`; this is an open M2/M3 dependency, not Phase 5 closure.
+**M2 two-shape lifecycle, 2026-09-24:** The dynamic two-box actor is now a registered staged-pair case. Its 0x110 group, two child arrays, broadphase `2/4 → 5/8 → 2/8` transition, recycled IDs, creation allocation/free order, and eleven-block release order match the oracle. Twenty-nine new assertions raise the Phase 5 floor to 209. See `docs/reconstruction/novodex-physics/evidence/phase5-multi-shape-group.md`; other shape geometries, final vtables, and the first dynamic actor's wider Scene initialization remain open.
 
 **M2 owner-link follow-up, 2026-09-24:** The oracle group+4 points to its outer body, body+4 points to the internal Scene, and Scene+0x48 points to a 0xa8 auxiliary manager. The candidate now matches those links after fixing two dword-index/byte-offset stores in the Scene constructor. The auxiliary manager's registration/growth behavior remains open; the ordinary Phase 5 actor differential and Phase 6 joint differential remain exact.
+
+**M2 dynamic initialization gap, 2026-09-24:** The separate opt-in `NX_PHYSICS_PROBE_DYNAMIC_INIT=1` drive counts 17 oracle allocations and nine candidate allocations on the first dynamic box actor. The registered two-box lifecycle is exact, but its preceding Scene setup is not closed. Trace the missing initial structures before claiming the actor factory complete.
 
 ## 1. Inputs and boundaries
 

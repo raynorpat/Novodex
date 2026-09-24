@@ -141,7 +141,36 @@ $NxRequiredCoverageLines = [ordered] @{
         'scene static_release_frees=4',
         'scene static_release_sizes=18.1c.228.50',
         'scene actors_after_static=2',
-        'scene static_still_listed=0'
+        'scene static_still_listed=0',
+        'actor multi broadphase_before=3c.2/4.1.1',
+        'actor multi creation_allocs=12',
+        'actor multi broadphase_after=3c.5/8.1.1',
+        'actor multi creation_frees=2',
+        'actor multi creation_free_sizes=60.10',
+        'actor multi creation_sizes=50.18.110.228.1c.8.8.228.1c.260.c0.20',
+        'actor multi broadphase_ref_0=0.0.1.0.0',
+        'actor multi broadphase_ref_1=0.0.0.1.0',
+        'actor multi broadphase_ref_2=1.0.0.0.0',
+        'actor multi broadphase_ref_3=0.1.0.0.0',
+        'actor multi broadphase_ref_4=0.0.0.0.1',
+        'actor multi group_size=110',
+        'actor multi group_index=0.ffff',
+        'actor multi child_index_0=3.0',
+        'actor multi child_index_1=4.0',
+        'actor multi group_owner=1 owner_is_body=1 owner_is_actor=0',
+        'actor multi body_scene_public=0 body_scene_internal=1',
+        'actor multi scene_manager=1',
+        'actor multi manager_guarded_size=a8',
+        'actor multi group_array_e0=2/2',
+        'actor multi group_array_f0=2/2',
+        'actor multi scene_array6e8_before_release=0/2',
+        'actor multi scene_array6e8_values_before_release=',
+        'actor multi scene_array6e8_after_release=3/6',
+        'actor multi scene_array6e8_values_after_release=3.4.0',
+        'actor multi broadphase_released=3c.2/8.1.1',
+        'actor multi release_allocs=1',
+        'actor multi release_frees=11',
+        'actor multi release_sizes=18.260.1c.228.1c.228.8.8.8.110.50'
     )
     # The Phase 6 joint-descriptor differential. Two cases over the two exported
     # rows, printing the whole descriptor surface before and after each call. The
@@ -1019,7 +1048,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 101  # 34 for NxPhysicsAssetTests, 67 for NxPhysicsThirdPartyTests
-    '5' = 180  # 126 object-layout assertions plus 54 public actor lifecycle lines
+    '5' = 209  # 126 object-layout assertions plus 83 public actor lifecycle lines
                # (RED on purpose: vtables family open)
     '6' = 11  # 3 oracle-descriptor + 4 oracle-joint + 4 staged-pair-joint
     '7' = 4   # the four STAGED-PAIR assertions; the oracle-differential assertions

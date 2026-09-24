@@ -78,6 +78,10 @@ void nxSceneApplyDescriptorFlags(void* scene, const unsigned* descWords, unsigne
 void nxSceneBuildGroundPlane(void* scene);
 // phys_fn_000651's array reserve, above.
 void nxSceneArrayReserve(void* arrayHeader, unsigned needed);
+void nxSceneBroadphaseRegister(NxSceneInternal* scene, void* body);
+void nxSceneBroadphaseUnregister(NxSceneInternal* scene, void* body);
+unsigned nxSceneTakeShapeId(NxSceneInternal* scene);
+void nxSceneRecycleShapeId(NxSceneInternal* scene, unsigned id);
 
 // phys_fn_005109 (0x000e1510, phase 4).
 //   FUN_100f0660(this); dword[0xd]=0; dword[0xe]=0; *this=&PTR_FUN_1011b794;
@@ -466,10 +470,10 @@ NxSceneInternal::NxSceneInternal()
 	nxDword(p, 0x1b5) = 0;
 	nxDword(p, 0x1b6) = 0;
 	nxDword(p, 0x1b7) = 0;
-	nxDword(p, 0x1b9) = 0;
-	nxDword(p, 0x1ba) = 0;
-	nxDword(p, 0x1bb) = 0;
-	nxDword(p, 0x1bc) = 0;
+	p[0x1b9] = 0;							// next shape ID at +0x6e4
+	p[0x1ba] = 0;							// recycle array at +0x6e8
+	p[0x1bb] = 0;
+	p[0x1bc] = 0;
 	nxDword(p, 0x1be) = 0;
 	nxDword(p, 0x1bf) = 0;
 	nxDword(p, 0x1c0) = 0;
@@ -554,6 +558,125 @@ void nxSceneArrayReserve(void* arrayHeader, unsigned needed)
 	a[0] = reinterpret_cast<unsigned>(grown);
 	a[1] = reinterpret_cast<unsigned>(grown + count);
 	a[2] = reinterpret_cast<unsigned>(grown + capacity);
+	}
+
+// Scene+0x6e4 is the next shape ID. Released IDs live in a LIFO array at
+// +0x6e8: the two-shape oracle drive reuses 0 and 3 before issuing ID 4.
+unsigned nxSceneTakeShapeId(NxSceneInternal* scene)
+	{
+	unsigned* first = scene->at<unsigned*>(0x6e8);
+	unsigned* last = scene->at<unsigned*>(0x6ec);
+	if(first && last != first)
+		{
+		--last;
+		scene->at<unsigned*>(0x6ec) = last;
+		return *last;
+		}
+	return scene->at<unsigned>(0x6e4)++;
+	}
+
+void nxSceneRecycleShapeId(NxSceneInternal* scene, unsigned id)
+	{
+	unsigned char* header = scene->bytes() + 0x6e8;
+	nxSceneArrayReserve(header, 1);
+	unsigned* last = scene->at<unsigned*>(0x6ec);
+	if(!last) return;
+	*last = id;
+	scene->at<unsigned*>(0x6ec) = last + 1;
+	}
+
+// The oracle's dynamic broadphase table is a 0x3c-byte object stored at
+// Scene+0x648. Its subcontainer begins at +4: count and capacity are the
+// 16-bit words at +0x10/+0x12, followed by parallel 0x18-byte-entry and
+// 4-byte-reference buffers at +0x14/+0x18. A single dynamic shape registers
+// one entry; a two-shape group registers its group plus both children.
+// The entry payload and the table's other fields remain to be reconstructed.
+void nxSceneBroadphaseRegister(NxSceneInternal* scene, void* bodyPointer)
+	{
+	unsigned char* body = static_cast<unsigned char*>(bodyPointer);
+	if(!body || !*reinterpret_cast<void**>(body + 8)) return;
+	unsigned char* shape = *reinterpret_cast<unsigned char**>(body + 0x10);
+	if(!shape) return;
+	const bool group = *reinterpret_cast<void**>(shape + 0xe0) != 0;
+	const unsigned childCount = group ? static_cast<unsigned>(
+		*reinterpret_cast<void***>(shape + 0xe4) -
+		*reinterpret_cast<void***>(shape + 0xe0)) : 0;
+	const unsigned added = group ? childCount + 1 : 1;
+	unsigned char*& table = scene->at<unsigned char*>(0x648);
+	if(!table)
+		{
+		table = static_cast<unsigned char*>(
+			nxGetSdkAllocator()->malloc(0x3c, NX_MEMORY_PERSISTENT));
+		if(!table) return;
+		memset(table, 0, 0x3c);
+		}
+	unsigned short& count = *reinterpret_cast<unsigned short*>(table + 0x10);
+	unsigned short& capacity = *reinterpret_cast<unsigned short*>(table + 0x12);
+	if(static_cast<unsigned>(count) + added > capacity)
+		{
+		unsigned next = capacity ? capacity * 2u : 4u;
+		while(next < static_cast<unsigned>(count) + added) next *= 2u;
+		unsigned char* entries = static_cast<unsigned char*>(
+			nxGetSdkAllocator()->malloc(next * 0x18, NX_MEMORY_PERSISTENT));
+		void** references = static_cast<void**>(
+			nxGetSdkAllocator()->malloc(next * sizeof(void*), NX_MEMORY_PERSISTENT));
+		if(!entries || !references)
+			{
+			if(entries) nxGetSdkAllocator()->free(entries);
+			if(references) nxGetSdkAllocator()->free(references);
+			return;
+			}
+		memset(entries, 0, next * 0x18);
+		memset(references, 0, next * sizeof(void*));
+		unsigned char* oldEntries = *reinterpret_cast<unsigned char**>(table + 0x14);
+		void** oldReferences = *reinterpret_cast<void***>(table + 0x18);
+		if(oldEntries) memcpy(entries, oldEntries, count * 0x18);
+		if(oldReferences) memcpy(references, oldReferences, count * sizeof(void*));
+		if(oldEntries) nxGetSdkAllocator()->free(oldEntries);
+		if(oldReferences) nxGetSdkAllocator()->free(oldReferences);
+		*reinterpret_cast<unsigned char**>(table + 0x14) = entries;
+		*reinterpret_cast<void***>(table + 0x18) = references;
+		capacity = static_cast<unsigned short>(next);
+		}
+	void** references = *reinterpret_cast<void***>(table + 0x18);
+	unsigned char* entries = *reinterpret_cast<unsigned char**>(table + 0x14);
+	if(group)
+		{
+		memmove(references + childCount, references, count * sizeof(void*));
+		memmove(entries + childCount * 0x18, entries, count * 0x18);
+		}
+	for(unsigned i = 0; i < childCount; ++i)
+		{
+		unsigned char* object = static_cast<unsigned char*>(
+			(*reinterpret_cast<void***>(shape + 0xe0))[i]);
+		references[i] = object + 0xa4;
+		}
+	references[count + childCount] = shape + 0xa4;
+	count = static_cast<unsigned short>(count + added);
+	}
+
+void nxSceneBroadphaseUnregister(NxSceneInternal* scene, void* bodyPointer)
+	{
+	unsigned char* table = scene->at<unsigned char*>(0x648);
+	unsigned char* body = static_cast<unsigned char*>(bodyPointer);
+	if(!table || !body || !*reinterpret_cast<void**>(body + 8)) return;
+	unsigned char* shape = *reinterpret_cast<unsigned char**>(body + 0x10);
+	if(!shape) return;
+	const bool group = *reinterpret_cast<void**>(shape + 0xe0) != 0;
+	const unsigned childCount = group ? static_cast<unsigned>(
+		*reinterpret_cast<void***>(shape + 0xe4) -
+		*reinterpret_cast<void***>(shape + 0xe0)) : 0;
+	const unsigned removed = group ? childCount + 1 : 1;
+	unsigned short& count = *reinterpret_cast<unsigned short*>(table + 0x10);
+	if(group && count >= removed)
+		{
+		void** references = *reinterpret_cast<void***>(table + 0x18);
+		unsigned char* entries = *reinterpret_cast<unsigned char**>(table + 0x14);
+		const unsigned remaining = count - removed;
+		memmove(references, references + childCount, remaining * sizeof(void*));
+		memmove(entries, entries + childCount * 0x18, remaining * 0x18);
+		}
+	count = static_cast<unsigned short>(count >= removed ? count - removed : 0);
 	}
 
 
@@ -805,6 +928,8 @@ NxActor* NxSceneInternal::createActor(const NxActorDescBase& desc)
 	if(p[0x61c / 4])
 		nxSceneNotifyActorCreated(reinterpret_cast<void*>(p[0x61c / 4]));
 
+	nxSceneBroadphaseRegister(this, outerMemory);
+
 	return actor;
 	}
 
@@ -825,6 +950,7 @@ void NxSceneInternal::releaseActor(void* bodyPointer)
 		++found;
 	if(found == last)
 		return;
+	nxSceneBroadphaseUnregister(this, body);
 	--last;
 	*found = *last;
 	at<NxActor**>(0x560) = last;
@@ -855,23 +981,26 @@ void NxSceneInternal::releaseActor(void* bodyPointer)
 		void** shapes = *reinterpret_cast<void***>(shape + 0xe0);
 		void** shapesEnd = *reinterpret_cast<void***>(shape + 0xe4);
 		void** helpers = *reinterpret_cast<void***>(shape + 0xf0);
-		void** helpersEnd = *reinterpret_cast<void***>(shape + 0xf4);
-		while(shapesEnd != shapes && helpersEnd != helpers)
+		for(unsigned i = 0; i < static_cast<unsigned>(shapesEnd - shapes); ++i)
 			{
-			--shapesEnd;
-			--helpersEnd;
-			nxGetSdkAllocator()->free(*helpersEnd);
-			nxGetSdkAllocator()->free(*shapesEnd);
+			const unsigned id = *reinterpret_cast<unsigned*>(
+				static_cast<unsigned char*>(shapes[i]) + 0xd4);
+			nxGetSdkAllocator()->free(helpers[i]);
+			nxGetSdkAllocator()->free(shapes[i]);
+			nxSceneRecycleShapeId(this, id);
 			}
 		nxGetSdkAllocator()->free(helpers);
 		nxGetSdkAllocator()->free(shapes);
+		nxSceneRecycleShapeId(this, *reinterpret_cast<unsigned*>(shape + 0xd4));
 		nxGetSdkAllocator()->free(shape);
 		}
 	else if(shape)
 		{
+		const unsigned id = *reinterpret_cast<unsigned*>(shape + 0xd4);
 		void* helper = *reinterpret_cast<void**>(shape + 0x9c);
 		if(helper) nxGetSdkAllocator()->free(helper);
 		nxGetSdkAllocator()->free(shape);
+		nxSceneRecycleShapeId(this, id);
 		}
 	nxGetSdkAllocator()->free(body);
 	}
@@ -1109,10 +1238,10 @@ void nxSceneBuildGroundPlane(void* scene)
 static void nxSceneDelete(void* self, int flags)
 	{
 	unsigned* p = static_cast<unsigned*>(self);
-	if(nxDword(p, 0x1b3))
-		nxGetSdkAllocator()->free(reinterpret_cast<void*>(nxDword(p, 0x1b3)));
-	if(nxDword(p, 0x12))
-		nxGetSdkAllocator()->free(reinterpret_cast<void*>(nxDword(p, 0x12)));
+	if(p[0x1b3])
+		nxGetSdkAllocator()->free(reinterpret_cast<void*>(p[0x1b3]));
+	if(p[0x12])
+		nxGetSdkAllocator()->free(reinterpret_cast<void*>(p[0x12]));
 	if(flags & 1)
 		nxGetSdkAllocator()->free(self);
 	}
@@ -1296,6 +1425,9 @@ void* nxShapeFactory(void* shapeDesc, void* actor)
 		}
 	memset(helper, 0, 0x1c);
 	*reinterpret_cast<void**>(shape + 0x9c) = helper;
+	NxSceneInternal* scene = *reinterpret_cast<NxSceneInternal**>(
+		static_cast<unsigned char*>(actor) + 4);
+	*reinterpret_cast<unsigned*>(shape + 0xd4) = nxSceneTakeShapeId(scene);
 	unsigned char* body = *reinterpret_cast<unsigned char**>(
 		static_cast<unsigned char*>(actor) + 0x14);
 	if(body)
@@ -1318,6 +1450,10 @@ void* nxShapeGroupConstruct(void* actor, const unsigned* shapeDescriptions, unsi
 	unsigned char* body = *reinterpret_cast<unsigned char**>(
 		static_cast<unsigned char*>(actor) + 0x14);
 	*reinterpret_cast<void**>(group + 4) = body;
+	NxSceneInternal* scene = *reinterpret_cast<NxSceneInternal**>(
+		static_cast<unsigned char*>(actor) + 4);
+	*reinterpret_cast<unsigned*>(group + 0xd4) = nxSceneTakeShapeId(scene);
+	*reinterpret_cast<unsigned short*>(group + 0xd8) = 0xffffu;
 	void** shapes = 0;
 	void** helpers = 0;
 	unsigned built = 0;
@@ -1334,6 +1470,7 @@ void* nxShapeGroupConstruct(void* actor, const unsigned* shapeDescriptions, unsi
 				count * sizeof(void*), NX_MEMORY_PERSISTENT));
 			if(!shapes || !helpers)
 				{
+				nxSceneRecycleShapeId(scene, *reinterpret_cast<unsigned*>(child + 0xd4));
 				nxGetSdkAllocator()->free(*reinterpret_cast<void**>(child + 0x9c));
 				nxGetSdkAllocator()->free(child);
 				break;
@@ -1356,11 +1493,14 @@ void* nxShapeGroupConstruct(void* actor, const unsigned* shapeDescriptions, unsi
 		while(built)
 			{
 			--built;
+			nxSceneRecycleShapeId(scene,
+				*reinterpret_cast<unsigned*>(static_cast<unsigned char*>(shapes[built]) + 0xd4));
 			nxGetSdkAllocator()->free(helpers[built]);
 			nxGetSdkAllocator()->free(shapes[built]);
 			}
 		if(helpers) nxGetSdkAllocator()->free(helpers);
 		if(shapes) nxGetSdkAllocator()->free(shapes);
+		nxSceneRecycleShapeId(scene, *reinterpret_cast<unsigned*>(group + 0xd4));
 		nxGetSdkAllocator()->free(group);
 		if(body) *reinterpret_cast<void**>(body + 0x10) = 0;
 		return 0;

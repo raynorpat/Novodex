@@ -1,41 +1,51 @@
 # Phase 5 two-box actor group — 2026-09-24
 
-The opt-in `NX_PHYSICS_PROBE_MULTI=1` branch of
-`NxPhysicsActorLifecycleTests` creates a dynamic actor with two box shapes
-after the registered single-shape create/release cases. It uses the pinned
-Physics/Foundation DLL pair and the guarded SDK allocator. The ordinary
-staged differential leaves this branch disabled until the whole two-shape
-path is reconstructed.
+`NxPhysicsActorLifecycleTests` now creates and releases a dynamic actor with
+two box shapes through both staged DLL pairs. Its 29 new transcript lines
+are registered in the Phase 5 gate; the assertion floor is 209. The ordinary
+staged differential has no output differences for this actor. This proves
+the measured lifecycle path, not the complete shape implementation or final
+vtable family.
 
-The oracle allocates an outer body (0x50), public actor (0x18), group
-(0x110), first shape (0x228), first helper (0x1c), two 0x8 arrays, second
-shape (0x228), second helper (0x1c), dynamic record (0x260), then 0xc0 and
-0x20 blocks. Creation also frees older 0x60 and 0x10 blocks as those later
-allocations grow. The group is body+0x10. Its +0xe0 array has two 0x228 shape
-pointers and its +0xf0 array has two 0x1c helper pointers, each with count
-and capacity two. Group+4 points to the 0x50 outer body, whose +4 points
-to the 0x710 internal Scene. Scene+0x48 points to a 0xa8 auxiliary manager.
-The candidate now matches these links. Its previous constructor wrote that
-manager pointer at byte 0x12 instead of dword index 0x12 (byte 0x48). The
-analogous collector pointer at dword index 0x1b3 (byte 0x6cc) was corrected
-at the same time. No public headers changed.
+The oracle and candidate allocate these blocks on creation, in hex size
+order: `50.18.110.228.1c.8.8.228.1c.260.c0.20`. The 0x50 outer body owns
+the 0x110 group at +0x10. Group+4 points back to the body; body+4 points to
+the 0x710 internal Scene, whose +0x48 points to the 0xa8 auxiliary manager.
+The group contains two parallel `2/2` arrays: shape pointers at +0xe0
+(each 0x228) and helper pointers at +0xf0 (each 0x1c). The candidate follows
+the oracle's group/child allocation order.
 
-The candidate now builds and frees that group/child graph in the measured
-order, including the two 0x8 arrays. Both DLLs report a 0x110 group and
-`2/2` for each array. This is a partial reconstruction, not a closed
-multi-shape contract: the candidate creates ten allocations where the
-oracle creates twelve. The oracle's later 0xc0 and 0x20 allocations are
-absent. During release the oracle allocates another 0x18 block and frees
-eleven blocks in order
-`18.260.1c.228.1c.228.8.8.8.110.50`; the candidate allocates none and
-frees ten in order `18.260.1c.228.1c.228.8.8.110.50`.
+The later 0xc0 and 0x20 allocations are broadphase table growth, not shape
+objects. Allocator ownership tracing located the table's 0x3c-byte owner at
+internal Scene+0x648, with buffers at owner+0x14 and +0x18. The owner is
+absent after Scene creation, appears for the first dynamic actor with one
+entry and capacity four, and has two entries after the earlier actor
+releases. Registering the two children and group grows it from `2/4` to
+`5/8`, replacing 0x60 and 0x10 buffers with 0xc0 and 0x20. The five
+reference slots point to `child0+0xa4`, `child1+0xa4`, the two surviving
+single shapes' `+0xa4` fields, and `group+0xa4` in that order. Release
+returns the table to `2/8` without shrinking its buffers. The candidate
+matches those counts, sizes, free sizes, and pointer roles.
 
-Allocator stack capture tied the oracle's 0xc0 and 0x20 allocation returns
-to RVAs `0x0005c584` and `0x0005c350`, inside the shape-registration paths.
-The extra 0x8 free comes from an older array through the group's destructor
-at `0x00022d00`, which calls the shared-array growth path at `0x00026c90`.
-That path allocates the 0x18 replacement on release. These calls, their
-array owner, and the broader shape/vtable behavior are the next closure
-packet. The allocator instrumentation used to identify call sites was
-removed from the committed probe; the opt-in output records the stable
-sizes, counts, and release order.
+Internal Scene+0x6e4 is the next shape ID. A LIFO ID array at +0x6e8
+receives ID 3 when the earlier quarter-turn actor is released and ID 0
+when the static actor is released. Group creation takes ID 0 first, the
+first child takes ID 3, and the second child receives new ID 4. The array
+is then empty with capacity two. Releasing the group returns child IDs 3
+and 4, then group ID 0. Its third append grows the array to capacity six,
+allocating 0x18 and freeing the old 0x8 buffer. The candidate matches the
+oracle's final `3/6` array and values `3.4.0`.
+
+The two DLLs release the actor in the same hex free-size order:
+`18.260.1c.228.1c.228.8.8.8.110.50`. The oracle calls at RVAs
+`0x000effc0`/`0x000f00c0` expose broadphase table growth, and the group's
+destructor at `0x00022d00` reaches the recycled-ID array growth path at
+`0x00026c90`. Temporary guarded-allocation owner tracing located these
+buffers and was removed after the compact staged-pair checks were added.
+No public Physics headers changed.
+
+The first dynamic actor's broader Scene initialization is still incomplete:
+an opt-in `NX_PHYSICS_PROBE_DYNAMIC_INIT=1` observation reports 17 oracle
+allocations against nine candidate allocations in this harness. This is a
+separate open dependency. The Phase 5 gate also remains red on the explicit
+final-vtable placeholder in `PhysicsObjectLayoutTests`.
