@@ -23,6 +23,27 @@ static unsigned nxBits(float value)
 	return bits;
 }
 
+static void nxPrintTrackedShapes(const char* stage, NxScene* scene)
+{
+	const unsigned char* internal = *reinterpret_cast<unsigned char* const*>(
+		reinterpret_cast<const unsigned char*>(scene) + 0x24);
+	const unsigned count = *reinterpret_cast<const unsigned*>(internal + 0x6a0);
+	const unsigned capacity = *reinterpret_cast<const unsigned*>(internal + 0x69c);
+	const void* const* entries = *reinterpret_cast<void* const* const*>(
+		internal + 0x6a4);
+	NxActor* const* actors = scene->getActors();
+	unsigned matched = 0;
+	for(unsigned i = 0; entries && i < count; ++i)
+		for(unsigned j = 0; actors && j < scene->getNbActors(); ++j)
+			{
+			const unsigned char* actor = reinterpret_cast<const unsigned char*>(actors[j]);
+			const unsigned char* body = *reinterpret_cast<unsigned char* const*>(actor + 0x14);
+			if(body && entries[i] == *reinterpret_cast<void* const*>(body + 0x10))
+				{ ++matched; break; }
+			}
+	printf("actor tracked_shapes_%s=%u/%u.%u\n", stage, count, capacity, matched);
+}
+
 static void nxPrintPosition(const char* label, const NxVec3& position)
 {
 	printf("actor %s position=%08x.%08x.%08x\n", label,
@@ -487,6 +508,7 @@ int wmain(int argc, wchar_t** argv)
 	const unsigned beforeStaticAllocations = allocator.allocations();
 	const unsigned beforeStaticFrees = allocator.frees();
 	NxActor* staticActor = scene->createActor(staticDesc);
+	nxPrintTrackedShapes("static", scene);
 	printf("actor static init_aux_prefix=");
 	if(allocator.allocations() - beforeStaticAllocations < 11)
 		printf("insufficient");
@@ -556,6 +578,7 @@ int wmain(int argc, wchar_t** argv)
 	const unsigned beforeDynamicAllocations = allocator.allocations();
 	const unsigned beforeDynamicFrees = allocator.frees();
 	NxActor* dynamicActor = scene->createActor(dynamicDesc);
+	nxPrintTrackedShapes("dynamic", scene);
 		{
 		printf("actor multi first_dynamic_allocs=%u\n",
 			allocator.allocations() - beforeDynamicAllocations);
@@ -590,6 +613,7 @@ int wmain(int argc, wchar_t** argv)
 	rotatedDesc.globalPose.M.setRow(2, NxVec3(0.0f, 0.0f, 1.0f));
 	rotatedDesc.globalPose.t = NxVec3(5.0f, -2.0f, 3.0f);
 	NxActor* rotatedActor = scene->createActor(rotatedDesc);
+	nxPrintTrackedShapes("rotated", scene);
 	if(getenv("NX_PHYSICS_PROBE_MULTI")) nxPrintBroadphase("rotated", scene);
 	nxPrintAuxArrays("rotated", scene);
 	printf("actor rotated created=%u\n", rotatedActor ? 1u : 0u);
@@ -604,6 +628,7 @@ int wmain(int argc, wchar_t** argv)
 	nxPrintObjectArray("before_quarter", scene);
 	const unsigned allocationsBeforeQuarter = allocator.allocations();
 	NxActor* quarterActor = scene->createActor(rotatedDesc);
+	nxPrintTrackedShapes("quarter", scene);
 	if(getenv("NX_PHYSICS_PROBE_MULTI")) nxPrintBroadphase("quarter", scene);
 	nxPrintAuxArrays("quarter", scene);
 	nxPrintAuxIndexSamples("quarter", scene);
@@ -678,6 +703,7 @@ int wmain(int argc, wchar_t** argv)
 	void* creationBlocks[6];
 	for(unsigned i = 0; i < 6; ++i) creationBlocks[i] = allocator.allocPointerFromEnd(i);
 	scene->releaseActor(*quarterActor);
+	nxPrintTrackedShapes("quarter_released", scene);
 	if(getenv("NX_PHYSICS_PROBE_MULTI")) nxPrintSceneArray6e8("quarter_released", scene);
 	nxPrintAuxArrays("quarter_released", scene);
 	nxPrintAuxIndexSamples("quarter_released", scene);
@@ -702,6 +728,7 @@ int wmain(int argc, wchar_t** argv)
 	const unsigned freesBeforeStatic = allocator.frees();
 	if(getenv("NX_PHYSICS_PROBE_MULTI")) nxPrintShapeIndex("static", staticActor);
 	scene->releaseActor(*staticActor);
+	nxPrintTrackedShapes("static_released", scene);
 	const unsigned char* releasedPruner = *reinterpret_cast<unsigned char* const*>(
 		staticInternal + 0x640);
 	const void* const* releasedReferences = releasedPruner
@@ -736,6 +763,7 @@ int wmain(int argc, wchar_t** argv)
 		const unsigned beforeAllocations = allocator.allocations();
 		const unsigned beforeCreationFrees = allocator.frees();
 		NxActor* multiActor = scene->createActor(multiDesc);
+	nxPrintTrackedShapes("multi", scene);
 		nxPrintAuxArrays("multi", scene);
 		nxPrintAuxStaticCounts("multi", scene);
 		if(!multiActor) return nxFail("multi-shape actor creation failed");
@@ -833,6 +861,7 @@ int wmain(int argc, wchar_t** argv)
 		const unsigned beforeFrees = allocator.frees();
 		nxPrintSceneArray6e8("before_release", scene);
 		scene->releaseActor(*multiActor);
+		nxPrintTrackedShapes("multi_released", scene);
 		nxPrintSceneArray6e8("after_release", scene);
 		nxPrintBroadphase("released", scene);
 		nxPrintAuxStaticCounts("multi_released", scene);

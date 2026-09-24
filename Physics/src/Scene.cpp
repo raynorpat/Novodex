@@ -856,6 +856,41 @@ static bool nxOpcodeEnsurePool()
 // 4-byte-reference buffers at +0x14/+0x18. A single dynamic shape registers
 // one entry; a two-shape group registers its group plus both children.
 // The entry payload and the table's other fields remain to be reconstructed.
+static void nxSceneTrackShape(NxSceneInternal* scene, unsigned char* shape)
+	{
+	unsigned& count = scene->at<unsigned>(0x6a0);
+	unsigned& capacity = scene->at<unsigned>(0x69c);
+	void**& entries = scene->at<void**>(0x6a4);
+	if(count == capacity)
+		{
+		const unsigned next = capacity ? capacity * 2 : 2;
+		void** grown = static_cast<void**>(nxGetSdkAllocator()->malloc(
+			next * sizeof(void*), NX_MEMORY_PERSISTENT));
+		if(!grown) return;
+		memset(grown, 0, next * sizeof(void*));
+		if(entries)
+			{
+			memcpy(grown, entries, count * sizeof(void*));
+			nxGetSdkAllocator()->free(entries);
+			}
+		entries = grown;
+		capacity = next;
+		}
+	entries[count++] = shape;
+	}
+
+static void nxSceneUntrackShape(NxSceneInternal* scene, unsigned char* shape)
+	{
+	void** entries = scene->at<void**>(0x6a4);
+	unsigned& count = scene->at<unsigned>(0x6a0);
+	for(unsigned i = 0; entries && i < count; ++i)
+		if(entries[i] == shape)
+			{
+			entries[i] = entries[--count];
+			return;
+			}
+	}
+
 void nxSceneBroadphaseRegister(NxSceneInternal* scene, void* bodyPointer)
 	{
 	unsigned char* body = static_cast<unsigned char*>(bodyPointer);
@@ -927,12 +962,7 @@ void nxSceneBroadphaseRegister(NxSceneInternal* scene, void* bodyPointer)
 		static_cast<unsigned short>(count + childCount);
 	*reinterpret_cast<unsigned char*>(shape + 0xce) = 2;
 	count = static_cast<unsigned short>(count + added);
-	if(!scene->at<void*>(0x6a4))
-		{
-		void* pending = nxGetSdkAllocator()->malloc(8, NX_MEMORY_PERSISTENT);
-		if(pending) memset(pending, 0, 8);
-		scene->at<void*>(0x6a4) = pending;
-		}
+	nxSceneTrackShape(scene, shape);
 	}
 
 void nxSceneBroadphaseUnregister(NxSceneInternal* scene, void* bodyPointer)
@@ -949,6 +979,7 @@ void nxSceneBroadphaseUnregister(NxSceneInternal* scene, void* bodyPointer)
 	if(!table) return;
 	unsigned char* shape = *reinterpret_cast<unsigned char**>(body + 0x10);
 	if(!shape) return;
+	nxSceneUntrackShape(scene, shape);
 	const bool group = *reinterpret_cast<void**>(shape + 0xe0) != 0;
 	const unsigned childCount = group ? static_cast<unsigned>(
 		*reinterpret_cast<void***>(shape + 0xe4) -
@@ -1792,12 +1823,7 @@ static void nxSceneStaticPrunerRegister(NxSceneInternal* scene, unsigned char* s
 	++count;
 	*reinterpret_cast<unsigned*>(manager + 8) = count;
 	++*reinterpret_cast<unsigned*>(manager + 0x38);
-	if(!scene->at<void*>(0x6a4))
-		{
-		void* pending = nxGetSdkAllocator()->malloc(8, NX_MEMORY_PERSISTENT);
-		if(pending) memset(pending, 0, 8);
-		scene->at<void*>(0x6a4) = pending;
-		}
+	nxSceneTrackShape(scene, shape);
 	nxSceneUpdateActorCount(scene, count);
 	*reinterpret_cast<void**>(manager + 0x48) = scene->at<void*>(0xc);
 	*reinterpret_cast<unsigned*>(manager + 0x40) = scene->at<unsigned>(4);
@@ -1805,6 +1831,7 @@ static void nxSceneStaticPrunerRegister(NxSceneInternal* scene, unsigned char* s
 
 static void nxSceneStaticPrunerUnregister(NxSceneInternal* scene, unsigned char* shape)
 	{
+	nxSceneUntrackShape(scene, shape);
 	unsigned char* manager = scene->at<unsigned char*>(0x640);
 	if(!manager || !shape) return;
 	unsigned short& count = *reinterpret_cast<unsigned short*>(manager + 0x10);
