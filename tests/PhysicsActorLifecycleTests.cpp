@@ -400,6 +400,7 @@ int wmain(int argc, wchar_t** argv)
 	staticDesc.shapes.pushBack(&box);
 	staticDesc.globalPose.t = NxVec3(2.0f, -1.0f, 4.0f);
 	const unsigned beforeStaticAllocations = allocator.allocations();
+	const unsigned beforeStaticFrees = allocator.frees();
 	NxActor* staticActor = scene->createActor(staticDesc);
 	printf("actor static init_aux_prefix=");
 	if(allocator.allocations() - beforeStaticAllocations < 11)
@@ -409,6 +410,41 @@ int wmain(int argc, wchar_t** argv)
 			printf("%s%x", i ? "." : "", allocator.allocSizeFromEnd(
 				allocator.allocations() - beforeStaticAllocations - 1 - i));
 	printf("\n");
+	printf("actor static init_allocs=%u\n", allocator.allocations() - beforeStaticAllocations);
+	printf("actor static init_sizes=");
+	for(unsigned i = 0; i < allocator.allocations() - beforeStaticAllocations; ++i)
+		printf("%s%x", i ? "." : "", allocator.allocSizeFromEnd(
+			allocator.allocations() - beforeStaticAllocations - 1 - i));
+	printf("\n");
+	printf("actor static init_frees=%u\n", allocator.frees() - beforeStaticFrees);
+	printf("actor static init_free_sizes=");
+	for(unsigned i = 0; i < allocator.frees() - beforeStaticFrees; ++i)
+		printf("%s%x", i ? "." : "", allocator.freedSizeFromEnd(
+			allocator.frees() - beforeStaticFrees - 1 - i));
+	printf("\n");
+	const unsigned char* staticInternal = *reinterpret_cast<unsigned char* const*>(
+		reinterpret_cast<const unsigned char*>(scene) + 0x24);
+	const unsigned char* staticBody = *reinterpret_cast<unsigned char* const*>(
+		reinterpret_cast<const unsigned char*>(staticActor) + 0x14);
+	const unsigned char* staticShape = *reinterpret_cast<unsigned char* const*>(
+		staticBody + 0x10);
+	const unsigned char* staticPruner = *reinterpret_cast<unsigned char* const*>(
+		staticInternal + 0x640);
+	const void* const* staticReferences = staticPruner
+		? *reinterpret_cast<void* const* const*>(staticPruner + 0x18) : 0;
+	printf("actor static prune_initial=%u.%u.%u.%u.%u.%u/%u.%u.%u.%u.%u\n",
+		*reinterpret_cast<const unsigned*>(staticInternal + 4),
+		*reinterpret_cast<void* const*>(staticInternal + 8) ? 1u : 0u,
+		*reinterpret_cast<void* const*>(staticInternal + 0xc) ? 1u : 0u,
+		*reinterpret_cast<const unsigned*>(staticInternal + 0x14),
+		staticPruner && staticPruner == *reinterpret_cast<unsigned char* const*>(
+			staticShape + 0xc4) ? 1u : 0u,
+		staticPruner ? *reinterpret_cast<const unsigned short*>(staticPruner + 0x10) : 0u,
+		staticPruner ? *reinterpret_cast<const unsigned short*>(staticPruner + 0x12) : 0u,
+		staticPruner ? *reinterpret_cast<const unsigned*>(staticPruner + 8) : 0u,
+		staticPruner ? *reinterpret_cast<const unsigned*>(staticPruner + 0x38) : 0u,
+		staticPruner ? *reinterpret_cast<const unsigned*>(staticPruner + 0x40) : 0u,
+		staticReferences && staticReferences[0] == staticShape + 0xa4 ? 1u : 0u);
 	if(getenv("NX_PHYSICS_PROBE_MULTI"))
 		{
 		nxPrintBroadphase("first", scene);
@@ -581,7 +617,17 @@ int wmain(int argc, wchar_t** argv)
 	const unsigned freesBeforeStatic = allocator.frees();
 	if(getenv("NX_PHYSICS_PROBE_MULTI")) nxPrintShapeIndex("static", staticActor);
 	scene->releaseActor(*staticActor);
-	if(getenv("NX_PHYSICS_PROBE_MULTI")) nxPrintSceneArray6e8("static_released", scene);
+	const unsigned char* releasedPruner = *reinterpret_cast<unsigned char* const*>(
+		staticInternal + 0x640);
+	const void* const* releasedReferences = releasedPruner
+		? *reinterpret_cast<void* const* const*>(releasedPruner + 0x18) : 0;
+	printf("actor static prune_released=%u.%u.%u.%u.%u.%u\n",
+		releasedPruner ? 1u : 0u,
+		releasedPruner ? *reinterpret_cast<const unsigned short*>(releasedPruner + 0x10) : 0u,
+		releasedReferences && releasedReferences[0] ? 1u : 0u,
+		releasedPruner ? *reinterpret_cast<const unsigned*>(releasedPruner + 8) : 0u,
+		releasedPruner ? *reinterpret_cast<const unsigned*>(releasedPruner + 0x38) : 0u,
+		releasedPruner ? *reinterpret_cast<const unsigned*>(releasedPruner + 0x40) : 0u);
 	printf("scene static_release_frees=%u\n", allocator.frees() - freesBeforeStatic);
 	printf("scene static_release_sizes=%x.%x.%x.%x\n",
 		allocator.freedSizeFromEnd(3), allocator.freedSizeFromEnd(2),

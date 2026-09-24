@@ -48,6 +48,8 @@
 
 **M2 static-shape auxiliary manager, 2026-09-24:** The first static box now creates the five Scene auxiliary arrays and registers all internal shape objects, including groups. The 11-allocation prefix, table counts, sampled contents, release compaction, and recycled-slot reuse match staged oracle/candidate drives. Thirty-seven registered checks raise the Phase 5 floor to 326. See `docs/reconstruction/novodex-physics/evidence/phase5-static-shape-auxiliary-manager.md`. Eleven further first-static-actor allocations and the final-vtable marker remain open.
 
+**M2 first static OPCODE pruner, 2026-09-24:** The remaining eleven first-static-actor allocations now match, completing that path's 24-allocation sequence and three scratch frees. The Scene/shape pruner links, initial capacity/count, and static release state also match. Six more registered checks raise the Phase 5 floor to 332. See `docs/reconstruction/novodex-physics/evidence/phase5-static-pruner-initialization.md`. The previous note's allocation gap is resolved for this exact drive; dynamic-first, pruner growth, spatial payloads, internal virtuals, and teardown remain open.
+
 ## 1. Inputs and boundaries
 
 - Repository: `D:\github\Novodex`, inspected at `0df8821f1c5e3668e566ad4182b1e8e568f632d6`.

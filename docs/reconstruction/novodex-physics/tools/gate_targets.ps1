@@ -90,6 +90,12 @@ $NxRequiredCoverageLines = [ordered] @{
     'NxPhysicsActorLifecycleTests' = @(
         # Static-shape auxiliary registration and slot reuse through group release.
         'actor static init_aux_prefix=50.18.228.800.400.800.400.800.400.400.400',
+        'actor static init_allocs=24',
+        'actor static init_sizes=50.18.228.800.400.800.400.800.400.400.400.1c.90.1c.8.4.4.4.60.10.8.400.400.8',
+        'actor static init_frees=3',
+        'actor static init_free_sizes=800.800.800',
+        'actor static prune_initial=256.1.1.256.1.1/4.1.1.256.1',
+        'actor static prune_released=1.0.1.0.2.256',
         'actor static aux_counts_static=256/256.1/256.256/256.0/256.256/256',
         'actor static aux_sample_static_0=ffffffff.0.0.0.0.0',
         'actor static aux_sample_static_10=0.0.0.0.0.0',
@@ -1166,7 +1172,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 101  # 34 for NxPhysicsAssetTests, 67 for NxPhysicsThirdPartyTests
-    '5' = 326  # 126 object-layout assertions plus 200 public actor lifecycle lines
+    '5' = 332  # 126 object-layout assertions plus 206 public actor lifecycle lines
                # (RED on purpose: vtables family open)
     '6' = 11  # 3 oracle-descriptor + 4 oracle-joint + 4 staged-pair-joint
     '7' = 4   # the four STAGED-PAIR assertions; the oracle-differential assertions

@@ -84,6 +84,7 @@ void nxSceneRecycleActorId(NxSceneInternal* scene, unsigned id);
 void* nxBoxShapePublicVtable();
 void nxSceneBroadphaseRegister(NxSceneInternal* scene, void* body);
 void nxSceneBroadphaseUnregister(NxSceneInternal* scene, void* body);
+static void nxSceneStaticPrunerUnregister(NxSceneInternal* scene, unsigned char* shape);
 void nxSceneAuxRegisterRecord(NxSceneInternal* scene, void* record);
 void nxSceneAuxUnregisterRecord(NxSceneInternal* scene, void* record);
 unsigned nxSceneTakeShapeId(NxSceneInternal* scene);
@@ -846,9 +847,16 @@ void nxSceneBroadphaseRegister(NxSceneInternal* scene, void* bodyPointer)
 
 void nxSceneBroadphaseUnregister(NxSceneInternal* scene, void* bodyPointer)
 	{
-	unsigned char* table = scene->at<unsigned char*>(0x648);
 	unsigned char* body = static_cast<unsigned char*>(bodyPointer);
-	if(!table || !body || !*reinterpret_cast<void**>(body + 8)) return;
+	if(!body) return;
+	if(!*reinterpret_cast<void**>(body + 8))
+		{
+		nxSceneStaticPrunerUnregister(scene,
+			*reinterpret_cast<unsigned char**>(body + 0x10));
+		return;
+		}
+	unsigned char* table = scene->at<unsigned char*>(0x648);
+	if(!table) return;
 	unsigned char* shape = *reinterpret_cast<unsigned char**>(body + 0x10);
 	if(!shape) return;
 	const bool group = *reinterpret_cast<void**>(shape + 0xe0) != 0;
@@ -1474,11 +1482,23 @@ void nxSceneActorDestroy(NxActor* actor)
 
 void nxSceneUpdateActorCount(void* scene, unsigned count)
 	{
-	// The oracle stores the array length into a Scene cache. The field is not one
-	// this reconstruction has identified, so the call is reproduced and the store
-	// is not.
-	(void)scene;
-	(void)count;
+	unsigned char* bytes = static_cast<unsigned char*>(scene);
+	unsigned& capacity = *reinterpret_cast<unsigned*>(bytes + 4);
+	if(count <= capacity) return;
+	capacity = (count + 0xffu) & ~0xffu;
+	for(unsigned offset = 8; offset <= 0xc; offset += 4)
+		{
+		void* old = *reinterpret_cast<void**>(bytes + offset);
+		if(old) nxGetSdkAllocator()->free(old);
+		void* next = nxGetSdkAllocator()->malloc(capacity * 4,
+			NX_MEMORY_PERSISTENT);
+		if(next) memset(next, 0, capacity * 4);
+		*reinterpret_cast<void**>(bytes + offset) = next;
+		}
+	*reinterpret_cast<unsigned*>(bytes + 0x14) = capacity;
+	// The three embedded broadphase caches at +0x50, +0x500, and +0x510,
+	// and the pruning collection at +0x624, also receive this capacity in the
+	// oracle. Their complete update routines remain separate reconstruction work.
 	}
 
 void nxSceneNotifyActorCreated(void* hook)
@@ -1558,6 +1578,108 @@ int nxActorComputeMass(void* actor, const unsigned* bodyWord)
 	return 0;
 	}
 
+// OPCODE's first static pruner is a 0x90-byte object. Its constructor also
+// initializes a process-wide 0x1c-byte pool on first use. The first insertion
+// gives it four 0x18-byte entries and four pointer references. These allocations
+// occur in Actor::loadFromDescInternal, before Scene::createActor grows its
+// public actor list.
+static unsigned char* gNxOpcodePool = 0;
+
+static void nxSceneStaticPrunerRegister(NxSceneInternal* scene, unsigned char* shape)
+	{
+	if(!scene || !shape) return;
+	unsigned char*& manager = scene->at<unsigned char*>(0x640);
+	if(!manager)
+		{
+		manager = static_cast<unsigned char*>(nxGetSdkAllocator()->malloc(
+			0x90, NX_MEMORY_PERSISTENT));
+		if(!manager) return;
+		memset(manager, 0, 0x90);
+		if(!gNxOpcodePool)
+			{
+			gNxOpcodePool = static_cast<unsigned char*>(nxGetSdkAllocator()->malloc(
+				0x1c, NX_MEMORY_PERSISTENT));
+			if(!gNxOpcodePool) return;
+			memset(gNxOpcodePool, 0, 0x1c);
+			const unsigned sizes[4] = {8, 4, 4, 4};
+			const unsigned offsets[4] = {0, 0xc, 0x10, 0x14};
+			for(unsigned i = 0; i < 4; ++i)
+				{
+				void* block = nxGetSdkAllocator()->malloc(sizes[i],
+					NX_MEMORY_PERSISTENT);
+				if(!block) return;
+				memset(block, i == 1 || i == 2 ? 0xff : 0, sizes[i]);
+				*reinterpret_cast<void**>(gNxOpcodePool + offsets[i]) = block;
+				}
+			*reinterpret_cast<unsigned*>(gNxOpcodePool + 8) = 2;
+			}
+		void* entries = nxGetSdkAllocator()->malloc(0x60, NX_MEMORY_PERSISTENT);
+		void* references = nxGetSdkAllocator()->malloc(0x10, NX_MEMORY_PERSISTENT);
+		if(!entries || !references) return;
+		memset(entries, 0, 0x60);
+		memset(references, 0, 0x10);
+		*reinterpret_cast<void**>(manager + 0x14) = entries;
+		*reinterpret_cast<void**>(manager + 0x18) = references;
+		*reinterpret_cast<unsigned short*>(manager + 0x12) = 4;
+		for(unsigned i = 0; i < 3; ++i)
+			{
+			*reinterpret_cast<unsigned*>(manager + 0x1c + i * 4) = 0x7f7fffffu;
+			*reinterpret_cast<unsigned*>(manager + 0x28 + i * 4) = 0xff7fffffu;
+			}
+		*reinterpret_cast<unsigned*>(manager + 0x4c) = 0xbf800000u;
+		*reinterpret_cast<unsigned*>(manager + 0x68) = 0x3f8ccccdu;
+		*reinterpret_cast<unsigned*>(manager + 0x8c) = 0x3f8ccccdu;
+		*reinterpret_cast<void**>(manager + 0x50) = manager + 0x40;
+		}
+	unsigned short& count = *reinterpret_cast<unsigned short*>(manager + 0x10);
+	unsigned short& capacity = *reinterpret_cast<unsigned short*>(manager + 0x12);
+	if(count >= capacity) return;
+	unsigned char* entries = *reinterpret_cast<unsigned char**>(manager + 0x14);
+	void** references = *reinterpret_cast<void***>(manager + 0x18);
+	memset(entries + count * 0x18, 0, 0x18);
+	references[count] = shape + 0xa4;
+	*reinterpret_cast<unsigned short*>(shape + 0xcc) = count;
+	*reinterpret_cast<unsigned char*>(shape + 0xce) = 0;
+	*reinterpret_cast<void**>(shape + 0xc4) = manager;
+	++count;
+	*reinterpret_cast<unsigned*>(manager + 8) = count;
+	++*reinterpret_cast<unsigned*>(manager + 0x38);
+	if(!scene->at<void*>(0x6a4))
+		{
+		void* pending = nxGetSdkAllocator()->malloc(8, NX_MEMORY_PERSISTENT);
+		if(pending) memset(pending, 0, 8);
+		scene->at<void*>(0x6a4) = pending;
+		}
+	nxSceneUpdateActorCount(scene, count);
+	*reinterpret_cast<void**>(manager + 0x48) = scene->at<void*>(0xc);
+	*reinterpret_cast<unsigned*>(manager + 0x40) = scene->at<unsigned>(4);
+	}
+
+static void nxSceneStaticPrunerUnregister(NxSceneInternal* scene, unsigned char* shape)
+	{
+	unsigned char* manager = scene->at<unsigned char*>(0x640);
+	if(!manager || !shape) return;
+	unsigned short& count = *reinterpret_cast<unsigned short*>(manager + 0x10);
+	if(!count) return;
+	const unsigned index = *reinterpret_cast<unsigned short*>(shape + 0xcc);
+	if(index >= count) return;
+	void** references = *reinterpret_cast<void***>(manager + 0x18);
+	unsigned char* entries = *reinterpret_cast<unsigned char**>(manager + 0x14);
+	const unsigned last = count - 1;
+	if(index != last)
+		{
+		references[index] = references[last];
+		memcpy(entries + index * 0x18, entries + last * 0x18, 0x18);
+		unsigned char* moved = static_cast<unsigned char*>(references[index]) - 0xa4;
+		*reinterpret_cast<unsigned short*>(moved + 0xcc) =
+			static_cast<unsigned short>(index);
+		}
+	--count;
+	*reinterpret_cast<unsigned*>(manager + 8) = count;
+	++*reinterpret_cast<unsigned*>(manager + 0x38);
+	*reinterpret_cast<unsigned short*>(shape + 0xcc) = 0xffffu;
+	}
+
 void nxSceneAddActorObject(void* scene, void* object, void* actorPointer)
 	{
 	// Register the dynamic record in the Scene's +0x56c array. Static actors
@@ -1569,7 +1691,12 @@ void nxSceneAddActorObject(void* scene, void* object, void* actorPointer)
 	unsigned char* body = *reinterpret_cast<unsigned char**>(actor + 0x14);
 	unsigned char* record = body
 		? *reinterpret_cast<unsigned char**>(body + 8) : 0;
-	if(!record) return;
+	if(!record)
+		{
+		nxSceneStaticPrunerRegister(static_cast<NxSceneInternal*>(scene),
+			static_cast<unsigned char*>(object));
+		return;
+		}
 	unsigned char* bytes = static_cast<unsigned char*>(scene);
 	nxSceneArrayReserve(bytes + 0x56c, 1);
 	void** last = *reinterpret_cast<void***>(bytes + 0x570);
