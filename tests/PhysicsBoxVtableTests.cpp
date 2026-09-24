@@ -161,6 +161,48 @@ int wmain(int argc, wchar_t** argv)
     if(oracleFreeCount != 3 || candidateAllocator.freeCount != 3)
         ++failures;
     ++cases;
+
+    // Slot 7 uses the caller's per-axis swept record. Exercise the installed
+    // table entries across the same shapes, poses and records as the direct
+    // Phase 5 sweep differential.
+    typedef bool (__thiscall* SweepSlot)(void*, float*, const float*);
+    const float sweepShapes[2][3] = {{1.f,1.5f,2.f},{4.f,65.f,7.f}};
+    const float rotations[3][9] = {
+        {0,-1,0, 1,0,0, 0,0,1},
+        {1,0,0, 0,1,0, 0,0,1},
+        {0,0,1, 0,1,0, -1,0,0}
+    };
+    const float sweepTranslations[3][3] = {{1,2,3},{0,0,0},{0,0,0}};
+    const float swept[8][3] = {
+        {1,2,3},{2,0,0},{3,5,0},{0,0,0},
+        {7,0.5f,100},{-3,-2,-1},{0.25f,-0.5f,4},{-1.5f,2.75f,-6.25f}
+    };
+    for(unsigned sh = 0; sh < 2; ++sh)
+    for(unsigned pose = 0; pose < 3; ++pose) {
+        unsigned char o[0x228], c[0x228];
+        memset(o, 0xcd, sizeof(o)); memset(c, 0xcd, sizeof(c));
+        reinterpret_cast<BoxCtor>(const_cast<unsigned char*>(base) + 0x21870)(o, 0, 0);
+        new(c) BoxShape(0, 0);
+        memcpy(o + 0xe4, sweepShapes[sh], 12); memcpy(c + 0xe4, sweepShapes[sh], 12);
+        memcpy(o + 0x0c, rotations[pose], 36); memcpy(c + 0x0c, rotations[pose], 36);
+        memcpy(o + 0x30, sweepTranslations[pose], 12);
+        memcpy(c + 0x30, sweepTranslations[pose], 12);
+        void** ot = *reinterpret_cast<void***>(o);
+        void** ct = *reinterpret_cast<void***>(c);
+        for(unsigned sw = 0; sw < 8; ++sw) {
+            float oo = 0.5f, co = 0.5f;
+            bool ro = reinterpret_cast<SweepSlot>(ot[7])(o, &oo, swept[sw]);
+            bool rc = reinterpret_cast<SweepSlot>(ct[7])(c, &co, swept[sw]);
+            if(ro != rc || (ro && memcmp(&oo, &co, 4) != 0)) {
+                fprintf(stderr, "box slot 7 shape=%u pose=%u sweep=%u differs\n",
+                    sh, pose, sw);
+                ++failures;
+            }
+            ++cases;
+        }
+        reinterpret_cast<DtorSlot>(ot[0])(o, 0);
+        reinterpret_cast<DtorSlot>(ct[0])(c, 0);
+    }
     nxSetSdkAllocatorBridge(0);
     printf("box vtable cases=%u failures=%u\n", cases, failures);
     return failures ? 1 : 0;
