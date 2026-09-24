@@ -1,0 +1,13 @@
+# Capsule primary vtable dispatch
+
+The pinned capsule primary table begins at `.rdata` RVA `0x106b20` and contains 19 entries before adjacent string data. Its function RVAs, slots 0–18, are `225e0, 27740, 256f0, 21cd0, 22440, 22480, 266a0, 225d0, 21c80, 22620, 21c30, 21c60, 21ad0, 21b40, 21be0, 27920, 27f00, 27f00, 27f00` (hex). The candidate constructor now installs a 19-entry table at shape offset zero. Every candidate entry resolves inside the candidate executable, and each slot has at least one oracle/candidate dispatch check.
+
+Slot 7, `phys_fn_001012` at `0x225d0`, writes a zero dword through its first argument and returns false with `ret 8`; the second argument is unread. `CapsuleShape::nxCapsuleSweepZero` matches four oracle cases through the installed table, with different initial output patterns and a poisoned unread pointer.
+
+Slot 0, `phys_fn_001014` at `0x225e0`, destroys the collision object through its deleting entry, runs the base/prunable chain, and frees the capsule when flags bit 0 is set. Stack and heap drives through the installed table agree with the oracle's allocator free deltas of one and two.
+
+Slot 5, `phys_fn_001010` at `0x22480`, is the existing capsule raycast implementation. Its body moved unchanged from `ContactGeneration.cpp` to `ShapeRaycast.cpp` so the isolated shape differential can link it. Sixteen ray/limit/normal-hint cases through both tables match bitwise, including the deliberately untouched normal field. `NxPhysicsCollisionTests` still reports `collision=pass` after the move.
+
+Slot 3, `phys_fn_001006` at `0x21cd0`, first checks the halfword render flag, calls the shared base renderer, then tests guard C. Its capsule-specific arm draws four side lines from one end of the capsule axis to the other at radial offsets `+/-r*column0` and `+/-r*column2`, followed by six poses at the two end centers. The first four poses carry reserved argument 1, the last two carry 0. The color is white for low flag bits zero and magenta otherwise. Thirty-two flag/guard/pose combinations, including A/B/C combinations with nine pose callbacks, match the oracle callback bytes. Slot 15 is the same radius getter the sphere table uses; six unusual radius bit patterns agree. Slots 4, 8–14 and 16–18 also have direct table-dispatch checks; slots 1, 2 and 6 cover detached base behavior.
+
+The pinned `NxPhysicsShapeVtableTests` transcript now reads `shape vtable oracle_digest=ccfe1788 cases=309 failures=0`. This establishes a constructed, callable capsule primary table, while attached-owner behavior and wider numerical inputs still need coverage. The base-shape, plane, mesh and actor tables remain before the Phase 5 vtable gate can turn green.

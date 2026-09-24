@@ -66,7 +66,7 @@ static bool sha256(const wchar_t* path, char out[65]) {
 }
 
 static unsigned renderCount;
-static unsigned renderRows[8][16];
+static unsigned renderRows[12][16];
 static unsigned lineCount;
 static unsigned lineRows[8][7];
 static unsigned foldOracle(unsigned digest, const void* data, size_t length) {
@@ -87,7 +87,7 @@ static void __fastcall captureLine(void*, void*, const unsigned* start,
 }
 static void __fastcall capturePose(void*, void*, unsigned count,
     const unsigned* pose, unsigned color, unsigned radius, unsigned reserved) {
-    if(renderCount < 8) {
+    if(renderCount < 12) {
         unsigned* row = renderRows[renderCount];
         row[0] = count;
         memcpy(row + 1, pose, 48);
@@ -388,7 +388,7 @@ int wmain(int argc, wchar_t** argv)
         memset(renderRows, 0xcd, sizeof(renderRows));
         oracleSphereSlot3(oracleSphere, rendererObject);
         const unsigned oracleCount = renderCount;
-        unsigned oracleRows[8][16];
+        unsigned oracleRows[12][16];
         memcpy(oracleRows, renderRows, sizeof(oracleRows));
         oracleDigest = foldOracle(oracleDigest, &oracleCount, sizeof(oracleCount));
         oracleDigest = foldOracle(oracleDigest, oracleRows, sizeof(oracleRows));
@@ -426,7 +426,7 @@ int wmain(int argc, wchar_t** argv)
         oracleSphereSlot3(oracleSphere, rendererObject);
         const unsigned oraclePoseCount = renderCount;
         const unsigned oracleLineCount = lineCount;
-        unsigned oraclePoseRows[8][16], oracleLineRows[8][7];
+        unsigned oraclePoseRows[12][16], oracleLineRows[8][7];
         memcpy(oraclePoseRows, renderRows, sizeof(renderRows));
         memcpy(oracleLineRows, lineRows, sizeof(lineRows));
         renderCount = lineCount = 0;
@@ -488,6 +488,25 @@ int wmain(int argc, wchar_t** argv)
         oracleCapsule, 0, 0);
     CapsuleShape& capsule = *new(candidateCapsule) CapsuleShape(0, 0);
     void** oracleCapsuleTable = *reinterpret_cast<void***>(oracleCapsule);
+    void** candidateCapsuleTable = *reinterpret_cast<void***>(candidateCapsule);
+    HMODULE capsuleTableOwner = 0;
+    const BOOL capsuleTableMapped = GetModuleHandleExW(
+        GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
+        GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+        reinterpret_cast<LPCWSTR>(candidateCapsuleTable), &capsuleTableOwner);
+    const bool capsuleTableInstalled = capsuleTableMapped &&
+        capsuleTableOwner == GetModuleHandleW(0);
+    if(!capsuleTableInstalled) ++failures;
+    ++cases;
+    if(capsuleTableInstalled)
+    for(unsigned slot = 0; slot < 19; ++slot) {
+        HMODULE owner = 0;
+        const BOOL ok = GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
+            GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+            reinterpret_cast<LPCWSTR>(candidateCapsuleTable[slot]), &owner);
+        if(!ok || owner != GetModuleHandleW(0)) ++failures;
+        ++cases;
+    }
     typedef bool (__thiscall* CapsuleSweepSlot)(void*, unsigned*, const void*);
     CapsuleSweepSlot oracleCapsuleSweep =
         reinterpret_cast<CapsuleSweepSlot>(oracleCapsuleTable[7]);
@@ -498,7 +517,10 @@ int wmain(int argc, wchar_t** argv)
         unsigned oracleOut = seed, candidateOut = seed;
         const void* unread = reinterpret_cast<const void*>(0xdeadbeefu);
         const bool ro = oracleCapsuleSweep(oracleCapsule, &oracleOut, unread);
-        const bool rc = capsule.nxCapsuleSweepZero(&candidateOut, unread);
+        const bool rc = capsuleTableInstalled
+            ? reinterpret_cast<CapsuleSweepSlot>(candidateCapsuleTable[7])(
+                candidateCapsule, &candidateOut, unread)
+            : capsule.nxCapsuleSweepZero(&candidateOut, unread);
         oracleDigest = foldOracle(oracleDigest, &ro, sizeof(ro));
         oracleDigest = foldOracle(oracleDigest, &oracleOut, sizeof(oracleOut));
         if(ro != rc || oracleOut != candidateOut || ro || oracleOut != 0)
@@ -528,10 +550,14 @@ int wmain(int argc, wchar_t** argv)
         const NxCollisionShape* ro = oracleCapsuleRaycast(
             reinterpret_cast<const NxCollisionShape*>(oracleCapsule),
             &capsuleRays[ray], limits[limit], 0, flags, &oracleHit);
-        const NxCollisionShape* rc = NxShapeRaycastCapsule(
-            reinterpret_cast<const NxCollisionShape*>(candidateCapsule),
-            nullptr, &capsuleRays[ray], limits[limit], 0, flags,
-            &candidateHit);
+        const NxCollisionShape* rc = capsuleTableInstalled
+            ? reinterpret_cast<NxShapeRaycastFn>(candidateCapsuleTable[5])(
+                reinterpret_cast<const NxCollisionShape*>(candidateCapsule),
+                &capsuleRays[ray], limits[limit], 0, flags, &candidateHit)
+            : NxShapeRaycastCapsule(
+                reinterpret_cast<const NxCollisionShape*>(candidateCapsule),
+                nullptr, &capsuleRays[ray], limits[limit], 0, flags,
+                &candidateHit);
         if(ro) oracleHit.shape = reinterpret_cast<NxShape*>(0x12345678u);
         if(rc) candidateHit.shape = reinterpret_cast<NxShape*>(0x12345678u);
         const unsigned oraclePresent = ro != 0;
@@ -545,10 +571,328 @@ int wmain(int argc, wchar_t** argv)
         }
         ++cases;
     }
+    unsigned capSaveA, capSaveB, capSaveC;
+    memcpy(&capSaveA, guardA, 4); memcpy(&capSaveB, guardB, 4);
+    memcpy(&capSaveC, guardC, 4);
+    DWORD capOldProtection, capIgnoredProtection;
+    if(!VirtualProtect(guardC, 4, PAGE_READWRITE, &capOldProtection)) return 2;
+    const unsigned capZero = 0, capOne = 0x3f800000u;
+    memcpy(guardA, &capZero, 4); memcpy(guardB, &capZero, 4);
+    const float capRotations[2][9] = {
+        {1,0,0, 0,1,0, 0,0,1},
+        {0,-1,0, 1,0,0, 0,0,1}
+    };
+    const float capTranslations[2][3] = {{0,0,0},{3,4,5}};
+    for(unsigned pose = 0; pose < 2; ++pose)
+    for(unsigned low = 0; low < 2; ++low)
+    for(unsigned enabled = 0; enabled < 2; ++enabled)
+    for(unsigned cGuard = 0; cGuard < 2; ++cGuard) {
+        memcpy(oracleCapsule + 0x0c, capRotations[pose], 36);
+        memcpy(candidateCapsule + 0x0c, capRotations[pose], 36);
+        memcpy(oracleCapsule + 0x30, capTranslations[pose], 12);
+        memcpy(candidateCapsule + 0x30, capTranslations[pose], 12);
+        const unsigned short flags = static_cast<unsigned short>(
+            low | (enabled ? 8u : 0u));
+        memcpy(oracleCapsule + 0xde, &flags, 2);
+        memcpy(candidateCapsule + 0xde, &flags, 2);
+        memcpy(guardC, cGuard ? &capOne : &capZero, 4);
+        renderCount = lineCount = 0;
+        memset(renderRows, 0xcd, sizeof(renderRows));
+        memset(lineRows, 0xcd, sizeof(lineRows));
+        reinterpret_cast<SphereSlot3>(oracleCapsuleTable[3])(
+            oracleCapsule, rendererObject);
+        const unsigned oraclePoseCount = renderCount;
+        const unsigned oracleLineCount = lineCount;
+        unsigned oraclePoseRows[12][16], oracleLineRows[8][7];
+        memcpy(oraclePoseRows, renderRows, sizeof(oraclePoseRows));
+        memcpy(oracleLineRows, lineRows, sizeof(oracleLineRows));
+        oracleDigest = foldOracle(oracleDigest, &oraclePoseCount,
+            sizeof(oraclePoseCount));
+        oracleDigest = foldOracle(oracleDigest, &oracleLineCount,
+            sizeof(oracleLineCount));
+        oracleDigest = foldOracle(oracleDigest, oraclePoseRows,
+            sizeof(oraclePoseRows));
+        oracleDigest = foldOracle(oracleDigest, oracleLineRows,
+            sizeof(oracleLineRows));
+        renderCount = lineCount = 0;
+        memset(renderRows, 0xcd, sizeof(renderRows));
+        memset(lineRows, 0xcd, sizeof(lineRows));
+        if(capsuleTableInstalled)
+            reinterpret_cast<SphereSlot3>(candidateCapsuleTable[3])(
+                candidateCapsule, rendererObject);
+        else
+            capsule.nxCapsuleDebugRenderDispatch(rendererObject);
+        const unsigned expected = enabled && cGuard ? 1u : 0u;
+        if(oraclePoseCount != 6u * expected ||
+           oracleLineCount != 4u * expected ||
+           renderCount != oraclePoseCount || lineCount != oracleLineCount ||
+           memcmp(oraclePoseRows, renderRows, sizeof(renderRows)) != 0 ||
+           memcmp(oracleLineRows, lineRows, sizeof(lineRows)) != 0) {
+            fprintf(stderr,
+                "capsule slot 3 pose=%u low=%u enabled=%u c=%u lines=%u/%u poses=%u/%u differs\n",
+                pose, low, enabled, cGuard, oracleLineCount, lineCount,
+                oraclePoseCount, renderCount);
+            ++failures;
+        }
+        ++cases;
+    }
+    unsigned capSaveScale;
+    memcpy(&capSaveScale, scale, 4);
+    memcpy(scale, &capOne, 4);
+    memcpy(oracleCapsule + 0x0c, capRotations[1], 36);
+    memcpy(candidateCapsule + 0x0c, capRotations[1], 36);
+    memcpy(oracleCapsule + 0x30, capTranslations[1], 12);
+    memcpy(candidateCapsule + 0x30, capTranslations[1], 12);
+    for(unsigned a = 0; a < 2; ++a)
+    for(unsigned b = 0; b < 2; ++b)
+    for(unsigned c = 0; c < 2; ++c)
+    for(unsigned low = 0; low < 2; ++low) {
+        memcpy(guardA, a ? &capOne : &capZero, 4);
+        memcpy(guardB, b ? &capOne : &capZero, 4);
+        memcpy(guardC, c ? &capOne : &capZero, 4);
+        const unsigned short flags = static_cast<unsigned short>(8u | low);
+        memcpy(oracleCapsule + 0xde, &flags, 2);
+        memcpy(candidateCapsule + 0xde, &flags, 2);
+        renderCount = lineCount = 0;
+        memset(renderRows, 0xcd, sizeof(renderRows));
+        memset(lineRows, 0xcd, sizeof(lineRows));
+        reinterpret_cast<SphereSlot3>(oracleCapsuleTable[3])(
+            oracleCapsule, rendererObject);
+        const unsigned oraclePoseCount = renderCount;
+        const unsigned oracleLineCount = lineCount;
+        unsigned oraclePoseRows[12][16], oracleLineRows[8][7];
+        memcpy(oraclePoseRows, renderRows, sizeof(oraclePoseRows));
+        memcpy(oracleLineRows, lineRows, sizeof(oracleLineRows));
+        oracleDigest = foldOracle(oracleDigest, &oraclePoseCount,
+            sizeof(oraclePoseCount));
+        oracleDigest = foldOracle(oracleDigest, &oracleLineCount,
+            sizeof(oracleLineCount));
+        oracleDigest = foldOracle(oracleDigest, oraclePoseRows,
+            sizeof(oraclePoseRows));
+        oracleDigest = foldOracle(oracleDigest, oracleLineRows,
+            sizeof(oracleLineRows));
+        renderCount = lineCount = 0;
+        memset(renderRows, 0xcd, sizeof(renderRows));
+        memset(lineRows, 0xcd, sizeof(lineRows));
+        if(capsuleTableInstalled)
+            reinterpret_cast<SphereSlot3>(candidateCapsuleTable[3])(
+                candidateCapsule, rendererObject);
+        else
+            capsule.nxCapsuleDebugRenderDispatch(rendererObject);
+        if(oraclePoseCount != 3u*b + 6u*c ||
+           oracleLineCount != 3u*a + 4u*c ||
+           renderCount != oraclePoseCount || lineCount != oracleLineCount ||
+           memcmp(oraclePoseRows, renderRows, sizeof(renderRows)) != 0 ||
+           memcmp(oracleLineRows, lineRows, sizeof(lineRows)) != 0) {
+            fprintf(stderr,
+                "capsule shared render a=%u b=%u c=%u low=%u lines=%u/%u poses=%u/%u differs\n",
+                a, b, c, low, oracleLineCount, lineCount,
+                oraclePoseCount, renderCount);
+            ++failures;
+        }
+        ++cases;
+    }
+    memcpy(scale, &capSaveScale, 4);
+    memcpy(guardA, &capSaveA, 4); memcpy(guardB, &capSaveB, 4);
+    memcpy(guardC, &capSaveC, 4);
+    VirtualProtect(guardC, 4, capOldProtection, &capIgnoredProtection);
+    const unsigned capsuleRadiusBits[] = {
+        0x00000000u, 0x80000000u, 0x3f000000u,
+        0xbf800000u, 0x7f800000u, 0x7fc00001u
+    };
+    for(unsigned bits : capsuleRadiusBits) {
+        memcpy(oracleCapsule + 0xe0, &bits, 4);
+        memcpy(candidateCapsule + 0xe0, &bits, 4);
+        const float ro = reinterpret_cast<RadiusGetter>(oracleCapsuleTable[15])(
+            oracleCapsule);
+        const float rc = capsuleTableInstalled
+            ? reinterpret_cast<RadiusGetter>(candidateCapsuleTable[15])(
+                candidateCapsule)
+            : capsule.nxCapsuleGetRadius();
+        oracleDigest = foldOracle(oracleDigest, &ro, sizeof(ro));
+        if(memcmp(&ro, &rc, 4) != 0) ++failures;
+        ++cases;
+    }
+    const float capsuleDimensions[2][2] = {{0.5f,1.0f},{1.75f,3.0f}};
+    for(unsigned dim = 0; dim < 2; ++dim) {
+        memcpy(oracleCapsule + 0xe0, capsuleDimensions[dim], 8);
+        memcpy(candidateCapsule + 0xe0, capsuleDimensions[dim], 8);
+        for(unsigned slot = 8; slot <= 11; ++slot) {
+            float oracleOut[6], candidateOut[6];
+            const float boundsSeed[6] = {100,100,100,-100,-100,-100};
+            if(slot == 9) {
+                memcpy(oracleOut, boundsSeed, sizeof(boundsSeed));
+                memcpy(candidateOut, boundsSeed, sizeof(boundsSeed));
+            } else {
+                memset(oracleOut, 0xcd, sizeof(oracleOut));
+                memset(candidateOut, 0xcd, sizeof(candidateOut));
+            }
+            reinterpret_cast<BoundsSlot>(oracleCapsuleTable[slot])(
+                oracleCapsule, oracleOut);
+            reinterpret_cast<BoundsSlot>(candidateCapsuleTable[slot])(
+                candidateCapsule, candidateOut);
+            oracleDigest = foldOracle(oracleDigest, oracleOut, sizeof(oracleOut));
+            if(memcmp(oracleOut, candidateOut, sizeof(oracleOut)) != 0) {
+                fprintf(stderr, "capsule slot %u dim=%u differs\n", slot, dim);
+                ++failures;
+            }
+            ++cases;
+        }
+    }
+    for(unsigned slot = 16; slot <= 18; ++slot) {
+        if(reinterpret_cast<SelfSlot>(oracleCapsuleTable[slot])(
+               oracleCapsule) != oracleCapsule ||
+           reinterpret_cast<SelfSlot>(candidateCapsuleTable[slot])(
+               candidateCapsule) != candidateCapsule)
+            ++failures;
+        ++cases;
+    }
+    typedef void (__thiscall* RadiusSetter)(void*, float);
+    const unsigned capsuleSetBits[] = {
+        0x00000000u, 0x3f800000u, 0xbf000000u, 0x7fc00001u
+    };
+    for(unsigned bits : capsuleSetBits) {
+        float radius;
+        memcpy(&radius, &bits, 4);
+        reinterpret_cast<RadiusSetter>(oracleCapsuleTable[14])(
+            oracleCapsule, radius);
+        reinterpret_cast<RadiusSetter>(candidateCapsuleTable[14])(
+            candidateCapsule, radius);
+        unsigned oracleStored, candidateStored;
+        memcpy(&oracleStored, oracleCapsule + 0xe0, 4);
+        memcpy(&candidateStored, candidateCapsule + 0xe0, 4);
+        oracleDigest = foldOracle(oracleDigest, &oracleStored,
+            sizeof(oracleStored));
+        if(oracleStored != candidateStored || oracleStored != bits)
+            ++failures;
+        ++cases;
+    }
+    typedef bool (__thiscall* CapsuleSaveSlot)(void*, void*);
+    unsigned char oracleRecord[0x58], candidateRecord[0x58];
+    memset(oracleRecord, 0xcd, sizeof(oracleRecord));
+    memset(candidateRecord, 0xcd, sizeof(candidateRecord));
+    const bool oracleSaved = reinterpret_cast<CapsuleSaveSlot>(
+        oracleCapsuleTable[13])(oracleCapsule, oracleRecord);
+    const bool candidateSaved = reinterpret_cast<CapsuleSaveSlot>(
+        candidateCapsuleTable[13])(candidateCapsule, candidateRecord);
+    oracleDigest = foldOracle(oracleDigest, &oracleSaved, sizeof(oracleSaved));
+    oracleDigest = foldOracle(oracleDigest, oracleRecord,
+        sizeof(oracleRecord));
+    if(oracleSaved != candidateSaved ||
+       memcmp(oracleRecord, candidateRecord, sizeof(oracleRecord)) != 0) {
+        fprintf(stderr, "capsule slot 13 save differs\n");
+        ++failures;
+    }
+    ++cases;
+    typedef void (__thiscall* CapsuleLoadSlot)(void*, const void*);
+    unsigned char loadRecord[0x58] = {};
+    const float loadDimensions[2] = {1.5f, 4.0f};
+    const unsigned loadWord = 0x13572468u;
+    const unsigned short loadGroup = 3u;
+    memcpy(loadRecord + 0x4c, loadDimensions, sizeof(loadDimensions));
+    memcpy(loadRecord + 0x54, &loadWord, 4);
+    memcpy(loadRecord + 0x3c, &loadGroup, 2);
+    reinterpret_cast<CapsuleLoadSlot>(oracleCapsuleTable[12])(
+        oracleCapsule, loadRecord);
+    reinterpret_cast<CapsuleLoadSlot>(candidateCapsuleTable[12])(
+        candidateCapsule, loadRecord);
+    oracleDigest = foldOracle(oracleDigest, oracleCapsule + 0xe0, 12);
+    if(memcmp(oracleCapsule + 0xe0, candidateCapsule + 0xe0, 12) != 0 ||
+       memcmp(oracleCapsule + 0xd8, candidateCapsule + 0xd8, 8) != 0) {
+        fprintf(stderr, "capsule slot 12 load differs\n");
+        ++failures;
+    }
+    ++cases;
+    typedef bool (__thiscall* CapsuleMassSlot)(void*, MassFrame*, float, unsigned);
+    const float capsuleDensities[2] = {1.0f,2.0f};
+    for(unsigned low = 0; low < 2; ++low)
+    for(unsigned density = 0; density < 2; ++density) {
+        const unsigned short flags = static_cast<unsigned short>(low);
+        memcpy(oracleCapsule + 0xde, &flags, 2);
+        memcpy(candidateCapsule + 0xde, &flags, 2);
+        unsigned char oracleFrame[0x34] = {}, candidateFrame[0x34] = {};
+        const bool ro = reinterpret_cast<CapsuleMassSlot>(oracleCapsuleTable[4])(
+            oracleCapsule, reinterpret_cast<MassFrame*>(oracleFrame),
+            capsuleDensities[density], 0);
+        const bool rc = reinterpret_cast<CapsuleMassSlot>(candidateCapsuleTable[4])(
+            candidateCapsule, reinterpret_cast<MassFrame*>(candidateFrame),
+            capsuleDensities[density], 0);
+        oracleDigest = foldOracle(oracleDigest, &ro, sizeof(ro));
+        oracleDigest = foldOracle(oracleDigest, oracleFrame,
+            sizeof(oracleFrame));
+        if(ro != rc || memcmp(oracleFrame, candidateFrame,
+                sizeof(oracleFrame)) != 0) {
+            fprintf(stderr, "capsule slot 4 low=%u density=%u differs\n",
+                low, density);
+            ++failures;
+        }
+        ++cases;
+    }
+    unsigned char baseRecord[0x58] = {};
+    const float basePose[12] = {
+        0,-1,0, 1,0,0, 0,0,1, 6,-3,2
+    };
+    memcpy(baseRecord + 8, basePose, sizeof(basePose));
+    const unsigned short baseGroup = 5u;
+    memcpy(baseRecord + 0x3c, &baseGroup, 2);
+    typedef bool (__thiscall* CapsuleApplySlot)(void*, const void*);
+    const bool appliedO = reinterpret_cast<CapsuleApplySlot>(oracleCapsuleTable[1])(
+        oracleCapsule, baseRecord);
+    const bool appliedC = reinterpret_cast<CapsuleApplySlot>(candidateCapsuleTable[1])(
+        candidateCapsule, baseRecord);
+    oracleDigest = foldOracle(oracleDigest, &appliedO, sizeof(appliedO));
+    oracleDigest = foldOracle(oracleDigest, oracleCapsule + 0x6c, 48);
+    if(appliedO != appliedC ||
+       memcmp(oracleCapsule + 0x6c, candidateCapsule + 0x6c, 48) != 0 ||
+       memcmp(oracleCapsule + 0xd8, candidateCapsule + 0xd8, 8) != 0) {
+        fprintf(stderr, "capsule slot 1 apply differs\n");
+        ++failures;
+    }
+    ++cases;
+    unsigned char oracleBaseRecord[0x58], candidateBaseRecord[0x58];
+    memset(oracleBaseRecord, 0xcd, sizeof(oracleBaseRecord));
+    memset(candidateBaseRecord, 0xcd, sizeof(candidateBaseRecord));
+    const bool baseSavedO = reinterpret_cast<CapsuleSaveSlot>(
+        oracleCapsuleTable[2])(oracleCapsule, oracleBaseRecord);
+    const bool baseSavedC = reinterpret_cast<CapsuleSaveSlot>(
+        candidateCapsuleTable[2])(candidateCapsule, candidateBaseRecord);
+    oracleDigest = foldOracle(oracleDigest, &baseSavedO, sizeof(baseSavedO));
+    oracleDigest = foldOracle(oracleDigest, oracleBaseRecord,
+        sizeof(oracleBaseRecord));
+    if(baseSavedO != baseSavedC ||
+       memcmp(oracleBaseRecord, candidateBaseRecord,
+           sizeof(oracleBaseRecord)) != 0) {
+        fprintf(stderr, "capsule slot 2 save differs\n");
+        ++failures;
+    }
+    ++cases;
+    typedef void (__thiscall* CapsuleOwnerSlot)(void*, unsigned);
+    unsigned char oracleBeforeOwner[0xec], candidateBeforeOwner[0xec];
+    memcpy(oracleBeforeOwner, oracleCapsule, sizeof(oracleBeforeOwner));
+    memcpy(candidateBeforeOwner, candidateCapsule, sizeof(candidateBeforeOwner));
+    reinterpret_cast<CapsuleOwnerSlot>(oracleCapsuleTable[6])(
+        oracleCapsule, 1);
+    reinterpret_cast<CapsuleOwnerSlot>(candidateCapsuleTable[6])(
+        candidateCapsule, 1);
+    const unsigned ownerUnchangedO =
+        memcmp(oracleBeforeOwner, oracleCapsule, sizeof(oracleBeforeOwner)) == 0;
+    const unsigned ownerUnchangedC =
+        memcmp(candidateBeforeOwner, candidateCapsule,
+            sizeof(candidateBeforeOwner)) == 0;
+    oracleDigest = foldOracle(oracleDigest, &ownerUnchangedO,
+        sizeof(ownerUnchangedO));
+    if(!ownerUnchangedO || ownerUnchangedO != ownerUnchangedC) {
+        fprintf(stderr, "capsule slot 6 detached owner update differs\n");
+        ++failures;
+    }
+    ++cases;
     oracleBefore = oracleFreeCount;
     candidateBefore = candidateAllocator.freeCount;
     reinterpret_cast<DtorSlot>(oracleCapsuleTable[0])(oracleCapsule, 0);
-    capsule.nxCapsuleScalarDeletingDtor(0);
+    if(capsuleTableInstalled)
+        reinterpret_cast<DtorSlot>(candidateCapsuleTable[0])(candidateCapsule, 0);
+    else
+        capsule.nxCapsuleScalarDeletingDtor(0);
     const unsigned oracleStackFrees = oracleFreeCount - oracleBefore;
     oracleDigest = foldOracle(oracleDigest, &oracleStackFrees,
         sizeof(oracleStackFrees));
@@ -565,10 +909,15 @@ int wmain(int argc, wchar_t** argv)
         oracleCapsuleHeap, 0, 0);
     new(candidateCapsuleHeap) CapsuleShape(0, 0);
     void** oracleCapsuleHeapTable = *reinterpret_cast<void***>(oracleCapsuleHeap);
+    void** candidateCapsuleHeapTable = *reinterpret_cast<void***>(candidateCapsuleHeap);
     oracleBefore = oracleFreeCount;
     candidateBefore = candidateAllocator.freeCount;
     reinterpret_cast<DtorSlot>(oracleCapsuleHeapTable[0])(oracleCapsuleHeap, 1);
-    reinterpret_cast<CapsuleShape*>(candidateCapsuleHeap)->nxCapsuleScalarDeletingDtor(1);
+    if(capsuleTableInstalled)
+        reinterpret_cast<DtorSlot>(candidateCapsuleHeapTable[0])(
+            candidateCapsuleHeap, 1);
+    else
+        reinterpret_cast<CapsuleShape*>(candidateCapsuleHeap)->nxCapsuleScalarDeletingDtor(1);
     const unsigned oracleHeapFrees = oracleFreeCount - oracleBefore;
     oracleDigest = foldOracle(oracleDigest, &oracleHeapFrees,
         sizeof(oracleHeapFrees));

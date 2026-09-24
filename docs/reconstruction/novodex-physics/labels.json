@@ -2,6 +2,13 @@
   "schema_version": 1,
   "labels": [
     {
+      "id": "phys_fn_001006",
+      "label": "NxCapsule debug-render dispatch (slot 3)",
+      "confidence": "semantic",
+      "evidence": "oracle/capstone/manifest.json#/entries/3063",
+      "reason": "CAPSULE primary table .rdata:0x106b20 slot 3; gated by +0xde bit 8 and guard C, calls shared base renderer, draws four side lines and six end-cap poses; 32 oracle/candidate callback-capture cases through installed tables match bitwise"
+    },
+    {
       "id": "phys_fn_000490",
       "label": "NxCreatePhysicsSDK",
       "confidence": "semantic",
@@ -2670,10 +2677,10 @@
     },
     {
       "id": "phys_fn_001359",
-      "label": "NxSphere get-radius row (slot 15)",
+      "label": "NxSphere/NxCapsule get-radius row (slot 15)",
       "confidence": "semantic",
       "evidence": "oracle/capstone/manifest.json#/entries/3522",
-      "reason": "SPHERE vtable .rdata:0x107528 slot 15; fld [+0xe0]; ret -- returns the radius; driven bitwise by the NxPhysicsObjectLayoutTests sphererows family"
+      "reason": "SPHERE vtable .rdata:0x107528 and CAPSULE vtable .rdata:0x106b20 both use this slot-15 fld [+0xe0]; ret accessor; driven by sphererows and capsule radius bit-pattern cases"
     },
     {
       "id": "phys_fn_001355",

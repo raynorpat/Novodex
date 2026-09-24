@@ -3883,6 +3883,38 @@ static void** nxSphereShapeInternalVtable()
 	return table.slot;
 	}
 
+static void** nxCapsuleShapeInternalVtable()
+	{
+	struct Table
+		{
+		void* slot[19];
+		Table()
+			{
+			slot[0] = nxShapeMethodAddress(&CapsuleShape::nxCapsuleScalarDeletingDtor);
+			slot[1] = nxShapeMethodAddress(&ShapeBase::nxApplyDescriptor);
+			slot[2] = nxShapeMethodAddress(&ShapeBase::nxBaseSaveState);
+			slot[3] = nxShapeMethodAddress(&CapsuleShape::nxCapsuleDebugRenderDispatch);
+			slot[4] = nxShapeMethodAddress(&CapsuleShape::nxCapsuleAccumulateMass);
+			slot[5] = reinterpret_cast<void*>(&NxShapeRaycastCapsule);
+			slot[6] = nxShapeMethodAddress(&ShapeBase::nxApplyOwnerUpdate);
+			slot[7] = nxShapeMethodAddress(&CapsuleShape::nxCapsuleSweepZero);
+			slot[8] = nxShapeMethodAddress(&CapsuleShape::nxCapsuleLocalAABB);
+			slot[9] = nxShapeMethodAddress(&CapsuleShape::nxCapsuleWorldAABB1016);
+			slot[10] = nxShapeMethodAddress(&CapsuleShape::nxCapsuleCenterRadius);
+			slot[11] = nxShapeMethodAddress(&CapsuleShape::nxCapsuleZeroCenterRadius);
+			slot[12] = nxShapeMethodAddress(&CapsuleShape::nxCapsuleLoadFromDesc);
+			slot[13] = nxShapeMethodAddress(&CapsuleShape::nxCapsuleSaveState);
+			slot[14] = nxShapeMethodAddress(&CapsuleShape::nxCapsuleSetRadius);
+			slot[15] = nxShapeMethodAddress(&CapsuleShape::nxCapsuleGetRadius);
+			slot[16] = nxShapeMethodAddress(&ShapeBase::nxSelf);
+			slot[17] = slot[16];
+			slot[18] = slot[16];
+			}
+		};
+	static Table table;
+	return table.slot;
+	}
+
 BoxShape::BoxShape(void* owner, unsigned argument)
 	: mBase(owner, argument)				// forwarded unchanged: 0x0002187c..80
 	{
@@ -4995,6 +5027,7 @@ void CapsuleShape::nxCapsuleComputeMassFrame(MassFrame* dest, float density,
 CapsuleShape::CapsuleShape(void* owner, unsigned argument)
 	: mBase(owner, argument)				// forwarded unchanged: 0x00021a67..6f
 	{
+	mBase.mVptrSlot = nxCapsuleShapeInternalVtable();
 	mFloatE0 = 0.0f;						// mov [esi+0xe0],0 at 0x00021a7a
 	mFloatE4 = 0.0f;						// mov [esi+0xe4],0 at 0x00021a84
 
@@ -5064,6 +5097,148 @@ bool CapsuleShape::nxCapsuleSweepZero(unsigned* out, const void* /*unread*/) con
 	{
 	*out = 0;
 	return false;
+	}
+
+// phys_fn_001305 (0x25960) through a CAPSULE receiver. The second guard
+// dispatches slot 10, whose radius is half-height plus radius for a capsule.
+void CapsuleShape::nxCapsuleBaseDebugRender(const void* renderer) const
+	{
+	if(!g_nxGuardRef || !renderer)
+		return;
+	const float ref = *g_nxGuardRef;
+	void** table = *reinterpret_cast<void** const*>(renderer);
+	typedef void (__fastcall* DrawLineFn)(void*, void*, const float*,
+		const float*, unsigned);
+	typedef void (__fastcall* DrawPoseFn)(void*, void*, unsigned,
+		const void*, unsigned, unsigned, unsigned);
+	DrawLineFn drawLine = reinterpret_cast<DrawLineFn>(table[8]);
+	DrawPoseFn drawPose = reinterpret_cast<DrawPoseFn>(table[14]);
+	void* rendererArg = const_cast<void*>(renderer);
+	const float guardA = *g_nxGuardA;
+	if(guardA != ref || guardA != guardA)
+		{
+		const float k = *g_nxRenderScale * guardA;
+		const float* rot = reinterpret_cast<const float*>(&mBase.mPose0C.mRotation);
+		const float* trn = reinterpret_cast<const float*>(&mBase.mPose0C.mTranslation);
+		static const unsigned colors[3] = { 0xcf0000u, 0xcf00u, 0xcfu };
+		for(unsigned axis = 0; axis < 3; ++axis)
+			{
+			const float start[3] = { trn[0], trn[1], trn[2] };
+			const float end[3] = {
+				k * rot[axis] + trn[0],
+				k * rot[3 + axis] + trn[1],
+				k * rot[6 + axis] + trn[2]
+			};
+			drawLine(rendererArg, nullptr, start, end, colors[axis]);
+			}
+		}
+	const float guardB = *g_nxGuardB;
+	if(guardB != ref || guardB != guardB)
+		{
+		float center[4] = {};
+		nxCapsuleCenterRadius(center);
+		const float* rot = reinterpret_cast<const float*>(&mBase.mPose0C.mRotation);
+		float pose[12];
+		for(unsigned i = 0; i < 9; ++i)
+			pose[i] = rot[i];
+		pose[9] = center[0];
+		pose[10] = center[1];
+		pose[11] = center[2];
+		unsigned radiusBits;
+		memcpy(&radiusBits, center + 3, 4);
+		for(unsigned round = 0; round < 3; ++round)
+			{
+			drawPose(rendererArg, nullptr, 0x14, pose, 0xffff00ffu,
+				radiusBits, 0);
+			if(round < 2)
+				{
+				float next[9];
+				for(unsigned row = 0; row < 3; ++row)
+					for(unsigned col = 0; col < 3; ++col)
+						next[row * 3 + col] = pose[row * 3 + (col + 1) % 3];
+				memcpy(pose, next, sizeof(next));
+				}
+			}
+		}
+	}
+
+// phys_fn_001006 (0x21cd0), CAPSULE primary-table slot 3.
+void CapsuleShape::nxCapsuleDebugRenderDispatch(const void* renderer) const
+	{
+	if(!mBase.nxFlagBitsDE(8) || !renderer)
+		return;
+	nxCapsuleBaseDebugRender(renderer);
+	if(!g_nxGuardC || !g_nxGuardRef)
+		return;
+	const float guard = *g_nxGuardC;
+	const float ref = *g_nxGuardRef;
+	if(guard == ref && guard == guard)
+		return;
+	void** table = *reinterpret_cast<void** const*>(renderer);
+	typedef void (__fastcall* DrawLineFn)(void*, void*, const float*,
+		const float*, unsigned);
+	typedef void (__fastcall* DrawPoseFn)(void*, void*, unsigned,
+		const void*, unsigned, unsigned, unsigned);
+	DrawLineFn drawLine = reinterpret_cast<DrawLineFn>(table[8]);
+	DrawPoseFn drawPose = reinterpret_cast<DrawPoseFn>(table[14]);
+	void* rendererArg = const_cast<void*>(renderer);
+	const float* rot = reinterpret_cast<const float*>(&mBase.mPose0C.mRotation);
+	const float* trn = reinterpret_cast<const float*>(&mBase.mPose0C.mTranslation);
+	const float r = mFloatE0, hh = mFloatE4;
+	const unsigned color = mBase.nxFlagBitsDE(7) ? 0xffff00ffu : 0xffffffffu;
+	float centers[2][3];
+	for(unsigned axis = 0; axis < 3; ++axis)
+		{
+		const float span = hh * rot[3 * axis + 1];
+		centers[0][axis] = trn[axis] - span;
+		centers[1][axis] = trn[axis] + span;
+		}
+	for(unsigned radial = 0; radial < 4; ++radial)
+		{
+		const unsigned column = radial < 2 ? 0u : 2u;
+		const float sign = (radial & 1u) ? -1.0f : 1.0f;
+		float start[3], end[3];
+		for(unsigned axis = 0; axis < 3; ++axis)
+			{
+			const float offset = sign * (r * rot[3 * axis + column]);
+			start[axis] = centers[0][axis] + offset;
+			end[axis] = centers[1][axis] + offset;
+			}
+		drawLine(rendererArg, nullptr, start, end, color);
+		}
+	unsigned radiusBits;
+	memcpy(&radiusBits, &mFloatE0, 4);
+	for(unsigned round = 0; round < 6; ++round)
+		{
+		float pose[12];
+		for(unsigned axis = 0; axis < 3; ++axis)
+			{
+			const float c0 = rot[3 * axis];
+			const float c1 = rot[3 * axis + 1];
+			const float c2 = rot[3 * axis + 2];
+			if(round < 2)
+				{
+				pose[3 * axis] = (round & 1u) ? c1 : -c1;
+				pose[3 * axis + 1] = -c0;
+				pose[3 * axis + 2] = c2;
+				}
+			else if(round < 4)
+				{
+				pose[3 * axis] = (round & 1u) ? c1 : -c1;
+				pose[3 * axis + 1] = c2;
+				pose[3 * axis + 2] = c0;
+				}
+			else
+				{
+				pose[3 * axis] = c2;
+				pose[3 * axis + 1] = c0;
+				pose[3 * axis + 2] = c1;
+				}
+			}
+		memcpy(pose + 9, centers[round & 1u], sizeof(centers[0]));
+		drawPose(rendererArg, nullptr, 0x14, pose, color, radiusBits,
+			round < 4 ? 1u : 0u);
+		}
 	}
 
 // phys_fn_000989 (0x00021ad0), CAPSULE-table slot 12.

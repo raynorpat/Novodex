@@ -1903,6 +1903,8 @@ class CapsuleShape
 	//! Stores to +0xe0 then tail-jumps through BASE slot 6 -- a null-owner
 	//! no-op on a detached shape.
 	void				nxCapsuleSetRadius(float radius);
+	//! CAPSULE-table slot 15, phys_fn_001359 (0x00027920): returns +0xe0.
+	float				nxCapsuleGetRadius() const { return mFloatE0; }
 
 	//! CAPSULE-table slot 0, phys_fn_001014 (0x000225e0): scalar deleting
 	//! destructor -- destroys colobj unconditionally, base-dtor chain,
@@ -1917,6 +1919,11 @@ class CapsuleShape
 	//! CAPSULE-table slot 7, phys_fn_001012 (0x000225d0): stores a zero
 	//! dword through the first argument, returns false, ignores the second.
 	bool				nxCapsuleSweepZero(unsigned* out, const void* unread) const;
+
+	//! CAPSULE-table slot 3, phys_fn_001006 at 0x00021cd0: gated debug
+	//! rendering of the shared pose, four side lines and six end-cap poses.
+	void				nxCapsuleDebugRenderDispatch(const void* renderer) const;
+	void				nxCapsuleBaseDebugRender(const void* renderer) const;
 
 	//! CAPSULE-table slot 12, phys_fn_000989 (0x00021ad0): loadFromDesc --
 	//! reads radius (+0xe0), half-height (desc+0x50 * 0.5f), third word
