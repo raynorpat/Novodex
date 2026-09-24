@@ -9,6 +9,7 @@
 // why they are two things rather than one.
 
 #include "NpActor.h"
+#include "NpSceneGuard.h"
 
 #include "NxMat34.h"
 #include "NxMat33.h"
@@ -19,6 +20,59 @@
 #include "NxBoxShape.h"
 #include <string.h>
 #include <stdlib.h>
+
+static unsigned char* nxNpActorBody(void* actor)
+	{
+	return *reinterpret_cast<unsigned char**>(
+		static_cast<unsigned char*>(actor) + 0x14);
+	}
+
+static unsigned char* nxNpActorRecord(void* actor)
+	{
+	unsigned char* body = nxNpActorBody(actor);
+	return body ? *reinterpret_cast<unsigned char**>(body + 8) : 0;
+	}
+
+static void* nxNpActorContext(void* actor, unsigned offset)
+	{
+	return *reinterpret_cast<void**>(static_cast<unsigned char*>(actor) + offset);
+	}
+
+static void nxNpActorMarkRecordDirty(unsigned char* record)
+	{
+	if(!record) return;
+	unsigned char* aux = *reinterpret_cast<unsigned char**>(record + 0x120);
+	if(!aux) return;
+	unsigned* flags = *reinterpret_cast<unsigned**>(aux + 0x40);
+	const unsigned id = *reinterpret_cast<unsigned*>(record + 0x11c);
+	if(!flags || id >= 256) return;
+	if(!flags[id])
+		{
+		unsigned* active = *reinterpret_cast<unsigned**>(aux + 0x50);
+		unsigned* end = *reinterpret_cast<unsigned**>(aux + 0x54);
+		unsigned* capacity = *reinterpret_cast<unsigned**>(aux + 0x58);
+		if(!active || !end || !capacity) return;
+		if(end == capacity)
+			{
+			const unsigned count = static_cast<unsigned>(end - active);
+			const unsigned next = count * 2 + 2;
+			unsigned* grown = static_cast<unsigned*>(nxGetSdkAllocator()->malloc(
+				next * sizeof(unsigned), NX_MEMORY_PERSISTENT));
+			if(!grown) return;
+			memcpy(grown, active, count * sizeof(unsigned));
+			nxGetSdkAllocator()->free(active);
+			active = grown;
+			end = grown + count;
+			*reinterpret_cast<unsigned**>(aux + 0x50) = active;
+			*reinterpret_cast<unsigned**>(aux + 0x58) = grown + next;
+			}
+		const unsigned index = static_cast<unsigned>(end - active);
+		active[index] = id;
+		*reinterpret_cast<unsigned**>(aux + 0x54) = end + 1;
+		(*reinterpret_cast<unsigned**>(aux + 0x60))[id] = index;
+		}
+	flags[id] |= 0x80000;
+	}
 
 // The vtable word. A single static instance of the concrete class supplies it: the
 // object needs a vtable POINTER, not a class instance, so one instance is enough for
@@ -757,44 +811,74 @@ void NpActorVtable::putToSleep()
 // Concrete actor slots 75-77 store the flag mask in the 0x50-byte body.
 void NpActorVtable::raiseActorFlag(NxActorFlag flag)
 	{
-	unsigned char* body = *reinterpret_cast<unsigned char**>(
-		reinterpret_cast<unsigned char*>(this) + 0x14);
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	unsigned char* body = nxNpActorBody(this);
 	if(body) *reinterpret_cast<unsigned*>(body + 0x14) |=
 		static_cast<unsigned>(flag);
+	nxNpSceneGuardLeave(ctx);
 	}
 
 void NpActorVtable::clearActorFlag(NxActorFlag flag)
 	{
-	unsigned char* body = *reinterpret_cast<unsigned char**>(
-		reinterpret_cast<unsigned char*>(this) + 0x14);
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	unsigned char* body = nxNpActorBody(this);
 	if(body) *reinterpret_cast<unsigned*>(body + 0x14) &=
 		~static_cast<unsigned>(flag);
+	nxNpSceneGuardLeave(ctx);
 	}
 
 bool NpActorVtable::readActorFlag(NxActorFlag flag) const
 	{
-	const unsigned char* body = *reinterpret_cast<unsigned char* const*>(
-		reinterpret_cast<const unsigned char*>(this) + 0x14);
-	return body && (*reinterpret_cast<const unsigned*>(body + 0x14) &
+	void* self = const_cast<NpActorVtable*>(this);
+	void* ctx = nxNpActorContext(self, 0x10);
+	nxNpSceneGuardEnter(ctx);
+	unsigned char* body = nxNpActorBody(self);
+	const bool out = body && (*reinterpret_cast<unsigned*>(body + 0x14) &
 		static_cast<unsigned>(flag)) != 0;
+	nxNpSceneGuardLeave(ctx);
+	return out;
 	}
 
-// (unimplemented) raiseBodyFlag
-void NpActorVtable::raiseBodyFlag(NxBodyFlag)
+void NpActorVtable::raiseBodyFlag(NxBodyFlag flag)
 	{
-	
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	unsigned char* record = nxNpActorRecord(this);
+	if(record)
+		{
+		*reinterpret_cast<unsigned*>(record + 0x10c) |=
+			static_cast<unsigned>(flag);
+		nxNpActorMarkRecordDirty(record);
+		}
+	nxNpSceneGuardLeave(ctx);
 	}
 
-// (unimplemented) clearBodyFlag
-void NpActorVtable::clearBodyFlag(NxBodyFlag)
+void NpActorVtable::clearBodyFlag(NxBodyFlag flag)
 	{
-	
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	unsigned char* record = nxNpActorRecord(this);
+	if(record)
+		{
+		*reinterpret_cast<unsigned*>(record + 0x10c) &=
+			~static_cast<unsigned>(flag);
+		nxNpActorMarkRecordDirty(record);
+		}
+	nxNpSceneGuardLeave(ctx);
 	}
 
-// (unimplemented) readBodyFlag
-bool NpActorVtable::readBodyFlag(NxBodyFlag) const
+bool NpActorVtable::readBodyFlag(NxBodyFlag flag) const
 	{
-	return bool();
+	void* self = const_cast<NpActorVtable*>(this);
+	void* ctx = nxNpActorContext(self, 0x10);
+	nxNpSceneGuardEnter(ctx);
+	unsigned char* record = nxNpActorRecord(self);
+	const bool out = record && (*reinterpret_cast<unsigned*>(record + 0x10c) &
+		static_cast<unsigned>(flag)) != 0;
+	nxNpSceneGuardLeave(ctx);
+	return out;
 	}
 
 // (unimplemented) saveBodyToDesc
@@ -828,17 +912,23 @@ const char* NpActorVtable::getName() const
 // Concrete actor slots 85/86 address the body +0x1c group word.
 void NpActorVtable::setGroup(NxActorGroup group)
 	{
-	unsigned char* body = *reinterpret_cast<unsigned char**>(
-		reinterpret_cast<unsigned char*>(this) + 0x14);
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	unsigned char* body = nxNpActorBody(this);
 	if(body) *reinterpret_cast<NxActorGroup*>(body + 0x1c) = group;
+	nxNpSceneGuardLeave(ctx);
 	}
 
 NxActorGroup NpActorVtable::getGroup() const
 	{
-	const unsigned char* body = *reinterpret_cast<unsigned char* const*>(
-		reinterpret_cast<const unsigned char*>(this) + 0x14);
-	return body ? *reinterpret_cast<const NxActorGroup*>(body + 0x1c) :
-		NxActorGroup();
+	void* self = const_cast<NpActorVtable*>(this);
+	void* ctx = nxNpActorContext(self, 0x10);
+	nxNpSceneGuardEnter(ctx);
+	unsigned char* body = nxNpActorBody(self);
+	const NxActorGroup out = body
+		? *reinterpret_cast<NxActorGroup*>(body + 0x1c) : NxActorGroup();
+	nxNpSceneGuardLeave(ctx);
+	return out;
 	}
 
 // (unimplemented) setGlobalPose

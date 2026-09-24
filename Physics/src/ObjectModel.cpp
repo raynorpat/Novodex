@@ -18,6 +18,7 @@
 #define NOMINMAX
 #include <windows.h>
 
+
 // phys_fn_002404 (0x0005ba70) is the shared member constructor; the oracle's
 // collision-object ctor calls it at 0x000247d7 and then overwrites the vptr
 // with the container's final table. The transcription constructs the member
@@ -3724,7 +3725,7 @@ bool nxVirtualSlot1Wrapper(void* arg)
 // ---------------------------------------------------------------------------
 // Actor slate 9: five small rows.
 
-// phys_fn_000080 (0x2c90): readBodyFlag -- ([record+0x10c] byte AND mask)
+// phys_fn_000080 (0x2c90): readBodyFlag -- ([record+0x10c] dword AND mask)
 // under the READ guard; kind-1 warning ("readBodyFlag: Actor must be
 // dynamic!") and false on a static actor.
 const char* const	nxMsgReadBodyFlagDynamic =
@@ -3744,9 +3745,9 @@ bool nxActorReadBodyFlag(void* self, unsigned mask)
 		nxSceneGuardLeave(scene);
 		return false;
 		}
-	unsigned flagByte = *reinterpret_cast<const unsigned char*>(rec + 0x10c);
+	unsigned flagWord = *reinterpret_cast<const unsigned*>(rec + 0x10c);
 	nxSceneGuardLeave(scene);
-	return (flagByte & mask) != 0;
+	return (flagWord & mask) != 0;
 	}
 
 // phys_fn_002408 (0x5baa0): the member subobject's scalar-deleting

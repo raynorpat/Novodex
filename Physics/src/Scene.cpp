@@ -28,6 +28,7 @@
 #include "Containers.h"
 #include "NxSceneDesc.h"
 #include "NxActorDesc.h"
+#include "NxBodyDesc.h"
 #include "NxShapeDesc.h"
 #include "NxBoxShapeDesc.h"
 #include "NxActor.h"
@@ -1765,8 +1766,8 @@ void nxActorBuildBody(void* actor, const unsigned* desc)
 int nxActorComputeMass(void* actor, const unsigned* bodyWord)
 	{
 	// The dynamic record is built after the shape and its helper, in the
-	// order the guarded oracle allocator reports. Static actors skip this row.
-	(void)bodyWord;
+	// order the guarded oracle allocator reports. bodyWord addresses the
+	// descriptor's body POINTER at d[0xc], rather than the body descriptor.
 	unsigned char* actorBytes = static_cast<unsigned char*>(actor);
 	unsigned char* body = *reinterpret_cast<unsigned char**>(actorBytes + 0x14);
 	if(!body)
@@ -1798,6 +1799,10 @@ int nxActorComputeMass(void* actor, const unsigned* bodyWord)
 	*reinterpret_cast<void**>(record + 0x19c) = body;
 	*reinterpret_cast<void**>(body + 0x08) = record;
 	NxSceneInternal* scene = *reinterpret_cast<NxSceneInternal**>(actorBytes + 4);
+	const NxBodyDesc* bodyDesc = reinterpret_cast<const NxBodyDesc*>(*bodyWord);
+	*reinterpret_cast<unsigned*>(record + 0x10c) = bodyDesc->flags;
+	*reinterpret_cast<unsigned char**>(record + 0x120) =
+		scene->at<unsigned char*>(0x48);
 	*reinterpret_cast<unsigned*>(record + 0x11c) = nxSceneTakeRecordId(scene);
 	nxSceneAuxRegisterRecord(scene, record);
 

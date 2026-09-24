@@ -1480,7 +1480,7 @@ mismatches=2 against control 1).
 ## 3z12. Slate 9: readBodyFlag and three deleting destructors
 
 Four rows close (000080, 002408, 002326, 002340). Slot 80 is readBodyFlag:
-([record+0x10c] byte AND mask) under the READ guard, kind-1 warning
+([record+0x10c] dword AND mask) under the READ guard, kind-1 warning
 ("readBodyFlag: Actor must be dynamic!") and false on a static actor -- the
 write-side sibling of this test lives in the slate-2 cluster. phys_fn_002408
 is the member subobject's own deleting destructor: third-table vptr then a

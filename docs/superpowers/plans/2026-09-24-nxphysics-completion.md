@@ -64,6 +64,8 @@
 
 **M2 actor metadata follow-up, 2026-09-24:** The concrete actor now propagates descriptor flags and group into the 0x50-byte body and implements public `raiseActorFlag`, `clearActorFlag`, `readActorFlag`, `setGroup`, and `getGroup` virtuals. A fresh-process staged pair checks initial state, mutations, direct body words, and allocation neutrality. Six registered lines raise the Phase 5 floor to 396; the gate remains red only on the explicit final-vtable marker. Setter and descriptor-propagation mutations both failed the differential. See `docs/reconstruction/novodex-physics/evidence/phase5-public-actor-metadata.md`. Full actor virtual coverage and populated Scene ownership remain open.
 
+**M2 actor body flags and locks, 2026-09-24:** Dynamic record flags, public body-flag slots 78–80, and the record's Scene auxiliary dirty queue now match a fresh-process oracle drive. This exposed and fixed uninitialized public Scene critical sections and a one-byte read of the record's 32-bit flag word. Ten registered lines raise the Phase 5 floor to 406; reader and dirty-bit mutations both fail the differential. See `docs/reconstruction/novodex-physics/evidence/phase5-public-actor-body-flags.md`. Kinematic mode, lock contention, and the remaining actor virtuals remain open.
+
 ## 1. Inputs and boundaries
 
 - Repository: `D:\github\Novodex`, inspected at `0df8821f1c5e3668e566ad4182b1e8e568f632d6`.

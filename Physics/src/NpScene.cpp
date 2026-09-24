@@ -8,10 +8,9 @@
 // The NxScene wrapper. Its layout is measured from phys_fn_000285 (0x0000c310);
 // see NpScene.h for the offsets.
 //
-// The three locks the constructor builds are Phase 3's rows -- phys_fn_0005b6a0,
-// phys_fn_0005b7b0, phys_fn_0005b9a0, phys_fn_0005b9d0, phys_fn_0005b870 and
-// phys_fn_0005ba70 -- and are REPRODUCTION HOLES here: the constructor reproduces
-// the allocation and the field layout, and does not model the lock protocol.
+// The Scene lock links follow the oracle's two-allocation shape. The
+// CRITICAL_SECTION lifecycle and guard protocol are connected to the actor
+// virtuals; the condition-object behavior remains a reproduction hole.
 //
 // The forwarding slots are the point of this class. phys_fn_000293 (0x0000c490)
 // is the shape of all of them, and it is transcribed:
@@ -30,6 +29,7 @@
 //     return 0;
 
 #include "NpScene.h"
+#include "NpSceneGuard.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -40,7 +40,7 @@
 #include "NxJoint.h"
 
 // ---------------------------------------------------------------------------
-// Reproduction holes: the lock protocol Phase 3 owns.
+// Lock helpers and the remaining condition-object reproduction hole.
 // ---------------------------------------------------------------------------
 static void* nxLockConstruct(void* memory);
 static bool nxLockTryLock(void* lock);
@@ -97,11 +97,17 @@ NpScene::~NpScene()
 		}
 	if(mReadLock)
 		{
+		if(*static_cast<void**>(mReadLock))
+			::DeleteCriticalSection(static_cast<CRITICAL_SECTION*>(
+				*static_cast<void**>(mReadLock)));
 		nxGetSdkAllocator()->free(*static_cast<void**>(mReadLock));
 		nxGetSdkAllocator()->free(mReadLock);
 		}
 	if(mWriteLock)
 		{
+		if(*static_cast<void**>(mWriteLock))
+			::DeleteCriticalSection(static_cast<CRITICAL_SECTION*>(
+				*static_cast<void**>(mWriteLock)));
 		nxGetSdkAllocator()->free(*static_cast<void**>(mWriteLock));
 		nxGetSdkAllocator()->free(mWriteLock);
 		}
@@ -151,26 +157,21 @@ void NpScene::release()
 
 static void* nxLockConstruct(void* memory)
 	{
-	// phys_fn_0005b6a0: the block is the CRITICAL_SECTION plus the owner flag at
-	// +0x18 and the owning thread id at +0x1c, so the whole 0x20 bytes belong to the
-	// lock even though the NpScene field holds only the pointer.
-	for(int i = 0; i < 8; ++i)
-		static_cast<unsigned*>(memory)[i] = 0;
+	// phys_fn_0005b6a0 zeroes the writer flag at +0x18 and initializes
+	// the CRITICAL_SECTION occupying the first 0x18 bytes.
+	memset(memory, 0, 0x20);
+	::InitializeCriticalSection(static_cast<CRITICAL_SECTION*>(memory));
 	return memory;
 	}
 
 static bool nxLockTryLock(void* lock)
 	{
-	// phys_fn_0005b730 is the tryLock that fails only when another thread holds it.
-	// Nothing in this reconstruction is threaded, so it succeeds.
-	(void)lock;
-	return true;
+	return nxNpSceneGuardWriteTry(lock);
 	}
 
 static bool nxLockUnlock(void* lock)
 	{
-	// phys_fn_0005b790 returns a literal true except the failing tryLock path.
-	(void)lock;
+	nxNpSceneGuardLeave(lock);
 	return true;
 	}
 
