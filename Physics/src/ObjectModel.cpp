@@ -3800,6 +3800,46 @@ void nxBoundDeletingDtor84c(void* self, unsigned flags)
 // ---------------------------------------------------------------------------
 // BoxShape. See ObjectModel.h for the row map.
 
+template<typename Method>
+static void* nxShapeMethodAddress(Method method)
+	{
+	static_assert(sizeof(Method) == sizeof(void*),
+		"shape vtable methods require the Win32 single-inheritance ABI");
+	void* address;
+	memcpy(&address, &method, sizeof(address));
+	return address;
+	}
+
+static void** nxBoxShapeInternalVtable()
+	{
+	struct Table
+		{
+		void* slot[17];
+		Table()
+			{
+			slot[0] = nxShapeMethodAddress(&BoxShape::nxBoxScalarDeletingDtor);
+			slot[1] = nxShapeMethodAddress(&ShapeBase::nxApplyDescriptor);
+			slot[2] = nxShapeMethodAddress(&ShapeBase::nxBaseSaveState);
+			slot[3] = nxShapeMethodAddress(&BoxShape::nxDebugRenderDispatch);
+			slot[4] = nxShapeMethodAddress(&BoxShape::nxBoxAccumulateMass);
+			slot[5] = nxShapeMethodAddress(&BoxShape::nxBoxRaycast);
+			slot[6] = nxShapeMethodAddress(&ShapeBase::nxApplyOwnerUpdate);
+			slot[7] = nxShapeMethodAddress(&BoxShape::nxBoxSweep);
+			slot[8] = nxShapeMethodAddress(&BoxShape::nxBoxLocalAABB);
+			slot[9] = nxShapeMethodAddress(&BoxShape::nxBoxWorldAABB);
+			slot[10] = nxShapeMethodAddress(&BoxShape::nxBoxCenterAndDiagonal);
+			slot[11] = nxShapeMethodAddress(&BoxShape::nxBoxZeroCenterAndDiagonal);
+			slot[12] = nxShapeMethodAddress(&BoxShape::nxBoxLoadFromDesc);
+			slot[13] = nxShapeMethodAddress(&BoxShape::nxBoxSaveState);
+			slot[14] = nxShapeMethodAddress(&BoxShape::nxBoxSelf);
+			slot[15] = slot[14];
+			slot[16] = slot[14];
+			}
+		};
+	static Table table;
+	return table.slot;
+	}
+
 BoxShape::BoxShape(void* owner, unsigned argument)
 	: mBase(owner, argument)				// forwarded unchanged: 0x0002187c..80
 	{
@@ -3810,6 +3850,7 @@ BoxShape::BoxShape(void* owner, unsigned argument)
 	// final tables and it is never observable after the constructor returns.
 	// The transcription writes the face-record pointer words once; the image
 	// reaches record 5 through a walking pointer with identical effect.
+	mBase.mVptrSlot = nxBoxShapeInternalVtable();
 	for(unsigned r = 0; r < 6; ++r)			// 0x000218a1..0x000218ee
 		{
 		mHull.mFaces[r].mCorners = 0;

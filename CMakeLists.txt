@@ -428,6 +428,21 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 			PROPERTIES COMPILE_OPTIONS "/GS-")
 	endif()
 
+	# Isolated candidate/oracle dispatch test for the constructed box table.
+	# The layout gate's single huge wmain has known stack-frame corruption if
+	# extended, so vtable probes live in this small executable.
+	add_executable(NxPhysicsBoxVtableTests tests/PhysicsBoxVtableTests.cpp
+		Physics/src/ObjectModel.cpp Physics/src/Containers.cpp
+		Physics/src/MemoryStream.cpp Physics/src/Geometry.cpp
+		Physics/src/opcode/IcePrunable.cpp
+		Physics/src/ThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp)
+	target_include_directories(NxPhysicsBoxVtableTests PRIVATE
+		Foundation/include Foundation/src/include Physics/include Physics/src/include
+		Physics/src/opcode)
+	target_link_libraries(NxPhysicsBoxVtableTests NxFoundation NxOpcode bcrypt)
+	if(MSVC)
+		target_compile_options(NxPhysicsBoxVtableTests PRIVATE /arch:IA32 /GR- /wd4996)
+	endif()
 	# The narrow-phase differential. Neither a staged-pair differential nor a
 	# static proof: it holds the pinned oracle in its own process and calls the
 	# recorded internal addresses, because the shape-pair dispatch matrix and
