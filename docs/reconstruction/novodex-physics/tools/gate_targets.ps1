@@ -14,7 +14,7 @@ $NxPhaseTestTargets = [ordered] @{
     '2' = @('NxPhysicsExportTests', 'NxPhysicsSDKTests', 'NxPhysicsCoreClusterTests')
     '3' = @('NxPhysicsGeometryTests', 'NxPhysicsKernelFuzzTests')
     '4' = @()
-    '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests', 'NxPhysicsActorForceTests')
+    '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests', 'NxPhysicsActorForceTests', 'NxPhysicsActorCMassTests')
     '6' = @('NxPhysicsJointStagedPairTests')
     '7' = @('NxPhysicsJointStagedPairTests')
     '8' = @()
@@ -87,6 +87,36 @@ $NxPhaseOracleDifferentialTargets = [ordered] @{
 # from 89978 to 3521 and leaves stdout_delta at 0, and this is what turns that
 # from a silent pass into a failure.
 $NxRequiredCoverageLines = [ordered] @{
+    'NxPhysicsActorCMassTests' = @(
+        'cmass variant=0 created=1',
+        'cmass identity local_pose=3f800000.0.0.0.3f800000.0.0.0.3f800000.0.0.0',
+        'cmass identity local_position=0.0.0',
+        'cmass identity local_orientation=3f800000.0.0.0.3f800000.0.0.0.3f800000',
+        'cmass identity global_pose=3f800000.0.0.0.3f800000.0.0.0.3f800000.0.0.0',
+        'cmass identity global_position=0.0.0',
+        'cmass identity global_orientation=3f800000.0.0.0.3f800000.0.0.0.3f800000',
+        'cmass variant=1 created=1',
+        'cmass offset local_pose=3f800000.0.0.0.3f800000.0.0.0.3f800000.3f800000.40000000.40400000',
+        'cmass offset local_position=3f800000.40000000.40400000',
+        'cmass offset local_orientation=3f800000.0.0.0.3f800000.0.0.0.3f800000',
+        'cmass offset global_pose=331302ae.bf7fffff.0.3f7fffff.331302ae.0.0.0.3f800000.40000001.40c00000.41100000',
+        'cmass offset global_position=40000001.40c00000.41100000',
+        'cmass offset global_orientation=331302ae.bf7fffff.0.3f7fffff.331302ae.0.0.0.3f800000',
+        'cmass variant=2 created=1',
+        'cmass rotated local_pose=3f800000.0.0.0.0.bf800000.0.3f800000.0.3f800000.40000000.40400000',
+        'cmass rotated local_position=3f800000.40000000.40400000',
+        'cmass rotated local_orientation=3f800000.0.0.0.0.bf800000.0.3f800000.0',
+        'cmass rotated global_pose=331302ae.0.3f7fffff.3f7fffff.0.b31302ae.0.3f800000.0.40000001.40c00000.41100000',
+        'cmass rotated global_position=40000001.40c00000.41100000',
+        'cmass rotated global_orientation=331302ae.0.3f7fffff.3f7fffff.0.b31302ae.0.3f800000.0',
+        'cmass static_created=1',
+        'cmass static local_pose=3f800000.0.0.0.3f800000.0.0.0.3f800000.0.0.0',
+        'cmass static local_position=0.0.0',
+        'cmass static local_orientation=3f800000.0.0.0.3f800000.0.0.0.3f800000',
+        'cmass static global_pose=3f800000.0.0.0.3f800000.0.0.0.3f800000.0.0.0',
+        'cmass static global_position=0.0.0',
+        'cmass static global_orientation=3f800000.0.0.0.3f800000.0.0.0.3f800000'
+    )
     'NxPhysicsActorForceTests' = @(
         'force mode=0 created=1',
         'force mode=0 stage=after_force dirty=20.2 linear=0.0.0 angular=0.0.0 force=40000000.40666667.40b33333 torque=0.0.0 smooth_force=0.0.0 smooth_torque=0.0.0',
@@ -1410,7 +1440,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 101  # 34 for NxPhysicsAssetTests, 67 for NxPhysicsThirdPartyTests
-    '5' = 552  # 126 object-layout assertions plus 426 public actor/pruner/box/scene lines
+    '5' = 580  # 126 object-layout assertions plus 454 public actor/pruner/box/scene lines
                # (RED on purpose: vtables family open)
     '6' = 11  # 3 oracle-descriptor + 4 oracle-joint + 4 staged-pair-joint
     '7' = 4   # the four STAGED-PAIR assertions; the oracle-differential assertions
@@ -1442,6 +1472,7 @@ $NxRegisteredTestTargets = @(
     'NxPhysicsActorDynamicSetterTests',
     'NxPhysicsActorMomentumTests',
     'NxPhysicsActorForceTests',
+    'NxPhysicsActorCMassTests',
     'NxPhysicsDynamicFirstTests',
     'NxPhysicsEmptySceneTests',
     'NxPhysicsCoreClusterTests',

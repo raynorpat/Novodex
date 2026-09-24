@@ -32,7 +32,7 @@ PHASE_TARGETS = {
     "2": "NxPhysicsExportTests,NxPhysicsSDKTests,NxPhysicsCoreClusterTests",
     "3": "NxPhysicsGeometryTests,NxPhysicsKernelFuzzTests",
     "4": "",
-    "5": "NxPhysicsActorLifecycleTests,NxPhysicsDynamicFirstTests,NxPhysicsEmptySceneTests,NxPhysicsActorNameTests,NxPhysicsActorMetadataTests,NxPhysicsActorBodyFlagTests,NxPhysicsActorDynamicsTests,NxPhysicsActorDynamicSetterTests,NxPhysicsActorMomentumTests,NxPhysicsActorForceTests",
+    "5": "NxPhysicsActorLifecycleTests,NxPhysicsDynamicFirstTests,NxPhysicsEmptySceneTests,NxPhysicsActorNameTests,NxPhysicsActorMetadataTests,NxPhysicsActorBodyFlagTests,NxPhysicsActorDynamicsTests,NxPhysicsActorDynamicSetterTests,NxPhysicsActorMomentumTests,NxPhysicsActorForceTests,NxPhysicsActorCMassTests",
     # Phase 6 has a registered STAGED-PAIR target: a closure is a mutation to a row's
     # implementation, and only a staged-pair target loads the rebuilt module, so the
     # closure schema needs one (evidence 11l).

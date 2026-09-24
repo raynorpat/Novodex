@@ -1802,6 +1802,7 @@ int nxActorComputeMass(void* actor, const unsigned* bodyWord)
 	NxSceneInternal* scene = *reinterpret_cast<NxSceneInternal**>(actorBytes + 4);
 	const NxBodyDesc* bodyDesc = reinterpret_cast<const NxBodyDesc*>(*bodyWord);
 	bodyDesc->massLocalPose.M.getRowMajor(reinterpret_cast<float*>(record + 0xdc));
+	memcpy(record + 0x100, &bodyDesc->massLocalPose.t, sizeof(NxVec3));
 	const NxVec3 massTranslation = bodyDesc->massLocalPose.t;
 	float pose[9];
 	nxNpActorRotationFromQuaternion(record, pose);

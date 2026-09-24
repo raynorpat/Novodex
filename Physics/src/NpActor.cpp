@@ -623,40 +623,80 @@ void NpActorVtable::setCMassGlobalOrientation(const NxMat33&)
 	
 	}
 
-// (unimplemented) getCMassLocalPoseVal
+static NxMat33 nxNpActorCMassMatrix(const unsigned char* record, unsigned offset)
+	{
+	NxMat33 result(NX_IDENTITY_MATRIX);
+	if(record) result.setRowMajor(reinterpret_cast<const float*>(record + offset));
+	return result;
+	}
+
+static NxVec3 nxNpActorCMassPosition(const unsigned char* record, unsigned offset)
+	{
+	NxVec3 result(0.0f, 0.0f, 0.0f);
+	if(record) memcpy(&result, record + offset, sizeof(result));
+	return result;
+	}
+
 NxMat34 NpActorVtable::getCMassLocalPoseVal() const
 	{
-	return NxMat34();
+	void* ctx = nxNpActorContext(const_cast<NpActorVtable*>(this), 0x10);
+	nxNpSceneGuardEnter(ctx);
+	const unsigned char* record = nxNpActorRecord(const_cast<NpActorVtable*>(this));
+	NxMat34 result(nxNpActorCMassMatrix(record, 0xdc),
+		nxNpActorCMassPosition(record, 0x100));
+	nxNpSceneGuardLeave(ctx);
+	return result;
 	}
 
-// (unimplemented) getCMassLocalPositionVal
 NxVec3 NpActorVtable::getCMassLocalPositionVal() const
 	{
-	return NxVec3();
+	void* ctx = nxNpActorContext(const_cast<NpActorVtable*>(this), 0x10);
+	nxNpSceneGuardEnter(ctx);
+	NxVec3 result = nxNpActorCMassPosition(
+		nxNpActorRecord(const_cast<NpActorVtable*>(this)), 0x100);
+	nxNpSceneGuardLeave(ctx);
+	return result;
 	}
 
-// (unimplemented) getCMassLocalOrientationVal
 NxMat33 NpActorVtable::getCMassLocalOrientationVal() const
 	{
-	return NxMat33();
+	void* ctx = nxNpActorContext(const_cast<NpActorVtable*>(this), 0x10);
+	nxNpSceneGuardEnter(ctx);
+	NxMat33 result = nxNpActorCMassMatrix(
+		nxNpActorRecord(const_cast<NpActorVtable*>(this)), 0xdc);
+	nxNpSceneGuardLeave(ctx);
+	return result;
 	}
 
-// (unimplemented) getCMassGlobalPoseVal
 NxMat34 NpActorVtable::getCMassGlobalPoseVal() const
 	{
-	return NxMat34();
+	void* ctx = nxNpActorContext(const_cast<NpActorVtable*>(this), 0x10);
+	nxNpSceneGuardEnter(ctx);
+	const unsigned char* record = nxNpActorRecord(const_cast<NpActorVtable*>(this));
+	NxMat34 result(nxNpActorCMassMatrix(record, 0x134),
+		nxNpActorCMassPosition(record, 0x158));
+	nxNpSceneGuardLeave(ctx);
+	return result;
 	}
 
-// (unimplemented) getCMassGlobalPositionVal
 NxVec3 NpActorVtable::getCMassGlobalPositionVal() const
 	{
-	return NxVec3();
+	void* ctx = nxNpActorContext(const_cast<NpActorVtable*>(this), 0x10);
+	nxNpSceneGuardEnter(ctx);
+	NxVec3 result = nxNpActorCMassPosition(
+		nxNpActorRecord(const_cast<NpActorVtable*>(this)), 0x158);
+	nxNpSceneGuardLeave(ctx);
+	return result;
 	}
 
-// (unimplemented) getCMassGlobalOrientationVal
 NxMat33 NpActorVtable::getCMassGlobalOrientationVal() const
 	{
-	return NxMat33();
+	void* ctx = nxNpActorContext(const_cast<NpActorVtable*>(this), 0x10);
+	nxNpSceneGuardEnter(ctx);
+	NxMat33 result = nxNpActorCMassMatrix(
+		nxNpActorRecord(const_cast<NpActorVtable*>(this)), 0x134);
+	nxNpSceneGuardLeave(ctx);
+	return result;
 	}
 
 void NpActorVtable::setMass(NxReal mass)
