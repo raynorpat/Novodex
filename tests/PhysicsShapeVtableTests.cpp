@@ -1340,6 +1340,46 @@ int wmain(int argc, wchar_t** argv)
        candidateAllocator.freeCount - candidateBefore != oraclePlaneHeapFrees)
         ++failures;
     ++cases;
+    // MESH slot 10 copies its four-word center record, transforms the first
+    // three words through the shape pose, and preserves the fourth word.
+    typedef void (__thiscall* MeshCenterSlot)(void*, float*);
+    for(unsigned sample = 0; sample < 4; ++sample) {
+        unsigned char oracleMeshShape[0xe8] = {}, candidateMeshShape[0xe8] = {};
+        unsigned char meshRecord[0x100] = {};
+        const float source[4] = {
+            0.25f + sample, -1.5f * (sample + 1), 2.75f - sample,
+            0.125f * (sample + 1)
+        };
+        memcpy(meshRecord + 0x5c, source, sizeof(source));
+        for(unsigned row = 0; row < 3; ++row) {
+            for(unsigned col = 0; col < 3; ++col) {
+                const float value = row == col ? 1.25f + sample * 0.25f :
+                    (row + 1) * (col + 1) * 0.125f;
+                memcpy(oracleMeshShape + 0x0c + 12*row + 4*col,
+                    &value, 4);
+                memcpy(candidateMeshShape + 0x0c + 12*row + 4*col,
+                    &value, 4);
+            }
+            const float translation = (row + 1) * (sample + 1) * 0.75f;
+            memcpy(oracleMeshShape + 0x30 + 4*row, &translation, 4);
+            memcpy(candidateMeshShape + 0x30 + 4*row, &translation, 4);
+        }
+        void* meshPointer = meshRecord;
+        memcpy(oracleMeshShape + 0xe0, &meshPointer, 4);
+        memcpy(candidateMeshShape + 0xe0, &meshPointer, 4);
+        float oracleCenter[4] = {}, candidateCenter[4] = {};
+        reinterpret_cast<MeshCenterSlot>(const_cast<unsigned char*>(base) +
+            0x29190)(oracleMeshShape, oracleCenter);
+        reinterpret_cast<MeshShape*>(candidateMeshShape)->nxMeshTransformCenter(
+            candidateCenter);
+        oracleDigest = foldOracle(oracleDigest, oracleCenter,
+            sizeof(oracleCenter));
+        if(memcmp(oracleCenter, candidateCenter, sizeof(oracleCenter)) != 0) {
+            fprintf(stderr, "mesh slot 10 sample=%u differs\n", sample);
+            ++failures;
+        }
+        ++cases;
+    }
     nxSetSdkAllocatorBridge(0);
     printf("shape vtable oracle_digest=%08x cases=%u failures=%u\n",
         oracleDigest, cases, failures);

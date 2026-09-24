@@ -414,12 +414,6 @@ class BoxShape
 	void				nxPoseCopyWithTail0827(const void* src,
 							const unsigned* extra, unsigned x);
 
-	//! phys_fn_001403 (0x29190, MESH vtable slot 4, ret 4): copies the 4
-	//! dwords at [[this+0xe0]+0x5c] into out[0..3], then overwrites out[0..2]
-	//! with the 3x3 matrix ([this+0xc..0x2c]) times that vector plus the
-	//! translation at [this+0x30..0x38].
-	void				nxTransformPoint1403(float* out);
-
 	//! phys_fn_000931 (0x00020490): write out[0..2] translation, then
 	//! out[6..14] rotation with a forward word copy, then out[3..5] dims.
 	//! Source ranges +0x30, +0x0c, +0xe4; aliasing preserves that order.
@@ -2126,6 +2120,11 @@ class MeshShape
 	//! MESH-table slot 8, phys_fn_001389 (0x00027ec0): copies six words from
 	//! meshptr+0x44 into out.
 	void				nxMeshGetWords44(unsigned* out) const;
+
+	//! MESH-table slot 10, phys_fn_001403 (0x00029190): copies the mesh's
+	//! four-word center record at +0x5c, transforms xyz by the shape pose,
+	//! and leaves the fourth word unchanged.
+	void				nxMeshTransformCenter(float* out) const;
 
 	//! MESH-table slot 12, phys_fn_001383: loadFromDesc. The record holds
 	//! a wrapper pointer; stores *(wrapper+4) at +0xe0 and increments the

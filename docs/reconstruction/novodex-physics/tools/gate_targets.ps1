@@ -88,7 +88,7 @@ $NxPhaseOracleDifferentialTargets = [ordered] @{
 # from a silent pass into a failure.
 $NxRequiredCoverageLines = [ordered] @{
     'NxPhysicsShapeVtableTests' = @(
-        'shape vtable oracle_digest=c60a363a cases=400 failures=0'
+        'shape vtable oracle_digest=e7f8a2c7 cases=404 failures=0'
     )
     'NxPhysicsActorCMassTests' = @(
         'cmass variant=0 created=1',
