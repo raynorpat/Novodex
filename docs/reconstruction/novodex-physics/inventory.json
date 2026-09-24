@@ -15187,7 +15187,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2545",
       "static_proof": "MassFrame translate (0x1c040, __thiscall ret 4): early-outs when the {d} arg is all-zero; else moves the reference center from old_offset o to c=d+o and adds the parallel-axis Delta-Q m*(Q(c)-Q(o)) to the nine inertia words, where Q(r)=|r|^2 I - r r^T; the image splits this into a centered path (0x1c0d7, c==0 -> -Q(o)) and a displaced path (0x1c26f, generic, with the 0.0-literal multiplications [0x101041f0] matching the symmetric Q structure), then the shared tail (0x1c578) sets offset=c. nxMassFrameTranslate reproduces Q(c)-Q(o); see 3z40.",
       "dynamic_proof": "differential 54/54 (6 offsets x 9 translations, incl. negatives/fractionals) byte-exact vs oracle 0x1c040; mutation of the Q off-diagonal sign -> 37/54 red (build/r25-mut.log), restored green",
-      "notes": ""
+      "notes": "Additional 48-case mesh cached-mass drive found and corrected asymmetric x87 rounding in diagonal Q terms; NxPhysicsShapeVtableTests digest ed1294b6, failures=0."
     },
     {
       "id": "phys_fn_000834",
@@ -25419,7 +25419,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3587",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Low-flag bypass and nonnegative cached-mass path are differentially checked across 48 cases; negative-cache recomputation at 0x54bb0 remains open."
     },
     {
       "id": "phys_fn_001398",

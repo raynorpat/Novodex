@@ -2139,6 +2139,11 @@ class MeshShape
 	//! classifier or a classifier whose tree plane table is already built.
 	bool				nxMeshSweepPrepared(float* out, const float* point) const;
 
+	//! MESH-table slot 4, phys_fn_001397 (0x00028e10), for a mesh whose
+	//! cached mass at +0xb0 is nonnegative. Low flag bits bypass the cache.
+	bool				nxMeshAccumulateMassCached(MassFrame* destination,
+							float density, unsigned reserved) const;
+
 	//! MESH-table slot 12, phys_fn_001383: loadFromDesc. The record holds
 	//! a wrapper pointer; stores *(wrapper+4) at +0xe0 and increments the
 	//! inner object refcount at +0x74.

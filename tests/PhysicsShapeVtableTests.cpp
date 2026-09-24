@@ -1664,6 +1664,66 @@ int wmain(int argc, wchar_t** argv)
         }
         ++cases;
     }
+    // MESH slot 4: low flag bits bypass mass work. Otherwise, a valid
+    // nonnegative cache at mesh+0xb0 supplies a 13-word mass frame.
+    typedef bool (__thiscall* MeshMassSlot)(void*, MassFrame*, float, unsigned);
+    for(unsigned sample = 0; sample < 48; ++sample) {
+        unsigned char oracleShape[0xe8] = {}, candidateShape[0xe8] = {};
+        unsigned char meshRecord[0xe8] = {};
+        const unsigned short flags = sample % 3 == 0 ? 1u :
+            sample % 3 == 1 ? 7u : 8u;
+        memcpy(oracleShape + 0xde, &flags, 2);
+        memcpy(candidateShape + 0xde, &flags, 2);
+        void* pointer = meshRecord;
+        memcpy(oracleShape + 0xe0, &pointer, 4);
+        memcpy(candidateShape + 0xe0, &pointer, 4);
+        const float cacheMass = 1.25f + 0.137f * sample;
+        memcpy(meshRecord + 0xb0, &cacheMass, 4);
+        for(unsigned k = 0; k < 12; ++k) {
+            const float value = (k + 1) * 0.071f + sample * 0.019f;
+            memcpy(meshRecord + 0xb4 + 4*k, &value, 4);
+        }
+        for(unsigned side = 0; side < 2; ++side) {
+            unsigned char* shape = side ? candidateShape : oracleShape;
+            for(unsigned row = 0; row < 3; ++row) {
+                for(unsigned col = 0; col < 3; ++col) {
+                    const float value = row == col ?
+                        1.0f + 0.013f * sample :
+                        ((row + col + sample) % 2 ? -1.0f : 1.0f) *
+                        0.017f * (row + col + 1);
+                    memcpy(shape + 0x6c + 12*row + 4*col, &value, 4);
+                }
+                const float translation =
+                    (row + 1) * (sample + 1) * 0.011f;
+                memcpy(shape + 0x90 + 4*row, &translation, 4);
+            }
+        }
+        unsigned oracleFrame[13], candidateFrame[13];
+        for(unsigned k = 0; k < 13; ++k) {
+            const float value = 0.2f + k * 0.037f;
+            memcpy(oracleFrame + k, &value, 4);
+            memcpy(candidateFrame + k, &value, 4);
+        }
+        const bool ro = reinterpret_cast<MeshMassSlot>(
+            const_cast<unsigned char*>(base) + 0x28e10)(
+            oracleShape, reinterpret_cast<MassFrame*>(oracleFrame), 2.0f, 0);
+        const bool rc = reinterpret_cast<MeshShape*>(candidateShape)->
+            nxMeshAccumulateMassCached(
+                reinterpret_cast<MassFrame*>(candidateFrame), 2.0f, 0);
+        oracleDigest = foldOracle(oracleDigest, &ro, sizeof(ro));
+        oracleDigest = foldOracle(oracleDigest, oracleFrame,
+            sizeof(oracleFrame));
+        if(ro != rc || memcmp(oracleFrame, candidateFrame,
+                sizeof(oracleFrame)) != 0) {
+            fprintf(stderr, "mesh slot 4 cached sample=%u differs\n", sample);
+            for(unsigned k = 0; k < 13; ++k)
+                if(oracleFrame[k] != candidateFrame[k])
+                    fprintf(stderr, "  word%u oracle=%08x candidate=%08x\n",
+                        k, oracleFrame[k], candidateFrame[k]);
+            ++failures;
+        }
+        ++cases;
+    }
     nxSetSdkAllocatorBridge(0);
     printf("shape vtable oracle_digest=%08x cases=%u failures=%u\n",
         oracleDigest, cases, failures);

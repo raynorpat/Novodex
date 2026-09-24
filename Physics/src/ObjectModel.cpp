@@ -4752,10 +4752,34 @@ void MassFrame::nxMassFrameTranslate(const void* param)
 		oy*oy+oz*oz, -(ox*oy), -(ox*oz),
 		-(ox*oy), ox*ox+oz*oz, -(oy*oz),
 		-(ox*oz), -(oy*oz), ox*ox+oy*oy };
+	// The diagonal x87 chains at 0x1c26f..34a and 0x1c350..421
+	// materialize negative Q(c) and negative Q(o) with asymmetric product
+	// stores. In particular c.y^2 and c.x^2 are rounded before two of the
+	// additions; an ordinary Q(c)-Q(o) expression differs by a few ulps.
+	const double cx2 = static_cast<double>(cx) * cx;
+	const double cy2 = static_cast<double>(cy) * cy;
+	const double cz2 = static_cast<double>(cz) * cz;
+	const double ox2 = static_cast<double>(ox) * ox;
+	const double oy2 = static_cast<double>(oy) * oy;
+	const double oz2 = static_cast<double>(oz) * oz;
+	const float negativeQc[3] = {
+		static_cast<float>(static_cast<double>(static_cast<float>(-cy2)) - cz2),
+		static_cast<float>(-cx2 - cz2),
+		static_cast<float>(static_cast<double>(static_cast<float>(-cx2)) +
+			static_cast<float>(-cy2))
+		};
+	const float negativeQo[3] = {
+		static_cast<float>(-oy2 - oz2),
+		static_cast<float>(-oz2 + static_cast<float>(-ox2)),
+		static_cast<float>(-oy2 + static_cast<float>(-ox2))
+		};
 	// Centered (c == 0) vs displaced path select the same Delta-Q.
 	for(unsigned i = 0; i < 9; ++i)
 		{
-		const float term = Qc[i] - Qo[i];
+		const float term = i % 4 == 0
+			? static_cast<float>(static_cast<double>(negativeQo[i / 4]) -
+				negativeQc[i / 4])
+			: Qc[i] - Qo[i];
 		const float scaled = static_cast<float>(static_cast<double>(term) * mMass);
 		mInertia[i] = static_cast<float>(static_cast<double>(mInertia[i]) + scaled);
 		}
@@ -5783,6 +5807,30 @@ void MeshShape::nxMeshWorldAABB(float* out) const
 			static_cast<double>(vertex[1]) * row[1] +
 			static_cast<double>(vertex[0]) * row[0] + t[axis]);
 		}
+	}
+
+// phys_fn_001397 (0x00028e10), MESH-table slot 4. This covers the bypass
+// and nonnegative cached-mass arms; the mesh volume-integral recomputation
+// for a negative cache is a separate dependency at 0x54bb0.
+bool MeshShape::nxMeshAccumulateMassCached(MassFrame* destination,
+	float /*density*/, unsigned /*reserved*/) const
+	{
+	if(mBase.mHalfwordDE & 7u)
+		return true;
+	const unsigned char* mesh = reinterpret_cast<const unsigned char*>(mWordE0);
+	const float cachedMass = *reinterpret_cast<const float*>(mesh + 0xb0);
+	if(!(cachedMass >= 0.0f))
+		return false;
+	MassFrame local;
+	memcpy(local.mInertia, mesh + 0xb4, 36);
+	memcpy(&local.mOffset, mesh + 0xd8, 12);
+	local.mMass = cachedMass;
+	const unsigned char* pose =
+		reinterpret_cast<const unsigned char*>(&mBase.mPose6C);
+	local.nxMassFrameFoldPayload(pose);
+	local.nxMassFrameTranslate(pose + 0x24);
+	destination->nxMassFrameMerge(local);
+	return true;
 	}
 
 // phys_fn_001407 (0x00029610), MESH-table slot 7. The prepared-tree arm
