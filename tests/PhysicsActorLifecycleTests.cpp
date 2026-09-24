@@ -1143,8 +1143,7 @@ int wmain(int argc, wchar_t** argv)
 			}
 		printf("\n");
 		}
-	if(getenv("NX_PHYSICS_PROBE_SCENE_TEARDOWN"))
-		{
+	{
 		printf("actor scene_teardown_allocs=%u\n",
 			allocator.allocations() - beforeSceneReleaseAllocs);
 		printf("actor scene_teardown_alloc_sizes=");

@@ -1292,6 +1292,7 @@ void NxSceneInternal::releaseActor(void* bodyPointer)
 	// dynamic record, shape helper, shape, then the outer body.
 	const unsigned actorId = *reinterpret_cast<unsigned*>(body + 0xc);
 	nxGetSdkAllocator()->free(actor);
+	nxShapeSetName(body, 0);
 	if(record)
 		{
 		nxSceneRecycleRecordId(this,
@@ -1311,6 +1312,7 @@ void NxSceneInternal::releaseActor(void* bodyPointer)
 				static_cast<unsigned char*>(shapes[i]) + 0xd4);
 			nxSceneAuxUnregisterShape(this, shapes[i]);
 			nxGetSdkAllocator()->free(helpers[i]);
+			nxShapeSetName(shapes[i], 0);
 			nxGetSdkAllocator()->free(shapes[i]);
 			nxSceneRecycleShapeId(this, id);
 			}
@@ -1318,6 +1320,7 @@ void NxSceneInternal::releaseActor(void* bodyPointer)
 		nxGetSdkAllocator()->free(shapes);
 		nxSceneAuxUnregisterShape(this, shape);
 		nxSceneRecycleShapeId(this, *reinterpret_cast<unsigned*>(shape + 0xd4));
+		nxShapeSetName(shape, 0);
 		nxGetSdkAllocator()->free(shape);
 		}
 	else if(shape)
@@ -1326,6 +1329,7 @@ void NxSceneInternal::releaseActor(void* bodyPointer)
 		void* helper = *reinterpret_cast<void**>(shape + 0x9c);
 		nxSceneAuxUnregisterShape(this, shape);
 		if(helper) nxGetSdkAllocator()->free(helper);
+		nxShapeSetName(shape, 0);
 		nxGetSdkAllocator()->free(shape);
 		nxSceneRecycleShapeId(this, id);
 		}

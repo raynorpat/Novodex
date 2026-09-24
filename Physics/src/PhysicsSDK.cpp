@@ -169,16 +169,15 @@ PhysicsSDK::PhysicsSDK()
 	mNp = NX_NEW(NpPhysicsSDK)(this);
 	}
 
+void nxShapeReleaseNameTable();
+
 PhysicsSDK::~PhysicsSDK()
 	{
 	NX_DELETE_SINGLE(mNp);
+	nxShapeReleaseNameTable();
 
-	// Not reconstructed here, in the oracle's order and all inert for the whole
-	// of this component's differential because the SDK owns no scene, no mesh
-	// and no pruning cache at this point. The pointer binding table the oracle
-	// releases first is reconstructed, in PhysicsInternal.cpp, but it is empty
-	// here and its teardown is not:
-	//   - the release of the table at .data 0x00123c0c;
+	// The global name map at .data 0x00123c0c is released above. Other
+	// ownership paths still need reconstruction here:
 	//   - the scene release loop over mScenes (phys_fn_001275), Phase 3;
 	//   - the mesh release loop over mTriangleMeshes (phys_fn_002253), Phase 4;
 	//   - the three cache teardowns phys_fn_004834, phys_fn_004828 and

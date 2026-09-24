@@ -87,8 +87,9 @@ static NxMaterialIndex __fastcall nxBoxHandleGetMaterial(void* self, void*)
 	return *reinterpret_cast<NxMaterialIndex*>(nxBoxHandleInternal(self) + 0xda);
 	}
 
-// The oracle's global shape-name map stores pointer pairs and discards the
-// two-entry table as soon as its last association is removed.
+// The oracle's global name map stores pointer pairs for actors and shapes. A
+// null-name lookup for a missing object still inserts a null association once
+// the table exists; removing its last existing association destroys the table.
 struct NxShapeNamePair
 	{
 	void* shape;
@@ -134,7 +135,6 @@ void nxShapeSetName(void* shape, const char* name)
 				}
 			return;
 			}
-	if(!name) return;
 	if(gNxShapeNames->count == gNxShapeNames->capacity)
 		{
 		const unsigned capacity = gNxShapeNames->count * 2 + 2;
@@ -153,6 +153,15 @@ void nxShapeSetName(void* shape, const char* name)
 	gNxShapeNames->entries[gNxShapeNames->count].shape = shape;
 	gNxShapeNames->entries[gNxShapeNames->count].name = name;
 	++gNxShapeNames->count;
+	}
+
+void nxShapeReleaseNameTable()
+	{
+	if(!gNxShapeNames) return;
+	if(gNxShapeNames->entries)
+		nxGetSdkAllocator()->free(gNxShapeNames->entries);
+	nxGetSdkAllocator()->free(gNxShapeNames);
+	gNxShapeNames = 0;
 	}
 
 const char* nxShapeGetName(void* shape)
