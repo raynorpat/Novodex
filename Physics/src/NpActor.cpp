@@ -1811,10 +1811,34 @@ bool NpActorVtable::saveBodyToDesc(NxBodyDesc&)
 	return bool();
 	}
 
-// (unimplemented) saveToDesc
-void NpActorVtable::saveToDesc(NxActorDescBase&)
+// phys_fn_000120 at 0x00003690, actor vtable slot 82. The oracle writes
+// the pose and four actor metadata fields; it leaves body, name and type alone.
+void NpActorVtable::saveToDesc(NxActorDescBase& desc)
 	{
-	
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	unsigned char* body = nxNpActorBody(this);
+	unsigned char* record = body
+		? *reinterpret_cast<unsigned char**>(body + 8) : 0;
+	if(record)
+		{
+		float rows[9];
+		nxNpActorRotationFromQuaternionGetter(
+			reinterpret_cast<const float*>(record + 0x5c), rows);
+		desc.globalPose.M.setRowMajor(rows);
+		memcpy(&desc.globalPose.t, record + 0x50, sizeof(NxVec3));
+		}
+	else if(body)
+		memcpy(&desc.globalPose, body + 0x20, sizeof(NxMat34));
+	if(body)
+		{
+		memcpy(&desc.density, body + 0x18, sizeof(desc.density));
+		memcpy(&desc.flags, body + 0x14, sizeof(desc.flags));
+		memcpy(&desc.group, body + 0x1c, sizeof(desc.group));
+		}
+	desc.userData = *reinterpret_cast<void**>(
+		reinterpret_cast<unsigned char*>(this) + 4);
+	nxNpSceneGuardLeave(ctx);
 	}
 
 // Concrete actor slots 83/84 address the same body-keyed global name map as

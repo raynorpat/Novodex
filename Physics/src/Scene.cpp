@@ -1054,6 +1054,8 @@ int nxActorLoadFromDescInternal(void* actor, const unsigned* d)
 	if(body)
 		{
 		*reinterpret_cast<unsigned*>(body + 0x14) = d[0x0e];
+		// Actor::saveToDesc reads the density back from this body word.
+		*reinterpret_cast<unsigned*>(body + 0x18) = d[0x0d];
 		*reinterpret_cast<unsigned short*>(body + 0x1c) =
 			*reinterpret_cast<const unsigned short*>(d + 0x0f);
 		}

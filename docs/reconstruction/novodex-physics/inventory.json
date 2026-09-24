@@ -2223,12 +2223,12 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/NpActor.cpp",
+      "state": "reconstructed",
+      "source": "actor_dynamic vtable slot 82 saveToDesc (Physics/src/NpActor.cpp)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/46",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/238",
-      "static_proof": null,
-      "dynamic_proof": null,
+      "static_proof": "RVA 0x3690 copies the cached static pose or converts record+0x5c quaternion and copies record+0x50 translation; writes body+0x18 density, +0x14 flags, +0x1c group and actor+4 userData to the descriptor, preserving body/name/type",
+      "dynamic_proof": "NxPhysicsActorLifecycleTests compares descriptor pose and metadata on both DLL pairs for static, dynamic, rotated and quarter-turn actors; all eight gate targets matched",
       "notes": ""
     },
     {

@@ -78,6 +78,21 @@ static void nxPrintPose(const char* label, const NxMat34& pose)
 		nxBits(pose.t.y), nxBits(pose.t.z));
 }
 
+static void nxProbeSavedActorDesc(const char* label, NxActor* actor)
+{
+	NxBodyDesc untouchedBody;
+	NxActorDesc desc;
+	desc.body = &untouchedBody;
+	desc.name = "untouched-name";
+	actor->saveToDesc(desc);
+	nxPrintPose(label, desc.globalPose);
+	printf("actor %s saved_metadata=%08x.%08x.%04x.%u.%u.%u\n", label,
+		nxBits(desc.density), desc.flags, static_cast<unsigned>(desc.group),
+		desc.userData == actor->userData ? 1u : 0u,
+		desc.body == &untouchedBody ? 1u : 0u,
+		strcmp(desc.name, "untouched-name") == 0 ? 1u : 0u);
+}
+
 static void nxPrintDynamicQuaternion(const char* label, const NxActor* actor)
 {
 	const unsigned char* bytes = reinterpret_cast<const unsigned char*>(actor);
@@ -568,6 +583,7 @@ int wmain(int argc, wchar_t** argv)
 	nxPrintOrientation("static", staticActor->getGlobalOrientationVal());
 	nxPrintPublicQuaternion("static", staticActor->getGlobalOrientationQuatVal());
 	nxPrintPose("static", staticActor->getGlobalPoseVal());
+	nxProbeSavedActorDesc("saved_static", staticActor);
 
 	NxBodyDesc body;
 	NxActorDesc dynamicDesc;
@@ -606,6 +622,7 @@ int wmain(int argc, wchar_t** argv)
 	nxPrintBodyLink("dynamic", dynamicActor);
 	nxPrintPosition("dynamic", dynamicActor->getGlobalPositionVal());
 	nxPrintPose("dynamic", dynamicActor->getGlobalPoseVal());
+	nxProbeSavedActorDesc("saved_dynamic", dynamicActor);
 
 	NxActorDesc rotatedDesc = dynamicDesc;
 	rotatedDesc.globalPose.M.setRow(0, NxVec3(-1.0f, 0.0f, 0.0f));
@@ -622,6 +639,7 @@ int wmain(int argc, wchar_t** argv)
 	nxPrintOrientation("rotated", rotatedActor->getGlobalOrientationVal());
 	nxPrintPublicQuaternion("rotated", rotatedActor->getGlobalOrientationQuatVal());
 	nxPrintPose("rotated", rotatedActor->getGlobalPoseVal());
+	nxProbeSavedActorDesc("saved_rotated", rotatedActor);
 
 	rotatedDesc.globalPose.M.setRow(0, NxVec3(0.0f, -1.0f, 0.0f));
 	rotatedDesc.globalPose.M.setRow(1, NxVec3(1.0f, 0.0f, 0.0f));
@@ -672,6 +690,7 @@ int wmain(int argc, wchar_t** argv)
 	nxPrintOrientation("quarter", quarterActor->getGlobalOrientationVal());
 	nxPrintPublicQuaternion("quarter", quarterActor->getGlobalOrientationQuatVal());
 	nxPrintPose("quarter", quarterActor->getGlobalPoseVal());
+	nxProbeSavedActorDesc("saved_quarter", quarterActor);
 	const void* staticLink = *reinterpret_cast<void* const*>(
 		reinterpret_cast<const unsigned char*>(staticActor) + 0x10);
 	const void* dynamicLink = *reinterpret_cast<void* const*>(
