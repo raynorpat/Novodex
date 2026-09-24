@@ -315,6 +315,19 @@ int wmain(int argc, wchar_t** argv)
 		*activeEnd = savedEnd;
 		managerIndex[id] = savedIndex;
 		}
+	NxMat34 combinedPose;
+	combinedPose.M.setRowMajor(matrixRows[0]);
+	combinedPose.t = NxVec3(7.0f, -5.0f, 2.0f);
+	PROBE_DIRTY("pose", actor->setGlobalPose(combinedPose));
+	printf("setter pose_record=");
+	const unsigned poseRecordOffsets[14] = {0x50,0x54,0x58,0x18,0x1c,0x20,
+		0x5c,0x60,0x64,0x68,0x158,0x15c,0x160,0x24};
+	for(unsigned i = 0; i < 14; ++i)
+		printf("%s%x", i ? "." : "", word(record, poseRecordOffsets[i]));
+	printf("\nsetter pose_shape=");
+	for(unsigned i = 0; i < 12; ++i)
+		printf("%s%x", i ? "." : "", word(movedShape, 0x0c + 4 * i));
+	printf("\n");
 #undef PROBE_DIRTY
 	scene->releaseActor(*actor);
 	NxActorDesc staticDesc;
@@ -361,6 +374,17 @@ int wmain(int argc, wchar_t** argv)
 	for(unsigned i = 0; i < 9; ++i)
 		printf("%s%x", i ? "." : "", word(staticShape, 0x0c + 4 * i));
 	printf("\n");
+	NxMat34 staticPose;
+	staticPose.M.setRowMajor(matrixRows[0]);
+	staticPose.t = NxVec3(-1.0f, 2.0f, 4.0f);
+	staticActor->setGlobalPose(staticPose);
+	printf("setter static_pose_body=");
+	for(unsigned i = 0; i < 12; ++i)
+		printf("%s%x", i ? "." : "", word(staticBody, 0x20 + 4 * i));
+	printf("\nsetter static_pose_shape=");
+	for(unsigned i = 0; i < 12; ++i)
+		printf("%s%x", i ? "." : "", word(staticShape, 0x0c + 4 * i));
+	printf("\n");
 	scene->releaseActor(*staticActor);
 	NxBoxShapeDesc secondBox;
 	secondBox.dimensions = NxVec3(0.5f, 1.0f, 1.5f);
@@ -382,6 +406,12 @@ int wmain(int argc, wchar_t** argv)
 	for(const unsigned char* const* child = firstChild; child != lastChild; ++child)
 		printf(".%x.%x.%x", word(*child, 0x30), word(*child, 0x34),
 			word(*child, 0x38));
+	printf("\n");
+	multiActor->setGlobalPose(combinedPose);
+	printf("setter multi_pose=%u", static_cast<unsigned>(lastChild - firstChild));
+	for(const unsigned char* const* child = firstChild; child != lastChild; ++child)
+		printf(".%x.%x.%x.%x.%x", word(*child, 0x0c), word(*child, 0x10),
+			word(*child, 0x14), word(*child, 0x30), word(*child, 0x34));
 	printf("\n");
 	scene->releaseActor(*multiActor);
 	NxBoxShapeDesc posedBox;

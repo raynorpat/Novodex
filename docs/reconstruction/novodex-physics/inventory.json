@@ -3595,9 +3595,9 @@
       "source": "Physics/src/NpActor.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/66",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/618",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Partial: Ghidra at RVA 0x8b00 shows the static 12-word pose copy and dynamic quaternion conversion, orientation dirty bit 2 before translation dirty bit 1, one mass-frame refresh, then one owned-shape update.",
+      "dynamic_proof": "Public actor probes match the pinned DLL for dynamic current/shadow position and quaternion, dirty mask 3, mass center and shape world pose; static body/shape poses and two-child compound shape poses also match.",
+      "notes": "Candidate implementation is partial pending lock-error, scene and final shape-family closure."
     },
     {
       "id": "phys_fn_000197",

@@ -41,6 +41,7 @@ static unsigned char* nxNpActorRecord(void* actor)
 
 static void nxNpActorRotationFromQuaternionGetter(const float* q, float* rows);
 static void nxNpActorRefreshCMass(unsigned char* record);
+static void nxNpActorNotifyOwnedShapes(unsigned char* body);
 
 static NxMat33 nxNpActorInstantTensor(const unsigned char* record,
 	unsigned diagonalOffset, bool roundedQuaternionProducts)
@@ -382,9 +383,36 @@ bool NpActorVtable::isDynamic() const
 	return body && *reinterpret_cast<const unsigned*>(body + 0x08) != 0;
 	}
 
-// (unimplemented) setGlobalPose
-void NpActorVtable::setGlobalPose(const NxMat34&)
+// phys_fn_000196 at 0x00008b00, actor dynamic slot 1. The dynamic path
+// marks orientation dirty before position, then refreshes the mass frame
+// and owned shape only once for the combined pose.
+void NpActorVtable::setGlobalPose(const NxMat34& pose)
 	{
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	unsigned char* body = nxNpActorBody(this);
+	if(body)
+		{
+		unsigned char* record = *reinterpret_cast<unsigned char**>(body + 8);
+		if(record)
+			{
+			const NxQuat quaternion(pose.M);
+			memcpy(record + 0x5c, &quaternion, sizeof(quaternion));
+			memcpy(record + 0x24, record + 0x5c, sizeof(quaternion));
+			nxNpActorMarkRecordDirty(record, 2);
+			memcpy(record + 0x50, &pose.t, sizeof(pose.t));
+			memcpy(record + 0x18, record + 0x50, sizeof(pose.t));
+			nxNpActorMarkRecordDirty(record, 1);
+			nxNpActorRefreshCMass(record);
+			}
+		else
+			{
+			memcpy(body + 0x44, &pose.t, sizeof(pose.t));
+			memcpy(body + 0x20, &pose.M, sizeof(pose.M));
+			}
+		nxNpActorNotifyOwnedShapes(body);
+		}
+	nxNpSceneGuardLeave(ctx);
 	}
 
 // phys_fn_000146, actor dynamic slot 65 at 0x000058f0. The world-space
