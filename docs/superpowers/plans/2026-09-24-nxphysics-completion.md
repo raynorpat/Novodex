@@ -20,6 +20,8 @@
 
 **Current gate matrix, 2026-09-24:** Phases 2, 3, 4, 6, and 7 pass from the isolated worktree. Phase 5 remains intentionally red on the vtable marker above. These are intermediate phase gates with substantial deferred census rows, not a claim that the DLL is complete.
 
+**M2 actor packet, 2026-09-24:** `NxPhysicsActorLifecycleTests` now drives static and dynamic box actors through both staged DLL pairs. The candidate matches the oracle's `isDynamic()` and position words; a static actor now owns the oracle's 0x50-byte outer body. Deliberate mutations of each virtual result failed the staged differential. The dynamic body graph still has incorrect allocation sizes (oracle outer 0x50, nested 0x260), and the Phase 5 gate remains red solely on the final-vtables placeholder. See `docs/reconstruction/novodex-physics/evidence/phase5-actor-lifecycle.md`.
+
 ## 1. Inputs and boundaries
 
 - Repository: `D:\github\Novodex`, inspected at `0df8821f1c5e3668e566ad4182b1e8e568f632d6`.

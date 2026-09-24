@@ -1,9 +1,9 @@
 # The one registry of differential test targets per reconstruction phase.
 # run_phase_gate.ps1 and run_differential.ps1 both dot-source this file and
-# neither keeps a second list, so registering a target is a one-line edit here.
+# neither keeps a second list, so target registration is centralized here.
 # The phase plans address it through `run_differential.ps1 -Phase N`.
 #
-# Phase 1 is evidence-only. Phases 5-8 have registered nothing yet: a phase with
+# Phase 1 is evidence-only. A phase with
 # no targets cannot be gated, so both runners report it skipped and exit 3
 # rather than reporting a pass. Phase 4 registers an oracle differential and no
 # staged-pair differential, which is why run_phase_gate.ps1 counts all three
@@ -14,7 +14,7 @@ $NxPhaseTestTargets = [ordered] @{
     '2' = @('NxPhysicsExportTests', 'NxPhysicsSDKTests', 'NxPhysicsCoreClusterTests')
     '3' = @('NxPhysicsGeometryTests', 'NxPhysicsKernelFuzzTests')
     '4' = @()
-    '5' = @()
+    '5' = @('NxPhysicsActorLifecycleTests')
     '6' = @('NxPhysicsJointStagedPairTests')
     '7' = @('NxPhysicsJointStagedPairTests')
     '8' = @()
@@ -87,6 +87,17 @@ $NxPhaseOracleDifferentialTargets = [ordered] @{
 # from 89978 to 3521 and leaves stdout_delta at 0, and this is what turns that
 # from a silent pass into a failure.
 $NxRequiredCoverageLines = [ordered] @{
+    'NxPhysicsActorLifecycleTests' = @(
+        'actor static created=1',
+        'actor static dynamic=0',
+        'actor static body=1 nested=0',
+        'actor static body_alloc=50',
+        'actor static position=40000000.bf800000.40800000',
+        'actor dynamic created=1',
+        'actor dynamic dynamic=1',
+        'actor dynamic body=1 nested=1',
+        'actor dynamic position=c0400000.40000000.3f800000'
+    )
     # The Phase 6 joint-descriptor differential. Two cases over the two exported
     # rows, printing the whole descriptor surface before and after each call. The
     # degenerate zero and NaN axes are quarantined in the harness with the reason
@@ -963,7 +974,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 101  # 34 for NxPhysicsAssetTests, 67 for NxPhysicsThirdPartyTests
-    '5' = 126  # was 124: +2 for the shapeleaf family (row + candidate drive)
+    '5' = 135  # 126 object-layout assertions plus nine public actor lifecycle lines
                # (RED on purpose: vtables family open)
     '6' = 11  # 3 oracle-descriptor + 4 oracle-joint + 4 staged-pair-joint
     '7' = 4   # the four STAGED-PAIR assertions; the oracle-differential assertions
@@ -987,6 +998,7 @@ $NxPhaseCoverageFloor = [ordered] @{
 # as $NxPhaseCoverageFloor below: put the name on a phase list, and put it in
 # the list of names this programme knows. A typo in either one fails.
 $NxRegisteredTestTargets = @(
+    'NxPhysicsActorLifecycleTests',
     'NxPhysicsCoreClusterTests',
     'NxPhysicsExportTests',
     'NxPhysicsGeometryTests',

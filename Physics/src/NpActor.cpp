@@ -15,6 +15,7 @@
 #include "NxVec3.h"
 #include "NxActorDesc.h"
 #include "NxBodyDesc.h"
+#include <string.h>
 
 // The vtable word. A single static instance of the concrete class supplies it: the
 // object needs a vtable POINTER, not a class instance, so one instance is enough for
@@ -27,9 +28,15 @@ void NpActorObject::installVtable()
 	}
 
 
-// The one virtual a reconstructed path calls. A descriptor with a body and a density
-// describes a dynamic actor, which is what the harness builds.
-bool NpActorVtable::isDynamic() const { return true; }
+// phys_fn_000110 at 0x00003580, dynamic actor vtable slot 19. The shipped
+// implementation tests the actor's body at +0x14, then its marker at +0x08.
+// The lock calls around that read are an independent scene-lock dependency.
+bool NpActorVtable::isDynamic() const
+	{
+	const unsigned char* actor = reinterpret_cast<const unsigned char*>(this);
+	const unsigned char* body = *reinterpret_cast<unsigned char* const*>(actor + 0x14);
+	return body && *reinterpret_cast<const unsigned*>(body + 0x08) != 0;
+	}
 
 // (unimplemented) setGlobalPose
 void NpActorVtable::setGlobalPose(const NxMat34&)
@@ -67,10 +74,20 @@ NxMat34 NpActorVtable::getGlobalPoseVal() const
 	return NxMat34();
 	}
 
-// (unimplemented) getGlobalPositionVal
+// phys_fn_000092 at 0x00002ed0, actor vtable slot 6. The oracle reads the
+// nested pose translation when body+8 is non-null, otherwise the outer body's
+// translation at +0x44. The final actor fallback covers incomplete setup.
 NxVec3 NpActorVtable::getGlobalPositionVal() const
 	{
-	return NxVec3();
+	const unsigned char* actor = reinterpret_cast<const unsigned char*>(this);
+	const unsigned char* body = *reinterpret_cast<unsigned char* const*>(actor + 0x14);
+	const unsigned char* record = body
+		? *reinterpret_cast<unsigned char* const*>(body + 0x08) : 0;
+	const unsigned char* translation = record ? record + 0x50
+		: (body ? body + 0x44 : actor + 0x44);
+	NxVec3 result;
+	memcpy(&result, translation, sizeof(result));
+	return result;
 	}
 
 // (unimplemented) getGlobalOrientationVal

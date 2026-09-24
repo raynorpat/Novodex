@@ -1145,20 +1145,14 @@ void nxActorSetName(void* actor, unsigned name)
 
 void nxActorBuildBody(void* actor, const unsigned* desc)
 	{
-	// phys_fn_000019b0 is the mass computation; the body OBJECT is built by the
-	// shape path, which links it at actor+0x10. What Scene::createJoint reads is
-	// two levels below the actor, and both levels are established here.
-	//
-	//   Scene::createJoint:  actor -> +0x14 -> body, body +8 -> the dynamic marker
-	//   phys_fn_000004:      actor -> +0x14 -> body, body +0x19c -> pose
-	//
-	// So actor+0x14 is the BODY pointer, and the body carries the marker at +8 and
-	// the pose pointer at +0x19c. A body built here therefore satisfies both
-	// readers with one object.
-	//
-	// What is NOT modelled: the body's own physics state -- mass, inertia, the
-	// damping and sleep fields -- and its vtable. The body is a zeroed block with
-	// the two fields the reconstructed readers actually dereference.
+	// actor+0x14 names a separate outer body holder. The oracle allocates 0x50
+	// bytes for it for both static and dynamic actors. Its +8 is null for a
+	// static actor and points to a 0x260-byte nested object for a dynamic actor;
+	// the global-position getter reads the nested translation at +0x50 or the
+	// outer holder's fallback translation at +0x44. The static holder below is
+	// reconstructed. The dynamic path still uses a larger 0x1c0-byte placeholder
+	// and a smaller pose allocation to support existing joint tests. That graph
+	// is a known layout gap, not evidence of full body reconstruction.
 	unsigned char* actorBytes = static_cast<unsigned char*>(actor);
 
 	// The descriptor's body pointer. NxActorDescBase declares it immediately after
@@ -1170,7 +1164,19 @@ void nxActorBuildBody(void* actor, const unsigned* desc)
 	const void* bodyDesc = reinterpret_cast<const void*>(desc[0x0c]);
 
 	if(!bodyDesc)
+		{
+		// The oracle still allocates an outer 0x50-byte holder for a static
+		// actor. Its nested pointer at +8 is null and its translation occupies
+		// the last three words, +0x44..+0x4c.
+		unsigned char* staticBody = static_cast<unsigned char*>(
+			nxGetSdkAllocator()->malloc(0x50, NX_MEMORY_PERSISTENT));
+		if(!staticBody)
+			return;
+		memset(staticBody, 0, 0x50);
+		memcpy(staticBody + 0x44, actorBytes + 0x44, 12);
+		*reinterpret_cast<void**>(actorBytes + 0x14) = staticBody;
 		return;
+		}
 
 	unsigned char* body = static_cast<unsigned char*>(
 		nxGetSdkAllocator()->malloc(0x1c0, NX_MEMORY_PERSISTENT));
@@ -1179,8 +1185,9 @@ void nxActorBuildBody(void* actor, const unsigned* desc)
 	for(int i = 0; i < 0x1c0; ++i)
 		body[i] = 0;
 
-	// The dynamic marker Scene::createJoint tests.
-	*reinterpret_cast<unsigned*>(body + 8) = 1;
+	// The body+8 word is a pointer, not a literal Boolean. isDynamic and
+	// Scene::createJoint test it for non-null; the actor's position getter follows
+	// it to the translation at record+0x50. The allocation graph remains partial.
 
 	// The pose the joint-descriptor rows read. A zeroed pose has a null cached
 	// matrix at +8, which is the quaternion arm, so the translation at +0x50 and
@@ -1209,6 +1216,7 @@ void nxActorBuildBody(void* actor, const unsigned* desc)
 	*reinterpret_cast<float*>(pose + 0x68) = 1.0f;
 
 	*reinterpret_cast<void**>(body + 0x19c) = pose;
+	*reinterpret_cast<void**>(body + 0x08) = pose;
 
 	// Link the body to the actor.
 	*reinterpret_cast<void**>(actorBytes + 0x14) = body;

@@ -320,15 +320,15 @@ class TargetRegistry(unittest.TestCase):
             registry = GATE_TARGETS.read_text(encoding="utf-8")
             shutil.copy2(GATE_TARGETS, Path(directory) / "gate_targets.ps1")
 
-            control = self._run_differential(directory, "5")
+            control = self._run_differential(directory, "8")
             self.assertEqual(control.returncode, 3, control.stdout + control.stderr)
-            self.assertIn("differential=skipped phase=5", control.stdout)
+            self.assertIn("differential=skipped phase=8", control.stdout)
 
-            mutated = registry.replace("    '5' = @()\n", "    '5' = @('NxNotInTheRegistry')\n", 1)
-            self.assertNotEqual(mutated, registry, "the phase-5 staged-pair list was not found")
+            mutated = registry.replace("    '8' = @()\n", "    '8' = @('NxNotInTheRegistry')\n", 1)
+            self.assertNotEqual(mutated, registry, "the phase-8 staged-pair list was not found")
             (Path(directory) / "gate_targets.ps1").write_text(mutated, encoding="utf-8")
 
-            rejected = self._run_differential(directory, "5")
+            rejected = self._run_differential(directory, "8")
             transcript = rejected.stdout + rejected.stderr
             # On the exact requirement, not on the exit code: the copy is
             # outside the evidence tree, so a run that got past the registry
@@ -368,7 +368,7 @@ class CoverageFloor(unittest.TestCase):
 
     # Pinned independently of the registry. Raising this is fine; lowering it is
     # the edit that has to be justified.
-    MINIMUM = {"3": 103, "4": 100, "5": 66}
+    MINIMUM = {"3": 103, "4": 101, "5": 135}
 
     def test_the_floor_is_at_least_what_this_task_recorded(self):
         floor = coverage_floor()
