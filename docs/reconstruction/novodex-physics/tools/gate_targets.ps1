@@ -157,6 +157,15 @@ $NxRequiredCoverageLines = [ordered] @{
         'cmass set_global_offset_pose global_orientation=0.0.3f7ffffe.0.3f7ffffe.0.bf800000.0.0',
         'cmass set_global_offset_pose actor_pose=331302ae.bf7fffff.0.3f7fffff.331302ae.0.0.0.3f800000.40800000.40a00000.40c00000',
         'cmass set_global_offset_pose record=0.3f3504f3.0.3f3504f3.a.3ecccccc.ffffffff',
+        'cmass set_global_mass_position local_pose=0.3f7fffff.331302ae.0.331302ae.bf7fffff.bf800000.0.0.40800000.c07ffffe.40800000',
+        'cmass set_global_mass_position local_position=40800000.c07ffffe.40800000',
+        'cmass set_global_mass_position local_orientation=0.3f7fffff.331302ae.0.331302ae.bf7fffff.bf800000.0.0',
+        'cmass set_global_mass_position global_pose=0.34b504f2.3f7ffffc.0.3f7ffffc.b4b504f2.bf800000.0.0.41100001.411fffff.41300000',
+        'cmass set_global_mass_position global_position=41100001.411fffff.41300000',
+        'cmass set_global_mass_position global_orientation=0.34b504f2.3f7ffffc.0.3f7ffffc.b4b504f2.bf800000.0.0',
+        'cmass set_global_mass_position actor_pose=34c76548.bf7ffffd.0.3f7ffffd.34c76548.0.0.0.3f800000.40a00002.40c00002.40e00000',
+        'cmass set_global_mass_position record=0.3f3504f3.0.3f3504f3.a.3ecccccc.ffffffff',
+        'cmass set_global_mass_position transform=40a00002.40c00002.40e00000.0.0.3f3504f1.3f3504f3.40a00002.40c00002.40e00000.0.0.3f3504f1.3f3504f3.40800000.c07ffffe.40800000.41100000.41200000.41300000',
         'cmass variant=2 created=1',
         'cmass rotated local_pose=3f800000.0.0.0.0.bf800000.0.3f800000.0.3f800000.40000000.40400000',
         'cmass rotated local_position=3f800000.40000000.40400000',
@@ -1495,7 +1504,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 101  # 34 for NxPhysicsAssetTests, 67 for NxPhysicsThirdPartyTests
-    '5' = 635  # 126 object-layout assertions plus 509 public actor/pruner/box/scene lines
+    '5' = 644  # 126 object-layout assertions plus 518 public actor/pruner/box/scene lines
                # (RED on purpose: vtables family open)
     '6' = 11  # 3 oracle-descriptor + 4 oracle-joint + 4 staged-pair-joint
     '7' = 4   # the four STAGED-PAIR assertions; the oracle-differential assertions

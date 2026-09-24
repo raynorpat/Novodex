@@ -569,7 +569,7 @@ void NpActorVtable::setDynamic(const NxBodyDesc&)
 	
 	}
 
-static void nxNpActorRefreshCMass(unsigned char* record)
+static void nxNpActorRefreshCMass(unsigned char* record, bool updateQuaternion = true)
 	{
 	float rotation[9];
 	nxNpActorRotationFromQuaternionAt(record, 0x24, rotation);
@@ -580,17 +580,25 @@ static void nxNpActorRefreshCMass(unsigned char* record)
 		static_cast<double>(rotation[2]) * local[2] +
 		static_cast<double>(rotation[1]) * local[1] +
 		static_cast<double>(rotation[0]) * local[0] + actorPosition[0]);
-	const volatile float yTranslationAndX = static_cast<float>(actorPosition[1] +
-		static_cast<double>(rotation[3]) * local[0]);
-	world[1] = static_cast<float>(static_cast<double>(yTranslationAndX) +
-		static_cast<double>(rotation[5]) * local[2] +
-		static_cast<double>(rotation[4]) * local[1]);
+	if(updateQuaternion)
+		{
+		const volatile float yTranslationAndX = static_cast<float>(actorPosition[1] +
+			static_cast<double>(rotation[3]) * local[0]);
+		world[1] = static_cast<float>(static_cast<double>(yTranslationAndX) +
+			static_cast<double>(rotation[5]) * local[2] +
+			static_cast<double>(rotation[4]) * local[1]);
+		}
+	else
+		world[1] = static_cast<float>(actorPosition[1] +
+			static_cast<double>(rotation[3]) * local[0] +
+			static_cast<double>(rotation[5]) * local[2] +
+			static_cast<double>(rotation[4]) * local[1]);
 	world[2] = static_cast<float>(actorPosition[2] +
 		static_cast<double>(rotation[6]) * local[0] +
 		static_cast<double>(rotation[8]) * local[2] +
 		static_cast<double>(rotation[7]) * local[1]);
 	nxNpActorUpdateInertiaMatrices(record);
-	nxNpActorUpdateCMassQuaternion(record);
+	if(updateQuaternion) nxNpActorUpdateCMassQuaternion(record);
 	}
 
 static void nxNpActorWakeAfterCMassWrite(unsigned char* record)
@@ -741,10 +749,73 @@ void NpActorVtable::setCMassGlobalPose(const NxMat34&)
 	
 	}
 
-// (unimplemented) setCMassGlobalPosition
-void NpActorVtable::setCMassGlobalPosition(const NxVec3&)
+static void nxNpActorApplyWorldMassPose(unsigned char* record, unsigned char* body)
 	{
-	
+	const float* worldMass = reinterpret_cast<const float*>(record + 0x134);
+	const float* localMass = reinterpret_cast<const float*>(record + 0xdc);
+	const float* localPosition = reinterpret_cast<const float*>(record + 0x100);
+	const float* worldPosition = reinterpret_cast<const float*>(record + 0x158);
+	float actorRotation[9];
+	auto product = [](float a, float b) { return static_cast<double>(a) * b; };
+	actorRotation[0] = static_cast<float>(product(worldMass[0], localMass[0]) + product(worldMass[2], localMass[2]) + product(localMass[1], worldMass[1]));
+	actorRotation[1] = static_cast<float>(product(localMass[5], worldMass[2]) + product(localMass[3], worldMass[0]) + product(localMass[4], worldMass[1]));
+	actorRotation[2] = static_cast<float>(product(worldMass[1], localMass[7]) + product(worldMass[2], localMass[8]) + product(localMass[6], worldMass[0]));
+	actorRotation[3] = static_cast<float>(product(worldMass[5], localMass[2]) + product(localMass[1], worldMass[4]) + product(worldMass[3], localMass[0]));
+	actorRotation[4] = static_cast<float>(product(worldMass[3], localMass[3]) + product(worldMass[4], localMass[4]) + product(worldMass[5], localMass[5]));
+	actorRotation[5] = static_cast<float>(product(worldMass[3], localMass[6]) + product(worldMass[4], localMass[7]) + product(worldMass[5], localMass[8]));
+	actorRotation[6] = static_cast<float>(product(worldMass[8], localMass[2]) + product(localMass[1], worldMass[7]) + product(worldMass[6], localMass[0]));
+	actorRotation[7] = static_cast<float>(product(worldMass[6], localMass[3]) + product(worldMass[7], localMass[4]) + product(worldMass[8], localMass[5]));
+	actorRotation[8] = static_cast<float>(product(worldMass[6], localMass[6]) + product(worldMass[7], localMass[7]) + product(worldMass[8], localMass[8]));
+	float actorPosition[3];
+	for(unsigned row = 0; row < 3; ++row)
+		{
+		const volatile float displacement = static_cast<float>(
+			static_cast<double>(actorRotation[row * 3]) * localPosition[0] +
+			static_cast<double>(actorRotation[row * 3 + 1]) * localPosition[1] +
+			static_cast<double>(actorRotation[row * 3 + 2]) * localPosition[2]);
+		actorPosition[row] = static_cast<float>(static_cast<double>(worldPosition[row]) - displacement);
+		}
+	memcpy(record + 0x50, actorPosition, sizeof(actorPosition));
+	memcpy(record + 0x18, actorPosition, sizeof(actorPosition));
+	nxNpActorMarkRecordDirty(record, 1);
+	float actorQuaternion[4];
+	nxNpActorQuaternionFromMatrix(actorRotation, actorQuaternion);
+	memcpy(record + 0x5c, actorQuaternion, sizeof(actorQuaternion));
+	memcpy(record + 0x24, actorQuaternion, sizeof(actorQuaternion));
+	nxNpActorMarkRecordDirty(record, 2);
+	NxMat33 matrix;
+	matrix.setRowMajor(actorRotation);
+	memcpy(body + 0x20, &matrix, sizeof(matrix));
+	memcpy(body + 0x44, actorPosition, sizeof(actorPosition));
+	nxNpActorWorldTensor(reinterpret_cast<const float*>(record + 0xc4),
+		worldMass, reinterpret_cast<float*>(record + 0x164));
+	}
+
+static const unsigned char* nxNpActorDerivedMassFrame(
+	const unsigned char* record, unsigned char* scratch)
+	{
+	if(!record) return 0;
+	// Offset setters cache the frame, while a world-mass move retains the
+	// requested frame and the public getters derive it from the actor pose.
+	// Keep the cached representation when it already equals the derived one.
+	memcpy(scratch, record, 0x260);
+	nxNpActorRefreshCMass(scratch);
+	if(memcmp(record + 0x134, scratch + 0x134, 0x30) == 0)
+		return record;
+	nxNpActorRefreshCMass(scratch, false);
+	return scratch;
+	}
+
+void NpActorVtable::setCMassGlobalPosition(const NxVec3& position)
+	{
+	unsigned char* record = nxNpActorRecord(this);
+	if(!record || (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u)) return;
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	memcpy(record + 0x158, &position, sizeof(position));
+	nxNpActorApplyWorldMassPose(record, nxNpActorBody(this));
+	nxNpActorWakeAfterCMassWrite(record);
+	nxNpSceneGuardLeave(ctx);
 	}
 
 // (unimplemented) setCMassGlobalOrientation
@@ -802,7 +873,9 @@ NxMat34 NpActorVtable::getCMassGlobalPoseVal() const
 	{
 	void* ctx = nxNpActorContext(const_cast<NpActorVtable*>(this), 0x10);
 	nxNpSceneGuardEnter(ctx);
-	const unsigned char* record = nxNpActorRecord(const_cast<NpActorVtable*>(this));
+	unsigned char scratch[0x260];
+	const unsigned char* record = nxNpActorDerivedMassFrame(
+		nxNpActorRecord(const_cast<NpActorVtable*>(this)), scratch);
 	NxMat34 result(nxNpActorCMassMatrix(record, 0x134),
 		nxNpActorCMassPosition(record, 0x158));
 	nxNpSceneGuardLeave(ctx);
@@ -813,8 +886,10 @@ NxVec3 NpActorVtable::getCMassGlobalPositionVal() const
 	{
 	void* ctx = nxNpActorContext(const_cast<NpActorVtable*>(this), 0x10);
 	nxNpSceneGuardEnter(ctx);
+	unsigned char scratch[0x260];
 	NxVec3 result = nxNpActorCMassPosition(
-		nxNpActorRecord(const_cast<NpActorVtable*>(this)), 0x158);
+		nxNpActorDerivedMassFrame(
+			nxNpActorRecord(const_cast<NpActorVtable*>(this)), scratch), 0x158);
 	nxNpSceneGuardLeave(ctx);
 	return result;
 	}
@@ -823,8 +898,10 @@ NxMat33 NpActorVtable::getCMassGlobalOrientationVal() const
 	{
 	void* ctx = nxNpActorContext(const_cast<NpActorVtable*>(this), 0x10);
 	nxNpSceneGuardEnter(ctx);
+	unsigned char scratch[0x260];
 	NxMat33 result = nxNpActorCMassMatrix(
-		nxNpActorRecord(const_cast<NpActorVtable*>(this)), 0x134);
+		nxNpActorDerivedMassFrame(
+			nxNpActorRecord(const_cast<NpActorVtable*>(this)), scratch), 0x134);
 	nxNpSceneGuardLeave(ctx);
 	return result;
 	}

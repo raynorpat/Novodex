@@ -73,10 +73,8 @@ static inline void nxNpActorUpdateInertiaMatrices(unsigned char* record)
 		rotation, inverse);
 	}
 
-static inline void nxNpActorUpdateCMassQuaternion(unsigned char* record)
+static inline void nxNpActorQuaternionFromMatrix(const float* m, float* q)
 	{
-	const float* m = reinterpret_cast<const float*>(record + 0x134);
-	float* q = reinterpret_cast<float*>(record + 0x124);
 	const double trace = static_cast<double>(m[0]) + m[4] + m[8];
 	if(trace >= 0.0)
 		{
@@ -104,6 +102,13 @@ static inline void nxNpActorUpdateCMassQuaternion(unsigned char* record)
 		q[3] = static_cast<float>((static_cast<double>(m[last * 3 + next]) -
 			m[next * 3 + last]) * scale);
 		}
+	}
+
+static inline void nxNpActorUpdateCMassQuaternion(unsigned char* record)
+	{
+	nxNpActorQuaternionFromMatrix(
+		reinterpret_cast<const float*>(record + 0x134),
+		reinterpret_cast<float*>(record + 0x124));
 	}
 
 #endif

@@ -155,6 +155,11 @@ int wmain(int argc, wchar_t** argv)
 			probe("set_global_offset_pose", actor);
 			pose("set_global_offset_pose", "actor_pose", actor->getGlobalPose());
 			recordState("set_global_offset_pose", actor);
+			actor->setCMassGlobalPosition(NxVec3(9.0f, 10.0f, 11.0f));
+			probe("set_global_mass_position", actor);
+			pose("set_global_mass_position", "actor_pose", actor->getGlobalPose());
+			recordState("set_global_mass_position", actor);
+			transformState("set_global_mass_position", actor);
 		}
 		scene->releaseActor(*actor);
 	}
