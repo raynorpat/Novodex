@@ -1008,6 +1008,23 @@ int wmain(int argc, wchar_t** argv)
 	NxActor** liveActorArray = scene->getActors();
 	for(unsigned i = 0; i < liveActors && i < 16; ++i)
 		liveActorPointers[i] = liveActorArray[i];
+	unsigned char sceneSnapshot[0x710] = {};
+	unsigned char auxSnapshot[0xa8] = {};
+	void* sceneAuxArrays[12] = {};
+	{
+	const unsigned char* internalScene = *reinterpret_cast<unsigned char* const*>(
+		reinterpret_cast<const unsigned char*>(scene) + 0x24);
+	memcpy(sceneSnapshot, internalScene, sizeof(sceneSnapshot));
+	const unsigned char* aux = *reinterpret_cast<unsigned char* const*>(
+		internalScene + 0x48);
+	if(aux) memcpy(auxSnapshot, aux, sizeof(auxSnapshot));
+	for(unsigned i = 0; i < 2; ++i)
+		sceneAuxArrays[i] = *reinterpret_cast<void* const*>(
+			internalScene + 8 + i * 4);
+	for(unsigned i = 0; i < 10 && aux; ++i)
+		sceneAuxArrays[i + 2] = *reinterpret_cast<void* const*>(
+			aux + i * 0x10);
+	}
 	const unsigned beforeSceneReleaseAllocs = allocator.allocations();
 	const unsigned beforeSceneReleaseFrees = allocator.frees();
 	sdk->releaseScene(*scene);
@@ -1021,6 +1038,36 @@ int wmain(int argc, wchar_t** argv)
 				break;
 				}
 	printf("actor scene_live_actor_frees=%u.%u\n", liveActors, freedLiveActors);
+	unsigned freedSceneAuxArrays = 0;
+	for(unsigned i = 0; i < 12; ++i)
+		for(unsigned j = 0; sceneAuxArrays[i] &&
+			j < allocator.frees() - beforeSceneReleaseFrees; ++j)
+			if(allocator.freedPointerFromEnd(
+				allocator.frees() - beforeSceneReleaseFrees - 1 - j) == sceneAuxArrays[i])
+				{ ++freedSceneAuxArrays; break; }
+	printf("actor scene_aux_arrays_freed=12.%u\n", freedSceneAuxArrays);
+	if(getenv("NX_PHYSICS_PROBE_SCENE_FREE_MAP"))
+		{
+		printf("actor scene_free_map=");
+		for(unsigned i = 0; i < allocator.frees() - beforeSceneReleaseFrees; ++i)
+			{
+			void* ptr = allocator.freedPointerFromEnd(
+				allocator.frees() - beforeSceneReleaseFrees - 1 - i);
+			unsigned sceneOffset = 0xffff;
+			unsigned auxOffset = 0xffff;
+			for(unsigned offset = 0; offset < sizeof(sceneSnapshot); offset += 4)
+				if(*reinterpret_cast<const void* const*>(sceneSnapshot + offset) == ptr)
+					{ sceneOffset = offset; break; }
+			for(unsigned offset = 0; offset < sizeof(auxSnapshot); offset += 4)
+				if(*reinterpret_cast<const void* const*>(auxSnapshot + offset) == ptr)
+					{ auxOffset = offset; break; }
+			printf("%s%x:s%x:a%x", i ? "." : "",
+				allocator.freedSizeFromEnd(
+					allocator.frees() - beforeSceneReleaseFrees - 1 - i),
+				sceneOffset, auxOffset);
+			}
+		printf("\n");
+		}
 	if(getenv("NX_PHYSICS_PROBE_SCENE_TEARDOWN"))
 		{
 		printf("actor scene_teardown_allocs=%u\n",

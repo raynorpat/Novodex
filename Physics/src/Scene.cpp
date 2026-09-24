@@ -1515,8 +1515,30 @@ static void nxSceneDelete(void* self, int flags)
 		scene->releaseActor(body);
 		if(scene->at<NxActor**>(0x560) == end) break;
 		}
+	for(unsigned offset = 8; offset <= 0xc; offset += 4)
+		{
+		void*& entries = *reinterpret_cast<void**>(
+			static_cast<unsigned char*>(self) + offset);
+		if(entries)
+			{
+			nxGetSdkAllocator()->free(entries);
+			entries = 0;
+			}
+		}
 	if(p[0x12])
-		nxGetSdkAllocator()->free(reinterpret_cast<void*>(p[0x12]));
+		{
+		unsigned char* aux = reinterpret_cast<unsigned char*>(p[0x12]);
+		for(int offset = 0x90; offset >= 0; offset -= 0x10)
+			{
+			void*& entries = *reinterpret_cast<void**>(aux + offset);
+			if(entries)
+				{
+				nxGetSdkAllocator()->free(entries);
+				entries = 0;
+				}
+			}
+		nxGetSdkAllocator()->free(aux);
+		}
 	if(flags & 1)
 		nxGetSdkAllocator()->free(self);
 	}
