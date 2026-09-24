@@ -1497,7 +1497,8 @@ void nxSceneBuildGroundPlane(void* scene)
 
 // The scalar deleting destructor the vtable's slot 0 points at. Empty-scene
 // release now follows the oracle's wrapper, auxiliary-manager, Scene free order.
-// Populated-scene actor and cache teardown is a separate open path.
+// Populated-scene array and pruner ownership is released here; the oracle's
+// actor-specific teardown allocations and remaining cache behavior are open.
 static void nxSceneDelete(void* self, int flags)
 	{
 	unsigned* p = static_cast<unsigned*>(self);
@@ -1538,6 +1539,48 @@ static void nxSceneDelete(void* self, int flags)
 				}
 			}
 		nxGetSdkAllocator()->free(aux);
+		}
+	const unsigned arrayOffsets[] = {0x6fc, 0x6e8, 0x6d4, 0x6a4};
+	for(unsigned offset : arrayOffsets)
+		{
+		void*& entries = *reinterpret_cast<void**>(
+			static_cast<unsigned char*>(self) + offset);
+		if(entries)
+			{
+			nxGetSdkAllocator()->free(entries);
+			entries = 0;
+			}
+		}
+	const unsigned tableOffsets[] = {0x640, 0x648};
+	for(unsigned offset : tableOffsets)
+		{
+		void*& table = *reinterpret_cast<void**>(
+			static_cast<unsigned char*>(self) + offset);
+		if(!table) continue;
+		unsigned char* container = static_cast<unsigned char*>(table);
+		const unsigned childOffsets[] = {0x14, 0x18};
+		for(unsigned childOffset : childOffsets)
+			{
+			void*& child = *reinterpret_cast<void**>(container + childOffset);
+			if(child)
+				{
+				nxGetSdkAllocator()->free(child);
+				child = 0;
+				}
+			}
+		nxGetSdkAllocator()->free(table);
+		table = 0;
+		}
+	const unsigned objectArrayOffsets[] = {0x56c, 0x55c};
+	for(unsigned offset : objectArrayOffsets)
+		{
+		void*& entries = *reinterpret_cast<void**>(
+			static_cast<unsigned char*>(self) + offset);
+		if(entries)
+			{
+			nxGetSdkAllocator()->free(entries);
+			entries = 0;
+			}
 		}
 	if(flags & 1)
 		nxGetSdkAllocator()->free(self);

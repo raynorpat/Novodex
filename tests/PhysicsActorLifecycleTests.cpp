@@ -1011,6 +1011,7 @@ int wmain(int argc, wchar_t** argv)
 	unsigned char sceneSnapshot[0x710] = {};
 	unsigned char auxSnapshot[0xa8] = {};
 	void* sceneAuxArrays[12] = {};
+	void* scenePrunerBlocks[9] = {};
 	{
 	const unsigned char* internalScene = *reinterpret_cast<unsigned char* const*>(
 		reinterpret_cast<const unsigned char*>(scene) + 0x24);
@@ -1024,6 +1025,19 @@ int wmain(int argc, wchar_t** argv)
 	for(unsigned i = 0; i < 10 && aux; ++i)
 		sceneAuxArrays[i + 2] = *reinterpret_cast<void* const*>(
 			aux + i * 0x10);
+	scenePrunerBlocks[0] = *reinterpret_cast<void* const*>(internalScene + 0x6a4);
+	for(unsigned i = 0; i < 2; ++i)
+		{
+		const unsigned char* table = *reinterpret_cast<unsigned char* const*>(
+			internalScene + 0x640 + i * 8);
+		scenePrunerBlocks[1 + i * 3] = const_cast<unsigned char*>(table);
+		if(table)
+			for(unsigned j = 0; j < 2; ++j)
+				scenePrunerBlocks[2 + i * 3 + j] =
+					*reinterpret_cast<void* const*>(table + 0x14 + j * 4);
+		}
+	scenePrunerBlocks[7] = *reinterpret_cast<void* const*>(internalScene + 0x56c);
+	scenePrunerBlocks[8] = *reinterpret_cast<void* const*>(internalScene + 0x55c);
 	}
 	const unsigned beforeSceneReleaseAllocs = allocator.allocations();
 	const unsigned beforeSceneReleaseFrees = allocator.frees();
@@ -1046,6 +1060,14 @@ int wmain(int argc, wchar_t** argv)
 				allocator.frees() - beforeSceneReleaseFrees - 1 - j) == sceneAuxArrays[i])
 				{ ++freedSceneAuxArrays; break; }
 	printf("actor scene_aux_arrays_freed=12.%u\n", freedSceneAuxArrays);
+	unsigned freedScenePrunerBlocks = 0;
+	for(unsigned i = 0; i < 9; ++i)
+		for(unsigned j = 0; scenePrunerBlocks[i] &&
+			j < allocator.frees() - beforeSceneReleaseFrees; ++j)
+			if(allocator.freedPointerFromEnd(
+				allocator.frees() - beforeSceneReleaseFrees - 1 - j) == scenePrunerBlocks[i])
+				{ ++freedScenePrunerBlocks; break; }
+	printf("actor scene_pruner_blocks_freed=9.%u\n", freedScenePrunerBlocks);
 	if(getenv("NX_PHYSICS_PROBE_SCENE_FREE_MAP"))
 		{
 		printf("actor scene_free_map=");
