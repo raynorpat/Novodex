@@ -1805,6 +1805,7 @@ int nxActorComputeMass(void* actor, const unsigned* bodyWord)
 		scene->at<unsigned char*>(0x48);
 	*reinterpret_cast<unsigned*>(record + 0x11c) = nxSceneTakeRecordId(scene);
 	*reinterpret_cast<unsigned char**>(record + 0x1bc) = record;
+	*reinterpret_cast<unsigned char**>(record + 0x1e8) = record;
 	*reinterpret_cast<float*>(record + 0xb8) = bodyDesc->linearDamping;
 	*reinterpret_cast<float*>(record + 0xbc) = bodyDesc->angularDamping;
 	*reinterpret_cast<float*>(record + 0x84) = bodyDesc->wakeUpCounter;

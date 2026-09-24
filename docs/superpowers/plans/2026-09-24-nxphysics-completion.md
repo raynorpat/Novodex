@@ -70,6 +70,8 @@
 
 **M2 dynamic setter follow-up, 2026-09-24:** Public mass, inertia, damping, and velocity setters now match the pinned oracle for valid dynamic inputs, including reciprocal fields, shadow velocities, wake initialization, and six dirty-queue masks. A fresh-process staged differential adds seventeen assertions and raises the Phase 5 floor to 436. A deliberate dirty-mask mutation failed the gate; after restoration the staged pair and Phases 2, 3, 4, 6, and 7 pass. The full Phase 5 gate remains red only on the existing final-vtable marker. See `docs/reconstruction/novodex-physics/evidence/phase5-public-dynamic-setters.md`. Invalid inputs and diagnostics, general wake/sleep behavior, and remaining actor virtuals are open.
 
+**M2 sleep/wake follow-up, 2026-09-24:** Public actor slots 67–74 now reproduce individual/group sleeping, threshold getters/setters, wake and forced-sleep transitions, and their record/dirty-queue state for the probed static, dynamic, and two-record group cases. Twenty-three new staged assertions raise the Phase 5 floor to 459. A wake-bit mutation fails the differential; the restored build passes the eight-target staged comparison, tooling tests, header check, and Phases 2, 3, 4, 6, and 7. The full Phase 5 gate remains red only on the existing final-vtable marker. See `docs/reconstruction/novodex-physics/evidence/phase5-public-actor-sleep-state.md`. Simulation-driven sleep and real joint-connected groups remain open.
+
 ## 1. Inputs and boundaries
 
 - Repository: `D:\github\Novodex`, inspected at `0df8821f1c5e3668e566ad4182b1e8e568f632d6`.

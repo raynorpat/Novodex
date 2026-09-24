@@ -66,6 +66,10 @@ int wmain(int argc, wchar_t** argv)
 	printf("setter initial_wake=%x.%x.%x.%x\n",
 		word(record, 0x84), word(record, 0x4c),
 		word(record, 0xd0), word(record, 0xd4));
+	printf("setter group_initial=%u.%u.%u\n",
+		actor->isGroupSleeping() ? 1u : 0u,
+		word(record, 0x1e8) == reinterpret_cast<unsigned>(record) ? 1u : 0u,
+		word(record, 0x1fc) == 0 ? 1u : 0u);
 	const unsigned beforeAlloc = allocator.allocations();
 	const unsigned beforeFree = allocator.frees();
 	actor->setMass(8.0f);
@@ -119,7 +123,6 @@ int wmain(int argc, wchar_t** argv)
 	PROBE_DIRTY("angular_damping", actor->setAngularDamping(0.7f));
 	PROBE_DIRTY("linear_velocity", actor->setLinearVelocity(NxVec3(13.0f, 14.0f, 15.0f)));
 	PROBE_DIRTY("angular_velocity", actor->setAngularVelocity(NxVec3(16.0f, 17.0f, 18.0f)));
-#undef PROBE_DIRTY
 	actor->raiseBodyFlag(NX_BF_KINEMATIC);
 	const unsigned beforeKinematicAlloc = allocator.allocations();
 	const unsigned beforeKinematicFree = allocator.frees();
@@ -132,7 +135,82 @@ int wmain(int argc, wchar_t** argv)
 		allocator.allocations() - beforeKinematicAlloc,
 		allocator.frees() - beforeKinematicFree);
 	actor->clearBodyFlag(NX_BF_KINEMATIC);
+	PROBE_DIRTY("sleep_linear", actor->setSleepLinearVelocity(0.25f));
+	PROBE_DIRTY("sleep_angular", actor->setSleepAngularVelocity(0.5f));
+	printf("setter sleep_thresholds=%x.%x.%x.%x\n",
+		word(record, 0xd0), word(record, 0xd4),
+		bits(actor->getSleepLinearVelocity()),
+		bits(actor->getSleepAngularVelocity()));
+	PROBE_DIRTY("wake", actor->wakeUp(0.75f));
+	printf("setter wake_state=%x.%x.%x.%u\n", word(record, 0x84),
+		word(record, 0x4c), word(record, 0x114),
+		actor->isSleeping() ? 1u : 0u);
+	PROBE_DIRTY("sleep", actor->putToSleep());
+	printf("setter asleep_state=%x.%x.%x.%u\n", word(record, 0x84),
+		word(record, 0x4c), word(record, 0x114),
+		actor->isSleeping() ? 1u : 0u);
+	printf("setter group_asleep=%u\n", actor->isGroupSleeping() ? 1u : 0u);
+	PROBE_DIRTY("rewake", actor->wakeUp(0.5f));
+	printf("setter rewake_state=%x.%x.%x.%u\n", word(record, 0x84),
+		word(record, 0x4c), word(record, 0x114),
+		actor->isSleeping() ? 1u : 0u);
+	printf("setter group_rewake=%u\n", actor->isGroupSleeping() ? 1u : 0u);
+	PROBE_DIRTY("negative_sleep_linear", actor->setSleepLinearVelocity(-0.25f));
+	printf("setter negative_sleep_linear=%x.%x\n", word(record, 0xd0),
+		bits(actor->getSleepLinearVelocity()));
+	actor->wakeUp(-0.5f);
+	printf("setter negative_wake=%x.%u.%u\n", word(record, 0x84),
+		actor->isSleeping() ? 1u : 0u,
+		actor->isGroupSleeping() ? 1u : 0u);
+	NxActor* other = scene->createActor(actorDesc);
+	printf("setter group_two_created=%u\n", other ? 1u : 0u);
+	if(!other) return nxFail("second actor creation failed");
+	unsigned char* otherBody = *reinterpret_cast<unsigned char**>(
+		reinterpret_cast<unsigned char*>(other) + 0x14);
+	unsigned char* otherRecord = *reinterpret_cast<unsigned char**>(otherBody + 8);
+	unsigned char* mutableRecord = const_cast<unsigned char*>(record);
+	*reinterpret_cast<unsigned char**>(otherRecord + 0x1e8) = mutableRecord;
+	*reinterpret_cast<unsigned char**>(mutableRecord + 0x1fc) = otherRecord;
+	printf("setter group_two_awake=%u.%u\n",
+		actor->isGroupSleeping() ? 1u : 0u,
+		other->isGroupSleeping() ? 1u : 0u);
+	actor->putToSleep();
+	printf("setter group_one_asleep=%u.%u\n",
+		actor->isGroupSleeping() ? 1u : 0u,
+		other->isGroupSleeping() ? 1u : 0u);
+	other->putToSleep();
+	printf("setter group_both_asleep=%u.%u\n",
+		actor->isGroupSleeping() ? 1u : 0u,
+		other->isGroupSleeping() ? 1u : 0u);
+	actor->wakeUp(0.5f);
+	printf("setter group_one_rewoke=%u.%u\n",
+		actor->isGroupSleeping() ? 1u : 0u,
+		other->isGroupSleeping() ? 1u : 0u);
+	*reinterpret_cast<unsigned char**>(otherRecord + 0x1e8) = otherRecord;
+	*reinterpret_cast<unsigned char**>(mutableRecord + 0x1fc) = 0;
+	scene->releaseActor(*other);
+#undef PROBE_DIRTY
 	scene->releaseActor(*actor);
+	NxActorDesc staticDesc;
+	staticDesc.shapes.pushBack(&box);
+	NxActor* staticActor = scene->createActor(staticDesc);
+	printf("setter static_created=%u\n", staticActor ? 1u : 0u);
+	if(!staticActor) return nxFail("static actor creation failed");
+	printf("setter static_sleep=%u.%u.%x.%x\n",
+		staticActor->isSleeping() ? 1u : 0u,
+		staticActor->isGroupSleeping() ? 1u : 0u,
+		bits(staticActor->getSleepLinearVelocity()),
+		bits(staticActor->getSleepAngularVelocity()));
+	staticActor->setSleepLinearVelocity(0.25f);
+	staticActor->setSleepAngularVelocity(0.5f);
+	staticActor->wakeUp(0.75f);
+	staticActor->putToSleep();
+	printf("setter static_after=%u.%u.%x.%x\n",
+		staticActor->isSleeping() ? 1u : 0u,
+		staticActor->isGroupSleeping() ? 1u : 0u,
+		bits(staticActor->getSleepLinearVelocity()),
+		bits(staticActor->getSleepAngularVelocity()));
+	scene->releaseActor(*staticActor);
 	sdk->releaseScene(*scene);
 	sdk->release();
 	return nxReportPairIdentity(pairDirectory);

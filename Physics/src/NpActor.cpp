@@ -20,6 +20,7 @@
 #include "NxBoxShape.h"
 #include <string.h>
 #include <stdlib.h>
+#include <math.h>
 
 static unsigned char* nxNpActorBody(void* actor)
 	{
@@ -888,52 +889,127 @@ NxVec3 NpActorVtable::getLocalPointVelocityVal(const NxVec3& point) const
 	return NxVec3();
 	}
 
-// (unimplemented) isGroupSleeping
+static unsigned char* nxNpActorGroupRoot(unsigned char* record)
+	{
+	unsigned char*& parent = *reinterpret_cast<unsigned char**>(record + 0x1e8);
+	if(parent != record) parent = nxNpActorGroupRoot(parent);
+	return parent;
+	}
+
 bool NpActorVtable::isGroupSleeping() const
 	{
-	return bool();
+	void* self = const_cast<NpActorVtable*>(this);
+	void* ctx = nxNpActorContext(self, 0x10);
+	nxNpSceneGuardEnter(ctx);
+	unsigned char* record = nxNpActorRecord(self);
+	bool asleep = true;
+	if(record)
+		{
+		unsigned char* root = nxNpActorGroupRoot(record);
+		for(unsigned char* member = *reinterpret_cast<unsigned char**>(root + 0x1e8);
+			member; member = *reinterpret_cast<unsigned char**>(member + 0x1fc))
+			{
+			if(*reinterpret_cast<NxReal*>(member + 0x84) > 0.0f)
+				{
+				asleep = false;
+				break;
+				}
+			}
+		}
+	nxNpSceneGuardLeave(ctx);
+	return asleep;
 	}
 
-// (unimplemented) isSleeping
 bool NpActorVtable::isSleeping() const
 	{
-	return bool();
+	void* self = const_cast<NpActorVtable*>(this);
+	void* ctx = nxNpActorContext(self, 0x10);
+	nxNpSceneGuardEnter(ctx);
+	unsigned char* record = nxNpActorRecord(self);
+	const bool asleep = !record ||
+		*reinterpret_cast<unsigned*>(record + 0x84) == 0;
+	nxNpSceneGuardLeave(ctx);
+	return asleep;
 	}
 
-// (unimplemented) getSleepLinearVelocity
 NxReal NpActorVtable::getSleepLinearVelocity() const
 	{
-	return NxReal();
+	void* self = const_cast<NpActorVtable*>(this);
+	void* ctx = nxNpActorContext(self, 0x10);
+	nxNpSceneGuardEnter(ctx);
+	unsigned char* record = nxNpActorRecord(self);
+	const NxReal threshold = record ? sqrtf(
+		*reinterpret_cast<NxReal*>(record + 0xd0)) : NxReal();
+	nxNpSceneGuardLeave(ctx);
+	return threshold;
 	}
 
-// (unimplemented) setSleepLinearVelocity
 void NpActorVtable::setSleepLinearVelocity(NxReal threshold)
 	{
-	
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	unsigned char* record = nxNpActorRecord(this);
+	if(record)
+		{
+		*reinterpret_cast<NxReal*>(record + 0xd0) = threshold * threshold;
+		nxNpActorMarkRecordDirty(record, 0x2000);
+		}
+	nxNpSceneGuardLeave(ctx);
 	}
 
-// (unimplemented) getSleepAngularVelocity
 NxReal NpActorVtable::getSleepAngularVelocity() const
 	{
-	return NxReal();
+	void* self = const_cast<NpActorVtable*>(this);
+	void* ctx = nxNpActorContext(self, 0x10);
+	nxNpSceneGuardEnter(ctx);
+	unsigned char* record = nxNpActorRecord(self);
+	const NxReal threshold = record ? sqrtf(
+		*reinterpret_cast<NxReal*>(record + 0xd4)) : NxReal();
+	nxNpSceneGuardLeave(ctx);
+	return threshold;
 	}
 
-// (unimplemented) setSleepAngularVelocity
 void NpActorVtable::setSleepAngularVelocity(NxReal threshold)
 	{
-	
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	unsigned char* record = nxNpActorRecord(this);
+	if(record)
+		{
+		*reinterpret_cast<NxReal*>(record + 0xd4) = threshold * threshold;
+		nxNpActorMarkRecordDirty(record, 0x4000);
+		}
+	nxNpSceneGuardLeave(ctx);
 	}
 
-// (unimplemented) wakeUp
 void NpActorVtable::wakeUp(NxReal wakeCounterValue)
 	{
-	
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	unsigned char* record = nxNpActorRecord(this);
+	if(record)
+		{
+		*reinterpret_cast<NxReal*>(record + 0x84) = wakeCounterValue;
+		*reinterpret_cast<NxReal*>(record + 0x4c) = wakeCounterValue;
+		nxNpActorMarkRecordDirty(record, 0x10);
+		*reinterpret_cast<unsigned*>(record + 0x114) &= ~0x100u;
+		}
+	nxNpSceneGuardLeave(ctx);
 	}
 
-// (unimplemented) putToSleep
 void NpActorVtable::putToSleep()
 	{
-	
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	unsigned char* record = nxNpActorRecord(this);
+	if(record)
+		{
+		*reinterpret_cast<NxReal*>(record + 0x84) = 0.0f;
+		*reinterpret_cast<NxReal*>(record + 0x4c) = 0.0f;
+		nxNpActorMarkRecordDirty(record, 0x10);
+		*reinterpret_cast<unsigned*>(record + 0x114) |= 0x100u;
+		}
+	nxNpSceneGuardLeave(ctx);
 	}
 
 // Concrete actor slots 75-77 store the flag mask in the 0x50-byte body.
