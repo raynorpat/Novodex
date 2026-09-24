@@ -802,16 +802,20 @@ void NpActorVtable::saveToDesc(NxActorDescBase&)
 	
 	}
 
-// (unimplemented) setName
-void NpActorVtable::setName(const char*)
+// Concrete actor slots 83/84 address the same body-keyed global name map as
+// Actor::loadFromDescInternal (oracle 0x2d90/0x2d60).
+void NpActorVtable::setName(const char* name)
 	{
-	
+	unsigned char* body = *reinterpret_cast<unsigned char**>(
+		reinterpret_cast<unsigned char*>(this) + 0x14);
+	if(body) nxShapeSetName(body, name);
 	}
 
-// (unimplemented) getName
 const char* NpActorVtable::getName() const
 	{
-	return 0;
+	const unsigned char* body = *reinterpret_cast<unsigned char* const*>(
+		reinterpret_cast<const unsigned char*>(this) + 0x14);
+	return nxShapeGetName(const_cast<unsigned char*>(body));
 	}
 
 // (unimplemented) setGroup

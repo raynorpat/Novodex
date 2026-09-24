@@ -220,6 +220,12 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_include_directories(NxPhysicsEmptySceneTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include)
 	target_link_libraries(NxPhysicsEmptySceneTests bcrypt)
+	# A fresh process isolates actor/shape name-map behavior from the populated
+	# lifecycle fixture's intentionally stateful teardown sequence.
+	add_executable(NxPhysicsActorNameTests tests/PhysicsActorNameTests.cpp)
+	target_include_directories(NxPhysicsActorNameTests PRIVATE
+		Foundation/include Foundation/src/include Physics/include)
+	target_link_libraries(NxPhysicsActorNameTests bcrypt)
 	# The same include set as the oracle target above; the harness includes the
 	# Foundation's allocator interface for the page-guarded allocator, and Physics'
 	# public headers for the descriptors.

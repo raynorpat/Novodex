@@ -1733,12 +1733,11 @@ void nxSceneReportError(const char* message)
 	printf("NxPhysics: %s\n", message);
 	}
 
-// Reproduction holes for Actor::loadFromDescInternal's callees.
 void nxActorSetName(void* actor, unsigned name)
 	{
-	// The oracle (phys_fn_0000edc0) releases any previous name block and stores the
-	// new one. The actor field is not one this reconstruction has identified.
-	(void)actor; (void)name;
+	unsigned char* body = *reinterpret_cast<unsigned char**>(
+		static_cast<unsigned char*>(actor) + 0x14);
+	if(body) nxShapeSetName(body, reinterpret_cast<const char*>(name));
 	}
 
 void nxActorBuildBody(void* actor, const unsigned* desc)
