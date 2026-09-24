@@ -471,6 +471,72 @@ int wmain(int argc, wchar_t** argv)
 		printf("%s%x", i ? "." : "", word(posedShape, 0x3c + 4 * i));
 	printf("\n");
 	NxBoxShape* posedPublicBox = posedActor->getShapes()[0]->isBox();
+	NxMat34 publicLocalPose;
+	NxVec3 publicLocalPosition;
+	NxMat33 publicLocalOrientation;
+	posedPublicBox->getLocalPose(publicLocalPose);
+	posedPublicBox->getLocalPosition(publicLocalPosition);
+	posedPublicBox->getLocalOrientation(publicLocalOrientation);
+	printf("setter posed_public_local_pose=");
+	for(unsigned i = 0; i < 12; ++i)
+		printf("%s%x", i ? "." : "", bits(reinterpret_cast<const float*>(
+			&publicLocalPose)[i]));
+	printf("\nsetter posed_public_local_position=%x.%x.%x\n",
+		bits(publicLocalPosition.x), bits(publicLocalPosition.y),
+		bits(publicLocalPosition.z));
+	printf("setter posed_public_local_orientation=");
+	for(unsigned i = 0; i < 9; ++i)
+		printf("%s%x", i ? "." : "", bits(reinterpret_cast<const float*>(
+			&publicLocalOrientation)[i]));
+	printf("\n");
+	const NxMat34 localValPose = posedPublicBox->getLocalPose();
+	const NxVec3 localValPosition = posedPublicBox->getLocalPosition();
+	const NxMat33 localValOrientation = posedPublicBox->getLocalOrientation();
+	printf("setter posed_public_local_val_pose=");
+	for(unsigned i = 0; i < 12; ++i)
+		printf("%s%x", i ? "." : "", bits(reinterpret_cast<const float*>(
+			&localValPose)[i]));
+	printf("\nsetter posed_public_local_val_position=%x.%x.%x\n",
+		bits(localValPosition.x), bits(localValPosition.y),
+		bits(localValPosition.z));
+	printf("setter posed_public_local_val_orientation=");
+	for(unsigned i = 0; i < 9; ++i)
+		printf("%s%x", i ? "." : "", bits(reinterpret_cast<const float*>(
+			&localValOrientation)[i]));
+	printf("\n");
+	NxMat34 publicGlobalPose;
+	NxVec3 publicGlobalPosition;
+	NxMat33 publicGlobalOrientation;
+	posedPublicBox->getGlobalPose(publicGlobalPose);
+	posedPublicBox->getGlobalPosition(publicGlobalPosition);
+	posedPublicBox->getGlobalOrientation(publicGlobalOrientation);
+	printf("setter posed_public_global_pose=");
+	for(unsigned i = 0; i < 12; ++i)
+		printf("%s%x", i ? "." : "", bits(reinterpret_cast<const float*>(
+			&publicGlobalPose)[i]));
+	printf("\nsetter posed_public_global_position=%x.%x.%x\n",
+		bits(publicGlobalPosition.x), bits(publicGlobalPosition.y),
+		bits(publicGlobalPosition.z));
+	printf("setter posed_public_global_orientation=");
+	for(unsigned i = 0; i < 9; ++i)
+		printf("%s%x", i ? "." : "", bits(reinterpret_cast<const float*>(
+			&publicGlobalOrientation)[i]));
+	printf("\n");
+	const NxMat34 globalValPose = posedPublicBox->getGlobalPose();
+	const NxVec3 globalValPosition = posedPublicBox->getGlobalPosition();
+	const NxMat33 globalValOrientation = posedPublicBox->getGlobalOrientation();
+	printf("setter posed_public_global_val_pose=");
+	for(unsigned i = 0; i < 12; ++i)
+		printf("%s%x", i ? "." : "", bits(reinterpret_cast<const float*>(
+			&globalValPose)[i]));
+	printf("\nsetter posed_public_global_val_position=%x.%x.%x\n",
+		bits(globalValPosition.x), bits(globalValPosition.y),
+		bits(globalValPosition.z));
+	printf("setter posed_public_global_val_orientation=");
+	for(unsigned i = 0; i < 9; ++i)
+		printf("%s%x", i ? "." : "", bits(reinterpret_cast<const float*>(
+			&globalValOrientation)[i]));
+	printf("\n");
 	NxBounds3 posedBounds;
 	posedPublicBox->getWorldBounds(posedBounds);
 	printf("setter posed_box_bounds=%x.%x.%x.%x.%x.%x\n",

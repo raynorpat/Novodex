@@ -195,6 +195,86 @@ static void __fastcall nxShapeHandleGetWorldBounds(void* self, void*,
 	reinterpret_cast<BoundsFn>(table[9])(shape, &bounds.getMin().x);
 	}
 
+static void __fastcall nxShapeHandleGetLocalPose(void* self, void*,
+	NxMat34& pose)
+	{
+	memcpy(&pose, nxBoxHandleInternal(self) + 0x6c, sizeof(pose));
+	}
+
+static void __fastcall nxShapeHandleGetLocalPosition(void* self, void*,
+	NxVec3& position)
+	{
+	memcpy(&position, nxBoxHandleInternal(self) + 0x90, sizeof(position));
+	}
+
+static void __fastcall nxShapeHandleGetLocalOrientation(void* self, void*,
+	NxMat33& orientation)
+	{
+	memcpy(&orientation, nxBoxHandleInternal(self) + 0x6c,
+		sizeof(orientation));
+	}
+
+static void __fastcall nxShapeHandleGetGlobalPose(void* self, void*,
+	NxMat34& pose)
+	{
+	memcpy(&pose, nxBoxHandleInternal(self) + 0x0c, sizeof(pose));
+	}
+
+static void __fastcall nxShapeHandleGetGlobalPosition(void* self, void*,
+	NxVec3& position)
+	{
+	memcpy(&position, nxBoxHandleInternal(self) + 0x30, sizeof(position));
+	}
+
+static void __fastcall nxShapeHandleGetGlobalOrientation(void* self, void*,
+	NxMat33& orientation)
+	{
+	memcpy(&orientation, nxBoxHandleInternal(self) + 0x0c,
+		sizeof(orientation));
+	}
+
+static NxMat34* __fastcall nxShapeHandleGetLocalPoseVal(void* self, void*,
+	NxMat34* pose)
+	{
+	nxShapeHandleGetLocalPose(self, 0, *pose);
+	return pose;
+	}
+
+static NxVec3* __fastcall nxShapeHandleGetLocalPositionVal(void* self, void*,
+	NxVec3* position)
+	{
+	nxShapeHandleGetLocalPosition(self, 0, *position);
+	return position;
+	}
+
+static NxMat33* __fastcall nxShapeHandleGetLocalOrientationVal(void* self, void*,
+	NxMat33* orientation)
+	{
+	nxShapeHandleGetLocalOrientation(self, 0, *orientation);
+	return orientation;
+	}
+
+static NxMat34* __fastcall nxShapeHandleGetGlobalPoseVal(void* self, void*,
+	NxMat34* pose)
+	{
+	nxShapeHandleGetGlobalPose(self, 0, *pose);
+	return pose;
+	}
+
+static NxVec3* __fastcall nxShapeHandleGetGlobalPositionVal(void* self, void*,
+	NxVec3* position)
+	{
+	nxShapeHandleGetGlobalPosition(self, 0, *position);
+	return position;
+	}
+
+static NxMat33* __fastcall nxShapeHandleGetGlobalOrientationVal(void* self, void*,
+	NxMat33* orientation)
+	{
+	nxShapeHandleGetGlobalOrientation(self, 0, *orientation);
+	return orientation;
+	}
+
 static NxCollisionGroup __fastcall nxBoxHandleGetGroup(void* self, void*)
 	{
 	return *reinterpret_cast<NxCollisionGroup*>(nxBoxHandleInternal(self) + 0xd8);
@@ -426,6 +506,18 @@ void* nxBoxShapePublicVtable()
 			slots[4] = reinterpret_cast<void*>(&nxShapeHandleGetWorldBounds);
 			slots[5] = reinterpret_cast<void*>(&nxBoxHandleSetFlag);
 			slots[6] = reinterpret_cast<void*>(&nxBoxHandleGetFlag);
+			slots[10] = reinterpret_cast<void*>(&nxShapeHandleGetLocalPose);
+			slots[11] = reinterpret_cast<void*>(&nxShapeHandleGetLocalPosition);
+			slots[12] = reinterpret_cast<void*>(&nxShapeHandleGetLocalOrientation);
+			slots[13] = reinterpret_cast<void*>(&nxShapeHandleGetLocalPoseVal);
+			slots[14] = reinterpret_cast<void*>(&nxShapeHandleGetLocalPositionVal);
+			slots[15] = reinterpret_cast<void*>(&nxShapeHandleGetLocalOrientationVal);
+			slots[19] = reinterpret_cast<void*>(&nxShapeHandleGetGlobalPose);
+			slots[20] = reinterpret_cast<void*>(&nxShapeHandleGetGlobalPosition);
+			slots[21] = reinterpret_cast<void*>(&nxShapeHandleGetGlobalOrientation);
+			slots[22] = reinterpret_cast<void*>(&nxShapeHandleGetGlobalPoseVal);
+			slots[23] = reinterpret_cast<void*>(&nxShapeHandleGetGlobalPositionVal);
+			slots[24] = reinterpret_cast<void*>(&nxShapeHandleGetGlobalOrientationVal);
 			slots[25] = reinterpret_cast<void*>(&nxBoxHandleSetMaterial);
 			slots[26] = reinterpret_cast<void*>(&nxBoxHandleGetMaterial);
 			slots[27] = reinterpret_cast<void*>(&nxBoxHandleGetType);
