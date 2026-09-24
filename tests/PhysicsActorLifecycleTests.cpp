@@ -897,6 +897,31 @@ int wmain(int argc, wchar_t** argv)
 				shape->getFlag(NX_SF_VISUALIZATION),
 				shape->getFlag(NX_SF_FEATURE_INDICES),
 				*reinterpret_cast<const NxU16*>(internalShape + 0xde));
+			static const char firstName[] = "box-one";
+			static const char secondName[] = "box-two";
+			printf("actor box name_default=%u\n", shape->getName() == 0);
+			const unsigned beforeNameAlloc = allocator.allocations();
+			const unsigned beforeNameFree = allocator.frees();
+			shape->setName(firstName);
+			printf("actor box name_first=%u.%s\n",
+				shape->getName() == firstName, shape->getName());
+			shape->setName(secondName);
+			printf("actor box name_second=%u.%s\n",
+				shape->getName() == secondName, shape->getName());
+			shape->setName(0);
+			printf("actor box name_cleared=%u\n", shape->getName() == 0);
+			printf("actor box name_allocs=%u.%u\n",
+				allocator.allocations() - beforeNameAlloc,
+				allocator.frees() - beforeNameFree);
+			printf("actor box name_alloc_sizes=");
+			for(unsigned i = 0; i < allocator.allocations() - beforeNameAlloc; ++i)
+				printf("%s%x", i ? "." : "", allocator.allocSizeFromEnd(
+					allocator.allocations() - beforeNameAlloc - 1 - i));
+			printf("\nactor box name_free_sizes=");
+			for(unsigned i = 0; i < allocator.frees() - beforeNameFree; ++i)
+				printf("%s%x", i ? "." : "", allocator.freedSizeFromEnd(
+					allocator.frees() - beforeNameFree - 1 - i));
+			printf("\n");
 			}
 		}
 
@@ -906,6 +931,9 @@ int wmain(int argc, wchar_t** argv)
 		box.group = 7;
 		box.materialIndex = 2;
 		box.shapeFlags = NX_SF_FEATURE_INDICES;
+		static const char descriptorName[] = "box-descriptor";
+		box.name = descriptorName;
+		const unsigned beforeNamedAlloc = allocator.allocations();
 		NxActor* descriptorActor = scene->createActor(dynamicDesc);
 		printf("actor box descriptor_created=%u\n", descriptorActor ? 1u : 0u);
 		if(descriptorActor)
@@ -922,6 +950,24 @@ int wmain(int argc, wchar_t** argv)
 				shape->getFlag(NX_SF_VISUALIZATION),
 				shape->getFlag(NX_SF_FEATURE_INDICES),
 				*reinterpret_cast<const NxU16*>(internalShape + 0xde));
+			printf("actor box descriptor_name=%u.%s\n",
+				shape->getName() == descriptorName, shape->getName());
+			printf("actor box descriptor_allocs=%u\n",
+				allocator.allocations() - beforeNamedAlloc);
+			printf("actor box descriptor_alloc_sizes=");
+			for(unsigned i = 0; i < allocator.allocations() - beforeNamedAlloc; ++i)
+				printf("%s%x", i ? "." : "", allocator.allocSizeFromEnd(
+					allocator.allocations() - beforeNamedAlloc - 1 - i));
+			printf("\n");
+			const unsigned beforeNamedFree = allocator.frees();
+			scene->releaseActor(*descriptorActor);
+			printf("actor box descriptor_release_frees=%u\n",
+				allocator.frees() - beforeNamedFree);
+			printf("actor box descriptor_release_sizes=");
+			for(unsigned i = 0; i < allocator.frees() - beforeNamedFree; ++i)
+				printf("%s%x", i ? "." : "", allocator.freedSizeFromEnd(
+					allocator.frees() - beforeNamedFree - 1 - i));
+			printf("\n");
 			}
 		}
 

@@ -87,6 +87,93 @@ static NxMaterialIndex __fastcall nxBoxHandleGetMaterial(void* self, void*)
 	return *reinterpret_cast<NxMaterialIndex*>(nxBoxHandleInternal(self) + 0xda);
 	}
 
+// The oracle's global shape-name map stores pointer pairs and discards the
+// two-entry table as soon as its last association is removed.
+struct NxShapeNamePair
+	{
+	void* shape;
+	const char* name;
+	};
+
+struct NxShapeNameTable
+	{
+	NxShapeNamePair* entries;
+	unsigned count;
+	unsigned capacity;
+	unsigned reserved;
+	};
+
+static NxShapeNameTable* gNxShapeNames = 0;
+
+void nxShapeSetName(void* shape, const char* name)
+	{
+	if(!shape) return;
+	if(!gNxShapeNames)
+		{
+		if(!name) return;
+		gNxShapeNames = static_cast<NxShapeNameTable*>(
+			nxGetSdkAllocator()->malloc(sizeof(NxShapeNameTable), NX_MEMORY_PERSISTENT));
+		if(!gNxShapeNames) return;
+		memset(gNxShapeNames, 0, sizeof(*gNxShapeNames));
+		}
+	for(unsigned i = 0; i < gNxShapeNames->count; ++i)
+		if(gNxShapeNames->entries[i].shape == shape)
+			{
+			if(name)
+				{
+				gNxShapeNames->entries[i].name = name;
+				return;
+				}
+			gNxShapeNames->entries[i] =
+				gNxShapeNames->entries[--gNxShapeNames->count];
+			if(!gNxShapeNames->count)
+				{
+				nxGetSdkAllocator()->free(gNxShapeNames->entries);
+				nxGetSdkAllocator()->free(gNxShapeNames);
+				gNxShapeNames = 0;
+				}
+			return;
+			}
+	if(!name) return;
+	if(gNxShapeNames->count == gNxShapeNames->capacity)
+		{
+		const unsigned capacity = gNxShapeNames->count * 2 + 2;
+		NxShapeNamePair* entries = static_cast<NxShapeNamePair*>(
+			nxGetSdkAllocator()->malloc(
+				capacity * sizeof(NxShapeNamePair), NX_MEMORY_PERSISTENT));
+		if(!entries) return;
+		if(gNxShapeNames->count)
+			memcpy(entries, gNxShapeNames->entries,
+				gNxShapeNames->count * sizeof(NxShapeNamePair));
+		if(gNxShapeNames->entries)
+			nxGetSdkAllocator()->free(gNxShapeNames->entries);
+		gNxShapeNames->entries = entries;
+		gNxShapeNames->capacity = capacity;
+		}
+	gNxShapeNames->entries[gNxShapeNames->count].shape = shape;
+	gNxShapeNames->entries[gNxShapeNames->count].name = name;
+	++gNxShapeNames->count;
+	}
+
+const char* nxShapeGetName(void* shape)
+	{
+	if(!gNxShapeNames || !shape) return 0;
+	for(unsigned i = 0; i < gNxShapeNames->count; ++i)
+		if(gNxShapeNames->entries[i].shape == shape)
+			return gNxShapeNames->entries[i].name;
+	return 0;
+	}
+
+static void __fastcall nxBoxHandleSetName(void* self, void*, const char* name)
+	{
+	nxShapeSetName(nxBoxHandleInternal(self), name);
+	}
+
+static const char* __fastcall nxBoxHandleGetName(void* self, void*)
+	{
+	return nxShapeGetName(nxBoxHandleInternal(self));
+	}
+
 static NxActor* __fastcall nxBoxHandleGetActor(void* self, void*)
 	{
 	unsigned char* body = *reinterpret_cast<unsigned char**>(nxBoxHandleInternal(self) + 4);
@@ -128,6 +215,8 @@ void* nxBoxShapePublicVtable()
 			slots[26] = reinterpret_cast<void*>(&nxBoxHandleGetMaterial);
 			slots[27] = reinterpret_cast<void*>(&nxBoxHandleGetType);
 			slots[28] = reinterpret_cast<void*>(&nxBoxHandleIs);
+			slots[29] = reinterpret_cast<void*>(&nxBoxHandleSetName);
+			slots[30] = reinterpret_cast<void*>(&nxBoxHandleGetName);
 			slots[32] = reinterpret_cast<void*>(&nxBoxHandleGetDimensions);
 			}
 		};

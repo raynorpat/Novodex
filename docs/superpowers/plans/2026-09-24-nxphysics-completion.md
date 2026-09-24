@@ -56,6 +56,8 @@
 
 **M2 box flag packet, 2026-09-24:** Public box slots 5 and 6 now match the oracle's 16-bit shape-flag mask, including returning the mask through `NX_BOOL` rather than normalizing to `1`. Default, enable, clear, and descriptor-copy observations add four registered lines and raise the Phase 5 floor to 345. An aimed boolean-normalization mutation failed the staged differential. See `docs/reconstruction/novodex-physics/evidence/phase5-box-flags.md`. Dirty queueing for a cleared auxiliary entry and the remaining public slots are still open.
 
+**M2 box name packet, 2026-09-24:** Public box slots 29 and 30 now use a pointer-preserving global name table. First insert, replacement, clear, descriptor name loading, the 0x10/0x10 allocation pair, and the named actor's five-block release match the pinned oracle. Twelve registered checks raise the Phase 5 floor to 357. An aimed replacement mutation failed the staged differential. See `docs/reconstruction/novodex-physics/evidence/phase5-box-name-registry.md`. Registry growth, stale entries, SDK teardown, other shape finals, and the final-vtable marker remain open.
+
 ## 1. Inputs and boundaries
 
 - Repository: `D:\github\Novodex`, inspected at `0df8821f1c5e3668e566ad4182b1e8e568f632d6`.

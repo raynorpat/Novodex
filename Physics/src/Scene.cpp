@@ -42,6 +42,9 @@
 #include <string.h>
 #include <new>
 
+// Public shape final and descriptor loader share the oracle's global name map.
+void nxShapeSetName(void* shape, const char* name);
+
 // ---------------------------------------------------------------------------
 // Reproduction holes. The oracle calls these; the phases that own them have not
 // reconstructed them. Each declaration below is a seam, not a claim: the stub
@@ -1850,6 +1853,8 @@ void* nxShapeFactory(void* shapeDesc, void* actor)
 		*reinterpret_cast<void**>(body + 0x10) = shape;
 		*reinterpret_cast<void**>(shape + 4) = body;
 		}
+	if(descriptor && descriptor->name)
+		nxShapeSetName(shape, descriptor->name);
 	return shape;
 	}
 
