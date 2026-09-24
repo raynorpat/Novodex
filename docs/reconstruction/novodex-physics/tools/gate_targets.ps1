@@ -329,7 +329,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'actor box descriptor_allocs=7',
         'actor box descriptor_alloc_sizes=50.18.228.1c.10.10.260',
         'actor box descriptor_release_frees=5',
-        'actor box descriptor_release_sizes=18.260.1c.228.50'
+        'actor box descriptor_release_sizes=18.260.1c.228.50',
+        'actor scene_live_actor_frees=2.2'
     )
     # The Phase 6 joint-descriptor differential. Two cases over the two exported
     # rows, printing the whole descriptor surface before and after each call. The
@@ -1207,7 +1208,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 101  # 34 for NxPhysicsAssetTests, 67 for NxPhysicsThirdPartyTests
-    '5' = 363  # 126 object-layout assertions plus 237 public actor/pruner/box/scene lines
+    '5' = 364  # 126 object-layout assertions plus 238 public actor/pruner/box/scene lines
                # (RED on purpose: vtables family open)
     '6' = 11  # 3 oracle-descriptor + 4 oracle-joint + 4 staged-pair-joint
     '7' = 4   # the four STAGED-PAIR assertions; the oracle-differential assertions

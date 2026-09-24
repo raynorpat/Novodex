@@ -60,6 +60,8 @@
 
 **M2 empty Scene release, 2026-09-24:** The internal Scene constructor now owns and builds its 0x28-byte public wrapper and the condition's 0x14-byte state block in oracle order. `releaseScene` removes the internal Scene from the SDK array and frees the empty Scene's nine blocks in exact order; SDK release's seven-block tail is also exact. A separate fresh-process target adds six registered checks and raises the Phase 5 floor to 363. See `docs/reconstruction/novodex-physics/evidence/phase5-empty-scene-release.md`. Populated Scene teardown is much larger: 45 oracle frees versus nine candidate frees in the current actor drive, with 14 versus seven SDK-release frees. This is the next ownership dependency, not a claim of Scene closure.
 
+**M2 populated Scene ownership frontier, 2026-09-24:** The candidate now releases both live public actors during `releaseScene`, matching the oracle's `2.2` pointer-free observation. One registered check raises the Phase 5 floor to 364. The candidate currently frees 19 of the oracle's 45 Scene-release blocks and makes none of its two teardown allocations; internal actor destruction, auxiliary arrays, pruners, and SDK name-table teardown remain open. See `docs/reconstruction/novodex-physics/evidence/phase5-populated-scene-teardown-frontier.md` for the full oracle sequence.
+
 ## 1. Inputs and boundaries
 
 - Repository: `D:\github\Novodex`, inspected at `0df8821f1c5e3668e566ad4182b1e8e568f632d6`.

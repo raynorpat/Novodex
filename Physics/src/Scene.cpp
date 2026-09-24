@@ -1503,6 +1503,18 @@ static void nxSceneDelete(void* self, int flags)
 	unsigned* p = static_cast<unsigned*>(self);
 	if(p[0x1b3])
 		delete reinterpret_cast<NpScene*>(p[0x1b3]);
+	NxSceneInternal* scene = static_cast<NxSceneInternal*>(self);
+	while(NxActor** actors = scene->at<NxActor**>(0x55c))
+		{
+		NxActor** end = scene->at<NxActor**>(0x560);
+		if(!end || actors == end) break;
+		unsigned char* actor = reinterpret_cast<unsigned char*>(*actors);
+		if(!actor) break;
+		unsigned char* body = *reinterpret_cast<unsigned char**>(actor + 0x14);
+		if(!body) break;
+		scene->releaseActor(body);
+		if(scene->at<NxActor**>(0x560) == end) break;
+		}
 	if(p[0x12])
 		nxGetSdkAllocator()->free(reinterpret_cast<void*>(p[0x12]));
 	if(flags & 1)

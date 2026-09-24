@@ -1003,10 +1003,33 @@ int wmain(int argc, wchar_t** argv)
 			}
 		}
 
+	const unsigned liveActors = scene->getNbActors();
+	NxActor* liveActorPointers[16] = {};
+	NxActor** liveActorArray = scene->getActors();
+	for(unsigned i = 0; i < liveActors && i < 16; ++i)
+		liveActorPointers[i] = liveActorArray[i];
+	const unsigned beforeSceneReleaseAllocs = allocator.allocations();
 	const unsigned beforeSceneReleaseFrees = allocator.frees();
 	sdk->releaseScene(*scene);
+	unsigned freedLiveActors = 0;
+	for(unsigned i = 0; i < liveActors && i < 16; ++i)
+		for(unsigned j = 0; j < allocator.frees() - beforeSceneReleaseFrees; ++j)
+			if(allocator.freedPointerFromEnd(
+				allocator.frees() - beforeSceneReleaseFrees - 1 - j) == liveActorPointers[i])
+				{
+				++freedLiveActors;
+				break;
+				}
+	printf("actor scene_live_actor_frees=%u.%u\n", liveActors, freedLiveActors);
 	if(getenv("NX_PHYSICS_PROBE_SCENE_TEARDOWN"))
 		{
+		printf("actor scene_teardown_allocs=%u\n",
+			allocator.allocations() - beforeSceneReleaseAllocs);
+		printf("actor scene_teardown_alloc_sizes=");
+		for(unsigned i = 0; i < allocator.allocations() - beforeSceneReleaseAllocs; ++i)
+			printf("%s%x", i ? "." : "", allocator.allocSizeFromEnd(
+				allocator.allocations() - beforeSceneReleaseAllocs - 1 - i));
+		printf("\n");
 		printf("actor scene_teardown_frees=%u\n",
 			allocator.frees() - beforeSceneReleaseFrees);
 		printf("actor scene_teardown_sizes=");
