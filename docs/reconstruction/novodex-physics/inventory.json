@@ -25454,8 +25454,8 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/560",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3590",
       "static_proof": "__thiscall: destroys the embedded collision object through [colobj-vtbl+0] with flag 1 UNCONDITIONALLY (0x00028e93..97), DECREMENTS the bound mesh refcount at mesh+0x74 when non-null (0x00028e99..a6), runs the base-dtor chain, frees this through allocator slot +0x14 when flag&1; MESH vtable .rdata 0x107630 slot 0",
-      "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests dtors2 family on a real constructed mesh with no bound mesh: post-dtor oracle digest b3c6ab70 equals candidate bitwise",
-      "notes": "",
+      "dynamic_proof": "layout dtors2 post-dtor digest b3c6ab70; shape vtable harness flags 0/1 compares allocator free deltas 1/2 and bound mesh refcount decrement 7->6, digest 73b85375 failures=0",
+      "notes": "Destructor vptr restoration awaits installation of the complete candidate mesh table.",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
     {

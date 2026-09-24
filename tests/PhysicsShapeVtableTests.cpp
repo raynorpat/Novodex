@@ -1616,6 +1616,54 @@ int wmain(int argc, wchar_t** argv)
         }
         ++cases;
     }
+    // MESH slot 0 must destroy its collision object, decrement the bound
+    // mesh refcount, and free the shape itself only when flags bit 0 is set.
+    for(unsigned flags = 0; flags <= 1; ++flags) {
+        unsigned char* oracleShape = static_cast<unsigned char*>(malloc(0xe8));
+        unsigned char* candidateShape = static_cast<unsigned char*>(malloc(0xe8));
+        if(!oracleShape || !candidateShape) return 2;
+        memset(oracleShape, 0xcd, 0xe8);
+        memset(candidateShape, 0xcd, 0xe8);
+        reinterpret_cast<BoxCtor>(const_cast<unsigned char*>(base) +
+            0x27db0)(oracleShape, 0, 0);
+        new(candidateShape) MeshShape(0, 0);
+        unsigned char oracleMesh[0x100] = {}, candidateMesh[0x100] = {};
+        unsigned refcount = 7;
+        memcpy(oracleMesh + 0x74, &refcount, 4);
+        memcpy(candidateMesh + 0x74, &refcount, 4);
+        void* pointer = oracleMesh;
+        memcpy(oracleShape + 0xe0, &pointer, 4);
+        pointer = candidateMesh;
+        memcpy(candidateShape + 0xe0, &pointer, 4);
+        const unsigned oracleBefore = oracleFreeCount;
+        const unsigned candidateBefore = candidateAllocator.freeCount;
+        reinterpret_cast<DtorSlot>(const_cast<unsigned char*>(base) +
+            0x28e80)(oracleShape, flags);
+        reinterpret_cast<MeshShape*>(candidateShape)->nxMeshScalarDeletingDtor(
+            flags);
+        unsigned oracleRefcount = 0, candidateRefcount = 0;
+        memcpy(&oracleRefcount, oracleMesh + 0x74, 4);
+        memcpy(&candidateRefcount, candidateMesh + 0x74, 4);
+        const unsigned oracleFrees = oracleFreeCount - oracleBefore;
+        const unsigned candidateFrees =
+            candidateAllocator.freeCount - candidateBefore;
+        oracleDigest = foldOracle(oracleDigest, &oracleFrees,
+            sizeof(oracleFrees));
+        oracleDigest = foldOracle(oracleDigest, &oracleRefcount,
+            sizeof(oracleRefcount));
+        if(oracleFrees != 1 + flags || candidateFrees != oracleFrees ||
+           oracleRefcount != 6 || candidateRefcount != oracleRefcount) {
+            fprintf(stderr, "mesh slot 0 flags=%u frees=%u/%u ref=%u/%u differs\n",
+                flags, oracleFrees, candidateFrees,
+                oracleRefcount, candidateRefcount);
+            ++failures;
+        }
+        if(flags == 0) {
+            free(oracleShape);
+            free(candidateShape);
+        }
+        ++cases;
+    }
     nxSetSdkAllocatorBridge(0);
     printf("shape vtable oracle_digest=%08x cases=%u failures=%u\n",
         oracleDigest, cases, failures);

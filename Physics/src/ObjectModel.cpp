@@ -5428,7 +5428,8 @@ void MeshShape::nxMeshScalarDeletingDtor(unsigned flags)
 	{
 	if(mBase.mWord9C)
 		{
-		// destroyed through its own vtable: 0x00028e93..97
+		reinterpret_cast<CollisionObject*>(mBase.mWord9C)->
+			nxScalarDeletingDtor(1);		// 0x00028e93..97
 		}
 	if(mWordE0)
 		{
@@ -5436,7 +5437,8 @@ void MeshShape::nxMeshScalarDeletingDtor(unsigned flags)
 		}
 	mBase.nxBaseDtorOwnerArms();		// owner arms, 0x26be1..c35
 	mBase.mPrunable.~Prunable();			// tail of the base-dtor chain
-	(void) flags;							// self-free arm not modeled
+	if(flags & 1u)
+		nxGetSdkAllocator()->free(this);
 	}
 
 // ---------------------------------------------------------------------------
