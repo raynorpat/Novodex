@@ -1,6 +1,10 @@
 #ifndef NP_ACTOR_DYNAMIC_MATH_H
 #define NP_ACTOR_DYNAMIC_MATH_H
 
+#include "NxMat33.h"
+#include "NxQuat.h"
+#include <string.h>
+
 // Dynamic record matrices are row-major. The shipped Win32 build evaluates
 // quaternion products in x87 precision, then rounds each matrix element to
 // float; its tensor helper rounds the scaled columns before accumulating.
@@ -60,6 +64,14 @@ static inline void nxNpActorUpdateInertiaMatrices(unsigned char* record)
 				static_cast<double>(bodyRotation[row * 3 + 2]) * frame[6 + col]);
 	nxNpActorWorldTensor(reinterpret_cast<const float*>(record + 0xc4),
 		rotation, inverse);
+	}
+
+static inline void nxNpActorUpdateCMassQuaternion(unsigned char* record)
+	{
+	NxMat33 matrix;
+	matrix.setRowMajor(reinterpret_cast<const float*>(record + 0x134));
+	const NxQuat quaternion(matrix);
+	memcpy(record + 0x124, &quaternion, sizeof(quaternion));
 	}
 
 #endif

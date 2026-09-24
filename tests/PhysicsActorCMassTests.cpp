@@ -13,6 +13,8 @@
 typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(NxU32, NxUserAllocator*, NxUserOutputStream*);
 
 static unsigned bits(float f) { unsigned u; memcpy(&u, &f, 4); return u; }
+static unsigned word(const unsigned char* bytes, unsigned offset)
+{ unsigned u; memcpy(&u, bytes + offset, 4); return u; }
 static void vector(const char* tag, const char* field, const NxVec3& v)
 {
 	printf("cmass %s %s=%x.%x.%x\n", tag, field, bits(v.x), bits(v.y), bits(v.z));
@@ -40,6 +42,19 @@ static void probe(const char* tag, NxActor* actor)
 	pose(tag, "global_pose", actor->getCMassGlobalPose());
 	vector(tag, "global_position", actor->getCMassGlobalPosition());
 	matrix(tag, "global_orientation", actor->getCMassGlobalOrientation());
+}
+static void recordState(const char* tag, NxActor* actor)
+{
+	unsigned char* body = *reinterpret_cast<unsigned char**>(
+		reinterpret_cast<unsigned char*>(actor) + 0x14);
+	unsigned char* record = *reinterpret_cast<unsigned char**>(body + 8);
+	unsigned char* aux = *reinterpret_cast<unsigned char**>(record + 0x120);
+	unsigned* flags = *reinterpret_cast<unsigned**>(aux + 0x40);
+	unsigned id = word(record, 0x11c);
+	printf("cmass %s record=%x.%x.%x.%x.%x.%x.%x\n", tag,
+		word(record, 0x124), word(record, 0x128),
+		word(record, 0x12c), word(record, 0x130),
+		word(record, 0x198), word(record, 0x84), flags[id]);
 }
 int wmain(int argc, wchar_t** argv)
 {
@@ -81,6 +96,35 @@ int wmain(int argc, wchar_t** argv)
 		printf("cmass variant=%u created=%u\n", variant, actor ? 1u : 0u);
 		if(!actor) return nxFail("actor creation failed");
 		probe(variant == 0 ? "identity" : variant == 1 ? "offset" : "rotated", actor);
+		if(variant == 0)
+		{
+			actor->wakeUp(0.1f);
+			recordState("low_wake_before", actor);
+			actor->setCMassOffsetLocalPosition(NxVec3(1.0f, 2.0f, 3.0f));
+			probe("low_wake_after", actor);
+			recordState("low_wake_after", actor);
+		}
+		if(variant == 1)
+		{
+			recordState("offset_initial", actor);
+			actor->setCMassOffsetLocalPosition(NxVec3(2.0f, 3.0f, 4.0f));
+			probe("set_local_position", actor);
+			recordState("set_local_position", actor);
+			NxMat33 xRotation(NX_IDENTITY_MATRIX);
+			xRotation.setRow(1, NxVec3(0.0f, 0.0f, -1.0f));
+			xRotation.setRow(2, NxVec3(0.0f, 1.0f, 0.0f));
+			actor->setCMassOffsetLocalOrientation(xRotation);
+			probe("set_local_orientation", actor);
+			recordState("set_local_orientation", actor);
+			NxMat34 localPose;
+			localPose.id();
+			localPose.M.setRow(0, NxVec3(0.0f, -1.0f, 0.0f));
+			localPose.M.setRow(1, NxVec3(1.0f, 0.0f, 0.0f));
+			localPose.t = NxVec3(3.0f, 4.0f, 5.0f);
+			actor->setCMassOffsetLocalPose(localPose);
+			probe("set_local_pose", actor);
+			recordState("set_local_pose", actor);
+		}
 		scene->releaseActor(*actor);
 	}
 	desc.body = 0;

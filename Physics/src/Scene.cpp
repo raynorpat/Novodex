@@ -1881,6 +1881,8 @@ int nxActorComputeMass(void* actor, const unsigned* bodyWord)
 			1.0f / inertia.z;
 		}
 	nxNpActorUpdateInertiaMatrices(record);
+	nxNpActorUpdateCMassQuaternion(record);
+	*reinterpret_cast<unsigned*>(record + 0x198) = 2;
 	nxSceneAuxRegisterRecord(scene, record);
 
 	return 0;
