@@ -82,6 +82,14 @@ if(MSVC)
 # reconstruction contains rows whose code exists and is discarded for exactly that reason --
 # measured in round 67 as 150 rows whose implementation object contributes no function.
 target_link_options(NxPhysics PRIVATE /MAP /OPT:NOREF /OPT:NOICF)
+	# Keep these measured vendor functions in the DLL while their callers are still
+	# being reconstructed. A normal static-library link omits their archive members.
+	# The complete vendor-link census is tracked separately: whole-archive linking
+	# currently exposes an unresolved CompleteBoxPruning reference in stock OPCODE's
+	# SweepAndPrune::Init, whereas the oracle calls its own pruning helper at b4530.
+	target_link_options(NxPhysics PRIVATE
+		"/INCLUDE:?SquareDistance@Segment@IceMaths@@QBEMABVPoint@2@PAM@Z"
+		"/INCLUDE:_qh_pointdist")
 endif()
 target_link_libraries(NxPhysics NxFoundation NxQhull NxOpcode)
 set_target_properties(NxPhysics PROPERTIES LINKER_LANGUAGE CXX)

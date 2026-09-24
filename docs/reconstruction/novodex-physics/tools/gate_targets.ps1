@@ -848,8 +848,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty name=container rva=0x000b4d70 owner=phys_fn_004836 source=Ice/IceContainer.cpp:40,81,97,153 words=3456 oracle=7abefb4c mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=container_copy rva=0x000b4f00 owner=phys_fn_004844 source=Ice/IceContainer.cpp:67 words=56 oracle=ea2f4a34 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=radixsort rva=0x000e32c0 owner=phys_fn_005157 source=Ice/IceRevisitedRadix.cpp:170,186,238,350 words=1254 oracle=469ea556 mismatches=0 worst_ulp=0 verdict=exact',
-        'thirdparty name=segment_sqrdist.grid rva=0x000f0560 owner=phys_fn_005493 source=Ice/IceSegment.cpp:29 words=60000 oracle=e2c89342 mismatches=9356 worst_ulp=67 verdict=divergent',
-        'thirdparty name=segment_sqrdist.wide rva=0x000f0560 owner=phys_fn_005493 source=Ice/IceSegment.cpp:29 words=40000 oracle=4dbf889d mismatches=15538 worst_ulp=8420 verdict=divergent',
+        'thirdparty name=segment_sqrdist.grid rva=0x000f0560 owner=phys_fn_005493 source=Ice/IceSegment.cpp:29 words=60000 oracle=e2c89342 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=segment_sqrdist.wide rva=0x000f0560 owner=phys_fn_005493 source=Ice/IceSegment.cpp:29 words=40000 oracle=4dbf889d mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=mesh_topology rva=0x000e8fd0 owner=phys_fn_005357 source=OPC_MeshInterface.cpp:178,228 words=1200 oracle=936f761e mismatches=0 worst_ulp=0 verdict=exact',
 
         # The layout modifications. Each is a number read off the disassembly at
@@ -937,7 +937,7 @@ $NxRequiredCoverageLines = [ordered] @{
         'layout sizeof_Prunable0C=20 expected=20 rva=0x000e7330,0x000b54a9 ok',
         'layout Pruner.mWorldBoxes=20 expected=20 rva=0x000b55a0 ok',
 
-        'thirdparty coverage driven=16 divergent=2 words=193028 layout_checks=47',
+        'thirdparty coverage driven=16 divergent=0 words=193028 layout_checks=47',
         'thirdparty oracle digest=b87c3219'
     )
 }

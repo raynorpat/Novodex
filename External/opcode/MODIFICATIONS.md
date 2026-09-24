@@ -20,6 +20,7 @@ unmodified** under a 2026 MSVC. Every one of these exists because the shipped
 | `OPC_IceHook.h` | `SetIceError` becomes a reporter carrying `__FILE__` and `__LINE__` | `0x000539b0`, `0x000e903b`, `0x000e912f` |
 | `OPC_Model.cpp` | the `mDeserializeFrom` guard around the `mLimit` check and `CheckTopology`, plus the loader dispatch; `AABBTree` through the host allocator | `0x000e9122`, `0x000e912f` (line 147), `0x000e9161`, `0x000e9191` |
 | `Ice/IceContainer.cpp` | the borrowed-buffer guards — `Empty()` frees only when `mGrowthFactor >= 0.0f`, `Resize()` returns false unless `> 0.0f`; allocation through the host allocator | `0x000b4d93`, `0x000b4e93`, `0x000b4f53`, `0x000b4def`, `0x000b4fd5` |
+| `Ice/IceSegment.cpp` | `Segment::SquareDistance` retains wide point deltas and stores only the oracle's selected intermediate products as floats | `0x000f0560`–`0x000f0659` |
 | `Ice/IceRevisitedRadix.h` | `mDeleteRanks` added at +0x14; `SetRankBuffers` declared | `0x000e32c0`, `0x000e3ea0` |
 | `Ice/IceRevisitedRadix.cpp` | the destructor and `Resize` free only when `mDeleteRanks`; allocation through the host allocator; **`SetRankBuffers`, the added member that clears the marker, reconstructed by P4 Task 2b** | `0x000e32e3`, `0x000e3333`, `0x000e3ea0` |
 | `OpcodeNovodeXHost.h` | **added file**, no upstream counterpart: the allocation and error-reporting seam | `0x000b4000`, `0x000539b0` |

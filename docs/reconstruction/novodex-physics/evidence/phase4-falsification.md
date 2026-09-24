@@ -304,3 +304,29 @@ of `phys_fn_002411` added after that measurement, reaches the same release arm t
 call. The two `e7094e9` counts reproduce. Every control is **dirty** in the same way as §8's: its one
 mismatch is `candidate CANDIDATE-MISSING family=vtables`, the target's designed RED, so each count is
 over a baseline of 1 and what a row owns is its family reading.
+
+---
+
+## 10. 2026-09-24 follow-up: Segment correction and DLL linkage
+
+The numbers in §7 describe the unmodified OPCODE 1.3 source and remain the historical baseline.
+The local `External/opcode/novodex/Ice/IceSegment.cpp` overlay now follows the oracle's x87
+register and float-store sequence at `0x000f0560`. With the registered `NxPhysicsThirdPartyTests`
+inputs against the pinned DLL (SHA-256 `4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c`),
+`segment_sqrdist.grid` reads `mismatches=0 worst_ulp=0` over 60,000 words and
+`segment_sqrdist.wide` reads `mismatches=0 worst_ulp=0` over 40,000. Both test families were first
+made strict and observed RED on the stock source; they are now exact. The full direct-linked
+third-party harness reports `driven=16 divergent=0 words=193028 layout_checks=47`.
+
+The normal static-library link had omitted both `Segment::SquareDistance` and `qh_pointdist` from
+the candidate DLL despite the direct-linked tests passing. Explicit MSVC `/INCLUDE` options now
+retain both symbols in `NxPhysics.map`; the DLL builds. This establishes physical linkage only.
+There is not yet a public-DLL drive of the Segment function, nor a falsifying mutation isolated
+to `phys_fn_005493`, so its Phase 4 disposition is `reconstructed_not_falsified`.
+
+Whole-archive linking remains open. It reaches stock `SweepAndPrune::Init`, which refers to
+`CompleteBoxPruning` in `OPC_BoxPruning.cpp`, a file absent from the oracle image. The oracle's
+`SweepAndPrune::Init` at `0x000e6db0` instead calls its own pruning helper at `0x000b4530`
+(`phys_fn_004816`, with continuation `phys_fn_004818`). That helper and the wider archive
+retention policy need reconstruction and a DLL-level drive before declaring the embedded
+libraries complete.

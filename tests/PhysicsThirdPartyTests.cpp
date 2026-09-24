@@ -279,11 +279,8 @@ static unsigned nxUlpDistance(unsigned a, unsigned b)
 // One driven row: compare the two tapes word for word, print the oracle digest,
 // and fold it into the run digest.
 //
-// `ulpTolerance` is 0 -- exact agreement required -- for every family but one.
-// kDivergent marks a family that is measured and reported and does NOT assert
-// agreement; a family driven that way is not a proof of its row, and the report
-// says so by name. Its counts are still registered, so they cannot move
-// unnoticed.
+// `ulpTolerance` is 0 for every registered family. kDivergent remains available
+// for an explicitly measured but unresolved family; none currently uses it.
 static const unsigned kDivergent = 0xffffffffu;
 
 static void nxReport(const char* name, const char* rva, const char* owner, const char* source,
@@ -815,15 +812,9 @@ static void nxDriveRadix(const NxOracleRows& o, bool selfOnly)
 
 static void nxDriveSegment(const NxOracleRows& o, bool selfOnly)
 	{
-	// Integral coordinates in [-32, 32]. Every product and every sum below is
-	// exactly representable and the final SquareMagnitude is a sum of squares --
-	// all positive, so the result cannot cancel. The intermediate can: fT/SqrLen
-	// is inexact and `Diff -= fT*Dir` then subtracts two nearly equal
-	// quantities. So this family is NOT clean either. It reports
-	// mismatches=9356 worst_ulp=67, is registered `divergent`, and is not
-	// counted as a proof of the row -- the same as the wide family below and
-	// for the same reason: st(0) at 53 bits against stores no C++ type names.
-	// What separates the two is size, 67 ULP here against 8420 there.
+	// Integral coordinates in [-32, 32] test all three segment branches and the
+	// optional parameter pointer. The candidate reproduces the oracle's float
+	// stores and must agree on every emitted word.
 	gState = 0x5e6de717;
 	gOracleTape.reset();
 	gCandidateTape.reset();
@@ -856,28 +847,12 @@ static void nxDriveSegment(const NxOracleRows& o, bool selfOnly)
 			}
 		}
 	nxReport("segment_sqrdist.grid", "0x000f0560", "phys_fn_005493", "Ice/IceSegment.cpp:29",
-		selfOnly, kDivergent);
+		selfOnly);
 
-	// THE SAME ROW OVER A DOMAIN WHERE THE TWO CODE GENERATORS DIVERGE, AND WHY
-	// IT IS RECORDED RATHER THAN DROPPED OR TOLERATED.
-	//
-	// IceSegment.cpp is STOCK -- there is no local modification in it -- so what
-	// this family compares is a 2003 x87 code generator against a 2026 one over
-	// the same statements. They round in different places: the dot product and
-	// the three-term SquareMagnitude live in st(0) at the process's 53-bit
-	// precision and are stored to a 32-bit float at points no C++ type names.
-	// On the grid family above that is unobservable. Over coordinates spanning
-	// 1e5, `Diff -= fT*Dir` cancels and amplifies the last bit of fT into the
-	// third decimal digit: 43% of draws differ and the worst is thousands of
-	// ULP.
-	//
-	// So this family is NOT an assertion that the two agree, and its result is
-	// NOT counted as a proof of the row -- `segment_sqrdist.wide` is reported as
-	// DIVERGENT. What makes it worth running anyway is that its counts are
-	// registered in gate_targets.ps1: they are a measurement of how far a
-	// vendored stock row drifts under a 23-year compiler gap, and if that
-	// measurement moves -- in either direction, including to zero -- the gate
-	// fails and somebody has to say why.
+	// Coordinates span roughly 1e5. Cancellation in the interior branch exposes
+	// the 2003 x87 register lifetimes: the stock function differs on 15,538 of
+	// these 40,000 words. The local overlay follows the measured float stores,
+	// so this family asserts exact distance and segment-parameter outputs.
 	gState = 0x5e6de717;
 	gOracleTape.reset();
 	gCandidateTape.reset();
@@ -903,7 +878,7 @@ static void nxDriveSegment(const NxOracleRows& o, bool selfOnly)
 			}
 		}
 	nxReport("segment_sqrdist.wide", "0x000f0560", "phys_fn_005493", "Ice/IceSegment.cpp:29",
-		selfOnly, kDivergent);
+		selfOnly);
 	}
 
 static void nxDriveMeshInterface(const NxOracleRows& o, bool selfOnly)
