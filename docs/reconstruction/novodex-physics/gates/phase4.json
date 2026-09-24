@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "phase": 4,
+  "name": "Mesh and spatial assets",
+  "status": "pass",
+  "closure_ledger": "gates/phase4-closure.json",
+  "implementation_commit": "de565924ad85cba85490c54ebc99db37593833a3",
+  "evidence_commit": "d8a5333eac4942f2c959eb50f183a99744c1d799",
+  "note": "The gate side of the Phase 4 close, as ported onto the canonical record at branch p4-close-port. The row side is gates/phase4-closure.json; the two meet at the counts below, which validate_inventory.py recomputes from the ledger's entries. implementation_commit is the tree the 26 closures were re-measured against -- de56592, the branch's base, which the port does not change -- and evidence_commit is the commit that published the re-measured ledger and evidence, so the commit adding this file is its child. Phase 4 passes its gate and closes 26 of the 1,050 code rows it owns; its 2,813 data objects and 87 compiler artifacts stand at `classified` and are accounted for by that state. The second number is the one to read. 722 of Phase 4's 1,137 function rows -- 377,842 of its 475,248 code bytes -- are qhull 2003.1 and OPCODE 1.3 VENDORED from pinned archives, present in the DLL rather than proven in it: 3 close, 32 are `reconstructed` on proofs later drives recorded and defer unfalsified, 601 defer `vendored_not_falsified`, and 86 are `classified` -- three of which, phys_fn_005493, phys_fn_005517 and phys_fn_005523, are real functions with a false artifact proof and are escalated below. Every one of the 26 closures was RE-MEASURED on this branch rather than carried: its recorded mutation re-applied in a `git archive` copy of de56592, rebuilt, and run against the pinned DLL between un-mutated controls reading zero, with the oracle digest unmoved -- eaefc573 for NxPhysicsAssetTests, whose fold grew from 21 probes to 30 after the fork, and b87c3219 for NxPhysicsThirdPartyTests. All 25 of the close's own closures survived; phys_fn_002262 moved from mutation O to N because O now also moves the writer's nine cases; and the canonical line's phys_fn_002162 closes on its own six published mutations, all six reproducing. Both Phase 4 gates are oracle differentials and Phase 4 registers no staged-pair target, so `run_differential.ps1 -Phase 4` exits the skip code and `run_phase_gate.ps1` admits it. The port also carried a gate-to-phase binding into the validator, and on the canonical ledgers it caught exactly one closure: phys_fn_002344, a Phase 3 row closed on Phase 5's NxPhysicsObjectLayoutTests, which neither -Phase 3 nor -Phase completed runs while Phase 5 is pending. It is re-deferred on the Phase 3 ledger for Phase 5 to discharge, and Phase 3 closes 61 again. What the phase did not do is stated in the ledger's note rather than summarised away: 108 rows are reconstructed and unfalsified, six of them the penetration map's arithmetic that no accepted fixture can see; 315 NovodeX rows were not reconstructed; the mesh column is not reconstructed, so Phase 3's thirteen mesh deferrals do not discharge; and nothing in this phase was ever driven under 0x0f7f.",
+  "counts": {
+    "closed": 26,
+    "deferred": 1024
+  },
+  "gate_sequence": [
+    {
+      "name": "immutable_headers",
+      "command": "python -B docs/reconstruction/novodex-physics/tools/verify_public_headers.py --root <root> --manifest docs/reconstruction/novodex-physics/public_header_hashes.json",
+      "result": "public_headers=pass for both roots the production runner names -- D:\\FlamingEnt__\\Unreal_3\\Development\\External\\Novodex\\Physics\\include and the implementation tree's Physics\\include -- against the canonical line's pin, Nxp.h 4,242 bytes sha256 ab032b9c..., which this port did not touch"
+    },
+    {
+      "name": "validate_inventory",
+      "command": "python -B docs/reconstruction/novodex-physics/tools/validate_inventory.py docs/reconstruction/novodex-physics/inventory.json",
+      "result": "inventory=pass; closure phase=2 closed=59 deferred=84; closure phase=3 closed=61 deferred=331; closure phase=4 closed=26 deferred=1024; closure phase=5 closed=0 deferred=205; closure phase=6 closed=2 deferred=431; closure phase=7 closed=4 deferred=557; functions=6338 data_objects=5138 unexplained=0"
+    },
+    {
+      "name": "verify_vendored_sources",
+      "command": "python -B docs/reconstruction/novodex-physics/tools/verify_vendored_sources.py --repo <implementation tree>",
+      "result": "vendored upstream files checked=148 locally modified=15; vendored status=pass failures=0, against the pinned archives staged at .analysis/novodex-physics/thirdparty"
+    },
+    {
+      "name": "oracle_differential:NxPhysicsAssetTests",
+      "command": "<implementation tree>/build/Release/NxPhysicsAssetTests.exe <oracle directory> <NxPhysics.dll sha256>",
+      "result": "exit=0; asset coverage driven=30 accepted=13 rejected=16 errors=10; asset oracle digest=eaefc573 expect_mismatches=0; asset candidate mismatches=0 mode=differential. Broken on purpose with mutation J applied to a staged copy of the same tree, the -Phase 4 gate reads `asset candidate mismatches=10` and fails with `GATE FAILED: oracle_differential:NxPhysicsAssetTests exited 1`, the oracle digest still eaefc573"
+    },
+    {
+      "name": "oracle_differential:NxPhysicsThirdPartyTests",
+      "command": "<implementation tree>/build/Release/NxPhysicsThirdPartyTests.exe <oracle directory> <NxPhysics.dll sha256>",
+      "result": "exit=0; thirdparty coverage driven=16 divergent=2 words=193028 layout_checks=47; thirdparty oracle digest=b87c3219; thirdparty candidate mismatches=0 layout_failures=0. The two divergent families are Segment::SquareDistance at mismatches=9356 worst_ulp=67 and mismatches=15538 worst_ulp=8420, both pinned"
+    },
+    {
+      "name": "phase_gate",
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase 4",
+      "result": "phase_gate=4 status=pass at coverage_assertions_evaluated=100 floor=100, with gate=run_differential status=skipped reason=no_registered_staged_pair_targets, exit=0. Run over a git archive of the branch with run_phase_gate.ps1's $novodexRepo and run_differential.ps1's $releaseRoot pointed at the archive instead of the shared D:\\github\\Novodex checkout; every registration, floor and header root is the production runner's"
+    },
+    {
+      "name": "phase_gate",
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase 2",
+      "result": "phase_gate=2 status=pass; static_proof checks=51 status=pass; NxPhysicsExportTests, NxPhysicsSDKTests and NxPhysicsCoreClusterTests each oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True; coverage_assertions_evaluated=0 floor=0"
+    },
+    {
+      "name": "phase_gate",
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase 3",
+      "result": "phase_gate=3 status=pass at coverage_assertions_evaluated=103 floor=103; selected_targets=NxPhysicsGeometryTests,NxPhysicsKernelFuzzTests and selected_oracle_differential_targets=NxPhysicsCollisionTests -- NxPhysicsObjectLayoutTests is not among them, which is why phys_fn_002344 cannot close on it here; both staged pairs stdout_delta=0 stderr_exact=True, NxPhysicsCollisionTests exit=0"
+    },
+    {
+      "name": "phase_gate_completed",
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase completed",
+      "result": "highest_passing_phase=4 differential_phases=1,2,3,4; selected_targets=NxPhysicsCoreClusterTests,NxPhysicsExportTests,NxPhysicsGeometryTests,NxPhysicsKernelFuzzTests,NxPhysicsSDKTests; selected_static_proof_targets=NxPhysicsInternalTests; selected_oracle_differential_targets=NxPhysicsAssetTests,NxPhysicsCollisionTests,NxPhysicsThirdPartyTests; differential=pass; coverage_assertions_evaluated=203 floor=203; phase_gate=completed status=pass. Before this close the same gate read highest_passing_phase=3 and floor=103, and selected no Phase 4 or Phase 5 target"
+    },
+    {
+      "name": "python_suite",
+      "command": "python -m unittest discover -s docs/reconstruction/novodex-physics/tools/tests",
+      "result": "Ran 616 tests, all pass in a git archive of the branch: 601 before the port, plus 15 pinning what it carried -- three for the gate-to-phase binding, one rejecting a discharge that names a phase no later than the owning one, one accepting `note` on a closed entry, seven binding a closed row's count to `evidence_file`, two on plan_path's resolution of a relative evidence root, and one asserting the retype split against evidence/phase4-artifact-retype.csv. Run inside the D:\\github\\Novodex-p4-port worktree, test_gate_commands.PhaseResolutionTests.test_phase_and_targets_are_mutually_exclusive fails before and after the port alike: PowerShell wraps its 'Parameter set cannot be resolved' message at that path length and the test matches the unwrapped string"
+    }
+  ],
+  "excluded_from_comparison": [
+    "pair_directory=",
+    "loaded module=",
+    "modules ",
+    "imports "
+  ],
+  "escalations": [
+    {
+      "id": "vendored_rows_are_present_not_proven",
+      "summary": "722 census rows and 377,842 bytes -- a third of the function rows in the image -- are not reconstructions. They are qhull 2003.1 and OPCODE 1.3 vendored from pinned archives and compiled into the libraries NxPhysics.dll links. On this branch they fall four ways. 3 carry a mutation inside their own extent and a measured mismatch count, and close. 32 stand at `reconstructed` on proofs later drives recorded and defer `reconstructed_not_falsified`: no mutation is aimed at them. 601, 341,680 bytes, defer `vendored_not_falsified`, a reason whose whole job is to stop 'present' being read as 'proven'; five of them own a family NxPhysicsThirdPartyTests drives and that agrees exactly, which is not falsification, one carries an inlined copy of a statement another row's mutation edits, and 595 have had nothing aimed at them at all. And 86 are `compiler_artifact` and `classified`. 3 + 32 + 601 + 86 = 722. THREE OF THE 86 ARE REAL FUNCTIONS: phys_fn_005493 (Segment::SquareDistance, driven by two registered families that diverge from the image), phys_fn_005517 and phys_fn_005523 (the OPC_AABBTree.cpp pair). Each carries the classification proof 'no product translation unit reaches these bytes', which is false for each -- the same false negative P4 Task 3 found for the 63 rows it retyped -- so on this branch the census makes a driven, divergent function terminal, and `vendored_driven_divergent`, the reason the close added for that one row, holds nothing. The census is the canonical line's and the port did not retype it. P4 Task 2a's own report put the proven count at 'roughly 20 of the 722'; re-derived per row against the standard every closure meets, it is three.",
+      "reproduction": "python docs/reconstruction/novodex-physics/tools/validate_inventory.py docs/reconstruction/novodex-physics/inventory.json prints `closure phase=4 closed=26 deferred=1024`; the 601 are the `vendored_not_falsified` entries of gates/phase4-closure.json and their count is recomputed from the entries. build/Release/NxPhysicsThirdPartyTests.exe <oracle dir> <sha256> reports `thirdparty coverage driven=16 divergent=2 words=193028 layout_checks=47` and `thirdparty candidate mismatches=0 layout_failures=0`, and its two `segment_sqrdist` lines name owner=phys_fn_005493 with mismatches=9356 worst_ulp=67 and mismatches=15538 worst_ulp=8420, verdict=divergent. inventory.json gives phys_fn_005493, phys_fn_005517 and phys_fn_005523 kind `compiler_artifact`, state `classified`; evidence/phase4-third-party-map/opcode_map.csv records phys_fn_005493 as reached from LSSCollider::InitQuery at 0x000d34c0.",
+      "evidence": "evidence/phase4-falsification.md sections 2, 3 and 7; gates/phase4-closure.json's `deferred_reasons.vendored_not_falsified` and `vendored_driven_divergent` and its note; evidence/phase4-third-party.md for the image-wide map and the spans; evidence/phase4-third-party-map/*.csv for the per-row correspondence.",
+      "inherited_by": [
+        8
+      ]
+    },
+    {
+      "id": "opcode_modification_list_not_closed",
+      "summary": "The vendored rows' correctness rests on a list of local modifications that is explicitly not proven closed. OPC_AABBTree.cpp was vendored stock while carrying NovodeX code -- an extend axis at BuildSettings+0x0c, a root-BV capture latch at AABBTreeBuilder+0x38, an inflate margin at +0x14 and 28 added builder bytes -- and it was found by a reviewer reading the disassembly, not by any check this repository runs. verify_vendored_sources.py proves External/*/novodex/ contains only real modifications; no artefact proves it contains all of them.",
+      "reproduction": "In a `git archive` copy, delete External/opcode/novodex/OPC_AABBTree.cpp, reconfigure, rebuild and run NxPhysicsThirdPartyTests: on this branch five layout assertions fail (`AABBTree.extend_pulls_min=0 expected=3225419776`, `capture_latch_cleared=1 expected=0`, `captured_root_max_y=14093820 expected=1082130432` -- uninitialised stack, 12260066 at bcf544f -- `inflate_min=0 expected=3204448256`, `inflate_max=1082130432 expected=1083179008`) and it exits 1 while `candidate mismatches` stays 0.",
+      "evidence": "evidence/phase4-falsification.md section 3; External/opcode/MODIFICATIONS.md, which states that the list is not proven closed. External/qhull/MODIFICATIONS.md does NOT carry that qualifier, checked on this branch; adding it is open.",
+      "inherited_by": [
+        8
+      ]
+    },
+    {
+      "id": "use_minmax_representation_undecided",
+      "summary": "USE_MINMAX is defined nowhere in the pinned OPCODE tree and nowhere in External/CMakeLists.txt, so NxOpcode compiles the centre/extents AABB while the image compiles min/max. It is one target_compile_definitions line and it changes the storage of every box across 34 translation units and the float results that follow. sizeof(AABB) is 24 under both representations, so the registered `layout sizeof_AABB=24` assertion cannot see it.",
+      "reproduction": "AABB::Add at 0x000e2d20 reads [this+0], [this+4], [this+8] straight into the min with no subtraction, where a centre/extents build emits mCenter[i] - mExtents[i]; _BuildHierarchy's inflate at 0x000f0f8e subtracts the margin from the first Point and adds it to the second. Adding -DUSE_MINMAX to NxOpcode and re-running NxPhysicsThirdPartyTests is the experiment.",
+      "evidence": "External/opcode/MODIFICATIONS.md, the USE_MINMAX paragraph; evidence/phase4-pmap-reconstruction.md section 10.",
+      "inherited_by": [
+        8
+      ]
+    },
+    {
+      "id": "layout_assertions_cannot_close_a_row",
+      "summary": "A falsification that is real, non-zero and aimed at the right rows cannot be spent, because the closure schema has no detection form for it. NxPhysicsThirdPartyTests is registered as an oracle differential, so a row it closes must report `mismatches=<n>`; its 47 layout assertions report `layout_failures=<n>`. Deleting the OPC_AABBTree.cpp overlay fails five of them, aimed at phys_fn_005517 and phys_fn_005523. On this branch the question is one step worse: both rows carry kind `compiler_artifact` on a false classification proof and stand at `classified`, outside any ledger, so the measurement has no row to be recorded against at all. Widening the schema was declined: Phase 2's close was repaired by inventing a step and the repair reintroduced the defect.",
+      "reproduction": "The probe run in opcode_modification_list_not_closed. Then read tools/validate_inventory.py: MISMATCHES binds oracle differentials, STDOUT_DELTA and DIFFERENTIAL_DETECTION bind staged pairs, and a static proof must report `check_failed <name>` and name a target in $NxRegisteredStaticProofTargets, which holds only NxPhysicsInternalTests.",
+      "evidence": "evidence/phase4-falsification.md section 3; gates/phase4-closure.json's note; tools/gate_targets.ps1's `layout ...` registrations for NxPhysicsThirdPartyTests.",
+      "inherited_by": [
+        8
+      ]
+    },
+    {
+      "id": "third_party_container_rows_not_reclosed",
+      "summary": "gates/phase2.json's third_party_container_rows_moved escalation asked Phase 4 to re-close all four Ice/IceContainer.cpp rows Phase 2 had closed on static proofs. One of the four is: phys_fn_004840, Container::Resize, on a mutation of its `mGrowthFactor <= 0.0f` guard reading 36 mismatches, re-measured on this branch. phys_fn_004836 and phys_fn_004847 have no mutation aimed at them; phys_fn_004846's ownership guard is an INLINED COPY of Container::Empty()'s, so the 20 mismatches that mutation produces belong to phys_fn_004838 and cannot be spent twice. All three stand at `reconstructed` on this branch and defer `reconstructed_not_falsified`. The escalation is discharged for one row of four and continues here.",
+      "reproduction": "The `container` family drives Resize, SetSize, Empty and ~Container at growth factors {2.0, 1.5, 0.5, 0.0, -0.0, -1.0, -2.0} crossed with a borrowed buffer and five sizes, and reports ONE count for all four. Weakening Empty()'s guard from `>= 0.0f` to `> 0.0f` gives `container mismatches=20`; narrowing Resize()'s from `<= 0.0f` to `< 0.0f` gives 36. Separating the three rows the first mutation reaches needs per-member counts.",
+      "evidence": "evidence/phase4-falsification.md section 2; evidence/phase4-third-party-map/opcode_outside_span_map.csv; gates/phase4-closure.json's notes on phys_fn_004836, phys_fn_004842, phys_fn_004846 and phys_fn_004847.",
+      "inherited_by": [
+        8
+      ]
+    },
+    {
+      "id": "container_reconstructed_twice",
+      "summary": "0x000b4d70, 0x000b4de0, 0x000b4e90 and 0x000b4f50 have two reconstructions compiled into NxPhysics.dll at once: Physics/src/Containers.cpp's SdkContainer, written by Phase 2 when the rows were believed to be NovodeX code, and External/opcode/novodex/Ice/IceContainer.cpp, which the census, the third-party differential and PMap.cpp use. Neither was deleted: NxPhysicsInternalTests is Phase 2's static-proof gate and still reports `checks=51 status=pass`. 0x000b4f90, the borrowed-buffer installer SdkContainer has and stock OPCODE does not, is why the choice is not obvious.",
+      "reproduction": "Physics/src/Containers.cpp declares SdkContainer and is globbed into NxPhysics by CMakeLists.txt's PHYSICS_SOURCES beside the vendored IceContainer.cpp in NxOpcode. run_phase_gate.ps1 -Phase 2 exercises the first through static_proof:NxPhysicsInternalTests and -Phase 4 the second through oracle_differential:NxPhysicsThirdPartyTests, and both pass.",
+      "evidence": "gates/phase4-closure.json's note on phys_fn_004847; the phase 2 gate transcript's `static_proof checks=51 status=pass`.",
+      "inherited_by": [
+        8
+      ]
+    },
+    {
+      "id": "retyped_opcode_rows_lack_attribution",
+      "summary": "P4 Task 3 retyped 63 rows from kind `compiler_artifact` to `code` because the recorded classification proof -- 'no product translation unit reaches these bytes' -- is false for every one of them: 35 are the target of a direct call or jmp from another censused row and 28 have their address written into the OPCODE vtable pool at .rdata:0x0011b5a4-0x0011bcf8. It changed nothing else. On this branch none of the 63 carries `third_party`, 53 stand at `discovered` and 10 at `reconstructed`; of the three NovodeX-added BaseModel and AABBOptimizedTree virtuals among them, phys_fn_005380 and phys_fn_005386 are still `discovered` stubs and phys_fn_005382 is now `reconstructed` on a later drive. The same false proof still stands on 86 Phase 4 artifacts, three of which are real functions (see vendored_rows_are_present_not_proven).",
+      "reproduction": "evidence/phase4-artifact-retype.csv carries one line per row with the reaching reference; RetypedArtifactsStayCode in tools/tests/test_gate_targets.py binds all 63 to the census and test_the_published_split_is_the_one_the_csv_records asserts the 35/28 split against the CSV's reached_by column. The split was published as 27/36 -- the right total, the wrong halves and the halves swapped -- until the Task 4 review.",
+      "evidence": "evidence/phase4-pmap-reconstruction.md section 7a; evidence/phase4-artifact-retype.csv.",
+      "inherited_by": [
+        8
+      ]
+    },
+    {
+      "id": "phase4_never_driven_under_simulate_word",
+      "summary": "Not one Phase 4 row was ever measured under 0x0f7f. Every mutation pass, both oracle differentials and all 26 closed rows run under the CRT default 0x027f, while in the image at least 21 OPCODE rows sit inside Scene::simulate's closure and two closed rows, phys_fn_004886 and phys_fn_004894, are inside it as well. Those two are provably indifferent -- 232 Capstone instructions across the sixteen in-span extents, zero x87 mnemonics and zero SSE operands -- but Segment::SquareDistance at 0x000f0560 already disagrees with the image by up to 8,420 ULP under 0x027f alone. NxPhysicsCollisionTests is still the only harness that drives both words; neither Phase 4 target can.",
+      "reproduction": "gate_targets.ps1 registers `collision control_words default=027f simulate=0f7f` for NxPhysicsCollisionTests and no equivalent line for either Phase 4 target, because neither installs a control word. evidence/phase4-third-party-sources.md section 4.6 records the 21 OPCODE rows by counting jmp edges beside call edges; evidence/phase4-third-party.md section 4 counts direct calls only and says 8.",
+      "evidence": "evidence/phase4-falsification.md section 7; gates/phase4-closure.json's `measured_from.control_words`; evidence/phase4-third-party-sources.md section 4.6.",
+      "inherited_by": [
+        7,
+        8
+      ]
+    },
+    {
+      "id": "mesh_column_blocks_phase3_mesh_deferrals",
+      "summary": "Phase 4 did not reconstruct the mesh column, and thirteen Phase 3 deferrals are waiting on it: phys_fn_001757, 001772, 001777, 001779, 001781, 001783, 001870, 001876, 001893, 001895, 001897, 001925 and 001929, every one `blocked_on_later_phase`, `blocked_on_type: TriangleMesh`, `driving_phases: [4]` and the note \"It needs the triangle mesh, its acceleration structure and the vertex and index data behind them\". Re-derived on this branch from gates/phase3-closure.json: all thirteen are still there, still `discovered`, and none carries an `implementation`. Phase 4 discharged none of them and closed anyway, so `driving_phases: [4]` now names a finished phase. The canonical line's Phase 5 work does NOT answer this: it transcribed the MeshShape constructor (phys_fn_001379) and two MESH shape slots into Physics/src/ObjectModel.cpp, and it recorded that TriangleMesh+0x74 is a reference count, but no Physics/src/MeshShape.cpp exists and nothing on this branch supplies the internal mesh the thirteen wait on. The canonical line's phys_fn_002162, the mesh writer, is a TriangleMesh row and is not one of the prerequisites. Vendoring OPCODE cleared one of four; the other three are Phase 4's own unreached debt -- InternalTriangleMesh, the OPCODECREATE fill at phys_fn_002083, and the accept arm of the mesh reader. The '153 rows of the mesh component' P4 Task 3 counted is not carried: `component` is not an inventory.json key and the count cannot be re-derived.",
+      "reproduction": "Read gates/phase3-closure.json and count `deferred` entries whose `blocked_on_type` is `TriangleMesh`: 13, every one with `driving_phases: [4]`; no Phase 4 closed entry carries `discharged_by_phase`. Three of the thirteen carry a `source` -- phys_fn_001876 Physics/src/ContactMeshMesh.cpp, phys_fn_001895 and phys_fn_001897 Physics/src/ContactPlaneMesh.cpp -- and neither file exists: `source` is the ORACLE's translation unit, and on this branch 312 of the 564 rows carrying a path-shaped `source` name a file the tree does not supply. Ten of the thirteen appear in the tree only in tests/PhysicsCollisionTests.cpp's recovered dispatch-matrix table; three appear nowhere.",
+      "evidence": "evidence/phase4-pmap-reconstruction.md section 8; gates/phase3-closure.json's thirteen `blocked_on_type: TriangleMesh` deferrals; evidence/phase5-object-model.md section 3e and 3j for what Phase 5 did reconstruct of the mesh shape.",
+      "inherited_by": [
+        5,
+        8
+      ]
+    }
+  ]
+}
