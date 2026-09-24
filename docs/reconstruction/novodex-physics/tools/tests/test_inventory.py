@@ -1054,10 +1054,19 @@ class SourceIdentifierTests(unittest.TestCase):
 class ClosureLedgerTests(unittest.TestCase):
     """A row closes only if a mutation was aimed at it and the gate caught it."""
 
+    # `by_phase` is the other half of the registry: which phase's gate run
+    # actually executes each target. Phase 2 owns the fixture's own gates and
+    # phase 3 owns NxPhysicsCollisionTests, so a phase 2 row naming the latter
+    # is a row resting on a gate phase 2 never runs.
     TARGETS = {"differential": {"NxRealDifferential", "NxPhysicsGeometryTests",
                                 "NxPhysicsKernelFuzzTests"},
                "static_proof": {"NxRealStaticProof"},
-               "oracle_differential": {"NxPhysicsCollisionTests"}}
+               "oracle_differential": {"NxPhysicsCollisionTests"},
+               "by_phase": {"differential": {2: {"NxRealDifferential",
+                                                 "NxPhysicsGeometryTests",
+                                                 "NxPhysicsKernelFuzzTests"}},
+                            "static_proof": {2: {"NxRealStaticProof"}},
+                            "oracle_differential": {3: {"NxPhysicsCollisionTests"}}}}
 
     def ledger(self, **overrides):
         ledger = {
@@ -1208,13 +1217,50 @@ class ClosureLedgerTests(unittest.TestCase):
         ledger["closed"][0]["falsification"]["detected"] = "mismatches=42"
         self.assertRejects(ledger, "not a non-zero stdout_delta, cases or digests count")
 
+    def test_a_gate_registered_to_another_phase_cannot_close_this_phase_s_row(self):
+        # Gate names used to be kind-scoped and not phase-scoped, so a Phase 4
+        # row could close on NxPhysicsCollisionTests -- Phase 3's oracle
+        # differential, which does not run at all when Phase 4 is gated -- and
+        # every other check passed. Found by the Phase 4 falsification pass, and
+        # when it was ported it caught one real closure: phys_fn_002344, a
+        # Phase 3 row closed on Phase 5's NxPhysicsObjectLayoutTests.
+        ledger = self.ledger()
+        ledger["closed"][0]["proof"] = "oracle_differential_falsified"
+        ledger["closed"][0]["gate"] = "NxPhysicsCollisionTests"
+        ledger["closed"][0]["falsification"]["detected"] = "mismatches=4"
+        ledger["counts"] = {"oracle_differential_falsified": 1, "static_proof_falsified": 1,
+                            "deferred_blocked_on_later_phase": 1,
+                            "deferred_data_object_not_dispositioned": 1}
+        self.assertRejects(ledger, "registered to phase 3 and not to phase 2")
+
+    def test_a_discharged_row_may_name_the_discharging_phase_s_gate(self):
+        # The one legitimate cross-phase case, and it is not hypothetical:
+        # gates/phase2-closure.json closes phys_fn_001690 on Phase 3's
+        # NxPhysicsCollisionTests with discharged_by_phase 3.
+        ledger = self.ledger()
+        ledger["closed"][0]["proof"] = "oracle_differential_falsified"
+        ledger["closed"][0]["gate"] = "NxPhysicsCollisionTests"
+        ledger["closed"][0]["falsification"]["detected"] = "mismatches=4"
+        ledger["closed"][0]["discharged_by_phase"] = 3
+        ledger["closed"][0]["driving_phases"] = [3]
+        ledger["counts"] = {"oracle_differential_falsified": 1, "static_proof_falsified": 1,
+                            "deferred_blocked_on_later_phase": 1,
+                            "deferred_data_object_not_dispositioned": 1}
+        self.assertEqual(self.errors(ledger), [])
+
     def test_a_phase_may_defer_a_row_nobody_got_to_without_claiming_it_is_blocked(self):
         # Phase 2 reached 125 of its 163 rows, so every row it did not close was
         # blocked, homeless or measured unreachable. Phase 3 owns 441 and closed
         # 61: most of the rest is a phase that ran out of dispatches, which is a
         # debt and not an obstruction, and naming a later phase for it would
         # invent an obligation nobody owes.
-        for reason in ("not_reconstructed_in_phase", "reconstructed_not_falsified"):
+        # Phase 4 owns 1,137 and 722 of its rows were vendored rather than
+        # reconstructed at all: `vendored_not_falsified` says the upstream source
+        # is in the build and no mutation is aimed at the row, and
+        # `vendored_driven_divergent` says it was driven and did not reproduce
+        # the image. Neither may name a later phase either.
+        for reason in ("not_reconstructed_in_phase", "reconstructed_not_falsified",
+                       "vendored_not_falsified", "vendored_driven_divergent"):
             ledger = self.ledger()
             ledger["deferred"][0] = {"id": "phys_fn_000003", "rva": "0x00001060", "size": 8,
                                      "phase_provenance": "translation_unit",
@@ -1226,8 +1272,12 @@ class ClosureLedgerTests(unittest.TestCase):
 
     def test_the_new_reasons_stay_on_the_code_half_of_the_census(self):
         # A data object giving a code reason claims a reachability argument
-        # nobody made about it, and it would shrink the data debt silently.
-        for reason in ("not_reconstructed_in_phase", "reconstructed_not_falsified"):
+        # nobody made about it, and it would shrink the data debt silently. The
+        # two vendored reasons are the ones that would do it most quietly: a data
+        # object relabelled `vendored_not_falsified` would read as part of a
+        # third-party library rather than as an undispositioned object.
+        for reason in ("not_reconstructed_in_phase", "reconstructed_not_falsified",
+                       "vendored_not_falsified", "vendored_driven_divergent"):
             ledger = self.ledger()
             ledger["deferred"][1]["reason"] = reason
             ledger["counts"] = {"differential_falsified": 1, "static_proof_falsified": 1,
@@ -1307,6 +1357,16 @@ class ClosureLedgerTests(unittest.TestCase):
         ledger = self.ledger()
         ledger["closed"][0]["observed_in"] = "step=create"
         self.assertRejects(ledger, "has unexpected key 'observed_in'")
+
+    def test_a_closed_entry_may_carry_a_note(self):
+        # A deferred entry has always had room to say something about itself
+        # that is not its reason; a closed one had none, so the one closure in
+        # the set that is thin enough to want flagging -- seven bytes, six of
+        # them an uncomparable vptr store, a delta of 1 -- could only be flagged
+        # in a document nobody diffs against the ledger.
+        ledger = self.ledger()
+        ledger["closed"][0]["note"] = "marginal: six of its seven bytes are a vptr store"
+        self.assertEqual(self.errors(ledger), [])
 
     def test_rejects_a_stale_key_left_on_a_deferred_entry(self):
         ledger = self.ledger()
@@ -1470,6 +1530,21 @@ class ClosureLedgerTests(unittest.TestCase):
         ledger["closed"][0]["discharged_by_phase"] = 2
         ledger["closed"][0]["driving_phases"] = [2, 3]
         self.assertRejects(ledger, "discharged its own deferral")
+
+    def test_rejects_a_discharge_naming_a_phase_that_ran_before_this_one(self):
+        # F14 reopened through the discharge fields. A closed row may name the
+        # discharging phase's gates, so a phase 4 row that declares phase 3 its
+        # discharger buys NxPhysicsCollisionTests with two fields it writes
+        # itself -- and the gate-to-phase binding stays silent about it, which
+        # is why the rule lives here and not there.
+        ledger = self.discharged()
+        ledger["phase"] = 4
+        ledger["closed"][0]["driving_phases"] = [3]
+        gate_errors = [error for error in self.errors(ledger, phase=4)
+                       if "does not run when phase 4 is gated" in error
+                       and "phys_fn_000001" in error]
+        self.assertEqual(gate_errors, [], "the gate binding was supposed to be bought")
+        self.assertRejects(ledger, "are not later than phase 4", phase=4)
 
     def test_rejects_a_discharge_that_does_not_carry_the_original_driving_phases(self):
         # discharged_by_phase on its own is unfalsifiable: there is nothing left
@@ -1863,6 +1938,87 @@ class EscalationLinkageTests(unittest.TestCase):
             self.assertEqual(validate_inventory.read_plan_escalations(path), {("one_ulp", 2)})
 
 
+class PlanPathTests(unittest.TestCase):
+    """Where a phase plan is looked for, given where the evidence tree is."""
+
+    def test_resolves_a_relative_evidence_root(self):
+        # `validate_inventory.py inventory.json` run from the evidence directory
+        # gave this a root of `.`, whose `parents[2]` raised an IndexError: a
+        # traceback that reads exactly like a validation failure and is not one.
+        # The production runner always passes an absolute path, so it was never
+        # seen from the gate.
+        self.assertEqual(
+            validate_inventory.plan_path(Path("docs/reconstruction/novodex-physics"),
+                                         "docs/superpowers/plans/p.md"),
+            Path.cwd().resolve() / "docs/superpowers/plans/p.md")
+
+    def test_reports_a_root_too_shallow_to_sit_in_a_repository(self):
+        # Not a crash and not a silent pass: no path, so the caller says the
+        # plan is not a file, which is a stated defect.
+        self.assertIsNone(validate_inventory.plan_path(Path(Path.cwd().anchor), "p.md"))
+
+
+class ClosureEvidenceTests(unittest.TestCase):
+    """A closed row's count has to be readable in the file the ledger publishes it in.
+
+    Everything else about a closure is checked across four documents. The
+    measurement itself was checked against nothing, so an already-closed row
+    could be moved onto a different mutation -- a documented GREEN one, say --
+    in a single file with no detector.
+    """
+
+    EVIDENCE = "evidence/phase4-falsification.md"
+
+    def ledger(self, detected="mismatches=10", **overrides):
+        ledger = {"phase": 4, "evidence_file": self.EVIDENCE,
+                  "closed": [{"id": "phys_fn_002045",
+                              "falsification": {"mutation": "mutation J", "detected": detected}}]}
+        ledger.update(overrides)
+        return ledger
+
+    def errors(self, ledger, published):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "evidence").mkdir()
+            (root / self.EVIDENCE).write_text(published, encoding="utf-8")
+            return validate_inventory.validate_closure_evidence(ledger, 4, root)
+
+    def test_accepts_a_row_whose_count_is_on_its_own_line(self):
+        self.assertEqual(self.errors(
+            self.ledger(), "| `phys_fn_002045` `0x000505f0`+69 | J | 10 |\n"), [])
+
+    def test_rejects_a_row_moved_onto_a_count_the_evidence_does_not_carry(self):
+        # The defect this exists for: the row stays closed, the gate, the proof
+        # kind and the counts all still agree, and only the measurement moved.
+        errors = self.errors(self.ledger("mismatches=7"),
+                             "| `phys_fn_002045` `0x000505f0`+69 | J | 10 |\n")
+        self.assertIn("recording different measurements", "\n".join(errors))
+
+    def test_rejects_a_closed_row_the_evidence_file_does_not_name(self):
+        errors = self.errors(self.ledger(), "| `phys_fn_002047` | A | 10 |\n")
+        self.assertIn("is not named in", "\n".join(errors))
+
+    def test_does_not_match_a_count_inside_a_longer_number(self):
+        errors = self.errors(self.ledger("mismatches=234"),
+                             "| `phys_fn_002045` `0x00050640`+2340 | J | 10 |\n")
+        self.assertIn("recording different measurements", "\n".join(errors))
+
+    def test_a_static_proof_has_no_count_to_bind(self):
+        self.assertEqual(self.errors(self.ledger("check_failed the guard holds"),
+                                     "`phys_fn_002045` drops the guard\n"), [])
+
+    def test_a_ledger_naming_no_evidence_file_is_unchanged(self):
+        # Phases 2 and 3 published their measurements before stable IDs were
+        # written into the evidence, so they name no file and bind nothing.
+        ledger = self.ledger()
+        del ledger["evidence_file"]
+        self.assertEqual(self.errors(ledger, ""), [])
+
+    def test_rejects_an_evidence_file_that_is_not_there(self):
+        ledger = self.ledger(evidence_file="evidence/nothing.md")
+        self.assertIn("cannot be read", "\n".join(self.errors(ledger, "")))
+
+
 class PhaseRecordTests(unittest.TestCase):
     """A phase gate record may not disagree with the ledger it sits beside."""
 
@@ -2004,6 +2160,21 @@ class GateTargetRegistryTests(unittest.TestCase):
         self.assertNotIn("NxPhysicsInternalTests", targets["differential"])
         self.assertNotIn("NxPhysicsCollisionTests", targets["differential"])
         self.assertNotIn("NxPhysicsCollisionTests", targets["static_proof"])
+
+    def test_the_registry_binds_each_target_to_the_phase_that_runs_it(self):
+        # The flat name sets say a gate exists; `by_phase` says which phase's
+        # gate run executes it, which is what stops a row closing on a target
+        # that never runs when its own phase is gated.
+        targets = validate_inventory.read_gate_targets(self.REGISTRY)
+        oracle = targets["by_phase"]["oracle_differential"]
+        self.assertEqual(oracle[3], {"NxPhysicsCollisionTests"})
+        self.assertEqual(oracle[4], {"NxPhysicsAssetTests", "NxPhysicsThirdPartyTests"})
+        self.assertEqual(oracle[5], {"NxPhysicsObjectLayoutTests"})
+        self.assertNotIn("NxPhysicsCollisionTests", oracle[4])
+        self.assertNotIn("NxPhysicsObjectLayoutTests", oracle[3])
+        self.assertEqual(targets["by_phase"]["static_proof"][2], {"NxPhysicsInternalTests"})
+        self.assertIn("NxPhysicsGeometryTests", targets["by_phase"]["differential"][3])
+        self.assertNotIn("NxPhysicsGeometryTests", targets["by_phase"]["differential"].get(2, ()))
 
     def test_a_commented_out_target_is_not_registered(self):
         # It fails open: a target nobody runs would have vouched for a closure.

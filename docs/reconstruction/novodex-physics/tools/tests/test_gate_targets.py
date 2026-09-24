@@ -17,6 +17,7 @@ instance: a registered line must be unique, and every generator that reports
 coverage must be registered.
 """
 
+import collections
 import re
 import shutil
 import subprocess
@@ -650,10 +651,12 @@ class RetypedArtifactsStayCode(unittest.TestCase):
 
     Their old classification proof was `no product translation unit reaches
     these bytes and none is named above the last one that does, at 0x000e9100`.
-    It is false for every one of the 63: 27 are the target of a direct
-    `call`/`jmp rel32` from another censused row and 36 have their address
+    It is false for every one of the 63: 35 are the target of a direct
+    `call`/`jmp rel32` from another censused row and 28 have their address
     written into the OPCODE vtable pool at .rdata:0x0011b5a4-0x0011bcf8, which
     is an indirect dispatch a reach heuristic built on direct calls cannot see.
+    The split was published as 27/36 -- right total, wrong halves, and the
+    halves swapped -- so it is asserted below rather than only described here.
     While they carried `compiler_artifact`, validate_inventory.py refused any
     row among them that recorded product source, so 8,919 bytes could not be
     closed at all.
@@ -679,6 +682,14 @@ class RetypedArtifactsStayCode(unittest.TestCase):
             % len(self.entries))
         self.assertEqual(sorted({entry["reached_by"] for entry in self.entries}),
                          ["direct_call", "vtable_slot"])
+
+    def test_the_published_split_is_the_one_the_csv_records(self):
+        # The escalation, both gate records, the pmap evidence and the Phase 8
+        # plan all quote this split. It was 27/36 in every one of them against a
+        # CSV that says 35/28, and nothing compared the two.
+        split = collections.Counter(entry["reached_by"] for entry in self.entries)
+        self.assertEqual(split["direct_call"], 35)
+        self.assertEqual(split["vtable_slot"], 28)
 
     def test_every_retyped_row_is_code_at_the_recorded_address(self):
         for entry in self.entries:

@@ -42528,7 +42528,7 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "callers",
-      "state": "dynamically_gated",
+      "state": "reconstructed",
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/872",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7320",

@@ -176,10 +176,20 @@ CLOSED_KEYS = ("id", "rva", "proof", "gate", "falsification")
 # proof was available" claim was made. `counts` is recomputed from the ledger,
 # so the owning phase's totals correct themselves rather than going stale.
 #
-# The original `driving_phases` travels with the row because it is what makes
-# the claim checkable: a discharge by a phase the deferral never named is a
-# phase helping itself to a row, which is the thing `stray` was written to stop.
-CLOSED_OPTIONAL_KEYS = ("discharged_by_phase", "driving_phases")
+# The original `driving_phases` is transcribed onto the row at the close. Closing
+# the row deletes the deferred entry it came from, so nothing holds the original
+# list to compare against and BOTH FIELDS ARE SELF-DECLARED: what `_check_discharge`
+# can hold them to is that they agree with each other, that the discharging phase
+# is not the owning one, and that every phase named is later than the owning one --
+# the same rule `blocked_on_later_phase` deferrals already obey. That last part is
+# the one with teeth, because a discharged row may name the DISCHARGING phase's
+# gates, so without it two self-declared fields buy a gate this phase never runs.
+#
+# `note` is what a deferred entry has always had and a closed one did not: room
+# to say something about the entry that is not the mutation. A closure that meets
+# the standard and is nonetheless thin -- a seven-byte row whose delta is 1 -- can
+# now say so on the row instead of only in a document nobody diffs against it.
+CLOSED_OPTIONAL_KEYS = ("discharged_by_phase", "driving_phases", "note")
 FALSIFICATION_KEYS = ("mutation", "detected")
 DEFERRED_KEYS = ("id", "rva", "size", "reason", "phase_provenance", "driving_phases")
 DEFERRED_OPTIONAL_KEYS = ("type", "translation_unit_zone", "reachability", "callers",
@@ -212,9 +222,23 @@ DATA_PROOF_KINDS = ()
 # mutation aimed at it. Calling either of those "unreachable" would be a false
 # reachability claim, and calling them "blocked_on_later_phase" would name a
 # phase that owes nothing.
+#
+# Phase 4 needed two more, and both exist to stop the same misreading. 722 of its
+# 1,137 function rows were not reconstructed at all: they were vendored from pinned
+# upstream archives, qhull 2003.1 and OPCODE 1.3, and compiled into the DLL. Saying
+# `not_reconstructed_in_phase` about them would be false -- a candidate for those
+# bytes exists and builds -- and saying nothing would let present bytes read as
+# finished ones. `vendored_not_falsified` is the honest middle: the source is there
+# and no mutation this schema can spend is aimed at the row. It deliberately makes
+# no reachability claim, because "nothing runs it" is not checkable per row when
+# the harness drives library entry points that call onward.
+# `vendored_driven_divergent` is separate because collapsing it into the first
+# would read as "nobody got to it" about the one row that was got to and did not
+# reproduce the image.
 DEFERRED_REASONS = ("blocked_on_later_phase", "unreachable_in_phase_2",
                     "not_independently_falsifiable", "homeless_shared_code",
                     "not_reconstructed_in_phase", "reconstructed_not_falsified",
+                    "vendored_not_falsified", "vendored_driven_divergent",
                     "data_object_not_dispositioned")
 # The one reason that belongs to the data half of the census, and the only one a
 # data object may give. Policed in both directions: a function row borrowing it
@@ -253,6 +277,11 @@ DETECTION_UNIT_GATES = {
 # The same shape for an oracle differential, which compares in process and so
 # reports a mismatch count rather than a transcript delta.
 MISMATCHES = re.compile(r"^mismatches=(0|[1-9][0-9]*)$")
+# The number a closed row spends, in whichever unit its gate prints it, so that
+# `validate_closure_evidence` can look for it in the evidence file. A static
+# proof reports `check_failed <name>` and matches nothing here, which is right:
+# there is no count to bind.
+DETECTED_COUNT = re.compile(r"^[a-z_]+=([0-9]+)$")
 # A registry ends at a closing brace in the first column and may not contain
 # another registry: indenting one brace by a space used to fold the static-proof
 # list into the differential one. A block whose brace is indented now matches
@@ -1144,9 +1173,17 @@ def read_gate_targets(path):
 
     A ledger naming a gate nobody runs is the same defect as a ledger with no gate
     at all, and it is not visible from the JSON alone.
+
+    The registry is a map from phase to target names, and until Phase 4's close
+    only the names were kept. Gate names were therefore kind-scoped and not
+    phase-scoped: a Phase 4 row could close on `NxPhysicsCollisionTests`, which
+    is Phase 3's oracle differential and never runs when Phase 4 is gated, and
+    nothing objected. `by_phase` keeps the other half of the registry so
+    validate_closure can bind a gate to the phase that runs it.
     """
     text = PS_COMMENT.sub("", path.read_text(encoding="utf-8"))
     targets = {"differential": set(), "static_proof": set(), "oracle_differential": set()}
+    by_phase = {"differential": {}, "static_proof": {}, "oracle_differential": {}}
     for name, body in PS_TARGET_BLOCK.findall(text):
         if "StaticProof" in name:
             kind = "static_proof"
@@ -1154,23 +1191,42 @@ def read_gate_targets(path):
             kind = "oracle_differential"
         else:
             kind = "differential"
-        # The keys are phase numbers and the values are target names; only the
-        # names can be a gate.
-        targets[kind].update(name for name in re.findall(r"'([A-Za-z0-9_]+)'", body)
-                             if not name.isdigit())
+        # One line per phase: the first quoted token is the phase key and the
+        # rest are that phase's target names. Only the names can be a gate.
+        for line in body.splitlines():
+            quoted = re.findall(r"'([A-Za-z0-9_]+)'", line)
+            names = [name for name in quoted if not name.isdigit()]
+            targets[kind].update(names)
+            if quoted and quoted[0].isdigit():
+                by_phase[kind].setdefault(int(quoted[0]), set()).update(names)
+    targets["by_phase"] = by_phase
     return targets
 
 
 def _check_discharge(where, row, phase):
     """A closed entry that claims a later phase discharged its deferral.
 
-    Three things are checked and each of them is a way the field could otherwise
-    be written to mean nothing: the two fields have to travel together, because
-    `discharged_by_phase` alone is unfalsifiable and `driving_phases` alone says
-    a discharge that never happened; the discharging phase has to be one the
-    original deferral named, so a phase cannot adopt a row by writing its own
-    number in; and it may not be the owning phase, because a phase discharging
-    its own deferral is just a closure and has no business claiming otherwise.
+    Four things are checked, and each of them is a way the fields could
+    otherwise be written to mean nothing. The two fields have to travel
+    together, because `discharged_by_phase` alone is unfalsifiable and
+    `driving_phases` alone says a discharge that never happened. The discharging
+    phase has to be one of the driving phases this entry lists. It may not be
+    the owning phase, because a phase discharging its own deferral is just a
+    closure and has no business claiming otherwise. And every driving phase has
+    to be LATER than the owning phase, which is the same rule the deferred form
+    already enforces for `blocked_on_later_phase`: a deferral is discharged by a
+    phase that runs after the one that deferred it, so a phase cannot reach back
+    and rest one of its own rows on an earlier phase's gate. That last clause is
+    what `validate_closure`'s gate-to-phase binding would otherwise hand back,
+    since it lets a discharged row name the discharging phase's gates.
+
+    What is NOT checked, and cannot be from these artefacts: the deferral these
+    fields claim to carry forward. Closing the row deletes the deferred entry it
+    came from, so no committed document holds the original `driving_phases` to
+    compare against -- they are transcribed by hand at the close. A later phase
+    can therefore still adopt a row it was never named on, and the guarantee
+    here is only that it must name a phase after the owning one and run that
+    phase's gate.
     """
     named = "discharged_by_phase" in row
     driving = "driving_phases" in row
@@ -1195,6 +1251,13 @@ def _check_discharge(where, row, phase):
     elif by not in phases:
         errors.append(f"{where} says phase {by} discharged it, but the deferral named "
                       f"{', '.join(str(value) for value in phases)} as the phases that could")
+    early = sorted(value for value in phases if value <= phase)
+    if early:
+        errors.append(f"{where} lists driving phases "
+                      f"{', '.join(str(value) for value in early)}, which are not later than "
+                      f"phase {phase}; a deferral is discharged by a phase that runs after the "
+                      f"one that deferred it, and a discharge naming an earlier phase is a row "
+                      f"reaching back for a gate phase {phase} does not run")
     return errors
 
 
@@ -1270,6 +1333,26 @@ def validate_closure(inventory, closure, phase, targets):
             if row.get("gate") not in targets[kind]:
                 errors.append(f"{where} names gate {row.get('gate')!r}, which is not a registered "
                               f"{kind} target")
+            else:
+                # And registered to THIS phase. A gate registered to another
+                # phase does not run when this one is gated, so a row closed on
+                # it is a row whose proof this phase's gate never executes --
+                # which is how a Phase 4 row could rest on Phase 3's collision
+                # differential with every other check passing. The discharging
+                # phase's gates are allowed too, because a discharge is by
+                # construction another phase's measurement.
+                registered = targets.get("by_phase", {}).get(kind, {})
+                allowed = set(registered.get(phase, ()))
+                by = row.get("discharged_by_phase")
+                if isinstance(by, int) and not isinstance(by, bool):
+                    allowed |= set(registered.get(by, ()))
+                if row["gate"] not in allowed:
+                    owners = sorted(number for number, names in registered.items()
+                                    if row["gate"] in names)
+                    errors.append(
+                        f"{where} names gate {row['gate']!r}, which is registered to phase "
+                        f"{', '.join(str(number) for number in owners) or 'no phase'} and not to "
+                        f"phase {phase}; that gate does not run when phase {phase} is gated")
             falsification = row.get("falsification")
             if falsification is None:
                 falsification = {}
@@ -1435,6 +1518,61 @@ def validate_closure(inventory, closure, phase, targets):
                      for key in keys if closure["counts"].get(key, 0) != measured.get(key, 0)]
         errors.append("the closure ledger counts do not match its own entries -- "
                       + "; ".join(differing))
+    return errors
+
+
+def validate_closure_evidence(closure, phase, evidence_root):
+    """Bind each closed row's measured count to the evidence file that publishes it.
+
+    `validate_closure` checks a row's DISPOSITION, and it checks it across four
+    documents. It checks nothing about the MEASUREMENT behind that disposition:
+    `mutation` is free text nobody reads and `detected` is a number somebody
+    writes down, so an already-closed row could be moved onto a different
+    mutation -- including one this programme publishes as GREEN -- by editing
+    one file, and no gate would say so.
+
+    Where a ledger names the evidence file its measurements are published in,
+    this requires every closed row's stable ID to appear in that file on a line
+    that also carries the count the ledger spends. A ledger that names no such
+    file is unchanged, which is how the Phase 2 and Phase 3 ledgers stay valid:
+    their evidence predates stable IDs being written into it.
+
+    It does not make the count true and cannot: the probe transcripts are still
+    not committed artefacts. Nor is a matching number a matching measurement --
+    the number only has to appear somewhere on a line that names the row, and
+    an RVA or a byte count on that line could supply it. What it buys is that
+    the ledger and the published evidence now have to be edited together.
+    """
+    name = closure.get("evidence_file")
+    if name is None:
+        return []
+    if not isinstance(name, str) or not name.strip():
+        return [f"the phase {phase} closure ledger records evidence_file {name!r}, which is "
+                f"not a path to the file its measurements are published in"]
+    try:
+        lines = (evidence_root / name).read_text(encoding="utf-8").splitlines()
+    except OSError as error:
+        return [f"the phase {phase} closure ledger publishes its measurements in {name}, which "
+                f"cannot be read ({error}); no closed row's count can be checked against it"]
+    errors = []
+    for row in closure["closed"]:
+        if not isinstance(row, dict) or not isinstance(row.get("id"), str):
+            continue
+        named = [line for line in lines if row["id"] in line]
+        if not named:
+            errors.append(f"closed entry {row['id']!r} is not named in {name}, the file this "
+                          f"ledger publishes its measurements in; a closure whose measurement "
+                          f"cannot be read is one whose evidence has moved")
+            continue
+        falsification = row.get("falsification")
+        detected = falsification.get("detected") if isinstance(falsification, dict) else None
+        count = DETECTED_COUNT.match(detected) if isinstance(detected, str) else None
+        if count is None:
+            continue
+        if not any(re.search(rf"(?<![0-9]){count.group(1)}(?![0-9])", line) for line in named):
+            errors.append(f"closed entry {row['id']!r} spends {detected!r} and no line of {name} "
+                          f"names both the row and that count; the ledger and the evidence are "
+                          f"recording different measurements")
     return errors
 
 
@@ -1678,8 +1816,18 @@ def validate_phase_record(record, phase, program_phase, closure_totals, exclusio
 
 
 def plan_path(evidence_root, plan):
-    """A phase plan is recorded from the repository root, three levels up."""
-    return evidence_root.parents[2] / plan
+    """A phase plan is recorded from the repository root, three levels up.
+
+    The root is resolved first. Run as `validate_inventory.py inventory.json`
+    from the evidence directory itself, the root was `.` and `parents[2]` had
+    nothing to index, so the tool died on an IndexError traceback -- which reads
+    exactly like a validation failure and is not one. The production runner
+    always passes an absolute path, which is why it was never seen.
+    """
+    root = Path(evidence_root).resolve()
+    if len(root.parents) < 3:
+        return None
+    return root.parents[2] / plan
 
 
 # A `source` naming a path is a claim that the reconstruction lives there. Nothing
@@ -1874,7 +2022,8 @@ def validate_program(inventory, program, closures, evidence_root):
                           f"{inventory_row['name']!r}")
         # A phase whose plan file is not there is a phase nobody can execute, and
         # the plan is where its escalations are inherited.
-        if not isinstance(row["plan"], str) or not (plan_path(evidence_root, row["plan"])).is_file():
+        plan = plan_path(evidence_root, row["plan"]) if isinstance(row["plan"], str) else None
+        if plan is None or not plan.is_file():
             errors.append(f"{where} names plan {row['plan']!r}, which is not a file")
         if not isinstance(row["gate"], str) or not row["gate"].strip():
             errors.append(f"{where} states no gate")
@@ -1979,6 +2128,7 @@ def main():
             parser.exit(2, f"error: {error}\n")
         ledgers[int(named.group(1))] = closure
         errors += validate_closure(data, closure, int(named.group(1)), targets)
+        errors += validate_closure_evidence(closure, int(named.group(1)), path.parent)
 
     # Every phase that owns a row must publish a ledger. The loop above checks
     # each ledger it finds and none it does not, so a phase without one had rows in
