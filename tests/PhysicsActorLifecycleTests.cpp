@@ -867,6 +867,21 @@ int wmain(int argc, wchar_t** argv)
 				reinterpret_cast<const unsigned char*>(reusedActor) + 0x14);
 			printf("actor reuse body_c=%x\n", *reinterpret_cast<const unsigned*>(body + 0xc));
 			nxPrintShapeIndex("reuse", reusedActor);
+			NxShape* shape = reusedActor->getShapes()[0];
+			const unsigned char* internalShape = *reinterpret_cast<unsigned char* const*>(
+				reinterpret_cast<const unsigned char*>(shape) + 0x18);
+			printf("actor box defaults=%u.%u.%x.%x\n",
+				static_cast<unsigned>(shape->getGroup()),
+				static_cast<unsigned>(shape->getMaterial()),
+				*reinterpret_cast<const unsigned*>(internalShape + 0xc8),
+				*reinterpret_cast<const unsigned*>(internalShape + 0xd8));
+			shape->setGroup(5);
+			shape->setMaterial(1);
+			printf("actor box mutated=%u.%u.%x.%x\n",
+				static_cast<unsigned>(shape->getGroup()),
+				static_cast<unsigned>(shape->getMaterial()),
+				*reinterpret_cast<const unsigned*>(internalShape + 0xc8),
+				*reinterpret_cast<const unsigned*>(internalShape + 0xd8));
 			}
 		}
 

@@ -27,7 +27,7 @@ static NpActorVtable gNpActorVtable;
 
 // The public 0x1c-byte box handle is separate from its 0x228-byte internal
 // shape. Its final table has 35 entries in the shipped x86 image; only the
-// four entries below are reconstructed here. An unimplemented entry aborts
+// measured entries below are reconstructed here. An unimplemented entry aborts
 // instead of returning a plausible but false result.
 static void __fastcall nxUnsupportedBoxMethod(void*, void*) { abort(); }
 
@@ -37,6 +37,35 @@ static unsigned char* nxBoxHandleInternal(void* self)
 		static_cast<unsigned char*>(self) + 0x18);
 	if(!shape) abort();
 	return shape;
+	}
+
+// phys_fn_10026c90: mark the internal shape for the Scene's deferred update.
+void nxSceneMarkShapeDirty(void* shape, unsigned flag);
+
+static void __fastcall nxBoxHandleSetGroup(void* self, void*, NxCollisionGroup group)
+	{
+	unsigned char* shape = nxBoxHandleInternal(self);
+	if(group >= 32) return;
+	*reinterpret_cast<NxCollisionGroup*>(shape + 0xd8) = group;
+	nxSceneMarkShapeDirty(shape, 4);
+	*reinterpret_cast<unsigned*>(shape + 0xc8) = 1u << group;
+	}
+
+static NxCollisionGroup __fastcall nxBoxHandleGetGroup(void* self, void*)
+	{
+	return *reinterpret_cast<NxCollisionGroup*>(nxBoxHandleInternal(self) + 0xd8);
+	}
+
+static void __fastcall nxBoxHandleSetMaterial(void* self, void*, NxMaterialIndex material)
+	{
+	unsigned char* shape = nxBoxHandleInternal(self);
+	*reinterpret_cast<NxMaterialIndex*>(shape + 0xda) = material;
+	nxSceneMarkShapeDirty(shape, 8);
+	}
+
+static NxMaterialIndex __fastcall nxBoxHandleGetMaterial(void* self, void*)
+	{
+	return *reinterpret_cast<NxMaterialIndex*>(nxBoxHandleInternal(self) + 0xda);
 	}
 
 static NxActor* __fastcall nxBoxHandleGetActor(void* self, void*)
@@ -72,6 +101,10 @@ void* nxBoxShapePublicVtable()
 			for(unsigned i = 0; i < 35; ++i)
 				slots[i] = reinterpret_cast<void*>(&nxUnsupportedBoxMethod);
 			slots[1] = reinterpret_cast<void*>(&nxBoxHandleGetActor);
+			slots[2] = reinterpret_cast<void*>(&nxBoxHandleSetGroup);
+			slots[3] = reinterpret_cast<void*>(&nxBoxHandleGetGroup);
+			slots[25] = reinterpret_cast<void*>(&nxBoxHandleSetMaterial);
+			slots[26] = reinterpret_cast<void*>(&nxBoxHandleGetMaterial);
 			slots[27] = reinterpret_cast<void*>(&nxBoxHandleGetType);
 			slots[28] = reinterpret_cast<void*>(&nxBoxHandleIs);
 			slots[32] = reinterpret_cast<void*>(&nxBoxHandleGetDimensions);
