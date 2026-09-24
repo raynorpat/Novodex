@@ -354,9 +354,16 @@ int wmain(int argc, wchar_t** argv)
 		multiDesc.shapes.pushBack(&secondBox);
 		multiDesc.globalPose.t = NxVec3(7.0f, 1.0f, -2.0f);
 		const unsigned beforeAllocations = allocator.allocations();
+		const unsigned beforeCreationFrees = allocator.frees();
 		NxActor* multiActor = scene->createActor(multiDesc);
 		if(!multiActor) return nxFail("multi-shape actor creation failed");
 		printf("actor multi creation_allocs=%u\n", allocator.allocations() - beforeAllocations);
+		printf("actor multi creation_frees=%u\n", allocator.frees() - beforeCreationFrees);
+		printf("actor multi creation_free_sizes=");
+		for(unsigned i = 0; i < allocator.frees() - beforeCreationFrees; ++i)
+			printf("%s%x", i ? "." : "", allocator.freedSizeFromEnd(
+				allocator.frees() - beforeCreationFrees - 1 - i));
+		printf("\n");
 		printf("actor multi creation_sizes=");
 		for(unsigned i = 0; i < allocator.allocations() - beforeAllocations; ++i)
 			printf("%s%x", i ? "." : "", allocator.allocSizeFromEnd(
@@ -370,6 +377,28 @@ int wmain(int argc, wchar_t** argv)
 		printf("actor multi group_size=%x\n", groupSize);
 		if(groupSize == 0x110)
 			{
+			const void* groupOwner = *reinterpret_cast<void* const*>(group + 4);
+			printf("actor multi group_owner=%u owner_is_body=%u owner_is_actor=%u\n",
+				groupOwner ? 1u : 0u, groupOwner == body ? 1u : 0u,
+				groupOwner == multiActor ? 1u : 0u);
+			const unsigned char* internalScene = *reinterpret_cast<unsigned char* const*>(body + 4);
+			const unsigned char* publicInternal = *reinterpret_cast<unsigned char* const*>(
+				reinterpret_cast<const unsigned char*>(scene) + 0x24);
+			printf("actor multi body_scene_public=%u body_scene_internal=%u\n",
+				internalScene == reinterpret_cast<const unsigned char*>(scene) ? 1u : 0u,
+				internalScene == publicInternal ? 1u : 0u);
+			const unsigned char* manager = internalScene
+				? *reinterpret_cast<unsigned char* const*>(internalScene + 0x48) : 0;
+			printf("actor multi scene_manager=%u\n", manager ? 1u : 0u);
+			if(manager)
+				{
+				const uintptr_t managerAddress = reinterpret_cast<uintptr_t>(manager);
+				const uintptr_t page = managerAddress & ~static_cast<uintptr_t>(0xfff);
+				const unsigned guardedSize = *reinterpret_cast<const unsigned*>(page);
+				printf("actor multi manager_guarded_size=%x\n",
+					guardedSize <= 0xffc && managerAddress + guardedSize == page + 0x1000
+						? guardedSize : 0u);
+				}
 			const unsigned arrayOffsets[2] = {0xe0u, 0xf0u};
 			for(unsigned arrayIndex = 0; arrayIndex < 2; ++arrayIndex)
 				{

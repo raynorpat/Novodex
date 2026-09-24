@@ -10,9 +10,15 @@ path is reconstructed.
 The oracle allocates an outer body (0x50), public actor (0x18), group
 (0x110), first shape (0x228), first helper (0x1c), two 0x8 arrays, second
 shape (0x228), second helper (0x1c), dynamic record (0x260), then 0xc0 and
-0x20 blocks. The group is body+0x10. Its +0xe0 array has two 0x228 shape
+0x20 blocks. Creation also frees older 0x60 and 0x10 blocks as those later
+allocations grow. The group is body+0x10. Its +0xe0 array has two 0x228 shape
 pointers and its +0xf0 array has two 0x1c helper pointers, each with count
-and capacity two. The group does not point directly to the public actor.
+and capacity two. Group+4 points to the 0x50 outer body, whose +4 points
+to the 0x710 internal Scene. Scene+0x48 points to a 0xa8 auxiliary manager.
+The candidate now matches these links. Its previous constructor wrote that
+manager pointer at byte 0x12 instead of dword index 0x12 (byte 0x48). The
+analogous collector pointer at dword index 0x1b3 (byte 0x6cc) was corrected
+at the same time. No public headers changed.
 
 The candidate now builds and frees that group/child graph in the measured
 order, including the two 0x8 arrays. Both DLLs report a 0x110 group and

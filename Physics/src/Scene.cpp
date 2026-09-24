@@ -488,12 +488,12 @@ NxSceneInternal::NxSceneInternal()
 
 	// phys_fn_000285, allocated 0x28 bytes.
 	void* collector = nxGetSdkAllocator()->malloc(0x28, NX_MEMORY_PERSISTENT);
-	nxDword(p, 0x1b3) = collector ? reinterpret_cast<unsigned>(nxSceneCollectorConstruct(collector, p))
+	p[0x1b3] = collector ? reinterpret_cast<unsigned>(nxSceneCollectorConstruct(collector, p))
 						 : 0;
 
 	// phys_fn_002415, allocated 0xa8 bytes.
 	void* aux = nxGetSdkAllocator()->malloc(0xa8, NX_MEMORY_PERSISTENT);
-	nxDword(p, 0x12) = aux ? reinterpret_cast<unsigned>(nxSceneAuxConstruct(aux, p)) : 0;
+	p[0x12] = aux ? reinterpret_cast<unsigned>(nxSceneAuxConstruct(aux, p)) : 0;
 	}
 
 
@@ -1313,10 +1313,11 @@ void* nxShapeGroupConstruct(void* actor, const unsigned* shapeDescriptions, unsi
 	if(!group)
 		return 0;
 	memset(group, 0, 0x110);
-	// The oracle group does not retain the public wrapper at +4; its owned
-	// children are reached through the two arrays near the end of the block.
+	// Like the oracle, the group retains its 0x50-byte outer body at +4.
+	// Its owned children are reached through the two arrays near the end.
 	unsigned char* body = *reinterpret_cast<unsigned char**>(
 		static_cast<unsigned char*>(actor) + 0x14);
+	*reinterpret_cast<void**>(group + 4) = body;
 	void** shapes = 0;
 	void** helpers = 0;
 	unsigned built = 0;

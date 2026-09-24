@@ -34,6 +34,8 @@
 
 **M2 two-shape probe, 2026-09-24:** A gated, opt-in public-DLL probe mapped the dynamic two-box actor's 0x110-byte shape group and its parallel `+0xe0`/`+0xf0` child arrays. The candidate now builds and frees that group with both child shapes and helpers. The oracle still has two creation allocations (0xc0, 0x20) and a release-time 0x18 array growth/old 0x8 free absent from the candidate. See `docs/reconstruction/novodex-physics/evidence/phase5-multi-shape-group.md`; this is an open M2/M3 dependency, not Phase 5 closure.
 
+**M2 owner-link follow-up, 2026-09-24:** The oracle group+4 points to its outer body, body+4 points to the internal Scene, and Scene+0x48 points to a 0xa8 auxiliary manager. The candidate now matches those links after fixing two dword-index/byte-offset stores in the Scene constructor. The auxiliary manager's registration/growth behavior remains open; the ordinary Phase 5 actor differential and Phase 6 joint differential remain exact.
+
 ## 1. Inputs and boundaries
 
 - Repository: `D:\github\Novodex`, inspected at `0df8821f1c5e3668e566ad4182b1e8e568f632d6`.
