@@ -642,9 +642,9 @@
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/17",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/78",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "Partial: Ghidra shows the per-shape-type constructor, descriptor load and public handle allocation. The candidate's factory now initializes local pose from NxShapeDesc, composes owner world pose, and refreshes it after dynamic record construction; final class allocation and full descriptor branches remain open.",
+      "dynamic_proof": "Public actor creation probes compare the shape's default identity local/world matrices and a rotated, translated descriptor's local, world and mirrored poses word for word on the pinned oracle and candidate.",
+      "notes": "Partial factory transcription; the final shape-family vtables remain a Phase 5 gate blocker."
     },
     {
       "id": "phys_fn_000033",
@@ -3704,7 +3704,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/69",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/675",
       "static_proof": "Partial: Ghidra at RVA 0x9450 shows the static quaternion-to-matrix copy into body+0x20 and the dynamic current/shadow quaternion writes at record+0x5c/+0x24, dirty bit 2, mass-frame refresh, then body shape owner update with flag 1.",
-      "dynamic_proof": "Public actor probes match the oracle for dynamic current/shadow quaternion words, dirty bit 2, mass center and owned-shape world pose, and for the static body's nine matrix words. A known local shape pose isolates this setter from a separate shape-creation initialization gap.",
+      "dynamic_proof": "Public actor probes match the oracle for dynamic current/shadow quaternion words, dirty bit 2, mass center and owned-shape world pose, and for the static body's nine matrix words. The shape factory now initializes the descriptor's local pose, so the setter probe no longer overrides it.",
       "notes": "Candidate implementation is partial pending error/scene/group and shape-family closure."
     },
     {

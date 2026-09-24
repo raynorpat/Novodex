@@ -305,6 +305,8 @@ $NxRequiredCoverageLines = [ordered] @{
     )
     'NxPhysicsActorDynamicSetterTests' = @(
         'setter created=1',
+        'setter initial_shape_local=3f800000.0.0.0.3f800000.0.0.0.3f800000.0.0.0',
+        'setter initial_shape_world=3f800000.0.0.0.3f800000.0.0.0.3f800000.0.0.0',
         'setter initial_pruner=1.1.7f7fffff.7f7fffff.7f7fffff.ff7fffff.ff7fffff.ff7fffff',
         'setter initial_wake=3ecccccc.3ecccccc.3cb851ec.3ca0902e',
         'setter group_initial=0.1.1',
@@ -358,7 +360,11 @@ $NxRequiredCoverageLines = [ordered] @{
         'setter static_position=c0800000.40c00000.c1000000.c0800000.40c00000.c1000000',
         'setter static_orientation_quat=331302ae.bf7fffff.0.3f7fffff.331302ae.0.0.0.3f800000',
         'setter multi_created=1',
-        'setter multi_position=2.40000000.40400000.c0800000.40000000.40400000.c0800000'
+        'setter multi_position=2.40000000.40400000.c0800000.40000000.40400000.c0800000',
+        'setter posed_created=1',
+        'setter posed_local=3f800000.0.0.0.0.bf800000.0.3f800000.0.3f000000.be800000.3f400000',
+        'setter posed_world=331302ae.0.3f7fffff.3f7fffff.0.b31302ae.0.3f800000.0.40100000.40600000.c0500000',
+        'setter posed_mirror=331302ae.0.3f7fffff.3f7fffff.0.b31302ae.0.3f800000.0.40100000.40600000.c0500000'
     )
     'NxPhysicsActorDynamicsTests' = @(
         'dynamics created=1',
@@ -1596,7 +1602,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 101  # 34 for NxPhysicsAssetTests, 67 for NxPhysicsThirdPartyTests
-    '5' = 734  # 126 object-layout, 1 shape-vtable and 607 public actor/pruner/box/scene lines
+    '5' = 740  # 126 object-layout, 1 shape-vtable and 613 public actor/pruner/box/scene lines
                # (RED on purpose: vtables family open)
     '6' = 11  # 3 oracle-descriptor + 4 oracle-joint + 4 staged-pair-joint
     '7' = 4   # the four STAGED-PAIR assertions; the oracle-differential assertions

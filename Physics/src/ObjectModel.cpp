@@ -4342,6 +4342,32 @@ void ShapeBase::nxApplyOwnerUpdate(unsigned flags)
 		}
 	}
 
+// The Scene shape factory constructs a raw internal shape while the final
+// shape classes are still being reconstructed. Initialize its three poses
+// through the same owner-composition path used by live actor pose changes.
+void nxShapeFactoryInitializePose(void* shape, const void* localPose)
+	{
+	unsigned char* bytes = static_cast<unsigned char*>(shape);
+	if(localPose)
+		memcpy(bytes + 0x6c, localPose, 0x30);
+	else
+		{
+		memset(bytes + 0x6c, 0, 0x30);
+		const float one = 1.0f;
+		for(unsigned i = 0; i < 3; ++i)
+			memcpy(bytes + 0x6c + 4 * (i * 3 + i), &one, 4);
+		}
+	static_cast<ShapeBase*>(shape)->nxApplyOwnerUpdate(0);
+	memcpy(bytes + 0x3c, bytes + 0x0c, 0x30);
+	}
+
+void nxShapeFactoryRefreshPose(void* shape)
+	{
+	unsigned char* bytes = static_cast<unsigned char*>(shape);
+	static_cast<ShapeBase*>(shape)->nxApplyOwnerUpdate(0);
+	memcpy(bytes + 0x3c, bytes + 0x0c, 0x30);
+	}
+
 // ---------------------------------------------------------------------------
 // Shape-to-name registry. See evidence section 3o for the full decode.
 

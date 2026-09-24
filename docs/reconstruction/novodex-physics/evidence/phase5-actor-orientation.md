@@ -10,8 +10,8 @@ center and inertia, and calls the body shape's slot-6 owner update with flag
 The public actor setter probe compares the dirty bit, current and shadow
 quaternion, mass-frame center, owned shape world pose, and static matrix.
 All four registered orientation lines match the pinned oracle and candidate,
-raising Phase 5's floor from 730 to 734. The probe writes an explicit
-identity local shape pose before the quaternion call because candidate shape
-creation currently leaves its default local rotation zero while the oracle
-uses identity. That shape-creation gap remains open. The vtable-family
-`CANDIDATE-MISSING` marker also remains, so Phase 5 is still red.
+raising Phase 5's floor from 730 to 734. The first version of the probe
+needed an explicit identity local pose because candidate shape creation left
+it zero. Shape-factory pose initialization now removes that override and
+separately checks default and rotated descriptor poses. The vtable-family
+`CANDIDATE-MISSING` marker remains, so Phase 5 is still red.

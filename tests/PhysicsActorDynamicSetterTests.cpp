@@ -64,6 +64,14 @@ int wmain(int argc, wchar_t** argv)
 		reinterpret_cast<const unsigned char*>(actor) + 0x14);
 	const unsigned char* record = *reinterpret_cast<unsigned char* const*>(body + 8);
 	const unsigned char* initialShape = *reinterpret_cast<unsigned char* const*>(body + 0x10);
+	printf("setter initial_shape_local=");
+	for(unsigned i = 0; i < 12; ++i)
+		printf("%s%x", i ? "." : "", word(initialShape, 0x6c + 4 * i));
+	printf("\n");
+	printf("setter initial_shape_world=");
+	for(unsigned i = 0; i < 12; ++i)
+		printf("%s%x", i ? "." : "", word(initialShape, 0x0c + 4 * i));
+	printf("\n");
 	const unsigned char* initialPruner = *reinterpret_cast<unsigned char* const*>(initialShape + 0xc4);
 	const unsigned char* initialEntries = initialPruner
 		? *reinterpret_cast<unsigned char* const*>(initialPruner + 0x14) : 0;
@@ -268,11 +276,6 @@ int wmain(int argc, wchar_t** argv)
 	memcpy(mutableShape + 0x6c, oldLocalPose, sizeof(oldLocalPose));
 	memcpy(mutableRecord + 0x100, oldMassOffset, sizeof(oldMassOffset));
 	actor->setGlobalPosition(NxVec3(3.0f, -2.0f, 5.0f));
-	// The actor setter is driven with a known local pose. Shape creation's
-	// default local-pose initialization is tracked separately in Phase 4.
-	const float identityLocalPose[12] = {1.0f,0.0f,0.0f,
-		0.0f,1.0f,0.0f,0.0f,0.0f,1.0f,0.0f,0.0f,0.0f};
-	memcpy(mutableShape + 0x6c, identityLocalPose, sizeof(identityLocalPose));
 	NxQuat rotation;
 	rotation.x = 0.0f;
 	rotation.y = 0.0f;
@@ -343,6 +346,36 @@ int wmain(int argc, wchar_t** argv)
 			word(*child, 0x38));
 	printf("\n");
 	scene->releaseActor(*multiActor);
+	NxBoxShapeDesc posedBox;
+	posedBox.dimensions = NxVec3(1.0f, 2.0f, 3.0f);
+	const float localRotation[9] = {1.0f,0.0f,0.0f,
+		0.0f,0.0f,-1.0f,0.0f,1.0f,0.0f};
+	posedBox.localPose.M.setRowMajor(localRotation);
+	posedBox.localPose.t = NxVec3(0.5f, -0.25f, 0.75f);
+	NxActorDesc posedDesc;
+	posedDesc.shapes.pushBack(&posedBox);
+	posedDesc.body = &bodyDesc;
+	const float actorRotation[9] = {0.0f,-1.0f,0.0f,
+		1.0f,0.0f,0.0f,0.0f,0.0f,1.0f};
+	posedDesc.globalPose.M.setRowMajor(actorRotation);
+	posedDesc.globalPose.t = NxVec3(2.0f, 3.0f, -4.0f);
+	NxActor* posedActor = scene->createActor(posedDesc);
+	printf("setter posed_created=%u\n", posedActor ? 1u : 0u);
+	if(!posedActor) return nxFail("posed actor creation failed");
+	const unsigned char* posedBody = *reinterpret_cast<unsigned char* const*>(
+		reinterpret_cast<const unsigned char*>(posedActor) + 0x14);
+	const unsigned char* posedShape = *reinterpret_cast<unsigned char* const*>(posedBody + 0x10);
+	printf("setter posed_local=");
+	for(unsigned i = 0; i < 12; ++i)
+		printf("%s%x", i ? "." : "", word(posedShape, 0x6c + 4 * i));
+	printf("\nsetter posed_world=");
+	for(unsigned i = 0; i < 12; ++i)
+		printf("%s%x", i ? "." : "", word(posedShape, 0x0c + 4 * i));
+	printf("\nsetter posed_mirror=");
+	for(unsigned i = 0; i < 12; ++i)
+		printf("%s%x", i ? "." : "", word(posedShape, 0x3c + 4 * i));
+	printf("\n");
+	scene->releaseActor(*posedActor);
 	sdk->releaseScene(*scene);
 	sdk->release();
 	return nxReportPairIdentity(pairDirectory);

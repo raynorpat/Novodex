@@ -47,6 +47,8 @@
 
 // Public shape final and descriptor loader share the oracle's global name map.
 void nxShapeSetName(void* shape, const char* name);
+void nxShapeFactoryInitializePose(void* shape, const void* localPose);
+void nxShapeFactoryRefreshPose(void* shape);
 
 // ---------------------------------------------------------------------------
 // Reproduction holes. The oracle calls these; the phases that own them have not
@@ -2009,6 +2011,19 @@ void nxSceneAddActorObject(void* scene, void* object, void* actorPointer)
 			static_cast<unsigned char*>(object));
 		return;
 		}
+	unsigned char* shape = *reinterpret_cast<unsigned char**>(body + 0x10);
+	if(shape)
+		{
+		if(*reinterpret_cast<unsigned*>(shape + 0xd0) == 5u)
+			{
+			void** first = *reinterpret_cast<void***>(shape + 0xe0);
+			void** last = *reinterpret_cast<void***>(shape + 0xe4);
+			for(void** child = first; child && child != last; ++child)
+				nxShapeFactoryRefreshPose(*child);
+			}
+		else
+			nxShapeFactoryRefreshPose(shape);
+		}
 	unsigned char* bytes = static_cast<unsigned char*>(scene);
 	nxSceneArrayReserve(bytes + 0x56c, 1);
 	void** last = *reinterpret_cast<void***>(bytes + 0x570);
@@ -2098,6 +2113,8 @@ void* nxShapeFactory(void* shapeDesc, void* actor)
 		{
 		*reinterpret_cast<void**>(body + 0x10) = shape;
 		*reinterpret_cast<void**>(shape + 4) = body;
+		nxShapeFactoryInitializePose(shape,
+			descriptor ? &descriptor->localPose : nullptr);
 		}
 	if(descriptor && descriptor->name)
 		nxShapeSetName(shape, descriptor->name);
