@@ -38,3 +38,28 @@ record's `+0x110` solver count at zero. It now stores the body descriptor's
 `solverIterationCount` there; the four public dispatch cases match. These add
 four more Phase 5 assertions, raising the floor to 679. The low-level row was
 already `reconstructed` in inventory; this closes its public actor dispatch.
+
+## Local point velocity
+
+Actor dynamic slot 66, RVA `0x5b40` (`phys_fn_000148`), was a zero-returning
+virtual stub. The shipped function transforms the local point through the
+record quaternion and the mass-frame orientation, then adds angular velocity
+cross the transformed point to linear velocity. The null-record arm returns
+zero. The candidate now implements this path under the scene read guard.
+
+The public probe seeds nonzero velocities and a quarter-turn mass frame in the
+dynamic record, restores all modified bytes after each call, and compares
+static, identity, half-turn and quarter-turn actors. The first three matched
+immediately. The quarter-turn Z output differed by one ULP because the image
+keeps local-point products on the x87 stack until after the cross product and
+velocity addition. Reproducing that store schedule gives `0x40cfffff` in both
+DLLs. Four gate assertions raise the Phase 5 floor to 683; inventory row
+`phys_fn_000148` is `reconstructed`.
+
+A further 16-case grid varied quaternion, mass-frame matrix, point and both
+velocity vectors. The initial floating-point transcription disagreed in nine
+cases, usually by one or two ULP. The image stores each combined matrix cell
+as float but retains all three transformed point coordinates on the x87 stack.
+It spills only the first two cross-product terms before adding linear velocity.
+The candidate now follows that sequence; all 16 triples match bit for bit.
+Those 16 cases raise the Phase 5 assertion floor to 699.

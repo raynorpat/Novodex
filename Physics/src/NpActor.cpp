@@ -1600,10 +1600,150 @@ NxReal NpActorVtable::computeKineticEnergy() const
 	return energy;
 	}
 
-// (unimplemented) getLocalPointVelocityVal
+// phys_fn_000148, actor dynamic slot 66 at 0x00005b40. The local point is rotated through
+// both the body quaternion and the mass frame before omega x radius is added
+// to the linear velocity. The null-record arm returns zero.
 NxVec3 NpActorVtable::getLocalPointVelocityVal(const NxVec3& point) const
 	{
-	return NxVec3();
+	void* self = const_cast<NpActorVtable*>(this);
+	void* ctx = nxNpActorContext(self, 0x10);
+	nxNpSceneGuardEnter(ctx);
+	const unsigned char* record = nxNpActorRecord(self);
+	NxVec3 out(0.0f, 0.0f, 0.0f);
+	if(record)
+		{
+		float rotation[9];
+		nxNpActorRotationFromQuaternionGetter(
+			reinterpret_cast<const float*>(record + 0x5c), rotation);
+		const float* frame = reinterpret_cast<const float*>(record + 0xdc);
+		float combined[9];
+		for(unsigned row = 0; row < 3; ++row)
+			for(unsigned col = 0; col < 3; ++col)
+				{
+				// The first column (and row-zero's second cell) is
+				// accumulated 1,2,0; other cells use 0,1,2.
+				const bool reordered = col == 0 || (row == 0 && col == 1);
+				const unsigned a = reordered ? 1u : 0u;
+				const unsigned b = reordered ? 2u : 1u;
+				const unsigned c = reordered ? 0u : 2u;
+#if defined(_MSC_VER) && defined(_M_IX86)
+				const float* r0 = rotation + row * 3 + a;
+				const float* r1 = rotation + row * 3 + b;
+				const float* r2 = rotation + row * 3 + c;
+				const float* f0 = frame + a * 3 + col;
+				const float* f1 = frame + b * 3 + col;
+				const float* f2 = frame + c * 3 + col;
+				float value;
+				__asm {
+					mov eax, r0
+					mov edx, f0
+					fld dword ptr [eax]
+					fmul dword ptr [edx]
+					mov eax, r1
+					mov edx, f1
+					fld dword ptr [eax]
+					fmul dword ptr [edx]
+					faddp st(1), st(0)
+					mov eax, r2
+					mov edx, f2
+					fld dword ptr [eax]
+					fmul dword ptr [edx]
+					faddp st(1), st(0)
+					fstp dword ptr [value]
+				}
+				combined[row * 3 + col] = value;
+#else
+				combined[row * 3 + col] = static_cast<float>(
+					static_cast<double>(rotation[row * 3 + a]) * frame[a * 3 + col] +
+					static_cast<double>(rotation[row * 3 + b]) * frame[b * 3 + col] +
+					static_cast<double>(rotation[row * 3 + c]) * frame[c * 3 + col]);
+#endif
+				}
+		const float* velocity = reinterpret_cast<const float*>(record + 0x6c);
+		const float* angular = reinterpret_cast<const float*>(record + 0x78);
+		// The three local-point radii stay on the x87 stack. The first two
+		// cross-product components spill to float before velocity is added;
+		// the third remains extended through the final addition.
+#if defined(_MSC_VER) && defined(_M_IX86)
+		const float* m = combined;
+		const float* localPoint = &point.x;
+		const float* omega = angular;
+		const float* linear = velocity;
+		float* destination = &out.x;
+		float crossX, crossY;
+		__asm {
+			mov eax, m
+			mov edx, localPoint
+			fld dword ptr [eax+4]
+			fmul dword ptr [edx+4]
+			fld dword ptr [eax+8]
+			fmul dword ptr [edx+8]
+			faddp st(1), st(0)
+			fld dword ptr [eax]
+			fmul dword ptr [edx]
+			faddp st(1), st(0)
+			fld dword ptr [eax+12]
+			fmul dword ptr [edx]
+			fld dword ptr [eax+16]
+			fmul dword ptr [edx+4]
+			faddp st(1), st(0)
+			fld dword ptr [eax+20]
+			fmul dword ptr [edx+8]
+			faddp st(1), st(0)
+			fld dword ptr [eax+24]
+			fmul dword ptr [edx]
+			fld dword ptr [eax+28]
+			fmul dword ptr [edx+4]
+			faddp st(1), st(0)
+			fld dword ptr [eax+32]
+			fmul dword ptr [edx+8]
+			faddp st(1), st(0)
+			mov ecx, omega
+			fld st(0)
+			fmul dword ptr [ecx+4]
+			fld st(2)
+			fmul dword ptr [ecx+8]
+			fsubp st(1), st(0)
+			fstp dword ptr [crossX]
+			fld st(2)
+			fmul dword ptr [ecx+8]
+			fxch st(1)
+			fmul dword ptr [ecx]
+			fsubp st(1), st(0)
+			fstp dword ptr [crossY]
+			fmul dword ptr [ecx]
+			fxch st(1)
+			fmul dword ptr [ecx+4]
+			fsubp st(1), st(0)
+			mov ecx, linear
+			fadd dword ptr [ecx+8]
+			fld dword ptr [crossY]
+			fadd dword ptr [ecx+4]
+			fld dword ptr [crossX]
+			fadd dword ptr [ecx]
+			mov ecx, destination
+			fstp dword ptr [ecx]
+			fstp dword ptr [ecx+4]
+			fstp dword ptr [ecx+8]
+		}
+#else
+		const float local[3] = {point.x, point.y, point.z};
+		float radius[3];
+		for(unsigned row = 0; row < 3; ++row)
+			radius[row] = static_cast<float>(
+				static_cast<double>(combined[row * 3]) * local[0] +
+				static_cast<double>(combined[row * 3 + 2]) * local[2] +
+				static_cast<double>(combined[row * 3 + 1]) * local[1]);
+		out.x = static_cast<float>(static_cast<double>(radius[2]) * angular[1] -
+			static_cast<double>(radius[1]) * angular[2] + velocity[0]);
+		out.y = static_cast<float>(static_cast<double>(radius[0]) * angular[2] -
+			static_cast<double>(radius[2]) * angular[0] + velocity[1]);
+		out.z = static_cast<float>(static_cast<double>(radius[1]) * angular[0] -
+			static_cast<double>(radius[0]) * angular[1] + velocity[2]);
+#endif
+		}
+	nxNpSceneGuardLeave(ctx);
+	return out;
 	}
 
 static unsigned char* nxNpActorGroupRoot(unsigned char* record)

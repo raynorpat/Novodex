@@ -107,6 +107,76 @@ static void nxProbeSavedBodyDesc(const char* label, NxActor* actor)
 		desc.solverIterationCount);
 }
 
+static void nxProbeLocalPointVelocity(const char* label, NxActor* actor,
+	bool seedRecord)
+{
+	unsigned char* body = *reinterpret_cast<unsigned char**>(
+		reinterpret_cast<unsigned char*>(actor) + 0x14);
+	unsigned char* record = body ? *reinterpret_cast<unsigned char**>(body + 8) : 0;
+	unsigned char originalMotion[0x18];
+	unsigned char originalFrame[0x24];
+	if(seedRecord && record)
+		{
+		memcpy(originalMotion, record + 0x6c, sizeof(originalMotion));
+		memcpy(originalFrame, record + 0xdc, sizeof(originalFrame));
+		const float motion[6] = {1.25f, -2.0f, 3.0f,
+			-0.5f, 2.0f, 1.5f};
+		const float frame[9] = {0.0f, -1.0f, 0.0f,
+			1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f};
+		memcpy(record + 0x6c, motion, sizeof(motion));
+		memcpy(record + 0xdc, frame, sizeof(frame));
+		}
+	const NxVec3 velocity = actor->getLocalPointVelocityVal(
+		NxVec3(2.0f, -1.0f, 0.75f));
+	printf("actor %s local_point_velocity=%08x.%08x.%08x\n", label,
+		nxBits(velocity.x), nxBits(velocity.y), nxBits(velocity.z));
+	if(seedRecord && record)
+		{
+		memcpy(record + 0x6c, originalMotion, sizeof(originalMotion));
+		memcpy(record + 0xdc, originalFrame, sizeof(originalFrame));
+		}
+}
+
+static void nxProbeLocalPointVelocityGrid(NxActor* actor)
+{
+	unsigned char* body = *reinterpret_cast<unsigned char**>(
+		reinterpret_cast<unsigned char*>(actor) + 0x14);
+	unsigned char* record = *reinterpret_cast<unsigned char**>(body + 8);
+	unsigned char originalMotion[0x18], originalQuaternion[0x10], originalFrame[0x24];
+	memcpy(originalMotion, record + 0x6c, sizeof(originalMotion));
+	memcpy(originalQuaternion, record + 0x5c, sizeof(originalQuaternion));
+	memcpy(originalFrame, record + 0xdc, sizeof(originalFrame));
+	const float quaternions[4][4] = {
+		{0.0f, 0.0f, 0.0f, 1.0f},
+		{0.0f, 0.0f, 0.70710677f, 0.70710677f},
+		{0.17f, -0.31f, 0.23f, 0.91f},
+		{-0.39f, 0.11f, 0.58f, 0.71f}
+	};
+	const float frames[4][9] = {
+		{1,0,0,0,1,0,0,0,1},
+		{0,-1,0,1,0,0,0,0,1},
+		{0.3f,-0.6f,0.2f,0.7f,0.4f,-0.1f,-0.2f,0.5f,0.8f},
+		{-0.1f,0.8f,0.3f,0.2f,-0.4f,0.9f,0.7f,0.1f,-0.5f}
+	};
+	for(unsigned i = 0; i < 16; ++i)
+		{
+		const float motion[6] = {
+			0.37f * (i + 1), -0.21f * (i + 2), 0.13f * (i + 3),
+			-0.19f * (i + 1), 0.29f * (i + 2), -0.11f * (i + 3)};
+		memcpy(record + 0x5c, quaternions[i / 4], sizeof(originalQuaternion));
+		memcpy(record + 0x6c, motion, sizeof(motion));
+		memcpy(record + 0xdc, frames[i % 4], sizeof(originalFrame));
+		const NxVec3 point(0.23f * (i + 1), -0.41f * (i + 2),
+			0.17f * (i + 3));
+		const NxVec3 velocity = actor->getLocalPointVelocityVal(point);
+		printf("actor local_velocity_grid_%u=%08x.%08x.%08x\n", i,
+			nxBits(velocity.x), nxBits(velocity.y), nxBits(velocity.z));
+		}
+	memcpy(record + 0x5c, originalQuaternion, sizeof(originalQuaternion));
+	memcpy(record + 0x6c, originalMotion, sizeof(originalMotion));
+	memcpy(record + 0xdc, originalFrame, sizeof(originalFrame));
+}
+
 static void nxPrintDynamicQuaternion(const char* label, const NxActor* actor)
 {
 	const unsigned char* bytes = reinterpret_cast<const unsigned char*>(actor);
@@ -599,6 +669,7 @@ int wmain(int argc, wchar_t** argv)
 	nxPrintPose("static", staticActor->getGlobalPoseVal());
 	nxProbeSavedActorDesc("saved_static", staticActor);
 	nxProbeSavedBodyDesc("saved_static", staticActor);
+	nxProbeLocalPointVelocity("static", staticActor, false);
 
 	NxBodyDesc body;
 	NxActorDesc dynamicDesc;
@@ -639,6 +710,8 @@ int wmain(int argc, wchar_t** argv)
 	nxPrintPose("dynamic", dynamicActor->getGlobalPoseVal());
 	nxProbeSavedActorDesc("saved_dynamic", dynamicActor);
 	nxProbeSavedBodyDesc("saved_dynamic", dynamicActor);
+	nxProbeLocalPointVelocity("dynamic", dynamicActor, true);
+	nxProbeLocalPointVelocityGrid(dynamicActor);
 
 	NxActorDesc rotatedDesc = dynamicDesc;
 	rotatedDesc.globalPose.M.setRow(0, NxVec3(-1.0f, 0.0f, 0.0f));
@@ -657,6 +730,7 @@ int wmain(int argc, wchar_t** argv)
 	nxPrintPose("rotated", rotatedActor->getGlobalPoseVal());
 	nxProbeSavedActorDesc("saved_rotated", rotatedActor);
 	nxProbeSavedBodyDesc("saved_rotated", rotatedActor);
+	nxProbeLocalPointVelocity("rotated", rotatedActor, true);
 
 	rotatedDesc.globalPose.M.setRow(0, NxVec3(0.0f, -1.0f, 0.0f));
 	rotatedDesc.globalPose.M.setRow(1, NxVec3(1.0f, 0.0f, 0.0f));
@@ -709,6 +783,7 @@ int wmain(int argc, wchar_t** argv)
 	nxPrintPose("quarter", quarterActor->getGlobalPoseVal());
 	nxProbeSavedActorDesc("saved_quarter", quarterActor);
 	nxProbeSavedBodyDesc("saved_quarter", quarterActor);
+	nxProbeLocalPointVelocity("quarter", quarterActor, true);
 	const void* staticLink = *reinterpret_cast<void* const*>(
 		reinterpret_cast<const unsigned char*>(staticActor) + 0x10);
 	const void* dynamicLink = *reinterpret_cast<void* const*>(
