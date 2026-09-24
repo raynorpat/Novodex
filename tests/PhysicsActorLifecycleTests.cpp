@@ -882,6 +882,21 @@ int wmain(int argc, wchar_t** argv)
 				static_cast<unsigned>(shape->getMaterial()),
 				*reinterpret_cast<const unsigned*>(internalShape + 0xc8),
 				*reinterpret_cast<const unsigned*>(internalShape + 0xd8));
+			printf("actor box flags_default=%x.%x.%x\n",
+				shape->getFlag(NX_SF_VISUALIZATION),
+				shape->getFlag(NX_SF_FEATURE_INDICES),
+				*reinterpret_cast<const NxU16*>(internalShape + 0xde));
+			shape->setFlag(NX_SF_FEATURE_INDICES, true);
+			shape->setFlag(NX_SF_VISUALIZATION, false);
+			printf("actor box flags_changed=%x.%x.%x\n",
+				shape->getFlag(NX_SF_VISUALIZATION),
+				shape->getFlag(NX_SF_FEATURE_INDICES),
+				*reinterpret_cast<const NxU16*>(internalShape + 0xde));
+			shape->setFlag(NX_SF_FEATURE_INDICES, false);
+			printf("actor box flags_cleared=%x.%x.%x\n",
+				shape->getFlag(NX_SF_VISUALIZATION),
+				shape->getFlag(NX_SF_FEATURE_INDICES),
+				*reinterpret_cast<const NxU16*>(internalShape + 0xde));
 			}
 		}
 
@@ -890,6 +905,7 @@ int wmain(int argc, wchar_t** argv)
 	{
 		box.group = 7;
 		box.materialIndex = 2;
+		box.shapeFlags = NX_SF_FEATURE_INDICES;
 		NxActor* descriptorActor = scene->createActor(dynamicDesc);
 		printf("actor box descriptor_created=%u\n", descriptorActor ? 1u : 0u);
 		if(descriptorActor)
@@ -902,6 +918,10 @@ int wmain(int argc, wchar_t** argv)
 				static_cast<unsigned>(shape->getMaterial()),
 				*reinterpret_cast<const unsigned*>(internalShape + 0xc8),
 				*reinterpret_cast<const unsigned*>(internalShape + 0xd8));
+			printf("actor box descriptor_flags=%x.%x.%x\n",
+				shape->getFlag(NX_SF_VISUALIZATION),
+				shape->getFlag(NX_SF_FEATURE_INDICES),
+				*reinterpret_cast<const NxU16*>(internalShape + 0xde));
 			}
 		}
 

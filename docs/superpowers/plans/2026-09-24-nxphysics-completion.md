@@ -54,6 +54,8 @@
 
 **M2 box group/material packet, 2026-09-24:** The public box final now routes `setGroup`, `getGroup`, `setMaterial`, and `getMaterial` through the internal shape, with group bitmask and scene dirty marking. A staged pair checks the default, a group-5/material-1 mutation, and a second box created directly from group-7/material-2 descriptor values; four registered lines raise the Phase 5 floor to 341. See `docs/reconstruction/novodex-physics/evidence/phase5-box-group-material.md`. This is a bounded slice of the final table, not closure of the box or shape family.
 
+**M2 box flag packet, 2026-09-24:** Public box slots 5 and 6 now match the oracle's 16-bit shape-flag mask, including returning the mask through `NX_BOOL` rather than normalizing to `1`. Default, enable, clear, and descriptor-copy observations add four registered lines and raise the Phase 5 floor to 345. An aimed boolean-normalization mutation failed the staged differential. See `docs/reconstruction/novodex-physics/evidence/phase5-box-flags.md`. Dirty queueing for a cleared auxiliary entry and the remaining public slots are still open.
+
 ## 1. Inputs and boundaries
 
 - Repository: `D:\github\Novodex`, inspected at `0df8821f1c5e3668e566ad4182b1e8e568f632d6`.

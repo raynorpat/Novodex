@@ -56,6 +56,25 @@ static NxCollisionGroup __fastcall nxBoxHandleGetGroup(void* self, void*)
 	return *reinterpret_cast<NxCollisionGroup*>(nxBoxHandleInternal(self) + 0xd8);
 	}
 
+static void __fastcall nxBoxHandleSetFlag(void* self, void*, NxShapeFlag flag,
+	bool value)
+	{
+	unsigned char* shape = nxBoxHandleInternal(self);
+	NxU16& flags = *reinterpret_cast<NxU16*>(shape + 0xde);
+	const NxU16 mask = static_cast<NxU16>(flag);
+	if(value)
+		flags |= mask;
+	else
+		flags &= static_cast<NxU16>(~mask);
+	nxSceneMarkShapeDirty(shape, 0x10);
+	}
+
+static NX_BOOL __fastcall nxBoxHandleGetFlag(void* self, void*, NxShapeFlag flag)
+	{
+	return *reinterpret_cast<NxU16*>(nxBoxHandleInternal(self) + 0xde)
+		& static_cast<NxU16>(flag);
+	}
+
 static void __fastcall nxBoxHandleSetMaterial(void* self, void*, NxMaterialIndex material)
 	{
 	unsigned char* shape = nxBoxHandleInternal(self);
@@ -103,6 +122,8 @@ void* nxBoxShapePublicVtable()
 			slots[1] = reinterpret_cast<void*>(&nxBoxHandleGetActor);
 			slots[2] = reinterpret_cast<void*>(&nxBoxHandleSetGroup);
 			slots[3] = reinterpret_cast<void*>(&nxBoxHandleGetGroup);
+			slots[5] = reinterpret_cast<void*>(&nxBoxHandleSetFlag);
+			slots[6] = reinterpret_cast<void*>(&nxBoxHandleGetFlag);
 			slots[25] = reinterpret_cast<void*>(&nxBoxHandleSetMaterial);
 			slots[26] = reinterpret_cast<void*>(&nxBoxHandleGetMaterial);
 			slots[27] = reinterpret_cast<void*>(&nxBoxHandleGetType);
