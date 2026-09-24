@@ -672,6 +672,79 @@ void nxSceneAuxRegisterRecord(NxSceneInternal* scene, void* recordPointer)
 	*reinterpret_cast<unsigned**>(aux + 0x54) = activeEnd + 1;
 	}
 
+// Every internal shape, including a multi-shape group, occupies a physical
+// slot in the Scene's first auxiliary table. The table uses the same five-array
+// layout as dynamic records, but is initialized by the first shape.
+static void nxSceneAuxRegisterShape(NxSceneInternal* scene, void* shapePointer)
+	{
+	unsigned char* aux = scene->at<unsigned char*>(0x48);
+	if(!aux || !shapePointer) return;
+	if(!*reinterpret_cast<void**>(aux + 0x90))
+		{
+		if(!nxSceneAuxPrepareStagedArray(aux, 0x90, 0,
+			reinterpret_cast<unsigned>(shapePointer))) return;
+		if(!nxSceneAuxPrepareStagedArray(aux, 0, 0, 0xffffffffu)) return;
+		if(!nxSceneAuxPrepareStagedArray(aux, 0x20, 0xd00beed0u, 0)) return;
+		unsigned* active = static_cast<unsigned*>(
+			nxGetSdkAllocator()->malloc(0x400, NX_MEMORY_PERSISTENT));
+		if(!active) return;
+		memset(active, 0, 0x400);
+		*reinterpret_cast<unsigned**>(aux + 0x10) = active;
+		*reinterpret_cast<unsigned**>(aux + 0x14) = active + 1;
+		*reinterpret_cast<unsigned**>(aux + 0x18) = active + 256;
+		unsigned* vacant = static_cast<unsigned*>(
+			nxGetSdkAllocator()->malloc(0x400, NX_MEMORY_PERSISTENT));
+		if(!vacant) return;
+		memset(vacant, 0, 0x400);
+		*reinterpret_cast<unsigned**>(aux + 0x30) = vacant;
+		*reinterpret_cast<unsigned**>(aux + 0x34) = vacant;
+		*reinterpret_cast<unsigned**>(aux + 0x38) = vacant + 256;
+		return;
+		}
+	unsigned* active = *reinterpret_cast<unsigned**>(aux + 0x10);
+	unsigned* activeEnd = *reinterpret_cast<unsigned**>(aux + 0x14);
+	if(!active || !activeEnd || activeEnd - active >= 256) return;
+	unsigned* flags = *reinterpret_cast<unsigned**>(aux);
+	const unsigned slot = *reinterpret_cast<unsigned*>(
+		static_cast<unsigned char*>(shapePointer) + 0xd4);
+	if(slot >= 256 || flags[slot]) return;
+	const unsigned activeIndex = static_cast<unsigned>(activeEnd - active);
+	flags[slot] = 0xffffffffu;
+	active[activeIndex] = slot;
+	(*reinterpret_cast<unsigned**>(aux + 0x20))[slot] = activeIndex;
+	(*reinterpret_cast<unsigned**>(aux + 0x90))[slot] =
+		reinterpret_cast<unsigned>(shapePointer);
+	*reinterpret_cast<unsigned**>(aux + 0x14) = activeEnd + 1;
+	}
+
+static void nxSceneAuxUnregisterShape(NxSceneInternal* scene, void* shapePointer)
+	{
+	unsigned char* aux = scene->at<unsigned char*>(0x48);
+	if(!aux || !shapePointer) return;
+	unsigned* active = *reinterpret_cast<unsigned**>(aux + 0x10);
+	unsigned* activeEnd = *reinterpret_cast<unsigned**>(aux + 0x14);
+	unsigned* shapes = *reinterpret_cast<unsigned**>(aux + 0x90);
+	if(!active || !activeEnd || !shapes || active == activeEnd) return;
+	const unsigned count = static_cast<unsigned>(activeEnd - active);
+	unsigned activeIndex = 0;
+	while(activeIndex < count && shapes[active[activeIndex]] !=
+		reinterpret_cast<unsigned>(shapePointer)) ++activeIndex;
+	if(activeIndex == count) return;
+	const unsigned slot = active[activeIndex];
+	const unsigned last = count - 1;
+	unsigned* flags = *reinterpret_cast<unsigned**>(aux);
+	unsigned* indices = *reinterpret_cast<unsigned**>(aux + 0x20);
+	if(activeIndex != last)
+		{
+		active[activeIndex] = active[last];
+		indices[active[activeIndex]] = activeIndex;
+		}
+	flags[slot] = 0;
+	indices[slot] = 0xd00beed0u;
+	shapes[slot] = 0;
+	*reinterpret_cast<unsigned**>(aux + 0x14) = activeEnd - 1;
+	}
+
 void nxSceneAuxUnregisterRecord(NxSceneInternal* scene, void* recordPointer)
 	{
 	unsigned char* aux = scene->at<unsigned char*>(0x48);
@@ -1105,12 +1178,14 @@ void NxSceneInternal::releaseActor(void* bodyPointer)
 			{
 			const unsigned id = *reinterpret_cast<unsigned*>(
 				static_cast<unsigned char*>(shapes[i]) + 0xd4);
+			nxSceneAuxUnregisterShape(this, shapes[i]);
 			nxGetSdkAllocator()->free(helpers[i]);
 			nxGetSdkAllocator()->free(shapes[i]);
 			nxSceneRecycleShapeId(this, id);
 			}
 		nxGetSdkAllocator()->free(helpers);
 		nxGetSdkAllocator()->free(shapes);
+		nxSceneAuxUnregisterShape(this, shape);
 		nxSceneRecycleShapeId(this, *reinterpret_cast<unsigned*>(shape + 0xd4));
 		nxGetSdkAllocator()->free(shape);
 		}
@@ -1118,6 +1193,7 @@ void NxSceneInternal::releaseActor(void* bodyPointer)
 		{
 		const unsigned id = *reinterpret_cast<unsigned*>(shape + 0xd4);
 		void* helper = *reinterpret_cast<void**>(shape + 0x9c);
+		nxSceneAuxUnregisterShape(this, shape);
 		if(helper) nxGetSdkAllocator()->free(helper);
 		nxGetSdkAllocator()->free(shape);
 		nxSceneRecycleShapeId(this, id);
@@ -1549,10 +1625,16 @@ void* nxShapeFactory(void* shapeDesc, void* actor)
 				&static_cast<const NxBoxShapeDesc*>(descriptor)->dimensions,
 				sizeof(NxVec3));
 		}
+	NxSceneInternal* scene = *reinterpret_cast<NxSceneInternal**>(
+		static_cast<unsigned char*>(actor) + 4);
+	*reinterpret_cast<unsigned*>(shape + 0xd4) = nxSceneTakeShapeId(scene);
+	nxSceneAuxRegisterShape(scene, shape);
 	// The oracle shape does not point at the public 0x18-byte actor wrapper.
 	void* helper = nxGetSdkAllocator()->malloc(0x1c, NX_MEMORY_PERSISTENT);
 	if(!helper)
 		{
+		nxSceneAuxUnregisterShape(scene, shape);
+		nxSceneRecycleShapeId(scene, *reinterpret_cast<unsigned*>(shape + 0xd4));
 		nxGetSdkAllocator()->free(shape);
 		return 0;
 		}
@@ -1562,9 +1644,6 @@ void* nxShapeFactory(void* shapeDesc, void* actor)
 	*reinterpret_cast<void**>(shape + 0x9c) = helper;
 	*reinterpret_cast<void**>(static_cast<unsigned char*>(helper) + 8) = shape;
 	*reinterpret_cast<void**>(static_cast<unsigned char*>(helper) + 0x18) = shape;
-	NxSceneInternal* scene = *reinterpret_cast<NxSceneInternal**>(
-		static_cast<unsigned char*>(actor) + 4);
-	*reinterpret_cast<unsigned*>(shape + 0xd4) = nxSceneTakeShapeId(scene);
 	unsigned char* body = *reinterpret_cast<unsigned char**>(
 		static_cast<unsigned char*>(actor) + 0x14);
 	if(body)
@@ -1595,6 +1674,7 @@ void* nxShapeGroupConstruct(void* actor, const unsigned* shapeDescriptions, unsi
 		static_cast<unsigned char*>(actor) + 4);
 	*reinterpret_cast<unsigned*>(group + 0xd4) = nxSceneTakeShapeId(scene);
 	*reinterpret_cast<unsigned short*>(group + 0xd8) = 0xffffu;
+	nxSceneAuxRegisterShape(scene, group);
 	void** shapes = 0;
 	void** helpers = 0;
 	unsigned built = 0;
@@ -1611,6 +1691,7 @@ void* nxShapeGroupConstruct(void* actor, const unsigned* shapeDescriptions, unsi
 				count * sizeof(void*), NX_MEMORY_PERSISTENT));
 			if(!shapes || !helpers)
 				{
+				nxSceneAuxUnregisterShape(scene, child);
 				nxSceneRecycleShapeId(scene, *reinterpret_cast<unsigned*>(child + 0xd4));
 				nxGetSdkAllocator()->free(*reinterpret_cast<void**>(child + 0x9c));
 				nxGetSdkAllocator()->free(child);
@@ -1634,6 +1715,7 @@ void* nxShapeGroupConstruct(void* actor, const unsigned* shapeDescriptions, unsi
 		while(built)
 			{
 			--built;
+			nxSceneAuxUnregisterShape(scene, shapes[built]);
 			nxSceneRecycleShapeId(scene,
 				*reinterpret_cast<unsigned*>(static_cast<unsigned char*>(shapes[built]) + 0xd4));
 			nxGetSdkAllocator()->free(helpers[built]);
@@ -1641,6 +1723,7 @@ void* nxShapeGroupConstruct(void* actor, const unsigned* shapeDescriptions, unsi
 			}
 		if(helpers) nxGetSdkAllocator()->free(helpers);
 		if(shapes) nxGetSdkAllocator()->free(shapes);
+		nxSceneAuxUnregisterShape(scene, group);
 		nxSceneRecycleShapeId(scene, *reinterpret_cast<unsigned*>(group + 0xd4));
 		nxGetSdkAllocator()->free(group);
 		if(body) *reinterpret_cast<void**>(body + 0x10) = 0;

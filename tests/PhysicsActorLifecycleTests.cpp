@@ -278,6 +278,34 @@ static void nxPrintAuxIndexSamples(const char* label, const NxScene* scene)
 	printf("\n");
 }
 
+static void nxPrintAuxStaticCounts(const char* label, const NxScene* scene)
+{
+	const unsigned char* wrapper = reinterpret_cast<const unsigned char*>(scene);
+	const unsigned char* internal = *reinterpret_cast<unsigned char* const*>(wrapper + 0x24);
+	const unsigned char* aux = *reinterpret_cast<unsigned char* const*>(internal + 0x48);
+	const unsigned offsets[5] = {0u, 0x10u, 0x20u, 0x30u, 0x90u};
+	printf("actor static aux_counts_%s=", label);
+	for(unsigned i = 0; i < 5; ++i)
+		{
+		const unsigned* first = *reinterpret_cast<unsigned* const*>(aux + offsets[i]);
+		const unsigned* last = *reinterpret_cast<unsigned* const*>(aux + offsets[i] + 4);
+		const unsigned* end = *reinterpret_cast<unsigned* const*>(aux + offsets[i] + 8);
+		printf("%s%u/%u", i ? "." : "",
+			first ? static_cast<unsigned>(last - first) : 0u,
+			first ? static_cast<unsigned>(end - first) : 0u);
+		}
+	printf("\n");
+	for(unsigned j = 0; j < 5; ++j)
+		{
+		const unsigned* first = *reinterpret_cast<unsigned* const*>(aux + offsets[j]);
+		printf("actor static aux_sample_%s_%x=", label, offsets[j]);
+		for(unsigned i = 0; i < 6; ++i)
+			printf("%s%x", i ? "." : "", first
+				? (j == 4 ? (first[i] ? 1u : 0u) : first[i]) : 0u);
+		printf("\n");
+		}
+}
+
 static void nxProbePublicShapes(const char* label, const NxActor* actor)
 {
 	const NxU32 count = actor->getNbShapes();
@@ -371,13 +399,23 @@ int wmain(int argc, wchar_t** argv)
 	NxActorDesc staticDesc;
 	staticDesc.shapes.pushBack(&box);
 	staticDesc.globalPose.t = NxVec3(2.0f, -1.0f, 4.0f);
+	const unsigned beforeStaticAllocations = allocator.allocations();
 	NxActor* staticActor = scene->createActor(staticDesc);
+	printf("actor static init_aux_prefix=");
+	if(allocator.allocations() - beforeStaticAllocations < 11)
+		printf("insufficient");
+	else
+		for(unsigned i = 0; i < 11; ++i)
+			printf("%s%x", i ? "." : "", allocator.allocSizeFromEnd(
+				allocator.allocations() - beforeStaticAllocations - 1 - i));
+	printf("\n");
 	if(getenv("NX_PHYSICS_PROBE_MULTI"))
 		{
 		nxPrintBroadphase("first", scene);
 		nxPrintSceneArray6e8("first", scene);
 		}
 	nxPrintAuxArrays("static", scene);
+	nxPrintAuxStaticCounts("static", scene);
 	printf("actor static created=%u\n", staticActor ? 1u : 0u);
 	if(!staticActor) return nxFail("static actor creation failed");
 	nxProbePublicShapes("static", staticActor);
@@ -415,6 +453,7 @@ int wmain(int argc, wchar_t** argv)
 		nxPrintSceneArray6e8("dynamic", scene);
 		nxPrintAuxArrays("dynamic", scene);
 		nxPrintAuxIndexSamples("dynamic", scene);
+		nxPrintAuxStaticCounts("dynamic", scene);
 		}
 	printf("actor dynamic created=%u\n", dynamicActor ? 1u : 0u);
 	if(!dynamicActor) return nxFail("dynamic actor creation failed");
@@ -567,6 +606,7 @@ int wmain(int argc, wchar_t** argv)
 		const unsigned beforeCreationFrees = allocator.frees();
 		NxActor* multiActor = scene->createActor(multiDesc);
 		nxPrintAuxArrays("multi", scene);
+		nxPrintAuxStaticCounts("multi", scene);
 		if(!multiActor) return nxFail("multi-shape actor creation failed");
 		nxProbePublicShapes("multi", multiActor);
 		printf("actor multi creation_allocs=%u\n", allocator.allocations() - beforeAllocations);
@@ -664,6 +704,7 @@ int wmain(int argc, wchar_t** argv)
 		scene->releaseActor(*multiActor);
 		nxPrintSceneArray6e8("after_release", scene);
 		nxPrintBroadphase("released", scene);
+		nxPrintAuxStaticCounts("multi_released", scene);
 		printf("actor multi release_allocs=%u\n",
 			allocator.allocations() - beforeReleaseAllocations);
 		printf("actor multi release_frees=%u\n", allocator.frees() - beforeFrees);
@@ -686,6 +727,7 @@ int wmain(int argc, wchar_t** argv)
 		const unsigned freesBeforeNonlast = allocator.frees();
 		scene->releaseActor(*dynamicActor);
 		nxPrintAuxArrays("after_nonlast", scene);
+		nxPrintAuxStaticCounts("nonlast", scene);
 		nxPrintAuxIndexSamples("after_nonlast", scene);
 		nxPrintBroadphase("after_nonlast", scene);
 		nxPrintSceneArray6e8("after_nonlast", scene);
@@ -715,6 +757,7 @@ int wmain(int argc, wchar_t** argv)
 				allocator.allocations() - beforeReuseAllocations - 1 - i));
 		printf("\n");
 		nxPrintAuxArrays("reuse", scene);
+		nxPrintAuxStaticCounts("reuse", scene);
 		nxPrintAuxIndexSamples("reuse", scene);
 		nxPrintSceneArray6d4("reuse", scene);
 		nxPrintSceneArray6e8("reuse", scene);
