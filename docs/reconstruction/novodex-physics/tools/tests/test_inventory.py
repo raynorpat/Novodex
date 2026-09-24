@@ -1646,6 +1646,47 @@ class ClosureLedgerTests(unittest.TestCase):
         self.assertRejects(self.ledger(), "file name says phase 3", phase=3)
 
 
+class DischargePassedTests(unittest.TestCase):
+    """A discharge counts only once the discharging phase has passed.
+
+    The self-declared fields `_check_discharge` reads let phys_fn_002344 be
+    re-closed with `discharged_by_phase: 5` while Phase 5 was pending, which is
+    a row resting on a gate no passing run executes.
+    """
+
+    def ledgers(self, by):
+        return {2: {"closed": [{"id": "phys_fn_001690", "discharged_by_phase": by,
+                                "driving_phases": [3, 4]},
+                               {"id": "phys_fn_000001"}]}}
+
+    def program(self, **statuses):
+        return {"phases": [{"phase": number, "status": statuses.get(f"p{number}", "pending")}
+                           for number in range(1, 9)]}
+
+    def test_accepts_a_discharge_by_a_phase_that_passed(self):
+        self.assertEqual(validate_inventory.validate_discharge_passed(
+            self.ledgers(3), self.program(p3="pass")), [])
+
+    def test_rejects_a_discharge_by_a_pending_phase(self):
+        errors = validate_inventory.validate_discharge_passed(self.ledgers(5),
+                                                              self.program(p3="pass"))
+        self.assertIn("discharged by phase 5, which program.json records as 'pending'",
+                      "\n".join(errors))
+
+    def test_rejects_a_discharge_by_a_failing_phase(self):
+        errors = validate_inventory.validate_discharge_passed(self.ledgers(3),
+                                                              self.program(p3="fail"))
+        self.assertIn("records as 'fail'", "\n".join(errors))
+
+    def test_rejects_a_discharge_by_a_phase_program_json_does_not_declare(self):
+        errors = validate_inventory.validate_discharge_passed(self.ledgers(3), {"phases": []})
+        self.assertIn("records as None", "\n".join(errors))
+
+    def test_a_closure_that_discharges_nothing_is_not_touched(self):
+        ledgers = {2: {"closed": [{"id": "phys_fn_000001"}]}}
+        self.assertEqual(validate_inventory.validate_discharge_passed(ledgers, self.program()), [])
+
+
 class ProgramRecordTests(unittest.TestCase):
     """Every number program.json states is recomputed from the census it quotes.
 

@@ -1220,13 +1220,23 @@ def _check_discharge(where, row, phase):
     what `validate_closure`'s gate-to-phase binding would otherwise hand back,
     since it lets a discharged row name the discharging phase's gates.
 
+    A fifth rule needs program.json, which this function does not see, and lives
+    in `validate_discharge_passed`: the discharging phase must stand at `pass`.
+    Without it two self-declared fields let a row rest on a later phase's gate
+    before that phase has passed -- phys_fn_002344 re-closed with
+    `discharged_by_phase: 5` validated while Phase 5 was pending.
+
     What is NOT checked, and cannot be from these artefacts: the deferral these
     fields claim to carry forward. Closing the row deletes the deferred entry it
     came from, so no committed document holds the original `driving_phases` to
     compare against -- they are transcribed by hand at the close. A later phase
-    can therefore still adopt a row it was never named on, and the guarantee
-    here is only that it must name a phase after the owning one and run that
-    phase's gate.
+    can therefore still adopt a row it was never named on. What is guaranteed is
+    that the discharge names a phase after the owning one, that the row's gate is
+    registered to the owning or the discharging phase (`validate_closure`), and
+    that the discharging phase is `pass` in program.json. Nothing guarantees that
+    the passing gate run executed this row's mutation: the mutation is measured in
+    a throwaway copy, and `pass` is a program.json field bound to the census and
+    the phase record, not to a transcript.
     """
     named = "discharged_by_phase" in row
     driving = "driving_phases" in row
@@ -1258,6 +1268,35 @@ def _check_discharge(where, row, phase):
                       f"phase {phase}; a deferral is discharged by a phase that runs after the "
                       f"one that deferred it, and a discharge naming an earlier phase is a row "
                       f"reaching back for a gate phase {phase} does not run")
+    return errors
+
+
+def validate_discharge_passed(ledgers, program):
+    """A discharge counts only once the discharging phase has passed.
+
+    `_check_discharge` holds the two fields to each other and to the owning
+    phase, and `validate_closure` lets the row name the discharging phase's gates.
+    Neither asks whether that phase's gate has ever passed, so a row could close
+    on a pending phase's target -- one that no passing gate run executes, which is
+    the same objection that re-deferred phys_fn_002344. program.json is where a
+    phase's pass is recorded, and `validate_program` binds it to the census.
+    """
+    statuses = {row.get("phase"): row.get("status") for row in program.get("phases", [])
+                if isinstance(row, dict)}
+    errors = []
+    for phase, closure in sorted(ledgers.items()):
+        for row in closure.get("closed", []):
+            if not isinstance(row, dict):
+                continue
+            by = row.get("discharged_by_phase")
+            if isinstance(by, bool) or not isinstance(by, int):
+                continue
+            if statuses.get(by) != "pass":
+                errors.append(
+                    f"phase {phase} closed entry {row.get('id')!r} is discharged by phase {by}, "
+                    f"which program.json records as {statuses.get(by)!r} rather than 'pass'; a "
+                    f"closure rests on a gate that has passed, so the row stays deferred until "
+                    f"phase {by} does")
     return errors
 
 
@@ -2170,6 +2209,7 @@ def main():
         errors += _check_implementation_paths(data['functions'], path.parent)
         errors += _check_implementation_contains_row(data['functions'], repo_root)
     errors += validate_program(data, program, ledgers, path.parent)
+    errors += validate_discharge_passed(ledgers, program)
     errors += _check_data_vocabulary(data['data_objects'])
     errors += validate_classification(data)
     errors += validate_row_states(data, ledgers)
