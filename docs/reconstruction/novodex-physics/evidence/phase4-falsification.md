@@ -62,9 +62,9 @@ counted a control row.)
 
 | # | census row the edit sits in | mutation | count spent | re-measured on this branch |
 | --- | --- | --- | ---: | --- |
-| A | `phys_fn_004838` `0x000b4d90`+66, guard at `0x000b4d93` | `Container::Empty()`'s guard `mGrowthFactor >= 0.0f` weakened to `> 0.0f` | **20** | `container` mismatches=20, as first published |
+| A | `phys_fn_004838` `0x000b4d90`+66, guard at `0x000b4d93` | `Container::Empty()`'s guard `mGrowthFactor >= 0.0f` weakened to `> 0.0f` | **10** | `container` mismatches=20 as first published: 10 read after `Empty()`, this row's, and 10 read after `~Container()` |
 | B | `phys_fn_004840` `0x000b4de0`+174, guard at `0x000b4de4`-`0x000b4df2` | `Container::Resize()`'s guard `<= 0.0f` narrowed to `< 0.0f` | **36** | `container` mismatches=36, as first published |
-| G | `phys_fn_005157` `0x000e32c0`+27, store at `0x000e32c0` | `RadixSort::RadixSort` initialises `mDeleteRanks` false | **42** | `radixsort` mismatches=42 as first published, and `radix_setrankbuffers` 6 more -- a family P4 Task 2b added after G was first run -- for a target total of 48 |
+| G | `phys_fn_005157` `0x000e32c0`+27, store at `0x000e32d0` | `RadixSort::RadixSort` initialises `mDeleteRanks` false | **42** | `radixsort` mismatches=42 as first published, and `radix_setrankbuffers` 6 more -- a family P4 Task 2b added after G was first run -- for a target total of 48 |
 | C | header; no row | `mDeleteRanks` deleted from `IceRevisitedRadix.h` | -- | carried: red at compile |
 | D | header; no row | the 28 added `AABBTreeBuilder` bytes deleted | -- | carried: `sizeof_AABBTreeOfTrianglesBuilder is 44, the oracle says 72` |
 | E | header; no row | `#define OPC_RAYHIT_CALLBACK` restored | -- | carried: red at compile |
@@ -76,8 +76,19 @@ vendored source and three copies of one statement in the image:
 `evidence/phase4-third-party-map/opcode_outside_span_map.csv` records the same guard inlined into
 `Container::SetSize` (`phys_fn_004842`, guard at `0x000b4e93`) and `Container::~Container`
 (`phys_fn_004846`, guard at `0x000b4f53`). The `container` family reports one count for all four
-members it drives, so the 20 are the family's. The ledger closes `phys_fn_004838`, whose function the
-edit is, and closes neither of the other two.
+members it drives. Re-measured with `nxReport`'s eight-line `MISMATCH` print cap lifted in the scratch
+copy only, control / mutant / control, the 20 split exactly in two. Each case of the family writes a
+64-word tape, and every mismatch is the entries-held flag, oracle 0 and candidate 1, on the ten cases
+with growth factor `0.0f` or `-0.0f` and `nb` 1 to 5:
+
+| tape offset | read after | mismatches | whose |
+| ---: | --- | ---: | --- |
+| 24 | `Empty()` | 10 | `phys_fn_004838`, the edited function -- the count its closure spends |
+| 29 | `~Container()` | 10 | `phys_fn_004846`'s inlined copy of the guard |
+
+None lands on the words `SetSize`'s call writes. The second ten are the objection that retired
+mutation O: a count produced by another row's code. The ledger closes `phys_fn_004838` on its own 10,
+where it spent the family's 20 until the port's review, and closes neither of the other two.
 
 **G's count surfaces through the readers.** The byte the constructor writes is read by
 `RadixSort::~RadixSort` (`phys_fn_005159`) and `RadixSort::Resize` (`phys_fn_005161`); the edited code
@@ -122,7 +133,7 @@ given and the ledger spends the larger.
 | D | `phys_fn_005297` `0x000e7330`+23 `Prunable0C::Prunable0C` -- **count spent 16** | stops zeroing `mMember18` | `prunable_ctor` 3, `prunable_ranges` 16 |
 | E | `phys_fn_005299` `0x000e7350`+7 `Prunable0C::~Prunable0C` -- **count spent 1** | writes a member | `prunable_ctor` 1 |
 | F | `phys_fn_004876` `0x000b54f0`+40 `Prunable::SetFlags` -- **count spent 236** | early-out becomes a subset test | `prunable_flags` 236 |
-| G | `phys_fn_004878` `0x000b5520`+45 `Prunable::ClearFlags` -- **count spent 684** | early-out takes `SetFlags`' sense | `prunable_flags` 684 |
+| G | `phys_fn_004878` `0x000b5520`+45 `Prunable::ClearFlags` -- **count spent 684** | early-out `!(flags & mFlags)` becomes the subset test `(flags & mFlags) == flags`, as in F | `prunable_flags` 684 |
 | H | `phys_fn_004880` `0x000b5550`+25 `Prunable::ToggleFlags` -- **count spent 236** | an already-set early-out added | `prunable_flags` 236 |
 | I | `phys_fn_004882` `0x000b5570`+27 `Prunable::SetOrClearFlags` -- **count spent 1056** | the two arms swapped | `prunable_flags` 1056 |
 | J | `phys_fn_004884` `0x000b5590`+29 `Prunable::GetWorldAABB` -- **count spent 30** | indexes `[0]` instead of `[mHandle]` | `prunable_pruner` 30 |
@@ -215,9 +226,11 @@ branch; all six reproduce the published count and the published localisation.
 | E | the blob length store deleted | 9 | every case, one event short |
 | F | array A sized `* 2` instead of `* 4` | 2 | `writer.full`, `writer.array_a_only` |
 
-The eleven store rows -- `phys_fn_004766`, `004768`, `004770`, `004780`, `004782`, `004784`,
-`004786`, `004788`, `004791`, `004795`, `004797` -- stay `reconstructed_not_falsified`: no mutation
-was ever aimed at one of them, and none is manufactured here.
+No mutation was ever aimed at any of the eleven store rows, and none is manufactured here. Nine are
+Phase 4 rows -- `phys_fn_004768`, `004770`, `004780`, `004782`, `004784`, `004788`, `004791`,
+`004795` and `004797` -- and defer `reconstructed_not_falsified` on this phase's ledger. The other two,
+`phys_fn_004766` and `phys_fn_004786`, are Phase 2 rows: they stay on the Phase 2 ledger, deferred
+`homeless_shared_code` with `driving_phases: [4, 6]`.
 
 ---
 
