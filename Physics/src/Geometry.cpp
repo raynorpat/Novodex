@@ -169,7 +169,7 @@ void NX_CALL_CONV NxSegmentPlaneIntersect(const NxVec3& v1, const NxVec3& v2,
 	pointOnPlane.z = (NxReal) (alongZ + (double) v1.z);
 	}
 
-// 0x00036e80. Both the projection onto the ray and the discriminant are
+// phys_fn_001710 (0x00036e80). Both the projection onto the ray and the discriminant are
 // narrowed to 32 bits before they are used again, at 0x00036eb1 and
 // 0x00036ed9, so the square and the square root see the rounded values.
 bool NX_CALL_CONV NxRaySphereIntersect(const NxVec3& origin, const NxVec3& dir,

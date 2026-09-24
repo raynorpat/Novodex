@@ -2697,6 +2697,13 @@
       "reason": "SPHERE vtable slot 10; copies pose-one translation and the radius into a caller record; driven bitwise by the sphererows family"
     },
     {
+      "id": "phys_fn_001369",
+      "label": "NxSphere debug-render dispatcher (slot 3)",
+      "confidence": "semantic",
+      "evidence": "oracle/capstone/manifest.json#/entries/3527",
+      "reason": "SPHERE primary vtable slot 3 at 0x27a30; gates on shape flag bit 8, calls the shared renderer, then draws three column-cyclic poses through renderer slot +0x38 when guard C differs. The installed-table differential captures 80 matching guard and payload cases."
+    },
+    {
       "id": "phys_fn_001079",
       "label": "Box collision-object scalar deleting destructor",
       "confidence": "semantic",

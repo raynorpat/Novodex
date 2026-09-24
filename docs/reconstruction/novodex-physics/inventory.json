@@ -24889,18 +24889,19 @@
       "rva": "0x00027a30",
       "size": 424,
       "kind": "code",
-      "label": "phys_fn_001369",
-      "label_confidence": "stable-id",
+      "label": "NxSphere debug-render dispatcher (slot 3)",
+      "label_confidence": "semantic",
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/555",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3527",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "0x27a30..0x27bd5: test flag bit 8, call shared debug-render row 0x25960, compare guard C against the zero reference, then make three renderer slot +0x38 calls with the shape pose, color selected by low flag bits, radius, and two column-cyclic pose rotations.",
+      "dynamic_proof": "NxPhysicsShapeVtableTests compares the installed oracle and candidate sphere slot-3 pointers over 64 enable/low-bit/guard cases plus 16 shared A/B/C guard combinations, capturing each renderer line and pose argument bitwise; 80/80 cases match.",
+      "notes": "The candidate uses externally bound guard storage; independent runtime initialization of those globals remains open.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001370",
@@ -25008,7 +25009,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/556",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3533",
       "static_proof": "__thiscall: destroys the embedded collision object through [colobj-vtbl+0] with flag 1 UNCONDITIONALLY (0x00027c43..47), runs the base-dtor chain 0x26bd0, frees this through SDK-allocator slot +0x14 when flag&1; SPHERE vtable .rdata 0x107528 slot 0",
-      "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests sphdtor family on a real constructed sphere, flag=0 path: post-dtor oracle digest c4a35d15 equals candidate bitwise under the six-pointer mask",
+      "dynamic_proof": "NxPhysicsObjectLayoutTests sphdtor flag=0 masked digest c4a35d15 matches. NxPhysicsShapeVtableTests calls installed oracle and candidate slot 0 with flags 0 and 1: allocator free deltas are 1 (collision object) and 2 (collision object plus shape) on both sides.",
       "notes": "P5 Task 3: the colobj deleting-dtor row stays its own census row.",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
@@ -25041,12 +25042,13 @@
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
       "state": "dynamically_gated",
-      "source": null,
+      "source": "Physics/src/ShapeRaycast.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/557",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3536",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Sphere vtable slot 5 is implemented once in ShapeRaycast.cpp and reached through the candidate table; 16 isolated through-vtable ray/limit/normal-hint fixtures match the oracle in NxPhysicsShapeVtableTests.",
+      "implementation": "Physics/src/ShapeRaycast.cpp"
     },
     {
       "id": "phys_fn_001378",
@@ -31070,7 +31072,7 @@
       "static_proof": null,
       "dynamic_proof": null,
       "notes": "",
-      "implementation": "Physics/src/ContactGeneration.cpp"
+      "implementation": "Physics/src/Geometry.cpp"
     },
     {
       "id": "phys_fn_001711",

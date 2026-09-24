@@ -65,7 +65,7 @@ $NxPhaseOracleDifferentialTargets = [ordered] @{
     '2' = @()
     '3' = @('NxPhysicsCollisionTests')
     '4' = @('NxPhysicsAssetTests', 'NxPhysicsThirdPartyTests')
-    '5' = @('NxPhysicsObjectLayoutTests')
+    '5' = @('NxPhysicsObjectLayoutTests', 'NxPhysicsShapeVtableTests')
     '6' = @('NxPhysicsJointDescTests', 'NxPhysicsJointTests')
     '7' = @()
     '8' = @()
@@ -87,6 +87,9 @@ $NxPhaseOracleDifferentialTargets = [ordered] @{
 # from 89978 to 3521 and leaves stdout_delta at 0, and this is what turns that
 # from a silent pass into a failure.
 $NxRequiredCoverageLines = [ordered] @{
+    'NxPhysicsShapeVtableTests' = @(
+        'shape vtable oracle_digest=fc9d47a0 cases=205 failures=0'
+    )
     'NxPhysicsActorCMassTests' = @(
         'cmass variant=0 created=1',
         'cmass identity local_pose=3f800000.0.0.0.3f800000.0.0.0.3f800000.0.0.0',
@@ -1526,7 +1529,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 101  # 34 for NxPhysicsAssetTests, 67 for NxPhysicsThirdPartyTests
-    '5' = 666  # 126 object-layout assertions plus 540 public actor/pruner/box/scene lines
+    '5' = 667  # 126 object-layout, 1 shape-vtable and 540 public actor/pruner/box/scene lines
                # (RED on purpose: vtables family open)
     '6' = 11  # 3 oracle-descriptor + 4 oracle-joint + 4 staged-pair-joint
     '7' = 4   # the four STAGED-PAIR assertions; the oracle-differential assertions
@@ -1577,6 +1580,7 @@ $NxRegisteredOracleDifferentialTargets = @(
     'NxPhysicsJointDescTests',
     'NxPhysicsJointTests',
     'NxPhysicsObjectLayoutTests',
+    'NxPhysicsShapeVtableTests',
     'NxPhysicsThirdPartyTests'
 )
 $NxSkippedExitCode = 3

@@ -6,6 +6,7 @@
 #include <cstring>
 #include <cstdlib>
 #include "ObjectModel.h"
+#include "ContactGeneration.h"
 
 static unsigned oracleFreeCount;
 struct OracleAllocator {
@@ -62,6 +63,39 @@ static bool sha256(const wchar_t* path, char out[65]) {
     for(unsigned i = 0; i < 32; ++i)
         sprintf_s(out + 2*i, 3, "%02x", digest[i]);
     return true;
+}
+
+static unsigned renderCount;
+static unsigned renderRows[8][16];
+static unsigned lineCount;
+static unsigned lineRows[8][7];
+static unsigned foldOracle(unsigned digest, const void* data, size_t length) {
+    const unsigned char* bytes = static_cast<const unsigned char*>(data);
+    for(size_t i = 0; i < length; ++i)
+        digest = (digest ^ bytes[i]) * 16777619u;
+    return digest;
+}
+static void __fastcall captureLine(void*, void*, const unsigned* start,
+    const unsigned* end, unsigned color) {
+    if(lineCount < 8) {
+        unsigned* row = lineRows[lineCount];
+        memcpy(row, start, 12);
+        memcpy(row + 3, end, 12);
+        row[6] = color;
+    }
+    ++lineCount;
+}
+static void __fastcall capturePose(void*, void*, unsigned count,
+    const unsigned* pose, unsigned color, unsigned radius, unsigned reserved) {
+    if(renderCount < 8) {
+        unsigned* row = renderRows[renderCount];
+        row[0] = count;
+        memcpy(row + 1, pose, 48);
+        row[13] = color;
+        row[14] = radius;
+        row[15] = reserved;
+    }
+    ++renderCount;
 }
 
 // A separate process keeps the Phase 5 layout harness's giant, fragile
@@ -212,9 +246,23 @@ int wmain(int argc, wchar_t** argv)
     reinterpret_cast<BoxCtor>(const_cast<unsigned char*>(base) + 0x277c0)(
         oracleSphere, 0, 0);
     SphereShape& sphere = *new(candidateSphere) SphereShape(0, 0);
+    void** oracleSphereTable = *reinterpret_cast<void***>(oracleSphere);
+    void** candidateSphereTable = *reinterpret_cast<void***>(candidateSphere);
+    unsigned oracleDigest = 2166136261u;
+    for(unsigned slot = 0; slot < 19; ++slot) {
+        const unsigned rva = static_cast<unsigned>(
+            reinterpret_cast<const unsigned char*>(oracleSphereTable[slot]) - base);
+        oracleDigest = foldOracle(oracleDigest, &rva, sizeof(rva));
+        HMODULE owner = 0;
+        BOOL ok = GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
+            GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+            reinterpret_cast<LPCWSTR>(candidateSphereTable[slot]), &owner);
+        if(!ok || owner != GetModuleHandleW(0)) ++failures;
+        ++cases;
+    }
     typedef bool (__thiscall* SphereSlot7)(void*, float*, const void*);
-    SphereSlot7 oracleSphereSlot7 = reinterpret_cast<SphereSlot7>(
-        const_cast<unsigned char*>(base) + 0x27c10);
+    SphereSlot7 oracleSphereSlot7 = reinterpret_cast<SphereSlot7>(oracleSphereTable[7]);
+    SphereSlot7 candidateSphereSlot7 = reinterpret_cast<SphereSlot7>(candidateSphereTable[7]);
     const unsigned radiusBits[] = {
         0x00000000u, 0x80000000u, 0x3f800000u,
         0xbf800000u, 0x7f800000u, 0x7fc00001u
@@ -226,13 +274,212 @@ int wmain(int argc, wchar_t** argv)
         const void* unread = reinterpret_cast<const void*>(0xdeadbeefu);
         bool ro = oracleSphereSlot7(oracleSphere,
             reinterpret_cast<float*>(&oracleOut), unread);
-        bool rc = sphere.nxSphereSweepRadius(
+        oracleDigest = foldOracle(oracleDigest, &ro, sizeof(ro));
+        oracleDigest = foldOracle(oracleDigest, &oracleOut, sizeof(oracleOut));
+        bool rc = candidateSphereSlot7(candidateSphere,
             reinterpret_cast<float*>(&candidateOut), unread);
         if(ro != rc || oracleOut != candidateOut || !ro)
             ++failures;
         ++cases;
     }
+
+    // Isolate the sphere-specific slot-3 arm: A/B remain at their shipped
+    // zero values, while guard C toggles against the zero reference word.
+    float* guardA = reinterpret_cast<float*>(const_cast<unsigned char*>(base) + 0x123bc8);
+    float* guardB = reinterpret_cast<float*>(const_cast<unsigned char*>(base) + 0x123bd8);
+    float* guardC = reinterpret_cast<float*>(const_cast<unsigned char*>(base) + 0x123bc4);
+    float* scale = reinterpret_cast<float*>(const_cast<unsigned char*>(base) + 0x123b4c);
+    float* ref = reinterpret_cast<float*>(const_cast<unsigned char*>(base) + 0x1041f0);
+    nxBindDebugRenderGuards(guardA, guardB, scale, ref);
+    nxBindDebugRenderGuardC(guardC);
+    void* rendererTable[16] = {};
+    rendererTable[8] = reinterpret_cast<void*>(&captureLine);
+    rendererTable[14] = reinterpret_cast<void*>(&capturePose);
+    void* rendererObject[1] = { rendererTable };
+    typedef void (__thiscall* SphereSlot3)(void*, const void*);
+    SphereSlot3 oracleSphereSlot3 = reinterpret_cast<SphereSlot3>(oracleSphereTable[3]);
+    SphereSlot3 candidateSphereSlot3 = reinterpret_cast<SphereSlot3>(candidateSphereTable[3]);
+    unsigned savedGuardC;
+    memcpy(&savedGuardC, guardC, 4);
+    DWORD oldProtection, ignoredProtection;
+    if(!VirtualProtect(guardC, 4, PAGE_READWRITE, &oldProtection)) return 2;
+    const unsigned guardCases[4] = {
+        0, 0x80000000u, 0x3f800000u, 0x7fc00000u
+    };
+    const unsigned radius = 0x40200000u;
+    memcpy(oracleSphere + 0xe0, &radius, 4);
+    memcpy(candidateSphere + 0xe0, &radius, 4);
+    const float rotation[9] = { 1,2,3, 4,5,6, 7,8,9 };
+    const float translation[3] = { 4,-2,8 };
+    memcpy(oracleSphere + 0x0c, rotation, sizeof(rotation));
+    memcpy(candidateSphere + 0x0c, rotation, sizeof(rotation));
+    memcpy(oracleSphere + 0x30, translation, sizeof(translation));
+    memcpy(candidateSphere + 0x30, translation, sizeof(translation));
+    NxShapeRaycastFn oracleRaycast = reinterpret_cast<NxShapeRaycastFn>(oracleSphereTable[5]);
+    NxShapeRaycastFn candidateRaycast = reinterpret_cast<NxShapeRaycastFn>(candidateSphereTable[5]);
+    const NxRay rays[4] = {
+        NxRay(NxVec3(-1,-2,8), NxVec3(1,0,0)),
+        NxRay(NxVec3(4,-2,8), NxVec3(1,0,0)),
+        NxRay(NxVec3(4,-2,13), NxVec3(0,0,-1)),
+        NxRay(NxVec3(4,5,8), NxVec3(0,1,0))
+    };
+    const float limits[2] = { 2.0f, 10.0f };
+    for(unsigned ray = 0; ray < 4; ++ray)
+    for(unsigned limit = 0; limit < 2; ++limit)
+    for(unsigned normal = 0; normal < 2; ++normal) {
+        NxRaycastHit oracleHit, candidateHit;
+        memset(&oracleHit, 0xcd, sizeof(oracleHit));
+        memset(&candidateHit, 0xcd, sizeof(candidateHit));
+        const unsigned flags = normal ? NX_RAYCAST_NORMAL : 0u;
+        const NxCollisionShape* ro = oracleRaycast(
+            reinterpret_cast<const NxCollisionShape*>(oracleSphere),
+            &rays[ray], limits[limit], 0, flags, &oracleHit);
+        const NxCollisionShape* rc = candidateRaycast(
+            reinterpret_cast<const NxCollisionShape*>(candidateSphere),
+            &rays[ray], limits[limit], 0, flags, &candidateHit);
+        if(ro) oracleHit.shape = reinterpret_cast<NxShape*>(0x12345678u);
+        if(rc) candidateHit.shape = reinterpret_cast<NxShape*>(0x12345678u);
+        const unsigned oraclePresent = ro != 0;
+        oracleDigest = foldOracle(oracleDigest, &oraclePresent, sizeof(oraclePresent));
+        oracleDigest = foldOracle(oracleDigest, &oracleHit, sizeof(oracleHit));
+        if(bool(ro) != bool(rc) ||
+           memcmp(&oracleHit, &candidateHit, sizeof(oracleHit)) != 0) {
+            fprintf(stderr, "sphere slot 5 ray=%u limit=%u normal=%u differs\n",
+                ray, limit, normal);
+            ++failures;
+        }
+        ++cases;
+    }
+    for(unsigned slot = 8; slot <= 11; ++slot) {
+        float oracleOut[6], candidateOut[6];
+        memset(oracleOut, 0xcd, sizeof(oracleOut));
+        memset(candidateOut, 0xcd, sizeof(candidateOut));
+        reinterpret_cast<BoundsSlot>(oracleSphereTable[slot])(
+            oracleSphere, oracleOut);
+        reinterpret_cast<BoundsSlot>(candidateSphereTable[slot])(
+            candidateSphere, candidateOut);
+        if(memcmp(oracleOut, candidateOut, sizeof(oracleOut)) != 0) {
+            fprintf(stderr, "sphere slot %u bounds differ\n", slot);
+            ++failures;
+        }
+        ++cases;
+    }
+    typedef float (__thiscall* RadiusGetter)(void*);
+    float oracleRadius = reinterpret_cast<RadiusGetter>(oracleSphereTable[15])(
+        oracleSphere);
+    float candidateRadius = reinterpret_cast<RadiusGetter>(candidateSphereTable[15])(
+        candidateSphere);
+    if(memcmp(&oracleRadius, &candidateRadius, 4) != 0) ++failures;
+    ++cases;
+    for(unsigned slot = 16; slot <= 18; ++slot) {
+        if(reinterpret_cast<SelfSlot>(oracleSphereTable[slot])(oracleSphere) != oracleSphere ||
+           reinterpret_cast<SelfSlot>(candidateSphereTable[slot])(candidateSphere) != candidateSphere)
+            ++failures;
+        ++cases;
+    }
+    for(unsigned enabled = 0; enabled < 2; ++enabled)
+    for(unsigned low = 0; low < 8; ++low)
+    for(unsigned g = 0; g < 4; ++g) {
+        const unsigned short flags = static_cast<unsigned short>((enabled ? 8u : 0u) | low);
+        memcpy(oracleSphere + 0xde, &flags, 2);
+        memcpy(candidateSphere + 0xde, &flags, 2);
+        memcpy(guardC, guardCases + g, 4);
+        renderCount = 0;
+        memset(renderRows, 0xcd, sizeof(renderRows));
+        oracleSphereSlot3(oracleSphere, rendererObject);
+        const unsigned oracleCount = renderCount;
+        unsigned oracleRows[8][16];
+        memcpy(oracleRows, renderRows, sizeof(oracleRows));
+        oracleDigest = foldOracle(oracleDigest, &oracleCount, sizeof(oracleCount));
+        oracleDigest = foldOracle(oracleDigest, oracleRows, sizeof(oracleRows));
+        renderCount = 0;
+        memset(renderRows, 0xcd, sizeof(renderRows));
+        candidateSphereSlot3(candidateSphere, rendererObject);
+        const unsigned expectedCount = enabled && g >= 2 ? 3u : 0u;
+        if(oracleCount != expectedCount || oracleCount != renderCount ||
+           memcmp(oracleRows, renderRows, sizeof(renderRows)) != 0) {
+            fprintf(stderr, "sphere slot 3 enabled=%u low=%u guard=%u count=%u/%u differs\n",
+                enabled, low, g, oracleCount, renderCount);
+            ++failures;
+        }
+        ++cases;
+    }
+    unsigned savedA, savedB, savedScale;
+    memcpy(&savedA, guardA, 4);
+    memcpy(&savedB, guardB, 4);
+    memcpy(&savedScale, scale, 4);
+    const unsigned one = 0x3f800000u;
+    memcpy(scale, &one, 4);
+    for(unsigned mask = 0; mask < 4; ++mask)
+    for(unsigned cGuard = 0; cGuard < 2; ++cGuard)
+    for(unsigned low = 0; low < 2; ++low) {
+        const unsigned zero = 0;
+        memcpy(guardA, mask & 1 ? &one : &zero, 4);
+        memcpy(guardB, mask & 2 ? &one : &zero, 4);
+        memcpy(guardC, cGuard ? &one : &zero, 4);
+        const unsigned short flags = static_cast<unsigned short>(8u | low);
+        memcpy(oracleSphere + 0xde, &flags, 2);
+        memcpy(candidateSphere + 0xde, &flags, 2);
+        renderCount = lineCount = 0;
+        memset(renderRows, 0xcd, sizeof(renderRows));
+        memset(lineRows, 0xcd, sizeof(lineRows));
+        oracleSphereSlot3(oracleSphere, rendererObject);
+        const unsigned oraclePoseCount = renderCount;
+        const unsigned oracleLineCount = lineCount;
+        unsigned oraclePoseRows[8][16], oracleLineRows[8][7];
+        memcpy(oraclePoseRows, renderRows, sizeof(renderRows));
+        memcpy(oracleLineRows, lineRows, sizeof(lineRows));
+        renderCount = lineCount = 0;
+        memset(renderRows, 0xcd, sizeof(renderRows));
+        memset(lineRows, 0xcd, sizeof(lineRows));
+        candidateSphereSlot3(candidateSphere, rendererObject);
+        const unsigned expectedLines = (mask & 1) ? 3u : 0u;
+        const unsigned expectedPoses = ((mask & 2) ? 3u : 0u) +
+            (cGuard ? 3u : 0u);
+        if(oraclePoseCount != expectedPoses || renderCount != oraclePoseCount ||
+           oracleLineCount != expectedLines || lineCount != oracleLineCount ||
+           memcmp(oraclePoseRows, renderRows, sizeof(renderRows)) != 0 ||
+           memcmp(oracleLineRows, lineRows, sizeof(lineRows)) != 0) {
+            fprintf(stderr, "sphere shared render mask=%u c=%u low=%u lines=%u/%u poses=%u/%u differs\n",
+                mask, cGuard, low, oracleLineCount, lineCount,
+                oraclePoseCount, renderCount);
+            ++failures;
+        }
+        ++cases;
+    }
+    memcpy(guardA, &savedA, 4);
+    memcpy(guardB, &savedB, 4);
+    memcpy(scale, &savedScale, 4);
+    memcpy(guardC, &savedGuardC, 4);
+    VirtualProtect(guardC, 4, oldProtection, &ignoredProtection);
+    unsigned oracleBefore = oracleFreeCount;
+    unsigned candidateBefore = candidateAllocator.freeCount;
+    reinterpret_cast<DtorSlot>(oracleSphereTable[0])(oracleSphere, 0);
+    reinterpret_cast<DtorSlot>(candidateSphereTable[0])(candidateSphere, 0);
+    if(oracleFreeCount - oracleBefore != 1 ||
+       candidateAllocator.freeCount - candidateBefore != 1)
+        ++failures;
+    ++cases;
+    unsigned char* oracleSphereHeap = static_cast<unsigned char*>(malloc(0xe4));
+    unsigned char* candidateSphereHeap = static_cast<unsigned char*>(malloc(0xe4));
+    if(!oracleSphereHeap || !candidateSphereHeap) return 2;
+    memset(oracleSphereHeap, 0xcd, 0xe4);
+    memset(candidateSphereHeap, 0xcd, 0xe4);
+    reinterpret_cast<BoxCtor>(const_cast<unsigned char*>(base) + 0x277c0)(
+        oracleSphereHeap, 0, 0);
+    new(candidateSphereHeap) SphereShape(0, 0);
+    void** oracleHeapSphereTable = *reinterpret_cast<void***>(oracleSphereHeap);
+    void** candidateHeapSphereTable = *reinterpret_cast<void***>(candidateSphereHeap);
+    oracleBefore = oracleFreeCount;
+    candidateBefore = candidateAllocator.freeCount;
+    reinterpret_cast<DtorSlot>(oracleHeapSphereTable[0])(oracleSphereHeap, 1);
+    reinterpret_cast<DtorSlot>(candidateHeapSphereTable[0])(candidateSphereHeap, 1);
+    if(oracleFreeCount - oracleBefore != 2 ||
+       candidateAllocator.freeCount - candidateBefore != 2)
+        ++failures;
+    ++cases;
     nxSetSdkAllocatorBridge(0);
-    printf("shape vtable cases=%u failures=%u\n", cases, failures);
+    printf("shape vtable oracle_digest=%08x cases=%u failures=%u\n",
+        oracleDigest, cases, failures);
     return failures ? 1 : 0;
 }

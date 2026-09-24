@@ -117,10 +117,11 @@ if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/SmoothNormals.cpp
 		Physics/src/NarrowPhase.cpp
 		Physics/src/ContactGeneration.cpp
+		Physics/src/ShapeRaycast.cpp
 		PROPERTIES COMPILE_OPTIONS "/arch:IA32")
 endif()
 
-# All four files are on that list because the x87 control word is not the same
+# These geometry and contact files are on that list because the x87 control word is not the same
 # everywhere this code runs, and the flag is what lets a translation unit follow
 # it at all.
 #
@@ -400,7 +401,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	add_executable(NxPhysicsObjectLayoutTests tests/PhysicsObjectLayoutTests.cpp
 		Physics/src/ObjectModel.cpp Physics/src/Containers.cpp
 		Physics/src/MemoryStream.cpp
-		Physics/src/Geometry.cpp
+		Physics/src/Geometry.cpp Physics/src/ShapeRaycast.cpp
 		Physics/src/opcode/IcePrunable.cpp
 		Physics/src/ThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp)
 	target_include_directories(NxPhysicsObjectLayoutTests PRIVATE
@@ -434,6 +435,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	add_executable(NxPhysicsShapeVtableTests tests/PhysicsShapeVtableTests.cpp
 		Physics/src/ObjectModel.cpp Physics/src/Containers.cpp
 		Physics/src/MemoryStream.cpp Physics/src/Geometry.cpp
+		Physics/src/ShapeRaycast.cpp
 		Physics/src/opcode/IcePrunable.cpp
 		Physics/src/ThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp)
 	target_include_directories(NxPhysicsShapeVtableTests PRIVATE
@@ -460,6 +462,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# neighbours in with it.
 	add_executable(NxPhysicsCollisionTests tests/PhysicsCollisionTests.cpp
 		Physics/src/NarrowPhase.cpp Physics/src/ContactGeneration.cpp
+		Physics/src/ShapeRaycast.cpp
 		Physics/src/Geometry.cpp Physics/src/SmoothNormals.cpp
 		Physics/src/PhysicsSDK.cpp Physics/src/NpPhysicsSDK.cpp
 		Physics/src/PhysicsInternal.cpp Physics/src/Containers.cpp

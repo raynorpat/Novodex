@@ -9,6 +9,7 @@
 #include "Containers.h"
 #include "MemoryStream.h"
 #include "NxIntersectionSegmentBox.h"
+#include "ContactGeneration.h"
 
 #include <math.h>
 #include <string.h>
@@ -3850,6 +3851,38 @@ static void** nxBoxShapeInternalVtable()
 	return table.slot;
 	}
 
+static void** nxSphereShapeInternalVtable()
+	{
+	struct Table
+		{
+		void* slot[19];
+		Table()
+			{
+			slot[0] = nxShapeMethodAddress(&SphereShape::nxSphereScalarDeletingDtor);
+			slot[1] = nxShapeMethodAddress(&ShapeBase::nxApplyDescriptor);
+			slot[2] = nxShapeMethodAddress(&ShapeBase::nxBaseSaveState);
+			slot[3] = nxShapeMethodAddress(&SphereShape::nxSphereDebugRenderDispatch);
+			slot[4] = nxShapeMethodAddress(&SphereShape::nxSphereAccumulateMass);
+			slot[5] = reinterpret_cast<void*>(&NxShapeRaycastSphere);
+			slot[6] = nxShapeMethodAddress(&ShapeBase::nxApplyOwnerUpdate);
+			slot[7] = nxShapeMethodAddress(&SphereShape::nxSphereSweepRadius);
+			slot[8] = nxShapeMethodAddress(&SphereShape::nxSphereLocalAABB);
+			slot[9] = nxShapeMethodAddress(&SphereShape::nxSphereWorldAABB);
+			slot[10] = nxShapeMethodAddress(&SphereShape::nxSphereCenterRadius);
+			slot[11] = nxShapeMethodAddress(&SphereShape::nxSphereZeroCenterRadius);
+			slot[12] = nxShapeMethodAddress(&SphereShape::nxSphereLoadFromDesc);
+			slot[13] = nxShapeMethodAddress(&SphereShape::nxSphereSaveState);
+			slot[14] = nxShapeMethodAddress(&SphereShape::nxSphereSetRadius);
+			slot[15] = nxShapeMethodAddress(&SphereShape::nxSphereGetRadius);
+			slot[16] = nxShapeMethodAddress(&ShapeBase::nxSelf);
+			slot[17] = slot[16];
+			slot[18] = slot[16];
+			}
+		};
+	static Table table;
+	return table.slot;
+	}
+
 BoxShape::BoxShape(void* owner, unsigned argument)
 	: mBase(owner, argument)				// forwarded unchanged: 0x0002187c..80
 	{
@@ -3894,6 +3927,7 @@ BoxShape::BoxShape(void* owner, unsigned argument)
 SphereShape::SphereShape(void* owner, unsigned argument)
 	: mBase(owner, argument)				// forwarded unchanged: 0x000277bb..cf
 	{
+	mBase.mVptrSlot = nxSphereShapeInternalVtable();
 	mRadiusE0 = 0.0f;						// mov [esi+0xe0],0 at 0x000277da
 
 	// The embedded collision object: a fresh 0x1c-byte block through the SDK
@@ -3917,6 +3951,109 @@ bool SphereShape::nxSphereSweepRadius(float* out, const void* /*unused*/) const
 	{
 	memcpy(out, &mRadiusE0, sizeof(mRadiusE0));
 	return true;
+	}
+
+// phys_fn_001305 (0x00025960) through a SPHERE receiver. Its B block
+// dispatches the receiver's slot-10 center/radius row, so this counterpart
+// uses nxSphereCenterRadius where the box counterpart uses its diagonal.
+void SphereShape::nxSphereBaseDebugRender(const void* renderer) const
+	{
+	if(!g_nxGuardRef || !renderer)
+		return;
+	const float ref = *g_nxGuardRef;
+	void** table = *reinterpret_cast<void** const*>(renderer);
+	typedef void (__fastcall* DrawLineFn)(void*, void*, const float*,
+		const float*, unsigned);
+	typedef void (__fastcall* DrawPoseFn)(void*, void*, unsigned,
+		const void*, unsigned, unsigned, unsigned);
+	DrawLineFn drawLine = reinterpret_cast<DrawLineFn>(table[8]);
+	DrawPoseFn drawPose = reinterpret_cast<DrawPoseFn>(table[14]);
+	void* rendererArg = const_cast<void*>(renderer);
+	const float guardA = *g_nxGuardA;
+	if(guardA != ref || guardA != guardA)
+		{
+		const float k = *g_nxRenderScale * guardA;
+		const float* rot = reinterpret_cast<const float*>(&mBase.mPose0C.mRotation);
+		const float* trn = reinterpret_cast<const float*>(&mBase.mPose0C.mTranslation);
+		static const unsigned colors[3] = { 0xcf0000u, 0xcf00u, 0xcfu };
+		for(unsigned axis = 0; axis < 3; ++axis)
+			{
+			const float start[3] = { trn[0], trn[1], trn[2] };
+			const float end[3] = {
+				k * rot[axis] + trn[0],
+				k * rot[3 + axis] + trn[1],
+				k * rot[6 + axis] + trn[2]
+			};
+			drawLine(rendererArg, nullptr, start, end, colors[axis]);
+			}
+		}
+	const float guardB = *g_nxGuardB;
+	if(guardB != ref || guardB != guardB)
+		{
+		float center[4] = {};
+		nxSphereCenterRadius(center);
+		const float* rot = reinterpret_cast<const float*>(&mBase.mPose0C.mRotation);
+		float pose[12];
+		for(unsigned i = 0; i < 9; ++i)
+			pose[i] = rot[i];
+		pose[9] = center[0];
+		pose[10] = center[1];
+		pose[11] = center[2];
+		unsigned radiusBits;
+		memcpy(&radiusBits, center + 3, 4);
+		for(unsigned round = 0; round < 3; ++round)
+			{
+			drawPose(rendererArg, nullptr, 0x14, pose, 0xffff00ffu,
+				radiusBits, 0);
+			if(round < 2)
+				{
+				float next[9];
+				for(unsigned row = 0; row < 3; ++row)
+					for(unsigned col = 0; col < 3; ++col)
+						next[row * 3 + col] = pose[row * 3 + (col + 1) % 3];
+				memcpy(pose, next, sizeof(next));
+				}
+			}
+		}
+	}
+
+// phys_fn_001369 (0x00027a30), SPHERE primary-table slot 3. The shared
+// 001305 base draw runs first; the sphere-specific arm then draws three
+// rotated poses through renderer slot +0x38 when guard C is active.
+void SphereShape::nxSphereDebugRenderDispatch(const void* renderer) const
+	{
+	if(!mBase.nxFlagBitsDE(8) || !renderer)
+		return;
+	nxSphereBaseDebugRender(renderer);
+	if(!g_nxGuardC || !g_nxGuardRef)
+		return;
+	const float guard = *g_nxGuardC;
+	const float ref = *g_nxGuardRef;
+	if(guard == ref && guard == guard)
+		return;
+	void** table = *reinterpret_cast<void** const*>(renderer);
+	typedef void (__fastcall* DrawPoseFn)(void*, void*, unsigned,
+		const void*, unsigned, unsigned, unsigned);
+	DrawPoseFn drawPose = reinterpret_cast<DrawPoseFn>(table[14]);
+	float pose[12];
+	memcpy(pose, &mBase.mPose0C, sizeof(pose));
+	const unsigned color = (mBase.mHalfwordDE & 7u)
+		? 0xffff00ffu : 0xffffffffu;
+	unsigned radius;
+	memcpy(&radius, &mRadiusE0, sizeof(radius));
+	for(unsigned round = 0; round < 3; ++round)
+		{
+		drawPose(const_cast<void*>(renderer), nullptr, 0x14,
+			pose, color, radius, 0);
+		if(round < 2)
+			{
+			float next[9];
+			for(unsigned row = 0; row < 3; ++row)
+				for(unsigned col = 0; col < 3; ++col)
+					next[row * 3 + col] = pose[row * 3 + (col + 1) % 3];
+			memcpy(pose, next, sizeof(next));
+			}
+		}
 	}
 
 // phys_fn_001355 (0x000278a0), SPHERE-table slot 13.
@@ -4149,11 +4286,13 @@ void SphereShape::nxSphereScalarDeletingDtor(unsigned flags)
 	{
 	if(mBase.mWord9C)
 		{
-		// destroyed through its own vtable by the image: 0x00027c43..47
+		// generic collision-object deleting row at 0x24810, flag 1.
+		reinterpret_cast<CollisionObject*>(mBase.mWord9C)->nxScalarDeletingDtor(1);
 		}
 	mBase.nxBaseDtorOwnerArms();			// owner arms, 0x26be1..c35
 	mBase.mPrunable.~Prunable();			// tail of the base-dtor chain
-	(void) flags;							// self-free arm not modeled
+	if(flags & 1u)
+		nxGetSdkAllocator()->free(this);
 	}
 
 // phys_fn_001353 (0x00027850), SPHERE-table slot 12.

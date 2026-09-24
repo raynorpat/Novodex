@@ -1,0 +1,11 @@
+# Sphere primary vtable dispatch
+
+The pinned sphere primary table is at `.rdata` RVA `0x107528`. Slot 7 points to `phys_fn_001373` at `0x27c10`. Its entire 17-byte body loads `[this+0xe0]`, stores that dword through the first stack argument, sets `al=1`, and returns with `ret 8`; the second argument is unread. `SphereShape::nxSphereSweepRadius` is now the owning candidate member. The candidate preserves the radius bits with `memcpy`, including signed zero and NaN payloads.
+
+`NxPhysicsShapeVtableTests` constructs oracle and candidate spheres and calls the installed slot 7 entries with six raw radius patterns and a poisoned unread argument. Six of six cases match.
+
+The candidate now installs a 19-slot sphere primary table at object offset zero. Slots 0–2, 4, 6, 8–18 point to their existing member transcriptions or the shared identity row; slot 3 points to `SphereShape::nxSphereDebugRenderDispatch`, and slot 5 points to the existing `NxShapeRaycastSphere` body. The raycast body moved unchanged from `ContactGeneration.cpp` into `ShapeRaycast.cpp` so both the DLL and the isolated shape probe link the same implementation without pulling in unrelated contact and SDK code. Its x87 `fsqrt` helper moved with it.
+
+The isolated differential now checks that all 19 candidate slot pointers belong to the candidate executable. It dispatches through slot 3 for 64 flag/guard cases and 16 combined base/derived guard cases, capturing line and pose calls bitwise. Slot 5 runs 16 ray/limit/normal-hint cases; slots 7–11, 15 and 16–18 have direct output or identity checks. Slot 0 is called with flags 0 and 1, confirming free-count deltas of one and two on both sides. The pinned oracle transcript is `shape vtable oracle_digest=fc9d47a0 cases=205 failures=0` (box and sphere combined). The digest folds sphere oracle table RVAs and selected oracle dispatch results. Phase 5 now registers and pins this line, while the layout harness remains red on the larger `vtables` family marker.
+
+This is a constructed, callable sphere primary table, not full semantic closure. Shared owner-update, descriptor, mass-frame, collision-object and global debug-render initialization paths still have the limitations recorded in the census and gate evidence. The other shape and actor tables remain for the Phase 5 gate.

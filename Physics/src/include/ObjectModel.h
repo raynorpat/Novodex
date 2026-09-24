@@ -60,7 +60,8 @@ class CollisionObject
 	//! phys_fn_001193 (0x000247c0). The argument is stored twice (+8/+0x18)
 	//! and handed nowhere else; what it means is unestablished.
 	explicit			CollisionObject(void* argument);
-	//! phys_fn_001079 (0x000235d0), the box-family slot-0 deleting row:
+	//! phys_fn_001079 (0x000235d0), the box-family slot-0 deleting row;
+	//! the generic collision object at 0x24810 has the same teardown:
 	//! destroys the embedded hook, then frees this through the SDK allocator
 	//! when flags&1. The member's final vptr is an intermediate destructor
 	//! detail; callers observe the allocator operation.
@@ -292,6 +293,8 @@ class ShapeBase
 	//! record+0x44 (the debug name) through the registry helper -- a no-op
 	//! when the name is NULL and the list is empty.
 	bool				nxApplyDescriptor(const void* record);
+	//! phys_fn_001391 (0x00027f00), shared final-table identity row.
+	void*				nxSelf() const { return const_cast<ShapeBase*>(this); }
 
 	//! +0x00, carried opaque like every other vtable slot in this model.
 	void*				mVptrSlot;
@@ -1778,6 +1781,13 @@ class SphereShape
 	//! SPHERE-table slot 7, phys_fn_001373 (0x00027c10): writes the raw
 	//! radius word to out, returns true, and ignores the second argument.
 	bool				nxSphereSweepRadius(float* out, const void* unused) const;
+	//! SPHERE-table slot 3, phys_fn_001369 (0x00027a30): guarded debug
+	//! renderer. The base-render call precedes three sphere-specific pose
+	//! draws through renderer slot +0x38.
+	void				nxSphereDebugRenderDispatch(const void* renderer) const;
+	//! Shared debug-render row phys_fn_001305, using the sphere's slot-10
+	//! center/radius result when the B guard enables pose drawing.
+	void				nxSphereBaseDebugRender(const void* renderer) const;
 
 	//! +0x00..+0xdf, the base shape subobject.
 	ShapeBase			mBase;
