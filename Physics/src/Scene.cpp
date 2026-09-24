@@ -1039,14 +1039,22 @@ int nxActorLoadFromDescInternal(void* actor, const unsigned* d)
 	// The 0x18-byte actor wrapper has no inline pose. nxActorBuildBody copies
 	// the descriptor's 0x30-byte pose into the separate body at +0x20.
 	// actor+0x14 is the BODY pointer, written by nxActorBuildBody above. The
-	// oracle does not store userData there: the descriptor word at 0x0f is
+	// oracle does not store userData there: descriptor word 0x10 is
 	// userData and reaches the actor through a different field, which this
 	// transcription has not identified. Writing it here would clobber the body.
-	(void)d[0x0f];
+	(void)d[0x10];
 
 	// The body. Scene::createJoint and the joint-descriptor rows both reach it
 	// through actor+0x14, so it is built here rather than left to the shape path.
 	nxActorBuildBody(actor, d);
+	unsigned char* body = *reinterpret_cast<unsigned char**>(
+		static_cast<unsigned char*>(actor) + 0x14);
+	if(body)
+		{
+		*reinterpret_cast<unsigned*>(body + 0x14) = d[0x0e];
+		*reinterpret_cast<unsigned short*>(body + 0x1c) =
+			*reinterpret_cast<const unsigned short*>(d + 0x0f);
+		}
 
 	// The name, through phys_fn_0000edc0.
 	nxActorSetName(actor, d[0x11]);

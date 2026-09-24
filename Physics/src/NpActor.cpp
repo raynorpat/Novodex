@@ -754,22 +754,29 @@ void NpActorVtable::putToSleep()
 	
 	}
 
-// (unimplemented) raiseActorFlag
-void NpActorVtable::raiseActorFlag(NxActorFlag)
+// Concrete actor slots 75-77 store the flag mask in the 0x50-byte body.
+void NpActorVtable::raiseActorFlag(NxActorFlag flag)
 	{
-	
+	unsigned char* body = *reinterpret_cast<unsigned char**>(
+		reinterpret_cast<unsigned char*>(this) + 0x14);
+	if(body) *reinterpret_cast<unsigned*>(body + 0x14) |=
+		static_cast<unsigned>(flag);
 	}
 
-// (unimplemented) clearActorFlag
-void NpActorVtable::clearActorFlag(NxActorFlag)
+void NpActorVtable::clearActorFlag(NxActorFlag flag)
 	{
-	
+	unsigned char* body = *reinterpret_cast<unsigned char**>(
+		reinterpret_cast<unsigned char*>(this) + 0x14);
+	if(body) *reinterpret_cast<unsigned*>(body + 0x14) &=
+		~static_cast<unsigned>(flag);
 	}
 
-// (unimplemented) readActorFlag
-bool NpActorVtable::readActorFlag(NxActorFlag) const
+bool NpActorVtable::readActorFlag(NxActorFlag flag) const
 	{
-	return bool();
+	const unsigned char* body = *reinterpret_cast<unsigned char* const*>(
+		reinterpret_cast<const unsigned char*>(this) + 0x14);
+	return body && (*reinterpret_cast<const unsigned*>(body + 0x14) &
+		static_cast<unsigned>(flag)) != 0;
 	}
 
 // (unimplemented) raiseBodyFlag
@@ -818,16 +825,20 @@ const char* NpActorVtable::getName() const
 	return nxShapeGetName(const_cast<unsigned char*>(body));
 	}
 
-// (unimplemented) setGroup
-void NpActorVtable::setGroup(NxActorGroup)
+// Concrete actor slots 85/86 address the body +0x1c group word.
+void NpActorVtable::setGroup(NxActorGroup group)
 	{
-	
+	unsigned char* body = *reinterpret_cast<unsigned char**>(
+		reinterpret_cast<unsigned char*>(this) + 0x14);
+	if(body) *reinterpret_cast<NxActorGroup*>(body + 0x1c) = group;
 	}
 
-// (unimplemented) getGroup
 NxActorGroup NpActorVtable::getGroup() const
 	{
-	return NxActorGroup();
+	const unsigned char* body = *reinterpret_cast<unsigned char* const*>(
+		reinterpret_cast<const unsigned char*>(this) + 0x14);
+	return body ? *reinterpret_cast<const NxActorGroup*>(body + 0x1c) :
+		NxActorGroup();
 	}
 
 // (unimplemented) setGlobalPose

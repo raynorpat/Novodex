@@ -62,6 +62,8 @@
 
 **M2 populated Scene ownership frontier, 2026-09-24:** The candidate now releases both live public actors during `releaseScene`, matching the oracle's `2.2` pointer-free observation. One registered check raises the Phase 5 floor to 364. The candidate currently frees 19 of the oracle's 45 Scene-release blocks and makes none of its two teardown allocations; internal actor destruction, auxiliary arrays, pruners, and SDK name-table teardown remain open. See `docs/reconstruction/novodex-physics/evidence/phase5-populated-scene-teardown-frontier.md` for the full oracle sequence.
 
+**M2 actor metadata follow-up, 2026-09-24:** The concrete actor now propagates descriptor flags and group into the 0x50-byte body and implements public `raiseActorFlag`, `clearActorFlag`, `readActorFlag`, `setGroup`, and `getGroup` virtuals. A fresh-process staged pair checks initial state, mutations, direct body words, and allocation neutrality. Six registered lines raise the Phase 5 floor to 396; the gate remains red only on the explicit final-vtable marker. Setter and descriptor-propagation mutations both failed the differential. See `docs/reconstruction/novodex-physics/evidence/phase5-public-actor-metadata.md`. Full actor virtual coverage and populated Scene ownership remain open.
+
 ## 1. Inputs and boundaries
 
 - Repository: `D:\github\Novodex`, inspected at `0df8821f1c5e3668e566ad4182b1e8e568f632d6`.
