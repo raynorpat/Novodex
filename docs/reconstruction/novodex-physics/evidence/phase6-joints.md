@@ -9130,12 +9130,16 @@ phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` ex
 and `validate_inventory.py` requires each closed row's stable ID on a line that also carries the count
 its ledger spends. At the port of the Phase 4 close (branch `p4-close-port`) that binding became
 mandatory for every ledger from Phase 4 on that closes a row; until then these six closures were bound
-to nothing. Each line below names the section above that published the measurement. Nothing was
-re-measured to write this table.
+to nothing. Nothing was re-measured to write this table: the two joint-descriptor rows were measured
+in section 11m, Scene::createActor in 12i, Scene::createJoint in 12h and 12k, the Scene descriptor
+initialiser in 12k and the actor constructor in 12n. The lines below carry no other number. Lines
+earlier in this file that name the same rows still carry phase, section and byte numbers, so a row can
+be moved onto one of those without the binding noticing: the coincidental-count limit
+`validate_closure_evidence` states.
 
-    phys_fn_004115  phase 6  NxJointDesc_SetGlobalAnchor       stdout_delta=14  section 11m, anchor_row
-    phys_fn_004117  phase 6  NxJointDesc_SetGlobalAxis         stdout_delta=14  section 11m, axis_row
-    phys_fn_000626  phase 7  Scene::createActor                stdout_delta=27  section 12i, createActor_valid
-    phys_fn_000665  phase 7  Scene::createJoint                stdout_delta=30  sections 12h and 12k
-    phys_fn_000651  phase 7  the Scene descriptor initialiser  stdout_delta=28  section 12k
-    phys_fn_000013  phase 7  the actor constructor             stdout_delta=30  section 12n, actorCtor_nobody
+    phys_fn_004115  NxJointDesc_SetGlobalAnchor       stdout_delta=14
+    phys_fn_004117  NxJointDesc_SetGlobalAxis         stdout_delta=14
+    phys_fn_000626  Scene::createActor                stdout_delta=27
+    phys_fn_000665  Scene::createJoint                stdout_delta=30
+    phys_fn_000651  the Scene descriptor initialiser  stdout_delta=28
+    phys_fn_000013  the actor constructor             stdout_delta=30
