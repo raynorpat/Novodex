@@ -19645,7 +19645,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/432",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3186",
       "static_proof": "0x235d0..0x23604: restore collision-object and member vptrs, call the embedded-hook destructor at 0x5ba90, and free this through SDK allocator slot +0x14 iff flags&1; ret 4. ObjectModel.cpp nxScalarDeletingDtor reproduces the observable member teardown and allocator branch.",
-      "dynamic_proof": "NxPhysicsBoxVtableTests calls box primary slot 0 with flags 0 and 1 on oracle and candidate constructed boxes; allocator free-count deltas agree at one (collision object) and two (collision object plus box), respectively; 26/26 fixture assertions pass.",
+      "dynamic_proof": "NxPhysicsShapeVtableTests calls box primary slot 0 with flags 0 and 1 on oracle and candidate constructed boxes; allocator free-count deltas agree at one (collision object) and two (collision object plus box), respectively; 26/26 fixture assertions pass.",
       "notes": "The oracle stores absolute construction/destruction vptrs; the candidate owns separate code pointers. This test covers the box-family collision object under null owner and no registry binding.",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
@@ -24967,12 +24967,13 @@
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
       "state": "reconstructed",
-      "source": "store [this+0xe0] to *out, return 1 (0x27c10, ret 8)",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/674",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3532",
       "static_proof": "mov eax,[ecx+0xe0]; mov ecx,[esp+4]; mov[ecx],eax; mov al,1; ret 8",
-      "dynamic_proof": "confirmed via smallctor drive (3z53): failures=0",
-      "notes": ""
+      "dynamic_proof": "smallctor drive (3z53) failures=0; NxPhysicsShapeVtableTests compares the oracle and SphereShape::nxSphereSweepRadius over +0, -0, +1, -1, +infinity and a NaN payload, six bitwise matches.",
+      "notes": "Sphere primary vtable slot 7; its second stack argument is unread.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001374",

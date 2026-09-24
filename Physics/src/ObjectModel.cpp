@@ -3912,6 +3912,13 @@ SphereShape::SphereShape(void* owner, unsigned argument)
 // ---------------------------------------------------------------------------
 // SPHERE-table rows. See ObjectModel.h.
 
+// phys_fn_001373 (0x00027c10), SPHERE primary-table slot 7.
+bool SphereShape::nxSphereSweepRadius(float* out, const void* /*unused*/) const
+	{
+	memcpy(out, &mRadiusE0, sizeof(mRadiusE0));
+	return true;
+	}
+
 // phys_fn_001355 (0x000278a0), SPHERE-table slot 13.
 bool SphereShape::nxSphereSaveState(void* record)
 	{

@@ -69,7 +69,7 @@ static bool sha256(const wchar_t* path, char out[65]) {
 int wmain(int argc, wchar_t** argv)
 {
     if(argc != 3) {
-        fprintf(stderr, "usage: NxPhysicsBoxVtableTests <oracle directory> <sha256>\n");
+        fprintf(stderr, "usage: NxPhysicsShapeVtableTests <oracle directory> <sha256>\n");
         return 2;
     }
     wchar_t path[MAX_PATH];
@@ -203,7 +203,36 @@ int wmain(int argc, wchar_t** argv)
         reinterpret_cast<DtorSlot>(ot[0])(o, 0);
         reinterpret_cast<DtorSlot>(ct[0])(c, 0);
     }
+
+    // SPHERE slot 7 copies the radius word without interpreting it. Include
+    // signed zero, infinity and a NaN payload to pin bitwise preservation.
+    unsigned char oracleSphere[0xe4], candidateSphere[0xe4];
+    memset(oracleSphere, 0xcd, sizeof(oracleSphere));
+    memset(candidateSphere, 0xcd, sizeof(candidateSphere));
+    reinterpret_cast<BoxCtor>(const_cast<unsigned char*>(base) + 0x277c0)(
+        oracleSphere, 0, 0);
+    SphereShape& sphere = *new(candidateSphere) SphereShape(0, 0);
+    typedef bool (__thiscall* SphereSlot7)(void*, float*, const void*);
+    SphereSlot7 oracleSphereSlot7 = reinterpret_cast<SphereSlot7>(
+        const_cast<unsigned char*>(base) + 0x27c10);
+    const unsigned radiusBits[] = {
+        0x00000000u, 0x80000000u, 0x3f800000u,
+        0xbf800000u, 0x7f800000u, 0x7fc00001u
+    };
+    for(unsigned bits : radiusBits) {
+        memcpy(oracleSphere + 0xe0, &bits, 4);
+        memcpy(candidateSphere + 0xe0, &bits, 4);
+        unsigned oracleOut = 0xcdcdcdcdu, candidateOut = 0xcdcdcdcdu;
+        const void* unread = reinterpret_cast<const void*>(0xdeadbeefu);
+        bool ro = oracleSphereSlot7(oracleSphere,
+            reinterpret_cast<float*>(&oracleOut), unread);
+        bool rc = sphere.nxSphereSweepRadius(
+            reinterpret_cast<float*>(&candidateOut), unread);
+        if(ro != rc || oracleOut != candidateOut || !ro)
+            ++failures;
+        ++cases;
+    }
     nxSetSdkAllocatorBridge(0);
-    printf("box vtable cases=%u failures=%u\n", cases, failures);
+    printf("shape vtable cases=%u failures=%u\n", cases, failures);
     return failures ? 1 : 0;
 }

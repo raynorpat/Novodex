@@ -1,0 +1,5 @@
+# Sphere primary vtable, slot 7
+
+The pinned sphere primary table is at `.rdata` RVA `0x107528`. Slot 7 points to `phys_fn_001373` at `0x27c10`. Its entire 17-byte body loads `[this+0xe0]`, stores that dword through the first stack argument, sets `al=1`, and returns with `ret 8`; the second argument is unread. `SphereShape::nxSphereSweepRadius` is now the owning candidate member. The candidate preserves the radius bits with `memcpy`, including signed zero and NaN payloads.
+
+`NxPhysicsShapeVtableTests` constructs oracle and candidate spheres, calls the oracle slot body and candidate member with six raw radius patterns and a poisoned unread argument, and compares return and output bits. Six of six cases match. The executable's full box/sphere transcript is now `shape vtable cases=80 failures=0`. This supplies one sphere slot body, not a candidate sphere primary table: sphere slot 3 and the other final-table mappings remain to be installed and checked before the Phase 5 vtable family can pass.

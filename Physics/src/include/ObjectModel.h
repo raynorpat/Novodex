@@ -1775,6 +1775,9 @@ class SphereShape
 	public:
 	//! phys_fn_001349 (0x000277c0). Same argument pair as the base ctor.
 					SphereShape(void* owner, unsigned argument);
+	//! SPHERE-table slot 7, phys_fn_001373 (0x00027c10): writes the raw
+	//! radius word to out, returns true, and ignores the second argument.
+	bool				nxSphereSweepRadius(float* out, const void* unused) const;
 
 	//! +0x00..+0xdf, the base shape subobject.
 	ShapeBase			mBase;
