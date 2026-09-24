@@ -4,6 +4,7 @@ phase closure ledgers, and the programme record that quotes their counts."""
 
 import argparse
 import collections
+from bisect import bisect_right
 import csv
 import io
 import json
@@ -152,6 +153,10 @@ PHASE_PROVENANCE = (
     "padding",
     "pe_structure",
     "reading_sites",
+    # The shape-class vtable ruling in shape_slot_ruling.json placed the row. Unlike the
+    # propagation rules above it is recomputed here, from that file and the oracle, so a
+    # row carrying it cannot be moved or relabelled without the check saying so.
+    "slot_ruling",
 )
 LABEL_CONFIDENCES = ("stable-id", "semantic")
 # A phase closes by proving each of its rows or by deferring it in writing. The
@@ -1739,6 +1744,402 @@ def validate_row_states(inventory, closures):
     return errors
 
 
+# The shape-class vtable ruling. The census generator assigns CapsuleShape.cpp,
+# SphereShape.cpp and Shape.cpp to Phase 3, and Phase 5's plan reconstructs those
+# classes; 43 rows were moved between the two as a side effect of transcription,
+# and no check could say whether a move was right. The user's decision is to rule
+# by vtable slot -- object-model slots are Phase 5's, collision slots stay in Phase
+# 3 -- and this file is that ruling, in the one place reconcile_analysis.py and
+# this validator both read.
+SHAPE_RULING_NAME = "shape_slot_ruling.json"
+SLOT_RULING = "slot_ruling"
+SLOT_RULINGS = ("collision", "object_model", "purecall")
+RULING_DISPOSITIONS = ("shared", "external", "collision", "object_model")
+MEMBER_BASES = ("constructor", "destructor", "adapter", "helper")
+RULING_KEYS = ("schema_version", "oracle_sha256", "rule", "phase_of", "tables",
+               "slot_evidence", "members", "exceptions")
+# A row the generator split off an entry carries the entry's phase and provenance,
+# and says which entry in its notes. The generator writes exactly this string.
+CONTINUATION = re.compile(r"^continuation of the entry at (0x[0-9a-f]{8})$")
+VIRTUAL_CALL = re.compile(r"^dword ptr \[e[a-z]{2}(?: \+ (0x[0-9a-f]+|[0-9]+))?\]$")
+
+
+def _entry_rva(row):
+    """The entry a function row belongs to: its own rva, or the one its notes name."""
+    match = CONTINUATION.match(row.get("notes") or "")
+    return int(match.group(1) if match else row["rva"], 16)
+
+
+def resolve_shape_ruling(ruling, pointers):
+    """The phase the ruling gives each row it names, keyed by entry rva.
+
+    `pointers` maps a relocated slot's rva to the rva it holds, from oracle/pe.json.
+    A value of None marks an `external` exception: named so that its slots are
+    accounted for, and left to whatever rule owns it. reconcile_analysis.py reads
+    the same answer, so the generator and this validator cannot disagree about
+    which row the ruling places where.
+    """
+    phase_of = ruling.get("phase_of", {})
+    errors, slots, phases = [], {}, {}
+    for table in ruling.get("tables", []):
+        base = int(table["rva"], 16)
+        for index, verdict in enumerate(table["slots"]):
+            target = pointers.get(base + 4 * index)
+            if target is None:
+                errors.append(f"shape ruling table {table['class']} slot {index} at "
+                              f"0x{base + 4 * index:08x} is not a relocated pointer in the oracle")
+                continue
+            slots.setdefault(target, []).append((table["class"], index, verdict))
+    for entry in ruling.get("exceptions", []):
+        rva = int(entry["rva"], 16)
+        disposition = entry.get("disposition")
+        phases[rva] = (entry.get("phase") if disposition == "shared" else
+                       None if disposition == "external" else phase_of.get(disposition))
+    for target, named in slots.items():
+        if target in phases:
+            continue
+        verdicts = {phase_of.get(verdict) for _, _, verdict in named}
+        if len(verdicts) != 1 or None in verdicts:
+            errors.append(f"row at 0x{target:08x} is named by slots "
+                          f"{', '.join(f'{cls} {index} {verdict}' for cls, index, verdict in named)}, "
+                          f"which do not give it one phase; name it as an exception")
+            continue
+        phases[target] = verdicts.pop()
+    for member in ruling.get("members", []):
+        phases[int(member["rva"], 16)] = phase_of.get(member.get("ruling"))
+    return phases, slots, errors
+
+
+def validate_shape_ruling(inventory, ruling, pointers, instructions, tail_calls, image_base):
+    """Recompute every shape-block row's phase and provenance from the ruling.
+
+    The ruling is checked against the oracle first, so it cannot cite evidence the
+    image does not hold: every table slot must be a relocated pointer to a censused
+    entry, every table must be stored by the constructor it names, every collision
+    slot must rest on at least one virtual call through that slot, every constructor
+    and destructor must store a shape table, and every helper's recorded callers
+    must be all of its direct callers and all of them ruled. Then the census is
+    checked against the ruling: a ruled row -- and every continuation of one -- must
+    carry the ruled phase and `slot_ruling`, and no other row may claim it.
+
+    What it does not recompute is the collision pipeline itself. Whether a slot the
+    ruling calls object model is really never dispatched by the narrow phase is the
+    analysis recorded in the file; deleting a collision slot's evidence and flipping
+    it is a visible edit to one file, not a move this check can see.
+    """
+    errors = [f"shape ruling is missing {key!r}" for key in RULING_KEYS if key not in ruling]
+    if errors:
+        return errors
+    if ruling["schema_version"] != SCHEMA_VERSION:
+        errors.append(f"shape ruling schema_version must be {SCHEMA_VERSION}")
+    if ruling["oracle_sha256"] != inventory["pins"]["oracle"]["sha256"]:
+        errors.append("shape ruling names an oracle the inventory does not pin")
+    if ruling["phase_of"] != {"collision": 3, "object_model": 5}:
+        errors.append(f"shape ruling phase_of {ruling['phase_of']!r} is not the user's decision: "
+                      f"collision slots stay in Phase 3, object-model slots are Phase 5's")
+    functions = inventory["functions"]
+    by_rva = {int(row["rva"], 16): row for row in functions}
+    by_id = {row["id"]: row for row in functions}
+    ranges = sorted((int(row["rva"], 16), int(row["rva"], 16) + row["size"], row["id"])
+                    for row in functions)
+    starts = [start for start, _, _ in ranges]
+
+    def owner(address):
+        index = bisect_right(starts, address) - 1
+        if index >= 0 and ranges[index][0] <= address < ranges[index][1]:
+            return ranges[index][2]
+        return None
+
+    def instruction(address, where):
+        found = instructions.get(address)
+        if found is None:
+            errors.append(f"{where} cites 0x{address:08x}, where the capstone corpus decodes no "
+                          f"instruction")
+        return found
+
+    def named_row(entry, where):
+        row = by_id.get(entry.get("id"))
+        if row is None:
+            errors.append(f"{where} names {entry.get('id')!r}, which is not a censused function")
+        elif row["rva"] != entry.get("rva"):
+            errors.append(f"{where} records rva {entry.get('rva')!r} for {row['id']!r} but the "
+                          f"inventory has {row['rva']!r}")
+        return row
+
+    tables = {}
+    for table in ruling["tables"]:
+        where = f"shape ruling table {table.get('class')!r}"
+        if not all(verdict in SLOT_RULINGS for verdict in table.get("slots", [])):
+            errors.append(f"{where} rules a slot outside {list(SLOT_RULINGS)}")
+            continue
+        tables[table["class"]] = table
+        store = instruction(int(table["vptr_store"], 16), where)
+        value = f", 0x{image_base + int(table['rva'], 16):08x}"
+        if store is not None and not (store["mnemonic"] == "mov"
+                                      and store["operands"].endswith(value)):
+            errors.append(f"{where} says {table['vptr_store']} stores its table, and the "
+                          f"instruction there is {store['mnemonic']} {store['operands']}")
+        elif store is not None and owner(int(table["vptr_store"], 16)) != table.get("constructor"):
+            errors.append(f"{where} says {table.get('constructor')!r} stores it, but "
+                          f"{table['vptr_store']} is inside {owner(int(table['vptr_store'], 16))!r}")
+
+    phases, slots, resolve_errors = resolve_shape_ruling(ruling, pointers)
+    errors += resolve_errors
+    for target, named in sorted(slots.items()):
+        if target not in by_rva:
+            errors.append(f"shape ruling slot {named[0][0]} {named[0][1]} holds 0x{target:08x}, "
+                          f"which is not a censused function entry")
+
+    covered = set()
+    for group in ruling["slot_evidence"]:
+        slot, verdict = group.get("slot"), group.get("ruling")
+        where = f"shape ruling evidence for slot {slot} ({verdict})"
+        for cls in group.get("classes", []):
+            table = tables.get(cls)
+            if table is None or not isinstance(slot, int) or slot >= len(table["slots"]):
+                errors.append(f"{where} names {cls}, which has no such slot")
+            elif table["slots"][slot] != verdict:
+                errors.append(f"{where} names {cls}, whose table rules slot {slot} "
+                              f"{table['slots'][slot]}")
+            elif group.get("sites"):
+                covered.add((cls, slot, verdict))
+        for cited in group.get("sites", []):
+            address = int(cited["site"], 16)
+            found = instruction(address, where)
+            if found is None:
+                continue
+            match = VIRTUAL_CALL.match(found["operands"])
+            if not (found["mnemonic"] in ("call", "jmp") and found["indirect"] and match
+                    and int(match.group(1) or "0", 0) == 4 * slot):
+                errors.append(f"{where} cites {cited['site']}, which is {found['mnemonic']} "
+                              f"{found['operands']} and not a call through slot {slot}")
+            elif owner(address) != cited.get("row"):
+                errors.append(f"{where} says {cited['site']} is in {cited.get('row')!r}, but it is "
+                              f"in {owner(address)!r}")
+    for cls, table in tables.items():
+        for index, verdict in enumerate(table["slots"]):
+            if verdict == "collision" and (cls, index, verdict) not in covered:
+                errors.append(f"shape ruling calls {cls} slot {index} a collision slot and cites no "
+                              f"virtual call through it; a collision slot is one the collision "
+                              f"pipeline dispatches, so it rests on the site that does")
+
+    direct = {}
+    for found in instructions.values():
+        target = found.get("target_rva")
+        if target and not found["indirect"] and found["flow"] in ("call", "jump"):
+            direct.setdefault(int(target, 16) if isinstance(target, str) else target,
+                              set()).add(int(found["rva"], 16))
+    for tail in tail_calls:
+        source, target = (int(value, 16) if isinstance(value, str) else value
+                          for value in (tail["from_rva"], tail["to_rva"]))
+        direct.setdefault(target, set()).add(source)
+
+    seen = set()
+    for member in ruling["members"]:
+        where = f"shape ruling member {member.get('id')!r}"
+        row = named_row(member, where)
+        if row is None:
+            continue
+        if row["id"] in seen:
+            errors.append(f"{where} is named twice")
+        seen.add(row["id"])
+        basis, verdict = member.get("basis"), member.get("ruling")
+        if basis not in MEMBER_BASES or verdict not in ("collision", "object_model"):
+            errors.append(f"{where} gives basis {basis!r} and ruling {verdict!r}")
+            continue
+        if basis in ("constructor", "destructor"):
+            store = instruction(int(member["site"], 16), where)
+            stored = {f", 0x{image_base + int(table['rva'], 16):08x}" for table in tables.values()}
+            if store is not None and not (store["mnemonic"] == "mov"
+                                          and any(store["operands"].endswith(value) for value in stored)):
+                errors.append(f"{where} is a {basis} because {member['site']} stores a shape table, "
+                              f"and the instruction there is {store['mnemonic']} {store['operands']}")
+            elif store is not None and owner(int(member["site"], 16)) != row["id"]:
+                errors.append(f"{where} cites {member['site']}, which is in "
+                              f"{owner(int(member['site'], 16))!r}")
+            if verdict != "object_model":
+                errors.append(f"{where} is a {basis}, and constructing or destroying a shape is "
+                              f"object model")
+        elif basis == "adapter":
+            install = instruction(int(member["site"], 16), where)
+            if install is not None and not (install["mnemonic"] == "mov" and install["operands"]
+                                            .endswith(f", 0x{image_base + int(row['rva'], 16):08x}")):
+                errors.append(f"{where} says {member['site']} installs it, and the instruction there "
+                              f"is {install['mnemonic']} {install['operands']}")
+            call = instruction(int(member["call_site"], 16), where)
+            match = VIRTUAL_CALL.match(call["operands"]) if call is not None else None
+            if call is not None and not (match and call["indirect"]
+                                         and int(match.group(1) or "0", 0) == 4 * member["slot"]
+                                         and owner(int(member["call_site"], 16)) == row["id"]):
+                errors.append(f"{where} says its body calls slot {member['slot']} at "
+                              f"{member['call_site']}, and it does not")
+            thunked = {table["slots"][member["slot"]] for table in tables.values()
+                       if table["class"] != "BOX_HULL" and member["slot"] < len(table["slots"])
+                       and table["slots"][member["slot"]] != "purecall"}
+            if thunked != {verdict}:
+                errors.append(f"{where} thunks slot {member['slot']}, which the tables rule "
+                              f"{sorted(thunked)}, but the member is ruled {verdict}")
+        else:
+            listed = {int(caller["site"], 16): caller.get("row") for caller in member.get("callers", [])}
+            actual = direct.get(int(row["rva"], 16), set())
+            if set(listed) != actual:
+                errors.append(f"{where} is a helper whose recorded call sites "
+                              f"{sorted(f'0x{a:08x}' for a in listed)} are not its direct callers "
+                              f"{sorted(f'0x{a:08x}' for a in actual)}")
+            for address, caller in sorted(listed.items()):
+                if owner(address) != caller:
+                    errors.append(f"{where} says 0x{address:08x} is in {caller!r}, but it is in "
+                                  f"{owner(address)!r}")
+                elif caller not in by_id or int(by_id[caller]["rva"], 16) not in phases:
+                    errors.append(f"{where} is called from {caller!r}, which the ruling does not "
+                                  f"place; a helper is a row only ruled rows call")
+                elif phases[int(by_id[caller]["rva"], 16)] != ruling["phase_of"].get(verdict):
+                    errors.append(f"{where} is ruled {verdict}, but its caller {caller!r} is ruled to "
+                                  f"phase {phases[int(by_id[caller]['rva'], 16)]}")
+    for entry in ruling["exceptions"]:
+        where = f"shape ruling exception {entry.get('id')!r}"
+        row = named_row(entry, where)
+        if row is None:
+            continue
+        if row["id"] in seen:
+            errors.append(f"{where} is also a member; a row is ruled once")
+        seen.add(row["id"])
+        disposition = entry.get("disposition")
+        if disposition not in RULING_DISPOSITIONS:
+            errors.append(f"{where} has disposition {disposition!r}")
+        elif disposition == "shared" and entry.get("phase") != 2:
+            errors.append(f"{where} is shared runtime, which is Phase 2")
+    for target, named in sorted(slots.items()):
+        if any(verdict == "purecall" for _, _, verdict in named) and phases.get(target, 0) is not None:
+            errors.append(f"row at 0x{target:08x} fills a pure-call slot, so it is the runtime's and "
+                          f"must be an external exception")
+
+    ruled = {rva: phase for rva, phase in phases.items() if phase is not None}
+    for row in functions:
+        entry = _entry_rva(row)
+        where = f"function {row['id']!r}"
+        if entry in ruled:
+            if row["phase"] != ruled[entry] or row["phase_provenance"] != SLOT_RULING:
+                errors.append(f"{where} is placed by the shape ruling at phase {ruled[entry]} with "
+                              f"provenance {SLOT_RULING!r}, but the census records phase "
+                              f"{row['phase']} {row['phase_provenance']!r}")
+        elif row["phase_provenance"] == SLOT_RULING:
+            errors.append(f"{where} claims {SLOT_RULING!r}, but the shape ruling does not place it")
+    return errors
+
+
+# Rows that claim `translation_unit` with no __FILE__ span around their entry. All 52
+# are Phase 4 rows the third-party phase column moved before this check existed, and
+# none carries `third_party`, the field that would name their upstream unit instead.
+# They are recorded rather than relabelled because their provenance is Phase 4's to
+# settle and this change does not own it; the set must stay exact, so a row that
+# leaves it has to be struck from it and a row that joins it is an error.
+TRANSLATION_UNIT_WITHOUT_SPAN = frozenset((
+    'phys_fn_004847', 'phys_fn_004874', 'phys_fn_004876', 'phys_fn_004878', 'phys_fn_004880',
+    'phys_fn_004882', 'phys_fn_004884', 'phys_fn_004886', 'phys_fn_005380', 'phys_fn_005382',
+    'phys_fn_005386', 'phys_fn_005440', 'phys_fn_005450', 'phys_fn_005452', 'phys_fn_005454',
+    'phys_fn_005456', 'phys_fn_005458', 'phys_fn_005460', 'phys_fn_005462', 'phys_fn_005466',
+    'phys_fn_005468', 'phys_fn_005470', 'phys_fn_005471', 'phys_fn_005473', 'phys_fn_005475',
+    'phys_fn_005477', 'phys_fn_005479', 'phys_fn_005481', 'phys_fn_005533', 'phys_fn_005535',
+    'phys_fn_005539', 'phys_fn_005547', 'phys_fn_005549', 'phys_fn_005550', 'phys_fn_005554',
+    'phys_fn_005558', 'phys_fn_005562', 'phys_fn_005566', 'phys_fn_005584', 'phys_fn_005586',
+    'phys_fn_005588', 'phys_fn_005590', 'phys_fn_005604', 'phys_fn_005606', 'phys_fn_005608',
+    'phys_fn_005610', 'phys_fn_005622', 'phys_fn_005624', 'phys_fn_005640', 'phys_fn_005642',
+    'phys_fn_005644', 'phys_fn_005646',
+))
+# Rules a span says nothing about: an artifact, the runtime tail, a plan's export pin,
+# padding, and the shape ruling, which is the one rule that outranks a span on purpose.
+SPAN_INDEPENDENT_PROVENANCE = ("runtime_artifact", "runtime_tail", "export_pin", "padding",
+                               SLOT_RULING)
+
+
+def translation_unit_spans_of(functions, strings, references):
+    """The __FILE__ spans the generator reads, recomputed from the census's own rows.
+
+    reconcile_analysis.py seeds a translation unit from every function that
+    references an NX_ASSERT __FILE__ string and takes each unit's span from its
+    seeds; this does the same over the committed rows, so a span is evidence the
+    validator reads from the oracle and not from the census it is checking.
+    """
+    import reconcile_analysis  # the generator owns SOURCE_PHASES and the span rule
+    ranges = sorted((int(row["rva"], 16), int(row["rva"], 16) + row["size"], _entry_rva(row))
+                    for row in functions)
+    starts = [start for start, _, _ in ranges]
+    files = {}
+    for entry in strings:
+        index = entry["value"].find(reconcile_analysis.SOURCE_MARK)
+        if index >= 0:
+            files[int(entry["rva"], 16)] = entry["value"][index + len(reconcile_analysis.SOURCE_MARK):]
+    seeds = {}
+    for reference in references:
+        if not reference["to_rva"]:
+            continue
+        name = files.get(int(reference["to_rva"], 16))
+        if name is None or name not in reconcile_analysis.SOURCE_PHASES:
+            continue
+        address = int(reference["from_rva"], 16)
+        index = bisect_right(starts, address) - 1
+        if index >= 0 and ranges[index][0] <= address < ranges[index][1]:
+            seeds[ranges[index][2]] = name
+    return reconcile_analysis.translation_unit_spans(seeds), reconcile_analysis.SOURCE_PHASES
+
+
+def validate_translation_unit_spans(functions, spans, source_phases,
+                                    without_span=TRANSLATION_UNIT_WITHOUT_SPAN):
+    """A row's translation-unit claim must be the span its entry sits in.
+
+    `translation_unit` says the entry is inside a named unit's span and takes that
+    unit's phase; `enclosed_by_one_phase` says it sits between two spans one phase
+    owns. Both were free text: rows claimed a unit no span encloses, and a row
+    inside ContactConvexHeightfield.cpp could be moved to Phase 5 with nothing
+    objecting. And an entry inside a span may be placed by nothing weaker than the
+    span, because a unit that names an entry outranks every propagation rule.
+    """
+    lows = [low for low, _, _ in spans]
+
+    def enclosing(address):
+        index = bisect_right(lows, address) - 1
+        if index >= 0 and spans[index][0] <= address <= spans[index][1]:
+            return spans[index][2]
+        return None
+
+    def neighbours(address):
+        index = bisect_right(lows, address) - 1
+        return (spans[index] if index >= 0 else None,
+                spans[index + 1] if index + 1 < len(spans) else None)
+
+    errors, gaps = [], set()
+    for row in functions:
+        entry, why, where = _entry_rva(row), row["phase_provenance"], f"function {row['id']!r}"
+        unit = enclosing(entry)
+        if why == "translation_unit":
+            if row.get("third_party"):
+                continue
+            if unit is None or source_phases[unit] != row["phase"]:
+                if row["id"] in without_span:
+                    gaps.add(row["id"])
+                    continue
+                errors.append(f"{where} claims translation_unit at phase {row['phase']}, but its "
+                              f"entry 0x{entry:08x} is "
+                              + (f"inside {unit}, a phase {source_phases[unit]} unit" if unit else
+                                 "inside no __FILE__ span"))
+        elif why == "enclosed_by_one_phase":
+            below, above = neighbours(entry)
+            if unit is not None or not (below and above and source_phases[below[2]]
+                                        == source_phases[above[2]] == row["phase"]):
+                errors.append(f"{where} claims enclosed_by_one_phase at phase {row['phase']}, but "
+                              f"its entry 0x{entry:08x} is "
+                              + (f"inside {unit}" if unit else
+                                 f"between {below and below[2]} and {above and above[2]}"))
+        elif unit is not None and why not in SPAN_INDEPENDENT_PROVENANCE:
+            errors.append(f"{where} sits inside {unit}, a phase {source_phases[unit]} unit, but is "
+                          f"placed by {why!r} at phase {row['phase']}")
+    for identifier in sorted(set(without_span) - gaps):
+        errors.append(f"{identifier!r} is recorded as claiming translation_unit without a span, "
+                      f"and no longer does; strike it from TRANSLATION_UNIT_WITHOUT_SPAN")
+    return errors
+
+
 def read_differential_exclusions(path):
     """The line prefixes run_differential.ps1 drops before it compares.
 
@@ -2242,6 +2643,44 @@ def main():
         errors += _check_source_paths(data['functions'], path.parent)
         errors += _check_implementation_paths(data['functions'], path.parent)
         errors += _check_implementation_contains_row(data['functions'], repo_root)
+
+    # The shape ruling is recomputed wherever it sits beside an inventory, and its
+    # absence is an error for the committed census: without it, the rows it places
+    # would be back to claiming whatever they were last written as.
+    committed = path.resolve() == (repo_root / 'docs' / 'reconstruction' / 'novodex-physics'
+                                   / 'inventory.json').resolve()
+    ruling_path = path.parent / SHAPE_RULING_NAME
+    if ruling_path.is_file():
+        try:
+            ruling = json.loads(ruling_path.read_text(encoding="utf-8"))
+            pe_oracle = json.loads((path.parent / "oracle" / "pe.json").read_text(encoding="utf-8"))
+            corpus = json.loads((path.parent / "oracle" / "capstone" / "manifest.json")
+                                .read_text(encoding="utf-8"))
+        except (OSError, ValueError) as error:
+            parser.exit(2, f"error: {error}\n")
+        pointers = {slot["rva"]: slot["target_rva"] for slot in pe_oracle["pointers"]
+                    if slot["relocated"] and slot["target_rva"] is not None}
+        errors += validate_shape_ruling(
+            data, ruling, pointers, {int(entry["rva"], 16): entry for entry in corpus["instructions"]},
+            corpus["tail_calls"], pe_oracle["image"]["image_base"])
+    else:
+        errors += [f"function {row['id']!r} claims {SLOT_RULING!r}, but there is no "
+                   f"{SHAPE_RULING_NAME} beside the inventory to recompute it from"
+                   for row in data["functions"] if row["phase_provenance"] == SLOT_RULING]
+        if committed:
+            errors.append(f"the committed census has no {SHAPE_RULING_NAME}")
+    # The span half reads the Ghidra manifest's __FILE__ strings and references. It is
+    # scoped to the committed census like the path checks above: a fixture has no
+    # oracle beside it, and its spans would be the fixture's own.
+    if committed:
+        try:
+            ghidra = json.loads((path.parent / "oracle" / "ghidra" / "manifest.json")
+                                .read_text(encoding="utf-8"))
+        except (OSError, ValueError) as error:
+            parser.exit(2, f"error: {error}\n")
+        spans, source_phases = translation_unit_spans_of(data["functions"], ghidra["strings"],
+                                                         ghidra["references"])
+        errors += validate_translation_unit_spans(data["functions"], spans, source_phases)
     errors += validate_program(data, program, ledgers, path.parent)
     errors += validate_discharge_passed(ledgers, program)
     errors += _check_data_vocabulary(data['data_objects'])

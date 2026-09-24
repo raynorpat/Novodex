@@ -473,6 +473,14 @@ which one that was:
   No entry above it carries a product source at all, and 318 of the 319 Function
   ID-named runtime functions live there: that region is the statically linked
   runtime, not unplaced product code.
+- `slot_ruling` — named by `shape_slot_ruling.json`, the shape-class vtable
+  ruling: a slot the collision pipeline dispatches through is Phase 3's, every
+  other slot of the shape classes is Phase 5's, and the file says which rows
+  follow which slot, with the call site that establishes each collision slot.
+  It outranks a span because the shape classes' own units are split by slot
+  rather than owned whole, and it seeds the caller layer. Unlike the
+  propagation rules it is recomputed: `validate_inventory.py` checks the file
+  against the oracle and every ruled row against the file.
 - `translation_unit` — inside the address span of a named translation unit.
 - `enclosed_by_one_phase` — between two spans one phase owns, so the unnamed
   translation units between them are bracketed by that phase.
@@ -487,9 +495,9 @@ override what the layers decided:
 
 - `shared_by_callers` — no translation unit of its own and reached from callers
   that several phases own, which is what shared runtime means. It runs after all
-  six layers and **overrides `callers` and `layout_adjacency`**, neither of which
+  seven layers and **overrides `callers` and `layout_adjacency`**, neither of which
   is translation-unit evidence. It does **not** override `translation_unit`,
-  `enclosed_by_one_phase`, `runtime_tail` or `runtime_artifact`: an entry a span
+  `enclosed_by_one_phase`, `slot_ruling`, `runtime_tail` or `runtime_artifact`: an entry a span
   names, or that two spans of one phase bracket, is physically inside that
   translation unit, and the phase that owns the unit reconstructs it along with
   the rest of it. Being called from several subsystems is ordinary C++, not
@@ -523,7 +531,7 @@ The graph also carries an edge from each dispatch table's installer to every
 method it holds, without which those methods look unreachable.
 
 Every row carries `phase_provenance`, so a worker holding one row can tell
-evidence from propagation without re-deriving the assignment. Beside the eight
+evidence from propagation without re-deriving the assignment. Beside the nine
 rules above it takes three values for rows no layer reaches: `padding` for an
 alignment run, `pe_structure` for the PE structures pinned to shared runtime, and
 `reading_sites` for a data object phased from the code that reads it.

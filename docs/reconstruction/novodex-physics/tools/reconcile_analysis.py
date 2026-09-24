@@ -126,14 +126,14 @@ SOURCE_MARK = "SDKs" + chr(92) + "Physics" + chr(92) + "src" + chr(92)
 # Owner classes for the non-executable image, highest precedence first. Every
 # byte a reference names has to land in one of them.
 # How a row's phase was decided, published on the row so a phase worker can
-# tell evidence from propagation without re-deriving the assignment. The eight
+# tell evidence from propagation without re-deriving the assignment. The nine
 # names `assign_phases` records, plus the three decisions taken over rows no
 # layer reaches: padding, the PE structures pinned to shared runtime, and a data
 # object phased from the code that reads it.
 PHASE_PROVENANCE = ("runtime_artifact", "runtime_tail", "translation_unit",
                     "enclosed_by_one_phase", "callers", "layout_adjacency",
                     "shared_by_callers", "export_pin",
-                    "padding", "pe_structure", "reading_sites")
+                    "padding", "pe_structure", "reading_sites", "slot_ruling")
 
 # The field order every data row is written in.
 DATA_ROW_KEYS = ("id", "rva", "size", "type", "owner", "references", "section",
@@ -576,7 +576,8 @@ def translation_unit_spans(files):
     return spans
 
 
-def assign_phases(nodes, edges, files, artifacts, pinned_exports, runtime_floor):
+def assign_phases(nodes, edges, files, artifacts, pinned_exports, runtime_floor,
+                  ruling=None):
     """Phase every entry from the strongest evidence that reaches it.
 
     In this order, and every entry records the rule that placed it:
@@ -585,6 +586,12 @@ def assign_phases(nodes, edges, files, artifacts, pinned_exports, runtime_floor)
     `runtime_tail`          above the last entry carrying a translation unit,
                             where the statically linked runtime lives and the
                             image holds no product evidence at all.
+    `slot_ruling`           the shape-class vtable ruling names it: `ruling`
+                            maps its address to the phase shape_slot_ruling.json
+                            gives it. It outranks a span on purpose, because
+                            the shape classes' units are split by slot rather
+                            than owned whole, and it seeds the caller layer so
+                            a helper only ruled rows call follows them.
     `translation_unit`      inside the address span of a named translation unit.
     `enclosed_by_one_phase` between two spans one phase owns, so the unnamed
                             translation units between them are bracketed by it.
@@ -600,8 +607,9 @@ def assign_phases(nodes, edges, files, artifacts, pinned_exports, runtime_floor)
                             callers several phases own: shared runtime. It
                             overrides `callers` and `layout_adjacency`, neither
                             of which is translation-unit evidence, and it does
-                            not override `translation_unit` or
-                            `enclosed_by_one_phase`. An entry a span names, or
+                            not override `translation_unit`,
+                            `enclosed_by_one_phase` or `slot_ruling` -- a ruled
+                            row is placed by name. An entry a span names, or
                             that two spans of one phase bracket, is physically
                             inside that unit: the phase owning the unit
                             reconstructs it along with everything else in it,
@@ -646,6 +654,9 @@ def assign_phases(nodes, edges, files, artifacts, pinned_exports, runtime_floor)
         if node > runtime_floor:
             place(node, ARTIFACT_PHASE, "runtime_tail")
             continue
+        if ruling and node in ruling:
+            place(node, ruling[node], "slot_ruling")
+            continue
         unit = enclosing(node)
         if unit:
             place(node, SOURCE_PHASES[unit], "translation_unit")
@@ -684,7 +695,7 @@ def assign_phases(nodes, edges, files, artifacts, pinned_exports, runtime_floor)
     settled = dict(phase)
     for node in sorted(nodes):
         if provenance[node] in ("translation_unit", "enclosed_by_one_phase",
-                                "runtime_tail", "runtime_artifact"):
+                                "runtime_tail", "runtime_artifact", "slot_ruling"):
             continue
         reaching = {settled[caller] for caller in callers.get(node, ())
                     if caller in settled} - {ARTIFACT_PHASE}
@@ -969,8 +980,12 @@ def oracle_independence(ghidra, capstone, extent):
     }
 
 
-def reconcile(pe, ghidra, capstone, inventory):
-    """Return the inventory, ledger, coverage reports and dependency graph."""
+def reconcile(pe, ghidra, capstone, inventory, ruling=None):
+    """Return the inventory, ledger, coverage reports and dependency graph.
+
+    `ruling` is shape_slot_ruling.json, read through the same resolver the
+    validator uses, so the rows it places are placed identically by both.
+    """
     for kind, document in (("pe", pe), ("ghidra", ghidra), ("capstone", capstone)):
         check_schema(kind, document)
     check_images(pe, capstone, inventory)
@@ -1149,8 +1164,17 @@ def reconcile(pe, ghidra, capstone, inventory):
     # product evidence at all, and all but one Function ID-named runtime
     # function lives there: that region is the statically linked runtime.
     runtime_floor = max(files, default=0)
+    ruled = None
+    if ruling is not None:
+        pointers = {slot["rva"]: slot["target_rva"] for slot in pe["pointers"]
+                    if slot["relocated"] and slot["target_rva"] is not None}
+        resolved, _, problems = validate_inventory.resolve_shape_ruling(ruling, pointers)
+        if problems:
+            raise ValueError(f"the shape ruling does not resolve against the PE oracle: "
+                             f"{problems[0]}")
+        ruled = {address: phase for address, phase in resolved.items() if phase is not None}
     phases, provenance = assign_phases(nodes, edges, files, artifacts,
-                                       pinned_exports, runtime_floor)
+                                       pinned_exports, runtime_floor, ruled)
     for node, why in provenance.items():
         if why == "runtime_tail":
             artifacts[node] = ("no product translation unit reaches these bytes "
@@ -1585,16 +1609,22 @@ def main():
     parser.add_argument("--capstone", required=True, help="Capstone corpus manifest")
     parser.add_argument("--inventory", required=True, help="census inventory to rewrite")
     parser.add_argument("--labels", required=True, help="label ledger to rewrite")
+    parser.add_argument("--ruling", help="shape-class vtable ruling; defaults to the "
+                                         "shape_slot_ruling.json beside the inventory, if any")
     args = parser.parse_args()
 
     inventory_path = Path(args.inventory)
+    ruling_path = (Path(args.ruling) if args.ruling else
+                   inventory_path.parent / validate_inventory.SHAPE_RULING_NAME)
     try:
         inventory = json.loads(inventory_path.read_text(encoding="utf-8"))
+        ruling = (json.loads(ruling_path.read_text(encoding="utf-8"))
+                  if args.ruling or ruling_path.is_file() else None)
         result = reconcile(
             json.loads(Path(args.pe).read_text(encoding="utf-8")),
             json.loads(Path(args.ghidra).read_text(encoding="utf-8")),
             json.loads(Path(args.capstone).read_text(encoding="utf-8")),
-            inventory)
+            inventory, ruling)
         census = result["inventory"]["coverage"]["census"]
         reports = inventory_path.parent
         (reports / census["code_report"]).parent.mkdir(parents=True, exist_ok=True)

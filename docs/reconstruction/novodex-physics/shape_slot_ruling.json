@@ -1,0 +1,1123 @@
+{
+  "schema_version": 1,
+  "oracle_sha256": "4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c",
+  "rule": "Rule by vtable slot. The shape classes are ShapeBase (phys_fn_001273) and the six classes whose constructors call it; the tables below are the eight vtables those seven constructors store, each with the store that establishes it. A slot is a collision slot when the collision pipeline dispatches through it: a virtual call through that slot on a receiver of the table's class, from a row the pipeline reaches -- the 39 matrix slots phys_fn_002338 fills, the rows they call and the callbacks they pass -- or from the Prunable owner adapter the pipeline reaches through phys_fn_004886. Every other slot is an object-model slot. The slot's name decides nothing; the sites in slot_evidence do. A slot target takes the phase of its slot, collision 3 and object model 5, and a row several slots name must get one phase from all of them or be listed as an exception. A row that stores a shape table -- a constructor or a destructor -- is object model. The two Prunable owner adapters take the phase of the one slot their body calls. A helper, a row whose every direct caller is a ruled row and which has no translation unit, export pin or table of its own, takes the one phase its callers are ruled to. A body the linker folded and shared outside the shape classes is shared runtime, Phase 2; a body another translation unit owns is left to it. Every ruled row, and every continuation row of one, records phase_provenance slot_ruling, and validate_inventory.py recomputes the phase from this file. A direct call from the collision pipeline into an object-model row does not move it: phys_fn_001874, the [MESH][MESH] vertex callback phys_fn_001876 passes at 0x00046d15, builds two temporary SphereShapes through phys_fn_001349, phys_fn_001357 and phys_fn_001351 as a client of the object model.",
+  "phase_of": {
+    "collision": 3,
+    "object_model": 5
+  },
+  "tables": [
+    {
+      "class": "BASE",
+      "rva": "0x00107494",
+      "constructor": "phys_fn_001273",
+      "vptr_store": "0x0002553d",
+      "slots": [
+        "object_model",
+        "object_model",
+        "object_model",
+        "object_model",
+        "object_model",
+        "collision",
+        "object_model",
+        "collision",
+        "purecall",
+        "purecall",
+        "purecall",
+        "purecall"
+      ]
+    },
+    {
+      "class": "BOX",
+      "rva": "0x00106ab8",
+      "constructor": "phys_fn_000977",
+      "vptr_store": "0x0002188f",
+      "slots": [
+        "object_model",
+        "object_model",
+        "object_model",
+        "object_model",
+        "object_model",
+        "collision",
+        "object_model",
+        "collision",
+        "object_model",
+        "collision",
+        "object_model",
+        "object_model",
+        "object_model",
+        "object_model",
+        "object_model",
+        "object_model",
+        "object_model"
+      ]
+    },
+    {
+      "class": "BOX_HULL",
+      "rva": "0x00106a88",
+      "constructor": "phys_fn_000977",
+      "vptr_store": "0x00021895",
+      "slots": [
+        "collision",
+        "object_model",
+        "collision",
+        "collision",
+        "collision",
+        "object_model",
+        "object_model",
+        "object_model",
+        "object_model",
+        "collision",
+        "collision",
+        "collision"
+      ]
+    },
+    {
+      "class": "CAPSULE",
+      "rva": "0x00106b20",
+      "constructor": "phys_fn_000987",
+      "vptr_store": "0x00021a74",
+      "slots": [
+        "object_model",
+        "object_model",
+        "object_model",
+        "object_model",
+        "object_model",
+        "collision",
+        "object_model",
+        "collision",
+        "object_model",
+        "collision",
+        "object_model",
+        "object_model",
+        "object_model",
+        "object_model",
+        "object_model",
+        "object_model",
+        "object_model",
+        "object_model",
+        "object_model"
+      ]
+    },
+    {
+      "class": "COMPOUND",
+      "rva": "0x00106c2c",
+      "constructor": "phys_fn_001033",
+      "vptr_store": "0x00022d76",
+      "slots": [
+        "object_model",
+        "object_model",
+        "object_model",
+        "object_model",
+        "object_model",
+        "collision",
+        "object_model",
+        "collision",
+        "object_model",
+        "collision",
+        "object_model",
+        "object_model",
+        "object_model",
+        "object_model",
+        "object_model"
+      ]
+    },
+    {
+      "class": "PLANE",
+      "rva": "0x00107430",
+      "constructor": "phys_fn_001247",
+      "vptr_store": "0x00024ee4",
+      "slots": [
+        "object_model",
+        "object_model",
+        "object_model",
+        "object_model",
+        "object_model",
+        "collision",
+        "object_model",
+        "collision",
+        "object_model",
+        "collision",
+        "object_model",
+        "object_model",
+        "object_model",
+        "object_model",
+        "object_model",
+        "object_model",
+        "object_model"
+      ]
+    },
+    {
+      "class": "SPHERE",
+      "rva": "0x00107528",
+      "constructor": "phys_fn_001349",
+      "vptr_store": "0x000277d4",
+      "slots": [
+        "object_model",
+        "object_model",
+        "object_model",
+        "object_model",
+        "object_model",
+        "collision",
+        "object_model",
+        "collision",
+        "object_model",
+        "collision",
+        "object_model",
+        "object_model",
+        "object_model",
+        "object_model",
+        "object_model",
+        "object_model",
+        "object_model",
+        "object_model",
+        "object_model"
+      ]
+    },
+    {
+      "class": "MESH",
+      "rva": "0x00107630",
+      "constructor": "phys_fn_001379",
+      "vptr_store": "0x00027dc4",
+      "slots": [
+        "object_model",
+        "object_model",
+        "object_model",
+        "object_model",
+        "object_model",
+        "collision",
+        "object_model",
+        "collision",
+        "object_model",
+        "collision",
+        "object_model",
+        "object_model",
+        "object_model",
+        "object_model",
+        "collision",
+        "object_model",
+        "object_model",
+        "object_model"
+      ]
+    }
+  ],
+  "slot_evidence": [
+    {
+      "ruling": "collision",
+      "slot": 5,
+      "classes": [
+        "BASE",
+        "BOX",
+        "CAPSULE",
+        "COMPOUND",
+        "PLANE",
+        "SPHERE",
+        "MESH"
+      ],
+      "sites": [
+        {
+          "site": "0x0003b3da",
+          "row": "phys_fn_001753",
+          "note": "matrix A [BOX][CAPSULE] calls shape0 slot 5"
+        },
+        {
+          "site": "0x0003dbf9",
+          "row": "phys_fn_001775",
+          "note": "matrix A [CAPSULE][CAPSULE] calls slot 5 on one of the pair it spilled at 0x0003db00/0x0003db0b"
+        },
+        {
+          "site": "0x0003e6c8",
+          "row": "phys_fn_001779",
+          "note": "matrix A [CAPSULE][MESH] calls shape1 slot 5"
+        },
+        {
+          "site": "0x000484e6",
+          "row": "phys_fn_001891",
+          "note": "matrix A [PLANE][CAPSULE] calls shape0 slot 5"
+        },
+        {
+          "site": "0x0004a624",
+          "row": "phys_fn_001923",
+          "note": "matrix A [SPHERE][CAPSULE] calls shape0 slot 5"
+        },
+        {
+          "site": "0x00056485",
+          "row": "phys_fn_002264",
+          "note": "the continuous-collision body calls the static shape slot 5 (ecx=esi, set up by phys_fn_002266, which seven matrix A entries call)"
+        }
+      ],
+      "note": "raycast: the narrow phase dispatches it"
+    },
+    {
+      "ruling": "collision",
+      "slot": 7,
+      "classes": [
+        "BASE",
+        "BOX",
+        "CAPSULE",
+        "COMPOUND",
+        "PLANE",
+        "SPHERE",
+        "MESH"
+      ],
+      "sites": [
+        {
+          "site": "0x000562c3",
+          "row": "phys_fn_002264",
+          "note": "continuous collision calls the moving shape slot 7 (eax=[edi], ecx=edi)"
+        },
+        {
+          "site": "0x000564b9",
+          "row": "phys_fn_002264",
+          "note": "second sweep call on the same shape"
+        }
+      ],
+      "note": "sweep: phys_fn_002264 is reached only through phys_fn_002266, which matrix A entries phys_fn_001749, 001772, 001820, 001851, 001919, 001929 and 001933 call"
+    },
+    {
+      "ruling": "collision",
+      "slot": 9,
+      "classes": [
+        "BOX",
+        "CAPSULE",
+        "COMPOUND",
+        "PLANE",
+        "SPHERE",
+        "MESH"
+      ],
+      "sites": [
+        {
+          "site": "0x0002551b",
+          "row": "phys_fn_001269",
+          "note": "the Prunable owner adapter ShapeBase::ShapeBase installs at 0x0002562b as [0x10128478]"
+        }
+      ],
+      "note": "world AABB: phys_fn_004886 (Prunable::updateWorldBox) calls [0x10128478] at 0x000b55c5, and the collision pipeline calls phys_fn_004886 from matrix B entries (0x0003f44d in phys_fn_001785, 0x0003f5a0 in phys_fn_001787, 0x0003f5eb in phys_fn_001789, 0x0003f753 in phys_fn_001791), the compound contact rows (phys_fn_001793, 001799, 001801), the hull kernel phys_fn_001818 and phys_fn_001847"
+    },
+    {
+      "ruling": "collision",
+      "slot": 14,
+      "classes": [
+        "MESH"
+      ],
+      "sites": [
+        {
+          "site": "0x00047dea",
+          "row": "phys_fn_001878",
+          "note": "matrix A [MESH][MESH] helper, reached from phys_fn_001876 through phys_fn_001880 at 0x00047e6f, on shape2 (pose read at +0x0c..+0x38, TriangleMesh at +0xe0)"
+        },
+        {
+          "site": "0x00047df8",
+          "row": "phys_fn_001878",
+          "note": "the same on shape0"
+        }
+      ],
+      "note": "MESH slot 14 resolves to phys_fn_001391, the folded identity body, which is ruled shared below"
+    },
+    {
+      "ruling": "collision",
+      "slot": 0,
+      "classes": [
+        "BOX_HULL"
+      ],
+      "sites": [
+        {
+          "site": "0x00040be6",
+          "row": "phys_fn_001818",
+          "note": "hull kernel, param 3 = BoxShape+0xe0 (0x0003bfeb in phys_fn_001758, which matrix A [BOX][MESH] phys_fn_001772 calls)"
+        },
+        {
+          "site": "0x00040605",
+          "row": "phys_fn_001816",
+          "note": "SAT query on the same hull, passed as its sixth argument at 0x00040e5d"
+        }
+      ],
+      "note": "box hull facade: lazy shared-hook accessor"
+    },
+    {
+      "ruling": "collision",
+      "slot": 2,
+      "classes": [
+        "BOX_HULL"
+      ],
+      "sites": [
+        {
+          "site": "0x0004040a",
+          "row": "phys_fn_001812",
+          "note": "vertex array of the hull phys_fn_001816 passes at 0x000409b5"
+        }
+      ],
+      "note": "box hull facade: vertex array"
+    },
+    {
+      "ruling": "collision",
+      "slot": 3,
+      "classes": [
+        "BOX_HULL"
+      ],
+      "sites": [
+        {
+          "site": "0x000406b8",
+          "row": "phys_fn_001816",
+          "note": "face count, sized into an alloca at 0x000406c4"
+        }
+      ],
+      "note": "box hull facade: face count"
+    },
+    {
+      "ruling": "collision",
+      "slot": 4,
+      "classes": [
+        "BOX_HULL"
+      ],
+      "sites": [
+        {
+          "site": "0x000407d0",
+          "row": "phys_fn_001816",
+          "note": "face record k"
+        },
+        {
+          "site": "0x0004042d",
+          "row": "phys_fn_001812",
+          "note": "face record k"
+        }
+      ],
+      "note": "box hull facade: face record"
+    },
+    {
+      "ruling": "collision",
+      "slot": 9,
+      "classes": [
+        "BOX_HULL"
+      ],
+      "sites": [
+        {
+          "site": "0x00040edd",
+          "row": "phys_fn_001818",
+          "note": "hull algorithm on param 3"
+        }
+      ],
+      "note": "box hull facade: projection"
+    },
+    {
+      "ruling": "collision",
+      "slot": 10,
+      "classes": [
+        "BOX_HULL"
+      ],
+      "sites": [
+        {
+          "site": "0x00040f00",
+          "row": "phys_fn_001818",
+          "note": "hull algorithm on param 3"
+        }
+      ],
+      "note": "box hull facade: projection with a matrix"
+    },
+    {
+      "ruling": "collision",
+      "slot": 11,
+      "classes": [
+        "BOX_HULL"
+      ],
+      "sites": [
+        {
+          "site": "0x00040ce4",
+          "row": "phys_fn_001818",
+          "note": "support mapping on param 3"
+        }
+      ],
+      "note": "box hull facade: support mapping"
+    },
+    {
+      "ruling": "object_model",
+      "slot": 0,
+      "classes": [
+        "BASE",
+        "BOX",
+        "CAPSULE",
+        "COMPOUND",
+        "PLANE",
+        "SPHERE",
+        "MESH"
+      ],
+      "sites": [
+        {
+          "site": "0x00001e7e",
+          "row": "phys_fn_000032",
+          "note": "the actor shape factory deletes a plane whose descriptor load failed"
+        },
+        {
+          "site": "0x00001fa0",
+          "row": "phys_fn_000032",
+          "note": "the same for a mesh"
+        }
+      ],
+      "note": "scalar deleting destructor"
+    },
+    {
+      "ruling": "object_model",
+      "slot": 1,
+      "classes": [
+        "BASE",
+        "BOX",
+        "CAPSULE",
+        "COMPOUND",
+        "PLANE",
+        "SPHERE",
+        "MESH"
+      ],
+      "sites": [
+        {
+          "site": "0x0005b866",
+          "row": "phys_fn_002379",
+          "note": "the stdcall slot-1 forwarder"
+        }
+      ],
+      "note": "apply from descriptor"
+    },
+    {
+      "ruling": "object_model",
+      "slot": 2,
+      "classes": [
+        "BASE",
+        "BOX",
+        "CAPSULE",
+        "COMPOUND",
+        "PLANE",
+        "SPHERE",
+        "MESH"
+      ],
+      "sites": [],
+      "note": "save to descriptor: no virtual call through it; every per-type slot 13 reaches phys_fn_001277 by direct tail call"
+    },
+    {
+      "ruling": "object_model",
+      "slot": 3,
+      "classes": [
+        "BASE",
+        "BOX",
+        "CAPSULE",
+        "COMPOUND",
+        "PLANE",
+        "SPHERE",
+        "MESH"
+      ],
+      "sites": [
+        {
+          "site": "0x00022998",
+          "row": "phys_fn_001022",
+          "note": "the compound draws each child"
+        }
+      ],
+      "note": "debug visualisation"
+    },
+    {
+      "ruling": "object_model",
+      "slot": 4,
+      "classes": [
+        "BASE",
+        "BOX",
+        "CAPSULE",
+        "COMPOUND",
+        "PLANE",
+        "SPHERE",
+        "MESH"
+      ],
+      "sites": [
+        {
+          "site": "0x000010e0",
+          "row": "phys_fn_000008",
+          "note": "actor mass update on its compound at actor+0x10, which phys_fn_000036 stores at 0x00002396"
+        },
+        {
+          "site": "0x000229ea",
+          "row": "phys_fn_001024",
+          "note": "the compound sums its children"
+        }
+      ],
+      "note": "mass: the actor consumes it and the collision pipeline never does"
+    },
+    {
+      "ruling": "object_model",
+      "slot": 6,
+      "classes": [
+        "BASE",
+        "BOX",
+        "CAPSULE",
+        "COMPOUND",
+        "PLANE",
+        "SPHERE",
+        "MESH"
+      ],
+      "sites": [
+        {
+          "site": "0x000022cc",
+          "row": "phys_fn_000036",
+          "note": "actor attaches a new shape"
+        },
+        {
+          "site": "0x00021bf4",
+          "row": "phys_fn_000995",
+          "note": "capsule setRadius tail-calls it"
+        },
+        {
+          "site": "0x00027909",
+          "row": "phys_fn_001357",
+          "note": "sphere setRadius calls it"
+        }
+      ],
+      "note": "owner update"
+    },
+    {
+      "ruling": "object_model",
+      "slot": 8,
+      "classes": [
+        "BOX",
+        "CAPSULE",
+        "COMPOUND",
+        "PLANE",
+        "SPHERE",
+        "MESH"
+      ],
+      "sites": [],
+      "note": "local bounds: no virtual call through slot 8 on a shape receiver was found anywhere in the image"
+    },
+    {
+      "ruling": "object_model",
+      "slot": 10,
+      "classes": [
+        "BOX",
+        "CAPSULE",
+        "COMPOUND",
+        "PLANE",
+        "SPHERE",
+        "MESH"
+      ],
+      "sites": [
+        {
+          "site": "0x0002552b",
+          "row": "phys_fn_001271",
+          "note": "the second Prunable owner adapter, installed at 0x00025635 as [0x10128474]; its reader phys_fn_004872 is reached only through [0x10128500], which only the Phase 4 AABB-tree rows phys_fn_005317/005318 read"
+        },
+        {
+          "site": "0x00025ab5",
+          "row": "phys_fn_001305",
+          "note": "debug visualisation"
+        }
+      ],
+      "note": "world bounding sphere: no collision-pipeline row reaches it"
+    },
+    {
+      "ruling": "object_model",
+      "slot": 11,
+      "classes": [
+        "BOX",
+        "CAPSULE",
+        "COMPOUND",
+        "PLANE",
+        "SPHERE",
+        "MESH"
+      ],
+      "sites": [
+        {
+          "site": "0x00022864",
+          "row": "phys_fn_001020",
+          "note": "the compound folds its children"
+        }
+      ],
+      "note": "local bounding sphere"
+    },
+    {
+      "ruling": "object_model",
+      "slot": 12,
+      "classes": [
+        "BOX",
+        "CAPSULE",
+        "PLANE",
+        "SPHERE",
+        "MESH"
+      ],
+      "sites": [
+        {
+          "site": "0x00001e63",
+          "row": "phys_fn_000032",
+          "note": "factory loads a new plane"
+        },
+        {
+          "site": "0x00001efd",
+          "row": "phys_fn_000032",
+          "note": "a capsule"
+        },
+        {
+          "site": "0x00001f69",
+          "row": "phys_fn_000032",
+          "note": "a mesh"
+        }
+      ],
+      "note": "load from descriptor"
+    },
+    {
+      "ruling": "object_model",
+      "slot": 13,
+      "classes": [
+        "BOX",
+        "CAPSULE",
+        "PLANE",
+        "SPHERE",
+        "MESH"
+      ],
+      "sites": [
+        {
+          "site": "0x000234a8",
+          "row": "phys_fn_001067",
+          "note": "NpBoxShape::saveToDesc through [this+0x18]"
+        },
+        {
+          "site": "0x00023b18",
+          "row": "phys_fn_001111",
+          "note": "NpCapsuleShape"
+        },
+        {
+          "site": "0x000241d8",
+          "row": "phys_fn_001155",
+          "note": "NpPlaneShape"
+        },
+        {
+          "site": "0x00024748",
+          "row": "phys_fn_001189",
+          "note": "NpSphereShape"
+        },
+        {
+          "site": "0x00024e28",
+          "row": "phys_fn_001239",
+          "note": "NpTriangleMeshShape"
+        }
+      ],
+      "note": "save to descriptor"
+    },
+    {
+      "ruling": "object_model",
+      "slot": 14,
+      "classes": [
+        "CAPSULE",
+        "SPHERE"
+      ],
+      "sites": [
+        {
+          "site": "0x00023bd5",
+          "row": "phys_fn_001115",
+          "note": "NpCapsuleShape::setRadius through [this+0x18]"
+        },
+        {
+          "site": "0x000247a5",
+          "row": "phys_fn_001191",
+          "note": "NpSphereShape::setRadius"
+        }
+      ],
+      "note": "setRadius"
+    },
+    {
+      "ruling": "object_model",
+      "slot": 15,
+      "classes": [
+        "CAPSULE",
+        "SPHERE"
+      ],
+      "sites": [
+        {
+          "site": "0x00023c64",
+          "row": "phys_fn_001119",
+          "note": "NpCapsuleShape::getRadius through [this+0x18]"
+        }
+      ],
+      "note": "getRadius"
+    },
+    {
+      "ruling": "object_model",
+      "slot": 17,
+      "classes": [
+        "MESH"
+      ],
+      "sites": [
+        {
+          "site": "0x00024dc3",
+          "row": "phys_fn_001237",
+          "note": "NpTriangleMeshShape through [this+0x18]"
+        }
+      ],
+      "note": "mesh accessor"
+    },
+    {
+      "ruling": "object_model",
+      "slot": 1,
+      "classes": [
+        "BOX_HULL"
+      ],
+      "sites": [
+        {
+          "site": "0x0002173c",
+          "row": "phys_fn_000973",
+          "note": "the box face-record builder"
+        }
+      ],
+      "note": "box hull facade: corner count, consumed only by the box itself"
+    }
+  ],
+  "members": [
+    {
+      "id": "phys_fn_000827",
+      "rva": "0x0001bcc0",
+      "basis": "helper",
+      "ruling": "object_model",
+      "callers": [
+        {
+          "site": "0x00028e3d",
+          "row": "phys_fn_001397"
+        }
+      ]
+    },
+    {
+      "id": "phys_fn_000829",
+      "rva": "0x0001bd00",
+      "basis": "helper",
+      "ruling": "object_model",
+      "callers": [
+        {
+          "site": "0x0001c8d0",
+          "row": "phys_fn_000849"
+        }
+      ]
+    },
+    {
+      "id": "phys_fn_000831",
+      "rva": "0x0001bdc0",
+      "basis": "helper",
+      "ruling": "object_model",
+      "callers": [
+        {
+          "site": "0x0001c5a9",
+          "row": "phys_fn_000835"
+        },
+        {
+          "site": "0x0001c7a9",
+          "row": "phys_fn_000843"
+        },
+        {
+          "site": "0x0001c8de",
+          "row": "phys_fn_000849"
+        },
+        {
+          "site": "0x0001c9ac",
+          "row": "phys_fn_000853"
+        }
+      ]
+    },
+    {
+      "id": "phys_fn_000835",
+      "rva": "0x0001c5a0",
+      "basis": "helper",
+      "ruling": "object_model",
+      "callers": [
+        {
+          "site": "0x00028e4a",
+          "row": "phys_fn_001397"
+        }
+      ]
+    },
+    {
+      "id": "phys_fn_000837",
+      "rva": "0x0001c5c0",
+      "basis": "helper",
+      "ruling": "object_model",
+      "callers": [
+        {
+          "site": "0x0001c90c",
+          "row": "phys_fn_000849"
+        },
+        {
+          "site": "0x0001c965",
+          "row": "phys_fn_000851"
+        },
+        {
+          "site": "0x0001c9da",
+          "row": "phys_fn_000853"
+        }
+      ]
+    },
+    {
+      "id": "phys_fn_000839",
+      "rva": "0x0001c630",
+      "basis": "helper",
+      "ruling": "object_model",
+      "callers": [
+        {
+          "site": "0x0001c918",
+          "row": "phys_fn_000849"
+        },
+        {
+          "site": "0x0001c971",
+          "row": "phys_fn_000851"
+        },
+        {
+          "site": "0x0001c9e6",
+          "row": "phys_fn_000853"
+        },
+        {
+          "site": "0x00028e58",
+          "row": "phys_fn_001397"
+        }
+      ]
+    },
+    {
+      "id": "phys_fn_000843",
+      "rva": "0x0001c750",
+      "basis": "helper",
+      "ruling": "object_model",
+      "callers": [
+        {
+          "site": "0x0001c944",
+          "row": "phys_fn_000851"
+        }
+      ]
+    },
+    {
+      "id": "phys_fn_000845",
+      "rva": "0x0001c7c0",
+      "basis": "helper",
+      "ruling": "object_model",
+      "callers": [
+        {
+          "site": "0x0001c99a",
+          "row": "phys_fn_000853"
+        }
+      ]
+    },
+    {
+      "id": "phys_fn_000849",
+      "rva": "0x0001c8c0",
+      "basis": "helper",
+      "ruling": "object_model",
+      "callers": [
+        {
+          "site": "0x0002086d",
+          "row": "phys_fn_000947"
+        }
+      ]
+    },
+    {
+      "id": "phys_fn_000851",
+      "rva": "0x0001c930",
+      "basis": "helper",
+      "ruling": "object_model",
+      "callers": [
+        {
+          "site": "0x00027bfd",
+          "row": "phys_fn_001371"
+        }
+      ]
+    },
+    {
+      "id": "phys_fn_000853",
+      "rva": "0x0001c980",
+      "basis": "helper",
+      "ruling": "object_model",
+      "callers": [
+        {
+          "site": "0x0002246f",
+          "row": "phys_fn_001008"
+        }
+      ]
+    },
+    {
+      "id": "phys_fn_000977",
+      "rva": "0x00021870",
+      "basis": "constructor",
+      "ruling": "object_model",
+      "site": "0x0002188f",
+      "note": "stores the table at 0x10106ab8"
+    },
+    {
+      "id": "phys_fn_000987",
+      "rva": "0x00021a60",
+      "basis": "constructor",
+      "ruling": "object_model",
+      "site": "0x00021a74",
+      "note": "stores the table at 0x10106b20"
+    },
+    {
+      "id": "phys_fn_001032",
+      "rva": "0x00022d00",
+      "basis": "helper",
+      "ruling": "object_model",
+      "callers": [
+        {
+          "site": "0x00022dea",
+          "row": "phys_fn_001037"
+        }
+      ]
+    },
+    {
+      "id": "phys_fn_001033",
+      "rva": "0x00022d60",
+      "basis": "constructor",
+      "ruling": "object_model",
+      "site": "0x00022d76",
+      "note": "stores the table at 0x10106c2c"
+    },
+    {
+      "id": "phys_fn_001037",
+      "rva": "0x00022de0",
+      "basis": "destructor",
+      "ruling": "object_model",
+      "site": "0x00022de4",
+      "note": "restores the table at 0x10106c2c before tearing down"
+    },
+    {
+      "id": "phys_fn_001247",
+      "rva": "0x00024ed0",
+      "basis": "constructor",
+      "ruling": "object_model",
+      "site": "0x00024ee4",
+      "note": "stores the table at 0x10107430"
+    },
+    {
+      "id": "phys_fn_001269",
+      "rva": "0x00025510",
+      "basis": "adapter",
+      "ruling": "collision",
+      "slot": 9,
+      "site": "0x0002562b",
+      "call_site": "0x0002551b",
+      "note": "ShapeBase::ShapeBase installs it as a Prunable owner adapter; its body is one call through slot 9"
+    },
+    {
+      "id": "phys_fn_001271",
+      "rva": "0x00025520",
+      "basis": "adapter",
+      "ruling": "object_model",
+      "slot": 10,
+      "site": "0x00025635",
+      "call_site": "0x0002552b",
+      "note": "ShapeBase::ShapeBase installs it as a Prunable owner adapter; its body is one call through slot 10"
+    },
+    {
+      "id": "phys_fn_001273",
+      "rva": "0x00025530",
+      "basis": "constructor",
+      "ruling": "object_model",
+      "site": "0x0002553d",
+      "note": "stores the table at 0x10107494"
+    },
+    {
+      "id": "phys_fn_001323",
+      "rva": "0x00026bd0",
+      "basis": "destructor",
+      "ruling": "object_model",
+      "site": "0x00026bd6",
+      "note": "restores the table at 0x10107494 before tearing down"
+    },
+    {
+      "id": "phys_fn_001349",
+      "rva": "0x000277c0",
+      "basis": "constructor",
+      "ruling": "object_model",
+      "site": "0x000277d4",
+      "note": "stores the table at 0x10107528"
+    },
+    {
+      "id": "phys_fn_001351",
+      "rva": "0x00027820",
+      "basis": "destructor",
+      "ruling": "object_model",
+      "site": "0x0002782b",
+      "note": "restores the table at 0x10107528 before tearing down"
+    },
+    {
+      "id": "phys_fn_001379",
+      "rva": "0x00027db0",
+      "basis": "constructor",
+      "ruling": "object_model",
+      "site": "0x00027dc4",
+      "note": "stores the table at 0x10107630"
+    },
+    {
+      "id": "phys_fn_002344",
+      "rva": "0x0005aae0",
+      "basis": "helper",
+      "ruling": "object_model",
+      "callers": [
+        {
+          "site": "0x00026c19",
+          "row": "phys_fn_001323"
+        }
+      ]
+    },
+    {
+      "id": "phys_fn_002413",
+      "rva": "0x0005bbe0",
+      "basis": "helper",
+      "ruling": "object_model",
+      "callers": [
+        {
+          "site": "0x00026c03",
+          "row": "phys_fn_001323"
+        }
+      ]
+    },
+    {
+      "id": "phys_fn_002423",
+      "rva": "0x0005c390",
+      "basis": "helper",
+      "ruling": "object_model",
+      "callers": [
+        {
+          "site": "0x00025626",
+          "row": "phys_fn_001273"
+        }
+      ]
+    }
+  ],
+  "exceptions": [
+    {
+      "id": "phys_fn_001391",
+      "rva": "0x00027f00",
+      "disposition": "shared",
+      "phase": 2,
+      "note": "mov eax,ecx; ret at 0x00027f00, the body the linker folded: slots of six shape tables (BOX 14-16, CAPSULE 16-18, COMPOUND 12-14, PLANE 14-16, SPHERE 16-18, MESH 14-16) and of ten Phase 6 joint dispatch tables (0x00119570..0x0011a4d0), and an immediate at 42 code sites across Phases 2, 3, 4, 6 and 7, where it is the element constructor handed to phys_fn_000001 (push 0x10027f00 at 0x0003dc9a). No one phase owns it: shared runtime, Phase 2."
+    },
+    {
+      "id": "phys_fn_004812",
+      "rva": "0x000b4070",
+      "disposition": "shared",
+      "phase": 2,
+      "note": "xor eax,eax; ret 0x14 at 0x000b4070: BASE slot 5 and slot 1 of the dispatch table at 0x0011b580, whose other slots are Phase 6 rows. Shared runtime, Phase 2."
+    },
+    {
+      "id": "phys_fn_000965",
+      "rva": "0x000213e0",
+      "disposition": "shared",
+      "phase": 2,
+      "note": "xor eax,eax; ret at 0x000213e0: BOX_HULL slot 5, the first Prunable owner adapter ShapeBase::ShapeBase installs at 0x0002563f, slots of the dispatch tables at 0x0011b764, 0x0011b784, 0x0011bb84 and 0x0011bc00, and the immediate at 0x000e1541 in a Phase 4 row. Shared runtime, Phase 2, as it already stands."
+    },
+    {
+      "id": "phys_fn_004248",
+      "rva": "0x000a0f60",
+      "disposition": "external",
+      "note": "ret 4 at 0x000a0f60: COMPOUND slots 8 and 10. The body sits inside a Phase 6 translation unit and is the slot target of twelve other dispatch tables; the ruling does not move it."
+    },
+    {
+      "id": "phys_fn_005667",
+      "rva": "0x000f41dc",
+      "disposition": "external",
+      "note": "the CRT pure-call filler in BASE slots 8-11; a runtime artifact the ruling does not move."
+    },
+    {
+      "id": "phys_fn_001267",
+      "rva": "0x00025490",
+      "disposition": "collision",
+      "site": "0x00022c6a",
+      "note": "PLANE slot 8, and also the cached world-AABB reader COMPOUND slot 9 (phys_fn_001030, collision) calls for every child at 0x00022c6a; it refreshes the box through phys_fn_004886 at 0x000254c7, the same path slot 9 is dispatched through. No virtual call through slot 8 on a shape was found, so the slot would rule it object model; the body is the world-AABB path, so it is ruled collision by name."
+    }
+  ]
+}

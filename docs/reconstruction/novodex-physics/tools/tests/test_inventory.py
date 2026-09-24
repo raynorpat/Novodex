@@ -2301,5 +2301,268 @@ class GateTargetRegistryTests(unittest.TestCase):
         self.assertNotIn("WhiteBox", targets["differential"])
         self.assertIn("WhiteBox", targets["static_proof"])
 
+
+def ruling_instruction(rva, mnemonic, operands, indirect=False, target=None):
+    return {"rva": f"0x{rva:08x}", "mnemonic": mnemonic, "operands": operands,
+            "indirect": indirect, "flow": "call" if mnemonic == "call" else "sequential",
+            "target_rva": None if target is None else f"0x{target:08x}"}
+
+
+def ruling_row(identifier, rva, size, phase, provenance, notes=""):
+    return {"id": identifier, "rva": f"0x{rva:08x}", "size": size, "phase": phase,
+            "phase_provenance": provenance, "notes": notes}
+
+
+class ShapeRulingTests(unittest.TestCase):
+    """The shape ruling is checked against the oracle, then the census against it.
+
+    One table T at 0x3000 holds A (object model) and B (collision). C constructs
+    it, X is a pipeline row that calls through slot 1, and H is a helper only A
+    calls. A2 is a continuation of A.
+    """
+
+    SHA = "4b" + "0" * 62
+
+    def fixture(self):
+        inventory = {"pins": {"oracle": {"sha256": self.SHA}}, "functions": [
+            ruling_row("phys_fn_000001", 0x1000, 8, 5, "slot_ruling"),
+            ruling_row("phys_fn_000002", 0x1008, 8, 5, "slot_ruling",
+                       "continuation of the entry at 0x00001000"),
+            ruling_row("phys_fn_000003", 0x1010, 16, 3, "slot_ruling"),
+            ruling_row("phys_fn_000004", 0x1020, 16, 5, "slot_ruling"),
+            ruling_row("phys_fn_000005", 0x1030, 16, 3, "callers"),
+            ruling_row("phys_fn_000006", 0x1040, 16, 5, "slot_ruling"),
+        ]}
+        ruling = {
+            "schema_version": 1, "oracle_sha256": self.SHA, "rule": "by slot",
+            "phase_of": {"collision": 3, "object_model": 5},
+            "tables": [{"class": "T", "rva": "0x00003000", "constructor": "phys_fn_000004",
+                        "vptr_store": "0x00001024", "slots": ["object_model", "collision"]}],
+            "slot_evidence": [{"ruling": "collision", "slot": 1, "classes": ["T"],
+                               "sites": [{"site": "0x00001034", "row": "phys_fn_000005"}]}],
+            "members": [
+                {"id": "phys_fn_000004", "rva": "0x00001020", "basis": "constructor",
+                 "ruling": "object_model", "site": "0x00001024"},
+                {"id": "phys_fn_000006", "rva": "0x00001040", "basis": "helper",
+                 "ruling": "object_model",
+                 "callers": [{"site": "0x00001004", "row": "phys_fn_000001"}]}],
+            "exceptions": []}
+        pointers = {0x3000: 0x1000, 0x3004: 0x1010}
+        instructions = {
+            0x1004: ruling_instruction(0x1004, "call", "0x10001040", target=0x1040),
+            0x1024: ruling_instruction(0x1024, "mov", "dword ptr [esi], 0x10003000"),
+            0x1034: ruling_instruction(0x1034, "call", "dword ptr [eax + 4]", indirect=True),
+        }
+        return inventory, ruling, pointers, instructions
+
+    def errors(self, mutate=None):
+        inventory, ruling, pointers, instructions = self.fixture()
+        if mutate:
+            mutate(inventory, ruling, pointers, instructions)
+        return validate_inventory.validate_shape_ruling(inventory, ruling, pointers, instructions,
+                                                        [], 0x10000000)
+
+    def assertRejects(self, mutate, pattern):
+        errors = self.errors(mutate)
+        self.assertTrue(any(re.search(pattern, error) for error in errors),
+                        f"{pattern!r} not in {errors}")
+
+    @staticmethod
+    def row(inventory, identifier):
+        return next(row for row in inventory["functions"] if row["id"] == identifier)
+
+    def test_accepts_a_census_that_agrees_with_the_ruling(self):
+        self.assertEqual(self.errors(), [])
+
+    def test_the_resolver_gives_every_named_row_one_phase(self):
+        _, ruling, pointers, _ = self.fixture()
+        phases, slots, errors = validate_inventory.resolve_shape_ruling(ruling, pointers)
+        self.assertEqual(errors, [])
+        self.assertEqual(phases, {0x1000: 5, 0x1010: 3, 0x1020: 5, 0x1040: 5})
+
+    def test_rejects_a_ruled_row_moved_to_another_phase(self):
+        self.assertRejects(lambda i, r, p, s: self.row(i, "phys_fn_000001").__setitem__("phase", 3),
+                           r"'phys_fn_000001' is placed by the shape ruling at phase 5")
+
+    def test_rejects_a_ruled_row_relabelled_to_a_weaker_rule(self):
+        self.assertRejects(
+            lambda i, r, p, s: self.row(i, "phys_fn_000003").__setitem__(
+                "phase_provenance", "layout_adjacency"),
+            r"'phys_fn_000003' is placed by the shape ruling at phase 3 with provenance "
+            r"'slot_ruling', but the census records phase 3 'layout_adjacency'")
+
+    def test_rejects_a_continuation_left_behind_by_its_entry(self):
+        self.assertRejects(lambda i, r, p, s: self.row(i, "phys_fn_000002").__setitem__("phase", 3),
+                           r"'phys_fn_000002' is placed by the shape ruling")
+
+    def test_rejects_an_unruled_row_claiming_the_ruling(self):
+        self.assertRejects(
+            lambda i, r, p, s: self.row(i, "phys_fn_000005").__setitem__(
+                "phase_provenance", "slot_ruling"),
+            r"'phys_fn_000005' claims 'slot_ruling', but the shape ruling does not place it")
+
+    def test_rejects_a_collision_slot_resting_on_no_virtual_call(self):
+        self.assertRejects(lambda i, r, p, s: r["slot_evidence"][0].__setitem__("sites", []),
+                           r"calls T slot 1 a collision slot and cites no virtual call")
+
+    def test_rejects_evidence_that_calls_through_another_slot(self):
+        self.assertRejects(
+            lambda i, r, p, s: s[0x1034].__setitem__("operands", "dword ptr [eax + 8]"),
+            r"cites 0x00001034, which is call dword ptr \[eax \+ 8\] and not a call through slot 1")
+
+    def test_rejects_a_row_two_slots_rule_differently(self):
+        self.assertRejects(lambda i, r, p, s: p.__setitem__(0x3004, 0x1000),
+                           r"row at 0x00001000 is named by slots T 0 object_model, T 1 collision")
+
+    def test_rejects_a_slot_the_oracle_does_not_hold(self):
+        self.assertRejects(lambda i, r, p, s: p.pop(0x3004),
+                           r"table T slot 1 at 0x00003004 is not a relocated pointer")
+
+    def test_rejects_a_helper_with_an_unrecorded_caller(self):
+        def mutate(i, r, p, s):
+            s[0x1038] = ruling_instruction(0x1038, "call", "0x10001040", target=0x1040)
+        self.assertRejects(mutate, r"'phys_fn_000006' is a helper whose recorded call sites "
+                                   r"\['0x00001004'\] are not its direct callers")
+
+    def test_rejects_a_helper_an_unruled_row_calls(self):
+        def mutate(i, r, p, s):
+            s.pop(0x1004)
+            s[0x1038] = ruling_instruction(0x1038, "call", "0x10001040", target=0x1040)
+            r["members"][1]["callers"] = [{"site": "0x00001038", "row": "phys_fn_000005"}]
+        self.assertRejects(mutate, r"is called from 'phys_fn_000005', which the ruling does not place")
+
+    def test_rejects_a_constructor_that_stores_no_shape_table(self):
+        self.assertRejects(
+            lambda i, r, p, s: s[0x1024].__setitem__("operands", "dword ptr [esi], 0x10004000"),
+            r"'phys_fn_000004' is a constructor because 0x00001024 stores a shape table")
+
+    def test_rejects_a_phase_of_that_is_not_the_decision(self):
+        self.assertRejects(
+            lambda i, r, p, s: r.__setitem__("phase_of", {"collision": 5, "object_model": 3}),
+            r"is not the user's decision")
+
+    def test_rejects_a_shared_exception_off_phase_2(self):
+        def mutate(i, r, p, s):
+            r["exceptions"] = [{"id": "phys_fn_000003", "rva": "0x00001010",
+                                "disposition": "shared", "phase": 4}]
+        self.assertRejects(mutate, r"'phys_fn_000003' is shared runtime, which is Phase 2")
+
+
+class TranslationUnitSpanTests(unittest.TestCase):
+    """A translation-unit claim is the span its entry sits in."""
+
+    SPANS = [(0x1000, 0x1020, "One.cpp"), (0x1100, 0x1120, "Two.cpp"),
+             (0x1200, 0x1220, "Three.cpp")]
+    PHASES = {"One.cpp": 3, "Two.cpp": 3, "Three.cpp": 7}
+
+    def check(self, *rows, gaps=frozenset()):
+        return validate_inventory.validate_translation_unit_spans(list(rows), self.SPANS,
+                                                                  self.PHASES, gaps)
+
+    def test_accepts_claims_the_spans_make(self):
+        self.assertEqual(self.check(ruling_row("phys_fn_000001", 0x1010, 8, 3, "translation_unit"),
+                                    ruling_row("phys_fn_000002", 0x1080, 8, 3, "enclosed_by_one_phase"),
+                                    ruling_row("phys_fn_000003", 0x1018, 8, 5, "slot_ruling")), [])
+
+    def test_rejects_a_row_moved_off_its_units_phase(self):
+        # The shape of the review's first experiment: a row inside a Phase 3 unit
+        # moved to Phase 5 with its provenance left as it was.
+        errors = self.check(ruling_row("phys_fn_000001", 0x1010, 8, 5, "translation_unit"))
+        self.assertIn("inside One.cpp, a phase 3 unit", errors[0])
+
+    def test_rejects_a_translation_unit_claim_no_span_encloses(self):
+        errors = self.check(ruling_row("phys_fn_000001", 0x1300, 8, 3, "translation_unit"))
+        self.assertIn("inside no __FILE__ span", errors[0])
+
+    def test_rejects_a_row_inside_a_span_placed_by_a_weaker_rule(self):
+        errors = self.check(ruling_row("phys_fn_000001", 0x1010, 8, 5, "layout_adjacency"))
+        self.assertIn("sits inside One.cpp, a phase 3 unit, but is placed by 'layout_adjacency'",
+                      errors[0])
+
+    def test_rejects_an_enclosure_two_phases_bracket(self):
+        errors = self.check(ruling_row("phys_fn_000001", 0x1180, 8, 3, "enclosed_by_one_phase"))
+        self.assertIn("between Two.cpp and Three.cpp", errors[0])
+
+    def test_a_continuation_is_judged_by_its_entry(self):
+        self.assertEqual(self.check(ruling_row("phys_fn_000001", 0x1030, 8, 3, "translation_unit",
+                                               "continuation of the entry at 0x00001010")), [])
+
+    def test_a_third_party_row_names_its_unit_elsewhere(self):
+        row = dict(ruling_row("phys_fn_000001", 0x1300, 8, 4, "translation_unit"), third_party="opcode")
+        self.assertEqual(self.check(row), [])
+
+    def test_a_recorded_gap_is_accepted_and_must_stay_exact(self):
+        row = ruling_row("phys_fn_000001", 0x1300, 8, 4, "translation_unit")
+        self.assertEqual(self.check(row, gaps={"phys_fn_000001"}), [])
+        errors = self.check(ruling_row("phys_fn_000001", 0x1010, 8, 3, "translation_unit"),
+                            gaps={"phys_fn_000001"})
+        self.assertIn("strike it from TRANSLATION_UNIT_WITHOUT_SPAN", errors[0])
+
+
+class CommittedShapeRulingTests(unittest.TestCase):
+    """The committed census against its ruling and its spans, and the review's experiments.
+
+    The review showed four wrong moves the validator accepted. Each is replayed here
+    on a copy of the committed census, so the check that rejects them cannot be
+    loosened without a test saying so.
+    """
+
+    ROOT = TOOLS_DIR.parent
+
+    @classmethod
+    def setUpClass(cls):
+        def read(*parts):
+            return json.loads(cls.ROOT.joinpath(*parts).read_text(encoding="utf-8"))
+        cls.inventory = read("inventory.json")
+        cls.ruling = read(validate_inventory.SHAPE_RULING_NAME)
+        pe = read("oracle", "pe.json")
+        corpus = read("oracle", "capstone", "manifest.json")
+        ghidra = read("oracle", "ghidra", "manifest.json")
+        cls.pointers = {slot["rva"]: slot["target_rva"] for slot in pe["pointers"]
+                        if slot["relocated"] and slot["target_rva"] is not None}
+        cls.instructions = {int(entry["rva"], 16): entry for entry in corpus["instructions"]}
+        cls.tail_calls = corpus["tail_calls"]
+        cls.image_base = pe["image"]["image_base"]
+        cls.spans, cls.phases = validate_inventory.translation_unit_spans_of(
+            cls.inventory["functions"], ghidra["strings"], ghidra["references"])
+
+    def errors(self, mutate=None):
+        inventory = copy.deepcopy(self.inventory)
+        rows = {row["id"]: row for row in inventory["functions"]}
+        if mutate:
+            mutate(rows)
+        return (validate_inventory.validate_shape_ruling(
+                    inventory, self.ruling, self.pointers, self.instructions, self.tail_calls,
+                    self.image_base)
+                + validate_inventory.validate_translation_unit_spans(
+                    inventory["functions"], self.spans, self.phases))
+
+    def test_the_committed_census_agrees_with_its_ruling_and_spans(self):
+        self.assertEqual(self.errors(), [])
+
+    def test_rejects_moving_a_contact_row_out_of_its_phase_3_unit(self):
+        # phys_fn_001847 sits inside ContactConvexHeightfield.cpp.
+        errors = self.errors(lambda rows: rows["phys_fn_001847"].__setitem__("phase", 5))
+        self.assertTrue(any("'phys_fn_001847'" in error and "ContactConvexHeightfield.cpp" in error
+                            for error in errors), errors)
+
+    def test_rejects_moving_shapebase_back_to_phase_3(self):
+        errors = self.errors(lambda rows: rows["phys_fn_001273"].__setitem__("phase", 3))
+        self.assertTrue(any("'phys_fn_001273' is placed by the shape ruling at phase 5" in error
+                            for error in errors), errors)
+
+    def test_rejects_relabelling_shapebase_to_layout_adjacency(self):
+        errors = self.errors(lambda rows: rows["phys_fn_001273"].__setitem__(
+            "phase_provenance", "layout_adjacency"))
+        self.assertTrue(any("'phys_fn_001273' is placed by the shape ruling" in error
+                            for error in errors), errors)
+
+    def test_rejects_moving_a_closed_slot_5_row_to_phase_5(self):
+        # phys_fn_001377 is SPHERE slot 5, a collision slot, closed by Phase 3.
+        errors = self.errors(lambda rows: rows["phys_fn_001377"].__setitem__("phase", 5))
+        self.assertTrue(any("'phys_fn_001377' is placed by the shape ruling at phase 3" in error
+                            for error in errors), errors)
+
+
 if __name__ == "__main__":
     unittest.main()
