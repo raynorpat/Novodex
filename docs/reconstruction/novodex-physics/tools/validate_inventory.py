@@ -245,6 +245,14 @@ DEFERRED_REASONS = ("blocked_on_later_phase", "unreachable_in_phase_2",
 # would shrink the code half of the split, and a data object borrowing a code
 # reason would claim a reachability argument nobody made about it.
 DATA_DEFERRAL_REASONS = ("data_object_not_dispositioned",)
+# The two reasons that say a row's candidate is vendored upstream source. The split
+# they draw was enforced by prose alone: a NovodeX row at `discovered` relabelled
+# `vendored_not_falsified`, or a vendored row relabelled `not_reconstructed_in_phase`,
+# validated with the counts adjusted. Both are policed now, in both directions:
+# either reason needs a `third_party` row, `vendored_not_falsified` is used only
+# where the census leaves that row at `discovered`, and a third-party row the
+# census leaves at `discovered` has to give one of the two.
+VENDORED_DEFERRAL_REASONS = ("vendored_not_falsified", "vendored_driven_divergent")
 # From this phase on a closure ledger that closes a row must name the evidence file
 # its counts are published in. Phases 2 and 3 published before stable IDs were
 # written into their evidence; every later ledger has no such excuse, and an
@@ -1331,6 +1339,7 @@ def validate_closure(inventory, closure, phase, targets):
     row_phase = {row["id"]: row["phase"] for row in census}
     row_rva = {row["id"]: row["rva"] for row in census}
     row_state = {row["id"]: row["state"] for row in census}
+    third_party = {row["id"] for row in inventory["functions"] if row.get("third_party")}
     closed, deferred = {}, {}
     measured = collections.Counter()
 
@@ -1493,6 +1502,18 @@ def validate_closure(inventory, closure, phase, targets):
             if not is_data and reason in DATA_DEFERRAL_REASONS:
                 errors.append(f"{where} is a function row giving {reason}; a function row "
                               f"deferred there is one hidden inside the data debt")
+            state = row_state.get(row["id"])
+            vendored = row["id"] in third_party
+            if reason in VENDORED_DEFERRAL_REASONS and not vendored:
+                errors.append(f"{where} gives {reason} but the census declares no third_party "
+                              f"for it; a NovodeX row has no vendored candidate to be present")
+            elif reason == "vendored_not_falsified" and state != "discovered":
+                errors.append(f"{where} gives {reason} but the inventory leaves it {state!r}; the "
+                              f"reason is for a vendored row the census leaves at 'discovered'")
+            if vendored and state == "discovered" and reason not in VENDORED_DEFERRAL_REASONS:
+                errors.append(f"{where} is a third-party row at 'discovered' giving {reason}; its "
+                              f"candidate is vendored source that builds, so it gives "
+                              f"{' or '.join(VENDORED_DEFERRAL_REASONS)}")
         phases = row.get("driving_phases", [])
         if not isinstance(phases, list) or any(
                 isinstance(value, bool) or not isinstance(value, int) or not 1 <= value <= 8

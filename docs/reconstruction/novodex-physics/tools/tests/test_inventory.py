@@ -1268,7 +1268,59 @@ class ClosureLedgerTests(unittest.TestCase):
             ledger["counts"] = {"differential_falsified": 1, "static_proof_falsified": 1,
                                 "deferred_" + reason: 1,
                                 "deferred_data_object_not_dispositioned": 1}
-            self.assertEqual(self.errors(ledger), [])
+            # A vendored reason is a claim about a third-party row, so the row
+            # it is given for has to be one.
+            vendored = reason in validate_inventory.VENDORED_DEFERRAL_REASONS
+            self.assertEqual(self.vendored_errors(ledger, vendored=vendored), [])
+
+    # -- the vendored split ---------------------------------------------------
+    #
+    # `vendored_not_falsified` is for a vendored row the census leaves at
+    # `discovered`, and `not_reconstructed_in_phase` is false about such a row.
+    # Both relabellings validated with the counts adjusted while the rule lived
+    # only in the ledger's prose.
+
+    def vendored_errors(self, ledger, vendored=True, state="discovered"):
+        inventory = self.inventory(phys_fn_000003=state)
+        if vendored:
+            inventory["functions"][2]["third_party"] = "qhull"
+        return validate_inventory.validate_closure(inventory, ledger, 2, self.TARGETS)
+
+    def deferred_as(self, reason):
+        ledger = self.ledger()
+        ledger["deferred"][0] = {"id": "phys_fn_000003", "rva": "0x00001060", "size": 8,
+                                 "phase_provenance": "translation_unit",
+                                 "reason": reason, "driving_phases": []}
+        ledger["counts"] = {"differential_falsified": 1, "static_proof_falsified": 1,
+                            "deferred_" + reason: 1,
+                            "deferred_data_object_not_dispositioned": 1}
+        return ledger
+
+    def test_rejects_a_novodex_row_relabelled_vendored(self):
+        errors = self.vendored_errors(self.deferred_as("vendored_not_falsified"), vendored=False)
+        self.assertIn("declares no third_party", "\n".join(errors))
+
+    def test_rejects_a_novodex_row_relabelled_vendored_and_divergent(self):
+        errors = self.vendored_errors(self.deferred_as("vendored_driven_divergent"),
+                                      vendored=False)
+        self.assertIn("declares no third_party", "\n".join(errors))
+
+    def test_rejects_vendored_not_falsified_on_a_row_the_census_raised(self):
+        # A vendored row a later drive raised to `reconstructed` keeps
+        # `reconstructed_not_falsified`; the vendored reason is for `discovered`.
+        errors = self.vendored_errors(self.deferred_as("vendored_not_falsified"),
+                                      state="reconstructed")
+        self.assertIn("the reason is for a vendored row the census leaves at 'discovered'",
+                      "\n".join(errors))
+
+    def test_rejects_a_vendored_row_at_discovered_relabelled_not_reconstructed(self):
+        errors = self.vendored_errors(self.deferred_as("not_reconstructed_in_phase"))
+        self.assertIn("is a third-party row at 'discovered' giving not_reconstructed_in_phase",
+                      "\n".join(errors))
+
+    def test_a_raised_vendored_row_keeps_reconstructed_not_falsified(self):
+        self.assertEqual(self.vendored_errors(self.deferred_as("reconstructed_not_falsified"),
+                                              state="reconstructed"), [])
 
     def test_the_new_reasons_stay_on_the_code_half_of_the_census(self):
         # A data object giving a code reason claims a reachability argument
