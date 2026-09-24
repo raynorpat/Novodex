@@ -5037,11 +5037,13 @@ void CapsuleShape::nxCapsuleScalarDeletingDtor(unsigned flags)
 	{
 	if(mBase.mWord9C)
 		{
-		// destroyed through its own vtable: 0x000225f3..f7
+		// phys_fn_001123's collision-object deleting row, flag 1.
+		reinterpret_cast<CollisionObject*>(mBase.mWord9C)->nxScalarDeletingDtor(1);
 		}
 	mBase.nxBaseDtorOwnerArms();		// owner arms, 0x26be1..c35
 	mBase.mPrunable.~Prunable();			// tail of the base-dtor chain
-	(void) flags;							// self-free arm not modeled
+	if(flags & 1u)
+		nxGetSdkAllocator()->free(this);
 	}
 
 // phys_fn_001004 (0x00021c80), CAPSULE-table slot 8.
@@ -5055,6 +5057,13 @@ void CapsuleShape::nxCapsuleLocalAABB(float* out) const
 	out[3] = r;
 	out[4] = reach;
 	out[5] = r;
+	}
+
+// phys_fn_001012 (0x000225d0), CAPSULE primary-table slot 7.
+bool CapsuleShape::nxCapsuleSweepZero(unsigned* out, const void* /*unread*/) const
+	{
+	*out = 0;
+	return false;
 	}
 
 // phys_fn_000989 (0x00021ad0), CAPSULE-table slot 12.

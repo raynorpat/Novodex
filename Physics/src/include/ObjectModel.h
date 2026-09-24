@@ -1914,6 +1914,10 @@ class CapsuleShape
 	//! and hh = stored half-height.
 	void				nxCapsuleLocalAABB(float* out) const;
 
+	//! CAPSULE-table slot 7, phys_fn_001012 (0x000225d0): stores a zero
+	//! dword through the first argument, returns false, ignores the second.
+	bool				nxCapsuleSweepZero(unsigned* out, const void* unread) const;
+
 	//! CAPSULE-table slot 12, phys_fn_000989 (0x00021ad0): loadFromDesc --
 	//! reads radius (+0xe0), half-height (desc+0x50 * 0.5f), third word
 	//! (+0xe8) from the descriptor, then applies base fields through

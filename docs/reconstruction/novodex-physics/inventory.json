@@ -18396,11 +18396,11 @@
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
       "state": "dynamically_gated",
-      "source": null,
+      "source": "Physics/src/ShapeRaycast.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/402",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3068",
       "static_proof": null,
-      "dynamic_proof": null,
+      "dynamic_proof": "NxPhysicsCollisionTests capsule-raycast family and 16 NxPhysicsShapeVtableTests oracle slot-5 ray/limit/normal cases, bitwise (candidate direct entry; final capsule table pending)",
       "notes": ""
     },
     {
@@ -18432,12 +18432,13 @@
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
       "state": "reconstructed",
-      "source": "zero *[esp+4], return false (0x225d0, ret 8)",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/494",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3073",
       "static_proof": "mov eax,[esp+4]; mov dword[eax],0; xor al,al; ret 8",
-      "dynamic_proof": "confirmed via zeroinit drive (3z51): failures=0",
-      "notes": ""
+      "dynamic_proof": "confirmed via zeroinit drive (3z51) and four NxPhysicsShapeVtableTests capsule slot-7 oracle/candidate cases",
+      "notes": "",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_001013",
@@ -18472,7 +18473,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/403",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3074",
       "static_proof": "__thiscall: destroys colobj through [colobj-vtbl+0] flag 1 UNCONDITIONALLY (0x000225f3..f7), base-dtor chain, self-free through allocator slot +0x14 when flag&1; CAPSULE vtable .rdata 0x106b20 slot 0",
-      "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests capdtor family on a real constructed capsule, flag=0 path: post-dtor oracle digest 7a376673 equals candidate bitwise",
+      "dynamic_proof": "NxPhysicsObjectLayoutTests capdtor flag-0 layout digest 7a376673; NxPhysicsShapeVtableTests flag-0 and flag-1 allocator free deltas agree with oracle (one and two)",
       "notes": "",
       "implementation": "Physics/src/ObjectModel.cpp"
     },

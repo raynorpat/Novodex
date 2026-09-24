@@ -478,6 +478,104 @@ int wmain(int argc, wchar_t** argv)
        candidateAllocator.freeCount - candidateBefore != 2)
         ++failures;
     ++cases;
+
+    // CAPSULE slot 7 writes a zero dword and returns false. A poisoned
+    // second argument tests that the oracle does not read the sweep record.
+    unsigned char oracleCapsule[0xec], candidateCapsule[0xec];
+    memset(oracleCapsule, 0xcd, sizeof(oracleCapsule));
+    memset(candidateCapsule, 0xcd, sizeof(candidateCapsule));
+    reinterpret_cast<BoxCtor>(const_cast<unsigned char*>(base) + 0x21a60)(
+        oracleCapsule, 0, 0);
+    CapsuleShape& capsule = *new(candidateCapsule) CapsuleShape(0, 0);
+    void** oracleCapsuleTable = *reinterpret_cast<void***>(oracleCapsule);
+    typedef bool (__thiscall* CapsuleSweepSlot)(void*, unsigned*, const void*);
+    CapsuleSweepSlot oracleCapsuleSweep =
+        reinterpret_cast<CapsuleSweepSlot>(oracleCapsuleTable[7]);
+    const unsigned capsuleSeeds[] = {
+        0u, 0xffffffffu, 0x7fc00001u, 0xdeadbeefu
+    };
+    for(unsigned seed : capsuleSeeds) {
+        unsigned oracleOut = seed, candidateOut = seed;
+        const void* unread = reinterpret_cast<const void*>(0xdeadbeefu);
+        const bool ro = oracleCapsuleSweep(oracleCapsule, &oracleOut, unread);
+        const bool rc = capsule.nxCapsuleSweepZero(&candidateOut, unread);
+        oracleDigest = foldOracle(oracleDigest, &ro, sizeof(ro));
+        oracleDigest = foldOracle(oracleDigest, &oracleOut, sizeof(oracleOut));
+        if(ro != rc || oracleOut != candidateOut || ro || oracleOut != 0)
+            ++failures;
+        ++cases;
+    }
+    const NxRay capsuleRays[4] = {
+        NxRay(NxVec3(-3,0,0), NxVec3(1,0,0)),
+        NxRay(NxVec3(0,0,0), NxVec3(1,0,0)),
+        NxRay(NxVec3(0,4,0), NxVec3(0,-1,0)),
+        NxRay(NxVec3(3,3,3), NxVec3(1,0,0))
+    };
+    const float capsuleRadius = 0.5f, capsuleHalfHeight = 1.0f;
+    memcpy(oracleCapsule + 0xe0, &capsuleRadius, 4);
+    memcpy(oracleCapsule + 0xe4, &capsuleHalfHeight, 4);
+    capsule.mFloatE0 = capsuleRadius;
+    capsule.mFloatE4 = capsuleHalfHeight;
+    NxShapeRaycastFn oracleCapsuleRaycast =
+        reinterpret_cast<NxShapeRaycastFn>(oracleCapsuleTable[5]);
+    for(unsigned ray = 0; ray < 4; ++ray)
+    for(unsigned limit = 0; limit < 2; ++limit)
+    for(unsigned normal = 0; normal < 2; ++normal) {
+        NxRaycastHit oracleHit, candidateHit;
+        memset(&oracleHit, 0xcd, sizeof(oracleHit));
+        memset(&candidateHit, 0xcd, sizeof(candidateHit));
+        const unsigned flags = normal ? NX_RAYCAST_NORMAL : 0u;
+        const NxCollisionShape* ro = oracleCapsuleRaycast(
+            reinterpret_cast<const NxCollisionShape*>(oracleCapsule),
+            &capsuleRays[ray], limits[limit], 0, flags, &oracleHit);
+        const NxCollisionShape* rc = NxShapeRaycastCapsule(
+            reinterpret_cast<const NxCollisionShape*>(candidateCapsule),
+            nullptr, &capsuleRays[ray], limits[limit], 0, flags,
+            &candidateHit);
+        if(ro) oracleHit.shape = reinterpret_cast<NxShape*>(0x12345678u);
+        if(rc) candidateHit.shape = reinterpret_cast<NxShape*>(0x12345678u);
+        const unsigned oraclePresent = ro != 0;
+        oracleDigest = foldOracle(oracleDigest, &oraclePresent, sizeof(oraclePresent));
+        oracleDigest = foldOracle(oracleDigest, &oracleHit, sizeof(oracleHit));
+        if(bool(ro) != bool(rc) ||
+           memcmp(&oracleHit, &candidateHit, sizeof(oracleHit)) != 0) {
+            fprintf(stderr, "capsule slot 5 ray=%u limit=%u normal=%u differs\n",
+                ray, limit, normal);
+            ++failures;
+        }
+        ++cases;
+    }
+    oracleBefore = oracleFreeCount;
+    candidateBefore = candidateAllocator.freeCount;
+    reinterpret_cast<DtorSlot>(oracleCapsuleTable[0])(oracleCapsule, 0);
+    capsule.nxCapsuleScalarDeletingDtor(0);
+    const unsigned oracleStackFrees = oracleFreeCount - oracleBefore;
+    oracleDigest = foldOracle(oracleDigest, &oracleStackFrees,
+        sizeof(oracleStackFrees));
+    if(oracleStackFrees != 1 ||
+       candidateAllocator.freeCount - candidateBefore != oracleStackFrees)
+        ++failures;
+    ++cases;
+    unsigned char* oracleCapsuleHeap = static_cast<unsigned char*>(malloc(0xec));
+    unsigned char* candidateCapsuleHeap = static_cast<unsigned char*>(malloc(0xec));
+    if(!oracleCapsuleHeap || !candidateCapsuleHeap) return 2;
+    memset(oracleCapsuleHeap, 0xcd, 0xec);
+    memset(candidateCapsuleHeap, 0xcd, 0xec);
+    reinterpret_cast<BoxCtor>(const_cast<unsigned char*>(base) + 0x21a60)(
+        oracleCapsuleHeap, 0, 0);
+    new(candidateCapsuleHeap) CapsuleShape(0, 0);
+    void** oracleCapsuleHeapTable = *reinterpret_cast<void***>(oracleCapsuleHeap);
+    oracleBefore = oracleFreeCount;
+    candidateBefore = candidateAllocator.freeCount;
+    reinterpret_cast<DtorSlot>(oracleCapsuleHeapTable[0])(oracleCapsuleHeap, 1);
+    reinterpret_cast<CapsuleShape*>(candidateCapsuleHeap)->nxCapsuleScalarDeletingDtor(1);
+    const unsigned oracleHeapFrees = oracleFreeCount - oracleBefore;
+    oracleDigest = foldOracle(oracleDigest, &oracleHeapFrees,
+        sizeof(oracleHeapFrees));
+    if(oracleHeapFrees != 2 ||
+       candidateAllocator.freeCount - candidateBefore != oracleHeapFrees)
+        ++failures;
+    ++cases;
     nxSetSdkAllocatorBridge(0);
     printf("shape vtable oracle_digest=%08x cases=%u failures=%u\n",
         oracleDigest, cases, failures);
