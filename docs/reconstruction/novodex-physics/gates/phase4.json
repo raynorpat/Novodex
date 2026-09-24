@@ -61,6 +61,36 @@
       "name": "python_suite",
       "command": "python -m unittest discover -s docs/reconstruction/novodex-physics/tools/tests",
       "result": "Ran 616 tests, all pass in a git archive of the branch: 601 before the port, plus 15 pinning what it carried -- three for the gate-to-phase binding, one rejecting a discharge that names a phase no later than the owning one, one accepting `note` on a closed entry, seven binding a closed row's count to `evidence_file`, two on plan_path's resolution of a relative evidence root, and one asserting the retype split against evidence/phase4-artifact-retype.csv. Run inside the D:\\github\\Novodex-p4-port worktree, test_gate_commands.PhaseResolutionTests.test_phase_and_targets_are_mutually_exclusive fails before and after the port alike: PowerShell wraps its 'Parameter set cannot be resolved' message at that path length and the test matches the unwrapped string"
+    },
+    {
+      "name": "review:validate_inventory",
+      "command": "python -B docs/reconstruction/novodex-physics/tools/validate_inventory.py docs/reconstruction/novodex-physics/inventory.json",
+      "result": "inventory=pass; closure phase=2 closed=56 deferred=87; closure phase=3 closed=61 deferred=331; closure phase=4 closed=26 deferred=1024; closure phase=5 closed=0 deferred=205; closure phase=6 closed=2 deferred=431; closure phase=7 closed=4 deferred=557; functions=6338 data_objects=5138 unexplained=0. Phase 2 closes 56, not 59: its three discharges by the pending Phase 5 are re-deferred"
+    },
+    {
+      "name": "review:phase_gate",
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase 4",
+      "result": "phase_gate=4 status=pass at coverage_assertions_evaluated=100 floor=100; asset coverage driven=30 accepted=13 rejected=16 errors=10, asset oracle digest=eaefc573, asset candidate mismatches=0 with phys_fn_001986's null test removed; thirdparty coverage driven=16 divergent=2 words=193028 layout_checks=47, oracle digest=b87c3219, candidate mismatches=0 layout_failures=0. Run at the port's review over a `git archive` of the branch commit that adds this entry, with run_phase_gate.ps1's $novodexRepo and run_differential.ps1's $releaseRoot pointed at the archive and nothing else changed"
+    },
+    {
+      "name": "review:phase_gate",
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase 2",
+      "result": "phase_gate=2 status=pass; static_proof checks=51 status=pass; differential=pass. Run at the port's review over a `git archive` of the branch commit that adds this entry, with run_phase_gate.ps1's $novodexRepo and run_differential.ps1's $releaseRoot pointed at the archive and nothing else changed"
+    },
+    {
+      "name": "review:phase_gate",
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase 3",
+      "result": "phase_gate=3 status=pass at coverage_assertions_evaluated=103 floor=103; selected_oracle_differential_targets=NxPhysicsCollisionTests. Run at the port's review over a `git archive` of the branch commit that adds this entry, with run_phase_gate.ps1's $novodexRepo and run_differential.ps1's $releaseRoot pointed at the archive and nothing else changed"
+    },
+    {
+      "name": "review:phase_gate_completed",
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase completed",
+      "result": "highest_passing_phase=4 differential_phases=1,2,3,4; selected_oracle_differential_targets=NxPhysicsAssetTests,NxPhysicsCollisionTests,NxPhysicsThirdPartyTests; differential=pass; coverage_assertions_evaluated=203 floor=203; phase_gate=completed status=pass. Run at the port's review over a `git archive` of the branch commit that adds this entry, with run_phase_gate.ps1's $novodexRepo and run_differential.ps1's $releaseRoot pointed at the archive and nothing else changed"
+    },
+    {
+      "name": "review:python_suite",
+      "command": "python -m unittest discover -s docs/reconstruction/novodex-physics/tools/tests",
+      "result": "Ran 628 tests, all pass in a git archive of the branch: the port's 616 plus 12 pinning the review's rules -- five for the rule that a discharging phase must have passed, two for evidence_file being required from Phase 4 on (a third test is the old no-evidence-file test narrowed to Phases 2 and 3), and five for the vendored split; the existing test that deferred rows under every reason now gives the vendored reasons to a third-party row. The PowerShell wrapping failure the port's entry describes still reproduces inside the D:\\github\\Novodex-p4-port worktree and not in the archive"
     }
   ],
   "excluded_from_comparison": [
