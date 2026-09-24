@@ -35,11 +35,29 @@ static void nxPrintBodyLink(const char* label, const NxActor* actor)
 		? *reinterpret_cast<unsigned char* const*>(body + 0x08) : 0;
 	printf("actor %s body=%u nested=%u\n", label,
 		body ? 1u : 0u, nested ? 1u : 0u);
-	if(strcmp(label, "static") == 0 && body)
+	if(body)
 		{
 		const unsigned allocSize = *reinterpret_cast<const unsigned*>(
 			reinterpret_cast<uintptr_t>(body) & ~static_cast<uintptr_t>(0xfff));
-		printf("actor static body_alloc=%x\n", allocSize);
+		printf("actor %s body_alloc=%x\n", label, allocSize);
+		}
+	if(nested)
+		{
+		const unsigned allocSize = *reinterpret_cast<const unsigned*>(
+			reinterpret_cast<uintptr_t>(nested) & ~static_cast<uintptr_t>(0xfff));
+		printf("actor %s nested_alloc=%x\n", label, allocSize);
+		if(allocSize >= 0x1a0)
+			{
+			const unsigned char* pose = *reinterpret_cast<unsigned char* const*>(nested + 0x19c);
+			if(pose)
+				{
+				const unsigned poseSize = *reinterpret_cast<const unsigned*>(
+					reinterpret_cast<uintptr_t>(pose) & ~static_cast<uintptr_t>(0xfff));
+				const void* cached = *reinterpret_cast<void* const*>(pose + 8);
+				printf("actor %s pose_alloc=%x cached=%u cached_nested=%u\n", label,
+					poseSize, cached ? 1u : 0u, cached == nested ? 1u : 0u);
+				}
+			}
 		}
 }
 

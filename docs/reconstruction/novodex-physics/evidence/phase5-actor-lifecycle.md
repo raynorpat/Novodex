@@ -45,3 +45,27 @@ The Phase 5 gate evaluates 135 of 135 registered coverage assertions, including
 nine lines from the new staged-pair target. It still exits 1 on the pre-existing
 `CANDIDATE-MISSING family=vtables` marker for final shape/actor tables. Phase 6
 continues to pass after the body-pointer change.
+
+## Dynamic allocation graph follow-up
+
+The staged-pair harness was extended to print allocation sizes for both
+dynamic-body links. Before changing the candidate, those two added lines
+produced `stdout_delta=4`: the oracle allocated outer `0x50` and record `0x260`,
+while the candidate allocated `0x1c0` and `0x80`. A further probe found a
+`0x50` pose at oracle record+0x19c; the candidate had no valid link there.
+The oracle pose at record+0x19c has a non-null +8
+pointer back to the same dynamic record. All three sizes and that link now
+match through the two staged DLL pairs; the public position and dynamic flag
+still match. Twelve Phase 5 coverage lines are registered, bringing its floor
+to 138.
+
+Disassembly of the pinned DLL's exported `NxJointDesc_SetGlobalAnchor` at
+`0x000980b0` and `NxJointDesc_SetGlobalAxis` at `0x000982e0` independently
+confirmed the path: actor+0x14, outer+8, record+0x19c, pose+8. The non-null
+pose+8 arm composes the record's quaternion and reads its translation at +0x50;
+the null arm reads a matrix and translation at pose+0x20. `JointDesc.cpp` now
+follows this graph. The Phase 6 staged joint differential remains exact.
+
+These observed links and allocation sizes do not complete the record's
+physical state, ownership, or cleanup. Phase 5 still fails on the final-vtable
+placeholder.

@@ -18,9 +18,9 @@
 // localNormal from it.
 //
 // WHY THE ADDRESS ARITHMETIC IS SPELLED THIS WAY. The oracle reaches each
-// actor's world pose through its own object graph -- actor+0x10 is the actor
-// descriptor, the descriptor's shape array, the shape's body pointer, and
-// body+0x19c is the pose. Those are internal offsets with no public accessor,
+// actor's world pose through its own object graph -- actor+0x14 is the outer
+// body, body+8 is the dynamic record, and record+0x19c is the pose. These are
+// internal offsets with no public accessor,
 // so they are written here as byte offsets with a comment naming what each one
 // is, rather than as calls through the public interface. A call through the
 // public interface would be a different computation, not the same one spelled
@@ -45,13 +45,12 @@
 namespace
 	{
 
-// The pose block the oracle reads at body+0x19c. A non-null second word means
-// the body carries a cached matrix; otherwise the pose is a quaternion whose
-// components the caller composes into one.
+// The pose block the oracle reads at record+0x19c. A non-null second word
+// points back to the dynamic record carrying quaternion and translation.
 struct NxJointPoseView
 	{
 	unsigned char pad00[8];
-	void* cached;			// +0x08: cached world matrix, or null
+void* cached;			// +0x08: dynamic record, or null
 	};
 
 struct NxJointBodyView
@@ -93,26 +92,23 @@ inline const float* nxJointWorldMatrix(NxActor* actor, const float*& t)
 	{
 	unsigned char* p = reinterpret_cast<unsigned char*>(actor);
 
-	// actor+0x14 is the actor's BODY, which is the chain the oracle itself uses:
-	// Scene::createJoint reads the same word to test whether an actor is dynamic, and
-	// nxActorBuildBody is what links it here. The previous version walked
-	// actor+0x10 -> descriptor -> shape -> body, which is a chain nothing in this
-	// reconstruction builds -- it found null at the first level and returned 0, so
-	// every actor took the copy-through arm and the transform never executed.
+	// The exported rows walk actor+0x14 -> outer+8 -> record+0x19c.
 	void* body = *reinterpret_cast<void**>(p + 0x14);
 	if(body == 0)
 		return 0;
+	void* record = *reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(body) + 8);
+	if(record == 0)
+		return 0;
 
-	NxJointBodyView* bodyView = reinterpret_cast<NxJointBodyView*>(body);
+	NxJointBodyView* bodyView = reinterpret_cast<NxJointBodyView*>(record);
 	NxJointPoseView* pose = bodyView->pose;
 	if(pose == 0)
 		return 0;
 	void* cached = *reinterpret_cast<void**>(reinterpret_cast<unsigned char*>(pose) + 8);
-	if(cached != 0)
+	if(cached == 0)
 		{
-		// The cached matrix is a 3x3 followed by the translation; the caller
-		// reads elements 9, 10 and 11 as the translation.
-		const float* m = reinterpret_cast<const float*>(cached);
+		const float* m = reinterpret_cast<const float*>(
+			reinterpret_cast<unsigned char*>(pose) + 0x20);
 		t = m + 9;
 		return m;
 		}
@@ -120,7 +116,7 @@ inline const float* nxJointWorldMatrix(NxActor* actor, const float*& t)
 	// Compose the matrix from the quaternion. The doubled products are spelled
 	// `a * a + a * a` rather than `2 * a * a` because that is the order the
 	// oracle's x87 stream evaluates, and the differential compares bits.
-	NxJointQuatView* q = reinterpret_cast<NxJointQuatView*>(pose);
+	NxJointQuatView* q = reinterpret_cast<NxJointQuatView*>(cached);
 	const float qx = q->x, qy = q->y, qz = q->z, qw = q->w;
 	t = reinterpret_cast<const float*>(&q->tx);
 

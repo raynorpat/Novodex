@@ -1150,9 +1150,8 @@ void nxActorBuildBody(void* actor, const unsigned* desc)
 	// static actor and points to a 0x260-byte nested object for a dynamic actor;
 	// the global-position getter reads the nested translation at +0x50 or the
 	// outer holder's fallback translation at +0x44. The static holder below is
-	// reconstructed. The dynamic path still uses a larger 0x1c0-byte placeholder
-	// and a smaller pose allocation to support existing joint tests. That graph
-	// is a known layout gap, not evidence of full body reconstruction.
+	// reconstructed. The dynamic path below now reproduces the three observed
+	// allocation sizes and links, but most of its physical state remains unknown.
 	unsigned char* actorBytes = static_cast<unsigned char*>(actor);
 
 	// The descriptor's body pointer. NxActorDescBase declares it immediately after
@@ -1179,44 +1178,48 @@ void nxActorBuildBody(void* actor, const unsigned* desc)
 		}
 
 	unsigned char* body = static_cast<unsigned char*>(
-		nxGetSdkAllocator()->malloc(0x1c0, NX_MEMORY_PERSISTENT));
+		nxGetSdkAllocator()->malloc(0x50, NX_MEMORY_PERSISTENT));
 	if(!body)
 		return;
-	for(int i = 0; i < 0x1c0; ++i)
-		body[i] = 0;
+	memset(body, 0, 0x50);
+	memcpy(body + 0x44, actorBytes + 0x44, 12);
 
-	// The body+8 word is a pointer, not a literal Boolean. isDynamic and
-	// Scene::createJoint test it for non-null; the actor's position getter follows
-	// it to the translation at record+0x50. The allocation graph remains partial.
-
-	// The pose the joint-descriptor rows read. A zeroed pose has a null cached
-	// matrix at +8, which is the quaternion arm, so the translation at +0x50 and
-	// the quaternion at +0x5c are what the row reads. They are copied from the
-	// actor's own globalPose, which the descriptor applied at actor+0x20.
-	unsigned char* pose = static_cast<unsigned char*>(
-		nxGetSdkAllocator()->malloc(0x80, NX_MEMORY_PERSISTENT));
-	if(!pose)
+	unsigned char* record = static_cast<unsigned char*>(
+		nxGetSdkAllocator()->malloc(0x260, NX_MEMORY_PERSISTENT));
+	if(!record)
 		{
 		nxGetSdkAllocator()->free(body);
 		return;
 		}
-	for(int i = 0; i < 0x80; ++i)
-		pose[i] = 0;
+	memset(record, 0, 0x260);
+
+	// The joint-descriptor exports walk actor+0x14 -> body+8 -> record+0x19c.
+	// The 0x50-byte pose object links back to the dynamic record at +8; that
+	// record carries the quaternion/translation used by the transform arm.
+	unsigned char* pose = static_cast<unsigned char*>(
+		nxGetSdkAllocator()->malloc(0x50, NX_MEMORY_PERSISTENT));
+	if(!pose)
+		{
+		nxGetSdkAllocator()->free(record);
+		nxGetSdkAllocator()->free(body);
+		return;
+		}
+	memset(pose, 0, 0x50);
+	*reinterpret_cast<void**>(pose + 8) = record;
 
 	// The translation, from the actor's globalPose.t at actor+0x44.
-	for(int i = 0; i < 12; ++i)
-		pose[0x50 + i] = actorBytes[0x44 + i];
+	memcpy(record + 0x50, actorBytes + 0x44, 12);
 
-	// The quaternion, from the actor's 3x3 at actor+0x20. The oracle's pose carries
-	// a quaternion at +0x5c with w last; an identity rotation is (0,0,0,1), which
-	// is what the harness's descriptors ask for.
-	*reinterpret_cast<float*>(pose + 0x5c) = 0.0f;
-	*reinterpret_cast<float*>(pose + 0x60) = 0.0f;
-	*reinterpret_cast<float*>(pose + 0x64) = 0.0f;
-	*reinterpret_cast<float*>(pose + 0x68) = 1.0f;
+	// The dynamic record carries a quaternion at +0x5c with w last. This path
+	// currently handles the identity rotation used by the staged actor and joint
+	// descriptors; nonidentity orientation recovery remains open.
+	*reinterpret_cast<float*>(record + 0x5c) = 0.0f;
+	*reinterpret_cast<float*>(record + 0x60) = 0.0f;
+	*reinterpret_cast<float*>(record + 0x64) = 0.0f;
+	*reinterpret_cast<float*>(record + 0x68) = 1.0f;
 
-	*reinterpret_cast<void**>(body + 0x19c) = pose;
-	*reinterpret_cast<void**>(body + 0x08) = pose;
+	*reinterpret_cast<void**>(record + 0x19c) = pose;
+	*reinterpret_cast<void**>(body + 0x08) = record;
 
 	// Link the body to the actor.
 	*reinterpret_cast<void**>(actorBytes + 0x14) = body;
