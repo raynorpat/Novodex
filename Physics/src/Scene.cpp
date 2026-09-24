@@ -582,6 +582,32 @@ void nxSceneRecycleActorId(NxSceneInternal* scene, unsigned id)
 	scene->at<unsigned*>(0x6d8) = last + 1;
 	}
 
+// Dynamic-record IDs use the same LIFO vector layout at Scene+0x6fc,
+// with the next fresh ID at +0x6f8. The record destructor returns its +0x11c
+// ID through this vector before releasing the 0x260-byte record.
+static unsigned nxSceneTakeRecordId(NxSceneInternal* scene)
+	{
+	unsigned* first = scene->at<unsigned*>(0x6fc);
+	unsigned* last = scene->at<unsigned*>(0x700);
+	if(first && last != first)
+		{
+		--last;
+		scene->at<unsigned*>(0x700) = last;
+		return *last;
+		}
+	return scene->at<unsigned>(0x6f8)++;
+	}
+
+static void nxSceneRecycleRecordId(NxSceneInternal* scene, unsigned id)
+	{
+	unsigned char* header = scene->bytes() + 0x6fc;
+	nxSceneArrayReserve(header, 1);
+	unsigned* last = scene->at<unsigned*>(0x700);
+	if(!last) return;
+	*last = id;
+	scene->at<unsigned*>(0x700) = last + 1;
+	}
+
 // The first dynamic record initializes five 256-slot arrays in the Scene's
 // 0xa8-byte auxiliary manager. Three are prepared through a temporary 0x800
 // staging buffer, then copied to retained 0x400-byte arrays. This follows
@@ -1236,7 +1262,11 @@ void NxSceneInternal::releaseActor(void* bodyPointer)
 	const unsigned actorId = *reinterpret_cast<unsigned*>(body + 0xc);
 	nxGetSdkAllocator()->free(actor);
 	if(record)
+		{
+		nxSceneRecycleRecordId(this,
+			*reinterpret_cast<unsigned*>(record + 0x11c));
 		nxGetSdkAllocator()->free(record);
+		}
 	nxSceneRecycleActorId(this, actorId);
 	unsigned char* shape = *reinterpret_cast<unsigned char**>(body + 0x10);
 	if(shape && *reinterpret_cast<void**>(shape + 0xe0))
@@ -1709,6 +1739,7 @@ int nxActorComputeMass(void* actor, const unsigned* bodyWord)
 	*reinterpret_cast<void**>(record + 0x19c) = body;
 	*reinterpret_cast<void**>(body + 0x08) = record;
 	NxSceneInternal* scene = *reinterpret_cast<NxSceneInternal**>(actorBytes + 4);
+	*reinterpret_cast<unsigned*>(record + 0x11c) = nxSceneTakeRecordId(scene);
 	nxSceneAuxRegisterRecord(scene, record);
 
 	return 0;

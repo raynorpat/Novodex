@@ -1012,6 +1012,7 @@ int wmain(int argc, wchar_t** argv)
 	unsigned char auxSnapshot[0xa8] = {};
 	void* sceneAuxArrays[12] = {};
 	void* scenePrunerBlocks[9] = {};
+	const unsigned char* idFirst = 0;
 	{
 	const unsigned char* internalScene = *reinterpret_cast<unsigned char* const*>(
 		reinterpret_cast<const unsigned char*>(scene) + 0x24);
@@ -1025,6 +1026,23 @@ int wmain(int argc, wchar_t** argv)
 	for(unsigned i = 0; i < 10 && aux; ++i)
 		sceneAuxArrays[i + 2] = *reinterpret_cast<void* const*>(
 			aux + i * 0x10);
+	idFirst = *reinterpret_cast<unsigned char* const*>(
+		internalScene + 0x6fc);
+	const unsigned char* idLast = *reinterpret_cast<unsigned char* const*>(
+		internalScene + 0x700);
+	const unsigned char* idEnd = *reinterpret_cast<unsigned char* const*>(
+		internalScene + 0x704);
+	printf("actor record_id_array_before_scene=%u/%u",
+		idFirst ? static_cast<unsigned>((idLast - idFirst) / 4) : 0u,
+		idFirst ? static_cast<unsigned>((idEnd - idFirst) / 4) : 0u);
+	for(unsigned i = 0; i < liveActors && i < 2; ++i)
+		{
+		const unsigned char* body = *reinterpret_cast<unsigned char* const*>(
+			reinterpret_cast<const unsigned char*>(liveActorPointers[i]) + 0x14);
+		const unsigned char* record = *reinterpret_cast<unsigned char* const*>(body + 8);
+		printf(".%x", record ? *reinterpret_cast<const unsigned*>(record + 0x11c) : 0xffffu);
+		}
+	printf("\n");
 	scenePrunerBlocks[0] = *reinterpret_cast<void* const*>(internalScene + 0x6a4);
 	for(unsigned i = 0; i < 2; ++i)
 		{
@@ -1060,6 +1078,12 @@ int wmain(int argc, wchar_t** argv)
 				allocator.frees() - beforeSceneReleaseFrees - 1 - j) == sceneAuxArrays[i])
 				{ ++freedSceneAuxArrays; break; }
 	printf("actor scene_aux_arrays_freed=12.%u\n", freedSceneAuxArrays);
+	unsigned oldRecordIdArrayFreed = 0;
+	for(unsigned j = 0; idFirst && j < allocator.frees() - beforeSceneReleaseFrees; ++j)
+		if(allocator.freedPointerFromEnd(
+			allocator.frees() - beforeSceneReleaseFrees - 1 - j) == idFirst)
+			{ oldRecordIdArrayFreed = 1; break; }
+	printf("actor old_record_id_array_freed=1.%u\n", oldRecordIdArrayFreed);
 	unsigned freedScenePrunerBlocks = 0;
 	for(unsigned i = 0; i < 9; ++i)
 		for(unsigned j = 0; scenePrunerBlocks[i] &&
