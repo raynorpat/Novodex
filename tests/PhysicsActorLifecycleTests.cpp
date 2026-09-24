@@ -10,6 +10,7 @@
 #include "NxActor.h"
 #include "NxBodyDesc.h"
 #include "NxBoxShapeDesc.h"
+#include <stdlib.h>
 #include <string.h>
 
 typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(NxU32, NxUserAllocator*, NxUserOutputStream*);
@@ -342,6 +343,57 @@ int wmain(int argc, wchar_t** argv)
 	for(NxU32 i = 0; afterStatic && i < scene->getNbActors(); ++i)
 		if(afterStatic[i] == staticActor) staticStillListed = 1;
 	printf("scene static_still_listed=%u\n", staticStillListed);
+
+	// This oracle-led probe remains opt-in until the shape-registration arrays
+	// reached by a group actor are reconstructed too.
+	if(getenv("NX_PHYSICS_PROBE_MULTI"))
+		{
+		NxBoxShapeDesc secondBox;
+		secondBox.dimensions = NxVec3(2.0f, 1.0f, 1.0f);
+		NxActorDesc multiDesc = dynamicDesc;
+		multiDesc.shapes.pushBack(&secondBox);
+		multiDesc.globalPose.t = NxVec3(7.0f, 1.0f, -2.0f);
+		const unsigned beforeAllocations = allocator.allocations();
+		NxActor* multiActor = scene->createActor(multiDesc);
+		if(!multiActor) return nxFail("multi-shape actor creation failed");
+		printf("actor multi creation_allocs=%u\n", allocator.allocations() - beforeAllocations);
+		printf("actor multi creation_sizes=");
+		for(unsigned i = 0; i < allocator.allocations() - beforeAllocations; ++i)
+			printf("%s%x", i ? "." : "", allocator.allocSizeFromEnd(
+				allocator.allocations() - beforeAllocations - 1 - i));
+		printf("\n");
+		const unsigned char* body = *reinterpret_cast<unsigned char* const*>(
+			reinterpret_cast<const unsigned char*>(multiActor) + 0x14);
+		const unsigned char* group = *reinterpret_cast<unsigned char* const*>(body + 0x10);
+		const unsigned groupSize = group ? *reinterpret_cast<const unsigned*>(
+			reinterpret_cast<uintptr_t>(group) & ~static_cast<uintptr_t>(0xfff)) : 0;
+		printf("actor multi group_size=%x\n", groupSize);
+		if(groupSize == 0x110)
+			{
+			const unsigned arrayOffsets[2] = {0xe0u, 0xf0u};
+			for(unsigned arrayIndex = 0; arrayIndex < 2; ++arrayIndex)
+				{
+				const unsigned base = arrayOffsets[arrayIndex];
+				const void* const* first = *reinterpret_cast<void* const* const*>(group + base);
+				const void* const* last = *reinterpret_cast<void* const* const*>(group + base + 4);
+				const void* const* end = *reinterpret_cast<void* const* const*>(group + base + 8);
+				printf("actor multi group_array_%x=%u/%u\n", base,
+					first ? static_cast<unsigned>(last - first) : 0u,
+					first ? static_cast<unsigned>(end - first) : 0u);
+				}
+			}
+		const unsigned beforeReleaseAllocations = allocator.allocations();
+		const unsigned beforeFrees = allocator.frees();
+		scene->releaseActor(*multiActor);
+		printf("actor multi release_allocs=%u\n",
+			allocator.allocations() - beforeReleaseAllocations);
+		printf("actor multi release_frees=%u\n", allocator.frees() - beforeFrees);
+		printf("actor multi release_sizes=");
+		for(unsigned i = 0; i < allocator.frees() - beforeFrees; ++i)
+			printf("%s%x", i ? "." : "", allocator.freedSizeFromEnd(
+				allocator.frees() - beforeFrees - 1 - i));
+		printf("\n");
+		}
 
 	sdk->releaseScene(*scene);
 	sdk->release();

@@ -281,7 +281,7 @@ void nxSceneDeadlockReport();
 // it returns a non-null shape object, which is what the caller tests.
 void* nxShapeFactory(void* shapeDesc, void* actor);
 // The multi-shape group builder (0x110 bytes). REPRODUCTION HOLE.
-void* nxShapeGroupConstruct(void* actor, unsigned count);
+void* nxShapeGroupConstruct(void* actor, const unsigned* shapeDescriptions, unsigned count);
 
 // phys_fn_000ad6e0 (0x000ad6e0, phase 6): constructs a joint of the given type over
 // a block. REPRODUCTION HOLE.
@@ -611,9 +611,9 @@ int nxActorLoadFromDescInternal(void* actor, const unsigned* d)
 	//     piVar4 = phys_fn_00001de0(*piVar4, this);
 	//     actor+0x10 = piVar4;
 	//     if (piVar4 == 0) return 0;
-	// and the multi-shape case allocates a 0x110-byte group instead. The factory is
-	// a REPRODUCTION HOLE; what matters for the caller is that actor+0x10 is
-	// non-null, because the oracle returns 0 from here when it is not.
+	// and the multi-shape case allocates a 0x110-byte group instead. Both paths
+	// still have unmodelled shape semantics; the group now owns the observed
+	// parallel shape and helper arrays for a two-box actor.
 	const unsigned shapeCount = (d[0x14] - d[0x13]) >> 2;
 	if(d[0x12] == 1 || d[0x12] == 2)
 		{
@@ -627,8 +627,9 @@ int nxActorLoadFromDescInternal(void* actor, const unsigned* d)
 		else if(shapeCount > 1)
 			{
 			// The multi-shape group. The oracle allocates 0x110 bytes and links each
-			// shape into it; the group is a hole and only its head is stored.
-			void* group = nxShapeGroupConstruct(actor, shapeCount);
+			// shape through the group-owned arrays at +0xe0 and +0xf0.
+			void* group = nxShapeGroupConstruct(actor,
+				reinterpret_cast<const unsigned*>(d[0x13]), shapeCount);
 			a[0x10 / 4] = reinterpret_cast<unsigned>(group);
 			if(!group)
 					return 0;
@@ -849,7 +850,24 @@ void NxSceneInternal::releaseActor(void* bodyPointer)
 	if(record)
 		nxGetSdkAllocator()->free(record);
 	unsigned char* shape = *reinterpret_cast<unsigned char**>(body + 0x10);
-	if(shape)
+	if(shape && *reinterpret_cast<void**>(shape + 0xe0))
+		{
+		void** shapes = *reinterpret_cast<void***>(shape + 0xe0);
+		void** shapesEnd = *reinterpret_cast<void***>(shape + 0xe4);
+		void** helpers = *reinterpret_cast<void***>(shape + 0xf0);
+		void** helpersEnd = *reinterpret_cast<void***>(shape + 0xf4);
+		while(shapesEnd != shapes && helpersEnd != helpers)
+			{
+			--shapesEnd;
+			--helpersEnd;
+			nxGetSdkAllocator()->free(*helpersEnd);
+			nxGetSdkAllocator()->free(*shapesEnd);
+			}
+		nxGetSdkAllocator()->free(helpers);
+		nxGetSdkAllocator()->free(shapes);
+		nxGetSdkAllocator()->free(shape);
+		}
+	else if(shape)
 		{
 		void* helper = *reinterpret_cast<void**>(shape + 0x9c);
 		if(helper) nxGetSdkAllocator()->free(helper);
@@ -1285,17 +1303,69 @@ void* nxShapeFactory(void* shapeDesc, void* actor)
 	return shape;
 	}
 
-// The multi-shape group builder. REPRODUCTION HOLE, as above.
-void* nxShapeGroupConstruct(void* actor, unsigned count)
+// The multi-shape group builder. The two parallel child arrays match the
+// observed two-box layout; shape registration and spatial bookkeeping remain
+// reproduction holes.
+void* nxShapeGroupConstruct(void* actor, const unsigned* shapeDescriptions, unsigned count)
 	{
-	(void)count;
 	unsigned char* group = static_cast<unsigned char*>(
 		nxGetSdkAllocator()->malloc(0x110, NX_MEMORY_PERSISTENT));
 	if(!group)
 		return 0;
-	for(int i = 0; i < 0x110; ++i)
-		group[i] = 0;
-	*reinterpret_cast<void**>(group + 4) = actor;
+	memset(group, 0, 0x110);
+	// The oracle group does not retain the public wrapper at +4; its owned
+	// children are reached through the two arrays near the end of the block.
+	unsigned char* body = *reinterpret_cast<unsigned char**>(
+		static_cast<unsigned char*>(actor) + 0x14);
+	void** shapes = 0;
+	void** helpers = 0;
+	unsigned built = 0;
+	for(unsigned i = 0; i < count; ++i)
+		{
+		unsigned char* child = static_cast<unsigned char*>(nxShapeFactory(
+			reinterpret_cast<void*>(shapeDescriptions[i]), actor));
+		if(!child) break;
+		if(i == 0)
+			{
+			shapes = static_cast<void**>(nxGetSdkAllocator()->malloc(
+				count * sizeof(void*), NX_MEMORY_PERSISTENT));
+			helpers = static_cast<void**>(nxGetSdkAllocator()->malloc(
+				count * sizeof(void*), NX_MEMORY_PERSISTENT));
+			if(!shapes || !helpers)
+				{
+				nxGetSdkAllocator()->free(*reinterpret_cast<void**>(child + 0x9c));
+				nxGetSdkAllocator()->free(child);
+				break;
+				}
+			*reinterpret_cast<void***>(group + 0xe0) = shapes;
+			*reinterpret_cast<void***>(group + 0xe4) = shapes;
+			*reinterpret_cast<void***>(group + 0xe8) = shapes + count;
+			*reinterpret_cast<void***>(group + 0xf0) = helpers;
+			*reinterpret_cast<void***>(group + 0xf4) = helpers;
+			*reinterpret_cast<void***>(group + 0xf8) = helpers + count;
+			}
+		void*** shapesEnd = reinterpret_cast<void***>(group + 0xe4);
+		void*** helpersEnd = reinterpret_cast<void***>(group + 0xf4);
+		*(*shapesEnd)++ = child;
+		*(*helpersEnd)++ = *reinterpret_cast<void**>(child + 0x9c);
+		++built;
+		}
+	if(built != count)
+		{
+		while(built)
+			{
+			--built;
+			nxGetSdkAllocator()->free(helpers[built]);
+			nxGetSdkAllocator()->free(shapes[built]);
+			}
+		if(helpers) nxGetSdkAllocator()->free(helpers);
+		if(shapes) nxGetSdkAllocator()->free(shapes);
+		nxGetSdkAllocator()->free(group);
+		if(body) *reinterpret_cast<void**>(body + 0x10) = 0;
+		return 0;
+		}
+	if(body)
+		*reinterpret_cast<void**>(body + 0x10) = group;
 	return group;
 	}
 
