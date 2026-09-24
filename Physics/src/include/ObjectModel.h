@@ -237,18 +237,19 @@ class ShapeBase
 	// The BASE vtable's stub rows (.rdata 0x10107494), transcribed as members
 	// ahead of the class going polymorphic. Each carries its slot number.
 
-	//! Slot 4, phys_fn_001249 (0x00024f70): `xor al,al; ret 0xc` -- two stack
-	//! arguments, always false. Consumer unestablished.
-	bool				nxBaseSlot4(void* argument1, void* argument2);
+	//! Slot 4, phys_fn_001249 (0x00024f70): `xor al,al; ret 0xc` --
+	//! destination, density and reserved word, always false.
+	bool				nxBaseSlot4(void* destination, float density,
+							unsigned reserved);
 	//! Slot 5, phys_fn_004812 (0x000b4070): `xor eax,eax; ret 0x14` -- four
 	//! stack arguments, always null.
 	void*				nxBaseSlot5(void* argument1, void* argument2,
 							void* argument3, void* argument4);
-	//! Slot 7, phys_fn_001035 (0x00022dd0): `xor al,al; ret 8` -- one stack
-	//! argument, always false. This is the continuous-collision sweep entry
-	//! Phase 3 left unresolved: the base shape cannot sweep, so the row is a
-	//! stub here while every final overrides it.
-	bool				nxBaseSlot7(void* argument1);
+	//! Slot 7, phys_fn_001035 (0x00022dd0): `xor al,al; ret 8` -- output
+	//! and swept record arguments, always false. This is the continuous-collision sweep entry
+	//! Phase 3 left unresolved: the base shape cannot sweep. The plane final
+	//! table reuses this stub; other final shapes can override it.
+	bool				nxBaseSlot7(unsigned* out, const void* swept);
 	//! Slot 2, phys_fn_001277 (0x000256f0): save-to-descriptor. Copies the
 	//! third pose (12 words) to record+8, the +0xde halfword zero-extended to
 	//! record+0x38, the +0xd8/+0xda halfwords to record+0x3c/0x3e, and
@@ -2045,11 +2046,19 @@ class PlaneShape
 	//! PLANE-table slot 12, phys_fn_001265: loadFromDesc -- stores the
 	//! descriptor normal/D through helper 0x24fc0 then applies BASE fields.
 	void				nxPlaneLoadFromDesc(const void* record);
+	//! phys_fn_001253 (0x00024fc0): set plane equation, classify the axis,
+	//! rebuild tangents and notify the owner.
+	void				nxPlaneSetEquation(const float* normal, float distance);
 
 	//! PLANE-table slots 9 and 11, phys_fn_001257 (0x000251d0): one row
 	//! filling two slots -- zeroes out[0..2] and writes +FLT_MAX (the
 	//! plane's unbounded reach) to out[3].
 	void				nxPlaneExtentRow(float* out) const;
+
+	//! PLANE-table slot 3, phys_fn_001259 (0x000251f0): shared debug
+	//! rendering, then four scaled plane-basis pose draws under guard C.
+	void				nxPlaneDebugRenderDispatch(const void* renderer) const;
+	void				nxPlaneBaseDebugRender(const void* renderer) const;
 	};
 
 static_assert(sizeof(PlaneShape) == 0x10c, "the plane spans base plus its basis frame");

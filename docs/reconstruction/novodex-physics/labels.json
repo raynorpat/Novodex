@@ -2,6 +2,20 @@
   "schema_version": 1,
   "labels": [
     {
+      "id": "phys_fn_001253",
+      "label": "NxPlane set-equation helper",
+      "confidence": "semantic",
+      "evidence": "oracle/capstone/manifest.json#/entries/3379",
+      "reason": "the plane load-from-descriptor row calls 0x24fc0 to copy and negate the equation, classify exact axis normals, rebuild tangents and notify the owner; four equation cases match the oracle"
+    },
+    {
+      "id": "phys_fn_001259",
+      "label": "NxPlane debug-render dispatch (slot 3)",
+      "confidence": "semantic",
+      "evidence": "oracle/capstone/manifest.json#/entries/3392",
+      "reason": "PLANE primary table .rdata:0x107430 slot 3; flag and guard gated shared renderer followed by four scaled plane-basis poses; 32 oracle/candidate callback-capture cases match bitwise"
+    },
+    {
       "id": "phys_fn_001006",
       "label": "NxCapsule debug-render dispatch (slot 3)",
       "confidence": "semantic",
@@ -2624,7 +2638,7 @@
       "label": "NxShape sweep stub (base slot 7)",
       "confidence": "semantic",
       "evidence": "oracle/capstone/manifest.json#/entries/3125",
-      "reason": "the value of BASE shape vtable .rdata:0x10107494 slot 7 (pe.json pointer record); xor al,al; ret 8 -- Phase 3's unresolved continuous-collision sweep entry, which the base shape answers with a stub while every final overrides it; driven against ShapeBase::nxBaseSlot7 by the basevt family"
+      "reason": "BASE shape vtable .rdata:0x10107494 and PLANE final table .rdata:0x10107430 slot 7 share this xor al,al; ret 8 sweep stub; it takes two stack dwords and leaves the output untouched, as driven through the plane table"
     },
     {
       "id": "phys_fn_001277",

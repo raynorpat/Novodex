@@ -925,6 +925,421 @@ int wmain(int argc, wchar_t** argv)
        candidateAllocator.freeCount - candidateBefore != oracleHeapFrees)
         ++failures;
     ++cases;
+
+    unsigned char oraclePlane[0x10c], candidatePlane[0x10c];
+    memset(oraclePlane, 0xcd, sizeof(oraclePlane));
+    memset(candidatePlane, 0xcd, sizeof(candidatePlane));
+    reinterpret_cast<BoxCtor>(const_cast<unsigned char*>(base) + 0x24ed0)(
+        oraclePlane, 0, 0);
+    PlaneShape& plane = *new(candidatePlane) PlaneShape(0, 0);
+    void** oraclePlaneTable = *reinterpret_cast<void***>(oraclePlane);
+    void** candidatePlaneTable = *reinterpret_cast<void***>(candidatePlane);
+    HMODULE planeTableOwner = 0;
+    const BOOL planeTableMapped = GetModuleHandleExW(
+        GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
+        GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+        reinterpret_cast<LPCWSTR>(candidatePlaneTable), &planeTableOwner);
+    const bool planeTableInstalled = planeTableMapped &&
+        planeTableOwner == GetModuleHandleW(0);
+    if(!planeTableInstalled) ++failures;
+    ++cases;
+    if(planeTableInstalled)
+    for(unsigned slot = 0; slot < 17; ++slot) {
+        HMODULE owner = 0;
+        const BOOL ok = GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
+            GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+            reinterpret_cast<LPCWSTR>(candidatePlaneTable[slot]), &owner);
+        if(!ok || owner != GetModuleHandleW(0)) ++failures;
+        ++cases;
+    }
+    typedef bool (__thiscall* PlaneMassSlot)(void*, void*, float, unsigned);
+    const unsigned planeMassSeeds[] = {0u,0xcdcdcdcdu,0x7fc00001u};
+    for(unsigned seed : planeMassSeeds) {
+        unsigned oracleOut[13], candidateOut[13];
+        for(unsigned i = 0; i < 13; ++i)
+            oracleOut[i] = candidateOut[i] = seed;
+        const bool ro = reinterpret_cast<PlaneMassSlot>(oraclePlaneTable[4])(
+            oraclePlane, oracleOut, 2.0f, 0);
+        const bool rc = planeTableInstalled
+            ? reinterpret_cast<PlaneMassSlot>(candidatePlaneTable[4])(
+                candidatePlane, candidateOut, 2.0f, 0)
+            : plane.mBase.nxBaseSlot4(candidateOut, 2.0f, 0);
+        oracleDigest = foldOracle(oracleDigest, &ro, sizeof(ro));
+        oracleDigest = foldOracle(oracleDigest, oracleOut, sizeof(oracleOut));
+        if(ro != rc || ro || memcmp(oracleOut, candidateOut,
+                sizeof(oracleOut)) != 0)
+            ++failures;
+        ++cases;
+    }
+    typedef bool (__thiscall* PlaneSweepSlot)(void*, unsigned*, const void*);
+    const unsigned planeSweepSeeds[] = {0u,0x80000000u,0xffffffffu};
+    for(unsigned seed : planeSweepSeeds) {
+        unsigned oracleOut = seed, candidateOut = seed;
+        const void* unread = reinterpret_cast<const void*>(0xdeadbeefu);
+        const bool ro = reinterpret_cast<PlaneSweepSlot>(oraclePlaneTable[7])(
+            oraclePlane, &oracleOut, unread);
+        const bool rc = planeTableInstalled
+            ? reinterpret_cast<PlaneSweepSlot>(candidatePlaneTable[7])(
+                candidatePlane, &candidateOut, unread)
+            : plane.mBase.nxBaseSlot7(&candidateOut, unread);
+        oracleDigest = foldOracle(oracleDigest, &ro, sizeof(ro));
+        oracleDigest = foldOracle(oracleDigest, &oracleOut, sizeof(oracleOut));
+        if(ro != rc || ro || oracleOut != candidateOut || oracleOut != seed)
+            ++failures;
+        ++cases;
+    }
+    NxShapeRaycastFn oraclePlaneRaycast =
+        reinterpret_cast<NxShapeRaycastFn>(oraclePlaneTable[5]);
+    const NxRay planeRays[4] = {
+        NxRay(NxVec3(0,3,0), NxVec3(0,-1,0)),
+        NxRay(NxVec3(0,-3,0), NxVec3(0,1,0)),
+        NxRay(NxVec3(0,0,0), NxVec3(0,-1,0)),
+        NxRay(NxVec3(2,5,-1), NxVec3(0,-1,0))
+    };
+    for(unsigned ray = 0; ray < 4; ++ray)
+    for(unsigned limit = 0; limit < 2; ++limit)
+    for(unsigned normal = 0; normal < 2; ++normal) {
+        NxRaycastHit oracleHit, candidateHit;
+        memset(&oracleHit, 0xcd, sizeof(oracleHit));
+        memset(&candidateHit, 0xcd, sizeof(candidateHit));
+        const unsigned flags = normal ? NX_RAYCAST_NORMAL : 0u;
+        const NxCollisionShape* ro = oraclePlaneRaycast(
+            reinterpret_cast<const NxCollisionShape*>(oraclePlane),
+            &planeRays[ray], limits[limit], 0, flags, &oracleHit);
+        const NxCollisionShape* rc = planeTableInstalled
+            ? reinterpret_cast<NxShapeRaycastFn>(candidatePlaneTable[5])(
+                reinterpret_cast<const NxCollisionShape*>(candidatePlane),
+                &planeRays[ray], limits[limit], 0, flags, &candidateHit)
+            : NxShapeRaycastPlane(
+                reinterpret_cast<const NxCollisionShape*>(candidatePlane),
+                nullptr, &planeRays[ray], limits[limit], 0, flags,
+                &candidateHit);
+        if(ro) oracleHit.shape = reinterpret_cast<NxShape*>(0x12345678u);
+        if(rc) candidateHit.shape = reinterpret_cast<NxShape*>(0x12345678u);
+        const unsigned oraclePresent = ro != 0;
+        oracleDigest = foldOracle(oracleDigest, &oraclePresent,
+            sizeof(oraclePresent));
+        oracleDigest = foldOracle(oracleDigest, &oracleHit,
+            sizeof(oracleHit));
+        if(bool(ro) != bool(rc) ||
+           memcmp(&oracleHit, &candidateHit, sizeof(oracleHit)) != 0) {
+            fprintf(stderr, "plane slot 5 ray=%u limit=%u normal=%u differs\n",
+                ray, limit, normal);
+            ++failures;
+        }
+        ++cases;
+    }
+    unsigned planeSaveA, planeSaveB, planeSaveC;
+    memcpy(&planeSaveA, guardA, 4); memcpy(&planeSaveB, guardB, 4);
+    memcpy(&planeSaveC, guardC, 4);
+    DWORD planeOldProtection, planeIgnoredProtection;
+    if(!VirtualProtect(guardC, 4, PAGE_READWRITE, &planeOldProtection)) return 2;
+    const unsigned planeZero = 0, planeOne = 0x3f800000u;
+    memcpy(guardA, &planeZero, 4); memcpy(guardB, &planeZero, 4);
+    const float planeGeometry[2][10] = {
+        {0,1,0,0, -1,0,0, 0,0,1},
+        {0,0,1,2, 1,0,0, 0,1,0}
+    };
+    for(unsigned geometry = 0; geometry < 2; ++geometry)
+    for(unsigned low = 0; low < 2; ++low)
+    for(unsigned enabled = 0; enabled < 2; ++enabled)
+    for(unsigned cGuard = 0; cGuard < 2; ++cGuard) {
+        memcpy(oraclePlane + 0xe0, planeGeometry[geometry], 40);
+        memcpy(candidatePlane + 0xe0, planeGeometry[geometry], 40);
+        const unsigned short flags = static_cast<unsigned short>(
+            low | (enabled ? 8u : 0u));
+        memcpy(oraclePlane + 0xde, &flags, 2);
+        memcpy(candidatePlane + 0xde, &flags, 2);
+        memcpy(guardC, cGuard ? &planeOne : &planeZero, 4);
+        renderCount = lineCount = 0;
+        memset(renderRows, 0xcd, sizeof(renderRows));
+        memset(lineRows, 0xcd, sizeof(lineRows));
+        reinterpret_cast<SphereSlot3>(oraclePlaneTable[3])(
+            oraclePlane, rendererObject);
+        const unsigned oraclePoseCount = renderCount;
+        const unsigned oracleLineCount = lineCount;
+        unsigned oraclePoseRows[12][16], oracleLineRows[8][7];
+        memcpy(oraclePoseRows, renderRows, sizeof(oraclePoseRows));
+        memcpy(oracleLineRows, lineRows, sizeof(oracleLineRows));
+        oracleDigest = foldOracle(oracleDigest, &oraclePoseCount,
+            sizeof(oraclePoseCount));
+        oracleDigest = foldOracle(oracleDigest, &oracleLineCount,
+            sizeof(oracleLineCount));
+        oracleDigest = foldOracle(oracleDigest, oraclePoseRows,
+            sizeof(oraclePoseRows));
+        oracleDigest = foldOracle(oracleDigest, oracleLineRows,
+            sizeof(oracleLineRows));
+        renderCount = lineCount = 0;
+        memset(renderRows, 0xcd, sizeof(renderRows));
+        memset(lineRows, 0xcd, sizeof(lineRows));
+        if(planeTableInstalled)
+            reinterpret_cast<SphereSlot3>(candidatePlaneTable[3])(
+                candidatePlane, rendererObject);
+        else
+            plane.nxPlaneDebugRenderDispatch(rendererObject);
+        const unsigned expected = enabled && cGuard ? 1u : 0u;
+        if(oraclePoseCount != 4u * expected || oracleLineCount != 0 ||
+           renderCount != oraclePoseCount || lineCount != oracleLineCount ||
+           memcmp(oraclePoseRows, renderRows, sizeof(renderRows)) != 0 ||
+           memcmp(oracleLineRows, lineRows, sizeof(lineRows)) != 0) {
+            fprintf(stderr,
+                "plane slot 3 geometry=%u low=%u enabled=%u c=%u lines=%u/%u poses=%u/%u differs\n",
+                geometry, low, enabled, cGuard, oracleLineCount, lineCount,
+                oraclePoseCount, renderCount);
+            ++failures;
+        }
+        ++cases;
+    }
+    unsigned planeSaveScale;
+    memcpy(&planeSaveScale, scale, 4);
+    memcpy(scale, &planeOne, 4);
+    memcpy(oraclePlane + 0xe0, planeGeometry[1], 40);
+    memcpy(candidatePlane + 0xe0, planeGeometry[1], 40);
+    const float planePoseRotation[9] = {0,-1,0, 1,0,0, 0,0,1};
+    const float planePoseTranslation[3] = {3,4,5};
+    memcpy(oraclePlane + 0x0c, planePoseRotation, 36);
+    memcpy(candidatePlane + 0x0c, planePoseRotation, 36);
+    memcpy(oraclePlane + 0x30, planePoseTranslation, 12);
+    memcpy(candidatePlane + 0x30, planePoseTranslation, 12);
+    for(unsigned a = 0; a < 2; ++a)
+    for(unsigned b = 0; b < 2; ++b)
+    for(unsigned c = 0; c < 2; ++c)
+    for(unsigned low = 0; low < 2; ++low) {
+        memcpy(guardA, a ? &planeOne : &planeZero, 4);
+        memcpy(guardB, b ? &planeOne : &planeZero, 4);
+        memcpy(guardC, c ? &planeOne : &planeZero, 4);
+        const unsigned short flags = static_cast<unsigned short>(8u | low);
+        memcpy(oraclePlane + 0xde, &flags, 2);
+        memcpy(candidatePlane + 0xde, &flags, 2);
+        renderCount = lineCount = 0;
+        memset(renderRows, 0xcd, sizeof(renderRows));
+        memset(lineRows, 0xcd, sizeof(lineRows));
+        reinterpret_cast<SphereSlot3>(oraclePlaneTable[3])(
+            oraclePlane, rendererObject);
+        const unsigned oraclePoseCount = renderCount;
+        const unsigned oracleLineCount = lineCount;
+        unsigned oraclePoseRows[12][16], oracleLineRows[8][7];
+        memcpy(oraclePoseRows, renderRows, sizeof(oraclePoseRows));
+        memcpy(oracleLineRows, lineRows, sizeof(oracleLineRows));
+        oracleDigest = foldOracle(oracleDigest, &oraclePoseCount,
+            sizeof(oraclePoseCount));
+        oracleDigest = foldOracle(oracleDigest, &oracleLineCount,
+            sizeof(oracleLineCount));
+        oracleDigest = foldOracle(oracleDigest, oraclePoseRows,
+            sizeof(oraclePoseRows));
+        oracleDigest = foldOracle(oracleDigest, oracleLineRows,
+            sizeof(oracleLineRows));
+        renderCount = lineCount = 0;
+        memset(renderRows, 0xcd, sizeof(renderRows));
+        memset(lineRows, 0xcd, sizeof(lineRows));
+        if(planeTableInstalled)
+            reinterpret_cast<SphereSlot3>(candidatePlaneTable[3])(
+                candidatePlane, rendererObject);
+        else
+            plane.nxPlaneDebugRenderDispatch(rendererObject);
+        if(oraclePoseCount != 3u*b + 4u*c ||
+           oracleLineCount != 3u*a ||
+           renderCount != oraclePoseCount || lineCount != oracleLineCount ||
+           memcmp(oraclePoseRows, renderRows, sizeof(renderRows)) != 0 ||
+           memcmp(oracleLineRows, lineRows, sizeof(lineRows)) != 0) {
+            fprintf(stderr,
+                "plane shared render a=%u b=%u c=%u low=%u lines=%u/%u poses=%u/%u differs\n",
+                a, b, c, low, oracleLineCount, lineCount,
+                oraclePoseCount, renderCount);
+            ++failures;
+        }
+        ++cases;
+    }
+    memcpy(scale, &planeSaveScale, 4);
+    memcpy(guardA, &planeSaveA, 4); memcpy(guardB, &planeSaveB, 4);
+    memcpy(guardC, &planeSaveC, 4);
+    VirtualProtect(guardC, 4, planeOldProtection, &planeIgnoredProtection);
+    unsigned char planeRecords[3 * 24];
+    for(unsigned i = 0; i < sizeof(planeRecords); i += 4) {
+        const unsigned word = 0x55000000u + i;
+        memcpy(planeRecords + i, &word, 4);
+    }
+    unsigned char planeInner[0x20] = {};
+    void* planeRecordsPtr = planeRecords;
+    memcpy(planeInner + 0x14, &planeRecordsPtr, 4);
+    unsigned char oraclePlaneFake[0x10c] = {}, candidatePlaneFake[0x10c] = {};
+    memcpy(oraclePlaneFake, &oraclePlaneTable, 4);
+    memcpy(candidatePlaneFake, &candidatePlaneTable, 4);
+    void* planeInnerPtr = planeInner;
+    memcpy(oraclePlaneFake + 0xc4, &planeInnerPtr, 4);
+    memcpy(candidatePlaneFake + 0xc4, &planeInnerPtr, 4);
+    oraclePlaneFake[0xac] = candidatePlaneFake[0xac] = 2;
+    for(unsigned idx = 0; idx < 3; ++idx) {
+        const unsigned short index = static_cast<unsigned short>(idx);
+        memcpy(oraclePlaneFake + 0xcc, &index, 2);
+        memcpy(candidatePlaneFake + 0xcc, &index, 2);
+        unsigned oracleOut[8] = {}, candidateOut[8] = {};
+        reinterpret_cast<BoundsSlot>(oraclePlaneTable[8])(
+            oraclePlaneFake, reinterpret_cast<float*>(oracleOut));
+        reinterpret_cast<BoundsSlot>(candidatePlaneTable[8])(
+            candidatePlaneFake, reinterpret_cast<float*>(candidateOut));
+        oracleDigest = foldOracle(oracleDigest, oracleOut, sizeof(oracleOut));
+        if(memcmp(oracleOut, candidateOut, sizeof(oracleOut)) != 0) {
+            fprintf(stderr, "plane slot 8 idx=%u differs\n", idx);
+            ++failures;
+        }
+        ++cases;
+    }
+    for(unsigned slot = 9; slot <= 11; ++slot) {
+        float oracleOut[6], candidateOut[6];
+        memset(oracleOut, 0xcd, sizeof(oracleOut));
+        memset(candidateOut, 0xcd, sizeof(candidateOut));
+        reinterpret_cast<BoundsSlot>(oraclePlaneTable[slot])(
+            oraclePlane, oracleOut);
+        reinterpret_cast<BoundsSlot>(candidatePlaneTable[slot])(
+            candidatePlane, candidateOut);
+        oracleDigest = foldOracle(oracleDigest, oracleOut, sizeof(oracleOut));
+        if(memcmp(oracleOut, candidateOut, sizeof(oracleOut)) != 0) {
+            fprintf(stderr, "plane slot %u bounds differ\n", slot);
+            ++failures;
+        }
+        ++cases;
+    }
+    for(unsigned slot = 14; slot <= 16; ++slot) {
+        if(reinterpret_cast<SelfSlot>(oraclePlaneTable[slot])(
+               oraclePlane) != oraclePlane ||
+           reinterpret_cast<SelfSlot>(candidatePlaneTable[slot])(
+               candidatePlane) != candidatePlane)
+            ++failures;
+        ++cases;
+    }
+    unsigned char planeDesc[0x5c] = {};
+    const float planeDescEquations[4][4] = {
+        {1,0,0,2}, {0,1,0,2}, {0,0,-1,2}, {0.6f,0.8f,0,1.25f}
+    };
+    const unsigned short planeDescGroup = 4;
+    memcpy(planeDesc + 0x3c, &planeDescGroup, 2);
+    typedef void (__thiscall* PlaneLoadSlot)(void*, const void*);
+    for(unsigned eq = 0; eq < 4; ++eq) {
+        memcpy(planeDesc + 0x4c, planeDescEquations[eq],
+            sizeof(planeDescEquations[eq]));
+        reinterpret_cast<PlaneLoadSlot>(oraclePlaneTable[12])(
+            oraclePlane, planeDesc);
+        reinterpret_cast<PlaneLoadSlot>(candidatePlaneTable[12])(
+            candidatePlane, planeDesc);
+        oracleDigest = foldOracle(oracleDigest, oraclePlane + 0xe0, 44);
+        if(memcmp(oraclePlane + 0xe0, candidatePlane + 0xe0, 44) != 0 ||
+           memcmp(oraclePlane + 0x6c, candidatePlane + 0x6c, 48) != 0 ||
+           memcmp(oraclePlane + 0xd8, candidatePlane + 0xd8, 8) != 0) {
+            fprintf(stderr, "plane slot 12 equation=%u load differs\n", eq);
+            ++failures;
+        }
+        ++cases;
+    }
+    typedef bool (__thiscall* PlaneSaveSlot)(void*, void*);
+    unsigned char oraclePlaneDesc[0x5c], candidatePlaneDesc[0x5c];
+    memset(oraclePlaneDesc, 0xcd, sizeof(oraclePlaneDesc));
+    memset(candidatePlaneDesc, 0xcd, sizeof(candidatePlaneDesc));
+    const bool savedO = reinterpret_cast<PlaneSaveSlot>(oraclePlaneTable[13])(
+        oraclePlane, oraclePlaneDesc);
+    const bool savedC = reinterpret_cast<PlaneSaveSlot>(candidatePlaneTable[13])(
+        candidatePlane, candidatePlaneDesc);
+    oracleDigest = foldOracle(oracleDigest, &savedO, sizeof(savedO));
+    oracleDigest = foldOracle(oracleDigest, oraclePlaneDesc,
+        sizeof(oraclePlaneDesc));
+    if(savedO != savedC || memcmp(oraclePlaneDesc, candidatePlaneDesc,
+            sizeof(oraclePlaneDesc)) != 0) {
+        fprintf(stderr, "plane slot 13 save differs\n");
+        ++failures;
+    }
+    ++cases;
+    const bool planeAppliedO = reinterpret_cast<CapsuleApplySlot>(
+        oraclePlaneTable[1])(oraclePlane, baseRecord);
+    const bool planeAppliedC = reinterpret_cast<CapsuleApplySlot>(
+        candidatePlaneTable[1])(candidatePlane, baseRecord);
+    oracleDigest = foldOracle(oracleDigest, &planeAppliedO,
+        sizeof(planeAppliedO));
+    oracleDigest = foldOracle(oracleDigest, oraclePlane + 0x6c, 48);
+    if(planeAppliedO != planeAppliedC ||
+       memcmp(oraclePlane + 0x6c, candidatePlane + 0x6c, 48) != 0 ||
+       memcmp(oraclePlane + 0xd8, candidatePlane + 0xd8, 8) != 0) {
+        fprintf(stderr, "plane slot 1 apply differs\n");
+        ++failures;
+    }
+    ++cases;
+    unsigned char oraclePlaneBase[0x5c], candidatePlaneBase[0x5c];
+    memset(oraclePlaneBase, 0xcd, sizeof(oraclePlaneBase));
+    memset(candidatePlaneBase, 0xcd, sizeof(candidatePlaneBase));
+    const bool planeBaseSavedO = reinterpret_cast<PlaneSaveSlot>(
+        oraclePlaneTable[2])(oraclePlane, oraclePlaneBase);
+    const bool planeBaseSavedC = reinterpret_cast<PlaneSaveSlot>(
+        candidatePlaneTable[2])(candidatePlane, candidatePlaneBase);
+    oracleDigest = foldOracle(oracleDigest, &planeBaseSavedO,
+        sizeof(planeBaseSavedO));
+    oracleDigest = foldOracle(oracleDigest, oraclePlaneBase,
+        sizeof(oraclePlaneBase));
+    if(planeBaseSavedO != planeBaseSavedC ||
+       memcmp(oraclePlaneBase, candidatePlaneBase,
+           sizeof(oraclePlaneBase)) != 0) {
+        fprintf(stderr, "plane slot 2 save differs\n");
+        ++failures;
+    }
+    ++cases;
+    unsigned char oraclePlaneBeforeOwner[0x10c], candidatePlaneBeforeOwner[0x10c];
+    memcpy(oraclePlaneBeforeOwner, oraclePlane,
+        sizeof(oraclePlaneBeforeOwner));
+    memcpy(candidatePlaneBeforeOwner, candidatePlane,
+        sizeof(candidatePlaneBeforeOwner));
+    reinterpret_cast<CapsuleOwnerSlot>(oraclePlaneTable[6])(oraclePlane, 1);
+    reinterpret_cast<CapsuleOwnerSlot>(candidatePlaneTable[6])(
+        candidatePlane, 1);
+    const unsigned planeOwnerNoopO =
+        memcmp(oraclePlaneBeforeOwner, oraclePlane,
+            sizeof(oraclePlaneBeforeOwner)) == 0;
+    const unsigned planeOwnerNoopC =
+        memcmp(candidatePlaneBeforeOwner, candidatePlane,
+            sizeof(candidatePlaneBeforeOwner)) == 0;
+    oracleDigest = foldOracle(oracleDigest, &planeOwnerNoopO,
+        sizeof(planeOwnerNoopO));
+    if(!planeOwnerNoopO || planeOwnerNoopO != planeOwnerNoopC) {
+        fprintf(stderr, "plane slot 6 detached owner update differs\n");
+        ++failures;
+    }
+    ++cases;
+    oracleBefore = oracleFreeCount;
+    candidateBefore = candidateAllocator.freeCount;
+    reinterpret_cast<DtorSlot>(oraclePlaneTable[0])(oraclePlane, 0);
+    if(planeTableInstalled)
+        reinterpret_cast<DtorSlot>(candidatePlaneTable[0])(candidatePlane, 0);
+    else
+        plane.nxPlaneScalarDeletingDtor(0);
+    const unsigned oraclePlaneStackFrees = oracleFreeCount - oracleBefore;
+    oracleDigest = foldOracle(oracleDigest, &oraclePlaneStackFrees,
+        sizeof(oraclePlaneStackFrees));
+    if(oraclePlaneStackFrees != 1 ||
+       candidateAllocator.freeCount - candidateBefore != oraclePlaneStackFrees)
+        ++failures;
+    ++cases;
+    unsigned char* oraclePlaneHeap = static_cast<unsigned char*>(malloc(0x10c));
+    unsigned char* candidatePlaneHeap = static_cast<unsigned char*>(malloc(0x10c));
+    if(!oraclePlaneHeap || !candidatePlaneHeap) return 2;
+    memset(oraclePlaneHeap, 0xcd, 0x10c);
+    memset(candidatePlaneHeap, 0xcd, 0x10c);
+    reinterpret_cast<BoxCtor>(const_cast<unsigned char*>(base) + 0x24ed0)(
+        oraclePlaneHeap, 0, 0);
+    new(candidatePlaneHeap) PlaneShape(0, 0);
+    void** oraclePlaneHeapTable = *reinterpret_cast<void***>(oraclePlaneHeap);
+    void** candidatePlaneHeapTable = *reinterpret_cast<void***>(candidatePlaneHeap);
+    oracleBefore = oracleFreeCount;
+    candidateBefore = candidateAllocator.freeCount;
+    reinterpret_cast<DtorSlot>(oraclePlaneHeapTable[0])(oraclePlaneHeap, 1);
+    if(planeTableInstalled)
+        reinterpret_cast<DtorSlot>(candidatePlaneHeapTable[0])(
+            candidatePlaneHeap, 1);
+    else
+        reinterpret_cast<PlaneShape*>(candidatePlaneHeap)->nxPlaneScalarDeletingDtor(1);
+    const unsigned oraclePlaneHeapFrees = oracleFreeCount - oracleBefore;
+    oracleDigest = foldOracle(oracleDigest, &oraclePlaneHeapFrees,
+        sizeof(oraclePlaneHeapFrees));
+    if(oraclePlaneHeapFrees != 2 ||
+       candidateAllocator.freeCount - candidateBefore != oraclePlaneHeapFrees)
+        ++failures;
+    ++cases;
     nxSetSdkAllocatorBridge(0);
     printf("shape vtable oracle_digest=%08x cases=%u failures=%u\n",
         oracleDigest, cases, failures);

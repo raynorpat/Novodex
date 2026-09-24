@@ -10,6 +10,7 @@
 #include "MemoryStream.h"
 #include "NxIntersectionSegmentBox.h"
 #include "ContactGeneration.h"
+#include "NxUtilities.h"
 
 #include <math.h>
 #include <string.h>
@@ -3915,6 +3916,36 @@ static void** nxCapsuleShapeInternalVtable()
 	return table.slot;
 	}
 
+static void** nxPlaneShapeInternalVtable()
+	{
+	struct Table
+		{
+		void* slot[17];
+		Table()
+			{
+			slot[0] = nxShapeMethodAddress(&PlaneShape::nxPlaneScalarDeletingDtor);
+			slot[1] = nxShapeMethodAddress(&ShapeBase::nxApplyDescriptor);
+			slot[2] = nxShapeMethodAddress(&ShapeBase::nxBaseSaveState);
+			slot[3] = nxShapeMethodAddress(&PlaneShape::nxPlaneDebugRenderDispatch);
+			slot[4] = nxShapeMethodAddress(&ShapeBase::nxBaseSlot4);
+			slot[5] = reinterpret_cast<void*>(&NxShapeRaycastPlane);
+			slot[6] = nxShapeMethodAddress(&ShapeBase::nxApplyOwnerUpdate);
+			slot[7] = nxShapeMethodAddress(&ShapeBase::nxBaseSlot7);
+			slot[8] = nxShapeMethodAddress(&PlaneShape::nxPlaneIndexed6_1267);
+			slot[9] = nxShapeMethodAddress(&PlaneShape::nxPlaneLocalAABB1255);
+			slot[10] = nxShapeMethodAddress(&PlaneShape::nxPlaneExtentRow);
+			slot[11] = slot[10];
+			slot[12] = nxShapeMethodAddress(&PlaneShape::nxPlaneLoadFromDesc);
+			slot[13] = nxShapeMethodAddress(&PlaneShape::nxPlaneSaveState);
+			slot[14] = nxShapeMethodAddress(&ShapeBase::nxSelf);
+			slot[15] = slot[14];
+			slot[16] = slot[14];
+			}
+		};
+	static Table table;
+	return table.slot;
+	}
+
 BoxShape::BoxShape(void* owner, unsigned argument)
 	: mBase(owner, argument)				// forwarded unchanged: 0x0002187c..80
 	{
@@ -4216,11 +4247,34 @@ bool MeshShape::nxMeshLoadFromDesc(const void* record)
 void PlaneShape::nxPlaneLoadFromDesc(const void* record)
 	{
 	const unsigned char* rec = static_cast<const unsigned char*>(record);
-	memcpy(&mNormalE0, rec + 0x4c, sizeof(mNormalE0));
 	float d = 0.0f;
 	memcpy(&d, rec + 0x58, sizeof(d));
-	mDistanceEC = -d;
+	nxPlaneSetEquation(reinterpret_cast<const float*>(rec + 0x4c), d);
 	mBase.nxApplyDescriptor(rec);
+	}
+
+// phys_fn_001253 (0x24fc0), the plane equation helper reached by slot 12.
+void PlaneShape::nxPlaneSetEquation(const float* normal, float distance)
+	{
+	memcpy(mNormalE0, normal, sizeof(mNormalE0));
+	mDistanceEC = -distance;
+	unsigned x, y, z;
+	memcpy(&x, mNormalE0, 4);
+	memcpy(&y, mNormalE0 + 1, 4);
+	memcpy(&z, mNormalE0 + 2, 4);
+	x &= 0x7fffffffu;
+	y &= 0x7fffffffu;
+	z &= 0x7fffffffu;
+	mWord108 = x == 0x3f800000u && y == 0 && z == 0 ? 0u
+		: x == 0 && y == 0x3f800000u && z == 0 ? 1u
+		: x == 0 && y == 0 && z == 0x3f800000u ? 2u : 3u;
+	NxNormalToTangents(
+		*reinterpret_cast<const NxVec3*>(&mNormalE0[0]),
+		*reinterpret_cast<NxVec3*>(&mTangentF0[0]),
+		*reinterpret_cast<NxVec3*>(&mBinormalFC[0]));
+	mBase.nxApplyOwnerUpdate(1);
+	// 0x2507e marks owner dirty flag 0x80 through 0x26c90. The detached
+	// shape path tested here has no owner and returns without a write.
 	}
 
 void ShapeBase::nxApplyOwnerUpdate(unsigned flags)
@@ -4306,11 +4360,13 @@ void PlaneShape::nxPlaneScalarDeletingDtor(unsigned flags)
 	{
 	if(mBase.mWord9C)
 		{
-		// destroyed through its own vtable: 0x00025433..37
+		// plane collision-object deleting entry, flag 1.
+		reinterpret_cast<CollisionObject*>(mBase.mWord9C)->nxScalarDeletingDtor(1);
 		}
 	mBase.nxBaseDtorOwnerArms();		// owner arms, 0x26be1..c35
 	mBase.mPrunable.~Prunable();			// tail of the base-dtor chain
-	(void) flags;							// self-free arm not modeled
+	if(flags & 1u)
+		nxGetSdkAllocator()->free(this);
 	}
 
 // phys_fn_001375 (0x00027c30), SPHERE-table slot 0.
@@ -5383,11 +5439,10 @@ void MeshShape::nxMeshScalarDeletingDtor(unsigned flags)
 // ---------------------------------------------------------------------------
 // PlaneShape. See ObjectModel.h for the row map.
 
-#include "NxUtilities.h"
-
 PlaneShape::PlaneShape(void* owner, unsigned argument)
 	: mBase(owner, argument)				// forwarded unchanged: 0x00024edb..df
 	{
+	mBase.mVptrSlot = nxPlaneShapeInternalVtable();
 	// The embedded collision object: a fresh 0x1c-byte block through the SDK
 	// allocator (0x00024eea..f8), built by phys_fn_001159 -- the plane-family
 	// variant of the shared collision-object constructor -- with the plane
@@ -5433,6 +5488,104 @@ void PlaneShape::nxPlaneExtentRow(float* out) const
 	out[2] = 0.0f;
 	unsigned big = 0x7f7fffffu;				// +FLT_MAX: the unbounded reach
 	memcpy(out + 3, &big, sizeof(big));
+	}
+
+// phys_fn_001305 (0x25960) through a PLANE receiver. The second arm calls
+// the plane's slot-10 extent row for the shared three-pose debug display.
+void PlaneShape::nxPlaneBaseDebugRender(const void* renderer) const
+	{
+	if(!g_nxGuardRef || !renderer)
+		return;
+	const float ref = *g_nxGuardRef;
+	void** table = *reinterpret_cast<void** const*>(renderer);
+	typedef void (__fastcall* DrawLineFn)(void*, void*, const float*,
+		const float*, unsigned);
+	typedef void (__fastcall* DrawPoseFn)(void*, void*, unsigned,
+		const void*, unsigned, unsigned, unsigned);
+	DrawLineFn drawLine = reinterpret_cast<DrawLineFn>(table[8]);
+	DrawPoseFn drawPose = reinterpret_cast<DrawPoseFn>(table[14]);
+	void* rendererArg = const_cast<void*>(renderer);
+	const float guardA = *g_nxGuardA;
+	if(guardA != ref || guardA != guardA)
+		{
+		const float k = *g_nxRenderScale * guardA;
+		const float* rot = reinterpret_cast<const float*>(&mBase.mPose0C.mRotation);
+		const float* trn = reinterpret_cast<const float*>(&mBase.mPose0C.mTranslation);
+		static const unsigned colors[3] = { 0xcf0000u, 0xcf00u, 0xcfu };
+		for(unsigned axis = 0; axis < 3; ++axis)
+			{
+			const float start[3] = { trn[0], trn[1], trn[2] };
+			const float end[3] = {
+				k * rot[axis] + trn[0],
+				k * rot[3 + axis] + trn[1],
+				k * rot[6 + axis] + trn[2]
+			};
+			drawLine(rendererArg, nullptr, start, end, colors[axis]);
+			}
+		}
+	const float guardB = *g_nxGuardB;
+	if(guardB != ref || guardB != guardB)
+		{
+		float center[4] = {};
+		nxPlaneExtentRow(center);
+		const float* rot = reinterpret_cast<const float*>(&mBase.mPose0C.mRotation);
+		float pose[12];
+		for(unsigned i = 0; i < 9; ++i)
+			pose[i] = rot[i];
+		pose[9] = center[0];
+		pose[10] = center[1];
+		pose[11] = center[2];
+		unsigned radiusBits;
+		memcpy(&radiusBits, center + 3, 4);
+		for(unsigned round = 0; round < 3; ++round)
+			{
+			drawPose(rendererArg, nullptr, 0x14, pose, 0xffff00ffu,
+				radiusBits, 0);
+			if(round < 2)
+				{
+				float next[9];
+				for(unsigned row = 0; row < 3; ++row)
+					for(unsigned col = 0; col < 3; ++col)
+						next[row * 3 + col] = pose[row * 3 + (col + 1) % 3];
+				memcpy(pose, next, sizeof(next));
+				}
+			}
+		}
+	}
+
+// phys_fn_001259 (0x251f0), PLANE primary-table slot 3.
+void PlaneShape::nxPlaneDebugRenderDispatch(const void* renderer) const
+	{
+	if(!mBase.nxFlagBitsDE(8) || !renderer)
+		return;
+	nxPlaneBaseDebugRender(renderer);
+	if(!g_nxGuardC || !g_nxGuardRef)
+		return;
+	const float guard = *g_nxGuardC;
+	const float ref = *g_nxGuardRef;
+	if(guard == ref && guard == guard)
+		return;
+	void** table = *reinterpret_cast<void** const*>(renderer);
+	typedef void (__fastcall* DrawPoseFn)(void*, void*, unsigned,
+		const void*, unsigned, unsigned, unsigned);
+	DrawPoseFn drawPose = reinterpret_cast<DrawPoseFn>(table[14]);
+	const unsigned color = mBase.nxFlagBitsDE(7) ? 0xffff00ffu : 0xffffffffu;
+	float pose[12];
+	for(unsigned row = 0; row < 3; ++row)
+		{
+		pose[3 * row] = mTangentF0[row];
+		pose[3 * row + 1] = mBinormalFC[row];
+		pose[3 * row + 2] = mNormalE0[row];
+		pose[9 + row] = -mNormalE0[row] * mDistanceEC;
+		}
+	static const float scales[4] = {1.0f,10.0f,100.0f,1000.0f};
+	for(unsigned round = 0; round < 4; ++round)
+		{
+		unsigned scaleBits;
+		memcpy(&scaleBits, &scales[round], 4);
+		drawPose(const_cast<void*>(renderer), nullptr, 0x14, pose,
+			color, scaleBits, 0);
+		}
 	}
 
 // ---------------------------------------------------------------------------
@@ -5486,7 +5639,8 @@ void MeshShape::nxMeshGetWords44(unsigned* out) const
 // The BASE vtable's stub rows. See ObjectModel.h for the slot map.
 
 // phys_fn_001249 (0x00024f70), base-table slot 4.
-bool ShapeBase::nxBaseSlot4(void* /*argument1*/, void* /*argument2*/)
+bool ShapeBase::nxBaseSlot4(void* /*destination*/, float /*density*/,
+	unsigned /*reserved*/)
 	{
 	return false;							// xor al,al; ret 0xc
 	}
@@ -5499,7 +5653,7 @@ void* ShapeBase::nxBaseSlot5(void* /*argument1*/, void* /*argument2*/,
 	}
 
 // phys_fn_001035 (0x00022dd0), base-table slot 7.
-bool ShapeBase::nxBaseSlot7(void* /*argument1*/)
+bool ShapeBase::nxBaseSlot7(unsigned* /*out*/, const void* /*swept*/)
 	{
 	return false;							// xor al,al; ret 8
 	}

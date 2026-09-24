@@ -8,6 +8,8 @@
 #include "ContactGeneration.h"
 #include "NxIntersectionRaySphere.h"
 #include "NxIntersectionSegmentCapsule.h"
+#include "NxIntersectionRayPlane.h"
+#include "NxPlane.h"
 
 // The original row executes x87 fsqrt. Its result must follow the live
 // control word, including the simulation step's 0x0f7f setting.
@@ -166,4 +168,65 @@ const NxCollisionShape* __fastcall NxShapeRaycastCapsule(const NxCollisionShape*
 	hit->flags = 0x13;
 	// hit->worldNormal is deliberately not written. See above.
 	return capsule;
+	}
+
+// phys_fn_001261 at 0x00025350: what a PLANE shape puts in vtable slot 5.
+//
+// It is a segment/plane raycast whose only callee is NxRayPlaneIntersect at
+// 0x00036bb0, a Task 2 export. Three gates in order -- the ray must run into
+// the plane, the hit must be ahead of the origin, and it must be within the
+// distance limit -- and every one of them lets an unordered comparison through,
+// so a NaN anywhere in the ray or the plane reaches the hit record rather than
+// being rejected.
+//
+// `hit.shape` is written from `shape->[0x9c]` (0x000253d8), the collision
+// object, not from the shape itself. Whether that object is what the public API
+// hands out as an NxShape is a Phase 5 question; this row only records which
+// pointer the oracle stores.
+const NxCollisionShape* __fastcall NxShapeRaycastPlane(const NxCollisionShape* plane,
+	void* edxUnused, const NxRay* worldRay, NxReal maxDistance, NxU32 unread,
+	NxU32 hintFlags, NxRaycastHit* hit)
+	{
+	(void) edxUnused;
+	(void) unread;
+	const NxReal* n = plane->geometry;
+
+	// 0x00025357..0x00025377, accumulated z, y, x and left in st(0).
+	const double facing = ((double) n[2] * worldRay->dir.z + (double) n[1] * worldRay->dir.y)
+		+ (double) n[0] * worldRay->dir.x;
+	// `test ah,1; jne` at 0x00025381 reads C0 alone, which is set for "less"
+	// and for "unordered" alike, so a NaN dot product continues.
+	if(facing >= 0.0)
+		return 0;
+
+	// The oracle passes the address of its own first argument slot as `dist`
+	// (0x00025396) -- a store into the caller's frame, dead by then.
+	NxReal distance;
+	if(!NxRayPlaneIntersect(*worldRay, *(const NxPlane*) n, distance, hit->worldImpact))
+		return 0;
+
+	// 0x000253bb and 0x000253cc, both `test ah,0x41` over C3 and C0 but with
+	// opposite branches: strictly ahead of the origin, and not past the limit.
+	// Both let the unordered case through.
+	if(distance <= 0.0f)
+		return 0;
+	if(distance > maxDistance)
+		return 0;
+
+	// Integer moves, not float stores: an fld/fstp pair would quiet a
+	// signalling NaN, and these are `mov` at 0x000253d1 and 0x000253ff.
+	memcpy(&hit->distance, &distance, 4);
+	hit->shape = (NxShape*) plane->collisionObject;
+	hit->faceID = 0;
+	hit->u = 0.0f;
+	hit->v = 0.0f;
+	hit->flags = NX_RAYCAST_SHAPE | NX_RAYCAST_IMPACT | NX_RAYCAST_DISTANCE;
+	if(hintFlags & NX_RAYCAST_NORMAL)
+		{
+		memcpy(&hit->worldNormal.x, &n[0], 4);
+		memcpy(&hit->worldNormal.y, &n[1], 4);
+		memcpy(&hit->worldNormal.z, &n[2], 4);
+		hit->flags |= NX_RAYCAST_NORMAL;
+		}
+	return plane;
 	}

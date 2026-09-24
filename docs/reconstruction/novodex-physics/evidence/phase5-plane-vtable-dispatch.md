@@ -1,0 +1,13 @@
+# Plane primary vtable dispatch
+
+The pinned plane primary table starts at `.rdata` RVA `0x107430` and has 17 entries before adjacent data. Slot function RVAs 0–16 are `25420, 27740, 256f0, 251f0, 24f70, 25350, 266a0, 22dd0, 25490, 25090, 251d0, 251d0, 25460, 24f80, 27f00, 27f00, 27f00` (hex). The candidate constructor now installs a 17-entry table at shape offset zero. Every entry resolves in the candidate executable, and every slot has at least one oracle/candidate dispatch check.
+
+The base stubs used by plane slots 4 and 7 needed an ABI correction. Oracle `phys_fn_001249` returns with `ret 0xc` and takes three stack dwords (destination, density, reserved); `phys_fn_001035` returns with `ret 8` and takes two (output, sweep record). The previous internal C++ declarations supplied only two and one arguments. They now match the oracle stack cleanup. Three mass and three sweep drives confirm both return false and leave their outputs untouched.
+
+Plane slot 3, `phys_fn_001259` at `0x251f0`, checks the render bit, calls the shared base renderer, and tests guard C. Its plane arm builds a pose from the stored tangent, binormal and normal, translates it by `-distance*normal`, and calls renderer slot 14 four times with scales 1, 10, 100 and 1000. Thirty-two flag, guard, basis and shared-render combinations match callback counts and bytes through the installed tables.
+
+Plane slot 12 exposed a missing part of `phys_fn_001253` at `0x24fc0`. The equation helper copies the normal, stores negated descriptor distance, classifies exact axis normals into tag 0/1/2 (general normals get 3), recomputes both tangents through `NxNormalToTangents`, then notifies the owner and marks it dirty. The detached candidate now reproduces the field and tangent effects. Four slot-12 equation cases (+X, +Y, -Z, and non-axis) match the oracle. The attached-owner notification path remains open along with the shared owner-update row.
+
+Plane slot 5, `phys_fn_001261`, moved unchanged from `ContactGeneration.cpp` to `ShapeRaycast.cpp`, allowing 16 ray/limit/normal-hint cases through both tables. The wider collision differential still passes after the move. Slot 0 frees the collision object and, with flag bit 0 set, the plane itself: oracle/candidate allocator free deltas are one and two. Indexed six-word row, AABB/extent, descriptor save, base apply/save, detached owner update, and identity slots also have callable-table checks.
+
+The pinned shape harness transcript is `shape vtable oracle_digest=c60a363a cases=400 failures=0`. Base-shape, mesh and actor tables remain before the Phase 5 vtable gate can turn green.
