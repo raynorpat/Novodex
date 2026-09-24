@@ -138,7 +138,7 @@ convention the compiler produced, not a parameter; the reconstruction passes the
 
 ---
 
-## 4. Falsification: twenty mutations, sixteen red, four green by design
+## 4. Falsification: twenty-one mutations, sixteen red, five green by design
 
 Every run rebuilds and re-runs `NxPhysicsAssetTests` in the archive copy after restoring all eight
 of this task's files from the production tree, so no mutation leaks into the next. **The oracle
@@ -171,6 +171,15 @@ the measurement.
 | U | `phys_fn_002043` `0x000504c0`+296 | the Morton reorder is skipped | **GREEN — see §5** |
 | V | `phys_fn_002008` `0x0004dba0`+909 | the cell-run count is not read off the stream | **red by access violation, exit `0xc0000005`** — not a compared value; see §5 |
 | Z | — | control again | **green**, `candidate mismatches=0` |
+
+The table is A to V with M skipped: 21 lettered mutations, 16 red (V by crash) and 5 green. The
+heading said twenty and four until the Task 4 review recounted it.
+
+**Re-measured on branch `p4-close-port`** (from `de56592`, where the asset oracle digest is
+`eaefc573` over 30 probes): all 21 reproduce except two. **O reads 10**, because
+`TriangleMesh::save` (`phys_fn_002162`) now stores the same file-scope constant and all nine writer
+cases move with `mesh.bad_tag1`; `phys_fn_002262` closes on N there. **V reads green**, exit 0,
+where it was red by access violation here. `evidence/phase4-falsification.md` §5 has both.
 
 Sixteen rows' worth of behaviour is falsified by a mutation inside the row's own censused extent
 with a measured non-zero delta. **Eight rows close on that basis:**
@@ -246,19 +255,23 @@ load-bearing.
 `evidence/phase4-artifact-retype.csv` carries the row, the reference that reaches it and how.
 Derivation, over the pinned image and the census:
 
-- **27 rows** are the target of a direct `call`/`jmp rel32` from another censused row. Their callers
+- **35 rows** are the target of a direct `call`/`jmp rel32` from another censused row. Their callers
   are ordinary code rows in and out of the set — `phys_fn_004830` (`0x000b4cc0`), `phys_fn_004832`,
   `phys_fn_004834`, `phys_fn_004852`, `phys_fn_004855`, `phys_fn_002282`, `phys_fn_002284`,
   `phys_fn_005208`, `phys_fn_005254`, `phys_fn_005256` and others.
-- **36 rows** have their virtual address written into the OPCODE vtable/literal pool at
+- **28 rows** have their virtual address written into the OPCODE vtable/literal pool at
   `.rdata:0x0011b5a4`-`0x0011bcf8`. Every hit is inside that pool; there are no coincidental matches
   elsewhere in the file.
 - **0 rows** are unreached.
 
+The split is `reached_by` counted over the CSV: 35 `direct_call`, 28 `vtable_slot`, 63 together.
+It was published as 27 and 36 — the right total, the wrong split, and the two halves the wrong way
+round — in four artefacts and in the Phase 8 plan, and was recounted at the Task 4 review.
+
 So the recorded proof — *"no product translation unit reaches these bytes and none is named above
 the last one that does, at `0x000e9100`"* — is false for all 63, not for the three Task 2b named.
 It is the same false negative the programme has been finding all phase: a reach heuristic built on
-direct calls cannot see an indirect vtable dispatch, and 36 of these are reached only that way.
+direct calls cannot see an indirect vtable dispatch, and 28 of these are reached only that way.
 
 The census now types all 63 `code` and records the reaching reference in each row's `static_proof`.
 **That is a `kind` change and nothing else** — no `phase`, no `third_party`, no `state` moves. It
@@ -315,8 +328,23 @@ Task 1 established that ten of the thirteen deferred Phase 3 rows reach `spatial
 call and nothing else in Phase 4, and read that as "blocked on OPCODE traversal, not on
 `TriangleMesh`". Both halves are true about *call edges*. Neither is what blocks a harness.
 
-`gates/phase3-closure.json` records all ten with `blocked_on_type: TriangleMesh` and the note *"It
-needs the triangle mesh, its acceleration structure and the vertex and index data behind them"*.
+`gates/phase3-closure.json` records **all thirteen** with `blocked_on_type: TriangleMesh` and the
+note *"It needs the triangle mesh, its acceleration structure and the vertex and index data behind
+them"* — `phys_fn_001757`, `001772`, `001777`, `001779`, `001781`, `001783`, `001870`, `001876`,
+`001893`, `001895`, `001897`, `001925` and `001929`, each with `driving_phases: [4]`. Ten is the
+count of the ones Task 1 reached by a direct call; the deferral reason is on all thirteen, and this
+paragraph said ten until the Task 4 review recounted it.
+
+Three of the thirteen carry a `source` — `phys_fn_001876` `Physics/src/ContactMeshMesh.cpp`,
+`phys_fn_001895` and `phys_fn_001897` `Physics/src/ContactPlaneMesh.cpp` — and **neither file
+exists**, which the validator's own `UNRESOLVED_SOURCE_PATHS` records. That is not an anomaly in
+these three rows and must not be read as a candidate implementation somebody could go and look
+at: `source` is the **oracle's** translation unit, recovered from the shipped image, and
+`implementation` is where a reconstruction lives. Counted on branch `p4-close-port`: 564 rows
+carry a path-shaped `source` and 312 of them name a file that tree does not supply,
+`Physics/src/fluids/NpFluid.cpp` alone accounting for 32. None of the thirteen carries an
+`implementation`; ten appear in the tree only in `tests/PhysicsCollisionTests.cpp`'s
+recovered dispatch-matrix table, which is an address map, and three appear nowhere.
 That is the operational statement, and vendoring OPCODE removes one of four prerequisites:
 
 1. **the `InternalTriangleMesh` object** — vertex and triangle arrays, material indices, the face
