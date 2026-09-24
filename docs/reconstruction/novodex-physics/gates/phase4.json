@@ -91,6 +91,21 @@
       "name": "review:python_suite",
       "command": "python -m unittest discover -s docs/reconstruction/novodex-physics/tools/tests",
       "result": "Ran 628 tests, all pass in a git archive of the branch: the port's 616 plus 12 pinning the review's rules -- five for the rule that a discharging phase must have passed, two for evidence_file being required from Phase 4 on (a third test is the old no-evidence-file test narrowed to Phases 2 and 3), and five for the vendored split; the existing test that deferred rows under every reason now gives the vendored reasons to a third-party row. The PowerShell wrapping failure the port's entry describes still reproduces inside the D:\\github\\Novodex-p4-port worktree and not in the archive"
+    },
+    {
+      "name": "reclose:shape_slot_ruling",
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase 4",
+      "result": "phase_gate=4 status=pass at coverage_assertions_evaluated=100 floor=100; asset coverage driven=30 accepted=13 rejected=16 errors=10, asset oracle digest=eaefc573, asset candidate mismatches=0; thirdparty coverage driven=16 divergent=2 words=193028 layout_checks=47, thirdparty oracle digest=b87c3219, thirdparty candidate mismatches=0 layout_failures=0; inventory=pass with closure phase=4 closed=26 deferred=1028, after phys_fn_004859 arrived and phys_fn_005493, 005517 and 005523 were retyped. Run over a `git archive` of branch census-shape-ruling at 524f978 with run_phase_gate.ps1's $novodexRepo and run_differential.ps1's $releaseRoot pointed at the archive and nothing else changed, one gate at a time, after the shape slot ruling moved rows into and out of this ledger with no closure among them."
+    },
+    {
+      "name": "reclose:shape_slot_ruling_completed",
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase completed",
+      "result": "phase_gate=completed status=pass; highest_passing_phase=4 differential_phases=1,2,3,4; every staged-pair target stdout_delta=0; NxPhysicsAssetTests, NxPhysicsCollisionTests and NxPhysicsThirdPartyTests exit=0; coverage_assertions_evaluated=203 floor=203. Run over a `git archive` of branch census-shape-ruling at 524f978 with run_phase_gate.ps1's $novodexRepo and run_differential.ps1's $releaseRoot pointed at the archive and nothing else changed, one gate at a time, after the shape slot ruling moved rows into and out of this ledger with no closure among them."
+    },
+    {
+      "name": "reclose:shape_slot_ruling_suite",
+      "command": "python -m unittest discover -s docs/reconstruction/novodex-physics/tools/tests",
+      "result": "Ran 671 tests, all pass in a git archive of 524f978: 628 before, plus 28 for the shape ruling and span checks (15 on synthetic tables, 8 on synthetic spans, 5 replaying the review's experiments on the committed census), 10 for the orphan rule, 4 for the generator's slot_ruling layer and 1 for its new raise site."
     }
   ],
   "excluded_from_comparison": [

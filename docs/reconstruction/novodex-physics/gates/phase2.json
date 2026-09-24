@@ -66,6 +66,11 @@
       "name": "reclose:p4_task_1c",
       "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase 2",
       "result": "phase_gate=2 status=pass, re-run after 19 function rows left Phase 2 for Phase 4. inventory=pass; closure phase=2 closed=56 deferred=1139; functions=6338 data_objects=5138 unexplained=0. static_proof checks=51 status=pass -- all 51 NxPhysicsInternalTests checks still run and still pass, including the four aimed at phys_fn_004836/004840/004846/004847; what left this ledger is the four citations, not the measurements, and gates/phase2.json carries them as third_party_container_rows_moved. differential=pass over NxPhysicsExportTests, NxPhysicsSDKTests and NxPhysicsCoreClusterTests, each oracle_exit=0 candidate_exit=0 stdout_delta=0 stderr_exact=True; coverage_assertions_evaluated=0 floor=0. The red path was run too: declaring one unmapped row third party makes this same command exit 1 at validate_inventory, which is the check the census change is gated on."
+    },
+    {
+      "name": "reclose:shape_slot_ruling",
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File docs/reconstruction/novodex-physics/tools/run_phase_gate.ps1 -Phase 2",
+      "result": "phase_gate=2 status=pass; static_proof checks=51 status=pass; NxPhysicsCoreClusterTests, NxPhysicsExportTests and NxPhysicsSDKTests differential=pass; coverage_assertions_evaluated=0 floor=0; inventory=pass with closure phase=2 closed=56 deferred=84. Run over a `git archive` of branch census-shape-ruling at 524f978 with run_phase_gate.ps1's $novodexRepo and run_differential.ps1's $releaseRoot pointed at the archive and nothing else changed, one gate at a time, after the shape slot ruling moved rows into and out of this ledger with no closure among them."
     }
   ],
   "excluded_from_comparison": [
