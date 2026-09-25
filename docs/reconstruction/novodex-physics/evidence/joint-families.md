@@ -328,6 +328,10 @@ These behaviours are in the oracle and the reconstruction keeps them.
 11. **The generic `createJoint` path** (`nxJointConstruct`, `nxJointSizeForType`) is now reachable
     for no type. Its size table keeps the stand-in's literals, with comments naming the real sizes
     for types 8 and 9 only.
+12. **Two sets of naked sqrt helpers.** `Physics/src/include/core/JointX87.h` (joint files) and
+    `Physics/src/include/X87Sqrt.h` (Geometry.cpp, commit 0637850) hold equivalent helpers;
+    `jointFsqrtDot2` has the same body as `x87FsqrtDot2`. X87Sqrt.h notes that folding JointX87.h
+    into it is a rename only. Not done here, to keep the joint transcript's reviewed code stable.
 
 ## Verification
 

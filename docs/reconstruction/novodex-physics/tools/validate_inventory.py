@@ -1994,7 +1994,7 @@ UNRESOLVED_SOURCE_PATHS = (
     # longer unresolved; remove the entry".
     # 'Physics/src/core/NpSphericalJoint.cpp' was here with 12 rows against
     # it, and is REMOVED: joint-families Task 3c created the file (same reason
-    # as NpRevoluteJoint.cpp below).
+    # as NpRevoluteJoint.cpp above).
     # 'Physics/src/core/PointInPlaneJoint.cpp' was here with 2 rows against it,
     # and is REMOVED: joint-families Task 3e created the file.
     # 'Physics/src/core/PointOnLineJoint.cpp' was here with 2 rows against it,
