@@ -7,6 +7,7 @@
 \*----------------------------------------------------------------------------*/
 #include "core/Joint.h"
 #include "core/JointSupport.h"
+#include "Scene.h"
 #include "X87Sqrt.h"
 #include "PhysicsSDK.h"
 #include "NxJoint.h"
@@ -31,10 +32,6 @@
 // (the solver slots call phys_fn_004097), whose control word is 64-bit
 // round-toward-zero; CMakeLists.txt builds this translation unit /arch:IA32 so
 // the code follows whichever control word is live, as the oracle's does.
-
-// Scene::addJoint (phys_fn_000661; thiscall on the Scene, `ret 4`). Reused as
-// the candidate's no-op hole; defined in Physics/src/Scene.cpp.
-void nxSceneAddJoint(void* scene, void* joint);
 
 // .data 0x10127180: the limit-plane iterator that phys_fn_004081 sets,
 // that phys_fn_004083 tests, phys_fn_004145 advances and 004089 clears.
@@ -352,9 +349,8 @@ Joint::~Joint()
 	{
 	nxSetSdkPointerBinding(this, 0);
 	if(mScene)
-		// The Scene removal row (phys_fn_000633) is deferred (reached only on
-		// release); its stub asserts.
-		reinterpret_cast<Row000633Fixture*>(mScene)->row000633(this);
+		// Scene::removeJoint (phys_fn_000633, Physics/src/Scene.cpp).
+		static_cast<NxSceneInternal*>(mScene)->removeJoint(this);
 	purgeLimitPlanes();
 	}
 
@@ -365,7 +361,7 @@ Joint::~Joint()
 // purges 8 bytes. Unless the record's bits 11-18 are 0x4d or the joint is
 // already broken: mark broken ((flags & ~8) | 0x10), flag its records
 // (004091), and post a break event carrying the second argument through
-// the Scene's phys_fn_000571 (deferred) -- a null event when the
+// the Scene's phys_fn_000571 (Scene.cpp) -- a null event when the
 // allocation fails, as 0x98032 does.
 void Joint::row004111(const JointSupportRecord* record, NxReal value)
 	{
@@ -377,7 +373,7 @@ void Joint::row004111(const JointSupportRecord* record, NxReal value)
 	row004091();
 	void* memory = nxGetSdkAllocator()->malloc(sizeof(JointBreakEvent), NX_MEMORY_PERSISTENT);
 	JointBreakEvent* event = memory ? new(memory) JointBreakEvent(this, value) : 0;
-	reinterpret_cast<Row000571Fixture*>(mScene)->row000571(event);
+	static_cast<NxSceneInternal*>(mScene)->addJointBreakEvent(event);
 	}
 
 // phys_fn_004087 (0x00095cc0, 87 B)
@@ -688,14 +684,14 @@ void Joint::row004091()
 
 // phys_fn_004093 (0x00095da0, 116 B)
 // The Scene's record array: pointer +0x5b8, count +0x5bc, capacity +0x5c0.
-// A full array is grown by the Scene row phys_fn_000598 (deferred; its stub
-// asserts). The listing reloads mScene for the returned address.
+// A full array is grown by the Scene row phys_fn_000598 (Scene.cpp). The
+// listing reloads mScene for the returned address.
 JointSupportRecord* Joint::row004093()
 	{
 	NxU8* scene = static_cast<NxU8*>(mScene);
 	NxU32& count = *reinterpret_cast<NxU32*>(scene + 0x5bc);
 	if(count == *reinterpret_cast<NxU32*>(scene + 0x5c0))
-		reinterpret_cast<Row000598Fixture*>(scene)->row000598();
+		static_cast<NxSceneInternal*>(mScene)->growJointRecords();
 	const NxU32 index = count;
 	count = index + 1;
 	if(mUnknown160[1] == 0)
@@ -991,7 +987,7 @@ void Joint::setGlobalAxis(const NxVec3& axis)
 
 // phys_fn_004107 (0x00097d30, 297 B)
 // With suppressAttach false the row detaches first: it wakes and clears the
-// bodies, removes the joint from its scene (deferred phys_fn_000633) and
+// bodies, removes the joint from its scene (phys_fn_000633) and
 // marks it broken ((flags & ~8) | 0x10); afterwards it re-registers
 // through Scene::addJoint (phys_fn_000661). The constructor passes true and
 // neither happens.
@@ -1004,9 +1000,10 @@ void Joint::row004107(void* actorImpl0, void* actorImpl1, bool suppressAttach)
 		mBody[0] = 0;
 		mBody[1] = 0;
 		if(mScene)
-			// The Scene removal row (phys_fn_000633) is deferred (reached
-			// only when phys_fn_004370 re-binds actors); its stub asserts.
-			reinterpret_cast<Row000633Fixture*>(mScene)->row000633(this);
+			// Scene::removeJoint (phys_fn_000633), which clears mScene when
+			// it unlinks the joint, so the re-registration below is skipped
+			// for a joint it removed.
+			static_cast<NxSceneInternal*>(mScene)->removeJoint(this);
 		mFlags = (mFlags & ~8u) | 0x10u;
 		}
 	void* body0 = jointBodyOfActorImpl(actorImpl0);
@@ -1031,7 +1028,7 @@ void Joint::row004107(void* actorImpl0, void* actorImpl1, bool suppressAttach)
 	// object whose mScene is not yet written (the constructor's call), so the
 	// flag is tested first here.
 	if(!suppressAttach && mScene)
-		nxSceneAddJoint(mScene, this);
+		static_cast<NxSceneInternal*>(mScene)->addJoint(this);
 	}
 
 // phys_fn_004109 (0x00097e60, 366 B)

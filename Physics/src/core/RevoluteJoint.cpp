@@ -8,6 +8,7 @@
 #include "core/RevoluteJoint.h"
 #include "core/NpRevoluteJoint.h"
 #include "core/JointSupport.h"
+#include "Scene.h"
 #include "core/JointAcos.h"
 #include "X87Sqrt.h"
 #include "PhysicsSDK.h"
@@ -403,8 +404,8 @@ void RevoluteJoint::row_slot0(NxU32 arg)
 			mFlags = (mFlags & ~8u) | 0x10;
 			void* memory = nxGetSdkAllocator()->malloc(sizeof(JointBreakEvent), NX_MEMORY_PERSISTENT);
 			JointBreakEvent* event = memory ? new(memory) JointBreakEvent(this, length) : 0;
-			// Scene row 000571 is deferred (owner Scene.cpp); its stub asserts.
-			reinterpret_cast<Row000571Fixture*>(mScene)->row000571(event);
+			// Scene row 000571 (Physics/src/Scene.cpp).
+			static_cast<NxSceneInternal*>(mScene)->addJointBreakEvent(event);
 			const double ratio = x87Fsqrt(mUnknown200) / length;
 			const NxReal ratioF = (NxReal)ratio;
 			const double sx = ratio * a.x;
@@ -1442,8 +1443,8 @@ void RevoluteJoint::row_slot8(void* bodyPointer)
 		body->mCMassOrientation[1] = (NxReal)qyN;
 		body->mCMassOrientation[2] = (NxReal)qzN;
 		body->mCMassOrientation[3] = (NxReal)qwN;
-		// Row 000758 is deferred (owner gap SceneRaycast..CapsuleShape); its
-		// stub asserts. It rebuilds +0x134 from the quaternion.
+		// Row 000758 (core/JointSupport.cpp) rebuilds +0x134 from the
+		// quaternion.
 		reinterpret_cast<Row000758Fixture*>(body)->row000758();
 		}
 	else if(!projected)
@@ -1451,7 +1452,8 @@ void RevoluteJoint::row_slot8(void* bodyPointer)
 		return;
 		}
 
-	// Row 000022 is deferred (owner gap <start>..Actor.cpp); its stub asserts.
+	// Row 000022 (core/JointSupport.cpp); its first callee, 000754, is
+	// deferred and its stub asserts.
 	reinterpret_cast<Row000022Fixture*>(body->mOwner)->row000022(1);
 	}
 

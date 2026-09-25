@@ -8,6 +8,7 @@
 #include "core/SphericalJoint.h"
 #include "core/NpSphericalJoint.h"
 #include "core/JointSupport.h"
+#include "Scene.h"
 #include "core/JointLinearRecords.h"
 #include "core/JointAcos.h"
 #include "X87Sqrt.h"
@@ -1083,8 +1084,8 @@ void SphericalJoint::row_slot0(NxU32 arg)
 			mFlags = (mFlags & ~8u) | 0x10;
 			void* memory = nxGetSdkAllocator()->malloc(sizeof(JointBreakEvent), NX_MEMORY_PERSISTENT);
 			JointBreakEvent* event = memory ? new(memory) JointBreakEvent(this, length) : 0;
-			// Scene row 000571 is deferred (owner Scene.cpp); its stub asserts.
-			reinterpret_cast<Row000571Fixture*>(mScene)->row000571(event);
+			// Scene row 000571 (Physics/src/Scene.cpp).
+			static_cast<NxSceneInternal*>(mScene)->addJointBreakEvent(event);
 			const double ratio = x87Fsqrt(mMaxImpulseSquared) / length;
 			const NxReal ratioF = (NxReal)ratio;
 			const double sx = ratio * a.x;

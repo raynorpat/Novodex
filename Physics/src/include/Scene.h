@@ -39,6 +39,8 @@ class NxActor;
 class NxActorDescBase;
 class NxJointDesc;
 class NxJoint;
+class Joint;
+class JointBreakEvent;
 
 /**
 The 0x710-byte scene object.
@@ -66,6 +68,28 @@ class NxSceneInternal
 	// phys_fn_000665 (0x000142c0). The joint factory. Needs at least one of the
 	// two actors dynamic, read through each actor's +0x14 body.
 	NxJoint* createJoint(const NxJointDesc& desc);
+
+	// The joint rows (units/joint-open-items-contract.md "## Scene joint rows").
+	// The Scene keeps its joints three ways: a list through Joint +0x10 headed
+	// at +0x59c (joints with +0x2c bit 0 set; a second list at +0x5a0 holds
+	// joints without it), a {begin, end, capacity} pointer array at
+	// +0x58c/+0x590/+0x594, and the count at +0x6c8 that getNbJoints reads;
+	// +0x6bc is the enumeration cursor.
+	// phys_fn_000661 (0x00013e00). Scene::addJoint.
+	void addJoint(Joint* joint);
+	// phys_fn_000633 (0x00012660). Scene::removeJoint.
+	void removeJoint(Joint* joint);
+	// phys_fn_000653 (0x00013760). Scene::releaseJoint.
+	void releaseJoint(Joint* joint);
+	// phys_fn_000598 (0x00010f50). Grows the 0x50-byte record array at +0x5b8.
+	void growJointRecords();
+	// phys_fn_000571 (0x000108e0). Links a break event into the list at +0x620.
+	void addJointBreakEvent(JointBreakEvent* event);
+	// phys_fn_000559 (0x00010860), phys_fn_000563 (0x00010880) and
+	// phys_fn_000567 (0x000108a0).
+	NxU32 getNbJoints() const;
+	void resetJointIterator();
+	Joint* getNextJoint();
 
 	// The raw object. `at` is the only sanctioned way to reach a field whose name
 	// is not recovered.

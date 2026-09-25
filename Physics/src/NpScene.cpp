@@ -38,6 +38,8 @@
 #include "NxActorDesc.h"
 #include "NxJointDesc.h"
 #include "NxJoint.h"
+#include "FoundationSDK.h"
+#include "core/Joint.h"
 
 // ---------------------------------------------------------------------------
 // Lock helpers and the remaining condition-object reproduction hole.
@@ -200,10 +202,24 @@ void NpScene::getGravity(NxVec3&)
 	
 	}
 
-// (unimplemented) releaseJoint
-void NpScene::releaseJoint(NxJoint &)
+// phys_fn_000299 (0x0000c5d0, 87 B, phase 7): NxScene::releaseJoint. The
+// write lock at +0xc through phys_fn_002364; on failure the Foundation
+// instance test with int3 and the deadlock report (code 2, NpScene.cpp line
+// 0x7f). Otherwise Scene::releaseJoint (phys_fn_000653) on the joint's
+// appData word (+0x08, the internal Joint), then phys_fn_002366 on the link
+// value loaded before the call.
+void NpScene::releaseJoint(NxJoint& joint)
 	{
-	
+	if(!nxNpSceneGuardWriteTry(mWriteLock))
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0x7f, 0,
+			"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
+		return;
+		}
+	void* link = mWriteLock;
+	mScene->releaseJoint(static_cast<Joint*>(joint.appData));
+	nxNpSceneGuardLeave(link);
 	}
 
 // (unimplemented) createSpringAndDamperEffector
@@ -281,22 +297,40 @@ NxActor** NpScene::getActors()
 	return mScene->at<NxActor**>(0x55c);
 	}
 
-// (unimplemented) getNbJoints
+// phys_fn_000321 (0x0000c910, 36 B, phase 7): NxScene::getNbJoints. The
+// read lock at +0x10 (phys_fn_002362 / phys_fn_002366, the link value loaded
+// once) around Scene::getNbJoints (phys_fn_000559).
 NxU32 NpScene::getNbJoints() const
 	{
-	return 0;
+	void* link = mReadLock;
+	nxNpSceneGuardEnter(link);
+	const NxU32 count = mScene->getNbJoints();
+	nxNpSceneGuardLeave(link);
+	return count;
 	}
 
-// (unimplemented) resetJointIterator
+// phys_fn_000323 (0x0000c940, 31 B, phase 7): NxScene::resetJointIterator,
+// the same lock around Scene::resetJointIterator (phys_fn_000563); the
+// unlock is a tail jump.
 void NpScene::resetJointIterator()
 	{
-	
+	void* link = mReadLock;
+	nxNpSceneGuardEnter(link);
+	mScene->resetJointIterator();
+	nxNpSceneGuardLeave(link);
 	}
 
-// (unimplemented) getNextJoint
+// phys_fn_000325 (0x0000c960, 55 B, phase 7): NxScene::getNextJoint, the
+// same lock around Scene::getNextJoint (phys_fn_000567); a joint is returned
+// as its public object ([internal+0x48], 0xc97a), the end as 0.
 NxJoint * NpScene::getNextJoint()
 	{
-	return 0;
+	void* link = mReadLock;
+	nxNpSceneGuardEnter(link);
+	Joint* joint = mScene->getNextJoint();
+	NxJoint* result = joint ? static_cast<NxJoint*>(joint->mPublicObject) : 0;
+	nxNpSceneGuardLeave(link);
+	return result;
 	}
 
 // (unimplemented) getNbEffectors

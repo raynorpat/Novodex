@@ -52,6 +52,7 @@
 #include "core/D6Joint.h"
 #include "NxMat33.h"
 #include "NxQuat.h"
+#include "FoundationSDK.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -295,8 +296,6 @@ void* nxShapeFactory(void* shapeDesc, void* actor);
 // The multi-shape group builder (0x110 bytes). REPRODUCTION HOLE.
 void* nxShapeGroupConstruct(void* actor, const unsigned* shapeDescriptions, unsigned count);
 
-// phys_fn_00013e00 (0x00013e00, phase 7): registers a joint with the scene.
-void nxSceneAddJoint(void* scene, void* joint);
 
 void nxActorSetName(void* actor, unsigned name);
 void nxActorBuildBody(void* actor, const unsigned* desc);
@@ -1608,7 +1607,7 @@ NxJoint* NxSceneInternal::createJoint(const NxJointDesc& desc)
 				result = nxD6JointAttachScene(static_cast<D6Joint*>(internal), writeLink, readLink);
 			else
 				result = nxRevoluteJointAttachScene(static_cast<RevoluteJoint*>(internal), writeLink, readLink);
-			nxSceneAddJoint(this, internal);
+			addJoint(internal);
 			}
 		else
 			{
@@ -1756,6 +1755,41 @@ static void nxSceneDelete(void* self, int flags)
 		scene->releaseActor(body);
 		if(scene->at<NxActor**>(0x560) == end) break;
 		}
+	// The joints still registered (phys_fn_000606, the continuation of
+	// phys_fn_000604 that the oracle's Scene destructor phys_fn_000663 calls at
+	// 0x13f9e, after the actors): for each list, +0x59c then +0x5a0, the head
+	// joint's link, mScene and flag bit 0 are cleared (so its ~Joint does not
+	// call removeJoint), it is destroyed through slot 5 with 1, and the head
+	// moves to the saved link (0x110f0-0x1118a). 000604's first loop (000760
+	// over the +0x56c records) is not reproduced here.
+	for(unsigned listOffset = 0x59c; listOffset <= 0x5a0; listOffset += 4)
+		{
+		while(Joint* joint = scene->at<Joint*>(listOffset))
+			{
+			void* next = joint->mNextJoint;
+			joint->mNextJoint = 0;
+			scene->at<Joint*>(listOffset)->mScene = 0;
+			scene->at<Joint*>(listOffset)->mFlags &= ~1u;
+			if(scene->at<Joint*>(listOffset))
+				{
+				delete scene->at<Joint*>(listOffset);
+				scene->at<void*>(listOffset) = 0;
+				}
+			scene->at<void*>(listOffset) = next;
+			}
+		}
+	// The joint record array (0x13ffb-0x14013) and the joint pointer array
+	// (0x14195-0x141b9, which also zeroes end and capacity).
+	if(scene->at<void*>(0x5b8))
+		{
+		nxGetSdkAllocator()->free(scene->at<void*>(0x5b8));
+		scene->at<void*>(0x5b8) = 0;
+		}
+	if(scene->at<void*>(0x58c))
+		nxGetSdkAllocator()->free(scene->at<void*>(0x58c));
+	scene->at<void*>(0x58c) = 0;
+	scene->at<void*>(0x590) = 0;
+	scene->at<void*>(0x594) = 0;
 	for(unsigned offset = 8; offset <= 0xc; offset += 4)
 		{
 		void*& entries = *reinterpret_cast<void**>(
@@ -2435,12 +2469,186 @@ void nxActorRemoveShape(void* actor, void* handle)
 	}
 
 // ---------------------------------------------------------------------------
-// Reproduction holes for Scene::createJoint's callees.
+// The Scene's joint rows (joint-open-items Task 2; units/joint-open-items-
+// contract.md "## Scene joint rows"). Every one is a thiscall member on the
+// Scene, transcribed from the Capstone listing. Joint fields by offset:
+// +0x08/+0x0c mBody, +0x10 mNextJoint, +0x2c mFlags (bit 0: on the +0x59c
+// list), +0x30 mScene, +0x34 the island link 000778 clears.
 // ---------------------------------------------------------------------------
 
-void nxSceneAddJoint(void* scene, void* joint)
+#define NX_SCENE_CPP	"\\Epic\\Novodex\\SDKs\\Physics\\src\\Scene.cpp"
+
+// phys_fn_000661 (0x00013e00, 290 B, phase 7) is Scene::addJoint.
+// A joint whose flag bit 0 is already set is reported (the Foundation
+// instance test with int3, code 2, line 0x752) and left alone. Otherwise:
+// bit 0 set, the joint pushed on the +0x59c list through +0x10, appended to
+// the +0x58c pointer array (grown to 2n + 2 entries when full,
+// 0x13e53-0x13f12), and mScene = this written last (0x13f1a).
+void NxSceneInternal::addJoint(Joint* joint)
 	{
-	// phys_fn_00013e00 (0x00013e00, phase 7) registers the joint with the scene.
-	(void)scene;
-	(void)joint;
+	if(joint->mFlags & 1)
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION, NX_SCENE_CPP, 0x752, 0,
+			"Scene::addJoint: joint is already in a scene.");
+		return;
+		}
+	joint->mFlags |= 1;
+	joint->mNextJoint = at<Joint*>(0x59c);
+	at<Joint*>(0x59c) = joint;
+	nxJointPointerArrayPush(&at<void*>(0x58c), joint);
+	joint->mScene = this;
+	}
+
+// phys_fn_000633 (0x00012660, 370 B, phase 7) is Scene::removeJoint.
+// Flag bit 0 clear: the joint is unlinked from the +0x5a0 list (head or
+// successor), or reported as not in the scene (code 0xce, NXE_DB_WARNING,
+// line 0x77c); nothing else is written. Bit 0 set: the island of the
+// joint's first non-null body is dissolved through phys_fn_000778 into the
+// +0x58c array; every occurrence of the joint in that array is replaced by
+// the last entry (the swapped-in entry is not re-tested, as the listing's
+// index advances past it); the joint is unlinked from the +0x59c list, or
+// reported (code 2, line 0x7a6) and left as it is; then its link, flag bit
+// 0 and mScene are cleared (0x1276e-0x12779).
+void NxSceneInternal::removeJoint(Joint* joint)
+	{
+	if(!(joint->mFlags & 1))
+		{
+		Joint* head = at<Joint*>(0x5a0);
+		if(joint == head)
+			{
+			at<void*>(0x5a0) = joint->mNextJoint;
+			return;
+			}
+		for(Joint* link = head; link; link = static_cast<Joint*>(link->mNextJoint))
+			{
+			if(link->mNextJoint == joint)
+				{
+				link->mNextJoint = joint->mNextJoint;
+				return;
+				}
+			}
+		NxFoundation::FoundationSDK::getInstance().error(NXE_DB_WARNING, NX_SCENE_CPP, 0x77c, 0,
+			"Scene::removeJoint: joint is not in the scene.");
+		return;
+		}
+
+	void* body = joint->mBody[0];
+	if(!body)
+		body = joint->mBody[1];
+	if(body)
+		reinterpret_cast<Row000778Fixture*>(body)->row000778(joint, &at<void*>(0x58c));
+
+	for(NxU32 i = 0; i < (NxU32)((at<NxU8*>(0x590) - at<NxU8*>(0x58c)) >> 2); i++)
+		{
+		Joint** entries = at<Joint**>(0x58c);
+		if(entries[i] != joint)
+			continue;
+		const NxU32 last = (NxU32)((at<NxU8*>(0x590) - reinterpret_cast<NxU8*>(entries)) >> 2) - 1;
+		if(i != last)
+			entries[i] = entries[last];
+		at<NxU8*>(0x590) -= 4;
+		}
+
+	Joint* head = at<Joint*>(0x59c);
+	if(joint == head)
+		{
+		at<void*>(0x59c) = joint->mNextJoint;
+		}
+	else
+		{
+		Joint* link = head;
+		for(; link; link = static_cast<Joint*>(link->mNextJoint))
+			if(link->mNextJoint == joint)
+				break;
+		if(!link)
+			{
+			NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION, NX_SCENE_CPP, 0x7a6, 0,
+				"Scene::removeJoint: joint is not in the scene.");
+			return;
+			}
+		link->mNextJoint = joint->mNextJoint;
+		}
+	joint->mNextJoint = 0;
+	joint->mFlags &= ~1u;
+	joint->mScene = 0;
+	}
+
+// phys_fn_000653 (0x00013760, 126 B, phase 7) is Scene::releaseJoint.
+// The re-entry flag is createJoint's (.data 0x00123c10); a re-entrant call is
+// reported with the message the pointer at .data 0x00122050 names (code 2,
+// line 0x4e2). Otherwise: removeJoint, the joint's scalar deleting
+// destructor (slot 5 with 1) when the pointer is non-null, --[+0x6c8] and
+// the enumeration cursor reset to the list head, then the flag cleared.
+void NxSceneInternal::releaseJoint(Joint* joint)
+	{
+	if(gCreateJointReentry)
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION, NX_SCENE_CPP, 0x4e2, 0,
+			"Reentry check: You may not call this API method from a callback!");
+		return;
+		}
+	gCreateJointReentry = true;
+	removeJoint(joint);
+	if(joint)
+		delete joint;
+	--at<NxU32>(0x6c8);
+	at<void*>(0x6bc) = at<void*>(0x59c);
+	gCreateJointReentry = false;
+	}
+
+// phys_fn_000598 (0x00010f50, 138 B, phase 7) grows the 0x50-byte record
+// array phys_fn_004093 takes records from: capacity (+0x5c0) doubled, or 4
+// from empty, stored first; a new block of capacity * 0x50 bytes; the
+// +0x5bc used records copied (rep movsd/movsb); the old block freed and the
+// pointer zeroed before the new one is stored.
+void NxSceneInternal::growJointRecords()
+	{
+	NxU32 capacity = at<NxU32>(0x5c0);
+	capacity = capacity ? capacity + capacity : 4;
+	at<NxU32>(0x5c0) = capacity;
+	void* block = nxGetSdkAllocator()->malloc(capacity * 0x50, NX_MEMORY_PERSISTENT);
+	const NxU32 count = at<NxU32>(0x5bc);
+	if(count)
+		memcpy(block, at<void*>(0x5b8), count * 0x50);
+	if(at<void*>(0x5b8))
+		{
+		nxGetSdkAllocator()->free(at<void*>(0x5b8));
+		at<void*>(0x5b8) = 0;
+		}
+	at<void*>(0x5b8) = block;
+	}
+
+// phys_fn_000571 (0x000108e0, 22 B, phase 7): the break event's +4 takes the
+// old head of the +0x620 list and the event becomes the head. The event is
+// not tested for null, as in the listing.
+void NxSceneInternal::addJointBreakEvent(JointBreakEvent* event)
+	{
+	event->mNext = at<JointBreakEvent*>(0x620);
+	at<JointBreakEvent*>(0x620) = event;
+	}
+
+// phys_fn_000559 (0x00010860, 7 B, phase 7): the joint count at +0x6c8. It
+// counts createJoint's calls that reach the type switch (every exit after it
+// increments the count, 0x14529) less releaseJoint's, not the list.
+NxU32 NxSceneInternal::getNbJoints() const
+	{
+	return at<NxU32>(0x6c8);
+	}
+
+// phys_fn_000563 (0x00010880, 13 B, phase 7): the cursor at +0x6bc = the list
+// head at +0x59c.
+void NxSceneInternal::resetJointIterator()
+	{
+	at<void*>(0x6bc) = at<void*>(0x59c);
+	}
+
+// phys_fn_000567 (0x000108a0, 23 B, phase 7): the joint under the cursor,
+// which advances through Joint +0x10; 0 at the end.
+Joint* NxSceneInternal::getNextJoint()
+	{
+	Joint* joint = at<Joint*>(0x6bc);
+	if(!joint)
+		return 0;
+	at<void*>(0x6bc) = joint->mNextJoint;
+	return joint;
 	}

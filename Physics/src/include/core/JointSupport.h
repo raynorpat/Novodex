@@ -10,13 +10,17 @@
 // Declarations for Physics/src/core/JointSupport.cpp (revolute pilot, Task 6).
 // Two groups: the constraint-record rows phys_fn_004389/004391/004393, which
 // are not Joint members (see revolute-contract.md "## Row assignment", the
-// 004389/004393 decision notes), and deferred stubs for rows owned by units
-// outside the pilot (000022, 000571, 000633, 000758) so pilot rows can call
-// them through a named function. Every name below is by offset or row ID:
-// the listing establishes these fields, not their meaning.
+// 004389/004393 decision notes), and the body-record rows from the gap units
+// the joint code reaches (000022, 000712, 000758, 000760, 000778, written by
+// joint-open-items Task 2, with 000754 and 004167 still deferred). The Scene
+// rows the joint code calls (000571, 000598, 000633, 000661) are NxSceneInternal
+// members in Physics/src/Scene.cpp (units/joint-open-items-contract.md
+// "## Scene joint rows"). Every name below is by offset or row ID: the listing
+// establishes these fields, not their meaning.
 
 #include "Nxp.h"
 #include "NxVec3.h"
+#include "PhysicsInternal.h"
 
 #include <cstddef>
 
@@ -89,51 +93,126 @@ static_assert(offsetof(JointSupportRecord, mUnknown030) == 0x30, "joint at +0x30
 static_assert(offsetof(JointSupportRecord, mUnknown048) == 0x48, "float at +0x48");
 static_assert(sizeof(JointSupportRecord) == 0x50, "records are 0x50 bytes (phys_fn_004093)");
 
-// phys_fn_000022 (deferred: owner gap <start>..Actor.cpp). Thiscall on the
-// body record's +0x19c owner (`mov ecx,[body+0x19c]; push 1`), one stack
-// argument, `ret 4`; same fixture convention as 000571 below.
+// The receiver types below are fixtures: MSVC rejects __thiscall on a free
+// function (C3865), so each thiscall row is a member of a non-virtual struct
+// whose pointer bits stand in for the record it runs on (the ObjectModel.h
+// row004165/3413 convention). None is ever constructed.
+
+// phys_fn_000022 (0x00001840, 27 B; owner gap <start>..Actor.cpp). Thiscall
+// on the 0x50-byte actor body (JointBodyRecord::mOwner, `mov ecx,[body+0x19c];
+// push 1`), one stack argument, `ret 4`: phys_fn_000754 on the body's +0x08
+// record, then, when +0x10 is set, a tail jump to that object's slot 6 with
+// the same argument.
 struct Row000022Fixture
 	{
 	void row000022(NxU32 arg);
 	};
 
-// phys_fn_000571 (deferred: owner Scene.cpp). Thiscall on the Scene, one
-// stack argument, `ret 4`: the 0x10-byte JointBreakEvent (Joint.h) that
-// phys_fn_004111 and phys_fn_004374 allocate, which it links through the
-// event's +4 into the list headed at Scene+0x620 (0x108e0-0x108ed). MSVC rejects __thiscall on a free
-// function (C3865), so the row is a member of a non-virtual fixture whose
-// pointer bits stand in for the Scene until a later task gives it a real
-// receiver type (the ObjectModel.h row004165/3413 convention).
-struct Row000571Fixture
+// The object at actor body +0x10 that phys_fn_000022 tail-calls: slot 6
+// (`jmp [eax+0x18]`) with one stack argument. Declared as an interface so the
+// call is a real virtual dispatch; nothing implements it here.
+struct Row000022Target
 	{
-	void row000571(void* event);
+	virtual void slot0() = 0;
+	virtual void slot1() = 0;
+	virtual void slot2() = 0;
+	virtual void slot3() = 0;
+	virtual void slot4() = 0;
+	virtual void slot5() = 0;
+	virtual void slot6(NxU32 arg) = 0;
 	};
 
-// phys_fn_000598 (deferred: owner Scene.cpp, 138 B). Thiscall on the Scene
-// (`mov ecx,[joint+0x30]`), no stack arguments, plain `ret`: grows the
-// constraint-record array at Scene+0x5b8 when its count (+0x5bc) reaches
-// its capacity (+0x5c0); phys_fn_004093 calls it. Same fixture convention
-// as 000571.
-struct Row000598Fixture
+// phys_fn_000754 (0x00017010, 1027 B; owner gap SceneRaycast..CapsuleShape;
+// deferred). Thiscall on the body record, no stack arguments, plain `ret`.
+// Its stub asserts.
+struct Row000754Fixture
 	{
-	void row000598();
+	void row000754();
 	};
 
-// phys_fn_000633 (deferred: owner Scene.cpp, joint removal). Thiscall on
-// the Scene (`mov ecx,[joint+0x30]; push joint`), `ret 4`; same fixture
-// convention as 000571.
-struct Row000633Fixture
-	{
-	void row000633(void* joint);
-	};
-
-// phys_fn_000758 (deferred: owner gap SceneRaycast..CapsuleShape). `this`
-// (the body record) in ecx, no stack arguments, plain `ret`: rebuilds the
-// record's +0x134 3x3 from its +0x124 quaternion. Same fixture convention.
+// phys_fn_000758 (0x00017630, 214 B; owner gap SceneRaycast..CapsuleShape).
+// `this` (the body record) in ecx, no stack arguments, plain `ret`: rebuilds
+// the record's +0x134 3x3 from its +0x124 quaternion (x, y, z, w).
 struct Row000758Fixture
 	{
 	void row000758();
 	};
+
+// phys_fn_000712 (0x00015d30, 32 B; owner gap SceneRaycast..CapsuleShape).
+// Thiscall on a body record, no stack arguments, plain `ret`: the island
+// root at +0x1bc, found recursively with path compression.
+struct Row000712Fixture
+	{
+	Row000712Fixture* row000712();
+	};
+
+// phys_fn_000760 (0x00017710, 168 B; owner gap SceneRaycast..CapsuleShape).
+// Thiscall on a body record, no stack arguments, plain `ret`: resets the
+// record's island fields (+0x1bc..+0x1e4) to a single-body island, frees the
+// island object at +0x1e0 when the record is its own root, and raises the
+// +0x4c wake counter to 0.4f as phys_fn_004107 does.
+struct Row000760Fixture
+	{
+	void row000760();
+	};
+
+// phys_fn_000778 (0x000185f0, 58 B, with its continuation phys_fn_000780 at
+// 0x00018630, 243 B; owner gap SceneRaycast..CapsuleShape). Thiscall on a
+// body record, two stack arguments, `ret 8`: dissolves the body's island.
+// Every joint on each island body's +0x1d8 list (linked through Joint +0x34)
+// other than `joint` is pushed back onto `jointArray` (the Scene's +0x58c
+// array) and unlinked, and each island body is reset through 000760.
+// phys_fn_000633 calls it on the joint's first non-null body.
+struct Row000778Fixture
+	{
+	void row000778(void* joint, void** jointArray);
+	};
+
+// phys_fn_004167 (0x0009ad10, 156 B; owner gap Joint.cpp..D6Joint.cpp;
+// deferred). Thiscall on the island object at body record +0x1e0, no stack
+// arguments; phys_fn_000760 calls it before freeing the object. Its stub
+// asserts.
+struct Row004167Fixture
+	{
+	void row004167();
+	};
+
+// The pointer-array push that phys_fn_000661 (0x13e53-0x13f12) and
+// phys_fn_000780 (0x1864c-0x186e6) both inline. `array` is {begin, end,
+// capacity}. With no room (capacity <= end) the array grows to 2n + 2
+// entries unless its capacity already covers that: a new block from the SDK
+// allocator (slot +8 with (bytes, 0)), the old entries copied, the old block
+// freed (slot +0x14), then end = new + n and capacity = new + bytes. The
+// value is stored at end and end advances by one entry.
+inline void nxJointPointerArrayPush(void** array, void* value)
+	{
+	void** begin = static_cast<void**>(array[0]);
+	void** end = static_cast<void**>(array[1]);
+	void** capacity = static_cast<void**>(array[2]);
+	if(!(capacity > end))
+		{
+		const NxI32 wanted = (NxI32)(((NxU8*)end - (NxU8*)begin) >> 2) * 2 + 2;
+		const NxI32 held = begin ? (NxI32)(((NxU8*)capacity - (NxU8*)begin) >> 2) : 0;
+		if((NxU32)held < (NxU32)wanted)
+			{
+			const NxU32 bytes = (NxU32)wanted * 4;
+			void** block = static_cast<void**>(nxGetSdkAllocator()->malloc(bytes, NX_MEMORY_PERSISTENT));
+			void** from = static_cast<void**>(array[0]);
+			void** to = block;
+			while(from != end)
+				*to++ = *from++;
+			if(array[0])
+				nxGetSdkAllocator()->free(array[0]);
+			const NxI32 count = (NxI32)(((NxU8*)array[1] - (NxU8*)array[0]) >> 2);
+			array[2] = (NxU8*)block + bytes;
+			array[1] = block + count;
+			array[0] = block;
+			}
+		}
+	void** slot = static_cast<void**>(array[1]);
+	*slot = value;
+	array[1] = slot + 1;
+	}
 
 // The three unit vectors at .data 0x10122054, 0x10122060 and 0x1012206c
 // (phys_data_003036, 003039, 003042): (1,0,0), (0,1,0), (0,0,1) in the image.
