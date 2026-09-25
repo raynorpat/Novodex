@@ -81,11 +81,14 @@ Reads `inventory.json`, `oracle/ghidra/manifest.json` and
 | `rows`, `bytes` | per `state`, code rows only |
 | `phases` | row count per owning phase |
 
-**Extent rule.** A named unit's extent is its evidenced span, grown outward
-over code rows until either the next unit's evidenced span or a row whose only
-callers and callees lie in a different named unit. Rows between two spans that
-satisfy neither side are `ambiguous_rows` of the gap unit. The rule is
-descriptive: it writes nothing into `inventory.json`.
+**Extent rule.** A named unit's extent is its evidenced span, grown outward one
+row at a time while the next row has a direct call edge into the unit's current
+rows and none into the neighbouring unit's rows. The left unit grows first, then
+the right unit over what remains. Rows neither side claims are the
+`ambiguous_rows` of a `gap:<left>..<right>` unit. A row with no edge into either
+unit is ambiguous, not assigned: unconnected code (for example the vendored
+OPCODE region) must not flow into its neighbour. The rule is descriptive: it
+writes nothing into `inventory.json`.
 
 Every executable code row appears in exactly one unit's extent or exactly one
 `ambiguous_rows` list; the tool fails otherwise. Span checks reuse
