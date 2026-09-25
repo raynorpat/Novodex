@@ -13,11 +13,11 @@ Evidenced span: ['0x000b1670', '0x000b19c0']. Rows: 10 (0 ambiguous). Generated 
 - PhysicsSDK.cpp: phys_fn_000480
 - gap:Controller.cpp..fluids\Fluid.cpp: phys_fn_002364, phys_fn_002366
 
-## phys_fn_004541 (0x000b1670, 84 B, discovered)
+## phys_fn_004541 (0x000b1670, 84 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpFixedJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpFixedJoint.cpp
 - prototype: undefined __thiscall FUN_100b1670(float * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004561 (0x000b1a20)
@@ -57,11 +57,11 @@ void __thiscall FUN_100b1670(void *this,float *param_1)
 
 ```
 
-## phys_fn_004543 (0x000b16d0, 84 B, discovered)
+## phys_fn_004543 (0x000b16d0, 84 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpFixedJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpFixedJoint.cpp
 - prototype: undefined __thiscall FUN_100b16d0(float * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004561 (0x000b1a20)
@@ -101,11 +101,11 @@ void __thiscall FUN_100b16d0(void *this,float *param_1)
 
 ```
 
-## phys_fn_004545 (0x000b1730, 89 B, discovered)
+## phys_fn_004545 (0x000b1730, 89 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpFixedJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpFixedJoint.cpp
 - prototype: undefined __thiscall FUN_100b1730(float param_1, float param_2)
 - calling convention: __thiscall, stack purge: 8
 - callers: phys_fn_004561 (0x000b1a20)
@@ -145,11 +145,11 @@ void __thiscall FUN_100b1730(void *this,float param_1,float param_2)
 
 ```
 
-## phys_fn_004547 (0x000b1790, 89 B, discovered)
+## phys_fn_004547 (0x000b1790, 89 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpFixedJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpFixedJoint.cpp
 - prototype: undefined __thiscall FUN_100b1790(float * param_1, char param_2)
 - calling convention: __thiscall, stack purge: 8
 - callers: phys_fn_004561 (0x000b1a20)
@@ -189,11 +189,11 @@ void __thiscall FUN_100b1790(void *this,float *param_1,char param_2)
 
 ```
 
-## phys_fn_004549 (0x000b17f0, 97 B, discovered)
+## phys_fn_004549 (0x000b17f0, 97 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpFixedJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpFixedJoint.cpp
 - prototype: uint __fastcall FUN_100b17f0(int param_1)
 - calling convention: __fastcall, stack purge: 8
 - callers: phys_fn_004561 (0x000b1a20)
@@ -240,7 +240,7 @@ uint __fastcall FUN_100b17f0(int param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpFixedJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpFixedJoint.cpp
 - prototype: undefined __fastcall FUN_100b1860(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_004561 (0x000b1a20)
@@ -280,11 +280,11 @@ void __fastcall FUN_100b1860(int param_1)
 
 ```
 
-## phys_fn_004553 (0x000b18b0, 88 B, discovered)
+## phys_fn_004553 (0x000b18b0, 88 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpFixedJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpFixedJoint.cpp
 - prototype: undefined __thiscall FUN_100b18b0(int param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004561 (0x000b1a20)
@@ -328,7 +328,7 @@ void __thiscall FUN_100b18b0(void *this,int param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpFixedJoint.cpp
-- implementation: Physics/src/ObjectModel.cpp
+- implementation: Physics/src/core/NpFixedJoint.cpp
 - prototype: undefined __fastcall FUN_100b1910(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_004561 (0x000b1a20)
@@ -372,7 +372,7 @@ void __fastcall FUN_100b1910(int param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpFixedJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpFixedJoint.cpp
 - prototype: undefined __thiscall FUN_100b1960(undefined4 param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004561 (0x000b1a20)
@@ -416,7 +416,7 @@ void __thiscall FUN_100b1960(void *this,undefined4 param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpFixedJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpFixedJoint.cpp
 - prototype: undefined __thiscall FUN_100b19c0(undefined4 param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004561 (0x000b1a20)

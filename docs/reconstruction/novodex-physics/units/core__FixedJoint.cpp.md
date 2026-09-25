@@ -33,11 +33,11 @@ Evidenced span: ['0x000a00e0', '0x000a1010']. Rows: 7 (0 ambiguous). Generated b
 - gap:core\NpFixedJoint.cpp..core\NpPointInPlaneJoint.cpp: phys_fn_004561
 - gap:core\PrismaticJoint.cpp..core\NpD6Joint.cpp: phys_fn_004391
 
-## phys_fn_004242 (0x000a00e0, 42 B, discovered)
+## phys_fn_004242 (0x000a00e0, 42 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/FixedJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/FixedJoint.cpp
 - prototype: undefined FUN_100a00e0(void)
 - calling convention: unknown, stack purge: 2147483647
 - callers: phys_fn_004250 (0x000a0f70)
@@ -67,11 +67,11 @@ void FUN_100a00e0(int param_1)
 
 ```
 
-## phys_fn_004244 (0x000a0110, 723 B, discovered)
+## phys_fn_004244 (0x000a0110, 723 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/FixedJoint.cpp
+- implementation: Physics/src/core/FixedJoint.cpp
 - prototype: undefined __fastcall FUN_100a0110(int param_1)
 - calling convention: __fastcall, stack purge: 4
 - callers: phys_fn_004250 (0x000a0f70), phys_fn_004254 (0x000a1010)
@@ -201,11 +201,11 @@ void __fastcall FUN_100a0110(int param_1)
 
 ```
 
-## phys_fn_004246 (0x000a03f0, 2922 B, discovered)
+## phys_fn_004246 (0x000a03f0, 2922 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/FixedJoint.cpp
+- implementation: Physics/src/core/FixedJoint.cpp
 - prototype: undefined __thiscall FUN_100a03f0(float param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004250 (0x000a0f70)
@@ -643,11 +643,11 @@ void FUN_100a0f60(void)
 
 ```
 
-## phys_fn_004250 (0x000a0f70, 81 B, discovered)
+## phys_fn_004250 (0x000a0f70, 81 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/FixedJoint.cpp
+- implementation: Physics/src/core/FixedJoint.cpp
 - prototype: void * __thiscall FUN_100a0f70(int param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_000665 (0x000142c0)
@@ -682,11 +682,11 @@ void * __thiscall FUN_100a0f70(void *this,int param_1)
 
 ```
 
-## phys_fn_004252 (0x000a0fd0, 56 B, discovered)
+## phys_fn_004252 (0x000a0fd0, 56 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/FixedJoint.cpp
+- implementation: Physics/src/core/FixedJoint.cpp
 - prototype: void * __thiscall FUN_100a0fd0(byte param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004250 (0x000a0f70)
@@ -715,11 +715,11 @@ void * __thiscall FUN_100a0fd0(void *this,byte param_1)
 
 ```
 
-## phys_fn_004254 (0x000a1010, 141 B, discovered)
+## phys_fn_004254 (0x000a1010, 141 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/FixedJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/FixedJoint.cpp
 - prototype: undefined FUN_100a1010(void)
 - calling convention: unknown, stack purge: 2147483647
 - callers: phys_fn_004250 (0x000a0f70)

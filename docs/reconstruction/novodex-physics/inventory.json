@@ -77245,13 +77245,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/FixedJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2049",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14175",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from units/core__FixedJoint.cpp.md (ghidra supplement) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Fixed)",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both fixed cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 8 wired to core/FixedJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 75/75 coverage); trace excerpt committed as evidence/joint-families-trace-fixed.txt (joint-families Task 3h)",
+      "notes": "",
+      "implementation": "Physics/src/core/FixedJoint.cpp"
     },
     {
       "id": "phys_fn_004243",
@@ -77281,13 +77282,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/FixedJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1598",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14177",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from units/core__FixedJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Fixed)",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both fixed cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 8 wired to core/FixedJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 75/75 coverage); trace excerpt committed as evidence/joint-families-trace-fixed.txt (joint-families Task 3h)",
+      "notes": "",
+      "implementation": "Physics/src/core/FixedJoint.cpp"
     },
     {
       "id": "phys_fn_004245",
@@ -77317,13 +77319,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/FixedJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1599",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14187",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__FixedJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Fixed)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/FixedJoint.cpp"
     },
     {
       "id": "phys_fn_004247",
@@ -77389,13 +77392,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/FixedJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1601",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14244",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from units/core__FixedJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Fixed)",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both fixed cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 8 wired to core/FixedJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 75/75 coverage); trace excerpt committed as evidence/joint-families-trace-fixed.txt (joint-families Task 3h)",
+      "notes": "",
+      "implementation": "Physics/src/core/FixedJoint.cpp"
     },
     {
       "id": "phys_fn_004251",
@@ -77425,13 +77429,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/FixedJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1602",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14247",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__FixedJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Fixed)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/FixedJoint.cpp"
     },
     {
       "id": "phys_fn_004253",
@@ -77461,13 +77466,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/FixedJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2055",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14250",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__FixedJoint.cpp.md (ghidra supplement) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Fixed)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/FixedJoint.cpp"
     },
     {
       "id": "phys_fn_004255",
@@ -82757,13 +82763,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpFixedJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1704",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15267",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpFixedJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Fixed)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpFixedJoint.cpp"
     },
     {
       "id": "phys_fn_004542",
@@ -82793,13 +82800,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpFixedJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1705",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15270",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpFixedJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Fixed)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpFixedJoint.cpp"
     },
     {
       "id": "phys_fn_004544",
@@ -82829,13 +82837,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpFixedJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1706",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15273",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpFixedJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Fixed)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpFixedJoint.cpp"
     },
     {
       "id": "phys_fn_004546",
@@ -82865,13 +82874,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpFixedJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1707",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15276",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpFixedJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Fixed)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpFixedJoint.cpp"
     },
     {
       "id": "phys_fn_004548",
@@ -82901,13 +82911,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpFixedJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1708",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15279",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpFixedJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Fixed)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpFixedJoint.cpp"
     },
     {
       "id": "phys_fn_004550",
@@ -82941,9 +82952,10 @@
       "source": "Physics/src/core/NpFixedJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1709",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15282",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpFixedJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Fixed)",
       "dynamic_proof": "confirmed via the tailjmp differential (3z191): failures=0 for all twelve rows on both arms, comparing the report tuple, the global word written at 0x10127180 and the whole object buffer, with the lock API, report slot and that global bound",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpFixedJoint.cpp"
     },
     {
       "id": "phys_fn_004552",
@@ -82973,13 +82985,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpFixedJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1710",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15285",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpFixedJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Fixed)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpFixedJoint.cpp"
     },
     {
       "id": "phys_fn_004554",
@@ -83013,10 +83026,10 @@
       "source": "Physics/src/core/NpFixedJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1711",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15288",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpFixedJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Fixed)",
       "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
-      "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp",
+      "notes": "previous implementation: Physics/src/ObjectModel.cpp",
+      "implementation": "Physics/src/core/NpFixedJoint.cpp",
       "implementation_symbol": "phys_fn_004555 (harness dispatch table)"
     },
     {
@@ -83051,9 +83064,10 @@
       "source": "Physics/src/core/NpFixedJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1712",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15291",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpFixedJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Fixed)",
       "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpFixedJoint.cpp"
     },
     {
       "id": "phys_fn_004558",
@@ -83087,9 +83101,10 @@
       "source": "Physics/src/core/NpFixedJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1713",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15294",
-      "static_proof": null,
-      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
-      "notes": ""
+      "static_proof": "transcribed from units/core__NpFixedJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Fixed)",
+      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound; executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both fixed cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 8 wired to core/FixedJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 75/75 coverage); trace excerpt committed as evidence/joint-families-trace-fixed.txt (joint-families Task 3h)",
+      "notes": "",
+      "implementation": "Physics/src/core/NpFixedJoint.cpp"
     },
     {
       "id": "phys_fn_004560",
@@ -83119,13 +83134,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/NpFixedJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1714",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15297",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from units/gap__core__NpFixedJoint.cpp__to__core__NpPointInPlaneJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Fixed)",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both fixed cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 8 wired to core/FixedJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 75/75 coverage); trace excerpt committed as evidence/joint-families-trace-fixed.txt (joint-families Task 3h)",
+      "notes": "",
+      "implementation": "Physics/src/core/NpFixedJoint.cpp"
     },
     {
       "id": "phys_fn_004562",
@@ -83155,13 +83171,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/NpFixedJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2209",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15298",
-      "static_proof": null,
+      "static_proof": "compiler-generated `vector deleting destructor' adjustor{12} thunk: Physics/src/core/NpFixedJoint.cpp carries only its stable-ID line above ~NpFixedJoint; the NpJointShared<NxFixedJoint, FixedJoint> layout per units/joint-families-contract.md makes the compiler emit ??_ENpFixedJoint@@WM@AEPAXI@Z (candidate 0x10036985 in build/Release/NxPhysics.map), which disassembles to `sub ecx,0xc; jmp <NpFixedJoint deleting destructor>` (evidence/joint-families-trace-fixed.txt), the same two instructions as the oracle's 0x100b1a60 `sub ecx,0xc; jmp 0x100b1a70` (phys_fn_004565)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpFixedJoint.cpp"
     },
     {
       "id": "phys_fn_004564",
@@ -83191,13 +83208,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/NpFixedJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1715",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15299",
-      "static_proof": null,
+      "static_proof": "transcribed from units/gap__core__NpFixedJoint.cpp__to__core__NpPointInPlaneJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Fixed)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpFixedJoint.cpp"
     },
     {
       "id": "phys_fn_004566",
