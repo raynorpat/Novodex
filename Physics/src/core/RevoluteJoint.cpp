@@ -1212,7 +1212,7 @@ void RevoluteJoint::row_slot7(NxReal arg)
 		}
 	else
 		{
-		// Joint base slot 7 (row 004135) is deferred; its stub asserts.
+		// Joint base slot 7 (row 004135), called directly as 0xab4b4 does.
 		Joint::row_slot7(arg);
 		}
 

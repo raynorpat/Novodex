@@ -66,9 +66,12 @@ struct JointSupportRecord
 	//! caller rounds where it stores.
 	NxF64				row004389() const;
 
-	//! phys_fn_004391 (0x000af3c0, 837 B; deferred: solver slots 6/7).
-	//! Thiscall, two pointer arguments, `ret 8`; 004393 passes two locals
-	//! and reads only the second afterwards.
+	//! phys_fn_004391 (0x000af3c0, 837 B; write: every family's solver
+	//! slots and the Joint base's slot 7). Thiscall, two pointer arguments,
+	//! `ret 8`: out0 = the record's effective mass term (bit 10 clear: the
+	//! +0x00/+0x18/+0x24 vectors through both bodies' +0x0c scale and +0x20
+	//! 3x3; set: +0x00 through the 3x3s only), out1 = 1 / out0, or 0 when
+	//! out0 is 0. 004393 passes two locals and reads only the second.
 	void				row004391(NxReal& out0, NxReal& out1);
 
 	//! phys_fn_004393 (0x000af710, 122 B). Thiscall, two float arguments,
@@ -104,6 +107,16 @@ struct Row000022Fixture
 struct Row000571Fixture
 	{
 	void row000571(void* event);
+	};
+
+// phys_fn_000598 (deferred: owner Scene.cpp, 138 B). Thiscall on the Scene
+// (`mov ecx,[joint+0x30]`), no stack arguments, plain `ret`: grows the
+// constraint-record array at Scene+0x5b8 when its count (+0x5bc) reaches
+// its capacity (+0x5c0); phys_fn_004093 calls it. Same fixture convention
+// as 000571.
+struct Row000598Fixture
+	{
+	void row000598();
 	};
 
 // phys_fn_000633 (deferred: owner Scene.cpp, joint removal). Thiscall on

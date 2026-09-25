@@ -73988,13 +73988,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1523",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13469",
-      "static_proof": null,
+      "static_proof": "transcribed from units/gap__NpSpringAndDamperEffector.cpp__to__Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; see units/joint-families-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/Joint.cpp"
     },
     {
       "id": "phys_fn_004065",
@@ -74486,12 +74487,13 @@
       "phase": 6,
       "phase_provenance": "translation_unit",
       "state": "reconstructed",
-      "source": "mark-degenerate loop (0x95d60)",
+      "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1537",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13504",
-      "static_proof": "for i in [base, base+count), OR 0x20 into array[slot*0x50 + 0xc] where array = *[*[this+0x30] + 0x5b8]; base/count at +0x160/+0x164",
+      "static_proof": "for i in [base, base+count), OR 0x20 into array[slot*0x50 + 0xc] where array = *[*[this+0x30] + 0x5b8]; base/count at +0x160/+0x164; transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; see units/joint-families-contract.md",
       "dynamic_proof": "confirmed via markdeg drive (3z73): failures=0",
-      "notes": ""
+      "notes": "previous source: mark-degenerate loop (0x95d60)",
+      "implementation": "Physics/src/core/Joint.cpp"
     },
     {
       "id": "phys_fn_004092",
@@ -74521,13 +74523,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1538",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13507",
-      "static_proof": null,
+      "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; see units/joint-families-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/Joint.cpp"
     },
     {
       "id": "phys_fn_004094",
@@ -74631,13 +74634,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/Joint.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1541",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13520",
-      "static_proof": null,
+      "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; see units/joint-families-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "previous source: Physics/src/Joint.cpp",
+      "implementation": "Physics/src/core/Joint.cpp"
     },
     {
       "id": "phys_fn_004100",
@@ -74667,13 +74671,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/Joint.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1542",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13531",
-      "static_proof": null,
+      "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; see units/joint-families-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "previous source: Physics/src/Joint.cpp",
+      "implementation": "Physics/src/core/Joint.cpp"
     },
     {
       "id": "phys_fn_004102",
@@ -74812,13 +74817,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/Joint.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1546",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13602",
-      "static_proof": null,
+      "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; see units/joint-families-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "previous source: Physics/src/Joint.cpp",
+      "implementation": "Physics/src/core/Joint.cpp"
     },
     {
       "id": "phys_fn_004110",
@@ -74848,13 +74854,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1986",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13612",
-      "static_proof": null,
+      "static_proof": "transcribed from units/Joint.cpp.md (ghidra supplement) and checked against the Capstone listing; see units/joint-families-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/Joint.cpp"
     },
     {
       "id": "phys_fn_004112",
@@ -75067,13 +75074,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1552",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13657",
-      "static_proof": null,
+      "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; see units/joint-families-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/Joint.cpp"
     },
     {
       "id": "phys_fn_004124",
@@ -75251,13 +75259,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1557",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13694",
-      "static_proof": null,
+      "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; see units/joint-families-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/Joint.cpp"
     },
     {
       "id": "phys_fn_004134",
@@ -75287,13 +75296,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1558",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13703",
-      "static_proof": null,
+      "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; see units/joint-families-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/Joint.cpp"
     },
     {
       "id": "phys_fn_004136",
@@ -75434,13 +75444,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/Joint.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1562",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13740",
-      "static_proof": null,
+      "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; see units/joint-families-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "previous source: Physics/src/Joint.cpp",
+      "implementation": "Physics/src/core/Joint.cpp"
     },
     {
       "id": "phys_fn_004144",
@@ -79932,13 +79943,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/JointSupport.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1647",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15051",
-      "static_proof": null,
+      "static_proof": "transcribed from units/gap__core__PrismaticJoint.cpp__to__core__NpD6Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; see units/joint-families-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/JointSupport.cpp"
     },
     {
       "id": "phys_fn_004392",

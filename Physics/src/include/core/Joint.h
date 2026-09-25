@@ -120,6 +120,28 @@ static_assert(offsetof(JointBodyRecord, mUnknown204) == 0x204, "record pointer a
 static_assert(offsetof(JointBodyRecord, mInverseMass) == 0x0c0, "inverse mass at +0xc0");
 static_assert(offsetof(JointBodyRecord, mWorldInverseInertia) == 0x164, "world inverse inertia at +0x164");
 
+// The actor-side record JointBodyRecord::mOwner (+0x19c) points to: the
+// 0x50-byte actor body the candidate builds in Physics/src/Scene.cpp (its
+// NxActor* at +0, its dynamic body record at +8, the static global pose at
+// +0x20). Read view only. phys_fn_004099 and phys_fn_004101 read the actor's
+// global pose through it: the rows of the +8 record's +0x5c quaternion and
+// its +0x50 position when +8 is set (the listing's inlined quaternion-to-
+// matrix, 0x9637e-0x9643e), else the 3x3 at +0x20 and the vec3 at +0x44.
+struct JointActorBody
+	{
+	NxActor*			mActor;				//!< +0x00 (phys_fn_004066 reads it)
+	NxU32				mUnknown004;		//!< +0x04
+	JointBodyRecord*	mBody;				//!< +0x08; null for a static actor
+	NxU8				mUnknown00c[0x20 - 0x0c];
+	NxReal				mPoseRotation[9];	//!< +0x20; row-major
+	NxVec3				mPosePosition;		//!< +0x44
+	};
+
+static_assert(offsetof(JointActorBody, mBody) == 0x08, "body record at +0x08");
+static_assert(offsetof(JointActorBody, mPoseRotation) == 0x20, "static pose at +0x20");
+static_assert(offsetof(JointActorBody, mPosePosition) == 0x44, "static position at +0x44");
+static_assert(sizeof(JointActorBody) == 0x50, "the actor body is 0x50 bytes");
+
 // A limit-plane list node: 0x14 bytes (phys_fn_004143 allocates `push 0x14`),
 // linked through +0x10 from Joint::mLimitPlaneHead. The names are the
 // public NxJoint::getNextLimitPlane outputs phys_fn_004131 copies them to.
@@ -188,10 +210,12 @@ class Joint
 	//! RevoluteJoint overrides this slot with phys_fn_004328.
 	virtual void row_slot1() {}
 
-	//! Slot 2 (+0x08). phys_fn_004111 (0x00097fd0, 113 B; deferred: break
-	//! test from the solver, needs phys_fn_000571/004091 and the break
-	//! event). RevoluteJoint inherits this slot unchanged.
-	virtual void row004111(NxU32 a, NxU32 b);
+	//! Slot 2 (+0x08). phys_fn_004111 (0x00097fd0, 113 B; write): the
+	//! break test the solver calls. `ret 8`: the first argument is a
+	//! constraint record (the row tests its +0x0c flags word), the second a
+	//! float the break event carries at +0xc. Every joint family inherits
+	//! this slot unchanged.
+	virtual void row004111(const JointSupportRecord* record, NxReal value);
 
 	//! Slot 3 (+0x0c). phys_fn_004087 (0x00095cc0, 87 B; write:
 	//! mAccumulated += (numerator / divisor) * v; `ret 0xc`, the middle
@@ -212,16 +236,20 @@ class Joint
 	//! the vtable (see revolute-contract.md's note on phys_fn_004119).
 	virtual ~Joint();
 
-	//! Slot 6 (+0x18). phys_fn_004133 (0x00099ab0, 134 B; deferred: the
-	//! Joint base's own default for this slot). RevoluteJoint overrides
-	//! this slot with phys_fn_004360. The argument is a float: the
-	//! override divides by it (0xaa2a7 `fdiv dword [esp+0xac]`).
+	//! Slot 6 (+0x18). phys_fn_004133 (0x00099ab0, 134 B; write): the
+	//! Joint base's own body for this slot, which every family overrides
+	//! (RevoluteJoint with phys_fn_004360). The scene row phys_fn_000728
+	//! calls this body directly (0x167ea), not through the table: it
+	//! refreshes a stale body, sets the state bits to 1, calls slot 7 and,
+	//! unless flag bit 2 is set, slot 6 (the override). The argument is a
+	//! float: the override divides by it (0xaa2a7).
 	virtual void row_slot6(NxReal arg);
 
-	//! Slot 7 (+0x1c). phys_fn_004135 (0x00099b40, 701 B; deferred: the
-	//! Joint base's own default for this slot). RevoluteJoint overrides
-	//! this slot with phys_fn_004362, which divides by the argument
-	//! (0xab261) and passes it on unchanged to this body (0xab4ad).
+	//! Slot 7 (+0x1c). phys_fn_004135 (0x00099b40, 701 B; write): the
+	//! limit-plane constraint record. Inherited by the prismatic,
+	//! cylindrical, point-on-line, point-in-plane, distance, pulley, fixed
+	//! and D6 tables; RevoluteJoint overrides it with phys_fn_004362, which
+	//! passes the argument on unchanged to this body (0xab4ad).
 	virtual void row_slot7(NxReal arg);
 
 	//! Slot 8 (+0x20). Joint's own default is the folded, unclaimed
@@ -234,8 +262,8 @@ class Joint
 	// --- non-virtual Joint members (write / defer rows assigned to
 	//     core/Joint.cpp; not part of either vtable) ---
 
-	//! phys_fn_004064 (0x000957a0, 385 B; deferred: internal slot 8 caller
-	//! only, reached from scene code outside the pilot). `ret 0xc`, three
+	//! phys_fn_004064 (0x000957a0, 385 B; write: called by the revolute
+	//! and spherical projection slots, 004356/004298). `ret 0xc`, three
 	//! pointers: out = body[0] pose * anchor0 - body[1] pose * anchor1 (the
 	//! +0x134/+0x158 poses; a missing body leaves its point as is).
 	void row004064(const NxVec3& anchor0, const NxVec3& anchor1, NxVec3& out) const;
@@ -278,11 +306,17 @@ class Joint
 	//! purgeLimitPlanes (phys_fn_004695); also the tail of phys_fn_004095.
 	void purgeLimitPlanes();
 
-	//! phys_fn_004093 (0x00095da0, 116 B; deferred: solver slots 6/7,
-	//! also needs Scene row phys_fn_000598 absent from the candidate).
-	//! Called by phys_fn_004360/phys_fn_004362. No stack arguments, plain
-	//! `ret`; returns the next 0x50-byte record of the Scene's array at
-	//! +0x5b8 (0x95dde-0x95df5).
+	//! phys_fn_004091 (0x00095d60, 62 B; write: called by phys_fn_004111).
+	//! `this` in ecx, plain `ret`: sets bit 5 of the flags word of every
+	//! record this joint took from phys_fn_004093 (records mUnknown160[0]
+	//! .. + mUnknown160[1] of the Scene's array at +0x5b8).
+	void row004091();
+
+	//! phys_fn_004093 (0x00095da0, 116 B; write: every family's solver
+	//! slots). No stack arguments, plain `ret`; takes the next 0x50-byte
+	//! record of the Scene's array at +0x5b8 (count +0x5bc, capacity
+	//! +0x5c0; the deferred Scene row phys_fn_000598 grows it when full)
+	//! and counts it in mUnknown160 (first index, count).
 	JointSupportRecord* row004093();
 
 	//! phys_fn_004095 -- see the ~Joint() destructor above (slot 5).
@@ -291,14 +325,12 @@ class Joint
 	//! Per-body frame refresh for body index `i`.
 	void refreshBodyFrame(NxU32 bodyIndex);
 
-	//! phys_fn_004099 (0x000962f0, 1112 B; deferred: NxJoint::setGlobalAnchor,
-	//! not reached by the joint test). Np slot 2 setGlobalAnchor
-	//! (phys_fn_004681) body.
+	//! phys_fn_004099 (0x000962f0, 1112 B; write). Np slot 2
+	//! setGlobalAnchor body (every family's slot-2 row, e.g. 004681).
 	void setGlobalAnchor(const NxVec3& anchor);
 
-	//! phys_fn_004101 (0x00096750, 5302 B; deferred: NxJoint::setGlobalAxis,
-	//! not reached by the joint test). Np slot 4 setGlobalAxis
-	//! (phys_fn_004683) body.
+	//! phys_fn_004101 (0x00096750, 5302 B; write). Np slot 4 setGlobalAxis
+	//! body (every family's slot-4 row, e.g. 004683).
 	void setGlobalAxis(const NxVec3& axis);
 
 	//! phys_fn_004107 (0x00097d30, 297 B; write; on the transcript path).
@@ -307,9 +339,8 @@ class Joint
 	//! each one's +8 (the JointBodyRecord) in mBody.
 	void row004107(void* actorImpl0, void* actorImpl1, bool suppressAttach);
 
-	//! phys_fn_004109 (0x00097e60, 366 B; deferred: NxJoint::setLimitPoint,
-	//! not reached by the joint test). Np slot 11 setLimitPoint
-	//! (phys_fn_004687) body.
+	//! phys_fn_004109 (0x00097e60, 366 B; write). Np slot 11 setLimitPoint
+	//! body (every family's slot-11 row, e.g. 004687).
 	void setLimitPoint(const NxVec3& point, bool pointIsOnBody2);
 
 	//! phys_fn_004121 (0x000987a0, 1084 B; write; on the transcript path).
@@ -317,10 +348,11 @@ class Joint
 	//! maxForce/maxTorque, name binding, jointFlags mapping.
 	void loadFromDescBase(const NxJointDesc& desc);
 
-	//! phys_fn_004123 (0x00098be0, 518 B; deferred: reached only through
-	//! internal slot 4, phys_fn_004364). `ret 4`, one output vec3: after
-	//! the stale-body refresh, a point formed from the two world anchors
-	//! carried through the bodies' +0x134/+0x158 poses (not read here).
+	//! phys_fn_004123 (0x00098be0, 518 B; write: the debug-visualization
+	//! slots of the revolute, cylindrical, point-on-line, point-in-plane,
+	//! spherical and D6 families). `ret 4`, one output vec3: after the
+	//! stale-body refresh, the midpoint of the two world anchors carried
+	//! through the bodies' +0x134/+0x158 poses.
 	void row004123(NxVec3& out);
 
 	//! phys_fn_004125 (0x00098df0, 1940 B; write; on the transcript path,
@@ -358,9 +390,8 @@ class Joint
 
 	//! phys_fn_004141 -- see the constructor above.
 
-	//! phys_fn_004143 (0x0009a0d0, 860 B; deferred: NxJoint::addLimitPlane,
-	//! not reached by the joint test). Np slot 13 addLimitPlane
-	//! (phys_fn_004689) body.
+	//! phys_fn_004143 (0x0009a0d0, 860 B; write). Np slot 13 addLimitPlane
+	//! body (every family's slot-13 row, e.g. 004689).
 	bool addLimitPlane(const NxVec3& normal, const NxVec3& pointInPlane);
 
 	//! phys_fn_004145 (0x0009a430, 174 B; write). Folded Np slot 17
@@ -462,7 +493,10 @@ class Joint
 	//! +0x154. Accumulated vec3 (`+= (a/b)*v` by internal slot 3).
 	NxVec3				mAccumulated;
 
-	//! +0x160 / +0x164. Unknown; no row read in this task touches them.
+	//! +0x160 / +0x164. First index and count of the constraint records
+	//! this joint took from phys_fn_004093 (004093 sets them, 004091 walks
+	//! them, the scene row phys_fn_000728 resets them to -1 / 0 before it
+	//! calls phys_fn_004133). Meaning beyond that unknown.
 	NxU32				mUnknown160[2];
 
 	//! +0x168. NxJointType.

@@ -1928,11 +1928,11 @@ UNRESOLVED_SOURCE_PATHS = (
     'Physics/src/EdgeList.cpp',                      # 3 rows
     'Physics/src/IceAdjacencies.cpp',                # 2 rows
     'Physics/src/InternalTriangleMesh.cpp',          # 1 rows
-    'Physics/src/Joint.cpp',                         # 4 rows (004099 004101 004109 004143): these
-                                                      # discovered rows keep the oracle path while
-                                                      # their deferred stubs live in
-                                                      # Physics/src/core/Joint.cpp -- do not create
-                                                      # Physics/src/Joint.cpp.
+    # 'Physics/src/Joint.cpp' was here with 4 rows (004099 004101 004109 004143),
+    # and was REMOVED when joint-families Task 2 wrote those rows in
+    # Physics/src/core/Joint.cpp (their notes keep the oracle path). The check
+    # said so itself: "is on the allowlist but no longer unresolved; remove the
+    # entry".
     # 'Physics/src/NpActor.cpp' was on this list with 66 rows against it, and is
     # REMOVED: the concrete actor class now exists, so the path resolves and the entry
     # would be a claim that a real file is missing. The check said so itself --

@@ -360,6 +360,16 @@ Headers `Physics/src/include/core/NpRevoluteJoint.h` and the new
   `forward*` helpers with this unit's `__FILE__` and line. The other write-locked rows report
   through `reportWriteLocked`.
 
+### Declaration changes made by joint-families Task 2
+
+Details in `units/joint-families-contract.md` `## Shared rows`. Of the rows `## Dependency
+closure` defers, 004064, 004093, 004099, 004101, 004109, 004111, 004123, 004133, 004135,
+004143 (`core/Joint.cpp`) and 004391 (`core/JointSupport.cpp`) are now written, with 004091
+(which 004111 calls); 000022, 000571, 000633 and 000758 stay deferred stubs, joined by
+000598 (called by 004093). `Joint::row004111` now takes `(const JointSupportRecord*,
+NxReal)`. The revolute rows that called those stubs (004356, 004360, 004362, 004364) now
+reach real bodies there, except where they reach 000022, 000571, 000598 or 000758.
+
 ## Construction chain
 
 The public call is `NxScene::createJoint(desc)` with `desc.type == NX_JOINT_REVOLUTE (1)`.

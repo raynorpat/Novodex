@@ -7,9 +7,12 @@
 \*----------------------------------------------------------------------------*/
 #include "core/Joint.h"
 #include "core/JointSupport.h"
+#include "PhysicsSDK.h"
 #include "NxJoint.h"
+#include "NxUtilities.h"
 
 #include <math.h>
+#include <new>
 
 // The oracle's __FILE__ for this unit (see revolute-contract.md "## Row
 // assignment": the pilot writes it as core/Joint.cpp, the oracle does not).
@@ -128,6 +131,170 @@ static void jointQuatToRows(const NxReal* q, NxReal* m)
 	m[8] = (NxReal)((double)oneMinusXx2f - yy2);
 	}
 
+// (a0 * b0 + a1 * b1) + a2 * b2 with the products exact and the sums at
+// double precision: the three-term row sums below, written in the order
+// the listing adds them.
+static NX_INLINE double jointDot3(NxReal a0, NxReal b0, NxReal a1, NxReal b1, NxReal a2, NxReal b2)
+	{
+	return (jointMul(a0, b0) + jointMul(a1, b1)) + jointMul(a2, b2);
+	}
+
+// The actor's global pose as 004099 and 004101 inline it for a body (see
+// JointActorBody in core/Joint.h): the rows of the dynamic record's +0x5c
+// quaternion (the same inlined conversion as jointQuatToRows; all eight
+// copies in the two rows match it instruction for instruction) and its
+// +0x50 position, or the static pose at +0x20/+0x44.
+static void jointActorPose(const JointBodyRecord* body, NxReal* m, NxVec3& t)
+	{
+	const JointActorBody* actor = static_cast<const JointActorBody*>(body->mOwner);
+	const JointBodyRecord* record = actor->mBody;
+	if(record)
+		{
+		jointQuatToRows(record->mOrientation, m);
+		t = record->mPosition;
+		}
+	else
+		{
+		for(NxU32 i = 0; i < 9; i++)
+			m[i] = actor->mPoseRotation[i];
+		t = actor->mPosePosition;
+		}
+	}
+
+// World point -> body frame, as 004099 inlines it for both bodies
+// (0x96468-0x9650e, 0x9666a-0x96709): out = transpose(m) * (p - t). The x
+// and z differences are stored as floats; y stays on the stack.
+static void jointLocalizePoint(const NxReal* m, const NxVec3& t, const NxVec3& p, NxVec3& out)
+	{
+	const NxReal dx = (NxReal)((double)p.x - t.x);
+	const double dy = (double)p.y - t.y;
+	const NxReal dz = (NxReal)((double)p.z - t.z);
+	const double x = (jointMul(m[6], dz) + m[3] * dy) + jointMul(m[0], dx);
+	const double y = (jointMul(m[7], dz) + m[4] * dy) + jointMul(m[1], dx);
+	const double z = (jointMul(m[8], dz) + m[5] * dy) + jointMul(m[2], dx);
+	out.z = (NxReal)z;
+	out.x = (NxReal)x;
+	out.y = (NxReal)y;
+	}
+
+// Rows 6-8 of the frame matrix 004101 builds: axis x normal, each
+// component stored as a float.
+static void jointFrameCross(const NxVec3& a, const NxVec3& n, NxReal* c)
+	{
+	c[0] = (NxReal)(jointMul(a.y, n.z) - jointMul(a.z, n.y));
+	c[1] = (NxReal)(jointMul(a.z, n.x) - jointMul(a.x, n.z));
+	c[2] = (NxReal)(jointMul(a.x, n.y) - jointMul(a.y, n.x));
+	}
+
+// The inlined NxQuat-from-matrix of phys_fn_004101's four sites, over the
+// row-major m (rows: axis, normal, axis x normal). The four sites differ
+// only in which pair sum of the diagonal they store as a float and reuse:
+//   JOINT_PAIR_08_WIDE   (body 0, both arms): p = m0 + m8 stored; trace =
+//                        the unrounded p + m4; case 1 uses the stored p.
+//   JOINT_PAIR_08_STORED (body 1 with a body): trace = m4 + the stored p;
+//                        case 1 uses the stored p.
+//   JOINT_PAIR_48_STORED (body 1 without a body): q = m8 + m4 stored;
+//                        trace = m0 + q; case 0 uses q, case 1 the
+//                        unrounded m8 + m0.
+// Unlike 004121's copy, the non-negative arm divides 0.5 by the float-
+// stored root (`fst; ...; fdiv dword`). Writes x, y, z as floats and
+// returns w unrounded; the callers negate x, y, z where they store them.
+enum JointPairForm
+	{
+	JOINT_PAIR_08_WIDE,
+	JOINT_PAIR_08_STORED,
+	JOINT_PAIR_48_STORED
+	};
+
+static double jointRowsToQuat(const NxReal* m, JointPairForm form, NxReal* q)
+	{
+	double trace;
+	NxReal pair;
+	if(form == JOINT_PAIR_48_STORED)
+		{
+		pair = (NxReal)((double)m[8] + m[4]);
+		trace = (double)m[0] + pair;
+		}
+	else
+		{
+		const double wide = (double)m[0] + m[8];
+		pair = (NxReal)wide;
+		trace = form == JOINT_PAIR_08_WIDE ? wide + m[4] : (double)m[4] + pair;
+		}
+	if(trace >= 0.0)
+		{
+		const double s = sqrt(trace + 1.0);
+		const NxReal sf = (NxReal)s;
+		const double w = s * 0.5f;
+		const double r = 0.5f / (double)sf;
+		q[0] = (NxReal)(((double)m[7] - m[5]) * r);
+		q[1] = (NxReal)(((double)m[2] - m[6]) * r);
+		q[2] = (NxReal)(((double)m[3] - m[1]) * r);
+		return w;
+		}
+	NxU32 k = 0;
+	if(m[4] > m[0])
+		k = 1;
+	if(m[8] > m[k * 4])
+		k = 2;
+	if(k == 0)
+		{
+		const double rest = form == JOINT_PAIR_48_STORED ? (double)pair : (double)m[4] + m[8];
+		const double s = sqrt(((double)m[0] - rest) + 1.0);
+		q[0] = (NxReal)(0.5f * s);
+		const double r = 0.5f / s;
+		q[1] = (NxReal)(((double)m[3] + m[1]) * r);
+		q[2] = (NxReal)(((double)m[6] + m[2]) * r);
+		return ((double)m[7] - m[5]) * r;
+		}
+	if(k == 1)
+		{
+		const double rest = form == JOINT_PAIR_48_STORED ? (double)m[8] + m[0] : (double)pair;
+		const double s = sqrt(((double)m[4] - rest) + 1.0);
+		q[1] = (NxReal)(0.5f * s);
+		const double r = 0.5f / s;
+		q[2] = (NxReal)(((double)m[7] + m[5]) * r);
+		q[0] = (NxReal)(((double)m[3] + m[1]) * r);
+		return ((double)m[2] - m[6]) * r;
+		}
+	const double s = sqrt(((double)m[8] - ((double)m[0] + m[4])) + 1.0);
+	q[2] = (NxReal)(0.5f * s);
+	const double r = 0.5f / s;
+	q[0] = (NxReal)(((double)m[6] + m[2]) * r);
+	q[1] = (NxReal)(((double)m[7] + m[5]) * r);
+	return ((double)m[3] - m[1]) * r;
+	}
+
+// The frame quaternion 004101 stores: x, y, z negated, w last.
+static void jointStoreFrameQuat(const NxVec3& axis, const NxVec3& normal, JointPairForm form, NxReal* target)
+	{
+	NxReal m[9];
+	m[0] = axis.x;
+	m[1] = axis.y;
+	m[2] = axis.z;
+	m[3] = normal.x;
+	m[4] = normal.y;
+	m[5] = normal.z;
+	jointFrameCross(axis, normal, m + 6);
+	NxReal q[3];
+	const double w = jointRowsToQuat(m, form, q);
+	target[2] = -q[2];
+	target[0] = -q[0];
+	target[1] = -q[1];
+	target[3] = (NxReal)w;
+	}
+
+// The SDK parameters 004135 reads straight from the live parameter array
+// (.data 0x10123b18, PhysicsSDK.cpp's gParameter): element 0 (0x10123b18,
+// NX_PENALTY_FORCE) and element 1 (0x10123b1c, NX_MIN_SEPARATION_FOR_
+// PENALTY). Read through PhysicsSDK::getParameter as core/RevoluteJoint.cpp
+// does (see its revoluteSdkParameter for the no-SDK case).
+static NxReal jointSdkParameter(NxParameter parameter)
+	{
+	const PhysicsSDK* const sdk = PhysicsSDK::instance;
+	return sdk ? sdk->getParameter(parameter) : 0.0f;
+	}
+
 // phys_fn_004141 (0x00099e60, 464 B)
 // The typeBit -> NxJointType map below was read from the oracle's byte table
 // at 0x9a048 and jump table 0x9a030 (2->5, 4->4, 8->3, 0x40->1, 0x80->0), not
@@ -184,12 +351,25 @@ Joint::~Joint()
 	}
 
 // phys_fn_004111 (0x00097fd0, 113 B)
-// (deferred: break test from the solver; needs phys_fn_000571, 004091 and the break event)
-void Joint::row004111(NxU32 a, NxU32 b)
+// Only the supplement decompile exists; it shows the second argument as
+// the return address (`unaff_retaddr`). The listing reads it from
+// [esp+0xc] after one push (0x98015), i.e. the second stack argument, and
+// purges 8 bytes. Unless the record's bits 11-18 are 0x4d or the joint is
+// already broken: mark broken ((flags & ~8) | 0x10), flag its records
+// (004091), and post a break event carrying the second argument through
+// the Scene's phys_fn_000571 (deferred) -- a null event when the
+// allocation fails, as 0x98032 does.
+void Joint::row004111(const JointSupportRecord* record, NxReal value)
 	{
-	(void)a;
-	(void)b;
-	NX_ASSERT(0);
+	if((NxU8)(record->mFlags >> 11) == 0x4d)
+		return;
+	if((mFlags & 0x18) == 0x10)
+		return;
+	mFlags = (mFlags & ~8u) | 0x10u;
+	row004091();
+	void* memory = nxGetSdkAllocator()->malloc(sizeof(JointBreakEvent), NX_MEMORY_PERSISTENT);
+	JointBreakEvent* event = memory ? new(memory) JointBreakEvent(this, value) : 0;
+	reinterpret_cast<Row000571Fixture*>(mScene)->row000571(event);
 	}
 
 // phys_fn_004087 (0x00095cc0, 87 B)
@@ -205,29 +385,165 @@ void Joint::row004087(NxReal numerator, const NxVec3& v, NxReal divisor)
 	}
 
 // phys_fn_004133 (0x00099ab0, 134 B)
-// (deferred: Joint base slot 6 default, overridden by phys_fn_004360 in RevoluteJoint)
+// Runs only when some body exists whose +0x10c bit 7 is clear. The two
+// calls go through the table (`call [edx+0x1c]`, `call [edx+0x18]`): slot
+// 6 here reaches the family's override, never this body, which only the
+// scene row phys_fn_000728 calls directly.
 void Joint::row_slot6(NxReal arg)
 	{
-	(void)arg;
-	NX_ASSERT(0);
+	const JointBodyRecord* body0 = jointBody(mBody[0]);
+	if(!body0 || (body0->mUnknown10c & 0x80))
+		{
+		const JointBodyRecord* body1 = jointBody(mBody[1]);
+		if(!body1 || (body1->mUnknown10c & 0x80))
+			return;
+		}
+	jointRefreshFirstStaleBody(*this);
+	mFlags = (mFlags & ~0x10u) | 8u;
+	row_slot7(arg);
+	if(!((mFlags >> 2) & 1))
+		row_slot6(arg);
 	}
 
 // phys_fn_004135 (0x00099b40, 701 B)
-// (deferred: internal slot 7 (solver); overridden by phys_fn_004362 in RevoluteJoint)
+// Clears mAccumulated, refreshes a stale body, then finds the first limit
+// plane the world limit point lies behind (row004131 < 0) and fills one
+// constraint record for it: the plane normal, the two bodies' +0x204
+// records in solver order, n x r for each (r = the limit point relative
+// to that body's +0x158; the point itself without a body), +0x34 =
+// (distance - SDK parameter 1) / arg, +0x48 = FLT_MAX, kind 0, then
+// row004391 and the kind scale 004360/004362 also apply.
+// Listing over decompile: the decompile drops the kind tests of the flag
+// update (0x99d43, 0x99d48, 0x99d7c) as unreachable; the listing keeps
+// them and so does this body. The listing passes the argument's own stack
+// slot as row004391's dead first output (0x99d9c), as here.
 void Joint::row_slot7(NxReal arg)
 	{
-	(void)arg;
-	NX_ASSERT(0);
+	mAccumulated.z = 0.0f;
+	mAccumulated.y = 0.0f;
+	mAccumulated.x = 0.0f;
+	jointRefreshFirstStaleBody(*this);
+	const JointLimitPlane* plane = mLimitPlaneHead;
+	NxVec3 limitPoint;
+	getLimitPoint(limitPoint);
+	if(!plane)
+		return;
+	NxVec3 normal;
+	NxReal planeD;
+	double distance;
+	for(;;)
+		{
+		distance = row004131(plane, limitPoint, normal, planeD);
+		if(distance < 0.0)
+			break;
+		plane = plane->next;
+		if(!plane)
+			return;
+		}
+
+	const JointBodyRecord* solver0 = jointBody(mSolverBody[0]);
+	NxVec3 r0 = limitPoint;
+	if(solver0)
+		{
+		r0.x = (NxReal)((double)limitPoint.x - solver0->mUnknown158.x);
+		r0.y = (NxReal)((double)limitPoint.y - solver0->mUnknown158.y);
+		r0.z = (NxReal)((double)limitPoint.z - solver0->mUnknown158.z);
+		}
+	const JointBodyRecord* solver1 = jointBody(mSolverBody[1]);
+	NxVec3 r1 = limitPoint;
+	if(solver1)
+		{
+		r1.x = (NxReal)((double)limitPoint.x - solver1->mUnknown158.x);
+		r1.y = (NxReal)((double)limitPoint.y - solver1->mUnknown158.y);
+		r1.z = (NxReal)((double)limitPoint.z - solver1->mUnknown158.z);
+		}
+	arg = (NxReal)((distance - jointSdkParameter(NX_MIN_SEPARATION_FOR_PENALTY)) / arg);
+	JointSupportBody* support1 = solver1 ? solver1->mUnknown204 : 0;
+	JointSupportBody* support0 = solver0 ? solver0->mUnknown204 : 0;
+
+	JointSupportRecord* record = row004093();
+	record->mBody[0] = support0;
+	record->mUnknown000 = normal;
+	record->mBody[1] = support1;
+	record->mUnknown018.x = (NxReal)(jointMul(normal.z, r0.y) - jointMul(normal.y, r0.z));
+	record->mUnknown018.y = (NxReal)(jointMul(normal.x, r0.z) - jointMul(normal.z, r0.x));
+	record->mUnknown018.z = (NxReal)(jointMul(normal.y, r0.x) - jointMul(normal.x, r0.y));
+	record->mUnknown024.x = (NxReal)(jointMul(normal.z, r1.y) - jointMul(normal.y, r1.z));
+	record->mUnknown024.y = (NxReal)(jointMul(r1.z, normal.x) - jointMul(normal.z, r1.x));
+	record->mUnknown024.z = (NxReal)(jointMul(normal.y, r1.x) - jointMul(normal.x, r1.y));
+
+	// Kind 0; bit 9 = (kind is 0 or 2); bit 10 = (kind is 2, 3 or 5);
+	// bits 5-8 and 11-18 cleared.
+	NxU32 flags = record->mFlags & 0xffffffe0;
+	record->mFlags = flags;
+	NxU32 kind = flags & 0x1f;
+	const NxU32 bit9 = (kind == 0 || kind == 2) ? 1 : 0;
+	flags = (((bit9 << 9) ^ flags) & 0x200) ^ flags;
+	record->mFlags = flags;
+	kind = flags & 0x1f;
+	const NxU32 bit10 = (kind == 3 || kind == 2 || kind == 5) ? 1 : 0;
+	record->mUnknown030 = this;
+	record->mFlags = ((bit10 & 1) << 10) | (flags & 0xfff8021f);
+	record->mUnknown034 = arg;
+	record->mUnknown038 = 0.0f;
+	record->mUnknown044 = 0;
+	record->mUnknown04c = 0;
+	record->mUnknown048 = NX_MAX_REAL;
+	record->row004391(arg, record->mUnknown040);
+	record->mUnknown03c = record->mUnknown040;
+	kind = record->mFlags & 0x1f;
+	if(kind == 0 || kind == 2)
+		record->mUnknown040 = (NxReal)((double)jointSdkParameter(NX_PENALTY_FORCE) * record->mUnknown040);
+	else if(kind == 1 || kind == 3)
+		record->mUnknown040 = (NxReal)((double)record->mUnknown040 * 0.7f);
 	}
 
 // phys_fn_004064 (0x000957a0, 385 B)
-// (deferred: internal slot 8 (phys_fn_004356), called only from scene code outside the pilot)
+// Body 0's transform keeps x on the stack and stores y and z before adding
+// the +0x158 translation; body 1's keeps x and y and stores z, and stores
+// its translated x before the subtraction (0x958c9). The listing groups the
+// two blocks' sums differently; both are kept.
 void Joint::row004064(const NxVec3& anchor0, const NxVec3& anchor1, NxVec3& out) const
 	{
-	(void)anchor0;
-	(void)anchor1;
-	(void)out;
-	NX_ASSERT(0);
+	const JointBodyRecord* body0 = jointBody(mBody[0]);
+	if(body0)
+		{
+		const NxReal* m = body0->mUnknown134;
+		const NxVec3& t = body0->mUnknown158;
+		const NxVec3& p = anchor0;
+		const double x = jointDot3(m[1], p.y, m[2], p.z, p.x, m[0]);
+		const NxReal y = (NxReal)jointDot3(m[4], p.y, m[5], p.z, m[3], p.x);
+		const NxReal z = (NxReal)jointDot3(m[7], p.y, m[8], p.z, m[6], p.x);
+		out.x = (NxReal)(x + t.x);
+		out.y = (NxReal)((double)y + t.y);
+		out.z = (NxReal)((double)z + t.z);
+		}
+	else
+		{
+		out = anchor0;
+		}
+	const JointBodyRecord* body1 = jointBody(mBody[1]);
+	if(body1)
+		{
+		const NxReal* m = body1->mUnknown134;
+		const NxVec3& t = body1->mUnknown158;
+		const NxVec3& p = anchor1;
+		const double x = jointDot3(m[2], p.z, m[1], p.y, m[0], p.x);
+		const double y = jointDot3(m[3], p.x, m[5], p.z, m[4], p.y);
+		const NxReal z = (NxReal)jointDot3(m[6], p.x, m[8], p.z, m[7], p.y);
+		const NxReal wx = (NxReal)(x + t.x);
+		const double wy = y + t.y;
+		const double wz = (double)z + t.z;
+		out.x = (NxReal)((double)out.x - wx);
+		out.y = (NxReal)((double)out.y - wy);
+		out.z = (NxReal)((double)out.z - wz);
+		}
+	else
+		{
+		out.x = (NxReal)((double)out.x - anchor1.x);
+		out.y = (NxReal)((double)out.y - anchor1.y);
+		out.z = (NxReal)((double)out.z - anchor1.z);
+		}
 	}
 
 // phys_fn_004066 (0x00095930, 266 B)
@@ -349,12 +665,41 @@ void Joint::purgeLimitPlanes()
 	gLimitPlaneIterator = 0;
 	}
 
+// phys_fn_004091 (0x00095d60, 62 B)
+// The listing reloads the Scene's array pointer on every pass (0x95d80).
+void Joint::row004091()
+	{
+	const NxU32 first = mUnknown160[0];
+	const NxU32 end = mUnknown160[1] + first;
+	for(NxU32 i = first; i < end; i++)
+		{
+		JointSupportRecord* records = *reinterpret_cast<JointSupportRecord**>(static_cast<NxU8*>(mScene) + 0x5b8);
+		records[i].mFlags |= 0x20;
+		}
+	}
+
 // phys_fn_004093 (0x00095da0, 116 B)
-// (deferred: internal slots 6/7 (solver); also needs Scene row phys_fn_000598, absent from the candidate)
+// The Scene's record array: pointer +0x5b8, count +0x5bc, capacity +0x5c0.
+// A full array is grown by the Scene row phys_fn_000598 (deferred; its stub
+// asserts). The listing reloads mScene for the returned address.
 JointSupportRecord* Joint::row004093()
 	{
-	NX_ASSERT(0);
-	return 0;
+	NxU8* scene = static_cast<NxU8*>(mScene);
+	NxU32& count = *reinterpret_cast<NxU32*>(scene + 0x5bc);
+	if(count == *reinterpret_cast<NxU32*>(scene + 0x5c0))
+		reinterpret_cast<Row000598Fixture*>(scene)->row000598();
+	const NxU32 index = count;
+	count = index + 1;
+	if(mUnknown160[1] == 0)
+		{
+		mUnknown160[0] = index;
+		mUnknown160[1] = 1;
+		}
+	else
+		{
+		mUnknown160[1]++;
+		}
+	return *reinterpret_cast<JointSupportRecord**>(static_cast<NxU8*>(mScene) + 0x5b8) + index;
 	}
 
 // phys_fn_004097 (0x00095e50, 1176 B)
@@ -484,19 +829,156 @@ void Joint::refreshBodyFrame(NxU32 bodyIndex)
 	}
 
 // phys_fn_004099 (0x000962f0, 1112 B)
-// (deferred: NxJoint::setGlobalAnchor -- the joint test never calls it)
+// For each body: none -> the world anchor is the argument; else the local
+// anchor is the argument in the actor's frame (jointLocalizePoint over the
+// actor's global pose), the frame is refreshed (004097) and the body's
+// wake counter raised (no null test: the body is known). The broken report
+// tests the Foundation instance and executes int3 without one, like
+// 004074 (code 1, line 0xf0).
+// Listing over decompile: the decompile shows the three differences as
+// floats; the listing keeps the y difference on the stack (0x9648e-0x96495).
 void Joint::setGlobalAnchor(const NxVec3& anchor)
 	{
-	(void)anchor;
-	NX_ASSERT(0);
+	if((mFlags & 0x18) == 0x10)
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_PARAMETER, NX_JOINT_CPP, 0xf0, 0,
+			"Joint::setGlobalAnchor: Joint is broken. Broken joints can't be manipulated!");
+		return;
+		}
+	for(NxU32 i = 0; i < 2; i++)
+		{
+		if(!mBody[i])
+			{
+			mWorldAnchor[i] = anchor;
+			continue;
+			}
+		NxReal m[9];
+		NxVec3 t;
+		jointActorPose(jointBody(mBody[i]), m, t);
+		jointLocalizePoint(m, t, anchor, mLocalAnchor[i]);
+		refreshBodyFrame(i);
+		jointRaiseWakeCounter(mBody[i]);
+		}
 	}
 
 // phys_fn_004101 (0x00096750, 5302 B)
-// (deferred: NxJoint::setGlobalAxis -- not called)
+// Normalizes the argument (unless its length is 0), takes two tangents
+// from NxNormalToTangents (the Foundation import at [0x1010418c]; t1 is
+// its second output, t2 its third) and, for each body:
+// - no body: world axis = the axis, world normal = t2, world cross = t1,
+//   and the world frame quaternion from the rows (axis, t2, axis x t2);
+// - a body: local axis, normal and cross = the axis, t2 and t1 in the
+//   actor's frame (the actor's global pose re-read for each of the three,
+//   as the listing does; one read here, the pose cannot change between
+//   them), the frame quaternion from the stored local axis and normal, then
+//   the frame refresh (004097) and the wake raise.
+// Listing over decompile: the per-body transforms group their sums
+// differently for body 0 and body 1 (jointDot3 argument order below), and
+// the four quaternion sites differ in which diagonal pair sum they store
+// as a float and reuse (JointPairForm). The decompile shows every
+// intermediate as a float and drops those differences.
 void Joint::setGlobalAxis(const NxVec3& axis)
 	{
-	(void)axis;
-	NX_ASSERT(0);
+	if((mFlags & 0x18) == 0x10)
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_PARAMETER, NX_JOINT_CPP, 0x13c, 0,
+			"Joint::setGlobalAxis: Joint is broken. Broken joints can't be manipulated!");
+		return;
+		}
+	NxVec3 a = axis;
+	const double length = sqrt((jointMul(a.y, a.y) + jointMul(a.x, a.x)) + jointMul(a.z, a.z));
+	if(length != 0.0)
+		{
+		const double scale = 1.0f / length;
+		a.x = (NxReal)(a.x * scale);
+		a.y = (NxReal)(a.y * scale);
+		a.z = (NxReal)(scale * a.z);
+		}
+	NxVec3 t1;
+	NxVec3 t2;
+	NxNormalToTangents(a, t1, t2);
+
+	if(!mBody[0])
+		{
+		mWorldAxis[0] = a;
+		mWorldNormal[0] = t2;
+		mWorldCross[0] = t1;
+		jointStoreFrameQuat(a, t2, JOINT_PAIR_08_WIDE, mWorldQuat[0]);
+		}
+	else
+		{
+		NxReal m[9];
+		NxVec3 t;
+		jointActorPose(jointBody(mBody[0]), m, t);
+		{
+		const double x = jointDot3(m[0], a.x, m[6], a.z, a.y, m[3]);
+		const double y = jointDot3(m[1], a.x, m[7], a.z, a.y, m[4]);
+		const double z = jointDot3(m[2], a.x, m[8], a.z, a.y, m[5]);
+		mLocalAxis[0].z = (NxReal)z;
+		mLocalAxis[0].x = (NxReal)x;
+		mLocalAxis[0].y = (NxReal)y;
+		}
+		{
+		const double x = jointDot3(t2.z, m[6], t2.y, m[3], t2.x, m[0]);
+		const double y = jointDot3(m[7], t2.z, m[4], t2.y, t2.x, m[1]);
+		const double z = jointDot3(m[8], t2.z, m[5], t2.y, t2.x, m[2]);
+		mLocalNormal[0].z = (NxReal)z;
+		mLocalNormal[0].x = (NxReal)x;
+		mLocalNormal[0].y = (NxReal)y;
+		}
+		{
+		const double x = jointDot3(t1.x, m[0], t1.z, m[6], t1.y, m[3]);
+		const double y = jointDot3(t1.x, m[1], m[7], t1.z, m[4], t1.y);
+		const double z = jointDot3(t1.x, m[2], m[8], t1.z, m[5], t1.y);
+		mLocalCross[0].z = (NxReal)z;
+		mLocalCross[0].x = (NxReal)x;
+		mLocalCross[0].y = (NxReal)y;
+		}
+		jointStoreFrameQuat(mLocalAxis[0], mLocalNormal[0], JOINT_PAIR_08_WIDE, mFrameQuat[0]);
+		refreshBodyFrame(0);
+		jointRaiseWakeCounter(mBody[0]);
+		}
+
+	if(!mBody[1])
+		{
+		mWorldAxis[1] = a;
+		mWorldNormal[1] = t2;
+		mWorldCross[1] = t1;
+		jointStoreFrameQuat(a, t2, JOINT_PAIR_48_STORED, mWorldQuat[1]);
+		}
+	else
+		{
+		NxReal m[9];
+		NxVec3 t;
+		jointActorPose(jointBody(mBody[1]), m, t);
+		{
+		const double x = jointDot3(a.y, m[3], m[6], a.z, m[0], a.x);
+		const double y = jointDot3(a.y, m[4], m[1], a.x, m[7], a.z);
+		const double z = jointDot3(a.y, m[5], m[2], a.x, m[8], a.z);
+		mLocalAxis[1].z = (NxReal)z;
+		mLocalAxis[1].x = (NxReal)x;
+		mLocalAxis[1].y = (NxReal)y;
+		}
+		{
+		const double x = jointDot3(m[0], t2.x, m[6], t2.z, m[3], t2.y);
+		const double y = jointDot3(m[1], t2.x, m[7], t2.z, m[4], t2.y);
+		const double z = jointDot3(m[2], t2.x, m[8], t2.z, m[5], t2.y);
+		mLocalNormal[1].z = (NxReal)z;
+		mLocalNormal[1].x = (NxReal)x;
+		mLocalNormal[1].y = (NxReal)y;
+		}
+		{
+		const double x = jointDot3(m[0], t1.x, m[6], t1.z, m[3], t1.y);
+		const double y = jointDot3(m[1], t1.x, m[7], t1.z, m[4], t1.y);
+		const double z = jointDot3(m[2], t1.x, m[8], t1.z, m[5], t1.y);
+		mLocalCross[1].z = (NxReal)z;
+		mLocalCross[1].x = (NxReal)x;
+		mLocalCross[1].y = (NxReal)y;
+		}
+		jointStoreFrameQuat(mLocalAxis[1], mLocalNormal[1], JOINT_PAIR_08_STORED, mFrameQuat[1]);
+		refreshBodyFrame(1);
+		jointRaiseWakeCounter(mBody[1]);
+		}
 	}
 
 // phys_fn_004107 (0x00097d30, 297 B)
@@ -545,12 +1027,57 @@ void Joint::row004107(void* actorImpl0, void* actorImpl1, bool suppressAttach)
 	}
 
 // phys_fn_004109 (0x00097e60, 366 B)
-// (deferred: NxJoint::setLimitPoint -- not called)
+// The report is the imported error call alone (no instance test), code 1,
+// line 0x285. pointIsOnBody2 clears flag bit 1 and puts body 1 first in
+// solver order; otherwise bit 1 is set and body 0 comes first. The point
+// is stored in the first solver body's +0x134/+0x158 frame (transpose),
+// then the limit planes are purged (004089) and both wake counters raised.
+// Listing over decompile: the decompile rounds the z difference to float
+// everywhere; the listing uses the unrounded one for y (0x97eed `fst`).
 void Joint::setLimitPoint(const NxVec3& point, bool pointIsOnBody2)
 	{
-	(void)point;
-	(void)pointIsOnBody2;
-	NX_ASSERT(0);
+	if((mFlags & 0x18) == 0x10)
+		{
+		NxFoundation::FoundationSDK::error(NXE_INVALID_PARAMETER, NX_JOINT_CPP, 0x285, 0,
+			"Joint::setLimitPoint: Joint is broken. Broken joints can't be manipulated!");
+		return;
+		}
+	void* first;
+	if(pointIsOnBody2)
+		{
+		mFlags &= ~2u;
+		first = mBody[1];
+		}
+	else
+		{
+		mFlags |= 2u;
+		first = mBody[0];
+		}
+	mSolverBody[0] = first;
+	mSolverBody[1] = pointIsOnBody2 ? mBody[0] : mBody[1];
+	const JointBodyRecord* body = jointBody(first);
+	if(body)
+		{
+		const NxReal* m = body->mUnknown134;
+		const NxVec3& t = body->mUnknown158;
+		const double dx = (double)point.x - t.x;
+		const NxReal dy = (NxReal)((double)point.y - t.y);
+		const double dz = (double)point.z - t.z;
+		const NxReal dzf = (NxReal)dz;
+		const double y = (dz * m[7] + jointMul(dy, m[4])) + dx * m[1];
+		const double z = (jointMul(dzf, m[8]) + jointMul(dy, m[5])) + dx * m[2];
+		const double x = (jointMul(dzf, m[6]) + jointMul(dy, m[3])) + dx * m[0];
+		mLimitPoint.x = (NxReal)x;
+		mLimitPoint.y = (NxReal)y;
+		mLimitPoint.z = (NxReal)z;
+		}
+	else
+		{
+		mLimitPoint = point;
+		}
+	purgeLimitPlanes();
+	jointRaiseWakeCounter(mBody[0]);
+	jointRaiseWakeCounter(mBody[1]);
 	}
 
 // phys_fn_004121 (0x000987a0, 1084 B)
@@ -676,11 +1203,57 @@ void Joint::loadFromDescBase(const NxJointDesc& desc)
 	}
 
 // phys_fn_004123 (0x00098be0, 518 B)
-// (deferred: reached only through internal slot 4, phys_fn_004364)
+// Like getGlobalAnchor (004125) but through the bodies' +0x134/+0x158
+// poses instead of the actor pose: out = (pose0 * worldAnchor[0] + pose1 *
+// worldAnchor[1]) * 0.5, a missing body contributing its world anchor
+// as is. Body 0 keeps x on the stack and stores y and z; body 1 keeps x
+// and y and stores z, and stores its translated x before the sum.
 void Joint::row004123(NxVec3& out)
 	{
-	(void)out;
-	NX_ASSERT(0);
+	jointRefreshFirstStaleBody(*this);
+	const JointBodyRecord* body0 = jointBody(mBody[0]);
+	if(!body0)
+		{
+		out = mWorldAnchor[0];
+		}
+	else
+		{
+		const NxReal* m = body0->mUnknown134;
+		const NxVec3& t = body0->mUnknown158;
+		const NxVec3& a = mWorldAnchor[0];
+		const double x = jointDot3(m[1], a.y, m[2], a.z, m[0], a.x);
+		const NxReal y = (NxReal)jointDot3(m[4], a.y, m[3], a.x, m[5], a.z);
+		const NxReal z = (NxReal)jointDot3(m[7], a.y, m[6], a.x, m[8], a.z);
+		out.x = (NxReal)(x + t.x);
+		out.y = (NxReal)((double)y + t.y);
+		out.z = (NxReal)((double)z + t.z);
+		}
+	const JointBodyRecord* body1 = jointBody(mBody[1]);
+	double sumZ;
+	if(!body1)
+		{
+		out.x = (NxReal)((double)mWorldAnchor[1].x + out.x);
+		out.y = (NxReal)((double)mWorldAnchor[1].y + out.y);
+		sumZ = mWorldAnchor[1].z;
+		}
+	else
+		{
+		const NxReal* m = body1->mUnknown134;
+		const NxVec3& t = body1->mUnknown158;
+		const NxVec3& b = mWorldAnchor[1];
+		const double x = jointDot3(m[2], b.z, m[1], b.y, m[0], b.x);
+		const double y = jointDot3(m[5], b.z, m[4], b.y, m[3], b.x);
+		const NxReal z = (NxReal)jointDot3(m[8], b.z, m[7], b.y, m[6], b.x);
+		const NxReal wx = (NxReal)(x + t.x);
+		const double wy = y + t.y;
+		sumZ = (double)z + t.z;
+		out.x = (NxReal)((double)wx + out.x);
+		out.y = (NxReal)(wy + out.y);
+		}
+	out.z = (NxReal)(sumZ + out.z);
+	out.x = (NxReal)((double)out.x * 0.5f);
+	out.y = (NxReal)((double)out.y * 0.5f);
+	out.z = (NxReal)((double)out.z * 0.5f);
 	}
 
 // phys_fn_004125 (0x00098df0, 1940 B)
@@ -875,13 +1448,109 @@ NxVec3 Joint::getGlobalAxisVal() const
 	}
 
 // phys_fn_004143 (0x0009a0d0, 860 B)
-// (deferred: NxJoint::addLimitPlane -- not called)
+// The report is the imported error call alone (code 1, line 0x2c1). The
+// node is allocated before the stale-body refresh and without a null test
+// (0x9a114). Normal and point go into the second solver body's frame
+// (transpose of +0x134, point less +0x158), the normal is normalized
+// (unless its length is 0), d = -(p . n); the world limit point (the
+// first solver body's pose applied to mLimitPoint, inlined with its own
+// grouping, not a call of 004080) is then tested against the new plane
+// through 004131 (the argument's stack slot takes the dead planeD):
+// behind it (< 0) the node is freed and the row returns false; otherwise
+// it is linked at the head and both wake counters raised.
+// Listing over decompile: the local point's x uses the unrounded z
+// difference (0x9a24c `fst`), and d is ((-(y * n.y)) - z * n.z) - x * n.x
+// with -(y * n.y) formed as a multiply by -1.0f (0x9a2c5).
 bool Joint::addLimitPlane(const NxVec3& normal, const NxVec3& pointInPlane)
 	{
-	(void)normal;
-	(void)pointInPlane;
-	NX_ASSERT(0);
-	return false;
+	if((mFlags & 0x18) == 0x10)
+		{
+		NxFoundation::FoundationSDK::error(NXE_INVALID_PARAMETER, NX_JOINT_CPP, 0x2c1, 0,
+			"Joint::addLimitPlane: Joint is broken. Broken joints can't be manipulated!");
+		return false;
+		}
+	JointLimitPlane* plane = static_cast<JointLimitPlane*>(nxGetSdkAllocator()->malloc(sizeof(JointLimitPlane), NX_MEMORY_PERSISTENT));
+	jointRefreshFirstStaleBody(*this);
+
+	const JointBodyRecord* body = jointBody(mSolverBody[1]);
+	if(body)
+		{
+		const NxReal* m = body->mUnknown134;
+		const double y = jointDot3(m[1], normal.x, m[4], normal.y, m[7], normal.z);
+		const double z = jointDot3(m[2], normal.x, m[5], normal.y, m[8], normal.z);
+		const double x = jointDot3(m[3], normal.y, m[6], normal.z, m[0], normal.x);
+		plane->normal.x = (NxReal)x;
+		plane->normal.y = (NxReal)y;
+		plane->normal.z = (NxReal)z;
+		}
+	else
+		{
+		plane->normal = normal;
+		}
+	{
+	const NxVec3& n = plane->normal;
+	const double length = sqrt((jointMul(n.x, n.x) + jointMul(n.y, n.y)) + jointMul(n.z, n.z));
+	if(length != 0.0)
+		{
+		const double scale = 1.0f / length;
+		plane->normal.x = (NxReal)(scale * plane->normal.x);
+		plane->normal.y = (NxReal)(scale * plane->normal.y);
+		plane->normal.z = (NxReal)(scale * plane->normal.z);
+		}
+	}
+	double px;
+	double py;
+	double pz;
+	if(body)
+		{
+		const NxReal* m = body->mUnknown134;
+		const NxVec3& t = body->mUnknown158;
+		const NxReal dx = (NxReal)((double)pointInPlane.x - t.x);
+		const NxReal dy = (NxReal)((double)pointInPlane.y - t.y);
+		const double dz = (double)pointInPlane.z - t.z;
+		const NxReal dzf = (NxReal)dz;
+		px = (dz * m[6] + jointMul(dy, m[3])) + jointMul(dx, m[0]);
+		py = (jointMul(dzf, m[7]) + jointMul(dy, m[4])) + jointMul(dx, m[1]);
+		pz = (jointMul(dzf, m[8]) + jointMul(dy, m[5])) + jointMul(dx, m[2]);
+		}
+	else
+		{
+		px = pointInPlane.x;
+		py = pointInPlane.y;
+		pz = pointInPlane.z;
+		}
+	plane->d = (NxReal)((((py * plane->normal.y) * -1.0f) - pz * plane->normal.z) - px * plane->normal.x);
+
+	NxVec3 limitPoint;
+	const JointBodyRecord* first = jointBody(mSolverBody[0]);
+	if(first)
+		{
+		const NxReal* m = first->mUnknown134;
+		const NxVec3& t = first->mUnknown158;
+		const NxVec3& p = mLimitPoint;
+		const double x = jointDot3(m[1], p.y, m[2], p.z, p.x, m[0]);
+		const NxReal y = (NxReal)jointDot3(m[4], p.y, m[3], p.x, m[5], p.z);
+		const NxReal z = (NxReal)jointDot3(m[7], p.y, m[6], p.x, m[8], p.z);
+		limitPoint.z = (NxReal)((double)z + t.z);
+		limitPoint.x = (NxReal)(x + t.x);
+		limitPoint.y = (NxReal)((double)y + t.y);
+		}
+	else
+		{
+		limitPoint = mLimitPoint;
+		}
+	NxVec3 planeNormal;
+	NxReal planeD;
+	if(row004131(plane, limitPoint, planeNormal, planeD) < 0.0)
+		{
+		nxGetSdkAllocator()->free(plane);
+		return false;
+		}
+	plane->next = mLimitPlaneHead;
+	mLimitPlaneHead = plane;
+	jointRaiseWakeCounter(mBody[0]);
+	jointRaiseWakeCounter(mBody[1]);
+	return true;
 	}
 
 // phys_fn_004145 (0x0009a430, 174 B)
