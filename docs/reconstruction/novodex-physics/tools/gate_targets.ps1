@@ -856,6 +856,10 @@ $NxRequiredCoverageLines = [ordered] @{
     # pulley lines to each list, copied the same way: created, the
     # anchor/axis/state, the type and is-queries, and the saveToDesc line with
     # the family fields (distance, stiffness, ratio, flags).
+    # Joint-families Task 3h added two fixed cases (NxJointType 8) and four fixed
+    # lines to each list, copied the same way: created, the anchor/axis/state, the
+    # type and is-queries, and the saveToDesc line with the saved local anchors
+    # (NxFixedJointDesc has no field of its own).
     'NxPhysicsJointStagedPairTests' = @(
         'case=revolute index=0 created=yes',
         'case=revolute index=0 out_anchor=00000000.00000000.00000000 out_axis=3f800000.00000000.00000000 state=0',
@@ -888,7 +892,11 @@ $NxRequiredCoverageLines = [ordered] @{
         'case=pulley index=0 created=yes',
         'case=pulley index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
         'case=pulley index=3 type=7 is_pulley=yes is_distance=no',
-        'case=pulley index=0 saved distance=40c00000 stiffness=3f400000 ratio=3fc00000 flags=00000001'
+        'case=pulley index=0 saved distance=40c00000 stiffness=3f400000 ratio=3fc00000 flags=00000001',
+        'case=fixed index=0 created=yes',
+        'case=fixed index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
+        'case=fixed index=3 type=8 is_fixed=yes is_pulley=no',
+        'case=fixed index=3 saved anchor0=40000000.40800000.00000000 anchor1=c0000000.40800000.00000000'
     )
     'NxPhysicsJointTests' = @(
         'case=revolute index=0 created=yes',
@@ -922,7 +930,11 @@ $NxRequiredCoverageLines = [ordered] @{
         'case=pulley index=0 created=yes',
         'case=pulley index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
         'case=pulley index=3 type=7 is_pulley=yes is_distance=no',
-        'case=pulley index=0 saved distance=40c00000 stiffness=3f400000 ratio=3fc00000 flags=00000001'
+        'case=pulley index=0 saved distance=40c00000 stiffness=3f400000 ratio=3fc00000 flags=00000001',
+        'case=fixed index=0 created=yes',
+        'case=fixed index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
+        'case=fixed index=3 type=8 is_fixed=yes is_pulley=no',
+        'case=fixed index=3 saved anchor0=40000000.40800000.00000000 anchor1=c0000000.40800000.00000000'
     )
     'NxPhysicsJointDescTests' = @(
         'case=0 actors a=null b=null in_anchor=3f800000.40000000.40400000 in_axis=3f000000.3f000000.3f000000',
@@ -1777,8 +1789,8 @@ $NxPhaseCoverageFloor = [ordered] @{
     '4' = 101  # 34 for NxPhysicsAssetTests, 67 for NxPhysicsThirdPartyTests
     '5' = 829  # 126 object-layout, 1 shape-vtable and 702 public actor/pruner/box/scene lines
                # (RED on purpose: vtables family open)
-    '6' = 67  # 3 oracle-descriptor + 32 oracle-joint + 32 staged-pair-joint
-    '7' = 32  # the thirty-two STAGED-PAIR assertions; the oracle-differential assertions
+    '6' = 75  # 3 oracle-descriptor + 36 oracle-joint + 36 staged-pair-joint
+    '7' = 36  # the thirty-six STAGED-PAIR assertions; the oracle-differential assertions
                # belong to NxPhysicsJointDescTests and NxPhysicsJointTests, which phase 7
                # does not run
     '8' = 0
