@@ -276,3 +276,105 @@ joint rows and is superseded for them. The plan itself is not edited.
 - Observable: the two allocators differ when the Foundation was created before NxCreatePhysicsSDK
   with another allocator, or when no allocator is passed. `NxPhysicsJointAllocatorTests` is the
   staged-pair target that shows it (phases 6 and 7, 12 oracle lines).
+
+## Scene initialisation
+
+Found by `NxPhysicsJointAllocatorTests` with an allocator that does not return zeroed memory: the
+candidate faulted in createActor (`nxSceneAddActorObject` -> `nxSceneArrayReserve` freeing the
+uninitialised +0x56c array header); the oracle ran clean.
+
+### Cause
+
+Not a missing field list but a unit error. 98f2625 ("166 more dword-vs-byte offsets") introduced
+`nxDword(p, byteOffset)` and converted the constructor's `p[n]` (dword index `n`, correct) into
+`nxDword(p, n)` without multiplying by four. From then on phys_fn_000647 wrote its stores to bytes
+0x00..0x1c7 (many unaligned) instead of 0x000..0x70c, and placed its sub-objects at byte `n`
+instead of `4n` (phys_fn_004147 at 0x0b instead of 0x2c, the SdkContainer at 0x14 instead of 0x50,
+and so on). The sub-object helpers (`nxSceneMember*`) had the same error inside them. Everything
+the Scene constructor should have written above byte 0x1c7 was left to the allocation, and the
+page-guarded allocator's fresh pages are zero, so every harness saw zeros. The fields the candidate
+reads after construction that were affected include +0x55c/+0x56c (the actor and body arrays,
+the fault), +0x58c/+0x59c/+0x5a0 (joint arrays and lists), +0x5ac..+0x5b8, +0x640 (the static
+pruner, now zeroed through 0x0004ca30's base 0x000b4fe0), +0x6d4..+0x704 (the ID recyclers) and
++0x70c (read-modify-written by 000651). The lines at Scene.cpp:436-438 that Task 3's review
+matched against 0x12e65..0x12e71 were the dword-index spelling of those three fields, and wrote
+bytes 0x16b..0x173.
+
+### Oracle stores (phys_fn_000647, 0x00012c10, Capstone listing)
+
+All stores are reproduced at their byte offsets and in the listing's order:
+
+| Listing | Store |
+|---|---|
+| 0x12c18 | +0x000 vtable (0x101066f4; the candidate installs its own) |
+| 0x12c21..0x12c3f | +0x004..+0x028 = 0 |
+| 0x12c42 / 0x12c4c / 0x12c54 | 0x0009a4e0 at +0x2c; 0x000b4d70 (SdkContainer) at +0x50; 0x000e1510 at +0x60 |
+| 0x12c5f..0x12c6b | +0x0a8, +0x0ac = 0; 0x000de7e0 at +0xb0 |
+| 0x12c70..0x12ca5 | +0x0f4..+0x108 = 0; +0x10c = 1.1f; 0x000d4d00 at +0x110 |
+| 0x12caa..0x12d17 | +0x244, +0x248 = 0; +0x288 = 1.1f; +0x254, +0x250, +0x24c, +0x260, +0x25c, +0x258 = 0; +0x264..+0x284 = 0; +0x284, +0x274, +0x264 = 1.0f; 0x000d3490 at +0x28c |
+| 0x12d24..0x12d74 | +0x30c, +0x310, +0x314, +0x304, +0x308, +0x318, +0x31c, +0x320, +0x324 = 0; +0x328 = 1.1f; 0x000bb510 at +0x32c |
+| 0x12d84..0x12dc8 | +0x448, +0x44c, +0x440 = 0; +0x444 = 1; 0x000b5720 at +0x450; SdkContainer at +0x4e0, +0x4f0, +0x500, +0x510 |
+| 0x12dcd..0x12ea5 | +0x52c = 0.1f; +0x530 = 10; +0x534..+0x544 = 0; +0x55c..+0x564, +0x56c..+0x574, +0x57c..+0x584, +0x58c..+0x594 = 0; +0x59c..+0x5cc = 0; +0x5d0 = -1; 0x0005ab50 at +0x5d4 |
+| 0x12eaa..0x12ee0 | +0x5fc..+0x604, +0x60c..+0x614, +0x61c, +0x620 = 0; 0x0004ca30 at +0x624 |
+| 0x12ee5..0x12f69 | +0x6ac..+0x6dc = 0; +0x6e4..+0x6f0 = 0; +0x6f8..+0x704 = 0; +0x70c = 1; call 0x0002ea70 (a bare `ret`) |
+| 0x12f6e..0x12f92 | +0x528, +0x524, +0x520 = 0; +0x0a8, +0x0f4, +0x244, +0x304 = Scene + 0x50 (ebx, the SdkContainer's address, not the Scene's) |
+| 0x12f98..0x12fb8 | 0x28-byte NpScene (0x0000c310) -> +0x6cc |
+| 0x12fbe..0x12fe9 | 0xa8-byte auxiliary manager (0x0005bc10) -> +0x48, or 0 |
+
+The four "self-references" were stored as the Scene's own address; the listing stores
+`lea ebx, [esi + 0x50]`. No candidate code reads the four fields.
+
+Sub-objects, each after its base constructor (0x000f0510: vtable, +4, +8, +0xc = 0; 0x000f0660:
+0x000f0510, then +0x10, +0x2c, +0x30 = 0, vtable):
+
+| Row | Stores after the base |
+|---|---|
+| 004147 (0x0009a4e0) | +0..+0x14 = 0, +0x18 = -1 (unchanged) |
+| 004836 (0x000b4d70) | +0, +4, +8 = 0, +0xc = 2.0f (unchanged, `SdkContainer`) |
+| 005109 (0x000e1510) | 0x000f0660; +0x34, +0x38 = 0 |
+| 005071 (0x000de7e0) | 0x000f0660; +0x3c, +0x38, +0x34, +0x40 = 0 |
+| 005029 (0x000d4d00) | 0x000f0660; byte +0x130 = 1 |
+| 004996 (0x000d3490) | 0x000f0660 only |
+| 004938 (0x000bb510) | 0x000f0510; SdkContainer at +0x10; +0x20..+0x30 = 0; bytes +0x110, +0x111 = 1 |
+| 004899 (0x000b5720) | 0x000f0510; +0x5c..+0x68, +0x88 = 0; byte +0x8c = 0; +0x84 = FLT_MAX; byte +0x8d = 1 |
+| 001980 (0x0004ca30) | 0x000b4fe0 (+0, +0x1c..+0x28 = 0; +4..+0xc = FLT_MAX; +0x10..+0x18 = -FLT_MAX); +0x2c, +0x30 = 0; 004147 at +0x34; 0x0002dae0 (+0x50, +0x54 = 0); +0x58..+0x60 = FLT_MAX; +0x64..+0x6c = -FLT_MAX; +0x70 = 2; +0x74 = 0; SdkContainer at +0x78 |
+| 002346 (0x0005ab50) | +8..+0x10, +0x18..+0x20 = 0; +0 = this+8; +4 = this+0x18. The candidate also zeroed +0x14 and +0x24, which the oracle leaves; removed |
+| 002415 (0x0005bc10) | the first three dwords of each 16-byte group +0x00..+0x98 = 0 (30 stores); +0xa4 = owner. The candidate zeroed +0x00..+0xa0 whole; now the 30 stores |
+
+Not reproduced: the vtable word each sub-object (and each base) installs at its +0. Those point into
+the oracle's .rdata and no candidate path reads them; they stay as the allocation left them.
+
+### Other objects on the create paths
+
+The actor (0x50), dynamic record (0x260), shape (0x228), shape group (0x110), static pruner (0x90)
+and the pruner's entry arrays are `memset` to zero by the candidate before its explicit stores; a
+memset writes a superset of the oracle's stores, and under the 0xcd fill they match the oracle in
+every harness listed under Test. One place where the candidate initialises what the oracle does
+not: the auxiliary manager's 256-slot arrays (Scene.cpp `nxSceneAuxRegisterRecord` /
+`nxSceneAuxRegisterShape`). The oracle builds them through a generic resize-with-fill (the
+0x0005bd00 region; the 0xd00beed0 fill is the `rep stosd` at 0x5bf18) that writes the used prefix
+and leaves the rest of each retained 0x400 block, and the "active" and "vacant" arrays past their
+first entry, unwritten; the candidate memsets them. Neither DLL reads a slot past an array's end.
+`NxPhysicsActorLifecycleTests` samples those slots directly, so under the fill it prints
+`cdcdcdcd` on the oracle and `0` on the candidate in 18 `aux_sample_*` / `aux_indices_*` lines.
+Recorded, not changed.
+
+Not audited here: the allocator of 000647's two allocations. The oracle uses `[[0x101041bc]]`
+(Foundation) for the NpScene and the auxiliary manager; the candidate uses `nxGetSdkAllocator()`.
+
+### Test
+
+- `NxPhysicsJointAllocatorTests`: the counting allocator now fills every block with 0xcd (it
+  returned `calloc` blocks before). Oracle and candidate: exit 0, `stdout_delta=0`; the 12
+  registered lines are unchanged. Before the fix the candidate stopped after `scene=created`
+  (exit 127).
+- `tests/NxPageGuardedAllocator.h` gains `NX_PAGE_GUARDED_FILL` (0xcd over each block, including
+  the plain-malloc fallback). Enabled on the nine targets whose registered lines the oracle still
+  prints under the fill: NxPhysicsActorNameTests, NxPhysicsActorMetadataTests,
+  NxPhysicsActorBodyFlagTests, NxPhysicsActorDynamicSetterTests, NxPhysicsActorMomentumTests,
+  NxPhysicsActorForceTests, NxPhysicsActorCMassTests, NxPhysicsActorShapeMutationTests and
+  NxPhysicsJointStagedPairTests. NxPhysicsActorLifecycleTests (the aux arrays above) and
+  NxPhysicsActorDynamicsTests (its `move_orientation` changed-word mask counts words the fill makes
+  non-zero: `ff` against the registered `cf`, on both DLLs) run clean and identical on both DLLs
+  under the fill but keep zeroed pages. Before the fix the candidate Lifecycle run faulted at
+  Scene +0x640 (the static pruner pointer). No registered line, floor or pin changes.

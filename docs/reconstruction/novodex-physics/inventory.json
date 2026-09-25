@@ -11818,9 +11818,9 @@
       "source": null,
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/253",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1717",
-      "static_proof": null,
-      "dynamic_proof": "the Scene constructor; executed by every scene the harness creates. driven on BOTH pairs by NxPhysicsJointStagedPairTests, a registered Phase 6 staged-pair differential (tools/gate_targets.ps1, floor 11, four coverage assertions). The harness creates the SDK, a scene, two actors with bodies and four revolute joints, reads each joint's anchor, axis, actors and state back, and releases everything; the oracle and candidate transcripts are identical after the runner normalises the pair-identity lines, and the gate runs the differential as part of phase 6. This row executes on that path. Recorded in round 30, after 11s found that the work was done and the census still said `discovered`.",
-      "notes": "",
+      "static_proof": "Scene initialisation (joint open items): every store of the Capstone listing 0x00012c10..0x00012fe9 reproduced at its byte offset and in listing order in Physics/src/Scene.cpp (NxSceneInternal::NxSceneInternal), including +0xa8/+0xf4/+0x244/+0x304 = Scene+0x50; sub-object vtable words not written; see units/joint-open-items-contract.md \"## Scene initialisation\".",
+      "dynamic_proof": "the Scene constructor; executed by every scene the harness creates. driven on BOTH pairs by NxPhysicsJointStagedPairTests, a registered Phase 6 staged-pair differential (tools/gate_targets.ps1, floor 11, four coverage assertions). The harness creates the SDK, a scene, two actors with bodies and four revolute joints, reads each joint's anchor, axis, actors and state back, and releases everything; the oracle and candidate transcripts are identical after the runner normalises the pair-identity lines, and the gate runs the differential as part of phase 6. This row executes on that path. Recorded in round 30, after 11s found that the work was done and the census still said `discovered`. Scene initialisation: NxPhysicsJointAllocatorTests (phases 6 and 7) now returns 0xcd-filled blocks; the candidate constructor previously left fields above byte 0x1c7 to the allocation and faulted in createActor, and now runs with stdout_delta=0 against the oracle.",
+      "notes": "Rewritten from byte-offset-less dword indices (98f2625) to the listing's byte offsets; units/joint-open-items-contract.md \"## Scene initialisation\".",
       "implementation": "Physics/src/Scene.cpp"
     },
     {
@@ -35978,7 +35978,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6043",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene initialisation: Scene.cpp's helper for this row now makes the listing's non-vtable stores at byte offsets (base 0x000b4fe0 bounds and the +0x2c..+0x78 stores); vtable word not written; state unchanged; units/joint-open-items-contract.md \"## Scene initialisation\"."
     },
     {
       "id": "phys_fn_001981",
@@ -42610,7 +42610,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7326",
       "static_proof": "zero [this+8..10] and [this+0x18..20]; [this]=this+8; [this+4]=this+0x18; ret",
       "dynamic_proof": "confirmed via quadbatch drive (3z59): failures=0",
-      "notes": ""
+      "notes": "Scene initialisation: the candidate now makes only the eight listed stores (it also zeroed +0x14 and +0x24); units/joint-open-items-contract.md \"## Scene initialisation\"."
     },
     {
       "id": "phys_fn_002347",
@@ -43854,7 +43854,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/7457",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene initialisation: Scene.cpp's helper for this row now makes the listing's non-vtable stores at byte offsets (30 stores (first three dwords of each 16-byte group to +0x98) and +0xa4 = owner); vtable word not written; state unchanged; units/joint-open-items-contract.md \"## Scene initialisation\"."
     },
     {
       "id": "phys_fn_002416",
@@ -89417,7 +89417,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15819",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "",
+      "notes": "Scene initialisation: Scene.cpp's helper for this row now makes the listing's non-vtable stores at byte offsets (base 0x000f0510, +0x5c..+0x68, +0x88, +0x84 = FLT_MAX, bytes +0x8c/+0x8d); vtable word not written; state unchanged; units/joint-open-items-contract.md \"## Scene initialisation\".",
       "third_party": "opcode"
     },
     {
@@ -90139,7 +90139,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/16068",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "",
+      "notes": "Scene initialisation: Scene.cpp's helper for this row now makes the listing's non-vtable stores at byte offsets (base 0x000f0510, SdkContainer at +0x10, +0x20..+0x30, bytes +0x110/+0x111); vtable word not written; state unchanged; units/joint-open-items-contract.md \"## Scene initialisation\".",
       "third_party": "opcode"
     },
     {
@@ -91213,7 +91213,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/17194",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "",
+      "notes": "Scene initialisation: Scene.cpp's helper for this row now makes the listing's non-vtable stores at byte offsets (base 0x000f0660 only); vtable word not written; state unchanged; units/joint-open-items-contract.md \"## Scene initialisation\".",
       "third_party": "opcode"
     },
     {
@@ -91824,7 +91824,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/17286",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "",
+      "notes": "Scene initialisation: Scene.cpp's helper for this row now makes the listing's non-vtable stores at byte offsets (byte +0x130 = 1 after base 0x000f0660); vtable word not written; state unchanged; units/joint-open-items-contract.md \"## Scene initialisation\".",
       "third_party": "opcode"
     },
     {
@@ -92601,7 +92601,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/17554",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "",
+      "notes": "Scene initialisation: Scene.cpp's helper for this row now makes the listing's non-vtable stores at byte offsets (+0x3c/+0x38/+0x34/+0x40 after base 0x000f0660); vtable word not written; state unchanged; units/joint-open-items-contract.md \"## Scene initialisation\".",
       "third_party": "opcode"
     },
     {
@@ -93305,7 +93305,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/17755",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "",
+      "notes": "Scene initialisation: Scene.cpp's helper for this row now makes the listing's non-vtable stores at byte offsets (+0x34/+0x38 after base 0x000f0660); vtable word not written; state unchanged; units/joint-open-items-contract.md \"## Scene initialisation\".",
       "third_party": "opcode"
     },
     {

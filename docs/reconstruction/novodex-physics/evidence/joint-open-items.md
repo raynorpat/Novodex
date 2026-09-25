@@ -15,6 +15,7 @@ and marks the items it closes under `## Open items`.
 | 4 | 2026-09-25T17:23:00 | 2026-09-25T17:56:16 | 0 | 0 | Rotated bodies and near-z axes (units/joint-open-items-contract.md `## Rotated bodies and near-z axes`). Test: every family over two near-z axes on the identity fixture (indices 4, 5) and over a rotated-body fixture in a second scene (actor a 90 degrees about y, actor b at (1, 2, 3, 4)/sqrt(30); indices 10-13: a general, a diagonal and the two near-z axes); revolute prints its saved frames; the Task 4 cases also print the rotated actors' body-record words and each internal joint's +0x4c..+0x14b block and family tail. Four transcript differences, four candidate defects, all on the candidate side: (1) the actor quaternion at +0x24/+0x5c came from the public NxQuat(NxMat33) conversion, not 000801's x87 one (one bit on actor b); (2) NxJointDesc_SetGlobalAnchor/SetGlobalAxis composed the body rotation with a formula that was right only for the identity quaternion, so every rotated case failed desc.isValid(); their normalisation and transposed products are now kept in the register as in the listing; (3) the creation path's +0x134/+0x158/+0x124 did not follow 000768 (one bit on actor a's +0x134 and +0x124, which moved 004378's and 004244's relative rotations); (4) +0x164 did not follow 000746. No joint row was wrong: 004097/004101/004121/004125/004129/004244/004378 match word for word once their inputs match. Near-z axes matched on the first run. 36 oracle lines registered in each joint list, floors 6/7 = 215/103. No inventory row changes state (000768 and 000746 are reproduced whole as helpers in NpActorDynamicMath.h, 000801 in part; none is claimed). Gates 2, 3, 4, 6, 7 pass; 5 red only on its vtables marker. |
 | 5 | 2026-09-25T18:30:40 | 2026-09-25T18:55:00 | 0 | 0 | SEH/GS frames on the joint deleting destructors (item 10). Cause: CMake's default `/EHsc`; the oracle has no C++ exception handling (no `__CxxFrameHandler`, and its only `fs:[0]` uses are CRT rows (0xf4000+)). Scratch reproduction (cl 14.51, `/O2 /EHsc`, a class with an inline class `operator delete` calling a non-noexcept allocator): the `??_G` gets `push -1; push handler; fs:[0]` plus the cookie; with `/EHs-c-` it is frameless; `/GS-` removes only the cookie, not the frame; `noexcept` on the operator delete alone, `throw()`, `/Zc:implicitNoexcept-` and `noexcept(false)` destructors do not remove it. Fix: `/EHs-c-` appended to the 22 joint class files in CMakeLists.txt (core/Joint.cpp, the ten family files, NpJointShared.cpp, the ten Np files); `/GS` unchanged. Before: 53 functions in those objects carried an EH frame and cookie (every `??_G`/`??_E`, the family constructors, `??1Joint`, the class `operator delete`s). After: none; the four cookie-only rows (D6Joint row_slot6/row_slot8, Joint::setGlobalAnchor/setGlobalAxis) keep their cookies. Joint staged-pair transcript byte-identical before/after (paths and DLL hashes aside); NxPhysicsJointTests output identical. No row changes state. Gates 2, 3, 4, 6, 7 pass; 5 red only on its vtables marker. |
 | 5 (follow-up) | 2026-09-25T19:00:08 | 2026-09-25T19:15:00 | 0 | 0 | Joint allocator (item 10, allocator subsection; units/joint-open-items-contract.md `## Joint allocator`). Every joint allocation and free now goes through `nxFoundationSDKAllocator` as the oracle rows do (`[[0x101041bc]]` slots +8/+0x14; no joint row calls 004803): 36 sites in core/*.cpp, Joint.h, NpJointShared.h, JointSupport.h and Scene.cpp (createJoint, 000598, the three joint-array frees in `nxSceneDelete`). New staged-pair target `NxPhysicsJointAllocatorTests` (phases 6 and 7): Foundation created with allocator A, then the SDK with B; a revolute and a distance joint created and released. Oracle and candidate: A 0x204,0x1c,8 then 2 frees; 0x184,0x1c then 2 frees; B none. Before: all in B. 12 oracle lines registered; floors 6/7 = 257/130. Found: the candidate faults in createActor when the SDK allocator does not return zeroed memory (Scene block array header left unset), before and after this change; recorded as open. No row changes state. Gates 2, 3, 4, 6, 7 pass; 5 red only on its vtables marker. |
+| Scene init | 2026-09-25T19:14:00 | 2026-09-25T19:45:00 | 2 | 1,032 | Scene initialisation (units/joint-open-items-contract.md `## Scene initialisation`). 000647 (998 B) rewritten at byte offsets from the listing (it wrote dword indices as byte offsets since 98f2625) with its sub-object helpers (004938, 004899, 005109, 005071, 005029, 004996, 001980 and their bases; no state change, all `discovered`); 002346 (34 B) and 002415 reduced to the oracle's stores. `NxPhysicsJointAllocatorTests` fills blocks with 0xcd: both DLLs exit 0, stdout_delta=0 (candidate faulted before). `NX_PAGE_GUARDED_FILL` on nine page-guarded targets. No registered line, floor or pin changes. Gates 2, 3, 4, 6, 7 pass; 5 red only on its vtables marker (same failure set as HEAD). |
 
 ## Open items
 
@@ -135,7 +136,8 @@ Numbers are those of `joint-families.md` `## Open items carried forward`.
     follow-up put all of them in B. After: identical to the oracle, 12 lines registered. The
     joint-families plan's rule "allocation through `nxGetSdkAllocator()->malloc`" is superseded
     for joint rows; see `units/joint-open-items-contract.md` `## Joint allocator`.
-  - **Scene construction relies on zeroed memory (found by the allocator test; open).** With an
+  - **Scene construction relies on zeroed memory (found by the allocator test; closed by the
+    Scene initialisation item below).** With an
     allocator that returns plain `malloc` blocks, the candidate faults in createActor:
     `nxSceneAddActorObject` -> `nxSceneArrayReserve` frees an uninitialised array-header pointer
     of the 0x710-byte Scene block (0xbaadf00d under cdb; heap corruption c0000374), before and
@@ -143,6 +145,21 @@ Numbers are those of `joint-families.md` `## Open items carried forward`.
     whose fresh pages are zero, which hid it. The allocator test's counting allocator returns
     zeroed blocks so it measures only the joint allocator; the Scene constructor's missing
     initialisation belongs with a faithful 000647.
+- **Scene initialisation (closes the allocator test's zeroed-memory finding).** The Scene
+  constructor 000647 and its sub-object helpers had been converted from dword indices to byte
+  offsets without scaling (98f2625: `p[0x43]` became `nxDword(p, 0x43)`), so they wrote bytes
+  0x00..0x1c7 and left every field above that, and every sub-object, to the allocation. Rewritten
+  from the listing at byte offsets in the listing's order (units/joint-open-items-contract.md
+  `## Scene initialisation`), including the sub-object bases 0x000f0510/0x000f0660/0x000b4fe0/
+  0x0002dae0, and the four fields that take Scene+0x50 rather than the Scene's address. 002346
+  and 002415 now make exactly the oracle's stores (the candidate over-zeroed). The vtable words the
+  sub-objects install are not written. `NxPhysicsJointAllocatorTests` now fills every block with
+  0xcd: oracle and candidate identical (before: candidate exit 127 after `scene=created`). Nine
+  page-guarded targets run with a 0xcd fill (`NX_PAGE_GUARDED_FILL`); Lifecycle and Dynamics run
+  clean under it on both DLLs but differ from their zero-page registrations (aux-array samples the
+  oracle leaves unwritten; a changed-word mask), so they keep zero pages. Open: the oracle
+  allocates 000647's NpScene and auxiliary manager through `[[0x101041bc]]`; the candidate through
+  `nxGetSdkAllocator()`.
 - **Task 4 review follow-ups.**
   - The two joint-descriptor closures were re-measured with mutations in each row's own code (see
     `evidence/phase6-joints.md` at the end and `gates/phase6-closure.json`).
