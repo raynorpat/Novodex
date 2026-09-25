@@ -9,7 +9,7 @@ and marks the items it closes under `## Open items`.
 
 | Task | Start | End | Rows written | Bytes written | Notes |
 |---|---|---|---:|---:|---|
-| 1 | 2026-09-25T15:53:05 | 2026-09-25T16:12:00 | 0 | 0 | Test targets, dead generic path, helper fold; no row written or moved. `NxPhysicsInternalTests` and `NxPhysicsCollisionTests` link `Physics/src/core/*.cpp` (the internal target also PhysicsSDK.cpp/NpPhysicsSDK.cpp for `PhysicsSDK::getParameter`/`instance`); both generated projects give the twelve internal joint files `NoExtensions`. Removed `nxJointConstruct`, `nxJointSizeForType`, `nxJointDestroy`, `NpJoint.cpp`/`NpJoint.h` (no test, ObjectModel or inventory `implementation` user); a type above 9 now takes the oracle's switch default (`cmp eax,9; ja 0x14529`). `core/JointX87.h` folded into `X87Sqrt.h` (`jointFsqrt*` -> `x87Fsqrt*`); all 27 helper instances in NxPhysics.dll byte-identical before and after. Gates 2, 4, 6, 7 pass; 5 red only on its vtables marker; 3 red on three registered `simulate_mismatches` counts that 0637850 moved to 0 (see item 7). |
+| 1 | 2026-09-25T15:53:05 | 2026-09-25T16:12:00 | 0 | 0 | Test targets, dead generic path, helper fold; no row written or moved. `NxPhysicsInternalTests` and `NxPhysicsCollisionTests` link `Physics/src/core/*.cpp` (the internal target also PhysicsSDK.cpp/NpPhysicsSDK.cpp for `PhysicsSDK::getParameter`/`instance`); both generated projects give the twelve internal joint files `NoExtensions`. Removed `nxJointConstruct`, `nxJointSizeForType`, `nxJointDestroy`, `NpJoint.cpp`/`NpJoint.h` (no test, ObjectModel or inventory `implementation` user); a type above 9 now takes the oracle's switch default (`cmp eax,9; ja 0x14529`). `core/JointX87.h` folded into `X87Sqrt.h` (`jointFsqrt*` -> `x87Fsqrt*`); all 27 helper instances in NxPhysics.dll byte-identical before and after. Gates 2, 4, 6, 7 pass; 5 red only on its vtables marker; 3 was red on three registered `simulate_mismatches` counts that 0637850 moved to 0 and passes after they were re-registered at 0, which the controller approved (see item 7). |
 
 ## Open items
 
@@ -25,8 +25,13 @@ Numbers are those of `joint-families.md` `## Open items carried forward`.
   Every other one of the 85 registered lines matches. The cause is 0637850 (Geometry.cpp square roots
   through fsqrt at the live control word), not Task 1: with `Physics/src/Geometry.cpp` put back to
   `0637850^` on top of Task 1's tree, Phase 3 reports `phase_gate=3 status=pass` with 13/242/43.
-  Re-registering the three lines is an edit to existing expected lines, which the plan's Global
-  Constraints do not allow a task to do on its own; it is left for a decision.
+  Re-registering the three lines edits existing expected lines, which the plan's Global
+  Constraints do not let a task do on its own, so it went to the controller. The controller decided
+  to re-register them. The three lines in `tools/gate_targets.ps1` now carry
+  `simulate_mismatches=0`, copied verbatim from the Phase 3 run; every other field is unchanged.
+  Each line's comment block now says 0637850 removed the in-step difference, gives the old count and
+  keeps the line registered so a regression back to nonzero fails. The count change was a
+  consequence of 0637850, not of the joint work.
 - **11. The generic `createJoint` path.** Closed by Task 1. `nxJointConstruct`, `nxJointSizeForType`,
   `nxJointDestroy` (Scene.cpp) and `NpJointObject`/`NpJointVtable` (`Physics/src/NpJoint.cpp`,
   `Physics/src/include/NpJoint.h`) are removed. Users checked before removal: `tests/`,

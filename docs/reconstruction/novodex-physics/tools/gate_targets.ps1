@@ -1263,8 +1263,12 @@ $NxRequiredCoverageLines = [ordered] @{
         # third time this program has had a Task 2 row reopened by a
         # reachability discovery. The count is registered so it fails if it
         # moves either way, including toward zero.
+        # 0637850 (Geometry.cpp square roots through fsqrt at the live control
+        # word instead of __CIsqrt) removed that in-step difference: the count
+        # went from 13 to 0, and NxRaySphereIntersect now matches under 0x0f7f.
+        # The line stays registered so that a regression back to nonzero fails.
         'collision name=shape_raycast_sphere index=- rva=0x00027c70 owner=phys_fn_001377 checks=5880000 oracle=6bee7065d00d060e',
-        'collision coverage name=shape_raycast_sphere hits=54437 wrote_normal=27073 aimed=22568 behind=5666 default_mismatches=0 simulate_mismatches=13',
+        'collision coverage name=shape_raycast_sphere hits=54437 wrote_normal=27073 aimed=22568 behind=5666 default_mismatches=0 simulate_mismatches=0',
         # `coincident` is the sphere centre placed exactly on the capsule axis,
         # the only input that reaches the zero-length-normal return at
         # 0x0004a811, and `beyond_end` is the closest point falling past an
@@ -1298,8 +1302,12 @@ $NxRequiredCoverageLines = [ordered] @{
         # and it is what phys_fn_001775's swept path depends on. Making the row
         # write one the way the sphere's does moves 65,343 words here and 31,150
         # in the contact block.
+        # simulate_mismatches counts the words that differ under the in-step
+        # word 0x0f7f. 0637850 (Geometry.cpp square roots through fsqrt at the
+        # live control word instead of __CIsqrt) took it from 242 to 0; the
+        # line stays registered so that a regression back to nonzero fails.
         'collision name=shape_raycast_capsule index=- rva=0x00022480 owner=phys_fn_001010 checks=5880000 oracle=28ac6dc0d51aa6bd',
-        'collision coverage name=shape_raycast_capsule hits=32821 untouched_normal=32821 aimed=22571 zero_axis=15030 default_mismatches=0 simulate_mismatches=242',
+        'collision coverage name=shape_raycast_capsule hits=32821 untouched_normal=32821 aimed=22571 zero_axis=15030 default_mismatches=0 simulate_mismatches=0',
 
         # Matrix A [CAPSULE][CAPSULE]. Four things here cannot be reached by a
         # generator that does the obvious thing:
@@ -1318,8 +1326,13 @@ $NxRequiredCoverageLines = [ordered] @{
         #     two half heights matched and the axes co-located to within a 0.1%
         #     parameter tolerance. Independent draws reach none of it.
         #   c1/c2 -- the single-contact path and the two-contact clip.
+        #
+        # simulate_mismatches counts the words that differ under the in-step
+        # word 0x0f7f. 0637850 (Geometry.cpp square roots through fsqrt at the
+        # live control word instead of __CIsqrt) took it from 43 to 0; the
+        # line stays registered so that a regression back to nonzero fails.
         'collision name=contact_capsule_capsule index=21 rva=0x0003d9d0 owner=phys_fn_001775 checks=1073192 oracle=d94c81f08538ddac',
-        'collision coverage name=contact_capsule_capsule emitted=20238 f00=25362 f01=25044 f10=24804 f11=25386 swept_emitted=10174 seeded_normal=10008 parallel=37380 zero_axis=42726 coincident=3830 beyond_end=10224 c1=18889 c2=1305 c3=20 c4=24 default_mismatches=0 simulate_mismatches=43',
+        'collision coverage name=contact_capsule_capsule emitted=20238 f00=25362 f01=25044 f10=24804 f11=25386 swept_emitted=10174 seeded_normal=10008 parallel=37380 zero_axis=42726 coincident=3830 beyond_end=10224 c1=18889 c2=1305 c3=20 c4=24 default_mismatches=0 simulate_mismatches=0',
 
         # Matrix A [PLANE][BOX], the one entry the oracle does not route through
         # phys_fn_000873 -- it inlines the stream logic. The reconstruction
