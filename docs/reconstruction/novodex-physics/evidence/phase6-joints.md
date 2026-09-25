@@ -9182,3 +9182,31 @@ be moved onto one of those without the binding noticing: the coincidental-count 
     phys_fn_000665  Scene::createJoint                stdout_delta=30
     phys_fn_000651  the Scene descriptor initialiser  stdout_delta=28
     phys_fn_000013  the actor constructor             stdout_delta=30
+
+## Closure binding re-measured: the two joint-descriptor rows (joint-open-items Task 4)
+
+Joint-open-items Task 4 rewrote both exported joint-descriptor rows from the listing. The body
+rotation is now composed by the shared `nxJointWorldMatrix`, and the transposed product is formed
+by the shared `nxJointTransposeMultiply`. The section 11m mutations quote code that no longer
+exists, so both closures were re-measured. Each mutation sits in code only its own row has:
+- the anchor row's `dz` uses `t[1]`;
+- the axis row normalises only when `length > 1.0`.
+
+Method:
+- The mutations were made in a throwaway `git archive` copy of HEAD, at
+  `D:/FlamingEnt__/novodex-analysis/t4mut`.
+- Each was rebuilt and run through `run_phase_gate.ps1 -Phase 7`, with the copy as `RepoRoot` and
+  `BuildRoot`.
+- Each was caught by the registered NxPhysicsJointStagedPairTests assertions.
+- After the mutation was reverted, the same run passed (`stdout_delta=0`, 103/103).
+
+Two precision mutations were also measured and not caught, so the register precision is reproduced
+but not pinned:
+- `dx` rounded to float;
+- the axis length rounded to float.
+
+`gates/phase6-closure.json` records the details. The rows now spend these counts. The 11m counts
+in the table above are kept as history.
+
+    phys_fn_004115  NxJointDesc_SetGlobalAnchor       stdout_delta=320
+    phys_fn_004117  NxJointDesc_SetGlobalAxis         stdout_delta=3655
