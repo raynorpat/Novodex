@@ -256,12 +256,12 @@ These behaviours are in the oracle and the reconstruction keeps them.
 
 ## Open items carried forward
 
-1. **Release is unwired.**
+1. (Closed by joint-open-items Task 2: release wired, see `evidence/joint-open-items.md`.) **Release is unwired.**
    - `NpScene::releaseJoint` is empty and `nxSceneAddJoint` (000661) is a no-op, so joints of every
      type live until scene teardown.
    - Every family's release chain (internal deleting destructor -> 004095 -> deferred 000633) is
      written but has never run.
-2. **Deferred Scene rows 000022, 000571, 000598, 000633 and 000758 are asserting stubs.** Revolute
+2. (Closed by joint-open-items Task 2: all five written; 000754 and 004167 remain deferred.) **Deferred Scene rows 000022, 000571, 000598, 000633 and 000758 are asserting stubs.** Revolute
    004356, spherical 004298 and D6 004207 reach 000022 on some projection arms. The solver slots
    need 004093's Scene record array (000598), and 004111's break path needs 000571.
 3. **Rotated-body conventions are untested.** Every family's test uses the pilot's
@@ -314,7 +314,7 @@ These behaviours are in the oracle and the reconstruction keeps them.
 8. **Body +0x204 is unbuilt** (revolute contract open issue 7). The candidate's body record never
    writes the `JointSupportBody*` that the solver-slot rows read; every family's internal file
    reads it through the body record.
-9. **`Joint::mScene` (+0x30) is never written.** 000661 is a no-op, so `~Joint`, 004107's false
+9. (Closed by joint-open-items Task 2: 000661 writes it.) **`Joint::mScene` (+0x30) is never written.** 000661 is a no-op, so `~Joint`, 004107's false
    branch and the break paths read uninitialised memory there. Whoever implements 000661/000633
    must write it.
 10. **SEH/GS frames on the candidate's deleting destructors.**
