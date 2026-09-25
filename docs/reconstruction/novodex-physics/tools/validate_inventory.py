@@ -1976,7 +1976,9 @@ UNRESOLVED_SOURCE_PATHS = (
     # 'Physics/src/core/NpPrismaticJoint.cpp' was here with 10 rows against
     # it, and is REMOVED: joint-families Task 3a created the file (same
     # reason as NpRevoluteJoint.cpp below).
-    'Physics/src/core/NpPulleyJoint.cpp',            # 10 rows
+    # 'Physics/src/core/NpPulleyJoint.cpp' was here with 10 rows against it, and
+    # is REMOVED: joint-families Task 3g created the file (same reason as
+    # NpRevoluteJoint.cpp below).
     # 'Physics/src/core/NpRevoluteJoint.cpp' was here with 14 rows against it,
     # and is REMOVED: Task 5 of the revolute pilot created the file, so the
     # path resolves and the entry would be a claim that a real file is
@@ -1991,7 +1993,8 @@ UNRESOLVED_SOURCE_PATHS = (
     # and is REMOVED: joint-families Task 3d created the file.
     # 'Physics/src/core/PrismaticJoint.cpp' was here with 2 rows against it,
     # and is REMOVED: joint-families Task 3a created the file.
-    'Physics/src/core/PulleyJoint.cpp',              # 2 rows
+    # 'Physics/src/core/PulleyJoint.cpp' was here with 2 rows against it, and is
+    # REMOVED: joint-families Task 3g created the file.
     # 'Physics/src/core/RevoluteJoint.cpp' was here with 7 rows against it,
     # and is REMOVED for the same reason as NpRevoluteJoint.cpp above.
     # 'Physics/src/core/SphericalJoint.cpp' was here with 4 rows against it,

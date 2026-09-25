@@ -21,6 +21,8 @@
 #include "NxPointInPlaneJoint.h"
 #include "core/DistanceJoint.h"
 #include "NxDistanceJoint.h"
+#include "core/PulleyJoint.h"
+#include "NxPulleyJoint.h"
 #include "PhysicsInternal.h"
 #include "NpSceneGuard.h"
 
@@ -235,3 +237,4 @@ template class NpJointShared<NxSphericalJoint, SphericalJoint>;
 template class NpJointShared<NxPointOnLineJoint, PointOnLineJoint>;
 template class NpJointShared<NxPointInPlaneJoint, PointInPlaneJoint>;
 template class NpJointShared<NxDistanceJoint, DistanceJoint>;
+template class NpJointShared<NxPulleyJoint, PulleyJoint>;
