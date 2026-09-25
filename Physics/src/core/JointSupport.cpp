@@ -19,6 +19,14 @@
 // stack is a `double` here and a value it stores is an `NxReal`, with the
 // listing's operand grouping kept.
 
+// .data 0x10122054 / 0x10122060 / 0x1012206c (see core/JointSupport.h).
+NxVec3 gJointUnitAxis[3] =
+	{
+	NxVec3(1.0f, 0.0f, 0.0f),
+	NxVec3(0.0f, 1.0f, 0.0f),
+	NxVec3(0.0f, 0.0f, 1.0f)
+	};
+
 static NX_INLINE double supportMul(NxReal a, NxReal b)
 	{
 	return (double)a * (double)b;

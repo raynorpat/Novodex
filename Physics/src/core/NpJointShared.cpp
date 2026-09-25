@@ -9,6 +9,8 @@
 #include "core/Joint.h"
 #include "core/RevoluteJoint.h"
 #include "NxRevoluteJoint.h"
+#include "core/PrismaticJoint.h"
+#include "NxPrismaticJoint.h"
 #include "PhysicsInternal.h"
 #include "NpSceneGuard.h"
 
@@ -217,3 +219,4 @@ const char* NpJointShared<Iface, Internal>::getName() const
 // One explicit instantiation per reconstructed family. A family task adds
 // its line (and its internal header above).
 template class NpJointShared<NxRevoluteJoint, RevoluteJoint>;
+template class NpJointShared<NxPrismaticJoint, PrismaticJoint>;

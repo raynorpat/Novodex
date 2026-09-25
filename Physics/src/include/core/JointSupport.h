@@ -135,4 +135,13 @@ struct Row000758Fixture
 	void row000758();
 	};
 
+// The three unit vectors at .data 0x10122054, 0x10122060 and 0x1012206c
+// (phys_data_003036, 003039, 003042): (1,0,0), (0,1,0), (0,0,1) in the image.
+// The joint rows read them from memory (the prismatic solver slot
+// phys_fn_004386 copies them into its angular records, 0xaf065-0xaf217; the
+// fixed, spherical and D6 rows multiply by them, 0xa05ab-0xa46bd), so they are
+// data, not constants the compiler may fold. Joint-families Task 3a; defined
+// in core/JointSupport.cpp.
+extern NxVec3 gJointUnitAxis[3];
+
 #endif
