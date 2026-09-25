@@ -35,11 +35,11 @@ Evidenced span: ['0x000b0610', '0x000b0b70']. Rows: 17 (0 ambiguous). Generated 
 - gap:Controller.cpp..fluids\Fluid.cpp: phys_fn_002362, phys_fn_002364, phys_fn_002366
 - gap:NpSpringAndDamperEffector.cpp..Joint.cpp: phys_fn_004070
 
-## phys_fn_004435 (0x000b0610, 84 B, discovered)
+## phys_fn_004435 (0x000b0610, 84 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpD6Joint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpD6Joint.cpp
 - prototype: undefined __thiscall FUN_100b0610(float * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004469 (0x000b0bd0)
@@ -110,11 +110,11 @@ void __thiscall FUN_100b0670(void *this,float *param_1)
 
 ```
 
-## phys_fn_004439 (0x000b06a0, 84 B, discovered)
+## phys_fn_004439 (0x000b06a0, 84 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpD6Joint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpD6Joint.cpp
 - prototype: undefined __thiscall FUN_100b06a0(float * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004469 (0x000b0bd0)
@@ -217,11 +217,11 @@ undefined4 __fastcall FUN_100b0730(int param_1)
 
 ```
 
-## phys_fn_004445 (0x000b0760, 89 B, discovered)
+## phys_fn_004445 (0x000b0760, 89 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpD6Joint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpD6Joint.cpp
 - prototype: undefined __thiscall FUN_100b0760(float param_1, float param_2)
 - calling convention: __thiscall, stack purge: 8
 - callers: phys_fn_004469 (0x000b0bd0)
@@ -261,11 +261,11 @@ void __thiscall FUN_100b0760(void *this,float param_1,float param_2)
 
 ```
 
-## phys_fn_004447 (0x000b07c0, 89 B, discovered)
+## phys_fn_004447 (0x000b07c0, 89 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpD6Joint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpD6Joint.cpp
 - prototype: undefined __thiscall FUN_100b07c0(float * param_1, char param_2)
 - calling convention: __thiscall, stack purge: 8
 - callers: phys_fn_004469 (0x000b0bd0)
@@ -305,11 +305,11 @@ void __thiscall FUN_100b07c0(void *this,float *param_1,char param_2)
 
 ```
 
-## phys_fn_004449 (0x000b0820, 97 B, discovered)
+## phys_fn_004449 (0x000b0820, 97 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpD6Joint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpD6Joint.cpp
 - prototype: uint __fastcall FUN_100b0820(int param_1)
 - calling convention: __fastcall, stack purge: 8
 - callers: phys_fn_004469 (0x000b0bd0)
@@ -356,7 +356,7 @@ uint __fastcall FUN_100b0820(int param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpD6Joint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpD6Joint.cpp
 - prototype: undefined __fastcall FUN_100b0890(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_004469 (0x000b0bd0)
@@ -396,11 +396,11 @@ void __fastcall FUN_100b0890(int param_1)
 
 ```
 
-## phys_fn_004453 (0x000b08e0, 88 B, discovered)
+## phys_fn_004453 (0x000b08e0, 88 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpD6Joint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpD6Joint.cpp
 - prototype: undefined __thiscall FUN_100b08e0(int param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004469 (0x000b0bd0)
@@ -444,7 +444,7 @@ void __thiscall FUN_100b08e0(void *this,int param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpD6Joint.cpp
-- implementation: Physics/src/ObjectModel.cpp
+- implementation: Physics/src/core/NpD6Joint.cpp
 - prototype: undefined __fastcall FUN_100b0940(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_004469 (0x000b0bd0)
@@ -488,7 +488,7 @@ void __fastcall FUN_100b0940(int param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpD6Joint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpD6Joint.cpp
 - prototype: undefined __thiscall FUN_100b0990(undefined4 param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004469 (0x000b0bd0)
@@ -532,7 +532,7 @@ void __thiscall FUN_100b0990(void *this,undefined4 param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpD6Joint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpD6Joint.cpp
 - prototype: undefined __thiscall FUN_100b09f0(undefined4 param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004469 (0x000b0bd0)
@@ -576,7 +576,7 @@ void __thiscall FUN_100b09f0(void *this,undefined4 param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpD6Joint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpD6Joint.cpp
 - prototype: undefined __fastcall FUN_100b0a50(int param_1)
 - calling convention: __fastcall, stack purge: 4
 - callers: phys_fn_004469 (0x000b0bd0)
@@ -620,7 +620,7 @@ void __fastcall FUN_100b0a50(int param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpD6Joint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpD6Joint.cpp
 - prototype: undefined __fastcall FUN_100b0ab0(int param_1)
 - calling convention: __fastcall, stack purge: 4
 - callers: phys_fn_004469 (0x000b0bd0)
@@ -664,7 +664,7 @@ void __fastcall FUN_100b0ab0(int param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpD6Joint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpD6Joint.cpp
 - prototype: undefined __fastcall FUN_100b0b10(int param_1)
 - calling convention: __fastcall, stack purge: 4
 - callers: phys_fn_004469 (0x000b0bd0)
@@ -708,7 +708,7 @@ void __fastcall FUN_100b0b10(int param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpD6Joint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpD6Joint.cpp
 - prototype: undefined __fastcall FUN_100b0b70(int param_1)
 - calling convention: __fastcall, stack purge: 4
 - callers: phys_fn_004469 (0x000b0bd0)

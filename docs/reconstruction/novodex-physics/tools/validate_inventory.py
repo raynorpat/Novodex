@@ -1924,7 +1924,10 @@ UNRESOLVED_SOURCE_PATHS = (
     'Physics/src/ContactPlaneMesh.cpp',              # 2 rows
     'Physics/src/Controller.cpp',                    # 2 rows
     'Physics/src/ConvexHull.cpp',                    # 1 rows
-    'Physics/src/D6Joint.cpp',                       # 3 rows
+    # 'Physics/src/D6Joint.cpp' was here with 3 rows (004182 004184 004212), and
+    # was REMOVED when joint-families Task 3i wrote the unit in
+    # Physics/src/core/D6Joint.cpp (the rows' notes keep the oracle path), as
+    # Physics/src/Joint.cpp below was.
     'Physics/src/EdgeList.cpp',                      # 3 rows
     'Physics/src/IceAdjacencies.cpp',                # 2 rows
     'Physics/src/InternalTriangleMesh.cpp',          # 1 rows

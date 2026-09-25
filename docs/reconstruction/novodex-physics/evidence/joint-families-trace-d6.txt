@@ -1,0 +1,146 @@
+D6 family: cdb breakpoint trace of the joint transcript (joint-families Task 3i)
+=================================================================================
+
+A trimmed excerpt of the raw cdb log, in the method of evidence/unit-pilot-revolute-trace.txt
+and evidence/joint-families-trace-fixed.txt. Register dumps, ModLoad lines, banners, the
+echoed breakpoint commands and the program's own stdout are removed; the HIT lines are kept in
+order and otherwise unedited. It is the evidence behind the dynamic_proof of phys_fn_004210,
+004204, 004469, 004459, 004182, 004461, 004463, 004465 and 004467 in inventory.json.
+
+Debugger:  Microsoft Windows Debugger (X86), Windows Kits 10 cdb.exe
+Command:   cdb -cf <script> build\Release\NxPhysicsJointTests.exe build\pairs\candidate
+           (the script breaks on the NxPhysics load with `sxe ld:NxPhysics`, sets the
+           breakpoints below, disassembles the adjustor thunk, then runs to exit)
+Recorded:  2026-09-25, on the Task 3i working tree after the wiring (Scene::createJoint
+           case 9 -> core/D6Joint.cpp), the nxD6Case test and the line registration.
+Candidate: build\pairs\candidate\NxPhysics.dll
+           sha256=2f9d9203dea8b2dd43068ccd0cbea121cb64eafcef80f1c97959b73fa7f64fd1
+           (identical to build\Release\NxPhysics.dll at the time of the trace).
+Offsets:   module-relative, from build\Release\NxPhysics.map of that build. The folded Np
+           bodies are broken on their NpJointShared<NxD6Joint, D6Joint> instantiation;
+           the Joint rows are shared with the other families.
+
+Breakpoints (each echoes and continues):
+bp NxPhysics+0x27540 ".echo HIT 000665 Scene::createJoint; gc"
+bp NxPhysics+0x2e5c0 ".echo HIT 004210 D6Joint ctor; gc"
+bp NxPhysics+0x33f90 ".echo HIT 004141 Joint ctor; gc"
+bp NxPhysics+0x359b0 ".echo HIT 004121 loadFromDescBase; gc"
+bp NxPhysics+0x35eb0 ".echo HIT 004097 refreshBodyFrame; gc"
+bp NxPhysics+0x2fb80 ".echo HIT 004204 D6Joint row004204; gc"
+bp NxPhysics+0x39180 ".echo HIT 004469 NpD6Joint ctor; gc"
+bp NxPhysics+0x39aa0 ".echo HIT (helper) nxD6JointAttachScene; gc"
+bp NxPhysics+0x3ffb0 ".echo HIT 004437 Np getGlobalAnchor (D6 instantiation); gc"
+bp NxPhysics+0x40730 ".echo HIT 004441 Np getGlobalAxis (D6 instantiation); gc"
+bp NxPhysics+0x41b20 ".echo HIT 004483 Np getState (D6 instantiation); gc"
+bp NxPhysics+0x3f680 ".echo HIT 004539 Np getActors (D6 instantiation); gc"
+bp NxPhysics+0x41e40 ".echo HIT 004443 Np getType (D6 instantiation); gc"
+bp NxPhysics+0x42540 ".echo HIT 004479 Np is (D6 instantiation); gc"
+bp NxPhysics+0x39c50 ".echo HIT 004459 NpD6Joint saveToDesc; gc"
+bp NxPhysics+0x31ea0 ".echo HIT 004182 D6Joint saveToDesc; gc"
+bp NxPhysics+0x37030 ".echo HIT 004066 Joint saveToDescBase; gc"
+bp NxPhysics+0x3a030 ".echo HIT 004461 NpD6Joint setDrivePosition; gc"
+bp NxPhysics+0x39f70 ".echo HIT 004463 NpD6Joint setDriveOrientation; gc"
+bp NxPhysics+0x39eb0 ".echo HIT 004465 NpD6Joint setDriveLinearVelocity; gc"
+bp NxPhysics+0x39df0 ".echo HIT 004467 NpD6Joint setDriveAngularVelocity; gc"
+bp NxPhysics+0x2e890 ".echo HIT 004202 ~D6Joint (scalar deleting); gc"
+bp NxPhysics+0x30340 ".echo HIT 004212 D6Joint loadFromDesc; gc"
+bp NxPhysics+0x30660 ".echo HIT 004206 row_slot6; gc"
+bp NxPhysics+0x32380 ".echo HIT 004207 row_slot8; gc"
+bp NxPhysics+0x30ed0 ".echo HIT 004200 row_slot4; gc"
+bp NxPhysics+0x31ee0 ".echo HIT 004184 D6Joint setProjectionMode; gc"
+bp NxPhysics+0x39270 ".echo HIT 004473 ~NpD6Joint (scalar deleting); gc"
+
+Hits, in order. The joint test runs four revolute cases and two cases of each of the other
+eight wired families first (their Joint-row hits are summarised, not repeated), then the two
+D6 cases in full.
+
+-- revolute 0 case: 5 hits (Joint rows only; no D6 breakpoint) --
+-- revolute 1 case: 5 hits (Joint rows only; no D6 breakpoint) --
+-- revolute 2 case: 5 hits (Joint rows only; no D6 breakpoint) --
+-- revolute 3 case: 5 hits (Joint rows only; no D6 breakpoint) --
+-- prismatic 0 case: 6 hits (Joint rows only; no D6 breakpoint) --
+-- prismatic 1 case: 6 hits (Joint rows only; no D6 breakpoint) --
+-- cylindrical 0 case: 6 hits (Joint rows only; no D6 breakpoint) --
+-- cylindrical 1 case: 6 hits (Joint rows only; no D6 breakpoint) --
+-- spherical 0 case: 6 hits (Joint rows only; no D6 breakpoint) --
+-- spherical 1 case: 6 hits (Joint rows only; no D6 breakpoint) --
+-- point-on-line 0 case: 6 hits (Joint rows only; no D6 breakpoint) --
+-- point-on-line 1 case: 6 hits (Joint rows only; no D6 breakpoint) --
+-- point-in-plane 0 case: 6 hits (Joint rows only; no D6 breakpoint) --
+-- point-in-plane 1 case: 6 hits (Joint rows only; no D6 breakpoint) --
+-- distance 0 case: 6 hits (Joint rows only; no D6 breakpoint) --
+-- distance 1 case: 6 hits (Joint rows only; no D6 breakpoint) --
+-- pulley 0 case: 6 hits (Joint rows only; no D6 breakpoint) --
+-- pulley 1 case: 6 hits (Joint rows only; no D6 breakpoint) --
+-- fixed 0 case: 6 hits (Joint rows only; no D6 breakpoint) --
+-- fixed 1 case: 6 hits (Joint rows only; no D6 breakpoint) --
+
+-- D6 case index=0 --
+HIT 000665 Scene::createJoint
+HIT 004210 D6Joint ctor
+HIT 004141 Joint ctor
+HIT 004121 loadFromDescBase
+HIT 004097 refreshBodyFrame
+HIT 004097 refreshBodyFrame
+HIT 004204 D6Joint row004204
+HIT 004469 NpD6Joint ctor
+HIT (helper) nxD6JointAttachScene
+HIT 004437 Np getGlobalAnchor (D6 instantiation)
+HIT 004441 Np getGlobalAxis (D6 instantiation)
+HIT 004483 Np getState (D6 instantiation)
+HIT 004539 Np getActors (D6 instantiation)
+HIT 004479 Np is (D6 instantiation)
+HIT 004479 Np is (D6 instantiation)
+HIT 004443 Np getType (D6 instantiation)
+HIT 004459 NpD6Joint saveToDesc
+HIT 004182 D6Joint saveToDesc
+HIT 004066 Joint saveToDescBase
+HIT 004461 NpD6Joint setDrivePosition
+HIT 004463 NpD6Joint setDriveOrientation
+HIT 004465 NpD6Joint setDriveLinearVelocity
+HIT 004467 NpD6Joint setDriveAngularVelocity
+HIT 004459 NpD6Joint saveToDesc
+HIT 004182 D6Joint saveToDesc
+HIT 004066 Joint saveToDescBase
+
+-- D6 case index=3 --
+HIT 000665 Scene::createJoint
+HIT 004210 D6Joint ctor
+HIT 004141 Joint ctor
+HIT 004121 loadFromDescBase
+HIT 004097 refreshBodyFrame
+HIT 004097 refreshBodyFrame
+HIT 004204 D6Joint row004204
+HIT 004469 NpD6Joint ctor
+HIT (helper) nxD6JointAttachScene
+HIT 004437 Np getGlobalAnchor (D6 instantiation)
+HIT 004441 Np getGlobalAxis (D6 instantiation)
+HIT 004483 Np getState (D6 instantiation)
+HIT 004539 Np getActors (D6 instantiation)
+HIT 004479 Np is (D6 instantiation)
+HIT 004479 Np is (D6 instantiation)
+HIT 004443 Np getType (D6 instantiation)
+HIT 004459 NpD6Joint saveToDesc
+HIT 004182 D6Joint saveToDesc
+HIT 004066 Joint saveToDescBase
+HIT 004461 NpD6Joint setDrivePosition
+HIT 004463 NpD6Joint setDriveOrientation
+HIT 004465 NpD6Joint setDriveLinearVelocity
+HIT 004467 NpD6Joint setDriveAngularVelocity
+HIT 004459 NpD6Joint saveToDesc
+HIT 004182 D6Joint saveToDesc
+HIT 004066 Joint saveToDescBase
+
+Not hit: 004202 (~D6Joint: release is unwired, NpScene::releaseJoint is empty), 004473
+(~NpD6Joint, for the same reason), 004212 (loadFromDesc), 004184 (setProjectionMode: no public
+setter), 004200 (debug visualization), 004206 (the solver slot) and 004207 (projection): no
+simulation step. 004479 is hit twice per case: once for is(NX_JOINT_D6) and once for the
+isFixedJoint inline. saveToDesc (004459 -> 004182 -> 004066) runs twice per case: before and
+after the four drive setters.
+
+The generated adjustor thunk for phys_fn_004471 (??_ENpD6Joint@@WM@AEPAXI@Z,
+NxPhysics+0x39265 in the same build), disassembled by the same cdb session:
+67ea9265 83e90c          sub     ecx,0Ch
+67ea9268 e903000000      jmp     NxPhysics!NxBuildSmoothNormals+0xd220 (67ea9270)
+The jump target NxPhysics+0x39270 is ??_ENpD6Joint@@UAEPAXI@Z (the scalar deleting
+destructor, phys_fn_004473), matching the oracle's 0x100b0c10 `sub ecx,0xc; jmp 0x100b0c20`.
