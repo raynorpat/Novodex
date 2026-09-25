@@ -115,11 +115,11 @@ float10 __fastcall FUN_100af2d0(float *param_1)
 
 ```
 
-## phys_fn_004391 (0x000af3c0, 837 B, discovered)
+## phys_fn_004391 (0x000af3c0, 837 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/core/JointSupport.cpp
+- implementation: Physics/src/core/JointSupport.cpp
 - prototype: undefined __thiscall FUN_100af3c0(float * param_1, float * param_2)
 - calling convention: __thiscall, stack purge: 8
 - callers: phys_fn_000879 (0x0001dd40), phys_fn_000897 (0x0001f320), phys_fn_004135 (0x00099b40), phys_fn_004194 (0x0009b860), phys_fn_004196 (0x0009ba70), phys_fn_004240 (0x0009f620), phys_fn_004246 (0x000a03f0), phys_fn_004258 (0x000a10e0), phys_fn_004272 (0x000a1d10), phys_fn_004296 (0x000a3090), phys_fn_004310 (0x000a5360), phys_fn_004326 (0x000a7810), phys_fn_004360 (0x000aa060), phys_fn_004362 (0x000ab1d0), phys_fn_004386 (0x000ad850), phys_fn_004393 (0x000af710)

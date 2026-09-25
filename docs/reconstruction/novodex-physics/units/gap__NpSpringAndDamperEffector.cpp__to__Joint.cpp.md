@@ -6623,11 +6623,11 @@ uint __thiscall FUN_100950f0(void *this,undefined4 param_1,char param_2,int para
 
 ```
 
-## phys_fn_004064 (0x000957a0, 385 B, discovered)
+## phys_fn_004064 (0x000957a0, 385 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/core/Joint.cpp
+- implementation: Physics/src/core/Joint.cpp
 - prototype: undefined __thiscall FUN_100957a0(float * param_1, float * param_2, float * param_3)
 - calling convention: __thiscall, stack purge: 12
 - callers: phys_fn_004298 (0x000a47b0), phys_fn_004356 (0x000a9650)
