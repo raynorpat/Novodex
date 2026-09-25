@@ -57,6 +57,9 @@
 #include "NxPulleyJointDesc.h"
 #include "NxFixedJoint.h"
 #include "NxFixedJointDesc.h"
+#include "NxBitField.h"
+#include "NxD6Joint.h"
+#include "NxD6JointDesc.h"
 
 typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(NxU32, NxUserAllocator*, NxUserOutputStream*);
 
@@ -838,6 +841,210 @@ static void nxFixedCase(NxScene& scene, NxActor* a, NxActor* b,
 	printf("case=fixed index=%u released=yes\n", index);
 	}
 
+// The D6 family's descriptor fields (joint-families Task 3i), one set per case.
+struct NxD6CaseFields
+	{
+	NxD6JointMotion		motion[6];		// x, y, z, twist, swing1, swing2
+	NxReal				linear[3];		// linearLimit value, restitution, hardness
+	NxReal				twistLow;
+	NxReal				twistHigh;
+	NxReal				swing1;
+	NxReal				swing2;
+	NxReal				drive;			// base value; drive i gets drive + i
+	bool				useSpherical;
+	NxVec3				drivePosition;
+	NxReal				driveOrientation[4];	// x, y, z, w
+	NxVec3				driveLinearVelocity;
+	NxVec3				driveAngularVelocity;
+	NxReal				projectionDistance;
+	NxReal				projectionAngle;
+	NxJointProjectionMode	projectionMode;
+	};
+
+// Writes one field set into a D6 descriptor's family part. Every family field
+// is written: the NxD6JointDesc constructor leaves projectionDistance,
+// projectionAngle, projectionMode and useSpherical uninitialised.
+static void nxD6Fill(NxD6JointDesc& desc, const NxD6CaseFields& f)
+	{
+	desc.xMotion = f.motion[0];
+	desc.yMotion = f.motion[1];
+	desc.zMotion = f.motion[2];
+	desc.twistMotion = f.motion[3];
+	desc.swing1Motion = f.motion[4];
+	desc.swing2Motion = f.motion[5];
+	desc.linearLimit.value = f.linear[0];
+	desc.linearLimit.restitution = f.linear[1];
+	desc.linearLimit.hardness = f.linear[2];
+	desc.twistLimit.low.value = f.twistLow;
+	desc.twistLimit.low.restitution = 0.125f;
+	desc.twistLimit.low.hardness = 0.875f;
+	desc.twistLimit.high.value = f.twistHigh;
+	desc.twistLimit.high.restitution = 0.25f;
+	desc.twistLimit.high.hardness = 0.625f;
+	desc.swing1Limit.value = f.swing1;
+	desc.swing1Limit.restitution = 0.375f;
+	desc.swing1Limit.hardness = 0.5f;
+	desc.swing2Limit.value = f.swing2;
+	desc.swing2Limit.restitution = 0.0625f;
+	desc.swing2Limit.hardness = 0.9375f;
+	NxJointDriveDesc* drives[6] = { &desc.xDrive, &desc.yDrive, &desc.zDrive,
+		&desc.swingDrive, &desc.twistDrive, &desc.sphericalDrive };
+	for(unsigned i = 0; i < 6; i++)
+		{
+		drives[i]->driveType = (i & 1) ? NX_D6JOINT_DRIVE_VELOCITY : NX_D6JOINT_DRIVE_POSITION;
+		drives[i]->spring = f.drive + static_cast<NxReal>(i);
+		drives[i]->damping = 0.5f * (f.drive + static_cast<NxReal>(i));
+		drives[i]->forceLimit = 100.0f + static_cast<NxReal>(i);
+		}
+	desc.useSpherical = f.useSpherical;
+	desc.drivePosition = f.drivePosition;
+	desc.driveOrientation.x = f.driveOrientation[0];
+	desc.driveOrientation.y = f.driveOrientation[1];
+	desc.driveOrientation.z = f.driveOrientation[2];
+	desc.driveOrientation.w = f.driveOrientation[3];
+	desc.driveLinearVelocity = f.driveLinearVelocity;
+	desc.driveAngularVelocity = f.driveAngularVelocity;
+	desc.projectionDistance = f.projectionDistance;
+	desc.projectionAngle = f.projectionAngle;
+	desc.projectionMode = f.projectionMode;
+	}
+
+// Prints every family field of a D6 descriptor as raw words.
+static void nxD6PrintFields(unsigned index, const char* tag, const NxD6JointDesc& d)
+	{
+	printf("case=d6 index=%u %s motions=%u.%u.%u.%u.%u.%u\n", index, tag,
+		static_cast<unsigned>(d.xMotion), static_cast<unsigned>(d.yMotion), static_cast<unsigned>(d.zMotion),
+		static_cast<unsigned>(d.twistMotion), static_cast<unsigned>(d.swing1Motion),
+		static_cast<unsigned>(d.swing2Motion));
+	printf("case=d6 index=%u %s linear=%08x.%08x.%08x twist_low=%08x.%08x.%08x twist_high=%08x.%08x.%08x\n",
+		index, tag, nxU(d.linearLimit.value), nxU(d.linearLimit.restitution), nxU(d.linearLimit.hardness),
+		nxU(d.twistLimit.low.value), nxU(d.twistLimit.low.restitution), nxU(d.twistLimit.low.hardness),
+		nxU(d.twistLimit.high.value), nxU(d.twistLimit.high.restitution), nxU(d.twistLimit.high.hardness));
+	printf("case=d6 index=%u %s swing1=%08x.%08x.%08x swing2=%08x.%08x.%08x\n", index, tag,
+		nxU(d.swing1Limit.value), nxU(d.swing1Limit.restitution), nxU(d.swing1Limit.hardness),
+		nxU(d.swing2Limit.value), nxU(d.swing2Limit.restitution), nxU(d.swing2Limit.hardness));
+	const NxJointDriveDesc* drives[6] = { &d.xDrive, &d.yDrive, &d.zDrive,
+		&d.swingDrive, &d.twistDrive, &d.sphericalDrive };
+	static const char* const names[6] = { "x", "y", "z", "swing", "twist", "spherical" };
+	for(unsigned i = 0; i < 6; i++)
+		{
+		NxJointDriveDesc drive = *drives[i];
+		printf("case=d6 index=%u %s drive_%s=%08x.%08x.%08x.%08x\n", index, tag, names[i],
+			static_cast<unsigned>(static_cast<NxU32>(drive.driveType)), nxU(drive.spring), nxU(drive.damping),
+			nxU(drive.forceLimit));
+		}
+	printf("case=d6 index=%u %s use_spherical=%u ", index, tag, d.useSpherical ? 1u : 0u);
+	nxPrintVec("drive_position", d.drivePosition);
+	printf(" drive_orientation=%08x.%08x.%08x.%08x\n", nxU(d.driveOrientation.x), nxU(d.driveOrientation.y),
+		nxU(d.driveOrientation.z), nxU(d.driveOrientation.w));
+	printf("case=d6 index=%u %s ", index, tag);
+	nxPrintVec("drive_linear_velocity", d.driveLinearVelocity);
+	printf(" ");
+	nxPrintVec("drive_angular_velocity", d.driveAngularVelocity);
+	printf("\n");
+	printf("case=d6 index=%u %s projection distance=%08x angle=%08x mode=%u\n", index, tag,
+		nxU(d.projectionDistance), nxU(d.projectionAngle), static_cast<unsigned>(d.projectionMode));
+	}
+
+// The D6 family (joint-families Task 3i). The oracle's D6Joint::saveToDesc
+// (phys_fn_004182) saves only the NxJointDesc base part, so every family field
+// of the saved descriptor keeps what the case wrote into it before the call
+// (the `sentinel` set); the transcript prints both.
+static void nxD6Case(NxScene& scene, NxActor* a, NxActor* b,
+	unsigned index, const NxVec3& anchor, const NxVec3& axis,
+	const NxD6CaseFields& fields, const NxD6CaseFields& sentinel)
+	{
+	printf("case=d6 index=%u ", index);
+	nxPrintVec("in_anchor", anchor);
+	printf(" ");
+	nxPrintVec("in_axis", axis);
+	printf("\n");
+
+	NxD6JointDesc desc;
+	desc.actor[0] = a;
+	desc.actor[1] = b;
+	nxSetGlobalAnchor(desc, anchor);
+	nxSetGlobalAxis(desc, axis);
+	nxD6Fill(desc, fields);
+	nxD6PrintFields(index, "in", desc);
+
+	NxJoint* joint = scene.createJoint(desc);
+	printf("case=d6 index=%u created=%s\n", index, joint ? "yes" : "no");
+	if(!joint)
+		return;
+
+	NxVec3 gotAnchor(0.0f, 0.0f, 0.0f);
+	NxVec3 gotAxis(0.0f, 0.0f, 0.0f);
+	joint->getGlobalAnchor(gotAnchor);
+	joint->getGlobalAxis(gotAxis);
+	printf("case=d6 index=%u ", index);
+	nxPrintVec("out_anchor", gotAnchor);
+	printf(" ");
+	nxPrintVec("out_axis", gotAxis);
+	printf(" state=%u\n", static_cast<unsigned>(joint->getState()));
+
+	NxActor* ra = 0;
+	NxActor* rb = 0;
+	joint->getActors(&ra, &rb);
+	printf("case=d6 index=%u actors a=%s b=%s\n", index,
+		ra == a ? "match" : (ra ? "other" : "null"),
+		rb == b ? "match" : (rb ? "other" : "null"));
+
+	// This SDK has no isD6Joint(): the generic is() (folded phys_fn_004479)
+	// returns the joint itself when the type matches.
+	NxD6Joint* d6 = static_cast<NxD6Joint*>(joint->is(NX_JOINT_D6));
+	printf("case=d6 index=%u type=%u is_d6=%s is_fixed=%s\n", index,
+		static_cast<unsigned>(joint->getType()), d6 ? "yes" : "no",
+		joint->isFixedJoint() ? "yes" : "no");
+	if(d6)
+		{
+		NxD6JointDesc saved;
+		nxD6Fill(saved, sentinel);
+		d6->saveToDesc(saved);
+		nxD6PrintFields(index, "saved", saved);
+		printf("case=d6 index=%u saved ", index);
+		nxPrintVec("anchor0", saved.localAnchor[0]);
+		printf(" ");
+		nxPrintVec("anchor1", saved.localAnchor[1]);
+		printf("\n");
+		printf("case=d6 index=%u saved ", index);
+		nxPrintVec("axis0", saved.localAxis[0]);
+		printf(" ");
+		nxPrintVec("axis1", saved.localAxis[1]);
+		printf("\n");
+		printf("case=d6 index=%u saved ", index);
+		nxPrintVec("normal0", saved.localNormal[0]);
+		printf(" ");
+		nxPrintVec("normal1", saved.localNormal[1]);
+		printf("\n");
+		printf("case=d6 index=%u saved max_force=%08x max_torque=%08x flags=%08x actors a=%s b=%s\n",
+			index, nxU(saved.maxForce), nxU(saved.maxTorque), static_cast<unsigned>(saved.jointFlags),
+			saved.actor[0] == a ? "match" : (saved.actor[0] ? "other" : "null"),
+			saved.actor[1] == b ? "match" : (saved.actor[1] ? "other" : "null"));
+
+		// The four drive setters take the write lock and call the folded empty
+		// internal body (phys_fn_004461-004467); nothing is stored, so a second
+		// save shows the same family fields.
+		NxQuat orientation;
+		orientation.x = 0.0f;
+		orientation.y = 0.0f;
+		orientation.z = 0.6f;
+		orientation.w = 0.8f;
+		d6->setDrivePosition(NxVec3(7.0f, 8.0f, 9.0f));
+		d6->setDriveOrientation(orientation);
+		d6->setDriveLinearVelocity(NxVec3(-1.0f, -2.0f, -3.0f));
+		d6->setDriveAngularVelocity(NxVec3(0.25f, 0.5f, 0.75f));
+		printf("case=d6 index=%u drive_setters=called\n", index);
+		NxD6JointDesc again;
+		nxD6Fill(again, sentinel);
+		d6->saveToDesc(again);
+		nxD6PrintFields(index, "resaved", again);
+		}
+
+	scene.releaseJoint(*joint);
+	printf("case=d6 index=%u released=yes\n", index);
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	wchar_t pairDirectory[MAX_PATH];
@@ -964,6 +1171,36 @@ int wmain(int argc, wchar_t** argv)
 	// anchor/axis values.
 	nxFixedCase(*scene, a, b, 0, NxVec3(0.0f, 0.0f, 0.0f), NxVec3(1.0f, 0.0f, 0.0f));
 	nxFixedCase(*scene, a, b, 3, NxVec3(2.0f, 4.0f, 0.0f), NxVec3(0.5f, 0.5f, 0.5f));
+	// The D6 family (joint-families Task 3i), over the same two anchor/axis
+	// values. Index 0 mixes locked, limited and free motions (twist and swing1
+	// limited, so the constructor forms their half-angle cosines); index 3
+	// limits every motion. The sentinel set is what the saved descriptors hold
+	// before saveToDesc.
+	{
+	NxD6CaseFields first = {
+		{ NX_D6JOINT_MOTION_LOCKED, NX_D6JOINT_MOTION_LIMITED, NX_D6JOINT_MOTION_FREE,
+		  NX_D6JOINT_MOTION_LIMITED, NX_D6JOINT_MOTION_LIMITED, NX_D6JOINT_MOTION_FREE },
+		{ 0.5f, 0.25f, 0.75f }, -0.5f, 0.75f, 0.625f, 0.375f, 2.0f, true,
+		NxVec3(1.0f, 2.0f, 3.0f), { 0.0f, 0.6f, 0.0f, 0.8f },
+		NxVec3(0.5f, -0.5f, 1.5f), NxVec3(-0.25f, 0.125f, 2.5f),
+		0.125f, 0.0625f, NX_JPM_POINT_MINDIST };
+	NxD6CaseFields second = {
+		{ NX_D6JOINT_MOTION_LIMITED, NX_D6JOINT_MOTION_LIMITED, NX_D6JOINT_MOTION_LIMITED,
+		  NX_D6JOINT_MOTION_LIMITED, NX_D6JOINT_MOTION_LIMITED, NX_D6JOINT_MOTION_LIMITED },
+		{ 1.25f, 0.0f, 1.0f }, -1.0f, 1.5f, 0.25f, 1.0f, 4.0f, false,
+		NxVec3(-2.0f, 0.5f, 4.0f), { 0.0f, 0.0f, 0.0f, 1.0f },
+		NxVec3(0.0f, 0.0f, 0.0f), NxVec3(3.0f, 0.0f, -3.0f),
+		2.0f, 0.5f, NX_JPM_NONE };
+	NxD6CaseFields sentinel = {
+		{ NX_D6JOINT_MOTION_FREE, NX_D6JOINT_MOTION_LOCKED, NX_D6JOINT_MOTION_FREE,
+		  NX_D6JOINT_MOTION_LOCKED, NX_D6JOINT_MOTION_FREE, NX_D6JOINT_MOTION_LOCKED },
+		{ 9.0f, 0.5f, 0.5f }, -9.0f, 9.5f, 8.0f, 7.0f, 20.0f, true,
+		NxVec3(11.0f, 12.0f, 13.0f), { 0.5f, 0.5f, 0.5f, 0.5f },
+		NxVec3(21.0f, 22.0f, 23.0f), NxVec3(31.0f, 32.0f, 33.0f),
+		99.0f, 98.0f, NX_JPM_POINT_MINDIST };
+	nxD6Case(*scene, a, b, 0, NxVec3(0.0f, 0.0f, 0.0f), NxVec3(1.0f, 0.0f, 0.0f), first, sentinel);
+	nxD6Case(*scene, a, b, 3, NxVec3(2.0f, 4.0f, 0.0f), NxVec3(0.5f, 0.5f, 0.5f), second, sentinel);
+	}
 
 	sdk->releaseScene(*scene);
 	printf("scene=released\n");
