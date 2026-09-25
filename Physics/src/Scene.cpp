@@ -42,6 +42,7 @@
 #include "NxJoint.h"
 #include "NpJoint.h"
 #include "core/RevoluteJoint.h"
+#include "core/PrismaticJoint.h"
 #include "NxMat33.h"
 #include "NxQuat.h"
 
@@ -1416,9 +1417,10 @@ void NxSceneInternal::releaseActor(void* bodyPointer)
 //     to register it (0x14524);
 //   on every exit after the switch, ++[Scene+0x6c8] and [Scene+0x6bc] =
 //     [Scene+0x59c] (0x14529-0x1453f) before the re-entry flag is cleared. Only
-//     the revolute path reproduces this; the generic path does not.
+//     the prismatic and revolute paths reproduce this; the generic path does not.
 //
-// Only the revolute case runs the reconstructed rows (core/RevoluteJoint.cpp,
+// The prismatic and revolute cases run the reconstructed rows
+// (core/PrismaticJoint.cpp, core/NpPrismaticJoint.cpp, core/RevoluteJoint.cpp,
 // core/NpRevoluteJoint.cpp). The other types keep the generic stand-in path
 // (nxJointConstruct over NpJointObject). The oracle's Scene::createJoint
 // returns the internal joint and its NpScene::createJoint (phys_fn_000297)
@@ -1471,33 +1473,55 @@ NxJoint* NxSceneInternal::createJoint(const NxJointDesc& desc)
 		return 0;
 		}
 
-	// NX_JOINT_REVOLUTE: case 1, target 0x143c2. The SDK allocator's slot +8 with
-	// (0x204, 0) (0x143cc-0x143d3), then phys_fn_004366 on the block (0x143e1).
-	if(d[1] == NX_JOINT_REVOLUTE)
+	// The reconstructed families. Each case is the oracle's switch arm: the SDK
+	// allocator's slot +8 with (size, 0), the family constructor on the block
+	// (null on allocation failure), then the shared tail at 0x144fc.
+	//   NX_JOINT_PRISMATIC: case 0, target 0x1439a; (0x17c, 0) at 0x143a3-0x143aa,
+	//     phys_fn_004380 at 0x143b8 (joint-families Task 3a).
+	//   NX_JOINT_REVOLUTE: case 1, target 0x143c2; (0x204, 0) at 0x143cc-0x143d3,
+	//     phys_fn_004366 at 0x143e1 (revolute pilot, Task 10).
+	if(d[1] == NX_JOINT_PRISMATIC || d[1] == NX_JOINT_REVOLUTE)
 		{
-		void* memory = nxGetSdkAllocator()->malloc(sizeof(RevoluteJoint), NX_MEMORY_PERSISTENT);
-		RevoluteJoint* internal = memory ?
-			new(memory) RevoluteJoint(static_cast<const NxRevoluteJointDesc&>(desc)) : 0;
+		Joint* internal = 0;
+		if(d[1] == NX_JOINT_PRISMATIC)
+			{
+			void* memory = nxGetSdkAllocator()->malloc(sizeof(PrismaticJoint), NX_MEMORY_PERSISTENT);
+			if(memory)
+				internal = new(memory) PrismaticJoint(static_cast<const NxPrismaticJointDesc&>(desc));
+			}
+		else
+			{
+			void* memory = nxGetSdkAllocator()->malloc(sizeof(RevoluteJoint), NX_MEMORY_PERSISTENT);
+			if(memory)
+				internal = new(memory) RevoluteJoint(static_cast<const NxRevoluteJointDesc&>(desc));
+			}
 
 		NxJoint* result = 0;
 		if(internal)
 			{
 			if(internal->mPublicObject)
 				{
-				// 0x14502: the public object at byte +0x48. 0x14509-0x14521: the
-				// NpScene's write-lock and read-lock links into np+0x10 / np+0x14;
-				// then phys_fn_000661 (0x14524). phys_fn_000297 (0xc5ae-0xc5b9)
-				// returns [internal+0x48], which the helper returns here.
+				// 0x14502: the public object at byte +0x48 (the same Joint field
+				// for every family). 0x14509-0x14521: the NpScene's write-lock and
+				// read-lock links into np+0x10 / np+0x14; then phys_fn_000661
+				// (0x14524). phys_fn_000297 (0xc5ae-0xc5b9) returns
+				// [internal+0x48], which the family's attach helper returns here.
 				// `holder` is dereferenced without a null check, as the oracle does at
 				// 0x14509, unlike the generic createJoint path.
 				const unsigned* holder = reinterpret_cast<const unsigned*>(p[0x6cc / 4]);
-				result = nxRevoluteJointAttachScene(internal,
-					reinterpret_cast<void*>(holder[3]), reinterpret_cast<void*>(holder[4]));
+				void* writeLink = reinterpret_cast<void*>(holder[3]);
+				void* readLink = reinterpret_cast<void*>(holder[4]);
+				if(d[1] == NX_JOINT_PRISMATIC)
+					result = nxPrismaticJointAttachScene(static_cast<PrismaticJoint*>(internal), writeLink, readLink);
+				else
+					result = nxRevoluteJointAttachScene(static_cast<RevoluteJoint*>(internal), writeLink, readLink);
 				nxSceneAddJoint(this, internal);
 				}
 			else
 				{
-				// 0x14581-0x1458c: slot 5 with 1 (phys_fn_004368), then `xor esi,esi`.
+				// 0x14581-0x1458c: internal slot 5 with 1 (the family's scalar
+				// deleting destructor: phys_fn_004382 prismatic, phys_fn_004368
+				// revolute), then `xor esi,esi`.
 				delete internal;
 				}
 			}
@@ -1512,14 +1536,9 @@ NxJoint* NxSceneInternal::createJoint(const NxJointDesc& desc)
 		}
 
 	// The other joint types: the generic stand-in. Their allocation literals are
-	// in revolute-contract.md "## Construction chain"; case 0 below is the
-	// PRISMATIC literal (0x17c, phys_fn_004380), not a revolute one.
-	NxU32 size = 0;
-	switch(d[1])
-		{
-		case 0: size = 0x17c; break;		// prismatic
-		default: size = nxJointSizeForType(d[1]); break;
-		}
+	// in revolute-contract.md "## Construction chain". Types 0 (prismatic) and 1
+	// (revolute) never get here.
+	NxU32 size = nxJointSizeForType(d[1]);
 
 	NxJoint* joint = 0;
 	if(size)
@@ -2411,7 +2430,7 @@ NxU32 nxJointSizeForType(unsigned type)
 	// rather than claims. They do not match the oracle's allocation literals (see
 	// revolute-contract.md "## Construction chain" step 3). Type 1 is
 	// NX_JOINT_REVOLUTE, which never reaches this function: createJoint builds it
-	// through RevoluteJoint. Type 0 (prismatic) is sized in createJoint itself.
+	// through RevoluteJoint, and type 0 (NX_JOINT_PRISMATIC) through PrismaticJoint.
 	switch(type)
 		{
 		case 1: return 0x17c;		// revolute: unreachable, createJoint builds it through RevoluteJoint
