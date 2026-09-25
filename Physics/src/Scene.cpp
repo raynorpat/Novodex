@@ -40,7 +40,6 @@
 #include "NpScene.h"
 #include "NxJointDesc.h"
 #include "NxJoint.h"
-#include "NpJoint.h"
 #include "core/RevoluteJoint.h"
 #include "core/PrismaticJoint.h"
 #include "core/CylindricalJoint.h"
@@ -296,17 +295,8 @@ void* nxShapeFactory(void* shapeDesc, void* actor);
 // The multi-shape group builder (0x110 bytes). REPRODUCTION HOLE.
 void* nxShapeGroupConstruct(void* actor, const unsigned* shapeDescriptions, unsigned count);
 
-// phys_fn_000ad6e0 (0x000ad6e0, phase 6): constructs a joint of the given type over
-// a block. REPRODUCTION HOLE.
-NxJoint* nxJointConstruct(void* memory, const void* desc, unsigned type);
-// The per-type allocation sizes for joint types this transcription has not read.
-// REPRODUCTION HOLE.
-NxU32 nxJointSizeForType(unsigned type);
 // phys_fn_00013e00 (0x00013e00, phase 7): registers a joint with the scene.
 void nxSceneAddJoint(void* scene, void* joint);
-// The joint's scalar deleting destructor, reached in the oracle through vtable slot
-// 0x14 with an argument of 1.
-void nxJointDestroy(void* joint);
 
 void nxActorSetName(void* actor, unsigned name);
 void nxActorBuildBody(void* actor, const unsigned* desc);
@@ -1424,10 +1414,9 @@ void NxSceneInternal::releaseActor(void* bodyPointer)
 //     [[Scene+0x6cc]+0x10] -> np+0x14 (0x14509-0x14521) and phys_fn_000661
 //     to register it (0x14524);
 //   on every exit after the switch, ++[Scene+0x6c8] and [Scene+0x6bc] =
-//     [Scene+0x59c] (0x14529-0x1453f) before the re-entry flag is cleared. Only
-//     the prismatic, revolute, cylindrical, spherical, point-on-line,
-//     point-in-plane, distance, pulley, fixed and D6 paths reproduce this; the
-//     generic path does not.
+//     [Scene+0x59c] (0x14529-0x1453f) before the re-entry flag is cleared.
+//     A type above 9 takes the switch's `ja 0x14529` (0x1438a-0x1438d) straight
+//     to that tail with esi = 0, so it returns 0 without allocating.
 //
 // All ten joint types (prismatic, revolute, cylindrical, spherical,
 // point-on-line, point-in-plane, distance, pulley, fixed and D6) run the
@@ -1439,9 +1428,10 @@ void NxSceneInternal::releaseActor(void* bodyPointer)
 // core/PointInPlaneJoint.cpp, core/NpPointInPlaneJoint.cpp,
 // core/DistanceJoint.cpp, core/NpDistanceJoint.cpp, core/PulleyJoint.cpp,
 // core/NpPulleyJoint.cpp, core/FixedJoint.cpp, core/NpFixedJoint.cpp,
-// core/D6Joint.cpp, core/NpD6Joint.cpp). Only a type outside the ten reaches
-// the generic stand-in path (nxJointConstruct over NpJointObject), whose
-// size table has no entry for it, so it returns 0. The oracle's Scene::createJoint
+// core/D6Joint.cpp, core/NpD6Joint.cpp). A type outside the ten allocates
+// nothing and runs the same tail, as the oracle's switch default does (the
+// generic stand-in that used to serve unreconstructed types was removed by
+// joint-open-items Task 1). The oracle's Scene::createJoint
 // returns the internal joint and its NpScene::createJoint (phys_fn_000297)
 // returns [internal+0x48]; here that load is done at the end of this function,
 // so NpScene::createJoint keeps returning what this returns for every type.
@@ -1517,178 +1507,128 @@ NxJoint* NxSceneInternal::createJoint(const NxJointDesc& desc)
 	//     phys_fn_004210 at 0x1456f (joint-families Task 3i). This arm repeats
 	//     the tail in place (0x14574-0x1458c) rather than jumping to 0x144fc;
 	//     the behaviour is the same.
-	if(d[1] == NX_JOINT_PRISMATIC || d[1] == NX_JOINT_REVOLUTE || d[1] == NX_JOINT_CYLINDRICAL ||
-		d[1] == NX_JOINT_SPHERICAL || d[1] == NX_JOINT_POINT_ON_LINE || d[1] == NX_JOINT_POINT_IN_PLANE ||
-		d[1] == NX_JOINT_DISTANCE || d[1] == NX_JOINT_PULLEY || d[1] == NX_JOINT_FIXED || d[1] == NX_JOINT_D6)
+	//   Any other type: `cmp eax,9; ja 0x14529` (0x1438a-0x1438d), no
+	//     allocation, internal stays 0 and the tail below returns 0. desc.isValid()
+	//     has already rejected type >= NX_JOINT_COUNT, so only a descriptor whose
+	//     own isValid() override accepts such a type gets here.
+	Joint* internal = 0;
+	if(d[1] == NX_JOINT_PRISMATIC)
 		{
-		Joint* internal = 0;
-		if(d[1] == NX_JOINT_PRISMATIC)
+		void* memory = nxGetSdkAllocator()->malloc(sizeof(PrismaticJoint), NX_MEMORY_PERSISTENT);
+		if(memory)
+			internal = new(memory) PrismaticJoint(static_cast<const NxPrismaticJointDesc&>(desc));
+		}
+	else if(d[1] == NX_JOINT_CYLINDRICAL)
+		{
+		void* memory = nxGetSdkAllocator()->malloc(sizeof(CylindricalJoint), NX_MEMORY_PERSISTENT);
+		if(memory)
+			internal = new(memory) CylindricalJoint(static_cast<const NxCylindricalJointDesc&>(desc));
+		}
+	else if(d[1] == NX_JOINT_SPHERICAL)
+		{
+		void* memory = nxGetSdkAllocator()->malloc(sizeof(SphericalJoint), NX_MEMORY_PERSISTENT);
+		if(memory)
+			internal = new(memory) SphericalJoint(static_cast<const NxSphericalJointDesc&>(desc));
+		}
+	else if(d[1] == NX_JOINT_POINT_ON_LINE)
+		{
+		void* memory = nxGetSdkAllocator()->malloc(sizeof(PointOnLineJoint), NX_MEMORY_PERSISTENT);
+		if(memory)
+			internal = new(memory) PointOnLineJoint(static_cast<const NxPointOnLineJointDesc&>(desc));
+		}
+	else if(d[1] == NX_JOINT_POINT_IN_PLANE)
+		{
+		void* memory = nxGetSdkAllocator()->malloc(sizeof(PointInPlaneJoint), NX_MEMORY_PERSISTENT);
+		if(memory)
+			internal = new(memory) PointInPlaneJoint(static_cast<const NxPointInPlaneJointDesc&>(desc));
+		}
+	else if(d[1] == NX_JOINT_DISTANCE)
+		{
+		void* memory = nxGetSdkAllocator()->malloc(sizeof(DistanceJoint), NX_MEMORY_PERSISTENT);
+		if(memory)
+			internal = new(memory) DistanceJoint(static_cast<const NxDistanceJointDesc&>(desc));
+		}
+	else if(d[1] == NX_JOINT_PULLEY)
+		{
+		void* memory = nxGetSdkAllocator()->malloc(sizeof(PulleyJoint), NX_MEMORY_PERSISTENT);
+		if(memory)
+			internal = new(memory) PulleyJoint(static_cast<const NxPulleyJointDesc&>(desc));
+		}
+	else if(d[1] == NX_JOINT_FIXED)
+		{
+		void* memory = nxGetSdkAllocator()->malloc(sizeof(FixedJoint), NX_MEMORY_PERSISTENT);
+		if(memory)
+			internal = new(memory) FixedJoint(static_cast<const NxFixedJointDesc&>(desc));
+		}
+	else if(d[1] == NX_JOINT_D6)
+		{
+		void* memory = nxGetSdkAllocator()->malloc(sizeof(D6Joint), NX_MEMORY_PERSISTENT);
+		if(memory)
+			internal = new(memory) D6Joint(static_cast<const NxD6JointDesc&>(desc));
+		}
+	else if(d[1] == NX_JOINT_REVOLUTE)
+		{
+		void* memory = nxGetSdkAllocator()->malloc(sizeof(RevoluteJoint), NX_MEMORY_PERSISTENT);
+		if(memory)
+			internal = new(memory) RevoluteJoint(static_cast<const NxRevoluteJointDesc&>(desc));
+		}
+
+	NxJoint* result = 0;
+	if(internal)
+		{
+		if(internal->mPublicObject)
 			{
-			void* memory = nxGetSdkAllocator()->malloc(sizeof(PrismaticJoint), NX_MEMORY_PERSISTENT);
-			if(memory)
-				internal = new(memory) PrismaticJoint(static_cast<const NxPrismaticJointDesc&>(desc));
-			}
-		else if(d[1] == NX_JOINT_CYLINDRICAL)
-			{
-			void* memory = nxGetSdkAllocator()->malloc(sizeof(CylindricalJoint), NX_MEMORY_PERSISTENT);
-			if(memory)
-				internal = new(memory) CylindricalJoint(static_cast<const NxCylindricalJointDesc&>(desc));
-			}
-		else if(d[1] == NX_JOINT_SPHERICAL)
-			{
-			void* memory = nxGetSdkAllocator()->malloc(sizeof(SphericalJoint), NX_MEMORY_PERSISTENT);
-			if(memory)
-				internal = new(memory) SphericalJoint(static_cast<const NxSphericalJointDesc&>(desc));
-			}
-		else if(d[1] == NX_JOINT_POINT_ON_LINE)
-			{
-			void* memory = nxGetSdkAllocator()->malloc(sizeof(PointOnLineJoint), NX_MEMORY_PERSISTENT);
-			if(memory)
-				internal = new(memory) PointOnLineJoint(static_cast<const NxPointOnLineJointDesc&>(desc));
-			}
-		else if(d[1] == NX_JOINT_POINT_IN_PLANE)
-			{
-			void* memory = nxGetSdkAllocator()->malloc(sizeof(PointInPlaneJoint), NX_MEMORY_PERSISTENT);
-			if(memory)
-				internal = new(memory) PointInPlaneJoint(static_cast<const NxPointInPlaneJointDesc&>(desc));
-			}
-		else if(d[1] == NX_JOINT_DISTANCE)
-			{
-			void* memory = nxGetSdkAllocator()->malloc(sizeof(DistanceJoint), NX_MEMORY_PERSISTENT);
-			if(memory)
-				internal = new(memory) DistanceJoint(static_cast<const NxDistanceJointDesc&>(desc));
-			}
-		else if(d[1] == NX_JOINT_PULLEY)
-			{
-			void* memory = nxGetSdkAllocator()->malloc(sizeof(PulleyJoint), NX_MEMORY_PERSISTENT);
-			if(memory)
-				internal = new(memory) PulleyJoint(static_cast<const NxPulleyJointDesc&>(desc));
-			}
-		else if(d[1] == NX_JOINT_FIXED)
-			{
-			void* memory = nxGetSdkAllocator()->malloc(sizeof(FixedJoint), NX_MEMORY_PERSISTENT);
-			if(memory)
-				internal = new(memory) FixedJoint(static_cast<const NxFixedJointDesc&>(desc));
-			}
-		else if(d[1] == NX_JOINT_D6)
-			{
-			void* memory = nxGetSdkAllocator()->malloc(sizeof(D6Joint), NX_MEMORY_PERSISTENT);
-			if(memory)
-				internal = new(memory) D6Joint(static_cast<const NxD6JointDesc&>(desc));
+			// 0x14502: the public object at byte +0x48 (the same Joint field
+			// for every family). 0x14509-0x14521: the NpScene's write-lock and
+			// read-lock links into np+0x10 / np+0x14; then phys_fn_000661
+			// (0x14524). phys_fn_000297 (0xc5ae-0xc5b9) returns
+			// [internal+0x48], which the family's attach helper returns here.
+			// `holder` is dereferenced without a null check, as the oracle does at
+			// 0x14509.
+			const unsigned* holder = reinterpret_cast<const unsigned*>(p[0x6cc / 4]);
+			void* writeLink = reinterpret_cast<void*>(holder[3]);
+			void* readLink = reinterpret_cast<void*>(holder[4]);
+			if(d[1] == NX_JOINT_PRISMATIC)
+				result = nxPrismaticJointAttachScene(static_cast<PrismaticJoint*>(internal), writeLink, readLink);
+			else if(d[1] == NX_JOINT_CYLINDRICAL)
+				result = nxCylindricalJointAttachScene(static_cast<CylindricalJoint*>(internal), writeLink, readLink);
+			else if(d[1] == NX_JOINT_SPHERICAL)
+				result = nxSphericalJointAttachScene(static_cast<SphericalJoint*>(internal), writeLink, readLink);
+			else if(d[1] == NX_JOINT_POINT_ON_LINE)
+				result = nxPointOnLineJointAttachScene(static_cast<PointOnLineJoint*>(internal), writeLink, readLink);
+			else if(d[1] == NX_JOINT_POINT_IN_PLANE)
+				result = nxPointInPlaneJointAttachScene(static_cast<PointInPlaneJoint*>(internal), writeLink, readLink);
+			else if(d[1] == NX_JOINT_DISTANCE)
+				result = nxDistanceJointAttachScene(static_cast<DistanceJoint*>(internal), writeLink, readLink);
+			else if(d[1] == NX_JOINT_PULLEY)
+				result = nxPulleyJointAttachScene(static_cast<PulleyJoint*>(internal), writeLink, readLink);
+			else if(d[1] == NX_JOINT_FIXED)
+				result = nxFixedJointAttachScene(static_cast<FixedJoint*>(internal), writeLink, readLink);
+			else if(d[1] == NX_JOINT_D6)
+				result = nxD6JointAttachScene(static_cast<D6Joint*>(internal), writeLink, readLink);
+			else
+				result = nxRevoluteJointAttachScene(static_cast<RevoluteJoint*>(internal), writeLink, readLink);
+			nxSceneAddJoint(this, internal);
 			}
 		else
 			{
-			void* memory = nxGetSdkAllocator()->malloc(sizeof(RevoluteJoint), NX_MEMORY_PERSISTENT);
-			if(memory)
-				internal = new(memory) RevoluteJoint(static_cast<const NxRevoluteJointDesc&>(desc));
+			// 0x14581-0x1458c: internal slot 5 with 1 (the family's scalar
+			// deleting destructor: phys_fn_004382 prismatic, phys_fn_004368
+			// revolute, phys_fn_004322 cylindrical, phys_fn_004302 spherical,
+			// phys_fn_004278 point-on-line, phys_fn_004264 point-in-plane,
+			// phys_fn_004236 distance, phys_fn_004224 pulley, phys_fn_004252
+			// fixed, phys_fn_004202 D6), then `xor esi,esi`.
+			delete internal;
 			}
-
-		NxJoint* result = 0;
-		if(internal)
-			{
-			if(internal->mPublicObject)
-				{
-				// 0x14502: the public object at byte +0x48 (the same Joint field
-				// for every family). 0x14509-0x14521: the NpScene's write-lock and
-				// read-lock links into np+0x10 / np+0x14; then phys_fn_000661
-				// (0x14524). phys_fn_000297 (0xc5ae-0xc5b9) returns
-				// [internal+0x48], which the family's attach helper returns here.
-				// `holder` is dereferenced without a null check, as the oracle does at
-				// 0x14509, unlike the generic createJoint path.
-				const unsigned* holder = reinterpret_cast<const unsigned*>(p[0x6cc / 4]);
-				void* writeLink = reinterpret_cast<void*>(holder[3]);
-				void* readLink = reinterpret_cast<void*>(holder[4]);
-				if(d[1] == NX_JOINT_PRISMATIC)
-					result = nxPrismaticJointAttachScene(static_cast<PrismaticJoint*>(internal), writeLink, readLink);
-				else if(d[1] == NX_JOINT_CYLINDRICAL)
-					result = nxCylindricalJointAttachScene(static_cast<CylindricalJoint*>(internal), writeLink, readLink);
-				else if(d[1] == NX_JOINT_SPHERICAL)
-					result = nxSphericalJointAttachScene(static_cast<SphericalJoint*>(internal), writeLink, readLink);
-				else if(d[1] == NX_JOINT_POINT_ON_LINE)
-					result = nxPointOnLineJointAttachScene(static_cast<PointOnLineJoint*>(internal), writeLink, readLink);
-				else if(d[1] == NX_JOINT_POINT_IN_PLANE)
-					result = nxPointInPlaneJointAttachScene(static_cast<PointInPlaneJoint*>(internal), writeLink, readLink);
-				else if(d[1] == NX_JOINT_DISTANCE)
-					result = nxDistanceJointAttachScene(static_cast<DistanceJoint*>(internal), writeLink, readLink);
-				else if(d[1] == NX_JOINT_PULLEY)
-					result = nxPulleyJointAttachScene(static_cast<PulleyJoint*>(internal), writeLink, readLink);
-				else if(d[1] == NX_JOINT_FIXED)
-					result = nxFixedJointAttachScene(static_cast<FixedJoint*>(internal), writeLink, readLink);
-				else if(d[1] == NX_JOINT_D6)
-					result = nxD6JointAttachScene(static_cast<D6Joint*>(internal), writeLink, readLink);
-				else
-					result = nxRevoluteJointAttachScene(static_cast<RevoluteJoint*>(internal), writeLink, readLink);
-				nxSceneAddJoint(this, internal);
-				}
-			else
-				{
-				// 0x14581-0x1458c: internal slot 5 with 1 (the family's scalar
-				// deleting destructor: phys_fn_004382 prismatic, phys_fn_004368
-				// revolute, phys_fn_004322 cylindrical, phys_fn_004302 spherical,
-				// phys_fn_004278 point-on-line, phys_fn_004264 point-in-plane,
-				// phys_fn_004236 distance, phys_fn_004224 pulley, phys_fn_004252
-				// fixed, phys_fn_004202 D6), then `xor esi,esi`.
-				delete internal;
-				}
-			}
-
-		// 0x14529-0x1453f, on every exit after the switch (success, allocation
-		// failure, null +0x48): ++[Scene+0x6c8], [Scene+0x6bc] = [Scene+0x59c],
-		// then the re-entry flag is cleared.
-		++p[0x6c8 / 4];
-		p[0x6bc / 4] = p[0x59c / 4];
-		gCreateJointReentry = false;
-		return result;
 		}
 
-	// The other joint types: the generic stand-in. Their allocation literals are
-	// in revolute-contract.md "## Construction chain". Types 0 (prismatic), 1
-	// (revolute), 2 (cylindrical), 3 (spherical), 4 (point on line), 5 (point
-	// in plane), 6 (distance), 7 (pulley), 8 (fixed) and 9 (D6) never get here.
-	NxU32 size = nxJointSizeForType(d[1]);
-
-	NxJoint* joint = 0;
-	if(size)
-		{
-		void* memory = nxGetSdkAllocator()->malloc(size, NX_MEMORY_PERSISTENT);
-		if(memory)
-			joint = nxJointConstruct(memory, &desc, d[1]);
-		}
-
-	if(!joint)
-		{
-		gCreateJointReentry = false;
-		return 0;
-		}
-
-	// The two words out of the Scene's +0x6cc holder, then registration.
-	unsigned marker = reinterpret_cast<unsigned*>(joint)[0x12 / 4];
-	if(marker)
-		{
-		unsigned* holder = reinterpret_cast<unsigned*>(p[0x6cc / 4]);
-		if(holder)
-			{
-			*reinterpret_cast<unsigned*>(marker + 0x10) = holder[3];
-			*reinterpret_cast<unsigned*>(marker + 0x14) = holder[4];
-			}
-		nxSceneAddJoint(this, joint);
-		}
-	else
-		{
-		// The oracle calls the joint's vtable slot 0x14 with 1 -- its scalar deleting
-		// destructor -- for the marker, and then FALLS THROUGH to the switch's default
-		// and RETURNS THE JOINT it built. Destroying the marker is not destroying the
-		// joint, so this returns it too.
-		//
-		// The joint is returned with its vtable installed, so the harness's virtual
-		// calls -- getGlobalAnchor, getGlobalAxis, getState -- dispatch. The marker
-		// word at +0x12 stays null, which is what the oracle's own guard expects for a
-		// joint that has no marker (10u).
-		nxJointDestroy(joint);
-		}
-
+	// 0x14529-0x1453f, on every exit after the switch (success, allocation
+	// failure, null +0x48, a type above 9): ++[Scene+0x6c8], [Scene+0x6bc] = [Scene+0x59c],
+	// then the re-entry flag is cleared.
+	++p[0x6c8 / 4];
+	p[0x6bc / 4] = p[0x59c / 4];
 	gCreateJointReentry = false;
-	return joint;
+	return result;
 	}
 
 // ---------------------------------------------------------------------------
@@ -2498,76 +2438,9 @@ void nxActorRemoveShape(void* actor, void* handle)
 // Reproduction holes for Scene::createJoint's callees.
 // ---------------------------------------------------------------------------
 
-NxJoint* nxJointConstruct(void* memory, const void* desc, unsigned type)
-	{
-	(void)desc;
-	(void)type;
-	// The oracle's phys_fn_000ad6e0 builds the joint object, installs its vtable and
-	// copies the descriptor into it. What Scene::createJoint reads back is the
-	// joint's +0x12 word, which the oracle leaves non-null for a joint that was
-	// constructed; this reproduces that so registration is reached.
-	unsigned char* joint = static_cast<unsigned char*>(memory);
-	for(int i = 0; i < 0x80; ++i)
-		joint[i] = 0;
-
-	// The vtable. The oracle's joint HAS one and the harness calls three of its
-	// virtuals on what createJoint returns -- getGlobalAnchor, getGlobalAxis and
-	// getState -- so a raw block leaves joint[0] at whatever the allocator left and
-	// the first virtual call reads through it. That is the actor's defect (10f, 10k)
-	// one class down, found in 10v.
-	static_cast<NpJointObject*>(memory)->installVtable();
-	// The descriptor, so the joint's virtuals can answer from what it carried.
-	static_cast<NpJointObject*>(memory)->setDescriptor(
-		static_cast<const NxJointDesc*>(desc));
-
-	// The marker at +0x12 is left NULL, deliberately. The oracle's createJoint tests
-	// it and skips the two-word copy out of the Scene's +0x6cc holder when it is null;
-	// a hole that invents a value there is claiming state it does not have, and the
-	// copy then writes through it. The guard caught exactly that: a write to address
-	// 0x11, which is marker 1 plus the 0x10 offset of the first copied word (10u).
-	//
-	// A real joint built by phys_fn_000ad6e0 would have a marker; this hole does not
-	// build one, so it says so.
-	return reinterpret_cast<NxJoint*>(memory);
-	}
-
-NxU32 nxJointSizeForType(unsigned type)
-	{
-	// The generic stand-in's sizes for the non-revolute types, recorded as holes
-	// rather than claims. They do not match the oracle's allocation literals (see
-	// revolute-contract.md "## Construction chain" step 3). Type 1 is
-	// NX_JOINT_REVOLUTE, which never reaches this function: createJoint builds it
-	// through RevoluteJoint, type 0 (NX_JOINT_PRISMATIC) through PrismaticJoint,
-	// type 2 (NX_JOINT_CYLINDRICAL) through CylindricalJoint, type 3
-	// (NX_JOINT_SPHERICAL) through SphericalJoint, type 4
-	// (NX_JOINT_POINT_ON_LINE) through PointOnLineJoint, type 5
-	// (NX_JOINT_POINT_IN_PLANE) through PointInPlaneJoint, type 6
-	// (NX_JOINT_DISTANCE) through DistanceJoint, type 7 (NX_JOINT_PULLEY)
-	// through PulleyJoint, type 8 (NX_JOINT_FIXED) through FixedJoint and type 9
-	// (NX_JOINT_D6) through D6Joint.
-	switch(type)
-		{
-		case 1: return 0x17c;		// revolute: unreachable, createJoint builds it through RevoluteJoint
-		case 2: return 0x1b0;		// cylindrical: unreachable, createJoint builds it through CylindricalJoint
-		case 3: return 0x150;		// spherical: unreachable, createJoint builds it through SphericalJoint
-		case 4: return 0x150;		// point on line: unreachable, createJoint builds it through PointOnLineJoint
-		case 5: return 0x150;		// point in plane: unreachable, createJoint builds it through PointInPlaneJoint
-		case 6: return 0x220;		// distance: unreachable, createJoint builds it through DistanceJoint
-		case 7: return 0x1b0;		// pulley: unreachable, createJoint builds it through PulleyJoint
-		case 8: return 0x1b0;		// fixed: unreachable, createJoint builds it through FixedJoint (0x188 bytes, push 0x188 at 0x14498)
-		case 9: return 0x260;		// D6: unreachable, createJoint builds it through D6Joint (0x270 bytes, push 0x270 at 0x14560)
-		default: return 0;
-		}
-	}
-
 void nxSceneAddJoint(void* scene, void* joint)
 	{
 	// phys_fn_00013e00 (0x00013e00, phase 7) registers the joint with the scene.
 	(void)scene;
-	(void)joint;
-	}
-
-void nxJointDestroy(void* joint)
-	{
 	(void)joint;
 	}

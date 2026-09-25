@@ -78,6 +78,9 @@ source_group("Header Files" FILES ${PHYSICS_HEADERS})
 # this directory has a counterpart in either pinned OPCODE 1.3 tree. Vendored
 # OPCODE is External/opcode/ and nowhere else.
 file(GLOB PHYSICS_SOURCES Physics/src/*.cpp Physics/src/core/*.cpp Physics/src/opcode/*.cpp)
+# The joint families on their own, for the test targets that link Scene.cpp: its
+# createJoint constructs every family, so they need the whole directory at link time.
+file(GLOB PHYSICS_CORE_SOURCES Physics/src/core/*.cpp)
 source_group("Source Files" FILES ${PHYSICS_SOURCES})
 
 if(WIN32)
@@ -431,15 +434,22 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# public API. Same shape as NxFoundationCustomArrayTests above.
 	add_executable(NxPhysicsInternalTests tests/PhysicsInternalTests.cpp
 		Physics/src/PhysicsInternal.cpp Physics/src/Containers.cpp
-		Physics/src/Scene.cpp Physics/src/NpScene.cpp Physics/src/NpActor.cpp Physics/src/NpJoint.cpp
+		Physics/src/Scene.cpp Physics/src/NpScene.cpp Physics/src/NpActor.cpp
 		Physics/src/ObjectModel.cpp Physics/src/MemoryStream.cpp
 		Physics/src/Geometry.cpp Physics/src/ShapeRaycast.cpp
-		Physics/src/opcode/IcePrunable.cpp Physics/src/ThirdPartyHost.cpp)
+		Physics/src/opcode/IcePrunable.cpp Physics/src/ThirdPartyHost.cpp
+		Physics/src/PhysicsSDK.cpp Physics/src/NpPhysicsSDK.cpp
+		${PHYSICS_CORE_SOURCES})
 	target_include_directories(NxPhysicsInternalTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include Physics/src/include
 		Physics/src/opcode)
 	# Geometry.cpp defines exports that ObjectModel.cpp calls, so it needs the
-	# DLL's linkage here, as in NxPhysicsCollisionTests below.
+	# DLL's linkage here, as in NxPhysicsCollisionTests below. Scene.cpp's
+	# createJoint constructs all ten joint families, so the target links
+	# Physics/src/core/*.cpp, and the families' SDK-parameter reads
+	# (PhysicsSDK::getParameter, PhysicsSDK::instance) pull in PhysicsSDK.cpp and
+	# NpPhysicsSDK.cpp. The /arch:IA32 rule above is per directory, so it gives
+	# the internal joint files NoExtensions here too.
 	target_compile_definitions(NxPhysicsInternalTests PRIVATE NX_PHYSICS_DLL=1)
 	target_link_libraries(NxPhysicsInternalTests NxFoundation NxOpcode)
 
@@ -516,9 +526,10 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/Geometry.cpp Physics/src/SmoothNormals.cpp
 		Physics/src/PhysicsSDK.cpp Physics/src/NpPhysicsSDK.cpp
 		Physics/src/PhysicsInternal.cpp Physics/src/Containers.cpp
-		Physics/src/Scene.cpp Physics/src/NpScene.cpp Physics/src/NpActor.cpp Physics/src/NpJoint.cpp
+		Physics/src/Scene.cpp Physics/src/NpScene.cpp Physics/src/NpActor.cpp
 		Physics/src/ObjectModel.cpp Physics/src/MemoryStream.cpp
-		Physics/src/opcode/IcePrunable.cpp Physics/src/ThirdPartyHost.cpp)
+		Physics/src/opcode/IcePrunable.cpp Physics/src/ThirdPartyHost.cpp
+		${PHYSICS_CORE_SOURCES})
 	target_include_directories(NxPhysicsCollisionTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include Physics/src/include
 		Physics/src/opcode)

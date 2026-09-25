@@ -13,11 +13,11 @@
 // "## Object layouts" (NpRevoluteJoint) and "## Dispatch tables"
 // (0x1011b328 -- NpRevoluteJoint primary).
 //
-// Unlike NpJointObject/NpJointVtable (NpJoint.h), which stand in for every
-// OTHER joint type with an offset-addressed byte array plus a detached
-// vtable class, NpRevoluteJoint is real C++ multiple inheritance: the
-// oracle's shape is the public NxRevoluteJoint (0xc bytes: vptr, userData,
-// appData) as the primary base, then a 12-byte secondary base with one
+// Unlike the generic stand-in the pilot started from (NpJointObject and
+// NpJointVtable, an offset-addressed byte array plus a detached vtable class,
+// removed by joint-open-items Task 1), NpRevoluteJoint is real C++ multiple
+// inheritance: the oracle's shape is the public NxRevoluteJoint (0xc bytes:
+// vptr, userData, appData) as the primary base, then a 12-byte secondary base with one
 // virtual at +0xc (the "hook base", same shape as ObjectModel.h's
 // EmbeddedHookBase -- its class name is unknown, and it is used here as an
 // actual base rather than an embedded member, which is what makes
