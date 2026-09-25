@@ -32,17 +32,36 @@
 // with +0x00); phys_fn_004358 forms +0x00 + (+0x10 x r); phys_fn_004374 adds
 // +0x0c times an impulse to +0x00 and the +0x20 3x3 times r x impulse to
 // +0x10. Meanings unknown; declared by offset.
+//
+// It is one 0x60-byte element of the Scene's per-step array at +0x5ac
+// (count word at [+0x5ac]-4, used count +0x5b0, capacity +0x5b4), grown by
+// phys_fn_000600 (`count * 0x60 + 4` bytes, 0x11023-0x1102e). phys_fn_000611,
+// on the simulation thread's step (002400 -> 000659 -> 000655 -> 000611),
+// fills one element per island body and is the only writer of body+0x204
+// (0x11305); phys_fn_000613 then copies +0x00/+0x10/+0x44/+0x50 back to the
+// body through phys_fn_000708. The body constructor phys_fn_000797 stores 0
+// at +0x204 (0x1b713). See units/joint-open-items-contract.md
+// "## Body record +0x204".
 struct JointSupportBody
 	{
-	NxVec3				mUnknown000;	//!< +0x00
-	NxReal				mUnknown00c;	//!< +0x0c; scales +0x00's increment (004374)
-	NxVec3				mUnknown010;	//!< +0x10
-	NxU32				mUnknown01c;	//!< +0x1c (not read)
-	NxReal				mUnknown020[9];	//!< +0x20; row-major 3x3 (004374 0xad345-0xad3a9)
+	NxVec3				mUnknown000;	//!< +0x00; body+0x34..+0x3c (000611), back to body+0x34 (000708)
+	NxReal				mUnknown00c;	//!< +0x0c; body+0xc0 (000611); scales +0x00's increment (004374)
+	NxVec3				mUnknown010;	//!< +0x10; body+0x40..+0x48 (000611), back to body+0x40 (000708)
+	void*				mUnknown01c;	//!< +0x1c; the body record itself (000611 0x112ec, read by 000613 0x11372)
+	NxReal				mUnknown020[9];	//!< +0x20; row-major 3x3, body+0x164 (000611 rep movsd; 004374 0xad345-0xad3a9)
+	NxVec3				mUnknown044;	//!< +0x44; copy of +0x00 after the record passes (004174 0x9b1a0); to body+0x1a0 (000708)
+	NxVec3				mUnknown050;	//!< +0x50; copy of +0x10 after the record passes (004174); to body+0x1ac (000708)
+	NxU32				mUnknown05c;	//!< +0x5c; body+0x110 (000611 0x1130b); pass filter in 004174
 	};
 
+static_assert(offsetof(JointSupportBody, mUnknown00c) == 0x0c, "scale at +0x0c");
 static_assert(offsetof(JointSupportBody, mUnknown010) == 0x10, "second vector at +0x10");
+static_assert(offsetof(JointSupportBody, mUnknown01c) == 0x1c, "body back-pointer at +0x1c");
 static_assert(offsetof(JointSupportBody, mUnknown020) == 0x20, "3x3 at +0x20");
+static_assert(offsetof(JointSupportBody, mUnknown044) == 0x44, "vector at +0x44");
+static_assert(offsetof(JointSupportBody, mUnknown050) == 0x50, "vector at +0x50");
+static_assert(offsetof(JointSupportBody, mUnknown05c) == 0x5c, "word at +0x5c");
+static_assert(sizeof(JointSupportBody) == 0x60, "000600/000611 step the array by 0x60");
 
 // The record phys_fn_004389/004391/004393 run on (`this` in ecx). 0x50
 // bytes: phys_fn_004093 hands out element `index` of the Scene's array at

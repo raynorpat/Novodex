@@ -1785,6 +1785,14 @@ static void nxSceneDelete(void* self, int flags)
 		nxGetSdkAllocator()->free(scene->at<void*>(0x5b8));
 		scene->at<void*>(0x5b8) = 0;
 		}
+	// The JointSupportBody array (0x14019-0x14034): phys_fn_000600 allocates
+	// it with a count word in front, so the free is of [+0x5ac]-4. Only the
+	// simulation step grows it, so in the candidate it is always null here.
+	if(scene->at<unsigned char*>(0x5ac))
+		{
+		nxGetSdkAllocator()->free(scene->at<unsigned char*>(0x5ac) - 4);
+		scene->at<void*>(0x5ac) = 0;
+		}
 	if(scene->at<void*>(0x58c))
 		nxGetSdkAllocator()->free(scene->at<void*>(0x58c));
 	scene->at<void*>(0x58c) = 0;
@@ -2012,6 +2020,12 @@ int nxActorComputeMass(void* actor, const unsigned* bodyWord)
 	*reinterpret_cast<unsigned*>(record + 0x11c) = nxSceneTakeRecordId(scene);
 	*reinterpret_cast<unsigned char**>(record + 0x1bc) = record;
 	*reinterpret_cast<unsigned char**>(record + 0x1e8) = record;
+	// The body's JointSupportBody pointer: the oracle's body constructor
+	// phys_fn_000797 stores 0 at +0x204 (0x1b713), after +0x1e4/+0x1e0. Only
+	// the simulation step's phys_fn_000611 (0x11305) points it at an element
+	// of the Scene's +0x5ac array; the candidate has no step, so it stays 0
+	// (joint-open-items-contract.md "## Body record +0x204"). No allocation.
+	reinterpret_cast<JointBodyRecord*>(record)->mUnknown204 = 0;
 	*reinterpret_cast<float*>(record + 0xb8) = bodyDesc->linearDamping;
 	*reinterpret_cast<float*>(record + 0xbc) = bodyDesc->angularDamping;
 	*reinterpret_cast<float*>(record + 0x84) = bodyDesc->wakeUpCounter;
