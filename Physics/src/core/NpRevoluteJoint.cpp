@@ -52,19 +52,20 @@ NpRevoluteJoint::NpRevoluteJoint(RevoluteJoint* internal)
 	}
 
 // phys_fn_004729 (0x000b33f0, 55 B)
-// phys_fn_004727 (0x000b33e0, 8 B) is not defined here: it is the
-// compiler-generated adjustor thunk ("sub ecx,0xc; jmp <~NpRevoluteJoint>")
-// the second base (EmbeddedHookBase) needs for this shared virtual
-// destructor, emitted automatically now that ~NpRevoluteJoint() is defined.
-// It has no decompile anywhere -- Capstone listing only.
+// phys_fn_004727 (0x000b33e0, 8 B)
+// The row above is not defined here: it is the compiler-generated adjustor
+// thunk ("sub ecx,0xc; jmp <~NpRevoluteJoint>") the second base
+// (EmbeddedHookBase) needs for this shared virtual destructor, emitted
+// automatically now that ~NpRevoluteJoint() is defined. It has no decompile
+// anywhere -- Capstone listing only.
 NpRevoluteJoint::~NpRevoluteJoint()
 	{
 	// Nothing to do in the body: the base-destruction chain the compiler
 	// generates for this multiple-inheritance shape reproduces the rest of
-	// phys_fn_004729 automatically -- EmbeddedHookBase's own (empty)
-	// destructor resets the secondary vptr to its own table (0x101088b8,
-	// phys_fn_002406, not claimed), then NxJoint's abstract destructor
-	// resets the primary vptr to 0x1011a680 -- and the scalar-deleting-
+	// this row (phys_fn_004729) automatically -- EmbeddedHookBase's own
+	// (empty) destructor resets the secondary vptr to its own table
+	// (0x101088b8, the not-claimed phys_fn_002406), then NxJoint's abstract
+	// destructor resets the primary vptr to 0x1011a680 -- and the scalar-deleting-
 	// destructor wrapper the compiler generates around this body supplies
 	// the flags&1 free, through the `operator delete` NpRevoluteJoint.h
 	// declares (the SDK allocator, matching phys_fn_004729's tail exactly).
@@ -319,10 +320,10 @@ const char* NpRevoluteJoint::getName() const
 	return name;
 	}
 
-// phys_fn_004697 (0x000b3000, 84 B). Slot +0x24 is virtual
-// (RevoluteJoint::loadFromDesc, internal slot 9); the plain call below
-// dispatches through mInternal's own vtable exactly as the listing's
-// `[[this+0x18]]+0x24]` indirect call does.
+// phys_fn_004697 (0x000b3000, 84 B)
+// Slot +0x24 is virtual (RevoluteJoint::loadFromDesc, internal slot 9); the
+// plain call below dispatches through mInternal's own vtable exactly as the
+// listing's `[[this+0x18]]+0x24]` indirect call does.
 void NpRevoluteJoint::loadFromDesc(const NxRevoluteJointDesc& desc)
 	{
 	if(!nxNpSceneGuardWriteTry(&mWord04))
@@ -335,8 +336,9 @@ void NpRevoluteJoint::loadFromDesc(const NxRevoluteJointDesc& desc)
 	nxNpSceneGuardLeave(&mWord04);
 	}
 
-// phys_fn_004699 (0x000b3060, 84 B). Internal slot 10 (RevoluteJoint::
-// saveToDesc), dispatched the same way as loadFromDesc above.
+// phys_fn_004699 (0x000b3060, 84 B)
+// Internal slot 10 (RevoluteJoint::saveToDesc), dispatched the same way as
+// loadFromDesc above.
 void NpRevoluteJoint::saveToDesc(NxRevoluteJointDesc& desc)
 	{
 	if(!nxNpSceneGuardWriteTry(&mWord04))
@@ -362,9 +364,9 @@ void NpRevoluteJoint::setLimits(const NxJointLimitPairDesc& limits)
 	nxNpSceneGuardLeave(&mWord04);
 	}
 
-// phys_fn_004711 (0x000b3240, 45 B). Locked copy-and-flag accessor shape
-// (ObjectModel.cpp's nxLockedCopyAndFlag); returns RevoluteJoint::getLimits'
-// bit-0 result.
+// phys_fn_004711 (0x000b3240, 45 B)
+// Locked copy-and-flag accessor shape (ObjectModel.cpp's nxLockedCopyAndFlag);
+// returns RevoluteJoint::getLimits' bit-0 result.
 bool NpRevoluteJoint::getLimits(NxJointLimitPairDesc& limits)
 	{
 	nxNpSceneGuardEnter(&mWord08);
@@ -373,14 +375,15 @@ bool NpRevoluteJoint::getLimits(NxJointLimitPairDesc& limits)
 	return result;
 	}
 
-// phys_fn_004713 (0x000b3270, 8 B). No lock: `mov ecx,[ecx+0x18]; jmp`
-// RevoluteJoint::setMotor.
+// phys_fn_004713 (0x000b3270, 8 B)
+// No lock: `mov ecx,[ecx+0x18]; jmp` RevoluteJoint::setMotor.
 void NpRevoluteJoint::setMotor(const NxMotorDesc& motor)
 	{
 	mInternal->setMotor(motor);
 	}
 
-// phys_fn_004715 (0x000b3280, 45 B). Same shape as getLimits above.
+// phys_fn_004715 (0x000b3280, 45 B)
+// Same shape as getLimits above.
 bool NpRevoluteJoint::getMotor(NxMotorDesc& motor)
 	{
 	nxNpSceneGuardEnter(&mWord08);
@@ -402,7 +405,8 @@ void NpRevoluteJoint::setSpring(const NxSpringDesc& spring)
 	nxNpSceneGuardLeave(&mWord04);
 	}
 
-// phys_fn_004719 (0x000b3310, 45 B). Same shape as getLimits/getMotor above.
+// phys_fn_004719 (0x000b3310, 45 B)
+// Same shape as getLimits/getMotor above.
 bool NpRevoluteJoint::getSpring(NxSpringDesc& spring)
 	{
 	nxNpSceneGuardEnter(&mWord08);
@@ -411,12 +415,13 @@ bool NpRevoluteJoint::getSpring(NxSpringDesc& spring)
 	return result;
 	}
 
-// phys_fn_004721 (0x000b3340, 42 B). RevoluteJoint::getAngle (phys_fn_004372)
-// returns its result unrounded in st(0); this row rounds it to float with
-// its own `fstp dword` BEFORE unlocking (0xb3357), then reloads it after the
-// unlock (0xb3362) -- the reload has no observable effect since the value
-// is already fixed at float precision, so the C++ below computes the float
-// result under the lock and returns it after unlocking.
+// phys_fn_004721 (0x000b3340, 42 B)
+// RevoluteJoint::getAngle (phys_fn_004372) returns its result unrounded in
+// st(0); this row rounds it to float with its own `fstp dword` BEFORE
+// unlocking (0xb3357), then reloads it after the unlock (0xb3362) -- the
+// reload has no observable effect since the value is already fixed at float
+// precision, so the C++ below computes the float result under the lock and
+// returns it after unlocking.
 NxReal NpRevoluteJoint::getAngle()
 	{
 	nxNpSceneGuardEnter(&mWord08);
@@ -425,8 +430,9 @@ NxReal NpRevoluteJoint::getAngle()
 	return angle;
 	}
 
-// phys_fn_004723 (0x000b3370, 42 B). Same shape as getAngle above, over
-// RevoluteJoint::getVelocity (phys_fn_004354).
+// phys_fn_004723 (0x000b3370, 42 B)
+// Same shape as getAngle above, over RevoluteJoint::getVelocity
+// (phys_fn_004354).
 NxReal NpRevoluteJoint::getVelocity()
 	{
 	nxNpSceneGuardEnter(&mWord08);
@@ -435,8 +441,9 @@ NxReal NpRevoluteJoint::getVelocity()
 	return velocity;
 	}
 
-// phys_fn_004701 (0x000b30c0, 84 B). Internal slot 11 (RevoluteJoint::
-// setFlags), dispatched through mInternal's own vtable.
+// phys_fn_004701 (0x000b30c0, 84 B)
+// Internal slot 11 (RevoluteJoint::setFlags), dispatched through mInternal's
+// own vtable.
 void NpRevoluteJoint::setFlags(NxU32 flags)
 	{
 	if(!nxNpSceneGuardWriteTry(&mWord04))
@@ -449,10 +456,11 @@ void NpRevoluteJoint::setFlags(NxU32 flags)
 	nxNpSceneGuardLeave(&mWord04);
 	}
 
-// phys_fn_004703 (0x000b3120, 36 B). Lock-bracketed vtable call with no
-// arguments (ObjectModel.cpp's nxLockedVtCallNoArg): read lock, internal
-// slot 12 (RevoluteJoint::getFlags), unlock. Also installed by the folded
-// NpSphericalJoint ctor (phys_fn_004649).
+// phys_fn_004703 (0x000b3120, 36 B)
+// Lock-bracketed vtable call with no arguments (ObjectModel.cpp's
+// nxLockedVtCallNoArg): read lock, internal slot 12 (RevoluteJoint::
+// getFlags), unlock. Also installed by the folded NpSphericalJoint ctor
+// (phys_fn_004649).
 NxU32 NpRevoluteJoint::getFlags()
 	{
 	nxNpSceneGuardEnter(&mWord08);
@@ -461,8 +469,9 @@ NxU32 NpRevoluteJoint::getFlags()
 	return flags;
 	}
 
-// phys_fn_004705 (0x000b3150, 84 B). Internal slot 13 (RevoluteJoint::
-// setProjectionMode), dispatched through mInternal's own vtable.
+// phys_fn_004705 (0x000b3150, 84 B)
+// Internal slot 13 (RevoluteJoint::setProjectionMode), dispatched through
+// mInternal's own vtable.
 void NpRevoluteJoint::setProjectionMode(NxJointProjectionMode projectionMode)
 	{
 	if(!nxNpSceneGuardWriteTry(&mWord04))
@@ -475,9 +484,9 @@ void NpRevoluteJoint::setProjectionMode(NxJointProjectionMode projectionMode)
 	nxNpSceneGuardLeave(&mWord04);
 	}
 
-// phys_fn_004707 (0x000b31b0, 36 B). Same nxLockedVtCallNoArg shape as
-// getFlags above, over internal slot 14 (RevoluteJoint::getProjectionMode,
-// folded phys_fn_004186).
+// phys_fn_004707 (0x000b31b0, 36 B)
+// Same nxLockedVtCallNoArg shape as getFlags above, over internal slot 14
+// (RevoluteJoint::getProjectionMode, folded phys_fn_004186).
 NxJointProjectionMode NpRevoluteJoint::getProjectionMode()
 	{
 	nxNpSceneGuardEnter(&mWord08);
