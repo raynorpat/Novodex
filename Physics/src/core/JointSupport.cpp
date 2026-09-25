@@ -8,7 +8,7 @@
 #include "core/JointSupport.h"
 #include "PhysicsInternal.h"
 
-// phys_fn_004389/004391/004393 are not Joint or RevoluteJoint members: they
+// Rows phys_fn_004389/004391/004393 are not Joint or RevoluteJoint members: they
 // run on JointSupportRecord (see core/JointSupport.h and revolute-contract.md
 // "## Row assignment"). phys_fn_000022/000571/000633/000758 are deferred
 // stubs only: each is owned by a unit outside the pilot, declared here so a

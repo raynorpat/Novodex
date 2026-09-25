@@ -177,7 +177,18 @@ rows. `core/Joint.cpp`/`core/JointSupport.cpp` rows are written only if
 
 `phys_fn_004675/004677/004679` are deliberately absent (NpCylindricalJoint.cpp, see above).
 The 13 folded NpJoint accessor bodies that table 002727 borrows from other units are
-listed in `## Dispatch tables` and `### Declaration changes made by Task 6
+listed in `## Dispatch tables` and `## Task split`; they are implemented as
+NpRevoluteJoint methods but **not claimed** (their rows stay with their own units).
+
+Joint.cpp inferred-extent rows 004085, 004091, 004103, 004105, 004113, 004115, 004117 and
+004119 are out of scope: no pilot row calls them directly (004091, 004113 and 004119 are
+reached only through deferred 004111; 004105 only through 004113; 004085/004103 from
+outside the joint units; 004115/004117 have no callers). 004119 is the Joint base scalar
+deleting destructor in base slot 5; no pilot path reaches it through the vtable, because
+RevoluteJoint overrides slot 5 with 004368, which calls the destructor body 004095
+directly, so release (if Task 10 wires it) goes 004368 → 004095, never 004119.
+
+### Declaration changes made by Task 6
 
 Recorded here as the procedure requires; the headers are `Physics/src/include/core/Joint.h`
 and the new `Physics/src/include/core/JointSupport.h`.
@@ -201,17 +212,6 @@ and the new `Physics/src/include/core/JointSupport.h`.
   (thiscall on the Scene, `ret 4`, as 000571). All declared in `JointSupport.h`.
 - `Joint::getGlobalAnchor/getGlobalAxis/row004127` stay `const`; the stale-body refresh
   they begin with (004097) goes through a `const_cast`, as the oracle row mutates the cache.
-
-## Task split`; they are implemented as
-NpRevoluteJoint methods but **not claimed** (their rows stay with their own units).
-
-Joint.cpp inferred-extent rows 004085, 004091, 004103, 004105, 004113, 004115, 004117 and
-004119 are out of scope: no pilot row calls them directly (004091, 004113 and 004119 are
-reached only through deferred 004111; 004105 only through 004113; 004085/004103 from
-outside the joint units; 004115/004117 have no callers). 004119 is the Joint base scalar
-deleting destructor in base slot 5; no pilot path reaches it through the vtable, because
-RevoluteJoint overrides slot 5 with 004368, which calls the destructor body 004095
-directly, so release (if Task 10 wires it) goes 004368 → 004095, never 004119.
 
 ## Construction chain
 
@@ -422,7 +422,7 @@ Size: the first revolute field is +0x16c (004366 0xac559) and 004141 writes up t
 | +0x014 | 0xc | limit point in mSolverBody[0]'s frame (`mLimitPoint`; Task 6: 004080 getLimitPoint transforms it by that body's +0x134 pose into worldLimitPoint, or copies it) | 004141 zero 0x99ea2–0x99ea8; 004080 |
 | +0x020 | 4 | limit-plane list head (`JointLimitPlane*`: 0x14-byte nodes, normal +0, d +0xc, next +0x10; 004143 `push 0x14`) | 004141 zero 0x99eab; 004081 copies it to `.data 0x10127180`; 004089 walks and frees it |
 | +0x024 | 4×2 | body pair in solver order: +0x2c bit 1 set → (body[0], body[1]); clear → (body[1], body[0]) (Task 6 correction: the earlier text said "swapped when set"; 0x97de5 `je` takes the swapped arm when the bit is clear) | 004107 0x97de5–0x97dfa |
-| +0x02c | 4 | flags: bit0 in scene (000661/000633); bit1 swap order (004107 0x97de5); bit2 **unknown** (tested by 004133 0x99b22); bits3–4 state, `(>>3)&3` = NxJointState, 0x10 = broken (004078; every setter's `(+0x2c & 0x18) == 0x10` test; 004107 0x97da9 and 004374 0xad13b set broken); bit8/bit9 = NX_JF_COLLISION_ENABLED/NX_JF_VISUALIZATION (004121 from desc.jointFlags; 004066 back) | as listed |
+| +0x02c | 4 | flags: bit0 in scene (000661/000633); bit1 solver order (004107 0x97de5: clear → +0x24 = body[1], +0x28 = body[0]; set → body[0], body[1]); bit2 **unknown** (tested by 004133 0x99b22); bits3–4 state, `(>>3)&3` = NxJointState, 0x10 = broken (004078; every setter's `(+0x2c & 0x18) == 0x10` test; 004107 0x97da9 and 004374 0xad13b set broken); bit8/bit9 = NX_JF_COLLISION_ENABLED/NX_JF_VISUALIZATION (004121 from desc.jointFlags; 004066 back) | as listed |
 | +0x030 | 4 | owning Scene* | 000661 0x13f1a; 004107 0x97d8b/0x97e3e; 004095 0x95e31; 004374 0xad170 |
 | +0x034 | 4×2 | **unknown** (+0x34, +0x38) | 004141 zero 0x99e8a, 0x99e8d |
 | +0x03c | 4 | maxForce | 004121 from desc+0x58; 004066; 004076 getBreakable; 004374 0xad0cf compares it |
@@ -724,7 +724,7 @@ What the new code replaces or must stay compatible with. Line numbers are at com
    and +0xdc's row-major order are candidate choices not checked against these rows.
    A wrong convention changes `out_anchor`/`out_axis` for cases 1–3.
 4. ~~The typeBit→type byte table (0x9a048) is inferred, not read.~~ Resolved by Task 6: read from the image, mapping confirmed (see `## Object layouts`).
-5. Fields marked **unknown** (Joint +0x04 readers, +0x14..+0x1c, +0x34/+0x38,
+5. Fields marked **unknown** (Joint +0x04 readers, +0x34/+0x38,
    +0x160/+0x164; revolute +0x1ac..+0x200) must be declared by offset only.
 6. `phys_fn_004727` has no decompile anywhere (Capstone listing only; 8 bytes).
 

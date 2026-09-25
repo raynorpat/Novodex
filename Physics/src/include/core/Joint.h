@@ -313,7 +313,8 @@ class Joint
 	//! (body[1], body[0]).
 	void*				mSolverBody[2];
 
-	//! +0x02c. Flags: bit0 in scene; bit1 swap order; bit2 unknown
+	//! +0x02c. Flags: bit0 in scene; bit1 solver order (clear: mSolverBody =
+	//! body[1], body[0]; set: body[0], body[1]); bit2 unknown
 	//! (phys_fn_004133 0x99b22); bits3-4 = NxJointState (0x10 = broken);
 	//! bit8/bit9 = NX_JF_COLLISION_ENABLED / NX_JF_VISUALIZATION.
 	NxU32				mFlags;

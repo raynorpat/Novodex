@@ -23,16 +23,20 @@
 // argument. The code below types every value the listing keeps on the stack
 // as `double` and every value it stores as `NxReal`, and keeps the listing's
 // operand grouping; a product of two floats is exact in a double, so only the
-// grouping of the sums matters. Rows reached from inside the step (the solver
-// slots call phys_fn_004097) would need /arch:IA32 to follow its 64-bit
-// round-toward-zero control word; this translation unit is SSE2 and does not.
+// grouping of the sums matters. Rows are also reached from inside the step
+// (the solver slots call phys_fn_004097), whose control word is 64-bit
+// round-toward-zero; CMakeLists.txt builds this translation unit /arch:IA32 so
+// the code follows whichever control word is live, as the oracle's does.
 
-// phys_fn_000661 Scene::addJoint (thiscall on the Scene, `ret 4`). Reused as
+// Scene::addJoint (phys_fn_000661; thiscall on the Scene, `ret 4`). Reused as
 // the candidate's no-op hole; defined in Physics/src/Scene.cpp.
 void nxSceneAddJoint(void* scene, void* joint);
 
-// .data 0x10127180: the limit-plane iterator phys_fn_004081 sets,
-// phys_fn_004083 tests, phys_fn_004145 advances and phys_fn_004089 clears.
+// .data 0x10127180: the limit-plane iterator that phys_fn_004081 sets,
+// that phys_fn_004083 tests, phys_fn_004145 advances and 004089 clears.
+// Physics/src/ObjectModel.cpp keeps its own twin of the same oracle word,
+// gNxGlobalFlag4491, for the parameterised Np-accessor models; the two are
+// deliberately separate (the models never touch a product Joint).
 static JointLimitPlane* gLimitPlaneIterator = 0;
 
 // The float the setters raise a body's wake counter to and compare it with:
@@ -173,7 +177,7 @@ Joint::~Joint()
 	{
 	nxSetSdkPointerBinding(this, 0);
 	if(mScene)
-		// phys_fn_000633 is deferred (Scene joint removal, reached only on
+		// The Scene removal row (phys_fn_000633) is deferred (reached only on
 		// release); its stub asserts.
 		reinterpret_cast<Row000633Fixture*>(mScene)->row000633(this);
 	purgeLimitPlanes();
@@ -499,8 +503,9 @@ void Joint::setGlobalAxis(const NxVec3& axis)
 // phys_fn_004107 (0x00097d30, 297 B)
 // With suppressAttach false the row detaches first: it wakes and clears the
 // bodies, removes the joint from its scene (deferred phys_fn_000633) and
-// marks it broken ((flags & ~8) | 0x10); afterwards it re-registers through
-// phys_fn_000661. The constructor passes true and neither happens.
+// marks it broken ((flags & ~8) | 0x10); afterwards it re-registers
+// through Scene::addJoint (phys_fn_000661). The constructor passes true and
+// neither happens.
 void Joint::row004107(void* actorImpl0, void* actorImpl1, bool suppressAttach)
 	{
 	if(!suppressAttach)
@@ -510,8 +515,8 @@ void Joint::row004107(void* actorImpl0, void* actorImpl1, bool suppressAttach)
 		mBody[0] = 0;
 		mBody[1] = 0;
 		if(mScene)
-			// phys_fn_000633 is deferred (reached only when phys_fn_004370
-			// re-binds actors); its stub asserts.
+			// The Scene removal row (phys_fn_000633) is deferred (reached
+			// only when phys_fn_004370 re-binds actors); its stub asserts.
 			reinterpret_cast<Row000633Fixture*>(mScene)->row000633(this);
 		mFlags = (mFlags & ~8u) | 0x10u;
 		}
