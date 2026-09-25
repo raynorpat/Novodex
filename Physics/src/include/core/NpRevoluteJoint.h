@@ -240,12 +240,25 @@ class NpRevoluteJoint : public NxRevoluteJoint, public EmbeddedHookBase
 	//! write-lock link (tryLock phys_fn_002364 / unlock phys_fn_002366 in
 	//! every setter) and scene read-lock link (lock phys_fn_002362 /
 	//! unlock phys_fn_002366 in every getter) -- the same meaning as
-	//! NpScene::mWriteLock (+0x0c) / mReadLock (+0x10).
+	//! NpScene::mWriteLock (+0x0c) / mReadLock (+0x10). Each word holds not
+	//! a lock-block pointer directly but a pointer to a one-word link whose
+	//! word points to the lock block (the guard functions' `link`
+	//! parameter, `NpSceneGuard.h`); every accessor passes the WORD'S VALUE
+	//! to the guard, not the word's address (e.g. phys_fn_004681 0xb2d16
+	//! `mov ecx,[esi+0x10]` before the tryLock call).
 
 	//! +0x18. The internal RevoluteJoint* every accessor forwards to
 	//! (also duplicated into NxJoint::appData at +0x08 by the
 	//! constructor).
 	RevoluteJoint*		mInternal;
+
+	private:
+	//! The write-lock link value (the VALUE stored at +0x10/mWord04, not its
+	//! address) -- what every setter passes to nxNpSceneGuardWriteTry/Leave.
+	void*			writeLink() const { return reinterpret_cast<void*>(mWord04); }
+	//! The read-lock link value (the VALUE stored at +0x14/mWord08) -- what
+	//! every getter passes to nxNpSceneGuardEnter/Leave.
+	void*			readLink() const { return reinterpret_cast<void*>(mWord08); }
 	};
 
 static_assert(sizeof(NxJoint) == 0xc, "NxJoint is vptr+userData+appData, twelve bytes");

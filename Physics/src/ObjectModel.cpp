@@ -1573,10 +1573,11 @@ float nxLockedDoubleField(void* self, unsigned fieldOff, unsigned dataOff)
 
 // The copy-and-flag member.
 // Product row: Physics/src/core/RevoluteJoint.cpp.
-// Same shape (lock, copy the block, return a flag bit): Physics/src/core/NpRevoluteJoint.cpp
-// getLimits/getMotor/getSpring (phys_fn_004711/004715/004719), written as
-// direct calls through the named RevoluteJoint accessor rather than this
-// byte-offset form.
+// Product row: Physics/src/core/NpRevoluteJoint.cpp.
+// The same shape (lock, copy the block, return a flag bit) also covers
+// NpRevoluteJoint's getLimits/getMotor/getSpring (phys_fn_004711/004715/
+// 004719), written there as direct calls through the named RevoluteJoint
+// accessor rather than through this byte-offset form.
 unsigned char nxLockedCopyAndFlag(void* self, unsigned fieldOff,
 	unsigned dataOff, unsigned count, unsigned shift, unsigned* out)
 	{
@@ -2000,10 +2001,11 @@ void nxMutexNoopEx(void* self, unsigned code, unsigned file, unsigned line,
 	}
 
 // The lock-bracketed vtable call with a caller-chosen slot and no arguments.
-// Product row: Physics/src/core/NpRevoluteJoint.cpp getFlags/getProjectionMode
-// (phys_fn_004703/004707: read lock, internal vtable slot 12/14, unlock),
-// written as direct calls through the named RevoluteJoint virtual rather
-// than this byte-offset form.
+// Product row: Physics/src/core/NpRevoluteJoint.cpp.
+// This shape also covers getFlags/getProjectionMode (phys_fn_004703/004707:
+// read lock, internal vtable slot 12/14, unlock), written there as direct
+// calls through the named RevoluteJoint virtual rather than this
+// byte-offset form.
 unsigned nxLockedVtCallNoArg(void* self, unsigned slot)
 	{
 	unsigned char* p = reinterpret_cast<unsigned char*>(self);
