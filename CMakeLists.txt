@@ -113,7 +113,7 @@ target_compile_definitions(NxPhysics PRIVATE NX_PHYSICS_DLL=1)
 # (core/Joint.cpp, core/RevoluteJoint.cpp, core/PrismaticJoint.cpp,
 # core/CylindricalJoint.cpp, core/SphericalJoint.cpp, core/PointOnLineJoint.cpp,
 # core/PointInPlaneJoint.cpp, core/DistanceJoint.cpp, core/PulleyJoint.cpp,
-# core/JointSupport.cpp)
+# core/FixedJoint.cpp, core/JointSupport.cpp)
 # are x87 in the oracle too and are reached from the solver step, so they are
 # on the list for the same reason. core/JointSupport.cpp's rows 004389 and 004393 are x87 in the
 # oracle and are called from the solver slots 004360 and 004362 inside the step.
@@ -134,6 +134,7 @@ if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/core/PointInPlaneJoint.cpp
 		Physics/src/core/DistanceJoint.cpp
 		Physics/src/core/PulleyJoint.cpp
+		Physics/src/core/FixedJoint.cpp
 		Physics/src/core/JointSupport.cpp
 		PROPERTIES COMPILE_OPTIONS "/arch:IA32")
 endif()
