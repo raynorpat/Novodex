@@ -42,11 +42,11 @@ Evidenced span: ['0x000b0c60', '0x000b10b0']. Rows: 18 (0 ambiguous). Generated 
 - gap:core\PrismaticJoint.cpp..core\NpD6Joint.cpp: phys_fn_004417, phys_fn_004419, phys_fn_004421, phys_fn_004423, phys_fn_004425, phys_fn_004427, phys_fn_004429, phys_fn_004431, phys_fn_004433
 - unassigned: phys_fn_005667
 
-## phys_fn_004475 (0x000b0c60, 84 B, discovered)
+## phys_fn_004475 (0x000b0c60, 84 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpPulleyJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpPulleyJoint.cpp
 - prototype: undefined __thiscall FUN_100b0c60(float * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004505 (0x000b1110)
@@ -86,11 +86,11 @@ void __thiscall FUN_100b0c60(void *this,float *param_1)
 
 ```
 
-## phys_fn_004477 (0x000b0cc0, 84 B, discovered)
+## phys_fn_004477 (0x000b0cc0, 84 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpPulleyJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpPulleyJoint.cpp
 - prototype: undefined __thiscall FUN_100b0cc0(float * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004505 (0x000b1110)
@@ -162,11 +162,11 @@ uint __thiscall FUN_100b0d20(void *this,int param_1)
 
 ```
 
-## phys_fn_004481 (0x000b0d60, 89 B, discovered)
+## phys_fn_004481 (0x000b0d60, 89 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpPulleyJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpPulleyJoint.cpp
 - prototype: undefined __thiscall FUN_100b0d60(float param_1, float param_2)
 - calling convention: __thiscall, stack purge: 8
 - callers: phys_fn_004505 (0x000b1110)
@@ -238,11 +238,11 @@ uint __fastcall FUN_100b0dc0(int param_1)
 
 ```
 
-## phys_fn_004485 (0x000b0df0, 89 B, discovered)
+## phys_fn_004485 (0x000b0df0, 89 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpPulleyJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpPulleyJoint.cpp
 - prototype: undefined __thiscall FUN_100b0df0(float * param_1, char param_2)
 - calling convention: __thiscall, stack purge: 8
 - callers: phys_fn_004505 (0x000b1110)
@@ -282,11 +282,11 @@ void __thiscall FUN_100b0df0(void *this,float *param_1,char param_2)
 
 ```
 
-## phys_fn_004487 (0x000b0e50, 97 B, discovered)
+## phys_fn_004487 (0x000b0e50, 97 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpPulleyJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpPulleyJoint.cpp
 - prototype: uint __fastcall FUN_100b0e50(int param_1)
 - calling convention: __fastcall, stack purge: 8
 - callers: phys_fn_004505 (0x000b1110)
@@ -333,7 +333,7 @@ uint __fastcall FUN_100b0e50(int param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpPulleyJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpPulleyJoint.cpp
 - prototype: undefined __fastcall FUN_100b0ec0(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_004505 (0x000b1110)
@@ -405,11 +405,11 @@ bool __fastcall FUN_100b0f10(int param_1)
 
 ```
 
-## phys_fn_004493 (0x000b0f40, 88 B, discovered)
+## phys_fn_004493 (0x000b0f40, 88 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpPulleyJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpPulleyJoint.cpp
 - prototype: undefined __thiscall FUN_100b0f40(int param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004505 (0x000b1110)
@@ -453,7 +453,7 @@ void __thiscall FUN_100b0f40(void *this,int param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpPulleyJoint.cpp
-- implementation: Physics/src/ObjectModel.cpp
+- implementation: Physics/src/core/NpPulleyJoint.cpp
 - prototype: undefined __fastcall FUN_100b0fa0(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_004505 (0x000b1110)
@@ -559,7 +559,7 @@ float * __thiscall FUN_100b1020(void *this,float *param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpPulleyJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpPulleyJoint.cpp
 - prototype: undefined __thiscall FUN_100b1050(undefined4 param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004505 (0x000b1110)
@@ -603,7 +603,7 @@ void __thiscall FUN_100b1050(void *this,undefined4 param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpPulleyJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpPulleyJoint.cpp
 - prototype: undefined __thiscall FUN_100b10b0(undefined4 param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004505 (0x000b1110)
@@ -643,11 +643,11 @@ void __thiscall FUN_100b10b0(void *this,undefined4 param_1)
 
 ```
 
-## phys_fn_004505 (0x000b1110, 57 B, discovered)
+## phys_fn_004505 (0x000b1110, 57 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/NpPulleyJoint.cpp
+- implementation: Physics/src/core/NpPulleyJoint.cpp
 - prototype: void * __thiscall FUN_100b1110(undefined4 param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004222 (0x0009ea60)
@@ -676,11 +676,11 @@ void * __thiscall FUN_100b1110(void *this,undefined4 param_1)
 
 ```
 
-## phys_fn_004507 (0x000b1150, 8 B, discovered)
+## phys_fn_004507 (0x000b1150, 8 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/NpPulleyJoint.cpp
+- implementation: Physics/src/core/NpPulleyJoint.cpp
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: phys_fn_004505 (0x000b1110)
@@ -695,11 +695,11 @@ Decompile (capstone disassembly):
 0x000b1153  jmp 0x100b1160
 ```
 
-## phys_fn_004509 (0x000b1160, 55 B, discovered)
+## phys_fn_004509 (0x000b1160, 55 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/NpPulleyJoint.cpp
+- implementation: Physics/src/core/NpPulleyJoint.cpp
 - prototype: void * __thiscall FUN_100b1160(byte param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004505 (0x000b1110), phys_fn_004507 (0x000b1150)

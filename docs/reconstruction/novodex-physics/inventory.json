@@ -76727,12 +76727,13 @@
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
       "state": "reconstructed",
-      "source": "zero this+0x1cc (0x9e3c0)",
+      "source": "Physics/src/core/PulleyJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2036",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14042",
-      "static_proof": "mov dword ptr [ecx+0x1cc],0; ret",
+      "static_proof": "mov dword ptr [ecx+0x1cc],0; ret; transcribed from units/core__PulleyJoint.cpp.md (capstone disassembly) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Pulley)",
       "dynamic_proof": "confirmed via tinygetters drive (3z48): failures=0",
-      "notes": ""
+      "notes": "previous source: zero this+0x1cc (0x9e3c0)",
+      "implementation": "Physics/src/core/PulleyJoint.cpp"
     },
     {
       "id": "phys_fn_004215",
@@ -76762,13 +76763,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/PulleyJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2037",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14043",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from units/core__PulleyJoint.cpp.md (ghidra supplement) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Pulley)",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both pulley cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 7 wired to core/PulleyJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 coverage); trace excerpt committed as evidence/joint-families-trace-pulley.txt (joint-families Task 3g)",
+      "notes": "",
+      "implementation": "Physics/src/core/PulleyJoint.cpp"
     },
     {
       "id": "phys_fn_004217",
@@ -76799,12 +76801,13 @@
       "phase": 6,
       "phase_provenance": "translation_unit",
       "state": "reconstructed",
-      "source": "copy 10 dwords to [this+0x16c..0x190] (0x9e470, ret 4)",
+      "source": "Physics/src/core/PulleyJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1591",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14045",
-      "static_proof": "copies [arg+0x6c..0x90] to [this+0x16c..0x190]; ret 4",
-      "dynamic_proof": "confirmed via builder4 drive (3z71): failures=0",
-      "notes": ""
+      "static_proof": "copies [arg+0x6c..0x90] to [this+0x16c..0x190]; ret 4; transcribed from units/core__PulleyJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Pulley)",
+      "dynamic_proof": "confirmed via builder4 drive (3z71): failures=0; executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both pulley cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 7 wired to core/PulleyJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 coverage); trace excerpt committed as evidence/joint-families-trace-pulley.txt (joint-families Task 3g)",
+      "notes": "previous source: copy 10 dwords to [this+0x16c..0x190] (0x9e470, ret 4)",
+      "implementation": "Physics/src/core/PulleyJoint.cpp"
     },
     {
       "id": "phys_fn_004219",
@@ -76816,13 +76819,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/PulleyJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2038",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14046",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__PulleyJoint.cpp.md (ghidra supplement) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Pulley)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/PulleyJoint.cpp"
     },
     {
       "id": "phys_fn_004220",
@@ -76852,13 +76856,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/PulleyJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2039",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14054",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__PulleyJoint.cpp.md (ghidra supplement) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Pulley)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/PulleyJoint.cpp"
     },
     {
       "id": "phys_fn_004222",
@@ -76870,13 +76875,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/PulleyJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1592",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14065",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from units/core__PulleyJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Pulley)",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both pulley cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 7 wired to core/PulleyJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 coverage); trace excerpt committed as evidence/joint-families-trace-pulley.txt (joint-families Task 3g)",
+      "notes": "",
+      "implementation": "Physics/src/core/PulleyJoint.cpp"
     },
     {
       "id": "phys_fn_004223",
@@ -76906,13 +76912,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/PulleyJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1593",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14068",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__PulleyJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Pulley)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/PulleyJoint.cpp"
     },
     {
       "id": "phys_fn_004225",
@@ -76942,13 +76949,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/PulleyJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2041",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14071",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__PulleyJoint.cpp.md (ghidra supplement) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Pulley)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/PulleyJoint.cpp"
     },
     {
       "id": "phys_fn_004227",
@@ -76978,13 +76986,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/PulleyJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1594",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14083",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__PulleyJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Pulley)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/PulleyJoint.cpp"
     },
     {
       "id": "phys_fn_004229",
@@ -81526,13 +81535,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpPulleyJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1674",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15188",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpPulleyJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Pulley)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpPulleyJoint.cpp"
     },
     {
       "id": "phys_fn_004476",
@@ -81562,13 +81572,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpPulleyJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1675",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15191",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpPulleyJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Pulley)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpPulleyJoint.cpp"
     },
     {
       "id": "phys_fn_004478",
@@ -81635,13 +81646,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpPulleyJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1677",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15195",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpPulleyJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Pulley)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpPulleyJoint.cpp"
     },
     {
       "id": "phys_fn_004482",
@@ -81708,13 +81720,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpPulleyJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1679",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15199",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpPulleyJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Pulley)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpPulleyJoint.cpp"
     },
     {
       "id": "phys_fn_004486",
@@ -81744,13 +81757,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpPulleyJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1680",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15202",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpPulleyJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Pulley)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpPulleyJoint.cpp"
     },
     {
       "id": "phys_fn_004488",
@@ -81784,9 +81798,10 @@
       "source": "Physics/src/core/NpPulleyJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1681",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15205",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpPulleyJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Pulley)",
       "dynamic_proof": "confirmed via the tailjmp differential (3z191): failures=0 for all twelve rows on both arms, comparing the report tuple, the global word written at 0x10127180 and the whole object buffer, with the lock API, report slot and that global bound",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpPulleyJoint.cpp"
     },
     {
       "id": "phys_fn_004490",
@@ -81853,13 +81868,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpPulleyJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1683",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15209",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpPulleyJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Pulley)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpPulleyJoint.cpp"
     },
     {
       "id": "phys_fn_004494",
@@ -81893,10 +81909,10 @@
       "source": "Physics/src/core/NpPulleyJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1684",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15212",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpPulleyJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Pulley)",
       "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
-      "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp",
+      "notes": "previous implementation: Physics/src/ObjectModel.cpp",
+      "implementation": "Physics/src/core/NpPulleyJoint.cpp",
       "implementation_symbol": "phys_fn_004495 (harness dispatch table)"
     },
     {
@@ -82005,9 +82021,10 @@
       "source": "Physics/src/core/NpPulleyJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1687",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15217",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpPulleyJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Pulley)",
       "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpPulleyJoint.cpp"
     },
     {
       "id": "phys_fn_004502",
@@ -82041,9 +82058,10 @@
       "source": "Physics/src/core/NpPulleyJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1688",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15220",
-      "static_proof": null,
-      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
-      "notes": ""
+      "static_proof": "transcribed from units/core__NpPulleyJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Pulley)",
+      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound; executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both pulley cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 7 wired to core/PulleyJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 coverage); trace excerpt committed as evidence/joint-families-trace-pulley.txt (joint-families Task 3g)",
+      "notes": "",
+      "implementation": "Physics/src/core/NpPulleyJoint.cpp"
     },
     {
       "id": "phys_fn_004504",
@@ -82073,13 +82091,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/NpPulleyJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1689",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15223",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from units/core__NpPulleyJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Pulley)",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both pulley cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 7 wired to core/PulleyJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 coverage); trace excerpt committed as evidence/joint-families-trace-pulley.txt (joint-families Task 3g)",
+      "notes": "",
+      "implementation": "Physics/src/core/NpPulleyJoint.cpp"
     },
     {
       "id": "phys_fn_004506",
@@ -82109,13 +82128,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/NpPulleyJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2181",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15224",
-      "static_proof": null,
+      "static_proof": "compiler-generated `vector deleting destructor' adjustor{12} thunk: Physics/src/core/NpPulleyJoint.cpp carries only its stable-ID line above ~NpPulleyJoint; the NpJointShared<NxPulleyJoint, PulleyJoint> layout per units/joint-families-contract.md makes the compiler emit ??_ENpPulleyJoint@@WM@AEPAXI@Z (candidate 0x1003cdce in build/Release/NxPhysics.map), which disassembles to `sub ecx,0xc; jmp <NpPulleyJoint deleting destructor>` (evidence/joint-families-trace-pulley.txt), the same two instructions as the oracle's 0x100b1150 `sub ecx,0xc; jmp 0x100b1160` (phys_fn_004509)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpPulleyJoint.cpp"
     },
     {
       "id": "phys_fn_004508",
@@ -82145,13 +82165,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/NpPulleyJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1690",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15225",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpPulleyJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Pulley)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpPulleyJoint.cpp"
     },
     {
       "id": "phys_fn_004510",

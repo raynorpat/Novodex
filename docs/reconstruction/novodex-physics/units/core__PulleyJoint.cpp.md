@@ -21,8 +21,8 @@ Evidenced span: ['0x0009e3d0', '0x0009eb00']. Rows: 9 (0 ambiguous). Generated b
 ## phys_fn_004214 (0x0009e3c0, 11 B, reconstructed)
 
 - ambiguous: no
-- source: zero this+0x1cc (0x9e3c0)
-- implementation: None
+- source: Physics/src/core/PulleyJoint.cpp
+- implementation: Physics/src/core/PulleyJoint.cpp
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: phys_fn_004222 (0x0009ea60)
@@ -37,11 +37,11 @@ Decompile (capstone disassembly):
 0x0009e3ca  ret
 ```
 
-## phys_fn_004216 (0x0009e3d0, 155 B, discovered)
+## phys_fn_004216 (0x0009e3d0, 155 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/PulleyJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/PulleyJoint.cpp
 - prototype: undefined FUN_1009e3d0(void)
 - calling convention: unknown, stack purge: 2147483647
 - callers: phys_fn_004222 (0x0009ea60)
@@ -84,8 +84,8 @@ void FUN_1009e3d0(int param_1)
 ## phys_fn_004218 (0x0009e470, 112 B, reconstructed)
 
 - ambiguous: no
-- source: copy 10 dwords to [this+0x16c..0x190] (0x9e470, ret 4)
-- implementation: None
+- source: Physics/src/core/PulleyJoint.cpp
+- implementation: Physics/src/core/PulleyJoint.cpp
 - prototype: undefined __thiscall FUN_1009e470(int param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004222 (0x0009ea60), phys_fn_004226 (0x0009eb00)
@@ -116,11 +116,11 @@ void __thiscall FUN_1009e470(void *this,int param_1)
 
 ```
 
-## phys_fn_004219 (0x0009e4e0, 805 B, discovered)
+## phys_fn_004219 (0x0009e4e0, 805 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/PulleyJoint.cpp
+- implementation: Physics/src/core/PulleyJoint.cpp
 - prototype: undefined FUN_1009e4e0(void)
 - calling convention: unknown, stack purge: 2147483647
 - callers: phys_fn_004222 (0x0009ea60)
@@ -211,11 +211,11 @@ void FUN_1009e4e0(void)
 
 ```
 
-## phys_fn_004221 (0x0009e810, 592 B, discovered)
+## phys_fn_004221 (0x0009e810, 592 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/PulleyJoint.cpp
+- implementation: Physics/src/core/PulleyJoint.cpp
 - prototype: undefined FUN_1009e810(void)
 - calling convention: unknown, stack purge: 2147483647
 - callers: phys_fn_004222 (0x0009ea60)
@@ -303,11 +303,11 @@ void FUN_1009e810(int *param_1)
 
 ```
 
-## phys_fn_004222 (0x0009ea60, 81 B, discovered)
+## phys_fn_004222 (0x0009ea60, 81 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/PulleyJoint.cpp
+- implementation: Physics/src/core/PulleyJoint.cpp
 - prototype: void * __thiscall FUN_1009ea60(int param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_000665 (0x000142c0)
@@ -342,11 +342,11 @@ void * __thiscall FUN_1009ea60(void *this,int param_1)
 
 ```
 
-## phys_fn_004224 (0x0009eac0, 56 B, discovered)
+## phys_fn_004224 (0x0009eac0, 56 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/PulleyJoint.cpp
+- implementation: Physics/src/core/PulleyJoint.cpp
 - prototype: void * __thiscall FUN_1009eac0(byte param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004222 (0x0009ea60)
@@ -375,11 +375,11 @@ void * __thiscall FUN_1009eac0(void *this,byte param_1)
 
 ```
 
-## phys_fn_004226 (0x0009eb00, 141 B, discovered)
+## phys_fn_004226 (0x0009eb00, 141 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/PulleyJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/PulleyJoint.cpp
 - prototype: undefined FUN_1009eb00(void)
 - calling convention: unknown, stack purge: 2147483647
 - callers: phys_fn_004222 (0x0009ea60)
@@ -444,11 +444,11 @@ LAB_1009eb78:
 
 ```
 
-## phys_fn_004228 (0x0009eb90, 1572 B, discovered)
+## phys_fn_004228 (0x0009eb90, 1572 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/PulleyJoint.cpp
+- implementation: Physics/src/core/PulleyJoint.cpp
 - prototype: undefined __thiscall FUN_1009eb90(float param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004222 (0x0009ea60)

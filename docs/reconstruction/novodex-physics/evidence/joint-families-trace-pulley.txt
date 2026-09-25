@@ -1,0 +1,121 @@
+Pulley family: cdb breakpoint trace of the joint transcript (joint-families Task 3g)
+===================================================================================
+
+A trimmed excerpt of the raw cdb log, in the method of evidence/unit-pilot-revolute-trace.txt
+and evidence/joint-families-trace-distance.txt. Register dumps, ModLoad lines, banners, the
+echoed breakpoint commands and the program's own stdout are removed; the HIT lines are kept in
+order and otherwise unedited. It is the evidence behind the dynamic_proof of phys_fn_004222,
+004505, 004218, 004503 and 004216 in inventory.json.
+
+Debugger:  Microsoft Windows Debugger 10.0.10586.567 (X86)
+Command:   cdb -cf <script> build\Release\NxPhysicsJointTests.exe build\pairs\candidate
+           (the script breaks on the NxPhysics load with `sxe ld:NxPhysics`, sets the
+           breakpoints below, disassembles the adjustor thunk, then runs to exit)
+Recorded:  2026-09-25, on the Task 3g working tree after the wiring (Scene::createJoint
+           case 7 -> core/PulleyJoint.cpp), the nxPulleyCase test and the line registration.
+Candidate: build\pairs\candidate\NxPhysics.dll
+           sha256=ec0d0014f880076b9477b035f1ea3b92beae43529f89ee93370fad2768b6e05c
+           (identical to build\Release\NxPhysics.dll at the time of the trace).
+Offsets:   module-relative, from build\Release\NxPhysics.map of that build. The folded Np
+           bodies are broken on their NpJointShared<NxPulleyJoint, PulleyJoint>
+           instantiation; the Joint rows are shared with the other families.
+
+Breakpoints (each echoes and continues):
+bp NxPhysics+0x27540 ".echo HIT 000665 Scene::createJoint; gc"
+bp NxPhysics+0x432e0 ".echo HIT 004222 PulleyJoint ctor; gc"
+bp NxPhysics+0x2f320 ".echo HIT 004141 Joint ctor; gc"
+bp NxPhysics+0x30d40 ".echo HIT 004121 loadFromDescBase; gc"
+bp NxPhysics+0x31240 ".echo HIT 004097 refreshBodyFrame; gc"
+bp NxPhysics+0x3cd80 ".echo HIT 004505 NpPulleyJoint ctor; gc"
+bp NxPhysics+0x43430 ".echo HIT 004218 PulleyJoint copyFamilyFields; gc"
+bp NxPhysics+0x3cff0 ".echo HIT (helper) nxPulleyJointAttachScene; gc"
+bp NxPhysics+0x38c60 ".echo HIT 004437 Np getGlobalAnchor (pulley instantiation); gc"
+bp NxPhysics+0x39260 ".echo HIT 004441 Np getGlobalAxis (pulley instantiation); gc"
+bp NxPhysics+0x3a210 ".echo HIT 004483 Np getState (pulley instantiation); gc"
+bp NxPhysics+0x385d0 ".echo HIT 004539 Np getActors (pulley instantiation); gc"
+bp NxPhysics+0x3a490 ".echo HIT 004443 Np getType (pulley instantiation); gc"
+bp NxPhysics+0x3aab0 ".echo HIT 004479 Np is (pulley instantiation); gc"
+bp NxPhysics+0x3d170 ".echo HIT 004503 NpPulleyJoint saveToDesc; gc"
+bp NxPhysics+0x43f70 ".echo HIT 004216 PulleyJoint saveToDesc; gc"
+bp NxPhysics+0x323c0 ".echo HIT 004066 Joint saveToDescBase; gc"
+bp NxPhysics+0x43390 ".echo HIT 004224 ~PulleyJoint; gc"
+bp NxPhysics+0x43500 ".echo HIT 004226 PulleyJoint loadFromDesc; gc"
+bp NxPhysics+0x43ae0 ".echo HIT 004228 row_slot6; gc"
+bp NxPhysics+0x439f0 ".echo HIT 004221 row_slot4; gc"
+bp NxPhysics+0x43870 ".echo HIT 004219 row_slot0; gc"
+bp NxPhysics+0x439e0 ".echo HIT 004214 row_slot1; gc"
+
+Hits, in order. The joint test runs four revolute, two prismatic, two cylindrical, two
+spherical, two point-on-line, two point-in-plane and two distance cases first (their Joint-row
+hits are summarised, not repeated), then the two pulley cases in full.
+
+-- revolute 0 case: 5 hits (Joint rows only; no pulley breakpoint) --
+-- revolute 1 case: 5 hits (Joint rows only; no pulley breakpoint) --
+-- revolute 2 case: 5 hits (Joint rows only; no pulley breakpoint) --
+-- revolute 3 case: 5 hits (Joint rows only; no pulley breakpoint) --
+-- prismatic 0 case: 6 hits (Joint rows only; no pulley breakpoint) --
+-- prismatic 1 case: 6 hits (Joint rows only; no pulley breakpoint) --
+-- cylindrical 0 case: 6 hits (Joint rows only; no pulley breakpoint) --
+-- cylindrical 1 case: 6 hits (Joint rows only; no pulley breakpoint) --
+-- spherical 0 case: 6 hits (Joint rows only; no pulley breakpoint) --
+-- spherical 1 case: 6 hits (Joint rows only; no pulley breakpoint) --
+-- point-on-line 0 case: 6 hits (Joint rows only; no pulley breakpoint) --
+-- point-on-line 1 case: 6 hits (Joint rows only; no pulley breakpoint) --
+-- point-in-plane 0 case: 6 hits (Joint rows only; no pulley breakpoint) --
+-- point-in-plane 1 case: 6 hits (Joint rows only; no pulley breakpoint) --
+-- distance 0 case: 6 hits (Joint rows only; no pulley breakpoint) --
+-- distance 1 case: 6 hits (Joint rows only; no pulley breakpoint) --
+
+-- pulley case index=0 --
+HIT 000665 Scene::createJoint
+HIT 004222 PulleyJoint ctor
+HIT 004141 Joint ctor
+HIT 004121 loadFromDescBase
+HIT 004097 refreshBodyFrame
+HIT 004097 refreshBodyFrame
+HIT 004505 NpPulleyJoint ctor
+HIT 004218 PulleyJoint copyFamilyFields
+HIT (helper) nxPulleyJointAttachScene
+HIT 004437 Np getGlobalAnchor (pulley instantiation)
+HIT 004441 Np getGlobalAxis (pulley instantiation)
+HIT 004483 Np getState (pulley instantiation)
+HIT 004539 Np getActors (pulley instantiation)
+HIT 004479 Np is (pulley instantiation)
+HIT 004479 Np is (pulley instantiation)
+HIT 004443 Np getType (pulley instantiation)
+HIT 004503 NpPulleyJoint saveToDesc
+HIT 004216 PulleyJoint saveToDesc
+HIT 004066 Joint saveToDescBase
+
+-- pulley case index=3 --
+HIT 000665 Scene::createJoint
+HIT 004222 PulleyJoint ctor
+HIT 004141 Joint ctor
+HIT 004121 loadFromDescBase
+HIT 004097 refreshBodyFrame
+HIT 004097 refreshBodyFrame
+HIT 004505 NpPulleyJoint ctor
+HIT 004218 PulleyJoint copyFamilyFields
+HIT (helper) nxPulleyJointAttachScene
+HIT 004437 Np getGlobalAnchor (pulley instantiation)
+HIT 004441 Np getGlobalAxis (pulley instantiation)
+HIT 004483 Np getState (pulley instantiation)
+HIT 004539 Np getActors (pulley instantiation)
+HIT 004479 Np is (pulley instantiation)
+HIT 004479 Np is (pulley instantiation)
+HIT 004443 Np getType (pulley instantiation)
+HIT 004503 NpPulleyJoint saveToDesc
+HIT 004216 PulleyJoint saveToDesc
+HIT 004066 Joint saveToDescBase
+
+Not hit: 004224 (~PulleyJoint: release is unwired, NpScene::releaseJoint is empty), 004226
+(loadFromDesc), 004228 (the solver slot: no simulation step), 004219 and 004214 (slots 0 and 1:
+no simulation step) and 004221 (no debug render). 004479 is hit twice per case: once for
+isPulleyJoint and once for isDistanceJoint (both NxJoint.h inlines call is()).
+
+The generated adjustor thunk for phys_fn_004507 (??_ENpPulleyJoint@@WM@AEPAXI@Z,
+NxPhysics+0x3cdce in the same build), disassembled by the same cdb session:
+67c0cdce 83e90c          sub     ecx,0Ch
+67c0cdd1 e90a000000      jmp     NxPhysics!NxBuildSmoothNormals+0x10e20 (67c0cde0)
+The jump target NxPhysics+0x3cde0 is ??_ENpPulleyJoint@@UAEPAXI@Z (the scalar deleting
+destructor, phys_fn_004509), matching the oracle's 0x100b1150 `sub ecx,0xc; jmp 0x100b1160`.
