@@ -876,6 +876,23 @@ $NxRequiredCoverageLines = [ordered] @{
     # release. Twenty-seven lines were added to each list, copied verbatim from
     # the oracle side of a staged-pair run: the index-0 before/after lines of the
     # ten families, the six cycle states and the cycle's closing line.
+    # Joint-open-items Task 4 added near-z axes over the identity fixture
+    # (indices 4 and 5: (0.1, 0.2, 0.97) normalised and (0, 0, 1)) and a
+    # rotated-body fixture in a scene of its own (actor a turned 90 degrees
+    # about y, actor b at the unit quaternion (1, 2, 3, 4) / sqrt(30);
+    # indices 10-13), every family over each, with the revolute case now
+    # printing its saved local frames too, and the Task 4 cases also printing
+    # the rotated actors' body-record words and each internal joint's
+    # orientation-dependent words (through the public object's +0x18).
+    # Thirty-six lines were added to each list, copied verbatim from the
+    # oracle side of a staged-pair run: the two actors' read-back poses (the
+    # body record's +0x5c quaternion from phys_fn_000801's matrix
+    # conversion), three near-z lines, every family's index-10 created line
+    # (the candidate's NxJointDesc_SetGlobalAxis failed isValid there before
+    # this task), saved local frames and read-back anchors/axes over the
+    # rotated bodies, the record's +0x124/+0x134/+0x164 words (phys_fn_000768
+    # and 000746), the prismatic and fixed relative rotations (004378,
+    # 004244) and one revolute frame-quaternion block (004101).
     'NxPhysicsJointStagedPairTests' = @(
         'case=revolute index=0 created=yes',
         'case=revolute index=0 out_anchor=00000000.00000000.00000000 out_axis=3f800000.00000000.00000000 state=0',
@@ -943,6 +960,42 @@ $NxRequiredCoverageLines = [ordered] @{
         'case=cycle index=4 scene_joints when=head_released count=2 enumerated=2 order=8.1 self=no end=null',
         'case=cycle index=5 scene_joints when=tail_released count=1 enumerated=1 order=8 self=no end=null',
         'case=cycle index=6 scene_joints when=prismatic_created count=2 enumerated=2 order=0.8 self=yes end=null',
+        'rotated_fixture actor=a t=00000000.3f800000.00000000 quat=00000000.3f3504f3.00000000.3f3504f3',
+        'rotated_fixture actor=a row0=33800000.00000000.3f7fffff row1=00000000.3f800000.00000000 row2=bf7fffff.00000000.33800000',
+        'rotated_fixture actor=b t=40800000.bf800000.40000000 quat=3e3af4b9.3ebaf4b9.3f0c378c.3f3af4ba',
+        'rotated_fixture actor=b row0=3e088889.bf2aaaab.3f3bbbbb row1=3f6eeeef.3eaaaaaa.3e088889 row2=beaaaaaa.3f2aaaaa.3f2aaaac',
+        'case=revolute index=4 out_anchor=3f800000.c0000000.3f000000 out_axis=3dcdbcfe.3e4dbcfe.3f797527 state=0',
+        'case=cylindrical index=4 saved normal0=3f7eb479.bca62f73.bdc97fed normal1=3f7eb479.bca62f73.bdc97fed',
+        'case=d6 index=5 saved normal0=3f800000.00000000.00000000 normal1=3f800000.00000000.00000000',
+        'case=revolute index=10 created=yes',
+        'case=prismatic index=10 created=yes',
+        'case=cylindrical index=10 created=yes',
+        'case=spherical index=10 created=yes',
+        'case=point_on_line index=10 created=yes',
+        'case=point_in_plane index=10 created=yes',
+        'case=distance index=10 created=yes',
+        'case=pulley index=10 created=yes',
+        'case=fixed index=10 created=yes',
+        'case=d6 index=10 created=yes',
+        'case=revolute index=10 saved anchor0=c03fffff.3f800000.3f800001 anchor1=40044444.406aaaaa.bf91110f',
+        'case=revolute index=11 saved axis0=bf13cd39.3f13cd3a.3f13cd3a axis1=3ed8c69a.3e4511a0.3f62a115',
+        'case=revolute index=12 saved normal0=3dc97ff4.bca62f73.3f7eb478 normal1=3e1609a3.bf3c5379.3f294caf',
+        'case=revolute index=13 saved anchor0=00000000.bf800000.00000000 anchor1=3f888888.3fd55556.c0844444',
+        'case=revolute index=12 out_anchor=bfbffffc.3e7ffffc.40ffffff out_axis=3dcdbcfc.3e4dbcfe.3f797525 state=0',
+        'case=d6 index=12 out_anchor=bfbffffc.3e7ffffc.40ffffff out_axis=3dcdbcfc.3e4dbcfe.3f797525 state=0',
+        'case=fixed index=13 out_anchor=33c88888.b31dddde.b4000000 out_axis=00000000.00000000.3f7ffffe state=0',
+        'case=d6 index=12 saved anchor0=c0ffffff.bf400000.bfbffffb anchor1=bfc88888.41015555.3e0888b9',
+        'case=pulley index=11 saved normal0=bf5105ec.bed105ec.bed105ea normal1=bf352744.3f2e2f9a.3e43169d',
+        'case=spherical index=13 saved normal0=33800000.00000000.3f7fffff normal1=3e088889.bf2aaaab.3f3bbbbb',
+        'case=point_in_plane index=12 saved axis0=bf797526.3e4dbcfe.3dcdbd05 axis1=bdfdbe69.3f264e19.3f4005bb',
+        'rotated_fixture actor=a record off=124 words=00000000.3f3504f2.00000000.3f3504f4',
+        'rotated_fixture actor=a record off=164 words=3e3ffffe.00000000.a5800000.00000000.3e400000.00000000.a5800000.00000000.3e3fffff',
+        'rotated_fixture actor=b record off=124 words=3e3af4b9.3ebaf4b9.3f0c378c.3f3af4ba',
+        'rotated_fixture actor=b record off=134 words=3e088889.bf2aaaab.3f3bbbbb.3f6eeeef.3eaaaaaa.3e088889.beaaaaaa.3f2aaaaa.3f2aaaac',
+        'rotated_fixture actor=b record off=164 words=3e3fffff.31599999.32099999.31599999.3e400000.314cccce.32099999.314cccce.3e400001',
+        'case=prismatic index=10 internal off=16c words=3e8432a4.3e8432a3.bf0432a5.3f464bf7',
+        'case=fixed index=10 internal off=16c words=bffffffd.c0000000.40800000.3e8432a4.3e8432a3.bf0432a5.3f464bf7',
+        'case=revolute index=12 internal off=0ac words=bddb3f43.bf32eec6.bf34c7db.bd14ac04.bf22b49e.bea0571e.bf2e5b9a.be3d1a85',
         'case=cycle left_for_scene_release=2'
     )
     # NxNormalToTangents, which NxJointDesc::setGlobalAxis calls. The digest folds
@@ -1027,6 +1080,42 @@ $NxRequiredCoverageLines = [ordered] @{
         'case=cycle index=4 scene_joints when=head_released count=2 enumerated=2 order=8.1 self=no end=null',
         'case=cycle index=5 scene_joints when=tail_released count=1 enumerated=1 order=8 self=no end=null',
         'case=cycle index=6 scene_joints when=prismatic_created count=2 enumerated=2 order=0.8 self=yes end=null',
+        'rotated_fixture actor=a t=00000000.3f800000.00000000 quat=00000000.3f3504f3.00000000.3f3504f3',
+        'rotated_fixture actor=a row0=33800000.00000000.3f7fffff row1=00000000.3f800000.00000000 row2=bf7fffff.00000000.33800000',
+        'rotated_fixture actor=b t=40800000.bf800000.40000000 quat=3e3af4b9.3ebaf4b9.3f0c378c.3f3af4ba',
+        'rotated_fixture actor=b row0=3e088889.bf2aaaab.3f3bbbbb row1=3f6eeeef.3eaaaaaa.3e088889 row2=beaaaaaa.3f2aaaaa.3f2aaaac',
+        'case=revolute index=4 out_anchor=3f800000.c0000000.3f000000 out_axis=3dcdbcfe.3e4dbcfe.3f797527 state=0',
+        'case=cylindrical index=4 saved normal0=3f7eb479.bca62f73.bdc97fed normal1=3f7eb479.bca62f73.bdc97fed',
+        'case=d6 index=5 saved normal0=3f800000.00000000.00000000 normal1=3f800000.00000000.00000000',
+        'case=revolute index=10 created=yes',
+        'case=prismatic index=10 created=yes',
+        'case=cylindrical index=10 created=yes',
+        'case=spherical index=10 created=yes',
+        'case=point_on_line index=10 created=yes',
+        'case=point_in_plane index=10 created=yes',
+        'case=distance index=10 created=yes',
+        'case=pulley index=10 created=yes',
+        'case=fixed index=10 created=yes',
+        'case=d6 index=10 created=yes',
+        'case=revolute index=10 saved anchor0=c03fffff.3f800000.3f800001 anchor1=40044444.406aaaaa.bf91110f',
+        'case=revolute index=11 saved axis0=bf13cd39.3f13cd3a.3f13cd3a axis1=3ed8c69a.3e4511a0.3f62a115',
+        'case=revolute index=12 saved normal0=3dc97ff4.bca62f73.3f7eb478 normal1=3e1609a3.bf3c5379.3f294caf',
+        'case=revolute index=13 saved anchor0=00000000.bf800000.00000000 anchor1=3f888888.3fd55556.c0844444',
+        'case=revolute index=12 out_anchor=bfbffffc.3e7ffffc.40ffffff out_axis=3dcdbcfc.3e4dbcfe.3f797525 state=0',
+        'case=d6 index=12 out_anchor=bfbffffc.3e7ffffc.40ffffff out_axis=3dcdbcfc.3e4dbcfe.3f797525 state=0',
+        'case=fixed index=13 out_anchor=33c88888.b31dddde.b4000000 out_axis=00000000.00000000.3f7ffffe state=0',
+        'case=d6 index=12 saved anchor0=c0ffffff.bf400000.bfbffffb anchor1=bfc88888.41015555.3e0888b9',
+        'case=pulley index=11 saved normal0=bf5105ec.bed105ec.bed105ea normal1=bf352744.3f2e2f9a.3e43169d',
+        'case=spherical index=13 saved normal0=33800000.00000000.3f7fffff normal1=3e088889.bf2aaaab.3f3bbbbb',
+        'case=point_in_plane index=12 saved axis0=bf797526.3e4dbcfe.3dcdbd05 axis1=bdfdbe69.3f264e19.3f4005bb',
+        'rotated_fixture actor=a record off=124 words=00000000.3f3504f2.00000000.3f3504f4',
+        'rotated_fixture actor=a record off=164 words=3e3ffffe.00000000.a5800000.00000000.3e400000.00000000.a5800000.00000000.3e3fffff',
+        'rotated_fixture actor=b record off=124 words=3e3af4b9.3ebaf4b9.3f0c378c.3f3af4ba',
+        'rotated_fixture actor=b record off=134 words=3e088889.bf2aaaab.3f3bbbbb.3f6eeeef.3eaaaaaa.3e088889.beaaaaaa.3f2aaaaa.3f2aaaac',
+        'rotated_fixture actor=b record off=164 words=3e3fffff.31599999.32099999.31599999.3e400000.314cccce.32099999.314cccce.3e400001',
+        'case=prismatic index=10 internal off=16c words=3e8432a4.3e8432a3.bf0432a5.3f464bf7',
+        'case=fixed index=10 internal off=16c words=bffffffd.c0000000.40800000.3e8432a4.3e8432a3.bf0432a5.3f464bf7',
+        'case=revolute index=12 internal off=0ac words=bddb3f43.bf32eec6.bf34c7db.bd14ac04.bf22b49e.bea0571e.bf2e5b9a.be3d1a85',
         'case=cycle left_for_scene_release=2'
     )
     'NxPhysicsJointDescTests' = @(
@@ -1895,8 +1984,8 @@ $NxPhaseCoverageFloor = [ordered] @{
     '4' = 101  # 34 for NxPhysicsAssetTests, 67 for NxPhysicsThirdPartyTests
     '5' = 829  # 126 object-layout, 1 shape-vtable and 702 public actor/pruner/box/scene lines
                # (RED on purpose: vtables family open)
-    '6' = 143  # 3 oracle-descriptor + 67 oracle-joint + 67 staged-pair-joint + 6 tangent
-    '7' = 67  # the sixty-seven STAGED-PAIR assertions; the oracle-differential assertions
+    '6' = 215  # 3 oracle-descriptor + 103 oracle-joint + 103 staged-pair-joint + 6 tangent
+    '7' = 103  # the 103 STAGED-PAIR assertions; the oracle-differential assertions
                # belong to NxPhysicsJointDescTests and NxPhysicsJointTests, which phase 7
                # does not run
     '8' = 0

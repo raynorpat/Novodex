@@ -1978,16 +1978,15 @@ int nxActorComputeMass(void* actor, const unsigned* bodyWord)
 	memcpy(record + 0x18, body + 0x44, 12);
 
 	// The dynamic record carries a quaternion at +0x5c with w last. Convert
-	// the descriptor's matrix already copied to body+0x20. The shipped path
-	// uses the same Foundation matrix-to-quaternion convention.
-	NxMat33 orientation;
-	memcpy(&orientation, body + 0x20, sizeof(orientation));
-	NxQuat quaternion(orientation);
-	*reinterpret_cast<float*>(record + 0x5c) = quaternion.x;
-	*reinterpret_cast<float*>(record + 0x60) = quaternion.y;
-	*reinterpret_cast<float*>(record + 0x64) = quaternion.z;
-	*reinterpret_cast<float*>(record + 0x68) = quaternion.w;
-	memcpy(record + 0x24, record + 0x5c, sizeof(quaternion));
+	// the descriptor's matrix already copied to body+0x20 the way the body
+	// pose constructor phys_fn_000801 does (0x1b82e-0x1b987): it writes +0x24
+	// and copies it to +0x5c. The public NxQuat(NxMat33) conversion rounds its
+	// intermediates to float and differs from it in the last bit for a general
+	// rotation (joint-open-items Task 4, rotated fixture actor b).
+	float quaternion[4];
+	nxNpActorBodyQuaternionFromMatrix(reinterpret_cast<const float*>(body + 0x20), quaternion);
+	memcpy(record + 0x24, quaternion, sizeof(quaternion));
+	memcpy(record + 0x5c, quaternion, sizeof(quaternion));
 
 	*reinterpret_cast<void**>(record + 0x19c) = body;
 	*reinterpret_cast<void**>(body + 0x08) = record;
@@ -1995,23 +1994,8 @@ int nxActorComputeMass(void* actor, const unsigned* bodyWord)
 	const NxBodyDesc* bodyDesc = reinterpret_cast<const NxBodyDesc*>(*bodyWord);
 	bodyDesc->massLocalPose.M.getRowMajor(reinterpret_cast<float*>(record + 0xdc));
 	memcpy(record + 0x100, &bodyDesc->massLocalPose.t, sizeof(NxVec3));
-	const NxVec3 massTranslation = bodyDesc->massLocalPose.t;
-	float pose[9];
-	nxNpActorRotationFromQuaternion(record, pose);
-	const float* translation = reinterpret_cast<const float*>(body + 0x44);
-	float* worldCenter = reinterpret_cast<float*>(record + 0x158);
-	worldCenter[0] = static_cast<float>(
-		static_cast<double>(pose[2]) * massTranslation.z +
-		static_cast<double>(pose[1]) * massTranslation.y +
-		static_cast<double>(pose[0]) * massTranslation.x + translation[0]);
-	worldCenter[1] = static_cast<float>(translation[1] +
-		static_cast<double>(pose[3]) * massTranslation.x +
-		static_cast<double>(pose[5]) * massTranslation.z +
-		static_cast<double>(pose[4]) * massTranslation.y);
-	worldCenter[2] = static_cast<float>(translation[2] +
-		static_cast<double>(pose[6]) * massTranslation.x +
-		static_cast<double>(pose[8]) * massTranslation.z +
-		static_cast<double>(pose[7]) * massTranslation.y);
+	// The world centre of mass (+0x158) is written with +0x134, +0x124 and
+	// +0x164 by nxNpActorUpdateMassFrame below.
 	*reinterpret_cast<unsigned*>(record + 0x10c) = bodyDesc->flags;
 	*reinterpret_cast<unsigned*>(record + 0x110) =
 		bodyDesc->solverIterationCount;
@@ -2086,8 +2070,12 @@ int nxActorComputeMass(void* actor, const unsigned* bodyWord)
 		*reinterpret_cast<float*>(record + 0xcc) =
 			1.0f / inertia.z;
 		}
-	nxNpActorUpdateInertiaMatrices(record);
-	nxNpActorUpdateCMassQuaternion(record);
+	// The oracle's creation path refreshes the mass frame through
+	// phys_fn_000768 (called from 000795 at 0x1b497): +0x134, +0x158, +0x124
+	// and +0x164 from the +0x24 quaternion and +0x18 position. Joint-open-items
+	// Task 4 found the earlier sequence one bit off on rotated bodies (the
+	// fixed and prismatic relative rotations read +0x124/+0x134/+0x158).
+	nxNpActorUpdateMassFrame(record);
 	*reinterpret_cast<unsigned*>(record + 0x198) = 2;
 	nxSceneAuxRegisterRecord(scene, record);
 

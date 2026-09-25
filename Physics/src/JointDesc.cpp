@@ -26,10 +26,11 @@
 // public interface would be a different computation, not the same one spelled
 // differently.
 //
-// The rotation matrix is built as `m[i][j]` so that `m[j][i]` in the transform
-// below is the matrix the oracle builds: the transcription stores the six
-// products in the order the decompiler reports them, and that order is what
-// makes the row read back the words the oracle reads back.
+// The rotation matrix is composed row-major from the record's quaternion with
+// the listing's x87 pattern, and the local value is M^T times the world value,
+// summed in the listing's order in the register (53-bit here, so double).
+// Joint-open-items Task 4 rewrote both from the Capstone listing: the earlier
+// transcription agreed with the oracle only for identity-oriented bodies.
 //
 // The joint differential (tests/PhysicsJointTests.cpp) drives both rows and
 // prints every output word, so a transcription error shows up as a moved word
@@ -40,6 +41,7 @@
 #include "NxVec3.h"
 #include "NxUtilities.h"
 
+#include <math.h>
 #include <string.h>
 
 namespace
@@ -113,41 +115,54 @@ inline const float* nxJointWorldMatrix(NxActor* actor, const float*& t)
 		return m;
 		}
 
-	// Compose the matrix from the quaternion. The doubled products are spelled
-	// `a * a + a * a` rather than `2 * a * a` because that is the order the
-	// oracle's x87 stream evaluates, and the differential compares bits.
+	// Compose the matrix from the quaternion as both rows do (0x980ff-0x981c5
+	// in the anchor row, 0x983c0-0x98483 in the axis row). Every doubled
+	// product is `fmul; fadd st(0), st(0)` in an x87 register (53-bit here,
+	// so double); five of them are spilled to float and reloaded, and the
+	// nine elements are stored row-major. Joint-open-items Task 4 replaced a
+	// transcription that was right only for the identity quaternion.
 	NxJointQuatView* q = reinterpret_cast<NxJointQuatView*>(cached);
-	const float qx = q->x, qy = q->y, qz = q->z, qw = q->w;
+	const double qx = q->x, qy = q->y, qz = q->z, qw = q->w;
 	t = reinterpret_cast<const float*>(&q->tx);
 
-	// The composed matrix lives in the same per-actor workspace the caller
-	// already owns; it is written and consumed inside one call.
 	float* m = nxJointMatrixWorkspace();
 
-	// The doubled products are spelled `a * a + a * a` because that is the order the
-	// oracle's x87 stream evaluates, and the differential compares bits.
-	const float fVar10 = qy * qy + qy * qy;		// y*y + y*y
-	const float fVar7 = qz * qz + qz * qz;		// z*z + z*z
-	const float fVar6 = qy * qx + qy * qx;		// y*x + y*x
-	const float fVar8 = qz * qw + qz * qw;		// z*w + z*w
-	const float fVar9 = qz * qx + qz * qx;		// z*x + z*x
-	const float fVar11 = qy * qw + qy * qw;		// y*w + y*w
-	const float fVar3b = qz * qy + qz * qy;		// z*y + z*y
-	const float fVar1b = qx * qw + qx * qw;		// x*w + x*w
-
-	m[0] = 1.0f - (qx * qx + qx * qx);
-	m[1] = fVar6 - fVar8;
-	m[2] = fVar11 + fVar9;
-	m[3] = fVar1b + fVar3b;
-	m[4] = 1.0f - (fVar10 + fVar7);
-	m[5] = fVar9 - fVar11;
-	m[6] = fVar8 - fVar6;
-	m[7] = fVar3b + fVar1b;
-	m[8] = 1.0f - (fVar10 + fVar7);
+	const float yy2 = static_cast<float>(qy * qy + qy * qy);		// spilled
+	const double zz2 = qz * qz + qz * qz;
+	m[0] = static_cast<float>((1.0 - yy2) - zz2);
+	const double xy2 = qy * qx + qy * qx;
+	const double zw2 = qz * qw + qz * qw;
+	m[1] = static_cast<float>(xy2 - zw2);
+	const float xz2 = static_cast<float>(qz * qx + qz * qx);		// spilled
+	const double yw2 = qy * qw + qy * qw;
+	const float yw2Spill = static_cast<float>(yw2);				// fst, kept
+	m[2] = static_cast<float>(yw2 + xz2);
+	m[3] = static_cast<float>(zw2 + xy2);
+	const double xx1 = 1.0 - (qx * qx + qx * qx);
+	const float xx1Spill = static_cast<float>(xx1);				// fst, kept
+	m[4] = static_cast<float>(xx1 - zz2);
+	const float yz2 = static_cast<float>(qz * qy + qz * qy);		// spilled
+	const double xw2 = qx * qw + qx * qw;
+	m[5] = static_cast<float>(static_cast<double>(yz2) - xw2);
+	m[6] = static_cast<float>(static_cast<double>(xz2) - yw2Spill);
+	m[7] = static_cast<float>(xw2 + yz2);
+	m[8] = static_cast<float>(static_cast<double>(xx1Spill) - yy2);
 	m[9] = q->tx;
 	m[10] = q->ty;
 	m[11] = q->tz;
 	return m;
+	}
+
+// out = M^T v, as both rows form it: each component is
+// (m[6+c] * z + m[3+c] * y) + m[c] * x in an x87 register (53-bit here, so
+// double), rounded to float only at the store. Joint-open-items Task 4: the
+// earlier float sum in x, y, z order agreed with the listing only while the
+// products were exact, i.e. for identity-oriented bodies.
+inline void nxJointTransposeMultiply(const float* m, double x, double y, double z, NxVec3& out)
+	{
+	out.x = static_cast<float>((m[6] * z + m[3] * y) + m[0] * x);
+	out.y = static_cast<float>((m[7] * z + m[4] * y) + m[1] * x);
+	out.z = static_cast<float>((m[8] * z + m[5] * y) + m[2] * x);
 	}
 
 	} // namespace
@@ -166,12 +181,13 @@ NX_C_EXPORT NXP_DLL_EXPORT void NX_CALL_CONV NxJointDesc_SetGlobalAnchor(
 			continue;
 			}
 
-		const float dx = wsAnchor.x - t[0];
-		const float dy = wsAnchor.y - t[1];
-		const float dz = wsAnchor.z - t[2];
-		dis.localAnchor[i].x = m[0] * dx + m[3] * dy + m[6] * dz;
-		dis.localAnchor[i].y = m[1] * dx + m[4] * dy + m[7] * dz;
-		dis.localAnchor[i].z = m[2] * dx + m[5] * dy + m[8] * dz;
+		// 0x981fb-0x982a0: x - t.x stays in a register, y - t.y and z - t.z
+		// are spilled to float; each component sums the column's z and y
+		// products first and adds the x product last, in the register.
+		const double dx = static_cast<double>(wsAnchor.x) - t[0];
+		const float dy = static_cast<float>(static_cast<double>(wsAnchor.y) - t[1]);
+		const float dz = static_cast<float>(static_cast<double>(wsAnchor.z) - t[2]);
+		nxJointTransposeMultiply(m, dx, dy, dz, dis.localAnchor[i]);
 		}
 	}
 
@@ -179,8 +195,12 @@ NX_C_EXPORT NXP_DLL_EXPORT void NX_CALL_CONV NxJointDesc_SetGlobalAxis(
 	NxJointDesc& dis, const NxVec3& wsAxis)
 	{
 	NxVec3 axis = wsAxis;
-	const float length = NxMath::sqrt(axis.x * axis.x + axis.y * axis.y + axis.z * axis.z);
-	if(length != 0.0f)
+	// 0x982f9-0x98326: (z*z + y*y) + x*x and its square root stay in the
+	// register; the float length the earlier transcription rounded to is not
+	// in the listing.
+	const double length = sqrt((static_cast<double>(axis.z) * axis.z +
+		static_cast<double>(axis.y) * axis.y) + static_cast<double>(axis.x) * axis.x);
+	if(length != 0.0)
 		{
 		// The oracle holds `1/length` in an x87 register and multiplies each
 		// component by it before any rounding to 32 bits (`fdivr` at
@@ -189,7 +209,7 @@ NX_C_EXPORT NXP_DLL_EXPORT void NX_CALL_CONV NxJointDesc_SetGlobalAxis(
 		// gets the same intermediate precision; a float reciprocal rounds first
 		// and moves the normalised axis by one ULP, which the joint differential
 		// catches on case 0.
-		const double inv = 1.0 / static_cast<double>(length);
+		const double inv = 1.0 / length;
 		axis.x = static_cast<float>(static_cast<double>(axis.x) * inv);
 		axis.y = static_cast<float>(static_cast<double>(axis.y) * inv);
 		axis.z = static_cast<float>(static_cast<double>(axis.z) * inv);
@@ -217,11 +237,8 @@ NX_C_EXPORT NXP_DLL_EXPORT void NX_CALL_CONV NxJointDesc_SetGlobalAxis(
 			continue;
 			}
 
-		dis.localAxis[i].x = m[0] * axis.x + m[3] * axis.y + m[6] * axis.z;
-		dis.localAxis[i].y = m[1] * axis.x + m[4] * axis.y + m[7] * axis.z;
-		dis.localAxis[i].z = m[2] * axis.x + m[5] * axis.y + m[8] * axis.z;
-		dis.localNormal[i].x = m[0] * binormal.x + m[3] * binormal.y + m[6] * binormal.z;
-		dis.localNormal[i].y = m[1] * binormal.x + m[4] * binormal.y + m[7] * binormal.z;
-		dis.localNormal[i].z = m[2] * binormal.x + m[5] * binormal.y + m[8] * binormal.z;
+		// 0x984c9-0x9854d (axis) and 0x98673-0x986f5 (second tangent).
+		nxJointTransposeMultiply(m, axis.x, axis.y, axis.z, dis.localAxis[i]);
+		nxJointTransposeMultiply(m, binormal.x, binormal.y, binormal.z, dis.localNormal[i]);
 		}
 	}

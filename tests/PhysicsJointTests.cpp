@@ -30,6 +30,7 @@
 #include "PhysicsPairLoader.h"
 #include "NxPageGuardedAllocator.h"
 
+#include <math.h>
 #include <string.h>
 
 #include "NxPhysicsSDK.h"
@@ -40,6 +41,7 @@
 #include "NxBoxShapeDesc.h"
 #include "NxJoint.h"
 #include "NxJointDesc.h"
+#include "NxRevoluteJoint.h"
 #include "NxRevoluteJointDesc.h"
 #include "NxPrismaticJoint.h"
 #include "NxPrismaticJointDesc.h"
@@ -163,6 +165,70 @@ static void nxPrintSceneJoints(NxScene& scene, const char* family, unsigned inde
 		enumerated ? order : "none", found ? "yes" : "no", endIsNull ? "null" : "joint");
 	}
 
+// The internal joint's orientation-dependent words (joint-open-items Task 4),
+// printed only for the Task 4 cases (nxPrintInternal). The public object keeps
+// the internal joint at +0x18. Printed: the Joint base block +0x4c..+0x14b
+// (local normal/cross/axis/anchor pairs, the two frame quaternions, their
+// world copies and the two body stamps; floats and counters only, no
+// pointers) and each family's own words from +0x16c to its size, which hold
+// the relative rotations that 004378 (prismatic) and 004244 (fixed) record
+// at creation. Pulley's +0x16c block is skipped: its lever words are left
+// uninitialised by the oracle (joint-families.md "Oracle quirks reproduced").
+static bool nxPrintInternal = false;
+
+static void nxPrintInternalWords(const char* family, unsigned index, const NxJoint* joint)
+	{
+	if(!nxPrintInternal)
+		return;
+	const unsigned char* np = reinterpret_cast<const unsigned char*>(joint);
+	const unsigned char* internal = *reinterpret_cast<const unsigned char* const*>(np + 0x18);
+	unsigned size = 0x16c;
+	switch(joint->getType())
+		{
+		case NX_JOINT_PRISMATIC:	size = 0x17c; break;
+		case NX_JOINT_REVOLUTE:		size = 0x204; break;
+		case NX_JOINT_SPHERICAL:	size = 0x23c; break;
+		case NX_JOINT_DISTANCE:		size = 0x184; break;
+		case NX_JOINT_FIXED:		size = 0x188; break;
+		case NX_JOINT_D6:			size = 0x270; break;
+		default:					size = 0x16c; break;
+		}
+	const unsigned ranges[2][2] = { { 0x4c, 0x14c }, { 0x16c, size } };
+	for(unsigned r = 0; r < 2; r++)
+		for(unsigned off = ranges[r][0]; off < ranges[r][1]; off += 0x20)
+			{
+			printf("case=%s index=%u internal off=%03x words=", family, index, off);
+			for(unsigned w = off; w < off + 0x20 && w < ranges[r][1]; w += 4)
+				{
+				NxU32 word;
+				memcpy(&word, internal + w, 4);
+				printf("%s%08x", w == off ? "" : ".", static_cast<unsigned>(word));
+				}
+			printf("\n");
+			}
+	}
+
+// The saved local frames of any family's saveToDesc: the anchors, axes and
+// normals in each body's frame (joint-open-items Task 4).
+static void nxPrintSavedFrames(const char* family, unsigned index, const NxJointDesc& saved)
+	{
+	printf("case=%s index=%u saved ", family, index);
+	nxPrintVec("anchor0", saved.localAnchor[0]);
+	printf(" ");
+	nxPrintVec("anchor1", saved.localAnchor[1]);
+	printf("\n");
+	printf("case=%s index=%u saved ", family, index);
+	nxPrintVec("axis0", saved.localAxis[0]);
+	printf(" ");
+	nxPrintVec("axis1", saved.localAxis[1]);
+	printf("\n");
+	printf("case=%s index=%u saved ", family, index);
+	nxPrintVec("normal0", saved.localNormal[0]);
+	printf(" ");
+	nxPrintVec("normal1", saved.localNormal[1]);
+	printf("\n");
+	}
+
 // One revolute case: build the descriptor, create, read every value back, then
 // release. Nothing is asserted; everything is printed.
 static void nxRevoluteCase(NxScene& scene, NxActor* a, NxActor* b,
@@ -195,6 +261,7 @@ static void nxRevoluteCase(NxScene& scene, NxActor* a, NxActor* b,
 	printf(" ");
 	nxPrintVec("out_axis", gotAxis);
 	printf(" state=%u\n", static_cast<unsigned>(joint->getState()));
+	nxPrintInternalWords("revolute", index, joint);
 
 	NxActor* ra = 0;
 	NxActor* rb = 0;
@@ -202,6 +269,16 @@ static void nxRevoluteCase(NxScene& scene, NxActor* a, NxActor* b,
 	printf("case=revolute index=%u actors a=%s b=%s\n", index,
 		ra == a ? "match" : (ra ? "other" : "null"),
 		rb == b ? "match" : (rb ? "other" : "null"));
+
+	// The saved local frames (joint-open-items Task 4): over rotated bodies
+	// these are the words that depend on the body orientation.
+	NxRevoluteJoint* revolute = joint->isRevoluteJoint();
+	if(revolute)
+		{
+		NxRevoluteJointDesc saved;
+		revolute->saveToDesc(saved);
+		nxPrintSavedFrames("revolute", index, saved);
+		}
 
 	nxPrintSceneJoints(scene, "revolute", index, "before_release", joint);
 	scene.releaseJoint(*joint);
@@ -245,6 +322,7 @@ static void nxPrismaticCase(NxScene& scene, NxActor* a, NxActor* b,
 	printf(" ");
 	nxPrintVec("out_axis", gotAxis);
 	printf(" state=%u\n", static_cast<unsigned>(joint->getState()));
+	nxPrintInternalWords("prismatic", index, joint);
 
 	NxActor* ra = 0;
 	NxActor* rb = 0;
@@ -324,6 +402,7 @@ static void nxCylindricalCase(NxScene& scene, NxActor* a, NxActor* b,
 	printf(" ");
 	nxPrintVec("out_axis", gotAxis);
 	printf(" state=%u\n", static_cast<unsigned>(joint->getState()));
+	nxPrintInternalWords("cylindrical", index, joint);
 
 	NxActor* ra = 0;
 	NxActor* rb = 0;
@@ -422,6 +501,7 @@ static void nxSphericalCase(NxScene& scene, NxActor* a, NxActor* b,
 	printf(" ");
 	nxPrintVec("out_axis", gotAxis);
 	printf(" state=%u\n", static_cast<unsigned>(joint->getState()));
+	nxPrintInternalWords("spherical", index, joint);
 
 	NxActor* ra = 0;
 	NxActor* rb = 0;
@@ -524,6 +604,7 @@ static void nxPointOnLineCase(NxScene& scene, NxActor* a, NxActor* b,
 	printf(" ");
 	nxPrintVec("out_axis", gotAxis);
 	printf(" state=%u\n", static_cast<unsigned>(joint->getState()));
+	nxPrintInternalWords("point_on_line", index, joint);
 
 	NxActor* ra = 0;
 	NxActor* rb = 0;
@@ -597,6 +678,7 @@ static void nxPointInPlaneCase(NxScene& scene, NxActor* a, NxActor* b,
 	printf(" ");
 	nxPrintVec("out_axis", gotAxis);
 	printf(" state=%u\n", static_cast<unsigned>(joint->getState()));
+	nxPrintInternalWords("point_in_plane", index, joint);
 
 	NxActor* ra = 0;
 	NxActor* rb = 0;
@@ -677,6 +759,7 @@ static void nxDistanceCase(NxScene& scene, NxActor* a, NxActor* b,
 	printf(" ");
 	nxPrintVec("out_axis", gotAxis);
 	printf(" state=%u\n", static_cast<unsigned>(joint->getState()));
+	nxPrintInternalWords("distance", index, joint);
 
 	NxActor* ra = 0;
 	NxActor* rb = 0;
@@ -766,6 +849,7 @@ static void nxPulleyCase(NxScene& scene, NxActor* a, NxActor* b,
 	printf(" ");
 	nxPrintVec("out_axis", gotAxis);
 	printf(" state=%u\n", static_cast<unsigned>(joint->getState()));
+	nxPrintInternalWords("pulley", index, joint);
 
 	NxActor* ra = 0;
 	NxActor* rb = 0;
@@ -848,6 +932,7 @@ static void nxFixedCase(NxScene& scene, NxActor* a, NxActor* b,
 	printf(" ");
 	nxPrintVec("out_axis", gotAxis);
 	printf(" state=%u\n", static_cast<unsigned>(joint->getState()));
+	nxPrintInternalWords("fixed", index, joint);
 
 	NxActor* ra = 0;
 	NxActor* rb = 0;
@@ -1032,6 +1117,7 @@ static void nxD6Case(NxScene& scene, NxActor* a, NxActor* b,
 	printf(" ");
 	nxPrintVec("out_axis", gotAxis);
 	printf(" state=%u\n", static_cast<unsigned>(joint->getState()));
+	nxPrintInternalWords("d6", index, joint);
 
 	NxActor* ra = 0;
 	NxActor* rb = 0;
@@ -1097,6 +1183,32 @@ static void nxD6Case(NxScene& scene, NxActor* a, NxActor* b,
 	nxPrintSceneJoints(scene, "d6", index, "after_release", joint);
 	}
 
+// The D6 field sets. Index 0 mixes locked, limited and free motions (twist and
+// swing1 limited, so the constructor forms their half-angle cosines); index 3
+// limits every motion. The sentinel set is what the saved descriptors hold
+// before saveToDesc. The Task 4 cases reuse the index-0 set.
+static const NxD6CaseFields nxD6First = {
+	{ NX_D6JOINT_MOTION_LOCKED, NX_D6JOINT_MOTION_LIMITED, NX_D6JOINT_MOTION_FREE,
+	  NX_D6JOINT_MOTION_LIMITED, NX_D6JOINT_MOTION_LIMITED, NX_D6JOINT_MOTION_FREE },
+	{ 0.5f, 0.25f, 0.75f }, -0.5f, 0.75f, 0.625f, 0.375f, 2.0f, true,
+	NxVec3(1.0f, 2.0f, 3.0f), { 0.0f, 0.6f, 0.0f, 0.8f },
+	NxVec3(0.5f, -0.5f, 1.5f), NxVec3(-0.25f, 0.125f, 2.5f),
+	0.125f, 0.0625f, NX_JPM_POINT_MINDIST };
+static const NxD6CaseFields nxD6Second = {
+	{ NX_D6JOINT_MOTION_LIMITED, NX_D6JOINT_MOTION_LIMITED, NX_D6JOINT_MOTION_LIMITED,
+	  NX_D6JOINT_MOTION_LIMITED, NX_D6JOINT_MOTION_LIMITED, NX_D6JOINT_MOTION_LIMITED },
+	{ 1.25f, 0.0f, 1.0f }, -1.0f, 1.5f, 0.25f, 1.0f, 4.0f, false,
+	NxVec3(-2.0f, 0.5f, 4.0f), { 0.0f, 0.0f, 0.0f, 1.0f },
+	NxVec3(0.0f, 0.0f, 0.0f), NxVec3(3.0f, 0.0f, -3.0f),
+	2.0f, 0.5f, NX_JPM_NONE };
+static const NxD6CaseFields nxD6Sentinel = {
+	{ NX_D6JOINT_MOTION_FREE, NX_D6JOINT_MOTION_LOCKED, NX_D6JOINT_MOTION_FREE,
+	  NX_D6JOINT_MOTION_LOCKED, NX_D6JOINT_MOTION_FREE, NX_D6JOINT_MOTION_LOCKED },
+	{ 9.0f, 0.5f, 0.5f }, -9.0f, 9.5f, 8.0f, 7.0f, 20.0f, true,
+	NxVec3(11.0f, 12.0f, 13.0f), { 0.5f, 0.5f, 0.5f, 0.5f },
+	NxVec3(21.0f, 22.0f, 23.0f), NxVec3(31.0f, 32.0f, 33.0f),
+	99.0f, 98.0f, NX_JPM_POINT_MINDIST };
+
 // The release-then-create cycle (joint-open-items Task 2). Three joints are
 // created over the fixture's actors (revolute, spherical, fixed), the middle
 // one is released, a D6 is created, the D6 (the list head) and the revolute
@@ -1154,6 +1266,146 @@ static void nxReleaseCycleCase(NxScene& scene, NxActor* a, NxActor* b)
 		return;
 	nxPrintSceneJoints(scene, "cycle", 6, "prismatic_created", prismatic);
 	printf("case=cycle left_for_scene_release=2\n");
+	}
+
+// Joint-open-items Task 4: every family over one anchor/axis pair, with each
+// family's index-0 field set. Used for the near-z axes over the identity
+// fixture and for every case over the rotated fixture.
+static void nxAllFamiliesCase(NxScene& scene, NxActor* a, NxActor* b,
+	unsigned index, const NxVec3& anchor, const NxVec3& axis)
+	{
+	nxRevoluteCase(scene, a, b, index, anchor, axis);
+	nxPrismaticCase(scene, a, b, index, anchor, axis);
+	nxCylindricalCase(scene, a, b, index, anchor, axis);
+	nxSphericalCase(scene, a, b, index, anchor, axis);
+	nxPointOnLineCase(scene, a, b, index, anchor, axis);
+	nxPointInPlaneCase(scene, a, b, index, anchor, axis);
+	nxDistanceCase(scene, a, b, index, anchor, axis,
+		2.5f, 0.5f, NxSpringDesc(10.0f, 0.5f, 0.25f),
+		NX_DJF_MAX_DISTANCE_ENABLED | NX_DJF_MIN_DISTANCE_ENABLED | NX_DJF_SPRING_ENABLED);
+	nxPulleyCase(scene, a, b, index, anchor, axis,
+		NxVec3(0.0f, 5.0f, 0.0f), NxVec3(4.0f, 5.0f, 0.0f), 6.0f, 0.75f, 1.5f, NX_PJF_IS_RIGID);
+	nxFixedCase(scene, a, b, index, anchor, axis);
+	nxD6Case(scene, a, b, index, anchor, axis, nxD6First, nxD6Sentinel);
+	}
+
+// A unit vector formed in the harness. The harness binary is the same for both
+// sides of the pair, so both DLLs receive the same input words; the input is
+// printed with every case anyway.
+static NxVec3 nxUnit(NxReal x, NxReal y, NxReal z)
+	{
+	const NxReal inv = 1.0f / sqrtf(x * x + y * y + z * z);
+	return NxVec3(x * inv, y * inv, z * inv);
+	}
+
+// A rotation matrix from a unit quaternion (x, y, z, w), formed in the harness
+// with the textbook formula; its rows are printed as the fixture's input.
+static NxMat33 nxQuatMatrix(NxReal x, NxReal y, NxReal z, NxReal w)
+	{
+	const NxVec3 row0(1.0f - 2.0f * (y * y + z * z), 2.0f * (x * y - w * z), 2.0f * (x * z + w * y));
+	const NxVec3 row1(2.0f * (x * y + w * z), 1.0f - 2.0f * (x * x + z * z), 2.0f * (y * z - w * x));
+	const NxVec3 row2(2.0f * (x * z - w * y), 2.0f * (y * z + w * x), 1.0f - 2.0f * (x * x + y * y));
+	return NxMat33(row0, row1, row2);
+	}
+
+static void nxPrintRows(const NxMat33& m)
+	{
+	NxVec3 r0, r1, r2;
+	m.getRow(0, r0);
+	m.getRow(1, r1);
+	m.getRow(2, r2);
+	nxPrintVec("row0", r0);
+	printf(" ");
+	nxPrintVec("row1", r1);
+	printf(" ");
+	nxPrintVec("row2", r2);
+	}
+
+// What an actor reports about its pose: the global position, the orientation
+// quaternion and the orientation rows, as raw words. These are the body
+// record's pose words that the joint rows read (+0x5c quaternion, +0xdc 3x3).
+static void nxPrintActorPose(const char* tag, const NxActor& actor)
+	{
+	const NxMat34 pose = actor.getGlobalPoseVal();
+	const NxQuat q = actor.getGlobalOrientationQuatVal();
+	printf("rotated_fixture actor=%s ", tag);
+	nxPrintVec("t", pose.t);
+	printf(" quat=%08x.%08x.%08x.%08x\n", nxU(q.x), nxU(q.y), nxU(q.z), nxU(q.w));
+	printf("rotated_fixture actor=%s ", tag);
+	nxPrintRows(pose.M);
+	printf("\n");
+
+	// The body record the joint rows read: actor+0x14 -> body, body+8 ->
+	// record. +0x5c quaternion, +0xdc mass-frame 3x3, +0x124 mass-frame
+	// quaternion, +0x134 mass-frame world 3x3, +0x158 world centre of mass,
+	// +0x164 world inverse inertia.
+	const unsigned char* body = *reinterpret_cast<const unsigned char* const*>(
+		reinterpret_cast<const unsigned char*>(&actor) + 0x14);
+	const unsigned char* record = body ? *reinterpret_cast<const unsigned char* const*>(body + 8) : 0;
+	if(!record)
+		return;
+	static const unsigned blocks[6][2] = { { 0x5c, 4 }, { 0xdc, 9 }, { 0x124, 4 }, { 0x134, 9 }, { 0x158, 3 },
+		{ 0x164, 9 } };
+	for(unsigned k = 0; k < 6; k++)
+		{
+		printf("rotated_fixture actor=%s record off=%03x words=", tag, blocks[k][0]);
+		for(unsigned w = 0; w < blocks[k][1]; w++)
+			{
+			NxU32 word;
+			memcpy(&word, record + blocks[k][0] + 4 * w, 4);
+			printf("%s%08x", w ? "." : "", static_cast<unsigned>(word));
+			}
+		printf("\n");
+		}
+	}
+
+// The rotated-body fixture (joint-open-items Task 4): the same two dynamic
+// boxes with the same density route as nxBuildFixture, but actor a is turned
+// 90 degrees about y and actor b carries an arbitrary unit quaternion,
+// (1, 2, 3, 4) / sqrt(30). Both poses are printed as given and as read back.
+static bool nxBuildRotatedFixture(NxScene& scene, NxActor** a, NxActor** b)
+	{
+	NxBoxShapeDesc box;
+	box.dimensions = NxVec3(1.0f, 1.0f, 1.0f);
+	NxBodyDesc body;
+	NxActorDesc da;
+	da.body = &body;
+	da.density = 1.0f;
+	da.shapes.pushBack(&box);
+	da.globalPose.M = NxMat33(NxVec3(0.0f, 0.0f, 1.0f), NxVec3(0.0f, 1.0f, 0.0f), NxVec3(-1.0f, 0.0f, 0.0f));
+	da.globalPose.t = NxVec3(0.0f, 1.0f, 0.0f);
+
+	const NxReal rs = 1.0f / sqrtf(30.0f);
+	NxBoxShapeDesc box2;
+	box2.dimensions = NxVec3(1.0f, 1.0f, 1.0f);
+	NxBodyDesc body2;
+	NxActorDesc db;
+	db.body = &body2;
+	db.density = 1.0f;
+	db.shapes.pushBack(&box2);
+	db.globalPose.M = nxQuatMatrix(1.0f * rs, 2.0f * rs, 3.0f * rs, 4.0f * rs);
+	db.globalPose.t = NxVec3(4.0f, -1.0f, 2.0f);
+
+	printf("rotated_fixture input=a ");
+	nxPrintRows(da.globalPose.M);
+	printf(" ");
+	nxPrintVec("t", da.globalPose.t);
+	printf("\n");
+	printf("rotated_fixture input=b ");
+	nxPrintRows(db.globalPose.M);
+	printf(" ");
+	nxPrintVec("t", db.globalPose.t);
+	printf("\n");
+
+	*a = scene.createActor(da);
+	if(!*a)
+		return false;
+	*b = scene.createActor(db);
+	if(!*b)
+		return false;
+	nxPrintActorPose("a", **a);
+	nxPrintActorPose("b", **b);
+	return true;
 	}
 
 int wmain(int argc, wchar_t** argv)
@@ -1283,42 +1535,45 @@ int wmain(int argc, wchar_t** argv)
 	nxFixedCase(*scene, a, b, 0, NxVec3(0.0f, 0.0f, 0.0f), NxVec3(1.0f, 0.0f, 0.0f));
 	nxFixedCase(*scene, a, b, 3, NxVec3(2.0f, 4.0f, 0.0f), NxVec3(0.5f, 0.5f, 0.5f));
 	// The D6 family (joint-families Task 3i), over the same two anchor/axis
-	// values. Index 0 mixes locked, limited and free motions (twist and swing1
-	// limited, so the constructor forms their half-angle cosines); index 3
-	// limits every motion. The sentinel set is what the saved descriptors hold
-	// before saveToDesc.
-	{
-	NxD6CaseFields first = {
-		{ NX_D6JOINT_MOTION_LOCKED, NX_D6JOINT_MOTION_LIMITED, NX_D6JOINT_MOTION_FREE,
-		  NX_D6JOINT_MOTION_LIMITED, NX_D6JOINT_MOTION_LIMITED, NX_D6JOINT_MOTION_FREE },
-		{ 0.5f, 0.25f, 0.75f }, -0.5f, 0.75f, 0.625f, 0.375f, 2.0f, true,
-		NxVec3(1.0f, 2.0f, 3.0f), { 0.0f, 0.6f, 0.0f, 0.8f },
-		NxVec3(0.5f, -0.5f, 1.5f), NxVec3(-0.25f, 0.125f, 2.5f),
-		0.125f, 0.0625f, NX_JPM_POINT_MINDIST };
-	NxD6CaseFields second = {
-		{ NX_D6JOINT_MOTION_LIMITED, NX_D6JOINT_MOTION_LIMITED, NX_D6JOINT_MOTION_LIMITED,
-		  NX_D6JOINT_MOTION_LIMITED, NX_D6JOINT_MOTION_LIMITED, NX_D6JOINT_MOTION_LIMITED },
-		{ 1.25f, 0.0f, 1.0f }, -1.0f, 1.5f, 0.25f, 1.0f, 4.0f, false,
-		NxVec3(-2.0f, 0.5f, 4.0f), { 0.0f, 0.0f, 0.0f, 1.0f },
-		NxVec3(0.0f, 0.0f, 0.0f), NxVec3(3.0f, 0.0f, -3.0f),
-		2.0f, 0.5f, NX_JPM_NONE };
-	NxD6CaseFields sentinel = {
-		{ NX_D6JOINT_MOTION_FREE, NX_D6JOINT_MOTION_LOCKED, NX_D6JOINT_MOTION_FREE,
-		  NX_D6JOINT_MOTION_LOCKED, NX_D6JOINT_MOTION_FREE, NX_D6JOINT_MOTION_LOCKED },
-		{ 9.0f, 0.5f, 0.5f }, -9.0f, 9.5f, 8.0f, 7.0f, 20.0f, true,
-		NxVec3(11.0f, 12.0f, 13.0f), { 0.5f, 0.5f, 0.5f, 0.5f },
-		NxVec3(21.0f, 22.0f, 23.0f), NxVec3(31.0f, 32.0f, 33.0f),
-		99.0f, 98.0f, NX_JPM_POINT_MINDIST };
-	nxD6Case(*scene, a, b, 0, NxVec3(0.0f, 0.0f, 0.0f), NxVec3(1.0f, 0.0f, 0.0f), first, sentinel);
-	nxD6Case(*scene, a, b, 3, NxVec3(2.0f, 4.0f, 0.0f), NxVec3(0.5f, 0.5f, 0.5f), second, sentinel);
-	}
+	// values, with the field sets nxD6First/nxD6Second and nxD6Sentinel.
+	nxD6Case(*scene, a, b, 0, NxVec3(0.0f, 0.0f, 0.0f), NxVec3(1.0f, 0.0f, 0.0f), nxD6First, nxD6Sentinel);
+	nxD6Case(*scene, a, b, 3, NxVec3(2.0f, 4.0f, 0.0f), NxVec3(0.5f, 0.5f, 0.5f), nxD6Second, nxD6Sentinel);
 
 	// The release-then-create cycle, after every family case has released its
 	// joint; it leaves two joints for the scene release below.
 	nxReleaseCycleCase(*scene, a, b);
 
+	// Joint-open-items Task 4: near-z axes (|axis.z| > 0.707, the arm of
+	// NxNormalToTangents that joint-families could not test) over the identity
+	// fixture, every family: (0.1, 0.2, 0.97) normalised, and exactly (0, 0, 1).
+	// The cycle's two joints are still registered, so the scene counts are 3/2.
+	nxPrintInternal = true;
+	nxAllFamiliesCase(*scene, a, b, 4, NxVec3(1.0f, -2.0f, 0.5f), nxUnit(0.1f, 0.2f, 0.97f));
+	nxAllFamiliesCase(*scene, a, b, 5, NxVec3(-0.5f, 1.5f, 2.0f), NxVec3(0.0f, 0.0f, 1.0f));
+
 	sdk->releaseScene(*scene);
 	printf("scene=released\n");
+
+	// Joint-open-items Task 4: the rotated-body fixture, in a scene of its own,
+	// every family over a general axis, a diagonal axis and the two near-z axes.
+	NxScene* rotatedScene = sdk->createScene(sceneDesc);
+	printf("rotated_scene=%s\n", rotatedScene ? "created" : "null");
+	if(rotatedScene)
+		{
+		NxActor* ra = 0;
+		NxActor* rb = 0;
+		const bool built = nxBuildRotatedFixture(*rotatedScene, &ra, &rb);
+		printf("rotated_fixture=a,%s b,%s\n", ra ? "created" : "null", rb ? "created" : "null");
+		if(built)
+			{
+			nxAllFamiliesCase(*rotatedScene, ra, rb, 10, NxVec3(1.0f, 2.0f, 3.0f), nxUnit(0.6f, -0.8f, 0.0f));
+			nxAllFamiliesCase(*rotatedScene, ra, rb, 11, NxVec3(2.0f, 4.0f, 0.0f), NxVec3(0.5f, 0.5f, 0.5f));
+			nxAllFamiliesCase(*rotatedScene, ra, rb, 12, NxVec3(-1.5f, 0.25f, 8.0f), nxUnit(0.1f, 0.2f, 0.97f));
+			nxAllFamiliesCase(*rotatedScene, ra, rb, 13, NxVec3(0.0f, 0.0f, 0.0f), NxVec3(0.0f, 0.0f, 1.0f));
+			}
+		sdk->releaseScene(*rotatedScene);
+		printf("rotated_scene=released\n");
+		}
 	sdk->release();
 	printf("sdk=released\n");
 
