@@ -2104,3 +2104,236 @@ the two pulley points, distance, stiffness, ratio and flags to non-default value
 - Ledger: the 22 rows are `reconstructed_not_falsified` in `gates/phase6-closure.json` (16 moved
   from `not_reconstructed_in_phase`; 6 already were); counts 155 / 276.
 - The D6 gap triple 004469-004473 stays `discovered` for Task 3i.
+
+## Fixed
+
+Recovered by joint-families Task 3h from the unit bundles `units/core__FixedJoint.cpp.md`,
+`units/core__NpFixedJoint.cpp.md` and `units/gap__core__NpFixedJoint.cpp__to__core__NpPointInPlaneJoint.cpp.md`,
+the Capstone listing, the relocated table words in `oracle/pe.json` and the pinned Ghidra
+supplement. 004242 (saveToDesc) and 004254 (loadFromDesc) had no decompile; Task 3h added
+0x000a00e0 and 0x000a1010 to `oracle/ghidra/supplement.json` (the union with the 28 existing
+`requested` RVAs; both `ok`; the 28 existing entries came back unchanged). The listing is
+authoritative over every decompile.
+
+The public interface has no family field: `NxFixedJointDesc` adds only its constructor,
+setToDefault and isValid (all `NxJointDesc`'s), and `NxFixedJoint` adds only
+loadFromDesc/saveToDesc to `NxJoint`.
+
+### Row assignment
+
+`work_units.json` puts 7 rows in `core\FixedJoint.cpp` (evidenced span 0xa00e0-0xa1010, no
+ambiguous rows), 10 in `core\NpFixedJoint.cpp` (evidenced span 0xb1670-0xb19c0, no ambiguous
+rows) and 3 ambiguous rows in `gap:core\NpFixedJoint.cpp..core\NpPointInPlaneJoint.cpp`. Checked
+by hand:
+
+- **Before `core\FixedJoint.cpp`**: 004240 (distance's solver slot, 0x9f620) ends `ret 4` at
+  0xa00d8; 004241 is padding; 004242 (0xa00e0) pushes the `FixedJoint.cpp` `__FILE__`
+  (0x10119a84).
+- **After it**: 004254 (loadFromDesc) ends `ret 4` at 0xa109a; 004256 (0xa10a0) pushes the
+  `PointInPlaneJoint.cpp` `__FILE__` and is point-in-plane's.
+- **004248** (0xa0f60, 3 B, `ret 4`) lies inside the unit, but it is the folded empty body that
+  every joint table and several non-joint tables name (19 table slots, 19 callers). It is already
+  `reconstructed` ("bare no-op return") and written inline as `Joint::row_slot0`/`row_slot8`.
+  Task 3h leaves it unclaimed: a stable-ID line would need an out-of-line definition, and every
+  family's slot 0/8 (and fixed's slot 4) would then have to call it. The fixed table names it at
+  slots 0, 4 and 8.
+- **The gap `core\NpFixedJoint.cpp..core\NpPointInPlaneJoint.cpp` (004561-004565, 0xb1a20-0xb1aa6)
+  is this family's**, as Task 3e found:
+  - 004561 (57 B) installs the transient table 0x1011ab38 (`phys_data_002710`, `NxFixedJoint`),
+    the secondary table 0x1011ac7c (0xb1a40) and the final table 0x1011abf8 (`phys_data_002712`,
+    0xb1a4d). Its only caller is the fixed constructor 004250 (`call 0x100b1a20` at 0xa0fa0).
+  - 004563 (8 B) is `sub ecx,0xc; jmp 004565`, the only slot of 0x1011ac7c.
+  - 004565 (55 B) is slot 0 of 0x1011abf8: reinstalls 0x1011abf8/0x1011ac7c, 002406 on +0xc,
+    the abstract NxJoint table 0x1011a680, frees if flag&1.
+  - They are the fixed family's Np constructor / thunk / deleting-destructor triple, recorded as
+    the other families recorded theirs (`core/NpFixedJoint.cpp`, the thunk's stable-ID line above
+    the destructor).
+- **Before `core\NpFixedJoint.cpp`**: 004539 (0xb1600, the folded getType body that
+  `NpJointShared` claims) ends at 0xb1662. The fixed Np range holds no folded body.
+- No other family's table names a fixed row except 004248. The fixed tables name no other
+  family's body, only the Joint base rows and the folded no-ops 004248/001583/001391.
+
+| Stable ID | RVA | Size | File | Evidence |
+|---|---|---:|---|---|
+| phys_fn_004242 | 0x000a00e0 | 42 | `core/FixedJoint.cpp` | internal slot 10 (0x119a78); "FixedJoint::saveToDesc" line 0x42 |
+| phys_fn_004244 | 0x000a0110 | 723 | `core/FixedJoint.cpp` | called by 004250 (0xa0fb5) and 004254 (0xa1093); the relative pose |
+| phys_fn_004246 | 0x000a03f0 | 2922 | `core/FixedJoint.cpp` | internal slot 6 (0x119a68); the solver slot |
+| phys_fn_004250 | 0x000a0f70 | 81 | `core/FixedJoint.cpp` | createJoint case 8 (0x144ab); installs 0x10119a50 (0xa0f83) |
+| phys_fn_004252 | 0x000a0fd0 | 56 | `core/FixedJoint.cpp` | internal slot 5; reinstalls 0x10119a50 (0xa0fd8) |
+| phys_fn_004254 | 0x000a1010 | 141 | `core/FixedJoint.cpp` | internal slot 9 (0x119a74); "FixedJoint::loadFromDesc" line 0x2a |
+| phys_fn_004541 | 0x000b1670 | 84 | `core/NpFixedJoint.cpp` | Np slot 2; line 0x10 |
+| phys_fn_004543 | 0x000b16d0 | 84 | `core/NpFixedJoint.cpp` | Np slot 4; line 0x10 |
+| phys_fn_004545 | 0x000b1730 | 89 | `core/NpFixedJoint.cpp` | Np slot 9; line 0x10 |
+| phys_fn_004547 | 0x000b1790 | 89 | `core/NpFixedJoint.cpp` | Np slot 11; line 0x10 |
+| phys_fn_004549 | 0x000b17f0 | 97 | `core/NpFixedJoint.cpp` | Np slot 13; line 0x10 |
+| phys_fn_004551 | 0x000b1860 | 74 | `core/NpFixedJoint.cpp` | Np slot 15; line 0x10 |
+| phys_fn_004553 | 0x000b18b0 | 88 | `core/NpFixedJoint.cpp` | Np slot 29; line 0x10 |
+| phys_fn_004555 | 0x000b1910 | 74 | `core/NpFixedJoint.cpp` | Np slot 14; line 0x10 |
+| phys_fn_004557 | 0x000b1960 | 84 | `core/NpFixedJoint.cpp` | Np slot 31 (loadFromDesc); line 0x14; internal `[vt+0x24]` |
+| phys_fn_004559 | 0x000b19c0 | 84 | `core/NpFixedJoint.cpp` | Np slot 32 (saveToDesc); line 0x1f; internal `[vt+0x28]` |
+| phys_fn_004561 | 0x000b1a20 | 57 | `core/NpFixedJoint.cpp` | constructor; called by 004250 (0xa0fa0) |
+| phys_fn_004563 | 0x000b1a60 | 8 | `core/NpFixedJoint.cpp` | secondary table 0x1011ac7c slot 0; compiler-generated thunk |
+| phys_fn_004565 | 0x000b1a70 | 55 | `core/NpFixedJoint.cpp` | Np slot 0 (scalar deleting destructor) |
+
+Already `reconstructed` through `ObjectModel.cpp` differentials (proofs kept, new text appended):
+004551 (tailjmp), 004555 (mutexlistfree; its model `nxMutexListFree` gains the `// Product row:`
+pointer), 004557 and 004559 (mutexfamily).
+
+The per-family Np rows have pulley's sizes in pulley's order (84, 84, 89, 89, 97, 74, 88, 74, 84,
+84) and pulley's report lines (0x10, 0x14, 0x1f: the `push` before each `push 0x1011abbc`,
+0xb1691 ... 0xb1931, 0xb1981, 0xb19e1). The triple 004561-004565 has pulley's 004505-004509
+instructions with the fixed tables.
+
+### Construction chain (NxJointType 8)
+
+1. 000665's switch (table 0x14590, entry 8 = **0x1448c**): SDK allocator slot +8 with
+   `(0x188, 0)` (`push 0x188` at 0x14498), null -> 0x1458a (result 0); otherwise
+   `call 0x100a0f70` = **004250** on the block with the descriptor (0x144ab), then the shared exit
+   at 0x144fc.
+2. **004250** FixedJoint::FixedJoint(const NxFixedJointDesc&) (`ret 4`):
+   - `Joint(desc, 0x200)` (004141, `push 0x200` at 0xa0f76: the type bit), vptr 0x10119a50
+     (0xa0f83);
+   - SDK allocator `(0x1c, 0)` -> **004561** on success, else null; public object -> `this+0x48`
+     (0xa0fa9); `desc.userData` (desc+0x60) -> `np+4` **without a null check** (0xa0fac-0xa0faf);
+   - **004244** with the descriptor (0xa0fb5), which records the bodies' relative pose.
+3. **004561** NpFixedJoint::NpFixedJoint(FixedJoint*): zeroes +4/+8, transient table 0x1011ab38,
+   002404 on +0xc, secondary table 0x1011ac7c, internal at +0x18 and +0x08, final table
+   0x1011abf8. The prismatic shape.
+4. Back in 000665 (0x144fc): identical to the other wired families (`[joint+0x48]` null ->
+   internal slot 5 with 1 (004252) and result 0; otherwise the link copy, 000661, and the
+   0x14529-0x1453f exit).
+
+**Public-object offset: +0x48** (`mPublicObject`; 004250 writes it at 0xa0fa9, 000665 reads it at
+0x14502).
+
+### Object layouts
+
+**FixedJoint (internal), 0x188 bytes** (`push 0x188` at 0x14498):
+
+| Off | Size | Field | Evidence |
+|---|---:|---|---|
+| +0x000 | 0x16c | `Joint` base; vptr 0x10119a50 | 004250 0xa0f7e/0xa0f83; 004252 0xa0fd8 |
+| +0x16c | 0xc | `mRelativePosition` (body 1's position minus body 0's, in body 0's frame) | 004244 0xa0211-0xa021d; 004246 0xa042f-0xa04cf |
+| +0x178 | 0x10 | `mRelativeRotation[4]` (x, y, z, w: conj(q0) q1, then its vector part negated) | 004244 0xa022a-0xa03d7; 004246 0xa0b6b-0xa0c15 |
+
+The rows also use these `Joint` base fields: `mBody` (+0x08/+0x0c), `mFlags` (+0x2c), `mMaxForce`
+(+0x3c), `mMaxTorque` (+0x40) and `mPublicObject` (+0x48). From the body records they use the
++0x124 quaternion, the +0x134 3x3, the +0x158 position and the +0x204 support record. No row reads
+`mBodyStamp`: neither 004244 nor 004246 runs the stale-body refresh the other families' solver
+slots open with.
+
+**NpFixedJoint (public), 0x1c bytes**: exactly `NpJointShared<NxFixedJoint, FixedJoint>` (vptr
+0x1011abf8, userData +4, appData +8 = internal, hook base +0xc with table 0x1011ac7c, write link
++0x10, read link +0x14, internal +0x18). No own field.
+
+### Dispatch tables
+
+**0x10119a50: FixedJoint internal (`phys_data_002653`, 13 slots, 52 B)**
+
+| Slot | Row | Declared as | Notes |
+|---:|---|---|---|
+| 0 | 004248 (folded, `ret 4`) | `Joint::row_slot0` inline | inherited no-op |
+| 1 | 001583 (folded, `ret`) | `Joint::row_slot1` inline | inherited no-op |
+| 2 | 004111 | `Joint::row004111` | inherited |
+| 3 | 004087 | `Joint::row004087` | inherited |
+| 4 | 004248 (folded, `ret 4`) | `FixedJoint::row_slot4(NxDebugRenderable&)` inline, empty | no debug visualization |
+| 5 | **004252** | `~FixedJoint()` (scalar deleting) | deletes `[this+0x48]` through its slot 0 with 1, 004095, frees if flag&1 |
+| 6 | **004246** | `FixedJoint::row_slot6(NxReal)` | `ret 4`; the float is the step divisor (`fdiv [esp+0x58]`, 0xa0568) |
+| 7 | 004135 | `Joint::row_slot7` | inherited |
+| 8 | 004248 (folded) | `Joint::row_slot8` inline | inherited no-op |
+| 9 | **004254** | `FixedJoint::loadFromDesc(const NxFixedJointDesc&)` | `ret 4` |
+| 10 | **004242** | `FixedJoint::saveToDesc(NxFixedJointDesc&)` | `ret 4`; tail-jumps 004066 |
+| 11 | 001391 (folded, `mov eax,ecx; ret`) | `FixedJoint::row_slot11()` inline | returns `this` |
+| 12 | 001391 (folded) | `FixedJoint::row_slot12()` inline | returns `this` |
+
+The table runs to 0x10119a84, where the unit's `__FILE__` string starts. Fixed is the first family
+whose slot 4 is the folded no-op: it has no debug visualization. Slot 4 is pure in `Joint`, so the
+class declares an empty inline override whose comment names 004248.
+
+**0x1011abf8: NpFixedJoint primary (`phys_data_002712`, 33 slots)**: slots 0-32 as the
+`### Slot split` table (per-family rows 004565, 004541, 004543, 004545, 004547, 004549, 004555,
+004551, 004553, 004557, 004559; the folded rows through `NpJointShared`). Every write-locked
+NxJoint row reports line 0x10; loadFromDesc 0x14, saveToDesc 0x1f. Slots 31/32 call internal slots
+9/10 (`[vt+0x24]` 0xb19a5 / `[vt+0x28]` 0xb1a05). **0x1011ac7c** (secondary): 004563.
+
+### The rows' shape
+
+- **004242** (saveToDesc), as pulley's 004216 without the family words: the broken test
+  `(mFlags & 0x18) == 0x10` reports (code 1, line 0x42, "FixedJoint::saveToDesc: joint is broken.
+  ...") through the static `FoundationSDK::error` (no `int3` guard) and returns; otherwise it
+  tail-jumps 004066.
+- **004254** (loadFromDesc), as pulley's 004226: no broken-joint test, `desc.isValid()`
+  (`[vt+8]`), a failure reports line 0x2a through the static error. Then the re-bind (004107
+  only when a body differs), 004121, and **004244** with the descriptor.
+- **004244** (thiscall, `ret 4`, the descriptor is never read): the relative pose.
+  - d = body 1's +0x158 minus body 0's (a missing body counts as the origin): x kept on the FPU
+    stack, y and z stored (the no-body-0 copy is exact, the no-body-1 negation too).
+  - With body 0, d is taken into body 0's frame with the transpose of its +0x134 3x3:
+    y ((d.z R7 + d.y R4) + d.x R1) and z ((d.z R8 + d.y R5) + d.x R2) stored, then
+    x ((d.z R6 + d.y R3) + d.x R0) stored at +0x16c. Without body 0, d is stored as it is.
+  - q = body 0's +0x124 quaternion (or (0,0,0,1)) into +0x178, its vector part negated in place.
+    With body 1 (+0x124 = (X,Y,Z,W)), q = q * body 1's quaternion, every product from the old
+    values: w ((wW - xX) - yY) - zZ, x ((xW + yZ) + wX) - zY, y ((Wy + Yw) + zX) - xZ (through a
+    stack slot), z ((Wz + xY) + Zw) - yX, each rounded once where it is stored. Then the vector
+    part is negated again in place.
+  - Prismatic's 004378 builds the same quaternion with other sum groupings.
+- **004246** (slot 6, arg = the step divisor). No stale-body refresh. s0/s1 = the bodies' +0x204
+  support records (null without a body).
+  - r = R0 * mRelativePosition (x ((R2 p.z + R1 p.y) + R0 p.x), y ((R3 p.x + R5 p.z) + R4 p.y),
+    z ((R6 p.x + R8 p.z) + R7 p.y), all stored), or the stored vector without body 0.
+  - The linear error: e = r - Z, where Z is the .data triple 0x10123c1c (zero in the image),
+    e.x kept and stored, e.y and e.z stored. With body 0: x = (stored e.x) + t0.x kept, y and z
+    (e + t0) stored. With body 1: x - t1.x kept, y and z (- t1) stored.
+  - inv = 1.0f / arg: `fdiv`, then `fst` back into the argument slot. The x error is the
+    unrounded inverse times the kept x; y and z use the stored inverse. Each is stored.
+  - Three kind-1 linear records along gJointUnitAxis[0..2] (jointLinearRecord with r0 = r,
+    r1 = Z, the same products and subtraction order; jointSolveRecord with +0x34 = the error and
+    +0x48 = maxForce).
+  - The angular error: P = conj(q0) q1 (q0/q1 = the bodies' +0x124 quaternions, the identity
+    without body 0, conj(q0) alone without body 1), each component stored; then
+    E = P * mRelativeRotation: w ((Pw Qw - Px Qx) - Py Qy) - Pz Qz, x ((Py Qz + Px Qw) + Pw Qx) -
+    Pz Qy, y ((Py Qw + Pw Qy) + Pz Qx) - Px Qz stored, z ((Pw Qz + Px Qy) + Pz Qw) - Py Qx kept.
+    If E.w < 0 (`fcomp 0.0f; test ah,5; jp`: a NaN counts as not less) x, y and z are multiplied
+    by -1.0f (0x1010687c).
+  - With body 0, V = R0 * (E.x, E.y, E.z): x ((E.y R1 + E.z R2) + E.x R0) and
+    y ((E.x R3 + E.y R4) + E.z R5) stored, z ((E.x R6 + E.y R7) + E.z R8) kept; without it, x and y
+    stored, z kept.
+  - The angular errors are (inv V) * -2.0f (0x10108748), inv read back from the argument slot,
+    each stored.
+  - Three kind-3 angular records along gJointUnitAxis[0..2] (prismatic's angular record bits:
+    `(f & ~0x1c) | 3`, bit 9 computed, bit 10 set; +0x18/+0x24 not written) with +0x34 = the error
+    and +0x48 = maxTorque (the argument slot is reused for maxTorque, 0xa0cef).
+  - Listing over decompile: the decompile drops the kind tests as unreachable (the helpers keep
+    them) and shows several stack values as floats.
+
+### Dependency closure
+
+- **write** (19 rows, 4,932 B): 004242, 004244, 004246, 004250, 004252, 004254 in
+  `core/FixedJoint.cpp` (6 rows, 3,965 B); 004541-004565 in `core/NpFixedJoint.cpp` (13 rows,
+  967 B; 004563 generated, its stable-ID line above the destructor it serves).
+- **reuse**:
+  - Joint rows 004141, 004107, 004121, 004097, 004066, 004095, 004093, 004111, 004087 and 004135
+    (`core/Joint.cpp`); 004391 (`core/JointSupport.cpp`).
+  - The 13 folded Np bodies (`NpJointShared`).
+  - 002362/002364/002366, 002404/002406 and 000454/000480.
+  - The inline bodies 004248, 001583 and 001391; 004417-004433, 004537 and 005667 (generated
+    from `NxJoint.h`).
+  - `jointLinearRecord`, `jointSolveRecord` and `jointLinearSdkParameter`
+    (`core/JointLinearRecords.h`); `gJointUnitAxis` and a new `gJointZeroVector` (the .data triple
+    0x10123c1c, `core/JointSupport.cpp`); the SDK allocator; SDK parameter 0. The constants 1.0f
+    (0x101041ec), 0.0f (0x101041f0), -1.0f (0x1010687c), -2.0f (0x10108748) and 0.7f (0x10106940).
+    No sqrt and no acos.
+- **defer**: none.
+
+### What the new test case reaches
+
+`nxFixedCase` uses indices 0 and 3 of the revolute table's anchor/axis values.
+
+- Creation: 000297, 000665 case 8, 004250, 004141 (-> 004107, 004121 -> 004097 x2, 000480),
+  004561 (002404), 004244, 000661.
+- Getters: 004437/004125, 004441/004129, 004483/004078, 004539, 004443/004070, `isFixedJoint`
+  (inline 004433 -> 004479/004070), and saveToDesc 004559 -> internal slot 10 = **004242** ->
+  004066.
+- Compiled but not reached: 004246, 004252 (release unwired), 004254, 004541-004557, 004565.
+  The relative pose 004244 writes is not visible through the public interface, so the transcript
+  shows only that the constructor ran.
