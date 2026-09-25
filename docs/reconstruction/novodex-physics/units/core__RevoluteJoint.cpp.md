@@ -26,8 +26,8 @@ Evidenced span: ['0x000a8d40', '0x000ac630']. Rows: 22 (0 ambiguous). Generated 
 ## phys_fn_004328 (0x000a8d20, 21 B, reconstructed)
 
 - ambiguous: no
-- source: zero [this+0x1ac/1b0/1b4] (0xa8d20)
-- implementation: None
+- source: Physics/src/core/RevoluteJoint.cpp
+- implementation: Physics/src/core/RevoluteJoint.cpp
 - prototype: undefined FUN_100a8d20(void)
 - calling convention: unknown, stack purge: 2147483647
 - callers: phys_fn_004366 (0x000ac540)
@@ -53,11 +53,11 @@ void FUN_100a8d20(void)
 
 ```
 
-## phys_fn_004330 (0x000a8d40, 281 B, discovered)
+## phys_fn_004330 (0x000a8d40, 281 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/RevoluteJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/RevoluteJoint.cpp
 - prototype: undefined __thiscall FUN_100a8d40(int param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004366 (0x000ac540)
@@ -122,11 +122,11 @@ void __thiscall FUN_100a8d40(void *this,int param_1)
 
 ```
 
-## phys_fn_004332 (0x000a8e60, 171 B, discovered)
+## phys_fn_004332 (0x000a8e60, 171 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/RevoluteJoint.cpp
+- implementation: Physics/src/core/RevoluteJoint.cpp
 - prototype: undefined __thiscall FUN_100a8e60(int param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004366 (0x000ac540), phys_fn_004370 (0x000ac630)
@@ -172,7 +172,7 @@ void __thiscall FUN_100a8e60(void *this,int param_1)
 
 - ambiguous: no
 - source: Physics/src/core/RevoluteJoint.cpp
-- implementation: Physics/src/ObjectModel.cpp
+- implementation: Physics/src/core/RevoluteJoint.cpp
 - prototype: undefined FUN_100a8f10(void)
 - calling convention: unknown, stack purge: 2147483647
 - callers: phys_fn_004366 (0x000ac540)
@@ -222,8 +222,8 @@ void FUN_100a8f10(undefined4 param_1)
 ## phys_fn_004336 (0x000a8fb0, 7 B, reconstructed)
 
 - ambiguous: no
-- source: field getter [this+0x1a8] (0xa8fb0)
-- implementation: None
+- source: Physics/src/core/RevoluteJoint.cpp
+- implementation: Physics/src/core/RevoluteJoint.cpp
 - prototype: undefined FUN_100a8fb0(void)
 - calling convention: unknown, stack purge: 2147483647
 - callers: phys_fn_004366 (0x000ac540)
@@ -250,7 +250,7 @@ undefined4 FUN_100a8fb0(void)
 
 - ambiguous: no
 - source: Physics/src/core/RevoluteJoint.cpp
-- implementation: Physics/src/ObjectModel.cpp
+- implementation: Physics/src/core/RevoluteJoint.cpp
 - prototype: undefined FUN_100a8fc0(void)
 - calling convention: unknown, stack purge: 2147483647
 - callers: phys_fn_004366 (0x000ac540)
@@ -287,11 +287,11 @@ void FUN_100a8fc0(undefined4 param_1)
 
 ```
 
-## phys_fn_004340 (0x000a9000, 189 B, discovered)
+## phys_fn_004340 (0x000a9000, 189 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/RevoluteJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/RevoluteJoint.cpp
 - prototype: undefined __thiscall FUN_100a9000(undefined4 * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004709 (0x000b31e0)
@@ -346,8 +346,8 @@ void __thiscall FUN_100a9000(void *this,undefined4 *param_1)
 ## phys_fn_004342 (0x000a90c0, 58 B, reconstructed)
 
 - ambiguous: no
-- source: copy 6 fields to out + return ([this+0x1a8]&1) (0xa90c0, ret 4)
-- implementation: None
+- source: Physics/src/core/RevoluteJoint.cpp
+- implementation: Physics/src/core/RevoluteJoint.cpp
 - prototype: uint __thiscall FUN_100a90c0(undefined4 * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004711 (0x000b3240)
@@ -374,11 +374,11 @@ uint __thiscall FUN_100a90c0(void *this,undefined4 *param_1)
 
 ```
 
-## phys_fn_004344 (0x000a9100, 171 B, discovered)
+## phys_fn_004344 (0x000a9100, 171 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/RevoluteJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/RevoluteJoint.cpp
 - prototype: undefined __thiscall FUN_100a9100(undefined4 * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004713 (0x000b3270)
@@ -430,8 +430,8 @@ void __thiscall FUN_100a9100(void *this,undefined4 *param_1)
 ## phys_fn_004346 (0x000a91b0, 42 B, reconstructed)
 
 - ambiguous: no
-- source: copy [this+0x184..0x18c] to out arg + return (([+0x1a8]>>1)&1) (0xa91b0, ret 4)
-- implementation: None
+- source: Physics/src/core/RevoluteJoint.cpp
+- implementation: Physics/src/core/RevoluteJoint.cpp
 - prototype: uint __thiscall FUN_100a91b0(undefined4 * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004715 (0x000b3280)
@@ -455,11 +455,11 @@ uint __thiscall FUN_100a91b0(void *this,undefined4 *param_1)
 
 ```
 
-## phys_fn_004348 (0x000a91e0, 171 B, discovered)
+## phys_fn_004348 (0x000a91e0, 171 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/RevoluteJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/RevoluteJoint.cpp
 - prototype: undefined __thiscall FUN_100a91e0(undefined4 * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004717 (0x000b32b0)
@@ -511,8 +511,8 @@ void __thiscall FUN_100a91e0(void *this,undefined4 *param_1)
 ## phys_fn_004350 (0x000a9290, 43 B, reconstructed)
 
 - ambiguous: no
-- source: copy [this+0x190..0x198] to out arg + return (([+0x1a8]>>2)&1) (0xa9290, ret 4)
-- implementation: None
+- source: Physics/src/core/RevoluteJoint.cpp
+- implementation: Physics/src/core/RevoluteJoint.cpp
 - prototype: uint __thiscall FUN_100a9290(undefined4 * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004719 (0x000b3310)
@@ -536,11 +536,11 @@ uint __thiscall FUN_100a9290(void *this,undefined4 *param_1)
 
 ```
 
-## phys_fn_004352 (0x000a92c0, 694 B, discovered)
+## phys_fn_004352 (0x000a92c0, 694 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/RevoluteJoint.cpp
+- implementation: Physics/src/core/RevoluteJoint.cpp
 - prototype: float10 __fastcall FUN_100a92c0(void * param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_004362 (0x000ab1d0), phys_fn_004364 (0x000ab840)
@@ -647,11 +647,11 @@ LAB_100a92f7:
 
 ```
 
-## phys_fn_004354 (0x000a9580, 197 B, discovered)
+## phys_fn_004354 (0x000a9580, 197 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/RevoluteJoint.cpp
+- implementation: Physics/src/core/RevoluteJoint.cpp
 - prototype: float10 __fastcall FUN_100a9580(void * param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_004723 (0x000b3370)
@@ -710,11 +710,11 @@ LAB_100a95b7:
 
 ```
 
-## phys_fn_004356 (0x000a9650, 2303 B, discovered)
+## phys_fn_004356 (0x000a9650, 2303 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/RevoluteJoint.cpp
+- implementation: Physics/src/core/RevoluteJoint.cpp
 - prototype: undefined FUN_100a9650(void)
 - calling convention: unknown, stack purge: 2147483647
 - callers: phys_fn_004366 (0x000ac540)
@@ -1004,11 +1004,11 @@ LAB_100a968c:
 
 ```
 
-## phys_fn_004358 (0x000a9f50, 269 B, discovered)
+## phys_fn_004358 (0x000a9f50, 269 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/RevoluteJoint.cpp
+- implementation: Physics/src/core/RevoluteJoint.cpp
 - prototype: undefined __thiscall FUN_100a9f50(float * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004374 (0x000ad0b0)
@@ -1081,11 +1081,11 @@ void __thiscall FUN_100a9f50(void *this,float *param_1)
 
 ```
 
-## phys_fn_004360 (0x000aa060, 4460 B, discovered)
+## phys_fn_004360 (0x000aa060, 4460 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/RevoluteJoint.cpp
+- implementation: Physics/src/core/RevoluteJoint.cpp
 - prototype: undefined FUN_100aa060(void)
 - calling convention: unknown, stack purge: 2147483647
 - callers: phys_fn_004366 (0x000ac540)
@@ -1540,11 +1540,11 @@ LAB_100ab0f3:
 
 ```
 
-## phys_fn_004362 (0x000ab1d0, 1644 B, discovered)
+## phys_fn_004362 (0x000ab1d0, 1644 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/RevoluteJoint.cpp
+- implementation: Physics/src/core/RevoluteJoint.cpp
 - prototype: undefined __thiscall FUN_100ab1d0(float param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004366 (0x000ac540)
@@ -1801,11 +1801,11 @@ LAB_100ab6e5:
 
 ```
 
-## phys_fn_004364 (0x000ab840, 3326 B, discovered)
+## phys_fn_004364 (0x000ab840, 3326 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/RevoluteJoint.cpp
+- implementation: Physics/src/core/RevoluteJoint.cpp
 - prototype: undefined FUN_100ab840(void)
 - calling convention: unknown, stack purge: 2147483647
 - callers: phys_fn_004366 (0x000ac540)
@@ -2215,11 +2215,11 @@ void FUN_100ab840(int *param_1)
 
 ```
 
-## phys_fn_004366 (0x000ac540, 162 B, discovered)
+## phys_fn_004366 (0x000ac540, 162 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/RevoluteJoint.cpp
+- implementation: Physics/src/core/RevoluteJoint.cpp
 - prototype: void * __thiscall FUN_100ac540(int param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_000665 (0x000142c0)
@@ -2266,11 +2266,11 @@ void * __thiscall FUN_100ac540(void *this,int param_1)
 
 ```
 
-## phys_fn_004368 (0x000ac5f0, 56 B, discovered)
+## phys_fn_004368 (0x000ac5f0, 56 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/RevoluteJoint.cpp
+- implementation: Physics/src/core/RevoluteJoint.cpp
 - prototype: void * __thiscall FUN_100ac5f0(byte param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004366 (0x000ac540)
@@ -2299,11 +2299,11 @@ void * __thiscall FUN_100ac5f0(void *this,byte param_1)
 
 ```
 
-## phys_fn_004370 (0x000ac630, 202 B, discovered)
+## phys_fn_004370 (0x000ac630, 202 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/RevoluteJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/RevoluteJoint.cpp
 - prototype: undefined __thiscall FUN_100ac630(int * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004366 (0x000ac540)

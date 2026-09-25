@@ -14,11 +14,11 @@ Evidenced span: ['0x000b2d10', '0x000b32b0']. Rows: 19 (0 ambiguous). Generated 
 - core\RevoluteJoint.cpp: phys_fn_004340, phys_fn_004342, phys_fn_004344, phys_fn_004346, phys_fn_004348
 - gap:Controller.cpp..fluids\Fluid.cpp: phys_fn_002362, phys_fn_002364, phys_fn_002366
 
-## phys_fn_004681 (0x000b2d10, 84 B, discovered)
+## phys_fn_004681 (0x000b2d10, 84 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpRevoluteJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpRevoluteJoint.cpp
 - prototype: undefined __thiscall FUN_100b2d10(float * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004725 (0x000b33a0)
@@ -58,11 +58,11 @@ void __thiscall FUN_100b2d10(void *this,float *param_1)
 
 ```
 
-## phys_fn_004683 (0x000b2d70, 84 B, discovered)
+## phys_fn_004683 (0x000b2d70, 84 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpRevoluteJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpRevoluteJoint.cpp
 - prototype: undefined __thiscall FUN_100b2d70(float * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004725 (0x000b33a0)
@@ -102,11 +102,11 @@ void __thiscall FUN_100b2d70(void *this,float *param_1)
 
 ```
 
-## phys_fn_004685 (0x000b2dd0, 89 B, discovered)
+## phys_fn_004685 (0x000b2dd0, 89 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpRevoluteJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpRevoluteJoint.cpp
 - prototype: undefined __thiscall FUN_100b2dd0(float param_1, float param_2)
 - calling convention: __thiscall, stack purge: 8
 - callers: phys_fn_004725 (0x000b33a0)
@@ -146,11 +146,11 @@ void __thiscall FUN_100b2dd0(void *this,float param_1,float param_2)
 
 ```
 
-## phys_fn_004687 (0x000b2e30, 89 B, discovered)
+## phys_fn_004687 (0x000b2e30, 89 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpRevoluteJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpRevoluteJoint.cpp
 - prototype: undefined __thiscall FUN_100b2e30(float * param_1, char param_2)
 - calling convention: __thiscall, stack purge: 8
 - callers: phys_fn_004725 (0x000b33a0)
@@ -190,11 +190,11 @@ void __thiscall FUN_100b2e30(void *this,float *param_1,char param_2)
 
 ```
 
-## phys_fn_004689 (0x000b2e90, 97 B, discovered)
+## phys_fn_004689 (0x000b2e90, 97 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpRevoluteJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpRevoluteJoint.cpp
 - prototype: uint __fastcall FUN_100b2e90(int param_1)
 - calling convention: __fastcall, stack purge: 8
 - callers: phys_fn_004725 (0x000b33a0)
@@ -241,7 +241,7 @@ uint __fastcall FUN_100b2e90(int param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpRevoluteJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpRevoluteJoint.cpp
 - prototype: undefined __fastcall FUN_100b2f00(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_004725 (0x000b33a0)
@@ -281,11 +281,11 @@ void __fastcall FUN_100b2f00(int param_1)
 
 ```
 
-## phys_fn_004693 (0x000b2f50, 88 B, discovered)
+## phys_fn_004693 (0x000b2f50, 88 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpRevoluteJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpRevoluteJoint.cpp
 - prototype: undefined __thiscall FUN_100b2f50(int param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004725 (0x000b33a0)
@@ -329,7 +329,7 @@ void __thiscall FUN_100b2f50(void *this,int param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpRevoluteJoint.cpp
-- implementation: Physics/src/ObjectModel.cpp
+- implementation: Physics/src/core/NpRevoluteJoint.cpp
 - prototype: undefined __fastcall FUN_100b2fb0(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_004725 (0x000b33a0)
@@ -373,7 +373,7 @@ void __fastcall FUN_100b2fb0(int param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpRevoluteJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpRevoluteJoint.cpp
 - prototype: undefined __thiscall FUN_100b3000(undefined4 param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004725 (0x000b33a0)
@@ -417,7 +417,7 @@ void __thiscall FUN_100b3000(void *this,undefined4 param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpRevoluteJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpRevoluteJoint.cpp
 - prototype: undefined __thiscall FUN_100b3060(undefined4 param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004725 (0x000b33a0)
@@ -461,7 +461,7 @@ void __thiscall FUN_100b3060(void *this,undefined4 param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpRevoluteJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpRevoluteJoint.cpp
 - prototype: undefined __thiscall FUN_100b30c0(undefined4 param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004725 (0x000b33a0)
@@ -504,8 +504,8 @@ void __thiscall FUN_100b30c0(void *this,undefined4 param_1)
 ## phys_fn_004703 (0x000b3120, 36 B, reconstructed)
 
 - ambiguous: no
-- source: lock-bracketed vtable call, slot +0x30 (0xb3120)
-- implementation: None
+- source: Physics/src/core/NpRevoluteJoint.cpp
+- implementation: Physics/src/core/NpRevoluteJoint.cpp
 - prototype: undefined4 __fastcall FUN_100b3120(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_004649 (0x000b2840), phys_fn_004725 (0x000b33a0)
@@ -537,7 +537,7 @@ undefined4 __fastcall FUN_100b3120(int param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpRevoluteJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpRevoluteJoint.cpp
 - prototype: undefined __thiscall FUN_100b3150(undefined4 param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004725 (0x000b33a0)
@@ -580,8 +580,8 @@ void __thiscall FUN_100b3150(void *this,undefined4 param_1)
 ## phys_fn_004707 (0x000b31b0, 36 B, reconstructed)
 
 - ambiguous: no
-- source: lock-bracketed vtable call, slot +0x38 (0xb31b0)
-- implementation: None
+- source: Physics/src/core/NpRevoluteJoint.cpp
+- implementation: Physics/src/core/NpRevoluteJoint.cpp
 - prototype: undefined4 __fastcall FUN_100b31b0(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_004649 (0x000b2840), phys_fn_004725 (0x000b33a0)
@@ -609,11 +609,11 @@ undefined4 __fastcall FUN_100b31b0(int param_1)
 
 ```
 
-## phys_fn_004709 (0x000b31e0, 84 B, discovered)
+## phys_fn_004709 (0x000b31e0, 84 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpRevoluteJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpRevoluteJoint.cpp
 - prototype: undefined __thiscall FUN_100b31e0(undefined4 * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004725 (0x000b33a0)
@@ -656,8 +656,8 @@ void __thiscall FUN_100b31e0(void *this,undefined4 *param_1)
 ## phys_fn_004711 (0x000b3240, 45 B, reconstructed)
 
 - ambiguous: no
-- source: locked copy-and-flag accessor (0xb3240, ret 4)
-- implementation: None
+- source: Physics/src/core/NpRevoluteJoint.cpp
+- implementation: Physics/src/core/NpRevoluteJoint.cpp
 - prototype: uint __thiscall FUN_100b3240(undefined4 * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004725 (0x000b33a0)
@@ -686,11 +686,11 @@ uint __thiscall FUN_100b3240(void *this,undefined4 *param_1)
 
 ```
 
-## phys_fn_004713 (0x000b3270, 8 B, discovered)
+## phys_fn_004713 (0x000b3270, 8 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/NpRevoluteJoint.cpp
+- implementation: Physics/src/core/NpRevoluteJoint.cpp
 - prototype: undefined FUN_100b3270(void)
 - calling convention: unknown, stack purge: 2147483647
 - callers: phys_fn_004725 (0x000b33a0)
@@ -717,8 +717,8 @@ void FUN_100b3270(undefined4 *param_1)
 ## phys_fn_004715 (0x000b3280, 45 B, reconstructed)
 
 - ambiguous: no
-- source: locked copy-and-flag accessor (0xb3280, ret 4)
-- implementation: None
+- source: Physics/src/core/NpRevoluteJoint.cpp
+- implementation: Physics/src/core/NpRevoluteJoint.cpp
 - prototype: uint __thiscall FUN_100b3280(undefined4 * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004725 (0x000b33a0)
@@ -747,11 +747,11 @@ uint __thiscall FUN_100b3280(void *this,undefined4 *param_1)
 
 ```
 
-## phys_fn_004717 (0x000b32b0, 84 B, discovered)
+## phys_fn_004717 (0x000b32b0, 84 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpRevoluteJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpRevoluteJoint.cpp
 - prototype: undefined __thiscall FUN_100b32b0(undefined4 * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004725 (0x000b33a0)

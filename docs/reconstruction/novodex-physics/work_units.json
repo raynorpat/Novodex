@@ -3392,12 +3392,12 @@
     "phys_fn_004072"
    ],
    "rows": {
-    "discovered": 50,
-    "reconstructed": 15
+    "discovered": 49,
+    "reconstructed": 16
    },
    "bytes": {
-    "discovered": 25811,
-    "reconstructed": 759
+    "discovered": 25545,
+    "reconstructed": 1025
    },
    "phases": {
     "6": 65
@@ -3450,14 +3450,14 @@
    ],
    "ambiguous_rows": [],
    "rows": {
-    "discovered": 27,
+    "discovered": 13,
     "dynamically_gated": 2,
-    "reconstructed": 8
+    "reconstructed": 22
    },
    "bytes": {
-    "discovered": 16608,
+    "discovered": 9644,
     "dynamically_gated": 1689,
-    "reconstructed": 271
+    "reconstructed": 7235
    },
    "phases": {
     "6": 37
@@ -3781,12 +3781,10 @@
    ],
    "ambiguous_rows": [],
    "rows": {
-    "discovered": 15,
-    "reconstructed": 7
+    "reconstructed": 22
    },
    "bytes": {
-    "discovered": 14296,
-    "reconstructed": 380
+    "reconstructed": 14676
    },
    "phases": {
     "6": 22
@@ -3801,10 +3799,10 @@
     "phys_fn_004374"
    ],
    "rows": {
-    "discovered": 2
+    "reconstructed": 2
    },
    "bytes": {
-    "discovered": 3535
+    "reconstructed": 3535
    },
    "phases": {
     "6": 2
@@ -3866,12 +3864,12 @@
     "phys_fn_004433"
    ],
    "rows": {
-    "discovered": 10,
-    "reconstructed": 14
+    "discovered": 8,
+    "reconstructed": 16
    },
    "bytes": {
-    "discovered": 4500,
-    "reconstructed": 251
+    "discovered": 4151,
+    "reconstructed": 600
    },
    "phases": {
     "6": 24
@@ -4245,12 +4243,10 @@
    ],
    "ambiguous_rows": [],
    "rows": {
-    "discovered": 9,
-    "reconstructed": 10
+    "reconstructed": 19
    },
    "bytes": {
-    "discovered": 707,
-    "reconstructed": 646
+    "reconstructed": 1353
    },
    "phases": {
     "6": 19
@@ -4269,12 +4265,10 @@
     "phys_fn_004729"
    ],
    "rows": {
-    "discovered": 5,
-    "reconstructed": 1
+    "reconstructed": 6
    },
    "bytes": {
-    "discovered": 204,
-    "reconstructed": 45
+    "reconstructed": 249
    },
    "phases": {
     "6": 6

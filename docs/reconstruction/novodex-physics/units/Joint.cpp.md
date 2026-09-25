@@ -47,11 +47,11 @@ Evidenced span: ['0x00095ab0', '0x0009a430']. Rows: 37 (0 ambiguous). Generated 
 - gap:core\PrismaticJoint.cpp..core\NpD6Joint.cpp: phys_fn_004391
 - unassigned: phys_fn_005667
 
-## phys_fn_004074 (0x00095ab0, 216 B, discovered)
+## phys_fn_004074 (0x00095ab0, 216 B, reconstructed)
 
 - ambiguous: no
-- source: Physics/src/Joint.cpp
-- implementation: None
+- source: Physics/src/core/Joint.cpp
+- implementation: Physics/src/core/Joint.cpp
 - prototype: undefined __thiscall FUN_10095ab0(float param_1, float param_2)
 - calling convention: __thiscall, stack purge: 8
 - callers: phys_fn_004445 (0x000b0760), phys_fn_004481 (0x000b0d60), phys_fn_004515 (0x000b1260), phys_fn_004545 (0x000b1730), phys_fn_004571 (0x000b1b70), phys_fn_004601 (0x000b2010), phys_fn_004627 (0x000b2450), phys_fn_004659 (0x000b2990), phys_fn_004685 (0x000b2dd0), phys_fn_004735 (0x000b34f0)
@@ -109,8 +109,8 @@ void __thiscall FUN_10095ab0(void *this,float param_1,float param_2)
 ## phys_fn_004076 (0x00095b90, 21 B, reconstructed)
 
 - ambiguous: no
-- source: copy [this+0x3c] and [this+0x40] to two out args (0x95b90, ret 8)
-- implementation: None
+- source: Physics/src/core/Joint.cpp
+- implementation: Physics/src/core/Joint.cpp
 - prototype: undefined __thiscall FUN_10095b90(undefined4 * param_1, undefined4 * param_2)
 - calling convention: __thiscall, stack purge: 8
 - callers: phys_fn_004573 (0x000b1bd0)
@@ -136,8 +136,8 @@ void __thiscall FUN_10095b90(void *this,undefined4 *param_1,undefined4 *param_2)
 ## phys_fn_004078 (0x00095bb0, 10 B, reconstructed)
 
 - ambiguous: no
-- source: bit extract: ((this+0x2c)>>3)&3 (0x95bb0)
-- implementation: None
+- source: Physics/src/core/Joint.cpp
+- implementation: Physics/src/core/Joint.cpp
 - prototype: uint __fastcall FUN_10095bb0(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_004483 (0x000b0dc0)
@@ -158,11 +158,11 @@ uint __fastcall FUN_10095bb0(int param_1)
 
 ```
 
-## phys_fn_004080 (0x00095bc0, 208 B, discovered)
+## phys_fn_004080 (0x00095bc0, 208 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/Joint.cpp
+- implementation: Physics/src/core/Joint.cpp
 - prototype: byte __thiscall FUN_10095bc0(float * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004135 (0x00099b40), phys_fn_004145 (0x0009a430), phys_fn_004577 (0x000b1c60)
@@ -229,8 +229,8 @@ byte __thiscall FUN_10095bc0(void *this,float *param_1)
 ## phys_fn_004081 (0x00095c90, 9 B, reconstructed)
 
 - ambiguous: no
-- source: global write: .data[0x10127180] = [this+0x20] (0x95c90)
-- implementation: None
+- source: Physics/src/core/Joint.cpp
+- implementation: Physics/src/core/Joint.cpp
 - prototype: undefined __fastcall FUN_10095c90(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_004037 (0x00092060), phys_fn_004451 (0x000b0890), phys_fn_004489 (0x000b0ec0), phys_fn_004521 (0x000b1390), phys_fn_004551 (0x000b1860), phys_fn_004581 (0x000b1d00), phys_fn_004607 (0x000b2140), phys_fn_004633 (0x000b2580), phys_fn_004665 (0x000b2ac0), phys_fn_004691 (0x000b2f00), phys_fn_004741 (0x000b3620)
@@ -255,8 +255,8 @@ void __fastcall FUN_10095c90(int param_1)
 ## phys_fn_004083 (0x00095ca0, 14 B, reconstructed)
 
 - ambiguous: no
-- source: setne global flag (0x95ca0)
-- implementation: None
+- source: Physics/src/core/Joint.cpp
+- implementation: Physics/src/core/Joint.cpp
 - prototype: bool __stdcall FUN_10095ca0(void)
 - calling convention: __stdcall, stack purge: 0
 - callers: phys_fn_004037 (0x00092060), phys_fn_004491 (0x000b0f10)
@@ -306,8 +306,8 @@ void __fastcall FUN_10095cb0(int param_1)
 ## phys_fn_004087 (0x00095cc0, 87 B, reconstructed)
 
 - ambiguous: no
-- source: x87 scale-and-accumulate (0x95cc0, ret 0xc)
-- implementation: Physics/src/ObjectModel.cpp
+- source: Physics/src/core/Joint.cpp
+- implementation: Physics/src/core/Joint.cpp
 - prototype: undefined __thiscall FUN_10095cc0(float param_1, float * param_2, float param_3)
 - calling convention: __thiscall, stack purge: 12
 - callers: phys_fn_004111 (0x00097fd0), phys_fn_004202 (0x0009c8a0), phys_fn_004222 (0x0009ea60), phys_fn_004234 (0x0009f470), phys_fn_004250 (0x000a0f70), phys_fn_004262 (0x000a1b50), phys_fn_004276 (0x000a2a80), phys_fn_004300 (0x000a48f0), phys_fn_004320 (0x000a76a0), phys_fn_004366 (0x000ac540), phys_fn_004380 (0x000ad6e0)
@@ -341,8 +341,8 @@ void __thiscall FUN_10095cc0(void *this,float param_1,float *param_2,float param
 ## phys_fn_004089 (0x00095d20, 58 B, reconstructed)
 
 - ambiguous: no
-- source: allocator-singleton list teardown (0x95d20)
-- implementation: None
+- source: Physics/src/core/Joint.cpp
+- implementation: Physics/src/core/Joint.cpp
 - prototype: undefined __fastcall FUN_10095d20(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_004095 (0x00095e20), phys_fn_004109 (0x00097e60), phys_fn_004119 (0x00098750), phys_fn_004455 (0x000b0940), phys_fn_004495 (0x000b0fa0), phys_fn_004525 (0x000b1440), phys_fn_004555 (0x000b1910), phys_fn_004585 (0x000b1db0), phys_fn_004611 (0x000b21f0), phys_fn_004639 (0x000b2670), phys_fn_004669 (0x000b2b70), phys_fn_004695 (0x000b2fb0), phys_fn_004747 (0x000b3700)
@@ -459,11 +459,11 @@ int __fastcall FUN_10095da0(int param_1)
 
 ```
 
-## phys_fn_004095 (0x00095e20, 41 B, discovered)
+## phys_fn_004095 (0x00095e20, 41 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/Joint.cpp
+- implementation: Physics/src/core/Joint.cpp
 - prototype: undefined __fastcall FUN_10095e20(int * param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_004202 (0x0009c8a0), phys_fn_004224 (0x0009eac0), phys_fn_004236 (0x0009f520), phys_fn_004252 (0x000a0fd0), phys_fn_004264 (0x000a1bb0), phys_fn_004278 (0x000a2ae0), phys_fn_004302 (0x000a49c0), phys_fn_004322 (0x000a7700), phys_fn_004368 (0x000ac5f0), phys_fn_004382 (0x000ad740)
@@ -490,11 +490,11 @@ void __fastcall FUN_10095e20(int *param_1)
 
 ```
 
-## phys_fn_004097 (0x00095e50, 1176 B, discovered)
+## phys_fn_004097 (0x00095e50, 1176 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/Joint.cpp
+- implementation: Physics/src/core/Joint.cpp
 - prototype: undefined __thiscall FUN_10095e50(int param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004099 (0x000962f0), phys_fn_004101 (0x00096750), phys_fn_004121 (0x000987a0), phys_fn_004123 (0x00098be0), phys_fn_004125 (0x00098df0), phys_fn_004127 (0x00099590), phys_fn_004129 (0x00099680), phys_fn_004131 (0x000999a0), phys_fn_004133 (0x00099ab0), phys_fn_004135 (0x00099b40), phys_fn_004143 (0x0009a0d0), phys_fn_004145 (0x0009a430), phys_fn_004200 (0x0009c060), phys_fn_004206 (0x0009cba0), phys_fn_004207 (0x0009d820), phys_fn_004221 (0x0009e810), phys_fn_004228 (0x0009eb90), phys_fn_004232 (0x0009f230), phys_fn_004240 (0x0009f620), phys_fn_004258 (0x000a10e0), phys_fn_004260 (0x000a1650), phys_fn_004272 (0x000a1d10), phys_fn_004274 (0x000a2530), phys_fn_004296 (0x000a3090), phys_fn_004298 (0x000a47b0), phys_fn_004306 (0x000a4ac0), phys_fn_004312 (0x000a5ee0), phys_fn_004318 (0x000a7240), phys_fn_004326 (0x000a7810), phys_fn_004352 (0x000a92c0), phys_fn_004354 (0x000a9580), phys_fn_004356 (0x000a9650), phys_fn_004360 (0x000aa060), phys_fn_004364 (0x000ab840), phys_fn_004372 (0x000ac700), phys_fn_004386 (0x000ad850)
@@ -1639,11 +1639,11 @@ void __fastcall FUN_10097ca0(int param_1)
 
 ```
 
-## phys_fn_004107 (0x00097d30, 297 B, discovered)
+## phys_fn_004107 (0x00097d30, 297 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/Joint.cpp
+- implementation: Physics/src/core/Joint.cpp
 - prototype: undefined __thiscall FUN_10097d30(int param_1, int param_2, char param_3)
 - calling convention: __thiscall, stack purge: 12
 - callers: phys_fn_004141 (0x00099e60), phys_fn_004212 (0x0009e2f0), phys_fn_004226 (0x0009eb00), phys_fn_004238 (0x0009f560), phys_fn_004254 (0x000a1010), phys_fn_004266 (0x000a1bf0), phys_fn_004280 (0x000a2b20), phys_fn_004304 (0x000a4a00), phys_fn_004324 (0x000a7740), phys_fn_004370 (0x000ac630), phys_fn_004384 (0x000ad780)
@@ -2297,11 +2297,11 @@ void * __thiscall FUN_10098750(void *this,byte param_1)
 
 ```
 
-## phys_fn_004121 (0x000987a0, 1084 B, discovered)
+## phys_fn_004121 (0x000987a0, 1084 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/Joint.cpp
+- implementation: Physics/src/core/Joint.cpp
 - prototype: undefined __thiscall FUN_100987a0(int param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004141 (0x00099e60), phys_fn_004212 (0x0009e2f0), phys_fn_004226 (0x0009eb00), phys_fn_004238 (0x0009f560), phys_fn_004254 (0x000a1010), phys_fn_004266 (0x000a1bf0), phys_fn_004280 (0x000a2b20), phys_fn_004304 (0x000a4a00), phys_fn_004324 (0x000a7740), phys_fn_004370 (0x000ac630), phys_fn_004384 (0x000ad780)
@@ -2588,11 +2588,11 @@ LAB_10098c15:
 
 ```
 
-## phys_fn_004125 (0x00098df0, 1940 B, discovered)
+## phys_fn_004125 (0x00098df0, 1940 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/Joint.cpp
+- implementation: Physics/src/core/Joint.cpp
 - prototype: undefined __thiscall FUN_10098df0(float * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004137 (0x00099e00), phys_fn_004437 (0x000b0670)
@@ -2840,11 +2840,11 @@ LAB_10098e29:
 
 ```
 
-## phys_fn_004127 (0x00099590, 235 B, discovered)
+## phys_fn_004127 (0x00099590, 235 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/Joint.cpp
+- implementation: Physics/src/core/Joint.cpp
 - prototype: undefined __thiscall FUN_10099590(float * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004260 (0x000a1650), phys_fn_004274 (0x000a2530), phys_fn_004318 (0x000a7240), phys_fn_004362 (0x000ab1d0), phys_fn_004364 (0x000ab840)
@@ -2920,11 +2920,11 @@ LAB_100995c5:
 
 ```
 
-## phys_fn_004129 (0x00099680, 787 B, discovered)
+## phys_fn_004129 (0x00099680, 787 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/Joint.cpp
+- implementation: Physics/src/core/Joint.cpp
 - prototype: undefined __thiscall FUN_10099680(float * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004139 (0x00099e30), phys_fn_004354 (0x000a9580), phys_fn_004441 (0x000b0700)
@@ -3060,11 +3060,11 @@ LAB_100996b7:
 
 ```
 
-## phys_fn_004131 (0x000999a0, 260 B, discovered)
+## phys_fn_004131 (0x000999a0, 260 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/Joint.cpp
+- implementation: Physics/src/core/Joint.cpp
 - prototype: float10 __thiscall FUN_100999a0(void * param_1, float * param_2, float * param_3, float * param_4, float * param_5)
 - calling convention: __thiscall, stack purge: 16
 - callers: phys_fn_004135 (0x00099b40), phys_fn_004143 (0x0009a0d0), phys_fn_004145 (0x0009a430)
@@ -3315,11 +3315,11 @@ LAB_10099b88:
 
 ```
 
-## phys_fn_004137 (0x00099e00, 41 B, discovered)
+## phys_fn_004137 (0x00099e00, 41 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/Joint.cpp
+- implementation: Physics/src/core/Joint.cpp
 - prototype: undefined __thiscall FUN_10099e00(float * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004497 (0x000b0ff0)
@@ -3348,11 +3348,11 @@ void __thiscall FUN_10099e00(void *this,float *param_1)
 
 ```
 
-## phys_fn_004139 (0x00099e30, 41 B, discovered)
+## phys_fn_004139 (0x00099e30, 41 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/Joint.cpp
+- implementation: Physics/src/core/Joint.cpp
 - prototype: undefined __thiscall FUN_10099e30(float * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004499 (0x000b1020)
@@ -3381,11 +3381,11 @@ void __thiscall FUN_10099e30(void *this,float *param_1)
 
 ```
 
-## phys_fn_004141 (0x00099e60, 464 B, discovered)
+## phys_fn_004141 (0x00099e60, 464 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/Joint.cpp
+- implementation: Physics/src/core/Joint.cpp
 - prototype: void * __thiscall FUN_10099e60(int param_1, int param_2)
 - calling convention: __thiscall, stack purge: 8
 - callers: phys_fn_004210 (0x0009e1a0), phys_fn_004222 (0x0009ea60), phys_fn_004234 (0x0009f470), phys_fn_004250 (0x000a0f70), phys_fn_004262 (0x000a1b50), phys_fn_004276 (0x000a2a80), phys_fn_004300 (0x000a48f0), phys_fn_004320 (0x000a76a0), phys_fn_004366 (0x000ac540), phys_fn_004380 (0x000ad6e0)
@@ -3646,11 +3646,11 @@ LAB_1009a147:
 
 ```
 
-## phys_fn_004145 (0x0009a430, 174 B, discovered)
+## phys_fn_004145 (0x0009a430, 174 B, reconstructed)
 
 - ambiguous: no
-- source: Physics/src/Joint.cpp
-- implementation: None
+- source: Physics/src/core/Joint.cpp
+- implementation: Physics/src/core/Joint.cpp
 - prototype: bool __thiscall FUN_1009a430(float * param_1, float * param_2)
 - calling convention: __thiscall, stack purge: 8
 - callers: phys_fn_004037 (0x00092060), phys_fn_004635 (0x000b25d0)

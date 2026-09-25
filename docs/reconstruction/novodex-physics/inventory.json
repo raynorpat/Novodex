@@ -74024,13 +74024,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1524",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13473",
-      "static_proof": null,
+      "static_proof": "transcribed from oracle/ghidra/manifest.json (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/Joint.cpp"
     },
     {
       "id": "phys_fn_004067",
@@ -74097,12 +74098,13 @@
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
       "state": "reconstructed",
-      "source": "getter: returns [this+0x168] (0x95a80)",
+      "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1526",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13485",
-      "static_proof": "mov eax,[ecx+0x168]; ret",
+      "static_proof": "mov eax,[ecx+0x168]; ret; transcribed from oracle/ghidra/manifest.json (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": "confirmed via simplegetters drive (3z46): failures=0",
-      "notes": ""
+      "notes": "previous source: getter: returns [this+0x168] (0x95a80)",
+      "implementation": "Physics/src/core/Joint.cpp"
     },
     {
       "id": "phys_fn_004071",
@@ -74168,13 +74170,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/Joint.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1528",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13487",
-      "static_proof": null,
+      "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "previous source: Physics/src/Joint.cpp",
+      "implementation": "Physics/src/core/Joint.cpp"
     },
     {
       "id": "phys_fn_004075",
@@ -74205,12 +74208,13 @@
       "phase": 6,
       "phase_provenance": "translation_unit",
       "state": "reconstructed",
-      "source": "copy [this+0x3c] and [this+0x40] to two out args (0x95b90, ret 8)",
+      "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1529",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13493",
-      "static_proof": "mov eax,[ecx+0x3c]; mov [edx],eax; mov eax,[ecx+0x40]; mov [ecx],eax; ret 8",
+      "static_proof": "mov eax,[ecx+0x3c]; mov [edx],eax; mov eax,[ecx+0x40]; mov [ecx],eax; ret 8; transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": "confirmed via zmix drive (3z54): failures=0",
-      "notes": ""
+      "notes": "previous source: copy [this+0x3c] and [this+0x40] to two out args (0x95b90, ret 8)",
+      "implementation": "Physics/src/core/Joint.cpp"
     },
     {
       "id": "phys_fn_004077",
@@ -74241,12 +74245,13 @@
       "phase": 6,
       "phase_provenance": "translation_unit",
       "state": "reconstructed",
-      "source": "bit extract: ((this+0x2c)>>3)&3 (0x95bb0)",
+      "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1530",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13494",
-      "static_proof": "mov eax,[ecx+0x2c]; shr eax,3; and eax,3; ret",
-      "dynamic_proof": "confirmed via simplegetters drive (3z46): failures=0",
-      "notes": ""
+      "static_proof": "mov eax,[ecx+0x2c]; shr eax,3; and eax,3; ret; transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
+      "dynamic_proof": "confirmed via simplegetters drive (3z46): failures=0; executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in each of the four cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint wired to core/RevoluteJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 11/11 coverage); trace recorded in evidence/unit-pilot-revolute.md (Task 10 row, ## Result)",
+      "notes": "previous source: bit extract: ((this+0x2c)>>3)&3 (0x95bb0)",
+      "implementation": "Physics/src/core/Joint.cpp"
     },
     {
       "id": "phys_fn_004079",
@@ -74276,13 +74281,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1531",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13495",
-      "static_proof": null,
+      "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/Joint.cpp"
     },
     {
       "id": "phys_fn_004081",
@@ -74295,12 +74301,13 @@
       "phase": 6,
       "phase_provenance": "translation_unit",
       "state": "reconstructed",
-      "source": "global write: .data[0x10127180] = [this+0x20] (0x95c90)",
+      "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1532",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13497",
-      "static_proof": "mov eax,[ecx+0x20]; mov dword ptr [0x10127180],eax; ret -- stores to the .data global",
+      "static_proof": "mov eax,[ecx+0x20]; mov dword ptr [0x10127180],eax; ret -- stores to the .data global; transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": "confirmed via globalwrite drive (3z52): failures=0",
-      "notes": ""
+      "notes": "previous source: global write: .data[0x10127180] = [this+0x20] (0x95c90)",
+      "implementation": "Physics/src/core/Joint.cpp"
     },
     {
       "id": "phys_fn_004082",
@@ -74331,12 +74338,13 @@
       "phase": 6,
       "phase_provenance": "translation_unit",
       "state": "reconstructed",
-      "source": "setne global flag (0x95ca0)",
+      "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1533",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13498",
-      "static_proof": "returns 1 if the [0x10127180] global is non-zero else 0; ret",
+      "static_proof": "returns 1 if the [0x10127180] global is non-zero else 0; ret; transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": "confirmed via smallflag differential (3z105): failures=0",
-      "notes": ""
+      "notes": "previous source: setne global flag (0x95ca0)",
+      "implementation": "Physics/src/core/Joint.cpp"
     },
     {
       "id": "phys_fn_004084",
@@ -74403,14 +74411,14 @@
       "phase": 6,
       "phase_provenance": "translation_unit",
       "state": "reconstructed",
-      "source": "x87 scale-and-accumulate (0x95cc0, ret 0xc)",
+      "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1535",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13500",
-      "static_proof": "scale = a/b; [this+0x154/0x158/0x15c] += scale * vec[0/1/2]; ret 0xc",
+      "static_proof": "scale = a/b; [this+0x154/0x158/0x15c] += scale * vec[0/1/2]; ret 0xc; transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": "confirmed via xaccum drive (3z74): failures=0",
-      "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp",
-      "implementation_symbol": "nxAccumulateByKind0867"
+      "notes": "previous source: x87 scale-and-accumulate (0x95cc0, ret 0xc); parameterised model kept at Physics/src/ObjectModel.cpp nxAccumulateByKind0867",
+      "implementation": "Physics/src/core/Joint.cpp",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_004088",
@@ -74441,12 +74449,13 @@
       "phase": 6,
       "phase_provenance": "translation_unit",
       "state": "reconstructed",
-      "source": "allocator-singleton list teardown (0x95d20)",
+      "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1536",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13501",
-      "static_proof": "static review of the recorded shape: allocator-singleton list teardown (0x95d20); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
+      "static_proof": "static review of the recorded shape: allocator-singleton list teardown (0x95d20); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257); transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": "confirmed via the list4089 differential (3z195): chain lengths 0..3 all failures=0, comparing the ordered free sequence, the global word and the whole object, with the allocator singleton and that global bound",
-      "notes": ""
+      "notes": "previous source: allocator-singleton list teardown (0x95d20)",
+      "implementation": "Physics/src/core/Joint.cpp"
     },
     {
       "id": "phys_fn_004090",
@@ -74548,13 +74557,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1539",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13510",
-      "static_proof": null,
+      "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/Joint.cpp"
     },
     {
       "id": "phys_fn_004096",
@@ -74584,13 +74594,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1540",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13512",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in each of the four cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), twice per case, with Scene::createJoint wired to core/RevoluteJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 11/11 coverage); trace recorded in evidence/unit-pilot-revolute.md (Task 10 row, ## Result)",
+      "notes": "",
+      "implementation": "Physics/src/core/Joint.cpp"
     },
     {
       "id": "phys_fn_004098",
@@ -74764,13 +74775,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1545",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13588",
-      "static_proof": null,
+      "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/Joint.cpp"
     },
     {
       "id": "phys_fn_004108",
@@ -75018,13 +75030,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1551",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13638",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in each of the four cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint wired to core/RevoluteJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 11/11 coverage); trace recorded in evidence/unit-pilot-revolute.md (Task 10 row, ## Result)",
+      "notes": "",
+      "implementation": "Physics/src/core/Joint.cpp"
     },
     {
       "id": "phys_fn_004122",
@@ -75090,13 +75103,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1553",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13666",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in each of the four cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint wired to core/RevoluteJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 11/11 coverage); trace recorded in evidence/unit-pilot-revolute.md (Task 10 row, ## Result)",
+      "notes": "",
+      "implementation": "Physics/src/core/Joint.cpp"
     },
     {
       "id": "phys_fn_004126",
@@ -75126,13 +75140,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1554",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13675",
-      "static_proof": null,
+      "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/Joint.cpp"
     },
     {
       "id": "phys_fn_004128",
@@ -75162,13 +75177,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1555",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13681",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in each of the four cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint wired to core/RevoluteJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 11/11 coverage); trace recorded in evidence/unit-pilot-revolute.md (Task 10 row, ## Result)",
+      "notes": "",
+      "implementation": "Physics/src/core/Joint.cpp"
     },
     {
       "id": "phys_fn_004130",
@@ -75198,13 +75214,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1556",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13687",
-      "static_proof": null,
+      "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/Joint.cpp"
     },
     {
       "id": "phys_fn_004132",
@@ -75306,13 +75323,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1559",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13722",
-      "static_proof": null,
+      "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/Joint.cpp"
     },
     {
       "id": "phys_fn_004138",
@@ -75342,13 +75360,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1560",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13723",
-      "static_proof": null,
+      "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/Joint.cpp"
     },
     {
       "id": "phys_fn_004140",
@@ -75378,13 +75397,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1561",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13724",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in each of the four cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint wired to core/RevoluteJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 11/11 coverage); trace recorded in evidence/unit-pilot-revolute.md (Task 10 row, ## Result)",
+      "notes": "",
+      "implementation": "Physics/src/core/Joint.cpp"
     },
     {
       "id": "phys_fn_004142",
@@ -75450,13 +75470,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": "Physics/src/Joint.cpp",
+      "state": "reconstructed",
+      "source": "Physics/src/core/Joint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1563",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13757",
-      "static_proof": null,
+      "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "previous source: Physics/src/Joint.cpp",
+      "implementation": "Physics/src/core/Joint.cpp"
     },
     {
       "id": "phys_fn_004146",
@@ -78751,12 +78772,13 @@
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
       "state": "reconstructed",
-      "source": "zero [this+0x1ac/1b0/1b4] (0xa8d20)",
+      "source": "Physics/src/core/RevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2092",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14705",
-      "static_proof": "xor eax,eax; mov [ecx+0x1b4],eax; [ecx+0x1b0],eax; [ecx+0x1ac],eax; ret",
+      "static_proof": "xor eax,eax; mov [ecx+0x1b4],eax; [ecx+0x1b0],eax; [ecx+0x1ac],eax; ret; transcribed from units/core__RevoluteJoint.cpp.md (ghidra supplement) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": "confirmed via zmix2 drive (3z55): failures=0",
-      "notes": ""
+      "notes": "previous source: zero [this+0x1ac/1b0/1b4] (0xa8d20)",
+      "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004329",
@@ -78786,13 +78808,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/RevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1625",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14706",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__RevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004331",
@@ -78822,13 +78845,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/RevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1626",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14712",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from units/core__RevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in each of the four cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint wired to core/RevoluteJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 11/11 coverage); trace recorded in evidence/unit-pilot-revolute.md (Task 10 row, ## Result)",
+      "notes": "",
+      "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004333",
@@ -78862,11 +78886,11 @@
       "source": "Physics/src/core/RevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2095",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14713",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__RevoluteJoint.cpp.md (ghidra supplement) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": "confirmed via guardedstore differential (3z172): both arms failures=0 for all five rows, comparing the report tuple, the whole object and the stored word, with the report slot bound",
-      "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp",
-      "implementation_symbol": "phys_fn_004334 (harness dispatch table)"
+      "notes": "parameterised model kept at Physics/src/ObjectModel.cpp phys_fn_004334 (harness dispatch table)",
+      "implementation": "Physics/src/core/RevoluteJoint.cpp",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_004335",
@@ -78897,12 +78921,13 @@
       "phase": 6,
       "phase_provenance": "translation_unit",
       "state": "reconstructed",
-      "source": "field getter [this+0x1a8] (0xa8fb0)",
+      "source": "Physics/src/core/RevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2096",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14718",
-      "static_proof": "mov eax,[ecx+0x1a8]; ret",
+      "static_proof": "mov eax,[ecx+0x1a8]; ret; transcribed from units/core__RevoluteJoint.cpp.md (ghidra supplement) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": "confirmed via setget2 drive (3z49): failures=0",
-      "notes": ""
+      "notes": "previous source: field getter [this+0x1a8] (0xa8fb0)",
+      "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004337",
@@ -78936,11 +78961,11 @@
       "source": "Physics/src/core/RevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2097",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14719",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__RevoluteJoint.cpp.md (ghidra supplement) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": "confirmed via guardedstore differential (3z172): both arms failures=0 for all five rows, comparing the report tuple, the whole object and the stored word, with the report slot bound",
-      "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp",
-      "implementation_symbol": "phys_fn_004338 (harness dispatch table)"
+      "notes": "parameterised model kept at Physics/src/ObjectModel.cpp phys_fn_004338 (harness dispatch table)",
+      "implementation": "Physics/src/core/RevoluteJoint.cpp",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_004339",
@@ -78970,13 +78995,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/RevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1627",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14722",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__RevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004341",
@@ -79007,12 +79033,13 @@
       "phase": 6,
       "phase_provenance": "translation_unit",
       "state": "reconstructed",
-      "source": "copy 6 fields to out + return ([this+0x1a8]&1) (0xa90c0, ret 4)",
+      "source": "Physics/src/core/RevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1628",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14727",
-      "static_proof": "copy [this+0x16c..0x180] to arg[0..0x14]; return [this+0x1a8]&1",
+      "static_proof": "copy [this+0x16c..0x180] to arg[0..0x14]; return [this+0x1a8]&1; transcribed from units/core__RevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": "confirmed via bufreset drive (3z68): failures=0",
-      "notes": ""
+      "notes": "previous source: copy 6 fields to out + return ([this+0x1a8]&1) (0xa90c0, ret 4)",
+      "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004343",
@@ -79042,13 +79069,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/RevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1629",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14728",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__RevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004345",
@@ -79079,12 +79107,13 @@
       "phase": 6,
       "phase_provenance": "translation_unit",
       "state": "reconstructed",
-      "source": "copy [this+0x184..0x18c] to out arg + return (([+0x1a8]>>1)&1) (0xa91b0, ret 4)",
+      "source": "Physics/src/core/RevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1630",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14733",
-      "static_proof": "3 dword moves to arg, then shr 1/and 1 of +0x1a8; ret 4",
+      "static_proof": "3 dword moves to arg, then shr 1/and 1 of +0x1a8; ret 4; transcribed from units/core__RevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": "confirmed via multicopy drive (3z60): failures=0",
-      "notes": ""
+      "notes": "previous source: copy [this+0x184..0x18c] to out arg + return (([+0x1a8]>>1)&1) (0xa91b0, ret 4)",
+      "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004347",
@@ -79114,13 +79143,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/RevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1631",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14734",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__RevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004349",
@@ -79151,12 +79181,13 @@
       "phase": 6,
       "phase_provenance": "translation_unit",
       "state": "reconstructed",
-      "source": "copy [this+0x190..0x198] to out arg + return (([+0x1a8]>>2)&1) (0xa9290, ret 4)",
+      "source": "Physics/src/core/RevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1632",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14739",
-      "static_proof": "3 dword moves to arg, then shr 2/and 1 of +0x1a8; ret 4",
+      "static_proof": "3 dword moves to arg, then shr 2/and 1 of +0x1a8; ret 4; transcribed from units/core__RevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": "confirmed via multicopy drive (3z60): failures=0",
-      "notes": ""
+      "notes": "previous source: copy [this+0x190..0x198] to out arg + return (([+0x1a8]>>2)&1) (0xa9290, ret 4)",
+      "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004351",
@@ -79186,13 +79217,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/RevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1633",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14740",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__RevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004353",
@@ -79222,13 +79254,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/RevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1634",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14753",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__RevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004355",
@@ -79258,13 +79291,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/RevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2106",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14760",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__RevoluteJoint.cpp.md (ghidra supplement) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004357",
@@ -79294,13 +79328,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/RevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1635",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14786",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__RevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004359",
@@ -79330,13 +79365,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/RevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2108",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14790",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__RevoluteJoint.cpp.md (ghidra supplement) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004361",
@@ -79366,13 +79402,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/RevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1636",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14829",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__RevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004363",
@@ -79402,13 +79439,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/RevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2110",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14870",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__RevoluteJoint.cpp.md (ghidra supplement) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004365",
@@ -79438,13 +79476,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/RevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1637",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14894",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from units/core__RevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in each of the four cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint wired to core/RevoluteJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 11/11 coverage); trace recorded in evidence/unit-pilot-revolute.md (Task 10 row, ## Result)",
+      "notes": "",
+      "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004367",
@@ -79474,13 +79513,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/RevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1638",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14897",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__RevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004369",
@@ -79510,13 +79550,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/RevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1639",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14900",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__RevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004371",
@@ -79546,13 +79587,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/RevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1640",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14915",
-      "static_proof": null,
+      "static_proof": "transcribed from oracle/ghidra/manifest.json (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004373",
@@ -79582,13 +79624,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/RevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1641",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14928",
-      "static_proof": null,
+      "static_proof": "transcribed from oracle/ghidra/manifest.json (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004375",
@@ -79852,13 +79895,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/JointSupport.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1646",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15044",
-      "static_proof": null,
+      "static_proof": "transcribed from oracle/ghidra/manifest.json (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/JointSupport.cpp"
     },
     {
       "id": "phys_fn_004390",
@@ -79924,13 +79968,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/JointSupport.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1648",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15064",
-      "static_proof": null,
+      "static_proof": "transcribed from oracle/ghidra/manifest.json (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/JointSupport.cpp"
     },
     {
       "id": "phys_fn_004394",
@@ -85143,13 +85188,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpRevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1769",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15446",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpRevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpRevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004682",
@@ -85179,13 +85225,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpRevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1770",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15449",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpRevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpRevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004684",
@@ -85215,13 +85262,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpRevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1771",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15452",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpRevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpRevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004686",
@@ -85251,13 +85299,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpRevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1772",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15455",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpRevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpRevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004688",
@@ -85287,13 +85336,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpRevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1773",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15458",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpRevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpRevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004690",
@@ -85327,9 +85377,10 @@
       "source": "Physics/src/core/NpRevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1774",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15461",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpRevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": "confirmed via the tailjmp differential (3z191): failures=0 for all twelve rows on both arms, comparing the report tuple, the global word written at 0x10127180 and the whole object buffer, with the lock API, report slot and that global bound",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpRevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004692",
@@ -85359,13 +85410,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpRevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1775",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15464",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpRevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpRevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004694",
@@ -85399,11 +85451,11 @@
       "source": "Physics/src/core/NpRevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1776",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15467",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpRevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
-      "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp",
-      "implementation_symbol": "phys_fn_004695 (harness dispatch table)"
+      "notes": "parameterised model kept at Physics/src/ObjectModel.cpp phys_fn_004695 (harness dispatch table)",
+      "implementation": "Physics/src/core/NpRevoluteJoint.cpp",
+      "implementation_symbol": null
     },
     {
       "id": "phys_fn_004696",
@@ -85437,9 +85489,10 @@
       "source": "Physics/src/core/NpRevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1777",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15470",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpRevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpRevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004698",
@@ -85473,9 +85526,10 @@
       "source": "Physics/src/core/NpRevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1778",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15473",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpRevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpRevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004700",
@@ -85509,9 +85563,10 @@
       "source": "Physics/src/core/NpRevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1779",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15476",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpRevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpRevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004702",
@@ -85542,12 +85597,13 @@
       "phase": 6,
       "phase_provenance": "translation_unit",
       "state": "reconstructed",
-      "source": "lock-bracketed vtable call, slot +0x30 (0xb3120)",
+      "source": "Physics/src/core/NpRevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1780",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15479",
-      "static_proof": "static review of the recorded shape: lock-bracketed vtable call, slot +0x30 (0xb3120); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
+      "static_proof": "static review of the recorded shape: lock-bracketed vtable call, slot +0x30 (0xb3120); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257); transcribed from units/core__NpRevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": "confirmed via the vtcall slots differential (3z169): result, slot target and hit count all failures=0 for both rows, with the Foundation lock API bound and each slot pointed at a recorder",
-      "notes": ""
+      "notes": "previous source: lock-bracketed vtable call, slot +0x30 (0xb3120)",
+      "implementation": "Physics/src/core/NpRevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004704",
@@ -85581,9 +85637,10 @@
       "source": "Physics/src/core/NpRevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1781",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15480",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpRevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpRevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004706",
@@ -85614,12 +85671,13 @@
       "phase": 6,
       "phase_provenance": "translation_unit",
       "state": "reconstructed",
-      "source": "lock-bracketed vtable call, slot +0x38 (0xb31b0)",
+      "source": "Physics/src/core/NpRevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1782",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15483",
-      "static_proof": "static review of the recorded shape: lock-bracketed vtable call, slot +0x38 (0xb31b0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
+      "static_proof": "static review of the recorded shape: lock-bracketed vtable call, slot +0x38 (0xb31b0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257); transcribed from units/core__NpRevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": "confirmed via the vtcall slots differential (3z175): result, slot target and hit count all failures=0, alongside the 004703 and 001209 arms",
-      "notes": ""
+      "notes": "previous source: lock-bracketed vtable call, slot +0x38 (0xb31b0)",
+      "implementation": "Physics/src/core/NpRevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004708",
@@ -85649,13 +85707,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpRevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1783",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15484",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpRevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpRevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004710",
@@ -85686,12 +85745,13 @@
       "phase": 6,
       "phase_provenance": "translation_unit",
       "state": "reconstructed",
-      "source": "locked copy-and-flag accessor (0xb3240, ret 4)",
+      "source": "Physics/src/core/NpRevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1784",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15487",
-      "static_proof": "locks [self+0x14], calls helper 004342 on [self+0x18] which copies six dwords from [field+0x16c] into out and returns bit 0 of [field+0x1a8] in al, then unlocks and returns that byte; ret 4",
+      "static_proof": "locks [self+0x14], calls helper 004342 on [self+0x18] which copies six dwords from [field+0x16c] into out and returns bit 0 of [field+0x1a8] in al, then unlocks and returns that byte; ret 4; transcribed from units/core__NpRevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": "confirmed via lockacc6 differential (3z146): both flag states failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
-      "notes": ""
+      "notes": "previous source: locked copy-and-flag accessor (0xb3240, ret 4)",
+      "implementation": "Physics/src/core/NpRevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004712",
@@ -85721,13 +85781,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/NpRevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2284",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15488",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpRevoluteJoint.cpp.md (ghidra supplement) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpRevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004714",
@@ -85758,12 +85819,13 @@
       "phase": 6,
       "phase_provenance": "translation_unit",
       "state": "reconstructed",
-      "source": "locked copy-and-flag accessor (0xb3280, ret 4)",
+      "source": "Physics/src/core/NpRevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1785",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15489",
-      "static_proof": "locks [self+0x14], calls helper 004346 on [self+0x18] which copies three dwords from [field+0x184] into out and returns bit 1 of [field+0x1a8] in al, then unlocks and returns that byte; ret 4",
+      "static_proof": "locks [self+0x14], calls helper 004346 on [self+0x18] which copies three dwords from [field+0x184] into out and returns bit 1 of [field+0x1a8] in al, then unlocks and returns that byte; ret 4; transcribed from units/core__NpRevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": "confirmed via lockacc6 differential (3z146): both flag states failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
-      "notes": ""
+      "notes": "previous source: locked copy-and-flag accessor (0xb3280, ret 4)",
+      "implementation": "Physics/src/core/NpRevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004716",
@@ -85793,13 +85855,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpRevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1786",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15490",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpRevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpRevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004718",
@@ -85830,12 +85893,13 @@
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
       "state": "reconstructed",
-      "source": "locked copy-and-flag accessor (0xb3310, ret 4)",
+      "source": "Physics/src/core/NpRevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1787",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15493",
-      "static_proof": "locks [self+0x14], calls helper 004350 on [self+0x18] which copies three dwords from [field+0x190] into out and returns bit 2 of [field+0x1a8] in al, then unlocks and returns that byte; ret 4",
+      "static_proof": "locks [self+0x14], calls helper 004350 on [self+0x18] which copies three dwords from [field+0x190] into out and returns bit 2 of [field+0x1a8] in al, then unlocks and returns that byte; ret 4; transcribed from oracle/ghidra/manifest.json (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": "confirmed via lockacc6 differential (3z146): both flag states failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
-      "notes": ""
+      "notes": "previous source: locked copy-and-flag accessor (0xb3310, ret 4)",
+      "implementation": "Physics/src/core/NpRevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004720",
@@ -85865,13 +85929,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/NpRevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2288",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15494",
-      "static_proof": null,
+      "static_proof": "transcribed from oracle/ghidra/supplement.json (ghidra supplement) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpRevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004722",
@@ -85901,13 +85966,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/NpRevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2289",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15495",
-      "static_proof": null,
+      "static_proof": "transcribed from oracle/ghidra/supplement.json (ghidra supplement) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpRevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004724",
@@ -85937,13 +86003,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/NpRevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1788",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15496",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from oracle/ghidra/manifest.json (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in each of the four cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint wired to core/RevoluteJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 11/11 coverage); trace recorded in evidence/unit-pilot-revolute.md (Task 10 row, ## Result)",
+      "notes": "",
+      "implementation": "Physics/src/core/NpRevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004726",
@@ -85973,13 +86040,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/NpRevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2291",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15497",
-      "static_proof": null,
+      "static_proof": "compiler-generated `vector deleting destructor' adjustor{12} thunk: Physics/src/core/NpRevoluteJoint.cpp carries only its stable-ID line above ~NpRevoluteJoint; the NpRevoluteJoint : NxRevoluteJoint, EmbeddedHookBase layout per units/revolute-contract.md makes the compiler emit ??_ENpRevoluteJoint@@WM@AEPAXI@Z (candidate 0x1002e9a5 in build/Release/NxPhysics.map), which disassembles to `sub ecx,0xc; jmp <NpRevoluteJoint deleting destructor>`, the same two instructions as the oracle's 0x100b33e0 `sub ecx,0xc; jmp 0x100b33f0` (phys_fn_004729)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpRevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004728",
@@ -86009,13 +86077,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/NpRevoluteJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1789",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15498",
-      "static_proof": null,
+      "static_proof": "transcribed from oracle/ghidra/manifest.json (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpRevoluteJoint.cpp"
     },
     {
       "id": "phys_fn_004730",
