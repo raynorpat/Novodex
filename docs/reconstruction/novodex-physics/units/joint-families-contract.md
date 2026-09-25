@@ -604,6 +604,21 @@ Getters: 004437/004125, 004441/004129, 004483/004078, 004539, 004443/004070,
   stable-ID line.
 - **Solver biases may divide**: point-in-plane 004258 forms its bias with `fdiv [arg]`, where
   point-on-line 004272 multiplies by 1/arg. Read the bias instruction at each site.
+- **Report sites differ per family**: distance 004230/004238 call the error import with no
+  `FoundationSDK` instance check (no `int3` guard), so they use the static
+  `FoundationSDK::error`, not `getInstance().error`. Distance loadFromDesc has no broken-joint
+  test at all. Read every report site's listing.
+- **Family descriptors with members**: `NxDistanceJointDesc.h` uses `NxSpringDesc` without including
+  it, so the internal header includes `NxSpringDesc.h` first. A spring member's inline
+  `NxSpringDesc()` shows up in the constructor as zero stores before the Np allocation.
+  Static-assert the descriptor offsets the constructor reads (desc+0x6c.. for distance).
+- **Kind-0 records**: the distance limit arms build kind-0 records: bits 0-4 cleared, and bit 9
+  set through the same xor sequence. `distanceRecordBits(record, keep, kind)` (the spherical
+  spring-bits shape) covers kinds 0 and 1. Pulley and fixed may need it.
+- **sqrt**: `sqrt()` in these /arch:IA32 units compiles to a `__CIsqrt` call in the candidate,
+  where the oracle has an inline `fsqrt`. Every family since the pilot does the same. The
+  results agree for a double argument, but a reviewer comparing the object code will see the
+  call.
 
 ## Cylindrical
 
@@ -1755,3 +1770,22 @@ sets maxDistance, minDistance, the spring and the flags to non-default values.
   10 = **004230** -> 004066 (the family fields come back through it).
 - Compiled but not reached: 004232, 004236 (release unwired), 004238, 004240, 004511-004527,
   004535.
+
+### Result (Task 3f)
+
+- Wired: `NxSceneInternal::createJoint` builds type 6 through `DistanceJoint` (0x184, type bit
+  0x2000) and `nxDistanceJointAttachScene`, in the same block as the other wired families.
+  `nxJointSizeForType` is now reached only by types 7-9.
+- The staged pair matched the oracle on the first run: `stdout_delta=0`, 59/59 Phase 6 coverage,
+  28/28 Phase 7. No transcript difference was found. The saved family fields (maxDistance,
+  minDistance, the spring's three words and the flags) came back unchanged in both cases.
+- Registered lines: four per joint list, copied from the oracle side of that run. The two sources
+  were the oracle-differential section of the Phase 6 log for `NxPhysicsJointTests` and the
+  `pair=oracle` child output for `NxPhysicsJointStagedPairTests`. Their 22 distance lines were
+  identical (`cmp`).
+- A cdb trace of the candidate (`evidence/joint-families-trace-distance.txt`) shows 004234,
+  004531, 004529 and 004230 executing in both cases. 004232, 004236, 004238, 004240 and the Np
+  setters are compiled but not reached. The solver and visualization rows are checked against
+  the listing by review and the build only. The candidate object has no xmm instruction.
+- Ledger: the 19 rows are `reconstructed_not_falsified` in `gates/phase6-closure.json` (15 moved
+  from `not_reconstructed_in_phase`; 4 already were); counts 171 / 260.
