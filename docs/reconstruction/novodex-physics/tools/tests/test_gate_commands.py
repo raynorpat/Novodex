@@ -36,7 +36,9 @@ PHASE_TARGETS = {
     # Phase 6 has a registered STAGED-PAIR target: a closure is a mutation to a row's
     # implementation, and only a staged-pair target loads the rebuilt module, so the
     # closure schema needs one (evidence 11l).
-    "6": "NxPhysicsJointStagedPairTests",
+    # NxFoundationTangentTests joined it when NxNormalToTangents, which
+    # NxJointDesc::setGlobalAxis calls, was brought to the oracle's words.
+    "6": "NxPhysicsJointStagedPairTests,NxFoundationTangentTests",
     # Phase 7 registered the same target for the same reason: five of the six rows
     # recorded in 11u are Phase 7's own and execute in that harness.
     "7": "NxPhysicsJointStagedPairTests",

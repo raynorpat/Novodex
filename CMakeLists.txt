@@ -27,6 +27,19 @@ target_include_directories(NxFoundation PRIVATE
 
 target_compile_definitions(NxFoundation PRIVATE NX_FOUNDATION_DLL=1 FOUNDATIONDLL_EXPORTS=1)
 
+# The Foundation's copy of the x87 rule the NxPhysics block below records.
+# NxNormalToTangents is x87 in the oracle, and typing its register lifetimes
+# `double` reproduces every finite word NxFoundationTangentTests compares; what
+# it cannot reproduce is which NaN survives an operation with two NaN operands.
+# Measured: with the default architecture ten of that differential's cases --
+# the zero axis, the infinite and NaN axes, the two-payload inputs -- came out
+# with the other NaN sign or payload, and with this flag none did.
+if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
+	set_source_files_properties(
+		Foundation/src/Utilities.cpp
+		PROPERTIES COMPILE_OPTIONS "/arch:IA32")
+endif()
+
 if(WIN32)
 	add_executable(NxFoundationExportTests tests/FoundationExportTests.cpp)
 	target_include_directories(NxFoundationExportTests PRIVATE Foundation/include)
@@ -297,6 +310,13 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	add_executable(NxNormalToTangentsProbe tests/NxNormalToTangentsProbe.cpp)
 	target_include_directories(NxNormalToTangentsProbe PRIVATE Foundation/include Physics/include)
 	target_link_libraries(NxNormalToTangentsProbe bcrypt)
+	# The gate that probe became: NxNormalToTangents's exact output words over
+	# both arms, the threshold, degenerate inputs and a digest sweep, compared
+	# between the two staged pairs. Registered on Phase 6 because
+	# NxJointDesc::setGlobalAxis reaches it (evidence/phase6-joints.md 6o).
+	add_executable(NxFoundationTangentTests tests/FoundationTangentTests.cpp)
+	target_include_directories(NxFoundationTangentTests PRIVATE Foundation/include Physics/include)
+	target_link_libraries(NxFoundationTangentTests bcrypt)
 	# Prints what NxVec3::magnitude and NxVec3::normalize do to the degenerate
 	# vectors the tangent path builds, so a NaN sign can be attributed to one call.
 	add_executable(NxVec3NormalizeProbe tests/NxVec3NormalizeProbe.cpp)

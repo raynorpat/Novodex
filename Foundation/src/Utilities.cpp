@@ -72,38 +72,78 @@ static NxF64 nxDivideOne(NxF64 x)
 	}
 
 
+// NxVec3::normalize as the oracle inlines it into NxNormalToTangents
+// (0x1000637e-0x100063cb for t1, 0x100063cd-0x10006415 for t2). It differs from
+// the public header's in two ways that each move a word by one ULP: the squares
+// are summed z first, (z*z + y*y) + x*x, and the magnitude and its reciprocal
+// never leave the register stack, where the header rounds the magnitude to a
+// float before dividing. The zero test is `fucompp` against 0.0f with `test ah,
+// 0x44`, so only an exact zero skips the scale and a NaN magnitude does not.
+static void nxNormalizeTangent(NxVec3& v)
+	{
+	const NxF64 zz = static_cast<NxF64>(v.z) * v.z;
+	const NxF64 yy = static_cast<NxF64>(v.y) * v.y;
+	const NxF64 xx = static_cast<NxF64>(v.x) * v.x;
+	const NxF64 m = NxMath::sqrt((zz + yy) + xx);
+	if (m != 0.0)
+		{
+		const NxF64 r = nxDivideOne(m);
+		v.x = static_cast<NxReal>(static_cast<NxF64>(v.x) * r);
+		v.y = static_cast<NxReal>(static_cast<NxF64>(v.y) * r);
+		v.z = static_cast<NxReal>(static_cast<NxF64>(v.z) * r);
+		}
+	}
+
 void NxNormalToTangents(const NxVec3 & n, NxVec3 & t1, NxVec3 & t2)
 	{
-	// The oracle evaluates every product here with the x87 unit and rounds only
-	// where it stores to a 32-bit slot (`fld`/`fmul`/`fstp dword` throughout
-	// 0x100062b0-0x1000637e). Typing the running value `a`, the reciprocal `k`
-	// and the products `double` reproduces that: the intermediates stay wide and
-	// each component rounds once, at its store.
+	// Written down in the order of the oracle's x87 stream (0x100062b0-0x1000637e),
+	// with one rule for types: a value the listing keeps on the register stack is
+	// `NxF64`, and a value it stores to a `dword` -- a spill slot on its own frame
+	// or an output component -- is `NxF32`, and is read back as that float. The
+	// process runs at _PC_53, so a register lifetime is a double and each `fstp
+	// dword` is one rounding. Which values are spilled is not a style choice: it
+	// is where the words come from, and both arms round different things at
+	// different points.
 	//
-	// This is the rule CMakeLists.txt records for the mass and geometry kernels,
-	// and the one NxVec3::magnitude and NxVec3::normalize now follow. It is also
-	// what fixes the finite-input ULP: with `a` computed in `float` the rounding
-	// happens before the square root, and the tangent lands one ULP away.
+	// The branch compares the float |n.z| with the double at [0x1001c3a0];
+	// `test ah, 0x41` sends an unordered compare to the second arm, as `>` does.
 	if (fabs(n.z) > M_SQRT1_2)
 		{
-		const NxF64 a = static_cast<NxF64>(n.y) * n.y + static_cast<NxF64>(n.z) * n.z;
-		const NxF64 k = 1.0 / NxMath::sqrt(a);
-		t1.set(0.0f, static_cast<NxReal>(-static_cast<NxF64>(n.z) * k),
-			static_cast<NxReal>(static_cast<NxF64>(n.y) * k));
-		// The negation is applied to the product, not to an operand, because that
-		// is the order the oracle's x87 stream uses (`fmul` then `fchs` at
-		// 0x10006311-0x1000631d). With `k` infinite and `n.x` zero the product is
-		// `0 * inf`, whose sign is the exclusive-or of the operand signs, so
-		// negating after the multiply and negating before it give different NaN
-		// signs -- which is the one-bit difference the joint differential sees.
-		const NxF64 px = static_cast<NxF64>(n.x) * k;
-		t2.set(static_cast<NxReal>(a * k),
-			static_cast<NxReal>(-(px * static_cast<NxF64>(t1.z))),
-			static_cast<NxReal>(px * static_cast<NxF64>(t1.y)));
+		// `fstp dword ptr [esp]` at 0x100062dd: `a` is rounded to a float before
+		// the square root, and the same float is read again for t2.x. An n whose
+		// y*y + z*z overflows a float therefore gets k == 0, not a small k.
+		const NxF32 a = static_cast<NxF32>(static_cast<NxF64>(n.y) * n.y + static_cast<NxF64>(n.z) * n.z);
+		const NxF64 k = nxDivideOne(NxMath::sqrt(static_cast<NxF64>(a)));
+		// `fst dword ptr [esp+0xc]`: the stored k feeds t1.y and t2.x, but t1.z is
+		// multiplied from the register copy that stays on the stack.
+		const NxF32 kStored = static_cast<NxF32>(k);
+		const NxF64 ky = k * n.y;
+		// `fst dword ptr [esp+4]`: t1.z's value is spilled here and reloaded as a
+		// float for t2.y.
+		const NxF32 kyStored = static_cast<NxF32>(ky);
+		t1.x = 0.0f;
+		// `fmul` then `fchs` (0x100062fe-0x10006307): the negation is of the
+		// product. With k infinite the product is `0 * inf`, and negating the
+		// operand instead would flip the sign of the NaN it produces.
+		const NxF64 kz = -(static_cast<NxF64>(kStored) * n.z);
+		t1.y = static_cast<NxF32>(kz);
+		t1.z = static_cast<NxF32>(ky);
+		// t2 = t1 x n with t1.x == 0, and neither product is scaled by k again:
+		// t2.z multiplies n.x by the unrounded -(k*z) still on the stack
+		// (0x10006311), t2.y by the spilled k*y (0x10006313-0x1000631d). n is read
+		// after t1 is written, as the listing reads it, so an aliased call sees
+		// the same words.
+		const NxF64 t2z = kz * n.x;
+		const NxF64 t2y = -(static_cast<NxF64>(kyStored) * n.x);
+		t2.x = static_cast<NxReal>(static_cast<NxF64>(kStored) * a);
+		t2.y = static_cast<NxReal>(t2y);
+		t2.z = static_cast<NxReal>(t2z);
 		}
 	else
 		{
-		const NxF64 a = static_cast<NxF64>(n.x) * n.x + static_cast<NxF64>(n.y) * n.y;
+		// This arm spills nothing: `a` and k stay on the stack throughout, so
+		// both are doubles, and the only float read back is t1.x (0x10006362).
+		const NxF64 a = static_cast<NxF64>(n.y) * n.y + static_cast<NxF64>(n.x) * n.x;
 		// The oracle divides with `fdivr` (`0x10006345`), and the rebuilt
 		// Foundation's .text contained zero `fdivr dword ptr` encodings, so the
 		// division was compiled as an SSE divide. On a degenerate input the two
@@ -111,14 +151,22 @@ void NxNormalToTangents(const NxVec3 & n, NxVec3 & t1, NxVec3 & t2)
 		// differential sees. Reaching the instruction rather than the operator is
 		// the same move NxMath::sqrt needed.
 		const NxF64 k = nxDivideOne(NxMath::sqrt(a));
-		t1.set(static_cast<NxReal>(-static_cast<NxF64>(n.y) * k),
-			static_cast<NxReal>(static_cast<NxF64>(n.x) * k), 0.0f);
-		t2.set(static_cast<NxReal>(-static_cast<NxF64>(n.z) * static_cast<NxF64>(t1.y)),
-			static_cast<NxReal>(static_cast<NxF64>(n.z) * static_cast<NxF64>(t1.x)),
-			static_cast<NxReal>(a * k));
+		const NxF64 kx = k * n.x;
+		const NxF64 ky = k * n.y;
+		t1.z = 0.0f;
+		t1.x = static_cast<NxF32>(-ky);
+		t1.y = static_cast<NxF32>(kx);
+		// t2 = n x t1 with t1.z == 0. t2.y reloads the stored t1.x, but t2.x takes
+		// the unrounded k*n.x from the stack (0x10006367-0x10006370) rather than
+		// the stored t1.y -- the two differ by one ULP whenever the store rounds.
+		const NxF64 t1xz = static_cast<NxF64>(t1.x) * n.z;
+		const NxF64 kxz = kx * n.z;
+		t2.x = static_cast<NxReal>(-kxz);
+		t2.y = static_cast<NxReal>(t1xz);
+		t2.z = static_cast<NxReal>(k * a);
 		}
-	t1.normalize();
-	t2.normalize();
+	nxNormalizeTangent(t1);
+	nxNormalizeTangent(t2);
 	}
 
 // Diagonalize a matrix

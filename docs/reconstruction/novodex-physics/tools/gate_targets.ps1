@@ -15,7 +15,7 @@ $NxPhaseTestTargets = [ordered] @{
     '3' = @('NxPhysicsGeometryTests', 'NxPhysicsKernelFuzzTests')
     '4' = @()
     '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests', 'NxPhysicsActorForceTests', 'NxPhysicsActorCMassTests', 'NxPhysicsActorShapeMutationTests')
-    '6' = @('NxPhysicsJointStagedPairTests')
+    '6' = @('NxPhysicsJointStagedPairTests', 'NxFoundationTangentTests')
     '7' = @('NxPhysicsJointStagedPairTests')
     '8' = @()
 }
@@ -835,6 +835,21 @@ $NxRequiredCoverageLines = [ordered] @{
         'case=revolute index=0 out_anchor=00000000.00000000.00000000 out_axis=3f800000.00000000.00000000 state=0',
         'case=revolute index=0 actors a=match b=match',
         'case=revolute index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0'
+    )
+    # NxNormalToTangents, which NxJointDesc::setGlobalAxis calls. The digest folds
+    # 240000 inputs' output words from the pinned NxFoundation.dll, so it moves if
+    # the generator or its seed changes or the oracle is not called; the case lines
+    # pin one word the reconstruction got wrong in each way it was wrong before:
+    # z_nonunit (the z arm's t1, from normalisation order), xy_nonunit_neg (the
+    # xy arm's t2.x), z_large (the z arm's float spill of y*y + z*z, which
+    # overflows to give k == 0) and xy_nan_payloads (x87 NaN propagation).
+    'NxFoundationTangentTests' = @(
+        'tangent sweep unit=120000 threshold=60000 scaled=60000 digest=5db0093f',
+        'tangent coverage arm_z=93923 arm_xy=146112',
+        'tangent case=z_nonunit arm=z n=40400000.40800000.41400000 t1=00000000.bf72dce9.3ea1e89b t2=3f791716.bd957440.be602e60',
+        'tangent case=xy_nonunit_neg arm=xy n=40400000.c0800000.3f000000 t1=3f4ccccd.3f19999a.00000000 t2=bd748a54.3da306e3.3f7ebac2',
+        'tangent case=z_large arm=z n=60ad78ec.612d78ec.61d8d727 t1=00000000.80000000.00000000 t2=ffc00000.ffc00000.ffc00000',
+        'tangent case=xy_nan_payloads arm=xy n=7fc12345.7fc54321.00000000 t1=7fc54321.7fc54321.7fc54321 t2=7fc54321.7fc54321.7fc54321'
     )
     'NxPhysicsJointTests' = @(
         'case=revolute index=0 created=yes',
@@ -1695,7 +1710,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '4' = 101  # 34 for NxPhysicsAssetTests, 67 for NxPhysicsThirdPartyTests
     '5' = 829  # 126 object-layout, 1 shape-vtable and 702 public actor/pruner/box/scene lines
                # (RED on purpose: vtables family open)
-    '6' = 11  # 3 oracle-descriptor + 4 oracle-joint + 4 staged-pair-joint
+    '6' = 17  # 3 oracle-descriptor + 4 oracle-joint + 4 staged-pair-joint + 6 tangent
     '7' = 4   # the four STAGED-PAIR assertions; the oracle-differential assertions
                # belong to NxPhysicsJointDescTests and NxPhysicsJointTests, which phase 7
                # does not run
@@ -1730,6 +1745,7 @@ $NxRegisteredTestTargets = @(
     'NxPhysicsDynamicFirstTests',
     'NxPhysicsEmptySceneTests',
     'NxPhysicsCoreClusterTests',
+    'NxFoundationTangentTests',
     'NxPhysicsExportTests',
     'NxPhysicsGeometryTests',
     'NxPhysicsJointStagedPairTests',
