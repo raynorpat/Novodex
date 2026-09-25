@@ -45,6 +45,7 @@
 #include "core/PrismaticJoint.h"
 #include "core/CylindricalJoint.h"
 #include "core/SphericalJoint.h"
+#include "core/PointOnLineJoint.h"
 #include "NxMat33.h"
 #include "NxQuat.h"
 
@@ -1419,14 +1420,15 @@ void NxSceneInternal::releaseActor(void* bodyPointer)
 //     to register it (0x14524);
 //   on every exit after the switch, ++[Scene+0x6c8] and [Scene+0x6bc] =
 //     [Scene+0x59c] (0x14529-0x1453f) before the re-entry flag is cleared. Only
-//     the prismatic, revolute, cylindrical and spherical paths reproduce this;
-//     the generic path does not.
+//     the prismatic, revolute, cylindrical, spherical and point-on-line paths
+//     reproduce this; the generic path does not.
 //
-// The prismatic, revolute, cylindrical and spherical cases run the
-// reconstructed rows (core/PrismaticJoint.cpp, core/NpPrismaticJoint.cpp,
+// The prismatic, revolute, cylindrical, spherical and point-on-line cases run
+// the reconstructed rows (core/PrismaticJoint.cpp, core/NpPrismaticJoint.cpp,
 // core/RevoluteJoint.cpp, core/NpRevoluteJoint.cpp, core/CylindricalJoint.cpp,
 // core/NpCylindricalJoint.cpp, core/SphericalJoint.cpp,
-// core/NpSphericalJoint.cpp). The other types keep the generic stand-in path
+// core/NpSphericalJoint.cpp, core/PointOnLineJoint.cpp,
+// core/NpPointOnLineJoint.cpp). The other types keep the generic stand-in path
 // (nxJointConstruct over NpJointObject). The oracle's Scene::createJoint
 // returns the internal joint and its NpScene::createJoint (phys_fn_000297)
 // returns [internal+0x48]; here that load is done at the end of this function,
@@ -1489,8 +1491,10 @@ NxJoint* NxSceneInternal::createJoint(const NxJointDesc& desc)
 	//     phys_fn_004320 at 0x1440a (joint-families Task 3b).
 	//   NX_JOINT_SPHERICAL: case 3, target 0x14414; (0x23c, 0) at 0x1441e-0x14425,
 	//     phys_fn_004300 at 0x14433 (joint-families Task 3c).
+	//   NX_JOINT_POINT_ON_LINE: case 4, target 0x1443d; (0x16c, 0) at 0x14447-0x1444e,
+	//     phys_fn_004276 at 0x1445c (joint-families Task 3d).
 	if(d[1] == NX_JOINT_PRISMATIC || d[1] == NX_JOINT_REVOLUTE || d[1] == NX_JOINT_CYLINDRICAL ||
-		d[1] == NX_JOINT_SPHERICAL)
+		d[1] == NX_JOINT_SPHERICAL || d[1] == NX_JOINT_POINT_ON_LINE)
 		{
 		Joint* internal = 0;
 		if(d[1] == NX_JOINT_PRISMATIC)
@@ -1510,6 +1514,12 @@ NxJoint* NxSceneInternal::createJoint(const NxJointDesc& desc)
 			void* memory = nxGetSdkAllocator()->malloc(sizeof(SphericalJoint), NX_MEMORY_PERSISTENT);
 			if(memory)
 				internal = new(memory) SphericalJoint(static_cast<const NxSphericalJointDesc&>(desc));
+			}
+		else if(d[1] == NX_JOINT_POINT_ON_LINE)
+			{
+			void* memory = nxGetSdkAllocator()->malloc(sizeof(PointOnLineJoint), NX_MEMORY_PERSISTENT);
+			if(memory)
+				internal = new(memory) PointOnLineJoint(static_cast<const NxPointOnLineJointDesc&>(desc));
 			}
 		else
 			{
@@ -1539,6 +1549,8 @@ NxJoint* NxSceneInternal::createJoint(const NxJointDesc& desc)
 					result = nxCylindricalJointAttachScene(static_cast<CylindricalJoint*>(internal), writeLink, readLink);
 				else if(d[1] == NX_JOINT_SPHERICAL)
 					result = nxSphericalJointAttachScene(static_cast<SphericalJoint*>(internal), writeLink, readLink);
+				else if(d[1] == NX_JOINT_POINT_ON_LINE)
+					result = nxPointOnLineJointAttachScene(static_cast<PointOnLineJoint*>(internal), writeLink, readLink);
 				else
 					result = nxRevoluteJointAttachScene(static_cast<RevoluteJoint*>(internal), writeLink, readLink);
 				nxSceneAddJoint(this, internal);
@@ -1547,8 +1559,8 @@ NxJoint* NxSceneInternal::createJoint(const NxJointDesc& desc)
 				{
 				// 0x14581-0x1458c: internal slot 5 with 1 (the family's scalar
 				// deleting destructor: phys_fn_004382 prismatic, phys_fn_004368
-				// revolute, phys_fn_004322 cylindrical, phys_fn_004302 spherical),
-				// then `xor esi,esi`.
+				// revolute, phys_fn_004322 cylindrical, phys_fn_004302 spherical,
+				// phys_fn_004278 point-on-line), then `xor esi,esi`.
 				delete internal;
 				}
 			}
@@ -1564,7 +1576,8 @@ NxJoint* NxSceneInternal::createJoint(const NxJointDesc& desc)
 
 	// The other joint types: the generic stand-in. Their allocation literals are
 	// in revolute-contract.md "## Construction chain". Types 0 (prismatic), 1
-	// (revolute), 2 (cylindrical) and 3 (spherical) never get here.
+	// (revolute), 2 (cylindrical), 3 (spherical) and 4 (point on line) never get
+	// here.
 	NxU32 size = nxJointSizeForType(d[1]);
 
 	NxJoint* joint = 0;
@@ -2458,14 +2471,15 @@ NxU32 nxJointSizeForType(unsigned type)
 	// revolute-contract.md "## Construction chain" step 3). Type 1 is
 	// NX_JOINT_REVOLUTE, which never reaches this function: createJoint builds it
 	// through RevoluteJoint, type 0 (NX_JOINT_PRISMATIC) through PrismaticJoint,
-	// type 2 (NX_JOINT_CYLINDRICAL) through CylindricalJoint and type 3
-	// (NX_JOINT_SPHERICAL) through SphericalJoint.
+	// type 2 (NX_JOINT_CYLINDRICAL) through CylindricalJoint, type 3
+	// (NX_JOINT_SPHERICAL) through SphericalJoint and type 4
+	// (NX_JOINT_POINT_ON_LINE) through PointOnLineJoint.
 	switch(type)
 		{
 		case 1: return 0x17c;		// revolute: unreachable, createJoint builds it through RevoluteJoint
 		case 2: return 0x1b0;		// cylindrical: unreachable, createJoint builds it through CylindricalJoint
 		case 3: return 0x150;		// spherical: unreachable, createJoint builds it through SphericalJoint
-		case 4: return 0x150;		// point on line
+		case 4: return 0x150;		// point on line: unreachable, createJoint builds it through PointOnLineJoint
 		case 5: return 0x150;		// point in plane
 		case 6: return 0x220;		// distance
 		case 7: return 0x1b0;		// pulley
