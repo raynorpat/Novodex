@@ -838,6 +838,11 @@ $NxRequiredCoverageLines = [ordered] @{
     # cylindrical lines to each list, copied the same way: created, the
     # anchor/axis/state, the type and is-queries, and one saveToDesc line (the
     # saved local normals, which come from NxNormalToTangents).
+    # Joint-families Task 3c added two spherical cases (NxJointType 3) and four
+    # spherical lines to each list, copied the same way: created, the
+    # anchor/axis/state, getFlags/getProjectionMode (internal slots 12 and 14
+    # through the Np bodies the spherical table shares with revolute), and one
+    # saveToDesc line (the twist and swing limits).
     'NxPhysicsJointStagedPairTests' = @(
         'case=revolute index=0 created=yes',
         'case=revolute index=0 out_anchor=00000000.00000000.00000000 out_axis=3f800000.00000000.00000000 state=0',
@@ -850,7 +855,11 @@ $NxRequiredCoverageLines = [ordered] @{
         'case=cylindrical index=0 created=yes',
         'case=cylindrical index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
         'case=cylindrical index=3 type=2 is_cylindrical=yes is_prismatic=no',
-        'case=cylindrical index=3 saved normal0=bed105ec.bed105ec.3f5105ec normal1=bed105ec.bed105ec.3f5105ec'
+        'case=cylindrical index=3 saved normal0=bed105ec.bed105ec.3f5105ec normal1=bed105ec.bed105ec.3f5105ec',
+        'case=spherical index=0 created=yes',
+        'case=spherical index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
+        'case=spherical index=3 flags=00000009 projection_mode=1',
+        'case=spherical index=3 saved twist_limit=bf000000.3e800000.3f800000.3f400000.00000000.3f000000 swing_limit=3f200000.3f000000.3f400000'
     )
     'NxPhysicsJointTests' = @(
         'case=revolute index=0 created=yes',
@@ -864,7 +873,11 @@ $NxRequiredCoverageLines = [ordered] @{
         'case=cylindrical index=0 created=yes',
         'case=cylindrical index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
         'case=cylindrical index=3 type=2 is_cylindrical=yes is_prismatic=no',
-        'case=cylindrical index=3 saved normal0=bed105ec.bed105ec.3f5105ec normal1=bed105ec.bed105ec.3f5105ec'
+        'case=cylindrical index=3 saved normal0=bed105ec.bed105ec.3f5105ec normal1=bed105ec.bed105ec.3f5105ec',
+        'case=spherical index=0 created=yes',
+        'case=spherical index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
+        'case=spherical index=3 flags=00000009 projection_mode=1',
+        'case=spherical index=3 saved twist_limit=bf000000.3e800000.3f800000.3f400000.00000000.3f000000 swing_limit=3f200000.3f000000.3f400000'
     )
     'NxPhysicsJointDescTests' = @(
         'case=0 actors a=null b=null in_anchor=3f800000.40000000.40400000 in_axis=3f000000.3f000000.3f000000',
@@ -1719,8 +1732,8 @@ $NxPhaseCoverageFloor = [ordered] @{
     '4' = 101  # 34 for NxPhysicsAssetTests, 67 for NxPhysicsThirdPartyTests
     '5' = 829  # 126 object-layout, 1 shape-vtable and 702 public actor/pruner/box/scene lines
                # (RED on purpose: vtables family open)
-    '6' = 27  # 3 oracle-descriptor + 12 oracle-joint + 12 staged-pair-joint
-    '7' = 12  # the twelve STAGED-PAIR assertions; the oracle-differential assertions
+    '6' = 35  # 3 oracle-descriptor + 16 oracle-joint + 16 staged-pair-joint
+    '7' = 16  # the sixteen STAGED-PAIR assertions; the oracle-differential assertions
                # belong to NxPhysicsJointDescTests and NxPhysicsJointTests, which phase 7
                # does not run
     '8' = 0
