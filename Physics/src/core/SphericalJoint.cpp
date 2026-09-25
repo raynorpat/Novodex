@@ -865,14 +865,14 @@ void SphericalJoint::row_slot8(void* bodyPointer)
 // vptr 0x10119e20 (0xa4901) and the member default constructors write
 // +0x16c..+0x1b0 (0xa4909-0xa4974: twist limit 0, 0, 1, 0, 0, 1; swing limit
 // 0, 0, 1; the three springs 0, 0, 0). The public object is allocated through
-// the SDK allocator (`push 0; push 0x1c; call [edx+8]`) and constructed only
+// the Foundation allocator (`push 0; push 0x1c; call [edx+8]`) and constructed only
 // when the allocation succeeded, but desc.userData is written to it without a
 // null check (0xa499c-0xa499f): a failed allocation faults there in the
 // oracle, and does here too.
 SphericalJoint::SphericalJoint(const NxSphericalJointDesc& desc)
 	: Joint(desc, 8)
 	{
-	void* memory = nxGetSdkAllocator()->malloc(sizeof(NpSphericalJoint), NX_MEMORY_PERSISTENT);
+	void* memory = nxFoundationSDKAllocator->malloc(sizeof(NpSphericalJoint), NX_MEMORY_PERSISTENT);
 	NpSphericalJoint* publicJoint = memory ? new(memory) NpSphericalJoint(this) : 0;
 	mPublicObject = publicJoint;
 	static_cast<NxJoint*>(publicJoint)->userData = desc.userData;
@@ -1082,7 +1082,7 @@ void SphericalJoint::row_slot0(NxU32 arg)
 			// operands in the same order (X87Sqrt.h).
 			const NxReal length = (NxReal)x87FsqrtDot3(az, a.z, a.y, a.y, a.x, a.x);
 			mFlags = (mFlags & ~8u) | 0x10;
-			void* memory = nxGetSdkAllocator()->malloc(sizeof(JointBreakEvent), NX_MEMORY_PERSISTENT);
+			void* memory = nxFoundationSDKAllocator->malloc(sizeof(JointBreakEvent), NX_MEMORY_PERSISTENT);
 			JointBreakEvent* event = memory ? new(memory) JointBreakEvent(this, length) : 0;
 			// Scene row 000571 (Physics/src/Scene.cpp).
 			static_cast<NxSceneInternal*>(mScene)->addJointBreakEvent(event);

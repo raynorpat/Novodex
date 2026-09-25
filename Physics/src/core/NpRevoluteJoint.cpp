@@ -65,7 +65,7 @@ NpRevoluteJoint::~NpRevoluteJoint()
 	// destructor resets the primary vptr to 0x1011a680 -- and the scalar-deleting-
 	// destructor wrapper the compiler generates around this body supplies
 	// the flags&1 free, through the `operator delete` NpJointShared.h
-	// declares (the SDK allocator, matching phys_fn_004729's tail exactly).
+	// declares (the Foundation allocator, matching phys_fn_004729's tail exactly).
 	}
 
 // phys_fn_004681 (0x000b2d10, 84 B)

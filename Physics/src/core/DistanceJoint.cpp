@@ -228,7 +228,7 @@ void DistanceJoint::row_slot4(NxDebugRenderable& renderable)
 DistanceJoint::DistanceJoint(const NxDistanceJointDesc& desc)
 	: Joint(desc, 0x2000)
 	{
-	void* memory = nxGetSdkAllocator()->malloc(sizeof(NpDistanceJoint), NX_MEMORY_PERSISTENT);
+	void* memory = nxFoundationSDKAllocator->malloc(sizeof(NpDistanceJoint), NX_MEMORY_PERSISTENT);
 	NpDistanceJoint* publicJoint = memory ? new(memory) NpDistanceJoint(this) : 0;
 	mPublicObject = publicJoint;
 	static_cast<NxJoint*>(publicJoint)->userData = desc.userData;
@@ -242,7 +242,7 @@ DistanceJoint::DistanceJoint(const NxDistanceJointDesc& desc)
 // The listing is the compiler's scalar deleting destructor around this body:
 // it reinstalls the vptr 0x10119948, deletes the public object through its
 // slot 0 with 1 (`push 1; call [eax]`), calls the Joint destructor body
-// (row 004095) directly, and frees `this` through the SDK allocator (slot
+// (row 004095) directly, and frees `this` through the Foundation allocator (slot
 // +0x14) when the flag's bit 0 is set (Joint::operator delete).
 DistanceJoint::~DistanceJoint()
 	{

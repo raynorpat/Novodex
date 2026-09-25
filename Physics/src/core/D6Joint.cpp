@@ -680,7 +680,7 @@ void D6Joint::row_slot4(NxDebugRenderable& renderable)
 // The listing is the compiler's scalar deleting destructor around this body:
 // it reinstalls the vptr 0x10119570, deletes the public object through its
 // slot 0 with 1 (`push 1; call [eax]`, 0x9c8b4), calls the Joint destructor
-// body (row 004095) directly, and frees `this` through the SDK allocator
+// body (row 004095) directly, and frees `this` through the Foundation allocator
 // (slot +0x14) when the flag's bit 0 is set (Joint::operator delete).
 D6Joint::~D6Joint()
 	{
@@ -1393,7 +1393,7 @@ void D6Joint::row_slot8(void* bodyArgument)
 // NxJointDriveDesc (driveType 0, spring 0, damping 0, forceLimit FLT_MAX)
 // for the six drives (0x9e1bc-0x9e2a1; NxVec3 and NxQuat construct nothing).
 // Then row004204 with the descriptor (0x9e2a7). The public object is
-// allocated through the SDK allocator (`push 0; push 0x1c; call [edx+8]`)
+// allocated through the Foundation allocator (`push 0; push 0x1c; call [edx+8]`)
 // and constructed only when the allocation succeeded, but desc.userData is
 // written to it without a null check (0x9e2ce / 0x9e2e1): a failed
 // allocation faults there in the oracle, and does here too.
@@ -1401,7 +1401,7 @@ D6Joint::D6Joint(const NxD6JointDesc& desc)
 	: Joint(desc, 0x4000)
 	{
 	row004204(desc);
-	void* memory = nxGetSdkAllocator()->malloc(sizeof(NpD6Joint), NX_MEMORY_PERSISTENT);
+	void* memory = nxFoundationSDKAllocator->malloc(sizeof(NpD6Joint), NX_MEMORY_PERSISTENT);
 	NpD6Joint* publicJoint = memory ? new(memory) NpD6Joint(this) : 0;
 	mPublicObject = publicJoint;
 	static_cast<NxJoint*>(publicJoint)->userData = desc.userData;

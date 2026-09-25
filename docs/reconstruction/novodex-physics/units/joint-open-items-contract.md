@@ -253,3 +253,26 @@ body records, the rotated actors):
 - **000164** (updateMassFromShapes) also calls 000768. The candidate has no body for it.
 - **The CMass-global setters** (setCMassGlobalPose/Position/Orientation) do not call 000768 and
   keep their earlier code. The rotated-body tests do not drive them.
+
+## Joint allocator
+
+Rule change (Task 5 follow-up, controller decision). The joint-families plan's Global Constraint
+"allocation through `nxGetSdkAllocator()->malloc(size, NX_MEMORY_PERSISTENT)`" does not hold for the
+joint rows and is superseded for them. The plan itself is not edited.
+
+- Every joint allocation and free goes through `nxFoundationSDKAllocator` (the Foundation's imported
+  `NxUserAllocator*`, `[[0x101041bc]]` in the oracle): `malloc(size, NX_MEMORY_PERSISTENT)` is slot
+  +8, `free(p)` slot +0x14. This is `NxAllocateable`'s operator new/delete body; the classes keep
+  their own `operator delete` and placement new, which the constructors' null check needs.
+- Evidence, per row: a scan of each row's listing for `[0x101041bc]` and for calls to 004803
+  (`nxGetSdkAllocator`, 0xb4000). All `[0x101041bc]`, no 004803: the family constructors' 0x1c Np
+  allocations (004366, 004380, 004320, 004300, 004276, 004262, 004234, 004222, 004250, 004210),
+  000665 (ten internal allocations), 004111/004374/004308 (break events), 004143/004089 (limit
+  planes), 000780 and 000661 (pointer-array grow), 000598 (record array), 000760 (island free),
+  000600 and 000663 (body array, joint arrays), and every joint deleting destructor (e.g. 004119,
+  004368, 004729).
+- Other Scene rows keep whatever their own listing says; this section changes only the joint sites.
+  The rest of Scene.cpp's `nxGetSdkAllocator()` calls were not audited here.
+- Observable: the two allocators differ when the Foundation was created before NxCreatePhysicsSDK
+  with another allocator, or when no allocator is passed. `NxPhysicsJointAllocatorTests` is the
+  staged-pair target that shows it (phases 6 and 7, 12 oracle lines).

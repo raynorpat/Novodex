@@ -271,7 +271,7 @@ void PulleyJoint::row_slot4(NxDebugRenderable& renderable)
 // phys_fn_004222 (0x0009ea60, 81 B)
 // Joint(desc, 0x1000) runs first (`push 0x1000` at 0x9ea66: the type bit);
 // the compiler then stores the vptr 0x10119840 (0x9ea73). The public object
-// is allocated through the SDK allocator (`push 0; push 0x1c; call [edx+8]`)
+// is allocated through the Foundation allocator (`push 0; push 0x1c; call [edx+8]`)
 // and constructed only when the allocation succeeded, but desc.userData is
 // written to it without a null check (0x9ea9c-0x9ea9f): a failed allocation
 // faults there in the oracle, and does here too. Then copyFamilyFields
@@ -280,7 +280,7 @@ void PulleyJoint::row_slot4(NxDebugRenderable& renderable)
 PulleyJoint::PulleyJoint(const NxPulleyJointDesc& desc)
 	: Joint(desc, 0x1000)
 	{
-	void* memory = nxGetSdkAllocator()->malloc(sizeof(NpPulleyJoint), NX_MEMORY_PERSISTENT);
+	void* memory = nxFoundationSDKAllocator->malloc(sizeof(NpPulleyJoint), NX_MEMORY_PERSISTENT);
 	NpPulleyJoint* publicJoint = memory ? new(memory) NpPulleyJoint(this) : 0;
 	mPublicObject = publicJoint;
 	static_cast<NxJoint*>(publicJoint)->userData = desc.userData;
@@ -291,7 +291,7 @@ PulleyJoint::PulleyJoint(const NxPulleyJointDesc& desc)
 // The listing is the compiler's scalar deleting destructor around this body:
 // it reinstalls the vptr 0x10119840, deletes the public object through its
 // slot 0 with 1 (`push 1; call [eax]`), calls the Joint destructor body
-// (row 004095) directly, and frees `this` through the SDK allocator (slot
+// (row 004095) directly, and frees `this` through the Foundation allocator (slot
 // +0x14) when the flag's bit 0 is set (Joint::operator delete).
 PulleyJoint::~PulleyJoint()
 	{

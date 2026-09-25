@@ -319,7 +319,7 @@ Row000712Fixture* Row000712Fixture::row000712()
 
 // phys_fn_000760 (0x00017710, 168 B)
 // Only a record that is its own root frees its island object (+0x1e0,
-// through 004167 and the SDK allocator's slot +0x14). The flags word +0x114
+// through 004167 and the Foundation allocator's slot +0x14). The flags word +0x114
 // is read before the stores (0x1774c); bit 8 suppresses the wake raise,
 // which is `fcomp [0x101053d4]; test ah,5; jp`: only an ordered +0x4c below
 // the floor is raised. noinline: the oracle calls it as its own function
@@ -333,7 +333,7 @@ __declspec(noinline) void Row000760Fixture::row000760()
 		if(island)
 			{
 			reinterpret_cast<Row004167Fixture*>(island)->row004167();
-			nxGetSdkAllocator()->free(island);
+			nxFoundationSDKAllocator->free(island);
 			supportPointer(this, 0x1e0) = 0;
 			}
 		}

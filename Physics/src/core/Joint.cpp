@@ -371,7 +371,7 @@ void Joint::row004111(const JointSupportRecord* record, NxReal value)
 		return;
 	mFlags = (mFlags & ~8u) | 0x10u;
 	row004091();
-	void* memory = nxGetSdkAllocator()->malloc(sizeof(JointBreakEvent), NX_MEMORY_PERSISTENT);
+	void* memory = nxFoundationSDKAllocator->malloc(sizeof(JointBreakEvent), NX_MEMORY_PERSISTENT);
 	JointBreakEvent* event = memory ? new(memory) JointBreakEvent(this, value) : 0;
 	static_cast<NxSceneInternal*>(mScene)->addJointBreakEvent(event);
 	}
@@ -657,14 +657,14 @@ bool Joint::hasMoreLimitPlanes() const
 	}
 
 // phys_fn_004089 (0x00095d20, 58 B)
-// Frees through the SDK allocator (`[[0x101041bc]]` slot +0x14).
+// Frees through the Foundation allocator (`[[0x101041bc]]` slot +0x14).
 void Joint::purgeLimitPlanes()
 	{
 	while(mLimitPlaneHead)
 		{
 		JointLimitPlane* plane = mLimitPlaneHead;
 		mLimitPlaneHead = plane->next;
-		nxGetSdkAllocator()->free(plane);
+		nxFoundationSDKAllocator->free(plane);
 		}
 	gLimitPlaneIterator = 0;
 	}
@@ -1474,7 +1474,7 @@ bool Joint::addLimitPlane(const NxVec3& normal, const NxVec3& pointInPlane)
 			"Joint::addLimitPlane: Joint is broken. Broken joints can't be manipulated!");
 		return false;
 		}
-	JointLimitPlane* plane = static_cast<JointLimitPlane*>(nxGetSdkAllocator()->malloc(sizeof(JointLimitPlane), NX_MEMORY_PERSISTENT));
+	JointLimitPlane* plane = static_cast<JointLimitPlane*>(nxFoundationSDKAllocator->malloc(sizeof(JointLimitPlane), NX_MEMORY_PERSISTENT));
 	jointRefreshFirstStaleBody(*this);
 
 	const JointBodyRecord* body = jointBody(mSolverBody[1]);
@@ -1548,7 +1548,7 @@ bool Joint::addLimitPlane(const NxVec3& normal, const NxVec3& pointInPlane)
 	NxReal planeD;
 	if(row004131(plane, limitPoint, planeNormal, planeD) < 0.0)
 		{
-		nxGetSdkAllocator()->free(plane);
+		nxFoundationSDKAllocator->free(plane);
 		return false;
 		}
 	plane->next = mLimitPlaneHead;

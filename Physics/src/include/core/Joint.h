@@ -163,7 +163,7 @@ class Joint;
 
 // The joint break event: 0x10 bytes, vtable 0x101192cc (inside
 // phys_data_002614; one slot, the oracle's row 004113, a Joint.cpp row
-// outside the pilot). Allocated through the SDK allocator by
+// outside the pilot). Allocated through the Foundation allocator by
 // phys_fn_004111 (0x98019-0x98022) and phys_fn_004374 (0xad160-0xad169),
 // which store the vptr, the joint at +8 and a float at +0xc, and handed to
 // the Scene's phys_fn_000571, which links it through +4 into the list at
@@ -196,11 +196,11 @@ class Joint
 	//! phys_fn_004121. See "## Construction chain" step 6.
 	Joint(const NxJointDesc& desc, NxU32 typeBit);
 
-	//! The deleting destructors free through the SDK allocator
+	//! The deleting destructors free through the Foundation allocator
 	//! (`[[0x101041bc]]` slot +0x14): phys_fn_004119 (0x98789) for the base
 	//! and phys_fn_004368 (0xac61f) for RevoluteJoint. Declared here so the
 	//! compiler-generated deleting destructors do the same.
-	static void operator delete(void* p) { nxGetSdkAllocator()->free(p); }
+	static void operator delete(void* p) { nxFoundationSDKAllocator->free(p); }
 
 	// --- internal vtable, slot order 0-8 (0x101192d0 / phys_data_002614) ---
 

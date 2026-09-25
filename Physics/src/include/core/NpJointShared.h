@@ -59,10 +59,10 @@ class NX_NPJOINT_NOVTABLE NpJointShared : public Iface, public EmbeddedHookBase
 	public:
 	//! The compiler-generated scalar deleting destructor of every family
 	//! frees through `operator delete` when its flag bit is set; the
-	//! oracle's free is the SDK allocator's (`[[0x101041bc]]` slot +0x14, the
+	//! oracle's free is the Foundation allocator's (`[[0x101041bc]]` slot +0x14, the
 	//! tail of each family's slot-0 row), so this routes there rather than to
 	//! the global operator delete.
-	static void operator delete(void* p) { nxGetSdkAllocator()->free(p); }
+	static void operator delete(void* p) { nxFoundationSDKAllocator->free(p); }
 
 	// --- The 13 folded NxJoint bodies (core/NpJointShared.cpp) ---
 

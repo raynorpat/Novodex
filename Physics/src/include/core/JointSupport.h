@@ -199,7 +199,7 @@ struct Row004167Fixture
 // The pointer-array push that phys_fn_000661 (0x13e53-0x13f12) and
 // phys_fn_000780 (0x1864c-0x186e6) both inline. `array` is {begin, end,
 // capacity}. With no room (capacity <= end) the array grows to 2n + 2
-// entries unless its capacity already covers that: a new block from the SDK
+// entries unless its capacity already covers that: a new block from the Foundation
 // allocator (slot +8 with (bytes, 0)), the old entries copied, the old block
 // freed (slot +0x14), then end = new + n and capacity = new + bytes. The
 // value is stored at end and end advances by one entry.
@@ -215,13 +215,13 @@ inline void nxJointPointerArrayPush(void** array, void* value)
 		if((NxU32)held < (NxU32)wanted)
 			{
 			const NxU32 bytes = (NxU32)wanted * 4;
-			void** block = static_cast<void**>(nxGetSdkAllocator()->malloc(bytes, NX_MEMORY_PERSISTENT));
+			void** block = static_cast<void**>(nxFoundationSDKAllocator->malloc(bytes, NX_MEMORY_PERSISTENT));
 			void** from = static_cast<void**>(array[0]);
 			void** to = block;
 			while(from != end)
 				*to++ = *from++;
 			if(array[0])
-				nxGetSdkAllocator()->free(array[0]);
+				nxFoundationSDKAllocator->free(array[0]);
 			const NxI32 count = (NxI32)(((NxU8*)array[1] - (NxU8*)array[0]) >> 2);
 			array[2] = (NxU8*)block + bytes;
 			array[1] = block + count;

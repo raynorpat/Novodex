@@ -306,14 +306,14 @@ static void revoluteQuatToRowsSpilled(const NxReal* q, NxReal* m)
 // Joint(desc, 0x40) runs first; the compiler then stores the vptr 0x1011a1c0
 // and the member default constructors write +0x16c..+0x198 (0xac559-0xac5a4:
 // limit 0, 0, 1, 0, 0, 1; motor NX_MAX_REAL, 0, 0; spring 0, 0, 0). The public
-// object is allocated through the SDK allocator (`push 0; push 0x1c; call
+// object is allocated through the Foundation allocator (`push 0; push 0x1c; call
 // [edx+8]`) and constructed only when the allocation succeeded, but
 // desc.userData is written to it without a null check (0xac5cc-0xac5cf): a
 // failed allocation faults there in the oracle, and does here too.
 RevoluteJoint::RevoluteJoint(const NxRevoluteJointDesc& desc)
 	: Joint(desc, 0x40)
 	{
-	void* memory = nxGetSdkAllocator()->malloc(sizeof(NpRevoluteJoint), NX_MEMORY_PERSISTENT);
+	void* memory = nxFoundationSDKAllocator->malloc(sizeof(NpRevoluteJoint), NX_MEMORY_PERSISTENT);
 	NpRevoluteJoint* publicJoint = memory ? new(memory) NpRevoluteJoint(this) : 0;
 	mPublicObject = publicJoint;
 	static_cast<NxJoint*>(publicJoint)->userData = desc.userData;
@@ -324,7 +324,7 @@ RevoluteJoint::RevoluteJoint(const NxRevoluteJointDesc& desc)
 // The listing is the compiler's scalar deleting destructor around this body:
 // it reinstalls the vptr 0x1011a1c0, deletes the public object through its
 // slot 0 with 1 (`push 1; call [eax]`), calls the Joint destructor body
-// (row 004095) directly, and frees `this` through the SDK allocator (slot
+// (row 004095) directly, and frees `this` through the Foundation allocator (slot
 // +0x14) when the flag's bit 0 is set (Joint::operator delete).
 RevoluteJoint::~RevoluteJoint()
 	{
@@ -402,7 +402,7 @@ void RevoluteJoint::row_slot0(NxU32 arg)
 			// operands in the same order (X87Sqrt.h).
 			const NxReal length = (NxReal)x87FsqrtDot3(az, a.z, a.y, a.y, a.x, a.x);
 			mFlags = (mFlags & ~8u) | 0x10;
-			void* memory = nxGetSdkAllocator()->malloc(sizeof(JointBreakEvent), NX_MEMORY_PERSISTENT);
+			void* memory = nxFoundationSDKAllocator->malloc(sizeof(JointBreakEvent), NX_MEMORY_PERSISTENT);
 			JointBreakEvent* event = memory ? new(memory) JointBreakEvent(this, length) : 0;
 			// Scene row 000571 (Physics/src/Scene.cpp).
 			static_cast<NxSceneInternal*>(mScene)->addJointBreakEvent(event);

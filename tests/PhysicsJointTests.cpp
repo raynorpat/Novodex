@@ -1472,6 +1472,150 @@ static void nxPosedScene(NxPhysicsSDK& sdk, const NxSceneDesc& sceneDesc, const 
 	printf("posed_scene=%s released\n", label);
 	}
 
+#ifdef NX_PHYSICS_JOINT_ALLOCATOR_ONLY
+// Joint-open-items Task 5 follow-up: which allocator the joint rows use.
+//
+// The oracle's joint rows allocate and free through the Foundation's allocator
+// (`[[0x101041bc]]`, nxFoundationSDKAllocator), not through the allocator handed
+// to NxCreatePhysicsSDK. The two are the same object only when the Physics SDK
+// creates the Foundation. This process creates the Foundation first with
+// allocator A and then the Physics SDK with a different allocator B, so the
+// Foundation keeps A; it then creates and releases one joint of two families and
+// prints how many blocks of which sizes each allocator saw, in each window.
+// Only the joint windows are printed: scene and actor creation are other phases'
+// rows and are not what this target measures.
+class NxCountingAllocator : public NxUserAllocator
+	{
+	public:
+	enum { LOG = 32 };
+	explicit NxCountingAllocator(const char* name) : mName(name) { reset(); }
+
+	void reset() { mMallocs = mFrees = mReallocs = 0; mLogged = 0; }
+
+	virtual void* mallocDEBUG(size_t size, const char*, int) { return allocate(size); }
+	virtual void* mallocDEBUG(size_t size, const char*, int, const char*, NxMemoryType) { return allocate(size); }
+	virtual void* malloc(size_t size) { return allocate(size); }
+	virtual void* malloc(size_t size, NxMemoryType) { return allocate(size); }
+	virtual void* realloc(void* memory, size_t size) { mReallocs++; return ::realloc(memory, size); }
+	virtual void free(void* memory) { if(memory) mFrees++; ::free(memory); }
+
+	void print(const char* family, const char* window) const
+		{
+		printf("case=allocator family=%s window=%s allocator=%s mallocs=%u frees=%u reallocs=%u sizes=",
+			family, window, mName, mMallocs, mFrees, mReallocs);
+		for(unsigned i = 0; i < mLogged; i++)
+			printf("%s%x", i ? "," : "", static_cast<unsigned>(mSizes[i]));
+		printf("%s\n", mLogged ? "" : "none");
+		}
+
+	private:
+	void* allocate(size_t size)
+		{
+		if(mLogged < LOG)
+			mSizes[mLogged++] = size;
+		mMallocs++;
+		// Zeroed, like the page-guarded allocator's fresh pages. The candidate's
+		// Scene construction leaves an array header of the Scene block unset and
+		// relies on zeroed memory: with plain malloc, createActor's
+		// nxSceneArrayReserve frees the uninitialised header pointer
+		// (0xbaadf00d under cdb) inside nxSceneAddActorObject, in the candidate
+		// only. That is a Scene defect outside this target, recorded in
+		// evidence/joint-open-items.md; zeroing keeps this target about which
+		// allocator the joint rows use.
+		return ::calloc(1, size);
+		}
+
+	const char* mName;
+	unsigned mMallocs, mFrees, mReallocs, mLogged;
+	size_t mSizes[LOG];
+	};
+
+typedef NxFoundationSDK* (NX_CALL_CONV *CreateFoundationSDKFn)(NxU32, NxUserOutputStream*, NxUserAllocator*);
+
+static void nxAllocatorWindow(const char* family, const char* window,
+	NxCountingAllocator& foundation, NxCountingAllocator& physics)
+	{
+	foundation.print(family, window);
+	physics.print(family, window);
+	foundation.reset();
+	physics.reset();
+	}
+
+static void nxAllocatorJoint(NxScene& scene, NxJointDesc& desc, NxActor* a, NxActor* b,
+	const char* family, NxCountingAllocator& foundation, NxCountingAllocator& physics)
+	{
+	desc.actor[0] = a;
+	desc.actor[1] = b;
+	nxSetGlobalAnchor(desc, NxVec3(1.0f, 2.0f, 3.0f));
+	nxSetGlobalAxis(desc, NxVec3(0.0f, 1.0f, 0.0f));
+	foundation.reset();
+	physics.reset();
+	NxJoint* joint = scene.createJoint(desc);
+	printf("case=allocator family=%s created=%s\n", family, joint ? "yes" : "no");
+	nxAllocatorWindow(family, "create", foundation, physics);
+	if(!joint)
+		return;
+	scene.releaseJoint(*joint);
+	printf("case=allocator family=%s released=yes\n", family);
+	nxAllocatorWindow(family, "release", foundation, physics);
+	}
+
+static int nxAllocatorCase(HMODULE physics, CreatePhysicsSDKFn createSDK, const wchar_t* pairDirectory)
+	{
+	// Unbuffered, so a fault leaves the lines before it.
+	setvbuf(stdout, 0, _IONBF, 0);
+	HMODULE foundationModule = GetModuleHandleW(L"NxFoundation.dll");
+	CreateFoundationSDKFn createFoundation = foundationModule ?
+		reinterpret_cast<CreateFoundationSDKFn>(GetProcAddress(foundationModule, "NxCreateFoundationSDK")) : 0;
+	printf("export=NxCreateFoundationSDK present=%s\n", createFoundation ? "yes" : "no");
+	if(!createFoundation)
+		{
+		FreeLibrary(physics);
+		return nxFail("NxCreateFoundationSDK missing; the allocator case cannot be driven");
+		}
+
+	static NxCountingAllocator foundationAllocator("foundation");
+	static NxCountingAllocator physicsAllocator("physics");
+	NxFoundationSDK* foundation = createFoundation(NX_FOUNDATION_SDK_VERSION, 0, &foundationAllocator);
+	printf("foundation=%s\n", foundation ? "created" : "null");
+	NxPhysicsSDK* sdk = foundation ? createSDK(NX_PHYSICS_SDK_VERSION, &physicsAllocator, 0) : 0;
+	printf("sdk=%s\n", sdk ? "created" : "null");
+	if(!sdk)
+		{
+		FreeLibrary(physics);
+		return nxFail("SDK creation failed");
+		}
+
+	NxSceneDesc sceneDesc;
+	sceneDesc.setToDefault();
+	sceneDesc.gravity = NxVec3(0.0f, 0.0f, 0.0f);
+	NxScene* scene = sdk->createScene(sceneDesc);
+	printf("scene=%s\n", scene ? "created" : "null");
+	NxActor* a = 0;
+	NxActor* b = 0;
+	if(!scene || !nxBuildFixture(*scene, &a, &b))
+		{
+		if(scene)
+			sdk->releaseScene(*scene);
+		sdk->release();
+		FreeLibrary(physics);
+		return nxFail("allocator fixture could not be created");
+		}
+	printf("fixture=a,%s b,%s\n", a ? "created" : "null", b ? "created" : "null");
+
+	NxRevoluteJointDesc revoluteDesc;
+	nxAllocatorJoint(*scene, revoluteDesc, a, b, "revolute", foundationAllocator, physicsAllocator);
+	NxDistanceJointDesc distanceDesc;
+	nxAllocatorJoint(*scene, distanceDesc, a, b, "distance", foundationAllocator, physicsAllocator);
+
+	sdk->releaseScene(*scene);
+	printf("scene=released\n");
+	sdk->release();
+	printf("sdk=released\n");
+	return nxReportPairIdentity(pairDirectory);
+	}
+#endif
+
 int wmain(int argc, wchar_t** argv)
 	{
 	wchar_t pairDirectory[MAX_PATH];
@@ -1515,6 +1659,9 @@ int wmain(int argc, wchar_t** argv)
 		return nxFail("the two exported joint-descriptor rows are missing");
 		}
 	printf("version=0x%08x\n", static_cast<unsigned>(NX_PHYSICS_SDK_VERSION));
+#ifdef NX_PHYSICS_JOINT_ALLOCATOR_ONLY
+	return nxAllocatorCase(physics, createSDK, pairDirectory);
+#endif
 
 	// Every SDK allocation goes through a page-guarded allocator, so a write past
 	// the end of any block faults AT THE WRITE rather than corrupting a later one.

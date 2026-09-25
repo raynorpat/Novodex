@@ -107,7 +107,7 @@ static NxReal prismaticBias(const NxVec3& t, double gx, double gy, double gz, Nx
 PrismaticJoint::PrismaticJoint(const NxPrismaticJointDesc& desc)
 	: Joint(desc, 0x80)
 	{
-	void* memory = nxGetSdkAllocator()->malloc(sizeof(NpPrismaticJoint), NX_MEMORY_PERSISTENT);
+	void* memory = nxFoundationSDKAllocator->malloc(sizeof(NpPrismaticJoint), NX_MEMORY_PERSISTENT);
 	NpPrismaticJoint* publicJoint = memory ? new(memory) NpPrismaticJoint(this) : 0;
 	mPublicObject = publicJoint;
 	static_cast<NxJoint*>(publicJoint)->userData = desc.userData;
@@ -118,7 +118,7 @@ PrismaticJoint::PrismaticJoint(const NxPrismaticJointDesc& desc)
 // The listing is the compiler's scalar deleting destructor around this body:
 // it reinstalls the vptr 0x1011a4d0, deletes the public object through its
 // slot 0 with 1 (`push 1; call [eax]`), calls the Joint destructor body
-// (row 004095) directly, and frees `this` through the SDK allocator (slot
+// (row 004095) directly, and frees `this` through the Foundation allocator (slot
 // +0x14) when the flag's bit 0 is set (Joint::operator delete).
 PrismaticJoint::~PrismaticJoint()
 	{

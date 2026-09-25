@@ -15,8 +15,8 @@ $NxPhaseTestTargets = [ordered] @{
     '3' = @('NxPhysicsGeometryTests', 'NxPhysicsKernelFuzzTests')
     '4' = @()
     '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests', 'NxPhysicsActorForceTests', 'NxPhysicsActorCMassTests', 'NxPhysicsActorShapeMutationTests')
-    '6' = @('NxPhysicsJointStagedPairTests', 'NxFoundationTangentTests')
-    '7' = @('NxPhysicsJointStagedPairTests')
+    '6' = @('NxPhysicsJointStagedPairTests', 'NxFoundationTangentTests', 'NxPhysicsJointAllocatorTests')
+    '7' = @('NxPhysicsJointStagedPairTests', 'NxPhysicsJointAllocatorTests')
     '8' = @()
 }
 
@@ -1075,6 +1075,27 @@ $NxRequiredCoverageLines = [ordered] @{
     # z_nonunit (the z arm's t1, from normalisation order), xy_nonunit_neg (the
     # xy arm's t2.x), z_large (the z arm's float spill of y*y + z*z, which
     # overflows to give k == 0) and xy_nan_payloads (x87 NaN propagation).
+    # Joint-open-items Task 5 follow-up: a fresh process creates the Foundation
+    # with allocator A, then the Physics SDK with allocator B, and creates and
+    # releases a revolute and a distance joint. The oracle's joint rows (the
+    # family constructors, 000665's internal allocation, 000661's pointer-array
+    # grow, the deleting destructors) use the Foundation's allocator, so every
+    # joint block lands in A and none in B. Copied verbatim from the ORACLE side;
+    # before the follow-up the candidate put all of them in B.
+    'NxPhysicsJointAllocatorTests' = @(
+        'case=allocator family=revolute created=yes',
+        'case=allocator family=revolute window=create allocator=foundation mallocs=3 frees=0 reallocs=0 sizes=204,1c,8',
+        'case=allocator family=revolute window=create allocator=physics mallocs=0 frees=0 reallocs=0 sizes=none',
+        'case=allocator family=revolute released=yes',
+        'case=allocator family=revolute window=release allocator=foundation mallocs=0 frees=2 reallocs=0 sizes=none',
+        'case=allocator family=revolute window=release allocator=physics mallocs=0 frees=0 reallocs=0 sizes=none',
+        'case=allocator family=distance created=yes',
+        'case=allocator family=distance window=create allocator=foundation mallocs=2 frees=0 reallocs=0 sizes=184,1c',
+        'case=allocator family=distance window=create allocator=physics mallocs=0 frees=0 reallocs=0 sizes=none',
+        'case=allocator family=distance released=yes',
+        'case=allocator family=distance window=release allocator=foundation mallocs=0 frees=2 reallocs=0 sizes=none',
+        'case=allocator family=distance window=release allocator=physics mallocs=0 frees=0 reallocs=0 sizes=none'
+    )
     'NxFoundationTangentTests' = @(
         'tangent sweep unit=120000 threshold=60000 scaled=60000 digest=5db0093f',
         'tangent coverage arm_z=93923 arm_xy=146112',
@@ -2069,8 +2090,9 @@ $NxPhaseCoverageFloor = [ordered] @{
     '4' = 101  # 34 for NxPhysicsAssetTests, 67 for NxPhysicsThirdPartyTests
     '5' = 871  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines
                # (RED on purpose: vtables family open)
-    '6' = 245  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
-    '7' = 118  # the 118 STAGED-PAIR assertions; the oracle-differential assertions
+    '6' = 257  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
+               # + 12 joint-allocator
+    '7' = 130  # the 118 + 12 STAGED-PAIR assertions; the oracle-differential assertions
                # belong to NxPhysicsJointDescTests and NxPhysicsJointTests, which phase 7
                # does not run
     '8' = 0
@@ -2107,6 +2129,7 @@ $NxRegisteredTestTargets = @(
     'NxFoundationTangentTests',
     'NxPhysicsExportTests',
     'NxPhysicsGeometryTests',
+    'NxPhysicsJointAllocatorTests',
     'NxPhysicsJointStagedPairTests',
     'NxPhysicsKernelFuzzTests',
     'NxPhysicsSDKTests'

@@ -357,7 +357,7 @@ void PointOnLineJoint::row_slot4(NxDebugRenderable& renderable)
 
 // phys_fn_004276 (0x000a2a80, 84 B)
 // Joint(desc, 4) runs first; the compiler then stores the vptr 0x10119cb0
-// (0xa2a90). The public object is allocated through the SDK allocator (`push
+// (0xa2a90). The public object is allocated through the Foundation allocator (`push
 // 0; push 0x1c; call [edx+8]`) and constructed only when the allocation
 // succeeded, but desc.userData is written to it without a null check
 // (0xa2ab5-0xa2ab8, 0xa2ac7-0xa2aca): a failed allocation faults there in the
@@ -365,7 +365,7 @@ void PointOnLineJoint::row_slot4(NxDebugRenderable& renderable)
 PointOnLineJoint::PointOnLineJoint(const NxPointOnLineJointDesc& desc)
 	: Joint(desc, 4)
 	{
-	void* memory = nxGetSdkAllocator()->malloc(sizeof(NpPointOnLineJoint), NX_MEMORY_PERSISTENT);
+	void* memory = nxFoundationSDKAllocator->malloc(sizeof(NpPointOnLineJoint), NX_MEMORY_PERSISTENT);
 	NpPointOnLineJoint* publicJoint = memory ? new(memory) NpPointOnLineJoint(this) : 0;
 	mPublicObject = publicJoint;
 	static_cast<NxJoint*>(publicJoint)->userData = desc.userData;
@@ -375,7 +375,7 @@ PointOnLineJoint::PointOnLineJoint(const NxPointOnLineJointDesc& desc)
 // The listing is the compiler's scalar deleting destructor around this body:
 // it reinstalls the vptr 0x10119cb0, deletes the public object through its
 // slot 0 with 1 (`push 1; call [eax]`), calls the Joint destructor body
-// (row 004095) directly, and frees `this` through the SDK allocator (slot
+// (row 004095) directly, and frees `this` through the Foundation allocator (slot
 // +0x14) when the flag's bit 0 is set (Joint::operator delete).
 PointOnLineJoint::~PointOnLineJoint()
 	{

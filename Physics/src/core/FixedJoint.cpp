@@ -384,7 +384,7 @@ void FixedJoint::row_slot6(NxReal arg)
 // phys_fn_004250 (0x000a0f70, 81 B)
 // Joint(desc, 0x200) runs first (`push 0x200` at 0xa0f76: the type bit); the
 // compiler then stores the vptr 0x10119a50 (0xa0f83). The public object is
-// allocated through the SDK allocator (`push 0; push 0x1c; call [edx+8]`) and
+// allocated through the Foundation allocator (`push 0; push 0x1c; call [edx+8]`) and
 // constructed only when the allocation succeeded, but desc.userData is written
 // to it without a null check (0xa0fac-0xa0faf): a failed allocation faults
 // there in the oracle, and does here too. Then recordRelativePose (row 004244,
@@ -392,7 +392,7 @@ void FixedJoint::row_slot6(NxReal arg)
 FixedJoint::FixedJoint(const NxFixedJointDesc& desc)
 	: Joint(desc, 0x200)
 	{
-	void* memory = nxGetSdkAllocator()->malloc(sizeof(NpFixedJoint), NX_MEMORY_PERSISTENT);
+	void* memory = nxFoundationSDKAllocator->malloc(sizeof(NpFixedJoint), NX_MEMORY_PERSISTENT);
 	NpFixedJoint* publicJoint = memory ? new(memory) NpFixedJoint(this) : 0;
 	mPublicObject = publicJoint;
 	static_cast<NxJoint*>(publicJoint)->userData = desc.userData;
@@ -403,7 +403,7 @@ FixedJoint::FixedJoint(const NxFixedJointDesc& desc)
 // The listing is the compiler's scalar deleting destructor around this body:
 // it reinstalls the vptr 0x10119a50, deletes the public object through its
 // slot 0 with 1 (`push 1; call [eax]`), calls the Joint destructor body
-// (row 004095) directly, and frees `this` through the SDK allocator (slot
+// (row 004095) directly, and frees `this` through the Foundation allocator (slot
 // +0x14) when the flag's bit 0 is set (Joint::operator delete).
 FixedJoint::~FixedJoint()
 	{

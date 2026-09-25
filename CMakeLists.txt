@@ -158,8 +158,7 @@ endif()
 
 # The joint classes are built without C++ exception handling, as the oracle
 # is. Measured: the oracle's .text has no __CxxFrameHandler and its only fs:[0]
-# uses are in CRT rows (_longjmp, __setjmp3, __SEH_prolog/epilog,
-# __local_unwind2, __ValidateEH3RN); every joint constructor and deleting
+# uses are in CRT rows (0xf4000+); every joint constructor and deleting
 # destructor in it is frameless (e.g. 004382, 004729). Under CMake's default
 # /EHsc each of these translation units gave its constructors an unwind
 # frame for the constructed bases, and its deleting destructors -- noexcept
@@ -339,6 +338,15 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_include_directories(NxPhysicsJointStagedPairTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include)
 	target_link_libraries(NxPhysicsJointStagedPairTests bcrypt)
+	# A fresh process that creates the Foundation with one allocator before the
+	# Physics SDK with another, so the joint rows' allocator (the Foundation's,
+	# `[[0x101041bc]]`) is observable (joint-open-items Task 5 follow-up).
+	add_executable(NxPhysicsJointAllocatorTests tests/PhysicsJointTests.cpp)
+	target_compile_definitions(NxPhysicsJointAllocatorTests PRIVATE
+		NX_PHYSICS_JOINT_ALLOCATOR_ONLY)
+	target_include_directories(NxPhysicsJointAllocatorTests PRIVATE
+		Foundation/include Foundation/src/include Physics/include)
+	target_link_libraries(NxPhysicsJointAllocatorTests bcrypt)
 	target_include_directories(NxPhysicsJointTests PRIVATE Foundation/include Physics/include)
 	target_link_libraries(NxPhysicsJointTests bcrypt)
 	# The two exported joint-descriptor rows on their own. Separate from

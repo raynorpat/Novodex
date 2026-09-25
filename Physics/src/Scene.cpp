@@ -1513,61 +1513,61 @@ NxJoint* NxSceneInternal::createJoint(const NxJointDesc& desc)
 	Joint* internal = 0;
 	if(d[1] == NX_JOINT_PRISMATIC)
 		{
-		void* memory = nxGetSdkAllocator()->malloc(sizeof(PrismaticJoint), NX_MEMORY_PERSISTENT);
+		void* memory = nxFoundationSDKAllocator->malloc(sizeof(PrismaticJoint), NX_MEMORY_PERSISTENT);
 		if(memory)
 			internal = new(memory) PrismaticJoint(static_cast<const NxPrismaticJointDesc&>(desc));
 		}
 	else if(d[1] == NX_JOINT_CYLINDRICAL)
 		{
-		void* memory = nxGetSdkAllocator()->malloc(sizeof(CylindricalJoint), NX_MEMORY_PERSISTENT);
+		void* memory = nxFoundationSDKAllocator->malloc(sizeof(CylindricalJoint), NX_MEMORY_PERSISTENT);
 		if(memory)
 			internal = new(memory) CylindricalJoint(static_cast<const NxCylindricalJointDesc&>(desc));
 		}
 	else if(d[1] == NX_JOINT_SPHERICAL)
 		{
-		void* memory = nxGetSdkAllocator()->malloc(sizeof(SphericalJoint), NX_MEMORY_PERSISTENT);
+		void* memory = nxFoundationSDKAllocator->malloc(sizeof(SphericalJoint), NX_MEMORY_PERSISTENT);
 		if(memory)
 			internal = new(memory) SphericalJoint(static_cast<const NxSphericalJointDesc&>(desc));
 		}
 	else if(d[1] == NX_JOINT_POINT_ON_LINE)
 		{
-		void* memory = nxGetSdkAllocator()->malloc(sizeof(PointOnLineJoint), NX_MEMORY_PERSISTENT);
+		void* memory = nxFoundationSDKAllocator->malloc(sizeof(PointOnLineJoint), NX_MEMORY_PERSISTENT);
 		if(memory)
 			internal = new(memory) PointOnLineJoint(static_cast<const NxPointOnLineJointDesc&>(desc));
 		}
 	else if(d[1] == NX_JOINT_POINT_IN_PLANE)
 		{
-		void* memory = nxGetSdkAllocator()->malloc(sizeof(PointInPlaneJoint), NX_MEMORY_PERSISTENT);
+		void* memory = nxFoundationSDKAllocator->malloc(sizeof(PointInPlaneJoint), NX_MEMORY_PERSISTENT);
 		if(memory)
 			internal = new(memory) PointInPlaneJoint(static_cast<const NxPointInPlaneJointDesc&>(desc));
 		}
 	else if(d[1] == NX_JOINT_DISTANCE)
 		{
-		void* memory = nxGetSdkAllocator()->malloc(sizeof(DistanceJoint), NX_MEMORY_PERSISTENT);
+		void* memory = nxFoundationSDKAllocator->malloc(sizeof(DistanceJoint), NX_MEMORY_PERSISTENT);
 		if(memory)
 			internal = new(memory) DistanceJoint(static_cast<const NxDistanceJointDesc&>(desc));
 		}
 	else if(d[1] == NX_JOINT_PULLEY)
 		{
-		void* memory = nxGetSdkAllocator()->malloc(sizeof(PulleyJoint), NX_MEMORY_PERSISTENT);
+		void* memory = nxFoundationSDKAllocator->malloc(sizeof(PulleyJoint), NX_MEMORY_PERSISTENT);
 		if(memory)
 			internal = new(memory) PulleyJoint(static_cast<const NxPulleyJointDesc&>(desc));
 		}
 	else if(d[1] == NX_JOINT_FIXED)
 		{
-		void* memory = nxGetSdkAllocator()->malloc(sizeof(FixedJoint), NX_MEMORY_PERSISTENT);
+		void* memory = nxFoundationSDKAllocator->malloc(sizeof(FixedJoint), NX_MEMORY_PERSISTENT);
 		if(memory)
 			internal = new(memory) FixedJoint(static_cast<const NxFixedJointDesc&>(desc));
 		}
 	else if(d[1] == NX_JOINT_D6)
 		{
-		void* memory = nxGetSdkAllocator()->malloc(sizeof(D6Joint), NX_MEMORY_PERSISTENT);
+		void* memory = nxFoundationSDKAllocator->malloc(sizeof(D6Joint), NX_MEMORY_PERSISTENT);
 		if(memory)
 			internal = new(memory) D6Joint(static_cast<const NxD6JointDesc&>(desc));
 		}
 	else if(d[1] == NX_JOINT_REVOLUTE)
 		{
-		void* memory = nxGetSdkAllocator()->malloc(sizeof(RevoluteJoint), NX_MEMORY_PERSISTENT);
+		void* memory = nxFoundationSDKAllocator->malloc(sizeof(RevoluteJoint), NX_MEMORY_PERSISTENT);
 		if(memory)
 			internal = new(memory) RevoluteJoint(static_cast<const NxRevoluteJointDesc&>(desc));
 		}
@@ -1779,10 +1779,13 @@ static void nxSceneDelete(void* self, int flags)
 			}
 		}
 	// The joint record array (0x13ffb-0x14013) and the joint pointer array
-	// (0x14195-0x141b9, which also zeroes end and capacity).
+	// (0x14195-0x141b9, which also zeroes end and capacity). These three
+	// frees go through nxFoundationSDKAllocator (`[[0x101041bc]]` slot
+	// +0x14), as 000663 does and as their allocators 000598, 000661 and
+	// 000600 do.
 	if(scene->at<void*>(0x5b8))
 		{
-		nxGetSdkAllocator()->free(scene->at<void*>(0x5b8));
+		nxFoundationSDKAllocator->free(scene->at<void*>(0x5b8));
 		scene->at<void*>(0x5b8) = 0;
 		}
 	// The JointSupportBody array (0x14019-0x14034): phys_fn_000600 allocates
@@ -1790,11 +1793,11 @@ static void nxSceneDelete(void* self, int flags)
 	// simulation step grows it, so in the candidate it is always null here.
 	if(scene->at<unsigned char*>(0x5ac))
 		{
-		nxGetSdkAllocator()->free(scene->at<unsigned char*>(0x5ac) - 4);
+		nxFoundationSDKAllocator->free(scene->at<unsigned char*>(0x5ac) - 4);
 		scene->at<void*>(0x5ac) = 0;
 		}
 	if(scene->at<void*>(0x58c))
-		nxGetSdkAllocator()->free(scene->at<void*>(0x58c));
+		nxFoundationSDKAllocator->free(scene->at<void*>(0x58c));
 	scene->at<void*>(0x58c) = 0;
 	scene->at<void*>(0x590) = 0;
 	scene->at<void*>(0x594) = 0;
@@ -2611,13 +2614,13 @@ void NxSceneInternal::growJointRecords()
 	NxU32 capacity = at<NxU32>(0x5c0);
 	capacity = capacity ? capacity + capacity : 4;
 	at<NxU32>(0x5c0) = capacity;
-	void* block = nxGetSdkAllocator()->malloc(capacity * 0x50, NX_MEMORY_PERSISTENT);
+	void* block = nxFoundationSDKAllocator->malloc(capacity * 0x50, NX_MEMORY_PERSISTENT);
 	const NxU32 count = at<NxU32>(0x5bc);
 	if(count)
 		memcpy(block, at<void*>(0x5b8), count * 0x50);
 	if(at<void*>(0x5b8))
 		{
-		nxGetSdkAllocator()->free(at<void*>(0x5b8));
+		nxFoundationSDKAllocator->free(at<void*>(0x5b8));
 		at<void*>(0x5b8) = 0;
 		}
 	at<void*>(0x5b8) = block;

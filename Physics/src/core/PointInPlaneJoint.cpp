@@ -354,7 +354,7 @@ void PointInPlaneJoint::row_slot4(NxDebugRenderable& renderable)
 // phys_fn_004262 (0x000a1b50, 84 B)
 // Joint(desc, 2) runs first (`push 2` at 0xa1b56: the type bit); the
 // compiler then stores the vptr 0x10119b48 (0xa1b60). The public object is
-// allocated through the SDK allocator (`push 0; push 0x1c; call [edx+8]`)
+// allocated through the Foundation allocator (`push 0; push 0x1c; call [edx+8]`)
 // and constructed only when the allocation succeeded, but desc.userData is
 // written to it without a null check (0xa1b85-0xa1b88, 0xa1b97-0xa1b9a): a
 // failed allocation faults there in the oracle, and does here too. Nothing
@@ -363,7 +363,7 @@ void PointInPlaneJoint::row_slot4(NxDebugRenderable& renderable)
 PointInPlaneJoint::PointInPlaneJoint(const NxPointInPlaneJointDesc& desc)
 	: Joint(desc, 2)
 	{
-	void* memory = nxGetSdkAllocator()->malloc(sizeof(NpPointInPlaneJoint), NX_MEMORY_PERSISTENT);
+	void* memory = nxFoundationSDKAllocator->malloc(sizeof(NpPointInPlaneJoint), NX_MEMORY_PERSISTENT);
 	NpPointInPlaneJoint* publicJoint = memory ? new(memory) NpPointInPlaneJoint(this) : 0;
 	mPublicObject = publicJoint;
 	static_cast<NxJoint*>(publicJoint)->userData = desc.userData;
@@ -373,7 +373,7 @@ PointInPlaneJoint::PointInPlaneJoint(const NxPointInPlaneJointDesc& desc)
 // The listing is the compiler's scalar deleting destructor around this body:
 // it reinstalls the vptr 0x10119b48, deletes the public object through its
 // slot 0 with 1 (`push 1; call [eax]`), calls the Joint destructor body
-// (row 004095) directly, and frees `this` through the SDK allocator (slot
+// (row 004095) directly, and frees `this` through the Foundation allocator (slot
 // +0x14) when the flag's bit 0 is set (Joint::operator delete).
 PointInPlaneJoint::~PointInPlaneJoint()
 	{

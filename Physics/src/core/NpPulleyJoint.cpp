@@ -111,7 +111,7 @@ NpPulleyJoint::~NpPulleyJoint()
 	// Nothing to do in the body: the base-destruction chain reinstalls the
 	// hook base's own table (phys_fn_002406) and the abstract NxJoint table
 	// 0x1011a680, and the compiler's scalar deleting destructor frees through
-	// NpJointShared's operator delete (the SDK allocator, slot +0x14).
+	// NpJointShared's operator delete (the Foundation allocator, slot +0x14).
 	}
 
 // Scene::createJoint's link copy (0x14509-0x14521), declared in

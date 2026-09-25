@@ -82,8 +82,8 @@ static NxReal cylindricalBias(const NxVec3& t, double gx, double gy, double gz, 
 
 // phys_fn_004320 (0x000a76a0, 87 B)
 // Joint(desc, 0x100) runs first (0xa76a6-0xa76ae); the compiler then stores
-// the vptr 0x1011a048 (0xa76b3). The public object is allocated through the
-// SDK allocator (`push 0; push 0x1c; call [edx+8]`) and constructed only
+// the vptr 0x1011a048 (0xa76b3). The public object is allocated through the Foundation
+// allocator (`push 0; push 0x1c; call [edx+8]`) and constructed only
 // when the allocation succeeded, but desc.userData is written to it without
 // a null check (the null arm stores 0 at +0x48 and then writes [0+4],
 // 0xa76e5-0xa76ed): a failed allocation faults there in the oracle, and does
@@ -91,7 +91,7 @@ static NxReal cylindricalBias(const NxVec3& t, double gx, double gy, double gz, 
 CylindricalJoint::CylindricalJoint(const NxCylindricalJointDesc& desc)
 	: Joint(desc, 0x100)
 	{
-	void* memory = nxGetSdkAllocator()->malloc(sizeof(NpCylindricalJoint), NX_MEMORY_PERSISTENT);
+	void* memory = nxFoundationSDKAllocator->malloc(sizeof(NpCylindricalJoint), NX_MEMORY_PERSISTENT);
 	NpCylindricalJoint* publicJoint = memory ? new(memory) NpCylindricalJoint(this) : 0;
 	mPublicObject = publicJoint;
 	static_cast<NxJoint*>(publicJoint)->userData = desc.userData;

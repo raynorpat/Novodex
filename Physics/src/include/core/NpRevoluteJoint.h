@@ -63,7 +63,7 @@ class NpRevoluteJoint : public NpJointShared<NxRevoluteJoint, RevoluteJoint>
 	//! wraps this body with the operator-delete-if-flagged step).
 	virtual ~NpRevoluteJoint();
 
-	//! `operator delete` (the SDK allocator) is inherited from
+	//! `operator delete` (the Foundation allocator) is inherited from
 	//! NpJointShared.
 
 	// --- NxJoint setters this family has its own rows for, in NxJoint.h
