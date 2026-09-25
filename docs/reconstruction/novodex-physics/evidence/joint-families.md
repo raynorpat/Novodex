@@ -305,7 +305,8 @@ These behaviours are in the oracle and the reconstruction keeps them.
 6. **Foundation `NxNormalToTangents` defect** (Task 2). It changes the local normal that 004101 and
    `NxJointDesc::setGlobalAxis` store for axes near z, and the tangents prismatic's 004386 builds.
    It belongs to a separate Foundation task. The joint tests avoid such axes.
-7. **Phase 2/3 test targets.**
+7. **Phase 2/3 test targets.** (Build closed by joint-open-items Task 1; Phase 3 red on three
+   registered counts 0637850 moved, see `evidence/joint-open-items.md`.)
    - `NxPhysicsInternalTests` and `NxPhysicsCollisionTests` still fail to compile (`IcePrunable.h`),
      a failure that predates the pilot.
    - Both compile `Scene.cpp`, which now constructs every joint type through `Physics/src/core`. Once the include path is
@@ -325,10 +326,11 @@ These behaviours are in the oracle and the reconstruction keeps them.
       004595, 004278, 004621, 004653, 004368, 004729.
     - The generated `sub ecx,0Ch; jmp` thunks match. The cause is still uninvestigated, probably the
       EH/GS settings of these translation units, and none of these destructors has run.
-11. **The generic `createJoint` path** (`nxJointConstruct`, `nxJointSizeForType`) is now reachable
+11. (Closed by joint-open-items Task 1: path removed.) **The generic `createJoint` path**
+    (`nxJointConstruct`, `nxJointSizeForType`) is now reachable
     for no type. Its size table keeps the stand-in's literals, with comments naming the real sizes
     for types 8 and 9 only.
-12. **Two sets of naked sqrt helpers.** `Physics/src/include/core/JointX87.h` (joint files) and
+12. (Closed by joint-open-items Task 1: folded into X87Sqrt.h.) **Two sets of naked sqrt helpers.** `Physics/src/include/core/JointX87.h` (joint files) and
     `Physics/src/include/X87Sqrt.h` (Geometry.cpp, commit 0637850) hold equivalent helpers;
     `jointFsqrtDot2` has the same body as `x87FsqrtDot2`. X87Sqrt.h notes that folding JointX87.h
     into it is a rename only. Not done here, to keep the joint transcript's reviewed code stable.
