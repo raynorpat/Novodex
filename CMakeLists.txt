@@ -64,7 +64,7 @@ source_group("Header Files" FILES ${PHYSICS_HEADERS})
 # `\Epic\Novodex\SDKs\Physics\src\opcode\IcePrunable.cpp`, and nothing under
 # this directory has a counterpart in either pinned OPCODE 1.3 tree. Vendored
 # OPCODE is External/opcode/ and nowhere else.
-file(GLOB PHYSICS_SOURCES Physics/src/*.cpp Physics/src/opcode/*.cpp)
+file(GLOB PHYSICS_SOURCES Physics/src/*.cpp Physics/src/core/*.cpp Physics/src/opcode/*.cpp)
 source_group("Source Files" FILES ${PHYSICS_SOURCES})
 
 if(WIN32)

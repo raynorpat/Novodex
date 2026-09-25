@@ -1961,13 +1961,18 @@ UNRESOLVED_SOURCE_PATHS = (
     'Physics/src/core/NpPointOnLineJoint.cpp',       # 10 rows
     'Physics/src/core/NpPrismaticJoint.cpp',         # 10 rows
     'Physics/src/core/NpPulleyJoint.cpp',            # 10 rows
-    'Physics/src/core/NpRevoluteJoint.cpp',          # 14 rows
+    # 'Physics/src/core/NpRevoluteJoint.cpp' was here with 14 rows against it,
+    # and is REMOVED: Task 5 of the revolute pilot created the file, so the
+    # path resolves and the entry would be a claim that a real file is
+    # missing. The validator says so itself -- "is on the allowlist but no
+    # longer unresolved; remove the entry".
     'Physics/src/core/NpSphericalJoint.cpp',         # 12 rows
     'Physics/src/core/PointInPlaneJoint.cpp',        # 2 rows
     'Physics/src/core/PointOnLineJoint.cpp',         # 2 rows
     'Physics/src/core/PrismaticJoint.cpp',           # 2 rows
     'Physics/src/core/PulleyJoint.cpp',              # 2 rows
-    'Physics/src/core/RevoluteJoint.cpp',            # 7 rows
+    # 'Physics/src/core/RevoluteJoint.cpp' was here with 7 rows against it,
+    # and is REMOVED for the same reason as NpRevoluteJoint.cpp above.
     'Physics/src/core/SphericalJoint.cpp',           # 4 rows
     'Physics/src/fluids/Fluid.cpp',                  # 3 rows
     'Physics/src/fluids/FluidManager.cpp',           # 7 rows
