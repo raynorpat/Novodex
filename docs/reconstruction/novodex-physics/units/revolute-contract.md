@@ -308,17 +308,28 @@ Header `Physics/src/include/core/NpRevoluteJoint.h`.
   0xb3423) frees through `operator delete` when its flag bit is set; without this declaration
   that call resolves to the global operator delete (a plain CRT free) instead of the SDK
   allocator the oracle uses (`[[0x101041bc]]` slot +0x14).
-- No other declaration changes: `NpRevoluteJoint`'s constructor needs no explicit vtable or
-  `userData`/`appData` code -- `NxJoint()`'s inline default constructor (already in the immutable
-  public header) zeroes `userData`/`appData` as part of ordinary base construction, and every
-  vtable phys_fn_004725/phys_fn_004729 install is the vtable C++ installs automatically for this
-  base/derived shape (see the constructor and destructor bodies' comments in
-  `Physics/src/core/NpRevoluteJoint.cpp`). Only the hook base's two words (`mWord04`/`mWord08`)
-  need an explicit zero in the constructor, since `EmbeddedHookBase` has no constructor of its
-  own; this reproduces phys_fn_002404's zeroing without adding a constructor to the shared
-  `EmbeddedHookBase` struct (out of this task's file scope, and other embedders such as
-  `CollisionObject` deliberately skip it -- see `ObjectModel.cpp`'s `CollisionObject::CollisionObject`
-  comment).
+- `NpRevoluteJoint` gains two private accessors, `void* writeLink() const { return
+  reinterpret_cast<void*>(mWord04); }` and `void* readLink() const { return
+  reinterpret_cast<void*>(mWord08); }`. `mWord04`/`mWord08` (+0x10/+0x14) do not hold the
+  lock block directly; per "## Object layouts" each holds a pointer to a one-word link
+  whose word points to the lock block, and that is exactly the `link` value the
+  `nxNpSceneGuardEnter`/`nxNpSceneGuardWriteTry`/`nxNpSceneGuardLeave` helpers
+  (`NpSceneGuard.h`) take. Every locked body in `NpRevoluteJoint.cpp` calls `writeLink()`/
+  `readLink()` once, before the guarded work, and passes that captured value to the guard
+  calls -- reproducing the listing's `mov ecx,[esi+0x10]` / `[esi+0x14]` reads (e.g.
+  phys_fn_004681 0xb2d16) exactly, rather than passing the field's own address.
+- Beyond the `operator delete` and the `writeLink()`/`readLink()` accessors above, no
+  other declaration changes were needed: `NpRevoluteJoint`'s constructor needs no explicit
+  vtable or `userData`/`appData` code -- `NxJoint()`'s inline default constructor (already
+  in the immutable public header) zeroes `userData`/`appData` as part of ordinary base
+  construction, and every vtable phys_fn_004725/phys_fn_004729 install is the vtable C++
+  installs automatically for this base/derived shape (see the constructor and destructor
+  bodies' comments in `Physics/src/core/NpRevoluteJoint.cpp`). Only the hook base's two
+  words (`mWord04`/`mWord08`) need an explicit zero in the constructor, since
+  `EmbeddedHookBase` has no constructor of its own; this reproduces phys_fn_002404's
+  zeroing without adding a constructor to the shared `EmbeddedHookBase` struct (out of
+  this task's file scope, and other embedders such as `CollisionObject` deliberately skip
+  it -- see `ObjectModel.cpp`'s `CollisionObject::CollisionObject` comment).
 - `nxLockedVtCallNoArg` and `nxLockedCopyAndFlag` (`ObjectModel.cpp`) gain a second pointer
   comment: their shape also covers phys_fn_004703/004707 and phys_fn_004711/004715/004719
   respectively, but those rows are written as direct calls through the named `RevoluteJoint`
