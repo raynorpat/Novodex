@@ -663,6 +663,24 @@ Getters: 004437/004125, 004441/004129, 004483/004078, 004539, 004443/004070,
   them on the stack, so the error is written inline.
 - **cdb echo lines**: grep for `HIT .*$` also matches the echoed `bp` commands (`...; gc"`); drop
   lines ending in `gc"` before counting hits.
+- **A unit whose `__FILE__` is not under `core\`** (D6, Task 3i: `...\src\D6Joint.cpp`): the file still
+  goes in `Physics/src/core/` beside the other families (the pilot's `src\Joint.cpp` precedent); the
+  report strings keep the image path, the rows' `source` is repointed with the old path in `notes`,
+  and the `UNRESOLVED_SOURCE_PATHS` entry for the image path is removed in the inventory commit (the
+  validator names it once the rows no longer point there).
+- **saveToDesc may save the base part only** (D6 004182 tail-jumps 004066): print the descriptor's
+  family fields after filling them with sentinels first, so the transcript shows what the oracle
+  leaves untouched rather than stack garbage (NxD6JointDesc's constructor leaves projectionDistance,
+  projectionAngle, projectionMode and useSpherical uninitialised).
+- **Public setters can call a folded no-op directly** (D6 004461-004467 `call 004248`): the family
+  declares an inline empty member the Np row calls; the candidate keeps only the lock and unlock.
+- **NxD6JointDesc.h uses NxBitField32 without including NxBitField.h**: include it first (internal
+  header and test).
+- **No isD6Joint() in this SDK**: the test uses `is(NX_JOINT_D6)` (folded 004479).
+- **A two-term root of stack-held differences** (D6 004207): `core/JointX87.h` gained
+  `jointFsqrtDot2(a0,b0, a1,b1)`; a sum of two float products still fits `jointFsqrtSum2`.
+- **004178/004180 return `out` in eax** and the callers chain them (`call 004180; mov ecx,eax; call
+  004178`): the pose helpers return the output pointer.
 
 ## Cylindrical
 
@@ -2578,7 +2596,7 @@ table (per-family rows 004473, 004435, 004439, 004445, 004447, 004449, 004455, 0
 
 - **write** (34 rows): the 17 `core/D6Joint.cpp` rows above (004178-004212 minus the folded 004186;
   12,450 B) and the 17 `core/NpD6Joint.cpp` rows (004435-004473 minus the folded 004437, 004441 and
-  004443; 1,390 B; 004471 generated).
+  004443; 1,303 B; 004471 generated).
 - **reuse**:
   - Joint rows 004141, 004107, 004121, 004097, 004066, 004093, 004095, 004111, 004087, 004123 and
     004135 (`core/Joint.cpp`); 004391 (`core/JointSupport.cpp`).
@@ -2609,3 +2627,65 @@ projectionAngle, projectionMode and useSpherical uninitialised).
   them and then saveToDesc again.
 - Compiled but not reached: 004178-004200, 004206, 004207 (no simulation step), 004202 (release
   unwired), 004212, 004184 (NxD6Joint has no public setProjectionMode), 004435-004457, 004473.
+
+### The rows' shape
+
+- **004182** (saveToDesc): broken test (line 0xaa, instance error with the `int3` guard), else
+  tail-jump 004066. No family field is written.
+- **004184** (setProjectionMode): spherical 004292's guarded store (line 0xb1) to +0x44.
+- **004212** (loadFromDesc): isValid (line 0x5f), then the broken test (line 0x60), both through
+  the instance; re-bind when a body differs, 004121, then **004204**.
+- **004204**: word copies of the family fields (only the x, y, z drives), `fld; fmul 0.5f; fcos;
+  fstp` for each LIMITED angular motion's half angle, the two "limited" bytes, then projection
+  mode/angle/distance.
+- **004178 / 004180**: pose product `out = this * other` (rotate other.p by this.q through a
+  quaternion sandwich with two of four intermediate components stored) and pose inverse (conjugate,
+  -p rotated by it); both return `out`.
+- **004194 / 004196**: append a 0x30-byte dump record to the .data array 0x10127198 (count
+  0x10127190, no bound check), then build a linear record (ra x n, rb x n; kind 1 or, for a limit,
+  0) or an angular one (kind 3 or, for a limit, 2; bit 10 set) and run the shared solve tail
+  (`jointSolveRecord`, SDK parameter 0 / 0.7f).
+- **004198**: the 4x3 "JwQ" matrix from W0.q and 0.5 W1.q with many stored intermediates.
+- **004188 / 004190 / 004192**: `fprintf`/`fputs` dump of every solver call to "D6JointDump.txt"
+  (opened once by 004206, never closed): fps, poses A/B/rel, the rel angle (the NxMath::acos clamp
+  with _CIacos, doubled), the JwQ rows and the records.
+- **004200** (visualization): world axes as three lines through row004123's point, local axes as
+  six arrows (normal/cross/axis per body) and a line between the anchors.
+- **004206** (solver slot): W0 = pose0 frame0, W1 = pose1 frame1, rel = W0^-1 W1; one linear record
+  per LOCKED linear motion (bias -(inv rel.p[i]), FLT_MAX), one for the linear limit, the LOCKED
+  angular records (a single N x column record when exactly one swing is locked with twist free,
+  else one per locked motion along a JwQ row), the twist limit, the elliptical swing cone, and the
+  dump. Angular records carry maxTorque.
+- **004207** (projection slot 8): the correction pose (free linear components; locked vector
+  clamped to projectionDistance; limited vector clamped to linearLimit + projectionDistance; the
+  angular correction by the locked set through the listing's 7-entry jump table 0x9e17c), then the
+  body's new pose W0 corr frame1^-1 (body 1) or W1 corr^-1 frame0^-1 (otherwise), its 3x3 rebuilt
+  and 000022 (deferred stub) called on its owner.
+- Listing over decompile: the supplement decompile of 004206 aliases the linear-lock bias operand to
+  body 0's position slot (rel.p overwrote it, 0x9d02c); the manifest decompiles of 004190 and 004200
+  drop stack arguments. Every row was written from the listing.
+
+### Result (Task 3i)
+
+- Wired: `NxSceneInternal::createJoint` builds type 9 through `D6Joint` (0x270, type bit 0x4000)
+  and `nxD6JointAttachScene`. All ten joint types now take the reconstructed path; the generic
+  stand-in is reached only by a type outside 0-9.
+- The staged pair matched the oracle on the first run: `stdout_delta=0`, 83/83 Phase 6 coverage,
+  40/40 Phase 7. No transcript difference was found. The oracle's D6 saveToDesc leaves every family
+  field of the descriptor untouched (the saved motions/limits/drives/projection lines show the
+  case's sentinel values), and the four drive setters store nothing.
+- Registered lines: four per joint list (created, index 3 anchor/axis/state, index 3 type/is, index 0
+  saved motions), copied from the oracle side of that run (the oracle-differential section of the
+  Phase 6 log for `NxPhysicsJointTests` and the `pair=oracle` child output for
+  `NxPhysicsJointStagedPairTests`; their 94 D6 lines were identical (`cmp`), and identical to the
+  `pair=candidate` child's).
+- A cdb trace of the candidate (`evidence/joint-families-trace-d6.txt`) shows 004210, 004204, 004469,
+  004459, 004182 and 004461-004467 executing in both cases. 004178-004200, 004202, 004206, 004207,
+  004212, 004184, 004473 and the other Np setters are compiled but not reached; the solver,
+  projection, visualization and dump rows are checked against the listing by review and the build
+  only. `D6Joint.obj` has no xmm instruction and no `__CIsqrt`; its 14 roots go through
+  `core/JointX87.h`.
+- Ledger: the 34 rows are `reconstructed_not_falsified` in `gates/phase6-closure.json` (25 moved
+  from `not_reconstructed_in_phase`; 004184, 004451, 004455, 004457, 004459 and 004461-004467
+  already were); counts 115 / 316.
+- 004186 and 004248 stay unclaimed (folded, inline).
