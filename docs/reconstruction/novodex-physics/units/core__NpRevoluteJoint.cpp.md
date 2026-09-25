@@ -4,8 +4,8 @@ Evidenced span: ['0x000b2d10', '0x000b32b0']. Rows: 19 (0 ambiguous). Generated 
 
 ## Dispatch tables naming this unit's rows
 
-- phys_data_002727 slot 2 -> phys_fn_004681
-- phys_data_002727 slot 4 -> phys_fn_004683
+- phys_data_002727 (0x0011b328) slot 2 -> phys_fn_004681
+- phys_data_002727 (0x0011b328) slot 4 -> phys_fn_004683
 
 ## External dependencies by unit
 

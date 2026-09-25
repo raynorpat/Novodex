@@ -4,39 +4,39 @@ Evidenced span: ['0x00095ab0', '0x0009a430']. Rows: 37 (0 ambiguous). Generated 
 
 ## Dispatch tables naming this unit's rows
 
-- phys_data_002614 slot 0 -> phys_fn_004113
-- phys_data_002614 slot 3 -> phys_fn_004111
-- phys_data_002614 slot 4 -> phys_fn_004087
-- phys_data_002614 slot 6 -> phys_fn_004119
-- phys_data_002614 slot 7 -> phys_fn_004133
-- phys_data_002623 slot 2 -> phys_fn_004111
-- phys_data_002623 slot 3 -> phys_fn_004087
-- phys_data_002623 slot 7 -> phys_fn_004135
-- phys_data_002645 slot 2 -> phys_fn_004111
-- phys_data_002645 slot 3 -> phys_fn_004087
-- phys_data_002645 slot 7 -> phys_fn_004135
-- phys_data_002649 slot 2 -> phys_fn_004111
-- phys_data_002649 slot 3 -> phys_fn_004087
-- phys_data_002649 slot 7 -> phys_fn_004135
-- phys_data_002653 slot 2 -> phys_fn_004111
-- phys_data_002653 slot 3 -> phys_fn_004087
-- phys_data_002653 slot 7 -> phys_fn_004135
-- phys_data_002657 slot 2 -> phys_fn_004111
-- phys_data_002657 slot 3 -> phys_fn_004087
-- phys_data_002657 slot 7 -> phys_fn_004135
-- phys_data_002662 slot 2 -> phys_fn_004111
-- phys_data_002662 slot 3 -> phys_fn_004087
-- phys_data_002662 slot 7 -> phys_fn_004135
-- phys_data_002668 slot 2 -> phys_fn_004111
-- phys_data_002668 slot 3 -> phys_fn_004087
-- phys_data_002678 slot 2 -> phys_fn_004111
-- phys_data_002678 slot 3 -> phys_fn_004087
-- phys_data_002678 slot 7 -> phys_fn_004135
-- phys_data_002684 slot 2 -> phys_fn_004111
-- phys_data_002684 slot 3 -> phys_fn_004087
-- phys_data_002694 slot 2 -> phys_fn_004111
-- phys_data_002694 slot 3 -> phys_fn_004087
-- phys_data_002694 slot 7 -> phys_fn_004135
+- phys_data_002614 (0x001192cc) slot 0 -> phys_fn_004113
+- phys_data_002614 (0x001192cc) slot 3 -> phys_fn_004111
+- phys_data_002614 (0x001192cc) slot 4 -> phys_fn_004087
+- phys_data_002614 (0x001192cc) slot 6 -> phys_fn_004119
+- phys_data_002614 (0x001192cc) slot 7 -> phys_fn_004133
+- phys_data_002623 (0x00119570) slot 2 -> phys_fn_004111
+- phys_data_002623 (0x00119570) slot 3 -> phys_fn_004087
+- phys_data_002623 (0x00119570) slot 7 -> phys_fn_004135
+- phys_data_002645 (0x00119840) slot 2 -> phys_fn_004111
+- phys_data_002645 (0x00119840) slot 3 -> phys_fn_004087
+- phys_data_002645 (0x00119840) slot 7 -> phys_fn_004135
+- phys_data_002649 (0x00119948) slot 2 -> phys_fn_004111
+- phys_data_002649 (0x00119948) slot 3 -> phys_fn_004087
+- phys_data_002649 (0x00119948) slot 7 -> phys_fn_004135
+- phys_data_002653 (0x00119a50) slot 2 -> phys_fn_004111
+- phys_data_002653 (0x00119a50) slot 3 -> phys_fn_004087
+- phys_data_002653 (0x00119a50) slot 7 -> phys_fn_004135
+- phys_data_002657 (0x00119b48) slot 2 -> phys_fn_004111
+- phys_data_002657 (0x00119b48) slot 3 -> phys_fn_004087
+- phys_data_002657 (0x00119b48) slot 7 -> phys_fn_004135
+- phys_data_002662 (0x00119cb0) slot 2 -> phys_fn_004111
+- phys_data_002662 (0x00119cb0) slot 3 -> phys_fn_004087
+- phys_data_002662 (0x00119cb0) slot 7 -> phys_fn_004135
+- phys_data_002668 (0x00119e20) slot 2 -> phys_fn_004111
+- phys_data_002668 (0x00119e20) slot 3 -> phys_fn_004087
+- phys_data_002678 (0x0011a048) slot 2 -> phys_fn_004111
+- phys_data_002678 (0x0011a048) slot 3 -> phys_fn_004087
+- phys_data_002678 (0x0011a048) slot 7 -> phys_fn_004135
+- phys_data_002684 (0x0011a1c0) slot 2 -> phys_fn_004111
+- phys_data_002684 (0x0011a1c0) slot 3 -> phys_fn_004087
+- phys_data_002694 (0x0011a4d0) slot 2 -> phys_fn_004111
+- phys_data_002694 (0x0011a4d0) slot 3 -> phys_fn_004087
+- phys_data_002694 (0x0011a4d0) slot 7 -> phys_fn_004135
 
 ## External dependencies by unit
 

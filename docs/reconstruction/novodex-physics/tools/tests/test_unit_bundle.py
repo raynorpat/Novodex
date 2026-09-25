@@ -68,7 +68,7 @@ class RenderUnitTest(unittest.TestCase):
         text = unit_bundle.render_unit(unit, {"phys_fn_000077": "Other.cpp"}, o)
         self.assertIn("# core\\A.cpp", text)
         self.assertIn("## phys_fn_000001 (0x00001000, 3 B, discovered)", text)
-        self.assertIn("phys_data_000009 slot 2 -> phys_fn_000002", text)
+        self.assertIn("phys_data_000009 (0x00003000) slot 2 -> phys_fn_000002", text)
         self.assertIn("0x00001001  call dword ptr [eax + 0x14]", text)
         self.assertIn("Joint.cpp", text)
         self.assertIn("Other.cpp: phys_fn_000077", text)
