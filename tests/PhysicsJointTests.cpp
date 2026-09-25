@@ -11,9 +11,9 @@
 //   * it is the harness Phase 6 needs, and it exists because Phase 6's own plan
 //     calls for tests/PhysicsJointTests.cpp;
 //   * it is a TRANSCRIPT generator for the revolute family and, since
-//     joint-families Tasks 3a-3d, the prismatic, cylindrical, spherical and
-//     point-on-line families. The other five families -- point-in-plane, D6,
-//     distance, fixed and pulley -- are not driven yet, and the file says so
+//     joint-families Tasks 3a-3g, the prismatic, cylindrical, spherical,
+//     point-on-line, point-in-plane, distance and pulley families. The other
+//     two families -- D6 and fixed -- are not driven yet, and the file says so
 //     rather than reporting a coverage number that overstates;
 //   * it is registered as an oracle differential only when its transcript is
 //     judged stable, which is a separate step.
@@ -53,6 +53,8 @@
 #include "NxPointInPlaneJointDesc.h"
 #include "NxDistanceJoint.h"
 #include "NxDistanceJointDesc.h"
+#include "NxPulleyJoint.h"
+#include "NxPulleyJointDesc.h"
 
 typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(NxU32, NxUserAllocator*, NxUserOutputStream*);
 
@@ -670,6 +672,97 @@ static void nxDistanceCase(NxScene& scene, NxActor* a, NxActor* b,
 	printf("case=distance index=%u released=yes\n", index);
 	}
 
+static void nxPulleyCase(NxScene& scene, NxActor* a, NxActor* b,
+	unsigned index, const NxVec3& anchor, const NxVec3& axis,
+	const NxVec3& pulley0, const NxVec3& pulley1, NxReal distance, NxReal stiffness, NxReal ratio, NxU32 flags)
+	{
+	printf("case=pulley index=%u ", index);
+	nxPrintVec("in_anchor", anchor);
+	printf(" ");
+	nxPrintVec("in_axis", axis);
+	printf("\n");
+	printf("case=pulley index=%u ", index);
+	nxPrintVec("in_pulley0", pulley0);
+	printf(" ");
+	nxPrintVec("in_pulley1", pulley1);
+	printf(" distance=%08x stiffness=%08x ratio=%08x flags=%08x\n",
+		nxU(distance), nxU(stiffness), nxU(ratio), static_cast<unsigned>(flags));
+
+	NxPulleyJointDesc desc;
+	desc.setToDefault();
+	desc.actor[0] = a;
+	desc.actor[1] = b;
+	nxSetGlobalAnchor(desc, anchor);
+	nxSetGlobalAxis(desc, axis);
+	desc.pulley[0] = pulley0;
+	desc.pulley[1] = pulley1;
+	desc.distance = distance;
+	desc.stiffness = stiffness;
+	desc.ratio = ratio;
+	desc.flags = flags;
+
+	NxJoint* joint = scene.createJoint(desc);
+	printf("case=pulley index=%u created=%s\n", index, joint ? "yes" : "no");
+	if(!joint)
+		return;
+
+	NxVec3 gotAnchor(0.0f, 0.0f, 0.0f);
+	NxVec3 gotAxis(0.0f, 0.0f, 0.0f);
+	joint->getGlobalAnchor(gotAnchor);
+	joint->getGlobalAxis(gotAxis);
+	printf("case=pulley index=%u ", index);
+	nxPrintVec("out_anchor", gotAnchor);
+	printf(" ");
+	nxPrintVec("out_axis", gotAxis);
+	printf(" state=%u\n", static_cast<unsigned>(joint->getState()));
+
+	NxActor* ra = 0;
+	NxActor* rb = 0;
+	joint->getActors(&ra, &rb);
+	printf("case=pulley index=%u actors a=%s b=%s\n", index,
+		ra == a ? "match" : (ra ? "other" : "null"),
+		rb == b ? "match" : (rb ? "other" : "null"));
+
+	NxPulleyJoint* pulley = joint->isPulleyJoint();
+	printf("case=pulley index=%u type=%u is_pulley=%s is_distance=%s\n", index,
+		static_cast<unsigned>(joint->getType()), pulley ? "yes" : "no",
+		joint->isDistanceJoint() ? "yes" : "no");
+	if(pulley)
+		{
+		NxPulleyJointDesc saved;
+		pulley->saveToDesc(saved);
+		printf("case=pulley index=%u saved ", index);
+		nxPrintVec("pulley0", saved.pulley[0]);
+		printf(" ");
+		nxPrintVec("pulley1", saved.pulley[1]);
+		printf("\n");
+		printf("case=pulley index=%u saved distance=%08x stiffness=%08x ratio=%08x flags=%08x\n",
+			index, nxU(saved.distance), nxU(saved.stiffness), nxU(saved.ratio), static_cast<unsigned>(saved.flags));
+		printf("case=pulley index=%u saved ", index);
+		nxPrintVec("anchor0", saved.localAnchor[0]);
+		printf(" ");
+		nxPrintVec("anchor1", saved.localAnchor[1]);
+		printf("\n");
+		printf("case=pulley index=%u saved ", index);
+		nxPrintVec("axis0", saved.localAxis[0]);
+		printf(" ");
+		nxPrintVec("axis1", saved.localAxis[1]);
+		printf("\n");
+		printf("case=pulley index=%u saved ", index);
+		nxPrintVec("normal0", saved.localNormal[0]);
+		printf(" ");
+		nxPrintVec("normal1", saved.localNormal[1]);
+		printf("\n");
+		printf("case=pulley index=%u saved max_force=%08x max_torque=%08x flags=%08x actors a=%s b=%s\n",
+			index, nxU(saved.maxForce), nxU(saved.maxTorque), static_cast<unsigned>(saved.jointFlags),
+			saved.actor[0] == a ? "match" : (saved.actor[0] ? "other" : "null"),
+			saved.actor[1] == b ? "match" : (saved.actor[1] ? "other" : "null"));
+		}
+
+	scene.releaseJoint(*joint);
+	printf("case=pulley index=%u released=yes\n", index);
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	wchar_t pairDirectory[MAX_PATH];
@@ -784,6 +877,14 @@ int wmain(int argc, wchar_t** argv)
 		NX_DJF_MAX_DISTANCE_ENABLED | NX_DJF_MIN_DISTANCE_ENABLED | NX_DJF_SPRING_ENABLED);
 	nxDistanceCase(*scene, a, b, 3, NxVec3(2.0f, 4.0f, 0.0f), NxVec3(0.5f, 0.5f, 0.5f),
 		1.25f, 1.25f, NxSpringDesc(), NX_DJF_MAX_DISTANCE_ENABLED | NX_DJF_MIN_DISTANCE_ENABLED);
+	// The pulley family's fields (this SDK's NxPulleyJointDesc has no motor):
+	// index 0 is a rigid rope over two pulleys with distinct distance,
+	// stiffness and ratio; index 3 moves both pulleys off the axes and clears
+	// the flags.
+	nxPulleyCase(*scene, a, b, 0, NxVec3(0.0f, 0.0f, 0.0f), NxVec3(1.0f, 0.0f, 0.0f),
+		NxVec3(0.0f, 5.0f, 0.0f), NxVec3(4.0f, 5.0f, 0.0f), 6.0f, 0.75f, 1.5f, NX_PJF_IS_RIGID);
+	nxPulleyCase(*scene, a, b, 3, NxVec3(2.0f, 4.0f, 0.0f), NxVec3(0.5f, 0.5f, 0.5f),
+		NxVec3(1.0f, 2.0f, 3.0f), NxVec3(-2.0f, 6.0f, 0.5f), 3.25f, 0.5f, 2.0f, 0);
 
 	sdk->releaseScene(*scene);
 	printf("scene=released\n");
