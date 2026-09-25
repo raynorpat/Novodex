@@ -59,9 +59,10 @@ struct JointBodyRecord
 	//! here (phys_fn_004354 differences it between the two bodies).
 	NxVec3				mAngularVelocity;
 	NxU8				mUnknown084[0xc0 - 0x84];
-	//! +0x0c0. Unknown scalar; phys_fn_004360 scales the unit vectors by it
-	//! when it builds the 3x3 at RevoluteJoint +0x1b8.
-	NxReal				mUnknown0c0;
+	//! +0x0c0. Inverse mass: the candidate writes 1.0f / mass here
+	//! (Physics/src/Scene.cpp:1905). phys_fn_004360 scales the unit
+	//! vectors by it when it builds the 3x3 at RevoluteJoint +0x1b8.
+	NxReal				mInverseMass;
 	NxU8				mUnknown0c4[0xdc - 0xc4];
 	//! +0x0dc. Row-major 3x3 (the candidate writes massLocalPose.M here).
 	NxReal				mMassLocalRot[9];
@@ -77,8 +78,12 @@ struct JointBodyRecord
 	//! transform through it; 004064 reads it).
 	NxReal				mUnknown134[9];
 	NxVec3				mUnknown158;
-	//! +0x164. Unknown row-major 3x3; phys_fn_004360 multiplies r x e by it.
-	NxReal				mUnknown164[9];
+	//! +0x164. World inverse inertia, row-major 3x3: the candidate's
+	//! nxNpActorUpdateInertiaMatrices (Physics/src/include/NpActorDynamicMath.h,
+	//! called from Scene.cpp and NpActor.cpp) writes it from the +0xc4
+	//! inverse-inertia diagonal and the +0x134 rotation. phys_fn_004360
+	//! multiplies r x e by it.
+	NxReal				mWorldInverseInertia[9];
 	NxU8				mUnknown188[0x198 - 0x188];
 	//! +0x198. Stamp compared with Joint::mBodyStamp[i].
 	NxU32				mStamp;
@@ -104,8 +109,8 @@ static_assert(offsetof(JointBodyRecord, mStamp) == 0x198, "stamp at +0x198");
 static_assert(offsetof(JointBodyRecord, mOwner) == 0x19c, "owner at +0x19c");
 static_assert(offsetof(JointBodyRecord, mAngularVelocity) == 0x078, "angular velocity at +0x78");
 static_assert(offsetof(JointBodyRecord, mUnknown204) == 0x204, "record pointer at +0x204");
-static_assert(offsetof(JointBodyRecord, mUnknown0c0) == 0x0c0, "scalar at +0xc0");
-static_assert(offsetof(JointBodyRecord, mUnknown164) == 0x164, "3x3 at +0x164");
+static_assert(offsetof(JointBodyRecord, mInverseMass) == 0x0c0, "inverse mass at +0xc0");
+static_assert(offsetof(JointBodyRecord, mWorldInverseInertia) == 0x164, "world inverse inertia at +0x164");
 
 // A limit-plane list node: 0x14 bytes (phys_fn_004143 allocates `push 0x14`),
 // linked through +0x10 from Joint::mLimitPlaneHead. The names are the

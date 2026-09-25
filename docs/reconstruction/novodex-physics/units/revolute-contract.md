@@ -248,8 +248,12 @@ Headers `Physics/src/include/core/Joint.h`, `JointSupport.h`, `RevoluteJoint.h`.
   `JointSupportBody` gains `NxReal mUnknown00c` (was an unread `NxU32`, now the factor 004374
   multiplies its impulse by and tests against 0), `mUnknown01c` (unread) and
   `NxReal mUnknown020[9]` (row-major 3x3, 004374 0xad345-0xad3a9).
-- `JointBodyRecord` gains `NxReal mUnknown0c0` (+0xc0) and `NxReal mUnknown164[9]` (+0x164..+0x184),
-  the scalar and 3x3 004360 builds the +0x1b8 matrix from.
+- `JointBodyRecord` gains `NxReal mInverseMass` (+0xc0) and `NxReal mWorldInverseInertia[9]`
+  (+0x164..+0x184), the scalar and 3x3 004360 builds the +0x1b8 matrix from. Names from the
+  candidate's writers: `Scene.cpp:1905` stores 1.0f / mass at +0xc0, and
+  `nxNpActorUpdateInertiaMatrices` (`Physics/src/include/NpActorDynamicMath.h:59–72`, called
+  at `Scene.cpp:1917` and `NpActor.cpp:1247`) stores the world inverse inertia at +0x164 from
+  the +0xc4 diagonal and the +0x134 rotation.
 - `JointSupportRecord` is 0x50 bytes (004093 returns `[Scene+0x5b8] + index * 0x50`,
   0x95dde-0x95df5); +0x30 `void* mUnknown030` (the joint), +0x34/+0x38 `NxReal`, +0x44 `NxU32`,
   +0x48 `NxReal`, +0x4c `NxU32` replace the old +0x30 padding. Bits 0-4 of +0x0c are a kind the
@@ -510,8 +514,10 @@ candidate sets 2, `Scene.cpp:1919`), +0x19c (pointer whose first word is the `Nx
 the candidate's 0x50-byte body has `actor` at +0, `Scene.cpp:1784`), +0x78 (angular
 velocity; 004354 — Task 7), +0x204 (pointer to a `JointSupportBody`: vec3s at +0x00/+0x10,
 a float at +0x0c, a 3x3 at +0x20; read by 004358, written through by 004374, copied into
-004093 records by 004360/004362; the candidate does not write it), +0xc0 (float) and
-+0x164..+0x184 (3x3) (004360 — Task 8a; not written by the candidate).
+004093 records by 004360/004362; the candidate does not write it), +0xc0 (inverse mass;
+the candidate writes it, `Scene.cpp:1905`) and +0x164..+0x184 (world inverse inertia 3x3;
+the candidate writes it in `nxNpActorUpdateInertiaMatrices`, `NpActorDynamicMath.h:59–72`)
+(both read by 004360 — Task 8a).
 
 ## Dispatch tables
 
@@ -616,7 +622,7 @@ far as the listing shows: 000665/000653 call slot 5; the NpRevoluteJoint rows ca
 | 3 | +0x0c | 004087 | 004087 (inherited) | thiscall, 3 args, `ret 0xc` | unknown (accumulates into +0x154) |
 | 4 | +0x10 | `_purecall` 005667 | **004364** | thiscall, 1 arg, `ret 4` | unknown |
 | 5 | +0x14 | 004119 | **004368** | thiscall, 1 arg (flags), `ret 4` | scalar deleting destructor (deletes `[this+0x48]` through its slot 0 with 1, then 004095, then frees if flag&1) |
-| 6 | +0x18 | 004133 | **004360** | thiscall, 1 float arg (a divisor), `ret 4` | unknown (fills +0x1ac..+0x200 and three or four 004093 records) |
+| 6 | +0x18 | 004133 | **004360** | thiscall, 1 float arg (a divisor), `ret 4` | unknown (fills +0x1ac..+0x200 and two or three 004093 records: 0xaac53 only when the determinant is non-zero, then 0xab03c and 0xab0fc) |
 | 7 | +0x1c | 004135 | **004362** | thiscall, 1 float arg (a divisor), `ret 4` | unknown (limit/motor/spring 004093 records) |
 | 8 | +0x20 | 004248 (`ret 4`, folded) | **004356** | thiscall, 1 arg, `ret 4` | unknown |
 | 9 | +0x24 | — | **004370** | thiscall, `const NxRevoluteJointDesc&`, `ret 4` | loadFromDesc (strings) |
@@ -734,7 +740,7 @@ owned by other units (000022, 000571, 000633, 000758) in `core/JointSupport.cpp`
 | 001391 | internal slots 15/16 | inline `return this` bodies in `RevoluteJoint.h`; not claimed |
 | 004248, 001583 | Joint base slots 0/1/8 | inline empty bodies in `Joint.h`; not claimed |
 | 004417–004433, 004537, 005667 | tables 002727/002725/002700 | generated from `NxJoint.h`; nothing to write |
-| 005697 (`_CIacos`, 0xf47f0) | 004330, 004352, 004372 | Task 8a: not `NxMath::acos(NxF32)` (the CRT acos need not match the oracle's x87 sequence). `core/RevoluteJoint.cpp` has one file-static inline-asm helper, `revoluteCIacos`, reproducing `_CIacos`'s core `fld1; fadd st,st(1); fld1; fsub st,st(2); fmulp st(1),st; fsqrt; fxch st(1); fpatan` (0xf4828–0xf4836) and its control-word handling (non-default word → `(cw & 0x300) \| 0x7f` for the core, 0xfa9b5; restored, 0xfaa3e), wrapped by `revoluteAcos`, the ≥ 1 → 0 / ≤ -1 → π clamp all three call sites carry inline (004330 0xa8dfe–0xa8e34, 004352 0xa9515–0xa9530, 004372 0xad02e–0xad04b; π is the float at 0x1011a1b0, `phys_data_002683`). 004372 (Task 8b) should call `revoluteAcos` too |
+| 005697 (`_CIacos`, 0xf47f0) | 004330, 004352, 004372 | Task 8a: not `NxMath::acos(NxF32)` (the CRT acos need not match the oracle's x87 sequence). `core/RevoluteJoint.cpp` has one file-static inline-asm helper, `revoluteCIacos`, reproducing `_CIacos`'s core `fld1; fadd st,st(1); fld1; fsub st,st(2); fmulp st(1),st; fsqrt; fxch st(1); fpatan` (0xf4828–0xf4836) and its control-word handling (non-default word → `(cw & 0x300) \| 0x7f` for the core, 0xfa9b5; restored on the 0xfaa4b exit at 0xfaa70 or via 0xfa957 at 0xfa98e — 0xfaa3e is dead, the flag at 0x10128514 is never set; the 0xfa957 qword round-trip and the NaN arm 0xf4881 → 0xfa9cc are not reproduced and change no value, see the helper's comment), wrapped by `revoluteAcos`, the ≥ 1 → 0 / ≤ -1 → π clamp all three call sites carry inline (004330 0xa8dfe–0xa8e34, 004352 0xa9515–0xa9530, 004372 0xad02e–0xad04b; π is the float at 0x1011a1b0, `phys_data_002683`). 004372 (Task 8b) should call `revoluteAcos` too |
 | SDK allocator `[[0x101041bc]]` +8 / +0x14 | 004366, 004368, 004729, 000665 | `nxGetSdkAllocator()->malloc(size, NX_MEMORY_PERSISTENT)` / `->free(p)` — `PhysicsInternal.h:158` |
 | `FoundationSDK::error` import `[0x101041b4]` | all asserting rows | `NxFoundation::FoundationSDK::getInstance().error(code, file, line, 0, msg)` — `Physics/src/PhysicsSDK.cpp:206` |
 | folded Np bodies 004437 004441 004443 004479 004483 004491 004497 004499 004539 004573 004577 004635 004743 | table 002727 | implemented as NpRevoluteJoint methods in `core/NpRevoluteJoint.cpp` by Task 9; **not claimed** (see `## Task split`) |
@@ -784,10 +790,10 @@ What the new code replaces or must stay compatible with. Line numbers are at com
 7. **Solver-slot inputs the candidate does not build (Task 8a).** Driving 004374 (slot 0)
    requires body +0x204 (a `JointSupportBody*`): it calls 004358, which dereferences it, and
    writes its impulse through it; the candidate's body record never writes +0x204. 004360
-   and 004362 (slots 6/7) copy the same pointer into their records, read body +0xc0 and
-   +0x164 (004360; not written by the candidate either), and take records from 004093,
-   which needs the Scene's record array at +0x5b8 and row 000598. None of the three is on the
-   transcript path.
+   and 004362 (slots 6/7) copy the same pointer into their records and take records from
+   004093, which needs the Scene's record array at +0x5b8 and row 000598. (The other body
+   fields 004360 reads, +0xc0 and +0x164, the candidate does write.) None of the three is on
+   the transcript path.
 8. **SDK parameters read by the solver-slot rows.** 004360 and 004362 read the live parameter
    array (`gParameter`, `.data 0x10123b18`) directly: element 0 (`NX_PENALTY_FORCE`) scales
    +0x1ac and the kind-0/2 record outputs, element 4 (`NX_BOUNCE_TRESHOLD`) gates the limit

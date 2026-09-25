@@ -90,14 +90,28 @@ static void revoluteRefreshFirstStaleBody(Joint& joint)
 // the CRT saves the control word and, when it is not the default 0x027f,
 // runs the core with the precision bits kept, rounding to nearest and all
 // exceptions masked ((cw & 0x300) | 0x7f, 0xfa9b5), restoring the saved
-// word afterwards (0xfaa3e); that is reproduced too. The argument passes
-// through `fst qword` (0xf47f3), so it arrives here as a double. Its
-// |x| >= 1 arms are not reproduced: every call site in this unit clamps
-// first (see revoluteAcos). The CRT's acos need not agree with this
-// sequence, which is why it is not used. The result is stored as a double
-// (SmoothNormals.cpp's reason: st(0) left to the caller is a register the
-// compiler did not put there); under the default 53-bit precision that
-// store is exact.
+// word afterwards (0xfaa70, or 0xfa98e); that is reproduced too. The
+// argument passes through `fst qword` (0xf47f3), so it arrives here as a
+// double.
+// The flag at 0x10128514 is never set, so the exit is always the
+// 0xfaa4b path (0xfaa3e is dead): with the default word it returns at
+// 0xfaa73; otherwise, when the saved word has PM (bit 5) clear it reloads
+// the word at 0xfaa70, and when PM is set and the status word shows PE it
+// calls 0xfa957, which stores the result as a qword, runs the CRT
+// exception dispatcher (0xffcf5; a masked inexact result passes through)
+// and reloads the qword before restoring the word (0xfa98e). Not
+// reproduced, and why no value differs under the SDK's control words
+// (0x027f, or the in-step word with every exception masked):
+// - the 0xfa957 arm only rounds the result to a double, which the helper's
+//   own double store below does as well;
+// - the |x| >= 1 arms (0xf4855-0xf4878) are unreachable, every call site
+//   clamps first (revoluteAcos);
+// - the NaN arm (0xf4881 -> 0xfa9cc) returns the argument quieted, which
+//   is also what the core computes for a NaN argument (it propagates
+//   through fadd/fsub/fmulp/fsqrt/fpatan unchanged).
+// The CRT's acos need not agree with this sequence, which is why it is not
+// used. The result is stored as a double (SmoothNormals.cpp's reason: st(0)
+// left to the caller is a register the compiler did not put there).
 static double revoluteCIacos(double x)
 	{
 #if defined(_MSC_VER) && defined(_M_IX86)
@@ -151,8 +165,11 @@ static double revoluteAcos(NxReal f)
 // parameter array at .data 0x10123b18 (PhysicsSDK.cpp's gParameter):
 // element 0 (0x10123b18, NX_PENALTY_FORCE) and element 4 (0x10123b28,
 // NX_BOUNCE_TRESHOLD). Read through PhysicsSDK::getParameter as
-// ContactGeneration.cpp does; with no SDK the array still holds its static
-// zero, which is what the oracle would read.
+// ContactGeneration.cpp does. With no SDK instance this returns 0, which
+// is what the oracle reads only before the first SDK exists: the static
+// array keeps its values after an SDK is released, so the oracle would
+// then read the last values. No joint exists without an SDK, so these
+// rows never run in that window.
 static NxReal revoluteSdkParameter(NxParameter parameter)
 	{
 	const PhysicsSDK* const sdk = PhysicsSDK::instance;
@@ -543,8 +560,8 @@ void RevoluteJoint::row_slot6(NxReal arg)
 	NxReal k10 = 0.0f, k11 = 0.0f, k20 = 0.0f, k21 = 0.0f;
 	if(body0)
 		{
-		const NxReal* J = body0->mUnknown164;
-		const NxReal m = body0->mUnknown0c0;
+		const NxReal* J = body0->mWorldInverseInertia;
+		const NxReal m = body0->mInverseMass;
 		const NxReal ryZero = (NxReal)((double)r0.y * 0.0f);
 		const NxReal rzZero = (NxReal)((double)r0.z * 0.0f);
 		const NxReal rxZero = (NxReal)((double)r0.x * 0.0f);
@@ -586,8 +603,8 @@ void RevoluteJoint::row_slot6(NxReal arg)
 
 	if(body1)
 		{
-		const NxReal* J = body1->mUnknown164;
-		const NxReal m = body1->mUnknown0c0;
+		const NxReal* J = body1->mWorldInverseInertia;
+		const NxReal m = body1->mInverseMass;
 		const NxReal ryZero = (NxReal)((double)r1.y * 0.0f);
 		const NxReal rzZero = (NxReal)((double)r1.z * 0.0f);
 		const NxReal rxZero = (NxReal)((double)r1.x * 0.0f);
