@@ -2756,6 +2756,7 @@ void nxListFreeViaSingleton4089(void* self)
 // Product row: Physics/src/core/NpPointOnLineJoint.cpp.
 // Product row: Physics/src/core/NpPointInPlaneJoint.cpp.
 // Product row: Physics/src/core/NpDistanceJoint.cpp.
+// Product row: Physics/src/core/NpPulleyJoint.cpp.
 unsigned nxMutexListFree(void* self, unsigned code, unsigned file, unsigned line,
 	unsigned expression)
 	{
