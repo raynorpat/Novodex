@@ -54,6 +54,7 @@
 //   jointFsqrtSum3(a, b, c)           fsqrt((a + b) + c)
 //   jointFsqrtSum4(a, b, c, d)        fsqrt(((a + b) + c) + d)
 //   jointFsqrtDiag(a, b, c)           fsqrt((a - (b + c)) + 1)
+//   jointFsqrtDot2(a0,b0, a1,b1)                 fsqrt(a0 b0 + a1 b1)
 //   jointFsqrtDot3(a0,b0, a1,b1, a2,b2)          fsqrt((a0 b0 + a1 b1) + a2 b2)
 //   jointFsqrtDot4(a0,b0, a1,b1, a2,b2, a3,b3)   fsqrt(((a0 b0 + a1 b1) + a2 b2) + a3 b3)
 // jointFsqrtDiag is the quaternion-from-matrix diagonal arm
@@ -128,6 +129,23 @@ static __declspec(naked) double __cdecl jointFsqrtDiag(double /*a*/, double /*b*
 		}
 	}
 
+// jointFsqrtDot2 joined the set with the D6 rows (joint-families Task 3i):
+// 004207's swing-lock arms take the root of two squared differences the
+// listing keeps on the stack (0x9dd1e-0x9dd28, 0x9de33-0x9de3d).
+static __declspec(naked) double __cdecl jointFsqrtDot2(double /*a0*/, double /*b0*/, double /*a1*/, double /*b1*/)
+	{
+	__asm
+		{
+		fld		qword ptr [esp + 4]
+		fmul	qword ptr [esp + 12]
+		fld		qword ptr [esp + 20]
+		fmul	qword ptr [esp + 28]
+		faddp	st(1), st(0)
+		fsqrt
+		ret
+		}
+	}
+
 static __declspec(naked) double __cdecl jointFsqrtDot3(double /*a0*/, double /*b0*/, double /*a1*/, double /*b1*/,
 	double /*a2*/, double /*b2*/)
 	{
@@ -192,6 +210,11 @@ static NX_INLINE double jointFsqrtSum4(double a, double b, double c, double d)
 static NX_INLINE double jointFsqrtDiag(double a, double b, double c)
 	{
 	return sqrt((a - (b + c)) + 1.0);
+	}
+
+static NX_INLINE double jointFsqrtDot2(double a0, double b0, double a1, double b1)
+	{
+	return sqrt(a0 * b0 + a1 * b1);
 	}
 
 static NX_INLINE double jointFsqrtDot3(double a0, double b0, double a1, double b1, double a2, double b2)

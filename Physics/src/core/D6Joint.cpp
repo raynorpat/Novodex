@@ -18,6 +18,7 @@
 #include <new>
 #include <cstdio>
 #include <cmath>
+#include <cfloat>
 
 // The oracle's __FILE__ for this unit (every report in it pushes the string
 // at 0x101195b0). The image keeps this unit at src\D6Joint.cpp, not under
@@ -743,20 +744,640 @@ __declspec(noinline) void D6Joint::row004204(const NxD6JointDesc& desc)
 	mProjectionDistance = desc.projectionDistance;
 	}
 
+static NX_INLINE double d6Twice(double v)
+	{
+	return v + v;
+	}
+
+// A body's pose as 004206/004207 copy it (word moves): its +0x124
+// quaternion and +0x158 position, or the identity without a body
+// (0x9cc07-0x9cc85, 0x9d8d8-0x9d97e).
+static void d6BodyPose(D6JointPose& pose, const JointBodyRecord* body)
+	{
+	if(body)
+		{
+		pose.q[0] = body->mCMassOrientation[0];
+		pose.q[1] = body->mCMassOrientation[1];
+		pose.q[2] = body->mCMassOrientation[2];
+		pose.q[3] = body->mCMassOrientation[3];
+		pose.p = body->mUnknown158;
+		}
+	else
+		{
+		pose.q[0] = 0.0f;
+		pose.q[1] = 0.0f;
+		pose.q[2] = 0.0f;
+		pose.q[3] = 1.0f;
+		pose.p.x = 0.0f;
+		pose.p.y = 0.0f;
+		pose.p.z = 0.0f;
+		}
+	}
+
+// Body i's joint frame in its own space: the Joint base's world quaternion
+// i (+0x12c / +0x13c) and world anchor i (+0x114 / +0x120), word copies.
+static void d6Frame(D6JointPose& pose, const Joint& joint, NxU32 i)
+	{
+	pose.q[0] = joint.mWorldQuat[i][0];
+	pose.q[1] = joint.mWorldQuat[i][1];
+	pose.q[2] = joint.mWorldQuat[i][2];
+	pose.q[3] = joint.mWorldQuat[i][3];
+	pose.p = joint.mWorldAnchor[i];
+	}
+
 // phys_fn_004206 (0x0009cba0, 3200 B)
+// The solver slot (`ret 4`; the float is the step divisor). In order:
+// - opens "D6JointDump.txt" ("w") once into the stream at 0x10127194, resets
+//   the dump count, refreshes the first stale body;
+// - W0 = pose0 * frame0 and W1 = pose1 * frame1 (004178; the bodies' poses
+//   and the joint frames, d6BodyPose/d6Frame); ra = W0.p - pose0.p and
+//   rb = W1.p - pose1.p, each component stored;
+// - M = the 3x3 of W0.q (row-major, each word stored; the listing's
+//   groupings: M0 (1 - 2yy) - 2zz, M1 2yx - 2zw, M2 float(2zx) + 2yw, M3
+//   2zw + 2yx, M4 (1 - 2xx) - 2zz, M5 2zy - 2wx, M6 float(2zx) - float(2yw),
+//   M7 2wx + 2zy, M8 float(1 - 2xx) - 2yy) and N = the first column of W1.q's
+//   3x3 (N0 (1 - 2yy) - 2zz, N3 2(yx + zw), N6 2zx - 2yw);
+// - rel = W0^-1 * W1 (004180 then 004178) and G = the first column of
+//   rel.q's 3x3, with y*y and z*z stored first (G0 (1 - 2yy) - 2zz,
+//   G3 2(wz + yx), G6 2zx - 2wy);
+// - jwq = the 4x3 matrix of 004198 from W0.q and W1.q; inv = 1.0f / arg;
+// - each LOCKED linear motion i: a kind-1 record along M's column i with
+//   bias -(inv * rel.p[i]) and maxForce FLT_MAX (004194);
+// - when a linear motion is LIMITED: the rows of M scaled by rel.p's
+//   LIMITED components summed (x on the stack, y and z stored), its length
+//   (fsqrt) minus linearLimit.value; above 0, a kind-0 record along the unit
+//   sum with bias -(float(error) * inv) and FLT_MAX;
+// - the LOCKED angular motions: with twist free, swing1 locked and swing2
+//   free, one record along N x M's column 1 with bias G3 * inv (no sign
+//   change); with twist and swing1 free and swing2 locked, along N x M's
+//   column 2 with bias G6 * inv; otherwise one record per locked motion
+//   along jwq's row 0 (twist), 1 (swing1) or 2 (swing2) with bias
+//   -(rel.q[i] * inv); every angular record carries maxTorque;
+// - a LIMITED twist: with c the twist cosine, error = (c c x) x - w
+//   float((1 - c c) w) on rel.q; above 0, a kind-2 record along
+//   2 jwq[0..2] float(c c x) - 2 jwq[9..11] float((1 - c c) w) with bias
+//   -(error * inv);
+// - both swings LIMITED: the elliptical cone test of the listing
+//   (0x9d57d-0x9d7e0; see the body) and, when violated, a kind-2 record;
+// - the dump (004192) of W0, W1, rel, jwq and inv.
+// Listing over decompile: the supplement decompile reads the linear
+// locked bias from the body-0 position slot (Ghidra's frame merges it with
+// rel.p, which the listing writes there first, 0x9d02c).
 void D6Joint::row_slot6(NxReal arg)
 	{
-	(void)arg;
-	NX_ASSERT(0);
-	// (unimplemented)
+	if(!gD6DumpStream)
+		gD6DumpStream = fopen("D6JointDump.txt", "w");
+	gD6DumpCount = 0;
+	d6RefreshFirstStaleBody(*this);
+
+	D6JointPose pose0;
+	D6JointPose pose1;
+	D6JointPose frame;
+	D6JointPose W0;
+	D6JointPose W1;
+	d6BodyPose(pose0, d6Body(mBody[0]));
+	d6BodyPose(pose1, d6Body(mBody[1]));
+	d6Frame(frame, *this, 0);
+	pose0.row004178(W0, frame);
+	d6Frame(frame, *this, 1);
+	pose1.row004178(W1, frame);
+
+	NxVec3 ra;
+	NxVec3 rb;
+	ra.x = (NxReal)((double)W0.p.x - pose0.p.x);
+	ra.y = (NxReal)((double)W0.p.y - pose0.p.y);
+	ra.z = (NxReal)((double)W0.p.z - pose0.p.z);
+	rb.x = (NxReal)((double)W1.p.x - pose1.p.x);
+	rb.y = (NxReal)((double)W1.p.y - pose1.p.y);
+	rb.z = (NxReal)((double)W1.p.z - pose1.p.z);
+
+	// M, W0.q's 3x3 (0x9ce7d-0x9cfa4).
+	NxReal M[9];
+		{
+		const NxReal x = W0.q[0];
+		const NxReal y = W0.q[1];
+		const NxReal z = W0.q[2];
+		const NxReal w = W0.q[3];
+		const double YY = d6Twice(d6Mul(y, y));
+		const double ZZ = d6Twice(d6Mul(z, z));
+		M[0] = (NxReal)((1.0f - YY) - ZZ);
+		const double XY = d6Twice(d6Mul(y, x));
+		const double ZW = d6Twice(d6Mul(z, w));
+		M[1] = (NxReal)(XY - ZW);
+		const NxReal ZXf = (NxReal)d6Twice(d6Mul(z, x));
+		const double YW = d6Twice(d6Mul(y, w));
+		const NxReal YWf = (NxReal)YW;
+		M[2] = (NxReal)(YW + ZXf);
+		M[3] = (NxReal)(ZW + XY);
+		const double oneMinusXX = 1.0f - d6Twice(d6Mul(x, x));
+		const NxReal oneMinusXXf = (NxReal)oneMinusXX;
+		M[4] = (NxReal)(oneMinusXX - ZZ);
+		const double ZY = d6Twice(d6Mul(z, y));
+		const double WX = d6Twice(d6Mul(w, x));
+		M[5] = (NxReal)(ZY - WX);
+		M[6] = (NxReal)((double)ZXf - YWf);
+		M[7] = (NxReal)(WX + ZY);
+		M[8] = (NxReal)((double)oneMinusXXf - YY);
+		}
+
+	// N, the first column of W1.q's 3x3 (0x9cfa6-0x9d01e).
+	NxReal N0;
+	NxReal N3;
+	NxReal N6;
+		{
+		const NxReal x = W1.q[0];
+		const NxReal y = W1.q[1];
+		const NxReal z = W1.q[2];
+		const NxReal w = W1.q[3];
+		N0 = (NxReal)((1.0f - d6Twice(d6Mul(y, y))) - d6Twice(d6Mul(z, z)));
+		N3 = (NxReal)d6Twice(d6Mul(y, x) + d6Mul(z, w));
+		N6 = (NxReal)(d6Twice(d6Mul(z, x)) - d6Twice(d6Mul(y, w)));
+		}
+
+	D6JointPose inverse0;
+	D6JointPose rel;
+	W0.row004180(inverse0)->row004178(rel, W1);
+
+	// G, the first column of rel.q's 3x3 (0x9d031-0x9d0ad).
+	const NxReal yyF = (NxReal)d6Mul(rel.q[1], rel.q[1]);
+	const NxReal zzF = (NxReal)d6Mul(rel.q[2], rel.q[2]);
+	const NxReal G0 = (NxReal)((1.0f - d6Twice(yyF)) - d6Twice(zzF));
+	const NxReal G3 = (NxReal)d6Twice(d6Mul(rel.q[3], rel.q[2]) + d6Mul(rel.q[1], rel.q[0]));
+	const NxReal G6 = (NxReal)(d6Twice(d6Mul(rel.q[2], rel.q[0])) - d6Twice(d6Mul(rel.q[3], rel.q[1])));
+
+	NxVec3 jwq[4];
+	d6QuaternionRateMatrix(&jwq[0].x, W0.q, W1.q);
+	const NxReal inv = (NxReal)(1.0f / (double)arg);
+
+	// The LOCKED linear motions (0x9d0d7-0x9d12b).
+	const NxReal relP[3] = { rel.p.x, rel.p.y, rel.p.z };
+	for(NxU32 i = 0; i < 3; i++)
+		{
+		if(mMotion[i] == NX_D6JOINT_MOTION_LOCKED)
+			{
+			NxVec3 axis;
+			axis.x = M[i];
+			axis.y = M[3 + i];
+			axis.z = M[6 + i];
+			row004194(0, ra, rb, axis, (NxReal)(-d6Mul(inv, relP[i])), FLT_MAX);
+			}
+		}
+
+	// The linear limit (0x9d12d-0x9d2b7).
+	if(mLinearLimited)
+		{
+		double sumX = 0.0f;
+		NxReal sumY = 0.0f;
+		NxReal sumZ = 0.0f;
+		if(mMotion[0] == NX_D6JOINT_MOTION_LIMITED)
+			{
+			sumX = d6Mul(M[0], rel.p.x);
+			sumY = (NxReal)d6Mul(M[1], rel.p.x);
+			sumZ = (NxReal)d6Mul(M[2], rel.p.x);
+			}
+		if(mMotion[1] == NX_D6JOINT_MOTION_LIMITED)
+			{
+			const double tx = d6Mul(M[3], rel.p.y);
+			const NxReal ty = (NxReal)d6Mul(M[4], rel.p.y);
+			const NxReal tz = (NxReal)d6Mul(M[5], rel.p.y);
+			sumX = sumX + tx;
+			sumY = (NxReal)((double)ty + sumY);
+			sumZ = (NxReal)((double)tz + sumZ);
+			}
+		if(mMotion[2] == NX_D6JOINT_MOTION_LIMITED)
+			{
+			const double tx = d6Mul(M[6], rel.p.z);
+			const NxReal ty = (NxReal)d6Mul(M[7], rel.p.z);
+			const NxReal tz = (NxReal)d6Mul(M[8], rel.p.z);
+			sumX = sumX + tx;
+			sumY = (NxReal)((double)ty + sumY);
+			sumZ = (NxReal)((double)tz + sumZ);
+			}
+		const double length = jointFsqrtDot3(sumX, sumX, sumY, sumY, sumZ, sumZ);
+		const double error = length - mLinearLimit.value;
+		const NxReal errorF = (NxReal)error;
+		if(error > 0.0f)
+			{
+			const NxReal inverseLength = (NxReal)(1.0f / length);
+			NxVec3 normal;
+			normal.x = (NxReal)(sumX * inverseLength);
+			normal.y = (NxReal)d6Mul(sumY, inverseLength);
+			normal.z = (NxReal)d6Mul(sumZ, inverseLength);
+			row004194(1, ra, rb, normal, (NxReal)(-d6Mul(errorF, inv)), FLT_MAX);
+			}
+		}
+
+	// The LOCKED angular motions (0x9d2b9-0x9d466).
+	const NxD6JointMotion twist = mMotion[3];
+	const NxD6JointMotion swing1 = mMotion[4];
+	const NxD6JointMotion swing2 = mMotion[5];
+	if(twist != NX_D6JOINT_MOTION_LOCKED && swing1 == NX_D6JOINT_MOTION_LOCKED &&
+		swing2 != NX_D6JOINT_MOTION_LOCKED)
+		{
+		NxVec3 v;
+		v.x = (NxReal)(d6Mul(N3, M[7]) - d6Mul(N6, M[4]));
+		v.y = (NxReal)(d6Mul(N6, M[1]) - d6Mul(M[7], N0));
+		v.z = (NxReal)(d6Mul(M[4], N0) - d6Mul(N3, M[1]));
+		row004196(0, v, (NxReal)d6Mul(G3, inv), mMaxTorque);
+		}
+	else if(twist != NX_D6JOINT_MOTION_LOCKED && swing1 != NX_D6JOINT_MOTION_LOCKED &&
+		swing2 == NX_D6JOINT_MOTION_LOCKED)
+		{
+		NxVec3 v;
+		v.x = (NxReal)(d6Mul(N3, M[8]) - d6Mul(N6, M[5]));
+		v.y = (NxReal)(d6Mul(N6, M[2]) - d6Mul(M[8], N0));
+		v.z = (NxReal)(d6Mul(M[5], N0) - d6Mul(N3, M[2]));
+		row004196(0, v, (NxReal)d6Mul(G6, inv), mMaxTorque);
+		}
+	else
+		{
+		if(twist == NX_D6JOINT_MOTION_LOCKED)
+			row004196(0, jwq[0], (NxReal)(-d6Mul(rel.q[0], inv)), mMaxTorque);
+		if(swing1 == NX_D6JOINT_MOTION_LOCKED)
+			row004196(0, jwq[1], (NxReal)(-d6Mul(rel.q[1], inv)), mMaxTorque);
+		if(swing2 == NX_D6JOINT_MOTION_LOCKED)
+			row004196(0, jwq[2], (NxReal)(-d6Mul(rel.q[2], inv)), mMaxTorque);
+		}
+
+	// The twist limit (0x9d46b-0x9d563).
+	if(twist == NX_D6JOINT_MOTION_LIMITED)
+		{
+		const double c = mTwistCosHalf;
+		const double cc = c * c;
+		const NxReal A = (NxReal)((1.0f - cc) * rel.q[3]);
+		const double B = cc * rel.q[0];
+		const NxReal Bf = (NxReal)B;
+		const double error = B * rel.q[0] - d6Mul(rel.q[3], A);
+		if(error > 0.0f)
+			{
+			const NxReal j9A = (NxReal)(d6Twice(jwq[3].x) * A);
+			const double j10A = d6Twice(jwq[3].y) * A;
+			const double j11A = d6Twice(jwq[3].z) * A;
+			const NxReal j0B = (NxReal)(d6Twice(jwq[0].x) * Bf);
+			const double j1B = d6Twice(jwq[0].y) * Bf;
+			const NxReal j2B = (NxReal)(d6Twice(jwq[0].z) * Bf);
+			NxVec3 v;
+			v.x = (NxReal)((double)j0B - j9A);
+			v.y = (NxReal)(j1B - j10A);
+			v.z = (NxReal)((double)j2B - j11A);
+			row004196(1, v, (NxReal)(-(error * inv)), mMaxTorque);
+			}
+		}
+
+	// The swing cone (0x9d565-0x9d7e9). With s = |(w, x)| and t = |(y, z)|
+	// of rel.q (t from the stored squares), k = 2 (1 + s) s, m = 2 s t and
+	// a_i = ((c_i + 1) G) / (1 - c_i) for swing1 (G3) and swing2 (G6): when
+	// q = G6 a2 + G3 a1 exceeds k k, the record's axis is N x l, where l is
+	// the listing's combination of M's columns (below), and the bias is
+	// -((float(1 / (1 + s)) t - float(sqrt(1 / q)) m) inv).
+	if(swing1 == NX_D6JOINT_MOTION_LIMITED && swing2 == NX_D6JOINT_MOTION_LIMITED)
+		{
+		const double s = jointFsqrtSum2(d6Mul(rel.q[3], rel.q[3]), d6Mul(rel.q[0], rel.q[0]));
+		const NxReal t = (NxReal)jointFsqrtSum2(yyF, zzF);
+		const double u = 1.0f + s;
+		const double us = u * s;
+		const NxReal k = (NxReal)(us + us);
+		const NxReal inverseU = (NxReal)(1.0f / u);
+		const double st = s * t;
+		const double m = st + st;
+		const NxReal c1 = mSwing1CosHalf;
+		const NxReal a1 = (NxReal)((((double)c1 + 1.0f) * G3) / (1.0f - (double)c1));
+		const NxReal c2 = mSwing2CosHalf;
+		const NxReal a2 = (NxReal)((((double)c2 + 1.0f) * G6) / (1.0f - (double)c2));
+		const double q = d6Mul(G6, a2) + d6Mul(G3, a1);
+		if(q > d6Mul(k, k))
+			{
+			const double iq = 1.0f / q;
+			const double sq = jointFsqrt(iq);
+			const NxReal sqF = (NxReal)sq;
+			const double r = (sq * m) * iq;
+			const NxReal e0 = (NxReal)((M[2] * r) * a2);
+			const double e1 = (M[5] * r) * a2;
+			const NxReal e2 = (NxReal)((double)(NxReal)(M[8] * r) * a2);
+			const NxReal f0 = (NxReal)((M[1] * r) * a1);
+			const double f1 = (M[4] * r) * a1;
+			const double f2 = (double)(NxReal)(M[7] * r) * a1;
+			const double h = d6Mul(inverseU, 0.5f) - d6Mul(G0, sqF);
+			const double m0h = M[0] * h;
+			const NxReal m3h = (NxReal)(M[3] * h);
+			const NxReal m6h = (NxReal)(M[6] * h);
+			const NxReal im = (NxReal)(1.0f / m);
+			const double g0 = m0h * im;
+			const double g1 = d6Mul(m3h, im);
+			const NxReal g2 = (NxReal)d6Mul(m6h, im);
+			const NxReal k0 = (NxReal)(g0 - f0);
+			const NxReal k1 = (NxReal)(g1 - f1);
+			const NxReal k2 = (NxReal)((double)g2 - f2);
+			const NxReal l0 = (NxReal)((double)k0 - e0);
+			const double l1 = (double)k1 - e1;
+			const NxReal l2 = (NxReal)((double)k2 - e2);
+			NxVec3 v;
+			v.x = (NxReal)(N6 * l1 - d6Mul(l2, N3));
+			v.y = (NxReal)(d6Mul(l2, N0) - d6Mul(N6, l0));
+			v.z = (NxReal)(d6Mul(N3, l0) - l1 * N0);
+			const NxReal bias = (NxReal)(-((d6Mul(inverseU, t) - sqF * m) * inv));
+			row004196(1, v, bias, mMaxTorque);
+			}
+		}
+
+	d6Dump(&W0, &W1, &rel, &jwq[0].x, inv);
 	}
 
 // phys_fn_004207 (0x0009d820, 2394 B)
-void D6Joint::row_slot8(void* body)
+// Projection (internal slot 8, `ret 4`; the argument is the body record to
+// move, compared with mBody[1] only). After the stale-body refresh:
+// - W0 = pose0 * frame0, W1 = pose1 * frame1 and rel = W0^-1 * W1 as in
+//   004206 (0x9d859-0x9da5f);
+// - the correction pose starts as the identity; per linear motion rel.p's
+//   component goes to the locked vector (LOCKED; x on the stack, y and z
+//   stored), the limited vector (LIMITED) or straight into the correction
+//   (FREE). A locked vector longer than projectionDistance is scaled to it
+//   (squares summed x, z, y; the compare re-forms the sum), a limited one
+//   longer than float(linearLimit.value + projectionDistance) to that, and
+//   both are added to the correction's position;
+// - the angular correction by the set of LOCKED angular motions (the
+//   listing's jump table at 0x9e17c, index twist + 2 swing1 + 4 swing2 - 1):
+//   one locked motion keeps the matching quaternion component pair
+//   normalised; two locked swings or twist with one swing keep one
+//   component and w normalised; all three give the identity;
+// - the target: for body 1, W0 * correction * frame1^-1; for any other
+//   body, W1 * correction^-1 * frame0^-1 (0x9ddcc-0x9e032). The body's +0x124
+//   quaternion and +0x158 position take it, its +0x134 3x3 is rebuilt from
+//   the quaternion (a local matrix copied with `rep movsd`), and row 000022
+//   is called on the body's +0x19c owner with 1 (deferred: its stub
+//   asserts, as in revolute 004356 and spherical 004298).
+void D6Joint::row_slot8(void* bodyArgument)
 	{
-	(void)body;
-	NX_ASSERT(0);
-	// (unimplemented)
+	d6RefreshFirstStaleBody(*this);
+
+	D6JointPose frame0;
+	D6JointPose frame1;
+	d6Frame(frame0, *this, 0);
+	d6Frame(frame1, *this, 1);
+	D6JointPose pose;
+	D6JointPose W0;
+	D6JointPose W1;
+	d6BodyPose(pose, d6Body(mBody[0]));
+	pose.row004178(W0, frame0);
+	d6BodyPose(pose, d6Body(mBody[1]));
+	pose.row004178(W1, frame1);
+	D6JointPose inverse0;
+	D6JointPose rel;
+	W0.row004180(inverse0)->row004178(rel, W1);
+
+	D6JointPose correction;
+	correction.q[0] = 0.0f;
+	correction.q[1] = 0.0f;
+	correction.q[2] = 0.0f;
+	correction.q[3] = 1.0f;
+	correction.p.x = 0.0f;
+	correction.p.y = 0.0f;
+	correction.p.z = 0.0f;
+	NxReal limitedX = 0.0f;
+	NxReal limitedY = 0.0f;
+	NxReal limitedZ = 0.0f;
+	double lockedX = 0.0f;
+	NxReal lockedY = 0.0f;
+	NxReal lockedZ = 0.0f;
+
+	// 0x9da6a-0x9db45.
+	if(mMotion[0] == NX_D6JOINT_MOTION_LOCKED)
+		lockedX = rel.p.x;
+	else if(mMotion[0] == NX_D6JOINT_MOTION_LIMITED)
+		limitedX = rel.p.x;
+	else
+		correction.p.x = rel.p.x;
+	if(mMotion[1] == NX_D6JOINT_MOTION_LOCKED)
+		lockedY = rel.p.y;
+	else if(mMotion[1] == NX_D6JOINT_MOTION_LIMITED)
+		limitedY = rel.p.y;
+	else
+		correction.p.y = rel.p.y;
+	if(mMotion[2] == NX_D6JOINT_MOTION_LOCKED)
+		lockedZ = rel.p.z;
+	else if(mMotion[2] == NX_D6JOINT_MOTION_LIMITED)
+		limitedZ = rel.p.z;
+	else
+		correction.p.z = rel.p.z;
+
+	// The locked vector (0x9db49-0x9dbc4).
+	const double lockedSquared = (lockedX * lockedX + d6Mul(lockedZ, lockedZ)) + d6Mul(lockedY, lockedY);
+	const NxReal distance = mProjectionDistance;
+	if(lockedSquared > d6Mul(distance, distance))
+		{
+		const double scale = distance / jointFsqrtDot3(lockedX, lockedX, lockedZ, lockedZ, lockedY, lockedY);
+		lockedX = lockedX * scale;
+		lockedY = (NxReal)(lockedY * scale);
+		lockedZ = (NxReal)(lockedZ * scale);
+		}
+	correction.p.x = (NxReal)((double)correction.p.x + lockedX);
+	correction.p.y = (NxReal)((double)correction.p.y + lockedY);
+	correction.p.z = (NxReal)((double)correction.p.z + lockedZ);
+
+	// The limited vector (0x9dbca-0x9dc41).
+	if(mLinearLimited)
+		{
+		const NxReal limit = (NxReal)((double)mLinearLimit.value + mProjectionDistance);
+		double lx = limitedX;
+		double ly = limitedY;
+		double lz = limitedZ;
+		const double limitedSquared = (d6Mul(limitedX, limitedX) + d6Mul(limitedZ, limitedZ)) +
+			d6Mul(limitedY, limitedY);
+		if(limitedSquared > d6Mul(limit, limit))
+			{
+			const double scale = limit / jointFsqrtDot3(limitedX, limitedX, limitedZ, limitedZ, limitedY, limitedY);
+			lx = lx * scale;
+			ly = ly * scale;
+			lz = lz * scale;
+			}
+		correction.p.x = (NxReal)((double)correction.p.x + lx);
+		correction.p.y = (NxReal)((double)correction.p.y + ly);
+		correction.p.z = (NxReal)((double)correction.p.z + lz);
+		}
+
+	// The angular correction (0x9dc43-0x9dfeb).
+	const NxReal x = rel.q[0];
+	const NxReal y = rel.q[1];
+	const NxReal z = rel.q[2];
+	const NxReal w = rel.q[3];
+	const NxU32 locked = (mMotion[3] == NX_D6JOINT_MOTION_LOCKED ? 1 : 0) +
+		(mMotion[4] == NX_D6JOINT_MOTION_LOCKED ? 2 : 0) + (mMotion[5] == NX_D6JOINT_MOTION_LOCKED ? 4 : 0);
+	switch(locked)
+		{
+		case 1:
+			{
+			// Twist locked (0x9dc88-0x9dcf5): (0, -(zx - yw) / s, (yx + zw) / s, s)
+			// with s = |(x, w)|.
+			const double s = jointFsqrtSum2(d6Mul(x, x), d6Mul(w, w));
+			if(s > 0.0f)
+				{
+				correction.q[0] = 0.0f;
+				const double is = 1.0f / s;
+				correction.q[1] = (NxReal)(-((d6Mul(z, x) - d6Mul(y, w)) * is));
+				correction.q[2] = (NxReal)((d6Mul(y, x) + d6Mul(z, w)) * is);
+				correction.q[3] = (NxReal)s;
+				}
+			break;
+			}
+		case 2:
+			{
+			// Swing1 locked (0x9dcfa-0x9ddc6).
+			double a = (double)w - y;
+			double b = (double)z + x;
+			NxReal c = (NxReal)((double)y + w);
+			double d = (double)z - x;
+			const NxReal n1 = (NxReal)jointFsqrtDot2(b, b, a, a);
+			const NxReal n2 = (NxReal)jointFsqrtDot2(d, d, c, c);
+			if(n1 != 0.0f && n2 != 0.0f)
+				{
+				const double i1 = 1.0f / (double)n1;
+				a = a * i1;
+				b = b * i1;
+				const double i2 = 1.0f / (double)n2;
+				c = (NxReal)(c * i2);
+				d = d * i2;
+				}
+			correction.q[0] = (NxReal)((b - d) * 0.5f);
+			correction.q[1] = (NxReal)(((double)c - a) * 0.5f);
+			correction.q[2] = (NxReal)((d + b) * 0.5f);
+			correction.q[3] = (NxReal)(((double)c + a) * 0.5f);
+			break;
+			}
+		case 3:
+			{
+			// Twist and swing1 locked (0x9df79-0x9dfc2): (0, 0, z, w) / |(z, w)|.
+			const double s = jointFsqrtSum2(d6Mul(z, z), d6Mul(w, w));
+			if(s > 0.0f)
+				{
+				const double is = 1.0f / s;
+				correction.q[0] = 0.0f;
+				correction.q[1] = 0.0f;
+				correction.q[2] = (NxReal)(z * is);
+				correction.q[3] = (NxReal)(is * w);
+				}
+			break;
+			}
+		case 4:
+			{
+			// Swing2 locked (0x9de0f-0x9dedf).
+			double a = (double)z + w;
+			double b = (double)x - y;
+			double c = (double)y + x;
+			NxReal d = (NxReal)((double)z - w);
+			const NxReal n1 = (NxReal)jointFsqrtDot2(c, c, a, a);
+			const NxReal n2 = (NxReal)jointFsqrtDot2(d, d, b, b);
+			if(n1 != 0.0f && n2 != 0.0f)
+				{
+				const double i1 = 1.0f / (double)n1;
+				a = a * i1;
+				const double i2 = 1.0f / (double)n2;
+				const NxReal i2F = (NxReal)i2;
+				b = b * i2;
+				c = c * i1;
+				d = (NxReal)d6Mul(i2F, d);
+				}
+			correction.q[0] = (NxReal)((c + b) * 0.5f);
+			correction.q[1] = (NxReal)((c - b) * 0.5f);
+			correction.q[2] = (NxReal)(((double)d + a) * 0.5f);
+			correction.q[3] = (NxReal)((a - d) * 0.5f);
+			break;
+			}
+		case 5:
+			{
+			// Twist and swing2 locked (0x9df27-0x9df74): (0, y, 0, w) / |(y, w)|.
+			const double s = jointFsqrtSum2(d6Mul(y, y), d6Mul(w, w));
+			if(s > 0.0f)
+				{
+				const double is = 1.0f / s;
+				correction.q[0] = 0.0f;
+				correction.q[1] = (NxReal)(y * is);
+				correction.q[3] = (NxReal)(is * w);
+				correction.q[2] = 0.0f;
+				}
+			break;
+			}
+		case 6:
+			{
+			// Both swings locked (0x9dee8-0x9df74): (x, 0, 0, w) / |(x, w)|.
+			const double s = jointFsqrtSum2(d6Mul(x, x), d6Mul(w, w));
+			if(s > 0.0f)
+				{
+				const double is = 1.0f / s;
+				correction.q[1] = 0.0f;
+				correction.q[0] = (NxReal)(x * is);
+				correction.q[3] = (NxReal)(is * w);
+				correction.q[2] = 0.0f;
+				}
+			break;
+			}
+		case 7:
+			correction.q[0] = 0.0f;
+			correction.q[1] = 0.0f;
+			correction.q[2] = 0.0f;
+			correction.q[3] = 1.0f;
+			break;
+		default:
+			break;
+		}
+
+	// The target pose (0x9ddcc-0x9e032).
+	JointBodyRecord* const body = d6Body(bodyArgument);
+	D6JointPose target;
+	if(bodyArgument == mBody[1])
+		{
+		D6JointPose inverse1;
+		D6JointPose moved;
+		frame1.row004180(inverse1);
+		W0.row004178(moved, correction);
+		moved.row004178(target, inverse1);
+		}
+	else
+		{
+		D6JointPose inverseFrame0;
+		D6JointPose inverseCorrection;
+		D6JointPose moved;
+		frame0.row004180(inverseFrame0);
+		correction.row004180(inverseCorrection);
+		W1.row004178(moved, inverseCorrection);
+		moved.row004178(target, inverseFrame0);
+		}
+
+	// The body's pose and 3x3 (0x9e037-0x9e15f); x, y and z stay on the
+	// stack, w is read back from a stored copy.
+	const NxReal qx = target.q[0];
+	const NxReal qy = target.q[1];
+	const NxReal qz = target.q[2];
+	const NxReal qw = target.q[3];
+	body->mUnknown158 = target.p;
+	body->mCMassOrientation[3] = qw;
+	body->mCMassOrientation[0] = qx;
+	body->mCMassOrientation[1] = qy;
+	body->mCMassOrientation[2] = qz;
+	NxReal R[9];
+	const NxReal YYf = (NxReal)d6Twice(d6Mul(qy, qy));
+	const double ZZ = d6Twice(d6Mul(qz, qz));
+	R[0] = (NxReal)((1.0f - (double)YYf) - ZZ);
+	const double XY = d6Twice(d6Mul(qy, qx));
+	const double WZ = d6Twice(d6Mul(qw, qz));
+	R[1] = (NxReal)(XY - WZ);
+	const NxReal WYf = (NxReal)d6Twice(d6Mul(qw, qy));
+	const double ZX = d6Twice(d6Mul(qz, qx));
+	const NxReal ZXf = (NxReal)ZX;
+	R[2] = (NxReal)(ZX + WYf);
+	R[3] = (NxReal)(WZ + XY);
+	const double oneMinusXX = 1.0f - d6Twice(d6Mul(qx, qx));
+	const NxReal oneMinusXXf = (NxReal)oneMinusXX;
+	R[4] = (NxReal)(oneMinusXX - ZZ);
+	const double ZY = d6Twice(d6Mul(qy, qz));
+	const double WX = d6Twice(d6Mul(qw, qx));
+	R[5] = (NxReal)(ZY - WX);
+	R[6] = (NxReal)((double)ZXf - WYf);
+	R[7] = (NxReal)(WX + ZY);
+	R[8] = (NxReal)((double)oneMinusXXf - YYf);
+	for(NxU32 i = 0; i < 9; i++)
+		body->mUnknown134[i] = R[i];
+	// Row 000022 is deferred (owner gap <start>..Actor.cpp); its stub asserts.
+	reinterpret_cast<Row000022Fixture*>(body->mOwner)->row000022(1);
 	}
 
 // phys_fn_004210 (0x0009e1a0, 331 B)
