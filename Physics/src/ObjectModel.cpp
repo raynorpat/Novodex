@@ -2081,6 +2081,7 @@ void* nxDtorWithGlobal3938(void* self, unsigned flags)
 // The guarded store family: the 004334 guard without the clamp tail.
 // Product row: Physics/src/core/RevoluteJoint.cpp.
 // Product row: Physics/src/core/SphericalJoint.cpp.
+// Product row: Physics/src/core/D6Joint.cpp.
 void nxGuardedStoreEx(void* self, unsigned arg, unsigned fieldOff, unsigned code,
 	unsigned file, unsigned line, unsigned expression)
 	{
@@ -2758,6 +2759,7 @@ void nxListFreeViaSingleton4089(void* self)
 // Product row: Physics/src/core/NpDistanceJoint.cpp.
 // Product row: Physics/src/core/NpPulleyJoint.cpp.
 // Product row: Physics/src/core/NpFixedJoint.cpp.
+// Product row: Physics/src/core/NpD6Joint.cpp.
 unsigned nxMutexListFree(void* self, unsigned code, unsigned file, unsigned line,
 	unsigned expression)
 	{
