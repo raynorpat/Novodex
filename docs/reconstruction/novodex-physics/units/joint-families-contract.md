@@ -2374,3 +2374,238 @@ NxJoint row reports line 0x10; loadFromDesc 0x14, saveToDesc 0x1f. Slots 31/32 c
   from `not_reconstructed_in_phase`; 004551, 004555, 004557 and 004559 already were); counts
   140 / 291.
 - 004248 stays unclaimed (folded, inline in `Joint.h` and `FixedJoint.h`).
+
+## D6
+
+Recovered by joint-families Task 3i from the unit bundles `units/D6Joint.cpp.md`,
+`units/core__NpD6Joint.cpp.md` and `units/gap__core__NpD6Joint.cpp__to__core__NpPulleyJoint.cpp.md`,
+the Capstone listing, the relocated table words in `oracle/pe.json` and the pinned Ghidra
+supplement. 004182 (saveToDesc), 004184 (setProjectionMode), 004206 (the solver slot) and 004212
+(loadFromDesc) had no manifest decompile; Task 3i added 0x0009b550, 0x0009b590, 0x0009cba0 and
+0x0009e2f0 to `oracle/ghidra/supplement.json` (the union with the 30 existing `requested` RVAs;
+all four `ok`; the 30 existing entries came back unchanged). The listing is authoritative over
+every decompile.
+
+### File placement
+
+The image's `__FILE__` for the internal unit is `\Epic\Novodex\SDKs\Physics\src\D6Joint.cpp`
+(0x101195b0), not under `core\`, and the inventory's `source` for 004182/004184/004212 is
+`Physics/src/D6Joint.cpp` (on `UNRESOLVED_SOURCE_PATHS` with those 3 rows). The pilot put the
+image's `src\Joint.cpp` in `Physics/src/core/Joint.cpp` and repointed its rows, keeping the oracle
+path in `notes` ("previous source: ..."); every other internal joint file is in
+`Physics/src/core/`. Task 3i follows that precedent: the rows go in **`Physics/src/core/D6Joint.cpp`**
+(header `Physics/src/include/core/D6Joint.h`), the report strings keep the image's `src\D6Joint.cpp`
+path, the three rows' `source` is repointed with the old path in `notes`, and the allowlist entry
+`Physics/src/D6Joint.cpp` is removed.
+
+### Row assignment
+
+`work_units.json` puts 18 rows in `D6Joint.cpp` (evidenced span 0x9b550-0x9e2f0; 004178 and 004180
+are in the inferred extent before it), 17 in `core\NpD6Joint.cpp` (evidenced span 0xb0610-0xb0b70)
+and 3 ambiguous rows in `gap:core\NpD6Joint.cpp..core\NpPulleyJoint.cpp`. Checked by hand:
+
+- **Before 004178**: 004176 (0x9b240, 33 B) stores the globals 0x10127184/0x1012718c around a call
+  to 004174 and returns `ret 4`; it is one of the gap `Joint.cpp..D6Joint.cpp` scene/articulation
+  helpers (`## Shared rows`, deferred) and D6 does not call it. 004178 (0x9b270) is a thiscall
+  pose helper whose only callers are D6's 004206 and 004207, so it and 004180 (same callers) are
+  D6's. No gap `Joint.cpp..D6Joint.cpp` row is on D6's creation, getter or solver path; none is
+  written here.
+- **After it**: 004212 (loadFromDesc) ends `ret 4` at 0x9e3af; 004213 is padding; 004214 (0x9e3d0)
+  is pulley's.
+- **004186** (0x9b5d0, 4 B, `mov eax,[ecx+0x44]; ret`) lies inside the unit and is D6's slot 12,
+  but it is the folded projection-mode getter the revolute and spherical tables also name (their
+  slot 14). It is already `reconstructed` and written inline (`getProjectionMode()` in
+  `RevoluteJoint.h`/`SphericalJoint.h`); Task 3i leaves it unclaimed as Task 3h left 004248, and
+  `D6Joint.h` declares the same inline body.
+- **004184** (setProjectionMode, 62 B) is `reconstructed` through the `ObjectModel.cpp` guarded
+  store differential; only the D6 table names it, so Task 3i writes it in `core/D6Joint.cpp` with
+  its stable-ID line (proofs kept) and adds the `// Product row:` pointer to `nxGuardedStoreEx`.
+- **The gap `core\NpD6Joint.cpp..core\NpPulleyJoint.cpp` (004469-004473, 0xb0bd0-0xb0c56) is this
+  family's**, as Task 3g found: 004469 (57 B) installs the transient table 0x1011a700
+  (`phys_data_002701`, `NxD6Joint`), the secondary table 0x1011a85c and the final table 0x1011a7c8
+  (`phys_data_002703`); its only caller is the D6 constructor 004210 (`call 0x100b0bd0` at
+  0x9e2c2). 004471 (8 B) is `sub ecx,0xc; jmp 004473`, the only slot of 0x1011a85c. 004473 (55 B)
+  is slot 0 of 0x1011a7c8 (reinstalls 0x1011a7c8/0x1011a85c, 002406 on +0xc, the abstract NxJoint
+  table 0x1011a680, frees if flag&1). They go in `core/NpD6Joint.cpp`.
+- **Folded Np bodies inside `core\NpD6Joint.cpp`**: 004437, 004441 and 004443 sit in the range but
+  are `NpJointShared`'s (Task 1). The D6 file gives them no stable-ID line.
+
+| Stable ID | RVA | Size | File | Evidence |
+|---|---|---:|---|---|
+| phys_fn_004178 | 0x0009b270 | 396 | `core/D6Joint.cpp` | thiscall `ret 8`; called by 004206/004207: pose composition |
+| phys_fn_004180 | 0x0009b400 | 330 | `core/D6Joint.cpp` | thiscall `ret 4`; called by 004206/004207: pose inverse |
+| phys_fn_004182 | 0x0009b550 | 57 | `core/D6Joint.cpp` | internal slot 10; "D6Joint::saveToDesc" line 0xaa |
+| phys_fn_004184 | 0x0009b590 | 62 | `core/D6Joint.cpp` | internal slot 11; "D6Joint::setProjectionMode" line 0xb1 |
+| phys_fn_004188 | 0x0009b5e0 | 181 | `core/D6Joint.cpp` | thiscall `ret 4`; called by 004192: prints one dumped record |
+| phys_fn_004190 | 0x0009b6a0 | 98 | `core/D6Joint.cpp` | cdecl; called by 004192: prints one pose |
+| phys_fn_004192 | 0x0009b710 | 328 | `core/D6Joint.cpp` | cdecl; called by 004206: the dump to D6JointDump.txt |
+| phys_fn_004194 | 0x0009b860 | 514 | `core/D6Joint.cpp` | thiscall `ret 0x18`; called by 004206: a linear record |
+| phys_fn_004196 | 0x0009ba70 | 349 | `core/D6Joint.cpp` | thiscall `ret 0x10`; called by 004206: an angular record |
+| phys_fn_004198 | 0x0009bbd0 | 1164 | `core/D6Joint.cpp` | cdecl; called by 004206: the 4x3 quaternion-rate matrix |
+| phys_fn_004200 | 0x0009c060 | 2098 | `core/D6Joint.cpp` | internal slot 4: debug visualization |
+| phys_fn_004202 | 0x0009c8a0 | 56 | `core/D6Joint.cpp` | internal slot 5: scalar deleting destructor |
+| phys_fn_004204 | 0x0009c8e0 | 698 | `core/D6Joint.cpp` | called by 004210 (0x9e2a7) and 004212 (0x9e3a7): the family-field copy |
+| phys_fn_004206 | 0x0009cba0 | 3200 | `core/D6Joint.cpp` | internal slot 6: the solver slot |
+| phys_fn_004207 | 0x0009d820 | 2394 | `core/D6Joint.cpp` | internal slot 8: projection |
+| phys_fn_004210 | 0x0009e1a0 | 331 | `core/D6Joint.cpp` | createJoint case 9 (0x1456f); installs 0x10119570 (0x9e1b4) |
+| phys_fn_004212 | 0x0009e2f0 | 194 | `core/D6Joint.cpp` | internal slot 9; "D6Joint::loadFromDesc" lines 0x5f/0x60 |
+| phys_fn_004435 | 0x000b0610 | 84 | `core/NpD6Joint.cpp` | Np slot 2; line 0x11 |
+| phys_fn_004439 | 0x000b06a0 | 84 | `core/NpD6Joint.cpp` | Np slot 4; line 0x11 |
+| phys_fn_004445 | 0x000b0760 | 89 | `core/NpD6Joint.cpp` | Np slot 9; line 0x11 |
+| phys_fn_004447 | 0x000b07c0 | 89 | `core/NpD6Joint.cpp` | Np slot 11; line 0x11 |
+| phys_fn_004449 | 0x000b0820 | 97 | `core/NpD6Joint.cpp` | Np slot 13; line 0x11 |
+| phys_fn_004451 | 0x000b0890 | 74 | `core/NpD6Joint.cpp` | Np slot 15; line 0x11 |
+| phys_fn_004453 | 0x000b08e0 | 88 | `core/NpD6Joint.cpp` | Np slot 29; line 0x11 |
+| phys_fn_004455 | 0x000b0940 | 74 | `core/NpD6Joint.cpp` | Np slot 14; line 0x11 |
+| phys_fn_004457 | 0x000b0990 | 84 | `core/NpD6Joint.cpp` | Np slot 31 (loadFromDesc); line 0x15; internal `[vt+0x24]` |
+| phys_fn_004459 | 0x000b09f0 | 84 | `core/NpD6Joint.cpp` | Np slot 32 (saveToDesc); line 0x20; internal `[vt+0x28]` |
+| phys_fn_004461 | 0x000b0a50 | 84 | `core/NpD6Joint.cpp` | Np slot 33 (setDrivePosition); line 0x28; `call 004248` |
+| phys_fn_004463 | 0x000b0ab0 | 84 | `core/NpD6Joint.cpp` | Np slot 34 (setDriveOrientation); line 0x2f; `call 004248` |
+| phys_fn_004465 | 0x000b0b10 | 84 | `core/NpD6Joint.cpp` | Np slot 35 (setDriveLinearVelocity); line 0x36; `call 004248` |
+| phys_fn_004467 | 0x000b0b70 | 84 | `core/NpD6Joint.cpp` | Np slot 36 (setDriveAngularVelocity); line 0x3d; `call 004248` |
+| phys_fn_004469 | 0x000b0bd0 | 57 | `core/NpD6Joint.cpp` | constructor; called by 004210 (0x9e2c2) |
+| phys_fn_004471 | 0x000b0c10 | 8 | `core/NpD6Joint.cpp` | secondary table 0x1011a85c slot 0; compiler-generated thunk |
+| phys_fn_004473 | 0x000b0c20 | 55 | `core/NpD6Joint.cpp` | Np slot 0 (scalar deleting destructor) |
+
+Already `reconstructed` through `ObjectModel.cpp` differentials (proofs kept, new text appended):
+004184 (guardedstore; `nxGuardedStoreEx` gains the `// Product row:` pointer), 004451 (tailjmp),
+004455 (mutexlistfree; `nxMutexListFree` gains the pointer), 004457/004459 (mutexfamily) and
+004461-004467 (mutexdirect: "the work helper 004248 is a bare ret-4 no-op").
+
+The per-family Np rows have the other families' sizes and order (84, 84, 89, 89, 97, 74, 88, 74,
+84, 84) and report lines 0x11 (the setters), 0x15 (loadFromDesc), 0x20 (saveToDesc) and
+0x28/0x2f/0x36/0x3d (the four drive setters). The four drive setters take the write lock, push
+their one argument and call **004248 directly** (`mov ecx,[esi+0x18]; call 0x100a0f60`, 0xb0a93):
+the internal `D6Joint::setDrive*` bodies are the folded empty `ret 4`, so the four public setters
+store nothing. The triple 004469-004473 has pulley's 004505-004509 instructions with the D6 tables.
+
+### Construction chain (NxJointType 9)
+
+1. 000665's switch (table 0x14590, entry 9 = **0x14554**): SDK allocator slot +8 with `(0x270, 0)`
+   (`push 0x270` at 0x14560), null -> 0x1458a (result 0); otherwise `call 0x1009e1a0` =
+   **004210** on the block with the descriptor (0x1456f). Unlike cases 0-8 the arm does not jump to
+   0x144fc: it repeats the tail in place (0x14574-0x1458c: null -> 0x14529; `[esi+0x48]` null ->
+   slot 5 with 1 and result 0; otherwise `jne 0x10014509`, the shared link copy, 000661 and exit).
+   The behaviour is the other families'.
+2. **004210** D6Joint::D6Joint(const NxD6JointDesc&) (`ret 4`):
+   - `Joint(desc, 0x4000)` (004141, `push 0x4000` at 0x9e1a7: the type bit), vptr 0x10119570
+     (0x9e1b4);
+   - the members' inline constructors: the four NxJointLimitDesc (value 0, restitution 0,
+     hardness 1.0f) at +0x184 (linear), +0x190 (swing1), +0x19c (swing2), +0x1a8/+0x1b4 (twist
+     low/high) and the six NxJointDriveDesc (driveType 0, spring 0, damping 0, forceLimit
+     0x7f7fffff) at +0x1c0..+0x210 (0x9e1bc-0x9e2a1);
+   - **004204** with the descriptor (0x9e2a7): the family-field copy;
+   - SDK allocator `(0x1c, 0)` -> **004469** on success, else null; public object -> `this+0x48`
+     (0x9e2c7 / 0x9e2da); `desc.userData` (desc+0x60) -> `np+4` **without a null check**
+     (0x9e2ce / 0x9e2e1).
+3. **004469** NpD6Joint::NpD6Joint(D6Joint*): zeroes +4/+8, transient table 0x1011a700, 002404 on
+   +0xc, secondary table 0x1011a85c, internal at +0x18 and +0x08, final table 0x1011a7c8.
+4. Back in 000665: the same tail as every wired family.
+
+**Public-object offset: +0x48** (`mPublicObject`; 004210 writes it at 0x9e2c7, 000665 reads it at
+0x1457a).
+
+### Object layouts
+
+**D6Joint (internal), 0x270 bytes** (`push 0x270` at 0x14560). The family fields are the
+descriptor's, in the joint's own order (004204 copies them; the constructor runs their inline
+constructors):
+
+| Off | Size | Field | Evidence |
+|---|---:|---|---|
+| +0x000 | 0x16c | `Joint` base; vptr 0x10119570 | 004210 0x9e1af/0x9e1b4; 004202 0x9c8a8 |
+| +0x16c | 0x18 | `mMotion[6]` x, y, z, twist, swing1, swing2 (NxD6JointMotion) | 004204 <- desc+0x6c..+0x80; 004206 0x9d0bf.. |
+| +0x184 | 0xc | `mLinearLimit` (NxJointLimitDesc) | 004210 0x9e1bc; 004204 <- desc+0x84 |
+| +0x190 | 0xc | `mSwing1Limit` | 004210 0x9e1d9; 004204 <- desc+0xa8 |
+| +0x19c | 0xc | `mSwing2Limit` | 004210 0x9e1eb; 004204 <- desc+0xb4 |
+| +0x1a8 | 0x18 | `mTwistLimit` (NxJointLimitPairDesc) | 004210 0x9e1fd; 004204 <- desc+0x90 |
+| +0x1c0 | 0x60 | `mDrive[6]` x, y, z, swing, twist, spherical (NxJointDriveDesc) | 004210 0x9e21b-0x9e2a1; 004204 copies x/y/z only (desc+0xc0..+0xef) |
+| +0x220 | 1 | `mUseSpherical` (bool) | 004204 <- desc+0x120 |
+| +0x224 | 0xc | `mDrivePosition` | 004204 <- desc+0x124 |
+| +0x230 | 0x10 | `mDriveOrientation` (NxQuat) | 004204 <- desc+0x130 |
+| +0x240 | 0xc | `mDriveLinearVelocity` | 004204 <- desc+0x140 |
+| +0x24c | 0xc | `mDriveAngularVelocity` | 004204 <- desc+0x14c |
+| +0x258 | 4 | `mProjectionDistance` | 004204 <- desc+0x158; 004207 |
+| +0x25c | 4 | `mProjectionAngle` | 004204 <- desc+0x15c |
+| +0x260 | 4 | `mSwing1CosHalf`: cos(swing1Limit.value * 0.5), written only when swing1Motion is limited | 004204; 004206 |
+| +0x264 | 4 | `mSwing2CosHalf`: cos(swing2Limit.value * 0.5), when swing2Motion is limited | 004204; 004206 |
+| +0x268 | 4 | `mTwistCosHalf`: cos(twistLimit.high.value * 0.5), when twistMotion is limited | 004204; 004206 |
+| +0x26c | 1 | `mAngularLimited` (any of twist/swing1/swing2 == LIMITED) | 004204 |
+| +0x26d | 1 | `mLinearLimited` (any of x/y/z == LIMITED) | 004204; 004206/004207 |
+| +0x26e | 2 | padding | |
+
+004204 also writes the Joint base's `mProjectionMode` (+0x44) from desc+0x160. The drive block
++0x1c0 holds six drives but loadFromDesc copies only the first three (x, y, z); the swing, twist and
+spherical drives keep their constructor defaults. The cos fields are written only for limited
+motions, so an unlimited motion leaves the value the allocator's bytes had; no transcript reads
+them.
+
+**NpD6Joint (public), 0x1c bytes**: exactly `NpJointShared<NxD6Joint, D6Joint>` (vptr 0x1011a7c8,
+userData +4, appData +8 = internal, hook base +0xc with table 0x1011a85c, write link +0x10, read
+link +0x14, internal +0x18). No own field.
+
+### Dispatch tables
+
+**0x10119570: D6Joint internal (`phys_data_002623`, 16 slots, 64 B)**
+
+| Slot | Row | Declared as | Notes |
+|---:|---|---|---|
+| 0 | 004248 (folded, `ret 4`) | `Joint::row_slot0` inline | inherited no-op |
+| 1 | 001583 (folded, `ret`) | `Joint::row_slot1` inline | inherited no-op |
+| 2 | 004111 | `Joint::row004111` | inherited |
+| 3 | 004087 | `Joint::row004087` | inherited |
+| 4 | **004200** | `D6Joint::row_slot4(NxDebugRenderable&)` | debug visualization |
+| 5 | **004202** | `~D6Joint()` (scalar deleting) | deletes `[this+0x48]` through its slot 0 with 1, 004095, frees if flag&1 |
+| 6 | **004206** | `D6Joint::row_slot6(NxReal)` | the solver slot |
+| 7 | 004135 | `Joint::row_slot7` | inherited |
+| 8 | **004207** | `D6Joint::row_slot8(void* body)` | projection (the revolute/spherical slot-8 shape) |
+| 9 | **004212** | `D6Joint::loadFromDesc(const NxD6JointDesc&)` | `ret 4` |
+| 10 | **004182** | `D6Joint::saveToDesc(NxD6JointDesc&)` | `ret 4`; tail-jumps 004066 |
+| 11 | **004184** | `D6Joint::setProjectionMode(NxJointProjectionMode)` | guarded store to +0x44 |
+| 12 | 004186 (folded) | `D6Joint::getProjectionMode()` inline | returns +0x44; not claimed |
+| 13-15 | 001391 (folded, `mov eax,ecx; ret`) | `D6Joint::row_slot13..15()` inline | return `this` |
+
+The table runs to 0x101195b0, where the unit's `__FILE__` string starts. Slot 8 is the family's own
+(like revolute 004356 and spherical 004298), not the folded no-op.
+
+**0x1011a7c8: NpD6Joint primary (`phys_data_002703`, 37 slots)**: slots 0-32 as the `### Slot split`
+table (per-family rows 004473, 004435, 004439, 004445, 004447, 004449, 004455, 004451, 004453,
+004457, 004459; the folded rows through `NpJointShared`), then NxD6Joint's four drive setters at
+33-36 (004461, 004463, 004465, 004467). Slots 31/32 call internal slots 9/10 (`[vt+0x24]` 0xb09d5 /
+`[vt+0x28]` 0xb0a35). **0x1011a85c** (secondary): 004471.
+
+### Dependency closure
+
+- **write** (34 rows): the 17 `core/D6Joint.cpp` rows above (004178-004212 minus the folded 004186;
+  12,450 B) and the 17 `core/NpD6Joint.cpp` rows (004435-004473 minus the folded 004437, 004441 and
+  004443; 1,390 B; 004471 generated).
+- **reuse**:
+  - Joint rows 004141, 004107, 004121, 004097, 004066, 004093, 004095, 004111, 004087, 004123 and
+    004135 (`core/Joint.cpp`); 004391 (`core/JointSupport.cpp`).
+  - The 13 folded Np bodies (`NpJointShared`); 002362/002364/002366, 002404/002406, 000454/000480.
+  - The inline bodies 004248, 001583, 001391 and 004186; 004417-004433, 004537 and 005667.
+  - The x87 helpers of `core/JointX87.h` and `core/JointAcos.h` (004192 prints an angle through
+    `_CIacos`, 005697); the SDK allocator; SDK parameters.
+  - The CRT's `fopen` (005671), `fprintf` (005716) and `fputs` (005773) for the dump rows
+    (004188/004190/004192 and 004206's `fopen("D6JointDump.txt", ...)`).
+  - 000001 (the compiler's `eh vector constructor iterator`, called by 004200 for its local NxVec3
+    arrays) is compiler-generated, as in the cylindrical and spherical visualization rows.
+- **defer**: 000022 (owner gap `<start>..Actor.cpp`), called by 004207 on the projected body's
+  owner, as revolute 004356 and spherical 004298 already call its asserting stub.
+
+### What the new test case reaches
+
+`nxD6Case` uses indices 0 and 3 of the revolute table's anchor/axis values and a descriptor with
+every family field set explicitly (the NxD6JointDesc constructor leaves projectionDistance,
+projectionAngle, projectionMode and useSpherical uninitialised).
+
+- Creation: 000297, 000665 case 9, 004210, 004141 (-> 004107, 004121 -> 004097 x2, 000480), 004204,
+  004469 (002404), 000661.
+- Getters: 004437/004125, 004441/004129, 004483/004078, 004539, 004443/004070, `isD6Joint` (inline
+  -> 004479/004070), and saveToDesc 004459 -> internal slot 10 = **004182** -> 004066. 004182
+  saves only the base fields: every family field of the descriptor comes back as the test set it
+  before the call, which the transcript prints.
+- The four drive setters (004461-004467): write lock, the folded no-op, unlock; the test calls
+  them and then saveToDesc again.
+- Compiled but not reached: 004178-004200, 004206, 004207 (no simulation step), 004202 (release
+  unwired), 004212, 004184 (NxD6Joint has no public setProjectionMode), 004435-004457, 004473.
