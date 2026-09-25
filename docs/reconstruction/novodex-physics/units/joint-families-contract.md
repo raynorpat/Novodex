@@ -630,6 +630,25 @@ Getters: 004437/004125, 004441/004129, 004483/004078, 004539, 004443/004070,
   same bits. The helpers are naked, so the root comes back in st(0) unnarrowed. Read the
   instructions before each `fsqrt` to pick the form; x87 fsin/fcos/fptan/fpatan and `_CIacos`
   already have their own helpers (`sphericalF*`, `revoluteF*`, `core/JointAcos.h`).
+- **Slots 0 and 1 can be the family's** (pulley, Task 3g): the pulley table names its own rows
+  in slots 0 (004219, the impulse slot, `ret 4`) and 1 (004214), where every family since
+  prismatic inherits the folded no-ops. Read slots 0 and 1 of the internal table, not only 4-6.
+- **A family's helper row may be a separate function** (pulley 004218, called by the constructor
+  and loadFromDesc): declare it as a member and mark its definition `__declspec(noinline)` so the
+  candidate keeps it as one function a cdb trace can break on.
+- **The listing can contain the original's own bugs** (pulley 004228 stores the lever into the
+  fixed slot lever[1] and reads lever[i]): reproduce the listing (write lever[1], read lever[i])
+  and say so in the row comment; do not "fix" it. The stack value the oracle reads there cannot be
+  matched, so no transcript can reach that path through a dynamic body 0.
+- **Gap units next to an Np unit** can belong to a family on the other side
+  (`gap:core\NpD6Joint.cpp..core\NpPulleyJoint.cpp` is D6's constructor triple: 004210 calls
+  004469, which installs D6's 0x1011a7c8). Check the constructor's caller before the gap's name.
+- **Scratchpad scripts**: the session scratchpad can already hold a helper with a common name
+  (`lst.py`, `inv.py`) from another run; a Write then fails, and running the name runs someone
+  else's script. Give task scripts unique names.
+- **Descriptors without the fields the brief expects**: this SDK's `NxPulleyJointDesc` has no
+  motor (pulley[2], distance, stiffness, ratio, flags only). Read the public header before
+  planning the test case's getters.
 
 ## Cylindrical
 
@@ -2036,9 +2055,9 @@ row reports line 0x10; loadFromDesc 0x14, saveToDesc 0x1f (the `push` before eac
 
 ### Dependency closure
 
-- **write** (22 rows, 4,547 B): 004214, 004216, 004218, 004219, 004221, 004222, 004224, 004226,
-  004228 in `core/PulleyJoint.cpp` (9 rows, 3,574 B); 004475-004509 in `core/NpPulleyJoint.cpp`
-  (13 rows, 973 B; 004507 generated, its stable-ID line above the destructor it serves).
+- **write** (22 rows, 4,492 B): 004214, 004216, 004218, 004219, 004221, 004222, 004224, 004226,
+  004228 in `core/PulleyJoint.cpp` (9 rows, 3,525 B); 004475-004509 in `core/NpPulleyJoint.cpp`
+  (13 rows, 967 B; 004507 generated, its stable-ID line above the destructor it serves).
 - **reuse**:
   - Joint rows 004141, 004107, 004121, 004097, 004066, 004095, 004093, 004111, 004087 and 004135
     (`core/Joint.cpp`).
@@ -2064,3 +2083,24 @@ the two pulley points, distance, stiffness, ratio and flags to non-default value
   10 = **004216** -> 004066 (the family fields come back through it).
 - Compiled but not reached: 004214, 004219, 004221, 004224 (release unwired), 004226, 004228,
   004475-004501, 004509.
+
+### Result (Task 3g)
+
+- Wired: `NxSceneInternal::createJoint` builds type 7 through `PulleyJoint` (0x1e0, type bit
+  0x1000) and `nxPulleyJointAttachScene`, in the same block as the other wired families.
+  `nxJointSizeForType` is now reached only by types 8 and 9.
+- The staged pair matched the oracle on the first run: `stdout_delta=0`, 67/67 Phase 6 coverage,
+  32/32 Phase 7. No transcript difference was found. The saved family fields (both pulley points,
+  distance, stiffness, ratio and flags) came back unchanged in both cases.
+- Registered lines: four per joint list, copied from the oracle side of that run. The two sources
+  were the oracle-differential section of the Phase 6 log for `NxPhysicsJointTests` and the
+  `pair=oracle` child output for `NxPhysicsJointStagedPairTests`. Their 26 pulley lines were
+  identical (`cmp`), and identical to the `pair=candidate` child's.
+- A cdb trace of the candidate (`evidence/joint-families-trace-pulley.txt`) shows 004222, 004505,
+  004218, 004503 and 004216 executing in both cases. 004214, 004219, 004221, 004224, 004226,
+  004228 and the Np setters are compiled but not reached. The solver, impulse and visualization
+  rows are checked against the listing by review and the build only. `PulleyJoint.obj` has no
+  xmm instruction and no `__CIsqrt` reference; its one `fsqrt` is `jointFsqrtDot3`.
+- Ledger: the 22 rows are `reconstructed_not_falsified` in `gates/phase6-closure.json` (16 moved
+  from `not_reconstructed_in_phase`; 6 already were); counts 155 / 276.
+- The D6 gap triple 004469-004473 stays `discovered` for Task 3i.
