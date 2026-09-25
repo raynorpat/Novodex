@@ -41,8 +41,8 @@ class PrismaticJoint : public Joint
 	// --- Joint slots PrismaticJoint overrides ---
 
 	//! Slot 4 (+0x10). The folded debug-visualization row phys_fn_004318
-	//! (core\CylindricalJoint.cpp; reads only Joint base fields). Deferred
-	//! to Task 3b, which writes that row once for both families.
+	//! (core\CylindricalJoint.cpp; reads only Joint base fields), written
+	//! once as Joint::row004318 by Task 3b; this override calls it.
 	virtual void row_slot4(NxDebugRenderable& renderable);
 
 	//! Slot 6 (+0x18). phys_fn_004386 (0x000ad850, 6772 B). The float

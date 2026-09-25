@@ -8,6 +8,7 @@
 #include "core/PrismaticJoint.h"
 #include "core/NpPrismaticJoint.h"
 #include "core/JointSupport.h"
+#include "core/JointLinearRecords.h"
 #include "PhysicsSDK.h"
 #include "NxJoint.h"
 #include "NxUtilities.h"
@@ -65,46 +66,10 @@ static void prismaticRefreshFirstStaleBody(Joint& joint)
 		}
 	}
 
-// SDK parameter 0 (NX_PENALTY_FORCE), which the record tail reads straight
-// from the live parameter array (.data 0x10123b18; 0xae56f). Read through
-// PhysicsSDK::getParameter as the revolute rows do (revolute-contract.md
-// open issue 8): 0 with no SDK, a window in which no joint exists.
-static NxReal prismaticSdkParameter(NxParameter parameter)
-	{
-	const PhysicsSDK* const sdk = PhysicsSDK::instance;
-	return sdk ? sdk->getParameter(parameter) : 0.0f;
-	}
-
-// The four linear records of 004386 (0xae418-0xae520 and its three copies):
-// the two body records, the tangent t at +0x00, t x r0... written as
-// r0 x t at +0x18 and r1 x t at +0x24 (each component one product minus
-// another, stored), then kind 1 in bits 0-4 ((flags & 0xffffffe1) | 1),
-// bit 9 = (kind is 0 or 2), bit 10 = (kind is 3, 2 or 5), bits 5-8 and
-// 11-18 cleared. The kind is known, but the listing tests it (the
-// supplement decompile drops those arms as unreachable), so the tests stay.
-static void prismaticLinearRecord(JointSupportRecord* record, JointSupportBody* body0, JointSupportBody* body1,
-	const NxVec3& t, const NxVec3& r0, const NxVec3& r1)
-	{
-	record->mBody[0] = body0;
-	record->mBody[1] = body1;
-	record->mUnknown000 = t;
-	record->mUnknown018.y = (NxReal)(prismaticMul(t.x, r0.z) - prismaticMul(t.z, r0.x));
-	record->mUnknown018.z = (NxReal)(prismaticMul(t.y, r0.x) - prismaticMul(t.x, r0.y));
-	record->mUnknown018.x = (NxReal)(prismaticMul(t.z, r0.y) - prismaticMul(t.y, r0.z));
-	record->mUnknown024.y = (NxReal)(prismaticMul(t.x, r1.z) - prismaticMul(t.z, r1.x));
-	record->mUnknown024.z = (NxReal)(prismaticMul(t.y, r1.x) - prismaticMul(t.x, r1.y));
-	record->mUnknown024.x = (NxReal)(prismaticMul(t.z, r1.y) - prismaticMul(t.y, r1.z));
-
-	NxU32 flags = (record->mFlags & 0xffffffe1) | 1;
-	record->mFlags = flags;
-	NxU32 kind = flags & 0x1f;
-	const NxU32 bit9 = (kind == 0 || kind == 2) ? 1 : 0;
-	flags = (((bit9 << 9) ^ flags) & 0x200) ^ flags;
-	record->mFlags = flags;
-	kind = flags & 0x1f;
-	const NxU32 bit10 = (kind == 3 || kind == 2 || kind == 5) ? 1 : 0;
-	record->mFlags = ((bit10 & 1) << 10) | (flags & 0xfff8021f);
-	}
+// The linear record, the solve tail and the error of one lever pair are shared
+// with the cylindrical solver slot (phys_fn_004326) instruction for
+// instruction: jointLinearRecord, jointSolveRecord and jointLinearError in
+// core/JointLinearRecords.h (moved there by joint-families Task 3b).
 
 // The three angular records (0xaf04f-0xaf0ba and its two copies): the two
 // body records, a unit axis at +0x00 (copied from gJointUnitAxis), kind 3
@@ -122,63 +87,6 @@ static void prismaticAngularRecord(JointSupportRecord* record, JointSupportBody*
 	const NxU32 kind = flags & 0x1f;
 	const NxU32 bit9 = (kind == 0 || kind == 2) ? 1 : 0;
 	record->mFlags = (((bit9 & 1) | 2) << 9) | (flags & 0xfff8041f);
-	}
-
-// The tail every phys_fn_004391 site of 004386 shares (0xae519-0xae577 and
-// its six copies; the same instructions as revolute's revoluteSolveRecord):
-// fill +0x34..+0x4c, solve with 004391 into +0x40, copy that to +0x3c, then
-// scale +0x40 by kind: 0 or 2 by SDK parameter 0, 1 or 3 by 0.7f
-// (0x3f333333 at 0x10106940). The listing passes as 004391's first output
-// the local that held +0x48 (maxForce or maxTorque), which is dead
-// afterwards; `unused` stands for it.
-static void prismaticSolveRecord(JointSupportRecord* record, Joint* joint, NxReal value034, NxReal value048)
-	{
-	record->mUnknown048 = value048;
-	record->mUnknown034 = value034;
-	record->mUnknown038 = 0.0f;
-	record->mUnknown044 = 0;
-	record->mUnknown04c = 0;
-	record->mUnknown030 = joint;
-	NxReal unused = value048;
-	record->row004391(unused, record->mUnknown040);
-	record->mUnknown03c = record->mUnknown040;
-	const NxU32 kind = record->mFlags & 0x1f;
-	if(kind == 0 || kind == 2)
-		record->mUnknown040 = (NxReal)((double)prismaticSdkParameter(NX_PENALTY_FORCE) * record->mUnknown040);
-	else if(kind == 1 || kind == 3)
-		record->mUnknown040 = (NxReal)((double)record->mUnknown040 * 0.7f);
-	}
-
-// 004386's joint error for one pair of levers (0xae31a-0xae3a4, and the
-// same instructions at 0xae9dc-0xaea48): d = r0 - r1, each component stored;
-// with body 0 the stored floats plus body 0's +0x158, without it the
-// unrounded x difference and the stored y and z; then minus body 1's +0x158
-// when body 1 is there. The three stay on the stack.
-static void prismaticError(const NxVec3& r0, const NxVec3& r1, const JointBodyRecord* body0,
-	const JointBodyRecord* body1, double& gx, double& gy, double& gz)
-	{
-	const double dx = (double)r0.x - r1.x;
-	const NxReal dxF = (NxReal)dx;
-	const NxReal dyF = (NxReal)((double)r0.y - r1.y);
-	const NxReal dzF = (NxReal)((double)r0.z - r1.z);
-	if(body0)
-		{
-		gx = (double)dxF + body0->mUnknown158.x;
-		gy = (double)dyF + body0->mUnknown158.y;
-		gz = (double)dzF + body0->mUnknown158.z;
-		}
-	else
-		{
-		gx = dx;
-		gy = dyF;
-		gz = dzF;
-		}
-	if(body1)
-		{
-		gx = gx - body1->mUnknown158.x;
-		gy = gy - body1->mUnknown158.y;
-		gz = gz - body1->mUnknown158.z;
-		}
 	}
 
 // The bias of one linear record (0xae3cb-0xae3e5 for t1, 0xae3ec-0xae408 for
@@ -218,13 +126,13 @@ PrismaticJoint::~PrismaticJoint()
 	}
 
 // Slot 4: the folded row phys_fn_004318 (0x000a7240, core\CylindricalJoint.cpp).
-// (deferred: Task 3b writes the cylindrical debug-visualization row once for both families)
 // The prismatic table 0x1011a4d0 names the cylindrical unit's body directly
-// (slot 4, 0x11a4e0); it reads only Joint base fields. Not claimed here.
+// (slot 4, 0x11a4e0); it reads only Joint base fields. Task 3b wrote it once
+// as Joint::row004318 (core/CylindricalJoint.cpp), which both families' slot 4
+// calls. Not claimed here.
 void PrismaticJoint::row_slot4(NxDebugRenderable& renderable)
 	{
-	(void)renderable;
-	NX_ASSERT(0);
+	row004318(renderable);
 	}
 
 // phys_fn_004386 (0x000ad850, 6772 B)
@@ -456,18 +364,18 @@ void PrismaticJoint::row_slot6(NxReal arg)
 
 	// Records 1 and 2 (0xae31a-0xae6ed).
 	double gx, gy, gz;
-	prismaticError(r0, r1, body0, body1, gx, gy, gz);
+	jointLinearError(r0, r1, body0, body1, gx, gy, gz);
 	const NxReal inverse = (NxReal)(1.0f / (double)arg);
 	NxReal bias1 = prismaticBias(t1, gx, gy, gz, inverse);
 	NxReal bias2 = prismaticBias(t2, gx, gy, gz, inverse);
 
 	JointSupportRecord* record = row004093();
-	prismaticLinearRecord(record, record0, record1, t1, r0, r1);
-	prismaticSolveRecord(record, this, bias1, mMaxForce);
+	jointLinearRecord(record, record0, record1, t1, r0, r1);
+	jointSolveRecord(record, this, bias1, mMaxForce);
 
 	record = row004093();
-	prismaticLinearRecord(record, record0, record1, t2, r0, r1);
-	prismaticSolveRecord(record, this, bias2, mMaxForce);
+	jointLinearRecord(record, record0, record1, t2, r0, r1);
+	jointSolveRecord(record, this, bias2, mMaxForce);
 
 	// The second pair of levers (0xae6ef-0xae9d8).
 	body0 = prismaticBody(mBody[0]);
@@ -540,17 +448,17 @@ void PrismaticJoint::row_slot6(NxReal arg)
 
 	// Records 3 and 4 (0xae9dc-0xaed80): the same as 1 and 2, with the
 	// stored 1 / arg.
-	prismaticError(r0, r1, body0, body1, gx, gy, gz);
+	jointLinearError(r0, r1, body0, body1, gx, gy, gz);
 	bias1 = prismaticBias(t1, gx, gy, gz, inverse);
 	bias2 = prismaticBias(t2, gx, gy, gz, inverse);
 
 	record = row004093();
-	prismaticLinearRecord(record, record0, record1, t1, r0, r1);
-	prismaticSolveRecord(record, this, bias1, mMaxForce);
+	jointLinearRecord(record, record0, record1, t1, r0, r1);
+	jointSolveRecord(record, this, bias1, mMaxForce);
 
 	record = row004093();
-	prismaticLinearRecord(record, record0, record1, t2, r0, r1);
-	prismaticSolveRecord(record, this, bias2, mMaxForce);
+	jointLinearRecord(record, record0, record1, t2, r0, r1);
+	jointSolveRecord(record, this, bias2, mMaxForce);
 
 	// The relative rotation (0xaed82-0xaef4c): a = conj(q0) * q1 over the
 	// bodies' +0x124 quaternions (identity for a missing body 0; conj(q0) as
@@ -624,15 +532,15 @@ void PrismaticJoint::row_slot6(NxReal arg)
 	// Records 5-7 (0xaf04a-0xaf2b6), one per unit axis, +0x48 = maxTorque.
 	record = row004093();
 	prismaticAngularRecord(record, record0, record1, gJointUnitAxis[0]);
-	prismaticSolveRecord(record, this, angular0, mMaxTorque);
+	jointSolveRecord(record, this, angular0, mMaxTorque);
 
 	record = row004093();
 	prismaticAngularRecord(record, record0, record1, gJointUnitAxis[1]);
-	prismaticSolveRecord(record, this, angular1, mMaxTorque);
+	jointSolveRecord(record, this, angular1, mMaxTorque);
 
 	record = row004093();
 	prismaticAngularRecord(record, record0, record1, gJointUnitAxis[2]);
-	prismaticSolveRecord(record, this, angular2, mMaxTorque);
+	jointSolveRecord(record, this, angular2, mMaxTorque);
 	}
 
 // phys_fn_004384 (0x000ad780, 202 B)
