@@ -926,6 +926,10 @@ What the new code replaces or must stay compatible with. Line numbers are at com
    Task 10: the four cases' `out_anchor`/`out_axis` match the oracle byte-for-byte. The
    test's two actors have identity orientation (only translated), so this confirms the
    +0x50 position and the identity case of the +0x5c/+0xdc conventions, not a rotated body.
+   Joint open-items Task 4 ran every family over rotated bodies: the rows' reading of +0x5c
+   (x, y, z, w) and +0xdc (row-major) is right, and the transcript matches the oracle once the
+   candidate's body-record writers follow 000801/000768/000746
+   (joint-open-items-contract.md `## Rotated bodies and near-z axes`).
 4. ~~The typeBit→type byte table (0x9a048) is inferred, not read.~~ Resolved by Task 6: read from the image, mapping confirmed (see `## Object layouts`).
 5. Fields marked **unknown** (Joint +0x04 readers, +0x34/+0x38,
    +0x160/+0x164; revolute +0x1ac..+0x200) must be declared by offset only.

@@ -264,7 +264,7 @@ These behaviours are in the oracle and the reconstruction keeps them.
 2. (Closed by joint-open-items Task 2: all five written; 000754 and 004167 remain deferred.) **Deferred Scene rows 000022, 000571, 000598, 000633 and 000758 are asserting stubs.** Revolute
    004356, spherical 004298 and D6 004207 reach 000022 on some projection arms. The solver slots
    need 004093's Scene record array (000598), and 004111's break path needs 000571.
-3. **Rotated-body conventions are untested.** Every family's test uses the pilot's
+3. (Closed by joint-open-items Task 4: every family matches over rotated bodies; the defects were in the candidate's body-record writers and the joint-descriptor exports, see `evidence/joint-open-items.md`.) **Rotated-body conventions are untested.** Every family's test uses the pilot's
    identity-oriented, translated bodies, as the pilot's contract open issue 3 describes. Only the
    identity case of the +0x5c quaternion and +0xdc 3x3 conventions is confirmed. That covers
    004101's frame quaternions, 004378/004244's relative rotations, and the D6 pose helpers.
@@ -302,7 +302,7 @@ These behaviours are in the oracle and the reconstruction keeps them.
      - pulley's operands are stored floats;
      - D6 004207's `lockedX` is a `double` that only ever holds a float.
    - Nothing on the transcript runs under 0x0f7f, so none of this is observable today.
-6. **Foundation `NxNormalToTangents` defect** (Task 2). It changes the local normal that 004101 and
+6. (Closed by joint-open-items Task 4: near-z axes match for every family after main's Foundation fix.) **Foundation `NxNormalToTangents` defect** (Task 2). It changes the local normal that 004101 and
    `NxJointDesc::setGlobalAxis` store for axes near z, and the tangents prismatic's 004386 builds.
    It belongs to a separate Foundation task. The joint tests avoid such axes.
 7. **Phase 2/3 test targets.** (Build closed by joint-open-items Task 1; Phase 3 red on three

@@ -186,3 +186,52 @@ before it reads them (0xaf2dd, 0xaf318), so a null there is harmless. A direct s
 has two options. It can leave the slot-0 rows uncalled on bodies that have not been simulated.
 Or it can supply a JointSupportBody the same way in both DLLs. Writing one into +0x204 by hand
 is test scaffolding, not something the oracle does.
+
+## Rotated bodies and near-z axes
+
+Open items 3 and 6 (revolute contract open issue 3). Test: `tests/PhysicsJointTests.cpp`.
+- Every family runs over two near-z axes on the identity fixture: index 4 is (0.1, 0.2, 0.97)
+  normalised and index 5 is (0, 0, 1).
+- It then runs over a rotated-body fixture in a second scene (`nxBuildRotatedFixture`):
+  - actor a is turned 90 degrees about y;
+  - actor b is at the unit quaternion (1, 2, 3, 4)/sqrt(30);
+  - the matrices are formed in the harness and printed as input.
+- The rotated cases are indices 10-13: a general axis, the diagonal, and the two near-z axes.
+- Besides the existing fields, the Task 4 cases print:
+  - the revolute saveToDesc frames;
+  - the rotated actors' read-back pose and body-record words +0x5c, +0xdc, +0x124, +0x134,
+    +0x158 and +0x164;
+  - each internal joint's +0x4c..+0x14b block and its family tail from +0x16c, read through the
+    public object's +0x18. Pulley's tail is left out because its lever words are uninitialised.
+
+The near-z cases matched on the first run. The rotated cases showed four differences. In each
+one the first differing word was on the candidate side:
+
+| # | First differing word | Cause (oracle listing) | Fix |
+|---|---|---|---|
+| 1 | actor b +0x5c quaternion x, y (one bit) | Actor creation fills +0x24 and copies it to +0x5c. It uses the body pose constructor 000801's conversion (0x1b82e-0x1b987): the trace is summed as (m11 + m22) + m00 in the register, (m11 + m22) is spilled to float for the x arm, and each arm is s = sqrt(... + 1), 0.5 * s, then products with the register reciprocal 0.5 / s. The candidate used the public `NxQuat(NxMat33)`, which rounds to float as it goes. | `nxNpActorBodyQuaternionFromMatrix` (NpActorDynamicMath.h), called from `nxActorComputeMass` |
+| 2 | every rotated case: `createJoint` returned null (`desc.isValid()` failed) | `NxJointDesc_SetGlobalAnchor`/`SetGlobalAxis` (004115/004117) compose the rotation from +0x5c with the standard row-major formula, spilling five doubled products (0x983c0-0x98483). The candidate's composition was right only for the identity quaternion. It also rounded the axis length to float, which the listing keeps in the register (0x982f9-0x98326), and it summed M^T v in x, y, z order in float. The listing sums (m[6+c] z + m[3+c] y) + m[c] x in the register, with x - t.x unrounded in the anchor row (0x981fb-0x982a0). | JointDesc.cpp: `nxJointWorldMatrix`, `nxJointTransposeMultiply`, the double length |
+| 3 | actor a +0x124 w and +0x134 m00 (one bit); this moved 004378's and 004244's relative rotations | The creation path refreshes the mass frame through 000768 (0x17f10, called from 000795 at 0x1b497). 000768 builds R from +0x24 with the 004117 pattern, then computes +0x134 = R F (F = +0xdc) in the listing's per-element operand order, and +0x158 = R p + t (x in the register, y and z rounded first). Last it forms +0x124 from +0x134 by 000801's conversion. The candidate used a double-precision formula and a different quaternion routine. | `nxNpActorUpdateMassFrame`, which replaces `nxActorComputeMass`'s world-centre code and its two calls |
+| 4 | actor b +0x164 off-diagonals | 000746 (0x16e80, cdecl) forms R diag(d) R^T as nine products d[k] R[i][k]. Four of them stay in the register and five are spilled to float, and each element sums in the listing's order. | `nxNpActorWorldTensorRDRt` |
+
+After the fixes the whole transcript is byte-identical to the oracle's (1,999 lines).
+
+No joint row needed a change. 004097, 004101, 004121, 004125 and 004129 (anchors, axes, frame
+quaternions, world copies), 004378 (prismatic +0x16c) and 004244 (fixed +0x16c..+0x187) match word
+for word once their inputs match. The conventions the pilot assumed are therefore the oracle's:
+- +0x5c is (x, y, z, w);
+- +0xdc and +0x134 are row-major;
+- 004378 and 004244 read +0x124, +0x134 and +0x158 as written by 000768.
+
+Scope of the candidate changes:
+- The Np setters (NpActor.cpp) keep their own sequences. They are not on this transcript.
+- `nxNpActorUpdateInertiaMatrices` and `nxNpActorUpdateCMassQuaternion` are still used by
+  NpActor.cpp:1247-1248/1403/1569. Those paths call 000768 in the oracle (000164, 000196-000222),
+  so the same one-bit differences can be expected there on rotated bodies.
+- Phase 5's registered actor lines are unchanged and still match.
+
+Dynamic evidence (cdb on the oracle pair; hardware write breakpoints on the third and fourth
+body records, the rotated actors):
+- +0x5c is written at 0x1b98e (000801);
+- +0x134 is written at 0x181ea (000768);
+- +0x130 (w of +0x124) is written at 0x18226 (000768).
