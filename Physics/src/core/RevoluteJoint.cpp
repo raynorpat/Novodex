@@ -8,6 +8,7 @@
 #include "core/RevoluteJoint.h"
 #include "core/NpRevoluteJoint.h"
 #include "core/JointSupport.h"
+#include "core/JointAcos.h"
 #include "PhysicsSDK.h"
 #include "NxJoint.h"
 #include "NxMath.h"
@@ -93,84 +94,9 @@ static void revoluteRefreshFirstStaleBody(Joint& joint)
 		}
 	}
 
-// _CIacos (0x000f47f0), the CRT's x87 acos: argument and result in st(0).
-// Its core (0xf4828-0xf4836) is
-//     fld1; fadd st,st(1); fld1; fsub st,st(2); fmulp st(1),st; fsqrt;
-//     fxch st(1); fpatan
-// i.e. atan2(sqrt((1 + x) * (1 - x)), x), computed in that order. Around it
-// the CRT saves the control word and, when it is not the default 0x027f,
-// runs the core with the precision bits kept, rounding to nearest and all
-// exceptions masked ((cw & 0x300) | 0x7f, 0xfa9b5), restoring the saved
-// word afterwards (0xfaa70, or 0xfa98e); that is reproduced too. The
-// argument passes through `fst qword` (0xf47f3), so it arrives here as a
-// double.
-// The flag at 0x10128514 is never set, so the exit is always the
-// 0xfaa4b path (0xfaa3e is dead): with the default word it returns at
-// 0xfaa73; otherwise, when the saved word has PM (bit 5) clear it reloads
-// the word at 0xfaa70, and when PM is set and the status word shows PE it
-// calls 0xfa957, which stores the result as a qword, runs the CRT
-// exception dispatcher (0xffcf5; a masked inexact result passes through)
-// and reloads the qword before restoring the word (0xfa98e). Not
-// reproduced, and why no value differs under the SDK's control words
-// (0x027f, or the in-step word with every exception masked):
-// - the 0xfa957 arm only rounds the result to a double, which the helper's
-//   own double store below does as well;
-// - the |x| >= 1 arms (0xf4855-0xf4878) are unreachable, every call site
-//   clamps first (revoluteAcos);
-// - the NaN arm (0xf4881 -> 0xfa9cc) returns the argument quieted, which
-//   is also what the core computes for a NaN argument (it propagates
-//   through fadd/fsub/fmulp/fsqrt/fpatan unchanged).
-// The CRT's acos need not agree with this sequence, which is why it is not
-// used. The result is stored as a double (SmoothNormals.cpp's reason: st(0)
-// left to the caller is a register the compiler did not put there).
-static double revoluteCIacos(double x)
-	{
-#if defined(_MSC_VER) && defined(_M_IX86)
-	double result;
-	NxU16 savedControlWord;
-	NxU16 coreControlWord;
-	__asm
-		{
-		fnstcw	savedControlWord
-		mov		ax, savedControlWord
-		cmp		ax, 0x27f
-		je		acosCore
-		and		ax, 0x300
-		or		ax, 0x7f
-		mov		coreControlWord, ax
-		fldcw	coreControlWord
-	acosCore:
-		fld		x
-		fld1
-		fadd	st(0), st(1)
-		fld1
-		fsub	st(0), st(2)
-		fmulp	st(1), st(0)
-		fsqrt
-		fxch	st(1)
-		fpatan
-		fstp	result
-		fldcw	savedControlWord
-		}
-	return result;
-#else
-	return atan2(sqrt((1.0 + x) * (1.0 - x)), x);
-#endif
-	}
-
-// The inlined NxMath::acos(NxF32) clamp every acos site in this unit carries
-// (004330 0xa8dfe-0xa8e34, 004352 0xa94fd-0xa9530, 004372 0xad015-0xad04b):
-// >= 1 -> 0, <= -1 -> the float pi at 0x1011a1b0, otherwise _CIacos of the
-// float. The result is returned unrounded: 004352 and 004372 keep it on the
-// stack; 004330 rounds it where it stores it.
-static double revoluteAcos(NxReal f)
-	{
-	if(f >= 1.0f)
-		return 0.0f;
-	if(f <= -1.0f)
-		return NxPiF32;
-	return revoluteCIacos(f);
-	}
+// The x87 _CIacos reproduction and the inlined NxMath::acos(NxF32) clamp
+// moved to core/JointAcos.h (jointCIacos, jointAcos) by joint-families Task
+// 3c, which reuses them for the spherical rows.
 
 // The two SDK parameters the solver-slot rows read straight from the live
 // parameter array at .data 0x10123b18 (PhysicsSDK.cpp's gParameter):
@@ -1568,7 +1494,7 @@ void RevoluteJoint::saveToDesc(NxRevoluteJointDesc& desc)
 	desc.motor = mMotor;
 	desc.spring = mSpring;
 	desc.projectionDistance = mProjectionDistance;
-	desc.projectionAngle = (NxReal)revoluteAcos(mProjectionAngleCos);
+	desc.projectionAngle = (NxReal)jointAcos(mProjectionAngleCos);
 	desc.flags = mRevoluteFlags;
 	desc.projectionMode = mProjectionMode;
 	}
@@ -1697,7 +1623,7 @@ bool RevoluteJoint::getSpring(NxSpringDesc& spring) const
 // (0xa9332-0xa93a8) and the sign sum unrounded (0xa9535-0xa9551), stores
 // only the cosine as a float (0xa94f4) before the acos clamp, and rounds
 // neither the acos result nor the returned product. The clamp and _CIacos
-// (0xa9530) are revoluteAcos/revoluteCIacos, which leave the result
+// (0xa9530) are jointAcos/jointCIacos, which leave the result
 // unrounded.
 NxF64 RevoluteJoint::row004352()
 	{
@@ -1746,7 +1672,7 @@ NxF64 RevoluteJoint::row004352()
 		}
 
 	const NxReal cosine = (NxReal)(((double)n1z * n0z + (double)n1y * n0y) + (double)n1x * n0x);
-	const double angle = revoluteAcos(cosine);
+	const double angle = jointAcos(cosine);
 	const double side = (revoluteMul(n1z, cz) + revoluteMul(n1y, cy)) + revoluteMul(n1x, cx);
 	if(side < 0.0f)
 		return angle * -1.0f;
@@ -1834,7 +1760,7 @@ void RevoluteJoint::row004358(NxVec3& out) const
 // composition) rather than the +0x134 3x3: body 0's normal and cross
 // vectors and body 1's normal are carried through that product (a missing
 // body contributes the stored world vector), the cosine of the normals is
-// stored as a float and clamped through revoluteAcos (_CIacos at
+// stored as a float and clamped through jointAcos (_CIacos at
 // 0xad04b), and the result is negated when body 1's normal points against
 // body 0's cross vector. The quaternion is converted afresh for each
 // vector: once with the conversion keeping most terms on the stack, twice
@@ -1933,7 +1859,7 @@ NxF64 RevoluteJoint::getAngle() const
 
 	// 0xacfec-0xad09a.
 	const NxReal cosine = (NxReal)(((double)n1.z * n0z + (double)n1.y * n0y) + (double)n1.x * n0x);
-	const double angle = revoluteAcos(cosine);
+	const double angle = jointAcos(cosine);
 	const double side = revoluteSum3(n1.z, c0.z, n1.y, c0.y, n1.x, c0.x);
 	if(side < 0.0f)
 		return angle * -1.0f;
