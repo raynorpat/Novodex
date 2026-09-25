@@ -47,6 +47,7 @@
 #include "core/SphericalJoint.h"
 #include "core/PointOnLineJoint.h"
 #include "core/PointInPlaneJoint.h"
+#include "core/DistanceJoint.h"
 #include "NxMat33.h"
 #include "NxQuat.h"
 
@@ -1421,16 +1422,19 @@ void NxSceneInternal::releaseActor(void* bodyPointer)
 //     to register it (0x14524);
 //   on every exit after the switch, ++[Scene+0x6c8] and [Scene+0x6bc] =
 //     [Scene+0x59c] (0x14529-0x1453f) before the re-entry flag is cleared. Only
-//     the prismatic, revolute, cylindrical, spherical, point-on-line and
-//     point-in-plane paths reproduce this; the generic path does not.
+//     the prismatic, revolute, cylindrical, spherical, point-on-line,
+//     point-in-plane and distance paths reproduce this; the generic path does
+//     not.
 //
-// The prismatic, revolute, cylindrical, spherical, point-on-line and
-// point-in-plane cases run the reconstructed rows (core/PrismaticJoint.cpp,
+// The prismatic, revolute, cylindrical, spherical, point-on-line,
+// point-in-plane and distance cases run the reconstructed rows
+// (core/PrismaticJoint.cpp,
 // core/NpPrismaticJoint.cpp, core/RevoluteJoint.cpp, core/NpRevoluteJoint.cpp,
 // core/CylindricalJoint.cpp, core/NpCylindricalJoint.cpp,
 // core/SphericalJoint.cpp, core/NpSphericalJoint.cpp,
 // core/PointOnLineJoint.cpp, core/NpPointOnLineJoint.cpp,
-// core/PointInPlaneJoint.cpp, core/NpPointInPlaneJoint.cpp). The other types
+// core/PointInPlaneJoint.cpp, core/NpPointInPlaneJoint.cpp,
+// core/DistanceJoint.cpp, core/NpDistanceJoint.cpp). The other types
 // keep the generic stand-in path
 // (nxJointConstruct over NpJointObject). The oracle's Scene::createJoint
 // returns the internal joint and its NpScene::createJoint (phys_fn_000297)
@@ -1498,8 +1502,11 @@ NxJoint* NxSceneInternal::createJoint(const NxJointDesc& desc)
 	//     phys_fn_004276 at 0x1445c (joint-families Task 3d).
 	//   NX_JOINT_POINT_IN_PLANE: case 5, target 0x14466; (0x16c, 0) at 0x14470-0x14477,
 	//     phys_fn_004262 at 0x14485 (joint-families Task 3e).
+	//   NX_JOINT_DISTANCE: case 6, target 0x144b2; (0x184, 0) at 0x144bc-0x144c3,
+	//     phys_fn_004234 at 0x144d1 (joint-families Task 3f).
 	if(d[1] == NX_JOINT_PRISMATIC || d[1] == NX_JOINT_REVOLUTE || d[1] == NX_JOINT_CYLINDRICAL ||
-		d[1] == NX_JOINT_SPHERICAL || d[1] == NX_JOINT_POINT_ON_LINE || d[1] == NX_JOINT_POINT_IN_PLANE)
+		d[1] == NX_JOINT_SPHERICAL || d[1] == NX_JOINT_POINT_ON_LINE || d[1] == NX_JOINT_POINT_IN_PLANE ||
+		d[1] == NX_JOINT_DISTANCE)
 		{
 		Joint* internal = 0;
 		if(d[1] == NX_JOINT_PRISMATIC)
@@ -1531,6 +1538,12 @@ NxJoint* NxSceneInternal::createJoint(const NxJointDesc& desc)
 			void* memory = nxGetSdkAllocator()->malloc(sizeof(PointInPlaneJoint), NX_MEMORY_PERSISTENT);
 			if(memory)
 				internal = new(memory) PointInPlaneJoint(static_cast<const NxPointInPlaneJointDesc&>(desc));
+			}
+		else if(d[1] == NX_JOINT_DISTANCE)
+			{
+			void* memory = nxGetSdkAllocator()->malloc(sizeof(DistanceJoint), NX_MEMORY_PERSISTENT);
+			if(memory)
+				internal = new(memory) DistanceJoint(static_cast<const NxDistanceJointDesc&>(desc));
 			}
 		else
 			{
@@ -1564,6 +1577,8 @@ NxJoint* NxSceneInternal::createJoint(const NxJointDesc& desc)
 					result = nxPointOnLineJointAttachScene(static_cast<PointOnLineJoint*>(internal), writeLink, readLink);
 				else if(d[1] == NX_JOINT_POINT_IN_PLANE)
 					result = nxPointInPlaneJointAttachScene(static_cast<PointInPlaneJoint*>(internal), writeLink, readLink);
+				else if(d[1] == NX_JOINT_DISTANCE)
+					result = nxDistanceJointAttachScene(static_cast<DistanceJoint*>(internal), writeLink, readLink);
 				else
 					result = nxRevoluteJointAttachScene(static_cast<RevoluteJoint*>(internal), writeLink, readLink);
 				nxSceneAddJoint(this, internal);
@@ -1573,8 +1588,8 @@ NxJoint* NxSceneInternal::createJoint(const NxJointDesc& desc)
 				// 0x14581-0x1458c: internal slot 5 with 1 (the family's scalar
 				// deleting destructor: phys_fn_004382 prismatic, phys_fn_004368
 				// revolute, phys_fn_004322 cylindrical, phys_fn_004302 spherical,
-				// phys_fn_004278 point-on-line, phys_fn_004264 point-in-plane), then
-				// `xor esi,esi`.
+				// phys_fn_004278 point-on-line, phys_fn_004264 point-in-plane,
+				// phys_fn_004236 distance), then `xor esi,esi`.
 				delete internal;
 				}
 			}
@@ -1590,8 +1605,8 @@ NxJoint* NxSceneInternal::createJoint(const NxJointDesc& desc)
 
 	// The other joint types: the generic stand-in. Their allocation literals are
 	// in revolute-contract.md "## Construction chain". Types 0 (prismatic), 1
-	// (revolute), 2 (cylindrical), 3 (spherical), 4 (point on line) and 5 (point
-	// in plane) never get here.
+	// (revolute), 2 (cylindrical), 3 (spherical), 4 (point on line), 5 (point
+	// in plane) and 6 (distance) never get here.
 	NxU32 size = nxJointSizeForType(d[1]);
 
 	NxJoint* joint = 0;
@@ -2487,8 +2502,9 @@ NxU32 nxJointSizeForType(unsigned type)
 	// through RevoluteJoint, type 0 (NX_JOINT_PRISMATIC) through PrismaticJoint,
 	// type 2 (NX_JOINT_CYLINDRICAL) through CylindricalJoint, type 3
 	// (NX_JOINT_SPHERICAL) through SphericalJoint, type 4
-	// (NX_JOINT_POINT_ON_LINE) through PointOnLineJoint and type 5
-	// (NX_JOINT_POINT_IN_PLANE) through PointInPlaneJoint.
+	// (NX_JOINT_POINT_ON_LINE) through PointOnLineJoint, type 5
+	// (NX_JOINT_POINT_IN_PLANE) through PointInPlaneJoint and type 6
+	// (NX_JOINT_DISTANCE) through DistanceJoint.
 	switch(type)
 		{
 		case 1: return 0x17c;		// revolute: unreachable, createJoint builds it through RevoluteJoint
@@ -2496,7 +2512,7 @@ NxU32 nxJointSizeForType(unsigned type)
 		case 3: return 0x150;		// spherical: unreachable, createJoint builds it through SphericalJoint
 		case 4: return 0x150;		// point on line: unreachable, createJoint builds it through PointOnLineJoint
 		case 5: return 0x150;		// point in plane: unreachable, createJoint builds it through PointInPlaneJoint
-		case 6: return 0x220;		// distance
+		case 6: return 0x220;		// distance: unreachable, createJoint builds it through DistanceJoint
 		case 7: return 0x1b0;		// pulley
 		case 8: return 0x1b0;		// fixed
 		case 9: return 0x260;		// D6
