@@ -1,0 +1,119 @@
+Prismatic family: cdb breakpoint trace of the joint transcript (joint-families Task 3a)
+======================================================================================
+
+A trimmed excerpt of the raw cdb log, in the method of evidence/unit-pilot-revolute-trace.txt.
+Register dumps, ModLoad lines, banners and the program's own stdout are removed; the HIT
+lines are kept in order and otherwise unedited. It is the evidence behind the dynamic_proof
+of phys_fn_004380, 004753, 004378, 004751 and 004376 in inventory.json.
+
+Debugger:  Microsoft Windows Debugger 10.0.10586.567 (X86)
+Command:   cdb -cf <script> build\Release\NxPhysicsJointTests.exe build\pairs\candidate
+Recorded:  2026-09-25, on the Task 3a working tree after the wiring (Scene::createJoint
+           case 0 -> core/PrismaticJoint.cpp) and the nxPrismaticCase test commits.
+Candidate: build\pairs\candidate\NxPhysics.dll
+           sha256=3f0de6bb05c3c5fb3fb54565d9eab5673ff545e5dd69b22dbaa02a264e02b33c
+           (identical to build\Release\NxPhysics.dll at the time of the trace).
+Offsets:   module-relative, from build\Release\NxPhysics.map of that build. The folded Np
+           bodies are broken on their NpJointShared<NxPrismaticJoint, PrismaticJoint>
+           instantiation; the Joint rows are shared with the revolute cases.
+
+Breakpoints (each echoes and continues):
+bp NxPhysics+0x27480 ".echo HIT 000665 Scene::createJoint; gc"
+bp NxPhysics+0x33540 ".echo HIT 004380 PrismaticJoint ctor; gc"
+bp NxPhysics+0x2c380 ".echo HIT 004141 Joint ctor; gc"
+bp NxPhysics+0x2e960 ".echo HIT 004107 row004107; gc"
+bp NxPhysics+0x2dcf0 ".echo HIT 004121 loadFromDescBase; gc"
+bp NxPhysics+0x2e1b0 ".echo HIT 004097 refreshBodyFrame; gc"
+bp NxPhysics+0x31d00 ".echo HIT 004753 NpPrismaticJoint ctor; gc"
+bp NxPhysics+0x33a90 ".echo HIT 004378 row004378; gc"
+bp NxPhysics+0x31f70 ".echo HIT (helper) nxPrismaticJointAttachScene; gc"
+bp NxPhysics+0x31280 ".echo HIT 004437 Np getGlobalAnchor (prismatic instantiation); gc"
+bp NxPhysics+0x2cc50 ".echo HIT 004125 Joint getGlobalAnchor; gc"
+bp NxPhysics+0x31400 ".echo HIT 004441 Np getGlobalAxis (prismatic instantiation); gc"
+bp NxPhysics+0x2d2e0 ".echo HIT 004129 Joint getGlobalAxis; gc"
+bp NxPhysics+0x31800 ".echo HIT 004483 Np getState (prismatic instantiation); gc"
+bp NxPhysics+0x2d6e0 ".echo HIT 004078 Joint getState; gc"
+bp NxPhysics+0x310a0 ".echo HIT 004539 Np getActors (prismatic instantiation); gc"
+bp NxPhysics+0x318a0 ".echo HIT 004443 Np getType (prismatic instantiation); gc"
+bp NxPhysics+0x2d6f0 ".echo HIT 004070 Joint getType; gc"
+bp NxPhysics+0x31a00 ".echo HIT 004479 Np is (prismatic instantiation); gc"
+bp NxPhysics+0x320f0 ".echo HIT 004751 NpPrismaticJoint saveToDesc; gc"
+bp NxPhysics+0x34fe0 ".echo HIT 004376 PrismaticJoint saveToDesc; gc"
+bp NxPhysics+0x2f330 ".echo HIT 004066 Joint saveToDescBase; gc"
+bp NxPhysics+0x335f0 ".echo HIT 004382 ~PrismaticJoint; gc"
+bp NxPhysics+0x33c50 ".echo HIT 004386 row_slot6; gc"
+
+Hits, in order. The joint test runs four revolute cases first (their Joint-row hits are
+summarised, not repeated), then the two prismatic cases in full.
+
+-- revolute case 0: 8 hits (000665, 004141, 004121, 004097 x2, 004125, 004129, 004078) --
+-- revolute case 1: 8 hits (000665, 004141, 004121, 004097 x2, 004125, 004129, 004078) --
+-- revolute case 2: 8 hits (000665, 004141, 004121, 004097 x2, 004125, 004129, 004078) --
+-- revolute case 3: 8 hits (000665, 004141, 004121, 004097 x2, 004125, 004129, 004078) --
+
+-- prismatic case index=0 --
+HIT 000665 Scene::createJoint
+HIT 004380 PrismaticJoint ctor
+HIT 004141 Joint ctor
+HIT 004121 loadFromDescBase
+HIT 004097 refreshBodyFrame
+HIT 004097 refreshBodyFrame
+HIT 004753 NpPrismaticJoint ctor
+HIT 004378 row004378
+HIT (helper) nxPrismaticJointAttachScene
+HIT 004437 Np getGlobalAnchor (prismatic instantiation)
+HIT 004125 Joint getGlobalAnchor
+HIT 004441 Np getGlobalAxis (prismatic instantiation)
+HIT 004129 Joint getGlobalAxis
+HIT 004483 Np getState (prismatic instantiation)
+HIT 004078 Joint getState
+HIT 004539 Np getActors (prismatic instantiation)
+HIT 004479 Np is (prismatic instantiation)
+HIT 004070 Joint getType
+HIT 004479 Np is (prismatic instantiation)
+HIT 004070 Joint getType
+HIT 004443 Np getType (prismatic instantiation)
+HIT 004070 Joint getType
+HIT 004751 NpPrismaticJoint saveToDesc
+HIT 004376 PrismaticJoint saveToDesc
+HIT 004066 Joint saveToDescBase
+
+-- prismatic case index=3 --
+HIT 000665 Scene::createJoint
+HIT 004380 PrismaticJoint ctor
+HIT 004141 Joint ctor
+HIT 004121 loadFromDescBase
+HIT 004097 refreshBodyFrame
+HIT 004097 refreshBodyFrame
+HIT 004753 NpPrismaticJoint ctor
+HIT 004378 row004378
+HIT (helper) nxPrismaticJointAttachScene
+HIT 004437 Np getGlobalAnchor (prismatic instantiation)
+HIT 004125 Joint getGlobalAnchor
+HIT 004441 Np getGlobalAxis (prismatic instantiation)
+HIT 004129 Joint getGlobalAxis
+HIT 004483 Np getState (prismatic instantiation)
+HIT 004078 Joint getState
+HIT 004539 Np getActors (prismatic instantiation)
+HIT 004479 Np is (prismatic instantiation)
+HIT 004070 Joint getType
+HIT 004479 Np is (prismatic instantiation)
+HIT 004070 Joint getType
+HIT 004443 Np getType (prismatic instantiation)
+HIT 004070 Joint getType
+HIT 004751 NpPrismaticJoint saveToDesc
+HIT 004376 PrismaticJoint saveToDesc
+HIT 004066 Joint saveToDescBase
+
+Not hit: 004107 (inlined into 004141 or not separately observed, as in the pilot trace),
+004382 (~PrismaticJoint: release is unwired, NpScene::releaseJoint is empty) and 004386
+(row_slot6: no simulation step). 004479/004070 are hit twice per case: once for
+isRevoluteJoint and once for isPrismaticJoint (both NxJoint.h inlines call is()).
+
+The generated adjustor thunk for phys_fn_004755 (??_ENpPrismaticJoint@@WM@AEPAXI@Z,
+NxPhysics+0x31d4e in the same build), disassembled by the same cdb session:
+6c0d1d4e 83e90c          sub     ecx,0Ch
+6c0d1d51 e90a000000      jmp     NxPhysics!NxBuildSmoothNormals+0x6010 (6c0d1d60)
+The jump target NxPhysics+0x31d60 is ??_ENpPrismaticJoint@@UAEPAXI@Z (the scalar
+deleting destructor, phys_fn_004757), matching the oracle's 0x100b3850
+`sub ecx,0xc; jmp 0x100b3860`.

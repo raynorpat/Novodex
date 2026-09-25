@@ -18,11 +18,11 @@ Evidenced span: ['0x000ad4e0', '0x000ad780']. Rows: 6 (0 ambiguous). Generated b
 - gap:SphereShape.cpp..ConvexHull.cpp: phys_fn_001391
 - gap:core\PrismaticJoint.cpp..core\NpD6Joint.cpp: phys_fn_004391
 
-## phys_fn_004376 (0x000ad4e0, 54 B, discovered)
+## phys_fn_004376 (0x000ad4e0, 54 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/PrismaticJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/PrismaticJoint.cpp
 - prototype: undefined FUN_100ad4e0(void)
 - calling convention: unknown, stack purge: 2147483647
 - callers: phys_fn_004380 (0x000ad6e0)
@@ -58,11 +58,11 @@ void FUN_100ad4e0(int param_1)
 
 ```
 
-## phys_fn_004378 (0x000ad520, 443 B, discovered)
+## phys_fn_004378 (0x000ad520, 443 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/PrismaticJoint.cpp
+- implementation: Physics/src/core/PrismaticJoint.cpp
 - prototype: undefined __fastcall FUN_100ad520(int param_1)
 - calling convention: __fastcall, stack purge: 4
 - callers: phys_fn_004380 (0x000ad6e0), phys_fn_004384 (0x000ad780)
@@ -157,11 +157,11 @@ void __fastcall FUN_100ad520(int param_1)
 
 ```
 
-## phys_fn_004380 (0x000ad6e0, 81 B, discovered)
+## phys_fn_004380 (0x000ad6e0, 81 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/PrismaticJoint.cpp
+- implementation: Physics/src/core/PrismaticJoint.cpp
 - prototype: void * __thiscall FUN_100ad6e0(int param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_000665 (0x000142c0)
@@ -196,11 +196,11 @@ void * __thiscall FUN_100ad6e0(void *this,int param_1)
 
 ```
 
-## phys_fn_004382 (0x000ad740, 56 B, discovered)
+## phys_fn_004382 (0x000ad740, 56 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/PrismaticJoint.cpp
+- implementation: Physics/src/core/PrismaticJoint.cpp
 - prototype: void * __thiscall FUN_100ad740(byte param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004380 (0x000ad6e0)
@@ -229,11 +229,11 @@ void * __thiscall FUN_100ad740(void *this,byte param_1)
 
 ```
 
-## phys_fn_004384 (0x000ad780, 202 B, discovered)
+## phys_fn_004384 (0x000ad780, 202 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/PrismaticJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/PrismaticJoint.cpp
 - prototype: undefined __thiscall FUN_100ad780(int * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004380 (0x000ad6e0)
@@ -315,11 +315,11 @@ LAB_100ad835:
 
 ```
 
-## phys_fn_004386 (0x000ad850, 6772 B, discovered)
+## phys_fn_004386 (0x000ad850, 6772 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/PrismaticJoint.cpp
+- implementation: Physics/src/core/PrismaticJoint.cpp
 - prototype: undefined FUN_100ad850(void)
 - calling convention: unknown, stack purge: 2147483647
 - callers: phys_fn_004380 (0x000ad6e0)

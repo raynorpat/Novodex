@@ -21,11 +21,11 @@ Evidenced span: ['0x000b3430', '0x000b37b0']. Rows: 14 (0 ambiguous). Generated 
 - gap:core\PrismaticJoint.cpp..core\NpD6Joint.cpp: phys_fn_004417, phys_fn_004419, phys_fn_004421, phys_fn_004423, phys_fn_004425, phys_fn_004427, phys_fn_004429, phys_fn_004431, phys_fn_004433
 - unassigned: phys_fn_005667
 
-## phys_fn_004731 (0x000b3430, 84 B, discovered)
+## phys_fn_004731 (0x000b3430, 84 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpPrismaticJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpPrismaticJoint.cpp
 - prototype: undefined __thiscall FUN_100b3430(float * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004753 (0x000b3810)
@@ -65,11 +65,11 @@ void __thiscall FUN_100b3430(void *this,float *param_1)
 
 ```
 
-## phys_fn_004733 (0x000b3490, 84 B, discovered)
+## phys_fn_004733 (0x000b3490, 84 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpPrismaticJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpPrismaticJoint.cpp
 - prototype: undefined __thiscall FUN_100b3490(float * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004753 (0x000b3810)
@@ -109,11 +109,11 @@ void __thiscall FUN_100b3490(void *this,float *param_1)
 
 ```
 
-## phys_fn_004735 (0x000b34f0, 89 B, discovered)
+## phys_fn_004735 (0x000b34f0, 89 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpPrismaticJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpPrismaticJoint.cpp
 - prototype: undefined __thiscall FUN_100b34f0(float param_1, float param_2)
 - calling convention: __thiscall, stack purge: 8
 - callers: phys_fn_004753 (0x000b3810)
@@ -153,11 +153,11 @@ void __thiscall FUN_100b34f0(void *this,float param_1,float param_2)
 
 ```
 
-## phys_fn_004737 (0x000b3550, 89 B, discovered)
+## phys_fn_004737 (0x000b3550, 89 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpPrismaticJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpPrismaticJoint.cpp
 - prototype: undefined __thiscall FUN_100b3550(float * param_1, char param_2)
 - calling convention: __thiscall, stack purge: 8
 - callers: phys_fn_004753 (0x000b3810)
@@ -197,11 +197,11 @@ void __thiscall FUN_100b3550(void *this,float *param_1,char param_2)
 
 ```
 
-## phys_fn_004739 (0x000b35b0, 97 B, discovered)
+## phys_fn_004739 (0x000b35b0, 97 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpPrismaticJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpPrismaticJoint.cpp
 - prototype: uint __fastcall FUN_100b35b0(int param_1)
 - calling convention: __fastcall, stack purge: 8
 - callers: phys_fn_004753 (0x000b3810)
@@ -248,7 +248,7 @@ uint __fastcall FUN_100b35b0(int param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpPrismaticJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpPrismaticJoint.cpp
 - prototype: undefined __fastcall FUN_100b3620(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_004753 (0x000b3810)
@@ -320,11 +320,11 @@ int __fastcall FUN_100b3670(int param_1)
 
 ```
 
-## phys_fn_004745 (0x000b36a0, 88 B, discovered)
+## phys_fn_004745 (0x000b36a0, 88 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpPrismaticJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpPrismaticJoint.cpp
 - prototype: undefined __thiscall FUN_100b36a0(int param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004753 (0x000b3810)
@@ -368,7 +368,7 @@ void __thiscall FUN_100b36a0(void *this,int param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpPrismaticJoint.cpp
-- implementation: Physics/src/ObjectModel.cpp
+- implementation: Physics/src/core/NpPrismaticJoint.cpp
 - prototype: undefined __fastcall FUN_100b3700(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_004753 (0x000b3810)
@@ -412,7 +412,7 @@ void __fastcall FUN_100b3700(int param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpPrismaticJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpPrismaticJoint.cpp
 - prototype: undefined __thiscall FUN_100b3750(undefined4 param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004753 (0x000b3810)
@@ -456,7 +456,7 @@ void __thiscall FUN_100b3750(void *this,undefined4 param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpPrismaticJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpPrismaticJoint.cpp
 - prototype: undefined __thiscall FUN_100b37b0(undefined4 param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004753 (0x000b3810)
@@ -496,11 +496,11 @@ void __thiscall FUN_100b37b0(void *this,undefined4 param_1)
 
 ```
 
-## phys_fn_004753 (0x000b3810, 57 B, discovered)
+## phys_fn_004753 (0x000b3810, 57 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/NpPrismaticJoint.cpp
+- implementation: Physics/src/core/NpPrismaticJoint.cpp
 - prototype: void * __thiscall FUN_100b3810(undefined4 param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004380 (0x000ad6e0)
@@ -529,11 +529,11 @@ void * __thiscall FUN_100b3810(void *this,undefined4 param_1)
 
 ```
 
-## phys_fn_004755 (0x000b3850, 8 B, discovered)
+## phys_fn_004755 (0x000b3850, 8 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/NpPrismaticJoint.cpp
+- implementation: Physics/src/core/NpPrismaticJoint.cpp
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: phys_fn_004753 (0x000b3810)
@@ -548,11 +548,11 @@ Decompile (capstone disassembly):
 0x000b3853  jmp 0x100b3860
 ```
 
-## phys_fn_004757 (0x000b3860, 55 B, discovered)
+## phys_fn_004757 (0x000b3860, 55 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/NpPrismaticJoint.cpp
+- implementation: Physics/src/core/NpPrismaticJoint.cpp
 - prototype: void * __thiscall FUN_100b3860(byte param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004753 (0x000b3810), phys_fn_004755 (0x000b3850)

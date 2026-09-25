@@ -79672,13 +79672,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/PrismaticJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2116",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14936",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from units/core__PrismaticJoint.cpp.md (ghidra supplement) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Prismatic)",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both prismatic cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 0 wired to core/PrismaticJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 19/19 coverage); trace excerpt committed as evidence/joint-families-trace-prismatic.txt (joint-families Task 3a)",
+      "notes": "",
+      "implementation": "Physics/src/core/PrismaticJoint.cpp"
     },
     {
       "id": "phys_fn_004377",
@@ -79708,13 +79709,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/PrismaticJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1642",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14939",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from units/core__PrismaticJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Prismatic)",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both prismatic cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 0 wired to core/PrismaticJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 19/19 coverage); trace excerpt committed as evidence/joint-families-trace-prismatic.txt (joint-families Task 3a)",
+      "notes": "",
+      "implementation": "Physics/src/core/PrismaticJoint.cpp"
     },
     {
       "id": "phys_fn_004379",
@@ -79744,13 +79746,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/PrismaticJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1643",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14943",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from units/core__PrismaticJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Prismatic)",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both prismatic cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 0 wired to core/PrismaticJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 19/19 coverage); trace excerpt committed as evidence/joint-families-trace-prismatic.txt (joint-families Task 3a)",
+      "notes": "",
+      "implementation": "Physics/src/core/PrismaticJoint.cpp"
     },
     {
       "id": "phys_fn_004381",
@@ -79780,13 +79783,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/PrismaticJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1644",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14946",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__PrismaticJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Prismatic)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/PrismaticJoint.cpp"
     },
     {
       "id": "phys_fn_004383",
@@ -79816,13 +79820,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/PrismaticJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1645",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14949",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__PrismaticJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Prismatic)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/PrismaticJoint.cpp"
     },
     {
       "id": "phys_fn_004385",
@@ -79852,13 +79857,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/PrismaticJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2121",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14964",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__PrismaticJoint.cpp.md (ghidra supplement) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Prismatic)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/PrismaticJoint.cpp"
     },
     {
       "id": "phys_fn_004387",
@@ -86137,13 +86143,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpPrismaticJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1790",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15500",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpPrismaticJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Prismatic)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpPrismaticJoint.cpp"
     },
     {
       "id": "phys_fn_004732",
@@ -86173,13 +86180,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpPrismaticJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1791",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15503",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpPrismaticJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Prismatic)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpPrismaticJoint.cpp"
     },
     {
       "id": "phys_fn_004734",
@@ -86209,13 +86217,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpPrismaticJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1792",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15506",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpPrismaticJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Prismatic)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpPrismaticJoint.cpp"
     },
     {
       "id": "phys_fn_004736",
@@ -86245,13 +86254,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpPrismaticJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1793",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15509",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpPrismaticJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Prismatic)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpPrismaticJoint.cpp"
     },
     {
       "id": "phys_fn_004738",
@@ -86281,13 +86291,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpPrismaticJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1794",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15512",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpPrismaticJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Prismatic)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpPrismaticJoint.cpp"
     },
     {
       "id": "phys_fn_004740",
@@ -86321,9 +86332,10 @@
       "source": "Physics/src/core/NpPrismaticJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1795",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15515",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpPrismaticJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Prismatic)",
       "dynamic_proof": "confirmed via the tailjmp differential (3z191): failures=0 for all twelve rows on both arms, comparing the report tuple, the global word written at 0x10127180 and the whole object buffer, with the lock API, report slot and that global bound",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpPrismaticJoint.cpp"
     },
     {
       "id": "phys_fn_004742",
@@ -86390,13 +86402,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpPrismaticJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1797",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15519",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpPrismaticJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Prismatic)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpPrismaticJoint.cpp"
     },
     {
       "id": "phys_fn_004746",
@@ -86430,10 +86443,10 @@
       "source": "Physics/src/core/NpPrismaticJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1798",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15522",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpPrismaticJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Prismatic)",
       "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
-      "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp",
+      "notes": "previous implementation: Physics/src/ObjectModel.cpp",
+      "implementation": "Physics/src/core/NpPrismaticJoint.cpp",
       "implementation_symbol": "phys_fn_004747 (harness dispatch table)"
     },
     {
@@ -86468,9 +86481,10 @@
       "source": "Physics/src/core/NpPrismaticJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1799",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15525",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpPrismaticJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Prismatic)",
       "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpPrismaticJoint.cpp"
     },
     {
       "id": "phys_fn_004750",
@@ -86504,9 +86518,10 @@
       "source": "Physics/src/core/NpPrismaticJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1800",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15528",
-      "static_proof": null,
-      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
-      "notes": ""
+      "static_proof": "transcribed from units/core__NpPrismaticJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Prismatic)",
+      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound; executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both prismatic cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 0 wired to core/PrismaticJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 19/19 coverage); trace excerpt committed as evidence/joint-families-trace-prismatic.txt (joint-families Task 3a)",
+      "notes": "",
+      "implementation": "Physics/src/core/NpPrismaticJoint.cpp"
     },
     {
       "id": "phys_fn_004752",
@@ -86536,13 +86551,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/NpPrismaticJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1801",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15531",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from units/core__NpPrismaticJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Prismatic)",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both prismatic cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 0 wired to core/PrismaticJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 19/19 coverage); trace excerpt committed as evidence/joint-families-trace-prismatic.txt (joint-families Task 3a)",
+      "notes": "",
+      "implementation": "Physics/src/core/NpPrismaticJoint.cpp"
     },
     {
       "id": "phys_fn_004754",
@@ -86572,13 +86588,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/NpPrismaticJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2305",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15532",
-      "static_proof": null,
+      "static_proof": "compiler-generated `vector deleting destructor' adjustor{12} thunk: Physics/src/core/NpPrismaticJoint.cpp carries only its stable-ID line above ~NpPrismaticJoint; the NpJointShared<NxPrismaticJoint, PrismaticJoint> layout per units/joint-families-contract.md makes the compiler emit ??_ENpPrismaticJoint@@WM@AEPAXI@Z (candidate 0x10031d4e in build/Release/NxPhysics.map), which disassembles to `sub ecx,0xc; jmp <NpPrismaticJoint deleting destructor>` (evidence/joint-families-trace-prismatic.txt), the same two instructions as the oracle's 0x100b3850 `sub ecx,0xc; jmp 0x100b3860` (phys_fn_004757)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpPrismaticJoint.cpp"
     },
     {
       "id": "phys_fn_004756",
@@ -86608,13 +86625,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/NpPrismaticJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1802",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15533",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpPrismaticJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Prismatic)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpPrismaticJoint.cpp"
     },
     {
       "id": "phys_fn_004758",
