@@ -620,7 +620,8 @@ Getters: 004437/004125, 004441/004129, 004483/004078, 004539, 004443/004070,
   `call __CIsqrt`, which runs fsqrt under `(cw & 0x300) | 0x7f` (round to nearest) whenever the
   word is not 0x027f. The solver slots run inside the step's 0x0f7f (PC64, chop), so the CRT
   rounds a root to nearest where the oracle chops it -- the results do *not* agree there
-  (e.g. x = 1.5625 - 2^-63). Use `core/JointX87.h` (the sqrt-fix task): pass the listing's
+  (e.g. x = 3: the bits of sqrt(3) after the 64th significant bit are 0.573 of an ulp, so
+  nearest gives 0xddb3d742c265539e x 2^-63 and chop 0xddb3d742c265539d x 2^-63). Use `core/JointX87.h` (the sqrt-fix task): pass the listing's
   operands, not a pre-formed sum, so the helper forms the sum at the live control word --
   `jointFsqrtDot3/Dot4` for sums of squares/products, `jointFsqrtSum2/3/4` for sums (a
   subtraction as a negated addend), `jointFsqrtDiag(a, b, c)` for the quaternion-from-matrix
@@ -801,8 +802,8 @@ table 0x1011b21c, write link +0x10, read link +0x14, internal +0x18). No own fie
 
 The table runs to 0x1011a080, where the unit's `__FILE__` string starts; the relocated words
 at 0x11a074, 0x11a078 and 0x11a07c all name 001391, and nothing in the listing addresses
-0x1011a07c on its own. So the cylindrical class has one more `return this` virtual than the
-prismatic one (13 slots). The meaning of the third is unknown; it is declared so the
+0x1011a07c on its own. So the cylindrical class (14 slots) has one more `return this` virtual than the
+prismatic one, whose internal table has 13 slots. The meaning of the third is unknown; it is declared so the
 candidate's table has the oracle's slot count.
 
 **0x1011b198: NpCylindricalJoint primary (`phys_data_002724`, 33 slots)**: slots 0-32 as the
