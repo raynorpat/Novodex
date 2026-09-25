@@ -78566,13 +78566,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/CylindricalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2086",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14615",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from units/core__CylindricalJoint.cpp.md (ghidra supplement) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Cylindrical)",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both cylindrical cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 2 wired to core/CylindricalJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 27/27 coverage); trace excerpt committed as evidence/joint-families-trace-cylindrical.txt (joint-families Task 3b)",
+      "notes": "",
+      "implementation": "Physics/src/core/CylindricalJoint.cpp"
     },
     {
       "id": "phys_fn_004317",
@@ -78602,13 +78603,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/CylindricalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1621",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14618",
-      "static_proof": null,
+      "static_proof": "written once as Joint::row004318 in Physics/src/core/CylindricalJoint.cpp and called by both CylindricalJoint::row_slot4 and PrismaticJoint::row_slot4 (the oracle names this one body at slot 4 of the cylindrical table 0x1011a048 and the prismatic table 0x1011a4d0); transcribed from units/core__CylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Cylindrical)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/CylindricalJoint.cpp"
     },
     {
       "id": "phys_fn_004319",
@@ -78638,13 +78640,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/CylindricalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1622",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14630",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from units/core__CylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Cylindrical)",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both cylindrical cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 2 wired to core/CylindricalJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 27/27 coverage); trace excerpt committed as evidence/joint-families-trace-cylindrical.txt (joint-families Task 3b)",
+      "notes": "",
+      "implementation": "Physics/src/core/CylindricalJoint.cpp"
     },
     {
       "id": "phys_fn_004321",
@@ -78674,13 +78677,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/CylindricalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1623",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14632",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__CylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Cylindrical)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/CylindricalJoint.cpp"
     },
     {
       "id": "phys_fn_004323",
@@ -78710,13 +78714,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/CylindricalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1624",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14635",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__CylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Cylindrical)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/CylindricalJoint.cpp"
     },
     {
       "id": "phys_fn_004325",
@@ -78746,13 +78751,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/CylindricalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2091",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14650",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__CylindricalJoint.cpp.md (ghidra supplement) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Cylindrical)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/CylindricalJoint.cpp"
     },
     {
       "id": "phys_fn_004327",
@@ -84747,13 +84753,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpCylindricalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1757",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15412",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpCylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Cylindrical)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpCylindricalJoint.cpp"
     },
     {
       "id": "phys_fn_004656",
@@ -84783,13 +84790,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpCylindricalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1758",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15415",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpCylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Cylindrical)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpCylindricalJoint.cpp"
     },
     {
       "id": "phys_fn_004658",
@@ -84819,13 +84827,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpCylindricalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1759",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15418",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpCylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Cylindrical)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpCylindricalJoint.cpp"
     },
     {
       "id": "phys_fn_004660",
@@ -84855,13 +84864,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpCylindricalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1760",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15421",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpCylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Cylindrical)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpCylindricalJoint.cpp"
     },
     {
       "id": "phys_fn_004662",
@@ -84891,13 +84901,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpCylindricalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1761",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15424",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpCylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Cylindrical)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpCylindricalJoint.cpp"
     },
     {
       "id": "phys_fn_004664",
@@ -84931,9 +84942,10 @@
       "source": "Physics/src/core/NpCylindricalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1762",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15427",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpCylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Cylindrical)",
       "dynamic_proof": "confirmed via the tailjmp differential (3z191): failures=0 for all twelve rows on both arms, comparing the report tuple, the global word written at 0x10127180 and the whole object buffer, with the lock API, report slot and that global bound",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpCylindricalJoint.cpp"
     },
     {
       "id": "phys_fn_004666",
@@ -84963,13 +84975,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpCylindricalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1763",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15430",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpCylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Cylindrical)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpCylindricalJoint.cpp"
     },
     {
       "id": "phys_fn_004668",
@@ -85003,10 +85016,10 @@
       "source": "Physics/src/core/NpCylindricalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1764",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15433",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpCylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Cylindrical)",
       "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
-      "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp",
+      "notes": "previous implementation: Physics/src/ObjectModel.cpp",
+      "implementation": "Physics/src/core/NpCylindricalJoint.cpp",
       "implementation_symbol": "phys_fn_004669 (harness dispatch table)"
     },
     {
@@ -85041,9 +85054,10 @@
       "source": "Physics/src/core/NpCylindricalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1765",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15436",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpCylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Cylindrical)",
       "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpCylindricalJoint.cpp"
     },
     {
       "id": "phys_fn_004672",
@@ -85077,9 +85091,10 @@
       "source": "Physics/src/core/NpCylindricalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1766",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15439",
-      "static_proof": null,
-      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
-      "notes": ""
+      "static_proof": "transcribed from units/core__NpCylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Cylindrical)",
+      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound; executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both cylindrical cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 2 wired to core/CylindricalJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 27/27 coverage); trace excerpt committed as evidence/joint-families-trace-cylindrical.txt (joint-families Task 3b)",
+      "notes": "",
+      "implementation": "Physics/src/core/NpCylindricalJoint.cpp"
     },
     {
       "id": "phys_fn_004674",
@@ -85109,13 +85124,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/NpCylindricalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1767",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15442",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from units/core__NpCylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Cylindrical)",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both cylindrical cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 2 wired to core/CylindricalJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 27/27 coverage); trace excerpt committed as evidence/joint-families-trace-cylindrical.txt (joint-families Task 3b)",
+      "notes": "",
+      "implementation": "Physics/src/core/NpCylindricalJoint.cpp"
     },
     {
       "id": "phys_fn_004676",
@@ -85145,13 +85161,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/NpCylindricalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2266",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15443",
-      "static_proof": null,
+      "static_proof": "compiler-generated `vector deleting destructor' adjustor{12} thunk: Physics/src/core/NpCylindricalJoint.cpp carries only its stable-ID line above ~NpCylindricalJoint; the NpJointShared<NxCylindricalJoint, CylindricalJoint> layout per units/joint-families-contract.md makes the compiler emit ??_ENpCylindricalJoint@@WM@AEPAXI@Z (candidate 0x10032305 in build/Release/NxPhysics.map), which disassembles to `sub ecx,0xc; jmp <NpCylindricalJoint deleting destructor>` (evidence/joint-families-trace-cylindrical.txt), the same two instructions as the oracle's 0x100b2cc0 `sub ecx,0xc; jmp 0x100b2cd0` (phys_fn_004679)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpCylindricalJoint.cpp"
     },
     {
       "id": "phys_fn_004678",
@@ -85181,13 +85198,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/NpCylindricalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1768",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15444",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpCylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Cylindrical)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpCylindricalJoint.cpp"
     },
     {
       "id": "phys_fn_004680",

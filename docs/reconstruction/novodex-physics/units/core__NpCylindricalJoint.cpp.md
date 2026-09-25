@@ -22,11 +22,11 @@ Evidenced span: ['0x000b28d0', '0x000b2c20']. Rows: 13 (0 ambiguous). Generated 
 - gap:core\PrismaticJoint.cpp..core\NpD6Joint.cpp: phys_fn_004417, phys_fn_004419, phys_fn_004421, phys_fn_004423, phys_fn_004425, phys_fn_004427, phys_fn_004429, phys_fn_004431, phys_fn_004433
 - unassigned: phys_fn_005667
 
-## phys_fn_004655 (0x000b28d0, 84 B, discovered)
+## phys_fn_004655 (0x000b28d0, 84 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpCylindricalJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpCylindricalJoint.cpp
 - prototype: undefined __thiscall FUN_100b28d0(float * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004675 (0x000b2c80)
@@ -66,11 +66,11 @@ void __thiscall FUN_100b28d0(void *this,float *param_1)
 
 ```
 
-## phys_fn_004657 (0x000b2930, 84 B, discovered)
+## phys_fn_004657 (0x000b2930, 84 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpCylindricalJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpCylindricalJoint.cpp
 - prototype: undefined __thiscall FUN_100b2930(float * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004675 (0x000b2c80)
@@ -110,11 +110,11 @@ void __thiscall FUN_100b2930(void *this,float *param_1)
 
 ```
 
-## phys_fn_004659 (0x000b2990, 89 B, discovered)
+## phys_fn_004659 (0x000b2990, 89 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpCylindricalJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpCylindricalJoint.cpp
 - prototype: undefined __thiscall FUN_100b2990(float param_1, float param_2)
 - calling convention: __thiscall, stack purge: 8
 - callers: phys_fn_004675 (0x000b2c80)
@@ -154,11 +154,11 @@ void __thiscall FUN_100b2990(void *this,float param_1,float param_2)
 
 ```
 
-## phys_fn_004661 (0x000b29f0, 89 B, discovered)
+## phys_fn_004661 (0x000b29f0, 89 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpCylindricalJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpCylindricalJoint.cpp
 - prototype: undefined __thiscall FUN_100b29f0(float * param_1, char param_2)
 - calling convention: __thiscall, stack purge: 8
 - callers: phys_fn_004675 (0x000b2c80)
@@ -198,11 +198,11 @@ void __thiscall FUN_100b29f0(void *this,float *param_1,char param_2)
 
 ```
 
-## phys_fn_004663 (0x000b2a50, 97 B, discovered)
+## phys_fn_004663 (0x000b2a50, 97 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpCylindricalJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpCylindricalJoint.cpp
 - prototype: uint __fastcall FUN_100b2a50(int param_1)
 - calling convention: __fastcall, stack purge: 8
 - callers: phys_fn_004675 (0x000b2c80)
@@ -249,7 +249,7 @@ uint __fastcall FUN_100b2a50(int param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpCylindricalJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpCylindricalJoint.cpp
 - prototype: undefined __fastcall FUN_100b2ac0(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_004675 (0x000b2c80)
@@ -289,11 +289,11 @@ void __fastcall FUN_100b2ac0(int param_1)
 
 ```
 
-## phys_fn_004667 (0x000b2b10, 88 B, discovered)
+## phys_fn_004667 (0x000b2b10, 88 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpCylindricalJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpCylindricalJoint.cpp
 - prototype: undefined __thiscall FUN_100b2b10(int param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004675 (0x000b2c80)
@@ -337,7 +337,7 @@ void __thiscall FUN_100b2b10(void *this,int param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpCylindricalJoint.cpp
-- implementation: Physics/src/ObjectModel.cpp
+- implementation: Physics/src/core/NpCylindricalJoint.cpp
 - prototype: undefined __fastcall FUN_100b2b70(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_004675 (0x000b2c80)
@@ -381,7 +381,7 @@ void __fastcall FUN_100b2b70(int param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpCylindricalJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpCylindricalJoint.cpp
 - prototype: undefined __thiscall FUN_100b2bc0(undefined4 param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004675 (0x000b2c80)
@@ -425,7 +425,7 @@ void __thiscall FUN_100b2bc0(void *this,undefined4 param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpCylindricalJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpCylindricalJoint.cpp
 - prototype: undefined __thiscall FUN_100b2c20(undefined4 param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004675 (0x000b2c80)
@@ -465,11 +465,11 @@ void __thiscall FUN_100b2c20(void *this,undefined4 param_1)
 
 ```
 
-## phys_fn_004675 (0x000b2c80, 57 B, discovered)
+## phys_fn_004675 (0x000b2c80, 57 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/NpCylindricalJoint.cpp
+- implementation: Physics/src/core/NpCylindricalJoint.cpp
 - prototype: void * __thiscall FUN_100b2c80(undefined4 param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004320 (0x000a76a0)
@@ -498,11 +498,11 @@ void * __thiscall FUN_100b2c80(void *this,undefined4 param_1)
 
 ```
 
-## phys_fn_004677 (0x000b2cc0, 8 B, discovered)
+## phys_fn_004677 (0x000b2cc0, 8 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/NpCylindricalJoint.cpp
+- implementation: Physics/src/core/NpCylindricalJoint.cpp
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: phys_fn_004675 (0x000b2c80)
@@ -517,11 +517,11 @@ Decompile (capstone disassembly):
 0x000b2cc3  jmp 0x100b2cd0
 ```
 
-## phys_fn_004679 (0x000b2cd0, 55 B, discovered)
+## phys_fn_004679 (0x000b2cd0, 55 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/NpCylindricalJoint.cpp
+- implementation: Physics/src/core/NpCylindricalJoint.cpp
 - prototype: void * __thiscall FUN_100b2cd0(byte param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004675 (0x000b2c80), phys_fn_004677 (0x000b2cc0)

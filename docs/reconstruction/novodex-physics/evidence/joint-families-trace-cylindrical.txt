@@ -1,0 +1,123 @@
+Cylindrical family: cdb breakpoint trace of the joint transcript (joint-families Task 3b)
+========================================================================================
+
+A trimmed excerpt of the raw cdb log, in the method of evidence/unit-pilot-revolute-trace.txt
+and evidence/joint-families-trace-prismatic.txt. Register dumps, ModLoad lines, banners and the
+program's own stdout are removed; the HIT lines are kept in order and otherwise unedited (one
+HIT that the debugger printed on the same line as program output is cut from that line). It
+is the evidence behind the dynamic_proof of phys_fn_004320, 004675, 004673 and 004316 in
+inventory.json.
+
+Debugger:  Microsoft Windows Debugger 10.0.10586.567 (X86)
+Command:   cdb -cf <script> build\Release\NxPhysicsJointTests.exe build\pairs\candidate
+Recorded:  2026-09-25, on the Task 3b working tree after the wiring (Scene::createJoint
+           case 2 -> core/CylindricalJoint.cpp) and the nxCylindricalCase test commits.
+Candidate: build\pairs\candidate\NxPhysics.dll
+           sha256=5252792acbd92df2b292171fcee23420d90c0404f116f8653b6d30ba6f7dcb28
+           (identical to build\Release\NxPhysics.dll at the time of the trace).
+Offsets:   module-relative, from build\Release\NxPhysics.map of that build. The folded Np
+           bodies are broken on their NpJointShared<NxCylindricalJoint, CylindricalJoint>
+           instantiation; the Joint rows are shared with the revolute and prismatic cases.
+
+Breakpoints (each echoes and continues):
+bp NxPhysics+0x27480 ".echo HIT 000665 Scene::createJoint; gc"
+bp NxPhysics+0x2c3d0 ".echo HIT 004320 CylindricalJoint ctor; gc"
+bp NxPhysics+0x2e2e0 ".echo HIT 004141 Joint ctor; gc"
+bp NxPhysics+0x30870 ".echo HIT 004107 row004107; gc"
+bp NxPhysics+0x2fc00 ".echo HIT 004121 loadFromDescBase; gc"
+bp NxPhysics+0x300c0 ".echo HIT 004097 refreshBodyFrame; gc"
+bp NxPhysics+0x32220 ".echo HIT 004675 NpCylindricalJoint ctor; gc"
+bp NxPhysics+0x32b40 ".echo HIT (helper) nxCylindricalJointAttachScene; gc"
+bp NxPhysics+0x34410 ".echo HIT 004437 Np getGlobalAnchor (cylindrical instantiation); gc"
+bp NxPhysics+0x2eb60 ".echo HIT 004125 Joint getGlobalAnchor; gc"
+bp NxPhysics+0x34650 ".echo HIT 004441 Np getGlobalAxis (cylindrical instantiation); gc"
+bp NxPhysics+0x2f1f0 ".echo HIT 004129 Joint getGlobalAxis; gc"
+bp NxPhysics+0x34c50 ".echo HIT 004483 Np getState (cylindrical instantiation); gc"
+bp NxPhysics+0x2f5f0 ".echo HIT 004078 Joint getState; gc"
+bp NxPhysics+0x34140 ".echo HIT 004539 Np getActors (cylindrical instantiation); gc"
+bp NxPhysics+0x34d40 ".echo HIT 004443 Np getType (cylindrical instantiation); gc"
+bp NxPhysics+0x2f600 ".echo HIT 004070 Joint getType; gc"
+bp NxPhysics+0x34f50 ".echo HIT 004479 Np is (cylindrical instantiation); gc"
+bp NxPhysics+0x32cf0 ".echo HIT 004673 NpCylindricalJoint saveToDesc; gc"
+bp NxPhysics+0x2e2a0 ".echo HIT 004316 CylindricalJoint saveToDesc; gc"
+bp NxPhysics+0x31210 ".echo HIT 004066 Joint saveToDescBase; gc"
+bp NxPhysics+0x2c4d0 ".echo HIT 004322 ~CylindricalJoint; gc"
+bp NxPhysics+0x2c8c0 ".echo HIT 004324 CylindricalJoint loadFromDesc; gc"
+bp NxPhysics+0x2cdf0 ".echo HIT 004326 row_slot6; gc"
+bp NxPhysics+0x2c990 ".echo HIT 004318 row004318; gc"
+
+Hits, in order. The joint test runs four revolute and two prismatic cases first (their
+Joint-row hits are summarised, not repeated), then the two cylindrical cases in full.
+
+-- revolute case 0: 8 hits (Joint rows only; no cylindrical breakpoint) --
+-- revolute case 1: 8 hits (Joint rows only; no cylindrical breakpoint) --
+-- revolute case 2: 8 hits (Joint rows only; no cylindrical breakpoint) --
+-- revolute case 3: 8 hits (Joint rows only; no cylindrical breakpoint) --
+-- prismatic case 0: 12 hits (Joint rows only; no cylindrical breakpoint) --
+-- prismatic case 1: 12 hits (Joint rows only; no cylindrical breakpoint) --
+
+-- cylindrical case index=0 --
+HIT 000665 Scene::createJoint
+HIT 004320 CylindricalJoint ctor
+HIT 004141 Joint ctor
+HIT 004121 loadFromDescBase
+HIT 004097 refreshBodyFrame
+HIT 004097 refreshBodyFrame
+HIT 004675 NpCylindricalJoint ctor
+HIT (helper) nxCylindricalJointAttachScene
+HIT 004437 Np getGlobalAnchor (cylindrical instantiation)
+HIT 004125 Joint getGlobalAnchor
+HIT 004441 Np getGlobalAxis (cylindrical instantiation)
+HIT 004129 Joint getGlobalAxis
+HIT 004483 Np getState (cylindrical instantiation)
+HIT 004078 Joint getState
+HIT 004539 Np getActors (cylindrical instantiation)
+HIT 004479 Np is (cylindrical instantiation)
+HIT 004070 Joint getType
+HIT 004479 Np is (cylindrical instantiation)
+HIT 004070 Joint getType
+HIT 004443 Np getType (cylindrical instantiation)
+HIT 004070 Joint getType
+HIT 004673 NpCylindricalJoint saveToDesc
+HIT 004316 CylindricalJoint saveToDesc
+HIT 004066 Joint saveToDescBase
+
+-- cylindrical case index=3 --
+HIT 000665 Scene::createJoint
+HIT 004320 CylindricalJoint ctor
+HIT 004141 Joint ctor
+HIT 004121 loadFromDescBase
+HIT 004097 refreshBodyFrame
+HIT 004097 refreshBodyFrame
+HIT 004675 NpCylindricalJoint ctor
+HIT (helper) nxCylindricalJointAttachScene
+HIT 004437 Np getGlobalAnchor (cylindrical instantiation)
+HIT 004125 Joint getGlobalAnchor
+HIT 004441 Np getGlobalAxis (cylindrical instantiation)
+HIT 004129 Joint getGlobalAxis
+HIT 004483 Np getState (cylindrical instantiation)
+HIT 004078 Joint getState
+HIT 004539 Np getActors (cylindrical instantiation)
+HIT 004479 Np is (cylindrical instantiation)
+HIT 004070 Joint getType
+HIT 004479 Np is (cylindrical instantiation)
+HIT 004070 Joint getType
+HIT 004443 Np getType (cylindrical instantiation)
+HIT 004070 Joint getType
+HIT 004673 NpCylindricalJoint saveToDesc
+HIT 004316 CylindricalJoint saveToDesc
+HIT 004066 Joint saveToDescBase
+
+Not hit: 004107 (inlined into 004141 or not separately observed, as in the pilot trace),
+004322 (~CylindricalJoint: release is unwired, NpScene::releaseJoint is empty), 004324
+(loadFromDesc: not called), 004326 (row_slot6: no simulation step) and 004318 (row004318: no
+debug render). 004479/004070 are hit twice per case: once for isCylindricalJoint and once
+for isPrismaticJoint (both NxJoint.h inlines call is()).
+
+The generated adjustor thunk for phys_fn_004677 (??_ENpCylindricalJoint@@WM@AEPAXI@Z,
+NxPhysics+0x32305 in the same build), disassembled by the same cdb session:
+6c0d2305 83e90c          sub     ecx,0Ch
+6c0d2308 e903000000      jmp     NxPhysics!NxBuildSmoothNormals+0x6570 (6c0d2310)
+The jump target NxPhysics+0x32310 is ??_ENpCylindricalJoint@@UAEPAXI@Z (the scalar
+deleting destructor, phys_fn_004679), matching the oracle's 0x100b2cc0
+`sub ecx,0xc; jmp 0x100b2cd0`.
