@@ -6,336 +6,482 @@
 |
 \*----------------------------------------------------------------------------*/
 #include "core/NpRevoluteJoint.h"
+#include "core/Joint.h"
+#include "PhysicsInternal.h"
+#include "NpSceneGuard.h"
 
-// Scaffold only (Phase 6 Task 5). The 25 claimed rows below get their
-// stable-ID stubs; Task 9 replaces them. The 13 pure virtuals NpRevoluteJoint
-// inherits from NxJoint/NxRevoluteJoint but does not claim (their code is a
-// folded copy living in another Np*Joint.cpp unit -- see
-// revolute-contract.md "## Task split") still need a definition here so the
-// class's vtable can link; Task 9 replaces those bodies with the forwarding
-// call and the "Shared NpJoint body" comment form the contract specifies.
-// Nothing constructs NpRevoluteJoint until Task 10, so none of this is
-// reachable yet.
+// Task 9 (Phase 6). The 25 claimed rows below are lock-bracketed forwarders:
+// lock np+0x10 (write, mWord04) or np+0x14 (read, mWord08), report on a
+// failed write tryLock, call the internal RevoluteJoint/Joint method
+// through mInternal (+0x18), unlock. The 13 pure virtuals NpRevoluteJoint
+// inherits from NxJoint/NxRevoluteJoint but does not claim -- their code is
+// an identical-code-folded copy living in another Np*Joint.cpp unit -- are
+// implemented here as the same forward, with the "Shared NpJoint body"
+// comment form revolute-contract.md specifies instead of a stable ID.
+// Nothing constructs NpRevoluteJoint until Task 10 wires
+// Scene::createJoint, so none of this is reachable yet.
+
+// The oracle's __FILE__ for this unit (every write-lock report in it pushes
+// the string at 0xb2d33/0xb2d93/etc; the four rows with their own source
+// line push it again at their own address -- see the bundle entries).
+#define NX_NPREVOLUTEJOINT_CPP	"\\Epic\\Novodex\\SDKs\\Physics\\src\\core\\NpRevoluteJoint.cpp"
+
+// The write-lock failure message, shared by every macro-generated setter row
+// (0xb2d2a and the same string repeated at every other setGuard call site).
+static const char* const gNpRevoluteJointLockMsg =
+	"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!";
 
 // phys_fn_004725 (0x000b33a0, 57 B)
-// (unimplemented)
 NpRevoluteJoint::NpRevoluteJoint(RevoluteJoint* internal)
 	{
-	(void)internal;
-	NX_ASSERT(0);
+	// NxJoint()'s inline default constructor -- called automatically as
+	// part of the NxRevoluteJoint primary-base construction -- already
+	// zeroes userData/appData (0xb33ab/0xb33ae); the transient
+	// NxRevoluteJoint vtable (0x1011b238) and the two final vtables
+	// (0x1011b328 primary, 0x1011b3dc secondary) are installed
+	// automatically by ordinary C++ base/derived construction, in the
+	// oracle's exact order, because neither base overloads a virtual. Only
+	// the hook base's two words need an explicit zero here: EmbeddedHookBase
+	// has no constructor of its own, so this reproduces phys_fn_002404's
+	// zeroing (0xb33b7; not claimed -- gap Controller.cpp..Fluid.cpp, see
+	// revolute-contract.md's reuse table).
+	mWord04 = 0;
+	mWord08 = 0;
+	mInternal = internal;			// 0xb33c6
+	appData = internal;			// 0xb33c9 (second write; NxJoint() zeroed it first)
 	}
 
 // phys_fn_004729 (0x000b33f0, 55 B)
-// (unimplemented)
-// phys_fn_004727 (0x000b33e0, 8 B; no decompile, Capstone listing only) is
-// not defined here: it is the compiler-generated adjustor thunk for
-// EmbeddedHookBase's virtual destructor, emitted automatically because this
-// destructor is defined.
+// phys_fn_004727 (0x000b33e0, 8 B) is not defined here: it is the
+// compiler-generated adjustor thunk ("sub ecx,0xc; jmp <~NpRevoluteJoint>")
+// the second base (EmbeddedHookBase) needs for this shared virtual
+// destructor, emitted automatically now that ~NpRevoluteJoint() is defined.
+// It has no decompile anywhere -- Capstone listing only.
 NpRevoluteJoint::~NpRevoluteJoint()
 	{
-	NX_ASSERT(0);
+	// Nothing to do in the body: the base-destruction chain the compiler
+	// generates for this multiple-inheritance shape reproduces the rest of
+	// phys_fn_004729 automatically -- EmbeddedHookBase's own (empty)
+	// destructor resets the secondary vptr to its own table (0x101088b8,
+	// phys_fn_002406, not claimed), then NxJoint's abstract destructor
+	// resets the primary vptr to 0x1011a680 -- and the scalar-deleting-
+	// destructor wrapper the compiler generates around this body supplies
+	// the flags&1 free, through the `operator delete` NpRevoluteJoint.h
+	// declares (the SDK allocator, matching phys_fn_004729's tail exactly).
 	}
 
 // Shared NpJoint body; the oracle keeps one folded copy at 0x000b1600
-// (phys_fn_004539). Task 9 implements the forward.
-// (unimplemented)
+// (phys_fn_004539).
 void NpRevoluteJoint::getActors(NxActor** actor1, NxActor** actor2)
 	{
-	(void)actor1;
-	(void)actor2;
-	NX_ASSERT(0);
+	nxNpSceneGuardEnter(&mWord08);
+	JointBodyRecord* body0 = static_cast<JointBodyRecord*>(mInternal->mBody[0]);
+	*actor1 = body0 ? *reinterpret_cast<NxActor**>(body0->mOwner) : 0;
+	JointBodyRecord* body1 = static_cast<JointBodyRecord*>(mInternal->mBody[1]);
+	if(body1)
+		{
+		*actor2 = *reinterpret_cast<NxActor**>(body1->mOwner);
+		nxNpSceneGuardLeave(&mWord08);
+		return;
+		}
+	*actor2 = 0;
+	nxNpSceneGuardLeave(&mWord08);
 	}
 
 // phys_fn_004681 (0x000b2d10, 84 B)
-// (unimplemented)
 void NpRevoluteJoint::setGlobalAnchor(const NxVec3& anchor)
 	{
-	(void)anchor;
-	NX_ASSERT(0);
+	if(!nxNpSceneGuardWriteTry(&mWord04))
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			NX_NPREVOLUTEJOINT_CPP, 0xe, 0, gNpRevoluteJointLockMsg);
+		return;
+		}
+	mInternal->setGlobalAnchor(anchor);
+	nxNpSceneGuardLeave(&mWord04);
 	}
 
 // Shared NpJoint body; the oracle keeps one folded copy at 0x000b0670
-// (phys_fn_004437). Task 9 implements the forward.
-// (unimplemented)
+// (phys_fn_004437).
 void NpRevoluteJoint::getGlobalAnchor(NxVec3& out) const
 	{
-	(void)out;
-	NX_ASSERT(0);
+	void* readLock = const_cast<NxU32*>(&mWord08);
+	nxNpSceneGuardEnter(readLock);
+	mInternal->getGlobalAnchor(out);
+	nxNpSceneGuardLeave(readLock);
 	}
 
 // phys_fn_004683 (0x000b2d70, 84 B)
-// (unimplemented)
 void NpRevoluteJoint::setGlobalAxis(const NxVec3& axis)
 	{
-	(void)axis;
-	NX_ASSERT(0);
+	if(!nxNpSceneGuardWriteTry(&mWord04))
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			NX_NPREVOLUTEJOINT_CPP, 0xe, 0, gNpRevoluteJointLockMsg);
+		return;
+		}
+	mInternal->setGlobalAxis(axis);
+	nxNpSceneGuardLeave(&mWord04);
 	}
 
 // Shared NpJoint body; the oracle keeps one folded copy at 0x000b0700
-// (phys_fn_004441). Task 9 implements the forward.
-// (unimplemented)
+// (phys_fn_004441).
 void NpRevoluteJoint::getGlobalAxis(NxVec3& out) const
 	{
-	(void)out;
-	NX_ASSERT(0);
+	void* readLock = const_cast<NxU32*>(&mWord08);
+	nxNpSceneGuardEnter(readLock);
+	mInternal->getGlobalAxis(out);
+	nxNpSceneGuardLeave(readLock);
 	}
 
 // Shared NpJoint body; the oracle keeps one folded copy at 0x000b0ff0
-// (phys_fn_004497). Task 9 implements the forward.
-// (unimplemented)
+// (phys_fn_004497).
 NxVec3 NpRevoluteJoint::getGlobalAnchorVal() const
 	{
-	NX_ASSERT(0);
-	return NxVec3();
+	void* readLock = const_cast<NxU32*>(&mWord08);
+	nxNpSceneGuardEnter(readLock);
+	NxVec3 out = mInternal->getGlobalAnchorVal();
+	nxNpSceneGuardLeave(readLock);
+	return out;
 	}
 
 // Shared NpJoint body; the oracle keeps one folded copy at 0x000b1020
-// (phys_fn_004499). Task 9 implements the forward.
-// (unimplemented)
+// (phys_fn_004499).
 NxVec3 NpRevoluteJoint::getGlobalAxisVal() const
 	{
-	NX_ASSERT(0);
-	return NxVec3();
+	void* readLock = const_cast<NxU32*>(&mWord08);
+	nxNpSceneGuardEnter(readLock);
+	NxVec3 out = mInternal->getGlobalAxisVal();
+	nxNpSceneGuardLeave(readLock);
+	return out;
 	}
 
 // Shared NpJoint body; the oracle keeps one folded copy at 0x000b0dc0
-// (phys_fn_004483). Task 9 implements the forward.
-// (unimplemented)
+// (phys_fn_004483). On the transcript path.
 NxJointState NpRevoluteJoint::getState()
 	{
-	NX_ASSERT(0);
-	return NX_JS_UNBOUND;
+	nxNpSceneGuardEnter(&mWord08);
+	NxJointState state = mInternal->getState();
+	nxNpSceneGuardLeave(&mWord08);
+	return state;
 	}
 
 // phys_fn_004685 (0x000b2dd0, 89 B)
-// (unimplemented)
 void NpRevoluteJoint::setBreakable(NxReal maxForce, NxReal maxTorque)
 	{
-	(void)maxForce;
-	(void)maxTorque;
-	NX_ASSERT(0);
+	if(!nxNpSceneGuardWriteTry(&mWord04))
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			NX_NPREVOLUTEJOINT_CPP, 0xe, 0, gNpRevoluteJointLockMsg);
+		return;
+		}
+	mInternal->setBreakable(maxForce, maxTorque);
+	nxNpSceneGuardLeave(&mWord04);
 	}
 
 // Shared NpJoint body; the oracle keeps one folded copy at 0x000b1bd0
-// (phys_fn_004573). Task 9 implements the forward.
-// (unimplemented)
+// (phys_fn_004573).
 void NpRevoluteJoint::getBreakable(NxReal& maxForce, NxReal& maxTorque)
 	{
-	(void)maxForce;
-	(void)maxTorque;
-	NX_ASSERT(0);
+	nxNpSceneGuardEnter(&mWord08);
+	mInternal->getBreakable(maxForce, maxTorque);
+	nxNpSceneGuardLeave(&mWord08);
 	}
 
 // phys_fn_004687 (0x000b2e30, 89 B)
-// (unimplemented)
 void NpRevoluteJoint::setLimitPoint(const NxVec3& point, bool pointIsOnBody2)
 	{
-	(void)point;
-	(void)pointIsOnBody2;
-	NX_ASSERT(0);
+	if(!nxNpSceneGuardWriteTry(&mWord04))
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			NX_NPREVOLUTEJOINT_CPP, 0xe, 0, gNpRevoluteJointLockMsg);
+		return;
+		}
+	mInternal->setLimitPoint(point, pointIsOnBody2);
+	nxNpSceneGuardLeave(&mWord04);
 	}
 
 // Shared NpJoint body; the oracle keeps one folded copy at 0x000b1c60
-// (phys_fn_004577). Task 9 implements the forward.
-// (unimplemented)
+// (phys_fn_004577).
 bool NpRevoluteJoint::getLimitPoint(NxVec3& worldLimitPoint)
 	{
-	(void)worldLimitPoint;
-	NX_ASSERT(0);
-	return false;
+	nxNpSceneGuardEnter(&mWord08);
+	bool result = mInternal->getLimitPoint(worldLimitPoint);
+	nxNpSceneGuardLeave(&mWord08);
+	return result;
 	}
 
 // phys_fn_004689 (0x000b2e90, 97 B)
-// (unimplemented)
 bool NpRevoluteJoint::addLimitPlane(const NxVec3& normal, const NxVec3& pointInPlane)
 	{
-	(void)normal;
-	(void)pointInPlane;
-	NX_ASSERT(0);
-	return false;
+	if(!nxNpSceneGuardWriteTry(&mWord04))
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			NX_NPREVOLUTEJOINT_CPP, 0xe, 0, gNpRevoluteJointLockMsg);
+		return false;
+		}
+	bool result = mInternal->addLimitPlane(normal, pointInPlane);
+	nxNpSceneGuardLeave(&mWord04);
+	return result;
 	}
 
 // phys_fn_004695 (0x000b2fb0, 74 B)
-// (unimplemented)
 void NpRevoluteJoint::purgeLimitPlanes()
 	{
-	NX_ASSERT(0);
+	if(!nxNpSceneGuardWriteTry(&mWord04))
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			NX_NPREVOLUTEJOINT_CPP, 0xe, 0, gNpRevoluteJointLockMsg);
+		return;
+		}
+	mInternal->purgeLimitPlanes();
+	nxNpSceneGuardLeave(&mWord04);
 	}
 
 // phys_fn_004691 (0x000b2f00, 74 B)
-// (unimplemented)
 void NpRevoluteJoint::resetLimitPlaneIterator()
 	{
-	NX_ASSERT(0);
+	if(!nxNpSceneGuardWriteTry(&mWord04))
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			NX_NPREVOLUTEJOINT_CPP, 0xe, 0, gNpRevoluteJointLockMsg);
+		return;
+		}
+	mInternal->resetLimitPlaneIterator();
+	nxNpSceneGuardLeave(&mWord04);
 	}
 
 // Shared NpJoint body; the oracle keeps one folded copy at 0x000b0f10
-// (phys_fn_004491). Task 9 implements the forward.
-// (unimplemented)
+// (phys_fn_004491).
 bool NpRevoluteJoint::hasMoreLimitPlanes()
 	{
-	NX_ASSERT(0);
-	return false;
+	nxNpSceneGuardEnter(&mWord08);
+	bool result = mInternal->hasMoreLimitPlanes();
+	nxNpSceneGuardLeave(&mWord08);
+	return result;
 	}
 
 // Shared NpJoint body; the oracle keeps one folded copy at 0x000b25d0
-// (phys_fn_004635). Task 9 implements the forward.
-// (unimplemented)
+// (phys_fn_004635).
 bool NpRevoluteJoint::getNextLimitPlane(NxVec3& planeNormal, NxReal& planeD)
 	{
-	(void)planeNormal;
-	(void)planeD;
-	NX_ASSERT(0);
-	return false;
+	nxNpSceneGuardEnter(&mWord08);
+	bool result = mInternal->getNextLimitPlane(planeNormal, planeD);
+	nxNpSceneGuardLeave(&mWord08);
+	return result;
 	}
 
 // Shared NpJoint body; the oracle keeps one folded copy at 0x000b0730
-// (phys_fn_004443). Task 9 implements the forward.
-// (unimplemented)
+// (phys_fn_004443).
 NxJointType NpRevoluteJoint::getType() const
 	{
-	NX_ASSERT(0);
-	return NX_JOINT_REVOLUTE;
+	void* readLock = const_cast<NxU32*>(&mWord08);
+	nxNpSceneGuardEnter(readLock);
+	NxJointType type = mInternal->getType();
+	nxNpSceneGuardLeave(readLock);
+	return type;
 	}
 
 // Shared NpJoint body; the oracle keeps one folded copy at 0x000b0d20
-// (phys_fn_004479). Task 9 implements the forward.
-// (unimplemented)
-void* NpRevoluteJoint::is(NxJointType) const
+// (phys_fn_004479). `(uint)this & (param_1 != getType()) - 1`: returns
+// `this` when the argument equals getType(), else 0 -- written here as the
+// equivalent conditional.
+void* NpRevoluteJoint::is(NxJointType type) const
 	{
-	NX_ASSERT(0);
-	return 0;
+	void* readLock = const_cast<NxU32*>(&mWord08);
+	nxNpSceneGuardEnter(readLock);
+	NxJointType actual = mInternal->getType();
+	nxNpSceneGuardLeave(readLock);
+	return actual == type ? const_cast<NpRevoluteJoint*>(this) : 0;
 	}
 
 // phys_fn_004693 (0x000b2f50, 88 B)
-// (unimplemented)
 void NpRevoluteJoint::setName(const char* name)
 	{
-	(void)name;
-	NX_ASSERT(0);
+	if(!nxNpSceneGuardWriteTry(&mWord04))
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			NX_NPREVOLUTEJOINT_CPP, 0xe, 0, gNpRevoluteJointLockMsg);
+		return;
+		}
+	nxSetSdkPointerBinding(mInternal, const_cast<char*>(name));
+	nxNpSceneGuardLeave(&mWord04);
 	}
 
 // Shared NpJoint body; the oracle keeps one folded copy at 0x000b3670
-// (phys_fn_004743). Task 9 implements the forward.
-// (unimplemented)
+// (phys_fn_004743).
 const char* NpRevoluteJoint::getName() const
 	{
-	NX_ASSERT(0);
-	return 0;
+	void* readLock = const_cast<NxU32*>(&mWord08);
+	nxNpSceneGuardEnter(readLock);
+	const char* name = static_cast<const char*>(nxGetSdkPointerBinding(mInternal));
+	nxNpSceneGuardLeave(readLock);
+	return name;
 	}
 
-// phys_fn_004697 (0x000b3000, 84 B)
-// (unimplemented)
+// phys_fn_004697 (0x000b3000, 84 B). Slot +0x24 is virtual
+// (RevoluteJoint::loadFromDesc, internal slot 9); the plain call below
+// dispatches through mInternal's own vtable exactly as the listing's
+// `[[this+0x18]]+0x24]` indirect call does.
 void NpRevoluteJoint::loadFromDesc(const NxRevoluteJointDesc& desc)
 	{
-	(void)desc;
-	NX_ASSERT(0);
+	if(!nxNpSceneGuardWriteTry(&mWord04))
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			NX_NPREVOLUTEJOINT_CPP, 0x12, 0, gNpRevoluteJointLockMsg);
+		return;
+		}
+	mInternal->loadFromDesc(desc);
+	nxNpSceneGuardLeave(&mWord04);
 	}
 
-// phys_fn_004699 (0x000b3060, 84 B)
-// (unimplemented)
+// phys_fn_004699 (0x000b3060, 84 B). Internal slot 10 (RevoluteJoint::
+// saveToDesc), dispatched the same way as loadFromDesc above.
 void NpRevoluteJoint::saveToDesc(NxRevoluteJointDesc& desc)
 	{
-	(void)desc;
-	NX_ASSERT(0);
+	if(!nxNpSceneGuardWriteTry(&mWord04))
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			NX_NPREVOLUTEJOINT_CPP, 0x1d, 0, gNpRevoluteJointLockMsg);
+		return;
+		}
+	mInternal->saveToDesc(desc);
+	nxNpSceneGuardLeave(&mWord04);
 	}
 
 // phys_fn_004709 (0x000b31e0, 84 B)
-// (unimplemented)
 void NpRevoluteJoint::setLimits(const NxJointLimitPairDesc& limits)
 	{
-	(void)limits;
-	NX_ASSERT(0);
+	if(!nxNpSceneGuardWriteTry(&mWord04))
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			NX_NPREVOLUTEJOINT_CPP, 0x3f, 0, gNpRevoluteJointLockMsg);
+		return;
+		}
+	mInternal->setLimits(limits);
+	nxNpSceneGuardLeave(&mWord04);
 	}
 
-// phys_fn_004711 (0x000b3240, 45 B)
-// (unimplemented)
+// phys_fn_004711 (0x000b3240, 45 B). Locked copy-and-flag accessor shape
+// (ObjectModel.cpp's nxLockedCopyAndFlag); returns RevoluteJoint::getLimits'
+// bit-0 result.
 bool NpRevoluteJoint::getLimits(NxJointLimitPairDesc& limits)
 	{
-	(void)limits;
-	NX_ASSERT(0);
-	return false;
+	nxNpSceneGuardEnter(&mWord08);
+	bool result = mInternal->getLimits(limits);
+	nxNpSceneGuardLeave(&mWord08);
+	return result;
 	}
 
-// phys_fn_004713 (0x000b3270, 8 B)
-// (unimplemented)
+// phys_fn_004713 (0x000b3270, 8 B). No lock: `mov ecx,[ecx+0x18]; jmp`
+// RevoluteJoint::setMotor.
 void NpRevoluteJoint::setMotor(const NxMotorDesc& motor)
 	{
-	(void)motor;
-	NX_ASSERT(0);
+	mInternal->setMotor(motor);
 	}
 
-// phys_fn_004715 (0x000b3280, 45 B)
-// (unimplemented)
+// phys_fn_004715 (0x000b3280, 45 B). Same shape as getLimits above.
 bool NpRevoluteJoint::getMotor(NxMotorDesc& motor)
 	{
-	(void)motor;
-	NX_ASSERT(0);
-	return false;
+	nxNpSceneGuardEnter(&mWord08);
+	bool result = mInternal->getMotor(motor);
+	nxNpSceneGuardLeave(&mWord08);
+	return result;
 	}
 
 // phys_fn_004717 (0x000b32b0, 84 B)
-// (unimplemented)
 void NpRevoluteJoint::setSpring(const NxSpringDesc& spring)
 	{
-	(void)spring;
-	NX_ASSERT(0);
+	if(!nxNpSceneGuardWriteTry(&mWord04))
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			NX_NPREVOLUTEJOINT_CPP, 0x57, 0, gNpRevoluteJointLockMsg);
+		return;
+		}
+	mInternal->setSpring(spring);
+	nxNpSceneGuardLeave(&mWord04);
 	}
 
-// phys_fn_004719 (0x000b3310, 45 B)
-// (unimplemented)
+// phys_fn_004719 (0x000b3310, 45 B). Same shape as getLimits/getMotor above.
 bool NpRevoluteJoint::getSpring(NxSpringDesc& spring)
 	{
-	(void)spring;
-	NX_ASSERT(0);
-	return false;
+	nxNpSceneGuardEnter(&mWord08);
+	bool result = mInternal->getSpring(spring);
+	nxNpSceneGuardLeave(&mWord08);
+	return result;
 	}
 
-// phys_fn_004721 (0x000b3340, 42 B)
-// (unimplemented)
+// phys_fn_004721 (0x000b3340, 42 B). RevoluteJoint::getAngle (phys_fn_004372)
+// returns its result unrounded in st(0); this row rounds it to float with
+// its own `fstp dword` BEFORE unlocking (0xb3357), then reloads it after the
+// unlock (0xb3362) -- the reload has no observable effect since the value
+// is already fixed at float precision, so the C++ below computes the float
+// result under the lock and returns it after unlocking.
 NxReal NpRevoluteJoint::getAngle()
 	{
-	NX_ASSERT(0);
-	return 0.0f;
+	nxNpSceneGuardEnter(&mWord08);
+	NxReal angle = static_cast<NxReal>(mInternal->getAngle());
+	nxNpSceneGuardLeave(&mWord08);
+	return angle;
 	}
 
-// phys_fn_004723 (0x000b3370, 42 B)
-// (unimplemented)
+// phys_fn_004723 (0x000b3370, 42 B). Same shape as getAngle above, over
+// RevoluteJoint::getVelocity (phys_fn_004354).
 NxReal NpRevoluteJoint::getVelocity()
 	{
-	NX_ASSERT(0);
-	return 0.0f;
+	nxNpSceneGuardEnter(&mWord08);
+	NxReal velocity = static_cast<NxReal>(mInternal->getVelocity());
+	nxNpSceneGuardLeave(&mWord08);
+	return velocity;
 	}
 
-// phys_fn_004701 (0x000b30c0, 84 B)
-// (unimplemented)
+// phys_fn_004701 (0x000b30c0, 84 B). Internal slot 11 (RevoluteJoint::
+// setFlags), dispatched through mInternal's own vtable.
 void NpRevoluteJoint::setFlags(NxU32 flags)
 	{
-	(void)flags;
-	NX_ASSERT(0);
+	if(!nxNpSceneGuardWriteTry(&mWord04))
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			NX_NPREVOLUTEJOINT_CPP, 0x25, 0, gNpRevoluteJointLockMsg);
+		return;
+		}
+	mInternal->setFlags(flags);
+	nxNpSceneGuardLeave(&mWord04);
 	}
 
-// phys_fn_004703 (0x000b3120, 36 B)
-// (unimplemented)
+// phys_fn_004703 (0x000b3120, 36 B). Lock-bracketed vtable call with no
+// arguments (ObjectModel.cpp's nxLockedVtCallNoArg): read lock, internal
+// slot 12 (RevoluteJoint::getFlags), unlock. Also installed by the folded
+// NpSphericalJoint ctor (phys_fn_004649).
 NxU32 NpRevoluteJoint::getFlags()
 	{
-	NX_ASSERT(0);
-	return 0;
+	nxNpSceneGuardEnter(&mWord08);
+	NxU32 flags = mInternal->getFlags();
+	nxNpSceneGuardLeave(&mWord08);
+	return flags;
 	}
 
-// phys_fn_004705 (0x000b3150, 84 B)
-// (unimplemented)
+// phys_fn_004705 (0x000b3150, 84 B). Internal slot 13 (RevoluteJoint::
+// setProjectionMode), dispatched through mInternal's own vtable.
 void NpRevoluteJoint::setProjectionMode(NxJointProjectionMode projectionMode)
 	{
-	(void)projectionMode;
-	NX_ASSERT(0);
+	if(!nxNpSceneGuardWriteTry(&mWord04))
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			NX_NPREVOLUTEJOINT_CPP, 0x32, 0, gNpRevoluteJointLockMsg);
+		return;
+		}
+	mInternal->setProjectionMode(projectionMode);
+	nxNpSceneGuardLeave(&mWord04);
 	}
 
-// phys_fn_004707 (0x000b31b0, 36 B)
-// (unimplemented)
+// phys_fn_004707 (0x000b31b0, 36 B). Same nxLockedVtCallNoArg shape as
+// getFlags above, over internal slot 14 (RevoluteJoint::getProjectionMode,
+// folded phys_fn_004186).
 NxJointProjectionMode NpRevoluteJoint::getProjectionMode()
 	{
-	NX_ASSERT(0);
-	return NX_JPM_NONE;
+	nxNpSceneGuardEnter(&mWord08);
+	NxJointProjectionMode mode = mInternal->getProjectionMode();
+	nxNpSceneGuardLeave(&mWord08);
+	return mode;
 	}
-

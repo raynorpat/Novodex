@@ -298,6 +298,34 @@ Headers `Physics/src/include/core/Joint.h`, `JointSupport.h`, `RevoluteJoint.h`.
   `Row000758Fixture::row000758()`: `this` (the body record) in ecx (0xa9f0e), plain `ret`
   (0x17705). Both keep the 000571 fixture convention; both still deferred.
 
+### Declaration changes made by Task 9
+
+Header `Physics/src/include/core/NpRevoluteJoint.h`.
+
+- `NpRevoluteJoint` gains `static void operator delete(void* p) { nxGetSdkAllocator()->free(p); }`,
+  the same declaration `Joint.h` adds for `Joint`'s deleting destructors. The compiler-generated
+  scalar deleting destructor that wraps `~NpRevoluteJoint()` (phys_fn_004729's tail, 0xb3416-
+  0xb3423) frees through `operator delete` when its flag bit is set; without this declaration
+  that call resolves to the global operator delete (a plain CRT free) instead of the SDK
+  allocator the oracle uses (`[[0x101041bc]]` slot +0x14).
+- No other declaration changes: `NpRevoluteJoint`'s constructor needs no explicit vtable or
+  `userData`/`appData` code -- `NxJoint()`'s inline default constructor (already in the immutable
+  public header) zeroes `userData`/`appData` as part of ordinary base construction, and every
+  vtable phys_fn_004725/phys_fn_004729 install is the vtable C++ installs automatically for this
+  base/derived shape (see the constructor and destructor bodies' comments in
+  `Physics/src/core/NpRevoluteJoint.cpp`). Only the hook base's two words (`mWord04`/`mWord08`)
+  need an explicit zero in the constructor, since `EmbeddedHookBase` has no constructor of its
+  own; this reproduces phys_fn_002404's zeroing without adding a constructor to the shared
+  `EmbeddedHookBase` struct (out of this task's file scope, and other embedders such as
+  `CollisionObject` deliberately skip it -- see `ObjectModel.cpp`'s `CollisionObject::CollisionObject`
+  comment).
+- `nxLockedVtCallNoArg` and `nxLockedCopyAndFlag` (`ObjectModel.cpp`) gain a second pointer
+  comment: their shape also covers phys_fn_004703/004707 and phys_fn_004711/004715/004719
+  respectively, but those rows are written as direct calls through the named `RevoluteJoint`
+  accessor (real C++ member/virtual calls through `mInternal`) rather than through the
+  byte-offset model, since `NpRevoluteJoint` is real multiple-inheritance C++, not the generic
+  `NpJointObject` byte array the model targets elsewhere.
+
 ## Construction chain
 
 The public call is `NxScene::createJoint(desc)` with `desc.type == NX_JOINT_REVOLUTE (1)`.

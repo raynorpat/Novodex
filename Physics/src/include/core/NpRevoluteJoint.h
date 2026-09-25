@@ -56,6 +56,14 @@ class NpRevoluteJoint : public NxRevoluteJoint, public EmbeddedHookBase
 	//! automatically once ~NpRevoluteJoint() below is defined.
 	virtual ~NpRevoluteJoint();
 
+	//! The compiler-generated scalar deleting destructor (the wrapper
+	//! around ~NpRevoluteJoint() above) frees through `operator delete`
+	//! when its flag bit is set; the oracle's free is the SDK allocator's
+	//! (`[[0x101041bc]]` slot +0x14, phys_fn_004729's tail), so this
+	//! routes there rather than to the global operator delete -- the same
+	//! declaration Joint.h adds for its own deleting destructors.
+	static void operator delete(void* p) { nxGetSdkAllocator()->free(p); }
+
 	// --- NxJoint pure virtuals, in NxJoint.h declaration order ---
 
 	//! Shared NpJoint body; the oracle keeps one folded copy at 0x000b1600
