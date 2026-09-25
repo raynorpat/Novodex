@@ -337,35 +337,6 @@ Header `Physics/src/include/core/NpRevoluteJoint.h`.
   byte-offset model, since `NpRevoluteJoint` is real multiple-inheritance C++, not the generic
   `NpJointObject` byte array the model targets elsewhere.
 
-### Wiring made by Task 10
-
-`NxSceneInternal::createJoint` (`Physics/src/Scene.cpp`) now builds `NX_JOINT_REVOLUTE`
-(descriptor word 1 == 1, the oracle's case 1) through the construction chain above:
-`nxGetSdkAllocator()->malloc(sizeof(RevoluteJoint) /* 0x204, asserted */, NX_MEMORY_PERSISTENT)`,
-placement `new RevoluteJoint(desc)` (004366, which builds the NpRevoluteJoint via 004725),
-then byte +0x48 (`mPublicObject`): null → `delete internal` (the class deleting destructor
-004368, freeing through `Joint::operator delete`) and return 0, as 0x14581-0x1458c;
-otherwise holder[3]/holder[4] of Scene+0x6cc (NpScene `mWriteLock`/`mReadLock`) → np+0x10 /
-np+0x14 (0x14509-0x14521), `nxSceneAddJoint(this, internal)` (000661's hole, still a no-op),
-and the NpRevoluteJoint is returned as `NxJoint*`. The oracle's Scene::createJoint returns
-the internal joint and 000297 loads `[internal+0x48]`; the candidate does that load inside
-Scene::createJoint so `NpScene::createJoint` stays unchanged for every type.
-
-- The np+0x10/+0x14 stores and the return go through byte offsets, not the
-  `NpRevoluteJoint` class: `core/NpRevoluteJoint.h` includes `ObjectModel.h`, whose
-  `void nxActorConstruct(void*, void*)` collides with Scene.cpp's own
-  `void* nxActorConstruct(void*, void*)`. `NxJoint` is NpRevoluteJoint's primary base at +0.
-- Every other type keeps the generic path (`nxJointConstruct` over `NpJointObject`).
-  The candidate's `case 0: size = 0x17c; // revolute` comment now says prismatic;
-  `nxJointSizeForType`'s sizes are unchanged (still not the oracle's literals).
-- Release is not wired (`NpScene::releaseJoint` stays empty; open issue 2 stands).
-- Phase 6: the staged-pair transcript is byte-identical to the oracle's on the first run
-  (no transcript difference found). A cdb breakpoint trace over the candidate
-  `NxPhysicsJointTests` run (addresses from `build/Release/NxPhysics.map`) hit, once per
-  case, in order: Scene::createJoint, 004366, 004141, 004121, 004097 ×2, 004725, 004332,
-  004437, 004125, 004441, 004129, 004483, 004078, 004539. 004107's out-of-line copy was
-  not hit (inlined into 004141 or not separately observed); no destructor row was hit.
-
 ## Construction chain
 
 The public call is `NxScene::createJoint(desc)` with `desc.type == NX_JOINT_REVOLUTE (1)`.
@@ -474,6 +445,42 @@ Ordered list, caller → callee (purpose), with the instruction that makes the c
   `createActor` (`Scene.cpp:1286`) already copies holder[3]/holder[4] (NpScene
   `mWriteLock`/`mReadLock`) into each actor. Task 10 only needs to copy holder[3]/holder[4]
   into `np+0x10`/`np+0x14` inside Scene::createJoint, as the oracle does at 0x14509–0x14521.
+
+### Wiring made by Task 10
+
+`NxSceneInternal::createJoint` (`Physics/src/Scene.cpp`) now builds `NX_JOINT_REVOLUTE`
+(descriptor word 1 == 1, the oracle's case 1) through the construction chain above:
+`nxGetSdkAllocator()->malloc(sizeof(RevoluteJoint) /* 0x204, asserted */, NX_MEMORY_PERSISTENT)`,
+placement `new RevoluteJoint(desc)` (004366, which builds the NpRevoluteJoint via 004725),
+then byte +0x48 (`mPublicObject`): null → `delete internal` (the class deleting destructor
+004368, freeing through `Joint::operator delete`) and a result of 0, as 0x14581-0x1458c;
+otherwise holder[3]/holder[4] of Scene+0x6cc (NpScene `mWriteLock`/`mReadLock`) → np+0x10 /
+np+0x14 (0x14509-0x14521), `nxSceneAddJoint(this, internal)` (000661's hole, still a no-op),
+and the NpRevoluteJoint as the result. Every exit after the switch (success, allocation
+failure, null +0x48) then runs step 12 (0x14529-0x1453f): `++[Scene+0x6c8]`,
+`[Scene+0x6bc] = [Scene+0x59c]`, clear the re-entry flag, return the result. The oracle's Scene::createJoint returns
+the internal joint and 000297 loads `[internal+0x48]`; the candidate does that load inside
+Scene::createJoint so `NpScene::createJoint` stays unchanged for every type.
+
+- The np+0x10/+0x14 stores and the `NxJoint*` conversion are done by
+  `nxRevoluteJointAttachScene(RevoluteJoint*, void* writeLink, void* readLink)` (not an
+  oracle row; declared in `core/RevoluteJoint.h`, defined in `core/NpRevoluteJoint.cpp`
+  through `mWord04`/`mWord08`), because Scene.cpp cannot include `core/NpRevoluteJoint.h`:
+  its `ObjectModel.h` declares `void nxActorConstruct(void*, void*)`, which collides with
+  Scene.cpp's own `void* nxActorConstruct(void*, void*)`.
+- The generic (non-revolute) path still lacks step 12 (the +0x6c8 increment and the
+  +0x6bc copy); out of pilot scope, left unchanged.
+- Every other type keeps the generic path (`nxJointConstruct` over `NpJointObject`).
+  The candidate's `case 0: size = 0x17c; // revolute` comment now says prismatic;
+  `nxJointSizeForType`'s sizes are unchanged (still not the oracle's literals), and its
+  `case 1` is labelled revolute and unreachable.
+- Release is not wired (`NpScene::releaseJoint` stays empty; open issue 2 stands).
+- Phase 6: the staged-pair transcript is byte-identical to the oracle's on the first run
+  (no transcript difference found). A cdb breakpoint trace over the candidate
+  `NxPhysicsJointTests` run (addresses from `build/Release/NxPhysics.map`) hit, once per
+  case, in order: Scene::createJoint, 004366, 004141, 004121, 004097 ×2, 004725, 004332,
+  004437, 004125, 004441, 004129, 004483, 004078, 004539. 004107's out-of-line copy was
+  not hit (inlined into 004141 or not separately observed); no destructor row was hit.
 
 ### What the staged-pair joint test reaches
 

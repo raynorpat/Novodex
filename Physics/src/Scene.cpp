@@ -1413,7 +1413,10 @@ void NxSceneInternal::releaseActor(void* bodyPointer)
 //     joint's slot 5 (scalar deleting destructor) with 1 and a return of 0
 //     (0x14581-0x1458c); otherwise [[Scene+0x6cc]+0xc] -> np+0x10 and
 //     [[Scene+0x6cc]+0x10] -> np+0x14 (0x14509-0x14521) and phys_fn_000661
-//     to register it (0x14524).
+//     to register it (0x14524);
+//   on every exit after the switch, ++[Scene+0x6c8] and [Scene+0x6bc] =
+//     [Scene+0x59c] (0x14529-0x1453f) before the re-entry flag is cleared. Only
+//     the revolute path reproduces this; the generic path does not.
 //
 // Only the revolute case runs the reconstructed rows (core/RevoluteJoint.cpp,
 // core/NpRevoluteJoint.cpp). The other types keep the generic stand-in path
@@ -1475,35 +1478,35 @@ NxJoint* NxSceneInternal::createJoint(const NxJointDesc& desc)
 		void* memory = nxGetSdkAllocator()->malloc(sizeof(RevoluteJoint), NX_MEMORY_PERSISTENT);
 		RevoluteJoint* internal = memory ?
 			new(memory) RevoluteJoint(static_cast<const NxRevoluteJointDesc&>(desc)) : 0;
-		if(!internal)
+
+		NxJoint* result = 0;
+		if(internal)
 			{
-			gCreateJointReentry = false;
-			return 0;
+			if(internal->mPublicObject)
+				{
+				// 0x14502: the public object at byte +0x48. 0x14509-0x14521: the
+				// NpScene's write-lock and read-lock links into np+0x10 / np+0x14;
+				// then phys_fn_000661 (0x14524). phys_fn_000297 (0xc5ae-0xc5b9)
+				// returns [internal+0x48], which the helper returns here.
+				const unsigned* holder = reinterpret_cast<const unsigned*>(p[0x6cc / 4]);
+				result = nxRevoluteJointAttachScene(internal,
+					reinterpret_cast<void*>(holder[3]), reinterpret_cast<void*>(holder[4]));
+				nxSceneAddJoint(this, internal);
+				}
+			else
+				{
+				// 0x14581-0x1458c: slot 5 with 1 (phys_fn_004368), then `xor esi,esi`.
+				delete internal;
+				}
 			}
 
-		// 0x14502: the public object at byte +0x48 (the NpRevoluteJoint). Its
-		// class is not named here: core/NpRevoluteJoint.h pulls in ObjectModel.h,
-		// whose nxActorConstruct declaration collides with this file's own, so
-		// the two stores below address it by the offsets the listing uses.
-		unsigned char* np = static_cast<unsigned char*>(internal->mPublicObject);
-		if(!np)
-			{
-			// 0x14581-0x1458c: slot 5 with 1 (phys_fn_004368), then `xor esi,esi`.
-			delete internal;
-			gCreateJointReentry = false;
-			return 0;
-			}
-
-		// 0x14509-0x14521: the NpScene's write-lock and read-lock links.
-		const unsigned* holder = reinterpret_cast<const unsigned*>(p[0x6cc / 4]);
-		*reinterpret_cast<unsigned*>(np + 0x10) = holder[3];
-		*reinterpret_cast<unsigned*>(np + 0x14) = holder[4];
-		nxSceneAddJoint(this, internal);
-
+		// 0x14529-0x1453f, on every exit after the switch (success, allocation
+		// failure, null +0x48): ++[Scene+0x6c8], [Scene+0x6bc] = [Scene+0x59c],
+		// then the re-entry flag is cleared.
+		++p[0x6c8 / 4];
+		p[0x6bc / 4] = p[0x59c / 4];
 		gCreateJointReentry = false;
-		// phys_fn_000297 (0xc5ae-0xc5b9) returns [internal+0x48].
-		// NxRevoluteJoint (and so NxJoint) is NpRevoluteJoint's primary base at +0.
-		return reinterpret_cast<NxJoint*>(np);
+		return result;
 		}
 
 	// The other joint types: the generic stand-in. Their allocation literals are
@@ -2404,11 +2407,12 @@ NxU32 nxJointSizeForType(unsigned type)
 	{
 	// The generic stand-in's sizes for the non-revolute types, recorded as holes
 	// rather than claims. They do not match the oracle's allocation literals (see
-	// revolute-contract.md "## Construction chain" step 3); NX_JOINT_REVOLUTE (1)
-	// never reaches this function -- createJoint builds it through RevoluteJoint.
+	// revolute-contract.md "## Construction chain" step 3). Type 1 is
+	// NX_JOINT_REVOLUTE, which never reaches this function: createJoint builds it
+	// through RevoluteJoint. Type 0 (prismatic) is sized in createJoint itself.
 	switch(type)
 		{
-		case 1: return 0x17c;		// prismatic
+		case 1: return 0x17c;		// revolute: unreachable, createJoint builds it through RevoluteJoint
 		case 2: return 0x1b0;		// cylindrical
 		case 3: return 0x150;		// spherical
 		case 4: return 0x150;		// point on line

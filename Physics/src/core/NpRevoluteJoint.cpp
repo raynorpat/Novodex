@@ -20,8 +20,8 @@
 // identical-code-folded copy living in another Np*Joint.cpp unit -- are
 // implemented here as the same forward, with the "Shared NpJoint body"
 // comment form revolute-contract.md specifies instead of a stable ID.
-// Nothing constructs NpRevoluteJoint until Task 10 wires
-// Scene::createJoint, so none of this is reachable yet.
+// Task 10 wired Scene::createJoint to construct it (through
+// RevoluteJoint's constructor, phys_fn_004366).
 
 // The oracle's __FILE__ for this unit (every write-lock report in it pushes
 // the string at 0xb2d33/0xb2d93/etc; the four rows with their own source
@@ -522,4 +522,14 @@ NxJointProjectionMode NpRevoluteJoint::getProjectionMode()
 	NxJointProjectionMode mode = mInternal->getProjectionMode();
 	nxNpSceneGuardLeave(link);
 	return mode;
+	}
+
+// Scene::createJoint's link copy (0x14509-0x14521), declared in
+// core/RevoluteJoint.h. Not an oracle row; see the declaration.
+NxJoint* nxRevoluteJointAttachScene(RevoluteJoint* internal, void* writeLink, void* readLink)
+	{
+	NpRevoluteJoint* np = static_cast<NpRevoluteJoint*>(internal->mPublicObject);
+	np->mWord04 = reinterpret_cast<NxU32>(writeLink);
+	np->mWord08 = reinterpret_cast<NxU32>(readLink);
+	return np;
 	}

@@ -220,6 +220,17 @@ class RevoluteJoint : public Joint
 	NxReal				mUnknown200;
 	};
 
+// Attaches the public object Scene::createJoint reads at internal +0x48 to the
+// scene: stores the NpScene's write-lock and read-lock links into its +0x10 and
+// +0x14 (Scene::createJoint 0x14509-0x14521) and returns it as the NxJoint*
+// NpScene::createJoint hands back. Not an oracle row: it exists so Scene.cpp
+// can reach NpRevoluteJoint's hook-base words without including
+// core/NpRevoluteJoint.h (whose ObjectModel.h clashes with Scene.cpp's own
+// nxActorConstruct declaration). Defined in core/NpRevoluteJoint.cpp;
+// internal->mPublicObject must be non-null.
+class NxJoint;
+NxJoint* nxRevoluteJointAttachScene(RevoluteJoint* internal, void* writeLink, void* readLink);
+
 static_assert(sizeof(RevoluteJoint) == 0x204, "RevoluteJoint is 0x204 bytes in the oracle");
 static_assert(offsetof(RevoluteJoint, mLimit) == 0x16c, "the limit pair is at +0x16c");
 static_assert(sizeof(NxJointLimitPairDesc) == 0x18 && sizeof(NxMotorDesc) == 0xc && sizeof(NxSpringDesc) == 0xc, "the descriptor blocks keep the oracle sizes");
