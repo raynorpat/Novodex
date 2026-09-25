@@ -156,6 +156,45 @@ if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		PROPERTIES COMPILE_OPTIONS "/arch:IA32")
 endif()
 
+# The joint classes are built without C++ exception handling, as the oracle
+# is. Measured: the oracle's .text has no __CxxFrameHandler and its only fs:[0]
+# uses are in CRT rows (_longjmp, __setjmp3, __SEH_prolog/epilog,
+# __local_unwind2, __ValidateEH3RN); every joint constructor and deleting
+# destructor in it is frameless (e.g. 004382, 004729). Under CMake's default
+# /EHsc each of these translation units gave its constructors an unwind
+# frame for the constructed bases, and its deleting destructors -- noexcept
+# since C++11 -- a terminate state around the allocator calls the inlined class
+# operator delete makes; /GS then put a cookie on every such frame. /EHs-c-
+# removes the frames, and with them the cookies. It does not touch /GS: rows
+# with a local buffer (D6Joint's row_slot6/row_slot8, Joint::setGlobalAnchor/
+# setGlobalAxis) keep theirs. No joint file uses try, catch or throw.
+if(MSVC)
+	set_property(SOURCE
+		Physics/src/core/Joint.cpp
+		Physics/src/core/RevoluteJoint.cpp
+		Physics/src/core/PrismaticJoint.cpp
+		Physics/src/core/CylindricalJoint.cpp
+		Physics/src/core/SphericalJoint.cpp
+		Physics/src/core/PointOnLineJoint.cpp
+		Physics/src/core/PointInPlaneJoint.cpp
+		Physics/src/core/DistanceJoint.cpp
+		Physics/src/core/PulleyJoint.cpp
+		Physics/src/core/FixedJoint.cpp
+		Physics/src/core/D6Joint.cpp
+		Physics/src/core/NpJointShared.cpp
+		Physics/src/core/NpRevoluteJoint.cpp
+		Physics/src/core/NpPrismaticJoint.cpp
+		Physics/src/core/NpCylindricalJoint.cpp
+		Physics/src/core/NpSphericalJoint.cpp
+		Physics/src/core/NpPointOnLineJoint.cpp
+		Physics/src/core/NpPointInPlaneJoint.cpp
+		Physics/src/core/NpDistanceJoint.cpp
+		Physics/src/core/NpPulleyJoint.cpp
+		Physics/src/core/NpFixedJoint.cpp
+		Physics/src/core/NpD6Joint.cpp
+		APPEND PROPERTY COMPILE_OPTIONS "/EHs-c-")
+endif()
+
 # These geometry and contact files are on that list because the x87 control word is not the same
 # everywhere this code runs, and the flag is what lets a translation unit follow
 # it at all.

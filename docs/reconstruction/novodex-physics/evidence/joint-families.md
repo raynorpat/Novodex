@@ -317,7 +317,7 @@ These behaviours are in the oracle and the reconstruction keeps them.
 9. (Closed by joint-open-items Task 2: 000661 writes it.) **`Joint::mScene` (+0x30) is never written.** 000661 is a no-op, so `~Joint`, 004107's false
    branch and the break paths read uninitialised memory there. Whoever implements 000661/000633
    must write it.
-10. **SEH/GS frames on the candidate's deleting destructors.**
+10. (Closed by joint-open-items Task 5: the joint files build with `/EHs-c-`.) **SEH/GS frames on the candidate's deleting destructors.**
     - The pilot recorded this for 004729. A map/disassembly check after this plan's clean build shows
       the same `push -1; push <handler>; mov eax,fs:[0]` and cookie prologue on every candidate
       `??_G`/`??_E` of the nine family classes, their Np classes and `Joint`.
