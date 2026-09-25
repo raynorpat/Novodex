@@ -464,7 +464,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/41",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json as a cross-check; contract units/joint-open-items-contract.md (## Scene joint rows) (joint-open-items Task 2)",
       "dynamic_proof": null,
-      "notes": "Its first callee phys_fn_000754 (1027 B) is still a deferred asserting stub (Row000754Fixture in core/JointSupport.cpp), so reaching this row asserts.",
+      "notes": "Its first callee phys_fn_000754 (1027 B) is still a deferred `NX_ASSERT(0)` stub, which is a silent no-op in Release (NX_ASSERT is `assert`, and Release builds with /DNDEBUG) (Row000754Fixture in core/JointSupport.cpp), so reaching this row skips the pose refresh. A breakpoint on this row was not hit in the Task 2 trace; its callers 004207, 004298 and 004356 have no dynamic proof.",
       "implementation": "Physics/src/core/JointSupport.cpp"
     },
     {
@@ -5892,7 +5892,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1045",
       "static_proof": "under the lock at [self+0x10], calls the plain field getter phys_fn_000559 (+0x6c8) on [self+0x24] and returns it; the whole row reduces to reading [field+0x6c8]; product row transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json as a cross-check; contract units/joint-open-items-contract.md (## Scene joint rows) (joint-open-items Task 2)",
       "dynamic_proof": "confirmed via lockedget differential (3z139): offset 0x6c8 failures=0, with the Foundation lock API bound to __stdcall no-op stubs; executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 51 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "Product row since joint-open-items Task 2: NpScene::getNbJoints in Physics/src/NpScene.cpp (was an unimplemented body returning 0). The parameterised model stays.",
+      "notes": "Product row since joint-open-items Task 2: NpScene::getNbJoints in Physics/src/NpScene.cpp (was an unimplemented body returning 0). The parameterised model stays. Previous source: locked field accessor over 000559 (0xc910).",
       "implementation": "Physics/src/NpScene.cpp"
     },
     {
@@ -5929,7 +5929,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1046",
       "static_proof": "static review of the recorded shape: tail-jmp mutex link advance; the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257); product row transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json as a cross-check; contract units/joint-open-items-contract.md (## Scene joint rows) (joint-open-items Task 2)",
       "dynamic_proof": "confirmed via the tailjmp differential (3z191): failures=0 for all twelve rows on both arms, comparing the report tuple, the global word written at 0x10127180 and the whole object buffer, with the lock API, report slot and that global bound; executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 51 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "Product row since joint-open-items Task 2: NpScene::resetJointIterator in Physics/src/NpScene.cpp (was an empty body). The parameterised model stays.",
+      "notes": "Product row since joint-open-items Task 2: NpScene::resetJointIterator in Physics/src/NpScene.cpp (was an empty body). The parameterised model stays. Previous source: tail-jmp mutex link advance.",
       "implementation": "Physics/src/NpScene.cpp"
     },
     {
@@ -5966,7 +5966,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1047",
       "static_proof": "static review of the recorded shape: locked list-advance accessor (0xc960); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257); product row transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json as a cross-check; contract units/joint-open-items-contract.md (## Scene joint rows) (joint-open-items Task 2)",
       "dynamic_proof": "confirmed via lockacc9 differential (3z153): failures=0, with the Foundation lock API bound to __stdcall no-op stubs; executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 137 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "Product row since joint-open-items Task 2: NpScene::getNextJoint in Physics/src/NpScene.cpp (was an unimplemented body returning 0). The parameterised model stays.",
+      "notes": "Product row since joint-open-items Task 2: NpScene::getNextJoint in Physics/src/NpScene.cpp (was an unimplemented body returning 0). The parameterised model stays. Previous source: locked list-advance accessor (0xc960).",
       "implementation": "Physics/src/NpScene.cpp"
     },
     {
@@ -10229,7 +10229,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1458",
       "static_proof": "mov eax,[ecx+0x6c8]; ret; product row transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json as a cross-check; contract units/joint-open-items-contract.md (## Scene joint rows) (joint-open-items Task 2)",
       "dynamic_proof": "confirmed via setget2 drive (3z49): failures=0; executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 51 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "Product row since joint-open-items Task 2: NxSceneInternal::getNbJoints in Physics/src/Scene.cpp. The parameterised model in Physics/src/ObjectModel.cpp stays.",
+      "notes": "Product row since joint-open-items Task 2: NxSceneInternal::getNbJoints in Physics/src/Scene.cpp. The parameterised model in Physics/src/ObjectModel.cpp stays. Previous source: field getter [this+0x6c8] (0x10860).",
       "implementation": "Physics/src/Scene.cpp"
     },
     {
@@ -10302,7 +10302,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1460",
       "static_proof": "mov eax,[ecx+0x59c]; mov [ecx+0x6bc],eax; ret; product row transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json as a cross-check; contract units/joint-open-items-contract.md (## Scene joint rows) (joint-open-items Task 2)",
       "dynamic_proof": "confirmed via setget3 drive (3z50): failures=0; executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 51 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "Product row since joint-open-items Task 2: NxSceneInternal::resetJointIterator in Physics/src/Scene.cpp. The parameterised model in Physics/src/ObjectModel.cpp stays.",
+      "notes": "Product row since joint-open-items Task 2: NxSceneInternal::resetJointIterator in Physics/src/Scene.cpp. The parameterised model in Physics/src/ObjectModel.cpp stays. Previous source: copy [this+0x59c] -> [this+0x6bc] (0x10880).",
       "implementation": "Physics/src/Scene.cpp"
     },
     {
@@ -10375,7 +10375,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1462",
       "static_proof": "if [this+0x6bc] non-null store [*ptr+0x10] back to [this+0x6bc] else 0; ret; product row transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json as a cross-check; contract units/joint-open-items-contract.md (## Scene joint rows) (joint-open-items Task 2)",
       "dynamic_proof": "confirmed via smallflag differential (3z105): failures=0; executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 137 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "Product row since joint-open-items Task 2: NxSceneInternal::getNextJoint in Physics/src/Scene.cpp. The parameterised model in Physics/src/ObjectModel.cpp stays.",
+      "notes": "Product row since joint-open-items Task 2: NxSceneInternal::getNextJoint in Physics/src/Scene.cpp. The parameterised model in Physics/src/ObjectModel.cpp stays. Previous source: link-advance (0x108a0).",
       "implementation": "Physics/src/Scene.cpp"
     },
     {
@@ -10448,7 +10448,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1466",
       "static_proof": "mov edx,[ecx+0x620]; mov eax,[esp+4]; mov [eax+4],edx; mov [ecx+0x620],eax; ret 4; product row transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json as a cross-check; contract units/joint-open-items-contract.md (## Scene joint rows) (joint-open-items Task 2)",
       "dynamic_proof": "confirmed via zmix drive (3z54): failures=0",
-      "notes": "Product row since joint-open-items Task 2: NxSceneInternal::addJointBreakEvent in Physics/src/Scene.cpp (the asserting stub in core/JointSupport.cpp is removed). The parameterised model in Physics/src/ObjectModel.cpp stays.",
+      "notes": "Product row since joint-open-items Task 2: NxSceneInternal::addJointBreakEvent in Physics/src/Scene.cpp (the deferred NX_ASSERT(0) stub in core/JointSupport.cpp is removed). The parameterised model in Physics/src/ObjectModel.cpp stays. Previous source: link-insert: [arg+4]=old head, [this+0x620]=arg (0x108e0, ret 4).",
       "implementation": "Physics/src/Scene.cpp"
     },
     {
@@ -13863,7 +13863,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2140",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json as a cross-check; contract units/joint-open-items-contract.md (## Scene joint rows) (joint-open-items Task 2)",
       "dynamic_proof": "executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 25 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
-      "notes": "The island-object arm (+0x1e0 non-null) calls phys_fn_004167, still a deferred asserting stub; no body before a simulation step has an island object.",
+      "notes": "The island-object arm (+0x1e0 non-null) calls phys_fn_004167, still a deferred `NX_ASSERT(0)` stub, which is a silent no-op in Release (NX_ASSERT is `assert`, and Release builds with /DNDEBUG); no body before a simulation step has an island object.",
       "implementation": "Physics/src/core/JointSupport.cpp"
     },
     {
@@ -14224,7 +14224,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/317",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2196",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json as a cross-check; contract units/joint-open-items-contract.md (## Scene joint rows) (joint-open-items Task 2)",
-      "dynamic_proof": "executed under the joint staged-pair transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 25 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll) (the continuation is part of the same candidate function, Row000778Fixture::row000778; 000760 is called only from it), with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
+      "dynamic_proof": "executed under the joint staged-pair transcript: no breakpoint was set at this row's own address; the entry breakpoint of phys_fn_000778 (the candidate function Row000778Fixture::row000778, which contains this continuation) was hit 25 times in NxPhysicsJointStagedPairTests against the staged candidate pair (NxPhysics.dll sha256 6ee4fd8b805df834, identical to build/Release/NxPhysics.dll), and the breakpoint on phys_fn_000760, which is reached only through this continuation's loop (0x1870a), was hit 25 times, with the Phase 6/7 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 67/67 staged-pair coverage); trace excerpt committed as evidence/joint-open-items-trace-release.txt (joint-open-items Task 2)",
       "notes": "continuation of the entry at 0x000185f0; written with it as Row000778Fixture::row000778",
       "implementation": "Physics/src/core/JointSupport.cpp"
     },

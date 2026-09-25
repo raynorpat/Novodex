@@ -693,6 +693,9 @@
         6,
         7
       ],
+      "translation_unit_zone": "below Actor.cpp",
+      "reachability": "unreachable_from_phase_2",
+      "callers": 5,
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
@@ -1165,6 +1168,9 @@
         5,
         7
       ],
+      "translation_unit_zone": "gap SceneRaycast.cpp .. CapsuleShape.cpp",
+      "reachability": "reachable_via_other_phase",
+      "callers": 8,
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
@@ -1264,6 +1270,9 @@
         6,
         7
       ],
+      "translation_unit_zone": "gap SceneRaycast.cpp .. CapsuleShape.cpp",
+      "reachability": "unreachable_from_phase_2",
+      "callers": 3,
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
@@ -1276,6 +1285,9 @@
         5,
         7
       ],
+      "translation_unit_zone": "gap SceneRaycast.cpp .. CapsuleShape.cpp",
+      "reachability": "reachable_via_other_phase",
+      "callers": 6,
       "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {

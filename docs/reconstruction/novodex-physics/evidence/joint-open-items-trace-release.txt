@@ -16,7 +16,9 @@ Recorded:  2026-09-25, on the Task 2 working tree after the Scene joint rows, th
            joint slots, the scene_joints/cycle test lines and the line registration.
 Candidate: D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxPhysics.dll
            sha256=6ee4fd8b805df83482e7594e07b5c8606687f079927818fdecb75bd7de5b6b3a
-           (identical to build\Release\NxPhysics.dll at the time of the trace).
+           (identical to build\Release\NxPhysics.dll at the time of the trace). Re-run after the
+           Task 2 review with the 000022 breakpoint added (the first run lacked it); the
+           HIT sequence is identical to the first run's.
 Offsets:   module-relative, from build\Release\NxPhysics.map of that build.
 
 What the counts show (the test creates 22 family joints and releases each, then the cycle
@@ -31,7 +33,9 @@ creates 5 and releases 3, leaving 2 for the scene release):
   nxSceneDelete (000606 joint loop)      1, followed by the two remaining joints' destructors
   004095 ~Joint                          27 = 25 releases + 2 at scene release
   000712 island root                     0 (every body is its own island root before a step)
-  000598, 000571, 000758, 000022         0 (solver, break and projection paths; no step runs)
+  000598, 000571, 000758                0 (solver, break and projection paths; no step runs)
+  000022                                0 (breakpointed and not hit; its callers 004207,
+                                         004298 and 004356 have no dynamic proof)
 
 Breakpoints (each echoes and continues):
 bp NxPhysics+0x16350 ".echo HIT 000299 NpScene::releaseJoint; gc"
@@ -72,6 +76,7 @@ bp NxPhysics+0x50d80 ".echo HIT 004302 SphericalJoint scalar deleting destructor
 bp NxPhysics+0x46a60 ".echo HIT 004653 NpSphericalJoint scalar deleting destructor; gc"
 bp NxPhysics+0x4c400 ".echo HIT 004368 RevoluteJoint scalar deleting destructor; gc"
 bp NxPhysics+0x45aa0 ".echo HIT 004729 NpRevoluteJoint scalar deleting destructor; gc"
+bp NxPhysics+0x37b30 ".echo HIT 000022; gc"
 
 Trace:
 HIT 000661 Scene::addJoint

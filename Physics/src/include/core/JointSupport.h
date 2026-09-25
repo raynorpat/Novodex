@@ -124,7 +124,7 @@ struct Row000022Target
 
 // phys_fn_000754 (0x00017010, 1027 B; owner gap SceneRaycast..CapsuleShape;
 // deferred). Thiscall on the body record, no stack arguments, plain `ret`.
-// Its stub asserts.
+// Its stub is NX_ASSERT(0): a silent no-op in Release (/DNDEBUG).
 struct Row000754Fixture
 	{
 	void row000754();
@@ -171,7 +171,7 @@ struct Row000778Fixture
 // phys_fn_004167 (0x0009ad10, 156 B; owner gap Joint.cpp..D6Joint.cpp;
 // deferred). Thiscall on the island object at body record +0x1e0, no stack
 // arguments; phys_fn_000760 calls it before freeing the object. Its stub
-// asserts.
+// is NX_ASSERT(0): a silent no-op in Release (/DNDEBUG).
 struct Row004167Fixture
 	{
 	void row004167();
