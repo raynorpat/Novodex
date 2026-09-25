@@ -235,3 +235,21 @@ body records, the rotated actors):
 - +0x5c is written at 0x1b98e (000801);
 - +0x134 is written at 0x181ea (000768);
 - +0x130 (w of +0x124) is written at 0x18226 (000768).
+
+### Task 4 review follow-ups
+
+- **Setters.** The rows 000196, 000198, 000200, 000202, 000210, 000212, 000214, 000218, 000220 and
+  000222 each call 000768 with ecx = the record, after their stores and +0x198 increments and
+  before the wake test. `nxNpActorRefreshCMass` is now `nxNpActorUpdateMassFrame`. Rotated bodies
+  showed three more differences:
+  - 000196 and 000200 share an inline conversion (0x8b5c-0x8d07). Its trace arm matches 000801.
+    Its z arm uses 0.5 / float(s), and its x and y arms spill the reciprocal. Now
+    `nxNpActorSetterQuaternionFromMatrix`.
+  - 000218, 000220 and 000222 build R from +0x5c with the same inline sequence as 004115/004117.
+    The listings match instruction for instruction once registers and stack slots are normalised.
+    Now `nxNpActorComposeRotation`.
+  - Each of those rows sums R^T (w - t) and R^T W in its own order. Its dy stays in the register,
+    and dx and dz are spilled.
+- **000164** (updateMassFromShapes) also calls 000768. The candidate has no body for it.
+- **The CMass-global setters** (setCMassGlobalPose/Position/Orientation) do not call 000768 and
+  keep their earlier code. The rotated-body tests do not drive them.

@@ -93,6 +93,22 @@ Numbers are those of `joint-families.md` `## Open items carried forward`.
   (0.1, 0.2, 0.97) normalised and exactly (0, 0, 1), over the identity fixture and the rotated one.
   All matched on the first run: the saved local normals (from `NxJointDesc_SetGlobalAxis`),
   004101's frame quaternions and prismatic's 004378 words agree with the oracle.
+- **Task 4 review follow-ups.**
+  - The two joint-descriptor closures were re-measured with mutations in each row's own code (see
+    `evidence/phase6-joints.md` at the end and `gates/phase6-closure.json`).
+  - The pose and CMass-offset setters now end in the 000768 reproduction. setGlobalPose and
+    setGlobalOrientation use 000196/000200's own conversion.
+  - The three global-offset setters form R^T products in their listing order.
+  - NxPhysicsActorCMassTests pins all of this over seven rotated bodies (+42 lines, floor 5 = 871).
+  - Posed joint fixtures (180 degrees about x and y; largest diagonal x and y) take the pivot arms
+    of 000801 and 000768 (+15 lines per joint list, floors 6/7 = 245/118).
+- **Precision of the new double/CRT-sqrt code** (Task 4 review). JointDesc.cpp, the Scene.cpp
+  creation path and the NpActorDynamicMath.h helpers (000801, 000768, 000746, 000196/000200) keep
+  the listing's register values as `double` and call the CRT `sqrt`, compiled for SSE2. These rows
+  run only from the public API outside the simulation step, where the control word is the
+  process default 0x027f (53-bit precision). There, a double operation and its square root round
+  exactly as the x87 register does, so SSE2 reproduces the oracle bit for bit. Under the step's
+  0x0f7f (64-bit precision) they would differ, but no step calls them in the candidate.
 - **Deferred stubs are silent in Release** (joint-open-items Task 2 review). `NX_ASSERT` is
   `assert` (`Foundation/include/NxAssert.h`) and the Release build defines `NDEBUG`, so every
   `NX_ASSERT(0)` deferred stub in `Physics/src/core` compiles to an empty body: reaching one skips
