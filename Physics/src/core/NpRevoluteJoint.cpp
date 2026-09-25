@@ -27,13 +27,17 @@ NpRevoluteJoint::NpRevoluteJoint(RevoluteJoint* internal)
 
 // phys_fn_004729 (0x000b33f0, 55 B)
 // (unimplemented)
+// phys_fn_004727 (0x000b33e0, 8 B; no decompile, Capstone listing only) is
+// not defined here: it is the compiler-generated adjustor thunk for
+// EmbeddedHookBase's virtual destructor, emitted automatically because this
+// destructor is defined.
 NpRevoluteJoint::~NpRevoluteJoint()
 	{
 	NX_ASSERT(0);
 	}
 
-// Unclaimed folded NpJoint body; the oracle keeps one folded copy at
-// 0x000b1600 (core\NpDistanceJoint.cpp). Task 9 implements the forward.
+// Shared NpJoint body; the oracle keeps one folded copy at 0x000b1600
+// (phys_fn_004539). Task 9 implements the forward.
 // (unimplemented)
 void NpRevoluteJoint::getActors(NxActor** actor1, NxActor** actor2)
 	{
@@ -50,8 +54,8 @@ void NpRevoluteJoint::setGlobalAnchor(const NxVec3& anchor)
 	NX_ASSERT(0);
 	}
 
-// Unclaimed folded NpJoint body; the oracle keeps one folded copy at
-// 0x000b0670 (core\NpD6Joint.cpp). Task 9 implements the forward.
+// Shared NpJoint body; the oracle keeps one folded copy at 0x000b0670
+// (phys_fn_004437). Task 9 implements the forward.
 // (unimplemented)
 void NpRevoluteJoint::getGlobalAnchor(NxVec3& out) const
 	{
@@ -67,8 +71,8 @@ void NpRevoluteJoint::setGlobalAxis(const NxVec3& axis)
 	NX_ASSERT(0);
 	}
 
-// Unclaimed folded NpJoint body; the oracle keeps one folded copy at
-// 0x000b0700 (core\NpD6Joint.cpp). Task 9 implements the forward.
+// Shared NpJoint body; the oracle keeps one folded copy at 0x000b0700
+// (phys_fn_004441). Task 9 implements the forward.
 // (unimplemented)
 void NpRevoluteJoint::getGlobalAxis(NxVec3& out) const
 	{
@@ -76,8 +80,8 @@ void NpRevoluteJoint::getGlobalAxis(NxVec3& out) const
 	NX_ASSERT(0);
 	}
 
-// Unclaimed folded NpJoint body; the oracle keeps one folded copy at
-// 0x000b0d30 (core\NpPulleyJoint.cpp). Task 9 implements the forward.
+// Shared NpJoint body; the oracle keeps one folded copy at 0x000b0ff0
+// (phys_fn_004497). Task 9 implements the forward.
 // (unimplemented)
 NxVec3 NpRevoluteJoint::getGlobalAnchorVal() const
 	{
@@ -85,8 +89,8 @@ NxVec3 NpRevoluteJoint::getGlobalAnchorVal() const
 	return NxVec3();
 	}
 
-// Unclaimed folded NpJoint body; the oracle keeps one folded copy at
-// 0x000b0d60 (core\NpPulleyJoint.cpp). Task 9 implements the forward.
+// Shared NpJoint body; the oracle keeps one folded copy at 0x000b1020
+// (phys_fn_004499). Task 9 implements the forward.
 // (unimplemented)
 NxVec3 NpRevoluteJoint::getGlobalAxisVal() const
 	{
@@ -94,8 +98,8 @@ NxVec3 NpRevoluteJoint::getGlobalAxisVal() const
 	return NxVec3();
 	}
 
-// Unclaimed folded NpJoint body; the oracle keeps one folded copy at
-// 0x000b0dc0 (core\NpPulleyJoint.cpp). Task 9 implements the forward.
+// Shared NpJoint body; the oracle keeps one folded copy at 0x000b0dc0
+// (phys_fn_004483). Task 9 implements the forward.
 // (unimplemented)
 NxJointState NpRevoluteJoint::getState()
 	{
@@ -112,8 +116,8 @@ void NpRevoluteJoint::setBreakable(NxReal maxForce, NxReal maxTorque)
 	NX_ASSERT(0);
 	}
 
-// Unclaimed folded NpJoint body; the oracle keeps one folded copy at
-// 0x000b0c40 (core\NpPointInPlaneJoint.cpp). Task 9 implements the forward.
+// Shared NpJoint body; the oracle keeps one folded copy at 0x000b1bd0
+// (phys_fn_004573). Task 9 implements the forward.
 // (unimplemented)
 void NpRevoluteJoint::getBreakable(NxReal& maxForce, NxReal& maxTorque)
 	{
@@ -131,8 +135,8 @@ void NpRevoluteJoint::setLimitPoint(const NxVec3& point, bool pointIsOnBody2)
 	NX_ASSERT(0);
 	}
 
-// Unclaimed folded NpJoint body; the oracle keeps one folded copy at
-// 0x000b0c70 (core\NpPointInPlaneJoint.cpp). Task 9 implements the forward.
+// Shared NpJoint body; the oracle keeps one folded copy at 0x000b1c60
+// (phys_fn_004577). Task 9 implements the forward.
 // (unimplemented)
 bool NpRevoluteJoint::getLimitPoint(NxVec3& worldLimitPoint)
 	{
@@ -165,8 +169,8 @@ void NpRevoluteJoint::resetLimitPlaneIterator()
 	NX_ASSERT(0);
 	}
 
-// Unclaimed folded NpJoint body; the oracle keeps one folded copy at
-// 0x000b0de0 (core\NpPulleyJoint.cpp). Task 9 implements the forward.
+// Shared NpJoint body; the oracle keeps one folded copy at 0x000b0f10
+// (phys_fn_004491). Task 9 implements the forward.
 // (unimplemented)
 bool NpRevoluteJoint::hasMoreLimitPlanes()
 	{
@@ -174,8 +178,8 @@ bool NpRevoluteJoint::hasMoreLimitPlanes()
 	return false;
 	}
 
-// Unclaimed folded NpJoint body; the oracle keeps one folded copy at
-// 0x000b1d10 (core\NpSphericalJoint.cpp). Task 9 implements the forward.
+// Shared NpJoint body; the oracle keeps one folded copy at 0x000b25d0
+// (phys_fn_004635). Task 9 implements the forward.
 // (unimplemented)
 bool NpRevoluteJoint::getNextLimitPlane(NxVec3& planeNormal, NxReal& planeD)
 	{
@@ -185,8 +189,8 @@ bool NpRevoluteJoint::getNextLimitPlane(NxVec3& planeNormal, NxReal& planeD)
 	return false;
 	}
 
-// Unclaimed folded NpJoint body; the oracle keeps one folded copy at
-// 0x000b06f0 (core\NpD6Joint.cpp). Task 9 implements the forward.
+// Shared NpJoint body; the oracle keeps one folded copy at 0x000b0730
+// (phys_fn_004443). Task 9 implements the forward.
 // (unimplemented)
 NxJointType NpRevoluteJoint::getType() const
 	{
@@ -194,8 +198,8 @@ NxJointType NpRevoluteJoint::getType() const
 	return NX_JOINT_REVOLUTE;
 	}
 
-// Unclaimed folded NpJoint body; the oracle keeps one folded copy at
-// 0x000b0d90 (core\NpPulleyJoint.cpp). Task 9 implements the forward.
+// Shared NpJoint body; the oracle keeps one folded copy at 0x000b0d20
+// (phys_fn_004479). Task 9 implements the forward.
 // (unimplemented)
 void* NpRevoluteJoint::is(NxJointType) const
 	{
@@ -211,8 +215,8 @@ void NpRevoluteJoint::setName(const char* name)
 	NX_ASSERT(0);
 	}
 
-// Unclaimed folded NpJoint body; the oracle keeps one folded copy at
-// 0x000b3540 (core\NpPrismaticJoint.cpp). Task 9 implements the forward.
+// Shared NpJoint body; the oracle keeps one folded copy at 0x000b3670
+// (phys_fn_004743). Task 9 implements the forward.
 // (unimplemented)
 const char* NpRevoluteJoint::getName() const
 	{
@@ -335,7 +339,3 @@ NxJointProjectionMode NpRevoluteJoint::getProjectionMode()
 	return NX_JPM_NONE;
 	}
 
-// phys_fn_004727 (0x000b33e0, 8 B; no decompile, Capstone listing only) is
-// not defined here: it is the compiler-generated adjustor thunk for
-// EmbeddedHookBase's virtual destructor, emitted automatically because
-// ~NpRevoluteJoint() above is defined.

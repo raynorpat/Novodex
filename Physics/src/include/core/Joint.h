@@ -279,10 +279,25 @@ class Joint
 	//! established by the listing, not left to NxQuat's own convention).
 	NxReal				mFrameQuat[2][4];
 
-	//! +0x0cc..+0x14b. World copy of the +0x4c..+0xcb block, same order:
-	//! normal[2] (+0xcc), cross[2] (+0xe4), axis[2] (+0xfc),
-	//! anchor[2] (+0x114), quat[2] (+0x12c).
-	unsigned char		mWorldCopy[0x80];
+	// World copy of the +0x4c..+0xcb local block, +0x0cc..+0x14b, same
+	// field order (each written by phys_fn_004121 when body[i] is null, or
+	// phys_fn_004097(i) otherwise; phys_fn_004372 reads normal/cross).
+
+	//! +0x0cc / +0x0d8. World normal[2].
+	NxVec3				mWorldNormal[2];
+
+	//! +0x0e4 / +0x0f0. World cross[2] (mirrors mLocalCross).
+	NxVec3				mWorldCross[2];
+
+	//! +0x0fc / +0x108. World axis[2].
+	NxVec3				mWorldAxis[2];
+
+	//! +0x114 / +0x120. World anchor[2].
+	NxVec3				mWorldAnchor[2];
+
+	//! +0x12c / +0x13c. World frame quaternion[2] (same raw storage
+	//! convention as mFrameQuat).
+	NxReal				mWorldQuat[2][4];
 
 	//! +0x14c / +0x150. body[i] stamp cache, compared with body+0x198;
 	//! -1 forces a refresh.
@@ -317,7 +332,11 @@ static_assert(offsetof(Joint, mLocalCross) == 0x064, "the cross products are at 
 static_assert(offsetof(Joint, mLocalAxis) == 0x07c, "localAxis[2] is at +0x7c");
 static_assert(offsetof(Joint, mLocalAnchor) == 0x094, "localAnchor[2] is at +0x94");
 static_assert(offsetof(Joint, mFrameQuat) == 0x0ac, "the frame quaternions are at +0xac");
-static_assert(offsetof(Joint, mWorldCopy) == 0x0cc, "the world copy block is at +0xcc");
+static_assert(offsetof(Joint, mWorldNormal) == 0x0cc, "the world normal pair is at +0xcc");
+static_assert(offsetof(Joint, mWorldCross) == 0x0e4, "the world cross pair is at +0xe4");
+static_assert(offsetof(Joint, mWorldAxis) == 0x0fc, "the world axis pair is at +0xfc");
+static_assert(offsetof(Joint, mWorldAnchor) == 0x114, "the world anchor pair is at +0x114");
+static_assert(offsetof(Joint, mWorldQuat) == 0x12c, "the world quaternion pair is at +0x12c");
 static_assert(offsetof(Joint, mBodyStamp) == 0x14c, "the body stamp cache is at +0x14c");
 static_assert(offsetof(Joint, mAccumulated) == 0x154, "the accumulated vec3 is at +0x154");
 static_assert(offsetof(Joint, mUnknown160) == 0x160, "the unknown pair is at +0x160");

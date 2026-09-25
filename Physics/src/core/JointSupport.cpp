@@ -22,14 +22,18 @@
 
 // phys_fn_004389 (0x000af2d0, 227 B)
 // (unimplemented)
-NxReal row004389(void* record)
+// Fastcall-shaped per the contract: `this` in ecx, no stack arguments, float
+// result in st(0) -- __fastcall reproduces that exactly for a single
+// pointer argument.
+NxReal __fastcall row004389(void* record)
 	{
 	(void)record;
 	NX_ASSERT(0);
 	return 0.0f;
 	}
 
-// phys_fn_004391 (0x000af3c0, 837 B; deferred: solver slots 6/7)
+// phys_fn_004391 (0x000af3c0, 837 B)
+// (deferred: solver slots 6/7)
 // (unimplemented)
 void row004391(void* record)
 	{
@@ -45,25 +49,36 @@ void row004393(void* record)
 	NX_ASSERT(0);
 	}
 
-// phys_fn_000022 (0x00001840, 27 B; deferred: owner gap <start>..Actor.cpp)
+// phys_fn_000022 (0x00001840, 27 B)
+// (deferred: owner gap <start>..Actor.cpp)
 // (unimplemented)
 void row000022()
 	{
 	NX_ASSERT(0);
 	}
 
-// phys_fn_000571 (0x000108e0, 22 B; deferred: owner Scene.cpp, link-insert
-// at Scene+0x620)
+// phys_fn_000571 (0x000108e0, 22 B)
+// (deferred: owner Scene.cpp, link-insert at Scene+0x620)
 // (unimplemented)
-void row000571(void* scene, void* joint)
+// Thiscall on Scene per the contract: Scene is `this` (ecx), `joint` is the
+// one stack argument (ret 4). MSVC rejects __thiscall on a free function
+// (C3865); the established workaround (ObjectModel.h's row004165/3413 note)
+// is a member function of a small non-virtual, non-inheriting fixture class
+// whose pointer bits stand in for the row until Task 10 gives it a real
+// Scene receiver type.
+struct Row000571Fixture
 	{
-	(void)scene;
+	void row000571(void* joint);
+	};
+
+void Row000571Fixture::row000571(void* joint)
+	{
 	(void)joint;
 	NX_ASSERT(0);
 	}
 
-// phys_fn_000633 (0x00012660, 370 B; deferred: owner Scene.cpp, joint
-// removal)
+// phys_fn_000633 (0x00012660, 370 B)
+// (deferred: owner Scene.cpp, joint removal)
 // (unimplemented)
 void row000633(void* joint)
 	{
@@ -71,8 +86,8 @@ void row000633(void* joint)
 	NX_ASSERT(0);
 	}
 
-// phys_fn_000758 (0x00017630, 214 B; deferred: owner gap
-// SceneRaycast..CapsuleShape)
+// phys_fn_000758 (0x00017630, 214 B)
+// (deferred: owner gap SceneRaycast..CapsuleShape)
 // (unimplemented)
 void row000758()
 	{
