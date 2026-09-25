@@ -50,6 +50,7 @@
 #include "core/DistanceJoint.h"
 #include "core/PulleyJoint.h"
 #include "core/FixedJoint.h"
+#include "core/D6Joint.h"
 #include "NxMat33.h"
 #include "NxQuat.h"
 
@@ -1425,21 +1426,22 @@ void NxSceneInternal::releaseActor(void* bodyPointer)
 //   on every exit after the switch, ++[Scene+0x6c8] and [Scene+0x6bc] =
 //     [Scene+0x59c] (0x14529-0x1453f) before the re-entry flag is cleared. Only
 //     the prismatic, revolute, cylindrical, spherical, point-on-line,
-//     point-in-plane, distance, pulley and fixed paths reproduce this; the
+//     point-in-plane, distance, pulley, fixed and D6 paths reproduce this; the
 //     generic path does not.
 //
-// The prismatic, revolute, cylindrical, spherical, point-on-line,
-// point-in-plane, distance, pulley and fixed cases run the reconstructed rows
-// (core/PrismaticJoint.cpp,
+// All ten joint types (prismatic, revolute, cylindrical, spherical,
+// point-on-line, point-in-plane, distance, pulley, fixed and D6) run the
+// reconstructed rows (core/PrismaticJoint.cpp,
 // core/NpPrismaticJoint.cpp, core/RevoluteJoint.cpp, core/NpRevoluteJoint.cpp,
 // core/CylindricalJoint.cpp, core/NpCylindricalJoint.cpp,
 // core/SphericalJoint.cpp, core/NpSphericalJoint.cpp,
 // core/PointOnLineJoint.cpp, core/NpPointOnLineJoint.cpp,
 // core/PointInPlaneJoint.cpp, core/NpPointInPlaneJoint.cpp,
 // core/DistanceJoint.cpp, core/NpDistanceJoint.cpp, core/PulleyJoint.cpp,
-// core/NpPulleyJoint.cpp, core/FixedJoint.cpp, core/NpFixedJoint.cpp). The
-// other type (D6) keeps the generic stand-in path
-// (nxJointConstruct over NpJointObject). The oracle's Scene::createJoint
+// core/NpPulleyJoint.cpp, core/FixedJoint.cpp, core/NpFixedJoint.cpp,
+// core/D6Joint.cpp, core/NpD6Joint.cpp). Only a type outside the ten reaches
+// the generic stand-in path (nxJointConstruct over NpJointObject), whose
+// size table has no entry for it, so it returns 0. The oracle's Scene::createJoint
 // returns the internal joint and its NpScene::createJoint (phys_fn_000297)
 // returns [internal+0x48]; here that load is done at the end of this function,
 // so NpScene::createJoint keeps returning what this returns for every type.
@@ -1511,9 +1513,13 @@ NxJoint* NxSceneInternal::createJoint(const NxJointDesc& desc)
 	//     phys_fn_004222 at 0x144f7 (joint-families Task 3g).
 	//   NX_JOINT_FIXED: case 8, target 0x1448c; (0x188, 0) at 0x14496-0x1449d,
 	//     phys_fn_004250 at 0x144ab (joint-families Task 3h).
+	//   NX_JOINT_D6: case 9, target 0x14554; (0x270, 0) at 0x1455e-0x14565,
+	//     phys_fn_004210 at 0x1456f (joint-families Task 3i). This arm repeats
+	//     the tail in place (0x14574-0x1458c) rather than jumping to 0x144fc;
+	//     the behaviour is the same.
 	if(d[1] == NX_JOINT_PRISMATIC || d[1] == NX_JOINT_REVOLUTE || d[1] == NX_JOINT_CYLINDRICAL ||
 		d[1] == NX_JOINT_SPHERICAL || d[1] == NX_JOINT_POINT_ON_LINE || d[1] == NX_JOINT_POINT_IN_PLANE ||
-		d[1] == NX_JOINT_DISTANCE || d[1] == NX_JOINT_PULLEY || d[1] == NX_JOINT_FIXED)
+		d[1] == NX_JOINT_DISTANCE || d[1] == NX_JOINT_PULLEY || d[1] == NX_JOINT_FIXED || d[1] == NX_JOINT_D6)
 		{
 		Joint* internal = 0;
 		if(d[1] == NX_JOINT_PRISMATIC)
@@ -1564,6 +1570,12 @@ NxJoint* NxSceneInternal::createJoint(const NxJointDesc& desc)
 			if(memory)
 				internal = new(memory) FixedJoint(static_cast<const NxFixedJointDesc&>(desc));
 			}
+		else if(d[1] == NX_JOINT_D6)
+			{
+			void* memory = nxGetSdkAllocator()->malloc(sizeof(D6Joint), NX_MEMORY_PERSISTENT);
+			if(memory)
+				internal = new(memory) D6Joint(static_cast<const NxD6JointDesc&>(desc));
+			}
 		else
 			{
 			void* memory = nxGetSdkAllocator()->malloc(sizeof(RevoluteJoint), NX_MEMORY_PERSISTENT);
@@ -1602,6 +1614,8 @@ NxJoint* NxSceneInternal::createJoint(const NxJointDesc& desc)
 					result = nxPulleyJointAttachScene(static_cast<PulleyJoint*>(internal), writeLink, readLink);
 				else if(d[1] == NX_JOINT_FIXED)
 					result = nxFixedJointAttachScene(static_cast<FixedJoint*>(internal), writeLink, readLink);
+				else if(d[1] == NX_JOINT_D6)
+					result = nxD6JointAttachScene(static_cast<D6Joint*>(internal), writeLink, readLink);
 				else
 					result = nxRevoluteJointAttachScene(static_cast<RevoluteJoint*>(internal), writeLink, readLink);
 				nxSceneAddJoint(this, internal);
@@ -1613,7 +1627,7 @@ NxJoint* NxSceneInternal::createJoint(const NxJointDesc& desc)
 				// revolute, phys_fn_004322 cylindrical, phys_fn_004302 spherical,
 				// phys_fn_004278 point-on-line, phys_fn_004264 point-in-plane,
 				// phys_fn_004236 distance, phys_fn_004224 pulley, phys_fn_004252
-				// fixed), then `xor esi,esi`.
+				// fixed, phys_fn_004202 D6), then `xor esi,esi`.
 				delete internal;
 				}
 			}
@@ -1630,7 +1644,7 @@ NxJoint* NxSceneInternal::createJoint(const NxJointDesc& desc)
 	// The other joint types: the generic stand-in. Their allocation literals are
 	// in revolute-contract.md "## Construction chain". Types 0 (prismatic), 1
 	// (revolute), 2 (cylindrical), 3 (spherical), 4 (point on line), 5 (point
-	// in plane), 6 (distance), 7 (pulley) and 8 (fixed) never get here.
+	// in plane), 6 (distance), 7 (pulley), 8 (fixed) and 9 (D6) never get here.
 	NxU32 size = nxJointSizeForType(d[1]);
 
 	NxJoint* joint = 0;
@@ -2529,7 +2543,8 @@ NxU32 nxJointSizeForType(unsigned type)
 	// (NX_JOINT_POINT_ON_LINE) through PointOnLineJoint, type 5
 	// (NX_JOINT_POINT_IN_PLANE) through PointInPlaneJoint, type 6
 	// (NX_JOINT_DISTANCE) through DistanceJoint, type 7 (NX_JOINT_PULLEY)
-	// through PulleyJoint and type 8 (NX_JOINT_FIXED) through FixedJoint.
+	// through PulleyJoint, type 8 (NX_JOINT_FIXED) through FixedJoint and type 9
+	// (NX_JOINT_D6) through D6Joint.
 	switch(type)
 		{
 		case 1: return 0x17c;		// revolute: unreachable, createJoint builds it through RevoluteJoint
@@ -2540,7 +2555,7 @@ NxU32 nxJointSizeForType(unsigned type)
 		case 6: return 0x220;		// distance: unreachable, createJoint builds it through DistanceJoint
 		case 7: return 0x1b0;		// pulley: unreachable, createJoint builds it through PulleyJoint
 		case 8: return 0x1b0;		// fixed: unreachable, createJoint builds it through FixedJoint
-		case 9: return 0x260;		// D6
+		case 9: return 0x260;		// D6: unreachable, createJoint builds it through D6Joint
 		default: return 0;
 		}
 	}
