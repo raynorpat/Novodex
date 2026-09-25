@@ -11,8 +11,8 @@
 //   * it is the harness Phase 6 needs, and it exists because Phase 6's own plan
 //     calls for tests/PhysicsJointTests.cpp;
 //   * it is a TRANSCRIPT generator for the revolute family and, since
-//     joint-families Tasks 3a and 3b, the prismatic and cylindrical families.
-//     The other seven families -- spherical, point-on-line, point-in-plane, D6,
+//     joint-families Tasks 3a-3d, the prismatic, cylindrical, spherical and
+//     point-on-line families. The other five families -- point-in-plane, D6,
 //     distance, fixed and pulley -- are not driven yet, and the file says so
 //     rather than reporting a coverage number that overstates;
 //   * it is registered as an oracle differential only when its transcript is
@@ -47,6 +47,8 @@
 #include "NxCylindricalJointDesc.h"
 #include "NxSphericalJoint.h"
 #include "NxSphericalJointDesc.h"
+#include "NxPointOnLineJoint.h"
+#include "NxPointOnLineJointDesc.h"
 
 typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(NxU32, NxUserAllocator*, NxUserOutputStream*);
 
@@ -435,6 +437,83 @@ static void nxSphericalCase(NxScene& scene, NxActor* a, NxActor* b,
 	printf("case=spherical index=%u released=yes\n", index);
 	}
 
+// One point-on-line case (joint-families Task 3d), modelled on nxPrismaticCase: build
+// the descriptor over the same two actors, create, read every value the joint
+// holds without a simulation step, then release. The family getter is
+// saveToDesc (NxPointOnLineJoint adds no other method), which returns the base
+// descriptor fields the joint stored. Nothing is asserted; everything is
+// printed.
+static void nxPointOnLineCase(NxScene& scene, NxActor* a, NxActor* b,
+	unsigned index, const NxVec3& anchor, const NxVec3& axis)
+	{
+	printf("case=point_on_line index=%u ", index);
+	nxPrintVec("in_anchor", anchor);
+	printf(" ");
+	nxPrintVec("in_axis", axis);
+	printf("\n");
+
+	NxPointOnLineJointDesc desc;
+	desc.setToDefault();
+	desc.actor[0] = a;
+	desc.actor[1] = b;
+	nxSetGlobalAnchor(desc, anchor);
+	nxSetGlobalAxis(desc, axis);
+
+	NxJoint* joint = scene.createJoint(desc);
+	printf("case=point_on_line index=%u created=%s\n", index, joint ? "yes" : "no");
+	if(!joint)
+		return;
+
+	NxVec3 gotAnchor(0.0f, 0.0f, 0.0f);
+	NxVec3 gotAxis(0.0f, 0.0f, 0.0f);
+	joint->getGlobalAnchor(gotAnchor);
+	joint->getGlobalAxis(gotAxis);
+	printf("case=point_on_line index=%u ", index);
+	nxPrintVec("out_anchor", gotAnchor);
+	printf(" ");
+	nxPrintVec("out_axis", gotAxis);
+	printf(" state=%u\n", static_cast<unsigned>(joint->getState()));
+
+	NxActor* ra = 0;
+	NxActor* rb = 0;
+	joint->getActors(&ra, &rb);
+	printf("case=point_on_line index=%u actors a=%s b=%s\n", index,
+		ra == a ? "match" : (ra ? "other" : "null"),
+		rb == b ? "match" : (rb ? "other" : "null"));
+
+	NxPointOnLineJoint* pointOnLine = joint->isPointOnLineJoint();
+	printf("case=point_on_line index=%u type=%u is_point_on_line=%s is_revolute=%s\n", index,
+		static_cast<unsigned>(joint->getType()), pointOnLine ? "yes" : "no",
+		joint->isRevoluteJoint() ? "yes" : "no");
+	if(pointOnLine)
+		{
+		NxPointOnLineJointDesc saved;
+		pointOnLine->saveToDesc(saved);
+		printf("case=point_on_line index=%u saved ", index);
+		nxPrintVec("anchor0", saved.localAnchor[0]);
+		printf(" ");
+		nxPrintVec("anchor1", saved.localAnchor[1]);
+		printf("\n");
+		printf("case=point_on_line index=%u saved ", index);
+		nxPrintVec("axis0", saved.localAxis[0]);
+		printf(" ");
+		nxPrintVec("axis1", saved.localAxis[1]);
+		printf("\n");
+		printf("case=point_on_line index=%u saved ", index);
+		nxPrintVec("normal0", saved.localNormal[0]);
+		printf(" ");
+		nxPrintVec("normal1", saved.localNormal[1]);
+		printf("\n");
+		printf("case=point_on_line index=%u saved max_force=%08x max_torque=%08x flags=%08x actors a=%s b=%s\n",
+			index, nxU(saved.maxForce), nxU(saved.maxTorque), static_cast<unsigned>(saved.jointFlags),
+			saved.actor[0] == a ? "match" : (saved.actor[0] ? "other" : "null"),
+			saved.actor[1] == b ? "match" : (saved.actor[1] ? "other" : "null"));
+		}
+
+	scene.releaseJoint(*joint);
+	printf("case=point_on_line index=%u released=yes\n", index);
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	wchar_t pairDirectory[MAX_PATH];
@@ -534,6 +613,11 @@ int wmain(int argc, wchar_t** argv)
 	// anchor/axis values.
 	nxSphericalCase(*scene, a, b, 0, NxVec3(0.0f, 0.0f, 0.0f), NxVec3(1.0f, 0.0f, 0.0f));
 	nxSphericalCase(*scene, a, b, 3, NxVec3(2.0f, 4.0f, 0.0f), NxVec3(0.5f, 0.5f, 0.5f));
+
+	// The point-on-line family (joint-families Task 3d), over the same two
+	// anchor/axis values.
+	nxPointOnLineCase(*scene, a, b, 0, NxVec3(0.0f, 0.0f, 0.0f), NxVec3(1.0f, 0.0f, 0.0f));
+	nxPointOnLineCase(*scene, a, b, 3, NxVec3(2.0f, 4.0f, 0.0f), NxVec3(0.5f, 0.5f, 0.5f));
 
 	sdk->releaseScene(*scene);
 	printf("scene=released\n");
