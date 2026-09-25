@@ -311,7 +311,7 @@ These behaviours are in the oracle and the reconstruction keeps them.
      a failure that predates the pilot.
    - Both compile `Scene.cpp`, which now constructs every joint type through `Physics/src/core`. Once the include path is
      fixed, they will also need `Physics/src/core/*.cpp` at link time.
-8. **Body +0x204 is unbuilt** (revolute contract open issue 7). The candidate's body record never
+8. (Closed by joint-open-items Task 3: 000797 stores 0, only the step's 000611 writes non-zero; see joint-open-items-contract.md `## Body record +0x204`.) **Body +0x204 is unbuilt** (revolute contract open issue 7). The candidate's body record never
    writes the `JointSupportBody*` that the solver-slot rows read; every family's internal file
    reads it through the body record.
 9. (Closed by joint-open-items Task 2: 000661 writes it.) **`Joint::mScene` (+0x30) is never written.** 000661 is a no-op, so `~Joint`, 004107's false

@@ -937,6 +937,9 @@ What the new code replaces or must stay compatible with. Line numbers are at com
    004093, which needs the Scene's record array at +0x5b8 and row 000598. (The other body
    fields 004360 reads, +0xc0 and +0x164, the candidate does write.) None of the three is on
    the transcript path.
+   Joint open-items Task 3 found where +0x204 is written. The body constructor 000797
+   stores 0, and the only other writer is the simulation step's 000611, which points it into
+   the Scene's +0x5ac array (joint-open-items-contract.md `## Body record +0x204`).
 8. **SDK parameters read by the solver-slot rows.** 004360 and 004362 read the live parameter
    array (`gParameter`, `.data 0x10123b18`) directly: element 0 (`NX_PENALTY_FORCE`) scales
    +0x1ac and the kind-0/2 record outputs, element 4 (`NX_BOUNCE_TRESHOLD`) gates the limit

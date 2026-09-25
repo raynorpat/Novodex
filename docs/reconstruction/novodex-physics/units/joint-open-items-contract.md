@@ -88,3 +88,101 @@ frees the +0x5b8 and +0x58c arrays; 000604's first loop (000760 over +0x56c) is 
 - `NpScene::releaseJoint` was empty and 000661 a no-op, so no joint was ever destroyed; the
   cycle's `count=` values and orders (`8.3.1`, `8.1`, `9.8.1`, `8.1`, `8`, `0.8`) need the list
   push order (new joints at the head) and the unlink of head, middle and tail.
+
+## Body record +0x204
+
+Open item 8 (revolute contract open issue 7). Scan: every Capstone instruction whose operand
+is `[reg + 0x204]`. 54 hits. Two stack stores (001878, 003349) and 000973's store (a
+shape-side field of another object, next to its +0x150..+0x1e0 stores of 4) are unrelated.
+The rest are the joint solver-slot readers (004135, 004194, 004196, 004228, 004240, 004246,
+004258, 004272, 004294, 004296, 004308, 004310, 004326, 004358, 004360, 004362, 004374,
+004386; 004210's and 004296's own +0x204 are D6/Spherical object fields), four body-side
+readers (000708, 000879, 000883, 000897) and exactly two writers on the body record:
+
+| Row | Site | Store | Path |
+|---|---|---|---|
+| 000797 (0x1b5c0, 402 B) | 0x1b713 `mov [ebx+0x204], esi` (esi = 0) | 0 | the body constructor (vptr 0x10106890; also zeroes +0x198..+0x1b4, +0x1e0/+0x1e4, calls 000760 and 000722). Reached from actor creation (000026 <- 000034 <- 000626 <- 000651/000293). |
+| 000611 (0x11260, 269 B) | 0x11305 `mov [eax+0x204], ebx` | `&[Scene+0x5ac][k]` | the simulation step only: 002400 (slot 1 of the 2-slot table phys_data_000982 at .rdata 0x10108894, installed by 002396; an endless loop on the step events) -> 000659 -> 000655 (0x13989) -> 000611. |
+
+The body destructor (000776, which reinstalls vptr 0x10106890 and calls 000760) does not touch
++0x204. Nothing clears it after a step: it keeps pointing into the Scene array until the next
+step rewrites it, and 000600 may free and reallocate that array in between.
+
+### What +0x204 points at
+
+Not an allocation of its own. It is element k of a Scene-owned array of 0x60-byte records:
+
+| Scene field | Meaning | Rows |
+|---|---|---|
+| +0x5ac | array pointer; the allocation starts 4 bytes earlier with the element count | 000600 (grow: free `[+0x5ac]-4` through allocator slot +0x14, malloc `n * 0x60 + 4` through slot +8 with 0, store n at the front, vector-construct n elements of 0x60 with the empty constructor 001391 (0x27f00, 3 B) through 000001), 000663 (free `[+0x5ac]-4` at 0x14019-0x14034) |
+| +0x5b0 | size requested by the last step (000600 stores its argument) | 000600 |
+| +0x5b4 | capacity; 000600 reallocates only when the argument exceeds it | 000600 |
+
+All three are zeroed by the Scene constructor 000647 (0x12e65-0x12e71); the candidate's
+constructor zeroes dwords 0x16b-0x16d.
+
+000611 (thiscall on the Scene, no arguments) sets +0x70c bit 2, then for each entry of the
+{begin, end} array at +0x57c/+0x580 (island head bodies) whose head has +0x1f0 != 0: calls
+000600 with the head's +0x1f4 (the island body count), then walks the bodies through +0x1fc and
+fills one element each (record base `ebx`, `edx = ebx + 0x18`):
+
+| Element | From body | Site |
+|---|---|---|
+| +0x00..+0x08 | +0x34..+0x3c (the candidate stores linearVelocity here) | 0x112c1-0x112cf |
+| +0x0c | +0xc0 (inverse mass) | 0x112d2 |
+| +0x10..+0x18 | +0x40..+0x48 (the candidate stores angularVelocity here) | 0x112db-0x112ea |
+| +0x1c | the body pointer | 0x112ec |
+| +0x20..+0x40 | +0x164..+0x184 (world inverse inertia, `rep movsd` of 9) | 0x112ef-0x112fd |
+| +0x5c | +0x110 (the candidate stores solverIterationCount here); also raises the global 0x1012718c to it | 0x112ff, 0x1130b-0x11316 |
+| body +0x204 | = the element | 0x11305 |
+
++0x44..+0x58 are not written here (004174 writes them, below). Then 000730 runs (thiscall on the island head body, with
+Scene +0x548/+0x54c). If the Scene has joint constraint records (+0x5bc != 0), 004176 runs.
+It zeroes the global 0x10127184, calls 004174 with +0x548 and zeroes 0x1012718c afterwards.
+004174 is the record solver:
+- it loops 0x1012718c times (the largest +0x5c seen);
+- on each pass it calls, for every 0x50-byte record at +0x5b8, the kind's handler from the
+  .data table 0x1012234c (`[flags & 0x1f]`, cdecl `(arg, pass, record)`). A record is skipped
+  when neither of its two elements (+0x10/+0x14) has +0x5c >= the pass counter,
+  which counts down from 0x1012718c to 1;
+- it then copies each element's +0x00..+0x08 to +0x44..+0x4c and +0x10..+0x18 to
+  +0x50..+0x58 (0x9b1a0-0x9b1ca);
+- last, it makes one pass with pass = -1 (0x9b1e4-0x9b22d).
+Last, 000613 walks the island's elements and calls
+000708 on each element's +0x1c body: 000708 copies element +0x00 -> body +0x34, +0x10 -> body
++0x40, +0x44 -> body +0x1a0, +0x50 -> body +0x1ac, and sets body +0x1e4 bit 5 (0x20). 000613
+then clears +0x5bc and moves to the next island; after the last it clears +0x70c bit 2.
+
+The readers agree with this layout: 004374 adds +0x0c times an impulse to +0x00 and the +0x20
+3x3 times r x impulse to +0x10 (a velocity update with inverse mass and inverse inertia);
+004389 multiplies +0x00 and +0x10 with the constraint record's vectors; 004358 forms
++0x00 + (+0x10 x r). `JointSupportBody` (core/JointSupport.h) now declares all 0x60 bytes with
+a `sizeof == 0x60` assert; field names stay by offset.
+
+### Candidate
+
+- **Construction.** The body record is `nxActorComputeMass`'s 0x260-byte block (Scene.cpp),
+  memset to 0, so +0x204 was already 0; the store is now explicit, through
+  `JointBodyRecord::mUnknown204`, after the +0x1bc/+0x1e8 stores, with the 000797 site in the
+  comment. No allocation is added. The oracle makes none for +0x204 at actor creation, so the
+  Phase 5 allocation sequences (e.g. the 34-allocation first-dynamic-actor path) stay as they are.
+- **Teardown.** Actor release needs nothing: the oracle's body destructor does not touch +0x204.
+  `nxSceneDelete` now frees `[+0x5ac]-4` when +0x5ac is non-null (000663's 0x14019-0x14034) and
+  clears it. In the candidate +0x5ac is always null, because only the step grows it.
+- **Not written:** 000600, 000611, 000613 and 000708. All four are reachable only from the
+  simulation step (002400 -> 000659 -> 000655), which the candidate does not have
+  (`NpScene::simulate` is empty). They belong with the step.
+- **No public observable.** Before the first simulate, both DLLs hold +0x204 = 0 on every
+  body. No public call reads +0x204 without a step.
+
+### Consequence for the internal-slot differential (Task 4)
+
+004358 loads `[body+0x204]` and dereferences it without a null test (0xa9f5a -> `fld [eax+0x14]`,
+0xa9fe3 -> `fld [edx+0x14]`). So does 004374 once its body is non-null (0xad2f4 -> `fld [ecx+0xc]`,
+0xad41b likewise). With a body attached and no step taken, +0x204 is 0 in the oracle as well,
+so slot 0 (the impulse slot) of a body joint faults near address 0 in **both** DLLs. 004360 and
+004362 only copy the pointer into their records, and 004389 null-tests the record's +0x10/+0x14
+before it reads them (0xaf2dd, 0xaf318), so a null there is harmless. A direct slot differential
+has two options. It can leave the slot-0 rows uncalled on bodies that have not been simulated.
+Or it can supply a JointSupportBody the same way in both DLLs. Writing one into +0x204 by hand
+is test scaffolding, not something the oracle does.
