@@ -592,6 +592,18 @@ Getters: 004437/004125, 004441/004129, 004483/004078, 004539, 004443/004070,
   asserts only the size; the contract lists the Joint base fields the rows use instead.
 - **Point-on-line and point-in-plane** share no row (see `## PointOnLine` "### Point-in-plane"
   for the listing differences Task 3e will meet).
+- **An Np gap is not always the tail of the family before it**:
+  `gap:core\NpFixedJoint.cpp..core\NpPointInPlaneJoint.cpp` holds the FIXED family's
+  constructor/thunk/destructor (fixed's 004250 calls 004561). Point-in-plane's own triple
+  (004591-004595) sits inside `core\NpPointInPlaneJoint.cpp`. Check the constructor's caller and
+  the tables it installs, not the gap's name.
+- **The type bit is not the NxJointType**: 004262 passes 2 to `Joint(desc, typeBit)` for type 5.
+  Read the `push` before the 004141 call.
+- **Folded Np bodies inside a family's range**: 004573/004577 sit in the address range of
+  `core\NpPointInPlaneJoint.cpp` but belong to `NpJointShared`. The family file gives them no
+  stable-ID line.
+- **Solver biases may divide**: point-in-plane 004258 forms its bias with `fdiv [arg]`, where
+  point-on-line 004272 multiplies by 1/arg. Read the bias instruction at each site.
 
 ## Cylindrical
 
@@ -1500,3 +1512,22 @@ NxJoint row reports line 0xf; loadFromDesc 0x13, saveToDesc 0x1e (the `push` bef
   10 = **004256** -> 004066.
 - Compiled but not reached: 004258, 004260, 004264 (release unwired), 004266, 004567-004587,
   004595.
+
+### Result (Task 3e)
+
+- Wired: `NxSceneInternal::createJoint` builds type 5 through `PointInPlaneJoint` (0x16c) and
+  `nxPointInPlaneJointAttachScene`, in the same block as the other wired families.
+  `nxJointSizeForType` is now reached only by types 6-9.
+- The staged pair matched the oracle on the first run: `stdout_delta=0`, 51/51 Phase 6 coverage,
+  24/24 Phase 7. No transcript difference was found.
+- Registered lines: four per joint list, copied from the oracle side of that run. The two sources
+  were the oracle-differential section of the Phase 6 log for `NxPhysicsJointTests` and the
+  `pair=oracle` child output for `NxPhysicsJointStagedPairTests`; their lines were identical
+  (`cmp`).
+- A cdb trace of the candidate (`evidence/joint-families-trace-point-in-plane.txt`) shows 004262,
+  004591, 004589 and 004256 executing in both cases. 004258, 004260, 004264, 004266 and the Np
+  setters are compiled but not reached. The solver and visualization rows are checked against the
+  listing by review and the build only; the candidate object is x87 only (no xmm) with the one
+  `fdiv` of 004258.
+- Ledger: the 19 rows are `reconstructed_not_falsified` in `gates/phase6-closure.json` (15 moved
+  from `not_reconstructed_in_phase`; 4 already were); counts 186 / 245.
