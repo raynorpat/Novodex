@@ -9,6 +9,7 @@
 #include "NxBoxShapeDesc.h"
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 
 typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(NxU32, NxUserAllocator*, NxUserOutputStream*);
 
@@ -68,6 +69,85 @@ static void transformState(const char* tag, NxActor* actor)
 		word(record, 0x5c), word(record, 0x60), word(record, 0x64), word(record, 0x68),
 		word(record, 0x100), word(record, 0x104), word(record, 0x108),
 		word(record, 0x158), word(record, 0x15c), word(record, 0x160));
+}
+// Joint-open-items Task 4: rotated bodies. A rotation matrix from a unit
+// quaternion (x, y, z, w), formed in the harness and printed as input.
+static NxMat33 quatMatrix(float x, float y, float z, float w)
+{
+	const float inv = 1.0f / sqrtf(x * x + y * y + z * z + w * w);
+	x *= inv; y *= inv; z *= inv; w *= inv;
+	NxMat33 m;
+	m.setRow(0, NxVec3(1.0f - 2.0f * (y * y + z * z), 2.0f * (x * y - w * z), 2.0f * (x * z + w * y)));
+	m.setRow(1, NxVec3(2.0f * (x * y + w * z), 1.0f - 2.0f * (x * x + z * z), 2.0f * (y * z - w * x)));
+	m.setRow(2, NxVec3(2.0f * (x * z - w * y), 2.0f * (y * z + w * x), 1.0f - 2.0f * (x * x + y * y)));
+	return m;
+}
+// The body-record words the mass-frame refresh (000768) and the pose
+// conversions (000801, 000196/000200) write: +0x5c quaternion, +0x124
+// mass-frame quaternion, +0x134 mass-frame world 3x3, +0x158 world centre,
+// +0x164 world inverse inertia.
+static void massFrame(const char* tag, NxActor* actor)
+{
+	unsigned char* body = *reinterpret_cast<unsigned char**>(
+		reinterpret_cast<unsigned char*>(actor) + 0x14);
+	unsigned char* record = *reinterpret_cast<unsigned char**>(body + 8);
+	static const unsigned blocks[5][2] = { { 0x5c, 4 }, { 0x124, 4 }, { 0x134, 9 }, { 0x158, 3 }, { 0x164, 9 } };
+	for(unsigned k = 0; k < 5; ++k)
+	{
+		printf("cmass %s frame off=%x words=", tag, blocks[k][0]);
+		for(unsigned w = 0; w < blocks[k][1]; ++w)
+			printf("%s%x", w ? "." : "", word(record, blocks[k][0] + 4 * w));
+		printf("\n");
+	}
+}
+// Every setter that ends in the mass-frame refresh, over a body created at
+// `orientation` with a rotated mass frame; each step prints the frame words.
+static void rotatedCase(NxScene* scene, const char* name, const NxMat33& orientation,
+	const NxMat33& massRotation, const NxMat33& target)
+{
+	NxBoxShapeDesc box; box.dimensions = NxVec3(1.0f, 2.0f, 3.0f);
+	NxBodyDesc body; body.mass = 5.0f;
+	body.massSpaceInertia = NxVec3(2.0f, 3.0f, 4.0f);
+	body.massLocalPose.M = massRotation;
+	body.massLocalPose.t = NxVec3(0.5f, -1.0f, 1.5f);
+	NxActorDesc desc; desc.shapes.pushBack(&box); desc.body = &body;
+	desc.globalPose.M = orientation;
+	desc.globalPose.t = NxVec3(4.0f, -1.0f, 2.0f);
+	char tag[96];
+	sprintf(tag, "rot_%s", name);
+	matrix(tag, "input_orientation", orientation);
+	matrix(tag, "input_mass_rotation", massRotation);
+	matrix(tag, "input_target", target);
+	NxActor* actor = scene->createActor(desc);
+	printf("cmass %s created=%u\n", tag, actor ? 1u : 0u);
+	if(!actor) return;
+	sprintf(tag, "rot_%s_created", name); massFrame(tag, actor);
+	NxMat34 targetPose; targetPose.M = target; targetPose.t = NxVec3(-2.0f, 3.0f, 0.5f);
+	actor->setGlobalPose(targetPose);
+	sprintf(tag, "rot_%s_set_global_pose", name); massFrame(tag, actor);
+	actor->setGlobalPosition(NxVec3(1.0f, 2.0f, -3.0f));
+	sprintf(tag, "rot_%s_set_global_position", name); massFrame(tag, actor);
+	actor->setGlobalOrientation(orientation);
+	sprintf(tag, "rot_%s_set_global_orientation", name); massFrame(tag, actor);
+	NxQuat quat; quat.x = 0.1f; quat.y = -0.7f; quat.z = 0.1f; quat.w = 0.7f;
+	actor->setGlobalOrientationQuat(quat);
+	sprintf(tag, "rot_%s_set_global_orientation_quat", name); massFrame(tag, actor);
+	actor->setCMassOffsetLocalPosition(NxVec3(-0.25f, 0.75f, 1.25f));
+	sprintf(tag, "rot_%s_set_local_position", name); massFrame(tag, actor);
+	actor->setCMassOffsetLocalOrientation(target);
+	sprintf(tag, "rot_%s_set_local_orientation", name); massFrame(tag, actor);
+	NxMat34 localPose; localPose.M = orientation; localPose.t = NxVec3(0.5f, 0.25f, -0.75f);
+	actor->setCMassOffsetLocalPose(localPose);
+	sprintf(tag, "rot_%s_set_local_pose", name); massFrame(tag, actor);
+	actor->setCMassOffsetGlobalPosition(NxVec3(1.5f, 2.5f, -2.5f));
+	sprintf(tag, "rot_%s_set_global_offset_position", name); massFrame(tag, actor);
+	actor->setCMassOffsetGlobalOrientation(massRotation);
+	sprintf(tag, "rot_%s_set_global_offset_orientation", name); massFrame(tag, actor);
+	NxMat34 worldPose; worldPose.M = target; worldPose.t = NxVec3(2.0f, -0.5f, 1.0f);
+	actor->setCMassOffsetGlobalPose(worldPose);
+	sprintf(tag, "rot_%s_set_global_offset_pose", name); massFrame(tag, actor);
+	sprintf(tag, "rot_%s_final", name); probe(tag, actor);
+	scene->releaseActor(*actor);
 }
 int wmain(int argc, wchar_t** argv)
 {
@@ -197,6 +277,26 @@ int wmain(int argc, wchar_t** argv)
 	const NxMat34& staticReference = staticActor->getGlobalPoseReference();
 	pose("static", "pose_reference", staticReference);
 	scene->releaseActor(*staticActor);
+	// Joint-open-items Task 4: rotated bodies through every setter that ends
+	// in the mass-frame refresh. The orientations walk every arm of the
+	// matrix-to-quaternion conversions: a general rotation (trace arm), 180
+	// degrees about x, y and z (exact, the three pivot arms) and three general
+	// rotations whose largest diagonal is x, y and z (non-positive trace).
+	const NxMat33 general = quatMatrix(1.0f, 2.0f, 3.0f, 4.0f);
+	const NxMat33 mass = quatMatrix(-0.3f, 0.5f, 0.2f, 0.8f);
+	const NxMat33 flipX = quatMatrix(1.0f, 0.0f, 0.0f, 0.0f);
+	const NxMat33 flipY = quatMatrix(0.0f, 1.0f, 0.0f, 0.0f);
+	const NxMat33 flipZ = quatMatrix(0.0f, 0.0f, 1.0f, 0.0f);
+	const NxMat33 nearX = quatMatrix(0.95f, 0.2f, 0.1f, 0.2f);
+	const NxMat33 nearY = quatMatrix(0.15f, 0.9f, -0.3f, 0.25f);
+	const NxMat33 nearZ = quatMatrix(-0.2f, 0.25f, 0.9f, 0.3f);
+	rotatedCase(scene, "general", general, mass, nearX);
+	rotatedCase(scene, "flip_x", flipX, nearY, nearZ);
+	rotatedCase(scene, "flip_y", flipY, nearZ, general);
+	rotatedCase(scene, "flip_z", flipZ, flipX, nearY);
+	rotatedCase(scene, "near_x", nearX, flipY, flipZ);
+	rotatedCase(scene, "near_y", nearY, general, flipX);
+	rotatedCase(scene, "near_z", nearZ, nearX, flipY);
 	sdk->releaseScene(*scene); sdk->release();
 	return nxReportPairIdentity(pairDirectory);
 }

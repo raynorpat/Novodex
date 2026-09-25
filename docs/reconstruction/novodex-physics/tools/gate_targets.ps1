@@ -101,6 +101,15 @@ $NxRequiredCoverageLines = [ordered] @{
     'NxPhysicsShapeVtableTests' = @(
         'shape vtable oracle_digest=ed1294b6 cases=626 failures=0'
     )
+    # Joint-open-items Task 4 review: seven rotated bodies (a general rotation,
+    # 180 degrees about x, y and z, and three general rotations whose largest
+    # diagonal is x, y and z) through every setter that ends in the
+    # mass-frame refresh 000768, printing +0x5c, +0x124, +0x134, +0x158 and
+    # +0x164 after each. Forty-two oracle-side lines were added to this list:
+    # per body, the created +0x5c/+0x124 (000801, 000768), the +0x5c after
+    # setGlobalPose and setGlobalOrientation (000196/000200's own
+    # conversion), +0x134 after setCMassOffsetGlobalOrientation (000222) and
+    # +0x158 after setCMassOffsetGlobalPose (000218).
     'NxPhysicsActorCMassTests' = @(
         'cmass variant=0 created=1',
         'cmass identity local_pose=3f800000.0.0.0.3f800000.0.0.0.3f800000.0.0.0',
@@ -215,6 +224,48 @@ $NxRequiredCoverageLines = [ordered] @{
         'cmass static global_pose=3f800000.0.0.0.3f800000.0.0.0.3f800000.0.0.0',
         'cmass static global_position=0.0.0',
         'cmass static global_orientation=3f800000.0.0.0.3f800000.0.0.0.3f800000',
+        'cmass rot_general_created frame off=5c words=3e3af4b9.3ebaf4b9.3f0c378c.3f3af4ba',
+        'cmass rot_general_created frame off=124 words=be8ad5e3.3ee76479.3f46ff5f.3eafdbb9',
+        'cmass rot_general_set_global_pose frame off=5c words=3f741dfd.3e4d9285.3dcd9285.3e4d9285',
+        'cmass rot_general_set_global_orientation frame off=5c words=3e3af4b9.3ebaf4b9.3f0c378c.3f3af4ba',
+        'cmass rot_general_set_global_offset_orientation frame off=134 words=3edcdcdc.bf1b9b9c.3f2aaaaa.3ca0a097.3f3ebebd.3f2aaaa9.bf66e6e5.be8c8c8c.3eaaaaa8',
+        'cmass rot_general_set_global_offset_pose frame off=158 words=3fffffff.bf000000.3f7ffff8',
+        'cmass rot_flip_x_created frame off=5c words=3f800000.0.0.0',
+        'cmass rot_flip_x_created frame off=124 words=3e80f890.3e9ac3e0.3f6825d0.be1ac3e0',
+        'cmass rot_flip_x_set_global_pose frame off=5c words=be4c8b64.3e7fae3d.3f661ccf.3e99688b',
+        'cmass rot_flip_x_set_global_orientation frame off=5c words=3f800000.0.0.0',
+        'cmass rot_flip_x_set_global_offset_orientation frame off=134 words=bf53d13e.3eda5093.3ebb207e.3df980a9.3f4585d8.bf1fd66b.bf0c585e.bef1b4a2.bf30bb24',
+        'cmass rot_flip_x_set_global_offset_pose frame off=158 words=3fffffff.bf000000.3f7ffff8',
+        'cmass rot_flip_y_created frame off=5c words=0.3f800000.0.0',
+        'cmass rot_flip_y_created frame off=124 words=3f661ccf.3e99688b.3e4c8b64.be7fae3d',
+        'cmass rot_flip_y_set_global_pose frame off=5c words=3e3af4b9.3ebaf4b9.3f0c378c.3f3af4ba',
+        'cmass rot_flip_y_set_global_orientation frame off=5c words=0.3f800000.0.0',
+        'cmass rot_flip_y_set_global_offset_orientation frame off=134 words=bf3d9b1f.bf236e72.be5680f5.3ee0b7dc.bf321d5c.3f118e5d.bf023c02.3ea889e4.3f4ba69e',
+        'cmass rot_flip_y_set_global_offset_pose frame off=158 words=3fffffff.bf000000.3f7ffff8',
+        'cmass rot_flip_z_created frame off=5c words=0.0.3f800000.0',
+        'cmass rot_flip_z_created frame off=124 words=0.3f800000.0.0',
+        'cmass rot_flip_z_set_global_pose frame off=5c words=3e1ac3df.3f6825d0.be9ac3df.3e80f88f',
+        'cmass rot_flip_z_set_global_orientation frame off=5c words=0.0.3f800000.0',
+        'cmass rot_flip_z_set_global_offset_orientation frame off=134 words=3f7fffff.0.32925461.0.bf7fffff.3296bb99.b2925461.3296bb99.bf7ffffe',
+        'cmass rot_flip_z_set_global_offset_pose frame off=158 words=3fffffff.bf000000.3f7ffff8',
+        'cmass rot_near_x_created frame off=5c words=3f741dfd.3e4d9285.3dcd9285.3e4d9285',
+        'cmass rot_near_x_created frame off=124 words=bdcd9285.3e4d9285.3f741dfd.be4d9285',
+        'cmass rot_near_x_set_global_pose frame off=5c words=0.0.3f800000.0',
+        'cmass rot_near_x_set_global_orientation frame off=5c words=3f741dfd.3e4d9285.3dcd9285.3e4d9285',
+        'cmass rot_near_x_set_global_offset_orientation frame off=134 words=bf7fffff.0.32925461.0.3f7fffff.3296bb99.32925461.b296bb99.bf7ffffe',
+        'cmass rot_near_x_set_global_offset_pose frame off=158 words=3fffffff.bf000000.3f7ffff8',
+        'cmass rot_near_y_created frame off=5c words=3e1ac3e0.3f6825d0.be9ac3e0.3e80f890',
+        'cmass rot_near_y_created frame off=124 words=3f43702b.3f1dc369.be45caf8.bc16b31f',
+        'cmass rot_near_y_set_global_pose frame off=5c words=3f800000.0.0.0',
+        'cmass rot_near_y_set_global_orientation frame off=5c words=3e1ac3df.3f6825d0.be9ac3df.3e80f88f',
+        'cmass rot_near_y_set_global_offset_orientation frame off=134 words=3e088887.bf2aaaab.3f3bbbba.3f6eeeef.3eaaaaa9.3e088889.beaaaaa9.3f2aaaa9.3f2aaaaa',
+        'cmass rot_near_y_set_global_offset_pose frame off=158 words=3fffffff.bf000000.3f7ffff8',
+        'cmass rot_near_z_created frame off=5c words=be4c8b64.3e7fae3d.3f661ccf.3e99688b',
+        'cmass rot_near_z_created frame off=124 words=3db8c8c5.3f7ccb8e.bd8a9691.3de1d8f2',
+        'cmass rot_near_z_set_global_pose frame off=5c words=0.3f800000.0.0',
+        'cmass rot_near_z_set_global_orientation frame off=5c words=be4c8b64.3e7fae3d.3f661ccf.3e99688b',
+        'cmass rot_near_z_set_global_offset_orientation frame off=134 words=3f6634e0.3eaf653b.3e8b48dd.3ed8aa3c.bf56bafb.beaf653b.3de2fb76.3ed8aa3b.bf6634da',
+        'cmass rot_near_z_set_global_offset_pose frame off=158 words=3fffffff.bf000000.3f7ffff8',
         'cmass static pose_reference=3f800000.0.0.0.3f800000.0.0.0.3f800000.0.0.0'
     )
     'NxPhysicsActorForceTests' = @(
@@ -1982,7 +2033,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 101  # 34 for NxPhysicsAssetTests, 67 for NxPhysicsThirdPartyTests
-    '5' = 829  # 126 object-layout, 1 shape-vtable and 702 public actor/pruner/box/scene lines
+    '5' = 871  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines
                # (RED on purpose: vtables family open)
     '6' = 215  # 3 oracle-descriptor + 103 oracle-joint + 103 staged-pair-joint + 6 tangent
     '7' = 103  # the 103 STAGED-PAIR assertions; the oracle-differential assertions

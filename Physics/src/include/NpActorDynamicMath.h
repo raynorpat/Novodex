@@ -56,23 +56,6 @@ static inline void nxNpActorWorldTensor(const float* diagonal,
 		}
 	}
 
-static inline void nxNpActorUpdateInertiaMatrices(unsigned char* record)
-	{
-	float* rotation = reinterpret_cast<float*>(record + 0x134);
-	float* inverse = reinterpret_cast<float*>(record + 0x164);
-	float bodyRotation[9];
-	nxNpActorRotationFromQuaternion(record, bodyRotation);
-	const float* frame = reinterpret_cast<const float*>(record + 0xdc);
-	for(unsigned row = 0; row < 3; ++row)
-		for(unsigned col = 0; col < 3; ++col)
-			rotation[row * 3 + col] = static_cast<float>(
-				static_cast<double>(bodyRotation[row * 3]) * frame[col] +
-				static_cast<double>(bodyRotation[row * 3 + 1]) * frame[3 + col] +
-				static_cast<double>(bodyRotation[row * 3 + 2]) * frame[6 + col]);
-	nxNpActorWorldTensor(reinterpret_cast<const float*>(record + 0xc4),
-		rotation, inverse);
-	}
-
 static inline void nxNpActorQuaternionFromMatrix(const float* m, float* q)
 	{
 	const double trace = static_cast<double>(m[0]) + m[4] + m[8];
@@ -162,6 +145,66 @@ static inline void nxNpActorBodyQuaternionFromMatrix(const float* m, float* q)
 		}
 	}
 
+// The pose setters' own matrix-to-quaternion conversion: setGlobalPose
+// (phys_fn_000196, 0x8b5c-0x8d07) and setGlobalOrientation (phys_fn_000200,
+// 0x9110-, the same instruction sequence). The trace arm matches 000801's
+// conversion. The other arms differ in what they spill:
+// - the z arm spills s to float and forms 0.5 / float(s);
+// - the y and x arms spill the reciprocal 0.5 / s to float before using it.
+// In every arm the (m22 + m11) sum is spilled to float, as in 000801.
+static inline void nxNpActorSetterQuaternionFromMatrix(const float* m, float* q)
+	{
+	const double zy = static_cast<double>(m[8]) + m[4];
+	const float zySpill = static_cast<float>(zy);		// fst [esp+0x34], 0x8b66
+	const double trace = zy + m[0];
+	if(trace >= 0.0)
+		{
+		const double s = sqrt(trace + 1.0);
+		q[3] = static_cast<float>(0.5 * s);
+		const double r = 0.5 / s;
+		q[0] = static_cast<float>((static_cast<double>(m[7]) - m[5]) * r);
+		q[1] = static_cast<float>((static_cast<double>(m[2]) - m[6]) * r);
+		q[2] = static_cast<float>((static_cast<double>(m[3]) - m[1]) * r);
+		return;
+		}
+	unsigned axis = m[4] > m[0] ? 1u : 0u;
+	if(m[8] > m[axis * 4])
+		axis = 2;
+	if(axis == 2)
+		{
+		// 0x8bf7: fst [esp+0x34] keeps a float copy of s for the reciprocal.
+		const double s = sqrt((static_cast<double>(m[8]) -
+			(static_cast<double>(m[4]) + m[0])) + 1.0);
+		const float sSpill = static_cast<float>(s);
+		q[2] = static_cast<float>(s * 0.5);
+		const double r = 0.5 / static_cast<double>(sSpill);
+		q[0] = static_cast<float>((static_cast<double>(m[6]) + m[2]) * r);
+		q[1] = static_cast<float>((static_cast<double>(m[7]) + m[5]) * r);
+		q[3] = static_cast<float>((static_cast<double>(m[3]) - m[1]) * r);
+		}
+	else if(axis == 1)
+		{
+		// 0x8c46: the reciprocal is stored to [esp+0x34] and reloaded.
+		const double s = sqrt((static_cast<double>(m[4]) -
+			(static_cast<double>(m[8]) + m[0])) + 1.0);
+		q[1] = static_cast<float>(0.5 * s);
+		const double r = static_cast<float>(0.5 / s);
+		q[2] = static_cast<float>((static_cast<double>(m[7]) + m[5]) * r);
+		q[0] = static_cast<float>((static_cast<double>(m[3]) + m[1]) * r);
+		q[3] = static_cast<float>((static_cast<double>(m[2]) - m[6]) * r);
+		}
+	else
+		{
+		// 0x8c98: as the y arm, over m00 - float(m22 + m11).
+		const double s = sqrt((static_cast<double>(m[0]) - zySpill) + 1.0);
+		q[0] = static_cast<float>(0.5 * s);
+		const double r = static_cast<float>(0.5 / s);
+		q[1] = static_cast<float>((static_cast<double>(m[3]) + m[1]) * r);
+		q[2] = static_cast<float>((static_cast<double>(m[6]) + m[2]) * r);
+		q[3] = static_cast<float>((static_cast<double>(m[7]) - m[5]) * r);
+		}
+	}
+
 // out = R diag(d) R^T, as the cdecl helper phys_fn_000746 (0x16e80, 245 B)
 // forms it (joint-open-items Task 4). Of the nine products d[k] * R[i][k],
 // four stay in x87 registers (d0*R00, d0*R20, d1*R21, d2*R22: double here)
@@ -190,23 +233,15 @@ static inline void nxNpActorWorldTensorRDRt(const float* d, const float* r, floa
 		static_cast<double>(s8) * r[7]);
 	}
 
-// The mass-frame refresh phys_fn_000768 (0x17f10, 1164 B, thiscall on the
-// record, joint-open-items Task 4). From the pose quaternion at +0x24 (w
-// last) and position at +0x18 it forms the rotation R with the same x87
-// pattern the joint-descriptor exports use (five doubled products spilled to
-// float), then writes
-//   +0x134 = R * F (F the mass-frame 3x3 at +0xdc), each element summed in
-//            the listing's operand order and rounded once;
-//   +0x158 = R * p + t (p the mass-frame position at +0x100): x stays in the
-//            register until the store, y and z round the product sum first;
-//   +0x124 = the quaternion of +0x134, by the conversion 000801 uses;
-// and calls the world-tensor helper 0x16e80 for +0x164. Only the actor
-// creation path calls it here; the Np setters keep their own sequences.
-static inline void nxNpActorUpdateMassFrame(unsigned char* record)
+// The rotation matrix, row-major, of a record quaternion (x, y, z, w), as
+// every inline expansion in the listing forms it (000768 from +0x24;
+// 000218, 000220, 000222 and the joint-descriptor exports 004115/004117 from
+// +0x5c: the same instruction sequence, compared with registers and stack
+// slots normalised). Each doubled product is `fmul; fadd st(0), st(0)` in an
+// x87 register (53-bit here, so double); five are spilled to float.
+static inline void nxNpActorComposeRotation(const float* q, float* r)
 	{
-	const float* q = reinterpret_cast<const float*>(record + 0x24);
 	const double x = q[0], y = q[1], z = q[2], w = q[3];
-	float r[9];
 	const float yy2 = static_cast<float>(y * y + y * y);
 	const double zz2 = z * z + z * z;
 	r[0] = static_cast<float>((1.0 - yy2) - zz2);
@@ -227,6 +262,24 @@ static inline void nxNpActorUpdateMassFrame(unsigned char* record)
 	r[6] = static_cast<float>(static_cast<double>(xz2) - yw2Spill);
 	r[7] = static_cast<float>(xw2 + yz2);
 	r[8] = static_cast<float>(static_cast<double>(xx1Spill) - yy2);
+	}
+
+// The mass-frame refresh phys_fn_000768 (0x17f10, 1164 B, thiscall on the
+// record, joint-open-items Task 4). From the pose quaternion at +0x24 (w
+// last) and position at +0x18 it forms the rotation R with the same x87
+// pattern the joint-descriptor exports use (five doubled products spilled to
+// float), then writes
+//   +0x134 = R * F (F the mass-frame 3x3 at +0xdc), each element summed in
+//            the listing's operand order and rounded once;
+//   +0x158 = R * p + t (p the mass-frame position at +0x100): x stays in the
+//            register until the store, y and z round the product sum first;
+//   +0x124 = the quaternion of +0x134, by the conversion 000801 uses;
+// and calls the world-tensor helper 0x16e80 for +0x164. Only the actor
+// creation path calls it here; the Np setters keep their own sequences.
+static inline void nxNpActorUpdateMassFrame(unsigned char* record)
+	{
+	float r[9];
+	nxNpActorComposeRotation(reinterpret_cast<const float*>(record + 0x24), r);
 
 	// World centre of mass, 0x17fe1-0x181f4.
 	const float* t = reinterpret_cast<const float*>(record + 0x18);
