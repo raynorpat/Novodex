@@ -22,11 +22,11 @@ Evidenced span: ['0x000b2390', '0x000b27e0']. Rows: 16 (0 ambiguous). Generated 
 - gap:core\PrismaticJoint.cpp..core\NpD6Joint.cpp: phys_fn_004417, phys_fn_004419, phys_fn_004421, phys_fn_004423, phys_fn_004425, phys_fn_004427, phys_fn_004429, phys_fn_004431, phys_fn_004433
 - unassigned: phys_fn_005667
 
-## phys_fn_004623 (0x000b2390, 84 B, discovered)
+## phys_fn_004623 (0x000b2390, 84 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpSphericalJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpSphericalJoint.cpp
 - prototype: undefined __thiscall FUN_100b2390(float * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004649 (0x000b2840)
@@ -66,11 +66,11 @@ void __thiscall FUN_100b2390(void *this,float *param_1)
 
 ```
 
-## phys_fn_004625 (0x000b23f0, 84 B, discovered)
+## phys_fn_004625 (0x000b23f0, 84 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpSphericalJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpSphericalJoint.cpp
 - prototype: undefined __thiscall FUN_100b23f0(float * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004649 (0x000b2840)
@@ -110,11 +110,11 @@ void __thiscall FUN_100b23f0(void *this,float *param_1)
 
 ```
 
-## phys_fn_004627 (0x000b2450, 89 B, discovered)
+## phys_fn_004627 (0x000b2450, 89 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpSphericalJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpSphericalJoint.cpp
 - prototype: undefined __thiscall FUN_100b2450(float param_1, float param_2)
 - calling convention: __thiscall, stack purge: 8
 - callers: phys_fn_004649 (0x000b2840)
@@ -154,11 +154,11 @@ void __thiscall FUN_100b2450(void *this,float param_1,float param_2)
 
 ```
 
-## phys_fn_004629 (0x000b24b0, 89 B, discovered)
+## phys_fn_004629 (0x000b24b0, 89 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpSphericalJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpSphericalJoint.cpp
 - prototype: undefined __thiscall FUN_100b24b0(float * param_1, char param_2)
 - calling convention: __thiscall, stack purge: 8
 - callers: phys_fn_004649 (0x000b2840)
@@ -198,11 +198,11 @@ void __thiscall FUN_100b24b0(void *this,float *param_1,char param_2)
 
 ```
 
-## phys_fn_004631 (0x000b2510, 97 B, discovered)
+## phys_fn_004631 (0x000b2510, 97 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpSphericalJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpSphericalJoint.cpp
 - prototype: uint __fastcall FUN_100b2510(int param_1)
 - calling convention: __fastcall, stack purge: 8
 - callers: phys_fn_004649 (0x000b2840)
@@ -249,7 +249,7 @@ uint __fastcall FUN_100b2510(int param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpSphericalJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpSphericalJoint.cpp
 - prototype: undefined __fastcall FUN_100b2580(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_004649 (0x000b2840)
@@ -321,11 +321,11 @@ bool __thiscall FUN_100b25d0(void *this,float *param_1,float *param_2)
 
 ```
 
-## phys_fn_004637 (0x000b2610, 88 B, discovered)
+## phys_fn_004637 (0x000b2610, 88 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpSphericalJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpSphericalJoint.cpp
 - prototype: undefined __thiscall FUN_100b2610(int param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004649 (0x000b2840)
@@ -369,7 +369,7 @@ void __thiscall FUN_100b2610(void *this,int param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpSphericalJoint.cpp
-- implementation: Physics/src/ObjectModel.cpp
+- implementation: Physics/src/core/NpSphericalJoint.cpp
 - prototype: undefined __fastcall FUN_100b2670(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_004649 (0x000b2840)
@@ -413,7 +413,7 @@ void __fastcall FUN_100b2670(int param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpSphericalJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpSphericalJoint.cpp
 - prototype: undefined __thiscall FUN_100b26c0(undefined4 param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004649 (0x000b2840)
@@ -457,7 +457,7 @@ void __thiscall FUN_100b26c0(void *this,undefined4 param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpSphericalJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpSphericalJoint.cpp
 - prototype: undefined __thiscall FUN_100b2720(undefined4 param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004649 (0x000b2840)
@@ -501,7 +501,7 @@ void __thiscall FUN_100b2720(void *this,undefined4 param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpSphericalJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpSphericalJoint.cpp
 - prototype: undefined __thiscall FUN_100b2780(undefined4 param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004649 (0x000b2840)
@@ -545,7 +545,7 @@ void __thiscall FUN_100b2780(void *this,undefined4 param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpSphericalJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpSphericalJoint.cpp
 - prototype: undefined __thiscall FUN_100b27e0(undefined4 param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004649 (0x000b2840)
@@ -585,11 +585,11 @@ void __thiscall FUN_100b27e0(void *this,undefined4 param_1)
 
 ```
 
-## phys_fn_004649 (0x000b2840, 57 B, discovered)
+## phys_fn_004649 (0x000b2840, 57 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/NpSphericalJoint.cpp
+- implementation: Physics/src/core/NpSphericalJoint.cpp
 - prototype: void * __thiscall FUN_100b2840(undefined4 param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004300 (0x000a48f0)
@@ -618,11 +618,11 @@ void * __thiscall FUN_100b2840(void *this,undefined4 param_1)
 
 ```
 
-## phys_fn_004651 (0x000b2880, 8 B, discovered)
+## phys_fn_004651 (0x000b2880, 8 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/NpSphericalJoint.cpp
+- implementation: Physics/src/core/NpSphericalJoint.cpp
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: phys_fn_004649 (0x000b2840)
@@ -637,11 +637,11 @@ Decompile (capstone disassembly):
 0x000b2883  jmp 0x100b2890
 ```
 
-## phys_fn_004653 (0x000b2890, 55 B, discovered)
+## phys_fn_004653 (0x000b2890, 55 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/NpSphericalJoint.cpp
+- implementation: Physics/src/core/NpSphericalJoint.cpp
 - prototype: void * __thiscall FUN_100b2890(byte param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004649 (0x000b2840), phys_fn_004651 (0x000b2880)

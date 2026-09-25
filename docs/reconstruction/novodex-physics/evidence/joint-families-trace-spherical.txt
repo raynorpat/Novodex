@@ -1,0 +1,130 @@
+Spherical family: cdb breakpoint trace of the joint transcript (joint-families Task 3c)
+======================================================================================
+
+A trimmed excerpt of the raw cdb log, in the method of evidence/unit-pilot-revolute-trace.txt
+and evidence/joint-families-trace-cylindrical.txt. Register dumps, ModLoad lines, banners and
+the program's own stdout are removed; the HIT lines are kept in order and otherwise unedited
+(a HIT that the debugger printed on the same line as program output is cut from that line).
+It is the evidence behind the dynamic_proof of phys_fn_004300, 004649, 004284, 004643, 004286
+and 004290 in inventory.json.
+
+Debugger:  Microsoft Windows Debugger 10.0.10586.567 (X86)
+Command:   cdb -cf <script> build\Release\NxPhysicsJointTests.exe build\pairs\candidate
+Recorded:  2026-09-25, on the Task 3c working tree after the wiring (Scene::createJoint
+           case 3 -> core/SphericalJoint.cpp) and the nxSphericalCase test commits.
+Candidate: build\pairs\candidate\NxPhysics.dll
+           sha256=299a438f988b7bb539332b6c8a0d97271a5893ea099c8f405b05302aaa718a8e
+           (identical to build\Release\NxPhysics.dll at the time of the trace).
+Offsets:   module-relative, from build\Release\NxPhysics.map of that build. The folded Np
+           bodies are broken on their NpJointShared<NxSphericalJoint, SphericalJoint>
+           instantiation; the Joint rows are shared with the other families. Slots 34 and 36
+           are the NpSphericalJoint members that carry the bodies of phys_fn_004703/004707
+           (claimed by core/NpRevoluteJoint.cpp); slot 14 is the inline folded 004186 body.
+
+Breakpoints (each echoes and continues):
+bp NxPhysics+0x27480 ".echo HIT 000665 Scene::createJoint; gc"
+bp NxPhysics+0x3f060 ".echo HIT 004300 SphericalJoint ctor; gc"
+bp NxPhysics+0x2e320 ".echo HIT 004141 Joint ctor; gc"
+bp NxPhysics+0x2fc40 ".echo HIT 004121 loadFromDescBase; gc"
+bp NxPhysics+0x30100 ".echo HIT 004097 refreshBodyFrame; gc"
+bp NxPhysics+0x379d0 ".echo HIT 004649 NpSphericalJoint ctor; gc"
+bp NxPhysics+0x3f6b0 ".echo HIT 004284 row004284; gc"
+bp NxPhysics+0x37ce0 ".echo HIT (helper) nxSphericalJointAttachScene; gc"
+bp NxPhysics+0x34df0 ".echo HIT 004437 Np getGlobalAnchor (spherical instantiation); gc"
+bp NxPhysics+0x350f0 ".echo HIT 004441 Np getGlobalAxis (spherical instantiation); gc"
+bp NxPhysics+0x358c0 ".echo HIT 004483 Np getState (spherical instantiation); gc"
+bp NxPhysics+0x34ac0 ".echo HIT 004539 Np getActors (spherical instantiation); gc"
+bp NxPhysics+0x35a00 ".echo HIT 004443 Np getType (spherical instantiation); gc"
+bp NxPhysics+0x35d20 ".echo HIT 004479 Np is (spherical instantiation); gc"
+bp NxPhysics+0x37b80 ".echo HIT (004703 body) NpSphericalJoint getFlags; gc"
+bp NxPhysics+0x3f260 ".echo HIT 004290 SphericalJoint getFlags; gc"
+bp NxPhysics+0x37bd0 ".echo HIT (004707 body) NpSphericalJoint getProjectionMode; gc"
+bp NxPhysics+0x3f270 ".echo HIT (004186 inline) SphericalJoint getProjectionMode; gc"
+bp NxPhysics+0x37e60 ".echo HIT 004643 NpSphericalJoint saveToDesc; gc"
+bp NxPhysics+0x453e0 ".echo HIT 004286 SphericalJoint saveToDesc; gc"
+bp NxPhysics+0x31250 ".echo HIT 004066 Joint saveToDescBase; gc"
+bp NxPhysics+0x3f1c0 ".echo HIT 004302 ~SphericalJoint; gc"
+bp NxPhysics+0x3f5f0 ".echo HIT 004304 SphericalJoint loadFromDesc; gc"
+bp NxPhysics+0x454f0 ".echo HIT 004288 SphericalJoint setFlags; gc"
+bp NxPhysics+0x45540 ".echo HIT 004292 SphericalJoint setProjectionMode; gc"
+bp NxPhysics+0x42500 ".echo HIT 004296 row_slot6; gc"
+bp NxPhysics+0x401d0 ".echo HIT 004308 row_slot0; gc"
+bp NxPhysics+0x444c0 ".echo HIT 004310 row_slot7; gc"
+bp NxPhysics+0x40990 ".echo HIT 004312 row_slot4; gc"
+bp NxPhysics+0x45220 ".echo HIT 004298 row_slot8; gc"
+bp NxPhysics+0x3fa80 ".echo HIT 004306 row004306; gc"
+
+Hits, in order. The joint test runs four revolute, two prismatic and two cylindrical cases
+first (their Joint-row hits are summarised, not repeated), then the two spherical cases in full.
+
+-- revolute 0 case: 5 hits (Joint rows only; no spherical breakpoint) --
+-- revolute 1 case: 5 hits (Joint rows only; no spherical breakpoint) --
+-- revolute 2 case: 5 hits (Joint rows only; no spherical breakpoint) --
+-- revolute 3 case: 5 hits (Joint rows only; no spherical breakpoint) --
+-- prismatic 0 case: 6 hits (Joint rows only; no spherical breakpoint) --
+-- prismatic 1 case: 6 hits (Joint rows only; no spherical breakpoint) --
+-- cylindrical 0 case: 6 hits (Joint rows only; no spherical breakpoint) --
+-- cylindrical 1 case: 6 hits (Joint rows only; no spherical breakpoint) --
+
+-- spherical case index=0 --
+HIT 000665 Scene::createJoint
+HIT 004300 SphericalJoint ctor
+HIT 004141 Joint ctor
+HIT 004121 loadFromDescBase
+HIT 004097 refreshBodyFrame
+HIT 004097 refreshBodyFrame
+HIT 004649 NpSphericalJoint ctor
+HIT 004284 row004284
+HIT (helper) nxSphericalJointAttachScene
+HIT 004437 Np getGlobalAnchor (spherical instantiation)
+HIT 004441 Np getGlobalAxis (spherical instantiation)
+HIT 004483 Np getState (spherical instantiation)
+HIT 004539 Np getActors (spherical instantiation)
+HIT 004479 Np is (spherical instantiation)
+HIT 004479 Np is (spherical instantiation)
+HIT 004443 Np getType (spherical instantiation)
+HIT (004707 body) NpSphericalJoint getProjectionMode
+HIT (004186 inline) SphericalJoint getProjectionMode
+HIT (004703 body) NpSphericalJoint getFlags
+HIT 004290 SphericalJoint getFlags
+HIT 004643 NpSphericalJoint saveToDesc
+HIT 004286 SphericalJoint saveToDesc
+HIT 004066 Joint saveToDescBase
+
+-- spherical case index=3 --
+HIT 000665 Scene::createJoint
+HIT 004300 SphericalJoint ctor
+HIT 004141 Joint ctor
+HIT 004121 loadFromDescBase
+HIT 004097 refreshBodyFrame
+HIT 004097 refreshBodyFrame
+HIT 004649 NpSphericalJoint ctor
+HIT 004284 row004284
+HIT (helper) nxSphericalJointAttachScene
+HIT 004437 Np getGlobalAnchor (spherical instantiation)
+HIT 004441 Np getGlobalAxis (spherical instantiation)
+HIT 004483 Np getState (spherical instantiation)
+HIT 004539 Np getActors (spherical instantiation)
+HIT 004479 Np is (spherical instantiation)
+HIT 004479 Np is (spherical instantiation)
+HIT 004443 Np getType (spherical instantiation)
+HIT (004707 body) NpSphericalJoint getProjectionMode
+HIT (004186 inline) SphericalJoint getProjectionMode
+HIT (004703 body) NpSphericalJoint getFlags
+HIT 004290 SphericalJoint getFlags
+HIT 004643 NpSphericalJoint saveToDesc
+HIT 004286 SphericalJoint saveToDesc
+HIT 004066 Joint saveToDescBase
+
+Not hit: 004302 (~SphericalJoint: release is unwired, NpScene::releaseJoint is empty), 004304
+(loadFromDesc), 004288 and 004292 (setFlags/setProjectionMode: not called), 004296, 004308,
+004310 (the solver slots: no simulation step), 004298 (projection), 004312/004314 (no debug
+render) and 004306 (reached only from 004310 and 004312). 004479 is hit twice per case: once
+for isSphericalJoint and once for isRevoluteJoint (both NxJoint.h inlines call is()).
+
+The generated adjustor thunk for phys_fn_004651 (??_ENpSphericalJoint@@WM@AEPAXI@Z,
+NxPhysics+0x37a1e in the same build), disassembled by the same cdb session:
+6b037a1e 83e90c          sub     ecx,0Ch
+6b037a21 e90a000000      jmp     NxPhysics!NxBuildSmoothNormals+0xbc50 (6b037a30)
+The jump target NxPhysics+0x37a30 is ??_ENpSphericalJoint@@UAEPAXI@Z (the scalar deleting
+destructor, phys_fn_004653), matching the oracle's 0x100b2880 `sub ecx,0xc; jmp 0x100b2890`.

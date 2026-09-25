@@ -77951,12 +77951,13 @@
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
       "state": "reconstructed",
-      "source": "zero [this+0x1f0/1f4/1f8] (0xa2bf0)",
+      "source": "Physics/src/core/SphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2069",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14385",
-      "static_proof": "xor eax,eax; mov [ecx+0x1f8],eax; [ecx+0x1f4],eax; [ecx+0x1f0],eax; ret",
+      "static_proof": "xor eax,eax; mov [ecx+0x1f8],eax; [ecx+0x1f4],eax; [ecx+0x1f0],eax; ret; transcribed from the Capstone listing (units/core__SphericalJoint.cpp.md); layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": "confirmed via zmix drive (3z54): failures=0",
-      "notes": ""
+      "notes": "previous source: zero [this+0x1f0/1f4/1f8] (0xa2bf0)",
+      "implementation": "Physics/src/core/SphericalJoint.cpp"
     },
     {
       "id": "phys_fn_004283",
@@ -77986,13 +77987,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/SphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1612",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14386",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from units/core__SphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both spherical cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 3 wired to core/SphericalJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 35/35 coverage); trace excerpt committed as evidence/joint-families-trace-spherical.txt (joint-families Task 3c)",
+      "notes": "",
+      "implementation": "Physics/src/core/SphericalJoint.cpp"
     },
     {
       "id": "phys_fn_004285",
@@ -78022,13 +78024,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/SphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1613",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14387",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from units/core__SphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both spherical cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 3 wired to core/SphericalJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 35/35 coverage); trace excerpt committed as evidence/joint-families-trace-spherical.txt (joint-families Task 3c)",
+      "notes": "",
+      "implementation": "Physics/src/core/SphericalJoint.cpp"
     },
     {
       "id": "phys_fn_004287",
@@ -78062,10 +78065,10 @@
       "source": "Physics/src/core/SphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2072",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14390",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (units/core__SphericalJoint.cpp.md); layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": "confirmed via guardedstore differential (3z172): both arms failures=0 for all five rows, comparing the report tuple, the whole object and the stored word, with the report slot bound",
-      "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp",
+      "notes": "previous implementation: Physics/src/ObjectModel.cpp",
+      "implementation": "Physics/src/core/SphericalJoint.cpp",
       "implementation_symbol": "phys_fn_004288 (harness dispatch table)"
     },
     {
@@ -78097,12 +78100,13 @@
       "phase": 6,
       "phase_provenance": "translation_unit",
       "state": "reconstructed",
-      "source": "field getter [this+0x1d0] (0xa2f30)",
+      "source": "Physics/src/core/SphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2073",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14393",
-      "static_proof": "mov eax,[ecx+0x1d0]; ret",
-      "dynamic_proof": "confirmed via batchgetters drive (3z47): failures=0",
-      "notes": ""
+      "static_proof": "mov eax,[ecx+0x1d0]; ret; transcribed from the Capstone listing (units/core__SphericalJoint.cpp.md); layout per units/joint-families-contract.md (## Spherical)",
+      "dynamic_proof": "confirmed via batchgetters drive (3z47): failures=0; executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both spherical cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 3 wired to core/SphericalJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 35/35 coverage); trace excerpt committed as evidence/joint-families-trace-spherical.txt (joint-families Task 3c)",
+      "notes": "previous source: field getter [this+0x1d0] (0xa2f30)",
+      "implementation": "Physics/src/core/SphericalJoint.cpp"
     },
     {
       "id": "phys_fn_004291",
@@ -78136,10 +78140,10 @@
       "source": "Physics/src/core/SphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2074",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14394",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (units/core__SphericalJoint.cpp.md); layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": "confirmed via guardedstore differential (3z172): both arms failures=0 for all five rows, comparing the report tuple, the whole object and the stored word, with the report slot bound",
-      "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp",
+      "notes": "previous implementation: Physics/src/ObjectModel.cpp",
+      "implementation": "Physics/src/core/SphericalJoint.cpp",
       "implementation_symbol": "phys_fn_004292 (harness dispatch table)"
     },
     {
@@ -78170,13 +78174,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/SphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1614",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14397",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__SphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/SphericalJoint.cpp"
     },
     {
       "id": "phys_fn_004295",
@@ -78206,13 +78211,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/SphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2076",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14401",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__SphericalJoint.cpp.md (ghidra supplement) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/SphericalJoint.cpp"
     },
     {
       "id": "phys_fn_004297",
@@ -78242,13 +78248,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/SphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1615",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14459",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__SphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/SphericalJoint.cpp"
     },
     {
       "id": "phys_fn_004299",
@@ -78278,13 +78285,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/SphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1616",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14466",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from units/core__SphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both spherical cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 3 wired to core/SphericalJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 35/35 coverage); trace excerpt committed as evidence/joint-families-trace-spherical.txt (joint-families Task 3c)",
+      "notes": "",
+      "implementation": "Physics/src/core/SphericalJoint.cpp"
     },
     {
       "id": "phys_fn_004301",
@@ -78314,13 +78322,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/SphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1617",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14469",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__SphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/SphericalJoint.cpp"
     },
     {
       "id": "phys_fn_004303",
@@ -78350,13 +78359,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/SphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2080",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14472",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__SphericalJoint.cpp.md (ghidra supplement) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/SphericalJoint.cpp"
     },
     {
       "id": "phys_fn_004305",
@@ -78386,13 +78396,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/SphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1618",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14488",
-      "static_proof": null,
+      "static_proof": "transcribed from units/gap__core__SphericalJoint.cpp__to__core__CylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; the gap row is spherical (units/joint-families-contract.md ## Spherical ### Row assignment); layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/SphericalJoint.cpp"
     },
     {
       "id": "phys_fn_004307",
@@ -78422,13 +78433,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/SphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1619",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14501",
-      "static_proof": null,
+      "static_proof": "transcribed from units/gap__core__SphericalJoint.cpp__to__core__CylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; the gap row is spherical (units/joint-families-contract.md ## Spherical ### Row assignment); layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/SphericalJoint.cpp"
     },
     {
       "id": "phys_fn_004309",
@@ -78458,13 +78470,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/SphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1620",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14510",
-      "static_proof": null,
+      "static_proof": "transcribed from units/gap__core__SphericalJoint.cpp__to__core__CylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; the gap row is spherical (units/joint-families-contract.md ## Spherical ### Row assignment); layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/SphericalJoint.cpp"
     },
     {
       "id": "phys_fn_004311",
@@ -78494,13 +78507,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/SphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2084",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14574",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing with the ghidra supplement decompile of 0x000a5ee0 (whose body covers 0xa5ee0-0xa704d and 0xa7050-0xa71fe); the gap row is spherical (units/joint-families-contract.md ## Spherical ### Row assignment); layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/SphericalJoint.cpp"
     },
     {
       "id": "phys_fn_004313",
@@ -78530,13 +78544,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/SphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2085",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14609",
-      "static_proof": null,
+      "static_proof": "not a function: the swing-limit loop and epilogue of phys_fn_004312 (entered by the last instruction of 004312, `jmp 0x100a7050` at 0xa704b, looping on itself at 0xa71eb and ending `add esp,0xe8; ret 4` with the frame and purge of 004312), written as the second loop of SphericalJoint::row_slot4 in Physics/src/core/SphericalJoint.cpp, whose stable-ID line for this row stands above the one of 004312; transcribed from the Capstone listing with the ghidra supplement decompile of 0x000a5ee0 (whose body covers 0xa5ee0-0xa704d and 0xa7050-0xa71fe); the gap row is spherical (units/joint-families-contract.md ## Spherical ### Row assignment); layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x000a5ee0"
+      "notes": "continuation of the entry at 0x000a5ee0",
+      "implementation": "Physics/src/core/SphericalJoint.cpp"
     },
     {
       "id": "phys_fn_004315",
@@ -84174,13 +84189,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpSphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1742",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15371",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpSphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpSphericalJoint.cpp"
     },
     {
       "id": "phys_fn_004624",
@@ -84210,13 +84226,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpSphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1743",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15374",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpSphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpSphericalJoint.cpp"
     },
     {
       "id": "phys_fn_004626",
@@ -84246,13 +84263,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpSphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1744",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15377",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpSphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpSphericalJoint.cpp"
     },
     {
       "id": "phys_fn_004628",
@@ -84282,13 +84300,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpSphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1745",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15380",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpSphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpSphericalJoint.cpp"
     },
     {
       "id": "phys_fn_004630",
@@ -84318,13 +84337,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpSphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1746",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15383",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpSphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpSphericalJoint.cpp"
     },
     {
       "id": "phys_fn_004632",
@@ -84358,9 +84378,10 @@
       "source": "Physics/src/core/NpSphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1747",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15386",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpSphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": "confirmed via the tailjmp differential (3z191): failures=0 for all twelve rows on both arms, comparing the report tuple, the global word written at 0x10127180 and the whole object buffer, with the lock API, report slot and that global bound",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpSphericalJoint.cpp"
     },
     {
       "id": "phys_fn_004634",
@@ -84427,13 +84448,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpSphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1749",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15390",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpSphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpSphericalJoint.cpp"
     },
     {
       "id": "phys_fn_004638",
@@ -84467,10 +84489,10 @@
       "source": "Physics/src/core/NpSphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1750",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15393",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpSphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
-      "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp",
+      "notes": "previous implementation: Physics/src/ObjectModel.cpp",
+      "implementation": "Physics/src/core/NpSphericalJoint.cpp",
       "implementation_symbol": "phys_fn_004639 (harness dispatch table)"
     },
     {
@@ -84505,9 +84527,10 @@
       "source": "Physics/src/core/NpSphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1751",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15396",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpSphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpSphericalJoint.cpp"
     },
     {
       "id": "phys_fn_004642",
@@ -84541,9 +84564,10 @@
       "source": "Physics/src/core/NpSphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1752",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15399",
-      "static_proof": null,
-      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
-      "notes": ""
+      "static_proof": "transcribed from units/core__NpSphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
+      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound; executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both spherical cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 3 wired to core/SphericalJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 35/35 coverage); trace excerpt committed as evidence/joint-families-trace-spherical.txt (joint-families Task 3c)",
+      "notes": "",
+      "implementation": "Physics/src/core/NpSphericalJoint.cpp"
     },
     {
       "id": "phys_fn_004644",
@@ -84577,9 +84601,10 @@
       "source": "Physics/src/core/NpSphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1753",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15402",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpSphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpSphericalJoint.cpp"
     },
     {
       "id": "phys_fn_004646",
@@ -84613,9 +84638,10 @@
       "source": "Physics/src/core/NpSphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1754",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15405",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpSphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpSphericalJoint.cpp"
     },
     {
       "id": "phys_fn_004648",
@@ -84645,13 +84671,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/NpSphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1755",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15408",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from units/core__NpSphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both spherical cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 3 wired to core/SphericalJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 35/35 coverage); trace excerpt committed as evidence/joint-families-trace-spherical.txt (joint-families Task 3c)",
+      "notes": "",
+      "implementation": "Physics/src/core/NpSphericalJoint.cpp"
     },
     {
       "id": "phys_fn_004650",
@@ -84681,13 +84708,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/NpSphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2253",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15409",
-      "static_proof": null,
+      "static_proof": "compiler-generated `vector deleting destructor' adjustor{12} thunk: Physics/src/core/NpSphericalJoint.cpp carries only its stable-ID line above ~NpSphericalJoint; the NpJointShared<NxSphericalJoint, SphericalJoint> layout per units/joint-families-contract.md makes the compiler emit ??_ENpSphericalJoint@@WM@AEPAXI@Z (candidate 0x10037a1e in build/Release/NxPhysics.map), which disassembles to `sub ecx,0xc; jmp <NpSphericalJoint deleting destructor>` (evidence/joint-families-trace-spherical.txt), the same two instructions as the oracle's 0x100b2880 `sub ecx,0xc; jmp 0x100b2890` (phys_fn_004653)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpSphericalJoint.cpp"
     },
     {
       "id": "phys_fn_004652",
@@ -84717,13 +84745,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/NpSphericalJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1756",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15410",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpSphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpSphericalJoint.cpp"
     },
     {
       "id": "phys_fn_004654",
