@@ -865,6 +865,17 @@ $NxRequiredCoverageLines = [ordered] @{
     # run: created, the anchor/axis/state, the type and is-queries, and the saved
     # motions (the oracle's D6 saveToDesc writes the base part only, so the saved
     # family fields are the case's sentinel values).
+    # Joint-open-items Task 2 wired NxScene::releaseJoint to the Scene's joint
+    # rows and added what the scene reports about its joints: every family case
+    # prints getNbJoints and one resetJointIterator/getNextJoint pass (count,
+    # joints yielded, their types in order, whether the case's joint is among
+    # them, and the read after the end) before and after its release, and a
+    # release-then-create cycle (revolute, spherical, fixed; release the
+    # middle; create D6; release the head and the tail; create prismatic)
+    # prints the same after each step and leaves two joints for the scene
+    # release. Twenty-seven lines were added to each list, copied verbatim from
+    # the oracle side of a staged-pair run: the index-0 before/after lines of the
+    # ten families, the six cycle states and the cycle's closing line.
     'NxPhysicsJointStagedPairTests' = @(
         'case=revolute index=0 created=yes',
         'case=revolute index=0 out_anchor=00000000.00000000.00000000 out_axis=3f800000.00000000.00000000 state=0',
@@ -905,7 +916,34 @@ $NxRequiredCoverageLines = [ordered] @{
         'case=d6 index=0 created=yes',
         'case=d6 index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
         'case=d6 index=3 type=9 is_d6=yes is_fixed=no',
-        'case=d6 index=0 saved motions=2.0.2.0.2.0'
+        'case=d6 index=0 saved motions=2.0.2.0.2.0',
+        'case=revolute index=0 scene_joints when=before_release count=1 enumerated=1 order=1 self=yes end=null',
+        'case=revolute index=0 scene_joints when=after_release count=0 enumerated=0 order=none self=no end=null',
+        'case=prismatic index=0 scene_joints when=before_release count=1 enumerated=1 order=0 self=yes end=null',
+        'case=prismatic index=0 scene_joints when=after_release count=0 enumerated=0 order=none self=no end=null',
+        'case=cylindrical index=0 scene_joints when=before_release count=1 enumerated=1 order=2 self=yes end=null',
+        'case=cylindrical index=0 scene_joints when=after_release count=0 enumerated=0 order=none self=no end=null',
+        'case=spherical index=0 scene_joints when=before_release count=1 enumerated=1 order=3 self=yes end=null',
+        'case=spherical index=0 scene_joints when=after_release count=0 enumerated=0 order=none self=no end=null',
+        'case=point_on_line index=0 scene_joints when=before_release count=1 enumerated=1 order=4 self=yes end=null',
+        'case=point_on_line index=0 scene_joints when=after_release count=0 enumerated=0 order=none self=no end=null',
+        'case=point_in_plane index=0 scene_joints when=before_release count=1 enumerated=1 order=5 self=yes end=null',
+        'case=point_in_plane index=0 scene_joints when=after_release count=0 enumerated=0 order=none self=no end=null',
+        'case=distance index=0 scene_joints when=before_release count=1 enumerated=1 order=6 self=yes end=null',
+        'case=distance index=0 scene_joints when=after_release count=0 enumerated=0 order=none self=no end=null',
+        'case=pulley index=0 scene_joints when=before_release count=1 enumerated=1 order=7 self=yes end=null',
+        'case=pulley index=0 scene_joints when=after_release count=0 enumerated=0 order=none self=no end=null',
+        'case=fixed index=0 scene_joints when=before_release count=1 enumerated=1 order=8 self=yes end=null',
+        'case=fixed index=0 scene_joints when=after_release count=0 enumerated=0 order=none self=no end=null',
+        'case=d6 index=0 scene_joints when=before_release count=1 enumerated=1 order=9 self=yes end=null',
+        'case=d6 index=0 scene_joints when=after_release count=0 enumerated=0 order=none self=no end=null',
+        'case=cycle index=1 scene_joints when=three_created count=3 enumerated=3 order=8.3.1 self=yes end=null',
+        'case=cycle index=2 scene_joints when=middle_released count=2 enumerated=2 order=8.1 self=no end=null',
+        'case=cycle index=3 scene_joints when=d6_created count=3 enumerated=3 order=9.8.1 self=yes end=null',
+        'case=cycle index=4 scene_joints when=head_released count=2 enumerated=2 order=8.1 self=no end=null',
+        'case=cycle index=5 scene_joints when=tail_released count=1 enumerated=1 order=8 self=no end=null',
+        'case=cycle index=6 scene_joints when=prismatic_created count=2 enumerated=2 order=0.8 self=yes end=null',
+        'case=cycle left_for_scene_release=2'
     )
     # NxNormalToTangents, which NxJointDesc::setGlobalAxis calls. The digest folds
     # 240000 inputs' output words from the pinned NxFoundation.dll, so it moves if
@@ -962,7 +1000,34 @@ $NxRequiredCoverageLines = [ordered] @{
         'case=d6 index=0 created=yes',
         'case=d6 index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
         'case=d6 index=3 type=9 is_d6=yes is_fixed=no',
-        'case=d6 index=0 saved motions=2.0.2.0.2.0'
+        'case=d6 index=0 saved motions=2.0.2.0.2.0',
+        'case=revolute index=0 scene_joints when=before_release count=1 enumerated=1 order=1 self=yes end=null',
+        'case=revolute index=0 scene_joints when=after_release count=0 enumerated=0 order=none self=no end=null',
+        'case=prismatic index=0 scene_joints when=before_release count=1 enumerated=1 order=0 self=yes end=null',
+        'case=prismatic index=0 scene_joints when=after_release count=0 enumerated=0 order=none self=no end=null',
+        'case=cylindrical index=0 scene_joints when=before_release count=1 enumerated=1 order=2 self=yes end=null',
+        'case=cylindrical index=0 scene_joints when=after_release count=0 enumerated=0 order=none self=no end=null',
+        'case=spherical index=0 scene_joints when=before_release count=1 enumerated=1 order=3 self=yes end=null',
+        'case=spherical index=0 scene_joints when=after_release count=0 enumerated=0 order=none self=no end=null',
+        'case=point_on_line index=0 scene_joints when=before_release count=1 enumerated=1 order=4 self=yes end=null',
+        'case=point_on_line index=0 scene_joints when=after_release count=0 enumerated=0 order=none self=no end=null',
+        'case=point_in_plane index=0 scene_joints when=before_release count=1 enumerated=1 order=5 self=yes end=null',
+        'case=point_in_plane index=0 scene_joints when=after_release count=0 enumerated=0 order=none self=no end=null',
+        'case=distance index=0 scene_joints when=before_release count=1 enumerated=1 order=6 self=yes end=null',
+        'case=distance index=0 scene_joints when=after_release count=0 enumerated=0 order=none self=no end=null',
+        'case=pulley index=0 scene_joints when=before_release count=1 enumerated=1 order=7 self=yes end=null',
+        'case=pulley index=0 scene_joints when=after_release count=0 enumerated=0 order=none self=no end=null',
+        'case=fixed index=0 scene_joints when=before_release count=1 enumerated=1 order=8 self=yes end=null',
+        'case=fixed index=0 scene_joints when=after_release count=0 enumerated=0 order=none self=no end=null',
+        'case=d6 index=0 scene_joints when=before_release count=1 enumerated=1 order=9 self=yes end=null',
+        'case=d6 index=0 scene_joints when=after_release count=0 enumerated=0 order=none self=no end=null',
+        'case=cycle index=1 scene_joints when=three_created count=3 enumerated=3 order=8.3.1 self=yes end=null',
+        'case=cycle index=2 scene_joints when=middle_released count=2 enumerated=2 order=8.1 self=no end=null',
+        'case=cycle index=3 scene_joints when=d6_created count=3 enumerated=3 order=9.8.1 self=yes end=null',
+        'case=cycle index=4 scene_joints when=head_released count=2 enumerated=2 order=8.1 self=no end=null',
+        'case=cycle index=5 scene_joints when=tail_released count=1 enumerated=1 order=8 self=no end=null',
+        'case=cycle index=6 scene_joints when=prismatic_created count=2 enumerated=2 order=0.8 self=yes end=null',
+        'case=cycle left_for_scene_release=2'
     )
     'NxPhysicsJointDescTests' = @(
         'case=0 actors a=null b=null in_anchor=3f800000.40000000.40400000 in_axis=3f000000.3f000000.3f000000',
@@ -1830,8 +1895,8 @@ $NxPhaseCoverageFloor = [ordered] @{
     '4' = 101  # 34 for NxPhysicsAssetTests, 67 for NxPhysicsThirdPartyTests
     '5' = 829  # 126 object-layout, 1 shape-vtable and 702 public actor/pruner/box/scene lines
                # (RED on purpose: vtables family open)
-    '6' = 89  # 3 oracle-descriptor + 40 oracle-joint + 40 staged-pair-joint + 6 tangent
-    '7' = 40  # the forty STAGED-PAIR assertions; the oracle-differential assertions
+    '6' = 143  # 3 oracle-descriptor + 67 oracle-joint + 67 staged-pair-joint + 6 tangent
+    '7' = 67  # the sixty-seven STAGED-PAIR assertions; the oracle-differential assertions
                # belong to NxPhysicsJointDescTests and NxPhysicsJointTests, which phase 7
                # does not run
     '8' = 0

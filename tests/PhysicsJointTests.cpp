@@ -131,6 +131,38 @@ static bool nxBuildFixture(NxScene& scene, NxActor** a, NxActor** b)
 	return *b != 0;
 	}
 
+// What the scene reports about its joints (joint-open-items Task 2): the
+// getNbJoints count, then one pass of resetJointIterator/getNextJoint -- how
+// many joints it yields, the type of each in order, and whether `joint` is
+// among them. `joint` is only compared, never dereferenced, so the pass after
+// its release is safe. The pass stops at 64 so a cycle in the list cannot hang
+// the run; one more getNextJoint after the end is printed too.
+static void nxPrintSceneJoints(NxScene& scene, const char* family, unsigned index,
+	const char* when, const NxJoint* joint)
+	{
+	const NxU32 count = scene.getNbJoints();
+	scene.resetJointIterator();
+	NxU32 enumerated = 0;
+	bool found = false;
+	char order[256];
+	order[0] = 0;
+	int used = 0;
+	while(NxJoint* next = scene.getNextJoint())
+		{
+		if(next == joint)
+			found = true;
+		if(used + 16 < static_cast<int>(sizeof(order)))
+			used += sprintf(order + used, "%s%u", enumerated ? "." : "",
+				static_cast<unsigned>(next->getType()));
+		if(++enumerated == 64)
+			break;
+		}
+	const bool endIsNull = scene.getNextJoint() == 0;
+	printf("case=%s index=%u scene_joints when=%s count=%u enumerated=%u order=%s self=%s end=%s\n",
+		family, index, when, static_cast<unsigned>(count), static_cast<unsigned>(enumerated),
+		enumerated ? order : "none", found ? "yes" : "no", endIsNull ? "null" : "joint");
+	}
+
 // One revolute case: build the descriptor, create, read every value back, then
 // release. Nothing is asserted; everything is printed.
 static void nxRevoluteCase(NxScene& scene, NxActor* a, NxActor* b,
@@ -171,8 +203,10 @@ static void nxRevoluteCase(NxScene& scene, NxActor* a, NxActor* b,
 		ra == a ? "match" : (ra ? "other" : "null"),
 		rb == b ? "match" : (rb ? "other" : "null"));
 
+	nxPrintSceneJoints(scene, "revolute", index, "before_release", joint);
 	scene.releaseJoint(*joint);
 	printf("case=revolute index=%u released=yes\n", index);
+	nxPrintSceneJoints(scene, "revolute", index, "after_release", joint);
 	}
 
 // One prismatic case (joint-families Task 3a), modelled on nxRevoluteCase: build
@@ -248,8 +282,10 @@ static void nxPrismaticCase(NxScene& scene, NxActor* a, NxActor* b,
 			saved.actor[1] == b ? "match" : (saved.actor[1] ? "other" : "null"));
 		}
 
+	nxPrintSceneJoints(scene, "prismatic", index, "before_release", joint);
 	scene.releaseJoint(*joint);
 	printf("case=prismatic index=%u released=yes\n", index);
+	nxPrintSceneJoints(scene, "prismatic", index, "after_release", joint);
 	}
 
 // One cylindrical case (joint-families Task 3b), modelled on nxPrismaticCase: build
@@ -325,8 +361,10 @@ static void nxCylindricalCase(NxScene& scene, NxActor* a, NxActor* b,
 			saved.actor[1] == b ? "match" : (saved.actor[1] ? "other" : "null"));
 		}
 
+	nxPrintSceneJoints(scene, "cylindrical", index, "before_release", joint);
 	scene.releaseJoint(*joint);
 	printf("case=cylindrical index=%u released=yes\n", index);
+	nxPrintSceneJoints(scene, "cylindrical", index, "after_release", joint);
 	}
 
 // One spherical case (joint-families Task 3c), modelled on nxCylindricalCase:
@@ -444,8 +482,10 @@ static void nxSphericalCase(NxScene& scene, NxActor* a, NxActor* b,
 			saved.actor[1] == b ? "match" : (saved.actor[1] ? "other" : "null"));
 		}
 
+	nxPrintSceneJoints(scene, "spherical", index, "before_release", joint);
 	scene.releaseJoint(*joint);
 	printf("case=spherical index=%u released=yes\n", index);
+	nxPrintSceneJoints(scene, "spherical", index, "after_release", joint);
 	}
 
 // One point-on-line case (joint-families Task 3d), modelled on nxPrismaticCase: build
@@ -521,8 +561,10 @@ static void nxPointOnLineCase(NxScene& scene, NxActor* a, NxActor* b,
 			saved.actor[1] == b ? "match" : (saved.actor[1] ? "other" : "null"));
 		}
 
+	nxPrintSceneJoints(scene, "point_on_line", index, "before_release", joint);
 	scene.releaseJoint(*joint);
 	printf("case=point_on_line index=%u released=yes\n", index);
+	nxPrintSceneJoints(scene, "point_on_line", index, "after_release", joint);
 	}
 
 static void nxPointInPlaneCase(NxScene& scene, NxActor* a, NxActor* b,
@@ -592,8 +634,10 @@ static void nxPointInPlaneCase(NxScene& scene, NxActor* a, NxActor* b,
 			saved.actor[1] == b ? "match" : (saved.actor[1] ? "other" : "null"));
 		}
 
+	nxPrintSceneJoints(scene, "point_in_plane", index, "before_release", joint);
 	scene.releaseJoint(*joint);
 	printf("case=point_in_plane index=%u released=yes\n", index);
+	nxPrintSceneJoints(scene, "point_in_plane", index, "after_release", joint);
 	}
 
 static void nxDistanceCase(NxScene& scene, NxActor* a, NxActor* b,
@@ -673,8 +717,10 @@ static void nxDistanceCase(NxScene& scene, NxActor* a, NxActor* b,
 			saved.actor[1] == b ? "match" : (saved.actor[1] ? "other" : "null"));
 		}
 
+	nxPrintSceneJoints(scene, "distance", index, "before_release", joint);
 	scene.releaseJoint(*joint);
 	printf("case=distance index=%u released=yes\n", index);
+	nxPrintSceneJoints(scene, "distance", index, "after_release", joint);
 	}
 
 static void nxPulleyCase(NxScene& scene, NxActor* a, NxActor* b,
@@ -764,8 +810,10 @@ static void nxPulleyCase(NxScene& scene, NxActor* a, NxActor* b,
 			saved.actor[1] == b ? "match" : (saved.actor[1] ? "other" : "null"));
 		}
 
+	nxPrintSceneJoints(scene, "pulley", index, "before_release", joint);
 	scene.releaseJoint(*joint);
 	printf("case=pulley index=%u released=yes\n", index);
+	nxPrintSceneJoints(scene, "pulley", index, "after_release", joint);
 	}
 
 // The fixed family (joint-families Task 3h). NxFixedJointDesc has no field of
@@ -837,8 +885,10 @@ static void nxFixedCase(NxScene& scene, NxActor* a, NxActor* b,
 			saved.actor[1] == b ? "match" : (saved.actor[1] ? "other" : "null"));
 		}
 
+	nxPrintSceneJoints(scene, "fixed", index, "before_release", joint);
 	scene.releaseJoint(*joint);
 	printf("case=fixed index=%u released=yes\n", index);
+	nxPrintSceneJoints(scene, "fixed", index, "after_release", joint);
 	}
 
 // The D6 family's descriptor fields (joint-families Task 3i), one set per case.
@@ -1041,8 +1091,69 @@ static void nxD6Case(NxScene& scene, NxActor* a, NxActor* b,
 		nxD6PrintFields(index, "resaved", again);
 		}
 
+	nxPrintSceneJoints(scene, "d6", index, "before_release", joint);
 	scene.releaseJoint(*joint);
 	printf("case=d6 index=%u released=yes\n", index);
+	nxPrintSceneJoints(scene, "d6", index, "after_release", joint);
+	}
+
+// The release-then-create cycle (joint-open-items Task 2). Three joints are
+// created over the fixture's actors (revolute, spherical, fixed), the middle
+// one is released, a D6 is created, the D6 (the list head) and the revolute
+// (the tail) are released, and a prismatic is created; after each step the
+// scene's joint count and one enumeration pass are printed. Two joints are
+// left registered on purpose, so the scene release that follows runs the
+// Scene's own destruction of registered joints.
+static NxJoint* nxCycleCreate(NxScene& scene, NxJointDesc& desc, NxActor* a, NxActor* b,
+	const char* name)
+	{
+	desc.actor[0] = a;
+	desc.actor[1] = b;
+	nxSetGlobalAnchor(desc, NxVec3(1.0f, 2.0f, 3.0f));
+	nxSetGlobalAxis(desc, NxVec3(0.0f, 1.0f, 0.0f));
+	NxJoint* joint = scene.createJoint(desc);
+	printf("case=cycle create=%s created=%s\n", name, joint ? "yes" : "no");
+	return joint;
+	}
+
+static void nxReleaseCycleCase(NxScene& scene, NxActor* a, NxActor* b)
+	{
+	nxPrintSceneJoints(scene, "cycle", 0, "start", 0);
+
+	NxRevoluteJointDesc revoluteDesc;
+	NxJoint* revolute = nxCycleCreate(scene, revoluteDesc, a, b, "revolute");
+	NxSphericalJointDesc sphericalDesc;
+	NxJoint* spherical = nxCycleCreate(scene, sphericalDesc, a, b, "spherical");
+	NxFixedJointDesc fixedDesc;
+	NxJoint* fixed = nxCycleCreate(scene, fixedDesc, a, b, "fixed");
+	if(!revolute || !spherical || !fixed)
+		return;
+	nxPrintSceneJoints(scene, "cycle", 1, "three_created", fixed);
+
+	scene.releaseJoint(*spherical);
+	printf("case=cycle release=spherical released=yes\n");
+	nxPrintSceneJoints(scene, "cycle", 2, "middle_released", spherical);
+
+	NxD6JointDesc d6Desc;
+	NxJoint* d6 = nxCycleCreate(scene, d6Desc, a, b, "d6");
+	if(!d6)
+		return;
+	nxPrintSceneJoints(scene, "cycle", 3, "d6_created", d6);
+
+	scene.releaseJoint(*d6);
+	printf("case=cycle release=d6 released=yes\n");
+	nxPrintSceneJoints(scene, "cycle", 4, "head_released", d6);
+
+	scene.releaseJoint(*revolute);
+	printf("case=cycle release=revolute released=yes\n");
+	nxPrintSceneJoints(scene, "cycle", 5, "tail_released", revolute);
+
+	NxPrismaticJointDesc prismaticDesc;
+	NxJoint* prismatic = nxCycleCreate(scene, prismaticDesc, a, b, "prismatic");
+	if(!prismatic)
+		return;
+	nxPrintSceneJoints(scene, "cycle", 6, "prismatic_created", prismatic);
+	printf("case=cycle left_for_scene_release=2\n");
 	}
 
 int wmain(int argc, wchar_t** argv)
@@ -1201,6 +1312,10 @@ int wmain(int argc, wchar_t** argv)
 	nxD6Case(*scene, a, b, 0, NxVec3(0.0f, 0.0f, 0.0f), NxVec3(1.0f, 0.0f, 0.0f), first, sentinel);
 	nxD6Case(*scene, a, b, 3, NxVec3(2.0f, 4.0f, 0.0f), NxVec3(0.5f, 0.5f, 0.5f), second, sentinel);
 	}
+
+	// The release-then-create cycle, after every family case has released its
+	// joint; it leaves two joints for the scene release below.
+	nxReleaseCycleCase(*scene, a, b);
 
 	sdk->releaseScene(*scene);
 	printf("scene=released\n");
