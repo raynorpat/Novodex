@@ -1954,10 +1954,13 @@ UNRESOLVED_SOURCE_PATHS = (
     # unresolved; remove the entry" -- which is the check working.
     'Physics/src/SceneRaycast.cpp',                  # 6 rows
     'Physics/src/Shape.cpp',                         # 6 rows
-    'Physics/src/core/CylindricalJoint.cpp',         # 2 rows
+    # 'Physics/src/core/CylindricalJoint.cpp' was here with 2 rows against it,
+    # and is REMOVED: joint-families Task 3b created the file.
     'Physics/src/core/DistanceJoint.cpp',            # 2 rows
     'Physics/src/core/FixedJoint.cpp',               # 2 rows
-    'Physics/src/core/NpCylindricalJoint.cpp',       # 10 rows
+    # 'Physics/src/core/NpCylindricalJoint.cpp' was here with 10 rows against
+    # it, and is REMOVED: joint-families Task 3b created the file (same reason
+    # as NpRevoluteJoint.cpp below).
     'Physics/src/core/NpD6Joint.cpp',                # 14 rows
     'Physics/src/core/NpDistanceJoint.cpp',          # 10 rows
     'Physics/src/core/NpFixedJoint.cpp',             # 10 rows

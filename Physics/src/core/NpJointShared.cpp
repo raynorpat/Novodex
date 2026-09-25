@@ -11,6 +11,8 @@
 #include "NxRevoluteJoint.h"
 #include "core/PrismaticJoint.h"
 #include "NxPrismaticJoint.h"
+#include "core/CylindricalJoint.h"
+#include "NxCylindricalJoint.h"
 #include "PhysicsInternal.h"
 #include "NpSceneGuard.h"
 
@@ -220,3 +222,4 @@ const char* NpJointShared<Iface, Internal>::getName() const
 // its line (and its internal header above).
 template class NpJointShared<NxRevoluteJoint, RevoluteJoint>;
 template class NpJointShared<NxPrismaticJoint, PrismaticJoint>;
+template class NpJointShared<NxCylindricalJoint, CylindricalJoint>;

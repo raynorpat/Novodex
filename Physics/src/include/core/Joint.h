@@ -364,6 +364,13 @@ class Joint
 	//! mWorldAxis[0] rotated by body[0]'s +0x134 3x3 (or copied, no body).
 	void row004127(NxVec3& out) const;
 
+	//! phys_fn_004318 (0x000a7240, 1115 B; joint-families Task 3b). The
+	//! debug-visualization body the cylindrical (0x1011a048) and prismatic
+	//! (0x1011a4d0) internal tables both name at slot 4. It reads only Joint
+	//! base fields, so it is written once here and each family's row_slot4
+	//! calls it. Defined in core/CylindricalJoint.cpp (its owning unit).
+	void row004318(NxDebugRenderable& renderable);
+
 	//! phys_fn_004129 (0x00099680, 787 B; write; on the transcript path via
 	//! folded Np slot 5 getGlobalAxis; also called by phys_fn_004354).
 	void getGlobalAxis(NxVec3& out) const;
