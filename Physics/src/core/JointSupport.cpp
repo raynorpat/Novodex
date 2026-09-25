@@ -27,6 +27,9 @@ NxVec3 gJointUnitAxis[3] =
 	NxVec3(0.0f, 0.0f, 1.0f)
 	};
 
+// .data 0x10123c1c (see core/JointSupport.h).
+NxVec3 gJointZeroVector(0.0f, 0.0f, 0.0f);
+
 static NX_INLINE double supportMul(NxReal a, NxReal b)
 	{
 	return (double)a * (double)b;

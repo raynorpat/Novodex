@@ -144,4 +144,12 @@ struct Row000758Fixture
 // in core/JointSupport.cpp.
 extern NxVec3 gJointUnitAxis[3];
 
+// The three-word .data triple at 0x10123c1c, zero in a fresh image (the NpActor
+// getters' static defaults copy it too; see Physics/src/ObjectModel.cpp "Actor
+// slate 7"). The fixed solver slot phys_fn_004246 reads it from memory as the
+// second lever of its three linear records and subtracts it from the linear
+// error (0xa04d9-0xa04fd, 0xa060d-0xa0659), so it is data here as well.
+// Joint-families Task 3h; defined in core/JointSupport.cpp.
+extern NxVec3 gJointZeroVector;
+
 #endif
