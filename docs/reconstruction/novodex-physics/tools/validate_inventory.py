@@ -1975,7 +1975,9 @@ UNRESOLVED_SOURCE_PATHS = (
     # path resolves and the entry would be a claim that a real file is
     # missing. The validator says so itself -- "is on the allowlist but no
     # longer unresolved; remove the entry".
-    'Physics/src/core/NpSphericalJoint.cpp',         # 12 rows
+    # 'Physics/src/core/NpSphericalJoint.cpp' was here with 12 rows against
+    # it, and is REMOVED: joint-families Task 3c created the file (same reason
+    # as NpRevoluteJoint.cpp below).
     'Physics/src/core/PointInPlaneJoint.cpp',        # 2 rows
     'Physics/src/core/PointOnLineJoint.cpp',         # 2 rows
     # 'Physics/src/core/PrismaticJoint.cpp' was here with 2 rows against it,
@@ -1983,7 +1985,8 @@ UNRESOLVED_SOURCE_PATHS = (
     'Physics/src/core/PulleyJoint.cpp',              # 2 rows
     # 'Physics/src/core/RevoluteJoint.cpp' was here with 7 rows against it,
     # and is REMOVED for the same reason as NpRevoluteJoint.cpp above.
-    'Physics/src/core/SphericalJoint.cpp',           # 4 rows
+    # 'Physics/src/core/SphericalJoint.cpp' was here with 4 rows against it,
+    # and is REMOVED: joint-families Task 3c created the file.
     'Physics/src/fluids/Fluid.cpp',                  # 3 rows
     'Physics/src/fluids/FluidManager.cpp',           # 7 rows
     'Physics/src/fluids/ImplicitMesh.cpp',           # 1 rows

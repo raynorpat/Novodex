@@ -111,9 +111,9 @@ target_compile_definitions(NxPhysics PRIVATE NX_PHYSICS_DLL=1)
 # needs the code generator, and only on these translation units. Everything
 # else in NxPhysics keeps the default architecture. The joint translation units
 # (core/Joint.cpp, core/RevoluteJoint.cpp, core/PrismaticJoint.cpp,
-# core/CylindricalJoint.cpp, core/JointSupport.cpp) are x87 in the
-# oracle too and are reached from the solver step, so they are on the list for
-# the same reason. core/JointSupport.cpp's rows 004389 and 004393 are x87 in the
+# core/CylindricalJoint.cpp, core/SphericalJoint.cpp, core/JointSupport.cpp)
+# are x87 in the oracle too and are reached from the solver step, so they are
+# on the list for the same reason. core/JointSupport.cpp's rows 004389 and 004393 are x87 in the
 # oracle and are called from the solver slots 004360 and 004362 inside the step.
 if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	set_source_files_properties(
