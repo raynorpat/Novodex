@@ -1800,3 +1800,267 @@ sets maxDistance, minDistance, the spring and the flags to non-default values.
   the listing by review and the build only. The candidate object has no xmm instruction.
 - Ledger: the 19 rows are `reconstructed_not_falsified` in `gates/phase6-closure.json` (15 moved
   from `not_reconstructed_in_phase`; 4 already were); counts 171 / 260.
+
+## Pulley
+
+Recovered by joint-families Task 3g from the unit bundles `units/core__PulleyJoint.cpp.md`,
+`units/core__NpPulleyJoint.cpp.md` and `units/gap__core__NpD6Joint.cpp__to__core__NpPulleyJoint.cpp.md`,
+the Capstone listing, the relocated table words in `oracle/pe.json` and the pinned Ghidra
+supplement. 004216 (saveToDesc), 004219 (slot 0), 004221 (debug visualization) and 004226
+(loadFromDesc) had no decompile; Task 3g added 0x0009e3d0, 0x0009e4e0, 0x0009e810 and 0x0009eb00
+to `oracle/ghidra/supplement.json` (the union with the 24 existing `requested` RVAs; all four
+`ok`; the 24 existing entries came back unchanged). The listing is authoritative over every
+decompile.
+
+The public interface in this SDK has no motor: `NxPulleyJointDesc` is `pulley[2]`, `distance`,
+`stiffness`, `ratio` and `flags` (`NX_PJF_IS_RIGID`), and `NxPulleyJoint` adds only
+loadFromDesc/saveToDesc to `NxJoint`.
+
+### Row assignment
+
+`work_units.json` puts 9 rows in `core\PulleyJoint.cpp` (evidenced span 0x9e3d0-0x9eb00, no
+ambiguous rows) and 18 in `core\NpPulleyJoint.cpp` (evidenced span 0xb0c60-0xb10b0, no ambiguous
+rows). The 3-row gap `gap:core\NpD6Joint.cpp..core\NpPulleyJoint.cpp` (all three ambiguous) sits
+between the D6 Np unit and the pulley Np unit. Checked by hand:
+
+- **Before `core\PulleyJoint.cpp`**: 004212 (0x9e2f0, 194 B, `core\D6Joint.cpp`) ends `ret 4` at
+  0x9e3af. 004214 (0x9e3c0, 11 B, `mov [ecx+0x1cc],0; ret`) lies before the evidenced span but
+  inside the unit's inferred extent, and the only table that names it is the pulley internal
+  table (slot 1). It writes the pulley-only field +0x1cc. It is pulley's.
+- **After it**: 004228 (the solver slot, 0x9eb90, 1,572 B) ends `ret 4` at 0x9f1b1; 004229 is
+  padding; 004230 (0x9f1c0) pushes the `DistanceJoint.cpp` `__FILE__` and is distance's.
+- **The gap `gap:core\NpD6Joint.cpp..core\NpPulleyJoint.cpp` is D6's, not pulley's**:
+  - 004469 (0xb0bd0, 57 B) is the first row of a constructor triple. Its only caller is the D6
+    constructor 004210 (`call 0x100b0bd0` at 0x9e2c2), which createJoint case 9 calls (0x1456f).
+  - It installs the transient table 0x1011a700 (0xb0be1), the secondary 0x1011a85c (0xb0bf0)
+    and the final table 0x1011a7c8 (0xb0bfd). 0x1011a7c8 is the D6 primary table
+    (`phys_data_002703`), whose slot 0 is 004473.
+  - 004471 is `sub ecx,0xc; jmp 004473`, the D6 secondary slot. 004473 is D6's scalar deleting
+    destructor (it reinstalls 0x1011a7c8/0x1011a85c).
+  - All three rows go to Task 3i with the D6 family. Task 3g writes none of them.
+- **`core\NpPulleyJoint.cpp`** ends with its own constructor / thunk / deleting-destructor
+  triple (004505-004509, 0xb1110-0xb1197):
+  - 004505 installs the transient table 0x1011a878 (`phys_data_002704`, `NxPulleyJoint`), the
+    secondary table 0x1011a9bc and the final table 0x1011a938 (`phys_data_002706`). Its only
+    caller is the pulley constructor 004222 (0x9ea90).
+  - 004507 is `sub ecx,0xc; jmp 004509`, the only slot of 0x1011a9bc.
+  - 004509 is slot 0 of 0x1011a938.
+- **Not this family's, though inside the Np unit's range**: the folded bodies 004479 (is),
+  004483 (getState), 004491 (hasMoreLimitPlanes), 004497 (getGlobalAnchorVal) and 004499
+  (getGlobalAxisVal). `NpJointShared` already claims them; the pulley file gives them no
+  stable-ID line.
+- After the Np unit: 004511 (0xb11a0) is distance's.
+- No other family's table names a pulley row. The pulley tables name no other family's body,
+  only the Joint base rows and the folded no-ops 004248/001391.
+
+| Stable ID | RVA | Size | File | Evidence |
+|---|---|---:|---|---|
+| phys_fn_004214 | 0x0009e3c0 | 11 | `core/PulleyJoint.cpp` | internal slot 1 (0x119844); zeroes +0x1cc |
+| phys_fn_004216 | 0x0009e3d0 | 155 | `core/PulleyJoint.cpp` | internal slot 10 (0x119868); "PulleyJoint::saveToDesc" line 0x42 |
+| phys_fn_004218 | 0x0009e470 | 112 | `core/PulleyJoint.cpp` | called by 004222 (0x9eaa5) and 004226 (0x9eb83); copies the family fields |
+| phys_fn_004219 | 0x0009e4e0 | 805 | `core/PulleyJoint.cpp` | internal slot 0 (0x119840); the impulse slot |
+| phys_fn_004221 | 0x0009e810 | 592 | `core/PulleyJoint.cpp` | internal slot 4 (0x119850); debug visualization |
+| phys_fn_004222 | 0x0009ea60 | 81 | `core/PulleyJoint.cpp` | createJoint case 7 (0x144f7); installs 0x10119840 (0x9ea73) |
+| phys_fn_004224 | 0x0009eac0 | 56 | `core/PulleyJoint.cpp` | internal slot 5; reinstalls 0x10119840 (0x9eac8) |
+| phys_fn_004226 | 0x0009eb00 | 141 | `core/PulleyJoint.cpp` | internal slot 9; "PulleyJoint::loadFromDesc" line 0x2a |
+| phys_fn_004228 | 0x0009eb90 | 1572 | `core/PulleyJoint.cpp` | internal slot 6 (0x119858); the solver slot |
+| phys_fn_004475 | 0x000b0c60 | 84 | `core/NpPulleyJoint.cpp` | Np slot 2; line 0x10 |
+| phys_fn_004477 | 0x000b0cc0 | 84 | `core/NpPulleyJoint.cpp` | Np slot 4; line 0x10 |
+| phys_fn_004481 | 0x000b0d60 | 89 | `core/NpPulleyJoint.cpp` | Np slot 9; line 0x10 |
+| phys_fn_004485 | 0x000b0df0 | 89 | `core/NpPulleyJoint.cpp` | Np slot 11; line 0x10 |
+| phys_fn_004487 | 0x000b0e50 | 97 | `core/NpPulleyJoint.cpp` | Np slot 13; line 0x10 |
+| phys_fn_004489 | 0x000b0ec0 | 74 | `core/NpPulleyJoint.cpp` | Np slot 15; line 0x10 |
+| phys_fn_004493 | 0x000b0f40 | 88 | `core/NpPulleyJoint.cpp` | Np slot 29; line 0x10 |
+| phys_fn_004495 | 0x000b0fa0 | 74 | `core/NpPulleyJoint.cpp` | Np slot 14; line 0x10 |
+| phys_fn_004501 | 0x000b1050 | 84 | `core/NpPulleyJoint.cpp` | Np slot 31 (loadFromDesc); line 0x14; internal `[vt+0x24]` |
+| phys_fn_004503 | 0x000b10b0 | 84 | `core/NpPulleyJoint.cpp` | Np slot 32 (saveToDesc); line 0x1f; internal `[vt+0x28]` |
+| phys_fn_004505 | 0x000b1110 | 57 | `core/NpPulleyJoint.cpp` | constructor; called by 004222 (0x9ea90) |
+| phys_fn_004507 | 0x000b1150 | 8 | `core/NpPulleyJoint.cpp` | secondary table 0x1011a9bc slot 0; compiler-generated thunk |
+| phys_fn_004509 | 0x000b1160 | 55 | `core/NpPulleyJoint.cpp` | Np slot 0 (scalar deleting destructor) |
+
+Already `reconstructed` through generic drives or `ObjectModel.cpp` differentials (proofs kept,
+new text appended): 004214 (tinygetters), 004218 (builder4), 004489 (tailjmp), 004495
+(mutexlistfree; its model `nxMutexListFree` gains the `// Product row:` pointer), 004501 and
+004503 (mutexfamily).
+
+A listing diff of the Np unit against NpDistanceJoint's per-family rows differs only in the
+`__FILE__` (0x1011a8fc) and the three table addresses. The report lines are distance's.
+
+### Construction chain (NxJointType 7)
+
+1. 000665's switch (table 0x14590, entry 7 = **0x144d8**): SDK allocator slot +8 with
+   `(0x1e0, 0)` (`push 0x1e0` at 0x144e4), null -> 0x1458a (result 0); otherwise
+   `call 0x1009ea60` = **004222** on the block with the descriptor (0x144f7), then the shared exit
+   at 0x144fc.
+2. **004222** PulleyJoint::PulleyJoint(const NxPulleyJointDesc&) (`ret 4`):
+   - `Joint(desc, 0x1000)` (004141, `push 0x1000` at 0x9ea66: the type bit), vptr 0x10119840
+     (0x9ea73);
+   - SDK allocator `(0x1c, 0)` -> **004505** on success, else null; public object -> `this+0x48`
+     (0x9ea99); `desc.userData` (desc+0x60) -> `np+4` **without a null check** (0x9ea9c-0x9ea9f);
+   - **004218** copies the family fields (0x9eaa5). Nothing else is initialised: +0x194..+0x1dc
+     keep the allocator's bytes until the solver writes them.
+3. **004505** NpPulleyJoint::NpPulleyJoint(PulleyJoint*): zeroes +4/+8, transient table
+   0x1011a878, 002404 on +0xc, secondary table 0x1011a9bc, internal at +0x18 and +0x08, final
+   table 0x1011a938. The prismatic shape.
+4. Back in 000665 (0x144fc): identical to the other wired families (`[joint+0x48]` null ->
+   internal slot 5 with 1 (004224) and result 0; otherwise the link copy, 000661, and the
+   0x14529-0x1453f exit).
+
+**Public-object offset: +0x48** (`mPublicObject`; 004222 writes it at 0x9ea99, 000665 reads it at
+0x14502).
+
+### Object layouts
+
+**PulleyJoint (internal), 0x1e0 bytes** (`push 0x1e0` at 0x144e4):
+
+| Off | Size | Field | Evidence |
+|---|---:|---|---|
+| +0x000 | 0x16c | `Joint` base; vptr 0x10119840 | 004222 0x9ea6e/0x9ea73; 004224 0x9eac8 |
+| +0x16c | 0x18 | `mPulley[2]` (NxPulleyJointDesc::pulley, desc+0x6c) | 004218; 004216 0x9e3f9-0x9e423; 004228 reads it as `[ecx+0x50]` from +0x11c (0x9eca7); 004221 passes +0x16c/+0x178 to addLine |
+| +0x184 | 4 | `mDistance` (desc+0x84) | 004218; 004216; 004228 0x9ed61 |
+| +0x188 | 4 | `mStiffness` (desc+0x88) | 004218; 004216; 004228 0x9ed67 |
+| +0x18c | 4 | `mRatio` (desc+0x8c) | 004218; 004216; 004228 0x9ed55 |
+| +0x190 | 4 | `mPulleyFlags` (NxPulleyJointFlag bits, desc+0x90) | 004218; 004216; no row tests it |
+| +0x194 | 8 | `mSupport[2]` (the bodies' +0x204 support records) | 004228 0x9ed8f/0x9eda3; 004219 reads both |
+| +0x19c | 0x18 | `mDirection[2]` (unit vectors from each world point to its pulley) | 004228 0x9ee5d-0x9ee87; 004219 |
+| +0x1b4 | 0x18 | `mCross[2]` (lever x direction, per body) | 004228 0x9eecb-0x9ef31; 004219 |
+| +0x1cc | 4 | `mBias` ((distance - (len0 + len1 ratio)) (stiffness / arg)) | 004228 0x9ed76; 004214 zeroes it; 004219 0x9e59b |
+| +0x1d0 | 4 | `mInverseMass` (1 / effective mass, or 0) | 004228 0x9f19a; 004219 0x9e581 |
+| +0x1d4 | 4 | `mScaledInverseMass` (the unrounded inverse * 0.7f) | 004228 0x9f1a6; 004219 0x9e595 |
+| +0x1d8 | 4 | `mAccumulated[0]` (sum of the applied impulses) | 004228 zeroes it (0x9ef3f); 004219 0x9e5b1 |
+| +0x1dc | 4 | `mAccumulated[1]` (sum of the unbiased impulses) | 004228 zeroes it (0x9ef45); 004219 0x9e58f |
+
+The rows also use these `Joint` base fields: `mBody` (+0x08/+0x0c), `mFlags` (+0x2c),
+`mPublicObject` (+0x48), `mWorldAnchor` (+0x114/+0x120) and `mBodyStamp` (+0x14c/+0x150). From the
+body records they use the +0x134 3x3, the +0x158 position, the +0x198 stamp and the +0x204 support
+record. From the support record (`JointSupportBody`) they use +0x00 (linear), +0x0c (the scale),
++0x10 (angular) and the +0x20 3x3.
+
+**NpPulleyJoint (public), 0x1c bytes**: exactly `NpJointShared<NxPulleyJoint, PulleyJoint>`
+(vptr 0x1011a938, userData +4, appData +8 = internal, hook base +0xc with table 0x1011a9bc, write
+link +0x10, read link +0x14, internal +0x18). No own field.
+
+### Dispatch tables
+
+**0x10119840: PulleyJoint internal (`phys_data_002645`, 14 slots, 56 B)**
+
+| Slot | Row | Declared as | Notes |
+|---:|---|---|---|
+| 0 | **004219** | `PulleyJoint::row_slot0(NxU32)` | `ret 4`; the argument is never read |
+| 1 | **004214** | `PulleyJoint::row_slot1()` | `ret`; zeroes mBias |
+| 2 | 004111 | `Joint::row004111` | inherited |
+| 3 | 004087 | `Joint::row004087` | inherited |
+| 4 | **004221** | `PulleyJoint::row_slot4(NxDebugRenderable&)` | `ret 4` |
+| 5 | **004224** | `~PulleyJoint()` (scalar deleting) | deletes `[this+0x48]` through its slot 0 with 1, 004095, frees if flag&1 |
+| 6 | **004228** | `PulleyJoint::row_slot6(NxReal)` | `ret 4`; the float is the step divisor (`fdiv [esp+0x8c]`, 0x9ed6d) |
+| 7 | 004135 | `Joint::row_slot7` | inherited |
+| 8 | 004248 (folded) | `Joint::row_slot8` inline | inherited no-op |
+| 9 | **004226** | `PulleyJoint::loadFromDesc(const NxPulleyJointDesc&)` | `ret 4` |
+| 10 | **004216** | `PulleyJoint::saveToDesc(NxPulleyJointDesc&)` | `ret 4`; tail-jumps 004066 |
+| 11-13 | 001391 (folded, `mov eax,ecx; ret`) | `PulleyJoint::row_slot11/12/13()` inline | return `this` (cylindrical's three) |
+
+The table runs to 0x10119878, where the unit's `__FILE__` string starts. Pulley is the first
+family after revolute to override slots 0 and 1.
+
+**0x1011a938: NpPulleyJoint primary (`phys_data_002706`, 33 slots)**: slots 0-32 as the
+`### Slot split` table (per-family rows 004509, 004475, 004477, 004481, 004485, 004487, 004495,
+004489, 004493, 004501, 004503; the folded rows through `NpJointShared`). Every write-locked NxJoint
+row reports line 0x10; loadFromDesc 0x14, saveToDesc 0x1f (the `push` before each
+`push 0x1011a8fc`: 0xb0c81 ... 0xb0fc1, 0xb1071, 0xb10d1). Slots 31/32 call internal slots 9/10
+(`[vt+0x24]` 0xb1095 / `[vt+0x28]` 0xb10f5). **0x1011a9bc** (secondary): 004507.
+
+### The rows' shape
+
+- **004216** (saveToDesc), as distance's 004230:
+  - The broken test `(mFlags & 0x18) == 0x10` reports (code 1, line 0x42, "PulleyJoint::saveToDesc:
+    joint is broken. ...") through the static `FoundationSDK::error` (no `int3` guard) and returns.
+  - Otherwise it copies the ten family words into desc+0x6c..+0x90 and tail-jumps 004066.
+- **004226** (loadFromDesc), as distance's 004238: no broken-joint test, `desc.isValid()`
+  (`[vt+8]`), a failure reports line 0x2a through the static error. Then the re-bind (004107
+  only when a body differs), 004121, and **004218** for the family fields (distance copies them
+  inline).
+- **004218**: a separate `ret 4` thiscall row, called by both 004222 and 004226.
+- **004214** (slot 1): mBias = 0.
+- **004221** (slot 4):
+  - Gated by SDK parameter 32 or 31 being non-zero; there is no `NX_JF_VISUALIZATION` test and
+    no scale (distance's gate).
+  - After the stale-body refresh it computes the two world anchors as distance's 004232 does
+    (x ((R2 a.z + R1 a.y) + R0 a.x) unrounded before + t.x; y and z stored first).
+  - Then it draws `addLine(P0, pulley[0], 0xf0f0f0)` and `addLine(P1, pulley[1], 0xf0f0f0)`.
+  - Listing over decompile: the supplement decompile passes P0 to both calls; the listing
+    passes P1 (`lea eax,[esp+0x34]` at 0x9ea4e) to the second.
+- **004228** (slot 6, arg = the step divisor):
+  - The stale-body refresh runs first. Then per body i:
+    - With a body, the lever R * a[i] is stored into **lever[1]** (fixed stack slots
+      [esp+0x4c..0x54], 0x9ec09-0x9ec4d), but the world point reads lever[i]
+      ([esp+edx+0x40], 0x9ec51). So for body 0 with a body the world point is built from
+      lever[0], which this row never writes.
+    - Without a body, lever[i] = point[i] = the stored anchor.
+    - The lever groups x ((R2 a.z + R1 a.y) + R0 a.x), y ((R5 a.z + R3 a.x) + R4 a.y),
+      z ((R8 a.z + R6 a.x) + R7 a.y), each stored. The point is lever + t, each stored.
+    - dir[i] = pulley[i] - point[i] (stored); len = fsqrt((x x + z z) + y y), kept unrounded
+      while dir is scaled by 1 / len (NaN counts as non-zero); then len[i] is stored.
+  - mBias = (distance - (len0 + len1 ratio)) * (stiffness / arg), rounded once.
+  - mSupport = the bodies' +0x204 (null without a body).
+  - One record from 004093: flags (f & ~0x19) | 0x26 (kind 6), +0x30 = this, bit 9 and bit 10
+    computed as `distanceRecordBits` does, +0x10/+0x14 the support records, every vector and
+    float zeroed, finally flags & 0xfff8063f. The record carries no direction: slot 0 applies
+    the impulse itself.
+  - mDirection = dir; mCross[0] = lever[0] x dir[0], mCross[1] = lever[1] x dir[1], each
+    component a lever product minus a lever product in the listing's order (lever[0] is the
+    unwritten slot for a dynamic body 0, as above).
+  - mAccumulated = 0.
+  - The effective mass:
+    - per support record s: w = s.I * cross (rows ((c.z I2 + c.y I1) + c.x I0), ...,
+      stored) and u = dir * s.m (stored);
+    - K0 = ((((u.y d.y + u.z d.z) + w.z c.z) + w.y c.y) + u.x d.x) + w.x c.x;
+    - K1 = ((((u.y d.y + u.z d.z) + w.z c.z) + w.y c.y) + w.x c.x) + u.x d.x (a different
+      order);
+    - K = K0 + K1 (0 for a missing record).
+    - mInverseMass = K != 0 ? 1 / K : 0 (NaN counts as non-zero), stored with `fst`;
+      mScaledInverseMass = (the unrounded value) * 0.7f.
+  - Listing over decompile: the decompile reads the stack arrays by name and so hides the
+    lever[1] store. The listing is followed.
+- **004219** (slot 0):
+  - S = the sum over the present support records of (v . dir + w . cross), each in the
+    listing's order: record 0 ((((v18 c.z + v14 c.y) + v8 d.z) + v4 d.y) + v10 c.x) + v0 d.x;
+    record 1 with v0 d.x before v10 c.x.
+  - lambda = -S * mInverseMass (kept); mAccumulated[1] += lambda.
+  - impulse = (float)(lambda - mScaledInverseMass * mBias); mAccumulated[0] += impulse.
+  - If impulse != 0 (NaN counts as non-zero), for each present record whose scale m (+0x0c)
+    is non-zero:
+    - linear += impulse * dir * m: x unrounded, y from the unrounded impulse * dir.y, z stored;
+    - angular += I * (impulse * cross): x and y unrounded, z stored.
+    - Body 1 gets +impulse too (its direction already points the other way).
+    - A record with m == 0 gets nothing, not even the angular part.
+
+### Dependency closure
+
+- **write** (22 rows, 4,547 B): 004214, 004216, 004218, 004219, 004221, 004222, 004224, 004226,
+  004228 in `core/PulleyJoint.cpp` (9 rows, 3,574 B); 004475-004509 in `core/NpPulleyJoint.cpp`
+  (13 rows, 973 B; 004507 generated, its stable-ID line above the destructor it serves).
+- **reuse**:
+  - Joint rows 004141, 004107, 004121, 004097, 004066, 004095, 004093, 004111, 004087 and 004135
+    (`core/Joint.cpp`).
+  - The 13 folded Np bodies (`NpJointShared`), including 004479/004483/004491/004497/004499 in
+    this unit's range.
+  - 002362/002364/002366, 002404/002406 and 000454/000480.
+  - The inline bodies 004248 and 001391; 004417-004433, 004537 and 005667 (generated from
+    `NxJoint.h`).
+  - `jointLinearSdkParameter` (`core/JointLinearRecords.h`); `jointFsqrtDot3`
+    (`core/JointX87.h`); the SDK allocator; SDK parameters 31 and 32. The constants 0.7f
+    (0x10106940), 1.0f (0x101041ec) and 0.0f (0x101041f0). No acos; 004391/004393 are not called.
+- **defer**: none. The gap rows 004469-004473 are D6's (Task 3i), not deferred pulley rows.
+
+### What the new test case reaches
+
+`nxPulleyCase` uses indices 0 and 3 of the revolute table's anchor/axis values. Its descriptor sets
+the two pulley points, distance, stiffness, ratio and flags to non-default values.
+
+- Creation: 000297, 000665 case 7, 004222, 004141 (-> 004107, 004121 -> 004097 x2, 000480),
+  004505 (002404), 004218, 000661.
+- Getters: 004437/004125, 004441/004129, 004483/004078, 004539, 004443/004070,
+  `isPulleyJoint` (inline 004433 -> 004479/004070), and saveToDesc 004503 -> internal slot
+  10 = **004216** -> 004066 (the family fields come back through it).
+- Compiled but not reached: 004214, 004219, 004221, 004224 (release unwired), 004226, 004228,
+  004475-004501, 004509.
