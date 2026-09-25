@@ -830,17 +830,29 @@ $NxRequiredCoverageLines = [ordered] @{
     # The staged-pair joint differential: the same harness built as its own target so
     # the closure schema has a target that loads the rebuilt module. Four assertions,
     # quoted from the transcript.
+    # Joint-families Task 3a added two prismatic cases (NxJointType 0) to the same
+    # harness and four prismatic lines to each list, copied verbatim from the
+    # oracle side of a staged-pair run (and the oracle differential): created, the
+    # anchor/axis/state, the type and is-queries, and one saveToDesc line.
     'NxPhysicsJointStagedPairTests' = @(
         'case=revolute index=0 created=yes',
         'case=revolute index=0 out_anchor=00000000.00000000.00000000 out_axis=3f800000.00000000.00000000 state=0',
         'case=revolute index=0 actors a=match b=match',
-        'case=revolute index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0'
+        'case=revolute index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
+        'case=prismatic index=0 created=yes',
+        'case=prismatic index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
+        'case=prismatic index=3 type=0 is_prismatic=yes is_revolute=no',
+        'case=prismatic index=3 saved anchor0=40000000.40800000.00000000 anchor1=c0000000.40800000.00000000'
     )
     'NxPhysicsJointTests' = @(
         'case=revolute index=0 created=yes',
         'case=revolute index=0 out_anchor=00000000.00000000.00000000 out_axis=3f800000.00000000.00000000 state=0',
         'case=revolute index=0 actors a=match b=match',
-        'case=revolute index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0'
+        'case=revolute index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
+        'case=prismatic index=0 created=yes',
+        'case=prismatic index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
+        'case=prismatic index=3 type=0 is_prismatic=yes is_revolute=no',
+        'case=prismatic index=3 saved anchor0=40000000.40800000.00000000 anchor1=c0000000.40800000.00000000'
     )
     'NxPhysicsJointDescTests' = @(
         'case=0 actors a=null b=null in_anchor=3f800000.40000000.40400000 in_axis=3f000000.3f000000.3f000000',
@@ -1695,8 +1707,8 @@ $NxPhaseCoverageFloor = [ordered] @{
     '4' = 101  # 34 for NxPhysicsAssetTests, 67 for NxPhysicsThirdPartyTests
     '5' = 829  # 126 object-layout, 1 shape-vtable and 702 public actor/pruner/box/scene lines
                # (RED on purpose: vtables family open)
-    '6' = 11  # 3 oracle-descriptor + 4 oracle-joint + 4 staged-pair-joint
-    '7' = 4   # the four STAGED-PAIR assertions; the oracle-differential assertions
+    '6' = 19  # 3 oracle-descriptor + 8 oracle-joint + 8 staged-pair-joint
+    '7' = 8   # the eight STAGED-PAIR assertions; the oracle-differential assertions
                # belong to NxPhysicsJointDescTests and NxPhysicsJointTests, which phase 7
                # does not run
     '8' = 0
