@@ -1,0 +1,788 @@
+Scene joint rows: cdb breakpoint trace of the joint transcript (joint-open-items Task 2)
+=======================================================================================
+
+A trimmed excerpt of the raw cdb log, in the method of evidence/joint-families-trace-fixed.txt.
+ModLoad lines, banners, register dumps, the echoed breakpoint commands and the program's own
+stdout are removed; the HIT lines are kept in order and otherwise unedited. It is the evidence
+behind the dynamic_proof this task records in inventory.json (see evidence/joint-open-items.md,
+Task 2).
+
+Debugger:  Microsoft Windows Debugger 10.0.10586.567 (X86)
+Command:   cdb -cf <script> build\Release\NxPhysicsJointStagedPairTests.exe
+           D:\FlamingEnt__\novodex-analysis\pairs\candidate
+           (the script breaks on the NxPhysics load with `sxe ld:NxPhysics`, sets the
+           breakpoints below, then runs to exit)
+Recorded:  2026-09-25, on the Task 2 working tree after the Scene joint rows, the NpScene
+           joint slots, the scene_joints/cycle test lines and the line registration.
+Candidate: D:\FlamingEnt__\novodex-analysis\pairs\candidate\NxPhysics.dll
+           sha256=6ee4fd8b805df83482e7594e07b5c8606687f079927818fdecb75bd7de5b6b3a
+           (identical to build\Release\NxPhysics.dll at the time of the trace).
+Offsets:   module-relative, from build\Release\NxPhysics.map of that build.
+
+What the counts show (the test creates 22 family joints and releases each, then the cycle
+creates 5 and releases 3, leaving 2 for the scene release):
+  000661 Scene::addJoint                 27 (every createJoint)
+  000299 NpScene::releaseJoint           25, each followed by 000653 -> 000633 -> 000778 ->
+                                         000760, then the family's scalar deleting
+                                         destructor, the Np one, and 004095 ~Joint (mScene is
+                                         0 by then, so ~Joint does not call 000633 again)
+  000321/000559, 000323/000563           51 each (one per printed scene_joints line)
+  000325/000567                          137 each (one per iterator read, the end read included)
+  nxSceneDelete (000606 joint loop)      1, followed by the two remaining joints' destructors
+  004095 ~Joint                          27 = 25 releases + 2 at scene release
+  000712 island root                     0 (every body is its own island root before a step)
+  000598, 000571, 000758, 000022         0 (solver, break and projection paths; no step runs)
+
+Breakpoints (each echoes and continues):
+bp NxPhysics+0x16350 ".echo HIT 000299 NpScene::releaseJoint; gc"
+bp NxPhysics+0x15f80 ".echo HIT 000321 NpScene::getNbJoints; gc"
+bp NxPhysics+0x16420 ".echo HIT 000323 NpScene::resetJointIterator; gc"
+bp NxPhysics+0x15ff0 ".echo HIT 000325 NpScene::getNextJoint; gc"
+bp NxPhysics+0x26da0 ".echo HIT 000661 Scene::addJoint; gc"
+bp NxPhysics+0x2bac0 ".echo HIT 000653 Scene::releaseJoint; gc"
+bp NxPhysics+0x2bb40 ".echo HIT 000633 Scene::removeJoint; gc"
+bp NxPhysics+0x27800 ".echo HIT 000559 Scene::getNbJoints; gc"
+bp NxPhysics+0x2bca0 ".echo HIT 000563 Scene::resetJointIterator; gc"
+bp NxPhysics+0x27810 ".echo HIT 000567 Scene::getNextJoint; gc"
+bp NxPhysics+0x37d40 ".echo HIT 000778 island dissolve; gc"
+bp NxPhysics+0x37c80 ".echo HIT 000760 island reset; gc"
+bp NxPhysics+0x37b50 ".echo HIT 000712 island root; gc"
+bp NxPhysics+0x34440 ".echo HIT 004095 ~Joint; gc"
+bp NxPhysics+0x2a660 ".echo HIT (helper) nxSceneDelete, scene teardown with the 000606 joint loop; gc"
+bp NxPhysics+0x27840 ".echo HIT 000598 growJointRecords; gc"
+bp NxPhysics+0x26ed0 ".echo HIT 000571 addJointBreakEvent; gc"
+bp NxPhysics+0x37b80 ".echo HIT 000758 quaternion to 3x3; gc"
+bp NxPhysics+0x494b0 ".echo HIT 004382 PrismaticJoint scalar deleting destructor; gc"
+bp NxPhysics+0x446a0 ".echo HIT 004757 NpPrismaticJoint scalar deleting destructor; gc"
+bp NxPhysics+0x2c900 ".echo HIT 004322 CylindricalJoint scalar deleting destructor; gc"
+bp NxPhysics+0x385e0 ".echo HIT 004679 NpCylindricalJoint scalar deleting destructor; gc"
+bp NxPhysics+0x2e9d0 ".echo HIT 004202 D6Joint scalar deleting destructor; gc"
+bp NxPhysics+0x397d0 ".echo HIT 004473 NpD6Joint scalar deleting destructor; gc"
+bp NxPhysics+0x32f60 ".echo HIT 004252 FixedJoint scalar deleting destructor; gc"
+bp NxPhysics+0x3bd30 ".echo HIT 004565 NpFixedJoint scalar deleting destructor; gc"
+bp NxPhysics+0x4b630 ".echo HIT 004224 PulleyJoint scalar deleting destructor; gc"
+bp NxPhysics+0x450a0 ".echo HIT 004509 NpPulleyJoint scalar deleting destructor; gc"
+bp NxPhysics+0x321d0 ".echo HIT 004236 DistanceJoint scalar deleting destructor; gc"
+bp NxPhysics+0x3ac00 ".echo HIT 004535 NpDistanceJoint scalar deleting destructor; gc"
+bp NxPhysics+0x47550 ".echo HIT 004264 PointInPlaneJoint scalar deleting destructor; gc"
+bp NxPhysics+0x432a0 ".echo HIT 004595 NpPointInPlaneJoint scalar deleting destructor; gc"
+bp NxPhysics+0x483c0 ".echo HIT 004278 PointOnLineJoint scalar deleting destructor; gc"
+bp NxPhysics+0x43ca0 ".echo HIT 004621 NpPointOnLineJoint scalar deleting destructor; gc"
+bp NxPhysics+0x50d80 ".echo HIT 004302 SphericalJoint scalar deleting destructor; gc"
+bp NxPhysics+0x46a60 ".echo HIT 004653 NpSphericalJoint scalar deleting destructor; gc"
+bp NxPhysics+0x4c400 ".echo HIT 004368 RevoluteJoint scalar deleting destructor; gc"
+bp NxPhysics+0x45aa0 ".echo HIT 004729 NpRevoluteJoint scalar deleting destructor; gc"
+
+Trace:
+HIT 000661 Scene::addJoint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000299 NpScene::releaseJoint
+HIT 000653 Scene::releaseJoint
+HIT 000633 Scene::removeJoint
+HIT 000778 island dissolve
+HIT 000760 island reset
+HIT 004368 RevoluteJoint scalar deleting destructor
+HIT 004729 NpRevoluteJoint scalar deleting destructor
+HIT 004095 ~Joint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000661 Scene::addJoint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000299 NpScene::releaseJoint
+HIT 000653 Scene::releaseJoint
+HIT 000633 Scene::removeJoint
+HIT 000778 island dissolve
+HIT 000760 island reset
+HIT 004368 RevoluteJoint scalar deleting destructor
+HIT 004729 NpRevoluteJoint scalar deleting destructor
+HIT 004095 ~Joint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000661 Scene::addJoint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000299 NpScene::releaseJoint
+HIT 000653 Scene::releaseJoint
+HIT 000633 Scene::removeJoint
+HIT 000778 island dissolve
+HIT 000760 island reset
+HIT 004368 RevoluteJoint scalar deleting destructor
+HIT 004729 NpRevoluteJoint scalar deleting destructor
+HIT 004095 ~Joint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000661 Scene::addJoint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000299 NpScene::releaseJoint
+HIT 000653 Scene::releaseJoint
+HIT 000633 Scene::removeJoint
+HIT 000778 island dissolve
+HIT 000760 island reset
+HIT 004368 RevoluteJoint scalar deleting destructor
+HIT 004729 NpRevoluteJoint scalar deleting destructor
+HIT 004095 ~Joint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000661 Scene::addJoint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000299 NpScene::releaseJoint
+HIT 000653 Scene::releaseJoint
+HIT 000633 Scene::removeJoint
+HIT 000778 island dissolve
+HIT 000760 island reset
+HIT 004382 PrismaticJoint scalar deleting destructor
+HIT 004757 NpPrismaticJoint scalar deleting destructor
+HIT 004095 ~Joint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000661 Scene::addJoint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000299 NpScene::releaseJoint
+HIT 000653 Scene::releaseJoint
+HIT 000633 Scene::removeJoint
+HIT 000778 island dissolve
+HIT 000760 island reset
+HIT 004382 PrismaticJoint scalar deleting destructor
+HIT 004757 NpPrismaticJoint scalar deleting destructor
+HIT 004095 ~Joint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000661 Scene::addJoint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000299 NpScene::releaseJoint
+HIT 000653 Scene::releaseJoint
+HIT 000633 Scene::removeJoint
+HIT 000778 island dissolve
+HIT 000760 island reset
+HIT 004322 CylindricalJoint scalar deleting destructor
+HIT 004679 NpCylindricalJoint scalar deleting destructor
+HIT 004095 ~Joint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000661 Scene::addJoint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000299 NpScene::releaseJoint
+HIT 000653 Scene::releaseJoint
+HIT 000633 Scene::removeJoint
+HIT 000778 island dissolve
+HIT 000760 island reset
+HIT 004322 CylindricalJoint scalar deleting destructor
+HIT 004679 NpCylindricalJoint scalar deleting destructor
+HIT 004095 ~Joint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000661 Scene::addJoint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000299 NpScene::releaseJoint
+HIT 000653 Scene::releaseJoint
+HIT 000633 Scene::removeJoint
+HIT 000778 island dissolve
+HIT 000760 island reset
+HIT 004302 SphericalJoint scalar deleting destructor
+HIT 004653 NpSphericalJoint scalar deleting destructor
+HIT 004095 ~Joint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000661 Scene::addJoint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000299 NpScene::releaseJoint
+HIT 000653 Scene::releaseJoint
+HIT 000633 Scene::removeJoint
+HIT 000778 island dissolve
+HIT 000760 island reset
+HIT 004302 SphericalJoint scalar deleting destructor
+HIT 004653 NpSphericalJoint scalar deleting destructor
+HIT 004095 ~Joint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000661 Scene::addJoint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000299 NpScene::releaseJoint
+HIT 000653 Scene::releaseJoint
+HIT 000633 Scene::removeJoint
+HIT 000778 island dissolve
+HIT 000760 island reset
+HIT 004278 PointOnLineJoint scalar deleting destructor
+HIT 004621 NpPointOnLineJoint scalar deleting destructor
+HIT 004095 ~Joint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000661 Scene::addJoint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000299 NpScene::releaseJoint
+HIT 000653 Scene::releaseJoint
+HIT 000633 Scene::removeJoint
+HIT 000778 island dissolve
+HIT 000760 island reset
+HIT 004278 PointOnLineJoint scalar deleting destructor
+HIT 004621 NpPointOnLineJoint scalar deleting destructor
+HIT 004095 ~Joint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000661 Scene::addJoint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000299 NpScene::releaseJoint
+HIT 000653 Scene::releaseJoint
+HIT 000633 Scene::removeJoint
+HIT 000778 island dissolve
+HIT 000760 island reset
+HIT 004264 PointInPlaneJoint scalar deleting destructor
+HIT 004595 NpPointInPlaneJoint scalar deleting destructor
+HIT 004095 ~Joint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000661 Scene::addJoint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000299 NpScene::releaseJoint
+HIT 000653 Scene::releaseJoint
+HIT 000633 Scene::removeJoint
+HIT 000778 island dissolve
+HIT 000760 island reset
+HIT 004264 PointInPlaneJoint scalar deleting destructor
+HIT 004595 NpPointInPlaneJoint scalar deleting destructor
+HIT 004095 ~Joint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000661 Scene::addJoint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000299 NpScene::releaseJoint
+HIT 000653 Scene::releaseJoint
+HIT 000633 Scene::removeJoint
+HIT 000778 island dissolve
+HIT 000760 island reset
+HIT 004236 DistanceJoint scalar deleting destructor
+HIT 004535 NpDistanceJoint scalar deleting destructor
+HIT 004095 ~Joint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000661 Scene::addJoint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000299 NpScene::releaseJoint
+HIT 000653 Scene::releaseJoint
+HIT 000633 Scene::removeJoint
+HIT 000778 island dissolve
+HIT 000760 island reset
+HIT 004236 DistanceJoint scalar deleting destructor
+HIT 004535 NpDistanceJoint scalar deleting destructor
+HIT 004095 ~Joint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000661 Scene::addJoint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000299 NpScene::releaseJoint
+HIT 000653 Scene::releaseJoint
+HIT 000633 Scene::removeJoint
+HIT 000778 island dissolve
+HIT 000760 island reset
+HIT 004224 PulleyJoint scalar deleting destructor
+HIT 004509 NpPulleyJoint scalar deleting destructor
+HIT 004095 ~Joint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000661 Scene::addJoint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000299 NpScene::releaseJoint
+HIT 000653 Scene::releaseJoint
+HIT 000633 Scene::removeJoint
+HIT 000778 island dissolve
+HIT 000760 island reset
+HIT 004224 PulleyJoint scalar deleting destructor
+HIT 004509 NpPulleyJoint scalar deleting destructor
+HIT 004095 ~Joint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000661 Scene::addJoint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000299 NpScene::releaseJoint
+HIT 000653 Scene::releaseJoint
+HIT 000633 Scene::removeJoint
+HIT 000778 island dissolve
+HIT 000760 island reset
+HIT 004252 FixedJoint scalar deleting destructor
+HIT 004565 NpFixedJoint scalar deleting destructor
+HIT 004095 ~Joint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000661 Scene::addJoint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000299 NpScene::releaseJoint
+HIT 000653 Scene::releaseJoint
+HIT 000633 Scene::removeJoint
+HIT 000778 island dissolve
+HIT 000760 island reset
+HIT 004252 FixedJoint scalar deleting destructor
+HIT 004565 NpFixedJoint scalar deleting destructor
+HIT 004095 ~Joint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000661 Scene::addJoint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000299 NpScene::releaseJoint
+HIT 000653 Scene::releaseJoint
+HIT 000633 Scene::removeJoint
+HIT 000778 island dissolve
+HIT 000760 island reset
+HIT 004202 D6Joint scalar deleting destructor
+HIT 004473 NpD6Joint scalar deleting destructor
+HIT 004095 ~Joint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000661 Scene::addJoint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000299 NpScene::releaseJoint
+HIT 000653 Scene::releaseJoint
+HIT 000633 Scene::removeJoint
+HIT 000778 island dissolve
+HIT 000760 island reset
+HIT 004202 D6Joint scalar deleting destructor
+HIT 004473 NpD6Joint scalar deleting destructor
+HIT 004095 ~Joint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000661 Scene::addJoint
+HIT 000661 Scene::addJoint
+HIT 000661 Scene::addJoint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000299 NpScene::releaseJoint
+HIT 000653 Scene::releaseJoint
+HIT 000633 Scene::removeJoint
+HIT 000778 island dissolve
+HIT 000760 island reset
+HIT 004302 SphericalJoint scalar deleting destructor
+HIT 004653 NpSphericalJoint scalar deleting destructor
+HIT 004095 ~Joint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000661 Scene::addJoint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000299 NpScene::releaseJoint
+HIT 000653 Scene::releaseJoint
+HIT 000633 Scene::removeJoint
+HIT 000778 island dissolve
+HIT 000760 island reset
+HIT 004202 D6Joint scalar deleting destructor
+HIT 004473 NpD6Joint scalar deleting destructor
+HIT 004095 ~Joint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000299 NpScene::releaseJoint
+HIT 000653 Scene::releaseJoint
+HIT 000633 Scene::removeJoint
+HIT 000778 island dissolve
+HIT 000760 island reset
+HIT 004368 RevoluteJoint scalar deleting destructor
+HIT 004729 NpRevoluteJoint scalar deleting destructor
+HIT 004095 ~Joint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000661 Scene::addJoint
+HIT 000321 NpScene::getNbJoints
+HIT 000559 Scene::getNbJoints
+HIT 000323 NpScene::resetJointIterator
+HIT 000563 Scene::resetJointIterator
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT 000325 NpScene::getNextJoint
+HIT 000567 Scene::getNextJoint
+HIT (helper) nxSceneDelete, scene teardown with the 000606 joint loop
+HIT 004382 PrismaticJoint scalar deleting destructor
+HIT 004757 NpPrismaticJoint scalar deleting destructor
+HIT 004095 ~Joint
+HIT 004252 FixedJoint scalar deleting destructor
+HIT 004565 NpFixedJoint scalar deleting destructor
+HIT 004095 ~Joint

@@ -322,8 +322,10 @@ Row000712Fixture* Row000712Fixture::row000712()
 // through 004167 and the SDK allocator's slot +0x14). The flags word +0x114
 // is read before the stores (0x1774c); bit 8 suppresses the wake raise,
 // which is `fcomp [0x101053d4]; test ah,5; jp`: only an ordered +0x4c below
-// the floor is raised.
-void Row000760Fixture::row000760()
+// the floor is raised. noinline: the oracle calls it as its own function
+// (0x1870a from 000780, 0x110d6 from 000604), which the compiler would
+// otherwise fold into row000778.
+__declspec(noinline) void Row000760Fixture::row000760()
 	{
 	if(supportPointer(this, 0x1bc) == this)
 		{

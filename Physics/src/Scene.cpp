@@ -2483,8 +2483,11 @@ void nxActorRemoveShape(void* actor, void* handle)
 // instance test with int3, code 2, line 0x752) and left alone. Otherwise:
 // bit 0 set, the joint pushed on the +0x59c list through +0x10, appended to
 // the +0x58c pointer array (grown to 2n + 2 entries when full,
-// 0x13e53-0x13f12), and mScene = this written last (0x13f1a).
-void NxSceneInternal::addJoint(Joint* joint)
+// 0x13e53-0x13f12), and mScene = this written last (0x13f1a). noinline:
+// the oracle calls it as its own function (0x14524, 0x97e4e), and the
+// compiler otherwise folds it into createJoint, where no breakpoint on the
+// row can see it run.
+__declspec(noinline) void NxSceneInternal::addJoint(Joint* joint)
 	{
 	if(joint->mFlags & 1)
 		{
