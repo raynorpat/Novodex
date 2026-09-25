@@ -1531,3 +1531,227 @@ NxJoint row reports line 0xf; loadFromDesc 0x13, saveToDesc 0x1e (the `push` bef
   `fdiv` of 004258.
 - Ledger: the 19 rows are `reconstructed_not_falsified` in `gates/phase6-closure.json` (15 moved
   from `not_reconstructed_in_phase`; 4 already were); counts 186 / 245.
+
+## Distance
+
+Recovered by joint-families Task 3f from the unit bundles `units/core__DistanceJoint.cpp.md` and
+`units/core__NpDistanceJoint.cpp.md`, the Capstone listing, the relocated table words in
+`oracle/pe.json` and the pinned Ghidra supplement. 004230 (saveToDesc), 004232 (debug
+visualization) and 004238 (loadFromDesc) had no decompile; Task 3f added 0x0009f1c0, 0x0009f230
+and 0x0009f560 to `oracle/ghidra/supplement.json` (the union with the 21 existing `requested`
+RVAs; all three `ok`; the 21 existing entries came back unchanged). The listing is authoritative
+over every decompile.
+
+### Row assignment
+
+`work_units.json` puts 6 rows in `core\DistanceJoint.cpp` (evidenced span 0x9f1c0-0x9f560, no
+ambiguous rows) and 15 in `core\NpDistanceJoint.cpp` (evidenced span 0xb11a0-0xb14f0, no ambiguous
+rows). Neither unit has a neighbouring gap unit. Checked by hand:
+
+- **Before `core\DistanceJoint.cpp`**: 004228 (pulley's solver slot, 0x9eb90, 1,572 B) ends at
+  0x9f1b4; 004229 is padding; 004230 starts at 0x9f1c0 and pushes the `DistanceJoint.cpp`
+  `__FILE__` (0x1011997c).
+- **After it**: 004240 (0x9f620, 2,747 B) ends `ret 4` at 0xa00d8; 004241 is padding; 004242
+  (0xa00e0) pushes the `FixedJoint.cpp` `__FILE__` and is fixed's.
+- **Before `core\NpDistanceJoint.cpp`**: NpPulleyJoint's own triple 004505-004509
+  (0xb1110-0xb1197) closes that unit.
+- **`core\NpDistanceJoint.cpp`** holds its own constructor / thunk / deleting-destructor triple
+  (004531-004535, 0xb1550-0xb15d7):
+  - 004531 installs the transient table 0x1011a9d8 (`phys_data_002707`, `NxDistanceJoint`), the
+    secondary table 0x1011ab1c and the final table 0x1011aa98 (`phys_data_002709`). Its only
+    caller is the distance constructor 004234 (0x9f4be).
+  - 004533 is `sub ecx,0xc; jmp 004535`, the only slot of 0x1011ab1c.
+  - 004535 is slot 0 of 0x1011aa98.
+- **Not this family's, though inside the unit's range**:
+  - 004537 (0xb15e0, 31 B) is the compiler-generated `~NxJoint()` deleting body: slot 0 of every
+    family's transient `Nx<Family>Joint` table, and it installs 0x1011a680. It is `reuse` per the
+    revolute contract (generated from `NxJoint.h`; nothing to write).
+  - 004539 (getActors, slot 1) is a folded body that `NpJointShared` already claims.
+  - NpFixedJoint's first row 004541 starts at 0xb1670.
+- No other family's table names a distance row. The distance tables name no other family's body,
+  only the Joint base rows and the folded no-ops 004248/001583/001391.
+
+| Stable ID | RVA | Size | File | Evidence |
+|---|---|---:|---|---|
+| phys_fn_004230 | 0x0009f1c0 | 109 | `core/DistanceJoint.cpp` | internal slot 10 (0x119970); "DistanceJoint::saveToDesc" line 0x42 |
+| phys_fn_004232 | 0x0009f230 | 564 | `core/DistanceJoint.cpp` | internal slot 4 (0x119958); debug visualization |
+| phys_fn_004234 | 0x0009f470 | 162 | `core/DistanceJoint.cpp` | createJoint case 6 (0x144d1); installs 0x10119948 (0x9f483) |
+| phys_fn_004236 | 0x0009f520 | 56 | `core/DistanceJoint.cpp` | internal slot 5; reinstalls 0x10119948 (0x9f528) |
+| phys_fn_004238 | 0x0009f560 | 188 | `core/DistanceJoint.cpp` | internal slot 9; "DistanceJoint::loadFromDesc" line 0x2a |
+| phys_fn_004240 | 0x0009f620 | 2747 | `core/DistanceJoint.cpp` | internal slot 6 (0x119960); the solver slot |
+| phys_fn_004511 | 0x000b11a0 | 84 | `core/NpDistanceJoint.cpp` | Np slot 2; line 0x10 |
+| phys_fn_004513 | 0x000b1200 | 84 | `core/NpDistanceJoint.cpp` | Np slot 4; line 0x10 |
+| phys_fn_004515 | 0x000b1260 | 89 | `core/NpDistanceJoint.cpp` | Np slot 9; line 0x10 |
+| phys_fn_004517 | 0x000b12c0 | 89 | `core/NpDistanceJoint.cpp` | Np slot 11; line 0x10 |
+| phys_fn_004519 | 0x000b1320 | 97 | `core/NpDistanceJoint.cpp` | Np slot 13; line 0x10 |
+| phys_fn_004521 | 0x000b1390 | 74 | `core/NpDistanceJoint.cpp` | Np slot 15; line 0x10 |
+| phys_fn_004523 | 0x000b13e0 | 88 | `core/NpDistanceJoint.cpp` | Np slot 29; line 0x10 |
+| phys_fn_004525 | 0x000b1440 | 74 | `core/NpDistanceJoint.cpp` | Np slot 14; line 0x10 |
+| phys_fn_004527 | 0x000b1490 | 84 | `core/NpDistanceJoint.cpp` | Np slot 31 (loadFromDesc); line 0x14; internal `[vt+0x24]` |
+| phys_fn_004529 | 0x000b14f0 | 84 | `core/NpDistanceJoint.cpp` | Np slot 32 (saveToDesc); line 0x1f; internal `[vt+0x28]` |
+| phys_fn_004531 | 0x000b1550 | 57 | `core/NpDistanceJoint.cpp` | constructor; called by 004234 (0x9f4be) |
+| phys_fn_004533 | 0x000b1590 | 8 | `core/NpDistanceJoint.cpp` | secondary table 0x1011ab1c slot 0; compiler-generated thunk |
+| phys_fn_004535 | 0x000b15a0 | 55 | `core/NpDistanceJoint.cpp` | Np slot 0 (scalar deleting destructor) |
+
+Already `reconstructed` through `ObjectModel.cpp` differentials (proofs kept, new text appended):
+004521 (tailjmp), 004525 (mutexlistfree; its model `nxMutexListFree` gains the `// Product row:`
+pointer), 004527 and 004529 (mutexfamily).
+
+A listing diff of the Np unit (0xb11a0-0xb1550) against NpPointInPlaneJoint's per-family rows
+differs only in:
+
+- the report lines (0x10/0x14/0x1f against 0xf/0x13/0x1e);
+- the `__FILE__` (0x1011aa5c);
+- the three table addresses.
+
+No folded body sits before 004531 in the distance range.
+
+### Construction chain (NxJointType 6)
+
+1. 000665's switch (table 0x14590, entry 6 = **0x144b2**): SDK allocator slot +8 with
+   `(0x184, 0)` (`push 0x184` at 0x144be), null -> 0x1458a (result 0); otherwise
+   `call 0x1009f470` = **004234** on the block with the descriptor (0x144d1), then the shared exit
+   at 0x144fc.
+2. **004234** DistanceJoint::DistanceJoint(const NxDistanceJointDesc&) (`ret 4`):
+   - `Joint(desc, 0x2000)` (004141, `push 0x2000` at 0x9f476: the type bit), vptr 0x10119948
+     (0x9f483);
+   - +0x174/+0x178/+0x17c zeroed (0x9f489-0x9f49d): the inline `NxSpringDesc()` of the spring
+     member;
+   - SDK allocator `(0x1c, 0)` -> **004531** on success, else null; public object -> `this+0x48`
+     (0x9f4c7); `desc.userData` (desc+0x60) -> `np+4` **without a null check** (0x9f4ca-0x9f4cd);
+   - the family fields copied from the descriptor (0x9f4d0-0x9f506): desc+0x6c maxDistance ->
+     +0x16c, desc+0x70 minDistance -> +0x170, desc+0x74..+0x7c spring -> +0x174..+0x17c,
+     desc+0x80 flags -> +0x180.
+3. **004531** NpDistanceJoint::NpDistanceJoint(DistanceJoint*): zeroes +4/+8, transient table
+   0x1011a9d8, 002404 on +0xc, secondary table 0x1011ab1c, internal at +0x18 and +0x08, final
+   table 0x1011aa98. The prismatic shape.
+4. Back in 000665 (0x144fc): identical to the other wired families (`[joint+0x48]` null ->
+   internal slot 5 with 1 (004236) and result 0; otherwise the link copy, 000661, and the
+   0x14529-0x1453f exit).
+
+**Public-object offset: +0x48** (`mPublicObject`; 004234 writes it at 0x9f4c7, 000665 reads it at
+0x14502).
+
+### Object layouts
+
+**DistanceJoint (internal), 0x184 bytes** (`push 0x184` at 0x144be):
+
+| Off | Size | Field | Evidence |
+|---|---:|---|---|
+| +0x000 | 0x16c | `Joint` base; vptr 0x10119948 | 004234 0x9f47e/0x9f483; 004236 0x9f528 |
+| +0x16c | 4 | `mMaxDistance` (NxDistanceJointDesc::maxDistance, desc+0x6c) | 004234 0x9f4d3; 004238 0x9f5e3; 004230 0x9f1e5; 004240 reads it (0x9f8dd, 0x9fbaf, 0x9fbc0) |
+| +0x170 | 4 | `mMinDistance` (desc+0x70) | 004234 0x9f4dc; 004238 0x9f5ec; 004230 0x9f1f2; 004240 (0x9f8e3, 0x9fe4d, 0x9fe65) |
+| +0x174 | 0xc | `mSpring` (NxSpringDesc: spring +0x174, damper +0x178, targetValue +0x17c; desc+0x74) | 004234 zeroes then copies it; 004238/004230 copy it; 004240 reads spring and damper only (0x9f926, 0x9f935) |
+| +0x180 | 4 | `mDistanceFlags` (NxDistanceJointFlag bits; desc+0x80) | 004234 0x9f506; 004238 0x9f612; 004230 0x9f216; 004240 tests bits 0-2 (0x9f8f6, 0x9fb9c) |
+
+The rows also use these `Joint` base fields: `mBody` (+0x08/+0x0c), `mFlags` (+0x2c), `mMaxForce`
+(+0x3c), `mPublicObject` (+0x48), `mWorldAnchor` (+0x114/+0x120) and `mBodyStamp` (+0x14c/+0x150).
+From the body records they use the +0x134 3x3, the +0x158 position, the +0x198 stamp and the +0x204
+support-body pointer.
+
+**NpDistanceJoint (public), 0x1c bytes**: exactly `NpJointShared<NxDistanceJoint, DistanceJoint>`
+(vptr 0x1011aa98, userData +4, appData +8 = internal, hook base +0xc with table 0x1011ab1c, write
+link +0x10, read link +0x14, internal +0x18). No own field.
+
+### Dispatch tables
+
+**0x10119948: DistanceJoint internal (`phys_data_002649`, 13 slots, 52 B)**
+
+| Slot | Row | Declared as | Notes |
+|---:|---|---|---|
+| 0 | 004248 (folded, `ret 4`) | `Joint::row_slot0` inline | inherited no-op |
+| 1 | 001583 (folded, `ret`) | `Joint::row_slot1` inline | inherited no-op |
+| 2 | 004111 | `Joint::row004111` | inherited |
+| 3 | 004087 | `Joint::row004087` | inherited |
+| 4 | **004232** | `DistanceJoint::row_slot4(NxDebugRenderable&)` | `ret 4` |
+| 5 | **004236** | `~DistanceJoint()` (scalar deleting) | deletes `[this+0x48]` through its slot 0 with 1, 004095, frees if flag&1 |
+| 6 | **004240** | `DistanceJoint::row_slot6(NxReal)` | `ret 4`; the float is the step divisor (`fld 1.0; fdiv [esp+0x70]`, 0x9f8cf) and the spring terms' factor |
+| 7 | 004135 | `Joint::row_slot7` | inherited |
+| 8 | 004248 (folded) | `Joint::row_slot8` inline | inherited no-op |
+| 9 | **004238** | `DistanceJoint::loadFromDesc(const NxDistanceJointDesc&)` | `ret 4` |
+| 10 | **004230** | `DistanceJoint::saveToDesc(NxDistanceJointDesc&)` | `ret 4`; tail-jumps 004066 |
+| 11 | 001391 (folded, `mov eax,ecx; ret`) | `DistanceJoint::row_slot11()` inline | returns `this` |
+| 12 | 001391 (folded) | `DistanceJoint::row_slot12()` inline | returns `this` |
+
+The table runs to 0x1011997c, where the unit's `__FILE__` string starts (prismatic's shape).
+
+**0x1011aa98: NpDistanceJoint primary (`phys_data_002709`, 33 slots)**: slots 0-32 as the
+`### Slot split` table (per-family rows 004535, 004511, 004513, 004515, 004517, 004519, 004525,
+004521, 004523, 004527, 004529; the folded rows through `NpJointShared`). Every write-locked
+NxJoint row reports line 0x10; loadFromDesc 0x14, saveToDesc 0x1f (the `push` before each
+`push 0x1011aa5c`: 0xb11c1 ... 0xb1461, 0xb14b1, 0xb1511). Slots 31/32 call internal slots 9/10
+(`[vt+0x24]` 0xb14d5 / `[vt+0x28]` 0xb1535). **0x1011ab1c** (secondary): 004533.
+
+### The rows' shape
+
+- **004230** (saveToDesc):
+  - The broken test `(mFlags & 0x18) == 0x10` reports (code 1, line 0x42, "DistanceJoint::saveToDesc:
+    joint is broken. ...") and returns.
+  - Unlike the other families' rows, it calls the error import with no `FoundationSDK` instance
+    check (no `int3` guard): this is the static `FoundationSDK::error`.
+  - Otherwise it copies the five family fields into desc+0x6c..+0x80 and tail-jumps 004066.
+- **004238** (loadFromDesc):
+  - It has **no** broken-joint test, only `desc.isValid()` (virtual `[vt+8]`). A failure reports
+    line 0x2a through the static error, again with no instance check.
+  - Then the point-in-plane re-bind (004107 only when a body differs), 004121, and the five
+    fields copied back.
+- **004232** (slot 4):
+  - Gated by SDK parameter 32 (world axes, 0x10123b98) or 31 (local axes, 0x10123b94) being
+    non-zero. There is **no** `NX_JF_VISUALIZATION` (+0x2c bit 9) test and no scale.
+  - After the stale-body refresh it draws one line, `addLine(P, Q, 0xf0f0f0)` (renderable slot
+    +0x20), between the two world anchors P and Q. Each is R * a + t through its body's
+    +0x134/+0x158 pose, or the stored anchor without a body.
+  - Both anchors group x as ((R2 a.z + R1 a.y) + R0 a.x) + t.x, unrounded before the store; y and
+    z store the sum, then add t.
+- **004240** (slot 6, arg = the step divisor):
+  - Levers: the stale-body refresh runs first. Then per body: the lever r = R * anchor, grouped
+    ((R1 a.y + R2 a.z) + R0 a.x) and stored; the world point p = r + t (x unrounded, y and z
+    stored); and the support record (+0x204). Without a body, r = p = the stored anchor and the
+    record is null.
+  - Direction: d = p0 - p1 (x and y stored; z stored, and its unrounded copy multiplies the stored
+    one), dist = sqrt((dz' dz + dy dy) + dx dx) stored; if dist != 0, d *= 1 / dist (stored).
+    invArg = (NxReal)(1 / arg).
+  - **Rigid arm**: maxDistance == minDistance (ordered) and flags & 3 == 3. e = (dist - max) *
+    invArg; one record along d, kind 1 (bit 9 and bit 10 computed as `jointLinearRecord` does).
+  - **Max arm** (otherwise): flags bit 0 and dist > max. e = (max - dist) * invArg; one record
+    along -d, kind 0 (bits 0-4 cleared, bit 9 from kind 0/2, bit 10 from kind 3/2/5, bits 5-8
+    and 11-18 cleared).
+  - **Min arm** (only when the max arm is not taken): flags bit 1 and dist < min. e = (dist - min)
+    * invArg; one record along d, kind 0. Neither arm: return.
+  - Record fields: +0x00 the direction t; +0x10/+0x14 the support records; +0x18 = (r0.y t.z -
+    r0.z t.y, r0.z t.x - t.z r0.x, t.y r0.x - r0.y t.x) and +0x24 the same with r1; +0x30 = this,
+    +0x34 = e, +0x38/+0x44/+0x4c = 0, +0x48 = maxForce (read before 004093).
+  - Tail: with flags bit 2 (spring), q = arg * spring + damper and `row004393(1 / (q * arg),
+    (spring / q) * arg)`. Otherwise the `jointSolveRecord` tail: 004391 into +0x40, the copy to
+    +0x3c, then the scale by SDK parameter 0 or 0.7f by kind.
+  - Listing over decompile: the decompile drops the kind tests as unreachable blocks (0x9fa16,
+    0x9fb54, 0x9fcf5, 0xa0048, 0xa0051, 0xa0058) and shows every intermediate as a float.
+
+### Dependency closure
+
+- **write** (19 rows, 4,793 B): 004230, 004232, 004234, 004236, 004238, 004240 in
+  `core/DistanceJoint.cpp` (3,826 B); 004511-004535 in `core/NpDistanceJoint.cpp` (13 rows,
+  967 B; 004533 generated, its stable-ID line above the destructor it serves).
+- **reuse**:
+  - Joint rows 004141, 004107, 004121, 004097, 004066, 004095, 004093, 004111, 004087 and 004135
+    (`core/Joint.cpp`); 004391 and 004393 (`core/JointSupport.cpp`).
+  - The 13 folded Np bodies (`NpJointShared`), including 004539 in this unit's range.
+  - 002362/002364/002366, 002404/002406 and 000454/000480.
+  - The inline bodies 004248, 001583 and 001391; 004417-004433, 004537 and 005667 (generated from
+    `NxJoint.h`).
+  - `jointSolveRecord` and `jointLinearSdkParameter` (`core/JointLinearRecords.h`); the SDK
+    allocator; SDK parameters 0, 31 and 32. No acos.
+- **defer**: none.
+
+### What the new test case reaches
+
+`nxDistanceCase` uses indices 0 and 3 of the revolute table's anchor/axis values. Its descriptor
+sets maxDistance, minDistance, the spring and the flags to non-default values.
+
+- Creation: 000297, 000665 case 6, 004234, 004141 (-> 004107, 004121 -> 004097 x2, 000480),
+  004531 (002404), 000661.
+- Getters: 004437/004125, 004441/004129, 004483/004078, 004539, 004443/004070,
+  `isDistanceJoint` (inline 004431 -> 004479/004070), and saveToDesc 004529 -> internal slot
+  10 = **004230** -> 004066 (the family fields come back through it).
+- Compiled but not reached: 004232, 004236 (release unwired), 004238, 004240, 004511-004527,
+  004535.
