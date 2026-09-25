@@ -944,6 +944,10 @@ $NxRequiredCoverageLines = [ordered] @{
     # rotated bodies, the record's +0x124/+0x134/+0x164 words (phys_fn_000768
     # and 000746), the prismatic and fixed relative rotations (004378,
     # 004244) and one revolute frame-quaternion block (004101).
+    # The Task 4 review added two posed fixtures (180 degrees about x and y;
+    # general rotations with largest diagonal x and y; indices 20-23) so the
+    # creation conversions (000801, 000768) take their pivot arms, and
+    # fifteen more oracle-side lines to each list.
     'NxPhysicsJointStagedPairTests' = @(
         'case=revolute index=0 created=yes',
         'case=revolute index=0 out_anchor=00000000.00000000.00000000 out_axis=3f800000.00000000.00000000 state=0',
@@ -1047,6 +1051,21 @@ $NxRequiredCoverageLines = [ordered] @{
         'case=prismatic index=10 internal off=16c words=3e8432a4.3e8432a3.bf0432a5.3f464bf7',
         'case=fixed index=10 internal off=16c words=bffffffd.c0000000.40800000.3e8432a4.3e8432a3.bf0432a5.3f464bf7',
         'case=revolute index=12 internal off=0ac words=bddb3f43.bf32eec6.bf34c7db.bd14ac04.bf22b49e.bea0571e.bf2e5b9a.be3d1a85',
+        'rotated_fixture actor=flip_xy_a record off=05c words=3f800000.00000000.00000000.00000000',
+        'rotated_fixture actor=flip_xy_b record off=05c words=00000000.3f800000.00000000.00000000',
+        'rotated_fixture actor=near_xy_a record off=124 words=3f741dfd.3e4d9285.3dcd9285.3e4d9285',
+        'rotated_fixture actor=near_xy_a record off=134 words=3f6634e0.3eaf653c.3e8b48dd.3ed8aa3b.bf56bafb.beaf653c.3de2fb7b.3ed8aa3b.bf6634dc',
+        'rotated_fixture actor=near_xy_b record off=124 words=3e1ac3e0.3f6825d0.be9ac3e0.3e80f890',
+        'rotated_fixture actor=near_xy_b record off=134 words=bf53d13e.3eda5094.3ebb207f.3df980a9.3f4585d8.bf1fd66c.bf0c585f.bef1b4a4.bf30bb26',
+        'case=revolute index=20 created=yes',
+        'case=d6 index=20 created=yes',
+        'case=revolute index=20 saved anchor0=3f800000.bf800000.c0400000 anchor1=40400000.40400000.bf800000',
+        'case=spherical index=21 saved normal0=3f7eb479.3ca62f73.3dc97fed normal1=bf7eb479.bca62f73.3dc97fed',
+        'case=revolute index=22 saved anchor0=3fd3d426.3f45f6fc.c0312b31 anchor1=40132ae7.3f103e58.c06a3bca',
+        'case=revolute index=23 saved normal0=3f600d83.3ea1e72b.3ebb7000 normal1=bf4591f6.3ee8fa38.3ee37124',
+        'case=fixed index=20 internal off=16c words=40800000.40000000.c0000000.80000000.80000000.3f800000.00000000',
+        'case=fixed index=22 internal off=16c words=403e3a09.40793aaa.bcce5840.3d6e3390.3e300fdb.3f6b9cc1.3eb15b45',
+        'case=prismatic index=23 internal off=16c words=3d6e3390.3e300fdb.3f6b9cc1.3eb15b45',
         'case=cycle left_for_scene_release=2'
     )
     # NxNormalToTangents, which NxJointDesc::setGlobalAxis calls. The digest folds
@@ -1167,6 +1186,21 @@ $NxRequiredCoverageLines = [ordered] @{
         'case=prismatic index=10 internal off=16c words=3e8432a4.3e8432a3.bf0432a5.3f464bf7',
         'case=fixed index=10 internal off=16c words=bffffffd.c0000000.40800000.3e8432a4.3e8432a3.bf0432a5.3f464bf7',
         'case=revolute index=12 internal off=0ac words=bddb3f43.bf32eec6.bf34c7db.bd14ac04.bf22b49e.bea0571e.bf2e5b9a.be3d1a85',
+        'rotated_fixture actor=flip_xy_a record off=05c words=3f800000.00000000.00000000.00000000',
+        'rotated_fixture actor=flip_xy_b record off=05c words=00000000.3f800000.00000000.00000000',
+        'rotated_fixture actor=near_xy_a record off=124 words=3f741dfd.3e4d9285.3dcd9285.3e4d9285',
+        'rotated_fixture actor=near_xy_a record off=134 words=3f6634e0.3eaf653c.3e8b48dd.3ed8aa3b.bf56bafb.beaf653c.3de2fb7b.3ed8aa3b.bf6634dc',
+        'rotated_fixture actor=near_xy_b record off=124 words=3e1ac3e0.3f6825d0.be9ac3e0.3e80f890',
+        'rotated_fixture actor=near_xy_b record off=134 words=bf53d13e.3eda5094.3ebb207f.3df980a9.3f4585d8.bf1fd66c.bf0c585f.bef1b4a4.bf30bb26',
+        'case=revolute index=20 created=yes',
+        'case=d6 index=20 created=yes',
+        'case=revolute index=20 saved anchor0=3f800000.bf800000.c0400000 anchor1=40400000.40400000.bf800000',
+        'case=spherical index=21 saved normal0=3f7eb479.3ca62f73.3dc97fed normal1=bf7eb479.bca62f73.3dc97fed',
+        'case=revolute index=22 saved anchor0=3fd3d426.3f45f6fc.c0312b31 anchor1=40132ae7.3f103e58.c06a3bca',
+        'case=revolute index=23 saved normal0=3f600d83.3ea1e72b.3ebb7000 normal1=bf4591f6.3ee8fa38.3ee37124',
+        'case=fixed index=20 internal off=16c words=40800000.40000000.c0000000.80000000.80000000.3f800000.00000000',
+        'case=fixed index=22 internal off=16c words=403e3a09.40793aaa.bcce5840.3d6e3390.3e300fdb.3f6b9cc1.3eb15b45',
+        'case=prismatic index=23 internal off=16c words=3d6e3390.3e300fdb.3f6b9cc1.3eb15b45',
         'case=cycle left_for_scene_release=2'
     )
     'NxPhysicsJointDescTests' = @(
@@ -2035,8 +2069,8 @@ $NxPhaseCoverageFloor = [ordered] @{
     '4' = 101  # 34 for NxPhysicsAssetTests, 67 for NxPhysicsThirdPartyTests
     '5' = 871  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines
                # (RED on purpose: vtables family open)
-    '6' = 215  # 3 oracle-descriptor + 103 oracle-joint + 103 staged-pair-joint + 6 tangent
-    '7' = 103  # the 103 STAGED-PAIR assertions; the oracle-differential assertions
+    '6' = 245  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
+    '7' = 118  # the 118 STAGED-PAIR assertions; the oracle-differential assertions
                # belong to NxPhysicsJointDescTests and NxPhysicsJointTests, which phase 7
                # does not run
     '8' = 0

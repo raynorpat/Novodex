@@ -1408,6 +1408,70 @@ static bool nxBuildRotatedFixture(NxScene& scene, NxActor** a, NxActor** b)
 	return true;
 	}
 
+// Joint-open-items Task 4 review: two more posed fixtures, each in a scene of
+// its own, so that the matrix-to-quaternion conversions at actor creation
+// (000801, and 000768's for +0x124) take their x, y and z pivot arms
+// (non-positive trace): 180 degrees about x and about y, then two general
+// rotations whose largest diagonal is x and y. The poses are printed as input
+// and as read back, with the same body-record words as the rotated fixture.
+static bool nxBuildPosedFixture(NxScene& scene, const char* label,
+	const NxMat33& ma, const NxMat33& mb, NxActor** a, NxActor** b)
+	{
+	NxBoxShapeDesc box;
+	box.dimensions = NxVec3(1.0f, 1.0f, 1.0f);
+	NxBodyDesc body;
+	NxActorDesc da;
+	da.body = &body;
+	da.density = 1.0f;
+	da.shapes.pushBack(&box);
+	da.globalPose.M = ma;
+	da.globalPose.t = NxVec3(0.0f, 1.0f, 0.0f);
+	NxBoxShapeDesc box2;
+	box2.dimensions = NxVec3(1.0f, 1.0f, 1.0f);
+	NxBodyDesc body2;
+	NxActorDesc db;
+	db.body = &body2;
+	db.density = 1.0f;
+	db.shapes.pushBack(&box2);
+	db.globalPose.M = mb;
+	db.globalPose.t = NxVec3(4.0f, -1.0f, 2.0f);
+	printf("posed_fixture=%s input=a ", label);
+	nxPrintRows(da.globalPose.M);
+	printf("\n");
+	printf("posed_fixture=%s input=b ", label);
+	nxPrintRows(db.globalPose.M);
+	printf("\n");
+	*a = scene.createActor(da);
+	*b = *a ? scene.createActor(db) : 0;
+	printf("posed_fixture=%s a,%s b,%s\n", label, *a ? "created" : "null", *b ? "created" : "null");
+	if(!*a || !*b)
+		return false;
+	char tag[64];
+	sprintf(tag, "%s_a", label);
+	nxPrintActorPose(tag, **a);
+	sprintf(tag, "%s_b", label);
+	nxPrintActorPose(tag, **b);
+	return true;
+	}
+
+static void nxPosedScene(NxPhysicsSDK& sdk, const NxSceneDesc& sceneDesc, const char* label,
+	const NxMat33& ma, const NxMat33& mb, unsigned firstIndex)
+	{
+	NxScene* scene = sdk.createScene(sceneDesc);
+	printf("posed_scene=%s %s\n", label, scene ? "created" : "null");
+	if(!scene)
+		return;
+	NxActor* a = 0;
+	NxActor* b = 0;
+	if(nxBuildPosedFixture(*scene, label, ma, mb, &a, &b))
+		{
+		nxAllFamiliesCase(*scene, a, b, firstIndex, NxVec3(1.0f, 2.0f, 3.0f), nxUnit(0.6f, -0.8f, 0.0f));
+		nxAllFamiliesCase(*scene, a, b, firstIndex + 1, NxVec3(-1.5f, 0.25f, 8.0f), nxUnit(0.1f, 0.2f, 0.97f));
+		}
+	sdk.releaseScene(*scene);
+	printf("posed_scene=%s released\n", label);
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	wchar_t pairDirectory[MAX_PATH];
@@ -1574,6 +1638,16 @@ int wmain(int argc, wchar_t** argv)
 		sdk->releaseScene(*rotatedScene);
 		printf("rotated_scene=released\n");
 		}
+
+	// Joint-open-items Task 4 review: the pivot arms (see nxBuildPosedFixture).
+	nxPosedScene(*sdk, sceneDesc, "flip_xy", nxQuatMatrix(1.0f, 0.0f, 0.0f, 0.0f),
+		nxQuatMatrix(0.0f, 1.0f, 0.0f, 0.0f), 20);
+	{
+	const NxReal ix = 1.0f / sqrtf(0.95f * 0.95f + 0.2f * 0.2f + 0.1f * 0.1f + 0.2f * 0.2f);
+	const NxReal iy = 1.0f / sqrtf(0.15f * 0.15f + 0.9f * 0.9f + 0.3f * 0.3f + 0.25f * 0.25f);
+	nxPosedScene(*sdk, sceneDesc, "near_xy", nxQuatMatrix(0.95f * ix, 0.2f * ix, 0.1f * ix, 0.2f * ix),
+		nxQuatMatrix(0.15f * iy, 0.9f * iy, -0.3f * iy, 0.25f * iy), 22);
+	}
 	sdk->release();
 	printf("sdk=released\n");
 
