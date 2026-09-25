@@ -104,9 +104,9 @@ class NxSceneInternal
 	// The measured fields, by the constant the oracle writes them with.
 	static const NxU32 SIZE = 0x710;
 
-	// The object's own address is stored in four fields the constructor writes
-	// from the `puVar1` it is handed: dwords 0x2a, 0x3d, 0x91 and 0xc1. They are
-	// self-references, not a base pointer, so they are set to `this` here.
+	// Four fields the constructor writes last, from the register that holds the
+	// address of the SdkContainer at +0x50 (0x00012c47 `lea ebx, [esi + 0x50]`,
+	// stored at 0x00012f80..0x00012f92): dwords 0x2a, 0x3d, 0x91 and 0xc1.
 	static const NxU32 SELF_0 = 0x2a * 4;
 	static const NxU32 SELF_1 = 0x3d * 4;
 	static const NxU32 SELF_2 = 0x91 * 4;

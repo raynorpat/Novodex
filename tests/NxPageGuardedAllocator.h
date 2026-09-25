@@ -139,11 +139,24 @@ class NxPageGuardedAllocator : public NxUserAllocator
 			// A plain allocation, deliberately NOT routed back through this class:
 			// recursion here would be worse than an unguarded block, and the scene
 			// path allocates at most 0x710 bytes.
+#ifdef NX_PAGE_GUARDED_FILL
+			void* plain = ::malloc(size);
+			if(plain)
+				memset(plain, 0xcd, size);
+			return plain;
+#else
 			return ::malloc(size);
+#endif
 			}
 
 		*reinterpret_cast<unsigned*>(base) = static_cast<unsigned>(size);
 		unsigned char* block = base + page - size;
+#ifdef NX_PAGE_GUARDED_FILL
+		// Fresh pages are zeroed, which hides a constructor that leaves a field to
+		// the allocation. A target built with NX_PAGE_GUARDED_FILL gets every
+		// block filled with 0xcd instead, like a debug heap's fresh memory.
+		memset(block, 0xcd, size);
+#endif
 		mAllocSizes[mAllocations % HISTORY] = static_cast<unsigned>(size);
 		mAllocPtrs[mAllocations % HISTORY] = block;
 		++mAllocations;

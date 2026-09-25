@@ -347,6 +347,24 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_include_directories(NxPhysicsJointAllocatorTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include)
 	target_link_libraries(NxPhysicsJointAllocatorTests bcrypt)
+	# Every block the page-guarded allocator returns to these targets is filled
+	# with 0xcd instead of being left as fresh zeroed pages, so a scene, actor,
+	# shape or joint constructor that leaves a field it later reads to the
+	# allocation shows up as a fault or a transcript difference (joint-open-items,
+	# Scene initialisation). Only targets whose registered lines the oracle
+	# still prints under the fill are listed. NxPhysicsActorLifecycleTests prints
+	# samples of the auxiliary manager's 256-slot arrays, whose unused slots the
+	# oracle leaves unwritten and the candidate zeroes; NxPhysicsActorDynamicsTests
+	# prints a changed-word mask (move_orientation) that counts words the fill
+	# makes non-zero. Both run clean on both DLLs under the fill.
+	foreach(nx_fill_target
+			NxPhysicsActorNameTests NxPhysicsActorMetadataTests
+			NxPhysicsActorBodyFlagTests
+			NxPhysicsActorDynamicSetterTests NxPhysicsActorMomentumTests
+			NxPhysicsActorForceTests NxPhysicsActorCMassTests
+			NxPhysicsActorShapeMutationTests NxPhysicsJointStagedPairTests)
+		target_compile_definitions(${nx_fill_target} PRIVATE NX_PAGE_GUARDED_FILL)
+	endforeach()
 	target_include_directories(NxPhysicsJointTests PRIVATE Foundation/include Physics/include)
 	target_link_libraries(NxPhysicsJointTests bcrypt)
 	# The two exported joint-descriptor rows on their own. Separate from

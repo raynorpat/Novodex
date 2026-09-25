@@ -1514,15 +1514,16 @@ class NxCountingAllocator : public NxUserAllocator
 		if(mLogged < LOG)
 			mSizes[mLogged++] = size;
 		mMallocs++;
-		// Zeroed, like the page-guarded allocator's fresh pages. The candidate's
-		// Scene construction leaves an array header of the Scene block unset and
-		// relies on zeroed memory: with plain malloc, createActor's
-		// nxSceneArrayReserve frees the uninitialised header pointer
-		// (0xbaadf00d under cdb) inside nxSceneAddActorObject, in the candidate
-		// only. That is a Scene defect outside this target, recorded in
-		// evidence/joint-open-items.md; zeroing keeps this target about which
-		// allocator the joint rows use.
-		return ::calloc(1, size);
+		// Not zeroed: every block is filled with 0xcd before it is returned, so
+		// a field that the constructors leave to the allocation reads 0xcdcdcdcd.
+		// The oracle writes every Scene field it later reads; before the
+		// Scene-initialisation fix the candidate relied on zeroed memory for
+		// several of them and faulted in createActor's nxSceneArrayReserve (see
+		// evidence/joint-open-items.md, Scene initialisation).
+		void* memory = ::malloc(size);
+		if(memory)
+			memset(memory, 0xcd, size);
+		return memory;
 		}
 
 	const char* mName;

@@ -115,103 +115,156 @@ void nxSceneAuxUnregisterRecord(NxSceneInternal* scene, void* record);
 unsigned nxSceneTakeShapeId(NxSceneInternal* scene);
 void nxSceneRecycleShapeId(NxSceneInternal* scene, unsigned id);
 
-// phys_fn_005109 (0x000e1510, phase 4).
-//   FUN_100f0660(this); dword[0xd]=0; dword[0xe]=0; *this=&PTR_FUN_1011b794;
+// phys_fn_004147's declaration; defined with the reconstructed leaves below.
 static void nxSceneArrayHeaderInit(void* self);
 
+// The sub-object constructors phys_fn_000647 calls. Every offset below is a BYTE
+// offset read from the Capstone listing of the named row (and of the base-class
+// constructors it calls first), and every store the listing makes is made here,
+// in the listing's order, with one exception: the vtable word each sub-object
+// installs at its +0 (and the intermediate base-class vtables) points into the
+// oracle's .rdata and has no counterpart in this reconstruction, so it is not
+// written. No reconstructed path reads a sub-object's vtable word.
+//
+// An earlier conversion turned the decompilation's dword indices into byte
+// offsets without scaling them (`dword[0xd]` became byte 0xd), so every one of
+// these helpers, and the Scene constructor itself, wrote into the wrong bytes
+// and left the right ones to whatever the allocator returned. A zeroing
+// allocator hid it; units/joint-open-items-contract.md "## Scene
+// initialisation" records the fix.
+
+// 0x000f0510, the root base: vtable at +0, then +4, +8, +0xc zeroed.
+static void nxSceneSubobjectRootInit(void* self)
+	{
+	nxDword(static_cast<unsigned*>(self), 0x04) = 0;
+	nxDword(static_cast<unsigned*>(self), 0x08) = 0;
+	nxDword(static_cast<unsigned*>(self), 0x0c) = 0;
+	}
+
+// 0x000f0660: 0x000f0510, then +0x10, +0x2c, +0x30 zeroed and its own vtable.
+static void nxSceneSubobjectBaseInit(void* self)
+	{
+	unsigned* p = static_cast<unsigned*>(self);
+	nxSceneSubobjectRootInit(self);
+	nxDword(p, 0x10) = 0;
+	nxDword(p, 0x2c) = 0;
+	nxDword(p, 0x30) = 0;
+	}
+
+// phys_fn_005109 (0x000e1510, phase 4): 0x000f0660, then +0x34, +0x38 zeroed.
 void nxSceneMemberE1510(void* self)
 	{
 	unsigned* p = static_cast<unsigned*>(self);
-	nxDword(p, 0x0d) = 0;
-	nxDword(p, 0x0e) = 0;
+	nxSceneSubobjectBaseInit(self);
+	nxDword(p, 0x34) = 0;
+	nxDword(p, 0x38) = 0;
 	}
 
-// phys_fn_005071 (0x000de7e0, phase 4).
-//   FUN_100f0660(this); *this=&PTR_FUN_1011b784; dword[0xd..0x10]=0;
+// phys_fn_005071 (0x000de7e0, phase 4): 0x000f0660, then +0x3c, +0x38, +0x34,
+// +0x40 zeroed, in that order.
 void nxSceneMemberDE7E0(void* self)
 	{
 	unsigned* p = static_cast<unsigned*>(self);
-	nxDword(p, 0x0d) = 0;
-	nxDword(p, 0x0e) = 0;
-	nxDword(p, 0x0f) = 0;
-	nxDword(p, 0x10) = 0;
+	nxSceneSubobjectBaseInit(self);
+	nxDword(p, 0x3c) = 0;
+	nxDword(p, 0x38) = 0;
+	nxDword(p, 0x34) = 0;
+	nxDword(p, 0x40) = 0;
 	}
 
-// phys_fn_005029 (0x000d4d00, phase 4).
-//   FUN_100f0660(this); *this=&PTR_FUN_1011b774; byte[0x4c]=1;
+// phys_fn_005029 (0x000d4d00, phase 4): 0x000f0660, then byte +0x130 = 1.
 void nxSceneMemberD4D00(void* self)
 	{
-	reinterpret_cast<unsigned char*>(self)[0x4c] = 1;
+	nxSceneSubobjectBaseInit(self);
+	static_cast<unsigned char*>(self)[0x130] = 1;
 	}
 
-// phys_fn_004996 (0x000d3490, phase 4).
-//   FUN_100f0660(this); *this=&PTR_FUN_1011b764;
+// phys_fn_004996 (0x000d3490, phase 4): 0x000f0660 and its own vtable only.
 void nxSceneMemberD3490(void* self)
 	{
-	(void)self;
+	nxSceneSubobjectBaseInit(self);
 	}
 
-// phys_fn_004938 (0x000bb510, phase 4).
-//   FUN_100f0510(this); *this=&PTR_FUN_1011b750; SdkContainer(this+4);
-//   dword[8..0xc]=0; byte[0x44]=1; byte[0x111]=1;
+// phys_fn_004938 (0x000bb510, phase 4): 0x000f0510, SdkContainer at +0x10
+// (phys_fn_004836), +0x20..+0x30 zeroed, bytes +0x110 and +0x111 = 1.
 void nxSceneMemberBB510(void* self)
 	{
 	unsigned* p = static_cast<unsigned*>(self);
-	new (p + 4) SdkContainer();
-	p[8] = 0;
-	p[9] = 0;
-	p[10] = 0;
-	nxDword(p, 0x0b) = 0;
-	nxDword(p, 0x0c) = 0;
-	reinterpret_cast<unsigned char*>(self)[0x44] = 1;
-	reinterpret_cast<unsigned char*>(self)[0x111] = 1;
+	nxSceneSubobjectRootInit(self);
+	new (nxAt(p, 0x10)) SdkContainer();
+	nxDword(p, 0x20) = 0;
+	nxDword(p, 0x24) = 0;
+	nxDword(p, 0x28) = 0;
+	nxDword(p, 0x2c) = 0;
+	nxDword(p, 0x30) = 0;
+	static_cast<unsigned char*>(self)[0x110] = 1;
+	static_cast<unsigned char*>(self)[0x111] = 1;
 	}
 
-// phys_fn_004899 (0x000b5720, phase 4).
-//   FUN_100f0510(this); *this=&PTR_FUN_1011b628; dword[0x17..0x1a]=0;
-//   dword[0x21]=0x7f7fffff; dword[0x22]=0; byte[0x23]=0; byte[0x8d]=1;
+// phys_fn_004899 (0x000b5720, phase 4): 0x000f0510, +0x5c..+0x68 and +0x88
+// zeroed, byte +0x8c = 0, +0x84 = FLT_MAX, byte +0x8d = 1.
 void nxSceneMemberB5720(void* self)
 	{
 	unsigned* p = static_cast<unsigned*>(self);
-	nxDword(p, 0x17) = 0;
-	nxDword(p, 0x18) = 0;
-	nxDword(p, 0x19) = 0;
-	nxDword(p, 0x1a) = 0;
-	nxDword(p, 0x21) = 0x7f7fffffu;								// FLT_MAX
-	nxDword(p, 0x22) = 0;
-	reinterpret_cast<unsigned char*>(self)[0x23] = 0;
-	reinterpret_cast<unsigned char*>(self)[0x8d] = 1;
+	nxSceneSubobjectRootInit(self);
+	nxDword(p, 0x5c) = 0;
+	nxDword(p, 0x60) = 0;
+	nxDword(p, 0x64) = 0;
+	nxDword(p, 0x68) = 0;
+	nxDword(p, 0x88) = 0;
+	static_cast<unsigned char*>(self)[0x8c] = 0;
+	nxDword(p, 0x84) = 0x7f7fffffu;								// FLT_MAX
+	static_cast<unsigned char*>(self)[0x8d] = 1;
 	}
 
-// phys_fn_001980 (0x0004ca30, phase 7).
-//   FUN_100b4fe0(this); dword[0xb]=0; dword[0xc]=0; phys_fn_004147(this+0xd);
-//   FUN_1002dae0(this+0x14); dword[0x16..0x1b]=+-FLT_MAX; dword[0x1c]=2;
-//   dword[0x1d]=0; phys_fn_004836(this+0x1e);
+// phys_fn_001980 (0x0004ca30, phase 7). Its base 0x000b4fe0 zeroes +0 and
+// +0x1c..+0x28 and writes the bounds +4..+0x18 as +-FLT_MAX; then +0x2c, +0x30
+// zeroed, phys_fn_004147 at +0x34, 0x0002dae0 at +0x50 (+0x50, +0x54 zeroed),
+// +0x58..+0x6c = +-FLT_MAX, +0x70 = 2, +0x74 = 0, phys_fn_004836 at +0x78.
 void nxSceneMember4CA30(void* self)
 	{
 	unsigned* p = static_cast<unsigned*>(self);
-	nxDword(p, 0x0b) = 0;
-	nxDword(p, 0x0c) = 0;
-	nxSceneArrayHeaderInit(nxAt(p, 0x0d));					// phys_fn_004147
-	nxDword(p, 0x16) = 0x7f7fffffu;
-	nxDword(p, 0x17) = 0x7f7fffffu;
-	nxDword(p, 0x18) = 0x7f7fffffu;
-	nxDword(p, 0x19) = 0xff7fffffu;
-	nxDword(p, 0x1a) = 0xff7fffffu;
-	nxDword(p, 0x1b) = 0xff7fffffu;
-	nxDword(p, 0x1c) = 2;
-	nxDword(p, 0x1d) = 0;
-	new (nxAt(p, 0x1e)) SdkContainer();						// phys_fn_004836
+	nxDword(p, 0x00) = 0;
+	nxDword(p, 0x1c) = 0;
+	nxDword(p, 0x20) = 0;
+	nxDword(p, 0x24) = 0;
+	nxDword(p, 0x28) = 0;
+	nxDword(p, 0x04) = 0x7f7fffffu;
+	nxDword(p, 0x08) = 0x7f7fffffu;
+	nxDword(p, 0x0c) = 0x7f7fffffu;
+	nxDword(p, 0x10) = 0xff7fffffu;
+	nxDword(p, 0x14) = 0xff7fffffu;
+	nxDword(p, 0x18) = 0xff7fffffu;
+	nxDword(p, 0x2c) = 0;
+	nxDword(p, 0x30) = 0;
+	nxSceneArrayHeaderInit(nxAt(p, 0x34));					// phys_fn_004147
+	nxDword(p, 0x50) = 0;									// 0x0002dae0
+	nxDword(p, 0x54) = 0;
+	nxDword(p, 0x58) = 0x7f7fffffu;
+	nxDword(p, 0x5c) = 0x7f7fffffu;
+	nxDword(p, 0x60) = 0x7f7fffffu;
+	nxDword(p, 0x64) = 0xff7fffffu;
+	nxDword(p, 0x68) = 0xff7fffffu;
+	nxDword(p, 0x6c) = 0xff7fffffu;
+	nxDword(p, 0x70) = 2;
+	nxDword(p, 0x74) = 0;
+	new (nxAt(p, 0x78)) SdkContainer();						// phys_fn_004836
 	}
 
-// phys_fn_002415 (0x0005bc10, phase 7). The 0xa8-byte auxiliary object. The oracle
-// zeroes 30 dwords and stores `owner` at +0xa4.
+// phys_fn_002415 (0x0005bc10, phase 7). The 0xa8-byte auxiliary object. The
+// oracle zeroes 30 dwords -- the first three of each 16-byte group from +0 to
+// +0x98; +0x0c, +0x1c, ..., +0x9c and +0xa0 are left to the allocation -- and
+// stores `owner` at +0xa4.
 void* nxSceneAuxConstruct(void* self, void* owner)
 	{
 	unsigned* p = static_cast<unsigned*>(self);
-	for(int i = 0; i <= 0x28; ++i)
-		p[i] = 0;
-	nxDword(p, 0x29) = reinterpret_cast<unsigned>(owner);		// +0xa4
+	for(unsigned group = 0; group < 0xa0; group += 0x10)
+		{
+		nxDword(p, group + 0x0) = 0;
+		nxDword(p, group + 0x4) = 0;
+		nxDword(p, group + 0x8) = 0;
+		}
+	nxDword(p, 0xa4) = reinterpret_cast<unsigned>(owner);
 	return self;
 	}
 
@@ -234,21 +287,20 @@ static void nxSceneArrayHeaderInit(void* self)
 	}
 
 // phys_fn_002346 (0x0005ab50), reconstructed: a two-lane list init. The oracle
-// writes [this]=this+8, [this+4]=this+0x18, then zeroes +8..+0x10 and +0x18..+0x20.
+// zeroes +8..+0x10 and +0x18..+0x20, then writes [this]=this+8 and
+// [this+4]=this+0x18. +0x14 and +0x24 are not written.
 static void nxSceneListInit(void* self)
 	{
 	unsigned* p = static_cast<unsigned*>(self);
 	const unsigned base = reinterpret_cast<unsigned>(self);
-	p[0] = base + 8;
-	p[1] = base + 0x18;
 	p[2] = 0;
 	p[3] = 0;
 	p[4] = 0;
-	p[5] = 0;
 	p[6] = 0;
 	p[7] = 0;
 	p[8] = 0;
-	p[9] = 0;
+	p[0] = base + 8;
+	p[1] = base + 0x18;
 	}
 
 // ---------------------------------------------------------------------------
@@ -336,165 +388,140 @@ static inline unsigned char* nxAt(unsigned* p, unsigned byteOffset)
 	return reinterpret_cast<unsigned char*>(p) + byteOffset;
 	}
 
+// phys_fn_000647 (0x00012c10). Every store below is the listing's, at the byte
+// offset the listing names, in the listing's order; the listing address of the
+// first store of each run is given so the two can be read side by side.
 NxSceneInternal::NxSceneInternal()
 	{
 	unsigned* p = reinterpret_cast<unsigned*>(mBytes);
 	const unsigned base = reinterpret_cast<unsigned>(this);
 
-	// The vtable the oracle installs.
-	nxDword(p, 0x00) = reinterpret_cast<unsigned>(vtable());
+	// 0x12c18: the vtable the oracle installs.
+	nxDword(p, 0x000) = reinterpret_cast<unsigned>(vtable());
 
-	// dwords 1..10 are zeroed individually by the oracle.
-	for(int i = 1; i <= 10; ++i)
-		p[i] = 0;
+	// 0x12c21: +0x04..+0x28 zeroed.
+	for(unsigned offset = 0x04; offset <= 0x28; offset += 4)
+		nxDword(p, offset) = 0;
 
-	nxSceneArrayHeaderInit(nxAt(p, 0x0b));					// phys_fn_004147
-	new (nxAt(p, 0x14)) SdkContainer();						// phys_fn_004836
-	nxSceneMemberE1510(nxAt(p, 0x18));						// phys_fn_005109
+	nxSceneArrayHeaderInit(nxAt(p, 0x02c));					// phys_fn_004147
+	new (nxAt(p, 0x050)) SdkContainer();					// phys_fn_004836
+	nxSceneMemberE1510(nxAt(p, 0x060));						// phys_fn_005109
 
-	nxDword(p, 0x2a) = 0;
-	nxDword(p, 0x2b) = 0;
-	nxSceneMemberDE7E0(nxAt(p, 0x2c));						// phys_fn_005071
+	nxDword(p, 0x0a8) = 0;										// 0x12c5f
+	nxDword(p, 0x0ac) = 0;
+	nxSceneMemberDE7E0(nxAt(p, 0x0b0));						// phys_fn_005071
 
-	nxDword(p, 0x3d) = 0;
-	nxDword(p, 0x3e) = 0;
-	nxDword(p, 0x3f) = 0;
-	nxDword(p, 0x40) = 0;
-	nxDword(p, 0x41) = 0;
-	nxDword(p, 0x42) = 0;
-	nxDword(p, 0x43) = 0x3f8ccccdu;								// 1.1f
-	nxSceneMemberD4D00(nxAt(p, 0x44));						// phys_fn_005029
+	nxDword(p, 0x0f4) = 0;										// 0x12c70
+	nxDword(p, 0x0f8) = 0;
+	nxDword(p, 0x0fc) = 0;
+	nxDword(p, 0x100) = 0;
+	nxDword(p, 0x104) = 0;
+	nxDword(p, 0x108) = 0;
+	nxDword(p, 0x10c) = 0x3f8ccccdu;							// 1.1f
+	nxSceneMemberD4D00(nxAt(p, 0x110));						// phys_fn_005029
 
-	nxDword(p, 0x91) = 0;
-	nxDword(p, 0x92) = 0;
-	nxDword(p, 0xa2) = 0x3f8ccccdu;								// 1.1f
-	nxDword(p, 0x95) = 0;
-	nxDword(p, 0x94) = 0;
-	nxDword(p, 0x93) = 0;
-	nxDword(p, 0x98) = 0;
-	nxDword(p, 0x97) = 0;
-	nxDword(p, 0x96) = 0;
-	nxDword(p, 0x99) = 0;
-	nxDword(p, 0x9a) = 0;
-	nxDword(p, 0x9b) = 0;
-	nxDword(p, 0x9c) = 0;
-	nxDword(p, 0x9d) = 0;
-	nxDword(p, 0x9e) = 0;
-	nxDword(p, 0x9f) = 0;
-	nxDword(p, 0xa0) = 0;
-	nxDword(p, 0xa1) = 0;
-	nxDword(p, 0xa1) = 0x3f800000u;								// 1.0f
-	nxDword(p, 0x9d) = 0x3f800000u;								// 1.0f
-	nxDword(p, 0x99) = 0x3f800000u;								// 1.0f
-	nxSceneMemberD3490(nxAt(p, 0xa3));						// phys_fn_004996
+	nxDword(p, 0x244) = 0;										// 0x12caa
+	nxDword(p, 0x248) = 0;
+	nxDword(p, 0x288) = 0x3f8ccccdu;							// 1.1f
+	nxDword(p, 0x254) = 0;
+	nxDword(p, 0x250) = 0;
+	nxDword(p, 0x24c) = 0;
+	nxDword(p, 0x260) = 0;
+	nxDword(p, 0x25c) = 0;
+	nxDword(p, 0x258) = 0;
+	for(unsigned offset = 0x264; offset <= 0x284; offset += 4)	// 0x12cea
+		nxDword(p, offset) = 0;
+	nxDword(p, 0x284) = 0x3f800000u;							// 1.0f
+	nxDword(p, 0x274) = 0x3f800000u;							// 1.0f
+	nxDword(p, 0x264) = 0x3f800000u;							// 1.0f
+	nxSceneMemberD3490(nxAt(p, 0x28c));						// phys_fn_004996
 
-	nxDword(p, 0xc3) = 0;
-	nxDword(p, 0xc4) = 0;
-	nxDword(p, 0xc5) = 0;
-	nxDword(p, 0xc1) = 0;
-	nxDword(p, 0xc2) = 0;
-	nxDword(p, 0xc6) = 0;
-	p[199] = 0;											// 0xc7
-	p[200] = 0;											// 0xc8
-	nxDword(p, 0xc9) = 0;
-	nxDword(p, 0xca) = 0x3f8ccccdu;								// 1.1f
-	nxSceneMemberBB510(nxAt(p, 0xcb));						// phys_fn_004938
+	nxDword(p, 0x30c) = 0;										// 0x12d24
+	nxDword(p, 0x310) = 0;
+	nxDword(p, 0x314) = 0;
+	nxDword(p, 0x304) = 0;
+	nxDword(p, 0x308) = 0;
+	nxDword(p, 0x318) = 0;
+	nxDword(p, 0x31c) = 0;
+	nxDword(p, 0x320) = 0;
+	nxDword(p, 0x324) = 0;
+	nxDword(p, 0x328) = 0x3f8ccccdu;							// 1.1f
+	nxSceneMemberBB510(nxAt(p, 0x32c));						// phys_fn_004938
 
-	nxDword(p, 0x112) = 0;
-	nxDword(p, 0x113) = 0;
-	nxDword(p, 0x110) = 0;
-	nxDword(p, 0x111) = 1;
-	nxSceneMemberB5720(nxAt(p, 0x114));						// phys_fn_004899
-	new (nxAt(p, 0x138)) SdkContainer();
-	new (nxAt(p, 0x13c)) SdkContainer();
-	new (nxAt(p, 0x140)) SdkContainer();
-	new (nxAt(p, 0x144)) SdkContainer();
+	nxDword(p, 0x448) = 0;										// 0x12d84
+	nxDword(p, 0x44c) = 0;
+	nxDword(p, 0x440) = 0;
+	nxDword(p, 0x444) = 1;
+	nxSceneMemberB5720(nxAt(p, 0x450));						// phys_fn_004899
+	new (nxAt(p, 0x4e0)) SdkContainer();					// phys_fn_004836
+	new (nxAt(p, 0x4f0)) SdkContainer();
+	new (nxAt(p, 0x500)) SdkContainer();
+	new (nxAt(p, 0x510)) SdkContainer();
 
-	nxDword(p, 0x14b) = 0x3dcccccdu;								// 0.1f
-	nxDword(p, 0x14c) = 10;
-	nxDword(p, 0x14d) = 0;
-	nxDword(p, 0x14e) = 0;
-	nxDword(p, 0x14f) = 0;
-	nxDword(p, 0x150) = 0;
-	nxDword(p, 0x151) = 0;
-	nxDword(p, 0x157) = 0;
-	nxDword(p, 0x158) = 0;
-	nxDword(p, 0x159) = 0;
-	nxDword(p, 0x15b) = 0;
-	nxDword(p, 0x15c) = 0;
-	nxDword(p, 0x15d) = 0;
-	nxDword(p, 0x15f) = 0;
-	nxDword(p, 0x160) = 0;
-	nxDword(p, 0x161) = 0;
-	nxDword(p, 0x163) = 0;
-	nxDword(p, 0x164) = 0;
-	nxDword(p, 0x165) = 0;
-	nxDword(p, 0x167) = 0;
-	nxDword(p, 0x168) = 0;
-	nxDword(p, 0x169) = 0;
-	nxDword(p, 0x16a) = 0;
-	nxDword(p, 0x16b) = 0;
-	nxDword(p, 0x16c) = 0;
-	nxDword(p, 0x16d) = 0;
-	nxDword(p, 0x16e) = 0;
-	nxDword(p, 0x16f) = 0;
-	nxDword(p, 0x170) = 0;
-	nxDword(p, 0x171) = 0;
-	nxDword(p, 0x172) = 0;
-	nxDword(p, 0x173) = 0;
-	nxDword(p, 0x174) = 0xffffffffu;
-	nxSceneListInit(nxAt(p, 0x175));							// phys_fn_002346
+	nxDword(p, 0x52c) = 0x3dcccccdu;							// 0.1f, 0x12dcd
+	nxDword(p, 0x530) = 10;
+	nxDword(p, 0x534) = 0;
+	nxDword(p, 0x538) = 0;
+	nxDword(p, 0x53c) = 0;
+	nxDword(p, 0x540) = 0;
+	nxDword(p, 0x544) = 0;
+	nxDword(p, 0x55c) = 0;										// 0x12dff
+	nxDword(p, 0x560) = 0;
+	nxDword(p, 0x564) = 0;
+	nxDword(p, 0x56c) = 0;
+	nxDword(p, 0x570) = 0;
+	nxDword(p, 0x574) = 0;
+	nxDword(p, 0x57c) = 0;
+	nxDword(p, 0x580) = 0;
+	nxDword(p, 0x584) = 0;
+	nxDword(p, 0x58c) = 0;
+	nxDword(p, 0x590) = 0;
+	nxDword(p, 0x594) = 0;
+	for(unsigned offset = 0x59c; offset <= 0x5cc; offset += 4)	// 0x12e4d
+		nxDword(p, offset) = 0;
+	nxDword(p, 0x5d0) = 0xffffffffu;
+	nxSceneListInit(nxAt(p, 0x5d4));							// phys_fn_002346
 
-	nxDword(p, 0x17f) = 0;
-	nxDword(p, 0x180) = 0;
-	nxDword(p, 0x181) = 0;
-	nxDword(p, 0x183) = 0;
-	nxDword(p, 0x184) = 0;
-	nxDword(p, 0x185) = 0;
-	nxDword(p, 0x187) = 0;
-	nxDword(p, 0x188) = 0;
-	nxSceneMember4CA30(nxAt(p, 0x189));						// phys_fn_001980
+	nxDword(p, 0x5fc) = 0;										// 0x12eaa
+	nxDword(p, 0x600) = 0;
+	nxDword(p, 0x604) = 0;
+	nxDword(p, 0x60c) = 0;
+	nxDword(p, 0x610) = 0;
+	nxDword(p, 0x614) = 0;
+	nxDword(p, 0x61c) = 0;
+	nxDword(p, 0x620) = 0;
+	nxSceneMember4CA30(nxAt(p, 0x624));						// phys_fn_001980
 
-	nxDword(p, 0x1ab) = 0;
-	nxDword(p, 0x1ac) = 0;
-	nxDword(p, 0x1ad) = 0;
-	nxDword(p, 0x1ae) = 0;
-	nxDword(p, 0x1af) = 0;
-	nxDword(p, 0x1b0) = 0;
-	nxDword(p, 0x1b1) = 0;
-	nxDword(p, 0x1b2) = 0;
-	nxDword(p, 0x1b3) = 0;
-	nxDword(p, 0x1b4) = 0;
-	nxDword(p, 0x1b5) = 0;
-	nxDword(p, 0x1b6) = 0;
-	nxDword(p, 0x1b7) = 0;
-	p[0x1b9] = 0;							// next shape ID at +0x6e4
-	p[0x1ba] = 0;							// recycle array at +0x6e8
-	p[0x1bb] = 0;
-	p[0x1bc] = 0;
-	nxDword(p, 0x1be) = 0;
-	nxDword(p, 0x1bf) = 0;
-	nxDword(p, 0x1c0) = 0;
-	nxDword(p, 0x1c1) = 0;
-	nxDword(p, 0x1c3) = 1;
+	for(unsigned offset = 0x6ac; offset <= 0x6dc; offset += 4)	// 0x12ee5
+		nxDword(p, offset) = 0;
+	nxDword(p, 0x6e4) = 0;							// next shape ID
+	nxDword(p, 0x6e8) = 0;							// shape-ID recycle array
+	nxDword(p, 0x6ec) = 0;
+	nxDword(p, 0x6f0) = 0;
+	nxDword(p, 0x6f8) = 0;							// next record ID
+	nxDword(p, 0x6fc) = 0;							// record-ID recycle array
+	nxDword(p, 0x700) = 0;
+	nxDword(p, 0x704) = 0;
+	nxDword(p, 0x70c) = 1;
+	// 0x12f69 calls 0x0002ea70, whose body is a bare `ret`.
 
-	// The four self-references. The oracle stores the block it was handed, which is
-	// this object.
-	nxDword(p, 0x14a) = 0;
-	nxDword(p, 0x149) = 0;
-	nxDword(p, 0x148) = 0;
-	nxDword(p, 0x2a) = base;
-	nxDword(p, 0x3d) = base;
-	nxDword(p, 0x91) = base;
-	nxDword(p, 0xc1) = base;
+	nxDword(p, 0x528) = 0;										// 0x12f6e
+	nxDword(p, 0x524) = 0;
+	nxDword(p, 0x520) = 0;
+	// 0x12f80: four fields take the address of the SdkContainer at +0x50 (the
+	// listing's ebx, loaded at 0x12c47), not the Scene's own address.
+	nxDword(p, SELF_0) = base + 0x50;
+	nxDword(p, SELF_1) = base + 0x50;
+	nxDword(p, SELF_2) = base + 0x50;
+	nxDword(p, SELF_3) = base + 0x50;
 
-	// phys_fn_000285: the Scene constructs and owns its public wrapper.
+	// phys_fn_000285: the Scene constructs and owns its public wrapper (0x12f98).
 	NpScene* wrapper = new (NX_MEMORY_PERSISTENT) NpScene(this);
-	p[0x1b3] = reinterpret_cast<unsigned>(wrapper);
+	nxDword(p, 0x6cc) = reinterpret_cast<unsigned>(wrapper);
 
-	// phys_fn_002415, allocated 0xa8 bytes.
+	// phys_fn_002415, allocated 0xa8 bytes (0x12fbe).
 	void* aux = nxGetSdkAllocator()->malloc(0xa8, NX_MEMORY_PERSISTENT);
-	p[0x12] = aux ? reinterpret_cast<unsigned>(nxSceneAuxConstruct(aux, p)) : 0;
+	nxDword(p, 0x048) = aux ? reinterpret_cast<unsigned>(nxSceneAuxConstruct(aux, p)) : 0;
 	}
 
 
