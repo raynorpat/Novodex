@@ -345,3 +345,164 @@ oracle's result is `n x t1` (from `n.x`), and on the other arm `t2.x` came out o
 two of eight cases. The frame quaternions (`mFrameQuat`, `mWorldQuat`) and the solver rows
 (004091, 004093, 004111, 004133, 004135, 004391, 004064, 004123) are not observable through
 the public API without a simulation step; they are checked by review and the build only.
+
+## Prismatic
+
+Recovered by joint-families Task 3a (the first family after the revolute pilot) from the unit
+bundles `units/core__PrismaticJoint.cpp.md` and `units/core__NpPrismaticJoint.cpp.md`, the
+Capstone listing, the relocated table words in `oracle/pe.json` and the pinned Ghidra
+supplement. 004376 (saveToDesc) and 004386 (the solver slot) had no decompile; Task 3a added
+0x000ad4e0 and 0x000ad850 to `oracle/ghidra/supplement.json` (the union with the 11 existing
+`requested` RVAs; both `ok`; the 11 existing entries came back unchanged). The listing is
+authoritative over both decompiles.
+
+### Row assignment
+
+`work_units.json` puts 6 rows in `core\PrismaticJoint.cpp` (evidenced span 0xad4e0-0xad780,
+no ambiguous rows) and 14 in `core\NpPrismaticJoint.cpp` (evidenced span 0xb3430-0xb37b0, no
+ambiguous rows). Checked by hand:
+
+- **Before `core\PrismaticJoint.cpp`**: 004374 (revolute slot 0) ends at 0xad4dc; 004376 starts
+  at 0xad4e0 and pushes the `PrismaticJoint.cpp` `__FILE__` (0x1011a504).
+- **After it**: 004386 (0xad850, 6,772 B) ends at 0xaf2c4, where the `Observable::event` import
+  thunk sits; 004387 (fluid trampoline) and 004389-004433 are the
+  `gap:core\PrismaticJoint.cpp..core\NpD6Joint.cpp` rows `## Shared rows` already classified.
+  004386 is slot 6 of the prismatic internal table (0x11a4e8) and is reached from nowhere
+  else, so it is prismatic's.
+- **Before `core\NpPrismaticJoint.cpp`**: 004729 (NpRevoluteJoint slot 0) ends at 0xb3427.
+- **After it**: the constructor / thunk / deleting-destructor triple 004753 (installs
+  0x1011b4b8, `phys_data_002730`), 004755 (`sub ecx,0xc; jmp 004757`, table 0x1011b53c) and
+  004757 (slot 0) closes the unit, as in every Np unit. 004759 (0xb38a0) is called by the
+  articulation row 004405, not a prismatic row.
+- 004743 (slot 30, getName) is in this unit's extent but was claimed by Task 1 in
+  `core/NpJointShared.cpp`; it is not written again.
+
+| Stable ID | RVA | Size | File | Evidence |
+|---|---|---:|---|---|
+| phys_fn_004376 | 0x000ad4e0 | 54 | `core/PrismaticJoint.cpp` | internal slot 10 (0x11a4f8); "PrismaticJoint::saveToDesc" line 0x4d |
+| phys_fn_004378 | 0x000ad520 | 443 | `core/PrismaticJoint.cpp` | called by 004380 (0xad725) and 004384 (0xad840); writes +0x16c..+0x178 |
+| phys_fn_004380 | 0x000ad6e0 | 81 | `core/PrismaticJoint.cpp` | createJoint case 0 (0x143b8); installs 0x1011a4d0 (0xad6f3) |
+| phys_fn_004382 | 0x000ad740 | 56 | `core/PrismaticJoint.cpp` | internal slot 5; reinstalls 0x1011a4d0 (0xad748) |
+| phys_fn_004384 | 0x000ad780 | 202 | `core/PrismaticJoint.cpp` | internal slot 9; "PrismaticJoint::loadFromDesc" lines 0x39/0x3a |
+| phys_fn_004386 | 0x000ad850 | 6772 | `core/PrismaticJoint.cpp` | internal slot 6 (0x11a4e8) |
+| phys_fn_004731 | 0x000b3430 | 84 | `core/NpPrismaticJoint.cpp` | Np slot 2; line 0xf |
+| phys_fn_004733 | 0x000b3490 | 84 | `core/NpPrismaticJoint.cpp` | Np slot 4; line 0xf |
+| phys_fn_004735 | 0x000b34f0 | 89 | `core/NpPrismaticJoint.cpp` | Np slot 9; line 0xf |
+| phys_fn_004737 | 0x000b3550 | 89 | `core/NpPrismaticJoint.cpp` | Np slot 11; line 0xf |
+| phys_fn_004739 | 0x000b35b0 | 97 | `core/NpPrismaticJoint.cpp` | Np slot 13; line 0xf |
+| phys_fn_004741 | 0x000b3620 | 74 | `core/NpPrismaticJoint.cpp` | Np slot 15; line 0xf |
+| phys_fn_004745 | 0x000b36a0 | 88 | `core/NpPrismaticJoint.cpp` | Np slot 29; line 0xf |
+| phys_fn_004747 | 0x000b3700 | 74 | `core/NpPrismaticJoint.cpp` | Np slot 14; line 0xf |
+| phys_fn_004749 | 0x000b3750 | 84 | `core/NpPrismaticJoint.cpp` | Np slot 31 (loadFromDesc); line 0x13; internal `[vt+0x24]` |
+| phys_fn_004751 | 0x000b37b0 | 84 | `core/NpPrismaticJoint.cpp` | Np slot 32 (saveToDesc); line 0x1e; internal `[vt+0x28]` |
+| phys_fn_004753 | 0x000b3810 | 57 | `core/NpPrismaticJoint.cpp` | constructor; called by 004380 (0xad710) |
+| phys_fn_004755 | 0x000b3850 | 8 | `core/NpPrismaticJoint.cpp` | secondary table 0x1011b53c slot 0; compiler-generated thunk |
+| phys_fn_004757 | 0x000b3860 | 55 | `core/NpPrismaticJoint.cpp` | Np slot 0 (scalar deleting destructor) |
+
+### Construction chain (NxJointType 0)
+
+1. 000665's switch (table 0x14590, `cmp eax,9` at 0x1438a) sends type 0 to **0x1439a**: SDK
+   allocator slot +8 with `(0x17c, 0)` (`push 0x17c` at 0x143a5), null -> 0x1458a (result 0);
+   otherwise `call 0x100ad6e0` = **004380** on the block with the descriptor (0x143b8), then
+   the shared exit at 0x144fc (the same code the revolute case jumps to).
+2. **004380** PrismaticJoint::PrismaticJoint(const NxPrismaticJointDesc&) (`ret 4`):
+   `Joint(desc, 0x80)` (004141; 0x80 -> NxJointType 0 through the byte table, as the pilot
+   confirmed), vptr 0x1011a4d0 (0xad6f3), SDK allocator `(0x1c, 0)` -> **004753** on success
+   or null, public object -> `this+0x48` (0xad719), `desc.userData` (desc+0x60) -> `np+4`
+   **without a null check** (0xad71c-0xad71f), then **004378(desc)** (0xad725; the
+   descriptor is pushed and popped by `ret 4` but never read). `NxPrismaticJointDesc` adds no
+   field to `NxJointDesc`, so nothing else is loaded.
+3. **004753** NpPrismaticJoint::NpPrismaticJoint(PrismaticJoint*): zeroes +4/+8, transient
+   table 0x1011b3f8 (`NxPrismaticJoint`), 002404 on +0xc, secondary table 0x1011b53c, internal
+   at +0x18 and +0x08, final table 0x1011b4b8. Exactly the revolute shape (004725).
+4. Back in 000665 (0x144fc), identical to revolute: `[joint+0x48]` null -> internal slot 5
+   with 1 (004382) and result 0; otherwise `[[Scene+0x6cc]+0xc]` -> np+0x10,
+   `[[Scene+0x6cc]+0x10]` -> np+0x14, 000661; then `++[Scene+0x6c8]`, `[Scene+0x6bc] =
+   [Scene+0x59c]`, re-entry flag cleared (0x14529-0x1453f). 000297 returns `[internal+0x48]`.
+
+**Public-object offset: +0x48**, the same as revolute: it is the Joint base field
+`mPublicObject`, which 004380 writes at 0xad719 and 000665 reads at 0x14502 for every case.
+
+### Object layouts
+
+**PrismaticJoint (internal), 0x17c bytes** (`push 0x17c` at 0x143a5):
+
+| Off | Size | Field | Evidence |
+|---|---:|---|---|
+| +0x000 | 0x16c | `Joint` base; vptr 0x1011a4d0 | 004380 0xad6ee/0xad6f3; 004382 0xad748 |
+| +0x16c | 0x10 | `mUnknown16c[4]`: quaternion x, y, z, w = conj(body0 +0x124 quat) * (body1 +0x124 quat); the identity stands for a missing body 0, and a missing body 1 leaves conj(q0). Name unknown (no string, descriptor field or public virtual) | written only by 004378 (0xad533-0xad6cf); read only by 004386 (0xaeea4-0xaef46) |
+
+The candidate writes the body record's +0x124 quaternion (`nxNpActorUpdateCMassQuaternion`),
+so 004378's inputs exist.
+
+**NpPrismaticJoint (public), 0x1c bytes**: exactly `NpJointShared<NxPrismaticJoint,
+PrismaticJoint>` (vptr 0x1011b4b8, userData +4, appData +8 = internal, hook base +0xc with
+table 0x1011b53c, write link +0x10, read link +0x14, internal +0x18). No own field.
+
+### Dispatch tables
+
+**0x1011a4d0: PrismaticJoint internal (`phys_data_002694`, 13 slots)**
+
+| Slot | Row | Declared as | Notes |
+|---:|---|---|---|
+| 0 | 004248 (folded, `ret 4`) | `Joint::row_slot0` inline | inherited no-op |
+| 1 | 001583 (folded, `ret`) | `Joint::row_slot1` inline | inherited no-op |
+| 2 | 004111 | `Joint::row004111` | inherited |
+| 3 | 004087 | `Joint::row004087` | inherited |
+| 4 | **004318** | `PrismaticJoint::row_slot4(NxDebugRenderable&)` | the folded debug-visualization body owned by `core\CylindricalJoint.cpp` (1,115 B). It reads only Joint base fields (+0x2c bit 9, the body stamps, 004097/004123/004127, SDK parameters through 0x10001000), which is why prismatic and cylindrical share one copy. **Deferred to Task 3b** (see below) |
+| 5 | **004382** | `~PrismaticJoint()` (scalar deleting) | deletes `[this+0x48]` through its slot 0 with 1, 004095, frees if flag&1 |
+| 6 | **004386** | `PrismaticJoint::row_slot6(NxReal)` | `ret 4`; the float argument is a divisor (`fld 1.0; fdiv [esp+0xc8]`, 0xae3aa) |
+| 7 | 004135 | `Joint::row_slot7` | inherited |
+| 8 | 004248 (folded) | `Joint::row_slot8` inline | inherited no-op |
+| 9 | **004384** | `PrismaticJoint::loadFromDesc(const NxPrismaticJointDesc&)` | `ret 4` |
+| 10 | **004376** | `PrismaticJoint::saveToDesc(NxPrismaticJointDesc&)` | `ret 4`; tail-jumps 004066 |
+| 11 | 001391 (folded, `mov eax,ecx; ret`) | `PrismaticJoint::row_slot11()` inline | returns `this` |
+| 12 | 001391 (folded) | `PrismaticJoint::row_slot12()` inline | returns `this` |
+
+The revolute table has 17 slots (setFlags/getFlags/setProjectionMode/getProjectionMode at
+11-14 before its two `return this` slots); the prismatic class has none of those, so its two
+`return this` slots are 11 and 12. Each family declares its own slots 9 onwards in its own
+header, not in `Joint`.
+
+**0x1011b4b8: NpPrismaticJoint primary (`phys_data_002730`, 33 slots)**: slots 0-32 as the
+`### Slot split` table above (per-family rows 004757, 004731, 004733, 004735, 004737, 004739,
+004747, 004741, 004745, 004749, 004751; the folded rows through `NpJointShared`). Every
+write-locked NxJoint row reports line 0xf; loadFromDesc 0x13, saveToDesc 0x1e. Slots 31/32
+call internal slots 9/10 (`[vt+0x24]`/`[vt+0x28]`). **0x1011b53c** (secondary): 004755.
+
+### Dependency closure
+
+- **write** (19 rows, 8,610 B): 004376, 004378, 004380, 004382, 004384, 004386 in
+  `core/PrismaticJoint.cpp` (7,608 B); 004731, 004733, 004735, 004737, 004739, 004741, 004745,
+  004747, 004749, 004751, 004753, 004755 (generated thunk; stable-ID line above the
+  destructor it serves, as 004727), 004757 in `core/NpPrismaticJoint.cpp` (1,002 B).
+- **reuse**: Joint rows 004141, 004107, 004121, 004097, 004066, 004095, 004093, 004111,
+  004087, 004135 (`core/Joint.cpp`) and 004391 (`core/JointSupport.cpp`); the 13 folded Np
+  bodies (`NpJointShared`); 002362/002364/002366 (`nxNpSceneGuard*`), 002404/002406
+  (`EmbeddedHookBase`), 000454/000480 (`nxGet/SetSdkPointerBinding`); 004248, 001583, 001391
+  (inline bodies); 004417-004433, 005667 (generated from `NxJoint.h`); `NxNormalToTangents`
+  (Foundation import `[0x1010418c]`, cdecl, called three times by 004386); the SDK
+  allocator; SDK parameter 0 (`.data 0x10123b18`, read by 004386 through
+  `PhysicsSDK::getParameter` as the revolute rows do).
+- **New shared data**: the three unit vectors at `.data 0x10122054`, 0x10122060, 0x1012206c
+  (`phys_data_003036`, 003039, 003042; (1,0,0), (0,1,0), (0,0,1) in the image). 004386 copies
+  them into its three angular records (0xaf065-0xaf217); the fixed, spherical and D6 rows
+  (0xa05ab-0xa46bd) multiply by them. They are read from memory, so they are non-const
+  data rather than immediates: declared once as `gJointUnitAxis[3]` in `core/JointSupport.h`
+  and defined in `core/JointSupport.cpp` for every family to use.
+- **defer**: **004318** (slot 4, debug visualization), a `core\CylindricalJoint.cpp` row
+  the prismatic table borrows. Task 3a keeps an asserting body for
+  `PrismaticJoint::row_slot4` whose comment names the folded row without the stable-ID form,
+  so the row is not claimed twice; **Task 3b** writes 004318 once, as a Joint-level body both
+  families call (it reads only Joint base fields), and replaces the prismatic stub with a
+  call to it.
+
+### What the new test case reaches
+
+`nxPrismaticCase` (two cases: indices 0 and 3 of the revolute table's anchor/axis values).
+Creation: 000297, 000665 case 0, 004380, 004141 (-> 004107, 004121 -> 004097 x2, 000480),
+004753 (002404), 004378 (both bodies present: the full quaternion product), 000661 (hole).
+Getters: 004437/004125, 004441/004129, 004483/004078, 004539, 004443/004070,
+`isPrismaticJoint` (inline 004423 -> 004479/004070), and saveToDesc 004751 -> internal slot
+10 = **004376** -> 004066. Rows compiled but not reached: 004382 (release unwired), 004384,
+004386, 004731-004747, 004757, 004318.
