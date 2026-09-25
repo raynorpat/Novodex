@@ -529,7 +529,10 @@ Getters: 004437/004125, 004441/004129, 004483/004078, 004539, 004443/004070,
   family's own slots (9 onwards) in its own header; `Joint` keeps slots 0-8 only.
 - **Rows folded across families**: a family table may name another family's body (prismatic
   slot 4 = cylindrical 004318). Keep an asserting override whose comment names the folded row
-  without the `// phys_fn_` form, and leave the row to its owning unit's task.
+  without the `// phys_fn_` form, and leave the row to its owning unit's task. The owner writes
+  the body once where both can call it (Task 3b: the non-virtual `Joint::row004318`, declared
+  in `core/Joint.h`, defined with its stable-ID line in the owner's file) and turns the
+  borrower's stub into a call.
 - **Scene wiring**: add the family to the dispatch block at the top of the reconstructed
   path in `Scene.cpp` (allocation case plus attach-helper case); each family needs its own
   `nx<Family>JointAttachScene` because `Scene.cpp` cannot include the Np headers.
@@ -540,8 +543,22 @@ Getters: 004437/004125, 004441/004129, 004483/004078, 004539, 004443/004070,
   The record-bit and solve-tail helpers are file-static copies in `core/RevoluteJoint.cpp`
   and `core/PrismaticJoint.cpp`; the linear records here use a different bit sequence
   (kind 1, bit 10 computed) from revolute's (bit 10 forced), so read each site's listing
-  rather than reusing a copy blindly. Hoisting the common tail into a shared internal header
-  is worth doing when the next family needs it.
+  rather than reusing a copy blindly. Task 3b hoisted the kind-1 linear record, the solve tail
+  and the lever-pair error into `core/JointLinearRecords.h` (`jointLinearRecord`,
+  `jointSolveRecord`, `jointLinearError`); prismatic and cylindrical use them. The three-term
+  sums around them are NOT shared: cylindrical 004326 repeats prismatic's algorithm but groups
+  about a dozen sums differently, so each family's sums come from its own listing.
+- **Internal table length**: count the relocated words up to the unit's `__FILE__` string. The
+  cylindrical table has three `return this` slots (11-13), one more than prismatic.
+- **Gap rows next to a family unit** can be the tail of the neighbour's function (004314 is
+  004312's loop and epilogue: same frame size, `ret 4`, entered by a `jmp` from 004312's last
+  instruction). Check the frame and the entry before assigning such a row.
+- **cdb**: pass absolute paths (`cygpath -aw`) for the script, the executable and the pair
+  directory; the harness rejects a relative pair directory ("FAIL pair directory is not an
+  existing absolute canonical path"). A HIT line can be printed on the same line as program
+  output; match `HIT .*$` anywhere in the line.
+- **Ledger**: move each reconstructed row to `reconstructed_not_falsified` with the file's
+  standard note and recount from the entries (the counts are the per-reason entry counts).
 - **Floors**: the Phase 7 floor counts the staged-pair lines too; raise `'7'` with `'6'`.
 - **Environment**: bash heredocs in this environment collapse `\\` sequences (a `"\\n"` in a
   heredoc'd Python script became a real newline); write helper scripts with the Write tool.
@@ -741,3 +758,24 @@ sums.
 `isCylindricalJoint` (inline 004425 -> 004479/004070), and saveToDesc 004673 -> internal slot
 10 = **004316** -> 004066. Compiled but not reached: 004318 (no debug render), 004322
 (release unwired), 004324, 004326 (no simulation step), 004655-004671, 004679.
+
+### Result (Task 3b)
+
+- Wired: `NxSceneInternal::createJoint` builds type 2 through `CylindricalJoint` (0x16c) and
+  `nxCylindricalJointAttachScene` in the same block as prismatic and revolute.
+  `nxJointSizeForType` is now reached only by types 3-9.
+- The staged pair matched the oracle on the first run (`stdout_delta=0`, 27/27 Phase 6
+  coverage, 12/12 Phase 7); no transcript difference was found. Registered lines (four per
+  joint list) were copied from the oracle side of that run: the oracle-differential section
+  of the Phase 6 log for `NxPhysicsJointTests` and the `pair=oracle` child output for
+  `NxPhysicsJointStagedPairTests` (the two are identical for the cylindrical lines).
+- A cdb trace of the candidate (`evidence/joint-families-trace-cylindrical.txt`) shows 004320,
+  004675, 004673 and 004316 executing in both cases; 004318, 004322, 004324, 004326 and the Np
+  setters are compiled but not reached. 004318 and 004326 are checked against the listing by
+  review and the build only.
+- 004318 replaced prismatic's asserting slot-4 stub, and the prismatic solver now uses the
+  shared `core/JointLinearRecords.h` helpers; the prismatic transcript lines are unchanged.
+- Ledger: the 19 rows are `reconstructed_not_falsified` in `gates/phase6-closure.json`
+  (15 moved from `not_reconstructed_in_phase`; 004665, 004669, 004671 and 004673 already were);
+  counts 239 / 192. Task 3a did not move the prismatic rows in the ledger (004376-004386 and
+  004731-004757 are still `not_reconstructed_in_phase` there); left for the controller.
