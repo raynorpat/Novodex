@@ -21,11 +21,11 @@ Evidenced span: ['0x000b1ab0', '0x000b1e60']. Rows: 15 (0 ambiguous). Generated 
 - gap:core\PrismaticJoint.cpp..core\NpD6Joint.cpp: phys_fn_004417, phys_fn_004419, phys_fn_004421, phys_fn_004423, phys_fn_004425, phys_fn_004427, phys_fn_004429, phys_fn_004431, phys_fn_004433
 - unassigned: phys_fn_005667
 
-## phys_fn_004567 (0x000b1ab0, 84 B, discovered)
+## phys_fn_004567 (0x000b1ab0, 84 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpPointInPlaneJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpPointInPlaneJoint.cpp
 - prototype: undefined __thiscall FUN_100b1ab0(float * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004591 (0x000b1ec0)
@@ -65,11 +65,11 @@ void __thiscall FUN_100b1ab0(void *this,float *param_1)
 
 ```
 
-## phys_fn_004569 (0x000b1b10, 84 B, discovered)
+## phys_fn_004569 (0x000b1b10, 84 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpPointInPlaneJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpPointInPlaneJoint.cpp
 - prototype: undefined __thiscall FUN_100b1b10(float * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004591 (0x000b1ec0)
@@ -109,11 +109,11 @@ void __thiscall FUN_100b1b10(void *this,float *param_1)
 
 ```
 
-## phys_fn_004571 (0x000b1b70, 89 B, discovered)
+## phys_fn_004571 (0x000b1b70, 89 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpPointInPlaneJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpPointInPlaneJoint.cpp
 - prototype: undefined __thiscall FUN_100b1b70(float param_1, float param_2)
 - calling convention: __thiscall, stack purge: 8
 - callers: phys_fn_004591 (0x000b1ec0)
@@ -184,11 +184,11 @@ void __thiscall FUN_100b1bd0(void *this,undefined4 *param_1,undefined4 *param_2)
 
 ```
 
-## phys_fn_004575 (0x000b1c00, 89 B, discovered)
+## phys_fn_004575 (0x000b1c00, 89 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpPointInPlaneJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpPointInPlaneJoint.cpp
 - prototype: undefined __thiscall FUN_100b1c00(float * param_1, char param_2)
 - calling convention: __thiscall, stack purge: 8
 - callers: phys_fn_004591 (0x000b1ec0)
@@ -260,11 +260,11 @@ byte __thiscall FUN_100b1c60(void *this,float *param_1)
 
 ```
 
-## phys_fn_004579 (0x000b1c90, 97 B, discovered)
+## phys_fn_004579 (0x000b1c90, 97 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpPointInPlaneJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpPointInPlaneJoint.cpp
 - prototype: uint __fastcall FUN_100b1c90(int param_1)
 - calling convention: __fastcall, stack purge: 8
 - callers: phys_fn_004591 (0x000b1ec0)
@@ -311,7 +311,7 @@ uint __fastcall FUN_100b1c90(int param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpPointInPlaneJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpPointInPlaneJoint.cpp
 - prototype: undefined __fastcall FUN_100b1d00(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_004591 (0x000b1ec0)
@@ -351,11 +351,11 @@ void __fastcall FUN_100b1d00(int param_1)
 
 ```
 
-## phys_fn_004583 (0x000b1d50, 88 B, discovered)
+## phys_fn_004583 (0x000b1d50, 88 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpPointInPlaneJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpPointInPlaneJoint.cpp
 - prototype: undefined __thiscall FUN_100b1d50(int param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004591 (0x000b1ec0)
@@ -399,7 +399,7 @@ void __thiscall FUN_100b1d50(void *this,int param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpPointInPlaneJoint.cpp
-- implementation: Physics/src/ObjectModel.cpp
+- implementation: Physics/src/core/NpPointInPlaneJoint.cpp
 - prototype: undefined __fastcall FUN_100b1db0(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_004591 (0x000b1ec0)
@@ -443,7 +443,7 @@ void __fastcall FUN_100b1db0(int param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpPointInPlaneJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpPointInPlaneJoint.cpp
 - prototype: undefined __thiscall FUN_100b1e00(undefined4 param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004591 (0x000b1ec0)
@@ -488,7 +488,7 @@ void __thiscall FUN_100b1e00(void *this,undefined4 param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpPointInPlaneJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpPointInPlaneJoint.cpp
 - prototype: undefined __thiscall FUN_100b1e60(undefined4 param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004591 (0x000b1ec0)
@@ -529,11 +529,11 @@ void __thiscall FUN_100b1e60(void *this,undefined4 param_1)
 
 ```
 
-## phys_fn_004591 (0x000b1ec0, 57 B, discovered)
+## phys_fn_004591 (0x000b1ec0, 57 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/NpPointInPlaneJoint.cpp
+- implementation: Physics/src/core/NpPointInPlaneJoint.cpp
 - prototype: void * __thiscall FUN_100b1ec0(undefined4 param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004262 (0x000a1b50)
@@ -562,11 +562,11 @@ void * __thiscall FUN_100b1ec0(void *this,undefined4 param_1)
 
 ```
 
-## phys_fn_004593 (0x000b1f00, 8 B, discovered)
+## phys_fn_004593 (0x000b1f00, 8 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/NpPointInPlaneJoint.cpp
+- implementation: Physics/src/core/NpPointInPlaneJoint.cpp
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: phys_fn_004591 (0x000b1ec0)
@@ -581,11 +581,11 @@ Decompile (capstone disassembly):
 0x000b1f03  jmp 0x100b1f10
 ```
 
-## phys_fn_004595 (0x000b1f10, 55 B, discovered)
+## phys_fn_004595 (0x000b1f10, 55 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/NpPointInPlaneJoint.cpp
+- implementation: Physics/src/core/NpPointInPlaneJoint.cpp
 - prototype: void * __thiscall FUN_100b1f10(byte param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004591 (0x000b1ec0), phys_fn_004593 (0x000b1f00)

@@ -77482,13 +77482,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/PointInPlaneJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2056",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14262",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from units/core__PointInPlaneJoint.cpp.md (ghidra supplement) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## PointInPlane)",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both point-in-plane cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 5 wired to core/PointInPlaneJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 51/51 coverage); trace excerpt committed as evidence/joint-families-trace-point-in-plane.txt (joint-families Task 3e)",
+      "notes": "",
+      "implementation": "Physics/src/core/PointInPlaneJoint.cpp"
     },
     {
       "id": "phys_fn_004257",
@@ -77518,13 +77519,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/PointInPlaneJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1603",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14265",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__PointInPlaneJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## PointInPlane)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/PointInPlaneJoint.cpp"
     },
     {
       "id": "phys_fn_004259",
@@ -77554,13 +77556,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/PointInPlaneJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2058",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14287",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__PointInPlaneJoint.cpp.md (ghidra supplement) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## PointInPlane)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/PointInPlaneJoint.cpp"
     },
     {
       "id": "phys_fn_004261",
@@ -77590,13 +77593,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/PointInPlaneJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1604",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14297",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from units/core__PointInPlaneJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## PointInPlane)",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both point-in-plane cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 5 wired to core/PointInPlaneJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 51/51 coverage); trace excerpt committed as evidence/joint-families-trace-point-in-plane.txt (joint-families Task 3e)",
+      "notes": "",
+      "implementation": "Physics/src/core/PointInPlaneJoint.cpp"
     },
     {
       "id": "phys_fn_004263",
@@ -77626,13 +77630,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/PointInPlaneJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1605",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14299",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__PointInPlaneJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## PointInPlane)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/PointInPlaneJoint.cpp"
     },
     {
       "id": "phys_fn_004265",
@@ -77662,13 +77667,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/PointInPlaneJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1606",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14302",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__PointInPlaneJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## PointInPlane)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/PointInPlaneJoint.cpp"
     },
     {
       "id": "phys_fn_004267",
@@ -83182,13 +83188,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpPointInPlaneJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1716",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15301",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpPointInPlaneJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointInPlane)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpPointInPlaneJoint.cpp"
     },
     {
       "id": "phys_fn_004568",
@@ -83218,13 +83225,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpPointInPlaneJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1717",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15304",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpPointInPlaneJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointInPlane)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpPointInPlaneJoint.cpp"
     },
     {
       "id": "phys_fn_004570",
@@ -83254,13 +83262,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpPointInPlaneJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1718",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15307",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpPointInPlaneJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointInPlane)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpPointInPlaneJoint.cpp"
     },
     {
       "id": "phys_fn_004572",
@@ -83327,13 +83336,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpPointInPlaneJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1720",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15311",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpPointInPlaneJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointInPlane)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpPointInPlaneJoint.cpp"
     },
     {
       "id": "phys_fn_004576",
@@ -83400,13 +83410,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpPointInPlaneJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1722",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15315",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpPointInPlaneJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointInPlane)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpPointInPlaneJoint.cpp"
     },
     {
       "id": "phys_fn_004580",
@@ -83440,9 +83451,10 @@
       "source": "Physics/src/core/NpPointInPlaneJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1723",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15318",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpPointInPlaneJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointInPlane)",
       "dynamic_proof": "confirmed via the tailjmp differential (3z191): failures=0 for all twelve rows on both arms, comparing the report tuple, the global word written at 0x10127180 and the whole object buffer, with the lock API, report slot and that global bound",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpPointInPlaneJoint.cpp"
     },
     {
       "id": "phys_fn_004582",
@@ -83472,13 +83484,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpPointInPlaneJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1724",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15321",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpPointInPlaneJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointInPlane)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpPointInPlaneJoint.cpp"
     },
     {
       "id": "phys_fn_004584",
@@ -83512,10 +83525,10 @@
       "source": "Physics/src/core/NpPointInPlaneJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1725",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15324",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpPointInPlaneJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointInPlane)",
       "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
-      "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp",
+      "notes": "previous implementation: Physics/src/ObjectModel.cpp",
+      "implementation": "Physics/src/core/NpPointInPlaneJoint.cpp",
       "implementation_symbol": "phys_fn_004585 (harness dispatch table)"
     },
     {
@@ -83550,9 +83563,10 @@
       "source": "Physics/src/core/NpPointInPlaneJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1726",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15327",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpPointInPlaneJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointInPlane)",
       "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpPointInPlaneJoint.cpp"
     },
     {
       "id": "phys_fn_004588",
@@ -83586,9 +83600,10 @@
       "source": "Physics/src/core/NpPointInPlaneJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1727",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15330",
-      "static_proof": null,
-      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
-      "notes": ""
+      "static_proof": "transcribed from units/core__NpPointInPlaneJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointInPlane)",
+      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound; executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both point-in-plane cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 5 wired to core/PointInPlaneJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 51/51 coverage); trace excerpt committed as evidence/joint-families-trace-point-in-plane.txt (joint-families Task 3e)",
+      "notes": "",
+      "implementation": "Physics/src/core/NpPointInPlaneJoint.cpp"
     },
     {
       "id": "phys_fn_004590",
@@ -83618,13 +83633,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/NpPointInPlaneJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1728",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15333",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from units/core__NpPointInPlaneJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointInPlane)",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both point-in-plane cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 5 wired to core/PointInPlaneJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 51/51 coverage); trace excerpt committed as evidence/joint-families-trace-point-in-plane.txt (joint-families Task 3e)",
+      "notes": "",
+      "implementation": "Physics/src/core/NpPointInPlaneJoint.cpp"
     },
     {
       "id": "phys_fn_004592",
@@ -83654,13 +83670,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/NpPointInPlaneJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2224",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15334",
-      "static_proof": null,
+      "static_proof": "compiler-generated `vector deleting destructor' adjustor{12} thunk: Physics/src/core/NpPointInPlaneJoint.cpp carries only its stable-ID line above ~NpPointInPlaneJoint; the NpJointShared<NxPointInPlaneJoint, PointInPlaneJoint> layout per units/joint-families-contract.md makes the compiler emit ??_ENpPointInPlaneJoint@@WM@AEPAXI@Z (candidate 0x10037aee in build/Release/NxPhysics.map), which disassembles to `sub ecx,0xc; jmp <NpPointInPlaneJoint deleting destructor>` (evidence/joint-families-trace-point-in-plane.txt), the same two instructions as the oracle's 0x100b1f00 `sub ecx,0xc; jmp 0x100b1f10` (phys_fn_004595)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpPointInPlaneJoint.cpp"
     },
     {
       "id": "phys_fn_004594",
@@ -83690,13 +83707,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/NpPointInPlaneJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1729",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15335",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpPointInPlaneJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointInPlane)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpPointInPlaneJoint.cpp"
     },
     {
       "id": "phys_fn_004596",

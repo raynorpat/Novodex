@@ -18,11 +18,11 @@ Evidenced span: ['0x000a10a0', '0x000a1bf0']. Rows: 6 (0 ambiguous). Generated b
 - gap:SphereShape.cpp..ConvexHull.cpp: phys_fn_001391
 - gap:core\PrismaticJoint.cpp..core\NpD6Joint.cpp: phys_fn_004391
 
-## phys_fn_004256 (0x000a10a0, 54 B, discovered)
+## phys_fn_004256 (0x000a10a0, 54 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/PointInPlaneJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/PointInPlaneJoint.cpp
 - prototype: undefined FUN_100a10a0(void)
 - calling convention: unknown, stack purge: 2147483647
 - callers: phys_fn_004262 (0x000a1b50)
@@ -58,11 +58,11 @@ void FUN_100a10a0(int param_1)
 
 ```
 
-## phys_fn_004258 (0x000a10e0, 1391 B, discovered)
+## phys_fn_004258 (0x000a10e0, 1391 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/PointInPlaneJoint.cpp
+- implementation: Physics/src/core/PointInPlaneJoint.cpp
 - prototype: undefined __thiscall FUN_100a10e0(float param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004262 (0x000a1b50)
@@ -245,11 +245,11 @@ LAB_100a1117:
 
 ```
 
-## phys_fn_004260 (0x000a1650, 1273 B, discovered)
+## phys_fn_004260 (0x000a1650, 1273 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/PointInPlaneJoint.cpp
+- implementation: Physics/src/core/PointInPlaneJoint.cpp
 - prototype: undefined FUN_100a1650(void)
 - calling convention: unknown, stack purge: 2147483647
 - callers: phys_fn_004262 (0x000a1b50)
@@ -455,11 +455,11 @@ void FUN_100a1650(int *param_1)
 
 ```
 
-## phys_fn_004262 (0x000a1b50, 84 B, discovered)
+## phys_fn_004262 (0x000a1b50, 84 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/PointInPlaneJoint.cpp
+- implementation: Physics/src/core/PointInPlaneJoint.cpp
 - prototype: void * __thiscall FUN_100a1b50(int param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_000665 (0x000142c0)
@@ -493,11 +493,11 @@ void * __thiscall FUN_100a1b50(void *this,int param_1)
 
 ```
 
-## phys_fn_004264 (0x000a1bb0, 56 B, discovered)
+## phys_fn_004264 (0x000a1bb0, 56 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/PointInPlaneJoint.cpp
+- implementation: Physics/src/core/PointInPlaneJoint.cpp
 - prototype: void * __thiscall FUN_100a1bb0(byte param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004262 (0x000a1b50)
@@ -526,11 +526,11 @@ void * __thiscall FUN_100a1bb0(void *this,byte param_1)
 
 ```
 
-## phys_fn_004266 (0x000a1bf0, 194 B, discovered)
+## phys_fn_004266 (0x000a1bf0, 194 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/PointInPlaneJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/PointInPlaneJoint.cpp
 - prototype: undefined __thiscall FUN_100a1bf0(int * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004262 (0x000a1b50)

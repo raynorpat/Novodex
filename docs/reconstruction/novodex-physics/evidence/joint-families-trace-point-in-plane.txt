@@ -1,0 +1,111 @@
+Point-in-plane family: cdb breakpoint trace of the joint transcript (joint-families Task 3e)
+===========================================================================================
+
+A trimmed excerpt of the raw cdb log, in the method of evidence/unit-pilot-revolute-trace.txt
+and evidence/joint-families-trace-point-on-line.txt. Register dumps, ModLoad lines, banners and
+the program's own stdout are removed; the HIT lines are kept in order and otherwise unedited
+(a HIT that the debugger printed on the same line as program output is cut from that line).
+It is the evidence behind the dynamic_proof of phys_fn_004262, 004591, 004589 and 004256 in
+inventory.json.
+
+Debugger:  Microsoft Windows Debugger 10.0.10586.567 (X86)
+Command:   cdb -cf <script> build\Release\NxPhysicsJointTests.exe build\pairs\candidate
+Recorded:  2026-09-25, on the Task 3e working tree after the wiring (Scene::createJoint
+           case 5 -> core/PointInPlaneJoint.cpp) and the nxPointInPlaneCase test commits.
+Candidate: build\pairs\candidate\NxPhysics.dll
+           sha256=145eb7d962128b376a0dc2a6f29edbf45bb18bef1a342a878eb73cfd8530facb
+           (identical to build\Release\NxPhysics.dll at the time of the trace).
+Offsets:   module-relative, from build\Release\NxPhysics.map of that build. The folded Np
+           bodies are broken on their NpJointShared<NxPointInPlaneJoint, PointInPlaneJoint>
+           instantiation; the Joint rows are shared with the other families.
+
+Breakpoints (each echoes and continues):
+bp NxPhysics+0x27480 ".echo HIT 000665 Scene::createJoint; gc"
+bp NxPhysics+0x3b300 ".echo HIT 004262 PointInPlaneJoint ctor; gc"
+bp NxPhysics+0x2e3b0 ".echo HIT 004141 Joint ctor; gc"
+bp NxPhysics+0x2fcd0 ".echo HIT 004121 loadFromDescBase; gc"
+bp NxPhysics+0x30190 ".echo HIT 004097 refreshBodyFrame; gc"
+bp NxPhysics+0x37aa0 ".echo HIT 004591 NpPointInPlaneJoint ctor; gc"
+bp NxPhysics+0x37d10 ".echo HIT (helper) nxPointInPlaneJointAttachScene; gc"
+bp NxPhysics+0x35ec0 ".echo HIT 004437 Np getGlobalAnchor (point-in-plane instantiation); gc"
+bp NxPhysics+0x36340 ".echo HIT 004441 Np getGlobalAxis (point-in-plane instantiation); gc"
+bp NxPhysics+0x36f30 ".echo HIT 004483 Np getState (point-in-plane instantiation); gc"
+bp NxPhysics+0x35950 ".echo HIT 004539 Np getActors (point-in-plane instantiation); gc"
+bp NxPhysics+0x37110 ".echo HIT 004443 Np getType (point-in-plane instantiation); gc"
+bp NxPhysics+0x37550 ".echo HIT 004479 Np is (point-in-plane instantiation); gc"
+bp NxPhysics+0x37e90 ".echo HIT 004589 NpPointInPlaneJoint saveToDesc; gc"
+bp NxPhysics+0x3c130 ".echo HIT 004256 PointInPlaneJoint saveToDesc; gc"
+bp NxPhysics+0x312e0 ".echo HIT 004066 Joint saveToDescBase; gc"
+bp NxPhysics+0x3b3b0 ".echo HIT 004264 ~PointInPlaneJoint; gc"
+bp NxPhysics+0x3b680 ".echo HIT 004266 PointInPlaneJoint loadFromDesc; gc"
+bp NxPhysics+0x3bc30 ".echo HIT 004258 row_slot6; gc"
+bp NxPhysics+0x3b920 ".echo HIT 004260 row_slot4; gc"
+
+Hits, in order. The joint test runs four revolute, two prismatic, two cylindrical, two
+spherical and two point-on-line cases first (their Joint-row hits are summarised, not
+repeated), then the two point-in-plane cases in full.
+
+-- revolute 0 case: 5 hits (Joint rows only; no point-in-plane breakpoint) --
+-- revolute 1 case: 5 hits (Joint rows only; no point-in-plane breakpoint) --
+-- revolute 2 case: 5 hits (Joint rows only; no point-in-plane breakpoint) --
+-- revolute 3 case: 5 hits (Joint rows only; no point-in-plane breakpoint) --
+-- prismatic 0 case: 6 hits (Joint rows only; no point-in-plane breakpoint) --
+-- prismatic 1 case: 6 hits (Joint rows only; no point-in-plane breakpoint) --
+-- cylindrical 0 case: 6 hits (Joint rows only; no point-in-plane breakpoint) --
+-- cylindrical 1 case: 6 hits (Joint rows only; no point-in-plane breakpoint) --
+-- spherical 0 case: 6 hits (Joint rows only; no point-in-plane breakpoint) --
+-- spherical 1 case: 6 hits (Joint rows only; no point-in-plane breakpoint) --
+-- point-on-line 0 case: 6 hits (Joint rows only; no point-in-plane breakpoint) --
+-- point-on-line 1 case: 6 hits (Joint rows only; no point-in-plane breakpoint) --
+
+-- point-in-plane case index=0 --
+HIT 000665 Scene::createJoint
+HIT 004262 PointInPlaneJoint ctor
+HIT 004141 Joint ctor
+HIT 004121 loadFromDescBase
+HIT 004097 refreshBodyFrame
+HIT 004097 refreshBodyFrame
+HIT 004591 NpPointInPlaneJoint ctor
+HIT (helper) nxPointInPlaneJointAttachScene
+HIT 004437 Np getGlobalAnchor (point-in-plane instantiation)
+HIT 004441 Np getGlobalAxis (point-in-plane instantiation)
+HIT 004483 Np getState (point-in-plane instantiation)
+HIT 004539 Np getActors (point-in-plane instantiation)
+HIT 004479 Np is (point-in-plane instantiation)
+HIT 004479 Np is (point-in-plane instantiation)
+HIT 004443 Np getType (point-in-plane instantiation)
+HIT 004589 NpPointInPlaneJoint saveToDesc
+HIT 004256 PointInPlaneJoint saveToDesc
+HIT 004066 Joint saveToDescBase
+
+-- point-in-plane case index=3 --
+HIT 000665 Scene::createJoint
+HIT 004262 PointInPlaneJoint ctor
+HIT 004141 Joint ctor
+HIT 004121 loadFromDescBase
+HIT 004097 refreshBodyFrame
+HIT 004097 refreshBodyFrame
+HIT 004591 NpPointInPlaneJoint ctor
+HIT (helper) nxPointInPlaneJointAttachScene
+HIT 004437 Np getGlobalAnchor (point-in-plane instantiation)
+HIT 004441 Np getGlobalAxis (point-in-plane instantiation)
+HIT 004483 Np getState (point-in-plane instantiation)
+HIT 004539 Np getActors (point-in-plane instantiation)
+HIT 004479 Np is (point-in-plane instantiation)
+HIT 004479 Np is (point-in-plane instantiation)
+HIT 004443 Np getType (point-in-plane instantiation)
+HIT 004589 NpPointInPlaneJoint saveToDesc
+HIT 004256 PointInPlaneJoint saveToDesc
+HIT 004066 Joint saveToDescBase
+
+Not hit: 004264 (~PointInPlaneJoint: release is unwired, NpScene::releaseJoint is empty), 004266
+(loadFromDesc), 004258 (the solver slot: no simulation step) and 004260 (no debug render).
+004479 is hit twice per case: once for isPointInPlaneJoint and once for isRevoluteJoint (both
+NxJoint.h inlines call is()).
+
+The generated adjustor thunk for phys_fn_004593 (??_ENpPointInPlaneJoint@@WM@AEPAXI@Z,
+NxPhysics+0x37aee in the same build), disassembled by the same cdb session:
+6c0c7aee 83e90c          sub     ecx,0Ch
+6c0c7af1 e90a000000      jmp     NxPhysics!NxBuildSmoothNormals+0xbc90 (6c0c7b00)
+The jump target NxPhysics+0x37b00 is ??_ENpPointInPlaneJoint@@UAEPAXI@Z (the scalar deleting
+destructor, phys_fn_004595), matching the oracle's 0x100b1f00 `sub ecx,0xc; jmp 0x100b1f10`.
