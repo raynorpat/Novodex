@@ -7,7 +7,7 @@
 \*----------------------------------------------------------------------------*/
 #include "core/Joint.h"
 #include "core/JointSupport.h"
-#include "core/JointX87.h"
+#include "X87Sqrt.h"
 #include "PhysicsSDK.h"
 #include "NxJoint.h"
 #include "NxUtilities.h"
@@ -227,11 +227,11 @@ static double jointRowsToQuat(const NxReal* m, JointPairForm form, NxReal* q)
 		// trace + 1 re-formed from the same operands in the same order.
 		double s;
 		if(form == JOINT_PAIR_08_WIDE)
-			s = jointFsqrtSum4(m[0], m[8], m[4], 1.0);
+			s = x87FsqrtSum4(m[0], m[8], m[4], 1.0);
 		else if(form == JOINT_PAIR_08_STORED)
-			s = jointFsqrtSum3(m[4], pair, 1.0);
+			s = x87FsqrtSum3(m[4], pair, 1.0);
 		else
-			s = jointFsqrtSum3(m[0], pair, 1.0);
+			s = x87FsqrtSum3(m[0], pair, 1.0);
 		const NxReal sf = (NxReal)s;
 		const double w = s * 0.5f;
 		const double r = 0.5f / (double)sf;
@@ -247,8 +247,8 @@ static double jointRowsToQuat(const NxReal* m, JointPairForm form, NxReal* q)
 		k = 2;
 	if(k == 0)
 		{
-		const double s = form == JOINT_PAIR_48_STORED ? jointFsqrtSum3(m[0], -pair, 1.0)
-			: jointFsqrtDiag(m[0], m[4], m[8]);
+		const double s = form == JOINT_PAIR_48_STORED ? x87FsqrtSum3(m[0], -pair, 1.0)
+			: x87FsqrtDiag(m[0], m[4], m[8]);
 		q[0] = (NxReal)(0.5f * s);
 		const double r = 0.5f / s;
 		q[1] = (NxReal)(((double)m[3] + m[1]) * r);
@@ -257,15 +257,15 @@ static double jointRowsToQuat(const NxReal* m, JointPairForm form, NxReal* q)
 		}
 	if(k == 1)
 		{
-		const double s = form == JOINT_PAIR_48_STORED ? jointFsqrtDiag(m[4], m[8], m[0])
-			: jointFsqrtSum3(m[4], -pair, 1.0);
+		const double s = form == JOINT_PAIR_48_STORED ? x87FsqrtDiag(m[4], m[8], m[0])
+			: x87FsqrtSum3(m[4], -pair, 1.0);
 		q[1] = (NxReal)(0.5f * s);
 		const double r = 0.5f / s;
 		q[2] = (NxReal)(((double)m[7] + m[5]) * r);
 		q[0] = (NxReal)(((double)m[3] + m[1]) * r);
 		return ((double)m[2] - m[6]) * r;
 		}
-	const double s = jointFsqrtDiag(m[8], m[0], m[4]);
+	const double s = x87FsqrtDiag(m[8], m[0], m[4]);
 	q[2] = (NxReal)(0.5f * s);
 	const double r = 0.5f / s;
 	q[0] = (NxReal)(((double)m[6] + m[2]) * r);
@@ -774,7 +774,7 @@ void Joint::refreshBodyFrame(NxU32 bodyIndex)
 	const double trace = ((double)b[4] + b[8]) + b[0];
 	if(trace >= 0.0)
 		{
-		const double s = jointFsqrtSum4(b[4], b[8], b[0], 1.0);
+		const double s = x87FsqrtSum4(b[4], b[8], b[0], 1.0);
 		qw = (NxReal)(0.5 * s);
 		const double r = 0.5 / s;
 		qx = (NxReal)(((double)b[7] - b[5]) * r);
@@ -790,7 +790,7 @@ void Joint::refreshBodyFrame(NxU32 bodyIndex)
 			k = 2;
 		if(k == 0)
 			{
-			const double s = jointFsqrtSum3(b[0], -m48, 1.0);
+			const double s = x87FsqrtSum3(b[0], -m48, 1.0);
 			qx = (NxReal)(0.5 * s);
 			const NxReal r = (NxReal)(0.5 / s);
 			qy = (NxReal)(((double)b[3] + b[1]) * r);
@@ -799,7 +799,7 @@ void Joint::refreshBodyFrame(NxU32 bodyIndex)
 			}
 		else if(k == 1)
 			{
-			const double s = jointFsqrtDiag(b[4], b[0], b[8]);
+			const double s = x87FsqrtDiag(b[4], b[0], b[8]);
 			qy = (NxReal)(0.5 * s);
 			const NxReal r = (NxReal)(0.5 / s);
 			qz = (NxReal)(((double)b[7] + b[5]) * r);
@@ -808,7 +808,7 @@ void Joint::refreshBodyFrame(NxU32 bodyIndex)
 			}
 		else
 			{
-			const double s = jointFsqrtDiag(b[8], b[0], b[4]);
+			const double s = x87FsqrtDiag(b[8], b[0], b[4]);
 			const NxReal sf = (NxReal)s;
 			const double r = 0.5 / sf;
 			qx = (NxReal)(((double)b[6] + b[2]) * r);
@@ -894,7 +894,7 @@ void Joint::setGlobalAxis(const NxVec3& axis)
 		return;
 		}
 	NxVec3 a = axis;
-	const double length = jointFsqrtDot3(a.y, a.y, a.x, a.x, a.z, a.z);
+	const double length = x87FsqrtDot3(a.y, a.y, a.x, a.x, a.z, a.z);
 	if(length != 0.0)
 		{
 		const double scale = 1.0f / length;
@@ -1127,7 +1127,7 @@ void Joint::loadFromDescBase(const NxJointDesc& desc)
 		const double trace = ((double)m[4] + m[8]) + m[0];
 		if(trace >= 0.0)
 			{
-			const double s = jointFsqrtSum4(m[4], m[8], m[0], 1.0);
+			const double s = x87FsqrtSum4(m[4], m[8], m[0], 1.0);
 			qw = (NxReal)(0.5 * s);
 			const double r = 0.5 / s;
 			qx = (NxReal)(((double)m[7] - m[5]) * r);
@@ -1143,7 +1143,7 @@ void Joint::loadFromDescBase(const NxJointDesc& desc)
 				k = 2;
 			if(k == 0)
 				{
-				const double s = jointFsqrtSum3(m[0], -m48, 1.0);
+				const double s = x87FsqrtSum3(m[0], -m48, 1.0);
 				qx = (NxReal)(0.5 * s);
 				const double r = 0.5 / s;
 				qy = (NxReal)(((double)m[3] + m[1]) * r);
@@ -1152,7 +1152,7 @@ void Joint::loadFromDescBase(const NxJointDesc& desc)
 				}
 			else if(k == 1)
 				{
-				const double s = jointFsqrtDiag(m[4], m[8], m[0]);
+				const double s = x87FsqrtDiag(m[4], m[8], m[0]);
 				qy = (NxReal)(0.5 * s);
 				const double r = 0.5 / s;
 				qz = (NxReal)(((double)m[5] + m[7]) * r);
@@ -1161,7 +1161,7 @@ void Joint::loadFromDescBase(const NxJointDesc& desc)
 				}
 			else
 				{
-				const double s = jointFsqrtDiag(m[8], m[4], m[0]);
+				const double s = x87FsqrtDiag(m[8], m[4], m[0]);
 				qz = (NxReal)(0.5 * s);
 				const double r = 0.5 / s;
 				qx = (NxReal)(((double)m[2] + m[6]) * r);
@@ -1497,7 +1497,7 @@ bool Joint::addLimitPlane(const NxVec3& normal, const NxVec3& pointInPlane)
 		}
 	{
 	const NxVec3& n = plane->normal;
-	const double length = jointFsqrtDot3(n.x, n.x, n.y, n.y, n.z, n.z);
+	const double length = x87FsqrtDot3(n.x, n.x, n.y, n.y, n.z, n.z);
 	if(length != 0.0)
 		{
 		const double scale = 1.0f / length;

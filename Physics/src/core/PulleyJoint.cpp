@@ -8,7 +8,7 @@
 #include "core/PulleyJoint.h"
 #include "core/NpPulleyJoint.h"
 #include "core/JointSupport.h"
-#include "core/JointX87.h"
+#include "X87Sqrt.h"
 #include "core/JointLinearRecords.h"
 #include "PhysicsSDK.h"
 #include "NxJoint.h"
@@ -380,7 +380,7 @@ void PulleyJoint::row_slot6(NxReal arg)
 		direction[i].x = (NxReal)((double)mPulley[i].x - point[i].x);
 		direction[i].y = (NxReal)((double)mPulley[i].y - point[i].y);
 		direction[i].z = (NxReal)((double)mPulley[i].z - point[i].z);
-		const double len = jointFsqrtDot3(direction[i].x, direction[i].x, direction[i].z, direction[i].z,
+		const double len = x87FsqrtDot3(direction[i].x, direction[i].x, direction[i].z, direction[i].z,
 			direction[i].y, direction[i].y);
 		if(len != 0.0f)
 			{

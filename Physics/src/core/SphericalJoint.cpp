@@ -10,7 +10,7 @@
 #include "core/JointSupport.h"
 #include "core/JointLinearRecords.h"
 #include "core/JointAcos.h"
-#include "core/JointX87.h"
+#include "X87Sqrt.h"
 #include "PhysicsSDK.h"
 #include "NxJoint.h"
 #include "NxDebugRenderable.h"
@@ -844,8 +844,8 @@ void SphericalJoint::row_slot8(void* bodyPointer)
 		d.z = -d.z;
 		}
 	// fsqrt of the compared sum (0xa4868), re-formed as in the test (the
-	// negation above does not change a square; core/JointX87.h).
-	const double length = jointFsqrtDot3(d.z, d.z, d.y, d.y, d.x, d.x);
+	// negation above does not change a square; X87Sqrt.h).
+	const double length = x87FsqrtDot3(d.z, d.z, d.y, d.y, d.x, d.x);
 	const double ratio = (length - mProjectionDistance) / length;
 	d.x = (NxReal)(d.x * ratio);
 	d.y = (NxReal)(d.y * ratio);
@@ -1001,7 +1001,7 @@ NxF64 SphericalJoint::row004306(NxVec3& halfAxis, NxReal& coneFactor)
 	halfAxis.y = sy;
 	halfAxis.x = sx;
 	halfAxis.z = (NxReal)sz;
-	const double inverse = 1.0f / jointFsqrtDot3(sz, sz, sy, sy, sx, sx);
+	const double inverse = 1.0f / x87FsqrtDot3(sz, sz, sy, sy, sx, sx);
 	const NxReal hx = (NxReal)(sx * inverse);
 	halfAxis.x = hx;
 	const NxReal hy = (NxReal)(sy * inverse);
@@ -1014,7 +1014,7 @@ NxF64 SphericalJoint::row004306(NxVec3& halfAxis, NxReal& coneFactor)
 	double cx = (double)n0.z * hy - n0.y * hz;
 	double cy = hz * n0.x - sphericalMul(n0.z, hx);
 	double cz = sphericalMul(n0.y, hx) - sphericalMul(hy, n0.x);
-	const double length = jointFsqrtDot3(cz, cz, cy, cy, cx, cx);
+	const double length = x87FsqrtDot3(cz, cz, cy, cy, cx, cx);
 	if(length != 0.0)
 		{
 		const double scale = 1.0f / length;
@@ -1078,14 +1078,14 @@ void SphericalJoint::row_slot0(NxU32 arg)
 		if(lengthSquared > mMaxImpulseSquared)
 			{
 			// fsqrt of the compared sum (0xa4fb9), re-formed from the same
-			// operands in the same order (core/JointX87.h).
-			const NxReal length = (NxReal)jointFsqrtDot3(az, a.z, a.y, a.y, a.x, a.x);
+			// operands in the same order (X87Sqrt.h).
+			const NxReal length = (NxReal)x87FsqrtDot3(az, a.z, a.y, a.y, a.x, a.x);
 			mFlags = (mFlags & ~8u) | 0x10;
 			void* memory = nxGetSdkAllocator()->malloc(sizeof(JointBreakEvent), NX_MEMORY_PERSISTENT);
 			JointBreakEvent* event = memory ? new(memory) JointBreakEvent(this, length) : 0;
 			// Scene row 000571 is deferred (owner Scene.cpp); its stub asserts.
 			reinterpret_cast<Row000571Fixture*>(mScene)->row000571(event);
-			const double ratio = jointFsqrt(mMaxImpulseSquared) / length;
+			const double ratio = x87Fsqrt(mMaxImpulseSquared) / length;
 			const NxReal ratioF = (NxReal)ratio;
 			const double sx = ratio * a.x;
 			const double sy = sphericalMul(a.y, ratioF);
@@ -1244,7 +1244,7 @@ void SphericalJoint::row_slot7(NxReal arg)
 		p.x = (NxReal)(sphericalMul(a1.z, s.y) - sphericalMul(s.z, a1.y));
 		p.y = (NxReal)(sphericalMul(s.z, a1.x) - sphericalMul(a1.z, s.x));
 		p.z = (NxReal)(sphericalMul(a1.y, s.x) - sphericalMul(s.y, a1.x));
-		const double length = jointFsqrtDot3(p.x, p.x, p.z, p.z, p.y, p.y);
+		const double length = x87FsqrtDot3(p.x, p.x, p.z, p.z, p.y, p.y);
 		if(length != 0.0)
 			{
 			const double inverse = 1.0f / length;
@@ -1273,7 +1273,7 @@ void SphericalJoint::row_slot7(NxReal arg)
 			q.y = (NxReal)(sphericalMul(s.z, p.x) - sphericalMul(p.z, s.x));
 			const double qz = sphericalMul(p.y, s.x) - sphericalMul(s.y, p.x);
 			q.z = (NxReal)qz;
-			const double qLength = jointFsqrtDot3(qz, q.z, q.y, q.y, q.x, q.x);
+			const double qLength = x87FsqrtDot3(qz, q.z, q.y, q.y, q.x, q.x);
 			if(qLength != 0.0)
 				{
 				const double inverse = 1.0f / qLength;
@@ -1339,7 +1339,7 @@ void SphericalJoint::row_slot7(NxReal arg)
 		p.y = (NxReal)(sphericalMul(s.z, a1.x) - sphericalMul(a1.z, s.x));
 		const double pz = sphericalMul(a1.y, s.x) - sphericalMul(s.y, a1.x);
 		p.z = (NxReal)pz;
-		const double length = jointFsqrtDot3(pz, p.z, p.y, p.y, p.x, p.x);
+		const double length = x87FsqrtDot3(pz, p.z, p.y, p.y, p.x, p.x);
 		if(length != 0.0)
 			{
 			const double inverse = 1.0f / length;
@@ -1713,7 +1713,7 @@ void SphericalJoint::row_slot4(NxDebugRenderable& renderable)
 		double x = sphericalFcos(angle) * radius;
 		double y = sphericalFsin(angleF) * radius;
 		double z;
-		const NxReal length = (NxReal)jointFsqrtDot3(y, y, x, x, signSquared, 1.0);
+		const NxReal length = (NxReal)x87FsqrtDot3(y, y, x, x, signSquared, 1.0);
 		if(length != 0.0f)
 			{
 			const double inverse = 1.0f / (double)length;

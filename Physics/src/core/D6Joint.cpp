@@ -10,7 +10,7 @@
 #include "core/JointSupport.h"
 #include "core/JointLinearRecords.h"
 #include "core/JointAcos.h"
-#include "core/JointX87.h"
+#include "X87Sqrt.h"
 #include "PhysicsSDK.h"
 #include "NxJoint.h"
 #include "NxDebugRenderable.h"
@@ -958,7 +958,7 @@ void D6Joint::row_slot6(NxReal arg)
 			}
 		// The squares are summed x, z, y (0x9d222-0x9d23a: [0x3c] is the y sum,
 		// [0x40] the z sum).
-		const double length = jointFsqrtDot3(sumX, sumX, sumZ, sumZ, sumY, sumY);
+		const double length = x87FsqrtDot3(sumX, sumX, sumZ, sumZ, sumY, sumY);
 		const double error = length - mLinearLimit.value;
 		const NxReal errorF = (NxReal)error;
 		if(error > 0.0f)
@@ -1037,8 +1037,8 @@ void D6Joint::row_slot6(NxReal arg)
 	// -((float(1 / (1 + s)) t - float(sqrt(1 / q)) m) inv).
 	if(swing1 == NX_D6JOINT_MOTION_LIMITED && swing2 == NX_D6JOINT_MOTION_LIMITED)
 		{
-		const double s = jointFsqrtSum2(d6Mul(rel.q[3], rel.q[3]), d6Mul(rel.q[0], rel.q[0]));
-		const NxReal t = (NxReal)jointFsqrtSum2(yyF, zzF);
+		const double s = x87FsqrtSum2(d6Mul(rel.q[3], rel.q[3]), d6Mul(rel.q[0], rel.q[0]));
+		const NxReal t = (NxReal)x87FsqrtSum2(yyF, zzF);
 		const double u = 1.0f + s;
 		const double us = u * s;
 		const NxReal k = (NxReal)(us + us);
@@ -1053,7 +1053,7 @@ void D6Joint::row_slot6(NxReal arg)
 		if(q > d6Mul(k, k))
 			{
 			const double iq = 1.0f / q;
-			const double sq = jointFsqrt(iq);
+			const double sq = x87Fsqrt(iq);
 			const NxReal sqF = (NxReal)sq;
 			const double r = (sq * m) * iq;
 			const NxReal e0 = (NxReal)((M[2] * r) * a2);
@@ -1170,7 +1170,7 @@ void D6Joint::row_slot8(void* bodyArgument)
 	const NxReal distance = mProjectionDistance;
 	if(lockedSquared > d6Mul(distance, distance))
 		{
-		const double scale = distance / jointFsqrtDot3(lockedX, lockedX, lockedZ, lockedZ, lockedY, lockedY);
+		const double scale = distance / x87FsqrtDot3(lockedX, lockedX, lockedZ, lockedZ, lockedY, lockedY);
 		lockedX = lockedX * scale;
 		lockedY = (NxReal)(lockedY * scale);
 		lockedZ = (NxReal)(lockedZ * scale);
@@ -1190,7 +1190,7 @@ void D6Joint::row_slot8(void* bodyArgument)
 			d6Mul(limitedY, limitedY);
 		if(limitedSquared > d6Mul(limit, limit))
 			{
-			const double scale = limit / jointFsqrtDot3(limitedX, limitedX, limitedZ, limitedZ, limitedY, limitedY);
+			const double scale = limit / x87FsqrtDot3(limitedX, limitedX, limitedZ, limitedZ, limitedY, limitedY);
 			lx = lx * scale;
 			ly = ly * scale;
 			lz = lz * scale;
@@ -1213,7 +1213,7 @@ void D6Joint::row_slot8(void* bodyArgument)
 			{
 			// Twist locked (0x9dc88-0x9dcf5): (0, -(zx - yw) / s, (yx + zw) / s, s)
 			// with s = |(x, w)|.
-			const double s = jointFsqrtSum2(d6Mul(x, x), d6Mul(w, w));
+			const double s = x87FsqrtSum2(d6Mul(x, x), d6Mul(w, w));
 			if(s > 0.0f)
 				{
 				correction.q[0] = 0.0f;
@@ -1231,8 +1231,8 @@ void D6Joint::row_slot8(void* bodyArgument)
 			double b = (double)z + x;
 			NxReal c = (NxReal)((double)y + w);
 			double d = (double)z - x;
-			const NxReal n1 = (NxReal)jointFsqrtDot2(b, b, a, a);
-			const NxReal n2 = (NxReal)jointFsqrtDot2(d, d, c, c);
+			const NxReal n1 = (NxReal)x87FsqrtDot2(b, b, a, a);
+			const NxReal n2 = (NxReal)x87FsqrtDot2(d, d, c, c);
 			if(n1 != 0.0f && n2 != 0.0f)
 				{
 				const double i1 = 1.0f / (double)n1;
@@ -1251,7 +1251,7 @@ void D6Joint::row_slot8(void* bodyArgument)
 		case 3:
 			{
 			// Twist and swing1 locked (0x9df79-0x9dfc2): (0, 0, z, w) / |(z, w)|.
-			const double s = jointFsqrtSum2(d6Mul(z, z), d6Mul(w, w));
+			const double s = x87FsqrtSum2(d6Mul(z, z), d6Mul(w, w));
 			if(s > 0.0f)
 				{
 				const double is = 1.0f / s;
@@ -1269,8 +1269,8 @@ void D6Joint::row_slot8(void* bodyArgument)
 			double b = (double)x - y;
 			double c = (double)y + x;
 			NxReal d = (NxReal)((double)z - w);
-			const NxReal n1 = (NxReal)jointFsqrtDot2(c, c, a, a);
-			const NxReal n2 = (NxReal)jointFsqrtDot2(d, d, b, b);
+			const NxReal n1 = (NxReal)x87FsqrtDot2(c, c, a, a);
+			const NxReal n2 = (NxReal)x87FsqrtDot2(d, d, b, b);
 			if(n1 != 0.0f && n2 != 0.0f)
 				{
 				const double i1 = 1.0f / (double)n1;
@@ -1290,7 +1290,7 @@ void D6Joint::row_slot8(void* bodyArgument)
 		case 5:
 			{
 			// Twist and swing2 locked (0x9df27-0x9df74): (0, y, 0, w) / |(y, w)|.
-			const double s = jointFsqrtSum2(d6Mul(y, y), d6Mul(w, w));
+			const double s = x87FsqrtSum2(d6Mul(y, y), d6Mul(w, w));
 			if(s > 0.0f)
 				{
 				const double is = 1.0f / s;
@@ -1304,7 +1304,7 @@ void D6Joint::row_slot8(void* bodyArgument)
 		case 6:
 			{
 			// Both swings locked (0x9dee8-0x9df74): (x, 0, 0, w) / |(x, w)|.
-			const double s = jointFsqrtSum2(d6Mul(x, x), d6Mul(w, w));
+			const double s = x87FsqrtSum2(d6Mul(x, x), d6Mul(w, w));
 			if(s > 0.0f)
 				{
 				const double is = 1.0f / s;
