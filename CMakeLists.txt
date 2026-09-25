@@ -27,6 +27,19 @@ target_include_directories(NxFoundation PRIVATE
 
 target_compile_definitions(NxFoundation PRIVATE NX_FOUNDATION_DLL=1 FOUNDATIONDLL_EXPORTS=1)
 
+# The Foundation's copy of the x87 rule the NxPhysics block below records.
+# NxNormalToTangents is x87 in the oracle, and typing its register lifetimes
+# `double` reproduces every finite word NxFoundationTangentTests compares; what
+# it cannot reproduce is which NaN survives an operation with two NaN operands.
+# Measured: with the default architecture ten of that differential's cases --
+# the zero axis, the infinite and NaN axes, the two-payload inputs -- came out
+# with the other NaN sign or payload, and with this flag none did.
+if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
+	set_source_files_properties(
+		Foundation/src/Utilities.cpp
+		PROPERTIES COMPILE_OPTIONS "/arch:IA32")
+endif()
+
 if(WIN32)
 	add_executable(NxFoundationExportTests tests/FoundationExportTests.cpp)
 	target_include_directories(NxFoundationExportTests PRIVATE Foundation/include)
@@ -316,6 +329,13 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	add_executable(NxNormalToTangentsProbe tests/NxNormalToTangentsProbe.cpp)
 	target_include_directories(NxNormalToTangentsProbe PRIVATE Foundation/include Physics/include)
 	target_link_libraries(NxNormalToTangentsProbe bcrypt)
+	# The gate that probe became: NxNormalToTangents's exact output words over
+	# both arms, the threshold, degenerate inputs and a digest sweep, compared
+	# between the two staged pairs. Registered on Phase 6 because
+	# NxJointDesc::setGlobalAxis reaches it (evidence/phase6-joints.md 6o).
+	add_executable(NxFoundationTangentTests tests/FoundationTangentTests.cpp)
+	target_include_directories(NxFoundationTangentTests PRIVATE Foundation/include Physics/include)
+	target_link_libraries(NxFoundationTangentTests bcrypt)
 	# Prints what NxVec3::magnitude and NxVec3::normalize do to the degenerate
 	# vectors the tangent path builds, so a NaN sign can be attributed to one call.
 	add_executable(NxVec3NormalizeProbe tests/NxVec3NormalizeProbe.cpp)
@@ -411,10 +431,17 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# public API. Same shape as NxFoundationCustomArrayTests above.
 	add_executable(NxPhysicsInternalTests tests/PhysicsInternalTests.cpp
 		Physics/src/PhysicsInternal.cpp Physics/src/Containers.cpp
-		Physics/src/Scene.cpp Physics/src/NpScene.cpp Physics/src/NpActor.cpp Physics/src/NpJoint.cpp)
+		Physics/src/Scene.cpp Physics/src/NpScene.cpp Physics/src/NpActor.cpp Physics/src/NpJoint.cpp
+		Physics/src/ObjectModel.cpp Physics/src/MemoryStream.cpp
+		Physics/src/Geometry.cpp Physics/src/ShapeRaycast.cpp
+		Physics/src/opcode/IcePrunable.cpp Physics/src/ThirdPartyHost.cpp)
 	target_include_directories(NxPhysicsInternalTests PRIVATE
-		Foundation/include Foundation/src/include Physics/include Physics/src/include)
-	target_link_libraries(NxPhysicsInternalTests NxFoundation)
+		Foundation/include Foundation/src/include Physics/include Physics/src/include
+		Physics/src/opcode)
+	# Geometry.cpp defines exports that ObjectModel.cpp calls, so it needs the
+	# DLL's linkage here, as in NxPhysicsCollisionTests below.
+	target_compile_definitions(NxPhysicsInternalTests PRIVATE NX_PHYSICS_DLL=1)
+	target_link_libraries(NxPhysicsInternalTests NxFoundation NxOpcode)
 
 	# The Phase 5 object-layout gate. RED on purpose until Tasks 2 and 3
 	# transcribe the object-model classes: it pins vtable identity, the
@@ -489,13 +516,16 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/Geometry.cpp Physics/src/SmoothNormals.cpp
 		Physics/src/PhysicsSDK.cpp Physics/src/NpPhysicsSDK.cpp
 		Physics/src/PhysicsInternal.cpp Physics/src/Containers.cpp
-		Physics/src/Scene.cpp Physics/src/NpScene.cpp Physics/src/NpActor.cpp Physics/src/NpJoint.cpp)
+		Physics/src/Scene.cpp Physics/src/NpScene.cpp Physics/src/NpActor.cpp Physics/src/NpJoint.cpp
+		Physics/src/ObjectModel.cpp Physics/src/MemoryStream.cpp
+		Physics/src/opcode/IcePrunable.cpp Physics/src/ThirdPartyHost.cpp)
 	target_include_directories(NxPhysicsCollisionTests PRIVATE
-		Foundation/include Foundation/src/include Physics/include Physics/src/include)
+		Foundation/include Foundation/src/include Physics/include Physics/src/include
+		Physics/src/opcode)
 	# Geometry.cpp defines exports, so it has to be compiled with the same
 	# linkage here as in the DLL or every one of them warns.
 	target_compile_definitions(NxPhysicsCollisionTests PRIVATE NX_PHYSICS_DLL=1)
-	target_link_libraries(NxPhysicsCollisionTests NxFoundation bcrypt)
+	target_link_libraries(NxPhysicsCollisionTests NxFoundation NxOpcode bcrypt)
 	# No architecture rule here: source file properties are per directory, so
 	# the /arch:IA32 rule above already covers these two files in this target
 	# too. A second rule naming them would set the same value and silently

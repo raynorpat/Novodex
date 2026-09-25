@@ -9124,6 +9124,45 @@ and it refutes the claim in one line.**
 phase 6 exit 0 PASS, phase 7 exit 0 PASS, phase 8 exit 3 skipped, `completed` exit 0,
 `validate_inventory` exit 0, 601 tool tests OK.
 
+## 18d. NxNormalToTangents brought to the oracle's words, and gated
+
+6o said what a fix would need to assert: the exact tangent words for fixed inputs
+on both branches, a zero axis and a non-finite axis. `tests/FoundationTangentTests.cpp`
+(target `NxFoundationTangentTests`, a staged-pair differential on Phase 6) prints
+35 fixed cases -- both arms, the two floats either side of 1/sqrt(2), n.x == 0,
+non-unit, zero, infinite and NaN axes, two distinct NaN payloads -- and a digest over
+240000 generated inputs, 60000 of them within 64 ULPs of the threshold.
+
+Against the unmodified candidate it differed on 40 lines. The listing
+(0x100062b0-0x10006415) accounts for every one, in four separate defects:
+
+- **z arm, t2.** `t2.z = t1.y_unrounded * n.x` and `t2.y = -(t1.z_spilled * n.x)`
+  (0x10006311-0x1000631d); the rebuild multiplied n.x by k a second time.
+- **z arm, spills.** `a = y*y + z*z` is stored to a float before `fsqrt` (0x100062dd),
+  k is stored to a float and that float feeds t1.y and t2.x, while t1.z uses k from
+  the stack. `z_large` shows the float spill directly: y*y + z*z overflows, k == 0,
+  and the oracle returns t1 = (0,-0,0).
+- **xy arm, t2.x.** It is `-(k*n.x*n.z)` with k*n.x from the stack (0x10006367-0x10006370),
+  not from the stored t1.y: one ULP whenever that store rounds.
+- **Normalisation.** The oracle inlines normalize with the squares summed
+  (z*z + y*y) + x*x and the magnitude and reciprocal on the stack. The public
+  header's NxVec3::normalize rounds the magnitude to a float first and sums x first.
+  Utilities.cpp now has its own `nxNormalizeTangent`. The header is not edited.
+
+With those fixed, every finite word and the digest matched, and 10 cases still differed
+only in the NaN sign or payload. That is the two-NaN propagation rule CMakeLists.txt records
+for the Physics kernels, so `Foundation/src/Utilities.cpp` is now compiled `/arch:IA32`,
+and after that the differential shows `stdout_delta=0`. Each defect was put back one at a
+time and the differential failed each time (4, 16, 4, 6 and 8 lines). The
+negate-before-multiply form of `t1.x` was one of those mutations.
+
+`run_phase_gate.ps1 -Phase 6`: status=pass, coverage_assertions_evaluated=17, floor=17.
+NxPhysicsJointStagedPairTests and NxFoundationTangentTests both show stdout_delta=0, and the
+two oracle-differential joint targets exit 0 with the same `after_axis` words 6j
+recorded. The staged-pair differentials for phases 2, 3 and 5 also pass against
+this Foundation, which checks that the architecture flag moved nothing else in that
+translation unit.
+
 ## Closure binding: the six rows the Phase 6 and Phase 7 ledgers close
 
 `gates/phase6-closure.json` and `gates/phase7-closure.json` name this file as their `evidence_file`,
