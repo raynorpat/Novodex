@@ -582,6 +582,16 @@ Getters: 004437/004125, 004441/004129, 004483/004078, 004539, 004443/004070,
 - **MSVC evaluates printf arguments right to left**: a transcript line that calls two getters
   in its argument list calls the later one first (the spherical trace shows getProjectionMode
   before getFlags). Harmless for the transcript, but read the trace order with it in mind.
+- **Check the `/arch:IA32` list itself, not only its comment**: Task 3c named
+  `core/SphericalJoint.cpp` in the CMake comment but not in the `set_source_files_properties`
+  list; Task 3d added it (and `core/PointOnLineJoint.cpp`). The joint transcript did not change.
+- **A slot that calls itself** (point-on-line slot 11, 004270: `mov eax,[ecx]; jmp [eax+0x2c]`)
+  is written as the virtual self-call `return row_slot11();`, which MSVC compiles to the same five
+  bytes; check the candidate bytes through the map (`?row_slot11@...`).
+- **A family class with no field of its own** (point-on-line, 0x16c = `sizeof(Joint)`): the header
+  asserts only the size; the contract lists the Joint base fields the rows use instead.
+- **Point-on-line and point-in-plane** share no row (see `## PointOnLine` "### Point-in-plane"
+  for the listing differences Task 3e will meet).
 
 ## Cylindrical
 
@@ -1263,3 +1273,20 @@ throughout.
 `isPointOnLineJoint` (inline 004421 -> 004479/004070), saveToDesc 004615 -> internal slot 10 =
 **004268** -> 004066. Compiled but not reached: 004270, 004272, 004274, 004278 (release unwired),
 004280, 004597-004613, 004621.
+
+### Result (Task 3d)
+
+- Wired: `NxSceneInternal::createJoint` builds type 4 through `PointOnLineJoint` (0x16c) and
+  `nxPointOnLineJointAttachScene` in the same block as the other wired families.
+  `nxJointSizeForType` is now reached only by types 5-9.
+- The staged pair matched the oracle on the first run (`stdout_delta=0`, 43/43 Phase 6 coverage,
+  20/20 Phase 7); no transcript difference was found. Registered lines (four per joint list) were
+  copied from the oracle side of that run: the oracle-differential section of the Phase 6 log for
+  `NxPhysicsJointTests` and the `pair=oracle` child output for `NxPhysicsJointStagedPairTests`
+  (identical lines).
+- A cdb trace of the candidate (`evidence/joint-families-trace-point-on-line.txt`) shows 004276,
+  004617, 004615 and 004268 executing in both cases; 004270-004274, 004278, 004280 and the Np
+  setters are compiled but not reached. The solver and visualization rows are checked against the
+  listing by review and the build only.
+- Ledger: the 20 rows are `reconstructed_not_falsified` in `gates/phase6-closure.json` (16 moved
+  from `not_reconstructed_in_phase`; 4 already were); counts 201 / 230.
