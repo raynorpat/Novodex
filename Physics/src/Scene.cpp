@@ -1488,6 +1488,8 @@ NxJoint* NxSceneInternal::createJoint(const NxJointDesc& desc)
 				// NpScene's write-lock and read-lock links into np+0x10 / np+0x14;
 				// then phys_fn_000661 (0x14524). phys_fn_000297 (0xc5ae-0xc5b9)
 				// returns [internal+0x48], which the helper returns here.
+				// `holder` is dereferenced without a null check, as the oracle does at
+				// 0x14509, unlike the generic createJoint path.
 				const unsigned* holder = reinterpret_cast<const unsigned*>(p[0x6cc / 4]);
 				result = nxRevoluteJointAttachScene(internal,
 					reinterpret_cast<void*>(holder[3]), reinterpret_cast<void*>(holder[4]));

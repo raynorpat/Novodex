@@ -45,15 +45,15 @@ class NpRevoluteJoint : public NxRevoluteJoint, public EmbeddedHookBase
 	//! +0x18 and +0x08, then installs the final vtable (0x1011b328).
 	explicit NpRevoluteJoint(RevoluteJoint* internal);
 
-	//! phys_fn_004729 (0x000b33f0, 55 B). Slot 0: reinstalls
-	//! 0x1011b328/0x1011b3dc then the abstract NxJoint table 0x1011a680
-	//! before releasing (compiler-generated scalar deleting destructor
-	//! wraps this body with the operator-delete-if-flagged step).
 	//! phys_fn_004727 (0x000b33e0, 8 B; no decompile, Capstone listing
 	//! only) is not declared here: it is the compiler-generated adjustor
 	//! thunk ("sub ecx,0xc; jmp <~NpRevoluteJoint>") the second base
 	//! (EmbeddedHookBase) needs for this shared virtual destructor, emitted
 	//! automatically once ~NpRevoluteJoint() below is defined.
+	//! phys_fn_004729 (0x000b33f0, 55 B). Slot 0: reinstalls
+	//! 0x1011b328/0x1011b3dc then the abstract NxJoint table 0x1011a680
+	//! before releasing (compiler-generated scalar deleting destructor
+	//! wraps this body with the operator-delete-if-flagged step).
 	virtual ~NpRevoluteJoint();
 
 	//! The compiler-generated scalar deleting destructor (the wrapper

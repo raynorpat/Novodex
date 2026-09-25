@@ -847,7 +847,7 @@ owned by other units (000022, 000571, 000633, 000758) in `core/JointSupport.cpp`
 | 001391 | internal slots 15/16 | inline `return this` bodies in `RevoluteJoint.h`; not claimed |
 | 004248, 001583 | Joint base slots 0/1/8 | inline empty bodies in `Joint.h`; not claimed |
 | 004417–004433, 004537, 005667 | tables 002727/002725/002700 | generated from `NxJoint.h`; nothing to write |
-| 005697 (`_CIacos`, 0xf47f0) | 004330, 004352, 004372 | Task 8a: not `NxMath::acos(NxF32)` (the CRT acos need not match the oracle's x87 sequence). `core/RevoluteJoint.cpp` has one file-static inline-asm helper, `revoluteCIacos`, reproducing `_CIacos`'s core `fld1; fadd st,st(1); fld1; fsub st,st(2); fmulp st(1),st; fsqrt; fxch st(1); fpatan` (0xf4828–0xf4836) and its control-word handling (non-default word → `(cw & 0x300) \| 0x7f` for the core, 0xfa9b5; restored on the 0xfaa4b exit at 0xfaa70 or via 0xfa957 at 0xfa98e — 0xfaa3e is dead, the flag at 0x10128514 is never set; the 0xfa957 qword round-trip and the NaN arm 0xf4881 → 0xfa9cc are not reproduced and change no value, see the helper's comment), wrapped by `revoluteAcos`, the ≥ 1 → 0 / ≤ -1 → π clamp all three call sites carry inline (004330 0xa8dfe–0xa8e34, 004352 0xa9515–0xa9530, 004372 0xad02e–0xad04b; π is the float at 0x1011a1b0, `phys_data_002683`). 004372 (Task 8b) calls `revoluteAcos` too |
+| 005697 (`_CIacos`, 0xf47f0) | 004330, 004352, 004372 | Task 8a: not `NxMath::acos(NxF32)` (the CRT acos need not match the oracle's x87 sequence). `core/RevoluteJoint.cpp` has one file-static inline-asm helper, `revoluteCIacos`, reproducing `_CIacos`'s core `fld1; fadd st,st(1); fld1; fsub st,st(2); fmulp st(1),st; fsqrt; fxch st(1); fpatan` (0xf4828–0xf4836) and its control-word handling (non-default word → `(cw & 0x300) \| 0x7f` for the core, 0xfa9b5; restored on the 0xfaa4b exit at 0xfaa70 or via 0xfa957 at 0xfa98e — 0xfaa3e is dead, the flag at 0x10128514 is never set; the 0xfa957 qword round-trip and the NaN arm 0xf4881 → 0xfa9cc are not reproduced and change no value, see the helper's comment), wrapped by `revoluteAcos`, the ≥ 1 → 0 / ≤ -1 → π clamp all three call sites carry inline (004330 0xa8dfe–0xa8e34, 004352 0xa94fd–0xa9530, 004372 0xad015–0xad04b, both starting at their `fld`/`fcomp` ≥ 1 test; π is the float at 0x1011a1b0, `phys_data_002683`). 004372 (Task 8b) calls `revoluteAcos` too |
 | `NxFindRotationMatrix` (Foundation export, import slot `[0x10104174]`) | 004356 (0xa9a90) | `NxFindRotationMatrix(const NxVec3&, const NxVec3&, NxMat33&)` — `Foundation/include/NxUtilities.h:102`, `Foundation/src/Utilities.cpp:243`; cdecl (`add esp, 0xc` at 0xa9a9d) |
 | `NxDebugRenderable::addLine` / `addArrow` (+0x20 / +0x30) | 004364 | the renderable's virtuals, `Foundation/include/NxDebugRenderable.h` |
 | SDK allocator `[[0x101041bc]]` +8 / +0x14 | 004366, 004368, 004729, 000665 | `nxGetSdkAllocator()->malloc(size, NX_MEMORY_PERSISTENT)` / `->free(p)` — `PhysicsInternal.h:158` |
@@ -913,8 +913,8 @@ What the new code replaces or must stay compatible with. Line numbers are at com
    array's static value), as `ContactGeneration.cpp` does.
 9. **Rows 8b leaves unrunnable (Task 8b).** 004356 ends in deferred 000022 (always, when it
    changes the body) and, on the turn arm, 000758; 004364 calls deferred 004123 in its world-axes
-   and limit arms. Their stubs assert, so neither row can run to completion until those rows
-   are written. 004356 also needs body +0x124/+0x19c and 004364 a renderable; neither is on the
+   and limit arms. Their stubs assert, so neither row can complete on the arms that reach the
+   deferred rows until those rows are written. 004356 also needs body +0x124/+0x19c and 004364 a renderable; neither is on the
    transcript path. 004364 reads SDK parameters 13, 31, 32 and 33 through
    `PhysicsSDK::getParameter`, as 8a's rows do (see 8).
 

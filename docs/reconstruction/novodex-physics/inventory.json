@@ -10440,7 +10440,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1466",
       "static_proof": "mov edx,[ecx+0x620]; mov eax,[esp+4]; mov [eax+4],edx; mov [ecx+0x620],eax; ret 4",
       "dynamic_proof": "confirmed via zmix drive (3z54): failures=0",
-      "notes": ""
+      "notes": "The only product line carrying this stable ID (Physics/src/core/JointSupport.cpp) is an asserting deferred stub; its `reconstructed` state predates the pilot and rests on its recorded proofs."
     },
     {
       "id": "phys_fn_000572",
@@ -74249,7 +74249,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1530",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13494",
       "static_proof": "mov eax,[ecx+0x2c]; shr eax,3; and eax,3; ret; transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
-      "dynamic_proof": "confirmed via simplegetters drive (3z46): failures=0; executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in each of the four cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint wired to core/RevoluteJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 11/11 coverage); trace excerpt committed as evidence/unit-pilot-revolute-trace.txt, summarised in evidence/unit-pilot-revolute.md (Task 10 row, ## Result)",
+      "dynamic_proof": "confirmed via simplegetters drive (3z46): failures=0; executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in each of the four cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint wired to core/RevoluteJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 11/11 coverage); trace excerpt committed as evidence/unit-pilot-revolute-trace.txt, summarised in evidence/unit-pilot-revolute.md (Task 10 row, ## Result) Trace taken on the pre-dc11888 build; see the header of evidence/unit-pilot-revolute-trace.txt.",
       "notes": "previous source: bit extract: ((this+0x2c)>>3)&3 (0x95bb0)",
       "implementation": "Physics/src/core/Joint.cpp"
     },
@@ -74599,7 +74599,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1540",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13512",
       "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
-      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in each of the four cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), twice per case, with Scene::createJoint wired to core/RevoluteJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 11/11 coverage); trace excerpt committed as evidence/unit-pilot-revolute-trace.txt, summarised in evidence/unit-pilot-revolute.md (Task 10 row, ## Result)",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in each of the four cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), twice per case, with Scene::createJoint wired to core/RevoluteJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 11/11 coverage); trace excerpt committed as evidence/unit-pilot-revolute-trace.txt, summarised in evidence/unit-pilot-revolute.md (Task 10 row, ## Result) Trace taken on the pre-dc11888 build; see the header of evidence/unit-pilot-revolute-trace.txt.",
       "notes": "",
       "implementation": "Physics/src/core/Joint.cpp"
     },
@@ -75035,7 +75035,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1551",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13638",
       "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
-      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in each of the four cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint wired to core/RevoluteJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 11/11 coverage); trace excerpt committed as evidence/unit-pilot-revolute-trace.txt, summarised in evidence/unit-pilot-revolute.md (Task 10 row, ## Result)",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in each of the four cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint wired to core/RevoluteJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 11/11 coverage); trace excerpt committed as evidence/unit-pilot-revolute-trace.txt, summarised in evidence/unit-pilot-revolute.md (Task 10 row, ## Result) Trace taken on the pre-dc11888 build; see the header of evidence/unit-pilot-revolute-trace.txt.",
       "notes": "",
       "implementation": "Physics/src/core/Joint.cpp"
     },
@@ -75108,7 +75108,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1553",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13666",
       "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
-      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in each of the four cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint wired to core/RevoluteJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 11/11 coverage); trace excerpt committed as evidence/unit-pilot-revolute-trace.txt, summarised in evidence/unit-pilot-revolute.md (Task 10 row, ## Result)",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in each of the four cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint wired to core/RevoluteJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 11/11 coverage); trace excerpt committed as evidence/unit-pilot-revolute-trace.txt, summarised in evidence/unit-pilot-revolute.md (Task 10 row, ## Result) Trace taken on the pre-dc11888 build; see the header of evidence/unit-pilot-revolute-trace.txt.",
       "notes": "",
       "implementation": "Physics/src/core/Joint.cpp"
     },
@@ -75182,7 +75182,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1555",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13681",
       "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
-      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in each of the four cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint wired to core/RevoluteJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 11/11 coverage); trace excerpt committed as evidence/unit-pilot-revolute-trace.txt, summarised in evidence/unit-pilot-revolute.md (Task 10 row, ## Result)",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in each of the four cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint wired to core/RevoluteJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 11/11 coverage); trace excerpt committed as evidence/unit-pilot-revolute-trace.txt, summarised in evidence/unit-pilot-revolute.md (Task 10 row, ## Result) Trace taken on the pre-dc11888 build; see the header of evidence/unit-pilot-revolute-trace.txt.",
       "notes": "",
       "implementation": "Physics/src/core/Joint.cpp"
     },
@@ -75402,7 +75402,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1561",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13724",
       "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
-      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in each of the four cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint wired to core/RevoluteJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 11/11 coverage); trace excerpt committed as evidence/unit-pilot-revolute-trace.txt, summarised in evidence/unit-pilot-revolute.md (Task 10 row, ## Result)",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in each of the four cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint wired to core/RevoluteJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 11/11 coverage); trace excerpt committed as evidence/unit-pilot-revolute-trace.txt, summarised in evidence/unit-pilot-revolute.md (Task 10 row, ## Result) Trace taken on the pre-dc11888 build; see the header of evidence/unit-pilot-revolute-trace.txt.",
       "notes": "",
       "implementation": "Physics/src/core/Joint.cpp"
     },
@@ -78850,7 +78850,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1626",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14712",
       "static_proof": "transcribed from units/core__RevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
-      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in each of the four cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint wired to core/RevoluteJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 11/11 coverage); trace excerpt committed as evidence/unit-pilot-revolute-trace.txt, summarised in evidence/unit-pilot-revolute.md (Task 10 row, ## Result)",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in each of the four cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint wired to core/RevoluteJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 11/11 coverage); trace excerpt committed as evidence/unit-pilot-revolute-trace.txt, summarised in evidence/unit-pilot-revolute.md (Task 10 row, ## Result) Trace taken on the pre-dc11888 build; see the header of evidence/unit-pilot-revolute-trace.txt.",
       "notes": "",
       "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
@@ -79481,7 +79481,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1637",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14894",
       "static_proof": "transcribed from units/core__RevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
-      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in each of the four cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint wired to core/RevoluteJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 11/11 coverage); trace excerpt committed as evidence/unit-pilot-revolute-trace.txt, summarised in evidence/unit-pilot-revolute.md (Task 10 row, ## Result)",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in each of the four cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint wired to core/RevoluteJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 11/11 coverage); trace excerpt committed as evidence/unit-pilot-revolute-trace.txt, summarised in evidence/unit-pilot-revolute.md (Task 10 row, ## Result) Trace taken on the pre-dc11888 build; see the header of evidence/unit-pilot-revolute-trace.txt.",
       "notes": "",
       "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
@@ -86008,7 +86008,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1788",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15496",
       "static_proof": "transcribed from oracle/ghidra/manifest.json (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
-      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in each of the four cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint wired to core/RevoluteJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 11/11 coverage); trace excerpt committed as evidence/unit-pilot-revolute-trace.txt, summarised in evidence/unit-pilot-revolute.md (Task 10 row, ## Result)",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in each of the four cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint wired to core/RevoluteJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 11/11 coverage); trace excerpt committed as evidence/unit-pilot-revolute-trace.txt, summarised in evidence/unit-pilot-revolute.md (Task 10 row, ## Result) Trace taken on the pre-dc11888 build; see the header of evidence/unit-pilot-revolute-trace.txt.",
       "notes": "",
       "implementation": "Physics/src/core/NpRevoluteJoint.cpp"
     },

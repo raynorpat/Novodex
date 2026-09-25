@@ -102,6 +102,8 @@ Open items carried forward:
 4. **The Phase 2/3 test targets** (`NxPhysicsInternalTests`, `NxPhysicsCollisionTests`) do not
    build because of an include-path problem that predates the pilot. Once that is fixed they will also
    need `Physics/src/core/*.cpp` at link time, because `Scene.cpp` now references `RevoluteJoint`.
+   Both targets compile `Scene.cpp`, so this is a latent link failure hidden by the pre-existing
+   `IcePrunable.h` include-path error; it will only surface once that error is fixed.
 5. **Body +0x204 is unbuilt** (contract open issue 7). The solver-slot rows 004374, 004360
    and 004362 need body +0x204, a `JointSupportBody*`, and the candidate's body record never
    writes it. 004360/004362 also need 004093's Scene record array (+0x5b8, row 000598). None of
@@ -126,6 +128,10 @@ Open items carried forward:
    The cause is not yet investigated; the likely candidates are the EH and /GS settings on this
    translation unit, or the compiler-generated destructor chain. The destructor has never run
    under a transcript (release is unwired, item 1).
+7. **`Joint::mScene` (+0x30) is never written in the candidate**, because `nxSceneAddJoint`
+   (000661) is a no-op (item 1). As a result, `~Joint` (reached on `createJoint`'s null-+0x48
+   exit), row004107 (false branch) and the 004374 break path all branch on uninitialised memory
+   at +0x30. Whoever implements 000661/000633 must write it.
 
 ## Defects found by the transcript
 

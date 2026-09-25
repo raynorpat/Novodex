@@ -53,13 +53,13 @@ NpRevoluteJoint::NpRevoluteJoint(RevoluteJoint* internal)
 	appData = internal;			// 0xb33c9 (second write; NxJoint() zeroed it first)
 	}
 
-// phys_fn_004729 (0x000b33f0, 55 B)
-// The row below (phys_fn_004727) is not defined here: it is the
-// compiler-generated adjustor thunk ("sub ecx,0xc; jmp <~NpRevoluteJoint>")
-// the second base (EmbeddedHookBase) needs for this shared virtual
-// destructor, emitted automatically now that ~NpRevoluteJoint() is defined.
-// It has no decompile anywhere -- Capstone listing only.
 // phys_fn_004727 (0x000b33e0, 8 B)
+// This row is not defined here: it is the compiler-generated adjustor
+// thunk ("sub ecx,0xc; jmp <~NpRevoluteJoint>") the second base
+// (EmbeddedHookBase) needs for this shared virtual destructor, emitted
+// automatically now that ~NpRevoluteJoint() is defined. It has no decompile
+// anywhere -- Capstone listing only.
+// phys_fn_004729 (0x000b33f0, 55 B)
 NpRevoluteJoint::~NpRevoluteJoint()
 	{
 	// Nothing to do in the body: the base-destruction chain the compiler
@@ -444,7 +444,10 @@ bool NpRevoluteJoint::getSpring(NxSpringDesc& spring)
 // unlocking (0xb3357), then reloads it after the unlock (0xb3362) -- the
 // reload has no observable effect since the value is already fixed at float
 // precision, so the C++ below computes the float result under the lock and
-// returns it after unlocking.
+// returns it after unlocking. This file compiles SSE2, so the NxF64 result
+// is narrowed via `cvtsd2ss` rather than the oracle's `fstp dword`;
+// identical under the default 0x027f control word the public API runs
+// under (same applies to 004723 below).
 NxReal NpRevoluteJoint::getAngle()
 	{
 	void* link = readLink();

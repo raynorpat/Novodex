@@ -30,8 +30,8 @@
 //
 // Task 7 wrote the rows under 700 B; Task 8a the solver-slot rows 004360,
 // 004362 and 004374; Task 8b the projection row 004356, the visualization
-// row 004364 and getAngle (004372). Nothing constructs RevoluteJoint until
-// Task 10 wires Scene::createJoint.
+// row 004364 and getAngle (004372). RevoluteJoint is constructed by
+// Scene::createJoint's revolute case (Task 10).
 
 // The float the setters raise a body's wake counter to and compare it with:
 // 0x3ecccccc (.rdata 0x101053d4 and the immediate stored), as in Joint.cpp.
