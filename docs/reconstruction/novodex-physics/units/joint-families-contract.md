@@ -546,3 +546,198 @@ Getters: 004437/004125, 004441/004129, 004483/004078, 004539, 004443/004070,
 - **Environment**: bash heredocs in this environment collapse `\\` sequences (a `"\\n"` in a
   heredoc'd Python script became a real newline); write helper scripts with the Write tool.
   cdb needs the pair directory as a backslash Windows path (`cygpath -w`).
+
+## Cylindrical
+
+Recovered by joint-families Task 3b from the unit bundles `units/core__CylindricalJoint.cpp.md`,
+`units/core__NpCylindricalJoint.cpp.md` and
+`units/gap__core__SphericalJoint.cpp__to__core__CylindricalJoint.cpp.md`, the Capstone listing,
+the relocated table words in `oracle/pe.json` and the pinned Ghidra supplement. 004316
+(saveToDesc) and 004326 (the solver slot) had no decompile; Task 3b added 0x000a7200 and
+0x000a7810 to `oracle/ghidra/supplement.json` (the union with the 13 existing `requested`
+RVAs; both `ok`; the 13 existing entries came back unchanged). The listing is authoritative
+over both decompiles.
+
+### Row assignment
+
+`work_units.json` puts 6 rows in `core\CylindricalJoint.cpp` (evidenced span 0xa7200-0xa7740,
+no ambiguous rows) and 13 in `core\NpCylindricalJoint.cpp` (evidenced span 0xb28d0-0xb2c20, no
+ambiguous rows). Checked by hand:
+
+- **Before `core\CylindricalJoint.cpp`**: the five rows of
+  `gap:core\SphericalJoint.cpp..core\CylindricalJoint.cpp` (004306-004314, 0xa4ac0-0xa71fb,
+  9,445 B) are all **spherical**; none is cylindrical, so this task writes none of them and
+  leaves all five to Task 3c. Evidence, row by row:
+  - 004308 (0xa4f00) is slot 0, 004312 (0xa5ee0) slot 4 and 004310 (0xa5360) slot 7 of the
+    spherical internal table 0x10119e20 (`phys_data_002668`, installed by the spherical
+    constructor 004300; the only caller of all three is that constructor's table install).
+  - 004306 (0xa4ac0) is called only by 004310 and 004312 (the listing's two direct calls).
+  - 004314 (0xa7050, 430 B, no callers) is not a function: it is the loop body and epilogue
+    of 004312. 004312 opens with `sub esp,0xe8` (0xa5ee0) and its last instruction is
+    `jmp 0x100a7050` (0xa704b); 004314 loops back to itself (`jbe 0x100a7050`, 0xa71eb) and
+    ends with `add esp,0xe8; ret 4` (0xa71f5), 004312's frame and stack purge.
+  - No cylindrical row calls any of them (the cylindrical bundles' dependency lists name none).
+- **`core\CylindricalJoint.cpp`**: 004316 starts at 0xa7200 right after 004314's `ret 4` and
+  pushes the `CylindricalJoint.cpp` `__FILE__` (0x1011a080); 004326 (0xa7810, 5,377 B) ends at
+  0xa8d0e, and the next row 004328 (0xa8d20) is revolute's (revolute contract).
+- **`core\NpCylindricalJoint.cpp`**: 004653 (NpSphericalJoint slot 0) ends at 0xb28c4; 004655
+  starts at 0xb28d0 and pushes the `NpCylindricalJoint.cpp` `__FILE__` (0x1011b15c). The
+  constructor / thunk / deleting-destructor triple 004675 (installs 0x1011b198,
+  `phys_data_002724`), 004677 (`sub ecx,0xc; jmp 004679`, table 0x1011b21c) and 004679 (slot
+  0) closes the unit; 004681 (0xb2d10) is NpRevoluteJoint's.
+
+| Stable ID | RVA | Size | File | Evidence |
+|---|---|---:|---|---|
+| phys_fn_004316 | 0x000a7200 | 54 | `core/CylindricalJoint.cpp` | internal slot 10 (0x11a070); line 0x3b; the string reads "CylindricalJoint::loadFromDesc: ... can't be saved!" (the oracle's own text) |
+| phys_fn_004318 | 0x000a7240 | 1115 | `core/CylindricalJoint.cpp` | internal slot 4 of the cylindrical (0x11a058) **and** prismatic (0x11a4e0) tables |
+| phys_fn_004320 | 0x000a76a0 | 87 | `core/CylindricalJoint.cpp` | createJoint case 2 (0x1440a); installs 0x1011a048 (0xa76b3) |
+| phys_fn_004322 | 0x000a7700 | 56 | `core/CylindricalJoint.cpp` | internal slot 5; reinstalls 0x1011a048 (0xa7708) |
+| phys_fn_004324 | 0x000a7740 | 194 | `core/CylindricalJoint.cpp` | internal slot 9; "CylindricalJoint::loadFromDesc" lines 0x26/0x27 |
+| phys_fn_004326 | 0x000a7810 | 5377 | `core/CylindricalJoint.cpp` | internal slot 6 (0x11a060) |
+| phys_fn_004655 | 0x000b28d0 | 84 | `core/NpCylindricalJoint.cpp` | Np slot 2; line 0x10 |
+| phys_fn_004657 | 0x000b2930 | 84 | `core/NpCylindricalJoint.cpp` | Np slot 4; line 0x10 |
+| phys_fn_004659 | 0x000b2990 | 89 | `core/NpCylindricalJoint.cpp` | Np slot 9; line 0x10 |
+| phys_fn_004661 | 0x000b29f0 | 89 | `core/NpCylindricalJoint.cpp` | Np slot 11; line 0x10 |
+| phys_fn_004663 | 0x000b2a50 | 97 | `core/NpCylindricalJoint.cpp` | Np slot 13; line 0x10 |
+| phys_fn_004665 | 0x000b2ac0 | 74 | `core/NpCylindricalJoint.cpp` | Np slot 15; line 0x10 |
+| phys_fn_004667 | 0x000b2b10 | 88 | `core/NpCylindricalJoint.cpp` | Np slot 29; line 0x10 |
+| phys_fn_004669 | 0x000b2b70 | 74 | `core/NpCylindricalJoint.cpp` | Np slot 14; line 0x10 |
+| phys_fn_004671 | 0x000b2bc0 | 84 | `core/NpCylindricalJoint.cpp` | Np slot 31 (loadFromDesc); line 0x15; internal `[vt+0x24]` |
+| phys_fn_004673 | 0x000b2c20 | 84 | `core/NpCylindricalJoint.cpp` | Np slot 32 (saveToDesc); line 0x20; internal `[vt+0x28]` |
+| phys_fn_004675 | 0x000b2c80 | 57 | `core/NpCylindricalJoint.cpp` | constructor; called by 004320 (0xa76d0) |
+| phys_fn_004677 | 0x000b2cc0 | 8 | `core/NpCylindricalJoint.cpp` | secondary table 0x1011b21c slot 0; compiler-generated thunk |
+| phys_fn_004679 | 0x000b2cd0 | 55 | `core/NpCylindricalJoint.cpp` | Np slot 0 (scalar deleting destructor) |
+
+004665, 004669, 004671 and 004673 are already `reconstructed` through `ObjectModel.cpp`
+differentials (the tailjmp, mutexlistfree and mutexfamily models); their proofs are kept and
+the models gain a `// Product row:` pointer.
+
+### Construction chain (NxJointType 2)
+
+1. 000665's switch (table 0x14590) sends type 2 to **0x143eb**: SDK allocator slot +8 with
+   `(0x16c, 0)` (`push 0x16c` at 0x143f7), null -> 0x1458a (result 0); otherwise
+   `call 0x100a76a0` = **004320** on the block with the descriptor (0x1440a), then the shared
+   exit at 0x144fc.
+2. **004320** CylindricalJoint::CylindricalJoint(const NxCylindricalJointDesc&) (`ret 4`):
+   `Joint(desc, 0x100)` (004141, `push 0x100` at 0xa76a6), vptr 0x1011a048 (0xa76b3), SDK
+   allocator `(0x1c, 0)` -> **004675** on success, public object -> `this+0x48` (0xa76d5),
+   `desc.userData` (desc+0x60) -> `np+4` **without a null check** (the null arm stores 0 at
+   +0x48 and then writes `[0+4]`, 0xa76e5-0xa76ed). Nothing else: `NxCylindricalJointDesc`
+   adds no field and the class has none of its own, so there is no 004378-style call.
+3. **004675** NpCylindricalJoint::NpCylindricalJoint(CylindricalJoint*): zeroes +4/+8,
+   transient table 0x1011b0d8 (`NxCylindricalJoint`), 002404 on +0xc, secondary table
+   0x1011b21c, internal at +0x18 and +0x08, final table 0x1011b198. The prismatic shape.
+4. Back in 000665 (0x144fc): identical to revolute and prismatic (`[joint+0x48]` null ->
+   internal slot 5 with 1 (004322) and result 0; otherwise the link copy, 000661, and the
+   0x14529-0x1453f exit).
+
+**Public-object offset: +0x48** (the Joint base field `mPublicObject`; 004320 writes it at
+0xa76d5, 000665 reads it at 0x14502).
+
+### Object layouts
+
+**CylindricalJoint (internal), 0x16c bytes** (`push 0x16c` at 0x143f7) = `sizeof(Joint)`: the
+`Joint` base with vptr 0x1011a048 and no field of its own.
+
+**NpCylindricalJoint (public), 0x1c bytes**: exactly `NpJointShared<NxCylindricalJoint,
+CylindricalJoint>` (vptr 0x1011b198, userData +4, appData +8 = internal, hook base +0xc with
+table 0x1011b21c, write link +0x10, read link +0x14, internal +0x18). No own field.
+
+### Dispatch tables
+
+**0x1011a048: CylindricalJoint internal (`phys_data_002678`, 14 slots)**
+
+| Slot | Row | Declared as | Notes |
+|---:|---|---|---|
+| 0 | 004248 (folded, `ret 4`) | `Joint::row_slot0` inline | inherited no-op |
+| 1 | 001583 (folded, `ret`) | `Joint::row_slot1` inline | inherited no-op |
+| 2 | 004111 | `Joint::row004111` | inherited |
+| 3 | 004087 | `Joint::row004087` | inherited |
+| 4 | **004318** | `CylindricalJoint::row_slot4(NxDebugRenderable&)` | calls `Joint::row004318` (below) |
+| 5 | **004322** | `~CylindricalJoint()` (scalar deleting) | deletes `[this+0x48]` through its slot 0 with 1, 004095, frees if flag&1 |
+| 6 | **004326** | `CylindricalJoint::row_slot6(NxReal)` | `ret 4`; the float is a divisor (`fld 1.0; fdiv [esp+0xb8]`, 0xa832b) |
+| 7 | 004135 | `Joint::row_slot7` | inherited |
+| 8 | 004248 (folded) | `Joint::row_slot8` inline | inherited no-op |
+| 9 | **004324** | `CylindricalJoint::loadFromDesc(const NxCylindricalJointDesc&)` | `ret 4` |
+| 10 | **004316** | `CylindricalJoint::saveToDesc(NxCylindricalJointDesc&)` | `ret 4`; tail-jumps 004066 |
+| 11 | 001391 (folded, `mov eax,ecx; ret`) | `CylindricalJoint::row_slot11()` inline | returns `this` |
+| 12 | 001391 (folded) | `CylindricalJoint::row_slot12()` inline | returns `this` |
+| 13 | 001391 (folded) | `CylindricalJoint::row_slot13()` inline | returns `this` |
+
+The table runs to 0x1011a080, where the unit's `__FILE__` string starts; the relocated words
+at 0x11a074, 0x11a078 and 0x11a07c all name 001391, and nothing in the listing addresses
+0x1011a07c on its own. So the cylindrical class has one more `return this` virtual than the
+prismatic one (13 slots). The meaning of the third is unknown; it is declared so the
+candidate's table has the oracle's slot count.
+
+**0x1011b198: NpCylindricalJoint primary (`phys_data_002724`, 33 slots)**: slots 0-32 as the
+`### Slot split` table (per-family rows 004679, 004655, 004657, 004659, 004661, 004663, 004669,
+004665, 004667, 004671, 004673; the folded rows through `NpJointShared`). Every write-locked
+NxJoint row reports line 0x10; loadFromDesc 0x15, saveToDesc 0x20. Slots 31/32 call internal
+slots 9/10 (`[vt+0x24]`/`[vt+0x28]`). **0x1011b21c** (secondary): 004677.
+
+### 004318: one body for two families
+
+004318 reads only Joint base fields (+0x2c bit 9, the body stamps, the world anchors
++0x114/+0x120 and axes +0xfc/+0x108, the bodies' +0x134/+0x158 poses), calls 004097, 004123
+and 004127, and reads SDK parameters 31, 32 and 13 (`.data 0x10123b94`, 0x10123b98,
+0x10123b4c). It is written once as the non-virtual `Joint::row004318(NxDebugRenderable&)`
+(declared in `core/Joint.h`, defined with its stable-ID line in `core/CylindricalJoint.cpp`),
+and both `CylindricalJoint::row_slot4` and `PrismaticJoint::row_slot4` call it; the prismatic
+asserting stub from Task 3a is replaced. What it draws, when bit 9 (NX_JF_VISUALIZATION) is
+set, after the stale-body refresh:
+
+- world axes (parameter 32 non-zero): `addArrow(row004123 point, row004127 axis, 1,
+  scale13 * p32, 0xffffff)`, as revolute 004364;
+- local axes (parameter 31 non-zero): each body's world anchor and axis carried through its
+  +0x134/+0x158 pose (as stored without a body), then `addArrow(anchor0, axis0, 1, p31 *
+  scale13, 0x202090)` and `addArrow(anchor1, axis1, 1, same, 0x5050e0)`. It builds four
+  two-element NxVec3 arrays through the `eh vector constructor iterator` (000001, with the
+  folded NxVec3 constructor 001391) and uses two of them (anchors, axes).
+
+Listing over decompile: the decompile passes the second arrow `(&fStack_50, auStack_68)`;
+the listing pushes body 1's anchor ([esp+0x4c]) and axis ([esp+0x34]) (0xa7683-0xa768c).
+
+### 004326: the solver slot
+
+The first four records of prismatic 004386 and nothing else: the same stale-body refresh,
+slide direction n, tangents t1/t2 (NxNormalToTangents), the two lever pairs (anchors, then
+points one axis length along; with both bodies the levers towards C0 and C1) and the four
+kind-1 linear records (t1, t2, t1, t2) with bias `(t . error) / arg` and +0x48 = maxForce.
+There is no angular record and no quaternion, which is what lets the joint turn about its
+axis. The record header and bit sequence, the error and the solve tail are the same
+instructions as prismatic's; the three shared helpers move into
+`core/JointLinearRecords.h` (below). The three-term groupings differ from prismatic's at
+many sites (the listing is followed; each site is named in the row comment). Listing over
+decompile (supplement): the decompile drops the kind tests as unreachable (0x100a8458,
+0x100a85cf, 0x100a8ae2, 0x100a8c59), shows every intermediate as a float and regroups most
+sums.
+
+### Dependency closure
+
+- **write** (19 rows, 7,850 B): 004316, 004318, 004320, 004322, 004324, 004326 in
+  `core/CylindricalJoint.cpp` (6,883 B); 004655, 004657, 004659, 004661, 004663, 004665,
+  004667, 004669, 004671, 004673, 004675, 004677 (generated thunk; stable-ID line above the
+  destructor it serves), 004679 in `core/NpCylindricalJoint.cpp` (967 B).
+- **reuse**: Joint rows 004141, 004107, 004121, 004097, 004066, 004095, 004093, 004111,
+  004087, 004135, 004123, 004127 (`core/Joint.cpp`) and 004391 (`core/JointSupport.cpp`); the
+  13 folded Np bodies (`NpJointShared`); 002362/002364/002366, 002404/002406, 000454/000480;
+  004248, 001583, 001391 (inline bodies); 000001 (the compiler's `eh vector constructor
+  iterator`); 004417-004433, 005667; `NxNormalToTangents` (Foundation import `[0x1010418c]`,
+  called three times by 004326); the SDK allocator; SDK parameters 0, 13, 31, 32.
+- **Shared helpers moved**: `prismaticLinearRecord`, `prismaticSolveRecord` and
+  `prismaticError` (file-static in `core/PrismaticJoint.cpp` since Task 3a) become
+  `jointLinearRecord`, `jointSolveRecord` and `jointLinearError` in the new internal header
+  `Physics/src/include/core/JointLinearRecords.h`, used by both families. They are the same
+  instructions in both listings (record and tail: prismatic 0xae418-0xae577, cylindrical
+  0xa83a3-0xa84f7, and their copies; error: 0xae31a-0xae3a4 / 0xa829b-0xa832b).
+- **defer**: none. The five gap rows 004306-004314 are spherical's (Task 3c).
+
+### What the new test case reaches
+
+`nxCylindricalCase` (indices 0 and 3 of the revolute table's anchor/axis values). Creation:
+000297, 000665 case 2, 004320, 004141 (-> 004107, 004121 -> 004097 x2, 000480), 004675
+(002404), 000661. Getters: 004437/004125, 004441/004129, 004483/004078, 004539, 004443/004070,
+`isCylindricalJoint` (inline 004425 -> 004479/004070), and saveToDesc 004673 -> internal slot
+10 = **004316** -> 004066. Compiled but not reached: 004318 (no debug render), 004322
+(release unwired), 004324, 004326 (no simulation step), 004655-004671, 004679.
