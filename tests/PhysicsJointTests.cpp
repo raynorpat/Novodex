@@ -51,6 +51,8 @@
 #include "NxPointOnLineJointDesc.h"
 #include "NxPointInPlaneJoint.h"
 #include "NxPointInPlaneJointDesc.h"
+#include "NxDistanceJoint.h"
+#include "NxDistanceJointDesc.h"
 
 typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(NxU32, NxUserAllocator*, NxUserOutputStream*);
 
@@ -587,6 +589,87 @@ static void nxPointInPlaneCase(NxScene& scene, NxActor* a, NxActor* b,
 	printf("case=point_in_plane index=%u released=yes\n", index);
 	}
 
+static void nxDistanceCase(NxScene& scene, NxActor* a, NxActor* b,
+	unsigned index, const NxVec3& anchor, const NxVec3& axis,
+	NxReal maxDistance, NxReal minDistance, const NxSpringDesc& spring, NxU32 flags)
+	{
+	printf("case=distance index=%u ", index);
+	nxPrintVec("in_anchor", anchor);
+	printf(" ");
+	nxPrintVec("in_axis", axis);
+	printf(" max_distance=%08x min_distance=%08x spring=%08x.%08x.%08x flags=%08x\n",
+		nxU(maxDistance), nxU(minDistance), nxU(spring.spring), nxU(spring.damper), nxU(spring.targetValue),
+		static_cast<unsigned>(flags));
+
+	NxDistanceJointDesc desc;
+	desc.setToDefault(false);
+	desc.actor[0] = a;
+	desc.actor[1] = b;
+	nxSetGlobalAnchor(desc, anchor);
+	nxSetGlobalAxis(desc, axis);
+	desc.maxDistance = maxDistance;
+	desc.minDistance = minDistance;
+	desc.spring = spring;
+	desc.flags = flags;
+
+	NxJoint* joint = scene.createJoint(desc);
+	printf("case=distance index=%u created=%s\n", index, joint ? "yes" : "no");
+	if(!joint)
+		return;
+
+	NxVec3 gotAnchor(0.0f, 0.0f, 0.0f);
+	NxVec3 gotAxis(0.0f, 0.0f, 0.0f);
+	joint->getGlobalAnchor(gotAnchor);
+	joint->getGlobalAxis(gotAxis);
+	printf("case=distance index=%u ", index);
+	nxPrintVec("out_anchor", gotAnchor);
+	printf(" ");
+	nxPrintVec("out_axis", gotAxis);
+	printf(" state=%u\n", static_cast<unsigned>(joint->getState()));
+
+	NxActor* ra = 0;
+	NxActor* rb = 0;
+	joint->getActors(&ra, &rb);
+	printf("case=distance index=%u actors a=%s b=%s\n", index,
+		ra == a ? "match" : (ra ? "other" : "null"),
+		rb == b ? "match" : (rb ? "other" : "null"));
+
+	NxDistanceJoint* distance = joint->isDistanceJoint();
+	printf("case=distance index=%u type=%u is_distance=%s is_revolute=%s\n", index,
+		static_cast<unsigned>(joint->getType()), distance ? "yes" : "no",
+		joint->isRevoluteJoint() ? "yes" : "no");
+	if(distance)
+		{
+		NxDistanceJointDesc saved;
+		distance->saveToDesc(saved);
+		printf("case=distance index=%u saved max_distance=%08x min_distance=%08x spring=%08x.%08x.%08x flags=%08x\n",
+			index, nxU(saved.maxDistance), nxU(saved.minDistance), nxU(saved.spring.spring),
+			nxU(saved.spring.damper), nxU(saved.spring.targetValue), static_cast<unsigned>(saved.flags));
+		printf("case=distance index=%u saved ", index);
+		nxPrintVec("anchor0", saved.localAnchor[0]);
+		printf(" ");
+		nxPrintVec("anchor1", saved.localAnchor[1]);
+		printf("\n");
+		printf("case=distance index=%u saved ", index);
+		nxPrintVec("axis0", saved.localAxis[0]);
+		printf(" ");
+		nxPrintVec("axis1", saved.localAxis[1]);
+		printf("\n");
+		printf("case=distance index=%u saved ", index);
+		nxPrintVec("normal0", saved.localNormal[0]);
+		printf(" ");
+		nxPrintVec("normal1", saved.localNormal[1]);
+		printf("\n");
+		printf("case=distance index=%u saved max_force=%08x max_torque=%08x flags=%08x actors a=%s b=%s\n",
+			index, nxU(saved.maxForce), nxU(saved.maxTorque), static_cast<unsigned>(saved.jointFlags),
+			saved.actor[0] == a ? "match" : (saved.actor[0] ? "other" : "null"),
+			saved.actor[1] == b ? "match" : (saved.actor[1] ? "other" : "null"));
+		}
+
+	scene.releaseJoint(*joint);
+	printf("case=distance index=%u released=yes\n", index);
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	wchar_t pairDirectory[MAX_PATH];
@@ -693,6 +776,14 @@ int wmain(int argc, wchar_t** argv)
 	nxPointOnLineCase(*scene, a, b, 3, NxVec3(2.0f, 4.0f, 0.0f), NxVec3(0.5f, 0.5f, 0.5f));
 	nxPointInPlaneCase(*scene, a, b, 0, NxVec3(0.0f, 0.0f, 0.0f), NxVec3(1.0f, 0.0f, 0.0f));
 	nxPointInPlaneCase(*scene, a, b, 3, NxVec3(2.0f, 4.0f, 0.0f), NxVec3(0.5f, 0.5f, 0.5f));
+	// The distance family's fields: index 0 enables both limits and the
+	// spring with distinct values; index 3 is a rigid rod (min == max, both
+	// limits, no spring).
+	nxDistanceCase(*scene, a, b, 0, NxVec3(0.0f, 0.0f, 0.0f), NxVec3(1.0f, 0.0f, 0.0f),
+		2.5f, 0.5f, NxSpringDesc(10.0f, 0.5f, 0.25f),
+		NX_DJF_MAX_DISTANCE_ENABLED | NX_DJF_MIN_DISTANCE_ENABLED | NX_DJF_SPRING_ENABLED);
+	nxDistanceCase(*scene, a, b, 3, NxVec3(2.0f, 4.0f, 0.0f), NxVec3(0.5f, 0.5f, 0.5f),
+		1.25f, 1.25f, NxSpringDesc(), NX_DJF_MAX_DISTANCE_ENABLED | NX_DJF_MIN_DISTANCE_ENABLED);
 
 	sdk->releaseScene(*scene);
 	printf("scene=released\n");
