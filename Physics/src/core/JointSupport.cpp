@@ -108,8 +108,9 @@ void JointSupportRecord::row004393(NxReal arg0, NxReal arg1)
 
 // phys_fn_000022 (0x00001840, 27 B)
 // (deferred: owner gap <start>..Actor.cpp)
-void row000022()
+void Row000022Fixture::row000022(NxU32 arg)
 	{
+	(void)arg;
 	NX_ASSERT(0);
 	}
 
@@ -131,7 +132,7 @@ void Row000633Fixture::row000633(void* joint)
 
 // phys_fn_000758 (0x00017630, 214 B)
 // (deferred: owner gap SceneRaycast..CapsuleShape)
-void row000758()
+void Row000758Fixture::row000758()
 	{
 	NX_ASSERT(0);
 	}

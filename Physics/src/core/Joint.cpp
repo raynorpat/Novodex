@@ -222,12 +222,11 @@ void Joint::row_slot7(NxReal arg)
 
 // phys_fn_004064 (0x000957a0, 385 B)
 // (deferred: internal slot 8 (phys_fn_004356), called only from scene code outside the pilot)
-void Joint::row004064(NxVec3& out1, NxVec3& out2, const NxVec3& in1, const NxVec3& in2)
+void Joint::row004064(const NxVec3& anchor0, const NxVec3& anchor1, NxVec3& out) const
 	{
-	(void)out1;
-	(void)out2;
-	(void)in1;
-	(void)in2;
+	(void)anchor0;
+	(void)anchor1;
+	(void)out;
 	NX_ASSERT(0);
 	}
 
@@ -677,10 +676,10 @@ void Joint::loadFromDescBase(const NxJointDesc& desc)
 	}
 
 // phys_fn_004123 (0x00098be0, 518 B)
-// (deferred: internal slot 4 (solver), called by phys_fn_004364)
-void Joint::row004123(NxU32 arg)
+// (deferred: reached only through internal slot 4, phys_fn_004364)
+void Joint::row004123(NxVec3& out)
 	{
-	(void)arg;
+	(void)out;
 	NX_ASSERT(0);
 	}
 

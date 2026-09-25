@@ -34,6 +34,8 @@
 
 #include <cstddef>
 
+class NxDebugRenderable;
+
 // The dynamic-body record Joint::mBody[i] points to -- `[actorImpl+8]`, the
 // 0x260-byte record the candidate builds in nxActorComputeMass
 // (Physics/src/Scene.cpp). This is a read view only: nothing constructs it
@@ -73,7 +75,12 @@ struct JointBodyRecord
 	NxU32				mUnknown110;
 	//! +0x114. Flags word; bit 8 (0x100) suppresses the 0.4f wake raise.
 	NxU32				mUnknown114;
-	NxU8				mUnknown118[0x134 - 0x118];
+	NxU8				mUnknown118[0x124 - 0x118];
+	//! +0x124. Quaternion x, y, z, w of the +0x134 3x3: the candidate's
+	//! nxNpActorUpdateCMassQuaternion (Physics/src/include/NpActorDynamicMath.h)
+	//! writes it from +0x134; phys_fn_004356 writes it and has row 000758
+	//! rebuild +0x134 from it (000758 reads +0x124..+0x130 as x, y, z, w).
+	NxReal				mCMassOrientation[4];
 	//! +0x134. Row-major 3x3 + vec3 pose (phys_fn_004080, 004127, 004131
 	//! transform through it; 004064 reads it).
 	NxReal				mUnknown134[9];
@@ -103,6 +110,7 @@ static_assert(offsetof(JointBodyRecord, mMassLocalRot) == 0x0dc, "3x3 at +0xdc")
 static_assert(offsetof(JointBodyRecord, mMassLocalPos) == 0x100, "vec3 at +0x100");
 static_assert(offsetof(JointBodyRecord, mUnknown10c) == 0x10c, "flags at +0x10c");
 static_assert(offsetof(JointBodyRecord, mUnknown114) == 0x114, "flags at +0x114");
+static_assert(offsetof(JointBodyRecord, mCMassOrientation) == 0x124, "quaternion at +0x124");
 static_assert(offsetof(JointBodyRecord, mUnknown134) == 0x134, "pose at +0x134");
 static_assert(offsetof(JointBodyRecord, mUnknown158) == 0x158, "pose vec3 at +0x158");
 static_assert(offsetof(JointBodyRecord, mStamp) == 0x198, "stamp at +0x198");
@@ -191,8 +199,10 @@ class Joint
 	virtual void row004087(NxReal numerator, const NxVec3& v, NxReal divisor);
 
 	//! Slot 4 (+0x10). Pure in the base (_purecall, phys_fn_005667).
-	//! RevoluteJoint overrides this slot with phys_fn_004364.
-	virtual void row_slot4(NxU32 arg) = 0;
+	//! RevoluteJoint overrides this slot with phys_fn_004364. The one
+	//! stack argument is an NxDebugRenderable: 004364 calls its slots +0x20
+	//! (addLine) and +0x30 (addArrow) with those virtuals' argument shapes.
+	virtual void row_slot4(NxDebugRenderable& renderable) = 0;
 
 	//! Slot 5 (+0x14). phys_fn_004095 (0x00095e20, 41 B) is this
 	//! destructor's body: reinstalls vptr 0x101192d0. The compiler emits
@@ -216,16 +226,19 @@ class Joint
 
 	//! Slot 8 (+0x20). Joint's own default is the folded, unclaimed
 	//! phys_fn_004248 (same trivial target as slot 0; not claimed, inline
-	//! here). RevoluteJoint overrides this slot with phys_fn_004356.
-	virtual void row_slot8(NxU32 arg) { (void)arg; }
+	//! here). RevoluteJoint overrides this slot with phys_fn_004356, whose
+	//! argument is one of the two body records (compared with mBody[0] and
+	//! mBody[1], and written through at +0x124..+0x160).
+	virtual void row_slot8(void* body) { (void)body; }
 
 	// --- non-virtual Joint members (write / defer rows assigned to
 	//     core/Joint.cpp; not part of either vtable) ---
 
 	//! phys_fn_004064 (0x000957a0, 385 B; deferred: internal slot 8 caller
-	//! only, reached from scene code outside the pilot). Transforms two
-	//! points through body[0]/body[1].
-	void row004064(NxVec3& out1, NxVec3& out2, const NxVec3& in1, const NxVec3& in2);
+	//! only, reached from scene code outside the pilot). `ret 0xc`, three
+	//! pointers: out = body[0] pose * anchor0 - body[1] pose * anchor1 (the
+	//! +0x134/+0x158 poses; a missing body leaves its point as is).
+	void row004064(const NxVec3& anchor0, const NxVec3& anchor1, NxVec3& out) const;
 
 	//! phys_fn_004066 (0x00095930, 266 B; write). Base part of
 	//! saveToDesc, called by every joint's saveToDesc row (incl.
@@ -304,9 +317,11 @@ class Joint
 	//! maxForce/maxTorque, name binding, jointFlags mapping.
 	void loadFromDescBase(const NxJointDesc& desc);
 
-	//! phys_fn_004123 (0x00098be0, 518 B; deferred: internal slot 4,
-	//! solver). Called by phys_fn_004364.
-	void row004123(NxU32 arg);
+	//! phys_fn_004123 (0x00098be0, 518 B; deferred: reached only through
+	//! internal slot 4, phys_fn_004364). `ret 4`, one output vec3: after
+	//! the stale-body refresh, a point formed from the two world anchors
+	//! carried through the bodies' +0x134/+0x158 poses (not read here).
+	void row004123(NxVec3& out);
 
 	//! phys_fn_004125 (0x00098df0, 1940 B; write; on the transcript path,
 	//! folded Np slot 3 getGlobalAnchor).

@@ -53,8 +53,11 @@ class RevoluteJoint : public Joint
 	//! +0x1ac..+0x1b4.
 	virtual void row_slot1();
 
-	//! Slot 4 (+0x10). phys_fn_004364 (0x000ab840, 3326 B).
-	virtual void row_slot4(NxU32 arg);
+	//! Slot 4 (+0x10). phys_fn_004364 (0x000ab840, 3326 B). Draws the
+	//! joint into the renderable when +0x2c bit 9 (NX_JF_VISUALIZATION)
+	//! is set: world axes, local axes and the limit arc, each gated by
+	//! its SDK visualization parameter.
+	virtual void row_slot4(NxDebugRenderable& renderable);
 
 	//! Slot 6 (+0x18). phys_fn_004360 (0x000aa060, 4460 B). The float
 	//! argument is a divisor (0xaa2a7).
@@ -64,8 +67,10 @@ class RevoluteJoint : public Joint
 	//! argument is a divisor (0xab261).
 	virtual void row_slot7(NxReal arg);
 
-	//! Slot 8 (+0x20). phys_fn_004356 (0x000a9650, 2303 B).
-	virtual void row_slot8(NxU32 arg);
+	//! Slot 8 (+0x20). phys_fn_004356 (0x000a9650, 2303 B). Projects the
+	//! given body (one of mBody[0]/mBody[1]) back towards the joint: the
+	//! only reader of projectionDistance and the cos/sin pair.
+	virtual void row_slot8(void* body);
 
 	// --- RevoluteJoint's own slots, 9-16 (0x1011a1c0) ---
 
@@ -153,8 +158,11 @@ class RevoluteJoint : public Joint
 	void row004358(NxVec3& out) const;
 
 	//! phys_fn_004372 (0x000ac700, 2467 B). Called only by phys_fn_004721
-	//! (Np getAngle); reads Joint +0x8/+0xcc/+0xe4 frames.
-	NxReal getAngle() const;
+	//! (Np getAngle); reads Joint +0x8/+0xcc/+0xe4 frames. `this` in ecx,
+	//! plain `ret`; the result is left unrounded in st(0) (004721 rounds
+	//! it with its own `fstp dword`), hence NxF64. Logically const; the
+	//! stale-body refresh it opens with goes through a const_cast.
+	NxF64 getAngle() const;
 
 	// --- fields, in the oracle's byte-offset order (RevoluteJoint's base
 	//     part, 0x00-0x16b, IS Joint; the fields below start at +0x16c) ---

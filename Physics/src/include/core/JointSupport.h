@@ -86,8 +86,13 @@ static_assert(offsetof(JointSupportRecord, mUnknown030) == 0x30, "joint at +0x30
 static_assert(offsetof(JointSupportRecord, mUnknown048) == 0x48, "float at +0x48");
 static_assert(sizeof(JointSupportRecord) == 0x50, "records are 0x50 bytes (phys_fn_004093)");
 
-// phys_fn_000022 (deferred: owner gap <start>..Actor.cpp).
-void row000022();
+// phys_fn_000022 (deferred: owner gap <start>..Actor.cpp). Thiscall on the
+// body record's +0x19c owner (`mov ecx,[body+0x19c]; push 1`), one stack
+// argument, `ret 4`; same fixture convention as 000571 below.
+struct Row000022Fixture
+	{
+	void row000022(NxU32 arg);
+	};
 
 // phys_fn_000571 (deferred: owner Scene.cpp). Thiscall on the Scene, one
 // stack argument, `ret 4`: the 0x10-byte JointBreakEvent (Joint.h) that
@@ -109,7 +114,12 @@ struct Row000633Fixture
 	void row000633(void* joint);
 	};
 
-// phys_fn_000758 (deferred: owner gap SceneRaycast..CapsuleShape).
-void row000758();
+// phys_fn_000758 (deferred: owner gap SceneRaycast..CapsuleShape). `this`
+// (the body record) in ecx, no stack arguments, plain `ret`: rebuilds the
+// record's +0x134 3x3 from its +0x124 quaternion. Same fixture convention.
+struct Row000758Fixture
+	{
+	void row000758();
+	};
 
 #endif

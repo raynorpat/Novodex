@@ -11,6 +11,9 @@
 #include "PhysicsSDK.h"
 #include "NxJoint.h"
 #include "NxMath.h"
+#include "NxMat33.h"
+#include "NxDebugRenderable.h"
+#include "NxUtilities.h"
 
 #include <float.h>
 #include <math.h>
@@ -26,9 +29,9 @@
 // listing's sum grouping is kept.
 //
 // Task 7 wrote the rows under 700 B; Task 8a the solver-slot rows 004360,
-// 004362 and 004374. 004356, 004364 and 004372 are Task 8b's and stay stubs
-// until then. Nothing constructs RevoluteJoint until Task 10 wires
-// Scene::createJoint.
+// 004362 and 004374; Task 8b the projection row 004356, the visualization
+// row 004364 and getAngle (004372). Nothing constructs RevoluteJoint until
+// Task 10 wires Scene::createJoint.
 
 // The float the setters raise a body's wake counter to and compare it with:
 // 0x3ecccccc (.rdata 0x101053d4 and the immediate stored), as in Joint.cpp.
@@ -37,6 +40,14 @@ static const NxReal gRevoluteWakeFloor = 0.39999998f;
 static NX_INLINE double revoluteMul(NxReal a, NxReal b)
 	{
 	return (double)a * (double)b;
+	}
+
+// (a0 * b0 + a1 * b1) + a2 * b2, the listing's usual three-term sum with the
+// products and the partial sum on the stack. The argument order is the
+// listing's term order at each site.
+static NX_INLINE double revoluteSum3(NxReal a0, NxReal b0, NxReal a1, NxReal b1, NxReal a2, NxReal b2)
+	{
+	return (revoluteMul(a0, b0) + revoluteMul(a1, b1)) + revoluteMul(a2, b2);
 	}
 
 static NX_INLINE JointBodyRecord* revoluteBody(void* body)
@@ -148,10 +159,10 @@ static double revoluteCIacos(double x)
 	}
 
 // The inlined NxMath::acos(NxF32) clamp every acos site in this unit carries
-// (004330 0xa8dfe-0xa8e34, 004352 0xa94fd-0xa9530): >= 1 -> 0, <= -1 -> the
-// float pi at 0x1011a1b0, otherwise _CIacos of the float. The result is
-// returned unrounded: 004352 keeps it on the stack; 004330 rounds it where
-// it stores it.
+// (004330 0xa8dfe-0xa8e34, 004352 0xa94fd-0xa9530, 004372 0xad015-0xad04b):
+// >= 1 -> 0, <= -1 -> the float pi at 0x1011a1b0, otherwise _CIacos of the
+// float. The result is returned unrounded: 004352 and 004372 keep it on the
+// stack; 004330 rounds it where it stores it.
 static double revoluteAcos(NxReal f)
 	{
 	if(f >= 1.0f)
@@ -258,6 +269,109 @@ static NxReal revoluteFsin(NxReal angle)
 #else
 	return (NxReal)sin((double)angle);
 #endif
+	}
+
+// 004364's limit arc (0xac328-0xac32e) takes fcos and fsin of the same
+// unrounded angle (`fld st(0); fcos; fxch st(1); fsin`); the CRT's cos/sin
+// need not agree with the instructions, so they are used directly, as in
+// revoluteFcos/revoluteFsin.
+static void revoluteFcosFsin(double angle, double& cosine, double& sine)
+	{
+#if defined(_MSC_VER) && defined(_M_IX86)
+	double c;
+	double s;
+	__asm
+		{
+		fld		angle
+		fld		st(0)
+		fcos
+		fxch	st(1)
+		fsin
+		fstp	s
+		fstp	c
+		}
+	cosine = c;
+	sine = s;
+#else
+	cosine = cos(angle);
+	sine = sin(angle);
+#endif
+	}
+
+// 004372's quaternion-to-rows conversion for body 0's normal (0xac77d-
+// 0xac83a): the same instructions as core/Joint.cpp's jointQuatToRows
+// (yy2, xz2 and yz2 stored, the rest on the stack). q is x, y, z, w; m is
+// row-major.
+static void revoluteQuatToRows(const NxReal* q, NxReal* m)
+	{
+	const double x = q[0], y = q[1], z = q[2], w = q[3];
+	const double yy = y * y;
+	const NxReal yy2 = (NxReal)(yy + yy);
+	const double zz = z * z;
+	const double zz2 = zz + zz;
+	m[0] = (NxReal)((1.0 - yy2) - zz2);
+	const double xy = y * x;
+	const double xy2 = xy + xy;
+	const double zw = z * w;
+	const double zw2 = zw + zw;
+	m[1] = (NxReal)(xy2 - zw2);
+	const double xz = z * x;
+	const NxReal xz2 = (NxReal)(xz + xz);
+	const double yw = y * w;
+	const double yw2 = yw + yw;
+	const NxReal yw2f = (NxReal)yw2;
+	m[2] = (NxReal)(yw2 + xz2);
+	m[3] = (NxReal)(zw2 + xy2);
+	const double xx = x * x;
+	const double oneMinusXx2 = 1.0 - (xx + xx);
+	const NxReal oneMinusXx2f = (NxReal)oneMinusXx2;
+	m[4] = (NxReal)(oneMinusXx2 - zz2);
+	const double yz = z * y;
+	const NxReal yz2 = (NxReal)(yz + yz);
+	const double xw = w * x;
+	const double xw2 = xw + xw;
+	m[5] = (NxReal)(yz2 - xw2);
+	m[6] = (NxReal)((double)xz2 - yw2f);
+	m[7] = (NxReal)(xw2 + yz2);
+	m[8] = (NxReal)((double)oneMinusXx2f - yy2);
+	}
+
+// The same conversion where 004372 already holds three values on the FPU
+// stack (body 0's cross vector, 0xaca27-0xacaed, and body 1's normal,
+// 0xacd23-0xacdf6; the two runs are the same instructions): zz2, xy2 and
+// zw2 are stored as well, so m[0], m[1], m[3] and m[4] use their floats.
+static void revoluteQuatToRowsSpilled(const NxReal* q, NxReal* m)
+	{
+	const double x = q[0], y = q[1], z = q[2], w = q[3];
+	const double yy = y * y;
+	const NxReal yy2 = (NxReal)(yy + yy);
+	const double zz = z * z;
+	const NxReal zz2 = (NxReal)(zz + zz);
+	m[0] = (NxReal)((1.0 - yy2) - zz2);
+	const double xy = y * x;
+	const NxReal xy2 = (NxReal)(xy + xy);
+	const double zw = z * w;
+	const NxReal zw2 = (NxReal)(zw + zw);
+	m[1] = (NxReal)((double)xy2 - zw2);
+	const double xz = z * x;
+	const NxReal xz2 = (NxReal)(xz + xz);
+	const double yw = y * w;
+	const double yw2 = yw + yw;
+	const NxReal yw2f = (NxReal)yw2;
+	m[2] = (NxReal)(yw2 + xz2);
+	m[3] = (NxReal)((double)zw2 + xy2);
+	const double xx = x * x;
+	const double oneMinusXx2 = 1.0 - (xx + xx);
+	const NxReal oneMinusXx2f = (NxReal)oneMinusXx2;
+	m[4] = (NxReal)(oneMinusXx2 - zz2);
+	const double yz = z * y;
+	const NxReal yz2 = (NxReal)(yz + yz);
+	const double xw = w * x;
+	const double xw2 = xw + xw;
+	m[5] = (NxReal)(yz2 - xw2);
+	m[6] = (NxReal)((double)xz2 - yw2f);
+	m[7] = (NxReal)(xw2 + yz2);
+	m[8] = (NxReal)((double)oneMinusXx2f - yy2);
 	}
 
 // phys_fn_004366 (0x000ac540, 162 B)
@@ -426,12 +540,239 @@ void RevoluteJoint::row_slot1()
 	mUnknown1ac.x = 0.0f;
 	}
 
+// The step 004364's limit arc advances by: 1/12 as a float (0x3daaaaab,
+// .rdata 0x101068e0).
+static const NxReal gRevoluteLimitStep = 0.083333336f;
+
 // phys_fn_004364 (0x000ab840, 3326 B)
-// (unimplemented)
-void RevoluteJoint::row_slot4(NxU32 arg)
+// Debug visualization, only when +0x2c bit 9 (NX_JF_VISUALIZATION) is set.
+// Each part is gated by its SDK parameter being non-zero (the oracle reads
+// the live array at 0x10123b18; revoluteSdkParameter here) and scaled by it
+// times NX_VISUALIZATION_SCALE (element 13, 0x10123b4c):
+// - world axes (element 32): an arrow along row004127's axis at the point
+//   row004123 returns, colour 0xffffff;
+// - local axes (element 31): per body, the world anchor, axis, normal and
+//   cross vectors carried through the body's +0x134/+0x158 pose (as
+//   stored without a body); three arrows from each anchor (0x902020,
+//   0x209020, 0x202090 for body 0; 0xe05050, 0x50e050, 0x5050e0 for body
+//   1), a line between the anchors and one between the axis tips
+//   (0xffff00);
+// - limits (element 33, only when limit.low < limit.high): 13 arc points
+//   from low to high, row004123's point plus scale * (cos * n + sin * c +
+//   0 * a) with n, c, a body 0's normal, cross and axis; the two end
+//   spokes are 0xff0000, or 0xffd000 when row004352's angle is past that
+//   limit, the arc 0xff0000; then an arrow along body 1's normal
+//   (0xff00d0).
+// The limit arm calls row004127 but never reads its result (0xac04c; the
+// stale-body refresh inside still runs).
+// Listing over decompile (supplement, no prototype): the decompile loses
+// the renderable calls' arguments and colours (the listing pushes them at
+// 0xab8c9, 0xabe9d-0xabf50, 0xac404, 0xac41f and 0xac517), shows every
+// rotated vector as float with its terms reordered, and misreads the end
+// spokes' colour (0xac3ee-0xac404: flag[i / 12] * 0xd000 + 0xff0000). The
+// listing keeps the values named double below on the stack.
+void RevoluteJoint::row_slot4(NxDebugRenderable& renderable)
 	{
-	(void)arg;
-	NX_ASSERT(0);
+	if(!((mFlags >> 9) & 1))
+		return;
+
+	revoluteRefreshFirstStaleBody(*this);
+
+	if(revoluteSdkParameter(NX_VISUALIZE_JOINT_WORLD_AXES) != 0.0f)
+		{
+		NxVec3 anchor;
+		row004123(anchor);
+		NxVec3 axis;
+		row004127(axis);
+		const NxReal scale = (NxReal)((double)revoluteSdkParameter(NX_VISUALIZATION_SCALE) *
+			revoluteSdkParameter(NX_VISUALIZE_JOINT_WORLD_AXES));
+		renderable.addArrow(anchor, axis, 1.0f, scale, 0xffffff);
+		}
+
+	if(revoluteSdkParameter(NX_VISUALIZE_JOINT_LOCAL_AXES) != 0.0f)
+		{
+		NxVec3 p0, a0, n0, c0;
+		const JointBodyRecord* body0 = revoluteBody(mBody[0]);
+		if(!body0)
+			{
+			p0 = mWorldAnchor[0];
+			a0 = mWorldAxis[0];
+			n0 = mWorldNormal[0];
+			c0 = mWorldCross[0];
+			}
+		else
+			{
+			// 0xab987-0xabbc5.
+			const NxReal* m = body0->mUnknown134;
+			const NxVec3& t = body0->mUnknown158;
+			const NxVec3& p = mWorldAnchor[0];
+			const double px = revoluteSum3(m[1], p.y, m[2], p.z, m[0], p.x);
+			const NxReal py = (NxReal)revoluteSum3(m[4], p.y, m[3], p.x, m[5], p.z);
+			const NxReal pz = (NxReal)revoluteSum3(m[7], p.y, m[6], p.x, m[8], p.z);
+			p0.x = (NxReal)(px + t.x);
+			p0.y = (NxReal)((double)py + t.y);
+			p0.z = (NxReal)((double)pz + t.z);
+			const NxVec3& a = mWorldAxis[0];
+			a0.x = (NxReal)revoluteSum3(m[2], a.z, m[1], a.y, a.x, m[0]);
+			a0.y = (NxReal)revoluteSum3(m[5], a.z, m[4], a.y, m[3], a.x);
+			a0.z = (NxReal)revoluteSum3(m[8], a.z, m[7], a.y, m[6], a.x);
+			const NxVec3& n = mWorldNormal[0];
+			n0.x = (NxReal)revoluteSum3(m[1], n.y, m[2], n.z, m[0], n.x);
+			n0.y = (NxReal)revoluteSum3(m[4], n.y, m[5], n.z, m[3], n.x);
+			n0.z = (NxReal)revoluteSum3(m[7], n.y, m[8], n.z, m[6], n.x);
+			const NxVec3& c = mWorldCross[0];
+			c0.x = (NxReal)revoluteSum3(m[2], c.z, m[1], c.y, c.x, m[0]);
+			c0.y = (NxReal)revoluteSum3(m[5], c.z, m[3], c.x, m[4], c.y);
+			c0.z = (NxReal)revoluteSum3(m[8], c.z, m[6], c.x, m[7], c.y);
+			}
+
+		NxVec3 p1, a1, n1, c1;
+		const JointBodyRecord* body1 = revoluteBody(mBody[1]);
+		if(!body1)
+			{
+			p1 = mWorldAnchor[1];
+			a1 = mWorldAxis[1];
+			n1 = mWorldNormal[1];
+			c1 = mWorldCross[1];
+			}
+		else
+			{
+			// 0xabc4d-0xabe8b.
+			const NxReal* m = body1->mUnknown134;
+			const NxVec3& t = body1->mUnknown158;
+			const NxVec3& p = mWorldAnchor[1];
+			const double px = revoluteSum3(m[2], p.z, m[1], p.y, m[0], p.x);
+			const NxReal py = (NxReal)revoluteSum3(m[5], p.z, m[4], p.y, m[3], p.x);
+			const NxReal pz = (NxReal)revoluteSum3(m[8], p.z, m[7], p.y, m[6], p.x);
+			p1.x = (NxReal)(px + t.x);
+			p1.y = (NxReal)((double)py + t.y);
+			p1.z = (NxReal)((double)pz + t.z);
+			const NxVec3& a = mWorldAxis[1];
+			a1.x = (NxReal)revoluteSum3(m[1], a.y, m[2], a.z, m[0], a.x);
+			a1.y = (NxReal)revoluteSum3(m[4], a.y, m[3], a.x, m[5], a.z);
+			a1.z = (NxReal)revoluteSum3(m[7], a.y, m[6], a.x, m[8], a.z);
+			const NxVec3& n = mWorldNormal[1];
+			n1.x = (NxReal)revoluteSum3(m[2], n.z, m[1], n.y, n.x, m[0]);
+			n1.y = (NxReal)revoluteSum3(m[5], n.z, m[4], n.y, m[3], n.x);
+			n1.z = (NxReal)revoluteSum3(m[8], n.z, m[7], n.y, m[6], n.x);
+			const NxVec3& c = mWorldCross[1];
+			c1.x = (NxReal)revoluteSum3(m[1], c.y, m[2], c.z, m[0], c.x);
+			c1.y = (NxReal)revoluteSum3(m[4], c.y, m[3], c.x, m[5], c.z);
+			c1.z = (NxReal)revoluteSum3(m[7], c.y, m[6], c.x, m[8], c.z);
+			}
+
+		const NxReal scale = (NxReal)((double)revoluteSdkParameter(NX_VISUALIZE_JOINT_LOCAL_AXES) *
+			revoluteSdkParameter(NX_VISUALIZATION_SCALE));
+		renderable.addArrow(p0, n0, 1.0f, scale, 0x902020);
+		renderable.addArrow(p0, c0, 1.0f, scale, 0x209020);
+		renderable.addArrow(p0, a0, 1.0f, scale, 0x202090);
+		renderable.addArrow(p1, n1, 1.0f, scale, 0xe05050);
+		renderable.addArrow(p1, c1, 1.0f, scale, 0x50e050);
+		renderable.addArrow(p1, a1, 1.0f, scale, 0x5050e0);
+		renderable.addLine(p0, p1, 0xffff00);
+
+		// The axis tips (0xabf64-0xabff9): the z products are stored before
+		// their sums, the x and y products are not.
+		NxVec3 tip1;
+		const NxReal tip1Z = (NxReal)revoluteMul(a1.z, scale);
+		tip1.x = (NxReal)(revoluteMul(a1.x, scale) + p1.x);
+		tip1.y = (NxReal)(revoluteMul(a1.y, scale) + p1.y);
+		tip1.z = (NxReal)((double)tip1Z + p1.z);
+		NxVec3 tip0;
+		const NxReal tip0Z = (NxReal)revoluteMul(a0.z, scale);
+		tip0.x = (NxReal)(revoluteMul(a0.x, scale) + p0.x);
+		tip0.y = (NxReal)(revoluteMul(a0.y, scale) + p0.y);
+		tip0.z = (NxReal)((double)tip0Z + p0.z);
+		renderable.addLine(tip0, tip1, 0xffff00);
+		}
+
+	if(mLimit.low.value < mLimit.high.value && revoluteSdkParameter(NX_VISUALIZE_JOINT_LIMITS) != 0.0f)
+		{
+		const NxReal scale = (NxReal)((double)revoluteSdkParameter(NX_VISUALIZE_JOINT_LIMITS) *
+			revoluteSdkParameter(NX_VISUALIZATION_SCALE));
+		NxVec3 anchor;
+		row004123(anchor);
+		NxVec3 unusedAxis;
+		row004127(unusedAxis);
+		const double angle = row004352();
+		// 1 when the angle is past that limit (0xac05f-0xac091).
+		NxU32 beyond[2];
+		beyond[0] = angle < mLimit.low.value ? 1 : 0;
+		beyond[1] = angle > mLimit.high.value ? 1 : 0;
+
+		// Body 0's normal, cross and axis (0xac0a4-0xac25d), all stored.
+		NxVec3 n, c, a;
+		const JointBodyRecord* body0 = revoluteBody(mBody[0]);
+		if(body0)
+			{
+			const NxReal* m = body0->mUnknown134;
+			const NxVec3& wn = mWorldNormal[0];
+			n.x = (NxReal)revoluteSum3(m[2], wn.z, m[1], wn.y, wn.x, m[0]);
+			n.y = (NxReal)revoluteSum3(m[5], wn.z, m[4], wn.y, m[3], wn.x);
+			n.z = (NxReal)revoluteSum3(m[8], wn.z, m[7], wn.y, m[6], wn.x);
+			const NxVec3& wc = mWorldCross[0];
+			c.x = (NxReal)revoluteSum3(m[1], wc.y, m[2], wc.z, wc.x, m[0]);
+			c.y = (NxReal)revoluteSum3(m[4], wc.y, m[3], wc.x, m[5], wc.z);
+			c.z = (NxReal)revoluteSum3(m[7], wc.y, m[6], wc.x, m[8], wc.z);
+			const NxVec3& wa = mWorldAxis[0];
+			a.x = (NxReal)revoluteSum3(m[2], wa.z, m[1], wa.y, wa.x, m[0]);
+			a.y = (NxReal)revoluteSum3(m[5], wa.z, m[4], wa.y, m[3], wa.x);
+			a.z = (NxReal)revoluteSum3(m[8], wa.z, m[7], wa.y, m[6], wa.x);
+			}
+		else
+			{
+			n = mWorldNormal[0];
+			c = mWorldCross[0];
+			a = mWorldAxis[0];
+			}
+		// The axis term is multiplied by the 0.0f at 0x101041f0, not dropped
+		// (0xac2b7-0xac2e7).
+		const NxReal axisY = (NxReal)((double)a.y * 0.0f);
+		const NxReal axisZ = (NxReal)((double)a.z * 0.0f);
+		const NxReal axisX = (NxReal)((double)a.x * 0.0f);
+
+		// i is unsigned (fild with the 2^32 correction, 0xac2f9-0xac302).
+		NxVec3 previous;
+		for(NxU32 i = 0; i <= 12; i++)
+			{
+			const double t = (double)i * gRevoluteLimitStep;
+			const double arcAngle = (1.0f - t) * mLimit.low.value + t * mLimit.high.value;
+			double cosine;
+			double sine;
+			revoluteFcosFsin(arcAngle, cosine, sine);
+			const NxReal ry = (NxReal)((c.y * sine + n.y * cosine) + axisY);
+			const NxReal rz = (NxReal)((c.z * sine + n.z * cosine) + axisZ);
+			const double rx = (n.x * cosine + c.x * sine) + axisX;
+			const NxReal sy = (NxReal)revoluteMul(ry, scale);
+			const NxReal sz = (NxReal)revoluteMul(rz, scale);
+			NxVec3 point;
+			point.x = (NxReal)(rx * scale + anchor.x);
+			point.y = (NxReal)((double)anchor.y + sy);
+			point.z = (NxReal)((double)anchor.z + sz);
+			if(i == 0 || i == 12)
+				renderable.addLine(anchor, point, beyond[i / 12] * 0xd000 + 0xff0000);
+			if(i > 0)
+				renderable.addLine(previous, point, 0xff0000);
+			previous = point;
+			}
+
+		// Body 1's normal (0xac48b-0xac50d).
+		NxVec3 n1;
+		const JointBodyRecord* body1 = revoluteBody(mBody[1]);
+		if(!body1)
+			{
+			n1 = mWorldNormal[1];
+			}
+		else
+			{
+			const NxReal* m = body1->mUnknown134;
+			const NxVec3& wn = mWorldNormal[1];
+			n1.x = (NxReal)revoluteSum3(m[2], wn.z, m[1], wn.y, m[0], wn.x);
+			n1.y = (NxReal)revoluteSum3(m[5], wn.z, m[3], wn.x, m[4], wn.y);
+			n1.z = (NxReal)revoluteSum3(m[8], wn.z, m[6], wn.x, m[7], wn.y);
+			}
+		renderable.addArrow(anchor, n1, 1.0f, scale, 0xff00d0);
+		}
 	}
 
 // 004360's column tail for body 0 (0xaa408-0xaa468 and its two repeats):
@@ -938,11 +1279,249 @@ void RevoluteJoint::row_slot7(NxReal arg)
 	}
 
 // phys_fn_004356 (0x000a9650, 2303 B)
-// (unimplemented)
-void RevoluteJoint::row_slot8(NxU32 arg)
+// Projection of the given body record (one of mBody[0]/mBody[1]; `ret 4`,
+// no null check). After the stale-body refresh:
+// 1. d = row004064(mWorldAnchor[0], mWorldAnchor[1]) (body 0's anchor minus
+//    body 1's, through the +0x134/+0x158 poses). When |d|^2 >=
+//    projectionDistance^2, d is negated for body 0, scaled by
+//    (|d| - projectionDistance) / |d| and added to the body's +0x158.
+// 2. With a0/a1 the bodies' world axes (rotated by their +0x134 3x3) and
+//    dot = a1 . a0: when dot < cos(projectionAngle), the body's axis ("own")
+//    is turned towards the other ("other") so that the two are
+//    projectionAngle apart: target = cos * other + sin * n, n the unit
+//    component of own orthogonal to other; NxFindRotationMatrix(own,
+//    target) (the Foundation export, import slot 0x10104174) gives M; the
+//    body's orientation becomes M times its +0x134 3x3, stored as the
+//    normalised +0x124 quaternion (the NxQuat-from-matrix sequence, inlined)
+//    with row 000758 rebuilding +0x134 from it, and +0x158 is moved so the
+//    body's own anchor keeps the world point it had after step 1.
+// 3. When either step changed the body, row 000022 is called on the body's
+//    +0x19c owner with 1.
+// Listing over decompile (supplement): the decompile shows the rotated
+// axes, the target and the matrix product as floats with reordered terms,
+// and compares dot after rounding it; the listing compares the unrounded
+// dot (0xa98f9 `fst`, then `fcomp`) and uses the stored float afterwards,
+// and keeps the values named double below on the stack. The quaternion
+// switch has a default arm (0xa9eb7) that loads an unset local; it is
+// unreachable (the index is 0, 1 or 2) and is not reproduced.
+void RevoluteJoint::row_slot8(void* bodyPointer)
 	{
-	(void)arg;
-	NX_ASSERT(0);
+	JointBodyRecord* body = revoluteBody(bodyPointer);
+	bool projected = false;
+	revoluteRefreshFirstStaleBody(*this);
+
+	NxVec3 d;
+	row004064(mWorldAnchor[0], mWorldAnchor[1], d);
+	const double lengthSquared = revoluteSum3(d.x, d.x, d.z, d.z, d.y, d.y);
+	if(lengthSquared >= revoluteMul(mProjectionDistance, mProjectionDistance))
+		{
+		if(bodyPointer == mBody[0])
+			{
+			d.x = -d.x;
+			d.y = -d.y;
+			d.z = -d.z;
+			}
+		const double length = sqrt(lengthSquared);
+		projected = true;
+		const double ratio = (length - mProjectionDistance) / length;
+		d.x = (NxReal)(d.x * ratio);
+		d.y = (NxReal)(d.y * ratio);
+		d.z = (NxReal)(d.z * ratio);
+		NxVec3& position = body->mUnknown158;
+		position.x = (NxReal)((double)d.x + position.x);
+		position.y = (NxReal)((double)d.y + position.y);
+		position.z = (NxReal)((double)d.z + position.z);
+		}
+
+	// The world axes, rotated and stored (0xa977c-0xa98d9).
+	NxVec3 a0;
+	const JointBodyRecord* body0 = revoluteBody(mBody[0]);
+	if(body0)
+		{
+		const NxReal* m = body0->mUnknown134;
+		const NxVec3& a = mWorldAxis[0];
+		a0.y = (NxReal)revoluteSum3(m[5], a.z, m[3], a.x, m[4], a.y);
+		a0.z = (NxReal)revoluteSum3(m[8], a.z, m[6], a.x, m[7], a.y);
+		a0.x = (NxReal)revoluteSum3(m[2], a.z, m[1], a.y, m[0], a.x);
+		}
+	else
+		{
+		a0 = mWorldAxis[0];
+		}
+	NxVec3 a1;
+	const JointBodyRecord* body1 = revoluteBody(mBody[1]);
+	if(body1)
+		{
+		const NxReal* m = body1->mUnknown134;
+		const NxVec3& a = mWorldAxis[1];
+		a1.y = (NxReal)revoluteSum3(m[4], a.y, m[3], a.x, m[5], a.z);
+		a1.z = (NxReal)revoluteSum3(m[7], a.y, m[6], a.x, m[8], a.z);
+		a1.x = (NxReal)revoluteSum3(m[1], a.y, m[2], a.z, m[0], a.x);
+		}
+	else
+		{
+		a1 = mWorldAxis[1];
+		}
+
+	const double dot = revoluteSum3(a1.x, a0.x, a1.z, a0.z, a1.y, a0.y);
+	const NxReal dotF = (NxReal)dot;
+	if(dot < mProjectionAngleCos)
+		{
+		// The body's own anchor in world space, before the turn
+		// (0xa990e-0xa99a3).
+		const NxVec3& anchor = (bodyPointer == mBody[1]) ? mWorldAnchor[1] : mWorldAnchor[0];
+		const NxReal* m = body->mUnknown134;
+		const NxVec3& t = body->mUnknown158;
+		const double px = revoluteSum3(m[2], anchor.z, m[1], anchor.y, m[0], anchor.x);
+		const double py = revoluteSum3(m[5], anchor.z, m[3], anchor.x, m[4], anchor.y);
+		const NxReal pz = (NxReal)revoluteSum3(m[8], anchor.z, m[6], anchor.x, m[7], anchor.y);
+		const NxReal worldX = (NxReal)(px + t.x);
+		const NxReal worldY = (NxReal)(py + t.y);
+		const NxReal worldZ = (NxReal)((double)pz + t.z);
+
+		const bool isBody0 = bodyPointer == mBody[0];
+		const NxVec3& own = isBody0 ? a0 : a1;
+		const NxVec3& other = isBody0 ? a1 : a0;
+
+		// n = (own - dot * other) / sqrt(1 - dot^2) (0xa99be-0xa9a21).
+		const double ox = revoluteMul(dotF, other.x);
+		const double oy = revoluteMul(dotF, other.y);
+		const NxReal oz = (NxReal)revoluteMul(dotF, other.z);
+		const NxReal wx = (NxReal)((double)own.x - ox);
+		const double wy = (double)own.y - oy;
+		const double wz = (double)own.z - oz;
+		const double k = 1.0f / sqrt(1.0f - revoluteMul(dotF, dotF));
+		const NxReal nx = (NxReal)(wx * k);
+		const NxReal ny = (NxReal)(wy * k);
+		const double nz = wz * k;
+
+		// target = cos * other + sin * n (0xa9a23-0xa9a8e).
+		const NxReal sine = mProjectionAngleSin;
+		const NxReal snx = (NxReal)revoluteMul(nx, sine);
+		const NxReal sny = (NxReal)revoluteMul(ny, sine);
+		const double snz = nz * sine;
+		const NxReal cosine = mProjectionAngleCos;
+		const double cox = revoluteMul(cosine, other.x);
+		const NxReal coy = (NxReal)revoluteMul(cosine, other.y);
+		const NxReal coz = (NxReal)revoluteMul(cosine, other.z);
+		NxVec3 target;
+		target.x = (NxReal)(cox + snx);
+		target.y = (NxReal)((double)coy + sny);
+		target.z = (NxReal)((double)coz + snz);
+		NxMat33 turn;
+		NxFindRotationMatrix(own, target, turn);
+
+		// R = turn * the body's 3x3, all stored (0xa9a96-0xa9c64).
+		NxReal M[9];
+		for(int e = 0; e < 9; e++)
+			M[e] = turn(e / 3, e % 3);
+		NxReal R[9];
+		R[0] = (NxReal)revoluteSum3(M[0], m[0], M[1], m[3], M[2], m[6]);
+		R[1] = (NxReal)revoluteSum3(M[2], m[7], M[1], m[4], M[0], m[1]);
+		R[2] = (NxReal)revoluteSum3(M[1], m[5], M[0], m[2], M[2], m[8]);
+		R[3] = (NxReal)revoluteSum3(M[3], m[0], M[4], m[3], M[5], m[6]);
+		R[4] = (NxReal)revoluteSum3(M[5], m[7], M[3], m[1], M[4], m[4]);
+		R[5] = (NxReal)revoluteSum3(M[3], m[2], M[4], m[5], M[5], m[8]);
+		R[6] = (NxReal)revoluteSum3(M[6], m[0], M[7], m[3], M[8], m[6]);
+		R[7] = (NxReal)revoluteSum3(M[8], m[7], M[6], m[1], M[7], m[4]);
+		R[8] = (NxReal)revoluteSum3(M[6], m[2], M[7], m[5], M[8], m[8]);
+
+		// Move the body so its anchor stays put (0xa9c6d-0xa9cf0).
+		const double qx = revoluteSum3(R[1], anchor.y, R[2], anchor.z, R[0], anchor.x);
+		const NxReal qy = (NxReal)revoluteSum3(R[3], anchor.x, R[4], anchor.y, R[5], anchor.z);
+		const NxReal qz = (NxReal)revoluteSum3(R[6], anchor.x, R[7], anchor.y, R[8], anchor.z);
+		NxVec3& position = body->mUnknown158;
+		position.z = (NxReal)((double)worldZ - qz);
+		position.x = (NxReal)((double)worldX - qx);
+		position.y = (NxReal)((double)worldY - qy);
+
+		// R to a quaternion (0xa9cf6-0xa9eb5). The trace's first sum is
+		// stored (0xa9cfe `fst`) and reused, rounded, by the index-0 arm.
+		const NxReal sum84 = (NxReal)((double)R[8] + R[4]);
+		const double trace = ((double)R[8] + R[4]) + R[0];
+		double x;
+		NxReal y, z, w;
+		if(trace >= 0.0f)
+			{
+			const double root = sqrt(trace + 1.0f);
+			w = (NxReal)(0.5f * root);
+			const NxReal scale = (NxReal)(0.5f / root);
+			x = ((double)R[7] - R[5]) * scale;
+			y = (NxReal)(((double)R[2] - R[6]) * scale);
+			z = (NxReal)(((double)R[3] - R[1]) * scale);
+			}
+		else
+			{
+			NxU32 index = 0;
+			if(R[4] > R[0])
+				index = 1;
+			if(R[8] > R[index * 4])
+				index = 2;
+			switch(index)
+				{
+				case 0:
+					{
+					const double root = sqrt(((double)R[0] - sum84) + 1.0f);
+					const NxReal rootF = (NxReal)root;
+					x = root * 0.5f;
+					const double scale = 0.5f / (double)rootF;
+					y = (NxReal)(((double)R[3] + R[1]) * scale);
+					z = (NxReal)(((double)R[6] + R[2]) * scale);
+					w = (NxReal)(((double)R[7] - R[5]) * scale);
+					}
+					break;
+				case 1:
+					{
+					const double root = sqrt(((double)R[4] - ((double)R[8] + R[0])) + 1.0f);
+					y = (NxReal)(0.5f * root);
+					const NxReal scale = (NxReal)(0.5f / root);
+					z = (NxReal)(((double)R[7] + R[5]) * scale);
+					x = ((double)R[3] + R[1]) * scale;
+					w = (NxReal)(((double)R[2] - R[6]) * scale);
+					}
+					break;
+				default:
+					{
+					const double root = sqrt(((double)R[8] - ((double)R[4] + R[0])) + 1.0f);
+					z = (NxReal)(0.5f * root);
+					const NxReal scale = (NxReal)(0.5f / root);
+					x = ((double)R[6] + R[2]) * scale;
+					y = (NxReal)(((double)R[7] + R[5]) * scale);
+					w = (NxReal)(((double)R[3] - R[1]) * scale);
+					}
+					break;
+				}
+			}
+
+		// Normalise and store as x, y, z, w (0xa9ebb-0xa9f24).
+		double qxN = x;
+		double qyN = y;
+		double qzN = z;
+		double qwN = w;
+		const double norm = sqrt(((revoluteMul(z, z) + revoluteMul(y, y)) + revoluteMul(w, w)) + x * x);
+		if(norm != 0.0f)
+			{
+			const double inverse = 1.0f / norm;
+			qxN = x * inverse;
+			qyN = y * inverse;
+			qzN = z * inverse;
+			qwN = w * inverse;
+			}
+		body->mCMassOrientation[0] = (NxReal)qxN;
+		body->mCMassOrientation[1] = (NxReal)qyN;
+		body->mCMassOrientation[2] = (NxReal)qzN;
+		body->mCMassOrientation[3] = (NxReal)qwN;
+		// Row 000758 is deferred (owner gap SceneRaycast..CapsuleShape); its
+		// stub asserts. It rebuilds +0x134 from the quaternion.
+		reinterpret_cast<Row000758Fixture*>(body)->row000758();
+		}
+	else if(!projected)
+		{
+		return;
+		}
+
+	// Row 000022 is deferred (owner gap <start>..Actor.cpp); its stub asserts.
+	reinterpret_cast<Row000022Fixture*>(body->mOwner)->row000022(1);
 	}
 
 // phys_fn_004370 (0x000ac630, 202 B)
@@ -1250,9 +1829,113 @@ void RevoluteJoint::row004358(NxVec3& out) const
 	}
 
 // phys_fn_004372 (0x000ac700, 2467 B)
-// (unimplemented)
-NxReal RevoluteJoint::getAngle() const
+// The same angle as row004352, but each body's frame is its orientation
+// quaternion (+0x5c) as rows times its +0xdc 3x3 (the getGlobalAxis
+// composition) rather than the +0x134 3x3: body 0's normal and cross
+// vectors and body 1's normal are carried through that product (a missing
+// body contributes the stored world vector), the cosine of the normals is
+// stored as a float and clamped through revoluteAcos (_CIacos at
+// 0xad04b), and the result is negated when body 1's normal points against
+// body 0's cross vector. The quaternion is converted afresh for each
+// vector: once with the conversion keeping most terms on the stack, twice
+// with three values already held there and more terms stored
+// (revoluteQuatToRows / revoluteQuatToRowsSpilled).
+// Listing over decompile: the decompile shows every product sum in a
+// different order from the listing (for example body 0's first matrix
+// element as m0 * r0 + m6 * r2 + m3 * r1; the listing adds r1 * m3 and
+// r2 * m6 first, 0xac840-0xac862) and all intermediates as floats; the
+// listing keeps body 0's first normal component on the stack
+// (0xac9a5-0xac9c5), stores its other two and every cross/normal-1
+// component, and returns the product unrounded in st(0) (004721 rounds it
+// with `fstp dword` at 0xb3357).
+NxF64 RevoluteJoint::getAngle() const
 	{
-	NX_ASSERT(0);
-	return 0.0f;
+	// The oracle row is logically const but refreshes the frame cache.
+	revoluteRefreshFirstStaleBody(const_cast<RevoluteJoint&>(*this));
+
+	double n0x;
+	NxReal n0y, n0z;
+	NxVec3 c0;
+	const JointBodyRecord* body0 = revoluteBody(mBody[0]);
+	if(!body0)
+		{
+		n0x = mWorldNormal[0].x;
+		n0y = mWorldNormal[0].y;
+		n0z = mWorldNormal[0].z;
+		c0 = mWorldCross[0];
+		}
+	else
+		{
+		const NxReal* m = body0->mMassLocalRot;
+		NxReal r[9];
+		NxReal n[9];
+
+		// Normal (0xac77d-0xaca20).
+		revoluteQuatToRows(body0->mOrientation, r);
+		n[0] = (NxReal)revoluteSum3(r[1], m[3], r[2], m[6], r[0], m[0]);
+		n[1] = (NxReal)revoluteSum3(r[0], m[1], r[1], m[4], r[2], m[7]);
+		n[2] = (NxReal)revoluteSum3(r[1], m[5], r[2], m[8], r[0], m[2]);
+		n[3] = (NxReal)revoluteSum3(r[3], m[0], r[4], m[3], r[5], m[6]);
+		n[4] = (NxReal)revoluteSum3(r[4], m[4], r[5], m[7], r[3], m[1]);
+		n[5] = (NxReal)revoluteSum3(r[4], m[5], r[5], m[8], r[3], m[2]);
+		n[6] = (NxReal)revoluteSum3(r[6], m[0], r[7], m[3], r[8], m[6]);
+		n[7] = (NxReal)revoluteSum3(r[7], m[4], r[8], m[7], r[6], m[1]);
+		n[8] = (NxReal)revoluteSum3(r[7], m[5], r[8], m[8], r[6], m[2]);
+		const NxVec3& wn = mWorldNormal[0];
+		n0x = revoluteSum3(n[0], wn.x, n[1], wn.y, n[2], wn.z);
+		n0y = (NxReal)revoluteSum3(n[3], wn.x, n[4], wn.y, n[5], wn.z);
+		n0z = (NxReal)revoluteSum3(n[6], wn.x, n[7], wn.y, n[8], wn.z);
+
+		// Cross (0xaca27-0xacce9).
+		revoluteQuatToRowsSpilled(body0->mOrientation, r);
+		n[0] = (NxReal)revoluteSum3(r[0], m[0], r[1], m[3], r[2], m[6]);
+		n[1] = (NxReal)revoluteSum3(r[1], m[4], r[0], m[1], r[2], m[7]);
+		n[2] = (NxReal)revoluteSum3(r[1], m[5], r[0], m[2], r[2], m[8]);
+		n[3] = (NxReal)revoluteSum3(r[3], m[0], r[4], m[3], r[5], m[6]);
+		n[4] = (NxReal)revoluteSum3(r[3], m[1], r[4], m[4], r[5], m[7]);
+		n[5] = (NxReal)revoluteSum3(r[3], m[2], r[4], m[5], r[5], m[8]);
+		n[6] = (NxReal)revoluteSum3(r[6], m[0], r[7], m[3], r[8], m[6]);
+		n[7] = (NxReal)revoluteSum3(r[6], m[1], r[7], m[4], r[8], m[7]);
+		n[8] = (NxReal)revoluteSum3(r[6], m[2], r[7], m[5], r[8], m[8]);
+		const NxVec3& wc = mWorldCross[0];
+		c0.x = (NxReal)revoluteSum3(n[0], wc.x, n[1], wc.y, n[2], wc.z);
+		c0.y = (NxReal)revoluteSum3(n[3], wc.x, n[4], wc.y, n[5], wc.z);
+		c0.z = (NxReal)revoluteSum3(n[6], wc.x, n[7], wc.y, n[8], wc.z);
+		}
+
+	NxVec3 n1;
+	const JointBodyRecord* body1 = revoluteBody(mBody[1]);
+	if(!body1)
+		{
+		n1 = mWorldNormal[1];
+		}
+	else
+		{
+		// 0xacd23-0xacfe5.
+		const NxReal* m = body1->mMassLocalRot;
+		NxReal r[9];
+		NxReal n[9];
+		revoluteQuatToRowsSpilled(body1->mOrientation, r);
+		n[0] = (NxReal)revoluteSum3(r[0], m[0], r[1], m[3], r[2], m[6]);
+		n[1] = (NxReal)revoluteSum3(r[0], m[1], r[1], m[4], r[2], m[7]);
+		n[2] = (NxReal)revoluteSum3(r[0], m[2], r[1], m[5], r[2], m[8]);
+		n[3] = (NxReal)revoluteSum3(r[4], m[3], r[5], m[6], r[3], m[0]);
+		n[4] = (NxReal)revoluteSum3(r[3], m[1], r[4], m[4], r[5], m[7]);
+		n[5] = (NxReal)revoluteSum3(r[3], m[2], r[4], m[5], r[5], m[8]);
+		n[6] = (NxReal)revoluteSum3(r[7], m[3], r[8], m[6], r[6], m[0]);
+		n[7] = (NxReal)revoluteSum3(r[6], m[1], r[7], m[4], r[8], m[7]);
+		n[8] = (NxReal)revoluteSum3(r[6], m[2], r[7], m[5], r[8], m[8]);
+		const NxVec3& wn = mWorldNormal[1];
+		n1.x = (NxReal)revoluteSum3(n[1], wn.y, n[2], wn.z, n[0], wn.x);
+		n1.y = (NxReal)revoluteSum3(n[4], wn.y, n[5], wn.z, n[3], wn.x);
+		n1.z = (NxReal)revoluteSum3(n[7], wn.y, n[8], wn.z, n[6], wn.x);
+		}
+
+	// 0xacfec-0xad09a.
+	const NxReal cosine = (NxReal)(((double)n1.z * n0z + (double)n1.y * n0y) + (double)n1.x * n0x);
+	const double angle = revoluteAcos(cosine);
+	const double side = revoluteSum3(n1.z, c0.z, n1.y, c0.y, n1.x, c0.x);
+	if(side < 0.0f)
+		return angle * -1.0f;
+	return angle * 1.0f;
 	}
