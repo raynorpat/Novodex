@@ -38,6 +38,7 @@
 #include "NxIntersectionBoxBox.h"
 #include "NxIntersectionSegmentCapsule.h"
 #include "NxIntersectionSweptSpheres.h"
+#include "X87Sqrt.h"
 
 #include <float.h>
 #include <math.h>
@@ -62,6 +63,97 @@ static const NxReal gRayBoxEpsilon = 1e-5f;
 // is FLT_EPSILON and rejects a degenerate transformed direction.
 static const NxReal gCapsuleAxialThreshold = 0.99999988f;
 static const NxReal gCapsuleDegenerateEpsilon = 1.1920928955078125e-07f;
+
+// 0x101068f4, a dword: the 4 in NxSweptSpheresIntersect's 4ac.
+static const NxReal gSweptFour = 4.0f;
+
+// Every square root in this file is an inline `fsqrt` in the oracle -- 11 sites:
+// 0x00036c97, 0x00036f06, eight in NxRayCapsuleIntersect (0x0003820c,
+// 0x0003826d, 0x00038341, 0x000384d3, 0x000385f1, 0x000386a6, 0x00038783,
+// 0x000387d4) and 0x0003894d. `sqrt()` compiled every one of them to
+// `call __CIsqrt`, which rounds to nearest where the in-step word 0x0f7f
+// chops. The square roots go through X87Sqrt.h, or through the two helpers
+// below where a listing forms a radicand no generic form covers. Each site
+// passes the listing's operands, not a sum the caller formed, so the radicand
+// is built at the live control word. A radicand that is a single float load
+// (the discriminants and `half`) goes through x87Fsqrt. The root comes back in
+// st(0), not narrowed, because every one of these sites either keeps it in a
+// register or narrows it straight to a float slot. The ContactGeneration.cpp
+// form (`fstp` to a double) would round it to 53 bits first, and under a
+// 64-bit round-to-nearest word that is a double rounding the oracle does not
+// do.
+
+#if defined(_MSC_VER) && defined(_M_IX86)
+
+// NxRayCapsuleIntersect's far-cap radicand, 0x00038674-0x000386a6:
+//   b2 = b1 - length kdn (stored with `fst`, so the square is register times
+//   narrowed) and fsqrt(b2 b2' - ((length - (kwn + kwn)) length + c1)).
+// All five operands are floats, so none of them loses anything in its qword,
+// and b2 is narrowed inside, at the live word, into the dead b1 slot. The
+// callee owns its cdecl argument area.
+static __declspec(naked) double __cdecl geometryFsqrtFarCap(double /*b1*/, double /*length*/, double /*kdn*/,
+	double /*kwn*/, double /*c1*/)
+	{
+	__asm
+		{
+		fld		qword ptr [esp + 12]
+		fmul	qword ptr [esp + 20]
+		fsubr	qword ptr [esp + 4]
+		fst		dword ptr [esp + 4]
+		fmul	dword ptr [esp + 4]
+		fld		qword ptr [esp + 28]
+		fadd	st(0), st(0)
+		fsubr	qword ptr [esp + 12]
+		fmul	qword ptr [esp + 12]
+		fadd	qword ptr [esp + 36]
+		fsubp	st(1), st(0)
+		fsqrt
+		ret
+		}
+	}
+
+// NxSweptSpheresIntersect's radicand, 0x000388ac-0x0003894d:
+//   rs = r0 + r1, rss = rs rs, fsqrt(b b - ((d - rss) a) 4).
+// The radius sum and its square never leave the register in the oracle. The
+// helper takes the two float radii and forms both itself, so neither is cut to
+// 53 bits on the way in.
+static __declspec(naked) double __cdecl geometryFsqrtSwept(double /*b*/, double /*a*/, double /*distanceSquared*/,
+	double /*radius0*/, double /*radius1*/)
+	{
+	__asm
+		{
+		fld		qword ptr [esp + 28]
+		fadd	qword ptr [esp + 36]
+		fmul	st(0), st(0)
+		fld		qword ptr [esp + 4]
+		fmul	qword ptr [esp + 4]
+		fld		qword ptr [esp + 20]
+		fsub	st(0), st(2)
+		fmul	qword ptr [esp + 12]
+		fmul	gSweptFour
+		fsubp	st(1), st(0)
+		fstp	st(1)
+		fsqrt
+		ret
+		}
+	}
+
+#else
+
+static NX_INLINE double geometryFsqrtFarCap(double b1, double length, double kdn, double kwn, double c1)
+	{
+	const double b2Register = b1 - length * kdn;
+	return sqrt(b2Register * (NxReal) b2Register - ((length - (kwn + kwn)) * length + c1));
+	}
+
+static NX_INLINE double geometryFsqrtSwept(double b, double a, double distanceSquared, double radius0,
+	double radius1)
+	{
+	const double radiusSum = radius0 + radius1;
+	return sqrt(b * b - ((distanceSquared - radiusSum * radiusSum) * a) * gSweptFour);
+	}
+
+#endif
 
 // `test eax, eax` on the raw word of a direction component. Zero skips the
 // division; -0.0f does not, because its word is 0x80000000 and not zero. A
@@ -130,8 +222,9 @@ void NX_CALL_CONV NxSegmentPlaneIntersect(const NxVec3& v1, const NxVec3& v2,
 	// 0x00036c7f is `fst`, not `fstp`: z is stored and then squared against
 	// the register copy, so this one term is the extended value times the
 	// narrowed one. y is loaded back twice and x never leaves the stack.
-	const double length = sqrt((directionZRegister * directionZ
-		+ directionY * (double) directionY) + directionX * directionX);
+	// fsqrt at 0x00036c97.
+	const double length = x87FsqrtDot3(directionZRegister, directionZ,
+		directionY, directionY, directionX, directionX);
 
 	if(length != 0.0)
 		{
@@ -191,7 +284,7 @@ bool NX_CALL_CONV NxRaySphereIntersect(const NxVec3& origin, const NxVec3& dir,
 
 	if(coord)
 		{
-		const double t = alongRay - sqrt((double) discriminant);
+		const double t = alongRay - x87Fsqrt(discriminant);
 
 		// z is written first, and it is the one component whose product with
 		// the direction is not narrowed before the origin is added.
@@ -926,8 +1019,7 @@ NxU32 NX_CALL_CONV NxRayCapsuleIntersect(const NxVec3& origin, const NxVec3& dir
 
 	// If the axis has no length the three registers keep the raw components.
 	double nx = axisX, ny = axisY, nz = axisZ;
-	const NxReal length = (NxReal) sqrt((axisZ * (double) axisZ + axisY * (double) axisY)
-		+ axisX * (double) axisX);
+	const NxReal length = (NxReal) x87FsqrtDot3(axisZ, axisZ, axisY, axisY, axisX, axisX);
 	if(length != 0.0f)
 		{
 		const NxReal inverseLength = (NxReal) (1.0f / (double) length);
@@ -941,7 +1033,7 @@ NxU32 NX_CALL_CONV NxRayCapsuleIntersect(const NxVec3& origin, const NxVec3& dir
 	double qx, qy, qz;
 	if(fabs(ny) <= fabs(nx))
 		{
-		const double inverse = 1.0f / sqrt(nz * nz + nx * nx);
+		const double inverse = 1.0f / x87FsqrtDot2(nz, nz, nx, nx);
 		const NxReal narrowed = (NxReal) inverse;
 		qx = -(inverse * nz);
 		qy = 0.0f;
@@ -965,8 +1057,7 @@ NxU32 NX_CALL_CONV NxRayCapsuleIntersect(const NxVec3& origin, const NxVec3& dir
 	NxReal kdr = (NxReal) ((rx * (double) dir.x + rz * (double) dir.z) + ry * (double) dir.y);
 	NxReal kdn = (NxReal) ((nx * dir.x + nz * dir.z) + ny * dir.y);
 
-	const NxReal dirLength = (NxReal) sqrt((kdr * (double) kdr + kdq * (double) kdq)
-		+ kdn * (double) kdn);
+	const NxReal dirLength = (NxReal) x87FsqrtDot3(kdr, kdr, kdq, kdq, kdn, kdn);
 	if(dirLength != 0.0f)
 		{
 		const double inverse = 1.0f / (double) dirLength;
@@ -1012,7 +1103,7 @@ NxU32 NX_CALL_CONV NxRayCapsuleIntersect(const NxVec3& origin, const NxVec3& dir
 		NxU32 count = 0;
 		if(discriminant > 0.0f)
 			{
-			const double root = sqrt((double) discriminant);
+			const double root = x87Fsqrt(discriminant);
 			const double inverseA = 1.0f / (double) a;
 			// The two roots are written differently -- (-b) - root against
 			// root - b -- and the first range test reads the register value
@@ -1058,7 +1149,8 @@ NxU32 NX_CALL_CONV NxRayCapsuleIntersect(const NxVec3& origin, const NxVec3& dir
 		const double discriminant1 = b1 * (double) b1 - c1;
 		if(discriminant1 > 0.0)
 			{
-			const double root = sqrt(discriminant1);
+			// Re-formed from b1 and c1 rather than passed as discriminant1.
+			const double root = x87FsqrtMulSub(b1, b1, c1);
 			const double nearRoot = (-(double) b1) - root;
 			if(nearRoot * (double) kdn + kwn <= 0.0)
 				{
@@ -1093,7 +1185,7 @@ NxU32 NX_CALL_CONV NxRayCapsuleIntersect(const NxVec3& origin, const NxVec3& dir
 			- (((double) length - (kwn + (double) kwn)) * length + c1);
 		if(discriminant2 > 0.0)
 			{
-			const double root = sqrt(discriminant2);
+			const double root = geometryFsqrtFarCap(b1, length, kdn, kwn, c1);
 			const double nearRoot = (-(double) b2) - root;
 			if(nearRoot * (double) kdn + kwn >= (double) length)
 				{
@@ -1132,14 +1224,14 @@ NxU32 NX_CALL_CONV NxRayCapsuleIntersect(const NxVec3& origin, const NxVec3& dir
 		- kwr * (double) kwr);
 	if(axisDot < 0.0 && half >= 0.0f)
 		{
-		const double root = sqrt((double) half);
+		const double root = x87Fsqrt(half);
 		t[0] = (NxReal) ((kwn + root) * (double) outputScale);
 		t[1] = (NxReal) (-((((double) length - kwn) + root) * (double) outputScale));
 		return 2;
 		}
 	if(axisDot > 0.0 && half >= 0.0f)
 		{
-		const double root = sqrt((double) half);
+		const double root = x87Fsqrt(half);
 		t[0] = (NxReal) (-((kwn + root) * (double) outputScale));
 		t[1] = (NxReal) ((((double) length - kwn) + root) * (double) outputScale);
 		return 2;
@@ -1213,7 +1305,7 @@ bool NX_CALL_CONV NxSweptSpheresIntersect(const NxSphere& sphere0, const NxVec3&
 	if(!(discriminant >= 0.0f))
 		return false;
 
-	const double root = sqrt(discriminant);
+	const double root = geometryFsqrtSwept(b, a, distanceSquared, s0[3], s1[3]);
 	// A reciprocal and a multiply, not a division by 2a.
 	const double inverse = 1.0f / (a + (double) a);
 	const NxReal first = (NxReal) ((root - b) * inverse);
