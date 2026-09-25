@@ -1068,3 +1068,198 @@ without the stable-ID form; `core/NpRevoluteJoint.cpp` keeps the stable-ID lines
   are checked against the listing by review and the build only.
 - Ledger: the 32 rows are `reconstructed_not_falsified` in `gates/phase6-closure.json` (22
   moved from `not_reconstructed_in_phase`; 10 already were); counts 217 / 214.
+
+## PointOnLine
+
+Recovered by joint-families Task 3d from the unit bundles `units/core__PointOnLineJoint.cpp.md`,
+`units/core__NpPointOnLineJoint.cpp.md` and
+`units/gap__core__NpPointOnLineJoint.cpp__to__core__NpSphericalJoint.cpp.md`, the Capstone
+listing, the relocated table words in `oracle/pe.json` and the pinned Ghidra supplement. 004268
+(saveToDesc) had no decompile; Task 3d added 0x000a1cc0 to `oracle/ghidra/supplement.json` (the
+union with the 18 existing `requested` RVAs; `ok`; the 18 existing entries came back unchanged).
+004270 is two instructions and is read from the listing only. The listing is authoritative over
+every decompile.
+
+### Row assignment
+
+`work_units.json` puts 7 rows in `core\PointOnLineJoint.cpp` (evidenced span 0xa1cc0-0xa2b20, no
+ambiguous rows), 10 in `core\NpPointOnLineJoint.cpp` (evidenced span 0xb1f50-0xb22a0, no
+ambiguous rows) and 3 ambiguous rows in
+`gap:core\NpPointOnLineJoint.cpp..core\NpSphericalJoint.cpp`. Checked by hand:
+
+- **Before `core\PointOnLineJoint.cpp`**: 004266 (PointInPlaneJoint::loadFromDesc, slot 9 of the
+  point-in-plane table 0x10119b48) ends `ret 4` at 0xa1caf; 004268 starts at 0xa1cc0 and pushes
+  the `PointOnLineJoint.cpp` `__FILE__` (0x10119ce4).
+- **Inside it**: 004270 (0xa1d00, 5 B: `mov eax,[ecx]; jmp [eax+0x2c]`) is slot 11 of the
+  point-on-line internal table 0x10119cb0 (0x119cdc) and is referenced from nowhere else; it sits
+  between 004268 and 004272 in this unit's code, so it is this unit's.
+- **After it**: 004280 (loadFromDesc) ends `ret 4` at 0xa2bdf; the next row 004282 (0xa2bf0) is
+  spherical (`## Spherical`).
+- **`core\NpPointOnLineJoint.cpp`**: 004595 (NpPointInPlaneJoint slot 0) ends `ret 4` at
+  0xb1f44; 004597 starts at 0xb1f50 and pushes the `NpPointOnLineJoint.cpp` `__FILE__`
+  (0x1011ae7c).
+- **The gap `core\NpPointOnLineJoint.cpp..core\NpSphericalJoint.cpp`** (004617-004621,
+  0xb2300-0xb2384) is the constructor / thunk / deleting-destructor triple that closes every Np
+  unit, and it is point-on-line's: 004617 installs the transient table 0x1011adf8
+  (`NxPointOnLineJoint`), the secondary table 0x1011af3c and the final table 0x1011aeb8
+  (`phys_data_002718`) and is called only by the point-on-line constructor 004276 (0xa2aad);
+  004619 is `sub ecx,0xc; jmp 004621`, the only slot of the secondary table 0x1011af3c; 004621 is
+  slot 0 of 0x1011aeb8 and reinstalls 0x1011aeb8/0x1011af3c. 004623 (0xb2390) is
+  NpSphericalJoint's.
+- No neighbouring ambiguous row belongs to another family, and no point-on-line row is named by
+  another family's table (see "### Point-in-plane" below).
+
+| Stable ID | RVA | Size | File | Evidence |
+|---|---|---:|---|---|
+| phys_fn_004268 | 0x000a1cc0 | 54 | `core/PointOnLineJoint.cpp` | internal slot 10 (0x119cd8); "PointOnLineJoint::saveToDesc" line 0x41 |
+| phys_fn_004270 | 0x000a1d00 | 5 | `core/PointOnLineJoint.cpp` | internal slot 11 (0x119cdc); calls slot 11 of `this` |
+| phys_fn_004272 | 0x000a1d10 | 2073 | `core/PointOnLineJoint.cpp` | internal slot 6 (0x119cc8); the solver slot |
+| phys_fn_004274 | 0x000a2530 | 1345 | `core/PointOnLineJoint.cpp` | internal slot 4 (0x119cc0); debug visualization |
+| phys_fn_004276 | 0x000a2a80 | 84 | `core/PointOnLineJoint.cpp` | createJoint case 4 (0x1445c); installs 0x10119cb0 (0xa2a90) |
+| phys_fn_004278 | 0x000a2ae0 | 56 | `core/PointOnLineJoint.cpp` | internal slot 5; reinstalls 0x10119cb0 (0xa2ae8) |
+| phys_fn_004280 | 0x000a2b20 | 194 | `core/PointOnLineJoint.cpp` | internal slot 9; "PointOnLineJoint::loadFromDesc" lines 0x2d/0x2e |
+| phys_fn_004597 | 0x000b1f50 | 84 | `core/NpPointOnLineJoint.cpp` | Np slot 2; line 0x10 |
+| phys_fn_004599 | 0x000b1fb0 | 84 | `core/NpPointOnLineJoint.cpp` | Np slot 4; line 0x10 |
+| phys_fn_004601 | 0x000b2010 | 89 | `core/NpPointOnLineJoint.cpp` | Np slot 9; line 0x10 |
+| phys_fn_004603 | 0x000b2070 | 89 | `core/NpPointOnLineJoint.cpp` | Np slot 11; line 0x10 |
+| phys_fn_004605 | 0x000b20d0 | 97 | `core/NpPointOnLineJoint.cpp` | Np slot 13; line 0x10 |
+| phys_fn_004607 | 0x000b2140 | 74 | `core/NpPointOnLineJoint.cpp` | Np slot 15; line 0x10 |
+| phys_fn_004609 | 0x000b2190 | 88 | `core/NpPointOnLineJoint.cpp` | Np slot 29; line 0x10 |
+| phys_fn_004611 | 0x000b21f0 | 74 | `core/NpPointOnLineJoint.cpp` | Np slot 14; line 0x10 |
+| phys_fn_004613 | 0x000b2240 | 84 | `core/NpPointOnLineJoint.cpp` | Np slot 31 (loadFromDesc); line 0x14; internal `[vt+0x24]` |
+| phys_fn_004615 | 0x000b22a0 | 84 | `core/NpPointOnLineJoint.cpp` | Np slot 32 (saveToDesc); line 0x1f; internal `[vt+0x28]` |
+| phys_fn_004617 | 0x000b2300 | 57 | `core/NpPointOnLineJoint.cpp` | constructor; called by 004276 (0xa2aad) |
+| phys_fn_004619 | 0x000b2340 | 8 | `core/NpPointOnLineJoint.cpp` | secondary table 0x1011af3c slot 0; compiler-generated thunk |
+| phys_fn_004621 | 0x000b2350 | 55 | `core/NpPointOnLineJoint.cpp` | Np slot 0 (scalar deleting destructor) |
+
+Already `reconstructed` through `ObjectModel.cpp` differentials (proofs kept, new text appended):
+004607 (tailjmp), 004611 (mutexlistfree; its model `nxMutexListFree` gains the `// Product row:`
+pointer), 004613 and 004615 (mutexfamily).
+
+### Construction chain (NxJointType 4)
+
+1. 000665's switch (table 0x14590) sends type 4 to **0x1443d**: SDK allocator slot +8 with
+   `(0x16c, 0)` (`push 0x16c` at 0x14449), null -> 0x1458a (result 0); otherwise
+   `call 0x100a2a80` = **004276** on the block with the descriptor (0x1445c), then the shared exit
+   at 0x144fc.
+2. **004276** PointOnLineJoint::PointOnLineJoint(const NxPointOnLineJointDesc&) (`ret 4`):
+   `Joint(desc, 4)` (004141, `push 4` at 0xa2a86), vptr 0x10119cb0 (0xa2a90), SDK allocator
+   `(0x1c, 0)` -> **004617** on success, public object -> `this+0x48` (0xa2ab2; 0xa2ac4 stores the
+   null), `desc.userData` (desc+0x60) -> `np+4` **without a null check** (0xa2ab5-0xa2ab8, and
+   0xa2ac7-0xa2aca on the null path, which writes to address 4). Nothing follows: the class has no
+   field of its own and no helper after the base constructor.
+3. **004617** NpPointOnLineJoint::NpPointOnLineJoint(PointOnLineJoint*): zeroes +4/+8, transient
+   table 0x1011adf8 (`NxPointOnLineJoint`), 002404 on +0xc, secondary table 0x1011af3c, internal at
+   +0x18 and +0x08, final table 0x1011aeb8. The prismatic shape.
+4. Back in 000665 (0x144fc): identical to the other wired families (`[joint+0x48]` null ->
+   internal slot 5 with 1 (004278) and result 0; otherwise the link copy, 000661, and the
+   0x14529-0x1453f exit).
+
+**Public-object offset: +0x48** (`mPublicObject`; 004276 writes it at 0xa2ab2, 000665 reads it at
+0x14502).
+
+### Object layouts
+
+**PointOnLineJoint (internal), 0x16c bytes** (`push 0x16c` at 0x14449): exactly the `Joint` base
+with vptr 0x10119cb0 (004276 0xa2a90, 004278 0xa2ae8). No row of the unit reads or writes an offset
+at or above +0x16c. The rows use only `Joint` base fields: `mBody` (+0x08/+0x0c), `mFlags`
+(+0x2c), `mMaxForce` (+0x3c), `mPublicObject` (+0x48), `mWorldNormal[0]` (+0xcc),
+`mWorldCross[0]` (+0xe4), `mWorldAnchor` (+0x114/+0x120), `mBodyStamp` (+0x14c/+0x150), and the
+body records' +0x134 3x3, +0x158 position and +0x204 support-body pointer.
+
+**NpPointOnLineJoint (public), 0x1c bytes**: exactly `NpJointShared<NxPointOnLineJoint,
+PointOnLineJoint>` (vptr 0x1011aeb8, userData +4, appData +8 = internal, hook base +0xc with table
+0x1011af3c, write link +0x10, read link +0x14, internal +0x18). No own field.
+
+### Dispatch tables
+
+**0x10119cb0: PointOnLineJoint internal (`phys_data_002662`, 13 slots)**
+
+| Slot | Row | Declared as | Notes |
+|---:|---|---|---|
+| 0 | 004248 (folded, `ret 4`) | `Joint::row_slot0` inline | inherited no-op |
+| 1 | 001583 (folded, `ret`) | `Joint::row_slot1` inline | inherited no-op |
+| 2 | 004111 | `Joint::row004111` | inherited |
+| 3 | 004087 | `Joint::row004087` | inherited |
+| 4 | **004274** | `PointOnLineJoint::row_slot4(NxDebugRenderable&)` | `ret 4` |
+| 5 | **004278** | `~PointOnLineJoint()` (scalar deleting) | deletes `[this+0x48]` through its slot 0 with 1, 004095, frees if flag&1 |
+| 6 | **004272** | `PointOnLineJoint::row_slot6(NxReal)` | `ret 4`; the float is a divisor (`fld 1.0; fdiv [esp+0x78]`, 0xa2200-0xa2209) |
+| 7 | 004135 | `Joint::row_slot7` | inherited |
+| 8 | 004248 (folded) | `Joint::row_slot8` inline | inherited no-op |
+| 9 | **004280** | `PointOnLineJoint::loadFromDesc(const NxPointOnLineJointDesc&)` | `ret 4` |
+| 10 | **004268** | `PointOnLineJoint::saveToDesc(NxPointOnLineJointDesc&)` | `ret 4`; tail-jumps 004066 |
+| 11 | **004270** | `PointOnLineJoint::row_slot11()` | `mov eax,[ecx]; jmp [eax+0x2c]`: a virtual call of slot 11 on `this`, that is of itself, so it never returns if called. Nothing in the image calls internal slot 11 of a point-on-line joint (the Np rows use slots 9 and 10 only). Written as the body that compiles to it (`return row_slot11();`) |
+| 12 | 001391 (folded, `mov eax,ecx; ret`) | `PointOnLineJoint::row_slot12()` inline | returns `this` |
+
+The table runs to 0x10119ce4, where the unit's `__FILE__` string starts. Where prismatic has two
+`return this` slots (11, 12), point-on-line has 004270 at 11 and one `return this` at 12.
+
+**0x1011aeb8: NpPointOnLineJoint primary (`phys_data_002718`, 33 slots)**: slots 0-32 as the
+`### Slot split` table (per-family rows 004621, 004597, 004599, 004601, 004603, 004605, 004611,
+004607, 004609, 004613, 004615; the folded rows through `NpJointShared`). Every write-locked
+NxJoint row reports line 0x10; loadFromDesc 0x14, saveToDesc 0x1f (the `push` before each
+`push 0x1011ae7c`: 0xb1f71 ... 0xb2211, 0xb2261, 0xb22c1). Slots 31/32 call internal slots 9/10
+(`[vt+0x24]` 0xb2285 / `[vt+0x28]` 0xb22e5). **0x1011af3c** (secondary): 004619.
+
+### The rows' shape
+
+- **004272** (solver slot, arg = the step divisor): the support-body pointers (body +0x204) are
+  read before the stale-body refresh. Then, with R0/R1 the bodies' +0x134 3x3s and t0/t1 their
+  +0x158 positions: n = R0 * worldNormal[0] and c = R0 * worldCross[0] (copies without body 0);
+  p0 = R0 * worldAnchor[0] + t0; r1 = R1 * worldAnchor[1] (stored) and p1 = r1 + t1 (copies
+  without the bodies). With d = p1 - p0, s = n . d (stored) and t = c . d (kept), the point of the
+  line through p0 along the joint axis nearest p1 is x = (p1 - n s) - c t, and body 0's lever is
+  r0 = x - t0. The error of the lever pair is `jointLinearError(r0, r1)` (the same instructions,
+  0xa218a-0xa21fa). Two kind-1 linear records follow, along n and along c, each through
+  `jointLinearRecord` (the cross products are the same products subtracted in the same order; the
+  listing stores +0x18/+0x24 in x, y, z order where the helper stores y, z, x) and
+  `jointSolveRecord` with bias (e . n) / arg and (e . c) / arg and +0x48 = maxForce. Listing over
+  decompile: the decompile regroups every dot product (the listing's are
+  ((n.z d.z + d.x n.x) + d.y n.y), ((d.x c.x + d.z c.z) + d.y c.y), ((e.z n.z + e.x n.x) + e.y n.y)
+  and ((e.x c.x + e.z c.z) + e.y c.y)) and drops the kind tests of the record flags as unreachable;
+  p1.x, d, t, x.x and e.x stay unrounded on the FPU stack where the decompile shows floats. The
+  first record passes the local that held its bias as 004391's (write-only) first output, the
+  second the local that held maxForce; neither is read afterwards.
+- **004274** (slot 4, `NxDebugRenderable&`): with +0x2c bit 9 (NX_JF_VISUALIZATION), after the
+  stale-body refresh. Parameter 32 (NX_VISUALIZE_JOINT_WORLD_AXES, 0x10123b98) non-zero: s =
+  param 13 * param 32; P = row004123 (the anchors' midpoint), A = row004127 (world axis 0); three
+  lines through P, P -/+ s along x (0xff0000), y (0xff00) and z (0xff), then A is scaled by s in
+  place and the line P - A to P + A is drawn (0xffffff). Parameter 31
+  (NX_VISUALIZE_JOINT_LOCAL_AXES, 0x10123b94) non-zero: s = param 31 * param 13; the same four
+  lines, then the same three-line cross at body 1's world anchor Q = R1 * worldAnchor[1] + t1 (the
+  copy without body 1) in 0xcf0000, 0xcf00 and 0xcf. All lines go through `addLine` (renderable
+  slot +0x20), minus end first. Listing over decompile: the decompile loses the argument order
+  and most arguments of every call.
+
+### Point-in-plane
+
+Task 3e's rows are near-identical but not folded: every point-in-plane row has its own address
+and its own table entry (0x10119b48 names 004260/004264/004258 at slots 4/5/6), so nothing here is
+shared with Task 3e and neither family overrides a row of the other. For Task 3e: a normalised
+listing diff of 004274 against 004260 shows the same instructions apart from the white line
+(004260 starts it at P itself, forming no P - A, and sums P + A in the other operand order) and
+the grouping of Q's three-term sums. 004272 (2,073 B) against 004258 (1,391 B): 004258 reads the
+support-body pointers after the refresh and builds one record, so the solver rows differ
+throughout.
+
+### Dependency closure
+
+- **write** (20 rows, 4,778 B): 004268, 004270, 004272, 004274, 004276, 004278, 004280 in
+  `core/PointOnLineJoint.cpp` (3,811 B); 004597-004621 in `core/NpPointOnLineJoint.cpp` (13 rows,
+  967 B; 004619 generated, its stable-ID line above the destructor it serves).
+- **reuse**: Joint rows 004141, 004107, 004121, 004097, 004066, 004095, 004093, 004111, 004087,
+  004135, 004123, 004127 (`core/Joint.cpp`) and 004391 (`core/JointSupport.cpp`); the 13 folded Np
+  bodies (`NpJointShared`); 002362/002364/002366, 002404/002406, 000454/000480; 004248, 001583,
+  001391 (inline bodies); 004417-004433, 005667; `jointLinearError`, `jointLinearRecord`,
+  `jointSolveRecord` and `jointLinearSdkParameter` (`core/JointLinearRecords.h`); the SDK
+  allocator; SDK parameters 0, 13, 31, 32. `core/JointAcos.h` is not needed (the unit has no acos).
+- **defer**: none.
+
+### What the new test case reaches
+
+`nxPointOnLineCase` (indices 0 and 3 of the revolute table's anchor/axis values). Creation:
+000297, 000665 case 4, 004276, 004141 (-> 004107, 004121 -> 004097 x2, 000480), 004617 (002404),
+000661. Getters: 004437/004125, 004441/004129, 004483/004078, 004539, 004443/004070,
+`isPointOnLineJoint` (inline 004421 -> 004479/004070), saveToDesc 004615 -> internal slot 10 =
+**004268** -> 004066. Compiled but not reached: 004270, 004272, 004274, 004278 (release unwired),
+004280, 004597-004613, 004621.
