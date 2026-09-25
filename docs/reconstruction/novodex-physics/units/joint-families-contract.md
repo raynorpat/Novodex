@@ -649,6 +649,20 @@ Getters: 004437/004125, 004441/004129, 004483/004078, 004539, 004443/004070,
 - **Descriptors without the fields the brief expects**: this SDK's `NxPulleyJointDesc` has no
   motor (pulley[2], distance, stiffness, ratio, flags only). Read the public header before
   planning the test case's getters.
+- **A pure Joint slot can be the folded no-op** (fixed, Task 3h): the fixed table names 004248 at
+  slot 4, where every other family has its visualization row. `Joint::row_slot4` is pure, so the
+  family declares an empty inline override whose comment names 004248 without the stable-ID form.
+- **Not every solver slot opens with the stale-body refresh**: fixed 004246 reads the bodies'
+  poses directly. Check the first instructions of each solver slot.
+- **.data vectors the listing reads are data** (fixed): 004246 uses the zero triple at 0x10123c1c as
+  a second lever and subtracts it from the error. It is `gJointZeroVector` in `core/JointSupport.cpp`
+  beside `gJointUnitAxis`, so the compiler cannot fold the operations away.
+- **The shared helpers still fit when the grouping matches**: fixed's linear records are
+  `jointLinearRecord`/`jointSolveRecord` exactly (same products, same subtraction order; only the
+  store order differs), but its error terms are stored where prismatic's `jointLinearError` keeps
+  them on the stack, so the error is written inline.
+- **cdb echo lines**: grep for `HIT .*$` also matches the echoed `bp` commands (`...; gc"`); drop
+  lines ending in `gc"` before counting hits.
 
 ## Cylindrical
 
@@ -2337,3 +2351,26 @@ NxJoint row reports line 0x10; loadFromDesc 0x14, saveToDesc 0x1f. Slots 31/32 c
 - Compiled but not reached: 004246, 004252 (release unwired), 004254, 004541-004557, 004565.
   The relative pose 004244 writes is not visible through the public interface, so the transcript
   shows only that the constructor ran.
+
+### Result (Task 3h)
+
+- Wired: `NxSceneInternal::createJoint` builds type 8 through `FixedJoint` (0x188, type bit 0x200)
+  and `nxFixedJointAttachScene`, in the same block as the other wired families.
+  `nxJointSizeForType` is now reached only by type 9 (D6).
+- The staged pair matched the oracle on the first run: `stdout_delta=0`, 75/75 Phase 6 coverage,
+  36/36 Phase 7. No transcript difference was found. The saved base fields came back unchanged in
+  both cases.
+- Registered lines: four per joint list, copied from the oracle side of that run (the
+  oracle-differential section of the Phase 6 log for `NxPhysicsJointTests` and the `pair=oracle`
+  child output for `NxPhysicsJointStagedPairTests`; their 20 fixed lines were identical (`cmp`),
+  and identical to the `pair=candidate` child's).
+- A cdb trace of the candidate (`evidence/joint-families-trace-fixed.txt`) shows 004250, 004561,
+  004244, 004559 and 004242 executing in both cases. 004246, 004252, 004254, 004565 and the Np
+  setters are compiled but not reached; the solver slot is checked against the listing by review
+  and the build only. `FixedJoint.obj` has no xmm instruction and no `__CIsqrt` or `fsqrt`.
+- The relative pose 004244 stores (+0x16c..+0x184) is not visible through the public interface:
+  the transcript shows only that the constructor ran and returned the object.
+- Ledger: the 19 rows are `reconstructed_not_falsified` in `gates/phase6-closure.json` (15 moved
+  from `not_reconstructed_in_phase`; 004551, 004555, 004557 and 004559 already were); counts
+  140 / 291.
+- 004248 stays unclaimed (folded, inline in `Joint.h` and `FixedJoint.h`).
