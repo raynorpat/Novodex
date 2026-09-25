@@ -175,6 +175,8 @@ rows. `core/Joint.cpp`/`core/JointSupport.cpp` rows are written only if
 | phys_fn_000633 | 0x00012660 | 370 | discovered | `core/JointSupport.cpp` | deferred stub only (owner Scene.cpp; joint removal); called by 004107 (third arg false), 004095 |
 | phys_fn_000758 | 0x00017630 | 214 | discovered | `core/JointSupport.cpp` | deferred stub only (owner gap SceneRaycast..CapsuleShape); called by 004356 |
 
+The State column above is a snapshot taken when the contract was written (Task 4). `inventory.json` is authoritative for current row states; Task 11 moved the written rows to `reconstructed`.
+
 `phys_fn_004675/004677/004679` are deliberately absent (NpCylindricalJoint.cpp, see above).
 The 13 folded NpJoint accessor bodies that table 002727 borrows from other units are
 listed in `## Dispatch tables` and `## Task split`; they are implemented as

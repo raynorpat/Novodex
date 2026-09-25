@@ -1,0 +1,151 @@
+Revolute pilot: cdb breakpoint trace of the joint transcript (Task 10)
+=======================================================================
+
+This is a trimmed excerpt of the raw cdb log. Register dumps, ModLoad lines and banners
+are removed; nothing else is edited. It is the evidence behind the dynamic_proof of
+phys_fn_004366, 004141, 004121, 004097, 004725, 004332, 004125, 004129 and 004078 in
+inventory.json.
+
+Debugger:  Microsoft Windows Debugger 10.0.10586.567 (X86)
+Command:   build\Release\NxPhysicsJointTests.exe build\pairs\candidate
+Recorded:  2026-09-25 about 04:20 local time, on the Task 10 working tree (Scene::createJoint
+           wired to core/RevoluteJoint.cpp), before the review-fix commit dc11888.
+Candidate: build\pairs\candidate\NxPhysics.dll
+           sha256=c6616261ba5bc73808bd1e17c28427548dbf9b685bc4cbc30a328839b200adfc
+           At the time of the trace this matched build\Release\NxPhysics.dll.
+           dc11888 later changed Scene.cpp's createJoint exit and added
+           nxRevoluteJointAttachScene, so the current build has different addresses and a
+           different hash. The trace has not been re-run on that build. The Phase 6
+           staged-pair transcript on the current build is still stdout_delta=0.
+Offsets:   taken from build\Release\NxPhysics.map of that build (module-relative).
+
+Breakpoints (each echoes and continues):
+bp NxPhysics+0x27480 ".echo HIT 000665 Scene::createJoint; gc"
+bp NxPhysics+0x2fd50 ".echo HIT 004366 RevoluteJoint ctor; gc"
+bp NxPhysics+0x2c330 ".echo HIT 004141 Joint ctor; gc"
+bp NxPhysics+0x2df80 ".echo HIT 004107 row004107; gc"
+bp NxPhysics+0x2d550 ".echo HIT 004121 loadFromDescBase; gc"
+bp NxPhysics+0x2da10 ".echo HIT 004097 refreshBodyFrame; gc"
+bp NxPhysics+0x2e8c0 ".echo HIT 004725 NpRevoluteJoint ctor; gc"
+bp NxPhysics+0x31030 ".echo HIT 004332 row004332; gc"
+bp NxPhysics+0x2ecc0 ".echo HIT 004437 Np getGlobalAnchor; gc"
+bp NxPhysics+0x2c860 ".echo HIT 004125 Joint getGlobalAnchor; gc"
+bp NxPhysics+0x2ed80 ".echo HIT 004441 Np getGlobalAxis; gc"
+bp NxPhysics+0x2cef0 ".echo HIT 004129 Joint getGlobalAxis; gc"
+bp NxPhysics+0x2f120 ".echo HIT 004483 Np getState; gc"
+bp NxPhysics+0x2d380 ".echo HIT 004078 Joint getState; gc"
+bp NxPhysics+0x2eb20 ".echo HIT 004539 Np getActors; gc"
+bp NxPhysics+0x2fe30 ".echo HIT 004368 ~RevoluteJoint; gc"
+bp NxPhysics+0x2c680 ".echo HIT 004095 ~Joint; gc"
+bp NxPhysics+0x2e930 ".echo HIT 004729 ~NpRevoluteJoint; gc"
+
+Hits, in order. There are four joint cases (revolute index=0..3), and each one produces
+the same 15-line block:
+
+-- case 0 --
+HIT 000665 Scene::createJoint
+HIT 004366 RevoluteJoint ctor
+HIT 004141 Joint ctor
+HIT 004121 loadFromDescBase
+HIT 004097 refreshBodyFrame
+HIT 004097 refreshBodyFrame
+HIT 004725 NpRevoluteJoint ctor
+HIT 004332 row004332
+HIT 004437 Np getGlobalAnchor
+HIT 004125 Joint getGlobalAnchor
+HIT 004441 Np getGlobalAxis
+HIT 004129 Joint getGlobalAxis
+HIT 004483 Np getState
+HIT 004078 Joint getState
+HIT 004539 Np getActors
+
+-- case 1 --
+HIT 000665 Scene::createJoint
+HIT 004366 RevoluteJoint ctor
+HIT 004141 Joint ctor
+HIT 004121 loadFromDescBase
+HIT 004097 refreshBodyFrame
+HIT 004097 refreshBodyFrame
+HIT 004725 NpRevoluteJoint ctor
+HIT 004332 row004332
+HIT 004437 Np getGlobalAnchor
+HIT 004125 Joint getGlobalAnchor
+HIT 004441 Np getGlobalAxis
+HIT 004129 Joint getGlobalAxis
+HIT 004483 Np getState
+HIT 004078 Joint getState
+HIT 004539 Np getActors
+
+-- case 2 --
+HIT 000665 Scene::createJoint
+HIT 004366 RevoluteJoint ctor
+HIT 004141 Joint ctor
+HIT 004121 loadFromDescBase
+HIT 004097 refreshBodyFrame
+HIT 004097 refreshBodyFrame
+HIT 004725 NpRevoluteJoint ctor
+HIT 004332 row004332
+HIT 004437 Np getGlobalAnchor
+HIT 004125 Joint getGlobalAnchor
+HIT 004441 Np getGlobalAxis
+HIT 004129 Joint getGlobalAxis
+HIT 004483 Np getState
+HIT 004078 Joint getState
+HIT 004539 Np getActors
+
+-- case 3 --
+HIT 000665 Scene::createJoint
+HIT 004366 RevoluteJoint ctor
+HIT 004141 Joint ctor
+HIT 004121 loadFromDescBase
+HIT 004097 refreshBodyFrame
+HIT 004097 refreshBodyFrame
+HIT 004725 NpRevoluteJoint ctor
+HIT 004332 row004332
+HIT 004437 Np getGlobalAnchor
+HIT 004125 Joint getGlobalAnchor
+HIT 004441 Np getGlobalAxis
+HIT 004129 Joint getGlobalAxis
+HIT 004483 Np getState
+HIT 004078 Joint getState
+HIT 004539 Np getActors
+
+Not hit in any case: 004107 (row004107), 004368 (~RevoluteJoint), 004095 (~Joint),
+004729 (~NpRevoluteJoint). Joint release is not wired (NpScene::releaseJoint is empty).
+004437, 004441, 004483 and 004539 are folded NpJoint bodies; the pilot does not claim them.
+
+Program stdout during the traced run:
+pair_directory=D:\github\Novodex\.claude\worktrees\reconstruction-progress-5b3127\build\pairs\candidate
+modules pair=2 trusted_system=7 rejected=0
+export=NxCreatePhysicsSDK present=yes
+export=NxJointDesc_SetGlobalAnchor present=yes
+export=NxJointDesc_SetGlobalAxis present=yes
+version=0x02010200
+sdk=created
+scene=created
+fixture=a,created b,created
+case=revolute index=0 in_anchor=00000000.00000000.00000000 in_axis=3f800000.00000000.00000000
+case=revolute index=0 created=yes
+case=revolute index=0 out_anchor=00000000.00000000.00000000 out_axis=3f800000.00000000.00000000 state=0
+case=revolute index=0 actors a=match b=match
+case=revolute index=0 released=yes
+case=revolute index=1 in_anchor=3f800000.40000000.40400000 in_axis=00000000.3f800000.00000000
+case=revolute index=1 created=yes
+case=revolute index=1 out_anchor=3f800000.40000000.40400000 out_axis=00000000.3f800000.00000000 state=0
+case=revolute index=1 actors a=match b=match
+case=revolute index=1 released=yes
+case=revolute index=2 in_anchor=bfc00000.3e800000.41000000 in_axis=00000000.00000000.3f800000
+case=revolute index=2 created=yes
+case=revolute index=2 out_anchor=bfc00000.3e800000.41000000 out_axis=00000000.00000000.3f800000 state=0
+case=revolute index=2 actors a=match b=match
+case=revolute index=2 released=yes
+case=revolute index=3 in_anchor=40000000.40800000.00000000 in_axis=3f000000.3f000000.3f000000
+case=revolute index=3 created=yes
+case=revolute index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0
+case=revolute index=3 actors a=match b=match
+case=revolute index=3 released=yes
+scene=released
+sdk=released
+modules pair=2 trusted_system=7 rejected=0
+loaded module=NxPhysics.dll path=D:\github\Novodex\.claude\worktrees\reconstruction-progress-5b3127\build\pairs\candidate\NxPhysics.dll sha256=c6616261ba5bc73808bd1e17c28427548dbf9b685bc4cbc30a328839b200adfc
+loaded module=NxFoundation.dll path=D:\github\Novodex\.claude\worktrees\reconstruction-progress-5b3127\build\pairs\candidate\NxFoundation.dll sha256=a19bf85390f98487ed8c3946f29c265072f836f9d928fb2c28165389feb37899

@@ -51,7 +51,8 @@ Proofs:
   `build/Release/NxPhysics.map` after the clean rebuild and disassembles to `sub ecx,0xc; jmp <the
   deleting destructor>`. The oracle's 0x100b33e0 has the same two instructions.
 - **Dynamic (9 rows, 5,851 B):** 004366, 004141, 004121, 004097, 004725, 004332, 004125, 004129,
-  004078. Task 10 ran a cdb breakpoint trace of `NxPhysicsJointTests` against
+  004078. The trimmed trace is `evidence/unit-pilot-revolute-trace.txt`: the breakpoint list and the
+  hits for each case. Task 10 ran a cdb breakpoint trace of `NxPhysicsJointTests` against
   `build/pairs/candidate` (same sha256 as `build/Release/NxPhysics.dll`), with addresses taken from
   the map. Each of these rows was hit in every one of the four cases; 004097 was hit twice per case.
   The trace also hit 004437, 004441, 004483 and 004539. Those are folded NpJoint bodies that this
@@ -106,6 +107,25 @@ Open items carried forward:
    writes it. 004360/004362 also need 004093's Scene record array (+0x5b8, row 000598). None of
    these is on the transcript path, and none has run. 004356 and 004364 end in deferred stubs
    (open issue 9).
+6. **Known codegen divergence in 004729 (`~NpRevoluteJoint`, deleting destructor).** 004729 is
+   the jump target of the 004727 adjustor thunk. The candidate's copy at 0x1002e9b0 opens with an
+   SEH frame and a /GS cookie:
+
+   ```
+   push ebp; mov ebp,esp; push -1; push 0x100b1570; mov eax,fs:[0]; ...; mov eax,[0x100c7480]; xor eax,ebp
+   ```
+
+   The oracle's 0x100b33f0 is frameless:
+
+   ```
+   push esi; mov esi,ecx; ...; ret 4
+   ```
+
+   The thunk's own two instructions match, so 004727's proof is unaffected. 004729 stays
+   `reconstructed` on the pilot's source bar, and its inventory `notes` record the difference.
+   The cause is not yet investigated; the likely candidates are the EH and /GS settings on this
+   translation unit, or the compiler-generated destructor chain. The destructor has never run
+   under a transcript (release is unwired, item 1).
 
 ## Defects found by the transcript
 
@@ -187,7 +207,8 @@ Fresh configure (`cmake -S . -B build -A Win32 --fresh`) and `--clean-first` bui
 bundles updated; product code as of `dc11888`):
 
 ```
-build exit 0            (no warnings from Physics/src/core; pre-existing C4291 in FoundationSDK/PhysicsInternal/PhysicsSDK/Scene.cpp)
+build exit 0            (no warnings from Physics/src/core; pre-existing C4291 in FoundationSDK/PhysicsInternal/PhysicsSDK/Scene.cpp
+                         and C4005 'ARRAYSIZE' macro redefinition, winnt.h vs opcode-tree Ice/IceUtils.h)
 public_headers=pass files=80
 Ran 643 tests ... OK
 phase 2 exit 1   GATE FAILED: build_physics exited 1

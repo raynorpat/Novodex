@@ -1928,7 +1928,7 @@ UNRESOLVED_SOURCE_PATHS = (
     'Physics/src/EdgeList.cpp',                      # 3 rows
     'Physics/src/IceAdjacencies.cpp',                # 2 rows
     'Physics/src/InternalTriangleMesh.cpp',          # 1 rows
-    'Physics/src/Joint.cpp',                         # 6 rows
+    'Physics/src/Joint.cpp',                         # 4 rows (004099 004101 004109 004143, deferred stubs)
     # 'Physics/src/NpActor.cpp' was on this list with 66 rows against it, and is
     # REMOVED: the concrete actor class now exists, so the path resolves and the entry
     # would be a claim that a real file is missing. The check said so itself --
