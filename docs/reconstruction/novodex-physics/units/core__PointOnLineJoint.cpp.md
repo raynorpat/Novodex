@@ -18,11 +18,11 @@ Evidenced span: ['0x000a1cc0', '0x000a2b20']. Rows: 7 (0 ambiguous). Generated b
 - gap:core\NpPointOnLineJoint.cpp..core\NpSphericalJoint.cpp: phys_fn_004617
 - gap:core\PrismaticJoint.cpp..core\NpD6Joint.cpp: phys_fn_004391
 
-## phys_fn_004268 (0x000a1cc0, 54 B, discovered)
+## phys_fn_004268 (0x000a1cc0, 54 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/PointOnLineJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/PointOnLineJoint.cpp
 - prototype: undefined FUN_100a1cc0(void)
 - calling convention: unknown, stack purge: 2147483647
 - callers: phys_fn_004276 (0x000a2a80)
@@ -58,11 +58,11 @@ void FUN_100a1cc0(int param_1)
 
 ```
 
-## phys_fn_004270 (0x000a1d00, 5 B, discovered)
+## phys_fn_004270 (0x000a1d00, 5 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/PointOnLineJoint.cpp
+- implementation: Physics/src/core/PointOnLineJoint.cpp
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: phys_fn_004276 (0x000a2a80)
@@ -77,11 +77,11 @@ Decompile (capstone disassembly):
 0x000a1d02  jmp dword ptr [eax + 0x2c]
 ```
 
-## phys_fn_004272 (0x000a1d10, 2073 B, discovered)
+## phys_fn_004272 (0x000a1d10, 2073 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/PointOnLineJoint.cpp
+- implementation: Physics/src/core/PointOnLineJoint.cpp
 - prototype: undefined __thiscall FUN_100a1d10(float param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004276 (0x000a2a80)
@@ -338,11 +338,11 @@ LAB_100a23ad:
 
 ```
 
-## phys_fn_004274 (0x000a2530, 1345 B, discovered)
+## phys_fn_004274 (0x000a2530, 1345 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/PointOnLineJoint.cpp
+- implementation: Physics/src/core/PointOnLineJoint.cpp
 - prototype: undefined __thiscall FUN_100a2530(int * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004276 (0x000a2a80)
@@ -552,11 +552,11 @@ void __thiscall FUN_100a2530(void *this,int *param_1)
 
 ```
 
-## phys_fn_004276 (0x000a2a80, 84 B, discovered)
+## phys_fn_004276 (0x000a2a80, 84 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/PointOnLineJoint.cpp
+- implementation: Physics/src/core/PointOnLineJoint.cpp
 - prototype: void * __thiscall FUN_100a2a80(int param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_000665 (0x000142c0)
@@ -590,11 +590,11 @@ void * __thiscall FUN_100a2a80(void *this,int param_1)
 
 ```
 
-## phys_fn_004278 (0x000a2ae0, 56 B, discovered)
+## phys_fn_004278 (0x000a2ae0, 56 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/PointOnLineJoint.cpp
+- implementation: Physics/src/core/PointOnLineJoint.cpp
 - prototype: void * __thiscall FUN_100a2ae0(byte param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004276 (0x000a2a80)
@@ -623,11 +623,11 @@ void * __thiscall FUN_100a2ae0(void *this,byte param_1)
 
 ```
 
-## phys_fn_004280 (0x000a2b20, 194 B, discovered)
+## phys_fn_004280 (0x000a2b20, 194 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/PointOnLineJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/PointOnLineJoint.cpp
 - prototype: undefined __thiscall FUN_100a2b20(int * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004276 (0x000a2a80)

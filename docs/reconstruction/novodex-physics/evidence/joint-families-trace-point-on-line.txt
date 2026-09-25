@@ -1,0 +1,110 @@
+Point-on-line family: cdb breakpoint trace of the joint transcript (joint-families Task 3d)
+==========================================================================================
+
+A trimmed excerpt of the raw cdb log, in the method of evidence/unit-pilot-revolute-trace.txt
+and evidence/joint-families-trace-spherical.txt. Register dumps, ModLoad lines, banners and
+the program's own stdout are removed; the HIT lines are kept in order and otherwise unedited
+(a HIT that the debugger printed on the same line as program output is cut from that line).
+It is the evidence behind the dynamic_proof of phys_fn_004276, 004617, 004615 and 004268 in
+inventory.json.
+
+Debugger:  Microsoft Windows Debugger 10.0.10586.567 (X86)
+Command:   cdb -cf <script> build\Release\NxPhysicsJointTests.exe build\pairs\candidate
+Recorded:  2026-09-25, on the Task 3d working tree after the wiring (Scene::createJoint
+           case 4 -> core/PointOnLineJoint.cpp) and the nxPointOnLineCase test commits.
+Candidate: build\pairs\candidate\NxPhysics.dll
+           sha256=522196a671dceef4153b0266b83cd1d22d322bd5df4e27edc4cdd1fe8e84ba8d
+           (identical to build\Release\NxPhysics.dll at the time of the trace).
+Offsets:   module-relative, from build\Release\NxPhysics.map of that build. The folded Np
+           bodies are broken on their NpJointShared<NxPointOnLineJoint, PointOnLineJoint>
+           instantiation; the Joint rows are shared with the other families.
+
+Breakpoints (each echoes and continues):
+bp NxPhysics+0x27480 ".echo HIT 000665 Scene::createJoint; gc"
+bp NxPhysics+0x39bb0 ".echo HIT 004276 PointOnLineJoint ctor; gc"
+bp NxPhysics+0x2e360 ".echo HIT 004141 Joint ctor; gc"
+bp NxPhysics+0x2fc80 ".echo HIT 004121 loadFromDescBase; gc"
+bp NxPhysics+0x30140 ".echo HIT 004097 refreshBodyFrame; gc"
+bp NxPhysics+0x36d50 ".echo HIT 004617 NpPointOnLineJoint ctor; gc"
+bp NxPhysics+0x36fc0 ".echo HIT (helper) nxPointOnLineJointAttachScene; gc"
+bp NxPhysics+0x355f0 ".echo HIT 004437 Np getGlobalAnchor (point-on-line instantiation); gc"
+bp NxPhysics+0x359b0 ".echo HIT 004441 Np getGlobalAxis (point-on-line instantiation); gc"
+bp NxPhysics+0x363a0 ".echo HIT 004483 Np getState (point-on-line instantiation); gc"
+bp NxPhysics+0x35170 ".echo HIT 004539 Np getActors (point-on-line instantiation); gc"
+bp NxPhysics+0x36530 ".echo HIT 004443 Np getType (point-on-line instantiation); gc"
+bp NxPhysics+0x368c0 ".echo HIT 004479 Np is (point-on-line instantiation); gc"
+bp NxPhysics+0x37140 ".echo HIT 004615 NpPointOnLineJoint saveToDesc; gc"
+bp NxPhysics+0x3ac60 ".echo HIT 004268 PointOnLineJoint saveToDesc; gc"
+bp NxPhysics+0x31290 ".echo HIT 004066 Joint saveToDescBase; gc"
+bp NxPhysics+0x39c60 ".echo HIT 004278 ~PointOnLineJoint; gc"
+bp NxPhysics+0x39f30 ".echo HIT 004280 PointOnLineJoint loadFromDesc; gc"
+bp NxPhysics+0x3a220 ".echo HIT 004270 row_slot11; gc"
+bp NxPhysics+0x3a4d0 ".echo HIT 004272 row_slot6; gc"
+bp NxPhysics+0x3a240 ".echo HIT 004274 row_slot4; gc"
+
+Hits, in order. The joint test runs four revolute, two prismatic, two cylindrical and two
+spherical cases first (their Joint-row hits are summarised, not repeated), then the two
+point-on-line cases in full.
+
+-- revolute 0 case: 5 hits (Joint rows only; no point-on-line breakpoint) --
+-- revolute 1 case: 5 hits (Joint rows only; no point-on-line breakpoint) --
+-- revolute 2 case: 5 hits (Joint rows only; no point-on-line breakpoint) --
+-- revolute 3 case: 5 hits (Joint rows only; no point-on-line breakpoint) --
+-- prismatic 0 case: 6 hits (Joint rows only; no point-on-line breakpoint) --
+-- prismatic 1 case: 6 hits (Joint rows only; no point-on-line breakpoint) --
+-- cylindrical 0 case: 6 hits (Joint rows only; no point-on-line breakpoint) --
+-- cylindrical 1 case: 6 hits (Joint rows only; no point-on-line breakpoint) --
+-- spherical 0 case: 6 hits (Joint rows only; no point-on-line breakpoint) --
+-- spherical 1 case: 6 hits (Joint rows only; no point-on-line breakpoint) --
+
+-- point-on-line case index=0 --
+HIT 000665 Scene::createJoint
+HIT 004276 PointOnLineJoint ctor
+HIT 004141 Joint ctor
+HIT 004121 loadFromDescBase
+HIT 004097 refreshBodyFrame
+HIT 004097 refreshBodyFrame
+HIT 004617 NpPointOnLineJoint ctor
+HIT (helper) nxPointOnLineJointAttachScene
+HIT 004437 Np getGlobalAnchor (point-on-line instantiation)
+HIT 004441 Np getGlobalAxis (point-on-line instantiation)
+HIT 004483 Np getState (point-on-line instantiation)
+HIT 004539 Np getActors (point-on-line instantiation)
+HIT 004479 Np is (point-on-line instantiation)
+HIT 004479 Np is (point-on-line instantiation)
+HIT 004443 Np getType (point-on-line instantiation)
+HIT 004615 NpPointOnLineJoint saveToDesc
+HIT 004268 PointOnLineJoint saveToDesc
+HIT 004066 Joint saveToDescBase
+
+-- point-on-line case index=3 --
+HIT 000665 Scene::createJoint
+HIT 004276 PointOnLineJoint ctor
+HIT 004141 Joint ctor
+HIT 004121 loadFromDescBase
+HIT 004097 refreshBodyFrame
+HIT 004097 refreshBodyFrame
+HIT 004617 NpPointOnLineJoint ctor
+HIT (helper) nxPointOnLineJointAttachScene
+HIT 004437 Np getGlobalAnchor (point-on-line instantiation)
+HIT 004441 Np getGlobalAxis (point-on-line instantiation)
+HIT 004483 Np getState (point-on-line instantiation)
+HIT 004539 Np getActors (point-on-line instantiation)
+HIT 004479 Np is (point-on-line instantiation)
+HIT 004479 Np is (point-on-line instantiation)
+HIT 004443 Np getType (point-on-line instantiation)
+HIT 004615 NpPointOnLineJoint saveToDesc
+HIT 004268 PointOnLineJoint saveToDesc
+HIT 004066 Joint saveToDescBase
+
+Not hit: 004278 (~PointOnLineJoint: release is unwired, NpScene::releaseJoint is empty), 004280
+(loadFromDesc), 004272 (the solver slot: no simulation step), 004274 (no debug render) and
+004270 (slot 11: nothing calls it). 004479 is hit twice per case: once for isPointOnLineJoint and
+once for isRevoluteJoint (both NxJoint.h inlines call is()).
+
+The generated adjustor thunk for phys_fn_004619 (??_ENpPointOnLineJoint@@WM@AEPAXI@Z,
+NxPhysics+0x36d9e in the same build), disassembled by the same cdb session:
+6b036d9e 83e90c          sub     ecx,0Ch
+6b036da1 e90a000000      jmp     NxPhysics!NxBuildSmoothNormals+0xaf90 (6b036db0)
+The jump target NxPhysics+0x36db0 is ??_ENpPointOnLineJoint@@UAEPAXI@Z (the scalar deleting
+destructor, phys_fn_004621), matching the oracle's 0x100b2340 `sub ecx,0xc; jmp 0x100b2350`.

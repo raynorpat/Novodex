@@ -77698,13 +77698,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/PointOnLineJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2062",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14317",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from units/core__PointOnLineJoint.cpp.md (ghidra supplement) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## PointOnLine)",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both point-on-line cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 4 wired to core/PointOnLineJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 43/43 coverage); trace excerpt committed as evidence/joint-families-trace-point-on-line.txt (joint-families Task 3d)",
+      "notes": "",
+      "implementation": "Physics/src/core/PointOnLineJoint.cpp"
     },
     {
       "id": "phys_fn_004269",
@@ -77734,13 +77735,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/PointOnLineJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2063",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14320",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (units/core__PointOnLineJoint.cpp.md); the candidate body compiles to the same two instructions, `mov eax,[ecx]; jmp [eax+0x2c]` (8b 01 ff 60 2c, ?row_slot11@PointOnLineJoint@@UAEPAV1@XZ in build/Release/NxPhysics.map), and fills slot 11 of the candidate PointOnLineJoint table; layout per units/joint-families-contract.md (## PointOnLine)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/PointOnLineJoint.cpp"
     },
     {
       "id": "phys_fn_004271",
@@ -77770,13 +77772,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/PointOnLineJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1607",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14321",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__PointOnLineJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## PointOnLine)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/PointOnLineJoint.cpp"
     },
     {
       "id": "phys_fn_004273",
@@ -77806,13 +77809,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/PointOnLineJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1608",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14355",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__PointOnLineJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## PointOnLine)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/PointOnLineJoint.cpp"
     },
     {
       "id": "phys_fn_004275",
@@ -77842,13 +77846,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/PointOnLineJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1609",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14365",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from units/core__PointOnLineJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## PointOnLine)",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both point-on-line cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 4 wired to core/PointOnLineJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 43/43 coverage); trace excerpt committed as evidence/joint-families-trace-point-on-line.txt (joint-families Task 3d)",
+      "notes": "",
+      "implementation": "Physics/src/core/PointOnLineJoint.cpp"
     },
     {
       "id": "phys_fn_004277",
@@ -77878,13 +77883,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/PointOnLineJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1610",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14367",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__PointOnLineJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## PointOnLine)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/PointOnLineJoint.cpp"
     },
     {
       "id": "phys_fn_004279",
@@ -77914,13 +77920,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/PointOnLineJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1611",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14370",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__PointOnLineJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## PointOnLine)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/PointOnLineJoint.cpp"
     },
     {
       "id": "phys_fn_004281",
@@ -83719,13 +83726,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpPointOnLineJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1730",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15337",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpPointOnLineJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointOnLine)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpPointOnLineJoint.cpp"
     },
     {
       "id": "phys_fn_004598",
@@ -83755,13 +83763,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpPointOnLineJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1731",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15340",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpPointOnLineJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointOnLine)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpPointOnLineJoint.cpp"
     },
     {
       "id": "phys_fn_004600",
@@ -83791,13 +83800,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpPointOnLineJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1732",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15343",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpPointOnLineJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointOnLine)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpPointOnLineJoint.cpp"
     },
     {
       "id": "phys_fn_004602",
@@ -83827,13 +83837,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpPointOnLineJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1733",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15346",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpPointOnLineJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointOnLine)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpPointOnLineJoint.cpp"
     },
     {
       "id": "phys_fn_004604",
@@ -83863,13 +83874,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpPointOnLineJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1734",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15349",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpPointOnLineJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointOnLine)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpPointOnLineJoint.cpp"
     },
     {
       "id": "phys_fn_004606",
@@ -83903,9 +83915,10 @@
       "source": "Physics/src/core/NpPointOnLineJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1735",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15352",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpPointOnLineJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointOnLine)",
       "dynamic_proof": "confirmed via the tailjmp differential (3z191): failures=0 for all twelve rows on both arms, comparing the report tuple, the global word written at 0x10127180 and the whole object buffer, with the lock API, report slot and that global bound",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpPointOnLineJoint.cpp"
     },
     {
       "id": "phys_fn_004608",
@@ -83935,13 +83948,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpPointOnLineJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1736",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15355",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpPointOnLineJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointOnLine)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpPointOnLineJoint.cpp"
     },
     {
       "id": "phys_fn_004610",
@@ -83975,10 +83989,10 @@
       "source": "Physics/src/core/NpPointOnLineJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1737",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15358",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpPointOnLineJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointOnLine)",
       "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
-      "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp",
+      "notes": "previous implementation: Physics/src/ObjectModel.cpp",
+      "implementation": "Physics/src/core/NpPointOnLineJoint.cpp",
       "implementation_symbol": "phys_fn_004611 (harness dispatch table)"
     },
     {
@@ -84013,9 +84027,10 @@
       "source": "Physics/src/core/NpPointOnLineJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1738",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15361",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpPointOnLineJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointOnLine)",
       "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpPointOnLineJoint.cpp"
     },
     {
       "id": "phys_fn_004614",
@@ -84049,9 +84064,10 @@
       "source": "Physics/src/core/NpPointOnLineJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1739",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15364",
-      "static_proof": null,
-      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
-      "notes": ""
+      "static_proof": "transcribed from units/core__NpPointOnLineJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointOnLine)",
+      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound; executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both point-on-line cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 4 wired to core/PointOnLineJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 43/43 coverage); trace excerpt committed as evidence/joint-families-trace-point-on-line.txt (joint-families Task 3d)",
+      "notes": "",
+      "implementation": "Physics/src/core/NpPointOnLineJoint.cpp"
     },
     {
       "id": "phys_fn_004616",
@@ -84081,13 +84097,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/NpPointOnLineJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1740",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15367",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from units/gap__core__NpPointOnLineJoint.cpp__to__core__NpSphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; the gap row is the point-on-line Np unit's constructor/destructor tail (units/joint-families-contract.md ## PointOnLine ### Row assignment); layout per units/joint-families-contract.md (## PointOnLine)",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both point-on-line cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 4 wired to core/PointOnLineJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 43/43 coverage); trace excerpt committed as evidence/joint-families-trace-point-on-line.txt (joint-families Task 3d)",
+      "notes": "",
+      "implementation": "Physics/src/core/NpPointOnLineJoint.cpp"
     },
     {
       "id": "phys_fn_004618",
@@ -84117,13 +84134,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/NpPointOnLineJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2237",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15368",
-      "static_proof": null,
+      "static_proof": "compiler-generated `vector deleting destructor' adjustor{12} thunk: Physics/src/core/NpPointOnLineJoint.cpp carries only its stable-ID line above ~NpPointOnLineJoint; the NpJointShared<NxPointOnLineJoint, PointOnLineJoint> layout per units/joint-families-contract.md makes the compiler emit ??_ENpPointOnLineJoint@@WM@AEPAXI@Z (candidate 0x10036d9e in build/Release/NxPhysics.map), which disassembles to `sub ecx,0xc; jmp <NpPointOnLineJoint deleting destructor>` (evidence/joint-families-trace-point-on-line.txt), the same two instructions as the oracle's 0x100b2340 `sub ecx,0xc; jmp 0x100b2350` (phys_fn_004621); the gap row is point-on-line's (units/joint-families-contract.md ## PointOnLine ### Row assignment)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpPointOnLineJoint.cpp"
     },
     {
       "id": "phys_fn_004620",
@@ -84153,13 +84171,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/NpPointOnLineJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1741",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15369",
-      "static_proof": null,
+      "static_proof": "transcribed from units/gap__core__NpPointOnLineJoint.cpp__to__core__NpSphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; the gap row is the point-on-line Np unit's constructor/destructor tail (units/joint-families-contract.md ## PointOnLine ### Row assignment); layout per units/joint-families-contract.md (## PointOnLine)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpPointOnLineJoint.cpp"
     },
     {
       "id": "phys_fn_004622",
