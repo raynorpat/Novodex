@@ -45,6 +45,8 @@
 #include "NxPrismaticJointDesc.h"
 #include "NxCylindricalJoint.h"
 #include "NxCylindricalJointDesc.h"
+#include "NxSphericalJoint.h"
+#include "NxSphericalJointDesc.h"
 
 typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(NxU32, NxUserAllocator*, NxUserOutputStream*);
 
@@ -314,6 +316,125 @@ static void nxCylindricalCase(NxScene& scene, NxActor* a, NxActor* b,
 	printf("case=cylindrical index=%u released=yes\n", index);
 	}
 
+// One spherical case (joint-families Task 3c), modelled on nxCylindricalCase:
+// build a valid NxSphericalJointDesc over the two-actor fixture with the given
+// anchor/axis and fixed non-default spherical fields, createJoint, then print
+// what the public API reads without a simulation step: the world anchor/axis
+// and state, the actors, the type, getFlags/getProjectionMode (internal slots
+// 12 and 14) and every field saveToDesc writes back, then releaseJoint.
+static void nxSphericalCase(NxScene& scene, NxActor* a, NxActor* b,
+	unsigned index, const NxVec3& anchor, const NxVec3& axis)
+	{
+	printf("case=spherical index=%u ", index);
+	nxPrintVec("in_anchor", anchor);
+	printf(" ");
+	nxPrintVec("in_axis", axis);
+	printf("\n");
+
+	NxSphericalJointDesc desc;
+	desc.setToDefault();
+	desc.actor[0] = a;
+	desc.actor[1] = b;
+	nxSetGlobalAnchor(desc, anchor);
+	nxSetGlobalAxis(desc, axis);
+	desc.swingAxis.set(0.6f, 0.0f, 0.8f);
+	desc.projectionDistance = 0.25f;
+	desc.twistLimit.low.value = -0.5f;
+	desc.twistLimit.low.restitution = 0.25f;
+	desc.twistLimit.high.value = 0.75f;
+	desc.twistLimit.high.hardness = 0.5f;
+	desc.swingLimit.value = 0.625f;
+	desc.swingLimit.restitution = 0.5f;
+	desc.swingLimit.hardness = 0.75f;
+	desc.twistSpring.spring = 2.0f;
+	desc.twistSpring.damper = 0.5f;
+	desc.twistSpring.targetValue = 0.125f;
+	desc.swingSpring.spring = 3.0f;
+	desc.swingSpring.damper = 1.0f;
+	desc.swingSpring.targetValue = 0.375f;
+	desc.jointSpring.spring = 4.0f;
+	desc.jointSpring.damper = 2.0f;
+	desc.flags = NX_SJF_TWIST_LIMIT_ENABLED | NX_SJF_SWING_SPRING_ENABLED;
+	desc.projectionMode = NX_JPM_POINT_MINDIST;
+
+	NxJoint* joint = scene.createJoint(desc);
+	printf("case=spherical index=%u created=%s\n", index, joint ? "yes" : "no");
+	if(!joint)
+		return;
+
+	NxVec3 gotAnchor(0.0f, 0.0f, 0.0f);
+	NxVec3 gotAxis(0.0f, 0.0f, 0.0f);
+	joint->getGlobalAnchor(gotAnchor);
+	joint->getGlobalAxis(gotAxis);
+	printf("case=spherical index=%u ", index);
+	nxPrintVec("out_anchor", gotAnchor);
+	printf(" ");
+	nxPrintVec("out_axis", gotAxis);
+	printf(" state=%u\n", static_cast<unsigned>(joint->getState()));
+
+	NxActor* ra = 0;
+	NxActor* rb = 0;
+	joint->getActors(&ra, &rb);
+	printf("case=spherical index=%u actors a=%s b=%s\n", index,
+		ra == a ? "match" : (ra ? "other" : "null"),
+		rb == b ? "match" : (rb ? "other" : "null"));
+
+	NxSphericalJoint* spherical = joint->isSphericalJoint();
+	printf("case=spherical index=%u type=%u is_spherical=%s is_revolute=%s\n", index,
+		static_cast<unsigned>(joint->getType()), spherical ? "yes" : "no",
+		joint->isRevoluteJoint() ? "yes" : "no");
+	if(spherical)
+		{
+		printf("case=spherical index=%u flags=%08x projection_mode=%u\n", index,
+			static_cast<unsigned>(spherical->getFlags()),
+			static_cast<unsigned>(spherical->getProjectionMode()));
+
+		NxSphericalJointDesc saved;
+		spherical->saveToDesc(saved);
+		printf("case=spherical index=%u saved ", index);
+		nxPrintVec("anchor0", saved.localAnchor[0]);
+		printf(" ");
+		nxPrintVec("anchor1", saved.localAnchor[1]);
+		printf("\n");
+		printf("case=spherical index=%u saved ", index);
+		nxPrintVec("axis0", saved.localAxis[0]);
+		printf(" ");
+		nxPrintVec("axis1", saved.localAxis[1]);
+		printf("\n");
+		printf("case=spherical index=%u saved ", index);
+		nxPrintVec("normal0", saved.localNormal[0]);
+		printf(" ");
+		nxPrintVec("normal1", saved.localNormal[1]);
+		printf("\n");
+		printf("case=spherical index=%u saved ", index);
+		nxPrintVec("swing_axis", saved.swingAxis);
+		printf(" projection_distance=%08x flags=%08x projection_mode=%u\n",
+			nxU(saved.projectionDistance), static_cast<unsigned>(saved.flags),
+			static_cast<unsigned>(saved.projectionMode));
+		printf("case=spherical index=%u saved twist_limit=%08x.%08x.%08x.%08x.%08x.%08x"
+			" swing_limit=%08x.%08x.%08x\n", index,
+			nxU(saved.twistLimit.low.value), nxU(saved.twistLimit.low.restitution),
+			nxU(saved.twistLimit.low.hardness), nxU(saved.twistLimit.high.value),
+			nxU(saved.twistLimit.high.restitution), nxU(saved.twistLimit.high.hardness),
+			nxU(saved.swingLimit.value), nxU(saved.swingLimit.restitution),
+			nxU(saved.swingLimit.hardness));
+		printf("case=spherical index=%u saved twist_spring=%08x.%08x.%08x"
+			" swing_spring=%08x.%08x.%08x joint_spring=%08x.%08x.%08x\n", index,
+			nxU(saved.twistSpring.spring), nxU(saved.twistSpring.damper),
+			nxU(saved.twistSpring.targetValue), nxU(saved.swingSpring.spring),
+			nxU(saved.swingSpring.damper), nxU(saved.swingSpring.targetValue),
+			nxU(saved.jointSpring.spring), nxU(saved.jointSpring.damper),
+			nxU(saved.jointSpring.targetValue));
+		printf("case=spherical index=%u saved max_force=%08x max_torque=%08x flags=%08x actors a=%s b=%s\n",
+			index, nxU(saved.maxForce), nxU(saved.maxTorque), static_cast<unsigned>(saved.jointFlags),
+			saved.actor[0] == a ? "match" : (saved.actor[0] ? "other" : "null"),
+			saved.actor[1] == b ? "match" : (saved.actor[1] ? "other" : "null"));
+		}
+
+	scene.releaseJoint(*joint);
+	printf("case=spherical index=%u released=yes\n", index);
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	wchar_t pairDirectory[MAX_PATH];
@@ -408,6 +529,11 @@ int wmain(int argc, wchar_t** argv)
 	// anchor/axis values.
 	nxCylindricalCase(*scene, a, b, 0, NxVec3(0.0f, 0.0f, 0.0f), NxVec3(1.0f, 0.0f, 0.0f));
 	nxCylindricalCase(*scene, a, b, 3, NxVec3(2.0f, 4.0f, 0.0f), NxVec3(0.5f, 0.5f, 0.5f));
+
+	// The spherical family (joint-families Task 3c), over the same two
+	// anchor/axis values.
+	nxSphericalCase(*scene, a, b, 0, NxVec3(0.0f, 0.0f, 0.0f), NxVec3(1.0f, 0.0f, 0.0f));
+	nxSphericalCase(*scene, a, b, 3, NxVec3(2.0f, 4.0f, 0.0f), NxVec3(0.5f, 0.5f, 0.5f));
 
 	sdk->releaseScene(*scene);
 	printf("scene=released\n");
