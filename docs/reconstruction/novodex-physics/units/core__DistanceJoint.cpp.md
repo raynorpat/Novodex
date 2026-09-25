@@ -18,11 +18,11 @@ Evidenced span: ['0x0009f1c0', '0x0009f560']. Rows: 6 (0 ambiguous). Generated b
 - gap:SphereShape.cpp..ConvexHull.cpp: phys_fn_001391
 - gap:core\PrismaticJoint.cpp..core\NpD6Joint.cpp: phys_fn_004391, phys_fn_004393
 
-## phys_fn_004230 (0x0009f1c0, 109 B, discovered)
+## phys_fn_004230 (0x0009f1c0, 109 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/DistanceJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/DistanceJoint.cpp
 - prototype: undefined FUN_1009f1c0(void)
 - calling convention: unknown, stack purge: 2147483647
 - callers: phys_fn_004234 (0x0009f470)
@@ -58,11 +58,11 @@ void FUN_1009f1c0(int param_1)
 
 ```
 
-## phys_fn_004232 (0x0009f230, 564 B, discovered)
+## phys_fn_004232 (0x0009f230, 564 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/DistanceJoint.cpp
+- implementation: Physics/src/core/DistanceJoint.cpp
 - prototype: undefined FUN_1009f230(void)
 - calling convention: unknown, stack purge: 2147483647
 - callers: phys_fn_004234 (0x0009f470)
@@ -149,11 +149,11 @@ void FUN_1009f230(int *param_1)
 
 ```
 
-## phys_fn_004234 (0x0009f470, 162 B, discovered)
+## phys_fn_004234 (0x0009f470, 162 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/DistanceJoint.cpp
+- implementation: Physics/src/core/DistanceJoint.cpp
 - prototype: void * __thiscall FUN_1009f470(int param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_000665 (0x000142c0)
@@ -196,11 +196,11 @@ void * __thiscall FUN_1009f470(void *this,int param_1)
 
 ```
 
-## phys_fn_004236 (0x0009f520, 56 B, discovered)
+## phys_fn_004236 (0x0009f520, 56 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/DistanceJoint.cpp
+- implementation: Physics/src/core/DistanceJoint.cpp
 - prototype: void * __thiscall FUN_1009f520(byte param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004234 (0x0009f470)
@@ -229,11 +229,11 @@ void * __thiscall FUN_1009f520(void *this,byte param_1)
 
 ```
 
-## phys_fn_004238 (0x0009f560, 188 B, discovered)
+## phys_fn_004238 (0x0009f560, 188 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/DistanceJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/DistanceJoint.cpp
 - prototype: undefined FUN_1009f560(void)
 - calling convention: unknown, stack purge: 2147483647
 - callers: phys_fn_004234 (0x0009f470)
@@ -303,11 +303,11 @@ LAB_1009f5d8:
 
 ```
 
-## phys_fn_004240 (0x0009f620, 2747 B, discovered)
+## phys_fn_004240 (0x0009f620, 2747 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/DistanceJoint.cpp
+- implementation: Physics/src/core/DistanceJoint.cpp
 - prototype: undefined __thiscall FUN_1009f620(float param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004234 (0x0009f470)

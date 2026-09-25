@@ -1,0 +1,113 @@
+Distance family: cdb breakpoint trace of the joint transcript (joint-families Task 3f)
+=====================================================================================
+
+A trimmed excerpt of the raw cdb log, in the method of evidence/unit-pilot-revolute-trace.txt
+and evidence/joint-families-trace-point-in-plane.txt. Register dumps, ModLoad lines, banners and
+the program's own stdout are removed; the HIT lines are kept in order and otherwise unedited
+(a HIT that the debugger printed on the same line as program output is cut from that line).
+It is the evidence behind the dynamic_proof of phys_fn_004234, 004531, 004529 and 004230 in
+inventory.json.
+
+Debugger:  Microsoft Windows Debugger 10.0.10586.567 (X86)
+Command:   cdb -cf <script> build\Release\NxPhysicsJointTests.exe build\pairs\candidate
+Recorded:  2026-09-25, on the Task 3f working tree after the wiring (Scene::createJoint
+           case 6 -> core/DistanceJoint.cpp) and the nxDistanceCase test commits.
+Candidate: build\pairs\candidate\NxPhysics.dll
+           sha256=943a3ce1ab76fa156062e9197bc54c4b28b83432f8c758c0b3618af407749532
+           (identical to build\Release\NxPhysics.dll at the time of the trace).
+Offsets:   module-relative, from build\Release\NxPhysics.map of that build. The folded Np
+           bodies are broken on their NpJointShared<NxDistanceJoint, DistanceJoint>
+           instantiation; the Joint rows are shared with the other families.
+
+Breakpoints (each echoes and continues):
+bp NxPhysics+0x27480 ".echo HIT 000665 Scene::createJoint; gc"
+bp NxPhysics+0x2e3f0 ".echo HIT 004234 DistanceJoint ctor; gc"
+bp NxPhysics+0x2f1b0 ".echo HIT 004141 Joint ctor; gc"
+bp NxPhysics+0x30ad0 ".echo HIT 004121 loadFromDescBase; gc"
+bp NxPhysics+0x30f90 ".echo HIT 004097 refreshBodyFrame; gc"
+bp NxPhysics+0x34220 ".echo HIT 004531 NpDistanceJoint ctor; gc"
+bp NxPhysics+0x34b40 ".echo HIT (helper) nxDistanceJointAttachScene; gc"
+bp NxPhysics+0x37f70 ".echo HIT 004437 Np getGlobalAnchor (distance instantiation); gc"
+bp NxPhysics+0x384b0 ".echo HIT 004441 Np getGlobalAxis (distance instantiation); gc"
+bp NxPhysics+0x392a0 ".echo HIT 004483 Np getState (distance instantiation); gc"
+bp NxPhysics+0x37910 ".echo HIT 004539 Np getActors (distance instantiation); gc"
+bp NxPhysics+0x394d0 ".echo HIT 004443 Np getType (distance instantiation); gc"
+bp NxPhysics+0x399c0 ".echo HIT 004479 Np is (distance instantiation); gc"
+bp NxPhysics+0x34cf0 ".echo HIT 004529 NpDistanceJoint saveToDesc; gc"
+bp NxPhysics+0x2f120 ".echo HIT 004230 DistanceJoint saveToDesc; gc"
+bp NxPhysics+0x320e0 ".echo HIT 004066 Joint saveToDescBase; gc"
+bp NxPhysics+0x2e500 ".echo HIT 004236 ~DistanceJoint; gc"
+bp NxPhysics+0x2ea20 ".echo HIT 004238 DistanceJoint loadFromDesc; gc"
+bp NxPhysics+0x2ebe0 ".echo HIT 004240 row_slot6; gc"
+bp NxPhysics+0x2eb10 ".echo HIT 004232 row_slot4; gc"
+
+Hits, in order. The joint test runs four revolute, two prismatic, two cylindrical, two
+spherical, two point-on-line and two point-in-plane cases first (their Joint-row hits are
+summarised, not repeated), then the two distance cases in full.
+
+-- revolute 0 case: 5 hits (Joint rows only; no distance breakpoint) --
+-- revolute 1 case: 5 hits (Joint rows only; no distance breakpoint) --
+-- revolute 2 case: 5 hits (Joint rows only; no distance breakpoint) --
+-- revolute 3 case: 5 hits (Joint rows only; no distance breakpoint) --
+-- prismatic 0 case: 6 hits (Joint rows only; no distance breakpoint) --
+-- prismatic 1 case: 6 hits (Joint rows only; no distance breakpoint) --
+-- cylindrical 0 case: 6 hits (Joint rows only; no distance breakpoint) --
+-- cylindrical 1 case: 6 hits (Joint rows only; no distance breakpoint) --
+-- spherical 0 case: 6 hits (Joint rows only; no distance breakpoint) --
+-- spherical 1 case: 6 hits (Joint rows only; no distance breakpoint) --
+-- point-on-line 0 case: 6 hits (Joint rows only; no distance breakpoint) --
+-- point-on-line 1 case: 6 hits (Joint rows only; no distance breakpoint) --
+-- point-in-plane 0 case: 6 hits (Joint rows only; no distance breakpoint) --
+-- point-in-plane 1 case: 6 hits (Joint rows only; no distance breakpoint) --
+
+-- distance case index=0 --
+HIT 000665 Scene::createJoint
+HIT 004234 DistanceJoint ctor
+HIT 004141 Joint ctor
+HIT 004121 loadFromDescBase
+HIT 004097 refreshBodyFrame
+HIT 004097 refreshBodyFrame
+HIT 004531 NpDistanceJoint ctor
+HIT (helper) nxDistanceJointAttachScene
+HIT 004437 Np getGlobalAnchor (distance instantiation)
+HIT 004441 Np getGlobalAxis (distance instantiation)
+HIT 004483 Np getState (distance instantiation)
+HIT 004539 Np getActors (distance instantiation)
+HIT 004479 Np is (distance instantiation)
+HIT 004479 Np is (distance instantiation)
+HIT 004443 Np getType (distance instantiation)
+HIT 004529 NpDistanceJoint saveToDesc
+HIT 004230 DistanceJoint saveToDesc
+HIT 004066 Joint saveToDescBase
+
+-- distance case index=3 --
+HIT 000665 Scene::createJoint
+HIT 004234 DistanceJoint ctor
+HIT 004141 Joint ctor
+HIT 004121 loadFromDescBase
+HIT 004097 refreshBodyFrame
+HIT 004097 refreshBodyFrame
+HIT 004531 NpDistanceJoint ctor
+HIT (helper) nxDistanceJointAttachScene
+HIT 004437 Np getGlobalAnchor (distance instantiation)
+HIT 004441 Np getGlobalAxis (distance instantiation)
+HIT 004483 Np getState (distance instantiation)
+HIT 004539 Np getActors (distance instantiation)
+HIT 004479 Np is (distance instantiation)
+HIT 004479 Np is (distance instantiation)
+HIT 004443 Np getType (distance instantiation)
+HIT 004529 NpDistanceJoint saveToDesc
+HIT 004230 DistanceJoint saveToDesc
+HIT 004066 Joint saveToDescBase
+
+Not hit: 004236 (~DistanceJoint: release is unwired, NpScene::releaseJoint is empty), 004238
+(loadFromDesc), 004240 (the solver slot: no simulation step) and 004232 (no debug render).
+004479 is hit twice per case: once for isDistanceJoint and once for isRevoluteJoint (both
+NxJoint.h inlines call is()).
+
+The generated adjustor thunk for phys_fn_004533 (??_ENpDistanceJoint@@WM@AEPAXI@Z,
+NxPhysics+0x34305 in the same build), disassembled by the same cdb session:
+6c0c4305 83e90c          sub     ecx,0Ch
+6c0c4308 e903000000      jmp     NxPhysics!NxBuildSmoothNormals+0x8460 (6c0c4310)
+The jump target NxPhysics+0x34310 is ??_ENpDistanceJoint@@UAEPAXI@Z (the scalar deleting
+destructor, phys_fn_004535), matching the oracle's 0x100b1590 `sub ecx,0xc; jmp 0x100b15a0`.

@@ -77014,13 +77014,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/DistanceJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2043",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14107",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from units/core__DistanceJoint.cpp.md (ghidra supplement) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Distance)",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both distance cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 6 wired to core/DistanceJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 59/59 coverage); trace excerpt committed as evidence/joint-families-trace-distance.txt (joint-families Task 3f)",
+      "notes": "",
+      "implementation": "Physics/src/core/DistanceJoint.cpp"
     },
     {
       "id": "phys_fn_004231",
@@ -77050,13 +77051,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/DistanceJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2044",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14109",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__DistanceJoint.cpp.md (ghidra supplement) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Distance)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/DistanceJoint.cpp"
     },
     {
       "id": "phys_fn_004233",
@@ -77086,13 +77088,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/DistanceJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1595",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14120",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from units/core__DistanceJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Distance)",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both distance cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 6 wired to core/DistanceJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 59/59 coverage); trace excerpt committed as evidence/joint-families-trace-distance.txt (joint-families Task 3f)",
+      "notes": "",
+      "implementation": "Physics/src/core/DistanceJoint.cpp"
     },
     {
       "id": "phys_fn_004235",
@@ -77122,13 +77125,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/DistanceJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1596",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14123",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__DistanceJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Distance)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/DistanceJoint.cpp"
     },
     {
       "id": "phys_fn_004237",
@@ -77158,13 +77162,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/DistanceJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2047",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14126",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__DistanceJoint.cpp.md (ghidra supplement) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Distance)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/DistanceJoint.cpp"
     },
     {
       "id": "phys_fn_004239",
@@ -77194,13 +77199,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/DistanceJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1597",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14138",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__DistanceJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Distance)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/DistanceJoint.cpp"
     },
     {
       "id": "phys_fn_004241",
@@ -82175,13 +82181,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpDistanceJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1691",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15227",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpDistanceJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Distance)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpDistanceJoint.cpp"
     },
     {
       "id": "phys_fn_004512",
@@ -82211,13 +82218,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpDistanceJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1692",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15230",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpDistanceJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Distance)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpDistanceJoint.cpp"
     },
     {
       "id": "phys_fn_004514",
@@ -82247,13 +82255,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpDistanceJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1693",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15233",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpDistanceJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Distance)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpDistanceJoint.cpp"
     },
     {
       "id": "phys_fn_004516",
@@ -82283,13 +82292,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpDistanceJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1694",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15236",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpDistanceJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Distance)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpDistanceJoint.cpp"
     },
     {
       "id": "phys_fn_004518",
@@ -82319,13 +82329,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpDistanceJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1695",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15239",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpDistanceJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Distance)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpDistanceJoint.cpp"
     },
     {
       "id": "phys_fn_004520",
@@ -82359,9 +82370,10 @@
       "source": "Physics/src/core/NpDistanceJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1696",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15242",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpDistanceJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Distance)",
       "dynamic_proof": "confirmed via the tailjmp differential (3z191): failures=0 for all twelve rows on both arms, comparing the report tuple, the global word written at 0x10127180 and the whole object buffer, with the lock API, report slot and that global bound",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpDistanceJoint.cpp"
     },
     {
       "id": "phys_fn_004522",
@@ -82391,13 +82403,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/core/NpDistanceJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1697",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15245",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpDistanceJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Distance)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpDistanceJoint.cpp"
     },
     {
       "id": "phys_fn_004524",
@@ -82431,10 +82444,10 @@
       "source": "Physics/src/core/NpDistanceJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1698",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15248",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpDistanceJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Distance)",
       "dynamic_proof": "confirmed via the mutexlistfree differential (3z196): both arms failures=0 for all ten rows, comparing the report tuple, the ordered free sequence, the global word cleared by the teardown and the whole object",
-      "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp",
+      "notes": "previous implementation: Physics/src/ObjectModel.cpp",
+      "implementation": "Physics/src/core/NpDistanceJoint.cpp",
       "implementation_symbol": "phys_fn_004525 (harness dispatch table)"
     },
     {
@@ -82469,9 +82482,10 @@
       "source": "Physics/src/core/NpDistanceJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1699",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15251",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpDistanceJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Distance)",
       "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpDistanceJoint.cpp"
     },
     {
       "id": "phys_fn_004528",
@@ -82505,9 +82519,10 @@
       "source": "Physics/src/core/NpDistanceJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1700",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15254",
-      "static_proof": null,
-      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound",
-      "notes": ""
+      "static_proof": "transcribed from units/core__NpDistanceJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Distance)",
+      "dynamic_proof": "confirmed via mutexfamily differential (3z161): both arms failures=0 for all 31 rows, with the report slot, lock API and each row vtable slot bound; executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both distance cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 6 wired to core/DistanceJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 59/59 coverage); trace excerpt committed as evidence/joint-families-trace-distance.txt (joint-families Task 3f)",
+      "notes": "",
+      "implementation": "Physics/src/core/NpDistanceJoint.cpp"
     },
     {
       "id": "phys_fn_004530",
@@ -82537,13 +82552,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/NpDistanceJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1701",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15257",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from units/core__NpDistanceJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Distance)",
+      "dynamic_proof": "executed under the Phase 6 joint transcript: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit in both distance cases of NxPhysicsJointTests against build/pairs/candidate (sha256 = build/Release/NxPhysics.dll), with Scene::createJoint case 6 wired to core/DistanceJoint.cpp and the Phase 6 staged-pair transcript byte-identical to the oracle (stdout_delta=0, 59/59 coverage); trace excerpt committed as evidence/joint-families-trace-distance.txt (joint-families Task 3f)",
+      "notes": "",
+      "implementation": "Physics/src/core/NpDistanceJoint.cpp"
     },
     {
       "id": "phys_fn_004532",
@@ -82573,13 +82589,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/NpDistanceJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2194",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15258",
-      "static_proof": null,
+      "static_proof": "compiler-generated `vector deleting destructor' adjustor{12} thunk: Physics/src/core/NpDistanceJoint.cpp carries only its stable-ID line above ~NpDistanceJoint; the NpJointShared<NxDistanceJoint, DistanceJoint> layout per units/joint-families-contract.md makes the compiler emit ??_ENpDistanceJoint@@WM@AEPAXI@Z (candidate 0x10034305 in build/Release/NxPhysics.map), which disassembles to `sub ecx,0xc; jmp <NpDistanceJoint deleting destructor>` (evidence/joint-families-trace-distance.txt), the same two instructions as the oracle's 0x100b1590 `sub ecx,0xc; jmp 0x100b15a0` (phys_fn_004535)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpDistanceJoint.cpp"
     },
     {
       "id": "phys_fn_004534",
@@ -82609,13 +82626,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/NpDistanceJoint.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1702",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15259",
-      "static_proof": null,
+      "static_proof": "transcribed from units/core__NpDistanceJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Distance)",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpDistanceJoint.cpp"
     },
     {
       "id": "phys_fn_004536",

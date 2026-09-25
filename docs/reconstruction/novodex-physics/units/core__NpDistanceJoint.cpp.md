@@ -42,11 +42,11 @@ Evidenced span: ['0x000b11a0', '0x000b14f0']. Rows: 15 (0 ambiguous). Generated 
 - gap:core\PrismaticJoint.cpp..core\NpD6Joint.cpp: phys_fn_004417, phys_fn_004419, phys_fn_004421, phys_fn_004423, phys_fn_004425, phys_fn_004427, phys_fn_004429, phys_fn_004431, phys_fn_004433
 - unassigned: phys_fn_005667, phys_fn_005668
 
-## phys_fn_004511 (0x000b11a0, 84 B, discovered)
+## phys_fn_004511 (0x000b11a0, 84 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpDistanceJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpDistanceJoint.cpp
 - prototype: undefined __thiscall FUN_100b11a0(float * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004531 (0x000b1550)
@@ -86,11 +86,11 @@ void __thiscall FUN_100b11a0(void *this,float *param_1)
 
 ```
 
-## phys_fn_004513 (0x000b1200, 84 B, discovered)
+## phys_fn_004513 (0x000b1200, 84 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpDistanceJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpDistanceJoint.cpp
 - prototype: undefined __thiscall FUN_100b1200(float * param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004531 (0x000b1550)
@@ -130,11 +130,11 @@ void __thiscall FUN_100b1200(void *this,float *param_1)
 
 ```
 
-## phys_fn_004515 (0x000b1260, 89 B, discovered)
+## phys_fn_004515 (0x000b1260, 89 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpDistanceJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpDistanceJoint.cpp
 - prototype: undefined __thiscall FUN_100b1260(float param_1, float param_2)
 - calling convention: __thiscall, stack purge: 8
 - callers: phys_fn_004531 (0x000b1550)
@@ -174,11 +174,11 @@ void __thiscall FUN_100b1260(void *this,float param_1,float param_2)
 
 ```
 
-## phys_fn_004517 (0x000b12c0, 89 B, discovered)
+## phys_fn_004517 (0x000b12c0, 89 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpDistanceJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpDistanceJoint.cpp
 - prototype: undefined __thiscall FUN_100b12c0(float * param_1, char param_2)
 - calling convention: __thiscall, stack purge: 8
 - callers: phys_fn_004531 (0x000b1550)
@@ -218,11 +218,11 @@ void __thiscall FUN_100b12c0(void *this,float *param_1,char param_2)
 
 ```
 
-## phys_fn_004519 (0x000b1320, 97 B, discovered)
+## phys_fn_004519 (0x000b1320, 97 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpDistanceJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpDistanceJoint.cpp
 - prototype: uint __fastcall FUN_100b1320(int param_1)
 - calling convention: __fastcall, stack purge: 8
 - callers: phys_fn_004531 (0x000b1550)
@@ -269,7 +269,7 @@ uint __fastcall FUN_100b1320(int param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpDistanceJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpDistanceJoint.cpp
 - prototype: undefined __fastcall FUN_100b1390(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_004531 (0x000b1550)
@@ -309,11 +309,11 @@ void __fastcall FUN_100b1390(int param_1)
 
 ```
 
-## phys_fn_004523 (0x000b13e0, 88 B, discovered)
+## phys_fn_004523 (0x000b13e0, 88 B, reconstructed)
 
 - ambiguous: no
 - source: Physics/src/core/NpDistanceJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpDistanceJoint.cpp
 - prototype: undefined __thiscall FUN_100b13e0(int param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004531 (0x000b1550)
@@ -357,7 +357,7 @@ void __thiscall FUN_100b13e0(void *this,int param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpDistanceJoint.cpp
-- implementation: Physics/src/ObjectModel.cpp
+- implementation: Physics/src/core/NpDistanceJoint.cpp
 - prototype: undefined __fastcall FUN_100b1440(int param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_004531 (0x000b1550)
@@ -401,7 +401,7 @@ void __fastcall FUN_100b1440(int param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpDistanceJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpDistanceJoint.cpp
 - prototype: undefined __thiscall FUN_100b1490(undefined4 param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004531 (0x000b1550)
@@ -445,7 +445,7 @@ void __thiscall FUN_100b1490(void *this,undefined4 param_1)
 
 - ambiguous: no
 - source: Physics/src/core/NpDistanceJoint.cpp
-- implementation: None
+- implementation: Physics/src/core/NpDistanceJoint.cpp
 - prototype: undefined __thiscall FUN_100b14f0(undefined4 param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004531 (0x000b1550)
@@ -485,11 +485,11 @@ void __thiscall FUN_100b14f0(void *this,undefined4 param_1)
 
 ```
 
-## phys_fn_004531 (0x000b1550, 57 B, discovered)
+## phys_fn_004531 (0x000b1550, 57 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/NpDistanceJoint.cpp
+- implementation: Physics/src/core/NpDistanceJoint.cpp
 - prototype: void * __thiscall FUN_100b1550(undefined4 param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004234 (0x0009f470)
@@ -518,11 +518,11 @@ void * __thiscall FUN_100b1550(void *this,undefined4 param_1)
 
 ```
 
-## phys_fn_004533 (0x000b1590, 8 B, discovered)
+## phys_fn_004533 (0x000b1590, 8 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/NpDistanceJoint.cpp
+- implementation: Physics/src/core/NpDistanceJoint.cpp
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: phys_fn_004531 (0x000b1550)
@@ -537,11 +537,11 @@ Decompile (capstone disassembly):
 0x000b1593  jmp 0x100b15a0
 ```
 
-## phys_fn_004535 (0x000b15a0, 55 B, discovered)
+## phys_fn_004535 (0x000b15a0, 55 B, reconstructed)
 
 - ambiguous: no
-- source: None
-- implementation: None
+- source: Physics/src/core/NpDistanceJoint.cpp
+- implementation: Physics/src/core/NpDistanceJoint.cpp
 - prototype: void * __thiscall FUN_100b15a0(byte param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_004531 (0x000b1550), phys_fn_004533 (0x000b1590)
