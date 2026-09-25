@@ -213,6 +213,30 @@ and the new `Physics/src/include/core/JointSupport.h`.
 - `Joint::getGlobalAnchor/getGlobalAxis/row004127` stay `const`; the stale-body refresh
   they begin with (004097) goes through a `const_cast`, as the oracle row mutates the cache.
 
+### Declaration changes made by Task 7
+
+Headers `Physics/src/include/core/RevoluteJoint.h` and `Physics/src/include/core/Joint.h`.
+
+- `RevoluteJoint::mLimit/mMotor/mSpring` are now `NxJointLimitPairDesc`/`NxMotorDesc`/`NxSpringDesc`
+  (the local `LimitLeg`/`Motor`/`Spring` structs are gone; offsets unchanged). Evidence: 004366
+  0xac559–0xac5a4 stores exactly the values the three inline default constructors store, and
+  every row copies the blocks dword-for-dword; `Motor::freeSpin` had been typed `NxReal`,
+  but it is `NX_BOOL`.
+- `void row004352()` → `NxF64 row004352()` (`this` in ecx, no stack args, plain `ret`, result
+  unrounded in st(0)).
+- `NxReal getVelocity() const` → `NxF64 getVelocity() const` (004354 returns st(0) unrounded;
+  the Np caller 004723 rounds it with its own `fstp`).
+- `void row004358()` → `void row004358(NxVec3& out) const` (`ret 4`, one output vec3).
+- `Joint` gains `static void operator delete(void*)` → SDK allocator free (slot +0x14), so the
+  compiler's deleting destructors free as 004119 (0x98789) and 004368 (0xac61f) do.
+- `JointBodyRecord` gains `NxVec3 mAngularVelocity` at +0x78 (004354; the candidate stores the
+  body descriptor's angularVelocity there) and `JointBodyRecord204* mUnknown204` at +0x204
+  (004358, and 004374 per the field list below). New read view `JointBodyRecord204`: vec3 at
+  +0x00 and +0x10 (`mUnknown000`, `mUnknown010`; 004358 forms `mUnknown000 + mUnknown010 × r`).
+- 004352 does not use `NxMath::acos(NxF32)` as the `reuse` table says: the listing leaves the
+  acos result unrounded, so the same clamp is inlined at double precision. 004330 does use it
+  (its result is stored as a float at once).
+
 ## Construction chain
 
 The public call is `NxScene::createJoint(desc)` with `desc.type == NX_JOINT_REVOLUTE (1)`.
@@ -456,8 +480,9 @@ quaternion (004125, 004129; the candidate writes both, `Scene.cpp:1811–1823`),
 massLocalPose there, `Scene.cpp:1830–1831`), +0x10c (bit 0x80 tested by 004133), +0x114
 (bit 0x100), +0x134..+0x160 (3×3 + vec3; read by 004064, and by 004080, 004127, 004131 — Task 6), +0x198 (stamp; the
 candidate sets 2, `Scene.cpp:1919`), +0x19c (pointer whose first word is the `NxActor*`;
-the candidate's 0x50-byte body has `actor` at +0, `Scene.cpp:1784`), +0x204 (read by
-004374 only).
+the candidate's 0x50-byte body has `actor` at +0, `Scene.cpp:1784`), +0x78 (angular
+velocity; 004354 — Task 7), +0x204 (pointer to a record with vec3s at +0x00/+0x10; read
+by 004358 and 004374; the candidate does not write it).
 
 ## Dispatch tables
 

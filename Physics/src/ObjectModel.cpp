@@ -1572,6 +1572,7 @@ float nxLockedDoubleField(void* self, unsigned fieldOff, unsigned dataOff)
 	}
 
 // The copy-and-flag member.
+// Product row: Physics/src/core/RevoluteJoint.cpp.
 unsigned char nxLockedCopyAndFlag(void* self, unsigned fieldOff,
 	unsigned dataOff, unsigned count, unsigned shift, unsigned* out)
 	{
@@ -2064,6 +2065,7 @@ void* nxDtorWithGlobal3938(void* self, unsigned flags)
 	}
 
 // The guarded store family: the 004334 guard without the clamp tail.
+// Product row: Physics/src/core/RevoluteJoint.cpp.
 void nxGuardedStoreEx(void* self, unsigned arg, unsigned fieldOff, unsigned code,
 	unsigned file, unsigned line, unsigned expression)
 	{

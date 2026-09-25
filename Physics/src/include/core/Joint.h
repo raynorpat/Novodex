@@ -39,6 +39,18 @@
 // through this type. Only the fields the Joint rows touch are named; names
 // come from what the candidate stores there, the rest are by offset. See
 // revolute-contract.md "## Object layouts" (Body fields the Joint rows read).
+// The record JointBodyRecord::mUnknown204 points to. Read view only; the
+// only fields named are the two vec3s phys_fn_004358 reads (it forms
+// mUnknown000 + mUnknown010 x r for a joint-owned offset r). Meaning unknown.
+struct JointBodyRecord204
+	{
+	NxVec3				mUnknown000;	//!< +0x00
+	NxU32				mUnknown00c;	//!< +0x0c (not read)
+	NxVec3				mUnknown010;	//!< +0x10
+	};
+
+static_assert(offsetof(JointBodyRecord204, mUnknown010) == 0x10, "second vec3 at +0x10");
+
 struct JointBodyRecord
 	{
 	NxU8				mUnknown000[0x4c];
@@ -50,7 +62,11 @@ struct JointBodyRecord
 	NxVec3				mPosition;
 	//! +0x05c. Orientation quaternion x, y, z, w (phys_fn_004125/004129).
 	NxReal				mOrientation[4];
-	NxU8				mUnknown06c[0xdc - 0x6c];
+	NxU8				mUnknown06c[0x78 - 0x6c];
+	//! +0x078. The candidate stores the body descriptor's angularVelocity
+	//! here (phys_fn_004354 differences it between the two bodies).
+	NxVec3				mAngularVelocity;
+	NxU8				mUnknown084[0xdc - 0x84];
 	//! +0x0dc. Row-major 3x3 (the candidate writes massLocalPose.M here).
 	NxReal				mMassLocalRot[9];
 	//! +0x100. The candidate writes massLocalPose.t here.
@@ -70,6 +86,10 @@ struct JointBodyRecord
 	NxU32				mStamp;
 	//! +0x19c. Pointer whose first word is the NxActor* (phys_fn_004066).
 	void*				mOwner;
+	NxU8				mUnknown1a0[0x204 - 0x1a0];
+	//! +0x204. Pointer to a JointBodyRecord204 (phys_fn_004358 reads it;
+	//! also read by phys_fn_004374). The candidate does not write it.
+	JointBodyRecord204*	mUnknown204;
 	};
 
 static_assert(offsetof(JointBodyRecord, mWakeUpCounter) == 0x04c, "wake counter at +0x4c");
@@ -83,6 +103,8 @@ static_assert(offsetof(JointBodyRecord, mUnknown134) == 0x134, "pose at +0x134")
 static_assert(offsetof(JointBodyRecord, mUnknown158) == 0x158, "pose vec3 at +0x158");
 static_assert(offsetof(JointBodyRecord, mStamp) == 0x198, "stamp at +0x198");
 static_assert(offsetof(JointBodyRecord, mOwner) == 0x19c, "owner at +0x19c");
+static_assert(offsetof(JointBodyRecord, mAngularVelocity) == 0x078, "angular velocity at +0x78");
+static_assert(offsetof(JointBodyRecord, mUnknown204) == 0x204, "record pointer at +0x204");
 
 // A limit-plane list node: 0x14 bytes (phys_fn_004143 allocates `push 0x14`),
 // linked through +0x10 from Joint::mLimitPlaneHead. The names are the
@@ -104,6 +126,12 @@ class Joint
 	//! +0x14..+0x1c/+0x20/+0x44, then calls phys_fn_004107 and
 	//! phys_fn_004121. See "## Construction chain" step 6.
 	Joint(const NxJointDesc& desc, NxU32 typeBit);
+
+	//! The deleting destructors free through the SDK allocator
+	//! (`[[0x101041bc]]` slot +0x14): phys_fn_004119 (0x98789) for the base
+	//! and phys_fn_004368 (0xac61f) for RevoluteJoint. Declared here so the
+	//! compiler-generated deleting destructors do the same.
+	static void operator delete(void* p) { nxGetSdkAllocator()->free(p); }
 
 	// --- internal vtable, slot order 0-8 (0x101192d0 / phys_data_002614) ---
 

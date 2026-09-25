@@ -20,6 +20,9 @@
 #include "Nxp.h"
 #include "core/Joint.h"
 #include "NxRevoluteJointDesc.h"
+#include "NxJointLimitPairDesc.h"
+#include "NxMotorDesc.h"
+#include "NxSpringDesc.h"
 
 #include <cstddef>
 
@@ -130,16 +133,21 @@ class RevoluteJoint : public Joint
 	bool getSpring(NxSpringDesc& spring) const;
 
 	//! phys_fn_004352 (0x000a92c0, 694 B). In the evidenced span; called
-	//! by phys_fn_004362/phys_fn_004364.
-	void row004352();
+	//! by phys_fn_004362/phys_fn_004364. `this` in ecx, no stack arguments,
+	//! plain `ret`; returns the signed angle between the two bodies' world
+	//! normals unrounded in st(0), hence NxF64 (as Joint::row004131).
+	NxF64 row004352();
 
 	//! phys_fn_004354 (0x000a9580, 197 B). Called by phys_fn_004723 (Np
-	//! getVelocity).
-	NxReal getVelocity() const;
+	//! getVelocity). Returns the unrounded st(0) value (the Np caller
+	//! rounds it with its own fstp), hence NxF64. Logically const; the
+	//! stale-body refresh it opens with goes through a const_cast, as in
+	//! Joint::getGlobalAxis.
+	NxF64 getVelocity() const;
 
 	//! phys_fn_004358 (0x000a9f50, 269 B). In the evidenced span; called
-	//! by phys_fn_004374; reads +0x1dc..+0x1f0.
-	void row004358();
+	//! by phys_fn_004374; reads +0x1dc..+0x1f0. `ret 4`: one output vec3.
+	void row004358(NxVec3& out) const;
 
 	//! phys_fn_004372 (0x000ac700, 2467 B). Called only by phys_fn_004721
 	//! (Np getAngle); reads Joint +0x8/+0xcc/+0xe4 frames.
@@ -148,39 +156,20 @@ class RevoluteJoint : public Joint
 	// --- fields, in the oracle's byte-offset order (RevoluteJoint's base
 	//     part, 0x00-0x16b, IS Joint; the fields below start at +0x16c) ---
 
-	struct LimitLeg
-		{
-		NxReal value;
-		NxReal restitution;
-		NxReal hardness;
-		};
-
-	struct Motor
-		{
-		NxReal velTarget;
-		NxReal maxForce;
-		NxReal freeSpin;
-		};
-
-	struct Spring
-		{
-		NxReal spring;
-		NxReal damper;
-		NxReal targetValue;
-		};
+	// The three descriptor blocks are held as the public descriptor types:
+	// phys_fn_004366 initialises them (0xac559-0xac5a4) with exactly the
+	// values their inline default constructors store (limit 0, 0, 1, 0, 0, 1;
+	// motor NX_MAX_REAL, 0, 0; spring 0, 0, 0), and every row copies them
+	// dword-for-dword to and from NxRevoluteJointDesc.
 
 	//! +0x16c. limit.low / limit.high (NxJointLimitPairDesc copy).
-	struct
-		{
-		LimitLeg low;
-		LimitLeg high;
-		}					mLimit;
+	NxJointLimitPairDesc	mLimit;
 
 	//! +0x184. motor (NxMotorDesc copy).
-	Motor				mMotor;
+	NxMotorDesc			mMotor;
 
 	//! +0x190. spring (NxSpringDesc copy).
-	Spring				mSpring;
+	NxSpringDesc		mSpring;
 
 	//! +0x19c. projectionDistance.
 	NxReal				mProjectionDistance;
@@ -222,6 +211,7 @@ class RevoluteJoint : public Joint
 
 static_assert(sizeof(RevoluteJoint) == 0x204, "RevoluteJoint is 0x204 bytes in the oracle");
 static_assert(offsetof(RevoluteJoint, mLimit) == 0x16c, "the limit pair is at +0x16c");
+static_assert(sizeof(NxJointLimitPairDesc) == 0x18 && sizeof(NxMotorDesc) == 0xc && sizeof(NxSpringDesc) == 0xc, "the descriptor blocks keep the oracle sizes");
 static_assert(offsetof(RevoluteJoint, mMotor) == 0x184, "the motor is at +0x184");
 static_assert(offsetof(RevoluteJoint, mSpring) == 0x190, "the spring is at +0x190");
 static_assert(offsetof(RevoluteJoint, mProjectionDistance) == 0x19c, "projectionDistance is at +0x19c");
