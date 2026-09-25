@@ -126,7 +126,9 @@ static void d6QuaternionRateMatrix(NxReal* out, const NxReal* a, const NxReal* b
 //   Qx z) + Qw y) - Qz x, z ((Qy x + Qz w) + Qw z) - Qx y, w (((Qw w -
 //   Qx x) - Qy y) - Qz z) (0x9b362-0x9b3d6).
 // Every operand is read before `out` is written (the callers never alias).
-void D6JointPose::row004178(D6JointPose& out, const D6JointPose& other) const
+// Returns `out` in eax (`mov eax,[esp+0x20]`, 0x9b3cd); 004207 chains it
+// (0x9e030 `mov ecx,eax`) and reads the result through it (0x9e037).
+D6JointPose* D6JointPose::row004178(D6JointPose& out, const D6JointPose& other) const
 	{
 	const double nx = -q[0];
 	const double ny = -q[1];
@@ -155,6 +157,7 @@ void D6JointPose::row004178(D6JointPose& out, const D6JointPose& other) const
 	out.p.z = pz;
 	out.p.x = (NxReal)px;
 	out.p.y = (NxReal)py;
+	return &out;
 	}
 
 // phys_fn_004180 (0x0009b400, 330 B)
@@ -953,7 +956,9 @@ void D6Joint::row_slot6(NxReal arg)
 			sumY = (NxReal)((double)ty + sumY);
 			sumZ = (NxReal)((double)tz + sumZ);
 			}
-		const double length = jointFsqrtDot3(sumX, sumX, sumY, sumY, sumZ, sumZ);
+		// The squares are summed x, z, y (0x9d222-0x9d23a: [0x3c] is the y sum,
+		// [0x40] the z sum).
+		const double length = jointFsqrtDot3(sumX, sumX, sumZ, sumZ, sumY, sumY);
 		const double error = length - mLinearLimit.value;
 		const NxReal errorF = (NxReal)error;
 		if(error > 0.0f)
@@ -1323,13 +1328,13 @@ void D6Joint::row_slot8(void* bodyArgument)
 	// The target pose (0x9ddcc-0x9e032).
 	JointBodyRecord* const body = d6Body(bodyArgument);
 	D6JointPose target;
+	const D6JointPose* result;
 	if(bodyArgument == mBody[1])
 		{
 		D6JointPose inverse1;
 		D6JointPose moved;
 		frame1.row004180(inverse1);
-		W0.row004178(moved, correction);
-		moved.row004178(target, inverse1);
+		result = W0.row004178(moved, correction)->row004178(target, inverse1);
 		}
 	else
 		{
@@ -1338,17 +1343,17 @@ void D6Joint::row_slot8(void* bodyArgument)
 		D6JointPose moved;
 		frame0.row004180(inverseFrame0);
 		correction.row004180(inverseCorrection);
-		W1.row004178(moved, inverseCorrection);
-		moved.row004178(target, inverseFrame0);
+		result = W1.row004178(moved, inverseCorrection)->row004178(target, inverseFrame0);
 		}
 
-	// The body's pose and 3x3 (0x9e037-0x9e15f); x, y and z stay on the
+	// The body's pose and 3x3, read through the pointer 004178 returns in
+	// eax (0x9e030-0x9e037); x, y and z stay on the
 	// stack, w is read back from a stored copy.
-	const NxReal qx = target.q[0];
-	const NxReal qy = target.q[1];
-	const NxReal qz = target.q[2];
-	const NxReal qw = target.q[3];
-	body->mUnknown158 = target.p;
+	const NxReal qx = result->q[0];
+	const NxReal qy = result->q[1];
+	const NxReal qz = result->q[2];
+	const NxReal qw = result->q[3];
+	body->mUnknown158 = result->p;
 	body->mCMassOrientation[3] = qw;
 	body->mCMassOrientation[0] = qx;
 	body->mCMassOrientation[1] = qy;

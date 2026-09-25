@@ -2555,7 +2555,7 @@ NxU32 nxJointSizeForType(unsigned type)
 		case 6: return 0x220;		// distance: unreachable, createJoint builds it through DistanceJoint
 		case 7: return 0x1b0;		// pulley: unreachable, createJoint builds it through PulleyJoint
 		case 8: return 0x1b0;		// fixed: unreachable, createJoint builds it through FixedJoint
-		case 9: return 0x260;		// D6: unreachable, createJoint builds it through D6Joint
+		case 9: return 0x260;		// D6: unreachable, createJoint builds it through D6Joint (0x270 bytes, push 0x270 at 0x14560)
 		default: return 0;
 		}
 	}

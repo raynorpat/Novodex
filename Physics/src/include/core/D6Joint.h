@@ -45,8 +45,9 @@ struct D6JointPose
 	//! phys_fn_004178 (0x0009b270, 396 B). Thiscall on the left pose,
 	//! `ret 8`: out = this * other (out.q = this.q * other.q, out.p =
 	//! this.q rotates other.p, plus this.p). Every product reads the
-	//! operands, so out may not alias them.
-	void				row004178(D6JointPose& out, const D6JointPose& other) const;
+	//! operands, so out may not alias them. Returns `out` in eax (0x9b3cd);
+	//! 004207 chains the result (0x9e030) and reads through it (0x9e037).
+	D6JointPose*		row004178(D6JointPose& out, const D6JointPose& other) const;
 
 	//! phys_fn_004180 (0x0009b400, 330 B). Thiscall, `ret 4`: out = the
 	//! inverse of this pose (conjugate quaternion, the position rotated by it
