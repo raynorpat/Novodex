@@ -25,6 +25,8 @@
 #include "NxPulleyJoint.h"
 #include "core/FixedJoint.h"
 #include "NxFixedJoint.h"
+#include "core/D6Joint.h"
+#include "NxD6Joint.h"
 #include "PhysicsInternal.h"
 #include "NpSceneGuard.h"
 
@@ -241,3 +243,4 @@ template class NpJointShared<NxPointInPlaneJoint, PointInPlaneJoint>;
 template class NpJointShared<NxDistanceJoint, DistanceJoint>;
 template class NpJointShared<NxPulleyJoint, PulleyJoint>;
 template class NpJointShared<NxFixedJoint, FixedJoint>;
+template class NpJointShared<NxD6Joint, D6Joint>;

@@ -1963,7 +1963,9 @@ UNRESOLVED_SOURCE_PATHS = (
     # 'Physics/src/core/NpCylindricalJoint.cpp' was here with 10 rows against
     # it, and is REMOVED: joint-families Task 3b created the file (same reason
     # as NpRevoluteJoint.cpp below).
-    'Physics/src/core/NpD6Joint.cpp',                # 14 rows
+    # 'Physics/src/core/NpD6Joint.cpp' was here with 14 rows against it, and is
+    # REMOVED: joint-families Task 3i created the file (same reason as
+    # NpRevoluteJoint.cpp below).
     # 'Physics/src/core/NpDistanceJoint.cpp' was here with 10 rows against it,
     # and is REMOVED: joint-families Task 3f created the file (same reason as
     # NpRevoluteJoint.cpp below).
