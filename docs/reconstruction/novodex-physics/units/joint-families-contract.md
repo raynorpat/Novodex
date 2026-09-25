@@ -615,10 +615,21 @@ Getters: 004437/004125, 004441/004129, 004483/004078, 004539, 004443/004070,
 - **Kind-0 records**: the distance limit arms build kind-0 records: bits 0-4 cleared, and bit 9
   set through the same xor sequence. `distanceRecordBits(record, keep, kind)` (the spherical
   spring-bits shape) covers kinds 0 and 1. Pulley and fixed may need it.
-- **sqrt**: `sqrt()` in these /arch:IA32 units compiles to a `__CIsqrt` call in the candidate,
-  where the oracle has an inline `fsqrt`. Every family since the pilot does the same. The
-  results agree for a double argument, but a reviewer comparing the object code will see the
-  call.
+- **sqrt**: never call `sqrt()` (or `sqrtf`, `NxMath::sqrt`) in a joint unit. Every joint square
+  root is an inline `fsqrt` in the oracle; in these /arch:IA32 units `sqrt()` compiles to
+  `call __CIsqrt`, which runs fsqrt under `(cw & 0x300) | 0x7f` (round to nearest) whenever the
+  word is not 0x027f. The solver slots run inside the step's 0x0f7f (PC64, chop), so the CRT
+  rounds a root to nearest where the oracle chops it -- the results do *not* agree there
+  (e.g. x = 1.5625 - 2^-63). Use `core/JointX87.h` (the sqrt-fix task): pass the listing's
+  operands, not a pre-formed sum, so the helper forms the sum at the live control word --
+  `jointFsqrtDot3/Dot4` for sums of squares/products, `jointFsqrtSum2/3/4` for sums (a
+  subtraction as a negated addend), `jointFsqrtDiag(a, b, c)` for the quaternion-from-matrix
+  diagonal arm `(a - (b + c)) + 1`, and `jointFsqrt(x)` only when the listing's argument is a
+  float load (or a value the reconstruction already holds as a `double`). A sum the listing
+  compared first (`lengthSquared > limit`) is re-formed from the same operands, which gives the
+  same bits. The helpers are naked, so the root comes back in st(0) unnarrowed. Read the
+  instructions before each `fsqrt` to pick the form; x87 fsin/fcos/fptan/fpatan and `_CIacos`
+  already have their own helpers (`sphericalF*`, `revoluteF*`, `core/JointAcos.h`).
 
 ## Cylindrical
 

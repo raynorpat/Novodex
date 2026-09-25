@@ -9,6 +9,7 @@
 #include "core/NpRevoluteJoint.h"
 #include "core/JointSupport.h"
 #include "core/JointAcos.h"
+#include "core/JointX87.h"
 #include "PhysicsSDK.h"
 #include "NxJoint.h"
 #include "NxMath.h"
@@ -396,13 +397,15 @@ void RevoluteJoint::row_slot0(NxU32 arg)
 		const double lengthSquared = ((az * a.z) + revoluteMul(a.y, a.y)) + revoluteMul(a.x, a.x);
 		if(lengthSquared > mUnknown200)
 			{
-			const NxReal length = (NxReal)sqrt(lengthSquared);
+			// fsqrt of the compared sum (0xad136), re-formed from the same
+			// operands in the same order (core/JointX87.h).
+			const NxReal length = (NxReal)jointFsqrtDot3(az, a.z, a.y, a.y, a.x, a.x);
 			mFlags = (mFlags & ~8u) | 0x10;
 			void* memory = nxGetSdkAllocator()->malloc(sizeof(JointBreakEvent), NX_MEMORY_PERSISTENT);
 			JointBreakEvent* event = memory ? new(memory) JointBreakEvent(this, length) : 0;
 			// Scene row 000571 is deferred (owner Scene.cpp); its stub asserts.
 			reinterpret_cast<Row000571Fixture*>(mScene)->row000571(event);
-			const double ratio = sqrt((double)mUnknown200) / length;
+			const double ratio = jointFsqrt(mUnknown200) / length;
 			const NxReal ratioF = (NxReal)ratio;
 			const double sx = ratio * a.x;
 			const double sy = revoluteMul(a.y, ratioF);
@@ -1247,7 +1250,9 @@ void RevoluteJoint::row_slot8(void* bodyPointer)
 			d.y = -d.y;
 			d.z = -d.z;
 			}
-		const double length = sqrt(lengthSquared);
+		// fsqrt of the compared sum (0xa9710), re-formed as in the test
+		// (the negation above does not change a square).
+		const double length = jointFsqrtDot3(d.x, d.x, d.z, d.z, d.y, d.y);
 		projected = true;
 		const double ratio = (length - mProjectionDistance) / length;
 		d.x = (NxReal)(d.x * ratio);
@@ -1316,7 +1321,7 @@ void RevoluteJoint::row_slot8(void* bodyPointer)
 		const NxReal wx = (NxReal)((double)own.x - ox);
 		const double wy = (double)own.y - oy;
 		const double wz = (double)own.z - oz;
-		const double k = 1.0f / sqrt(1.0f - revoluteMul(dotF, dotF));
+		const double k = 1.0f / jointFsqrtSum2(1.0f, -revoluteMul(dotF, dotF));
 		const NxReal nx = (NxReal)(wx * k);
 		const NxReal ny = (NxReal)(wy * k);
 		const double nz = wz * k;
@@ -1369,7 +1374,7 @@ void RevoluteJoint::row_slot8(void* bodyPointer)
 		NxReal y, z, w;
 		if(trace >= 0.0f)
 			{
-			const double root = sqrt(trace + 1.0f);
+			const double root = jointFsqrtSum4(R[8], R[4], R[0], 1.0f);
 			w = (NxReal)(0.5f * root);
 			const NxReal scale = (NxReal)(0.5f / root);
 			x = ((double)R[7] - R[5]) * scale;
@@ -1387,7 +1392,7 @@ void RevoluteJoint::row_slot8(void* bodyPointer)
 				{
 				case 0:
 					{
-					const double root = sqrt(((double)R[0] - sum84) + 1.0f);
+					const double root = jointFsqrtSum3(R[0], -sum84, 1.0f);
 					const NxReal rootF = (NxReal)root;
 					x = root * 0.5f;
 					const double scale = 0.5f / (double)rootF;
@@ -1398,7 +1403,7 @@ void RevoluteJoint::row_slot8(void* bodyPointer)
 					break;
 				case 1:
 					{
-					const double root = sqrt(((double)R[4] - ((double)R[8] + R[0])) + 1.0f);
+					const double root = jointFsqrtDiag(R[4], R[8], R[0]);
 					y = (NxReal)(0.5f * root);
 					const NxReal scale = (NxReal)(0.5f / root);
 					z = (NxReal)(((double)R[7] + R[5]) * scale);
@@ -1408,7 +1413,7 @@ void RevoluteJoint::row_slot8(void* bodyPointer)
 					break;
 				default:
 					{
-					const double root = sqrt(((double)R[8] - ((double)R[4] + R[0])) + 1.0f);
+					const double root = jointFsqrtDiag(R[8], R[4], R[0]);
 					z = (NxReal)(0.5f * root);
 					const NxReal scale = (NxReal)(0.5f / root);
 					x = ((double)R[6] + R[2]) * scale;
@@ -1424,7 +1429,7 @@ void RevoluteJoint::row_slot8(void* bodyPointer)
 		double qyN = y;
 		double qzN = z;
 		double qwN = w;
-		const double norm = sqrt(((revoluteMul(z, z) + revoluteMul(y, y)) + revoluteMul(w, w)) + x * x);
+		const double norm = jointFsqrtDot4(z, z, y, y, w, w, x, x);
 		if(norm != 0.0f)
 			{
 			const double inverse = 1.0f / norm;

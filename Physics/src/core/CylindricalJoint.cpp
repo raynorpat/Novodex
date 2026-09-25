@@ -9,6 +9,7 @@
 #include "core/NpCylindricalJoint.h"
 #include "core/JointSupport.h"
 #include "core/JointLinearRecords.h"
+#include "core/JointX87.h"
 #include "PhysicsSDK.h"
 #include "NxJoint.h"
 #include "NxDebugRenderable.h"
@@ -286,7 +287,7 @@ void CylindricalJoint::row_slot6(NxReal arg)
 		n.x = (NxReal)sx;
 		n.y = sy;
 		n.z = (NxReal)sz;
-		const double length = sqrt((sz * sz + cylindricalMul(sy, sy)) + sx * sx);
+		const double length = jointFsqrtDot3(sz, sz, sy, sy, sx, sx);
 		if(length != 0.0f)
 			{
 			const double scale = 1.0f / length;

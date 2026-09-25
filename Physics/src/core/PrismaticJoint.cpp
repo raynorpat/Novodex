@@ -8,6 +8,7 @@
 #include "core/PrismaticJoint.h"
 #include "core/NpPrismaticJoint.h"
 #include "core/JointSupport.h"
+#include "core/JointX87.h"
 #include "core/JointLinearRecords.h"
 #include "PhysicsSDK.h"
 #include "NxJoint.h"
@@ -283,7 +284,7 @@ void PrismaticJoint::row_slot6(NxReal arg)
 		n.x = (NxReal)sx;
 		n.y = sy;
 		n.z = (NxReal)sz;
-		const double length = sqrt((sx * sx + sz * sz) + prismaticMul(sy, sy));
+		const double length = jointFsqrtDot3(sx, sx, sz, sz, sy, sy);
 		if(length != 0.0f)
 			{
 			const double scale = 1.0f / length;

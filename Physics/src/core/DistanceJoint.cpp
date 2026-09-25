@@ -8,6 +8,7 @@
 #include "core/DistanceJoint.h"
 #include "core/NpDistanceJoint.h"
 #include "core/JointSupport.h"
+#include "core/JointX87.h"
 #include "core/JointLinearRecords.h"
 #include "PhysicsSDK.h"
 #include "NxJoint.h"
@@ -327,7 +328,7 @@ void DistanceJoint::row_slot6(NxReal arg)
 	d.y = (NxReal)((double)p0y - p1y);
 	const double dzUnrounded = (double)p0z - p1z;
 	d.z = (NxReal)dzUnrounded;
-	const NxReal dist = (NxReal)sqrt((dzUnrounded * d.z + distanceMul(d.y, d.y)) + distanceMul(d.x, d.x));
+	const NxReal dist = (NxReal)jointFsqrtDot3(dzUnrounded, d.z, d.y, d.y, d.x, d.x);
 	if(dist != 0.0f)
 		{
 		const double inverse = 1.0f / (double)dist;
