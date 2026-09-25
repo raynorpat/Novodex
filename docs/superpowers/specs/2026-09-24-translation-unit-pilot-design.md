@@ -111,8 +111,8 @@ the existing type application (`ApplyPhysicsTypes.java`,
 entry lacking one and records its decompile. Output:
 `oracle/ghidra/supplement.json` with the Ghidra version, analysis-options hash,
 requested RVAs and per-row `decompiler_c`/status. The main manifest is not
-modified. The pilot requests `0xa9650`, `0xaa060`, `0xab840`, `0x08d20`-family
-entries without functions (`0xa8d20`, `0xa8f10`, `0xa8fb0`, `0xa8fc0`,
+modified. The pilot requests `0xa9650`, `0xaa060`, `0xab840`, the small pilot
+rows without functions (`0xa8d20`, `0xa8f10`, `0xa8fb0`, `0xa8fc0`,
 `0xb2cc0`, `0xb3270`), and any row the extent adds that lacks one.
 
 ### 4.4 Pilot source
