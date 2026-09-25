@@ -1119,22 +1119,48 @@ const NxMat34 & NpActorVtable::getGlobalPoseReference() const
 	return *reinterpret_cast<const NxMat34*>(body + 0x20);
 	}
 
-// (unimplemented) moveGlobalPose
-void NpActorVtable::moveGlobalPose(const NxMat34&)
+void NpActorVtable::moveGlobalPose(const NxMat34& pose)
 	{
-	
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	unsigned char* record = nxNpActorRecord(this);
+	if(record && (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u))
+		{
+		unsigned char* target = *reinterpret_cast<unsigned char**>(record + 0x118);
+		if(target)
+			{
+			memcpy(target, &pose.t, sizeof(pose.t));
+			*reinterpret_cast<unsigned*>(target + 0x0c) = 3;
+			const NxQuat orientation(pose.M);
+			memcpy(target + 0x10, &orientation, sizeof(orientation));
+			}
+		}
+	nxNpSceneGuardLeave(ctx);
 	}
 
-// (unimplemented) moveGlobalPosition
-void NpActorVtable::moveGlobalPosition(const NxVec3&)
+void NpActorVtable::moveGlobalPosition(const NxVec3& position)
 	{
-	
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	unsigned char* record = nxNpActorRecord(this);
+	if(record && (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u))
+		{
+		unsigned char* target = *reinterpret_cast<unsigned char**>(record + 0x118);
+		if(target)
+			{
+			memcpy(target, &position, sizeof(position));
+			*reinterpret_cast<unsigned*>(target + 0x0c) |= 1u;
+			}
+		}
+	nxNpSceneGuardLeave(ctx);
 	}
 
-// (unimplemented) moveGlobalOrientation
-void NpActorVtable::moveGlobalOrientation(const NxMat33&)
+void NpActorVtable::moveGlobalOrientation(const NxMat33& orientation)
 	{
-	
+	NxMat34 pose;
+	pose.M = orientation;
+	pose.t = getGlobalPositionVal();
+	moveGlobalPose(pose);
 	}
 
 // (unimplemented) createShape
