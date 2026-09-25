@@ -14,7 +14,7 @@ $NxPhaseTestTargets = [ordered] @{
     '2' = @('NxPhysicsExportTests', 'NxPhysicsSDKTests', 'NxPhysicsCoreClusterTests')
     '3' = @('NxPhysicsGeometryTests', 'NxPhysicsKernelFuzzTests')
     '4' = @()
-    '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests', 'NxPhysicsActorForceTests', 'NxPhysicsActorCMassTests')
+    '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests', 'NxPhysicsActorForceTests', 'NxPhysicsActorCMassTests', 'NxPhysicsActorShapeMutationTests')
     '6' = @('NxPhysicsJointStagedPairTests')
     '7' = @('NxPhysicsJointStagedPairTests')
     '8' = @()
@@ -87,6 +87,17 @@ $NxPhaseOracleDifferentialTargets = [ordered] @{
 # from 89978 to 3521 and leaves stdout_delta at 0, and this is what turns that
 # from a silent pass into a failure.
 $NxRequiredCoverageLines = [ordered] @{
+    'NxPhysicsActorShapeMutationTests' = @(
+        'shape_mutation actor=1',
+        'shape_mutation initial=1.2.1',
+        'shape_mutation add_memory=5.0.552.28.272.8.8.f',
+        'shape_mutation added=1.2.5.1.1',
+        'shape_mutation group=2.2.2.2.1.1',
+        'shape_mutation release_memory=0.0.f',
+        'shape_mutation released=1.5.1',
+        'shape_mutation released_group=1.1.1.1',
+        'shape_mutation actor_release_memory=2.7.8.8.f.24.28.552.8.8.272.80'
+    )
     'NxPhysicsShapeVtableTests' = @(
         'shape vtable oracle_digest=ed1294b6 cases=626 failures=0'
     )
@@ -1682,7 +1693,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 101  # 34 for NxPhysicsAssetTests, 67 for NxPhysicsThirdPartyTests
-    '5' = 820  # 126 object-layout, 1 shape-vtable and 693 public actor/pruner/box/scene lines
+    '5' = 829  # 126 object-layout, 1 shape-vtable and 702 public actor/pruner/box/scene lines
                # (RED on purpose: vtables family open)
     '6' = 11  # 3 oracle-descriptor + 4 oracle-joint + 4 staged-pair-joint
     '7' = 4   # the four STAGED-PAIR assertions; the oracle-differential assertions
@@ -1712,6 +1723,7 @@ $NxRegisteredTestTargets = @(
     'NxPhysicsActorBodyFlagTests',
     'NxPhysicsActorDynamicsTests',
     'NxPhysicsActorDynamicSetterTests',
+    'NxPhysicsActorShapeMutationTests',
     'NxPhysicsActorMomentumTests',
     'NxPhysicsActorForceTests',
     'NxPhysicsActorCMassTests',

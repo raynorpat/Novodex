@@ -243,6 +243,10 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_include_directories(NxPhysicsActorDynamicSetterTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include)
 	target_link_libraries(NxPhysicsActorDynamicSetterTests bcrypt)
+	add_executable(NxPhysicsActorShapeMutationTests tests/PhysicsActorShapeMutationTests.cpp)
+	target_include_directories(NxPhysicsActorShapeMutationTests PRIVATE
+		Foundation/include Foundation/src/include Physics/include)
+	target_link_libraries(NxPhysicsActorShapeMutationTests bcrypt)
 	add_executable(NxPhysicsActorMomentumTests tests/PhysicsActorMomentumTests.cpp)
 	target_include_directories(NxPhysicsActorMomentumTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include)

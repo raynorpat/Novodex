@@ -2229,6 +2229,87 @@ void* nxShapeGroupConstruct(void* actor, const unsigned* shapeDescriptions, unsi
 	return group;
 	}
 
+// Runtime single-to-group promotion follows the allocation order of the
+// actor's public createShape slot: child, public handle, group, then arrays.
+// The factory temporarily links the new child as the body's root; promotion
+// replaces that link with the group while retaining the original child.
+void* nxActorAppendShape(void* actor, const NxShapeDesc* descriptor)
+	{
+	if(!actor || !descriptor || !descriptor->isValid()) return 0;
+	unsigned char* body = *reinterpret_cast<unsigned char**>(
+		static_cast<unsigned char*>(actor) + 0x14);
+	if(!body) return 0;
+	unsigned char* original = *reinterpret_cast<unsigned char**>(body + 0x10);
+	if(!original || *reinterpret_cast<unsigned*>(original + 0xd0) == 5u)
+		return 0;
+	unsigned char* child = static_cast<unsigned char*>(nxShapeFactory(
+		const_cast<NxShapeDesc*>(descriptor), actor));
+	if(!child) return 0;
+	NxSceneInternal* scene = *reinterpret_cast<NxSceneInternal**>(body + 4);
+	unsigned char* group = static_cast<unsigned char*>(
+		nxGetSdkAllocator()->malloc(0x110, NX_MEMORY_PERSISTENT));
+	void** shapes = group ? static_cast<void**>(
+		nxGetSdkAllocator()->malloc(2 * sizeof(void*), NX_MEMORY_PERSISTENT)) : 0;
+	void** helpers = shapes ? static_cast<void**>(
+		nxGetSdkAllocator()->malloc(2 * sizeof(void*), NX_MEMORY_PERSISTENT)) : 0;
+	if(!helpers)
+		{
+		if(shapes) nxGetSdkAllocator()->free(shapes);
+		if(group) nxGetSdkAllocator()->free(group);
+		nxSceneAuxUnregisterShape(scene, child);
+		nxSceneRecycleShapeId(scene, *reinterpret_cast<unsigned*>(child + 0xd4));
+		nxGetSdkAllocator()->free(*reinterpret_cast<void**>(child + 0x9c));
+		nxShapeSetName(child, 0);
+		nxGetSdkAllocator()->free(child);
+		*reinterpret_cast<void**>(body + 0x10) = original;
+		return 0;
+		}
+	memset(group, 0, 0x110);
+	*reinterpret_cast<void**>(group + 4) = body;
+	*reinterpret_cast<unsigned*>(group + 0xd0) = 5;
+	*reinterpret_cast<unsigned*>(group + 0xd4) = nxSceneTakeShapeId(scene);
+	*reinterpret_cast<unsigned short*>(group + 0xd8) = 0xffffu;
+	nxSceneAuxRegisterShape(scene, group);
+	shapes[0] = original;
+	shapes[1] = child;
+	helpers[0] = *reinterpret_cast<void**>(original + 0x9c);
+	helpers[1] = *reinterpret_cast<void**>(child + 0x9c);
+	*reinterpret_cast<void***>(group + 0xe0) = shapes;
+	*reinterpret_cast<void***>(group + 0xe4) = shapes + 2;
+	*reinterpret_cast<void***>(group + 0xe8) = shapes + 2;
+	*reinterpret_cast<void***>(group + 0xf0) = helpers;
+	*reinterpret_cast<void***>(group + 0xf4) = helpers + 2;
+	*reinterpret_cast<void***>(group + 0xf8) = helpers + 2;
+	*reinterpret_cast<void**>(body + 0x10) = group;
+	return helpers[1];
+	}
+
+void nxActorRemoveShape(void* actor, void* handle)
+	{
+	if(!actor || !handle) return;
+	unsigned char* body = *reinterpret_cast<unsigned char**>(
+		static_cast<unsigned char*>(actor) + 0x14);
+	unsigned char* group = body
+		? *reinterpret_cast<unsigned char**>(body + 0x10) : 0;
+	if(!group || *reinterpret_cast<unsigned*>(group + 0xd0) != 5u)
+		return;
+	void** shapes = *reinterpret_cast<void***>(group + 0xe0);
+	void** helpers = *reinterpret_cast<void***>(group + 0xf0);
+	void** end = *reinterpret_cast<void***>(group + 0xf4);
+	for(unsigned i = 0, count = static_cast<unsigned>(end - helpers); i < count; ++i)
+		if(helpers[i] == handle)
+			{
+			for(unsigned j = i + 1; j < count; ++j)
+				{
+				shapes[j - 1] = shapes[j];
+				helpers[j - 1] = helpers[j];
+				}
+			*reinterpret_cast<void***>(group + 0xe4) = shapes + count - 1;
+			*reinterpret_cast<void***>(group + 0xf4) = helpers + count - 1;
+			return;
+			}
+	}
+
 // ---------------------------------------------------------------------------
 // Reproduction holes for Scene::createJoint's callees.
 // ---------------------------------------------------------------------------

@@ -48,6 +48,8 @@ static unsigned char* nxNpActorRecord(void* actor)
 static void nxNpActorRotationFromQuaternionGetter(const float* q, float* rows);
 static void nxNpActorRefreshCMass(unsigned char* record);
 static void nxNpActorNotifyOwnedShapes(unsigned char* body);
+void* nxActorAppendShape(void* actor, const NxShapeDesc* descriptor);
+void nxActorRemoveShape(void* actor, void* handle);
 
 static NxMat33 nxNpActorInstantTensor(const unsigned char* record,
 	unsigned diagonalOffset, bool roundedQuaternionProducts)
@@ -1163,16 +1165,21 @@ void NpActorVtable::moveGlobalOrientation(const NxMat33& orientation)
 	moveGlobalPose(pose);
 	}
 
-// (unimplemented) createShape
-NxShape* NpActorVtable::createShape(const NxShapeDesc&)
+NxShape* NpActorVtable::createShape(const NxShapeDesc& descriptor)
 	{
-	return 0;
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpSceneGuardWriteTry(ctx)) return 0;
+	NxShape* shape = static_cast<NxShape*>(nxActorAppendShape(this, &descriptor));
+	nxNpSceneGuardLeave(ctx);
+	return shape;
 	}
 
-// (unimplemented) releaseShape
-void NpActorVtable::releaseShape(NxShape&)
+void NpActorVtable::releaseShape(NxShape& shape)
 	{
-	
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	nxActorRemoveShape(this, &shape);
+	nxNpSceneGuardLeave(ctx);
 	}
 
 // phys_fn_000082 (0x00002d00) delegates to the outer body's shape holder.
