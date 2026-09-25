@@ -50,7 +50,7 @@
 // The CRT's acos need not agree with this sequence, which is why it is not
 // used. The result is stored as a double (SmoothNormals.cpp's reason: st(0)
 // left to the caller is a register the compiler did not put there).
-static NX_INLINE double jointCIacos(double x)
+static double jointCIacos(double x)
 	{
 #if defined(_MSC_VER) && defined(_M_IX86)
 	double result;
@@ -92,7 +92,7 @@ static NX_INLINE double jointCIacos(double x)
 // value): >= 1 -> 0, <= -1 -> the float pi (0x1011a1b0 in the revolute
 // unit), otherwise _CIacos of the float. The result is returned unrounded: 004352 and 004372 keep it on the
 // stack; 004330 rounds it where it stores it.
-static NX_INLINE double jointAcos(NxReal f)
+static double jointAcos(NxReal f)
 	{
 	if(f >= 1.0f)
 		return 0.0f;

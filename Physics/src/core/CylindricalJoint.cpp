@@ -31,16 +31,11 @@
 // cylindrical case (NxJointType 2). See units/joint-families-contract.md
 // "## Cylindrical".
 
-static NX_INLINE double cylindricalMul(NxReal a, NxReal b)
-	{
-	return (double)a * (double)b;
-	}
-
 // (a0 * b0 + a1 * b1) + a2 * b2 with the products and the partial sum on the
 // stack; the argument order is the listing's term order at each site.
 static NX_INLINE double cylindricalSum3(NxReal a0, NxReal b0, NxReal a1, NxReal b1, NxReal a2, NxReal b2)
 	{
-	return (cylindricalMul(a0, b0) + cylindricalMul(a1, b1)) + cylindricalMul(a2, b2);
+	return (jointLinearMul(a0, b0) + jointLinearMul(a1, b1)) + jointLinearMul(a2, b2);
 	}
 
 static NX_INLINE JointBodyRecord* cylindricalBody(void* body)
@@ -74,15 +69,6 @@ static void cylindricalRefreshFirstStaleBody(Joint& joint)
 			return;
 			}
 		}
-	}
-
-// An SDK parameter the oracle reads straight from the live array (.data
-// 0x10123b18 + 4 * index). Read through PhysicsSDK::getParameter as the
-// revolute rows do (revolute-contract.md open issue 8).
-static NxReal cylindricalSdkParameter(NxParameter parameter)
-	{
-	const PhysicsSDK* const sdk = PhysicsSDK::instance;
-	return sdk ? sdk->getParameter(parameter) : 0.0f;
 	}
 
 // The bias of one linear record in 004326 (0xa8345-0xa835f for t1,
@@ -335,9 +321,9 @@ void CylindricalJoint::row_slot6(NxReal arg)
 			d1 = (double)d0 + 1.0f;
 
 		NxVec3 c0;
-		c0.x = (NxReal)(cylindricalMul(n.x, d0) + mx);
-		c0.y = (NxReal)(cylindricalMul(n.y, d0) + my);
-		const NxReal nzd0 = (NxReal)cylindricalMul(n.z, d0);
+		c0.x = (NxReal)(jointLinearMul(n.x, d0) + mx);
+		c0.y = (NxReal)(jointLinearMul(n.y, d0) + my);
+		const NxReal nzd0 = (NxReal)jointLinearMul(n.z, d0);
 		c0.z = (NxReal)((double)nzd0 + mz);
 		const NxReal nxd1 = (NxReal)(n.x * d1);
 		const NxReal nyd1 = (NxReal)(n.y * d1);
@@ -538,18 +524,18 @@ void Joint::row004318(NxDebugRenderable& renderable)
 
 	cylindricalRefreshFirstStaleBody(*this);
 
-	if(cylindricalSdkParameter(NX_VISUALIZE_JOINT_WORLD_AXES) != 0.0f)
+	if(jointLinearSdkParameter(NX_VISUALIZE_JOINT_WORLD_AXES) != 0.0f)
 		{
 		NxVec3 anchor;
 		row004123(anchor);
 		NxVec3 axis;
 		row004127(axis);
-		const NxReal scale = (NxReal)((double)cylindricalSdkParameter(NX_VISUALIZATION_SCALE) *
-			cylindricalSdkParameter(NX_VISUALIZE_JOINT_WORLD_AXES));
+		const NxReal scale = (NxReal)((double)jointLinearSdkParameter(NX_VISUALIZATION_SCALE) *
+			jointLinearSdkParameter(NX_VISUALIZE_JOINT_WORLD_AXES));
 		renderable.addArrow(anchor, axis, 1.0f, scale, 0xffffff);
 		}
 
-	if(cylindricalSdkParameter(NX_VISUALIZE_JOINT_LOCAL_AXES) != 0.0f)
+	if(jointLinearSdkParameter(NX_VISUALIZE_JOINT_LOCAL_AXES) != 0.0f)
 		{
 		NxVec3 anchor[2];
 		NxVec3 axis[2];
@@ -606,8 +592,8 @@ void Joint::row004318(NxDebugRenderable& renderable)
 			axis[1].x = (NxReal)cylindricalSum3(m[2], w.z, m[1], w.y, m[0], w.x);
 			}
 
-		const NxReal scale = (NxReal)((double)cylindricalSdkParameter(NX_VISUALIZE_JOINT_LOCAL_AXES) *
-			cylindricalSdkParameter(NX_VISUALIZATION_SCALE));
+		const NxReal scale = (NxReal)((double)jointLinearSdkParameter(NX_VISUALIZE_JOINT_LOCAL_AXES) *
+			jointLinearSdkParameter(NX_VISUALIZATION_SCALE));
 		renderable.addArrow(anchor[0], axis[0], 1.0f, scale, 0x202090);
 		renderable.addArrow(anchor[1], axis[1], 1.0f, scale, 0x5050e0);
 		}
