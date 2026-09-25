@@ -779,3 +779,256 @@ sums.
   (15 moved from `not_reconstructed_in_phase`; 004665, 004669, 004671 and 004673 already were);
   counts 239 / 192. Task 3a did not move the prismatic rows in the ledger (004376-004386 and
   004731-004757 are still `not_reconstructed_in_phase` there); left for the controller.
+
+## Spherical
+
+Recovered by joint-families Task 3c from the unit bundles `units/core__SphericalJoint.cpp.md`,
+`units/core__NpSphericalJoint.cpp.md` and
+`units/gap__core__SphericalJoint.cpp__to__core__CylindricalJoint.cpp.md`, the Capstone listing,
+the relocated table words in `oracle/pe.json` and the pinned Ghidra supplement. 004296 (the
+solver slot), 004304 (loadFromDesc) and 004312 (debug visualization) had no decompile; Task 3c
+added 0x000a3090, 0x000a4a00 and 0x000a5ee0 to `oracle/ghidra/supplement.json` (the union with
+the 15 existing `requested` RVAs; all three `ok`; the 15 existing entries came back unchanged).
+Ghidra's body for 0x000a5ee0 is two ranges, 0xa5ee0-0xa704d and 0xa7050-0xa71fe: it takes
+004314 as part of 004312 (below). The listing is authoritative over every decompile.
+
+### Row assignment
+
+`work_units.json` puts 12 rows in `core\SphericalJoint.cpp` (evidenced span 0xa2dc0-0xa4a00, no
+ambiguous rows), 16 in `core\NpSphericalJoint.cpp` (evidenced span 0xb2390-0xb27e0, no ambiguous
+rows) and 5 ambiguous rows in `gap:core\SphericalJoint.cpp..core\CylindricalJoint.cpp`. Checked
+by hand:
+
+- **Before `core\SphericalJoint.cpp`**: the unit starts at 004282 (0xa2bf0), before the evidenced
+  span. The row before it ends with `ret 4` at 0xa2bdf.
+  004282 (slot 1 of the spherical internal table, zeroes +0x1f0..+0x1f8) and 004284 (called only
+  by the spherical constructor 004300 and loadFromDesc 004304) are spherical.
+- **The gap `core\SphericalJoint.cpp..core\CylindricalJoint.cpp`** (004306-004314, 0xa4ac0-0xa71fb)
+  is spherical, as Task 3b found: 004308, 004312 and 004310 are slots 0, 4 and 7 of the spherical
+  internal table 0x10119e20; 004306 is called only by 004310 (0xa53af) and 004312 (0xa67d0); and
+  004314 is not a function but 004312's tail. 004312 opens `sub esp,0xe8` (0xa5ee0) and its last
+  instruction is `jmp 0x100a7050` (0xa704b); 004314 (0xa7050, 430 B, no callers) loops back to
+  itself (`jbe 0x100a7050`, 0xa71eb) and ends `pop ebp; pop edi; pop ebx; pop esi; add esp,0xe8;
+  ret 4` (0xa71f1-0xa71fb), which pops the registers 004312 pushed and purges its frame and its
+  one argument. It is written as part of 004312's body; its stable-ID line is stacked above
+  004312's with a comment saying it is not a function (the form the generated adjustor thunks
+  004755/004677 use), so the file names the row and the validator's implementation check holds.
+  It is recorded `reconstructed` with `implementation` = `core/SphericalJoint.cpp` and a note
+  that it is 004312's tail.
+- **After the gap**: 004316 (0xa7200) is cylindrical.
+- **`core\NpSphericalJoint.cpp`**: 004621 (NpPointOnLineJoint slot 0) ends `ret 4` at 0xb2384;
+  004623 starts at 0xb2390 and pushes the `NpSphericalJoint.cpp` `__FILE__` (0x1011afec). The
+  constructor / thunk / deleting-destructor triple 004649 (installs 0x1011b028,
+  `phys_data_002721`), 004651 (`sub ecx,0xc; jmp 004653`, table 0x1011b0bc) and 004653 (slot 0)
+  closes the unit; 004655 (0xb28d0) is NpCylindricalJoint's.
+- 004635 (slot 17, getNextLimitPlane) is in this unit's extent but was claimed by Task 1 in
+  `core/NpJointShared.cpp`; it is not written again. Slots 34 and 36 name revolute's 004703 and
+  004707 (below); they get no stable-ID line here.
+
+| Stable ID | RVA | Size | File | Evidence |
+|---|---|---:|---|---|
+| phys_fn_004282 | 0x000a2bf0 | 21 | `core/SphericalJoint.cpp` | internal slot 1 (0x119e24); zeroes +0x1f0..+0x1f8 |
+| phys_fn_004284 | 0x000a2c10 | 427 | `core/SphericalJoint.cpp` | called by 004300 (0xa49a5) and 004304 (0xa4ab0); desc+0x6c..+0xc8 -> +0x16c..+0x1d4, +0x44 |
+| phys_fn_004286 | 0x000a2dc0 | 283 | `core/SphericalJoint.cpp` | internal slot 10 (0x119e48); "SphericalJoint::saveToDesc" line 0x70 |
+| phys_fn_004288 | 0x000a2ee0 | 65 | `core/SphericalJoint.cpp` | internal slot 11; "SphericalJoint::setFlags" line 0x83 |
+| phys_fn_004290 | 0x000a2f30 | 7 | `core/SphericalJoint.cpp` | internal slot 12; returns +0x1d0 |
+| phys_fn_004292 | 0x000a2f40 | 62 | `core/SphericalJoint.cpp` | internal slot 13; "SphericalJoint::setProjectionMode" line 0x8e |
+| phys_fn_004294 | 0x000a2f80 | 269 | `core/SphericalJoint.cpp` | called by 004308 (0xa4f1a); revolute 004358's instructions over +0x1d8/+0x1e4 |
+| phys_fn_004296 | 0x000a3090 | 5907 | `core/SphericalJoint.cpp` | internal slot 6 (0x119e38) |
+| phys_fn_004298 | 0x000a47b0 | 317 | `core/SphericalJoint.cpp` | internal slot 8 (0x119e40); the projection (anchor distance only) |
+| phys_fn_004300 | 0x000a48f0 | 194 | `core/SphericalJoint.cpp` | createJoint case 3 (0x14433); installs 0x10119e20 (0xa4901) |
+| phys_fn_004302 | 0x000a49c0 | 56 | `core/SphericalJoint.cpp` | internal slot 5; reinstalls 0x10119e20 (0xa49c8) |
+| phys_fn_004304 | 0x000a4a00 | 186 | `core/SphericalJoint.cpp` | internal slot 9; "SphericalJoint::loadFromDesc" lines 0x39/0x3a |
+| phys_fn_004306 | 0x000a4ac0 | 1075 | `core/SphericalJoint.cpp` | called by 004310 and 004312; `ret 8`, returns st(0) (the twist angle) |
+| phys_fn_004308 | 0x000a4f00 | 1107 | `core/SphericalJoint.cpp` | internal slot 0 (0x119e20) |
+| phys_fn_004310 | 0x000a5360 | 2942 | `core/SphericalJoint.cpp` | internal slot 7 (0x119e3c) |
+| phys_fn_004312 | 0x000a5ee0 | 4461 | `core/SphericalJoint.cpp` | internal slot 4 (0x119e30) |
+| phys_fn_004314 | 0x000a7050 | 430 | `core/SphericalJoint.cpp` | 004312's swing-limit loop and epilogue (not a function) |
+| phys_fn_004623 | 0x000b2390 | 84 | `core/NpSphericalJoint.cpp` | Np slot 2; line 0xf |
+| phys_fn_004625 | 0x000b23f0 | 84 | `core/NpSphericalJoint.cpp` | Np slot 4; line 0xf |
+| phys_fn_004627 | 0x000b2450 | 89 | `core/NpSphericalJoint.cpp` | Np slot 9; line 0xf |
+| phys_fn_004629 | 0x000b24b0 | 89 | `core/NpSphericalJoint.cpp` | Np slot 11; line 0xf |
+| phys_fn_004631 | 0x000b2510 | 97 | `core/NpSphericalJoint.cpp` | Np slot 13; line 0xf |
+| phys_fn_004633 | 0x000b2580 | 74 | `core/NpSphericalJoint.cpp` | Np slot 15; line 0xf |
+| phys_fn_004637 | 0x000b2610 | 88 | `core/NpSphericalJoint.cpp` | Np slot 29; line 0xf |
+| phys_fn_004639 | 0x000b2670 | 74 | `core/NpSphericalJoint.cpp` | Np slot 14; line 0xf |
+| phys_fn_004641 | 0x000b26c0 | 84 | `core/NpSphericalJoint.cpp` | Np slot 31 (loadFromDesc); line 0x13; internal `[vt+0x24]` |
+| phys_fn_004643 | 0x000b2720 | 84 | `core/NpSphericalJoint.cpp` | Np slot 32 (saveToDesc); line 0x1e; internal `[vt+0x28]` |
+| phys_fn_004645 | 0x000b2780 | 84 | `core/NpSphericalJoint.cpp` | Np slot 33 (setFlags); line 0x27; internal `[vt+0x2c]` |
+| phys_fn_004647 | 0x000b27e0 | 84 | `core/NpSphericalJoint.cpp` | Np slot 35 (setProjectionMode); line 0x34; internal `[vt+0x34]` |
+| phys_fn_004649 | 0x000b2840 | 57 | `core/NpSphericalJoint.cpp` | constructor; called by 004300 (0xa4990) |
+| phys_fn_004651 | 0x000b2880 | 8 | `core/NpSphericalJoint.cpp` | secondary table 0x1011b0bc slot 0; compiler-generated thunk |
+| phys_fn_004653 | 0x000b2890 | 55 | `core/NpSphericalJoint.cpp` | Np slot 0 (scalar deleting destructor) |
+
+Already `reconstructed` through `ObjectModel.cpp` differentials or drives (proofs kept, new text
+appended; the covering models gain a `// Product row:` pointer): 004282 (zmix drive), 004288 and
+004292 (guardedstore), 004290 (batchgetters), 004633 (tailjmp), 004639 (mutexlistfree), 004641,
+004643, 004645, 004647 (mutexfamily).
+
+### Construction chain (NxJointType 3)
+
+1. 000665's switch (table 0x14590) sends type 3 to **0x14414**: SDK allocator slot +8 with
+   `(0x23c, 0)` (`push 0x23c` at 0x14420), null -> 0x1458a (result 0); otherwise
+   `call 0x100a48f0` = **004300** on the block with the descriptor (0x14433), then the shared
+   exit at 0x144fc.
+2. **004300** SphericalJoint::SphericalJoint(const NxSphericalJointDesc&) (`ret 4`):
+   `Joint(desc, 8)` (004141, `push 8` at 0xa48f7), vptr 0x10119e20 (0xa4901), then the member
+   default constructors: twistLimit (0, 0, 1, 0, 0, 1) at +0x16c, swingLimit (0, 0, 1) at +0x184,
+   the three springs (0, 0, 0) at +0x190/+0x19c/+0x1a8 (0xa4909-0xa4974) -- the inline
+   `NxJointLimitPairDesc`/`NxJointLimitDesc`/`NxSpringDesc` constructors. SDK allocator `(0x1c,
+   0)` -> **004649** on success, public object -> `this+0x48` (0xa4999), `desc.userData`
+   (desc+0x60) -> `np+4` **without a null check** (0xa499c-0xa499f), then **004284(desc)**
+   (0xa49a5).
+3. **004649** NpSphericalJoint::NpSphericalJoint(SphericalJoint*): zeroes +4/+8, transient table
+   0x1011af58 (`NxSphericalJoint`), 002404 on +0xc, secondary table 0x1011b0bc, internal at +0x18
+   and +0x08, final table 0x1011b028. The prismatic shape.
+4. Back in 000665 (0x144fc): identical to the other wired families (`[joint+0x48]` null ->
+   internal slot 5 with 1 (004302) and result 0; otherwise the link copy, 000661, and the
+   0x14529-0x1453f exit).
+
+**Public-object offset: +0x48** (`mPublicObject`; 004300 writes it at 0xa4999, 000665 reads it at
+0x14502).
+
+### Object layouts
+
+**SphericalJoint (internal), 0x23c bytes** (`push 0x23c` at 0x14420):
+
+| Off | Size | Field | Evidence |
+|---|---:|---|---|
+| +0x000 | 0x16c | `Joint` base; vptr 0x10119e20 | 004300 0xa48fc/0xa4901; 004302 0xa49c8 |
+| +0x16c | 0x18 | `mTwistLimit` (`NxJointLimitPairDesc`: low value/restitution/hardness, high ...) | 004300, 004284 (desc+0x7c), 004286; read by 004310, 004312 |
+| +0x184 | 0xc | `mSwingLimit` (`NxJointLimitDesc`) | 004284 (desc+0x94), 004286; 004310 (+0x184, +0x188) |
+| +0x190 | 0xc | `mTwistSpring` (`NxSpringDesc`) | 004284 (desc+0xa0), 004286; 004310 |
+| +0x19c | 0xc | `mSwingSpring` | 004284 (desc+0xac), 004286; 004310 |
+| +0x1a8 | 0xc | `mJointSpring` | 004284 (desc+0xb8), 004286; 004296 (+0x1a8, +0x1ac) |
+| +0x1b4 | 0xc | `mSwingAxis` (desc.swingAxis, joint space of body 0) | 004284, 004286 |
+| +0x1c0 | 0xc | `mSwingAxisWorld`: `(mWorldNormal[0] * s.x + mWorldAxis[0] * s.z) + mWorldCross[0] * s.y`, s = swingAxis (0xa2cdc-0xa2d91). Name unknown | written only by 004284; read by 004310, 004312 |
+| +0x1cc | 4 | `mSwingLimitCos` = fcos(swingLimit.value) | 004284 0xa2c63-0xa2c73; 004310 0xa5ce2, 004312 |
+| +0x1d0 | 4 | `mSphericalFlags` (NX_SJF_*) | 004284, 004286, 004288, 004290; 004296, 004308, 004310, 004312 |
+| +0x1d4 | 4 | `mProjectionDistance` | 004284, 004286; 004298 |
+| +0x1d8 | 0xc | `mLever[0]`: body 0's anchor lever (rotated local anchor) | written by 004296 (0xa32ea); read by 004294, 004308 |
+| +0x1e4 | 0xc | `mLever[1]` | 004296 (0xa3308); 004294, 004308 |
+| +0x1f0 | 0xc | `mBias`: the position error times SDK parameter 0 / arg (and the spring gain) | 004282 (zero), 004296; 004308 |
+| +0x1fc | 0xc | `mSpringGain`: 1 / (g K^-1[i][i] + 1) per axis when the joint spring is on | 004296 (0xa3efc-0xa3f3c); 004308 (flag 0x10) |
+| +0x208 | 0x24 | `mInverseMass`: row-major 3x3, the inverse of the point constraint's effective mass (identity when singular) | 004296; 004308 |
+| +0x22c | 0xc | `mAccumulatedImpulse` | 004296 (zeroed), 004308 |
+| +0x238 | 4 | `mMaxImpulseSquared`: maxForce^2 (1.1920929e-7f when that is 0) | 004296 (0xa3f91-0xa3fa8); 004308 |
+
+The +0x1d8..+0x238 fields have the revolute pilot's roles (revolute +0x1dc/+0x1e8 levers,
++0x1ac bias, +0x1b8 3x3, +0x1f4 accumulator, +0x200 limit) at spherical offsets; names are
+descriptive, from the rows' arithmetic.
+
+**NpSphericalJoint (public), 0x1c bytes**: exactly `NpJointShared<NxSphericalJoint,
+SphericalJoint>` (vptr 0x1011b028, userData +4, appData +8 = internal, hook base +0xc with table
+0x1011b0bc, write link +0x10, read link +0x14, internal +0x18). No own field.
+
+### Dispatch tables
+
+**0x10119e20: SphericalJoint internal (`phys_data_002668`, 17 slots)**
+
+| Slot | Row | Declared as | Notes |
+|---:|---|---|---|
+| 0 | **004308** | `SphericalJoint::row_slot0(NxU32)` | `ret 4`, argument unread (revolute 004374's shape) |
+| 1 | **004282** | `SphericalJoint::row_slot1()` | zeroes +0x1f0..+0x1f8 |
+| 2 | 004111 | `Joint::row004111` | inherited |
+| 3 | 004087 | `Joint::row004087` | inherited |
+| 4 | **004312** (+ 004314) | `SphericalJoint::row_slot4(NxDebugRenderable&)` | `ret 4` |
+| 5 | **004302** | `~SphericalJoint()` (scalar deleting) | deletes `[this+0x48]` through its slot 0 with 1, 004095, frees if flag&1 |
+| 6 | **004296** | `SphericalJoint::row_slot6(NxReal)` | `ret 4`; the float is a divisor (`fld 1.0; fdiv [esp+0xb8]`, 0xa32d1) |
+| 7 | **004310** | `SphericalJoint::row_slot7(NxReal)` | `ret 4`; ends by calling 004135 (Joint base slot 7) directly (0xa5ecf) |
+| 8 | **004298** | `SphericalJoint::row_slot8(void*)` | `ret 4` |
+| 9 | **004304** | `SphericalJoint::loadFromDesc(const NxSphericalJointDesc&)` | `ret 4` |
+| 10 | **004286** | `SphericalJoint::saveToDesc(NxSphericalJointDesc&)` | `ret 4`; calls 004066 |
+| 11 | **004288** | `SphericalJoint::setFlags(NxU32)` | `ret 4`; no wake raise (unlike revolute 004334) |
+| 12 | **004290** | `SphericalJoint::getFlags() const` | reached from Np 004703 (`[vt+0x30]`) |
+| 13 | **004292** | `SphericalJoint::setProjectionMode(NxJointProjectionMode)` | `ret 4` |
+| 14 | 004186 (folded, `mov eax,[ecx+0x44]; ret`) | `SphericalJoint::getProjectionMode()` inline | as revolute slot 14; reached from Np 004707 (`[vt+0x38]`) |
+| 15 | 001391 (folded) | `SphericalJoint::row_slot15()` inline | returns `this` |
+| 16 | 001391 (folded) | `SphericalJoint::row_slot16()` inline | returns `this` |
+
+The table runs to 0x10119e64, where the unit's `__FILE__` string starts. It has the revolute
+table's shape (17 slots, the flags/projection-mode quartet at 11-14), so the two Np bodies that
+read slots 12 and 14 (004703, 004707) serve both families unchanged.
+
+**0x1011b028: NpSphericalJoint primary (`phys_data_002721`, 37 slots)**: slots 0-32 as the
+`### Slot split` table (per-family rows 004653, 004623, 004625, 004627, 004629, 004631, 004639,
+004633, 004637, 004641, 004643; the folded rows through `NpJointShared`), then 33 = **004645**
+setFlags (line 0x27, `[vt+0x2c]`), 34 = 004703 getFlags, 35 = **004647** setProjectionMode (line
+0x34, `[vt+0x34]`), 36 = 004707 getProjectionMode. Every write-locked NxJoint row reports line
+0xf; loadFromDesc 0x13, saveToDesc 0x1e. **0x1011b0bc** (secondary): 004651.
+
+**Slots 34 and 36.** The oracle's table points at revolute's bodies (identical-code folding: read
+lock, internal slot 12 or 14, unlock). `NpSphericalJoint::getFlags`/`getProjectionMode` are
+written in `core/NpSphericalJoint.cpp` with the same body and a comment naming the folded row
+without the stable-ID form; `core/NpRevoluteJoint.cpp` keeps the stable-ID lines.
+
+### The rows' shape
+
+- **004296** (solver slot, arg = the step divisor): after the stale-body refresh, the levers r_i =
+  body i's +0x134 3x3 times the world anchor (the anchor itself without the body), the position
+  error e = (r0 - r1) + body 0's +0x158 - body 1's +0x158 (each stored), then +0x1d8/+0x1e4 = r0/r1,
+  +0x1f0 = e * (1/arg * SDK parameter 0). The effective mass K = sum over bodies of (invMass * I
+  - [r]x Iinv [r]x), built column by column against the unit axes (the `* 0.0f` products kept:
+  the compiler cannot fold them); its adjugate over the determinant goes to +0x208. Determinant
+  non-zero: one kind-6 record (+0x30 = this, everything else zero) that marks the joint for the
+  point solve of slot 0, then, with the joint spring on (flag 0x10), the per-axis spring gains at
+  +0x1fc and the bias scaled by them, and with finite maxForce +0x238 = maxForce^2 and +0x22c = 0.
+  Determinant zero: +0x208 = identity and three kind-1 linear records along the unit axes
+  (`gJointUnitAxis`): through 004393 with the spring's (1/((spring*arg + damper)*arg),
+  spring/(spring*arg+damper)*arg) when the joint spring is on, otherwise through 004391 with bias
+  e_i / arg and +0x48 = maxForce.
+- **004308** (slot 0): revolute 004374's instructions over the spherical fields, plus the
+  flag-0x10 spring-gain scaling of the velocity error (0xa4f1f-0xa4f4e) and `fchs` where revolute
+  multiplies by -1.0f (same values).
+- **004310** (slot 7): the twist spring (flag 4, one kind-3 record through 004393 along body 1's
+  world axis), the swing spring (flag 8, two kind-3 records about the swing plane), the twist limit
+  (flag 1: low == high -> one kind-3 lock record; otherwise the kind-2 limit records with
+  restitution through 004389 and SDK parameter 4), the swing limit (flag 2, cos below
+  +0x1cc -> one kind-2 record), then Joint base slot 7 (004135) called directly.
+- **004306** (helper of 004310/004312): the twist angle about the half-way axis h = normalize(a0 +
+  a1) (a_i body i's world axis): `-fpatan(c . n1, b . n1)` with c = normalize(h x n0), b = c x h;
+  writes h and a cone factor (dot < 0 -> dot + 1, else 1).
+- **004312 + 004314** (slot 4): with bit 9 (NX_JF_VISUALIZATION) after the stale-body refresh:
+  parameter 32 -> three axis lines through row004123's point (red, green, blue, +/- scale);
+  parameter 31 -> six arrows (both bodies' normals, crosses and axes, colours 0x902020, 0x209020,
+  0x202090, 0xe05050, 0x50e050, 0x5050e0) and a yellow line between the two anchors, with four
+  two-element NxVec3 arrays built through the `eh vector constructor iterator` (000001);
+  parameter 33 -> the twist-limit arc (flag 1, 13 points between low and high with the limit
+  colours of revolute's arc, the 004306 twist angle arrow in 0xff00d0) and the swing-limit cone
+  (flag 2; 004314: 24 spokes of radius tan(acos(+0x1cc)), clamped to 1000 for cos in (-0.01,
+  0.01), coloured by whether the current swing is inside).
+
+### Dependency closure
+
+- **write** (33 rows): 004282-004314 in `core/SphericalJoint.cpp` (17 rows, 004314 inside
+  004312); 004623-004653 minus 004635 in `core/NpSphericalJoint.cpp` (15 rows, 004651 generated).
+- **reuse**: Joint rows 004141, 004107, 004121, 004097, 004066, 004095, 004093, 004111, 004087,
+  004135, 004123, 004064 (`core/Joint.cpp`), 004389, 004391, 004393 (`core/JointSupport.cpp`); the
+  13 folded Np bodies (`NpJointShared`); 004703/004707 (bodies shared with revolute, see above);
+  002362/002364/002366, 002404/002406, 000454/000480; 004248 (slot 0 of nothing here), 001391,
+  004186 (inline bodies); 000001 (`eh vector constructor iterator`); 004417-004433, 005667;
+  `NxNormalToTangents` (Foundation import `[0x1010418c]`, called once by 004312); `_CIacos`
+  (0x000f47f0, through the shared x87 reproduction); the SDK allocator; SDK parameters 0, 4, 13,
+  31, 32, 33; `gJointUnitAxis`.
+- **Shared helpers moved**: revolute's file-static `revoluteCIacos`/`revoluteAcos` move to the new
+  internal header `Physics/src/include/core/JointAcos.h` as `jointCIacos`/`jointAcos` (the
+  Global Constraints' rule for reusing the `_CIacos` reproduction); `core/RevoluteJoint.cpp` calls
+  them. The spherical acos sites (0xa5723-0xa5740, 0xa5d9f-0xa5dbc, 0xa6ff0-0xa700d) are the same
+  clamp with the unit's own pi float (0x10119e10, the same value).
+- **Reused from `core/JointLinearRecords.h`**: `jointLinearRecord` for 004296's three singular-arm
+  records (the listing's record header and bit sequence at 0xa3c3a-0xa3d1a / 0xa3fd1-0xa4017 and
+  copies; the cross products are the same products subtracted in the same order, stored) and
+  `jointSolveRecord` for the rigid arm's tail (0xa4414-0xa446e and copies). Not reused:
+  `jointLinearError` (004296 stores the error after each add; the helper keeps it on the stack).
+- **defer** (existing stubs, as the pilot): 000571 (the break event 004308 posts), 000022 (the
+  owner notify 004298 calls).
+
+### What the new test case reaches
+
+`nxSphericalCase` (indices 0 and 3 of the revolute table's anchor/axis values). Creation: 000297,
+000665 case 3, 004300, 004141 (-> 004107, 004121 -> 004097 x2, 000480), 004649 (002404), 004284,
+000661. Getters: 004437/004125, 004441/004129, 004483/004078, 004539, 004443/004070,
+`isSphericalJoint` (inline 004427 -> 004479/004070), saveToDesc 004643 -> internal slot 10 =
+**004286** -> 004066, getFlags (004703 body) -> internal slot 12 = **004290**, getProjectionMode
+(004707 body) -> slot 14 (004186 inline). Compiled but not reached: 004282, 004288, 004292-004298,
+004302 (release unwired), 004304, 004306-004314, 004623-004641, 004645, 004647, 004653.
