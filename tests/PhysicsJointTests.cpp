@@ -55,6 +55,8 @@
 #include "NxDistanceJointDesc.h"
 #include "NxPulleyJoint.h"
 #include "NxPulleyJointDesc.h"
+#include "NxFixedJoint.h"
+#include "NxFixedJointDesc.h"
 
 typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(NxU32, NxUserAllocator*, NxUserOutputStream*);
 
@@ -763,6 +765,79 @@ static void nxPulleyCase(NxScene& scene, NxActor* a, NxActor* b,
 	printf("case=pulley index=%u released=yes\n", index);
 	}
 
+// The fixed family (joint-families Task 3h). NxFixedJointDesc has no field of
+// its own, so saveToDesc brings back only the NxJointDesc base part.
+static void nxFixedCase(NxScene& scene, NxActor* a, NxActor* b,
+	unsigned index, const NxVec3& anchor, const NxVec3& axis)
+	{
+	printf("case=fixed index=%u ", index);
+	nxPrintVec("in_anchor", anchor);
+	printf(" ");
+	nxPrintVec("in_axis", axis);
+	printf("\n");
+
+	NxFixedJointDesc desc;
+	desc.setToDefault();
+	desc.actor[0] = a;
+	desc.actor[1] = b;
+	nxSetGlobalAnchor(desc, anchor);
+	nxSetGlobalAxis(desc, axis);
+
+	NxJoint* joint = scene.createJoint(desc);
+	printf("case=fixed index=%u created=%s\n", index, joint ? "yes" : "no");
+	if(!joint)
+		return;
+
+	NxVec3 gotAnchor(0.0f, 0.0f, 0.0f);
+	NxVec3 gotAxis(0.0f, 0.0f, 0.0f);
+	joint->getGlobalAnchor(gotAnchor);
+	joint->getGlobalAxis(gotAxis);
+	printf("case=fixed index=%u ", index);
+	nxPrintVec("out_anchor", gotAnchor);
+	printf(" ");
+	nxPrintVec("out_axis", gotAxis);
+	printf(" state=%u\n", static_cast<unsigned>(joint->getState()));
+
+	NxActor* ra = 0;
+	NxActor* rb = 0;
+	joint->getActors(&ra, &rb);
+	printf("case=fixed index=%u actors a=%s b=%s\n", index,
+		ra == a ? "match" : (ra ? "other" : "null"),
+		rb == b ? "match" : (rb ? "other" : "null"));
+
+	NxFixedJoint* fixed = joint->isFixedJoint();
+	printf("case=fixed index=%u type=%u is_fixed=%s is_pulley=%s\n", index,
+		static_cast<unsigned>(joint->getType()), fixed ? "yes" : "no",
+		joint->isPulleyJoint() ? "yes" : "no");
+	if(fixed)
+		{
+		NxFixedJointDesc saved;
+		fixed->saveToDesc(saved);
+		printf("case=fixed index=%u saved ", index);
+		nxPrintVec("anchor0", saved.localAnchor[0]);
+		printf(" ");
+		nxPrintVec("anchor1", saved.localAnchor[1]);
+		printf("\n");
+		printf("case=fixed index=%u saved ", index);
+		nxPrintVec("axis0", saved.localAxis[0]);
+		printf(" ");
+		nxPrintVec("axis1", saved.localAxis[1]);
+		printf("\n");
+		printf("case=fixed index=%u saved ", index);
+		nxPrintVec("normal0", saved.localNormal[0]);
+		printf(" ");
+		nxPrintVec("normal1", saved.localNormal[1]);
+		printf("\n");
+		printf("case=fixed index=%u saved max_force=%08x max_torque=%08x flags=%08x actors a=%s b=%s\n",
+			index, nxU(saved.maxForce), nxU(saved.maxTorque), static_cast<unsigned>(saved.jointFlags),
+			saved.actor[0] == a ? "match" : (saved.actor[0] ? "other" : "null"),
+			saved.actor[1] == b ? "match" : (saved.actor[1] ? "other" : "null"));
+		}
+
+	scene.releaseJoint(*joint);
+	printf("case=fixed index=%u released=yes\n", index);
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	wchar_t pairDirectory[MAX_PATH];
@@ -885,6 +960,10 @@ int wmain(int argc, wchar_t** argv)
 		NxVec3(0.0f, 5.0f, 0.0f), NxVec3(4.0f, 5.0f, 0.0f), 6.0f, 0.75f, 1.5f, NX_PJF_IS_RIGID);
 	nxPulleyCase(*scene, a, b, 3, NxVec3(2.0f, 4.0f, 0.0f), NxVec3(0.5f, 0.5f, 0.5f),
 		NxVec3(1.0f, 2.0f, 3.0f), NxVec3(-2.0f, 6.0f, 0.5f), 3.25f, 0.5f, 2.0f, 0);
+	// The fixed family (joint-families Task 3h), over the same two
+	// anchor/axis values.
+	nxFixedCase(*scene, a, b, 0, NxVec3(0.0f, 0.0f, 0.0f), NxVec3(1.0f, 0.0f, 0.0f));
+	nxFixedCase(*scene, a, b, 3, NxVec3(2.0f, 4.0f, 0.0f), NxVec3(0.5f, 0.5f, 0.5f));
 
 	sdk->releaseScene(*scene);
 	printf("scene=released\n");
