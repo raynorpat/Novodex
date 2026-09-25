@@ -7,10 +7,10 @@
 \*----------------------------------------------------------------------------*/
 // The internal Scene, reconstructed from the shipped Win32 Release NxPhysics.dll.
 //
-// Every write below is a transcription of phys_fn_000647 (0x00012c10), read from
-// its decompilation, in the order the oracle performs it. The decompilation names
-// the object `param_1`, so an offset written as dword index `n` is byte offset
-// `4n`; each line carries its index so a reader can check it against the oracle.
+// The constructor is a transcription of phys_fn_000647 (0x00012c10) from its
+// Capstone listing, in the order the oracle performs it. Every offset is a BYTE
+// offset, written through nxDword/nxAt, and the listing address of each run of
+// stores is given beside it so a reader can check it against the oracle.
 //
 // Nothing here is elided: the oracle writes no field the object does not carry, and
 // a field this file skips would be one the differential could not see.
@@ -89,13 +89,10 @@ static inline unsigned char* nxAt(unsigned* p, unsigned byteOffset);
 
 // Each function below is a REPRODUCTION HOLE for a helper another phase owns.
 //
-// The oracle's body is transcribed as far as its own field writes go, in the order
-// it performs them. What is NOT reproduced is the base-class construction each one
-// performs first -- FUN_100f0660 for four of them, FUN_100f0510 for two -- which
-// lives in a phase that has not reconstructed it and which writes bytes outside the
-// ranges those rows are known to touch. The evidence records that gap against each
-// row; none of these helpers is reachable from a joint-descriptor differential, so
-// the gap does not affect the closure these rows are being built for.
+// Each helper makes its row's field writes and those of the base-class construction
+// it performs first (0x000f0660 or 0x000f0510, and 0x000b4fe0/0x0002dae0 for
+// phys_fn_001980), in the listing's order. Only the vtable words those constructors
+// install are not written; see the comment above nxSceneSubobjectRootInit.
 
 // phys_fn_000544 (0x00010750, phase 7): applies the descriptor's flags.
 void nxSceneApplyDescriptorFlags(void* scene, const unsigned* descWords, unsigned debug);
@@ -526,9 +523,10 @@ NxSceneInternal::NxSceneInternal()
 
 
 
-// Reserves an embedded NxArraySDK<T> to `needed` entries using the Foundation
-// allocator, which is what the oracle's capacity-compare-then-grow sequence at
-// 0x00013070 does: it tests `last` against `memEnd`, doubles when it must, copies
+// Reserves an embedded NxArraySDK<T> to `needed` entries through
+// nxGetSdkAllocator() (the oracle's sequence uses the Foundation allocator,
+// `[[0x101041bc]]`; that allocator gap is tracked separately). This follows the
+// oracle's capacity-compare-then-grow sequence at 0x00013070: it tests `last` against `memEnd`, doubles when it must, copies
 // the live entries and releases the old block. The array is {first, last, memEnd,
 // allocator}, so its three pointers are at +0, +4 and +8.
 void nxSceneArrayReserve(void* arrayHeader, unsigned needed)

@@ -157,9 +157,11 @@ Numbers are those of `joint-families.md` `## Open items carried forward`.
   0xcd: oracle and candidate identical (before: candidate exit 127 after `scene=created`). Nine
   page-guarded targets run with a 0xcd fill (`NX_PAGE_GUARDED_FILL`); Lifecycle and Dynamics run
   clean under it on both DLLs but differ from their zero-page registrations (aux-array samples the
-  oracle leaves unwritten; a changed-word mask), so they keep zero pages. Open: the oracle
-  allocates 000647's NpScene and auxiliary manager through `[[0x101041bc]]`; the candidate through
-  `nxGetSdkAllocator()`.
+  oracle leaves unwritten; a changed-word mask), so they keep zero pages. Allocators: 000647's
+  NpScene (0x28) already goes through `NxAllocateable::operator new` -> `nxFoundationSDKAllocator`
+  (built DLL 0x1002800b: `mov eax,[__imp_nxFoundationSDKAllocator]; call [eax+8]`), as in the
+  oracle; only the 0xa8 auxiliary manager (Scene.cpp, the constructor's last allocation) uses
+  `nxGetSdkAllocator()`. Candidate-wide, the oracle's scene, actor, record, shape and group allocations (rows in 0x1000..0x28000 and 0x5a000..0x5c000) all use `[[0x101041bc]]`, while the candidate uses `nxGetSdkAllocator()` at about 117 sites. Pre-existing, tracked as a separate follow-up task. Each block is freed through the allocator that made it, so there is no crash risk; the difference is observable only when the Foundation was created with a different allocator.
 - **Task 4 review follow-ups.**
   - The two joint-descriptor closures were re-measured with mutations in each row's own code (see
     `evidence/phase6-joints.md` at the end and `gates/phase6-closure.json`).

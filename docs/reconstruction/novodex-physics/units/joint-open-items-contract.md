@@ -258,7 +258,9 @@ body records, the rotated actors):
 
 Rule change (Task 5 follow-up, controller decision). The joint-families plan's Global Constraint
 "allocation through `nxGetSdkAllocator()->malloc(size, NX_MEMORY_PERSISTENT)`" does not hold for the
-joint rows and is superseded for them. The plan itself is not edited.
+joint rows and is superseded for them. The plan itself is not edited. This section supersedes the
+joint-families plan's "Allocation through `nxGetSdkAllocator()->malloc(size, NX_MEMORY_PERSISTENT)`"
+Global Constraint for every joint row.
 
 - Every joint allocation and free goes through `nxFoundationSDKAllocator` (the Foundation's imported
   `NxUserAllocator*`, `[[0x101041bc]]` in the oracle): `malloc(size, NX_MEMORY_PERSISTENT)` is slot
@@ -359,8 +361,11 @@ first entry, unwritten; the candidate memsets them. Neither DLL reads a slot pas
 `cdcdcdcd` on the oracle and `0` on the candidate in 18 `aux_sample_*` / `aux_indices_*` lines.
 Recorded, not changed.
 
-Not audited here: the allocator of 000647's two allocations. The oracle uses `[[0x101041bc]]`
-(Foundation) for the NpScene and the auxiliary manager; the candidate uses `nxGetSdkAllocator()`.
+Allocators. The oracle makes both of 000647's allocations through `[[0x101041bc]]` (Foundation).
+The candidate's NpScene (0x28) already does, through `NxAllocateable::operator new` ->
+`nxFoundationSDKAllocator` (built DLL 0x1002800b: `mov eax,[__imp_nxFoundationSDKAllocator];
+call [eax+8]`); only the 0xa8 auxiliary manager uses `nxGetSdkAllocator()`. Candidate-wide,
+the oracle's scene, actor, record, shape and group allocations (rows in 0x1000..0x28000 and 0x5a000..0x5c000) all use `[[0x101041bc]]`, while the candidate uses `nxGetSdkAllocator()` at about 117 sites. Pre-existing, tracked as a separate follow-up task. Each block is freed through the allocator that made it, so there is no crash risk; the difference is observable only when the Foundation was created with a different allocator.
 
 ### Test
 
