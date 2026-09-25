@@ -206,7 +206,7 @@ void Joint::row004087(NxReal numerator, const NxVec3& v, NxReal divisor)
 
 // phys_fn_004133 (0x00099ab0, 134 B)
 // (deferred: Joint base slot 6 default, overridden by phys_fn_004360 in RevoluteJoint)
-void Joint::row_slot6(NxU32 arg)
+void Joint::row_slot6(NxReal arg)
 	{
 	(void)arg;
 	NX_ASSERT(0);
@@ -214,7 +214,7 @@ void Joint::row_slot6(NxU32 arg)
 
 // phys_fn_004135 (0x00099b40, 701 B)
 // (deferred: internal slot 7 (solver); overridden by phys_fn_004362 in RevoluteJoint)
-void Joint::row_slot7(NxU32 arg)
+void Joint::row_slot7(NxReal arg)
 	{
 	(void)arg;
 	NX_ASSERT(0);
@@ -352,10 +352,10 @@ void Joint::purgeLimitPlanes()
 
 // phys_fn_004093 (0x00095da0, 116 B)
 // (deferred: internal slots 6/7 (solver); also needs Scene row phys_fn_000598, absent from the candidate)
-void Joint::row004093(NxU32 arg)
+JointSupportRecord* Joint::row004093()
 	{
-	(void)arg;
 	NX_ASSERT(0);
+	return 0;
 	}
 
 // phys_fn_004097 (0x00095e50, 1176 B)

@@ -45,7 +45,8 @@ class RevoluteJoint : public Joint
 	// --- Joint slots RevoluteJoint overrides ---
 
 	//! Slot 0 (+0x00). phys_fn_004374 (0x000ad0b0, 1068 B). Reads/writes
-	//! the revolute-only +0x1ac..+0x200 fields.
+	//! the revolute-only +0x1ac..+0x200 fields. `ret 4`; the listing never
+	//! reads the argument.
 	virtual void row_slot0(NxU32 arg);
 
 	//! Slot 1 (+0x04). phys_fn_004328 (0x000a8d20, 21 B). Zeroes
@@ -55,11 +56,13 @@ class RevoluteJoint : public Joint
 	//! Slot 4 (+0x10). phys_fn_004364 (0x000ab840, 3326 B).
 	virtual void row_slot4(NxU32 arg);
 
-	//! Slot 6 (+0x18). phys_fn_004360 (0x000aa060, 4460 B).
-	virtual void row_slot6(NxU32 arg);
+	//! Slot 6 (+0x18). phys_fn_004360 (0x000aa060, 4460 B). The float
+	//! argument is a divisor (0xaa2a7).
+	virtual void row_slot6(NxReal arg);
 
-	//! Slot 7 (+0x1c). phys_fn_004362 (0x000ab1d0, 1644 B).
-	virtual void row_slot7(NxU32 arg);
+	//! Slot 7 (+0x1c). phys_fn_004362 (0x000ab1d0, 1644 B). The float
+	//! argument is a divisor (0xab261).
+	virtual void row_slot7(NxReal arg);
 
 	//! Slot 8 (+0x20). phys_fn_004356 (0x000a9650, 2303 B).
 	virtual void row_slot8(NxU32 arg);

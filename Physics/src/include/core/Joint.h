@@ -30,6 +30,7 @@
 #include "PhysicsInternal.h"
 #include "NxJointDesc.h"
 #include "NxVec3.h"
+#include "core/JointSupport.h"
 
 #include <cstddef>
 
@@ -39,18 +40,9 @@
 // through this type. Only the fields the Joint rows touch are named; names
 // come from what the candidate stores there, the rest are by offset. See
 // revolute-contract.md "## Object layouts" (Body fields the Joint rows read).
-// The record JointBodyRecord::mUnknown204 points to. Read view only; the
-// only fields named are the two vec3s phys_fn_004358 reads (it forms
-// mUnknown000 + mUnknown010 x r for a joint-owned offset r). Meaning unknown.
-struct JointBodyRecord204
-	{
-	NxVec3				mUnknown000;	//!< +0x00
-	NxU32				mUnknown00c;	//!< +0x0c (not read)
-	NxVec3				mUnknown010;	//!< +0x10
-	};
-
-static_assert(offsetof(JointBodyRecord204, mUnknown010) == 0x10, "second vec3 at +0x10");
-
+// Its +0x204 points to a JointSupportBody (core/JointSupport.h): Task 8a
+// found that phys_fn_004360/004362 store that pointer in the constraint
+// record's body slots, so the two views are one record.
 struct JointBodyRecord
 	{
 	NxU8				mUnknown000[0x4c];
@@ -66,7 +58,11 @@ struct JointBodyRecord
 	//! +0x078. The candidate stores the body descriptor's angularVelocity
 	//! here (phys_fn_004354 differences it between the two bodies).
 	NxVec3				mAngularVelocity;
-	NxU8				mUnknown084[0xdc - 0x84];
+	NxU8				mUnknown084[0xc0 - 0x84];
+	//! +0x0c0. Unknown scalar; phys_fn_004360 scales the unit vectors by it
+	//! when it builds the 3x3 at RevoluteJoint +0x1b8.
+	NxReal				mUnknown0c0;
+	NxU8				mUnknown0c4[0xdc - 0xc4];
 	//! +0x0dc. Row-major 3x3 (the candidate writes massLocalPose.M here).
 	NxReal				mMassLocalRot[9];
 	//! +0x100. The candidate writes massLocalPose.t here.
@@ -81,15 +77,18 @@ struct JointBodyRecord
 	//! transform through it; 004064 reads it).
 	NxReal				mUnknown134[9];
 	NxVec3				mUnknown158;
-	NxU8				mUnknown164[0x198 - 0x164];
+	//! +0x164. Unknown row-major 3x3; phys_fn_004360 multiplies r x e by it.
+	NxReal				mUnknown164[9];
+	NxU8				mUnknown188[0x198 - 0x188];
 	//! +0x198. Stamp compared with Joint::mBodyStamp[i].
 	NxU32				mStamp;
 	//! +0x19c. Pointer whose first word is the NxActor* (phys_fn_004066).
 	void*				mOwner;
 	NxU8				mUnknown1a0[0x204 - 0x1a0];
-	//! +0x204. Pointer to a JointBodyRecord204 (phys_fn_004358 reads it;
-	//! also read by phys_fn_004374). The candidate does not write it.
-	JointBodyRecord204*	mUnknown204;
+	//! +0x204. Pointer to a JointSupportBody (phys_fn_004358 reads it;
+	//! phys_fn_004374 writes through it; phys_fn_004360/004362 copy it into
+	//! JointSupportRecord::mBody). The candidate does not write it.
+	JointSupportBody*	mUnknown204;
 	};
 
 static_assert(offsetof(JointBodyRecord, mWakeUpCounter) == 0x04c, "wake counter at +0x4c");
@@ -105,6 +104,8 @@ static_assert(offsetof(JointBodyRecord, mStamp) == 0x198, "stamp at +0x198");
 static_assert(offsetof(JointBodyRecord, mOwner) == 0x19c, "owner at +0x19c");
 static_assert(offsetof(JointBodyRecord, mAngularVelocity) == 0x078, "angular velocity at +0x78");
 static_assert(offsetof(JointBodyRecord, mUnknown204) == 0x204, "record pointer at +0x204");
+static_assert(offsetof(JointBodyRecord, mUnknown0c0) == 0x0c0, "scalar at +0xc0");
+static_assert(offsetof(JointBodyRecord, mUnknown164) == 0x164, "3x3 at +0x164");
 
 // A limit-plane list node: 0x14 bytes (phys_fn_004143 allocates `push 0x14`),
 // linked through +0x10 from Joint::mLimitPlaneHead. The names are the
@@ -117,6 +118,34 @@ struct JointLimitPlane
 	};
 
 static_assert(sizeof(JointLimitPlane) == 0x14, "limit-plane nodes are 0x14 bytes");
+
+class Joint;
+
+// The joint break event: 0x10 bytes, vtable 0x101192cc (inside
+// phys_data_002614; one slot, the oracle's row 004113, a Joint.cpp row
+// outside the pilot). Allocated through the SDK allocator by
+// phys_fn_004111 (0x98019-0x98022) and phys_fn_004374 (0xad160-0xad169),
+// which store the vptr, the joint at +8 and a float at +0xc, and handed to
+// the Scene's phys_fn_000571, which links it through +4 into the list at
+// Scene+0x620. See revolute-contract.md "## Dispatch tables".
+class JointBreakEvent
+	{
+	public:
+	JointBreakEvent(Joint* joint, NxReal value) : mJoint(joint), mUnknown00c(value) {}
+
+	//! Slot 0: the oracle's row 004113 (fires the user notify, else frees
+	//! the event). Out of the pilot's scope -- no pilot path dispatches it --
+	//! so the body only asserts; declared so the object carries a vtable.
+	virtual void row004113() { NX_ASSERT(0); }
+
+	JointBreakEvent*	mNext;			//!< +0x04; written by phys_fn_000571
+	Joint*				mJoint;			//!< +0x08
+	NxReal				mUnknown00c;	//!< +0x0c
+	};
+
+static_assert(sizeof(JointBreakEvent) == 0x10, "the break event is 0x10 bytes");
+static_assert(offsetof(JointBreakEvent, mJoint) == 0x08, "joint at +0x08");
+static_assert(offsetof(JointBreakEvent, mUnknown00c) == 0x0c, "float at +0x0c");
 
 class Joint
 	{
@@ -170,13 +199,15 @@ class Joint
 
 	//! Slot 6 (+0x18). phys_fn_004133 (0x00099ab0, 134 B; deferred: the
 	//! Joint base's own default for this slot). RevoluteJoint overrides
-	//! this slot with phys_fn_004360.
-	virtual void row_slot6(NxU32 arg);
+	//! this slot with phys_fn_004360. The argument is a float: the
+	//! override divides by it (0xaa2a7 `fdiv dword [esp+0xac]`).
+	virtual void row_slot6(NxReal arg);
 
 	//! Slot 7 (+0x1c). phys_fn_004135 (0x00099b40, 701 B; deferred: the
 	//! Joint base's own default for this slot). RevoluteJoint overrides
-	//! this slot with phys_fn_004362.
-	virtual void row_slot7(NxU32 arg);
+	//! this slot with phys_fn_004362, which divides by the argument
+	//! (0xab261) and passes it on unchanged to this body (0xab4ad).
+	virtual void row_slot7(NxReal arg);
 
 	//! Slot 8 (+0x20). Joint's own default is the folded, unclaimed
 	//! phys_fn_004248 (same trivial target as slot 0; not claimed, inline
@@ -231,8 +262,10 @@ class Joint
 
 	//! phys_fn_004093 (0x00095da0, 116 B; deferred: solver slots 6/7,
 	//! also needs Scene row phys_fn_000598 absent from the candidate).
-	//! Called by phys_fn_004360/phys_fn_004362.
-	void row004093(NxU32 arg);
+	//! Called by phys_fn_004360/phys_fn_004362. No stack arguments, plain
+	//! `ret`; returns the next 0x50-byte record of the Scene's array at
+	//! +0x5b8 (0x95dde-0x95df5).
+	JointSupportRecord* row004093();
 
 	//! phys_fn_004095 -- see the ~Joint() destructor above (slot 5).
 

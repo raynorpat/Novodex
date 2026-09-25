@@ -115,9 +115,9 @@ void row000022()
 
 // phys_fn_000571 (0x000108e0, 22 B)
 // (deferred: owner Scene.cpp, link-insert at Scene+0x620)
-void Row000571Fixture::row000571(void* joint)
+void Row000571Fixture::row000571(void* event)
 	{
-	(void)joint;
+	(void)event;
 	NX_ASSERT(0);
 	}
 

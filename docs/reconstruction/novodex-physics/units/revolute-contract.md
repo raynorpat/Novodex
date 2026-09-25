@@ -234,8 +234,35 @@ Headers `Physics/src/include/core/RevoluteJoint.h` and `Physics/src/include/core
   (004358, and 004374 per the field list below). New read view `JointBodyRecord204`: vec3 at
   +0x00 and +0x10 (`mUnknown000`, `mUnknown010`; 004358 forms `mUnknown000 + mUnknown010 × r`).
 - 004352 does not use `NxMath::acos(NxF32)` as the `reuse` table says: the listing leaves the
-  acos result unrounded, so the same clamp is inlined at double precision. 004330 does use it
-  (its result is stored as a float at once).
+  acos result unrounded, so the same clamp is inlined at double precision. (Task 8a: 004330
+  no longer uses it either; both sites call the file-static `revoluteAcos` clamp over
+  `revoluteCIacos`, the x87 `_CIacos` sequence. See the `reuse` table.)
+
+### Declaration changes made by Task 8a
+
+Headers `Physics/src/include/core/Joint.h`, `JointSupport.h`, `RevoluteJoint.h`.
+
+- `JointBodyRecord204` is gone: it is the same record as `JointSupportBody`. 004360 (0xaa0ac,
+  0xaa169) and 004362 (0xab1e2, 0xab1f9) copy body +0x204 into `JointSupportRecord::mBody`,
+  whose pointee 004389 reads. `JointBodyRecord::mUnknown204` is now `JointSupportBody*`;
+  `JointSupportBody` gains `NxReal mUnknown00c` (was an unread `NxU32`, now the factor 004374
+  multiplies its impulse by and tests against 0), `mUnknown01c` (unread) and
+  `NxReal mUnknown020[9]` (row-major 3x3, 004374 0xad345-0xad3a9).
+- `JointBodyRecord` gains `NxReal mUnknown0c0` (+0xc0) and `NxReal mUnknown164[9]` (+0x164..+0x184),
+  the scalar and 3x3 004360 builds the +0x1b8 matrix from.
+- `JointSupportRecord` is 0x50 bytes (004093 returns `[Scene+0x5b8] + index * 0x50`,
+  0x95dde-0x95df5); +0x30 `void* mUnknown030` (the joint), +0x34/+0x38 `NxReal`, +0x44 `NxU32`,
+  +0x48 `NxReal`, +0x4c `NxU32` replace the old +0x30 padding. Bits 0-4 of +0x0c are a kind the
+  rows test (0/2 and 1/3 select the +0x40 scale, see 004360/004362).
+- `void row004093(NxU32)` → `JointSupportRecord* row004093()` (no stack arguments, plain `ret`;
+  still deferred).
+- `row_slot6`/`row_slot7` take `NxReal` (Joint and RevoluteJoint): 004360 and 004362 divide by the
+  argument (0xaa2a7, 0xab261); 004362 passes it on unchanged to the base slot-7 body 004135.
+  `row_slot0` keeps `NxU32`: 004374 never reads its argument.
+- New `JointBreakEvent` in `Joint.h` (the 0x101192cc object: vptr, +4 list link, +8 joint,
+  +0xc float; slot 0 = row 004113, declared inline as an asserting body, not claimed).
+  `Row000571Fixture::row000571`'s parameter is the event, not the joint (000571 writes the
+  argument's +4, 0x108ea).
 
 ## Construction chain
 
@@ -481,8 +508,10 @@ massLocalPose there, `Scene.cpp:1830–1831`), +0x10c (bit 0x80 tested by 004133
 (bit 0x100), +0x134..+0x160 (3×3 + vec3; read by 004064, and by 004080, 004127, 004131 — Task 6), +0x198 (stamp; the
 candidate sets 2, `Scene.cpp:1919`), +0x19c (pointer whose first word is the `NxActor*`;
 the candidate's 0x50-byte body has `actor` at +0, `Scene.cpp:1784`), +0x78 (angular
-velocity; 004354 — Task 7), +0x204 (pointer to a record with vec3s at +0x00/+0x10; read
-by 004358 and 004374; the candidate does not write it).
+velocity; 004354 — Task 7), +0x204 (pointer to a `JointSupportBody`: vec3s at +0x00/+0x10,
+a float at +0x0c, a 3x3 at +0x20; read by 004358, written through by 004374, copied into
+004093 records by 004360/004362; the candidate does not write it), +0xc0 (float) and
++0x164..+0x184 (3x3) (004360 — Task 8a; not written by the candidate).
 
 ## Dispatch tables
 
@@ -541,7 +570,7 @@ unit's range; NpRevoluteJoint must still implement them (see `## Task split`).
 | 37 | +0x94 | setSpring | 004717 | NpRevoluteJoint | W line 0xe; → 004348 |
 | 38 | +0x98 | getSpring | 004719 | NpRevoluteJoint | R; → 004350 |
 | 39 | +0x9c | getAngle | 004721 | NpRevoluteJoint | R; → 004372, float in st(0) |
-| 40 | +0xa0 | getVelocity | 004723 | NpRevoluteJoint | R; → 004354, float in st(0) |
+| 40 | +0xa0 | getVelocity | 004723 | NpRevoluteJoint | R; → 004354, which returns `NxF64` (unrounded st(0)); 004723 rounds it with its own `fstp` |
 | 41 | +0xa4 | setFlags | 004701 | NpRevoluteJoint | W line 0x25; internal slot 11 (+0x2c) |
 | 42 | +0xa8 | getFlags | 004703 | NpRevoluteJoint | R; internal slot 12 (+0x30) |
 | 43 | +0xac | setProjectionMode | 004705 | NpRevoluteJoint | W line 0x32; internal slot 13 (+0x34) |
@@ -581,14 +610,14 @@ far as the listing shows: 000665/000653 call slot 5; the NpRevoluteJoint rows ca
 
 | Slot | Off | Joint base (0x1192d0) | RevoluteJoint | Signature (listing) | Meaning |
 |---:|---|---|---|---|---|
-| 0 | +0x00 | 004248 (`ret 4`, FixedJoint.cpp, folded) | **004374** | thiscall, 1 arg, `ret 4` | unknown (projection-like: reads maxForce, may break the joint and post a 0x10-byte event through 000571) |
+| 0 | +0x00 | 004248 (`ret 4`, FixedJoint.cpp, folded) | **004374** | thiscall, 1 arg (never read), `ret 4` | unknown (reads maxForce, may break the joint and post a 0x10-byte event through 000571; applies an impulse to both bodies' +0x204 records) |
 | 1 | +0x04 | 001583 (`ret`, folded) | **004328** | thiscall, 0 args | unknown (zeroes +0x1ac..+0x1b4) |
 | 2 | +0x08 | 004111 | 004111 (inherited) | thiscall, 2 args, `ret 8` | unknown (break test: sets broken, allocates the 0x101192cc event) |
 | 3 | +0x0c | 004087 | 004087 (inherited) | thiscall, 3 args, `ret 0xc` | unknown (accumulates into +0x154) |
 | 4 | +0x10 | `_purecall` 005667 | **004364** | thiscall, 1 arg, `ret 4` | unknown |
 | 5 | +0x14 | 004119 | **004368** | thiscall, 1 arg (flags), `ret 4` | scalar deleting destructor (deletes `[this+0x48]` through its slot 0 with 1, then 004095, then frees if flag&1) |
-| 6 | +0x18 | 004133 | **004360** | thiscall, 1 arg, `ret 4` | unknown |
-| 7 | +0x1c | 004135 | **004362** | thiscall, 1 arg, `ret 4` | unknown |
+| 6 | +0x18 | 004133 | **004360** | thiscall, 1 float arg (a divisor), `ret 4` | unknown (fills +0x1ac..+0x200 and three or four 004093 records) |
+| 7 | +0x1c | 004135 | **004362** | thiscall, 1 float arg (a divisor), `ret 4` | unknown (limit/motor/spring 004093 records) |
 | 8 | +0x20 | 004248 (`ret 4`, folded) | **004356** | thiscall, 1 arg, `ret 4` | unknown |
 | 9 | +0x24 | — | **004370** | thiscall, `const NxRevoluteJointDesc&`, `ret 4` | loadFromDesc (strings) |
 | 10 | +0x28 | — | **004330** | thiscall, `NxRevoluteJointDesc&`, `ret 4` | saveToDesc (string) |
@@ -672,7 +701,7 @@ comment. 004066, 004070, 004389, 004393 are not in the Joint.cpp bundle: read th
 | Row | RVA | B | Called by (pilot) | Unreachable path |
 |---|---|---:|---|---|
 | 004064 | 0x957a0 | 385 | 004356 | internal slot 8 (004356), called only from scene code outside the pilot |
-| 004093 | 0x95da0 | 116 | 004360, 004362 | internal slots 6/7 (solver); also needs Scene row 000598, absent from the candidate |
+| 004093 | 0x95da0 | 116 | 004360, 004362 | internal slots 6/7 (solver); also needs Scene row 000598, absent from the candidate. Returns the next 0x50-byte `JointSupportRecord` of the array at Scene+0x5b8 and counts it in Joint +0x160/+0x164 |
 | 004099 | 0x962f0 | 1112 | 004681 | `NxJoint::setGlobalAnchor` — the test never calls it |
 | 004101 | 0x96750 | 5302 | 004683 | `NxJoint::setGlobalAxis` — not called |
 | 004109 | 0x97e60 | 366 | 004687 | `NxJoint::setLimitPoint` — not called |
@@ -684,7 +713,7 @@ comment. 004066, 004070, 004389, 004393 are not in the Joint.cpp bundle: read th
 | 004391 | 0xaf3c0 | 837 | 004360, 004362, 004393 | solver slots 6/7 |
 | 000022 | 0x1840 | 27 | 004356 | slot 8 (as 004064); owner gap `<start>..Actor.cpp` |
 | 000758 | 0x17630 | 214 | 004356 | slot 8; owner gap SceneRaycast..CapsuleShape |
-| 000571 | 0x108e0 | 22 | 004374, 004111 | break-event post (slot 0 / slot 2 break); Scene-owned, no candidate symbol |
+| 000571 | 0x108e0 | 22 | 004374, 004111 | break-event post (slot 0 / slot 2 break): links the event through its +4 into the list at Scene+0x620; Scene-owned, no candidate symbol |
 | 000633 | 0x12660 | 370 | 004107 (third arg false), 004095 | 004370 re-binding actors / joint release; Scene-owned, no candidate symbol |
 
 Where the stubs go: deferred Joint rows in `core/Joint.cpp`; 004391 and the deferred rows
@@ -705,7 +734,7 @@ owned by other units (000022, 000571, 000633, 000758) in `core/JointSupport.cpp`
 | 001391 | internal slots 15/16 | inline `return this` bodies in `RevoluteJoint.h`; not claimed |
 | 004248, 001583 | Joint base slots 0/1/8 | inline empty bodies in `Joint.h`; not claimed |
 | 004417–004433, 004537, 005667 | tables 002727/002725/002700 | generated from `NxJoint.h`; nothing to write |
-| 005697 (`_CIacos`) | 004330, 004352, 004372 | `NxMath::acos(NxF32)` — `Foundation/include/NxMath.h:571` — all three call sites carry its ≥ 1 → 0 / ≤ -1 → π clamp inline (004330 0xa8dfe–0xa8e34, 004352 0xa9515–0xa9530, 004372 0xad02e–0xad04b; π is the float at 0x1011a1b0, `phys_data_002683`) |
+| 005697 (`_CIacos`, 0xf47f0) | 004330, 004352, 004372 | Task 8a: not `NxMath::acos(NxF32)` (the CRT acos need not match the oracle's x87 sequence). `core/RevoluteJoint.cpp` has one file-static inline-asm helper, `revoluteCIacos`, reproducing `_CIacos`'s core `fld1; fadd st,st(1); fld1; fsub st,st(2); fmulp st(1),st; fsqrt; fxch st(1); fpatan` (0xf4828–0xf4836) and its control-word handling (non-default word → `(cw & 0x300) \| 0x7f` for the core, 0xfa9b5; restored, 0xfaa3e), wrapped by `revoluteAcos`, the ≥ 1 → 0 / ≤ -1 → π clamp all three call sites carry inline (004330 0xa8dfe–0xa8e34, 004352 0xa9515–0xa9530, 004372 0xad02e–0xad04b; π is the float at 0x1011a1b0, `phys_data_002683`). 004372 (Task 8b) should call `revoluteAcos` too |
 | SDK allocator `[[0x101041bc]]` +8 / +0x14 | 004366, 004368, 004729, 000665 | `nxGetSdkAllocator()->malloc(size, NX_MEMORY_PERSISTENT)` / `->free(p)` — `PhysicsInternal.h:158` |
 | `FoundationSDK::error` import `[0x101041b4]` | all asserting rows | `NxFoundation::FoundationSDK::getInstance().error(code, file, line, 0, msg)` — `Physics/src/PhysicsSDK.cpp:206` |
 | folded Np bodies 004437 004441 004443 004479 004483 004491 004497 004499 004539 004573 004577 004635 004743 | table 002727 | implemented as NpRevoluteJoint methods in `core/NpRevoluteJoint.cpp` by Task 9; **not claimed** (see `## Task split`) |
@@ -752,6 +781,18 @@ What the new code replaces or must stay compatible with. Line numbers are at com
 5. Fields marked **unknown** (Joint +0x04 readers, +0x34/+0x38,
    +0x160/+0x164; revolute +0x1ac..+0x200) must be declared by offset only.
 6. `phys_fn_004727` has no decompile anywhere (Capstone listing only; 8 bytes).
+7. **Solver-slot inputs the candidate does not build (Task 8a).** Driving 004374 (slot 0)
+   requires body +0x204 (a `JointSupportBody*`): it calls 004358, which dereferences it, and
+   writes its impulse through it; the candidate's body record never writes +0x204. 004360
+   and 004362 (slots 6/7) copy the same pointer into their records, read body +0xc0 and
+   +0x164 (004360; not written by the candidate either), and take records from 004093,
+   which needs the Scene's record array at +0x5b8 and row 000598. None of the three is on the
+   transcript path.
+8. **SDK parameters read by the solver-slot rows.** 004360 and 004362 read the live parameter
+   array (`gParameter`, `.data 0x10123b18`) directly: element 0 (`NX_PENALTY_FORCE`) scales
+   +0x1ac and the kind-0/2 record outputs, element 4 (`NX_BOUNCE_TRESHOLD`) gates the limit
+   restitution. The product reads them through `PhysicsSDK::getParameter` (0 with no SDK, the
+   array's static value), as `ContactGeneration.cpp` does.
 
 ## Task split
 
