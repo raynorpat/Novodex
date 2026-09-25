@@ -472,10 +472,10 @@ call internal slots 9/10 (`[vt+0x24]`/`[vt+0x28]`). **0x1011b53c** (secondary): 
 
 ### Dependency closure
 
-- **write** (19 rows, 8,610 B): 004376, 004378, 004380, 004382, 004384, 004386 in
+- **write** (19 rows, 8,575 B): 004376, 004378, 004380, 004382, 004384, 004386 in
   `core/PrismaticJoint.cpp` (7,608 B); 004731, 004733, 004735, 004737, 004739, 004741, 004745,
   004747, 004749, 004751, 004753, 004755 (generated thunk; stable-ID line above the
-  destructor it serves, as 004727), 004757 in `core/NpPrismaticJoint.cpp` (1,002 B).
+  destructor it serves, as 004727), 004757 in `core/NpPrismaticJoint.cpp` (967 B).
 - **reuse**: Joint rows 004141, 004107, 004121, 004097, 004066, 004095, 004093, 004111,
   004087, 004135 (`core/Joint.cpp`) and 004391 (`core/JointSupport.cpp`); the 13 folded Np
   bodies (`NpJointShared`); 002362/002364/002366 (`nxNpSceneGuard*`), 002404/002406
@@ -506,3 +506,43 @@ Getters: 004437/004125, 004441/004129, 004483/004078, 004539, 004443/004070,
 `isPrismaticJoint` (inline 004423 -> 004479/004070), and saveToDesc 004751 -> internal slot
 10 = **004376** -> 004066. Rows compiled but not reached: 004382 (release unwired), 004384,
 004386, 004731-004747, 004757, 004318.
+
+### Result (Task 3a)
+
+- Wired: `NxSceneInternal::createJoint` builds type 0 through `PrismaticJoint` (0x17c) and
+  `nxPrismaticJointAttachScene`, sharing one block with the revolute case (allocation per
+  family, then the common +0x48 test, link copy, `nxSceneAddJoint`, slot-5 delete and the
+  0x14529-0x1453f exit). `nxJointSizeForType` is now reached only by types 2-9.
+- The staged pair matched the oracle on the first run (`stdout_delta=0`); no transcript
+  difference was found. Both prismatic cases' saved local normals matched as well: the
+  Foundation `NxNormalToTangents` defect is on the |n.z| > 1/sqrt(2) arm, which neither
+  index 0 nor index 3 reaches.
+- A cdb trace of the candidate (`evidence/joint-families-trace-prismatic.txt`) shows 004380,
+  004753, 004378, 004751 and 004376 executing in both cases; 004382, 004384, 004386 and the
+  Np setters are compiled but not reached.
+
+### Template notes for Tasks 3b-3i
+
+- **Supplement**: pass the union of the existing `requested` RVAs plus the new ones; the
+  existing entries come back byte-identical. The Ghidra project was not locked.
+- **Internal tables differ per family** (prismatic 13 slots, revolute 17): declare each
+  family's own slots (9 onwards) in its own header; `Joint` keeps slots 0-8 only.
+- **Rows folded across families**: a family table may name another family's body (prismatic
+  slot 4 = cylindrical 004318). Keep an asserting override whose comment names the folded row
+  without the `// phys_fn_` form, and leave the row to its owning unit's task.
+- **Scene wiring**: add the family to the dispatch block at the top of the reconstructed
+  path in `Scene.cpp` (allocation case plus attach-helper case); each family needs its own
+  `nx<Family>JointAttachScene` because `Scene.cpp` cannot include the Np headers.
+- **NpJointShared**: add the explicit instantiation and the two includes in
+  `core/NpJointShared.cpp`. The folded bodies then exist once per family in the candidate,
+  so a trace breaks on the family's instantiation.
+- **Shared data and helpers**: the unit axes are `gJointUnitAxis` (`core/JointSupport.h`).
+  The record-bit and solve-tail helpers are file-static copies in `core/RevoluteJoint.cpp`
+  and `core/PrismaticJoint.cpp`; the linear records here use a different bit sequence
+  (kind 1, bit 10 computed) from revolute's (bit 10 forced), so read each site's listing
+  rather than reusing a copy blindly. Hoisting the common tail into a shared internal header
+  is worth doing when the next family needs it.
+- **Floors**: the Phase 7 floor counts the staged-pair lines too; raise `'7'` with `'6'`.
+- **Environment**: bash heredocs in this environment collapse `\\` sequences (a `"\\n"` in a
+  heredoc'd Python script became a real newline); write helper scripts with the Write tool.
+  cdb needs the pair directory as a backslash Windows path (`cygpath -w`).
