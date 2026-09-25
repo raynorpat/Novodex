@@ -1443,6 +1443,7 @@ void* nxLockedCopy12_3872(void* self, unsigned* out)
 // phys_fn_004479 (0xb0d20, ret 4): compares arg with [field+0x168] (field from
 // [self+0x18]) and returns SELF when they are equal, else zero -- the mask is
 // `and esi, ecx` with esi still holding this.
+// Product row: Physics/src/core/NpJointShared.cpp.
 unsigned nxLockedMatch4479(void* self, unsigned arg)
 	{
 	const unsigned char* p = reinterpret_cast<const unsigned char*>(self);
@@ -1487,6 +1488,7 @@ unsigned nxLockedAndRead(void* self, unsigned fieldOff, unsigned dataOff,
 	}
 
 // The bit-extract member: `mov eax,[ecx+dataOff]; shr eax,3; and eax,3`.
+// Product row: Physics/src/core/NpJointShared.cpp.
 unsigned nxLockedBitExtract(void* self, unsigned fieldOff, unsigned dataOff)
 	{
 	const unsigned char* p = reinterpret_cast<const unsigned char*>(self);
@@ -1551,6 +1553,7 @@ unsigned nxLockedWordAndRead(void* self, unsigned fieldOff, unsigned dataOff,
 	}
 
 // The two-pointer copy member.
+// Product row: Physics/src/core/NpJointShared.cpp.
 void nxLockedCopyTwoPointers(void* self, unsigned fieldOff, unsigned* out1,
 	unsigned* out2)
 	{
@@ -1644,6 +1647,7 @@ int nxLockedConditionalCount(void* self, unsigned fieldOff, unsigned dataOff,
 	}
 
 // The nested-deref member.
+// Product row: Physics/src/core/NpJointShared.cpp.
 void nxLockedTwoNestedDerefs(void* self, unsigned fieldOff, unsigned off1,
 	unsigned off2, unsigned nested, unsigned* out1, unsigned* out2)
 	{
@@ -2156,6 +2160,7 @@ unsigned char nxArrayVtCall3Args1024(void* self, unsigned a1, unsigned a2,
 
 // phys_fn_004491 (0xb0f10): the lock-bracketed global-flag read. The helper
 // 004083 tests the data word at [0x10127180] and returns 0 or 1.
+// Product row: Physics/src/core/NpJointShared.cpp.
 static unsigned gNxGlobalFlag4491 = 0;
 
 void nxSetGlobalFlag4491(unsigned value)
@@ -2323,6 +2328,7 @@ void* nxDtorOwnedPtr(void* self, unsigned flags, unsigned vtable)
 // phys_fn_004743 (0xb3670): the lock-bracketed registry lookup. 000454 walks
 // the registry vector when [0x10123c0c] is non-null and returns 0 when it is
 // null, which is the image's state.
+// Product row: Physics/src/core/NpJointShared.cpp.
 static void* gNxRegistry4743 = nullptr;
 
 void nxSetRegistry4743(void* registry)

@@ -339,6 +339,27 @@ Header `Physics/src/include/core/NpRevoluteJoint.h`.
   byte-offset model, since `NpRevoluteJoint` is real multiple-inheritance C++, not the generic
   `NpJointObject` byte array the model targets elsewhere.
 
+### Declaration changes made by joint-families Task 1
+
+Headers `Physics/src/include/core/NpRevoluteJoint.h` and the new
+`Physics/src/include/core/NpJointShared.h`; details in `units/joint-families-contract.md`
+`## Shared NpJoint slots`.
+
+- `NpRevoluteJoint` now derives from `NpJointShared<NxRevoluteJoint, RevoluteJoint>`, a
+  `__declspec(novtable)` template that itself derives from `NxRevoluteJoint` and
+  `EmbeddedHookBase` in that order. The layout, the static_asserts and the table slot order
+  are unchanged; `mInternal` (+0x18), `operator delete`, `writeLink()`/`readLink()` and the
+  hook-word zeroing of the constructor moved into the base.
+- The 13 folded bodies are no longer `NpRevoluteJoint` members: they are
+  `NpJointShared` members defined in `Physics/src/core/NpJointShared.cpp`, which now claims
+  them (stable-ID lines; `reconstructed`, `implementation` = that file). The statement in
+  `### Table` that they are "implemented as NpRevoluteJoint methods but not claimed" is
+  superseded.
+- The revolute rows of slots 2, 4, 9, 11, 13, 14, 15, 29, 31 and 32 keep their stable-ID lines
+  in `core/NpRevoluteJoint.cpp`; their bodies are one-line calls to `NpJointShared`'s shared
+  `forward*` helpers with this unit's `__FILE__` and line. The other write-locked rows report
+  through `reportWriteLocked`.
+
 ## Construction chain
 
 The public call is `NxScene::createJoint(desc)` with `desc.type == NX_JOINT_REVOLUTE (1)`.

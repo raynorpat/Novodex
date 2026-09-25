@@ -80779,13 +80779,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/NpJointShared.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1656",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15142",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) as the shared NpJoint body all ten Np joint tables point at (unit core\\NpD6Joint.cpp, claimed by joint-families Task 1); see units/joint-families-contract.md ## Shared NpJoint slots",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpJointShared.cpp"
     },
     {
       "id": "phys_fn_004438",
@@ -80851,13 +80852,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/NpJointShared.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1658",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15146",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) as the shared NpJoint body all ten Np joint tables point at (unit core\\NpD6Joint.cpp, claimed by joint-families Task 1); see units/joint-families-contract.md ## Shared NpJoint slots",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpJointShared.cpp"
     },
     {
       "id": "phys_fn_004442",
@@ -80888,12 +80890,13 @@
       "phase": 6,
       "phase_provenance": "translation_unit",
       "state": "reconstructed",
-      "source": "locked field accessor, variant B (0xb0730)",
+      "source": "Physics/src/core/NpJointShared.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1659",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15147",
-      "static_proof": "locks [self+0x14], calls the plain dword getter 004070 on [self+0x18] (reads [field+0x168]), unlocks and returns it",
+      "static_proof": "locks [self+0x14], calls the plain dword getter 004070 on [self+0x18] (reads [field+0x168]), unlocks and returns it; transcribed from the Capstone listing (oracle/capstone/manifest.json) as the shared NpJoint body all ten Np joint tables point at (unit core\\NpD6Joint.cpp, claimed by joint-families Task 1); see units/joint-families-contract.md ## Shared NpJoint slots",
       "dynamic_proof": "confirmed via lockedget2 differential (3z140): offset 0x168 failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpJointShared.cpp"
     },
     {
       "id": "phys_fn_004444",
@@ -81538,12 +81541,13 @@
       "phase": 6,
       "phase_provenance": "translation_unit",
       "state": "reconstructed",
-      "source": "locked match-or-self accessor (0xb0d20, ret 4)",
+      "source": "Physics/src/core/NpJointShared.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1676",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15194",
-      "static_proof": "locks [self+0x14], reads [field+0x168] with field from [self+0x18], unlocks and returns SELF when the argument equals that word, else zero",
+      "static_proof": "locks [self+0x14], reads [field+0x168] with field from [self+0x18], unlocks and returns SELF when the argument equals that word, else zero; transcribed from the Capstone listing (oracle/capstone/manifest.json) as the shared NpJoint body all ten Np joint tables point at (unit core\\NpPulleyJoint.cpp, claimed by joint-families Task 1); see units/joint-families-contract.md ## Shared NpJoint slots",
       "dynamic_proof": "confirmed via lockedget2 differential (3z140): equal and unequal arms failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpJointShared.cpp"
     },
     {
       "id": "phys_fn_004480",
@@ -81610,12 +81614,13 @@
       "phase": 6,
       "phase_provenance": "translation_unit",
       "state": "reconstructed",
-      "source": "locked bit-extract accessor (0xb0dc0)",
+      "source": "Physics/src/core/NpJointShared.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1678",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15198",
-      "static_proof": "locks [self+0x14], calls helper 004078 on [self+0x18] which returns ([field+0x2c]>>3)&3, unlocks and returns it",
+      "static_proof": "locks [self+0x14], calls helper 004078 on [self+0x18] which returns ([field+0x2c]>>3)&3, unlocks and returns it; transcribed from the Capstone listing (oracle/capstone/manifest.json) as the shared NpJoint body all ten Np joint tables point at (unit core\\NpPulleyJoint.cpp, claimed by joint-families Task 1); see units/joint-families-contract.md ## Shared NpJoint slots",
       "dynamic_proof": "confirmed via lockacc4 differential (3z144): four field values failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpJointShared.cpp"
     },
     {
       "id": "phys_fn_004484",
@@ -81754,13 +81759,13 @@
       "phase": 6,
       "phase_provenance": "translation_unit",
       "state": "reconstructed",
-      "source": "lock-bracketed global-flag read (0xb0f10)",
+      "source": "Physics/src/core/NpJointShared.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1682",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15208",
-      "static_proof": "static review of the recorded shape: lock-bracketed global-flag read (0xb0f10); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
+      "static_proof": "static review of the recorded shape: lock-bracketed global-flag read (0xb0f10); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257); transcribed from the Capstone listing (oracle/capstone/manifest.json) as the shared NpJoint body all ten Np joint tables point at (unit core\\NpPulleyJoint.cpp, claimed by joint-families Task 1); see units/joint-families-contract.md ## Shared NpJoint slots",
       "dynamic_proof": "confirmed via globalflag4491 differential (3z176): the non-zero and zero flag arms both failures=0, with the data word 0x10127180 bound and the lock API bound",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/core/NpJointShared.cpp"
     },
     {
       "id": "phys_fn_004492",
@@ -81864,13 +81869,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/NpJointShared.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1685",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15215",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) as the shared NpJoint body all ten Np joint tables point at (unit core\\NpPulleyJoint.cpp, claimed by joint-families Task 1); see units/joint-families-contract.md ## Shared NpJoint slots",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpJointShared.cpp"
     },
     {
       "id": "phys_fn_004498",
@@ -81900,13 +81906,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/NpJointShared.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1686",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15216",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) as the shared NpJoint body all ten Np joint tables point at (unit core\\NpPulleyJoint.cpp, claimed by joint-families Task 1); see units/joint-families-contract.md ## Shared NpJoint slots",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpJointShared.cpp"
     },
     {
       "id": "phys_fn_004500",
@@ -82623,12 +82630,13 @@
       "phase": 6,
       "phase_provenance": "enclosed_by_one_phase",
       "state": "reconstructed",
-      "source": "locked nested-deref accessor (0xb1600, ret 8)",
+      "source": "Physics/src/core/NpJointShared.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1703",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15263",
-      "static_proof": "static review of the recorded shape: locked nested-deref accessor (0xb1600, ret 8); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
+      "static_proof": "static review of the recorded shape: locked nested-deref accessor (0xb1600, ret 8); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257); transcribed from the Capstone listing (oracle/capstone/manifest.json) as the shared NpJoint body all ten Np joint tables point at (unit core\\NpDistanceJoint.cpp, claimed by joint-families Task 1); see units/joint-families-contract.md ## Shared NpJoint slots",
       "dynamic_proof": "confirmed via lockacc8 differential (3z152): failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpJointShared.cpp"
     },
     {
       "id": "phys_fn_004540",
@@ -83237,12 +83245,13 @@
       "phase": 6,
       "phase_provenance": "translation_unit",
       "state": "reconstructed",
-      "source": "locked two-pointer copy accessor (0xb1bd0, ret 8)",
+      "source": "Physics/src/core/NpJointShared.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1719",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15310",
-      "static_proof": "locks [self+0x14], calls helper 004076 on [self+0x18] which writes [field+0x3c] through the first out pointer and [field+0x40] through the second, then unlocks; ret 8",
+      "static_proof": "locks [self+0x14], calls helper 004076 on [self+0x18] which writes [field+0x3c] through the first out pointer and [field+0x40] through the second, then unlocks; ret 8; transcribed from the Capstone listing (oracle/capstone/manifest.json) as the shared NpJoint body all ten Np joint tables point at (unit core\\NpPointInPlaneJoint.cpp, claimed by joint-families Task 1); see units/joint-families-contract.md ## Shared NpJoint slots",
       "dynamic_proof": "confirmed via lockacc5 differential (3z145): failures=0, with the Foundation lock API bound to __stdcall no-op stubs",
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpJointShared.cpp"
     },
     {
       "id": "phys_fn_004574",
@@ -83308,13 +83317,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/NpJointShared.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1721",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15314",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) as the shared NpJoint body all ten Np joint tables point at (unit core\\NpPointInPlaneJoint.cpp, claimed by joint-families Task 1); see units/joint-families-contract.md ## Shared NpJoint slots",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpJointShared.cpp"
     },
     {
       "id": "phys_fn_004578",
@@ -84356,13 +84366,14 @@
       "section": ".text",
       "phase": 6,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/NpJointShared.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1748",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15389",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) as the shared NpJoint body all ten Np joint tables point at (unit core\\NpSphericalJoint.cpp, claimed by joint-families Task 1); see units/joint-families-contract.md ## Shared NpJoint slots",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "implementation": "Physics/src/core/NpJointShared.cpp"
     },
     {
       "id": "phys_fn_004636",
@@ -86331,13 +86342,13 @@
       "phase": 6,
       "phase_provenance": "translation_unit",
       "state": "reconstructed",
-      "source": "lock-bracketed registry lookup (0xb3670)",
+      "source": "Physics/src/core/NpJointShared.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1796",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15518",
-      "static_proof": "static review of the recorded shape: lock-bracketed registry lookup (0xb3670); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
+      "static_proof": "static review of the recorded shape: lock-bracketed registry lookup (0xb3670); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257); transcribed from the Capstone listing (oracle/capstone/manifest.json) as the shared NpJoint body all ten Np joint tables point at (unit core\\NpPrismaticJoint.cpp, claimed by joint-families Task 1); see units/joint-families-contract.md ## Shared NpJoint slots",
       "dynamic_proof": "confirmed via registry4743 differential (3z182): failures=0 for two object shapes, with the registry global 0x10123c0c bound null and the lock API bound",
       "notes": "",
-      "implementation": "Physics/src/ObjectModel.cpp"
+      "implementation": "Physics/src/core/NpJointShared.cpp"
     },
     {
       "id": "phys_fn_004744",

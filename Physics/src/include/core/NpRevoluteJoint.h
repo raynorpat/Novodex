@@ -26,16 +26,23 @@
 // exactly the two vtables (0x1011b328 primary / 0x1011b3dc secondary) the
 // oracle installs, in the oracle's slot order, because neither NxJoint nor
 // NxRevoluteJoint overloads any virtual (MSVC keeps declaration order).
+//
+// Joint-families Task 1 moved the NxJoint-level part (layout, lock links,
+// the 13 folded bodies, the shared setter bodies, operator delete) into
+// NpJointShared<NxRevoluteJoint, RevoluteJoint> (core/NpJointShared.h); the
+// bases, their order and the 0x1c layout are unchanged, and the intermediate
+// class is __declspec(novtable), so the table installs are as before.
 
 #include "Nxp.h"
 #include "PhysicsInternal.h"
 #include "NxRevoluteJoint.h"
 #include "ObjectModel.h"
 #include "core/RevoluteJoint.h"
+#include "core/NpJointShared.h"
 
 #include <cstddef>
 
-class NpRevoluteJoint : public NxRevoluteJoint, public EmbeddedHookBase
+class NpRevoluteJoint : public NpJointShared<NxRevoluteJoint, RevoluteJoint>
 	{
 	public:
 	//! phys_fn_004725 (0x000b33a0, 57 B). Zeroes userData/appData (inlined
@@ -56,72 +63,29 @@ class NpRevoluteJoint : public NxRevoluteJoint, public EmbeddedHookBase
 	//! wraps this body with the operator-delete-if-flagged step).
 	virtual ~NpRevoluteJoint();
 
-	//! The compiler-generated scalar deleting destructor (the wrapper
-	//! around ~NpRevoluteJoint() above) frees through `operator delete`
-	//! when its flag bit is set; the oracle's free is the SDK allocator's
-	//! (`[[0x101041bc]]` slot +0x14, phys_fn_004729's tail), so this
-	//! routes there rather than to the global operator delete -- the same
-	//! declaration Joint.h adds for its own deleting destructors.
-	static void operator delete(void* p) { nxGetSdkAllocator()->free(p); }
+	//! `operator delete` (the SDK allocator) is inherited from
+	//! NpJointShared.
 
-	// --- NxJoint pure virtuals, in NxJoint.h declaration order ---
-
-	//! Shared NpJoint body; the oracle keeps one folded copy at 0x000b1600
-	//! (phys_fn_004539). Slot 1. Task 9 implements the forward to
-	//! `*[[j+8]+0x19c]` / `*[[j+0xc]+0x19c]` under the read lock.
-	virtual void getActors(NxActor** actor1, NxActor** actor2);
+	// --- NxJoint setters this family has its own rows for, in NxJoint.h
+	//     declaration order. Slots 1, 3, 5-8, 10, 12, 16-19 and 30 are the
+	//     folded bodies NpJointShared defines; slots 20-28 are NxJoint.h's
+	//     inline isXxxJoint bodies. ---
 
 	//! phys_fn_004681 (0x000b2d10, 84 B). Slot 2: write lock, forwards to
 	//! Joint::setGlobalAnchor (phys_fn_004099).
 	virtual void setGlobalAnchor(const NxVec3&);
 
-	//! Shared NpJoint body; the oracle keeps one folded copy at 0x000b0670
-	//! (phys_fn_004437). Slot 3. Task 9 implements the forward to
-	//! Joint::getGlobalAnchor (phys_fn_004125) under the read lock.
-	virtual void getGlobalAnchor(NxVec3&) const;
-
 	//! phys_fn_004683 (0x000b2d70, 84 B). Slot 4: write lock, forwards to
 	//! Joint::setGlobalAxis (phys_fn_004101).
 	virtual void setGlobalAxis(const NxVec3&);
-
-	//! Shared NpJoint body; the oracle keeps one folded copy at 0x000b0700
-	//! (phys_fn_004441). Slot 5. Task 9 implements the forward to
-	//! Joint::getGlobalAxis (phys_fn_004129) under the read lock.
-	virtual void getGlobalAxis(NxVec3&) const;
-
-	//! Shared NpJoint body; the oracle keeps one folded copy at 0x000b0ff0
-	//! (phys_fn_004497). Slot 6. Task 9 implements the forward to
-	//! Joint::getGlobalAnchorVal (phys_fn_004137).
-	virtual NxVec3 getGlobalAnchorVal() const;
-
-	//! Shared NpJoint body; the oracle keeps one folded copy at 0x000b1020
-	//! (phys_fn_004499). Slot 7. Task 9 implements the forward to
-	//! Joint::getGlobalAxisVal (phys_fn_004139).
-	virtual NxVec3 getGlobalAxisVal() const;
-
-	//! Shared NpJoint body; the oracle keeps one folded copy at 0x000b0dc0
-	//! (phys_fn_004483). Slot 8 (on the transcript path). Task 9
-	//! implements the forward to Joint::getState (phys_fn_004078) under
-	//! the read lock.
-	virtual NxJointState getState();
 
 	//! phys_fn_004685 (0x000b2dd0, 89 B). Slot 9: write lock, forwards to
 	//! Joint::setBreakable (phys_fn_004074).
 	virtual void setBreakable(NxReal maxForce, NxReal maxTorque);
 
-	//! Shared NpJoint body; the oracle keeps one folded copy at 0x000b1bd0
-	//! (phys_fn_004573). Slot 10. Task 9 implements the forward to
-	//! Joint::getBreakable (phys_fn_004076).
-	virtual void getBreakable(NxReal& maxForce, NxReal& maxTorque);
-
 	//! phys_fn_004687 (0x000b2e30, 89 B). Slot 11: write lock, forwards to
 	//! Joint::setLimitPoint (phys_fn_004109).
 	virtual void setLimitPoint(const NxVec3& point, bool pointIsOnBody2 = true);
-
-	//! Shared NpJoint body; the oracle keeps one folded copy at 0x000b1c60
-	//! (phys_fn_004577). Slot 12. Task 9 implements the forward to
-	//! Joint::getLimitPoint (phys_fn_004080).
-	virtual bool getLimitPoint(NxVec3& worldLimitPoint);
 
 	//! phys_fn_004689 (0x000b2e90, 97 B). Slot 13: write lock, forwards to
 	//! Joint::addLimitPlane (phys_fn_004143).
@@ -136,37 +100,9 @@ class NpRevoluteJoint : public NxRevoluteJoint, public EmbeddedHookBase
 	//! unlock.
 	virtual void resetLimitPlaneIterator();
 
-	//! Shared NpJoint body; the oracle keeps one folded copy at 0x000b0f10
-	//! (phys_fn_004491). Slot 16. Task 9 implements the forward to
-	//! Joint::hasMoreLimitPlanes (phys_fn_004083).
-	virtual bool hasMoreLimitPlanes();
-
-	//! Shared NpJoint body; the oracle keeps one folded copy at 0x000b25d0
-	//! (phys_fn_004635). Slot 17. Task 9 implements the forward to
-	//! Joint::getNextLimitPlane (phys_fn_004145).
-	virtual bool getNextLimitPlane(NxVec3& planeNormal, NxReal& planeD);
-
-	//! Shared NpJoint body; the oracle keeps one folded copy at 0x000b0730
-	//! (phys_fn_004443). Slot 18. Task 9 implements the forward to
-	//! Joint::getType (phys_fn_004070).
-	virtual NxJointType getType() const;
-
-	//! Shared NpJoint body; the oracle keeps one folded copy at 0x000b0d20
-	//! (phys_fn_004479). Slot 19. Task 9 implements: returns `this` if the
-	//! argument equals getType(), else 0.
-	virtual void* is(NxJointType) const;
-
-	//! Slots 20-28 (isRevoluteJoint..isPulleyJoint): compiler-generated
-	//! from the inline bodies in NxJoint.h; not overridden here.
-
 	//! phys_fn_004693 (0x000b2f50, 88 B). Slot 29: write lock, forwards to
 	//! nxSetSdkPointerBinding([np+0x18], name).
 	virtual void setName(const char*);
-
-	//! Shared NpJoint body; the oracle keeps one folded copy at 0x000b3670
-	//! (phys_fn_004743). Slot 30. Task 9 implements the forward to
-	//! nxGetSdkPointerBinding([np+0x18]).
-	virtual const char* getName() const;
 
 	// --- NxRevoluteJoint pure virtuals, in NxRevoluteJoint.h order ---
 
@@ -247,18 +183,7 @@ class NpRevoluteJoint : public NxRevoluteJoint, public EmbeddedHookBase
 	//! to the guard, not the word's address (e.g. phys_fn_004681 0xb2d16
 	//! `mov ecx,[esi+0x10]` before the tryLock call).
 
-	//! +0x18. The internal RevoluteJoint* every accessor forwards to
-	//! (also duplicated into NxJoint::appData at +0x08 by the
-	//! constructor).
-	RevoluteJoint*		mInternal;
-
-	private:
-	//! The write-lock link value (the VALUE stored at +0x10/mWord04, not its
-	//! address) -- what every setter passes to nxNpSceneGuardWriteTry/Leave.
-	void*			writeLink() const { return reinterpret_cast<void*>(mWord04); }
-	//! The read-lock link value (the VALUE stored at +0x14/mWord08) -- what
-	//! every getter passes to nxNpSceneGuardEnter/Leave.
-	void*			readLink() const { return reinterpret_cast<void*>(mWord08); }
+	//! +0x18: NpJointShared::mInternal (RevoluteJoint*).
 	};
 
 static_assert(sizeof(NxJoint) == 0xc, "NxJoint is vptr+userData+appData, twelve bytes");
