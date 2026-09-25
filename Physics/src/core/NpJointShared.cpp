@@ -17,6 +17,8 @@
 #include "NxSphericalJoint.h"
 #include "core/PointOnLineJoint.h"
 #include "NxPointOnLineJoint.h"
+#include "core/PointInPlaneJoint.h"
+#include "NxPointInPlaneJoint.h"
 #include "PhysicsInternal.h"
 #include "NpSceneGuard.h"
 
@@ -229,3 +231,4 @@ template class NpJointShared<NxPrismaticJoint, PrismaticJoint>;
 template class NpJointShared<NxCylindricalJoint, CylindricalJoint>;
 template class NpJointShared<NxSphericalJoint, SphericalJoint>;
 template class NpJointShared<NxPointOnLineJoint, PointOnLineJoint>;
+template class NpJointShared<NxPointInPlaneJoint, PointInPlaneJoint>;

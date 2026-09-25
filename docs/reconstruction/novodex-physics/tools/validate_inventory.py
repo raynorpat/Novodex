@@ -1964,7 +1964,9 @@ UNRESOLVED_SOURCE_PATHS = (
     'Physics/src/core/NpD6Joint.cpp',                # 14 rows
     'Physics/src/core/NpDistanceJoint.cpp',          # 10 rows
     'Physics/src/core/NpFixedJoint.cpp',             # 10 rows
-    'Physics/src/core/NpPointInPlaneJoint.cpp',      # 10 rows
+    # 'Physics/src/core/NpPointInPlaneJoint.cpp' was here with 10 rows against
+    # it, and is REMOVED: joint-families Task 3e created the file (same reason
+    # as NpRevoluteJoint.cpp below).
     # 'Physics/src/core/NpPointOnLineJoint.cpp' was here with 10 rows against
     # it, and is REMOVED: joint-families Task 3d created the file (same reason
     # as NpRevoluteJoint.cpp below).
@@ -1980,7 +1982,8 @@ UNRESOLVED_SOURCE_PATHS = (
     # 'Physics/src/core/NpSphericalJoint.cpp' was here with 12 rows against
     # it, and is REMOVED: joint-families Task 3c created the file (same reason
     # as NpRevoluteJoint.cpp below).
-    'Physics/src/core/PointInPlaneJoint.cpp',        # 2 rows
+    # 'Physics/src/core/PointInPlaneJoint.cpp' was here with 2 rows against it,
+    # and is REMOVED: joint-families Task 3e created the file.
     # 'Physics/src/core/PointOnLineJoint.cpp' was here with 2 rows against it,
     # and is REMOVED: joint-families Task 3d created the file.
     # 'Physics/src/core/PrismaticJoint.cpp' was here with 2 rows against it,
