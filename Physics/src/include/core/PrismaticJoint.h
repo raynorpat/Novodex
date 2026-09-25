@@ -70,8 +70,8 @@ class PrismaticJoint : public Joint
 
 	//! phys_fn_004378 (0x000ad520, 443 B). Called by phys_fn_004380
 	//! (0xad725) and phys_fn_004384 (0xad840) with the descriptor, which it
-	//! never reads (`ret 4`). Writes mUnknown16c = conj(body0 +0x124
-	//! quaternion) * (body1 +0x124 quaternion).
+	//! never reads (`ret 4`). Writes mUnknown16c = conj(conj(q0) * q1) for
+	//! the bodies' +0x124 quaternions (identity for a missing body 0).
 	void row004378(const NxPrismaticJointDesc& desc);
 
 	// --- fields (the Joint base part is 0x00-0x16b) ---

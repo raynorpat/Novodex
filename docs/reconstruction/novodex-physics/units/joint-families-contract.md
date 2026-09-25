@@ -430,7 +430,7 @@ ambiguous rows). Checked by hand:
 | Off | Size | Field | Evidence |
 |---|---:|---|---|
 | +0x000 | 0x16c | `Joint` base; vptr 0x1011a4d0 | 004380 0xad6ee/0xad6f3; 004382 0xad748 |
-| +0x16c | 0x10 | `mUnknown16c[4]`: quaternion x, y, z, w = conj(body0 +0x124 quat) * (body1 +0x124 quat); the identity stands for a missing body 0, and a missing body 1 leaves conj(q0). Name unknown (no string, descriptor field or public virtual) | written only by 004378 (0xad533-0xad6cf); read only by 004386 (0xaeea4-0xaef46) |
+| +0x16c | 0x10 | `mUnknown16c[4]`: quaternion x, y, z, w = conj(conj(q0) * q1) for the bodies' +0x124 quaternions q0, q1 (004378 conjugates q0 in place, multiplies by q1, then negates the vector part again); the identity stands for a missing body 0, and a missing body 1 leaves q0. 004386 multiplies the current conj(q0) * q1 by it, so it is the inverse of the relative rotation at creation. Name unknown (no string, descriptor field or public virtual) | written only by 004378 (0xad533-0xad6cf); read only by 004386 (0xaeea4-0xaef46) |
 
 The candidate writes the body record's +0x124 quaternion (`nxNpActorUpdateCMassQuaternion`),
 so 004378's inputs exist.

@@ -2749,6 +2749,7 @@ void nxListFreeViaSingleton4089(void* self)
 	}
 
 // The ten 74-byte mutex rows that run the 004089 teardown under the lock.
+// Product row: Physics/src/core/NpPrismaticJoint.cpp.
 unsigned nxMutexListFree(void* self, unsigned code, unsigned file, unsigned line,
 	unsigned expression)
 	{
