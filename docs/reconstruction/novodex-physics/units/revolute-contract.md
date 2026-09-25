@@ -74,7 +74,9 @@ Conventions used below:
     their receiver is a different record (flags word at +0xc tested for bit 10, two body
     pointers at +0x10/+0x14, vectors at +0x00..+0x2c, outputs at +0x3c/+0x40 — 004389
     decompile, 004393 0xaf710), and their callers span every joint family plus the
-    raycast gap rows 000879/000883/000897.
+    raycast gap rows 000879, 000885 and 000899 (call sites 0x1e2c9/0x1e46d, 0x1e8f2,
+    0x1f8af/0x1f8fd). `dependencies.dot` attributes these call sites to 000883/000897; the
+    listing puts them in 000879/000885/000899.
 
 ### Table
 
@@ -135,7 +137,7 @@ rows. `core/Joint.cpp`/`core/JointSupport.cpp` rows are written only if
 | phys_fn_004729 | 0x000b33f0 | 55 | discovered | `core/NpRevoluteJoint.cpp` | DECIDED: 002727 slot 0; reinstalls 0x1011b328/0x1011b3dc then NxJoint table 0x1011a680 |
 | phys_fn_004064 | 0x000957a0 | 385 | discovered | `core/Joint.cpp` | DECIDED (gap row): transforms two points through body[0]/body[1] (this+8/+0xc, body+0x134..+0x160); callers 004356, 004298 (joint rows only) |
 | phys_fn_004066 | 0x00095930 | 266 | discovered | `core/Joint.cpp` | DECIDED (work_units: gap NpSpringAndDamperEffector..Joint): base saveToDesc, called by all ten joint saveToDesc rows incl. 004330 (0xa8d80); writes NxJointDesc fields from Joint +0x3c..+0xa8/+0x2c/+0x48 |
-| phys_fn_004070 | 0x00095a80 | 7 | reconstructed | `core/Joint.cpp` | DECIDED (gap row): returns +0x168, the NxJointType 004141 stores; called by folded Np getType/is (004443/004479) |
+| phys_fn_004070 | 0x00095a80 | 7 | reconstructed | `core/Joint.cpp` | DECIDED (gap row): returns +0x168, the NxJointType 004141 stores; called by folded Np getType/is (004443/004479) and by 004037 (gap NpSpringAndDamperEffector..Joint, not Np) |
 | phys_fn_004074 | 0x00095ab0 | 216 | discovered | `core/Joint.cpp` | Joint.cpp per work_units; setBreakable (Np slot 9 004685) |
 | phys_fn_004076 | 0x00095b90 | 21 | reconstructed | `core/Joint.cpp` | Joint.cpp per work_units; getBreakable (folded Np slot 10) |
 | phys_fn_004078 | 0x00095bb0 | 10 | reconstructed | `core/Joint.cpp` | Joint.cpp per work_units; getState (folded Np slot 8) |
@@ -165,9 +167,9 @@ rows. `core/Joint.cpp`/`core/JointSupport.cpp` rows are written only if
 | phys_fn_004141 | 0x00099e60 | 464 | discovered | `core/Joint.cpp` | Joint.cpp per work_units; Joint ctor: installs 0x101192d0 (0x99e70); called by 004366 (0xac54c) |
 | phys_fn_004143 | 0x0009a0d0 | 860 | discovered | `core/Joint.cpp` | Joint.cpp per work_units; addLimitPlane body (Np slot 13 004689) |
 | phys_fn_004145 | 0x0009a430 | 174 | discovered | `core/Joint.cpp` | Joint.cpp per work_units; getNextLimitPlane body (folded Np slot 17) |
-| phys_fn_004389 | 0x000af2d0 | 227 | discovered | `core/JointSupport.cpp` | DECIDED (gap PrismaticJoint..NpD6Joint): operates on a separate record (flags +0xc, body ptrs +0x10/+0x14), callers in 5 joint families + raycast gap rows |
-| phys_fn_004391 | 0x000af3c0 | 837 | discovered | `core/JointSupport.cpp` | DECIDED (gap row): same record type as 004389; 16 callers across joints, Joint.cpp 004135, raycast gap rows |
-| phys_fn_004393 | 0x000af710 | 122 | discovered | `core/JointSupport.cpp` | DECIDED (gap row): calls 004391, writes record +0x3c/+0x40 |
+| phys_fn_004389 | 0x000af2d0 | 227 | discovered | `core/JointSupport.cpp` | DECIDED (gap PrismaticJoint..NpD6Joint): operates on a separate record (flags +0xc, body ptrs +0x10/+0x14), callers 004310, 004362, 004397, 004399 (joint rows) + raycast row 000899 (0x1f8fd) |
+| phys_fn_004391 | 0x000af3c0 | 837 | discovered | `core/JointSupport.cpp` | DECIDED (gap row): same record type as 004389; callers across joint families, Joint.cpp 004135, and raycast rows 000879 (0x1e2c9, 0x1e46d), 000899 (0x1f8af) |
+| phys_fn_004393 | 0x000af710 | 122 | discovered | `core/JointSupport.cpp` | DECIDED (gap row): calls 004391, writes record +0x3c/+0x40; raycast caller 000885 (0x1e8f2) |
 | phys_fn_000022 | 0x00001840 | 27 | discovered | `core/JointSupport.cpp` | deferred stub only (owner gap <start>..Actor.cpp); called by 004356 |
 | phys_fn_000571 | 0x000108e0 | 22 | reconstructed | `core/JointSupport.cpp` | deferred stub only (owner Scene.cpp; link-insert at Scene+0x620); called by 004374, 004111 |
 | phys_fn_000633 | 0x00012660 | 370 | discovered | `core/JointSupport.cpp` | deferred stub only (owner Scene.cpp; joint removal); called by 004107 (third arg false), 004095 |
@@ -177,6 +179,14 @@ rows. `core/Joint.cpp`/`core/JointSupport.cpp` rows are written only if
 The 13 folded NpJoint accessor bodies that table 002727 borrows from other units are
 listed in `## Dispatch tables` and `## Task split`; they are implemented as
 NpRevoluteJoint methods but **not claimed** (their rows stay with their own units).
+
+Joint.cpp inferred-extent rows 004085, 004091, 004103, 004105, 004113, 004115, 004117 and
+004119 are out of scope: no pilot row calls them directly (004091, 004113 and 004119 are
+reached only through deferred 004111; 004105 only through 004113; 004085/004103 from
+outside the joint units; 004115/004117 have no callers). 004119 is the Joint base scalar
+deleting destructor in base slot 5; no pilot path reaches it through the vtable, because
+RevoluteJoint overrides slot 5 with 004368, which calls the destructor body 004095
+directly, so release (if Task 10 wires it) goes 004368 → 004095, never 004119.
 
 ## Construction chain
 
@@ -269,17 +279,23 @@ Ordered list, caller → callee (purpose), with the instruction that makes the c
   (`case 0: size = 0x17c; // revolute`) and every size in `nxJointSizeForType`
   (`Scene.cpp:2350`) disagree with the table above. `NpJointObject`'s 0x17c
   (`NpJoint.h:27`) is the prismatic internal size, not a revolute size of any object.
-- The candidate's "joint's +0x12 word" is dword index 0x12 = byte offset **+0x48**, the
-  public-object pointer.
+- The oracle's marker is dword index 0x12 = byte offset **+0x48**, the public-object
+  pointer (000665 0x14502 `mov eax,[esi+0x48]`). The candidate's read at `Scene.cpp:1481`,
+  `reinterpret_cast<unsigned*>(joint)[0x12 / 4]`, is dword index 4 = **byte +0x10**, which
+  is wrong (it reads the Joint's scene-list link). Task 10 must read byte +0x48.
 - The candidate comment at `Scene.cpp:1492–1504` says the oracle "falls through and returns
   the joint" when that word is null. The listing does not: 0x1458a zeroes `esi` and 0x1453c
   returns it, so the oracle returns 0.
 - The candidate's Scene::createJoint returns the object it built and NpScene::createJoint
   (`NpScene.cpp:579`) returns it unchanged; the oracle's NpScene::createJoint returns
   `[internal+0x48]`.
-- The candidate never writes Scene+0x6cc (only reads it: `Scene.cpp:1286, 1484, 1553`), so
-  the lock-link copy is skipped and `np+0x10`/`np+0x14` would stay 0 — see open issue 1 in
-  `## Existing candidate code`.
+- Scene+0x6cc already holds the NpScene in the candidate: the NxSceneInternal constructor
+  zeroes it (`Scene.cpp:467`) and stores the wrapper (`Scene.cpp:494`,
+  `p[0x1b3] = reinterpret_cast<unsigned>(wrapper)`, 0x1b3·4 = 0x6cc), on the live path from
+  `PhysicsSDK.cpp:266`; `Scene.h:97` `setPublicScene` writes the same word, and
+  `createActor` (`Scene.cpp:1286`) already copies holder[3]/holder[4] (NpScene
+  `mWriteLock`/`mReadLock`) into each actor. Task 10 only needs to copy holder[3]/holder[4]
+  into `np+0x10`/`np+0x14` inside Scene::createJoint, as the oracle does at 0x14509–0x14521.
 
 ### What the staged-pair joint test reaches
 
@@ -669,15 +685,12 @@ What the new code replaces or must stay compatible with. Line numbers are at com
 | test | `tests/PhysicsJointTests.cpp:116–156` | the four revolute cases; see `## Construction chain` |
 | validator allowlist | `docs/reconstruction/novodex-physics/tools/validate_inventory.py:1964, 1970` | `'Physics/src/core/NpRevoluteJoint.cpp'` and `'Physics/src/core/RevoluteJoint.cpp'` are on `UNRESOLVED_SOURCE_PATHS`. Once Task 5 creates the files the validator fails with "is on the allowlist but no longer unresolved; remove the entry" (line 2033). **Task 5 must remove those two entries.** `'Physics/src/Joint.cpp'` (line 1931, the oracle's real path for Joint.cpp) is unaffected by `core/Joint.cpp` |
 
-### Open issues that can block later tasks
+### Open issues for later tasks
 
-1. **Scene+0x6cc is never written by the candidate.** The oracle copies the NpScene lock
-   links into `np+0x10`/`np+0x14` from `[Scene+0x6cc]` (the NpScene), and every
-   NpRevoluteJoint accessor locks one of them. In the candidate the holder is null, so
-   the links stay 0 and the first `getGlobalAnchor` would dereference null. Task 10 must
-   supply the links — e.g. have `NpScene::createJoint` write `mWriteLock`/`mReadLock` into
-   `np+0x10`/`np+0x14` (the same values), or set Scene+0x6cc to the NpScene — and record
-   which. Without it the transcript cannot pass.
+1. **Lock links.** Every NpRevoluteJoint accessor locks `np+0x10` or `np+0x14`. Scene+0x6cc
+   already holds the NpScene (`Scene.cpp:494`), so Task 10 copies holder[3]/holder[4] into
+   `np+0x10`/`np+0x14` in Scene::createJoint (oracle 0x14509–0x14521), reading the public
+   object from byte +0x48 (not the current `[0x12 / 4]` read at `Scene.cpp:1481`).
 2. **Release is unwired.** `NpScene::releaseJoint` is empty, so the four joints are never
    destroyed (they leak into scene teardown). The transcript prints `released=yes`
    regardless. If Task 10 wires release it also needs 000653/000633 (deferred Scene rows).
