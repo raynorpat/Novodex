@@ -41,6 +41,7 @@
 #include "NxJointDesc.h"
 #include "NxJoint.h"
 #include "NpJoint.h"
+#include "core/RevoluteJoint.h"
 #include "NxMat33.h"
 #include "NxQuat.h"
 
@@ -1402,10 +1403,24 @@ void NxSceneInternal::releaseActor(void* bodyPointer)
 //   desc.isValid() through the descriptor's vtable slot 8;
 //   a dynamic test: descriptor words 2 and 3 are the two actors, +0x14 is each
 //     actor's body, and the body's +8 is the non-null marker;
-//   a switch on descriptor word 1 (the joint type). The revolute case allocates
-//     0x17c bytes and constructs through phys_fn_000ad6e0;
-//   then the joint's +0x12 word, and if non-null, two words copied out of the
-//     Scene's +0x6cc holder and a call to phys_fn_00013e00 to register it.
+//   a switch on descriptor word 1 (the joint type) through the table at
+//     0x14590. Case 0 (NX_JOINT_PRISMATIC) allocates 0x17c bytes and constructs
+//     through phys_fn_004380 (0xad6e0); case 1 (NX_JOINT_REVOLUTE, target
+//     0x143c2) allocates 0x204 bytes (0x143ce) and constructs through
+//     phys_fn_004366 (0x143e1), which builds the 0x1c-byte NpRevoluteJoint at
+//     internal +0x48;
+//   then the joint's byte +0x48 (0x14502 `mov eax,[esi+0x48]`): if null, the
+//     joint's slot 5 (scalar deleting destructor) with 1 and a return of 0
+//     (0x14581-0x1458c); otherwise [[Scene+0x6cc]+0xc] -> np+0x10 and
+//     [[Scene+0x6cc]+0x10] -> np+0x14 (0x14509-0x14521) and phys_fn_000661
+//     to register it (0x14524).
+//
+// Only the revolute case runs the reconstructed rows (core/RevoluteJoint.cpp,
+// core/NpRevoluteJoint.cpp). The other types keep the generic stand-in path
+// (nxJointConstruct over NpJointObject). The oracle's Scene::createJoint
+// returns the internal joint and its NpScene::createJoint (phys_fn_000297)
+// returns [internal+0x48]; here that load is done at the end of this function,
+// so NpScene::createJoint keeps returning what this returns for every type.
 // ---------------------------------------------------------------------------
 
 static bool gCreateJointReentry = false;
@@ -1453,13 +1468,51 @@ NxJoint* NxSceneInternal::createJoint(const NxJointDesc& desc)
 		return 0;
 		}
 
-	// The joint object, by type. The oracle switches on descriptor word 1; the
-	// sizes are its allocation literals. Only the revolute case (type 0) has been
-	// read; the others share the same shape and are named as holes.
+	// NX_JOINT_REVOLUTE: case 1, target 0x143c2. The SDK allocator's slot +8 with
+	// (0x204, 0) (0x143cc-0x143d3), then phys_fn_004366 on the block (0x143e1).
+	if(d[1] == NX_JOINT_REVOLUTE)
+		{
+		void* memory = nxGetSdkAllocator()->malloc(sizeof(RevoluteJoint), NX_MEMORY_PERSISTENT);
+		RevoluteJoint* internal = memory ?
+			new(memory) RevoluteJoint(static_cast<const NxRevoluteJointDesc&>(desc)) : 0;
+		if(!internal)
+			{
+			gCreateJointReentry = false;
+			return 0;
+			}
+
+		// 0x14502: the public object at byte +0x48 (the NpRevoluteJoint). Its
+		// class is not named here: core/NpRevoluteJoint.h pulls in ObjectModel.h,
+		// whose nxActorConstruct declaration collides with this file's own, so
+		// the two stores below address it by the offsets the listing uses.
+		unsigned char* np = static_cast<unsigned char*>(internal->mPublicObject);
+		if(!np)
+			{
+			// 0x14581-0x1458c: slot 5 with 1 (phys_fn_004368), then `xor esi,esi`.
+			delete internal;
+			gCreateJointReentry = false;
+			return 0;
+			}
+
+		// 0x14509-0x14521: the NpScene's write-lock and read-lock links.
+		const unsigned* holder = reinterpret_cast<const unsigned*>(p[0x6cc / 4]);
+		*reinterpret_cast<unsigned*>(np + 0x10) = holder[3];
+		*reinterpret_cast<unsigned*>(np + 0x14) = holder[4];
+		nxSceneAddJoint(this, internal);
+
+		gCreateJointReentry = false;
+		// phys_fn_000297 (0xc5ae-0xc5b9) returns [internal+0x48].
+		// NxRevoluteJoint (and so NxJoint) is NpRevoluteJoint's primary base at +0.
+		return reinterpret_cast<NxJoint*>(np);
+		}
+
+	// The other joint types: the generic stand-in. Their allocation literals are
+	// in revolute-contract.md "## Construction chain"; case 0 below is the
+	// PRISMATIC literal (0x17c, phys_fn_004380), not a revolute one.
 	NxU32 size = 0;
 	switch(d[1])
 		{
-		case 0: size = 0x17c; break;		// revolute
+		case 0: size = 0x17c; break;		// prismatic
 		default: size = nxJointSizeForType(d[1]); break;
 		}
 
@@ -2349,9 +2402,10 @@ NxJoint* nxJointConstruct(void* memory, const void* desc, unsigned type)
 
 NxU32 nxJointSizeForType(unsigned type)
 	{
-	// The oracle's switch has one case per joint type with its own literal. Only the
-	// revolute case (0x17c) has been read; these are the other sizes the same shape
-	// uses, recorded as holes rather than claims.
+	// The generic stand-in's sizes for the non-revolute types, recorded as holes
+	// rather than claims. They do not match the oracle's allocation literals (see
+	// revolute-contract.md "## Construction chain" step 3); NX_JOINT_REVOLUTE (1)
+	// never reaches this function -- createJoint builds it through RevoluteJoint.
 	switch(type)
 		{
 		case 1: return 0x17c;		// prismatic
