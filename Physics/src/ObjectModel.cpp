@@ -2710,6 +2710,7 @@ int nxCountFromPair0448(void* self)
 
 // phys_fn_004089 (0x95d20): the list teardown that frees through the
 // allocator singleton.
+// Product row: Physics/src/core/Joint.cpp.
 void nxListFreeViaSingleton4089(void* self)
 	{
 	unsigned char* p = reinterpret_cast<unsigned char*>(self);

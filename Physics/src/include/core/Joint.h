@@ -33,6 +33,69 @@
 
 #include <cstddef>
 
+// The dynamic-body record Joint::mBody[i] points to -- `[actorImpl+8]`, the
+// 0x260-byte record the candidate builds in nxActorComputeMass
+// (Physics/src/Scene.cpp). This is a read view only: nothing constructs it
+// through this type. Only the fields the Joint rows touch are named; names
+// come from what the candidate stores there, the rest are by offset. See
+// revolute-contract.md "## Object layouts" (Body fields the Joint rows read).
+struct JointBodyRecord
+	{
+	NxU8				mUnknown000[0x4c];
+	//! +0x04c. Raised to 0.4f (0x3ecccccc) by phys_fn_004107/004121/004074
+	//! when below it and mUnknown114 bit 8 is clear; the candidate stores
+	//! the body descriptor's wakeUpCounter here.
+	NxReal				mWakeUpCounter;
+	//! +0x050. Position (phys_fn_004125).
+	NxVec3				mPosition;
+	//! +0x05c. Orientation quaternion x, y, z, w (phys_fn_004125/004129).
+	NxReal				mOrientation[4];
+	NxU8				mUnknown06c[0xdc - 0x6c];
+	//! +0x0dc. Row-major 3x3 (the candidate writes massLocalPose.M here).
+	NxReal				mMassLocalRot[9];
+	//! +0x100. The candidate writes massLocalPose.t here.
+	NxVec3				mMassLocalPos;
+	//! +0x10c. Flags word (bit 0x80 tested by phys_fn_004133).
+	NxU32				mUnknown10c;
+	NxU32				mUnknown110;
+	//! +0x114. Flags word; bit 8 (0x100) suppresses the 0.4f wake raise.
+	NxU32				mUnknown114;
+	NxU8				mUnknown118[0x134 - 0x118];
+	//! +0x134. Row-major 3x3 + vec3 pose (phys_fn_004080, 004127, 004131
+	//! transform through it; 004064 reads it).
+	NxReal				mUnknown134[9];
+	NxVec3				mUnknown158;
+	NxU8				mUnknown164[0x198 - 0x164];
+	//! +0x198. Stamp compared with Joint::mBodyStamp[i].
+	NxU32				mStamp;
+	//! +0x19c. Pointer whose first word is the NxActor* (phys_fn_004066).
+	void*				mOwner;
+	};
+
+static_assert(offsetof(JointBodyRecord, mWakeUpCounter) == 0x04c, "wake counter at +0x4c");
+static_assert(offsetof(JointBodyRecord, mPosition) == 0x050, "position at +0x50");
+static_assert(offsetof(JointBodyRecord, mOrientation) == 0x05c, "quaternion at +0x5c");
+static_assert(offsetof(JointBodyRecord, mMassLocalRot) == 0x0dc, "3x3 at +0xdc");
+static_assert(offsetof(JointBodyRecord, mMassLocalPos) == 0x100, "vec3 at +0x100");
+static_assert(offsetof(JointBodyRecord, mUnknown10c) == 0x10c, "flags at +0x10c");
+static_assert(offsetof(JointBodyRecord, mUnknown114) == 0x114, "flags at +0x114");
+static_assert(offsetof(JointBodyRecord, mUnknown134) == 0x134, "pose at +0x134");
+static_assert(offsetof(JointBodyRecord, mUnknown158) == 0x158, "pose vec3 at +0x158");
+static_assert(offsetof(JointBodyRecord, mStamp) == 0x198, "stamp at +0x198");
+static_assert(offsetof(JointBodyRecord, mOwner) == 0x19c, "owner at +0x19c");
+
+// A limit-plane list node: 0x14 bytes (phys_fn_004143 allocates `push 0x14`),
+// linked through +0x10 from Joint::mLimitPlaneHead. The names are the
+// public NxJoint::getNextLimitPlane outputs phys_fn_004131 copies them to.
+struct JointLimitPlane
+	{
+	NxVec3				normal;		//!< +0x00
+	NxReal				d;			//!< +0x0c
+	JointLimitPlane*	next;		//!< +0x10
+	};
+
+static_assert(sizeof(JointLimitPlane) == 0x14, "limit-plane nodes are 0x14 bytes");
+
 class Joint
 	{
 	public:
@@ -60,9 +123,10 @@ class Joint
 	//! event). RevoluteJoint inherits this slot unchanged.
 	virtual void row004111(NxU32 a, NxU32 b);
 
-	//! Slot 3 (+0x0c). phys_fn_004087 (0x00095cc0, 87 B; write: accumulates
-	//! into +0x154). RevoluteJoint inherits this slot unchanged.
-	virtual void row004087(NxU32 a, NxU32 b, NxU32 c);
+	//! Slot 3 (+0x0c). phys_fn_004087 (0x00095cc0, 87 B; write:
+	//! mAccumulated += (numerator / divisor) * v; `ret 0xc`, the middle
+	//! argument is a pointer). RevoluteJoint inherits this slot unchanged.
+	virtual void row004087(NxReal numerator, const NxVec3& v, NxReal divisor);
 
 	//! Slot 4 (+0x10). Pure in the base (_purecall, phys_fn_005667).
 	//! RevoluteJoint overrides this slot with phys_fn_004364.
@@ -159,8 +223,10 @@ class Joint
 	void setGlobalAxis(const NxVec3& axis);
 
 	//! phys_fn_004107 (0x00097d30, 297 B; write; on the transcript path).
-	//! Called by phys_fn_004141 and phys_fn_004370.
-	void row004107(void* body0, void* body1, bool suppressAttach);
+	//! Called by phys_fn_004141 and phys_fn_004370. The two pointers are
+	//! the actors' internal objects (desc.actor[i] +0x14); the row stores
+	//! each one's +8 (the JointBodyRecord) in mBody.
+	void row004107(void* actorImpl0, void* actorImpl1, bool suppressAttach);
 
 	//! phys_fn_004109 (0x00097e60, 366 B; deferred: NxJoint::setLimitPoint,
 	//! not reached by the joint test). Np slot 11 setLimitPoint
@@ -181,16 +247,21 @@ class Joint
 	void getGlobalAnchor(NxVec3& out) const;
 
 	//! phys_fn_004127 (0x00099590, 235 B; write). Called by
-	//! phys_fn_004362/phys_fn_004364.
-	void row004127(NxU32 arg);
+	//! phys_fn_004362/phys_fn_004364. Refreshes a stale body, then writes
+	//! mWorldAxis[0] rotated by body[0]'s +0x134 3x3 (or copied, no body).
+	void row004127(NxVec3& out) const;
 
 	//! phys_fn_004129 (0x00099680, 787 B; write; on the transcript path via
 	//! folded Np slot 5 getGlobalAxis; also called by phys_fn_004354).
 	void getGlobalAxis(NxVec3& out) const;
 
-	//! phys_fn_004131 (0x000999a0, 260 B; deferred: called only by
-	//! phys_fn_004145).
-	void row004131(NxU32 arg);
+	//! phys_fn_004131 (0x000999a0, 260 B; write: called by
+	//! phys_fn_004145). `ret 0x10`. Writes the plane in world space
+	//! (rotated/offset by mSolverBody[1]'s +0x134 pose, or copied) and
+	//! returns dot(point, planeNormal) + planeD. The listing returns the
+	//! unrounded x87 value in st(0), which the caller compares with 0, so
+	//! it is declared NxF64.
+	NxF64 row004131(const JointLimitPlane* plane, const NxVec3& point, NxVec3& planeNormal, NxReal& planeD);
 
 	//! phys_fn_004133 default body -- see the slot 6 virtual above.
 
@@ -229,14 +300,17 @@ class Joint
 	//! +0x010. Next joint in the Scene's list (head at Scene+0x59c).
 	void*				mNextJoint;
 
-	//! +0x014..+0x01c. Unknown; zeroed by phys_fn_004141 (0x99ea2-0x99ea8).
-	NxU32				mUnknown014[3];
+	//! +0x014..+0x01c. Limit point, in mSolverBody[0]'s frame:
+	//! phys_fn_004080 (getLimitPoint) transforms it by that body's +0x134
+	//! pose into worldLimitPoint. Zeroed by phys_fn_004141 (0x99ea2-0x99ea8).
+	NxVec3				mLimitPoint;
 
 	//! +0x020. Limit-plane list head (nodes linked through node+0x10).
-	void*				mLimitPlaneHead;
+	JointLimitPlane*	mLimitPlaneHead;
 
-	//! +0x024 / +0x028. Body pair in solver order (swapped when +0x2c
-	//! bit 1 is set). phys_fn_004107 0x97def-0x97dfa.
+	//! +0x024 / +0x028. Body pair in solver order. phys_fn_004107
+	//! 0x97de5-0x97dfa: +0x2c bit 1 set -> (body[0], body[1]); clear ->
+	//! (body[1], body[0]).
 	void*				mSolverBody[2];
 
 	//! +0x02c. Flags: bit0 in scene; bit1 swap order; bit2 unknown
@@ -317,7 +391,7 @@ static_assert(sizeof(Joint) == 0x16c, "Joint is 0x16c bytes in the oracle");
 static_assert(offsetof(Joint, mTypeBit) == 0x004, "type bit follows the vptr");
 static_assert(offsetof(Joint, mBody) == 0x008, "the body pointers are at +0x08");
 static_assert(offsetof(Joint, mNextJoint) == 0x010, "the scene list link is at +0x10");
-static_assert(offsetof(Joint, mUnknown014) == 0x014, "the unknown triple is at +0x14");
+static_assert(offsetof(Joint, mLimitPoint) == 0x014, "the limit point is at +0x14");
 static_assert(offsetof(Joint, mLimitPlaneHead) == 0x020, "the limit-plane head is at +0x20");
 static_assert(offsetof(Joint, mSolverBody) == 0x024, "the solver body pair is at +0x24");
 static_assert(offsetof(Joint, mFlags) == 0x02c, "the flags word is at +0x2c");

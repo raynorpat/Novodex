@@ -177,7 +177,32 @@ rows. `core/Joint.cpp`/`core/JointSupport.cpp` rows are written only if
 
 `phys_fn_004675/004677/004679` are deliberately absent (NpCylindricalJoint.cpp, see above).
 The 13 folded NpJoint accessor bodies that table 002727 borrows from other units are
-listed in `## Dispatch tables` and `## Task split`; they are implemented as
+listed in `## Dispatch tables` and `### Declaration changes made by Task 6
+
+Recorded here as the procedure requires; the headers are `Physics/src/include/core/Joint.h`
+and the new `Physics/src/include/core/JointSupport.h`.
+
+- `Joint::mUnknown014[3]` → `NxVec3 mLimitPoint` (+0x14; evidence: 004080, table above).
+  `mLimitPlaneHead` is typed `JointLimitPlane*` (new 0x14-byte node struct in `Joint.h`).
+- New read view `JointBodyRecord` in `Joint.h` for the body record `mBody[i]` points to
+  (offset-asserted: +0x4c, +0x50, +0x5c, +0xdc, +0x100, +0x10c, +0x114, +0x134, +0x158,
+  +0x198, +0x19c). Nothing constructs it.
+- `row004087(NxU32, NxU32, NxU32)` → `row004087(NxReal numerator, const NxVec3& v, NxReal divisor)`
+  (listing: `fld arg1; fdiv arg3`, arg2 dereferenced; `ret 0xc` unchanged).
+- `row004127(NxU32)` → `void row004127(NxVec3& out) const` (`ret 4`, one output pointer).
+- `row004131(NxU32)` → `NxF64 row004131(const JointLimitPlane*, const NxVec3& point, NxVec3& planeNormal, NxReal& planeD)`
+  (`ret 0x10`; the st(0) result is compared unrounded by 004145, hence `NxF64`).
+- `row004107` parameters renamed `actorImpl0/actorImpl1` (they are `desc.actor[i]+0x14`; the
+  row stores their `+8`). Types unchanged.
+- `JointSupport.cpp` rows are members of `JointSupportRecord` (offset view of the record:
+  +0x00 vec3, +0x0c flags, +0x10/+0x14 `JointSupportBody*`, +0x18/+0x24 vec3, +0x3c/+0x40
+  outputs): `NxF64 row004389() const`, `void row004391(NxReal&, NxReal&)` (deferred; `ret 8`),
+  `void row004393(NxReal, NxReal)` (`ret 8`). 000633 became `Row000633Fixture::row000633(void* joint)`
+  (thiscall on the Scene, `ret 4`, as 000571). All declared in `JointSupport.h`.
+- `Joint::getGlobalAnchor/getGlobalAxis/row004127` stay `const`; the stale-body refresh
+  they begin with (004097) goes through a `const_cast`, as the oracle row mutates the cache.
+
+## Task split`; they are implemented as
 NpRevoluteJoint methods but **not claimed** (their rows stay with their own units).
 
 Joint.cpp inferred-extent rows 004085, 004091, 004103, 004105, 004113, 004115, 004117 and
@@ -394,9 +419,9 @@ Size: the first revolute field is +0x16c (004366 0xac559) and 004141 writes up t
 | +0x004 | 4 | joint type bit (0x40 revolute; one bit per type, see mapping below) | 004141 0x99e6d (the constructor's second argument). Readers outside the ctor: **unknown** |
 | +0x008 | 4×2 | body[0], body[1] — `[actorImpl+8]` for desc.actor[i]'s `+0x14`; 0 = world | 004107 0x97dc7, 0x97dea; 004066, 004064, 004539 read them |
 | +0x010 | 4 | next joint in the Scene's list (head at Scene+0x59c) | 000661 0x13e4a; 000633 0x12678; 004141 zero 0x99e87 |
-| +0x014 | 4×3 | **unknown** (+0x14, +0x18, +0x1c) | 004141 zero 0x99ea2–0x99ea8 |
-| +0x020 | 4 | limit-plane list head (nodes linked through node+0x10) | 004141 zero 0x99eab; 004081 copies it to `.data 0x10127180`; 004089 walks and frees it |
-| +0x024 | 4×2 | body pair in solver order (swapped when +0x2c bit 1 is set) | 004107 0x97def–0x97dfa |
+| +0x014 | 0xc | limit point in mSolverBody[0]'s frame (`mLimitPoint`; Task 6: 004080 getLimitPoint transforms it by that body's +0x134 pose into worldLimitPoint, or copies it) | 004141 zero 0x99ea2–0x99ea8; 004080 |
+| +0x020 | 4 | limit-plane list head (`JointLimitPlane*`: 0x14-byte nodes, normal +0, d +0xc, next +0x10; 004143 `push 0x14`) | 004141 zero 0x99eab; 004081 copies it to `.data 0x10127180`; 004089 walks and frees it |
+| +0x024 | 4×2 | body pair in solver order: +0x2c bit 1 set → (body[0], body[1]); clear → (body[1], body[0]) (Task 6 correction: the earlier text said "swapped when set"; 0x97de5 `je` takes the swapped arm when the bit is clear) | 004107 0x97de5–0x97dfa |
 | +0x02c | 4 | flags: bit0 in scene (000661/000633); bit1 swap order (004107 0x97de5); bit2 **unknown** (tested by 004133 0x99b22); bits3–4 state, `(>>3)&3` = NxJointState, 0x10 = broken (004078; every setter's `(+0x2c & 0x18) == 0x10` test; 004107 0x97da9 and 004374 0xad13b set broken); bit8/bit9 = NX_JF_COLLISION_ENABLED/NX_JF_VISUALIZATION (004121 from desc.jointFlags; 004066 back) | as listed |
 | +0x030 | 4 | owning Scene* | 000661 0x13f1a; 004107 0x97d8b/0x97e3e; 004095 0x95e31; 004374 0xad170 |
 | +0x034 | 4×2 | **unknown** (+0x34, +0x38) | 004141 zero 0x99e8a, 0x99e8d |
@@ -421,7 +446,7 @@ The < 0x100 cases go through a byte table at 0x9a048 that is not in the pinned d
 the mapping is inferred from the jump table 0x9a030 (targets store 5, 4, 3, 1, 0 in
 ascending address order) against the ten constructors' pushes (004262 `push 2`, 004276
 `push 4`, 004300 `push 8`, 004366 `push 0x40`, 004380 `push 0x80`), which agree with
-the Scene switch types. Confidence: high, not read directly.
+the Scene switch types. Task 6 read both tables from the shipped image: jump table 0x9a030 = 0x99f04, 0x99f1f, 0x99f3a, 0x99f55, 0x99f70, 0x9a01f (stores 5, 4, 3, 1, 0, default) and byte table 0x9a048 indexed by typeBit-2 = {2→0, 4→1, 8→2, 0x40→3, 0x80→4, all others 5}. The mapping above is confirmed.
 
 **Body fields the Joint rows read** (the "body" is the 0x260-byte record the candidate
 builds in `nxActorBuildBody`, `Scene.cpp:1777`, reached through `actor+0x14` → `+8`):
@@ -429,7 +454,7 @@ builds in `nxActorBuildBody`, `Scene.cpp:1777`, reached through `actor+0x14` →
 quaternion (004125, 004129; the candidate writes both, `Scene.cpp:1811–1823`),
 +0xdc..+0xfc 3×3 and +0x100..+0x108 vec3 (004097, 004125, 004129; the candidate writes
 massLocalPose there, `Scene.cpp:1830–1831`), +0x10c (bit 0x80 tested by 004133), +0x114
-(bit 0x100), +0x134..+0x160 (3×3 + vec3, read by 004064 only), +0x198 (stamp; the
+(bit 0x100), +0x134..+0x160 (3×3 + vec3; read by 004064, and by 004080, 004127, 004131 — Task 6), +0x198 (stamp; the
 candidate sets 2, `Scene.cpp:1919`), +0x19c (pointer whose first word is the `NxActor*`;
 the candidate's 0x50-byte body has `actor` at +0, `Scene.cpp:1784`), +0x204 (read by
 004374 only).
@@ -609,7 +634,7 @@ can call it; it keeps its inventory state.
 | 004139 | 0x99e30 | 41 | core/Joint.cpp | Np getGlobalAxisVal | Joint::getGlobalAxisVal |
 | 004141 | 0x99e60 | 464 | core/Joint.cpp | 004366 (transcript) | Joint::Joint |
 | 004145 | 0x9a430 | 174 | core/Joint.cpp | Np getNextLimitPlane | Joint::getNextLimitPlane |
-| 004389 | 0xaf2d0 | 227 | core/JointSupport.cpp | 004362 | row004389 (fastcall-shaped: `this` in ecx, `ret`, float in st(0)) |
+| 004389 | 0xaf2d0 | 227 | core/JointSupport.cpp | 004362 | `JointSupportRecord::row004389() const` (`this` in ecx, no stack args, `ret`: a no-argument thiscall member; returns the unrounded st(0) value, declared `NxF64`) |
 | 004393 | 0xaf710 | 122 | core/JointSupport.cpp | 004362 | row004393 |
 
 Several of these are `reconstructed` as parameterised models (004070, 004076, 004078,
@@ -698,7 +723,7 @@ What the new code replaces or must stay compatible with. Line numbers are at com
    the candidate writes those (`Scene.cpp:1811–1919`), but +0x5c's quaternion convention
    and +0xdc's row-major order are candidate choices not checked against these rows.
    A wrong convention changes `out_anchor`/`out_axis` for cases 1–3.
-4. The typeBit→type byte table (0x9a048) is inferred, not read.
+4. ~~The typeBit→type byte table (0x9a048) is inferred, not read.~~ Resolved by Task 6: read from the image, mapping confirmed (see `## Object layouts`).
 5. Fields marked **unknown** (Joint +0x04 readers, +0x14..+0x1c, +0x34/+0x38,
    +0x160/+0x164; revolute +0x1ac..+0x200) must be declared by offset only.
 6. `phys_fn_004727` has no decompile anywhere (Capstone listing only; 8 bytes).
