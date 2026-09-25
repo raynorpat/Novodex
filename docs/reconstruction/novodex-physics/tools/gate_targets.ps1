@@ -848,6 +848,10 @@ $NxRequiredCoverageLines = [ordered] @{
     # anchor/axis/state, the type and is-queries, and one saveToDesc line.
     # Joint-families Task 3e added two point-in-plane cases (NxJointType 5) and
     # four point-in-plane lines to each list, copied the same way.
+    # Joint-families Task 3f added two distance cases (NxJointType 6) and four
+    # distance lines to each list, copied the same way: created, the
+    # anchor/axis/state, the type and is-queries, and the saveToDesc line with
+    # the family fields (maxDistance, minDistance, spring, flags).
     'NxPhysicsJointStagedPairTests' = @(
         'case=revolute index=0 created=yes',
         'case=revolute index=0 out_anchor=00000000.00000000.00000000 out_axis=3f800000.00000000.00000000 state=0',
@@ -872,7 +876,11 @@ $NxRequiredCoverageLines = [ordered] @{
         'case=point_in_plane index=0 created=yes',
         'case=point_in_plane index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
         'case=point_in_plane index=3 type=5 is_point_in_plane=yes is_revolute=no',
-        'case=point_in_plane index=3 saved anchor0=40000000.40800000.00000000 anchor1=c0000000.40800000.00000000'
+        'case=point_in_plane index=3 saved anchor0=40000000.40800000.00000000 anchor1=c0000000.40800000.00000000',
+        'case=distance index=0 created=yes',
+        'case=distance index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
+        'case=distance index=3 type=6 is_distance=yes is_revolute=no',
+        'case=distance index=0 saved max_distance=40200000 min_distance=3f000000 spring=41200000.3f000000.3e800000 flags=00000007'
     )
     'NxPhysicsJointTests' = @(
         'case=revolute index=0 created=yes',
@@ -898,7 +906,11 @@ $NxRequiredCoverageLines = [ordered] @{
         'case=point_in_plane index=0 created=yes',
         'case=point_in_plane index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
         'case=point_in_plane index=3 type=5 is_point_in_plane=yes is_revolute=no',
-        'case=point_in_plane index=3 saved anchor0=40000000.40800000.00000000 anchor1=c0000000.40800000.00000000'
+        'case=point_in_plane index=3 saved anchor0=40000000.40800000.00000000 anchor1=c0000000.40800000.00000000',
+        'case=distance index=0 created=yes',
+        'case=distance index=3 out_anchor=40000000.40800000.00000000 out_axis=3f13cd3a.3f13cd3a.3f13cd3a state=0',
+        'case=distance index=3 type=6 is_distance=yes is_revolute=no',
+        'case=distance index=0 saved max_distance=40200000 min_distance=3f000000 spring=41200000.3f000000.3e800000 flags=00000007'
     )
     'NxPhysicsJointDescTests' = @(
         'case=0 actors a=null b=null in_anchor=3f800000.40000000.40400000 in_axis=3f000000.3f000000.3f000000',
@@ -1753,8 +1765,8 @@ $NxPhaseCoverageFloor = [ordered] @{
     '4' = 101  # 34 for NxPhysicsAssetTests, 67 for NxPhysicsThirdPartyTests
     '5' = 829  # 126 object-layout, 1 shape-vtable and 702 public actor/pruner/box/scene lines
                # (RED on purpose: vtables family open)
-    '6' = 51  # 3 oracle-descriptor + 24 oracle-joint + 24 staged-pair-joint
-    '7' = 24  # the twenty-four STAGED-PAIR assertions; the oracle-differential assertions
+    '6' = 59  # 3 oracle-descriptor + 28 oracle-joint + 28 staged-pair-joint
+    '7' = 28  # the twenty-eight STAGED-PAIR assertions; the oracle-differential assertions
                # belong to NxPhysicsJointDescTests and NxPhysicsJointTests, which phase 7
                # does not run
     '8' = 0
