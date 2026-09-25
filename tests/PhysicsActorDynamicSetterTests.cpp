@@ -16,6 +16,7 @@
 #include "NxCapsuleShape.h"
 #include "NxPlaneShape.h"
 #include "NxBoxShape.h"
+#include "NxBox.h"
 #include "NxBounds3.h"
 
 #include <stdio.h>
@@ -412,6 +413,22 @@ int wmain(int argc, wchar_t** argv)
 	for(unsigned i = 0; i < 12; ++i)
 		printf("%s%x", i ? "." : "", word(staticShape, 0x0c + 4 * i));
 	printf("\n");
+	NxShape* staticPublicShape = staticActor->getShapes()[0];
+	NxMat34 staticShapeTarget;
+	staticShapeTarget.M.setRowMajor(matrixRows[1]);
+	staticShapeTarget.t = NxVec3(2.0f, -3.0f, 5.0f);
+	const unsigned char* staticPruner = *reinterpret_cast<unsigned char* const*>(
+		staticShape + 0xc4);
+	const unsigned beforeStaticShapeEpoch = staticPruner
+		? word(staticPruner, 0x38) : 0u;
+	staticPublicShape->setGlobalPose(staticShapeTarget);
+	printf("setter static_shape_global_pose=");
+	for(unsigned i = 0; i < 12; ++i)
+		printf("%s%x", i ? "." : "", word(staticShape, 0x6c + 4 * i));
+	for(unsigned i = 0; i < 12; ++i)
+		printf(".%x", word(staticShape, 0x0c + 4 * i));
+	printf(".%x.%u\n", word(staticShape, 0xdc), staticPruner
+		? word(staticPruner, 0x38) - beforeStaticShapeEpoch : 0u);
 	scene->releaseActor(*staticActor);
 	NxBoxShapeDesc secondBox;
 	secondBox.dimensions = NxVec3(0.5f, 1.0f, 1.5f);
@@ -559,6 +576,35 @@ int wmain(int argc, wchar_t** argv)
 		bits(posedBounds.getMin().x), bits(posedBounds.getMin().y),
 		bits(posedBounds.getMin().z), bits(posedBounds.getMax().x),
 		bits(posedBounds.getMax().y), bits(posedBounds.getMax().z));
+	NxBox posedWorldOBB;
+	posedPublicBox->getWorldOBB(posedWorldOBB);
+	printf("setter box_world_obb=");
+	for(unsigned i = 0; i < 15; ++i)
+		printf("%s%x", i ? "." : "", bits(reinterpret_cast<const float*>(
+			&posedWorldOBB)[i]));
+	printf("\n");
+	NxBoxShapeDesc savedBox;
+	savedBox.shapeFlags = 0x1234u;
+	const char* savedNameSentinel = "descriptor-sentinel";
+	savedBox.name = savedNameSentinel;
+	posedPublicBox->userData = reinterpret_cast<void*>(0x12345670u);
+	posedPublicBox->setName("saved-box");
+	posedPublicBox->setGroup(5);
+	posedPublicBox->setMaterial(2);
+	posedPublicBox->setFlag(NX_SF_DISABLE_RAYCASTING, true);
+	const bool boxSaved = posedPublicBox->saveToDesc(savedBox);
+	printf("setter box_saved=%u.%u.%u.%u.%u.%u.%x.%x.%x",
+		boxSaved ? 1u : 0u, static_cast<unsigned>(savedBox.getType()),
+		savedBox.shapeFlags, static_cast<unsigned>(savedBox.group),
+		static_cast<unsigned>(savedBox.materialIndex),
+		savedBox.userData == posedPublicBox->userData ? 1u : 0u,
+		bits(savedBox.dimensions.x), bits(savedBox.dimensions.y),
+		bits(savedBox.dimensions.z));
+	for(unsigned i = 0; i < 12; ++i)
+		printf(".%x", bits(reinterpret_cast<const float*>(
+			&savedBox.localPose)[i]));
+	printf(".%u.%u\n", savedBox.name == savedNameSentinel ? 1u : 0u,
+		savedBox.name == posedPublicBox->getName() ? 1u : 0u);
 	float changedBoxAABB[6] = {};
 	void** posedBoxTable = *reinterpret_cast<void***>(
 		const_cast<unsigned char*>(posedShape));
@@ -770,6 +816,69 @@ int wmain(int argc, wchar_t** argv)
 			printf(".%x.%u\n", word(familyShape, 0xdc),
 				planePruner ? word(planePruner, 0x38) - beforeEpoch : 0u);
 			}
+		const unsigned char* posePruner = *reinterpret_cast<unsigned char* const*>(
+			familyShape + 0xc4);
+		const unsigned beforeFamilyPoseEpoch = posePruner
+			? word(posePruner, 0x38) : 0u;
+		publicShape->setLocalPosition(NxVec3(0.5f, -1.0f, 2.0f));
+		const NxVec3 familyLocalPosition = publicShape->getLocalPosition();
+		printf("setter %s_local_position=%x.%x.%x.%x.%x.%x.%x.%x.%x.%x.%u\n",
+			familyNames[family], bits(familyLocalPosition.x),
+			bits(familyLocalPosition.y), bits(familyLocalPosition.z),
+			word(familyShape, 0x90), word(familyShape, 0x94),
+			word(familyShape, 0x98), word(familyShape, 0x30),
+			word(familyShape, 0x34), word(familyShape, 0x38),
+			word(familyShape, 0xdc), posePruner
+				? word(posePruner, 0x38) - beforeFamilyPoseEpoch : 0u);
+		NxMat34 familyTargetPose;
+		familyTargetPose.M.setRowMajor(matrixRows[1]);
+		familyTargetPose.t = NxVec3(1.0f, 2.0f, 3.0f);
+		const unsigned beforeFamilyGlobalEpoch = posePruner
+			? word(posePruner, 0x38) : 0u;
+		publicShape->setGlobalPose(familyTargetPose);
+		printf("setter %s_global_pose=", familyNames[family]);
+		for(unsigned i = 0; i < 12; ++i)
+			printf("%s%x", i ? "." : "", word(familyShape, 0x6c + 4 * i));
+		for(unsigned i = 0; i < 12; ++i)
+			printf(".%x", word(familyShape, 0x0c + 4 * i));
+		printf(".%x.%u\n", word(familyShape, 0xdc), posePruner
+			? word(posePruner, 0x38) - beforeFamilyGlobalEpoch : 0u);
+		publicShape->userData = reinterpret_cast<void*>(0x12345000u + family);
+		publicShape->setName(familyNames[family]);
+		NxSphereShapeDesc savedSphere;
+		NxCapsuleShapeDesc savedCapsule;
+		NxPlaneShapeDesc savedPlane;
+		NxShapeDesc* savedDesc = family == 0
+			? static_cast<NxShapeDesc*>(&savedSphere)
+			: family == 1 ? static_cast<NxShapeDesc*>(&savedCapsule)
+				: static_cast<NxShapeDesc*>(&savedPlane);
+		savedDesc->name = savedNameSentinel;
+		bool saved = family == 0
+			? static_cast<NxSphereShape*>(publicShape)->saveToDesc(savedSphere)
+			: family == 1
+				? static_cast<NxCapsuleShape*>(publicShape)->saveToDesc(savedCapsule)
+				: static_cast<NxPlaneShape*>(publicShape)->saveToDesc(savedPlane);
+		printf("setter %s_saved=%u.%u.%u.%u.%u.%u.%u.%u",
+			familyNames[family], saved ? 1u : 0u,
+			static_cast<unsigned>(savedDesc->getType()), savedDesc->shapeFlags,
+			static_cast<unsigned>(savedDesc->group),
+			static_cast<unsigned>(savedDesc->materialIndex),
+			savedDesc->userData == publicShape->userData ? 1u : 0u,
+			savedDesc->name == savedNameSentinel ? 1u : 0u,
+			savedDesc->name == publicShape->getName() ? 1u : 0u);
+		for(unsigned i = 0; i < 12; ++i)
+			printf(".%x", bits(reinterpret_cast<const float*>(
+				&savedDesc->localPose)[i]));
+		if(family == 0)
+			printf(".%x", bits(savedSphere.radius));
+		else if(family == 1)
+			printf(".%x.%x.%x", bits(savedCapsule.radius),
+				bits(savedCapsule.height), savedCapsule.flags);
+		else
+			printf(".%x.%x.%x.%x", bits(savedPlane.normal.x),
+				bits(savedPlane.normal.y), bits(savedPlane.normal.z),
+				bits(savedPlane.d));
+		printf("\n");
 		scene->releaseActor(*familyActor);
 		}
 	sdk->releaseScene(*scene);

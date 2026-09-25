@@ -22,6 +22,11 @@
 #include "NxBodyDesc.h"
 #include "NxShape.h"
 #include "NxBoxShape.h"
+#include "NxBoxShapeDesc.h"
+#include "NxSphereShapeDesc.h"
+#include "NxCapsuleShapeDesc.h"
+#include "NxPlaneShapeDesc.h"
+#include "NxBox.h"
 #include "NxBounds3.h"
 #include <string.h>
 #include <stdlib.h>
@@ -482,6 +487,38 @@ static const NxVec3* __fastcall nxBoxHandleGetDimensions(void* self, void*)
 	return reinterpret_cast<const NxVec3*>(nxBoxHandleInternal(self) + 0xe4);
 	}
 
+static void __fastcall nxBoxHandleGetWorldOBB(void* self, void*, NxBox& box)
+	{
+	unsigned char* shape = nxBoxHandleInternal(self);
+	memcpy(&box.center, shape + 0x30, sizeof(box.center));
+	memcpy(&box.extents, shape + 0xe4, sizeof(box.extents));
+	memcpy(&box.rot, shape + 0x0c, sizeof(box.rot));
+	}
+
+static bool __fastcall nxBoxHandleSaveToDesc(void* self, void*,
+	NxBoxShapeDesc& descriptor)
+	{
+	unsigned char* shape = nxBoxHandleInternal(self);
+	memcpy(&descriptor.localPose, shape + 0x6c, sizeof(descriptor.localPose));
+	descriptor.shapeFlags = *reinterpret_cast<NxU16*>(shape + 0xde);
+	descriptor.group = *reinterpret_cast<NxCollisionGroup*>(shape + 0xd8);
+	descriptor.materialIndex = *reinterpret_cast<NxMaterialIndex*>(shape + 0xda);
+	descriptor.userData = *reinterpret_cast<void**>(
+		static_cast<unsigned char*>(self) + 4);
+	memcpy(&descriptor.dimensions, shape + 0xe4, sizeof(descriptor.dimensions));
+	return true;
+	}
+
+static bool __fastcall nxShapeHandleSaveToDesc(void* self, void*,
+	NxShapeDesc& descriptor)
+	{
+	unsigned char* shape = nxBoxHandleInternal(self);
+	void** table = *reinterpret_cast<void***>(shape);
+	typedef bool (__thiscall* SaveFn)(void*, void*);
+	const bool saved = reinterpret_cast<SaveFn>(table[13])(shape, &descriptor);
+	return saved;
+	}
+
 static NxReal __fastcall nxShapeHandleGetRadius(void* self, void*)
 	{
 	return *reinterpret_cast<const NxReal*>(nxBoxHandleInternal(self) + 0xe0);
@@ -584,6 +621,8 @@ void* nxBoxShapePublicVtable()
 			slots[30] = reinterpret_cast<void*>(&nxBoxHandleGetName);
 			slots[31] = reinterpret_cast<void*>(&nxBoxHandleSetDimensions);
 			slots[32] = reinterpret_cast<void*>(&nxBoxHandleGetDimensions);
+			slots[33] = reinterpret_cast<void*>(&nxBoxHandleGetWorldOBB);
+			slots[34] = reinterpret_cast<void*>(&nxBoxHandleSaveToDesc);
 			}
 		};
 	static Table table;
@@ -610,13 +649,16 @@ void* nxShapePublicVtable(unsigned type)
 						: reinterpret_cast<void*>(&nxUnsupportedBoxMethod);
 				}
 			slots[0][31] = reinterpret_cast<void*>(&nxPlaneHandleSetPlane);
+			slots[0][32] = reinterpret_cast<void*>(&nxShapeHandleSaveToDesc);
 			slots[1][31] = reinterpret_cast<void*>(&nxSphereHandleSetRadius);
 			slots[1][32] = reinterpret_cast<void*>(&nxShapeHandleGetRadius);
+			slots[1][33] = reinterpret_cast<void*>(&nxShapeHandleSaveToDesc);
 			slots[2][31] = reinterpret_cast<void*>(&nxCapsuleHandleSetDimensions);
 			slots[2][32] = reinterpret_cast<void*>(&nxCapsuleHandleSetRadius);
 			slots[2][33] = reinterpret_cast<void*>(&nxShapeHandleGetRadius);
 			slots[2][34] = reinterpret_cast<void*>(&nxCapsuleHandleSetHeight);
 			slots[2][35] = reinterpret_cast<void*>(&nxCapsuleHandleGetHeight);
+			slots[2][36] = reinterpret_cast<void*>(&nxShapeHandleSaveToDesc);
 			}
 		};
 	static Tables tables;
