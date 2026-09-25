@@ -563,6 +563,25 @@ Getters: 004437/004125, 004441/004129, 004483/004078, 004539, 004443/004070,
 - **Environment**: bash heredocs in this environment collapse `\\` sequences (a `"\\n"` in a
   heredoc'd Python script became a real newline); write helper scripts with the Write tool.
   cdb needs the pair directory as a backslash Windows path (`cygpath -w`).
+- **A gap row that is a function tail** (spherical 004314, 004312's loop and epilogue): write
+  it inside the owning function and stack its stable-ID line above the owner's with a line
+  saying it is not a function (the generated-thunk form); record it `reconstructed` with the
+  owner's file as `implementation` (the validator only needs the file to name the row).
+- **Np slots that name another family's row** (spherical 34/36 = revolute 004703/004707): the
+  family class declares the virtual itself with the same body and a comment naming the folded
+  row without the `// phys_fn_` form. Such bodies work only when the internal tables put the
+  called slot at the same index (spherical and revolute both have the flags/projection-mode
+  quartet at 11-14).
+- **Same instructions, other offsets**: spherical 004294 is revolute 004358 and 004308 is
+  revolute 004374 (plus one scaling block) at other field offsets; 004296 repeats revolute
+  004360's effective-mass build but groups the lever and inertia sums differently. A normalised
+  listing diff (addresses stripped) against the revolute row finds these quickly; the sums still
+  come from the family's own listing.
+- **acos**: `revoluteCIacos`/`revoluteAcos` now live in `core/JointAcos.h` as
+  `jointCIacos`/`jointAcos`; the spherical, and any later family's, acos sites use them.
+- **MSVC evaluates printf arguments right to left**: a transcript line that calls two getters
+  in its argument list calls the later one first (the spherical trace shows getProjectionMode
+  before getFlags). Harmless for the transcript, but read the trace order with it in mind.
 
 ## Cylindrical
 
@@ -996,7 +1015,7 @@ without the stable-ID form; `core/NpRevoluteJoint.cpp` keeps the stable-ID lines
   parameter 33 -> the twist-limit arc (flag 1, 13 points between low and high with the limit
   colours of revolute's arc, the 004306 twist angle arrow in 0xff00d0) and the swing-limit cone
   (flag 2; 004314: 24 spokes of radius tan(acos(+0x1cc)), clamped to 1000 for cos in (-0.01,
-  0.01), coloured by whether the current swing is inside).
+  0.01), each spoke from the centre coloured by whether s . a1 is below the limit cosine).
 
 ### Dependency closure
 
@@ -1005,8 +1024,7 @@ without the stable-ID form; `core/NpRevoluteJoint.cpp` keeps the stable-ID lines
 - **reuse**: Joint rows 004141, 004107, 004121, 004097, 004066, 004095, 004093, 004111, 004087,
   004135, 004123, 004064 (`core/Joint.cpp`), 004389, 004391, 004393 (`core/JointSupport.cpp`); the
   13 folded Np bodies (`NpJointShared`); 004703/004707 (bodies shared with revolute, see above);
-  002362/002364/002366, 002404/002406, 000454/000480; 004248 (slot 0 of nothing here), 001391,
-  004186 (inline bodies); 000001 (`eh vector constructor iterator`); 004417-004433, 005667;
+  002362/002364/002366, 002404/002406, 000454/000480; 001391 and 004186 (inline bodies); 000001 (`eh vector constructor iterator`); 004417-004433, 005667;
   `NxNormalToTangents` (Foundation import `[0x1010418c]`, called once by 004312); `_CIacos`
   (0x000f47f0, through the shared x87 reproduction); the SDK allocator; SDK parameters 0, 4, 13,
   31, 32, 33; `gJointUnitAxis`.
@@ -1032,3 +1050,21 @@ without the stable-ID form; `core/NpRevoluteJoint.cpp` keeps the stable-ID lines
 **004286** -> 004066, getFlags (004703 body) -> internal slot 12 = **004290**, getProjectionMode
 (004707 body) -> slot 14 (004186 inline). Compiled but not reached: 004282, 004288, 004292-004298,
 004302 (release unwired), 004304, 004306-004314, 004623-004641, 004645, 004647, 004653.
+
+### Result (Task 3c)
+
+- Wired: `NxSceneInternal::createJoint` builds type 3 through `SphericalJoint` (0x23c) and
+  `nxSphericalJointAttachScene` in the same block as the other wired families.
+  `nxJointSizeForType` is now reached only by types 4-9.
+- The staged pair matched the oracle on the first run (`stdout_delta=0`, 35/35 Phase 6
+  coverage, 16/16 Phase 7); no transcript difference was found. Registered lines (four per
+  joint list) were copied from the oracle side of that run: the oracle-differential section
+  of the Phase 6 log for `NxPhysicsJointTests` and the `pair=oracle` child output for
+  `NxPhysicsJointStagedPairTests` (identical lines).
+- A cdb trace of the candidate (`evidence/joint-families-trace-spherical.txt`) shows 004300,
+  004649, 004284, 004643, 004286 and 004290 executing in both cases, and the Np bodies for
+  slots 34/36 reaching internal slots 12/14; 004282, 004288, 004292-004298, 004302-004314 and
+  the Np setters are compiled but not reached. The solver, projection and visualization rows
+  are checked against the listing by review and the build only.
+- Ledger: the 32 rows are `reconstructed_not_falsified` in `gates/phase6-closure.json` (22
+  moved from `not_reconstructed_in_phase`; 10 already were); counts 217 / 214.
