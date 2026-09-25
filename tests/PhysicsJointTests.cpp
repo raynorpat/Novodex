@@ -49,6 +49,8 @@
 #include "NxSphericalJointDesc.h"
 #include "NxPointOnLineJoint.h"
 #include "NxPointOnLineJointDesc.h"
+#include "NxPointInPlaneJoint.h"
+#include "NxPointInPlaneJointDesc.h"
 
 typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(NxU32, NxUserAllocator*, NxUserOutputStream*);
 
@@ -514,6 +516,77 @@ static void nxPointOnLineCase(NxScene& scene, NxActor* a, NxActor* b,
 	printf("case=point_on_line index=%u released=yes\n", index);
 	}
 
+static void nxPointInPlaneCase(NxScene& scene, NxActor* a, NxActor* b,
+	unsigned index, const NxVec3& anchor, const NxVec3& axis)
+	{
+	printf("case=point_in_plane index=%u ", index);
+	nxPrintVec("in_anchor", anchor);
+	printf(" ");
+	nxPrintVec("in_axis", axis);
+	printf("\n");
+
+	NxPointInPlaneJointDesc desc;
+	desc.setToDefault();
+	desc.actor[0] = a;
+	desc.actor[1] = b;
+	nxSetGlobalAnchor(desc, anchor);
+	nxSetGlobalAxis(desc, axis);
+
+	NxJoint* joint = scene.createJoint(desc);
+	printf("case=point_in_plane index=%u created=%s\n", index, joint ? "yes" : "no");
+	if(!joint)
+		return;
+
+	NxVec3 gotAnchor(0.0f, 0.0f, 0.0f);
+	NxVec3 gotAxis(0.0f, 0.0f, 0.0f);
+	joint->getGlobalAnchor(gotAnchor);
+	joint->getGlobalAxis(gotAxis);
+	printf("case=point_in_plane index=%u ", index);
+	nxPrintVec("out_anchor", gotAnchor);
+	printf(" ");
+	nxPrintVec("out_axis", gotAxis);
+	printf(" state=%u\n", static_cast<unsigned>(joint->getState()));
+
+	NxActor* ra = 0;
+	NxActor* rb = 0;
+	joint->getActors(&ra, &rb);
+	printf("case=point_in_plane index=%u actors a=%s b=%s\n", index,
+		ra == a ? "match" : (ra ? "other" : "null"),
+		rb == b ? "match" : (rb ? "other" : "null"));
+
+	NxPointInPlaneJoint* pointInPlane = joint->isPointInPlaneJoint();
+	printf("case=point_in_plane index=%u type=%u is_point_in_plane=%s is_revolute=%s\n", index,
+		static_cast<unsigned>(joint->getType()), pointInPlane ? "yes" : "no",
+		joint->isRevoluteJoint() ? "yes" : "no");
+	if(pointInPlane)
+		{
+		NxPointInPlaneJointDesc saved;
+		pointInPlane->saveToDesc(saved);
+		printf("case=point_in_plane index=%u saved ", index);
+		nxPrintVec("anchor0", saved.localAnchor[0]);
+		printf(" ");
+		nxPrintVec("anchor1", saved.localAnchor[1]);
+		printf("\n");
+		printf("case=point_in_plane index=%u saved ", index);
+		nxPrintVec("axis0", saved.localAxis[0]);
+		printf(" ");
+		nxPrintVec("axis1", saved.localAxis[1]);
+		printf("\n");
+		printf("case=point_in_plane index=%u saved ", index);
+		nxPrintVec("normal0", saved.localNormal[0]);
+		printf(" ");
+		nxPrintVec("normal1", saved.localNormal[1]);
+		printf("\n");
+		printf("case=point_in_plane index=%u saved max_force=%08x max_torque=%08x flags=%08x actors a=%s b=%s\n",
+			index, nxU(saved.maxForce), nxU(saved.maxTorque), static_cast<unsigned>(saved.jointFlags),
+			saved.actor[0] == a ? "match" : (saved.actor[0] ? "other" : "null"),
+			saved.actor[1] == b ? "match" : (saved.actor[1] ? "other" : "null"));
+		}
+
+	scene.releaseJoint(*joint);
+	printf("case=point_in_plane index=%u released=yes\n", index);
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	wchar_t pairDirectory[MAX_PATH];
@@ -618,6 +691,8 @@ int wmain(int argc, wchar_t** argv)
 	// anchor/axis values.
 	nxPointOnLineCase(*scene, a, b, 0, NxVec3(0.0f, 0.0f, 0.0f), NxVec3(1.0f, 0.0f, 0.0f));
 	nxPointOnLineCase(*scene, a, b, 3, NxVec3(2.0f, 4.0f, 0.0f), NxVec3(0.5f, 0.5f, 0.5f));
+	nxPointInPlaneCase(*scene, a, b, 0, NxVec3(0.0f, 0.0f, 0.0f), NxVec3(1.0f, 0.0f, 0.0f));
+	nxPointInPlaneCase(*scene, a, b, 3, NxVec3(2.0f, 4.0f, 0.0f), NxVec3(0.5f, 0.5f, 0.5f));
 
 	sdk->releaseScene(*scene);
 	printf("scene=released\n");
