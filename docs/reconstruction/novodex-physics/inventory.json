@@ -463,8 +463,8 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/12",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/41",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json as a cross-check; contract units/joint-open-items-contract.md (## Scene joint rows) (joint-open-items Task 2)",
-      "dynamic_proof": null,
-      "notes": "Its first callee phys_fn_000754 (1027 B) is still a deferred `NX_ASSERT(0)` stub, which is a silent no-op in Release (NX_ASSERT is `assert`, and Release builds with /DNDEBUG) (Row000754Fixture in core/JointSupport.cpp), so reaching this row skips the pose refresh. A breakpoint on this row was not hit in the Task 2 trace; its callers 004207, 004298 and 004356 have no dynamic proof.",
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 14 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
+      "notes": "Its first callee phys_fn_000754 was a deferred NX_ASSERT(0) stub until joint-open-items Task 6 wrote it. The projection rows 004207, 004298 and 004356 reach this row whenever they move a body (14 times in the Task 6 trace).",
       "implementation": "Physics/src/core/JointSupport.cpp"
     },
     {
@@ -10934,7 +10934,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/230",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1516",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json as a cross-check; contract units/joint-open-items-contract.md (## Scene joint rows) (joint-open-items Task 2)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/Scene.cpp"
     },
@@ -13748,13 +13748,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/JointSupport.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/305",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2124",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x17010-0x17412) with oracle/ghidra/manifest.json as a cross-check: R = C M^T over the +0x134 and +0xdc 3x3s, position c - R m into +0x18, unnormalised quaternion of R into +0x24 (joint-open-items Task 6)",
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 14 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); before the row was written the candidate differed from the oracle on every projection that moved a body, at body +0x18..+0x30; trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
+      "notes": "Written by joint-open-items Task 6 (was a deferred NX_ASSERT(0) stub, silent in Release). Called first by phys_fn_000022 on every projection that moves a body.",
+      "implementation": "Physics/src/core/JointSupport.cpp"
     },
     {
       "id": "phys_fn_000755",
@@ -13825,7 +13826,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/307",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2139",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) with oracle/ghidra/manifest.json as a cross-check; contract units/joint-open-items-contract.md (## Scene joint rows) (joint-open-items Task 2)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/JointSupport.cpp"
     },
@@ -74011,7 +74012,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1523",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13469",
       "static_proof": "transcribed from units/gap__NpSpringAndDamperEffector.cpp__to__Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; see units/joint-families-contract.md",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 16 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/Joint.cpp"
     },
@@ -74305,7 +74306,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1531",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13495",
       "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 26 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/Joint.cpp"
     },
@@ -74546,7 +74547,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1538",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13507",
       "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; see units/joint-families-contract.md",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 82 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/Joint.cpp"
     },
@@ -74840,7 +74841,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1546",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13602",
       "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; see units/joint-families-contract.md",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 14 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "previous source: Physics/src/Joint.cpp",
       "implementation": "Physics/src/core/Joint.cpp"
     },
@@ -74877,7 +74878,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/1986",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13612",
       "static_proof": "transcribed from units/Joint.cpp.md (ghidra supplement) and checked against the Capstone listing; see units/joint-families-contract.md",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 1 time in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/Joint.cpp"
     },
@@ -75097,7 +75098,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1552",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13657",
       "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; see units/joint-families-contract.md",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 30 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/Joint.cpp"
     },
@@ -75171,7 +75172,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1554",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13675",
       "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 22 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/Joint.cpp"
     },
@@ -75245,7 +75246,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1556",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13687",
       "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 54 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/Joint.cpp"
     },
@@ -75319,7 +75320,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1558",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13703",
       "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; see units/joint-families-contract.md",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 26 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/Joint.cpp"
     },
@@ -75467,7 +75468,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1562",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13740",
       "static_proof": "transcribed from units/Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; see units/joint-families-contract.md",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 28 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "previous source: Physics/src/Joint.cpp",
       "implementation": "Physics/src/core/Joint.cpp"
     },
@@ -76099,7 +76100,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1579",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13895",
       "static_proof": "transcribed from units/D6Joint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## D6)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 52 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/D6Joint.cpp"
     },
@@ -76136,7 +76137,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1580",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13896",
       "static_proof": "transcribed from units/D6Joint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## D6)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 24 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/D6Joint.cpp"
     },
@@ -76284,7 +76285,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1581",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13904",
       "static_proof": "transcribed from units/D6Joint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## D6)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 8 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/D6Joint.cpp"
     },
@@ -76321,7 +76322,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1582",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13907",
       "static_proof": "transcribed from units/D6Joint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## D6)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 12 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/D6Joint.cpp"
     },
@@ -76395,7 +76396,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1584",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13915",
       "static_proof": "transcribed from units/D6Joint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## D6)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/D6Joint.cpp"
     },
@@ -76432,7 +76433,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1585",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13926",
       "static_proof": "transcribed from units/D6Joint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## D6)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 6 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/D6Joint.cpp"
     },
@@ -76469,7 +76470,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1586",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13936",
       "static_proof": "transcribed from units/D6Joint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## D6)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/D6Joint.cpp"
     },
@@ -76506,7 +76507,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1587",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13937",
       "static_proof": "transcribed from units/D6Joint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## D6)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/D6Joint.cpp"
     },
@@ -76617,7 +76618,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2033",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13960",
       "static_proof": "transcribed from units/D6Joint.cpp.md (ghidra supplement) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## D6)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/D6Joint.cpp"
     },
@@ -76636,7 +76637,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2033",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/13988",
       "static_proof": "transcribed from units/D6Joint.cpp.md (ghidra supplement) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## D6)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 8 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/D6Joint.cpp"
     },
@@ -76858,7 +76859,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2038",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14046",
       "static_proof": "transcribed from units/core__PulleyJoint.cpp.md (ghidra supplement) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Pulley)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/PulleyJoint.cpp"
     },
@@ -76895,7 +76896,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2039",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14054",
       "static_proof": "transcribed from units/core__PulleyJoint.cpp.md (ghidra supplement) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Pulley)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/PulleyJoint.cpp"
     },
@@ -77025,7 +77026,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1594",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14083",
       "static_proof": "transcribed from units/core__PulleyJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Pulley)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/PulleyJoint.cpp"
     },
@@ -77099,7 +77100,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2044",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14109",
       "static_proof": "transcribed from units/core__DistanceJoint.cpp.md (ghidra supplement) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Distance)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/DistanceJoint.cpp"
     },
@@ -77247,7 +77248,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1597",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14138",
       "static_proof": "transcribed from units/core__DistanceJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Distance)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/DistanceJoint.cpp"
     },
@@ -77358,7 +77359,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1599",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14187",
       "static_proof": "transcribed from units/core__FixedJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Fixed)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/FixedJoint.cpp"
     },
@@ -77579,7 +77580,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1603",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14265",
       "static_proof": "transcribed from units/core__PointInPlaneJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## PointInPlane)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/PointInPlaneJoint.cpp"
     },
@@ -77616,7 +77617,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2058",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14287",
       "static_proof": "transcribed from units/core__PointInPlaneJoint.cpp.md (ghidra supplement) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## PointInPlane)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/PointInPlaneJoint.cpp"
     },
@@ -77838,7 +77839,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1607",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14321",
       "static_proof": "transcribed from units/core__PointOnLineJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## PointOnLine)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/PointOnLineJoint.cpp"
     },
@@ -77875,7 +77876,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1608",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14355",
       "static_proof": "transcribed from units/core__PointOnLineJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## PointOnLine)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/PointOnLineJoint.cpp"
     },
@@ -78247,7 +78248,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1614",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14397",
       "static_proof": "transcribed from units/core__SphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/SphericalJoint.cpp"
     },
@@ -78284,7 +78285,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2076",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14401",
       "static_proof": "transcribed from units/core__SphericalJoint.cpp.md (ghidra supplement) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Spherical)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/SphericalJoint.cpp"
     },
@@ -78321,7 +78322,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1615",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14459",
       "static_proof": "transcribed from units/core__SphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 8 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/SphericalJoint.cpp"
     },
@@ -78469,7 +78470,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1618",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14488",
       "static_proof": "transcribed from units/gap__core__SphericalJoint.cpp__to__core__CylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; the gap row is spherical (units/joint-families-contract.md ## Spherical ### Row assignment); layout per units/joint-families-contract.md (## Spherical)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/SphericalJoint.cpp"
     },
@@ -78506,7 +78507,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1619",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14501",
       "static_proof": "transcribed from units/gap__core__SphericalJoint.cpp__to__core__CylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; the gap row is spherical (units/joint-families-contract.md ## Spherical ### Row assignment); layout per units/joint-families-contract.md (## Spherical)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/SphericalJoint.cpp"
     },
@@ -78543,7 +78544,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1620",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14510",
       "static_proof": "transcribed from units/gap__core__SphericalJoint.cpp__to__core__CylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; the gap row is spherical (units/joint-families-contract.md ## Spherical ### Row assignment); layout per units/joint-families-contract.md (## Spherical)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/SphericalJoint.cpp"
     },
@@ -78580,7 +78581,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2084",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14574",
       "static_proof": "transcribed from the Capstone listing with the ghidra supplement decompile of 0x000a5ee0 (whose body covers 0xa5ee0-0xa704d and 0xa7050-0xa71fe); the gap row is spherical (units/joint-families-contract.md ## Spherical ### Row assignment); layout per units/joint-families-contract.md (## Spherical)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/SphericalJoint.cpp"
     },
@@ -78617,7 +78618,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2085",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14609",
       "static_proof": "not a function: the swing-limit loop and epilogue of phys_fn_004312 (entered by the last instruction of 004312, `jmp 0x100a7050` at 0xa704b, looping on itself at 0xa71eb and ending `add esp,0xe8; ret 4` with the frame and purge of 004312), written as the second loop of SphericalJoint::row_slot4 in Physics/src/core/SphericalJoint.cpp, whose stable-ID line for this row stands above the one of 004312; transcribed from the Capstone listing with the ghidra supplement decompile of 0x000a5ee0 (whose body covers 0xa5ee0-0xa704d and 0xa7050-0xa71fe); the gap row is spherical (units/joint-families-contract.md ## Spherical ### Row assignment); layout per units/joint-families-contract.md (## Spherical)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential as the swing-limit loop of phys_fn_004312: a cdb breakpoint on SphericalJoint::row_slot4 in the candidate build was hit 4 times in NxPhysicsJointSlotTests (NxPhysics.dll sha256 42eec139dba10271), and on the swing-limited case (spherical config 0) the recorded renderer calls include the cone's 24 spokes this loop draws, identical to the oracle's (stdout_delta=0); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "continuation of the entry at 0x000a5ee0",
       "implementation": "Physics/src/core/SphericalJoint.cpp"
     },
@@ -78691,7 +78692,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1621",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14618",
       "static_proof": "written once as Joint::row004318 in Physics/src/core/CylindricalJoint.cpp and called by both CylindricalJoint::row_slot4 and PrismaticJoint::row_slot4 (the oracle names this one body at slot 4 of the cylindrical table 0x1011a048 and the prismatic table 0x1011a4d0); transcribed from units/core__CylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Cylindrical)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/CylindricalJoint.cpp"
     },
@@ -78839,7 +78840,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2091",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14650",
       "static_proof": "transcribed from units/core__CylindricalJoint.cpp.md (ghidra supplement) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Cylindrical)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/CylindricalJoint.cpp"
     },
@@ -79322,7 +79323,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1633",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14740",
       "static_proof": "transcribed from units/core__RevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 6 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
@@ -79396,7 +79397,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2106",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14760",
       "static_proof": "transcribed from units/core__RevoluteJoint.cpp.md (ghidra supplement) and checked against the Capstone listing; layout per units/revolute-contract.md",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 8 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
@@ -79433,7 +79434,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1635",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14786",
       "static_proof": "transcribed from units/core__RevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
@@ -79470,7 +79471,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2108",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14790",
       "static_proof": "transcribed from units/core__RevoluteJoint.cpp.md (ghidra supplement) and checked against the Capstone listing; layout per units/revolute-contract.md",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
@@ -79507,7 +79508,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1636",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14829",
       "static_proof": "transcribed from units/core__RevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
@@ -79544,7 +79545,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2110",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14870",
       "static_proof": "transcribed from units/core__RevoluteJoint.cpp.md (ghidra supplement) and checked against the Capstone listing; layout per units/revolute-contract.md",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
@@ -79729,7 +79730,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1641",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14928",
       "static_proof": "transcribed from oracle/ghidra/manifest.json (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/RevoluteJoint.cpp"
     },
@@ -79951,7 +79952,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/2121",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/14964",
       "static_proof": "transcribed from units/core__PrismaticJoint.cpp.md (ghidra supplement) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Prismatic)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/PrismaticJoint.cpp"
     },
@@ -80006,7 +80007,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1646",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15044",
       "static_proof": "transcribed from oracle/ghidra/manifest.json (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/JointSupport.cpp"
     },
@@ -80043,7 +80044,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1647",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15051",
       "static_proof": "transcribed from units/gap__core__PrismaticJoint.cpp__to__core__NpD6Joint.cpp.md (ghidra manifest) and checked against the Capstone listing; see units/joint-families-contract.md",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 72 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/JointSupport.cpp"
     },
@@ -80080,7 +80081,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1648",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15064",
       "static_proof": "transcribed from oracle/ghidra/manifest.json (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 10 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/JointSupport.cpp"
     },
@@ -81077,7 +81078,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1661",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15151",
       "static_proof": "transcribed from units/core__NpD6Joint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## D6)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/NpD6Joint.cpp"
     },
@@ -81114,7 +81115,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1662",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15154",
       "static_proof": "transcribed from units/core__NpD6Joint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## D6)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/NpD6Joint.cpp"
     },
@@ -81781,7 +81782,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1679",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15199",
       "static_proof": "transcribed from units/core__NpPulleyJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Pulley)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 1 time in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/NpPulleyJoint.cpp"
     },
@@ -81818,7 +81819,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1680",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15202",
       "static_proof": "transcribed from units/core__NpPulleyJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Pulley)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/NpPulleyJoint.cpp"
     },
@@ -82374,7 +82375,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1694",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15236",
       "static_proof": "transcribed from units/core__NpDistanceJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Distance)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/NpDistanceJoint.cpp"
     },
@@ -82411,7 +82412,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1695",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15239",
       "static_proof": "transcribed from units/core__NpDistanceJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Distance)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/NpDistanceJoint.cpp"
     },
@@ -82929,7 +82930,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1707",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15276",
       "static_proof": "transcribed from units/core__NpFixedJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Fixed)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 1 time in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/NpFixedJoint.cpp"
     },
@@ -82966,7 +82967,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1708",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15279",
       "static_proof": "transcribed from units/core__NpFixedJoint.cpp.md (ghidra manifest) and checked against the Capstone listing, which is authoritative; layout per units/joint-families-contract.md (## Fixed)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/NpFixedJoint.cpp"
     },
@@ -83448,7 +83449,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1720",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15311",
       "static_proof": "transcribed from units/core__NpPointInPlaneJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointInPlane)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 1 time in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/NpPointInPlaneJoint.cpp"
     },
@@ -83522,7 +83523,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1722",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15315",
       "static_proof": "transcribed from units/core__NpPointInPlaneJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointInPlane)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/NpPointInPlaneJoint.cpp"
     },
@@ -83967,7 +83968,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1733",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15346",
       "static_proof": "transcribed from units/core__NpPointOnLineJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointOnLine)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 1 time in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/NpPointOnLineJoint.cpp"
     },
@@ -84004,7 +84005,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1734",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15349",
       "static_proof": "transcribed from units/core__NpPointOnLineJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## PointOnLine)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/NpPointOnLineJoint.cpp"
     },
@@ -84449,7 +84450,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1745",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15380",
       "static_proof": "transcribed from units/core__NpSphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/NpSphericalJoint.cpp"
     },
@@ -84486,7 +84487,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1746",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15383",
       "static_proof": "transcribed from units/core__NpSphericalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Spherical)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/NpSphericalJoint.cpp"
     },
@@ -85042,7 +85043,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1760",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15421",
       "static_proof": "transcribed from units/core__NpCylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Cylindrical)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 1 time in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/NpCylindricalJoint.cpp"
     },
@@ -85079,7 +85080,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1761",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15424",
       "static_proof": "transcribed from units/core__NpCylindricalJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Cylindrical)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/NpCylindricalJoint.cpp"
     },
@@ -85524,7 +85525,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1772",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15455",
       "static_proof": "transcribed from units/core__NpRevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/NpRevoluteJoint.cpp"
     },
@@ -85561,7 +85562,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1773",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15458",
       "static_proof": "transcribed from units/core__NpRevoluteJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/revolute-contract.md",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 4 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/NpRevoluteJoint.cpp"
     },
@@ -86450,7 +86451,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1793",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15509",
       "static_proof": "transcribed from units/core__NpPrismaticJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Prismatic)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 1 time in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/NpPrismaticJoint.cpp"
     },
@@ -86487,7 +86488,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/1794",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/15512",
       "static_proof": "transcribed from units/core__NpPrismaticJoint.cpp.md (ghidra manifest) and checked against the Capstone listing; layout per units/joint-families-contract.md (## Prismatic)",
-      "dynamic_proof": null,
+      "dynamic_proof": "executed under the internal-slot differential: a cdb breakpoint at this row's address in the candidate build (build/Release/NxPhysics.map) was hit 2 times in NxPhysicsJointSlotTests against the staged candidate pair (NxPhysics.dll sha256 42eec139dba10271, identical to build/Release/NxPhysics.dll), with the slot transcript identical to the oracle's (stdout_delta=0, 134/134 registered lines); trace excerpt committed as evidence/joint-open-items-trace-slots.txt (joint-open-items Task 6)",
       "notes": "",
       "implementation": "Physics/src/core/NpPrismaticJoint.cpp"
     },

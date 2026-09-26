@@ -1,0 +1,1494 @@
+Internal-slot joint differential: cdb breakpoint trace (joint-open-items Task 6)
+================================================================================
+
+A trimmed excerpt of the raw cdb log, in the method of evidence/joint-open-items-trace-release.txt.
+ModLoad lines, banners, register dumps and the echoed breakpoint commands are removed. The HIT
+lines are kept in order and otherwise unedited. Between them, marked "  | ", are the program's own
+lines that open each call (creation, the renderer call count, the step's record count, the first
+changed-word line of each impulse/projection/break call, release; the rotation cases), cut at 150
+columns, so each HIT can be placed in its call. It is the evidence behind the dynamic_proof this
+task records in inventory.json (see evidence/joint-open-items.md, Task 6).
+
+Debugger:  Microsoft Windows Debugger 10.0.10586.567 (X86)
+Command:   cdb -cf <script> build\Release\NxPhysicsJointSlotTests.exe
+           D:\FlamingEnt__\novodex-analysis\pairs\t6-candidate
+           (the script breaks on the NxPhysics load with `sxe ld:NxPhysics`, sets the
+           breakpoints below, then runs to exit)
+Recorded:  2026-09-25, on the Task 6 working tree after 000754, the NxFindRotationMatrix
+           rewrite and the four noinline markings (commit e5f596f).
+Candidate: D:\FlamingEnt__\novodex-analysis\pairs\t6-candidate\NxPhysics.dll
+           sha256=42eec139dba10271a268a6dc6edcdd85f302bc80a852935dbb7199bcdf47d496
+           (identical to build\Release\NxPhysics.dll at the time of the trace)
+Offsets:   module-relative, from build\Release\NxPhysics.map of that build. One breakpoint per
+           function that carries a `// phys_fn_` stable-ID line in Physics/src/core/*.cpp and
+           has its own symbol (284 addresses; the 13 templated NpJointShared bodies have none),
+           plus Scene.cpp's 000571 and 000598: 286 breakpoints. Two IDs on one address are
+           one function.
+
+The run: 15 joints (revolute x2, prismatic, cylindrical, spherical x2, point-on-line,
+point-in-plane, distance x2, pulley, fixed, D6 x2), each over two fresh actors (pulley: the
+world and one), each taken through visualization, a 0x027f step (slots 1, 7, 6), impulse (0),
+projection (8) on each body, the same three under 0x0f7f, visualization again; revolute's first
+joint then the break test (2).
+
+Hit counts (row, symbol, hits). Rows not listed were not hit; among the joint rows that means
+004133 (Joint slot 6, which every family overrides; only the step's 000728 calls it directly),
+004087 (slot 3, not driven), and rows the compiler inlines into their callers (the
+loadFromDesc/saveToDesc and destructor bodies, whose ??_G wrappers are what the tables name).
+  000022 row000022@Row000022Fixture                     14
+  000571 addJointBreakEvent@NxSceneInternal              1
+  000598 growJointRecords@NxSceneInternal                2
+  000754 row000754@Row000754Fixture                     14
+  000758 row000758@Row000758Fixture                      4
+  000760 row000760@Row000760Fixture                     14
+  000778 row000778@Row000778Fixture                     14
+  004064 row004064@Joint                                16
+  004070 getType@Joint                                  28
+  004078 getState@Joint                                  1
+  004080 getLimitPoint@Joint                            26
+  004089 purgeLimitPlanes@Joint                         14
+  004091 row004091@Joint                                 1
+  004093 row004093@Joint                                82
+  004095 1Joint                                         14
+  004097 refreshBodyFrame@Joint                         27
+  004109 setLimitPoint@Joint                            14
+  004111 row004111@Joint                                 1
+  004121 loadFromDescBase@Joint                         14
+  004123 row004123@Joint                                30
+  004127 row004127@Joint                                22
+  004131 row004131@Joint                                54
+  004135 row_slot7@Joint                                26
+  004141 0Joint                                         14
+  004143 addLimitPlane@Joint                            28
+  004178 row004178@D6JointPose                          52
+  004180 row004180@D6JointPose                          24
+  004188 print@D6JointDumpRecord                         8
+  004190 d6PrintPose                                    12
+  004194 row004194@D6Joint                               2
+  004196 row004196@D6Joint                               6
+  004198 d6QuaternionRateMatrix                          4
+  004200 row_slot4@D6Joint                               4
+  004204 row004204@D6Joint                               2
+  004206 row_slot6@D6Joint                               4
+  004207 row_slot8@D6Joint                               8
+  004210 0D6Joint                                        2
+  004214 row_slot1@PulleyJoint                           2
+  004218 copyFamilyFields@PulleyJoint                    1
+  004219 row_slot0@PulleyJoint                           2
+  004221 row_slot4@PulleyJoint                           2
+  004222 0PulleyJoint                                    1
+  004228 row_slot6@PulleyJoint                           2
+  004232 row_slot4@DistanceJoint                         4
+  004234 0DistanceJoint                                  2
+  004240 row_slot6@DistanceJoint                         4
+  004244 recordRelativePose@FixedJoint                   1
+  004246 row_slot6@FixedJoint                            2
+  004250 0FixedJoint                                     1
+  004258 row_slot6@PointInPlaneJoint                     2
+  004260 row_slot4@PointInPlaneJoint                     2
+  004262 0PointInPlaneJoint                              1
+  004272 row_slot6@PointOnLineJoint                      2
+  004274 row_slot4@PointOnLineJoint                      2
+  004276 0PointOnLineJoint                               1
+  004282 row_slot1@SphericalJoint                        4
+  004284 row004284@SphericalJoint                        2
+  004294 row004294@SphericalJoint                        4
+  004296 row_slot6@SphericalJoint                        4
+  004298 row_slot8@SphericalJoint                        8
+  004300 0SphericalJoint                                 2
+  004306 row004306@SphericalJoint                        4
+  004308 row_slot0@SphericalJoint                        4
+  004310 row_slot7@SphericalJoint                        4
+  004312 row_slot4@SphericalJoint                        4
+  004314 row_slot4@SphericalJoint                        4
+  004318 row004318@Joint                                 4
+  004320 0CylindricalJoint                               1
+  004326 row_slot6@CylindricalJoint                      2
+  004328 row_slot1@RevoluteJoint                         4
+  004332 row004332@RevoluteJoint                         2
+  004352 row004352@RevoluteJoint                         6
+  004356 row_slot8@RevoluteJoint                         8
+  004358 row004358@RevoluteJoint                         4
+  004360 row_slot6@RevoluteJoint                         4
+  004362 row_slot7@RevoluteJoint                         4
+  004364 row_slot4@RevoluteJoint                         4
+  004366 0RevoluteJoint                                  2
+  004374 row_slot0@RevoluteJoint                         4
+  004378 row004378@PrismaticJoint                        1
+  004380 0PrismaticJoint                                 1
+  004386 row_slot6@PrismaticJoint                        2
+  004389 row004389@JointSupportRecord                    2
+  004391 row004391@JointSupportRecord                   72
+  004393 row004393@JointSupportRecord                   10
+  004447 setLimitPoint@NpD6Joint                         2
+  004449 addLimitPlane@NpD6Joint                         4
+  004469 0NpD6Joint                                      2
+  004485 setLimitPoint@NpPulleyJoint                     1
+  004487 addLimitPlane@NpPulleyJoint                     2
+  004505 0NpPulleyJoint                                  1
+  004517 setLimitPoint@NpDistanceJoint                   2
+  004519 addLimitPlane@NpDistanceJoint                   4
+  004531 0NpDistanceJoint                                2
+  004547 setLimitPoint@NpFixedJoint                      1
+  004549 addLimitPlane@NpFixedJoint                      2
+  004561 0NpFixedJoint                                   1
+  004575 setLimitPoint@NpPointInPlaneJoint               1
+  004579 addLimitPlane@NpPointInPlaneJoint               2
+  004591 0NpPointInPlaneJoint                            1
+  004603 setLimitPoint@NpPointOnLineJoint                1
+  004605 addLimitPlane@NpPointOnLineJoint                2
+  004617 0NpPointOnLineJoint                             1
+  004629 setLimitPoint@NpSphericalJoint                  2
+  004631 addLimitPlane@NpSphericalJoint                  4
+  004649 0NpSphericalJoint                               2
+  004661 setLimitPoint@NpCylindricalJoint                1
+  004663 addLimitPlane@NpCylindricalJoint                2
+  004675 0NpCylindricalJoint                             1
+  004687 setLimitPoint@NpRevoluteJoint                   2
+  004689 addLimitPlane@NpRevoluteJoint                   4
+  004725 0NpRevoluteJoint                                2
+  004737 setLimitPoint@NpPrismaticJoint                  1
+  004739 addLimitPlane@NpPrismaticJoint                  2
+  004753 0NpPrismaticJoint                               1
+
+Breakpoints (each echoes and continues):
+bp NxPhysics+0x02dc70 ".echo HIT 004320 0CylindricalJoint; gc"
+bp NxPhysics+0x02dcd0 ".echo HIT 004322 1CylindricalJoint; gc"
+bp NxPhysics+0x02e5f0 ".echo HIT 004326 row_slot6@CylindricalJoint; gc"
+bp NxPhysics+0x02e0c0 ".echo HIT 004324 loadFromDesc@CylindricalJoint; gc"
+bp NxPhysics+0x02fab0 ".echo HIT 004316 saveToDesc@CylindricalJoint; gc"
+bp NxPhysics+0x02e190 ".echo HIT 004318 row004318@Joint; gc"
+bp NxPhysics+0x030870 ".echo HIT 004178 row004178@D6JointPose; gc"
+bp NxPhysics+0x030a40 ".echo HIT 004180 row004180@D6JointPose; gc"
+bp NxPhysics+0x033340 ".echo HIT 004182 saveToDesc@D6Joint; gc"
+bp NxPhysics+0x033380 ".echo HIT 004184 setProjectionMode@D6Joint; gc"
+bp NxPhysics+0x0307b0 ".echo HIT 004188 print@D6JointDumpRecord; gc"
+bp NxPhysics+0x0300f0 ".echo HIT 004190 d6PrintPose; gc"
+bp NxPhysics+0x02fee0 ".echo HIT 004192 d6Dump; gc"
+bp NxPhysics+0x030b80 ".echo HIT 004194 row004194@D6Joint; gc"
+bp NxPhysics+0x030db0 ".echo HIT 004196 row004196@D6Joint; gc"
+bp NxPhysics+0x030160 ".echo HIT 004198 d6QuaternionRateMatrix; gc"
+bp NxPhysics+0x031280 ".echo HIT 004200 row_slot4@D6Joint; gc"
+bp NxPhysics+0x02fd20 ".echo HIT 004202 1D6Joint; gc"
+bp NxPhysics+0x030f30 ".echo HIT 004204 row004204@D6Joint; gc"
+bp NxPhysics+0x031a10 ".echo HIT 004206 row_slot6@D6Joint; gc"
+bp NxPhysics+0x032820 ".echo HIT 004207 row_slot8@D6Joint; gc"
+bp NxPhysics+0x02fb10 ".echo HIT 004210 0D6Joint; gc"
+bp NxPhysics+0x0306f0 ".echo HIT 004212 loadFromDesc@D6Joint; gc"
+bp NxPhysics+0x034140 ".echo HIT 004230 saveToDesc@DistanceJoint; gc"
+bp NxPhysics+0x033b20 ".echo HIT 004232 row_slot4@DistanceJoint; gc"
+bp NxPhysics+0x033480 ".echo HIT 004234 0DistanceJoint; gc"
+bp NxPhysics+0x033530 ".echo HIT 004236 1DistanceJoint; gc"
+bp NxPhysics+0x033a30 ".echo HIT 004238 loadFromDesc@DistanceJoint; gc"
+bp NxPhysics+0x033bf0 ".echo HIT 004240 row_slot6@DistanceJoint; gc"
+bp NxPhysics+0x035370 ".echo HIT 004242 saveToDesc@FixedJoint; gc"
+bp NxPhysics+0x0345b0 ".echo HIT 004244 recordRelativePose@FixedJoint; gc"
+bp NxPhysics+0x034870 ".echo HIT 004246 row_slot6@FixedJoint; gc"
+bp NxPhysics+0x0341f0 ".echo HIT 004250 0FixedJoint; gc"
+bp NxPhysics+0x034250 ".echo HIT 004252 1FixedJoint; gc"
+bp NxPhysics+0x034510 ".echo HIT 004254 loadFromDesc@FixedJoint; gc"
+bp NxPhysics+0x0353a0 ".echo HIT 004141 0Joint; gc"
+bp NxPhysics+0x035710 ".echo HIT 004095 1Joint; gc"
+bp NxPhysics+0x037af0 ".echo HIT 004111 row004111@Joint; gc"
+bp NxPhysics+0x0378d0 ".echo HIT 004087 row004087@Joint; gc"
+bp NxPhysics+0x037f90 ".echo HIT 004133 row_slot6@Joint; gc"
+bp NxPhysics+0x037ff0 ".echo HIT 004135 row_slot7@Joint; gc"
+bp NxPhysics+0x037710 ".echo HIT 004064 row004064@Joint; gc"
+bp NxPhysics+0x038320 ".echo HIT 004066 saveToDescBase@Joint; gc"
+bp NxPhysics+0x036650 ".echo HIT 004070 getType@Joint; gc"
+bp NxPhysics+0x038430 ".echo HIT 004074 setBreakable@Joint; gc"
+bp NxPhysics+0x035b90 ".echo HIT 004076 getBreakable@Joint; gc"
+bp NxPhysics+0x036640 ".echo HIT 004078 getState@Joint; gc"
+bp NxPhysics+0x0364d0 ".echo HIT 004080 getLimitPoint@Joint; gc"
+bp NxPhysics+0x037700 ".echo HIT 004081 resetLimitPlaneIterator@Joint; gc"
+bp NxPhysics+0x036660 ".echo HIT 004083 hasMoreLimitPlanes@Joint; gc"
+bp NxPhysics+0x0371a0 ".echo HIT 004089 purgeLimitPlanes@Joint; gc"
+bp NxPhysics+0x037920 ".echo HIT 004091 row004091@Joint; gc"
+bp NxPhysics+0x037960 ".echo HIT 004093 row004093@Joint; gc"
+bp NxPhysics+0x0371e0 ".echo HIT 004097 refreshBodyFrame@Joint; gc"
+bp NxPhysics+0x038510 ".echo HIT 004099 setGlobalAnchor@Joint; gc"
+bp NxPhysics+0x038680 ".echo HIT 004101 setGlobalAxis@Joint; gc"
+bp NxPhysics+0x0379c0 ".echo HIT 004107 row004107@Joint; gc"
+bp NxPhysics+0x038b70 ".echo HIT 004109 setLimitPoint@Joint; gc"
+bp NxPhysics+0x036ce0 ".echo HIT 004121 loadFromDescBase@Joint; gc"
+bp NxPhysics+0x037b70 ".echo HIT 004123 row004123@Joint; gc"
+bp NxPhysics+0x035bb0 ".echo HIT 004125 getGlobalAnchor@Joint; gc"
+bp NxPhysics+0x037d90 ".echo HIT 004127 row004127@Joint; gc"
+bp NxPhysics+0x036240 ".echo HIT 004129 getGlobalAxis@Joint; gc"
+bp NxPhysics+0x037e70 ".echo HIT 004131 row004131@Joint; gc"
+bp NxPhysics+0x036220 ".echo HIT 004137 getGlobalAnchorVal@Joint; gc"
+bp NxPhysics+0x0364b0 ".echo HIT 004139 getGlobalAxisVal@Joint; gc"
+bp NxPhysics+0x035800 ".echo HIT 004143 addLimitPlane@Joint; gc"
+bp NxPhysics+0x036590 ".echo HIT 004145 getNextLimitPlane@Joint; gc"
+bp NxPhysics+0x039480 ".echo HIT 004389 row004389@JointSupportRecord; gc"
+bp NxPhysics+0x039550 ".echo HIT 004391 row004391@JointSupportRecord; gc"
+bp NxPhysics+0x039830 ".echo HIT 004393 row004393@JointSupportRecord; gc"
+bp NxPhysics+0x038d50 ".echo HIT 000022 row000022@Row000022Fixture; gc"
+bp NxPhysics+0x038d90 ".echo HIT 000754 row000754@Row000754Fixture; gc"
+bp NxPhysics+0x039160 ".echo HIT 000758 row000758@Row000758Fixture; gc"
+bp NxPhysics+0x038d70 ".echo HIT 000712 row000712@Row000712Fixture; gc"
+bp NxPhysics+0x039260 ".echo HIT 000760 row000760@Row000760Fixture; gc"
+bp NxPhysics+0x039320 ".echo HIT 000778 row000778@Row000778Fixture; gc"
+bp NxPhysics+0x039470 ".echo HIT 004167 row004167@Row004167Fixture; gc"
+bp NxPhysics+0x039ac0 ".echo HIT 004675 0NpCylindricalJoint; gc"
+bp NxPhysics+0x039b50 ".echo HIT 004677/004679 1NpCylindricalJoint; gc"
+bp NxPhysics+0x03a790 ".echo HIT 004655 setGlobalAnchor@NpCylindricalJoint; gc"
+bp NxPhysics+0x03a850 ".echo HIT 004657 setGlobalAxis@NpCylindricalJoint; gc"
+bp NxPhysics+0x03a6c0 ".echo HIT 004659 setBreakable@NpCylindricalJoint; gc"
+bp NxPhysics+0x03a910 ".echo HIT 004661 setLimitPoint@NpCylindricalJoint; gc"
+bp NxPhysics+0x039c50 ".echo HIT 004663 addLimitPlane@NpCylindricalJoint; gc"
+bp NxPhysics+0x03a550 ".echo HIT 004665 resetLimitPlaneIterator@NpCylindricalJoint; gc"
+bp NxPhysics+0x03a9d0 ".echo HIT 004667 setName@NpCylindricalJoint; gc"
+bp NxPhysics+0x03a470 ".echo HIT 004669 purgeLimitPlanes@NpCylindricalJoint; gc"
+bp NxPhysics+0x03a390 ".echo HIT 004671 loadFromDesc@NpCylindricalJoint; gc"
+bp NxPhysics+0x03a600 ".echo HIT 004673 saveToDesc@NpCylindricalJoint; gc"
+bp NxPhysics+0x03bb40 ".echo HIT 004435 setGlobalAnchor@NpD6Joint; gc"
+bp NxPhysics+0x03bc00 ".echo HIT 004439 setGlobalAxis@NpD6Joint; gc"
+bp NxPhysics+0x03b770 ".echo HIT 004445 setBreakable@NpD6Joint; gc"
+bp NxPhysics+0x03bcc0 ".echo HIT 004447 setLimitPoint@NpD6Joint; gc"
+bp NxPhysics+0x03ad90 ".echo HIT 004449 addLimitPlane@NpD6Joint; gc"
+bp NxPhysics+0x03b600 ".echo HIT 004451 resetLimitPlaneIterator@NpD6Joint; gc"
+bp NxPhysics+0x03bd80 ".echo HIT 004453 setName@NpD6Joint; gc"
+bp NxPhysics+0x03b520 ".echo HIT 004455 purgeLimitPlanes@NpD6Joint; gc"
+bp NxPhysics+0x03b440 ".echo HIT 004457 loadFromDesc@NpD6Joint; gc"
+bp NxPhysics+0x03b6b0 ".echo HIT 004459 saveToDesc@NpD6Joint; gc"
+bp NxPhysics+0x03ba90 ".echo HIT 004461 setDrivePosition@NpD6Joint; gc"
+bp NxPhysics+0x03b9d0 ".echo HIT 004463 setDriveOrientation@NpD6Joint; gc"
+bp NxPhysics+0x03b910 ".echo HIT 004465 setDriveLinearVelocity@NpD6Joint; gc"
+bp NxPhysics+0x03b850 ".echo HIT 004467 setDriveAngularVelocity@NpD6Joint; gc"
+bp NxPhysics+0x03ac60 ".echo HIT 004469 0NpD6Joint; gc"
+bp NxPhysics+0x03acd0 ".echo HIT 004471/004473 1NpD6Joint; gc"
+bp NxPhysics+0x03cbf0 ".echo HIT 004511 setGlobalAnchor@NpDistanceJoint; gc"
+bp NxPhysics+0x03ccb0 ".echo HIT 004513 setGlobalAxis@NpDistanceJoint; gc"
+bp NxPhysics+0x03cb20 ".echo HIT 004515 setBreakable@NpDistanceJoint; gc"
+bp NxPhysics+0x03cd70 ".echo HIT 004517 setLimitPoint@NpDistanceJoint; gc"
+bp NxPhysics+0x03c140 ".echo HIT 004519 addLimitPlane@NpDistanceJoint; gc"
+bp NxPhysics+0x03c9b0 ".echo HIT 004521 resetLimitPlaneIterator@NpDistanceJoint; gc"
+bp NxPhysics+0x03ce30 ".echo HIT 004523 setName@NpDistanceJoint; gc"
+bp NxPhysics+0x03c8d0 ".echo HIT 004525 purgeLimitPlanes@NpDistanceJoint; gc"
+bp NxPhysics+0x03c7f0 ".echo HIT 004527 loadFromDesc@NpDistanceJoint; gc"
+bp NxPhysics+0x03ca60 ".echo HIT 004529 saveToDesc@NpDistanceJoint; gc"
+bp NxPhysics+0x03c010 ".echo HIT 004531 0NpDistanceJoint; gc"
+bp NxPhysics+0x03c080 ".echo HIT 004533/004535 1NpDistanceJoint; gc"
+bp NxPhysics+0x03dca0 ".echo HIT 004541 setGlobalAnchor@NpFixedJoint; gc"
+bp NxPhysics+0x03dd60 ".echo HIT 004543 setGlobalAxis@NpFixedJoint; gc"
+bp NxPhysics+0x03dbd0 ".echo HIT 004545 setBreakable@NpFixedJoint; gc"
+bp NxPhysics+0x03de20 ".echo HIT 004547 setLimitPoint@NpFixedJoint; gc"
+bp NxPhysics+0x03d1f0 ".echo HIT 004549 addLimitPlane@NpFixedJoint; gc"
+bp NxPhysics+0x03da60 ".echo HIT 004551 resetLimitPlaneIterator@NpFixedJoint; gc"
+bp NxPhysics+0x03dee0 ".echo HIT 004553 setName@NpFixedJoint; gc"
+bp NxPhysics+0x03d980 ".echo HIT 004555 purgeLimitPlanes@NpFixedJoint; gc"
+bp NxPhysics+0x03d8a0 ".echo HIT 004557 loadFromDesc@NpFixedJoint; gc"
+bp NxPhysics+0x03db10 ".echo HIT 004559 saveToDesc@NpFixedJoint; gc"
+bp NxPhysics+0x03d0c0 ".echo HIT 004561 0NpFixedJoint; gc"
+bp NxPhysics+0x03d130 ".echo HIT 004563/004565 1NpFixedJoint; gc"
+bp NxPhysics+0x044780 ".echo HIT 004567 setGlobalAnchor@NpPointInPlaneJoint; gc"
+bp NxPhysics+0x044840 ".echo HIT 004569 setGlobalAxis@NpPointInPlaneJoint; gc"
+bp NxPhysics+0x0446b0 ".echo HIT 004571 setBreakable@NpPointInPlaneJoint; gc"
+bp NxPhysics+0x044900 ".echo HIT 004575 setLimitPoint@NpPointInPlaneJoint; gc"
+bp NxPhysics+0x0442f0 ".echo HIT 004579 addLimitPlane@NpPointInPlaneJoint; gc"
+bp NxPhysics+0x044540 ".echo HIT 004581 resetLimitPlaneIterator@NpPointInPlaneJoint; gc"
+bp NxPhysics+0x0449c0 ".echo HIT 004583 setName@NpPointInPlaneJoint; gc"
+bp NxPhysics+0x044490 ".echo HIT 004585 purgeLimitPlanes@NpPointInPlaneJoint; gc"
+bp NxPhysics+0x0443b0 ".echo HIT 004587 loadFromDesc@NpPointInPlaneJoint; gc"
+bp NxPhysics+0x0445f0 ".echo HIT 004589 saveToDesc@NpPointInPlaneJoint; gc"
+bp NxPhysics+0x044240 ".echo HIT 004591 0NpPointInPlaneJoint; gc"
+bp NxPhysics+0x044280 ".echo HIT 004593/004595 1NpPointInPlaneJoint; gc"
+bp NxPhysics+0x045150 ".echo HIT 004597 setGlobalAnchor@NpPointOnLineJoint; gc"
+bp NxPhysics+0x045210 ".echo HIT 004599 setGlobalAxis@NpPointOnLineJoint; gc"
+bp NxPhysics+0x045080 ".echo HIT 004601 setBreakable@NpPointOnLineJoint; gc"
+bp NxPhysics+0x0452d0 ".echo HIT 004603 setLimitPoint@NpPointOnLineJoint; gc"
+bp NxPhysics+0x044cb0 ".echo HIT 004605 addLimitPlane@NpPointOnLineJoint; gc"
+bp NxPhysics+0x044f00 ".echo HIT 004607 resetLimitPlaneIterator@NpPointOnLineJoint; gc"
+bp NxPhysics+0x045390 ".echo HIT 004609 setName@NpPointOnLineJoint; gc"
+bp NxPhysics+0x044e50 ".echo HIT 004611 purgeLimitPlanes@NpPointOnLineJoint; gc"
+bp NxPhysics+0x044d70 ".echo HIT 004613 loadFromDesc@NpPointOnLineJoint; gc"
+bp NxPhysics+0x044fc0 ".echo HIT 004615 saveToDesc@NpPointOnLineJoint; gc"
+bp NxPhysics+0x044c00 ".echo HIT 004617 0NpPointOnLineJoint; gc"
+bp NxPhysics+0x044c40 ".echo HIT 004619/004621 1NpPointOnLineJoint; gc"
+bp NxPhysics+0x0455d0 ".echo HIT 004753 0NpPrismaticJoint; gc"
+bp NxPhysics+0x045610 ".echo HIT 004755/004757 1NpPrismaticJoint; gc"
+bp NxPhysics+0x045b10 ".echo HIT 004731 setGlobalAnchor@NpPrismaticJoint; gc"
+bp NxPhysics+0x045bd0 ".echo HIT 004733 setGlobalAxis@NpPrismaticJoint; gc"
+bp NxPhysics+0x045a40 ".echo HIT 004735 setBreakable@NpPrismaticJoint; gc"
+bp NxPhysics+0x045c90 ".echo HIT 004737 setLimitPoint@NpPrismaticJoint; gc"
+bp NxPhysics+0x045680 ".echo HIT 004739 addLimitPlane@NpPrismaticJoint; gc"
+bp NxPhysics+0x0458d0 ".echo HIT 004741 resetLimitPlaneIterator@NpPrismaticJoint; gc"
+bp NxPhysics+0x045d50 ".echo HIT 004745 setName@NpPrismaticJoint; gc"
+bp NxPhysics+0x045820 ".echo HIT 004747 purgeLimitPlanes@NpPrismaticJoint; gc"
+bp NxPhysics+0x045740 ".echo HIT 004749 loadFromDesc@NpPrismaticJoint; gc"
+bp NxPhysics+0x045980 ".echo HIT 004751 saveToDesc@NpPrismaticJoint; gc"
+bp NxPhysics+0x0464d0 ".echo HIT 004475 setGlobalAnchor@NpPulleyJoint; gc"
+bp NxPhysics+0x046590 ".echo HIT 004477 setGlobalAxis@NpPulleyJoint; gc"
+bp NxPhysics+0x046400 ".echo HIT 004481 setBreakable@NpPulleyJoint; gc"
+bp NxPhysics+0x046650 ".echo HIT 004485 setLimitPoint@NpPulleyJoint; gc"
+bp NxPhysics+0x046040 ".echo HIT 004487 addLimitPlane@NpPulleyJoint; gc"
+bp NxPhysics+0x046290 ".echo HIT 004489 resetLimitPlaneIterator@NpPulleyJoint; gc"
+bp NxPhysics+0x046710 ".echo HIT 004493 setName@NpPulleyJoint; gc"
+bp NxPhysics+0x0461e0 ".echo HIT 004495 purgeLimitPlanes@NpPulleyJoint; gc"
+bp NxPhysics+0x046100 ".echo HIT 004501 loadFromDesc@NpPulleyJoint; gc"
+bp NxPhysics+0x046340 ".echo HIT 004503 saveToDesc@NpPulleyJoint; gc"
+bp NxPhysics+0x045f90 ".echo HIT 004505 0NpPulleyJoint; gc"
+bp NxPhysics+0x045fd0 ".echo HIT 004507/004509 1NpPulleyJoint; gc"
+bp NxPhysics+0x046950 ".echo HIT 004725 0NpRevoluteJoint; gc"
+bp NxPhysics+0x046990 ".echo HIT 004727/004729 1NpRevoluteJoint; gc"
+bp NxPhysics+0x047210 ".echo HIT 004681 setGlobalAnchor@NpRevoluteJoint; gc"
+bp NxPhysics+0x0472d0 ".echo HIT 004683 setGlobalAxis@NpRevoluteJoint; gc"
+bp NxPhysics+0x047080 ".echo HIT 004685 setBreakable@NpRevoluteJoint; gc"
+bp NxPhysics+0x047390 ".echo HIT 004687 setLimitPoint@NpRevoluteJoint; gc"
+bp NxPhysics+0x046a00 ".echo HIT 004689 addLimitPlane@NpRevoluteJoint; gc"
+bp NxPhysics+0x046e50 ".echo HIT 004695 purgeLimitPlanes@NpRevoluteJoint; gc"
+bp NxPhysics+0x046f00 ".echo HIT 004691 resetLimitPlaneIterator@NpRevoluteJoint; gc"
+bp NxPhysics+0x047520 ".echo HIT 004693 setName@NpRevoluteJoint; gc"
+bp NxPhysics+0x046d70 ".echo HIT 004697 loadFromDesc@NpRevoluteJoint; gc"
+bp NxPhysics+0x046fc0 ".echo HIT 004699 saveToDesc@NpRevoluteJoint; gc"
+bp NxPhysics+0x047450 ".echo HIT 004709 setLimits@NpRevoluteJoint; gc"
+bp NxPhysics+0x046b70 ".echo HIT 004711 getLimits@NpRevoluteJoint; gc"
+bp NxPhysics+0x047510 ".echo HIT 004713 setMotor@NpRevoluteJoint; gc"
+bp NxPhysics+0x046be0 ".echo HIT 004715 getMotor@NpRevoluteJoint; gc"
+bp NxPhysics+0x0476a0 ".echo HIT 004717 setSpring@NpRevoluteJoint; gc"
+bp NxPhysics+0x046ca0 ".echo HIT 004719 getSpring@NpRevoluteJoint; gc"
+bp NxPhysics+0x046ac0 ".echo HIT 004721 getAngle@NpRevoluteJoint; gc"
+bp NxPhysics+0x046d10 ".echo HIT 004723 getVelocity@NpRevoluteJoint; gc"
+bp NxPhysics+0x047150 ".echo HIT 004701 setFlags@NpRevoluteJoint; gc"
+bp NxPhysics+0x046b20 ".echo HIT 004703 getFlags@NpRevoluteJoint; gc"
+bp NxPhysics+0x0475e0 ".echo HIT 004705 setProjectionMode@NpRevoluteJoint; gc"
+bp NxPhysics+0x046c50 ".echo HIT 004707 getProjectionMode@NpRevoluteJoint; gc"
+bp NxPhysics+0x0478e0 ".echo HIT 004649 0NpSphericalJoint; gc"
+bp NxPhysics+0x047920 ".echo HIT 004651/004653 1NpSphericalJoint; gc"
+bp NxPhysics+0x047f80 ".echo HIT 004623 setGlobalAnchor@NpSphericalJoint; gc"
+bp NxPhysics+0x048040 ".echo HIT 004625 setGlobalAxis@NpSphericalJoint; gc"
+bp NxPhysics+0x047df0 ".echo HIT 004627 setBreakable@NpSphericalJoint; gc"
+bp NxPhysics+0x048100 ".echo HIT 004629 setLimitPoint@NpSphericalJoint; gc"
+bp NxPhysics+0x047990 ".echo HIT 004631 addLimitPlane@NpSphericalJoint; gc"
+bp NxPhysics+0x047c80 ".echo HIT 004633 resetLimitPlaneIterator@NpSphericalJoint; gc"
+bp NxPhysics+0x0481c0 ".echo HIT 004637 setName@NpSphericalJoint; gc"
+bp NxPhysics+0x047bd0 ".echo HIT 004639 purgeLimitPlanes@NpSphericalJoint; gc"
+bp NxPhysics+0x047af0 ".echo HIT 004641 loadFromDesc@NpSphericalJoint; gc"
+bp NxPhysics+0x047d30 ".echo HIT 004643 saveToDesc@NpSphericalJoint; gc"
+bp NxPhysics+0x047ec0 ".echo HIT 004645 setFlags@NpSphericalJoint; gc"
+bp NxPhysics+0x048280 ".echo HIT 004647 setProjectionMode@NpSphericalJoint; gc"
+bp NxPhysics+0x049100 ".echo HIT 004256 saveToDesc@PointInPlaneJoint; gc"
+bp NxPhysics+0x048c00 ".echo HIT 004258 row_slot6@PointInPlaneJoint; gc"
+bp NxPhysics+0x0488f0 ".echo HIT 004260 row_slot4@PointInPlaneJoint; gc"
+bp NxPhysics+0x048340 ".echo HIT 004262 0PointInPlaneJoint; gc"
+bp NxPhysics+0x0483a0 ".echo HIT 004264 1PointInPlaneJoint; gc"
+bp NxPhysics+0x048650 ".echo HIT 004266 loadFromDesc@PointInPlaneJoint; gc"
+bp NxPhysics+0x04a180 ".echo HIT 004268 saveToDesc@PointOnLineJoint; gc"
+bp NxPhysics+0x049740 ".echo HIT 004270 row_slot11@PointOnLineJoint; gc"
+bp NxPhysics+0x0499f0 ".echo HIT 004272 row_slot6@PointOnLineJoint; gc"
+bp NxPhysics+0x049760 ".echo HIT 004274 row_slot4@PointOnLineJoint; gc"
+bp NxPhysics+0x049140 ".echo HIT 004276 0PointOnLineJoint; gc"
+bp NxPhysics+0x0491a0 ".echo HIT 004278 1PointOnLineJoint; gc"
+bp NxPhysics+0x049450 ".echo HIT 004280 loadFromDesc@PointOnLineJoint; gc"
+bp NxPhysics+0x04a1c0 ".echo HIT 004380 0PrismaticJoint; gc"
+bp NxPhysics+0x04a220 ".echo HIT 004382 1PrismaticJoint; gc"
+bp NxPhysics+0x04a870 ".echo HIT 004386 row_slot6@PrismaticJoint; gc"
+bp NxPhysics+0x04a4d0 ".echo HIT 004384 loadFromDesc@PrismaticJoint; gc"
+bp NxPhysics+0x04c270 ".echo HIT 004376 saveToDesc@PrismaticJoint; gc"
+bp NxPhysics+0x04a6b0 ".echo HIT 004378 row004378@PrismaticJoint; gc"
+bp NxPhysics+0x04c940 ".echo HIT 004214 row_slot1@PulleyJoint; gc"
+bp NxPhysics+0x04ced0 ".echo HIT 004216 saveToDesc@PulleyJoint; gc"
+bp NxPhysics+0x04c3b0 ".echo HIT 004218 copyFamilyFields@PulleyJoint; gc"
+bp NxPhysics+0x04c7d0 ".echo HIT 004219 row_slot0@PulleyJoint; gc"
+bp NxPhysics+0x04c950 ".echo HIT 004221 row_slot4@PulleyJoint; gc"
+bp NxPhysics+0x04c2d0 ".echo HIT 004222 0PulleyJoint; gc"
+bp NxPhysics+0x04c330 ".echo HIT 004224 1PulleyJoint; gc"
+bp NxPhysics+0x04c460 ".echo HIT 004226 loadFromDesc@PulleyJoint; gc"
+bp NxPhysics+0x04ca40 ".echo HIT 004228 row_slot6@PulleyJoint; gc"
+bp NxPhysics+0x04cfc0 ".echo HIT 004366 0RevoluteJoint; gc"
+bp NxPhysics+0x04d070 ".echo HIT 004368 1RevoluteJoint; gc"
+bp NxPhysics+0x04e6b0 ".echo HIT 004374 row_slot0@RevoluteJoint; gc"
+bp NxPhysics+0x04ea10 ".echo HIT 004328 row_slot1@RevoluteJoint; gc"
+bp NxPhysics+0x04ea30 ".echo HIT 004364 row_slot4@RevoluteJoint; gc"
+bp NxPhysics+0x04f720 ".echo HIT 004360 row_slot6@RevoluteJoint; gc"
+bp NxPhysics+0x050610 ".echo HIT 004362 row_slot7@RevoluteJoint; gc"
+bp NxPhysics+0x050a70 ".echo HIT 004356 row_slot8@RevoluteJoint; gc"
+bp NxPhysics+0x04db60 ".echo HIT 004370 loadFromDesc@RevoluteJoint; gc"
+bp NxPhysics+0x0513e0 ".echo HIT 004330 saveToDesc@RevoluteJoint; gc"
+bp NxPhysics+0x0514f0 ".echo HIT 004334 setFlags@RevoluteJoint; gc"
+bp NxPhysics+0x04d910 ".echo HIT 004336 getFlags@RevoluteJoint; gc"
+bp NxPhysics+0x051700 ".echo HIT 004338 setProjectionMode@RevoluteJoint; gc"
+bp NxPhysics+0x04e220 ".echo HIT 004332 row004332@RevoluteJoint; gc"
+bp NxPhysics+0x051580 ".echo HIT 004340 setLimits@RevoluteJoint; gc"
+bp NxPhysics+0x04d920 ".echo HIT 004342 getLimits@RevoluteJoint; gc"
+bp NxPhysics+0x051650 ".echo HIT 004344 setMotor@RevoluteJoint; gc"
+bp NxPhysics+0x04d970 ".echo HIT 004346 getMotor@RevoluteJoint; gc"
+bp NxPhysics+0x051750 ".echo HIT 004348 setSpring@RevoluteJoint; gc"
+bp NxPhysics+0x04d9b0 ".echo HIT 004350 getSpring@RevoluteJoint; gc"
+bp NxPhysics+0x04e310 ".echo HIT 004352 row004352@RevoluteJoint; gc"
+bp NxPhysics+0x04d9e0 ".echo HIT 004354 getVelocity@RevoluteJoint; gc"
+bp NxPhysics+0x04e570 ".echo HIT 004358 row004358@RevoluteJoint; gc"
+bp NxPhysics+0x04d110 ".echo HIT 004372 getAngle@RevoluteJoint; gc"
+bp NxPhysics+0x052890 ".echo HIT 004282 row_slot1@SphericalJoint; gc"
+bp NxPhysics+0x051d80 ".echo HIT 004284 row004284@SphericalJoint; gc"
+bp NxPhysics+0x0559d0 ".echo HIT 004286 saveToDesc@SphericalJoint; gc"
+bp NxPhysics+0x055b30 ".echo HIT 004288 setFlags@SphericalJoint; gc"
+bp NxPhysics+0x051a30 ".echo HIT 004290 getFlags@SphericalJoint; gc"
+bp NxPhysics+0x055b80 ".echo HIT 004292 setProjectionMode@SphericalJoint; gc"
+bp NxPhysics+0x051f30 ".echo HIT 004294 row004294@SphericalJoint; gc"
+bp NxPhysics+0x053b30 ".echo HIT 004296 row_slot6@SphericalJoint; gc"
+bp NxPhysics+0x055880 ".echo HIT 004298 row_slot8@SphericalJoint; gc"
+bp NxPhysics+0x0518e0 ".echo HIT 004300 0SphericalJoint; gc"
+bp NxPhysics+0x0519b0 ".echo HIT 004302 1SphericalJoint; gc"
+bp NxPhysics+0x051cc0 ".echo HIT 004304 loadFromDesc@SphericalJoint; gc"
+bp NxPhysics+0x052070 ".echo HIT 004306 row004306@SphericalJoint; gc"
+bp NxPhysics+0x052510 ".echo HIT 004308 row_slot0@SphericalJoint; gc"
+bp NxPhysics+0x055010 ".echo HIT 004310 row_slot7@SphericalJoint; gc"
+bp NxPhysics+0x0528b0 ".echo HIT 004314/004312 row_slot4@SphericalJoint; gc"
+bp NxPhysics+0x0281c0 ".echo HIT 000571 addJointBreakEvent@NxSceneInternal; gc"
+bp NxPhysics+0x028b40 ".echo HIT 000598 growJointRecords@NxSceneInternal; gc"
+
+Trace:
+HIT 004366 0RevoluteJoint
+HIT 004141 0Joint
+HIT 004121 loadFromDescBase@Joint
+HIT 004097 refreshBodyFrame@Joint
+HIT 004097 refreshBodyFrame@Joint
+HIT 004725 0NpRevoluteJoint
+HIT 004332 row004332@RevoluteJoint
+  | slots family=revolute config=0 created=yes
+HIT 004687 setLimitPoint@NpRevoluteJoint
+HIT 004109 setLimitPoint@Joint
+HIT 004089 purgeLimitPlanes@Joint
+HIT 004689 addLimitPlane@NpRevoluteJoint
+HIT 004143 addLimitPlane@Joint
+HIT 004131 row004131@Joint
+HIT 004689 addLimitPlane@NpRevoluteJoint
+HIT 004143 addLimitPlane@Joint
+HIT 004131 row004131@Joint
+HIT 004070 getType@Joint
+HIT 004070 getType@Joint
+HIT 004364 row_slot4@RevoluteJoint
+HIT 004123 row004123@Joint
+HIT 004127 row004127@Joint
+HIT 004123 row004123@Joint
+HIT 004127 row004127@Joint
+HIT 004352 row004352@RevoluteJoint
+  | slots family=revolute config=0 call=vis cw=027f calls=24
+HIT 004328 row_slot1@RevoluteJoint
+HIT 004362 row_slot7@RevoluteJoint
+HIT 004352 row004352@RevoluteJoint
+HIT 004093 row004093@Joint
+HIT 000598 growJointRecords@NxSceneInternal
+HIT 004127 row004127@Joint
+HIT 004352 row004352@RevoluteJoint
+HIT 004393 row004393@JointSupportRecord
+HIT 004391 row004391@JointSupportRecord
+HIT 004360 row_slot6@RevoluteJoint
+HIT 004093 row004093@Joint
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+  | slots family=revolute config=0 call=step cw=027f records count=4 capacity=4 window=00000000.00000004
+HIT 004374 row_slot0@RevoluteJoint
+HIT 004358 row004358@RevoluteJoint
+  | slots family=revolute config=0 call=impulse cw=027f joint changed none
+HIT 004356 row_slot8@RevoluteJoint
+HIT 004064 row004064@Joint
+HIT 000758 row000758@Row000758Fixture
+HIT 000022 row000022@Row000022Fixture
+HIT 000754 row000754@Row000754Fixture
+  | slots family=revolute config=0 call=project0 cw=027f joint changed none
+HIT 004356 row_slot8@RevoluteJoint
+HIT 004064 row004064@Joint
+HIT 000758 row000758@Row000758Fixture
+HIT 000022 row000022@Row000022Fixture
+HIT 000754 row000754@Row000754Fixture
+  | slots family=revolute config=0 call=project1 cw=027f joint changed none
+HIT 004328 row_slot1@RevoluteJoint
+HIT 004362 row_slot7@RevoluteJoint
+HIT 004352 row004352@RevoluteJoint
+HIT 004093 row004093@Joint
+HIT 004127 row004127@Joint
+HIT 004352 row004352@RevoluteJoint
+HIT 004393 row004393@JointSupportRecord
+HIT 004391 row004391@JointSupportRecord
+HIT 004360 row_slot6@RevoluteJoint
+HIT 004093 row004093@Joint
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+  | slots family=revolute config=0 call=step cw=0f7f records count=4 capacity=4 window=00000000.00000004
+HIT 004374 row_slot0@RevoluteJoint
+HIT 004358 row004358@RevoluteJoint
+  | slots family=revolute config=0 call=impulse cw=0f7f joint changed none
+HIT 004356 row_slot8@RevoluteJoint
+HIT 004064 row004064@Joint
+HIT 000758 row000758@Row000758Fixture
+HIT 000022 row000022@Row000022Fixture
+HIT 000754 row000754@Row000754Fixture
+  | slots family=revolute config=0 call=project0 cw=0f7f joint changed none
+HIT 004356 row_slot8@RevoluteJoint
+HIT 004064 row004064@Joint
+HIT 000758 row000758@Row000758Fixture
+HIT 000022 row000022@Row000022Fixture
+HIT 000754 row000754@Row000754Fixture
+  | slots family=revolute config=0 call=project1 cw=0f7f joint changed none
+HIT 004364 row_slot4@RevoluteJoint
+HIT 004123 row004123@Joint
+HIT 004127 row004127@Joint
+HIT 004123 row004123@Joint
+HIT 004127 row004127@Joint
+HIT 004352 row004352@RevoluteJoint
+  | slots family=revolute config=0 call=vis cw=027f calls=24
+HIT 004111 row004111@Joint
+HIT 004091 row004091@Joint
+HIT 000571 addJointBreakEvent@NxSceneInternal
+HIT 004078 getState@Joint
+  | slots family=revolute config=0 call=break cw=027f state=2 record0_flags=cdc80423
+  | slots family=revolute config=0 call=break cw=027f joint changed 02c=00000201>00000211
+HIT 000778 row000778@Row000778Fixture
+HIT 000760 row000760@Row000760Fixture
+HIT 004095 1Joint
+  | slots family=revolute config=0 released=yes
+HIT 004366 0RevoluteJoint
+HIT 004141 0Joint
+HIT 004121 loadFromDescBase@Joint
+HIT 004097 refreshBodyFrame@Joint
+HIT 004097 refreshBodyFrame@Joint
+HIT 004725 0NpRevoluteJoint
+HIT 004332 row004332@RevoluteJoint
+  | slots family=revolute config=1 created=yes
+HIT 004687 setLimitPoint@NpRevoluteJoint
+HIT 004109 setLimitPoint@Joint
+HIT 004089 purgeLimitPlanes@Joint
+HIT 004689 addLimitPlane@NpRevoluteJoint
+HIT 004143 addLimitPlane@Joint
+HIT 004131 row004131@Joint
+HIT 004689 addLimitPlane@NpRevoluteJoint
+HIT 004143 addLimitPlane@Joint
+HIT 004131 row004131@Joint
+HIT 004070 getType@Joint
+HIT 004070 getType@Joint
+HIT 004364 row_slot4@RevoluteJoint
+HIT 004123 row004123@Joint
+HIT 004127 row004127@Joint
+  | slots family=revolute config=1 call=vis cw=027f calls=9
+HIT 004328 row_slot1@RevoluteJoint
+HIT 004362 row_slot7@RevoluteJoint
+HIT 004135 row_slot7@Joint
+HIT 004080 getLimitPoint@Joint
+HIT 004131 row004131@Joint
+HIT 004127 row004127@Joint
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004360 row_slot6@RevoluteJoint
+HIT 004093 row004093@Joint
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+  | slots family=revolute config=1 call=step cw=027f records count=4 capacity=4 window=00000000.00000004
+HIT 004374 row_slot0@RevoluteJoint
+HIT 004358 row004358@RevoluteJoint
+  | slots family=revolute config=1 call=impulse cw=027f joint changed none
+HIT 004356 row_slot8@RevoluteJoint
+HIT 004064 row004064@Joint
+  | slots family=revolute config=1 call=project0 cw=027f joint changed none
+HIT 004356 row_slot8@RevoluteJoint
+HIT 004064 row004064@Joint
+  | slots family=revolute config=1 call=project1 cw=027f joint changed none
+HIT 004328 row_slot1@RevoluteJoint
+HIT 004362 row_slot7@RevoluteJoint
+HIT 004135 row_slot7@Joint
+HIT 004080 getLimitPoint@Joint
+HIT 004131 row004131@Joint
+HIT 004127 row004127@Joint
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004360 row_slot6@RevoluteJoint
+HIT 004093 row004093@Joint
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+  | slots family=revolute config=1 call=step cw=0f7f records count=4 capacity=4 window=00000000.00000004
+HIT 004374 row_slot0@RevoluteJoint
+HIT 004358 row004358@RevoluteJoint
+  | slots family=revolute config=1 call=impulse cw=0f7f joint changed none
+HIT 004356 row_slot8@RevoluteJoint
+HIT 004064 row004064@Joint
+  | slots family=revolute config=1 call=project0 cw=0f7f joint changed none
+HIT 004356 row_slot8@RevoluteJoint
+HIT 004064 row004064@Joint
+  | slots family=revolute config=1 call=project1 cw=0f7f joint changed none
+HIT 004364 row_slot4@RevoluteJoint
+HIT 004123 row004123@Joint
+HIT 004127 row004127@Joint
+  | slots family=revolute config=1 call=vis cw=027f calls=9
+HIT 000778 row000778@Row000778Fixture
+HIT 000760 row000760@Row000760Fixture
+HIT 004095 1Joint
+  | slots family=revolute config=1 released=yes
+HIT 004380 0PrismaticJoint
+HIT 004141 0Joint
+HIT 004121 loadFromDescBase@Joint
+HIT 004097 refreshBodyFrame@Joint
+HIT 004097 refreshBodyFrame@Joint
+HIT 004753 0NpPrismaticJoint
+HIT 004378 row004378@PrismaticJoint
+  | slots family=prismatic config=0 created=yes
+HIT 004737 setLimitPoint@NpPrismaticJoint
+HIT 004109 setLimitPoint@Joint
+HIT 004089 purgeLimitPlanes@Joint
+HIT 004739 addLimitPlane@NpPrismaticJoint
+HIT 004143 addLimitPlane@Joint
+HIT 004131 row004131@Joint
+HIT 004739 addLimitPlane@NpPrismaticJoint
+HIT 004143 addLimitPlane@Joint
+HIT 004131 row004131@Joint
+HIT 004070 getType@Joint
+HIT 004070 getType@Joint
+HIT 004318 row004318@Joint
+HIT 004123 row004123@Joint
+HIT 004127 row004127@Joint
+  | slots family=prismatic config=0 call=vis cw=027f calls=3
+HIT 004135 row_slot7@Joint
+HIT 004080 getLimitPoint@Joint
+HIT 004131 row004131@Joint
+HIT 004386 row_slot6@PrismaticJoint
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004093 row004093@Joint
+HIT 000598 growJointRecords@NxSceneInternal
+HIT 004391 row004391@JointSupportRecord
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+  | slots family=prismatic config=0 call=step cw=027f records count=7 capacity=8 window=00000000.00000007
+  | slots family=prismatic config=0 call=impulse cw=027f joint changed none
+  | slots family=prismatic config=0 call=project0 cw=027f joint changed none
+  | slots family=prismatic config=0 call=project1 cw=027f joint changed none
+HIT 004135 row_slot7@Joint
+HIT 004080 getLimitPoint@Joint
+HIT 004131 row004131@Joint
+HIT 004386 row_slot6@PrismaticJoint
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+  | slots family=prismatic config=0 call=step cw=0f7f records count=7 capacity=8 window=00000000.00000007
+  | slots family=prismatic config=0 call=impulse cw=0f7f joint changed none
+  | slots family=prismatic config=0 call=project0 cw=0f7f joint changed none
+  | slots family=prismatic config=0 call=project1 cw=0f7f joint changed none
+HIT 004318 row004318@Joint
+HIT 004123 row004123@Joint
+HIT 004127 row004127@Joint
+  | slots family=prismatic config=0 call=vis cw=027f calls=3
+HIT 000778 row000778@Row000778Fixture
+HIT 000760 row000760@Row000760Fixture
+HIT 004095 1Joint
+  | slots family=prismatic config=0 released=yes
+HIT 004320 0CylindricalJoint
+HIT 004141 0Joint
+HIT 004121 loadFromDescBase@Joint
+HIT 004097 refreshBodyFrame@Joint
+HIT 004097 refreshBodyFrame@Joint
+HIT 004675 0NpCylindricalJoint
+  | slots family=cylindrical config=0 created=yes
+HIT 004661 setLimitPoint@NpCylindricalJoint
+HIT 004109 setLimitPoint@Joint
+HIT 004089 purgeLimitPlanes@Joint
+HIT 004663 addLimitPlane@NpCylindricalJoint
+HIT 004143 addLimitPlane@Joint
+HIT 004131 row004131@Joint
+HIT 004663 addLimitPlane@NpCylindricalJoint
+HIT 004143 addLimitPlane@Joint
+HIT 004131 row004131@Joint
+HIT 004070 getType@Joint
+HIT 004070 getType@Joint
+HIT 004318 row004318@Joint
+HIT 004123 row004123@Joint
+HIT 004127 row004127@Joint
+  | slots family=cylindrical config=0 call=vis cw=027f calls=3
+HIT 004135 row_slot7@Joint
+HIT 004080 getLimitPoint@Joint
+HIT 004131 row004131@Joint
+HIT 004326 row_slot6@CylindricalJoint
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+  | slots family=cylindrical config=0 call=step cw=027f records count=4 capacity=8 window=00000000.00000004
+  | slots family=cylindrical config=0 call=impulse cw=027f joint changed none
+  | slots family=cylindrical config=0 call=project0 cw=027f joint changed none
+  | slots family=cylindrical config=0 call=project1 cw=027f joint changed none
+HIT 004135 row_slot7@Joint
+HIT 004080 getLimitPoint@Joint
+HIT 004131 row004131@Joint
+HIT 004326 row_slot6@CylindricalJoint
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+  | slots family=cylindrical config=0 call=step cw=0f7f records count=4 capacity=8 window=00000000.00000004
+  | slots family=cylindrical config=0 call=impulse cw=0f7f joint changed none
+  | slots family=cylindrical config=0 call=project0 cw=0f7f joint changed none
+  | slots family=cylindrical config=0 call=project1 cw=0f7f joint changed none
+HIT 004318 row004318@Joint
+HIT 004123 row004123@Joint
+HIT 004127 row004127@Joint
+  | slots family=cylindrical config=0 call=vis cw=027f calls=3
+HIT 000778 row000778@Row000778Fixture
+HIT 000760 row000760@Row000760Fixture
+HIT 004095 1Joint
+  | slots family=cylindrical config=0 released=yes
+HIT 004300 0SphericalJoint
+HIT 004141 0Joint
+HIT 004121 loadFromDescBase@Joint
+HIT 004097 refreshBodyFrame@Joint
+HIT 004097 refreshBodyFrame@Joint
+HIT 004649 0NpSphericalJoint
+HIT 004284 row004284@SphericalJoint
+  | slots family=spherical config=0 created=yes
+HIT 004629 setLimitPoint@NpSphericalJoint
+HIT 004109 setLimitPoint@Joint
+HIT 004089 purgeLimitPlanes@Joint
+HIT 004631 addLimitPlane@NpSphericalJoint
+HIT 004143 addLimitPlane@Joint
+HIT 004131 row004131@Joint
+HIT 004631 addLimitPlane@NpSphericalJoint
+HIT 004143 addLimitPlane@Joint
+HIT 004131 row004131@Joint
+HIT 004070 getType@Joint
+HIT 004070 getType@Joint
+HIT 004314/004312 row_slot4@SphericalJoint
+HIT 004123 row004123@Joint
+HIT 004123 row004123@Joint
+HIT 004306 row004306@SphericalJoint
+HIT 004123 row004123@Joint
+  | slots family=spherical config=0 call=vis cw=027f calls=72
+HIT 004282 row_slot1@SphericalJoint
+HIT 004310 row_slot7@SphericalJoint
+HIT 004306 row004306@SphericalJoint
+HIT 004093 row004093@Joint
+HIT 004393 row004393@JointSupportRecord
+HIT 004391 row004391@JointSupportRecord
+HIT 004093 row004093@Joint
+HIT 004393 row004393@JointSupportRecord
+HIT 004391 row004391@JointSupportRecord
+HIT 004093 row004093@Joint
+HIT 004393 row004393@JointSupportRecord
+HIT 004391 row004391@JointSupportRecord
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004389 row004389@JointSupportRecord
+HIT 004135 row_slot7@Joint
+HIT 004080 getLimitPoint@Joint
+HIT 004131 row004131@Joint
+HIT 004296 row_slot6@SphericalJoint
+HIT 004093 row004093@Joint
+  | slots family=spherical config=0 call=step cw=027f records count=5 capacity=8 window=00000000.00000005
+HIT 004308 row_slot0@SphericalJoint
+HIT 004294 row004294@SphericalJoint
+  | slots family=spherical config=0 call=impulse cw=027f joint changed none
+HIT 004298 row_slot8@SphericalJoint
+HIT 004064 row004064@Joint
+HIT 000022 row000022@Row000022Fixture
+HIT 000754 row000754@Row000754Fixture
+  | slots family=spherical config=0 call=project0 cw=027f joint changed none
+HIT 004298 row_slot8@SphericalJoint
+HIT 004064 row004064@Joint
+HIT 000022 row000022@Row000022Fixture
+HIT 000754 row000754@Row000754Fixture
+  | slots family=spherical config=0 call=project1 cw=027f joint changed none
+HIT 004282 row_slot1@SphericalJoint
+HIT 004310 row_slot7@SphericalJoint
+HIT 004306 row004306@SphericalJoint
+HIT 004093 row004093@Joint
+HIT 004393 row004393@JointSupportRecord
+HIT 004391 row004391@JointSupportRecord
+HIT 004093 row004093@Joint
+HIT 004393 row004393@JointSupportRecord
+HIT 004391 row004391@JointSupportRecord
+HIT 004093 row004093@Joint
+HIT 004393 row004393@JointSupportRecord
+HIT 004391 row004391@JointSupportRecord
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004389 row004389@JointSupportRecord
+HIT 004135 row_slot7@Joint
+HIT 004080 getLimitPoint@Joint
+HIT 004131 row004131@Joint
+HIT 004296 row_slot6@SphericalJoint
+HIT 004093 row004093@Joint
+  | slots family=spherical config=0 call=step cw=0f7f records count=5 capacity=8 window=00000000.00000005
+HIT 004308 row_slot0@SphericalJoint
+HIT 004294 row004294@SphericalJoint
+  | slots family=spherical config=0 call=impulse cw=0f7f joint changed none
+HIT 004298 row_slot8@SphericalJoint
+HIT 004064 row004064@Joint
+  | slots family=spherical config=0 call=project0 cw=0f7f joint changed none
+HIT 004298 row_slot8@SphericalJoint
+HIT 004064 row004064@Joint
+  | slots family=spherical config=0 call=project1 cw=0f7f joint changed none
+HIT 004314/004312 row_slot4@SphericalJoint
+HIT 004123 row004123@Joint
+HIT 004123 row004123@Joint
+HIT 004306 row004306@SphericalJoint
+HIT 004123 row004123@Joint
+  | slots family=spherical config=0 call=vis cw=027f calls=72
+HIT 000778 row000778@Row000778Fixture
+HIT 000760 row000760@Row000760Fixture
+HIT 004095 1Joint
+  | slots family=spherical config=0 released=yes
+HIT 004300 0SphericalJoint
+HIT 004141 0Joint
+HIT 004121 loadFromDescBase@Joint
+HIT 004097 refreshBodyFrame@Joint
+HIT 004097 refreshBodyFrame@Joint
+HIT 004649 0NpSphericalJoint
+HIT 004284 row004284@SphericalJoint
+  | slots family=spherical config=1 created=yes
+HIT 004629 setLimitPoint@NpSphericalJoint
+HIT 004109 setLimitPoint@Joint
+HIT 004089 purgeLimitPlanes@Joint
+HIT 004631 addLimitPlane@NpSphericalJoint
+HIT 004143 addLimitPlane@Joint
+HIT 004131 row004131@Joint
+HIT 004631 addLimitPlane@NpSphericalJoint
+HIT 004143 addLimitPlane@Joint
+HIT 004131 row004131@Joint
+HIT 004070 getType@Joint
+HIT 004070 getType@Joint
+HIT 004314/004312 row_slot4@SphericalJoint
+HIT 004123 row004123@Joint
+  | slots family=spherical config=1 call=vis cw=027f calls=10
+HIT 004282 row_slot1@SphericalJoint
+HIT 004310 row_slot7@SphericalJoint
+HIT 004135 row_slot7@Joint
+HIT 004080 getLimitPoint@Joint
+HIT 004131 row004131@Joint
+HIT 004296 row_slot6@SphericalJoint
+HIT 004093 row004093@Joint
+  | slots family=spherical config=1 call=step cw=027f records count=1 capacity=8 window=00000000.00000001
+HIT 004308 row_slot0@SphericalJoint
+HIT 004294 row004294@SphericalJoint
+  | slots family=spherical config=1 call=impulse cw=027f joint changed none
+HIT 004298 row_slot8@SphericalJoint
+HIT 004064 row004064@Joint
+  | slots family=spherical config=1 call=project0 cw=027f joint changed none
+HIT 004298 row_slot8@SphericalJoint
+HIT 004064 row004064@Joint
+  | slots family=spherical config=1 call=project1 cw=027f joint changed none
+HIT 004282 row_slot1@SphericalJoint
+HIT 004310 row_slot7@SphericalJoint
+HIT 004135 row_slot7@Joint
+HIT 004080 getLimitPoint@Joint
+HIT 004131 row004131@Joint
+HIT 004296 row_slot6@SphericalJoint
+HIT 004093 row004093@Joint
+  | slots family=spherical config=1 call=step cw=0f7f records count=1 capacity=8 window=00000000.00000001
+HIT 004308 row_slot0@SphericalJoint
+HIT 004294 row004294@SphericalJoint
+  | slots family=spherical config=1 call=impulse cw=0f7f joint changed none
+HIT 004298 row_slot8@SphericalJoint
+HIT 004064 row004064@Joint
+  | slots family=spherical config=1 call=project0 cw=0f7f joint changed none
+HIT 004298 row_slot8@SphericalJoint
+HIT 004064 row004064@Joint
+  | slots family=spherical config=1 call=project1 cw=0f7f joint changed none
+HIT 004314/004312 row_slot4@SphericalJoint
+HIT 004123 row004123@Joint
+  | slots family=spherical config=1 call=vis cw=027f calls=10
+HIT 000778 row000778@Row000778Fixture
+HIT 000760 row000760@Row000760Fixture
+HIT 004095 1Joint
+  | slots family=spherical config=1 released=yes
+HIT 004276 0PointOnLineJoint
+HIT 004141 0Joint
+HIT 004121 loadFromDescBase@Joint
+HIT 004097 refreshBodyFrame@Joint
+HIT 004097 refreshBodyFrame@Joint
+HIT 004617 0NpPointOnLineJoint
+  | slots family=point_on_line config=0 created=yes
+HIT 004603 setLimitPoint@NpPointOnLineJoint
+HIT 004109 setLimitPoint@Joint
+HIT 004089 purgeLimitPlanes@Joint
+HIT 004605 addLimitPlane@NpPointOnLineJoint
+HIT 004143 addLimitPlane@Joint
+HIT 004131 row004131@Joint
+HIT 004605 addLimitPlane@NpPointOnLineJoint
+HIT 004143 addLimitPlane@Joint
+HIT 004131 row004131@Joint
+HIT 004070 getType@Joint
+HIT 004070 getType@Joint
+HIT 004274 row_slot4@PointOnLineJoint
+HIT 004123 row004123@Joint
+HIT 004127 row004127@Joint
+HIT 004123 row004123@Joint
+HIT 004127 row004127@Joint
+  | slots family=point_on_line config=0 call=vis cw=027f calls=11
+HIT 004135 row_slot7@Joint
+HIT 004080 getLimitPoint@Joint
+HIT 004131 row004131@Joint
+HIT 004272 row_slot6@PointOnLineJoint
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+  | slots family=point_on_line config=0 call=step cw=027f records count=2 capacity=8 window=00000000.00000002
+  | slots family=point_on_line config=0 call=impulse cw=027f joint changed none
+  | slots family=point_on_line config=0 call=project0 cw=027f joint changed none
+  | slots family=point_on_line config=0 call=project1 cw=027f joint changed none
+HIT 004135 row_slot7@Joint
+HIT 004080 getLimitPoint@Joint
+HIT 004131 row004131@Joint
+HIT 004272 row_slot6@PointOnLineJoint
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+  | slots family=point_on_line config=0 call=step cw=0f7f records count=2 capacity=8 window=00000000.00000002
+  | slots family=point_on_line config=0 call=impulse cw=0f7f joint changed none
+  | slots family=point_on_line config=0 call=project0 cw=0f7f joint changed none
+  | slots family=point_on_line config=0 call=project1 cw=0f7f joint changed none
+HIT 004274 row_slot4@PointOnLineJoint
+HIT 004123 row004123@Joint
+HIT 004127 row004127@Joint
+HIT 004123 row004123@Joint
+HIT 004127 row004127@Joint
+  | slots family=point_on_line config=0 call=vis cw=027f calls=11
+HIT 000778 row000778@Row000778Fixture
+HIT 000760 row000760@Row000760Fixture
+HIT 004095 1Joint
+  | slots family=point_on_line config=0 released=yes
+HIT 004262 0PointInPlaneJoint
+HIT 004141 0Joint
+HIT 004121 loadFromDescBase@Joint
+HIT 004097 refreshBodyFrame@Joint
+HIT 004097 refreshBodyFrame@Joint
+HIT 004591 0NpPointInPlaneJoint
+  | slots family=point_in_plane config=0 created=yes
+HIT 004575 setLimitPoint@NpPointInPlaneJoint
+HIT 004109 setLimitPoint@Joint
+HIT 004089 purgeLimitPlanes@Joint
+HIT 004579 addLimitPlane@NpPointInPlaneJoint
+HIT 004143 addLimitPlane@Joint
+HIT 004131 row004131@Joint
+HIT 004579 addLimitPlane@NpPointInPlaneJoint
+HIT 004143 addLimitPlane@Joint
+HIT 004131 row004131@Joint
+HIT 004070 getType@Joint
+HIT 004070 getType@Joint
+HIT 004260 row_slot4@PointInPlaneJoint
+HIT 004123 row004123@Joint
+HIT 004127 row004127@Joint
+HIT 004123 row004123@Joint
+HIT 004127 row004127@Joint
+  | slots family=point_in_plane config=0 call=vis cw=027f calls=11
+HIT 004135 row_slot7@Joint
+HIT 004080 getLimitPoint@Joint
+HIT 004131 row004131@Joint
+HIT 004258 row_slot6@PointInPlaneJoint
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+  | slots family=point_in_plane config=0 call=step cw=027f records count=1 capacity=8 window=00000000.00000001
+  | slots family=point_in_plane config=0 call=impulse cw=027f joint changed none
+  | slots family=point_in_plane config=0 call=project0 cw=027f joint changed none
+  | slots family=point_in_plane config=0 call=project1 cw=027f joint changed none
+HIT 004135 row_slot7@Joint
+HIT 004080 getLimitPoint@Joint
+HIT 004131 row004131@Joint
+HIT 004258 row_slot6@PointInPlaneJoint
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+  | slots family=point_in_plane config=0 call=step cw=0f7f records count=1 capacity=8 window=00000000.00000001
+  | slots family=point_in_plane config=0 call=impulse cw=0f7f joint changed none
+  | slots family=point_in_plane config=0 call=project0 cw=0f7f joint changed none
+  | slots family=point_in_plane config=0 call=project1 cw=0f7f joint changed none
+HIT 004260 row_slot4@PointInPlaneJoint
+HIT 004123 row004123@Joint
+HIT 004127 row004127@Joint
+HIT 004123 row004123@Joint
+HIT 004127 row004127@Joint
+  | slots family=point_in_plane config=0 call=vis cw=027f calls=11
+HIT 000778 row000778@Row000778Fixture
+HIT 000760 row000760@Row000760Fixture
+HIT 004095 1Joint
+  | slots family=point_in_plane config=0 released=yes
+HIT 004234 0DistanceJoint
+HIT 004141 0Joint
+HIT 004121 loadFromDescBase@Joint
+HIT 004097 refreshBodyFrame@Joint
+HIT 004097 refreshBodyFrame@Joint
+HIT 004531 0NpDistanceJoint
+  | slots family=distance config=0 created=yes
+HIT 004517 setLimitPoint@NpDistanceJoint
+HIT 004109 setLimitPoint@Joint
+HIT 004089 purgeLimitPlanes@Joint
+HIT 004519 addLimitPlane@NpDistanceJoint
+HIT 004143 addLimitPlane@Joint
+HIT 004131 row004131@Joint
+HIT 004519 addLimitPlane@NpDistanceJoint
+HIT 004143 addLimitPlane@Joint
+HIT 004131 row004131@Joint
+HIT 004070 getType@Joint
+HIT 004070 getType@Joint
+HIT 004232 row_slot4@DistanceJoint
+  | slots family=distance config=0 call=vis cw=027f calls=1
+HIT 004135 row_slot7@Joint
+HIT 004080 getLimitPoint@Joint
+HIT 004131 row004131@Joint
+HIT 004240 row_slot6@DistanceJoint
+HIT 004093 row004093@Joint
+HIT 004393 row004393@JointSupportRecord
+HIT 004391 row004391@JointSupportRecord
+  | slots family=distance config=0 call=step cw=027f records count=1 capacity=8 window=00000000.00000001
+  | slots family=distance config=0 call=impulse cw=027f joint changed none
+  | slots family=distance config=0 call=project0 cw=027f joint changed none
+  | slots family=distance config=0 call=project1 cw=027f joint changed none
+HIT 004135 row_slot7@Joint
+HIT 004080 getLimitPoint@Joint
+HIT 004131 row004131@Joint
+HIT 004240 row_slot6@DistanceJoint
+HIT 004093 row004093@Joint
+HIT 004393 row004393@JointSupportRecord
+HIT 004391 row004391@JointSupportRecord
+  | slots family=distance config=0 call=step cw=0f7f records count=1 capacity=8 window=00000000.00000001
+  | slots family=distance config=0 call=impulse cw=0f7f joint changed none
+  | slots family=distance config=0 call=project0 cw=0f7f joint changed none
+  | slots family=distance config=0 call=project1 cw=0f7f joint changed none
+HIT 004232 row_slot4@DistanceJoint
+  | slots family=distance config=0 call=vis cw=027f calls=1
+HIT 000778 row000778@Row000778Fixture
+HIT 000760 row000760@Row000760Fixture
+HIT 004095 1Joint
+  | slots family=distance config=0 released=yes
+HIT 004234 0DistanceJoint
+HIT 004141 0Joint
+HIT 004121 loadFromDescBase@Joint
+HIT 004097 refreshBodyFrame@Joint
+HIT 004097 refreshBodyFrame@Joint
+HIT 004531 0NpDistanceJoint
+  | slots family=distance config=1 created=yes
+HIT 004517 setLimitPoint@NpDistanceJoint
+HIT 004109 setLimitPoint@Joint
+HIT 004089 purgeLimitPlanes@Joint
+HIT 004519 addLimitPlane@NpDistanceJoint
+HIT 004143 addLimitPlane@Joint
+HIT 004131 row004131@Joint
+HIT 004519 addLimitPlane@NpDistanceJoint
+HIT 004143 addLimitPlane@Joint
+HIT 004131 row004131@Joint
+HIT 004070 getType@Joint
+HIT 004070 getType@Joint
+HIT 004232 row_slot4@DistanceJoint
+  | slots family=distance config=1 call=vis cw=027f calls=1
+HIT 004135 row_slot7@Joint
+HIT 004080 getLimitPoint@Joint
+HIT 004131 row004131@Joint
+HIT 004240 row_slot6@DistanceJoint
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+  | slots family=distance config=1 call=step cw=027f records count=1 capacity=8 window=00000000.00000001
+  | slots family=distance config=1 call=impulse cw=027f joint changed none
+  | slots family=distance config=1 call=project0 cw=027f joint changed none
+  | slots family=distance config=1 call=project1 cw=027f joint changed none
+HIT 004135 row_slot7@Joint
+HIT 004080 getLimitPoint@Joint
+HIT 004131 row004131@Joint
+HIT 004240 row_slot6@DistanceJoint
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+  | slots family=distance config=1 call=step cw=0f7f records count=1 capacity=8 window=00000000.00000001
+  | slots family=distance config=1 call=impulse cw=0f7f joint changed none
+  | slots family=distance config=1 call=project0 cw=0f7f joint changed none
+  | slots family=distance config=1 call=project1 cw=0f7f joint changed none
+HIT 004232 row_slot4@DistanceJoint
+  | slots family=distance config=1 call=vis cw=027f calls=1
+HIT 000778 row000778@Row000778Fixture
+HIT 000760 row000760@Row000760Fixture
+HIT 004095 1Joint
+  | slots family=distance config=1 released=yes
+HIT 004222 0PulleyJoint
+HIT 004141 0Joint
+HIT 004121 loadFromDescBase@Joint
+HIT 004097 refreshBodyFrame@Joint
+HIT 004505 0NpPulleyJoint
+HIT 004218 copyFamilyFields@PulleyJoint
+  | slots family=pulley config=0 created=yes
+HIT 004485 setLimitPoint@NpPulleyJoint
+HIT 004109 setLimitPoint@Joint
+HIT 004089 purgeLimitPlanes@Joint
+HIT 004487 addLimitPlane@NpPulleyJoint
+HIT 004143 addLimitPlane@Joint
+HIT 004131 row004131@Joint
+HIT 004487 addLimitPlane@NpPulleyJoint
+HIT 004143 addLimitPlane@Joint
+HIT 004131 row004131@Joint
+HIT 004070 getType@Joint
+HIT 004070 getType@Joint
+HIT 004221 row_slot4@PulleyJoint
+  | slots family=pulley config=0 call=vis cw=027f calls=2
+HIT 004214 row_slot1@PulleyJoint
+HIT 004135 row_slot7@Joint
+HIT 004080 getLimitPoint@Joint
+HIT 004131 row004131@Joint
+HIT 004228 row_slot6@PulleyJoint
+HIT 004093 row004093@Joint
+  | slots family=pulley config=0 call=step cw=027f records count=1 capacity=8 window=00000000.00000001
+HIT 004219 row_slot0@PulleyJoint
+  | slots family=pulley config=0 call=impulse cw=027f joint changed 1d8=00000000>4318360a 1dc=00000000>3fba8325
+  | slots family=pulley config=0 call=project1 cw=027f joint changed none
+HIT 004214 row_slot1@PulleyJoint
+HIT 004135 row_slot7@Joint
+HIT 004080 getLimitPoint@Joint
+HIT 004131 row004131@Joint
+HIT 004228 row_slot6@PulleyJoint
+HIT 004093 row004093@Joint
+  | slots family=pulley config=0 call=step cw=0f7f records count=1 capacity=8 window=00000000.00000001
+HIT 004219 row_slot0@PulleyJoint
+  | slots family=pulley config=0 call=impulse cw=0f7f joint changed 1d8=00000000>b71d5139 1dc=00000000>c316c103
+  | slots family=pulley config=0 call=project1 cw=0f7f joint changed none
+HIT 004221 row_slot4@PulleyJoint
+  | slots family=pulley config=0 call=vis cw=027f calls=2
+HIT 000778 row000778@Row000778Fixture
+HIT 000760 row000760@Row000760Fixture
+HIT 004095 1Joint
+  | slots family=pulley config=0 released=yes
+HIT 004250 0FixedJoint
+HIT 004141 0Joint
+HIT 004121 loadFromDescBase@Joint
+HIT 004097 refreshBodyFrame@Joint
+HIT 004097 refreshBodyFrame@Joint
+HIT 004561 0NpFixedJoint
+HIT 004244 recordRelativePose@FixedJoint
+  | slots family=fixed config=0 created=yes
+HIT 004547 setLimitPoint@NpFixedJoint
+HIT 004109 setLimitPoint@Joint
+HIT 004089 purgeLimitPlanes@Joint
+HIT 004549 addLimitPlane@NpFixedJoint
+HIT 004143 addLimitPlane@Joint
+HIT 004131 row004131@Joint
+HIT 004549 addLimitPlane@NpFixedJoint
+HIT 004143 addLimitPlane@Joint
+HIT 004131 row004131@Joint
+HIT 004070 getType@Joint
+HIT 004070 getType@Joint
+  | slots family=fixed config=0 call=vis cw=027f calls=0
+HIT 004135 row_slot7@Joint
+HIT 004080 getLimitPoint@Joint
+HIT 004131 row004131@Joint
+HIT 004246 row_slot6@FixedJoint
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+  | slots family=fixed config=0 call=step cw=027f records count=6 capacity=8 window=00000000.00000006
+  | slots family=fixed config=0 call=impulse cw=027f joint changed none
+  | slots family=fixed config=0 call=project0 cw=027f joint changed none
+  | slots family=fixed config=0 call=project1 cw=027f joint changed none
+HIT 004135 row_slot7@Joint
+HIT 004080 getLimitPoint@Joint
+HIT 004131 row004131@Joint
+HIT 004246 row_slot6@FixedJoint
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+  | slots family=fixed config=0 call=step cw=0f7f records count=6 capacity=8 window=00000000.00000006
+  | slots family=fixed config=0 call=impulse cw=0f7f joint changed none
+  | slots family=fixed config=0 call=project0 cw=0f7f joint changed none
+  | slots family=fixed config=0 call=project1 cw=0f7f joint changed none
+  | slots family=fixed config=0 call=vis cw=027f calls=0
+HIT 000778 row000778@Row000778Fixture
+HIT 000760 row000760@Row000760Fixture
+HIT 004095 1Joint
+  | slots family=fixed config=0 released=yes
+HIT 004210 0D6Joint
+HIT 004141 0Joint
+HIT 004121 loadFromDescBase@Joint
+HIT 004097 refreshBodyFrame@Joint
+HIT 004097 refreshBodyFrame@Joint
+HIT 004204 row004204@D6Joint
+HIT 004469 0NpD6Joint
+  | slots family=d6 config=0 created=yes
+HIT 004447 setLimitPoint@NpD6Joint
+HIT 004109 setLimitPoint@Joint
+HIT 004089 purgeLimitPlanes@Joint
+HIT 004449 addLimitPlane@NpD6Joint
+HIT 004143 addLimitPlane@Joint
+HIT 004131 row004131@Joint
+HIT 004449 addLimitPlane@NpD6Joint
+HIT 004143 addLimitPlane@Joint
+HIT 004131 row004131@Joint
+HIT 004070 getType@Joint
+HIT 004070 getType@Joint
+HIT 004200 row_slot4@D6Joint
+HIT 004123 row004123@Joint
+  | slots family=d6 config=0 call=vis cw=027f calls=10
+HIT 004135 row_slot7@Joint
+HIT 004080 getLimitPoint@Joint
+HIT 004131 row004131@Joint
+HIT 004206 row_slot6@D6Joint
+HIT 004178 row004178@D6JointPose
+HIT 004178 row004178@D6JointPose
+HIT 004180 row004180@D6JointPose
+HIT 004178 row004178@D6JointPose
+HIT 004198 d6QuaternionRateMatrix
+HIT 004194 row004194@D6Joint
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004196 row004196@D6Joint
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004190 d6PrintPose
+HIT 004190 d6PrintPose
+HIT 004190 d6PrintPose
+HIT 004188 print@D6JointDumpRecord
+HIT 004188 print@D6JointDumpRecord
+  | slots family=d6 config=0 call=step cw=027f records count=2 capacity=8 window=00000000.00000002
+  | slots family=d6 config=0 call=impulse cw=027f joint changed none
+HIT 004207 row_slot8@D6Joint
+HIT 004178 row004178@D6JointPose
+HIT 004178 row004178@D6JointPose
+HIT 004180 row004180@D6JointPose
+HIT 004178 row004178@D6JointPose
+HIT 004180 row004180@D6JointPose
+HIT 004180 row004180@D6JointPose
+HIT 004178 row004178@D6JointPose
+HIT 004178 row004178@D6JointPose
+HIT 000022 row000022@Row000022Fixture
+HIT 000754 row000754@Row000754Fixture
+  | slots family=d6 config=0 call=project0 cw=027f joint changed none
+HIT 004207 row_slot8@D6Joint
+HIT 004178 row004178@D6JointPose
+HIT 004178 row004178@D6JointPose
+HIT 004180 row004180@D6JointPose
+HIT 004178 row004178@D6JointPose
+HIT 004180 row004180@D6JointPose
+HIT 004178 row004178@D6JointPose
+HIT 004178 row004178@D6JointPose
+HIT 000022 row000022@Row000022Fixture
+HIT 000754 row000754@Row000754Fixture
+  | slots family=d6 config=0 call=project1 cw=027f joint changed none
+HIT 004135 row_slot7@Joint
+HIT 004080 getLimitPoint@Joint
+HIT 004131 row004131@Joint
+HIT 004206 row_slot6@D6Joint
+HIT 004178 row004178@D6JointPose
+HIT 004178 row004178@D6JointPose
+HIT 004180 row004180@D6JointPose
+HIT 004178 row004178@D6JointPose
+HIT 004198 d6QuaternionRateMatrix
+HIT 004194 row004194@D6Joint
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004196 row004196@D6Joint
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004190 d6PrintPose
+HIT 004190 d6PrintPose
+HIT 004190 d6PrintPose
+HIT 004188 print@D6JointDumpRecord
+HIT 004188 print@D6JointDumpRecord
+  | slots family=d6 config=0 call=step cw=0f7f records count=2 capacity=8 window=00000000.00000002
+  | slots family=d6 config=0 call=impulse cw=0f7f joint changed none
+HIT 004207 row_slot8@D6Joint
+HIT 004178 row004178@D6JointPose
+HIT 004178 row004178@D6JointPose
+HIT 004180 row004180@D6JointPose
+HIT 004178 row004178@D6JointPose
+HIT 004180 row004180@D6JointPose
+HIT 004180 row004180@D6JointPose
+HIT 004178 row004178@D6JointPose
+HIT 004178 row004178@D6JointPose
+HIT 000022 row000022@Row000022Fixture
+HIT 000754 row000754@Row000754Fixture
+  | slots family=d6 config=0 call=project0 cw=0f7f joint changed none
+HIT 004207 row_slot8@D6Joint
+HIT 004178 row004178@D6JointPose
+HIT 004178 row004178@D6JointPose
+HIT 004180 row004180@D6JointPose
+HIT 004178 row004178@D6JointPose
+HIT 004180 row004180@D6JointPose
+HIT 004178 row004178@D6JointPose
+HIT 004178 row004178@D6JointPose
+HIT 000022 row000022@Row000022Fixture
+HIT 000754 row000754@Row000754Fixture
+  | slots family=d6 config=0 call=project1 cw=0f7f joint changed none
+HIT 004200 row_slot4@D6Joint
+HIT 004123 row004123@Joint
+  | slots family=d6 config=0 call=vis cw=027f calls=10
+HIT 000778 row000778@Row000778Fixture
+HIT 000760 row000760@Row000760Fixture
+HIT 004095 1Joint
+  | slots family=d6 config=0 released=yes
+HIT 004210 0D6Joint
+HIT 004141 0Joint
+HIT 004121 loadFromDescBase@Joint
+HIT 004097 refreshBodyFrame@Joint
+HIT 004097 refreshBodyFrame@Joint
+HIT 004204 row004204@D6Joint
+HIT 004469 0NpD6Joint
+  | slots family=d6 config=1 created=yes
+HIT 004447 setLimitPoint@NpD6Joint
+HIT 004109 setLimitPoint@Joint
+HIT 004089 purgeLimitPlanes@Joint
+HIT 004449 addLimitPlane@NpD6Joint
+HIT 004143 addLimitPlane@Joint
+HIT 004131 row004131@Joint
+HIT 004449 addLimitPlane@NpD6Joint
+HIT 004143 addLimitPlane@Joint
+HIT 004131 row004131@Joint
+HIT 004070 getType@Joint
+HIT 004070 getType@Joint
+HIT 004200 row_slot4@D6Joint
+HIT 004123 row004123@Joint
+  | slots family=d6 config=1 call=vis cw=027f calls=10
+HIT 004135 row_slot7@Joint
+HIT 004080 getLimitPoint@Joint
+HIT 004131 row004131@Joint
+HIT 004206 row_slot6@D6Joint
+HIT 004178 row004178@D6JointPose
+HIT 004178 row004178@D6JointPose
+HIT 004180 row004180@D6JointPose
+HIT 004178 row004178@D6JointPose
+HIT 004198 d6QuaternionRateMatrix
+HIT 004196 row004196@D6Joint
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004196 row004196@D6Joint
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004190 d6PrintPose
+HIT 004190 d6PrintPose
+HIT 004190 d6PrintPose
+HIT 004188 print@D6JointDumpRecord
+HIT 004188 print@D6JointDumpRecord
+  | slots family=d6 config=1 call=step cw=027f records count=2 capacity=8 window=00000000.00000002
+  | slots family=d6 config=1 call=impulse cw=027f joint changed none
+HIT 004207 row_slot8@D6Joint
+HIT 004178 row004178@D6JointPose
+HIT 004178 row004178@D6JointPose
+HIT 004180 row004180@D6JointPose
+HIT 004178 row004178@D6JointPose
+HIT 004180 row004180@D6JointPose
+HIT 004180 row004180@D6JointPose
+HIT 004178 row004178@D6JointPose
+HIT 004178 row004178@D6JointPose
+HIT 000022 row000022@Row000022Fixture
+HIT 000754 row000754@Row000754Fixture
+  | slots family=d6 config=1 call=project0 cw=027f joint changed none
+HIT 004207 row_slot8@D6Joint
+HIT 004178 row004178@D6JointPose
+HIT 004178 row004178@D6JointPose
+HIT 004180 row004180@D6JointPose
+HIT 004178 row004178@D6JointPose
+HIT 004180 row004180@D6JointPose
+HIT 004178 row004178@D6JointPose
+HIT 004178 row004178@D6JointPose
+HIT 000022 row000022@Row000022Fixture
+HIT 000754 row000754@Row000754Fixture
+  | slots family=d6 config=1 call=project1 cw=027f joint changed none
+HIT 004135 row_slot7@Joint
+HIT 004080 getLimitPoint@Joint
+HIT 004131 row004131@Joint
+HIT 004206 row_slot6@D6Joint
+HIT 004178 row004178@D6JointPose
+HIT 004178 row004178@D6JointPose
+HIT 004180 row004180@D6JointPose
+HIT 004178 row004178@D6JointPose
+HIT 004198 d6QuaternionRateMatrix
+HIT 004196 row004196@D6Joint
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004196 row004196@D6Joint
+HIT 004093 row004093@Joint
+HIT 004391 row004391@JointSupportRecord
+HIT 004190 d6PrintPose
+HIT 004190 d6PrintPose
+HIT 004190 d6PrintPose
+HIT 004188 print@D6JointDumpRecord
+HIT 004188 print@D6JointDumpRecord
+  | slots family=d6 config=1 call=step cw=0f7f records count=2 capacity=8 window=00000000.00000002
+  | slots family=d6 config=1 call=impulse cw=0f7f joint changed none
+HIT 004207 row_slot8@D6Joint
+HIT 004178 row004178@D6JointPose
+HIT 004178 row004178@D6JointPose
+HIT 004180 row004180@D6JointPose
+HIT 004178 row004178@D6JointPose
+HIT 004180 row004180@D6JointPose
+HIT 004180 row004180@D6JointPose
+HIT 004178 row004178@D6JointPose
+HIT 004178 row004178@D6JointPose
+HIT 000022 row000022@Row000022Fixture
+HIT 000754 row000754@Row000754Fixture
+  | slots family=d6 config=1 call=project0 cw=0f7f joint changed none
+HIT 004207 row_slot8@D6Joint
+HIT 004178 row004178@D6JointPose
+HIT 004178 row004178@D6JointPose
+HIT 004180 row004180@D6JointPose
+HIT 004178 row004178@D6JointPose
+HIT 004180 row004180@D6JointPose
+HIT 004178 row004178@D6JointPose
+HIT 004178 row004178@D6JointPose
+HIT 000022 row000022@Row000022Fixture
+HIT 000754 row000754@Row000754Fixture
+  | slots family=d6 config=1 call=project1 cw=0f7f joint changed none
+HIT 004200 row_slot4@D6Joint
+HIT 004123 row004123@Joint
+  | slots family=d6 config=1 call=vis cw=027f calls=10
+HIT 000778 row000778@Row000778Fixture
+HIT 000760 row000760@Row000760Fixture
+HIT 004095 1Joint
+  | slots family=d6 config=1 released=yes
+  | export=NxFindRotationMatrix present=yes
+  | rotation case=0 from=3f800000.00000000.00000000 to=00000000.
+  | rotation case=1 from=3eb851ec.3ef5c28f.3f4ccccd to=be533c2f.
+  | rotation case=2 from=3e0b5948.bf73dc3e.3e8b5948 to=3f1f0fe8.
+  | rotation case=3 from=3eb851ec.3ef5c28f.3f4ccccd to=3eb82498.
+  | rotation case=4 from=bf71865b.3ea1043e.3dd6b052 to=3f00a514.
+  | rotation case=10 from=3dcdd4ed.3f341a4f.3f341a4f to=3dcdd4ed
+  | rotation case=11 from=3ea1043e.3f71865b.3dd6b052 to=3ea1043e
+  | rotation case=12 from=3f4cfeaf.3dccfeaf.3f172f07 to=3f4cfeaf
+  | rotation case=13 from=3f4cfeaf.3f172f07.3dccfeaf to=3f4cfeaf
+  | rotation case=14 from=3dcdd4ed.3f341a4f.3f341a4f to=bdcdd4ed
+  | rotation case=15 from=bea1043e.3f71865b.bdd6b052 to=3ea1043e
+  | rotation case=16 from=3eb851ec.3ef5c28f.3f4ccccd to=3eb84fa8
+  | rotation case=17 from=bf4cfeaf.3dccfeaf.bf172f07 to=bf4cfe27

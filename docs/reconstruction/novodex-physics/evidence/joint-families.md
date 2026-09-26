@@ -268,7 +268,7 @@ These behaviours are in the oracle and the reconstruction keeps them.
    identity-oriented, translated bodies, as the pilot's contract open issue 3 describes. Only the
    identity case of the +0x5c quaternion and +0xdc 3x3 conventions is confirmed. That covers
    004101's frame quaternions, 004378/004244's relative rotations, and the D6 pose helpers.
-4. **No simulation-path execution.**
+4. (Closed by joint-open-items Task 6 for every slot a table call reaches: the internal-slot differential runs the solver, projection, impulse and visualization slots of every family in both DLLs and they match; 004133 stays unreached; see `evidence/joint-open-items.md`.) **No simulation-path execution.**
    - Unexecuted rows: the solver slots, projection slots, debug visualization, the impulse slot
      (pulley 004219), the D6 dump rows, and the shared 004064, 004093, 004111, 004123, 004133,
      004135 and 004391.
@@ -276,7 +276,7 @@ These behaviours are in the oracle and the reconstruction keeps them.
      listing and by the build only.
    - The first real check for them is a simulation differential. It must expect D6JointDump.txt
      and pulley's uninitialised lever (see `## Oracle quirks reproduced`).
-5. **PC64 narrowing at the `core/JointX87.h` helpers.**
+5. (Measured by joint-open-items Task 6: no difference under 0x0f7f in any case; see `evidence/joint-open-items.md`.) **PC64 narrowing at the `core/JointX87.h` helpers.**
    - The mechanism: the helpers take qword arguments. Under the in-step word 0x0f7f, an operand the
      reconstruction holds as an unrounded `double` is narrowed from the 64-bit register value to 53
      bits before the helper uses it, where the oracle keeps all 64 bits.

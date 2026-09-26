@@ -16,6 +16,7 @@ and marks the items it closes under `## Open items`.
 | 5 | 2026-09-25T18:30:40 | 2026-09-25T18:55:00 | 0 | 0 | SEH/GS frames on the joint deleting destructors (item 10). Cause: CMake's default `/EHsc`; the oracle has no C++ exception handling (no `__CxxFrameHandler`, and its only `fs:[0]` uses are CRT rows (0xf4000+)). Scratch reproduction (cl 14.51, `/O2 /EHsc`, a class with an inline class `operator delete` calling a non-noexcept allocator): the `??_G` gets `push -1; push handler; fs:[0]` plus the cookie; with `/EHs-c-` it is frameless; `/GS-` removes only the cookie, not the frame; `noexcept` on the operator delete alone, `throw()`, `/Zc:implicitNoexcept-` and `noexcept(false)` destructors do not remove it. Fix: `/EHs-c-` appended to the 22 joint class files in CMakeLists.txt (core/Joint.cpp, the ten family files, NpJointShared.cpp, the ten Np files); `/GS` unchanged. Before: 53 functions in those objects carried an EH frame and cookie (every `??_G`/`??_E`, the family constructors, `??1Joint`, the class `operator delete`s). After: none; the four cookie-only rows (D6Joint row_slot6/row_slot8, Joint::setGlobalAnchor/setGlobalAxis) keep their cookies. Joint staged-pair transcript byte-identical before/after (paths and DLL hashes aside); NxPhysicsJointTests output identical. No row changes state. Gates 2, 3, 4, 6, 7 pass; 5 red only on its vtables marker. |
 | 5 (follow-up) | 2026-09-25T19:00:08 | 2026-09-25T19:15:00 | 0 | 0 | Joint allocator (item 10, allocator subsection; units/joint-open-items-contract.md `## Joint allocator`). Every joint allocation and free now goes through `nxFoundationSDKAllocator` as the oracle rows do (`[[0x101041bc]]` slots +8/+0x14; no joint row calls 004803): 36 sites in core/*.cpp, Joint.h, NpJointShared.h, JointSupport.h and Scene.cpp (createJoint, 000598, the three joint-array frees in `nxSceneDelete`). New staged-pair target `NxPhysicsJointAllocatorTests` (phases 6 and 7): Foundation created with allocator A, then the SDK with B; a revolute and a distance joint created and released. Oracle and candidate: A 0x204,0x1c,8 then 2 frees; 0x184,0x1c then 2 frees; B none. Before: all in B. 12 oracle lines registered; floors 6/7 = 257/130. Found: the candidate faults in createActor when the SDK allocator does not return zeroed memory (Scene block array header left unset), before and after this change; recorded as open. No row changes state. Gates 2, 3, 4, 6, 7 pass; 5 red only on its vtables marker. |
 | Scene init | 2026-09-25T19:14:00 | 2026-09-25T19:45:00 | 2 | 1,032 | Scene initialisation (units/joint-open-items-contract.md `## Scene initialisation`). 000647 (998 B) rewritten at byte offsets from the listing (it wrote dword indices as byte offsets since 98f2625) with its sub-object helpers (004938, 004899, 005109, 005071, 005029, 004996, 001980 and their bases; no state change, all `discovered`); 002346 (34 B) and 002415 reduced to the oracle's stores. `NxPhysicsJointAllocatorTests` fills blocks with 0xcd: both DLLs exit 0, stdout_delta=0 (candidate faulted before). `NX_PAGE_GUARDED_FILL` on nine page-guarded targets. No registered line, floor or pin changes. Gates 2, 3, 4, 6, 7 pass; 5 red only on its vtables marker (same failure set as HEAD). |
+| 6 | 2026-09-25T19:50:00 | 2026-09-25T20:25:00 | 1 | 1,027 | Internal-slot differential (items 4, 5; units/joint-open-items-contract.md `## Internal-slot differential`). New staged-pair target `NxPhysicsJointSlotTests` (phases 6 and 7): 15 joints over all ten families; each internal joint (public +0x18) has slots 4, 1/7/6, 0 and 8 called through its own table by index, under 0x027f and again (step, impulse, projection) under 0x0f7f, revolute's break test (2) last; body +0x204 gets a harness block filled from the body record as 000611 fills it; Scene +0x5bc and the joint's record window reset as 000613/000728 do. Every renderer call, Scene record and changed word of joint, bodies and blocks printed, pointers named. Two defects, both below the slot rows: 000754 (1027 B, the body pose from the centre-of-mass pose, called by 000022 on every projection that moves a body) was a stub, now written; the Foundation's NxFindRotationMatrix rounded to float where the oracle keeps x87 registers and wrote the transpose in its parallel arm, now follows the oracle's stream. Then 1369 transcript lines identical, nothing differs only under 0x0f7f. D6JointDump.txt: same values, differs only in CRT `%f` formatting (FLT_MAX digits; last digit under chop). growJointRecords, addJointBreakEvent, 004091 and 004188 made noinline (the oracle calls them). 134 oracle lines registered, floors 6/7 = 391/264. cdb trace evidence/joint-open-items-trace-slots.txt: 115 rows hit; 74 rows gain dynamic_proof, 000754 moves to reconstructed (Phase 7 ledger reconstructed_not_falsified). Gates 2, 3, 4, 6, 7 pass; 5 red only on its vtables marker. |
 
 ## Open items
 
@@ -184,9 +185,37 @@ Numbers are those of `joint-families.md` `## Open items carried forward`.
   the oracle's work without any report. Earlier documents that call these "asserting stubs" mean
   this. The ones remaining after Task 2 are both in `core/JointSupport.cpp`:
   `Row000754Fixture::row000754` (phys_fn_000754, called by 000022) and
-  `Row004167Fixture::row004167` (phys_fn_004167, called by 000760's island-object arm).
+  `Row004167Fixture::row004167` (phys_fn_004167, called by 000760's island-object arm). Task 6 wrote 000754; 004167 is the one left.
 - **Scene teardown free order** (open; found in the Task 2 review, behaviour unchanged). The
   candidate's `nxSceneDelete` frees the joint record array (+0x5b8) and the joint pointer array
   (+0x58c) directly after its joint-list loops. The oracle's destructor 000663 frees +0x5b8 at
   0x13ffb, after the +0x08/+0x0c arrays and the +0x48 object, and +0x58c at 0x14195, near its
   end. No gate observes the order today; aligning it belongs with a faithful 000663.
+- **4. No simulation-path execution.** Closed by Task 6 for every slot a table call reaches.
+  `NxPhysicsJointSlotTests` calls each family's internal visualization (4), step (1, 7, 6),
+  impulse (0) and projection (8) slots through the object's own table by slot index, in both DLLs,
+  with the step's inputs (body +0x204, the Scene record count, the joint's record window) injected
+  identically (units/joint-open-items-contract.md `## Internal-slot differential`). Executed and
+  matching word for word: the solver slots of all ten families, the projection slots (004356,
+  004298, 004207), the visualization slots (004364, 004318, 004312/004314, 004274, 004260, 004232,
+  004221, 004200; fixed has none), the impulse slots (004374, 004308, 004219), D6's dump rows
+  (004188, 004190, 004192) and the shared 004064, 004093, 004111 (with 004091 and 000571), 004123,
+  004135, 004389, 004391, 004393; also 000022, 000598, 000754 and 000758. The differential found two
+  defects below the slot rows: 000754 was an `NX_ASSERT(0)` stub (now written), and the
+  Foundation's `NxFindRotationMatrix` did not follow the oracle's rounding and wrote the transpose
+  in its parallel arm (now follows the oracle's stream). No slot row itself was wrong. Pulley's
+  body 0 is the world, so 004228 reads no uninitialised lever. D6JointDump.txt: both sides write
+  the same 77 lines with the same values; the text differs only where the two CRTs format `%f`
+  (FLT_MAX's digits; under RC chop, a last digit). Not reached: 004133, which every family
+  overrides and only the step's 000728 calls directly, and 004087 (slot 3), which the harness
+  does not drive. The step itself (000600, 000611, 000613, 000708, 004174, 004176, 000728) is still
+  not in the candidate. cdb trace: `evidence/joint-open-items-trace-slots.txt`.
+- **5. PC64 narrowing at the naked x87 helpers.** Measured by Task 6; no difference found. Every
+  step, impulse and projection call ran again under the in-step word 0x0f7f (PC 64, RC chop) in
+  both DLLs, over the 15 joints (every family; the rows holding every operand the item lists ran:
+  distance 004240, spherical 004306/004308/004310/004314, cylindrical 004326, prismatic 004386,
+  revolute 004356/004374, D6 004206/004207). All 0x0f7f results match the oracle word for word,
+  so no per-site asm was added. The narrowing is real in principle (a `double` argument to an
+  `x87Fsqrt*` helper is rounded from 64 to 53 bits), but in these cases it never reached a
+  stored float. The item stays a known risk for inputs that land on a rounding boundary; it is
+  not observable in any registered case.

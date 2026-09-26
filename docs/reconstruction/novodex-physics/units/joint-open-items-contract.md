@@ -383,3 +383,94 @@ the oracle's scene, actor, record, shape and group allocations (rows in 0x1000..
   non-zero: `ff` against the registered `cf`, on both DLLs) run clean and identical on both DLLs
   under the fill but keep zeroed pages. Before the fix the candidate Lifecycle run faulted at
   Scene +0x640 (the static pruner pointer). No registered line, floor or pin changes.
+
+## Internal-slot differential
+
+Open items 4 and 5 (joint-open-items Task 6). Target `NxPhysicsJointSlotTests`
+(`tests/PhysicsJointSlotTests.cpp`), a staged-pair differential on phases 6 and 7.
+
+### Harness
+
+Per case, two fresh dynamic box actors (density 2, posed with general rotations), then the joint
+through the public API, then drift: actor 1 moved and turned after creation, both given linear and
+angular velocities, a limit point on body 1 and two limit planes (the first accepted). The internal
+joint is `*(public + 0x18)`; each slot is called as `(*(void***)internal)[slot]` with `__thiscall`,
+so the same code drives both DLLs and no oracle address is named. Per case:
+
+| Call | Slots | Printed |
+|---|---|---|
+| vis | 4, with a recording `NxDebugRenderable` | every renderer call as raw words, the count |
+| step | 1, 7, 6 (004133's order; slot 6 with dt = 1/60) | the Scene records 0..count-1 (20 words each), the record window |
+| impulse | 0 (argument unread) | changed words |
+| project0/1 | 8 with each non-null body record | changed words |
+| break | 2 on record 0 with 2.5 (revolute config 0 only, last) | state, record flags, changed words |
+
+Step, impulse and projection run once under 0x027f and again under 0x0f7f (`fnstcw`/`fldcw` around
+each call); visualization runs before and after. After every call the harness prints each changed
+word of the joint (its full size), both body records (0x260) and both injected blocks (0x60).
+Pointer words equal to the joint, the public joint, the Scene, a body record or an injected block
+print as `JOINT`, `NPJOINT`, `SCENE`, `BODY0/1`, `SUPPORT0/1`. The SDK is created with the
+page-guarded allocator and the 0xcd fill (`NX_PAGE_GUARDED_FILL`). SDK parameters: 13 = 1.5,
+31 = 1, 32 = 0.75, 33 = 2; 0 and 1 are left at their defaults (0.6, -0.05) and printed.
+
+Cases: revolute (limit + spring, projection 0.05/0.03125; motor, projection 0.5/1.0), prismatic,
+cylindrical, spherical (every flag, swing axis (0, 0.6, 0.8), projection 0.05; plain, projection 2),
+point-on-line, point-in-plane, distance (min/max/spring; rigid rod), pulley (body 0 the world, so
+004228 writes every lever it reads; rigid), fixed, D6 (locked/limited/free mix, x and twist drives,
+projection; all-linear-limited, locked twist/swing1, swing and slerp drives, projection). Then
+`NxFindRotationMatrix` (NxFoundation export) over 13 pairs covering the common arm and every helper
+axis of the parallel arm.
+
+### State injected in place of the step
+
+Identical on both sides, and documented in the test file:
+- body record +0x204: each non-null body record gets a harness block of 0x60 bytes filled from
+  that DLL's own record as 000611 fills it (+0x00..+0x08 <- +0x34..+0x3c, +0x0c <- +0xc0,
+  +0x10..+0x18 <- +0x40..+0x48, +0x1c <- the record, +0x20..+0x40 <- +0x164..+0x184, +0x5c <-
+  +0x110; +0x44..+0x58 zero). Reset to 0 before the actors are released.
+- Scene +0x5bc = 0 before each step (000613 clears it after each island), and the joint's
+  +0x160/+0x164 = -1/0 (000728 does this before 004133). The Scene array at +0x5b8 starts empty on
+  both sides (000647); 000598 grows it to 4, then 8.
+- Bodies: stale when the slots first run (actor 1 was moved), so 004097 runs, on both sides.
+
+### Results
+
+Two candidate defects, both in rows the slots call, none in the slot rows themselves:
+1. **000754 was a deferred stub.** Every projection that moves a body calls 000022, whose first
+   callee 000754 rebuilds the body's pose (+0x18 position, +0x24 quaternion) from its
+   centre-of-mass pose. The candidate's `NX_ASSERT(0)` stub (silent in Release) left +0x18..+0x30
+   unchanged; the oracle wrote c - C M^T m and the quaternion of C M^T. Written from the listing
+   (core/JointSupport.cpp).
+2. **NxFindRotationMatrix rounded differently.** Revolute's second projection turned body 1 by a
+   few ULPs differently with the rebuilt Foundation, and matched with the oracle's (candidate
+   NxPhysics + oracle NxFoundation). The vendored source rounds the cross product, 1/(1+e) and the
+   products to float where the oracle keeps them on the x87 stack. The parallel arm (|e| > 1 -
+   1e-6) also wrote the transpose of the oracle's matrix, i.e. the inverse rotation: the vendored
+   loop assigns element (j, i) the value the oracle stores at (i, j). Rewritten to the oracle's
+   stream (Foundation/src/Utilities.cpp). With the old Foundation 53 transcript lines differ:
+   revolute's projection and every later line it feeds, the common-arm rotation cases 0, 1, 2
+   and 4 by an ULP or a sign of zero, and all eight parallel-arm cases 10-17 (16 and 17 with
+   the off-diagonal signs swapped, i.e. transposed).
+
+After both, the transcript (1369 lines) is identical to the oracle's apart from the `modules` line
+the runner drops. No difference appears only under 0x0f7f: every step, impulse and projection result
+under 0x0f7f matches word for word, in every family.
+
+### D6JointDump.txt
+
+The D6 solver slot (004206) opens `D6JointDump.txt` once and writes one block per call (004192).
+With the pair directory as the working directory each side writes its own. Both files are 3548
+bytes and 77 lines, the same line structure and the same values; they differ only in the CRT's
+`%f` output. The oracle's 2003 CRT prints FLT_MAX as 17 significant digits then zeros
+(`340282346638528860000000000000000000000.000000`), UCRT prints the exact integer
+(`...859811704183484516925440.000000`). The two blocks written under 0x0f7f (RC chop) differ
+in the last printed digit of several values. The two CRTs format under the chop mode differently,
+e.g. `-0.428584` against `-0.428583`. The blocks written under 0x027f are identical apart from
+FLT_MAX. The values behind the text are the ones the transcript compares in hex, which match. The
+file is not printed into the transcript: the candidate's stream belongs to the shared UCRT, which
+flushes it only at process exit.
+
+### Not reached
+
+004133 (Joint slot 6) is overridden by every family and called directly only by the step's 000728,
+so no table call reaches it. 004087 (slot 3) is not driven.
