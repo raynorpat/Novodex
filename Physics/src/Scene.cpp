@@ -1506,8 +1506,8 @@ NxJoint* NxSceneInternal::createJoint(const NxJointDesc& desc)
 		return 0;
 		}
 
-	// The reconstructed families. Each case is the oracle's switch arm: the SDK
-	// allocator's slot +8 with (size, 0), the family constructor on the block
+	// The reconstructed families. Each case is the oracle's switch arm: the
+	// Foundation allocator's ([[0x101041bc]]) slot +8 with (size, 0), the family constructor on the block
 	// (null on allocation failure), then the shared tail at 0x144fc.
 	//   NX_JOINT_PRISMATIC: case 0, target 0x1439a; (0x17c, 0) at 0x143a3-0x143aa,
 	//     phys_fn_004380 at 0x143b8 (joint-families Task 3a).

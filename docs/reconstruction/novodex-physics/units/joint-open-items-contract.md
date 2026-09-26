@@ -53,7 +53,7 @@ switch is reachable from the public API with a valid descriptor), but the rows k
 | 000760 | 0x17710 | 168 | 2 | reset a body's island fields | when its own root: 004167 on +0x1e0 and free it; +0x1bc = self, +0x1c0/+0x1c4/+0x1d0/+0x1d8/+0x1dc = 0, +0x1c8 = 1, +0x1cc = 0x4b7afafa, +0x1d4 = self, +0x1e4 &= ~2; +0x4c raised to 0.39999998f unless +0x114 bit 8 | 000780, 000604, 000632 (0x12624), 000776 (0x185c8), 000797 (0x1b6fb) | write, `Row000760Fixture::row000760` |
 | 000758 | 0x17630 | 214 | 2 | body +0x124 quaternion (x, y, z, w) to the +0x134 3x3 | +0x134..+0x154 | revolute 004356 (0xa9f2a), 000770 (0x1840c), 000772 (0x18514) | write, `Row000758Fixture::row000758` (x87: spills 2yy, 2xz, 2yw, 2yz, 1 - 2xx) |
 | 000022 | 0x1840 | 27 | 2 | refresh an actor body after a pose change | 000754 on +0x08; then the +0x10 object's slot 6 with the argument (tail jump) when set | revolute 004356 (0xa9f3d), spherical 004298, D6 004207, 000615 (0x11402), 000774 (0x18559) | write, `Row000022Fixture::row000022` |
-| 000754 | 0x17010 | 1027 | 7 | body pose from the mass pose (x87) | - | 000022 | defer: `NX_ASSERT(0)` stub `Row000754Fixture::row000754` (a silent no-op in Release) |
+| 000754 | 0x17010 | 1027 | 7 | body pose from the mass pose (x87) | - | 000022 | write, `Row000754Fixture::row000754` (written by Task 6, 21b275d) |
 | 004167 | 0x9ad10 | 156 | 6 | island-object teardown | - | 000760 | defer: `NX_ASSERT(0)` stub `Row004167Fixture::row004167` (a silent no-op in Release) |
 | 000604 / 000606 | 0x110b0 / 0x110f0 | 57 / 158 | 7 | Scene destructor helper: 000760 over +0x56c, then destroy both joint lists | - | 000663 | not claimed; the joint-list loops are reproduced inside the candidate's `nxSceneDelete` |
 

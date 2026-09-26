@@ -12,7 +12,8 @@
 // are not Joint members (see revolute-contract.md "## Row assignment", the
 // 004389/004393 decision notes), and the body-record rows from the gap units
 // the joint code reaches (000022, 000712, 000758, 000760, 000778, written by
-// joint-open-items Task 2, with 000754 and 004167 still deferred). The Scene
+// joint-open-items Task 2; 000754 is also written below, by Task 6 (21b275d),
+// with 004167 still deferred). The Scene
 // rows the joint code calls (000571, 000598, 000633, 000661) are NxSceneInternal
 // members in Physics/src/Scene.cpp (units/joint-open-items-contract.md
 // "## Scene joint rows"). Every name below is by offset or row ID: the listing
@@ -145,8 +146,9 @@ struct Row000022Target
 	};
 
 // phys_fn_000754 (0x00017010, 1027 B; owner gap SceneRaycast..CapsuleShape;
-// deferred). Thiscall on the body record, no stack arguments, plain `ret`.
-// Its stub is NX_ASSERT(0): a silent no-op in Release (/DNDEBUG).
+// written by joint-open-items Task 6, 21b275d). Thiscall on the body record,
+// no stack arguments, plain `ret`: rebuilds the body's pose (+0x18 position,
+// +0x24 quaternion) from its centre-of-mass pose (x87).
 struct Row000754Fixture
 	{
 	void row000754();

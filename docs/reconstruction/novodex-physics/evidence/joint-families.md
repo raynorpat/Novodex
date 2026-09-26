@@ -263,7 +263,7 @@ Each item's disposition (closed, partly closed or open, with its evidence) is in
      type live until scene teardown.
    - Every family's release chain (internal deleting destructor -> 004095 -> deferred 000633) is
      written but has never run.
-2. [Closed; `joint-open-items.md` `## Dispositions` item 2] (Closed by joint-open-items Task 2: all five written; 000754 and 004167 remain deferred.) **Deferred Scene rows 000022, 000571, 000598, 000633 and 000758 are asserting stubs.** Revolute
+2. [Closed; `joint-open-items.md` `## Dispositions` item 2] (Closed by joint-open-items Task 2: all five written; 000754 written by Task 6, 21b275d; 004167 remains deferred.) **Deferred Scene rows 000022, 000571, 000598, 000633 and 000758 are asserting stubs.** Revolute
    004356, spherical 004298 and D6 004207 reach 000022 on some projection arms. The solver slots
    need 004093's Scene record array (000598), and 004111's break path needs 000571.
 3. [Closed; `joint-open-items.md` `## Dispositions` item 3] (Closed by joint-open-items Task 4: every family matches over rotated bodies; the defects were in the candidate's body-record writers and the joint-descriptor exports, see `evidence/joint-open-items.md`.) **Rotated-body conventions are untested.** Every family's test uses the pilot's

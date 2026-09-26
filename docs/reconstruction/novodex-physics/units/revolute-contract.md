@@ -309,7 +309,9 @@ Header `Physics/src/include/core/NpRevoluteJoint.h`.
   scalar deleting destructor that wraps `~NpRevoluteJoint()` (phys_fn_004729's tail, 0xb3416-
   0xb3423) frees through `operator delete` when its flag bit is set; without this declaration
   that call resolves to the global operator delete (a plain CRT free) instead of the SDK
-  allocator the oracle uses (`[[0x101041bc]]` slot +0x14).
+  allocator the oracle uses (`[[0x101041bc]]` slot +0x14; superseded, see
+  `units/joint-open-items-contract.md` `## Joint allocator` — the joint code now calls the
+  imported `nxFoundationSDKAllocator` directly instead of `nxGetSdkAllocator()`).
 - `NpRevoluteJoint` gains two private accessors, `void* writeLink() const { return
   reinterpret_cast<void*>(mWord04); }` and `void* readLink() const { return
   reinterpret_cast<void*>(mWord08); }`. `mWord04`/`mWord08` (+0x10/+0x14) do not hold the
@@ -397,7 +399,8 @@ Ordered list, caller → callee (purpose), with the instruction that makes the c
    | 8 FIXED | 0x1448c | 0x188 | 004250 |
    | 9 D6 | 0x14554 | 0x270 | 004210 |
 
-4. `phys_fn_000665` → SDK allocator `[[0x101041bc]]` slot +8 with `(0x204, 0)` (0x143cc–0x143d3;
+4. `phys_fn_000665` → SDK allocator `[[0x101041bc]]` slot +8 with `(0x204, 0)` (superseded, see below;
+   0x143cc–0x143d3;
    candidate: `nxGetSdkAllocator()->malloc(0x204, NX_MEMORY_PERSISTENT)`).
 5. `phys_fn_000665` → `phys_fn_004366` RevoluteJoint::RevoluteJoint(const NxRevoluteJointDesc&)
    on the new block (0x143e1; `__thiscall`, `ret 4`).
@@ -483,7 +486,8 @@ Ordered list, caller → callee (purpose), with the instruction that makes the c
 
 `NxSceneInternal::createJoint` (`Physics/src/Scene.cpp`) now builds `NX_JOINT_REVOLUTE`
 (descriptor word 1 == 1, the oracle's case 1) through the construction chain above:
-`nxGetSdkAllocator()->malloc(sizeof(RevoluteJoint) /* 0x204, asserted */, NX_MEMORY_PERSISTENT)`,
+`nxGetSdkAllocator()->malloc(sizeof(RevoluteJoint) /* 0x204, asserted */, NX_MEMORY_PERSISTENT)`
+(superseded, see below),
 placement `new RevoluteJoint(desc)` (004366, which builds the NpRevoluteJoint via 004725),
 then byte +0x48 (`mPublicObject`): null → `delete internal` (the class deleting destructor
 004368, freeing through `Joint::operator delete`) and a result of 0, as 0x14581-0x1458c;
@@ -881,7 +885,7 @@ owned by other units (000022, 000571, 000633, 000758) in `core/JointSupport.cpp`
 | 005697 (`_CIacos`, 0xf47f0) | 004330, 004352, 004372 | Task 8a: not `NxMath::acos(NxF32)` (the CRT acos need not match the oracle's x87 sequence). `core/RevoluteJoint.cpp` has one file-static inline-asm helper, `revoluteCIacos`, reproducing `_CIacos`'s core `fld1; fadd st,st(1); fld1; fsub st,st(2); fmulp st(1),st; fsqrt; fxch st(1); fpatan` (0xf4828–0xf4836) and its control-word handling (non-default word → `(cw & 0x300) \| 0x7f` for the core, 0xfa9b5; restored on the 0xfaa4b exit at 0xfaa70 or via 0xfa957 at 0xfa98e — 0xfaa3e is dead, the flag at 0x10128514 is never set; the 0xfa957 qword round-trip and the NaN arm 0xf4881 → 0xfa9cc are not reproduced and change no value, see the helper's comment), wrapped by `revoluteAcos`, the ≥ 1 → 0 / ≤ -1 → π clamp all three call sites carry inline (004330 0xa8dfe–0xa8e34, 004352 0xa94fd–0xa9530, 004372 0xad015–0xad04b, both starting at their `fld`/`fcomp` ≥ 1 test; π is the float at 0x1011a1b0, `phys_data_002683`). 004372 (Task 8b) calls `revoluteAcos` too |
 | `NxFindRotationMatrix` (Foundation export, import slot `[0x10104174]`) | 004356 (0xa9a90) | `NxFindRotationMatrix(const NxVec3&, const NxVec3&, NxMat33&)` — `Foundation/include/NxUtilities.h:102`, `Foundation/src/Utilities.cpp:243`; cdecl (`add esp, 0xc` at 0xa9a9d) |
 | `NxDebugRenderable::addLine` / `addArrow` (+0x20 / +0x30) | 004364 | the renderable's virtuals, `Foundation/include/NxDebugRenderable.h` |
-| SDK allocator `[[0x101041bc]]` +8 / +0x14 | 004366, 004368, 004729, 000665 | `nxGetSdkAllocator()->malloc(size, NX_MEMORY_PERSISTENT)` / `->free(p)` — `PhysicsInternal.h:158` |
+| SDK allocator `[[0x101041bc]]` +8 / +0x14 (superseded, see below) | 004366, 004368, 004729, 000665 | `nxGetSdkAllocator()->malloc(size, NX_MEMORY_PERSISTENT)` / `->free(p)` — `PhysicsInternal.h:158` |
 | `FoundationSDK::error` import `[0x101041b4]` | all asserting rows | `NxFoundation::FoundationSDK::getInstance().error(code, file, line, 0, msg)` — `Physics/src/PhysicsSDK.cpp:206` |
 | folded Np bodies 004437 004441 004443 004479 004483 004491 004497 004499 004539 004573 004577 004635 004743 | table 002727 | implemented as NpRevoluteJoint methods in `core/NpRevoluteJoint.cpp` by Task 9; **not claimed** (see `## Task split`) |
 

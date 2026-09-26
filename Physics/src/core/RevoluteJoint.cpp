@@ -1453,7 +1453,7 @@ void RevoluteJoint::row_slot8(void* bodyPointer)
 		}
 
 	// Row 000022 (core/JointSupport.cpp); its first callee, 000754, is
-	// deferred (an NX_ASSERT(0) stub, a no-op in Release).
+	// written in core/JointSupport.cpp (Task 6, 21b275d).
 	reinterpret_cast<Row000022Fixture*>(body->mOwner)->row000022(1);
 	}
 

@@ -15,7 +15,8 @@
 // 000760, 000778) belong to gap units outside the joint code; they are
 // written here because the joint code and the Scene's joint removal reach
 // them (joint-open-items Task 2, units/joint-open-items-contract.md
-// "## Scene joint rows"). 000754 and 004167 remain deferred stubs.
+// "## Scene joint rows"). 000754 is now written below (Task 6, 21b275d);
+// 004167 remains a deferred stub.
 //
 // Precision: as in core/Joint.cpp, a value the listing keeps on the x87
 // stack is a `double` here and a value it stores is an `NxReal`, with the
