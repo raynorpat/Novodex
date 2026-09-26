@@ -1096,6 +1096,10 @@ $NxRequiredCoverageLines = [ordered] @{
         'case=allocator family=distance window=release allocator=foundation mallocs=0 frees=2 reallocs=0 sizes=none',
         'case=allocator family=distance window=release allocator=physics mallocs=0 frees=0 reallocs=0 sizes=none'
     )
+    # Task 6 review adds 12: the control word read back inside two step
+    # windows per mode, and D6JointDump.txt read back after the pair is
+    # unloaded and flushed (0x0f7f blocks included, now that NxPhysics links
+    # legacy_stdio_float_rounding.obj; FLT_MAX printed as bits, see the test).
     # Joint-open-items Task 6: the internal-slot differential. Each family's
     # internal joint (public +0x18) has its visualization (4), emulated step
     # (1, 7, 6), impulse (0) and projection (8) slots called through its own
@@ -1242,7 +1246,19 @@ $NxRequiredCoverageLines = [ordered] @{
         'rotation case=15 from=bea1043e.3f71865b.bdd6b052 to=3ea1043e.bf71865b.3dd6b052 m=3f4ccccc.3f19999b.31e3f4e6.3f19999b.bf4ccccc.b2aaf7ab.b1e3f4e6.32aaf7ab.bf800000',
         'rotation case=16 from=3eb851ec.3ef5c28f.3f4ccccd to=3eb84fa8.3ef5cca5.3f4cca48 m=3f800000.3886318d.b87bdad6.b8862d85.3f800000.39031810.387be36d.b9031708.3f800000',
         'rotation case=17 from=bf4cfeaf.3dccfeaf.bf172f07 to=bf4cfe27.3dcd32a1.bf172ea2 m=3f800000.38a7df04.33155384.b8a7df03.3f800000.b8776f58.b3299baa.38776f57.3f800000',
-        'export=NxFindRotationMatrix present=yes'
+        'export=NxFindRotationMatrix present=yes',
+        'slots family=revolute config=0 call=step cw=027f control_inside=027f',
+        'slots family=revolute config=0 call=step cw=0f7f control_inside=0f7f',
+        'slots family=d6 config=1 call=step cw=027f control_inside=027f',
+        'slots family=d6 config=1 call=step cw=0f7f control_inside=0f7f',
+        'd6dump present=yes',
+        'd6dump line=16 text=maxForce: f32:7f7fffff,  bias:  -8.960279',
+        'd6dump line=21 text=A position    (XYZ) : 1.531677, 0.793200, -0.428584',
+        'd6dump line=27 text=Angle: 0.124414',
+        'd6dump line=36 text=maxForce: f32:7f7fffff,  bias:  -3.749996',
+        'd6dump line=64 text=rel orientation (XYZW): 0.000000, -0.000000, 0.005017, 0.999987',
+        'd6dump line=72 text=maxForce: f32:7f7fffff,  bias:  -0.000002',
+        'd6dump lines=77'
     )
     'NxFoundationTangentTests' = @(
         'tangent sweep unit=120000 threshold=60000 scaled=60000 digest=5db0093f',
@@ -2238,9 +2254,9 @@ $NxPhaseCoverageFloor = [ordered] @{
     '4' = 101  # 34 for NxPhysicsAssetTests, 67 for NxPhysicsThirdPartyTests
     '5' = 871  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines
                # (RED on purpose: vtables family open)
-    '6' = 391  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
-               # + 12 joint-allocator + 134 joint-slot
-    '7' = 264  # the 118 + 12 + 134 STAGED-PAIR assertions; the oracle-differential assertions
+    '6' = 403  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
+               # + 12 joint-allocator + 146 joint-slot
+    '7' = 276  # the 118 + 12 + 146 STAGED-PAIR assertions; the oracle-differential assertions
                # belong to NxPhysicsJointDescTests and NxPhysicsJointTests, which phase 7
                # does not run
     '8' = 0

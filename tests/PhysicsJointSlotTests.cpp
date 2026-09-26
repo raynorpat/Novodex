@@ -46,10 +46,17 @@
 //
 // D6's solver slot writes D6JointDump.txt to the working directory and never
 // closes it. The harness makes the pair directory the working directory, so
-// each side writes its own file there, and the two files are compared after
-// the run (evidence/joint-open-items.md, Task 6). They are not printed here:
-// the candidate's CRT is the shared UCRT, which flushes the stream only at
-// process exit, so the file is empty for as long as this process runs.
+// each side writes its own file there. At the end the harness unloads the
+// pair and prints the file. The oracle's static CRT flushes and closes the
+// stream at DLL_PROCESS_DETACH (_endstdio); the candidate's stream belongs
+// to the shared UCRT, which is not unloaded and would flush only at process
+// exit, so the harness calls _flushall() itself after FreeLibrary (the same
+// UCRT instance; nothing left to flush on the oracle side). One toolchain
+// residual is not reproduced and is printed as bits instead of text: a
+// decimal integer part longer than 17 digits (FLT_MAX in the dump's
+// maxForce). The 2003 CRT prints 17 significant digits and pads with zeros,
+// UCRT prints the exact integer; such a token is printed as the float it
+// parses to (`f32:7f7fffff`).
 //
 // The last section drives the Foundation export NxFindRotationMatrix, which
 // the projection slots call (004356, 004298, 004207), over both of its arms
@@ -416,7 +423,11 @@ static void nxCallStep(const NxSlotCase& c, NxReal dt, unsigned short control)
 	reinterpret_cast<NxSlotVoid>(nxSlot(c.internal, 1))(c.internal);
 	reinterpret_cast<NxSlotReal>(nxSlot(c.internal, 7))(c.internal, dt);
 	reinterpret_cast<NxSlotReal>(nxSlot(c.internal, 6))(c.internal, dt);
+	// The word read back before it is restored: the one the three slots ran
+	// under (none of them loads its own).
+	const unsigned short inside = nxGetControl();
 	nxSetControl(saved);
+	printf("%s control_inside=%04x\n", nxLabel, static_cast<unsigned>(inside));
 	nxPrintRecords(c);
 	nxPrintDifferences(c, before);
 	}
@@ -852,6 +863,66 @@ static void nxRotationCases()
 	}
 
 // ---------------------------------------------------------------------------
+// D6JointDump.txt, line by line. A number whose integer part has more than
+// 17 digits is printed as the bits of the float it parses to (the toolchain
+// residual in the header); every other character is printed as written.
+
+static void nxPrintDumpLine(unsigned index, const char* line)
+	{
+	printf("d6dump line=%u text=", index);
+	const char* p = line;
+	while(*p)
+		{
+		const char* start = p;
+		if(*p == '-')
+			p++;
+		const char* digits = p;
+		while(*p >= '0' && *p <= '9')
+			p++;
+		if(p - digits > 17)
+			{
+			while((*p >= '0' && *p <= '9') || *p == '.')
+				p++;
+			char number[128];
+			const size_t length = static_cast<size_t>(p - start) < sizeof(number) - 1 ?
+				static_cast<size_t>(p - start) : sizeof(number) - 1;
+			memcpy(number, start, length);
+			number[length] = 0;
+			printf("f32:%08x", nxU(static_cast<NxReal>(atof(number))));
+			continue;
+			}
+		if(p == digits)
+			{
+			p = start;
+			putchar(*p++);
+			continue;
+			}
+		fwrite(start, 1, static_cast<size_t>(p - start), stdout);
+		}
+	printf("\n");
+	}
+
+static void nxPrintDump(const wchar_t* path)
+	{
+	FILE* dump = _wfopen(path, L"r");
+	printf("d6dump present=%s\n", dump ? "yes" : "no");
+	if(!dump)
+		return;
+	char line[512];
+	unsigned lines = 0;
+	while(fgets(line, sizeof(line), dump))
+		{
+		size_t length = strlen(line);
+		while(length && (line[length - 1] == '\n' || line[length - 1] == '\r'))
+			line[--length] = 0;
+		nxPrintDumpLine(lines, line);
+		lines++;
+		}
+	fclose(dump);
+	printf("d6dump lines=%u\n", lines);
+	}
+
+// ---------------------------------------------------------------------------
 
 int wmain(int argc, wchar_t** argv)
 	{
@@ -929,5 +1000,14 @@ int wmain(int argc, wchar_t** argv)
 	printf("sdk=released\n");
 	printf("control after=%04x\n", static_cast<unsigned>(nxGetControl()));
 
-	return nxReportPairIdentity(pairDirectory);
+	status = nxReportPairIdentity(pairDirectory);
+	if(status)
+		return status;
+
+	// The D6 dump (see the header): unload, flush, print.
+	const BOOL unloaded = FreeLibrary(physics);
+	_flushall();
+	printf("pair unloaded=%s\n", unloaded ? "yes" : "no");
+	nxPrintDump(dumpPath);
+	return 0;
 	}
