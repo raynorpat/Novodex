@@ -7,6 +7,7 @@
 \*----------------------------------------------------------------------------*/
 #include "core/JointSupport.h"
 #include "PhysicsInternal.h"
+#include "X87Sqrt.h"
 
 // Rows phys_fn_004389/004391/004393 are not Joint or RevoluteJoint members: they
 // run on JointSupportRecord (see core/JointSupport.h and revolute-contract.md
@@ -255,10 +256,107 @@ void Row000022Fixture::row000022(NxU32 arg)
 	}
 
 // phys_fn_000754 (0x00017010, 1027 B)
-// (deferred: owner gap SceneRaycast..CapsuleShape)
+// The body record's pose from its centre-of-mass pose (owner gap
+// SceneRaycast..CapsuleShape; written by joint-open-items Task 6, whose
+// projection differential showed the oracle writing +0x18..+0x30 here).
+// R = C M^T with C the +0x134 3x3 and M the +0xdc mass-local 3x3 (both
+// row-major), each element a sum of three products stored as a float
+// (0x17013-0x1719b). The position is c - R m, with c = +0x158 and m =
+// +0x100: R m's x stays in a register, y and z are stored (0x1719f-0x17209);
+// the three differences are rounded once into +0x18..+0x20. The quaternion
+// is the unnormalised NxQuat-from-matrix sequence over the stored R, into
+// +0x24..+0x30 as x, y, z, w (0x1724a-0x1740c):
+// - trace = (R22 + R11) + R00, with R22 + R11 also stored as a float; when
+//   trace >= 0 (a NaN takes the other arm), s = sqrt(trace + 1), w = s/2
+//   stored, k = 0.5 / s kept, and x, y stored, z kept;
+// - otherwise the largest diagonal i (R11 > R00, then R22 > R[i][i], both
+//   strict), s = sqrt(1 + R[i][i] - the other two), the i component s/2 and
+//   k = 0.5 / s stored (arm 2 keeps s/2 and forms k from the stored s).
+// z always reaches +0x2c from the register.
 void Row000754Fixture::row000754()
 	{
-	NX_ASSERT(0);
+	NxU8* record = static_cast<NxU8*>(static_cast<void*>(this));
+	const NxReal* C = reinterpret_cast<const NxReal*>(record + 0x134);
+	const NxReal* M = reinterpret_cast<const NxReal*>(record + 0xdc);
+	const NxReal* c = reinterpret_cast<const NxReal*>(record + 0x158);
+	const NxReal* m = reinterpret_cast<const NxReal*>(record + 0x100);
+	NxReal* position = reinterpret_cast<NxReal*>(record + 0x18);
+	NxReal* quaternion = reinterpret_cast<NxReal*>(record + 0x24);
+
+	NxReal R[9];
+	R[0] = (NxReal)((supportMul(C[2], M[2]) + supportMul(C[0], M[0])) + supportMul(C[1], M[1]));
+	R[1] = (NxReal)((supportMul(C[2], M[5]) + supportMul(M[3], C[0])) + supportMul(C[1], M[4]));
+	R[2] = (NxReal)((supportMul(C[2], M[8]) + supportMul(C[1], M[7])) + supportMul(M[6], C[0]));
+	R[3] = (NxReal)((supportMul(M[2], C[5]) + supportMul(M[1], C[4])) + supportMul(C[3], M[0]));
+	R[4] = (NxReal)((supportMul(C[3], M[3]) + supportMul(C[5], M[5])) + supportMul(C[4], M[4]));
+	R[5] = (NxReal)((supportMul(M[8], C[5]) + supportMul(M[7], C[4])) + supportMul(M[6], C[3]));
+	R[6] = (NxReal)((supportMul(M[2], C[8]) + supportMul(M[1], C[7])) + supportMul(C[6], M[0]));
+	R[7] = (NxReal)((supportMul(C[6], M[3]) + supportMul(C[8], M[5])) + supportMul(C[7], M[4]));
+	R[8] = (NxReal)((supportMul(M[8], C[8]) + supportMul(M[7], C[7])) + supportMul(M[6], C[6]));
+
+	const double rmx = (supportMul(R[2], m[2]) + supportMul(R[1], m[1])) + supportMul(R[0], m[0]);
+	const NxReal rmy = (NxReal)((supportMul(R[5], m[2]) + supportMul(R[4], m[1])) + supportMul(R[3], m[0]));
+	const NxReal rmz = (NxReal)((supportMul(R[8], m[2]) + supportMul(R[7], m[1])) + supportMul(R[6], m[0]));
+	const NxReal px = (NxReal)((double)c[0] - rmx);
+	const NxReal py = (NxReal)((double)c[1] - rmy);
+	const NxReal pz = (NxReal)((double)c[2] - rmz);
+	position[2] = pz;
+	position[0] = px;
+	position[1] = py;
+
+	const NxReal sum84 = (NxReal)((double)R[8] + R[4]);
+	const double trace = ((double)R[8] + R[4]) + R[0];
+	NxReal x, y, w;
+	double z;
+	if(trace >= 0.0f)
+		{
+		const double s = x87Fsqrt(trace + 1.0f);
+		w = (NxReal)(0.5f * s);
+		const double k = 0.5f / s;
+		x = (NxReal)(((double)R[7] - R[5]) * k);
+		y = (NxReal)(((double)R[2] - R[6]) * k);
+		z = ((double)R[3] - R[1]) * k;
+		}
+	else
+		{
+		NxU32 index = 0;
+		if(R[4] > R[0])
+			index = 1;
+		if(R[8] > R[index * 4])
+			index = 2;
+		if(index == 2)
+			{
+			const double s = x87Fsqrt(((double)R[8] - ((double)R[4] + R[0])) + 1.0f);
+			const NxReal sF = (NxReal)s;
+			z = s * 0.5f;
+			const double k = 0.5f / (double)sF;
+			x = (NxReal)(((double)R[6] + R[2]) * k);
+			y = (NxReal)(((double)R[7] + R[5]) * k);
+			w = (NxReal)(((double)R[3] - R[1]) * k);
+			}
+		else if(index == 1)
+			{
+			const double s = x87Fsqrt(((double)R[4] - ((double)R[8] + R[0])) + 1.0f);
+			y = (NxReal)(0.5f * s);
+			const NxReal k = (NxReal)(0.5f / s);
+			z = ((double)R[7] + R[5]) * k;
+			x = (NxReal)(((double)R[3] + R[1]) * k);
+			w = (NxReal)(((double)R[2] - R[6]) * k);
+			}
+		else
+			{
+			const double s = x87Fsqrt(((double)R[0] - sum84) + 1.0f);
+			x = (NxReal)(0.5f * s);
+			const NxReal k = (NxReal)(0.5f / s);
+			y = (NxReal)(((double)R[3] + R[1]) * k);
+			z = ((double)R[6] + R[2]) * k;
+			w = (NxReal)(((double)R[7] - R[5]) * k);
+			}
+		}
+	quaternion[2] = (NxReal)z;
+	quaternion[0] = x;
+	quaternion[1] = y;
+	quaternion[3] = w;
 	}
 
 // phys_fn_000758 (0x00017630, 214 B)
