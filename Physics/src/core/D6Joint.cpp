@@ -234,8 +234,9 @@ void D6Joint::setProjectionMode(NxJointProjectionMode mode)
 // fputs("angular\n" or "linear\n") by the +0x2c byte; for a linear record
 // the two levers ("ra: %f, %f, %f\n", "rb: %f, %f, %f\n"); then "normal: %f,
 // %f, %f\n" and "maxForce: %f,  bias:  %f\n" (maxForce first). Each float is
-// widened to a double for fprintf (`fld dword; fstp qword`).
-void D6JointDumpRecord::print(FILE* stream) const
+// widened to a double for fprintf (`fld dword; fstp qword`). noinline: the
+// dump row 004192 calls it as a function (0x9b82c).
+__declspec(noinline) void D6JointDumpRecord::print(FILE* stream) const
 	{
 	fputs(angular ? "angular\n" : "linear\n", stream);
 	if(!angular)

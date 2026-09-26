@@ -2633,8 +2633,10 @@ void NxSceneInternal::releaseJoint(Joint* joint)
 // array phys_fn_004093 takes records from: capacity (+0x5c0) doubled, or 4
 // from empty, stored first; a new block of capacity * 0x50 bytes; the
 // +0x5bc used records copied (rep movsd/movsb); the old block freed and the
-// pointer zeroed before the new one is stored.
-void NxSceneInternal::growJointRecords()
+// pointer zeroed before the new one is stored. noinline: the oracle calls it
+// as its own function (004093, 0x95db7), and the compiler otherwise folds it
+// into the joint rows, where no breakpoint on the row can see it run.
+__declspec(noinline) void NxSceneInternal::growJointRecords()
 	{
 	NxU32 capacity = at<NxU32>(0x5c0);
 	capacity = capacity ? capacity + capacity : 4;
@@ -2653,8 +2655,9 @@ void NxSceneInternal::growJointRecords()
 
 // phys_fn_000571 (0x000108e0, 22 B, phase 7): the break event's +4 takes the
 // old head of the +0x620 list and the event becomes the head. The event is
-// not tested for null, as in the listing.
-void NxSceneInternal::addJointBreakEvent(JointBreakEvent* event)
+// not tested for null, as in the listing. noinline: the oracle calls it as
+// its own function (004111 0x98029/0x98038, 004374, 004308).
+__declspec(noinline) void NxSceneInternal::addJointBreakEvent(JointBreakEvent* event)
 	{
 	event->mNext = at<JointBreakEvent*>(0x620);
 	at<JointBreakEvent*>(0x620) = event;

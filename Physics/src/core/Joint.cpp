@@ -671,7 +671,8 @@ void Joint::purgeLimitPlanes()
 
 // phys_fn_004091 (0x00095d60, 62 B)
 // The listing reloads the Scene's array pointer on every pass (0x95d80).
-void Joint::row004091()
+// noinline: 004111 calls it as a function (0x97ffb).
+__declspec(noinline) void Joint::row004091()
 	{
 	const NxU32 first = mUnknown160[0];
 	const NxU32 end = mUnknown160[1] + first;
