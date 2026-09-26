@@ -406,7 +406,8 @@ so the same code drives both DLLs and no oracle address is named. Per case:
 | break | 2 on record 0 with 2.5 (revolute config 0 only, last) | state, record flags, changed words |
 
 Step, impulse and projection run once under 0x027f and again under 0x0f7f (`fnstcw`/`fldcw` around
-each call); visualization runs before and after. After every call the harness prints each changed
+each call); visualization runs before and after. Each step prints the control word read back before it is restored
+(`control_inside=027f` / `0f7f`). After every call the harness prints each changed
 word of the joint (its full size), both body records (0x260) and both injected blocks (0x60).
 Pointer words equal to the joint, the public joint, the Scene, a body record or an injected block
 print as `JOINT`, `NPJOINT`, `SCENE`, `BODY0/1`, `SUPPORT0/1`. The SDK is created with the
@@ -416,7 +417,8 @@ page-guarded allocator and the 0xcd fill (`NX_PAGE_GUARDED_FILL`). SDK parameter
 Cases: revolute (limit + spring, projection 0.05/0.03125; motor, projection 0.5/1.0), prismatic,
 cylindrical, spherical (every flag, swing axis (0, 0.6, 0.8), projection 0.05; plain, projection 2),
 point-on-line, point-in-plane, distance (min/max/spring; rigid rod), pulley (body 0 the world, so
-004228 writes every lever it reads; rigid), fixed, D6 (locked/limited/free mix, x and twist drives,
+004228 writes every lever it reads; rigid. The two-dynamic-body path of 004228, which reads the
+uninitialised body-0 lever, is not exercised), fixed, D6 (locked/limited/free mix, x and twist drives,
 projection; all-linear-limited, locked twist/swing1, swing and slerp drives, projection). Then
 `NxFindRotationMatrix` (NxFoundation export) over 13 pairs covering the common arm and every helper
 axis of the parallel arm.
@@ -452,23 +454,34 @@ Two candidate defects, both in rows the slots call, none in the slot rows themse
    and 4 by an ULP or a sign of zero, and all eight parallel-arm cases 10-17 (16 and 17 with
    the off-diagonal signs swapped, i.e. transposed).
 
-After both, the transcript (1369 lines) is identical to the oracle's apart from the `modules` line
+After both, the transcript (1369 lines; 1477 with the review's dump read-back) is identical to the oracle's apart from the `modules` line
 the runner drops. No difference appears only under 0x0f7f: every step, impulse and projection result
-under 0x0f7f matches word for word, in every family.
+under 0x0f7f matches word for word, in every family. 000754's four roots now go through the X87Sqrt.h helpers
+with the stored R elements as operands (Sum4, Diag, Diag, Sum3 in the listing's order), so no sum
+the listing keeps on the stack is narrowed at a qword under 0x0f7f; the transcript is unchanged.
 
 ### D6JointDump.txt
 
-The D6 solver slot (004206) opens `D6JointDump.txt` once and writes one block per call (004192).
-With the pair directory as the working directory each side writes its own. Both files are 3548
-bytes and 77 lines, the same line structure and the same values; they differ only in the CRT's
-`%f` output. The oracle's 2003 CRT prints FLT_MAX as 17 significant digits then zeros
-(`340282346638528860000000000000000000000.000000`), UCRT prints the exact integer
-(`...859811704183484516925440.000000`). The two blocks written under 0x0f7f (RC chop) differ
-in the last printed digit of several values. The two CRTs format under the chop mode differently,
-e.g. `-0.428584` against `-0.428583`. The blocks written under 0x027f are identical apart from
-FLT_MAX. The values behind the text are the ones the transcript compares in hex, which match. The
-file is not printed into the transcript: the candidate's stream belongs to the shared UCRT, which
-flushes it only at process exit.
+The D6 solver slot (004206) opens `D6JointDump.txt` once and writes one block per call (004192,
+printing through 004190 and 004188). With the pair directory as the working directory each side
+writes its own; both are 3548 bytes and 77 lines. Three CRT differences, found by comparing them:
+- **Rounding mode (fixed).** UCRT's printf rounds the `%f` digits at the live x87 rounding mode
+  (VS2019 16.2+); the oracle's 2003 static CRT always rounds to nearest in software. The two blocks
+  written under 0x0f7f (RC chop) differed in last digits (`-0.428584` against `-0.428583`).
+  NxPhysics.dll now links `legacy_stdio_float_rounding.obj` (CMakeLists.txt, NxPhysics only), and
+  every such difference is gone.
+- **FLT_MAX (toolchain residual, not fixed).** The 2003 CRT prints at most 17 significant digits
+  and pads with zeros (`340282346638528860000000000000000000000.000000`); UCRT prints the exact
+  integer (`340282346638528859811704183484516925440.000000`). This is the only remaining
+  difference between the two files (the 8 maxForce lines, FLT_MAX token only).
+- **Flush timing (recorded).** The oracle's static CRT flushes and closes the stream at
+  DLL_PROCESS_DETACH (`_endstdio`); the candidate's stream belongs to the shared UCRT, which the
+  DLL unload does not touch, so it is flushed only at process exit.
+The harness therefore unloads the pair after the run, calls `_flushall()` (the candidate's UCRT
+instance; nothing is left to flush on the oracle side), and prints the file line by line. A number
+with more than 17 integer digits is printed as its float bits (`f32:7f7fffff`). The dump text,
+including the poses, angles and JwQ rows, which appear nowhere else in the transcript, is now part
+of the compared transcript. It is identical on both sides.
 
 ### Not reached
 
