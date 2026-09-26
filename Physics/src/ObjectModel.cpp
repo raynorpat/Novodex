@@ -39,12 +39,12 @@ CollisionObject::CollisionObject(void* argument)
 
 // phys_fn_001079 (0x000235d0): the box-family collision-object deleting
 // row. The embedded hook teardown at 0x5ba90 changes only its vptr, then
-// flag bit zero selects the SDK allocator's +0x14 free operation.
+// flag bit zero selects nxFoundationSDKAllocator's +0x14 free operation.
 void CollisionObject::nxScalarDeletingDtor(unsigned flags)
 	{
 	mMember.~EmbeddedHookBase();
 	if(flags & 1u)
-		nxGetSdkAllocator()->free(this);
+		nxFoundationSDKAllocator->free(this);
 	}
 
 // phys_fn_001281 (0x000257a0): mov eax,[ecx+4]; ret. The whole row -- note
@@ -723,7 +723,7 @@ void nxSceneRemovePairs(void* container, void* shape)
 
 // phys_fn_000028 (0x1b90): dword-vector push_back over the VC9 layout
 // {_Myproxy@+0x00 untouched by this row, _Myfirst@+0x04, _Mylast@+0x08,
-// _Myend@+0x0c}. The growth arm allocates 2*size + 2 dwords through the SDK
+// _Myend@+0x0c}. The growth arm allocates 2*size + 2 dwords through the Foundation
 // allocator (adapter vtable slot +8 with flag word 0), copies the live
 // elements dword-wise, releases the old block (slot +0x14) and repoints all
 // three cursors; the compiler's own escape (`jae` over the arm when the old
@@ -748,13 +748,13 @@ void nxU32VectorPushBack(void* vecHeader, NxU32 value)
 		(reinterpret_cast<unsigned>(capEnd) - reinterpret_cast<unsigned>(begin)) >> 2);
 	if(oldCapDwords < newCapDwords)
 		{
-		void* fresh = nxGetSdkAllocator()->malloc(
+		void* fresh = nxFoundationSDKAllocator->malloc(
 			newCapDwords * sizeof(unsigned), NX_MEMORY_PERSISTENT);
 		unsigned* run = static_cast<unsigned*>(fresh);
 		for(unsigned i = 0; i < size; ++i)	// copy before release
 			run[i] = begin[i];
 		if(begin != 0)
-			nxGetSdkAllocator()->free(begin);
+			nxFoundationSDKAllocator->free(begin);
 		*reinterpret_cast<unsigned**>(f + 0x04) = run;
 		*reinterpret_cast<unsigned**>(f + 0x0c) = run + newCapDwords;
 		end = run + size;
@@ -1013,7 +1013,7 @@ void nxActorDeletingDtor(void* self, unsigned flags)
 	*reinterpret_cast<unsigned**>(a) =
 		reinterpret_cast<unsigned*>(0x101043d0u);
 	if(flags & 1)
-		nxGetSdkAllocator()->free(self);
+		nxFoundationSDKAllocator->free(self);
 	}
 
 // phys_fn_000116 (slot 87, 0x3640): the member table's this-adjustor
@@ -3667,7 +3667,7 @@ void nxChainedDeletingDtor(void* self, unsigned flags)
 	*reinterpret_cast<unsigned**>(a) =
 		reinterpret_cast<unsigned*>(0x1010878cu);
 	if(flags & 1)
-		nxGetSdkAllocator()->free(self);
+		nxFoundationSDKAllocator->free(self);
 	}
 
 // phys_fn_002322 (0x5a230): member-table adjustor thunk -- `sub ecx,8` onto
@@ -3799,7 +3799,7 @@ void nxBoundDeletingDtor798(void* self, unsigned flags)
 	*reinterpret_cast<unsigned**>(self) =
 		reinterpret_cast<unsigned*>(0x10108798u);
 	if(flags & 1)
-		nxGetSdkAllocator()->free(self);
+		nxFoundationSDKAllocator->free(self);
 	}
 
 // phys_fn_002340 (0x5aa60): same shape for the second pool class, vptr
@@ -3809,7 +3809,7 @@ void nxBoundDeletingDtor84c(void* self, unsigned flags)
 	*reinterpret_cast<unsigned**>(self) =
 		reinterpret_cast<unsigned*>(0x1010884cu);
 	if(flags & 1)
-		nxGetSdkAllocator()->free(self);
+		nxFoundationSDKAllocator->free(self);
 	}
 
 // ---------------------------------------------------------------------------
@@ -3985,11 +3985,11 @@ BoxShape::BoxShape(void* owner, unsigned argument)
 		mHull.mFaces[r].mIndexListB = 0;
 		}
 
-	// The embedded collision object: a fresh 0x1c-byte block through the SDK
+	// The embedded collision object: a fresh 0x1c-byte block through the Foundation
 	// allocator (0x000218f1..fe -- malloc slot, size 0x1c, flag 0), built by
 	// phys_fn_001075 (0x00023580), whose body is phys_fn_001193 with the
 	// box-family tables and which stores the box at BOTH +0x08 and +0x18.
-	void* memory = nxGetSdkAllocator()->malloc(0x1c, NX_MEMORY_PERSISTENT);
+	void* memory = nxFoundationSDKAllocator->malloc(0x1c, NX_MEMORY_PERSISTENT);
 	CollisionObject* object = memory
 		? new(memory) CollisionObject(this)
 		: 0;								// null arm: 0x0002190f
@@ -4014,11 +4014,11 @@ SphereShape::SphereShape(void* owner, unsigned argument)
 	mBase.mVptrSlot = nxSphereShapeInternalVtable();
 	mRadiusE0 = 0.0f;						// mov [esi+0xe0],0 at 0x000277da
 
-	// The embedded collision object: a fresh 0x1c-byte block through the SDK
+	// The embedded collision object: a fresh 0x1c-byte block through the Foundation
 	// allocator (0x00027de4..f2), built by phys_fn_001193 itself -- the
 	// GENERIC collision-object constructor, not a per-type variant -- with
 	// the sphere stored at BOTH +0x08 and +0x18.
-	void* memory = nxGetSdkAllocator()->malloc(0x1c, NX_MEMORY_PERSISTENT);
+	void* memory = nxFoundationSDKAllocator->malloc(0x1c, NX_MEMORY_PERSISTENT);
 	CollisionObject* object = memory
 		? new(memory) CollisionObject(this)
 		: 0;								// null arm: 0x00027803
@@ -4412,7 +4412,7 @@ void nxShapeFactoryInitializePlane(void* shape, const float* normal,
 // Shape-to-name registry. See evidence section 3o for the full decode.
 
 // The global list head at .data 0x10123c0c. Each entry is {shape*, name*}
-// (8-byte stride). The list grows via the SDK allocator when capacity is
+// (8-byte stride). The list grows via the Foundation allocator when capacity is
 // exhausted.
 static void* gShapeNameList = nullptr;
 
@@ -4490,7 +4490,7 @@ void PlaneShape::nxPlaneScalarDeletingDtor(unsigned flags)
 	mBase.nxBaseDtorOwnerArms();		// owner arms, 0x26be1..c35
 	mBase.mPrunable.~Prunable();			// tail of the base-dtor chain
 	if(flags & 1u)
-		nxGetSdkAllocator()->free(this);
+		nxFoundationSDKAllocator->free(this);
 	}
 
 // phys_fn_001375 (0x00027c30), SPHERE-table slot 0.
@@ -4504,7 +4504,7 @@ void SphereShape::nxSphereScalarDeletingDtor(unsigned flags)
 	mBase.nxBaseDtorOwnerArms();			// owner arms, 0x26be1..c35
 	mBase.mPrunable.~Prunable();			// tail of the base-dtor chain
 	if(flags & 1u)
-		nxGetSdkAllocator()->free(this);
+		nxFoundationSDKAllocator->free(this);
 	}
 
 // phys_fn_001353 (0x00027850), SPHERE-table slot 12.
@@ -5235,11 +5235,11 @@ CapsuleShape::CapsuleShape(void* owner, unsigned argument)
 	mFloatE0 = 0.0f;						// mov [esi+0xe0],0 at 0x00021a7a
 	mFloatE4 = 0.0f;						// mov [esi+0xe4],0 at 0x00021a84
 
-	// The embedded collision object: a fresh 0x1c-byte block through the SDK
+	// The embedded collision object: a fresh 0x1c-byte block through the Foundation
 	// allocator (0x00021a8e..9c), built by phys_fn_001123 -- the capsule-family
 	// variant of the shared collision-object constructor -- with the capsule
 	// stored at BOTH +0x08 and +0x18.
-	void* memory = nxGetSdkAllocator()->malloc(0x1c, NX_MEMORY_PERSISTENT);
+	void* memory = nxFoundationSDKAllocator->malloc(0x1c, NX_MEMORY_PERSISTENT);
 	CollisionObject* object = memory
 		? new(memory) CollisionObject(this)
 		: 0;								// null arm: 0x00021aad
@@ -5280,7 +5280,7 @@ void CapsuleShape::nxCapsuleScalarDeletingDtor(unsigned flags)
 	mBase.nxBaseDtorOwnerArms();		// owner arms, 0x26be1..c35
 	mBase.mPrunable.~Prunable();			// tail of the base-dtor chain
 	if(flags & 1u)
-		nxGetSdkAllocator()->free(this);
+		nxFoundationSDKAllocator->free(this);
 	}
 
 // phys_fn_001004 (0x00021c80), CAPSULE-table slot 8.
@@ -5564,7 +5564,7 @@ void BoxShape::nxBoxScalarDeletingDtor(unsigned flags)
 	mBase.nxBaseDtorOwnerArms();		// owner arms, 0x26be1..c35
 	mBase.mPrunable.~Prunable();			// tail of 0x00026bd0: jmp 0xb5640
 	if(flags & 1u)
-		nxGetSdkAllocator()->free(this);
+		nxFoundationSDKAllocator->free(this);
 	}
 
 // phys_fn_001399 (0x00028e80), MESH-table slot 0.
@@ -5582,7 +5582,7 @@ void MeshShape::nxMeshScalarDeletingDtor(unsigned flags)
 	mBase.nxBaseDtorOwnerArms();		// owner arms, 0x26be1..c35
 	mBase.mPrunable.~Prunable();			// tail of the base-dtor chain
 	if(flags & 1u)
-		nxGetSdkAllocator()->free(this);
+		nxFoundationSDKAllocator->free(this);
 	}
 
 // ---------------------------------------------------------------------------
@@ -5592,11 +5592,11 @@ PlaneShape::PlaneShape(void* owner, unsigned argument)
 	: mBase(owner, argument)				// forwarded unchanged: 0x00024edb..df
 	{
 	mBase.mVptrSlot = nxPlaneShapeInternalVtable();
-	// The embedded collision object: a fresh 0x1c-byte block through the SDK
+	// The embedded collision object: a fresh 0x1c-byte block through the Foundation
 	// allocator (0x00024eea..f8), built by phys_fn_001159 -- the plane-family
 	// variant of the shared collision-object constructor -- with the plane
 	// stored at BOTH +0x08 and +0x18.
-	void* memory = nxGetSdkAllocator()->malloc(0x1c, NX_MEMORY_PERSISTENT);
+	void* memory = nxFoundationSDKAllocator->malloc(0x1c, NX_MEMORY_PERSISTENT);
 	CollisionObject* object = memory
 		? new(memory) CollisionObject(this)
 		: 0;								// null arm: 0x00024f09
@@ -5746,11 +5746,11 @@ MeshShape::MeshShape(void* owner, unsigned argument)
 	mWordE0 = 0;							// mov [esi+0xe0],0 at 0x00027dca
 	mWordE4 = 0;							// mov [esi+0xe4],0 at 0x00027dd4
 
-	// The embedded collision object: a fresh 0x1c-byte block through the SDK
+	// The embedded collision object: a fresh 0x1c-byte block through the Foundation
 	// allocator (0x00027dde..ec), built by phys_fn_001241 -- the mesh-family
 	// variant of the shared collision-object constructor -- with the mesh
 	// shape stored at BOTH +0x08 and +0x18.
-	void* memory = nxGetSdkAllocator()->malloc(0x1c, NX_MEMORY_PERSISTENT);
+	void* memory = nxFoundationSDKAllocator->malloc(0x1c, NX_MEMORY_PERSISTENT);
 	CollisionObject* object = memory
 		? new(memory) CollisionObject(this)
 		: 0;								// null arm: 0x00027dfd

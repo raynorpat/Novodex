@@ -257,8 +257,9 @@ NxSceneInternal* PhysicsSDK::createScene(const NxSceneDesc& desc)
 		return 0;
 		}
 
-	// 0x710 bytes from the SDK allocator.
-	void* memory = nxGetSdkAllocator()->malloc(NxSceneInternal::SIZE, NX_MEMORY_PERSISTENT);
+	// 0x710 bytes from nxFoundationSDKAllocator ([0x101041bc], slot +8), not
+	// phys_fn_004803; the failure path frees through the same slot +0x14.
+	void* memory = nxFoundationSDKAllocator->malloc(NxSceneInternal::SIZE, NX_MEMORY_PERSISTENT);
 	if(!memory)
 		return 0;
 
@@ -270,7 +271,7 @@ NxSceneInternal* PhysicsSDK::createScene(const NxSceneDesc& desc)
 	if(!scene->initialise(desc))
 		{
 		scene->~NxSceneInternal();
-		nxGetSdkAllocator()->free(memory);
+		nxFoundationSDKAllocator->free(memory);
 		return 0;
 		}
 

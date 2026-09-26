@@ -236,6 +236,13 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_link_libraries(NxPhysicsEmptySceneTests bcrypt)
 	# A fresh process isolates actor/shape name-map behavior from the populated
 	# lifecycle fixture's intentionally stateful teardown sequence.
+	# Foundation created with one counting allocator, NxCreatePhysicsSDK given a
+	# second, so each Scene/actor/shape block reports which allocator the DLL
+	# used: nxFoundationSDKAllocator or the phys_fn_004803 bridge.
+	add_executable(NxPhysicsSceneAllocatorTests tests/PhysicsSceneAllocatorTests.cpp)
+	target_include_directories(NxPhysicsSceneAllocatorTests PRIVATE
+		Foundation/include Physics/include)
+	target_link_libraries(NxPhysicsSceneAllocatorTests bcrypt)
 	add_executable(NxPhysicsActorNameTests tests/PhysicsActorNameTests.cpp)
 	target_include_directories(NxPhysicsActorNameTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include)

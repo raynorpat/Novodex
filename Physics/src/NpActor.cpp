@@ -106,11 +106,11 @@ static void nxNpActorMarkRecordDirty(unsigned char* record, unsigned mask)
 			{
 			const unsigned count = static_cast<unsigned>(end - active);
 			const unsigned next = count * 2 + 2;
-			unsigned* grown = static_cast<unsigned*>(nxGetSdkAllocator()->malloc(
+			unsigned* grown = static_cast<unsigned*>(nxFoundationSDKAllocator->malloc(
 				next * sizeof(unsigned), NX_MEMORY_PERSISTENT));
 			if(!grown) return;
 			memcpy(grown, active, count * sizeof(unsigned));
-			nxGetSdkAllocator()->free(active);
+			nxFoundationSDKAllocator->free(active);
 			active = grown;
 			end = grown + count;
 			*reinterpret_cast<unsigned**>(aux + 0x50) = active;
@@ -138,7 +138,7 @@ static void nxNpActorTransitionKinematic(unsigned char* record, bool enable)
 		memset(record + 0xc0, 0, 4 * sizeof(float));
 		void*& state = *reinterpret_cast<void**>(record + 0x118);
 		if(!state)
-			state = nxGetSdkAllocator()->malloc(0x20, NX_MEMORY_PERSISTENT);
+			state = nxFoundationSDKAllocator->malloc(0x20, NX_MEMORY_PERSISTENT);
 		if(state) *reinterpret_cast<unsigned*>(
 			static_cast<unsigned char*>(state) + 0xc) = 0;
 		}
@@ -155,7 +155,7 @@ static void nxNpActorTransitionKinematic(unsigned char* record, bool enable)
 		void*& state = *reinterpret_cast<void**>(record + 0x118);
 		if(state)
 			{
-			nxGetSdkAllocator()->free(state);
+			nxFoundationSDKAllocator->free(state);
 			state = 0;
 			}
 		}
@@ -396,7 +396,7 @@ void nxShapeSetName(void* shape, const char* name)
 		{
 		if(!name) return;
 		gNxShapeNames = static_cast<NxShapeNameTable*>(
-			nxGetSdkAllocator()->malloc(sizeof(NxShapeNameTable), NX_MEMORY_PERSISTENT));
+			nxFoundationSDKAllocator->malloc(sizeof(NxShapeNameTable), NX_MEMORY_PERSISTENT));
 		if(!gNxShapeNames) return;
 		memset(gNxShapeNames, 0, sizeof(*gNxShapeNames));
 		}
@@ -412,8 +412,8 @@ void nxShapeSetName(void* shape, const char* name)
 				gNxShapeNames->entries[--gNxShapeNames->count];
 			if(!gNxShapeNames->count)
 				{
-				nxGetSdkAllocator()->free(gNxShapeNames->entries);
-				nxGetSdkAllocator()->free(gNxShapeNames);
+				nxFoundationSDKAllocator->free(gNxShapeNames->entries);
+				nxFoundationSDKAllocator->free(gNxShapeNames);
 				gNxShapeNames = 0;
 				}
 			return;
@@ -422,14 +422,14 @@ void nxShapeSetName(void* shape, const char* name)
 		{
 		const unsigned capacity = gNxShapeNames->count * 2 + 2;
 		NxShapeNamePair* entries = static_cast<NxShapeNamePair*>(
-			nxGetSdkAllocator()->malloc(
+			nxFoundationSDKAllocator->malloc(
 				capacity * sizeof(NxShapeNamePair), NX_MEMORY_PERSISTENT));
 		if(!entries) return;
 		if(gNxShapeNames->count)
 			memcpy(entries, gNxShapeNames->entries,
 				gNxShapeNames->count * sizeof(NxShapeNamePair));
 		if(gNxShapeNames->entries)
-			nxGetSdkAllocator()->free(gNxShapeNames->entries);
+			nxFoundationSDKAllocator->free(gNxShapeNames->entries);
 		gNxShapeNames->entries = entries;
 		gNxShapeNames->capacity = capacity;
 		}
@@ -442,8 +442,8 @@ void nxShapeReleaseNameTable()
 	{
 	if(!gNxShapeNames) return;
 	if(gNxShapeNames->entries)
-		nxGetSdkAllocator()->free(gNxShapeNames->entries);
-	nxGetSdkAllocator()->free(gNxShapeNames);
+		nxFoundationSDKAllocator->free(gNxShapeNames->entries);
+	nxFoundationSDKAllocator->free(gNxShapeNames);
 	gNxShapeNames = 0;
 	}
 
