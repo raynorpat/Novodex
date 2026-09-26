@@ -272,7 +272,11 @@ void Row000022Fixture::row000022(NxU32 arg)
 // - otherwise the largest diagonal i (R11 > R00, then R22 > R[i][i], both
 //   strict), s = sqrt(1 + R[i][i] - the other two), the i component s/2 and
 //   k = 0.5 / s stored (arm 2 keeps s/2 and forms k from the stored s).
-// z always reaches +0x2c from the register.
+// z always reaches +0x2c from the register. Each root is formed inside an
+// X87Sqrt.h helper from the stored floats in the listing's order (trace arm
+// fld R22, fadd R11, fadd R00, fadd 1; arm 2 fld R11, fadd R00, fsubr R22,
+// fadd 1; arm 1 fld R22, fadd R00, fsubr R11, fadd 1; arm 0 fld R00, fsub
+// the stored R22 + R11, fadd 1), so no sum is narrowed under 0x0f7f.
 void Row000754Fixture::row000754()
 	{
 	NxU8* record = static_cast<NxU8*>(static_cast<void*>(this));
@@ -310,7 +314,7 @@ void Row000754Fixture::row000754()
 	double z;
 	if(trace >= 0.0f)
 		{
-		const double s = x87Fsqrt(trace + 1.0f);
+		const double s = x87FsqrtSum4(R[8], R[4], R[0], 1.0f);
 		w = (NxReal)(0.5f * s);
 		const double k = 0.5f / s;
 		x = (NxReal)(((double)R[7] - R[5]) * k);
@@ -326,7 +330,7 @@ void Row000754Fixture::row000754()
 			index = 2;
 		if(index == 2)
 			{
-			const double s = x87Fsqrt(((double)R[8] - ((double)R[4] + R[0])) + 1.0f);
+			const double s = x87FsqrtDiag(R[8], R[4], R[0]);
 			const NxReal sF = (NxReal)s;
 			z = s * 0.5f;
 			const double k = 0.5f / (double)sF;
@@ -336,7 +340,7 @@ void Row000754Fixture::row000754()
 			}
 		else if(index == 1)
 			{
-			const double s = x87Fsqrt(((double)R[4] - ((double)R[8] + R[0])) + 1.0f);
+			const double s = x87FsqrtDiag(R[4], R[8], R[0]);
 			y = (NxReal)(0.5f * s);
 			const NxReal k = (NxReal)(0.5f / s);
 			z = ((double)R[7] + R[5]) * k;
@@ -345,7 +349,7 @@ void Row000754Fixture::row000754()
 			}
 		else
 			{
-			const double s = x87Fsqrt(((double)R[0] - sum84) + 1.0f);
+			const double s = x87FsqrtSum3(R[0], -sum84, 1.0f);
 			x = (NxReal)(0.5f * s);
 			const NxReal k = (NxReal)(0.5f / s);
 			y = (NxReal)(((double)R[3] + R[1]) * k);
