@@ -17,6 +17,7 @@ and marks the items it closes under `## Open items`.
 | 5 (follow-up) | 2026-09-25T19:00:08 | 2026-09-25T19:15:00 | 0 | 0 | Joint allocator (item 10, allocator subsection; units/joint-open-items-contract.md `## Joint allocator`). Every joint allocation and free now goes through `nxFoundationSDKAllocator` as the oracle rows do (`[[0x101041bc]]` slots +8/+0x14; no joint row calls 004803): 36 sites in core/*.cpp, Joint.h, NpJointShared.h, JointSupport.h and Scene.cpp (createJoint, 000598, the three joint-array frees in `nxSceneDelete`). New staged-pair target `NxPhysicsJointAllocatorTests` (phases 6 and 7): Foundation created with allocator A, then the SDK with B; a revolute and a distance joint created and released. Oracle and candidate: A 0x204,0x1c,8 then 2 frees; 0x184,0x1c then 2 frees; B none. Before: all in B. 12 oracle lines registered; floors 6/7 = 257/130. Found: the candidate faults in createActor when the SDK allocator does not return zeroed memory (Scene block array header left unset), before and after this change; recorded as open. No row changes state. Gates 2, 3, 4, 6, 7 pass; 5 red only on its vtables marker. |
 | Scene init | 2026-09-25T19:14:00 | 2026-09-25T19:45:00 | 2 | 1,032 | Scene initialisation (units/joint-open-items-contract.md `## Scene initialisation`). 000647 (998 B) rewritten at byte offsets from the listing (it wrote dword indices as byte offsets since 98f2625) with its sub-object helpers (004938, 004899, 005109, 005071, 005029, 004996, 001980 and their bases; no state change, all `discovered`); 002346 (34 B) and 002415 reduced to the oracle's stores. `NxPhysicsJointAllocatorTests` fills blocks with 0xcd: both DLLs exit 0, stdout_delta=0 (candidate faulted before). `NX_PAGE_GUARDED_FILL` on nine page-guarded targets. No registered line, floor or pin changes. Gates 2, 3, 4, 6, 7 pass; 5 red only on its vtables marker (same failure set as HEAD). |
 | 6 | 2026-09-25T19:50:00 | 2026-09-25T20:25:00 | 1 | 1,027 | Internal-slot differential (items 4, 5; units/joint-open-items-contract.md `## Internal-slot differential`). New staged-pair target `NxPhysicsJointSlotTests` (phases 6 and 7): 14 joints over all ten families; each internal joint (public +0x18) has slots 4, 1/7/6, 0 and 8 called through its own table by index, under 0x027f and again (step, impulse, projection) under 0x0f7f, revolute's break test (2) last; body +0x204 gets a harness block filled from the body record as 000611 fills it; Scene +0x5bc and the joint's record window reset as 000613/000728 do. Every renderer call, Scene record and changed word of joint, bodies and blocks printed, pointers named. Two defects, both below the slot rows: 000754 (1027 B, the body pose from the centre-of-mass pose, called by 000022 on every projection that moves a body) was a stub, now written; the Foundation's NxFindRotationMatrix rounded to float where the oracle keeps x87 registers and wrote the transpose in its parallel arm, now follows the oracle's stream. Then 1369 transcript lines identical, nothing differs only under 0x0f7f. D6JointDump.txt: same values; UCRT's rounding-mode-dependent `%f` fixed by linking `legacy_stdio_float_rounding.obj` into NxPhysics (review), FLT_MAX's digits a toolchain residual; the dump is read back into the transcript after unload + `_flushall()`. growJointRecords, addJointBreakEvent, 004091 and 004188 made noinline (the oracle calls them). 146 oracle lines registered (134, then 12 dump/control-word lines in review), floors 6/7 = 403/276. 000754's roots through the X87Sqrt.h helpers (review). cdb trace evidence/joint-open-items-trace-slots.txt: 115 rows hit; 74 rows gain dynamic_proof, 000754 moves to reconstructed (Phase 7 ledger reconstructed_not_falsified). Gates 2, 3, 4, 6, 7 pass; 5 red only on its vtables marker. |
+| 7 | 2026-09-25T20:42:00 | 2026-09-25T21:08:00 | 0 | 0 | Results; no row written or moved. Review minors swept (6a246c8): helper count 25, 14 joints, joint-families item 7, the sphere comment in gate_targets.ps1 (comment only), NpActorDynamicMath.h's 000768 callers, the superseded Task 4 setter bullets, `1,999 lines at 7cfadb7`, and body +0x204 as element k of the island's pass (000611 reloads the base per island at 0x112b6; contract, Joint.h, JointSupport.h). work_units.json and the 31 joint-range bundles regenerated: the 28 existing bundles unchanged, the three missing gap bundles added. `## Dispositions` (10 closed, 2 partly closed, 0 open of the twelve; the items found on the way), `## Defects found by the new differentials`, `## Rate`, `## Verification`; joint-families.md items point at their dispositions. Fresh configure, clean build of every target, headers, 643 tool tests, validator, gates 2-7 (2, 3, 4, 6, 7 pass; 5 red only on its vtables marker), stable-ID form (308 lines) and no CRT math in core/. |
 
 ## Open items
 
@@ -55,7 +56,7 @@ Numbers are those of `joint-families.md` `## Open items carried forward`.
   one set: `x87Fsqrt`, `x87FsqrtSum2/3/4`, `x87FsqrtDiag`, `x87FsqrtMulSub`, `x87FsqrtDot2/3/4`.
   The joint files include it and call the `x87Fsqrt*` names. Instruction bodies unchanged: a
   capstone dump of every `?x87Fsqrt*`/`?jointFsqrt*` symbol in `build/Release/NxPhysics.map`
-  (27 instances across Geometry.obj and eight joint objects) is byte-identical before and after
+  (25 instances across Geometry.obj and eight joint objects) is byte-identical before and after
   once the name is mapped; for example `x87FsqrtDiag` (was `jointFsqrtDiag`, RevoluteJoint.obj)
   `dd44240cdc442414dc6c2404d9e8dec1d9fac3` and `x87FsqrtDot3` (was `jointFsqrtDot3`, D6Joint.obj)
   `dd442404dc4c240cdd442414dc4c241cdec1dd442424dc4c242cdec1d9fac3`. Earlier documents that name
@@ -228,3 +229,154 @@ Numbers are those of `joint-families.md` `## Open items carried forward`.
   `x87Fsqrt*` helper is rounded from 64 to 53 bits), but in these cases it never reached a
   stored float. The item stays a known risk for inputs that land on a rounding boundary; it is
   not observable in any registered case.
+
+## Dispositions
+
+Task 7's summary of the twelve items of `joint-families.md` `## Open items carried forward` and of
+the items found on the way. The evidence for each is the item's entry under `## Open items` above
+and the timing row named. Counts: of the twelve carried items, 10 are closed, 2 partly closed and
+none still open.
+
+| # | Item | Disposition | Evidence |
+|---|---|---|---|
+| 1 | Release is unwired | Closed | Task 2 (4458316): 000299 -> 000653 -> 000633 wired; all 25 releases and every family's deleting destructors in `evidence/joint-open-items-trace-release.txt`. |
+| 2 | Deferred Scene rows 000022, 000571, 000598, 000633, 000758 | Closed | Task 2 (4458316) wrote all five; 000022's callee 000754 written by Task 6 (21b275d). 000022, 000571, 000598 and 000758 ran in the Task 6 trace. Left: 004167 (000760's island-object arm), still an `NX_ASSERT(0)` stub, listed below. |
+| 3 | Rotated-body conventions untested | Closed | Task 4 (19251a2, 686cce0, 6da86f1): every family over the rotated and posed fixtures matches; the joint rows' conventions were right; four creation-side and three setter-side candidate defects fixed. Residuals (000164, setCMassGlobal*) listed below. |
+| 4 | No simulation-path execution | Partly closed | Task 6 (a7635da, 39b40ff): the solver, impulse, projection and visualization slots of every family, D6's dump rows and the shared rows run in both DLLs and match. Still open: 004133 (only the step's 000728 calls it), 004087 (slot 3, not driven), and the step itself (000600, 000611, 000613, 000708, 004174, 004176, 000728), which the candidate does not have. |
+| 5 | PC64 narrowing at the naked x87 helpers | Partly closed | Task 6: every step, impulse and projection call re-run under 0x0f7f over the 14 joints, the row of every listed operand included; no difference. The mechanism remains, so an input on a rounding boundary could still show it; no registered case does. |
+| 6 | Foundation `NxNormalToTangents` | Closed | Task 4, with main's 560666c: two near-z axes over the identity and rotated fixtures match for every family on the first run. |
+| 7 | Phase 2/3 test targets | Closed | Task 1 (c629dab): both targets build and link; the three Phase 3 counts 0637850 moved to 0 were re-registered at 0 with the controller's approval (a2317c2); Phases 2 and 3 pass. |
+| 8 | Body +0x204 unbuilt | Closed | Task 3 (149ce42): 000797 stores 0 (now explicit in the candidate); the only non-zero writer is the step's 000611, which goes with the step (item 4's remainder). The slot differential injects 000611's element identically in both DLLs. |
+| 9 | `Joint::mScene` (+0x30) never written | Closed | Task 2: 000661 writes it on every registration; 000633 and the scene teardown clear it. |
+| 10 | SEH/GS frames on the deleting destructors | Closed | Task 5 (4e9d203): `/EHs-c-` on the 22 joint class files; every joint `??_G`/`??_E` is frameless. The remaining non-EH differences (ebp frame, `__global_delete` branch, inlined bases, dead vptr store) are recorded under item 10. |
+| 11 | Generic `createJoint` path | Closed | Task 1 (c629dab): removed; a type above 9 takes the oracle's switch default. |
+| 12 | Two sets of naked sqrt helpers | Closed | Task 1 (58e4f24): folded into `X87Sqrt.h`; all 25 helper instances byte-identical before and after. |
+
+Items found during the plan:
+
+| Item | Disposition | Evidence |
+|---|---|---|
+| Scene construction relied on zeroed memory (000647 wrote dword indices as byte offsets since 98f2625) | Closed | Scene initialisation (3f31680, f47c8cc, 0a488e1): 000647 and its sub-object helpers at the listing's byte offsets; `NxPhysicsJointAllocatorTests` with 0xcd-filled blocks matches (the candidate faulted before). |
+| Joint allocations through `nxGetSdkAllocator()` instead of `nxFoundationSDKAllocator` | Closed | Task 5 follow-up (12c5023): 36 joint sites switched; `NxPhysicsJointAllocatorTests` (allocators A and B) matches. |
+| Candidate-wide, the Scene, actor, record, shape and group allocations use `nxGetSdkAllocator()` (about 117 sites) where the oracle uses `[[0x101041bc]]` | Open, tracked separately | Recorded under the Scene initialisation item; spawned as its own follow-up task (task_1a28cda3). Observable only when the Foundation was created with a different allocator. |
+| Foundation `NxFindRotationMatrix`: float rounding and a transposed parallel arm | Closed | Task 6 (8393ee9): follows the oracle's x87 stream; 13 rotation cases registered. |
+| 000754 (the body pose from the centre-of-mass pose) was a silent stub | Closed | Task 6 (21b275d; roots through the X87Sqrt.h helpers in 8c39e5c); `reconstructed`, Phase 7 ledger `reconstructed_not_falsified`. |
+| D6JointDump.txt: FLT_MAX digits and flush timing | Open (toolchain residual, accepted) | Task 6 review (ca1f4ec, 56da3c0): UCRT's rounding-mode-dependent `%f` fixed by `legacy_stdio_float_rounding.obj`. FLT_MAX still prints as UCRT's exact integer against the 2003 CRT's 17 digits and zeros. The 2003 CRT flushes at DLL detach, UCRT at process exit. The harness unloads, calls `_flushall()` and compares the dump with FLT_MAX as float bits. |
+| 000164 (updateMassFromShapes) has no candidate body | Open | Task 4 (686cce0): the oracle's 000164 ends in 000768; the candidate's body is empty, so there is nothing to route or test. |
+| setCMassGlobalPose/Position/Orientation not tested on rotated bodies | Open | Task 4: they do not call 000768, and `NxPhysicsActorCMassTests` does not drive them rotated. |
+| 004133 and slot 3 (004087) not driven | Open | Task 6: no table call reaches 004133 (only 000728 does); the harness does not call slot 3. Part of item 4's remainder. |
+| Pulley's two-dynamic-body 004228 path not exercised | Open | Task 6: pulley's body 0 is the world, so the path that reads the uninitialised lever (joint-families `## Oracle quirks reproduced`) does not run. |
+| 004167 (000760's island-object arm) still an `NX_ASSERT(0)` stub | Open | Task 2; silent in Release (see "Deferred stubs are silent in Release" above). |
+| Scene teardown free order (+0x5b8, +0x58c) | Open | Task 2 review; no gate observes it; belongs with a faithful 000663. |
+| SSE2 `double`/CRT sqrt in JointDesc.cpp, the Scene.cpp creation path and NpActorDynamicMath.h | Open (unreachable under 0x0f7f) | Task 4 review: exact at 0x027f, the only word these rows run under in the candidate. |
+| Four oracle-called rows inlined by the compiler (000598, 000571, 004091, 004188) | Closed | Task 6 (e5f596f): `noinline`, so the trace sees them; transcript unchanged. |
+
+## Defects found by the new differentials
+
+Every one was a candidate-side defect; no joint row (the families' internal and Np rows) was wrong.
+
+| Found by | Defect | Fix |
+|---|---|---|
+| Task 4 rotated fixture (`NxPhysicsJointTests`, joint staged pair) | Actor quaternion +0x24/+0x5c from the public `NxQuat(NxMat33)` instead of 000801's x87 conversion (one bit on actor b) | 19251a2 |
+| Task 4 rotated fixture | `NxJointDesc_SetGlobalAnchor`/`SetGlobalAxis` composed the body rotation correctly only for the identity quaternion, so every rotated `createJoint` failed `desc.isValid()` | 19251a2 |
+| Task 4 rotated fixture | Creation's +0x134/+0x158/+0x124 did not follow 000768 (one bit on actor a, which moved 004378's and 004244's relative rotations) | 19251a2 |
+| Task 4 rotated fixture | +0x164 did not follow 000746 | 19251a2 |
+| Task 4 review, `NxPhysicsActorCMassTests` (seven rotated bodies) | The pose and CMass-offset setters did not end in 000768 | 686cce0 |
+| same | setGlobalPose/setGlobalOrientation (000196/000200) used `NxQuat(NxMat33)` instead of their own inline conversion | 686cce0 |
+| same | setCMassOffsetGlobalPosition/Orientation/Pose (000220/000222/000218) summed their R^T products in the wrong order | 686cce0 |
+| `NxPhysicsJointAllocatorTests` | Joint allocations and frees went to the SDK allocator, not the Foundation allocator | 12c5023 |
+| `NxPhysicsJointAllocatorTests` with a non-zeroing allocator | The Scene constructor 000647 and its helpers wrote dword indices as byte offsets, so createActor freed an uninitialised header; 002346/002415 over-zeroed | 3f31680 |
+| `NxPhysicsJointSlotTests` (internal-slot differential) | 000754 was an `NX_ASSERT(0)` stub (silent in Release), so a projection that moves a body skipped the pose update | 21b275d, 8c39e5c |
+| `NxPhysicsJointSlotTests` | Foundation `NxFindRotationMatrix` rounded to float where the oracle keeps registers, and wrote the transpose in its parallel arm | 8393ee9 |
+| `NxPhysicsJointSlotTests` (D6 dump) | UCRT's `%f` rounded at the live rounding mode (0x0f7f, chop) where the 2003 CRT rounds to nearest | ca1f4ec |
+| cdb trace of the slot differential | 000598, 000571, 004091 and 004188 inlined where the oracle calls them | e5f596f |
+
+Not found by a differential but fixed under the plan: the SEH frames and cookies on the joint
+deleting destructors (item 10, a map/disassembly check, 4e9d203).
+
+## Rate
+
+Method as in `joint-families.md` `## Rate`: rows moved are rows whose inventory `state` changed
+(`inventory.json` compared between the commits); rows written are rows given native source. The
+window runs from the plan commit 1ab382f (15:52:32) to Task 6's last commit beaedd7 (20:41:08),
+4.81 h. The implementer intervals in the timing table add up to 3.51 h (Task 5's follow-up and the
+Scene initialisation overlap by one minute).
+
+| Measure | Plan total | Per window hour | Per implementer hour |
+|---|---:|---:|---:|
+| Rows moved to `reconstructed` | 12 (Task 2: 11; Task 6: 000754) | 2.5 | 3.4 |
+| Bytes moved | 2,780 | 578 | 791 |
+| Rows written | 21 (Task 2: 18; Scene initialisation: 000647, 002346; Task 6: 000754) | 4.4 | 6.0 |
+| Bytes written | 3,999 | 831 | 1,139 |
+| Rows gaining `dynamic_proof` | 103 (Task 2: 28; Task 6: 75) | 21.4 | 29.3 |
+| Registered coverage floors 5/6/7 | 829/89/40 -> 871/403/276 (+42/+314/+236) | - | - |
+
+Per-task windows (the previous task's last commit to this task's last commit): Task 1 0.38 h,
+Task 2 0.91 h, Task 3 0.19 h, Task 4 1.04 h (with its review follow-ups), Task 5 0.84 h (with the
+allocator follow-up), Scene initialisation 0.56 h, Task 6 0.91 h. Task 7 adds about 0.5 h and moves
+no rows.
+
+**Caveats.** The row rate is not comparable with the joint-families plan's 21.4 rows/h and
+9,900 B/h. This plan's work was differentials and fixes, not new rows. Most of its time went into
+test fixtures (rotated bodies, the allocator pair, the internal-slot harness), traces, and
+candidate-side fixes outside the joint rows (actor setters, the Scene constructor, the Foundation).
+Its product is execution evidence: 103 rows gained `dynamic_proof` and the Phase 5/6/7 floors rose
+by 592 assertions. The joint-families caveats (wall-clock is not effort; windows include review
+and idle gaps) apply.
+
+## Verification
+
+Fresh configure and clean build of every target, 2026-09-25T20:48:30 to 20:52:35, on the tree at
+6a246c8 (all product changes of this plan; Task 7 changes only records):
+
+```
+cmake -S . -B build -A Win32 --fresh                  exit 0
+cmake --build build --config Release --clean-first    exit 0
+  NxPhysics.vcxproj warnings: 23 x C4005 'ARRAYSIZE' (winnt.h vs Ice/IceUtils.h), 5 x C4291
+  (FoundationSDK.cpp, PhysicsInternal.cpp, PhysicsSDK.cpp, Scene.cpp), 4 x D9025; the test
+  targets add C4273 (Geometry.cpp dllimport), C4806 (PhysicsObjectLayoutTests.cpp) and
+  LNK4217/LNK4286; no warning from Physics/src/core
+```
+
+Checks and gates on that build (`run_phase_gate.ps1 -Phase N`), 20:54:38 to 20:57:07:
+
+```
+git diff 1ab382f -- Physics/include Foundation/include: empty
+public_headers=pass (both roots, every gate)
+Ran 643 tests ... OK
+validate_inventory.py exit 0: inventory=pass, closure phase=6 closed=2 deferred=431,
+  phase=7 closed=4 deferred=557, unexplained=0
+phase 2 exit 0   3 differentials stdout_delta=0 / phase_gate=2 status=pass
+phase 3 exit 0   NxPhysicsGeometryTests, NxPhysicsKernelFuzzTests stdout_delta=0
+                 coverage_assertions_evaluated=103 floor=103 / phase_gate=3 status=pass
+phase 4 exit 0   coverage_assertions_evaluated=101 floor=101 / phase_gate=4 status=pass
+phase 5 exit 1   candidate CANDIDATE-MISSING family=vtables reason=shape finals/actor classes are Tasks 3-4
+                 gate_failure=oracle_differential:NxPhysicsObjectLayoutTests exited 1
+                 (coverage_assertions_evaluated=871 floor=871; all 12 staged-pair differentials
+                 stdout_delta=0; the documented provisional batch3268 failures=3 line unchanged)
+phase 6 exit 0   NxFoundationTangentTests, NxPhysicsJointAllocatorTests, NxPhysicsJointSlotTests,
+                 NxPhysicsJointStagedPairTests stdout_delta=0 stderr_exact=True
+                 coverage_assertions_evaluated=403 floor=403 / phase_gate=6 status=pass
+phase 7 exit 0   NxPhysicsJointAllocatorTests, NxPhysicsJointSlotTests, NxPhysicsJointStagedPairTests
+                 stdout_delta=0 / coverage_assertions_evaluated=276 floor=276 / phase_gate=7 status=pass
+```
+
+- **Phases 2 and 3** pass (open item 7); at the start of the plan both failed at `build_physics`.
+- **Phase 5** fails only on its RED-on-purpose `CANDIDATE-MISSING family=vtables` marker.
+- **Stable-ID form.** Every line in `Physics/src/core/*.cpp` matching `^\s*// phys_fn_` fullmatches
+  `\s*// phys_fn_\d{6} \(0x[0-9a-f]{8}, \d+ B\)`: 308 lines, 0 malformed, 0 duplicates, and every
+  line's RVA and size equal its inventory row's.
+- **No CRT math in core/.** `dumpbin -symbols` over the 23 `Physics/src/core` objects in
+  `build/NxPhysics.dir/Release` finds no UNDEF external named for a CRT math routine (`sqrt`,
+  `acos`, `asin`, `atan`, `atan2`, `sin`, `cos`, `tan`, `pow`, `exp`, `log`, `fmod`, `floor`,
+  `ceil`, `fabs` and their `f` forms, `__CI*`, `__libm_sse2_*`). The same scan finds
+  `__libm_sse2_sqrt_precise` in JointDesc.obj, NpActor.obj and Scene.obj (the SSE2 creation-path
+  rows recorded above), so the pattern does catch a CRT reference.
+- **work_units.json and bundles.** `work_units.py` regenerated (units=103, named=57, gaps=46;
+  only Scene/actor units' row counts moved, from Tasks 2 and 6). All 31 units from
+  `gap:NpSpringAndDamperEffector.cpp..Joint.cpp` to `gap:core\NpPrismaticJoint.cpp..opcode\IcePrunable.cpp`
+  regenerated with `unit_bundle.py`: the 28 existing bundles are unchanged, and the three gap
+  bundles the joint-families final review found missing are now generated
+  (`gap:core\RevoluteJoint.cpp..core\PrismaticJoint.cpp`,
+  `gap:core\NpRevoluteJoint.cpp..core\NpPrismaticJoint.cpp`,
+  `gap:core\NpPrismaticJoint.cpp..opcode\IcePrunable.cpp`).

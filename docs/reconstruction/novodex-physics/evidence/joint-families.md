@@ -256,19 +256,21 @@ These behaviours are in the oracle and the reconstruction keeps them.
 
 ## Open items carried forward
 
-1. (Closed by joint-open-items Task 2: release wired, see `evidence/joint-open-items.md`.) **Release is unwired.**
+Each item's disposition (closed, partly closed or open, with its evidence) is in `evidence/joint-open-items.md` `## Dispositions`, row by item number: 10 closed, 2 partly closed (4 and 5), none still open.
+
+1. [Closed; `joint-open-items.md` `## Dispositions` item 1] (Closed by joint-open-items Task 2: release wired, see `evidence/joint-open-items.md`.) **Release is unwired.**
    - `NpScene::releaseJoint` is empty and `nxSceneAddJoint` (000661) is a no-op, so joints of every
      type live until scene teardown.
    - Every family's release chain (internal deleting destructor -> 004095 -> deferred 000633) is
      written but has never run.
-2. (Closed by joint-open-items Task 2: all five written; 000754 and 004167 remain deferred.) **Deferred Scene rows 000022, 000571, 000598, 000633 and 000758 are asserting stubs.** Revolute
+2. [Closed; `joint-open-items.md` `## Dispositions` item 2] (Closed by joint-open-items Task 2: all five written; 000754 and 004167 remain deferred.) **Deferred Scene rows 000022, 000571, 000598, 000633 and 000758 are asserting stubs.** Revolute
    004356, spherical 004298 and D6 004207 reach 000022 on some projection arms. The solver slots
    need 004093's Scene record array (000598), and 004111's break path needs 000571.
-3. (Closed by joint-open-items Task 4: every family matches over rotated bodies; the defects were in the candidate's body-record writers and the joint-descriptor exports, see `evidence/joint-open-items.md`.) **Rotated-body conventions are untested.** Every family's test uses the pilot's
+3. [Closed; `joint-open-items.md` `## Dispositions` item 3] (Closed by joint-open-items Task 4: every family matches over rotated bodies; the defects were in the candidate's body-record writers and the joint-descriptor exports, see `evidence/joint-open-items.md`.) **Rotated-body conventions are untested.** Every family's test uses the pilot's
    identity-oriented, translated bodies, as the pilot's contract open issue 3 describes. Only the
    identity case of the +0x5c quaternion and +0xdc 3x3 conventions is confirmed. That covers
    004101's frame quaternions, 004378/004244's relative rotations, and the D6 pose helpers.
-4. (Closed by joint-open-items Task 6 for every slot a table call reaches: the internal-slot differential runs the solver, projection, impulse and visualization slots of every family in both DLLs and they match; 004133 stays unreached; see `evidence/joint-open-items.md`.) **No simulation-path execution.**
+4. [Partly closed; `joint-open-items.md` `## Dispositions` item 4] (Closed by joint-open-items Task 6 for every slot a table call reaches: the internal-slot differential runs the solver, projection, impulse and visualization slots of every family in both DLLs and they match; 004133 stays unreached; see `evidence/joint-open-items.md`.) **No simulation-path execution.**
    - Unexecuted rows: the solver slots, projection slots, debug visualization, the impulse slot
      (pulley 004219), the D6 dump rows, and the shared 004064, 004093, 004111, 004123, 004133,
      004135 and 004391.
@@ -276,7 +278,7 @@ These behaviours are in the oracle and the reconstruction keeps them.
      listing and by the build only.
    - The first real check for them is a simulation differential. It must expect D6JointDump.txt
      and pulley's uninitialised lever (see `## Oracle quirks reproduced`).
-5. (Measured by joint-open-items Task 6: no difference under 0x0f7f in any case; see `evidence/joint-open-items.md`.) **PC64 narrowing at the `core/JointX87.h` helpers.**
+5. [Partly closed; `joint-open-items.md` `## Dispositions` item 5] (Measured by joint-open-items Task 6: no difference under 0x0f7f in any case; see `evidence/joint-open-items.md`.) **PC64 narrowing at the `core/JointX87.h` helpers.**
    - The mechanism: the helpers take qword arguments. Under the in-step word 0x0f7f, an operand the
      reconstruction holds as an unrounded `double` is narrowed from the 64-bit register value to 53
      bits before the helper uses it, where the oracle keeps all 64 bits.
@@ -302,23 +304,23 @@ These behaviours are in the oracle and the reconstruction keeps them.
      - pulley's operands are stored floats;
      - D6 004207's `lockedX` is a `double` that only ever holds a float.
    - Nothing on the transcript runs under 0x0f7f, so none of this is observable today.
-6. (Closed by joint-open-items Task 4: near-z axes match for every family after main's Foundation fix.) **Foundation `NxNormalToTangents` defect** (Task 2). It changes the local normal that 004101 and
+6. [Closed; `joint-open-items.md` `## Dispositions` item 6] (Closed by joint-open-items Task 4: near-z axes match for every family after main's Foundation fix.) **Foundation `NxNormalToTangents` defect** (Task 2). It changes the local normal that 004101 and
    `NxJointDesc::setGlobalAxis` store for axes near z, and the tangents prismatic's 004386 builds.
    It belongs to a separate Foundation task. The joint tests avoid such axes.
-7. **Phase 2/3 test targets.** (Closed by joint-open-items Task 1: both targets build and link;
+7. [Closed; `joint-open-items.md` `## Dispositions` item 7] **Phase 2/3 test targets.** (Closed by joint-open-items Task 1: both targets build and link;
    the three Phase 3 `simulate_mismatches` counts 0637850 moved to 0 were re-registered at 0 with
    the controller's approval (a2317c2), and Phase 3 passes; see `evidence/joint-open-items.md`.)
    - `NxPhysicsInternalTests` and `NxPhysicsCollisionTests` still fail to compile (`IcePrunable.h`),
      a failure that predates the pilot.
    - Both compile `Scene.cpp`, which now constructs every joint type through `Physics/src/core`. Once the include path is
      fixed, they will also need `Physics/src/core/*.cpp` at link time.
-8. (Closed by joint-open-items Task 3: 000797 stores 0, only the step's 000611 writes non-zero; see joint-open-items-contract.md `## Body record +0x204`.) **Body +0x204 is unbuilt** (revolute contract open issue 7). The candidate's body record never
+8. [Closed; `joint-open-items.md` `## Dispositions` item 8] (Closed by joint-open-items Task 3: 000797 stores 0, only the step's 000611 writes non-zero; see joint-open-items-contract.md `## Body record +0x204`.) **Body +0x204 is unbuilt** (revolute contract open issue 7). The candidate's body record never
    writes the `JointSupportBody*` that the solver-slot rows read; every family's internal file
    reads it through the body record.
-9. (Closed by joint-open-items Task 2: 000661 writes it.) **`Joint::mScene` (+0x30) is never written.** 000661 is a no-op, so `~Joint`, 004107's false
+9. [Closed; `joint-open-items.md` `## Dispositions` item 9] (Closed by joint-open-items Task 2: 000661 writes it.) **`Joint::mScene` (+0x30) is never written.** 000661 is a no-op, so `~Joint`, 004107's false
    branch and the break paths read uninitialised memory there. Whoever implements 000661/000633
    must write it.
-10. (Closed by joint-open-items Task 5: the joint files build with `/EHs-c-`.) **SEH/GS frames on the candidate's deleting destructors.**
+10. [Closed; `joint-open-items.md` `## Dispositions` item 10] (Closed by joint-open-items Task 5: the joint files build with `/EHs-c-`.) **SEH/GS frames on the candidate's deleting destructors.**
     - The pilot recorded this for 004729. A map/disassembly check after this plan's clean build shows
       the same `push -1; push <handler>; mov eax,fs:[0]` and cookie prologue on every candidate
       `??_G`/`??_E` of the nine family classes, their Np classes and `Joint`.
@@ -327,11 +329,11 @@ These behaviours are in the oracle and the reconstruction keeps them.
       004595, 004278, 004621, 004653, 004368, 004729.
     - The generated `sub ecx,0Ch; jmp` thunks match. The cause is still uninvestigated, probably the
       EH/GS settings of these translation units, and none of these destructors has run.
-11. (Closed by joint-open-items Task 1: path removed.) **The generic `createJoint` path**
+11. [Closed; `joint-open-items.md` `## Dispositions` item 11] (Closed by joint-open-items Task 1: path removed.) **The generic `createJoint` path**
     (`nxJointConstruct`, `nxJointSizeForType`) is now reachable
     for no type. Its size table keeps the stand-in's literals, with comments naming the real sizes
     for types 8 and 9 only.
-12. (Closed by joint-open-items Task 1: folded into X87Sqrt.h.) **Two sets of naked sqrt helpers.** `Physics/src/include/core/JointX87.h` (joint files) and
+12. [Closed; `joint-open-items.md` `## Dispositions` item 12] (Closed by joint-open-items Task 1: folded into X87Sqrt.h.) **Two sets of naked sqrt helpers.** `Physics/src/include/core/JointX87.h` (joint files) and
     `Physics/src/include/X87Sqrt.h` (Geometry.cpp, commit 0637850) hold equivalent helpers;
     `jointFsqrtDot2` has the same body as `x87FsqrtDot2`. X87Sqrt.h notes that folding JointX87.h
     into it is a rename only. Not done here, to keep the joint transcript's reviewed code stable.
