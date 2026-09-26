@@ -347,6 +347,13 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_include_directories(NxPhysicsJointAllocatorTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include)
 	target_link_libraries(NxPhysicsJointAllocatorTests bcrypt)
+	# The internal-slot joint differential (joint-open-items Task 6): each
+	# family's internal visualization, step and projection slots called through
+	# the internal object's own table by slot index, under 0x027f and 0x0f7f.
+	add_executable(NxPhysicsJointSlotTests tests/PhysicsJointSlotTests.cpp)
+	target_include_directories(NxPhysicsJointSlotTests PRIVATE
+		Foundation/include Foundation/src/include Physics/include)
+	target_link_libraries(NxPhysicsJointSlotTests bcrypt)
 	# Every block the page-guarded allocator returns to these targets is filled
 	# with 0xcd instead of being left as fresh zeroed pages, so a scene, actor,
 	# shape or joint constructor that leaves a field it later reads to the
@@ -362,7 +369,8 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 			NxPhysicsActorBodyFlagTests
 			NxPhysicsActorDynamicSetterTests NxPhysicsActorMomentumTests
 			NxPhysicsActorForceTests NxPhysicsActorCMassTests
-			NxPhysicsActorShapeMutationTests NxPhysicsJointStagedPairTests)
+			NxPhysicsActorShapeMutationTests NxPhysicsJointStagedPairTests
+			NxPhysicsJointSlotTests)
 		target_compile_definitions(${nx_fill_target} PRIVATE NX_PAGE_GUARDED_FILL)
 	endforeach()
 	target_include_directories(NxPhysicsJointTests PRIVATE Foundation/include Physics/include)
