@@ -110,7 +110,12 @@ step rewrites it, and 000600 may free and reallocate that array in between.
 
 ### What +0x204 points at
 
-Not an allocation of its own. It is element k of a Scene-owned array of 0x60-byte records:
+Not an allocation of its own. It is element k of a Scene-owned array of 0x60-byte records, where
+k is the body's position in its island's body list, not a stable per-body index. 000611 reloads
+the element base from +0x5ac for every island (0x112b6, after its 000600 call) and restarts at
+element 0, so bodies in different islands are given the same elements in turn, and 000600 may
+free and reallocate the array between islands. After a step, a body's +0x204 points at the
+element its island last used, in the allocation that was current for that island:
 
 | Scene field | Meaning | Rows |
 |---|---|---|
@@ -134,7 +139,7 @@ fills one element each (record base `ebx`, `edx = ebx + 0x18`):
 | +0x1c | the body pointer | 0x112ec |
 | +0x20..+0x40 | +0x164..+0x184 (world inverse inertia, `rep movsd` of 9) | 0x112ef-0x112fd |
 | +0x5c | +0x110 (the candidate stores solverIterationCount here); also raises the global 0x1012718c to it | 0x112ff, 0x1130b-0x11316 |
-| body +0x204 | = the element | 0x11305 |
+| body +0x204 | = the element (element k of this island's pass; `ebx` restarts at `[Scene+0x5ac]` per island, 0x112b6) | 0x11305 |
 
 +0x44..+0x58 are not written here (004174 writes them, below). Then 000730 runs (thiscall on the island head body, with
 Scene +0x548/+0x54c). If the Scene has joint constraint records (+0x5bc != 0), 004176 runs.
@@ -224,10 +229,12 @@ for word once their inputs match. The conventions the pilot assumed are therefor
 - 004378 and 004244 read +0x124, +0x134 and +0x158 as written by 000768.
 
 Scope of the candidate changes:
-- The Np setters (NpActor.cpp) keep their own sequences. They are not on this transcript.
-- `nxNpActorUpdateInertiaMatrices` and `nxNpActorUpdateCMassQuaternion` are still used by
+- (Superseded by the Task 4 review follow-ups, 686cce0: the setters now end in the 000768
+  reproduction and `nxNpActorUpdateInertiaMatrices` is deleted; see `### Task 4 review follow-ups`.)
+  ~~The Np setters (NpActor.cpp) keep their own sequences. They are not on this transcript.~~
+- ~~`nxNpActorUpdateInertiaMatrices` and `nxNpActorUpdateCMassQuaternion` are still used by
   NpActor.cpp:1247-1248/1403/1569. Those paths call 000768 in the oracle (000164, 000196-000222),
-  so the same one-bit differences can be expected there on rotated bodies.
+  so the same one-bit differences can be expected there on rotated bodies.~~
 - Phase 5's registered actor lines are unchanged and still match.
 
 Dynamic evidence (cdb on the oracle pair; hardware write breakpoints on the third and fourth

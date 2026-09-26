@@ -101,8 +101,11 @@ struct JointBodyRecord
 	//! phys_fn_004374 writes through it; phys_fn_004360/004362 copy it into
 	//! JointSupportRecord::mBody). The body constructor phys_fn_000797 stores
 	//! 0 (0x1b713); the only other writer is phys_fn_000611 (0x11305), on the
-	//! simulation step, which points it at the body's element of the Scene's
-	//! +0x5ac array. The candidate has no step, so it stays 0 (Scene.cpp,
+	//! simulation step, which points it at element k of the Scene's +0x5ac
+	//! array, k the body's position in its island (the element base reloads
+	//! per island, so bodies in different islands share elements and
+	//! phys_fn_000600 may reallocate the array between islands). The
+	//! candidate has no step, so it stays 0 (Scene.cpp,
 	//! nxActorComputeMass). See joint-open-items-contract.md
 	//! "## Body record +0x204".
 	JointSupportBody*	mUnknown204;

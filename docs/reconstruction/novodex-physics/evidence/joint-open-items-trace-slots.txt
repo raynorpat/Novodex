@@ -28,7 +28,7 @@ Offsets:   module-relative, from build\Release\NxPhysics.map of that build. One 
            plus Scene.cpp's 000571 and 000598: 286 breakpoints. Two IDs on one address are
            one function.
 
-The run: 15 joints (revolute x2, prismatic, cylindrical, spherical x2, point-on-line,
+The run: 14 joints (revolute x2, prismatic, cylindrical, spherical x2, point-on-line,
 point-in-plane, distance x2, pulley, fixed, D6 x2), each over two fresh actors (pulley: the
 world and one), each taken through visualization, a 0x027f step (slots 1, 7, 6), impulse (0),
 projection (8) on each body, the same three under 0x0f7f, visualization again; revolute's first

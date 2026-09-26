@@ -305,8 +305,9 @@ These behaviours are in the oracle and the reconstruction keeps them.
 6. (Closed by joint-open-items Task 4: near-z axes match for every family after main's Foundation fix.) **Foundation `NxNormalToTangents` defect** (Task 2). It changes the local normal that 004101 and
    `NxJointDesc::setGlobalAxis` store for axes near z, and the tangents prismatic's 004386 builds.
    It belongs to a separate Foundation task. The joint tests avoid such axes.
-7. **Phase 2/3 test targets.** (Build closed by joint-open-items Task 1; Phase 3 red on three
-   registered counts 0637850 moved, see `evidence/joint-open-items.md`.)
+7. **Phase 2/3 test targets.** (Closed by joint-open-items Task 1: both targets build and link;
+   the three Phase 3 `simulate_mismatches` counts 0637850 moved to 0 were re-registered at 0 with
+   the controller's approval (a2317c2), and Phase 3 passes; see `evidence/joint-open-items.md`.)
    - `NxPhysicsInternalTests` and `NxPhysicsCollisionTests` still fail to compile (`IcePrunable.h`),
      a failure that predates the pilot.
    - Both compile `Scene.cpp`, which now constructs every joint type through `Physics/src/core`. Once the include path is

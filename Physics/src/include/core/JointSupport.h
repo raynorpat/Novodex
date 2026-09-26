@@ -38,7 +38,10 @@
 // phys_fn_000600 (`count * 0x60 + 4` bytes, 0x11023-0x1102e). phys_fn_000611,
 // on the simulation thread's step (002400 -> 000659 -> 000655 -> 000611),
 // fills one element per island body and is the only writer of body+0x204
-// (0x11305); phys_fn_000613 then copies +0x00/+0x10/+0x44/+0x50 back to the
+// (0x11305). The elements are per island, not per body: 000611 reloads the
+// base from +0x5ac for each island (0x112b6) and starts again at element 0,
+// so bodies in different islands share elements, and 000600 may reallocate
+// the array between islands; phys_fn_000613 then copies +0x00/+0x10/+0x44/+0x50 back to the
 // body through phys_fn_000708. The body constructor phys_fn_000797 stores 0
 // at +0x204 (0x1b713). See units/joint-open-items-contract.md
 // "## Body record +0x204".

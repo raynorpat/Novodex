@@ -274,8 +274,10 @@ static inline void nxNpActorComposeRotation(const float* q, float* r)
 //   +0x158 = R * p + t (p the mass-frame position at +0x100): x stays in the
 //            register until the store, y and z round the product sum first;
 //   +0x124 = the quaternion of +0x134, by the conversion 000801 uses;
-// and calls the world-tensor helper 0x16e80 for +0x164. Only the actor
-// creation path calls it here; the Np setters keep their own sequences.
+// and calls the world-tensor helper 0x16e80 for +0x164. The actor creation
+// path calls it, and so do the pose and CMass-offset setters, through
+// nxNpActorRefreshCMass (NpActor.cpp), as every oracle setter ends in
+// `call 0x10017f10`.
 static inline void nxNpActorUpdateMassFrame(unsigned char* record)
 	{
 	float r[9];

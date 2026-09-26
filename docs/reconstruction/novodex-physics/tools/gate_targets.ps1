@@ -1679,14 +1679,13 @@ $NxRequiredCoverageLines = [ordered] @{
 
         # Matrix A [SPHERE][CAPSULE] and the sphere's own slot 5.
         #
-        # phys_fn_001377 gates on its default-word half only. Under 0x0f7f it
-        # differs on 13 of 2,940,000, and every one is hit.worldImpact or the
+        # phys_fn_001377 gated on its default-word half only. Under 0x0f7f it
+        # differed on 13 of 2,940,000, and every one was hit.worldImpact or the
         # distance derived from it -- fields NxRaySphereIntersect writes, not
-        # fields this row computes. The recovered matrix has just put that
-        # export inside the simulation step for the first time, which is the
-        # third time this program has had a Task 2 row reopened by a
-        # reachability discovery. The count is registered so it fails if it
-        # moves either way, including toward zero.
+        # fields this row computes. The recovered matrix had put that export
+        # inside the simulation step for the first time, the third time this
+        # program had a Task 2 row reopened by a reachability discovery, and
+        # the count of 13 was registered so that any move would fail.
         # 0637850 (Geometry.cpp square roots through fsqrt at the live control
         # word instead of __CIsqrt) removed that in-step difference: the count
         # went from 13 to 0, and NxRaySphereIntersect now matches under 0x0f7f.
