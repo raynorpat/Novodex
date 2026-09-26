@@ -288,104 +288,115 @@ bool NxDiagonalizeInertiaTensor(const NxMat33 & denseInertia, NxVec3 & diagonalI
 adapted by Adam M.
  */
 //void fromToRotation(float from[3], float to[3], float mtx[3][3]) 
+//
+// Written to the oracle's instruction stream (NxFoundation.dll 0x10005f20-
+// 0x10006223), the NxNormalToTangents rule: a value the oracle keeps on the
+// x87 stack is a double here, a value it stores is a float. The source above
+// (Moeller/Hughes) is the same algorithm; what differs is where the 2003
+// compiler rounded:
+// - v = from x to (the source above forms to x from and flips the index
+//   pair of every element, which gives the same common arm); v.x and v.y
+//   stay in registers, v.z is stored;
+// - the dot product e is stored (`fst`), but the sign test compares the
+//   unrounded sum with 0 and then negates the stored float;
+// - common arm: h = 1 / (e + 1) and hvx, hvxy stay in registers; hvz, hvxz,
+//   hvyz are stored; mtx(1,1) forms (v.y * v.y) * h;
+// - parallel arm: u, v and x are stored floats; c1, c2 and c3 stay in
+//   registers, c3 as (u.v * c2) * c1, and element (i, j) (row i, the
+//   oracle stores row by row) as (u[j] c3) v[i] - ((u[j] u[i]) c1 +
+//   (v[j] c2) v[i]). The source above writes that value to (j, i), the
+//   transpose, i.e. the inverse rotation.
+// Stack semantics: `fsubp st(1)` (DE E9) leaves st(1) - st(0).
+// The joint projection rows (004356, 004298, 004207) call this export with
+// nearly parallel axes, where a float rounding of v.x or h moves the result by
+// many ULPs (joint-open-items Task 6).
 void NxFindRotationMatrix(const NxVec3 & from, const NxVec3 & to, NxMat33 & mtx)
 	{
-	NxVec3 v;
-	NxReal e, h, f;
-	static const NxReal EPSILON = 0.000001f;
-	
-	v.cross(to, from);
-	e = from.dot(to);
-	f = (e < 0)? -e:e;
-	if (f > 1.0 - EPSILON)     /* "from" and "to"-vector almost parallel */
+	// 0x5f2b-0x5f51: v = from x to; x and y kept, z stored.
+	const NxF64 vx = static_cast<NxF64>(to.z) * from.y - static_cast<NxF64>(to.y) * from.z;
+	const NxF64 vy = static_cast<NxF64>(to.x) * from.z - static_cast<NxF64>(to.z) * from.x;
+	const NxReal vz = static_cast<NxReal>(static_cast<NxF64>(to.y) * from.x - static_cast<NxF64>(to.x) * from.y);
+
+	// 0x5f55-0x5f8b: e = (from.x to.x + from.z to.z) + from.y to.y.
+	const NxF64 eWide = (static_cast<NxF64>(from.x) * to.x + static_cast<NxF64>(to.z) * from.z)
+		+ static_cast<NxF64>(to.y) * from.y;
+	const NxReal e = static_cast<NxReal>(eWide);
+	const NxReal f = (eWide < 0.0) ? -e : e;
+	if (f > 0.9999990000000025)	/* "from" and "to"-vector almost parallel */
 		{
-		NxVec3 u, v; /* temporary storage vectors */
-		NxVec3 x;       /* vector most nearly orthogonal to "from" */
-		NxReal c1, c2, c3; /* coefficients for later use */
-		int i, j;
-		
-		x[0] = (from[0] > 0.0)? from[0] : -from[0];
-		x[1] = (from[1] > 0.0)? from[1] : -from[1];
-		x[2] = (from[2] > 0.0)? from[2] : -from[2];
-		
-		if (x[0] < x[1])
+		// 0x5f95-0x6045: |from| per component, then the axis most nearly
+		// orthogonal to it. x0 and x1 are stored, x2 stays in a register
+		// (its value is 0 or 1 either way).
+		NxReal x0 = (from.x > 0.0) ? from.x : -from.x;
+		NxReal x1 = (from.y > 0.0) ? from.y : -from.y;
+		NxReal x2 = (from.z > 0.0) ? from.z : -from.z;
+		if (x0 < x1)
 			{
-			if (x[0] < x[2])
+			if (x0 < x2)
 				{
-				x[0] = 1.0; x[1] = x[2] = 0.0;
+				x0 = 1.0f; x1 = 0.0f; x2 = 0.0f;
 				}
 			else
 				{
-				x[2] = 1.0; x[0] = x[1] = 0.0;
+				x0 = 0.0f; x1 = 0.0f; x2 = 1.0f;
 				}
 			}
 		else
 			{
-			if (x[1] < x[2])
+			if (x1 < x2)
 				{
-				x[1] = 1.0; x[0] = x[2] = 0.0;
+				x0 = 0.0f; x1 = 1.0f; x2 = 0.0f;
 				}
 			else
 				{
-				x[2] = 1.0; x[0] = x[1] = 0.0;
+				x0 = 0.0f; x1 = 0.0f; x2 = 1.0f;
 				}
 			}
-		
-		u[0] = x[0] - from[0]; u[1] = x[1] - from[1]; u[2] = x[2] - from[2];
-		v[0] = x[0] - to[0];   v[1] = x[1] - to[1];   v[2] = x[2] - to[2];
-		
-		c1 = 2.0f / u.dot(u);
-		c2 = 2.0f / v.dot(v);
-		c3 = c1 * c2  * u.dot(v);
-		
-		for (i = 0; i < 3; i++) 
+
+		// 0x6045-0x6084: u and v stored.
+		NxReal u[3], w[3];
+		u[0] = x0 - from.x; u[1] = x1 - from.y; u[2] = x2 - from.z;
+		w[0] = x0 - to.x;   w[1] = x1 - to.y;   w[2] = x2 - to.z;
+
+		// 0x6088-0x60ea: c1, c2, c3 in registers.
+		const NxF64 c1 = 2.0f / ((static_cast<NxF64>(u[2]) * u[2] + static_cast<NxF64>(u[1]) * u[1])
+			+ static_cast<NxF64>(u[0]) * u[0]);
+		const NxF64 c2 = 2.0f / ((static_cast<NxF64>(w[2]) * w[2] + static_cast<NxF64>(w[1]) * w[1])
+			+ static_cast<NxF64>(w[0]) * w[0]);
+		const NxF64 uv = (static_cast<NxF64>(w[2]) * u[2] + static_cast<NxF64>(w[1]) * u[1])
+			+ static_cast<NxF64>(w[0]) * u[0];
+		const NxF64 c3 = (uv * c2) * c1;
+
+		// 0x60f0-0x6177: row i, columns j = 0, 1, 2, then the diagonal + 1.0.
+		for (int i = 0; i < 3; i++)
 			{
-			for (j = 0; j < 3; j++) 
+			for (int j = 0; j < 3; j++)
 				{
-				mtx(j,i) =  - c1 * u[i] * u[j] - c2 * v[i] * v[j] + c3 * v[i] * u[j];
+				const NxF64 t = (u[j] * c3) * w[i];
+				const NxF64 s = (static_cast<NxF64>(u[j]) * u[i]) * c1 + (w[j] * c2) * w[i];
+				mtx(i,j) = static_cast<NxReal>(t - s);
 				}
-			mtx(i,i) += 1.0;
+			mtx(i,i) = static_cast<NxReal>(mtx(i,i) + 1.0);
 			}
 		}
 	else  /* the most common case, unless "from"="to", or "from"=-"to" */
 		{
-#if 0
-		/* unoptimized version - a good compiler will optimize this. */
-		/* h = (1.0 - e)/DOT(v, v); old code */
-		h = 1.0/(1.0 + e);      /* optimization by Gottfried Chen */
-		mtx(0,0) = e + h * v[0] * v[0];
-		mtx(1,0) = h * v[0] * v[1] - v[2];
-		mtx(2,0) = h * v[0] * v[2] + v[1];
-		
-		mtx(0,1) = h * v[0] * v[1] + v[2];
-		mtx(1,1) = e + h * v[1] * v[1];
-		mtx(2,1) = h * v[1] * v[2] - v[0];
-		
-		mtx(0,2) = h * v[0] * v[2] - v[1];
-		mtx(1,2) = h * v[1] * v[2] + v[0];
-		mtx(2,2) = e + h * v[2] * v[2];
-#else
-		/* ...otherwise use this hand optimized version (9 mults less) */
-		NxReal hvx, hvz, hvxy, hvxz, hvyz;
-		/* h = (1.0 - e)/DOT(v, v); old code */
-		h = 1.0f/(1.0f + e);      /* optimization by Gottfried Chen */
-		hvx = h * v[0];
-		hvz = h * v[2];
-		hvxy = hvx * v[1];
-		hvxz = hvx * v[2];
-		hvyz = hvz * v[1];
-		mtx(0,0) = e + hvx * v[0];
-		mtx(1,0) = hvxy - v[2];
-		mtx(2,0) = hvxz + v[1];
-		
-		mtx(0,1) = hvxy + v[2];
-		mtx(1,1) = e + h * v[1] * v[1];
-		mtx(2,1) = hvyz - v[0];
-		
-		mtx(0,2) = hvxz - v[1];
-		mtx(1,2) = hvyz + v[0];
-		mtx(2,2) = e + hvz * v[2];
-#endif
+		// 0x6187-0x6220.
+		const NxF64 h = 1.0f / (e + 1.0);
+		const NxF64 hvx = vx * h;
+		const NxReal hvz = static_cast<NxReal>(vz * h);
+		const NxF64 hvxy = vy * hvx;
+		const NxReal hvxz = static_cast<NxReal>(vz * hvx);
+		const NxReal hvyz = static_cast<NxReal>(vy * hvz);
+		mtx(0,0) = static_cast<NxReal>(vx * hvx + e);
+		mtx(0,1) = static_cast<NxReal>(hvxy - vz);
+		mtx(0,2) = static_cast<NxReal>(vy + hvxz);
+		mtx(1,0) = static_cast<NxReal>(vz + hvxy);
+		mtx(1,1) = static_cast<NxReal>((vy * vy) * h + e);
+		mtx(1,2) = static_cast<NxReal>(hvyz - vx);
+		mtx(2,0) = static_cast<NxReal>(hvxz - vy);
+		mtx(2,1) = static_cast<NxReal>(vx + hvyz);
+		mtx(2,2) = static_cast<NxReal>(static_cast<NxF64>(vz) * hvz + e);
 		}
 	}
 
