@@ -15,8 +15,8 @@ $NxPhaseTestTargets = [ordered] @{
     '3' = @('NxPhysicsGeometryTests', 'NxPhysicsKernelFuzzTests')
     '4' = @()
     '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests', 'NxPhysicsActorForceTests', 'NxPhysicsActorCMassTests', 'NxPhysicsActorShapeMutationTests')
-    '6' = @('NxPhysicsJointStagedPairTests', 'NxFoundationTangentTests', 'NxPhysicsJointAllocatorTests')
-    '7' = @('NxPhysicsJointStagedPairTests', 'NxPhysicsJointAllocatorTests')
+    '6' = @('NxPhysicsJointStagedPairTests', 'NxFoundationTangentTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests')
+    '7' = @('NxPhysicsJointStagedPairTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests')
     '8' = @()
 }
 
@@ -1096,6 +1096,154 @@ $NxRequiredCoverageLines = [ordered] @{
         'case=allocator family=distance window=release allocator=foundation mallocs=0 frees=2 reallocs=0 sizes=none',
         'case=allocator family=distance window=release allocator=physics mallocs=0 frees=0 reallocs=0 sizes=none'
     )
+    # Joint-open-items Task 6: the internal-slot differential. Each family's
+    # internal joint (public +0x18) has its visualization (4), emulated step
+    # (1, 7, 6), impulse (0) and projection (8) slots called through its own
+    # table by index, under 0x027f and again under 0x0f7f; revolute's break
+    # test (2) last; then NxFindRotationMatrix over both of its arms. Per case:
+    # creation, the renderer call count and first call, the step's record
+    # count, record 0 under each control word, the joint words the 0x0f7f step
+    # changed, the first 0x0f7f impulse and projection changes, release.
+    # Copied verbatim from the ORACLE side. Before this task the candidate
+    # differed in every projection that moved a body (000754 was a stub) and
+    # in revolute's second projection and the rotation cases (the Foundation's
+    # NxFindRotationMatrix rounded where the oracle's does not).
+    'NxPhysicsJointSlotTests' = @(
+        'slots family=revolute config=0 created=yes',
+        'slots family=revolute config=0 call=vis cw=027f calls=24',
+        'slots family=revolute config=0 call=vis cw=027f vis n=0 arrow p=3fd067e6.3f34c3b4.bee0427e d=3eb851ec.3ef5c28f.3f4ccccd length=3f800000 scale=3f900000 color=00ffffff',
+        'slots family=revolute config=0 call=step cw=027f records count=4 capacity=4 window=00000000.00000004',
+        'slots family=revolute config=0 call=step cw=027f record=0 words=3eb851ec.3ef5c28f.3f4ccccd.cdc80403.SUPPORT0.SUPPORT1.cdcdcdcd.cdcdcdcd.cdcdcdcd.cdcdcdcd.cdcdcdcd.cdcdcdcd.JOINT.c01695f9.00000000.3c2b8c05.3b1075ea.00000000.7f7fffff.00000000',
+        'slots family=revolute config=0 call=step cw=0f7f record=0 words=3ebb91ad.3f0e0ae6.3f3f37d6.cdc80403.SUPPORT0.SUPPORT1.cdcdcdcd.cdcdcdcd.cdcdcdcd.cdcdcdcd.cdcdcdcd.cdcdcdcd.JOINT.c01e89d4.00000000.3c2b8bd9.3b1075c4.00000000.7f7fffff.00000000',
+        'slots family=revolute config=0 call=step cw=0f7f joint changed 160=ffffffff>00000000 164=00000000>00000004 1ac=c144deaf>c00423f6 1b0=4086d390>3f34fd97 1b4=c0be710b>bf7fa64f 1b8=402b353b>402ab44f 1bc=bece90ed>bed16932 1c0=bf401ac2>bf421e7a',
+        'slots family=revolute config=0 call=impulse cw=0f7f support0 changed 000=40a7ecfc>3f897fb9 004=bf20c560>3e82d190 008=bf41b8d2>3d627b60 010=be2d04e1>3e8c9888 014=bffe92d5>be49d309 018=bfcd25ee>bf8981e7',
+        'slots family=revolute config=0 call=project0 cw=0f7f body0 changed 018=3e60ced3>3e60cecb 01c=3f6f3a70>3f6f3ad5 020=3df12294>3df12098 024=3d6894d1>3d6892dc 028=3e5951be>3e59516c 02c=bdcd2ad8>bdcd2bb3 030=3f786cf1>3f786cf3 124=3d6894d1>3d6892de',
+        'slots family=revolute config=0 call=break cw=027f state=2 record0_flags=cdc80423',
+        'slots family=revolute config=0 released=yes',
+        'slots family=revolute config=1 created=yes',
+        'slots family=revolute config=1 call=vis cw=027f calls=9',
+        'slots family=revolute config=1 call=vis cw=027f vis n=0 arrow p=3fd067e6.3f34c3b4.bee0427e d=3eb851ec.3ef5c28f.3f4ccccd length=3f800000 scale=3f900000 color=00ffffff',
+        'slots family=revolute config=1 call=step cw=027f records count=4 capacity=4 window=00000000.00000004',
+        'slots family=revolute config=1 call=step cw=027f record=0 words=3eb851ec.3ef5c28f.3f4ccccd.cdca6e02.SUPPORT0.SUPPORT1.cdcdcdcd.cdcdcdcd.cdcdcdcd.cdcdcdcd.cdcdcdcd.cdcdcdcd.JOINT.00000000.40200000.3fa61e05.3f84e4d1.00000000.42200000.00000000',
+        'slots family=revolute config=1 call=step cw=0f7f record=0 words=3eb851eb.3ef5c28e.3f4ccccd.cdca6e02.SUPPORT0.SUPPORT1.cdcdcdcd.cdcdcdcd.cdcdcdcd.cdcdcdcd.cdcdcdcd.cdcdcdcd.JOINT.00000000.40200000.3fa61e06.3f84e4d1.00000000.42200000.00000000',
+        'slots family=revolute config=1 call=step cw=0f7f joint changed 160=ffffffff>00000000 164=00000000>00000004 1ac=c144deaf>c144debb 1b0=4086d390>4086d395 1b8=402b353b>402b353c 1bc=bece90ed>bece90ef 1c8=3f00a861>3f00a862 1cc=3e052da0>3e052da1',
+        'slots family=revolute config=1 call=impulse cw=0f7f support0 changed 000=40a7ecfc>40a7ed09 004=bf20c560>bf20c572 008=bf41b8d2>bf41b8ec 010=be2d04e1>be2d04f1 014=bffe92d5>bffe92e3 018=bfcd25ee>bfcd25ed',
+        'slots family=revolute config=1 released=yes',
+        'slots family=prismatic config=0 created=yes',
+        'slots family=prismatic config=0 call=vis cw=027f calls=3',
+        'slots family=prismatic config=0 call=vis cw=027f vis n=0 arrow p=3fd067e6.3f34c3b4.bee0427e d=3eb851ec.3ef5c28f.3f4ccccd length=3f800000 scale=3f900000 color=00ffffff',
+        'slots family=prismatic config=0 call=step cw=027f records count=7 capacity=8 window=00000000.00000007',
+        'slots family=prismatic config=0 call=step cw=027f record=0 words=00000000.bf525e01.3f11e1dd.cdc80001.SUPPORT0.SUPPORT1.bf0cb7eb.bf5b0796.bf9dec91.3ee4643c.3f614771.3fa26e17.JOINT.c110f496.00000000.3ede372e.3e9b8d06.00000000.7f7fffff.00000000',
+        'slots family=prismatic config=0 call=step cw=0f7f record=0 words=00000000.bf525e00.3f11e1dd.cdc80001.SUPPORT0.SUPPORT1.bf0cb7eb.bf5b0794.bf9dec8f.3ee46439.3f614773.3fa26e18.JOINT.c110f495.00000000.3ede3730.3e9b8d07.00000000.7f7fffff.00000000',
+        'slots family=prismatic config=0 call=step cw=0f7f joint changed 160=ffffffff>00000000 164=00000000>00000007',
+        'slots family=prismatic config=0 released=yes',
+        'slots family=cylindrical config=0 created=yes',
+        'slots family=cylindrical config=0 call=vis cw=027f calls=3',
+        'slots family=cylindrical config=0 call=vis cw=027f vis n=0 arrow p=3fd067e6.3f34c3b4.bee0427e d=3eb851ec.3ef5c28f.3f4ccccd length=3f800000 scale=3f900000 color=00ffffff',
+        'slots family=cylindrical config=0 call=step cw=027f records count=4 capacity=8 window=00000000.00000004',
+        'slots family=cylindrical config=0 call=step cw=027f record=0 words=00000000.bf525e01.3f11e1dd.cdc80001.SUPPORT0.SUPPORT1.bf0cb7eb.bf5b0796.bf9dec91.3ee4643c.3f614771.3fa26e17.JOINT.c110f496.00000000.3ede372e.3e9b8d06.00000000.7f7fffff.00000000',
+        'slots family=cylindrical config=0 call=step cw=0f7f record=0 words=00000000.bf525e00.3f11e1dd.cdc80001.SUPPORT0.SUPPORT1.bf0cb7eb.bf5b0794.bf9dec8f.3ee46439.3f614773.3fa26e18.JOINT.c110f495.00000000.3ede3730.3e9b8d07.00000000.7f7fffff.00000000',
+        'slots family=cylindrical config=0 call=step cw=0f7f joint changed 160=ffffffff>00000000 164=00000000>00000004',
+        'slots family=cylindrical config=0 released=yes',
+        'slots family=spherical config=0 created=yes',
+        'slots family=spherical config=0 call=vis cw=027f calls=72',
+        'slots family=spherical config=0 call=vis cw=027f vis n=0 line p0=3f00cfcc.3f34c3b4.bee0427e p1=403033f3.3f34c3b4.bee0427e color=00ff0000',
+        'slots family=spherical config=0 call=step cw=027f records count=5 capacity=8 window=00000000.00000005',
+        'slots family=spherical config=0 call=step cw=027f record=0 words=3ebc5009.3f144939.3f3a3b08.cdc80403.SUPPORT0.SUPPORT1.bf0cb7eb.bf5b0794.bf9dec8f.3ee46439.3f614773.3fa26e18.JOINT.c0c7a287.00000000.3bbe4a63.3ad97996.00000000.7f7fffff.00000000',
+        'slots family=spherical config=0 call=step cw=0f7f record=0 words=3ebc5009.3f144939.3f3a3b08.cdc80403.SUPPORT0.SUPPORT1.bf0cb7eb.bf5b0794.bf9dec8f.3ee46439.3f614773.3fa26e18.JOINT.c0c7a288.00000000.3bbe4a62.3ad97995.00000000.7f7fffff.00000000',
+        'slots family=spherical config=0 call=step cw=0f7f joint changed 160=ffffffff>00000000 164=00000000>00000005 1d8=3fc00001>3fc00000 1e8=3e930ed0>3e930ecf 1f0=bc78906d>bb26d657 1f4=3cd8b5c1>3b9174ce 1f8=bce697b7>bb9ac618 1fc=3c2bb604>3c2bb603',
+        'slots family=spherical config=0 call=impulse cw=0f7f support0 changed 000=bde7972e>bdd85dc9 004=3f1d03dc>3f1abc94 008=3e805c90>3e80630b 010=3efa4395>3ef5f904 014=3e734d62>3e6cc2d6 018=bed1e8df>bee02886',
+        'slots family=spherical config=0 released=yes',
+        'slots family=spherical config=1 created=yes',
+        'slots family=spherical config=1 call=vis cw=027f calls=10',
+        'slots family=spherical config=1 call=vis cw=027f vis n=0 line p0=3f00cfcc.3f34c3b4.bee0427e p1=403033f3.3f34c3b4.bee0427e color=00ff0000',
+        'slots family=spherical config=1 call=step cw=027f records count=1 capacity=8 window=00000000.00000001',
+        'slots family=spherical config=1 call=step cw=027f record=0 words=00000000.00000000.00000000.cdc80026.SUPPORT0.SUPPORT1.00000000.00000000.00000000.00000000.00000000.00000000.JOINT.00000000.00000000.00000000.00000000.00000000.00000000.00000000',
+        'slots family=spherical config=1 call=step cw=0f7f record=0 words=00000000.00000000.00000000.cdc80026.SUPPORT0.SUPPORT1.00000000.00000000.00000000.00000000.00000000.00000000.JOINT.00000000.00000000.00000000.00000000.00000000.00000000.00000000',
+        'slots family=spherical config=1 call=step cw=0f7f joint changed 160=ffffffff>00000000 164=00000000>00000001 1d8=3fc00001>3fc00000 1e8=3e930ed0>3e930ecf 1f0=c144deb0>c144debb 1f4=4086d390>4086d395 1f8=c0be710c>c0be710b 208=402b353b>402b353c',
+        'slots family=spherical config=1 call=impulse cw=0f7f support0 changed 000=40a7ecfe>40a7ed09 004=bf20c560>bf20c571 008=bf41b8d2>bf41b8e9 010=be2d04d8>be2d04eb 014=bffe92d9>bffe92e3 018=bfcd25eb>bfcd25ee',
+        'slots family=spherical config=1 released=yes',
+        'slots family=point_on_line config=0 created=yes',
+        'slots family=point_on_line config=0 call=vis cw=027f calls=11',
+        'slots family=point_on_line config=0 call=vis cw=027f vis n=0 line p0=3f00cfcc.3f34c3b4.bee0427e p1=403033f3.3f34c3b4.bee0427e color=00ff0000',
+        'slots family=point_on_line config=0 call=step cw=027f records count=2 capacity=8 window=00000000.00000002',
+        'slots family=point_on_line config=0 call=step cw=027f record=0 words=3f6ed5f7.be3da9ea.be9e0d99.cdc80001.SUPPORT0.SUPPORT1.bc7ce295.3dff3c0f.bdf8acd4.3b762f75.3b9184df.3c0e59dc.JOINT.c15073dd.00000000.40399027.4001e4e8.00000000.7f7fffff.00000000',
+        'slots family=point_on_line config=0 call=step cw=0f7f record=0 words=3f6ed5f7.be3da9e9.be9e0d98.cdc80001.SUPPORT0.SUPPORT1.bc7ce27b.3dff3c02.bdf8acc3.3b762fa1.3b91853e.3c0e59e1.JOINT.c15073eb.00000000.4039902a.4001e4ea.00000000.7f7fffff.00000000',
+        'slots family=point_on_line config=0 call=step cw=0f7f joint changed 160=ffffffff>00000000 164=00000000>00000002',
+        'slots family=point_on_line config=0 released=yes',
+        'slots family=point_in_plane config=0 created=yes',
+        'slots family=point_in_plane config=0 call=vis cw=027f calls=11',
+        'slots family=point_in_plane config=0 call=vis cw=027f vis n=0 line p0=3f00cfcc.3f34c3b4.bee0427e p1=403033f3.3f34c3b4.bee0427e color=00ff0000',
+        'slots family=point_in_plane config=0 call=step cw=027f records count=1 capacity=8 window=00000000.00000001',
+        'slots family=point_in_plane config=0 call=step cw=027f record=0 words=3eb851ec.3ef5c28f.3f4ccccd.cdc80001.SUPPORT0.SUPPORT1.bdb7c706.bfc52d15.3f76f2e4.bc1f7fe2.3faff1a4.bf5202de.JOINT.c10f5d42.00000000.3ec1fbe2.3e87c9eb.00000000.7f7fffff.00000000',
+        'slots family=point_in_plane config=0 call=step cw=0f7f record=0 words=3eb851eb.3ef5c28e.3f4ccccd.cdc80001.SUPPORT0.SUPPORT1.bdb7c715.bfc52d13.3f76f2e2.bc1f7feb.3faff1a3.bf5202dd.JOINT.c10f5d48.00000000.3ec1fbe5.3e87c9ec.00000000.7f7fffff.00000000',
+        'slots family=point_in_plane config=0 call=step cw=0f7f joint changed 160=ffffffff>00000000 164=00000000>00000001',
+        'slots family=point_in_plane config=0 released=yes',
+        'slots family=distance config=0 created=yes',
+        'slots family=distance config=0 call=vis cw=027f calls=1',
+        'slots family=distance config=0 call=vis cw=027f vis n=0 line p0=3fc00001.3f400000.bf000000 p1=3fe0cfca.3f298768.bec084fc color=00f0f0f0',
+        'slots family=distance config=0 call=step cw=027f records count=1 capacity=8 window=00000000.00000001',
+        'slots family=distance config=0 call=step cw=027f record=0 words=bf5c3b75.3e96d37a.bed50a82.cdc80200.SUPPORT0.SUPPORT1.3e80ac5e.3f86f2ce.3e683efb.be88733e.bf867fbe.be458af9.JOINT.c2287c85.00000000.3c337b5f.3b337b5f.00000000.7f7fffff.00000000',
+        'slots family=distance config=0 call=step cw=0f7f record=0 words=bf5c3b77.3e96d37e.bed50a7d.cdc80200.SUPPORT0.SUPPORT1.3e80ac5e.3f86f2cc.3e683f03.be88733e.bf867fbc.be458b04.JOINT.c2287c83.00000000.3c337b5e.3b337b5e.00000000.7f7fffff.00000000',
+        'slots family=distance config=0 call=step cw=0f7f joint changed 160=ffffffff>00000000 164=00000000>00000001',
+        'slots family=distance config=0 released=yes',
+        'slots family=distance config=1 created=yes',
+        'slots family=distance config=1 call=vis cw=027f calls=1',
+        'slots family=distance config=1 call=vis cw=027f vis n=0 line p0=3fc00001.3f400000.bf000000 p1=3fe0cfca.3f298768.bec084fc color=00f0f0f0',
+        'slots family=distance config=1 call=step cw=027f records count=1 capacity=8 window=00000000.00000001',
+        'slots family=distance config=1 call=step cw=027f record=0 words=bf5c3b75.3e96d37a.bed50a82.cdc80001.SUPPORT0.SUPPORT1.3e80ac5e.3f86f2ce.3e683efb.be88733e.bf867fbe.be458af9.JOINT.c141f218.00000000.3f4739f8.3f0b7561.00000000.7f7fffff.00000000',
+        'slots family=distance config=1 call=step cw=0f7f record=0 words=bf5c3b77.3e96d37e.bed50a7d.cdc80001.SUPPORT0.SUPPORT1.3e80ac5e.3f86f2cc.3e683f03.be88733e.bf867fbc.be458b04.JOINT.c141f211.00000000.3f4739fc.3f0b7563.00000000.7f7fffff.00000000',
+        'slots family=distance config=1 call=step cw=0f7f joint changed 160=ffffffff>00000000 164=00000000>00000001',
+        'slots family=distance config=1 released=yes',
+        'slots family=pulley config=0 created=yes',
+        'slots family=pulley config=0 call=vis cw=027f calls=2',
+        'slots family=pulley config=0 call=vis cw=027f vis n=0 line p0=3fc00000.3f400000.bf000000 p1=00000000.40a00000.00000000 color=00f0f0f0',
+        'slots family=pulley config=0 call=step cw=027f records count=1 capacity=8 window=00000000.00000001',
+        'slots family=pulley config=0 call=step cw=027f record=0 words=00000000.00000000.00000000.cdc80026.00000000.SUPPORT1.00000000.00000000.00000000.00000000.00000000.00000000.JOINT.00000000.00000000.00000000.00000000.00000000.00000000.00000000',
+        'slots family=pulley config=0 call=step cw=0f7f record=0 words=00000000.00000000.00000000.cdc80026.00000000.SUPPORT1.00000000.00000000.00000000.00000000.00000000.00000000.JOINT.00000000.00000000.00000000.00000000.00000000.00000000.00000000',
+        'slots family=pulley config=0 call=step cw=0f7f joint changed 160=ffffffff>00000000 164=00000000>00000001 1a0=3f6feefc>3f6feefb 1a4=3de1d1de>3de1d1dd 1b0=be0c4320>be0c431f 1b4=3f0d232b>3f0d232a 1b8=b2000000>31800000 1bc=3fd3b4c0>3fd3b4bf',
+        'slots family=pulley config=0 call=impulse cw=0f7f joint changed 1d8=00000000>b71d5139 1dc=00000000>c316c103',
+        'slots family=pulley config=0 released=yes',
+        'slots family=fixed config=0 created=yes',
+        'slots family=fixed config=0 call=vis cw=027f calls=0',
+        'slots family=fixed config=0 call=step cw=027f records count=6 capacity=8 window=00000000.00000006',
+        'slots family=fixed config=0 call=step cw=027f record=0 words=3f800000.00000000.00000000.cdc80001.SUPPORT0.SUPPORT1.00000000.bf800000.3f000000.00000000.00000000.00000000.JOINT.c16ffff0.00000000.3fa5d3ad.3f682858.00000000.7f7fffff.00000000',
+        'slots family=fixed config=0 call=step cw=0f7f record=0 words=3f800000.00000000.00000000.cdc80001.SUPPORT0.SUPPORT1.00000000.bf800000.3f000000.00000000.00000000.00000000.JOINT.c16fffff.00000000.3fa5d3ae.3f682859.00000000.7f7fffff.00000000',
+        'slots family=fixed config=0 call=step cw=0f7f joint changed 160=ffffffff>00000000 164=00000000>00000006',
+        'slots family=fixed config=0 released=yes',
+        'slots family=d6 config=0 created=yes',
+        'slots family=d6 config=0 call=vis cw=027f calls=10',
+        'slots family=d6 config=0 call=vis cw=027f vis n=0 line p0=3f00cfcc.3f34c3b4.bee0427e p1=403033f3.3f34c3b4.bee0427e color=00ff0000',
+        'slots family=d6 config=0 call=step cw=027f records count=2 capacity=8 window=00000000.00000002',
+        'slots family=d6 config=0 call=step cw=027f record=0 words=3eb851ed.3ef5c290.3f4ccccd.cdc80001.SUPPORT0.SUPPORT1.3d23d70c.bfb0a3d7.3f4f5c2a.bc1f8001.3faff1a4.bf5202df.JOINT.c10f5d4e.00000000.3ed8d5bf.3e97c8d2.00000000.7f7fffff.00000000',
+        'slots family=d6 config=0 call=step cw=0f7f record=0 words=3ebda8a6.3ef4add1.3f4be72a.cdc80001.SUPPORT0.SUPPORT1.3d1ab0f7.bfb09f61.3f4f725a.bc1eba35.3faff0a2.bf51f876.JOINT.c06ffff0.00000000.3ed8d893.3e97cacd.00000000.7f7fffff.00000000',
+        'slots family=d6 config=0 call=step cw=0f7f joint changed 160=ffffffff>00000000 164=00000000>00000002',
+        'slots family=d6 config=0 call=project0 cw=0f7f body0 changed 018=3d1b7c80>3d1b7d20 01c=3f86e0ba>3f86e0b8 020=3dad696c>3dad6940 024=3dd0c160>3dd0c15a 028=3e54cbfd>3e54cbf5 02c=bdd8987a>bdd8986f 124=3dd0c161>3dd0c15e 128=3e54cbfd>3e54cbf9',
+        'slots family=d6 config=0 released=yes',
+        'slots family=d6 config=1 created=yes',
+        'slots family=d6 config=1 call=vis cw=027f calls=10',
+        'slots family=d6 config=1 call=vis cw=027f vis n=0 line p0=3f00cfcc.3f34c3b4.bee0427e p1=403033f3.3f34c3b4.bee0427e color=00ff0000',
+        'slots family=d6 config=1 call=step cw=027f records count=2 capacity=8 window=00000000.00000002',
+        'slots family=d6 config=1 call=step cw=027f record=0 words=3e3a5a12.3e87e084.3ec3eb64.cdc80403.SUPPORT0.SUPPORT1.3d1ab0f7.bfb09f61.3f4f725a.bc1eba35.3faff0a2.bf51f876.JOINT.3f217401.00000000.40a61b8a.40688cf4.00000000.7f7fffff.00000000',
+        'slots family=d6 config=1 call=step cw=0f7f record=0 words=3e39ec22.3e948d13.3eba9e87.cdc80403.SUPPORT0.SUPPORT1.3d1ab0f7.bfb09f61.3f4f725a.bc1eba35.3faff0a2.bf51f876.JOINT.b5cc3ed7.00000000.40a60552.40686dd8.00000000.7f7fffff.00000000',
+        'slots family=d6 config=1 call=step cw=0f7f joint changed 160=ffffffff>00000000 164=00000000>00000002',
+        'slots family=d6 config=1 call=project0 cw=0f7f body0 changed 018=bb2bf400>bb2be400 01c=3f80dd59>3f80dd56 020=bc9a8d40>bc9a8d80 024=3d2311fb>3d2311f9 028=3e5188dc>3e5188d5 02c=bdd5bd77>bdd5bd6d 030=3f78f240>3f78f23f 124=3d2311fc>3d2311fd',
+        'slots family=d6 config=1 released=yes',
+        'rotation case=0 from=3f800000.00000000.00000000 to=00000000.3f800000.00000000 m=00000000.bf800000.00000000.3f800000.00000000.00000000.00000000.00000000.3f800000',
+        'rotation case=1 from=3eb851ec.3ef5c28f.3f4ccccd to=be533c2f.3f6da3b4.3e9e6d23 m=3f563dbd.bea9dba7.bedeec97.3f08de2a.3f2a8262.3f05273a.3df085ff.bf2b0679.3f3c1a29',
+        'rotation case=2 from=3e0b5948.bf73dc3e.3e8b5948 to=3f1f0fe8.3dd41535.bf46d3e2 m=3edb5939.beb4fa4f.3f54e225.3f5bc3d2.be030cb4.befe4a8f.3e905fae.3f6d38e5.3e7e945e',
+        'rotation case=3 from=3eb851ec.3ef5c28f.3f4ccccd to=3eb82498.3ef68c03.3f4c9a6f m=3f7ffffb.ba3c8fae.b5167aee.3a3c8fae.3f7fffe6.3ad183d7.b51e29f4.bad183d7.3f7fffea',
+        'rotation case=4 from=bf71865b.3ea1043e.3dd6b052 to=3f00a514.bf00a514.bf341a4f m=bf1bf947.3d0bf191.bf4acf3b.3f2a92fe.3f104fa0.bef9eb07.3edc1d66.bf534465.bebb8151',
+        'rotation case=10 from=3dcdd4ed.3f341a4f.3f341a4f to=3dcdd4ed.3f341a4f.3f341a4f m=3f800000.26000000.26000000.25800000.3f800000.a6000000.25800000.a6000000.3f800000',
+        'rotation case=11 from=3ea1043e.3f71865b.3dd6b052 to=3ea1043e.3f71865b.3dd6b052 m=3f800000.25000000.00000000.25000000.3f800000.00000000.00000000.00000000.3f800000',
+        'rotation case=12 from=3f4cfeaf.3dccfeaf.3f172f07 to=3f4cfeaf.3dccfeaf.3f172f07 m=3f800000.00000000.00000000.00000000.3f800000.00000000.a5800000.00000000.3f800000',
+        'rotation case=13 from=3f4cfeaf.3f172f07.3dccfeaf to=3f4cfeaf.3f172f07.3dccfeaf m=3f800000.00000000.00000000.a5800000.3f800000.00000000.00000000.00000000.3f800000',
+        'rotation case=14 from=3dcdd4ed.3f341a4f.3f341a4f to=bdcdd4ed.bf341a4f.bf341a4f m=bf800000.b38912fb.b38912fb.338912fb.00000000.bf800000.338912fb.bf800000.00000000',
+        'rotation case=15 from=bea1043e.3f71865b.bdd6b052 to=3ea1043e.bf71865b.3dd6b052 m=3f4ccccc.3f19999b.31e3f4e6.3f19999b.bf4ccccc.b2aaf7ab.b1e3f4e6.32aaf7ab.bf800000',
+        'rotation case=16 from=3eb851ec.3ef5c28f.3f4ccccd to=3eb84fa8.3ef5cca5.3f4cca48 m=3f800000.3886318d.b87bdad6.b8862d85.3f800000.39031810.387be36d.b9031708.3f800000',
+        'rotation case=17 from=bf4cfeaf.3dccfeaf.bf172f07 to=bf4cfe27.3dcd32a1.bf172ea2 m=3f800000.38a7df04.33155384.b8a7df03.3f800000.b8776f58.b3299baa.38776f57.3f800000',
+        'export=NxFindRotationMatrix present=yes'
+    )
     'NxFoundationTangentTests' = @(
         'tangent sweep unit=120000 threshold=60000 scaled=60000 digest=5db0093f',
         'tangent coverage arm_z=93923 arm_xy=146112',
@@ -2090,9 +2238,9 @@ $NxPhaseCoverageFloor = [ordered] @{
     '4' = 101  # 34 for NxPhysicsAssetTests, 67 for NxPhysicsThirdPartyTests
     '5' = 871  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines
                # (RED on purpose: vtables family open)
-    '6' = 257  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
-               # + 12 joint-allocator
-    '7' = 130  # the 118 + 12 STAGED-PAIR assertions; the oracle-differential assertions
+    '6' = 391  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
+               # + 12 joint-allocator + 134 joint-slot
+    '7' = 264  # the 118 + 12 + 134 STAGED-PAIR assertions; the oracle-differential assertions
                # belong to NxPhysicsJointDescTests and NxPhysicsJointTests, which phase 7
                # does not run
     '8' = 0
@@ -2130,6 +2278,7 @@ $NxRegisteredTestTargets = @(
     'NxPhysicsExportTests',
     'NxPhysicsGeometryTests',
     'NxPhysicsJointAllocatorTests',
+    'NxPhysicsJointSlotTests',
     'NxPhysicsJointStagedPairTests',
     'NxPhysicsKernelFuzzTests',
     'NxPhysicsSDKTests'
