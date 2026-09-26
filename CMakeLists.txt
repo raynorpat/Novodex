@@ -106,6 +106,15 @@ target_link_options(NxPhysics PRIVATE /MAP /OPT:NOREF /OPT:NOICF)
 		"/WHOLEARCHIVE:$<TARGET_FILE:NxQhull>")
 endif()
 target_link_libraries(NxPhysics NxFoundation NxQhull NxOpcode)
+# UCRT's printf rounds %f at the live x87 rounding mode (VS2019 16.2+); the
+# oracle's 2003 static CRT always rounds its decimal digits to nearest in
+# software. D6's dump rows (004188-004192) print from inside the simulation
+# step's word 0x0f7f (round toward zero), where the two gave different last
+# digits (joint-open-items Task 6). The linker option object restores the
+# legacy rounding for NxPhysics.dll's own printf calls only.
+if(MSVC)
+	target_link_options(NxPhysics PRIVATE legacy_stdio_float_rounding.obj)
+endif()
 set_target_properties(NxPhysics PROPERTIES LINKER_LANGUAGE CXX)
 
 target_include_directories(NxPhysics PRIVATE
