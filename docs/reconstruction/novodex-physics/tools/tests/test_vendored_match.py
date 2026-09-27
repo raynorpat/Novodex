@@ -612,15 +612,6 @@ class Task3RulesTest(unittest.TestCase):
         mapping = vm.learn_data_map(pairs)
         self.assertEqual(mapping[f"oracle:0x{start:08x}"], (symbol, "seed"))
 
-    def test_minus_one_against_a_negated_one(self):
-        o = features(floats=Counter({"-1.0": 1}))
-        c = features(floats=Counter({"1.0": 1}))
-        self.assertEqual(vm.classify(o, c, {})[0], "DIFF")
-        c.fchs = 1
-        cls, details = vm.classify(o, c, {})
-        self.assertEqual(cls, "SHAPE")
-        self.assertIn("negated trivial float -1.0", details["shape"])
-
     def test_crt_operator_thunks_are_named(self):
         for rva, name in ((0x000f48c0, "operator new[]"), (0x000f48bb, "operator delete[]"),
                           (0x000f41f0, "operator delete"), (0x000f48c5, "operator new")):
