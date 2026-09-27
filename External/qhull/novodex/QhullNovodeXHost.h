@@ -54,12 +54,27 @@
 extern "C" {
 #endif
 
+/* [vtable+0x00], qh_printbegin's qh_PRINToff header (io.c NOVODEX [3],
+   0x0006c727): (dim, numpoints, numfacets, totneighbors/2) */
+void  qhNovodeXOffBegin(int dim, int numpoints, int numfacets, int numridges);
+/* [vtable+0x04], qh_printpointid's 3-d coordinates (io.c NOVODEX [1],
+   0x00067f84 and its five inlined copies) */
+void  qhNovodeXPoint3(float x, float y, float z);
+/* [vtable+0x08], qh_printfacet3vertex's point ids (io.c NOVODEX [2],
+   0x00067c7a) */
+void  qhNovodeXFacet3Vertex(int count, int *pointids);
+/* [vtable+0x0c], qh_printfacets' qh_PRINTsize (io.c NOVODEX [4],
+   0x0006d458) */
+void  qhNovodeXSize(float totarea, float totvol);
 /* [vtable+0x10] */
 int   qhNovodeXFprintf(FILE *stream, const char *format, ...);
 /* [vtable+0x14] */
 void *qhNovodeXMalloc(size_t size);
 /* [vtable+0x18] */
 void  qhNovodeXFree(void *memory);
+/* [vtable+0x1c], qh_initialhull's narrow-hull warning (poly2.c NOVODEX [1],
+   0x0007965a) */
+void  qhNovodeXNarrowHull(void);
 /* [vtable+0x20], reached from qh_errexit at 0x00084800 */
 void  qhNovodeXErrexit(int exitcode);
 

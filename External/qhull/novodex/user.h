@@ -37,9 +37,8 @@
  *     argument promotion makes a 32-bit float impossible in a variadic call, so
  *     +0x04 is a typed method taking three floats and not any spelling of
  *     fprintf. io.c's printers were restructured to call the host object
- *     directly. That restructuring is NOT reconstructed here: vendoring stock
- *     io.c with this macro reproduces the +0x10 traffic and none of the ten
- *     sites above, which is a divergence this file declares rather than hides.
+ *     directly. That restructuring is reconstructed in the io.c and poly2.c
+ *     overlays (their NOVODEX blocks), not by this macro.
  *
  *     The other eight non-+0x10 sites are not diagnostics: 0x0006dade,
  *     0x0006dbb3, 0x0006de24 (+0x14) and 0x0006dc74 (+0x18) are mem.c's, see

@@ -199,6 +199,10 @@ ORACLE_KNOWN = {
     0x00001000: "`vector constructor iterator'",   # phase3-narrow-phase.md, phys_fn_000001
     0x00001030: "`vector destructor iterator'",    # phase3-narrow-phase.md, phys_fn_000002
     0x000f7a3c: "ftol",                             # phys_fn_005825: the fistp/fild _ftol2 body
+    0x000f4dc0: "ftol",                             # phys_fn_005719: _ftol2_sse (stmxcsr/fnstcw
+                                                    # check, then 0x000fc7f1); qh_nextfurthest
+    0x000f50a0: "strstr",                           # phys_fn_005732: qh_init_qhull_command's
+                                                    # strstr(qhull_command, ".EXE"/".exe")
 }
 
 # The NovodeX host seams. The oracle reaches the host inline (a virtual call through a global
@@ -206,7 +210,12 @@ ORACLE_KNOWN = {
 # call counts as the oracle call tokens it stands for ("@rva" = the oracle row at that RVA).
 # Sources: External/qhull/novodex/QhullNovodeXHost.h, External/opcode/novodex/OpcodeNovodeXHost.h.
 HOST_SEAMS = {
+    "qhNovodeXOffBegin": ["icall[host]+0x0"],
+    "qhNovodeXPoint3": ["icall[host]+0x4"],
+    "qhNovodeXFacet3Vertex": ["icall[host]+0x8"],
+    "qhNovodeXSize": ["icall[host]+0xc"],
     "qhNovodeXFprintf": ["icall[host]+0x10"],
+    "qhNovodeXNarrowHull": ["icall[host]+0x1c"],
     "qhNovodeXMalloc": ["icall[host]+0x14"],
     "qhNovodeXFree": ["icall[host]+0x18"],
     "qhNovodeXErrexit": ["icall[host]+0x20"],

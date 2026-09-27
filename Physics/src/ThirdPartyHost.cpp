@@ -65,11 +65,31 @@ bool opcNovodeXSetIceError(const char* /*message*/, const char* /*file*/, int /*
 }
 
 //////////////////////////////////////////////////////////////////////////////
-// qhull -- all four are shims for the Task 2b class at .data:0x00125080
+// qhull -- all nine are shims for the Task 2b class at .data:0x00125080
+
+void qhNovodeXOffBegin(int /*dim*/, int /*numpoints*/, int /*numfacets*/, int /*numridges*/)
+{
+}
+
+void qhNovodeXPoint3(float /*x*/, float /*y*/, float /*z*/)
+{
+}
+
+void qhNovodeXFacet3Vertex(int /*count*/, int* /*pointids*/)
+{
+}
+
+void qhNovodeXSize(float /*totarea*/, float /*totvol*/)
+{
+}
 
 int qhNovodeXFprintf(FILE* /*stream*/, const char* /*format*/, ...)
 {
 	return 0;
+}
+
+void qhNovodeXNarrowHull()
+{
 }
 
 void* qhNovodeXMalloc(size_t size)

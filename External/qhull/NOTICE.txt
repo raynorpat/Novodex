@@ -57,6 +57,14 @@ course of reconstructing what NovodeX did.
                  novodex/qhull_a.h, novodex/mem.h, novodex/user.h,
                  novodex/QhullNovodeXHost.h.  See MODIFICATIONS.md.
 
+4.  Modified by: the NovodeX Physics reconstruction project.
+    Date:        2026-09-27.
+    Reason:      to reproduce the rest of modification 1: Qhull's geometry
+                 printers in io.c and the narrow-hull warning in poly2.c hand
+                 their data to the host engine instead of formatting it.
+                 Files: novodex/io.c, novodex/poly2.c,
+                 novodex/QhullNovodeXHost.h.  See MODIFICATIONS.md.
+
     (Append one entry per further change.  Clause 3 requires a name, a date and
     a reason for every modification, so this file grows rather than being
     rewritten.)
