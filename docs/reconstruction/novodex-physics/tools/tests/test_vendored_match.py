@@ -540,6 +540,73 @@ class IcallTagTest(unittest.TestCase):
         self.assertEqual(run(b"\x8b\x41\x08\xff\x50\x04\xc3").calls, ["icall[fptr]+0x4"])
 
 
+class Task3RulesTest(unittest.TestCase):
+    def test_register_call_through_a_vtable_slot_is_the_memory_call(self):
+        # mov eax,[ecx]; mov edx,[eax+8]; call edx  ==  mov eax,[ecx]; call [eax+8]
+        register = run(b"\x8b\x01\x8b\x50\x08\xff\xd2\xc3")
+        memory = run(b"\x8b\x01\xff\x50\x08\xc3")
+        self.assertEqual(register.calls, ["icall[obj]+0x8"])
+        self.assertEqual(register.calls, memory.calls)
+        self.assertEqual(register.icall_reg, 0)
+        # the slot load is the call's operand, not a field read
+        self.assertEqual(register.fields, memory.fields)
+
+    def test_register_call_through_an_absolute_slot_stays_a_register_call(self):
+        asm = Asm(TEXT).raw(b"\x8b\x35").abs32(DATA).raw(b"\xff\xd6\xc3")  # mov esi,[g]; call esi
+        feats = run(asm)
+        self.assertEqual([c for c in feats.calls if c.startswith("icall")], [])
+        self.assertEqual(feats.icall_reg, 1)
+
+    def test_trivial_constructor_fnptr_and_iterator_drop_out(self):
+        extra = {TEXT + 0x200: Asm(TEXT + 0x200).raw(b"\x8b\xc1\xc3"),
+                 TEXT + 0x210: body(lambda a: a.ret(), TEXT + 0x210)}
+        asm = Asm(TEXT).push_addr(TEXT + 0x200).call(TEXT + 0x210).ret()
+        self.assertEqual(run(asm, extra=extra).data, ["fnptr:" + vm.TRIVIAL_CTOR_TOKEN])
+        o = features(calls=[vm.VECTOR_CTOR_ITERATOR], data=["fnptr:" + vm.TRIVIAL_CTOR_TOKEN])
+        cls, details = vm.classify(o, features(), {})
+        self.assertEqual(cls, "SHAPE")
+        self.assertIn("oracle vector constructor iterator over " + vm.TRIVIAL_CTOR_TOKEN,
+                      details["shape"])
+
+    def test_iterator_over_a_real_constructor_needs_that_constructor_inlined(self):
+        o = features(calls=[vm.VECTOR_CTOR_ITERATOR], data=["fnptr:Node::Node"])
+        cls, details = vm.classify(o, features(), {})
+        self.assertEqual(cls, "DIFF")
+        self.assertEqual(details["calls"], ["-Node::Node"])
+        inner = features(strings=Counter({"str:ctor": 1}))
+        o = features(calls=[vm.VECTOR_CTOR_ITERATOR], data=["fnptr:Node::Node"])
+        cls, details = vm.classify(o, features(strings=Counter({"str:ctor": 1})), {},
+                                   expand_o=lambda i: inner if i == "Node::Node" else None)
+        self.assertEqual(cls, "SHAPE")
+
+    def test_float_stored_as_an_integer_immediate(self):
+        rdata = bytearray(rdata_blob())
+        rdata[0x28:0x2c] = struct.pack("<f", 2.0)
+        # fld dword [2.0]; mov eax,ecx; fstp dword [ecx+0xc]
+        code = Asm(TEXT).raw(b"\xd9\x05").abs32(RDATA + 0x28).raw(b"\x8b\xc1\xd9\x59\x0c\xc3")
+        image = make_image({TEXT: code}, bytes(rdata))
+        cand = vm.extract(image, [TEXT], [(TEXT, TEXT + 0x100)], lambda t, j: None,
+                          lambda t: None)
+        orac = run(b"\xc7\x41\x0c\x00\x00\x00\x40\xc3")        # mov dword [ecx+0xc], 2.0f
+        self.assertEqual(cand.const_store_loads, Counter({"2.0": 1}))
+        cls, details = vm.classify(orac, cand, {})
+        self.assertEqual(cls, "SHAPE")
+        self.assertIn("float 2.0 stored as an immediate on the other side", details["shape"])
+        # stored to a different field, it stays a difference
+        elsewhere = run(b"\xc7\x41\x10\x00\x00\x00\x40\xc3")
+        self.assertEqual(vm.classify(elsewhere, cand, {})[0], "DIFF")
+
+    def test_float_used_in_arithmetic_is_not_a_store(self):
+        feats = run(Asm(TEXT).fld_dword(RDATA + 0x10).raw(b"\xd8\xc1\xd9\x59\x0c\xc3"))
+        self.assertEqual(feats.const_loads, Counter({"0.5": 1}))
+        self.assertEqual(feats.const_store_loads, Counter())
+
+    def test_crt_operator_thunks_are_named(self):
+        for rva, name in ((0x000f48c0, "operator new[]"), (0x000f48bb, "operator delete[]"),
+                          (0x000f41f0, "operator delete"), (0x000f48c5, "operator new")):
+            self.assertEqual(vm.ORACLE_KNOWN[rva], name)
+
+
 class ReviewClassTest(unittest.TestCase):
     @staticmethod
     def accessed(*accesses):

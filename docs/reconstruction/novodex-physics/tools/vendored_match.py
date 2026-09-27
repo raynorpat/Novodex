@@ -47,7 +47,11 @@ Features (every relocated operand is resolved through the image's base relocatio
                Imports are their normalised name, so a UCRT import meets a static-CRT row.
                Memory-indirect calls are "icall[<base>]+0x<disp>", <base> being where the
                called pointer came from (see _icall_tag: host, gobj, getter, obj, fptr, ret, ?);
-               register calls only count (shape `icall_reg`, usually a cached import).
+               a register call whose register was just loaded from [reg+disp] (not the stack,
+               not an absolute slot) is that same memory call, and the slot load is not a
+               field; other register calls only count (shape `icall_reg`, usually a cached
+               import). A function pointer to `mov eax, ecx; ret` is "fnptr:<trivial
+               constructor>".
                `rep stos`/`rep movs`/`repe cmps` count as memset/memcpy/memcmp. CRT helpers are
                folded (CRT_FOLDS); DROPPED_CALLS (/GS, the UCRT stream accessor) are dropped. A
                candidate call to a NovodeX host wrapper (HOST_SEAMS) counts as the oracle's
@@ -122,7 +126,13 @@ Comparison
     field bytes that each lie in a wider access of their own side which also covers bytes the
     other side touches (a narrower or wider access to the same field; two adjacent one-byte
     fields are not); field and bit tokens that differ only between the "derived" and "other"
-    classes, which classification merges into one pointer class ("this" stays apart).
+    classes, which classification merges into one pointer class ("this" stays apart); a
+    one-sided float constant whose every load only feeds fst/fstp stores, each matched by an
+    integer store of the same bits to the same field (or any frame slot) on the other side
+    (`fld [FLT_MAX]; fstp [this+0x84]` against `mov [this+0x84], 0x7f7fffff`). Before the
+    inlining check, a one-sided `vector constructor iterator' call is unwrapped: the
+    constructor it is passed becomes a call (the other compiler loops inline), and a trivial
+    constructor drops out with the iterator.
 
 Classes (a row takes the first that applies)
     MISSING    no candidate symbol. The oracle callers of the row are resolved to candidate
@@ -203,6 +213,14 @@ ORACLE_KNOWN = {
                                                     # check, then 0x000fc7f1); qh_nextfurthest
     0x000f50a0: "strstr",                           # phys_fn_005732: qh_init_qhull_command's
                                                     # strstr(qhull_command, ".EXE"/".exe")
+    # The static CRT's global operators. Ghidra's function ID names the two jmp thunks after
+    # the functions they jump to; the bodies say which operator each is (VC7.1 new.cpp,
+    # newaop.cpp, delete.cpp, delete2.cpp): PlanesCollider::InitQuery's `new Plane[n]` calls
+    # 0x000f48c0 and its DELETEARRAY 0x000f48bb, a collider's deleting destructor 0x000f41f0.
+    0x000f48c5: "operator new",                     # phys_fn_005702: _nh_malloc(size, 1)
+    0x000f48c0: "operator new[]",                   # phys_fn_005701: jmp 0x000f48c5
+    0x000f41f0: "operator delete",                  # phys_fn_005668: jmp _free (0x000f4734)
+    0x000f48bb: "operator delete[]",                # phys_fn_005700: jmp 0x000f41f0
 }
 
 # The NovodeX host seams. The oracle reaches the host inline (a virtual call through a global
@@ -240,6 +258,12 @@ X87_CONSTANTS = {"fldz": 0.0, "fld1": 1.0, "fldpi": 3.141592653589793,
                  "fldlg2": 0.3010299956639812, "fldln2": 0.6931471805599453}
 
 STOP_MNEMONICS = frozenset({"ret", "retf", "int3", "hlt", "ud2"})
+
+# `mov eax, ecx; ret`: a constructor with nothing to do. The 2003 compiler still runs it over
+# an array through the vector constructor iterator; a 2026 one emits nothing.
+TRIVIAL_CONSTRUCTOR = b"\x8b\xc1\xc3"
+TRIVIAL_CTOR_TOKEN = "<trivial constructor>"
+VECTOR_CTOR_ITERATOR = "`vector constructor iterator'"
 FRAME_REGISTERS = frozenset({"esp", "ebp"})
 SCALAR_DTOR = "`scalar deleting destructor'"
 VECTOR_DTOR = "`vector deleting destructor'"
@@ -812,6 +836,10 @@ class Features:
     x87ops: set = field(default_factory=set)
     jccpairs: Counter = field(default_factory=Counter)   # report only
     stores: Counter = field(default_factory=Counter)     # report only
+    const_loads: Counter = field(default_factory=Counter)        # float key -> fld [constant]
+    const_store_loads: Counter = field(default_factory=Counter)  # ... that only feed stores
+    const_store_fields: Counter = field(default_factory=Counter)  # (class, offset, float key)
+    imm_store_fields: Counter = field(default_factory=Counter)    # (class, offset, float key)
 
     def merge(self, other):
         self.calls.extend(other.calls)
@@ -834,6 +862,10 @@ class Features:
         self.x87ops |= other.x87ops
         self.jccpairs.update(other.jccpairs)
         self.stores.update(other.stores)
+        self.const_loads.update(other.const_loads)
+        self.const_store_loads.update(other.const_store_loads)
+        self.const_store_fields.update(other.const_store_fields)
+        self.imm_store_fields.update(other.imm_store_fields)
 
 
 _CS = None
@@ -942,6 +974,11 @@ def extract(image, entries, extent, resolve_code, resolve_data):
             ordered.append(item)
     ordered = Ordered(ordered)
     feats.frame = any(i.mnemonic == "mov" and i.op_str == "ebp, esp" for i in ordered)
+    ordered.call_feeders = {}
+    for position, insn in enumerate(ordered):
+        feeder = _register_call_feeder(insn, (ordered, position))
+        if feeder is not None:
+            ordered.call_feeders[feeder] = position
     for position, insn in enumerate(ordered):
         _features_of(image, insn, feats, resolve_code, resolve_data,
                      tails.get(insn.address), inside, (ordered, position))
@@ -984,6 +1021,7 @@ def _features_of(image, insn, feats, resolve_code, resolve_data, tail, inside, c
         feats.x87ops.add(X87_OPS[m])
     if context is not None:
         _report_pairs(insn, feats, context)
+        _constant_stores(image, insn, feats, context)
     if m in X87_CONSTANTS:
         feats.floats[repr(X87_CONSTANTS[m])] += 1
     relocated = set(_relocated_values(image, insn))
@@ -1002,7 +1040,11 @@ def _features_of(image, insn, feats, resolve_code, resolve_data, tail, inside, c
                 tag = _icall_tag(image, insn, op, context)
                 feats.calls.append(f"icall[{tag}]+0x{op.mem.disp & 0xffffffff:x}")
         else:
-            feats.icall_reg += 1       # through a register: often a cached import address
+            ident = _register_call(image, insn, context)
+            if ident:
+                feats.calls.append(ident)
+            else:
+                feats.icall_reg += 1   # through a register: often a cached import address
         return
     string_op = m.startswith(("rep ", "repe ", "repne "))
     if m.startswith("rep stos"):
@@ -1064,6 +1106,8 @@ def _features_of(image, insn, feats, resolve_code, resolve_data, tail, inside, c
                 continue
             if m == "lea" or string_op:
                 continue
+            if context is not None and context[1] in getattr(context[0], "call_feeders", {}):
+                continue               # the slot load of a register call: the call, not a field
             base = insn.reg_name(op.mem.base) if op.mem.base else None
             if base is None or base == "esp" or (base == "ebp" and feats.frame):
                 continue
@@ -1111,6 +1155,124 @@ def _report_pairs(insn, feats, context):
         return
     cls = _base_class(ordered, position, base)
     feats.stores[f"{cls}:{_hex(offset)}={value}"] += 1
+
+
+def _store_field(insn, op, ordered, position, frame):
+    """(class, offset) a store to op names: a structure field (pointer classes merged, as
+    classification merges them), or ("stack", None) for any frame slot."""
+    if not op.mem.base or op.mem.index:
+        return None
+    base = insn.reg_name(op.mem.base)
+    if base == "esp" or (base == "ebp" and frame):
+        return ("stack", None)
+    offset = _signed(op.mem.disp, 4)
+    if offset < 0:
+        return None
+    cls = _base_class(ordered, position, base)
+    return ("this" if cls == "this" else "ptr", offset)
+
+
+def _bits_key(value):
+    raw = struct.pack("<I", value & 0xffffffff)
+    return _float_key(struct.unpack("<f", raw)[0], raw)
+
+
+def _constant_stores(image, insn, feats, context, window=6):
+    """How a float constant reaches memory, for the one rule that needs it: one compiler
+    writes `fld [constant]; fstp [field]`, the other `mov [field], <the same bits>`.
+
+    const_loads        every fld of a 4-byte read-only constant, by float key
+    const_store_loads  those whose value only goes to memory: the next x87 instructions
+                       (within `window`; non-x87 ones skipped, a branch ends the search)
+                       are fst/fstp to a field or a frame slot, ending in fstp
+    const_store_fields (class, offset, key) for each of those stores
+    imm_store_fields   (class, offset, key) for every 4-byte `mov [field], imm32`, and
+                       `mov [field], reg` whose reg was last set by `mov reg, imm32`
+    """
+    ordered, position = context
+    ops = insn.operands
+    m = insn.mnemonic
+    frame = feats.frame
+    if (m == "fld" and ops and ops[0].type == x86.X86_OP_MEM and ops[0].size == 4
+            and not ops[0].mem.base and not ops[0].mem.index):
+        target = (ops[0].mem.disp & 0xffffffff) - image.base
+        section = image.section_of(target)
+        raw = image.read(target, 4) if section is not None and not section.writable else None
+        if raw is None:
+            return
+        key = _float_key(struct.unpack("<f", raw)[0], raw)
+        feats.const_loads[key] += 1
+        stores = []
+        for later in range(position + 1, min(len(ordered), position + 1 + window)):
+            nxt = ordered[later]
+            if _is_float_insn(nxt) != "x87":
+                if nxt.group(x86.X86_GRP_JUMP) or nxt.mnemonic in STOP_MNEMONICS \
+                        or nxt.mnemonic == "call":
+                    return
+                continue
+            nops = nxt.operands
+            if nxt.mnemonic not in ("fst", "fstp") or not nops or nops[0].type != x86.X86_OP_MEM:
+                return
+            where = _store_field(nxt, nops[0], ordered, later, frame)
+            if where is None:
+                return
+            stores.append(where)
+            if nxt.mnemonic == "fstp":
+                feats.const_store_loads[key] += 1
+                for cls, offset in stores:
+                    feats.const_store_fields[(cls, offset, key)] += 1
+                return
+        return
+    if m == "mov" and len(ops) == 2 and ops[0].type == x86.X86_OP_MEM and ops[0].size == 4:
+        value = None
+        if ops[1].type == x86.X86_OP_IMM:
+            value = ops[1].imm
+        elif ops[1].type == x86.X86_OP_REG:
+            w = _last_writer(ordered, position, insn.reg_name(ops[1].reg), 8)
+            if w is not None:
+                wops = ordered[w].operands
+                if (ordered[w].mnemonic == "mov" and len(wops) == 2
+                        and wops[1].type == x86.X86_OP_IMM):
+                    value = wops[1].imm
+        if value is None or not value & 0xffffffff:
+            return
+        where = _store_field(insn, ops[0], ordered, position, frame)
+        if where is not None:
+            feats.imm_store_fields[(where[0], where[1], _bits_key(value))] += 1
+
+
+def _register_call_feeder(insn, context, window=8):
+    """Position of the `mov reg, [base+disp]` that loads the target of `call reg`, when base
+    is a register (a vtable or a structure) other than the stack or frame; else None."""
+    if insn.mnemonic != "call" or not insn.operands \
+            or insn.operands[0].type != x86.X86_OP_REG:
+        return None
+    ordered, position = context
+    w = _last_writer(ordered, position, insn.reg_name(insn.operands[0].reg), window)
+    if w is None:
+        return None
+    writer = ordered[w]
+    wops = writer.operands
+    if writer.mnemonic != "mov" or len(wops) != 2 or wops[1].type != x86.X86_OP_MEM:
+        return None
+    mem = wops[1].mem
+    if not mem.base or mem.index or writer.reg_name(mem.base) in FRAME_REGISTERS:
+        return None               # an absolute slot: a cached import or a global pointer
+    return w
+
+
+def _register_call(image, insn, context):
+    """`mov reg, [base+disp]; ...; call reg` is the call `call [base+disp]` makes, and gets
+    the same icall token; None for any other register call."""
+    if context is None:
+        return None
+    w = _register_call_feeder(insn, context)
+    if w is None:
+        return None
+    ordered = context[0]
+    writer = ordered[w]
+    op = writer.operands[1]
+    return f"icall[{_icall_tag(image, writer, op, (ordered, w))}]+0x{op.mem.disp & 0xffffffff:x}"
 
 
 def _loaded_field(insn, ops, context, window=6):
@@ -1345,6 +1507,8 @@ def _data_ref(image, insn, target, mem_op, feats, resolve_code, resolve_data, in
     if section.executable:
         if mem_op is not None or inside(target):
             feats.switch += 1
+        elif image.read(target, 3) == TRIVIAL_CONSTRUCTOR:
+            feats.data.append("fnptr:" + TRIVIAL_CTOR_TOKEN)
         else:
             ident = resolve_code(target, False)
             feats.data.append("fnptr:" + (ident or "self"))
@@ -1786,6 +1950,46 @@ def _expand_inlining(o_sets, c_sets, expand_o, expand_c, data_map, rounds=3):
     return notes
 
 
+def _unwrap_vector_iterator(o_sets, c_sets):
+    """A vector constructor iterator call on one side only, with the constructor it is passed:
+    the other compiler constructs the array inline. A trivial constructor (nothing to run)
+    and the iterator both drop out; a real one becomes a call to that constructor, which the
+    inlining check can then absorb. Returns a shape note, or None."""
+    notes = []
+    for mine, other, label in ((o_sets, c_sets, "oracle"), (c_sets, o_sets, "candidate")):
+        if VECTOR_CTOR_ITERATOR not in mine["calls"] or VECTOR_CTOR_ITERATOR in other["calls"]:
+            continue
+        ctors = sorted(t for t in mine["data"] - other["data"] if t.startswith("fnptr:"))
+        if not ctors:
+            continue
+        mine["calls"].discard(VECTOR_CTOR_ITERATOR)
+        for token in ctors:
+            mine["data"].discard(token)
+            ident = token[len("fnptr:"):]
+            if ident != TRIVIAL_CTOR_TOKEN:
+                mine["calls"].add(ident)
+        notes.append(f"{label} vector constructor iterator over "
+                     + ", ".join(t[len("fnptr:"):] for t in ctors))
+    return "; ".join(notes) or None
+
+
+def _floats_stored_as_immediates(diff, o, c):
+    """One-sided float tokens whose every load on their side only feeds stores, each of which
+    the other side makes as an integer store of the same bits to the same field."""
+    out = []
+    for token in diff:
+        mine, other = (o, c) if token.startswith("-") else (c, o)
+        key = token[1:]
+        loads = mine.const_loads.get(key, 0)
+        if not loads or mine.const_store_loads.get(key, 0) != loads:
+            continue
+        fields = {(cls, off) for cls, off, k in mine.const_store_fields if k == key}
+        theirs = {(cls, off) for cls, off, k in other.imm_store_fields if k == key}
+        if fields and fields <= theirs:
+            out.append(token)
+    return out
+
+
 def classify(o, c, data_map, expand_o=None, expand_c=None):
     """(class, details) for oracle and candidate Features.
 
@@ -1795,6 +1999,7 @@ def classify(o, c, data_map, expand_o=None, expand_c=None):
     """
     o_sets = _key_sets(o, data_map, True)
     c_sets = _key_sets(c, data_map, False)
+    iterator = _unwrap_vector_iterator(o_sets, c_sets)
     inlined = _expand_inlining(o_sets, c_sets, expand_o, expand_c, data_map)
     details = {k: _set_diff(o_sets[k], c_sets[k]) for k in FEATURE_KINDS}
     details["fields"] = _field_diff(o_sets["fields"], c_sets["fields"])
@@ -1815,6 +2020,8 @@ def classify(o, c, data_map, expand_o=None, expand_c=None):
         imms_review = bool(_multiset_diff([_merge_token(t) for t in o.logic.elements()],
                                           [_merge_token(t) for t in c.logic.elements()]))
     shape = []
+    if iterator:
+        shape.append(iterator)
     if inlined:
         shape.append("inlining: " + ", ".join(inlined))
     memops = [t for t in details["calls"] if t[1:] in MEMORY_CALLS]
@@ -1829,6 +2036,9 @@ def classify(o, c, data_map, expand_o=None, expand_c=None):
         details["floats"].remove(f"-{a}")
         details["floats"].remove(f"+{b}")
         shape.append(f"{how} float {a}~{b}")
+    for token in _floats_stored_as_immediates(details["floats"], o, c):
+        details["floats"].remove(token)
+        shape.append(f"float {token[1:]} stored as an immediate on the other side")
     if not inlined:
         o_data = [data_map.get(t, (t, ""))[0] for t in o.data]
         raw = {"calls": (o.calls, c.calls),
