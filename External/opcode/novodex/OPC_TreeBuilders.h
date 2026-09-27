@@ -75,6 +75,12 @@
  *       +0x39..+0x3b   padding, from a 1-byte member ahead of udword mCount.
  *
  *     See novodex/OPC_AABBTree.cpp, which is where both halves are applied.
+ * [3] AABBTreeBuilder's storage comes from the host allocator (the class
+ *     operators of OpcodeNovodeXHost.h [3]), so its deleting destructor, and
+ *     its subclasses', free through the allocator singleton.
+ *     established at 0x000538b0, the deleting destructor in slot 0 of the
+ *     AABBTreeOfTrianglesBuilder vtable (.rdata:0x0011bab4): `call 0x000b4000;
+ *     call [edx+0x0c]` at 0x000538c0..0x000538ca.
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
@@ -134,6 +140,7 @@
 	class OPCODE_API AABBTreeBuilder
 	{
 		public:
+		OPC_NOVODEX_ALLOCATEABLE	// NOVODEX [3]
 		//! Constructor
 													AABBTreeBuilder() :
 														mNbPrimitives(0),

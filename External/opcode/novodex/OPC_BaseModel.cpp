@@ -7,15 +7,12 @@
  *     established at the Model vtable at .rdata:0x0011bac8 and the BaseModel vtable at
  *     .rdata:0x0011bb5c both hold seven slots ending 0x000e9420, 0x000e9440,
  *     0x000e94c0, where stock holds four. Those three rows are Task 2b's.
- * [2] the host allocator seam. Every allocation and free in this file goes
- *     through the engine's allocator singleton instead of operator new/delete.
- *     The seam is applied per file pair whose sites are all enumerable, not
- *     globally: half a conversion frees a compiler-allocated block through the
- *     host and corrupts the heap.
- *     Paired with OPC_Model.cpp, which is where mSource is allocated.
- *     established at 0x000e949c and 0x000e94dc free through `call dword ptr [edx+0x0c]`
- *     after the allocator getter at 0x000b4000, and every tree allocation in the
- *     image goes through `call dword ptr [edx]` the same way.
+ * [2] (withdrawn) The allocations and frees in this file are stock again:
+ *     the classes they name now carry the host allocator's class operators
+ *     (OpcodeNovodeXHost.h [3]), which is how the image reaches the seam. The
+ *     explicit construct-then-free helpers this entry used to apply called a
+ *     tree's destructor and then freed it, where the image calls the tree's
+ *     virtual deleting destructor (0x000e931e `push 1; call [eax]`).
  * [3] the constructor clears the added mDeserializeFrom. Without it the member
  *     is indeterminate in a stack OPCODECREATE, and Model::Build branches on
  *     it (OPC_Model.cpp, the load-or-build guard).
@@ -103,8 +100,8 @@ BaseModel::~BaseModel()
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void BaseModel::ReleaseBase()
 {
-	opcNovodeXDelete(mSource);	mSource = null;	// NOVODEX [2]
-	opcNovodeXDelete(mTree);	mTree = null;	// NOVODEX [2]
+	DELETESINGLE(mSource);
+	DELETESINGLE(mTree);
 }
 
 // NOVODEX [1]: the three appended virtuals. NOT RECONSTRUCTED. These three
@@ -125,7 +122,7 @@ bool BaseModel::Load(const void*)			{ return false;	}
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool BaseModel::CreateTree(bool no_leaf, bool quantized)
 {
-	opcNovodeXDelete(mTree);	mTree = null;	// NOVODEX [2]
+	DELETESINGLE(mTree);
 
 	// Setup model code
 	if(no_leaf)		mModelCode |= OPC_NO_LEAF;
@@ -137,13 +134,13 @@ bool BaseModel::CreateTree(bool no_leaf, bool quantized)
 	// Create the correct class
 	if(mModelCode & OPC_NO_LEAF)
 	{
-		if(mModelCode & OPC_QUANTIZED)	mTree = opcNovodeXNew<AABBQuantizedNoLeafTree>();	// NOVODEX [2]
-		else							mTree = opcNovodeXNew<AABBNoLeafTree>();	// NOVODEX [2]
+		if(mModelCode & OPC_QUANTIZED)	mTree = new AABBQuantizedNoLeafTree;
+		else							mTree = new AABBNoLeafTree;
 	}
 	else
 	{
-		if(mModelCode & OPC_QUANTIZED)	mTree = opcNovodeXNew<AABBQuantizedTree>();	// NOVODEX [2]
-		else							mTree = opcNovodeXNew<AABBCollisionTree>();	// NOVODEX [2]
+		if(mModelCode & OPC_QUANTIZED)	mTree = new AABBQuantizedTree;
+		else							mTree = new AABBCollisionTree;
 	}
 	CHECKALLOC(mTree);
 

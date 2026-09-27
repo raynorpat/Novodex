@@ -53,16 +53,17 @@
  *     rather than reproduced: no C++ spelling of the condition compiles to that
  *     test, so which one NovodeX wrote is not established.
  *
- * NOT a modification of this file, although the disassembly of it looks like
- * one: every allocation and release in this translation unit reaches the host
- * allocator (0x000b4000, then [vtable+0x00] or [vtable+0x0c]) through
- * COMPILER-GENERATED code emitted from stock expressions -- 0x000f114c is
- * `new AABBTreeNode[n]` with its array cookie written inline at 0x000f1170,
- * 0x000f0890 is MSVC's vector deleting destructor reading that cookie back, and
- * 0x000f10ac is DELETEARRAY(mIndices). The seam is a replaced operator new[] /
- * operator delete[], which lives outside this file; there is no site in this
- * source text to convert, and converting the `new` expressions by hand would
- * mean writing the array cookie by hand. Left stock deliberately.
+ * [3] mIndices, a udword array, is allocated and freed through the host
+ *     allocator. Every allocation and release in this translation unit reaches
+ *     it (0x000b4000, then [vtable+0x00] or [vtable+0x0c]); the AABBTreeNode
+ *     ones do so through the node class's operators (OPC_AABBTree.h [1], the
+ *     compiler-generated array cookie and vector deleting destructor included),
+ *     so their `new` expressions stay stock. A udword array has no class to
+ *     carry operators, so its two sites are converted here.
+ *     established at 0x000f10f0..0x000f1102 (Build: getter, then [edx] with
+ *     (count*4, 0), no cookie) and 0x000f109f..0x000f10ac (Release: the
+ *     getter, then [edx+0x0c]), after the node pool's vector deleting
+ *     destructor call.
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
@@ -507,7 +508,7 @@ AABBTree::~AABBTree()
 void AABBTree::Release()
 {
 	DELETEARRAY(mPool);
-	DELETEARRAY(mIndices);
+	if(mIndices)	{ opcNovodeXFree(mIndices);	mIndices = null; }	// NOVODEX [3]
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -531,7 +532,7 @@ bool AABBTree::Build(AABBTreeBuilder* builder)
 	builder->SetNbInvalidSplits(0);
 
 	// Initialize indices. This list will be modified during build.
-	mIndices = new udword[builder->mNbPrimitives];
+	mIndices = (udword*)opcNovodeXAlloc(builder->mNbPrimitives*sizeof(udword));	// NOVODEX [3]
 	CHECKALLOC(mIndices);
 	// Identity permutation
 	for(udword i=0;i<builder->mNbPrimitives;i++)	mIndices[i] = i;

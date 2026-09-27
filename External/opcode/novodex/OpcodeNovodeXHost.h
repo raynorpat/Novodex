@@ -38,15 +38,21 @@ void	opcNovodeXFree(void* memory);
 // 0x000539b0
 bool	opcNovodeXSetIceError(const char* message, const char* file, int line);
 
-template<class T> inline T* opcNovodeXNew()
-{
-	void* memory = opcNovodeXAlloc(sizeof(T));
-	return memory ? new (memory) T : 0;
-}
-
-template<class T> inline void opcNovodeXDelete(T* object)
-{
-	if(object) { object->~T(); opcNovodeXFree(object); }
-}
+// [3] The classes whose storage the image takes from the allocator singleton
+//     carry these four operators, so every `new`/`delete` of them -- including
+//     the compiler-generated ones: the array cookie of `new T[n]`, the vector
+//     and scalar deleting destructors -- reaches the seam, and nothing else
+//     does. The image draws the line by class, not by call site: the model,
+//     tree, node, builder and sweep-and-prune classes go through the getter;
+//     the colliders' deleting destructors and PlanesCollider's Plane array go
+//     through the CRT's operator new[]/delete (0x000f48c0, 0x000f41f0).
+//     established at 0x000f0890 (AABBTreeNode's vector deleting destructor
+//     frees through [getter+0x0c]), 0x000f24c4..0x000f24ed (`new
+//     AABBCollisionNode[n]`: getter, (28n+4, 0), cookie, vector constructor
+//     iterator), 0x000e935b (`new AABBQuantizedNoLeafTree`), 0x000538c0 (the
+//     AABBTreeBuilder deleting destructor), 0x000f3fb0 (a tree's scalar deleting
+//     destructor); against 0x000ba6c0 (RayCollider's, CRT operator delete) and
+//     0x000e159a (PlanesCollider::InitQuery, CRT operator new[]).
+#define OPC_NOVODEX_ALLOCATEABLE																	static void*	operator new(size_t size)			{ return opcNovodeXAlloc(size);	}		static void*	operator new[](size_t size)			{ return opcNovodeXAlloc(size);	}		static void		operator delete(void* memory)		{ opcNovodeXFree(memory);		}		static void		operator delete[](void* memory)		{ opcNovodeXFree(memory);		}
 
 #endif // __OPCODE_NOVODEX_HOST_H__

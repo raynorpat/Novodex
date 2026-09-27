@@ -13,6 +13,21 @@
  *     0x000e9420 tail-jumps [edx+0x10] (slot 4), 0x000e945f calls [edx+0x14]
  *     (slot 5), 0x000e953d calls [edx+0x18] (slot 6), and Model::GetUsedBytes
  *     at 0x000e90c0 tail-jumps [eax+0x1c] -- slot 7.
+ * [2] The node classes and AABBOptimizedTree take their storage from the host
+ *     allocator (the class operators of OpcodeNovodeXHost.h [3]): `new
+ *     node[n]` allocates (sizeof*n + 4) through the singleton and writes the
+ *     array cookie, DELETEARRAY frees cookie-first through it, and the trees'
+ *     scalar deleting destructors free through it.
+ *     established at 0x000f24c4..0x000f24eb (AABBCollisionTree::Build: getter,
+ *     `imul ecx,ecx,0x1c; add ecx,4`, (size, 0) to [edx], count stored at
+ *     [eax]) and 0x000f24aa..0x000f24b7 (the old array freed at mNodes-4 through
+ *     [edx+0x0c]); the same in 0x000f26c0, 0x000f3010 and 0x000f36e0;
+ *     0x000f21a0 and 0x000f3fb0..0x000f40a0 (scalar deleting destructors).
+ * [3] The node constructors are empty: stock zeroes mData (implicit nodes)
+ *     and mPosData/mNegData (no-leaf nodes); the image's constructor does not.
+ *     established at 0x000f24df, 0x000f26c0's and 0x000f3010's vector
+ *     constructor iterator calls: the constructor they pass is 0x00027f00,
+ *     `mov eax, ecx; ret`, for all four node types.
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
@@ -40,7 +55,7 @@
 	#define IMPLEMENT_IMPLICIT_NODE(base_class, volume)														\
 		public:																								\
 		/* Constructor / Destructor */																		\
-		inline_								base_class() : mData(0)	{}										\
+		OPC_NOVODEX_ALLOCATEABLE	/* NOVODEX [2] */																inline_								base_class()			{}	/* NOVODEX [3] */						\
 		inline_								~base_class()			{}										\
 		/* Leaf test */																						\
 		inline_			BOOL				IsLeaf()		const	{ return mData&1;					}	\
@@ -58,7 +73,7 @@
 	#define IMPLEMENT_NOLEAF_NODE(base_class, volume)														\
 		public:																								\
 		/* Constructor / Destructor */																		\
-		inline_								base_class() : mPosData(0), mNegData(0)	{}						\
+		OPC_NOVODEX_ALLOCATEABLE	/* NOVODEX [2] */																inline_								base_class()							{}	/* NOVODEX [3] */		\
 		inline_								~base_class()							{}						\
 		/* Leaf tests */																					\
 		inline_			BOOL				HasPosLeaf()		const	{ return mPosData&1;			}	\
@@ -154,6 +169,7 @@
 	class OPCODE_API AABBOptimizedTree
 	{
 		public:
+		OPC_NOVODEX_ALLOCATEABLE	// NOVODEX [2]
 		// Constructor / Destructor
 											AABBOptimizedTree() :
 												mNbNodes	(0)

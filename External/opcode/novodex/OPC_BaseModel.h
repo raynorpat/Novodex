@@ -22,6 +22,11 @@
  *     Slot 5 is reached at 0x000e945f, slot 6 at 0x000e916d and 0x000e953d.
  *     Argument counts come from the returns: 0x000e9420 ends `ret` (no stack
  *     arguments), 0x000e9440 and 0x000e94c0 end `ret 4` (one).
+ * [3] BaseModel (and so Model) takes its storage from the host allocator: the
+ *     class operators of OpcodeNovodeXHost.h [3].
+ *     established at 0x000e9280 (Model's scalar deleting destructor) and
+ *     0x000e95a0 (BaseModel's), each ending in `call 0x000b4000; call
+ *     [edx+0x0c]` on this.
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
@@ -76,6 +81,7 @@
 	class OPCODE_API BaseModel
 	{
 		public:
+		OPC_NOVODEX_ALLOCATEABLE	// NOVODEX [3]
 		// Constructor/Destructor
 											BaseModel();
 		virtual								~BaseModel();

@@ -15,12 +15,10 @@
  *     landing on Release() at 0x000e9155 -- so Release is OUTSIDE the guard.
  *     0x000e9161 tests it again and 0x000e916d is `call dword ptr [edx+0x18]`
  *     with ecx = this and the pointer pushed, returning immediately after.
- * [2] the host allocator seam. Every allocation and free in this file goes
- *     through the engine's allocator singleton instead of operator new/delete.
- *     The seam is applied per file pair whose sites are all enumerable, not
- *     globally: half a conversion frees a compiler-allocated block through the
- *     host and corrupts the heap.
- *     Paired with OPC_BaseModel.cpp, which is where mSource and mTree are freed.
+ * [2] (withdrawn as a source edit) `new AABBTree` and DELETESINGLE(mSource)
+ *     are stock again: AABBTree inherits AABBTreeNode's host-allocator class
+ *     operators (OpcodeNovodeXHost.h [3]), which is how the image reaches the
+ *     seam here.
  *     established at 0x000e9191 calls the allocator getter 0x000b4000 and 0x000e919e is
  *     `call dword ptr [edx]` with (0x30, 0); stock emits `push 48; call operator
  *     new`. 0x30 = 48 = sizeof(AABBTree) in a stock compile, which is what says
@@ -200,7 +198,7 @@ bool Model::Build(const OPCODECREATE& create)
 	}
 
 	// 2) Build a generic AABB Tree.
-	mSource = opcNovodeXNew<AABBTree>();	// NOVODEX [2]
+	mSource = new AABBTree;
 	CHECKALLOC(mSource);
 
 	// 2-1) Setup a builder. Our primitives here are triangles from input mesh,
@@ -220,7 +218,7 @@ bool Model::Build(const OPCODECREATE& create)
 	if(!mTree->Build(mSource))	return false;
 
 	// 3-3) Delete generic tree if needed
-	if(!create.mKeepOriginal)	opcNovodeXDelete(mSource), mSource = null;	// NOVODEX [2]
+	if(!create.mKeepOriginal)	DELETESINGLE(mSource);
 
 #ifdef __MESHMERIZER_H__
 	// 4) Convex hull
