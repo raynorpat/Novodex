@@ -16,6 +16,11 @@
  *     established at 0x000e949c and 0x000e94dc free through `call dword ptr [edx+0x0c]`
  *     after the allocator getter at 0x000b4000, and every tree allocation in the
  *     image goes through `call dword ptr [edx]` the same way.
+ * [3] the constructor clears the added mDeserializeFrom. Without it the member
+ *     is indeterminate in a stack OPCODECREATE, and Model::Build branches on
+ *     it (OPC_Model.cpp, the load-or-build guard).
+ *     established at 0x000e92d2, `mov [eax+4], ecx` with ecx = 0, right after
+ *     mIMesh's store at 0x000e92d0.
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
@@ -60,6 +65,7 @@ using namespace Opcode;
 OPCODECREATE::OPCODECREATE()
 {
 	mIMesh				= null;
+	mDeserializeFrom	= null;	// NOVODEX [3]
 	mSettings.mRules	= SPLIT_SPLATTER_POINTS | SPLIT_GEOM_CENTER;
 	mSettings.mLimit	= 1;	// Mandatory for complete trees
 	mNoLeaf				= true;
