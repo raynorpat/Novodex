@@ -2065,6 +2065,13 @@ def classify(o, c, data_map, expand_o=None, expand_c=None):
         details["floats"].remove(f"-{a}")
         details["floats"].remove(f"+{b}")
         shape.append(f"{how} float {a}~{b}")
+    for token in [t for t in details["floats"] if t[1:] == "-1.0"]:
+        # -1.0 on one side, 1.0 (a trivial constant) and more fchs on the other: the same
+        # constant negated at run time
+        mine, other = (o, c) if token.startswith("-") else (c, o)
+        if other.fchs > mine.fchs:
+            details["floats"].remove(token)
+            shape.append("negated trivial float -1.0")
     for token in _floats_stored_as_immediates(details["floats"], o, c):
         details["floats"].remove(token)
         shape.append(f"float {token[1:]} stored as an immediate on the other side")
