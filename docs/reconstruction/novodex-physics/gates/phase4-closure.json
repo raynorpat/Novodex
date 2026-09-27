@@ -11,7 +11,7 @@
   "deferred_reasons": {
     "not_reconstructed_in_phase": "this phase did not reconstruct this NovodeX row and names nothing that blocks it. A debt, not an obstruction: 315 rows. No per-row reachability claim is made, for the reason Phase 3 gave -- this component dispatches through vtables and function-pointer tables and a call-edge walk over it undercounts",
     "reconstructed_not_falsified": "the row is reconstructed and carries a recorded proof, but no mutation aimed at its own extent produced a measured non-zero count. 110 rows: 76 NovodeX and 34 vendored rows later drives confirmed. The sharpest are named in their own notes -- six penetration-map rows against which mutations R, S and U come out GREEN because every accepted fixture leaves a uniform grid, the cell-run decoder whose mutation V is green on this branch and was red only by crash at bcf544f, and two compiler-generated deleting destructors whose only mutation edits a class declaration",
-    "vendored_not_falsified": "NEW IN PHASE 4. The row's candidate side is a pinned upstream source tree -- qhull 2003.1 or OPCODE 1.3 -- vendored under External/, verified byte-identical to the archives outside the recorded modifications, and compiled into the NxQhull or NxOpcode static library NxPhysics.dll links; and NO MUTATION THIS LEDGER CAN SPEND IS AIMED AT THIS ROW. It is PRESENT, NOT PROVEN. 601 rows, 341,680 bytes. With the 32 vendored rows that later drives raised to `reconstructed` and that defer `reconstructed_not_falsified`, 633 vendored rows are unfalsified. It is used only where the census leaves a vendored code row at `discovered` -- validate_inventory.py rejects it on any other row, and rejects any reason but the two vendored ones on such a row -- because `not_reconstructed_in_phase` is false about such a row -- a candidate for its bytes exists and builds; a vendored row a later drive raised to `reconstructed` keeps that reason instead. The reason deliberately makes no reachability claim -- it does not say nothing runs the row -- because the harness drives library entry points that call onward and a per-row 'not exercised' claim would be another of this programme's undercounting walks. FIVE of the 601 own a family NxPhysicsThirdPartyTests drives and that agrees exactly; each note says which family, how many words and which oracle digest, and agreement is still not falsification. One, phys_fn_004842, carries an inlined copy of the statement mutation A edits, and none of that mutation's 20 mismatches lands on a word SetSize's call writes",
+    "vendored_not_falsified": "NEW IN PHASE 4. The row's candidate side is a pinned upstream source tree -- qhull 2003.1 or OPCODE 1.3 -- vendored under External/, verified byte-identical to the archives outside the recorded modifications, and compiled into the NxQhull or NxOpcode static library NxPhysics.dll links; and NO MUTATION THIS LEDGER CAN SPEND IS AIMED AT THIS ROW. It is PRESENT, NOT PROVEN. 608 rows, 344,949 bytes (601 and 341,680 until vendored-correspondence Task 3 mapped seven rows the census had filed as NovodeX code to the stock OBB and SweepAndPrune functions they are). With the 32 vendored rows that later drives raised to `reconstructed` and that defer `reconstructed_not_falsified`, 640 vendored rows are unfalsified. It is used only where the census leaves a vendored code row at `discovered` -- validate_inventory.py rejects it on any other row, and rejects any reason but the two vendored ones on such a row -- because `not_reconstructed_in_phase` is false about such a row -- a candidate for its bytes exists and builds; a vendored row a later drive raised to `reconstructed` keeps that reason instead. The reason deliberately makes no reachability claim -- it does not say nothing runs the row -- because the harness drives library entry points that call onward and a per-row 'not exercised' claim would be another of this programme's undercounting walks. FIVE of the 601 own a family NxPhysicsThirdPartyTests drives and that agrees exactly; each note says which family, how many words and which oracle digest, and agreement is still not falsification. One, phys_fn_004842, carries an inlined copy of the statement mutation A edits, and none of that mutation's 20 mismatches lands on a word SetSize's call writes",
     "vendored_driven_divergent": "The row has vendored source and is driven against the pinned oracle, but its candidate differs. Used for phys_fn_005493, Segment::SquareDistance: 9356 mismatches in the grid family and 15538 in the wide family; see evidence/phase4-falsification.md section 7. The code remains discovered and must be corrected before falsification can close it.",
     "data_object_not_dispositioned": "no Phase 4 data object gives it: all 2,813 stand at `classified`, the terminal rung their structural proof gives them, and are accounted for by that state"
   },
@@ -54,9 +54,9 @@
   },
   "counts": {
     "oracle_differential_falsified": 28,
-    "deferred_not_reconstructed_in_phase": 313,
+    "deferred_not_reconstructed_in_phase": 306,
     "deferred_reconstructed_not_falsified": 111,
-    "deferred_vendored_not_falsified": 601
+    "deferred_vendored_not_falsified": 608
   },
   "closed": [
     {
@@ -6703,7 +6703,7 @@
       "id": "phys_fn_005199",
       "rva": "0x000e4580",
       "size": 851,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "vendored_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": []
     },
@@ -6711,7 +6711,7 @@
       "id": "phys_fn_005201",
       "rva": "0x000e48e0",
       "size": 960,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "vendored_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": []
     },
@@ -6727,7 +6727,7 @@
       "id": "phys_fn_005206",
       "rva": "0x000e4d30",
       "size": 906,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "vendored_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": []
     },
@@ -7023,7 +7023,7 @@
       "id": "phys_fn_005281",
       "rva": "0x000e6c10",
       "size": 142,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "vendored_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": []
     },
@@ -7031,7 +7031,7 @@
       "id": "phys_fn_005283",
       "rva": "0x000e6ca0",
       "size": 266,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "vendored_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": []
     },
@@ -7055,7 +7055,7 @@
       "id": "phys_fn_005291",
       "rva": "0x000e71b0",
       "size": 45,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "vendored_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": []
     },
@@ -7063,7 +7063,7 @@
       "id": "phys_fn_005293",
       "rva": "0x000e71e0",
       "size": 99,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "vendored_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
       "driving_phases": []
     },

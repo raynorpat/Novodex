@@ -94971,7 +94971,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18050",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "third_party": "opcode"
     },
     {
       "id": "phys_fn_005200",
@@ -95007,7 +95008,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18052",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "third_party": "opcode"
     },
     {
       "id": "phys_fn_005202",
@@ -95098,7 +95100,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18056",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "third_party": "opcode"
     },
     {
       "id": "phys_fn_005207",
@@ -96455,7 +96458,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18299",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "third_party": "opcode"
     },
     {
       "id": "phys_fn_005282",
@@ -96491,7 +96495,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18304",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "third_party": "opcode"
     },
     {
       "id": "phys_fn_005284",
@@ -96638,7 +96643,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18338",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "",
+      "third_party": "opcode"
     },
     {
       "id": "phys_fn_005292",
@@ -96674,7 +96680,8 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/18340",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x000e71b0"
+      "notes": "continuation of the entry at 0x000e71b0",
+      "third_party": "opcode"
     },
     {
       "id": "phys_fn_005294",
@@ -100952,7 +100959,7 @@
       "static_proof": "no product translation unit reaches these bytes and none is named above the last one that does, at 0x000e9100",
       "dynamic_proof": null,
       "notes": "",
-      "third_party": "opcode"
+      "third_party": null
     },
     {
       "id": "phys_fn_005528",

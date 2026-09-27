@@ -225,6 +225,9 @@ ORACLE_KNOWN = {
     # (phys_fn_004816; the complete_pruning differential drives it): SweepAndPrune::Init calls
     # it where stock calls OPC_BoxPruning.cpp's, which the image does not contain.
     0x000b4530: "CompleteBoxPruning",
+    # Stock ICE Matrix3x3::operator Matrix4x4() (IceMatrix3x3.cpp:41). Its map row stays
+    # `unmapped` because validate_inventory cannot take an operator as a source function name.
+    0x000e9b20: "Matrix3x3::operator cast",
 }
 
 # Oracle data objects identified by hand, where a single referencing row gives the learned
@@ -1639,7 +1642,7 @@ class OracleResolver:
     def identity(self, target):
         row = self.rows.get(target)
         suffix = ""
-        if row is None and target in ORACLE_KNOWN:
+        if target in ORACLE_KNOWN and (row is None or row.grade not in MATCHED_GRADES):
             return ORACLE_KNOWN[target]
         if row is None:
             i = bisect.bisect_right(self.starts, target) - 1
