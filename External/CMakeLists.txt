@@ -135,6 +135,9 @@ target_compile_options(NxQhull PRIVATE /Qfast_transcendentals)
 # Scene::simulate's 0x0f7f (64-bit precision, chop) as well as 0x027f, and fsqrt
 # follows the control word where the UCRT's __CIsqrt takes its SSE2 path on any
 # SSE2 CPU and rounds a double to nearest regardless of it.
+# The switch covers every transcendental, not only sqrt: any sin, cos, log, exp or
+# pow added to NxOpcode later is inlined as an x87 instruction too, so check its
+# oracle listing before relying on the CRT's rounding.
 target_compile_options(NxOpcode PRIVATE /Qfast_transcendentals)
 
 #### BUILD FLAGS FOR BOTH ####

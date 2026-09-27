@@ -35,6 +35,12 @@ address in it, and requires the file to actually differ from upstream — a
 `novodex/` copy that has drifted back to stock is a lost modification, and it
 fails.
 
+**Line endings follow the upstream file.** A `novodex/` overlay keeps its
+upstream counterpart's line endings, so a diff against `upstream/` shows only
+the change: the qhull overlays are LF and the OPCODE overlays CRLF, as their
+archives are; a file with no upstream counterpart (the two host seam headers) is
+LF.
+
 ## What is *not* here
 
 The 185 census rows that sit inside the two libraries' address spans but have no

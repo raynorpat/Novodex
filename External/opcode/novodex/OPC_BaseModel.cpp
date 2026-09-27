@@ -109,8 +109,12 @@ void BaseModel::ReleaseBase()
 // owns; what is applied here is the vtable SHAPE, which a stock header gets
 // wrong at every indirect call site. Do not read these as reconstructions.
 udword BaseModel::NovodeXSlot4()			{ return 0;		}
-bool BaseModel::Save(void*)					{ return false;	}
-bool BaseModel::Load(const void*)			{ return false;	}
+// Save and Load report through the SetIceError seam (OPC_IceHook.h [1]) before
+// failing, so a reconstructed caller that reaches them -- TriangleMesh's save path,
+// Model::Build's load dispatch -- is not silently handed `false`. The host side of
+// that seam is still a shim that prints nothing, so no transcript changes.
+bool BaseModel::Save(void*)					{ return SetIceError("BaseModel::Save (0x000e9440) is not reconstructed", null);	}
+bool BaseModel::Load(const void*)			{ return SetIceError("BaseModel::Load (0x000e94c0) is not reconstructed", null);	}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
