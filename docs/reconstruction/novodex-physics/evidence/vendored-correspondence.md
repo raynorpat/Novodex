@@ -32,7 +32,8 @@ oracle at `D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll`, the candidate
 sha256 `ac45c56b41240f928eaf74a4284e7b8fee0440ee495aed09c5149382c5784f34`, the build of
 `b210042`. The Task 2 figures (the Summary's qhull rows and the Task 2 section) are from candidate
 sha256 `0b3027e5c70d792c8df06677ae177ab1023b8c7e825bb0c9a6a76f9da4cdea35`, the build of the
-Task 2 head.
+Task 2 head; the review-fix rebuild (`3c5b834e...`, comment and matcher changes only) gives
+identical match classes.
 
 `tools/qhull_trace_attribution.py` backs the trace-macro finding below.
 
@@ -373,6 +374,22 @@ so nothing in the candidate can reach them, and no differential exercises them. 
 work unit (bundle `gap:Controller.cpp..fluids\Fluid.cpp`), with a differential built through
 `phys_fn_002233`.
 
+## Open items
+
+- **The NovodeX hull library (separate work unit, controller decision after Task 2).** The 31
+  `discovered` unmapped rows in the qhull span are NovodeX's own code: 12,166 bytes, 3,903
+  instructions, 750 of them x87. They are listed in the Task 2 section:
+  - the drivers `003279` and `003236`, and the entry `003255`;
+  - the clean-up `003243`/`003245`;
+  - the output-arena class behind `.rdata:0x00113614`;
+  - the OBJ writers;
+  - band B at `0x0007fda0`-`0x000814f0`.
+
+  They are not vendored-correspondence rows. They get their own work unit (bundle
+  `gap:Controller.cpp..fluids\Fluid.cpp`), reconstructed together with their only caller
+  `phys_fn_002233` and a differential through it. Until then the qhull host hooks in
+  `Physics/src/ThirdPartyHost.cpp` stay shims.
+
 ## Timing
 
 | Task | Start | End | Rows written | Bytes written | Notes |
@@ -380,4 +397,4 @@ work unit (bundle `gap:Controller.cpp..fluids\Fluid.cpp`), with a differential b
 | 1 | 2026-09-27T15:24:12 | 2026-09-27T15:56:00 | 0 | 0 | Structural matcher `tools/vendored_match.py` + 29 unit tests; first run over 455 qhull and 267 OPCODE rows (qhull MATCH 2 / SHAPE 177 / DIFF 276; OPCODE MATCH 19 / SHAPE 174 / DIFF 72 / MISSING 1 / AMBIGUOUS 1). Top DIFF causes: qhull trace macros on the CRT in the oracle (127 groups), mem.c/qset.c on the CRT in the candidate (21), OPCODE allocator not redirected (25). No product code or ledger change; gates 2, 3, 4, 6, 7 pass, Phase 5 red only on `CANDIDATE-MISSING family=vtables`. |
 | 1 review | 2026-09-27T16:06:39 | 2026-09-27T16:30:00 | 0 | 0 | Matcher strengthened after review: REVIEW class (field byte coverage, logic/compare immediates with bit-address normalisation), MAPCHECK class, overload-aware call keys and real operator names, icall base tags, float rule narrowed to reciprocal/halving and fchs-backed negation, repe cmps, ebp-frame note, rank pairs need two votes; opcode_map.csv 0x000e90e0 and 0x000f0890 corrected; tools/qhull_trace_attribution.py committed; 58 matcher tests. qhull MATCH 0 / SHAPE 88 / REVIEW 80 / DIFF 287; OPCODE MATCH 17 / SHAPE 60 / REVIEW 116 / DIFF 72 / MISSING 1 / AMBIGUOUS 1. OPCODECREATE ctor and the 8 RayCollider stab rows are REVIEW. No product code or ledger change. |
 | 1 final | 2026-09-27T16:33:00 | 2026-09-27T16:44:39 | 0 | 0 | Router approved; final changes: x87 operation classes as a REVIEW feature (6 SHAPE groups flipped, all explained: fabs_ macro x3, reciprocal x3); coverage-based narrowing replaces the same-dword downgrade (adjacent one-byte fields stay REVIEW); field and bit tokens carry a base class (this / derived / other, derived and other merged for classification) traced through copies and ebp spills; register read-modify-write and/or/xor normalised to the memory form; report-only report_jcc and report_stores columns; "Not compared" and "Promotion policy for Task 5" sections; 69 matcher tests. qhull SHAPE 83 / REVIEW 85 / DIFF 287; OPCODE MATCH 17 / SHAPE 49 / REVIEW 127 / DIFF 72 / MISSING 1 / AMBIGUOUS 1. No product code or ledger change. |
-| 2 | 2026-09-27T16:45:42 | 2026-09-27T17:45:00 | 0 | 0 | qhull triage. Fixes: trace macros on the CRT and mem.c/qset.c prints on the host (qhull_a.h, mem.h, host header), inline fsqrt (/Qfast_transcendentals on NxQhull), io.c/poly2.c typed host dispatches (+0x00/+0x04/+0x08/+0x0c/+0x1c), geom.c reciprocal parity for qh_gausselim/qh_getcenter/qh_normalize2, map row 0x0007f310 corrected to qh_settempfree_all; matcher: high-byte bit tests, new seams, two CRT identities, 71 tests. qhull SHAPE 83->162 / REVIEW 85->197 / DIFF 287->96 rows; qhull_review.csv covers all 331 groups (no unreviewed line). Unmapped NovodeX rows (31 discovered, 3,903 insns) not written: need their own unit. No ledger change; gates 2, 3, 4, 6, 7 pass, Phase 5 red only on `CANDIDATE-MISSING family=vtables`. |
+| 2 | 2026-09-27T16:45:42 | 2026-09-27T17:56:47 | 0 | 0 | qhull triage. Fixes: trace macros on the CRT and mem.c/qset.c prints on the host (qhull_a.h, mem.h, host header), inline fsqrt (/Qfast_transcendentals on NxQhull), io.c/poly2.c typed host dispatches (+0x00/+0x04/+0x08/+0x0c/+0x1c), geom.c reciprocal parity for qh_gausselim/qh_getcenter/qh_normalize2, map row 0x0007f310 corrected to qh_settempfree_all; matcher: high-byte bit tests, new seams, two CRT identities, 71 tests. qhull SHAPE 83->162 / REVIEW 85->197 / DIFF 287->96 rows; qhull_review.csv covers all 331 groups (no unreviewed line). Unmapped NovodeX rows (31 discovered, 3,903 insns) not written: need their own unit. No ledger change; gates 2, 3, 4, 6, 7 pass, Phase 5 red only on `CANDIDATE-MISSING family=vtables`. |

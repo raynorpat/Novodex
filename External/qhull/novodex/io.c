@@ -22,7 +22,8 @@
  *     array (`sub esp,0x404` = the vertices set pointer + 0x400 bytes;
  *     `push eax (=ids); push ebx (=count); call [edx+8]` at 0x00067c74). The
  *     count is taken unconditionally -- the `format == qh_PRINToff` test is
- *     gone from the listing -- and nothing else is printed.
+ *     gone from the listing -- and nothing else is printed. The write into
+ *     the array is unbounded in the oracle too (see the declaration).
  * [3] qh_printbegin, qh_PRINToff arm (0x0006c6f2-0x0006c727): the header of
  *     the off / 2-d branch goes to slot +0x00 as (dim, numpoints, numfacets,
  *     totneighbors/2). The qh_PRINTtriangles branch keeps its fprintf (on
@@ -2221,7 +2222,12 @@ void qh_printfacet3math (FILE *fp, facetT *facet, int format, int notfirst) {
 void qh_printfacet3vertex(FILE *fp, facetT *facet, int format) {
   vertexT *vertex, **vertexp;
   setT *vertices;
-  int pointids[256];  /* NOVODEX [2] */
+  int pointids[256];  /* NOVODEX [2]: the oracle's fixed 0x400-byte stack array. The fill
+                         loop below has no bound check, and neither has the oracle's
+                         (0x00067c50-0x00067c68 walks the whole set into [esp+0x10] with
+                         no count test), so a facet with more than 256 vertices overruns
+                         it there too. Inherited from the shipped code, not a
+                         transcription slip; kept for fidelity. */
   int numvertices, i= 0;
 
   vertices= qh_facet3vertex (facet);

@@ -468,6 +468,13 @@ class FieldAndLogicTest(unittest.TestCase):
         self.assertEqual(field.logic, Counter({"other:bit@651": 1}))
         self.assertEqual(status.logic, Counter())
 
+    def test_mask_outside_a_byte_field_is_kept_as_a_raw_immediate(self):
+        # movzx eax,byte [ecx+4]; test ah,1 -- bit 8 is outside the one-byte field
+        outside = run(b"\x0f\xb6\x41\x04\xf6\xc4\x01\xc3")
+        inside = run(b"\x0f\xb6\x41\x04\xa8\x01\xc3")   # ...; test al,1
+        self.assertEqual(outside.logic, Counter({"1": 1}))
+        self.assertEqual(inside.logic, Counter({"this:bit@32": 1}))
+
     def test_memory_and_records_the_cleared_bits(self):
         feats = run(b"\x80\x61\x04\xfe\xc3")                    # and byte [ecx+4],0xfe
         self.assertEqual(feats.logic, Counter({"this:clear@32": 1}))

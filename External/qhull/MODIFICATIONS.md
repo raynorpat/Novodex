@@ -51,6 +51,12 @@ source file changes for it.
 
 ## One object, four slots
 
+**Two counts of the `+0x10` sites.** 593 (this file, `user.h`, `QhullNovodeXHost.h`) is the slot
+census below: of the 683 occurrences of `.data:0x00125080`, 611 feed exactly one call and are
+classified to a slot. 616 (`qhull_a.h` NOVODEX [2]) is `tools/qhull_trace_attribution.py`, which
+counts every `call [reg+0x10]` in the span whatever loaded the register. The difference of 23
+falls among the census's 72 unclassified occurrences (e.g. one load feeding two calls).
+
 All four hooks are the same object: a NovodeX class with a nine-slot vtable at
 `.rdata:0x00113614`, constructed at `0x0007e370` with a 16,384-byte inline
 arena, held in a global at `.data:0x00125080` that is written **exactly once**

@@ -11,6 +11,13 @@
  *     geom.c), and the other 9 are NovodeX's OBJ writers at
  *     0x0007dea0/0x0007df20. The 616 calls on [0x10125080]->+0x10 are the
  *     plain fprintfs. tools/qhull_trace_attribution.py measures it.
+ *     COUNTS: 593 (MODIFICATIONS.md, user.h, QhullNovodeXHost.h) is the slot
+ *     census over the 683 occurrences of .data:0x00125080, which attributes a
+ *     call to a slot only when one load of the global feeds it (611 classified);
+ *     616 is tools/qhull_trace_attribution.py, which counts every
+ *     `call [reg+0x10]` in the span whatever loaded reg. The difference of 23
+ *     falls among the census's 72 unclassified occurrences (e.g. one load
+ *     feeding two calls). Both passes count the same image.
  *
  *     So NovodeX's redirect did not reach the trace macros. The change here is
  *     `fprintf args` -> `(fprintf) args`: the parenthesised name does not

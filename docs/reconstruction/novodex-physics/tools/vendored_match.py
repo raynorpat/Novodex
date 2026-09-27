@@ -1048,6 +1048,10 @@ def _features_of(image, insn, feats, resolve_code, resolve_data, tail, inside, c
                         mask <<= 8
                     tokens, _ = _bit_tokens(kind, cls, offset, size, mask)
                     feats.logic.update(tokens)
+                    # bits beyond the loaded field (e.g. test ah after a byte load) name no
+                    # field bit; keep them as the raw immediate rather than dropping them
+                    if mask & ~((1 << (8 * size)) - 1):
+                        feats.logic[str(_signed(op.imm, ops[0].size or 4))] += 1
                 else:
                     feats.logic[str(_signed(op.imm, ops[0].size or 4))] += 1
             elif not first_reg and not insn.group(x86.X86_GRP_JUMP):

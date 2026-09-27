@@ -14,6 +14,13 @@
  *     Of the 616 host calls on +0x10, none is a traceN site: the 8 that
  *     tools/qhull_trace_attribution.py tags as trace are short or repeated
  *     strings it matched to the wrong line (e.g. 0x0007cdd7, qhull.c:371).
+ *     COUNTS: 593 (MODIFICATIONS.md, user.h, QhullNovodeXHost.h) is the slot
+ *     census over the 683 occurrences of .data:0x00125080, which attributes a
+ *     call to a slot only when one load of the global feeds it (611 classified);
+ *     616 is tools/qhull_trace_attribution.py, which counts every
+ *     `call [reg+0x10]` in the span whatever loaded reg. The difference of 23
+ *     falls among the census's 72 unclassified occurrences (e.g. one load
+ *     feeding two calls). Both passes count the same image.
  *
  *     What this macro does NOT cover, and what an earlier version of this block
  *     wrongly claimed it did ("No fprintf survives in the span that does not go
