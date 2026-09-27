@@ -124,9 +124,18 @@ target_compile_definitions(NxOpcode PUBLIC ICE_NO_DLL OPCODE_EXPORTS USE_MINMAX)
 # the switch that restores the inline instruction without /fp:fast's
 # reassociation. qhull runs only under the 0x027f control word (phase4-third-
 # party.md section 4), where fsqrt and __CIsqrt round identically, so this is a
-# code-shape correction, not a numeric one. qhull only: OPCODE's six __CIsqrt
-# groups run under both control words and are OPCODE's triage to make.
+# code-shape correction, not a numeric one.
 target_compile_options(NxQhull PRIVATE /Qfast_transcendentals)
+
+# OPCODE likewise: every square root in the image's OPCODE span is an inline
+# `fsqrt` (Plane::Set at 0x000e3274 among ten) and none calls the CRT, where a
+# 2026 /fp:precise build calls __CIsqrt in six groups (Plane::Set,
+# Triangle::Area/Compacity/Inflate, SphereCollider::InitQuery,
+# LSSCollider::InitQuery). Here it is numeric as well as shape: OPCODE runs under
+# Scene::simulate's 0x0f7f (64-bit precision, chop) as well as 0x027f, and fsqrt
+# follows the control word where the UCRT's __CIsqrt takes its SSE2 path on any
+# SSE2 CPU and rounds a double to nearest regardless of it.
+target_compile_options(NxOpcode PRIVATE /Qfast_transcendentals)
 
 #### BUILD FLAGS FOR BOTH ####
 

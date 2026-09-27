@@ -29,6 +29,12 @@ unmodified** under a 2026 MSVC. Every one of these exists because the shipped
 | `Ice/IceRevisitedRadix.cpp` | the destructor and `Resize` free only when `mDeleteRanks`; allocation through the host allocator; **`SetRankBuffers`, the added member that clears the marker, reconstructed by P4 Task 2b** | `0x000e32e3`, `0x000e3333`, `0x000e3ea0` |
 | `OpcodeNovodeXHost.h` | **added file**, no upstream counterpart: the allocation and error-reporting seam, and (Task 3) `OPC_NOVODEX_ALLOCATEABLE`, the four class operators that route a class's storage through it | `0x000b4000`, `0x000539b0`, `0x000f0890`, `0x000ba6c0` |
 
+**Build parity, not source.** `External/CMakeLists.txt` compiles `NxOpcode` with
+`/Qfast_transcendentals` (vendored-correspondence Task 3): the image's OPCODE
+square roots are all inline `fsqrt` (`0x000e3274`), which follows the x87 control
+word; the UCRT's `__CIsqrt` a 2026 `/fp:precise` build calls instead takes an
+SSE2 path that ignores it, and OPCODE runs under both `0x027f` and `0x0f7f`.
+
 **This list is not proven closed.** It is every modification this project has
 established, each with the address that establishes it, and nothing more.
 `OPC_AABBTree.cpp` is the reason the qualifier is here: it was absent from an
