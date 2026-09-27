@@ -221,6 +221,10 @@ ORACLE_KNOWN = {
     0x000f48c0: "operator new[]",                   # phys_fn_005701: jmp 0x000f48c5
     0x000f41f0: "operator delete",                  # phys_fn_005668: jmp _free (0x000f4734)
     0x000f48bb: "operator delete[]",                # phys_fn_005700: jmp 0x000f41f0
+    # NovodeX's CompleteBoxPruning, reconstructed as Physics/src/opcode/NovodexBoxPruning.cpp
+    # (phys_fn_004816; the complete_pruning differential drives it): SweepAndPrune::Init calls
+    # it where stock calls OPC_BoxPruning.cpp's, which the image does not contain.
+    0x000b4530: "CompleteBoxPruning",
 }
 
 # The NovodeX host seams. The oracle reaches the host inline (a virtual call through a global
