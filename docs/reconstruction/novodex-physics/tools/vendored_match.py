@@ -958,6 +958,7 @@ for _cls, _names in (("add", "fadd faddp fiadd"), ("sub", "fsub fsubp fsubr fsub
 LOGIC_MNEMONICS = frozenset({"cmp", "test", "and", "or", "xor", "shl", "shr", "sar", "sal"})
 BIT_MNEMONICS = {"test": "bit", "and": "clear", "or": "set", "xor": "flip"}
 X87_STATUS_REGISTERS = frozenset({"ah", "ax"})
+HIGH_BYTE_REGISTERS = frozenset({"ah", "bh", "ch", "dh"})
 
 
 def _signed(value, size):
@@ -1013,8 +1014,10 @@ def _features_of(image, insn, feats, resolve_code, resolve_data, tail, inside, c
     first_reg = (ops and ops[0].type == x86.X86_OP_REG
                  and insn.reg_name(ops[0].reg) in FRAME_REGISTERS)
     logic = m in LOGIC_MNEMONICS
+    # ah/ax after fnstsw is the x87 status word; after a field load it is that field.
     status = (logic and ops and ops[0].type == x86.X86_OP_REG
-              and insn.reg_name(ops[0].reg) in X87_STATUS_REGISTERS)
+              and insn.reg_name(ops[0].reg) in X87_STATUS_REGISTERS
+              and _loaded_field(insn, ops, context) is None)
     imm_ops = [op for op in ops if op.type == x86.X86_OP_IMM]
     for op in ops:
         if op.type == x86.X86_OP_IMM:
@@ -1039,6 +1042,10 @@ def _features_of(image, insn, feats, resolve_code, resolve_data, tail, inside, c
                     # the same bits a memory-form instruction on the field would name
                     cls, offset, size, _, _ = loaded
                     mask = op.imm if kind != "clear" else ~op.imm
+                    # the mask covers the register operand only; ah/bh/ch/dh are bits 8..15
+                    mask &= (1 << (8 * (ops[0].size or 4))) - 1
+                    if insn.reg_name(ops[0].reg) in HIGH_BYTE_REGISTERS:
+                        mask <<= 8
                     tokens, _ = _bit_tokens(kind, cls, offset, size, mask)
                     feats.logic.update(tokens)
                 else:

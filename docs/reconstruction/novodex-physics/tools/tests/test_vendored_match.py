@@ -452,6 +452,22 @@ class FieldAndLogicTest(unittest.TestCase):
         self.assertEqual(loaded.logic, narrow.logic)
         self.assertEqual(narrow.fields, {("this", 2)})
 
+    def test_high_byte_register_test_names_the_high_byte_bits(self):
+        # mov ecx,[eax+0x50]; test ch,8 tests bit 11 of the dword (byte +0x51, bit 3), the
+        # same bit as test byte [eax+0x51],8 and test dword [eax+0x50],0x800.
+        high = run(b"\x8b\x48\x50\xf6\xc5\x08\xc3")
+        memory = run(b"\xf6\x40\x51\x08\xc3")
+        wide = run(b"\xf7\x40\x50\x00\x08\x00\x00\xc3")
+        self.assertEqual(high.logic, Counter({"other:bit@651": 1}))
+        self.assertEqual(memory.logic, high.logic)
+        self.assertEqual(wide.logic, high.logic)
+
+    def test_ah_after_a_field_load_is_a_field_test_not_a_status_mask(self):
+        field = run(b"\x8b\x40\x50\xf6\xc4\x08\xc3")        # mov eax,[eax+0x50]; test ah,8
+        status = run(b"\xdf\xe0\xf6\xc4\x41\xc3")            # fnstsw ax; test ah,0x41
+        self.assertEqual(field.logic, Counter({"other:bit@651": 1}))
+        self.assertEqual(status.logic, Counter())
+
     def test_memory_and_records_the_cleared_bits(self):
         feats = run(b"\x80\x61\x04\xfe\xc3")                    # and byte [ecx+4],0xfe
         self.assertEqual(feats.logic, Counter({"this:clear@32": 1}))
