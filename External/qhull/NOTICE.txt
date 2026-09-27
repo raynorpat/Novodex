@@ -65,6 +65,17 @@ course of reconstructing what NovodeX did.
                  Files: novodex/io.c, novodex/poly2.c,
                  novodex/QhullNovodeXHost.h.  See MODIFICATIONS.md.
 
+5.  Modified by: the NovodeX Physics reconstruction project.
+    Date:        2026-09-27.
+    Reason:      not a NovodeX change: three functions in geom.c
+                 (qh_gausselim, qh_getcenter, qh_normalize2) are rewritten to
+                 multiply by a reciprocal where the original divided, because
+                 the compiler that built the reference binary evaluated them
+                 that way and a modern compiler does not; without it the
+                 vendored Qhull computes different low-order bits than the
+                 reference binary.  File: novodex/geom.c.  See
+                 MODIFICATIONS.md.
+
     (Append one entry per further change.  Clause 3 requires a name, a date and
     a reason for every modification, so this file grows rather than being
     rewritten.)

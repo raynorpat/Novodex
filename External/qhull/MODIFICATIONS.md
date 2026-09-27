@@ -18,6 +18,30 @@ because the shipped `NxPhysics.dll` does something stock 2003.1 does not.
 | `user.c` | `qh_errexit`'s body replaced by a call on slot `+0x20` forwarding only the exit code; the stock body is kept under `#if 0` | `0x00084800` |
 | `QhullNovodeXHost.h` | **added file**, no upstream counterpart: the nine hooks, and the function-like `fprintf` redirect macro for the qhull C files | `0x0007ea51`, `.rdata:0x00113614` |
 
+## Build parity: source written the way the 2003 compiler evaluated it
+
+These are NOT NovodeX modifications. The shipped DLL's compiler replaced a
+division by a loop-invariant value with one reciprocal and a multiplication
+per element, which is not IEEE-exact; a 2026 `/fp:precise` build keeps the
+divisions and so computes different low bits on qhull's main path (facet
+normals, the interior point and every centrum, the Gaussian-elimination
+fallback). The overlay spells the reciprocal out so the candidate evaluates
+what the oracle evaluates.
+
+| file | function | established at |
+|---|---|---|
+| `geom.c` | `qh_gausselim`: `n = *ai * (1/pivot)` | `0x0005d363` (`fdivr [1.0]`), `0x0005d373` |
+| `geom.c` | `qh_getcenter`: `*coord *= 1/count` | `0x0005d4fa`/`0x0005d501`, `0x0005d539` |
+| `geom.c` | `qh_normalize2`: each component `*= 1/norm` | `0x0005d7ca`/`0x0005d7d0`, `0x0005d7d4`-`0x0005d839` |
+
+The same transformation appears on paths the NovodeX driver never enables
+(its only option string is `"o"`, `.rdata:0x0011363c`) and is left stock:
+`qh_gram_schmidt` (`0x0005f3d2`, rotation `QRn`), `qh_printhyperplaneintersection`
+(`0x0006927e`, `Fp`), `qh_printstatistics` (`0x00084548`), and the constant
+reciprocals behind `qh RANDOMa` (`R`/`Qr`), `qh_randommatrix`, `qh_joggleinput`
+(`QJ`), `qh_nextfurthest`/`qh_initialvertices` (`Qr`) and `qh_distplane`/
+`qh_getangle`'s `RANDOMdist` arms.
+
 ## Build configuration, not source
 
 `External/CMakeLists.txt` compiles `NxQhull` with `/Qfast_transcendentals`, so
