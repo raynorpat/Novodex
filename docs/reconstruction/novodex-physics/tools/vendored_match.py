@@ -657,6 +657,10 @@ def parse_source_function(text):
             pre, tick = head.split("`", 1)
             parts = [p for p in pre.split("::") if p]
             components = [p.split()[-1] for p in parts] + ["`" + tick.strip()]
+        elif re.search(r"(?:^|::)operator\s+\w+$", head):
+            # a conversion operator keeps its two words ("Matrix3x3::operator cast")
+            scoped = re.search(r"((?:\w+::)*operator\s+\w+)$", head).group(1)
+            components = [p for p in scoped.split("::") if p]
         else:
             head = head.split()[-1] if head.split() else head
             components = [p for p in head.split("::") if p]

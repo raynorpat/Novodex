@@ -601,6 +601,11 @@ class Task3RulesTest(unittest.TestCase):
         self.assertEqual(feats.const_loads, Counter({"0.5": 1}))
         self.assertEqual(feats.const_store_loads, Counter())
 
+    def test_conversion_operator_source_name(self):
+        names, tags = vm.parse_source_function("Matrix3x3::operator cast [operator Matrix4x4() const]")
+        self.assertEqual(names[0].components, ["Matrix3x3", "operator cast"])
+        self.assertEqual(tags, ["operator Matrix4x4() const"])
+
     def test_crt_operator_thunks_are_named(self):
         for rva, name in ((0x000f48c0, "operator new[]"), (0x000f48bb, "operator delete[]"),
                           (0x000f41f0, "operator delete"), (0x000f48c5, "operator new")):
