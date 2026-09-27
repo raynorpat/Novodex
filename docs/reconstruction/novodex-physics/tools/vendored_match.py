@@ -1199,7 +1199,7 @@ def _bits_key(value):
     return _float_key(struct.unpack("<f", raw)[0], raw)
 
 
-def _constant_stores(image, insn, feats, context, window=6):
+def _constant_stores(image, insn, feats, context, window=12):
     """How a float constant reaches memory, for the one rule that needs it: one compiler
     writes `fld [constant]; fstp [field]`, the other `mov [field], <the same bits>`.
 
