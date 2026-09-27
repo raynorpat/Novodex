@@ -132,7 +132,8 @@ Both are left for Task 3 to fix.
 ## Summary
 
 The qhull rows are after Task 2 (Task 1 ended at SHAPE 83 / REVIEW 85 / DIFF 287 rows; see the
-Task 2 section); the OPCODE rows are Task 1's and unchanged. Rows and bytes count map rows, so a
+Task 2 section); the OPCODE rows are after Task 3 (Task 1 ended at MATCH 17 / SHAPE 49 / REVIEW
+127 / DIFF 72 / MISSING 1 / AMBIGUOUS 1 over 267 rows; see the Task 3 section). Rows and bytes count map rows, so a
 function the census split into several rows counts each of its rows. Groups count candidate functions, meaning the rows that resolve to one candidate
 symbol.
 
@@ -144,14 +145,14 @@ symbol.
 | qhull | DIFF | 96 | 45,975 | 47 |
 | qhull | MAPCHECK / MISSING / AMBIGUOUS | 0 | 0 | 0 |
 | qhull | **total** | **455** | **148,202** | **331** |
-| OPCODE | MATCH | 17 | 218 | 17 |
-| OPCODE | SHAPE | 49 | 2,651 | 49 |
-| OPCODE | REVIEW | 127 | 168,752 | 96 |
-| OPCODE | DIFF | 72 | 57,773 | 63 |
+| OPCODE | MATCH | 18 | 233 | 18 |
+| OPCODE | SHAPE | 66 | 12,418 | 64 |
+| OPCODE | REVIEW | 176 | 193,271 | 136 |
+| OPCODE | DIFF | 13 | 26,569 | 13 |
 | OPCODE | MAPCHECK | 0 | 0 | 0 |
-| OPCODE | MISSING | 1 | 124 | 1 |
-| OPCODE | AMBIGUOUS | 1 | 122 | 1 |
-| OPCODE | **total** | **267** | **229,640** | **227** |
+| OPCODE | MISSING | 0 | 0 | 0 |
+| OPCODE | AMBIGUOUS | 0 | 0 | 0 |
+| OPCODE | **total** | **273** | **232,491** | **231** |
 
 For REVIEW groups, the split by cause at the end of Task 1 is:
 
@@ -374,6 +375,205 @@ so nothing in the candidate can reach them, and no differential exercises them. 
 work unit (bundle `gap:Controller.cpp..fluids\Fluid.cpp`), with a differential built through
 `phys_fn_002233`.
 
+## Task 3: OPCODE triage
+
+Every OPCODE DIFF, MISSING and AMBIGUOUS group was traced to its cause. The real differences
+were fixed in `External/opcode/novodex/` overlays, and the map errors were corrected. Every OPCODE
+group now has a hand-review line in `phase4-third-party-map/opcode_review.csv`: 231 groups, with
+the same columns as `qhull_review.csv`.
+
+**Fixes, with the OPCODE match classes (rows) after each.** Map corrections add or remove rows,
+because `unmapped` rows are outside the matcher.
+
+| Commit | Change | MATCH | SHAPE | REVIEW | DIFF | MISSING | AMBIG. | Rows |
+|---|---|---:|---:|---:|---:|---:|---:|---:|
+| (Task 1) | | 17 | 49 | 127 | 72 | 1 | 1 | 267 |
+| `6e14ab6` | `OPCODECREATE` clears `mDeserializeFrom` (`0x000e92d2`) | 17 | 50 | 126 | 72 | 1 | 1 | 267 |
+| `dbd3172` | RayCollider: the culling arm of `RayTriOverlap` widens U, V and U+V by the float at `+0x88`, and the constructor clears it (see below) | 17 | 50 | 126 | 72 | 1 | 1 | 267 |
+| `9266906` | Host allocator by class (`OPC_NOVODEX_ALLOCATEABLE`), node constructors empty, `mIndices` at its sites | 17 | 50 | 134 | 64 | 1 | 1 | 267 |
+| `85004e8` | `CONTAINER_STATS` off (`Ice/IceContainer.h` overlay) | 17 | 50 | 138 | 60 | 1 | 1 | 267 |
+| `d6ffcb3` | `/Qfast_transcendentals` on `NxOpcode`: inline `fsqrt` | 17 | 52 | 140 | 56 | 1 | 1 | 267 |
+| `021fbe3` | Matcher: register vtable calls, trivial-constructor iterators, floats stored as immediates, CRT operator thunks | 18 | 55 | 148 | 44 | 1 | 1 | 267 |
+| `88fe6ba` | Map: `CoplanarTriTri`, `OBB::IsInside`, the Matrix3x3 cast; parser keeps conversion operators | 18 | 57 | 151 | 41 | 1 | 1 | 269 |
+| `75ff740` | Map: `OBB::ComputePlanes`, `OBB::ComputePoints` | 18 | 57 | 153 | 41 | 1 | 1 | 271 |
+| `05d81a9` | SweepAndPrune: NovodeX `Init`, constructor, destructor, allocator; map rows corrected | 18 | 58 | 159 | 38 | 1 | 1 | 275 |
+| `b7b1131` | Map: `ComputeWorldEdgeNormal` (was `Point::Mult`), `~BaseModel`; seeded data objects | 18 | 60 | 160 | 36 | 0 | 1 | 275 |
+| `70ab8b1` | Map: `GetSplittingValue`'s loop block | 18 | 60 | 162 | 35 | 0 | 0 | 275 |
+| `f075dd1` | Map: `0x000f11b0` is `Refit2`; `0x000f1350` is an ICE culling walk (unmapped) | 18 | 60 | 163 | 33 | 0 | 0 | 274 |
+| `ad690da` | Map: `0x000e3f50` is `Triangle::Normal` | 18 | 61 | 163 | 32 | 0 | 0 | 274 |
+| `e153286` | Matcher: `-1.0` against a negated `1.0` | 18 | 62 | 163 | 31 | 0 | 0 | 274 |
+| `660dcec` | Matcher: constant-store window of 12 | 18 | 62 | 168 | 26 | 0 | 0 | 274 |
+| `19a9844` | LSSCollider: NovodeX members and inflated-box test; LSS distance rows renamed; census `third_party` for the newly mapped rows | 18 | 66 | 176 | 13 | 0 | 0 | 273 |
+
+The final figures are MATCH 18 rows (233 bytes, 18 groups), SHAPE 66 (12,418, 64), REVIEW 176
+(193,271, 136) and DIFF 13 (26,569, 13). They come from candidate sha256
+`ec405bc23037bc51c95c313752cb05732ee707d59364aa9956eacf00ef30f8ef`, the build of `19a9844`.
+The qhull classes did not change. Every qhull match line is unchanged except a candidate string
+address inside one `report_jcc` value, which moved because the candidate DLL's layout moved.
+
+**Real behavioural divergences found and fixed.**
+
+1. **`OPCODECREATE::mDeserializeFrom` was uninitialised.** `Model::Build` branches on it. A stack
+   `OPCODECREATE` would take the load path with a garbage pointer.
+2. **RayCollider's added member is a float tolerance on the barycentric bounds of the culling
+   arm.** It is not a hit-distance tolerance:
+   - `U < -t`, `U > det + t`, `V < -t` and `U + V > det + t` reject (`0x000b873b`..`0x000b87f1`),
+     where stock tests the sign bit and `det` exactly;
+   - the distance's sign test stays stock;
+   - the non-culling arm is stock;
+   - the same code is inlined in all eight `_RayStab`/`_SegmentStab` variants.
+
+   The constructor zeroes it (`0x000b5736`), and the candidate's constructor had not. Its one
+   writer is the scene raycast at `0x0002929b`, from `[[scene+0xe0]+0x70]`. The Scene
+   reconstruction's stand-in for the constructor (`Scene.cpp`) already writes the 0.
+3. **The allocator line is drawn by class.** The model, builder, tree, node and sweep-and-prune
+   classes reach the singleton for every `new`/`delete` of them, including the compiler-generated
+   ones. The colliders and `Plane` use the CRT.
+
+   The earlier explicit helpers called a tree's destructor and then freed it. The image calls the
+   tree's virtual deleting destructor instead (`0x000e931e`).
+4. **The node constructors are empty in the image.** The vector constructor iterator is passed
+   `0x00027f00`, `mov eax,ecx; ret`. Stock zeroes the child words.
+5. **`CONTAINER_STATS` was compiled in.** The image keeps no container statics.
+6. **`__CIsqrt` for `fsqrt`.** The UCRT's SSE2 path ignores the x87 control word, and OPCODE runs
+   under `0x0f7f` as well as `0x027f`.
+7. **SweepAndPrune is NovodeX-modified.** `Init` takes a third argument, a per-object byte array
+   that drops static-static pairs. It also rejects empty input, frees the previous arrays, and
+   keeps its scratch on the stack. The constructor zeroes the members, and the destructor frees
+   them. The census had split `Init` across four rows under two wrong names.
+8. **LSSCollider is NovodeX-modified.**
+   - It adds the radius, half the segment's direction, the direction's absolute value, and the
+     segment's centre. `mRadius2` moves from `+0x4c` to `+0x74`.
+   - Box tests use RayCollider's segment-box separating-axis test against the box inflated by the
+     radius, in place of the exact segment-box squared distance.
+
+   The inflated test is conservative: it accepts every box stock accepts. So the triangle queries
+   report the same triangles, but the `_CollideNoPrimitiveTest` paths, which dump whole subtrees,
+   can report more.
+
+Nothing in the candidate's product code calls the LSS, OBB, sphere, AABB or planes colliders or
+SweepAndPrune yet, so no registered line moved. Gates 2, 3, 4, 6 and 7 pass. NxPhysicsThirdPartyTests
+passes 101 of 101 with oracle digest `74ebc669`, and NxPhysicsAssetTests has digest `eaefc573`.
+
+**Map corrections** are recorded in each row's `notes`:
+
+- `0x000538b0`: respelled so it pairs with the deleting destructor.
+- `0x000ba8e0`: `CoplanarTriTri`, not `TriTriOverlap`.
+- `0x000e4d30`, `0x000e4580`, `0x000e48e0`: `OBB::IsInside`, `OBB::ComputePlanes` and
+  `OBB::ComputePoints`, where they had been unmapped.
+- `0x000e9b20`: stock `Matrix3x3::operator Matrix4x4`, left unmapped because the validator takes
+  no operator names. The matcher names it through `ORACLE_KNOWN`.
+- `0x000e4cb0`: `OBB::ComputeWorldEdgeNormal`, not `Point::Mult`.
+- `0x000e9550`: `~BaseModel`, not `ReleaseBase`.
+- `0x000e9aa0`: `GetSplittingValue`'s loop block.
+- SweepAndPrune:
+  - `0x000e6c10` is `SAP_PairData::Init`;
+  - `0x000e6ca0`, `0x000e6db0` and `0x000e70c0` are one `Init`;
+  - `0x000e71b0` and `0x000e71e0` are the destructor.
+- `0x000f11b0`: `Refit2`, not `Walk`. The image has no `Walk`.
+- `0x000f1350`: an ICE culling walk. It had been mapped as `Refit2`.
+- `0x000e3f50`: `Triangle::Normal`, not `Compacity`.
+- `0x000d1ed0`, `0x000d1930`, `0x000d14b0`: `OPC_SegmentTriangleSqrDist`,
+  `OPC_SegmentSegmentSqrDist` and `OPC_PointTriangleSqrDist`, not `LSSTriOverlap` blocks.
+
+The seven rows newly mapped to stock functions now declare `third_party=opcode` in the census and
+defer `vendored_not_falsified`, as the validator requires. `phase4-closure.json` moves from 313/601
+to 306/608. `0x000f1350` no longer declares a third party. It is still typed `compiler_artifact`,
+although it is real code: a retype for the ledger's owner.
+
+**Matcher changes** (`vendored_match.py`, 82 tests):
+
+- A register call through a just-loaded vtable slot is the memory call it stands for.
+- A one-sided `vector constructor iterator` is unwrapped: a trivial constructor drops out, and a
+  real one becomes a call that the inlining check can absorb.
+- A float constant that only feeds stores matches an integer store of the same bits to the same
+  field.
+- `-1.0` against a run-time-negated `1.0` is shape.
+- The CRT operator thunks are named, and so is `CompleteBoxPruning`.
+- `SEEDED_DATA` holds three hand-identified data objects.
+- The source-name parser keeps a conversion operator's two words.
+- `ORACLE_KNOWN` applies to unmapped rows.
+
+**Review.** `opcode_review.csv` has one line per group (231):
+
+| Class | Groups | Verdicts |
+|---|---:|---|
+| REVIEW | 136 | all equivalent |
+| SHAPE | 64 | all equivalent |
+| MATCH | 18 | all equivalent |
+| DIFF | 13 | 9 equivalent, 4 novodex-variant-unwritten |
+
+The method:
+
+1. Every field and bit token was re-derived with `lea`/`add`/`mov` copies folded into effective
+   offsets, ignoring the base class.
+2. Each residue was read against the listing and recorded with addresses. The residues are:
+   - `rep movs` member copies;
+   - allocator vtable loads;
+   - loop-walked pointers;
+   - reloaded `this`;
+   - inlined callees.
+3. Every one-sided logic or compare immediate was attributed to a listing form, again with
+   addresses:
+   - index scaling;
+   - `fnstsw` tests;
+   - flag set/clear in register versus memory form;
+   - `(mFlags&3)==3`-style mask compares;
+   - loop bounds;
+   - the 2026 deleting-destructor flag 4;
+   - `GetNbFaces()!=0` as `>=4`.
+
+The nine equivalent DIFF groups are inlining, ICF, table-offset or cookie-loop forms, and each is
+named in its line. Groups with x87 work still need execution evidence (Task 5). The review is
+tool-assisted in the same sense as Task 2's: the rules attribute tokens to forms; they do not prove
+a whole body equivalent.
+
+**Still open.** These are separate work units, not vendored-correspondence rows:
+
+1. **The NovodeX tree-collider callback variant.**
+   - Rows `0x000d12b0`, `0x000cd700`, `0x000ca5a0` and `0x000cbe50`: 25,613 bytes.
+   - A second instantiation of the no-leaf tree-versus-tree code that takes a depth counter and a
+     callback, where stock adds to `mPairs`.
+   - Its only caller is NovodeX's unreconstructed mesh-mesh contact, `phys_fn_001876`.
+2. **Serialization.**
+   - BaseModel's slots 4 to 6 (`0x000e9420`, `0x000e9440`, `0x000e94c0`), and the four trees'
+     getSerialSize, save, load and pointer-relocation rows (`0x000f2570`..`0x000f3e70`): 17 rows,
+     1,277 bytes.
+   - The overlays still carry stubs that return 0 or false.
+   - `BaseModel::Save` is reached from the reconstructed `TriangleMesh.cpp` save path, and
+     `Model::Build` dispatches `Load` when `mDeserializeFrom` is set. So these stubs are live on
+     reconstructed paths.
+   - The stream helpers they call (`phys_fn_004797`, `004799`, `004774`, `004778`) are MemoryStream
+     rows, so writing them needs new host seams and a direct-oracle differential.
+3. **The unmapped NovodeX clusters inside the span.** 143 rows, 22,243 bytes. The classification
+   is below.
+
+**Unmapped rows (143).**
+
+| Rows | Bytes | States | What |
+|---:|---:|---|---|
+| 12 | 556 | 11 dynamically_gated, 1 reconstructed | `IcePrunable.cpp`, the Prunable class (`.rdata:0x0011b5a4`); P4 Task 2b |
+| 5 | 60 | 4 reconstructed, 1 dynamically_gated | constant getters `0x000e3190`/`a0`/`b0`/`0x000e4ca0`; `RadixSort::SetRankBuffers` |
+| 24 | 2,384 | 22 discovered, 2 reconstructed | NovodeX pruner A (`0x000e50c0`..; vtables `0x0011b9c8`/`0x0011b9f0`): builds and refits an AABBTree and runs the Ray, Sphere and AABB colliders |
+| 6 | 2,484 | discovered | NovodeX pruner B (`0x000e5ab0`..`0x000e6430`): container queries with static result buffers |
+| 1 | 186 | discovered | SweepAndPrune box dump through a callback (`0x000e6b50`; NovodeX addition; caller `phys_fn_001978`) |
+| 14 | 2,403 | 9 discovered, 2 dynamically_gated, 3 reconstructed | the NovodeX pruning owner and prunable pool (`0x000e7250`..; vtable `0x0011ba1c`) |
+| 1 | 5 | classified | a `jmp rand` thunk (`0x000e7c40`) |
+| 16 | 4,828 | 14 discovered, 2 reconstructed | penetration-map builder helpers (`0x000e7c50`..`0x000e8f40`; vtable `0x0011ba40`; `PenetrationMap::Create` callers) |
+| 3 | 205 | 2 discovered, 1 reconstructed | BaseModel serialization slots (open item 2) |
+| 1 | 94 | discovered | stock `Matrix3x3::operator Matrix4x4` (unmapped for the validator only) |
+| 25 | 4,562 | 22 discovered, 3 reconstructed | NovodeX pruner C (`0x000ef270`..; vtables `0x0011bb98`/`0x0011bbc0`) |
+| 1 | 418 | classified | the ICE plane-culling walk (`0x000f1350`) |
+| 20 | 2,986 | 18 discovered, 2 reconstructed | NovodeX pruner D (`0x000f1550`..; vtable `0x0011bc18`) |
+| 14 | 1,072 | 10 discovered, 4 reconstructed | tree serialization (open item 2) |
+
+None of the pruner, penetration-map or dump clusters is called by a mapped OPCODE row. They call
+OPCODE; OPCODE does not call them. So they are not needed for the vendored code to correspond. They
+belong with the scene-query and mesh work units that own their callers.
+
+The "reconstructed" rows in them are P4 Task 2b's small generic helpers (getters, zeroers, frees),
+and none is wired to its cluster.
+
 ## Open items
 
 - **The NovodeX hull library (separate work unit, controller decision after Task 2).** The 31
@@ -389,6 +589,20 @@ work unit (bundle `gap:Controller.cpp..fluids\Fluid.cpp`), with a differential b
   `gap:Controller.cpp..fluids\Fluid.cpp`), reconstructed together with their only caller
   `phys_fn_002233` and a differential through it. Until then the qhull host hooks in
   `Physics/src/ThirdPartyHost.cpp` stay shims.
+- **OPCODE, after Task 3 (separate work units; see the Task 3 section).**
+  - The NovodeX callback instantiation of the no-leaf tree-versus-tree collider:
+    - rows `0x000d12b0`, `0x000cd700`, `0x000ca5a0`, `0x000cbe50` (25,613 bytes);
+    - to be written with its caller `phys_fn_001876`.
+  - Serialization, 17 rows and 1,277 bytes:
+    - BaseModel slots 4 to 6, and the four trees' getSerialSize, save, load and relocation rows;
+    - they need MemoryStream host seams and a direct-oracle differential;
+    - their stubs are reachable from the reconstructed `TriangleMesh.cpp` save path and from
+      `Model::Build`'s load dispatch.
+  - The NovodeX pruner, penetration-map and SweepAndPrune-dump clusters in the OPCODE span, with
+    the scene-query and mesh units that own their callers.
+  - `0x000f1350`, the ICE culling walk: typed `compiler_artifact` but real code.
+  - RayCollider's `+0x88` tolerance has no setter in the overlay; the scene raycast
+    (`0x0002929b`) writes it from outside the class, so whoever reconstructs that raycast adds one.
 
 ## Timing
 
@@ -398,3 +612,4 @@ work unit (bundle `gap:Controller.cpp..fluids\Fluid.cpp`), with a differential b
 | 1 review | 2026-09-27T16:06:39 | 2026-09-27T16:30:00 | 0 | 0 | Matcher strengthened after review: REVIEW class (field byte coverage, logic/compare immediates with bit-address normalisation), MAPCHECK class, overload-aware call keys and real operator names, icall base tags, float rule narrowed to reciprocal/halving and fchs-backed negation, repe cmps, ebp-frame note, rank pairs need two votes; opcode_map.csv 0x000e90e0 and 0x000f0890 corrected; tools/qhull_trace_attribution.py committed; 58 matcher tests. qhull MATCH 0 / SHAPE 88 / REVIEW 80 / DIFF 287; OPCODE MATCH 17 / SHAPE 60 / REVIEW 116 / DIFF 72 / MISSING 1 / AMBIGUOUS 1. OPCODECREATE ctor and the 8 RayCollider stab rows are REVIEW. No product code or ledger change. |
 | 1 final | 2026-09-27T16:33:00 | 2026-09-27T16:44:39 | 0 | 0 | Router approved; final changes: x87 operation classes as a REVIEW feature (6 SHAPE groups flipped, all explained: fabs_ macro x3, reciprocal x3); coverage-based narrowing replaces the same-dword downgrade (adjacent one-byte fields stay REVIEW); field and bit tokens carry a base class (this / derived / other, derived and other merged for classification) traced through copies and ebp spills; register read-modify-write and/or/xor normalised to the memory form; report-only report_jcc and report_stores columns; "Not compared" and "Promotion policy for Task 5" sections; 69 matcher tests. qhull SHAPE 83 / REVIEW 85 / DIFF 287; OPCODE MATCH 17 / SHAPE 49 / REVIEW 127 / DIFF 72 / MISSING 1 / AMBIGUOUS 1. No product code or ledger change. |
 | 2 | 2026-09-27T16:45:42 | 2026-09-27T17:56:47 | 0 | 0 | qhull triage. Fixes: trace macros on the CRT and mem.c/qset.c prints on the host (qhull_a.h, mem.h, host header), inline fsqrt (/Qfast_transcendentals on NxQhull), io.c/poly2.c typed host dispatches (+0x00/+0x04/+0x08/+0x0c/+0x1c), geom.c reciprocal parity for qh_gausselim/qh_getcenter/qh_normalize2, map row 0x0007f310 corrected to qh_settempfree_all; matcher: high-byte bit tests, new seams, two CRT identities, 71 tests. qhull SHAPE 83->162 / REVIEW 85->197 / DIFF 287->96 rows; qhull_review.csv covers all 331 groups (no unreviewed line). Unmapped NovodeX rows (31 discovered, 3,903 insns) not written: need their own unit. No ledger change; gates 2, 3, 4, 6, 7 pass, Phase 5 red only on `CANDIDATE-MISSING family=vtables`. |
+| 3 | 2026-09-27T17:58:46 | 2026-09-27T19:21:57 | 0 | 0 | OPCODE triage. Fixes: OPCODECREATE clears mDeserializeFrom; RayCollider's +0x88 float widens the culling arm's barycentric bounds (all eight stab variants) and the constructor clears it; host allocator by class (OPC_NOVODEX_ALLOCATEABLE) with empty node constructors and mIndices at its sites; CONTAINER_STATS off; /Qfast_transcendentals on NxOpcode; NovodeX SweepAndPrune (3-argument Init, ctor/dtor, allocator); NovodeX LSSCollider (radius, precomputed segment, inflated-box SAT). Map: 20 rows corrected (CoplanarTriTri, OBB::IsInside/ComputePlanes/ComputePoints/ComputeWorldEdgeNormal, Matrix3x3 cast, SAP Init/PairData::Init/dtor, ~BaseModel, Refit2, Triangle::Normal, the three LSS distance functions, GetSplittingValue loop, the ICE culling walk). Matcher: register vtable calls, trivial-ctor iterators, floats stored as immediates, CRT operators, seeded data, -1.0 negation, conversion-operator names; 82 tests. OPCODE MATCH 17->18 / SHAPE 49->66 / REVIEW 127->176 / DIFF 72->13 / MISSING 1->0 / AMBIGUOUS 1->0 rows; opcode_review.csv covers all 231 groups (227 equivalent, 4 novodex-variant-unwritten). Census: 7 rows third_party=opcode and vendored_not_falsified, 0x000f1350 no longer third party. Unmapped 143 rows classified; the callback tree-collider variant (25,613 B) and serialization (1,277 B) are separate units. Gates 2, 3, 4, 6, 7 pass; Phase 5 red only on `CANDIDATE-MISSING family=vtables`. |
