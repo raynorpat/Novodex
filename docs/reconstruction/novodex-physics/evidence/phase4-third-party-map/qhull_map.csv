@@ -434,7 +434,7 @@ rva,id,size,grade,source_file,source_line,source_function,signals,notes
 0x0007f170,phys_fn_003304,165,mapped,qset.c,1015,qh_setprint,S1-string(3 uniquely-owned literal(s));S3-TU-band,
 0x0007f220,phys_fn_003306,122,mapped,qset.c,1046,qh_setreplace,S1-string(1 uniquely-owned literal(s));S3-TU-band,
 0x0007f2a0,phys_fn_003308,98,mapped,qset.c,1076,qh_setsize,S1-string(2 uniquely-owned literal(s));S3-TU-band,
-0x0007f310,phys_fn_003310,106,mapped,qset.c,714,qh_setfree2,"S2-callgraph(2 agreeing edges, 0 contradicting);S3-TU-band",
+0x0007f310,phys_fn_003310,106,mapped,qset.c,1165,qh_settempfree_all,"S4-control-flow(no arguments: loads qhmem.tempstack [0x10125008] at 0x0007f310, walks its elements with qh_setfree(&set) inlined -- the quick-fit free list push through qhmem.indextable [0x10124ff8] / freelists [0x10124ff0] or qh_memfree 0x0006dc10 for a long set -- then tail-calls qh_setfree(&qhmem.tempstack) with push 0x10125008 at 0x0007f36e)","Corrected by vc Task 2 (was qh_setfree2, mapped). qh_setfree2 takes (setp, elemsize) and frees each element with qh_memfree(elem, elemsize); this row takes nothing and frees qhmem.tempstack. qh_freebuild tail-jumps here (0x00062062), as upstream global.c ends qh_freebuild with qh_settempfree_all(). Surfaced by vendored_match.py (DIFF -_qhmem+0x30 in the row and -qh_setfree2 +qh_settempfree_all in qh_freebuild)."
 0x0007f380,phys_fn_003312,188,mapped,qset.c,1185,qh_settemppop,S1-string(2 uniquely-owned literal(s));S3-TU-band,
 0x0007f440,phys_fn_003314,93,mapped,qset.c,1236,qh_settruncate,S1-string(1 uniquely-owned literal(s));S3-TU-band,
 0x0007f4a0,phys_fn_003316,125,mapped,qset.c,1288,qh_setzero,S1-string(1 uniquely-owned literal(s));S3-TU-band,
