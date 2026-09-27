@@ -28,9 +28,11 @@ Outputs:
 
 Run: `python docs/reconstruction/novodex-physics/tools/vendored_match.py`. The defaults are the
 oracle at `D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll`, the candidate
-`build/Release/NxPhysics.dll`, and the candidate's `.map`. Every run recorded here used candidate
+`build/Release/NxPhysics.dll`, and the candidate's `.map`. The Task 1 runs used candidate
 sha256 `ac45c56b41240f928eaf74a4284e7b8fee0440ee495aed09c5149382c5784f34`, the build of
-`b210042`. No vendored source has changed since that build.
+`b210042`. The Task 2 figures (the Summary's qhull rows and the Task 2 section) are from candidate
+sha256 `0b3027e5c70d792c8df06677ae177ab1023b8c7e825bb0c9a6a76f9da4cdea35`, the build of the
+Task 2 head.
 
 `tools/qhull_trace_attribution.py` backs the trace-macro finding below.
 
@@ -128,16 +130,17 @@ Both are left for Task 3 to fix.
 
 ## Summary
 
-Rows and bytes count map rows, so a function the census split into several rows counts each of
-its rows. Groups count candidate functions, meaning the rows that resolve to one candidate
+The qhull rows are after Task 2 (Task 1 ended at SHAPE 83 / REVIEW 85 / DIFF 287 rows; see the
+Task 2 section); the OPCODE rows are Task 1's and unchanged. Rows and bytes count map rows, so a
+function the census split into several rows counts each of its rows. Groups count candidate functions, meaning the rows that resolve to one candidate
 symbol.
 
 | Library | Class | Rows | Bytes | Groups |
 |---|---|---:|---:|---:|
 | qhull | MATCH | 0 | 0 | 0 |
-| qhull | SHAPE | 83 | 20,885 | 78 |
-| qhull | REVIEW | 85 | 17,889 | 64 |
-| qhull | DIFF | 287 | 109,428 | 189 |
+| qhull | SHAPE | 162 | 41,396 | 142 |
+| qhull | REVIEW | 197 | 60,831 | 142 |
+| qhull | DIFF | 96 | 45,975 | 47 |
 | qhull | MAPCHECK / MISSING / AMBIGUOUS | 0 | 0 | 0 |
 | qhull | **total** | **455** | **148,202** | **331** |
 | OPCODE | MATCH | 17 | 218 | 17 |
@@ -149,7 +152,7 @@ symbol.
 | OPCODE | AMBIGUOUS | 1 | 122 | 1 |
 | OPCODE | **total** | **267** | **229,640** | **227** |
 
-For REVIEW groups, the split by cause is:
+For REVIEW groups, the split by cause at the end of Task 1 is:
 
 | Library | Fields | Immediates | Fields + immediates | x87 classes | Immediates + x87 classes |
 |---|---:|---:|---:|---:|---:|
@@ -215,9 +218,10 @@ Which evidence a group needs before its rows can move depends on its class and n
 - **Not promotable until fixed:** DIFF, MISSING and AMBIGUOUS groups. MAPCHECK groups wait for
   the map to be corrected.
 
-## What the DIFF rows say
+## What the DIFF rows say (at the end of Task 1)
 
-The `diff_causes` column tags each DIFF. Counts below are by group.
+The `diff_causes` column tags each DIFF. Counts below are by group. Task 2 resolved the qhull
+causes; see the Task 2 section.
 
 **qhull (189 DIFF groups).** 158 carry `host-seam`, and 125 carry nothing else.
 
@@ -272,6 +276,103 @@ not compiled into `NxOpcode`.
 **AMBIGUOUS.** `AABBTreeOfTrianglesBuilder::GetSplittingValue(...) [outlined loop]`
 (`0x000e9aa0`). The map row names no parameters, and both overloads exist.
 
+## Task 2: qhull triage
+
+Every qhull DIFF group was traced to its cause, the real differences were fixed, and every qhull
+REVIEW, SHAPE and DIFF group got a hand-review line in
+`phase4-third-party-map/qhull_review.csv` (331 groups: group, class, reviewed_by_task, verdict,
+addresses, note).
+
+**Fixes, with the qhull match classes (rows) after each.**
+
+| Commit | Change | SHAPE | REVIEW | DIFF |
+|---|---|---:|---:|---:|
+| (Task 1) | | 83 | 85 | 287 |
+| `e6cc359` | Trace macros back on the CRT: `(fprintf) args` in a new `qhull_a.h` overlay; the plain-`fprintf` redirect is a function-like macro in `QhullNovodeXHost.h`, reached from `user.h` and a new `mem.h` overlay so `mem.c`/`qset.c` print through `+0x10` too | 133 | 206 | 116 |
+| `93c0e1d` | `/Qfast_transcendentals` on `NxQhull`: `sqrt` is the inline `fsqrt` the oracle has (`0x0005fbac`), not `__CIsqrt` | 138 | 211 | 106 |
+| `18774f3` | NovodeX's typed host dispatches: `io.c` overlay (`qh_printpointid` `+0x04`, `qh_printfacet3vertex` `+0x08`, `qh_printbegin` `+0x00`, `qh_printfacets` `+0x0c`) and `poly2.c` overlay (`qh_initialhull` `+0x1c`); five host hooks; matcher seams and two CRT identities | 140 | 216 | 99 |
+| `dcb2836` | Map correction: `0x0007f310` is `qh_settempfree_all`, not `qh_setfree2` | 140 | 219 | 96 |
+| `2d823f3` | Build parity: `geom.c` overlay evaluates `qh_gausselim`, `qh_getcenter` and `qh_normalize2` with the reciprocal the 2003 compiler formed (`0x0005d363`, `0x0005d501`, `0x0005d7d0`) | 142 | 217 | 96 |
+| `a1e5428` | High-byte register bit tests (`test ch,8` is bit 11, not bit 3); `test ah,imm` after a field load is a field test, not the x87 status word | 162 | 197 | 96 |
+
+**The one real behavioural divergence** was numeric: the oracle's compiler replaced
+loop-invariant divisions with a reciprocal and multiplications. `x*(1/n)` and `x/n` differ in the
+last bit, and `qh_normalize2` runs on every facet normal, `qh_getcenter` on the interior point and
+every centrum. The `geom.c` overlay is recorded in `External/qhull/MODIFICATIONS.md` as build
+parity, not as a NovodeX change. The same transformation on paths the NovodeX driver never enables
+(its option string is `"o"`, `.rdata:0x0011363c`) is documented there and left stock.
+
+**The remaining 47 DIFF groups are all explained and none is a defect.** 46 are equivalent:
+
+- host `fprintf` calls whose base the matcher's tracer cannot attribute (`icall[?]`/`[getter]`/`[obj]`);
+- inlining that the call-set check cannot absorb;
+- ICF folds: `qh_comparevisit` into `qh_comparemerge`, and `qh_user_memsizes` into the one-byte `ret`;
+- CRT `_iob` against `__acrt_iob_func`;
+- string literals referenced as data;
+- exact constant folds: `-2*x` as `fchs`/`fadd`, `2*x*0.002` as `x*0.004`, and `k*REALepsilon`
+  with `REALepsilon = 2^-52`;
+- a dead alignment check that the 2003 compiler kept;
+- loop bounds written as `&PRINTout[qh_PRINTEND]`.
+
+One group, `qh_initqhull_globals`, differs numerically (`RANDOMa`), but only under options the
+driver never passes.
+
+**REVIEW and SHAPE groups.** The review attributes every field, logic-immediate and x87-class
+token to a listing form:
+
+- host vptr loads;
+- set walks;
+- register-held masks and constants;
+- high-byte tests;
+- inlined callees;
+- `memcpy` splits;
+- magic division;
+- the manual readings recorded in the notes.
+
+Every one-sided compare/branch predicate is matched to the other side's form. `fabs_` compiled to
+`fabs` differs only in the sign of a zero, and every use is a comparison or a magnitude. Eight
+REVIEW groups carry a numeric difference that exists only under driver-disabled options. Ten SHAPE
+groups were read in full against the listing: `qh_pointid`, `qh_setlast`, `qh_willdelete`,
+`qh_delvertex`, `qh_setsize`, `qh_maxabsval`, `qh_point`, `qh_mergevertex_del`, `qh_memfree` and
+`qh_crossproduct`. All of them agree statement for statement.
+
+**The host object's slots.** The vtable at `.rdata:0x00113614` is:
+
+| Slot | Row | Role |
+|---|---|---|
+| `+0x00` | `003259` | off-header |
+| `+0x04` | `003261` | push three floats |
+| `+0x08` | `003268` | facet append |
+| `+0x0c` | `003265` | area/volume |
+| `+0x10` | `003263` | fprintf |
+| `+0x14` | `003272` | arena malloc |
+| `+0x18` | `003275` | free |
+| `+0x1c` | `001583` | a one-byte `ret`, so the narrow-hull hook does nothing |
+| `+0x20` | `003267` | release, then `longjmp` to the driver's `jmp_buf` at `.data:0x00125040` |
+
+So qhull's `"o"` output is how NovodeX collects the hull.
+
+**Unmapped rows: not written.** The 37 unmapped qhull rows are NovodeX's own code, and the
+candidate has none of them wired:
+
+- Six have generic shape reconstructions in `Physics/src/ObjectModel.cpp` (`003238`, `003257`,
+  `003261`, `003265`, `003268`, `003274`).
+- 31 are `discovered`: 3,903 instructions, 750 of them x87.
+
+They are a hull-cooking library around qhull:
+
+- the driver `003279` and its `setjmp`, and `003236`, which calls `qh_init_A`, `qh_initflags`,
+  `qh_init_B`, `qh_qhull`, `qh_check_output` and `qh_produce_output`;
+- vertex clean-up with a bounding-box normalisation (`003243`/`003245`);
+- the output arena class above;
+- the `QHULL_OK_%04d.obj` and `QHULL_FAIL_%04d.obj` writers;
+- band B (`0x0007fda0`-`0x000814f0`), a hashed vertex/edge structure.
+
+Their only caller is `phys_fn_002233` in `TriangleMesh.cpp`, which is itself not reconstructed,
+so nothing in the candidate can reach them, and no differential exercises them. This needs its own
+work unit (bundle `gap:Controller.cpp..fluids\Fluid.cpp`), with a differential built through
+`phys_fn_002233`.
+
 ## Timing
 
 | Task | Start | End | Rows written | Bytes written | Notes |
@@ -279,3 +380,4 @@ not compiled into `NxOpcode`.
 | 1 | 2026-09-27T15:24:12 | 2026-09-27T15:56:00 | 0 | 0 | Structural matcher `tools/vendored_match.py` + 29 unit tests; first run over 455 qhull and 267 OPCODE rows (qhull MATCH 2 / SHAPE 177 / DIFF 276; OPCODE MATCH 19 / SHAPE 174 / DIFF 72 / MISSING 1 / AMBIGUOUS 1). Top DIFF causes: qhull trace macros on the CRT in the oracle (127 groups), mem.c/qset.c on the CRT in the candidate (21), OPCODE allocator not redirected (25). No product code or ledger change; gates 2, 3, 4, 6, 7 pass, Phase 5 red only on `CANDIDATE-MISSING family=vtables`. |
 | 1 review | 2026-09-27T16:06:39 | 2026-09-27T16:30:00 | 0 | 0 | Matcher strengthened after review: REVIEW class (field byte coverage, logic/compare immediates with bit-address normalisation), MAPCHECK class, overload-aware call keys and real operator names, icall base tags, float rule narrowed to reciprocal/halving and fchs-backed negation, repe cmps, ebp-frame note, rank pairs need two votes; opcode_map.csv 0x000e90e0 and 0x000f0890 corrected; tools/qhull_trace_attribution.py committed; 58 matcher tests. qhull MATCH 0 / SHAPE 88 / REVIEW 80 / DIFF 287; OPCODE MATCH 17 / SHAPE 60 / REVIEW 116 / DIFF 72 / MISSING 1 / AMBIGUOUS 1. OPCODECREATE ctor and the 8 RayCollider stab rows are REVIEW. No product code or ledger change. |
 | 1 final | 2026-09-27T16:33:00 | 2026-09-27T16:44:39 | 0 | 0 | Router approved; final changes: x87 operation classes as a REVIEW feature (6 SHAPE groups flipped, all explained: fabs_ macro x3, reciprocal x3); coverage-based narrowing replaces the same-dword downgrade (adjacent one-byte fields stay REVIEW); field and bit tokens carry a base class (this / derived / other, derived and other merged for classification) traced through copies and ebp spills; register read-modify-write and/or/xor normalised to the memory form; report-only report_jcc and report_stores columns; "Not compared" and "Promotion policy for Task 5" sections; 69 matcher tests. qhull SHAPE 83 / REVIEW 85 / DIFF 287; OPCODE MATCH 17 / SHAPE 49 / REVIEW 127 / DIFF 72 / MISSING 1 / AMBIGUOUS 1. No product code or ledger change. |
+| 2 | 2026-09-27T16:45:42 | 2026-09-27T17:45:00 | 0 | 0 | qhull triage. Fixes: trace macros on the CRT and mem.c/qset.c prints on the host (qhull_a.h, mem.h, host header), inline fsqrt (/Qfast_transcendentals on NxQhull), io.c/poly2.c typed host dispatches (+0x00/+0x04/+0x08/+0x0c/+0x1c), geom.c reciprocal parity for qh_gausselim/qh_getcenter/qh_normalize2, map row 0x0007f310 corrected to qh_settempfree_all; matcher: high-byte bit tests, new seams, two CRT identities, 71 tests. qhull SHAPE 83->162 / REVIEW 85->197 / DIFF 287->96 rows; qhull_review.csv covers all 331 groups (no unreviewed line). Unmapped NovodeX rows (31 discovered, 3,903 insns) not written: need their own unit. No ledger change; gates 2, 3, 4, 6, 7 pass, Phase 5 red only on `CANDIDATE-MISSING family=vtables`. |

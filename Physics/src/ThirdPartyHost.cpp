@@ -17,7 +17,7 @@ opcNovodeXAlloc/opcNovodeXFree reach nxGetSdkAllocator, which IS phys_fn_004803
 at 0x000b4000 and was closed in Phase 2. Everything else is a LINKAGE SHIM. In
 particular:
 
-  * qhull's four hooks belong to a NovodeX class with a nine-slot vtable at
+  * qhull's nine hooks belong to a NovodeX class with a nine-slot vtable at
     .rdata:0x00113614, constructed at 0x0007e370 with a 16,384-byte inline
     arena, held in the global at .data:0x00125080 and written exactly once at
     0x0007ea51. That class is a Task 2b row. Nothing here reconstructs it: the
@@ -90,6 +90,9 @@ int qhNovodeXFprintf(FILE* /*stream*/, const char* /*format*/, ...)
 
 void qhNovodeXNarrowHull()
 {
+	// Slot +0x1c of the vtable at .rdata:0x00113614 is phys_fn_001583 at
+	// 0x0002ea70, a one-byte `ret` shared by folding: the shipped hook does
+	// nothing, so this empty body is the shipped behaviour, not a placeholder.
 }
 
 void* qhNovodeXMalloc(size_t size)
@@ -104,6 +107,10 @@ void qhNovodeXFree(void* memory)
 
 void qhNovodeXErrexit(int /*exitcode*/)
 {
+	// The shipped slot +0x20 is phys_fn_003267 (0x0007e540): it releases the
+	// object's arrays through 003238 and then longjmps to the jmp_buf at
+	// .data:0x00125040 that the driver 003279 set with _setjmp3. That driver
+	// is not reconstructed, so there is nothing to jump back to.
 	// The shipped slot +0x20 does not return to qhull. Neither does this: a
 	// hook that returned would let qhull carry on past an error exit, which is
 	// a worse lie than stopping.
