@@ -116,6 +116,18 @@ target_include_directories(NxOpcode PUBLIC ${OPCODE_TREE})
 # consumer compiling Opcode.h, including the direct-link oracle harness.
 target_compile_definitions(NxOpcode PUBLIC ICE_NO_DLL OPCODE_EXPORTS USE_MINMAX)
 
+# Every qhull square root is an inline `fsqrt` in the oracle -- e.g. qh_pointdist
+# at 0x0005fb70 ends `jle; fsqrt; ret` (0x0005fbac) -- and no qhull row calls a
+# CRT square root. A 2026 /fp:precise x87 build turns sqrt() into
+# `call __CIsqrt` (14 qhull groups, among them qh_normalize2, qh_gram_schmidt,
+# qh_pointdist, qh_detroundoff, qh_printstatistics). /Qfast_transcendentals is
+# the switch that restores the inline instruction without /fp:fast's
+# reassociation. qhull runs only under the 0x027f control word (phase4-third-
+# party.md section 4), where fsqrt and __CIsqrt round identically, so this is a
+# code-shape correction, not a numeric one. qhull only: OPCODE's six __CIsqrt
+# groups run under both control words and are OPCODE's triage to make.
+target_compile_options(NxQhull PRIVATE /Qfast_transcendentals)
+
 #### BUILD FLAGS FOR BOTH ####
 
 if(MSVC)

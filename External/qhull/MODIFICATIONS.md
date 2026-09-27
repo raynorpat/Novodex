@@ -16,6 +16,13 @@ because the shipped `NxPhysics.dll` does something stock 2003.1 does not.
 | `user.c` | `qh_errexit`'s body replaced by a call on slot `+0x20` forwarding only the exit code; the stock body is kept under `#if 0` | `0x00084800` |
 | `QhullNovodeXHost.h` | **added file**, no upstream counterpart: the four hooks, and the function-like `fprintf` redirect macro for the qhull C files | `0x0007ea51`, `.rdata:0x00113614` |
 
+## Build configuration, not source
+
+`External/CMakeLists.txt` compiles `NxQhull` with `/Qfast_transcendentals`, so
+`sqrt()` is the inline `fsqrt` the oracle has (e.g. `0x0005fbac` in
+`qh_pointdist`) instead of a 2026 `/fp:precise` build's `call __CIsqrt`. No
+source file changes for it.
+
 ## One object, four slots
 
 All four hooks are the same object: a NovodeX class with a nine-slot vtable at
