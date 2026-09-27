@@ -67,23 +67,34 @@ Features (every relocated operand is resolved through the image's base relocatio
     fields     byte coverage of structure accesses: for every memory operand of a non-call,
                non-lea, non-string instruction whose base is a register other than esp (and
                other than ebp when the function sets up an ebp frame), with no index register,
-               a non-negative displacement and no relocation, the bytes disp..disp+size-1. A
-               test/and/or/xor of such an operand with an immediate covers only the bytes of the
-               bits it touches. Negative displacements and indexed operands are left out: they
-               are strength-reduced pointer walks and array elements, whose offsets are the
-               compiler's choice.
+               a non-negative displacement and no relocation, the bytes disp..disp+size-1, each
+               tagged with the base register's class (_base_class, traced back through register
+               copies and ebp spills): "this" (ecx as it came in), "derived" (a pointer loaded
+               from memory or computed from another register) or "other". A test/and/or/xor of
+               such an operand with an immediate covers only the bytes of the bits it touches.
+               Negative displacements and indexed operands are left out: they are
+               strength-reduced pointer walks and array elements, whose offsets are the
+               compiler's choice. The accesses themselves are kept for the narrowing rule.
     imms       (classifying) the logic/compare immediates: the multiset of immediates of
                cmp/test/and/or/xor/shl/shr/sar/sal, read as signed at the operand size, leaving
                out 0, the x87 status masks (first operand ah/ax) and stack alignment (esp). A
-               test/and/or/xor on a field, or a test/and on a register just loaded from one
-               (within 6 instructions), becomes a bit-address token "bit@N..M" (N = disp*8 +
-               bit; "clear@"/"set@"/"flip@" for memory and/or/xor), so byte-narrowing cancels.
+               bit operation on a field becomes a base-classed bit-address token
+               "this:bit@N..M" (N = disp*8 + bit; "clear@"/"set@"/"flip@" for and/or/xor that
+               write): the memory form, a test/and on a register just loaded from a field
+               (within 6 instructions), and a register and/or/xor whose result is stored back to
+               the field it was loaded from (read-modify-write). Byte-narrowing so cancels.
                These are where flags, masks, thresholds and enumerators live.
+    x87ops     (classifying) the set of x87 operation classes executed: add, sub, mul, div,
+               sqrt, abs. Operand order (fsub against fsubr) is not compared.
     other imms (shape only) every other non-relocated immediate, less those of instructions
                whose first operand is esp or ebp. They are reported and do not classify: they
                are mostly store values (float bit patterns, zero-fills, counters), argument byte
                counts and element sizes, which two compilers choose differently for the same
                source, and a store of a different constant also moves a field or a float.
+    report     (report only, never classifying) report_jcc: (cmp immediate, following jcc)
+               pairs; report_stores: (base class, field, value) for mov [r+d],imm and for
+               fldz/fld1 followed by fstp [r+d], the value normalised (0 whatever its type, a
+               float bit pattern as the float).
     shape      instruction count, conditional-branch count, x87 and SSE instruction counts,
                fchs count, switch-table references, register calls, float widths, whether an
                ebp frame is set up (the oracle uses ebp as a general register, the candidate
@@ -100,15 +111,18 @@ Global-data correspondence
     majority. The result is written to vendored_data_map.csv so it can be audited.
 
 Comparison
-    calls, strings, floats, data, fields and imms are compared as sets after inlining is
+    calls, strings, floats, data, fields, imms and x87ops are compared as sets after inlining is
     accounted for: a callee that one side calls and the other does not is replaced by that
     callee's own features (oracle: its matched group or inventory row; candidate: its map
     symbol) whenever that shrinks the difference, for up to three rounds. When nothing was
     inlined, imms are compared as a multiset. These differences are shape, not DIFF: occurrence
     counts; memset/memcpy/memmove; the trivial float constants 0.0, -0.0 and 1.0; an oracle-only
     and a candidate-only float whose product is 1 (reciprocal) or 2 (halving), or that are
-    negations of each other when the side holding the positive value has more fchs; field bytes
-    that differ only inside the same aligned dwords (narrower or wider access).
+    negations of each other when the side holding the positive value has more fchs; one-sided
+    field bytes that each lie in a wider access of their own side which also covers bytes the
+    other side touches (a narrower or wider access to the same field; two adjacent one-byte
+    fields are not); field and bit tokens that differ only between the "derived" and "other"
+    classes, which classification merges into one pointer class ("this" stays apart).
 
 Classes (a row takes the first that applies)
     MISSING    no candidate symbol. The oracle callers of the row are resolved to candidate
@@ -120,7 +134,8 @@ Classes (a row takes the first that applies)
     DIFF       calls, strings, floats or data differ (listed, "-" oracle only, "+" candidate
                only; `diff_causes` tags them: host-seam, allocator, sqrt-intrinsic,
                vector-iterator, calls, strings, floats, data).
-    REVIEW     fields (`diff_fields`) or logic/compare immediates (`diff_imms`) differ. A
+    REVIEW     fields (`diff_fields`), logic/compare immediates (`diff_imms`) or x87
+               operation classes (`diff_x87ops`) differ. A
                mandatory hand review: the two bodies call and reference the same things but
                read, write or test different parts of the objects.
     SHAPE      everything above equal; something in shape differs (listed in `shape`, with
@@ -782,8 +797,12 @@ class Features:
     icall_reg: int = 0
     fchs: int = 0
     frame: bool = False
-    fields: set = field(default_factory=set)
+    fields: set = field(default_factory=set)          # (base class, byte offset)
+    accesses: set = field(default_factory=set)        # (base class, offset, size)
     logic: Counter = field(default_factory=Counter)
+    x87ops: set = field(default_factory=set)
+    jccpairs: Counter = field(default_factory=Counter)   # report only
+    stores: Counter = field(default_factory=Counter)     # report only
 
     def merge(self, other):
         self.calls.extend(other.calls)
@@ -801,7 +820,11 @@ class Features:
         self.fchs += other.fchs
         self.frame = self.frame or other.frame
         self.fields |= other.fields
+        self.accesses |= other.accesses
         self.logic.update(other.logic)
+        self.x87ops |= other.x87ops
+        self.jccpairs.update(other.jccpairs)
+        self.stores.update(other.stores)
 
 
 _CS = None
@@ -908,12 +931,20 @@ def extract(image, entries, extent, resolve_code, resolve_data):
             tails[rva] = item[2]
         else:
             ordered.append(item)
+    ordered = Ordered(ordered)
     feats.frame = any(i.mnemonic == "mov" and i.op_str == "ebp, esp" for i in ordered)
     for position, insn in enumerate(ordered):
         _features_of(image, insn, feats, resolve_code, resolve_data,
                      tails.get(insn.address), inside, (ordered, position))
     return feats
 
+
+X87_OPS = {}
+for _cls, _names in (("add", "fadd faddp fiadd"), ("sub", "fsub fsubp fsubr fsubrp fisub fisubr"),
+                     ("mul", "fmul fmulp fimul"), ("div", "fdiv fdivp fdivr fdivrp fidiv fidivr"),
+                     ("sqrt", "fsqrt"), ("abs", "fabs")):
+    for _name in _names.split():
+        X87_OPS[_name] = _cls
 
 LOGIC_MNEMONICS = frozenset({"cmp", "test", "and", "or", "xor", "shl", "shr", "sar", "sal"})
 BIT_MNEMONICS = {"test": "bit", "and": "clear", "or": "set", "xor": "flip"}
@@ -939,6 +970,10 @@ def _features_of(image, insn, feats, resolve_code, resolve_data, tail, inside, c
         feats.sse += 1
     if m == "fchs":
         feats.fchs += 1
+    if m in X87_OPS:
+        feats.x87ops.add(X87_OPS[m])
+    if context is not None:
+        _report_pairs(insn, feats, context)
     if m in X87_CONSTANTS:
         feats.floats[repr(X87_CONSTANTS[m])] += 1
     relocated = set(_relocated_values(image, insn))
@@ -982,15 +1017,21 @@ def _features_of(image, insn, feats, resolve_code, resolve_data, tail, inside, c
                 bit_form = ops[0].type == x86.X86_OP_MEM and m in BIT_MNEMONICS
                 if first_reg or status or not value or bit_form:
                     continue
-                loaded = _loaded_field(insn, ops, context) if m in ("test", "and") else None
+                loaded = (_loaded_field(insn, ops, context)
+                          if m in ("test", "and", "or", "xor") else None)
+                kind = None
                 if loaded is not None:
-                    # a mask on a register just loaded from a field: the same bits as a
-                    # narrowed memory test, so it is recorded the same way
-                    offset, size = loaded
-                    mask = op.imm & ((1 << (8 * size)) - 1)
-                    for lo, hi in _runs([b for b in range(8 * size) if mask >> b & 1]):
-                        lo, hi = offset * 8 + lo, offset * 8 + hi
-                        feats.logic[f"bit@{lo}" + (f"..{hi}" if hi > lo else "")] += 1
+                    rmw = _stored_back(insn, ops, context, loaded)
+                    if m in ("test", "and") and not rmw:
+                        kind = "bit"          # a mask on a field just loaded: a test
+                    elif rmw:
+                        kind = BIT_MNEMONICS[m]   # load, modify, store back: a memory op
+                if kind is not None:
+                    # the same bits a memory-form instruction on the field would name
+                    cls, offset, size, _, _ = loaded
+                    mask = op.imm if kind != "clear" else ~op.imm
+                    tokens, _ = _bit_tokens(kind, cls, offset, size, mask)
+                    feats.logic.update(tokens)
                 else:
                     feats.logic[str(_signed(op.imm, ops[0].size or 4))] += 1
             elif not first_reg and not insn.group(x86.X86_GRP_JUMP):
@@ -1011,22 +1052,50 @@ def _features_of(image, insn, feats, resolve_code, resolve_data, tail, inside, c
             if offset < 0 or op.mem.index:
                 # a strength-reduced pointer walk or an indexed element, not a named field
                 continue
+            cls = _base_class(context[0], context[1], base) if context else "other"
             if m in BIT_MNEMONICS and imm_ops:
-                mask = imm_ops[0].imm & ((1 << (8 * size)) - 1)
-                if m == "and":
-                    mask = ~mask & ((1 << (8 * size)) - 1)
-                bits = [b for b in range(8 * size) if mask >> b & 1]
-                for lo, hi in _runs(bits):      # one token per contiguous run of bits
-                    lo, hi = offset * 8 + lo, offset * 8 + hi
-                    feats.logic[f"{BIT_MNEMONICS[m]}@{lo}" + (f"..{hi}" if hi > lo else "")] += 1
-                feats.fields.update(offset + b // 8 for b in bits)
+                mask = imm_ops[0].imm if m != "and" else ~imm_ops[0].imm
+                tokens, bits = _bit_tokens(BIT_MNEMONICS[m], cls, offset, size, mask)
+                feats.logic.update(tokens)
+                touched = {offset + b // 8 for b in bits}
+                feats.fields.update((cls, b) for b in touched)
+                feats.accesses.update((cls, b, 1) for b in touched)
             else:
-                feats.fields.update(range(offset, offset + size))
+                feats.fields.update((cls, b) for b in range(offset, offset + size))
+                feats.accesses.add((cls, offset, size))
+
+
+def _report_pairs(insn, feats, context):
+    """Report-only features: (compare immediate, jcc) pairs and (field, stored value) pairs."""
+    ordered, position = context
+    m = insn.mnemonic
+    ops = insn.operands
+    if (m == "cmp" and len(ops) == 2 and ops[1].type == x86.X86_OP_IMM
+            and position + 1 < len(ordered)):
+        nxt = ordered[position + 1]
+        if nxt.group(x86.X86_GRP_JUMP) and nxt.mnemonic != "jmp":
+            feats.jccpairs[f"{_signed(ops[1].imm, ops[0].size or 4)}:{nxt.mnemonic}"] += 1
+    target = None
+    if m == "mov" and len(ops) == 2 and ops[0].type == x86.X86_OP_MEM \
+            and ops[1].type == x86.X86_OP_IMM:
+        target, value = ops[0], _store_value(ops[1].imm, ops[0].size or 4)
+    elif m in ("fstp", "fst") and ops and ops[0].type == x86.X86_OP_MEM and position:
+        prior = ordered[position - 1].mnemonic
+        if prior in ("fldz", "fld1"):
+            target, value = ops[0], "0" if prior == "fldz" else "f:1.0"
+    if target is None or not target.mem.base or target.mem.index:
+        return
+    base = insn.reg_name(target.mem.base)
+    offset = _signed(target.mem.disp, 4)
+    if base == "esp" or (base == "ebp" and feats.frame) or offset < 0:
+        return
+    cls = _base_class(ordered, position, base)
+    feats.stores[f"{cls}:{_hex(offset)}={value}"] += 1
 
 
 def _loaded_field(insn, ops, context, window=6):
-    """(offset, size) when the register operand of insn was last written by a plain load
-    from a non-stack structure field, else None."""
+    """(base class, offset, size, base register, load index) when the register operand of
+    insn was last written by a plain load from a non-stack structure field, else None."""
     if context is None or ops[0].type != x86.X86_OP_REG:
         return None
     ordered, position = context
@@ -1039,9 +1108,54 @@ def _loaded_field(insn, ops, context, window=6):
     if (writer.mnemonic not in ("mov", "movzx") or len(wops) != 2
             or wops[1].type != x86.X86_OP_MEM or not wops[1].mem.base or wops[1].mem.index):
         return None
-    if writer.reg_name(wops[1].mem.base) in FRAME_REGISTERS:
+    base = writer.reg_name(wops[1].mem.base)
+    if base in FRAME_REGISTERS:
         return None
-    return _signed(wops[1].mem.disp, 4), wops[1].size or 4
+    offset = _signed(wops[1].mem.disp, 4)
+    if offset < 0:
+        return None
+    return (_base_class(ordered, w, base), offset, wops[1].size or 4, base, w)
+
+
+def _stored_back(insn, ops, context, loaded, window=4):
+    """Whether the register of a read-modify-write goes back to the field it came from."""
+    ordered, position = context
+    reg = GPR_PARENT.get(insn.reg_name(ops[0].reg))
+    _, offset, _, base, _ = loaded
+    for later in ordered[position + 1:position + 1 + window]:
+        lops = later.operands
+        if (later.mnemonic == "mov" and len(lops) == 2 and lops[0].type == x86.X86_OP_MEM
+                and lops[1].type == x86.X86_OP_REG
+                and GPR_PARENT.get(later.reg_name(lops[1].reg)) == reg
+                and lops[0].mem.base and later.reg_name(lops[0].mem.base) == base
+                and not lops[0].mem.index and _signed(lops[0].mem.disp, 4) == offset):
+            return True
+        if reg in _written_gprs(later):
+            return False
+    return False
+
+
+def _bit_tokens(kind, cls, offset, size, mask):
+    """One token per contiguous run of the mask's bits, at absolute bit addresses."""
+    mask &= (1 << (8 * size)) - 1
+    bits = [b for b in range(8 * size) if mask >> b & 1]
+    out = []
+    for lo, hi in _runs(bits):
+        lo, hi = offset * 8 + lo, offset * 8 + hi
+        out.append(f"{cls}:{kind}@{lo}" + (f"..{hi}" if hi > lo else ""))
+    return out, bits
+
+
+def _store_value(value, size):
+    """A stored immediate, normalised: 0 whatever its type, a float bit pattern as the float."""
+    value &= (1 << (8 * size)) - 1
+    if value == 0:
+        return "0"
+    if size == 4 and value > 0xffff and (value >> 23) & 0xff not in (0, 0xff):
+        f = struct.unpack("<f", struct.pack("<I", value))[0]
+        if 1e-6 <= abs(f) <= 1e9:
+            return f"f:{f!r}"
+    return str(_signed(value, size))
 
 
 def _runs(values):
@@ -1055,22 +1169,88 @@ def _runs(values):
     return [tuple(r) for r in runs]
 
 
-def _writes(insn, reg):
-    """Whether insn writes reg (calls clobber eax, ecx and edx)."""
+GPR_PARENT = {}
+for _parent, _subs in (("eax", "ax al ah"), ("ebx", "bx bl bh"), ("ecx", "cx cl ch"),
+                       ("edx", "dx dl dh"), ("esi", "si"), ("edi", "di"), ("ebp", "bp"),
+                       ("esp", "sp")):
+    GPR_PARENT[_parent] = _parent
+    for _sub in _subs.split():
+        GPR_PARENT[_sub] = _parent
+
+
+def _written_gprs(insn):
+    """The 32-bit general registers insn writes (calls clobber eax, ecx and edx)."""
     if insn.mnemonic == "call":
-        return reg in ("eax", "ecx", "edx")
+        return {"eax", "ecx", "edx"}
     try:
         _, written = insn.regs_access()
     except capstone.CsError:
-        return False
-    return any(insn.reg_name(r) == reg for r in written)
+        return set()
+    return {GPR_PARENT[n] for n in (insn.reg_name(r) for r in written) if n in GPR_PARENT}
+
+
+class Ordered(list):
+    """Instructions in address order, with the last writer of every register before each."""
+
+    def __init__(self, insns):
+        super().__init__(insns)
+        self.writers = []
+        current = {}
+        for i, insn in enumerate(self):
+            self.writers.append(dict(current))
+            for reg in _written_gprs(insn):
+                current[reg] = i
 
 
 def _last_writer(ordered, position, reg, window=16):
-    for i in range(position - 1, max(-1, position - 1 - window), -1):
-        if _writes(ordered[i], reg):
+    """Index of the last instruction before position (in address order) that writes reg,
+    within window instructions (None = no limit)."""
+    reg = GPR_PARENT.get(reg, reg)
+    if isinstance(ordered, Ordered):
+        w = ordered.writers[position].get(reg)
+        if w is None or (window is not None and position - w > window):
+            return None
+        return w
+    low = -1 if window is None else max(-1, position - 1 - window)
+    for i in range(position - 1, low, -1):
+        if reg in _written_gprs(ordered[i]):
             return i
     return None
+
+
+def _base_class(ordered, position, reg, depth=0):
+    """What a base register holds at position, traced back through register copies.
+
+    this     ecx as it came in (never written before): the thiscall object
+    derived  a pointer loaded from memory, or an address computed from another register
+    other    anything else (a stack argument, a returned pointer, an untraced value)
+    """
+    if ordered is None:
+        return "other"
+    w = _last_writer(ordered, position, reg, None)
+    if w is None:
+        return "this" if GPR_PARENT.get(reg) == "ecx" else "other"
+    writer = ordered[w]
+    wops = writer.operands
+    if writer.mnemonic == "mov" and len(wops) == 2 and wops[1].type == x86.X86_OP_REG:
+        if depth < 4:
+            return _base_class(ordered, w, writer.reg_name(wops[1].reg), depth + 1)
+        return "other"
+    if writer.mnemonic in ("mov", "lea") and len(wops) == 2 and wops[1].type == x86.X86_OP_MEM:
+        base = writer.reg_name(wops[1].mem.base) if wops[1].mem.base else None
+        if base and base not in FRAME_REGISTERS:
+            return "derived"
+        if writer.mnemonic == "mov" and base == "ebp" and depth < 4:
+            # a reload of a spilled register: follow the register that was stored there
+            disp = wops[1].mem.disp
+            for i in range(w - 1, -1, -1):
+                sops = ordered[i].operands
+                if (ordered[i].mnemonic == "mov" and len(sops) == 2
+                        and sops[0].type == x86.X86_OP_MEM and sops[1].type == x86.X86_OP_REG
+                        and sops[0].mem.base and ordered[i].reg_name(sops[0].mem.base) == "ebp"
+                        and not sops[0].mem.index and sops[0].mem.disp == disp):
+                    return _base_class(ordered, i, ordered[i].reg_name(sops[1].reg), depth + 1)
+    return "other"
 
 
 def _icall_tag(image, insn, op, context):
@@ -1442,19 +1622,44 @@ def _hex(value):
 
 
 def _field_diff(oracle, candidate):
-    """Byte offsets present on one side only, as "-0x88..0x8b" / "+0x4" ranges."""
+    """(base class, byte) pairs present on one side only, as "-this[0x88..0x8b]" ranges."""
     out = []
     for sign, only in (("-", oracle - candidate), ("+", candidate - oracle)):
-        run = []
-        for off in sorted(only) + [None]:
-            if run and (off is None or off != run[-1] + 1):
-                lo, hi = run[0], run[-1]
+        for cls in sorted({c for c, _ in only}):
+            offsets = sorted(off for c, off in only if c == cls)
+            for lo, hi in _runs(offsets):
                 text = _hex(lo) if lo == hi else f"{_hex(lo)}..{_hex(hi)}"
-                out.append(f"{sign}[{text}]")
-                run = []
-            if off is not None:
-                run.append(off)
+                out.append(f"{sign}{cls}[{text}]")
     return out
+
+
+POINTER_CLASSES = {"derived": "ptr", "other": "ptr"}
+
+
+def _merge_token(token):
+    cls, sep, rest = token.partition(":")
+    return f"{POINTER_CLASSES.get(cls, cls)}:{rest}" if sep and cls in POINTER_CLASSES else token
+
+
+def _pointer_merged(sets):
+    """fields, accesses and imms with the derived and other base classes merged."""
+    return {"fields": {(POINTER_CLASSES.get(c, c), b) for c, b in sets["fields"]},
+            "accesses": {(POINTER_CLASSES.get(c, c), o, n) for c, o, n in sets["accesses"]},
+            "imms": {_merge_token(t) for t in sets["imms"]}}
+
+
+def _narrowing_only(o_sets, c_sets):
+    """True when every byte one side touches and the other does not lies inside an access of
+    its own side that also covers a byte the other side touches: a narrower or wider access to
+    the same field. Two different one-byte fields next to each other are not narrowing."""
+    sides = ((o_sets, c_sets), (c_sets, o_sets))
+    for mine, other in sides:
+        for cls, byte in mine["fields"] - other["fields"]:
+            if not any(a_cls == cls and off <= byte < off + size
+                       and any((cls, x) in other["fields"] for x in range(off, off + size))
+                       for a_cls, off, size in mine["accesses"]):
+                return False
+    return True
 
 
 def _set_diff(oracle, candidate):
@@ -1512,7 +1717,7 @@ def _float_pairs(diff, o=None, c=None):
 
 
 FEATURE_KINDS = ("calls", "strings", "floats", "data")
-REVIEW_KINDS = ("fields", "imms")
+REVIEW_KINDS = ("fields", "imms", "x87ops")
 ALL_KINDS = FEATURE_KINDS + REVIEW_KINDS
 
 
@@ -1520,7 +1725,8 @@ def _key_sets(feats, data_map, oracle_side):
     data = [data_map.get(t, (t, ""))[0] for t in feats.data] if oracle_side else feats.data
     return {"calls": set(feats.calls), "strings": set(feats.strings),
             "floats": set(feats.floats), "data": set(data), "fields": set(feats.fields),
-            "imms": set(feats.logic)}
+            "imms": set(feats.logic), "x87ops": set(feats.x87ops),
+            "accesses": set(feats.accesses)}
 
 
 def _diff_size(a, b):
@@ -1547,7 +1753,7 @@ def _expand_inlining(o_sets, c_sets, expand_o, expand_c, data_map, rounds=3):
                 trial = {k: set(v) for k, v in mine.items()}
                 extra = _key_sets(feats, data_map, oracle_side)
                 extra["calls"] = {ident if c == "self" else c for c in extra["calls"]}
-                for k in ALL_KINDS:
+                for k in ALL_KINDS + ("accesses",):
                     trial[k] |= extra[k]
                 trial["calls"].discard(ident)
                 if _diff_size(trial, other) < _diff_size(mine, other):
@@ -1572,11 +1778,22 @@ def classify(o, c, data_map, expand_o=None, expand_c=None):
     inlined = _expand_inlining(o_sets, c_sets, expand_o, expand_c, data_map)
     details = {k: _set_diff(o_sets[k], c_sets[k]) for k in FEATURE_KINDS}
     details["fields"] = _field_diff(o_sets["fields"], c_sets["fields"])
-    words_differ = ({f // 4 for f in o_sets["fields"]} != {f // 4 for f in c_sets["fields"]})
+    # Classification treats "derived" and "other" as one pointer class: which of the two a
+    # register is depends on which writer comes last in address order, not on the source.
+    mo, mc = _pointer_merged(o_sets), _pointer_merged(c_sets)
+    fields_review = bool(_field_diff(mo["fields"], mc["fields"])) and not _narrowing_only(mo, mc)
+    details["x87ops"] = _set_diff(o_sets["x87ops"], c_sets["x87ops"])
+    details["report_jcc"] = _multiset_diff(list(o.jccpairs.elements()),
+                                           list(c.jccpairs.elements()))
+    details["report_stores"] = _multiset_diff(list(o.stores.elements()),
+                                              list(c.stores.elements()))
     if inlined:
         details["imms"] = _set_diff(o_sets["imms"], c_sets["imms"])
+        imms_review = bool(_set_diff(mo["imms"], mc["imms"]))
     else:
         details["imms"] = _multiset_diff(list(o.logic.elements()), list(c.logic.elements()))
+        imms_review = bool(_multiset_diff([_merge_token(t) for t in o.logic.elements()],
+                                          [_merge_token(t) for t in c.logic.elements()]))
     shape = []
     if inlined:
         shape.append("inlining: " + ", ".join(inlined))
@@ -1619,10 +1836,14 @@ def classify(o, c, data_map, expand_o=None, expand_c=None):
     details["shape"] = shape
     if any(details[k] for k in FEATURE_KINDS):
         return "DIFF", details
-    if details["fields"] and not words_differ:
-        # the same aligned dwords, touched through narrower or wider accesses
+    if details["fields"] and not fields_review:
+        # narrower/wider access to the same field, or the same field through a pointer the
+        # tracer called derived on one side and other on the other
         shape.append("field bytes " + " ".join(details["fields"]))
         details["fields"] = []
+    if details["imms"] and not imms_review:
+        shape.append("imms base class " + " ".join(details["imms"]))
+        details["imms"] = []
     if any(details[k] for k in REVIEW_KINDS):
         return "REVIEW", details
     if shape:
@@ -1670,7 +1891,7 @@ OUTPUT_COLUMNS = ["rva", "id", "size", "grade", "source_function", "class", "com
                   "group_rows", "candidate_symbol", "candidate_rva", "candidate_size",
                   "oracle_insns", "candidate_insns", "diff_causes", "diff_calls",
                   "diff_strings", "diff_floats", "diff_data", "diff_fields", "diff_imms",
-                  "shape", "notes"]
+                  "diff_x87ops", "shape", "report_jcc", "report_stores", "notes"]
 
 
 def match_library(rows, oracle_image, candidate_image, index, resolver, seams=None):
@@ -1809,6 +2030,9 @@ def write_csv(path, records):
                 "diff_data": "; ".join(d.get("data", [])),
                 "diff_fields": " ".join(d.get("fields", [])),
                 "diff_imms": " ".join(d.get("imms", [])),
+                "diff_x87ops": " ".join(d.get("x87ops", [])),
+                "report_jcc": " ".join(d.get("report_jcc", [])[:16]),
+                "report_stores": " ".join(d.get("report_stores", [])[:16]),
                 "shape": "; ".join(d.get("shape", [])),
                 "notes": rec["notes"],
             })

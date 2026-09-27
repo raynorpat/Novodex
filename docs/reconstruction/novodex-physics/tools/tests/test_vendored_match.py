@@ -426,14 +426,14 @@ class FieldAndLogicTest(unittest.TestCase):
                     b"\x8b\x41\xfc"                  # mov eax,[ecx-4]
                     b"\x8b\x44\x81\x08"              # mov eax,[ecx+eax*4+8]
                     b"\xc3")
-        self.assertEqual(feats.fields, {0x88, 0x89, 0x8a, 0x8b})
+        self.assertEqual(feats.fields, {("this", b) for b in range(0x88, 0x8c)})
 
     def test_ebp_is_a_field_base_only_without_a_frame(self):
         framed = run(b"\x55\x8b\xec\x8b\x45\x08\x8b\xe5\x5d\xc3")
         frameless = run(b"\x8b\x45\x08\xc3")
         self.assertTrue(framed.frame)
         self.assertEqual(framed.fields, set())
-        self.assertEqual(frameless.fields, {8, 9, 10, 11})
+        self.assertEqual(frameless.fields, {("other", b) for b in range(8, 12)})
 
     def test_logic_immediates_skip_status_masks_and_zero(self):
         feats = run(b"\x83\xf8\x05"                  # cmp eax,5
@@ -447,20 +447,61 @@ class FieldAndLogicTest(unittest.TestCase):
         narrow = run(b"\xf6\x41\x02\x01\xc3")                   # test byte [ecx+2],1
         wide = run(b"\xf7\x01\x00\x00\x01\x00\xc3")             # test dword [ecx],0x10000
         loaded = run(b"\x8b\x01\xa9\x00\x00\x01\x00\xc3")       # mov eax,[ecx]; test eax,..
-        self.assertEqual(narrow.logic, Counter({"bit@16": 1}))
+        self.assertEqual(narrow.logic, Counter({"this:bit@16": 1}))
         self.assertEqual(wide.logic, narrow.logic)
         self.assertEqual(loaded.logic, narrow.logic)
-        self.assertEqual(narrow.fields, {2})
+        self.assertEqual(narrow.fields, {("this", 2)})
 
     def test_memory_and_records_the_cleared_bits(self):
         feats = run(b"\x80\x61\x04\xfe\xc3")                    # and byte [ecx+4],0xfe
-        self.assertEqual(feats.logic, Counter({"clear@32": 1}))
+        self.assertEqual(feats.logic, Counter({"this:clear@32": 1}))
 
     def test_repe_cmps_is_memcmp(self):
         self.assertEqual(run(b"\xf3\xa6\xc3").calls, ["memcmp"])
 
 
+class BaseClassAndPairsTest(unittest.TestCase):
+    def test_this_through_a_copy_derived_and_other(self):
+        copied = run(b"\x8b\xf1\x8b\x46\x08\xc3")          # mov esi,ecx; mov eax,[esi+8]
+        derived = run(b"\x8b\x51\x04\x8b\x42\x08\xc3")     # mov edx,[ecx+4]; [edx+8]
+        other = run(b"\x8b\x44\x24\x04\x8b\x40\x08\xc3")  # mov eax,[esp+4]; [eax+8]
+        self.assertEqual({c for c, _ in copied.fields}, {"this"})
+        self.assertEqual({(c, b) for c, b in derived.fields if b >= 8}, {("derived", b)
+                                                                         for b in range(8, 12)})
+        self.assertEqual(other.fields, {("other", b) for b in range(8, 12)})
+
+    def test_register_read_modify_write_is_the_memory_form(self):
+        rmw = run(b"\x8b\x41\x08\x83\xc8\x04\x89\x41\x08\xc3")  # load; or eax,4; store
+        memory = run(b"\x83\x49\x08\x04\xc3")                   # or dword [ecx+8],4
+        self.assertEqual(rmw.logic, Counter({"this:set@66": 1}))
+        self.assertEqual(memory.logic, rmw.logic)
+
+    def test_register_and_that_is_not_stored_back_is_a_test(self):
+        feats = run(b"\x8b\x41\x08\x83\xe0\x04\xc3")           # mov eax,[ecx+8]; and eax,4
+        self.assertEqual(feats.logic, Counter({"this:bit@66": 1}))
+
+    def test_x87_operation_classes(self):
+        feats = run(b"\xd8\xc1\xd9\xfa\xde\xf9\xc3")          # fadd; fsqrt; fdivp
+        self.assertEqual(feats.x87ops, {"add", "sqrt", "div"})
+
+    def test_jcc_pairs_and_normalised_stores(self):
+        feats = run(b"\x83\xf8\x05\x7c\x00"                     # cmp eax,5; jl
+                    b"\xc7\x41\x04\x00\x00\x80\x3f"             # mov dword [ecx+4],1.0f
+                    b"\xd9\xe8\xd9\x59\x08"                     # fld1; fstp dword [ecx+8]
+                    b"\xc7\x41\x0c\x00\x00\x00\x00\xc3")        # mov dword [ecx+0xc],0
+        self.assertEqual(feats.jccpairs, Counter({"5:jl": 1}))
+        self.assertEqual(feats.stores, Counter({"this:0x4=f:1.0": 1, "this:0x8=f:1.0": 1,
+                                                "this:0xc=0": 1}))
+
+
 class IcallTagTest(unittest.TestCase):
+    def test_returned_pointer_and_clobbered_base(self):
+        callee = {TEXT + 0x80: body(lambda a: a.ret(), TEXT + 0x80)}
+        ret = Asm(TEXT).call(TEXT + 0x80).raw(b"\xff\x50\x04\xc3")     # call [eax+4]
+        lost = Asm(TEXT).call(TEXT + 0x80).raw(b"\xff\x52\x04\xc3")    # call [edx+4]
+        self.assertEqual(run(ret, extra=callee).calls, ["fn:1080", "icall[ret]+0x4"])
+        self.assertEqual(run(lost, extra=callee).calls, ["fn:1080", "icall[?]+0x4"])
+
     def test_host_global_object(self):
         asm = Asm(TEXT).raw(b"\x8b\x0d").abs32(DATA).raw(b"\x8b\x01\x51\xff\x50\x10\xc3")
         self.assertEqual(run(asm, host_globals={DATA}).calls, ["icall[host]+0x10"])
@@ -477,19 +518,58 @@ class IcallTagTest(unittest.TestCase):
 
 
 class ReviewClassTest(unittest.TestCase):
+    @staticmethod
+    def accessed(*accesses):
+        """Features touching (class, offset, size) accesses."""
+        return features(fields={(c, off + i) for c, off, size in accesses for i in range(size)},
+                        accesses=set(accesses))
+
     def test_field_difference_is_review(self):
-        o = features(fields={0x88, 0x89, 0x8a, 0x8b})
-        c = features(fields={0x4c, 0x4d, 0x4e, 0x4f})
+        o = self.accessed(("this", 0x88, 4))
+        c = self.accessed(("this", 0x4c, 4))
         cls, details = vm.classify(o, c, {})
         self.assertEqual(cls, "REVIEW")
-        self.assertEqual(details["fields"], ["-[0x88..0x8b]", "+[0x4c..0x4f]"])
+        self.assertEqual(details["fields"], ["-this[0x88..0x8b]", "+this[0x4c..0x4f]"])
 
-    def test_narrowing_within_a_dword_is_shape(self):
-        o = features(fields={0x52})
-        c = features(fields={0x50, 0x51, 0x52, 0x53})
+    def test_a_wider_access_covering_the_narrow_one_is_shape(self):
+        o = self.accessed(("this", 0x52, 1))
+        c = self.accessed(("this", 0x50, 4))
         cls, details = vm.classify(o, c, {})
         self.assertEqual(cls, "SHAPE")
         self.assertTrue(any(s.startswith("field bytes") for s in details["shape"]))
+
+    def test_adjacent_one_byte_fields_are_review(self):
+        # RayCollider: mClosestHit at +0x8c against mCulling at +0x8d
+        o = self.accessed(("this", 0x8c, 1))
+        c = self.accessed(("this", 0x8d, 1))
+        self.assertEqual(vm.classify(o, c, {})[0], "REVIEW")
+
+    def test_same_offset_through_another_base_class_is_review(self):
+        o = self.accessed(("this", 0x10, 4))
+        c = self.accessed(("derived", 0x10, 4))
+        self.assertEqual(vm.classify(o, c, {})[0], "REVIEW")
+
+    def test_derived_and_other_pointers_are_one_class(self):
+        o = self.accessed(("other", 0x10, 4))
+        c = self.accessed(("derived", 0x10, 4))
+        o.logic, c.logic = Counter({"other:bit@3": 1}), Counter({"derived:bit@3": 1})
+        cls, details = vm.classify(o, c, {})
+        self.assertEqual(cls, "SHAPE")
+        self.assertTrue(any(s.startswith("imms base class") for s in details["shape"]))
+
+    def test_x87_operation_classes_are_review(self):
+        o = features(x87ops={"add", "mul"})
+        c = features(x87ops={"add", "div"})
+        cls, details = vm.classify(o, c, {})
+        self.assertEqual(cls, "REVIEW")
+        self.assertEqual(details["x87ops"], ["-mul", "+div"])
+
+    def test_report_only_columns_do_not_classify(self):
+        o = features(jccpairs=Counter({"5:jl": 1}), stores=Counter({"this:0x4=0": 1}))
+        c = features(jccpairs=Counter({"5:jge": 1}), stores=Counter({"this:0x4=1": 1}))
+        cls, details = vm.classify(o, c, {})
+        self.assertEqual(cls, "MATCH")
+        self.assertEqual(details["report_jcc"], ["-5:jl", "+5:jge"])
 
     def test_logic_immediate_difference_is_review_and_diff_wins(self):
         o = features(logic=Counter({"5": 1}))
