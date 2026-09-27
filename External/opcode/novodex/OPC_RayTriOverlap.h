@@ -7,14 +7,22 @@
  *     U+V may overshoot det by that tolerance, where stock rejects on the sign
  *     bit and on det exactly. Both bounds are formed once as floats. The
  *     non-culling branch and the distance test are stock.
+ *     V is compared and summed as the unrounded register value: the image
+ *     stores it to mStabbedFace.mV as a float (`fst [esi+0x58]`) but tests
+ *     `fcom [lower]` and forms U+V with `fadd st(1)` from the register, so V's
+ *     lifetime is a double here (the project's x87 convention) and only the
+ *     member is float. U is compared as the float it was stored as.
  *     established at 0x000b873b (fld [esi+0x88]; fchs; fstp -> the lower bound),
  *     0x000b874e (mU < lower -> reject), 0x000b8765 (fadd [esi+0x88] -> det +
  *     tolerance), 0x000b8773 (mU > upper -> reject), 0x000b87d9 (mV < lower),
  *     0x000b87eb (mU + mV > upper), 0x000b8824 (sign test of mDistance, stock),
- *     all in RayCollider::_RayStab(const AABBCollisionNode*) at 0x000b84c0; the
- *     same block is inlined in every _RayStab/_SegmentStab variant -- 0x000b65be,
- *     0x000b6bc3, 0x000b7113, 0x000b755d, 0x000b7b30, 0x000b7f7a, 0x000b8d50,
- *     0x000b92d4, 0x000b9715, 0x000b9d1d. The non-culling arm at 0x000b8851
+ *     all in RayCollider::_RayStab(const AABBCollisionNode*) at 0x000b84c0, and
+ *     0x000b87d9..0x000b87ef for V (fcom; fst [esi+0x58]; fld U; fadd st(1)).
+ *     The block is inlined at 14 sites in all (the `fld [reg+0x88]` of each):
+ *     RayCollider::InitQuery 0x000b5aef, 0x000b5f75; _SegmentStab 0x000b65be,
+ *     0x000b6bc3, 0x000b7113, 0x000b755d, 0x000b7b30, 0x000b7f7a; _RayStab
+ *     0x000b873b, 0x000b8d50, 0x000b92d4, 0x000b9715, 0x000b9d1d, 0x000ba15e.
+ *     The non-culling arm at 0x000b8851
  *     keeps stock's IS_NEGATIVE_FLOAT and IEEE_1_0 tests (0x000b88c9, 0x000b88d4).
  */
 #define LOCAL_EPSILON 0.000001f
@@ -68,8 +76,11 @@ inline_ BOOL RayCollider::RayTriOverlap(const Point& vert0, const Point& vert1, 
 		Point qvec = tvec^edge1;
 
 		// Calculate V parameter and test bounds
-		mStabbedFace.mV = mDir|qvec;
-		if(mStabbedFace.mV<LowerBound || mStabbedFace.mU+mStabbedFace.mV>UpperBound)	return FALSE;
+		// NOVODEX [1]: V tested and summed unrounded; only the member is float.
+		// (Point::operator| returns a float, which /fp:precise rounds on return.)
+		const double V = double(mDir.x)*qvec.x + double(mDir.y)*qvec.y + double(mDir.z)*qvec.z;
+		mStabbedFace.mV = float(V);
+		if(V<LowerBound || mStabbedFace.mU+V>UpperBound)							return FALSE;
 
 		// Calculate t, scale parameters, ray intersects triangle
 		mStabbedFace.mDistance = edge2|qvec;
