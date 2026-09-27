@@ -16,8 +16,9 @@ Locating the candidate
     the source's components. Overloads are cut down, in order, by an exact parameter-type match,
     then by the candidate object file's stem equalling the source file's stem; if more than one
     is left the row is AMBIGUOUS. A "scalar deleting destructor" that is absent falls back to the
-    vector deleting destructor. The candidate extent runs from the symbol to the next map symbol
-    in the same section.
+    vector deleting destructor, and a row whose alternatives include a deleting destructor is
+    looked up by that alternative first (the other one names the body inlined into it). The
+    candidate extent runs from the symbol to the next map symbol in the same section.
 
 Grouping
     Oracle rows that resolve to the same candidate symbol are one group (the census splits some
@@ -36,21 +37,26 @@ Disassembly
 
 Features (every relocated operand is resolved through the image's base relocations)
     calls      direct call and tail-call targets in address order, resolved to identities.
-               Oracle: ORACLE_KNOWN; else map row -> the candidate symbol's key when the row
-               resolved, else the key of its source_function; else the inventory label (CRT
+               Oracle: map row -> the candidate symbol's key when the row resolved, else the
+               key of its source_function; else ORACLE_KNOWN; else the inventory label (CRT
                names) when it is not a stable id; else "census:<id>". Candidate: the map
                symbol's key. Keys keep the last two name components ("AABBTree::Build",
-               "qh_setappend"). Imports are their normalised name, so a UCRT import meets a
-               static-CRT row. Memory-indirect calls are "icall+0x<disp>"; register calls only
-               count (shape `icall_reg`, usually a cached import). `rep stos`/`rep movs` count as
-               memset/memcpy. CRT helpers are folded (CRT_FOLDS); DROPPED_CALLS (/GS, the UCRT
-               stream accessor) are dropped. A candidate call to a NovodeX host wrapper
-               (HOST_SEAMS) counts as the oracle's inline form of it.
+               "qh_setappend"); when several class or namespace members share a key (overloads)
+               each gets its demangled parameter list ("T::Collide(const A*,const A*,int)"), so
+               oracle rows, which take the key of the symbol they resolved to, stay apart too.
+               Imports are their normalised name, so a UCRT import meets a static-CRT row.
+               Memory-indirect calls are "icall[<base>]+0x<disp>", <base> being where the
+               called pointer came from (see _icall_tag: host, gobj, getter, obj, fptr, ret, ?);
+               register calls only count (shape `icall_reg`, usually a cached import).
+               `rep stos`/`rep movs`/`repe cmps` count as memset/memcpy/memcmp. CRT helpers are
+               folded (CRT_FOLDS); DROPPED_CALLS (/GS, the UCRT stream accessor) are dropped. A
+               candidate call to a NovodeX host wrapper (HOST_SEAMS) counts as the oracle's
+               inline form of it.
     strings    relocated immediates that point into a read-only section at a NUL-terminated
                printable string, compared by content; a __FILE__ path by its file name only.
     floats     memory operands of x87 or SSE instructions that land in a read-only section, read
                at the operand's width and compared by value; fldz/fld1/fldpi... count as their
-               value. The width multiset is a separate shape feature.
+               value. The width multiset and the fchs count are shape features.
     data       every other relocated reference into a non-executable section. Candidate: map
                symbol + offset (/GS's ___security_cookie dropped). Oracle: raw RVA, translated
                through a learned correspondence (below); an oracle address with no
@@ -58,10 +64,30 @@ Features (every relocated operand is resolved through the image's base relocatio
                (ORACLE_HOST_GLOBALS). References to code by a non-call instruction are
                "fnptr:<identity>"; memory operands into code (switch tables, index bytes) only
                count as `switch`.
-    imms       multiset of immediate operands that are not relocated addresses, excluding
-               instructions whose first operand is esp or ebp (frame and stack adjustment).
+    fields     byte coverage of structure accesses: for every memory operand of a non-call,
+               non-lea, non-string instruction whose base is a register other than esp (and
+               other than ebp when the function sets up an ebp frame), with no index register,
+               a non-negative displacement and no relocation, the bytes disp..disp+size-1. A
+               test/and/or/xor of such an operand with an immediate covers only the bytes of the
+               bits it touches. Negative displacements and indexed operands are left out: they
+               are strength-reduced pointer walks and array elements, whose offsets are the
+               compiler's choice.
+    imms       (classifying) the logic/compare immediates: the multiset of immediates of
+               cmp/test/and/or/xor/shl/shr/sar/sal, read as signed at the operand size, leaving
+               out 0, the x87 status masks (first operand ah/ax) and stack alignment (esp). A
+               test/and/or/xor on a field, or a test/and on a register just loaded from one
+               (within 6 instructions), becomes a bit-address token "bit@N..M" (N = disp*8 +
+               bit; "clear@"/"set@"/"flip@" for memory and/or/xor), so byte-narrowing cancels.
+               These are where flags, masks, thresholds and enumerators live.
+    other imms (shape only) every other non-relocated immediate, less those of instructions
+               whose first operand is esp or ebp. They are reported and do not classify: they
+               are mostly store values (float bit patterns, zero-fills, counters), argument byte
+               counts and element sizes, which two compilers choose differently for the same
+               source, and a store of a different constant also moves a field or a float.
     shape      instruction count, conditional-branch count, x87 and SSE instruction counts,
-               switch-table references, register calls, float widths, call order.
+               fchs count, switch-table references, register calls, float widths, whether an
+               ebp frame is set up (the oracle uses ebp as a general register, the candidate
+               keeps frames in some functions: a build difference), call order.
 
 Global-data correspondence
     Learned from all resolved groups. Phase A: an oracle address and a candidate symbol+offset
@@ -70,28 +96,45 @@ Global-data correspondence
     a candidate symbol whose Phase A pairs share one oracle-minus-candidate delta (at least 3
     pairs, 75%) is rigid, and every other oracle address the delta places inside it is paired.
     Phase C: in each group, the still-unpaired oracle addresses and candidate tokens, when equal
-    in number, are paired by address rank; a pair is accepted when it wins a strict majority of
-    its votes. The result is written to vendored_data_map.csv so it can be audited.
+    in number, are paired by address rank; a pair needs at least two votes and a strict
+    majority. The result is written to vendored_data_map.csv so it can be audited.
 
 Comparison
-    calls, strings, floats and data are compared as SETS. Before that, inlining is accounted
-    for: a callee that one side calls and the other does not is replaced by that callee's own
-    features (oracle: its matched group or inventory row; candidate: its map symbol) whenever
-    that shrinks the difference, for up to three rounds. What is left is the DIFF. These
-    differences are shape, not DIFF: occurrence counts; memset/memcpy/memmove; the trivial float
-    constants 0.0, -0.0 and 1.0; an oracle-only and a candidate-only float that are negations or
-    whose product is a power of two from 1/8 to 8 (a folded division or factor).
+    calls, strings, floats, data, fields and imms are compared as sets after inlining is
+    accounted for: a callee that one side calls and the other does not is replaced by that
+    callee's own features (oracle: its matched group or inventory row; candidate: its map
+    symbol) whenever that shrinks the difference, for up to three rounds. When nothing was
+    inlined, imms are compared as a multiset. These differences are shape, not DIFF: occurrence
+    counts; memset/memcpy/memmove; the trivial float constants 0.0, -0.0 and 1.0; an oracle-only
+    and a candidate-only float whose product is 1 (reciprocal) or 2 (halving), or that are
+    negations of each other when the side holding the positive value has more fchs; field bytes
+    that differ only inside the same aligned dwords (narrower or wider access).
 
-Classes
-    MATCH      every feature equal.
-    SHAPE      calls, strings, floats and data equal as above; something else differs (listed
-               in `shape`, with any inlining that was accounted for).
-    DIFF       calls, strings, floats or data differ (listed, "-" oracle only, "+" candidate
-               only; `diff_causes` tags them: host-seam, allocator, sqrt-intrinsic,
-               vector-iterator, calls, strings, floats, data).
+Classes (a row takes the first that applies)
     MISSING    no candidate symbol. The oracle callers of the row are resolved to candidate
                symbols and named as the likely inliners.
     AMBIGUOUS  more than one candidate symbol survives the overload filters.
+    MAPCHECK   the group unites several untagged map rows none of which the map calls a
+               "continuation" block: the map may name two functions alike. `compare_class`
+               keeps the comparison's class; the map must be checked first.
+    DIFF       calls, strings, floats or data differ (listed, "-" oracle only, "+" candidate
+               only; `diff_causes` tags them: host-seam, allocator, sqrt-intrinsic,
+               vector-iterator, calls, strings, floats, data).
+    REVIEW     fields (`diff_fields`) or logic/compare immediates (`diff_imms`) differ. A
+               mandatory hand review: the two bodies call and reference the same things but
+               read, write or test different parts of the objects.
+    SHAPE      everything above equal; something in shape differs (listed in `shape`, with
+               any inlining that was accounted for).
+    MATCH      every feature equal.
+
+Limitations
+    x87 compare predicates are not canonicalised. A compare is fcom/fcomp/fucomp (or fcomi)
+    followed by fnstsw/test ah/jcc (or sahf/jcc); turning that into a relation needs the operand
+    order, which two compilers pick independently for two loaded values, and the branch sense,
+    which follows block layout. Without data flow either flip is invisible, so the only
+    canonical residue (ordered versus equality compare) would add noise, not signal. The status
+    masks are therefore excluded from imms and the compare counts sit in the instruction counts.
+    SHAPE and MATCH do not prove equivalence: arithmetic order and precision are not compared.
 """
 
 import argparse
@@ -148,12 +191,12 @@ ORACLE_KNOWN = {
 # call counts as the oracle call tokens it stands for ("@rva" = the oracle row at that RVA).
 # Sources: External/qhull/novodex/QhullNovodeXHost.h, External/opcode/novodex/OpcodeNovodeXHost.h.
 HOST_SEAMS = {
-    "qhNovodeXFprintf": ["icall+0x10"],
-    "qhNovodeXMalloc": ["icall+0x14"],
-    "qhNovodeXFree": ["icall+0x18"],
-    "qhNovodeXErrexit": ["icall+0x20"],
-    "opcNovodeXAlloc": ["@0x000b4000", "icall+0x0"],
-    "opcNovodeXFree": ["@0x000b4000", "icall+0xc"],
+    "qhNovodeXFprintf": ["icall[host]+0x10"],
+    "qhNovodeXMalloc": ["icall[host]+0x14"],
+    "qhNovodeXFree": ["icall[host]+0x18"],
+    "qhNovodeXErrexit": ["icall[host]+0x20"],
+    "opcNovodeXAlloc": ["@0x000b4000", "icall[getter]+0x0"],
+    "opcNovodeXFree": ["@0x000b4000", "icall[getter]+0xc"],
     "opcNovodeXSetIceError": ["@0x000539b0"],
 }
 # The qhull host-object global (.data:0x00125080). Every inline seam loads it, and the load
@@ -177,7 +220,7 @@ FRAME_REGISTERS = frozenset({"esp", "ebp"})
 SCALAR_DTOR = "`scalar deleting destructor'"
 VECTOR_DTOR = "`vector deleting destructor'"
 
-CLASSES = ("MATCH", "SHAPE", "DIFF", "MISSING", "AMBIGUOUS")
+CLASSES = ("MATCH", "SHAPE", "REVIEW", "DIFF", "MAPCHECK", "MISSING", "AMBIGUOUS")
 
 
 # --------------------------------------------------------------------------- images
@@ -203,6 +246,7 @@ class Image:
         self.sections = sorted(sections, key=lambda s: s.rva)
         self.relocations = set(relocations)
         self.imports = dict(imports)   # IAT slot rva -> imported name
+        self.host_globals = frozenset()
 
     @classmethod
     def from_pe(cls, path):
@@ -276,6 +320,16 @@ SOURCE_TYPEDEFS = {
 }
 SPECIAL_NAMES = {
     "0": None, "1": None, "2": "operator new", "3": "operator delete", "4": "operator=",
+    "5": "operator>>", "6": "operator<<", "7": "operator!", "8": "operator==",
+    "9": "operator!=", "A": "operator[]", "B": "operator cast", "C": "operator->",
+    "D": "operator*", "E": "operator++", "F": "operator--", "G": "operator-",
+    "H": "operator+", "I": "operator&", "J": "operator->*", "K": "operator/",
+    "L": "operator%", "M": "operator<", "N": "operator<=", "O": "operator>",
+    "P": "operator>=", "Q": "operator,", "R": "operator()", "S": "operator~",
+    "T": "operator^", "U": "operator|", "V": "operator&&", "W": "operator||",
+    "X": "operator*=", "Y": "operator+=", "Z": "operator-=", "_0": "operator/=",
+    "_1": "operator%=", "_2": "operator>>=", "_3": "operator<<=", "_4": "operator&=",
+    "_5": "operator|=", "_6": "operator^=",
     "_G": SCALAR_DTOR, "_E": VECTOR_DTOR, "_7": "`vftable'", "_U": "operator new[]",
     "_V": "operator delete[]", "_H": "`vector constructor iterator'",
     "_L": "`vector constructor iterator'", "_I": "`vector destructor iterator'",
@@ -583,10 +637,11 @@ class Symbol:
     is_function: bool
     demangled: Demangled = None
     end: int = 0
+    ident: str = None             # set by SymbolIndex when the short key is overloaded
 
     @property
     def key(self):
-        return short_key(self.demangled.components)
+        return self.ident or short_key(self.demangled.components)
 
 
 MAP_LINE = re.compile(r"^\s*([0-9a-fA-F]{4}):([0-9a-fA-F]{8})\s+(\S+)\s+([0-9a-fA-F]{8})\s+(.*)$")
@@ -640,6 +695,20 @@ class SymbolIndex:
         for s in symbols:
             if s.is_function:
                 self.function_at.setdefault(s.rva, s)
+        # Overloads share a short key; give each its parameter list so that a call to one
+        # overload is not taken for a call to another.
+        by_key = defaultdict(set)
+        for s in symbols:
+            if s.is_function:
+                by_key[short_key(s.demangled.components)].add(s.name)
+        self.overloaded = {k for k, names in by_key.items() if len(names) > 1}
+        for s in symbols:
+            k = short_key(s.demangled.components)
+            # C functions and the global operators cannot be told apart by what they do.
+            if s.is_function and k in self.overloaded and len(s.demangled.components) >= 2:
+                params = s.demangled.params
+                s.ident = (f"{k}({','.join(params)})" if params is not None
+                           else f"{k}#{s.name}")
 
     def locate(self, token):
         """(name, rva, end, offset) of a candidate data token "symbol[+0xoff]"."""
@@ -658,7 +727,11 @@ class SymbolIndex:
 
     def lookup(self, source_names, source_file=""):
         """(symbol, None) on a unique match, (None, [options]) when ambiguous, (None, [])."""
-        for name in source_names:
+        # A row that names a deleting destructor among its alternatives is that destructor
+        # (the other alternative is the body inlined into it).
+        ordered = sorted(source_names,
+                         key=lambda n: n.components[-1] not in (SCALAR_DTOR, VECTOR_DTOR))
+        for name in ordered:
             options = self._suffix_matches(name.components)
             if not options and name.components[-1] == SCALAR_DTOR:
                 options = self._suffix_matches(name.components[:-1] + [VECTOR_DTOR])
@@ -707,6 +780,10 @@ class Features:
     sse: int = 0
     switch: int = 0
     icall_reg: int = 0
+    fchs: int = 0
+    frame: bool = False
+    fields: set = field(default_factory=set)
+    logic: Counter = field(default_factory=Counter)
 
     def merge(self, other):
         self.calls.extend(other.calls)
@@ -721,6 +798,10 @@ class Features:
         self.sse += other.sse
         self.switch += other.switch
         self.icall_reg += other.icall_reg
+        self.fchs += other.fchs
+        self.frame = self.frame or other.frame
+        self.fields |= other.fields
+        self.logic.update(other.logic)
 
 
 _CS = None
@@ -819,18 +900,33 @@ def extract(image, entries, extent, resolve_code, resolve_data):
                 continue
             rva = nxt
     # Features, in address order so the call sequence is stable.
+    ordered, tails = [], {}
     for rva in sorted(seen):
         item = seen[rva]
-        tail = None
         if isinstance(item, tuple):
-            insn, _, tail = item
+            ordered.append(item[0])
+            tails[rva] = item[2]
         else:
-            insn = item
-        _features_of(image, insn, feats, resolve_code, resolve_data, tail, inside)
+            ordered.append(item)
+    feats.frame = any(i.mnemonic == "mov" and i.op_str == "ebp, esp" for i in ordered)
+    for position, insn in enumerate(ordered):
+        _features_of(image, insn, feats, resolve_code, resolve_data,
+                     tails.get(insn.address), inside, (ordered, position))
     return feats
 
 
-def _features_of(image, insn, feats, resolve_code, resolve_data, tail, inside):
+LOGIC_MNEMONICS = frozenset({"cmp", "test", "and", "or", "xor", "shl", "shr", "sar", "sal"})
+BIT_MNEMONICS = {"test": "bit", "and": "clear", "or": "set", "xor": "flip"}
+X87_STATUS_REGISTERS = frozenset({"ah", "ax"})
+
+
+def _signed(value, size):
+    bits = 8 * size
+    value &= (1 << bits) - 1
+    return value - (1 << bits) if value >> (bits - 1) else value
+
+
+def _features_of(image, insn, feats, resolve_code, resolve_data, tail, inside, context=None):
     m = insn.mnemonic
     ops = insn.operands
     feats.n_insn += 1
@@ -841,6 +937,8 @@ def _features_of(image, insn, feats, resolve_code, resolve_data, tail, inside):
         feats.x87 += 1
     elif fp == "sse":
         feats.sse += 1
+    if m == "fchs":
+        feats.fchs += 1
     if m in X87_CONSTANTS:
         feats.floats[repr(X87_CONSTANTS[m])] += 1
     relocated = set(_relocated_values(image, insn))
@@ -856,22 +954,45 @@ def _features_of(image, insn, feats, resolve_code, resolve_data, tail, inside):
             if op.mem.base == 0 and op.mem.index == 0 and slot in image.imports:
                 _add_call(feats, import_key(image.imports[slot]))
             else:
-                feats.calls.append(f"icall+0x{op.mem.disp & 0xffffffff:x}")
+                tag = _icall_tag(image, insn, op, context)
+                feats.calls.append(f"icall[{tag}]+0x{op.mem.disp & 0xffffffff:x}")
         else:
             feats.icall_reg += 1       # through a register: often a cached import address
         return
+    string_op = m.startswith(("rep ", "repe ", "repne "))
     if m.startswith("rep stos"):
         _add_call(feats, "memset")     # the inline form of the CRT call
     elif m.startswith("rep movs"):
         _add_call(feats, "memcpy")
+    elif m.startswith("repe cmps"):
+        _add_call(feats, "memcmp")
     first_reg = (ops and ops[0].type == x86.X86_OP_REG
                  and insn.reg_name(ops[0].reg) in FRAME_REGISTERS)
+    logic = m in LOGIC_MNEMONICS
+    status = (logic and ops and ops[0].type == x86.X86_OP_REG
+              and insn.reg_name(ops[0].reg) in X87_STATUS_REGISTERS)
+    imm_ops = [op for op in ops if op.type == x86.X86_OP_IMM]
     for op in ops:
         if op.type == x86.X86_OP_IMM:
             value = op.imm & 0xffffffff
             if (value - image.base) in relocated:
                 _data_ref(image, insn, value - image.base, None, feats, resolve_code,
                           resolve_data, inside)
+            elif logic:
+                bit_form = ops[0].type == x86.X86_OP_MEM and m in BIT_MNEMONICS
+                if first_reg or status or not value or bit_form:
+                    continue
+                loaded = _loaded_field(insn, ops, context) if m in ("test", "and") else None
+                if loaded is not None:
+                    # a mask on a register just loaded from a field: the same bits as a
+                    # narrowed memory test, so it is recorded the same way
+                    offset, size = loaded
+                    mask = op.imm & ((1 << (8 * size)) - 1)
+                    for lo, hi in _runs([b for b in range(8 * size) if mask >> b & 1]):
+                        lo, hi = offset * 8 + lo, offset * 8 + hi
+                        feats.logic[f"bit@{lo}" + (f"..{hi}" if hi > lo else "")] += 1
+                else:
+                    feats.logic[str(_signed(op.imm, ops[0].size or 4))] += 1
             elif not first_reg and not insn.group(x86.X86_GRP_JUMP):
                 feats.imms[value] += 1
         elif op.type == x86.X86_OP_MEM:
@@ -879,6 +1000,128 @@ def _features_of(image, insn, feats, resolve_code, resolve_data, tail, inside):
             if (disp - image.base) in relocated:
                 _data_ref(image, insn, disp - image.base, op, feats, resolve_code,
                           resolve_data, inside)
+                continue
+            if m == "lea" or string_op:
+                continue
+            base = insn.reg_name(op.mem.base) if op.mem.base else None
+            if base is None or base == "esp" or (base == "ebp" and feats.frame):
+                continue
+            offset = _signed(op.mem.disp, 4)
+            size = op.size or 4
+            if offset < 0 or op.mem.index:
+                # a strength-reduced pointer walk or an indexed element, not a named field
+                continue
+            if m in BIT_MNEMONICS and imm_ops:
+                mask = imm_ops[0].imm & ((1 << (8 * size)) - 1)
+                if m == "and":
+                    mask = ~mask & ((1 << (8 * size)) - 1)
+                bits = [b for b in range(8 * size) if mask >> b & 1]
+                for lo, hi in _runs(bits):      # one token per contiguous run of bits
+                    lo, hi = offset * 8 + lo, offset * 8 + hi
+                    feats.logic[f"{BIT_MNEMONICS[m]}@{lo}" + (f"..{hi}" if hi > lo else "")] += 1
+                feats.fields.update(offset + b // 8 for b in bits)
+            else:
+                feats.fields.update(range(offset, offset + size))
+
+
+def _loaded_field(insn, ops, context, window=6):
+    """(offset, size) when the register operand of insn was last written by a plain load
+    from a non-stack structure field, else None."""
+    if context is None or ops[0].type != x86.X86_OP_REG:
+        return None
+    ordered, position = context
+    reg = insn.reg_name(ops[0].reg)
+    w = _last_writer(ordered, position, reg, window)
+    if w is None:
+        return None
+    writer = ordered[w]
+    wops = writer.operands
+    if (writer.mnemonic not in ("mov", "movzx") or len(wops) != 2
+            or wops[1].type != x86.X86_OP_MEM or not wops[1].mem.base or wops[1].mem.index):
+        return None
+    if writer.reg_name(wops[1].mem.base) in FRAME_REGISTERS:
+        return None
+    return _signed(wops[1].mem.disp, 4), wops[1].size or 4
+
+
+def _runs(values):
+    """Contiguous runs of sorted integers, as (first, last) pairs."""
+    runs = []
+    for v in values:
+        if runs and v == runs[-1][1] + 1:
+            runs[-1][1] = v
+        else:
+            runs.append([v, v])
+    return [tuple(r) for r in runs]
+
+
+def _writes(insn, reg):
+    """Whether insn writes reg (calls clobber eax, ecx and edx)."""
+    if insn.mnemonic == "call":
+        return reg in ("eax", "ecx", "edx")
+    try:
+        _, written = insn.regs_access()
+    except capstone.CsError:
+        return False
+    return any(insn.reg_name(r) == reg for r in written)
+
+
+def _last_writer(ordered, position, reg, window=16):
+    for i in range(position - 1, max(-1, position - 1 - window), -1):
+        if _writes(ordered[i], reg):
+            return i
+    return None
+
+
+def _icall_tag(image, insn, op, context):
+    """Where the base of a memory-indirect call came from.
+
+    host    an ORACLE_HOST_GLOBALS global is read within the 12 instructions before the call
+            (the qhull host passes its object explicitly, and the vtable register is often
+            cached from further back)
+    gobj    a vtable read from an object held in another global
+    getter  a vtable read from an object a preceding call returned
+    obj     a vtable read from any other object (this, a member, an argument)
+    fptr    a function pointer read from a non-zero offset of a structure
+    ret     a function pointer a preceding call returned in eax
+    ?       not traced (the base was written too far back, or by something else)
+    """
+    if context is None or not op.mem.base:
+        return "?"
+    ordered, position = context
+    hosts = getattr(image, "host_globals", ())
+    if hosts:
+        for prior in ordered[max(0, position - 12):position]:
+            for pop in prior.operands:
+                if (pop.type == x86.X86_OP_MEM and not pop.mem.base and not pop.mem.index
+                        and (pop.mem.disp & 0xffffffff) - image.base in hosts):
+                    return "host"
+    base = insn.reg_name(op.mem.base)
+    w = _last_writer(ordered, position, base)
+    if w is None:
+        return "?"
+    writer = ordered[w]
+    if writer.mnemonic == "call":
+        return "ret" if base == "eax" else "?"
+    wops = writer.operands
+    if writer.mnemonic != "mov" or len(wops) != 2 or wops[1].type != x86.X86_OP_MEM:
+        return "?"
+    src = wops[1].mem
+    if src.index or src.disp or not src.base:
+        return "fptr"
+    obj_reg = writer.reg_name(src.base)
+    o = _last_writer(ordered, w, obj_reg)
+    if o is None:
+        return "obj"
+    origin = ordered[o]
+    if origin.mnemonic == "call":
+        return "getter"
+    oops = origin.operands
+    if (origin.mnemonic == "mov" and len(oops) == 2 and oops[1].type == x86.X86_OP_MEM
+            and not oops[1].mem.base and not oops[1].mem.index):
+        target = (oops[1].mem.disp & 0xffffffff) - image.base
+        return "host" if target in getattr(image, "host_globals", ()) else "gobj"
+    return "obj"
 
 
 def import_key(name):
@@ -955,6 +1198,7 @@ class MapRow:
     source_function: str
     names: list = None
     tags: list = None
+    notes: str = ""
     symbol: Symbol = None
     options: list = None
     group: str = ""
@@ -970,6 +1214,7 @@ def load_map_rows(library, map_dir=MAP_DIR):
                              r["grade"], r["source_file"], r["source_line"],
                              r["source_function"])
                 row.names, row.tags = parse_source_function(r["source_function"])
+                row.notes = r.get("notes", "")
                 rows.append(row)
     return rows
 
@@ -1177,7 +1422,7 @@ def learn_data_map(pairs, locate=None):
                 votes[o][c] += 1
     for o, counter in votes.items():
         (c, n), total = counter.most_common(1)[0], sum(counter.values())
-        if n * 2 > total and c not in used:
+        if n >= 2 and n * 2 > total and c not in used:
             mapping[o] = (c, f"rank {n}/{total}")
             used.add(c)
     return mapping
@@ -1190,6 +1435,26 @@ def _oracle_rva(token):
 def _token_order(token):
     m = re.match(r"(.*)\+0x([0-9a-f]+)$", token)
     return (m.group(1), int(m.group(2), 16)) if m else (token, 0)
+
+
+def _hex(value):
+    return f"-{-value:#x}" if value < 0 else f"{value:#x}"
+
+
+def _field_diff(oracle, candidate):
+    """Byte offsets present on one side only, as "-0x88..0x8b" / "+0x4" ranges."""
+    out = []
+    for sign, only in (("-", oracle - candidate), ("+", candidate - oracle)):
+        run = []
+        for off in sorted(only) + [None]:
+            if run and (off is None or off != run[-1] + 1):
+                lo, hi = run[0], run[-1]
+                text = _hex(lo) if lo == hi else f"{_hex(lo)}..{_hex(hi)}"
+                out.append(f"{sign}[{text}]")
+                run = []
+            if off is not None:
+                run.append(off)
+    return out
 
 
 def _set_diff(oracle, candidate):
@@ -1212,10 +1477,14 @@ def _is_number(text):
         return False
 
 
-def _float_pairs(diff):
-    """Oracle-only/candidate-only float pairs that are one constant written two ways: a*b a power
-    of two from 1/8 to 8 (a division compiled as a multiplication, with the factor folded in),
-    or a == -b (a negation folded into the constant)."""
+def _float_pairs(diff, o=None, c=None):
+    """Oracle-only/candidate-only float pairs that are one constant written two ways.
+
+    reciprocal  a*b == 1 (a division by a constant compiled as a multiplication)
+    halving     a*b == 2 (the same, with a factor of two folded in)
+    negated     a == -b, only when the side holding the positive value has more fchs than
+                the other (it negates at run time what the other side stores negative)
+    """
     minus = [t[1:] for t in diff if t.startswith("-") and _is_number(t[1:])]
     plus = [t[1:] for t in diff if t.startswith("+") and _is_number(t[1:])]
     pairs, taken = [], set()
@@ -1226,11 +1495,14 @@ def _float_pairs(diff):
             x, y = float(a), float(b)
             if not x or not y or x != x or y != y:
                 continue
-            product = abs(x * y)
-            if x == -y:
-                how = "negated"
-            elif any(abs(product / (2.0 ** k) - 1.0) < 1e-6 for k in range(-3, 4)):
+            product = x * y
+            if abs(product - 1.0) < 1e-6:
                 how = "reciprocal"
+            elif abs(product - 2.0) < 2e-6:
+                how = "halving"
+            elif x == -y and o is not None and c is not None and (
+                    (x < 0 and c.fchs > o.fchs) or (x > 0 and o.fchs > c.fchs)):
+                how = "negated"
             else:
                 continue
             pairs.append((a, b, how))
@@ -1240,16 +1512,19 @@ def _float_pairs(diff):
 
 
 FEATURE_KINDS = ("calls", "strings", "floats", "data")
+REVIEW_KINDS = ("fields", "imms")
+ALL_KINDS = FEATURE_KINDS + REVIEW_KINDS
 
 
 def _key_sets(feats, data_map, oracle_side):
     data = [data_map.get(t, (t, ""))[0] for t in feats.data] if oracle_side else feats.data
     return {"calls": set(feats.calls), "strings": set(feats.strings),
-            "floats": set(feats.floats), "data": set(data)}
+            "floats": set(feats.floats), "data": set(data), "fields": set(feats.fields),
+            "imms": set(feats.logic)}
 
 
 def _diff_size(a, b):
-    return sum(len(a[k] ^ b[k]) for k in FEATURE_KINDS)
+    return sum(len(a[k] ^ b[k]) for k in ALL_KINDS)
 
 
 def _expand_inlining(o_sets, c_sets, expand_o, expand_c, data_map, rounds=3):
@@ -1272,7 +1547,7 @@ def _expand_inlining(o_sets, c_sets, expand_o, expand_c, data_map, rounds=3):
                 trial = {k: set(v) for k, v in mine.items()}
                 extra = _key_sets(feats, data_map, oracle_side)
                 extra["calls"] = {ident if c == "self" else c for c in extra["calls"]}
-                for k in FEATURE_KINDS:
+                for k in ALL_KINDS:
                     trial[k] |= extra[k]
                 trial["calls"].discard(ident)
                 if _diff_size(trial, other) < _diff_size(mine, other):
@@ -1296,6 +1571,12 @@ def classify(o, c, data_map, expand_o=None, expand_c=None):
     c_sets = _key_sets(c, data_map, False)
     inlined = _expand_inlining(o_sets, c_sets, expand_o, expand_c, data_map)
     details = {k: _set_diff(o_sets[k], c_sets[k]) for k in FEATURE_KINDS}
+    details["fields"] = _field_diff(o_sets["fields"], c_sets["fields"])
+    words_differ = ({f // 4 for f in o_sets["fields"]} != {f // 4 for f in c_sets["fields"]})
+    if inlined:
+        details["imms"] = _set_diff(o_sets["imms"], c_sets["imms"])
+    else:
+        details["imms"] = _multiset_diff(list(o.logic.elements()), list(c.logic.elements()))
     shape = []
     if inlined:
         shape.append("inlining: " + ", ".join(inlined))
@@ -1307,7 +1588,7 @@ def classify(o, c, data_map, expand_o=None, expand_c=None):
     if trivial:
         details["floats"] = [t for t in details["floats"] if t not in trivial]
         shape.append("trivial floats " + " ".join(trivial))
-    for a, b, how in _float_pairs(details["floats"]):
+    for a, b, how in _float_pairs(details["floats"], o, c):
         details["floats"].remove(f"-{a}")
         details["floats"].remove(f"+{b}")
         shape.append(f"{how} float {a}~{b}")
@@ -1322,10 +1603,12 @@ def classify(o, c, data_map, expand_o=None, expand_c=None):
                 shape.append(f"{k} counts " + " ".join(_multiset_diff(a, b)[:6]))
         if not details["calls"] and Counter(o.calls) == Counter(c.calls) and o.calls != c.calls:
             shape.append("call order")
-    for name in ("n_insn", "n_jcc", "x87", "sse", "switch", "icall_reg"):
+    for name in ("n_insn", "n_jcc", "x87", "sse", "switch", "icall_reg", "fchs"):
         a, b = getattr(o, name), getattr(c, name)
         if a != b:
             shape.append(f"{name} {a}->{b}")
+    if o.frame != c.frame:
+        shape.append(f"ebp frame {'yes' if o.frame else 'no'}->{'yes' if c.frame else 'no'}")
     if o.float_widths != c.float_widths:
         shape.append("float widths " + ",".join(_multiset_diff(o.float_widths.elements(),
                                                                 c.float_widths.elements())))
@@ -1336,6 +1619,12 @@ def classify(o, c, data_map, expand_o=None, expand_c=None):
     details["shape"] = shape
     if any(details[k] for k in FEATURE_KINDS):
         return "DIFF", details
+    if details["fields"] and not words_differ:
+        # the same aligned dwords, touched through narrower or wider accesses
+        shape.append("field bytes " + " ".join(details["fields"]))
+        details["fields"] = []
+    if any(details[k] for k in REVIEW_KINDS):
+        return "REVIEW", details
     if shape:
         return "SHAPE", details
     return "MATCH", details
@@ -1347,12 +1636,16 @@ def diff_causes(details, seams, library):
                           "operator delete[]", "malloc", "free", "calloc", "realloc"}
     if library == "qhull":
         host = {t for name, toks in seams.items() if name.startswith("qh") for t in toks}
-        host |= {"fprintf", "icall+0x0", "icall+0x4", "icall+0x8", "icall+0xc", "icall+0x1c"}
+        host.add("fprintf")
     else:
         alloc |= {t for name, toks in seams.items() if name.startswith("opc") for t in toks}
     tags = []
     for token in details.get("calls", []):
         ident = token[1:]
+        if ident.startswith("icall[host]"):
+            host.add(ident)
+        if ident.startswith("icall[getter]") and library != "qhull":
+            alloc.add(ident)
         if ident in alloc:
             tag = "allocator"
         elif ident in host:
@@ -1373,10 +1666,11 @@ def diff_causes(details, seams, library):
 
 # --------------------------------------------------------------------------- driver
 
-OUTPUT_COLUMNS = ["rva", "id", "size", "grade", "source_function", "class", "group_rows",
-                  "candidate_symbol", "candidate_rva", "candidate_size", "oracle_insns",
-                  "candidate_insns", "diff_causes", "diff_calls", "diff_strings", "diff_floats",
-                  "diff_data", "shape", "notes"]
+OUTPUT_COLUMNS = ["rva", "id", "size", "grade", "source_function", "class", "compare_class",
+                  "group_rows", "candidate_symbol", "candidate_rva", "candidate_size",
+                  "oracle_insns", "candidate_insns", "diff_causes", "diff_calls",
+                  "diff_strings", "diff_floats", "diff_data", "diff_fields", "diff_imms",
+                  "shape", "notes"]
 
 
 def match_library(rows, oracle_image, candidate_image, index, resolver, seams=None):
@@ -1388,7 +1682,7 @@ def match_library(rows, oracle_image, candidate_image, index, resolver, seams=No
         head = group[0]
         o_feat = oracle_features(oracle_image, group, resolver)
         rec = {"key": key, "rows": group, "oracle": o_feat, "candidate": None,
-               "class": None, "details": {}, "notes": ""}
+               "class": None, "details": {}, "notes": "", "mapcheck": mapcheck(group)}
         if head.symbol is None:
             if head.options:
                 rec["class"] = "AMBIGUOUS"
@@ -1400,6 +1694,13 @@ def match_library(rows, oracle_image, candidate_image, index, resolver, seams=No
             pairs.append((o_feat.data, rec["candidate"].data))
         records.append(rec)
     return records, pairs
+
+
+def mapcheck(group):
+    """A group that unites several untagged rows none of which the map calls a continuation
+    block: the map may have given two different functions the same name."""
+    heads = [r for r in group if not r.tags and "continuation" not in (r.notes or "")]
+    return len(heads) > 1
 
 
 def record_identity(rec):
@@ -1470,6 +1771,11 @@ def finish(records, data_map, all_records, expanders=None, seams=None):
             if rec["class"] == "DIFF":
                 rec["details"]["causes"] = diff_causes(rec["details"], seams or {},
                                                        rec["rows"][0].library)
+            rec["compare_class"] = rec["class"]
+            if rec["mapcheck"]:
+                rec["class"] = "MAPCHECK"
+                rec["notes"] = ("several untagged map rows resolve to this symbol; check the "
+                                "map before trusting compare_class")
         elif rec["class"] == "MISSING":
             ident = record_identity(rec)
             inliners = sorted(n or f"(unresolved: {s})" for s, n in by_identity.get(ident, ()))
@@ -1489,6 +1795,7 @@ def write_csv(path, records):
             lines.append({
                 "rva": f"0x{row.rva:08x}", "id": row.id, "size": row.size, "grade": row.grade,
                 "source_function": row.source_function, "class": rec["class"],
+                "compare_class": rec.get("compare_class", ""),
                 "group_rows": len(group),
                 "candidate_symbol": head.symbol.name if head.symbol else "",
                 "candidate_rva": f"0x{head.symbol.rva:08x}" if head.symbol else "",
@@ -1500,6 +1807,8 @@ def write_csv(path, records):
                 "diff_strings": "; ".join(d.get("strings", [])),
                 "diff_floats": "; ".join(d.get("floats", [])),
                 "diff_data": "; ".join(d.get("data", [])),
+                "diff_fields": " ".join(d.get("fields", [])),
+                "diff_imms": " ".join(d.get("imms", [])),
                 "shape": "; ".join(d.get("shape", [])),
                 "notes": rec["notes"],
             })
@@ -1539,6 +1848,7 @@ def main(argv=None):
     except (OSError, ValueError, KeyError) as error:
         print(f"error: {error}", file=sys.stderr)
         return 2
+    oracle.host_globals = ORACLE_HOST_GLOBALS
     symbols = parse_map(map_text, candidate.base, candidate)
     if not symbols:
         print("error: no symbols in the candidate map", file=sys.stderr)

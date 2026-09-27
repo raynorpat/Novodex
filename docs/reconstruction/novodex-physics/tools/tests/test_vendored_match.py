@@ -406,5 +406,284 @@ class MatchLibraryTest(unittest.TestCase):
         self.assertIn("inlining: candidate inlines qh_g", f_rec["details"]["shape"])
 
 
+
+def run(code, host_globals=(), extra=None):
+    """Features of one synthetic function at TEXT (raw bytes or an Asm)."""
+    asm = code if isinstance(code, Asm) else Asm(TEXT).raw(code)
+    functions = {TEXT: asm}
+    functions.update(extra or {})
+    image = make_image(functions, rdata_blob())
+    image.host_globals = frozenset(host_globals)
+    return vm.extract(image, [TEXT], [(TEXT, TEXT + 0x100)],
+                      lambda t, j: f"fn:{t:x}", lambda t: f"g:{t:x}")
+
+
+class FieldAndLogicTest(unittest.TestCase):
+    def test_field_bytes_exclude_stack_lea_negative_and_indexed(self):
+        feats = run(b"\x8b\x81\x88\x00\x00\x00"      # mov eax,[ecx+0x88]
+                    b"\x8b\x44\x24\x08"              # mov eax,[esp+8]
+                    b"\x8d\x41\x10"                  # lea eax,[ecx+0x10]
+                    b"\x8b\x41\xfc"                  # mov eax,[ecx-4]
+                    b"\x8b\x44\x81\x08"              # mov eax,[ecx+eax*4+8]
+                    b"\xc3")
+        self.assertEqual(feats.fields, {0x88, 0x89, 0x8a, 0x8b})
+
+    def test_ebp_is_a_field_base_only_without_a_frame(self):
+        framed = run(b"\x55\x8b\xec\x8b\x45\x08\x8b\xe5\x5d\xc3")
+        frameless = run(b"\x8b\x45\x08\xc3")
+        self.assertTrue(framed.frame)
+        self.assertEqual(framed.fields, set())
+        self.assertEqual(frameless.fields, {8, 9, 10, 11})
+
+    def test_logic_immediates_skip_status_masks_and_zero(self):
+        feats = run(b"\x83\xf8\x05"                  # cmp eax,5
+                    b"\xf6\xc4\x41"                  # test ah,0x41
+                    b"\x83\xf9\x00"                  # cmp ecx,0
+                    b"\x83\xf8\xff"                  # cmp eax,-1
+                    b"\xc3")
+        self.assertEqual(feats.logic, Counter({"5": 1, "-1": 1}))
+
+    def test_narrowed_memory_test_and_register_test_agree(self):
+        narrow = run(b"\xf6\x41\x02\x01\xc3")                   # test byte [ecx+2],1
+        wide = run(b"\xf7\x01\x00\x00\x01\x00\xc3")             # test dword [ecx],0x10000
+        loaded = run(b"\x8b\x01\xa9\x00\x00\x01\x00\xc3")       # mov eax,[ecx]; test eax,..
+        self.assertEqual(narrow.logic, Counter({"bit@16": 1}))
+        self.assertEqual(wide.logic, narrow.logic)
+        self.assertEqual(loaded.logic, narrow.logic)
+        self.assertEqual(narrow.fields, {2})
+
+    def test_memory_and_records_the_cleared_bits(self):
+        feats = run(b"\x80\x61\x04\xfe\xc3")                    # and byte [ecx+4],0xfe
+        self.assertEqual(feats.logic, Counter({"clear@32": 1}))
+
+    def test_repe_cmps_is_memcmp(self):
+        self.assertEqual(run(b"\xf3\xa6\xc3").calls, ["memcmp"])
+
+
+class IcallTagTest(unittest.TestCase):
+    def test_host_global_object(self):
+        asm = Asm(TEXT).raw(b"\x8b\x0d").abs32(DATA).raw(b"\x8b\x01\x51\xff\x50\x10\xc3")
+        self.assertEqual(run(asm, host_globals={DATA}).calls, ["icall[host]+0x10"])
+        self.assertEqual(run(asm).calls, ["icall[gobj]+0x10"])
+
+    def test_getter_object(self):
+        asm = Asm(TEXT).call(TEXT + 0x80).raw(b"\x8b\x10\xff\x52\x0c\xc3")
+        feats = run(asm, extra={TEXT + 0x80: body(lambda a: a.ret(), TEXT + 0x80)})
+        self.assertEqual(feats.calls, ["fn:1080", "icall[getter]+0xc"])
+
+    def test_this_vtable_and_member_function_pointer(self):
+        self.assertEqual(run(b"\x8b\x01\xff\x50\x04\xc3").calls, ["icall[obj]+0x4"])
+        self.assertEqual(run(b"\x8b\x41\x08\xff\x50\x04\xc3").calls, ["icall[fptr]+0x4"])
+
+
+class ReviewClassTest(unittest.TestCase):
+    def test_field_difference_is_review(self):
+        o = features(fields={0x88, 0x89, 0x8a, 0x8b})
+        c = features(fields={0x4c, 0x4d, 0x4e, 0x4f})
+        cls, details = vm.classify(o, c, {})
+        self.assertEqual(cls, "REVIEW")
+        self.assertEqual(details["fields"], ["-[0x88..0x8b]", "+[0x4c..0x4f]"])
+
+    def test_narrowing_within_a_dword_is_shape(self):
+        o = features(fields={0x52})
+        c = features(fields={0x50, 0x51, 0x52, 0x53})
+        cls, details = vm.classify(o, c, {})
+        self.assertEqual(cls, "SHAPE")
+        self.assertTrue(any(s.startswith("field bytes") for s in details["shape"]))
+
+    def test_logic_immediate_difference_is_review_and_diff_wins(self):
+        o = features(logic=Counter({"5": 1}))
+        c = features(logic=Counter({"6": 1}))
+        self.assertEqual(vm.classify(o, c, {})[0], "REVIEW")
+        o.calls, c.calls = ["a"], ["b"]
+        self.assertEqual(vm.classify(o, c, {})[0], "DIFF")
+
+    def test_frame_difference_is_a_shape_note(self):
+        cls, details = vm.classify(features(frame=False), features(frame=True), {})
+        self.assertEqual(cls, "SHAPE")
+        self.assertIn("ebp frame no->yes", details["shape"])
+
+
+class FloatRuleTest(unittest.TestCase):
+    def test_halving_pair_is_shape_but_a_factor_of_four_is_not(self):
+        self.assertEqual(vm.classify(features(floats=Counter({"0.25": 1})),
+                                     features(floats=Counter({"8.0": 1})), {})[0], "SHAPE")
+        self.assertEqual(vm.classify(features(floats=Counter({"0.25": 1})),
+                                     features(floats=Counter({"16.0": 1})), {})[0], "DIFF")
+
+    def test_negation_needs_a_compensating_fchs(self):
+        o = features(floats=Counter({"-2.5": 1}))
+        c = features(floats=Counter({"2.5": 1}))
+        self.assertEqual(vm.classify(o, c, {})[0], "DIFF")
+        c.fchs = 1
+        cls, details = vm.classify(o, c, {})
+        self.assertEqual(cls, "SHAPE")
+        self.assertIn("negated float -2.5~2.5", details["shape"])
+
+
+class LookupExtrasTest(unittest.TestCase):
+    def setUp(self):
+        self.index = vm.SymbolIndex(vm.parse_map(map_text([
+            ("??_EModel@Opcode@@UAEPAXI@Z", 0x1000, "f", "a.obj"),
+            ("??1Model@Opcode@@UAE@XZ", 0x1100, "f", "a.obj"),
+            ("?Collide@T@Opcode@@QAE_NPBVA@2@0H@Z", 0x1200, "f", "a.obj"),
+            ("?Collide@T@Opcode@@QAE_NPBVB@2@0H@Z", 0x1300, "f", "a.obj"),
+            ("??DPoint@IceMaths@@QBEMABV01@@Z", 0x1400, "f", "a.obj"),
+            ("_qh_f", 0x1500, "f", "a.obj"),
+        ]), BASE))
+
+    def lookup(self, text):
+        names, _ = vm.parse_source_function(text)
+        return self.index.lookup(names)
+
+    def test_scalar_deleting_destructor_falls_back_to_vector(self):
+        symbol, _ = self.lookup("Model::`scalar deleting destructor'")
+        self.assertEqual(symbol.rva, 0x1000)
+
+    def test_deleting_destructor_alternative_is_preferred(self):
+        symbol, _ = self.lookup("Model::~Model / `scalar deleting destructor'")
+        self.assertEqual(symbol.rva, 0x1000)
+
+    def test_partial_parameters(self):
+        symbol, _ = self.lookup("T::Collide(const B*, ...)")
+        self.assertEqual(symbol.rva, 0x1300)
+
+    def test_overloads_get_parameter_keys_and_operators_real_names(self):
+        keys = {s.rva: s.key for s in self.index.symbols}
+        self.assertEqual(keys[0x1200], "T::Collide(const A*,const A*,int)")
+        self.assertEqual(keys[0x1500], "qh_f")
+        self.assertEqual(keys[0x1400], "Point::operator*")
+
+
+class SeamsAndDropsTest(unittest.TestCase):
+    def test_resolve_seams_replaces_rva_tokens(self):
+        _, rows, functions = oracle_setup()
+        seams = vm.resolve_seams(vm.OracleResolver(rows, functions))
+        self.assertEqual(seams["qhNovodeXFprintf"], ["icall[host]+0x10"])
+        functions.append({"id": "phys_fn_004803", "rva": 0x000b4000, "size": 20,
+                          "kind": "code", "label": "phys_fn_004803",
+                          "label_confidence": "stable-id"})
+        seams = vm.resolve_seams(vm.OracleResolver(rows, functions))
+        self.assertEqual(seams["opcNovodeXAlloc"], ["census:phys_fn_004803",
+                                                    "icall[getter]+0x0"])
+
+    def test_dropped_calls(self):
+        f = body(lambda a: a.call(0x1100).call(0x1200).ret(), 0x1000)
+        image = make_image({0x1000: f, 0x1100: body(lambda a: a.ret(), 0x1100),
+                            0x1200: body(lambda a: a.ret(), 0x1200)})
+        index = vm.SymbolIndex(vm.parse_map(map_text([
+            ("_qh_f", 0x1000, "f", "a.obj"), ("@__security_check_cookie@4", 0x1100, "f", "gs.obj"),
+            ("_qh_g", 0x1200, "f", "a.obj")]), BASE, image))
+        feats = vm.candidate_features(image, index.function_at[0x1000], index)
+        self.assertEqual(feats.calls, ["qh_g"])
+
+    def test_diff_causes(self):
+        seams = {"qhNovodeXFprintf": ["icall[host]+0x10"],
+                 "opcNovodeXFree": ["census:phys_fn_004803", "icall[getter]+0xc"]}
+        details = {"calls": ["-fprintf", "+icall[host]+0x10", "+_CIsqrt", "+qh_x"],
+                   "floats": ["-0.5"]}
+        self.assertEqual(vm.diff_causes(details, seams, "qhull"),
+                         ["host-seam", "sqrt-intrinsic", "calls", "floats"])
+        details = {"calls": ["-census:phys_fn_004803", "+operator delete[]",
+                             "-`vector constructor iterator'"]}
+        self.assertEqual(vm.diff_causes(details, seams, "opcode"),
+                         ["allocator", "vector-iterator"])
+
+
+class GroupingTest(unittest.TestCase):
+    def rows(self, specs):
+        out = []
+        for rva, size, source, notes in specs:
+            row = vm.MapRow("qhull", "qhull_map.csv", rva, f"phys_fn_{rva:06x}", size,
+                            "mapped", "geom.c", "1", source)
+            row.names, row.tags = vm.parse_source_function(source)
+            row.notes = notes
+            out.append(row)
+        return out
+
+    def test_continuation_rows_form_one_group_and_calls_between_them_vanish(self):
+        entry = body(lambda a: a.call(0x1040).call(0x1000).ret(), 0x1000)
+        block = body(lambda a: a.push_addr(RDATA).ret(), 0x1040)
+        image = make_image({0x1000: entry, 0x1040: block}, rdata_blob())
+        rows = self.rows([(0x1000, 0x40, "qh_f", ""),
+                          (0x1040, 0x20, "qh_f", "continuation block of the function")])
+        index = vm.SymbolIndex(vm.parse_map(map_text([("_qh_f", 0x1000, "f", "a.obj")]), BASE))
+        vm.resolve_rows(rows, index)
+        groups = vm.group_rows(rows)
+        self.assertEqual(len(groups), 1)
+        group = next(iter(groups.values()))
+        self.assertFalse(vm.mapcheck(group))
+        feats = vm.oracle_features(image, group, vm.OracleResolver(rows, []))
+        self.assertEqual(feats.calls, ["self"])                  # the block call is internal
+        self.assertEqual(feats.strings, Counter({"str:hello\n": 1}))
+
+    def test_two_untagged_heads_are_mapcheck(self):
+        rows = self.rows([(0x1000, 0x10, "Model::Release", ""),
+                          (0x1100, 0x10, "Model::Release", "")])
+        self.assertTrue(vm.mapcheck(rows))
+
+
+class RankPhaseTest(unittest.TestCase):
+    def test_single_vote_is_not_enough(self):
+        mapping = vm.learn_data_map([(["oracle:0x00003000"], ["_a"])])
+        self.assertNotIn("oracle:0x00003000", mapping)
+
+    def test_two_agreeing_votes_pair(self):
+        pairs = [(["oracle:0x00003000", "oracle:0x00003010"], ["_a", "_b"]),
+                 (["oracle:0x00003000", "oracle:0x00003010"], ["_a", "_c"]),
+                 (["oracle:0x00003000", "oracle:0x00003020"], ["_a", "_d"])]
+        mapping = vm.learn_data_map(pairs)
+        self.assertEqual(mapping["oracle:0x00003000"][0], "_a")
+
+
+class MainTest(unittest.TestCase):
+    def test_missing_input_returns_2(self):
+        import contextlib
+        import io
+        with contextlib.redirect_stderr(io.StringIO()):
+            self.assertEqual(vm.main(["--oracle", "no-such-file.dll", "--out-dir", "."]), 2)
+
+    def test_full_run_on_synthetic_images_returns_0(self):
+        import tempfile
+        from unittest import mock
+        image, rows, functions = oracle_setup()
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            (tmp / "qhull_map.csv").write_text(
+                "rva,id,size,grade,source_file,source_line,source_function,signals,notes\n"
+                "0x00001000,phys_fn_001000,256,mapped,geom.c,1,qh_f,,\n", encoding="utf-8")
+            for name in ("opcode_map.csv", "opcode_outside_span_map.csv"):
+                (tmp / name).write_text(
+                    "rva,id,size,grade,source_file,source_line,source_function,signals,notes\n",
+                    encoding="utf-8")
+            (tmp / "cand.map").write_text(map_text([("_qh_f", 0x1000, "f", "geom.obj")]),
+                                          encoding="utf-8")
+            (tmp / "inv.json").write_text(
+                '{"functions": [{"id": "phys_fn_001000", "rva": "0x00001000", "size": 256,'
+                ' "kind": "code", "label": "phys_fn_001000", "label_confidence": "stable-id"}]}',
+                encoding="utf-8")
+            import contextlib
+            import io
+            patch = mock.patch.object(vm.Image, "from_pe", side_effect=lambda p: image)
+            with patch, contextlib.redirect_stdout(io.StringIO()):
+                code = vm.main(["--oracle", "o", "--candidate", "c",
+                                "--candidate-map", str(tmp / "cand.map"),
+                                "--inventory", str(tmp / "inv.json"),
+                                "--map-dir", str(tmp), "--out-dir", str(tmp)])
+            self.assertEqual(code, 0)
+            text = (tmp / "qhull_match.csv").read_text(encoding="utf-8")
+            self.assertIn("0x00001000,phys_fn_001000,256,mapped,qh_f,", text)
+
+
+class TraceAttributionTest(unittest.TestCase):
+    def test_trace_macro_detection(self):
+        import qhull_trace_attribution as qt
+        sources = {"geom.c": 'x;\n  trace4((qh ferr, "qh_x: f%d\\n", id));\n'
+                             '  fprintf(qh ferr, "qh_y: plain\\n");\n'}
+        self.assertTrue(qt.in_trace_macro(sources, "qh_x: f%d\n"))
+        self.assertFalse(qt.in_trace_macro(sources, "qh_y: plain\n", lines=1))
+        self.assertIsNone(qt.in_trace_macro(sources, "nowhere"))
+
+
 if __name__ == "__main__":
     unittest.main()

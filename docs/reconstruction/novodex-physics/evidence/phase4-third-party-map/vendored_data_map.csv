@@ -1,9 +1,4 @@
 oracle_rva,candidate_symbol,method
-0x0010833c,??_7AABBTreeBuilder@Opcode@@6B@,rank 1/1
-0x0010a020,??_C@_01CLKCMJKC@?5@,rank 1/1
-0x0010a040,??_C@_05PDGFPKPF@qhull@,rank 1/1
-0x0010a044,??_C@_05PDGFPKPF@qhull@+0x4,rank 1/1
-0x0010c590,??_C@_0CLP@BDDNMJPK@?$HLappearance?5?$HL?9edge?5?9normal?5norms@,rank 1/1
 0x0010cf43,??_C@_00CNPNBAHC@@,cooccurrence
 0x0011b628,??_7RayCollider@Opcode@@6B@,cooccurrence
 0x0011b750,??_7AABBTreeCollider@Opcode@@6B@,cooccurrence
@@ -11,8 +6,7 @@ oracle_rva,candidate_symbol,method
 0x0011b774,??_7OBBCollider@Opcode@@6B@,cooccurrence
 0x0011b784,??_7SphereCollider@Opcode@@6B@,cooccurrence
 0x0011b794,??_7PlanesCollider@Opcode@@6B@,cooccurrence
-0x0011bab4,??_7AABBTreeOfTrianglesBuilder@Opcode@@6B@,rank 1/1
-0x0011bac8,??_7Model@Opcode@@6B@,rank 2/2
+0x0011bac8,??_7Model@Opcode@@6B@,cooccurrence
 0x0011bb5c,??_7BaseModel@Opcode@@6B@,rank 2/2
 0x0011bb84,??_7AABBCollider@Opcode@@6B@,cooccurrence
 0x0011bbec,??_7Collider@Opcode@@6B@,cooccurrence
