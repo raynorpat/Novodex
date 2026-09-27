@@ -67,4 +67,22 @@ void  qhNovodeXErrexit(int exitcode);
 }
 #endif
 
+/* The redirect of qhull's plain fprintf onto [vtable+0x10], for the qhull C
+   translation units only (the C++ host that defines the hooks above must not
+   see it). One definition, reached two ways: user.h (through qhull.h, for the
+   ten library files built on qhull_a.h) and mem.h (for mem.c and qset.c, which
+   include neither qhull.h nor user.h -- the oracle's mem.c/qset.c prints are on
+   +0x10 too, e.g. qh_memalloc's errors and all 15 qset.c groups).
+
+   Function-like on purpose. `(fprintf) args` -- a parenthesised name -- does
+   not invoke a function-like macro, so qhull_a.h's traceN macros can name the
+   CRT's fprintf while every plain `fprintf (qh ferr, ...)` still reaches the
+   host. The oracle does exactly that split: 208 traceN sites call the CRT's
+   fprintf at 0x000f4d5a directly, and no plain qhull fprintf does. stdio.h is
+   included above, before the macro exists, so its own declaration of fprintf is
+   untouched. */
+#ifndef __cplusplus
+#define fprintf(...) qhNovodeXFprintf(__VA_ARGS__)
+#endif
+
 #endif /* qhDEFnovodexhost */

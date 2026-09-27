@@ -2,11 +2,18 @@
  * NOVODEX LOCAL MODIFICATION
  * upstream: External/qhull/upstream/src/user.h
  *
- * [1] fprintf redirected to the host object's slot +0x10.
+ * [1] plain fprintf redirected to the host object's slot +0x10 (the traceN
+ *     macros are NOT: they stay on the CRT, see qhull_a.h NOVODEX [2]).
  *     established at 593 of the 611 classified call sites through
  *     .data:0x00125080 are on that slot, spread over the whole qhull span; the
- *     global is written exactly once, at 0x0007ea51; and no CRT fprintf, fputs
- *     or fwrite is reachable from the span at all.
+ *     global is written exactly once, at 0x0007ea51. An earlier version of
+ *     this block also said no CRT fprintf is reachable from the span; that was
+ *     wrong. The span makes 217 direct calls to the CRT's fprintf at
+ *     0x000f4d5a: 208 are traceN((...)) sites, the other 9 are in NovodeX's
+ *     OBJ writers at 0x0007dea0/0x0007df20 (none is a plain qhull fprintf).
+ *     Of the 616 host calls on +0x10, none is a traceN site: the 8 that
+ *     tools/qhull_trace_attribution.py tags as trace are short or repeated
+ *     strings it matched to the wrong line (e.g. 0x0007cdd7, qhull.c:371).
  *
  *     What this macro does NOT cover, and what an earlier version of this block
  *     wrongly claimed it did ("No fprintf survives in the span that does not go
@@ -58,13 +65,14 @@
 #ifndef qhDEFuser
 #define qhDEFuser 1
 
-/* NOVODEX [1]: qhull's whole diagnostic stream leaves through the host object.
-   A macro rather than an edit at each site: the EFFECT is measured -- every
-   surviving fprintf in the span is a call on [object+0x10] -- while the
-   MECHANISM is this project's choice and is not established by anything in
-   the image. */
+/* NOVODEX [1]: qhull's plain fprintf leaves through the host object. A macro
+   rather than an edit at each site: the EFFECT is measured -- every plain
+   fprintf in the span is a call on [object+0x10] -- while the MECHANISM is this
+   project's choice and is not established by anything in the image. The macro
+   itself lives in QhullNovodeXHost.h, so that mem.h can reach it too (mem.c and
+   qset.c never include this file); the traceN macros are exempted from it in
+   qhull_a.h, see NOVODEX [2] there. */
 #include "QhullNovodeXHost.h"
-#define fprintf qhNovodeXFprintf
 
 /*============= data types and configuration macros ==========*/
 

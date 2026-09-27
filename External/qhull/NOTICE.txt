@@ -48,6 +48,15 @@ course of reconstructing what NovodeX did.
                  reference binary that establishes each one, in
                  External/qhull/MODIFICATIONS.md.
 
+3.  Modified by: the NovodeX Physics reconstruction project.
+    Date:        2026-09-27.
+    Reason:      to narrow modification 2's fprintf redirect to what the
+                 reference binary does: plain fprintf calls (including those in
+                 mem.c and qset.c) go to the host engine, while the traceN
+                 debugging macros keep calling the C library's fprintf.  Files:
+                 novodex/qhull_a.h, novodex/mem.h, novodex/user.h,
+                 novodex/QhullNovodeXHost.h.  See MODIFICATIONS.md.
+
     (Append one entry per further change.  Clause 3 requires a name, a date and
     a reason for every modification, so this file grows rather than being
     rewritten.)

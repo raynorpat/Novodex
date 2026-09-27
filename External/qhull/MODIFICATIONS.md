@@ -9,10 +9,12 @@ because the shipped `NxPhysics.dll` does something stock 2003.1 does not.
 
 | file | change | established at |
 |---|---|---|
-| `user.h` | `fprintf` redirected to the host object's slot `+0x10` | 593 of the 611 classified call sites through `.data:0x00125080` |
+| `user.h` | plain `fprintf` redirected to the host object's slot `+0x10` (the macro itself is in `QhullNovodeXHost.h`) | 593 of the 611 classified call sites through `.data:0x00125080` |
+| `qhull_a.h` | the six `traceN` macros call the CRT's `fprintf` as `(fprintf) args`, bypassing the redirect | the 217 direct calls to CRT `fprintf` at `0x000f4d5a` in the span: 208 are `traceN` sites, 9 are NovodeX's OBJ writers (`0x0007dea0`/`0x0007df20`); no plain qhull `fprintf` reaches the CRT |
+| `mem.h` | includes `QhullNovodeXHost.h`, so `mem.c` and `qset.c` (which never include `user.h`) print through slot `+0x10` too | mem.c band `0x0006da40`-`0x0006e0a8` and qset.c band `0x0007ed50`-`0x0007fda0` print only through `[0x10125080]`+`0x10`, e.g. `0x0006dafb` |
 | `mem.c` | `malloc` and `free` routed to slots `+0x14` and `+0x18`; `calloc` stays on the CRT | `0x0006dade`, `0x0006dbb3`, `0x0006de24`, `0x0006dc74` |
 | `user.c` | `qh_errexit`'s body replaced by a call on slot `+0x20` forwarding only the exit code; the stock body is kept under `#if 0` | `0x00084800` |
-| `QhullNovodeXHost.h` | **added file**, no upstream counterpart: the four hooks | `0x0007ea51`, `.rdata:0x00113614` |
+| `QhullNovodeXHost.h` | **added file**, no upstream counterpart: the four hooks, and the function-like `fprintf` redirect macro for the qhull C files | `0x0007ea51`, `.rdata:0x00113614` |
 
 ## One object, four slots
 
