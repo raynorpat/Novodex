@@ -1,4 +1,5 @@
 oracle_rva,candidate_symbol,method
+0x0010833c,??_7AABBTreeBuilder@Opcode@@6B@,seed
 0x0010cf43,??_C@_00CNPNBAHC@@,cooccurrence
 0x0011b628,??_7RayCollider@Opcode@@6B@,cooccurrence
 0x0011b750,??_7AABBTreeCollider@Opcode@@6B@,cooccurrence
@@ -6,8 +7,9 @@ oracle_rva,candidate_symbol,method
 0x0011b774,??_7OBBCollider@Opcode@@6B@,cooccurrence
 0x0011b784,??_7SphereCollider@Opcode@@6B@,cooccurrence
 0x0011b794,??_7PlanesCollider@Opcode@@6B@,cooccurrence
+0x0011bab4,??_7AABBTreeOfTrianglesBuilder@Opcode@@6B@,seed
 0x0011bac8,??_7Model@Opcode@@6B@,cooccurrence
-0x0011bb5c,??_7BaseModel@Opcode@@6B@,rank 2/2
+0x0011bb5c,??_7BaseModel@Opcode@@6B@,cooccurrence
 0x0011bb84,??_7AABBCollider@Opcode@@6B@,cooccurrence
 0x0011bbec,??_7Collider@Opcode@@6B@,cooccurrence
 0x0011bc00,??_7VolumeCollider@Opcode@@6B@,cooccurrence
@@ -18,6 +20,8 @@ oracle_rva,candidate_symbol,method
 0x0011bcd0,??_7AABBQuantizedNoLeafTree@Opcode@@6B@,cooccurrence
 0x00122340,_qh_rand_seed,cooccurrence
 0x00122344,_qh_version,cooccurrence
+0x00122520,?EdgeNormals@?1??GetLocalEdgeNormals@OBB@IceMaths@@QBEPBVPoint@3@XZ@4PAMA,seed
+0x00122524,?EdgeNormals@?1??GetLocalEdgeNormals@OBB@IceMaths@@QBEPBVPoint@3@XZ@4PAMA+0x4,seed
 0x001225b4,?gFixQuantized@@3_NA,cooccurrence
 0x00124678,_qh_qh,cooccurrence
 0x0012467c,_qh_qh+0x4,cooccurrence

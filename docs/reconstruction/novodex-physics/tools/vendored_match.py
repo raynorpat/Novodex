@@ -227,6 +227,20 @@ ORACLE_KNOWN = {
     0x000b4530: "CompleteBoxPruning",
 }
 
+# Oracle data objects identified by hand, where a single referencing row gives the learned
+# correspondence nothing to vote with: oracle start rva -> (candidate symbol, size, evidence).
+# Any oracle address inside [start, start+size) maps to the symbol at the same offset.
+SEEDED_DATA = {
+    0x0010833c: ("??_7AABBTreeBuilder@Opcode@@6B@", 4,
+                 "the vptr AABBTreeBuilder's deleting destructor 0x000538b0 stores; slot 0 of "
+                 "both it and AABBTreeOfTrianglesBuilder's table is that destructor"),
+    0x0011bab4: ("??_7AABBTreeOfTrianglesBuilder@Opcode@@6B@", 4,
+                 "opcode_vtables.md; the builder constructor 0x000e9060 stores it"),
+    0x00122520: ("?EdgeNormals@?1??GetLocalEdgeNormals@OBB@IceMaths@@QBEPBVPoint@3@XZ@4PAMA", 144,
+                 "IceOBB.cpp:214's static 12-normal table, indexed by "
+                 "OBB::ComputeWorldEdgeNormal 0x000e4cb0 in 12-byte steps"),
+}
+
 # The NovodeX host seams. The oracle reaches the host inline (a virtual call through a global
 # or through an allocator getter); the candidate's overlays call one named wrapper. Each wrapper
 # call counts as the oracle call tokens it stands for ("@rva" = the oracle row at that RVA).
@@ -1752,7 +1766,14 @@ def learn_data_map(pairs, locate=None):
             best_o[o].append((j, n, c))
             best_c[c].append((j, n, o))
     mapping = {}
+    for o in o_rows:
+        rva = _oracle_rva(o)
+        for start, (symbol, size, _) in SEEDED_DATA.items():
+            if start <= rva < start + size:
+                mapping[o] = (symbol if rva == start else f"{symbol}+0x{rva - start:x}", "seed")
     for o, cands in best_o.items():
+        if o in mapping:
+            continue
         cands.sort(reverse=True)
         if len(cands) > 1 and cands[0][:2] == cands[1][:2]:
             continue

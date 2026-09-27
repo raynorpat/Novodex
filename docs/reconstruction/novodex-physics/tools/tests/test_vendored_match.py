@@ -606,6 +606,12 @@ class Task3RulesTest(unittest.TestCase):
         self.assertEqual(names[0].components, ["Matrix3x3", "operator cast"])
         self.assertEqual(tags, ["operator Matrix4x4() const"])
 
+    def test_seeded_data_objects_map_by_offset(self):
+        start, (symbol, size, _) = next(iter(sorted(vm.SEEDED_DATA.items())))
+        pairs = [([f"oracle:0x{start:08x}"], ["unrelated"])]
+        mapping = vm.learn_data_map(pairs)
+        self.assertEqual(mapping[f"oracle:0x{start:08x}"], (symbol, "seed"))
+
     def test_crt_operator_thunks_are_named(self):
         for rva, name in ((0x000f48c0, "operator new[]"), (0x000f48bb, "operator delete[]"),
                           (0x000f41f0, "operator delete"), (0x000f48c5, "operator new")):
