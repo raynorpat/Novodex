@@ -2,13 +2,17 @@
  * NOVODEX LOCAL MODIFICATION
  * upstream: External/opcode/upstream/Opcode/OPC_RayCollider.h
  *
- * [1] One 4-byte member added between mMaxDist and mClosestHit. Its meaning is
- *     NOT established and nothing here guesses at it; what is established is
- *     that four bytes sit there.
+ * [1] One 4-byte member added between mMaxDist and mClosestHit.
  *     established at 0x000b5770 reads mMaxDist at this+0x84 and 0x000b579d reads mClosestHit
  *     at this+0x8c. With OPC_RAYHIT_CALLBACK off, everything from the vptr
  *     through mMaxDist matches stock exactly, and stock puts mClosestHit at
  *     +0x88.
+ *     It is a float: the culling arm of RayTriOverlap widens its barycentric
+ *     bounds by it (OPC_RayTriOverlap.h [1]; `fld`/`fadd dword ptr [esi+0x88]`
+ *     at 0x000b873b and 0x000b8765). The constructor clears it (0x000b5736,
+ *     OPC_RayCollider.cpp [1]); the one writer found is the scene's mesh
+ *     raycast at 0x0002929b, which copies a dword from [[scene+0xe0]+0x70].
+ *     No setter is declared: none is established.
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
@@ -211,7 +215,7 @@
 							Point			mExtentsCoeff;
 		// Settings
 							float			mMaxDist;			//!< Valid segment on the ray
-							udword			mNovodeXSetting88;	//!< NOVODEX: added, unidentified. See [1].
+							float			mNovodeXSetting88;	//!< NOVODEX: added; culling-arm barycentric tolerance. See [1].
 #ifndef OPC_RAYHIT_CALLBACK
 							bool			mClosestHit;		//!< Report closest hit only
 #endif
