@@ -180,6 +180,19 @@ struct Row000760Fixture
 	void row000760();
 	};
 
+// phys_fn_000722 (0x00016130, 127 B; owner gap SceneRaycast..CapsuleShape).
+// Thiscall on a body record, no stack arguments, plain `ret`: the record's
+// island snapshot. The root (+0x1bc, refreshed through 000712 when the
+// record is not its own) is read; a record that is its own root stores the
+// largest +0x4c over its island chain (+0x1d0 links, starting from 0.0f) at
+// +0x1cc, any other stores 0x4b7afafa there; the seven words +0x1bc..+0x1d4
+// are copied to +0x1e8..+0x200, and +0x25c and +0x208 are zeroed. The record
+// constructor 000797 and destructor 000776 call it.
+struct Row000722Fixture
+	{
+	void row000722();
+	};
+
 // phys_fn_000778 (0x000185f0, 58 B, with its continuation phys_fn_000780 at
 // 0x00018630, 243 B; owner gap SceneRaycast..CapsuleShape). Thiscall on a
 // body record, two stack arguments, `ret 8`: dissolves the body's island.

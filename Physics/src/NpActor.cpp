@@ -14,6 +14,8 @@
 #include "ObjectModel.h"
 #include "FoundationSDK.h"
 #include "core/JointSupport.h"
+#include "Scene.h"
+#include "Observable.h"
 
 #include "NxMat34.h"
 #include "NxMat33.h"
@@ -1556,10 +1558,83 @@ void NpActorVtable::updateMassFromShapes(NxReal density, NxReal totalMass)
 	nxNpSceneGuardLeave(ctx);
 	}
 
-// (unimplemented) setDynamic
-void NpActorVtable::setDynamic(const NxBodyDesc&)
+// phys_fn_000122 (0x00003840, 761 B)
+// setDynamic (slot 18). After the write lock (G1 0x5b): a negative mass
+// (`test ah,5; jnp`: a NaN mass passes) or a massLocalPose word that
+// _fpclass (005666, the twelve words in order) finds NaN or infinite is
+// E1 0x63; a body without shapes whose tensor is all zero bits is E1 0x66.
+// A static body with a shape takes it out of the Scene first (000533) and
+// remembers to add it back. 000026 on the body builds and installs the new
+// record: 1 is E1 0x7c and any other nonzero result E1 0x7d, both leaving the
+// removed shape out of the Scene. With an old record: 000632 removes it from
+// the Scene, it notifies its observers with 0x100 (the Foundation import),
+// 000776 destroys it and [0x101041bc] frees it. Then 000531 adds the shape
+// back as a dynamic one, and the lock is released. Every E1 unlocks.
+void nxSceneAddShape(NxSceneInternal* scene, unsigned char* shape, bool hasRecord);
+bool nxSceneRemoveStaticShape(NxSceneInternal* scene, unsigned char* shape);
+void nxSceneRemoveBody(NxSceneInternal* scene, unsigned char* record);
+void nxBodyRecordDestroy(unsigned char* record);
+int nxActorBuildRecord(unsigned char* body, const NxBodyDesc* desc);
+
+void NpActorVtable::setDynamic(const NxBodyDesc& desc)
 	{
-	
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpActorWriteTry(ctx, 0x5b)) return;
+	unsigned char* body = nxNpActorBody(this);
+	unsigned char* oldRecord = *reinterpret_cast<unsigned char**>(body + 8);
+	bool valid = !(desc.mass < 0.0f);
+	const float* pose = reinterpret_cast<const float*>(&desc.massLocalPose);
+	for(unsigned i = 0; valid && i < 12; ++i)
+		if(_fpclass(pose[i]) & 0x207)
+			valid = false;
+	if(!valid)
+		{
+		nxNpActorReport(0x63, "Actor::setDynamic: desc.isValid() fails!");
+		nxNpSceneGuardLeave(ctx);
+		return;
+		}
+	unsigned char* shape = *reinterpret_cast<unsigned char**>(body + 0x10);
+	const unsigned* tensor = reinterpret_cast<const unsigned*>(&desc.massSpaceInertia);
+	if(!shape && !tensor[0] && !tensor[1] && !tensor[2])
+		{
+		nxNpActorReport(0x66, "Actor::setDynamic: we need a valid massSpaceInertia if the "
+			"actor has no shapes!");
+		nxNpSceneGuardLeave(ctx);
+		return;
+		}
+	NxSceneInternal* scene = *reinterpret_cast<NxSceneInternal**>(body + 4);
+	bool readd = false;
+	if(!oldRecord && shape)
+		{
+		nxSceneRemoveStaticShape(scene, shape);
+		readd = true;
+		}
+	const int result = nxActorBuildRecord(body, &desc);
+	if(result == 1)
+		{
+		nxNpActorReport(0x7c, "Actor::setDynamic: Compute mesh inertia tensor failed for one "
+			"of the actor's mesh shapes! Please change mesh geometry or supply a tensor "
+			"manually!");
+		nxNpSceneGuardLeave(ctx);
+		return;
+		}
+	if(result)
+		{
+		nxNpActorReport(0x7d, "Actor::setDynamic: Can't compute mass from shapes: must have "
+			"at least one non-trigger shape!");
+		nxNpSceneGuardLeave(ctx);
+		return;
+		}
+	if(oldRecord)
+		{
+		nxSceneRemoveBody(scene, oldRecord);
+		reinterpret_cast<NxFoundation::Observable*>(oldRecord)->notifyObservers(0x100);
+		nxBodyRecordDestroy(oldRecord);
+		nxFoundationSDKAllocator->free(oldRecord);
+		}
+	if(readd)
+		nxSceneAddShape(scene, shape, true);
+	nxNpSceneGuardLeave(ctx);
 	}
 
 // The mass-frame refresh every pose and CMass-offset setter calls last:

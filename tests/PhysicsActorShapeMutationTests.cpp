@@ -12,6 +12,8 @@
 #include "NxPlaneShapeDesc.h"
 #include "NxBodyDesc.h"
 #include "NxShape.h"
+#include "NxFixedJointDesc.h"
+#include "NxJoint.h"
 #include "PhysicsActorErrorStream.h"
 
 #include <stdio.h>
@@ -740,6 +742,39 @@ static void runTask5DynamicCases(NxPhysicsSDK* sdk, NxPageGuardedAllocator& allo
 	lock.release();
 	}
 
+	// A dynamic actor held by a joint: 000632 hands the joint to 004103,
+	// which breaks it (bodies cleared, removeJoint, flags | 0x10, the +0x5a0
+	// list).
+	one[0] = &box;
+	NxActor* jointA = t5Dynamic(scene, one, 1, pose, 0.0f, 2.0f, given);
+	one[0] = &sphere;
+	NxActor* jointB = t5Dynamic(scene, one, 1, identity, 0.0f, 2.0f, given);
+	NxJoint* joint = 0;
+	if(jointA && jointB)
+		{
+		NxFixedJointDesc jointDesc;
+		jointDesc.actor[0] = jointA;
+		jointDesc.actor[1] = jointB;
+		joint = scene->createJoint(jointDesc);
+		}
+	printf("shape_mutation t5_joint=%u.%u.%u\n", jointA ? 1u : 0u, jointB ? 1u : 0u,
+		joint ? static_cast<unsigned>(joint->getState()) : 99u);
+	if(joint)
+		{
+		DYNAMIC_CASE("t5_jointed_dynamic", jointA, given2);
+		NxActor* held[2] = { 0, 0 };
+		joint->getActors(&held[0], &held[1]);
+		printf("shape_mutation t5_joint_after=%u.%u.%u.%u\n",
+			static_cast<unsigned>(joint->getState()), held[0] == jointA ? 1u : 0u,
+			held[1] == jointB ? 1u : 0u, scene->getNbJoints());
+		t5UseDynamic("t5_jointed_use", jointA);
+		scene->releaseJoint(*joint);
+		const unsigned a3 = allocator.allocations(), f3 = allocator.frees();
+		scene->releaseActor(*jointA);
+		scene->releaseActor(*jointB);
+		printAllocations("t5_joint_release_memory", allocator, a3, f3);
+		}
+
 	const unsigned a0 = allocator.allocations(), f0 = allocator.frees();
 	scene->releaseActor(*single);
 	printAllocations("t5_single_release_memory", allocator, a0, f0);
@@ -847,7 +882,7 @@ int wmain(int argc, wchar_t** argv)
 	sdk->releaseScene(*scene);
 	runTask4Cases(sdk, allocator, errors);
 	runTask5Cases(sdk, allocator, errors);
-	// runTask5DynamicCases(sdk, allocator, errors);
+	runTask5DynamicCases(sdk, allocator, errors);
 	sdk->release();
 	return nxReportPairIdentity(pairDirectory);
 	}

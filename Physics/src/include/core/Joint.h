@@ -347,6 +347,11 @@ class Joint
 	//! each one's +8 (the JointBodyRecord) in mBody.
 	void row004107(void* actorImpl0, void* actorImpl1, bool suppressAttach);
 
+	//! phys_fn_004103 (0x00097c10, 142 B; write). Scene::removeBody
+	//! (phys_fn_000632) calls it for each joint of the Scene's +0x58c array
+	//! with the body record being removed.
+	void row004103(void* bodyRecord);
+
 	//! phys_fn_004109 (0x00097e60, 366 B; write). Np slot 11 setLimitPoint
 	//! body (every family's slot-11 row, e.g. 004687).
 	void setLimitPoint(const NxVec3& point, bool pointIsOnBody2);

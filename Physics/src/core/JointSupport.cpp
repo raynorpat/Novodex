@@ -491,6 +491,40 @@ void Row000778Fixture::row000778(void* joint, void** jointArray)
 		}
 	}
 
+// phys_fn_000722 (0x00016130, 127 B)
+// The comparison is `fcom [ecx+0x4c]; test ah,5; jp`: the running value is
+// replaced by the member's +0x4c only when it is below it (ordered), so an
+// unordered +0x4c is skipped. Note the root is written to +0x1bc only when
+// the record is not its own root (0x16144-0x16149).
+void Row000722Fixture::row000722()
+	{
+	void* root = supportPointer(this, 0x1bc);
+	if(this != root)
+		{
+		root = static_cast<Row000712Fixture*>(root)->row000712();
+		supportPointer(this, 0x1bc) = root;
+		}
+	root = supportPointer(this, 0x1bc);
+	if(root == this)
+		{
+		float largest = 0.0f;
+		for(void* member = root; member; member = supportPointer(member, 0x1d0))
+			{
+			const float wake = *reinterpret_cast<const float*>(
+				static_cast<NxU8*>(member) + 0x4c);
+			if(largest < wake)
+				largest = wake;
+			}
+		*reinterpret_cast<float*>(static_cast<NxU8*>(root) + 0x1cc) = largest;
+		}
+	else
+		supportWord(root, 0x1cc) = 0x4b7afafa;
+	memcpy(static_cast<NxU8*>(static_cast<void*>(this)) + 0x1e8,
+		static_cast<NxU8*>(static_cast<void*>(this)) + 0x1bc, 7 * sizeof(NxU32));
+	supportWord(this, 0x25c) = 0;
+	supportWord(this, 0x208) = 0;
+	}
+
 // phys_fn_004167 (0x0009ad10, 156 B)
 // (deferred: owner gap Joint.cpp..D6Joint.cpp)
 void Row004167Fixture::row004167()
