@@ -1,0 +1,1203 @@
+SceneRaycast..CapsuleShape audit: cdb breakpoint traces of the staged-pair targets (scene-raycast block Task 1)
+========================================================================================================
+
+A trimmed excerpt of the raw cdb logs, in the method of evidence/joint-open-items-trace-slots.txt.
+ModLoad lines, banners, register dumps, the echoed breakpoint commands and the programs' own stdout
+are removed. Two runs per target: the ORACLE pair (breakpoints on every code row of the three units at
+its oracle RVA; this is what says which targets reach a row) and the CANDIDATE pair (breakpoints on the
+candidate functions units/scene-raycast-contract.md maps to rows; this is the execution evidence for
+the product). Hit counts per row and target are given for both; the candidate HIT lines are then kept
+in order and otherwise unedited, per target. It is the evidence behind the "Reached by" and
+"Candidate executed" columns of units/scene-raycast-contract.md.
+
+Debugger:  Microsoft Windows Debugger 10.0.10586.567 (X86)
+Command:   cdb -cf <script> build\Release\<target>.exe <pair dir>
+           pair dirs build\pairs\oracle and build\pairs\candidate, staged by
+           tools/run_phase_gate.ps1 -Phase 5/6/7 on this build (cygpath -w of each); the script breaks on the
+           NxPhysics load with `sxe ld:NxPhysics`, sets the breakpoints below, then runs to exit.
+Targets:   the 12 Phase 5 staged-pair targets, the 3 Phase 7 staged-pair targets and the Phase 6 joint
+           targets (NxPhysicsJointStagedPairTests, NxFoundationTangentTests, NxPhysicsJointAllocatorTests,
+           NxPhysicsJointSlotTests): 16 executables, every one exited 0 on both pairs.
+Recorded:  2026-09-28, on branch claude/scene-raycast-block at 907d00c (no product change in Task 1).
+Oracle:    build\pairs\oracle\NxPhysics.dll
+           sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c (the pinned oracle)
+Candidate: build\pairs\candidate\NxPhysics.dll
+           sha256=9eb58049c43dba4ab9686f6576fe47b0619907391e465c8842b61ab873beedc1
+           (identical to build\Release\NxPhysics.dll at the time of the trace)
+Offsets:   oracle: module-relative = the row RVA (156 breakpoints, one per code row of SceneRaycast.cpp,
+           gap:SceneRaycast.cpp..CapsuleShape.cpp and CapsuleShape.cpp). Candidate: module-relative, from
+           build\Release\NxPhysics.map of that build; one breakpoint per out-of-line symbol of each mapped
+           candidate (90 addresses). A row whose candidate is inlined into another function (000746 in
+           000768, 000780 in 000778, 000795 in 000793, 000835 in the mesh slot-4 member ...) has no address
+           of its own. Labels ending in "x" (000746x, 000756x) are the helper the product calls where the
+           contract says the row's own reproduction should be called instead (see the contract notes).
+
+ORACLE: hit counts per row (rows not listed were not hit by any target)
+-----------------------------------------------------------------------
+Totals per target: ActorLifecycle 361, DynamicFirst 51, EmptyScene 0, ActorName 24, ActorMetadata 24, ActorBodyFlag 51, ActorDynamics 106, ActorDynamicSetter 290, ActorMomentum 170, ActorForce 496, ActorCMass 606, ActorShapeMutation 47, JointStagedPair 714, FoundationTangent 0, JointAllocator 108, JointSlot 1493
+  000713                                           ActorDynamicSetter=4
+  000722                                           ActorLifecycle=18 DynamicFirst=3 ActorBodyFlag=3 ActorDynamics=6 ActorDynamicSetter=12 ActorMomentum=9 ActorForce=33 ActorCMass=30 JointStagedPair=24 JointAllocator=6 JointSlot=81
+  000742                                           ActorMomentum=4
+  000744                                           ActorDynamicSetter=12
+  000746                                           ActorLifecycle=6 DynamicFirst=1 ActorBodyFlag=1 ActorDynamics=2 ActorDynamicSetter=15 ActorMomentum=17 ActorForce=11 ActorCMass=90 JointStagedPair=8 JointAllocator=2 JointSlot=55
+  000748                                           ActorLifecycle=6 DynamicFirst=1 ActorBodyFlag=1 ActorDynamics=2 ActorDynamicSetter=4 ActorMomentum=3 ActorForce=11 ActorCMass=10 JointStagedPair=8 JointAllocator=2 JointSlot=27
+  000754                                           JointSlot=14
+  000756                                           ActorCMass=2
+  000758                                           JointSlot=4
+  000760                                           ActorLifecycle=24 DynamicFirst=4 ActorBodyFlag=4 ActorDynamics=8 ActorDynamicSetter=16 ActorMomentum=12 ActorForce=44 ActorCMass=40 JointStagedPair=157 JointAllocator=10 JointSlot=122
+  000768                                           ActorLifecycle=6 DynamicFirst=1 ActorBodyFlag=1 ActorDynamics=2 ActorDynamicSetter=15 ActorMomentum=3 ActorForce=11 ActorCMass=87 JointStagedPair=8 JointAllocator=2 JointSlot=55
+  000776                                           ActorLifecycle=6 DynamicFirst=1 ActorBodyFlag=1 ActorDynamics=2 ActorDynamicSetter=4 ActorMomentum=3 ActorForce=11 ActorCMass=10 JointStagedPair=8 JointAllocator=2 JointSlot=27
+  000778                                           ActorLifecycle=4 DynamicFirst=1 ActorBodyFlag=1 ActorDynamics=2 ActorDynamicSetter=4 ActorMomentum=3 ActorForce=11 ActorCMass=10 JointStagedPair=66 JointAllocator=4 JointSlot=41
+  000780                                           ActorLifecycle=6 DynamicFirst=1 ActorBodyFlag=1 ActorDynamics=2 ActorDynamicSetter=4 ActorMomentum=3 ActorForce=11 ActorCMass=10 JointStagedPair=133 JointAllocator=4 JointSlot=41
+  000782                                           ActorForce=26
+  000784                                           ActorDynamics=5
+  000785                                           ActorLifecycle=6 DynamicFirst=1 ActorBodyFlag=1 ActorDynamics=10 ActorDynamicSetter=6 ActorMomentum=5 ActorForce=13 ActorCMass=10 JointStagedPair=8 JointAllocator=2 JointSlot=27
+  000789                                           ActorCMass=3
+  000791                                           ActorForce=6
+  000793                                           ActorLifecycle=6 DynamicFirst=1 ActorBodyFlag=1 ActorDynamics=2 ActorDynamicSetter=4 ActorMomentum=3 ActorForce=11 ActorCMass=10 JointStagedPair=8 JointAllocator=2 JointSlot=27
+  000797                                           ActorLifecycle=6 DynamicFirst=1 ActorBodyFlag=1 ActorDynamics=2 ActorDynamicSetter=4 ActorMomentum=3 ActorForce=11 ActorCMass=10 JointStagedPair=8 JointAllocator=2 JointSlot=27
+  000799                                           ActorLifecycle=6 DynamicFirst=1 ActorBodyFlag=1 ActorDynamics=2 ActorDynamicSetter=4 ActorMomentum=3 ActorForce=11 ActorCMass=10 JointStagedPair=8 JointAllocator=2 JointSlot=27
+  000801                                           ActorLifecycle=6 DynamicFirst=1 ActorBodyFlag=1 ActorDynamics=2 ActorDynamicSetter=4 ActorMomentum=3 ActorForce=11 ActorCMass=10 JointStagedPair=8 JointAllocator=2 JointSlot=27
+  000829                                           ActorLifecycle=7 DynamicFirst=1 ActorBodyFlag=1 ActorDynamics=1 JointStagedPair=8 JointAllocator=2 JointSlot=27
+  000831                                           ActorLifecycle=7 DynamicFirst=1 ActorBodyFlag=1 ActorDynamics=1 JointStagedPair=8 JointAllocator=2 JointSlot=27
+  000833                                           ActorLifecycle=13 DynamicFirst=2 ActorBodyFlag=2 ActorDynamics=2 JointStagedPair=16 JointAllocator=4 JointSlot=54
+  000839                                           ActorLifecycle=7 DynamicFirst=1 ActorBodyFlag=1 ActorDynamics=1 JointStagedPair=8 JointAllocator=2 JointSlot=27
+  000841                                           ActorLifecycle=6 DynamicFirst=1 ActorBodyFlag=1 ActorDynamics=1 JointStagedPair=8 JointAllocator=2 JointSlot=27
+  000847                                           ActorLifecycle=6 DynamicFirst=1 ActorBodyFlag=1 ActorDynamics=1 JointStagedPair=8 JointAllocator=2 JointSlot=27
+  000849                                           ActorLifecycle=7 DynamicFirst=1 ActorBodyFlag=1 ActorDynamics=1 JointStagedPair=8 JointAllocator=2 JointSlot=27
+  000923                                           ActorLifecycle=8 DynamicFirst=1 ActorName=1 ActorMetadata=1 ActorBodyFlag=1 ActorDynamics=2 ActorDynamicSetter=7 ActorMomentum=4 ActorForce=11 ActorCMass=11 ActorShapeMutation=2 JointStagedPair=8 JointAllocator=2 JointSlot=27
+  000927                                           ActorDynamicSetter=1
+  000929                                           ActorLifecycle=4 ActorDynamicSetter=1
+  000933                                           ActorDynamicSetter=1
+  000935                                           ActorDynamicSetter=2
+  000937                                           ActorDynamicSetter=1
+  000941                                           ActorDynamicSetter=1
+  000947                                           ActorLifecycle=7 DynamicFirst=1 ActorBodyFlag=1 ActorDynamics=1 JointStagedPair=8 JointAllocator=2 JointSlot=27
+  000953                                           ActorLifecycle=48 DynamicFirst=6 ActorName=6 ActorMetadata=6 ActorBodyFlag=6 ActorDynamics=12 ActorDynamicSetter=42 ActorMomentum=24 ActorForce=66 ActorCMass=66 ActorShapeMutation=12 JointStagedPair=48 JointAllocator=12 JointSlot=162
+  000955                                           ActorLifecycle=48 DynamicFirst=6 ActorName=6 ActorMetadata=6 ActorBodyFlag=6 ActorDynamics=12 ActorDynamicSetter=42 ActorMomentum=24 ActorForce=66 ActorCMass=66 ActorShapeMutation=12 JointStagedPair=48 JointAllocator=12 JointSlot=162
+  000961                                           ActorLifecycle=56 DynamicFirst=7 ActorName=7 ActorMetadata=7 ActorBodyFlag=7 ActorDynamics=14 ActorDynamicSetter=49 ActorMomentum=28 ActorForce=77 ActorCMass=77 ActorShapeMutation=14 JointStagedPair=56 JointAllocator=14 JointSlot=189
+  000973                                           ActorLifecycle=8 DynamicFirst=1 ActorName=1 ActorMetadata=1 ActorBodyFlag=1 ActorDynamics=2 ActorDynamicSetter=7 ActorMomentum=4 ActorForce=11 ActorCMass=11 ActorShapeMutation=2 JointStagedPair=8 JointAllocator=2 JointSlot=27
+  000977                                           ActorLifecycle=7 DynamicFirst=1 ActorName=1 ActorMetadata=1 ActorBodyFlag=1 ActorDynamics=2 ActorDynamicSetter=6 ActorMomentum=4 ActorForce=11 ActorCMass=11 ActorShapeMutation=2 JointStagedPair=6 JointAllocator=2 JointSlot=27
+  000979                                           ActorLifecycle=8 DynamicFirst=1 ActorName=1 ActorMetadata=1 ActorBodyFlag=1 ActorDynamics=2 ActorDynamicSetter=6 ActorMomentum=4 ActorForce=11 ActorCMass=11 ActorShapeMutation=1 JointStagedPair=8 JointAllocator=2 JointSlot=27
+  000981                                           ActorLifecycle=8 DynamicFirst=1 ActorName=1 ActorMetadata=1 ActorBodyFlag=1 ActorDynamics=2 ActorDynamicSetter=6 ActorMomentum=4 ActorForce=11 ActorCMass=11 ActorShapeMutation=2 JointStagedPair=8 JointAllocator=2 JointSlot=27
+  000983                                           ActorDynamicSetter=1
+  000987                                           ActorDynamicSetter=1
+  000989                                           ActorDynamicSetter=1
+  000991                                           ActorDynamicSetter=1
+  000993                                           ActorDynamicSetter=1
+  000995                                           ActorDynamicSetter=1
+
+CANDIDATE: hit counts per breakpoint (breakpoints not listed were not hit)
+--------------------------------------------------------------------------
+Totals per target: ActorLifecycle 32, DynamicFirst 5, EmptyScene 0, ActorName 1, ActorMetadata 1, ActorBodyFlag 5, ActorDynamics 26, ActorDynamicSetter 76, ActorMomentum 37, ActorForce 95, ActorCMass 216, ActorShapeMutation 1, JointStagedPair 221, FoundationTangent 0, JointAllocator 14, JointSlot 237
+  000713 nxNpActorGroupRoot@NpActor                ActorDynamicSetter=4
+  000742 computeKineticEnergy@NpActor              ActorMomentum=5
+  000744 isGroupSleeping@NpActor                   ActorDynamicSetter=14
+  000746x nxNpActorWorldTensor@NpActor             ActorMomentum=14 ActorCMass=3
+  000754 row000754@JointSupport                    JointSlot=14
+  000756x nxNpActorQuaternionFromMatrix@NpActor    ActorCMass=5
+  000758 row000758@JointSupport                    JointSlot=4
+  000760 row000760@JointSupport                    JointStagedPair=125 JointAllocator=2 JointSlot=14
+  000768 nxNpActorUpdateMassFrame@NpActor          ActorDynamicSetter=11 ActorCMass=77 JointSlot=28
+  000768 nxNpActorUpdateMassFrame@Scene            ActorLifecycle=6 DynamicFirst=1 ActorBodyFlag=1 ActorDynamics=2 ActorDynamicSetter=4 ActorMomentum=3 ActorForce=11 ActorCMass=10 JointStagedPair=8 JointAllocator=2 JointSlot=27
+  000776 releaseActor@Scene                        ActorLifecycle=5 DynamicFirst=1 ActorName=1 ActorMetadata=1 ActorBodyFlag=1 ActorDynamics=2 ActorDynamicSetter=8 ActorMomentum=4 ActorForce=11 ActorCMass=11 ActorShapeMutation=1 JointStagedPair=8 JointAllocator=2 JointSlot=27
+  000778 row000778@JointSupport                    JointStagedPair=58 JointAllocator=2 JointSlot=14
+  000782 nxNpActorAccumulateForce@NpActor          ActorForce=32
+  000784 moveGlobalPose@NpActor                    ActorDynamics=5
+  000784 moveGlobalPosition@NpActor                ActorDynamics=3
+  000785 nxNpActorTransitionKinematic@NpActor      ActorDynamics=8 ActorDynamicSetter=2 ActorMomentum=2 ActorForce=2
+  000789 nxNpActorApplyWorldMassPose@NpActor       ActorCMass=3
+  000791 nxNpActorForceAtPos@NpActor               ActorForce=6
+  000793 nxActorComputeMass@Scene                  ActorLifecycle=5 DynamicFirst=1 ActorBodyFlag=1 ActorDynamics=2 ActorDynamicSetter=4 ActorMomentum=3 ActorForce=11 ActorCMass=10 JointStagedPair=6 JointAllocator=2 JointSlot=27
+  000801 nxNpActorBodyQuaternionFromMatrix@NpActor ActorDynamicSetter=11 ActorCMass=77 JointSlot=28
+  000801 nxNpActorBodyQuaternionFromMatrix@Scene   ActorLifecycle=12 DynamicFirst=2 ActorBodyFlag=2 ActorDynamics=4 ActorDynamicSetter=8 ActorMomentum=6 ActorForce=22 ActorCMass=20 JointStagedPair=16 JointAllocator=4 JointSlot=54
+  000929 nxBoxHandleGetDimensions@NpActor          ActorLifecycle=4 ActorDynamicSetter=1
+  000933 nxBoxHandleGetWorldOBB@NpActor            ActorDynamicSetter=1
+  000935 nxBoxWorldAABB@ObjectModel                ActorDynamicSetter=2
+  000937 nxBoxCenterAndDiagonal@ObjectModel        ActorDynamicSetter=1
+  000941 nxBoxLocalAABB@ObjectModel                ActorDynamicSetter=1
+  000983 nxBoxHandleSetDimensions@NpActor          ActorDynamicSetter=1
+  000991 nxCapsuleSaveState@ObjectModel            ActorDynamicSetter=1
+  000993 nxCapsuleHandleSetDimensions@NpActor      ActorDynamicSetter=1
+  000995 nxCapsuleHandleSetRadius@NpActor          ActorDynamicSetter=1
+
+Candidate breakpoints (90):
+  bp NxPhysics+0x38e00 ".echo HIT 000712 row000712@JointSupport; gc"
+  bp NxPhysics+0x1a540 ".echo HIT 000713 nxBodyRecordFixRoot@ObjectModel; gc"
+  bp NxPhysics+0x10c80 ".echo HIT 000713 nxNpActorGroupRoot@NpActor; gc"
+  bp NxPhysics+0x1a480 ".echo HIT 000742 nxBodyRecordEnergyWord@ObjectModel; gc"
+  bp NxPhysics+0xcb80 ".echo HIT 000742 computeKineticEnergy@NpActor; gc"
+  bp NxPhysics+0x1a410 ".echo HIT 000744 nxBodyRecordChainSettled@ObjectModel; gc"
+  bp NxPhysics+0xe690 ".echo HIT 000744 isGroupSleeping@NpActor; gc"
+  bp NxPhysics+0x130a0 ".echo HIT 000746 nxNpActorWorldTensorRDRt@NpActor; gc"
+  bp NxPhysics+0x2a960 ".echo HIT 000746 nxNpActorWorldTensorRDRt@Scene; gc"
+  bp NxPhysics+0x12fb0 ".echo HIT 000746x nxNpActorWorldTensor@NpActor; gc"
+  bp NxPhysics+0x38e20 ".echo HIT 000754 row000754@JointSupport; gc"
+  bp NxPhysics+0x12800 ".echo HIT 000756 nxNpActorUpdateCMassQuaternion@NpActor; gc"
+  bp NxPhysics+0x114c0 ".echo HIT 000756x nxNpActorQuaternionFromMatrix@NpActor; gc"
+  bp NxPhysics+0x39200 ".echo HIT 000758 row000758@JointSupport; gc"
+  bp NxPhysics+0x39300 ".echo HIT 000760 row000760@JointSupport; gc"
+  bp NxPhysics+0x12820 ".echo HIT 000768 nxNpActorUpdateMassFrame@NpActor; gc"
+  bp NxPhysics+0x2a220 ".echo HIT 000768 nxNpActorUpdateMassFrame@Scene; gc"
+  bp NxPhysics+0x2cbc0 ".echo HIT 000776 releaseActor@Scene; gc"
+  bp NxPhysics+0x393c0 ".echo HIT 000778 row000778@JointSupport; gc"
+  bp NxPhysics+0x29d00 ".echo HIT 000780 nxJointPointerArrayPush@Scene; gc"
+  bp NxPhysics+0xfad0 ".echo HIT 000782 nxNpActorAccumulateForce@NpActor; gc"
+  bp NxPhysics+0xe820 ".echo HIT 000784 moveGlobalPose@NpActor; gc"
+  bp NxPhysics+0xeb00 ".echo HIT 000784 moveGlobalPosition@NpActor; gc"
+  bp NxPhysics+0x126b0 ".echo HIT 000785 nxNpActorTransitionKinematic@NpActor; gc"
+  bp NxPhysics+0xfcc0 ".echo HIT 000789 nxNpActorApplyWorldMassPose@NpActor; gc"
+  bp NxPhysics+0x10bd0 ".echo HIT 000791 nxNpActorForceAtPos@NpActor; gc"
+  bp NxPhysics+0x29700 ".echo HIT 000793 nxActorComputeMass@Scene; gc"
+  bp NxPhysics+0x2c480 ".echo HIT 000797 nxSceneTakeRecordId@Scene; gc"
+  bp NxPhysics+0x2b2f0 ".echo HIT 000799 nxSceneAuxUnregisterRecord@Scene; gc"
+  bp NxPhysics+0x10360 ".echo HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor; gc"
+  bp NxPhysics+0x29db0 ".echo HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene; gc"
+  bp NxPhysics+0xa290 ".echo HIT 000803 NxComputeSphereMass@MassProperties; gc"
+  bp NxPhysics+0xa210 ".echo HIT 000805 NxComputeSphereDensity@MassProperties; gc"
+  bp NxPhysics+0xa030 ".echo HIT 000807 NxComputeBoxMass@MassProperties; gc"
+  bp NxPhysics+0x9f70 ".echo HIT 000809 NxComputeBoxDensity@MassProperties; gc"
+  bp NxPhysics+0xa1a0 ".echo HIT 000811 NxComputeEllipsoidMass@MassProperties; gc"
+  bp NxPhysics+0xa130 ".echo HIT 000813 NxComputeEllipsoidDensity@MassProperties; gc"
+  bp NxPhysics+0xa100 ".echo HIT 000815 NxComputeCylinderMass@MassProperties; gc"
+  bp NxPhysics+0xa0e0 ".echo HIT 000817 NxComputeCylinderDensity@MassProperties; gc"
+  bp NxPhysics+0xa0c0 ".echo HIT 000819 NxComputeConeMass@MassProperties; gc"
+  bp NxPhysics+0xa0a0 ".echo HIT 000821 NxComputeConeDensity@MassProperties; gc"
+  bp NxPhysics+0x9fe0 ".echo HIT 000823 NxComputeBoxInertiaTensor@MassProperties; gc"
+  bp NxPhysics+0xa240 ".echo HIT 000825 NxComputeSphereInertiaTensor@MassProperties; gc"
+  bp NxPhysics+0x209d0 ".echo HIT 000827 nxPoseCopyWithTail0827@ObjectModel; gc"
+  bp NxPhysics+0x1dcb0 ".echo HIT 000829 nxMassFrameBuildBox@ObjectModel; gc"
+  bp NxPhysics+0x1dfc0 ".echo HIT 000831 nxMassFrameFoldPayload@ObjectModel; gc"
+  bp NxPhysics+0x1e6f0 ".echo HIT 000833 nxMassFrameTranslate@ObjectModel; gc"
+  bp NxPhysics+0x1ea20 ".echo HIT 000835 nxMeshAccumulateMassCached@ObjectModel; gc"
+  bp NxPhysics+0x1e610 ".echo HIT 000837 nxMassFrameScale@ObjectModel; gc"
+  bp NxPhysics+0x1e420 ".echo HIT 000839 nxMassFrameMerge@ObjectModel; gc"
+  bp NxPhysics+0x1dea0 ".echo HIT 000843 nxMassFrameBuildSphere@ObjectModel; gc"
+  bp NxPhysics+0x1ddb0 ".echo HIT 000845 nxMassFrameBuildCapsule@ObjectModel; gc"
+  bp NxPhysics+0x1df50 ".echo HIT 000847 nxMassFrameConditionalZero@ObjectModel; gc"
+  bp NxPhysics+0x1a6d0 ".echo HIT 000849 nxBoxComputeMassFrame@ObjectModel; gc"
+  bp NxPhysics+0x220e0 ".echo HIT 000851 nxSphereComputeMassFrame@ObjectModel; gc"
+  bp NxPhysics+0x1bbf0 ".echo HIT 000853 nxCapsuleComputeMassFrame@ObjectModel; gc"
+  bp NxPhysics+0x18190 ".echo HIT 000867 nxAccumulateByKind0867@ObjectModel; gc"
+  bp NxPhysics+0x50b0 ".echo HIT 000873 NxEmitContact@ContactGeneration; gc"
+  bp NxPhysics+0x88c20 ".echo HIT 000923 SetCenterExtents@NxOpcode:IceAABB; gc"
+  bp NxPhysics+0x1b150 ".echo HIT 000927 nxBoxSaveState@ObjectModel; gc"
+  bp NxPhysics+0xf370 ".echo HIT 000929 nxBoxHandleGetDimensions@NpActor; gc"
+  bp NxPhysics+0x1cfd0 ".echo HIT 000931 nxFillShapeDescriptor@ObjectModel; gc"
+  bp NxPhysics+0xf470 ".echo HIT 000933 nxBoxHandleGetWorldOBB@NpActor; gc"
+  bp NxPhysics+0x1b310 ".echo HIT 000935 nxBoxWorldAABB@ObjectModel; gc"
+  bp NxPhysics+0x1a640 ".echo HIT 000937 nxBoxCenterAndDiagonal@ObjectModel; gc"
+  bp NxPhysics+0x1b400 ".echo HIT 000939 nxBoxZeroCenterAndDiagonal@ObjectModel; gc"
+  bp NxPhysics+0x1ad60 ".echo HIT 000941 nxBoxLocalAABB@ObjectModel; gc"
+  bp NxPhysics+0xa8d0 ".echo HIT 000943 NxBoxShapeCorner@NarrowPhase; gc"
+  bp NxPhysics+0x1cb30 ".echo HIT 000945 nxDebugRenderDispatch@ObjectModel; gc"
+  bp NxPhysics+0x1a610 ".echo HIT 000947 nxBoxAccumulateMass@ObjectModel; gc"
+  bp NxPhysics+0x1adc0 ".echo HIT 000949 nxBoxRaycast@ObjectModel; gc"
+  bp NxPhysics+0x1b240 ".echo HIT 000951 nxBoxSweep@ObjectModel; gc"
+  bp NxPhysics+0x235b0 ".echo HIT 000955 vertices@ObjectModel; gc"
+  bp NxPhysics+0x18120 ".echo HIT 000963 face@ObjectModel; gc"
+  bp NxPhysics+0x22d00 ".echo HIT 000965 shapeOwnerQuery@ObjectModel; gc"
+  bp NxPhysics+0x18110 ".echo HIT 000967 edgeTable@ObjectModel; gc"
+  bp NxPhysics+0x18140 ".echo HIT 000969 faceCornerTable@ObjectModel; gc"
+  bp NxPhysics+0x18100 ".echo HIT 000971 adjacencyTable@ObjectModel; gc"
+  bp NxPhysics+0x22d70 ".echo HIT 000975 supportBounds@ObjectModel; gc"
+  bp NxPhysics+0x17840 ".echo HIT 000977 0BoxShape@ObjectModel; gc"
+  bp NxPhysics+0x1b1c0 ".echo HIT 000979 nxBoxScalarDeletingDtor@ObjectModel; gc"
+  bp NxPhysics+0x1ad30 ".echo HIT 000981 nxBoxLoadFromDesc@ObjectModel; gc"
+  bp NxPhysics+0xf5a0 ".echo HIT 000983 nxBoxHandleSetDimensions@NpActor; gc"
+  bp NxPhysics+0x22d30 ".echo HIT 000985 sharedHook@ObjectModel; gc"
+  bp NxPhysics+0x179b0 ".echo HIT 000987 0CapsuleShape@ObjectModel; gc"
+  bp NxPhysics+0x1c330 ".echo HIT 000989 nxCapsuleLoadFromDesc@ObjectModel; gc"
+  bp NxPhysics+0x1c400 ".echo HIT 000991 nxCapsuleSaveState@ObjectModel; gc"
+  bp NxPhysics+0xfa10 ".echo HIT 000993 nxCapsuleHandleSetDimensions@NpActor; gc"
+  bp NxPhysics+0x1c4e0 ".echo HIT 000995 nxCapsuleSetRadius@ObjectModel; gc"
+  bp NxPhysics+0xfaa0 ".echo HIT 000995 nxCapsuleHandleSetRadius@NpActor; gc"
+
+Oracle breakpoints: `bp NxPhysics+0x<rva> ".echo HIT <row>; gc"` for each of the 156 rows listed in
+units/scene-raycast-contract.md.
+
+CANDIDATE HIT lines, in order, per target
+-----------------------------------------
+[NxPhysicsActorLifecycleTests] 32 HIT lines
+  HIT 000929 nxBoxHandleGetDimensions@NpActor
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000929 nxBoxHandleGetDimensions@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000776 releaseActor@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000929 nxBoxHandleGetDimensions@NpActor
+  HIT 000929 nxBoxHandleGetDimensions@NpActor
+  HIT 000776 releaseActor@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000776 releaseActor@Scene
+  HIT 000776 releaseActor@Scene
+  HIT 000776 releaseActor@Scene
+[NxPhysicsDynamicFirstTests] 5 HIT lines
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000776 releaseActor@Scene
+[NxPhysicsEmptySceneTests] 0 HIT lines
+[NxPhysicsActorNameTests] 1 HIT lines
+  HIT 000776 releaseActor@Scene
+[NxPhysicsActorMetadataTests] 1 HIT lines
+  HIT 000776 releaseActor@Scene
+[NxPhysicsActorBodyFlagTests] 5 HIT lines
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000776 releaseActor@Scene
+[NxPhysicsActorDynamicsTests] 26 HIT lines
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000785 nxNpActorTransitionKinematic@NpActor
+  HIT 000785 nxNpActorTransitionKinematic@NpActor
+  HIT 000785 nxNpActorTransitionKinematic@NpActor
+  HIT 000785 nxNpActorTransitionKinematic@NpActor
+  HIT 000785 nxNpActorTransitionKinematic@NpActor
+  HIT 000784 moveGlobalPosition@NpActor
+  HIT 000784 moveGlobalPose@NpActor
+  HIT 000784 moveGlobalPose@NpActor
+  HIT 000784 moveGlobalPosition@NpActor
+  HIT 000785 nxNpActorTransitionKinematic@NpActor
+  HIT 000785 nxNpActorTransitionKinematic@NpActor
+  HIT 000784 moveGlobalPose@NpActor
+  HIT 000785 nxNpActorTransitionKinematic@NpActor
+  HIT 000784 moveGlobalPosition@NpActor
+  HIT 000784 moveGlobalPose@NpActor
+  HIT 000784 moveGlobalPose@NpActor
+  HIT 000776 releaseActor@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000776 releaseActor@Scene
+[NxPhysicsActorDynamicSetterTests] 76 HIT lines
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000937 nxBoxCenterAndDiagonal@ObjectModel
+  HIT 000744 isGroupSleeping@NpActor
+  HIT 000785 nxNpActorTransitionKinematic@NpActor
+  HIT 000785 nxNpActorTransitionKinematic@NpActor
+  HIT 000744 isGroupSleeping@NpActor
+  HIT 000744 isGroupSleeping@NpActor
+  HIT 000744 isGroupSleeping@NpActor
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000744 isGroupSleeping@NpActor
+  HIT 000713 nxNpActorGroupRoot@NpActor
+  HIT 000744 isGroupSleeping@NpActor
+  HIT 000744 isGroupSleeping@NpActor
+  HIT 000713 nxNpActorGroupRoot@NpActor
+  HIT 000744 isGroupSleeping@NpActor
+  HIT 000744 isGroupSleeping@NpActor
+  HIT 000713 nxNpActorGroupRoot@NpActor
+  HIT 000744 isGroupSleeping@NpActor
+  HIT 000744 isGroupSleeping@NpActor
+  HIT 000713 nxNpActorGroupRoot@NpActor
+  HIT 000744 isGroupSleeping@NpActor
+  HIT 000776 releaseActor@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000776 releaseActor@Scene
+  HIT 000744 isGroupSleeping@NpActor
+  HIT 000744 isGroupSleeping@NpActor
+  HIT 000776 releaseActor@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000776 releaseActor@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000935 nxBoxWorldAABB@ObjectModel
+  HIT 000983 nxBoxHandleSetDimensions@NpActor
+  HIT 000929 nxBoxHandleGetDimensions@NpActor
+  HIT 000935 nxBoxWorldAABB@ObjectModel
+  HIT 000933 nxBoxHandleGetWorldOBB@NpActor
+  HIT 000941 nxBoxLocalAABB@ObjectModel
+  HIT 000776 releaseActor@Scene
+  HIT 000776 releaseActor@Scene
+  HIT 000995 nxCapsuleHandleSetRadius@NpActor
+  HIT 000993 nxCapsuleHandleSetDimensions@NpActor
+  HIT 000991 nxCapsuleSaveState@ObjectModel
+  HIT 000776 releaseActor@Scene
+  HIT 000776 releaseActor@Scene
+[NxPhysicsActorMomentumTests] 37 HIT lines
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000746x nxNpActorWorldTensor@NpActor
+  HIT 000746x nxNpActorWorldTensor@NpActor
+  HIT 000746x nxNpActorWorldTensor@NpActor
+  HIT 000742 computeKineticEnergy@NpActor
+  HIT 000746x nxNpActorWorldTensor@NpActor
+  HIT 000742 computeKineticEnergy@NpActor
+  HIT 000785 nxNpActorTransitionKinematic@NpActor
+  HIT 000785 nxNpActorTransitionKinematic@NpActor
+  HIT 000776 releaseActor@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000746x nxNpActorWorldTensor@NpActor
+  HIT 000746x nxNpActorWorldTensor@NpActor
+  HIT 000746x nxNpActorWorldTensor@NpActor
+  HIT 000746x nxNpActorWorldTensor@NpActor
+  HIT 000742 computeKineticEnergy@NpActor
+  HIT 000746x nxNpActorWorldTensor@NpActor
+  HIT 000746x nxNpActorWorldTensor@NpActor
+  HIT 000746x nxNpActorWorldTensor@NpActor
+  HIT 000776 releaseActor@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000746x nxNpActorWorldTensor@NpActor
+  HIT 000746x nxNpActorWorldTensor@NpActor
+  HIT 000746x nxNpActorWorldTensor@NpActor
+  HIT 000742 computeKineticEnergy@NpActor
+  HIT 000776 releaseActor@Scene
+  HIT 000742 computeKineticEnergy@NpActor
+  HIT 000776 releaseActor@Scene
+[NxPhysicsActorForceTests] 95 HIT lines
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000782 nxNpActorAccumulateForce@NpActor
+  HIT 000782 nxNpActorAccumulateForce@NpActor
+  HIT 000782 nxNpActorAccumulateForce@NpActor
+  HIT 000782 nxNpActorAccumulateForce@NpActor
+  HIT 000776 releaseActor@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000782 nxNpActorAccumulateForce@NpActor
+  HIT 000782 nxNpActorAccumulateForce@NpActor
+  HIT 000776 releaseActor@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000782 nxNpActorAccumulateForce@NpActor
+  HIT 000782 nxNpActorAccumulateForce@NpActor
+  HIT 000776 releaseActor@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000782 nxNpActorAccumulateForce@NpActor
+  HIT 000782 nxNpActorAccumulateForce@NpActor
+  HIT 000776 releaseActor@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000782 nxNpActorAccumulateForce@NpActor
+  HIT 000782 nxNpActorAccumulateForce@NpActor
+  HIT 000776 releaseActor@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000782 nxNpActorAccumulateForce@NpActor
+  HIT 000782 nxNpActorAccumulateForce@NpActor
+  HIT 000776 releaseActor@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000782 nxNpActorAccumulateForce@NpActor
+  HIT 000782 nxNpActorAccumulateForce@NpActor
+  HIT 000776 releaseActor@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000782 nxNpActorAccumulateForce@NpActor
+  HIT 000782 nxNpActorAccumulateForce@NpActor
+  HIT 000782 nxNpActorAccumulateForce@NpActor
+  HIT 000782 nxNpActorAccumulateForce@NpActor
+  HIT 000776 releaseActor@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000791 nxNpActorForceAtPos@NpActor
+  HIT 000782 nxNpActorAccumulateForce@NpActor
+  HIT 000782 nxNpActorAccumulateForce@NpActor
+  HIT 000791 nxNpActorForceAtPos@NpActor
+  HIT 000782 nxNpActorAccumulateForce@NpActor
+  HIT 000782 nxNpActorAccumulateForce@NpActor
+  HIT 000791 nxNpActorForceAtPos@NpActor
+  HIT 000782 nxNpActorAccumulateForce@NpActor
+  HIT 000782 nxNpActorAccumulateForce@NpActor
+  HIT 000791 nxNpActorForceAtPos@NpActor
+  HIT 000782 nxNpActorAccumulateForce@NpActor
+  HIT 000782 nxNpActorAccumulateForce@NpActor
+  HIT 000776 releaseActor@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000791 nxNpActorForceAtPos@NpActor
+  HIT 000782 nxNpActorAccumulateForce@NpActor
+  HIT 000782 nxNpActorAccumulateForce@NpActor
+  HIT 000791 nxNpActorForceAtPos@NpActor
+  HIT 000782 nxNpActorAccumulateForce@NpActor
+  HIT 000782 nxNpActorAccumulateForce@NpActor
+  HIT 000776 releaseActor@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000785 nxNpActorTransitionKinematic@NpActor
+  HIT 000785 nxNpActorTransitionKinematic@NpActor
+  HIT 000776 releaseActor@Scene
+[NxPhysicsActorCMassTests] 216 HIT lines
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000776 releaseActor@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000789 nxNpActorApplyWorldMassPose@NpActor
+  HIT 000756x nxNpActorQuaternionFromMatrix@NpActor
+  HIT 000746x nxNpActorWorldTensor@NpActor
+  HIT 000756x nxNpActorQuaternionFromMatrix@NpActor
+  HIT 000789 nxNpActorApplyWorldMassPose@NpActor
+  HIT 000756x nxNpActorQuaternionFromMatrix@NpActor
+  HIT 000746x nxNpActorWorldTensor@NpActor
+  HIT 000756x nxNpActorQuaternionFromMatrix@NpActor
+  HIT 000789 nxNpActorApplyWorldMassPose@NpActor
+  HIT 000756x nxNpActorQuaternionFromMatrix@NpActor
+  HIT 000746x nxNpActorWorldTensor@NpActor
+  HIT 000776 releaseActor@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000776 releaseActor@Scene
+  HIT 000776 releaseActor@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000776 releaseActor@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000776 releaseActor@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000776 releaseActor@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000776 releaseActor@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000776 releaseActor@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000776 releaseActor@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000776 releaseActor@Scene
+[NxPhysicsActorShapeMutationTests] 1 HIT lines
+  HIT 000776 releaseActor@Scene
+[NxPhysicsJointStagedPairTests] 221 HIT lines
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000776 releaseActor@Scene
+  HIT 000776 releaseActor@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000776 releaseActor@Scene
+  HIT 000776 releaseActor@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000776 releaseActor@Scene
+  HIT 000776 releaseActor@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000776 releaseActor@Scene
+  HIT 000776 releaseActor@Scene
+[NxFoundationTangentTests] 0 HIT lines
+[NxPhysicsJointAllocatorTests] 14 HIT lines
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000776 releaseActor@Scene
+  HIT 000776 releaseActor@Scene
+[NxPhysicsJointSlotTests] 237 HIT lines
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000758 row000758@JointSupport
+  HIT 000754 row000754@JointSupport
+  HIT 000758 row000758@JointSupport
+  HIT 000754 row000754@JointSupport
+  HIT 000758 row000758@JointSupport
+  HIT 000754 row000754@JointSupport
+  HIT 000758 row000758@JointSupport
+  HIT 000754 row000754@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000776 releaseActor@Scene
+  HIT 000776 releaseActor@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000776 releaseActor@Scene
+  HIT 000776 releaseActor@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000776 releaseActor@Scene
+  HIT 000776 releaseActor@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000776 releaseActor@Scene
+  HIT 000776 releaseActor@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000754 row000754@JointSupport
+  HIT 000754 row000754@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000776 releaseActor@Scene
+  HIT 000776 releaseActor@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000776 releaseActor@Scene
+  HIT 000776 releaseActor@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000776 releaseActor@Scene
+  HIT 000776 releaseActor@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000776 releaseActor@Scene
+  HIT 000776 releaseActor@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000776 releaseActor@Scene
+  HIT 000776 releaseActor@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000776 releaseActor@Scene
+  HIT 000776 releaseActor@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000776 releaseActor@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000776 releaseActor@Scene
+  HIT 000776 releaseActor@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000754 row000754@JointSupport
+  HIT 000754 row000754@JointSupport
+  HIT 000754 row000754@JointSupport
+  HIT 000754 row000754@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000776 releaseActor@Scene
+  HIT 000776 releaseActor@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000793 nxActorComputeMass@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@Scene
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@Scene
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000768 nxNpActorUpdateMassFrame@NpActor
+  HIT 000801 nxNpActorBodyQuaternionFromMatrix@NpActor
+  HIT 000754 row000754@JointSupport
+  HIT 000754 row000754@JointSupport
+  HIT 000754 row000754@JointSupport
+  HIT 000754 row000754@JointSupport
+  HIT 000778 row000778@JointSupport
+  HIT 000760 row000760@JointSupport
+  HIT 000776 releaseActor@Scene
+  HIT 000776 releaseActor@Scene
