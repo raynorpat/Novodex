@@ -55,9 +55,9 @@ Np wrapper `NpSpringAndDamperEffector`, 0x18 B (003960 allocates it through
 |---|---|---|
 | +0x00 | primary vptr 0x1011794c | 003958 last store; 003956 first store |
 | +0x04 | `NxEffector::userData` | public header |
-| +0x08 | hook member vptr 0x10117948 (the `EmbeddedHookBase` of the joints: 002404 constructs it, 002406 restores 0x101088b8) | 003958, 003956 |
-| +0x0c | scene write-lock link (NpScene+0xc) | 000301 at 0xc68f; setters tryLock it (002364) |
-| +0x10 | scene read-lock link (NpScene+0x10) | 000301 at 0xc689; getters lock it (002362) |
+| +0x08 | hook member vptr 0x10117948 (the 3-word `EmbeddedHookBase` of the joints: 002404 stores its vptr and zeroes +0xc/+0x10, 002406 restores 0x101088b8) | 003958, 003956 |
+| +0x0c | hook word 1 = scene write-lock link (NpScene+0xc) | 002404 (0), then 000301 at 0xc68f; setters tryLock it (002364) |
+| +0x10 | hook word 2 = scene read-lock link (NpScene+0x10) | 002404 (0), then 000301 at 0xc689; getters lock it (002362) |
 | +0x14 | internal `SpringAndDamperEffector*` | 003958; 003952 returns it |
 
 Note the lock links are one word lower than the joints' (+0x10/+0x14): the hook is at +8 here
@@ -79,7 +79,8 @@ Internal `SpringAndDamperEffector`, 0x68 B (000587 allocates `(0x68, 0)` through
 | Off | Field | Written by |
 |---|---|---|
 | +0x00 | vptr: 0x10117920 (Effector) -> 0x101178f8 (ActorPairEffector) -> 0x101179e4 | 003934, 003922, 003960 |
-| +0x04..+0x17 | `NxFoundation::Observable` (constructed through the import 0x10104190, destroyed through 0x10104194) | 003934, 003936 |
+| +0x00..+0x13 | `NxFoundation::Observable` base, sizeof 0x14: vptr at +0, observer array {first, last, memEnd} at +0x4..+0xc (zeroed by the Observable ctor, import 0x10104190), the array's allocator word at +0x10; destroyed through 0x10104194 | 003934, 003936 |
+| +0x14 | pad word: no effector row writes it (name it explicitly, e.g. `mPad14`) | -- |
 | +0x18 | next effector in the Scene list (+0x5a4) | 003934 (0), 000587, 000573, 000575 |
 | +0x1c | owning Scene | 003934 (ctor argument) |
 | +0x20 | Np wrapper | 003960 (null if its allocation failed) |
@@ -113,7 +114,7 @@ destructor. Slot 2 (003924) is the per-tick entry: it calls slot 3 with (+0x24, 
 | 000573 (0x10900) | 109 | removeEffector: unlink from +0x5a4 via +0x18; not found -> error 2, Scene.cpp line 0x84c, "Scene::removeEffector: effector is not in the scene." | discovered |
 | 000575 (0x10970) | 68 | release all effectors (slot 1 with 1 on each), called by the Scene destructor 000663 at 0x13f90, after 000596 (actors) and before 002320 / 000604 (joints) | discovered |
 | 000587 (0x10c90) | 187 | createSpringAndDamperEffector: allocate 0x68, 003960(scene), push at the head of +0x5a4, `++[+0x6c4]`, `[+0x6c0] = [+0x5a4]`, then 003962(desc.body1 ? [body1+0x14] : 0, &desc.pos1, desc.body2 ? [body2+0x14] : 0, &desc.pos2), 003966(desc +0x20..+0x30), 003968(desc +0x34..+0x40); returns the internal | discovered |
-| 000594 (0x10e80) | 126 | releaseEffector: re-entry guard .data 0x10123c10 (the same flag createJoint uses; report line 0x4ec with the message pointer at 0x10122050), 000573, slot 1 with 1, `--[+0x6c4]`, `[+0x6c0] = [+0x5a4]` | discovered |
+| 000594 (0x10e80) | 126 | releaseEffector: the global user-callback re-entry guard .data 0x10123c10 (shared by about 50 rows, createJoint among them; report line 0x4ec with the message pointer at 0x10122050), 000573, slot 1 with 1, `--[+0x6c4]`, `[+0x6c0] = [+0x5a4]` | discovered |
 
 Scene fields: +0x5a4 list head, +0x6c0 enumeration cursor, +0x6c4 count. The candidate
 constructor already zeroes all three (Scene.cpp, from 000647 0x12e59/0x12f03/0x12f09). The
@@ -135,12 +136,28 @@ whose only slot is the Observable::event trampoline 004387; its destructor 00077
 virtually on the record when its observer count reaches zero -- on the first effector release
 the candidate would call through a null vptr. Task 2 must construct the record's Observable
 part (placement of `NxFoundation::Observable` at +0 plus the 0x10106890-equivalent table, and
-`~Observable` in the record teardown) before any effector can be released. The array lives at
-+0x04..+0x13; the record's pose sub-object starts at +0x18 (000801 on `record+0x18`).
+`~Observable` in the record teardown) before any effector can be released. The Observable
+occupies +0x00..+0x13 (sizeof 0x14); +0x14 is a pad word no row writes (name it explicitly);
+the record's pose sub-object starts at +0x18 (000801 on `record+0x18`).
 
-Who sends event 0x100 to the effector: `notifyObservers` (import 0x10104160) is called only
-from 002310 (Phase 7). Releasing an actor that an effector observes therefore depends on
-unwritten Phase 7 code; tests release effectors before their actors.
+Who sends event 0x100 to the effector: `Observable::notifyObservers` (import 0x101041ac;
+0x10104160 is `NxGetBoxTriangles`, not an Observable import) is called with 0x100 from two
+sites only:
+- 000030 at 0x1d82 (the internal actor teardown, on `[actor+8]`, the record, just before the
+  record's destructor 000776 runs); 000030 is called by 000596 (the Scene destructor's actor
+  loop) and by 000626/000628 (releaseActor);
+- 000122 at 0x3af6 (NpActor.cpp).
+So in the oracle, releasing an actor, or the scene, calls 003928 on every effector observing
+that record, which nulls its +0x24/+0x28 before 000575 runs (000663 calls 000596 before 000575).
+
+Controller decision (binding for Task 2): reproduce this. Add `notifyObservers(0x100)` on the
+record in the candidate's record teardown, in 000030's order (before the record's destructor
+work), on both reachable paths: `NxSceneInternal::releaseActor` (Scene.cpp, near line 1331)
+and the actor loop of `nxSceneDelete`; also 000122's site if it is on a path the candidate
+reaches. Wire 000575 into `nxSceneDelete` at the oracle's position: after the actor loop
+(000596) and before 002320 / 000604 (the joint lists). What is reproduced is the behaviour of
+those sites of 000030 and 000122 (Phase 5 rows); the rows themselves stay `discovered` unless
+written whole.
 
 ### Solver slots
 
@@ -162,8 +179,9 @@ internal vtable with a root whose +0x1f8 is zero and report static proof only.
 Written in the candidate and reused: 002362/002364/002366 (the recursive scene lock), 002404/002406
 (hook member), 000448/000450, the Foundation Observable exports, `nxFoundationSDKAllocator`.
 New with the effector: the 30 rows above, the 12 Scene/NpScene rows, the body-record Observable
-(000797/000776 parts), 000575 in the candidate's `nxSceneDelete` (between the actor loop and the
-joint lists, as 000663 orders them), 000713, and a stub for 000791. 004387 is a model; the
+(000797/000776 parts), the `notifyObservers(0x100)` sites of 000030/000122 in the candidate's
+record teardown (behaviour only), 000575 in the candidate's `nxSceneDelete` (after the actor
+loop 000596, before 002320/000604, as 000663 orders them), 000713, and a stub for 000791. 004387 is a model; the
 product uses `NxFoundation::Observable::event` itself (the trampoline is the import thunk).
 
 ## Core dump
@@ -223,7 +241,7 @@ There is no binary record format. `binary` selects the float token 003995 uses a
 The token buffer is a ring of 16 x 64 bytes at .data 0x10126978 with the index at 0x10126d78
 (so one fprintf may hold at most 16 tokens). Some lines bypass 003995: the asset header's
 elapsed-time lines always pass `binary = false`, and the effector lines use `%f` with a
-promoted `double` in both modes. `%d`/`%08X` integers are printed directly; two setting kinds
+promoted `double` in both modes. `%d`/`%08X` integers are printed directly; three setting kinds
 (material index, solver count, group) round the float with `fistp` at the live control word.
 
 ### Record formats (strings read from the image; `T` = one 003995 token)
@@ -266,7 +284,7 @@ PsGravity T T T                                (000509: Scene+0x520..+0x528)
 <per actor, Scene+0x55c..+0x560 order: settings lines, shape lines, then the actor line>
 <004015 "PsJoint <joint> <actor0> <actor1>" per joint>
 <"PsActorPair <a> <b> false" per disabled pair, deduplicated for shape pairs>
-<per effector in the +0x5a4 list: six to eight PsDefaultSettings spring_* lines, "PsSpring <a> <b>">
+<per effector in the +0x5a4 list: 5 fixed PsDefaultSettings spring_* lines plus spring_pos1/spring_pos2 when present (5-7 lines), "PsSpring <a> <b>">
 PsAssetEnd\r\n
 ##################################################################################\r\n\r\n
 ```
@@ -284,16 +302,22 @@ prints a `PsDefaultSettings <kind>(...)` line; otherwise sets `pending`. 003999 
 2 density (only when > 0), 3 sides, 4 localposition, 5 localorientation, 6 plane, 7 height,
 8 radius, 9 material(mat<fistp(v)+1>), 10 com, 11 comrot, 12 inertia, 13 mass, 14 velocity,
 15 angularvelocity, 16 force, 17 torque, 18 wakeupcounter, 19 lineardamping, 20 angulardamping,
-21 maxangularvelocity, 22 solvercount (fistp), 23 group (fistp). A multi-shape actor saves the
-block, writes `PsShapeBegin Shape%d` + each shape + `PsShapeEnd`, restores it and writes
-`PsShape Shape%d ` before the actor fields; the shape counter is 004062's local, shared across
-scenes.
+21 maxangularvelocity, 22 solvercount (fistp), 23 group (fistp). Record k sits at +k*0x1c
+(10 at +0x118, 22 at +0x268). Kinds 16 force and 17 torque are never stored or printed by the
+dump. An actor with exactly one shape writes that shape through 004048 and the actor fields
+follow on the same line (0x94a71 -> 0x94b29). Any other shape count, 0 included, increments the
+shape counter, saves the block, writes `PsShapeBegin Shape%d\r\n` + each shape (each followed
+by `\r\n`) + `PsShapeEnd\r\n`, restores the block and writes `PsShape Shape%d ` before the
+actor fields; the shape counter is 004062's local, shared across scenes.
 
 Actor line (004051/004055/004057): quaternion from saveToDesc's globalPose matrix (the listing's
 trace-branch conversion, `fsqrt`), records 0 position, 1 orientation, 2 density; if
-saveBodyToDesc returns true: 4 (com, massLocalPose.t), 5 comrot, 6 inertia, 7 mass,
-solvercount from `(float)(unsigned)solverIterationCount`, 14-21 from the body desc; then
-`name(<name>) `, `awake(false) ` when the actor has no record or record+0x4c (wakeUpCounter) is
+saveBodyToDesc returns true, records 10 com (massLocalPose.t, +0x118), 11 comrot (+0x134),
+12 inertia (+0x150), 13 mass (+0x16c), 22 solvercount (`(float)(unsigned)solverIterationCount`,
++0x268), 14 velocity, 15 angularvelocity, 18 wakeupcounter, 19 lineardamping, 20
+angulardamping, 21 maxangularvelocity -- stored in that order (0x94903-0x94a41) and printed in
+the same order (0x94b8b-0x94bff). Line layout: the single shape's part (or `PsShape Shape%d `),
+then `name(<name>) `, `awake(false) ` when the actor has no record or record+0x4c (wakeUpCounter) is
 zero, the inline settings, `static(true) ` when not dynamic, else `kinematic(true) ` (body flags
 bit 7), `locked(true) ` (bits 1-6 all set) or `locked(%s,%s,%s,%s,%s,%s) ` (bits 1-6, in the
 listing's argument order) when some are set; `collision(false) ` when the saved actor desc's
@@ -302,11 +326,16 @@ listing's argument order) when some are set; `collision(false) ` when the saved 
 Shape line (004048, switch on `[shape+0xd0]` = 001283): builds the family's `Nx*ShapeDesc` on
 the stack (setToDefault inlined), calls the internal shape's slot 13 (`[vt+0x34]`, saveToDesc)
 on the shape cast by type, stores localposition/localorientation (quaternion from localPose),
-material (materialIndex, desc +0x3e) and group (desc +0x3c), and prints:
-`PsPlane  plane() localposition() localorientation() group() material()`, `PsSphere radius() ...`,
-`PsBox sides() ...` (dimensions), `PsCapsule height() radius() ...`, type 4:
-`PsConvex <mesh> ` or `PsTriangleMesh <mesh> ` after 004046 wrote the mesh; type 5 and others:
-nothing. Each ends with 004017: `triggerevent(` + `enter,`/`leave,` ... for the trigger flag bits.
+material (record 9, materialIndex, desc +0x3e) and group (record 23, desc +0x3c), and prints
+these inline records in this order:
+- plane: `PsPlane  ` plane, localposition, localorientation, group, material (group before
+  material only here);
+- sphere: `PsSphere ` radius, localposition, localorientation, material, group (0x93689/0x93694);
+- box: `PsBox ` sides (dimensions), localposition, localorientation, material, group;
+- capsule: `PsCapsule ` height, radius, localposition, localorientation, material, group;
+- type 4: `PsConvex <mesh> ` or `PsTriangleMesh <mesh> ` (after 004046 wrote the mesh),
+  localposition, localorientation, material, group;
+- type 5 and others: nothing. Each ends with 004017: `triggerevent(` + `enter,`/`leave,` ... for the trigger flag bits.
 
 Mesh (004046, type 4 only): `PsConvexBegin tmesh%d`/`PsTriangleMeshBegin tmesh%d`,
 `@pmap(%d)`, `gouraud(%s)`, `winding(%s)`, `@heightfield(%s, %f)`, `PsVert T T T` (004035),
@@ -330,7 +359,9 @@ spring/swing-spring/joint-spring/projection; the others fixed strings). Every ty
 gets `PsJointLimitPlane T T T T` per limit plane (004081, 004083, 004145) and `PsJointEnd`.
 Types 6-9 (distance, pulley, fixed, D6) produce only the limit-plane lines and `PsJointEnd`.
 
-Names (004004 joints, 004006 actors): `"$__%I64x"` of the internal object (the joint, or the
+Names (004004 joints, 004006 actors; every `%s__%I64x` in 004062 too): the pointer is
+sign-extended with `cdq` before the 64-bit push, so faithful code passes `(__int64)(int)ptr`.
+`"$__%I64x"` of the internal object (the joint, or the
 actor's 0x50-byte body); when it has a name: `<name>___%I64x`, quoted with `"` when the name
 contains a delimiter (004002: space, quote, tab, comma, parens, `=`, brackets, braces, `#`);
 a null actor is `@world`. Name sources: joints 004085 (the registry 000454 keyed on the internal
@@ -422,10 +453,13 @@ are read under the recursive scene lock that 000267 already holds.
 
 ## Task split
 
+Out of scope: 004064, 004066 and 004070, in the same gap, are already written in
+`core/Joint.cpp`.
+
 | Task | Rows | B | Content |
 |---|---:|---:|---|
-| 2 | 30 + 12 | 3,325 + 887 = 4,212 | the effector rows above (003922-003979 without 003981), Scene/NpScene 000301 000303 000327 000329 000331 000561 000565 000569 000573 000575 000587 000594; plus the body-record Observable (parts of 000797/000776), 000713 (32) and a 000791 stub |
-| 3a | 25 + 3 | 11,448 + 91 = 11,539 | dump infrastructure, joints and entry: 003981 003985 004021 004023 004025 004027 (joint-desc inlines), 003992 003994 003995 003997 003999 004002 004004 004006 004007 004009 004011 004013 004015 004037 004039 004041 004043 004062; readers 004068 004072 004085; export the parameter and group-mask arrays |
+| 2 | 30 + 12 | 3,325 + 887 = 4,212 | the effector rows above (003922-003979 without 003981), Scene/NpScene 000301 000303 000327 000329 000331 000561 000565 000569 000573 000575 000587 000594; plus the body-record Observable (parts of 000797/000776), the `notifyObservers(0x100)` behaviour of 000030 (0x1d82) and 000122 (0x3af6) in the candidate's record teardown (those Phase 5 rows stay `discovered`), 000575 wired into `nxSceneDelete` after the actor loop, 000713 (32) and a 000791 stub |
+| 3a | 24 + 3 | 11,702 + 91 = 11,793 (23 rows / 11,448 B without 003981) | dump infrastructure, joints and entry: 003981 003985 004021 004023 004025 004027 (joint-desc inlines), 003992 003994 003995 003997 003999 004002 004004 004006 004007 004009 004011 004013 004015 004037 004039 004041 004043 004062; readers 004068 004072 004085; export the parameter and group-mask arrays |
 | 3b | 18 + 5 | 11,517 + 113 = 11,630 | asset writer, actors, shapes, meshes, effectors: 003983 003987 003989 004019 004029 004031 004033 (shape-desc inlines), 003991 004017 004035 004046 004048 004051 004053 004055 004057 004059 004061; readers 000015 000017 000509 000523 001283; stub 001472 |
 | 4 | 1 | 221 | 000267, the wiring and the staged-pair dump test |
 
