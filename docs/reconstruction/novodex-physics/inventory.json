@@ -12939,13 +12939,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Island.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/282",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2016",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) in scene-raycast Task 4 (island sub-area): Walked 0x15c20-0x15ca1: thiscall on the body record, plain ret; the four dword triples from the +0x204 JointSupportBody (+0x00/+0x10/+0x44/+0x50) to +0x34/+0x40/+0x1a0/+0x1ac with +0x1e4 |= 0x20 after the second, +0x204 re-read per group, all reproduced by Island.cpp Row000708Fixture::row000708. Reachable only from the simulation step (000613); no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (island sub-area): written from the listing (source-only; the step and the CCD sweep are not reconstructed, so nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/Island.cpp"
     },
     {
       "id": "phys_fn_000709",
@@ -12975,13 +12976,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/BodyStep.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/283",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2017",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) in scene-raycast Task 4 (island sub-area): Walked 0x15cb0-0x15d27: thiscall ret 4, no floating point; the NX_BF_DISABLE_GRAVITY (+0x10c bit 0) choice between *gravity and zero for +0x88..+0x90 and the nine zeroed words +0x94..+0xb4 are reproduced by BodyStep.cpp Row000710Fixture::row000710. Its only caller is 000619, reached from NxScene::fetchResults (000398); the candidate's fetchResults is a stub, so there is no public path. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (island sub-area): written from the listing (source-only; the step and the CCD sweep are not reconstructed, so nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/BodyStep.cpp"
     },
     {
       "id": "phys_fn_000711",
@@ -13049,13 +13051,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Island.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/286",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2024",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) in scene-raycast Task 4 (island sub-area): Walked 0x15d70-0x15eb5 (x87): thiscall ret 4; the +0x1b8/G+0x1f4 check and 0.4f wake raise (test ah,5; jp: ordered below 0x101053d4), the saved/live velocity choice on +0x1e4 bit 5, |v|^2 kept and |w|^2 spilled to float as the listing does, both ordered below +0xd0/+0xd4, the wake decrement (fst, then the register value against 0) and the final +0x114 bit-8 clear are reproduced by Island.cpp Row000714Fixture::row000714. Reachable only from the simulation step (000636 -> 000732 -> row); no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (island sub-area): written from the listing (source-only; the step and the CCD sweep are not reconstructed, so nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/Island.cpp"
     },
     {
       "id": "phys_fn_000715",
@@ -13085,13 +13088,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Island.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/287",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2030",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) in scene-raycast Task 4 (island sub-area): Walked 0x15ec0-0x15fd2: thiscall ret 4; both finds as the inlined 000712 pattern (other first, its root read before this record's find), the unsigned rank comparison (jbe), the absorbed root's parent, the +0x1d4/+0x1d0 list splice, the +0x1c4/+0x1c8 sums, the +0x1e4 bit-1 transfer and the unconditional rank increment of the else arm are reproduced by Island.cpp Row000716Fixture::row000716. Reachable only from the simulation step (000635 -> 000762 -> row); no public path while NpScene::simulate is a stub. Integration review: 0x15f79-0x15f85 increments the surviving (other) root's rank on every else-arm merge; there is no tie test (the contract row's 'bumps rank on a tie' is corrected). units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (island sub-area): written from the listing (source-only; the step and the CCD sweep are not reconstructed, so nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/Island.cpp"
     },
     {
       "id": "phys_fn_000717",
@@ -13121,13 +13125,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Island.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/288",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2035",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) in scene-raycast Task 4 (island sub-area): Walked 0x15fe0-0x160fa: thiscall ret 4; the two sleep-group finds (000713 on each parent, other first), unsigned rank compare on +0x1ec, the +0x200/+0x1fc splice, the +0x1f0/+0x1f4 word sums and the +0x1f8 float sum in the listing's operand order, and the unconditional else-arm rank increment are reproduced by Island.cpp Row000718Fixture::row000718 (000713 is called through the cdecl nxBodyRecordFixRoot, a recorded code-shape difference). Reachable only from the simulation step (000608 -> 000724 -> row); no public path while NpScene::simulate is a stub. Integration review: 0x16095-0x160a1, the same unconditional else-arm rank increment as 000716. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (island sub-area): written from the listing (source-only; the step and the CCD sweep are not reconstructed, so nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/Island.cpp"
     },
     {
       "id": "phys_fn_000719",
@@ -13157,13 +13162,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Island.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/289",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2040",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) in scene-raycast Task 4 (island sub-area): Walked 0x16100-0x1612d: thiscall, plain ret; the inlined 000712 find and the +0x1e4 bit-1 test calling 004172 cdecl on the root are reproduced by Island.cpp Row000720Fixture::row000720; 004172 itself is not reconstructed and has no candidate anywhere (open stand-in nxBodyIslandRebuild004172Open, a no-op, no stable-ID line). Reachable only from the simulation step (000635); no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (island sub-area): written from the listing (source-only; the step and the CCD sweep are not reconstructed, so nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/Island.cpp"
     },
     {
       "id": "phys_fn_000721",
@@ -13230,13 +13236,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Island.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/291",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2050",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) in scene-raycast Task 4 (island sub-area): Walked 0x161b0-0x1625c: thiscall ret 8; the +0x25c increments, the 000713 finds, root+0x1f0 increment, the +0x11c (jb) owner choice for the +0x208/+0x100 push and the 000718 call are reproduced by Island.cpp Row000724Fixture::row000724. Reachable only from the simulation step (000608); no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (island sub-area): written from the listing (source-only; the step and the CCD sweep are not reconstructed, so nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/Island.cpp"
     },
     {
       "id": "phys_fn_000725",
@@ -13266,13 +13273,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/BodyStep.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/292",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2056",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) in scene-raycast Task 4 (island sub-area): Walked 0x16260-0x167b8 (x87): thiscall ret 8; the kinematic arm (target position and quaternion delta, hemisphere flip, normalisation, the 0/pi/_CIacos angle through the x87CIacos stand-in for CRT row 005697, the (a invDt + a invDt)/sqrt(1 - w w) rate kept in registers, the Scene+0x550/+0x558 target reset) and the dynamic arm (pair-count scale gated by the .data float 0x10123c00, force/gravity and torque integration with the listing's spills, linear and angular damping, the +0xd8 angular clamp) are reproduced by BodyStep.cpp Row000726Fixture::row000726; _CIacos's _87except error reporting is not reproduced (no returned value changes). Reachable only from the simulation step (000610); no public path while NpScene::simulate is a stub. Integration review (scene-raycast Task 4): the kinematic arm 0x16274-0x1653e and the dynamic arm 0x16541-0x167b8 re-walked against the listing and the compiled BodyStep.obj: the linear/angular sums, the quaternion product and its four-term orders, the hemisphere and |r.w - 1| tests (NaN arms included), the damping compares (`test ah,5; jp`) and the clamp (`test ah,0x41; jne`) agree in value with every float spill; the compiler drops the intermediate +0x34..+0x48 stores that both damping arms overwrite (final words equal), keeps the pair scale in a qword spill (exact while the .data float 0x10123c00 is 0, as in the image), and x87FsqrtQuotDot3 re-forms the clamp's |w|^2 in the listing's order. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (island sub-area): written from the listing (source-only; the step and the CCD sweep are not reconstructed, so nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/BodyStep.cpp"
     },
     {
       "id": "phys_fn_000727",
@@ -13302,13 +13310,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Island.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/293",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2075",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) in scene-raycast Task 4 (island sub-area): Walked 0x167c0-0x16829: thiscall ret 8; the +0x1d8 joint walk (+0x160=-1, +0x164=0, direct call of 004133 = Joint::row_slot6 with the first argument) and the +0x208 pair walk calling 000897 on pair+0x14 with ([[+0x19c]+4], a1, a2) are reproduced by Island.cpp Row000728Fixture::row000728; 000897 is ContactPairManager.cpp NxActorPair::row000897 (reconstructed in the same integration; the call's ecx = pair node + 0x14 and its three stack arguments were checked against 0x16809-0x16816, `ret 0xc`). Reachable only from the simulation step (000611 -> 000730 -> row); no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (island sub-area): written from the listing (source-only; the step and the CCD sweep are not reconstructed, so nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/Island.cpp"
     },
     {
       "id": "phys_fn_000729",
@@ -13338,13 +13347,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Island.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/294",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2080",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) in scene-raycast Task 4 (island sub-area): Walked 0x16830-0x16857: thiscall ret 8 with a null-this test; 000728(a1, a2) on each record of the +0x1fc chain, reproduced by Island.cpp Row000730Fixture::row000730. Reachable only from the simulation step (000611); no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (island sub-area): written from the listing (source-only; the step and the CCD sweep are not reconstructed, so nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/Island.cpp"
     },
     {
       "id": "phys_fn_000731",
@@ -13374,13 +13384,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/BodyStep.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/295",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2083",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) in scene-raycast Task 4 (island sub-area): Walked 0x16860-0x169ec: thiscall ret 8; the 000714 call, the integer test of the +0x4c bits, the saved-velocity zeroing/saving rule on +0x1e4 bit 5 and +0x10c bit 7, the per-axis NX_BF_FROZEN_* handling of the live copy and the saved words (angular z through the FPU) and the final kinematic zeroing are reproduced by BodyStep.cpp Row000732Fixture::row000732. Reachable only from the simulation step (000636); no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (island sub-area): written from the listing (source-only; the step and the CCD sweep are not reconstructed, so nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/BodyStep.cpp"
     },
     {
       "id": "phys_fn_000733",
@@ -13410,13 +13421,14 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/BodyStep.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/296",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2095",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) in scene-raycast Task 4 (island sub-area): Walked 0x169f0-0x16a52 (x87): thiscall ret 4; +0x158 += dt * +0x1a0 with the x product in a register and the y/z products spilled to float, as reproduced by BodyStep.cpp Row000734Fixture::row000734. Reachable only from the simulation step (000615 -> 000770 -> row) and the CCD sweep (002264 -> 000774 -> 000772 -> row), neither reconstructed; no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (island sub-area): written from the listing (source-only; the step and the CCD sweep are not reconstructed, so nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/BodyStep.cpp"
     },
     {
       "id": "phys_fn_000735",
@@ -13446,13 +13458,14 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/BodyStep.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/297",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2096",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) in scene-raycast Task 4 (island sub-area): Walked 0x16a60-0x16bf3 (x87): thiscall ret 8 returning 1 or 0; |w| == 0 returns 0, the half-angle fsin/fcos (inline instructions, through X87Sqrt.h helpers), k w spilled to float, the quaternion product from the original components in the listing's order and the renormalisation (0 length returns 1 unnormalised) are reproduced by BodyStep.cpp Row000736Fixture::row000736; k and c are double variables the compiler may spill (the accepted convention). Reachable only from the simulation step (000615 -> 000770 -> row) and the CCD sweep (002264 -> 000774 -> 000772 -> row); no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (island sub-area): written from the listing (source-only; the step and the CCD sweep are not reconstructed, so nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/BodyStep.cpp"
     },
     {
       "id": "phys_fn_000737",
@@ -13519,13 +13532,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/BodyStep.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/299",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2101",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) in scene-raycast Task 4 (island sub-area): Walked 0x16c20-0x16dc4 (x87): thiscall ret 4; the +0x1e4 bit-9 set/clear, the dt * +0x1a0 sweep, the owner object's slot-10 bounding sphere, R = |centre - com| + radius in registers, the +0x244..+0x258 box and the per-axis extension by the sweep sign are reproduced by BodyStep.cpp Row000740Fixture::row000740; its reader 000738 is core/JointSupport.cpp Row000738Fixture::row000738. Reachable only from the simulation step (000615 -> 000770 -> row) with NX_CONTINUOUS_CD set; no public path while NpScene::simulate is a stub. /GS gives the candidate a stack cookie the image does not have (the local sphere array; the joint rows' accepted difference). units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (island sub-area): written from the listing (source-only; the step and the CCD sweep are not reconstructed, so nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/BodyStep.cpp"
     },
     {
       "id": "phys_fn_000741",
@@ -13703,13 +13717,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/304",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2118",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x16fb0-0x17004, 000752 being the second loop entered by the jmp at 0x10016fdb) in scene-raycast Task 4 (contact-pair manager): thiscall(body, other), `ret 4`, eax 0/1; both joint lists (+0x1d8, link Joint+0x34) searched for a joint naming the other body at +8/+0xc; found: !(joint+0x2c bit 8), none: 0. Candidate CpmJointedBody::row000750 (Physics/src/ContactPairManager.cpp), one function carrying every row's stable-ID line. Reachable only from the simulation step (000905 <- 000909 <- 001976 <- 000608 <- 000655); reachable only from the simulation step; no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
       "id": "phys_fn_000751",
@@ -13739,13 +13754,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/304",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2121",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x16fb0-0x17004, 000752 being the second loop entered by the jmp at 0x10016fdb) in scene-raycast Task 4 (contact-pair manager): thiscall(body, other), `ret 4`, eax 0/1; both joint lists (+0x1d8, link Joint+0x34) searched for a joint naming the other body at +8/+0xc; found: !(joint+0x2c bit 8), none: 0. Candidate CpmJointedBody::row000750 (Physics/src/ContactPairManager.cpp), one function carrying every row's stable-ID line. Reachable only from the simulation step (000905 <- 000909 <- 001976 <- 000608 <- 000655); reachable only from the simulation step; no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00016fb0"
+      "notes": "continuation of the entry at 0x00016fb0 Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
       "id": "phys_fn_000753",
@@ -13923,13 +13939,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Island.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/309",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2144",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) in scene-raycast Task 4 (island sub-area): Walked 0x177c0-0x17922: thiscall ret 4; the joint+8 test with the wake raise on the record itself (twice on the two-body path, both reading esi), the 000712 finds, the island-object release through 004167 and the Foundation allocator's free, root+0x1c4 increment, the +0x11c (jae) choice of the +0x1d8/+0x34 and +0x1dc/+0x38 lists, the 000716 merge and the single-body +0x1e4 |= 2 are reproduced by Island.cpp Row000762Fixture::row000762 (004167 is the existing deferred stub). Reachable only from the simulation step (000635); no public path while NpScene::simulate is a stub. Integration review: 0x177d1-0x177ec and 0x17856-0x17871 both read esi, so the record itself is woken twice on the two-body path (the contract row's 'wakes body1' is corrected). units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (island sub-area): written from the listing (source-only; the step and the CCD sweep are not reconstructed, so nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/Island.cpp"
     },
     {
       "id": "phys_fn_000763",
@@ -13959,13 +13976,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Island.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/310",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2157",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) in scene-raycast Task 4 (island sub-area): Walked 0x17930-0x1798f: record in ecx, plain ret; the 000712 find, the +0x1e4 bit-1 test releasing the island object (004167, allocator free, +0x1e0=0) and calling 004172 cdecl, then 000722 on the record (a tail jmp in the oracle, a call here) are reproduced by Island.cpp Row000764Fixture::row000764; 000722 is core/JointSupport.cpp Row000722Fixture::row000722 (reconstructed, body-creation), 004172 the open stand-in nxBodyIslandRebuild004172Open (not reconstructed, no candidate anywhere). Reachable only from the simulation step (000635); no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (island sub-area): written from the listing (source-only; the step and the CCD sweep are not reconstructed, so nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/Island.cpp"
     },
     {
       "id": "phys_fn_000765",
@@ -14068,13 +14086,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/BodyStep.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/313",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2183",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) in scene-raycast Task 4 (island sub-area): Walked 0x183a0-0x1846a: thiscall ret 8 (second argument unread); the CCD start-pose save, the integer wake test, the 000734/000736/000758/000746 advance and the NX_CONTINUOUS_CD (000429) test choosing 000740 or the +0x1e4 bit-9 clear are reproduced by BodyStep.cpp Row000770Fixture::row000770. Reachable only from the simulation step (000615); no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (island sub-area): written from the listing (source-only; the step and the CCD sweep are not reconstructed, so nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/BodyStep.cpp"
     },
     {
       "id": "phys_fn_000771",
@@ -14104,13 +14123,14 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/BodyStep.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/314",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2185",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) in scene-raycast Task 4 (island sub-area): Walked 0x18470-0x1853c: thiscall ret 4 returning al; the ordered toi < +0x23c test, the pose restore, 000756, the time rescale by Scene+0x548 spilled to float and the 000734/000736/000758/000746 re-advance are reproduced by BodyStep.cpp Row000772Fixture::row000772. Its only caller is 000774, whose only caller is the CCD sweep 002264 (reached from 002266 in the contact-matrix entries 001749 001772 001820 001851 001919 001929 001933, gated by NX_CONTINUOUS_CD, default 0); 002264 is not reconstructed, so no candidate path reaches it. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (island sub-area): written from the listing (source-only; the step and the CCD sweep are not reconstructed, so nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/BodyStep.cpp"
     },
     {
       "id": "phys_fn_000773",
@@ -14140,13 +14160,14 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/BodyStep.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/315",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2187",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative) in scene-raycast Task 4 (island sub-area): Walked 0x18540-0x1855f: thiscall ret 4; 000772 and, on true, 000022 on the actor body with 0, reproduced by BodyStep.cpp Row000774Fixture::row000774. Its only caller is the CCD sweep 002264 (see 000772), which is not reconstructed, so no candidate path reaches it. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (island sub-area): written from the listing (source-only; the step and the CCD sweep are not reconstructed, so nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/BodyStep.cpp"
     },
     {
       "id": "phys_fn_000775",
@@ -15643,13 +15664,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/353",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2570",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1ca00-0x1ca4b) in scene-raycast Task 4 (contact-pair manager): stdcall(a, b, mode), `ret 0xc`, the result left unrounded in st(0); NxCombineMode average ((a + b) * 0.5f) / min / multiply / max with the `fcomp; test ah,5; jp` NaN picks (min keeps b, max keeps a); integration review: every arm re-walked against the compiled object, equal in value. Candidate cpmCombine0855 (__stdcall returning double) (Physics/src/ContactPairManager.cpp). Reachable only from the simulation step (000861 <- 000879 <- 000897 <- 000728); reachable only from the simulation step; no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
       "id": "phys_fn_000856",
@@ -15679,13 +15701,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/354",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2576",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1ca50-0x1cb21) in scene-raycast Task 4 (contact-pair manager): stdcall(ids, out), `ret 8` (ecx is overwritten at entry, not an argument); materials lo16/hi16 through the inlined getMaterial (count by the 0x38e38e39 reciprocal, out of range -> material 0), their restitutions combined with the larger (signed) restitution combine mode, out[1] = (flagsA | flagsB) & 4. Candidate cpmRestitution0857 (Physics/src/ContactPairManager.cpp). Reachable only from the simulation step (000897 <- 000728); reachable only from the simulation step; no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
       "id": "phys_fn_000858",
@@ -15715,13 +15738,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/355",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2585",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1cb30-0x1cd8f) in scene-raycast Task 4 (contact-pair manager): stdcall(shape, material, other, normalForce, out), `ret 0x14`; the other material's averages when anisotropic (dynamic kept in a register, static spilled), the world anisotropy direction in the listing's (y, z, x) grouping, the combined coefficients scaled by NX_DYN_FRICT_SCALING (clamped) and NX_STA_FRICT_SCALING (raised to the dynamic ones), times the normal force; the parameters read through nxSdkParameterTable() (the same live array as .data 0x10123b18). Candidate cpmAnisotropicFriction0859 (Physics/src/ContactPairManager.cpp). Reachable only from the simulation step (000861 <- 000879 <- 000897); reachable only from the simulation step; no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
       "id": "phys_fn_000860",
@@ -15751,13 +15775,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/356",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2611",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1cd90-0x1d0a4) in scene-raycast Task 4 (contact-pair manager): stdcall(shapes, ids, n, normalForce, out, t1, t2), `ret 0x1c`; the isotropic and anisotropic paths (the choice tests the whole flag words and |dyn - dynV|), t1 = dir x n / |.| when |.| > 0.01f and t2 = n x t1, else NxNormalToTangents and the averages; the root through x87FsqrtDot3. Candidate cpmFrictionParams0861 (Physics/src/ContactPairManager.cpp). Reachable only from the simulation step (000879 <- 000897); reachable only from the simulation step; no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
       "id": "phys_fn_000862",
@@ -15787,13 +15812,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/357",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2629",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1d0b0-0x1d0b7) in scene-raycast Task 4 (contact-pair manager): fastcall(pair): `add ecx,0x10; jmp 0x1005b620`; 002354 on pair + 0x10. Candidate cpmActorPairResetStream0863 (__fastcall) (Physics/src/ContactPairManager.cpp). Open callee: 002354 is not in the candidate (the no-op stand-in cpmOpen002354, no stable-ID line). Reachable only from the simulation step (000905 <- 000909 <- 001976); reachable only from the simulation step; no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
       "id": "phys_fn_000864",
@@ -15823,13 +15849,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/358",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2630",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1d0c0-0x1d256) in scene-raycast Task 4 (contact-pair manager): thiscall(patch, points, count byte), `ret 0xc`; the count stored to +0x74 and the loop bound reloaded; each world point made body-local (dy stored, dz `fst` so the unrounded dz feeds y only; the raw copy for a null body); +0x75 = 0. Candidate NxActorPair::row000865 (Physics/src/ContactPairManager.cpp). Reachable only from the simulation step (000897); reachable only from the simulation step; no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
       "id": "phys_fn_000866",
@@ -15932,13 +15959,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/360",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2657",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1d590-0x1d609) in scene-raycast Task 4 (contact-pair manager): cdecl(patch); (material[+0x68].flags | material[+0x6a].flags) & 4 through the inlined getMaterial. Candidate cpmPatchSpring0871 (Physics/src/ContactPairManager.cpp). Reachable only from the simulation step (000891, 000895 <- 000897); reachable only from the simulation step; no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
       "id": "phys_fn_000872",
@@ -16004,13 +16032,14 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/362",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2681",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1d8e0-0x1dc70) in scene-raycast Task 4 (contact-pair manager): thiscall on the pair (the contact sink), nine stack arguments, `ret 0x24`; the swap and negation when owner+8 differs from the sink's, the pair header (flag word 4 for shape+0xde bit 0x20), the normal block on a raw-word change, the contact record with bit 31 for wide features and the flag-1/flag-4 feature words; every append grows the stream through 004840 (SdkContainer::resize on pair+0x38) with the listing's two predicates at the eight sites. Candidate NxActorPair::row000875 (Physics/src/ContactPairManager.cpp). Reachable only from the simulation step (the narrow-phase entries 001762, 001779, 001844, 001909, 001927, 001929 <- 002348); reachable only from the simulation step; no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
       "id": "phys_fn_000876",
@@ -16040,13 +16069,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/363",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2710",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1dc80-0x1dd3a) in scene-raycast Task 4 (contact-pair manager): thiscall(src), `ret 4`, returns this; the dwords +0x04..+0x70 and the bytes +0x74/+0x75 copied by integer moves, the vptr untouched. Candidate NxFrictionPatch::operator= (Physics/src/ContactPairManager.cpp). Reachable only from the simulation step (000891); reachable only from the simulation step; no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
       "id": "phys_fn_000878",
@@ -16076,13 +16106,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/364",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2711",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1dd40-0x1e4fc) in scene-raycast Task 4 (contact-pair manager): thiscall(scene, forceScale, errorScale), `ret 0xc`; per patch and anchor: the world anchors, e1 stored and e2 kept, the lever arms, the error, the two kind-4 friction records through 000598/004391 (one loop body for k = 0, 1 in the listing's order), the penalty/0.7 scaling, +0x4c = dynamic / dynamicV, patch +0x58..+0x64 zeroed; /GS gives the candidate a stack cookie the image does not have (local arrays, the joint rows' accepted difference). Candidate NxActorPair::row000879 (Physics/src/ContactPairManager.cpp). Reachable only from the simulation step (000897 <- 000728); reachable only from the simulation step; no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
       "id": "phys_fn_000880",
@@ -16112,13 +16143,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/365",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2750",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1e500-0x1e5d2) in scene-raycast Task 4 (contact-pair manager): thiscall(outNormal, outFriction), `ret 8`; the embedded patch then the count-1 vector patches summed; nothing written when the count is 0. Candidate NxActorPair::row000881 (Physics/src/ContactPairManager.cpp). Its callers are 000913 (NxPhysicsSDK::releaseScene -> 000668 -> 000663, the Scene destructor, not step-only) and 000917 (the simulation step); the candidate's Scene destructor (Scene.cpp nxSceneDelete) does not call 000913 and NpScene::simulate is a stub, so no candidate path runs it and no target executes it. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
       "id": "phys_fn_000882",
@@ -16148,13 +16180,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/366",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2754",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1e5e0-0x1e6a6, 000885 being the body at 0x1e6b0-0x1e8fe entered by the jmp at 0x1001e6a6) in scene-raycast Task 4 (contact-pair manager): thiscall(scene, patch, separation, point, normal), `ret 0x14`, the third and fifth arguments unread; the lever arms, the swept-capsule search (a null dereference when none, as the image), the separation along rotation column 1, the kind-0 spring record, +0x48 = FLT_MAX, 004393(1/(h(kh + d)), kh/(kh + d)). Candidate NxActorPair::row000883 (Physics/src/ContactPairManager.cpp), one function carrying every row's stable-ID line. Reachable only from the simulation step (000897); reachable only from the simulation step; no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
       "id": "phys_fn_000884",
@@ -16184,13 +16217,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/366",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2761",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1e5e0-0x1e6a6, 000885 being the body at 0x1e6b0-0x1e8fe entered by the jmp at 0x1001e6a6) in scene-raycast Task 4 (contact-pair manager): thiscall(scene, patch, separation, point, normal), `ret 0x14`, the third and fifth arguments unread; the lever arms, the swept-capsule search (a null dereference when none, as the image), the separation along rotation column 1, the kind-0 spring record, +0x48 = FLT_MAX, 004393(1/(h(kh + d)), kh/(kh + d)). Candidate NxActorPair::row000883 (Physics/src/ContactPairManager.cpp), one function carrying every row's stable-ID line. Reachable only from the simulation step (000897); reachable only from the simulation step; no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0001e5e0"
+      "notes": "continuation of the entry at 0x0001e5e0 Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
       "id": "phys_fn_000886",
@@ -16220,13 +16254,14 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/367",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2772",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1e910-0x1e937, 000889 = 0x1e940-0x1e99e) in scene-raycast Task 4 (contact-pair manager): fastcall(pair); 002354 on pair+0x10, each vector patch freed through [0x101041bc] (count re-read), the count zeroed, the vector freed and zeroed, the tail jump to 002352 (nxContainerAddThunk). Candidate cpmActorPairRelease0887 (Physics/src/ContactPairManager.cpp), one function carrying every row's stable-ID line. Open callee: 002354 is not in the candidate (the no-op stand-in cpmOpen002354, no stable-ID line). Reached only from 000903 <- 000915 (pair deletion from 001953, the Scene destructor, and 001955 <- 001323, the shape/actor scalar deleting destructors), which the candidate does not reproduce; pair nodes exist only after a simulation step, so no candidate path runs it and no target executes it. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
       "id": "phys_fn_000888",
@@ -16256,13 +16291,14 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/367",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2773",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1e910-0x1e937, 000889 = 0x1e940-0x1e99e) in scene-raycast Task 4 (contact-pair manager): fastcall(pair); 002354 on pair+0x10, each vector patch freed through [0x101041bc] (count re-read), the count zeroed, the vector freed and zeroed, the tail jump to 002352 (nxContainerAddThunk). Candidate cpmActorPairRelease0887 (Physics/src/ContactPairManager.cpp), one function carrying every row's stable-ID line. Open callee: 002354 is not in the candidate (the no-op stand-in cpmOpen002354, no stable-ID line). Reached only from 000903 <- 000915 (pair deletion from 001953, the Scene destructor, and 001955 <- 001323, the shape/actor scalar deleting destructors), which the candidate does not reproduce; pair nodes exist only after a simulation step, so no candidate path runs it and no target executes it. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0001e910"
+      "notes": "continuation of the entry at 0x0001e910 Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
       "id": "phys_fn_000890",
@@ -16292,13 +16328,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/368",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2776",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1e9b0-0x1ef92) in scene-raycast Task 4 (contact-pair manager): thiscall(scene), `ret 4`; every patch refreshed from its body-local anchors (000891's own operand order of the body transform) or dropped, the dropped normal force added to +0xd4, the kept patches compacted with 000877; the frame slots persist across patches as in the image (0 before the first patch here, stack garbage in the image, read only for a patch with count 0). Candidate NxActorPair::row000891 (Physics/src/ContactPairManager.cpp). Reachable only from the simulation step (000897); reachable only from the simulation step; no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
       "id": "phys_fn_000892",
@@ -16328,13 +16365,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/369",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2798",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1efa0-0x1f00a) in scene-raycast Task 4 (contact-pair manager): thiscall(shape0, shape1), `ret 8`, returns this; 002356 on +0x10, the embedded patch's vptr, the zeroed words, the 0xff bytes at +0xe8/+0xe9, the objects and bodies; the vptr is the candidate's NxFrictionPatch table (compiler-generated; slot 3 forwards to 000867, slots 0-2 are not the image's shared 004248/001583/005242), not 0x10106944. Candidate NxActorPair::row000893 (Physics/src/ContactPairManager.cpp). Open callee: 002356 is not in the candidate (the no-op stand-in cpmOpen002356, no stable-ID line). Reachable only from the simulation step (000901 <- 000911 <- 001971/001976); reachable only from the simulation step; no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
       "id": "phys_fn_000894",
@@ -16364,13 +16402,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/370",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2799",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1f010-0x1f318) in scene-raycast Task 4 (contact-pair manager): thiscall(shape0, shape1, normal, materialIds), `ret 0x10`; the patch for a normal found (embedded, then the vector) or created, the vector grown 2n+2 on nxFoundationSDKAllocator ([0x101041bc]), the body-local normal, +0x64 from 000871. Candidate NxActorPair::row000895 (Physics/src/ContactPairManager.cpp). Reachable only from the simulation step (000897); reachable only from the simulation step; no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
       "id": "phys_fn_000896",
@@ -16400,13 +16439,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/371",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2822",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1f320-0x1f548, 000899 = 0x1f550-0x1fa99 reached by the jmps at 0x1001f544/0x1f548/0x1f94a/0x1f9a8/0x1f9f0/0x1fa4c) in scene-raycast Task 4 (contact-pair manager): thiscall(scene, forceScale, penaltyScale), `ret 0xc`; the object +0x14 bit-1 exit, 000891, the contact stream per pair header (flag 2 skipped; a pair with a missing body whose other body's +0x240 exceeds the header material gets flag 2 and its contacts skipped), 000857 on (shape B material << 16 | shape A), the 0.996f new-normal test, the per-contact feature restitution (a -1 feature after a real one keeps the last feature word as the patch ids, 0x1001f5b6/0x1001f5e5), the anchors (000865) and next patch (000895), 000883 for a spring material else the kind-0 record (penalty, cross products in the listing's y, z, x order, 004391, the bounce), the anchor selection, then 000879; integration review: 0x1f320-0x1f800 re-walked instruction by instruction (frame slots, the stream walk, the restitution selection, the record take through 000598 and the lever arms), no difference. Candidate NxActorPair::row000897 (Physics/src/ContactPairManager.cpp), one function carrying every row's stable-ID line. Reachable only from the simulation step (002400 -> 000659 -> 000655 -> 000611 -> 000730 -> 000728; 000728 is Island.cpp Row000728Fixture::row000728, which now calls this function); reachable only from the simulation step; no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
       "id": "phys_fn_000898",
@@ -16436,13 +16476,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/371",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2844",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1f320-0x1f548, 000899 = 0x1f550-0x1fa99 reached by the jmps at 0x1001f544/0x1f548/0x1f94a/0x1f9a8/0x1f9f0/0x1fa4c) in scene-raycast Task 4 (contact-pair manager): thiscall(scene, forceScale, penaltyScale), `ret 0xc`; the object +0x14 bit-1 exit, 000891, the contact stream per pair header (flag 2 skipped; a pair with a missing body whose other body's +0x240 exceeds the header material gets flag 2 and its contacts skipped), 000857 on (shape B material << 16 | shape A), the 0.996f new-normal test, the per-contact feature restitution (a -1 feature after a real one keeps the last feature word as the patch ids, 0x1001f5b6/0x1001f5e5), the anchors (000865) and next patch (000895), 000883 for a spring material else the kind-0 record (penalty, cross products in the listing's y, z, x order, 004391, the bounce), the anchor selection, then 000879; integration review: 0x1f320-0x1f800 re-walked instruction by instruction (frame slots, the stream walk, the restitution selection, the record take through 000598 and the lever arms), no difference. Candidate NxActorPair::row000897 (Physics/src/ContactPairManager.cpp), one function carrying every row's stable-ID line. Reachable only from the simulation step (002400 -> 000659 -> 000655 -> 000611 -> 000730 -> 000728; 000728 is Island.cpp Row000728Fixture::row000728, which now calls this function); reachable only from the simulation step; no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0001f320"
+      "notes": "continuation of the entry at 0x0001f320 Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
       "id": "phys_fn_000900",
@@ -16472,13 +16513,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/372",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2881",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1faa0-0x1fb29) in scene-raycast Task 4 (contact-pair manager): thiscall(element0, element1, list), `ret 0xc`, returns this; 000893 on the elements' +0x10, +0x104 = -1, the list, and the tail or head link. Candidate NxPairNode::row000901 (Physics/src/ContactPairManager.cpp). Reachable only from the simulation step (000911 <- 001971/001976); reachable only from the simulation step; no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
       "id": "phys_fn_000902",
@@ -16508,13 +16550,14 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/373",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2887",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1fb30-0x1fba3) in scene-raycast Task 4 (contact-pair manager): fastcall(node); the three unlink cases, then the tail call of 000887 on +0x14. Candidate cpmPairNodeUnlink0903 (Physics/src/ContactPairManager.cpp). Reached only from 000915 (pair deletion via 001953, the Scene destructor, and 001955 <- 001323), not reproduced in the candidate; pair nodes exist only after a simulation step, so no candidate path runs it and no target executes it. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
       "id": "phys_fn_000904",
@@ -16544,13 +16587,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/374",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2893",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1fbb0-0x1fd98) in scene-raycast Task 4 (contact-pair manager): thiscall(scene), `ret 4`; the cached body words, 000750 for jointed pairs, the pair's report record found or inserted in Scene+0x2c's hash, 000863 and the narrow-phase dispatch; the `scene+0x2c` null test at 0x1001fc70 (the address of a member, never null) is not written. Candidate NxPairNode::row000905 (Physics/src/ContactPairManager.cpp). Open callees: 002348, 004153 and 004155 are not in the candidate (no-op stand-ins cpmOpen002348/004153/004155; the find and insert return null, no stable-ID lines). Reachable only from the simulation step (000909 <- 001976 <- 000608 <- 000655); reachable only from the simulation step; no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
       "id": "phys_fn_000906",
@@ -16616,13 +16660,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/376",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2911",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1fdb0-0x1fe10) in scene-raycast Task 4 (contact-pair manager): thiscall on the list (scene), `ret 4`; 000905 on every node of the list. Candidate NxPairList::row000909 (Physics/src/ContactPairManager.cpp). Reachable only from the simulation step (001976 <- 000608 <- 000655); reachable only from the simulation step; no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
       "id": "phys_fn_000910",
@@ -16652,13 +16697,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/377",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2917",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1fe20-0x1feac) in scene-raycast Task 4 (contact-pair manager): thiscall(element0, element1), `ret 8`; the elements ordered by +0xd4 (unsigned), the group mask test (`shl edx,cl`: 1u << (g1 & 31)) on the live table .data 0x10123a98 (nxSdkGroupCollisionMaskTable()), the 0x108 allocation on [0x101041bc] and 000901. Candidate NxPairList::row000911 (Physics/src/ContactPairManager.cpp). Reachable only from the simulation step (001971/001976, the broadphase new pair); reachable only from the simulation step; no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
       "id": "phys_fn_000912",
@@ -16688,13 +16734,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/378",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2922",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1feb0-0x20016) in scene-raycast Task 4 (contact-pair manager): cdecl(scene, report, hash); for each hash entry holding a record: the events (shared with 000917), NxContactPair {objects, stream, 000881's sums} to the report's slot 0, a released record freed on [0x101041bc] and erased (004157); NxContactPair's inline constructor stores the stream NULL first (unobservable); with no node the sums are not written, as in the image. Candidate cpmFireContactReports0913 (Physics/src/ContactPairManager.cpp). Open callees: 004153 and 004157 are not in the candidate (no-op stand-ins), and the SDK's actor-group pair-flags hash (.data 0x10123c28) is absent (a null pointer is passed). Its caller 000663 (the Scene destructor, reached by NxPhysicsSDK::releaseScene via 000668) is reproduced as Scene.cpp nxSceneDelete, which does not call it; with no simulation step the image's report hash is empty and the row returns at 0x1001fec0. No candidate path runs it and no target executes it. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
       "id": "phys_fn_000914",
@@ -16724,13 +16771,14 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/379",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2936",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x20020-0x2003e) in scene-raycast Task 4 (contact-pair manager): stdcall(node), `ret 4`; 000903 on the node and its free on [0x101041bc]. Candidate cpmDeletePairNode0915 (Physics/src/ContactPairManager.cpp). Its callers 001953 (the Scene destructor) and 001955 (<- 001323, the shape/actor scalar deleting destructors) are not in the candidate, and pair nodes exist only after a simulation step; no candidate path runs it and no target executes it. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
       "id": "phys_fn_000916",
@@ -16760,13 +16808,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/380",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2938",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x20050-0x20075; 000919 = 0x20080-0x2025b, 000921 = 0x20260-0x203b2) in scene-raycast Task 4 (contact-pair manager): cdecl(scene, hash); the 000913 event logic, 0x2c-byte records appended to Scene+0x60c (grown 2n+2 on [0x101041bc], copied, the old block freed); /GS gives the candidate a stack cookie the image does not have (local array). Candidate cpmBufferContactReports0917 (Physics/src/ContactPairManager.cpp), one function carrying every row's stable-ID line. Open callees: 004153 and 004157 are not in the candidate (no-op stand-ins), and the pair-flags hash .data 0x10123c28 is absent. Reachable only from the simulation step (000655); reachable only from the simulation step; no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
       "id": "phys_fn_000918",
@@ -16796,13 +16845,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/380",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2939",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x20050-0x20075; 000919 = 0x20080-0x2025b, 000921 = 0x20260-0x203b2) in scene-raycast Task 4 (contact-pair manager): cdecl(scene, hash); the 000913 event logic, 0x2c-byte records appended to Scene+0x60c (grown 2n+2 on [0x101041bc], copied, the old block freed); /GS gives the candidate a stack cookie the image does not have (local array). Candidate cpmBufferContactReports0917 (Physics/src/ContactPairManager.cpp), one function carrying every row's stable-ID line. Open callees: 004153 and 004157 are not in the candidate (no-op stand-ins), and the pair-flags hash .data 0x10123c28 is absent. Reachable only from the simulation step (000655); reachable only from the simulation step; no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00020050"
+      "notes": "continuation of the entry at 0x00020050 Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
       "id": "phys_fn_000920",
@@ -16832,13 +16882,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ContactPairManager.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/380",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2951",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x20050-0x20075; 000919 = 0x20080-0x2025b, 000921 = 0x20260-0x203b2) in scene-raycast Task 4 (contact-pair manager): cdecl(scene, hash); the 000913 event logic, 0x2c-byte records appended to Scene+0x60c (grown 2n+2 on [0x101041bc], copied, the old block freed); /GS gives the candidate a stack cookie the image does not have (local array). Candidate cpmBufferContactReports0917 (Physics/src/ContactPairManager.cpp), one function carrying every row's stable-ID line. Open callees: 004153 and 004157 are not in the candidate (no-op stand-ins), and the pair-flags hash .data 0x10123c28 is absent. Reachable only from the simulation step (000655); reachable only from the simulation step; no public path while NpScene::simulate is a stub. units/scene-raycast-contract.md",
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00020050"
+      "notes": "continuation of the entry at 0x00020050 Scene-raycast Task 4 (contact-pair manager): written from the listing (source-only; nothing in the candidate calls it), integrated and reviewed; claimed and promoted on a static proof.",
+      "implementation": "Physics/src/ContactPairManager.cpp"
     },
     {
       "id": "phys_fn_000922",

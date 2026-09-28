@@ -142,8 +142,20 @@ target_compile_definitions(NxPhysics PRIVATE NX_PHYSICS_DLL=1)
 # are x87 in the oracle too and are reached from the solver step, so they are
 # on the list for the same reason. core/JointSupport.cpp's rows 004389 and 004393 are x87 in the
 # oracle and are called from the solver slots 004360 and 004362 inside the step.
+# BodyStep.cpp and Island.cpp (scene-raycast Task 4) hold the body record's
+# step rows -- the velocity integration, damping and clamp, the wake-counter
+# update, the quaternion integrator (fsin/fcos/fsqrt), the CCD pose and swept
+# box, and the island/sleep-group unions -- which are x87 in the oracle and
+# run only inside the simulation step (000655's phases) or its CCD sweep
+# (002264), under the step's control word 0x0f7f; they are on the list so
+# the code generator keeps their register values and NaN propagation x87.
+# ContactPairManager.cpp's rows (000750..000921, the contact and friction
+# constraint rows, the friction patches and the contact reports) are x87 in the
+# oracle and run from the simulation step (002400 -> 000659 -> 000655) under its
+# control word 0x0f7f.
 if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	set_source_files_properties(
+		Physics/src/ContactPairManager.cpp
 		Physics/src/Geometry.cpp
 		Physics/src/MassProperties.cpp
 		Physics/src/SmoothNormals.cpp
@@ -162,6 +174,8 @@ if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/core/FixedJoint.cpp
 		Physics/src/core/D6Joint.cpp
 		Physics/src/core/JointSupport.cpp
+		Physics/src/BodyStep.cpp
+		Physics/src/Island.cpp
 		PROPERTIES COMPILE_OPTIONS "/arch:IA32")
 	# opcode/IcePruner.cpp builds OPCODE's AABBTreeOfAABBsBuilder on the stack
 	# (the static pruner's tree build, 005216), so it emits COMDAT copies of

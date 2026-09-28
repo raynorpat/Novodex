@@ -55,9 +55,9 @@
   "counts": {
     "differential_falsified": 31,
     "oracle_differential_falsified": 30,
-    "deferred_not_reconstructed_in_phase": 309,
-    "deferred_blocked_on_later_phase": 20,
-    "deferred_reconstructed_not_falsified": 2
+    "deferred_not_reconstructed_in_phase": 305,
+    "deferred_blocked_on_later_phase": 18,
+    "deferred_reconstructed_not_falsified": 8
   },
   "closed": [
     {
@@ -684,39 +684,27 @@
       "id": "phys_fn_000772",
       "rva": "0x00018470",
       "size": 207,
-      "reason": "blocked_on_later_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [
         4,
         5,
         7
       ],
-      "blocked_on": [
-        "phys_fn_000754",
-        "phys_fn_005191"
-      ],
-      "blocked_on_type": "Shape",
-      "vtable_slot": 7,
-      "note": "the continuous-collision sweep and what only it reaches, 3,802 bytes behind phys_fn_002266's guard. NX_CONTINUOUS_CD is parameter 11 and its shipped default is 0.0f -- measured three ways against the oracle's own live array rather than read off the disassembly -- so the guard closes and this arm runs in no configuration the shipped SDK produces. Driving it needs vtable slot 7, which no phase has resolved for any shape type, a second pose at Shape+0x3c..+0x68 and the sink past +0x44; it also reaches phys_fn_000754, a 1,027-byte Phase 7 row nothing else reaches, and phys_fn_005191, a Phase 4 row"
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure; previously deferred blocked_on_later_phase: the continuous-collision sweep and what only it reaches, 3,802 bytes behind phys_fn_002266's guard. NX_CONTINUOUS_CD is parameter 11 and its shipped default is 0.0f -- measured three ways against the oracle's own live array rather than read off the disassembly -- so the guard closes and this arm runs in no configuration the shipped SDK produces. Driving it needs vtable slot 7, which no phase has resolved for any shape type, a second pose at Shape+0x3c..+0x68 and the sink past +0x44; it also reaches phys_fn_000754, a 1,027-byte Phase 7 row nothing else reaches, and phys_fn_005191, a Phase 4 row"
     },
     {
       "id": "phys_fn_000774",
       "rva": "0x00018540",
       "size": 34,
-      "reason": "blocked_on_later_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [
         4,
         5,
         7
       ],
-      "blocked_on": [
-        "phys_fn_000754",
-        "phys_fn_005191"
-      ],
-      "blocked_on_type": "Shape",
-      "vtable_slot": 7,
-      "note": "the continuous-collision sweep and what only it reaches, 3,802 bytes behind phys_fn_002266's guard. NX_CONTINUOUS_CD is parameter 11 and its shipped default is 0.0f -- measured three ways against the oracle's own live array rather than read off the disassembly -- so the guard closes and this arm runs in no configuration the shipped SDK produces. Driving it needs vtable slot 7, which no phase has resolved for any shape type, a second pose at Shape+0x3c..+0x68 and the sink past +0x44; it also reaches phys_fn_000754, a 1,027-byte Phase 7 row nothing else reaches, and phys_fn_005191, a Phase 4 row"
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure; previously deferred blocked_on_later_phase: the continuous-collision sweep and what only it reaches, 3,802 bytes behind phys_fn_002266's guard. NX_CONTINUOUS_CD is parameter 11 and its shipped default is 0.0f -- measured three ways against the oracle's own live array rather than read off the disassembly -- so the guard closes and this arm runs in no configuration the shipped SDK produces. Driving it needs vtable slot 7, which no phase has resolved for any shape type, a second pose at Shape+0x3c..+0x68 and the sink past +0x44; it also reaches phys_fn_000754, a 1,027-byte Phase 7 row nothing else reaches, and phys_fn_005191, a Phase 4 row"
     },
     {
       "id": "phys_fn_000827",
@@ -754,33 +742,37 @@
       "id": "phys_fn_000875",
       "rva": "0x0001d8e0",
       "size": 915,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000887",
       "rva": "0x0001e910",
       "size": 41,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000889",
       "rva": "0x0001e940",
       "size": 99,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000903",
       "rva": "0x0001fb30",
       "size": 120,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000925",

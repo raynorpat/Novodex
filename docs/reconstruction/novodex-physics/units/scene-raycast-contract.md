@@ -881,3 +881,74 @@ new one; validator unexplained=0; tool tests OK; stable-ID check: 8 new lines (B
 core/JointSupport.cpp 1), exact form, RVA and size equal to the inventory, no duplicates. The pre-existing
 non-stable `// phys_fn_` description lines in Scene.cpp (52) and NpActor.cpp (17) are other rows' and are not
 touched.
+
+## Task 4 results: island, body step, CCD and contact-pair manager
+
+Two source-only sub-areas were written in separate branches from bb2e485 and integrated onto the body-creation
+commit (6bd2529) by cherry-pick: `claude/sr-t4-island` 5b8662b (Physics/src/Island.cpp, Physics/src/BodyStep.cpp,
+include/BodyStep.h, six X87Sqrt.h helpers) and `claude/sr-t4-cpm` 3274683 (Physics/src/ContactPairManager.cpp,
+include/ContactPairManager.h, two PhysicsSDK accessors for the live parameter array .data 0x10123b18 and the group
+mask table .data 0x10123a98). Writers' notes: `.superpowers/sdd/sr/task-4-island-notes.md`, `task-4-cpm-notes.md`.
+No candidate code calls any of these rows (NpScene::simulate and fetchResults are stubs, the CCD sweep 002264 and the
+Scene/shape destructors 001953/001955 are not reproduced), so none has dynamic evidence and none is wired.
+
+**Claimed and promoted to `reconstructed` on static proofs (51 rows, 18,198 B):**
+
+| Set | Rows | B | Candidate |
+|---|---|---:|---|
+| island | 000708 000714 000716 000718 000720 000724 000728 000730 000762 000764 | 1,848 | `Row0007NNFixture::row0007NN` (Island.cpp) |
+| body step | 000710 000726 000732 000734 000736 000770 | 2,604 | the same pattern (BodyStep.cpp) |
+| CCD | 000740 000772 000774 | 664 | the same pattern (BodyStep.cpp); 000738 stays core/JointSupport.cpp's |
+| contact-pair manager | 000750+000752, 000855, 000857, 000859, 000861, 000863, 000865, 000871, 000875, 000877, 000879, 000881, 000883+000885, 000887+000889, 000891, 000893, 000895, 000897+000899, 000901, 000903, 000905, 000909, 000911, 000913, 000915, 000917+000919+000921 | 13,082 | ContactPairManager.cpp (NxActorPair/NxPairNode/NxPairList members, `cpm*NNNNNN` free functions with the rows' stdcall/fastcall/cdecl ABIs) |
+
+(The island/step/CCD total is 5,116 B, not the 5,265 B quoted in the hand-off.) Every row's static proof states
+"reachable only from the simulation step; no public path while NpScene::simulate is a stub", except the rows with a
+real non-step path the candidate does not run: 000710 (000619 <- NxScene::fetchResults, a stub), 000772/000774 (only
+from the CCD sweep 002264), 000881 and 000913 (NxPhysicsSDK::releaseScene -> 000668 -> 000663; Scene.cpp
+nxSceneDelete does not call 000913), 000887/000889, 000903 and 000915 (pair deletion from 001953/001955 <- 001323).
+Ledgers: phase 7 (42 rows), phase 3 (000875, 000887, 000889, 000903 from `not_reconstructed_in_phase`; 000772/000774
+from `blocked_on_later_phase`, the old note kept after the standard one) and phase 2 (000734, 000736, 000915 from
+`homeless_shared_code`) move to `reconstructed_not_falsified`. 000738's proofs were already restated in Task 2 (no
+harness fixture left); unchanged.
+
+**Integration fix-ups.**
+- 000722: BodyStep.h's placeholder `struct Row000722Fixture` duplicated core/JointSupport.h's (C2011 in Island.cpp)
+  and Island.cpp's NX_ASSERT body would have collided with core/JointSupport.cpp's (LNK2005). Both removed; 000764
+  calls the real, reconstructed `Row000722Fixture::row000722` (the image's tail jmp; the candidate also compiles it
+  to a `jmp`).
+- 000897: the placeholder `Row000897Fixture` is removed; 000728 calls `NxActorPair::row000897` on
+  `NxPairNode::pair()` (node + 0x14), with (scene = [[record+0x19c]+4], dt, invDt), `ret 0xc`, checked against
+  0x16809-0x16816 and 0x1f320's prologue/epilogue.
+- 004172 (0x9b0d0, 69 B, owner gap Joint.cpp..D6Joint.cpp): no candidate exists. The stand-in is renamed
+  `nxBodyIslandRebuild004172Open` (an open no-op, `noinline`, no stable-ID line); 000720 and 000764 call it.
+- The CPM open callees stay the named no-op stand-ins `cpmOpen002348/002354/002356/004153/004155/004157` (none of
+  those rows, and not the pair-flags hash .data 0x10123c28, exists anywhere in the candidate: grepped by stable ID,
+  RVA and name); they are now `noinline`. The empty void ones still compile away (a no-op call has no observable
+  effect); 004153/004155 remain real calls returning null.
+- CMakeLists.txt: the two branches' /arch:IA32 additions merged into one list with both reasons (BodyStep.cpp,
+  Island.cpp and ContactPairManager.cpp run under the step's 0x0f7f).
+
+**Review (integration).** Walked against the listing and the compiled objects: 000726 in full (kinematic arm
+0x16274-0x1653e including the quaternion product, the hemisphere and |r.w - 1| tests and the rate helpers; dynamic
+arm 0x16541-0x167b8: every spill, the NaN arms of the damping and clamp compares), 000762 (0x177c0-0x17922), 000716
+(0x15ec0-0x15fd2) and 000718's else arm, 000897+000899 over 0x1f320-0x1f800 (frame slots, the stream walk, the
+feature restitution quirk, the record take, the lever arms), 000855 in full. All faithful. The `ret N` of all 51
+rows was compared mechanically between the listing and the objects: equal. `dumpbin /symbols` on Island.obj,
+BodyStep.obj and ContactPairManager.obj: no UNDEF sqrt/sin/cos/acos/_CI*/__libm_sse2_* (the roots, fsin/fcos and
+_CIacos go through X87Sqrt.h's naked helpers). Recorded code-shape differences, none changing a stored value:
+- 000726: the compiler drops the intermediate +0x34..+0x48 stores that both damping arms overwrite, and keeps the
+  pair scale (1 / +0x25c) in a qword spill; the scale is 1.0 exactly while .data 0x10123c00 is 0, as in the image.
+- /GS stack cookies in 000740, 000879 and 000917 (local arrays), the joint rows' accepted difference.
+- x87CIacos does not reproduce _CIacos's _87except error reporting; 000893's patch vptr is the candidate's
+  compiler-generated NxFrictionPatch table, not 0x10106944.
+
+**Contract text corrections (from the listing).**
+- 000762 (row table): the record itself (esi) is woken, twice on the two-body path (0x177d1, 0x17856); the joint's
+  second body (joint+0xc) is not woken.
+- 000716 (row table): the surviving root's rank is incremented on every else-arm merge (0x15f85), not "on a tie";
+  there is no tie test. 000718 does the same (0x160a1).
+
+**Open.** 004172, 002348, 002354, 002356, 004153, 004155, 004157 and the pair-flags hash (no candidates; not rows of
+these sub-areas). Wiring waits for the simulation step, the CCD sweep, the Scene destructor's 000913 call and pair
+deletion. The Phase 7 ledger's note still carries its older "187 / 374" figures (not checked by the validator; not
+changed here).

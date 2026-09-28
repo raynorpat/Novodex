@@ -60,6 +60,20 @@ PhysicsSDK* PhysicsSDK::instance = 0;
 // been copied into the material array, and nothing in Phase 2 reads it back.
 static const NxU32 NX_MF_INTERNAL_BIT31 = 0x80000000;
 
+// The contact-pair manager rows (ContactPairManager.cpp) load the live
+// parameters and the group collision masks straight from these two arrays
+// (e.g. `fld [0x10123b2c]` at 0x1001cbff, `mov eax,[eax*4 + 0x10123a98]` at
+// 0x1001fe6e), not through getParameter/getGroupCollisionFlag. Not rows.
+const NxReal* nxSdkParameterTable()
+	{
+	return gParameter;
+	}
+
+const NxU32* nxSdkGroupCollisionMaskTable()
+	{
+	return gGroupCollisionMask;
+	}
+
 static void defineParameter(NxParameter paramEnum, NxReal defaultValue, NxReal minValue, NxReal maxValue)
 	{
 	gParameterDefault[paramEnum] = defaultValue;

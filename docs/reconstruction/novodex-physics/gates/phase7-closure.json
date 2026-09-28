@@ -20,8 +20,8 @@
   },
   "counts": {
     "differential_falsified": 4,
-    "deferred_not_reconstructed_in_phase": 341,
-    "deferred_reconstructed_not_falsified": 216
+    "deferred_not_reconstructed_in_phase": 299,
+    "deferred_reconstructed_not_falsified": 258
   },
   "closed": [
     {
@@ -1087,113 +1087,127 @@
       "id": "phys_fn_000708",
       "rva": "0x00015c20",
       "size": 130,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000710",
       "rva": "0x00015cb0",
       "size": 122,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000714",
       "rva": "0x00015d70",
       "size": 328,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000716",
       "rva": "0x00015ec0",
       "size": 277,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000718",
       "rva": "0x00015fe0",
       "size": 285,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000720",
       "rva": "0x00016100",
       "size": 46,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000724",
       "rva": "0x000161b0",
       "size": 175,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000726",
       "rva": "0x00016260",
       "size": 1371,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000728",
       "rva": "0x000167c0",
       "size": 108,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000730",
       "rva": "0x00016830",
       "size": 42,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000732",
       "rva": "0x00016860",
       "size": 399,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000740",
       "rva": "0x00016c20",
       "size": 423,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000750",
       "rva": "0x00016fb0",
       "size": 45,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000752",
       "rva": "0x00016fe0",
       "size": 36,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000754",
@@ -1208,17 +1222,19 @@
       "id": "phys_fn_000762",
       "rva": "0x000177c0",
       "size": 357,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000764",
       "rva": "0x00017930",
       "size": 100,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000766",
@@ -1232,9 +1248,10 @@
       "id": "phys_fn_000770",
       "rva": "0x000183a0",
       "size": 205,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000778",
@@ -1267,49 +1284,55 @@
       "id": "phys_fn_000855",
       "rva": "0x0001ca00",
       "size": 75,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000857",
       "rva": "0x0001ca50",
       "size": 209,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000859",
       "rva": "0x0001cb30",
       "size": 607,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000861",
       "rva": "0x0001cd90",
       "size": 791,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000863",
       "rva": "0x0001d0b0",
       "size": 8,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000865",
       "rva": "0x0001d0c0",
       "size": 409,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000869",
@@ -1323,105 +1346,118 @@
       "id": "phys_fn_000871",
       "rva": "0x0001d590",
       "size": 122,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000877",
       "rva": "0x0001dc80",
       "size": 189,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000879",
       "rva": "0x0001dd40",
       "size": 1983,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000881",
       "rva": "0x0001e500",
       "size": 213,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000883",
       "rva": "0x0001e5e0",
       "size": 200,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000885",
       "rva": "0x0001e6b0",
       "size": 593,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000891",
       "rva": "0x0001e9b0",
       "size": 1509,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000893",
       "rva": "0x0001efa0",
       "size": 109,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000895",
       "rva": "0x0001f010",
       "size": 779,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000897",
       "rva": "0x0001f320",
       "size": 554,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000899",
       "rva": "0x0001f550",
       "size": 1356,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000901",
       "rva": "0x0001faa0",
       "size": 140,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000905",
       "rva": "0x0001fbb0",
       "size": 491,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000907",
@@ -1435,49 +1471,55 @@
       "id": "phys_fn_000909",
       "rva": "0x0001fdb0",
       "size": 99,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000911",
       "rva": "0x0001fe20",
       "size": 143,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000913",
       "rva": "0x0001feb0",
       "size": 359,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000917",
       "rva": "0x00020050",
       "size": 39,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000919",
       "rva": "0x00020080",
       "size": 477,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000921",
       "rva": "0x00020260",
       "size": 339,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_001639",
