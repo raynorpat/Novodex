@@ -1152,17 +1152,20 @@ static const unsigned kIceTriangleInflateRva = 0x000e4090;	// phys_fn_005185
 // The candidate side of the pre-flight, in PhysicsCollisionInflate.cpp (why there).
 void nxCandidateTriangleInflate(float* corners, float fatCoeff, bool constantBorder);
 
+static const unsigned kRayTriIntersectRva = 0x00036f50;	// phys_fn_001712
+
 // Row phys_fn_001708 calls Triangle::Inflate (phys_fn_005185), a vendored row whose
 // candidate differs from the oracle's in the last bits (held at `discovered` for
-// that; evidence/vendored-correspondence.md). Each side of ray_inflated_tris
-// reaches its own, so the family pre-flights every fan: when the two Inflates
-// agree on all of its triangles the fan is compared exactly and gates; when they
-// differ the fan's words are counted apart under these ceilings and do not gate,
-// because what differs there is the callee, not 001708.
-// Measured when the family was written: 21,018 of the 60,000 fans, with 914
-// differing words under 0x027f and 981 under 0x0f7f; none on the other fans.
-static const unsigned kInflateDivergentFanCeiling = 21018;
-static const unsigned kInflateDivergentWordCeiling[2] = { 914, 981 };
+// that; evidence/vendored-correspondence.md), and NxRayTriIntersect
+// (phys_fn_001712), whose candidate differs from the oracle's on some NaN inputs.
+// Each side of ray_inflated_tris reaches its own, so the family pre-flights every
+// fan: when both callees agree on all of its triangles the fan is compared
+// exactly and gates; when either differs the fan's words are counted apart under
+// these ceilings and do not gate, because what differs there is a callee, not
+// 001708. The ceilings are the counts measured when the family was last
+// registered (fans under 0x027f / 0x0f7f; words under 0x027f / 0x0f7f).
+static const unsigned kCalleeDivergentFanCeiling[2] = { 28800, 41229 };
+static const unsigned kCalleeDivergentWordCeiling[2] = { 1051, 1603 };
 
 typedef void(__cdecl* NxLineLineFn)(NxReal*, NxReal*, const NxReal*, const NxReal*,
 	const NxReal*, const NxReal*);
@@ -1202,17 +1205,75 @@ static void nxCallWide7(const void* fn, const void* a0, const void* a1, const vo
 		}
 	}
 
+// Task 2b's raw words are written into their slots as bits and never returned as
+// a float. nxPick returns its word through a float return value, and whether that
+// value passes through st(0) -- which quiets a signalling NaN -- depends on how the
+// compiler inlined the call site, so the words the oracle is handed could move with
+// an unrelated edit (convex-mesh gap Task 2b review). nxPickBits draws what nxPick
+// draws, plus a fifth branch of mixed exponents; nxMixedBits is that branch alone:
+// a finite word of random sign and significand with a magnitude in 2^-27..2^72, the
+// range over which the wide intermediates of the triangle kernels differ from their
+// 53-bit and 24-bit roundings (the review's scratch differential). One in sixteen
+// is a zero of either sign.
+static void nxMixedBits(unsigned* state, float* out)
+	{
+	unsigned bits;
+	if((nxNext(state) & 15) == 0)
+		bits = nxNext(state) & 0x80000000u;
+	else
+		bits = (nxNext(state) & 0x807fffffu) | ((100u + nxNext(state) % 100u) << 23);
+	memcpy(out, &bits, 4);
+	}
+
+static void nxPickBits(unsigned* state, float* out)
+	{
+	const unsigned choice = nxNext(state) & 7;
+	unsigned bits;
+	if(choice == 0)
+		bits = nxNext(state);
+	else if(choice == 1)
+		bits = 0;
+	else if(choice == 2)
+		{
+		const float value = nxUnit(state) * 1e-6f;
+		memcpy(&bits, &value, 4);
+		}
+	else if(choice == 3)
+		bits = (nxNext(state) & 0x807fffffu) | 0x7f800000u;
+	else if(choice == 4)
+		{
+		nxMixedBits(state, out);
+		return;
+		}
+	else
+		{
+		const float value = nxUnit(state) * 8.0f - 4.0f;
+		memcpy(&bits, &value, 4);
+		}
+	memcpy(out, &bits, 4);
+	}
+
+// A word of a Task 2b draw that is not aimed: mixed exponents, or nxPickBits.
+static void nxDrawBits(unsigned* state, bool mixed, float* out)
+	{
+	if(mixed)
+		nxMixedBits(state, out);
+	else
+		nxPickBits(state, out);
+	}
+
 // A triangle for the triangle kernels. `aimed` keeps it finite: a random
 // triangle in [-2, 2]^3, one draw in eight degenerate (a repeated vertex, or the
 // third vertex on the line of the first two) and one in sixteen shrunk to a
-// thousandth; otherwise every word is nxPick's. Returns true for a degenerate one.
-static bool nxFillTriangle(unsigned* state, bool aimed, float v[3][3])
+// thousandth; otherwise every word is nxDrawBits's (mixed exponents when `mixed`).
+// Returns true for a degenerate one.
+static bool nxFillTriangle(unsigned* state, bool aimed, bool mixed, float v[3][3])
 	{
 	if(!aimed)
 		{
 		for(int i = 0; i < 3; ++i)
 			for(int k = 0; k < 3; ++k)
-				v[i][k] = nxPick(state);
+				nxDrawBits(state, mixed, &v[i][k]);
 		return false;
 		}
 	for(int i = 0; i < 3; ++i)
@@ -1315,7 +1376,8 @@ static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
 	unsigned totalMismatch = 0;
 	// The triangle distance kernels, the ray/fan and slab helpers, the
 	// triangle plane and the segment/triangle-edge test, at their own recorded
-	// addresses, half raw draws (every word through nxPick) and half aimed, under
+	// addresses, a third raw draws (every word through nxPickBits), a third aimed and a third
+	// of mixed exponents (nxMixedBits), under
 	// both control words. As for Task 2a's kernels only the default word's half
 	// gates; the 0x0f7f count is in the registered coverage line.
 	{
@@ -1329,6 +1391,7 @@ static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
 	nxDigestInit(&candidateDigest);
 	unsigned perMode[2] = { 0, 0 };
 	unsigned canonical = 0;
+	unsigned mixedDraws = 0;
 	unsigned degenerate = 0;
 	unsigned onFeature = 0;
 	unsigned vertex[3] = { 0, 0, 0 };
@@ -1340,9 +1403,13 @@ static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
 	unsigned state = 0x3a17c0d5u;
 	for(unsigned i = 0; i < kPairIterations; ++i)
 		{
-		const bool aimed = (nxNext(&state) & 1) != 0;
+		const unsigned draw = nxNext(&state) % 3;
+		const bool aimed = draw == 1;
+		const bool mixed = draw == 2;
+		if(mixed)
+			++mixedDraws;
 		float v[3][3];
-		if(nxFillTriangle(&state, aimed, v))
+		if(nxFillTriangle(&state, aimed, mixed, v))
 			++degenerate;
 		float point[3];
 		if(aimed)
@@ -1354,7 +1421,7 @@ static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
 			}
 		else
 			for(int k = 0; k < 3; ++k)
-				point[k] = nxPick(&state);
+				nxDrawBits(&state, mixed, &point[k]);
 		const unsigned nulls = (nxNext(&state) % 8 == 0) ? (1 + nxNext(&state) % 3) : 0;
 		if(nulls)
 			++nullOutputs;
@@ -1400,9 +1467,9 @@ static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
 	printf("collision name=point_triangle index=- rva=0x%08x owner=phys_fn_001672 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
 		kPointTriangleRva, oracleDigest.checks, oracleDigest.state, candidateDigest.state,
 		perMode[0] + perMode[1]);
-	printf("collision coverage name=point_triangle degenerate=%u on_feature=%u vertex0=%u vertex1=%u vertex2=%u edge_s0=%u edge_t0=%u open=%u flt_max=%u null_outputs=%u canonical_nan=%u default_mismatches=%u simulate_mismatches=%u\n",
+	printf("collision coverage name=point_triangle degenerate=%u on_feature=%u vertex0=%u vertex1=%u vertex2=%u edge_s0=%u edge_t0=%u open=%u flt_max=%u null_outputs=%u mixed=%u canonical_nan=%u default_mismatches=%u simulate_mismatches=%u\n",
 		degenerate, onFeature, vertex[0], vertex[1], vertex[2], edgeS, edgeT, open, floatMax,
-		nullOutputs, canonical, perMode[0], perMode[1]);
+		nullOutputs, mixedDraws, canonical, perMode[0], perMode[1]);
 	}
 
 	{
@@ -1416,6 +1483,7 @@ static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
 	nxDigestInit(&candidateDigest);
 	unsigned perMode[2] = { 0, 0 };
 	unsigned canonical = 0;
+	unsigned mixedDraws = 0;
 	unsigned parallel = 0;
 	unsigned zeroDirection = 0;
 	unsigned crossing = 0;
@@ -1424,7 +1492,11 @@ static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
 	unsigned state = 0x6c1b0e97u;
 	for(unsigned i = 0; i < kPairIterations; ++i)
 		{
-		const bool aimed = (nxNext(&state) & 1) != 0;
+		const unsigned draw = nxNext(&state) % 3;
+		const bool aimed = draw == 1;
+		const bool mixed = draw == 2;
+		if(mixed)
+			++mixedDraws;
 		float o0[3], d0[3], o1[3], d1[3];
 		if(aimed)
 			{
@@ -1461,10 +1533,10 @@ static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
 		else
 			for(int k = 0; k < 3; ++k)
 				{
-				o0[k] = nxPick(&state);
-				d0[k] = nxPick(&state);
-				o1[k] = nxPick(&state);
-				d1[k] = nxPick(&state);
+				nxDrawBits(&state, mixed, &o0[k]);
+				nxDrawBits(&state, mixed, &d0[k]);
+				nxDrawBits(&state, mixed, &o1[k]);
+				nxDrawBits(&state, mixed, &d1[k]);
 				}
 
 		for(int mode = 0; mode < 2; ++mode)
@@ -1490,8 +1562,8 @@ static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
 	printf("collision name=line_line index=- rva=0x%08x owner=phys_fn_001692 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
 		kLineLineRva, oracleDigest.checks, oracleDigest.state, candidateDigest.state,
 		perMode[0] + perMode[1]);
-	printf("collision coverage name=line_line parallel=%u zero_direction=%u crossing=%u at_origin0=%u at_origin1=%u canonical_nan=%u default_mismatches=%u simulate_mismatches=%u\n",
-		parallel, zeroDirection, crossing, atOrigin0, atOrigin1, canonical, perMode[0], perMode[1]);
+	printf("collision coverage name=line_line parallel=%u zero_direction=%u crossing=%u at_origin0=%u at_origin1=%u mixed=%u canonical_nan=%u default_mismatches=%u simulate_mismatches=%u\n",
+		parallel, zeroDirection, crossing, atOrigin0, atOrigin1, mixedDraws, canonical, perMode[0], perMode[1]);
 	}
 
 	{
@@ -1510,6 +1582,7 @@ static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
 	nxDigestInit(&candidateDigest);
 	unsigned perMode[2] = { 0, 0 };
 	unsigned canonical = 0;
+	unsigned mixedDraws = 0;
 	unsigned degenerate = 0;
 	unsigned parallel = 0;
 	unsigned zeroLength = 0;
@@ -1524,9 +1597,13 @@ static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
 	unsigned state = 0x59d02c4bu;
 	for(unsigned i = 0; i < kPairIterations; ++i)
 		{
-		const bool aimed = (nxNext(&state) & 1) != 0;
+		const unsigned draw = nxNext(&state) % 3;
+		const bool aimed = draw == 1;
+		const bool mixed = draw == 2;
+		if(mixed)
+			++mixedDraws;
 		float v[3][3];
-		if(nxFillTriangle(&state, aimed, v))
+		if(nxFillTriangle(&state, aimed, mixed, v))
 			++degenerate;
 		NxSegment segment;
 		if(aimed)
@@ -1580,7 +1657,7 @@ static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
 			{
 			float* words = &segment.p0.x;
 			for(int k = 0; k < 6; ++k)
-				words[k] = nxPick(&state);
+				nxDrawBits(&state, mixed, &words[k]);
 			}
 		const unsigned nulls = (nxNext(&state) % 8 == 0) ? (1 + nxNext(&state) % 7) : 0;
 		if(nulls)
@@ -1621,9 +1698,9 @@ static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
 	printf("collision name=segment_triangle index=- rva=0x%08x owner=phys_fn_001694 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
 		kSegmentTriangleRva, oracleDigest.checks, oracleDigest.state, candidateDigest.state,
 		perMode[0] + perMode[1]);
-	printf("collision coverage name=segment_triangle degenerate=%u parallel=%u zero_length=%u crossing=%u r_start=%u r_end=%u r_open=%u s_zero=%u t_zero=%u intersecting=%u null_outputs=%u canonical_nan=%u default_mismatches=%u simulate_mismatches=%u\n",
+	printf("collision coverage name=segment_triangle degenerate=%u parallel=%u zero_length=%u crossing=%u r_start=%u r_end=%u r_open=%u s_zero=%u t_zero=%u intersecting=%u null_outputs=%u mixed=%u canonical_nan=%u default_mismatches=%u simulate_mismatches=%u\n",
 		degenerate, parallel, zeroLength, crossing, rStart, rEnd, rOpen, sZero, tZero, intersecting,
-		nullOutputs, canonical, perMode[0], perMode[1]);
+		nullOutputs, mixedDraws, canonical, perMode[0], perMode[1]);
 	}
 
 	{
@@ -1638,18 +1715,27 @@ static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
 	nxDigestInit(&candidateDigest);
 	unsigned perMode[2] = { 0, 0 };
 	unsigned canonical = 0;
+	unsigned mixedDraws = 0;
 	unsigned hits = 0;
 	unsigned misses = 0;
 	unsigned countTwo = 0;
 	unsigned inPlane = 0;
-	unsigned inflateDivergent = 0;
+	unsigned inflateDivergent[2] = { 0, 0 };
+	unsigned rayTriDivergent[2] = { 0, 0 };
+	typedef bool(__cdecl* NxRayTriFn)(const NxVec3&, const NxVec3&, const NxVec3&, const NxVec3&,
+		const NxVec3&, float&, float&, float&, bool);
+	const NxRayTriFn oracleRayTri = (NxRayTriFn) (base + kRayTriIntersectRva);
 	unsigned divergentMismatches[2] = { 0, 0 };
 	typedef void(__thiscall* NxInflateFn)(void*, float, bool);
 	const NxInflateFn oracleInflate = (NxInflateFn) (base + kIceTriangleInflateRva);
 	unsigned state = 0x0fa9d3e1u;
 	for(unsigned i = 0; i < kPairIterations; ++i)
 		{
-		const bool aimed = (nxNext(&state) & 1) != 0;
+		const unsigned draw = nxNext(&state) % 3;
+		const bool aimed = draw == 1;
+		const bool mixed = draw == 2;
+		if(mixed)
+			++mixedDraws;
 		NxVec3 vertices[8];
 		NxU32 indices[8];
 		NxU32 count = 3 + nxNext(&state) % 4;
@@ -1697,9 +1783,17 @@ static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
 		else
 			{
 			for(NxU32 k = 0; k < 8; ++k)
-				vertices[k].set(nxPick(&state), nxPick(&state), nxPick(&state));
-			ray.orig.set(nxPick(&state), nxPick(&state), nxPick(&state));
-			ray.dir.set(nxPick(&state), nxPick(&state), nxPick(&state));
+				{
+				nxDrawBits(&state, mixed, &vertices[k].x);
+				nxDrawBits(&state, mixed, &vertices[k].y);
+				nxDrawBits(&state, mixed, &vertices[k].z);
+				}
+			nxDrawBits(&state, mixed, &ray.orig.x);
+			nxDrawBits(&state, mixed, &ray.orig.y);
+			nxDrawBits(&state, mixed, &ray.orig.z);
+			nxDrawBits(&state, mixed, &ray.dir.x);
+			nxDrawBits(&state, mixed, &ray.dir.y);
+			nxDrawBits(&state, mixed, &ray.dir.z);
 			}
 		if((nxNext(&state) & 15) == 0)
 			{
@@ -1710,9 +1804,12 @@ static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
 		for(int mode = 0; mode < 2; ++mode)
 			{
 			// The pre-flight: every triangle of the fan inflated by both sides'
-			// Triangle::Inflate under this word. A fan on which they differ is
-			// counted apart and does not gate (see kInflateDivergentFanCeiling).
+			// Triangle::Inflate under this word, and the oracle-inflated triangle
+			// put through both sides' NxRayTriIntersect. A fan on which either
+			// callee differs is counted apart and does not gate (see
+			// kCalleeDivergentFanCeiling).
 			bool inflateSame = true;
+			bool rayTriSame = true;
 			nxSetControl(mode ? kControlSimulate : kControlDefault);
 			for(NxU32 k = 0; k + 2 < count; ++k)
 				{
@@ -1725,6 +1822,16 @@ static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
 				nxCandidateTriangleInflate(inflated[1], 0.02f, false);
 				if(memcmp(&inflated[0], &inflated[1], sizeof(inflated[0])) != 0)
 					inflateSame = false;
+				float hit[2][3];
+				memset(hit, 0xcd, sizeof(hit));
+				const bool rayTri0 = oracleRayTri(ray.orig, ray.dir, *(const NxVec3*) &inflated[0][0],
+					*(const NxVec3*) &inflated[0][3], *(const NxVec3*) &inflated[0][6],
+					hit[0][0], hit[0][1], hit[0][2], false);
+				const bool rayTri1 = NxRayTriIntersect(ray.orig, ray.dir, *(const NxVec3*) &inflated[0][0],
+					*(const NxVec3*) &inflated[0][3], *(const NxVec3*) &inflated[0][6],
+					hit[1][0], hit[1][1], hit[1][2], false);
+				if(rayTri0 != rayTri1 || memcmp(hit[0], hit[1], sizeof(hit[0])) != 0)
+					rayTriSame = false;
 				}
 			NxReal t[2];
 			memset(t, 0xcd, sizeof(t));
@@ -1732,12 +1839,13 @@ static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
 			const bool hit1 = NxRayInflatedTriangleFan(count, vertices, indices, &ray, &t[1]);
 			nxSetControl(kControlDefault);
 			if(mode == 0)
-				{
 				++*(hit0 ? &hits : &misses);
-				if(!inflateSame)
-					++inflateDivergent;
-				}
-			unsigned* const counter = inflateSame ? &perMode[mode] : &divergentMismatches[mode];
+			if(!inflateSame)
+				++inflateDivergent[mode];
+			else if(!rayTriSame)
+				++rayTriDivergent[mode];
+			const bool exact = inflateSame && rayTriSame;
+			unsigned* const counter = exact ? &perMode[mode] : &divergentMismatches[mode];
 			nxDigestByte(&oracleDigest, hit0 ? 1 : 0);
 			nxDigestByte(&candidateDigest, hit1 ? 1 : 0);
 			if(hit0 != hit1)
@@ -1749,15 +1857,18 @@ static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
 	printf("collision name=ray_inflated_tris index=- rva=0x%08x owner=phys_fn_001708 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
 		kRayInflatedFanRva, oracleDigest.checks, oracleDigest.state, candidateDigest.state,
 		perMode[0] + perMode[1]);
-	printf("collision coverage name=ray_inflated_tris hits=%u misses=%u count_two=%u in_plane=%u inflate_divergent=%u canonical_nan=%u default_mismatches=%u simulate_mismatches=%u\n",
-		hits, misses, countTwo, inPlane, inflateDivergent, canonical, perMode[0], perMode[1]);
-	// The fans whose two Triangle::Inflates differ, and the words that differ on
-	// them under each word; enforced ceilings (they may fall, never rise).
-	printf("collision divergent name=ray_inflated_tris cause=phys_fn_005185 fans=%u default_mismatches=%u simulate_mismatches=%u\n",
-		inflateDivergent, divergentMismatches[0], divergentMismatches[1]);
-	if(inflateDivergent > kInflateDivergentFanCeiling
-		|| divergentMismatches[0] > kInflateDivergentWordCeiling[0]
-		|| divergentMismatches[1] > kInflateDivergentWordCeiling[1])
+	printf("collision coverage name=ray_inflated_tris hits=%u misses=%u count_two=%u in_plane=%u inflate_divergent=%u inflate_divergent_simulate=%u raytri_divergent=%u raytri_divergent_simulate=%u mixed=%u canonical_nan=%u default_mismatches=%u simulate_mismatches=%u\n",
+		hits, misses, countTwo, inPlane, inflateDivergent[0], inflateDivergent[1], rayTriDivergent[0], rayTriDivergent[1], mixedDraws, canonical, perMode[0], perMode[1]);
+	// The fans on which a callee differs, and the words that differ on them under
+	// each word; enforced ceilings (they may fall, never rise).
+	const unsigned calleeFans[2] = { inflateDivergent[0] + rayTriDivergent[0],
+		inflateDivergent[1] + rayTriDivergent[1] };
+	printf("collision divergent name=ray_inflated_tris cause=phys_fn_005185,phys_fn_001712 fans=%u fans_simulate=%u default_mismatches=%u simulate_mismatches=%u\n",
+		calleeFans[0], calleeFans[1], divergentMismatches[0], divergentMismatches[1]);
+	if(calleeFans[0] > kCalleeDivergentFanCeiling[0]
+		|| calleeFans[1] > kCalleeDivergentFanCeiling[1]
+		|| divergentMismatches[0] > kCalleeDivergentWordCeiling[0]
+		|| divergentMismatches[1] > kCalleeDivergentWordCeiling[1])
 		{
 		printf("collision divergent name=ray_inflated_tris ceiling=exceeded\n");
 		++totalMismatch;
@@ -1776,6 +1887,7 @@ static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
 	nxDigestInit(&candidateDigest);
 	unsigned perMode[2] = { 0, 0 };
 	unsigned canonical = 0;
+	unsigned mixedDraws = 0;
 	unsigned faces[7] = { 0, 0, 0, 0, 0, 0, 0 };
 	unsigned parallelAxes = 0;
 	unsigned boundaryAxes = 0;
@@ -1783,7 +1895,11 @@ static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
 	unsigned state = 0x2d5c93a7u;
 	for(unsigned i = 0; i < kPairIterations; ++i)
 		{
-		const bool aimed = (nxNext(&state) & 1) != 0;
+		const unsigned draw = nxNext(&state) % 3;
+		const bool aimed = draw == 1;
+		const bool mixed = draw == 2;
+		if(mixed)
+			++mixedDraws;
 		float boxMin[3], boxMax[3], origin[3], dir[3];
 		if(aimed)
 			{
@@ -1820,10 +1936,10 @@ static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
 		else
 			for(int k = 0; k < 3; ++k)
 				{
-				boxMin[k] = nxPick(&state);
-				boxMax[k] = nxPick(&state);
-				origin[k] = nxPick(&state);
-				dir[k] = nxPick(&state);
+				nxDrawBits(&state, mixed, &boxMin[k]);
+				nxDrawBits(&state, mixed, &boxMax[k]);
+				nxDrawBits(&state, mixed, &origin[k]);
+				nxDrawBits(&state, mixed, &dir[k]);
 				}
 
 		for(int mode = 0; mode < 2; ++mode)
@@ -1847,9 +1963,9 @@ static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
 	printf("collision name=aabb_slab index=- rva=0x%08x owner=phys_fn_001730 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
 		kRayAabbSlabRva, oracleDigest.checks, oracleDigest.state, candidateDigest.state,
 		perMode[0] + perMode[1]);
-	printf("collision coverage name=aabb_slab miss=%u face0=%u face1=%u face2=%u face3=%u face4=%u face5=%u parallel_axes=%u boundary_axes=%u inverted=%u canonical_nan=%u default_mismatches=%u simulate_mismatches=%u\n",
+	printf("collision coverage name=aabb_slab miss=%u face0=%u face1=%u face2=%u face3=%u face4=%u face5=%u parallel_axes=%u boundary_axes=%u inverted=%u mixed=%u canonical_nan=%u default_mismatches=%u simulate_mismatches=%u\n",
 		faces[0], faces[1], faces[2], faces[3], faces[4], faces[5], faces[6], parallelAxes,
-		boundaryAxes, inverted, canonical, perMode[0], perMode[1]);
+		boundaryAxes, inverted, mixedDraws, canonical, perMode[0], perMode[1]);
 	}
 
 	{
@@ -1862,15 +1978,20 @@ static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
 	nxDigestInit(&candidateDigest);
 	unsigned perMode[2] = { 0, 0 };
 	unsigned canonical = 0;
+	unsigned mixedDraws = 0;
 	unsigned degenerate = 0;
 	unsigned zeroNormal = 0;
 	unsigned wrongReturn = 0;
 	unsigned state = 0x71e3a90bu;
 	for(unsigned i = 0; i < kPairIterations; ++i)
 		{
-		const bool aimed = (nxNext(&state) & 1) != 0;
+		const unsigned draw = nxNext(&state) % 3;
+		const bool aimed = draw == 1;
+		const bool mixed = draw == 2;
+		if(mixed)
+			++mixedDraws;
 		float v[3][3];
-		if(nxFillTriangle(&state, aimed, v))
+		if(nxFillTriangle(&state, aimed, mixed, v))
 			++degenerate;
 		for(int mode = 0; mode < 2; ++mode)
 			{
@@ -1892,8 +2013,8 @@ static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
 	printf("collision name=triangle_plane index=- rva=0x%08x owner=phys_fn_001760 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
 		kTrianglePlaneRva, oracleDigest.checks, oracleDigest.state, candidateDigest.state,
 		perMode[0] + perMode[1]);
-	printf("collision coverage name=triangle_plane degenerate=%u zero_normal=%u wrong_return=%u canonical_nan=%u default_mismatches=%u simulate_mismatches=%u\n",
-		degenerate, zeroNormal, wrongReturn, canonical, perMode[0], perMode[1]);
+	printf("collision coverage name=triangle_plane degenerate=%u zero_normal=%u wrong_return=%u mixed=%u canonical_nan=%u default_mismatches=%u simulate_mismatches=%u\n",
+		degenerate, zeroNormal, wrongReturn, mixedDraws, canonical, perMode[0], perMode[1]);
 	}
 
 	{
@@ -1909,6 +2030,7 @@ static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
 	nxDigestInit(&candidateDigest);
 	unsigned perMode[2] = { 0, 0 };
 	unsigned canonical = 0;
+	unsigned mixedDraws = 0;
 	unsigned onEdge = 0;
 	unsigned exitEarly = 0;
 	unsigned exitBehind = 0;
@@ -1918,9 +2040,13 @@ static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
 	unsigned state = 0x4b8e2f61u;
 	for(unsigned i = 0; i < kPairIterations; ++i)
 		{
-		const bool aimed = (nxNext(&state) & 1) != 0;
+		const unsigned draw = nxNext(&state) % 3;
+		const bool aimed = draw == 1;
+		const bool mixed = draw == 2;
+		if(mixed)
+			++mixedDraws;
 		float v[3][3];
-		nxFillTriangle(&state, aimed, v);
+		nxFillTriangle(&state, aimed, mixed, v);
 		float axis[3];
 		float s0[3], s1[3];
 		const unsigned a = nxNext(&state) % 3;
@@ -1977,9 +2103,9 @@ static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
 		else
 			for(int k = 0; k < 3; ++k)
 				{
-				axis[k] = nxPick(&state);
-				s0[k] = nxPick(&state);
-				s1[k] = nxPick(&state);
+				nxDrawBits(&state, mixed, &axis[k]);
+				nxDrawBits(&state, mixed, &s0[k]);
+				nxDrawBits(&state, mixed, &s1[k]);
 				}
 
 		for(int mode = 0; mode < 2; ++mode)
@@ -2016,8 +2142,8 @@ static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
 	printf("collision name=segment_triangle_edges index=- rva=0x%08x owner=phys_fn_001855 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
 		kSegmentTriangleEdgeRva, oracleDigest.checks, oracleDigest.state, candidateDigest.state,
 		perMode[0] + perMode[1]);
-	printf("collision coverage name=segment_triangle_edges on_edge=%u exit_early=%u exit_behind=%u exit_outside=%u parallel=%u zero_length=%u canonical_nan=%u default_mismatches=%u simulate_mismatches=%u\n",
-		onEdge, exitEarly, exitBehind, exitOutside, parallel, zeroLength, canonical, perMode[0], perMode[1]);
+	printf("collision coverage name=segment_triangle_edges on_edge=%u exit_early=%u exit_behind=%u exit_outside=%u parallel=%u zero_length=%u mixed=%u canonical_nan=%u default_mismatches=%u simulate_mismatches=%u\n",
+		onEdge, exitEarly, exitBehind, exitOutside, parallel, zeroLength, mixedDraws, canonical, perMode[0], perMode[1]);
 	}
 
 	return totalMismatch;

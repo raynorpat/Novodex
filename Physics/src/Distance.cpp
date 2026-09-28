@@ -764,27 +764,45 @@ struct NxPointTriangleTerms
 	NxReal dx;
 	NxReal dy;
 	NxReal dz;
+	NxReal e1x;
+	NxReal e1y;
+	NxReal e1z;
 	};
+
+// The first edge's three products (0x000329eb..0x00032a9e): a00 = (x^2 + z^2)
+// + y^2, a01 = (e1.x x + e1.z z) + e1.y y and b0 = (d.x x + d.z z) + d.y y,
+// with the first edge on the FPU stack throughout. A function of its own, entered
+// only with stored floats: written inside the whole setup, MSVC held the edge in
+// three 8-byte slots (cutting it to 53 bits under 0x0f7f) and read a01 and b0
+// from those copies.
+static __declspec(noinline) void nxPointTriangleFirstEdge(const NxReal* v0, const NxReal* v1,
+	NxPointTriangleTerms* k)
+	{
+	const double e0x = (double) v1[0] - v0[0];
+	const double e0y = (double) v1[1] - v0[1];
+	const double e0z = (double) v1[2] - v0[2];
+	k->a00 = (NxReal) ((e0x * e0x + e0z * e0z) + e0y * e0y);
+	k->a01 = (NxReal) (((double) k->e1x * e0x + (double) k->e1z * e0z) + (double) k->e1y * e0y);
+	k->b0 = (NxReal) (((double) k->dx * e0x + (double) k->dz * e0z) + (double) k->dy * e0y);
+	}
 
 // 0x000329e0..0x00032b0c. The first edge is on the FPU stack; the second edge
 // and the offset are stored. a00 is (x^2 + z^2) + y^2 of the first edge.
 static __declspec(noinline) void nxPointTriangleTerms(const NxReal* point, const NxReal* v0,
 	const NxReal* v1, const NxReal* v2, NxPointTriangleTerms* k)
 	{
-	const double e0x = (double) v1[0] - v0[0];
-	const double e0y = (double) v1[1] - v0[1];
-	const double e0z = (double) v1[2] - v0[2];
-	const NxReal e1x = (NxReal) ((double) v2[0] - v0[0]);
-	const NxReal e1y = (NxReal) ((double) v2[1] - v0[1]);
-	const NxReal e1z = (NxReal) ((double) v2[2] - v0[2]);
+	k->e1x = (NxReal) ((double) v2[0] - v0[0]);
+	k->e1y = (NxReal) ((double) v2[1] - v0[1]);
+	k->e1z = (NxReal) ((double) v2[2] - v0[2]);
 	k->dx = (NxReal) ((double) v0[0] - point[0]);
 	k->dy = (NxReal) ((double) v0[1] - point[1]);
 	k->dz = (NxReal) ((double) v0[2] - point[2]);
+	nxPointTriangleFirstEdge(v0, v1, k);
 
-	k->a00 = (NxReal) ((e0x * e0x + e0z * e0z) + e0y * e0y);
-	k->a01 = (NxReal) (((double) e1x * e0x + (double) e1z * e0z) + (double) e1y * e0y);
+	const NxReal e1x = k->e1x;
+	const NxReal e1y = k->e1y;
+	const NxReal e1z = k->e1z;
 	k->a11 = (NxReal) (((double) e1z * e1z + (double) e1y * e1y) + (double) e1x * e1x);
-	k->b0 = (NxReal) (((double) k->dx * e0x + (double) k->dz * e0z) + (double) k->dy * e0y);
 	k->b1 = (NxReal) (((double) k->dz * e1z + (double) k->dy * e1y) + (double) k->dx * e1x);
 	k->det = (NxReal) fabs((double) k->a11 * k->a00 - (double) k->a01 * k->a01);
 	k->s = (NxReal) ((double) k->b1 * k->a01 - (double) k->b0 * k->a11);
@@ -1148,10 +1166,11 @@ __declspec(noinline) void __cdecl NxLineLineClosestPoints(NxReal* point0, NxReal
 //  * The edge segments are (origin, origin + edge) with each end narrowed, not
 //    Eberly's (origin, direction). The third edge is (v1, v1 + (e1 - e0)) with
 //    z's difference narrowed first and x's and y's kept wide (0x00034f0f..
-//    0x00034f46 and its eight copies). The far end of the segment is re-formed
+//    0x00034f46 and its seven copies: eight sites). The far end of the segment is re-formed
 //    as p0 + (p1 - p0), narrowed, not read as p1.
-//  * s stays wide in st(0) from 0x00034b50 through the region tests and into
-//    the interior's closed form; r and t are narrowed before they are tested.
+//  * s stays wide in st(0) from 0x00034b50 through the region tests, and on the
+//    r in [0, 1] path on into the interior's closed form; r and t are narrowed
+//    before they are tested.
 //  * A NaN goes the way `test ah` sends it: r NaN is "r >= 0" and then "r > 1",
 //    a NaN s + t is "s + t > 1", a NaN s or t is ">= 0", and a NaN determinant
 //    is parallel.
@@ -1307,8 +1326,9 @@ static __declspec(noinline) int nxSegmentTriangleRegion(const NxSegmentTriangleT
 	return third + (k->t < 0.0f ? 6 : 1);
 	}
 
-// The interior (0x00035483..0x00035524): r (e0-row) ... in the listing's
-// order, with s wide throughout, then the offset's squared length z, y, x.
+// The interior (0x00035483..0x00035524), in the listing's order: t's term, then
+// s's, then r's -- each ((t a + s a + r a) + 2 b) times its own parameter, with s
+// wide throughout -- then the offset's squared length added z, y, x.
 static __declspec(noinline) NxReal nxSegmentTriangleInterior(const NxSegmentTriangleTerms* k)
 	{
 	const NxReal r = k->r;

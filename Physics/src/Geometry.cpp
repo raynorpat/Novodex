@@ -431,7 +431,8 @@ bool __cdecl NxRayInflatedTriangleFan(NxU32 count, const NxVec3* vertices, const
 		// `this` (0x00036e18..0x00036e21). A plain block and not an
 		// IceMaths::Triangle object: Triangle declares a destructor, and an
 		// object with one gave this function an unwind frame the oracle's does
-		// not have.
+		// not have. The block does give it a /GS cookie the oracle's has not;
+		// that is accepted (it changes no value this row computes).
 		NxVec3 corners[3];
 		memcpy(&corners[0], &hub, sizeof(NxVec3));
 		const NxVec3& second = vertices[indices[1]];

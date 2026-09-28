@@ -73,6 +73,20 @@
 // x87FsqrtDot2 serves Geometry.cpp and D6 004207's swing-lock arms, which
 // take the root of two squared differences the listing keeps on the stack
 // (0x9dd1e-0x9dd28, 0x9de33-0x9de3d). x87FsqrtMulSub is Geometry.cpp's only.
+//
+// Where these helpers are not enough. A helper takes its operands through qwords
+// and returns through st(0), so a row whose listing keeps a WIDE value both as an
+// operand of the root and for use after it (the value is squared into the root,
+// then scaled by 1/root) cannot be reproduced under 0x0f7f through them: the
+// operand is cut to 53 bits on the way in, and the value itself is held in an
+// 8-byte slot across the call. The per-site precedent (convex-mesh gap Task 2b)
+// is to write that row's span -- the wide value, the root and its reuse -- as one
+// x87 `__asm` block transcribed instruction for instruction from the listing,
+// keeping the rest of the row in C++: phys_fn_001760 in ContactBoxMeshICE.cpp
+// (0x0003c163..0x0003c21b, 0 differing words where the C++ form had 51). It is a
+// per-row judgement of proportion, not a rule: phys_fn_001855 has the same shape
+// twice (about 131 instructions) and keeps the C++ form with its measured
+// divergence pinned.
 
 #include "Nxp.h"
 

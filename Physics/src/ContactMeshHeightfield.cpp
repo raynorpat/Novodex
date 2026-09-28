@@ -40,14 +40,19 @@
 // is on the edge when (e1 - hit) . (e0 - hit) < 0 over those wide values,
 // summed z, x, y.
 //
-// Under the in-step word 0x0f7f this row does not reproduce every last bit, and
-// cannot as C++: both square roots take a wide operand (the normal's z and x,
-// the direction's z and x), and a `double` reaches the X87Sqrt.h helper
-// through a qword, which cuts 64 bits to 53; the oracle's `fsqrt` is inline and
-// keeps them. MSVC also keeps those values in 8-byte slots across the call. The
-// differential measures the effect (raw draws of extreme magnitude only) and
-// pins it; written as leaves that recompute the wide values after the call, the
-// count rose, because MSVC folds the recomputation into the spilled copy.
+// Under the in-step word 0x0f7f this row does not reproduce every last bit in
+// C++. What is narrowed are the wide intermediates themselves -- the normal's x
+// and z and the direction's x and z, which the listing keeps in st(n) -- at two
+// points: as the operands of each square root, which reach the X87Sqrt.h helper
+// through qwords (64 bits cut to 53), and in their reuse after the root, where
+// MSVC reloads them from the same 8-byte slots to scale them by 1/root (and dirX
+// again for the denominator and the crossing). The oracle's `fsqrt` is inline and
+// keeps all of them. The differential measures the effect and pins it (215 words
+// with mixed-exponent draws); written as leaves that recompute the wide values
+// after the call, the count rose, because MSVC folds the recomputation into the
+// spilled copy. The remedy X87Sqrt.h records for 001760 -- the span as one x87
+// assembly block -- would be two blocks of about 131 instructions here, and is
+// not judged proportionate.
 __declspec(noinline) bool __cdecl NxSegmentTriangleEdge(const NxReal* e0, const NxReal* e1,
 	const NxReal* axis, const NxReal* s0, const NxReal* s1, NxReal* t, NxReal* hit)
 	{
