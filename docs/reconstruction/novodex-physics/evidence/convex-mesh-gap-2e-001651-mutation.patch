@@ -1,0 +1,13 @@
+diff --git a/Physics/src/IceMeshTools.cpp b/Physics/src/IceMeshTools.cpp
+index a3b231e..65b15b0 100644
+--- a/Physics/src/IceMeshTools.cpp
++++ b/Physics/src/IceMeshTools.cpp
+@@ -521,7 +521,7 @@ L31a14:
+ 		fucompp		// 0x00031aa9
+ 		fnstsw	ax		// 0x00031aab
+ 		test	ah, 0x44		// 0x00031aad
+-		jnp	L31ad0		// 0x00031ab0
++		jp	L31ad0		// 0x00031ab0
+ 		fsqrt		// 0x00031ab2
+ 		fdivr	dword ptr kIceMeshToolsOne		// 0x00031ab4
+ 		fld	st(0)		// 0x00031aba

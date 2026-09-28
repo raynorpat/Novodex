@@ -21,6 +21,7 @@ table below.
 | 2c review | 2026-09-28T14:38:42 | 2026-09-28T14:58:32 | 0 | 0 | Task 2c review: the edge_list / ice_adjacencies plane-divergent split frozen as a list of 13 meshes (the candidate pre-flight kept as a failing check, detail on stderr); every digest unchanged, the coverage line `pairs=1487 side=40 angle=9 meshes=13` replaced by `frozen_meshes=13`; the throwaway callee binding committed as `convex-mesh-gap-2c-bind-oracle-callees.patch` (re-run: 465/124, 306/100, 342/92, 0/0); the 002160 product shim recorded (evidence, contract, row notes); the 001539 errata extended to the no-face-array case. See `## Task 2c`. |
 | 2d | 2026-09-28T15:01:00 | 2026-09-28T15:41:14 | 26 | 10,728 | MeshBuilder2 (sub-unit C, 001591..001637, 25 rows incl. seven continuations) in the new `IceMeshBuilder2.cpp` and the vertex reduction 001647 in `IceMeshTools.cpp`; product forms of 001645 / 001659. Heap checked first: 005700/005701 are `jmp`s to 005668/005702, the same static-CRT heap as 001514's pair (contract Open item 7 closed); the candidate uses its CRT's nothrow `operator new` / `free` with the listing's cookies; the reduction uses the 004803 getter. x87 sections as assembly blocks; the FPU sequences of 001597, 001603, 001607, 001627 equal the listing's (45/62/6/110). Families ice_meshbuilder2 (249 cases over 68 meshes, eight create-block configurations, both control words) and vertex_reduction: exact (178,377 and 24,313 words). 8 lines registered, phase 4 floor 183. 21 traced functions hit. Contract corrected: 001627 runs once per run of faces, not per face. See `## Task 2d`. |
 | 2d review | 2026-09-28T15:44:00 | 2026-09-28T16:09:23 | 0 | 0 | Task 2d review: the uvw and colour streams written as bits (signalling and quiet NaNs, infinities, denormals; 510 / 347 signalling-NaN input words), so the fld/fstp pass-through of 001607 / 001627 is exercised -- still exact, and an integer copy there gives 276 mismatches (patch committed); the ice_meshbuilder2 input, exact, coverage lines and the totals pair re-registered (before/after under `## Task 2d`); 001591 given the oracle's register ABI (__fastcall, `ret 4`); 001647's /GS cookie recorded; trace re-recorded (21 hit). See `## Task 2d`. |
+| 2e | 2026-09-28T16:14:00 | 2026-09-28T16:52:07 | 10 | 4,370 | The rest of sub-unit D (001639, 001641/001643, 001651, 001653, 001661 in `IceMeshTools.cpp`) and P-Small (002144 in `SmoothNormals.cpp`, 001461 in the new `ConvexHull.cpp`, 002186/002188 in the new `TriangleMeshTopology.cpp`); product forms of 001536 and 001649. 001651, 001653, 001661 and 002144 are naked listing transcriptions whose built code equals the listing instruction for instruction; `angleAtVertex` now calls 002144 (every collision line unchanged). Families pose_pair, unique_axis, edge_dedupe, mesh_normals, adjacency_owner in NxPhysicsThirdPartyTests, all exact with signalling NaNs in the inputs; two fixed-input splits under ceilings (944 NaN words the vendored InvertPRMatrix quiets; 155 on Task 2c's frozen meshes), both 0 with the oracle's callees bound in. One throwaway mutation per x87 row detected (the 001653 one only after cancelling pose kinds were added). 19 lines registered, phase 4 floor 202. 11 traced functions hit. Contract: 001639 is a 3x3 and a 4x4 identity; 001641 chains an outline; TriangleMesh +0x84/+0x88 are the Adjacencies and the EdgeList. See `## Task 2e`. |
 
 ## Task 2a: box distance kernels and the entries that reach them
 
@@ -753,3 +754,196 @@ updated. `validate_inventory.py` asked for nothing else.
 **Verification.** Build (Release, Win32) clean; gates 2, 3, 4, 6 and 7 pass; phase 5 fails only on
 `candidate CANDIDATE-MISSING family=vtables`; tool tests 763 OK; `validate_inventory.py`
 inventory=pass.
+
+## Task 2e: the rest of sub-unit D and P-Small
+
+**Rows (10, 4,370 B), all `discovered` -> `reconstructed`.**
+
+| row | bytes | candidate | file | form |
+|---|---:|---|---|---|
+| 001639 | 157 | `nxIceIdentityPoses` | IceMeshTools.cpp | C++ |
+| 001641 + 001643 | 61 + 433 | `nxIceEdgeLoop` | IceMeshTools.cpp | C++ |
+| 001651 | 1,240 | `nxMeshNormalsCompute` | IceMeshTools.cpp | naked listing |
+| 001653 | 1,618 | `nxIcePosePair` | IceMeshTools.cpp | naked listing |
+| 001661 | 155 | `nxIceAddUniqueAxis` | IceMeshTools.cpp | naked listing |
+| 002144 | 217 | `nxSmoothNormalsAngleAtVertex` | SmoothNormals.cpp | naked listing |
+| 001461 | 194 | `ConvexHull::ComputeVertexNormals` | ConvexHull.cpp (new) | C++ |
+| 002186 | 143 | `TriangleMesh::createAdjacencies` | TriangleMeshTopology.cpp (new) | C++ |
+| 002188 | 152 | `TriangleMesh::createEdgeList` | TriangleMeshTopology.cpp (new) | C++ |
+
+Also written: the product forms of two rows that were already `reconstructed` as ObjectModel.cpp
+models. 001536 is `Adjacencies::Adjacencies` in IceAdjacencies.cpp; the oracle's linker folded it
+with MeshNormals' constructor, which is inline in IceMeshTools.h. 001649 is
+`MeshNormals::~MeshNormals`. Their states are unchanged; their notes record the product forms.
+
+*Wiring.* The only candidate stand-in was SmoothNormals.cpp's C++ `angleAtVertex`, which modelled
+002144 inside the reconstructed NxBuildSmoothNormals. It now calls the product row with the listing's
+registers:
+- the collision harness prints the same lines as before, step_smooth_normals included;
+- its `.snan` variant still differs on the same 15 words under its ceiling, so they come from
+  NxBuildSmoothNormals' own C++ and not from the angle.
+
+No other row has a candidate caller:
+- 001844, 001818, 001849, 002264, 002296, 001465, 001514, 001812, 001834, 001836 and 001859 are
+  not written.
+- Scene.cpp's inline store for the oracle's call of 0x0002dae0 on the scene's +0x50 member belongs
+  to another class and was left as it is.
+
+*Fidelity.*
+- **Naked rows.** 001651, 001653, 001661 and 002144 are the listing's instructions, naked, as
+  001712 is. `evidence/convex-mesh-gap-2e-listing-compare.py` shows that each built function in
+  NxPhysics.dll equals its listing instruction for instruction (85, 445, 454 and 55 instructions):
+  - branch targets are compared by index;
+  - absolute operands are compared as "[abs]";
+  - the two alignment `lea`s are emitted as their bytes.
+
+  Each call reaches the candidate row of the same stable ID: the 004803 getter, 002144, the vendored
+  005191 and 001591.
+- **Calling conventions.** These are the oracle's:
+  - 001651 and 001661 are thiscall with `ret 4` in the oracle. Naked code cannot be a member, and
+    the vendored Container header is not changed, so both are `__fastcall` with an unused edx.
+  - 002144 keeps its register convention: eax, edx and esi in, st(0) out, ebx and edi preserved.
+  - 001653, 001641 and 001639 are cdecl.
+  - 001461, 002186, 002188 and 001536 are thiscall members.
+- **Frames.** No new function carries a /GS cookie or an unwind frame. ConvexHull.cpp and
+  TriangleMeshTopology.cpp join the /EHs-c- list, as the MeshNormals local and the placement-new
+  objects would otherwise get frames. This was checked in the DLL's disassembly.
+- **Allocators.** Every allocation these rows make goes through the 004803 getter:
+  - 001651's arrays, 001461's normals and 002186/002188's objects are type 0;
+  - 001641's copy goes through the vendored Container, which also uses the getter.
+
+  None goes through the CRT or the imported allocator, as in the listings.
+
+*Listing findings* (reproduced; the contract is corrected):
+- **001639** returns a 3x3 identity followed by a 4x4 identity (0x10123c7c, 100 bytes). It is not
+  a 4x4 with six zero words.
+- **001641 builds an outline, not only a dedupe.** After the pairs that occur twice are removed,
+  it chains the rest into an outline and returns false when the chain breaks. It reads the first
+  remaining pair without testing the count, so an input whose pairs all cancel reads stale words.
+- **001651.** A failed vertex-normal allocation leaks the face normals it has just allocated. The
+  weighted pass visits the corners in the order r0, r2, r1 and hands 002144 the triangle
+  {r0, r2, r1}. A NaN sum is normalised, because the listing tests `jnp` after `test ah, 0x44`.
+- **001653** has a dead store at 0x00031dc2.
+- **001661** negates the direction when the sign bit of x is set, so -0 and negative NaNs are
+  negated too. A NaN dot product never rejects.
+- **002186 and 002188** call Init on their allocation without testing it. Each returns only what
+  eax happens to hold.
+- **TriangleMesh.** +0x84 is the Adjacencies and +0x88 is the EdgeList. The "three-way state" at
+  +0x84 is 001859 caching 1 when 002186 fails.
+
+**Differential** (`NxPhysicsThirdPartyTests`, through nxIceFamily: the recording 004803 allocator and
+the report recorder; oracle rows by RVA, candidates on the same inputs; every float input written as
+bits):
+
+| family | rows | runs | words | result |
+|---|---|---:|---:|---|
+| pose_pair | 001653, 001639 | 4,608 calls | 127,828 | exact |
+| pose_pair.inverse_divergent | 001653 | 736 calls | 24,288 | 944 NaN words, ceiling 944 |
+| unique_axis | 001661 | 320 sequences | 13,830 | exact |
+| edge_dedupe | 001641/001643 | 216 cases | 30,416 | exact |
+| mesh_normals | 001651 (001536, 001649, 002144), 001461 | 381 + 139 cases | 36,260 | exact |
+| adjacency_owner | 002186 (001536), 002188 | 66 meshes | 28,728 | exact |
+| adjacency_owner.plane_divergent | 002188 | 13 meshes | 6,300 | 155 discrete words, ceiling 155 |
+
+- **pose_pair.**
+  - Poses are null, clean, raw, a raw rotation at the origin, and rows (x, x, y) or (x, -x, y) at
+    the origin. A clean pose is a signed permutation scaled by drawn finite words, with a finite or
+    infinite translation.
+  - Either output is requested, under both control words.
+  - The vendored InvertPRMatrix inverts every non-raw kind exactly: one product, a transposed copy,
+    or a sum of zero products.
+  - The last two kinds make each element's two large products cancel, so the listing's
+    per-element term order is visible.
+  - A call that uses the inverse of a raw pose goes to `.inverse_divergent` by a rule on the fixed
+    inputs. Every word that differs there is a NaN that the vendored 005191 quiets, because it
+    copies through the FPU where the oracle copies as integers.
+  - 001639 is compared on its block, on the same pointer from a second call, and on a third call
+    over a poisoned block, which must leave the poison (the guard).
+- **unique_axis.**
+  - Pairs straddle 0.9999 by margins of 1e-11..1e-8. They were computed offline over float words
+    and are fixed in the harness, together with the exactly-equal pair and one word above it.
+  - Their negations, doublings and last-bit nudges are made by bit operations.
+  - Raw words: 320 signalling-NaN input words.
+- **edge_dedupe.**
+  - Triangle fans over 3..16 drawn vertices, shuffled, flipped, with a stray edge, a doubled
+    boundary edge or an internal edge three times.
+  - The face edges of every mesh of at most 100 faces (O(n^3) past that), in order and shuffled.
+  - An input whose pairs all cancel is not driven (4 cases). This is a rule on the fixed input.
+- **mesh_normals.**
+  - Each mesh runs under rotating create blocks: 32-bit, 16-bit or no faces; weighted or not;
+    caller or object arrays. The six fixtures run under all 24.
+  - The vertex words are raw-mixed (nxMb2RawWords) for half the cases: 1,089 signalling-NaN words.
+  - Cases alternate between the control words.
+  - 001461 runs over hull images, with and without a previous array, and with no vertices.
+- **adjacency_owner.**
+  - TriangleMesh images of every mesh, and one with no triangles.
+  - The object built, the release path on failure, and every report: 29 non-manifold at line 321,
+    and EdgeList's 0x72.
+  - 002188's EdgeList computes active edges from the vertices, so its runs on Task 2c's 13 frozen
+    meshes go to `.plane_divergent`.
+
+*Attribution of the two splits.* `evidence/convex-mesh-gap-2e-bind-oracle-callees.patch` applies
+with `git apply` to 5aad0c8. It extends Task 2c's patch with a hook in 001653 for the oracle's 005191
+at base+0x000e4200 (NX_ICE_BIND bit 4). With NX_ICE_BIND unset, rebuild NxPhysicsThirdPartyTests
+and run it, then set the variable to 3, 4 and 7 in turn. The four `.plane_divergent` /
+`.inverse_divergent` lines read:
+
+| NX_ICE_BIND | edge_list | ice_adjacencies | pose_pair | adjacency_owner |
+|---|---:|---:|---:|---:|
+| unset (0) | 465 | 124 | 944 | 155 |
+| 3 | 0 | 0 | 944 | 0 |
+| 4 | 465 | 124 | 0 | 155 |
+| 7 | 0 | 0 | 0 | 0 |
+
+So every word in the two new splits belongs to the vendored callees. Never commit the patch applied:
+product code must not reach the oracle.
+
+*Sensitivity* (throwaway mutations, one per x87 row, each committed as
+`evidence/convex-mesh-gap-2e-<row>-mutation.patch`). To reproduce: `git apply` the patch, rebuild
+NxPhysicsThirdPartyTests (and NxPhysicsCollisionTests for 002144), run, then `git checkout` the file.
+
+| row | mutation | result |
+|---|---|---|
+| 002144 | `faddp` -> `fsubp` at 0x000533a5 (the dot product) | mesh_normals 4,311 mismatches; step_smooth_normals 53,653 |
+| 001651 | `jnp` -> `jp` at 0x00031ab0 (the face-normal normalisation) | mesh_normals 15,539 |
+| 001653 | first and last terms of relative0[0][0] swapped (0x00031e6e/72 <-> 0x00031e87/8b) | pose_pair 32 |
+| 001661 | the `fchs` of y at 0x0003251b removed | unique_axis FAILED: its tape is 14,140 words against 13,830, as different directions are kept |
+
+- The 001653 mutation first moved nothing (a0622c2): with the earlier inputs, an element's order of
+  terms could not change a float. The cancelling pose kinds were added for that (5aad0c8).
+- The 002144, 001651 and 001661 counts were measured on a0622c2. The families they touch did not
+  change afterwards.
+
+*Registered lines.* 19 lines, all copied from the oracle side of the run on 5aad0c8:
+- per family, the input digest, the exact line whole and the coverage line;
+- the two divergent lines, up to the oracle digest;
+- the totals pair `driven=85 divergent=29 words=2225551` / `a1b4f9a6`.
+
+The name lines' agreement fields are the gate's assertion. The coverage lines count oracle-side
+values and fixed-input rules only. The pose_pair lines and the totals pair were first registered
+from a0622c2 (`words=77668 oracle=56567247`, `2174863` / `d9a2accc`) and re-registered once, from
+5aad0c8, after the cancelling kinds were added. The phase 4 floor goes from 183 to 202, and the
+MINIMUM pin with it. Every line registered before this task is unchanged: the families run last,
+and their seeds are their own. The runs are deterministic, and `--self` gives the same oracle
+digests.
+
+**Trace.** `evidence/convex-mesh-gap-trace-2e.txt` records one-shot cdb breakpoints on 11 candidate
+functions: the nine rows with an address of their own, and the product forms of 001536 and 001649.
+All 11 were hit in one full run of the build of 5aad0c8, which closed
+`thirdparty candidate mismatches=0` (exe sha256 1a3476b96506cb0e...).
+
+**Inventory and ledgers.**
+- The 10 rows are now `reconstructed`, with static proofs that cite the listing ranges (and, for
+  the naked rows, the comparison script) and dynamic proofs that cite the trace and the family.
+- 001536 and 001649 get notes.
+- Ledgers, with the standard note:
+  - phase 2: 001661 moves from homeless_shared_code to reconstructed_not_falsified (48 -> 47,
+    10 -> 11);
+  - phase 3: 001461, 001641, 001643 and 001651 move from not_reconstructed_in_phase, and 001653
+    from blocked_on_later_phase, to reconstructed_not_falsified (300 -> 296, 18 -> 17, 13 -> 18);
+  - phase 4: 002144, 002186 and 002188 (260, 508);
+  - phase 7: 001639 (361, 196).
+- The reason texts are updated. `validate_inventory.py` asked only that the ConvexHull.cpp
+  unresolved-source allowlist entry be removed.
+- The four mutated rows keep the standard note: the mutations above are evidence, not the
+  ledgers' closure procedure.

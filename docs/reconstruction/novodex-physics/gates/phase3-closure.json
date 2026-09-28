@@ -8,12 +8,12 @@
     "oracle_differential_falsified": "a mutation was aimed at this row's reconstruction in a throwaway `git archive` copy, rebuilt, and run through NxPhysicsCollisionTests -- a target that loads the pinned DLL in its own process, checks its hash and calls the recorded internal address directly, because none of these rows is exported and the public path that would reach them is Phase 4, 5 and 7 work that does not exist. It runs once rather than once per pair, so there is no transcript to diff and the detection is a mismatch count against the shipped bytes. Where one mutation was measured on more than one block or under both control words the largest single count is recorded and the mutation names the split"
   },
   "deferred_reasons": {
-    "blocked_on_later_phase": "the row, or something it must dispatch into to be driven at all, belongs to a phase after 3. Eighteen rows: the thirteen that make up the dispatch matrix's mesh column and its continuations, the four rows of the continuous-collision subtree, and phys_fn_002344, whose only falsification runs on Phase 5's NxPhysicsObjectLayoutTests. Matrix B's and matrix A's [BOX][CAPSULE] entries were here (twenty rows) until convex-mesh gap Task 2a reconstructed them with the Phase 4 box distance rows they were blocked on and the box raycast phys_fn_000949 bound from the oracle in the harness",
+    "blocked_on_later_phase": "the row, or something it must dispatch into to be driven at all, belongs to a phase after 3. Seventeen rows: the thirteen that make up the dispatch matrix's mesh column and its continuations, three of the four rows of the continuous-collision subtree (its pose helper phys_fn_001653 was reconstructed by convex-mesh gap Task 2e and driven exactly in NxPhysicsThirdPartyTests), and phys_fn_002344, whose only falsification runs on Phase 5's NxPhysicsObjectLayoutTests. Matrix B's and matrix A's [BOX][CAPSULE] entries were here (twenty rows) until convex-mesh gap Task 2a reconstructed them with the Phase 4 box distance rows they were blocked on and the box raycast phys_fn_000949 bound from the oracle in the harness",
     "unreachable_in_phase_2": "Phase 2's reason, unused here",
     "not_independently_falsifiable": "the row has no counterpart in the candidate that can be mutated on its own. Unused here",
     "homeless_shared_code": "Phase 2's reason for shared code with no translation unit span. Unused here",
-    "not_reconstructed_in_phase": "Phase 3 did not reconstruct this row and names nothing that blocks it. This is a debt, not an obstruction, and it is the largest single category in this ledger. No per-row reachability claim is made for these 300 rows (310 before convex-mesh gap Task 2a reconstructed matrix B [CAPSULE][CAPSULE] and three of the compound entries, 306 before its Task 2b reconstructed four helpers, 302 before its Task 2c reconstructed two ICE rows), and that is deliberate: this component dispatches through function-pointer tables and vtable slots and the census splits functions at their internal alignment padding, so a call-edge closure over them systematically undercounts -- four separate counting methods in this programme have each answered a narrower question than the one asked, the last of them a call-edge walk that could not see a continuation row. Some of these rows will turn out to be blocked on Phase 4 mesh data once someone walks them properly; asserting which ones without walking them is the claim this reason refuses to make. Where the evidence does say something specific about a row -- the three compound entries still here -- the entry carries a note",
-    "reconstructed_not_falsified": "the row is reconstructed and driven against the pinned oracle, and no mutation aimed at its own body is recorded. Thirteen rows: `phys_fn_001901`, the six matrix entries convex-mesh gap Task 2a reconstructed and drove exactly in NxPhysicsCollisionTests (`phys_fn_001751`, `phys_fn_001753`, `phys_fn_001774`, `phys_fn_001785`, `phys_fn_001789`, `phys_fn_001791`), and the four helpers its Task 2b reconstructed and drove there (`phys_fn_001692`, `phys_fn_001708`, `phys_fn_001760`, `phys_fn_001855`), and the two ICE rows its Task 2c reconstructed and drove exactly in NxPhysicsThirdPartyTests (`phys_fn_001542`, `phys_fn_001667`). This is not `unreachable` and not `blocked`: the instrument exists and runs, and what is missing is one mutation",
+    "not_reconstructed_in_phase": "Phase 3 did not reconstruct this row and names nothing that blocks it. This is a debt, not an obstruction, and it is the largest single category in this ledger. No per-row reachability claim is made for these 296 rows (310 before convex-mesh gap Task 2a reconstructed matrix B [CAPSULE][CAPSULE] and three of the compound entries, 306 before its Task 2b reconstructed four helpers, 302 before its Task 2c reconstructed two ICE rows, 300 before its Task 2e reconstructed four more), and that is deliberate: this component dispatches through function-pointer tables and vtable slots and the census splits functions at their internal alignment padding, so a call-edge closure over them systematically undercounts -- four separate counting methods in this programme have each answered a narrower question than the one asked, the last of them a call-edge walk that could not see a continuation row. Some of these rows will turn out to be blocked on Phase 4 mesh data once someone walks them properly; asserting which ones without walking them is the claim this reason refuses to make. Where the evidence does say something specific about a row -- the three compound entries still here -- the entry carries a note",
+    "reconstructed_not_falsified": "the row is reconstructed and driven against the pinned oracle, and no mutation aimed at its own body is recorded. Eighteen rows: `phys_fn_001901`, the six matrix entries convex-mesh gap Task 2a reconstructed and drove exactly in NxPhysicsCollisionTests (`phys_fn_001751`, `phys_fn_001753`, `phys_fn_001774`, `phys_fn_001785`, `phys_fn_001789`, `phys_fn_001791`), and the four helpers its Task 2b reconstructed and drove there (`phys_fn_001692`, `phys_fn_001708`, `phys_fn_001760`, `phys_fn_001855`), and the two ICE rows its Task 2c reconstructed and drove exactly in NxPhysicsThirdPartyTests (`phys_fn_001542`, `phys_fn_001667`), and the five its Task 2e reconstructed and drove exactly there (`phys_fn_001641` with its continuation `phys_fn_001643`, `phys_fn_001651`, `phys_fn_001653`, `phys_fn_001461`). This is not `unreachable` and not `blocked`: the instrument exists and runs, and what is missing is one mutation",
     "data_object_not_dispositioned": "a Phase 3 data object that no Phase 3 task dispositioned. A data object has no body to mutate and no transcript of its own, so it cannot carry a code proof kind; Phase 2 left its 1,051 in the same state and this list makes the same debt countable rather than silent. One of the 102 is load-bearing and named in the evidence: phys_data_000006 at 0x0003acc0, the 24-byte switch table phys_fn_001745's `jmp dword ptr [ecx*4+0x1003acc0]` walks, whose six slots were all resolved when that row was closed"
   },
   "measured_from": {
@@ -55,9 +55,9 @@
   "counts": {
     "differential_falsified": 31,
     "oracle_differential_falsified": 30,
-    "deferred_not_reconstructed_in_phase": 300,
-    "deferred_blocked_on_later_phase": 18,
-    "deferred_reconstructed_not_falsified": 13
+    "deferred_not_reconstructed_in_phase": 296,
+    "deferred_blocked_on_later_phase": 17,
+    "deferred_reconstructed_not_falsified": 18
   },
   "closed": [
     {
@@ -2378,9 +2378,10 @@
       "id": "phys_fn_001461",
       "rva": "0x0002ae60",
       "size": 194,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "enclosed_by_one_phase",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_001463",
@@ -2523,17 +2524,19 @@
       "id": "phys_fn_001641",
       "rva": "0x00031480",
       "size": 61,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_001643",
       "rva": "0x000314c0",
       "size": 433,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_001649",
@@ -2547,15 +2550,16 @@
       "id": "phys_fn_001651",
       "rva": "0x000318d0",
       "size": 1240,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_001653",
       "rva": "0x00031db0",
       "size": 1618,
-      "reason": "blocked_on_later_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
       "driving_phases": [
         4,
@@ -2568,7 +2572,7 @@
       ],
       "blocked_on_type": "Shape",
       "vtable_slot": 7,
-      "note": "the continuous-collision sweep and what only it reaches, 3,802 bytes behind phys_fn_002266's guard. NX_CONTINUOUS_CD is parameter 11 and its shipped default is 0.0f -- measured three ways against the oracle's own live array rather than read off the disassembly -- so the guard closes and this arm runs in no configuration the shipped SDK produces. Driving it needs vtable slot 7, which no phase has resolved for any shape type, a second pose at Shape+0x3c..+0x68 and the sink past +0x44; it also reaches phys_fn_000754, a 1,027-byte Phase 7 row nothing else reaches, and phys_fn_005191, a Phase 4 row"
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_001655",

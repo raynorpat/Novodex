@@ -179,10 +179,14 @@ Established by this survey for the first time:
   002229, 002231, 002217, 002219, **002249 (slot 11, 459 B, which calls the support-map lookup
   001556)**; nine of the twelve (649 B) are not started. 001820 passes `mesh+4` for both shapes
   (`add ecx,4` at 0x000412f0, `add eax,4` at 0x00041341).
-- +0x84 is a cached three-way state (0, 1, other): 001859 reads it at 0x00044b83 and 0x00044ba7
-  and writes it at 0x00044bb1.
+- +0x84 is the mesh's Adjacencies, built on demand by 002186 (Task 2e: `mov [esi+0x84], eax` at
+  0x00054421, cleared on failure at 0x0005444f). 001859 reads it at 0x00044b83 and 0x00044ba7 and
+  writes 1 at 0x00044bb1 when 002186 left it null, so 0 means "not built yet", 1 "could not be
+  built" and anything else the object (the three-way state this survey first saw).
 - +0x88 is a lazily built pointer: 001834 reads it at 0x00041c23 and calls 002188 at 0x00041c31
-  when it is null.
+  when it is null. It is the mesh's EdgeList (Task 2e: 002188 stores it at 0x000544ba, clears it
+  on failure at 0x000544e8). 002186 and 002188 read the triangle count (+0x0c), the vertices
+  (+0x10) and the 32-bit triangles (+0x14); TriangleMesh.h names both pointers.
 - +0xa4 and +0xa8 are read by 001820 (0x000411f1..0x0004120d) and passed to 001818.
 
 **Adjacencies** (001546): +0x00 NbFaces, +0x04 faces (`new[]` of 12-byte AdjTriangle through
@@ -390,7 +394,7 @@ Totals: 25 rows; discovered 10,236 B
 
 | row | rva | bytes | state | phase | callers | role |
 |---|---|---:|---|---:|---|---|
-| 001639 | 0x000313e0 | 157 | discovered | 7 | 002296 | function-static pose: identity 4x4 at 0x10123ca0 plus six zero words, guarded by the byte 0x10123c78 |
+| 001639 | 0x000313e0 | 157 | discovered | 7 | 002296 | function-static pose pair at 0x10123c7c, guarded by the byte 0x10123c78: a 3x3 identity, then a 4x4 identity at +0x24 (0x10123ca0) (corrected by Task 2e) |
 | 001641 | 0x00031480 | 61 | discovered | 3 | 001465 | edge-pair list dedupe over a copied Container (004844): removes both copies of an edge that appears twice |
 | 001643 | 0x000314c0 | 433 | discovered | 3 | continuation | continuation of 001641 |
 | 001645 | 0x00031680 | 29 | reconstructed | 2 | 001451, 001476, 001602, 001611 | vertex-reduction init: [+4] = arg1, [+0] = arg2, zero +8/+0xc/+0x10 |
@@ -424,7 +428,30 @@ Totals: 16 rows; discovered 4,668 B, reconstructed 435 B
   `SmoothNormals.cpp`, see P-Small) for 001651; 005191
   (vendored) for 001653; 004844 (vendored) for 001641; the EdgeList closure for 001667.
 - **x87.** 001651, 001653, 001661, 001668: `/arch:IA32`.
-- **Test route.** Leaf families in `NxPhysicsCollisionTests` for the float rows (001653 over random
+- **As written by Task 2e** (`Physics/src/IceMeshTools.cpp`). 001651, 001653 and 001661 are the
+  listing's instructions, naked (their built code equals the listing instruction for instruction:
+  `evidence/convex-mesh-gap-2e-listing-compare.py`); 001639 and 001641/001643 are C++. Found in
+  the listings:
+  - 001641 is more than a dedupe: after removing every pair that occurs twice (either
+    orientation), it chains the remaining pairs into an outline from the first one, returning
+    false when the chain breaks. It reads the first remaining pair without a count test.
+  - 001651 is `MeshNormals::Compute` (thiscall, `ret 4`) on an 8-byte object {face normals,
+    vertex normals}, whose constructor is 001536 (zero +0/+4, the linker-folded body of
+    Adjacencies' constructor) and whose release is 001649. Its create block is 0x20 bytes:
+    vertex count, vertices, face count, 32-bit faces, 16-bit faces, a weight-by-angle byte, and the
+    caller's face- and vertex-normal arrays (null: allocated through the 004803 getter, type 0, and
+    owned by the object). The corner order of the weighted pass is r0, r2, r1, with the triangle
+    handed to 002144 as {r0, r2, r1}.
+  - 001653 is cdecl (relative0, relative1, pose0, pose1): relative0 = pose0 * inverse(pose1) and
+    relative1 = pose1 * inverse(pose0), null poses read as identity, each output skipped when
+    null; the inverses go through the vendored 005191, whose copies quiet signalling NaNs (the
+    oracle's copy them as integers) -- the one split of its family.
+  - 001661 is thiscall on the Container (`ret 4`); the candidate's is __fastcall with an unused edx.
+- **Test route.** As driven by Task 2e: every family is in `NxPhysicsThirdPartyTests` (the rows
+  call 001591, the vendored Container and InvertPRMatrix, which that harness links), not in
+  `NxPhysicsCollisionTests`: pose_pair (001653, 001639), unique_axis (001661), edge_dedupe (001641),
+  mesh_normals (001651, 001461, and 002144 through the weighted cases). The first draft follows.
+  Leaf families in `NxPhysicsCollisionTests` for the float rows (001653 over random
   poses with and without the null arms; 001661 over direction sets with near-parallel pairs at the
   0.9999 threshold) and `NxPhysicsThirdPartyTests` for the ICE ones (001641 edge lists with
   duplicates; 001647 over the NxMesh fixtures with welded duplicates; 001651 over the fixtures;
@@ -798,7 +825,18 @@ through CRT new/free or the imported allocator.
 000001 is not a prerequisite. It is MSVC's compiler-generated `vector constructor iterator`,
 which `new[]` produces.
 
-**002144 is already modelled.** `Physics/src/SmoothNormals.cpp` has `angleAtVertex`, which
+**Written by Task 2e.** 002144 is a naked row in `Physics/src/SmoothNormals.cpp` with the
+listing's register convention (eax the vertex, edx the three indices, esi the vertices, st(0) the
+result); `angleAtVertex` now calls it, and step_smooth_normals is unchanged. 001461 is in
+`Physics/src/ConvexHull.cpp` (new; a choice: the row lies in the gap before 001465's
+`ConvexHull.cpp`), on a `ConvexHull` whose fields +0x04 (face count), +0x08 (16-bit faces), +0x0c
+(vertex count), +0x10 (vertices) and +0x14 (vertex normals) it establishes; Task 2f adds the rest.
+002186 and 002188 are TriangleMesh members in `Physics/src/TriangleMeshTopology.cpp` (new; they
+sit in TriangleMesh's own span, but a file of their own keeps the asset harness, which links
+TriangleMesh.cpp, free of the ICE rows). Neither tests its allocation before calling Init on it,
+as the listing does not; both return nothing a caller reads.
+
+**002144 was already modelled.** `Physics/src/SmoothNormals.cpp` had `angleAtVertex`, which
 stands in for 002144 (217 B) inside the reconstructed `NxBuildSmoothNormals`. Task 2e writes
 002144 as a product row and makes `angleAtVertex` a wrapper of it (or replaces it). The existing
 `step_smooth_normals` and `NxBuildSmoothNormals` families must stay green.

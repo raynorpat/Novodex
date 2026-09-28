@@ -1,0 +1,12 @@
+diff --git a/Physics/src/IceMeshTools.cpp b/Physics/src/IceMeshTools.cpp
+index a3b231e..dedd1ce 100644
+--- a/Physics/src/IceMeshTools.cpp
++++ b/Physics/src/IceMeshTools.cpp
+@@ -1323,7 +1323,6 @@ __declspec(naked) bool __fastcall nxIceAddUniqueAxis(IceCore::Container* /*axes*
+ 		fchs		// 0x00032512
+ 		fstp	dword ptr [esp]		// 0x00032514
+ 		fld	dword ptr [esp + 4]		// 0x00032517
+-		fchs		// 0x0003251b
+ 		fstp	dword ptr [esp + 4]		// 0x0003251d
+ 		fld	dword ptr [esp + 8]		// 0x00032521
+ 		fchs		// 0x00032525
