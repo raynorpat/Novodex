@@ -2276,7 +2276,19 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty name=qhull_hull_x87 rva=0x0005c5c0 owner=phys_fn_002425 source=geom.c,geom2.c,merge.c words=32036 oracle=20ffcbef',
         'thirdparty name=qhull_hull_rotated rva=0x0005ff40 owner=phys_fn_002520 source=geom2.c,qhull.c,poly.c,poly2.c,merge.c words=9431 oracle=0a2f0b05',
         'thirdparty coverage driven=44 divergent=9 words=464286 layout_checks=47',
-        'thirdparty oracle digest=c16f0c0c'
+        'thirdparty oracle digest=c16f0c0c',
+
+        # Vendored correspondence, Task 5a: candidate-built trees queried by the
+        # candidate's colliders, against the oracle's trees and colliders over the
+        # same inputs. The exact family (the models opcode_model_build builds
+        # exactly) is registered whole; the quantized and tied models are
+        # DIVERGENT, registered up to the oracle digest, and held by the harness's
+        # recorded ceiling (kDivergentCeilings). The pair above keeps printing
+        # where Task 4 put it; the pair below carries the totals.
+        'thirdparty name=opcode_candidate_trees rva=0x000e9100 owner=phys_fn_005368 source=OPC_Model.cpp,OPC_TreeBuilders.cpp,OPC_OptimizedTree.cpp,OPC_RayCollider.cpp,OPC_SphereCollider.cpp,OPC_OBBCollider.cpp,OPC_AABBCollider.cpp,OPC_LSSCollider.cpp,OPC_PlanesCollider.cpp,OPC_TreeCollider.cpp words=4172 oracle=6f68c7e3 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=opcode_candidate_trees_x87 rva=0x000f09b0 owner=phys_fn_005513 source=OPC_AABBTree.cpp,OPC_TreeBuilders.cpp,OPC_OptimizedTree.cpp words=18517 oracle=b7da8d7c',
+        'thirdparty coverage driven=46 divergent=10 words=486975 layout_checks=47',
+        'thirdparty oracle digest=dafb6637'
     )
 }
 
@@ -2299,8 +2311,8 @@ $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
-    '4' = 130  # 34 for NxPhysicsAssetTests, 96 for NxPhysicsThirdPartyTests (67 + 29 from
-               # vendored-correspondence Task 4)
+    '4' = 134  # 34 for NxPhysicsAssetTests, 100 for NxPhysicsThirdPartyTests (67 + 29 from
+               # vendored-correspondence Task 4 + 4 from its Task 5a)
     '5' = 871  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines
                # (RED on purpose: vtables family open)
     '6' = 403  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
