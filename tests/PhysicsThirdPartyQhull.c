@@ -16,7 +16,8 @@
  *   * nxQhullTape: a walk of a finished hull in a qhT image, pushing every
  *     facet, ridge and vertex word the build produced: the combinatorial ones
  *     (ids, flags, sets, point indices) on `tape` and the doubles (normals,
- *     offsets, centrums, distances) on `floats`. It takes the qhT by
+ *     offsets, centrums, distances) on `floats`, through `pushDouble` so
+ *     that each is taped as a double. It takes the qhT by
  *     address and reads it through the vendored struct definitions, so one walk
  *     serves the candidate's qh_qh and the oracle's (.data:0x00124678, the
  *     address vendored_data_map.csv pairs with _qh_qh+0; all 209 of its qh_qh
@@ -31,6 +32,7 @@
 #include "qhull_a.h"
 
 typedef void (*NxQhPush)(void* tape, unsigned word);
+typedef void (*NxQhPushDouble)(void* tape, double value);
 
 typedef void (__cdecl* NxQhInitA)(FILE*, FILE*, FILE*, int, char**);
 typedef void (__cdecl* NxQhInitflags)(char*);
@@ -110,14 +112,6 @@ int nxQhullRun(const NxQhullEntries* e, coordT* points, int numpoints, const cha
 	return result;
 	}
 
-static void nxPushDouble(NxQhPush push, void* tape, double value)
-	{
-	unsigned w[2];
-	memcpy(w, &value, sizeof(w));
-	push(tape, w[0]);
-	push(tape, w[1]);
-	}
-
 static unsigned nxPointId(const pointT* point, const coordT* points, int numpoints)
 	{
 	if(!point)
@@ -159,7 +153,7 @@ static void nxPushPointSet(NxQhPush push, void* tape, const setT* set, const coo
 	}
 
 void nxQhullTape(const void* state, const coordT* points, int numpoints, NxQhPush push, void* tape,
-	void* floats)
+	NxQhPushDouble pushDouble, void* floats)
 	{
 	const qhT* q = (const qhT*) state;
 	const facetT* f;
@@ -173,36 +167,36 @@ void nxQhullTape(const void* state, const coordT* points, int numpoints, NxQhPus
 	push(tape, q->facet_id);
 	push(tape, q->ridge_id);
 	push(tape, q->vertex_id);
-	nxPushDouble(push, floats, q->max_outside);
-	nxPushDouble(push, floats, q->min_vertex);
-	nxPushDouble(push, floats, q->DISTround);
-	nxPushDouble(push, floats, q->ONEmerge);
-	nxPushDouble(push, floats, q->MINvisible);
-	nxPushDouble(push, floats, q->MAXcoplanar);
-	nxPushDouble(push, floats, q->totarea);
-	nxPushDouble(push, floats, q->totvol);
+	pushDouble(floats, q->max_outside);
+	pushDouble(floats, q->min_vertex);
+	pushDouble(floats, q->DISTround);
+	pushDouble(floats, q->ONEmerge);
+	pushDouble(floats, q->MINvisible);
+	pushDouble(floats, q->MAXcoplanar);
+	pushDouble(floats, q->totarea);
+	pushDouble(floats, q->totvol);
 
 	for(f = q->facet_list; f && f->next; f = f->next)
 		{
 		push(tape, f->id);
 		nxPushFacetFlags(push, tape, f);
 #if !qh_COMPUTEfurthest
-		nxPushDouble(push, floats, f->furthestdist);
+		pushDouble(floats, f->furthestdist);
 #endif
 #if qh_MAXoutside
-		nxPushDouble(push, floats, f->maxoutside);
+		pushDouble(floats, f->maxoutside);
 #endif
-		nxPushDouble(push, floats, f->offset);
+		pushDouble(floats, f->offset);
 		if(f->isarea)
-			nxPushDouble(push, floats, f->f.area);
+			pushDouble(floats, f->f.area);
 		if(f->normal)
 			for(k = 0; k < 3; ++k)
-				nxPushDouble(push, floats, f->normal[k]);
+				pushDouble(floats, f->normal[k]);
 		else
 			push(tape, 0xfffffffcu);
 		if(f->center && !f->tricoplanar)
 			for(k = 0; k < 3; ++k)
-				nxPushDouble(push, floats, f->center[k]);
+				pushDouble(floats, f->center[k]);
 		else
 			push(tape, 0xfffffffcu);
 		if(f->vertices)

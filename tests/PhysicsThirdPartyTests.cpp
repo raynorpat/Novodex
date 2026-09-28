@@ -235,18 +235,42 @@ static unsigned nxFoldFloat(unsigned digest, float value)
 	return nxFold(digest, word);
 	}
 
+// What a tape word is, so a divergent family can say how far apart its two
+// tapes are: a discrete word (a count, an index, a verdict, a flag, a
+// quantized coordinate) differs or it does not; a float or double differs by
+// some number of representable values. The kind never reaches a digest.
+enum NxWordKind { kWordDiscrete = 0, kWordFloat = 1, kWordDoubleLo = 2, kWordDoubleHi = 3 };
+
 // A row's transcript: every word either side produced, in order.
 struct NxTape
 	{
 	enum { kMax = 262144 };
 	unsigned words[kMax];
+	unsigned char kinds[kMax];
 	unsigned count;
 	unsigned overflow;
 
 	void reset()					{ count = 0; overflow = 0; }
-	void push(unsigned word)		{ if(count < kMax) words[count++] = word; else ++overflow; }
-	void pushFloat(float value)		{ unsigned w; memcpy(&w, &value, sizeof(w)); push(w); }
-	void pushDouble(double value)	{ unsigned w[2]; memcpy(w, &value, sizeof(w)); push(w[0]); push(w[1]); }
+	void pushKind(unsigned word, unsigned char kind)
+		{
+		if(count < kMax)
+			{
+			kinds[count] = kind;
+			words[count++] = word;
+			}
+		else
+			++overflow;
+		}
+	void push(unsigned word)		{ pushKind(word, kWordDiscrete); }
+	void pushFloatWord(unsigned word)	{ pushKind(word, kWordFloat); }
+	void pushFloat(float value)		{ unsigned w; memcpy(&w, &value, sizeof(w)); pushKind(w, kWordFloat); }
+	void pushDouble(double value)
+		{
+		unsigned w[2];
+		memcpy(w, &value, sizeof(w));
+		pushKind(w[0], kWordDoubleLo);
+		pushKind(w[1], kWordDoubleHi);
+		}
 	unsigned digest() const
 		{
 		unsigned d = 2166136261u;
@@ -280,29 +304,225 @@ static unsigned nxUlpDistance(unsigned a, unsigned b)
 	return a > b ? a - b : b - a;
 	}
 
+// The distance in representable doubles between two IEEE-754 double patterns,
+// on the same terms as nxUlpDistance: an infinity, a NaN or a sign change is
+// never "near".
+static unsigned __int64 nxUlpDistance64(unsigned __int64 a, unsigned __int64 b)
+	{
+	if(a == b)
+		return 0;
+	const unsigned expA = (unsigned) (a >> 52) & 0x7ffu;
+	const unsigned expB = (unsigned) (b >> 52) & 0x7ffu;
+	if(expA == 0x7ffu || expB == 0x7ffu)
+		return ~(unsigned __int64) 0;
+	if((a >> 63) != (b >> 63))
+		return ~(unsigned __int64) 0;
+	return a > b ? a - b : b - a;
+	}
+
+// A divergent family's recorded ceiling: how many tape words differed, and how
+// many of those were discrete words (plus one for a tape-length difference),
+// when it was measured. A run over either fails the family; a run under both
+// prints an improvement note, so that the ceiling is lowered.
+//
+// Measured by vendored-correspondence Task 5a (evidence/vendored-correspondence.md,
+// "Task 5a"): each value is what this harness printed against the pinned oracle
+// (4b7db3e1...602c) with the candidate vendored code at that commit, and every
+// run since has printed the same (the families are deterministic). So today's
+// run passes at exactly the ceiling, and any change that makes a family differ
+// more fails it. The words figure counts a double's two halves separately.
+struct NxDivergentCeiling
+	{
+	const char*	name;
+	unsigned	words;		// mismatching words, plus the length difference
+	unsigned	discrete;	// mismatching discrete words, plus 1 for a length difference
+	};
+
+static const NxDivergentCeiling kDivergentCeilings[] =
+	{
+	//  family                          words  discrete
+	{ "opcode_model_build_x87",			2316,	779 },	// splatter ties change the tree; quantized coefficients
+	{ "opcode_ray_x87",					194,	0 },	// distances and barycentrics only
+	{ "opcode_ray_boundary",			927,	756 },	// one root rejection; the tape is 4 words shorter
+	{ "opcode_treecollider_boundary",	684,	671 },	// pair verdicts; the tape is 14 words shorter
+	{ "ice_plane_triangle",				947,	0 },
+	{ "ice_matrix4x4",					1815,	0 },
+	{ "ice_obb",						1204,	0 },
+	{ "qhull_hull_x87",					1284,	0 },	// doubles only; the combinatorial hull is exact
+	{ "qhull_hull_rotated",				1201,	582 },	// "QR1": the merges differ
+	};
+
+static const NxDivergentCeiling* nxFindCeiling(const char* name)
+	{
+	for(unsigned i = 0; i < sizeof(kDivergentCeilings) / sizeof(kDivergentCeilings[0]); ++i)
+		if(!strcmp(kDivergentCeilings[i].name, name))
+			return &kDivergentCeilings[i];
+	return 0;
+	}
+
 // One driven row: compare the two tapes word for word, print the oracle digest,
 // and fold it into the run digest.
 //
-// `ulpTolerance` is 0 for every registered family. kDivergent remains available
-// for an explicitly measured but unresolved family; none currently uses it.
+// `ulpTolerance` is 0 for an exact family: any differing word fails it. A
+// family reported with kDivergent is a measured, attributed divergence
+// (evidence/vendored-correspondence.md). It fails when it differs by more than
+// its recorded ceiling (kDivergentCeilings), and its line says by how much it
+// differs, which is what tools/vendored_trace.py classifies it by:
+//   mismatches=   words that differ, plus the length difference
+//   discrete=     differing discrete words, plus 1 if the lengths differ
+//   float_ulp=    the largest distance over differing float words ("inf" for a
+//                 sign change, an infinity or a NaN; 0 when none differ)
+//   double_ulp=   the same over doubles
+//   beyond=       how many differing floats and doubles are more than
+//                 kLastBitUlp apart (a double counts once)
+//   first_diff=   the first index at which the tapes differ, or the shorter
+//                 length when one is a prefix of the other ("none" if equal)
+//   length_delta= candidate words minus oracle words
+//   ceiling=      the recorded words/discrete ceiling
+// Past a length difference the tapes are still compared position by position
+// up to the shorter one. What that counts after the first difference depends
+// on where the two fall out of step, but it is deterministic, and it is what
+// the ceiling records.
 static const unsigned kDivergent = 0xffffffffu;
+
+// The "last bit" bound. A three-term sum that a 2003 x87 build adds in another
+// order, or keeps unrounded where a 2026 /fp:precise build rounds, differs from
+// it by a rounding of the result, and a few of those in a row by a few units:
+// 4 is two roundings on each side. A value further apart than that has been
+// through a cancellation or a different branch, which is not a last-bit
+// difference. tools/vendored_trace.py applies the same bound (LASTBIT_ULP).
+static const unsigned kLastBitUlp = 4;
+
+struct NxTapeDifference
+	{
+	unsigned			words;
+	unsigned			discrete;
+	unsigned			beyond;
+	unsigned			floatUlp;		// 0xffffffff = inf
+	unsigned __int64	doubleUlp;		// all ones = inf
+	unsigned			first;			// 0xffffffff = none
+	int					lengthDelta;
+	};
+
+static NxTapeDifference nxCompareTapes(const NxTape& oracle, const NxTape& candidate)
+	{
+	NxTapeDifference d;
+	d.words = 0;
+	d.discrete = 0;
+	d.beyond = 0;
+	d.floatUlp = 0;
+	d.doubleUlp = 0;
+	d.first = 0xffffffffu;
+	d.lengthDelta = (int) (candidate.count + candidate.overflow) - (int) (oracle.count + oracle.overflow);
+	const unsigned common = oracle.count < candidate.count ? oracle.count : candidate.count;
+	for(unsigned i = 0; i < common; ++i)
+		{
+		const unsigned char kind = oracle.kinds[i];
+		if(kind == kWordDoubleLo && i + 1 < common && oracle.kinds[i + 1] == kWordDoubleHi
+			&& candidate.kinds[i] == kWordDoubleLo && candidate.kinds[i + 1] == kWordDoubleHi)
+			{
+			const bool lo = oracle.words[i] != candidate.words[i];
+			const bool hi = oracle.words[i + 1] != candidate.words[i + 1];
+			if(lo || hi)
+				{
+				if(d.first == 0xffffffffu)
+					d.first = lo ? i : i + 1;
+				d.words += (lo ? 1u : 0u) + (hi ? 1u : 0u);
+				const unsigned __int64 a = ((unsigned __int64) oracle.words[i + 1] << 32) | oracle.words[i];
+				const unsigned __int64 b = ((unsigned __int64) candidate.words[i + 1] << 32) | candidate.words[i];
+				const unsigned __int64 ulp = nxUlpDistance64(a, b);
+				if(ulp > d.doubleUlp)
+					d.doubleUlp = ulp;
+				if(ulp > kLastBitUlp)
+					++d.beyond;
+				}
+			++i;
+			continue;
+			}
+		if(oracle.words[i] == candidate.words[i])
+			continue;
+		if(d.first == 0xffffffffu)
+			d.first = i;
+		++d.words;
+		if(kind == kWordFloat && candidate.kinds[i] == kWordFloat)
+			{
+			const unsigned ulp = nxUlpDistance(oracle.words[i], candidate.words[i]);
+			if(ulp > d.floatUlp)
+				d.floatUlp = ulp;
+			if(ulp > kLastBitUlp)
+				++d.beyond;
+			}
+		else
+			++d.discrete;	// a discrete word, or two tapes out of step
+		}
+	if(d.lengthDelta != 0)
+		{
+		if(d.first == 0xffffffffu)
+			d.first = common;
+		d.words += (unsigned) (d.lengthDelta < 0 ? -d.lengthDelta : d.lengthDelta);
+		++d.discrete;
+		}
+	return d;
+	}
+
+static void nxFormatUlp(char* out, size_t size, unsigned __int64 ulp, unsigned __int64 inf)
+	{
+	if(ulp == inf)
+		_snprintf(out, size, "inf");
+	else
+		_snprintf(out, size, "%I64u", ulp);
+	out[size - 1] = 0;
+	}
 
 static void nxReport(const char* name, const char* rva, const char* owner, const char* source,
 	bool selfOnly, unsigned ulpTolerance = 0)
 	{
 	const unsigned oracleDigest = gOracleTape.digest();
+	const bool divergent = ulpTolerance == kDivergent;
 	unsigned mismatches = 0;
 	unsigned fatal = 0;
 	unsigned worstUlp = 0;
-	if(!selfOnly)
+	NxTapeDifference d;
+	memset(&d, 0, sizeof(d));
+	d.first = 0xffffffffu;
+	const NxDivergentCeiling* ceiling = divergent ? nxFindCeiling(name) : 0;
+	if(!selfOnly && divergent)
+		{
+		d = nxCompareTapes(gOracleTape, gCandidateTape);
+		mismatches = d.words;
+		if(d.first != 0xffffffffu)
+			{
+			const unsigned i = d.first;
+			if(i < gOracleTape.count && i < gCandidateTape.count)
+				fprintf(stderr, "DIVERGENT %s first_diff=%u oracle=%08x candidate=%08x kind=%u/%u"
+					" length oracle=%u candidate=%u\n", name, i, gOracleTape.words[i], gCandidateTape.words[i],
+					gOracleTape.kinds[i], gCandidateTape.kinds[i], gOracleTape.count, gCandidateTape.count);
+			else
+				fprintf(stderr, "DIVERGENT %s first_diff=%u: the %s tape ends there; length oracle=%u candidate=%u\n",
+					name, i, gOracleTape.count < gCandidateTape.count ? "oracle" : "candidate",
+					gOracleTape.count, gCandidateTape.count);
+			}
+		if(!ceiling)
+			{
+			fprintf(stderr, "FAIL %s is divergent and has no recorded ceiling\n", name);
+			fatal = 1;
+			}
+		else if(d.words > ceiling->words || d.discrete > ceiling->discrete)
+			{
+			fprintf(stderr, "FAIL %s exceeds its recorded ceiling: words %u (ceiling %u), discrete %u (ceiling %u)\n",
+				name, d.words, ceiling->words, d.discrete, ceiling->discrete);
+			fatal = 1;
+			}
+		else if(d.words < ceiling->words || d.discrete < ceiling->discrete)
+			fprintf(stderr, "IMPROVED %s is under its recorded ceiling: words %u (ceiling %u), discrete %u"
+				" (ceiling %u); lower the ceiling\n", name, d.words, ceiling->words, d.discrete, ceiling->discrete);
+		}
+	else if(!selfOnly)
 		{
 		if(gOracleTape.count != gCandidateTape.count || gOracleTape.overflow != gCandidateTape.overflow)
 			{
-			// A divergent family's tapes may differ in length -- a boundary query
-			// that one side answers with a hit and the other without -- and that
-			// is part of what it measures; anywhere else it fails the run.
 			mismatches = 1;
-			fatal = ulpTolerance == kDivergent ? 0 : 1;
+			fatal = 1;
 			fprintf(stderr, "MISMATCH %s word count oracle=%u candidate=%u\n",
 				name, gOracleTape.count, gCandidateTape.count);
 			}
@@ -315,7 +535,7 @@ static void nxReport(const char* name, const char* rva, const char* owner, const
 					const unsigned ulp = nxUlpDistance(gOracleTape.words[i], gCandidateTape.words[i]);
 					if(ulp > worstUlp && ulp != 0xffffffffu)
 						worstUlp = ulp;
-					if(ulpTolerance != kDivergent && ulp > ulpTolerance)
+					if(ulp > ulpTolerance)
 						{
 						if(fatal < 8)
 							fprintf(stderr, "MISMATCH %s word %u oracle=%08x candidate=%08x ulp=%u\n",
@@ -327,14 +547,31 @@ static void nxReport(const char* name, const char* rva, const char* owner, const
 		}
 	gMismatches += fatal;
 	++gDriven;
-	if(ulpTolerance == kDivergent)
+	if(divergent)
 		++gDivergent;
 	gWordsCompared += gOracleTape.count;
 	gRunDigest = nxFold(gRunDigest, oracleDigest);
-	printf("thirdparty name=%s rva=%s owner=%s source=%s words=%u oracle=%08x mismatches=%u"
-		" worst_ulp=%u verdict=%s\n",
-		name, rva, owner, source, gOracleTape.count, oracleDigest, mismatches, worstUlp,
-		ulpTolerance == kDivergent ? "divergent" : (fatal ? "FAILED" : "exact"));
+	if(divergent)
+		{
+		char floatUlp[32], doubleUlp[32], first[16];
+		nxFormatUlp(floatUlp, sizeof(floatUlp), d.floatUlp, 0xffffffffu);
+		nxFormatUlp(doubleUlp, sizeof(doubleUlp), d.doubleUlp, ~(unsigned __int64) 0);
+		if(d.first == 0xffffffffu)
+			_snprintf(first, sizeof(first), "none");
+		else
+			_snprintf(first, sizeof(first), "%u", d.first);
+		first[sizeof(first) - 1] = 0;
+		printf("thirdparty name=%s rva=%s owner=%s source=%s words=%u oracle=%08x mismatches=%u"
+			" discrete=%u float_ulp=%s double_ulp=%s beyond=%u first_diff=%s length_delta=%d ceiling=%u/%u verdict=%s\n",
+			name, rva, owner, source, gOracleTape.count, oracleDigest, mismatches, d.discrete, floatUlp,
+			doubleUlp, d.beyond, first, d.lengthDelta, ceiling ? ceiling->words : 0u, ceiling ? ceiling->discrete : 0u,
+			fatal ? "FAILED" : "divergent");
+		}
+	else
+		printf("thirdparty name=%s rva=%s owner=%s source=%s words=%u oracle=%08x mismatches=%u"
+			" worst_ulp=%u verdict=%s\n",
+			name, rva, owner, source, gOracleTape.count, oracleDigest, mismatches, worstUlp,
+			fatal ? "FAILED" : "exact");
 	}
 
 //////////////////////////////////////////////////////////////////////////////
@@ -1941,6 +2178,12 @@ struct NxModelPair
 	Model*			candidate;
 	bool			built;
 	bool			exact;		// taped into opcode_model_build, else opcode_model_build_x87
+	// The build settings, kept so that the two families build in two passes.
+	udword			rules;
+	bool			keepOriginal;
+	float			inflate;
+	int				extendAxis;
+	float			extendValue;
 	};
 
 static const int kMaxModels = 48;
@@ -1963,16 +2206,16 @@ static void nxReportTapes(const NxTape& oracle, const NxTape& candidate, const c
 	gOracleTape.reset();
 	gCandidateTape.reset();
 	for(unsigned i = 0; i < oracle.count; ++i)
-		gOracleTape.push(oracle.words[i]);
+		gOracleTape.pushKind(oracle.words[i], oracle.kinds[i]);
 	for(unsigned i = 0; i < candidate.count; ++i)
-		gCandidateTape.push(candidate.words[i]);
+		gCandidateTape.pushKind(candidate.words[i], candidate.kinds[i]);
 	nxReport(name, rva, owner, source, selfOnly, tolerance);
 	}
 
 // A node array with its links replaced by indices. `stride` is the node size;
 // `links` the byte offsets of the link words (the low bit marks a leaf).
 static void nxTapeNodes(NxTape& tape, const unsigned char* nodes, unsigned count, unsigned stride,
-	const unsigned* links, int nbLinks)
+	const unsigned* links, int nbLinks, bool floatBoxes)
 	{
 	tape.push(count);
 	for(unsigned n = 0; n < count; ++n)
@@ -1990,7 +2233,9 @@ static void nxTapeNodes(NxTape& tape, const unsigned char* nodes, unsigned count
 				const unsigned delta = word - (unsigned) (size_t) nodes;
 				word = 0x80000000u | (delta % stride == 0 ? delta / stride : 0x7fffffffu);
 				}
-			tape.push(word);
+			// A link, or a quantized box's packed shorts, is discrete; a float
+			// box's centre and extents are floats.
+			tape.pushKind(word, floatBoxes && !link ? kWordFloat : kWordDiscrete);
 			}
 		}
 	}
@@ -2017,33 +2262,33 @@ static void nxTapeModel(NxTape& tape, const void* object)
 	if(!noLeaf && !quantized)
 		{
 		static const unsigned links[1] = { 24 };
-		nxTapeNodes(tape, nodes, nbNodes, sizeof(AABBCollisionNode), links, 1);
+		nxTapeNodes(tape, nodes, nbNodes, sizeof(AABBCollisionNode), links, 1, true);
 		}
 	else if(noLeaf && !quantized)
 		{
 		static const unsigned links[2] = { 24, 28 };
-		nxTapeNodes(tape, nodes, nbNodes, sizeof(AABBNoLeafNode), links, 2);
+		nxTapeNodes(tape, nodes, nbNodes, sizeof(AABBNoLeafNode), links, 2, true);
 		}
 	else if(!noLeaf && quantized)
 		{
 		static const unsigned links[1] = { 12 };
-		nxTapeNodes(tape, nodes, nbNodes, sizeof(AABBQuantizedNode), links, 1);
+		nxTapeNodes(tape, nodes, nbNodes, sizeof(AABBQuantizedNode), links, 1, false);
 		for(unsigned off = 12; off < sizeof(AABBQuantizedTree); off += 4)
 			{
 			unsigned w;
 			memcpy(&w, raw + off, 4);
-			tape.push(w);
+			tape.pushFloatWord(w);	// mCenterCoeff, mExtentsCoeff
 			}
 		}
 	else
 		{
 		static const unsigned links[2] = { 12, 16 };
-		nxTapeNodes(tape, nodes, nbNodes, sizeof(AABBQuantizedNoLeafNode), links, 2);
+		nxTapeNodes(tape, nodes, nbNodes, sizeof(AABBQuantizedNoLeafNode), links, 2, false);
 		for(unsigned off = 12; off < sizeof(AABBQuantizedNoLeafTree); off += 4)
 			{
 			unsigned w;
 			memcpy(&w, raw + off, 4);
-			tape.push(w);
+			tape.pushFloatWord(w);	// mCenterCoeff, mExtentsCoeff
 			}
 		}
 	}
@@ -2059,7 +2304,7 @@ static void nxTapeVanillaNode(NxTape& tape, const AABBTreeNode* node, const udwo
 		{
 		unsigned w;
 		memcpy(&w, raw + off, 4);
-		tape.push(w);
+		tape.pushFloatWord(w);		// the node's AABB
 		}
 	unsigned pos;
 	memcpy(&pos, raw + 24, 4);
@@ -2084,27 +2329,44 @@ static void nxTapeVanillaTree(NxTape& tape, const AABBTree* tree)
 		tape.push(indices[i]);
 	}
 
-static void nxAddModel(const NxOracleRows& o, int mesh, int kind, udword rules, bool keepOriginal,
-	float inflate, int extendAxis, float extendValue, bool exact, bool selfOnly)
+// Records a model; nxBuildModel builds it. The builds of the two families run
+// in two passes (all of opcode_model_build's, then all of the x87 family's),
+// so that each family's executions sit between its own report and the one
+// before it, where the execution trace (tools/vendored_trace.py) attributes
+// them. Each family's tape is in the same order as when they were interleaved.
+static void nxAddModel(int mesh, int kind, udword rules, bool keepOriginal,
+	float inflate, int extendAxis, float extendValue, bool exact)
 	{
 	NxModelPair& p = gModels[gNbModels++];
 	p.mesh = mesh;
 	p.kind = kind;
 	p.exact = exact;
-	nxCopyMesh(p.oracleMesh, gMeshes[mesh]);
-	nxCopyMesh(p.candidateMesh, gMeshes[mesh]);
-	NxTape& oracleTape = exact ? gOracleTape : gOracleTapeX87;
-	NxTape& candidateTape = exact ? gCandidateTape : gCandidateTapeX87;
+	p.rules = rules;
+	p.keepOriginal = keepOriginal;
+	p.inflate = inflate;
+	p.extendAxis = extendAxis;
+	p.extendValue = extendValue;
+	p.oracle = 0;
+	p.candidate = 0;
+	p.built = false;
+	}
+
+static void nxBuildModel(const NxOracleRows& o, NxModelPair& p, bool selfOnly)
+	{
+	nxCopyMesh(p.oracleMesh, gMeshes[p.mesh]);
+	nxCopyMesh(p.candidateMesh, gMeshes[p.mesh]);
+	NxTape& oracleTape = p.exact ? gOracleTape : gOracleTapeX87;
+	NxTape& candidateTape = p.exact ? gCandidateTape : gCandidateTapeX87;
 
 	OPCODECREATE create;
-	create.mSettings.mRules				= rules;
+	create.mSettings.mRules				= p.rules;
 	create.mSettings.mLimit				= 1;
-	create.mSettings.mNovodeXInflate	= inflate;
-	create.mSettings.mNovodeXExtendAxis	= extendAxis;
-	create.mSettings.mNovodeXExtendValue= extendValue;
-	create.mNoLeaf						= (kind & 1) != 0;
-	create.mQuantized					= (kind & 2) != 0;
-	create.mKeepOriginal				= keepOriginal;
+	create.mSettings.mNovodeXInflate	= p.inflate;
+	create.mSettings.mNovodeXExtendAxis	= p.extendAxis;
+	create.mSettings.mNovodeXExtendValue= p.extendValue;
+	create.mNoLeaf						= (p.kind & 1) != 0;
+	create.mQuantized					= (p.kind & 2) != 0;
+	create.mKeepOriginal				= p.keepOriginal;
 	create.mCanRemap					= false;
 
 	create.mIMesh = &p.oracleMesh.iface;
@@ -2194,8 +2456,7 @@ static void nxDriveModels(const NxOracleRows& o, bool selfOnly)
 			// No tie: the soup, the degenerate set and the single triangle.
 			const bool untied = mesh == 1 || mesh == 3 || mesh == 4;
 			gModelIndex[mesh][kind] = gNbModels;
-			nxAddModel(o, mesh, kind, kDefaultRules, false, 0.0f, -1, 0.0f,
-				untied && !(kind & 2), selfOnly);
+			nxAddModel(mesh, kind, kDefaultRules, false, 0.0f, -1, 0.0f, untied && !(kind & 2));
 			}
 	// The other splitting rules. The rules that do not look at the variance
 	// build the symmetric meshes exactly; the ones that do go to the x87 family.
@@ -2210,23 +2471,29 @@ static void nxDriveModels(const NxOracleRows& o, bool selfOnly)
 	for(unsigned r = 0; r < sizeof(kRules) / sizeof(kRules[0]); ++r)
 		{
 		const bool variance = (kRules[r] & SPLIT_SPLATTER_POINTS) != 0;
-		nxAddModel(o, 0, 0, kRules[r], r == 0, 0.0f, -1, 0.0f, !variance, selfOnly);
-		nxAddModel(o, 1, 1, kRules[r], false, 0.0f, -1, 0.0f, true, selfOnly);
-		nxAddModel(o, 1, 3, kRules[r], false, 0.0f, -1, 0.0f, false, selfOnly);
+		nxAddModel(0, 0, kRules[r], r == 0, 0.0f, -1, 0.0f, !variance);
+		nxAddModel(1, 1, kRules[r], false, 0.0f, -1, 0.0f, true);
+		nxAddModel(1, 3, kRules[r], false, 0.0f, -1, 0.0f, false);
 		if(!variance)
 			{
-			nxAddModel(o, 2, 1, kRules[r], false, 0.0f, -1, 0.0f, true, selfOnly);
-			nxAddModel(o, 5, 0, kRules[r], false, 0.0f, -1, 0.0f, true, selfOnly);
+			nxAddModel(2, 1, kRules[r], false, 0.0f, -1, 0.0f, true);
+			nxAddModel(5, 0, kRules[r], false, 0.0f, -1, 0.0f, true);
 			}
 		}
 	// The NovodeX settings: a margin, and the root box extended along z.
-	nxAddModel(o, 0, 0, SPLIT_LARGEST_AXIS | SPLIT_GEOM_CENTER, true, 0.25f, 2, -3.0f, true, selfOnly);
-	nxAddModel(o, 1, 1, kDefaultRules, false, 0.125f, 1, 9.0f, true, selfOnly);
-	nxAddModel(o, 0, 0, kDefaultRules, true, 0.25f, 2, -3.0f, false, selfOnly);
+	nxAddModel(0, 0, SPLIT_LARGEST_AXIS | SPLIT_GEOM_CENTER, true, 0.25f, 2, -3.0f, true);
+	nxAddModel(1, 1, kDefaultRules, false, 0.125f, 1, 9.0f, true);
+	nxAddModel(0, 0, kDefaultRules, true, 0.25f, 2, -3.0f, false);
+	for(int i = 0; i < gNbModels; ++i)
+		if(gModels[i].exact)
+			nxBuildModel(o, gModels[i], selfOnly);
 	nxReport("opcode_model_build", "0x000e9100", "phys_fn_005368",
 		"OPC_Model.cpp,OPC_BaseModel.cpp,OPC_AABBTree.cpp,OPC_OptimizedTree.cpp,OPC_TreeBuilders.cpp",
 		selfOnly);
 
+	for(int i = 0; i < gNbModels; ++i)
+		if(!gModels[i].exact)
+			nxBuildModel(o, gModels[i], selfOnly);
 	nxReportTapes(gOracleTapeX87, gCandidateTapeX87, "opcode_model_build_x87", "0x000f09b0", "phys_fn_005513",
 		"OPC_AABBTree.cpp,OPC_TreeBuilders.cpp,OPC_OptimizedTree.cpp", selfOnly, kDivergent);
 	}
@@ -2984,6 +3251,70 @@ static void nxDriveVanilla(const NxOracleRows& o, bool selfOnly)
 // those contacts is the last bit of its sums. That pair, unrotated, is
 // opcode_treecollider_boundary (DIVERGENT); every other pair and placement is
 // opcode_treecollider (exact).
+// One tree-versus-tree query, both sides, onto `boundary`'s tapes.
+struct NxTreeQuery
+	{
+	int			a, b;		// gModels indices
+	int			placement;
+	int			setting;
+	bool		boundary;
+	Matrix4x4	w0, w1;
+	};
+
+static void nxTreeColliderQuery(const NxOracleRows& o, const NxTreeQuery& q, bool selfOnly)
+	{
+	for(int side = 0; side < (selfOnly ? 1 : 2); ++side)
+		{
+		NxTape& tape = q.boundary ? (side == 0 ? gOracleTapeB : gCandidateTapeB)
+			: (side == 0 ? gOracleTape : gCandidateTape);
+		BVTCache cache;
+		cache.Model0 = (const Model*) gModels[q.a].oracle;
+		cache.Model1 = (const Model*) gModels[q.b].oracle;
+		void* object;
+		if(side == 0)
+			{
+			object = nxOracleAlloc(sizeof(AABBTreeCollider));
+			((NxCtorFn) nxAt(o, kOpcTreeColliderCtor))(object);
+			}
+		else
+			object = new AABBTreeCollider;
+		AABBTreeCollider* tc = (AABBTreeCollider*) object;
+		tc->SetFullBoxBoxTest((q.setting & 1) != 0);
+		tc->SetFullPrimBoxTest((q.setting & 2) != 0);
+		tc->SetFirstContact((q.setting & 4) != 0);
+		tc->SetTemporalCoherence(q.setting == 5);
+		for(int call = 0; call < (q.setting == 5 ? 2 : 1); ++call)
+			{
+			const bool returned = side == 0
+				? ((NxBVTFn) nxAt(o, kOpcTreeColliderBVT))(object, &cache, &q.w0, q.placement ? &q.w1 : 0)
+				: tc->Collide(cache, &q.w0, q.placement ? &q.w1 : 0);
+			nxTapeCollider(tape, returned, object);
+			tape.push(tc->GetNbBVBVTests());
+			tape.push(tc->GetNbBVPrimTests());
+			tape.push(tc->GetNbPrimPrimTests());
+			tape.push(cache.id0);
+			tape.push(cache.id1);
+			tape.push(tc->GetNbPairs());
+			for(udword i = 0; i < tc->GetNbPairs(); ++i)
+				{
+				tape.push(tc->GetPairs()[i].id0);
+				tape.push(tc->GetPairs()[i].id1);
+				}
+			}
+		if(side == 0)
+			{
+			((NxDtorFn) nxAt(o, kOpcTreeColliderDtor))(object);
+			nxOracleFree(object, sizeof(AABBTreeCollider));
+			}
+		else
+			delete tc;
+		}
+	}
+
+// The queries are drawn first, in their original order, and then run in two
+// passes -- opcode_treecollider's, then the boundary family's -- so that each
+// family's executions sit between its own report and the one before it (the
+// execution trace attributes them by that). Each tape keeps its order.
 static void nxDriveTreeCollider(const NxOracleRows& o, bool selfOnly)
 	{
 	gState = 0x77ee0c01;
@@ -2992,68 +3323,32 @@ static void nxDriveTreeCollider(const NxOracleRows& o, bool selfOnly)
 	gOracleTapeB.reset();
 	gCandidateTapeB.reset();
 	static const int kPairs[][2] = { { 0, 1 }, { 5, 5 }, { 2, 2 }, { 1, 1 }, { 0, 3 }, { 3, 3 }, { 2, 0 } };	// no single-triangle model: it has no tree to collide
+	static NxTreeQuery queries[4 * 7 * 3];
+	int nbQueries = 0;
 	for(int kind = 0; kind < 4; ++kind)
 		for(unsigned pr = 0; pr < sizeof(kPairs) / sizeof(kPairs[0]); ++pr)
 			for(int placement = 0; placement < 3; ++placement)
 				{
-				const NxModelPair& a = gModels[gModelIndex[kPairs[pr][0]][kind]];
-				const NxModelPair& b = gModels[gModelIndex[kPairs[pr][1]][kind]];
-				if(!a.built || !b.built)
+				NxTreeQuery& q = queries[nbQueries];
+				q.a = gModelIndex[kPairs[pr][0]][kind];
+				q.b = gModelIndex[kPairs[pr][1]][kind];
+				if(!gModels[q.a].built || !gModels[q.b].built)
 					continue;
-				Matrix4x4 w0, w1;
-				nxWorld(w0, placement == 2 ? 2 : 0);
-				nxWorld(w1, placement);
-				const int setting = (int) (pr + placement + kind) % 8;
-				for(int side = 0; side < (selfOnly ? 1 : 2); ++side)
-					{
-					const bool boundary = kPairs[pr][0] == 2 && kPairs[pr][1] == 0 && placement < 2;
-					NxTape& tape = boundary ? (side == 0 ? gOracleTapeB : gCandidateTapeB)
-						: (side == 0 ? gOracleTape : gCandidateTape);
-					BVTCache cache;
-					cache.Model0 = (const Model*) a.oracle;
-					cache.Model1 = (const Model*) b.oracle;
-					void* object;
-					if(side == 0)
-						{
-						object = nxOracleAlloc(sizeof(AABBTreeCollider));
-						((NxCtorFn) nxAt(o, kOpcTreeColliderCtor))(object);
-						}
-					else
-						object = new AABBTreeCollider;
-					AABBTreeCollider* tc = (AABBTreeCollider*) object;
-					tc->SetFullBoxBoxTest((setting & 1) != 0);
-					tc->SetFullPrimBoxTest((setting & 2) != 0);
-					tc->SetFirstContact((setting & 4) != 0);
-					tc->SetTemporalCoherence(setting == 5);
-					for(int call = 0; call < (setting == 5 ? 2 : 1); ++call)
-						{
-						const bool returned = side == 0
-							? ((NxBVTFn) nxAt(o, kOpcTreeColliderBVT))(object, &cache, &w0, placement ? &w1 : 0)
-							: tc->Collide(cache, &w0, placement ? &w1 : 0);
-						nxTapeCollider(tape, returned, object);
-						tape.push(tc->GetNbBVBVTests());
-						tape.push(tc->GetNbBVPrimTests());
-						tape.push(tc->GetNbPrimPrimTests());
-						tape.push(cache.id0);
-						tape.push(cache.id1);
-						tape.push(tc->GetNbPairs());
-						for(udword i = 0; i < tc->GetNbPairs(); ++i)
-							{
-							tape.push(tc->GetPairs()[i].id0);
-							tape.push(tc->GetPairs()[i].id1);
-							}
-						}
-					if(side == 0)
-						{
-						((NxDtorFn) nxAt(o, kOpcTreeColliderDtor))(object);
-						nxOracleFree(object, sizeof(AABBTreeCollider));
-						}
-					else
-						delete tc;
-					}
+				nxWorld(q.w0, placement == 2 ? 2 : 0);
+				nxWorld(q.w1, placement);
+				q.placement = placement;
+				q.setting = (int) (pr + placement + kind) % 8;
+				q.boundary = kPairs[pr][0] == 2 && kPairs[pr][1] == 0 && placement < 2;
+				++nbQueries;
 				}
+	for(int i = 0; i < nbQueries; ++i)
+		if(!queries[i].boundary)
+			nxTreeColliderQuery(o, queries[i], selfOnly);
 	nxReport("opcode_treecollider", "0x000d13c0", "phys_fn_004986",
 		"OPC_TreeCollider.cpp,OPC_TriTriOverlap.h,OPC_TriBoxOverlap.h,OPC_BoxBoxOverlap.h", selfOnly);
+	for(int i = 0; i < nbQueries; ++i)
+		if(queries[i].boundary)
+			nxTreeColliderQuery(o, queries[i], selfOnly);
 	nxReportTapes(gOracleTapeB, gCandidateTapeB, "opcode_treecollider_boundary", "0x000bbd60", "phys_fn_004948",
 		"OPC_TreeCollider.cpp,OPC_TriTriOverlap.h", selfOnly, kDivergent);
 	}
@@ -3193,6 +3488,18 @@ static void nxTapeWords(NxTape& tape, const void* p, size_t bytes)
 		}
 	}
 
+// The same, for an object that is all floats (a Point, a Plane, a matrix).
+static void nxTapeFloatWords(NxTape& tape, const void* p, size_t bytes)
+	{
+	const unsigned char* b = (const unsigned char*) p;
+	for(size_t i = 0; i + 4 <= bytes; i += 4)
+		{
+		unsigned w;
+		memcpy(&w, b + i, 4);
+		tape.pushFloatWord(w);
+		}
+	}
+
 static const struct { const char* name; const char* rva; const char* owner; const char* source; } kIceParts[5] =
 	{
 	{ "ice_aabb", "0x000e2d20", "phys_fn_005141", "Ice/IceAABB.cpp" },
@@ -3239,9 +3546,9 @@ static void nxDriveIcePart(const NxOracleRows& o, int part, bool selfOnly, unsig
 				tape.push(a.IsInside(b) ? 1u : 0u);
 				tape.push(a.ComputePoints(pts) ? 1u : 0u);
 				}
-			nxTapeWords(tape, &sum, sizeof(sum));
-			nxTapeWords(tape, &cube, sizeof(cube));
-			nxTapeWords(tape, pts, sizeof(pts));
+			nxTapeFloatWords(tape, &sum, sizeof(sum));
+			nxTapeFloatWords(tape, &cube, sizeof(cube));
+			nxTapeFloatWords(tape, pts, sizeof(pts));
 			}
 
 		// Plane and Triangle
@@ -3272,11 +3579,11 @@ static void nxDriveIcePart(const NxOracleRows& o, int part, bool selfOnly, unsig
 				tri.Center(center);
 				tri.Inflate(fat, (c & 1) != 0);
 				}
-			nxTapeWords(tape, &plane, sizeof(plane));
+			nxTapeFloatWords(tape, &plane, sizeof(plane));
 			tape.pushFloat(area);
-			nxTapeWords(tape, &normal, sizeof(normal));
-			nxTapeWords(tape, &center, sizeof(center));
-			nxTapeWords(tape, &tri, sizeof(tri));
+			nxTapeFloatWords(tape, &normal, sizeof(normal));
+			nxTapeFloatWords(tape, &center, sizeof(center));
+			nxTapeFloatWords(tape, &tri, sizeof(tri));
 			}
 
 		// IndexedTriangle
@@ -3335,8 +3642,8 @@ static void nxDriveIcePart(const NxOracleRows& o, int part, bool selfOnly, unsig
 				}
 			tape.pushFloat(cof);
 			tape.pushFloat(det);
-			nxTapeWords(tape, &inv, sizeof(inv));
-			nxTapeWords(tape, &dest, sizeof(dest));
+			nxTapeFloatWords(tape, &inv, sizeof(inv));
+			nxTapeFloatWords(tape, &dest, sizeof(dest));
 			}
 
 		// OBB
@@ -3381,9 +3688,9 @@ static void nxDriveIcePart(const NxOracleRows& o, int part, bool selfOnly, unsig
 			tape.push(okPlanes ? 1u : 0u);
 			tape.push(okPoints ? 1u : 0u);
 			tape.push((unsigned) inside);
-			nxTapeWords(tape, planes, sizeof(planes));
-			nxTapeWords(tape, pts, sizeof(pts));
-			nxTapeWords(tape, &edgeNormal, sizeof(edgeNormal));
+			nxTapeFloatWords(tape, planes, sizeof(planes));
+			nxTapeFloatWords(tape, pts, sizeof(pts));
+			nxTapeFloatWords(tape, &edgeNormal, sizeof(edgeNormal));
 			}
 		}
 	nxReport(kIceParts[part].name, kIceParts[part].rva, kIceParts[part].owner, kIceParts[part].source,
@@ -3436,9 +3743,10 @@ typedef struct NxQhullEntries
 	void*	ferr;
 	} NxQhullEntries;
 typedef void (*NxQhPush)(void* tape, unsigned word);
+typedef void (*NxQhPushDouble)(void* tape, double value);
 int		nxQhullRun(const NxQhullEntries* e, double* points, int numpoints, const char* options);
 void	nxQhullTape(const void* state, const double* points, int numpoints, NxQhPush push, void* tape,
-	void* floats);
+	NxQhPushDouble pushDouble, void* floats);
 void*	nxQhullCandidateState(void);
 void	nxQhullErrorExit(int exitcode);
 void	qh_init_A(FILE* infile, FILE* outfile, FILE* errfile, int argc, char* argv[]);
@@ -3488,6 +3796,11 @@ static void* gQhHostObject[4] = { gQhHostVtable, 0, 0, 0 };
 static void nxQhPushTape(void* tape, unsigned word)
 	{
 	((NxTape*) tape)->push(word);
+	}
+
+static void nxQhPushTapeDouble(void* tape, double value)
+	{
+	((NxTape*) tape)->pushDouble(value);
 	}
 
 static unsigned nxQhullPoints(int set, float* out)
@@ -3670,7 +3983,7 @@ static void nxDriveQhullHull(const NxOracleRows& o, bool selfOnly)
 			tape.push(result ? 1u : 0u);
 			if(result == 0)
 				nxQhullTape(side == 0 ? (const void*) (o.base + kQhState) : nxQhullCandidateState(),
-					coords, (int) n, nxQhPushTape, &tape, &floats);
+					coords, (int) n, nxQhPushTape, &tape, nxQhPushTapeDouble, &floats);
 			if(side == 0)
 				{
 				while(gQhOracleNbBlocks)
