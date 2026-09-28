@@ -7271,7 +7271,21 @@ struct NxMb2Coverage
 	unsigned outFaces, outVerts, submeshes, materials, killed, normInfo, remapped, x87;
 	unsigned vrRuns, vrVerts, vrReduced;
 	unsigned probes, probesFalse;	// AddFace before Init, AddFace past the count, Build before any face
+	unsigned uvwSnan, colourSnan;	// signalling NaN words in the input streams (fixed inputs)
 	};
+
+static unsigned nxMb2CountSnan(const float* words, unsigned count)
+	{
+	unsigned n = 0;
+	for(unsigned i = 0; i < count; ++i)
+		{
+		unsigned w;
+		memcpy(&w, &words[i], 4);
+		if((w & 0x7f800000u) == 0x7f800000u && (w & 0x007fffffu) && !(w & 0x00400000u))
+			++n;
+		}
+	return n;
+	}
 static NxMb2Coverage gMb2Coverage;
 
 static void nxMb2Probe(const NxIceSide& s, bool ok)
@@ -7514,6 +7528,35 @@ static bool nxMb2AnyDistinctFace(const NxMesh& m)
 	return false;
 	}
 
+// Special words written into a float stream as bits: one word in six (drawn)
+// becomes a signalling NaN (either sign, drawn payload), a quiet NaN, an
+// infinity, a denormal, a negative zero or a raw drawn word. Each draw is its
+// own named local; nothing goes through a float value, so every word reaches
+// the rows as drawn.
+static void nxMb2RawWords(float* words, unsigned count)
+	{
+	for(unsigned i = 0; i < count; ++i)
+		{
+		const unsigned select = nxNext();
+		if(select % 6)
+			continue;
+		const unsigned kind = nxNext();
+		const unsigned payload = nxNext();
+		unsigned bits;
+		switch(kind % 7)
+			{
+			case 0:	bits = 0x7f800001u | (payload & 0x003ffffeu);	break;	// +sNaN
+			case 1:	bits = 0xff800001u | (payload & 0x003ffffeu);	break;	// -sNaN
+			case 2:	bits = 0x7fc00000u | (payload & 0x003fffffu);	break;	// qNaN
+			case 3:	bits = (payload & 1) ? 0xff800000u : 0x7f800000u;	break;	// infinity
+			case 4:	bits = (payload & 0x807fffffu) | 1u;			break;	// denormal
+			case 5:	bits = 0x80000000u;							break;	// -0
+			default: bits = payload;							break;	// raw
+			}
+		memcpy(&words[i], &bits, 4);
+		}
+	}
+
 static const int kMb2Family = 3;
 static const int kVrFamily = 4;
 
@@ -7537,12 +7580,10 @@ static void nxMb2Case(const NxIceSide& s, const NxMesh& mesh, int meshIndex, int
 	if(cfg.uvw == 1)
 		{
 		nbUVW = mesh.nbVerts;
-		for(unsigned v = 0; v < nbUVW; ++v)
-			{
-			uvw[v * 3 + 0] = mesh.verts[v * 3 + 0] * 0.5f;
-			uvw[v * 3 + 1] = mesh.verts[v * 3 + 1] * 0.25f;
-			uvw[v * 3 + 2] = (float) (v & 3);
-			}
+		// The vertex words themselves (x, y, and z), bits copied, with
+		// special words mixed in (nxMb2RawWords).
+		memcpy(uvw, mesh.verts, 12 * nbUVW);
+		nxMb2RawWords(uvw, 3 * nbUVW);
 		uvwSource = uvw;
 		}
 	else if(cfg.uvw == 2)
@@ -7550,31 +7591,43 @@ static void nxMb2Case(const NxIceSide& s, const NxMesh& mesh, int meshIndex, int
 	else if(cfg.uvw == 3)
 		{
 		nbUVW = 5;
-		for(unsigned v = 0; v < nbUVW; ++v)
+		// Five uvw of fixed words: 0, 1, 2 in x, 0 / 1 in y, 0.5 in z, and in
+		// the last one a signalling NaN in x and a denormal in y.
+		static const unsigned kPalette[15] =
 			{
-			uvw[v * 3 + 0] = (float) (v % 3);
-			uvw[v * 3 + 1] = (float) (v % 2);
-			uvw[v * 3 + 2] = 0.5f;
-			}
+			0x00000000u, 0x00000000u, 0x3f000000u,
+			0x3f800000u, 0x3f800000u, 0x3f000000u,
+			0x40000000u, 0x00000000u, 0x3f000000u,
+			0x00000000u, 0x3f800000u, 0x3f000000u,
+			0x7fa00005u, 0x00000123u, 0x3f000000u,
+			};
+		memcpy(uvw, kPalette, sizeof(kPalette));
 		uvwSource = uvw;
 		}
 	if(cfg.colours == 1)
 		{
 		nbColours = 4;
-		for(unsigned v = 0; v < nbColours; ++v)
-			for(int k = 0; k < 3; ++k)
-				colours[v * 3 + k] = (float) ((v >> (k & 1)) & 1);
+		static const unsigned kPalette[12] =
+			{
+			0x00000000u, 0x00000000u, 0x00000000u,
+			0x3f800000u, 0x00000000u, 0x3f800000u,
+			0x00000000u, 0x3f800000u, 0x00000000u,
+			0xffa00007u, 0x7f800000u, 0x7fc00009u,
+			};
+		memcpy(colours, kPalette, sizeof(kPalette));
 		colourSource = colours;
 		}
 	else if(cfg.colours == 2)
 		{
 		nbColours = mesh.nbVerts;
-		for(unsigned v = 0; v < nbColours; ++v)
-			for(int k = 0; k < 3; ++k)
-				{
-				const unsigned draw = nxNext();
-				colours[v * 3 + k] = (float) (draw % 3) * 0.5f;
-				}
+		// Three levels as words (0, 0.5, 1), drawn, then special words mixed in.
+		static const unsigned kLevels[3] = { 0x00000000u, 0x3f000000u, 0x3f800000u };
+		for(unsigned v = 0; v < 3 * nbColours; ++v)
+			{
+			const unsigned draw = nxNext();
+			memcpy(&colours[v], &kLevels[draw % 3], 4);
+			}
+		nxMb2RawWords(colours, 3 * nbColours);
 		colourSource = colours;
 		}
 	static const unsigned kSmoothing[5] = { 0, 1, 2, 4, 3 };
@@ -7653,6 +7706,10 @@ static void nxMb2Case(const NxIceSide& s, const NxMesh& mesh, int meshIndex, int
 	tape.push(initOk ? 1u : 0u);
 	if(s.oracle)
 		{
+		if(uvwSource)
+			c.uvwSnan += nxMb2CountSnan(uvwSource, 3 * nbUVW);
+		if(colourSource)
+			c.colourSnan += nxMb2CountSnan(colourSource, 3 * nbColours);
 		++c.cases;
 		initOk ? ++c.initOk : ++c.initFailed;
 		if(cw == 0x0f7f)
@@ -7927,10 +7984,10 @@ static void nxDriveIceMeshBuilder2(const NxOracleRows& o, bool selfOnly)
 	const NxMb2Coverage& c = gMb2Coverage;
 	printf("thirdparty coverage name=ice_meshbuilder2 meshes=%d+3 cases=%u x87_0f7f=%u init_ok=%u init_failed=%u"
 		" faces_added=%u faces_dropped=%u faces_rejected=%u built=%u build_failed=%u skipped=%u out_faces=%u"
-		" out_verts=%u submeshes=%u materials=%u killed=%u norm_info=%u remapped=%u probes=%u probes_false=%u reports=%u\n",
+		" out_verts=%u submeshes=%u materials=%u killed=%u norm_info=%u remapped=%u probes=%u probes_false=%u uvw_snan=%u colour_snan=%u reports=%u\n",
 		gIceNbMeshes, c.cases, c.x87, c.initOk, c.initFailed, c.added, c.dropped, c.rejected, c.built,
 		c.buildFailed, c.skipped, c.outFaces, c.outVerts, c.submeshes, c.materials, c.killed, c.normInfo,
-		c.remapped, c.probes, c.probesFalse, gIceReports);
+		c.remapped, c.probes, c.probesFalse, c.uvwSnan, c.colourSnan, gIceReports);
 
 	gIceReports = 0;
 	nxIceFamily(o, selfOnly, nxVrDrive, "vertex_reduction", "0x000316a0", "phys_fn_001647",

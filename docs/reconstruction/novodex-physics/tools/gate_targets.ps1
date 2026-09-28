@@ -2605,14 +2605,14 @@ $NxRequiredCoverageLines = [ordered] @{
         # below is copied from the oracle side (the name lines' agreement fields are the gate's
         # assertion); the coverage lines count oracle-side values and fixed inputs only. The
         # pairs above keep printing where they were; the pair below carries the totals.
-        'thirdparty input name=ice_meshbuilder2 words=125178 input=1200bbc6',
-        'thirdparty name=ice_meshbuilder2 rva=0x00030f50 owner=phys_fn_001633 source=IceMeshBuilder2.cpp,IceMeshTools.cpp words=178377 oracle=5e33a49e mismatches=0 worst_ulp=0 verdict=exact',
-        'thirdparty coverage name=ice_meshbuilder2 meshes=65+3 cases=249 x87_0f7f=154 init_ok=249 init_failed=0 faces_added=6695 faces_dropped=445 faces_rejected=0 built=241 build_failed=0 skipped=8 out_faces=6689 out_verts=18056 submeshes=1043 materials=520 killed=3 norm_info=34816 remapped=174 probes=453 probes_false=453 reports=0',
+        'thirdparty input name=ice_meshbuilder2 words=125178 input=333baf0f',
+        'thirdparty name=ice_meshbuilder2 rva=0x00030f50 owner=phys_fn_001633 source=IceMeshBuilder2.cpp,IceMeshTools.cpp words=178141 oracle=ae71cdd4 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty coverage name=ice_meshbuilder2 meshes=65+3 cases=249 x87_0f7f=154 init_ok=249 init_failed=0 faces_added=6695 faces_dropped=445 faces_rejected=0 built=241 build_failed=0 skipped=8 out_faces=6689 out_verts=18031 submeshes=1040 materials=515 killed=3 norm_info=34694 remapped=177 probes=453 probes_false=453 uvw_snan=510 colour_snan=347 reports=0',
         'thirdparty input name=vertex_reduction words=13893 input=db8a41b6',
         'thirdparty name=vertex_reduction rva=0x000316a0 owner=phys_fn_001647 source=IceMeshTools.cpp words=24313 oracle=9d4e0115 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty coverage name=vertex_reduction meshes=65 runs=178 verts=5457 reduced=4331 reports=0',
-        'thirdparty coverage driven=78 divergent=27 words=1958137 layout_checks=47',
-        'thirdparty oracle digest=d54a58fc'
+        'thirdparty coverage driven=78 divergent=27 words=1957901 layout_checks=47',
+        'thirdparty oracle digest=c2e747eb'
     )
 }
 
