@@ -555,6 +555,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/Geometry.cpp Physics/src/ShapeRaycast.cpp
 		Physics/src/opcode/IcePrunable.cpp Physics/src/ThirdPartyHost.cpp
 		Physics/src/PhysicsSDK.cpp Physics/src/NpPhysicsSDK.cpp
+		Physics/src/NarrowPhase.cpp Physics/src/ContactGeneration.cpp
 		${PHYSICS_CORE_SOURCES})
 	target_include_directories(NxPhysicsInternalTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include Physics/src/include
@@ -564,8 +565,10 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# createJoint constructs all ten joint families, so the target links
 	# Physics/src/core/*.cpp, and the families' SDK-parameter reads
 	# (PhysicsSDK::getParameter, PhysicsSDK::instance) pull in PhysicsSDK.cpp and
-	# NpPhysicsSDK.cpp. The /arch:IA32 rule above is per directory, so it gives
-	# the internal joint files NoExtensions here too.
+	# NpPhysicsSDK.cpp. The core dump (core/SceneDump.cpp) reads a shape's owner
+	# and type through phys_fn_001281/001283 in ContactGeneration.cpp, which
+	# needs NarrowPhase.cpp. The /arch:IA32 rule above is per directory, so it
+	# gives the internal joint files NoExtensions here too.
 	target_compile_definitions(NxPhysicsInternalTests PRIVATE NX_PHYSICS_DLL=1)
 	target_link_libraries(NxPhysicsInternalTests NxFoundation NxOpcode)
 

@@ -24,7 +24,10 @@
 class Joint;
 class NxSceneInternal;
 class NxJointDesc;
+class TriangleMesh;
+class SceneDumpShape;
 struct JointActorBody;
+struct NxCollisionShape;
 
 //! The 24 setting kinds of a SceneDumpSetting (the jump tables of
 //! phys_fn_003997 at 0x10090680 and phys_fn_003999 at 0x10090d48).
@@ -91,6 +94,19 @@ static_assert(offsetof(SceneDumpSetting, mFile) == 0x18, "stream at +0x18");
 //! 0x8000 pointers.
 struct SceneDumpNames
 	{
+	//! phys_fn_003991 (0x0008fd50, 144 B). `tmesh%d` of a mesh (keyed on its
+	//! internal mesh, TriangleMesh+0x08), in the mesh-name buffer .data
+	//! 0x10126678; appends it to the table when new and says so through
+	//! `isNew`.
+	const char* meshName(const void* mesh, bool* isNew);
+
+	//! phys_fn_004035 (0x00091f70, 238 B). One `PsVert` line per vertex not
+	//! within 1e-5 of an earlier one on all three axes; returns the remap
+	//! (operator new, count words) from each vertex to the one written for
+	//! it. The listing's `this` is the names block (004046 loads it) and is
+	//! not read.
+	NxU32* writeVertices(NxU32 count, const void* points, NxU32 stride, FILE* file, bool binary);
+
 	NxU32		mShapeCount;	//!< +0x00
 	NxU32		mMeshCount;		//!< +0x04
 	const void**	mMeshes;	//!< +0x08
@@ -135,12 +151,26 @@ class SceneDump
 	//! The third argument is not read.
 	void writeJointLine(FILE* file, Joint* joint, bool binary);
 
+	//! phys_fn_004017 (0x000913f0, 105 B). `triggerevent(...) ` of the
+	//! trigger bits of a shape's flags. `this` is not read.
+	void writeTriggerFlags(FILE* file, NxU32 flags);
+
 	//! phys_fn_004037 (0x00092060, 409 B), with its continuations
 	//! phys_fn_004039, phys_fn_004041 and phys_fn_004043. One joint block.
 	void writeJoint(FILE* file, Joint* joint, bool binary);
 
-	//! phys_fn_004051 (0x00094130, 409 B). The per-scene asset writer
-	//! (effector-and-coredump Task 3b).
+	//! phys_fn_004046 (0x00092b50, 1079 B). The mesh block of a mesh shape
+	//! the first time the mesh is met (`ret 0x1c`); returns its name.
+	const char* writeMesh(FILE* file, TriangleMesh* mesh, SceneDumpShape* shape, bool binary, bool isConvex,
+		NxU32 pmapDensity, SceneDumpNames* names);
+
+	//! phys_fn_004048 (0x00092f90, 4481 B). One shape's inline records
+	//! (`ret 0x10`).
+	void writeShape(FILE* file, NxCollisionShape* shape, bool binary, SceneDumpNames* names);
+
+	//! phys_fn_004051 (0x00094130, 409 B), with its continuations
+	//! phys_fn_004053, 004055, 004057, 004059 and 004061. The per-scene asset
+	//! writer (`ret 0x14`): false only for a null file. `index` is not read.
 	bool writeAsset(NxSceneInternal* scene, FILE* file, bool binary, NxU32 index, SceneDumpNames* names);
 
 	SceneDumpSetting	mSettings[NX_DUMP_SETTING_COUNT];	//!< +0x000
