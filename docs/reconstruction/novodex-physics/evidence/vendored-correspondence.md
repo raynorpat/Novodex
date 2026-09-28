@@ -222,6 +222,11 @@ Which evidence a group needs before its rows can move depends on its class and n
   for any group with x87 compares or x87 arithmetic, whatever else it has.
 - **Not promotable until fixed:** DIFF, MISSING and AMBIGUOUS groups. MAPCHECK groups wait for
   the map to be corrected.
+- **Summation order and register lifetimes (added after the Task 3 review).** A static proof
+  for a vendored row with x87 arithmetic says that the float-sum grouping and some register
+  lifetimes of the oracle are not reproduced (see "Summation order"), and names the row's
+  `sum_grouping.csv` sites. That is a recorded limitation, not a promotion blocker. Execution
+  evidence is still required as above.
 
 ## What the DIFF rows say (at the end of Task 1)
 
@@ -625,32 +630,35 @@ last bit of the register value, and that bit shows up in compares made on the re
 float that is later stored.
 
 **Scope, measured by `tools/x87_sum_grouping.py`.** The tool uses a symbolic x87 evaluator over
-every matched group; the method is in its docstring and it has 5 tests. Its output is
-`phase4-third-party-map/sum_grouping.csv`.
+every matched group; the method is in its docstring and it has 6 tests. Its output is
+`phase4-third-party-map/sum_grouping.csv`. The figures below are after the review fix to its
+`fxch` handling: capstone lists `fxch st(i)` as `(st(0), st(i))`, and the first version read the
+zero index, which made every `fxch` a no-op. For example, the candidate site `0x000a4756` in
+`RayCollider::InitQuery` now reads `(x+y)+z`.
 
-- **OPCODE, oracle: 980 three-product sums in 70 groups.** Their groupings:
+- **OPCODE, oracle: 1,068 three-product sums in 70 groups.** Their groupings:
 
   | Grouping | Sites |
   |---|---:|
-  | `(y+z)+x` | 373 |
-  | `(x+z)+y` | 237 |
-  | `(x+y)+z` (source order) | 198 |
-  | unlabelled, no common Point base | 172 |
+  | `(y+z)+x` | 408 |
+  | `(x+z)+y` | 257 |
+  | `(x+y)+z` (source order) | 217 |
+  | unlabelled, no common Point base | 186 |
 
   So only about a quarter of the labelled sites are in source order.
-- **OPCODE, candidate: 428 sites.**
+- **OPCODE, candidate: 703 sites.**
 
   | Grouping | Sites |
   |---|---:|
-  | `(x+y)+z` | 92 |
-  | `(x+z)+y` | 8 |
-  | `(y+z)+x` | 5 |
-  | unlabelled | 323 |
+  | `(x+y)+z` | 216 |
+  | `(y+z)+x` | 10 |
+  | `(x+z)+y` | 4 |
+  | unlabelled | 473 |
 
   The candidate keeps more values in registers, so fewer products can be named. Where they can,
   they are overwhelmingly in source order.
-- **Pairing.** Of the oracle sites whose three products the candidate also sums, 27 group the same
-  way and 53 do not.
+- **Pairing.** Of the oracle sites whose three products the candidate also sums, 37 group the same
+  way and 158 do not.
 - **It is not one rule, and not one rule per source expression.** The same inlined source
   expression is grouped differently in different instantiations. RayTriOverlap's
   `det = edge1|pvec`, for example:
@@ -667,8 +675,18 @@ every matched group; the method is in its docstring and it has 5 tests. Its outp
   hull's main path, is `((p2*n2 + p1*n1) + p0*n0) + offset` in the oracle
   (`0x0005c601`..`0x0005c61d`), the source order reversed. The source, `geom.c`, reads
   `offset + p0*n0 + p1*n1 + p2*n2`. The tool's three-product pattern misses sums that begin with a
-  non-product (the offset), so its qhull count (11 oracle sites, all unlabelled
-  `double` walks) undercounts.
+  non-product (the offset), so its qhull count (11 oracle and 7 candidate sites, all unlabelled
+  `double` walks; 1 paired, grouped differently) undercounts.
+
+**Register lifetimes vary per instantiation too.** RayTriOverlap's V uses the unrounded `qvec.z`
+still on the stack (`0x000b87c0`). The CollisionNode copy's `det` multiplies `pvec.z` from the
+register (`fst [esp+0x44]; fmul`, `0x000b86c7`), where the QuantizedNode copy reloads it rounded
+from its float slot (`0x000b8cd4`). No shared source spelling reproduces both.
+
+**Decision (user, via the coordinator, after the Task 3 review).** This block is finished and
+promoted under the policy, with each static proof for a vendored row stating that summation order
+and some register lifetimes are not reproduced. The per-site grouping is its own tool-driven work
+unit, later.
 
 **Not fixed; this needs its own work unit.** Reproducing the oracle needs an explicit grouping at
 each of the several hundred OPCODE sites, and at the qhull sites once they are counted. Where an
@@ -706,10 +724,12 @@ Consequences for promotion:
   `gap:Controller.cpp..fluids\Fluid.cpp`), reconstructed together with their only caller
   `phys_fn_002233` and a differential through it. Until then the qhull host hooks in
   `Physics/src/ThirdPartyHost.cpp` stay shims.
-- **Float summation order (both libraries; see "Summation order").** Several hundred OPCODE
-  sites and at least `qh_distplane` in qhull group float sums differently from the source; the
-  grouping varies per inlined instantiation. It needs a site-by-site unit driven by
-  `sum_grouping.csv`.
+- **Summation order, and per-instantiation register lifetimes: separate work unit** (user decision
+  after the Task 3 review; see "Summation order"). It is driven by `sum_grouping.csv`, with the
+  tool extended to offset-led and longer sums, and covers several hundred OPCODE sites and at least
+  `qh_distplane` in qhull. Until it lands, Task 5's static proofs for vendored rows state that
+  summation order and some register lifetimes are not reproduced, and rows with x87 arithmetic
+  still need execution evidence.
 - **OPCODE, after Task 3 (separate work units; see the Task 3 section).**
   - The NovodeX callback instantiation of the no-leaf tree-versus-tree collider:
     - rows `0x000d12b0`, `0x000cd700`, `0x000ca5a0`, `0x000cbe50` (25,613 bytes);

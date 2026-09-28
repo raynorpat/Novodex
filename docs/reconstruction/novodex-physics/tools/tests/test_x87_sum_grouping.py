@@ -40,6 +40,15 @@ class GroupingTest(unittest.TestCase):
         spill = Z[:3] + b"\xd9\x5c\x24\x08" + b"\xd9\x44\x24\x08" + Z[3:]
         self.assertEqual(self.grouping(spill + Y + FADDP + X + FADDP), "(y+z)+x")
 
+    def test_fxch_exchanges_the_named_register(self):
+        # x*x' and y*y' pushed, fxch st(1) swaps them, faddp; then z: still (x+y)+z, and the
+        # swap must not lose a product (a no-op fxch would pair the wrong nodes)
+        self.assertEqual(self.grouping(X + Y + b"\xd9\xc9" + FADDP + Z + FADDP), "(x+y)+z")
+        # z, y, x pushed; fxch st(2) brings z to the top, so the first faddp adds y and z:
+        # (y+z)+x. A no-op fxch would add x and y first.
+        code = Z + Y + X + b"\xd9\xca" + FADDP + FADDP
+        self.assertEqual(self.grouping(code), "(y+z)+x")
+
     def test_pairing_counts_same_and_different(self):
         o = sg.scan(image(Z + Y + FADDP + X + FADDP + b"\xc3"), TEXT, TEXT + 0x100)
         c = sg.scan(image(X + Y + FADDP + Z + FADDP + b"\xc3"), TEXT, TEXT + 0x100)

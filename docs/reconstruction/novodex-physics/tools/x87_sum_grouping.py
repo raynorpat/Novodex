@@ -175,7 +175,9 @@ def scan(image, start, end):
             if m.endswith("p"):
                 pop()
         elif m == "fxch":
-            i = sti[0] if sti else 1
+            # capstone lists `fxch st(i)` as (st(0), st(i)): the exchanged register is the
+            # non-zero index
+            i = max(sti) if sti else 1
             a, b = st(0), st(i)
             put(0, b)
             put(i, a)

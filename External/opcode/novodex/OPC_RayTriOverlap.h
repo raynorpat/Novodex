@@ -12,6 +12,12 @@
  *     `fcom [lower]` and forms U+V with `fadd st(1)` from the register, so V's
  *     lifetime is a double here (the project's x87 convention) and only the
  *     member is float. U is compared as the float it was stored as.
+ *     NOT reproduced: which operands stay unrounded varies per instantiation.
+ *     The image's V also multiplies the unrounded qvec.z still on the stack
+ *     (0x000b87c0), and the CollisionNode copy's det takes pvec.z from the
+ *     register (`fst [esp+0x44]; fmul`, 0x000b86c7) where the QuantizedNode copy
+ *     reloads it rounded (0x000b8cd4); the summation order of the dot products
+ *     varies per copy as well. See vendored-correspondence.md, Summation order.
  *     established at 0x000b873b (fld [esi+0x88]; fchs; fstp -> the lower bound),
  *     0x000b874e (mU < lower -> reject), 0x000b8765 (fadd [esi+0x88] -> det +
  *     tolerance), 0x000b8773 (mU > upper -> reject), 0x000b87d9 (mV < lower),
