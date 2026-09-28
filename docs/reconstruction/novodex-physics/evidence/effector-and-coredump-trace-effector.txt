@@ -1,0 +1,341 @@
+Spring-and-damper effector: cdb breakpoint trace of the effector transcript (effector-and-coredump Task 2)
+==========================================================================================================
+
+A trimmed excerpt of the raw cdb log, in the method of evidence/joint-open-items-trace-release.txt.
+ModLoad lines, banners, register dumps, the echoed breakpoint commands and the program's own
+stdout are removed (the program's stdout is unbuffered, so a HIT line that interleaved with a
+printed line is cut out of it at "HIT"); the HIT lines are kept in order and otherwise unedited.
+It is the evidence behind the dynamic_proof this task records in inventory.json (see
+evidence/effector-and-coredump.md, Task 2).
+
+Debugger:  Microsoft Windows Debugger 10.0.10586.567 (X86)
+Command:   cdb -cf <script> build\Release\NxPhysicsEffectorTests.exe build\pairs\candidate
+           (the script breaks on the NxPhysics load with `sxe ld:NxPhysics`, sets the
+           breakpoints below, then runs to exit)
+Recorded:  2026-09-28, on the Task 2 working tree (effector rows, Scene/NpScene rows, the body
+           record's Observable part and its teardown notify, the noinline rows), after the
+           transcript and the line registration.
+Candidate: build\pairs\candidate\NxPhysics.dll
+           sha256=74821795f2b8222830346fece6a6e0eacb9ba3f97a1f11b2f35a630cf221f4a0
+           (identical to build\Release\NxPhysics.dll at the time of the trace; the staged pair
+           of the NxPhysicsEffectorTests differential, stdout_delta=0).
+Offsets:   module-relative, from build\Release\NxPhysics.map of that build.
+
+What the counts show (the test creates 5 effectors over dynamic actors, releases 3 through
+NxScene::releaseEffector, releases one actor under two effectors, and releases the scene with
+2 effectors and 3 actors alive):
+  (helper) NxSceneInternal::releaseActor, the 000030 record notify and ~Observable 4
+  (helper) nxSceneDelete, scene teardown with 000575 after the actor loop          1
+  000301 NpScene::createSpringAndDamperEffector                                    5
+  000303 NpScene::releaseEffector                                                  3
+  000327 NpScene::getNbEffectors                                                   9
+  000329 NpScene::resetEffectorIterator                                            9
+  000331 NpScene::getNextEffector                                                  20
+  000561 Scene::getNbEffectors                                                     9
+  000565 Scene::resetEffectorIterator                                              9
+  000569 Scene::getNextEffector                                                    20
+  000573 Scene::removeEffector                                                     3
+  000575 Scene release of all effectors                                            1
+  000587 Scene::createSpringAndDamperEffector                                      5
+  000594 Scene::releaseEffector                                                    3
+  000713 record chain root                                                         4
+  003922 ActorPairEffector ctor                                                    5
+  003924 ActorPairEffector::tick (slot 2)                                          1
+  003926 ActorPairEffector::setBodyRecords                                         7
+  003928 ActorPairEffector::event (slot 0)                                         5
+  003930 ~ActorPairEffector                                                        5
+  003934 Effector ctor                                                             5
+  003936 ~Effector                                                                 5
+  003940 NpSpringAndDamperEffector::setBodies                                      2
+  003942 NpSpringAndDamperEffector::setLinearSpring                                1
+  003944 NpSpringAndDamperEffector::setLinearDamper                                1
+  003946 NpSpringAndDamperEffector::getLinearSpring                                2
+  003948 NpSpringAndDamperEffector::getLinearDamper                                2
+  003950 (slot 6 copy)                                                             1
+  003950 (slot 7 copy)                                                             1
+  003950 NpSpringAndDamperEffector::isSpringAndDamperEffector (slot 0)             1
+  003952 NpSpringAndDamperEffector::getInternal                                    3
+  003954 NpSpringAndDamperEffector adjustor thunk                                  5
+  003956 NpSpringAndDamperEffector scalar deleting destructor                      5
+  003958 NpSpringAndDamperEffector ctor                                            5
+  003960 SpringAndDamperEffector ctor                                              5
+  003962 SpringAndDamperEffector::setBodies                                        7
+  003966 SpringAndDamperEffector::setLinearSpring                                  6
+  003968 SpringAndDamperEffector::setLinearDamper                                  6
+  003970 SpringAndDamperEffector::springForce                                      4
+  003972 SpringAndDamperEffector::damperForce                                      4
+  003974 SpringAndDamperEffector::getLinearSpring                                  2
+  003975 SpringAndDamperEffector::getLinearDamper                                  2
+  003977 SpringAndDamperEffector scalar deleting destructor                        5
+  003979 SpringAndDamperEffector::apply (slot 3)                                   4
+
+  Not hit: 003932 and 003938 (the scalar deleting destructors of the two abstract classes,
+  in their tables only: nothing is ever of those dynamic types), 003964 (the core dump's
+  reader; Tasks 3b and 4 reach it), 000791 (the deferred stub: both roots' +0x1f8 are set to
+  0 before the slot calls, as the transcript records). 003928 runs 5 times: the actor release
+  notifies the two effectors observing rec_a, and the scene release's actor loop notifies e2
+  (rec_b) and e4 twice (rec_c, rec_d) before 000575 destroys e2 and e4.
+
+Breakpoints (each echoes and continues):
+bp NxPhysics+0x16f10 ".echo HIT 000301 NpScene::createSpringAndDamperEffector; gc"
+bp NxPhysics+0x17530 ".echo HIT 000303 NpScene::releaseEffector; gc"
+bp NxPhysics+0x170d0 ".echo HIT 000327 NpScene::getNbEffectors; gc"
+bp NxPhysics+0x176d0 ".echo HIT 000329 NpScene::resetEffectorIterator; gc"
+bp NxPhysics+0x171a0 ".echo HIT 000331 NpScene::getNextEffector; gc"
+bp NxPhysics+0x28f30 ".echo HIT 000561 Scene::getNbEffectors; gc"
+bp NxPhysics+0x2d710 ".echo HIT 000565 Scene::resetEffectorIterator; gc"
+bp NxPhysics+0x28f50 ".echo HIT 000569 Scene::getNextEffector; gc"
+bp NxPhysics+0x2d540 ".echo HIT 000573 Scene::removeEffector; gc"
+bp NxPhysics+0x2d480 ".echo HIT 000575 Scene release of all effectors; gc"
+bp NxPhysics+0x28e30 ".echo HIT 000587 Scene::createSpringAndDamperEffector; gc"
+bp NxPhysics+0x2d400 ".echo HIT 000594 Scene::releaseEffector; gc"
+bp NxPhysics+0x393f0 ".echo HIT 000713 record chain root; gc"
+bp NxPhysics+0x39b00 ".echo HIT 000791 addForceAtPos (deferred stub); gc"
+bp NxPhysics+0x56de0 ".echo HIT 003922 ActorPairEffector ctor; gc"
+bp NxPhysics+0x57a20 ".echo HIT 003924 ActorPairEffector::tick (slot 2); gc"
+bp NxPhysics+0x578d0 ".echo HIT 003926 ActorPairEffector::setBodyRecords; gc"
+bp NxPhysics+0x57540 ".echo HIT 003928 ActorPairEffector::event (slot 0); gc"
+bp NxPhysics+0x56ed0 ".echo HIT 003930 ~ActorPairEffector; gc"
+bp NxPhysics+0x56f70 ".echo HIT 003932 ActorPairEffector scalar deleting destructor; gc"
+bp NxPhysics+0x56e10 ".echo HIT 003934 Effector ctor; gc"
+bp NxPhysics+0x56f10 ".echo HIT 003936 ~Effector; gc"
+bp NxPhysics+0x56fb0 ".echo HIT 003938 Effector scalar deleting destructor; gc"
+bp NxPhysics+0x48cf0 ".echo HIT 003940 NpSpringAndDamperEffector::setBodies; gc"
+bp NxPhysics+0x48eb0 ".echo HIT 003942 NpSpringAndDamperEffector::setLinearSpring; gc"
+bp NxPhysics+0x48dd0 ".echo HIT 003944 NpSpringAndDamperEffector::setLinearDamper; gc"
+bp NxPhysics+0x48b40 ".echo HIT 003946 NpSpringAndDamperEffector::getLinearSpring; gc"
+bp NxPhysics+0x48ae0 ".echo HIT 003948 NpSpringAndDamperEffector::getLinearDamper; gc"
+bp NxPhysics+0x48ba0 ".echo HIT 003950 NpSpringAndDamperEffector::isSpringAndDamperEffector (slot 0); gc"
+bp NxPhysics+0x48bf0 ".echo HIT 003950 (slot 6 copy); gc"
+bp NxPhysics+0x48c40 ".echo HIT 003950 (slot 7 copy); gc"
+bp NxPhysics+0x48ad0 ".echo HIT 003952 NpSpringAndDamperEffector::getInternal; gc"
+bp NxPhysics+0x48a74 ".echo HIT 003954 NpSpringAndDamperEffector adjustor thunk; gc"
+bp NxPhysics+0x48a80 ".echo HIT 003956 NpSpringAndDamperEffector scalar deleting destructor; gc"
+bp NxPhysics+0x48a00 ".echo HIT 003958 NpSpringAndDamperEffector ctor; gc"
+bp NxPhysics+0x56e50 ".echo HIT 003960 SpringAndDamperEffector ctor; gc"
+bp NxPhysics+0x57720 ".echo HIT 003962 SpringAndDamperEffector::setBodies; gc"
+bp NxPhysics+0x57570 ".echo HIT 003964 SpringAndDamperEffector::getBodies (dump reader); gc"
+bp NxPhysics+0x57940 ".echo HIT 003966 SpringAndDamperEffector::setLinearSpring; gc"
+bp NxPhysics+0x57920 ".echo HIT 003968 SpringAndDamperEffector::setLinearDamper; gc"
+bp NxPhysics+0x57970 ".echo HIT 003970 SpringAndDamperEffector::springForce; gc"
+bp NxPhysics+0x57250 ".echo HIT 003972 SpringAndDamperEffector::damperForce; gc"
+bp NxPhysics+0x576f0 ".echo HIT 003974 SpringAndDamperEffector::getLinearSpring; gc"
+bp NxPhysics+0x576c0 ".echo HIT 003975 SpringAndDamperEffector::getLinearDamper; gc"
+bp NxPhysics+0x56ff0 ".echo HIT 003977 SpringAndDamperEffector scalar deleting destructor; gc"
+bp NxPhysics+0x57050 ".echo HIT 003979 SpringAndDamperEffector::apply (slot 3); gc"
+bp NxPhysics+0x2d040 ".echo HIT (helper) NxSceneInternal::releaseActor, the 000030 record notify and ~Observable; gc"
+bp NxPhysics+0x2bde0 ".echo HIT (helper) nxSceneDelete, scene teardown with 000575 after the actor loop; gc"
+
+Trace:
+HIT 000327 NpScene::getNbEffectors
+HIT 000561 Scene::getNbEffectors
+HIT 000329 NpScene::resetEffectorIterator
+HIT 000565 Scene::resetEffectorIterator
+HIT 000331 NpScene::getNextEffector
+HIT 000569 Scene::getNextEffector
+HIT 000301 NpScene::createSpringAndDamperEffector
+HIT 000587 Scene::createSpringAndDamperEffector
+HIT 003960 SpringAndDamperEffector ctor
+HIT 003922 ActorPairEffector ctor
+HIT 003934 Effector ctor
+HIT 003958 NpSpringAndDamperEffector ctor
+HIT 003962 SpringAndDamperEffector::setBodies
+HIT 003926 ActorPairEffector::setBodyRecords
+HIT 003966 SpringAndDamperEffector::setLinearSpring
+HIT 003968 SpringAndDamperEffector::setLinearDamper
+HIT 000327 NpScene::getNbEffectors
+HIT 000561 Scene::getNbEffectors
+HIT 000329 NpScene::resetEffectorIterator
+HIT 000565 Scene::resetEffectorIterator
+HIT 000331 NpScene::getNextEffector
+HIT 000569 Scene::getNextEffector
+HIT 000331 NpScene::getNextEffector
+HIT 000569 Scene::getNextEffector
+HIT 003950 NpSpringAndDamperEffector::isSpringAndDamperEffector (slot 0)
+HIT 003950 (slot 6 copy)
+HIT 003950 (slot 7 copy)
+HIT 003946 NpSpringAndDamperEffector::getLinearSpring
+HIT 003974 SpringAndDamperEffector::getLinearSpring
+HIT 003948 NpSpringAndDamperEffector::getLinearDamper
+HIT 003975 SpringAndDamperEffector::getLinearDamper
+HIT 003942 NpSpringAndDamperEffector::setLinearSpring
+HIT 003966 SpringAndDamperEffector::setLinearSpring
+HIT 003944 NpSpringAndDamperEffector::setLinearDamper
+HIT 003968 SpringAndDamperEffector::setLinearDamper
+HIT 003946 NpSpringAndDamperEffector::getLinearSpring
+HIT 003974 SpringAndDamperEffector::getLinearSpring
+HIT 003948 NpSpringAndDamperEffector::getLinearDamper
+HIT 003975 SpringAndDamperEffector::getLinearDamper
+HIT 003940 NpSpringAndDamperEffector::setBodies
+HIT 003962 SpringAndDamperEffector::setBodies
+HIT 003926 ActorPairEffector::setBodyRecords
+HIT 003940 NpSpringAndDamperEffector::setBodies
+HIT 003962 SpringAndDamperEffector::setBodies
+HIT 003926 ActorPairEffector::setBodyRecords
+HIT 003924 ActorPairEffector::tick (slot 2)
+HIT 003979 SpringAndDamperEffector::apply (slot 3)
+HIT 003972 SpringAndDamperEffector::damperForce
+HIT 003970 SpringAndDamperEffector::springForce
+HIT 000713 record chain root
+HIT 000713 record chain root
+HIT 003979 SpringAndDamperEffector::apply (slot 3)
+HIT 003972 SpringAndDamperEffector::damperForce
+HIT 003970 SpringAndDamperEffector::springForce
+HIT 000713 record chain root
+HIT 003979 SpringAndDamperEffector::apply (slot 3)
+HIT 003972 SpringAndDamperEffector::damperForce
+HIT 003970 SpringAndDamperEffector::springForce
+HIT 000713 record chain root
+HIT 003979 SpringAndDamperEffector::apply (slot 3)
+HIT 003972 SpringAndDamperEffector::damperForce
+HIT 003970 SpringAndDamperEffector::springForce
+HIT 000303 NpScene::releaseEffector
+HIT 003952 NpSpringAndDamperEffector::getInternal
+HIT 000594 Scene::releaseEffector
+HIT 000573 Scene::removeEffector
+HIT 003977 SpringAndDamperEffector scalar deleting destructor
+HIT 003954 NpSpringAndDamperEffector adjustor thunk
+HIT 003956 NpSpringAndDamperEffector scalar deleting destructor
+HIT 003930 ~ActorPairEffector
+HIT 003936 ~Effector
+HIT 000327 NpScene::getNbEffectors
+HIT 000561 Scene::getNbEffectors
+HIT 000329 NpScene::resetEffectorIterator
+HIT 000565 Scene::resetEffectorIterator
+HIT 000331 NpScene::getNextEffector
+HIT 000569 Scene::getNextEffector
+HIT 000301 NpScene::createSpringAndDamperEffector
+HIT 000587 Scene::createSpringAndDamperEffector
+HIT 003960 SpringAndDamperEffector ctor
+HIT 003922 ActorPairEffector ctor
+HIT 003934 Effector ctor
+HIT 003958 NpSpringAndDamperEffector ctor
+HIT 003962 SpringAndDamperEffector::setBodies
+HIT 003926 ActorPairEffector::setBodyRecords
+HIT 003966 SpringAndDamperEffector::setLinearSpring
+HIT 003968 SpringAndDamperEffector::setLinearDamper
+HIT 000301 NpScene::createSpringAndDamperEffector
+HIT 000587 Scene::createSpringAndDamperEffector
+HIT 003960 SpringAndDamperEffector ctor
+HIT 003922 ActorPairEffector ctor
+HIT 003934 Effector ctor
+HIT 003958 NpSpringAndDamperEffector ctor
+HIT 003962 SpringAndDamperEffector::setBodies
+HIT 003926 ActorPairEffector::setBodyRecords
+HIT 003966 SpringAndDamperEffector::setLinearSpring
+HIT 003968 SpringAndDamperEffector::setLinearDamper
+HIT 000327 NpScene::getNbEffectors
+HIT 000561 Scene::getNbEffectors
+HIT 000329 NpScene::resetEffectorIterator
+HIT 000565 Scene::resetEffectorIterator
+HIT 000331 NpScene::getNextEffector
+HIT 000569 Scene::getNextEffector
+HIT 000331 NpScene::getNextEffector
+HIT 000569 Scene::getNextEffector
+HIT 000331 NpScene::getNextEffector
+HIT 000569 Scene::getNextEffector
+HIT 000303 NpScene::releaseEffector
+HIT 003952 NpSpringAndDamperEffector::getInternal
+HIT 000594 Scene::releaseEffector
+HIT 000573 Scene::removeEffector
+HIT 003977 SpringAndDamperEffector scalar deleting destructor
+HIT 003954 NpSpringAndDamperEffector adjustor thunk
+HIT 003956 NpSpringAndDamperEffector scalar deleting destructor
+HIT 003930 ~ActorPairEffector
+HIT 003936 ~Effector
+HIT 000327 NpScene::getNbEffectors
+HIT 000561 Scene::getNbEffectors
+HIT 000329 NpScene::resetEffectorIterator
+HIT 000565 Scene::resetEffectorIterator
+HIT 000331 NpScene::getNextEffector
+HIT 000569 Scene::getNextEffector
+HIT 000331 NpScene::getNextEffector
+HIT 000569 Scene::getNextEffector
+HIT 000301 NpScene::createSpringAndDamperEffector
+HIT 000587 Scene::createSpringAndDamperEffector
+HIT 003960 SpringAndDamperEffector ctor
+HIT 003922 ActorPairEffector ctor
+HIT 003934 Effector ctor
+HIT 003958 NpSpringAndDamperEffector ctor
+HIT 003962 SpringAndDamperEffector::setBodies
+HIT 003926 ActorPairEffector::setBodyRecords
+HIT 003966 SpringAndDamperEffector::setLinearSpring
+HIT 003968 SpringAndDamperEffector::setLinearDamper
+HIT 000327 NpScene::getNbEffectors
+HIT 000561 Scene::getNbEffectors
+HIT 000329 NpScene::resetEffectorIterator
+HIT 000565 Scene::resetEffectorIterator
+HIT 000331 NpScene::getNextEffector
+HIT 000569 Scene::getNextEffector
+HIT 000331 NpScene::getNextEffector
+HIT 000569 Scene::getNextEffector
+HIT 000331 NpScene::getNextEffector
+HIT 000569 Scene::getNextEffector
+HIT (helper) NxSceneInternal::releaseActor, the 000030 record notify and ~Observable
+HIT 003928 ActorPairEffector::event (slot 0)
+HIT 003928 ActorPairEffector::event (slot 0)
+HIT 000327 NpScene::getNbEffectors
+HIT 000561 Scene::getNbEffectors
+HIT 000329 NpScene::resetEffectorIterator
+HIT 000565 Scene::resetEffectorIterator
+HIT 000331 NpScene::getNextEffector
+HIT 000569 Scene::getNextEffector
+HIT 000331 NpScene::getNextEffector
+HIT 000569 Scene::getNextEffector
+HIT 000331 NpScene::getNextEffector
+HIT 000569 Scene::getNextEffector
+HIT 000303 NpScene::releaseEffector
+HIT 003952 NpSpringAndDamperEffector::getInternal
+HIT 000594 Scene::releaseEffector
+HIT 000573 Scene::removeEffector
+HIT 003977 SpringAndDamperEffector scalar deleting destructor
+HIT 003954 NpSpringAndDamperEffector adjustor thunk
+HIT 003956 NpSpringAndDamperEffector scalar deleting destructor
+HIT 003930 ~ActorPairEffector
+HIT 003936 ~Effector
+HIT 000327 NpScene::getNbEffectors
+HIT 000561 Scene::getNbEffectors
+HIT 000329 NpScene::resetEffectorIterator
+HIT 000565 Scene::resetEffectorIterator
+HIT 000331 NpScene::getNextEffector
+HIT 000569 Scene::getNextEffector
+HIT 000331 NpScene::getNextEffector
+HIT 000569 Scene::getNextEffector
+HIT 000301 NpScene::createSpringAndDamperEffector
+HIT 000587 Scene::createSpringAndDamperEffector
+HIT 003960 SpringAndDamperEffector ctor
+HIT 003922 ActorPairEffector ctor
+HIT 003934 Effector ctor
+HIT 003958 NpSpringAndDamperEffector ctor
+HIT 003962 SpringAndDamperEffector::setBodies
+HIT 003926 ActorPairEffector::setBodyRecords
+HIT 003966 SpringAndDamperEffector::setLinearSpring
+HIT 003968 SpringAndDamperEffector::setLinearDamper
+HIT 000327 NpScene::getNbEffectors
+HIT 000561 Scene::getNbEffectors
+HIT 000329 NpScene::resetEffectorIterator
+HIT 000565 Scene::resetEffectorIterator
+HIT 000331 NpScene::getNextEffector
+HIT 000569 Scene::getNextEffector
+HIT 000331 NpScene::getNextEffector
+HIT 000569 Scene::getNextEffector
+HIT 000331 NpScene::getNextEffector
+HIT 000569 Scene::getNextEffector
+HIT (helper) nxSceneDelete, scene teardown with 000575 after the actor loop
+HIT (helper) NxSceneInternal::releaseActor, the 000030 record notify and ~Observable
+HIT 003928 ActorPairEffector::event (slot 0)
+HIT (helper) NxSceneInternal::releaseActor, the 000030 record notify and ~Observable
+HIT 003928 ActorPairEffector::event (slot 0)
+HIT (helper) NxSceneInternal::releaseActor, the 000030 record notify and ~Observable
+HIT 003928 ActorPairEffector::event (slot 0)
+HIT 000575 Scene release of all effectors
+HIT 003977 SpringAndDamperEffector scalar deleting destructor
+HIT 003954 NpSpringAndDamperEffector adjustor thunk
+HIT 003956 NpSpringAndDamperEffector scalar deleting destructor
+HIT 003930 ~ActorPairEffector
+HIT 003936 ~Effector
+HIT 003977 SpringAndDamperEffector scalar deleting destructor
+HIT 003954 NpSpringAndDamperEffector adjustor thunk
+HIT 003956 NpSpringAndDamperEffector scalar deleting destructor
+HIT 003930 ~ActorPairEffector
+HIT 003936 ~Effector
