@@ -175,18 +175,27 @@ undefined4 __fastcall FUN_1008f0f0(int param_1)
 - ambiguous: yes
 - source: None
 - implementation: None
-- prototype: None
-- calling convention: None, stack purge: None
+- prototype: undefined FUN_1008f100(void)
+- calling convention: unknown, stack purge: 2147483647
 - callers: phys_fn_003956 (0x0008f110)
 - callees: phys_fn_003956 (0x0008f110)
 - indirect calls: none
 - strings: none
 
-Decompile (capstone disassembly):
+Decompile (ghidra supplement):
 
-```asm
-0x0008f100  sub ecx, 8
-0x0008f103  jmp 0x1008f110
+```c
+
+void FUN_1008f100(byte param_1)
+
+{
+  int in_ECX;
+  
+  FUN_1008f110((void *)(in_ECX + -8),param_1);
+  return;
+}
+
+
 ```
 
 ## phys_fn_003956 (0x0008f110, 49 B, discovered)
@@ -952,39 +961,46 @@ LAB_1008fbf6:
 - ambiguous: yes
 - source: template init (0x8fc00)
 - implementation: None
-- prototype: None
-- calling convention: None, stack purge: None
+- prototype: undefined FUN_1008fc00(void)
+- calling convention: unknown, stack purge: 2147483647
 - callers: phys_fn_004048 (0x00092f90)
 - callees: none
 - indirect calls: none
 - strings: none
 
-Decompile (capstone disassembly):
+Decompile (ghidra supplement):
 
-```asm
-0x0008fc00  xor eax, eax
-0x0008fc02  mov dword ptr [ecx + 0xc], eax
-0x0008fc05  mov dword ptr [ecx + 0x10], eax
-0x0008fc08  mov dword ptr [ecx + 0x14], eax
-0x0008fc0b  mov dword ptr [ecx + 0x1c], eax
-0x0008fc0e  mov dword ptr [ecx + 0x20], eax
-0x0008fc11  mov dword ptr [ecx + 0x24], eax
-0x0008fc14  mov edx, 0x3f800000
-0x0008fc19  mov dword ptr [ecx + 8], edx
-0x0008fc1c  mov dword ptr [ecx + 0x18], edx
-0x0008fc1f  mov dword ptr [ecx + 0x28], edx
-0x0008fc22  mov dword ptr [ecx + 0x34], eax
-0x0008fc25  mov dword ptr [ecx + 0x30], eax
-0x0008fc28  mov dword ptr [ecx + 0x2c], eax
-0x0008fc2b  mov dword ptr [ecx + 0x38], 8
-0x0008fc32  mov word ptr [ecx + 0x3c], ax
-0x0008fc36  mov word ptr [ecx + 0x3e], ax
-0x0008fc3a  mov dword ptr [ecx + 0x40], eax
-0x0008fc3d  mov dword ptr [ecx + 0x44], eax
-0x0008fc40  mov dword ptr [ecx + 0x4c], eax
-0x0008fc43  mov dword ptr [ecx + 0x50], eax
-0x0008fc46  mov dword ptr [ecx + 0x54], eax
-0x0008fc49  ret
+```c
+
+void FUN_1008fc00(void)
+
+{
+  int in_ECX;
+  
+  *(undefined4 *)(in_ECX + 0xc) = 0;
+  *(undefined4 *)(in_ECX + 0x10) = 0;
+  *(undefined4 *)(in_ECX + 0x14) = 0;
+  *(undefined4 *)(in_ECX + 0x1c) = 0;
+  *(undefined4 *)(in_ECX + 0x20) = 0;
+  *(undefined4 *)(in_ECX + 0x24) = 0;
+  *(undefined4 *)(in_ECX + 8) = 0x3f800000;
+  *(undefined4 *)(in_ECX + 0x18) = 0x3f800000;
+  *(undefined4 *)(in_ECX + 0x28) = 0x3f800000;
+  *(undefined4 *)(in_ECX + 0x34) = 0;
+  *(undefined4 *)(in_ECX + 0x30) = 0;
+  *(undefined4 *)(in_ECX + 0x2c) = 0;
+  *(undefined4 *)(in_ECX + 0x38) = 8;
+  *(undefined2 *)(in_ECX + 0x3c) = 0;
+  *(undefined2 *)(in_ECX + 0x3e) = 0;
+  *(undefined4 *)(in_ECX + 0x40) = 0;
+  *(undefined4 *)(in_ECX + 0x44) = 0;
+  *(undefined4 *)(in_ECX + 0x4c) = 0;
+  *(undefined4 *)(in_ECX + 0x50) = 0;
+  *(undefined4 *)(in_ECX + 0x54) = 0;
+  return;
+}
+
+
 ```
 
 ## phys_fn_003985 (0x0008fc50, 92 B, reconstructed)
@@ -992,45 +1008,51 @@ Decompile (capstone disassembly):
 - ambiguous: yes
 - source: template + FLT_MAX/identity init (0x8fc50)
 - implementation: None
-- prototype: None
-- calling convention: None, stack purge: None
+- prototype: undefined FUN_1008fc50(void)
+- calling convention: unknown, stack purge: 2147483647
 - callers: phys_fn_004025 (0x00091940), phys_fn_004037 (0x00092060), phys_fn_004048 (0x00092f90)
 - callees: none
 - indirect calls: none
 - strings: none
 
-Decompile (capstone disassembly):
+Decompile (ghidra supplement):
 
-```asm
-0x0008fc50  xor eax, eax
-0x0008fc52  mov dword ptr [ecx + 8], eax
-0x0008fc55  mov dword ptr [ecx + 0x28], eax
-0x0008fc58  mov dword ptr [ecx + 0x2c], eax
-0x0008fc5b  mov edx, 0x3f800000
-0x0008fc60  mov dword ptr [ecx + 0x30], edx
-0x0008fc63  mov dword ptr [ecx + 0x10], edx
-0x0008fc66  mov dword ptr [ecx + 0x14], eax
-0x0008fc69  mov dword ptr [ecx + 0x18], eax
-0x0008fc6c  mov dword ptr [ecx + 0x48], eax
-0x0008fc6f  mov dword ptr [ecx + 0x44], eax
-0x0008fc72  mov dword ptr [ecx + 0x40], eax
-0x0008fc75  mov dword ptr [ecx + 0xc], eax
-0x0008fc78  mov dword ptr [ecx + 0x3c], edx
-0x0008fc7b  mov dword ptr [ecx + 0x34], eax
-0x0008fc7e  mov dword ptr [ecx + 0x38], eax
-0x0008fc81  mov dword ptr [ecx + 0x1c], edx
-0x0008fc84  mov dword ptr [ecx + 0x20], eax
-0x0008fc87  mov dword ptr [ecx + 0x24], eax
-0x0008fc8a  mov dword ptr [ecx + 0x54], eax
-0x0008fc8d  mov dword ptr [ecx + 0x50], eax
-0x0008fc90  mov dword ptr [ecx + 0x4c], eax
-0x0008fc93  mov edx, 0x7f7fffff
-0x0008fc98  mov dword ptr [ecx + 0x58], edx
-0x0008fc9b  mov dword ptr [ecx + 0x5c], edx
-0x0008fc9e  mov dword ptr [ecx + 0x60], eax
-0x0008fca1  mov dword ptr [ecx + 0x64], eax
-0x0008fca4  mov dword ptr [ecx + 0x68], 2
-0x0008fcab  ret
+```c
+
+void FUN_1008fc50(void)
+
+{
+  int in_ECX;
+  
+  *(undefined4 *)(in_ECX + 8) = 0;
+  *(undefined4 *)(in_ECX + 0x28) = 0;
+  *(undefined4 *)(in_ECX + 0x2c) = 0;
+  *(undefined4 *)(in_ECX + 0x30) = 0x3f800000;
+  *(undefined4 *)(in_ECX + 0x10) = 0x3f800000;
+  *(undefined4 *)(in_ECX + 0x14) = 0;
+  *(undefined4 *)(in_ECX + 0x18) = 0;
+  *(undefined4 *)(in_ECX + 0x48) = 0;
+  *(undefined4 *)(in_ECX + 0x44) = 0;
+  *(undefined4 *)(in_ECX + 0x40) = 0;
+  *(undefined4 *)(in_ECX + 0xc) = 0;
+  *(undefined4 *)(in_ECX + 0x3c) = 0x3f800000;
+  *(undefined4 *)(in_ECX + 0x34) = 0;
+  *(undefined4 *)(in_ECX + 0x38) = 0;
+  *(undefined4 *)(in_ECX + 0x1c) = 0x3f800000;
+  *(undefined4 *)(in_ECX + 0x20) = 0;
+  *(undefined4 *)(in_ECX + 0x24) = 0;
+  *(undefined4 *)(in_ECX + 0x54) = 0;
+  *(undefined4 *)(in_ECX + 0x50) = 0;
+  *(undefined4 *)(in_ECX + 0x4c) = 0;
+  *(undefined4 *)(in_ECX + 0x58) = 0x7f7fffff;
+  *(undefined4 *)(in_ECX + 0x5c) = 0x7f7fffff;
+  *(undefined4 *)(in_ECX + 0x60) = 0;
+  *(undefined4 *)(in_ECX + 100) = 0;
+  *(undefined4 *)(in_ECX + 0x68) = 2;
+  return;
+}
+
+
 ```
 
 ## phys_fn_003987 (0x0008fcb0, 68 B, reconstructed)
@@ -1038,37 +1060,44 @@ Decompile (capstone disassembly):
 - ambiguous: yes
 - source: template init (0x8fcb0)
 - implementation: None
-- prototype: None
-- calling convention: None, stack purge: None
+- prototype: undefined FUN_1008fcb0(void)
+- calling convention: unknown, stack purge: 2147483647
 - callers: phys_fn_004037 (0x00092060)
 - callees: none
 - indirect calls: none
 - strings: none
 
-Decompile (capstone disassembly):
+Decompile (ghidra supplement):
 
-```asm
-0x0008fcb0  xor eax, eax
-0x0008fcb2  mov dword ptr [ecx + 0xc], eax
-0x0008fcb5  mov dword ptr [ecx + 0x10], eax
-0x0008fcb8  mov dword ptr [ecx + 0x14], eax
-0x0008fcbb  mov dword ptr [ecx + 0x1c], eax
-0x0008fcbe  mov dword ptr [ecx + 0x20], eax
-0x0008fcc1  mov dword ptr [ecx + 0x24], eax
-0x0008fcc4  mov edx, 0x3f800000
-0x0008fcc9  mov dword ptr [ecx + 8], edx
-0x0008fccc  mov dword ptr [ecx + 0x18], edx
-0x0008fccf  mov dword ptr [ecx + 0x28], edx
-0x0008fcd2  mov dword ptr [ecx + 0x34], eax
-0x0008fcd5  mov dword ptr [ecx + 0x30], eax
-0x0008fcd8  mov dword ptr [ecx + 0x2c], eax
-0x0008fcdb  mov dword ptr [ecx + 0x38], 8
-0x0008fce2  mov word ptr [ecx + 0x3c], ax
-0x0008fce6  mov word ptr [ecx + 0x3e], ax
-0x0008fcea  mov dword ptr [ecx + 0x40], eax
-0x0008fced  mov dword ptr [ecx + 0x44], eax
-0x0008fcf0  mov dword ptr [ecx + 0x4c], eax
-0x0008fcf3  ret
+```c
+
+void FUN_1008fcb0(void)
+
+{
+  int in_ECX;
+  
+  *(undefined4 *)(in_ECX + 0xc) = 0;
+  *(undefined4 *)(in_ECX + 0x10) = 0;
+  *(undefined4 *)(in_ECX + 0x14) = 0;
+  *(undefined4 *)(in_ECX + 0x1c) = 0;
+  *(undefined4 *)(in_ECX + 0x20) = 0;
+  *(undefined4 *)(in_ECX + 0x24) = 0;
+  *(undefined4 *)(in_ECX + 8) = 0x3f800000;
+  *(undefined4 *)(in_ECX + 0x18) = 0x3f800000;
+  *(undefined4 *)(in_ECX + 0x28) = 0x3f800000;
+  *(undefined4 *)(in_ECX + 0x34) = 0;
+  *(undefined4 *)(in_ECX + 0x30) = 0;
+  *(undefined4 *)(in_ECX + 0x2c) = 0;
+  *(undefined4 *)(in_ECX + 0x38) = 8;
+  *(undefined2 *)(in_ECX + 0x3c) = 0;
+  *(undefined2 *)(in_ECX + 0x3e) = 0;
+  *(undefined4 *)(in_ECX + 0x40) = 0;
+  *(undefined4 *)(in_ECX + 0x44) = 0;
+  *(undefined4 *)(in_ECX + 0x4c) = 0;
+  return;
+}
+
+
 ```
 
 ## phys_fn_003989 (0x0008fd00, 71 B, reconstructed)
@@ -1076,38 +1105,45 @@ Decompile (capstone disassembly):
 - ambiguous: yes
 - source: template init (0x8fd00)
 - implementation: None
-- prototype: None
-- calling convention: None, stack purge: None
+- prototype: undefined FUN_1008fd00(void)
+- calling convention: unknown, stack purge: 2147483647
 - callers: phys_fn_004037 (0x00092060)
 - callees: none
 - indirect calls: none
 - strings: none
 
-Decompile (capstone disassembly):
+Decompile (ghidra supplement):
 
-```asm
-0x0008fd00  xor eax, eax
-0x0008fd02  mov dword ptr [ecx + 0xc], eax
-0x0008fd05  mov dword ptr [ecx + 0x10], eax
-0x0008fd08  mov dword ptr [ecx + 0x14], eax
-0x0008fd0b  mov dword ptr [ecx + 0x1c], eax
-0x0008fd0e  mov dword ptr [ecx + 0x20], eax
-0x0008fd11  mov dword ptr [ecx + 0x24], eax
-0x0008fd14  mov edx, 0x3f800000
-0x0008fd19  mov dword ptr [ecx + 8], edx
-0x0008fd1c  mov dword ptr [ecx + 0x18], edx
-0x0008fd1f  mov dword ptr [ecx + 0x28], edx
-0x0008fd22  mov dword ptr [ecx + 0x34], eax
-0x0008fd25  mov dword ptr [ecx + 0x30], eax
-0x0008fd28  mov dword ptr [ecx + 0x2c], eax
-0x0008fd2b  mov dword ptr [ecx + 0x38], 8
-0x0008fd32  mov word ptr [ecx + 0x3c], ax
-0x0008fd36  mov word ptr [ecx + 0x3e], ax
-0x0008fd3a  mov dword ptr [ecx + 0x40], eax
-0x0008fd3d  mov dword ptr [ecx + 0x44], eax
-0x0008fd40  mov dword ptr [ecx + 0x4c], eax
-0x0008fd43  mov dword ptr [ecx + 0x50], eax
-0x0008fd46  ret
+```c
+
+void FUN_1008fd00(void)
+
+{
+  int in_ECX;
+  
+  *(undefined4 *)(in_ECX + 0xc) = 0;
+  *(undefined4 *)(in_ECX + 0x10) = 0;
+  *(undefined4 *)(in_ECX + 0x14) = 0;
+  *(undefined4 *)(in_ECX + 0x1c) = 0;
+  *(undefined4 *)(in_ECX + 0x20) = 0;
+  *(undefined4 *)(in_ECX + 0x24) = 0;
+  *(undefined4 *)(in_ECX + 8) = 0x3f800000;
+  *(undefined4 *)(in_ECX + 0x18) = 0x3f800000;
+  *(undefined4 *)(in_ECX + 0x28) = 0x3f800000;
+  *(undefined4 *)(in_ECX + 0x34) = 0;
+  *(undefined4 *)(in_ECX + 0x30) = 0;
+  *(undefined4 *)(in_ECX + 0x2c) = 0;
+  *(undefined4 *)(in_ECX + 0x38) = 8;
+  *(undefined2 *)(in_ECX + 0x3c) = 0;
+  *(undefined2 *)(in_ECX + 0x3e) = 0;
+  *(undefined4 *)(in_ECX + 0x40) = 0;
+  *(undefined4 *)(in_ECX + 0x44) = 0;
+  *(undefined4 *)(in_ECX + 0x4c) = 0;
+  *(undefined4 *)(in_ECX + 0x50) = 0;
+  return;
+}
+
+
 ```
 
 ## phys_fn_003991 (0x0008fd50, 144 B, discovered)
@@ -2456,27 +2492,30 @@ LAB_10091936:
 - ambiguous: yes
 - source: None
 - implementation: None
-- prototype: None
-- calling convention: None, stack purge: None
+- prototype: undefined FUN_10091940(void)
+- calling convention: unknown, stack purge: 2147483647
 - callers: phys_fn_004037 (0x00092060), phys_fn_004048 (0x00092f90)
 - callees: phys_fn_003981 (0x0008fb00), phys_fn_003985 (0x0008fc50), phys_fn_005668 (0x000f41f0)
 - indirect calls: none
 - strings: none
 
-Decompile (capstone disassembly):
+Decompile (ghidra supplement):
 
-```asm
-0x00091940  test byte ptr [esp + 4], 1
-0x00091945  push esi
-0x00091946  mov esi, ecx
-0x00091948  mov dword ptr [esi], 0x10117a44
-0x0009194e  je 0x10091959
-0x00091950  push esi
-0x00091951  call 0x100f41f0
-0x00091956  add esp, 4
-0x00091959  mov eax, esi
-0x0009195b  pop esi
-0x0009195c  ret 4
+```c
+
+void FUN_10091940(byte param_1)
+
+{
+  undefined4 *in_ECX;
+  
+  *in_ECX = &PTR_FUN_10117a44;
+  if ((param_1 & 1) != 0) {
+    _free(in_ECX);
+  }
+  return;
+}
+
+
 ```
 
 ## phys_fn_004027 (0x00091960, 730 B, discovered)
@@ -2768,27 +2807,30 @@ bool __fastcall FUN_10091c40(int param_1)
 - ambiguous: yes
 - source: None
 - implementation: None
-- prototype: None
-- calling convention: None, stack purge: None
+- prototype: undefined FUN_10091de0(void)
+- calling convention: unknown, stack purge: 2147483647
 - callers: phys_fn_000651 (0x00013070), phys_fn_002332 (0x0005a520), phys_fn_004037 (0x00092060), phys_fn_004048 (0x00092f90)
 - callees: phys_fn_005668 (0x000f41f0)
 - indirect calls: none
 - strings: none
 
-Decompile (capstone disassembly):
+Decompile (ghidra supplement):
 
-```asm
-0x00091de0  test byte ptr [esp + 4], 1
-0x00091de5  push esi
-0x00091de6  mov esi, ecx
-0x00091de8  mov dword ptr [esi], 0x10106414
-0x00091dee  je 0x10091df9
-0x00091df0  push esi
-0x00091df1  call 0x100f41f0
-0x00091df6  add esp, 4
-0x00091df9  mov eax, esi
-0x00091dfb  pop esi
-0x00091dfc  ret 4
+```c
+
+void FUN_10091de0(byte param_1)
+
+{
+  undefined4 *in_ECX;
+  
+  *in_ECX = &PTR_FUN_10106414;
+  if ((param_1 & 1) != 0) {
+    _free(in_ECX);
+  }
+  return;
+}
+
+
 ```
 
 ## phys_fn_004033 (0x00091e00, 367 B, discovered)
