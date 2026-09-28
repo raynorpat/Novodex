@@ -9163,6 +9163,31 @@ recorded. The staged-pair differentials for phases 2, 3 and 5 also pass against
 this Foundation, which checks that the architecture flag moved nothing else in that
 translation unit.
 
+## 18e. DebugRenderable's arrows and the box corners brought to the oracle's words
+
+Scene-raycast block Task 4 (visualisation; units/scene-raycast-contract.md, `## Task 4 results: visualisation`)
+applied 18d's rule to three more Foundation functions. NxPhysicsSceneVisualizeTests (a Phase 7 staged pair that
+prints every line NxPhysicsSDK::visualize hands a renderer) differed on 77 of 873 lines, each by 1 ulp, and a pair of
+the candidate NxPhysics with the oracle NxFoundation matched on all of them, so the difference was the Foundation's.
+The pinned NxFoundation.dll (sha256 7e0596e4...) was disassembled with Capstone (DebugRenderable's table 0x1001c1c8):
+
+- `DebugRenderable::addArrow` (0x10001640-0x10001858): the arrow length is spilled; the tip's x and y products stay
+  on the stack and the z product is spilled before its sum; headScale (0.15f at 0x1001c1bc) is kept in the register
+  for tipBase.x and its stored float is used everywhere else; tipBase.x is spilled, .y and .z stay on the stack for
+  all four lobes; per tangent the x product is spilled, the y product kept, the z product kept for the sum and
+  spilled for the difference.
+- `DebugRenderable::addBasis` (0x10001860-0x1000192a): a null colours array passes colour 0 (the listing tests the
+  pointer per arrow).
+- `NxComputeBoxPoints` (Box.cpp, 0x10007cf0-0x10007f3a; addOBB's corners): the z products of Axis1 and Axis2 stay in
+  registers; Axis1+Axis2 keeps x/y and spills z; Axis1-Axis2 spills x/y and keeps z.
+
+Register lifetimes are NxF64 and dword spills NxF32 (the process runs at _PC_53, so SSE2 doubles reproduce the
+finite words; no /arch:IA32, which only NaN payloads would need). After the change the visualisation target is
+stdout_delta=0 on the full candidate pair; NxFoundationTangentTests (Phase 6), NxFoundationClusterTests (all twelve
+groups, the box group's bit-level line included), NxFoundationSDKTests and NxFoundationExportTests are unchanged on
+both Foundations. cdb traces of both Foundations over the 24 staged targets hit addBasis, addArrow, addOBB and
+NxComputeBoxPoints equally (evidence/scene-raycast-trace-task4-vis.txt).
+
 ## Closure binding: the six rows the Phase 6 and Phase 7 ledgers close
 
 `gates/phase6-closure.json` and `gates/phase7-closure.json` name this file as their `evidence_file`,

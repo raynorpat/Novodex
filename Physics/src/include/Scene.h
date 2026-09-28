@@ -43,6 +43,7 @@ class NxJoint;
 class Joint;
 class JointBreakEvent;
 class NxRay;
+class NxDebugRenderable;
 
 /**
 The 0x710-byte scene object.
@@ -107,6 +108,12 @@ class NxSceneInternal
 	bool raycastAnyShape(const NxRay& worldRay, NxShapesType shapesType, NxU32 groups, NxReal maxDist);
 	void* raycastClosestShape(const NxRay& worldRay, NxShapesType shapeType, NxRaycastHit& hit,
 		NxU32 groups, NxReal maxDist, NxU32 hintFlags);
+
+	// Debug visualisation (scene-raycast block Task 4; SceneVisualize.h has
+	// the chain). phys_fn_000657 (0x000139c0) fills the renderable at +0x6b8,
+	// which phys_fn_000579 (0x00010a10) creates through the Foundation.
+	void visualize();
+	NxDebugRenderable* getDebugRenderable();
 
 	// The raw object. `at` is the only sanctioned way to reach a field whose name
 	// is not recovered.

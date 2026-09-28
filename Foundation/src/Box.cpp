@@ -143,17 +143,27 @@ bool NxComputeBoxPoints(const NxBox& box, NxVec3* pts)
 	// Checkings
 	if(!pts)	return false;
 
-//	NxVec3 Axis0; box.rot.getRow(0, Axis0);
-//	NxVec3 Axis1; box.rot.getRow(1, Axis1);
-//	NxVec3 Axis2; box.rot.getRow(2, Axis2);
-	NxVec3 Axis0; box.rot.getColumn(0, Axis0);
-	NxVec3 Axis1; box.rot.getColumn(1, Axis1);
-	NxVec3 Axis2; box.rot.getColumn(2, Axis2);
-
-	// "Rotated extents"
-	Axis0 *= box.extents.x;
-	Axis1 *= box.extents.y;
-	Axis2 *= box.extents.z;
+	// Written in the order of the oracle's x87 stream (NxFoundation.dll
+	// 0x10007cf0-0x10007f3a), with the NxNormalToTangents rule (Utilities.cpp): a
+	// value the listing keeps on the register stack is NxF64, a value it stores
+	// to a dword is NxF32. The process runs at _PC_53, so a register lifetime is
+	// a double. DebugRenderable::addOBB draws these points, and with the plain
+	// NxVec3 operators four of NxPhysicsSceneVisualizeTests' corners came out
+	// one ULP off the oracle's.
+	//
+	// "Rotated extents" (the columns of rot): every product is spilled to a
+	// float except the z components of Axis1 and Axis2 (`fmul dword ptr
+	// [esp+8]` at 0x10007d75, `[esp+0x14]` at 0x10007d90), which stay on the
+	// stack until the end.
+	const NxF32 a0x = box.rot(0,0) * box.extents.x;
+	const NxF32 a0y = box.rot(1,0) * box.extents.x;
+	const NxF32 a0z = box.rot(2,0) * box.extents.x;
+	const NxF32 a1x = box.rot(0,1) * box.extents.y;
+	const NxF32 a1y = box.rot(1,1) * box.extents.y;
+	const NxF64 a1z = static_cast<NxF64>(box.rot(2,1)) * box.extents.y;
+	const NxF32 a2x = box.rot(0,2) * box.extents.z;
+	const NxF32 a2y = box.rot(1,2) * box.extents.z;
+	const NxF64 a2z = static_cast<NxF64>(box.rot(2,2)) * box.extents.z;
 
 	//     7+------+6			0 = ---
 	//     /|     /|			1 = +--
@@ -175,20 +185,47 @@ bool NxComputeBoxPoints(const NxBox& box, NxVec3* pts)
 	pts[7] = box.center - Axis0 + Axis1 + Axis2;*/
 
 	// Rewritten: 12 vector ops
-	pts[0] = pts[3] = pts[4] = pts[7] = box.center - Axis0;
-	pts[1] = pts[2] = pts[5] = pts[6] = box.center + Axis0;
+	// center -/+ Axis0 (0x10007d94-0x10007e20): single operations on floats.
+	const NxVec3 minus(box.center.x - a0x, box.center.y - a0y, box.center.z - a0z);
+	const NxVec3 plus(a0x + box.center.x, a0y + box.center.y, a0z + box.center.z);
+	pts[0] = pts[3] = pts[4] = pts[7] = minus;
+	pts[1] = pts[2] = pts[5] = pts[6] = plus;
 
-	NxVec3 Tmp = Axis1 + Axis2;
-	pts[0] -= Tmp;
-	pts[1] -= Tmp;
-	pts[6] += Tmp;
-	pts[7] += Tmp;
+	// Tmp = Axis1 + Axis2 (0x10007e26-0x10007e42): x and y stay on the stack; z
+	// is the sum of the two register products, spilled to a float.
+	const NxF64 tx = static_cast<NxF64>(a2x) + a1x;
+	const NxF64 ty = static_cast<NxF64>(a2y) + a1y;
+	const NxF32 tz = static_cast<NxF32>(a2z + a1z);
+	pts[0].x = static_cast<NxF32>(pts[0].x - tx);
+	pts[0].y = static_cast<NxF32>(pts[0].y - ty);
+	pts[0].z = pts[0].z - tz;
+	pts[1].x = static_cast<NxF32>(pts[1].x - tx);
+	pts[1].y = static_cast<NxF32>(pts[1].y - ty);
+	pts[1].z = pts[1].z - tz;
+	pts[6].x = static_cast<NxF32>(tx + pts[6].x);
+	pts[6].y = static_cast<NxF32>(ty + pts[6].y);
+	pts[6].z = tz + pts[6].z;
+	pts[7].x = static_cast<NxF32>(tx + pts[7].x);
+	pts[7].y = static_cast<NxF32>(ty + pts[7].y);
+	pts[7].z = tz + pts[7].z;
 
-	Tmp = Axis1 - Axis2;
-	pts[2] += Tmp;
-	pts[3] += Tmp;
-	pts[4] -= Tmp;
-	pts[5] -= Tmp;
+	// Tmp = Axis1 - Axis2 (0x10007eaa-0x10007f30): x and y spilled to floats, z
+	// the difference of the two register products (`fsubp st(1)`), kept.
+	const NxF32 ux = a1x - a2x;
+	const NxF32 uy = a1y - a2y;
+	const NxF64 uz = a1z - a2z;
+	pts[2].x = ux + pts[2].x;
+	pts[2].y = uy + pts[2].y;
+	pts[2].z = static_cast<NxF32>(uz + pts[2].z);
+	pts[3].x = ux + pts[3].x;
+	pts[3].y = uy + pts[3].y;
+	pts[3].z = static_cast<NxF32>(uz + pts[3].z);
+	pts[4].x = pts[4].x - ux;
+	pts[4].y = pts[4].y - uy;
+	pts[4].z = static_cast<NxF32>(pts[4].z - uz);
+	pts[5].x = pts[5].x - ux;
+	pts[5].y = pts[5].y - uy;
+	pts[5].z = static_cast<NxF32>(pts[5].z - uz);
 
 	return true;
 }

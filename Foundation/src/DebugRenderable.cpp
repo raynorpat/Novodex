@@ -178,32 +178,84 @@ namespace NxFoundation
 		//direction is assumed to be normalized!!
 		//the arrow's tip has length		1 * scale;
 		//the arrow has length				length * scale
-		NxReal arrowLength = scale * length;
+		//
+		// Written in the order of the oracle's x87 stream (NxFoundation.dll
+		// 0x10001640-0x10001858), with the NxNormalToTangents rule (Utilities.cpp):
+		// a value the listing keeps on the register stack is NxF64, a value it
+		// stores to a dword is NxF32 and is read back as that float (_PC_53, so a
+		// register lifetime is a double). With the plain NxVec3 operators the tip
+		// and lobes came out one ULP off the oracle's in NxPhysicsSceneVisualizeTests.
+		//
+		// `fld length; fmul scale; fstp` (0x10001643-0x10001654): the length is
+		// spilled; both tests are `fcomp 0.0f` with `test ah, 0x41`, so a NaN or
+		// non-positive operand draws nothing.
+		const NxReal arrowLength = length * scale;
 		if (length > 0 && scale > 0)
 			{
-			NxVec3 tip = position + direction * arrowLength;
+			// 0x10001688-0x100016db: the x and y products stay on the stack; the z
+			// product is spilled before its sum.
+			NxVec3 tip;
+			const NxF32 dzL = direction.z * arrowLength;
+			tip.x = static_cast<NxF32>(static_cast<NxF64>(arrowLength) * direction.x + position.x);
+			tip.y = static_cast<NxF32>(static_cast<NxF64>(arrowLength) * direction.y + position.y);
+			tip.z = dzL + position.z;
 			addLine(position, tip, color);
 
 			NxVec3 t1,t2;
 			NxNormalToTangents(direction, t1, t2);
 
 			//the arrow head should be 1/4th of the arrow length
-			//all this world space guesswork is lame. we need the arrows to be constant size in 
+			//all this world space guesswork is lame. we need the arrows to be constant size in
 			//screenspace while they are smaller than 1/4th of the arrow.
 
-			NxReal headScale = arrowLength * 0.15f;
+			// `fmul 0.15f; fst dword` (0x100016f6-0x100016ff): the stored float
+			// scales every term except tipBase.x, which multiplies the register
+			// copy.
+			const NxF64 headScaleWide = static_cast<NxF64>(arrowLength) * 0.15f;
+			const NxF32 headScale = static_cast<NxF32>(headScaleWide);
 
 /*
 			NxReal headScale = scale;
 			if (arrowLength < 4)
 				headScale = arrowLength * 0.25f;
-*/			
+*/
 
-			NxVec3 tipBase = tip - direction * headScale;
-			NxVec3 lobe1  = tipBase + t1 * headScale;
-			NxVec3 lobe2  = tipBase - t1 * headScale;
-			NxVec3 lobe3  = tipBase + t2 * headScale;
-			NxVec3 lobe4  = tipBase - t2 * headScale;
+			// tipBase (0x10001703-0x1000172f): x spilled; y and z stay on the stack
+			// for all four lobes, z subtracting a spilled product.
+			const NxF32 tipBaseX = static_cast<NxF32>(tip.x - headScaleWide * direction.x);
+			const NxF64 tipBaseY = tip.y - static_cast<NxF64>(headScale) * direction.y;
+			const NxF32 dzH = headScale * direction.z;
+			const NxF64 tipBaseZ = static_cast<NxF64>(tip.z) - dzH;
+
+			// Lobes (0x10001733-0x10001812): per tangent, the x product is
+			// spilled before both its sum and its difference, the y product is
+			// kept for both, and the z product is kept for the sum and spilled for
+			// the difference.
+			NxVec3 lobe1, lobe2, lobe3, lobe4;
+			{
+			const NxF32 sx = t1.x * headScale;
+			const NxF64 wy = static_cast<NxF64>(t1.y) * headScale;
+			const NxF64 wz = static_cast<NxF64>(t1.z) * headScale;
+			const NxF32 sz = static_cast<NxF32>(wz);
+			lobe1.x = sx + tipBaseX;
+			lobe1.y = static_cast<NxF32>(wy + tipBaseY);
+			lobe1.z = static_cast<NxF32>(wz + tipBaseZ);
+			lobe2.x = tipBaseX - sx;
+			lobe2.y = static_cast<NxF32>(tipBaseY - wy);
+			lobe2.z = static_cast<NxF32>(tipBaseZ - sz);
+			}
+			{
+			const NxF32 sx = t2.x * headScale;
+			const NxF64 wy = static_cast<NxF64>(t2.y) * headScale;
+			const NxF64 wz = static_cast<NxF64>(t2.z) * headScale;
+			const NxF32 sz = static_cast<NxF32>(wz);
+			lobe3.x = sx + tipBaseX;
+			lobe3.y = static_cast<NxF32>(wy + tipBaseY);
+			lobe3.z = static_cast<NxF32>(wz + tipBaseZ);
+			lobe4.x = tipBaseX - sx;
+			lobe4.y = static_cast<NxF32>(tipBaseY - wy);
+			lobe4.z = static_cast<NxF32>(tipBaseZ - sz);
+			}
 			addLine(tip, lobe1, color);
 			addLine(tip, lobe2, color);
 			addLine(tip, lobe3, color);
@@ -213,13 +265,15 @@ namespace NxFoundation
 
 	void DebugRenderable::addBasis(const NxVec3 & position, const NxMat33 & columns, const NxVec3 & lengths, NxReal scale, NxU32 colors[3])
 		{
+		// 0x10001860-0x1000192a: each column through the addArrow slot (+0x30);
+		// a null colors array draws with colour 0 (`test ebx, ebx` per arrow).
 		NxVec3 dir;
 		columns.getColumn(0, dir);
-		addArrow(position, dir, lengths[0], scale, colors[0]);
+		addArrow(position, dir, lengths[0], scale, colors ? colors[0] : 0);
 		columns.getColumn(1, dir);
-		addArrow(position, dir, lengths[1], scale, colors[1]);
+		addArrow(position, dir, lengths[1], scale, colors ? colors[1] : 0);
 		columns.getColumn(2, dir);
-		addArrow(position, dir, lengths[2], scale, colors[2]);
+		addArrow(position, dir, lengths[2], scale, colors ? colors[2] : 0);
 		}
 
 	void DebugRenderable::addCircle(NxU32 nbSegments, const NxMat34& matrix, NxU32 color, NxF32 radius, bool semicircle)

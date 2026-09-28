@@ -387,10 +387,24 @@ void NpScene::runFor(NxReal elapsedTime, NxReal maxTimestep, NxU32 maxIter, NxTi
 	
 	}
 
-// (unimplemented) visualize
+// phys_fn_000344 (0x0000cc10, 77 B)
+// NxScene::visualize (slot 31 of the table at .rdata:0x10105a98). The write
+// lock at +0xc (phys_fn_002364); on failure the deadlock report (code 2, line
+// 0x13c) and a plain return, no unlock. Otherwise the link is kept, the Scene
+// row on +0x24 runs (phys_fn_000657), and the unlock (phys_fn_002366, a tail
+// jump in the image) is on the kept link. Scene-raycast block Task 4.
 void NpScene::visualize()
 	{
-	
+	if(!nxNpSceneGuardWriteTry(mWriteLock))
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0x13c, 0,
+			"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
+		return;
+		}
+	void* link = mWriteLock;
+	mScene->visualize();
+	nxNpSceneGuardLeave(link);
 	}
 
 // (unimplemented) getSceneStats

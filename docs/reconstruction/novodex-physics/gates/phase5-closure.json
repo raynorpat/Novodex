@@ -18,8 +18,8 @@
     "differentials": []
   },
   "counts": {
-    "deferred_not_reconstructed_in_phase": 71,
-    "deferred_reconstructed_not_falsified": 134
+    "deferred_not_reconstructed_in_phase": 70,
+    "deferred_reconstructed_not_falsified": 135
   },
   "closed": [],
   "deferred": [
@@ -637,9 +637,10 @@
       "id": "phys_fn_000945",
       "rva": "0x000207e0",
       "size": 104,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000949",

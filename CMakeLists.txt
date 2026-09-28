@@ -421,6 +421,14 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_include_directories(NxPhysicsSceneRaycastTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include)
 	target_link_libraries(NxPhysicsSceneRaycastTests bcrypt)
+	# The scene visualisation differential (scene-raycast block, Task 4,
+	# visualisation sub-area; Phase 7): NxScene::visualize over static and
+	# dynamic actors, with what the NxUserDebugRenderer receives from
+	# NxPhysicsSDK::visualize printed as words.
+	add_executable(NxPhysicsSceneVisualizeTests tests/PhysicsSceneVisualizeTests.cpp)
+	target_include_directories(NxPhysicsSceneVisualizeTests PRIVATE
+		Foundation/include Foundation/src/include Physics/include)
+	target_link_libraries(NxPhysicsSceneVisualizeTests bcrypt)
 	# Every block the page-guarded allocator returns to these targets is filled
 	# with 0xcd instead of being left as fresh zeroed pages, so a scene, actor,
 	# shape or joint constructor that leaves a field it later reads to the
@@ -438,7 +446,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 			NxPhysicsActorForceTests NxPhysicsActorCMassTests
 			NxPhysicsActorShapeMutationTests NxPhysicsJointStagedPairTests
 			NxPhysicsJointSlotTests NxPhysicsSceneRaycastTests
-			NxPhysicsBodyCreationTests)
+			NxPhysicsBodyCreationTests NxPhysicsSceneVisualizeTests)
 		target_compile_definitions(${nx_fill_target} PRIVATE NX_PAGE_GUARDED_FILL)
 	endforeach()
 	target_include_directories(NxPhysicsJointTests PRIVATE Foundation/include Physics/include)
@@ -592,7 +600,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	add_executable(NxPhysicsInternalTests tests/PhysicsInternalTests.cpp
 		Physics/src/PhysicsInternal.cpp Physics/src/Containers.cpp
 		Physics/src/Scene.cpp Physics/src/NpScene.cpp Physics/src/NpActor.cpp
-		Physics/src/SceneRaycast.cpp Physics/src/BodyCreation.cpp
+		Physics/src/SceneRaycast.cpp Physics/src/BodyCreation.cpp Physics/src/SceneVisualize.cpp
 		Physics/src/ObjectModel.cpp Physics/src/StepOnlyRows.cpp Physics/src/MemoryStream.cpp
 		Physics/src/Geometry.cpp Physics/src/ShapeRaycast.cpp
 		Physics/src/opcode/IcePrunable.cpp Physics/src/ThirdPartyHost.cpp
@@ -690,7 +698,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/PhysicsSDK.cpp Physics/src/NpPhysicsSDK.cpp
 		Physics/src/PhysicsInternal.cpp Physics/src/Containers.cpp
 		Physics/src/Scene.cpp Physics/src/NpScene.cpp Physics/src/NpActor.cpp
-		Physics/src/SceneRaycast.cpp Physics/src/BodyCreation.cpp
+		Physics/src/SceneRaycast.cpp Physics/src/BodyCreation.cpp Physics/src/SceneVisualize.cpp
 		Physics/src/ObjectModel.cpp Physics/src/StepOnlyRows.cpp Physics/src/MemoryStream.cpp
 		Physics/src/opcode/IcePrunable.cpp Physics/src/ThirdPartyHost.cpp
 		Physics/src/opcode/IcePruner.cpp Physics/src/opcode/IcePruningEngine.cpp

@@ -1191,3 +1191,119 @@ oracle_digest=ed1294b6 cases=626 failures=0` unchanged, the new `box hull` line 
 check: 5 new lines (ObjectModel.cpp 000957, 000959, 000973, 000981; NpActor.cpp 000983), exact form, RVA and size
 equal to the inventory, no duplicates, no new non-stable `// phys_fn_` line. Ledgers: phase 2 (000973, from
 `homeless_shared_code`), phase 3 (000983) and phase 5 (000957, 000959, 000981) to `reconstructed_not_falsified`.
+
+## Task 4 results: visualisation
+
+The visualisation rows and the public chain they sit on were written in a separate branch from bb2e485
+(`claude/sr-t4-vis` 914f6b0; the Foundation follow-up `claude/sr-t4-vis2` 697a25b; notes
+`.superpowers/sdd/sr/task-4-vis-notes.md`, section 7 for this integration) and cherry-picked onto 4c74429. One
+conflict, CMakeLists.txt's NxPhysicsInternalTests and NxPhysicsCollisionTests source lists: merged, keeping
+BodyCreation.cpp and StepOnlyRows.cpp and adding SceneVisualize.cpp. Scene.cpp (the rows appended at the end, the
+`nxSceneDelete` release of the renderable), NpScene.cpp and Scene.h merged cleanly. Traces of both sides:
+`evidence/scene-raycast-trace-task4-vis.txt` (24 staged targets, candidate NxPhysics.dll sha256
+113dbcfb440b437d..., NxFoundation.dll bc5c9248190bf4c4...; plus NxPhysicsObjectLayoutTests for 000945).
+
+**Written, claimed and promoted to `reconstructed` (8 rows, 3,687 B):**
+
+| Row | B | Candidate | Evidence (hits, oracle/candidate) |
+|---|---:|---|---|
+| 000344 | 77 | `NpScene::visualize` (NpScene.cpp; replaces the `(unimplemented)` stub) | dynamic: SVis 14/14 |
+| 000657 | 636 | `NxSceneInternal::visualize` (Scene.cpp) | dynamic: SVis 14/14 |
+| 000579 | 55 | `NxSceneInternal::getDebugRenderable` (Scene.cpp), now noinline | dynamic: SVis 11/11 |
+| 000020 | 731 | `NxActorVisualRecord::visualize` (new Physics/src/SceneVisualize.cpp) | dynamic: SVis 77/77 |
+| 000766 | 1,377 | `NxBodyVisualRecord::visualize` (SceneVisualize.cpp) | dynamic: SVis 55/55 |
+| 000945 | 104 | `BoxShape::nxDebugRenderDispatch` (ObjectModel.cpp), BOX slot 3 | static; harness drive ObjectLayout 65/65 recorded in its dynamic_proof (staged 0/0) |
+| 000869 | 699 | `NxActorPair::row000869` (SceneVisualize.cpp; declared in ContactPairManager.h) | static (step-only) |
+| 000907 | 8 | `NxPairNode::row000907` (SceneVisualize.cpp; declared in ContactPairManager.h) | static (step-only) |
+
+Of these, 000766, 000869, 000907 and 000945 (2,188 B) are rows of this block's units (gap:SceneRaycast..CapsuleShape).
+**000344 (NpScene.cpp), 000657 and 000579 (Scene.cpp) and 000020 (gap:<start>..Actor.cpp) are outside the block's
+units** (1,499 B): they are the only public path to 000766, so they were written, reviewed and recorded the same way
+(inventory fields, phase 7 ledger). Every row runs at API time under 0x027f (NxScene::visualize is a user call; none
+is reached from the step); SceneVisualize.cpp keeps the default architecture. Parameters are read through
+PhysicsSDK::getParameter (000945: through `nxSdkParameterTable()`, as ContactPairManager.cpp reads the live array).
+The ordered hit sequences of the nine NxPhysics and four Foundation labels are identical on all 24 staged targets;
+only NxPhysicsSceneVisualizeTests reaches the rows. 000869, 000907 and 004163 are hit on neither side (no contact
+pair and no island object before a step). Their static proofs say "reachable only from the simulation step; no
+public path while NpScene::simulate is a stub".
+
+**Review at integration (Capstone listing).** Walked 000344 in full (0xcc10-0xcc5c), 000657 in full (0x139c0-0x13c3b:
+the gates' `test ah,0x44; jnp/jp` predicates, the addBasis argument order against the pushes 0x13a35-0x13ae2, the
+actor count's sar/unsigned compare, the per-element renderable re-reads, the joint and pair links), 000020 in full
+(0x1560-0x1838: both inline pose expansions against `nxNpActorComposeRotation` instruction by instruction, and which
+copy supplies the rotation (esp+0x9c) and which the position (esp+0x48)), and 000766 over 0x179a0-0x17d7b and
+0x17ea6-0x17efe (every frame-slot offset of the body-axes products and spills, the inertia box's fsqrt operands,
+the extents' register/spill split, the fistp grey, the arrow arms' reciprocal and direction products, the colours of
+all eight pushes, the 004163 call). All faithful. The Foundation changes were spot-checked against the oracle
+NxFoundation.dll (sha256 7e0596e4...) disassembled with Capstone: addArrow 0x10001640-0x10001812 (the tip's z spill,
+headScale's register copy for tipBase.x and its float everywhere else, tipBase.y/z kept, per lobe the x and z spills
+and the y register) matches the source. Controls: every written row's `ret N` and ABI as in the listing; files
+outside the block's owners: none of the NpActor.cpp unit rows (0x2610-0xb100), the effector gap or the qhull gap is
+touched (NpActor.cpp is not in the diff).
+
+**Fixes at integration.**
+- 000869/000907 now sit on the contact-pair manager's structures instead of raw-offset receiver classes: 000907 is
+  `NxPairNode::row000907` (the node on Scene+0x674, link +0x08, stamp +0x104; `pair()` is node + 0x14) and 000869 is
+  `NxActorPair::row000869`, reading the stream as the entries of the pair's SdkContainer at +0x38 (+0x40,
+  static_assert on `offsetof(SdkContainer, mEntries)`), the layout 000873/000875 write: the pair count word, 12-byte
+  pair headers (shape ids, then material << 24 | flags << 16 | normal count), 16-byte normals with point counts,
+  16-byte points whose separation word carries 000875's wide-feature bit 31, then the flag 1 and flag 4 words. 000657
+  walks the list as NxPairNode. The `NxPairContactVisual`/`NxActorPairVisual` classes are removed.
+- 000579 made `__declspec(noinline)`: the candidate had inlined it into 000657 (trace 11/0), the image calls it
+  (0x100139ff).
+- 000945 (BOX slot 3): the guard was read through `g_nxGuardC`, a pointer only a test probe bound, so the product never
+  drew the box; it now reads NX_VISUALIZE_COLLISION_SHAPES from the live parameter array (0x10123bc4), and the draw
+  is `NxDebugRenderable::addOBB` on the 000931-filled NxBox (the old code called slot +0x28 through a fastcall cast).
+  The sphere, capsule and plane dispatchers keep the probe pointer (not this block's rows). NxPhysicsObjectLayoutTests
+  and NxPhysicsShapeVtableTests link ObjectModel.cpp without PhysicsSDK.cpp, so each supplies `nxSdkParameterTable`:
+  zeros, and in ObjectLayout the oracle's live array (.data 0x123b18) around its slot-3 contract, so the candidate
+  reads the word the contract mutates (without that, `FAIL slot3 candidate ... guard=2`). 000945 is not reached from
+  NxScene::visualize: 000657 reaches shape slot 3 only through 000581, which is an unwritten placeholder.
+- The test gained NX_VISUALIZE_BODY_JOINT_GROUPS (a `joint_groups` stage, and in `all`): 000766's island arm runs with
+  +0x1e0 == 0 on both sides.
+
+**Writer's findings re-checked against HEAD.**
+- Inertia: `nxActorComputeMass` still fills the tensor only for one box with density and no mass; with a mass and no
+  massSpaceInertia the candidate's inertia stays 0, where the image runs 000008 (not reproduced). The test keeps
+  giving every body its inertia.
+- Island object: 000722/000748 now run at creation (body-creation), but +0x1e0 stays 0 until a step builds islands,
+  on both sides; the joint-groups arm is covered only for the null case.
+- Released actors: the candidate's `NxSceneInternal::releaseActor` still removes the actor from +0x55c at once, where
+  the image leaves it until the step; the test still does not release actors before the scene (not these rows').
+- 004163: SceneVisualize.cpp's inline copy re-reads the count per call as the listing does; ObjectModel.cpp's claimed
+  `nxVectorVirtualLoop4163` caches it (finding 5.5, not changed here).
+
+**Foundation fidelity (not NxPhysics rows).** `Foundation/src/DebugRenderable.cpp` addArrow (0x10001640) and addBasis
+(0x10001860: a null colours array passes colour 0) and `Foundation/src/Box.cpp` NxComputeBoxPoints (0x10007cf0, the
+addOBB corners) are written in the order of the oracle Foundation's x87 stream (register lifetimes NxF64, dword spills
+NxF32; no /arch:IA32, only NaN payloads would need it). Before, NxPhysicsSceneVisualizeTests differed on 77 lines by
+1 ulp (arrow lobes, four near-zero box corners); after, 0 on the full candidate pair. Recorded in
+evidence/phase6-joints.md 18e beside the NxNormalToTangents fix. The Foundation gates are unchanged:
+NxFoundationTangentTests stdout_delta=0 (Phase 6), NxFoundationClusterTests (all twelve groups), NxFoundationSDKTests
+and NxFoundationExportTests identical on the oracle and candidate Foundations.
+
+**New staged-pair target.** `NxPhysicsSceneVisualizeTests` (tests/PhysicsSceneVisualizeTests.cpp, Phase 7, 0xcd-filled
+allocations): seven actors (static box, rotated static box, dynamic box, rotated dynamic box, sphere, rotated capsule,
+a dynamic box without NX_BF_VISUALIZATION), the stages empty, scale_zero, scale_only, world_axes, actor_axes,
+body_axes, mass_axes, lin_velocity, ang_velocity, joint_groups, all, again, cleared, moved and scene_released; every
+line the NxUserDebugRenderer receives from NxPhysicsSDK::visualize printed as words. 880 lines per side, equal. 185
+oracle-sourced lines registered (every create, stage-summary and count line, all lines of the world-axes, body-axes,
+inertia-box and velocity stages, and the first three actors' actor-axes lines); Phase 7 floor 491 -> 676
+(gate_targets.ps1, test_gate_targets.py; the Phase 7 list in test_gate_commands.py; $NxRegisteredTestTargets; the
+CMake fill list). The block is its own entry after NxPhysicsSceneRaycastTests' list; no existing line is edited.
+
+**Open.** 001978, 000638, 000581 (+000583) and 003639 are unclaimed placeholders that draw nothing, so the candidate
+draws nothing for the collision (pruner, AABB, compound, shape) and fluid parameters; 000581 needs the engine
+accessors 0x4be80/0x4be90/0x4bec0/0x4bee0 and every shape's slot 3 (sphere/capsule/plane/mesh dispatchers and 001305
+still read probe-bound guards). 000869/000907 wait for the step. The released-actor array (000030/000632) and 000008
+as above.
+
+**Verification.** Build clean; gates 2, 3, 4, 6, 7 pass (Phase 7: all five staged targets stdout_delta=0,
+NxPhysicsSceneVisualizeTests included, coverage 676/676; Phase 6: NxFoundationTangentTests stdout_delta=0); Phase 5
+fails only on `candidate CANDIDATE-MISSING family=vtables` (`batch3268 candidate failures=3`, `layout ...
+candidate_fold=4492c8c1`, `shape vtable oracle_digest=ed1294b6 cases=626 failures=0` unchanged; the slot-3 contract's
+three lines reported; coverage 1046/1046; all 13 staged targets stdout_delta=0); validator unexplained=0; 753 tool
+tests OK; stable-ID check: 8 new lines (NpScene.cpp 1, Scene.cpp 2, SceneVisualize.cpp 4, ObjectModel.cpp 1, the old
+"Provisional phys_fn_000945" comment replaced), exact form, RVA and size equal to the inventory, no duplicates, no new
+non-stable `// phys_fn_` line. Ledgers: phase 7 (000344, 000657, 000579, 000020, 000766, 000869, 000907) and phase 5
+(000945) to `reconstructed_not_falsified`.

@@ -54,6 +54,10 @@
 #include "NxMat33.h"
 #include "NxQuat.h"
 #include "FoundationSDK.h"
+#include "PhysicsSDK.h"
+#include "SceneVisualize.h"
+#include "ContactPairManager.h"
+#include "NxDebugRenderable.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -1764,6 +1768,16 @@ static void nxSceneDelete(void* self, int flags)
 	scene->at<void*>(0x58c) = 0;
 	scene->at<void*>(0x590) = 0;
 	scene->at<void*>(0x594) = 0;
+	// The debug renderable phys_fn_000579 creates (0x14066-0x14092): released
+	// through the Foundation's releaseDebugRenderable (slot +0x20, which takes
+	// the field by reference), then the field is cleared. Scene-raycast block
+	// Task 4 (visualisation); the rest of 000663 is not re-walked here.
+	if(scene->at<NxDebugRenderable*>(0x6b8))
+		{
+		static_cast<NxFoundationSDK&>(NxFoundation::FoundationSDK::getInstance())
+			.releaseDebugRenderable(scene->at<NxDebugRenderable*>(0x6b8));
+		scene->at<NxDebugRenderable*>(0x6b8) = 0;
+		}
 	for(unsigned offset = 8; offset <= 0xc; offset += 4)
 		{
 		void*& entries = *reinterpret_cast<void**>(
@@ -2509,4 +2523,105 @@ Joint* NxSceneInternal::getNextJoint()
 		return 0;
 	at<void*>(0x6bc) = joint->mNextJoint;
 	return joint;
+	}
+
+// ---------------------------------------------------------------------------
+// Debug visualisation (scene-raycast block Task 4, visualisation sub-area;
+// the chain is in SceneVisualize.h). Both rows run at API time under 0x027f.
+
+// phys_fn_000579 (0x00010a10, 55 B)
+// The Scene's debug renderable at +0x6b8: created on first use through the
+// Foundation instance's createDebugRenderable (slot +0x1c of its
+// NxFoundationSDK part at +0x14; getInstance's `int 3` when there is no
+// instance is the listing's 0x10a1d-0x10a27), then returned. Out of line, as
+// the image calls it (0x100139ff).
+__declspec(noinline) NxDebugRenderable* NxSceneInternal::getDebugRenderable()
+	{
+	if(!at<NxDebugRenderable*>(0x6b8))
+		at<NxDebugRenderable*>(0x6b8) =
+			static_cast<NxFoundationSDK&>(NxFoundation::FoundationSDK::getInstance()).createDebugRenderable();
+	return at<NxDebugRenderable*>(0x6b8);
+	}
+
+// The SDK parameter array (.data 0x10123b18, element 4 * index), read through
+// PhysicsSDK::getParameter as the joint rows do.
+static NxReal nxSceneVisParameter(NxParameter parameter)
+	{
+	const PhysicsSDK* const sdk = PhysicsSDK::instance;
+	return sdk ? sdk->getParameter(parameter) : 0.0f;
+	}
+
+// phys_fn_000657 (0x000139c0, 636 B)
+// Scene::visualize, __thiscall, no arguments. Nothing when +0x70c bit 1 is
+// set. Otherwise the renderable, if there is one, is cleared (slot +0x18);
+// with NX_VISUALIZATION_SCALE 0.0f that is all (a NaN goes on). Then:
+// - 000579 makes sure the renderable exists (its result is not used; every
+//   later use re-reads +0x6b8);
+// - 001978 on the pruning engine (+0x624);
+// - NX_VISUALIZE_WORLD_AXES (0x13a16-0x13ae2): addBasis (slot +0x34) at the
+//   origin, identity columns, lengths (1, 1, 1), scale the raw parameter,
+//   colours 0xffff0000, 0xff00ff00, 0xff0000ff;
+// - every actor on the array at +0x55c/+0x560 (the count taken once, as a
+//   signed byte difference >> 2, compared unsigned): 000020 on its +0x14;
+// - every joint on the list at +0x59c (link +0x10): slot +0x10;
+// - every contact pair node (ContactPairManager.h's NxPairNode) on the list
+//   at +0x674 (link +0x08) whose stamp (+0x104) equals the Scene's (+0x540):
+//   000907;
+// - NX_VISUALIZE_COLLISION_AABBS: 000638(engine, renderable, 0xffffff00, 0);
+//   NX_VISUALIZE_COLLISION_COMPOUNDS: 000638(engine, renderable, 0xffff00ff,
+//   1); any of NX_VISUALIZE_COLLISION_SHAPES, _AXES, _SPHERES: 000581;
+// - the fluid manager at +0x61c, when there is one: 003639.
+// Each parameter test is fucompp against 0.0f, so a NaN counts as set.
+// 001978, 000638, 000581 and 003639 are unwritten placeholders
+// (SceneVisualize.cpp).
+void NxSceneInternal::visualize()
+	{
+	if(at<NxU32>(0x70c) & 2u)
+		return;
+	if(NxDebugRenderable* renderable = at<NxDebugRenderable*>(0x6b8))
+		renderable->clear();
+	if(nxSceneVisParameter(NX_VISUALIZATION_SCALE) == 0.0f)
+		return;
+
+	getDebugRenderable();
+	nxSceneVisualizeCollisionPruners(&at<unsigned char>(0x624), at<NxDebugRenderable*>(0x6b8));
+
+	if(nxSceneVisParameter(NX_VISUALIZE_WORLD_AXES) != 0.0f)
+		{
+		NxU32 colours[3] = { 0xffff0000u, 0xff00ff00u, 0xff0000ffu };
+		NxVec3 lengths(1.0f, 1.0f, 1.0f);
+		NxMat33 columns;
+		columns.id();
+		NxVec3 origin(0.0f, 0.0f, 0.0f);
+		at<NxDebugRenderable*>(0x6b8)->addBasis(origin, columns, lengths,
+			nxSceneVisParameter(NX_VISUALIZE_WORLD_AXES), colours);
+		}
+
+	NxActor** actors = at<NxActor**>(0x55c);
+	const NxU32 actorCount = static_cast<NxU32>(static_cast<NxI32>(
+		reinterpret_cast<char*>(at<NxActor**>(0x560)) - reinterpret_cast<char*>(actors)) >> 2);
+	for(NxU32 i = 0; i < actorCount; i++)
+		{
+		NxDebugRenderable* renderable = at<NxDebugRenderable*>(0x6b8);
+		(*reinterpret_cast<NxActorVisualRecord**>(reinterpret_cast<unsigned char*>(actors[i]) + 0x14))
+			->visualize(*renderable);
+		}
+
+	for(Joint* joint = at<Joint*>(0x59c); joint; joint = static_cast<Joint*>(joint->mNextJoint))
+		joint->row_slot4(*at<NxDebugRenderable*>(0x6b8));
+
+	for(NxPairNode* node = at<NxPairNode*>(0x674); node; node = node->at<NxPairNode*>(0x08))
+		if(node->at<NxU32>(0x104) == at<NxU32>(0x540))
+			node->row000907(*at<NxDebugRenderable*>(0x6b8));
+
+	if(nxSceneVisParameter(NX_VISUALIZE_COLLISION_AABBS) != 0.0f)
+		nxSceneVisualizeCollisionBounds(&at<unsigned char>(0x624), at<NxDebugRenderable*>(0x6b8), 0xffffff00u, false);
+	if(nxSceneVisParameter(NX_VISUALIZE_COLLISION_COMPOUNDS) != 0.0f)
+		nxSceneVisualizeCollisionBounds(&at<unsigned char>(0x624), at<NxDebugRenderable*>(0x6b8), 0xffff00ffu, true);
+	if(nxSceneVisParameter(NX_VISUALIZE_COLLISION_SHAPES) != 0.0f
+		|| nxSceneVisParameter(NX_VISUALIZE_COLLISION_AXES) != 0.0f
+		|| nxSceneVisParameter(NX_VISUALIZE_COLLISION_SPHERES) != 0.0f)
+		nxSceneVisualizeCollisionShapes(&at<unsigned char>(0x624), at<NxDebugRenderable*>(0x6b8));
+	if(void* fluids = at<void*>(0x61c))
+		nxSceneVisualizeFluids(fluids, at<NxDebugRenderable*>(0x6b8));
 	}

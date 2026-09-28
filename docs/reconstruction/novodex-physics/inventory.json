@@ -422,13 +422,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/SceneVisualize.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/11",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/34",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1560-0x1838) in scene-raycast Task 4 (visualisation): thiscall on the 0x50-byte actor record (NpActor +0x14), ret 4; under NX_VISUALIZE_ACTOR_AXES (.data 0x10123bbc; NaN draws) the global pose formed twice inline (with a body at +0x08: the rotation of its quaternion +0x24 with the five float spills of nxNpActorComposeRotation, checked instruction by instruction at 0x15cf-0x168c and 0x16ef-0x17ac, and the position +0x18; without one the 12 floats at +0x20) and drawn by addBasis (slot +0x34) with the first copy's rotation (esp+0x9c) and the second copy's position (esp+0x48), lengths (1,1,1), the raw parameter as scale, colours ffff0000/ff00ff00/ff0000ff; then, unconditionally, phys_fn_000766 on +0x08 when non-null. Reproduced as NxActorVisualRecord::visualize (Physics/src/SceneVisualize.cpp); the dead store [esp+8] = 0 (0x157f) is not reproduced; the parameter read through PhysicsSDK::getParameter. Runs at API time (0x027f); default architecture.",
+      "dynamic_proof": "executed under NxPhysicsSceneVisualizeTests (Phase 7 staged pair): a cdb breakpoint on the candidate ?visualize@NxActorVisualRecord@@QAEXAAVNxDebugRenderable@@@Z (SceneVisualize.obj, from build/Release/NxPhysics.map) was hit 77 times against the staged candidate pair (candidate NxPhysics.dll sha256 113dbcfb440b437d7d0915f3c181d02a4ccd4dc028b618cb0d0d57ab3e0082ab, NxFoundation.dll bc5c9248190bf4c4cbe54a78793e3d48059747dfd81d4982017c55d2e7aec782), and the oracle row 77 times against the pinned pair; the ordered hit sequences of the nine NxPhysics and four Foundation labels are identical on all 24 staged targets, and no other target reaches the row (evidence/scene-raycast-trace-task4-vis.txt). The transcript (874 compared lines) is equal on both pairs and 185 oracle-sourced lines are registered.",
+      "notes": "Scene-raycast Task 4 (visualisation): written, claimed and promoted. Not a row of the block's units (gap:<start>..Actor.cpp); reached by the block's visualisation chain.",
+      "implementation": "Physics/src/SceneVisualize.cpp"
     },
     {
       "id": "phys_fn_000021",
@@ -6303,13 +6304,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/NpScene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/121",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1067",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0xcc10-0xcc5c) in scene-raycast Task 4 (visualisation): NxScene::visualize (slot 31 of the NpScene table 0x10105a98), thiscall, plain ret; the write lock at +0xc (phys_fn_002364); on failure the [0x101041b0] instance test and error(2, NpScene.cpp, line 0x13c, 0, the deadlock text) through [0x101041b4] and a return without unlock; otherwise the link (+0xc) kept, NxSceneInternal::visualize (phys_fn_000657) on +0x24, and the unlock (phys_fn_002366) on the kept link. Reproduced as NpScene::visualize through the NpSceneGuard.h helpers, as the Task 3 raycast wrappers; the unlock is a call where the image tail-jumps (code shape). Runs at API time (0x027f); default architecture.",
+      "dynamic_proof": "executed under NxPhysicsSceneVisualizeTests (Phase 7 staged pair): a cdb breakpoint on the candidate ?visualize@NpScene@@UAEXXZ (NpScene.obj, from build/Release/NxPhysics.map) was hit 14 times against the staged candidate pair (candidate NxPhysics.dll sha256 113dbcfb440b437d7d0915f3c181d02a4ccd4dc028b618cb0d0d57ab3e0082ab, NxFoundation.dll bc5c9248190bf4c4cbe54a78793e3d48059747dfd81d4982017c55d2e7aec782), and the oracle row 14 times against the pinned pair; the ordered hit sequences of the nine NxPhysics and four Foundation labels are identical on all 24 staged targets, and no other target reaches the row (evidence/scene-raycast-trace-task4-vis.txt). The transcript (874 compared lines) is equal on both pairs and 185 oracle-sourced lines are registered.",
+      "notes": "Scene-raycast Task 4 (visualisation): written (replacing the `(unimplemented) visualize` stub), claimed and promoted. Not a row of the block's units (NpScene.cpp); reached by the block's visualisation chain.",
+      "implementation": "Physics/src/NpScene.cpp"
     },
     {
       "id": "phys_fn_000345",
@@ -10593,13 +10595,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/221",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1480",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x10a10-0x10a46) in scene-raycast Task 4 (visualisation): thiscall, ret; when +0x6b8 is null, the Foundation instance ([0x101041b0], int3 when absent), createDebugRenderable through slot +0x1c of its NxFoundationSDK part (+0x14), stored at +0x6b8; returns +0x6b8. Reproduced as NxSceneInternal::getDebugRenderable (Physics/src/Scene.cpp), __declspec(noinline) as the image calls it (0x100139ff). 000663's emulation (nxSceneDelete) releases the renderable through releaseDebugRenderable (0x14066-0x14092). Runs at API time (0x027f); default architecture.",
+      "dynamic_proof": "executed under NxPhysicsSceneVisualizeTests (Phase 7 staged pair): a cdb breakpoint on the candidate ?getDebugRenderable@NxSceneInternal@@QAEPAVNxDebugRenderable@@XZ (Scene.obj, from build/Release/NxPhysics.map) was hit 11 times against the staged candidate pair (candidate NxPhysics.dll sha256 113dbcfb440b437d7d0915f3c181d02a4ccd4dc028b618cb0d0d57ab3e0082ab, NxFoundation.dll bc5c9248190bf4c4cbe54a78793e3d48059747dfd81d4982017c55d2e7aec782), and the oracle row 11 times against the pinned pair; the ordered hit sequences of the nine NxPhysics and four Foundation labels are identical on all 24 staged targets, and no other target reaches the row (evidence/scene-raycast-trace-task4-vis.txt). The transcript (874 compared lines) is equal on both pairs and 185 oracle-sourced lines are registered. (Before it was made noinline the candidate inlined it into 000657 and the breakpoint saw 0.)",
+      "notes": "Scene-raycast Task 4 (visualisation): written, claimed and promoted. Not a row of the block's units (Scene.cpp); reached by the block's visualisation chain.",
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_000580",
@@ -12004,13 +12007,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/Scene.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/258",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1767",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x139c0-0x13c3b) in scene-raycast Task 4 (visualisation): thiscall, no arguments, ret; +0x70c bit 1 returns; the renderable at +0x6b8 cleared through slot +0x18 when set; NX_VISUALIZATION_SCALE (.data 0x10123b4c) against 0.0f (`test ah,0x44; jnp`: equal returns, NaN goes on); phys_fn_000579 (result unused); 001978 on the pruning engine (+0x624) with the re-read renderable; NX_VISUALIZE_WORLD_AXES: addBasis (slot +0x34) at the origin, identity, lengths (1,1,1), the raw parameter as scale, colours ffff0000/ff00ff00/ff0000ff (argument order checked against the pushes 0x13a35-0x13ae2); every actor of the +0x55c/+0x560 array (count = sar 2 of the byte difference, compared unsigned, taken once, the renderable re-read per element) -> phys_fn_000020 on its +0x14; every joint of the +0x59c list (link +0x10) through slot +0x10; every contact pair node of the +0x674 list (link +0x08) whose +0x104 equals +0x540 -> phys_fn_000907 (ContactPairManager.h NxPairNode); AABBS (0x10123bc0) -> 000638(engine, r, 0xffffff00, 0); COMPOUNDS (0x10123bcc) -> 000638(.., 0xffff00ff, 1); SHAPES/AXES/SPHERES (0x10123bc4/bc8/bd8, jp/jp/jnp) -> 000581(engine, r); the fluid manager at +0x61c -> 003639. Reproduced in full as NxSceneInternal::visualize (Physics/src/Scene.cpp); parameters read through PhysicsSDK::getParameter (the same stored floats); 001978, 000638, 000581 and 003639 are unwritten, unclaimed placeholders that draw nothing (SceneVisualize.cpp), so the chain is incomplete when those parameters are set or a fluid manager exists. Runs at API time (0x027f); default architecture.",
+      "dynamic_proof": "executed under NxPhysicsSceneVisualizeTests (Phase 7 staged pair): a cdb breakpoint on the candidate ?visualize@NxSceneInternal@@QAEXXZ (Scene.obj, from build/Release/NxPhysics.map) was hit 14 times against the staged candidate pair (candidate NxPhysics.dll sha256 113dbcfb440b437d7d0915f3c181d02a4ccd4dc028b618cb0d0d57ab3e0082ab, NxFoundation.dll bc5c9248190bf4c4cbe54a78793e3d48059747dfd81d4982017c55d2e7aec782), and the oracle row 14 times against the pinned pair; the ordered hit sequences of the nine NxPhysics and four Foundation labels are identical on all 24 staged targets, and no other target reaches the row (evidence/scene-raycast-trace-task4-vis.txt). The transcript (874 compared lines) is equal on both pairs and 185 oracle-sourced lines are registered.",
+      "notes": "Scene-raycast Task 4 (visualisation): written, claimed and promoted. Not a row of the block's units (Scene.cpp); reached by the block's visualisation chain.",
+      "implementation": "Physics/src/Scene.cpp"
     },
     {
       "id": "phys_fn_000658",
@@ -14013,13 +14017,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/SceneVisualize.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/311",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2161",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x179a0-0x17efe) in scene-raycast Task 4 (visualisation): thiscall on the 0x260-byte body record, ret 4; the NX_BF_VISUALIZATION gate (+0x10c bit 8, `test ah,1`); BODY_AXES (0x179b5-0x17b00): s = scale * param kept in the register, the nine products of the +0x134 frame by s spilled to float except column 0's y (+0x140), which is added to centre.y in the register, three addLine (slot +0x20) from the centre of mass +0x158 in ff0000/ff00/ff; MASS_AXES (0x17b03-0x17c24): k = 6.0f / +0x188 in the register, e0 = fsqrt(((I194 + I190) - I18c) k) and e1 = fsqrt(((I18c - I190) + I194) k) to float, e2 = fsqrt(((I18c + I190) - I194) k) kept, h = float((param * scale) * 0.5f), extents (e0 h, e1 h, e2 h), the frame by rep movsd, grey = fistp((+0x4c * 2.5000002f) * 255.0f) folded to ((g | ffffff00) << 8 | g) << 8 | g, addOBB (slot +0x28, frame false); LIN/ANG_VELOCITY (0x17c27-0x17ece): t = float(param * scale); for +0x34 (ffffff), +0x1a0 (8000), +0x40 (0) and +0x1ac (5f1fe0) |v| = fsqrt((zz + yy) + xx) to float, when not 0.0f (NaN draws) the register reciprocal 1.0f / |v| and the direction (x r, y r, z r), addArrow (slot +0x30); JOINT_GROUPS (0x17ed0-0x17ef3): 004163 on +0x1e0 when non-null. Walked in full at integration (the frame-slot offsets of every spill and push). Reproduced as NxBodyVisualRecord::visualize (Physics/src/SceneVisualize.cpp); parameters read through PhysicsSDK::getParameter; roots through X87Sqrt.h (x87Fsqrt, x87FsqrtDot3); the fistp through a naked helper (rounds by the live control word); 004163 as an inline copy (nxVisIslandMembers) that calls each element's own slot +0x18 and re-reads the count per call, as 0x9acc4-0x9accb does. Runs at API time (0x027f); default architecture.",
+      "dynamic_proof": "executed under NxPhysicsSceneVisualizeTests (Phase 7 staged pair): a cdb breakpoint on the candidate ?visualize@NxBodyVisualRecord@@QAEXAAVNxDebugRenderable@@@Z (SceneVisualize.obj, from build/Release/NxPhysics.map) was hit 55 times against the staged candidate pair (candidate NxPhysics.dll sha256 113dbcfb440b437d7d0915f3c181d02a4ccd4dc028b618cb0d0d57ab3e0082ab, NxFoundation.dll bc5c9248190bf4c4cbe54a78793e3d48059747dfd81d4982017c55d2e7aec782), and the oracle row 55 times against the pinned pair; the ordered hit sequences of the nine NxPhysics and four Foundation labels are identical on all 24 staged targets, and no other target reaches the row (evidence/scene-raycast-trace-task4-vis.txt). The transcript (874 compared lines) is equal on both pairs and 185 oracle-sourced lines are registered. The JOINT_GROUPS arm runs with +0x1e0 == 0 on both sides (no step creates an island object), so 004163 is not reached.",
+      "notes": "Scene-raycast Task 4 (visualisation): written, claimed and promoted.",
+      "implementation": "Physics/src/SceneVisualize.cpp"
     },
     {
       "id": "phys_fn_000767",
@@ -15929,13 +15934,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/SceneVisualize.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/359",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2640",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1d2d0-0x1d586) in scene-raycast Task 4 (visualisation): thiscall on the actor pair (the pair node's +0x14, ContactPairManager.h NxActorPair), ret 4; the contact stream at +0x40 (the entries of the SdkContainer at +0x38 that 000873/000875 fill): the pair count word, 12-byte pair headers whose third word holds the normal count (low 16) and the flags (bits 16-23; flag 2 skipped), 16-byte normals with their point counts, 16-byte points plus 4 bytes with flag 1 and 4 or 8 (separation sign bit set) with flag 4; per point one addLine along the normal of length NX_VISUALIZE_CONTACT_FORCE * scale (ff0000), else _NORMAL * scale (ff), else |-|sep| * _ERROR * scale| (ffff00), drawn when not 0 (x and y products spilled, z kept), then the NX_VISUALIZE_CONTACT_POINT cross of half size float(float(param * scale) * 0.1f) in ff whose second and third lines re-add and re-subtract from the first's rounded coordinates. Reproduced as NxActorPair::row000869 (Physics/src/SceneVisualize.cpp); parameters through PhysicsSDK::getParameter. reachable only from the simulation step; no public path while NpScene::simulate is a stub: 000657 reaches it only for contact pairs on the Scene's +0x674 list, which only the step creates. Runs at API time (0x027f) when reached.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (visualisation): written, claimed and promoted on a static proof; integrated onto the contact-pair manager's NxActorPair and its stream container (was a raw-offset receiver class). Hit on neither side over the 24 staged targets (evidence/scene-raycast-trace-task4-vis.txt).",
+      "implementation": "Physics/src/SceneVisualize.cpp"
     },
     {
       "id": "phys_fn_000870",
@@ -16631,13 +16637,14 @@
       "section": ".text",
       "phase": 7,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/SceneVisualize.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/375",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2910",
-      "static_proof": null,
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x1fda0-0x1fda7) in scene-raycast Task 4 (visualisation): `add ecx, 0x14; jmp 0x1001d2d0`, the pair node's actor pair visualising its contacts; reproduced as NxPairNode::row000907 (Physics/src/SceneVisualize.cpp), which forwards to NxActorPair::row000869 on pair() (node + 0x14); 000869 is noinline, so the candidate emits the forwarding thunk. reachable only from the simulation step; no public path while NpScene::simulate is a stub: 000657 reaches it only for contact pairs on the Scene's +0x674 list, which only the step creates.",
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Scene-raycast Task 4 (visualisation): written, claimed and promoted on a static proof; a member of the contact-pair manager's NxPairNode. Hit on neither side over the 24 staged targets (evidence/scene-raycast-trace-task4-vis.txt).",
+      "implementation": "Physics/src/SceneVisualize.cpp"
     },
     {
       "id": "phys_fn_000908",
@@ -17331,13 +17338,14 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/387",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2969",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json, authoritative; 0x207e0-0x20845) in scene-raycast Task 4 (visualisation): BOX slot 3, thiscall (renderer), ret 4; the +0xde & 8 gate (001287); 001305 on the renderer; NX_VISUALIZE_COLLISION_SHAPES (.data 0x10123bc4, the live parameter array) against 0.0f (0x101041f0; `test ah,0x44; jnp`: equal skips, NaN draws); 000931 fills the 60-byte NxBox (centre, extents, rotation); colour (+0xde & 7) == 0 ? ffffffff : ffff00ff (`and al,7; neg al; sbb; and 0xffff0100; dec`); the renderer's addOBB (slot +0x28) with (box, colour, 0). Reproduced as BoxShape::nxDebugRenderDispatch (Physics/src/ObjectModel.cpp). Defect fixed: the guard was read through a pointer only a test probe bound (nxBindDebugRenderGuardC), so the product never drew; it now reads nxSdkParameterTable() [NX_VISUALIZE_COLLISION_SHAPES] as the listing reads 0x10123bc4. Its callee 001305 (not claimed) still reads probe-bound guards. Not reached from NxScene::visualize in the candidate: 000657 reaches shape slot 3 only through 000581, an unwritten placeholder.",
+      "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests slot-3 contract (oracle differential, at 0x027f): the harness mutates the oracle's 0x10123bc4 over {0, -0, 1.0, NaN} with every +0xde flag combination and calls the oracle row and the candidate member with a recording renderer; its nxSdkParameterTable stand-in returns the oracle's live array (.data 0x123b18) during the contract, so both read the same word. cdb: oracle row 65 hits, candidate ?nxDebugRenderDispatch@BoxShape@@QBEXPBX@Z (NxPhysicsObjectLayoutTests.exe sha256 d03d7f6d867cb10422498e765b36f8498822e9f0cd2dbc6c4819789d30f02943) 65 hits, alternating identically; `slot3 contract cases=64 failures=0`, `slot3 candidate masks=64 agree`, `slot3 order case agree calls=7` (evidence/scene-raycast-trace-task4-vis.txt). A harness drive, not the product path: no staged target reaches the row (0/0).",
+      "notes": "Scene-raycast Task 4 (visualisation): guard defect fixed from the listing, claimed and promoted.",
+      "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
       "id": "phys_fn_000946",

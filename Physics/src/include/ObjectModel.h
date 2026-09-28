@@ -743,9 +743,10 @@ void					nxInstallReportSink(NxReportFn sink);
 void					nxBindDebugRenderGuards(float* guardA, float* guardB,
 							float* renderScale, float* guardRef);
 
-//! Bind the 000945 dispatcher's guard C word to live storage (oracle
-//! .data 0x123bc4 in the slot3cap probe). Null restores the unbound
-//! state, in which the descriptor arm never executes.
+//! Bind the sphere, capsule and plane slot-3 dispatchers' guard word to live
+//! storage (oracle .data 0x123bc4 in the slot3cap probe). Null restores the
+//! unbound state, in which their descriptor arm never executes. The box's
+//! (000945) reads the SDK's live parameter array instead.
 void					nxBindDebugRenderGuardC(float* guardC);
 
 //! Task 4 scaffolding: the scene shape-array insert the base ctor's owned

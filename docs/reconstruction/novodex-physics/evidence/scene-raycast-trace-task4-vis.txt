@@ -1,0 +1,857 @@
+SceneRaycast..CapsuleShape block: cdb breakpoint traces of the visualisation rows
+(scene-raycast Task 4, sub-area visualisation)
+====================================================================================================
+
+A trimmed excerpt of the raw cdb logs, in the method of evidence/joint-open-items-trace-slots.txt,
+evidence/scene-raycast-trace-task3.txt and the earlier Task 4 traces. ModLoad lines, banners, the echoed
+breakpoint commands and the programs' own stdout are removed (HIT labels extracted in order with a pattern
+that skips the echoed commands). The per-label hit counts are complete for every target on both sides; the
+ordered HIT lines are kept for NxPhysicsSceneVisualizeTests. It is the evidence behind the dynamic_proof
+fields recorded in inventory.json for 000344, 000657, 000579, 000020, 000766 and 000945, and behind the
+Foundation fidelity change to DebugRenderable::addArrow/addBasis and NxComputeBoxPoints
+(units/scene-raycast-contract.md, ## Task 4 results: visualisation).
+
+Debugger:  Microsoft Windows Debugger 10.0.10586.567 (X86)
+Staged-pair targets (24: every target of $NxPhaseTestTargets phases 2, 3, 5, 6 and 7):
+           cdb -G -cf <script> build\Release\<target>.exe <pair directory>, cwd the pairs root; the script
+           sets deferred breakpoints `bu NxPhysics+<offset> ".echo HIT <label>; gc"` and
+           `bu NxFoundation+<offset> ...` for each label below (resolved as each module loads), then runs to
+           exit. Pair directories staged by hand in the session scratchpad (pairs\oracle, pairs\candidate;
+           not kept); the sha256s identify the modules, and each run printed the staged identities. Every run
+           exited 0; the same sources give stdout_delta=0 on every target (phase gates 2-7).
+Oracle differential: NxPhysicsObjectLayoutTests (candidate code linked into the exe, the pinned oracle loaded
+           in the same process): cdb -G -cf <script> build\Release\NxPhysicsObjectLayoutTests.exe
+           D:\FlamingEnt__\Unreal_3\Binaries <oracle sha256>; o000945 on NxPhysics+0x207e0, c000945 on
+           NxPhysicsObjectLayoutTests+0x32420 (?nxDebugRenderDispatch@BoxShape@@QBEXPBX@Z, from the exe's map).
+Recorded:  2026-09-28, branch claude/scene-raycast-block (4c74429 plus claude/sr-t4-vis2 914f6b0 and 697a25b,
+           cherry-picked, with the integration changes of this sub-area).
+Oracle:    NxPhysics.dll    sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+           NxFoundation.dll sha256=7e0596e45af2f1ab937a948100528e51c80dfd02b295ba678898081883ae0990
+Candidate: NxPhysics.dll    sha256=113dbcfb440b437d7d0915f3c181d02a4ccd4dc028b618cb0d0d57ab3e0082ab
+           NxFoundation.dll sha256=bc5c9248190bf4c4cbe54a78793e3d48059747dfd81d4982017c55d2e7aec782
+           NxPhysicsObjectLayoutTests.exe sha256=d03d7f6d867cb10422498e765b36f8498822e9f0cd2dbc6c4819789d30f02943
+           (each identical to the build\Release file at the time of the trace)
+Offsets:   module-relative. Oracle NxPhysics: every row's inventory RVA. Oracle NxFoundation: the functions of
+           DebugRenderable's table 0x1001c1c8 and Box.cpp's NxComputeBoxPoints, found in its disassembly
+           (.superpowers/sdd/sr/task-4-vis-notes.md section 6). Candidate NxPhysics: build\Release\NxPhysics.map.
+           Candidate NxFoundation: the build has no map; the same objects were relinked with the same command
+           line plus /MAP into the scratchpad, and that image's .text, .data, .rsrc and .reloc are
+           byte-identical to build\Release\NxFoundation.dll's (.rdata differs only in the debug-directory
+           timestamp), so its map's offsets are the build's.
+           Labels starting F_ are Foundation functions (not NxPhysics rows). 004163 is the island loop the
+           candidate reproduces inline as nxVisIslandMembers (not claimed here).
+
+BREAKPOINTS, ORACLE (label, module offset)
+------------------------------------------
+  000344                 NxPhysics+0xcc10
+  000657                 NxPhysics+0x139c0
+  000579                 NxPhysics+0x10a10
+  000020                 NxPhysics+0x1560
+  000766                 NxPhysics+0x179a0
+  000869                 NxPhysics+0x1d2d0
+  000907                 NxPhysics+0x1fda0
+  000945                 NxPhysics+0x207e0
+  004163                 NxPhysics+0x9aca0
+  F_addArrow             NxFoundation+0x1640
+  F_addBasis             NxFoundation+0x1860
+  F_addOBB               NxFoundation+0x1fb0
+  F_NxComputeBoxPoints   NxFoundation+0x7cf0
+
+BREAKPOINTS, CANDIDATE (label, module offset, object, symbol)
+--------------------------------------------------------------
+  000344                 NxPhysics+0x21270    NpScene          ?visualize@NpScene@@UAEXXZ
+  000657                 NxPhysics+0x371c0    Scene            ?visualize@NxSceneInternal@@QAEXXZ
+  000579                 NxPhysics+0x34040    Scene            ?getDebugRenderable@NxSceneInternal@@QAEPAVNxDebugRenderable@@XZ
+  000020                 NxPhysics+0x38e70    SceneVisualize   ?visualize@NxActorVisualRecord@@QAEXAAVNxDebugRenderable@@@Z
+  000766                 NxPhysics+0x38f90    SceneVisualize   ?visualize@NxBodyVisualRecord@@QAEXAAVNxDebugRenderable@@@Z
+  000869                 NxPhysics+0x38950    SceneVisualize   ?row000869@NxActorPair@@QAEXAAVNxDebugRenderable@@@Z
+  000907                 NxPhysics+0x38e60    SceneVisualize   ?row000907@NxPairNode@@QAEXAAVNxDebugRenderable@@@Z
+  000945                 NxPhysics+0x26da0    ObjectModel      ?nxDebugRenderDispatch@BoxShape@@QBEXPBX@Z
+  004163                 NxPhysics+0x38820    SceneVisualize   ?nxVisIslandMembers@@YAXPAXAAVNxDebugRenderable@@@Z
+  F_addArrow             NxFoundation+0x28f0  DebugRenderable  ?addArrow@DebugRenderable@NxFoundation@@UAEXABVNxVec3@@0MMI@Z
+  F_addBasis             NxFoundation+0x2b50  DebugRenderable  ?addBasis@DebugRenderable@NxFoundation@@UAEXABVNxVec3@@ABVNxMat33@@0MQAI@Z
+  F_addOBB               NxFoundation+0x3010  DebugRenderable  ?addOBB@DebugRenderable@NxFoundation@@UAEXABVNxBox@@I_N@Z
+  F_NxComputeBoxPoints   NxFoundation+0x1460  Box              _NxComputeBoxPoints
+
+HIT COUNTS, STAGED PAIRS (oracle/candidate; targets with no hit on either side omitted)
+----------------------------------------------------------------------------------------
+  000344                 total 14/14: NxPhysicsSceneVisualizeTests 14/14
+  000657                 total 14/14: NxPhysicsSceneVisualizeTests 14/14
+  000579                 total 11/11: NxPhysicsSceneVisualizeTests 11/11
+  000020                 total 77/77: NxPhysicsSceneVisualizeTests 77/77
+  000766                 total 55/55: NxPhysicsSceneVisualizeTests 55/55
+  000869                 total 0/0
+  000907                 total 0/0
+  000945                 total 0/0
+  004163                 total 0/0
+  F_addBasis             total 32/32: NxPhysicsSceneVisualizeTests 32/32
+  F_addArrow             total 121/121: NxPhysicsCoreClusterTests 1/1, NxPhysicsSceneVisualizeTests 120/120
+  F_addOBB               total 17/17: NxPhysicsCoreClusterTests 1/1, NxPhysicsSceneVisualizeTests 16/16
+  F_NxComputeBoxPoints   total 17/17: NxPhysicsCoreClusterTests 1/1, NxPhysicsSceneVisualizeTests 16/16
+  No hit on either side: NxPhysicsExportTests, NxPhysicsSDKTests, NxPhysicsGeometryTests, NxPhysicsKernelFuzzTests, NxPhysicsActorLifecycleTests, NxPhysicsDynamicFirstTests, NxPhysicsEmptySceneTests, NxPhysicsActorNameTests, NxPhysicsActorMetadataTests, NxPhysicsActorBodyFlagTests, NxPhysicsActorDynamicsTests, NxPhysicsActorDynamicSetterTests, NxPhysicsActorMomentumTests, NxPhysicsActorForceTests, NxPhysicsActorCMassTests, NxPhysicsActorShapeMutationTests, NxPhysicsBodyCreationTests, NxPhysicsJointStagedPairTests, NxFoundationTangentTests, NxPhysicsJointAllocatorTests, NxPhysicsJointSlotTests, NxPhysicsSceneRaycastTests
+
+HIT COUNTS, ORACLE DIFFERENTIAL (oracle row / candidate function, one process)
+-------------------------------------------------------------------------------
+  NxPhysicsObjectLayoutTests: 000945 65/65 (the slot-3 contract: 64 cases, then the ordering case); the o/c
+  alternation is identical, and the harness's `slot3 contract cases=64 failures=0`, `slot3 candidate
+  masks=64 agree n28-first=1` and `slot3 order case agree calls=7 seq28>20/38 both` lines were printed under
+  the debugger.
+
+READING
+-------
+  Only NxPhysicsSceneVisualizeTests calls NxScene::visualize. 000344 and 000657 run once per
+  scene->visualize (14); 000579 once per call with a non-zero NX_VISUALIZATION_SCALE (11: the empty,
+  scale_zero and cleared stages return before it); 000020 once per actor per drawing call (7 x 11 = 77); 000766
+  once per dynamic actor per drawing call (5 x 11 = 55; the NX_BF_VISUALIZATION gate is inside it). Every
+  claimed row is hit exactly as often as the oracle row, and the ordered sequences are identical on every
+  target (table below).
+  000869, 000907 and 004163 are hit on neither side: no target runs a simulation step, so there is no contact
+  pair on Scene+0x674 and no island object at body+0x1e0 (the joint_groups stage runs 000766's island test
+  with +0x1e0 == 0 on both sides). 000945 (BOX slot 3) is not reached from NxScene::visualize: 000657 calls
+  it only through 000581 under NX_VISUALIZE_COLLISION_SHAPES/_AXES/_SPHERES, and 000581 is an unwritten
+  placeholder; NxPhysicsObjectLayoutTests drives the oracle row and the candidate member directly (0x027f).
+  Foundation: addBasis, addArrow, addOBB and NxComputeBoxPoints are hit equally on both sides wherever they
+  are hit (the visualisation target, and NxPhysicsCoreClusterTests once each through its own renderable).
+
+ORDERED SEQUENCES (all labels; oracle/candidate hits)
+-----------------------------------------------------
+  NxPhysicsExportTests                       0/0     identical
+  NxPhysicsSDKTests                          0/0     identical
+  NxPhysicsCoreClusterTests                  3/3     identical
+  NxPhysicsGeometryTests                     0/0     identical
+  NxPhysicsKernelFuzzTests                   0/0     identical
+  NxPhysicsActorLifecycleTests               0/0     identical
+  NxPhysicsDynamicFirstTests                 0/0     identical
+  NxPhysicsEmptySceneTests                   0/0     identical
+  NxPhysicsActorNameTests                    0/0     identical
+  NxPhysicsActorMetadataTests                0/0     identical
+  NxPhysicsActorBodyFlagTests                0/0     identical
+  NxPhysicsActorDynamicsTests                0/0     identical
+  NxPhysicsActorDynamicSetterTests           0/0     identical
+  NxPhysicsActorMomentumTests                0/0     identical
+  NxPhysicsActorForceTests                   0/0     identical
+  NxPhysicsActorCMassTests                   0/0     identical
+  NxPhysicsActorShapeMutationTests           0/0     identical
+  NxPhysicsBodyCreationTests                 0/0     identical
+  NxPhysicsJointStagedPairTests              0/0     identical
+  NxFoundationTangentTests                   0/0     identical
+  NxPhysicsJointAllocatorTests               0/0     identical
+  NxPhysicsJointSlotTests                    0/0     identical
+  NxPhysicsSceneRaycastTests                 0/0     identical
+  NxPhysicsSceneVisualizeTests             355/355   identical
+
+HIT LINES, NxPhysicsSceneVisualizeTests, ORACLE (355)
+------------------------------------------------------------
+HIT 000344
+HIT 000657
+HIT 000344
+HIT 000657
+HIT 000344
+HIT 000657
+HIT 000579
+HIT 000020
+HIT 000020
+HIT 000020
+HIT 000766
+HIT 000020
+HIT 000766
+HIT 000020
+HIT 000766
+HIT 000020
+HIT 000766
+HIT 000020
+HIT 000766
+HIT 000344
+HIT 000657
+HIT 000579
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000020
+HIT 000020
+HIT 000020
+HIT 000766
+HIT 000020
+HIT 000766
+HIT 000020
+HIT 000766
+HIT 000020
+HIT 000766
+HIT 000020
+HIT 000766
+HIT 000344
+HIT 000657
+HIT 000579
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000766
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000766
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000766
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000766
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000766
+HIT 000344
+HIT 000657
+HIT 000579
+HIT 000020
+HIT 000020
+HIT 000020
+HIT 000766
+HIT 000020
+HIT 000766
+HIT 000020
+HIT 000766
+HIT 000020
+HIT 000766
+HIT 000020
+HIT 000766
+HIT 000344
+HIT 000657
+HIT 000579
+HIT 000020
+HIT 000020
+HIT 000020
+HIT 000766
+HIT F_addOBB
+HIT F_NxComputeBoxPoints
+HIT 000020
+HIT 000766
+HIT F_addOBB
+HIT F_NxComputeBoxPoints
+HIT 000020
+HIT 000766
+HIT F_addOBB
+HIT F_NxComputeBoxPoints
+HIT 000020
+HIT 000766
+HIT F_addOBB
+HIT F_NxComputeBoxPoints
+HIT 000020
+HIT 000766
+HIT 000344
+HIT 000657
+HIT 000579
+HIT 000020
+HIT 000020
+HIT 000020
+HIT 000766
+HIT F_addArrow
+HIT 000020
+HIT 000766
+HIT F_addArrow
+HIT 000020
+HIT 000766
+HIT 000020
+HIT 000766
+HIT F_addArrow
+HIT 000020
+HIT 000766
+HIT 000344
+HIT 000657
+HIT 000579
+HIT 000020
+HIT 000020
+HIT 000020
+HIT 000766
+HIT F_addArrow
+HIT 000020
+HIT 000766
+HIT F_addArrow
+HIT 000020
+HIT 000766
+HIT 000020
+HIT 000766
+HIT F_addArrow
+HIT 000020
+HIT 000766
+HIT 000344
+HIT 000657
+HIT 000579
+HIT 000020
+HIT 000020
+HIT 000020
+HIT 000766
+HIT 000020
+HIT 000766
+HIT 000020
+HIT 000766
+HIT 000020
+HIT 000766
+HIT 000020
+HIT 000766
+HIT 000344
+HIT 000657
+HIT 000579
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000766
+HIT F_addOBB
+HIT F_NxComputeBoxPoints
+HIT F_addArrow
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000766
+HIT F_addOBB
+HIT F_NxComputeBoxPoints
+HIT F_addArrow
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000766
+HIT F_addOBB
+HIT F_NxComputeBoxPoints
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000766
+HIT F_addOBB
+HIT F_NxComputeBoxPoints
+HIT F_addArrow
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000766
+HIT 000344
+HIT 000657
+HIT 000579
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000766
+HIT F_addOBB
+HIT F_NxComputeBoxPoints
+HIT F_addArrow
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000766
+HIT F_addOBB
+HIT F_NxComputeBoxPoints
+HIT F_addArrow
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000766
+HIT F_addOBB
+HIT F_NxComputeBoxPoints
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000766
+HIT F_addOBB
+HIT F_NxComputeBoxPoints
+HIT F_addArrow
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000766
+HIT 000344
+HIT 000657
+HIT 000344
+HIT 000657
+HIT 000579
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000766
+HIT F_addOBB
+HIT F_NxComputeBoxPoints
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000766
+HIT F_addOBB
+HIT F_NxComputeBoxPoints
+HIT F_addArrow
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000766
+HIT F_addOBB
+HIT F_NxComputeBoxPoints
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000766
+HIT F_addOBB
+HIT F_NxComputeBoxPoints
+HIT F_addArrow
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000766
+
+HIT LINES, NxPhysicsSceneVisualizeTests, CANDIDATE (355)
+------------------------------------------------------------
+HIT 000344
+HIT 000657
+HIT 000344
+HIT 000657
+HIT 000344
+HIT 000657
+HIT 000579
+HIT 000020
+HIT 000020
+HIT 000020
+HIT 000766
+HIT 000020
+HIT 000766
+HIT 000020
+HIT 000766
+HIT 000020
+HIT 000766
+HIT 000020
+HIT 000766
+HIT 000344
+HIT 000657
+HIT 000579
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000020
+HIT 000020
+HIT 000020
+HIT 000766
+HIT 000020
+HIT 000766
+HIT 000020
+HIT 000766
+HIT 000020
+HIT 000766
+HIT 000020
+HIT 000766
+HIT 000344
+HIT 000657
+HIT 000579
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000766
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000766
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000766
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000766
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000766
+HIT 000344
+HIT 000657
+HIT 000579
+HIT 000020
+HIT 000020
+HIT 000020
+HIT 000766
+HIT 000020
+HIT 000766
+HIT 000020
+HIT 000766
+HIT 000020
+HIT 000766
+HIT 000020
+HIT 000766
+HIT 000344
+HIT 000657
+HIT 000579
+HIT 000020
+HIT 000020
+HIT 000020
+HIT 000766
+HIT F_addOBB
+HIT F_NxComputeBoxPoints
+HIT 000020
+HIT 000766
+HIT F_addOBB
+HIT F_NxComputeBoxPoints
+HIT 000020
+HIT 000766
+HIT F_addOBB
+HIT F_NxComputeBoxPoints
+HIT 000020
+HIT 000766
+HIT F_addOBB
+HIT F_NxComputeBoxPoints
+HIT 000020
+HIT 000766
+HIT 000344
+HIT 000657
+HIT 000579
+HIT 000020
+HIT 000020
+HIT 000020
+HIT 000766
+HIT F_addArrow
+HIT 000020
+HIT 000766
+HIT F_addArrow
+HIT 000020
+HIT 000766
+HIT 000020
+HIT 000766
+HIT F_addArrow
+HIT 000020
+HIT 000766
+HIT 000344
+HIT 000657
+HIT 000579
+HIT 000020
+HIT 000020
+HIT 000020
+HIT 000766
+HIT F_addArrow
+HIT 000020
+HIT 000766
+HIT F_addArrow
+HIT 000020
+HIT 000766
+HIT 000020
+HIT 000766
+HIT F_addArrow
+HIT 000020
+HIT 000766
+HIT 000344
+HIT 000657
+HIT 000579
+HIT 000020
+HIT 000020
+HIT 000020
+HIT 000766
+HIT 000020
+HIT 000766
+HIT 000020
+HIT 000766
+HIT 000020
+HIT 000766
+HIT 000020
+HIT 000766
+HIT 000344
+HIT 000657
+HIT 000579
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000766
+HIT F_addOBB
+HIT F_NxComputeBoxPoints
+HIT F_addArrow
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000766
+HIT F_addOBB
+HIT F_NxComputeBoxPoints
+HIT F_addArrow
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000766
+HIT F_addOBB
+HIT F_NxComputeBoxPoints
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000766
+HIT F_addOBB
+HIT F_NxComputeBoxPoints
+HIT F_addArrow
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000766
+HIT 000344
+HIT 000657
+HIT 000579
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000766
+HIT F_addOBB
+HIT F_NxComputeBoxPoints
+HIT F_addArrow
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000766
+HIT F_addOBB
+HIT F_NxComputeBoxPoints
+HIT F_addArrow
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000766
+HIT F_addOBB
+HIT F_NxComputeBoxPoints
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000766
+HIT F_addOBB
+HIT F_NxComputeBoxPoints
+HIT F_addArrow
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000766
+HIT 000344
+HIT 000657
+HIT 000344
+HIT 000657
+HIT 000579
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000766
+HIT F_addOBB
+HIT F_NxComputeBoxPoints
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000766
+HIT F_addOBB
+HIT F_NxComputeBoxPoints
+HIT F_addArrow
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000766
+HIT F_addOBB
+HIT F_NxComputeBoxPoints
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000766
+HIT F_addOBB
+HIT F_NxComputeBoxPoints
+HIT F_addArrow
+HIT F_addArrow
+HIT 000020
+HIT F_addBasis
+HIT F_addArrow
+HIT F_addArrow
+HIT F_addArrow
+HIT 000766

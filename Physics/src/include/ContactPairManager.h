@@ -28,6 +28,7 @@
 #include "NxVec3.h"
 
 class NxSceneInternal;
+class NxDebugRenderable;
 class NxUserContactReport;
 class NxMaterial;
 struct JointSupportRecord;
@@ -179,6 +180,9 @@ struct NxActorPair
 	//! phys_fn_000897 + phys_fn_000899: the contact and friction rows from
 	//! the contact stream. thiscall, `ret 0xc`.
 	void row000897(NxSceneInternal* scene, NxReal forceScale, NxReal penaltyScale);
+	//! phys_fn_000869: the contact visualisation over the stream (+0x38's
+	//! entries at +0x40). thiscall, `ret 4`. Defined in SceneVisualize.cpp.
+	void row000869(NxDebugRenderable& renderable);
 
 	NxU8	mBytes[0xec];
 	};
@@ -202,6 +206,9 @@ struct NxPairNode
 	NxPairNode* row000901(NxU8* element0, NxU8* element1, NxPairList* list);
 	//! phys_fn_000905: the per-step refresh. thiscall, `ret 4`.
 	void row000905(NxSceneInternal* scene);
+	//! phys_fn_000907: `add ecx, 0x14; jmp 000869`, the actor pair's
+	//! contact visualisation. Defined in SceneVisualize.cpp.
+	void row000907(NxDebugRenderable& renderable);
 
 	NxU8	mBytes[0x108];
 	};

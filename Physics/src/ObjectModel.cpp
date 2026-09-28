@@ -15,6 +15,9 @@
 #include "ContactGeneration.h"
 #include "NxUtilities.h"
 #include "X87Sqrt.h"
+#include "PhysicsSDK.h"
+#include "NxDebugRenderable.h"
+#include "NxBox.h"
 
 #include <float.h>
 #include <math.h>
@@ -785,6 +788,9 @@ void nxBindDebugRenderGuards(float* guardA, float* guardB,
 	g_nxGuardRef = guardRef;
 	}
 
+// The sphere, capsule and plane slot-3 dispatchers below still read their
+// guard through this probe-bound pointer (0x10123bc4); the box's (000945)
+// reads the live parameter array.
 static float* g_nxGuardC = nullptr;		// 0x10123bc4 (slot-3 guard)
 
 void nxBindDebugRenderGuardC(float* guardC)
@@ -792,40 +798,36 @@ void nxBindDebugRenderGuardC(float* guardC)
 	g_nxGuardC = guardC;
 	}
 
-// Provisional phys_fn_000945 (0x207e0, 104 B): debug-render dispatcher,
-// `ret 4`. Stage order and gates per build/slot3-full.txt:
-// 0x207e4  gate: word[+0xde] & 8 (call 0x257d0 with mask 8), zero exits;
-// 0x207f9  call 001305 (nxDebugRender) unconditionally after the gate;
-// 0x207fe  guard C (0x123bc4) vs ref (0x1041f0): equality skips, unordered
-//          executes (test ah,0x44; jnp skip -- same pattern as 001305);
-// 0x2081a  nxFillShapeDescriptor fills a 60-byte local;
-// 0x2081f..39  color = ((+0xde & 7) == 0 ? 0xffffffff : 0xffff00ff) --
+// phys_fn_000945 (0x000207e0, 104 B)
+// BOX slot 3, the box's debug visualisation: thiscall (renderer), `ret 4`.
+// 0x207e4  gate: +0xde & 8 (001287 with mask 8), zero exits;
+// 0x207f9  001305 (nxDebugRender) on the renderer after the gate;
+// 0x207fe  NX_VISUALIZE_COLLISION_SHAPES (.data 0x10123bc4, the SDK's live
+//          parameter array) against 0.0f (0x101041f0): equality skips, a NaN
+//          draws (`test ah,0x44; jnp`);
+// 0x2081a  000931 fills the 60-byte NxBox (centre, extents, rotation);
+// 0x2081f..39  colour ((+0xde & 7) == 0 ? 0xffffffff : 0xffff00ff) --
 //          `and al,7; neg al; sbb eax,eax; and eax,0xffff0100; dec eax`;
-// 0x2083d  renderer vtable slot +0x28 with (descriptor, color, 0).
-// Driven by the 64-case slot3cap differential (3z28); census closure
-// awaits a family registration.
+// 0x2083d  the renderer's addOBB (slot +0x28) with (box, colour, false).
+// Scene-raycast block Task 4 (visualisation): the parameter was read through a
+// pointer only a test probe bound (nxBindDebugRenderGuardC), so the
+// box arm never ran in the product; it now reads the live array as the listing
+// does (nxSdkParameterTable, PhysicsSDK.cpp).
 void BoxShape::nxDebugRenderDispatch(const void* renderer) const
 	{
 	if(!mBase.nxFlagBitsDE(8))
 		return;
 	nxDebugRender(renderer);
-	if(!g_nxGuardC || !g_nxGuardRef || !renderer)
+	if(nxSdkParameterTable()[NX_VISUALIZE_COLLISION_SHAPES] == 0.0f)
 		return;
-	const float ref = *g_nxGuardRef;
-	const float guardC = *g_nxGuardC;
-	if(guardC == ref && guardC == guardC)
-		return;
-	unsigned descriptor[15];
-	nxFillShapeDescriptor(descriptor);
-	void** table = *reinterpret_cast<void** const*>(renderer);
-	typedef void (__fastcall* NxDrawShapeFn)(void*, void*, const unsigned*,
-		unsigned, unsigned);
-	const NxDrawShapeFn drawShape = reinterpret_cast<NxDrawShapeFn>(table[10]);
+	NxBox box;
+	static_assert(sizeof(NxBox) == 60, "000931's 60-byte descriptor");
+	nxFillShapeDescriptor(reinterpret_cast<unsigned*>(&box));
 	// mov al,[esi+0xde] addresses the flag halfword directly (the +0xde
 	// byte offset, not an aligned dword index); nxFlagBitsDE reads it.
 	const unsigned lowBits = mBase.nxFlagBitsDE(7);
 	const unsigned color = lowBits == 0 ? 0xffffffffu : 0xffff00ffu;
-	drawShape(const_cast<void*>(renderer), nullptr, descriptor, color, 0);
+	static_cast<NxDebugRenderable*>(const_cast<void*>(renderer))->addOBB(box, color, false);
 	}
 
 // Task 4 scaffolding: the scene shape-array insert. Write order follows the
