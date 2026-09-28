@@ -154,6 +154,7 @@ if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/ContactMeshHeightfield.cpp
 		Physics/src/EdgeList.cpp
 		Physics/src/IceMeshTools.cpp
+		Physics/src/IceMeshBuilder2.cpp
 		Physics/src/ShapeRaycast.cpp
 		Physics/src/core/Joint.cpp
 		Physics/src/core/RevoluteJoint.cpp
@@ -213,12 +214,15 @@ endif()
 # no fs:[0] record); under /EHsc the RadixSort and EdgeList locals and the
 # noexcept destructors gave CreateFacesToEdges, CreateDatabase, Adjacencies::
 # Init, Valencies::Compute and the three destructors unwind frames the oracle
-# lacks. None of the three files uses try, catch or throw.
+# lacks. None of the three files uses try, catch or throw. Task 2d adds
+# IceMeshBuilder2.cpp for the same reason (0x0002f290, 0x0002fc50, 0x00030620,
+# 0x00030d90 are frameless with their Container, reducer and RadixSort locals).
 if(MSVC)
 	set_property(SOURCE
 		Physics/src/EdgeList.cpp
 		Physics/src/IceAdjacencies.cpp
 		Physics/src/IceMeshTools.cpp
+		Physics/src/IceMeshBuilder2.cpp
 		APPEND PROPERTY COMPILE_OPTIONS "/EHs-c-")
 endif()
 
@@ -531,7 +535,8 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		tests/PhysicsThirdPartyQhull.c
 		tests/PhysicsThirdPartyHost.cpp Physics/src/PhysicsInternal.cpp
 		Physics/src/opcode/IcePrunable.cpp Physics/src/opcode/NovodexBoxPruning.cpp
-		Physics/src/EdgeList.cpp Physics/src/IceAdjacencies.cpp Physics/src/IceMeshTools.cpp)
+		Physics/src/EdgeList.cpp Physics/src/IceAdjacencies.cpp Physics/src/IceMeshTools.cpp
+		Physics/src/IceMeshBuilder2.cpp)
 	# The hull family's C half reads qhull's own structs, so it and only it sees the
 	# merged tree's headers (their fprintf redirection stays out of the C++ harness).
 	set_source_files_properties(tests/PhysicsThirdPartyQhull.c PROPERTIES
