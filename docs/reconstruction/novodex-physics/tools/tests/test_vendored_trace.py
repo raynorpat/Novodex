@@ -136,6 +136,67 @@ class ParseLog(unittest.TestCase):
         self.assertEqual(vt.parse_log(log, 1), [("x", [1])])
 
 
+class Classes(unittest.TestCase):
+    """exact / lastbit / discrete per family, and a group's outcome over its drives."""
+
+    DIV = ("thirdparty name=f_x87 rva=0x1 owner=o source=s words=10 oracle=00000000 mismatches={m} "
+           "discrete={d} float_ulp={fu} double_ulp={du} beyond=0 first_diff=0 length_delta={ld} "
+           "ceiling=1/1 verdict=divergent")
+
+    def entry(self, m=3, d=0, fu="2", du="0", ld=0):
+        return vt.parse_families(self.DIV.format(m=m, d=d, fu=fu, du=du, ld=ld))["f_x87"]
+
+    def test_the_divergent_line_is_parsed_with_its_distances(self):
+        e = self.entry(m=7, d=1, fu="inf", du="12", ld=-4)
+        self.assertEqual(e, {"verdict": "divergent", "mismatches": "7", "discrete": "1",
+                             "float_ulp": "inf", "double_ulp": "12", "beyond": "0",
+                             "length_delta": "-4"})
+
+    def test_an_exact_line_is_exact_and_a_failed_one_failed(self):
+        text = ("thirdparty name=a rva=0x1 owner=o source=s words=4 oracle=00000000 mismatches=0 "
+                "worst_ulp=0 verdict=exact\n"
+                "thirdparty name=b rva=0x1 owner=o source=s words=4 oracle=00000000 mismatches=1 "
+                "worst_ulp=0 verdict=FAILED\n"
+                "asset oracle digest=eaefc573 expect_mismatches=0\n")
+        classes = {k: vt.family_class(v) for k, v in vt.parse_families(text).items()}
+        self.assertEqual(classes, {"a": "exact", "b": "failed", "asset": "exact"})
+
+    def test_floats_within_the_bound_and_no_discrete_word_are_lastbit(self):
+        self.assertEqual(vt.family_class(self.entry(fu="4", du="3")), "lastbit")
+
+    def test_one_float_past_the_bound_is_discrete(self):
+        self.assertEqual(vt.family_class(self.entry(fu="5")), "discrete")
+        self.assertEqual(vt.family_class(self.entry(du="1569849344")), "discrete")
+        self.assertEqual(vt.family_class(self.entry(fu="inf")), "discrete")
+
+    def test_a_discrete_word_or_a_length_difference_is_discrete(self):
+        self.assertEqual(vt.family_class(self.entry(d=1, fu="0")), "discrete")
+        self.assertEqual(vt.family_class(self.entry(ld=-4, fu="0")), "discrete")
+
+    def test_a_divergent_line_without_distances_is_not_lastbit(self):
+        self.assertEqual(vt.family_class({"verdict": "divergent"}), "discrete")
+
+    def test_hitless_sibling_segments_join_the_drive_before_them(self):
+        segments = [{"label": "a", "hits": {"g": 1}},
+                    {"label": "a_x87", "hits": {}},
+                    {"label": "a_boundary", "hits": {}},
+                    {"label": "b", "hits": {"g": 2}},
+                    {"label": "b_x87", "hits": {"g": 1}},
+                    {"label": "c", "hits": {}}]
+        self.assertEqual(vt.drives(segments), [(0, ["a", "a_x87", "a_boundary"]), (3, ["b"]),
+                                               (4, ["b_x87"]), (5, ["c"])])
+
+    def test_the_outcome_is_the_best_drive_and_a_drive_its_worst_family(self):
+        self.assertEqual(vt.worst(["exact", "lastbit"]), "lastbit")
+        self.assertEqual(vt.worst(["exact", "discrete", "lastbit"]), "discrete")
+        self.assertEqual(vt.outcome_of(["discrete", "exact"]), "exact")
+        self.assertEqual(vt.outcome_of(["discrete", "lastbit", "layout"]), "lastbit")
+        self.assertEqual(vt.outcome_of(["layout"]), "layout")
+        self.assertEqual(vt.outcome_of([]), "none")
+        self.assertEqual(vt.outcome_of(["uncompared"]), "uncompared")
+        self.assertEqual(vt.outcome_of(["uncompared", "discrete"]), "discrete")
+
+
 class Groups(unittest.TestCase):
     def test_a_separate_instantiation_keeps_its_own_group(self):
         header = ("rva,id,size,grade,source_function,class,compare_class,group_rows,candidate_symbol,"

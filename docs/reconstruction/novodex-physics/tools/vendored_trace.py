@@ -25,12 +25,31 @@ the binaries' sha256, the per-group counters per family, and the head of the raw
 
 `coverage` joins one or more parsed traces with the identity results into the per-group
 coverage CSV (evidence/phase4-third-party-map/vendored_coverage.csv). `hits` sums the capped
-per-family counts (a trailing `+` means some family reached the cap). `differential` lists,
-per family in which the group executed, the families that drive reports with their verdicts;
-`outcome` condenses them: `exact`, `exact+divergent` (it ran in a drive whose discrete outcome
-matched and whose float outputs are a measured divergence), `divergent`, `layout` (only the
-ThirdParty harness's candidate-only layout assertions ran it: execution, not a compared
-outcome), or `none`.
+per-family counts (a trailing `+` means some family reached the cap).
+
+Classes. Each family the harness reports is classified from its own line (family_class):
+`exact` (verdict exact: no word differs), `lastbit` (a divergent family in which no discrete
+word differs, the tapes are the same length, and every differing float or double is at most
+LASTBIT_ULP representable values from the oracle's), or `discrete` (anything else: a differing
+count, index, verdict, tree link or quantized box, a length difference, a sign change, or a
+float further apart than the bound). A `FAILED` family is `failed`.
+
+Executions. A trace segment runs from one harness report to the next, so a segment's hits
+are executions whose outputs the family reported at its end compares. A harness drive can fill
+several families from the same executions and report them back to back (`opcode_ray`, then
+`opcode_ray_x87` and `opcode_ray_boundary`, with nothing executed in between); the segments
+of the later ones hold no hits. So an execution (a drive) is a segment with hits plus the
+following hit-less segments whose family is its sibling (`<family>_<suffix>`), and its class is
+the worst class of those families: the floats an execution produced are part of its outcome.
+
+`differential` lists, per drive in which the group executed, the drive's families with their
+classes. `outcome` is the group's best drive (exact < lastbit < discrete < failed): `exact` if
+some execution of it was compared and matched completely. `family_best` is the best class of
+any family the group ran in, whatever else its execution fed -- the looser reading, kept so the
+two can be told apart. `layout` means only the ThirdParty harness's candidate-only layout
+assertions ran it (execution, not a compared outcome); `uncompared` that only segments no family
+reports ran it (a `--mark` boundary such as `release`, the harness's model clean-up, or the
+ThirdParty harness's `END` after its last report); `none` that nothing ran it.
 
 main() returns 0 on success, 1 when identity finds a body that differs, and 2 on bad input.
 """
@@ -49,6 +68,11 @@ TRACED_CLASSES = ("MATCH", "SHAPE", "REVIEW", "DIFF")
 COUNTER_BASE = 0x60000000
 COVERAGE_CSV = vm.MAP_DIR / "vendored_coverage.csv"
 BOUNDARY_SYMBOL = "?nxReport@@YAXPBD000_NI@Z"
+# The last-bit bound, in representable values; the harness applies the same one (kLastBitUlp in
+# tests/PhysicsThirdPartyTests.cpp) to count `beyond=`. Two roundings on each side of a
+# reassociated or unrounded three-term sum; see evidence/vendored-correspondence.md, Task 5a.
+LASTBIT_ULP = 4
+CLASS_ORDER = ("exact", "lastbit", "discrete", "failed")
 
 
 # --------------------------------------------------------------------------- groups
@@ -316,49 +340,109 @@ def parse_log(text, n):
 # --------------------------------------------------------------------------- main
 
 VERDICT_LINE = re.compile(r"^thirdparty name=(\S+) .* verdict=(\w+)$")
+FIELD = re.compile(r" (mismatches|discrete|float_ulp|double_ulp|beyond|length_delta)=(\S+)")
 ASSET_LINE = re.compile(r"^asset oracle digest=\S+ expect_mismatches=(\d+)")
 
 
-def parse_verdicts(text):
-    """{family: verdict} from the harness's own lines in the cdb log.
+def parse_families(text):
+    """{family: {"verdict": ..., and the divergence fields the line carries}} from the harness's
+    own lines in the cdb log.
 
-    The ThirdParty harness prints `verdict=exact|divergent|FAILED` per family. The asset harness
-    has one family, `asset`, printed as exact when its expect_mismatches count is 0.
+    The ThirdParty harness prints `verdict=exact|divergent|FAILED` per family, and a divergent
+    family's line also carries mismatches=, discrete=, float_ulp=, double_ulp=, beyond= and
+    length_delta= (an ulp field may read `inf`). The asset harness has one family, `asset`,
+    printed as exact when its expect_mismatches count is 0.
     """
-    verdicts = {}
+    families = {}
     for line in text.splitlines():
         line = line.strip()
         m = VERDICT_LINE.match(line)
         if m:
-            verdicts[m.group(1)] = m.group(2)
+            entry = {"verdict": m.group(2)}
+            for key, value in FIELD.findall(line):
+                entry[key] = value
+            families[m.group(1)] = entry
         m = ASSET_LINE.match(line)
         if m:
-            verdicts["asset"] = "exact" if m.group(1) == "0" else "FAILED"
-    return verdicts
+            families["asset"] = {"verdict": "exact" if m.group(1) == "0" else "FAILED"}
+    return families
 
 
-def drive_families(label, verdicts):
-    """The families one drive reports: its own and the `_x87`/`_boundary`/`_rotated` siblings it fills at
-    the same time and reports right after it, with nothing executed in between."""
-    names = [label] + [label + suffix for suffix in ("_x87", "_boundary", "_rotated") if label + suffix in verdicts]
-    return [(name, verdicts.get(name, "?")) for name in names]
+def parse_verdicts(text):
+    """{family: verdict}: parse_families without the divergence fields."""
+    return {name: entry["verdict"] for name, entry in parse_families(text).items()}
 
 
-def outcome_of(verdicts):
-    """exact | exact+divergent | divergent | layout | none, over the families a group ran in."""
-    kinds = set(verdicts)
-    if not kinds:
-        return "none"
-    if kinds == {"layout"}:
-        return "layout"
-    kinds.discard("layout")
-    if kinds <= {"exact"}:
+def _ulp(value):
+    return float("inf") if value == "inf" else int(value)
+
+
+def family_class(entry):
+    """exact | lastbit | discrete | failed | ? for one family's parsed line (see the module
+    docstring). A divergent line without its distance fields cannot be called last-bit."""
+    verdict = entry.get("verdict")
+    if verdict == "exact":
         return "exact"
-    if "exact" in kinds and kinds - {"exact"} <= {"divergent"}:
-        return "exact+divergent"
-    if kinds <= {"divergent"}:
-        return "divergent"
-    return "+".join(sorted(kinds))
+    if verdict == "FAILED":
+        return "failed"
+    if verdict != "divergent":
+        return "?"
+    try:
+        discrete = int(entry["discrete"])
+        delta = int(entry["length_delta"])
+        worst = max(_ulp(entry["float_ulp"]), _ulp(entry["double_ulp"]))
+    except (KeyError, ValueError):
+        return "discrete"
+    if discrete == 0 and delta == 0 and worst <= LASTBIT_ULP:
+        return "lastbit"
+    return "discrete"
+
+
+def drives(segments):
+    """[(segment index, [family, ...])]: one entry per segment with hits, carrying the sibling
+    families reported right after it from hit-less segments (see the module docstring)."""
+    out = []
+    for i, seg in enumerate(segments):
+        label = seg["label"]
+        if seg["hits"] or not out:
+            out.append((i, [label]))
+            continue
+        head = out[-1][1][0]
+        if label.startswith(head + "_"):
+            out[-1][1].append(label)
+        else:
+            out.append((i, [label]))
+    return out
+
+
+def worst(classes):
+    ranked = [c for c in classes if c in CLASS_ORDER]
+    if len(ranked) != len(classes) or not ranked:
+        return "?"
+    return max(ranked, key=CLASS_ORDER.index)
+
+
+def best(classes):
+    ranked = [c for c in classes if c in CLASS_ORDER]
+    if not ranked:
+        return None
+    return min(ranked, key=CLASS_ORDER.index)
+
+
+UNCOMPARED = ("layout", "uncompared")
+
+
+def outcome_of(drive_classes):
+    """The group's outcome over the classes of the drives it ran in ("layout" for the layout
+    assertions, "uncompared" for a segment no family reports): its best compared drive, else
+    layout, else uncompared, else none."""
+    compared = [c for c in drive_classes if c not in UNCOMPARED]
+    if compared:
+        return best(compared) or "+".join(sorted(set(compared)))
+    for label in UNCOMPARED:
+        if label in drive_classes:
+            return label
+    return "none"
 
 
 def cmd_identity(args, groups):
@@ -403,7 +487,9 @@ def cmd_parse(args, groups):
     index = json.loads(Path(args.index).read_text(encoding="utf-8"))
     text = Path(args.log).read_text(encoding="utf-8", errors="replace")
     segments = parse_log(text, len(index))
-    out = {"segments": [], "verdicts": parse_verdicts(text)}
+    families = parse_families(text)
+    out = {"segments": [], "verdicts": {k: v["verdict"] for k, v in families.items()},
+           "families": families}
     for label, counts in segments:
         hits = {}
         for entry, count in zip(index, counts):
@@ -430,39 +516,51 @@ def cmd_coverage(args, groups):
     with open(args.out, "w", encoding="utf-8", newline="") as handle:
         w = csv.writer(handle, lineterminator="\n")
         w.writerow(["library", "rva", "class", "candidate_symbol", "x87", "identity", "hits",
-                    "outcome", "differential", "source_function"])
+                    "outcome", "family_best", "differential", "source_function"])
+        prepared = []
+        for harness, trace in traces:
+            families = trace.get("families") or {k: {"verdict": v} for k, v in trace.get("verdicts", {}).items()}
+            classes = {name: family_class(entry) for name, entry in families.items()}
+            segments = trace["segments"]
+            plan = []
+            for index, names in drives(segments):
+                names = ["asset" if n == "END" and harness == "asset" else n for n in names]
+                plan.append((index, names))
+            prepared.append((harness, segments, plan, classes))
         for g in groups:
-            hits, saturated, families, idents, kinds = 0, False, [], [], []
-            for harness, trace in traces:
+            hits, saturated, listed, idents, drive_classes, family_classes = 0, False, [], [], [], []
+            for harness, segments, plan, classes in prepared:
                 idents.append(f"{harness}:{identities.get((g['key'], harness), 'n/a')}")
-                verdicts = trace.get("verdicts", {})
-                for seg in trace["segments"]:
-                    count = seg["hits"].get(g["key"], 0)
+                for index, names in plan:
+                    count = segments[index]["hits"].get(g["key"], 0)
                     if not count:
                         continue
                     hits += count
                     saturated |= count >= cap
-                    label = seg["label"]
-                    if label == "END" and harness == "asset":
-                        label = "asset"
-                    if label == "layout":
-                        families.append(f"{harness}:layout")
-                        kinds.append("layout")
+                    if names == ["layout"]:
+                        listed.append(f"{harness}:layout")
+                        drive_classes.append("layout")
                         continue
-                    drive = drive_families(label, verdicts)
-                    families.append(f"{harness}:" + "+".join(f"{n}={v}" for n, v in drive))
-                    kinds.extend(v for _, v in drive)
+                    if not any(n in classes for n in names):
+                        listed.append(f"{harness}:" + "+".join(names) + "=uncompared")
+                        drive_classes.append("uncompared")
+                        continue
+                    member = [classes.get(n, "?") for n in names]
+                    listed.append(f"{harness}:" + "+".join(f"{n}={c}" for n, c in zip(names, member)))
+                    drive_classes.append(worst(member))
+                    family_classes.extend(member)
             if g["class"] not in TRACED_CLASSES:
-                hits_text, outcome = "untraced", "untraced"
+                hits_text, outcome, loose = "untraced", "untraced", ""
             elif g["separate"]:
-                hits_text, outcome = "no candidate body of its own", "none"
-                families = []
+                hits_text, outcome, loose = "no candidate body of its own", "none", "none"
+                listed = []
             else:
                 hits_text = f"{hits}+" if saturated else str(hits)
-                outcome = outcome_of(kinds)
+                outcome = outcome_of(drive_classes)
+                loose = best(family_classes) or outcome
             w.writerow([g["library"], f"0x{g['rows'][0][0]:08x}", g["class"], g["symbol"],
-                        x87_count(oracle, g["rows"]), ";".join(idents), hits_text, outcome,
-                        ";".join(families), g["source_function"]])
+                        x87_count(oracle, g["rows"]), ";".join(idents), hits_text, outcome, loose,
+                        ";".join(listed), g["source_function"]])
     print(f"coverage groups={len(groups)}")
     return 0
 
@@ -499,8 +597,9 @@ def cmd_report(args, groups):
             f"Candidate: {_rel(args.dll)} sha256={_sha256(args.dll)}"]
     for harness, parsed, log, exe in traces:
         out.append(f"Traced:    {harness}: {_rel(exe)} sha256={_sha256(exe)}")
-        fams = parsed.get("verdicts", {})
-        out.append(f"           families and verdicts: " + ", ".join(f"{k}={v}" for k, v in fams.items()))
+        fams = parsed.get("families") or {k: {"verdict": v} for k, v in parsed.get("verdicts", {}).items()}
+        out.append(f"           families and classes: " + ", ".join(
+            f"{k}={family_class(v)}" for k, v in fams.items()))
     out += ["", "Per-group counts. One line per matched group of this library in match-CSV order:",
             "oracle rva, class, candidate symbol, and for each harness the exe address traced and",
             "the counter per segment (the family the harness reported at the segment's end; `layout`",
