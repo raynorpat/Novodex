@@ -88,78 +88,132 @@ static void* nxNpActorContext(void* actor, unsigned offset)
 	return *reinterpret_cast<void**>(static_cast<unsigned char*>(actor) + offset);
 	}
 
+// The reports every public actor row makes (contract G1 and E1), in the form
+// of 000128's warning. Each is written as the joint units write theirs,
+// FoundationSDK::getInstance().error(...): the variadic static error is the
+// Foundation import and is never inlined, while evaluating getInstance()
+// inlines its instance test, so the built code is the oracle's
+// `mov eax,[__imp_instance]; cmp [eax],0; jne; int3` ahead of the
+// `call [__imp_error]` (oracle 0x10004442-0x1000445c, 0x100070a0-0x100070be;
+// checked in the candidate DLL). The file string is 0x10104690 and each
+// message is the row's own .rdata string, copied byte for byte.
+#define NX_NPACTOR_CPP "\\Epic\\Novodex\\SDKs\\Physics\\src\\NpActor.cpp"
+
+// E1: kind 1 (NXE_INVALID_PARAMETER), the row's line and message.
+static void nxNpActorReport(int line, const char* message)
+	{
+	NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_PARAMETER, NX_NPACTOR_CPP,
+		line, 0, message);
+	}
+
+// G1: phys_fn_002364 (0x5b730) returns 0 when another thread holds the write
+// flag; the row then reports kind 2 (NXE_INVALID_OPERATION) with the message
+// at 0x10104760 and returns without unlocking.
+static bool nxNpActorWriteTry(void* ctx, int line)
+	{
+	if(nxNpSceneGuardWriteTry(ctx)) return true;
+	NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION, NX_NPACTOR_CPP,
+		line, 0, "PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
+	return false;
+	}
+
+// The dirty mark every record setter inlines (contract H1), from 000184's
+// 0x10008285-0x1000836c; 000170 (0x1000713d-0x1000722f), 000785's four marks
+// (0x1001966f-0x1001975e, ...) and the other rows inline the same NxArray
+// pushBack with only the register allocation and store order varying. The
+// dirty manager is [record+0x120]+0x40: +0x00 the per-id flag words, +0x10/
+// +0x14/+0x18 the dirty list's begin/end/capacity, +0x20 the id-to-index
+// table. Nothing is null-tested and the id is not bounded. A clean id first
+// records its index (the list length), then the list grows when full: to
+// 2n+2 entries, unless the current capacity (0 for a null list) already
+// covers that, through the imported nxFoundationSDKAllocator ([0x101041bc]
+// vtable +8 malloc(size, 0), +0x14 free), copying the live entries and freeing
+// the old block only when it is non-null. The id is appended and the mask ORed.
 static void nxNpActorMarkRecordDirty(unsigned char* record, unsigned mask)
 	{
-	if(!record) return;
-	unsigned char* aux = *reinterpret_cast<unsigned char**>(record + 0x120);
-	if(!aux) return;
-	unsigned* flags = *reinterpret_cast<unsigned**>(aux + 0x40);
+	unsigned char* manager = *reinterpret_cast<unsigned char**>(record + 0x120) + 0x40;
 	const unsigned id = *reinterpret_cast<unsigned*>(record + 0x11c);
-	if(!flags || id >= 256) return;
-	if(!flags[id])
+	unsigned* flags = *reinterpret_cast<unsigned**>(manager);
+	if(flags[id] == 0)
 		{
-		unsigned* active = *reinterpret_cast<unsigned**>(aux + 0x50);
-		unsigned* end = *reinterpret_cast<unsigned**>(aux + 0x54);
-		unsigned* capacity = *reinterpret_cast<unsigned**>(aux + 0x58);
-		if(!active || !end || !capacity) return;
-		if(end == capacity)
+		unsigned*& begin = *reinterpret_cast<unsigned**>(manager + 0x10);
+		unsigned*& end = *reinterpret_cast<unsigned**>(manager + 0x14);
+		unsigned*& capacity = *reinterpret_cast<unsigned**>(manager + 0x18);
+		unsigned* index = *reinterpret_cast<unsigned**>(manager + 0x20);
+		index[id] = static_cast<unsigned>(end - begin);
+		if(!(capacity > end))
 			{
-			const unsigned count = static_cast<unsigned>(end - active);
-			const unsigned next = count * 2 + 2;
-			unsigned* grown = static_cast<unsigned*>(nxGetSdkAllocator()->malloc(
-				next * sizeof(unsigned), NX_MEMORY_PERSISTENT));
-			if(!grown) return;
-			memcpy(grown, active, count * sizeof(unsigned));
-			nxGetSdkAllocator()->free(active);
-			active = grown;
-			end = grown + count;
-			*reinterpret_cast<unsigned**>(aux + 0x50) = active;
-			*reinterpret_cast<unsigned**>(aux + 0x58) = grown + next;
+			const unsigned next = static_cast<unsigned>(end - begin) * 2 + 2;
+			const unsigned current = begin ? static_cast<unsigned>(capacity - begin) : 0;
+			if(current < next)
+				{
+				unsigned* grown = static_cast<unsigned*>(nxFoundationSDKAllocator->malloc(
+					next * sizeof(unsigned), NX_MEMORY_PERSISTENT));
+				unsigned* to = grown;
+				for(unsigned* from = begin; from != end; ++from, ++to)
+					*to = *from;
+				if(begin)
+					nxFoundationSDKAllocator->free(begin);
+				end = grown + (end - begin);
+				capacity = grown + next;
+				begin = grown;
+				}
 			}
-		const unsigned index = static_cast<unsigned>(end - active);
-		active[index] = id;
-		*reinterpret_cast<unsigned**>(aux + 0x54) = end + 1;
-		(*reinterpret_cast<unsigned**>(aux + 0x60))[id] = index;
+		*end++ = id;
 		}
 	flags[id] |= mask;
 	}
 
-// The kinematic branch at 0x19620 runs before the ordinary body-flag OR/AND.
-// The explicit-mass path keeps inverse mass/inertia at +0xc0..+0xcc and a
-// 0x20-byte transition block at +0x118. Scene dirties are independent bits.
+// phys_fn_000785 (0x00019620, 1325 B)
+// phys_fn_000787 (0x00019b50, 428 B)
+// The kinematic transition raiseBodyFlag/clearBodyFlag call before their own
+// flag OR/AND (000787 is 000785's tail, 0x19b50-0x19cf9). Enable, when the
+// record is not already kinematic: +0xc0 = 0, mark 0x10000; +0xc4..+0xcc = 0,
+// mark 0x20000; flags |= 0x80, mark 0x80000; then the 0x20-byte target block
+// at +0x118 is allocated if absent (0x1001995d, no null check) and its +0xc
+// cleared. Disable, when it is: flags &= ~0x80, mark 0x80000; +0xc0 = 1/mass,
+// mark 0x10000; +0xc4..+0xcc = 1/inertia (unguarded fld 1; fdiv), mark
+// 0x20000; then the block is freed (0x10019cda) and cleared. The 000712
+// island-root refresh at the head of both arms (+0x1bc, [root+0x1e4] |= 2)
+// is a row-level defect left to the body-flag group.
 static void nxNpActorTransitionKinematic(unsigned char* record, bool enable)
 	{
 	unsigned& flags = *reinterpret_cast<unsigned*>(record + 0x10c);
-	if(enable ? (flags & 0x80u) != 0 : (flags & 0x80u) == 0)
-		return;
+	void*& state = *reinterpret_cast<void**>(record + 0x118);
+	float* inverse = reinterpret_cast<float*>(record + 0xc0);
+	const float* mass = reinterpret_cast<const float*>(record + 0x188);
 	if(enable)
 		{
+		if(flags & 0x80u) return;
+		inverse[0] = 0.0f;
+		nxNpActorMarkRecordDirty(record, 0x10000u);
+		inverse[1] = 0.0f;
+		inverse[2] = 0.0f;
+		inverse[3] = 0.0f;
+		nxNpActorMarkRecordDirty(record, 0x20000u);
 		flags |= 0x80u;
-		memset(record + 0xc0, 0, 4 * sizeof(float));
-		void*& state = *reinterpret_cast<void**>(record + 0x118);
+		nxNpActorMarkRecordDirty(record, 0x80000u);
 		if(!state)
-			state = nxGetSdkAllocator()->malloc(0x20, NX_MEMORY_PERSISTENT);
-		if(state) *reinterpret_cast<unsigned*>(
-			static_cast<unsigned char*>(state) + 0xc) = 0;
+			state = nxFoundationSDKAllocator->malloc(0x20, NX_MEMORY_PERSISTENT);
+		*reinterpret_cast<unsigned*>(static_cast<unsigned char*>(state) + 0xc) = 0;
 		}
 	else
 		{
+		if(!(flags & 0x80u)) return;
 		flags &= ~0x80u;
-		const unsigned massOffsets[4] = {0x188, 0x18c, 0x190, 0x194};
-		for(unsigned i = 0; i < 4; ++i)
-			{
-			const float mass = *reinterpret_cast<float*>(record + massOffsets[i]);
-			*reinterpret_cast<float*>(record + 0xc0 + i * 4) =
-				mass > 0.0f ? 1.0f / mass : 0.0f;
-			}
-		void*& state = *reinterpret_cast<void**>(record + 0x118);
+		nxNpActorMarkRecordDirty(record, 0x80000u);
+		inverse[0] = static_cast<float>(1.0 / mass[0]);
+		nxNpActorMarkRecordDirty(record, 0x10000u);
+		inverse[1] = static_cast<float>(1.0 / mass[1]);
+		inverse[2] = static_cast<float>(1.0 / mass[2]);
+		inverse[3] = static_cast<float>(1.0 / mass[3]);
+		nxNpActorMarkRecordDirty(record, 0x20000u);
 		if(state)
 			{
-			nxGetSdkAllocator()->free(state);
+			nxFoundationSDKAllocator->free(state);
 			state = 0;
 			}
 		}
-	nxNpActorMarkRecordDirty(record, 0x80000u | 0x10000u | 0x20000u);
 	}
 
 // The vtable word. A single static instance of the concrete class supplies it: the
@@ -695,7 +749,7 @@ bool NpActorVtable::isDynamic() const
 void NpActorVtable::setGlobalPose(const NxMat34& pose)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0x21d)) return;
 	unsigned char* body = nxNpActorBody(this);
 	if(body)
 		{
@@ -862,7 +916,7 @@ static void nxNpActorNotifyOwnedShapes(unsigned char* body)
 void NpActorVtable::setGlobalPosition(const NxVec3& position)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0x232)) return;
 	unsigned char* body = nxNpActorBody(this);
 	if(body)
 		{
@@ -887,7 +941,7 @@ void NpActorVtable::setGlobalPosition(const NxVec3& position)
 void NpActorVtable::setGlobalOrientation(const NxMat33& orientation)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0x242)) return;
 	unsigned char* body = nxNpActorBody(this);
 	if(body)
 		{
@@ -915,7 +969,7 @@ void NpActorVtable::setGlobalOrientation(const NxMat33& orientation)
 void NpActorVtable::setGlobalOrientationQuat(const NxQuat& orientation)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0x254)) return;
 	unsigned char* body = nxNpActorBody(this);
 	if(body)
 		{
@@ -1106,7 +1160,7 @@ const NxMat34 & NpActorVtable::getGlobalPoseReference() const
 	if(!warningIssued)
 		{
 		warningIssued = true;
-		NxFoundation::FoundationSDK::error(static_cast<NxErrorCode>(0xd0),
+		NxFoundation::FoundationSDK::getInstance().error(static_cast<NxErrorCode>(0xd0),
 			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpActor.cpp", 0x2c0, 0,
 			"Warning: deprecated method: Actor::getGlobalPoseReference().  Please use getGlobalPose() instead.\n");
 		}
@@ -1125,12 +1179,15 @@ const NxMat34 & NpActorVtable::getGlobalPoseReference() const
 	return *reinterpret_cast<const NxMat34*>(body + 0x20);
 	}
 
+// phys_fn_000124 (0x00003b40, 1075 B)
 void NpActorVtable::moveGlobalPose(const NxMat34& pose)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0x28f)) return;
 	unsigned char* record = nxNpActorRecord(this);
-	if(record && (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u))
+	if(!record || (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u) == 0)
+		nxNpActorReport(0x291, "Actor::moveGlobalPose: Actor must be kinematic!");
+	else
 		{
 		unsigned char* target = *reinterpret_cast<unsigned char**>(record + 0x118);
 		if(target)
@@ -1144,12 +1201,15 @@ void NpActorVtable::moveGlobalPose(const NxMat34& pose)
 	nxNpSceneGuardLeave(ctx);
 	}
 
+// phys_fn_000090 (0x00002df0, 211 B)
 void NpActorVtable::moveGlobalPosition(const NxVec3& position)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0x29e)) return;
 	unsigned char* record = nxNpActorRecord(this);
-	if(record && (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u))
+	if(!record || (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u) == 0)
+		nxNpActorReport(0x2a1, "Actor::moveGlobalPosition: Actor must be kinematic!");
+	else
 		{
 		unsigned char* target = *reinterpret_cast<unsigned char**>(record + 0x118);
 		if(target)
@@ -1161,27 +1221,52 @@ void NpActorVtable::moveGlobalPosition(const NxVec3& position)
 	nxNpSceneGuardLeave(ctx);
 	}
 
+// phys_fn_000126 (0x00003f80, 1192 B)
+// The oracle composes the target inline under this one write lock; the
+// composition is still delegated to moveGlobalPose (a row-level defect), but
+// the lock, G1 line 0x2ac and the kinematic check with E1 line 0x2ae are this
+// row's, so the nested moveGlobalPose (re-entrant on this thread) never
+// reports its own lines.
 void NpActorVtable::moveGlobalOrientation(const NxMat33& orientation)
 	{
-	NxMat34 pose;
-	pose.M = orientation;
-	pose.t = getGlobalPositionVal();
-	moveGlobalPose(pose);
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpActorWriteTry(ctx, 0x2ac)) return;
+	unsigned char* record = nxNpActorRecord(this);
+	if(!record || (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u) == 0)
+		nxNpActorReport(0x2ae, "Actor::moveGlobalOrientation: Actor must be kinematic!");
+	else
+		{
+		NxMat34 pose;
+		pose.M = orientation;
+		pose.t = getGlobalPositionVal();
+		moveGlobalPose(pose);
+		}
+	nxNpSceneGuardLeave(ctx);
 	}
 
+// phys_fn_000070 (0x00002a80, 185 B)
+// 0x2abc-0x2b03: the descriptor's own isValid() (vtable slot 2) is asked
+// first; a false answer reports E1 line 0x1ac and returns 0 after unlocking.
 NxShape* NpActorVtable::createShape(const NxShapeDesc& descriptor)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return 0;
+	if(!nxNpActorWriteTry(ctx, 0x1ab)) return 0;
+	if(!descriptor.isValid())
+		{
+		nxNpActorReport(0x1ac, "Actor::createShape: desc.isValid() fails!");
+		nxNpSceneGuardLeave(ctx);
+		return 0;
+		}
 	NxShape* shape = static_cast<NxShape*>(nxActorAppendShape(this, &descriptor));
 	nxNpSceneGuardLeave(ctx);
 	return shape;
 	}
 
+// phys_fn_000072 (0x00002b40, 90 B)
 void NpActorVtable::releaseShape(NxShape& shape)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0x1b3)) return;
 	nxActorRemoveShape(this, &shape);
 	nxNpSceneGuardLeave(ctx);
 	}
@@ -1251,10 +1336,11 @@ static void nxNpActorWakeAfterCMassWrite(unsigned char* record)
 		}
 	}
 
+// phys_fn_000210 (0x00009cc0, 998 B)
 void NpActorVtable::setCMassOffsetLocalPose(const NxMat34& pose)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0x387)) return;
 	unsigned char* record = nxNpActorRecord(this);
 	if(record && (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u) == 0)
 		{
@@ -1267,13 +1353,16 @@ void NpActorVtable::setCMassOffsetLocalPose(const NxMat34& pose)
 		nxNpActorRefreshCMass(record);
 		nxNpActorWakeAfterCMassWrite(record);
 		}
+	else
+		nxNpActorReport(0x388, "Actor::setCMassOffsetLocalPose: Actor must be (non-kinematic) dynamic!");
 	nxNpSceneGuardLeave(ctx);
 	}
 
+// phys_fn_000212 (0x0000a0b0, 739 B)
 void NpActorVtable::setCMassOffsetLocalPosition(const NxVec3& position)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0x393)) return;
 	unsigned char* record = nxNpActorRecord(this);
 	if(record && (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u) == 0)
 		{
@@ -1283,13 +1372,16 @@ void NpActorVtable::setCMassOffsetLocalPosition(const NxVec3& position)
 		nxNpActorRefreshCMass(record);
 		nxNpActorWakeAfterCMassWrite(record);
 		}
+	else
+		nxNpActorReport(0x394, "Actor::setCMassOffsetLocalPosition: Actor must be (non-kinematic) dynamic!");
 	nxNpSceneGuardLeave(ctx);
 	}
 
+// phys_fn_000214 (0x0000a3a0, 557 B)
 void NpActorVtable::setCMassOffsetLocalOrientation(const NxMat33& orientation)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0x39e)) return;
 	unsigned char* record = nxNpActorRecord(this);
 	if(record && (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u) == 0)
 		{
@@ -1299,6 +1391,8 @@ void NpActorVtable::setCMassOffsetLocalOrientation(const NxMat33& orientation)
 		nxNpActorRefreshCMass(record);
 		nxNpActorWakeAfterCMassWrite(record);
 		}
+	else
+		nxNpActorReport(0x39f, "Actor::setCMassOffsetLocalOrientation: Actor must be (non-kinematic) dynamic!");
 	nxNpSceneGuardLeave(ctx);
 	}
 
@@ -1371,10 +1465,11 @@ static void nxNpActorStoreGlobalMassOrientation(unsigned char* record,
 	++*reinterpret_cast<unsigned*>(record + 0x198);
 	}
 
+// phys_fn_000218 (0x0000a680, 1614 B)
 void NpActorVtable::setCMassOffsetGlobalPose(const NxMat34& pose)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0x3ab)) return;
 	unsigned char* record = nxNpActorRecord(this);
 	if(record && (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u) == 0)
 		{
@@ -1383,13 +1478,16 @@ void NpActorVtable::setCMassOffsetGlobalPose(const NxMat34& pose)
 		nxNpActorRefreshCMass(record);
 		nxNpActorWakeAfterCMassWrite(record);
 		}
+	else
+		nxNpActorReport(0x3ac, "Actor::setCMassOffsetGlobalPose: Actor must be (non-kinematic) dynamic!");
 	nxNpSceneGuardLeave(ctx);
 	}
 
+// phys_fn_000220 (0x0000acd0, 1059 B)
 void NpActorVtable::setCMassOffsetGlobalPosition(const NxVec3& position)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0x3b7)) return;
 	unsigned char* record = nxNpActorRecord(this);
 	if(record && (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u) == 0)
 		{
@@ -1397,13 +1495,16 @@ void NpActorVtable::setCMassOffsetGlobalPosition(const NxVec3& position)
 		nxNpActorRefreshCMass(record);
 		nxNpActorWakeAfterCMassWrite(record);
 		}
+	else
+		nxNpActorReport(0x3b8, "Actor::setCMassOffsetGlobalPosition: Actor must be (non-kinematic) dynamic!");
 	nxNpSceneGuardLeave(ctx);
 	}
 
+// phys_fn_000222 (0x0000b100, 1187 B)
 void NpActorVtable::setCMassOffsetGlobalOrientation(const NxMat33& orientation)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0x3c0)) return;
 	unsigned char* record = nxNpActorRecord(this);
 	if(record && (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u) == 0)
 		{
@@ -1411,17 +1512,26 @@ void NpActorVtable::setCMassOffsetGlobalOrientation(const NxMat33& orientation)
 		nxNpActorRefreshCMass(record);
 		nxNpActorWakeAfterCMassWrite(record);
 		}
+	else
+		nxNpActorReport(0x3c1, "Actor::setCMassOffsetGlobalOrientation: Actor must be (non-kinematic) dynamic!");
 	nxNpSceneGuardLeave(ctx);
 	}
 
 static void nxNpActorApplyWorldMassPose(unsigned char* record);
 
+// phys_fn_000204 (0x000096c0, 520 B)
+// The static/kinematic check and its E1 report (line 0x268) come before the
+// write lock is tried, so that arm never locks or unlocks.
 void NpActorVtable::setCMassGlobalPose(const NxMat34& pose)
 	{
 	unsigned char* record = nxNpActorRecord(this);
-	if(!record || (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u)) return;
+	if(!record || (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u))
+		{
+		nxNpActorReport(0x268, "Actor::setCMassGlobalPose: Actor must be (non-kinematic) dynamic!");
+		return;
+		}
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0x269)) return;
 	memcpy(record + 0x158, &pose.t, sizeof(pose.t));
 	pose.M.getRowMajor(reinterpret_cast<float*>(record + 0x134));
 	nxNpActorUpdateCMassQuaternion(record);
@@ -1571,24 +1681,38 @@ static const unsigned char* nxNpActorDerivedMassFrame(
 	return scratch;
 	}
 
+// phys_fn_000206 (0x000098d0, 504 B)
+// The static/kinematic check and its E1 report (line 0x276) come before the
+// write lock is tried, so that arm never locks or unlocks.
 void NpActorVtable::setCMassGlobalPosition(const NxVec3& position)
 	{
 	unsigned char* record = nxNpActorRecord(this);
-	if(!record || (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u)) return;
+	if(!record || (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u))
+		{
+		nxNpActorReport(0x276, "Actor::setCMassGlobalPosition: Actor must be (non-kinematic) dynamic!");
+		return;
+		}
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0x277)) return;
 	memcpy(record + 0x158, &position, sizeof(position));
 	nxNpActorApplyWorldMassPose(record);
 	nxNpActorWakeAfterCMassWrite(record);
 	nxNpSceneGuardLeave(ctx);
 	}
 
+// phys_fn_000208 (0x00009ad0, 492 B)
+// The static/kinematic check and its E1 report (line 0x281) come before the
+// write lock is tried, so that arm never locks or unlocks.
 void NpActorVtable::setCMassGlobalOrientation(const NxMat33& orientation)
 	{
 	unsigned char* record = nxNpActorRecord(this);
-	if(!record || (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u)) return;
+	if(!record || (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u))
+		{
+		nxNpActorReport(0x281, "Actor::setCMassGlobalOrientation: Actor must be (non-kinematic) dynamic!");
+		return;
+		}
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0x282)) return;
 	orientation.getRowMajor(reinterpret_cast<float*>(record + 0x134));
 	nxNpActorUpdateCMassQuaternion(record);
 	nxNpActorApplyWorldMassPose(record);
@@ -1610,80 +1734,108 @@ static NxVec3 nxNpActorCMassPosition(const unsigned char* record, unsigned offse
 	return result;
 	}
 
+// phys_fn_000096 (0x00003140, 179 B)
 NxMat34 NpActorVtable::getCMassLocalPoseVal() const
 	{
 	void* ctx = nxNpActorContext(const_cast<NpActorVtable*>(this), 0x10);
 	nxNpSceneGuardEnter(ctx);
 	const unsigned char* record = nxNpActorRecord(const_cast<NpActorVtable*>(this));
+	if(!record)
+		nxNpActorReport(0x2f2, "Actor::getCMassLocalPose: Cannot be called on a static actor!");
 	NxMat34 result(nxNpActorCMassMatrix(record, 0xdc),
 		nxNpActorCMassPosition(record, 0x100));
 	nxNpSceneGuardLeave(ctx);
 	return result;
 	}
 
+// phys_fn_000098 (0x00003200, 151 B)
 NxVec3 NpActorVtable::getCMassLocalPositionVal() const
 	{
 	void* ctx = nxNpActorContext(const_cast<NpActorVtable*>(this), 0x10);
 	nxNpSceneGuardEnter(ctx);
-	NxVec3 result = nxNpActorCMassPosition(
-		nxNpActorRecord(const_cast<NpActorVtable*>(this)), 0x100);
+	const unsigned char* record = nxNpActorRecord(const_cast<NpActorVtable*>(this));
+	if(!record)
+		nxNpActorReport(0x2fa, "Actor::getCMassLocalPosition: Cannot be called on a static actor!");
+	NxVec3 result = nxNpActorCMassPosition(record, 0x100);
 	nxNpSceneGuardLeave(ctx);
 	return result;
 	}
 
+// phys_fn_000100 (0x000032a0, 108 B)
 NxMat33 NpActorVtable::getCMassLocalOrientationVal() const
 	{
 	void* ctx = nxNpActorContext(const_cast<NpActorVtable*>(this), 0x10);
 	nxNpSceneGuardEnter(ctx);
-	NxMat33 result = nxNpActorCMassMatrix(
-		nxNpActorRecord(const_cast<NpActorVtable*>(this)), 0xdc);
+	const unsigned char* record = nxNpActorRecord(const_cast<NpActorVtable*>(this));
+	if(!record)
+		nxNpActorReport(0x301, "Actor::getCMassLocalOrientation: Cannot be called on a static actor!");
+	NxMat33 result = nxNpActorCMassMatrix(record, 0xdc);
 	nxNpSceneGuardLeave(ctx);
 	return result;
 	}
 
+// phys_fn_000134 (0x000047d0, 907 B)
 NxMat34 NpActorVtable::getCMassGlobalPoseVal() const
 	{
 	void* ctx = nxNpActorContext(const_cast<NpActorVtable*>(this), 0x10);
 	nxNpSceneGuardEnter(ctx);
 	unsigned char scratch[0x260];
-	const unsigned char* record = nxNpActorDerivedMassFrame(
-		nxNpActorRecord(const_cast<NpActorVtable*>(this)), scratch);
+	const unsigned char* source = nxNpActorRecord(const_cast<NpActorVtable*>(this));
+	if(!source)
+		nxNpActorReport(0x30a, "Actor::getCMassGlobalPose: Cannot be called on a static actor!");
+	const unsigned char* record = nxNpActorDerivedMassFrame(source, scratch);
 	NxMat34 result(nxNpActorCMassMatrix(record, 0x134),
 		nxNpActorCMassPosition(record, 0x158));
 	nxNpSceneGuardLeave(ctx);
 	return result;
 	}
 
+// phys_fn_000136 (0x00004b60, 498 B)
 NxVec3 NpActorVtable::getCMassGlobalPositionVal() const
 	{
 	void* ctx = nxNpActorContext(const_cast<NpActorVtable*>(this), 0x10);
 	nxNpSceneGuardEnter(ctx);
 	unsigned char scratch[0x260];
+	const unsigned char* source = nxNpActorRecord(const_cast<NpActorVtable*>(this));
+	if(!source)
+		nxNpActorReport(0x314, "Actor::getCMassGlobalPosition: Cannot be called on a static actor!");
 	NxVec3 result = nxNpActorCMassPosition(
-		nxNpActorDerivedMassFrame(
-			nxNpActorRecord(const_cast<NpActorVtable*>(this)), scratch), 0x158);
+		nxNpActorDerivedMassFrame(source, scratch), 0x158);
 	nxNpSceneGuardLeave(ctx);
 	return result;
 	}
 
+// phys_fn_000138 (0x00004d60, 658 B)
 NxMat33 NpActorVtable::getCMassGlobalOrientationVal() const
 	{
 	void* ctx = nxNpActorContext(const_cast<NpActorVtable*>(this), 0x10);
 	nxNpSceneGuardEnter(ctx);
 	unsigned char scratch[0x260];
+	const unsigned char* source = nxNpActorRecord(const_cast<NpActorVtable*>(this));
+	if(!source)
+		nxNpActorReport(0x31d, "Actor::getCMassGlobalOrientation: Cannot be called on a static actor!");
 	NxMat33 result = nxNpActorCMassMatrix(
-		nxNpActorDerivedMassFrame(
-			nxNpActorRecord(const_cast<NpActorVtable*>(this)), scratch), 0x134);
+		nxNpActorDerivedMassFrame(source, scratch), 0x134);
 	nxNpSceneGuardLeave(ctx);
 	return result;
 	}
 
+// phys_fn_000166 (0x00006c60, 479 B)
+// 0x6c9c-0x6d2f: a static actor reports E1 line 0xba; a mass that is not
+// greater than zero (NaN included: `test ah,0x41` after fcomp 0.0) reports
+// line 0xbb with the mass passed as a double for the %f.
 void NpActorVtable::setMass(NxReal mass)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0xb9)) return;
 	unsigned char* record = nxNpActorRecord(this);
-	if(record && mass > 0.0f)
+	if(!record)
+		nxNpActorReport(0xba, "Actor::setMass: Actor must be dynamic!");
+	else if(!(mass > 0.0f))
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_PARAMETER, NX_NPACTOR_CPP,
+			0xbb, 0, "Body::setMass: mass is %f, should be positive!",
+			static_cast<double>(mass));
+	else
 		{
 		*reinterpret_cast<float*>(record + 0x188) = mass;
 		*reinterpret_cast<float*>(record + 0xc0) = 1.0f / mass;
@@ -1704,10 +1856,11 @@ NxReal NpActorVtable::getMass() const
 	return out;
 	}
 
+// phys_fn_000168 (0x00006e40, 577 B)
 void NpActorVtable::setMassSpaceInertiaTensor(const NxVec3& m)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0xc5)) return;
 	unsigned char* record = nxNpActorRecord(this);
 	if(record)
 		{
@@ -1723,95 +1876,136 @@ void NpActorVtable::setMassSpaceInertiaTensor(const NxVec3& m)
 			memset(inverse, 0, sizeof(NxVec3));
 		nxNpActorMarkRecordDirty(record, 0x20000);
 		}
+	else
+		nxNpActorReport(0xc6, "Actor::setMassSpaceInertiaTensor: Actor must be dynamic!");
 	nxNpSceneGuardLeave(ctx);
 	}
 
+// phys_fn_000102 (0x00003310, 151 B)
 NxVec3 NpActorVtable::getMassSpaceInertiaTensorVal() const
 	{
 	void* self = const_cast<NpActorVtable*>(this);
 	void* ctx = nxNpActorContext(self, 0x10);
 	nxNpSceneGuardEnter(ctx);
 	unsigned char* record = nxNpActorRecord(self);
+	if(!record)
+		nxNpActorReport(0x328, "Actor::getMassSpaceInertiaTensorVal: Cannot be called on a static actor!");
 	NxVec3 out(0.0f, 0.0f, 0.0f);
 	if(record) memcpy(&out, record + 0x18c, sizeof(out));
 	nxNpSceneGuardLeave(ctx);
 	return out;
 	}
 
+// phys_fn_000140 (0x00005000, 706 B)
 NxMat33 NpActorVtable::getGlobalInertiaTensorVal() const
 	{
 	void* self = const_cast<NpActorVtable*>(this);
 	void* ctx = nxNpActorContext(self, 0x10);
 	nxNpSceneGuardEnter(ctx);
-	NxMat33 out = nxNpActorInstantTensor(nxNpActorRecord(self), 0x18c, false);
+	unsigned char* record = nxNpActorRecord(self);
+	if(!record)
+		nxNpActorReport(0x32f, "Actor::getGlobalInertiaTensorVal: Cannot be called on a static actor!");
+	NxMat33 out = nxNpActorInstantTensor(record, 0x18c, false);
 	nxNpSceneGuardLeave(ctx);
 	return out;
 	}
 
+// phys_fn_000142 (0x000052d0, 691 B)
+// The only reader in the unit that takes no scene lock (0x52d0-0x5320 go
+// straight to [[this+0x14]+8]); the static arm reports E1 line 0x338.
 NxMat33 NpActorVtable::getGlobalInertiaTensorInverseVal() const
 	{
-	void* self = const_cast<NpActorVtable*>(this);
-	void* ctx = nxNpActorContext(self, 0x10);
-	nxNpSceneGuardEnter(ctx);
-	NxMat33 out = nxNpActorInstantTensor(nxNpActorRecord(self), 0xc4, false);
-	nxNpSceneGuardLeave(ctx);
-	return out;
+	unsigned char* record = nxNpActorRecord(const_cast<NpActorVtable*>(this));
+	if(!record)
+		nxNpActorReport(0x338, "Actor::getGlobalInertiaTensorInverseVal: Cannot be called on a static actor!");
+	return nxNpActorInstantTensor(record, 0xc4, false);
 	}
 
+// phys_fn_000170 (0x00007090, 431 B)
+// The value is checked before the actor (fcomp 0.0; `test ah,1`: negative or
+// unordered reports line 0xd1 even on a static actor), then a static actor
+// reports line 0xd2; both arms unlock after the report.
 void NpActorVtable::setLinearDamping(NxReal damping)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0xd0)) return;
+	if(!(damping >= 0.0f))
+		{
+		nxNpActorReport(0xd1, "Actor::setLinearDamping: The linear damping must be nonnegative!");
+		nxNpSceneGuardLeave(ctx);
+		return;
+		}
 	unsigned char* record = nxNpActorRecord(this);
-	if(record && damping >= 0.0f)
+	if(record)
 		{
 		*reinterpret_cast<float*>(record + 0xb8) = damping;
 		nxNpActorMarkRecordDirty(record, 0x800);
 		}
+	else
+		nxNpActorReport(0xd2, "Actor::setLinearDamping: Actor must be dynamic!");
 	nxNpSceneGuardLeave(ctx);
 	}
 
+// phys_fn_000050 (0x00002610, 107 B)
 NxReal NpActorVtable::getLinearDamping() const
 	{
 	void* self = const_cast<NpActorVtable*>(this);
 	void* ctx = nxNpActorContext(self, 0x10);
 	nxNpSceneGuardEnter(ctx);
 	unsigned char* record = nxNpActorRecord(self);
+	if(!record)
+		nxNpActorReport(0xd9, "Actor::setLinearDamping: Actor must be dynamic!");
 	const NxReal out = record
 		? *reinterpret_cast<NxReal*>(record + 0xb8) : NxReal();
 	nxNpSceneGuardLeave(ctx);
 	return out;
 	}
 
+// phys_fn_000172 (0x00007240, 431 B)
+// The value is checked before the actor (fcomp 0.0; `test ah,1`: negative or
+// unordered reports line 0xe0 even on a static actor), then a static actor
+// reports line 0xe1; both arms unlock after the report.
 void NpActorVtable::setAngularDamping(NxReal damping)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0xdf)) return;
+	if(!(damping >= 0.0f))
+		{
+		nxNpActorReport(0xe0, "Actor::setAngularDamping: The angular damping must be nonnegative!");
+		nxNpSceneGuardLeave(ctx);
+		return;
+		}
 	unsigned char* record = nxNpActorRecord(this);
-	if(record && damping >= 0.0f)
+	if(record)
 		{
 		*reinterpret_cast<float*>(record + 0xbc) = damping;
 		nxNpActorMarkRecordDirty(record, 0x1000);
 		}
+	else
+		nxNpActorReport(0xe1, "Actor::setAngularDamping: Actor must be dynamic!");
 	nxNpSceneGuardLeave(ctx);
 	}
 
+// phys_fn_000052 (0x00002680, 107 B)
 NxReal NpActorVtable::getAngularDamping() const
 	{
 	void* self = const_cast<NpActorVtable*>(this);
 	void* ctx = nxNpActorContext(self, 0x10);
 	nxNpSceneGuardEnter(ctx);
 	unsigned char* record = nxNpActorRecord(self);
+	if(!record)
+		nxNpActorReport(0xe8, "Actor::getAngularDamping: Actor must be dynamic!");
 	const NxReal out = record
 		? *reinterpret_cast<NxReal*>(record + 0xbc) : NxReal();
 	nxNpSceneGuardLeave(ctx);
 	return out;
 	}
 
+// phys_fn_000174 (0x000073f0, 770 B)
 void NpActorVtable::setLinearVelocity(const NxVec3& velocity)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0xf3)) return;
 	unsigned char* record = nxNpActorRecord(this);
 	if(record && (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u) == 0)
 		{
@@ -1819,13 +2013,16 @@ void NpActorVtable::setLinearVelocity(const NxVec3& velocity)
 		memcpy(record + 0x34, &velocity, sizeof(velocity));
 		nxNpActorMarkRecordDirty(record, 4);
 		}
+	else
+		nxNpActorReport(0xf4, "Actor::setLinearVelocity: Actor must be (non-kinematic) dynamic!");
 	nxNpSceneGuardLeave(ctx);
 	}
 
+// phys_fn_000176 (0x00007700, 786 B)
 void NpActorVtable::setAngularVelocity(const NxVec3& velocity)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0xfc)) return;
 	unsigned char* record = nxNpActorRecord(this);
 	if(record && (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u) == 0)
 		{
@@ -1833,50 +2030,62 @@ void NpActorVtable::setAngularVelocity(const NxVec3& velocity)
 		memcpy(record + 0x40, &velocity, sizeof(velocity));
 		nxNpActorMarkRecordDirty(record, 8);
 		}
+	else
+		nxNpActorReport(0xfd, "Actor::setAngularVelocity: Actor must be (non-kinematic) dynamic!");
 	nxNpSceneGuardLeave(ctx);
 	}
 
+// phys_fn_000104 (0x000033b0, 137 B)
 NxVec3 NpActorVtable::getLinearVelocityVal() const
 	{
 	void* self = const_cast<NpActorVtable*>(this);
 	void* ctx = nxNpActorContext(self, 0x10);
 	nxNpSceneGuardEnter(ctx);
 	unsigned char* record = nxNpActorRecord(self);
+	if(!record)
+		nxNpActorReport(0x343, "Actor::getLinearVelocity: Actor must be dynamic!");
 	NxVec3 out(0.0f, 0.0f, 0.0f);
 	if(record) memcpy(&out, record + 0x6c, sizeof(out));
 	nxNpSceneGuardLeave(ctx);
 	return out;
 	}
 
+// phys_fn_000106 (0x00003440, 140 B)
 NxVec3 NpActorVtable::getAngularVelocityVal() const
 	{
 	void* self = const_cast<NpActorVtable*>(this);
 	void* ctx = nxNpActorContext(self, 0x10);
 	nxNpSceneGuardEnter(ctx);
 	unsigned char* record = nxNpActorRecord(self);
+	if(!record)
+		nxNpActorReport(0x34a, "Actor::getAngularVelocity: Actor must be dynamic!");
 	NxVec3 out(0.0f, 0.0f, 0.0f);
 	if(record) memcpy(&out, record + 0x78, sizeof(out));
 	nxNpSceneGuardLeave(ctx);
 	return out;
 	}
 
+// phys_fn_000178 (0x00007a20, 385 B)
 void NpActorVtable::setMaxAngularVelocity(NxReal limit)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0x108)) return;
 	unsigned char* record = nxNpActorRecord(this);
 	if(record)
 		{
 		*reinterpret_cast<NxReal*>(record + 0xd8) = limit * limit;
 		nxNpActorMarkRecordDirty(record, 0x8000);
 		}
+	else
+		nxNpActorReport(0x109, "Actor::setMaxAngularVelocity: Actor must be dynamic!");
 	nxNpSceneGuardLeave(ctx);
 	}
 
+// phys_fn_000180 (0x00007bb0, 782 B)
 void NpActorVtable::setLinearMomentum(const NxVec3& momentum)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0x113)) return;
 	unsigned char* record = nxNpActorRecord(this);
 	if(record)
 		{
@@ -1887,13 +2096,16 @@ void NpActorVtable::setLinearMomentum(const NxVec3& momentum)
 		memcpy(record + 0x34, &velocity, sizeof(velocity));
 		nxNpActorMarkRecordDirty(record, 4);
 		}
+	else
+		nxNpActorReport(0x114, "Actor::setLinearMomentum: Actor must be dynamic!");
 	nxNpSceneGuardLeave(ctx);
 	}
 
+// phys_fn_000182 (0x00007ec0, 867 B)
 void NpActorVtable::setAngularMomentum(const NxVec3& momentum)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0x11c)) return;
 	unsigned char* record = nxNpActorRecord(this);
 	if(record && (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u) == 0)
 		{
@@ -1912,15 +2124,20 @@ void NpActorVtable::setAngularMomentum(const NxVec3& momentum)
 		memcpy(record + 0x40, &velocity, sizeof(velocity));
 		nxNpActorMarkRecordDirty(record, 8);
 		}
+	else
+		nxNpActorReport(0x11d, "Actor::setAngularMomentum: Actor must be (non-kinematic) dynamic!");
 	nxNpSceneGuardLeave(ctx);
 	}
 
+// phys_fn_000108 (0x000034d0, 173 B)
 NxVec3 NpActorVtable::getLinearMomentumVal() const
 	{
 	void* self = const_cast<NpActorVtable*>(this);
 	void* ctx = nxNpActorContext(self, 0x10);
 	nxNpSceneGuardEnter(ctx);
 	unsigned char* record = nxNpActorRecord(self);
+	if(!record)
+		nxNpActorReport(0x353, "Actor::getLinearMomentumVal: Cannot be called on a static actor!");
 	NxVec3 out(0.0f, 0.0f, 0.0f);
 	if(record)
 		{
@@ -1932,12 +2149,15 @@ NxVec3 NpActorVtable::getLinearMomentumVal() const
 	return out;
 	}
 
+// phys_fn_000144 (0x00005590, 849 B)
 NxVec3 NpActorVtable::getAngularMomentumVal() const
 	{
 	void* self = const_cast<NpActorVtable*>(this);
 	void* ctx = nxNpActorContext(self, 0x10);
 	nxNpSceneGuardEnter(ctx);
 	unsigned char* record = nxNpActorRecord(self);
+	if(!record)
+		nxNpActorReport(0x35a, "Actor::getAngularMomentumVal: Cannot be called on a static actor!");
 	NxVec3 out(0.0f, 0.0f, 0.0f);
 	if(record)
 		{
@@ -1972,65 +2192,87 @@ static void nxNpActorForceAtPos(unsigned char* record, const NxVec3& force,
 	nxNpActorAccumulateForce(record, torque, mode, true);
 	}
 
+// phys_fn_000152 (0x00005fa0, 346 B)
+// Local point to world (callers 000154, 000158). R is the shared ROT
+// sequence (the five float spills, rows stored to float); then, in x87
+// registers, x = (R01 py + R02 pz) + R00 px stays unrounded until it is added
+// to t.x, while y = (R11 py + R12 pz) + R10 px and z = (R22 pz + R20 px) +
+// R21 py are spilled to float (0x100060b4, 0x100060d4) before t.y and t.z are
+// added to them.
 static NxVec3 nxNpActorLocalPosition(const unsigned char* record,
 	const NxVec3& position)
 	{
-	float rotation[9];
-	nxNpActorRotationFromQuaternion(record, rotation);
-	const float* translation = reinterpret_cast<const float*>(record + 0x50);
-	return NxVec3(
-		static_cast<float>(static_cast<double>(rotation[0]) * position.x +
-			static_cast<double>(rotation[2]) * position.z +
-			static_cast<double>(rotation[1]) * position.y + translation[0]),
-		static_cast<float>(static_cast<double>(rotation[3]) * position.x +
-			static_cast<double>(rotation[5]) * position.z +
-			static_cast<double>(rotation[4]) * position.y + translation[1]),
-		static_cast<float>(static_cast<double>(rotation[6]) * position.x +
-			static_cast<double>(rotation[8]) * position.z +
-			static_cast<double>(rotation[7]) * position.y + translation[2]));
+	float r[9];
+	nxNpActorRotationFromQuaternionGetter(
+		reinterpret_cast<const float*>(record + 0x5c), r);
+	const float* t = reinterpret_cast<const float*>(record + 0x50);
+	const double x = (static_cast<double>(r[1]) * position.y +
+		static_cast<double>(r[2]) * position.z) +
+		static_cast<double>(r[0]) * position.x;
+	const NxReal y = static_cast<NxReal>((static_cast<double>(r[4]) * position.y +
+		static_cast<double>(r[5]) * position.z) +
+		static_cast<double>(r[3]) * position.x);
+	const NxReal z = static_cast<NxReal>((static_cast<double>(r[8]) * position.z +
+		static_cast<double>(r[6]) * position.x) +
+		static_cast<double>(r[7]) * position.y);
+	return NxVec3(static_cast<NxReal>(x + t[0]),
+		static_cast<NxReal>(static_cast<double>(t[1]) + y),
+		static_cast<NxReal>(static_cast<double>(t[2]) + z));
 	}
 
+// phys_fn_000054 (0x000026f0, 167 B)
 void NpActorVtable::addForceAtPos(const NxVec3& force, const NxVec3& pos, NxForceMode mode )
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0x12a)) return;
 	unsigned char* record = nxNpActorRecord(this);
 	if(record && (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u) == 0)
 		nxNpActorForceAtPos(record, force, pos, mode);
+	else
+		nxNpActorReport(0x12b, "Actor::addForceAtPos: Actor must be (non-kinematic) dynamic!");
 	nxNpSceneGuardLeave(ctx);
 	}
 
+// phys_fn_000154 (0x00006100, 201 B)
 void NpActorVtable::addForceAtLocalPos(const NxVec3& force, const NxVec3& pos, NxForceMode mode )
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0x131)) return;
 	unsigned char* record = nxNpActorRecord(this);
 	if(record && (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u) == 0)
 		nxNpActorForceAtPos(record, force,
 			nxNpActorLocalPosition(record, pos), mode);
+	else
+		nxNpActorReport(0x132, "Actor::addForceAtLocalPos: Actor must be (non-kinematic) dynamic!");
 	nxNpSceneGuardLeave(ctx);
 	}
 
+// phys_fn_000156 (0x000061d0, 201 B)
 void NpActorVtable::addLocalForceAtPos(const NxVec3& force, const NxVec3& pos, NxForceMode mode )
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0x13b)) return;
 	unsigned char* record = nxNpActorRecord(this);
 	if(record && (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u) == 0)
 		nxNpActorForceAtPos(record,
 			nxNpActorRotateLocalForce(record, force), pos, mode);
+	else
+		nxNpActorReport(0x13c, "Actor::addLocalForceAtPos: Actor must be (non-kinematic) dynamic!");
 	nxNpSceneGuardLeave(ctx);
 	}
 
+// phys_fn_000158 (0x000062a0, 214 B)
 void NpActorVtable::addLocalForceAtLocalPos(const NxVec3& force, const NxVec3& pos, NxForceMode mode )
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0x144)) return;
 	unsigned char* record = nxNpActorRecord(this);
 	if(record && (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u) == 0)
 		nxNpActorForceAtPos(record,
 			nxNpActorRotateLocalForce(record, force),
 			nxNpActorLocalPosition(record, pos), mode);
+	else
+		nxNpActorReport(0x145, "Actor::addLocalForceAtLocalPos: Actor must be (non-kinematic) dynamic!");
 	nxNpSceneGuardLeave(ctx);
 	}
 
@@ -2091,65 +2333,79 @@ static void nxNpActorAccumulateForce(unsigned char* record,
 		}
 	}
 
+// phys_fn_000056 (0x000027a0, 165 B)
 void NpActorVtable::addForce(const NxVec3& force, NxForceMode mode )
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0x14d)) return;
 	unsigned char* record = nxNpActorRecord(this);
 	if(record && (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u) == 0)
 		nxNpActorAccumulateForce(record, force, mode, false);
+	else
+		nxNpActorReport(0x14e, "Actor::addForce: Actor must be (non-kinematic) dynamic!");
 	nxNpSceneGuardLeave(ctx);
 	}
 
+// phys_fn_000150 (0x00005e70, 298 B)
+// Local vector to world (callers 000156, 000158, 000160, 000162): the shared
+// ROT sequence, then each row summed in x87 registers as (Ri1 y + Ri2 z) +
+// Ri0 x and rounded only at the store (0x10005f3c-0x10005f91).
 static NxVec3 nxNpActorRotateLocalForce(const unsigned char* record,
 	const NxVec3& local)
 	{
-	NxQuat quaternion;
-	memcpy(&quaternion, record + 0x5c, sizeof(quaternion));
-	NxMat33 rotation(quaternion);
 	float m[9];
-	rotation.getRowMajor(m);
+	nxNpActorRotationFromQuaternionGetter(
+		reinterpret_cast<const float*>(record + 0x5c), m);
 	return NxVec3(
-		static_cast<float>(static_cast<double>(m[0]) * local.x +
-			static_cast<double>(m[2]) * local.z +
-			static_cast<double>(m[1]) * local.y),
-		static_cast<float>(static_cast<double>(m[3]) * local.x +
-			static_cast<double>(m[5]) * local.z +
-			static_cast<double>(m[4]) * local.y),
-		static_cast<float>(static_cast<double>(m[6]) * local.x +
-			static_cast<double>(m[8]) * local.z +
-			static_cast<double>(m[7]) * local.y));
+		static_cast<NxReal>((static_cast<double>(m[1]) * local.y +
+			static_cast<double>(m[2]) * local.z) +
+			static_cast<double>(m[0]) * local.x),
+		static_cast<NxReal>((static_cast<double>(m[4]) * local.y +
+			static_cast<double>(m[5]) * local.z) +
+			static_cast<double>(m[3]) * local.x),
+		static_cast<NxReal>((static_cast<double>(m[7]) * local.y +
+			static_cast<double>(m[8]) * local.z) +
+			static_cast<double>(m[6]) * local.x));
 	}
 
+// phys_fn_000160 (0x00006380, 198 B)
 void NpActorVtable::addLocalForce(const NxVec3& force, NxForceMode mode )
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0x156)) return;
 	unsigned char* record = nxNpActorRecord(this);
 	if(record && (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u) == 0)
 		nxNpActorAccumulateForce(record,
 			nxNpActorRotateLocalForce(record, force), mode, false);
+	else
+		nxNpActorReport(0x157, "Actor::addLocalForce: Actor must be (non-kinematic) dynamic!");
 	nxNpSceneGuardLeave(ctx);
 	}
 
+// phys_fn_000058 (0x00002850, 165 B)
 void NpActorVtable::addTorque(const NxVec3& torque, NxForceMode mode )
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0x160)) return;
 	unsigned char* record = nxNpActorRecord(this);
 	if(record && (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u) == 0)
 		nxNpActorAccumulateForce(record, torque, mode, true);
+	else
+		nxNpActorReport(0x161, "Actor::addTorque: Actor must be (non-kinematic) dynamic!");
 	nxNpSceneGuardLeave(ctx);
 	}
 
+// phys_fn_000162 (0x00006450, 198 B)
 void NpActorVtable::addLocalTorque(const NxVec3& torque, NxForceMode mode )
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0x169)) return;
 	unsigned char* record = nxNpActorRecord(this);
 	if(record && (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u) == 0)
 		nxNpActorAccumulateForce(record,
 			nxNpActorRotateLocalForce(record, torque), mode, true);
+	else
+		nxNpActorReport(0x16a, "Actor::addLocalTorque: Actor must be (non-kinematic) dynamic!");
 	nxNpSceneGuardLeave(ctx);
 	}
 
@@ -2384,7 +2640,7 @@ NxReal NpActorVtable::getSleepLinearVelocity() const
 void NpActorVtable::setSleepLinearVelocity(NxReal threshold)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0x195)) return;
 	unsigned char* record = nxNpActorRecord(this);
 	if(record)
 		{
@@ -2409,7 +2665,7 @@ NxReal NpActorVtable::getSleepAngularVelocity() const
 void NpActorVtable::setSleepAngularVelocity(NxReal threshold)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0x1a2)) return;
 	unsigned char* record = nxNpActorRecord(this);
 	if(record)
 		{
@@ -2422,7 +2678,7 @@ void NpActorVtable::setSleepAngularVelocity(NxReal threshold)
 void NpActorVtable::wakeUp(NxReal wakeCounterValue)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0x207)) return;
 	unsigned char* record = nxNpActorRecord(this);
 	if(record)
 		{
@@ -2437,7 +2693,7 @@ void NpActorVtable::wakeUp(NxReal wakeCounterValue)
 void NpActorVtable::putToSleep()
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0x211)) return;
 	unsigned char* record = nxNpActorRecord(this);
 	if(record)
 		{
@@ -2453,7 +2709,7 @@ void NpActorVtable::putToSleep()
 void NpActorVtable::raiseActorFlag(NxActorFlag flag)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0x1bb)) return;
 	unsigned char* body = nxNpActorBody(this);
 	if(body) *reinterpret_cast<unsigned*>(body + 0x14) |=
 		static_cast<unsigned>(flag);
@@ -2463,7 +2719,7 @@ void NpActorVtable::raiseActorFlag(NxActorFlag flag)
 void NpActorVtable::clearActorFlag(NxActorFlag flag)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0x1c1)) return;
 	unsigned char* body = nxNpActorBody(this);
 	if(body) *reinterpret_cast<unsigned*>(body + 0x14) &=
 		~static_cast<unsigned>(flag);
@@ -2482,10 +2738,11 @@ bool NpActorVtable::readActorFlag(NxActorFlag flag) const
 	return out;
 	}
 
+// phys_fn_000188 (0x000084d0, 407 B)
 void NpActorVtable::raiseBodyFlag(NxBodyFlag flag)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0x1cf)) return;
 	unsigned char* record = nxNpActorRecord(this);
 	if(record)
 		{
@@ -2495,13 +2752,16 @@ void NpActorVtable::raiseBodyFlag(NxBodyFlag flag)
 			static_cast<unsigned>(flag);
 		nxNpActorMarkRecordDirty(record, 0x80000);
 		}
+	else
+		nxNpActorReport(0x1d0, "Actor::raiseBodyFlag: Actor must be dynamic!");
 	nxNpSceneGuardLeave(ctx);
 	}
 
+// phys_fn_000190 (0x00008670, 415 B)
 void NpActorVtable::clearBodyFlag(NxBodyFlag flag)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0x1d9)) return;
 	unsigned char* record = nxNpActorRecord(this);
 	if(record)
 		{
@@ -2511,15 +2771,20 @@ void NpActorVtable::clearBodyFlag(NxBodyFlag flag)
 			~static_cast<unsigned>(flag);
 		nxNpActorMarkRecordDirty(record, 0x80000);
 		}
+	else
+		nxNpActorReport(0x1da, "Actor::clearBodyFlag: Actor must be dynamic!");
 	nxNpSceneGuardLeave(ctx);
 	}
 
+// phys_fn_000080 (0x00002c90, 103 B)
 bool NpActorVtable::readBodyFlag(NxBodyFlag flag) const
 	{
 	void* self = const_cast<NpActorVtable*>(this);
 	void* ctx = nxNpActorContext(self, 0x10);
 	nxNpSceneGuardEnter(ctx);
 	unsigned char* record = nxNpActorRecord(self);
+	if(!record)
+		nxNpActorReport(0x1e3, "Actor::readBodyFlag: Actor must be dynamic!");
 	const bool out = record && (*reinterpret_cast<unsigned*>(record + 0x10c) &
 		static_cast<unsigned>(flag)) != 0;
 	nxNpSceneGuardLeave(ctx);
@@ -2543,7 +2808,7 @@ bool NpActorVtable::saveBodyToDesc(NxBodyDesc& desc)
 void NpActorVtable::saveToDesc(NxActorDescBase& desc)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0x22)) return;
 	unsigned char* body = nxNpActorBody(this);
 	unsigned char* record = body
 		? *reinterpret_cast<unsigned char**>(body + 8) : 0;
@@ -2570,11 +2835,17 @@ void NpActorVtable::saveToDesc(NxActorDescBase& desc)
 
 // Concrete actor slots 83/84 address the same body-keyed global name map as
 // Actor::loadFromDescInternal (oracle 0x2d90/0x2d60).
+// phys_fn_000088 (0x00002d90, 91 B)
+// Under the write lock (G1 line 0x1ff), as 0x2d90-0x2de1 are; which table
+// the name is bound in is a row-level defect of its own.
 void NpActorVtable::setName(const char* name)
 	{
+	void* ctx = nxNpActorContext(this, 0xc);
+	if(!nxNpActorWriteTry(ctx, 0x1ff)) return;
 	unsigned char* body = *reinterpret_cast<unsigned char**>(
 		reinterpret_cast<unsigned char*>(this) + 0x14);
 	if(body) nxShapeSetName(body, name);
+	nxNpSceneGuardLeave(ctx);
 	}
 
 const char* NpActorVtable::getName() const
@@ -2588,7 +2859,7 @@ const char* NpActorVtable::getName() const
 void NpActorVtable::setGroup(NxActorGroup group)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
-	if(!nxNpSceneGuardWriteTry(ctx)) return;
+	if(!nxNpActorWriteTry(ctx, 0x3cd)) return;
 	unsigned char* body = nxNpActorBody(this);
 	if(body) *reinterpret_cast<NxActorGroup*>(body + 0x1c) = group;
 	nxNpSceneGuardLeave(ctx);

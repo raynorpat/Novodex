@@ -254,6 +254,43 @@ int wmain(int argc, wchar_t** argv)
 		allocator.frees() - beforeKinematicFree);
 	kinematic->clearBodyFlag(NX_BF_KINEMATIC);
 	scene->releaseActor(*kinematic);
+	// NpActor.cpp completion Task 2 (000150's x87 row sums): a body at an
+	// irregular orientation with zero velocity takes local velocity changes,
+	// so the record's velocity is exactly 000150's rotated vector, rounded
+	// once at its store after the (R_i1 y + R_i2 z) + R_i0 x register sums.
+	actorDesc.globalPose.M.id();
+	actorDesc.globalPose.t = NxVec3(0.0f, 0.0f, 0.0f);
+	NxActor* turned = scene->createActor(actorDesc);
+	printf("force x87_created=%u\n", turned ? 1u : 0u);
+	if(!turned) return nxFail("x87 actor creation failed");
+	unsigned char* turnedRecord = *reinterpret_cast<unsigned char**>(
+		*reinterpret_cast<unsigned char**>(
+			reinterpret_cast<unsigned char*>(turned) + 0x14) + 8);
+	NxQuat turn;
+	turn.setXYZW(0.3137f, -0.5171f, 0.7043f, 0.3719f);
+	turn.normalize();
+	turned->setGlobalOrientationQuat(turn);
+	printf("force x87_quat=%x.%x.%x.%x\n", word(turnedRecord, 0x5c),
+		word(turnedRecord, 0x60), word(turnedRecord, 0x64), word(turnedRecord, 0x68));
+	const float x87Inputs[6][3] = {
+		{ 1.1f, -2.3f, 3.7f },
+		{ -0.013f, 7.77f, 0.5003f },
+		{ 1234.567f, -0.0021f, 89.1f },
+		{ 3.3333333f, 3.3333333f, -3.3333333f },
+		{ -17.25f, 0.071f, 1.0e-3f },
+		{ 0.1f, 0.2f, 0.3f } };
+	for(unsigned i = 0; i < 6; ++i)
+		{
+		const NxVec3 input(x87Inputs[i][0], x87Inputs[i][1], x87Inputs[i][2]);
+		turned->setLinearVelocity(NxVec3(0.0f, 0.0f, 0.0f));
+		turned->setAngularVelocity(NxVec3(0.0f, 0.0f, 0.0f));
+		turned->addLocalForce(input, NX_VELOCITY_CHANGE);
+		turned->addLocalTorque(input, NX_VELOCITY_CHANGE);
+		printf("force x87_rotate_%u=%x.%x.%x.%x.%x.%x\n", i,
+			word(turnedRecord, 0x6c), word(turnedRecord, 0x70), word(turnedRecord, 0x74),
+			word(turnedRecord, 0x78), word(turnedRecord, 0x7c), word(turnedRecord, 0x80));
+		}
+	scene->releaseActor(*turned);
 	sdk->releaseScene(*scene);
 	sdk->release();
 	return nxReportPairIdentity(pairDirectory);

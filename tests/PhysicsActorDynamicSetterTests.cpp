@@ -1,5 +1,6 @@
 #include "PhysicsPairLoader.h"
 #include "NxPageGuardedAllocator.h"
+#include "PhysicsActorErrorStream.h"
 
 #include "NxPhysicsSDK.h"
 #include "NxScene.h"
@@ -51,7 +52,9 @@ int wmain(int argc, wchar_t** argv)
 		GetProcAddress(physics, "NxCreatePhysicsSDK"));
 	if(!createSDK) return nxFail("NxCreatePhysicsSDK is missing");
 	static NxPageGuardedAllocator allocator;
-	NxPhysicsSDK* sdk = createSDK(NX_PHYSICS_SDK_VERSION, &allocator, 0);
+	// Silent until the G1/E1 cases at the end enable it.
+	static NxActorErrorStream errors("setter");
+	NxPhysicsSDK* sdk = createSDK(NX_PHYSICS_SDK_VERSION, &allocator, &errors);
 	if(!sdk) return nxFail("SDK creation failed");
 	NxSceneDesc sceneDesc;
 	sceneDesc.setToDefault();
@@ -881,6 +884,242 @@ int wmain(int argc, wchar_t** argv)
 		printf("\n");
 		scene->releaseActor(*familyActor);
 		}
+	// NpActor.cpp completion Task 2: the G1/E1 reports. The stream has been
+	// silent until here, so every line above is what it was before it was
+	// passed; from here on each report the pair's Foundation delivers is
+	// printed as "setter report=<code>.<line>.<file>.<message>", and each case
+	// line ends with the number of reports the call made.
+	errors.enabled = true;
+	NxActor* errStatic = scene->createActor(staticDesc);
+	NxBodyDesc errBody;
+	errBody.mass = 2.0f;
+	errBody.massSpaceInertia = NxVec3(1.0f, 2.0f, 3.0f);
+	NxActorDesc errDynamicDesc;
+	errDynamicDesc.shapes.pushBack(&box);
+	errDynamicDesc.body = &errBody;
+	errDynamicDesc.globalPose.t = NxVec3(3.0f, 4.0f, 5.0f);
+	NxActor* errDynamic = scene->createActor(errDynamicDesc);
+	NxActor* errKinematic = scene->createActor(errDynamicDesc);
+	printf("setter error_actors=%u.%u.%u.%u\n", errStatic ? 1u : 0u,
+		errDynamic ? 1u : 0u, errKinematic ? 1u : 0u, errors.reports);
+	if(!errStatic || !errDynamic || !errKinematic)
+		return nxFail("error-case actor creation failed");
+	errKinematic->raiseBodyFlag(NX_BF_KINEMATIC);
+	const unsigned char* errDynamicRecord = *reinterpret_cast<unsigned char* const*>(
+		*reinterpret_cast<unsigned char* const*>(
+			reinterpret_cast<const unsigned char*>(errDynamic) + 0x14) + 8);
+	NxMat34 errPose;
+	errPose.M.setRowMajor(matrixRows[1]);
+	errPose.t = NxVec3(1.0f, 2.0f, 3.0f);
+	const NxVec3 errVector(0.5f, -1.5f, 2.5f);
+	const NxQuat errQuat(errPose.M);
+	NxBoxShapeDesc badBox;
+	badBox.dimensions = NxVec3(-1.0f, 1.0f, 1.0f);
+	unsigned errBefore = 0;
+#define ERROR_CASE(label, expression) \
+	errBefore = errors.reports; \
+	expression; \
+	printf("setter error_" label "=%u\n", errors.reports - errBefore)
+#define ERROR_VALUE(label, type, expression, kind) \
+	{ \
+	errBefore = errors.reports; \
+	const type errValue = expression; \
+	printf("setter error_" label "=" ERRFMT_##kind ".%u\n", ERRARGS_##kind(errValue), \
+		errors.reports - errBefore); \
+	}
+#define ERRFMT_SCALAR "%x"
+#define ERRFMT_COUNT "%u"
+#define ERRFMT_VEC "%x.%x.%x"
+#define ERRFMT_MAT "%x.%x.%x.%x.%x.%x.%x.%x.%x"
+#define ERRFMT_POSE ERRFMT_MAT "." ERRFMT_VEC
+#define ERRARGS_SCALAR(v) bits(v)
+#define ERRARGS_COUNT(v) static_cast<unsigned>(v)
+#define ERRARGS_VEC(v) bits((v).x), bits((v).y), bits((v).z)
+#define ERRARGS_MAT(v) bits((v)(0,0)), bits((v)(0,1)), bits((v)(0,2)), \
+	bits((v)(1,0)), bits((v)(1,1)), bits((v)(1,2)), \
+	bits((v)(2,0)), bits((v)(2,1)), bits((v)(2,2))
+#define ERRARGS_POSE(v) ERRARGS_MAT((v).M), ERRARGS_VEC((v).t)
+
+	// Static actor: every dynamic-only row reports E1 and takes its null arm.
+	ERROR_CASE("static_linear_damping", errStatic->setLinearDamping(0.5f));
+	ERROR_CASE("static_linear_damping_negative", errStatic->setLinearDamping(-1.0f));
+	ERROR_CASE("static_angular_damping", errStatic->setAngularDamping(0.5f));
+	ERROR_CASE("static_angular_damping_negative", errStatic->setAngularDamping(-1.0f));
+	ERROR_CASE("static_mass", errStatic->setMass(2.0f));
+	ERROR_CASE("static_inertia", errStatic->setMassSpaceInertiaTensor(errVector));
+	ERROR_CASE("static_linear_velocity", errStatic->setLinearVelocity(errVector));
+	ERROR_CASE("static_angular_velocity", errStatic->setAngularVelocity(errVector));
+	ERROR_CASE("static_max_angular", errStatic->setMaxAngularVelocity(3.0f));
+	ERROR_CASE("static_linear_momentum", errStatic->setLinearMomentum(errVector));
+	ERROR_CASE("static_angular_momentum", errStatic->setAngularMomentum(errVector));
+	ERROR_CASE("static_raise_body_flag", errStatic->raiseBodyFlag(NX_BF_DISABLE_GRAVITY));
+	ERROR_CASE("static_clear_body_flag", errStatic->clearBodyFlag(NX_BF_DISABLE_GRAVITY));
+	ERROR_CASE("static_force_at_pos", errStatic->addForceAtPos(errVector, errVector));
+	ERROR_CASE("static_force_at_local_pos", errStatic->addForceAtLocalPos(errVector, errVector));
+	ERROR_CASE("static_local_force_at_pos", errStatic->addLocalForceAtPos(errVector, errVector));
+	ERROR_CASE("static_local_force_at_local_pos", errStatic->addLocalForceAtLocalPos(errVector, errVector));
+	ERROR_CASE("static_force", errStatic->addForce(errVector));
+	ERROR_CASE("static_local_force", errStatic->addLocalForce(errVector));
+	ERROR_CASE("static_torque", errStatic->addTorque(errVector));
+	ERROR_CASE("static_local_torque", errStatic->addLocalTorque(errVector));
+	ERROR_CASE("static_move_position", errStatic->moveGlobalPosition(errVector));
+	ERROR_CASE("static_move_pose", errStatic->moveGlobalPose(errPose));
+	ERROR_CASE("static_move_orientation", errStatic->moveGlobalOrientation(errPose.M));
+	ERROR_CASE("static_cmass_local_pose", errStatic->setCMassOffsetLocalPose(errPose));
+	ERROR_CASE("static_cmass_local_position", errStatic->setCMassOffsetLocalPosition(errVector));
+	ERROR_CASE("static_cmass_local_orientation", errStatic->setCMassOffsetLocalOrientation(errPose.M));
+	ERROR_CASE("static_cmass_offset_global_pose", errStatic->setCMassOffsetGlobalPose(errPose));
+	ERROR_CASE("static_cmass_offset_global_position", errStatic->setCMassOffsetGlobalPosition(errVector));
+	ERROR_CASE("static_cmass_offset_global_orientation", errStatic->setCMassOffsetGlobalOrientation(errPose.M));
+	ERROR_CASE("static_cmass_global_pose", errStatic->setCMassGlobalPose(errPose));
+	ERROR_CASE("static_cmass_global_position", errStatic->setCMassGlobalPosition(errVector));
+	ERROR_CASE("static_cmass_global_orientation", errStatic->setCMassGlobalOrientation(errPose.M));
+	ERROR_VALUE("static_get_linear_damping", NxReal, errStatic->getLinearDamping(), SCALAR);
+	ERROR_VALUE("static_get_angular_damping", NxReal, errStatic->getAngularDamping(), SCALAR);
+	ERROR_VALUE("static_read_body_flag", unsigned, errStatic->readBodyFlag(NX_BF_KINEMATIC) ? 1u : 0u, COUNT);
+	ERROR_VALUE("static_get_linear_velocity", NxVec3, errStatic->getLinearVelocity(), VEC);
+	ERROR_VALUE("static_get_angular_velocity", NxVec3, errStatic->getAngularVelocity(), VEC);
+	ERROR_VALUE("static_get_linear_momentum", NxVec3, errStatic->getLinearMomentum(), VEC);
+	ERROR_VALUE("static_get_angular_momentum", NxVec3, errStatic->getAngularMomentum(), VEC);
+	ERROR_VALUE("static_get_inertia", NxVec3, errStatic->getMassSpaceInertiaTensor(), VEC);
+	ERROR_VALUE("static_get_global_inertia", NxMat33, errStatic->getGlobalInertiaTensor(), MAT);
+	ERROR_VALUE("static_get_global_inverse", NxMat33, errStatic->getGlobalInertiaTensorInverse(), MAT);
+	ERROR_VALUE("static_get_cmass_local_pose", NxMat34, errStatic->getCMassLocalPose(), POSE);
+	ERROR_VALUE("static_get_cmass_local_position", NxVec3, errStatic->getCMassLocalPosition(), VEC);
+	ERROR_VALUE("static_get_cmass_local_orientation", NxMat33, errStatic->getCMassLocalOrientation(), MAT);
+	ERROR_VALUE("static_get_cmass_global_pose", NxMat34, errStatic->getCMassGlobalPose(), POSE);
+	ERROR_VALUE("static_get_cmass_global_position", NxVec3, errStatic->getCMassGlobalPosition(), VEC);
+	ERROR_VALUE("static_get_cmass_global_orientation", NxMat33, errStatic->getCMassGlobalOrientation(), MAT);
+	ERROR_VALUE("static_create_invalid_shape", unsigned, errStatic->createShape(badBox) ? 1u : 0u, COUNT);
+
+	// Dynamic actor: invalid arguments and the kinematic-only moves.
+	ERROR_CASE("dynamic_mass_negative", errDynamic->setMass(-3.0f));
+	ERROR_CASE("dynamic_mass_zero", errDynamic->setMass(0.0f));
+	ERROR_CASE("dynamic_linear_damping_negative", errDynamic->setLinearDamping(-0.5f));
+	ERROR_CASE("dynamic_angular_damping_negative", errDynamic->setAngularDamping(-0.5f));
+	printf("setter error_dynamic_unchanged=%x.%x.%x.%x\n",
+		word(errDynamicRecord, 0x188), word(errDynamicRecord, 0xc0),
+		word(errDynamicRecord, 0xb8), word(errDynamicRecord, 0xbc));
+	ERROR_CASE("dynamic_move_position", errDynamic->moveGlobalPosition(errVector));
+	ERROR_CASE("dynamic_move_pose", errDynamic->moveGlobalPose(errPose));
+	ERROR_CASE("dynamic_move_orientation", errDynamic->moveGlobalOrientation(errPose.M));
+	ERROR_VALUE("dynamic_create_invalid_shape", unsigned, errDynamic->createShape(badBox) ? 1u : 0u, COUNT);
+	ERROR_VALUE("dynamic_shapes_after_invalid", unsigned, errDynamic->getNbShapes(), COUNT);
+
+	// Kinematic actor: the (non-kinematic) dynamic rows report E1; the rows
+	// that only need a body do not.
+	ERROR_CASE("kinematic_linear_velocity", errKinematic->setLinearVelocity(errVector));
+	ERROR_CASE("kinematic_angular_velocity", errKinematic->setAngularVelocity(errVector));
+	ERROR_CASE("kinematic_angular_momentum", errKinematic->setAngularMomentum(errVector));
+	ERROR_CASE("kinematic_linear_momentum", errKinematic->setLinearMomentum(errVector));
+	ERROR_CASE("kinematic_force", errKinematic->addForce(errVector));
+	ERROR_CASE("kinematic_torque", errKinematic->addTorque(errVector));
+	ERROR_CASE("kinematic_local_force", errKinematic->addLocalForce(errVector));
+	ERROR_CASE("kinematic_local_torque", errKinematic->addLocalTorque(errVector));
+	ERROR_CASE("kinematic_force_at_pos", errKinematic->addForceAtPos(errVector, errVector));
+	ERROR_CASE("kinematic_force_at_local_pos", errKinematic->addForceAtLocalPos(errVector, errVector));
+	ERROR_CASE("kinematic_local_force_at_pos", errKinematic->addLocalForceAtPos(errVector, errVector));
+	ERROR_CASE("kinematic_local_force_at_local_pos", errKinematic->addLocalForceAtLocalPos(errVector, errVector));
+	ERROR_CASE("kinematic_cmass_local_pose", errKinematic->setCMassOffsetLocalPose(errPose));
+	ERROR_CASE("kinematic_cmass_local_position", errKinematic->setCMassOffsetLocalPosition(errVector));
+	ERROR_CASE("kinematic_cmass_local_orientation", errKinematic->setCMassOffsetLocalOrientation(errPose.M));
+	ERROR_CASE("kinematic_cmass_offset_global_pose", errKinematic->setCMassOffsetGlobalPose(errPose));
+	ERROR_CASE("kinematic_cmass_offset_global_position", errKinematic->setCMassOffsetGlobalPosition(errVector));
+	ERROR_CASE("kinematic_cmass_offset_global_orientation", errKinematic->setCMassOffsetGlobalOrientation(errPose.M));
+	ERROR_CASE("kinematic_cmass_global_pose", errKinematic->setCMassGlobalPose(errPose));
+	ERROR_CASE("kinematic_cmass_global_position", errKinematic->setCMassGlobalPosition(errVector));
+	ERROR_CASE("kinematic_cmass_global_orientation", errKinematic->setCMassGlobalOrientation(errPose.M));
+	ERROR_CASE("kinematic_move_position", errKinematic->moveGlobalPosition(errVector));
+
+	// Write lock held by "another thread": every guarded row reports G1 with
+	// its own line and changes nothing; the CMass-global setters check the
+	// actor before the lock, so on a static actor they report E1 instead.
+	NxActorWriteLockHolder errLock(errDynamic);
+	NxShape* errShape = errDynamic->getShapes()[0];
+	NxActorDesc errSaved;
+#define LOCKED_CASE(label, expression) \
+	errLock.hold(); \
+	ERROR_CASE("locked_" label, expression); \
+	errLock.release()
+	LOCKED_CASE("global_pose", errDynamic->setGlobalPose(errPose));
+	LOCKED_CASE("global_position", errDynamic->setGlobalPosition(errVector));
+	LOCKED_CASE("global_orientation", errDynamic->setGlobalOrientation(errPose.M));
+	LOCKED_CASE("global_orientation_quat", errDynamic->setGlobalOrientationQuat(errQuat));
+	LOCKED_CASE("move_pose", errDynamic->moveGlobalPose(errPose));
+	LOCKED_CASE("move_position", errDynamic->moveGlobalPosition(errVector));
+	LOCKED_CASE("move_orientation", errDynamic->moveGlobalOrientation(errPose.M));
+	LOCKED_CASE("create_shape", errDynamic->createShape(badBox));
+	LOCKED_CASE("release_shape", errDynamic->releaseShape(*errShape));
+	LOCKED_CASE("cmass_local_pose", errDynamic->setCMassOffsetLocalPose(errPose));
+	LOCKED_CASE("cmass_local_position", errDynamic->setCMassOffsetLocalPosition(errVector));
+	LOCKED_CASE("cmass_local_orientation", errDynamic->setCMassOffsetLocalOrientation(errPose.M));
+	LOCKED_CASE("cmass_offset_global_pose", errDynamic->setCMassOffsetGlobalPose(errPose));
+	LOCKED_CASE("cmass_offset_global_position", errDynamic->setCMassOffsetGlobalPosition(errVector));
+	LOCKED_CASE("cmass_offset_global_orientation", errDynamic->setCMassOffsetGlobalOrientation(errPose.M));
+	LOCKED_CASE("cmass_global_pose", errDynamic->setCMassGlobalPose(errPose));
+	LOCKED_CASE("cmass_global_position", errDynamic->setCMassGlobalPosition(errVector));
+	LOCKED_CASE("cmass_global_orientation", errDynamic->setCMassGlobalOrientation(errPose.M));
+	LOCKED_CASE("mass", errDynamic->setMass(-3.0f));
+	LOCKED_CASE("inertia", errDynamic->setMassSpaceInertiaTensor(errVector));
+	LOCKED_CASE("linear_damping", errDynamic->setLinearDamping(-1.0f));
+	LOCKED_CASE("angular_damping", errDynamic->setAngularDamping(-1.0f));
+	LOCKED_CASE("linear_velocity", errDynamic->setLinearVelocity(errVector));
+	LOCKED_CASE("angular_velocity", errDynamic->setAngularVelocity(errVector));
+	LOCKED_CASE("max_angular", errDynamic->setMaxAngularVelocity(3.0f));
+	LOCKED_CASE("linear_momentum", errDynamic->setLinearMomentum(errVector));
+	LOCKED_CASE("angular_momentum", errDynamic->setAngularMomentum(errVector));
+	LOCKED_CASE("force_at_pos", errDynamic->addForceAtPos(errVector, errVector));
+	LOCKED_CASE("force_at_local_pos", errDynamic->addForceAtLocalPos(errVector, errVector));
+	LOCKED_CASE("local_force_at_pos", errDynamic->addLocalForceAtPos(errVector, errVector));
+	LOCKED_CASE("local_force_at_local_pos", errDynamic->addLocalForceAtLocalPos(errVector, errVector));
+	LOCKED_CASE("force", errDynamic->addForce(errVector));
+	LOCKED_CASE("local_force", errDynamic->addLocalForce(errVector));
+	LOCKED_CASE("torque", errDynamic->addTorque(errVector));
+	LOCKED_CASE("local_torque", errDynamic->addLocalTorque(errVector));
+	LOCKED_CASE("sleep_linear", errDynamic->setSleepLinearVelocity(0.25f));
+	LOCKED_CASE("sleep_angular", errDynamic->setSleepAngularVelocity(0.25f));
+	LOCKED_CASE("wake", errDynamic->wakeUp(0.5f));
+	LOCKED_CASE("sleep", errDynamic->putToSleep());
+	LOCKED_CASE("raise_actor_flag", errDynamic->raiseActorFlag(NX_AF_DISABLE_COLLISION));
+	LOCKED_CASE("clear_actor_flag", errDynamic->clearActorFlag(NX_AF_DISABLE_COLLISION));
+	LOCKED_CASE("raise_body_flag", errDynamic->raiseBodyFlag(NX_BF_KINEMATIC));
+	LOCKED_CASE("clear_body_flag", errDynamic->clearBodyFlag(NX_BF_DISABLE_GRAVITY));
+	LOCKED_CASE("save_to_desc", errDynamic->saveToDesc(errSaved));
+	LOCKED_CASE("name", errDynamic->setName("locked"));
+	LOCKED_CASE("group", errDynamic->setGroup(7));
+	errLock.hold();
+	ERROR_VALUE("locked_get_linear_damping", NxReal, errDynamic->getLinearDamping(), SCALAR);
+	errLock.release();
+	NxActorWriteLockHolder errStaticLock(errStatic);
+	errStaticLock.hold();
+	ERROR_CASE("locked_static_cmass_global_pose", errStatic->setCMassGlobalPose(errPose));
+	printf("setter error_locked_static_state=%u.%u\n", errStaticLock.flag(), errStaticLock.owner());
+	errStaticLock.release();
+	printf("setter error_locked_unchanged=%x.%x.%x.%x.%x.%x.%x.%x.%x.%u.%u.%u\n",
+		word(errDynamicRecord, 0x188), word(errDynamicRecord, 0xc0),
+		word(errDynamicRecord, 0xb8), word(errDynamicRecord, 0xbc),
+		word(errDynamicRecord, 0x50), word(errDynamicRecord, 0x54),
+		word(errDynamicRecord, 0x58), word(errDynamicRecord, 0x10c),
+		word(errDynamicRecord, 0x84), errDynamic->getNbShapes(),
+		static_cast<unsigned>(errDynamic->getGroup()),
+		errDynamic->readActorFlag(NX_AF_DISABLE_COLLISION) ? 1u : 0u);
+#undef LOCKED_CASE
+#undef ERROR_CASE
+#undef ERROR_VALUE
+#undef ERRFMT_SCALAR
+#undef ERRFMT_COUNT
+#undef ERRFMT_VEC
+#undef ERRFMT_MAT
+#undef ERRFMT_POSE
+#undef ERRARGS_SCALAR
+#undef ERRARGS_COUNT
+#undef ERRARGS_VEC
+#undef ERRARGS_MAT
+#undef ERRARGS_POSE
+	errors.enabled = false;
+	scene->releaseActor(*errKinematic);
+	scene->releaseActor(*errDynamic);
+	scene->releaseActor(*errStatic);
 	sdk->releaseScene(*scene);
 	sdk->release();
 	return nxReportPairIdentity(pairDirectory);

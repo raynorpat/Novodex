@@ -142,6 +142,10 @@ target_compile_definitions(NxPhysics PRIVATE NX_PHYSICS_DLL=1)
 # are x87 in the oracle too and are reached from the solver step, so they are
 # on the list for the same reason. core/JointSupport.cpp's rows 004389 and 004393 are x87 in the
 # oracle and are called from the solver slots 004360 and 004362 inside the step.
+# NpActor.cpp, the public actor API, is here for the same reason: its float
+# rows (the x87 row sums of 000150/000152, the setters and getters) are x87 in
+# the oracle, and its `double` register lifetimes must compile to x87 at the
+# process's _PC_53 rather than to SSE2 (NpActor.cpp completion Task 2).
 if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	set_source_files_properties(
 		Physics/src/Geometry.cpp
@@ -150,6 +154,7 @@ if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/NarrowPhase.cpp
 		Physics/src/ContactGeneration.cpp
 		Physics/src/ShapeRaycast.cpp
+		Physics/src/NpActor.cpp
 		Physics/src/core/Joint.cpp
 		Physics/src/core/RevoluteJoint.cpp
 		Physics/src/core/PrismaticJoint.cpp
