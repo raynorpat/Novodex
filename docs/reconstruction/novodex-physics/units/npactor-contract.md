@@ -180,7 +180,7 @@ NxPhysicsDynamicFirstTests reaches only the 000118 counterpart.
 | 000116 | 0x00003640 | 8 | reconstructed | table word 87 (0x1010468c): the member (actor+8) table's this-adjust thunk to slot 0 | none (candidate actor has no +8 member table) | OM only | defect (M) | not breakpointed (no candidate function) | NA: no member table or thunk. OM (ObjectModel) faithful, inherits 000118's allocator defect |
 | 000118 | 0x00003650 | 55 | reconstructed | slot 0 ~NxActor (scalar deleting dtor) | none; the wrapper is freed in `NxSceneInternal::releaseActor` Scene.cpp:1332 (free at :1369); the compiler-generated `??_GNpActorVtable` (slot 0 of the candidate table) is the NA counterpart, which no path calls | OM only | defect (M) | 47: ActorBodyFlag 1, ActorCMass 11, ActorDynamicSetter 8, ActorDynamics 2, ActorForce 11, ActorLifecycle 6, ActorMetadata 1, ActorMomentum 4, ActorName 1, ActorShapeMutation 1, DynamicFirst 1 | NA: no destructor; Scene.cpp:1369 frees the wrapper without the table stores/002406. OM: frees through nxGetSdkAllocator, not the imported nxFoundationSDKAllocator ([0x101041bc]); returns void |
 | 000120 | 0x00003690 | 429 | reconstructed | slot 82 saveToDesc | NpActor.cpp:2543 `saveToDesc` | implemented | faithful | 3: ActorLifecycle 3 | NA faithful (G1 0x22 reproduced by Task 2) |
-| 000122 | 0x00003840 | 761 | discovered | slot 18 setDynamic | NpActor.cpp:1226 `setDynamic` | missing | defect (M) | 0 (breakpointed, not hit) | empty body; oracle: validate desc (0x63/0x66), remove static shape, build record via 000026 (malloc 0x260, ctor 0x1b5c0), errors 0x7c/0x7d, tear down old record (000632, notifyObservers(0x100), 000776, free), re-add shape (000531) |
+| 000122 | 0x00003840 | 761 | discovered | slot 18 setDynamic | NpActor.cpp:1579 `setDynamic` | implemented | faithful | not traced (driven by ActorShapeMutation, Task 5) | Task 5: G1 0x5b; E1 0x63 (mass < 0, then the twelve massLocalPose words through _fpclass & 0x207), 0x66 (no shape and a zero-bit tensor); 000533 on a static body's shape; 000026 (Scene.cpp `nxActorBuildRecord`) with E1 0x7c/0x7d leaving the shape out; an old record: 000632, notifyObservers(0x100), 000776, free; 000531 with true. See `## Task 5` |
 | 000124 | 0x00003b40 | 1075 | discovered | slot 10 moveGlobalPose | NpActor.cpp:1128 `moveGlobalPose` | implemented | faithful | 5: ActorDynamics 5 | Task 3: the CMass-frame composition from the listing (row 0 of M p kept in the register, rows 1-2 spilled; G = M F in the listing orders), the 000801 conversion of G, 000784 (ORs 1/2 into +0xc, no null test) and its wake |
 | 000126 | 0x00003f80 | 1192 | discovered | slot 12 moveGlobalOrientation | NpActor.cpp:1164 `moveGlobalOrientation` | implemented | faithful | 3: ActorDynamics 3 | Task 3: composes inline under its own lock with its own orders (translation +0x50; M p row 0 in the register, rows 1-2 spilled; G = M F row by row), the 000801 conversion, 000784 and its wake; no longer delegates |
 | 000128 | 0x00004430 | 333 | discovered | slot 9 getGlobalPoseReference | NpActor.cpp:1100 `getGlobalPoseReference` | implemented | faithful | 2: ActorCMass 2 | all blocks incl. the one-shot 0xd0 warning (line 0x2c0) and the x87 quat-to-rows sequence; Task 2 made the report getInstance().error (the inline `cmp [instance],0; int3`); the Task 3 review moved position x/y through fld/fstp (SNaN quieted) and z as a dword, as 0x10004553-0x10004568 |
@@ -201,7 +201,7 @@ NxPhysicsDynamicFirstTests reaches only the 000118 counterpart.
 | 000158 | 0x000062a0 | 214 | discovered | slot 57 addLocalForceAtLocalPos | NpActor.cpp:2025 `addLocalForceAtLocalPos` | implemented | faithful | 2: ActorForce 2 | Task 3: 000791/000782 from the listing; G1 0x144, E1 0x145 and both helpers from Task 2 |
 | 000160 | 0x00006380 | 198 | discovered | slot 59 addLocalForce | NpActor.cpp:2124 `addLocalForce` | implemented | faithful | 2: ActorForce 2 | Task 3: 000782 from the listing; G1 0x156, E1 0x157 and the 000150 helper from Task 2 |
 | 000162 | 0x00006450 | 198 | discovered | slot 61 addLocalTorque | NpActor.cpp:2145 `addLocalTorque` | implemented | faithful | 2: ActorForce 2 | Task 3: 000782 from the listing; G1 0x169, E1 0x16a and the 000150 helper from Task 2 |
-| 000164 | 0x00006520 | 1846 | discovered | slot 17 updateMassFromShapes | NpActor.cpp:1220 `updateMassFromShapes` | missing | defect (M) | 0 (breakpointed, not hit) | empty body; oracle: sign (0x9a), dynamic (0x9d), shapes (0x9e), exactly one of density/totalMass (0x9f/0xa0), 000008(core; density,&totalMass,&pose,&diag) with errors 0xa8/0xa9, then +0x188/+0xc0 (0x10000), +0x18c../+0xc4.. fpclass-zeroed (0x20000), +0x100 (0x200, ++0x198), +0xdc (0x400, ++0x198), 000768; needs 000008 first |
+| 000164 | 0x00006520 | 1846 | discovered | slot 17 updateMassFromShapes | NpActor.cpp:1468 `updateMassFromShapes` | implemented | faithful | not traced (driven by ActorShapeMutation, Task 5) | Task 5: G1 0x98; E1 0x9a (ordered below zero or unordered), 0x9d, 0x9e, 0x9f, 0xa0, 0xa8/0xa9 from 000008 (Scene.cpp `nxActorComputeMassFromShapes`); +0x188, +0xc0 (1/m, no test), mark 0x10000; diagonal and _fpclass-zeroed inverses, mark 0x20000; +0x100, mark 0x200, ++0x198; +0xdc, mark 0x400, ++0x198; 000768. See `## Task 5` |
 | 000166 | 0x00006c60 | 479 | discovered | slot 35 setMass | NpActor.cpp:1681 `setMass` | implemented | faithful | 2: ActorDynamicSetter 2 | E1 0xba and 0xbb ("Body::setMass: mass is %f, should be positive!", the mass passed as a double) reproduced by Task 2; record effects faithful |
 | 000168 | 0x00006e40 | 577 | discovered | slot 37 setMassSpaceInertiaTensor | NpActor.cpp:1707 `setMassSpaceInertiaTensor` | implemented | faithful | 3: ActorDynamicSetter 2, ActorMomentum 1 | Task 3: the three float inverses 1/m are classified by the CRT _fpclass the oracle calls (005666); any NaN or infinity (0x207) zeroes all three, so negatives keep their inverse and zero/denormal inertias zero them; G1 0xc5, E1 0xc6 and H1 from Task 2 |
 | 000170 | 0x00007090 | 431 | discovered | slot 41 setLinearDamping | NpActor.cpp:1761 `setLinearDamping` | implemented | faithful | 2: ActorDynamicSetter 2 | E1 0xd1 (value, checked before dynamic) and 0xd2 reproduced by Task 2; record effects faithful |
@@ -500,7 +500,10 @@ the static pruner; actor release erases the root and the current children by sea
   every nonzero call sets it; nothing in the candidate clears it), and 000531/000036 run slot 6
   before the prunable is inserted, so neither add path reaches either arm;
 - the creation path (000034's model) still registers only a static group's root, and does not
-  run 000531's slot 6 on a desc-built group (its children get the flag-0 refresh).
+  run 000531's slot 6 on a desc-built group. (Task 5: a static group root now runs its slot 6
+  with 1 and a desc-built group is 000034's arm, 001033 and 001041 pushes; a dynamic root keeps
+  the model's registration, the factory wrapper's 001315 with 1 and then its flag-0 refresh
+  (`nxShapeFactoryRefreshPose`), which the DynamicSetter posed_mirror line needs.)
 - 000028 (`nxU32VectorPushBack`, ObjectModel.cpp) still allocates through
   `nxGetSdkAllocator()`, where the listing uses [0x101041bc].
 
@@ -528,8 +531,110 @@ Counts after Task 4. Of the 53 `discovered` rows:
 The 34 `reconstructed` rows are unchanged: 30 faithful, 2 X (000086, 000088), 2 M (000116,
 000118).
 
+## Task 5: mass from shapes and setDynamic
+
+Task 5 (commits 65e3add and 5df7040) wrote updateMassFromShapes (000164) and setDynamic
+(000122) from their listings and the chains under them. Line numbers are of 5df7040.
+
+- **000164** (NpActor.cpp:1468): the lock (G1 0x98); E1 0x9a when the density or the total
+  mass is below zero or unordered (`fcomp; test ah,1`, density first); 0x9d without a record;
+  0x9e without a root (body +0x10); 0x9f both zero and 0xa0 both nonzero (`fucompp; test
+  ah,0x44`: -0.0 is zero); 000008 on the body with the density, the total mass's own argument
+  slot, an identity pose and an unset diagonal (0x6678-0x66f4); 1 is E1 0xa8, any other nonzero
+  E1 0xa9; then the writes and marks in the order of the Rows table, and 000768. No wake, no
+  kinematic test.
+- **000122** (NpActor.cpp:1579): the lock (G1 0x5b); E1 0x63 (`test ah,5; jnp`: a NaN mass
+  passes; the twelve massLocalPose words classified in order); E1 0x66; 000533 on a static
+  body's shape (bl = 1); 000026; 1 is E1 0x7c and any other nonzero E1 0x7d, both leaving the
+  removed shape out of the Scene (t5_trigger_dynamic_root and t5_plane_dynamic_root show
+  +0xa0 = 0 and the pruner count down by one); with an old record: 000632, the record's
+  Observable notifyObservers(0x100) (the Foundation import, on an empty observer list), 000776,
+  the record freed through [0x101041bc]; 000531(shape, true); unlock.
+
+The chain rows, each claimed with a `// phys_fn_` line:
+
+| Row | RVA | B | Owning unit | Candidate | Notes |
+|---|---|---:|---|---|---|
+| 000008 | 0x10a0 | 751 | gap:<start>..Actor.cpp | Scene.cpp:3276 `nxActorComputeMassFromShapes` | 000847 zero, the root's slot 4 at unit density (false: 1), mass not above zero (ordered): 2, pose.t = centre, 0x1c720 (000833 with the negated centre), the three scaling arms (density with or without totalMass written, else the register ratio totalMass / mass), NxDiagonalizeInertiaTensor ([0x101041b8]) |
+| 000026 | 0x19b0 | 465 | Actor.cpp | Scene.cpp:2339 `nxActorBuildRecord` | replaces the creation path's one-box density approximation (`nxActorComputeMass`, removed): 000034 now calls it |
+| 000030 | 0x1c40 | 403 | Actor.cpp | Scene.cpp:2430 `nxActorDestroy` | used by releaseActor and the creation failure path (it replaces `nxSceneActorDestroy`, an empty stub) |
+| 000628 | 0x123d0 | 241 | Scene.cpp | Scene.cpp:1501 `releaseActor` | rewritten: reentry 0x492, the search, E1-style code-2 report 0x4ae ("double deletion detected!"), swap-remove, 000030, the body freed through [0x101041bc] |
+| 000630 | 0x124d0 | 233 | Scene.cpp | Scene.cpp:2124 `nxSceneAddBody` | +0x56c push (2n + 2 through [0x101041bc]) and 000503 |
+| 000632 | 0x125c0 | 160 | Scene.cpp | Scene.cpp:2161 `nxSceneRemoveBody` | swap-remove, 000778 into +0x58c, 000760, the 004103 loop |
+| 000557 | 0x10840 | 22 | Scene.cpp | Scene.cpp:3563 `pushJointWithoutBodies` | inventory `reconstructed` with no candidate until now |
+| 004103 | 0x97c10 | 142 | Joint.cpp | core/Joint.cpp:1042 `Joint::row004103` | wakes and clears both bodies, 000633, flags (& ~8) \| 0x10, 000557 |
+| 000722 | 0x16130 | 127 | gap:SceneRaycast.cpp..CapsuleShape.cpp | core/JointSupport.cpp:499 `Row000722Fixture::row000722` | the island snapshot |
+| 000776 | 0x18570 | 117 | gap:SceneRaycast.cpp..CapsuleShape.cpp | Scene.cpp:2386 `nxBodyRecordDestroy` | id to +0x6f8 (000028), 000713, the 000722 chain, 000760, 000722, 000799 |
+| 000797 | 0x1b5c0 | 402 | gap:SceneRaycast.cpp..CapsuleShape.cpp | Scene.cpp:2207 `nxBodyRecordConstruct` | id first, the 000801 model, the listing's stores, 000760, 000722, 000793 |
+| 000793 | 0x1a350 | 1613 | gap:SceneRaycast.cpp..CapsuleShape.cpp | Scene.cpp:2262 `nxBodyRecordApplyDesc` (a model) | its mass block is the listing's; the other fields keep the earlier model |
+| 000799 | 0x1b760 | 51 | gap:SceneRaycast.cpp..CapsuleShape.cpp | inside `nxBodyRecordDestroy` | the manager slot and the kinematic block |
+
+Already written and reused: 000531/000533 (Task 4), 001943, 000503, 001279, 000760/000778/000713
+(JointSupport.cpp, ObjectModel.cpp), 000028, 000012, 000768.
+
+**Slot-4 audit.** Every runtime family's installed table reaches its mass row at slot 4: box
+000947 (`BoxShape::nxBoxAccumulateMass`), sphere 001371, capsule 001008, plane the base 001249
+(false), and the group's table (Scene.cpp) now has slot 4 = 001024. 001024's model
+(`nxArrayVtCall3Args1024`, ObjectModel.cpp) called each child's slot 4 as a stdcall with no
+`this`; it is now a thiscall on the element (0x229d1-0x229ea). 000845 (`nxMassFrameBuildCapsule`)
+left +0x00 unwritten for selector 1; the listing stores the side term there (0x1c836) before it
+branches, and the capsule's slot 4 passes 1: fixed (the object-layout differential drives 0 and
+2 only). 001397 (the mesh slot 4, 0x28e10) is not reachable: the candidate has no runtime
+triangle-mesh family (000032's mesh arm fails), so it stays the ObjectModel.cpp model.
+
+**Creation path.** 000034 now runs 000026 (000008 when the tensor is zero bits, the record through
+[0x101041bc], 000797, 000630) and reports its failures through the Foundation (Actor.cpp 0xe5 and
+0xe6, then createActor's Scene.cpp 0x228; they were printf lines). Its group arm is the listing's
+(0x2137-0x21a9): the group through [0x101041bc], its id after the allocation, 001033, +8, and each
+child appended by 001041 (the arrays grow 2 -> 6 for three shapes, where the model allocated
+exact-size arrays). A static group root runs its slot 6 with 1 (its +0xdc is then 2, as in the
+oracle; t5_several_before). The record's +0x188/+0xc0 are now unconditional and a zero tensor
+gives 1.0f (000793's arms); every existing Phase 5 transcript is byte-identical.
+
+**Review items from Task 4.**
+1. The reentry flag .data 0x10123c10 is one variable, `gNxApiReentry` (Scene.cpp), used by
+   createJoint/releaseJoint, releaseActor and 000036/000024.
+2. The two `// phys_fn_001273` lines: ObjectModel.cpp's `ShapeBase::ShapeBase` is canonical (the
+   object-layout differential drives it); Scene.cpp's `nxRuntimeShapeBaseInit` is the runtime
+   shapes' copy of the same stores.
+3. releaseActor is now 000628 -> 000030: the runtime shapes and groups go through their deleting
+   destructors (001323's id push before each free, the [0x101041bc] frees), the record through
+   000632/000776. The creation failure path uses 000030 too.
+4. The stale "flag-0 refresh" bullet in `## Task 4` is corrected in place.
+
+**Not reproduced** (recorded):
+- 000793/000795 beyond the mass block: its dirty marks at creation and its other fields' exact
+  arms (the model's damping, sleep and velocity stores are kept);
+- 000801's full sub-object (the model writes the pose, the quaternion, +0x120, the id and the
+  manager slot), the record's vptr (0x10106890) and the Observable constructor and destructor
+  (the candidate's zeroed words are an empty observer list);
+- 000521 -> 000517's pass over the Scene's +0x3c/+0x40 pair table (the candidate keeps none),
+  003635 (no fluid manager);
+- 000030 frees the public actor directly (000118, its deleting destructor, has no body to run in
+  the candidate);
+- the reentry flag cannot be set from the harness, so 0x492 is static-only; 0x4ae is not driven.
+
+**Tests.** `PhysicsActorShapeMutationTests` gains two Task 5 blocks on fresh Scenes:
+updateMassFromShapes over a rotated box, a sphere, a capsule, a centred box, a group of the three,
+a trigger with a sphere, a plane (E1 0xa8), a group holding a plane, and a trigger (E1 0xa9),
+with a density and with a total mass; every argument E1 (NaN and -0.0 included), a static actor,
+a shapeless one, a denormal mass, an infinite density, FLT_MAX, G1 0x98; the creation path's mass
+pass for each family (density and total mass) and its two failures; setDynamic on a static actor
+with one shape, one with three (a group) and a density, one with a capsule and a density, a
+dynamic actor again, a shapeless one (E1 0x66, then a tensor), a negative mass and a NaN pose
+(0x63), a trigger (0x7d) and a plane (0x7c), G1 0x5b, and a jointed dynamic actor (004103 breaks
+the joint: state 2, both actors null); each is used afterwards (a force, a torque, a velocity
+and getLinearVelocity, getMassSpaceInertiaTensor, getCMassGlobalPosition, getMass) and released.
+Each case prints the record's mass words, the root's pruning bytes and the Scene's counts. 110
+oracle lines are registered verbatim (repeated report lines once); floor 5 = 1817. 99 of the
+110 are absent from the Task 4 candidate's transcript (6b1a6f2's DLL under the new test).
+
+Counts after Task 5. Of the 53 `discovered` rows, **53 are faithful**. The 34 `reconstructed` rows
+are unchanged: 30 faithful, 2 X (000086, 000088), 2 M (000116, 000118).
+
 ## Callees the implementing tasks need
 
+- (Task 5 wrote 000008, 000026 and the record rows; see `## Task 5`.)
 - 000008 (0x10a0, 751 B, `discovered`, gap `<start>..Actor.cpp`): the body's mass-from-shapes
   computation 000164 calls (ecx = [actor+0x14]; density, &totalMass, &pose, &diag). It
   dispatches `[body+0x10]->vtbl[4](dest, 1.0f, ...)` to the per-shape mass wrappers: group
@@ -561,8 +666,8 @@ Sizes of the rows each open item pulls in (the Task 1 review's sizing, from the 
 
 | Chain | Rows (B) | Total |
 |---|---|---:|
-| 000164 updateMassFromShapes | 000008 (751), 001397 (104), plus the slot-4 audit of the candidate shapes | 855 B + audit |
-| 000122 setDynamic | 000026 (465), 000797 (402), 000630 (233), 000776 (117), 000722 (127), 000632 (160), 004103 (142), 000531 (97), 001943 (270), 000503 (232), 000533 (40), 001279 (53); plus 000008 above | 2,338 B |
+| 000164 updateMassFromShapes | 000008 (751), 001397 (104), plus the slot-4 audit of the candidate shapes | 855 B + audit (Task 5: done, 001397 unreachable; see `## Task 5`) |
+| 000122 setDynamic | 000026 (465), 000797 (402), 000630 (233), 000776 (117), 000722 (127), 000632 (160), 004103 (142), 000531 (97), 001943 (270), 000503 (232), 000533 (40), 001279 (53); plus 000008 above | 2,338 B (Task 5: done; see `## Task 5`) |
 | shape add/remove (000070/000072) | 000036, 000024, 000032, 001041, 001033, 001028, 000006, 001941 | ~2.1 KB (Task 4: done, see `## Task 4`) |
 | force/torque (000054-000058, 000154-000162) | 000782 | 3,428 B |
 | CMass-global setters (000204-000208) | 000789 + 000746 | 1,706 B |
