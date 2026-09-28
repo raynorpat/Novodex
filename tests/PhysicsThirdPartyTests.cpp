@@ -6629,14 +6629,27 @@ static void nxIceCountEdgeList(const void* object, NxIceCoverage& c)
 // normals through the oracle's 005181 and the vendored Triangle::Normal and the
 // |angle| > 0.1f decision under each (in double, flagged as well when either
 // angle is within 1e-6 of 0.1, beyond anything the double model can be off by).
-// A mesh with any edge whose decision could differ is `plane-divergent`: its
-// vertex runs -- edge_list's and ice_adjacencies' -- are compared apart as
-// <family>.plane_divergent, under the ceilings in kDivergentCeilings; every
-// other run is gated exactly.
+// A mesh with any edge whose decision could differ is `plane-divergent`.
+//
+// The split itself is FROZEN (kIcePlaneDivergentMeshes): the 13 meshes the
+// pre-flight flagged when Task 2c registered its lines (eight random soups,
+// 40..53, and five raw-word meshes, 59..63). Their vertex runs -- edge_list's
+// and ice_adjacencies' -- are compared apart as <family>.plane_divergent, under
+// the ceilings in kDivergentCeilings; every other run is gated exactly. Which
+// tape a run lands on, and so every registered digest, depends only on this
+// list and the oracle, not on the candidate's vendored callees: a later fix to
+// 005155/005181 moves no registered line (the ceilings report IMPROVED). The
+// pre-flight is kept as a check: a mesh OUTSIDE the list whose decisions could
+// differ fails the run (the gated tape would be comparing a callee); its detail
+// goes to stderr only. (Task 2c review: the first registration derived the
+// split from the pre-flight itself, so its digests encoded candidate
+// behaviour; the frozen list reproduces the same split, and every digest.)
+static const int kIcePlaneDivergentMeshes[] = { 40, 41, 42, 43, 44, 46, 50, 53, 59, 60, 61, 62, 63 };
 typedef void*	(__thiscall* IcePlaneSetFn)(void*, const void*, const void*, const void*);	// at kIcePlaneSet, phys_fn_005155
 typedef void	(__thiscall* IceTriangleNormalFn)(const void*, void*);
 static const unsigned kIceTriangleNormal = 0x000e3f50;	// phys_fn_005181
-static bool		gIcePlaneDivergent[kIceMaxMeshes];
+static bool		gIcePlaneDivergent[kIceMaxMeshes];		// the frozen split
+static bool		gIcePreflightDivergent[kIceMaxMeshes];	// the candidate check
 static unsigned	gIcePreflightEdges = 0;
 static unsigned	gIcePreflightSide = 0;
 static unsigned	gIcePreflightAngle = 0;
@@ -6685,7 +6698,11 @@ static void nxIcePlanePreflight(const NxOracleRows& o)
 		{
 		const NxMesh& mesh = gIceMeshes[m];
 		const float* verts = mesh.verts;
+		gIcePreflightDivergent[m] = false;
 		gIcePlaneDivergent[m] = false;
+		for(unsigned f = 0; f < sizeof(kIcePlaneDivergentMeshes) / sizeof(kIcePlaneDivergentMeshes[0]); ++f)
+			if(kIcePlaneDivergentMeshes[f] == m)
+				gIcePlaneDivergent[m] = true;
 		unsigned nbSlots = 0;
 		for(unsigned t = 0; t < mesh.nbTris; ++t)
 			for(unsigned j = 0; j < 3; ++j)
@@ -6754,14 +6771,20 @@ static void nxIcePlanePreflight(const NxOracleRows& o)
 						}
 					}
 				if(differs)
-					gIcePlaneDivergent[m] = true;
+					gIcePreflightDivergent[m] = true;
 				}
 			i += run;
 			}
-		if(gIcePlaneDivergent[m])
+		if(gIcePreflightDivergent[m])
 			{
 			++gIcePlaneMeshes;
-			fprintf(stderr, "ICE plane_divergent mesh=%d\n", m);
+			fprintf(stderr, "ICE plane_divergent preflight mesh=%d frozen=%d\n", m, gIcePlaneDivergent[m] ? 1 : 0);
+			if(!gIcePlaneDivergent[m])
+				{
+				fprintf(stderr, "FAIL ice mesh %d is outside kIcePlaneDivergentMeshes but its active-edge "
+					"decisions follow the vendored Plane::Set / Triangle::Normal\n", m);
+				++gMismatches;
+				}
 			}
 		}
 	}
@@ -7101,7 +7124,9 @@ static void nxDriveIceMeshTools(const NxOracleRows& o, bool selfOnly)
 		gIceNbMeshes, e.runs, e.succeeded, e.failed, e.edges, e.active, e.activeVerts, gIceReports,
 		gIceReportLines[0], gIceReportLines[1], gIceReportLines[2], gIceReportLines[3],
 		gIceReportLines[4], gIceReportLines[5], gIceReportLines[6]);
-	printf("thirdparty coverage name=edge_list.plane_divergent pairs=%u side=%u angle=%u meshes=%u\n",
+	printf("thirdparty coverage name=edge_list.plane_divergent frozen_meshes=%u\n",
+		(unsigned) (sizeof(kIcePlaneDivergentMeshes) / sizeof(kIcePlaneDivergentMeshes[0])));
+	fprintf(stderr, "ICE preflight pairs=%u side=%u angle=%u meshes=%u\n",
 		gIcePreflightEdges, gIcePreflightSide, gIcePreflightAngle, gIcePlaneMeshes);
 
 	gIceReports = 0;

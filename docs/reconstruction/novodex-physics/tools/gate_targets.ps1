@@ -2574,12 +2574,16 @@ $NxRequiredCoverageLines = [ordered] @{
         # of the meshes whose active-edge decisions follow the vendored Plane::Set /
         # Triangle::Normal (005155, 005181; pre-flighted edge by edge), registered up
         # to the oracle digest and held by kDivergentCeilings. The pairs above keep
-        # printing where they were; the pair below carries the totals.
+        # printing where they were; the pair below carries the totals. The split is a
+        # frozen list of 13 meshes in the harness (kIcePlaneDivergentMeshes), so no line
+        # here depends on the candidate's callees; the candidate pre-flight only checks
+        # that no other mesh diverges (Task 2c review; it replaced the pre-flight's
+        # `pairs=1487 side=40 angle=9 meshes=13` coverage line, every digest unchanged).
         'thirdparty input name=edge_list words=11703 input=466037b8',
         'thirdparty name=edge_list rva=0x00051dd0 owner=phys_fn_002063 source=EdgeList.cpp words=160261 oracle=76644d57 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=edge_list.plane_divergent rva=0x00051dd0 owner=phys_fn_002063 source=EdgeList.cpp words=23225 oracle=18406f6d',
         'thirdparty coverage name=edge_list meshes=65 runs=650 succeeded=650 failed=0 edges=27045 active_edge_links=6714 active_vertex_links=12384 reports=8 line72=2 line10a=1 line10b=1 line10e=1 line111=1 line114=1 line117=1',
-        'thirdparty coverage name=edge_list.plane_divergent pairs=1487 side=40 angle=9 meshes=13',
+        'thirdparty coverage name=edge_list.plane_divergent frozen_meshes=13',
         'thirdparty input name=ice_adjacencies words=11478 input=3ce4907d',
         'thirdparty name=ice_adjacencies rva=0x0002def0 owner=phys_fn_001546 source=IceAdjacencies.cpp words=35084 oracle=39b6cbc7 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=ice_adjacencies.plane_divergent rva=0x0002def0 owner=phys_fn_001546 source=IceAdjacencies.cpp words=3528 oracle=b67b88e0',
