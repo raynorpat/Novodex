@@ -111,7 +111,8 @@ X = substantive arithmetic/field/branch differences; M = missing.
   each child's slot 6 and then 001315(flags) on the group itself. `nxNpActorNotifyOwnedShapes`
   omits that group-level 001315 call, so for grouped actors S1 is a real behavioural defect.
   A faithful 000004 dispatch fixes it provided the candidate group's slot 6 behaves like
-  001018 (001315 is itself `discovered`/partial).
+  001018 (001315 is itself `discovered`/partial). Closed by Task 4: the group has its own
+  table with slot 6 = 001018, and `nxNpActorNotifyOwnedShapes` is the plain 000004 call.
 - **ROT**: the body rotation from the quaternion at [rec+0x5c] is built with one x87 sequence
   (five float spills: 2yy, 2xz, 2yw, 1-2xx, 2yz) in every row that needs it.
   `nxNpActorRotationFromQuaternionGetter` (asm, NpActor.cpp:970) and `nxNpActorComposeRotation`
@@ -153,8 +154,8 @@ NxPhysicsDynamicFirstTests reaches only the 000118 counterpart.
 | 000064 | 0x00002990 | 73 | reconstructed | slot 68 isSleeping | NpActor.cpp:2360 `isSleeping`; OM ObjectModel.cpp:1136 | implemented | faithful | 6: ActorDynamicSetter 6 | NA and OM faithful |
 | 000066 | 0x000029e0 | 75 | reconstructed | slot 69 getSleepLinearVelocity | NpActor.cpp:2372 `getSleepLinearVelocity`; OM ObjectModel.cpp:839 | implemented | faithful | 4: ActorDynamicSetter 4 | NA and OM faithful (sqrtss == fsqrt+fstp) |
 | 000068 | 0x00002a30 | 75 | reconstructed | slot 71 getSleepAngularVelocity | NpActor.cpp:2397 `getSleepAngularVelocity`; OM ObjectModel.cpp:863 | implemented | faithful | 3: ActorDynamicSetter 3 | NA and OM faithful |
-| 000070 | 0x00002a80 | 185 | discovered | slot 13 createShape | NpActor.cpp:1172 `createShape` | partial | defect (X) | 1: ActorShapeMutation 1 | Task 2: G1 0x1ab and E1 0x1ac (desc.isValid()) fixed. Open: Actor.cpp reentry guard (0x150) missing; empty actor and existing group return 0 (oracle installs/appends via 000036); promotion lacks scene remove/add (000535/000533/000531), group+8, 001041 arrays |
-| 000072 | 0x00002b40 | 90 | discovered | slot 14 releaseShape | NpActor.cpp:1181 `releaseShape` | partial | defect (X) | 1: ActorShapeMutation 1 | Task 2: G1 0x1b3 fixed. Open: keyed on public NxShape* not [shape+8]; shift instead of swap-remove (001028); no +0xdc/+0x10c updates; no single-shape or empty-group release (000006, deleting dtor); the Actor.cpp reports inside 000024 (reentry 0x186, 0x18f, 0x19c, 0x19d, 0x1a4) are absent (they belong to 000024, not 000072) |
+| 000070 | 0x00002a80 | 185 | discovered | slot 13 createShape | NpActor.cpp:1172 `createShape` | implemented | faithful | 1: ActorShapeMutation 1 | Task 4: 000036(body, desc) (Scene.cpp `nxActorCreateShape`: reentry 0x150, empty-root install, group append, promotion with scene remove/add, group+8, 001041 arrays) and the handle [shape+0x9c] read before the unlock; the callees and their residuals are in `## Task 4`. G1 0x1ab and E1 0x1ac from Task 2 |
+| 000072 | 0x00002b40 | 90 | discovered | slot 14 releaseShape | NpActor.cpp:1181 `releaseShape` | implemented | faithful | 1: ActorShapeMutation 1 | Task 4: 000024(body, [NxShape+8]) (Scene.cpp `nxActorReleaseShape`): reentry 0x186, E1 0x18f/0x19c/0x19d/0x1a4, 001028 swap-remove with the +0xdc/+0x10c writes, the emptied group and the single root released through 000006 and their deleting destructors. G1 0x1b3 from Task 2 |
 | 000074 | 0x00002ba0 | 85 | reconstructed | slot 75 raiseActorFlag | NpActor.cpp:2453 `raiseActorFlag`; OM ObjectModel.cpp:1107 | implemented | faithful | 1: ActorMetadata 1 | NA faithful (G1 0x1bb reproduced by Task 2); OM faithful |
 | 000076 | 0x00002c00 | 87 | reconstructed | slot 76 clearActorFlag | NpActor.cpp:2463 `clearActorFlag`; OM ObjectModel.cpp:1113 | implemented | faithful | 1: ActorMetadata 1 | NA faithful (G1 0x1c1 reproduced by Task 2); OM faithful |
 | 000078 | 0x00002c60 | 39 | reconstructed | slot 77 readActorFlag | NpActor.cpp:2473 `readActorFlag`; OM ObjectModel.cpp:826 | implemented | faithful | 6: ActorMetadata 6 | NA and OM faithful |
@@ -216,13 +217,13 @@ NxPhysicsDynamicFirstTests reaches only the 000118 counterpart.
 | 000190 | 0x00008670 | 415 | discovered | slot 79 clearBodyFlag | NpActor.cpp:2501 `clearBodyFlag` | implemented | faithful | 8: ActorBodyFlag 1, ActorDynamicSetter 1, ActorDynamics 4, ActorForce 1, ActorMomentum 1 | Task 3: 000785 disable arm now begins with the same island-root refresh; G1 0x1d9, E1 0x1da, H1, the marks/allocator and the unconditional 1/m from Task 2 |
 | 000192 | 0x00008810 | 371 | discovered | slot 73 wakeUp | NpActor.cpp:2422 `wakeUp` | implemented | faithful | 7: ActorCMass 1, ActorDynamicSetter 5, ActorForce 1 | H1 fixed by Task 2; body faithful (G1 0x207 reproduced) |
 | 000194 | 0x00008990 | 354 | discovered | slot 74 putToSleep | NpActor.cpp:2437 `putToSleep` | implemented | faithful | 5: ActorDynamicSetter 4, ActorForce 1 | H1 fixed by Task 2; body faithful (G1 0x211 reproduced) |
-| 000196 | 0x00008b00 | 1114 | discovered | slot 1 setGlobalPose | NpActor.cpp:695 `setGlobalPose` | implemented | defect (S) | 10: ActorCMass 7, ActorDynamicSetter 3 | Task 2: G1 0x21d and H1 fixed. Open: S1 residual. Task 3 made the update a virtual slot-6 dispatch (000004) and the group arm a model of 001018 (each child's slot 6), but the group-level 001315 call is still missing; conversion, stores and 000768 faithful |
-| 000198 | 0x00008f60 | 418 | discovered | slot 2 setGlobalPosition | NpActor.cpp:862 `setGlobalPosition` | implemented | defect (S) | 12: ActorCMass 7, ActorDynamicSetter 5 | Task 2: G1 0x232 and H1 fixed. Open: S1 residual (group-level 001315; Task 3 made the dispatch virtual); both arms and the refresh faithful |
-| 000200 | 0x00009110 | 821 | discovered | slot 3 setGlobalOrientation | NpActor.cpp:887 `setGlobalOrientation` | implemented | defect (S) | 12: ActorCMass 7, ActorDynamicSetter 5 | Task 2: G1 0x242 and H1 fixed. Open: S1 residual (group-level 001315; Task 3 made the dispatch virtual); setter conversion faithful |
-| 000202 | 0x00009450 | 611 | discovered | slot 4 setGlobalOrientationQuat | NpActor.cpp:915 `setGlobalOrientationQuat` | implemented | defect (S) | 9: ActorCMass 7, ActorDynamicSetter 2 | Task 2: G1 0x254 and H1 fixed. Open: S1 residual (group-level 001315; Task 3 made the dispatch virtual); static quat-to-matrix x87 sequence faithful |
-| 000204 | 0x000096c0 | 520 | discovered | slot 26 setCMassGlobalPose | NpActor.cpp:1419 `setCMassGlobalPose` | implemented | defect (S) | 1: ActorCMass 1 | Task 3: 000756 = nxNpActorBodyQuaternionFromMatrix (x87 roots), 000789 rewritten from the listing (000746 tensor first, displacement row 0 unrounded and rows 1-2 spilled, setter conversion), 000004 shape update added (virtual slot 6; the group arm models 001018). Open: S1 residual, the group-level 001315 call (the candidate group has no table or ShapeBase layout) |
-| 000206 | 0x000098d0 | 504 | discovered | slot 27 setCMassGlobalPosition | NpActor.cpp:1574 `setCMassGlobalPosition` | implemented | defect (S) | 1: ActorCMass 1 | Task 3: 000789 rewritten from the listing and the 000004 shape update added. Open: S1 residual (group-level 001315) |
-| 000208 | 0x00009ad0 | 492 | discovered | slot 28 setCMassGlobalOrientation | NpActor.cpp:1586 `setCMassGlobalOrientation` | implemented | defect (S) | 1: ActorCMass 1 | Task 3: 000756, 000789 and the 000004 shape update fixed as in 000204. Open: S1 residual (group-level 001315) |
+| 000196 | 0x00008b00 | 1114 | discovered | slot 1 setGlobalPose | NpActor.cpp:695 `setGlobalPose` | implemented | faithful | 10: ActorCMass 7, ActorDynamicSetter 3 | Task 2: G1 0x21d and H1 fixed; conversion, stores and 000768 faithful. Task 4: S1 closed (the group has its table; 000004 reaches 001018 and the group-level 001315) |
+| 000198 | 0x00008f60 | 418 | discovered | slot 2 setGlobalPosition | NpActor.cpp:862 `setGlobalPosition` | implemented | faithful | 12: ActorCMass 7, ActorDynamicSetter 5 | Task 2: G1 0x232 and H1 fixed; both arms and the refresh faithful. Task 4: S1 closed (the group has its table; 000004 reaches 001018 and the group-level 001315) |
+| 000200 | 0x00009110 | 821 | discovered | slot 3 setGlobalOrientation | NpActor.cpp:887 `setGlobalOrientation` | implemented | faithful | 12: ActorCMass 7, ActorDynamicSetter 5 | Task 2: G1 0x242 and H1 fixed; setter conversion faithful. Task 4: S1 closed (the group has its table; 000004 reaches 001018 and the group-level 001315) |
+| 000202 | 0x00009450 | 611 | discovered | slot 4 setGlobalOrientationQuat | NpActor.cpp:915 `setGlobalOrientationQuat` | implemented | faithful | 9: ActorCMass 7, ActorDynamicSetter 2 | Task 2: G1 0x254 and H1 fixed; static quat-to-matrix x87 sequence faithful. Task 4: S1 closed (the group has its table; 000004 reaches 001018 and the group-level 001315) |
+| 000204 | 0x000096c0 | 520 | discovered | slot 26 setCMassGlobalPose | NpActor.cpp:1419 `setCMassGlobalPose` | implemented | faithful | 1: ActorCMass 1 | Task 3: 000756 = nxNpActorBodyQuaternionFromMatrix (x87 roots), 000789 rewritten from the listing (000746 tensor first, displacement row 0 unrounded and rows 1-2 spilled, setter conversion), 000004 shape update added (virtual slot 6; the group arm models 001018). Task 4: S1 closed (the group has its table; 000004 reaches 001018 and the group-level 001315) |
+| 000206 | 0x000098d0 | 504 | discovered | slot 27 setCMassGlobalPosition | NpActor.cpp:1574 `setCMassGlobalPosition` | implemented | faithful | 1: ActorCMass 1 | Task 3: 000789 rewritten from the listing and the 000004 shape update added. Task 4: S1 closed (the group has its table; 000004 reaches 001018 and the group-level 001315) |
+| 000208 | 0x00009ad0 | 492 | discovered | slot 28 setCMassGlobalOrientation | NpActor.cpp:1586 `setCMassGlobalOrientation` | implemented | faithful | 1: ActorCMass 1 | Task 3: 000756, 000789 and the 000004 shape update fixed as in 000204. Task 4: S1 closed (the group has its table; 000004 reaches 001018 and the group-level 001315) |
 | 000210 | 0x00009cc0 | 998 | discovered | slot 20 setCMassOffsetLocalPose | NpActor.cpp:1254 `setCMassOffsetLocalPose` | implemented | faithful | 8: ActorCMass 8 | E1 0x388, G1 0x387 and H1 fixed by Task 2; store/dirty/++0x198/000768/wake order faithful |
 | 000212 | 0x0000a0b0 | 739 | discovered | slot 21 setCMassOffsetLocalPosition | NpActor.cpp:1273 `setCMassOffsetLocalPosition` | implemented | faithful | 9: ActorCMass 9 | E1 0x394, G1 0x393 and H1 fixed by Task 2 |
 | 000214 | 0x0000a3a0 | 557 | discovered | slot 22 setCMassOffsetLocalOrientation | NpActor.cpp:1289 `setCMassOffsetLocalOrientation` | implemented | faithful | 8: ActorCMass 8 | E1 0x39f (the report sits in 000216's range), G1 0x39e and H1 fixed by Task 2 |
@@ -416,6 +417,117 @@ Of the 34 `reconstructed` rows:
 
 The OM forms of 000094, 000130 and 000132 (ObjectModel.cpp) keep their own defects.
 
+## Task 4: shape add/remove
+
+Task 4 (commits 370aca7 and 2b4bcb1) rebuilt createShape (000070) and releaseShape (000072)
+on the Actor.cpp rows they call, and the chain under those, from the Capstone listings. Line
+numbers below are of 370aca7.
+
+- **000070** (NpActor.cpp:1387): after Task 2's lock (G1 0x1ab) and `desc.isValid()` (E1
+  0x1ac), 000036 on the body [actor+0x14]; a built shape's handle [shape+0x9c] is read before
+  the unlock and returned, else 0 (0x2b06-0x2b36).
+- **000072** (NpActor.cpp:1406): after the lock (G1 0x1b3), 000024 on the body with the
+  internal shape [NxShape+8], then the unlock (0x2b7a-0x2b90).
+- **000036** (Scene.cpp:3088 `nxActorCreateShape`): the reentry flag (.data 0x10123c10;
+  set: code 2, Actor.cpp line 0x150, the message at 0x10122050), then the factory, then by
+  the root: none -> the shape is the root and 000531 adds it; a group -> 001041, the shape's
+  slot 6 with 1, 001941, 000503(001957 + 001960), 003628 with a fluid manager; a single ->
+  000535/000533 on the old root, a 0x110-byte group through [0x101041bc] constructed by 001033
+  with an id from 000012 (taken after the allocation), the root, +8 = [scene+0x540] - 1, 001041
+  old then new, 000531 on the group. The new shape (not the group) is returned.
+- **000024** (Scene.cpp:3157 `nxActorReleaseShape`): reentry (code 2, 0x186); no root -> E1
+  0x1a4; a group holding one child on a static body -> E1 0x18f (before any search); else
+  001028, and a group it empties leaves the Scene (000006), is deleted (slot 0 with 1) and the
+  root cleared; a single root on a static body -> E1 0x19c; a root that is not the shape ->
+  E1 0x19d; the root itself -> 000006, delete, root cleared. All E1s are code 1 with
+  `\Epic\Novodex\SDKs\Physics\src\Actor.cpp`.
+
+The callees, each claimed with a `// phys_fn_` line in Scene.cpp, which is the candidate's
+Actor.cpp equivalent (it already holds 000034 and 000013) and its runtime shape model:
+
+| Row | RVA | B | Owning unit | Candidate | Notes |
+|---|---|---:|---|---|---|
+| 000032 | 0x1de0 | 539 | Actor.cpp | `nxActorShapeFactory` | Id first (000012 inlined), the families' sizes (plane 0x10c, sphere 0xe4, box 0x228, capsule 0xec) through [0x101041bc], construct, slot-12 load, the handle's +0x10/+0x14 NpScene lock links, +8 = [scene+0x540] - 1; no shape -> the id back through 000028. Type 4 (triangle mesh, 0xe8, 001379, the Scene+0x10 count and its own 000503) has no runtime family and takes the no-shape arm |
+| 000024 | 0x1860 | 328 | Actor.cpp | `nxActorReleaseShape` | above |
+| 000036 | 0x2250 | 420 | Actor.cpp | `nxActorCreateShape` | above |
+| 000006 | 0x1080 | 30 | gap:<start>..Actor.cpp | `nxActorRemoveRootFromScene` | 000535 with a record, else 000533 |
+| 000012 | 0x1430 | 32 | gap:<start>..Actor.cpp | ObjectModel.cpp `nxIdAllocNext` (already reconstructed) | called on Scene+0x6e4 |
+| 001033 | 0x22d60 | 99 | gap:CapsuleShape.cpp..NpBoxShape.cpp | `nxShapeGroupConstructAt` | 001273, the group table, arrays emptied, sentinel 5, +0xd8 = 0xffff, +0x10c = -1.0f; also used by the creation path's group (`nxShapeGroupConstruct`) |
+| 001041 | 0x22e80 | 442 | gap:CapsuleShape.cpp..NpBoxShape.cpp | `nxShapeGroupAddChild` | both pushes grow a full array to 2n + 2 through [0x101041bc]; child +0xdc bit 0; +0x10c = -1.0f; 001325(0x100) |
+| 001028 | 0x22b50 | 152 | gap:CapsuleShape.cpp..NpBoxShape.cpp | `nxShapeGroupRemoveChild` | swap-with-last in both arrays, child +0xdc bit 0 cleared, +0x10c = -1.0f; nothing freed or unregistered |
+| 001018 | 0x227d0 | 62 | gap:CapsuleShape.cpp..NpBoxShape.cpp | `nxShapeGroupOwnerUpdate` (group slot 6) | each child's slot 6, then 001315 on the group |
+| 001032, 001037, 001039 | 0x22d00, 0x22de0, 0x22e50 | 96, 110, 34 | gap:CapsuleShape.cpp..NpBoxShape.cpp | `nxShapeGroupDeleteChildren`, `nxShapeGroupDeletingDtor` (group slot 0) | children deleted, handle then child array freed, 001323, group freed |
+| 001273 | 0x25530 | 424 | gap:NpTriangleMeshShape.cpp..Shape.cpp | `nxRuntimeShapeBaseInit` | the listing's stores on a runtime shape (ShapeBase::ShapeBase is the listing model) |
+| 001279 | 0x25760 | 53 | gap:NpTriangleMeshShape.cpp..Shape.cpp | `nxShapeLeavePruning` | 001955, 001945, +0xa0 cleared |
+| 001323 | 0x26bd0 | 182 | Shape.cpp | `nxRuntimeShapeBaseDestroy` | name, +0x70c, aux (002413), pairs (002344), id (000028), pruning |
+| 000503 | 0x100a0 | 232 | gap:PhysicsSDK.cpp..Scene.cpp | `nxSceneUpdateActorCount` (Scene.cpp:2084) | rewritten: (n + 0x100) & ~0xff, free/alloc order, only +8 zeroed, 004847 on +0x50/+0x500/+0x510 |
+| 000531 | 0x10600 | 97 | Scene.cpp | `nxSceneAddShape` | slot 6 with 1, 001943, 000503(001960 + 001957), 003628 |
+| 000533, 000535 | 0x10670, 0x106a0 | 40, 40 | Scene.cpp | `nxSceneRemoveStaticShape`, `nxSceneRemoveDynamicShape` | 001279, 003628 with false/true |
+| 001941 | 0x4ba80 | 59 | gap:ContactPlaneMesh.cpp..PenetrationMap.cpp | `nxPruningAddShape` | type (+0x70 or 0), kind 0, insert |
+| 001943 | 0x4bac0 | 270 | gap:ContactPlaneMesh.cpp..PenetrationMap.cpp | `nxPruningAddBody` | root +0xa0, kinds 2 (group) / 1 / 0 (children), the +0x78 list push (SdkContainer, 004840) |
+| 001945 | 0x4bbd0 | 74 | gap:ContactPlaneMesh.cpp..PenetrationMap.cpp | `nxPruningRemoveBody` | root and current children erased |
+| 001955 | 0x4bde0 | 153 | gap:ContactPlaneMesh.cpp..PenetrationMap.cpp | `nxPruningRemoveRootPairs` | +0x78 swap-remove; the pair-record loop (+0x44/+0x48) is empty in the candidate |
+| 001957, 001960 | 0x4be80, 0x4bec0 | 16, 20 | gap:ContactPlaneMesh.cpp..PenetrationMap.cpp | `nxPruningCountFirst`, `nxPruningCountIndexed` | exact (already reconstructed rows) |
+| 003628 | 0x89bb0 | 22 | gap:fluids\Fluid.cpp..fluids\FluidManager.cpp | `nxFluidManagerShapeChanged` | exact (already reconstructed row) |
+
+The group is now its own object with a table (slot 0 = 001039, slot 6 = 001018; the other
+slots of 0x10106c2c are not reached and stay null), so 000004 in the pose and CMass-global
+setters is a plain `nxForwardSubobjectCall` and reaches the group-level 001315: **S1 is
+closed** for 000196-000208. The runtime shapes' deleting destructors (the families' slot 0,
+e.g. 001375) are `nxRuntimeShapeDelete`: the collision object freed, 001323, the shape freed.
+
+**Pruner model.** The OPCODE pruners (004852, 004857, 004859 and their classes) belong to the
+opcode units and stay a model (Scene.cpp:987 onward): per-prunable insert and erase with the
+measured allocations and growth points (4 entries, then doubling when an insertion would exceed
+the capacity; the fifth prunable of a pruner grows it, as the oracle does for a static and a
+dynamic group), the type (+0xce) and kind (+0xcf) bytes of 004888/004890, and +8 = the number of
+nonzero-kind prunables (the per-actor roots), which is what 001957/001960 read (the oracle keeps
+it at one per actor through promotion and appends). Entry order and handle assignment are the
+model's. The creation path's registration (`nxSceneStaticPrunerRegister`,
+`nxSceneBroadphaseRegister`) now sets the root's kind and +0xa0 and counts the root, and grows
+the static pruner; actor release erases the root and the current children by search.
+
+**Not reproduced** (recorded):
+- the reentry flags themselves cannot be set from the harness (no callback runs), so 0x150 and
+  0x186 are static-only;
+- 000032's mesh arm (no runtime triangle-mesh family);
+- 001943's release of the collection's cached +0x2c object and 001955's pair-record loop (the
+  candidate keeps neither), 004861's per-pruner slot-4 call in 000503, 000517's pass over the
+  Scene's +0x3c/+0x40 pairs in 001323, the prunable's vptr, its 005297 member and its
+  destructor 004892, the collision object's hook teardown 002406;
+- 001315's +0xa0 list append and pruner slot-3 call on the add paths: every root now carries
+  the pruning collection at +0xa0, but the arm needs +0xdc bit 2 clear (+0xdc starts at 6 and
+  every nonzero call sets it; nothing in the candidate clears it), and 000531/000036 run slot 6
+  before the prunable is inserted, so neither add path reaches either arm;
+- the creation path (000034's model) still registers only a static group's root, and does not
+  run 000531's slot 6 on a desc-built group (its children get the flag-0 refresh).
+- 000028 (`nxU32VectorPushBack`, ObjectModel.cpp) still allocates through
+  `nxGetSdkAllocator()`, where the listing uses [0x101041bc].
+
+Also changed: a dynamic actor built without shapes registers its record in Scene+0x56c (the
+oracle's push and 000503 precede the actor array's growth), and the creation path's factory
+wrapper runs 001315 with 1 (the shape takes the Scene stamp at +8, as 000531's slot 6 does).
+
+**Tests.** `PhysicsActorShapeMutationTests` gains a Task 4 block after its existing flow (the
+nine registered lines are unchanged): createShape of plane, sphere, box and capsule on a static
+and a dynamic actor (promotion; appends growing the group arrays 2 -> 6 -> 14; the pruner growth
+at the fifth prunable), releaseShape at the middle, first and last positions and with a foreign
+handle, down to E1 0x18f (static) and the group teardown (dynamic), E1 0x1a4 on an empty actor,
+installs into it, E1 0x19c and 0x19d, the single-root release, the group's own poses before and
+after setGlobalPose (S1), the roots' prunable bytes, and a fresh Scene whose first shape comes
+from createShape on a shapeless dynamic actor. Each case prints the allocation transcript, the
+shape count and handle order, the group's arrays, +8, +0x10c, +0xdc, id and +0xa0, each child's
+type, +0xdc, +8, id and +0xa0, and Scene +4, the pruner counts and +0x540. 136 oracle lines are
+registered verbatim; floor 5 = 1707. 125 of them are absent from the Task 3 candidate's
+transcript (it returns 0 for every append and crashes at the S1 print).
+
+Counts after Task 4. Of the 53 `discovered` rows:
+- 51 are faithful (000070, 000072 and the seven S1 rows joined).
+- 2 are M, 000122 and 000164 (Task 5).
+
+The 34 `reconstructed` rows are unchanged: 30 faithful, 2 X (000086, 000088), 2 M (000116,
+000118).
+
 ## Callees the implementing tasks need
 
 - 000008 (0x10a0, 751 B, `discovered`, gap `<start>..Actor.cpp`): the body's mass-from-shapes
@@ -431,7 +543,7 @@ The OM forms of 000094, 000130 and 000132 (ObjectModel.cpp) keep their own defec
   record destructor; 000632/000531/000533/000535 (Scene add/remove body and shape).
 - 000036/000024 (Actor.cpp createShape/releaseShape, `discovered`), 000032 (shape factory,
   539 B), 001041, 001028, 001033, 000006, 001941, 000503, 003628, 000012, 001957, 001960: the
-  shape add/remove paths 000070/000072 forward to.
+  shape add/remove paths 000070/000072 forward to. (Task 4 wrote them; see `## Task 4: shape add/remove`.)
 - 000756 (0x17420) = `nxNpActorBodyQuaternionFromMatrix(rec+0x134, rec+0x124)`; 000789
   (0x19d00) = world-mass-pose apply (000746 tensor, listing displacement order, setter
   quaternion); 000785 (0x19620) = the kinematic transition with the 000712 island-root
@@ -451,7 +563,7 @@ Sizes of the rows each open item pulls in (the Task 1 review's sizing, from the 
 |---|---|---:|
 | 000164 updateMassFromShapes | 000008 (751), 001397 (104), plus the slot-4 audit of the candidate shapes | 855 B + audit |
 | 000122 setDynamic | 000026 (465), 000797 (402), 000630 (233), 000776 (117), 000722 (127), 000632 (160), 004103 (142), 000531 (97), 001943 (270), 000503 (232), 000533 (40), 001279 (53); plus 000008 above | 2,338 B |
-| shape add/remove (000070/000072) | 000036, 000024, 000032, 001041, 001033, 001028, 000006, 001941 | ~2.1 KB |
+| shape add/remove (000070/000072) | 000036, 000024, 000032, 001041, 001033, 001028, 000006, 001941 | ~2.1 KB (Task 4: done, see `## Task 4`) |
 | force/torque (000054-000058, 000154-000162) | 000782 | 3,428 B |
 | CMass-global setters (000204-000208) | 000789 + 000746 | 1,706 B |
 | body flags (000188/000190) | 000785 + 000787 | 1,753 B |
