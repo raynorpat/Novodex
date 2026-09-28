@@ -2122,7 +2122,23 @@ NxReal NpActorVtable::getAngularDamping() const
 	return out;
 	}
 
+// The velocity setters' wake (000174 0x7566-0x76a7, 000176 0x7881-, 000180
+// 0x7d68-, 000182 0x8094-): the squared speed, an x87 register sum, is
+// compared with fcomp against the sleep threshold (+0xd0 linear, +0xd4
+// angular), and `test ah,1; jne` skips the wake when it is below or
+// unordered; otherwise the wake every setter has follows (+0x114 & 0x100,
+// then an ordered +0x84 < 0.39999998f, then 0x3ecccccc and the 0x10 mark).
+static void nxNpActorWakeAboveThreshold(unsigned char* record, double squaredSpeed,
+	unsigned thresholdOffset)
+	{
+	if(!(squaredSpeed >= *reinterpret_cast<const float*>(record + thresholdOffset)))
+		return;
+	nxNpActorWakeAfterCMassWrite(record);
+	}
+
 // phys_fn_000174 (0x000073f0, 770 B)
+// After the stores and the 4 mark, the input's (y y + z z) + x x against
+// the linear sleep threshold +0xd0.
 void NpActorVtable::setLinearVelocity(const NxVec3& velocity)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
@@ -2133,6 +2149,8 @@ void NpActorVtable::setLinearVelocity(const NxVec3& velocity)
 		memcpy(record + 0x6c, &velocity, sizeof(velocity));
 		memcpy(record + 0x34, &velocity, sizeof(velocity));
 		nxNpActorMarkRecordDirty(record, 4);
+		const double x = velocity.x, y = velocity.y, z = velocity.z;
+		nxNpActorWakeAboveThreshold(record, (y * y + z * z) + x * x, 0xd0);
 		}
 	else
 		nxNpActorReport(0xf4, "Actor::setLinearVelocity: Actor must be (non-kinematic) dynamic!");
@@ -2140,6 +2158,7 @@ void NpActorVtable::setLinearVelocity(const NxVec3& velocity)
 	}
 
 // phys_fn_000176 (0x00007700, 786 B)
+// As 000174, against the angular sleep threshold +0xd4.
 void NpActorVtable::setAngularVelocity(const NxVec3& velocity)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
@@ -2150,6 +2169,8 @@ void NpActorVtable::setAngularVelocity(const NxVec3& velocity)
 		memcpy(record + 0x78, &velocity, sizeof(velocity));
 		memcpy(record + 0x40, &velocity, sizeof(velocity));
 		nxNpActorMarkRecordDirty(record, 8);
+		const double x = velocity.x, y = velocity.y, z = velocity.z;
+		nxNpActorWakeAboveThreshold(record, (y * y + z * z) + x * x, 0xd4);
 		}
 	else
 		nxNpActorReport(0xfd, "Actor::setAngularVelocity: Actor must be (non-kinematic) dynamic!");
@@ -2203,6 +2224,7 @@ void NpActorVtable::setMaxAngularVelocity(NxReal limit)
 	}
 
 // phys_fn_000180 (0x00007bb0, 782 B)
+// The stored velocity's (x x + y y) + z z against +0xd0 (0x7d68-0x7d90).
 void NpActorVtable::setLinearMomentum(const NxVec3& momentum)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
@@ -2216,6 +2238,9 @@ void NpActorVtable::setLinearMomentum(const NxVec3& momentum)
 		memcpy(record + 0x6c, &velocity, sizeof(velocity));
 		memcpy(record + 0x34, &velocity, sizeof(velocity));
 		nxNpActorMarkRecordDirty(record, 4);
+		const float* v = reinterpret_cast<const float*>(record + 0x6c);
+		const double x = v[0], y = v[1], z = v[2];
+		nxNpActorWakeAboveThreshold(record, (x * x + y * y) + z * z, 0xd0);
 		}
 	else
 		nxNpActorReport(0x114, "Actor::setLinearMomentum: Actor must be dynamic!");
@@ -2223,6 +2248,10 @@ void NpActorVtable::setLinearMomentum(const NxVec3& momentum)
 	}
 
 // phys_fn_000182 (0x00007ec0, 867 B)
+// 0x7f32-0x7f9e: w = I L with I the world inverse inertia +0x164, each row
+// one x87 sum in the listing's order, (I1 y + I2 z) + I0 x, (I4 y + I3 x) +
+// I5 z and (I7 y + I6 x) + I8 z, rounded at the store; then the stored
+// velocity's (x x + y y) + z z against +0xd4 (0x8094-0x80bc).
 void NpActorVtable::setAngularMomentum(const NxVec3& momentum)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
@@ -2231,19 +2260,18 @@ void NpActorVtable::setAngularMomentum(const NxVec3& momentum)
 	if(record && (*reinterpret_cast<unsigned*>(record + 0x10c) & 0x80u) == 0)
 		{
 		const NxReal* inverse = reinterpret_cast<const NxReal*>(record + 0x164);
+		#define NX_IL(i, c) (static_cast<double>(inverse[i]) * momentum.c)
 		NxVec3 velocity(
-			static_cast<NxReal>(static_cast<double>(inverse[0]) * momentum.x +
-				static_cast<double>(inverse[2]) * momentum.z +
-				static_cast<double>(inverse[1]) * momentum.y),
-			static_cast<NxReal>(static_cast<double>(inverse[5]) * momentum.z +
-				static_cast<double>(inverse[3]) * momentum.x +
-				static_cast<double>(inverse[4]) * momentum.y),
-			static_cast<NxReal>(static_cast<double>(inverse[8]) * momentum.z +
-				static_cast<double>(inverse[6]) * momentum.x +
-				static_cast<double>(inverse[7]) * momentum.y));
+			static_cast<NxReal>((NX_IL(1, y) + NX_IL(2, z)) + NX_IL(0, x)),
+			static_cast<NxReal>((NX_IL(4, y) + NX_IL(3, x)) + NX_IL(5, z)),
+			static_cast<NxReal>((NX_IL(7, y) + NX_IL(6, x)) + NX_IL(8, z)));
+		#undef NX_IL
 		memcpy(record + 0x78, &velocity, sizeof(velocity));
 		memcpy(record + 0x40, &velocity, sizeof(velocity));
 		nxNpActorMarkRecordDirty(record, 8);
+		const float* w = reinterpret_cast<const float*>(record + 0x78);
+		const double x = w[0], y = w[1], z = w[2];
+		nxNpActorWakeAboveThreshold(record, (x * x + y * y) + z * z, 0xd4);
 		}
 	else
 		nxNpActorReport(0x11d, "Actor::setAngularMomentum: Actor must be (non-kinematic) dynamic!");

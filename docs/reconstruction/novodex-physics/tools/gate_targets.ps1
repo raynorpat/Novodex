@@ -612,6 +612,39 @@ $NxRequiredCoverageLines = [ordered] @{
         'force kinematic_unchanged=0.0.0.0.0.0.0.0'
     )
     'NxPhysicsActorMomentumTests' = @(
+        # NpActor.cpp completion Task 3 (000174, 000176, 000180, 000182): the velocity and
+        # momentum setters' wake at, just below and just above the sleep thresholds, NaN and
+        # asleep, with the dirty word; 000182's row sums over a general +0x164, including
+        # three near-cancelling momenta where the listing's order decides the last bit.
+        'momentum t3 created=1',
+        'momentum t3 thresholds=3e800000.3f100000 inverse=3f06df56.bcb4a48b.3ddf8877.bcb4a48b.3ea521de.bdf014f6.3ddf8877.bdf014f6.3f0745c5',
+        'momentum t3_wake lv_equal in=3f000000.0.0 lin=3f000000.0.0 ang=0.0.0 wake=3ecccccc.3ecccccc.0 dirty=14',
+        'momentum t3_wake lv_below in=0.3effffff.0 lin=0.3effffff.0 ang=0.0.0 wake=3dcccccd.3dcccccd.0 dirty=4',
+        'momentum t3_wake lv_above in=0.0.3f000001 lin=0.0.3f000001 ang=0.0.0 wake=3ecccccc.3ecccccc.0 dirty=14',
+        'momentum t3_wake lv_mixed in=3e99999a.3ecccccd.0 lin=3e99999a.3ecccccd.0 ang=0.0.0 wake=3ecccccc.3ecccccc.0 dirty=14',
+        'momentum t3_wake lv_nan in=ffc00000.0.0 lin=ffc00000.0.0 ang=0.0.0 wake=3dcccccd.3dcccccd.0 dirty=4',
+        'momentum t3_wake lv_asleep in=40400000.40800000.40a00000 lin=40400000.40800000.40a00000 ang=0.0.0 wake=0.0.100 dirty=4',
+        'momentum t3_wake av_equal in=0.3f400000.0 lin=40400000.40800000.40a00000 ang=0.3f400000.0 wake=3ecccccc.3ecccccc.0 dirty=18',
+        'momentum t3_wake av_below in=3f3fffff.0.0 lin=40400000.40800000.40a00000 ang=3f3fffff.0.0 wake=3dcccccd.3dcccccd.0 dirty=8',
+        'momentum t3_wake av_above in=0.0.3f400001 lin=40400000.40800000.40a00000 ang=0.0.3f400001 wake=3ecccccc.3ecccccc.0 dirty=18',
+        'momentum t3_wake av_mixed in=3ee66666.3f19999a.0 lin=40400000.40800000.40a00000 ang=3ee66666.3f19999a.0 wake=3ecccccc.3ecccccc.0 dirty=18',
+        'momentum t3_wake av_nan in=0.ffc00000.0 lin=40400000.40800000.40a00000 ang=0.ffc00000.0 wake=3dcccccd.3dcccccd.0 dirty=8',
+        'momentum t3_wake av_asleep in=3f800000.40000000.40400000 lin=40400000.40800000.40a00000 ang=3f800000.40000000.40400000 wake=0.0.100 dirty=8',
+        'momentum t3_wake lm_equal in=3f800000.0.0 lin=3f000000.0.0 ang=3f800000.40000000.40400000 wake=3ecccccc.3ecccccc.0 dirty=14',
+        'momentum t3_wake lm_below in=0.3f7fffff.0 lin=0.3effffff.0 ang=3f800000.40000000.40400000 wake=3dcccccd.3dcccccd.0 dirty=4',
+        'momentum t3_wake lm_above in=0.0.3f800001 lin=0.0.3f000001 ang=3f800000.40000000.40400000 wake=3ecccccc.3ecccccc.0 dirty=14',
+        'momentum t3_wake lm_mixed in=3f19999a.3f4ccccd.0 lin=3e99999a.3ecccccd.0 ang=3f800000.40000000.40400000 wake=3ecccccc.3ecccccc.0 dirty=14',
+        'momentum t3_wake lm_nan in=0.0.ffc00000 lin=0.0.ffc00000 ang=3f800000.40000000.40400000 wake=3dcccccd.3dcccccd.0 dirty=4',
+        'momentum t3_wake lm_asleep in=40400000.40800000.40a00000 lin=3fc00000.40000000.40200000 ang=3f800000.40000000.40400000 wake=0.0.100 dirty=4',
+        'momentum t3_wake am_general in=3fa66666.c02ccccd.3f666666 lin=3fc00000.40000000.40200000 ang=3f57b92c.bf80a362.3f6f18d7 wake=3ecccccc.3ecccccc.0 dirty=18',
+        'momentum t3_wake am_general2 in=bebd70a4.3de147ae.40a9999a lin=3fc00000.40000000.40200000 ang=3ec32242.bf13e21f.402fd384 wake=3ecccccc.3ecccccc.0 dirty=18',
+        'momentum t3_wake am_small in=3c23d70a.bca3d70a.3cf5c28f lin=3fc00000.40000000.40200000 ang=3c133126.bc26eacc.3c9e026f wake=3dcccccd.3dcccccd.0 dirty=8',
+        'momentum t3_wake am_large in=3f333333.3f666666.bf8ccccd lin=3fc00000.40000000.40200000 ang=3e6a6092.3ecebd0c.bf1c3ff7 wake=3ecccccc.3ecccccc.0 dirty=18',
+        'momentum t3_wake am_cancel_x in=c2838868.c1dbd53d.439bf301 lin=3fc00000.40000000.40200000 ang=b603e8f8.c22fe6f0.4320da55 wake=3ecccccc.3ecccccc.0 dirty=18',
+        'momentum t3_wake am_cancel_y in=444e6cfc.42614caa.beb57702 lin=3fc00000.40000000.40200000 ang=43d8de56.b3b71261.42a6aa71 wake=3ecccccc.3ecccccc.0 dirty=18',
+        'momentum t3_wake am_cancel_z in=c54e02be.c1e93add.44289883 lin=3fc00000.40000000.40200000 ang=c4cfca54.c17c6558.b71e1e16 wake=3ecccccc.3ecccccc.0 dirty=18',
+        'momentum t3_wake am_nan in=ffc00000.3f800000.3f800000 lin=3fc00000.40000000.40200000 ang=ffc00000.ffc00000.ffc00000 wake=3dcccccd.3dcccccd.0 dirty=8',
+        'momentum t3_wake am_asleep in=40400000.40800000.40a00000 lin=3fc00000.40000000.40200000 ang=40026faf.3f234735.40200963 wake=0.0.100 dirty=8',
         'momentum created=1',
         'momentum inverse_tensor=3f000000.0.0.0.3eaaaaab.0.0.0.3e800000',
         'momentum rotation_matrix=3f800000.0.0.0.3f800000.0.0.0.3f800000',
@@ -2929,7 +2962,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 159  # 34 for NxPhysicsAssetTests, 125 for NxPhysicsThirdPartyTests (67 + 29 from
                # vendored-correspondence Task 4 + 5 from its Task 5a + 24 from qhull-gap Task 1)
-    '5' = 1429 # 126 object-layout, 1 shape-vtable and 1302 public actor/pruner/box/scene lines
+    '5' = 1458 # 126 object-layout, 1 shape-vtable and 1331 public actor/pruner/box/scene lines
                # (744 + 251 from NpActor.cpp completion Task 2; RED on purpose: vtables
                # family open)
     '6' = 403  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent

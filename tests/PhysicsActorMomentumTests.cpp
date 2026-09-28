@@ -12,6 +12,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 
 typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(
 	NxU32, NxUserAllocator*, NxUserOutputStream*);
@@ -44,6 +45,143 @@ static void printMatrix(const char* name, const NxMat33& matrix)
 		bits(values[0]), bits(values[1]), bits(values[2]),
 		bits(values[3]), bits(values[4]), bits(values[5]),
 		bits(values[6]), bits(values[7]), bits(values[8]));
+}
+
+// NpActor.cpp completion Task 3: the wake blocks of the velocity and
+// momentum setters (000174, 000176, 000180, 000182), 000182's row sums and
+// the kinetic energy (000060/000742). A rotated body with a rotated mass
+// frame makes the world inverse inertia +0x164 general.
+static NxMat33 task3Rotation(float x, float y, float z, float w)
+{
+	const float inv = 1.0f / sqrtf(x * x + y * y + z * z + w * w);
+	x *= inv; y *= inv; z *= inv; w *= inv;
+	NxMat33 m;
+	m.setRow(0, NxVec3(1.0f - 2.0f * (y * y + z * z), 2.0f * (x * y - w * z), 2.0f * (x * z + w * y)));
+	m.setRow(1, NxVec3(2.0f * (x * y + w * z), 1.0f - 2.0f * (x * x + z * z), 2.0f * (y * z - w * x)));
+	m.setRow(2, NxVec3(2.0f * (x * z - w * y), 2.0f * (y * z + w * x), 1.0f - 2.0f * (x * x + y * y)));
+	return m;
+}
+static NxVec3 task3Bits(unsigned x, unsigned y, unsigned z)
+{
+	NxVec3 v;
+	memcpy(&v.x, &x, 4); memcpy(&v.y, &y, 4); memcpy(&v.z, &z, 4);
+	return v;
+}
+static unsigned char* task3Record(NxActor* actor)
+{
+	unsigned char* body = *reinterpret_cast<unsigned char**>(
+		reinterpret_cast<unsigned char*>(actor) + 0x14);
+	return *reinterpret_cast<unsigned char**>(body + 8);
+}
+// The record's dirty word is zeroed before the setter, so the setter's own
+// marks (4 or 8, and 0x10 when it wakes) are what is printed; the dirty list,
+// index and word are put back afterwards.
+struct Task3Dirty
+{
+	unsigned* flags; unsigned* index; unsigned** end; unsigned id;
+	unsigned savedFlags, savedIndex; unsigned* savedEnd;
+	Task3Dirty(NxActor* actor)
+	{
+		unsigned char* record = task3Record(actor);
+		unsigned char* aux = *reinterpret_cast<unsigned char**>(record + 0x120);
+		flags = *reinterpret_cast<unsigned**>(aux + 0x40);
+		index = *reinterpret_cast<unsigned**>(aux + 0x60);
+		end = reinterpret_cast<unsigned**>(aux + 0x54);
+		id = word(record, 0x11c);
+		savedFlags = flags[id]; savedIndex = index[id]; savedEnd = *end;
+		flags[id] = 0;
+	}
+	unsigned mark() const { return flags[id]; }
+	~Task3Dirty() { flags[id] = savedFlags; index[id] = savedIndex; *end = savedEnd; }
+};
+enum Task3Setter { T3_LINEAR_VELOCITY, T3_ANGULAR_VELOCITY, T3_LINEAR_MOMENTUM, T3_ANGULAR_MOMENTUM };
+static void task3Wake(NxActor* actor, const char* name, Task3Setter setter,
+	const NxVec3& value, bool asleep)
+{
+	if(asleep) actor->putToSleep();
+	else actor->wakeUp(0.1f);
+	unsigned char* record = task3Record(actor);
+	unsigned mark;
+	{
+		Task3Dirty dirty(actor);
+		switch(setter)
+		{
+			case T3_LINEAR_VELOCITY: actor->setLinearVelocity(value); break;
+			case T3_ANGULAR_VELOCITY: actor->setAngularVelocity(value); break;
+			case T3_LINEAR_MOMENTUM: actor->setLinearMomentum(value); break;
+			case T3_ANGULAR_MOMENTUM: actor->setAngularMomentum(value); break;
+		}
+		mark = dirty.mark();
+	}
+	printf("momentum t3_wake %s in=%x.%x.%x lin=%x.%x.%x ang=%x.%x.%x wake=%x.%x.%x dirty=%x\n",
+		name, bits(value.x), bits(value.y), bits(value.z),
+		word(record, 0x6c), word(record, 0x70), word(record, 0x74),
+		word(record, 0x78), word(record, 0x7c), word(record, 0x80),
+		word(record, 0x84), word(record, 0x4c), word(record, 0x114), mark);
+}
+static void task3Cases(NxScene* scene)
+{
+	NxBoxShapeDesc box;
+	box.dimensions = NxVec3(1.0f, 2.0f, 3.0f);
+	NxBodyDesc body;
+	body.mass = 2.0f;
+	body.massSpaceInertia = NxVec3(1.5f, 2.25f, 3.75f);
+	body.massLocalPose.M = task3Rotation(-0.3f, 0.5f, 0.2f, 0.8f);
+	body.massLocalPose.t = NxVec3(0.25f, -0.5f, 0.75f);
+	NxActorDesc desc;
+	desc.shapes.pushBack(&box);
+	desc.body = &body;
+	desc.globalPose.M = task3Rotation(1.0f, 2.0f, 3.0f, 4.0f);
+	desc.globalPose.t = NxVec3(1.0f, -2.0f, 3.0f);
+	NxActor* actor = scene->createActor(desc);
+	printf("momentum t3 created=%u\n", actor ? 1u : 0u);
+	if(!actor) return;
+	unsigned char* record = task3Record(actor);
+	actor->setSleepLinearVelocity(0.5f);
+	actor->setSleepAngularVelocity(0.75f);
+	printf("momentum t3 thresholds=%x.%x inverse=", word(record, 0xd0), word(record, 0xd4));
+	for(unsigned i = 0; i < 9; ++i)
+		printf("%s%x", i ? "." : "", word(record, 0x164 + 4 * i));
+	printf("\n");
+	const float nan = sqrtf(-1.0f);
+	// 000174 / 000176: the input's squared speed at, just below and just
+	// above the threshold (0.25 and 0.5625), NaN, and on a sleeping actor.
+	task3Wake(actor, "lv_equal", T3_LINEAR_VELOCITY, NxVec3(0.5f, 0.0f, 0.0f), false);
+	task3Wake(actor, "lv_below", T3_LINEAR_VELOCITY, NxVec3(0.0f, 0.49999997f, 0.0f), false);
+	task3Wake(actor, "lv_above", T3_LINEAR_VELOCITY, NxVec3(0.0f, 0.0f, 0.50000006f), false);
+	task3Wake(actor, "lv_mixed", T3_LINEAR_VELOCITY, NxVec3(0.3f, 0.4f, 0.0f), false);
+	task3Wake(actor, "lv_nan", T3_LINEAR_VELOCITY, NxVec3(nan, 0.0f, 0.0f), false);
+	task3Wake(actor, "lv_asleep", T3_LINEAR_VELOCITY, NxVec3(3.0f, 4.0f, 5.0f), true);
+	task3Wake(actor, "av_equal", T3_ANGULAR_VELOCITY, NxVec3(0.0f, 0.75f, 0.0f), false);
+	task3Wake(actor, "av_below", T3_ANGULAR_VELOCITY, NxVec3(0.74999994f, 0.0f, 0.0f), false);
+	task3Wake(actor, "av_above", T3_ANGULAR_VELOCITY, NxVec3(0.0f, 0.0f, 0.75000006f), false);
+	task3Wake(actor, "av_mixed", T3_ANGULAR_VELOCITY, NxVec3(0.45f, 0.6f, 0.0f), false);
+	task3Wake(actor, "av_nan", T3_ANGULAR_VELOCITY, NxVec3(0.0f, nan, 0.0f), false);
+	task3Wake(actor, "av_asleep", T3_ANGULAR_VELOCITY, NxVec3(1.0f, 2.0f, 3.0f), true);
+	// 000180: the stored velocity (1/m p, m = 2) against 0.25.
+	task3Wake(actor, "lm_equal", T3_LINEAR_MOMENTUM, NxVec3(1.0f, 0.0f, 0.0f), false);
+	task3Wake(actor, "lm_below", T3_LINEAR_MOMENTUM, NxVec3(0.0f, 0.99999994f, 0.0f), false);
+	task3Wake(actor, "lm_above", T3_LINEAR_MOMENTUM, NxVec3(0.0f, 0.0f, 1.0000001f), false);
+	task3Wake(actor, "lm_mixed", T3_LINEAR_MOMENTUM, NxVec3(0.6f, 0.8f, 0.0f), false);
+	task3Wake(actor, "lm_nan", T3_LINEAR_MOMENTUM, NxVec3(0.0f, 0.0f, nan), false);
+	task3Wake(actor, "lm_asleep", T3_LINEAR_MOMENTUM, NxVec3(3.0f, 4.0f, 5.0f), true);
+	// 000182: the row sums over the general +0x164 with distinct components,
+	// and the stored angular velocity against 0.5625.
+	task3Wake(actor, "am_general", T3_ANGULAR_MOMENTUM, NxVec3(1.3f, -2.7f, 0.9f), false);
+	task3Wake(actor, "am_general2", T3_ANGULAR_MOMENTUM, NxVec3(-0.37f, 0.11f, 5.3f), false);
+	task3Wake(actor, "am_small", T3_ANGULAR_MOMENTUM, NxVec3(0.01f, -0.02f, 0.03f), false);
+	task3Wake(actor, "am_large", T3_ANGULAR_MOMENTUM, NxVec3(0.7f, 0.9f, -1.1f), false);
+	// Momenta chosen so that each row nearly cancels, where the listing's
+	// summation order decides the last bit of w (rows 0, 1 and 2).
+	task3Wake(actor, "am_cancel_x", T3_ANGULAR_MOMENTUM,
+		task3Bits(0xc2838868u, 0xc1dbd53du, 0x439bf301u), false);
+	task3Wake(actor, "am_cancel_y", T3_ANGULAR_MOMENTUM,
+		task3Bits(0x444e6cfcu, 0x42614caau, 0xbeb57702u), false);
+	task3Wake(actor, "am_cancel_z", T3_ANGULAR_MOMENTUM,
+		task3Bits(0xc54e02beu, 0xc1e93addu, 0x44289883u), false);
+	task3Wake(actor, "am_nan", T3_ANGULAR_MOMENTUM, NxVec3(nan, 1.0f, 1.0f), false);
+	task3Wake(actor, "am_asleep", T3_ANGULAR_MOMENTUM, NxVec3(3.0f, 4.0f, 5.0f), true);
+	scene->releaseActor(*actor);
 }
 
 int wmain(int argc, wchar_t** argv)
@@ -234,6 +372,7 @@ int wmain(int argc, wchar_t** argv)
 	printMatrix("static_global_inverse", staticActor->getGlobalInertiaTensorInverseVal());
 	printf("momentum static_energy=%x\n", bits(staticActor->computeKineticEnergy()));
 	scene->releaseActor(*staticActor);
+	task3Cases(scene);
 	sdk->releaseScene(*scene);
 	sdk->release();
 	return nxReportPairIdentity(pairDirectory);
