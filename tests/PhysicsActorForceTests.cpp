@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 
 typedef NxPhysicsSDK* (NX_CALL_CONV *CreatePhysicsSDKFn)(
 	NxU32, NxUserAllocator*, NxUserOutputStream*);
@@ -45,6 +46,81 @@ static void printAtPosState(const char* stage, const unsigned char* record)
 		word(record, 0x94), word(record, 0x98), word(record, 0x9c),
 		word(record, 0xa0), word(record, 0xa4), word(record, 0xa8),
 		word(record, 0xac), word(record, 0xb0), word(record, 0xb4));
+}
+
+// NpActor.cpp completion Task 3 (000782, 000791): a rotated body with a
+// rotated, offset mass frame (so +0x164 is general and +0x158 is off the
+// actor origin), and three accumulations per mode (0-4, and 7, which only
+// wakes) through addForce, addTorque and addForceAtPos, printing every
+// accumulator the mode writes, the velocity copies, the wake words and the
+// dirty word the calls left.
+static NxMat33 t3ForceRotation(float x, float y, float z, float w)
+{
+	const float inv = 1.0f / sqrtf(x * x + y * y + z * z + w * w);
+	x *= inv; y *= inv; z *= inv; w *= inv;
+	NxMat33 m;
+	m.setRow(0, NxVec3(1.0f - 2.0f * (y * y + z * z), 2.0f * (x * y - w * z), 2.0f * (x * z + w * y)));
+	m.setRow(1, NxVec3(2.0f * (x * y + w * z), 1.0f - 2.0f * (x * x + z * z), 2.0f * (y * z - w * x)));
+	m.setRow(2, NxVec3(2.0f * (x * z - w * y), 2.0f * (y * z + w * x), 1.0f - 2.0f * (x * x + y * y)));
+	return m;
+}
+static void t3ForceCase(NxScene* scene, unsigned mode, unsigned kind)
+{
+	NxBoxShapeDesc box;
+	box.dimensions = NxVec3(1.0f, 2.0f, 3.0f);
+	NxBodyDesc body;
+	body.mass = 3.7f;
+	body.massSpaceInertia = NxVec3(1.3f, 2.9f, 4.1f);
+	body.massLocalPose.M = t3ForceRotation(-0.3f, 0.5f, 0.2f, 0.8f);
+	body.massLocalPose.t = NxVec3(0.3f, -0.6f, 0.9f);
+	body.linearVelocity = NxVec3(0.37f, -1.19f, 2.03f);
+	body.angularVelocity = NxVec3(-0.71f, 0.53f, 1.17f);
+	NxActorDesc desc;
+	desc.shapes.pushBack(&box);
+	desc.body = &body;
+	desc.globalPose.M = t3ForceRotation(1.0f, 2.0f, 3.0f, 4.0f);
+	desc.globalPose.t = NxVec3(1.5f, -2.5f, 0.5f);
+	NxActor* actor = scene->createActor(desc);
+	if(!actor) return;
+	unsigned char* record = *reinterpret_cast<unsigned char**>(
+		*reinterpret_cast<unsigned char**>(reinterpret_cast<unsigned char*>(actor) + 0x14) + 8);
+	unsigned char* aux = *reinterpret_cast<unsigned char**>(record + 0x120);
+	unsigned* flags = *reinterpret_cast<unsigned**>(aux + 0x40);
+	unsigned* index = *reinterpret_cast<unsigned**>(aux + 0x60);
+	unsigned** end = reinterpret_cast<unsigned**>(aux + 0x54);
+	const unsigned id = word(record, 0x11c);
+	const unsigned savedFlags = flags[id], savedIndex = index[id];
+	unsigned* savedEnd = *end;
+	// Nonzero starting accumulators, so each add rounds against a real value.
+	const float seed[12] = { 0.11f, -0.23f, 0.37f, -0.41f, 0.53f, -0.67f,
+		0.79f, -0.83f, 0.97f, -1.07f, 1.13f, -1.29f };
+	memcpy(record + 0x88, seed, sizeof(seed));
+	actor->wakeUp(0.1f);
+	flags[id] = 0;
+	const NxVec3 inputs[3] = { NxVec3(1.37f, -2.71f, 0.93f), NxVec3(-0.311f, 5.17f, -3.03f),
+		NxVec3(7.7f, 0.013f, -1.9f) };
+	const NxVec3 points[3] = { NxVec3(2.2f, -1.1f, 0.35f), NxVec3(-0.4f, 3.3f, 1.7f),
+		NxVec3(0.05f, 0.6f, -2.6f) };
+	for(unsigned i = 0; i < 3; ++i)
+	{
+		const NxForceMode m = static_cast<NxForceMode>(mode);
+		if(kind == 0) actor->addForce(inputs[i], m);
+		else if(kind == 1) actor->addTorque(inputs[i], m);
+		else actor->addForceAtPos(inputs[i], points[i], m);
+	}
+	const unsigned mark = flags[id];
+	flags[id] = savedFlags; index[id] = savedIndex; *end = savedEnd;
+	printf("force t3_%u_%u acc=", mode, kind);
+	for(unsigned k = 0; k < 12; ++k)
+		printf("%s%x", k ? "." : "", word(record, 0x88 + 4 * k));
+	printf(" vel=");
+	for(unsigned k = 0; k < 6; ++k)
+		printf("%s%x", k ? "." : "", word(record, 0x6c + 4 * k));
+	printf(" copy=");
+	for(unsigned k = 0; k < 6; ++k)
+		printf("%s%x", k ? "." : "", word(record, 0x34 + 4 * k));
+	printf(" wake=%x.%x dirty=%x\n", word(record, 0x84), word(record, 0x4c), mark);
+	scene->releaseActor(*actor);
 }
 
 int wmain(int argc, wchar_t** argv)
@@ -291,6 +367,12 @@ int wmain(int argc, wchar_t** argv)
 			word(turnedRecord, 0x78), word(turnedRecord, 0x7c), word(turnedRecord, 0x80));
 		}
 	scene->releaseActor(*turned);
+	{
+		const unsigned modes[6] = { 0, 1, 2, 3, 4, 7 };
+		for(unsigned m = 0; m < 6; ++m)
+			for(unsigned kind = 0; kind < 3; ++kind)
+				t3ForceCase(scene, modes[m], kind);
+	}
 	sdk->releaseScene(*scene);
 	sdk->release();
 	return nxReportPairIdentity(pairDirectory);

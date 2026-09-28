@@ -2419,17 +2419,28 @@ static void nxNpActorAccumulateForce(unsigned char* record,
 static NxVec3 nxNpActorRotateLocalForce(const unsigned char* record,
 	const NxVec3& local);
 
+static void nxNpActorApplyForce(unsigned char* record, const NxVec3* force,
+	const NxVec3* torque, unsigned mode, bool wake);
+
+// phys_fn_000791 (0x0001a2c0, 133 B)
+// A row of gap:SceneRaycast.cpp..CapsuleShape.cpp (thiscall on the record,
+// (force, pos, mode, wake)): the lever r = pos - the world centre +0x158,
+// r.x kept in the register and r.y, r.z spilled; the torque r x f, each
+// component rounded once; then 000782(force, &torque, mode, wake). The
+// at-position rows 000054/000154/000156/000158 pass wake = 1.
 static void nxNpActorForceAtPos(unsigned char* record, const NxVec3& force,
 	const NxVec3& worldPosition, NxForceMode mode)
 	{
 	const float* center = reinterpret_cast<const float*>(record + 0x158);
-	const NxVec3 lever(worldPosition.x - center[0],
-		worldPosition.y - center[1], worldPosition.z - center[2]);
-	const NxVec3 torque(lever.y * force.z - lever.z * force.y,
-		lever.z * force.x - lever.x * force.z,
-		lever.x * force.y - lever.y * force.x);
-	nxNpActorAccumulateForce(record, force, mode, false);
-	nxNpActorAccumulateForce(record, torque, mode, true);
+	const double rx = static_cast<double>(worldPosition.x) - center[0];
+	const float ry = worldPosition.y - center[1];
+	const float rz = worldPosition.z - center[2];
+	NxVec3 torque;
+	torque.x = static_cast<float>(static_cast<double>(ry) * force.z -
+		static_cast<double>(rz) * force.y);
+	torque.y = static_cast<float>(static_cast<double>(rz) * force.x - rx * force.z);
+	torque.z = static_cast<float>(rx * force.y - static_cast<double>(ry) * force.x);
+	nxNpActorApplyForce(record, &force, &torque, static_cast<unsigned>(mode), true);
 	}
 
 // phys_fn_000152 (0x00005fa0, 346 B)
@@ -2516,61 +2527,143 @@ void NpActorVtable::addLocalForceAtLocalPos(const NxVec3& force, const NxVec3& p
 	nxNpSceneGuardLeave(ctx);
 	}
 
-static void nxNpActorAccumulateForce(unsigned char* record,
-	const NxVec3& value, NxForceMode mode, bool angular)
+// phys_fn_000782 (0x00018730, 3428 B)
+// A row of gap:SceneRaycast.cpp..CapsuleShape.cpp (thiscall on the record,
+// (force, torque, mode, wake), `ret 0x10`): the body's force/torque
+// accumulator. A jump table on the mode (0x10018746; a mode above 4 goes
+// straight to the wake tail) adds the force, if non-null, and then the
+// torque, if non-null, each followed by its dirty mark:
+// - NX_FORCE (0) and NX_SMOOTH_IMPULSE (3): +0x88/+0xa0 += f / m, the x
+//   product kept in the register (only y and z are spilled), mark 0x20/0x80;
+//   +0x94/+0xac += I t with I the world inverse inertia +0x164, each row
+//   (I2 z + I1 y) + I0 x, rows 0 and 1 kept in registers and row 2 spilled,
+//   mark 0x40/0x100;
+// - NX_IMPULSE (1): +0x6c += f / m with all three products spilled (copied to
+//   +0x34), mark 4; +0x78 += I t with row 0 in the register and rows 1 and 2
+//   spilled (copied to +0x40), mark 8;
+// - NX_VELOCITY_CHANGE (2): +0x6c += f (+0x34), mark 4; +0x78 += t (+0x40),
+//   mark 8;
+// - NX_SMOOTH_VELOCITY_CHANGE (4): +0xa0 += f, mark 0x80; +0xac += t, mark 0x100.
+// The tail (0x1001936f) runs once for every mode when the wake argument is
+// set: unless +0x114 & 0x100, an ordered +0x84 < 0.39999998f raises +0x84
+// and +0x4c to 0x3ecccccc and marks 0x10.
+static void nxNpActorApplyForce(unsigned char* record, const NxVec3* force,
+	const NxVec3* torque, unsigned mode, bool wake)
 	{
-	unsigned target;
-	unsigned mask;
+	const float inverseMass = *reinterpret_cast<const float*>(record + 0xc0);
+	const float* inertia = reinterpret_cast<const float*>(record + 0x164);
+	#define NX_IT(r, t) ((static_cast<double>(inertia[3 * (r) + 2]) * (t).z + \
+		static_cast<double>(inertia[3 * (r) + 1]) * (t).y) + \
+		static_cast<double>(inertia[3 * (r)]) * (t).x)
 	switch(mode)
 		{
 		case NX_FORCE:
-			target = angular ? 0x94 : 0x88;
-			mask = angular ? 0x40 : 0x20;
-			break;
-		case NX_IMPULSE:
-		case NX_VELOCITY_CHANGE:
-			target = angular ? 0x78 : 0x6c;
-			mask = angular ? 8 : 4;
-			break;
 		case NX_SMOOTH_IMPULSE:
+			{
+			const bool smooth = mode == NX_SMOOTH_IMPULSE;
+			if(force)
+				{
+				float* d = reinterpret_cast<float*>(record + (smooth ? 0xa0 : 0x88));
+				const double x = static_cast<double>(inverseMass) * force->x;
+				const float y = inverseMass * force->y;
+				const float z = inverseMass * force->z;
+				d[0] = static_cast<float>(x + d[0]);
+				d[1] = y + d[1];
+				d[2] = z + d[2];
+				nxNpActorMarkRecordDirty(record, smooth ? 0x80u : 0x20u);
+				}
+			if(torque)
+				{
+				float* d = reinterpret_cast<float*>(record + (smooth ? 0xac : 0x94));
+				const double row0 = NX_IT(0, *torque);
+				const double row1 = NX_IT(1, *torque);
+				const float row2 = static_cast<float>(NX_IT(2, *torque));
+				d[0] = static_cast<float>(row0 + d[0]);
+				d[1] = static_cast<float>(row1 + d[1]);
+				d[2] = row2 + d[2];
+				nxNpActorMarkRecordDirty(record, smooth ? 0x100u : 0x40u);
+				}
+			break;
+			}
+		case NX_IMPULSE:
+			if(force)
+				{
+				float* d = reinterpret_cast<float*>(record + 0x6c);
+				const float x = inverseMass * force->x;
+				const float y = inverseMass * force->y;
+				const float z = inverseMass * force->z;
+				d[0] = x + d[0];
+				d[1] = y + d[1];
+				d[2] = z + d[2];
+				memcpy(record + 0x34, d, 3 * sizeof(float));
+				nxNpActorMarkRecordDirty(record, 4);
+				}
+			if(torque)
+				{
+				float* d = reinterpret_cast<float*>(record + 0x78);
+				const double row0 = NX_IT(0, *torque);
+				const float row1 = static_cast<float>(NX_IT(1, *torque));
+				const float row2 = static_cast<float>(NX_IT(2, *torque));
+				d[0] = static_cast<float>(row0 + d[0]);
+				d[1] = row1 + d[1];
+				d[2] = row2 + d[2];
+				memcpy(record + 0x40, d, 3 * sizeof(float));
+				nxNpActorMarkRecordDirty(record, 8);
+				}
+			break;
+		case NX_VELOCITY_CHANGE:
+			if(force)
+				{
+				float* d = reinterpret_cast<float*>(record + 0x6c);
+				d[0] = force->x + d[0];
+				d[1] = d[1] + force->y;
+				d[2] = d[2] + force->z;
+				memcpy(record + 0x34, d, 3 * sizeof(float));
+				nxNpActorMarkRecordDirty(record, 4);
+				}
+			if(torque)
+				{
+				float* d = reinterpret_cast<float*>(record + 0x78);
+				d[0] = d[0] + torque->x;
+				d[1] = d[1] + torque->y;
+				d[2] = d[2] + torque->z;
+				memcpy(record + 0x40, d, 3 * sizeof(float));
+				nxNpActorMarkRecordDirty(record, 8);
+				}
+			break;
 		case NX_SMOOTH_VELOCITY_CHANGE:
-			target = angular ? 0xac : 0xa0;
-			mask = angular ? 0x100 : 0x80;
+			if(force)
+				{
+				float* d = reinterpret_cast<float*>(record + 0xa0);
+				d[0] = force->x + d[0];
+				d[1] = force->y + d[1];
+				d[2] = force->z + d[2];
+				nxNpActorMarkRecordDirty(record, 0x80);
+				}
+			if(torque)
+				{
+				float* d = reinterpret_cast<float*>(record + 0xac);
+				d[0] = torque->x + d[0];
+				d[1] = torque->y + d[1];
+				d[2] = torque->z + d[2];
+				nxNpActorMarkRecordDirty(record, 0x100);
+				}
 			break;
 		default:
-			return;
+			break;
 		}
-	const float input[3] = { value.x, value.y, value.z };
-	float increment[3];
-	if(mode == NX_VELOCITY_CHANGE || mode == NX_SMOOTH_VELOCITY_CHANGE)
-		memcpy(increment, input, sizeof(increment));
-	else if(!angular)
-		{
-		const float inverseMass = *reinterpret_cast<float*>(record + 0xc0);
-		for(unsigned i = 0; i < 3; ++i) increment[i] = inverseMass * input[i];
-		}
-	else
-		{
-		const float* inverse = reinterpret_cast<const float*>(record + 0x164);
-		for(unsigned i = 0; i < 3; ++i)
-			increment[i] = static_cast<float>(
-				static_cast<double>(inverse[i * 3]) * input[0] +
-				static_cast<double>(inverse[i * 3 + 1]) * input[1] +
-				static_cast<double>(inverse[i * 3 + 2]) * input[2]);
-		}
-	float* destination = reinterpret_cast<float*>(record + target);
-	for(unsigned i = 0; i < 3; ++i)
-		destination[i] += increment[i];
-	if(target == 0x6c || target == 0x78)
-		memcpy(record + (angular ? 0x40 : 0x34), destination, sizeof(NxVec3));
-	nxNpActorMarkRecordDirty(record, mask);
-	if((*reinterpret_cast<unsigned*>(record + 0x114) & 0x100u) == 0 &&
-		*reinterpret_cast<float*>(record + 0x84) < 0.39999998f)
-		{
-		*reinterpret_cast<unsigned*>(record + 0x84) = 0x3eccccccu;
-		*reinterpret_cast<unsigned*>(record + 0x4c) = 0x3eccccccu;
-		nxNpActorMarkRecordDirty(record, 0x10);
-		}
+	#undef NX_IT
+	if(wake)
+		nxNpActorWakeAfterCMassWrite(record);
+	}
+
+// The single-vector rows (000056, 000058, 000160, 000162) call 000782 with
+// the other vector null and the wake argument 1.
+static void nxNpActorAccumulateForce(unsigned char* record,
+	const NxVec3& value, NxForceMode mode, bool angular)
+	{
+	nxNpActorApplyForce(record, angular ? 0 : &value, angular ? &value : 0,
+		static_cast<unsigned>(mode), true);
 	}
 
 // phys_fn_000056 (0x000027a0, 165 B)

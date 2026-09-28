@@ -560,6 +560,28 @@ $NxRequiredCoverageLines = [ordered] @{
         'cmass static pose_reference=3f800000.0.0.0.3f800000.0.0.0.3f800000.0.0.0'
     )
     'NxPhysicsActorForceTests' = @(
+        # NpActor.cpp completion Task 3 (000782, 000791): a rotated body with a rotated,
+        # offset mass frame, three addForce/addTorque/addForceAtPos accumulations per mode
+        # 0-4 and 7 (wake only), with every accumulator, the velocity copies, the wake words
+        # and the dirty word.
+        'force t3_0_0 acc=401e8c09.3ee07320.bf360968.bed1eb85.3f07ae14.bf2b851f.3f4a3d71.bf547ae1.3f7851ec.bf88f5c3.3f90a3d7.bfa51eb8 vel=3ebd70a4.bf9851ec.4001eb85.bf35c28f.3f07ae14.3f95c28f copy=3ebd70a4.bf9851ec.4001eb85.bf35c28f.3f07ae14.3f95c28f wake=3ecccccc.3ecccccc dirty=30',
+        'force t3_0_1 acc=3de147ae.be6b851f.3ebd70a4.40443078.3f9bb175.bfbd14b5.3f4a3d71.bf547ae1.3f7851ec.bf88f5c3.3f90a3d7.bfa51eb8 vel=3ebd70a4.bf9851ec.4001eb85.bf35c28f.3f07ae14.3f95c28f copy=3ebd70a4.bf9851ec.4001eb85.bf35c28f.3f07ae14.3f95c28f wake=3ecccccc.3ecccccc dirty=50',
+        'force t3_0_2 acc=401e8c09.3ee07320.bf360968.c198745b.c0929bd1.c1aab6d8.3f4a3d71.bf547ae1.3f7851ec.bf88f5c3.3f90a3d7.bfa51eb8 vel=3ebd70a4.bf9851ec.4001eb85.bf35c28f.3f07ae14.3f95c28f copy=3ebd70a4.bf9851ec.4001eb85.bf35c28f.3f07ae14.3f95c28f wake=3ecccccc.3ecccccc dirty=70',
+        'force t3_1_0 acc=3de147ae.be6b851f.3ebd70a4.bed1eb85.3f07ae14.bf2b851f.3f4a3d71.bf547ae1.3f7851ec.bf88f5c3.3f90a3d7.bfa51eb8 vel=402f2fe0.bf0588ff.3f72ec59.bf35c28f.3f07ae14.3f95c28f copy=402f2fe0.bf0588ff.3f72ec59.bf35c28f.3f07ae14.3f95c28f wake=3ecccccc.3ecccccc dirty=14',
+        'force t3_1_1 acc=3de147ae.be6b851f.3ebd70a4.bed1eb85.3f07ae14.bf2b851f.3f4a3d71.bf547ae1.3f7851ec.bf88f5c3.3f90a3d7.bfa51eb8 vel=3ebd70a4.bf9851ec.4001eb85.4030fd45.3f9bb175.3eb9c1a5 copy=3ebd70a4.bf9851ec.4001eb85.4030fd45.3f9bb175.3eb9c1a5 wake=3ecccccc.3ecccccc dirty=18',
+        'force t3_1_2 acc=3de147ae.be6b851f.3ebd70a4.bed1eb85.3f07ae14.bf2b851f.3f4a3d71.bf547ae1.3f7851ec.bf88f5c3.3f90a3d7.bfa51eb8 vel=402f2fe0.bf0588ff.3f72ec59.c19adac2.c0929bd1.c19bfe86 copy=402f2fe0.bf0588ff.3f72ec59.c19adac2.c0929bd1.c19bfe86 wake=3ecccccc.3ecccccc dirty=1c',
+        'force t3_2_0 acc=3de147ae.be6b851f.3ebd70a4.bed1eb85.3f07ae14.bf2b851f.3f4a3d71.bf547ae1.3f7851ec.bf88f5c3.3f90a3d7.bfa51eb8 vel=41121062.3fa43958.bffc28f5.bf35c28f.3f07ae14.3f95c28f copy=41121062.3fa43958.bffc28f5.bf35c28f.3f07ae14.3f95c28f wake=3ecccccc.3ecccccc dirty=14',
+        'force t3_2_1 acc=3de147ae.be6b851f.3ebd70a4.bed1eb85.3f07ae14.bf2b851f.3f4a3d71.bf547ae1.3f7851ec.bf88f5c3.3f90a3d7.bfa51eb8 vel=3ebd70a4.bf9851ec.4001eb85.4100c8b4.40403127.c0351eb8 copy=3ebd70a4.bf9851ec.4001eb85.4100c8b4.40403127.c0351eb8 wake=3ecccccc.3ecccccc dirty=18',
+        'force t3_2_2 acc=3de147ae.be6b851f.3ebd70a4.bed1eb85.3f07ae14.bf2b851f.3f4a3d71.bf547ae1.3f7851ec.bf88f5c3.3f90a3d7.bfa51eb8 vel=41121062.3fa43958.bffc28f5.c1e328c0.c2196e2e.c20e1611 copy=41121062.3fa43958.bffc28f5.c1e328c0.c2196e2e.c20e1611 wake=3ecccccc.3ecccccc dirty=1c',
+        'force t3_3_0 acc=3de147ae.be6b851f.3ebd70a4.bed1eb85.3f07ae14.bf2b851f.404a1129.be258024.bde37e70.bf88f5c3.3f90a3d7.bfa51eb8 vel=3ebd70a4.bf9851ec.4001eb85.bf35c28f.3f07ae14.3f95c28f copy=3ebd70a4.bf9851ec.4001eb85.bf35c28f.3f07ae14.3f95c28f wake=3ecccccc.3ecccccc dirty=90',
+        'force t3_3_1 acc=3de147ae.be6b851f.3ebd70a4.bed1eb85.3f07ae14.bf2b851f.3f4a3d71.bf547ae1.3f7851ec.4019f307.3fe87e43.c006386e vel=3ebd70a4.bf9851ec.4001eb85.bf35c28f.3f07ae14.3f95c28f copy=3ebd70a4.bf9851ec.4001eb85.bf35c28f.3f07ae14.3f95c28f wake=3ecccccc.3ecccccc dirty=110',
+        'force t3_3_2 acc=3de147ae.be6b851f.3ebd70a4.bed1eb85.3f07ae14.bf2b851f.404a1129.be258024.bde37e70.c19dbc09.c07ed13c.c1afac9a vel=3ebd70a4.bf9851ec.4001eb85.bf35c28f.3f07ae14.3f95c28f copy=3ebd70a4.bf9851ec.4001eb85.bf35c28f.3f07ae14.3f95c28f wake=3ecccccc.3ecccccc dirty=190',
+        'force t3_4_0 acc=3de147ae.be6b851f.3ebd70a4.bed1eb85.3f07ae14.bf2b851f.4118c8b4.3fd24dd4.c041eb84.bf88f5c3.3f90a3d7.bfa51eb8 vel=3ebd70a4.bf9851ec.4001eb85.bf35c28f.3f07ae14.3f95c28f copy=3ebd70a4.bf9851ec.4001eb85.bf35c28f.3f07ae14.3f95c28f wake=3ecccccc.3ecccccc dirty=90',
+        'force t3_4_1 acc=3de147ae.be6b851f.3ebd70a4.bed1eb85.3f07ae14.bf2b851f.3f4a3d71.bf547ae1.3f7851ec.40f60c49.4066978e.c0a947ae vel=3ebd70a4.bf9851ec.4001eb85.bf35c28f.3f07ae14.3f95c28f copy=3ebd70a4.bf9851ec.4001eb85.bf35c28f.3f07ae14.3f95c28f wake=3ecccccc.3ecccccc dirty=110',
+        'force t3_4_2 acc=3de147ae.be6b851f.3ebd70a4.bed1eb85.3f07ae14.bf2b851f.4118c8b4.3fd24dd4.c041eb84.c1e60a08.c21707c8.c217ed1c vel=3ebd70a4.bf9851ec.4001eb85.bf35c28f.3f07ae14.3f95c28f copy=3ebd70a4.bf9851ec.4001eb85.bf35c28f.3f07ae14.3f95c28f wake=3ecccccc.3ecccccc dirty=190',
+        'force t3_7_0 acc=3de147ae.be6b851f.3ebd70a4.bed1eb85.3f07ae14.bf2b851f.3f4a3d71.bf547ae1.3f7851ec.bf88f5c3.3f90a3d7.bfa51eb8 vel=3ebd70a4.bf9851ec.4001eb85.bf35c28f.3f07ae14.3f95c28f copy=3ebd70a4.bf9851ec.4001eb85.bf35c28f.3f07ae14.3f95c28f wake=3ecccccc.3ecccccc dirty=10',
+        'force t3_7_1 acc=3de147ae.be6b851f.3ebd70a4.bed1eb85.3f07ae14.bf2b851f.3f4a3d71.bf547ae1.3f7851ec.bf88f5c3.3f90a3d7.bfa51eb8 vel=3ebd70a4.bf9851ec.4001eb85.bf35c28f.3f07ae14.3f95c28f copy=3ebd70a4.bf9851ec.4001eb85.bf35c28f.3f07ae14.3f95c28f wake=3ecccccc.3ecccccc dirty=10',
+        'force t3_7_2 acc=3de147ae.be6b851f.3ebd70a4.bed1eb85.3f07ae14.bf2b851f.3f4a3d71.bf547ae1.3f7851ec.bf88f5c3.3f90a3d7.bfa51eb8 vel=3ebd70a4.bf9851ec.4001eb85.bf35c28f.3f07ae14.3f95c28f copy=3ebd70a4.bf9851ec.4001eb85.bf35c28f.3f07ae14.3f95c28f wake=3ecccccc.3ecccccc dirty=10',
         # NpActor.cpp completion Task 2 (000150): local velocity changes on an irregularly
         # oriented body, the x87 row sums of the rotation helper. Oracle side.
         'force x87_created=1',
@@ -3065,7 +3087,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 159  # 34 for NxPhysicsAssetTests, 125 for NxPhysicsThirdPartyTests (67 + 29 from
                # vendored-correspondence Task 4 + 5 from its Task 5a + 24 from qhull-gap Task 1)
-    '5' = 1550 # 126 object-layout, 1 shape-vtable and 1423 public actor/pruner/box/scene lines
+    '5' = 1568 # 126 object-layout, 1 shape-vtable and 1441 public actor/pruner/box/scene lines
                # (744 + 251 from NpActor.cpp completion Task 2; RED on purpose: vtables
                # family open)
     '6' = 403  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
