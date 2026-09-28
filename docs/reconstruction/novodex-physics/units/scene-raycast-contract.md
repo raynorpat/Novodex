@@ -1039,7 +1039,7 @@ NxPhysicsCollisionTests, whose candidate code is in the test exe: their sha256s 
 |---|---:|---|---|
 | 000933 | 188 | `BoxShape::nxBoxGetWorldOBB` (ObjectModel.cpp), called by the handle as 001073 does (0x10023566) | dynamic: DSet 4/4 |
 | 000993 | 108 | `CapsuleShape::nxCapsuleSetDimensions` (NpActor.cpp, noinline; it calls 001325 in Scene.cpp), called by the handle as 001113 does (0x10023b78) | dynamic: DSet 2/2 |
-| 000951 | 507 | `BoxShape::nxBoxSweep` (new Physics/src/StepOnlyRows.cpp, /arch:IA32), replacing the fitted model | static (step-only: CCD sweep 002264); harness drives ShapeVtable 132/132, ObjectLayout 48/48 at 0x027f, recorded in its dynamic_proof with that limit |
+| 000951 | 507 | `BoxShape::nxBoxSweep` (new Physics/src/StepOnlyRows.cpp, /arch:IA32), replacing the fitted model | dynamic (harness drive, counted with the dynamic proofs): ShapeVtable 132/132, ObjectLayout 48/48 at 0x027f, recorded in its dynamic_proof with that limit; staged 0/0 (step-only: CCD sweep 002264) |
 
 **Defects fixed in rows already `reconstructed` (state kept; static_proof and notes appended):**
 - 000995 (0x21be0): the slot-6 tail jump (0x10021bf4) through the shape's own table with 1; the handle calls the
@@ -1212,7 +1212,7 @@ BodyCreation.cpp and StepOnlyRows.cpp and adding SceneVisualize.cpp. Scene.cpp (
 | 000579 | 55 | `NxSceneInternal::getDebugRenderable` (Scene.cpp), now noinline | dynamic: SVis 11/11 |
 | 000020 | 731 | `NxActorVisualRecord::visualize` (new Physics/src/SceneVisualize.cpp) | dynamic: SVis 77/77 |
 | 000766 | 1,377 | `NxBodyVisualRecord::visualize` (SceneVisualize.cpp) | dynamic: SVis 55/55 |
-| 000945 | 104 | `BoxShape::nxDebugRenderDispatch` (ObjectModel.cpp), BOX slot 3 | static; harness drive ObjectLayout 65/65 recorded in its dynamic_proof (staged 0/0) |
+| 000945 | 104 | `BoxShape::nxDebugRenderDispatch` (ObjectModel.cpp), BOX slot 3 | dynamic (harness drive, counted with the dynamic proofs): ObjectLayout 65/65 recorded in its dynamic_proof; staged 0/0 |
 | 000869 | 699 | `NxActorPair::row000869` (SceneVisualize.cpp; declared in ContactPairManager.h) | static (step-only) |
 | 000907 | 8 | `NxPairNode::row000907` (SceneVisualize.cpp; declared in ContactPairManager.h) | static (step-only) |
 
@@ -1307,3 +1307,30 @@ tests OK; stable-ID check: 8 new lines (NpScene.cpp 1, Scene.cpp 2, SceneVisuali
 "Provisional phys_fn_000945" comment replaced), exact form, RVA and size equal to the inventory, no duplicates, no new
 non-stable `// phys_fn_` line. Ledgers: phase 7 (000344, 000657, 000579, 000020, 000766, 000869, 000907) and phase 5
 (000945) to `reconstructed_not_falsified`.
+
+## Task 4 totals (review correction)
+
+Inside the block's units, Task 4 wrote or completed and promoted 77 rows (37,190 B) to `reconstructed`:
+
+- 23 rows (17,917 B) carry a `dynamic_proof`: body creation 8, setters 5 (000782, 000785, 000787, 000789,
+  000791), shape 000933 and 000993, box hull 5, 000766, and 000945 and 000951. The last two are harness drives
+  (ObjectLayout 65/65; ShapeVtable 132/132 and ObjectLayout 48/48), not the product path: no staged target reaches
+  either (0/0). The Task 4 report's "21 dynamic / 56 static" counted them static.
+- 54 rows (19,273 B) rest on a `static_proof` only: the 51 island, body-step, CCD and contact-pair manager rows,
+  000784, 000869 and 000907.
+
+The 54 static rows are not all step-only. Most are reachable only from the simulation step (no public path while
+NpScene::simulate is a stub). The exceptions, each with a real non-step path the candidate does not run:
+
+- 000913 runs on the public NxPhysicsSDK::releaseScene in the oracle (-> 000668 -> 000663, the Scene destructor),
+  but the candidate's nxSceneDelete never calls it: unwired. 000881 is reached from 000913 (and from 000917 in the
+  step).
+- 000887, 000889, 000903 and 000915 are reached from the destructors 001953 (Scene) and 001955 (<- 001323, the
+  shape/actor scalar deleting destructors), which the candidate does not reproduce.
+- 000710 is reached only from 000619 <- NxScene::fetchResults (a stub).
+- 000772 and 000774 are reached only from the CCD sweep 002264 (NX_CONTINUOUS_CD, off by default).
+- 000784 runs at API time in the oracle (NxPhysicsActorDynamicsTests 5 hits) but is unwired pending the NpActor
+  session's handover (000090/000124/000126).
+
+The inventory's contact-pair manager static proofs no longer repeat "reachable only from the simulation step"
+twice (26 proofs deduplicated).
