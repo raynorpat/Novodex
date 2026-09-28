@@ -20,6 +20,7 @@ table below.
 | 2c | 2026-09-28T13:48:00 | 2026-09-28T14:38:42 | 12 | 5,564 | EdgeList (002054 with continuation 002056, 002058, 002061, 002063) in the new `EdgeList.cpp`, IceAdjacencies (001537..001548) in the new `IceAdjacencies.cpp`, 001667 in the new `IceMeshTools.cpp`; product forms of 002052, 002060, 001544, 001663, 001665. Allocations through the 004803 getter with the listing's cookies; reports through the SetIceError seam; 002061's plane side and angle as x87 blocks; the three files `/EHs-c-`. Families edge_list, ice_adjacencies, ice_valencies in NxPhysicsThirdPartyTests (object image, allocations and reports compared): exact on every gated run; the vertex runs of 13 meshes whose decisions follow the vendored Plane::Set / Triangle::Normal split into `.plane_divergent` under ceilings (465 / 124 words; 0 with the oracle's callees bound in). 14 lines registered, phase 4 floor 175. 15 traced functions hit. Also: segment_segment's scale draws sequenced (stdout identical) and the raw-bit float-return scan widened (.c files, casts, unions, conventions). See `## Task 2c`. |
 | 2c review | 2026-09-28T14:38:42 | 2026-09-28T14:58:32 | 0 | 0 | Task 2c review: the edge_list / ice_adjacencies plane-divergent split frozen as a list of 13 meshes (the candidate pre-flight kept as a failing check, detail on stderr); every digest unchanged, the coverage line `pairs=1487 side=40 angle=9 meshes=13` replaced by `frozen_meshes=13`; the throwaway callee binding committed as `convex-mesh-gap-2c-bind-oracle-callees.patch` (re-run: 465/124, 306/100, 342/92, 0/0); the 002160 product shim recorded (evidence, contract, row notes); the 001539 errata extended to the no-face-array case. See `## Task 2c`. |
 | 2d | 2026-09-28T15:01:00 | 2026-09-28T15:41:14 | 26 | 10,728 | MeshBuilder2 (sub-unit C, 001591..001637, 25 rows incl. seven continuations) in the new `IceMeshBuilder2.cpp` and the vertex reduction 001647 in `IceMeshTools.cpp`; product forms of 001645 / 001659. Heap checked first: 005700/005701 are `jmp`s to 005668/005702, the same static-CRT heap as 001514's pair (contract Open item 7 closed); the candidate uses its CRT's nothrow `operator new` / `free` with the listing's cookies; the reduction uses the 004803 getter. x87 sections as assembly blocks; the FPU sequences of 001597, 001603, 001607, 001627 equal the listing's (45/62/6/110). Families ice_meshbuilder2 (249 cases over 68 meshes, eight create-block configurations, both control words) and vertex_reduction: exact (178,377 and 24,313 words). 8 lines registered, phase 4 floor 183. 21 traced functions hit. Contract corrected: 001627 runs once per run of faces, not per face. See `## Task 2d`. |
+| 2d review | 2026-09-28T15:44:00 | 2026-09-28T16:09:23 | 0 | 0 | Task 2d review: the uvw and colour streams written as bits (signalling and quiet NaNs, infinities, denormals; 510 / 347 signalling-NaN input words), so the fld/fstp pass-through of 001607 / 001627 is exercised -- still exact, and an integer copy there gives 276 mismatches (patch committed); the ice_meshbuilder2 input, exact, coverage lines and the totals pair re-registered (before/after under `## Task 2d`); 001591 given the oracle's register ABI (__fastcall, `ret 4`); 001647's /GS cookie recorded; trace re-recorded (21 hit). See `## Task 2d`. |
 
 ## Task 2a: box distance kernels and the entries that reach them
 
@@ -607,8 +608,13 @@ no stand-in for any row.
 - *Frames and functions.* The file is built `/EHs-c-` with the other ICE-shaped files (the listings
   are frameless; the Container, reducer and RadixSort locals would otherwise get unwind frames). Every
   row the oracle has as a function of its own is `noinline` (001595, 001602, 001617 and 001625 had
-  been inlined into Init, Build and OutputRun), so each has an address to trace. 001591 is a free
-  function (the oracle's is thiscall on the Container, whose vendored header is not changed).
+  been inlined into Init, Build and OutputRun), so each has an address to trace. 001591, thiscall
+  on the Container with `ret 4` in the oracle, is a `__fastcall` function with the Container in ecx,
+  an unused edx and the point on the stack (the built function ends in `ret 4`): the same registers
+  and stack cleanup, without changing the vendored Container header (Task 2d review). 001647 carries
+  a `/GS` cookie (its three-word "previous" array `Junk[3]` on the stack, IceMeshTools.cpp) that the
+  oracle's frameless listing lacks, as 002061, 001539 and 001541 do (Task 2c); no other function of
+  the two files has one (checked in the objects' disassembly).
 
 **Listing findings** (reproduced; the contract is corrected where it said otherwise).
 - 001627 is called once per *run* of faces of equal (material, smoothing groups), not once per
@@ -639,7 +645,7 @@ installed per pass; entry rows by RVA on oracle-side objects, the candidate's on
 
 | family | entries | runs | words | result |
 |---|---|---:|---:|---|
-| ice_meshbuilder2 | 001593, 001623, 001597, 001633, 001629 | 249 cases | 178,377 | exact |
+| ice_meshbuilder2 | 001593, 001623, 001597, 001633, 001629 | 249 cases | 178,141 | exact |
 | vertex_reduction | 001645, 001647, 001659 | 178 reductions | 24,313 | exact |
 
 *ice_meshbuilder2* is driven as 002087 drives it: constructor, Init with a create block, AddFace per
@@ -651,12 +657,14 @@ every face's corners unshared, which the vertex pass welds back; a face whose tw
 different vertices at one position, which the vertex pass drops -- `killed=3`; a face with no
 distinct corners). Eight create-block configurations (002087's own among them) vary the twelve
 flags, the uvw stream (per vertex, a palette of five, a null source with a count -- the zeroed copy
-of 001595), the colour stream (a palette of four, per vertex), smoothing groups (all 1, all 0 --
+of 001595), the colour stream (a palette of four, per vertex), all written as bits (see below),
+smoothing groups (all 1, all 0 --
 every face unshared --, drawn from {0, 1, 2, 4, 3}), materials (all 0xffffffff, {0, 1, 2},
 {0xffffffff, 5, 3}), flips and out-of-range uvw/colour references (clamped). The six fixtures and
 the three own meshes run all eight, the other meshes a rotating three; cases alternate between the
-x87 control words 0x027f and 0x0f7f (154 of 249 under 0x0f7f). Build is skipped, by a fixed rule on
-the inputs, for a case none of whose faces has three corner positions of distinct bits (the vertex
+x87 control words 0x027f and 0x0f7f (154 of 249 under 0x0f7f). When Init succeeded (the side's own
+return value, taped first and compared), Build is skipped by a rule on the fixed inputs for a case
+none of whose faces has three corner positions of distinct bits (the vertex
 pass would drop every face and 001631 would then read the rank of face 0 of an empty sort): the
 eight cases of the third own mesh.
 
@@ -671,6 +679,32 @@ release through the 004803 getter in order. After a second Init the face and ref
 not digested (Init allocates them unwritten). The CRT blocks MeshBuilder2 takes itself come from the
 oracle's own heap and are not recorded on either side.
 
+*Raw-word streams (Task 2d review).* As first registered, the uvw and colour streams were built
+with float arithmetic (`x * 0.5f`, `(float) (draw % 3) * 0.5f`), which quiets every signalling NaN
+before it reaches the rows, so the `fld`/`fstp` pass-through of 001607 and 001627 was never handed
+one, and an integer copy there would have produced the same tapes. The streams are now written as
+bits: the per-vertex uvw is the vertex words copied; the palettes are fixed words (the uvw palette's
+fifth entry a signalling NaN 0x7fa00005 and a denormal, the colour palette's fourth a signalling NaN
+0xffa00007, +infinity and a quiet NaN); the per-vertex colours are drawn level words; and
+`nxMb2RawWords` turns one word in six (drawn) into a signalling NaN of either sign, a quiet NaN, an
+infinity, a denormal, -0 or a raw drawn word, each draw a named local. The input streams carry 510
+(uvw) and 347 (colour) signalling-NaN words (counted from the fixed inputs, registered). Both the
+indexed path (001607, +0x11e) and the per-vertex path (001627) are reached. ice_meshbuilder2 stays
+exact, so the rows reproduce the oracle's quieting and no `.snan` variant is needed. Replacing the
+pass-through with an integer copy (`evidence/convex-mesh-gap-2d-fldfstp-mutation.patch`, applied
+with `git apply` to 2973938, NxPhysicsThirdPartyTests rebuilt and run, then `git checkout` the file)
+gives `mismatches=276`: the pass-through is now tested. Re-registered (this task's own unmerged
+lines, replaced once; values from the oracle side):
+
+| line | before | after |
+|---|---|---|
+| input | `words=125178 input=1200bbc6` | `words=125178 input=333baf0f` |
+| exact | `words=178377 oracle=5e33a49e` | `words=178141 oracle=ae71cdd4` |
+| coverage | `out_verts=18056 submeshes=1043 materials=520 norm_info=34816 remapped=174` | `out_verts=18031 submeshes=1040 materials=515 norm_info=34694 remapped=177`, plus `uvw_snan=510 colour_snan=347` |
+| totals | `words=1958137` / `d54a58fc` | `words=1957901` / `c2e747eb` |
+
+The vertex_reduction lines are unchanged.
+
 *vertex_reduction*: per mesh its vertices with a third again inserted as bit copies at drawn slots
 (welded duplicates), with and without the result block; every fifth mesh twice on one object (the
 release of both outputs at 001647's start); every fourth mesh's plain vertices twice; an empty set;
@@ -680,20 +714,22 @@ block against the object's pointers, and every 004803 allocation and release.
 
 Coverage (oracle side, registered): 249 cases, 249 Init true (and 68 no-face Inits false among the
 453 probes, all false); 6,695 faces added, 445 dropped by the zero-area test, 241 builds true, 8
-skipped; 6,689 output faces, 18,056 output vertices, 1,043 runs, 520 material entries, 3 faces
-dropped by the vertex pass, 34,816 normal-info words, 174 non-identity face remaps; vertex_reduction
+skipped; 6,689 output faces, 18,031 output vertices, 1,040 runs, 515 material entries, 3 faces
+dropped by the vertex pass, 34,694 normal-info words, 177 non-identity face remaps; 510 uvw and 347
+colour signalling-NaN input words; vertex_reduction
 178 reductions of 5,457 vertices to 4,331. No report is made by these rows (reports=0).
 
 *Sensitivity (throwaway, not committed).* Each edit below was made on the working tree, rebuilt and
 run, then reverted: (A) `jnp SkipNormalize` -> `jp` in 001627's normalisation: ice_meshbuilder2
 2,655 mismatches; (C) the `fxch st(1)` before 001627's `fpatan` removed: 1,183; (B) 001597's third
 uvw clamp `>=` -> `>` and (D) 001647 comparing only x and y: both end the run in an access violation
-(an unclamped reference, a wrong cross-reference), which fails the gate as well. Reproduce with, for
+(an unclamped reference, a wrong cross-reference), which fails the gate as well; (E, review) the
+uvw pass-through as an integer copy: 276 (the patch above). Reproduce A..D with, for
 example, `sed -i 's/\t\t\t\tjnp\t\tSkipNormalize/\t\t\t\tjp\t\tSkipNormalize/'
 Physics/src/IceMeshBuilder2.cpp`, rebuild NxPhysicsThirdPartyTests, run, `git checkout` the file.
 
 Registered: 8 lines (per family the input digest, the exact line whole and the coverage line, and
-the totals pair `driven=78 divergent=27 words=1958137` / `d54a58fc`), every one copied from the
+the totals pair `driven=78 divergent=27 words=1957901` / `c2e747eb`), every one copied from the
 oracle side of a run (the name lines' agreement fields are the gate's assertion; the coverage lines
 count oracle-side values and fixed inputs only). Phase 4 floor 175 -> 183 and `test_gate_targets.py`
 MINIMUM with it. Every line registered before is unchanged (the families run after all others and
@@ -702,8 +738,9 @@ restore the generator state). Deterministic run to run; `--self` prints the same
 **Trace.** `evidence/convex-mesh-gap-trace-2d.txt`: one-shot cdb breakpoints (from the map, against
 `@$exentry` as in Task 2c) on the 21 candidate functions -- the 26 rows' 19 functions (the seven
 continuations have no address of their own) and the product forms of 001645 and 001659 -- all hit in
-one full run closing `thirdparty candidate mismatches=0` (exe sha256 69e19c5619e2299c..., build of
-e8fe4e3).
+one full run closing `thirdparty candidate mismatches=0` (exe sha256 0f5bdda539b6c409..., build of
+2973938, re-recorded after the review fixes; the first recording, on e8fe4e3, sha256
+69e19c5619e2299c..., hit the same 21).
 
 **Inventory and ledgers.** The 26 rows: `reconstructed`, `source`/`implementation` their file,
 static proofs citing the listing ranges (and, for 001597, 001603, 001607 and 001627, the FPU
