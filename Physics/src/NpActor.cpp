@@ -1256,8 +1256,11 @@ static void nxNpActorWakeAfterCMassWrite(unsigned char* record);
 // test: a non-null position goes to +0..+8 and ORs 1 into +0xc, a non-null
 // quaternion to +0x10..+0x1c and ORs 2. Then the wake every setter has
 // (0x1950a-0x1961b): unless +0x114 & 0x100, an ordered +0x84 < 0.39999998f
-// raises +0x84 and +0x4c to 0x3ecccccc and marks 0x10.
-static void nxNpActorSetKinematicTarget(unsigned char* record,
+// raises +0x84 and +0x4c to 0x3ecccccc and marks 0x10. noinline: the image
+// calls it as its own function from each move (000090, 000124, 000126); the
+// compiler had folded it into two of them (kept at the second merge of main
+// into the scene-raycast block, which found the calls missing in its trace).
+static __declspec(noinline) void nxNpActorSetKinematicTarget(unsigned char* record,
 	const float* position, const float* quaternion)
 	{
 	if(position)
