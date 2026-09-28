@@ -225,7 +225,8 @@ Which evidence a group needs before its rows can move depends on its class and n
   group in `phase4-third-party-map/vendored_coverage.csv` (`hits`, `outcome`, `differential`),
   backed by `evidence/vendored-trace-{qhull,opcode}.txt`. Task 5a replaced the column's values
   with `exact` / `lastbit` / `discrete`, classed per execution (see "Task 5a"). Deciding which
-  class counts as "a matching outcome" is Task 5b's call.
+  class counts as "a matching outcome" is Task 5b's call. *Task 5b's rule is under "Task 5b:
+  promotion", below.*
 - **Not promotable until fixed:** DIFF, MISSING and AMBIGUOUS groups. MAPCHECK groups wait for
   the map to be corrected.
 - **Summation order and register lifetimes (added after the Task 3 review).** A static proof
@@ -987,6 +988,14 @@ Notes on the table:
 
 - `opcode_ray_boundary` and `opcode_candidate_trees_x87` are out of step after their first
   difference, so from there on their float "distances" compare unrelated words.
+- (Task 5b wording fix.) The `discrete` figures of the two `*_boundary` families (756 and 671)
+  and of `opcode_candidate_trees_x87` are **not** counts of discrete outcome mismatches. Each is
+  a deterministic count, inflated by tape misalignment after the first difference: one root
+  rejection for the rays (after which the candidate tape is 4 words shorter), one pair verdict for
+  the tree colliders (14 words shorter), and a different tree for the candidate-built quantized
+  and tied models. From that point the harness compares words position by position that no longer
+  describe the same query. The ceiling holds the count because it is deterministic, not because
+  it counts outcomes.
 - Of `qhull_hull_x87`'s 1,284 differing words, only 7 doubles are more than 4 ulp apart. They are
   values next to zero.
 
@@ -1203,6 +1212,327 @@ The trace was re-run on the Task 5a build:
 - The results are in `vendored-trace-{qhull,opcode}.txt` and `vendored_coverage.csv` (columns
   `outcome` and `family_best`).
 
+## Task 5b: promotion
+
+Task 5b closes the four prerequisites the Task 5a review left, then moves the rows the evidence
+supports from `discovered` to `reconstructed`.
+
+### Prerequisites
+
+1. **The gate holds the figures a proof cites** (`426c0a7`). `kDivergentCeilings` in
+   `tests/PhysicsThirdPartyTests.cpp` now caps, per divergent family:
+   - `words` and `discrete`, as before;
+   - the worst float ulp and the worst double ulp;
+   - `beyond`, the words more than 4 ulp apart;
+   - `inf_words`, the floats and doubles an infinite distance apart;
+   - `degenerate`, described below;
+   - `finite_ulp`, the worst finite distance;
+   - `beyond_abs`, the largest `|oracle - candidate|` over the `beyond` words. This is the bound
+     that matters for values next to zero, where a large ulp distance is a tiny difference.
+
+   A run over any cap fails the harness. Lowering `ice_obb`'s `beyond` to 71 and
+   `qhull_hull_x87`'s `beyond_abs` to 2.9e-12 made the run fail on exactly those two families.
+   Each word beyond 4 ulp is listed on stderr (`ULP_BEYOND`).
+2. **Degenerate ICE inputs are named, not averaged in.** The ICE drive builds some inputs
+   degenerate on purpose: a triangle with a repeated vertex (`c % 7 == 2`) or three collinear
+   points (`c % 13 == 5`), and a matrix whose row 2 is twice row 1 (`c % 8 == 3`). Their tape words
+   now carry a mark. A differing marked word is counted as `degenerate=`, listed on stderr
+   (`ULP_DEGENERATE`), and kept out of the distance figures. The marking is by construction,
+   decided before either side runs, so it cannot hide a regular input. Every infinite distance in
+   `ice_plane_triangle` (31) and `ice_matrix4x4` (8) was on such an input. The cases whose words
+   differ (29 triangles, 17 matrices) are listed in `vendored-trace-opcode.txt`.
+3. **`lea r,[r]` is a copy** (`9425d75`). The candidate aligns a loop in
+   `PlanesCollider::InitQuery` with `lea ebx,[ebx]` (`0x000aba8a`). `_base_class` read that as a
+   derived pointer, which made the field report Task 5a flagged. `lea r,[s]` and `lea r,[s+0]`
+   (no index, not a frame register) now trace through to `s`. One test was added, for 82 in all.
+   The re-run changes no row's class; 44 qhull and 8 OPCODE rows change only their base-class
+   tokens, which the hand reviews already ignore. `PlanesCollider::InitQuery`'s `diff_fields`
+   is empty again. Its review line records the re-review: every `[ebx+d]` after `0x000aba8a` is
+   `this+d`, and the verdict `equivalent` stands.
+4. **Candidate-only builds fail.** `nxDriveCandidateTrees` used to skip a model that the oracle
+   declined to build and the candidate built. It now fails on it.
+5. **The QR1 runs have a segment of their own.** The qhull drive reports `qhull_hull` and
+   `qhull_hull_x87` before its `"o QR1"` runs. The tapes, the draws and the report order are
+   unchanged. The re-trace (`e172256`, exe `6658d086...`, candidate DLL `b0e275ae...` unchanged)
+   shows 16 qhull groups that only the QR1 runs reach: `qh_randommatrix`, `qh_gram_schmidt`,
+   `qh_rotateinput`, and merge paths such as `qh_renamevertex` and `qh_find_newvertex`. Those now
+   read `family_best=discrete`. No other group changes its outcome.
+6. **Wording.** The `discrete` counts of the `*_boundary` families and of
+   `opcode_candidate_trees_x87` are described as what they are, in the Task 5a notes above:
+   deterministic counts inflated by tape misalignment after the first root or verdict difference.
+
+Every registered line prints unchanged, and the run is deterministic.
+
+### The rule applied
+
+A group's `discovered` rows are promoted when the group meets all of these:
+
+- it is MATCH, SHAPE or REVIEW;
+- its `{qhull,opcode}_review.csv` verdict is `equivalent`;
+- it has no open triage item;
+- it meets one of the arms below.
+
+**Arm (i), exact.** At least one execution of the group was compared with the oracle and matched
+in every word.
+
+**Arm (ii), outcome-exact.** Some execution of the group meets all of these:
+
+- **(a)** its discrete outcome is exact: a sibling family is exact, or, for the ICE maths, no
+  discrete word of the family differs;
+- **(b)** its float family has `discrete=0` and `length_delta=0` (and `inf_words=0`);
+- **(c)** the proof states that family's worst ulp, `beyond` and `beyond_abs`;
+- **(d)** the gate holds those figures (prerequisite 1);
+- **(e)** the proof lists, with attribution, every discrete-mismatch family the group also ran
+  in.
+
+The executions that qualify are:
+
+| Execution | Exact part | Float family |
+|---|---|---|
+| The qhull hull | `qhull_hull` | `qhull_hull_x87` |
+| The rays | `opcode_ray` | `opcode_ray_x87` (`opcode_ray_boundary` shares the segment and is attributed) |
+| The ICE maths | none | `ice_plane_triangle`, `ice_matrix4x4` or `ice_obb`, each with its degenerate inputs excluded by name |
+
+**Arm static.** The static-only policy class: no x87 code, no `inlining:` note and no
+other-immediates note, with a hand review. Such a group is promoted even if nothing executes it.
+
+**Held back, even when an arm would admit the group:**
+
+- DIFF groups.
+- Reviews marked `equivalent-option-gated`: a numeric difference remains under options the
+  NovodeX driver never passes.
+- Groups whose only compared executions have discrete-outcome mismatches: the QR1-only qhull
+  paths, and the quantized trees' constructors, `GetUsedBytes` and `Build`.
+- The two `AABBTreeOfTrianglesBuilder::GetSplittingValue` overloads and
+  `AABBTreeNode::Subdivide`. They have exact executions, but Task 4 attributes the tie divergence
+  in `opcode_model_build_x87` to their own arithmetic: the `(v2+v1)+v0` sum returned unrounded,
+  and `1/n`.
+- Unexecuted groups with x87 code.
+- Unexecuted groups with an inlining or other-immediate note.
+
+**What each promoted row carries:**
+
+- `state`: `reconstructed`.
+- `implementation` and `source`: the file that defines the function, as the build merges it. That
+  is the overlay under `External/*/novodex/` where one exists, otherwise the upstream file. A
+  compiler-generated deleting destructor names the file of the destructor it wraps.
+- `implementation_symbol`: the function's source name. The upstream files do not write stable
+  IDs, so `_check_implementation_contains_row` accepts the symbol, as it does for the other rows
+  that record one.
+- `static_proof`, which states:
+  - the matcher class and the features it compares;
+  - the "Not compared" list;
+  - that summation order and some register lifetimes are not reproduced, with the group's
+    `sum_grouping.csv` sites;
+  - the review verdict, with its addresses;
+  - the execution class and its figures, the discrete-mismatch families with their attribution,
+    and the evidence files.
+
+  For a collider on quantized nodes that also ran over candidate-built trees, the proof says
+  that it matches on oracle-built quantized trees and differs end to end, because the build
+  rows are not promoted.
+- `dynamic_proof`: only on rows whose group has trace hits. It cites
+  `evidence/vendored-trace-{qhull,opcode}.txt`, the hit counts and families, the sha256 of both
+  traced exes and of the candidate DLL, and the identity result.
+
+**Attribution quoted in the proofs:**
+
+| Family | Attribution |
+|---|---|
+| `opcode_ray_boundary` | The oracle keeps `RayAABBOverlap`'s `f` unrounded (`0x000b912d`..`0x000b913f`) and the candidate rounds it. That flips one root rejection, and the count after it is misalignment. |
+| `opcode_candidate_trees_ray` | One grazing ray's BV test count, 6 against 14. The same count appears when the candidate's collider queries the oracle's tree. |
+| `opcode_candidate_trees_x87` | The unpromoted build rows make different quantized and tied trees. |
+| `opcode_model_build_x87` | Ties and quantization in the builds. |
+| `opcode_treecollider_boundary` | Edges aligned exactly: `TriTriOverlap`'s sums flip a pair verdict. |
+| `qhull_hull_rotated` | QR1's rotation rounds differently, and the merges that follow differ. |
+
+**The float figures the proofs cite.** The gate caps each of these at today's value.
+
+| Family | Worst ulp | `beyond` | `beyond_abs` | Degenerate words |
+|---|---:|---:|---:|---|
+| `qhull_hull_x87` | 3,421,917,482,582,016 (double) | 7 | 2.96e-12 | none |
+| `opcode_ray_x87` | 377 | 21 | 5.14e-07 | none |
+| `ice_plane_triangle` | 2,820 | 39 | 8.34e-07 | 122, from 29 triangles |
+| `ice_matrix4x4` | 106 | 109 | 0.00128 | 19, from 17 matrices |
+| `ice_obb` | 512 | 72 | 2.38e-07 | none |
+
+The seven `qhull_hull_x87` words beyond 4 ulp are all values of order 1e-16 to 1e-11:
+distances and offsets that are zero in exact arithmetic. `ice_matrix4x4`'s absolute bound is
+on inverse entries up to 186 in magnitude.
+
+## Results
+
+### Rows promoted (`9658600`)
+
+**By library:**
+
+| Library | Arm | Groups | Rows | Bytes |
+|---|---|---:|---:|---:|
+| qhull | (i) exact | 3 | 3 | 248 |
+| qhull | (ii) outcome-exact | 130 | 169 | 59,884 |
+| qhull | static-only | 28 | 30 | 3,808 |
+| qhull | **total** | **161** | **202** | **63,940** |
+| OPCODE | (i) exact | 94 | 126 | 149,043 |
+| OPCODE | (ii) outcome-exact | 19 | 21 | 19,829 |
+| OPCODE | static-only | 10 | 10 | 657 |
+| OPCODE | **total** | **123** | **157** | **169,529** |
+| **both** | | **284** | **359** | **233,469** |
+
+**By match class:**
+
+| Library | Arm | MATCH | SHAPE | REVIEW |
+|---|---|---|---|---|
+| qhull | (i) | – | 3 rows / 248 B | – |
+| qhull | (ii) | – | 68 / 23,776 | 101 / 36,108 |
+| qhull | static | – | 19 / 2,022 | 11 / 1,786 |
+| OPCODE | (i) | 3 / 61 | 22 / 8,317 | 101 / 140,665 |
+| OPCODE | (ii) | – | 5 / 767 | 16 / 19,062 |
+| OPCODE | static | 5 / 69 | – | 5 / 588 |
+
+**What the arms contain:**
+
+- OPCODE's (ii) groups are:
+  - the eight `_RayStab`/`_SegmentStab` walks and
+    `RayCollider::Collide(const Ray&, const Model&, ...)`;
+  - `Plane::Set`;
+  - `Triangle::Area`, `Normal`, `Center` and `Inflate`;
+  - `Matrix4x4::CoFactor`, `Determinant` and `Invert`;
+  - `OBB::ComputePlanes` and `ComputePoints`.
+
+  `RayCollider::ValidateSettings` meets the rule too, but its row already stood at
+  `reconstructed` and is left there.
+- qhull's (ii) groups are every hull group that ran in the unrotated runs.
+- The static arm holds:
+  - the destructors;
+  - qhull printers, set and statistics helpers with no x87 code and no notes, which nothing
+    compares.
+
+**The ledger** (`gates/phase4-closure.json`) moves 359 deferrals from `vendored_not_falsified`
+to `reconstructed_not_falsified`:
+
+- `vendored_not_falsified`: 608 to 249;
+- `reconstructed_not_falsified`: 111 to 470.
+
+Existing notes are kept. The prose counts are updated. `validate_inventory` requires that the one
+promoted row whose source had been `Physics/src/opcode/OPC_MeshInterface.cpp` (`phys_fn_005358`,
+`MeshInterface::SetPointers`) leave the unresolved-source allowlist, so its entry is removed.
+
+### Rows left at `discovered`, by reason
+
+| Library | Reason | Groups | Rows | Bytes |
+|---|---|---:|---:|---:|
+| qhull | DIFF (46 equivalent and 1 option-gated in review; not promotable under the rule) | 47 | 96 | 45,975 |
+| qhull | not executed, x87 code | 48 | 65 | 19,238 |
+| qhull | not executed, inlining or other-immediate note | 42 | 59 | 12,704 |
+| qhull | only compared execution is QR1 (discrete) | 10 | 10 | 2,074 |
+| qhull | review `equivalent-option-gated` | 8 | 8 | 3,683 |
+| qhull | **total** | | **238** | **83,674** |
+| OPCODE | DIFF, including the four callback-variant groups (`novodex-variant-unwritten`) | 10 | 10 | 27,664 |
+| OPCODE | not executed, inlining or other-immediate note | 1 | 1 | 142 |
+| OPCODE | **total** | | **11** | **27,806** |
+
+**Rows already above `discovered`.** In the matched groups, 82 OPCODE rows stand at
+`classified`, 35 vendored rows (20 OPCODE, 15 qhull) at `reconstructed` and 3 OPCODE rows at
+`dynamically_gated`. They are left as
+they are. This includes:
+
+- the quantized trees;
+- `GetSplittingValue`;
+- `Subdivide`;
+- the remaining ICE rows.
+
+### Deferred units (not vendored-correspondence rows)
+
+- **Serialization: 17 rows, 1,277 bytes.**
+  - The rows: BaseModel's slots 4 to 6, and the four trees' `GetSerialSize`, save, load and
+    relocation rows.
+  - They need MemoryStream host seams and a direct-oracle differential. The candidate has only
+    the reporting stubs.
+  - The reconstructed `TriangleMesh.cpp` save path and `Model::Build`'s load dispatch reach them.
+  - 12 of them are unmapped `discovered` rows in the OPCODE span.
+- **The tree-collider callback variant: 4 groups, 25,613 bytes.**
+  - The rows are `0x000d12b0`, `0x000cd700`, `0x000ca5a0` and `0x000cbe50`.
+  - They are to be written with their caller `phys_fn_001876`, NovodeX's mesh-mesh contact.
+- **The NovodeX hull library: 31 qhull-span rows, `discovered`, 11,641 bytes.**
+  - These are the drivers `003279`/`003236`, the clean-up, the output arena, the OBJ writers and
+    band B.
+  - They form bundle `gap:Controller.cpp..fluids\Fluid.cpp`, with their only caller
+    `phys_fn_002233` in `TriangleMesh.cpp`.
+- **The unmapped NovodeX clusters in the OPCODE span: 92 `discovered` rows.**
+  - Measured here as 105 unmapped `discovered` rows, less the 12 serialization rows and the
+    stock `Matrix3x3` cast. The coordinator's figure was 91.
+  - The clusters, with the units of their direct callers (from `oracle/dependencies.dot` and
+    `work_units.json`):
+
+    | Cluster | Rows | Bytes | Direct callers' units |
+    |---|---:|---:|---|
+    | pruner A | 22 | 2,373 | `gap:core\NpPrismaticJoint.cpp..opcode\IcePrunable.cpp` (`phys_fn_004852`), `gap:ContactPlaneMesh.cpp..PenetrationMap.cpp` (`001967`, `001969`) |
+    | pruner B | 6 | 2,484 | none by direct call (vtable dispatch) |
+    | SweepAndPrune box dump | 1 | 186 | `gap:ContactPlaneMesh.cpp..PenetrationMap.cpp` (`001978`) |
+    | pruning owner and pool | 9 | 2,272 | `gap:ContactPlaneMesh.cpp..PenetrationMap.cpp` (`001967`) |
+    | penetration-map builder | 14 | 4,805 | `PenetrationMap.cpp` (`002047`), `gap:ContactPlaneMesh.cpp..PenetrationMap.cpp` (`002025`) |
+    | pruner C | 22 | 4,420 | `gap:core\NpPrismaticJoint.cpp..opcode\IcePrunable.cpp` (`004830`, `004832`, `004834`, `004852`, `004855`) |
+    | pruner D | 18 | 2,976 | none by direct call (vtable dispatch) |
+- **Summation order and register lifetimes: their own tool-driven unit.** It covers several
+  hundred OPCODE sites and at least `qh_distplane`, and is driven by `sum_grouping.csv` extended
+  to offset-led and longer sums. Every promoted row's proof records this as not reproduced.
+
+### Defects found and fixed during the plan
+
+| Task | Commit | Defect |
+|---|---|---|
+| 2 | `e6cc359` | qhull's trace macros must print through the CRT, and `mem.c`/`qset.c` through the host |
+| 2 | `93c0e1d` | `__CIsqrt` where the oracle has an inline `fsqrt` (qhull) |
+| 2 | `18774f3` | NovodeX's typed host dispatches in `io.c`/`poly2.c` |
+| 2 | `2d823f3` | `geom.c` reciprocal build parity (`qh_gausselim`, `qh_getcenter`, `qh_normalize2`) |
+| 3 | `6e14ab6` | `OPCODECREATE::mDeserializeFrom` uninitialised |
+| 3 | `dbd3172`, `e4f9f73` | RayCollider's `+0x88` barycentric tolerance, and V compared unrounded |
+| 3 | `9266906` | OPCODE's allocator by class, and empty node constructors |
+| 3 | `85004e8` | `CONTAINER_STATS` compiled in |
+| 3 | `d6ffcb3` | `__CIsqrt` (OPCODE) |
+| 3 | `05d81a9` | NovodeX `SweepAndPrune` |
+| 3 | `19a9844` | NovodeX `LSSCollider` |
+| 3 | `ba36f82` | `SphereTriOverlap`'s reciprocal form and register lifetime |
+| 4 | `045ed3b` | stock `AABBCollider::_Collide(const AABBTreeNode*)` argument swap |
+| 5a | `1aa9092` | NovodeX `VolumeCache` holds `Container*` at +0 |
+
+The matcher and harness defects found along the way:
+
+- the high-byte bit tests (`a1e5428`);
+- the withdrawn `-1.0` rule (`ba36f82`);
+- the `fxch` register (`e44b61c`);
+- a divergent family that could not fail (`82d5320`);
+- the `lea` copy (`9425d75`);
+- the QR1 segment and the candidate-only build skip (`426c0a7`).
+
+### Rate
+
+Of the 728 vendored map rows (qhull 455, OPCODE 273), 394 now stand at `reconstructed`: 359 from
+this task, and 35 raised earlier by other drives. That is 233,469 of the 380,693 matched bytes
+(61%) promoted by this plan.
+
+The plan's recorded wall time, Task 1 to the end of Task 5b, is 7.01 hours (the nine timing rows, 2026-09-27T15:24:12 to 2026-09-28T00:08:17). That gives
+about 33,299 bytes per hour for the bytes promoted.
+
+### Verification
+
+| Check | Result |
+|---|---|
+| Fresh configure | `cmake -G "Visual Studio 18 2026" -A Win32 --fresh`: exit 0. |
+| Clean build | `cmake --build build --config Release --clean-first`: exit 0, no errors. |
+| Candidate DLL after the clean build | sha256 `f9075db4...03ef`. It differs from Task 5a's `b0e275ae...` only by the link: the PE timestamp changes with every link. The matcher re-run over it (`--out-dir` scratch) gives `qhull_match.csv`, `opcode_match.csv` and `vendored_data_map.csv` byte-identical to the committed ones, candidate addresses and sizes included. The gates' own `--fresh` rebuild gave the same `f9075db4...`. |
+| Public headers | `public_headers=pass` against the oracle tree and the worktree's `Physics/include` (in every gate run). |
+| Tool tests | `python -m unittest discover -s tests`: 753 tests OK (752 + the new `lea` test). `test_gate_targets` against the worktree harness: OK. |
+| `verify_vendored_sources.py` | pass: 148 upstream files checked, 36 locally modified, 0 failures. |
+| `validate_inventory.py` | exit 0, `unexplained=0`; phase 4 `closed=28 deferred=1025`. |
+| Phase 2 | `phase_gate=2 status=pass` |
+| Phase 3 | `phase_gate=3 status=pass`, 103/103 |
+| Phase 4 | `phase_gate=4 status=pass`, 135/135; asset `eaefc573`; thirdparty digests `74ebc669`, `c16f0c0c`, `5f87aa37`; `thirdparty candidate mismatches=0`. |
+| Phase 5 | Fails only on `candidate CANDIDATE-MISSING family=vtables`, and the layout harness exits 1 because of it, as before. 871/871. |
+| Phase 6 | `phase_gate=6 status=pass`, 403/403 |
+| Phase 7 | `phase_gate=7 status=pass`, 276/276 |
+| `NxPhysicsThirdPartyTests` | Exit 0 and deterministic: two runs are byte-identical on stdout and stderr. Every exact line, and every registered prefix, is unchanged from Task 5a. |
+
 ## Open items
 
 - **The NovodeX hull library (separate work unit, controller decision after Task 2).** The 31
@@ -1228,7 +1558,8 @@ The trace was re-run on the Task 5a build:
   and the owning model at `+4`. The owner supplies the `Container`, and the colliders never test
   the pointer. The fix is `novodex/OPC_VolumeCollider.h` plus the five `InitQuery` overlays; see
   "Task 5a". `PlanesCollider::InitQuery`'s matcher field report changed with the rebuild, and
-  Task 5b has to re-review it.
+  Task 5b has to re-review it. *Done in Task 5b:* a matcher artifact of the candidate's
+  alignment no-op `lea ebx,[ebx]`, fixed in the matcher (`9425d75`); the verdict stands.
 - **Execution gaps after Task 4.** qhull has 70 x87 groups that no differential runs, most of them
   printers for output formats the NovodeX driver never requests. OPCODE has 5: the base
   `GetSplittingValue`, the two `AABBTreeOfAABBsBuilder` rows, and two bodies the exes inline. See
@@ -1262,3 +1593,4 @@ The trace was re-run on the Task 5a build:
 | 3 review | 2026-09-27T19:25:00 | 2026-09-27T20:01:01 | 0 | 0 | Review fixes: SphereTriOverlap reciprocal form and SqrDist register lifetime (build-parity overlay OPC_SphereTriOverlap.h); the e153286 `-1.0` matcher rule withdrawn with its test (it hid that difference; the group is DIFF on the constant alone, bit-identical by exact sign identities); RayTriOverlap V compared and summed unrounded at all 14 sites; CMake comment, README EOL rule, closure prose, reporting Save/Load stubs; opcode_review.csv notes build-stamped. OPCODE MATCH 18 / SHAPE 65 / REVIEW 176 / DIFF 14 rows. Gates 2, 3, 4, 6, 7 pass; Phase 5 red only on `CANDIDATE-MISSING family=vtables`. |
 | 4 | 2026-09-27T21:03:00 | 2026-09-27T22:21:48 | 0 | 0 | Execution coverage. `tools/vendored_trace.py` (14 tests): exe-versus-DLL body identity (every traced body the same code but one COMDAT without x87), counting cdb breakpoints per family, coverage CSV and trace excerpts; `/MAP` on both Phase 4 harnesses. `NxPhysicsThirdPartyTests` + 29 families (OPCODE builds, all colliders over oracle-built models, vanilla tree, SAP, ICE maths, qhull through the NovodeX call sequence over 10 option sets); 20 exact, 9 divergent and registered to the oracle digest only; Phase 4 floor 101 -> 130. Groups executed 40 -> 373 of 562; x87 groups in a compared family 9 -> 184 of 259. Found and fixed: stock `AABBCollider::_Collide(const AABBTreeNode*)` argument swap (overlay; candidate `e9e1ba15...` -> `f3a603a2...`). Found, not fixed: NovodeX `VolumeCache` holds `Container*` at +0 (open item). Divergences attributed: splatter-tie and quantized builds, RayTriOverlap/TriTri/ICE sums, boundary inputs, qhull doubles, QR1. No ledger change; gates 2, 3, 4, 6, 7 pass, Phase 5 red only on `CANDIDATE-MISSING family=vtables`. |
 | 5a | 2026-09-27T22:37:38 | 2026-09-27T23:24:09 | 0 | 0 | Execution evidence made enforceable. Divergent families fail above a recorded words/discrete ceiling (`kDivergentCeilings`, set to today's measurement; stderr names the first differing word); tape words carry their kind. `vendored_trace.py` (22 tests) classes families exact / lastbit (<= 4 ulp, no discrete word) / discrete and groups by their best execution, with `family_best` alongside: x87 groups qhull 3 exact / 0 lastbit / 70 discrete / 70 not executed, OPCODE 89 / 0 / 22 / 5; no family is lastbit. Harness drives split into per-family passes for attribution; a `release` mark. Fixed: NovodeX `VolumeCache` holds `Container*` at +0 (new overlays OPC_VolumeCollider.h, OPC_Sphere/OBB/PlanesCollider.cpp; AABB/LSS overlays; candidate `f3a603a2...` -> `b0e275ae...`). New families: candidate-built trees queried by candidate colliders (`opcode_candidate_trees` exact; `_ray` divergent by the collider's last bit; `_x87` divergent on quantized/tied trees); Phase 4 floor 130 -> 135. Serialization confirmed unexecuted (candidate stubs). No ledger change; gates 2, 3, 4, 6, 7 pass, Phase 5 red only on `CANDIDATE-MISSING family=vtables`. |
+| 5b | 2026-09-27T23:30:00 | 2026-09-28T00:08:17 | 359 | 233469 | Promotion. Prerequisites: kDivergentCeilings also caps worst float/double ulp, beyond, inf_words, degenerate, finite_ulp and beyond_abs (the absolute bound for values near zero); degenerate ICE inputs (29 zero-area triangles, 17 singular matrices) marked by construction and kept out of the distance figures; QR1 runs in their own trace segment (16 QR1-only qhull groups separated); a candidate-only build fails; matcher traces `lea r,[r]`/`lea r,[s+0]` as a copy (PlanesCollider::InitQuery artifact gone, no class change; 82 tests); boundary-count wording. Promoted discovered -> reconstructed: qhull 202 rows / 63,940 B (exact 3, outcome-exact 169, static-only 30), OPCODE 157 / 169,529 B (126 / 21 / 10); each with implementation/source = the defining upstream or overlay file, implementation_symbol, static_proof (matcher class, compared and not-compared features, summation order and register lifetimes not reproduced with sum_grouping sites, review verdict, execution class, attributed discrete families) and dynamic_proof where traced. Ledger: vendored_not_falsified 608 -> 249, reconstructed_not_falsified 111 -> 470; validate_inventory exits 0. Left: qhull DIFF 96, unexecuted x87 65, unexecuted with notes 59, QR1-only 10, option-gated 8; OPCODE DIFF 10, unexecuted with notes 1. work_units.json and the two vendored gap bundles regenerated. Fresh configure and clean build; gates 2, 3, 4, 6, 7 pass, Phase 5 red only on `CANDIDATE-MISSING family=vtables`. |
