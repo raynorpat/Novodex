@@ -39,7 +39,9 @@
 // Dumps: text, text with a two-line addendum, binary, binary with an
 // addendum, the deadlock arm of 000267 (below), scene B released (one
 // asset), both released (no asset, binary, an empty addendum); then scene C
-// (nxBuildSceneC, below) in text and binary, in a new pointer epoch. Every report
+// (nxBuildSceneC, below) in text and binary, in a new pointer epoch (the
+// ordinals are compared within an epoch; they are reset once, before scene C,
+// after the outstanding SDK block count is printed). Every report
 // the SDK makes goes to a printing output stream and is compared too.
 //
 // What is normalised, and nothing else:
@@ -48,8 +50,8 @@
 //   * pointer tokens "<prefix>__<hex>" (the "%s__%I64x" names of 004062,
 //     004004, 004006 and 003994: the PhysicsSDK, the scenes, the actor bodies
 //     and the joints): the hex is replaced by "P<n>", n the first-appearance
-//     ordinal of that pointer value over the whole run, so identity and
-//     aliasing are still compared;
+//     ordinal of that pointer value within an epoch (reset once, before scene
+//     C), so identity and aliasing are still compared within it;
 //   * the CRT digit residual: a number whose integer part has more than 17
 //     digits is printed as the bits of the float it parses to (f32:xxxxxxxx).
 //     The 2003 static CRT prints 17 significant digits and pads with zeros,
@@ -860,6 +862,17 @@ int wmain(int argc, wchar_t** argv)
 	sdk->releaseScene(*sceneA);
 	nxDump(*sdk, "no_scene", "coredump_no_scene", true, "");
 	printf("scene=released\n");
+	// Before the pointer epoch below resets: the SDK blocks still outstanding
+	// once scenes A and B are released, so the reset cannot hide a block one
+	// DLL leaks or frees that the other does not. The raw allocation and free
+	// COUNTS are not printed: they differ by 4 each (232/218 in the oracle,
+	// 228/214 in the candidate) because the candidate's actor-creation models
+	// (broadphase, pruner and auxiliary-array growth, Phase 5) allocate and
+	// free a different number of intermediate blocks; the step-by-step
+	// difference is recorded in evidence/effector-and-coredump.md
+	// (## Open items). The outstanding count, and every block the dump reads,
+	// agree.
+	printf("allocator after_release outstanding=%u\n", gAllocator.allocations() - gAllocator.frees());
 
 	// Scene C, dumped on its own after the others (review addition).
 	sceneDesc.gravity = NxVec3(0.0f, -9.81f, 0.0f);

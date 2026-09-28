@@ -719,8 +719,10 @@ static three-shape actor. Its first run found one defect: the candidate's shape 
 the capsule loader 000989 stores them (0x00021af0) and slot 13 reads them back; 004048's capsule
 arm hands that word to 004017, so the oracle printed `triggerevent(enter,)` for a capsule with
 `NX_SWEPT_SHAPE` and the candidate nothing. Fixed (d628181). A capsule's `shapeFlags` triggers do
-not print, in either DLL: the quirk recorded in "### Task 3b record". 95 lines added; floors 6/7 =
-855/728.
+not print, in either DLL: the quirk recorded in "### Task 3b record". 95 lines added, inserted before the target list's last pre-Task-5 entry;
+floors 6/7 = 855/728. The final review added the outstanding SDK block count at the epoch reset
+(`allocator after_release outstanding=14`; floors 856/729); the raw allocation and free counts
+differ (actor-creation models; evidence, "## Open items") and are not printed.
 
 ## Task split
 

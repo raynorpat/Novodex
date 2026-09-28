@@ -127,7 +127,7 @@ descriptor inlines nothing calls. 29 rows gain `dynamic_proof` (000267 among the
 | 3a | 2026-09-28T09:45:00 | 2026-09-28T10:10:38 | 27 (18 hand-written incl. 3 continuations of 004037; 6 compiler-generated desc inlines: 003981 003985 004021 004023 004025 004027; readers 004068 004072 004085) | 11,793 | `core/SceneDump.cpp` (new, /arch:IA32 and /EHs-c-) + `include/core/SceneDump.h`; readers in `core/Joint.cpp`; parameter/group-mask accessors in `PhysicsSDK.cpp`. Not wired (Task 4); static proofs only; 163/164 format literals NUL-delimited in the image (the 164th, `\r\n`, a string tail as in the oracle). Contract correction: the 0x20000 block is 003991's mesh-name table. 004051 placeholder for 3b. 23 rows discovered -> reconstructed, Phase 6 ledger 45/386. Gates 2/3/4/6/7 pass, 5 only the vtables marker. |
 | 3b | 2026-09-28T10:12:00 (approx.) | 2026-09-28T10:58:00 | 23 (11 hand-written incl. 5 continuations of 004051; 7 compiler-generated desc inlines: 003983 003987 003989 004019 004029 004031 004033; readers 000015 000017 000509 000523 001283) | 11,630 | Asset, shape, mesh and effector rows in `core/SceneDump.cpp`; readers in `core/JointSupport.cpp`, `Scene.cpp`, `ContactGeneration.cpp`; deferred stubs 001472 and 000525/000527 (unreachable: no mesh shapes, no pair flags). Not wired (Task 4); static proofs only; 225/225 format literals in the image (222 NUL-delimited, 3 at the oracle pointer behind a table word). Found: capsule arm passes its own flags to 004017. 15 rows discovered -> reconstructed, Phase 6 ledger 30/401. `NxPhysicsInternalTests` links NarrowPhase/ContactGeneration. Gates 2/3/4/6/7 pass, 5 only the vtables marker. |
 | 4 | 2026-09-28T10:55:00 (approx.) | 2026-09-28T11:30:00 | 1 (000267) | 221 | 000267 wired in `NpPhysicsSDK.cpp` (lock walk, reverse unlock and report at line 225, call to 004062); `NpScene::writeLink()`. New staged-pair target `NxPhysicsCoreDumpTests` (Phases 6/7): two populated scenes dumped seven times (text/binary, with/without addendum, deadlock arm, one scene, none), each `.psc` printed back; date line and pointer tokens normalised. `stdout_delta=0`; 278 oracle lines registered, floors 6/7 = 760/633. Defect found and fixed: body thresholds (maxAngularVelocity, sleep velocities) from the live SDK parameters as 000795 does, not pinned defaults (`Scene.cpp`). Found, not fixed (unwritten Phase 5 rows): no mass from shapes (000008) and a trigger-only dynamic actor accepted; the scene gives explicit masses. cdb trace: 29 rows gain `dynamic_proof`; not hit: mesh arm, pair loop, 000525, descriptor inlines. 000267 Phase 2 ledger `reconstructed_not_falsified`. Gates 2/3/4/6/7 pass, 5 only the vtables marker. |
-| 5 | 2026-09-28T11:30:00 (approx.) | 2026-09-28T12:05:00 | 0 | 0 | Review coverage: scene C in `NxPhysicsCoreDumpTests` (awake(false) on a dynamic body, capsule flags, every printable PsDefaultSettings kind, a static three-shape actor), 95 oracle lines, floors 6/7 = 855/728; defect found and fixed: capsule flags not stored at +0xe8 (`Scene.cpp`). Records: unreached branches, 000008/000795 open-item notes, Phase 6 ledger text, superseded contract sections. `work_units.json` and the three bundles regenerated. Result, defects, open items, rate, verification written. Fresh configure and clean build; gates 2/3/4/6/7 pass, 5 only the vtables marker. |
+| 5 | 2026-09-28T11:30:00 (approx.) | 2026-09-28T12:05:00 | 0 | 0 | Review coverage: scene C in `NxPhysicsCoreDumpTests` (awake(false) on a dynamic body, capsule flags, every printable PsDefaultSettings kind, a static three-shape actor), 95 oracle lines (inserted before the target list's last pre-Task-5 entry, which is unchanged; the Task 5 commit message says "appended"), floors 6/7 = 855/728 (856/729 with the final review's outstanding-block line); defect found and fixed: capsule flags not stored at +0xe8 (`Scene.cpp`). Records: unreached branches, 000008/000795 open-item notes, Phase 6 ledger text, superseded contract sections. `work_units.json` and the three bundles regenerated. Result, defects, open items, rate, verification written. Fresh configure and clean build; gates 2/3/4/6/7 pass, 5 only the vtables marker. |
 
 ## Result
 
@@ -156,7 +156,7 @@ Wired: `NxScene::createSpringAndDamperEffector`, `releaseEffector`, `getNbEffect
 iterator and every `NxSpringAndDamperEffector` method; `NxPhysicsSDK::coreDump` (text and binary,
 with and without an addendum, and its deadlock arm). Two staged-pair targets on Phases 6 and 7,
 both `stdout_delta=0`: `NxPhysicsEffectorTests` (79 registered oracle lines) and
-`NxPhysicsCoreDumpTests` (373). Floors 6/7 went from 403/276 to 855/728.
+`NxPhysicsCoreDumpTests` (374). Floors 6/7 went from 403/276 to 856/729.
 
 Deferred, as asserting stubs with their stable-ID lines, rows left `discovered`:
 - 000791 (133 B, `addForceAtPos` on a body record): needs 000782, not written; the effector's
@@ -202,6 +202,31 @@ name, quote and line ending matched on the first comparison.
   because an address a freed object had may be handed out again depending on the process's
   address-space history.
 
+- **SDK allocation and free counts during actor and joint creation** (found in the final review):
+  by the time scenes A and B are released, the oracle has made 232 allocations and 218 frees
+  through the test's allocator, the candidate 228 and 214. The 14 blocks still outstanding agree,
+  and so does every block the dump reads. The counts part per step, printed by a throwaway
+  instrumented build and given as oracle allocs/frees against candidate allocs/frees:
+  - "wall block" (a static box): 5/1 against 4/0;
+  - "ball": 19/5 against 20/6;
+  - `crate"q`: 6/1 against 5/0;
+  - "mover": 6/0 against 5/0;
+  - "compound": 18/6 against 16/4;
+  - "ghost": 4/1 against 3/0;
+  - the unnamed sleeper: 6/1 against 7/2;
+  - joints: revolute_plain 5/2 against 7/2, cylindrical 2/0 against 3/1, point_in_plane 3/0
+    against 4/1, fixed 3/1 against 2/0;
+  - "floor": 23/7 against 19/3;
+  - scene B's release: 5/54 against 6/55; scene A's release: 9/125 against 9/126;
+  - scene C: "pebble" 6/2 against 4/0, "twin 2" 7/2 against 6/1, "brick 2" 7/2 against 8/3,
+    "gate" 15/4 against 11/0.
+
+  The dumps themselves allocate nothing through it. These are growth and reallocation patterns
+  of the candidate's Phase 5 creation models (broadphase table, static pruner, auxiliary arrays),
+  not dump rows. `NxPhysicsCoreDumpTests` prints only the outstanding count at the pointer-epoch
+  reset (`allocator after_release outstanding=14`, registered). It does not print the raw counts,
+  which would differ. A Phase 5 follow-up.
+
 ## Rate
 
 Method as in `evidence/joint-families.md`: written rows and bytes against the timing table's own
@@ -236,7 +261,7 @@ On the final tree (Task 5):
 - Validator: `validate_inventory.py inventory.json` -> `inventory=pass`, exit 0.
 - Gates: 2 pass; 3 pass (103/103); 4 pass (135/135); 5 fails only on `candidate
   CANDIDATE-MISSING family=vtables` (871/871, 12/12 staged-pair targets `stdout_delta=0`); 6 pass
-  (855/855, 6/6 differentials `stdout_delta=0`); 7 pass (728/728).
+  (856/856, 6/6 differentials `stdout_delta=0`); 7 pass (729/729).
 - Stable-ID form: every `// phys_fn_` line in `Physics/src/core/*.cpp` matches
   `// phys_fn_NNNNNN (0x........, N B)`; 0 violations.
 - CRT use in the block's `core/` files: `SceneDump.cpp` calls only stdio, string and time

@@ -385,7 +385,8 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_link_libraries(NxPhysicsEffectorTests bcrypt)
 	# The scene core-dump differential (effector-and-coredump Task 4): two
 	# populated scenes dumped through NxPhysicsSDK::coreDump in text and binary
-	# mode, with and without an addendum, each .psc file printed back.
+	# mode, with and without an addendum, each .psc file printed back; then a
+	# third scene (Task 5 review coverage) dumped on its own in text and binary.
 	add_executable(NxPhysicsCoreDumpTests tests/PhysicsCoreDumpTests.cpp)
 	target_include_directories(NxPhysicsCoreDumpTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include)

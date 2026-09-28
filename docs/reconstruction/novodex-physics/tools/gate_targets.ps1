@@ -1370,6 +1370,9 @@ $NxRequiredCoverageLines = [ordered] @{
     # flags reach the trigger writer), consecutive equal actors and shapes for the
     # PsDefaultSettings lines, and a static three-shape actor; its first run found
     # the capsule's flags missing from the shape (fixed in Scene.cpp).
+    # Those 95 lines sit before the list's last pre-Task-5 entry (the no_scene line
+    # count). The final-review line after it is the outstanding SDK block count
+    # at the pointer-epoch reset.
     'NxPhysicsCoreDumpTests' = @(
         'sdk materials=3 added=1,2',
         'sdk group_1_3=0 group_2_2=0',
@@ -1743,7 +1746,8 @@ $NxRequiredCoverageLines = [ordered] @{
         'dump scene_c_binary line=156 text=PsCapsule radius(0.2000$3e4ccccd) localposition(0,2.0000$40000000,0) localorientation(0,0,0.7071$3f3504f5,0.7071$3f3504f2) group(6) <CR>',
         'dump scene_c_binary lines=167 normalised_bytes=8523',
         'scene c=released',
-        'dump no_scene lines=67 normalised_bytes=1799'
+        'dump no_scene lines=67 normalised_bytes=1799',
+        'allocator after_release outstanding=14'
     )
     'NxFoundationTangentTests' = @(
         'tangent sweep unit=120000 threshold=60000 scaled=60000 digest=5db0093f',
@@ -2804,9 +2808,9 @@ $NxPhaseCoverageFloor = [ordered] @{
                # vendored-correspondence Task 4 + 5 from its Task 5a)
     '5' = 871  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines
                # (RED on purpose: vtables family open)
-    '6' = 855  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
-               # + 12 joint-allocator + 146 joint-slot + 79 effector + 373 core-dump
-    '7' = 728  # the 118 + 12 + 146 + 79 + 373 STAGED-PAIR assertions; the oracle-differential assertions
+    '6' = 856  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
+               # + 12 joint-allocator + 146 joint-slot + 79 effector + 374 core-dump
+    '7' = 729  # the 118 + 12 + 146 + 79 + 374 STAGED-PAIR assertions; the oracle-differential assertions
                # belong to NxPhysicsJointDescTests and NxPhysicsJointTests, which phase 7
                # does not run
     '8' = 0
