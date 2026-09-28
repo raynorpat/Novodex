@@ -2784,11 +2784,11 @@ LAB_1005ca56:
 
 ```
 
-## phys_fn_002430 (0x0005cb40, 869 B, discovered)
+## phys_fn_002430 (0x0005cb40, 869 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/geom.c
+- implementation: External/qhull/novodex/geom.c
 - prototype: int __cdecl FUN_1005cb40(double * param_1, int param_2, double * param_3, int param_4, undefined4 * param_5, int * param_6)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002454 (0x0005dfb0), phys_fn_003200 (0x0007a330), phys_fn_003214 (0x0007bcf0), phys_fn_003222 (0x0007c3b0)
@@ -3737,11 +3737,11 @@ FUN_1005d670(double *param_1,uint param_2,int param_3,double *param_4,undefined4
 
 ```
 
-## phys_fn_002448 (0x0005d980, 107 B, discovered)
+## phys_fn_002448 (0x0005d980, 107 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/geom.c
+- implementation: External/qhull/novodex/geom.c
 - prototype: undefined __cdecl FUN_1005d980(double * param_1, int param_2, double param_3)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002456 (0x0005e3e0), phys_fn_002707 (0x00067080), phys_fn_002721 (0x00067680), phys_fn_002725 (0x00067850), phys_fn_002729 (0x00067a30), phys_fn_002817 (0x0006a550), phys_fn_002822 (0x0006a9b0), phys_fn_002826 (0x0006ae90)
@@ -3943,11 +3943,11 @@ LAB_1005de3a:
 
 ```
 
-## phys_fn_002452 (0x0005de50, 348 B, discovered)
+## phys_fn_002452 (0x0005de50, 348 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/geom.c
+- implementation: External/qhull/novodex/geom.c
 - prototype: undefined __cdecl FUN_1005de50(uint param_1, int param_2, double * param_3, uint param_4, double * param_5, double * param_6, int * param_7)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002460 (0x0005e490), phys_fn_002689 (0x00066310)
@@ -4273,11 +4273,11 @@ void __cdecl FUN_1005e470(double *param_1,uint param_2,int param_3)
 
 ```
 
-## phys_fn_002460 (0x0005e490, 439 B, discovered)
+## phys_fn_002460 (0x0005e490, 439 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/geom.c
+- implementation: External/qhull/novodex/geom.c
 - prototype: undefined __cdecl FUN_1005e490(undefined8 * param_1)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_003047 (0x00074430), phys_fn_003083 (0x000751c0), phys_fn_003180 (0x000793f0)
@@ -4549,11 +4549,11 @@ LAB_1005e99b:
 
 ```
 
-## phys_fn_002462 (0x0005e650, 1026 B, discovered)
+## phys_fn_002462 (0x0005e650, 1026 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/geom.c
+- implementation: External/qhull/novodex/geom.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -5239,11 +5239,11 @@ Decompile (capstone disassembly):
 0x0005ed50  ret
 ```
 
-## phys_fn_002475 (0x0005ed60, 39 B, discovered)
+## phys_fn_002475 (0x0005ed60, 39 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/geom2.c
+- implementation: External/qhull/upstream/src/geom2.c
 - prototype: float10 __cdecl FUN_1005ed60(int param_1, int param_2, double * param_3, double * param_4)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002689 (0x00066310)
@@ -6084,11 +6084,11 @@ double * __cdecl FUN_1005f530(double *param_1,int param_2)
 
 ```
 
-## phys_fn_002495 (0x0005f590, 98 B, discovered)
+## phys_fn_002495 (0x0005f590, 98 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/geom2.c
+- implementation: External/qhull/upstream/src/geom2.c
 - prototype: float10 __stdcall FUN_1005f590(void)
 - calling convention: __stdcall, stack purge: 0
 - callers: phys_fn_002503 (0x0005fa60)
@@ -6553,11 +6553,11 @@ undefined4 __cdecl FUN_1005f9f0(int param_1)
 
 ```
 
-## phys_fn_002503 (0x0005fa60, 258 B, discovered)
+## phys_fn_002503 (0x0005fa60, 258 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/geom2.c
+- implementation: External/qhull/upstream/src/geom2.c
 - prototype: undefined __cdecl FUN_1005fa60(int param_1, double * param_2, double * param_3)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002709 (0x00067130), phys_fn_002857 (0x0006c950), phys_fn_002862 (0x0006d200), phys_fn_003111 (0x00076610), phys_fn_003208 (0x0007ae80)
@@ -6664,11 +6664,11 @@ float10 __cdecl FUN_1005fb70(double *param_1,double *param_2,int param_3)
 
 ```
 
-## phys_fn_002507 (0x0005fbb0, 146 B, discovered)
+## phys_fn_002507 (0x0005fbb0, 146 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/geom2.c
+- implementation: External/qhull/upstream/src/geom2.c
 - prototype: undefined __cdecl FUN_1005fbb0(undefined4 param_1, undefined4 param_2, int param_3, int param_4, int param_5)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002436 (0x0005d0e0), phys_fn_002520 (0x0005ff40), phys_fn_002532 (0x000605f0), phys_fn_002689 (0x00066310)
@@ -6770,11 +6770,11 @@ void __cdecl FUN_1005fc50(undefined4 param_1,int param_2,int param_3)
 
 ```
 
-## phys_fn_002511 (0x0005fd10, 264 B, discovered)
+## phys_fn_002511 (0x0005fd10, 264 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/geom2.c
+- implementation: External/qhull/upstream/src/geom2.c
 - prototype: undefined __cdecl FUN_1005fd10(int param_1, int param_2, undefined8 * param_3, int param_4, int param_5, undefined8 * param_6, int param_7)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002554 (0x00061990)
@@ -7001,11 +7001,11 @@ void __cdecl FUN_1005fec0(double *param_1,int param_2,undefined4 *param_3)
 
 ```
 
-## phys_fn_002520 (0x0005ff40, 167 B, discovered)
+## phys_fn_002520 (0x0005ff40, 167 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/geom2.c
+- implementation: External/qhull/upstream/src/geom2.c
 - prototype: undefined __cdecl FUN_1005ff40(double * param_1, int param_2, int param_3, int param_4)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002558 (0x00061cd0)
@@ -8074,11 +8074,11 @@ Decompile (capstone disassembly):
 0x00060a3c  ret
 ```
 
-## phys_fn_002540 (0x00060a40, 410 B, discovered)
+## phys_fn_002540 (0x00060a40, 410 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/geom2.c
+- implementation: External/qhull/upstream/src/geom2.c
 - prototype: float10 __cdecl FUN_10060a40(uint param_1, int param_2, int param_3)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002550 (0x00061490)
@@ -8161,11 +8161,11 @@ float10 __cdecl FUN_10060a40(uint param_1,int param_2,int param_3)
 
 ```
 
-## phys_fn_002542 (0x00060be0, 1413 B, discovered)
+## phys_fn_002542 (0x00060be0, 1413 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/geom2.c
+- implementation: External/qhull/upstream/src/geom2.c
 - prototype: undefined __stdcall FUN_10060be0(void)
 - calling convention: __stdcall, stack purge: 0
 - callers: phys_fn_003200 (0x0007a330)
@@ -8306,11 +8306,11 @@ LAB_10060f1c:
 
 ```
 
-## phys_fn_002544 (0x00061170, 303 B, discovered)
+## phys_fn_002544 (0x00061170, 303 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/geom2.c
+- implementation: External/qhull/upstream/src/geom2.c
 - prototype: float10 __cdecl FUN_10061170(int param_1)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002548 (0x00061310)
@@ -8379,11 +8379,11 @@ float10 __cdecl FUN_10061170(int param_1)
 
 ```
 
-## phys_fn_002546 (0x000612a0, 100 B, discovered)
+## phys_fn_002546 (0x000612a0, 100 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/geom2.c
+- implementation: External/qhull/upstream/src/geom2.c
 - prototype: double * __cdecl FUN_100612a0(int * param_1)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002689 (0x00066310), phys_fn_002715 (0x00067500), phys_fn_003143 (0x00077220)
@@ -8606,11 +8606,11 @@ void FUN_10061490(void)
 
 ```
 
-## phys_fn_002552 (0x00061780, 519 B, discovered)
+## phys_fn_002552 (0x00061780, 519 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/geom2.c
+- implementation: External/qhull/upstream/src/geom2.c
 - prototype: undefined4 * __cdecl FUN_10061780(uint param_1, int param_2, int param_3)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_003200 (0x0007a330)
@@ -8714,11 +8714,11 @@ undefined4 * __cdecl FUN_10061780(uint param_1,int param_2,int param_3)
 
 ```
 
-## phys_fn_002554 (0x00061990, 616 B, discovered)
+## phys_fn_002554 (0x00061990, 616 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/geom2.c
+- implementation: External/qhull/upstream/src/geom2.c
 - prototype: undefined __stdcall FUN_10061990(void)
 - calling convention: __stdcall, stack purge: 0
 - callers: phys_fn_002678 (0x000660a0)
@@ -8869,11 +8869,11 @@ void FUN_10061990(void)
 
 ```
 
-## phys_fn_002556 (0x00061c00, 206 B, discovered)
+## phys_fn_002556 (0x00061c00, 206 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/geom2.c
+- implementation: External/qhull/upstream/src/geom2.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -9023,11 +9023,11 @@ void FUN_10061d30(void)
 
 ```
 
-## phys_fn_002562 (0x00061d90, 378 B, discovered)
+## phys_fn_002562 (0x00061d90, 378 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/global.c
+- implementation: External/qhull/upstream/src/global.c
 - prototype: undefined __cdecl FUN_10061d90(int param_1)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_003232 (0x0007cf80)
@@ -9178,11 +9178,11 @@ void __cdecl FUN_10061d90(int param_1)
 
 ```
 
-## phys_fn_002564 (0x00061f10, 343 B, discovered)
+## phys_fn_002564 (0x00061f10, 343 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/global.c
+- implementation: External/qhull/upstream/src/global.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -9875,11 +9875,11 @@ void __cdecl FUN_10062690(char *param_1,char **param_2)
 
 ```
 
-## phys_fn_002585 (0x000626c0, 47 B, discovered)
+## phys_fn_002585 (0x000626c0, 47 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/global.c
+- implementation: External/qhull/upstream/src/global.c
 - prototype: undefined __cdecl FUN_100626c0(undefined4 param_1, undefined4 param_2, undefined4 param_3, int param_4, undefined4 * param_5)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_003236 (0x0007d420)
@@ -9905,11 +9905,11 @@ FUN_100626c0(undefined4 param_1,undefined4 param_2,undefined4 param_3,int param_
 
 ```
 
-## phys_fn_002587 (0x000626f0, 356 B, discovered)
+## phys_fn_002587 (0x000626f0, 356 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/global.c
+- implementation: External/qhull/upstream/src/global.c
 - prototype: undefined __cdecl FUN_100626f0(char * param_1)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_003236 (0x0007d420)
@@ -11503,11 +11503,11 @@ LAB_10064db0:
 
 ```
 
-## phys_fn_002591 (0x00062860, 68 B, discovered)
+## phys_fn_002591 (0x00062860, 68 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/global.c
+- implementation: External/qhull/upstream/src/global.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -11538,11 +11538,11 @@ Decompile (capstone disassembly):
 0x000628a2  jmp 0x100628b0
 ```
 
-## phys_fn_002595 (0x000628b0, 68 B, discovered)
+## phys_fn_002595 (0x000628b0, 68 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/global.c
+- implementation: External/qhull/upstream/src/global.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -11573,11 +11573,11 @@ Decompile (capstone disassembly):
 0x000628f2  jmp 0x10062900
 ```
 
-## phys_fn_002599 (0x00062900, 68 B, discovered)
+## phys_fn_002599 (0x00062900, 68 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/global.c
+- implementation: External/qhull/upstream/src/global.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -11608,11 +11608,11 @@ Decompile (capstone disassembly):
 0x00062942  jmp 0x10062950
 ```
 
-## phys_fn_002603 (0x00062950, 68 B, discovered)
+## phys_fn_002603 (0x00062950, 68 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/global.c
+- implementation: External/qhull/upstream/src/global.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -11643,11 +11643,11 @@ Decompile (capstone disassembly):
 0x00062992  jmp 0x100629a0
 ```
 
-## phys_fn_002607 (0x000629a0, 1590 B, discovered)
+## phys_fn_002607 (0x000629a0, 1590 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/global.c
+- implementation: External/qhull/upstream/src/global.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -12141,11 +12141,11 @@ Decompile (capstone disassembly):
 0x00062fd4  jmp 0x10062fe0
 ```
 
-## phys_fn_002609 (0x00062fe0, 68 B, discovered)
+## phys_fn_002609 (0x00062fe0, 68 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/global.c
+- implementation: External/qhull/upstream/src/global.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -12176,11 +12176,11 @@ Decompile (capstone disassembly):
 0x00063022  jmp 0x10063030
 ```
 
-## phys_fn_002613 (0x00063030, 196 B, discovered)
+## phys_fn_002613 (0x00063030, 196 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/global.c
+- implementation: External/qhull/upstream/src/global.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -12243,11 +12243,11 @@ Decompile (capstone disassembly):
 0x000630f2  jmp 0x10063100
 ```
 
-## phys_fn_002617 (0x00063100, 68 B, discovered)
+## phys_fn_002617 (0x00063100, 68 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/global.c
+- implementation: External/qhull/upstream/src/global.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -12278,11 +12278,11 @@ Decompile (capstone disassembly):
 0x00063142  jmp 0x10063150
 ```
 
-## phys_fn_002621 (0x00063150, 68 B, discovered)
+## phys_fn_002621 (0x00063150, 68 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/global.c
+- implementation: External/qhull/upstream/src/global.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -12313,11 +12313,11 @@ Decompile (capstone disassembly):
 0x00063192  jmp 0x100631a0
 ```
 
-## phys_fn_002625 (0x000631a0, 68 B, discovered)
+## phys_fn_002625 (0x000631a0, 68 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/global.c
+- implementation: External/qhull/upstream/src/global.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -12348,11 +12348,11 @@ Decompile (capstone disassembly):
 0x000631e2  jmp 0x100631f0
 ```
 
-## phys_fn_002629 (0x000631f0, 132 B, discovered)
+## phys_fn_002629 (0x000631f0, 132 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/global.c
+- implementation: External/qhull/upstream/src/global.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -12401,11 +12401,11 @@ Decompile (capstone disassembly):
 0x00063272  jmp 0x10063280
 ```
 
-## phys_fn_002633 (0x00063280, 72 B, discovered)
+## phys_fn_002633 (0x00063280, 72 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/global.c
+- implementation: External/qhull/upstream/src/global.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -12436,11 +12436,11 @@ Decompile (capstone disassembly):
 0x000632c6  jmp 0x100632d0
 ```
 
-## phys_fn_002635 (0x000632d0, 85 B, discovered)
+## phys_fn_002635 (0x000632d0, 85 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/global.c
+- implementation: External/qhull/upstream/src/global.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -12474,11 +12474,11 @@ Decompile (capstone disassembly):
 0x00063323  jmp 0x10063330
 ```
 
-## phys_fn_002637 (0x00063330, 148 B, discovered)
+## phys_fn_002637 (0x00063330, 148 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/global.c
+- implementation: External/qhull/upstream/src/global.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -12528,11 +12528,11 @@ Decompile (capstone disassembly):
 0x000633c2  jmp 0x100633d0
 ```
 
-## phys_fn_002641 (0x000633d0, 72 B, discovered)
+## phys_fn_002641 (0x000633d0, 72 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/global.c
+- implementation: External/qhull/upstream/src/global.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -12563,11 +12563,11 @@ Decompile (capstone disassembly):
 0x00063416  jmp 0x10063420
 ```
 
-## phys_fn_002643 (0x00063420, 136 B, discovered)
+## phys_fn_002643 (0x00063420, 136 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/global.c
+- implementation: External/qhull/upstream/src/global.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -12614,11 +12614,11 @@ Decompile (capstone disassembly):
 0x000634a6  jmp 0x100634b0
 ```
 
-## phys_fn_002645 (0x000634b0, 84 B, discovered)
+## phys_fn_002645 (0x000634b0, 84 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/global.c
+- implementation: External/qhull/upstream/src/global.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -12651,11 +12651,11 @@ Decompile (capstone disassembly):
 0x00063502  jmp 0x10063510
 ```
 
-## phys_fn_002649 (0x00063510, 55 B, discovered)
+## phys_fn_002649 (0x00063510, 55 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/global.c
+- implementation: External/qhull/upstream/src/global.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -12681,11 +12681,11 @@ Decompile (capstone disassembly):
 0x00063545  jmp 0x10063550
 ```
 
-## phys_fn_002651 (0x00063550, 72 B, discovered)
+## phys_fn_002651 (0x00063550, 72 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/global.c
+- implementation: External/qhull/upstream/src/global.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -12716,11 +12716,11 @@ Decompile (capstone disassembly):
 0x00063596  jmp 0x100635a0
 ```
 
-## phys_fn_002653 (0x000635a0, 72 B, discovered)
+## phys_fn_002653 (0x000635a0, 72 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/global.c
+- implementation: External/qhull/upstream/src/global.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -12751,11 +12751,11 @@ Decompile (capstone disassembly):
 0x000635e6  jmp 0x100635f0
 ```
 
-## phys_fn_002655 (0x000635f0, 148 B, discovered)
+## phys_fn_002655 (0x000635f0, 148 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/global.c
+- implementation: External/qhull/upstream/src/global.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -12812,11 +12812,11 @@ Decompile (capstone disassembly):
 0x00063682  jmp 0x10063690
 ```
 
-## phys_fn_002659 (0x00063690, 58 B, discovered)
+## phys_fn_002659 (0x00063690, 58 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/global.c
+- implementation: External/qhull/upstream/src/global.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -12843,11 +12843,11 @@ Decompile (capstone disassembly):
 0x000636c8  jmp 0x100636d0
 ```
 
-## phys_fn_002661 (0x000636d0, 1325 B, discovered)
+## phys_fn_002661 (0x000636d0, 1325 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/global.c
+- implementation: External/qhull/upstream/src/global.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -13233,11 +13233,11 @@ Decompile (capstone disassembly):
 0x00063bfb  jmp 0x10063c00
 ```
 
-## phys_fn_002663 (0x00063c00, 2397 B, discovered)
+## phys_fn_002663 (0x00063c00, 2397 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/global.c
+- implementation: External/qhull/upstream/src/global.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -13902,11 +13902,11 @@ Decompile (capstone disassembly):
 0x0006455b  jmp 0x10064560
 ```
 
-## phys_fn_002665 (0x00064560, 2199 B, discovered)
+## phys_fn_002665 (0x00064560, 2199 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/global.c
+- implementation: External/qhull/upstream/src/global.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -15649,11 +15649,11 @@ Decompile (capstone disassembly):
 0x00066090  ret
 ```
 
-## phys_fn_002678 (0x000660a0, 183 B, discovered)
+## phys_fn_002678 (0x000660a0, 183 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/global.c
+- implementation: External/qhull/upstream/src/global.c
 - prototype: undefined __cdecl FUN_100660a0(undefined4 param_1, int param_2, int param_3, undefined4 param_4)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_003236 (0x0007d420)
@@ -15718,11 +15718,11 @@ void __cdecl FUN_100660a0(undefined4 param_1,int param_2,int param_3,undefined4 
 
 ```
 
-## phys_fn_002680 (0x00066160, 168 B, discovered)
+## phys_fn_002680 (0x00066160, 168 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/global.c
+- implementation: External/qhull/upstream/src/global.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -15774,11 +15774,11 @@ Decompile (capstone disassembly):
 0x00066206  jmp 0x10066210
 ```
 
-## phys_fn_002682 (0x00066210, 93 B, discovered)
+## phys_fn_002682 (0x00066210, 93 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/global.c
+- implementation: External/qhull/upstream/src/global.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -15916,11 +15916,11 @@ int __cdecl FUN_100662e0(int *param_1,int *param_2)
 
 ```
 
-## phys_fn_002689 (0x00066310, 317 B, discovered)
+## phys_fn_002689 (0x00066310, 317 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: double * __cdecl FUN_10066310(int param_1, int param_2, int * param_3, double * param_4)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002753 (0x00068290)
@@ -16223,11 +16223,11 @@ double * __cdecl FUN_10066310(int param_1,int param_2,int *param_3,double *param
 
 ```
 
-## phys_fn_002691 (0x00066450, 389 B, discovered)
+## phys_fn_002691 (0x00066450, 389 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -16367,11 +16367,11 @@ Decompile (capstone disassembly):
 0x000665d3  jmp 0x100665e0
 ```
 
-## phys_fn_002693 (0x000665e0, 90 B, discovered)
+## phys_fn_002693 (0x000665e0, 90 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -16411,11 +16411,11 @@ Decompile (capstone disassembly):
 0x00066638  jmp 0x10066640
 ```
 
-## phys_fn_002695 (0x00066640, 1233 B, discovered)
+## phys_fn_002695 (0x00066640, 1233 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -17277,11 +17277,11 @@ Decompile (capstone disassembly):
 0x00067078  ret
 ```
 
-## phys_fn_002707 (0x00067080, 171 B, discovered)
+## phys_fn_002707 (0x00067080, 171 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined __cdecl FUN_10067080(int param_1, undefined4 * param_2, undefined4 * param_3, double * param_4)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002723 (0x000677a0), phys_fn_002787 (0x000690b0)
@@ -17328,11 +17328,11 @@ void __cdecl FUN_10067080(int param_1,undefined4 *param_2,undefined4 *param_3,do
 
 ```
 
-## phys_fn_002709 (0x00067130, 186 B, discovered)
+## phys_fn_002709 (0x00067130, 186 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined __cdecl FUN_10067130(int param_1, double * param_2, double * param_3)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002787 (0x000690b0), phys_fn_002822 (0x0006a9b0), phys_fn_002824 (0x0006ac30)
@@ -17373,11 +17373,11 @@ void __cdecl FUN_10067130(int param_1,double *param_2,double *param_3)
 
 ```
 
-## phys_fn_002711 (0x000671f0, 465 B, discovered)
+## phys_fn_002711 (0x000671f0, 465 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined __cdecl FUN_100671f0(int param_1)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002866 (0x0006d800)
@@ -17471,11 +17471,11 @@ void __cdecl FUN_100671f0(int param_1)
 
 ```
 
-## phys_fn_002713 (0x000673d0, 292 B, discovered)
+## phys_fn_002713 (0x000673d0, 292 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined __cdecl FUN_100673d0(int param_1)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002811 (0x00069e10), phys_fn_002813 (0x0006a0e0)
@@ -17548,11 +17548,11 @@ LAB_100674c5:
 
 ```
 
-## phys_fn_002715 (0x00067500, 116 B, discovered)
+## phys_fn_002715 (0x00067500, 116 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined __cdecl FUN_10067500(undefined4 param_1, int param_2, int param_3, int param_4)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002813 (0x0006a0e0), phys_fn_002836 (0x0006b2b0), phys_fn_002843 (0x0006bc30), phys_fn_002857 (0x0006c950)
@@ -17628,11 +17628,11 @@ void __cdecl FUN_10067500(undefined4 param_1,int param_2,int param_3,int param_4
 
 ```
 
-## phys_fn_002719 (0x00067580, 253 B, discovered)
+## phys_fn_002719 (0x00067580, 253 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -17736,11 +17736,11 @@ Decompile (capstone disassembly):
 0x0006767c  ret
 ```
 
-## phys_fn_002721 (0x00067680, 286 B, discovered)
+## phys_fn_002721 (0x00067680, 286 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined __cdecl FUN_10067680(undefined4 param_1, double * param_2, double * param_3, int param_4, double param_5)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002787 (0x000690b0)
@@ -17780,11 +17780,11 @@ FUN_10067680(undefined4 param_1,double *param_2,double *param_3,int param_4,doub
 
 ```
 
-## phys_fn_002723 (0x000677a0, 169 B, discovered)
+## phys_fn_002723 (0x000677a0, 169 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined __cdecl FUN_100677a0(undefined4 param_1, int param_2, int param_3, int param_4)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002857 (0x0006c950)
@@ -17826,11 +17826,11 @@ void __cdecl FUN_100677a0(undefined4 param_1,int param_2,int param_3,int param_4
 
 ```
 
-## phys_fn_002725 (0x00067850, 216 B, discovered)
+## phys_fn_002725 (0x00067850, 216 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined __cdecl FUN_10067850(undefined4 param_1, int * param_2, int param_3, double param_4, undefined8 * param_5)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002822 (0x0006a9b0), phys_fn_002824 (0x0006ac30)
@@ -17924,11 +17924,11 @@ FUN_10067850(undefined4 param_1,int *param_2,int param_3,double param_4,undefine
 
 ```
 
-## phys_fn_002727 (0x00067930, 255 B, discovered)
+## phys_fn_002727 (0x00067930, 255 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -18035,11 +18035,11 @@ Decompile (capstone disassembly):
 0x00067a2e  ret
 ```
 
-## phys_fn_002729 (0x00067a30, 102 B, discovered)
+## phys_fn_002729 (0x00067a30, 102 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined __cdecl FUN_10067a30(undefined4 param_1, undefined4 * param_2, int param_3, int param_4)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002857 (0x0006c950)
@@ -18129,11 +18129,11 @@ void __cdecl FUN_10067a30(undefined4 param_1,undefined4 *param_2,int param_3,int
 
 ```
 
-## phys_fn_002731 (0x00067aa0, 360 B, discovered)
+## phys_fn_002731 (0x00067aa0, 360 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -18267,11 +18267,11 @@ Decompile (capstone disassembly):
 0x00067c07  ret
 ```
 
-## phys_fn_002733 (0x00067c10, 130 B, discovered)
+## phys_fn_002733 (0x00067c10, 130 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined __cdecl FUN_10067c10(undefined4 param_1, undefined4 * param_2)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002857 (0x0006c950)
@@ -18397,11 +18397,11 @@ void __cdecl FUN_10067ca0(undefined4 param_1,int param_2,undefined4 param_3,int 
 
 ```
 
-## phys_fn_002737 (0x00067e00, 205 B, discovered)
+## phys_fn_002737 (0x00067e00, 205 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined __cdecl FUN_10067e00(undefined4 param_1, int param_2, int param_3)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002857 (0x0006c950)
@@ -18465,11 +18465,11 @@ void __cdecl FUN_10067e00(undefined4 param_1,int param_2,int param_3)
 
 ```
 
-## phys_fn_002739 (0x00067ed0, 70 B, discovered)
+## phys_fn_002739 (0x00067ed0, 70 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -18509,11 +18509,11 @@ Decompile (capstone disassembly):
 0x00067f15  ret
 ```
 
-## phys_fn_002741 (0x00067f20, 105 B, discovered)
+## phys_fn_002741 (0x00067f20, 105 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined __cdecl FUN_10067f20(FILE * param_1, char * param_2, int param_3, double * param_4, int param_5)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002793 (0x00069690)
@@ -18600,11 +18600,11 @@ int __cdecl FUN_10067f90(undefined4 param_1,undefined *param_2,int *param_3,int 
 
 ```
 
-## phys_fn_002745 (0x00068070, 125 B, discovered)
+## phys_fn_002745 (0x00068070, 125 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined __cdecl FUN_10068070(undefined4 param_1, int param_2)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002809 (0x00069da0), phys_fn_003415 (0x00084820)
@@ -18677,11 +18677,11 @@ void __cdecl FUN_10068070(undefined4 param_1,int param_2)
 
 ```
 
-## phys_fn_002747 (0x000680f0, 269 B, discovered)
+## phys_fn_002747 (0x000680f0, 269 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -18885,11 +18885,11 @@ Decompile (capstone disassembly):
 0x00068282  ret
 ```
 
-## phys_fn_002753 (0x00068290, 223 B, discovered)
+## phys_fn_002753 (0x00068290, 223 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined __cdecl FUN_10068290(undefined4 param_1, int param_2, int param_3, int * param_4)
 - calling convention: __cdecl, stack purge: 0
 - callers: none
@@ -18929,11 +18929,11 @@ void __cdecl FUN_10068290(undefined4 param_1,int param_2,int param_3,int *param_
 
 ```
 
-## phys_fn_002755 (0x00068370, 156 B, discovered)
+## phys_fn_002755 (0x00068370, 156 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -19006,11 +19006,11 @@ Decompile (capstone disassembly):
 0x0006840b  ret
 ```
 
-## phys_fn_002757 (0x00068410, 26 B, discovered)
+## phys_fn_002757 (0x00068410, 26 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined __cdecl FUN_10068410(int param_1, int param_2)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002789 (0x000691c0), phys_fn_002791 (0x00069520), phys_fn_002795 (0x000696c0), phys_fn_002817 (0x0006a550), phys_fn_002857 (0x0006c950)
@@ -19066,11 +19066,11 @@ LAB_10068442:
 
 ```
 
-## phys_fn_002759 (0x00068430, 75 B, discovered)
+## phys_fn_002759 (0x00068430, 75 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -19436,11 +19436,11 @@ Decompile (capstone disassembly):
 0x000686f1  ret
 ```
 
-## phys_fn_002767 (0x00068700, 189 B, discovered)
+## phys_fn_002767 (0x00068700, 189 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined4 * __cdecl FUN_10068700(undefined4 * param_1, int param_2, int param_3)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002779 (0x00068ce0), phys_fn_002781 (0x00068de0), phys_fn_002785 (0x00068fa0), phys_fn_002797 (0x00069730), phys_fn_002809 (0x00069da0), phys_fn_002811 (0x00069e10), phys_fn_002843 (0x0006bc30), phys_fn_002862 (0x0006d200)
@@ -19527,11 +19527,11 @@ undefined4 * __cdecl FUN_10068700(undefined4 *param_1,int param_2,int param_3)
 
 ```
 
-## phys_fn_002769 (0x000687c0, 103 B, discovered)
+## phys_fn_002769 (0x000687c0, 103 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -19584,11 +19584,11 @@ Decompile (capstone disassembly):
 0x00068825  jmp 0x10068830
 ```
 
-## phys_fn_002771 (0x00068830, 54 B, discovered)
+## phys_fn_002771 (0x00068830, 54 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -19624,11 +19624,11 @@ Decompile (capstone disassembly):
 0x00068865  ret
 ```
 
-## phys_fn_002773 (0x00068870, 381 B, discovered)
+## phys_fn_002773 (0x00068870, 381 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: int * __cdecl FUN_10068870(int param_1, int param_2, int param_3, uint * param_4, int * param_5)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002807 (0x00069cd0), phys_fn_002813 (0x0006a0e0)
@@ -19726,11 +19726,11 @@ LAB_10068914:
 
 ```
 
-## phys_fn_002775 (0x000689f0, 92 B, discovered)
+## phys_fn_002775 (0x000689f0, 92 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -19778,11 +19778,11 @@ Decompile (capstone disassembly):
 0x00068a4b  ret
 ```
 
-## phys_fn_002777 (0x00068a50, 644 B, discovered)
+## phys_fn_002777 (0x00068a50, 644 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined __cdecl FUN_10068a50(int param_1, int param_2, int * param_3, int param_4)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002819 (0x0006a810), phys_fn_002843 (0x0006bc30)
@@ -19911,11 +19911,11 @@ void __cdecl FUN_10068a50(int param_1,int param_2,int *param_3,int param_4)
 
 ```
 
-## phys_fn_002779 (0x00068ce0, 255 B, discovered)
+## phys_fn_002779 (0x00068ce0, 255 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined __cdecl FUN_10068ce0(undefined4 param_1, undefined4 * param_2, int param_3, int param_4)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002862 (0x0006d200)
@@ -19979,11 +19979,11 @@ void __cdecl FUN_10068ce0(undefined4 param_1,undefined4 *param_2,int param_3,int
 
 ```
 
-## phys_fn_002781 (0x00068de0, 186 B, discovered)
+## phys_fn_002781 (0x00068de0, 186 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined __cdecl FUN_10068de0(undefined4 param_1, undefined4 * param_2, int param_3, int param_4)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002862 (0x0006d200)
@@ -20069,11 +20069,11 @@ void __cdecl FUN_10068de0(undefined4 param_1,undefined4 *param_2,int param_3,int
 
 ```
 
-## phys_fn_002783 (0x00068ea0, 246 B, discovered)
+## phys_fn_002783 (0x00068ea0, 246 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -20255,11 +20255,11 @@ LAB_10069024:
 
 ```
 
-## phys_fn_002787 (0x000690b0, 264 B, discovered)
+## phys_fn_002787 (0x000690b0, 264 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined __cdecl FUN_100690b0(undefined4 param_1, int param_2, int param_3)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002857 (0x0006c950)
@@ -20312,11 +20312,11 @@ LAB_10069191:
 
 ```
 
-## phys_fn_002789 (0x000691c0, 858 B, discovered)
+## phys_fn_002789 (0x000691c0, 858 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined __cdecl FUN_100691c0(undefined4 param_1, int param_2, int param_3, int * param_4, undefined8 * param_5)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002822 (0x0006a9b0), phys_fn_002824 (0x0006ac30), phys_fn_002826 (0x0006ae90), phys_fn_002830 (0x0006b0b0)
@@ -20474,11 +20474,11 @@ FUN_100691c0(undefined4 param_1,int param_2,int param_3,int *param_4,undefined8 
 
 ```
 
-## phys_fn_002791 (0x00069520, 361 B, discovered)
+## phys_fn_002791 (0x00069520, 361 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined __cdecl FUN_10069520(undefined4 param_1, uint param_2, uint param_3, undefined8 * param_4)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002799 (0x000699d0), phys_fn_002822 (0x0006a9b0), phys_fn_002824 (0x0006ac30)
@@ -20539,11 +20539,11 @@ void __cdecl FUN_10069520(undefined4 param_1,uint param_2,uint param_3,undefined
 
 ```
 
-## phys_fn_002793 (0x00069690, 39 B, discovered)
+## phys_fn_002793 (0x00069690, 39 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined __cdecl FUN_10069690(FILE * param_1, char * param_2, double * param_3)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002836 (0x0006b2b0), phys_fn_002843 (0x0006bc30), phys_fn_002857 (0x0006c950)
@@ -20568,11 +20568,11 @@ void __cdecl FUN_10069690(FILE *param_1,char *param_2,double *param_3)
 
 ```
 
-## phys_fn_002795 (0x000696c0, 110 B, discovered)
+## phys_fn_002795 (0x000696c0, 110 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined __cdecl FUN_100696c0(undefined4 param_1, uint param_2)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002805 (0x00069c10), phys_fn_002817 (0x0006a550), phys_fn_002843 (0x0006bc30)
@@ -20607,11 +20607,11 @@ void __cdecl FUN_100696c0(undefined4 param_1,uint param_2)
 
 ```
 
-## phys_fn_002797 (0x00069730, 660 B, discovered)
+## phys_fn_002797 (0x00069730, 660 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined __cdecl FUN_10069730(undefined4 param_1, undefined4 * param_2, int param_3, int param_4)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002862 (0x0006d200)
@@ -20755,11 +20755,11 @@ void __cdecl FUN_10069730(undefined4 param_1,undefined4 *param_2,int param_3,int
 
 ```
 
-## phys_fn_002799 (0x000699d0, 222 B, discovered)
+## phys_fn_002799 (0x000699d0, 222 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined __cdecl FUN_100699d0(undefined4 param_1, uint param_2, int param_3, int param_4, double param_5, undefined8 * param_6)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002801 (0x00069ab0), phys_fn_002817 (0x0006a550)
@@ -20823,11 +20823,11 @@ LAB_10069a3a:
 
 ```
 
-## phys_fn_002801 (0x00069ab0, 147 B, discovered)
+## phys_fn_002801 (0x00069ab0, 147 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined __cdecl FUN_10069ab0(undefined4 param_1, uint param_2, int param_3, int param_4, double param_5)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002843 (0x0006bc30)
@@ -20903,11 +20903,11 @@ void __cdecl FUN_10069b50(FILE *param_1,int *param_2)
 
 ```
 
-## phys_fn_002805 (0x00069c10, 182 B, discovered)
+## phys_fn_002805 (0x00069c10, 182 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined __cdecl FUN_10069c10(undefined4 param_1, int param_2, undefined8 param_3)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002843 (0x0006bc30)
@@ -21009,11 +21009,11 @@ void __cdecl FUN_10069c10(undefined4 param_1,int param_2,undefined8 param_3)
 
 ```
 
-## phys_fn_002807 (0x00069cd0, 206 B, discovered)
+## phys_fn_002807 (0x00069cd0, 206 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined __cdecl FUN_10069cd0(undefined4 param_1, int * param_2, int param_3, int param_4, int param_5)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002862 (0x0006d200)
@@ -21105,11 +21105,11 @@ void __cdecl FUN_10069da0(FILE *param_1,char *param_2,undefined4 *param_3,int pa
 
 ```
 
-## phys_fn_002811 (0x00069e10, 706 B, discovered)
+## phys_fn_002811 (0x00069e10, 706 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined __cdecl FUN_10069e10(undefined4 param_1, undefined4 * param_2, int param_3, int param_4)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002862 (0x0006d200)
@@ -21784,11 +21784,11 @@ Decompile (capstone disassembly):
 0x0006a543  ret
 ```
 
-## phys_fn_002817 (0x0006a550, 701 B, discovered)
+## phys_fn_002817 (0x0006a550, 701 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined __cdecl FUN_1006a550(undefined4 param_1, int param_2, double param_3)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002843 (0x0006bc30)
@@ -21997,11 +21997,11 @@ switchD_1006a84a_caseD_f:
 
 ```
 
-## phys_fn_002822 (0x0006a9b0, 628 B, discovered)
+## phys_fn_002822 (0x0006a9b0, 628 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined __cdecl FUN_1006a9b0(undefined4 param_1, undefined4 * param_2, undefined8 * param_3)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002857 (0x0006c950)
@@ -22118,11 +22118,11 @@ LAB_1006ab2c:
 
 ```
 
-## phys_fn_002824 (0x0006ac30, 594 B, discovered)
+## phys_fn_002824 (0x0006ac30, 594 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined __cdecl FUN_1006ac30(undefined4 param_1, undefined4 * param_2, undefined8 * param_3)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002857 (0x0006c950)
@@ -22221,11 +22221,11 @@ LAB_1006ad7e:
 
 ```
 
-## phys_fn_002826 (0x0006ae90, 282 B, discovered)
+## phys_fn_002826 (0x0006ae90, 282 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined __cdecl FUN_1006ae90(undefined4 param_1, int param_2, undefined8 * param_3)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002857 (0x0006c950)
@@ -22311,11 +22311,11 @@ void __cdecl FUN_1006ae90(undefined4 param_1,int param_2,undefined8 *param_3)
 
 ```
 
-## phys_fn_002828 (0x0006afb0, 251 B, discovered)
+## phys_fn_002828 (0x0006afb0, 251 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -22415,11 +22415,11 @@ Decompile (capstone disassembly):
 0x0006b0aa  ret
 ```
 
-## phys_fn_002830 (0x0006b0b0, 87 B, discovered)
+## phys_fn_002830 (0x0006b0b0, 87 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined __cdecl FUN_1006b0b0(undefined4 param_1, int param_2, undefined8 * param_3)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002857 (0x0006c950)
@@ -22494,11 +22494,11 @@ void __cdecl FUN_1006b0b0(undefined4 param_1,int param_2,undefined8 *param_3)
 
 ```
 
-## phys_fn_002832 (0x0006b110, 199 B, discovered)
+## phys_fn_002832 (0x0006b110, 199 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -22578,11 +22578,11 @@ Decompile (capstone disassembly):
 0x0006b1d5  jmp 0x1006b1e0
 ```
 
-## phys_fn_002834 (0x0006b1e0, 194 B, discovered)
+## phys_fn_002834 (0x0006b1e0, 194 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -22664,11 +22664,11 @@ Decompile (capstone disassembly):
 0x0006b2a1  ret
 ```
 
-## phys_fn_002836 (0x0006b2b0, 1846 B, discovered)
+## phys_fn_002836 (0x0006b2b0, 1846 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined __cdecl FUN_1006b2b0(FILE * param_1, undefined8 * param_2)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002855 (0x0006c920), phys_fn_002857 (0x0006c950)
@@ -22944,11 +22944,11 @@ LAB_1006b661:
 
 ```
 
-## phys_fn_002838 (0x0006b9f0, 234 B, discovered)
+## phys_fn_002838 (0x0006b9f0, 234 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined __cdecl FUN_1006b9f0(FILE * param_1, int param_2)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002855 (0x0006c920)
@@ -23072,11 +23072,11 @@ void __cdecl FUN_1006b9f0(FILE *param_1,int param_2)
 
 ```
 
-## phys_fn_002840 (0x0006bae0, 218 B, discovered)
+## phys_fn_002840 (0x0006bae0, 218 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -23170,11 +23170,11 @@ Decompile (capstone disassembly):
 0x0006bbb8  jmp 0x1006bbc0
 ```
 
-## phys_fn_002842 (0x0006bbc0, 112 B, discovered)
+## phys_fn_002842 (0x0006bbc0, 112 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -23234,11 +23234,11 @@ Decompile (capstone disassembly):
 0x0006bc2f  ret
 ```
 
-## phys_fn_002843 (0x0006bc30, 845 B, discovered)
+## phys_fn_002843 (0x0006bc30, 845 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined __cdecl FUN_1006bc30(FILE * param_1, int param_2, undefined4 * param_3, int param_4, int param_5)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002862 (0x0006d200), phys_fn_003417 (0x000849b0)
@@ -23694,11 +23694,11 @@ switchD_1006bc90_caseD_0:
 
 ```
 
-## phys_fn_002845 (0x0006bf80, 295 B, discovered)
+## phys_fn_002845 (0x0006bf80, 295 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -23818,11 +23818,11 @@ Decompile (capstone disassembly):
 0x0006c0a5  jmp 0x1006c0b0
 ```
 
-## phys_fn_002847 (0x0006c0b0, 664 B, discovered)
+## phys_fn_002847 (0x0006c0b0, 664 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -24028,11 +24028,11 @@ Decompile (capstone disassembly):
 0x0006c346  jmp 0x1006c350
 ```
 
-## phys_fn_002849 (0x0006c350, 170 B, discovered)
+## phys_fn_002849 (0x0006c350, 170 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -24103,11 +24103,11 @@ Decompile (capstone disassembly):
 0x0006c3f8  jmp 0x1006c400
 ```
 
-## phys_fn_002851 (0x0006c400, 247 B, discovered)
+## phys_fn_002851 (0x0006c400, 247 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -24203,11 +24203,11 @@ Decompile (capstone disassembly):
 0x0006c4f5  jmp 0x1006c500
 ```
 
-## phys_fn_002853 (0x0006c500, 976 B, discovered)
+## phys_fn_002853 (0x0006c500, 976 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -24599,11 +24599,11 @@ void __cdecl FUN_1006c920(FILE *param_1,undefined8 *param_2)
 
 ```
 
-## phys_fn_002857 (0x0006c950, 1018 B, discovered)
+## phys_fn_002857 (0x0006c950, 1018 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined __cdecl FUN_1006c950(FILE * param_1, int param_2, undefined8 * param_3, int param_4)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002862 (0x0006d200), phys_fn_003417 (0x000849b0)
@@ -24913,11 +24913,11 @@ joined_r0x1006d005:
 
 ```
 
-## phys_fn_002859 (0x0006cd50, 1081 B, discovered)
+## phys_fn_002859 (0x0006cd50, 1081 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -25328,11 +25328,11 @@ Decompile (capstone disassembly):
 0x0006d188  ret
 ```
 
-## phys_fn_002862 (0x0006d200, 1260 B, discovered)
+## phys_fn_002862 (0x0006d200, 1260 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined __cdecl FUN_1006d200(FILE * param_1, int * param_2, undefined8 * param_3, int param_4, int param_5)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002864 (0x0006d6f0), phys_fn_002866 (0x0006d800)
@@ -25515,11 +25515,11 @@ void __cdecl FUN_1006d200(FILE *param_1,int *param_2,undefined8 *param_3,int par
 
 ```
 
-## phys_fn_002864 (0x0006d6f0, 263 B, discovered)
+## phys_fn_002864 (0x0006d6f0, 263 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined __cdecl FUN_1006d6f0(FILE * param_1, int * param_2, uint param_3, uint param_4, int param_5)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_003415 (0x00084820)
@@ -25583,11 +25583,11 @@ void __cdecl FUN_1006d6f0(FILE *param_1,int *param_2,uint param_3,uint param_4,i
 
 ```
 
-## phys_fn_002866 (0x0006d800, 566 B, discovered)
+## phys_fn_002866 (0x0006d800, 566 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/io.c
+- implementation: External/qhull/novodex/io.c
 - prototype: undefined __stdcall FUN_1006d800(void)
 - calling convention: __stdcall, stack purge: 0
 - callers: phys_fn_003236 (0x0007d420)
@@ -25860,11 +25860,11 @@ void __cdecl FUN_1006dca0(undefined4 param_1)
 
 ```
 
-## phys_fn_002876 (0x0006dcc0, 218 B, discovered)
+## phys_fn_002876 (0x0006dcc0, 218 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/mem.c
+- implementation: External/qhull/novodex/mem.c
 - prototype: undefined __cdecl FUN_1006dcc0(int param_1, int param_2, size_t param_3, undefined4 param_4, undefined4 param_5)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002575 (0x00062320)
@@ -26023,11 +26023,11 @@ void __cdecl FUN_1006deb0(int param_1)
 
 ```
 
-## phys_fn_002882 (0x0006df50, 345 B, discovered)
+## phys_fn_002882 (0x0006df50, 345 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/mem.c
+- implementation: External/qhull/novodex/mem.c
 - prototype: undefined __cdecl FUN_1006df50(undefined4 param_1)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002866 (0x0006d800), phys_fn_003412 (0x000847d0)
@@ -27370,11 +27370,11 @@ Decompile (capstone disassembly):
 0x0006ec24  ret
 ```
 
-## phys_fn_002908 (0x0006ec30, 186 B, discovered)
+## phys_fn_002908 (0x0006ec30, 186 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/merge.c
+- implementation: External/qhull/upstream/src/merge.c
 - prototype: undefined __cdecl FUN_1006ec30(int param_1, int param_2, int param_3, int * param_4, double * param_5, double * param_6, double * param_7)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002910 (0x0006ecf0)
@@ -27426,11 +27426,11 @@ FUN_1006ec30(int param_1,int param_2,int param_3,int *param_4,double *param_5,do
 
 ```
 
-## phys_fn_002910 (0x0006ecf0, 424 B, discovered)
+## phys_fn_002910 (0x0006ecf0, 424 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/merge.c
+- implementation: External/qhull/upstream/src/merge.c
 - prototype: int __cdecl FUN_1006ecf0(int param_1, double * param_2, double * param_3, double * param_4)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_003009 (0x00072b10), phys_fn_003013 (0x00072e20), phys_fn_003028 (0x00073710)
@@ -29718,11 +29718,11 @@ undefined4 __cdecl FUN_100703f0(int param_1)
 
 ```
 
-## phys_fn_002959 (0x00070590, 280 B, discovered)
+## phys_fn_002959 (0x00070590, 280 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/merge.c
+- implementation: External/qhull/upstream/src/merge.c
 - prototype: undefined __cdecl FUN_10070590(int * param_1, int param_2, int param_3)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002961 (0x000706b0)
@@ -29798,11 +29798,11 @@ void __cdecl FUN_10070590(int *param_1,int param_2,int param_3)
 
 ```
 
-## phys_fn_002961 (0x000706b0, 555 B, discovered)
+## phys_fn_002961 (0x000706b0, 555 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/merge.c
+- implementation: External/qhull/upstream/src/merge.c
 - prototype: undefined __cdecl FUN_100706b0(int param_1, int param_2, int param_3, int param_4, int param_5)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002999 (0x00072590), phys_fn_003001 (0x00072630)
@@ -29911,11 +29911,11 @@ void __cdecl FUN_100706b0(int param_1,int param_2,int param_3,int param_4,int pa
 
 ```
 
-## phys_fn_002963 (0x000708e0, 766 B, discovered)
+## phys_fn_002963 (0x000708e0, 766 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/merge.c
+- implementation: External/qhull/upstream/src/merge.c
 - prototype: undefined4 __cdecl FUN_100708e0(int param_1, int param_2)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002965 (0x00070be0), phys_fn_002978 (0x00071100), phys_fn_002979 (0x000712d0)
@@ -30033,11 +30033,11 @@ LAB_10070ab4:
 
 ```
 
-## phys_fn_002965 (0x00070be0, 105 B, discovered)
+## phys_fn_002965 (0x00070be0, 105 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/merge.c
+- implementation: External/qhull/upstream/src/merge.c
 - prototype: bool __stdcall FUN_10070be0(void)
 - calling convention: __stdcall, stack purge: 0
 - callers: phys_fn_003025 (0x00073460)
@@ -30121,11 +30121,11 @@ bool FUN_10070be0(void)
 
 ```
 
-## phys_fn_002967 (0x00070c50, 224 B, discovered)
+## phys_fn_002967 (0x00070c50, 224 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/merge.c
+- implementation: External/qhull/upstream/src/merge.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -30411,11 +30411,11 @@ void __cdecl FUN_10070f50(int param_1,int param_2)
 
 ```
 
-## phys_fn_002974 (0x00071030, 132 B, discovered)
+## phys_fn_002974 (0x00071030, 132 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/merge.c
+- implementation: External/qhull/upstream/src/merge.c
 - prototype: undefined __cdecl FUN_10071030(int param_1, int param_2, int * param_3)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002987 (0x00071960), phys_fn_003001 (0x00072630)
@@ -31876,11 +31876,11 @@ void __cdecl FUN_10072060(int *param_1,int *param_2,double *param_3,double *para
 
 ```
 
-## phys_fn_002999 (0x00072590, 148 B, discovered)
+## phys_fn_002999 (0x00072590, 148 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/merge.c
+- implementation: External/qhull/upstream/src/merge.c
 - prototype: uint __cdecl FUN_10072590(int * param_1)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_003021 (0x000732c0)
@@ -32797,11 +32797,11 @@ Decompile (capstone disassembly):
 0x00072e17  ret
 ```
 
-## phys_fn_003013 (0x00072e20, 652 B, discovered)
+## phys_fn_003013 (0x00072e20, 652 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/merge.c
+- implementation: External/qhull/upstream/src/merge.c
 - prototype: undefined __cdecl FUN_10072e20(int * param_1, int * param_2, int param_3)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_003025 (0x00073460)
@@ -34104,11 +34104,11 @@ void __cdecl FUN_10073da0(int *param_1)
 
 ```
 
-## phys_fn_003036 (0x00073e10, 269 B, discovered)
+## phys_fn_003036 (0x00073e10, 269 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/poly.c
+- implementation: External/qhull/upstream/src/poly.c
 - prototype: undefined __fastcall FUN_10073e10(undefined4 param_1)
 - calling convention: __fastcall, stack purge: 0
 - callers: phys_fn_003228 (0x0007c900)
@@ -34257,11 +34257,11 @@ LAB_1007404c:
 
 ```
 
-## phys_fn_003038 (0x00073f20, 367 B, discovered)
+## phys_fn_003038 (0x00073f20, 367 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/poly.c
+- implementation: External/qhull/upstream/src/poly.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -34569,11 +34569,11 @@ undefined4 __cdecl FUN_10074170(int param_1,int param_2,uint *param_3,int *param
 
 ```
 
-## phys_fn_003044 (0x000742f0, 281 B, discovered)
+## phys_fn_003044 (0x000742f0, 281 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/poly.c
+- implementation: External/qhull/upstream/src/poly.c
 - prototype: uint __cdecl FUN_100742f0(uint param_1, int param_2, int param_3, int param_4, uint param_5)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002912 (0x0006eea0), phys_fn_002914 (0x0006eef0), phys_fn_003083 (0x000751c0), phys_fn_003107 (0x00076230)
@@ -35931,11 +35931,11 @@ Decompile (capstone disassembly):
 0x000751b9  ret
 ```
 
-## phys_fn_003083 (0x000751c0, 883 B, discovered)
+## phys_fn_003083 (0x000751c0, 883 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/poly.c
+- implementation: External/qhull/upstream/src/poly.c
 - prototype: undefined __cdecl FUN_100751c0(undefined8 * param_1, uint param_2, uint param_3, int * param_4)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_003085 (0x00075540)
@@ -36704,11 +36704,11 @@ void __cdecl FUN_10075eb0(int param_1)
 
 ```
 
-## phys_fn_003095 (0x00075fe0, 131 B, discovered)
+## phys_fn_003095 (0x00075fe0, 131 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/poly2.c
+- implementation: External/qhull/novodex/poly2.c
 - prototype: undefined __cdecl FUN_10075fe0(int param_1)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002562 (0x00061d90), phys_fn_002773 (0x00068870), phys_fn_002843 (0x0006bc30), phys_fn_002866 (0x0006d800), phys_fn_003188 (0x00079cf0)
@@ -36750,11 +36750,11 @@ void __cdecl FUN_10075fe0(int param_1)
 
 ```
 
-## phys_fn_003097 (0x00076070, 77 B, discovered)
+## phys_fn_003097 (0x00076070, 77 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/poly2.c
+- implementation: External/qhull/novodex/poly2.c
 - prototype: undefined __cdecl FUN_10076070(undefined4 * param_1)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002939 (0x0006fea0), phys_fn_002959 (0x00070590)
@@ -37482,11 +37482,11 @@ void FUN_10076610(void)
 
 ```
 
-## phys_fn_003113 (0x00076730, 428 B, discovered)
+## phys_fn_003113 (0x00076730, 428 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/poly2.c
+- implementation: External/qhull/novodex/poly2.c
 - prototype: int __cdecl FUN_10076730(int param_1, double * param_2, double * param_3)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002857 (0x0006c950), phys_fn_003169 (0x00078c50)
@@ -37733,11 +37733,11 @@ int * __cdecl FUN_10076a10(int *param_1,int param_2,undefined4 *param_3)
 
 ```
 
-## phys_fn_003121 (0x00076a80, 184 B, discovered)
+## phys_fn_003121 (0x00076a80, 184 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/poly2.c
+- implementation: External/qhull/novodex/poly2.c
 - prototype: undefined __stdcall FUN_10076a80(void)
 - calling convention: __stdcall, stack purge: 0
 - callers: phys_fn_003230 (0x0007cd80)
@@ -37876,11 +37876,11 @@ void __cdecl FUN_10076b90(int *param_1,uint param_2,int param_3)
 
 ```
 
-## phys_fn_003127 (0x00076c30, 237 B, discovered)
+## phys_fn_003127 (0x00076c30, 237 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/poly2.c
+- implementation: External/qhull/novodex/poly2.c
 - prototype: int * __stdcall FUN_10076c30(void)
 - calling convention: __stdcall, stack purge: 0
 - callers: phys_fn_003153 (0x00077740)
@@ -37946,11 +37946,11 @@ int * FUN_10076c30(void)
 
 ```
 
-## phys_fn_003129 (0x00076d20, 83 B, discovered)
+## phys_fn_003129 (0x00076d20, 83 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/poly2.c
+- implementation: External/qhull/novodex/poly2.c
 - prototype: int * __stdcall FUN_10076d20(void)
 - calling convention: __stdcall, stack purge: 0
 - callers: phys_fn_002773 (0x00068870), phys_fn_003153 (0x00077740)
@@ -38242,11 +38242,11 @@ Decompile (capstone disassembly):
 0x00076fab  ret
 ```
 
-## phys_fn_003137 (0x00076fb0, 360 B, discovered)
+## phys_fn_003137 (0x00076fb0, 360 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/poly2.c
+- implementation: External/qhull/novodex/poly2.c
 - prototype: undefined __stdcall FUN_10076fb0(void)
 - calling convention: __stdcall, stack purge: 0
 - callers: phys_fn_003025 (0x00073460), phys_fn_003030 (0x00073980), phys_fn_003161 (0x000784f0), phys_fn_003212 (0x0007b8b0), phys_fn_003228 (0x0007c900)
@@ -40300,11 +40300,11 @@ LAB_10078c1c:
 
 ```
 
-## phys_fn_003169 (0x00078c50, 202 B, discovered)
+## phys_fn_003169 (0x00078c50, 202 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/poly2.c
+- implementation: External/qhull/novodex/poly2.c
 - prototype: int __cdecl FUN_10078c50(int param_1, double * param_2, double * param_3, int * param_4)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002454 (0x0005dfb0)
@@ -40390,11 +40390,11 @@ LAB_10078d95:
 
 ```
 
-## phys_fn_003171 (0x00078d20, 199 B, discovered)
+## phys_fn_003171 (0x00078d20, 199 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/poly2.c
+- implementation: External/qhull/novodex/poly2.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -40485,11 +40485,11 @@ Decompile (capstone disassembly):
 0x00078de6  ret
 ```
 
-## phys_fn_003173 (0x00078df0, 708 B, discovered)
+## phys_fn_003173 (0x00078df0, 708 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/poly2.c
+- implementation: External/qhull/novodex/poly2.c
 - prototype: int __cdecl FUN_10078df0(int param_1, int param_2)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_003175 (0x000790c0), phys_fn_003200 (0x0007a330), phys_fn_003228 (0x0007c900)
@@ -40942,11 +40942,11 @@ Decompile (capstone disassembly):
 0x0007934f  ret
 ```
 
-## phys_fn_003178 (0x00079350, 148 B, discovered)
+## phys_fn_003178 (0x00079350, 148 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/poly2.c
+- implementation: External/qhull/novodex/poly2.c
 - prototype: undefined __stdcall FUN_10079350(void)
 - calling convention: __stdcall, stack purge: 0
 - callers: phys_fn_003200 (0x0007a330), phys_fn_003204 (0x0007abb0)
@@ -42241,11 +42241,11 @@ void FUN_1007a2a0(void)
 
 ```
 
-## phys_fn_003200 (0x0007a330, 1274 B, discovered)
+## phys_fn_003200 (0x0007a330, 1274 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/poly2.c
+- implementation: External/qhull/novodex/poly2.c
 - prototype: undefined __stdcall FUN_1007a330(void)
 - calling convention: __stdcall, stack purge: 0
 - callers: phys_fn_003232 (0x0007cf80), phys_fn_003234 (0x0007d180)
@@ -42424,11 +42424,11 @@ LAB_1007a640:
 
 ```
 
-## phys_fn_003202 (0x0007a830, 848 B, discovered)
+## phys_fn_003202 (0x0007a830, 848 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/qhull.c
+- implementation: External/qhull/upstream/src/qhull.c
 - prototype: undefined __cdecl FUN_1007a830(double * param_1, int param_2)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_003031 (0x00073b30), phys_fn_003228 (0x0007c900), phys_fn_003234 (0x0007d180)
@@ -42771,11 +42771,11 @@ void __cdecl FUN_1007ae20(undefined4 param_1)
 
 ```
 
-## phys_fn_003208 (0x0007ae80, 109 B, discovered)
+## phys_fn_003208 (0x0007ae80, 109 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/qhull.c
+- implementation: External/qhull/upstream/src/qhull.c
 - prototype: undefined __cdecl FUN_1007ae80(undefined4 param_1)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002460 (0x0005e490), phys_fn_002866 (0x0006d800), phys_fn_003031 (0x00073b30)
@@ -43129,11 +43129,11 @@ void __cdecl FUN_1007ae80(undefined4 param_1)
 
 ```
 
-## phys_fn_003210 (0x0007aef0, 2490 B, discovered)
+## phys_fn_003210 (0x0007aef0, 2490 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/qhull.c
+- implementation: External/qhull/upstream/src/qhull.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -45429,11 +45429,11 @@ void FUN_1007cd80(void)
 
 ```
 
-## phys_fn_003232 (0x0007cf80, 509 B, discovered)
+## phys_fn_003232 (0x0007cf80, 509 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/qhull.c
+- implementation: External/qhull/upstream/src/qhull.c
 - prototype: undefined __stdcall FUN_1007cf80(void)
 - calling convention: __stdcall, stack purge: 0
 - callers: phys_fn_003234 (0x0007d180)
@@ -47976,11 +47976,11 @@ int __cdecl FUN_1007edb0(int *param_1)
 
 ```
 
-## phys_fn_003285 (0x0007edf0, 92 B, discovered)
+## phys_fn_003285 (0x0007edf0, 92 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/qset.c
+- implementation: External/qhull/upstream/src/qset.c
 - prototype: int __cdecl FUN_1007edf0(int * param_1, int param_2)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002933 (0x0006fac0), phys_fn_002941 (0x0006ff70), phys_fn_002951 (0x00070270), phys_fn_002957 (0x000703f0), phys_fn_002961 (0x000706b0)
@@ -48034,11 +48034,11 @@ int __cdecl FUN_1007edf0(int *param_1,int param_2)
 
 ```
 
-## phys_fn_003287 (0x0007ee50, 86 B, discovered)
+## phys_fn_003287 (0x0007ee50, 86 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/qset.c
+- implementation: External/qhull/upstream/src/qset.c
 - prototype: undefined1 __cdecl FUN_1007ee50(int * param_1, int * param_2)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002884 (0x0006e0b0), phys_fn_003157 (0x00077bb0)
@@ -48092,11 +48092,11 @@ undefined1 __cdecl FUN_1007ee50(int *param_1,int *param_2)
 
 ```
 
-## phys_fn_003289 (0x0007eeb0, 115 B, discovered)
+## phys_fn_003289 (0x0007eeb0, 115 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/qset.c
+- implementation: External/qhull/upstream/src/qset.c
 - prototype: undefined4 __cdecl FUN_1007eeb0(int * param_1, int param_2, int * param_3, int param_4)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002914 (0x0006eef0)
@@ -48605,11 +48605,11 @@ int __cdecl FUN_1007f2a0(int *param_1)
 
 ```
 
-## phys_fn_003310 (0x0007f310, 106 B, discovered)
+## phys_fn_003310 (0x0007f310, 106 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/qset.c
+- implementation: External/qhull/upstream/src/qset.c
 - prototype: undefined __stdcall FUN_1007f310(void)
 - calling convention: __stdcall, stack purge: 0
 - callers: phys_fn_002562 (0x00061d90)
@@ -49013,11 +49013,11 @@ int __cdecl FUN_1007f670(int *param_1,int param_2)
 
 ```
 
-## phys_fn_003326 (0x0007f6f0, 139 B, discovered)
+## phys_fn_003326 (0x0007f6f0, 139 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/qset.c
+- implementation: External/qhull/upstream/src/qset.c
 - prototype: int __cdecl FUN_1007f6f0(int * param_1, int param_2)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002959 (0x00070590)
@@ -53180,11 +53180,11 @@ void FUN_10083a60(void)
 
 ```
 
-## phys_fn_003392 (0x00083a80, 378 B, discovered)
+## phys_fn_003392 (0x00083a80, 378 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/stat.c
+- implementation: External/qhull/upstream/src/stat.c
 - prototype: undefined __stdcall FUN_10083a80(void)
 - calling convention: __stdcall, stack purge: 0
 - callers: phys_fn_002866 (0x0006d800), phys_fn_003412 (0x000847d0)
@@ -53367,11 +53367,11 @@ void FUN_10083a80(void)
 
 ```
 
-## phys_fn_003394 (0x00083c00, 805 B, discovered)
+## phys_fn_003394 (0x00083c00, 805 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/stat.c
+- implementation: External/qhull/upstream/src/stat.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -53629,11 +53629,11 @@ Decompile (capstone disassembly):
 0x00083f24  ret
 ```
 
-## phys_fn_003396 (0x00083f30, 689 B, discovered)
+## phys_fn_003396 (0x00083f30, 689 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/stat.c
+- implementation: External/qhull/upstream/src/stat.c
 - prototype: undefined __stdcall FUN_10083f30(void)
 - calling convention: __stdcall, stack purge: 0
 - callers: phys_fn_002577 (0x000623a0)
@@ -53784,11 +53784,11 @@ void FUN_10083f30(void)
 
 ```
 
-## phys_fn_003398 (0x000841f0, 74 B, discovered)
+## phys_fn_003398 (0x000841f0, 74 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/stat.c
+- implementation: External/qhull/upstream/src/stat.c
 - prototype: undefined4 __cdecl FUN_100841f0(int param_1)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_003400 (0x00084240)
@@ -53818,11 +53818,11 @@ undefined4 __cdecl FUN_100841f0(int param_1)
 
 ```
 
-## phys_fn_003400 (0x00084240, 401 B, discovered)
+## phys_fn_003400 (0x00084240, 401 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/stat.c
+- implementation: External/qhull/upstream/src/stat.c
 - prototype: undefined __cdecl FUN_10084240(undefined4 param_1, int param_2)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_003406 (0x000844a0)
@@ -53904,11 +53904,11 @@ LAB_100843b2:
 
 ```
 
-## phys_fn_003402 (0x000843e0, 39 B, discovered)
+## phys_fn_003402 (0x000843e0, 39 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/stat.c
+- implementation: External/qhull/upstream/src/stat.c
 - prototype: undefined4 __cdecl FUN_100843e0(int param_1, int * param_2)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_003198 (0x0007a2a0), phys_fn_003406 (0x000844a0)
@@ -53958,11 +53958,11 @@ undefined4 __cdecl FUN_100843e0(int param_1,int *param_2)
 
 ```
 
-## phys_fn_003404 (0x00084410, 130 B, discovered)
+## phys_fn_003404 (0x00084410, 130 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/stat.c
+- implementation: External/qhull/upstream/src/stat.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -54023,11 +54023,11 @@ Decompile (capstone disassembly):
 0x00084491  ret
 ```
 
-## phys_fn_003406 (0x000844a0, 103 B, discovered)
+## phys_fn_003406 (0x000844a0, 103 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/stat.c
+- implementation: External/qhull/upstream/src/stat.c
 - prototype: undefined __cdecl FUN_100844a0(undefined4 param_1, int param_2, int * param_3)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002866 (0x0006d800), phys_fn_003408 (0x00084510)
@@ -54061,11 +54061,11 @@ void __cdecl FUN_100844a0(undefined4 param_1,int param_2,int *param_3)
 
 ```
 
-## phys_fn_003408 (0x00084510, 566 B, discovered)
+## phys_fn_003408 (0x00084510, 566 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/stat.c
+- implementation: External/qhull/upstream/src/stat.c
 - prototype: undefined __cdecl FUN_10084510(undefined4 param_1, undefined4 param_2)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_002866 (0x0006d800), phys_fn_003412 (0x000847d0)
@@ -54162,11 +54162,11 @@ void __cdecl FUN_10084510(undefined4 param_1,undefined4 param_2)
 
 ```
 
-## phys_fn_003410 (0x00084750, 116 B, discovered)
+## phys_fn_003410 (0x00084750, 116 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/upstream/src/stat.c
+- implementation: External/qhull/upstream/src/stat.c
 - prototype: None
 - calling convention: None, stack purge: None
 - callers: none
@@ -54359,11 +54359,11 @@ FUN_10084820(undefined4 param_1,undefined8 *param_2,undefined8 *param_3,int *par
 
 ```
 
-## phys_fn_003417 (0x000849b0, 148 B, discovered)
+## phys_fn_003417 (0x000849b0, 148 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: External/qhull/novodex/user.c
+- implementation: External/qhull/novodex/user.c
 - prototype: undefined __cdecl FUN_100849b0(undefined8 * param_1, int param_2, int param_3)
 - calling convention: __cdecl, stack purge: 0
 - callers: phys_fn_003085 (0x00075540), phys_fn_003186 (0x00079b80), phys_fn_003212 (0x0007b8b0), phys_fn_003216 (0x0007bff0), phys_fn_003228 (0x0007c900)

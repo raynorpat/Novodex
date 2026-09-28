@@ -252,6 +252,11 @@ Phase 4 rows -- `phys_fn_004768`, `004770`, `004780`, `004782`, `004784`, `00478
   family owners above are among them (`phys_fn_002493`, `002505`, `003308`, `005357`), and so is
   `phys_fn_004842`. 257 vendored rows stay `discovered`, deferred `vendored_not_falsified`; the
   evidence and the per-reason split are in evidence/vendored-correspondence.md, "Results".
+
+  *Update, qhull-gap Task 2:* 167 of those 257 (all qhull, 61,010 bytes) are promoted the same way
+  on the qhull-gap execution families, 69 of them under the DIFF-equivalent arm; they defer
+  `reconstructed_not_falsified`, with no mutation aimed at them. 90 vendored rows (71 qhull, 19
+  OPCODE) stay `discovered`, deferred `vendored_not_falsified`; see evidence/qhull-gap.md, "Task 2".
 - **`phys_fn_005493`** `0x000f0560`+252, `Segment::SquareDistance`, vendored stock, driven, and it
   does **not** reproduce the image: re-measured here, `segment_sqrdist.grid` reads
   `mismatches=9356 worst_ulp=67` over 60,000 words and `segment_sqrdist.wide`
