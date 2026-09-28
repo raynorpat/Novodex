@@ -216,16 +216,24 @@ vector's old block when the recycle grows it). Not visible to any earlier regist
 Differences measured and left (outside this task):
 - The oracle leaves the record's +0x14 pad as allocated (0xcdcdcdcd under the fill allocator);
   the candidate's record `memset` zeroes it.
-- The oracle's record holds the island snapshot phys_fn_000722 copies from +0x1bc..+0x1d4 to
-  +0x1e8..+0x200 at construction, so the chain root's +0x1f8 is the island's wake counter
-  (0x3ecccccc); the candidate builds only +0x1e8 (= the record) and leaves +0x1f8 at 0. 003979
-  applies a force only when that word is non-zero, so in a stepped candidate scene the effector
-  would apply nothing. The transcript sets +0x1f8 to 0 on both sides before the slot calls and
-  does not print it.
+
+Review fix (the +0x1f8 difference): the candidate's record now builds 000797's island.
+`nxActorComputeMass` calls 000760 (written) and then 000722 (written by this task in
+`core/JointSupport.cpp`: the island's largest +0x4c on the root's +0x1cc, the copy of
++0x1bc..+0x1d4 to +0x1e8..+0x200, +0x208 and +0x25c zeroed) where it used to store only
++0x1bc/+0x1e8, before the descriptor's wake counter is stored at +0x4c, as 000797 calls both
+before 000793. The root's +0x1f8 is now 0x3ecccccc on both sides; the transcript prints the
+island words and registers them. Every Phase 5 and joint staged-pair target stays identical.
+
+Recorded, not changed: `releaseActor`'s compound-shape branch (shape type 5) still frees each
+sub-shape before recycling its id, the order the non-compound branch had before the fix above.
+The oracle's order there is not measured: no registered target creates a multi-shape actor (the
+candidate's group builder is a hole) and the compound shape's deleting destructor is not
+reconstructed.
 
 Test: `NxPhysicsEffectorTests` (`tests/PhysicsEffectorTests.cpp`), a staged-pair target on the
-Phase 6 and 7 lists, with the page-guarded fill allocator. 77 lines registered from the oracle
-side; floors 6/7 = 480/353. dynamic_proof from `evidence/effector-and-coredump-trace-effector.txt`.
+Phase 6 and 7 lists, with the page-guarded fill allocator. 79 lines registered from the oracle
+side; floors 6/7 = 482/355. dynamic_proof from `evidence/effector-and-coredump-trace-effector.txt`.
 
 ## Core dump
 

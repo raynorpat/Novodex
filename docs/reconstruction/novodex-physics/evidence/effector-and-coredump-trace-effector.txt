@@ -13,10 +13,11 @@ Command:   cdb -cf <script> build\Release\NxPhysicsEffectorTests.exe build\pairs
            (the script breaks on the NxPhysics load with `sxe ld:NxPhysics`, sets the
            breakpoints below, then runs to exit)
 Recorded:  2026-09-28, on the Task 2 working tree (effector rows, Scene/NpScene rows, the body
-           record's Observable part and its teardown notify, the noinline rows), after the
-           transcript and the line registration.
+           record's Observable part and its teardown notify, the noinline rows, and the
+           review's body-construction island: 000760 then 000722), after the transcript
+           and the line registration.
 Candidate: build\pairs\candidate\NxPhysics.dll
-           sha256=74821795f2b8222830346fece6a6e0eacb9ba3f97a1f11b2f35a630cf221f4a0
+           sha256=8313db1b0e34b3e9186381278508ff6142434f11c2fc6d70e472951d89d90e3c
            (identical to build\Release\NxPhysics.dll at the time of the trace; the staged pair
            of the NxPhysicsEffectorTests differential, stdout_delta=0).
 Offsets:   module-relative, from build\Release\NxPhysics.map of that build.
@@ -39,6 +40,8 @@ NxScene::releaseEffector, releases one actor under two effectors, and releases t
   000587 Scene::createSpringAndDamperEffector                                      5
   000594 Scene::releaseEffector                                                    3
   000713 record chain root                                                         4
+  000722 island wake counter and copy (body construction)                          4
+  000760 island reset (body construction and joint release)                        4
   003922 ActorPairEffector ctor                                                    5
   003924 ActorPairEffector::tick (slot 2)                                          1
   003926 ActorPairEffector::setBodyRecords                                         7
@@ -74,7 +77,8 @@ NxScene::releaseEffector, releases one actor under two effectors, and releases t
   reader; Tasks 3b and 4 reach it), 000791 (the deferred stub: both roots' +0x1f8 are set to
   0 before the slot calls, as the transcript records). 003928 runs 5 times: the actor release
   notifies the two effectors observing rec_a, and the scene release's actor loop notifies e2
-  (rec_b) and e4 twice (rec_c, rec_d) before 000575 destroys e2 and e4.
+  (rec_b) and e4 twice (rec_c, rec_d) before 000575 destroys e2 and e4. 000760 and 000722
+  run once per dynamic body created (4), from nxActorComputeMass, in 000797's order.
 
 Breakpoints (each echoes and continues):
 bp NxPhysics+0x16f10 ".echo HIT 000301 NpScene::createSpringAndDamperEffector; gc"
@@ -83,48 +87,50 @@ bp NxPhysics+0x170d0 ".echo HIT 000327 NpScene::getNbEffectors; gc"
 bp NxPhysics+0x176d0 ".echo HIT 000329 NpScene::resetEffectorIterator; gc"
 bp NxPhysics+0x171a0 ".echo HIT 000331 NpScene::getNextEffector; gc"
 bp NxPhysics+0x28f30 ".echo HIT 000561 Scene::getNbEffectors; gc"
-bp NxPhysics+0x2d710 ".echo HIT 000565 Scene::resetEffectorIterator; gc"
+bp NxPhysics+0x2d720 ".echo HIT 000565 Scene::resetEffectorIterator; gc"
 bp NxPhysics+0x28f50 ".echo HIT 000569 Scene::getNextEffector; gc"
-bp NxPhysics+0x2d540 ".echo HIT 000573 Scene::removeEffector; gc"
-bp NxPhysics+0x2d480 ".echo HIT 000575 Scene release of all effectors; gc"
+bp NxPhysics+0x2d550 ".echo HIT 000573 Scene::removeEffector; gc"
+bp NxPhysics+0x2d490 ".echo HIT 000575 Scene release of all effectors; gc"
 bp NxPhysics+0x28e30 ".echo HIT 000587 Scene::createSpringAndDamperEffector; gc"
-bp NxPhysics+0x2d400 ".echo HIT 000594 Scene::releaseEffector; gc"
-bp NxPhysics+0x393f0 ".echo HIT 000713 record chain root; gc"
-bp NxPhysics+0x39b00 ".echo HIT 000791 addForceAtPos (deferred stub); gc"
-bp NxPhysics+0x56de0 ".echo HIT 003922 ActorPairEffector ctor; gc"
-bp NxPhysics+0x57a20 ".echo HIT 003924 ActorPairEffector::tick (slot 2); gc"
-bp NxPhysics+0x578d0 ".echo HIT 003926 ActorPairEffector::setBodyRecords; gc"
-bp NxPhysics+0x57540 ".echo HIT 003928 ActorPairEffector::event (slot 0); gc"
-bp NxPhysics+0x56ed0 ".echo HIT 003930 ~ActorPairEffector; gc"
-bp NxPhysics+0x56f70 ".echo HIT 003932 ActorPairEffector scalar deleting destructor; gc"
-bp NxPhysics+0x56e10 ".echo HIT 003934 Effector ctor; gc"
-bp NxPhysics+0x56f10 ".echo HIT 003936 ~Effector; gc"
-bp NxPhysics+0x56fb0 ".echo HIT 003938 Effector scalar deleting destructor; gc"
-bp NxPhysics+0x48cf0 ".echo HIT 003940 NpSpringAndDamperEffector::setBodies; gc"
-bp NxPhysics+0x48eb0 ".echo HIT 003942 NpSpringAndDamperEffector::setLinearSpring; gc"
-bp NxPhysics+0x48dd0 ".echo HIT 003944 NpSpringAndDamperEffector::setLinearDamper; gc"
-bp NxPhysics+0x48b40 ".echo HIT 003946 NpSpringAndDamperEffector::getLinearSpring; gc"
-bp NxPhysics+0x48ae0 ".echo HIT 003948 NpSpringAndDamperEffector::getLinearDamper; gc"
-bp NxPhysics+0x48ba0 ".echo HIT 003950 NpSpringAndDamperEffector::isSpringAndDamperEffector (slot 0); gc"
-bp NxPhysics+0x48bf0 ".echo HIT 003950 (slot 6 copy); gc"
-bp NxPhysics+0x48c40 ".echo HIT 003950 (slot 7 copy); gc"
-bp NxPhysics+0x48ad0 ".echo HIT 003952 NpSpringAndDamperEffector::getInternal; gc"
-bp NxPhysics+0x48a74 ".echo HIT 003954 NpSpringAndDamperEffector adjustor thunk; gc"
-bp NxPhysics+0x48a80 ".echo HIT 003956 NpSpringAndDamperEffector scalar deleting destructor; gc"
-bp NxPhysics+0x48a00 ".echo HIT 003958 NpSpringAndDamperEffector ctor; gc"
-bp NxPhysics+0x56e50 ".echo HIT 003960 SpringAndDamperEffector ctor; gc"
-bp NxPhysics+0x57720 ".echo HIT 003962 SpringAndDamperEffector::setBodies; gc"
-bp NxPhysics+0x57570 ".echo HIT 003964 SpringAndDamperEffector::getBodies (dump reader); gc"
-bp NxPhysics+0x57940 ".echo HIT 003966 SpringAndDamperEffector::setLinearSpring; gc"
-bp NxPhysics+0x57920 ".echo HIT 003968 SpringAndDamperEffector::setLinearDamper; gc"
-bp NxPhysics+0x57970 ".echo HIT 003970 SpringAndDamperEffector::springForce; gc"
-bp NxPhysics+0x57250 ".echo HIT 003972 SpringAndDamperEffector::damperForce; gc"
-bp NxPhysics+0x576f0 ".echo HIT 003974 SpringAndDamperEffector::getLinearSpring; gc"
-bp NxPhysics+0x576c0 ".echo HIT 003975 SpringAndDamperEffector::getLinearDamper; gc"
-bp NxPhysics+0x56ff0 ".echo HIT 003977 SpringAndDamperEffector scalar deleting destructor; gc"
-bp NxPhysics+0x57050 ".echo HIT 003979 SpringAndDamperEffector::apply (slot 3); gc"
-bp NxPhysics+0x2d040 ".echo HIT (helper) NxSceneInternal::releaseActor, the 000030 record notify and ~Observable; gc"
-bp NxPhysics+0x2bde0 ".echo HIT (helper) nxSceneDelete, scene teardown with 000575 after the actor loop; gc"
+bp NxPhysics+0x2d410 ".echo HIT 000594 Scene::releaseEffector; gc"
+bp NxPhysics+0x39400 ".echo HIT 000713 record chain root; gc"
+bp NxPhysics+0x39420 ".echo HIT 000722 island wake counter and copy (body construction); gc"
+bp NxPhysics+0x399f0 ".echo HIT 000760 island reset (body construction and joint release); gc"
+bp NxPhysics+0x39c00 ".echo HIT 000791 addForceAtPos (deferred stub); gc"
+bp NxPhysics+0x56ed0 ".echo HIT 003922 ActorPairEffector ctor; gc"
+bp NxPhysics+0x57b10 ".echo HIT 003924 ActorPairEffector::tick (slot 2); gc"
+bp NxPhysics+0x579c0 ".echo HIT 003926 ActorPairEffector::setBodyRecords; gc"
+bp NxPhysics+0x57630 ".echo HIT 003928 ActorPairEffector::event (slot 0); gc"
+bp NxPhysics+0x56fc0 ".echo HIT 003930 ~ActorPairEffector; gc"
+bp NxPhysics+0x57060 ".echo HIT 003932 ActorPairEffector scalar deleting destructor; gc"
+bp NxPhysics+0x56f00 ".echo HIT 003934 Effector ctor; gc"
+bp NxPhysics+0x57000 ".echo HIT 003936 ~Effector; gc"
+bp NxPhysics+0x570a0 ".echo HIT 003938 Effector scalar deleting destructor; gc"
+bp NxPhysics+0x48de0 ".echo HIT 003940 NpSpringAndDamperEffector::setBodies; gc"
+bp NxPhysics+0x48fa0 ".echo HIT 003942 NpSpringAndDamperEffector::setLinearSpring; gc"
+bp NxPhysics+0x48ec0 ".echo HIT 003944 NpSpringAndDamperEffector::setLinearDamper; gc"
+bp NxPhysics+0x48c30 ".echo HIT 003946 NpSpringAndDamperEffector::getLinearSpring; gc"
+bp NxPhysics+0x48bd0 ".echo HIT 003948 NpSpringAndDamperEffector::getLinearDamper; gc"
+bp NxPhysics+0x48c90 ".echo HIT 003950 NpSpringAndDamperEffector::isSpringAndDamperEffector (slot 0); gc"
+bp NxPhysics+0x48ce0 ".echo HIT 003950 (slot 6 copy); gc"
+bp NxPhysics+0x48d30 ".echo HIT 003950 (slot 7 copy); gc"
+bp NxPhysics+0x48bc0 ".echo HIT 003952 NpSpringAndDamperEffector::getInternal; gc"
+bp NxPhysics+0x48b64 ".echo HIT 003954 NpSpringAndDamperEffector adjustor thunk; gc"
+bp NxPhysics+0x48b70 ".echo HIT 003956 NpSpringAndDamperEffector scalar deleting destructor; gc"
+bp NxPhysics+0x48af0 ".echo HIT 003958 NpSpringAndDamperEffector ctor; gc"
+bp NxPhysics+0x56f40 ".echo HIT 003960 SpringAndDamperEffector ctor; gc"
+bp NxPhysics+0x57810 ".echo HIT 003962 SpringAndDamperEffector::setBodies; gc"
+bp NxPhysics+0x57660 ".echo HIT 003964 SpringAndDamperEffector::getBodies (dump reader); gc"
+bp NxPhysics+0x57a30 ".echo HIT 003966 SpringAndDamperEffector::setLinearSpring; gc"
+bp NxPhysics+0x57a10 ".echo HIT 003968 SpringAndDamperEffector::setLinearDamper; gc"
+bp NxPhysics+0x57a60 ".echo HIT 003970 SpringAndDamperEffector::springForce; gc"
+bp NxPhysics+0x57340 ".echo HIT 003972 SpringAndDamperEffector::damperForce; gc"
+bp NxPhysics+0x577e0 ".echo HIT 003974 SpringAndDamperEffector::getLinearSpring; gc"
+bp NxPhysics+0x577b0 ".echo HIT 003975 SpringAndDamperEffector::getLinearDamper; gc"
+bp NxPhysics+0x570e0 ".echo HIT 003977 SpringAndDamperEffector scalar deleting destructor; gc"
+bp NxPhysics+0x57140 ".echo HIT 003979 SpringAndDamperEffector::apply (slot 3); gc"
+bp NxPhysics+0x2d050 ".echo HIT (helper) NxSceneInternal::releaseActor, the 000030 record notify and ~Observable; gc"
+bp NxPhysics+0x2bdf0 ".echo HIT (helper) nxSceneDelete, scene teardown with 000575 after the actor loop; gc"
 
 Trace:
 HIT 000327 NpScene::getNbEffectors
@@ -133,6 +139,10 @@ HIT 000329 NpScene::resetEffectorIterator
 HIT 000565 Scene::resetEffectorIterator
 HIT 000331 NpScene::getNextEffector
 HIT 000569 Scene::getNextEffector
+HIT 000760 island reset (body construction and joint release)
+HIT 000722 island wake counter and copy (body construction)
+HIT 000760 island reset (body construction and joint release)
+HIT 000722 island wake counter and copy (body construction)
 HIT 000301 NpScene::createSpringAndDamperEffector
 HIT 000587 Scene::createSpringAndDamperEffector
 HIT 003960 SpringAndDamperEffector ctor
@@ -301,6 +311,10 @@ HIT 000331 NpScene::getNextEffector
 HIT 000569 Scene::getNextEffector
 HIT 000331 NpScene::getNextEffector
 HIT 000569 Scene::getNextEffector
+HIT 000760 island reset (body construction and joint release)
+HIT 000722 island wake counter and copy (body construction)
+HIT 000760 island reset (body construction and joint release)
+HIT 000722 island wake counter and copy (body construction)
 HIT 000301 NpScene::createSpringAndDamperEffector
 HIT 000587 Scene::createSpringAndDamperEffector
 HIT 003960 SpringAndDamperEffector ctor

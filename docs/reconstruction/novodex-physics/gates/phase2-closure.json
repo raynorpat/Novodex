@@ -12,7 +12,7 @@
     "unreachable_in_phase_2": "reconstructed, but no input sequence through the Phase 2 public API enters it; for the rows demoted here that is a measurement, not a judgement -- a mutation was applied and every target read a delta of zero in the same run that a positive control read non-zero",
     "not_independently_falsifiable": "the row has no counterpart in the candidate that can be mutated on its own: it is emitted by the compiler from a construct belonging to another row, or its distinctive behaviour has no consequence any gate can observe",
     "homeless_shared_code": "shared_by_callers with no translation unit span; not drivable from any Phase 2 entry point, and not linkable for a static proof either",
-    "reconstructed_not_falsified": "the row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. 5 rows: the body-record rows phys_fn_000022, phys_fn_000712, phys_fn_000758 and phys_fn_000760, homeless_shared_code until joint-open-items Task 2 wrote them in Physics/src/core/JointSupport.cpp, and phys_fn_000713, homeless_shared_code until effector-and-coredump Task 2 wrote it there",
+    "reconstructed_not_falsified": "the row is reconstructed and carries a recorded proof, but no mutation has been aimed at it. 6 rows: the body-record rows phys_fn_000022, phys_fn_000712, phys_fn_000758 and phys_fn_000760, homeless_shared_code until joint-open-items Task 2 wrote them in Physics/src/core/JointSupport.cpp, and phys_fn_000713 and phys_fn_000722, homeless_shared_code until effector-and-coredump Task 2 wrote them there",
     "data_object_not_dispositioned": "a Phase 2 data object that Task 4 did not disposition; Task 5 owns the data half of the census and this list makes the debt countable rather than silent"
   },
   "measured_from": {
@@ -61,11 +61,11 @@
     "differential_falsified": 49,
     "static_proof_falsified": 6,
     "oracle_differential_falsified": 1,
-    "deferred_homeless_shared_code": 53,
+    "deferred_homeless_shared_code": 52,
     "deferred_blocked_on_later_phase": 22,
     "deferred_unreachable_in_phase_2": 6,
     "deferred_not_independently_falsifiable": 1,
-    "deferred_reconstructed_not_falsified": 5
+    "deferred_reconstructed_not_falsified": 6
   },
   "closed": [
     {
@@ -1193,7 +1193,7 @@
       "id": "phys_fn_000722",
       "rva": "0x00016130",
       "size": 127,
-      "reason": "homeless_shared_code",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "shared_by_callers",
       "translation_unit_zone": "gap SceneRaycast.cpp .. CapsuleShape.cpp",
       "reachability": "reachable_via_other_phase",
@@ -1201,7 +1201,8 @@
         5,
         7
       ],
-      "callers": 3
+      "callers": 3,
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000734",
