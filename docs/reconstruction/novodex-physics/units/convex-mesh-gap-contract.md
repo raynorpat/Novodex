@@ -249,7 +249,7 @@ Totals: 7 rows; discovered 1,560 B, reconstructed 37 B
   005189 (vendored); 002160 (the SetIceError report row: `reconstructed` in the census as an ObjectModel model, but the
   product's seam, `opcNovodeXSetIceError` in Physics/src/ThirdPartyHost.cpp, is still a shim that
   reports nothing and returns false, where the oracle forwards (2, file, line, 0, message) to the
-  error-stream pointer at [0x101041b4]; the Task 2c rows call the seam); 005695 (`__chkstk`, for
+  imported variadic `FoundationSDK::error` (IAT [0x101041b4]); the Task 2c rows call the seam); 005695 (`__chkstk`, for
   the alloca in 001541); 000001 (MSVC's compiler-generated `vector constructor iterator`, called
   by `new[]` sites with the trivial constructor 0x00027f00 - not a prerequisite); **EdgeList.cpp 002052 (zero), 002063 (`EdgeList::Init`,
   not started), 002060 (release, reconstructed)**. 002063's closure is 002054, 002058, 002061,

@@ -532,8 +532,8 @@ for the review). Never commit it applied: product code must not reach the oracle
 
 *The 002160 seam.* The rows report through `opcNovodeXSetIceError`, the host seam for 002160. In the
 product DLL that seam (Physics/src/ThirdPartyHost.cpp) is still the shim: it reports nothing and
-returns false, where the oracle's 002160 forwards (2, file, line, 0, message) to the error-stream
-pointer at [0x101041b4]. The rows' return values are unaffected (both return the false), and the
+returns false, where the oracle's 002160 forwards (2, file, line, 0, message) to NxFoundation's
+variadic `FoundationSDK::error` (import slot [0x101041b4], message as format). The rows' return values are unaffected (both return the false), and the
 families compare the (message, file, line) the rows pass; what a user's error stream would receive
 is not reproduced until 002160 is written as product code.
 
