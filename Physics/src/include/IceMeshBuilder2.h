@@ -186,8 +186,11 @@ class MeshBuilder2
 	};
 
 // 001591: three dwords appended to a Container (ICE's inline Add(const Point&),
-// a function of its own in the oracle, thiscall on the Container).
-IceCore::Container&	nxIceContainerAddPoint(IceCore::Container& container, const NxU32* point);
+// a function of its own in the oracle, thiscall on the Container with `ret 4`;
+// here __fastcall with the Container in ecx and an unused edx, which gives the
+// same registers and the same callee-popped argument).
+IceCore::Container&	__fastcall nxIceContainerAddPoint(IceCore::Container* container, NxU32 edx,
+						const NxU32* point);
 
 // 001595: a copy of a 12-byte-element stream (see the row).
 bool				nxMb2DuplicateStream(NxU32 nb, const IceMaths::Point* src, IceMaths::Point** dst,

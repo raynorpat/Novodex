@@ -78,12 +78,17 @@ static inline void nxMb2DeleteArray(void* array)
 	}
 
 // phys_fn_001591 (0x0002eb50, 141 B)
-__declspec(noinline) IceCore::Container& nxIceContainerAddPoint(IceCore::Container& container, const NxU32* point)
+// The oracle's is thiscall on the Container (`ret 4`): here __fastcall with the
+// Container in ecx, an unused edx and the point on the stack, popped by the
+// callee -- the same registers and the same `ret 4` -- since the vendored
+// Container header is not changed to give it the member.
+__declspec(noinline) IceCore::Container& __fastcall nxIceContainerAddPoint(IceCore::Container* container,
+	NxU32 /*edx*/, const NxU32* point)
 	{
-	container.Add(point[0]);
-	container.Add(point[1]);
-	container.Add(point[2]);
-	return container;
+	container->Add(point[0]);
+	container->Add(point[1]);
+	container->Add(point[2]);
+	return *container;
 	}
 
 // phys_fn_001593 (0x0002ebe0, 301 B)
@@ -303,9 +308,9 @@ __declspec(noinline) bool MeshBuilder2::ComputeUnsharedVertices()
 			continue;
 		if(!mIsSkin)
 			{
-			nxIceContainerAddPoint(Unshared, (const NxU32*) &mVertsCopy[mRefs[F.Ref[0]].VRef]);
-			nxIceContainerAddPoint(Unshared, (const NxU32*) &mVertsCopy[mRefs[F.Ref[1]].VRef]);
-			nxIceContainerAddPoint(Unshared, (const NxU32*) &mVertsCopy[mRefs[F.Ref[2]].VRef]);
+			nxIceContainerAddPoint(&Unshared, 0, (const NxU32*) &mVertsCopy[mRefs[F.Ref[0]].VRef]);
+			nxIceContainerAddPoint(&Unshared, 0, (const NxU32*) &mVertsCopy[mRefs[F.Ref[1]].VRef]);
+			nxIceContainerAddPoint(&Unshared, 0, (const NxU32*) &mVertsCopy[mRefs[F.Ref[2]].VRef]);
 			mRefs[F.Ref[0]].VRef = NewIndex++;
 			mRefs[F.Ref[1]].VRef = NewIndex++;
 			mRefs[F.Ref[2]].VRef = NewIndex++;
@@ -474,7 +479,7 @@ __declspec(noinline) bool MeshBuilder2::ComputeNormals()
 			}
 
 		if(mComputeFNormals)
-			nxIceContainerAddPoint(mFaceNormals, (const NxU32*) N);
+			nxIceContainerAddPoint(&mFaceNormals, 0, (const NxU32*) N);
 		}
 
 	mVertFaceCount = (NxU32*) nxMb2New(mNbVerts * 4);
@@ -540,7 +545,7 @@ __declspec(noinline) bool MeshBuilder2::SaveStreams()
 	{
 	if(mVertsCopy && mIndexedGeo)
 		for(NxU32 i = 0; i < mNbVerts; i++)
-			nxIceContainerAddPoint(mVerts, (const NxU32*) &mVertsCopy[i]);
+			nxIceContainerAddPoint(&mVerts, 0, (const NxU32*) &mVertsCopy[i]);
 
 	if(mTVertsCopy && mIndexedUVW)
 		for(NxU32 i = 0; i < mNbTVerts; i++)
@@ -554,7 +559,7 @@ __declspec(noinline) bool MeshBuilder2::SaveStreams()
 
 	if(mCVertsCopy && mIndexedColors)
 		for(NxU32 i = 0; i < mNbCVerts; i++)
-			nxIceContainerAddPoint(mCVerts, (const NxU32*) &mCVertsCopy[i]);
+			nxIceContainerAddPoint(&mCVerts, 0, (const NxU32*) &mCVertsCopy[i]);
 	return true;
 	}
 
@@ -895,7 +900,7 @@ __declspec(noinline) NxU32 MeshBuilder2::OutputRun(const NxU32* faces, NxU32 nb_
 			if(mIndexedColors)
 				mCRefs.Add(CRef);
 			else
-				nxIceContainerAddPoint(mCVerts, (const NxU32*) &mCVertsCopy[CRef]);
+				nxIceContainerAddPoint(&mCVerts, 0, (const NxU32*) &mCVertsCopy[CRef]);
 			}
 
 		if(mComputeVNormals)
@@ -1087,7 +1092,7 @@ __declspec(noinline) NxU32 MeshBuilder2::OutputRun(const NxU32* faces, NxU32 nb_
 			SkipNormalize:
 				fstp	st(0)
 				}
-			nxIceContainerAddPoint(mNormals, (const NxU32*) Sum);
+			nxIceContainerAddPoint(&mNormals, 0, (const NxU32*) Sum);
 			}
 
 		if(mVertsCopy)
@@ -1095,7 +1100,7 @@ __declspec(noinline) NxU32 MeshBuilder2::OutputRun(const NxU32* faces, NxU32 nb_
 			if(mIndexedGeo)
 				mVRefs.Add(VRef);
 			else
-				nxIceContainerAddPoint(mVerts, (const NxU32*) &mVertsCopy[VRef]);
+				nxIceContainerAddPoint(&mVerts, 0, (const NxU32*) &mVertsCopy[VRef]);
 			}
 		}
 
