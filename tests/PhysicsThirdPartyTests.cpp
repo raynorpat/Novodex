@@ -394,6 +394,8 @@ static const NxDivergentCeiling kDivergentCeilings[] =
 	{ "qhull_rotation_x87", 2001, 0, 0, kInf64, 547, 20, 0, 4611686018427387904ull, 2.0 },	// qhull-gap: "QRn"
 	{ "edge_list.plane_divergent", 465, 465, 0, 0, 0, 0, 0, 0ull, 0.0 },	// convex-mesh gap Task 2c: active-edge bits that follow the vendored Plane::Set / Triangle::Normal (005155, 005181); 0 with the oracle's bound in
 	{ "ice_adjacencies.plane_divergent", 124, 124, 0, 0, 0, 0, 0, 0ull, 0.0 },	// the same, through 001546's EdgeList
+	{ "pose_pair.inverse_divergent", 990, 0, 0xffffffffu, 0, 990, 990, 0, 0ull, HUGE_VAL },	// convex-mesh gap Task 2e: 001653 over the inverse of a raw pose; every word a NaN whose signalling bit the vendored InvertPRMatrix (005191) quiets by copying through the FPU; 0 with the oracle's bound in
+	{ "adjacency_owner.plane_divergent", 155, 155, 0, 0, 0, 0, 0, 0ull, 0.0 },	// convex-mesh gap Task 2e: 002188's EdgeList on Task 2c's 13 frozen meshes (005155, 005181); 0 with the oracle's bound in
 	};
 
 static const NxDivergentCeiling* nxFindCeiling(const char* name)
@@ -6126,8 +6128,8 @@ static NxIceRecordingAllocator gIceAllocator;
 static const int kIceMaxMeshes = 72;
 static NxMesh gIceMeshes[kIceMaxMeshes];
 static int gIceNbMeshes = 0;
-static unsigned gIceInputDigest[5];	// 0..2 Task 2c; 3, 4 Task 2d
-static unsigned gIceInputWords[5];
+static unsigned gIceInputDigest[10];	// 0..2 Task 2c; 3, 4 Task 2d; 5..9 Task 2e
+static unsigned gIceInputWords[10];
 
 static NxMesh& nxIceNewMesh(unsigned nbVerts, unsigned nbTris)
 	{
@@ -7035,6 +7037,9 @@ static void nxIceDriveValencies(const NxIceSide& s)
 
 typedef void (*NxIceDriver)(const NxIceSide& s);
 
+// The name of a family's split tape (Task 2e's pose_pair names its own).
+static const char* gIceSplitSuffix = "plane_divergent";
+
 // One family: the oracle pass, then the candidate's, each with the recording
 // allocator and the report recorder installed for the pass only.
 static void nxIceFamily(const NxOracleRows& o, bool selfOnly, NxIceDriver driver, const char* name,
@@ -7099,7 +7104,7 @@ static void nxIceFamily(const NxOracleRows& o, bool selfOnly, NxIceDriver driver
 	if(gOracleTapeB.count)
 		{
 		char split[64];
-		_snprintf(split, sizeof(split), "%s.plane_divergent", name);
+		_snprintf(split, sizeof(split), "%s.%s", name, gIceSplitSuffix);
 		split[sizeof(split) - 1] = 0;
 		nxReportTapes(gOracleTapeB, gCandidateTapeB, split, rva, owner, source, selfOnly, kDivergent);
 		}
@@ -7996,6 +8001,951 @@ static void nxDriveIceMeshBuilder2(const NxOracleRows& o, bool selfOnly)
 		gIceNbMeshes, c.vrRuns, c.vrVerts, c.vrReduced, gIceReports);
 	}
 
+//////////////////////////////////////////////////////////////////////////////
+// convex-mesh gap Task 2e. The rest of sub-unit D (IceMeshTools.cpp: 001639,
+// 001641/001643, 001649, 001651, 001653, 001661) and prerequisite P-Small
+// (002144 in SmoothNormals.cpp, 001461 in ConvexHull.cpp, 002186 / 002188 in
+// TriangleMeshTopology.cpp), linked into this harness. Five families, run
+// through nxIceFamily (the recording 004803 allocator and the report recorder
+// installed per pass), each driving the oracle's rows at their RVAs and the
+// candidate's over the same inputs:
+//
+//   pose_pair        001653 over pairs of 4x4 poses (null, "clean" or raw) with
+//                    either output requested, both x87 control words; and
+//                    001639's block, twice, and once more over a poisoned block
+//                    (the guard). A clean pose has a signed-permutation
+//                    rotation scaled by raw finite words and a raw finite or
+//                    infinite translation, or a rotation of raw finite words at
+//                    the origin: every inverse element is one product or a sum
+//                    of zero products, so the vendored InvertPRMatrix (005191,
+//                    whose sums the 2003 compiler reassociated, and which
+//                    copies through the FPU) inverts it exactly as the
+//                    oracle's does. A call that uses the inverse of a raw
+//                    pose goes to pose_pair.inverse_divergent, under a ceiling
+//                    (a rule on the fixed inputs, not a comparison).
+//   unique_axis      001661 over sequences of directions on a fresh Container:
+//                    fixed pairs straddling 0.9999 (words computed offline),
+//                    their negations, doubled and last-bit-perturbed copies (bit
+//                    operations only), and raw words (signalling and quiet NaNs,
+//                    infinities, denormals, -0); both control words.
+//   edge_dedupe      001641 over edge lists: triangle fans (a closed outline),
+//                    the same shuffled and flipped, with a stray edge, a
+//                    doubled boundary edge, an edge three times; and every
+//                    mesh's face edges. An input whose pairs would all cancel
+//                    is not driven (001641 then reads the stale words of an
+//                    empty copy and counts down from zero): a rule on the fixed
+//                    input, counted in the coverage line.
+//   mesh_normals     001651 (on an object built by 001536 and released by
+//                    001649) per mesh under rotating create blocks (32-bit,
+//                    16-bit or no faces; angle-weighted or not, which reaches
+//                    002144; the caller's arrays or the object's), the vertex
+//                    words with raw words mixed in (nxMb2RawWords) for half of
+//                    the cases, both control words; and 001461 over a hull
+//                    image of each mesh (16-bit faces), with and without a
+//                    previous normal array, and with no vertices.
+//   adjacency_owner  002186 and 002188 over a TriangleMesh image of each mesh
+//                    (+0x0c, +0x10, +0x14), with no triangles and on the
+//                    non-manifold mesh (Init fails: the release path). 002188's
+//                    EdgeList computes active edges from the vertices, so its
+//                    runs on the 13 meshes of Task 2c's frozen split
+//                    (kIcePlaneDivergentMeshes) go to
+//                    adjacency_owner.plane_divergent, under a ceiling.
+//
+// Tapes: every return value; the objects and output arrays word for word (the
+// larger arrays their first 48 words and a digest of all, as Task 2d); pointers
+// only as null / which array; every allocation and release through the 004803
+// getter and every report, interleaved.
+#pragma push_macro("min")
+#pragma push_macro("max")
+#pragma push_macro("random")
+#undef min
+#undef max
+#undef random
+#include "ConvexHull.h"
+#include "TriangleMesh.h"
+#pragma pop_macro("random")
+#pragma pop_macro("max")
+#pragma pop_macro("min")
+
+static const unsigned kMtHullNormals		= 0x0002ae60;	// phys_fn_001461
+static const unsigned kMtZeroPair			= 0x0002dae0;	// phys_fn_001536
+static const unsigned kMtIdentityPoses		= 0x000313e0;	// phys_fn_001639
+static const unsigned kMtEdgeLoop			= 0x00031480;	// phys_fn_001641
+static const unsigned kMtNormalsRelease		= 0x00031890;	// phys_fn_001649
+static const unsigned kMtNormalsCompute		= 0x000318d0;	// phys_fn_001651
+static const unsigned kMtPosePair			= 0x00031db0;	// phys_fn_001653
+static const unsigned kMtUniqueAxis			= 0x000324f0;	// phys_fn_001661
+static const unsigned kMtCreateAdjacencies	= 0x000543d0;	// phys_fn_002186
+static const unsigned kMtCreateEdgeList		= 0x00054460;	// phys_fn_002188
+static const unsigned kMtIdentityGuard		= 0x00123c78;	// 001639's guard byte
+static const unsigned kMtIdentityBlock		= 0x00123c7c;	// 001639's block
+
+typedef const float*	(__cdecl* MtIdentityFn)();
+typedef bool			(__cdecl* MtEdgeLoopFn)(void*, const void*);
+typedef void			(__cdecl* MtPosePairFn)(void*, void*, const void*, const void*);
+typedef bool			(__thiscall* MtBoolThisFn)(void*);
+
+typedef char nxMtLayout0[sizeof(MESHNORMALSCREATE) == 0x20 && offsetof(MESHNORMALSCREATE, WeightByAngle) == 0x14
+	&& offsetof(MESHNORMALSCREATE, VertexNormals) == 0x1c && sizeof(MeshNormals) == 8 ? 1 : -1];
+typedef char nxMtLayout1[offsetof(ConvexHull, mNbFaces) == 4 && offsetof(ConvexHull, mVertexNormals) == 0x14
+	&& offsetof(TriangleMesh, mAdjacencies) == 0x84 && offsetof(TriangleMesh, mEdgeList) == 0x88 ? 1 : -1];
+
+static const int kPoseFamily = 5;
+static const int kAxisFamily = 6;
+static const int kDedupeFamily = 7;
+static const int kNormalsFamily = 8;
+static const int kOwnerFamily = 9;
+
+// Oracle-side coverage for the five families' lines.
+struct NxMtCoverage
+	{
+	unsigned identityGuard, identityAtBlock, identityKept;
+	unsigned poseCalls, poseExact, poseDivergent, poseX87;
+	unsigned axisCases, axisCalls, axisAdded, axisRejected, axisNegated, axisSnan;
+	unsigned dedupeCases, dedupeTrue, dedupeFalse, dedupeSkipped, dedupeLoopWords;
+	unsigned normalsCases, normalsTrue, normalsFalse, normalsWeighted, normalsX87, normalsSnan;
+	unsigned hullCases, hullTrue, hullFalse;
+	unsigned ownerAdj, ownerAdjBuilt, ownerEdge, ownerEdgeBuilt, ownerSplit;
+	};
+static NxMtCoverage gMtCoverage;
+
+static unsigned nxMtWord(const float* f)
+	{
+	unsigned w;
+	memcpy(&w, f, 4);
+	return w;
+	}
+
+static void nxMtFloatWords(const void* data, unsigned words)
+	{
+	const unsigned char* p = (const unsigned char*) data;
+	for(unsigned i = 0; i < words; ++i)
+		{
+		unsigned w;
+		memcpy(&w, p + i * 4, 4);
+		gIceTape->pushFloatWord(w);
+		}
+	}
+
+// A large float array: its first 48 words, then the digest of all of it.
+static void nxMtFloatArray(const void* data, unsigned words)
+	{
+	gIceTape->push(words);
+	nxMtFloatWords(data, words < 48 ? words : 48);
+	if(words > 48)
+		gIceTape->push(nxMb2Digest(data, words));
+	}
+
+static unsigned nxMtCountSnan(const void* data, unsigned words)
+	{
+	return nxMb2CountSnan((const float*) data, words);
+	}
+
+// One side's Container: constructed, sized and filled, or read back.
+static void nxMtContainerCtor(const NxIceSide& s, void* obj)
+	{
+	if(s.oracle)	s.o->containerCtor(obj);
+	else			new (obj) IceCore::Container;
+	}
+static void nxMtContainerDtor(const NxIceSide& s, void* obj)
+	{
+	if(s.oracle)	s.o->containerDtor(obj);
+	else			((IceCore::Container*) obj)->~Container();
+	}
+static void nxMtContainerFill(const NxIceSide& s, void* obj, const unsigned* words, unsigned count)
+	{
+	if(!count)
+		return;
+	if(s.oracle)	s.o->containerSetSize(obj, count);
+	else			((IceCore::Container*) obj)->SetSize(count);
+	unsigned* entries = (unsigned*) (size_t) nxIceWord(obj, 8);
+	memcpy(entries, words, 4 * count);
+	memcpy((unsigned char*) obj + 4, &count, 4);
+	}
+static void nxMtTapeContainer(const void* obj, bool floats)
+	{
+	NxTape& t = *gIceTape;
+	const unsigned count = nxIceWord(obj, 4);
+	const unsigned* entries = (const unsigned*) (size_t) nxIceWord(obj, 8);
+	t.push(nxIceWord(obj, 0));
+	t.push(count);
+	t.push(nxIceWord(obj, 12));
+	t.push(entries ? 1u : 0u);
+	if(entries)
+		for(unsigned i = 0; i < count && i < kIceTableCap; ++i)
+			t.pushKind(entries[i], floats ? kWordFloat : kWordDiscrete);
+	}
+
+// A raw word drawn as bits: one of the special kinds nxMb2RawWords mixes in, or
+// a drawn word, or (finite) a drawn word whose exponent is not all ones.
+static unsigned nxMtRawWord(bool finiteOnly)
+	{
+	const unsigned kind = nxNext();
+	const unsigned payload = nxNext();
+	if(finiteOnly)
+		{
+		unsigned bits = payload;
+		if((bits & 0x7f800000u) == 0x7f800000u)
+			bits &= 0xbfffffffu;
+		switch(kind % 5)
+			{
+			case 0:	return (payload & 0x807fffffu) | 1u;				// denormal
+			case 1:	return (payload & 1) ? 0x80000000u : 0u;			// -0 / +0
+			case 2:	return (payload & 0x807fffffu) | 0x3f000000u;		// [0.5, 1)
+			default: return bits;
+			}
+		}
+	switch(kind % 9)
+		{
+		case 0:	return 0x7f800001u | (payload & 0x003ffffeu);				// +sNaN
+		case 1:	return 0xff800001u | (payload & 0x003ffffeu);				// -sNaN
+		case 2:	return 0x7fc00000u | (payload & 0x003fffffu);				// qNaN
+		case 3:	return (payload & 1) ? 0xff800000u : 0x7f800000u;			// infinity
+		case 4:	return (payload & 0x807fffffu) | 1u;						// denormal
+		case 5:	return 0x80000000u;										// -0
+		case 6:	return (payload & 0x807fffffu) | 0x3f000000u;				// [0.5, 1)
+		default: return payload;										// raw
+		}
+	}
+
+// ---------------------------------------------------------------------------
+// pose_pair
+
+// A pose of kind 0 (null), 1 (clean), 2 (raw) or 3 (a raw rotation at the
+// origin), as sixteen words.
+static void nxMtPose(unsigned kind, unsigned* m)
+	{
+	if(kind == 2)
+		{
+		for(int i = 0; i < 16; ++i)
+			{
+			const unsigned w = nxMtRawWord(false);
+			m[i] = w;
+			}
+		return;
+		}
+	if(kind == 3)
+		{
+		// Every rotation word drawn finite (one in eleven an infinity), the
+		// translation +0 or -0, column 3 raw: the inverse is the transpose and a
+		// translation of sums of zero products, exact in any order, while the
+		// product with it is three full products per element.
+		for(int r = 0; r < 3; ++r)
+			{
+			for(int c = 0; c < 3; ++c)
+				{
+				const unsigned select = nxNext();
+				const unsigned w = nxMtRawWord(true);
+				m[r * 4 + c] = (select % 11) ? w : ((select & 16) ? 0xff800000u : 0x7f800000u);
+				}
+			const unsigned last = nxMtRawWord(false);
+			m[r * 4 + 3] = last;
+			}
+		for(int c = 0; c < 3; ++c)
+			{
+			const unsigned sign = nxNext() & 0x80000000u;
+			m[12 + c] = sign;
+			}
+		const unsigned last = nxMtRawWord(false);
+		m[15] = last;
+		return;
+		}
+	// A signed permutation of the three axes, each row's one element a drawn
+	// finite word; the translation (row 3) finite or infinite; column 3 raw.
+	const unsigned perm = nxNext() % 6;
+	static const int kPerm[6][3] = { { 0, 1, 2 }, { 0, 2, 1 }, { 1, 0, 2 }, { 1, 2, 0 }, { 2, 0, 1 }, { 2, 1, 0 } };
+	for(int r = 0; r < 3; ++r)
+		{
+		for(int c = 0; c < 3; ++c)
+			m[r * 4 + c] = 0;
+		const unsigned sign = nxNext() & 0x80000000u;
+		const unsigned scale = nxNext();
+		const unsigned value = (scale % 3) ? (0x3f800000u | sign) : (nxMtRawWord(true) | sign);
+		m[r * 4 + kPerm[perm][r]] = value;
+		const unsigned last = nxMtRawWord(false);
+		m[r * 4 + 3] = last;
+		}
+	for(int c = 0; c < 3; ++c)
+		{
+		const unsigned select = nxNext();
+		const unsigned t = nxMtRawWord(true);
+		m[12 + c] = (select % 11) ? t : ((select & 16) ? 0xff800000u : 0x7f800000u);
+		}
+	const unsigned last = nxMtRawWord(false);
+	m[15] = last;
+	}
+
+static void nxMtPoseCall(const NxIceSide& s, unsigned k0, unsigned k1, const unsigned* p0, const unsigned* p1,
+	bool want0, bool want1, unsigned short cw)
+	{
+	NxMtCoverage& c = gMtCoverage;
+	const bool exact = (!want0 || k1 != 2) && (!want1 || k0 != 2);
+	gIceTape = exact ? s.mainTape : s.splitTape;
+	unsigned out[2][16];
+	for(int o = 0; o < 2; ++o)
+		for(int i = 0; i < 16; ++i)
+			out[o][i] = 0xcdcd0000u + o * 16 + i;
+	const unsigned short saved = nxMb2SetControlWord(cw);
+	if(s.oracle)
+		((MtPosePairFn) (s.o->base + kMtPosePair))(want0 ? out[0] : 0, want1 ? out[1] : 0, k0 ? p0 : 0, k1 ? p1 : 0);
+	else
+		nxIcePosePair(want0 ? (IceMaths::Matrix4x4*) out[0] : 0, want1 ? (IceMaths::Matrix4x4*) out[1] : 0,
+			k0 ? (const IceMaths::Matrix4x4*) p0 : 0, k1 ? (const IceMaths::Matrix4x4*) p1 : 0);
+	nxMb2SetControlWord(saved);
+	gIceTape->push(0x905e0000u | (k0 << 8) | (k1 << 4) | (want0 ? 2u : 0u) | (want1 ? 1u : 0u));
+	for(int o = 0; o < 2; ++o)
+		nxMtFloatWords(out[o], 16);
+	if(s.oracle)
+		{
+		++c.poseCalls;
+		exact ? ++c.poseExact : ++c.poseDivergent;
+		if(cw == 0x0f7f)
+			++c.poseX87;
+		}
+	gIceTape = s.mainTape;
+	}
+
+static void nxMtIdentity(const NxIceSide& s)
+	{
+	NxMtCoverage& c = gMtCoverage;
+	NxTape& t = *gIceTape;
+	if(s.oracle)
+		c.identityGuard = *(const unsigned char*) (s.o->base + kMtIdentityGuard);
+	const float* first = s.oracle ? ((MtIdentityFn) (s.o->base + kMtIdentityPoses))() : nxIceIdentityPoses();
+	nxMtFloatWords(first, 25);
+	const float* second = s.oracle ? ((MtIdentityFn) (s.o->base + kMtIdentityPoses))() : nxIceIdentityPoses();
+	t.push(second == first ? 1u : 0u);
+	// The guard: over a poisoned block, a third call must leave the poison.
+	float saved[25];
+	memcpy(saved, first, sizeof(saved));
+	unsigned poison[25];
+	for(int i = 0; i < 25; ++i)
+		poison[i] = 0x7fa0dd00u + i;
+	memcpy((void*) first, poison, sizeof(poison));
+	const float* third = s.oracle ? ((MtIdentityFn) (s.o->base + kMtIdentityPoses))() : nxIceIdentityPoses();
+	t.push(third == first ? 1u : 0u);
+	nxMtFloatWords(third, 25);
+	if(s.oracle)
+		{
+		c.identityAtBlock = (const unsigned char*) first == s.o->base + kMtIdentityBlock ? 1u : 0u;
+		c.identityKept = memcmp(third, poison, sizeof(poison)) == 0 ? 1u : 0u;
+		}
+	memcpy((void*) first, saved, sizeof(saved));
+	}
+
+static void nxMtPoseDrive(const NxIceSide& s)
+	{
+	const unsigned savedState = gState;
+	nxMtIdentity(s);
+	unsigned p0[16], p1[16];
+	for(unsigned k0 = 0; k0 < 4; ++k0)
+		for(unsigned k1 = 0; k1 < 4; ++k1)
+			for(unsigned want = 0; want < 4; ++want)
+				for(unsigned draw = 0; draw < 24; ++draw)
+					{
+					gState = 0x90e50000u ^ (k0 * 1031 + k1 * 257 + want * 61 + draw * 7 + 3);
+					nxMtPose(k0, p0);
+					nxMtPose(k1, p1);
+					nxIceFoldRun(kPoseFamily, k0 | (k1 << 4) | (want << 8), draw, 0);
+					if(gIceOraclePass)
+						{
+						nxMb2FoldInput(kPoseFamily, p0, 16);
+						nxMb2FoldInput(kPoseFamily, p1, 16);
+						}
+					for(int m = 0; m < 2; ++m)
+						nxMtPoseCall(s, k0, k1, p0, p1, (want & 2) != 0, (want & 1) != 0, m ? 0x0f7f : 0x027f);
+					}
+	gState = savedState;
+	}
+
+// ---------------------------------------------------------------------------
+// unique_axis
+
+// Pairs of directions straddling the 0.9999 threshold (|dot| computed in the
+// row's order, (z*sz + y*sy) + x*sx, above it for the even rows and below for
+// the odd), found offline by scanning angles about acos(0.9999) over float
+// words; the margin is printed beside each. Then the exactly-equal pair (not
+// rejected: the row rejects only a greater |dot|) and one word above it.
+static const unsigned kMtAxisPairs[18][2][3] =
+	{
+	{ { 0xbf473035u, 0x3e85b956u, 0xbf124061u }, { 0xbf44f077u, 0x3e86b175u, 0xbf150c52u } },	// +1.88e-10
+	{ { 0xbcc96d18u, 0x3f76d601u, 0xbe872e07u }, { 0xbcf3cff1u, 0x3f75e3cfu, 0xbe8da62bu } },	// -2.88e-09
+	{ { 0x3e6cebc7u, 0xbefc6210u, 0xbf56b79au }, { 0x3e61e5a9u, 0xbf007586u, 0xbf561d40u } },	// +3.39e-11
+	{ { 0x3f429ddcu, 0xbe2bc67fu, 0x3f20ac96u }, { 0x3f414b9eu, 0xbe38fa5bu, 0x3f215a02u } },	// -1.43e-11
+	{ { 0xbf67172fu, 0x3eadc44cu, 0xbe876ab6u }, { 0xbf670d60u, 0x3ea95977u, 0xbe8d272eu } },	// +1.5e-08
+	{ { 0xbf2161a9u, 0x3d90aadau, 0xbf45e6c9u }, { 0xbf242947u, 0x3d91e597u, 0xbf43966au } },	// -2.23e-10
+	{ { 0xbedad584u, 0x3e0415b0u, 0xbf65122cu }, { 0xbedbf230u, 0x3deb9adfu, 0xbf654aa0u } },	// +2.71e-11
+	{ { 0x3eba5764u, 0xbf41b7deu, 0xbf0b06e1u }, { 0x3eb3946cu, 0xbf42d2ccu, 0xbf0bb498u } },	// -9.64e-11
+	{ { 0x3ed61398u, 0x3ebfea1eu, 0xbf53d3eau }, { 0x3ed54c3cu, 0x3ec69757u, 0xbf527b3au } },	// +4.51e-10
+	{ { 0x3f44fc6cu, 0xbeb571d5u, 0x3f08059du }, { 0x3f472632u, 0xbeb0862eu, 0x3f067b62u } },	// -2.3e-11
+	{ { 0x3e39b9f2u, 0xbf268317u, 0x3f3cd27fu }, { 0x3e2bb294u, 0xbf276a12u, 0x3f3cdab2u } },	// +2.88e-10
+	{ { 0x3e1835dau, 0xbf1c2c6au, 0x3f473e41u }, { 0x3e0f0d13u, 0xbf1a2d13u, 0x3f493696u } },	// -1.49e-08
+	{ { 0x3ebb9963u, 0x3f04b1dfu, 0xbf45cff7u }, { 0x3eb7a9c5u, 0x3f02aa03u, 0xbf48131au } },	// +4.01e-10
+	{ { 0x3f1d8ec0u, 0x3f4999eau, 0x3d047678u }, { 0x3f205ad6u, 0x3f475c8au, 0x3d0cb2a2u } },	// -6.64e-11
+	{ { 0xbf4543a9u, 0xbf07fcdfu, 0xbeb45599u }, { 0xbf4332ebu, 0xbf0af645u, 0xbeb44143u } },	// +7.28e-10
+	{ { 0x3df75d8cu, 0xbf717643u, 0x3e9e7161u }, { 0x3df5a2cfu, 0xbf7296e4u, 0x3e9792c0u } },	// -7.63e-10
+	{ { 0x3f800000u, 0x00000000u, 0x00000000u }, { 0x3f7ff972u, 0x3e000000u, 0x00000000u } },	// |dot| == 0.9999f
+	{ { 0x3f800000u, 0x00000000u, 0x00000000u }, { 0x3f7ff973u, 0x3e000000u, 0x00000000u } },	// one word above
+	};
+
+// A direction for step `step` of a case: a table vector, or one derived from
+// an earlier direction of the case by bit operations (sign flips, a doubled
+// exponent, a last-bit nudge), or raw words.
+static void nxMtAxisDraw(unsigned* d, const unsigned (*earlier)[3], unsigned nbEarlier)
+	{
+	const unsigned select = nxNext();
+	const unsigned which = nxNext();
+	const unsigned pick = which % 18;
+	const unsigned half = (which >> 8) & 1;
+	switch(select % 8)
+		{
+		case 0: case 1:
+			memcpy(d, kMtAxisPairs[pick][half], 12);
+			break;
+		case 2:
+			memcpy(d, kMtAxisPairs[pick][half], 12);
+			d[0] ^= 0x80000000u;
+			d[1] ^= 0x80000000u;
+			d[2] ^= 0x80000000u;
+			break;
+		case 3: case 4:
+			if(nbEarlier)
+				{
+				memcpy(d, earlier[which % nbEarlier], 12);
+				const unsigned how = nxNext();
+				if(how & 1)
+					for(int i = 0; i < 3; ++i)
+						d[i] ^= 0x80000000u;
+				if(how & 2)
+					for(int i = 0; i < 3; ++i)
+						if((d[i] & 0x7f800000u) && (d[i] & 0x7f800000u) < 0x7f000000u)
+							d[i] += 0x00800000u;
+				if(how & 4)
+					d[(how >> 4) % 3] += 1 + ((how >> 8) & 3);
+				}
+			else
+				memcpy(d, kMtAxisPairs[pick][half], 12);
+			break;
+		default:
+			for(int i = 0; i < 3; ++i)
+				{
+				const unsigned w = nxMtRawWord(false);
+				d[i] = w;
+				}
+			break;
+		}
+	}
+
+static void nxMtAxisDrive(const NxIceSide& s)
+	{
+	NxMtCoverage& c = gMtCoverage;
+	const unsigned savedState = gState;
+	unsigned char obj[0x20];
+	for(unsigned k = 0; k < 160; ++k)
+		{
+		gState = 0xa4150000u ^ (k * 977 + 11);
+		const unsigned count = 2 + nxNext() % 11;
+		unsigned dirs[16][3];
+		for(unsigned i = 0; i < count; ++i)
+			nxMtAxisDraw(dirs[i], dirs, i);
+		nxIceFoldRun(kAxisFamily, k, count, 0);
+		nxMb2FoldInput(kAxisFamily, dirs, 3 * count);
+		for(int m = 0; m < 2; ++m)
+			{
+			const unsigned short cw = m ? 0x0f7f : 0x027f;
+			memset(obj, 0xcd, sizeof(obj));
+			nxMtContainerCtor(s, obj);
+			for(unsigned i = 0; i < count; ++i)
+				{
+				const unsigned short saved = nxMb2SetControlWord(cw);
+				bool added;
+				if(s.oracle)
+					added = ((IceCreateFn) (s.o->base + kMtUniqueAxis))(obj, dirs[i]);
+				else
+					added = nxIceAddUniqueAxis((IceCore::Container*) obj, 0, (const IceMaths::Point*) dirs[i]);
+				nxMb2SetControlWord(saved);
+				gIceTape->push(added ? 1u : 0u);
+				if(s.oracle)
+					{
+					++c.axisCalls;
+					added ? ++c.axisAdded : ++c.axisRejected;
+					if(dirs[i][0] & 0x80000000u)
+						++c.axisNegated;
+					if(m == 0)
+						c.axisSnan += nxMtCountSnan(dirs[i], 3);
+					}
+				}
+			nxMtTapeContainer(obj, true);
+			nxMtContainerDtor(s, obj);
+			if(s.oracle)
+				++c.axisCases;
+			}
+		}
+	gState = savedState;
+	}
+
+// ---------------------------------------------------------------------------
+// edge_dedupe
+
+// How many pairs survive the dedupe: per unordered edge, its count modulo two.
+static unsigned nxMtSurvivors(const unsigned* pairs, unsigned nbPairs)
+	{
+	unsigned survivors = 0;
+	for(unsigned i = 0; i < nbPairs; ++i)
+		{
+		const unsigned a = pairs[i * 2] < pairs[i * 2 + 1] ? pairs[i * 2] : pairs[i * 2 + 1];
+		const unsigned b = pairs[i * 2] < pairs[i * 2 + 1] ? pairs[i * 2 + 1] : pairs[i * 2];
+		unsigned before = 0;
+		unsigned total = 0;
+		for(unsigned j = 0; j < nbPairs; ++j)
+			{
+			const unsigned x = pairs[j * 2] < pairs[j * 2 + 1] ? pairs[j * 2] : pairs[j * 2 + 1];
+			const unsigned y = pairs[j * 2] < pairs[j * 2 + 1] ? pairs[j * 2 + 1] : pairs[j * 2];
+			if(x == a && y == b)
+				{
+				++total;
+				if(j < i)
+					++before;
+				}
+			}
+		// Count the edge once, at its first occurrence.
+		if(!before && (total & 1))
+			++survivors;
+		}
+	return survivors;
+	}
+
+static void nxMtEdgeCase(const NxIceSide& s, const unsigned* pairs, unsigned nbPairs, unsigned tag)
+	{
+	NxMtCoverage& c = gMtCoverage;
+	nxIceFoldRun(kDedupeFamily, tag, nbPairs, 0);
+	nxMb2FoldInput(kDedupeFamily, pairs, 2 * nbPairs);
+	if(!nxMtSurvivors(pairs, nbPairs))
+		{
+		gIceTape->push(0x5c1bu);
+		if(s.oracle)
+			++c.dedupeSkipped;
+		return;
+		}
+	unsigned char edges[0x20], loop[0x20];
+	memset(edges, 0xcd, sizeof(edges));
+	memset(loop, 0xcd, sizeof(loop));
+	nxMtContainerCtor(s, edges);
+	nxMtContainerCtor(s, loop);
+	nxMtContainerFill(s, edges, pairs, 2 * nbPairs);
+	bool ok;
+	if(s.oracle)
+		ok = ((MtEdgeLoopFn) (s.o->base + kMtEdgeLoop))(loop, edges);
+	else
+		ok = nxIceEdgeLoop(*(IceCore::Container*) loop, *(const IceCore::Container*) edges);
+	gIceTape->push(ok ? 1u : 0u);
+	nxMtTapeContainer(loop, false);
+	nxMtTapeContainer(edges, false);
+	if(s.oracle)
+		{
+		++c.dedupeCases;
+		ok ? ++c.dedupeTrue : ++c.dedupeFalse;
+		c.dedupeLoopWords += nxIceWord(loop, 4);
+		}
+	nxMtContainerDtor(s, loop);
+	nxMtContainerDtor(s, edges);
+	}
+
+static void nxMtShuffle(unsigned* pairs, unsigned nbPairs)
+	{
+	for(unsigned i = nbPairs - 1; i > 0; --i)
+		{
+		const unsigned draw = nxNext();
+		const unsigned j = draw % (i + 1);
+		const unsigned a = pairs[i * 2], b = pairs[i * 2 + 1];
+		pairs[i * 2] = pairs[j * 2];
+		pairs[i * 2 + 1] = pairs[j * 2 + 1];
+		pairs[j * 2] = a;
+		pairs[j * 2 + 1] = b;
+		}
+	}
+
+static void nxMtEdgeDrive(const NxIceSide& s)
+	{
+	const unsigned savedState = gState;
+	static unsigned pairs[2 * 1300];
+	// Triangle fans over k drawn distinct vertices: a closed outline.
+	for(unsigned f = 0; f < 96; ++f)
+		{
+		gState = 0xed9e0000u ^ (f * 523 + 17);
+		const unsigned k = 3 + nxNext() % 14;
+		unsigned v[16];
+		for(unsigned i = 0; i < k; ++i)
+			{
+			unsigned candidate;
+			bool fresh;
+			do
+				{
+				candidate = nxNext() % 40;
+				fresh = true;
+				for(unsigned j = 0; j < i; ++j)
+					fresh &= v[j] != candidate;
+				}
+			while(!fresh);
+			v[i] = candidate;
+			}
+		unsigned n = 0;
+		for(unsigned t = 1; t + 1 < k; ++t)
+			{
+			const unsigned tri[3] = { v[0], v[t], v[t + 1] };
+			for(int e = 0; e < 3; ++e)
+				{
+				pairs[n * 2] = tri[e];
+				pairs[n * 2 + 1] = tri[(e + 1) % 3];
+				++n;
+				}
+			}
+		const unsigned variant = f % 6;
+		if(variant >= 1)
+			nxMtShuffle(pairs, n);
+		if(variant >= 2)
+			for(unsigned i = 0; i < n; ++i)
+				{
+				const unsigned flip = nxNext();
+				if(flip & 1)
+					{
+					const unsigned a = pairs[i * 2];
+					pairs[i * 2] = pairs[i * 2 + 1];
+					pairs[i * 2 + 1] = a;
+					}
+				}
+		if(variant == 3)
+			{
+			// A stray edge to a vertex outside the fan: the chain cannot close.
+			pairs[n * 2] = v[0];
+			pairs[n * 2 + 1] = 100 + f;
+			++n;
+			}
+		if(variant == 4)
+			{
+			// A boundary edge doubled: both copies go, the outline breaks.
+			pairs[n * 2] = v[k - 1];
+			pairs[n * 2 + 1] = v[0];
+			++n;
+			}
+		if(variant == 5)
+			{
+			// An internal edge a third time: one copy stays.
+			pairs[n * 2] = v[0];
+			pairs[n * 2 + 1] = v[k / 2];
+			++n;
+			}
+		nxMtEdgeCase(s, pairs, n, f);
+		}
+	// Every mesh's face edges, in face order and shuffled.
+	for(int m = 0; m < gIceNbMeshes; ++m)
+		{
+		const NxMesh& mesh = gIceMeshes[m];
+		if(mesh.nbTris > 100)
+			continue;
+		unsigned n = 0;
+		for(unsigned t = 0; t < mesh.nbTris; ++t)
+			for(int e = 0; e < 3; ++e)
+				{
+				pairs[n * 2] = mesh.tris[t * 3 + e];
+				pairs[n * 2 + 1] = mesh.tris[t * 3 + (e + 1) % 3];
+				++n;
+				}
+		nxMtEdgeCase(s, pairs, n, 0x1000 + m);
+		gState = 0xed9f0000u ^ (unsigned) (m * 131 + 7);
+		if(n > 1)
+			nxMtShuffle(pairs, n);
+		nxMtEdgeCase(s, pairs, n, 0x2000 + m);
+		}
+	gState = savedState;
+	}
+
+// ---------------------------------------------------------------------------
+// mesh_normals
+
+static void nxMtNormalsCase(const NxIceSide& s, const NxMesh& mesh, int meshIndex, unsigned config)
+	{
+	NxMtCoverage& c = gMtCoverage;
+	const unsigned short cw = ((meshIndex + config) & 1) ? 0x0f7f : 0x027f;
+	nxIceFoldRun(kNormalsFamily, (unsigned) meshIndex, config, cw);
+	gState = 0x4e0a0000u ^ (unsigned) (meshIndex * 211 + config * 13 + 5);
+	NxIceInput in;
+	nxIceMakeInput(in, mesh, kNormalsFamily);
+	// Raw words mixed into the vertex words (bits) for the odd configurations.
+	float* verts = (float*) in.verts;
+	if(config & 1)
+		nxMb2RawWords(verts, 3 * mesh.nbVerts);
+	nxMb2FoldInput(kNormalsFamily, verts, 3 * mesh.nbVerts);
+	const unsigned faces = (config >> 1) % 3;	// 0 32-bit, 1 16-bit, 2 none
+	const bool weighted = ((config >> 2) & 1) != 0;
+	const unsigned supplied = (config >> 3) & 3;	// bit 0 face normals, bit 1 vertex normals
+	if(faces == 2 && mesh.nbVerts < 3)
+		{
+		nxIceFreeInput(in);
+		return;
+		}
+	static float faceNormals[3 * 400 + 3];
+	static float vertexNormals[3 * 400 + 3];
+	for(unsigned i = 0; i < 3 * 400 + 3; ++i)
+		{
+		const unsigned w = 0xcdcd0000u + i;
+		memcpy(&faceNormals[i], &w, 4);
+		memcpy(&vertexNormals[i], &w, 4);
+		}
+	MESHNORMALSCREATE create;
+	memset(&create, 0, sizeof(create));
+	create.NbVerts = mesh.nbVerts;
+	create.Verts = in.verts;
+	create.NbFaces = mesh.nbTris;
+	create.DFaces = faces == 0 ? in.dfaces : 0;
+	create.WFaces = faces == 1 ? in.wfaces : 0;
+	create.WeightByAngle = weighted;
+	create.FaceNormals = (supplied & 1) ? (IceMaths::Point*) faceNormals : 0;
+	create.VertexNormals = (supplied & 2) ? (IceMaths::Point*) vertexNormals : 0;
+	unsigned char obj[0x10];
+	memset(obj, 0xcd, sizeof(obj));
+	if(s.oracle)	((VoidThisFn) (s.o->base + kMtZeroPair))(obj);
+	else			new (obj) MeshNormals;
+	const unsigned short saved = nxMb2SetControlWord(cw);
+	bool ok;
+	if(s.oracle)	ok = ((IceCreateFn) (s.o->base + kMtNormalsCompute))(obj, &create);
+	else			ok = nxMeshNormalsCompute((MeshNormals*) obj, 0, &create);
+	nxMb2SetControlWord(saved);
+	NxTape& t = *gIceTape;
+	t.push(ok ? 1u : 0u);
+	const float* fn = (const float*) (size_t) nxIceWord(obj, 0);
+	const float* vn = (const float*) (size_t) nxIceWord(obj, 4);
+	t.push(fn ? 1u : 0u);
+	t.push(vn ? 1u : 0u);
+	if(ok)
+		{
+		nxMtFloatArray(fn ? fn : faceNormals, 3 * mesh.nbTris);
+		nxMtFloatArray(vn ? vn : vertexNormals, 3 * mesh.nbVerts);
+		}
+	if(s.oracle)
+		{
+		++c.normalsCases;
+		ok ? ++c.normalsTrue : ++c.normalsFalse;
+		if(weighted)
+			++c.normalsWeighted;
+		if(cw == 0x0f7f)
+			++c.normalsX87;
+		c.normalsSnan += nxMtCountSnan(verts, 3 * mesh.nbVerts);
+		}
+	if(s.oracle)	((VoidThisFn) (s.o->base + kMtNormalsRelease))(obj);
+	else			((MeshNormals*) obj)->~MeshNormals();
+	t.push(nxIceWord(obj, 0));
+	t.push(nxIceWord(obj, 4));
+	nxIceFreeInput(in);
+	}
+
+// 001461 over a hull image: +0x04 faces, +0x08 16-bit faces, +0x0c vertices,
+// +0x10 the vertex array, +0x14 the previous normals (a block from the
+// recording allocator, so its release is taped) or null.
+static void nxMtHullCase(const NxIceSide& s, const NxMesh& mesh, int meshIndex, unsigned variant)
+	{
+	NxMtCoverage& c = gMtCoverage;
+	const unsigned short cw = ((meshIndex + variant) & 1) ? 0x0f7f : 0x027f;
+	nxIceFoldRun(kNormalsFamily, 0x4000 + meshIndex, variant, cw);
+	NxIceInput in;
+	nxIceMakeInput(in, mesh, kNormalsFamily);
+	unsigned hull[8];
+	for(int i = 0; i < 8; ++i)
+		hull[i] = 0xcdcd4000u + i;
+	hull[1] = mesh.nbTris;
+	hull[2] = (unsigned) (size_t) in.wfaces;
+	hull[3] = variant == 2 ? 0 : mesh.nbVerts;
+	hull[4] = (unsigned) (size_t) in.verts;
+	hull[5] = variant == 1 ? (unsigned) (size_t) gIceAllocator.malloc(12, NX_MEMORY_PERSISTENT) : 0;
+	const unsigned short saved = nxMb2SetControlWord(cw);
+	bool ok;
+	if(s.oracle)	ok = ((MtBoolThisFn) (s.o->base + kMtHullNormals))(hull);
+	else			ok = ((ConvexHull*) hull)->ComputeVertexNormals();
+	nxMb2SetControlWord(saved);
+	NxTape& t = *gIceTape;
+	t.push(ok ? 1u : 0u);
+	const float* normals = (const float*) (size_t) hull[5];
+	t.push(normals ? 1u : 0u);
+	if(ok && normals)
+		nxMtFloatArray(normals, 3 * mesh.nbVerts);
+	for(int i = 0; i < 5; ++i)
+		t.push(i == 2 || i == 4 ? 0u : hull[i]);
+	if(normals)
+		gIceAllocator.free((void*) normals);
+	if(s.oracle)
+		{
+		++c.hullCases;
+		ok ? ++c.hullTrue : ++c.hullFalse;
+		}
+	nxIceFreeInput(in);
+	}
+
+static void nxMtNormalsDrive(const NxIceSide& s)
+	{
+	const unsigned savedState = gState;
+	for(int m = 0; m < gIceNbMeshes; ++m)
+		{
+		const NxMesh& mesh = gIceMeshes[m];
+		// The six fixtures under all 24 create blocks, the others under four.
+		if(m < kNbMeshes)
+			for(unsigned config = 0; config < 24; ++config)
+				nxMtNormalsCase(s, mesh, m, config);
+		else
+			for(unsigned r = 0; r < 4; ++r)
+				nxMtNormalsCase(s, mesh, m, (m * 5 + r * 7) % 24);
+		for(unsigned variant = 0; variant < 3; ++variant)
+			if(variant != 2 || m % 8 == 0)
+				nxMtHullCase(s, mesh, m, variant);
+		}
+	// No vertices: false at once, nothing allocated.
+	{
+	MESHNORMALSCREATE create;
+	memset(&create, 0, sizeof(create));
+	create.NbVerts = 3;
+	create.NbFaces = 1;
+	nxIceFoldRun(kNormalsFamily, 0xdead, 0, 0);
+	unsigned char obj[0x10];
+	memset(obj, 0xcd, sizeof(obj));
+	if(s.oracle)	((VoidThisFn) (s.o->base + kMtZeroPair))(obj);
+	else			new (obj) MeshNormals;
+	bool ok;
+	if(s.oracle)	ok = ((IceCreateFn) (s.o->base + kMtNormalsCompute))(obj, &create);
+	else			ok = nxMeshNormalsCompute((MeshNormals*) obj, 0, &create);
+	gIceTape->push(ok ? 1u : 0u);
+	gIceTape->push(nxIceWord(obj, 0));
+	gIceTape->push(nxIceWord(obj, 4));
+	if(s.oracle)
+		{
+		++gMtCoverage.normalsCases;
+		ok ? ++gMtCoverage.normalsTrue : ++gMtCoverage.normalsFalse;
+		}
+	}
+	if(gIceTape->overflow)
+		{
+		fprintf(stderr, "FAIL mesh_normals tape overflow (%u words beyond)\n", gIceTape->overflow);
+		++gMismatches;
+		}
+	gState = savedState;
+	}
+
+// ---------------------------------------------------------------------------
+// adjacency_owner
+
+static void nxMtOwnerCase(const NxIceSide& s, const NxMesh& mesh, int meshIndex, unsigned nbTris)
+	{
+	NxMtCoverage& c = gMtCoverage;
+	nxIceFoldRun(kOwnerFamily, (unsigned) meshIndex, nbTris, 0);
+	NxIceInput in;
+	nxIceMakeInput(in, mesh, kOwnerFamily);
+	static unsigned image[0x40];
+	for(int i = 0; i < 0x40; ++i)
+		image[i] = 0xcdcd8000u + i;
+	image[0x0c / 4] = nbTris;
+	image[0x10 / 4] = (unsigned) (size_t) in.verts;
+	image[0x14 / 4] = (unsigned) (size_t) in.dfaces;
+	NxTape& t = *gIceTape;
+
+	if(s.oracle)	((VoidThisFn) (s.o->base + kMtCreateAdjacencies))(image);
+	else			((TriangleMesh*) image)->createAdjacencies();
+	void* adjacencies = (void*) (size_t) image[0x84 / 4];
+	t.push(0xad50000u | (adjacencies ? 1u : 0u));
+	if(adjacencies)
+		{
+		nxIceTapeAdjacencies(adjacencies);
+		s.adjDtor(adjacencies);
+		gIceAllocator.free(adjacencies);
+		}
+	if(s.oracle)
+		{
+		++c.ownerAdj;
+		if(adjacencies)
+			++c.ownerAdjBuilt;
+		}
+
+	const bool split = gIcePlaneDivergent[meshIndex];
+	if(split)
+		gIceTape = s.splitTape;
+	if(s.oracle)	((VoidThisFn) (s.o->base + kMtCreateEdgeList))(image);
+	else			((TriangleMesh*) image)->createEdgeList();
+	void* edgeList = (void*) (size_t) image[0x88 / 4];
+	gIceTape->push(0xed50000u | (edgeList ? 1u : 0u));
+	if(edgeList)
+		{
+		nxIceTapeEdgeList(edgeList);
+		s.edgeListDtor(edgeList);
+		gIceAllocator.free(edgeList);
+		}
+	gIceTape = s.mainTape;
+	for(int i = 0; i < 0x40; ++i)
+		if(i != 0x10 / 4 && i != 0x14 / 4 && i != 0x84 / 4 && i != 0x88 / 4)
+			t.push(image[i]);
+	if(s.oracle)
+		{
+		++c.ownerEdge;
+		if(edgeList)
+			++c.ownerEdgeBuilt;
+		if(split)
+			++c.ownerSplit;
+		}
+	nxIceFreeInput(in);
+	}
+
+static void nxMtOwnerDrive(const NxIceSide& s)
+	{
+	for(int m = 0; m < gIceNbMeshes; ++m)
+		nxMtOwnerCase(s, gIceMeshes[m], m, gIceMeshes[m].nbTris);
+	// No triangles: both Inits fail, both objects are released.
+	nxMtOwnerCase(s, gIceMeshes[5], 5, 0);
+	}
+
+static void nxDriveMeshToolsRest(const NxOracleRows& o, bool selfOnly)
+	{
+	memset(&gMtCoverage, 0, sizeof(gMtCoverage));
+	const NxMtCoverage& c = gMtCoverage;
+
+	gIceReports = 0;
+	gIceSplitSuffix = "inverse_divergent";
+	nxIceFamily(o, selfOnly, nxMtPoseDrive, "pose_pair", "0x00031db0", "phys_fn_001653",
+		"IceMeshTools.cpp", kPoseFamily);
+	gIceSplitSuffix = "plane_divergent";
+	printf("thirdparty coverage name=pose_pair calls=%u exact=%u inverse_divergent=%u x87_0f7f=%u"
+		" identity_guard_before=%u identity_at_block=%u identity_kept=%u reports=%u\n",
+		c.poseCalls, c.poseExact, c.poseDivergent, c.poseX87, c.identityGuard, c.identityAtBlock,
+		c.identityKept, gIceReports);
+
+	gIceReports = 0;
+	nxIceFamily(o, selfOnly, nxMtAxisDrive, "unique_axis", "0x000324f0", "phys_fn_001661",
+		"IceMeshTools.cpp,IceMeshBuilder2.cpp", kAxisFamily);
+	printf("thirdparty coverage name=unique_axis cases=%u calls=%u added=%u rejected=%u negated=%u"
+		" input_snan=%u reports=%u\n",
+		c.axisCases, c.axisCalls, c.axisAdded, c.axisRejected, c.axisNegated, c.axisSnan, gIceReports);
+
+	gIceReports = 0;
+	nxIceFamily(o, selfOnly, nxMtEdgeDrive, "edge_dedupe", "0x00031480", "phys_fn_001641",
+		"IceMeshTools.cpp", kDedupeFamily);
+	printf("thirdparty coverage name=edge_dedupe cases=%u closed=%u open=%u skipped=%u loop_words=%u reports=%u\n",
+		c.dedupeCases, c.dedupeTrue, c.dedupeFalse, c.dedupeSkipped, c.dedupeLoopWords, gIceReports);
+
+	gIceReports = 0;
+	nxIceFamily(o, selfOnly, nxMtNormalsDrive, "mesh_normals", "0x000318d0", "phys_fn_001651",
+		"IceMeshTools.cpp,SmoothNormals.cpp,ConvexHull.cpp", kNormalsFamily);
+	printf("thirdparty coverage name=mesh_normals meshes=%d cases=%u true=%u false=%u weighted=%u x87_0f7f=%u"
+		" vertex_snan=%u hull_cases=%u hull_true=%u hull_false=%u reports=%u\n",
+		gIceNbMeshes, c.normalsCases, c.normalsTrue, c.normalsFalse, c.normalsWeighted, c.normalsX87,
+		c.normalsSnan, c.hullCases, c.hullTrue, c.hullFalse, gIceReports);
+
+	gIceReports = 0;
+	memset(gIceReportLines, 0, sizeof(gIceReportLines));
+	gIceReportLine267 = 0;
+	gIceReportLine321 = 0;
+	nxIceFamily(o, selfOnly, nxMtOwnerDrive, "adjacency_owner", "0x000543d0", "phys_fn_002186",
+		"TriangleMeshTopology.cpp,IceAdjacencies.cpp,EdgeList.cpp", kOwnerFamily);
+	printf("thirdparty coverage name=adjacency_owner meshes=%d adjacencies=%u adjacencies_built=%u"
+		" edge_lists=%u edge_lists_built=%u frozen_split_runs=%u reports=%u line72=%u line321=%u\n",
+		gIceNbMeshes, c.ownerAdj, c.ownerAdjBuilt, c.ownerEdge, c.ownerEdgeBuilt, c.ownerSplit, gIceReports,
+		gIceReportLines[0], gIceReportLine321);
+	}
+
 static void nxPrintTotals()
 	{
 	printf("thirdparty coverage driven=%u divergent=%u words=%u layout_checks=%u\n",
@@ -8135,6 +9085,11 @@ int wmain(int argc, wchar_t** argv)
 	// convex-mesh gap Task 2d: the same two lines after its two families, with
 	// the running totals; the pairs above stay where they were printed.
 	nxDriveIceMeshBuilder2(o, selfOnly);
+	nxPrintTotals();
+
+	// convex-mesh gap Task 2e: the same two lines after its five families, with
+	// the running totals; the pairs above stay where they were printed.
+	nxDriveMeshToolsRest(o, selfOnly);
 	nxPrintTotals();
 	printf("thirdparty candidate mismatches=%u layout_failures=%u\n", gMismatches, gLayoutFailures);
 

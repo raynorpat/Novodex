@@ -2612,7 +2612,42 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty name=vertex_reduction rva=0x000316a0 owner=phys_fn_001647 source=IceMeshTools.cpp words=24313 oracle=9d4e0115 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty coverage name=vertex_reduction meshes=65 runs=178 verts=5457 reduced=4331 reports=0',
         'thirdparty coverage driven=78 divergent=27 words=1957901 layout_checks=47',
-        'thirdparty oracle digest=c2e747eb'
+        'thirdparty oracle digest=c2e747eb',
+        # convex-mesh gap Task 2e: the rest of sub-unit D (IceMeshTools.cpp: 001639, 001641/001643,
+        # 001649, 001651, 001653, 001661) and P-Small (002144 in SmoothNormals.cpp, 001461 in
+        # ConvexHull.cpp, 002186 / 002188 in TriangleMeshTopology.cpp), linked into the harness.
+        # pose_pair drives 001653 (and 001639's block), unique_axis 001661, edge_dedupe 001641,
+        # mesh_normals 001651 (through 001536 / 001649; angle-weighted cases reach 002144) and
+        # 001461, adjacency_owner 002186 and 002188, each oracle row at its RVA against the
+        # candidate's over the same inputs; every float input is written as bits (signalling and
+        # quiet NaNs, infinities, denormals, -0). The exact families are registered whole. The two
+        # splits are rules on the fixed inputs: pose_pair.inverse_divergent holds the calls that use
+        # the inverse of a raw pose (the vendored InvertPRMatrix, 005191, quiets signalling NaNs
+        # the oracle's copies as integers), adjacency_owner.plane_divergent 002188's runs on Task
+        # 2c's 13 frozen meshes; both are registered up to the oracle digest and held by
+        # kDivergentCeilings. Every line below is copied from the oracle side of a run
+        # (evidence/convex-mesh-gap.md, Task 2e): the name lines' agreement fields are the gate's
+        # assertion, and the coverage lines count oracle-side values and fixed inputs only. The
+        # pairs above keep printing where they were; the pair below carries the totals.
+        'thirdparty input name=pose_pair words=53760 input=b9b7f03f',
+        'thirdparty name=pose_pair rva=0x00031db0 owner=phys_fn_001653 source=IceMeshTools.cpp words=77668 oracle=56567247 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=pose_pair.inverse_divergent rva=0x00031db0 owner=phys_fn_001653 source=IceMeshTools.cpp words=23760 oracle=7a83cbc5',
+        'thirdparty coverage name=pose_pair calls=3072 exact=2352 inverse_divergent=720 x87_0f7f=1536 identity_guard_before=0 identity_at_block=1 identity_kept=1 reports=0',
+        'thirdparty input name=unique_axis words=3783 input=95bee3a5',
+        'thirdparty name=unique_axis rva=0x000324f0 owner=phys_fn_001661 source=IceMeshTools.cpp,IceMeshBuilder2.cpp words=13830 oracle=fb7a8219 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty coverage name=unique_axis cases=320 calls=2202 added=1652 rejected=550 negated=1070 input_snan=320 reports=0',
+        'thirdparty input name=edge_dedupe words=21708 input=3d4ad949',
+        'thirdparty name=edge_dedupe rva=0x00031480 owner=phys_fn_001641 source=IceMeshTools.cpp words=30416 oracle=2185bb03 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty coverage name=edge_dedupe cases=216 closed=127 open=89 skipped=4 loop_words=2792 reports=0',
+        'thirdparty input name=mesh_normals words=158976 input=c6769b78',
+        'thirdparty name=mesh_normals rva=0x000318d0 owner=phys_fn_001651 source=IceMeshTools.cpp,SmoothNormals.cpp,ConvexHull.cpp words=36260 oracle=8ac07cc2 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty coverage name=mesh_normals meshes=65 cases=381 true=380 false=1 weighted=190 x87_0f7f=190 vertex_snan=1089 hull_cases=139 hull_true=130 hull_false=9 reports=0',
+        'thirdparty input name=adjacency_owner words=9948 input=4ddc1540',
+        'thirdparty name=adjacency_owner rva=0x000543d0 owner=phys_fn_002186 source=TriangleMeshTopology.cpp,IceAdjacencies.cpp,EdgeList.cpp words=28728 oracle=b9df247a mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=adjacency_owner.plane_divergent rva=0x000543d0 owner=phys_fn_002186 source=TriangleMeshTopology.cpp,IceAdjacencies.cpp,EdgeList.cpp words=6300 oracle=50e4dd46',
+        'thirdparty coverage name=adjacency_owner meshes=65 adjacencies=66 adjacencies_built=36 edge_lists=66 edge_lists_built=65 frozen_split_runs=13 reports=30 line72=1 line321=29',
+        'thirdparty coverage driven=85 divergent=29 words=2174863 layout_checks=47',
+        'thirdparty oracle digest=d9a2accc'
     )
 }
 
@@ -2636,9 +2671,9 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 0
     '3' = 243  # 18 for NxPhysicsKernelFuzzTests, 225 for NxPhysicsCollisionTests (85 + 23 from
                # convex-mesh gap Task 2a + 14 from its Task 2b + 59 + 44 from its harness hardening)
-    '4' = 183  # 34 for NxPhysicsAssetTests, 149 for NxPhysicsThirdPartyTests (67 + 29 from
+    '4' = 202  # 34 for NxPhysicsAssetTests, 168 for NxPhysicsThirdPartyTests (67 + 29 from
                # vendored-correspondence Task 4 + 5 from its Task 5a + 26 from qhull-gap Task 1
-               # + 14 from convex-mesh gap Task 2c + 8 from its Task 2d)
+               # + 14 from convex-mesh gap Task 2c + 8 from its Task 2d + 19 from its Task 2e)
     '5' = 871  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines
                # (RED on purpose: vtables family open)
     '6' = 403  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
