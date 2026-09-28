@@ -865,6 +865,23 @@ $NxRequiredCoverageLines = [ordered] @{
         'cmass rot_near_z_set_global_orientation frame off=5c words=be4c8b64.3e7fae3d.3f661ccf.3e99688b',
         'cmass rot_near_z_set_global_offset_orientation frame off=134 words=3f6634e0.3eaf653b.3e8b48dd.3ed8aa3c.bf56bafb.beaf653b.3de2fb76.3ed8aa3b.bf6634da',
         'cmass rot_near_z_set_global_offset_pose frame off=158 words=3fffffff.bf000000.3f7ffff8',
+        # NpActor.cpp completion final review I1: signalling-NaN payloads through the rows
+        # whose listings copy the words as integers (000210, 000214, 000204, 000208, 000096,
+        # 000098, 000100, 000130, 000192) and through 000124/000126's products; the words
+        # come out as they went in (oracle side of the staged pair).
+        'cmass snan_local_pose record=7f800001.0.0.0.3f800000.ffa00000.0.7fa00003.3f800000.ff800004.7f900005.40000000',
+        'cmass snan_local_pose pose=7f800001.0.0.0.3f800000.ffa00000.0.7fa00003.3f800000.ff800004.7f900005.40000000',
+        'cmass snan_local_pose position=ff800004.7f900005.40000000',
+        'cmass snan_local_pose orientation=7f800001.0.0.0.3f800000.ffa00000.0.7fa00003.3f800000',
+        'cmass snan_local_orientation record=7f800001.0.0.0.3f800000.ffa00000.0.7fa00003.3f800000',
+        'cmass snan_local_orientation orientation=7f800001.0.0.0.3f800000.ffa00000.0.7fa00003.3f800000',
+        'cmass snan_global_pose record=7f800001.0.0.0.3f800000.ffa00000.0.7fa00003.3f800000.ff800004.7f900005.40000000',
+        'cmass snan_global_orientation record=7f800001.0.0.0.3f800000.ffa00000.0.7fa00003.3f800000',
+        'cmass snan_move_pose target=7fc00001.ffe00000.7fe00003.3.7fe00003.7fe00003.7fe00003.7fe00003',
+        'cmass snan_move_orientation target=7fc00001.ffe00000.7fe00003.3.7fe00003.7fe00003.7fe00003.7fe00003',
+        'cmass snan_pose_val static=7f800001.0.0.0.3f800000.ffa00000.0.7fa00003.3f800000.ff800004.7f900005.40000000',
+        'cmass snan_pose_val dynamic_t=ff800004.7f900005.40000000',
+        'cmass snan_wake counter=7f900005.7f900005',
         'cmass static pose_reference=3f800000.0.0.0.3f800000.0.0.0.3f800000.0.0.0'
     )
     'NxPhysicsActorForceTests' = @(
@@ -3399,9 +3416,9 @@ $NxPhaseCoverageFloor = [ordered] @{
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 159  # 34 for NxPhysicsAssetTests, 125 for NxPhysicsThirdPartyTests (67 + 29 from
                # vendored-correspondence Task 4 + 5 from its Task 5a + 24 from qhull-gap Task 1)
-    '5' = 1849 # 126 object-layout, 1 shape-vtable and 1722 public actor/pruner/box/scene lines
+    '5' = 1862 # 126 object-layout, 1 shape-vtable and 1735 public actor/pruner/box/scene lines
                # (744 + 251 from NpActor.cpp completion Task 2, 136 from its Task 4, 142 from its
-               # Task 5 and its review; RED on purpose:
+               # Task 5 and its review, 13 from its final review I1; RED on purpose:
                # vtables family open)
     '6' = 403  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
                # + 12 joint-allocator + 146 joint-slot

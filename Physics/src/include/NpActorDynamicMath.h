@@ -123,7 +123,7 @@ static inline void nxNpActorBodyQuaternionFromMatrix(const float* m, float* q)
 		axis = 2;
 	if(axis == 0)
 		{
-		const double s = x87FsqrtSum3(m[0], -static_cast<double>(yzSpill), 1.0);
+		const double s = x87FsqrtDiffSum(m[0], yzSpill, 1.0);
 		q[0] = static_cast<float>(0.5 * s);
 		const double r = 0.5 / s;
 		q[1] = static_cast<float>((static_cast<double>(m[3]) + m[1]) * r);
@@ -203,7 +203,7 @@ static inline void nxNpActorSetterQuaternionFromMatrix(const float* m, float* q)
 	else
 		{
 		// 0x8c98: as the y arm, over m00 - float(m22 + m11).
-		const double s = x87FsqrtSum3(m[0], -static_cast<double>(zySpill), 1.0);
+		const double s = x87FsqrtDiffSum(m[0], zySpill, 1.0);
 		q[0] = static_cast<float>(0.5 * s);
 		const double r = static_cast<float>(0.5 / s);
 		q[1] = static_cast<float>((static_cast<double>(m[3]) + m[1]) * r);

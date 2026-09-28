@@ -71,6 +71,128 @@ static void transformState(const char* tag, NxActor* actor)
 		word(record, 0x100), word(record, 0x104), word(record, 0x108),
 		word(record, 0x158), word(record, 0x15c), word(record, 0x160));
 }
+// Final review I1: signalling-NaN payloads through the setters and getters
+// whose listings copy the words as integers (rep movsd / mov). Every value is
+// built, passed and printed as raw words, never as a float in the harness.
+static unsigned char* snanRecordOf(NxActor* actor)
+{
+	unsigned char* body = *reinterpret_cast<unsigned char**>(
+		reinterpret_cast<unsigned char*>(actor) + 0x14);
+	return *reinterpret_cast<unsigned char**>(body + 8);
+}
+static void snanWords(const char* tag, const char* field, const void* bytes, unsigned count)
+{
+	printf("cmass %s %s=", tag, field);
+	for(unsigned i = 0; i < count; ++i)
+		printf(i ? ".%x" : "%x", word(static_cast<const unsigned char*>(bytes), i * 4));
+	printf("\n");
+}
+static NxActor* snanActor(NxScene* scene, bool dynamic)
+{
+	NxBoxShapeDesc box; box.dimensions = NxVec3(1.0f, 2.0f, 3.0f);
+	NxBodyDesc bodyDesc; bodyDesc.mass = 2.0f;
+	bodyDesc.massSpaceInertia = NxVec3(1.0f, 2.0f, 3.0f);
+	NxActorDesc desc; desc.shapes.pushBack(&box);
+	if(dynamic) desc.body = &bodyDesc;
+	return scene->createActor(desc);
+}
+// Rows: identity words with signalling NaNs of both signs at M[0][0], M[1][2]
+// and M[2][1]; the translation carries two more.
+static const unsigned kSnanPose[12] = {
+	0x7f800001u, 0u, 0u,
+	0u, 0x3f800000u, 0xffa00000u,
+	0u, 0x7fa00003u, 0x3f800000u,
+	0xff800004u, 0x7f900005u, 0x40000000u };
+static void snanCases(NxScene* scene)
+{
+	NxMat34 snanPose; memcpy(&snanPose, kSnanPose, sizeof(snanPose));
+	NxMat33 snanOrientation; memcpy(&snanOrientation, kSnanPose, sizeof(snanOrientation));
+	// 000210 setCMassOffsetLocalPose (0x9e50 rep movsd, t by mov), then the
+	// local getters 000096/000098/000100 (rep movsd / mov).
+	if(NxActor* actor = snanActor(scene, true))
+	{
+		actor->setCMassOffsetLocalPose(snanPose);
+		snanWords("snan_local_pose", "record", snanRecordOf(actor) + 0xdc, 12);
+		const NxMat34 got = actor->getCMassLocalPoseVal();
+		snanWords("snan_local_pose", "pose", &got, 12);
+		const NxVec3 position = actor->getCMassLocalPositionVal();
+		snanWords("snan_local_pose", "position", &position, 3);
+		const NxMat33 orientation = actor->getCMassLocalOrientationVal();
+		snanWords("snan_local_pose", "orientation", &orientation, 9);
+		scene->releaseActor(*actor);
+	}
+	// 000214 setCMassOffsetLocalOrientation (0xa419 rep movsd).
+	if(NxActor* actor = snanActor(scene, true))
+	{
+		actor->setCMassOffsetLocalOrientation(snanOrientation);
+		snanWords("snan_local_orientation", "record", snanRecordOf(actor) + 0xdc, 9);
+		const NxMat33 orientation = actor->getCMassLocalOrientationVal();
+		snanWords("snan_local_orientation", "orientation", &orientation, 9);
+		scene->releaseActor(*actor);
+	}
+	// 000204 setCMassGlobalPose (t by mov, M by 0x975b rep movsd) and 000208
+	// setCMassGlobalOrientation (0x9b4c rep movsd): the stored world frame.
+	if(NxActor* actor = snanActor(scene, true))
+	{
+		actor->setCMassGlobalPose(snanPose);
+		snanWords("snan_global_pose", "record", snanRecordOf(actor) + 0x134, 12);
+		scene->releaseActor(*actor);
+	}
+	if(NxActor* actor = snanActor(scene, true))
+	{
+		actor->setCMassGlobalOrientation(snanOrientation);
+		snanWords("snan_global_orientation", "record", snanRecordOf(actor) + 0x134, 9);
+		scene->releaseActor(*actor);
+	}
+	// 000124 moveGlobalPose and 000126 moveGlobalOrientation (0x3ffa rep
+	// movsd): the kinematic target the products of the NaN rows give.
+	if(NxActor* actor = snanActor(scene, true))
+	{
+		actor->raiseBodyFlag(NX_BF_KINEMATIC);
+		unsigned char* record = snanRecordOf(actor);
+		actor->moveGlobalPose(snanPose);
+		snanWords("snan_move_pose", "target",
+			*reinterpret_cast<unsigned char**>(record + 0x118), 8);
+		actor->moveGlobalOrientation(snanOrientation);
+		snanWords("snan_move_orientation", "target",
+			*reinterpret_cast<unsigned char**>(record + 0x118), 8);
+		scene->releaseActor(*actor);
+	}
+	// 000130 getGlobalPoseVal: the static arm copies body+0x20 (0x4697 rep
+	// movsd and three movs), the dynamic arm moves +0x50 with mov.
+	if(NxActor* actor = snanActor(scene, false))
+	{
+		unsigned char* body = *reinterpret_cast<unsigned char**>(
+			reinterpret_cast<unsigned char*>(actor) + 0x14);
+		unsigned saved[12];
+		memcpy(saved, body + 0x20, sizeof(saved));
+		memcpy(body + 0x20, kSnanPose, sizeof(kSnanPose));
+		const NxMat34 got = actor->getGlobalPoseVal();
+		snanWords("snan_pose_val", "static", &got, 12);
+		memcpy(body + 0x20, saved, sizeof(saved));
+		scene->releaseActor(*actor);
+	}
+	if(NxActor* actor = snanActor(scene, true))
+	{
+		unsigned char* record = snanRecordOf(actor);
+		unsigned saved[3];
+		memcpy(saved, record + 0x50, sizeof(saved));
+		memcpy(record + 0x50, kSnanPose + 9, sizeof(saved));
+		const NxMat34 got = actor->getGlobalPoseVal();
+		snanWords("snan_pose_val", "dynamic_t", &got.t, 3);
+		memcpy(record + 0x50, saved, sizeof(saved));
+		scene->releaseActor(*actor);
+	}
+	// 000192 wakeUp (0x8869-0x8886: the argument stored with mov).
+	if(NxActor* actor = snanActor(scene, true))
+	{
+		NxReal counter; memcpy(&counter, kSnanPose + 10, sizeof(counter));
+		actor->wakeUp(counter);
+		unsigned char* record = snanRecordOf(actor);
+		printf("cmass snan_wake counter=%x.%x\n", word(record, 0x84), word(record, 0x4c));
+		scene->releaseActor(*actor);
+	}
+}
 // Joint-open-items Task 4: rotated bodies. A rotation matrix from a unit
 // quaternion (x, y, z, w), formed in the harness and printed as input.
 static NxMat33 quatMatrix(float x, float y, float z, float w)
@@ -391,6 +513,7 @@ int wmain(int argc, wchar_t** argv)
 			scene->releaseActor(*snanActor);
 		}
 	}
+	snanCases(scene);
 	sdk->releaseScene(*scene); sdk->release();
 	return nxReportPairIdentity(pairDirectory);
 }

@@ -63,6 +63,7 @@
 //   x87FsqrtSum2(a, b)              fsqrt(a + b)
 //   x87FsqrtSum3(a, b, c)           fsqrt((a + b) + c)
 //   x87FsqrtSum4(a, b, c, d)        fsqrt(((a + b) + c) + d)
+//   x87FsqrtDiffSum(a, b, c)        fsqrt((a - b) + c)
 //   x87FsqrtDiag(a, b, c)           fsqrt((a - (b + c)) + 1)
 //   x87FsqrtMulSub(a, b, c)         fsqrt(a b - c)
 //   x87FsqrtDot2(a0,b0, a1,b1)                 fsqrt(a0 b0 + a1 b1)
@@ -110,6 +111,21 @@ static __declspec(naked) double __cdecl x87FsqrtSum3(double /*a*/, double /*b*/,
 		{
 		fld		qword ptr [esp + 4]
 		fadd	qword ptr [esp + 12]
+		fadd	qword ptr [esp + 20]
+		fsqrt
+		ret
+		}
+	}
+
+// fsqrt((a - b) + c): `fld a; fsub b; fadd c`. Passing -b to x87FsqrtSum3
+// rounds identically, but fchs flips a NaN's sign, and when b is the NaN the
+// x87 keeps, the root then differs in its sign bit (NpActor final review I1).
+static __declspec(naked) double __cdecl x87FsqrtDiffSum(double /*a*/, double /*b*/, double /*c*/)
+	{
+	__asm
+		{
+		fld		qword ptr [esp + 4]
+		fsub	qword ptr [esp + 12]
 		fadd	qword ptr [esp + 20]
 		fsqrt
 		ret
@@ -223,6 +239,11 @@ static NX_INLINE double x87FsqrtSum2(double a, double b)
 static NX_INLINE double x87FsqrtSum3(double a, double b, double c)
 	{
 	return sqrt((a + b) + c);
+	}
+
+static NX_INLINE double x87FsqrtDiffSum(double a, double b, double c)
+	{
+	return sqrt((a - b) + c);
 	}
 
 static NX_INLINE double x87FsqrtSum4(double a, double b, double c, double d)
