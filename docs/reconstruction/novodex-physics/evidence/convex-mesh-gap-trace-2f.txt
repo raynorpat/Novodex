@@ -1,0 +1,112 @@
+convex-mesh gap Task 2f: cdb breakpoint trace of P-Hull and the support maps
+============================================================================
+
+A trimmed excerpt of the raw cdb log, in the method of evidence/convex-mesh-gap-trace-2e.txt.
+Banners, ModLoad lines and the program's own output are removed except the Task 2f families' lines
+and the harness's closing line (marked `  | `); the echoed breakpoint commands and the HIT lines
+are kept in order and unedited. It is the evidence behind the dynamic_proof this task records in
+inventory.json for the rows below (see evidence/convex-mesh-gap.md, Task 2f).
+
+Debugger:  Microsoft Windows Debugger 10.0.10586.567 (X86)
+Command:   cdb -cf <script> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsThirdPartyTests.exe
+           D:\FlamingEnt__\Unreal_3\Binaries 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+           (the script is the bp lines below, then `g` and `q`)
+Recorded:  2026-09-28, on the build of commit 0701abc (the Task 2f rows, wiring and families).
+Binary:    build\Release\NxPhysicsThirdPartyTests.exe
+           sha256=af76122099e401308885fba06a0a609db81bddde987dff95f7b339c34b30bccb
+Oracle:    D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll
+           sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c (the pin; the
+           harness re-hashes it and refuses to run otherwise)
+Offsets:   module-relative, from build\Release\NxPhysicsThirdPartyTests.map of that build (the exe
+           has no PDB); each breakpoint is written against the entry point: `@$exentry - 0x901f0`
+           is the image base (entry point RVA 0x901f0). One one-shot breakpoint (`bp /1`) per
+           candidate function carrying one of this task's stable IDs: the rows written (the
+           continuations 001498, 001500, 001504..001512 and 001560 are bodies of 001496, 001502 and
+           001558 and have no address of their own), the helpers 000001, 000925, 001391, 001439 and
+           001657, and the product forms of the support-map rows the census had closed (001552,
+           001554, 001563, 001565, 001571, 001575, 001577, 001583, 001585, 001587, 001589).
+
+Result: 32 of the 33 breakpoints were hit; the harness then closed with
+`thirdparty candidate mismatches=0 layout_failures=0`. The one not hit is 001563
+(nxSupportMapBaseDelete), the base table's scalar deleting destructor: the families destroy
+every map through its own table (001585, 001587, 001589), and nothing destroys an object while it
+holds the base table. Each breakpoint fires on the candidate pass of its family, which follows the
+oracle pass.
+
+0:000> bp /1 @$exentry-0x901f0+0x2d760 ".echo HIT 000001 nxIceVectorConstruct +0x2d760; gc"
+0:000> bp /1 @$exentry-0x901f0+0x2d230 ".echo HIT 000925 nxHullPolygonConstruct +0x2d230; gc"
+0:000> bp /1 @$exentry-0x901f0+0x2220 ".echo HIT 001391 nxIceIdentityConstruct +0x2220; gc"
+0:000> bp /1 @$exentry-0x901f0+0x2c350 ".echo HIT 001439 nxEdgeDescConstruct +0x2c350; gc"
+0:000> bp /1 @$exentry-0x901f0+0x2d600 ".echo HIT 001441 nxHullTriangleArea +0x2d600; gc"
+0:000> bp /1 @$exentry-0x901f0+0x2d6c0 ".echo HIT 001445 nxHullTriangleCenter +0x2d6c0; gc"
+0:000> bp /1 @$exentry-0x901f0+0x2d190 ".echo HIT 001449 nxHullGatherFaces +0x2d190; gc"
+0:000> bp /1 @$exentry-0x901f0+0x2c360 ".echo HIT 001459 nxHullComputeCentroid +0x2c360; gc"
+0:000> bp /1 @$exentry-0x901f0+0x2d240 ".echo HIT 001463 nxHullPolygonPlane +0x2d240; gc"
+0:000> bp /1 @$exentry-0x901f0+0x2ce90 ".echo HIT 001465 nxHullExtractPolygons +0x2ce90; gc"
+0:000> bp /1 @$exentry-0x901f0+0x2cbf0 ".echo HIT 001472 nxHullComputePolygons +0x2cbf0; gc"
+0:000> bp /1 @$exentry-0x901f0+0x2d3a0 ".echo HIT 001496 nxHullSupportPolygon +0x2d3a0; gc"
+0:000> bp /1 @$exentry-0x901f0+0x2c460 ".echo HIT 001502 nxHullComputeEdges +0x2c460; gc"
+0:000> bp /1 @$exentry-0x901f0+0x29720 ".echo HIT 001657 nxIceReverseArray +0x29720; gc"
+0:000> bp /1 @$exentry-0x901f0+0x2e060 ".echo HIT 001550 nxSupportMapCubeFace +0x2e060; gc"
+0:000> bp /1 @$exentry-0x901f0+0x2e030 ".echo HIT 001552 nxSupportMapBaseConstruct +0x2e030; gc"
+0:000> bp /1 @$exentry-0x901f0+0x2e050 ".echo HIT 001554 nxSupportMapBaseTable +0x2e050; gc"
+0:000> bp /1 @$exentry-0x901f0+0x2e120 ".echo HIT 001556 nxSupportMapLookup +0x2e120; gc"
+0:000> bp /1 @$exentry-0x901f0+0x2d8d0 ".echo HIT 001558 nxSupportMapInit +0x2d8d0; gc"
+0:000> bp /1 @$exentry-0x901f0+0x2db30 ".echo HIT 001563 nxSupportMapBaseDelete +0x2db30; gc"
+0:000> bp /1 @$exentry-0x901f0+0x2e0f0 ".echo HIT 001565 nxSupportMapHullConstruct +0x2e0f0; gc"
+0:000> bp /1 @$exentry-0x901f0+0x2db60 ".echo HIT 001567 nxSupportMapHullAllocate +0x2db60; gc"
+0:000> bp /1 @$exentry-0x901f0+0x2dba0 ".echo HIT 001569 nxSupportMapHullCompute +0x2dba0; gc"
+0:000> bp /1 @$exentry-0x901f0+0x2e1f0 ".echo HIT 001571 nxSupportMapPlaneConstruct +0x2e1f0; gc"
+0:000> bp /1 @$exentry-0x901f0+0x2dbd0 ".echo HIT 001573 nxSupportMapPlaneCompute +0x2dbd0; gc"
+0:000> bp /1 @$exentry-0x901f0+0x2e220 ".echo HIT 001575 nxSupportMapVertexConstruct +0x2e220; gc"
+0:000> bp /1 @$exentry-0x901f0+0x2e250 ".echo HIT 001577 nxSupportMapVertexRelease +0x2e250; gc"
+0:000> bp /1 @$exentry-0x901f0+0x2dd20 ".echo HIT 001579 nxSupportMapVertexAllocate +0x2dd20; gc"
+0:000> bp /1 @$exentry-0x901f0+0x2dd70 ".echo HIT 001581 nxSupportMapVertexCompute +0x2dd70; gc"
+0:000> bp /1 @$exentry-0x901f0+0x2df50 ".echo HIT 001583 nxSupportMapNoop +0x2df50; gc"
+0:000> bp /1 @$exentry-0x901f0+0x2df60 ".echo HIT 001585 nxSupportMapHullDelete +0x2df60; gc"
+0:000> bp /1 @$exentry-0x901f0+0x2dfb0 ".echo HIT 001587 nxSupportMapPlaneDelete +0x2dfb0; gc"
+0:000> bp /1 @$exentry-0x901f0+0x2e000 ".echo HIT 001589 nxSupportMapVertexDelete +0x2e000; gc"
+HIT 001391 nxIceIdentityConstruct +0x2220
+HIT 001441 nxHullTriangleArea +0x2d600
+HIT 001445 nxHullTriangleCenter +0x2d6c0
+HIT 001459 nxHullComputeCentroid +0x2c360
+HIT 001496 nxHullSupportPolygon +0x2d3a0
+HIT 001449 nxHullGatherFaces +0x2d190
+HIT 001657 nxIceReverseArray +0x29720
+HIT 000001 nxIceVectorConstruct +0x2d760
+HIT 000925 nxHullPolygonConstruct +0x2d230
+HIT 001439 nxEdgeDescConstruct +0x2c350
+  | thirdparty input name=hull_leaf words=181380 input=9279a52e
+  | thirdparty name=hull_leaf rva=0x0002a620 owner=phys_fn_001441 source=ConvexHull.cpp,IceMeshTools.cpp words=21813 oracle=106d7907 mismatches=0 worst_ulp=0 verdict=exact
+  | thirdparty coverage name=hull_leaf area=900 center=900 centroid=400 centroid_true=379 support=1500 support_posed=752 gather=300 gather_faces=1639 reverse=24 vector=18 input_snan=7706 x87_0f7f=450 reports=0
+HIT 001472 nxHullComputePolygons +0x2cbf0
+HIT 001465 nxHullExtractPolygons +0x2ce90
+HIT 001463 nxHullPolygonPlane +0x2d240
+HIT 001502 nxHullComputeEdges +0x2c460
+  | thirdparty input name=convex_hull words=70348 input=2ebe9920
+  | thirdparty name=convex_hull rva=0x0002b6f0 owner=phys_fn_001472 source=ConvexHull.cpp,IceAdjacencies.cpp,EdgeList.cpp,IceMeshTools.cpp words=20691 oracle=64a1d9bd mismatches=0 worst_ulp=0 verdict=exact
+  | thirdparty name=convex_hull.plane_divergent rva=0x0002b6f0 owner=phys_fn_001472 source=ConvexHull.cpp,IceAdjacencies.cpp,EdgeList.cpp,IceMeshTools.cpp words=56808 oracle=87dd3578 mismatches=1595 discrete=52 float_ulp=inf double_ulp=0 beyond=512 inf_words=118 degenerate=0 finite_ulp=1074731964 beyond_abs=inf first_diff=521 length_delta=0 ceiling=1595/52 verdict=divergent
+  | thirdparty coverage name=convex_hull meshes=90 split_meshes=68 polygons_true=53 polygons_false=34 edges_alone=3 polygons=469 edges_true=56 edges_false=0 edges=1495 rebuilt=22 support=1344 plane=700 plane_split=175 reports=24 line318=9 line321=15
+HIT 001550 nxSupportMapCubeFace +0x2e060
+HIT 001556 nxSupportMapLookup +0x2e120
+HIT 001565 nxSupportMapHullConstruct +0x2e0f0
+HIT 001552 nxSupportMapBaseConstruct +0x2e030
+HIT 001558 nxSupportMapInit +0x2d8d0
+HIT 001567 nxSupportMapHullAllocate +0x2db60
+HIT 001569 nxSupportMapHullCompute +0x2dba0
+HIT 001583 nxSupportMapNoop +0x2df50
+HIT 001585 nxSupportMapHullDelete +0x2df60
+HIT 001554 nxSupportMapBaseTable +0x2e050
+HIT 001571 nxSupportMapPlaneConstruct +0x2e1f0
+HIT 001573 nxSupportMapPlaneCompute +0x2dbd0
+HIT 001587 nxSupportMapPlaneDelete +0x2dfb0
+HIT 001575 nxSupportMapVertexConstruct +0x2e220
+HIT 001579 nxSupportMapVertexAllocate +0x2dd20
+HIT 001581 nxSupportMapVertexCompute +0x2dd70
+HIT 001589 nxSupportMapVertexDelete +0x2e000
+HIT 001577 nxSupportMapVertexRelease +0x2e250
+  | thirdparty input name=support_maps words=26184 input=caa5f9eb
+  | thirdparty name=support_maps rva=0x0002e2f0 owner=phys_fn_001558 source=IceSupportMaps.cpp,ConvexHull.cpp words=26162 oracle=79d50caf mismatches=0 worst_ulp=0 verdict=exact
+  | thirdparty coverage name=support_maps faces=2400 lookups=2400 maps=138 init_true=135 init_false=3 samples=11844 map_lookups=1620 freed=66 input_snan=625 reports=4
+  | thirdparty candidate mismatches=0 layout_failures=0
+0:000> q

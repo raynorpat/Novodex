@@ -84,7 +84,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/0",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "convex-mesh gap Task 2f: written as nxIceVectorConstruct in Physics/src/ConvexHull.cpp (naked, listing-exact; evidence/convex-mesh-gap-2f-listing-compare.py), because the naked 001472 and 001502 call it where the listing does; hit in evidence/convex-mesh-gap-trace-2f.txt and compared in hull_leaf (each element constructor, counts 0..4 and -1). Not promoted: it is MSVC's compiler-generated `vector constructor iterator`, outside the task's rows (the contract names it not a prerequisite); state unchanged"
     },
     {
       "id": "phys_fn_000002",
@@ -16865,7 +16865,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2959",
       "static_proof": "zeroes the three dwords at this+0,4,8 and returns this; ret 0",
       "dynamic_proof": "confirmed in shapegetters2 drive (3z44)",
-      "notes": ""
+      "notes": "convex-mesh gap Task 2f: the product form is nxHullPolygonConstruct in Physics/src/ConvexHull.cpp (naked, listing-exact; the constructor 001472's `new[]` runs through 000001) (stable-ID line), hit in evidence/convex-mesh-gap-trace-2f.txt; the hull_leaf family compares its effects with the oracle's. The existing model and its proof stand; state unchanged"
     },
     {
       "id": "phys_fn_000926",
@@ -25329,7 +25329,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3550",
       "static_proof": "mov eax,ecx; ret -- returns this, ignores every argument; fills BOX vtable .rdata 0x10106ab8 slots 14, 15 AND 16",
       "dynamic_proof": "driven by the NxPhysicsObjectLayoutTests boxrow family: all three slots return the constructed object address on both sides (pointer equality; never folded)",
-      "notes": "P5 Task 3: one row serving three slots.",
+      "notes": "P5 Task 3: one row serving three slots.; convex-mesh gap Task 2f: the product form is nxIceIdentityConstruct in Physics/src/ConvexHull.cpp (naked, listing-exact; the constructor 001502's edge `new[]` runs) (stable-ID line), hit in evidence/convex-mesh-gap-trace-2f.txt; the hull_leaf family compares its effects with the oracle's. The existing model and its proof stand; state unchanged",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
@@ -25621,7 +25621,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3609",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "Null-classifier and prepared-plane arms are differentially checked in MeshShape::nxMeshSweepPrepared; lazy plane-table builder 0x2b6f0 is not reconstructed."
+      "notes": "Null-classifier and prepared-plane arms are differentially checked in MeshShape::nxMeshSweepPrepared (the ObjectModel.cpp model; NxPhysicsShapeVtableTests). Since convex-mesh gap Task 2f the model takes the sample from the product lookup 001556 and builds the hull's polygons when absent through the product 001472 (Physics/src/IceSupportMaps.cpp, ConvexHull.cpp), as the listing calls them (0x000296a7, 0x000296c8); the row itself is not reconstructed."
     },
     {
       "id": "phys_fn_001408",
@@ -26197,7 +26197,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3738",
       "static_proof": "mov eax,ecx; xor ecx,ecx; mov word[eax],cx; mov word[eax+2],cx; mov dword[eax+4],ecx; ret",
       "dynamic_proof": "confirmed via zeroinit drive (3z51): failures=0",
-      "notes": ""
+      "notes": "convex-mesh gap Task 2f: the product form is nxEdgeDescConstruct in Physics/src/ConvexHull.cpp (naked, listing-exact; the constructor 001502's EdgeDesc array runs) (stable-ID line), hit in evidence/convex-mesh-gap-trace-2f.txt; the hull_leaf family compares its effects with the oracle's. The existing model and its proof stand; state unchanged"
     },
     {
       "id": "phys_fn_001440",
@@ -26227,13 +26227,14 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ConvexHull.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/577",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3739",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (prerequisite P-Hull and sub-unit B); listing 0x0002a620..0x0002a6d1: thiscall on a 16-bit triangle, `ret 4`; 0.0f without vertices; else |(p0-p2) x (p0-p1)| with the first edge on the stack, the second's x and y and the cross product's x and y stored narrow, the root of ((z^2 + y^2) + x^2) times 0.5f, returned in st(0); the row is the listing's instructions, naked, and its built code in NxPhysics.dll equals the listing instruction for instruction (branch targets by index, calls by the candidate row of the same stable ID, absolute operands by the bytes they read in each image; evidence/convex-mesh-gap-2f-listing-compare.py)",
+      "dynamic_proof": "convex-mesh gap Task 2f: nxHullTriangleArea hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2f.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 af76122099e40130...)); oracle differential hull_leaf (001441 and 001445 over drawn triangles of drawn vertex words and null vertices, 001459 over hull images of drawn faces and vertex words, 001496 over hand-built polygon arrays with and without a drawn pose, 001449 over drawn link words, 001657, 000001 with each element constructor; 7,706 signalling-NaN input words; both x87 control words) against the pinned oracle, mismatches=0 on 21,813 words; see evidence/convex-mesh-gap.md, Task 2f",
+      "notes": "",
+      "implementation": "Physics/src/ConvexHull.cpp"
     },
     {
       "id": "phys_fn_001442",
@@ -26299,13 +26300,14 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ConvexHull.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/579",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3743",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (prerequisite P-Hull and sub-unit B); listing 0x0002a790..0x0002a821: thiscall, `ret 8`; nothing without vertices; ((p1 + p0) + p2) * (1/3) (0x3eaaaaab) per component, the z and x sums stored before the scaling, each result stored narrow and copied as an integer; the row is the listing's instructions, naked, and its built code in NxPhysics.dll equals the listing instruction for instruction (branch targets by index, calls by the candidate row of the same stable ID, absolute operands by the bytes they read in each image; evidence/convex-mesh-gap-2f-listing-compare.py)",
+      "dynamic_proof": "convex-mesh gap Task 2f: nxHullTriangleCenter hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2f.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 af76122099e40130...)); oracle differential hull_leaf (001441 and 001445 over drawn triangles of drawn vertex words and null vertices, 001459 over hull images of drawn faces and vertex words, 001496 over hand-built polygon arrays with and without a drawn pose, 001449 over drawn link words, 001657, 000001 with each element constructor; 7,706 signalling-NaN input words; both x87 control words) against the pinned oracle, mismatches=0 on 21,813 words; see evidence/convex-mesh-gap.md, Task 2f",
+      "notes": "",
+      "implementation": "Physics/src/ConvexHull.cpp"
     },
     {
       "id": "phys_fn_001446",
@@ -26371,13 +26373,14 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ConvexHull.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/581",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3747",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (prerequisite P-Hull and sub-unit B); listing 0x0002a900..0x0002a99b: cdecl, recursive; nothing for a marked face; else mark, Container::Add (Resize(1) when full), recurse across link words 0 and 1 whose bit 29 is clear, and follow word 2 in the same frame until it is active or leads to a marked face; C++ (an integer row)",
+      "dynamic_proof": "convex-mesh gap Task 2f: nxHullGatherFaces hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2f.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 af76122099e40130...)); oracle differential hull_leaf (001441 and 001445 over drawn triangles of drawn vertex words and null vertices, 001459 over hull images of drawn faces and vertex words, 001496 over hand-built polygon arrays with and without a drawn pose, 001449 over drawn link words, 001657, 000001 with each element constructor; 7,706 signalling-NaN input words; both x87 control words) against the pinned oracle, mismatches=0 on 21,813 words; see evidence/convex-mesh-gap.md, Task 2f",
+      "notes": "",
+      "implementation": "Physics/src/ConvexHull.cpp"
     },
     {
       "id": "phys_fn_001450",
@@ -26551,13 +26554,14 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ConvexHull.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/586",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3787",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (prerequisite P-Hull and sub-unit B); listing 0x0002ad60..0x0002ae4e: thiscall, `ret 4`; false without a vertex count or vertices; the output zeroed; per face 001441's area (stored narrow) weights 001445's centre, added per component, and summed; the output scaled by 1 / sum; the row is the listing's instructions, naked, and its built code in NxPhysics.dll equals the listing instruction for instruction (branch targets by index, calls by the candidate row of the same stable ID, absolute operands by the bytes they read in each image; evidence/convex-mesh-gap-2f-listing-compare.py)",
+      "dynamic_proof": "convex-mesh gap Task 2f: nxHullComputeCentroid hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2f.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 af76122099e40130...)); oracle differential hull_leaf (001441 and 001445 over drawn triangles of drawn vertex words and null vertices, 001459 over hull images of drawn faces and vertex words, 001496 over hand-built polygon arrays with and without a drawn pose, 001449 over drawn link words, 001657, 000001 with each element constructor; 7,706 signalling-NaN input words; both x87 control words) against the pinned oracle, mismatches=0 on 21,813 words; see evidence/convex-mesh-gap.md, Task 2f",
+      "notes": "",
+      "implementation": "Physics/src/ConvexHull.cpp"
     },
     {
       "id": "phys_fn_001460",
@@ -26624,13 +26628,14 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ConvexHull.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/588",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3795",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (prerequisite P-Hull and sub-unit B); listing 0x0002af30..0x0002b080: cdecl; false for no reference, no reference array or no vertices; the triangle (i, i + n/3, i + 2n/3) mod n copied to the stack for each i and its area taken (005179), the first strictly largest from -FLT_MAX kept (`test ah, 0x41`), Plane::Set (005155) through it; the row is the listing's instructions, naked, and its built code in NxPhysics.dll equals the listing instruction for instruction (branch targets by index, calls by the candidate row of the same stable ID, absolute operands by the bytes they read in each image; evidence/convex-mesh-gap-2f-listing-compare.py)",
+      "dynamic_proof": "convex-mesh gap Task 2f: nxHullPolygonPlane hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2f.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 af76122099e40130...)); oracle differential convex_hull (001472, 001502 and 001496 at their RVAs over hull images of polycube meshes -- boxes, separate cubes, a ring, an edge pair, open meshes -- whose lattice words keep the vendored Plane::Set / Triangle::Area exact, and 001463 directly on rectangle corners; every allocation, release and report compared) against the pinned oracle, mismatches=0 on 20,691 words (the concave, nudged and 0x0f7f meshes and 001463's drawn points split to convex_hull.plane_divergent by a rule on the fixed input: 1,595 words from 001463's vendored 005155 / 005179, 0 with the oracle's pair bound in); see evidence/convex-mesh-gap.md, Task 2f",
+      "notes": "",
+      "implementation": "Physics/src/ConvexHull.cpp"
     },
     {
       "id": "phys_fn_001464",
@@ -26660,13 +26665,14 @@
       "section": ".text",
       "phase": 3,
       "phase_provenance": "translation_unit",
-      "state": "discovered",
+      "state": "reconstructed",
       "source": "Physics/src/ConvexHull.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/589",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3801",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (prerequisite P-Hull and sub-unit B); listing 0x0002b090..0x0002b3a6: cdecl; an Adjacencies over the 16-bit faces (001536, 001546; epsilon 0.001f) with no boundary edge (001542) or false; a mark byte per face from the stack (__chkstk); per unmarked face the polygon's faces gathered (001449), the active edges as vertex pairs ((v0,v1), (v0,v2), (v1,v2)), chained by 001641; a broken outline reported through 002160 (line 318, no message) and its result returned; else count-1 and the references appended and the count incremented; 001544 on every exit; C++ (an integer row)",
+      "dynamic_proof": "convex-mesh gap Task 2f: nxHullExtractPolygons hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2f.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 af76122099e40130...)); oracle differential convex_hull (001472, 001502 and 001496 at their RVAs over hull images of polycube meshes -- boxes, separate cubes, a ring, an edge pair, open meshes -- whose lattice words keep the vendored Plane::Set / Triangle::Area exact, and 001463 directly on rectangle corners; every allocation, release and report compared) against the pinned oracle, mismatches=0 on 20,691 words (the concave, nudged and 0x0f7f meshes and 001463's drawn points split to convex_hull.plane_divergent by a rule on the fixed input: 1,595 words from 001463's vendored 005155 / 005179, 0 with the oracle's pair bound in); see evidence/convex-mesh-gap.md, Task 2f",
+      "notes": "",
+      "implementation": "Physics/src/ConvexHull.cpp"
     },
     {
       "id": "phys_fn_001466",
@@ -26786,13 +26792,14 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ConvexHull.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/593",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3852",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (prerequisite P-Hull and sub-unit B); listing 0x0002b6f0..0x0002b987: thiscall; the count cleared, +0x2c (slot 3) and +0x28 (a `new[]`) released; 001465 into a stacked Container or false; the polygons `new[]` (cookie, 000001 with 000925), the centre (001459, into a local), the references copied into one (entries - count)-dword array; per polygon its plane (001463) and, with the centre above it (`test ah, 0x41`), the references reversed (001657) and the four plane words negated; per polygon the least and greatest projection of every vertex from FLT_MAX / -FLT_MAX; the row is the listing's instructions, naked, and its built code in NxPhysics.dll equals the listing instruction for instruction (branch targets by index, calls by the candidate row of the same stable ID, absolute operands by the bytes they read in each image; evidence/convex-mesh-gap-2f-listing-compare.py)",
+      "dynamic_proof": "convex-mesh gap Task 2f: nxHullComputePolygons hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2f.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 af76122099e40130...)); oracle differential convex_hull (001472, 001502 and 001496 at their RVAs over hull images of polycube meshes -- boxes, separate cubes, a ring, an edge pair, open meshes -- whose lattice words keep the vendored Plane::Set / Triangle::Area exact, and 001463 directly on rectangle corners; every allocation, release and report compared) against the pinned oracle, mismatches=0 on 20,691 words (the concave, nudged and 0x0f7f meshes and 001463's drawn points split to convex_hull.plane_divergent by a rule on the fixed input: 1,595 words from 001463's vendored 005155 / 005179, 0 with the oracle's pair bound in); see evidence/convex-mesh-gap.md, Task 2f",
+      "notes": "",
+      "implementation": "Physics/src/ConvexHull.cpp"
     },
     {
       "id": "phys_fn_001473",
@@ -27218,13 +27225,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ConvexHull.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/597",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3984",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (prerequisite P-Hull and sub-unit B); listing 0x0002c8f0..0x0002ca17: thiscall (direction, pose), `ret 8`; with a pose the 3x3 copied and the direction rotated, each component stored narrow; the polygons built when the count is zero (001472); the first polygon's dot product seeds the best, continued in 001498/001500; the row is the listing's instructions, naked, and its built code in NxPhysics.dll equals the listing instruction for instruction (branch targets by index, calls by the candidate row of the same stable ID, absolute operands by the bytes they read in each image; evidence/convex-mesh-gap-2f-listing-compare.py)",
+      "dynamic_proof": "convex-mesh gap Task 2f: nxHullSupportPolygon hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2f.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 af76122099e40130...)); oracle differential hull_leaf (001441 and 001445 over drawn triangles of drawn vertex words and null vertices, 001459 over hull images of drawn faces and vertex words, 001496 over hand-built polygon arrays with and without a drawn pose, 001449 over drawn link words, 001657, 000001 with each element constructor; 7,706 signalling-NaN input words; both x87 control words) against the pinned oracle, mismatches=0 on 21,813 words and in convex_hull on built hulls; see evidence/convex-mesh-gap.md, Task 2f",
+      "notes": "",
+      "implementation": "Physics/src/ConvexHull.cpp"
     },
     {
       "id": "phys_fn_001497",
@@ -27254,13 +27262,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ConvexHull.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/597",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3988",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0002c8f0"
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (prerequisite P-Hull and sub-unit B); listing 0x0002ca20..0x0002caf8 (continuation of 001496): four polygons per pass, each (n.z d.z + n.x d.x) + n.y d.y (by the unrolled step's own order) replacing the best when strictly greater (`test ah, 0x41`); the row is the listing's instructions, naked, and its built code in NxPhysics.dll equals the listing instruction for instruction (branch targets by index, calls by the candidate row of the same stable ID, absolute operands by the bytes they read in each image; evidence/convex-mesh-gap-2f-listing-compare.py)",
+      "dynamic_proof": "convex-mesh gap Task 2f: nxHullSupportPolygon (001498 has no separate address; it is a body of nxHullSupportPolygon) hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2f.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 af76122099e40130...)); oracle differential hull_leaf (001441 and 001445 over drawn triangles of drawn vertex words and null vertices, 001459 over hull images of drawn faces and vertex words, 001496 over hand-built polygon arrays with and without a drawn pose, 001449 over drawn link words, 001657, 000001 with each element constructor; 7,706 signalling-NaN input words; both x87 control words) against the pinned oracle, mismatches=0 on 21,813 words and in convex_hull on built hulls; see evidence/convex-mesh-gap.md, Task 2f",
+      "notes": "continuation of the entry at 0x0002c8f0",
+      "implementation": "Physics/src/ConvexHull.cpp"
     },
     {
       "id": "phys_fn_001499",
@@ -27290,13 +27299,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ConvexHull.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/597",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3994",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0002c8f0"
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (prerequisite P-Hull and sub-unit B); listing 0x0002cb00..0x0002cb41 (continuation of 001496): the remaining polygons one at a time, the index returned, `ret 8`; the row is the listing's instructions, naked, and its built code in NxPhysics.dll equals the listing instruction for instruction (branch targets by index, calls by the candidate row of the same stable ID, absolute operands by the bytes they read in each image; evidence/convex-mesh-gap-2f-listing-compare.py)",
+      "dynamic_proof": "convex-mesh gap Task 2f: nxHullSupportPolygon (001500 has no separate address; it is a body of nxHullSupportPolygon) hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2f.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 af76122099e40130...)); oracle differential hull_leaf (001441 and 001445 over drawn triangles of drawn vertex words and null vertices, 001459 over hull images of drawn faces and vertex words, 001496 over hand-built polygon arrays with and without a drawn pose, 001449 over drawn link words, 001657, 000001 with each element constructor; 7,706 signalling-NaN input words; both x87 control words) against the pinned oracle, mismatches=0 on 21,813 words and in convex_hull on built hulls; see evidence/convex-mesh-gap.md, Task 2f",
+      "notes": "continuation of the entry at 0x0002c8f0",
+      "implementation": "Physics/src/ConvexHull.cpp"
     },
     {
       "id": "phys_fn_001501",
@@ -27326,13 +27336,14 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ConvexHull.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/598",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3997",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (prerequisite P-Hull and sub-unit B); listing 0x0002cb50..0x0002cc79: thiscall; the polygons built when absent (001472, re-tested per polygon); the total of the polygons' counts; four temporary arrays of that many dwords (slot 0, type 1), false when one fails; continued in 001504..001512; the row is the listing's instructions, naked, and its built code in NxPhysics.dll equals the listing instruction for instruction (branch targets by index, calls by the candidate row of the same stable ID, absolute operands by the bytes they read in each image; evidence/convex-mesh-gap-2f-listing-compare.py)",
+      "dynamic_proof": "convex-mesh gap Task 2f: nxHullComputeEdges hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2f.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 af76122099e40130...)); oracle differential convex_hull (001472, 001502 and 001496 at their RVAs over hull images of polycube meshes -- boxes, separate cubes, a ring, an edge pair, open meshes -- whose lattice words keep the vendored Plane::Set / Triangle::Area exact, and 001463 directly on rectangle corners; every allocation, release and report compared) against the pinned oracle, mismatches=0 on 20,691 words (the concave, nudged and 0x0f7f meshes and 001463's drawn points split to convex_hull.plane_divergent by a rule on the fixed input: 1,595 words from 001463's vendored 005155 / 005179, 0 with the oracle's pair bound in); see evidence/convex-mesh-gap.md, Task 2f",
+      "notes": "",
+      "implementation": "Physics/src/ConvexHull.cpp"
     },
     {
       "id": "phys_fn_001503",
@@ -27362,13 +27373,14 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ConvexHull.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/598",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4005",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0002cb50"
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (prerequisite P-Hull and sub-unit B); listing 0x0002cc80..0x0002cf6c (continuation of 001502): per polygon edge its smaller and larger reference, polygon and position; the pairs radix-sorted (005157, 005163 twice, signed hint); runs of equal pairs as 8-byte edges in a `new[]` (cookie, 001391) sized for all, every polygon edge given its edge number; the edges copied into an exactly sized `new[]` at +0x3c and the other released; the second sort begun; the row is the listing's instructions, naked, and its built code in NxPhysics.dll equals the listing instruction for instruction (branch targets by index, calls by the candidate row of the same stable ID, absolute operands by the bytes they read in each image; evidence/convex-mesh-gap-2f-listing-compare.py)",
+      "dynamic_proof": "convex-mesh gap Task 2f: nxHullComputeEdges (001504 has no separate address; it is a body of nxHullComputeEdges) hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2f.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 af76122099e40130...)); oracle differential convex_hull (001472, 001502 and 001496 at their RVAs over hull images of polycube meshes -- boxes, separate cubes, a ring, an edge pair, open meshes -- whose lattice words keep the vendored Plane::Set / Triangle::Area exact, and 001463 directly on rectangle corners; every allocation, release and report compared) against the pinned oracle, mismatches=0 on 20,691 words (the concave, nudged and 0x0f7f meshes and 001463's drawn points split to convex_hull.plane_divergent by a rule on the fixed input: 1,595 words from 001463's vendored 005155 / 005179, 0 with the oracle's pair bound in); see evidence/convex-mesh-gap.md, Task 2f",
+      "notes": "continuation of the entry at 0x0002cb50",
+      "implementation": "Physics/src/ConvexHull.cpp"
     },
     {
       "id": "phys_fn_001505",
@@ -27398,13 +27410,14 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ConvexHull.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/598",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4018",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0002cb50"
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (prerequisite P-Hull and sub-unit B); listing 0x0002cf70..0x0002d048 (continuation of 001502): the edge numbers in polygon order into +0x30, each polygon's +0x08 pointed at its run; the four temporaries released; +0x44 released and allocated as 8-byte EdgeDescs (no cookie, 000001 with 001439); the row is the listing's instructions, naked, and its built code in NxPhysics.dll equals the listing instruction for instruction (branch targets by index, calls by the candidate row of the same stable ID, absolute operands by the bytes they read in each image; evidence/convex-mesh-gap-2f-listing-compare.py)",
+      "dynamic_proof": "convex-mesh gap Task 2f: nxHullComputeEdges (001506 has no separate address; it is a body of nxHullComputeEdges) hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2f.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 af76122099e40130...)); oracle differential convex_hull (001472, 001502 and 001496 at their RVAs over hull images of polycube meshes -- boxes, separate cubes, a ring, an edge pair, open meshes -- whose lattice words keep the vendored Plane::Set / Triangle::Area exact, and 001463 directly on rectangle corners; every allocation, release and report compared) against the pinned oracle, mismatches=0 on 20,691 words (the concave, nudged and 0x0f7f meshes and 001463's drawn points split to convex_hull.plane_divergent by a rule on the fixed input: 1,595 words from 001463's vendored 005155 / 005179, 0 with the oracle's pair bound in); see evidence/convex-mesh-gap.md, Task 2f",
+      "notes": "continuation of the entry at 0x0002cb50",
+      "implementation": "Physics/src/ConvexHull.cpp"
     },
     {
       "id": "phys_fn_001507",
@@ -27434,13 +27447,14 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ConvexHull.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/598",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4025",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0002cb50"
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (prerequisite P-Hull and sub-unit B); listing 0x0002d050..0x0002d109 (continuation of 001502): each edge's polygon count in its word at +2, the run offsets formed; +0x48 released and allocated for the total; false (the sorter released) when an allocation failed; the row is the listing's instructions, naked, and its built code in NxPhysics.dll equals the listing instruction for instruction (branch targets by index, calls by the candidate row of the same stable ID, absolute operands by the bytes they read in each image; evidence/convex-mesh-gap-2f-listing-compare.py)",
+      "dynamic_proof": "convex-mesh gap Task 2f: nxHullComputeEdges (001508 has no separate address; it is a body of nxHullComputeEdges) hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2f.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 af76122099e40130...)); oracle differential convex_hull (001472, 001502 and 001496 at their RVAs over hull images of polycube meshes -- boxes, separate cubes, a ring, an edge pair, open meshes -- whose lattice words keep the vendored Plane::Set / Triangle::Area exact, and 001463 directly on rectangle corners; every allocation, release and report compared) against the pinned oracle, mismatches=0 on 20,691 words (the concave, nudged and 0x0f7f meshes and 001463's drawn points split to convex_hull.plane_divergent by a rule on the fixed input: 1,595 words from 001463's vendored 005155 / 005179, 0 with the oracle's pair bound in); see evidence/convex-mesh-gap.md, Task 2f",
+      "notes": "continuation of the entry at 0x0002cb50",
+      "implementation": "Physics/src/ConvexHull.cpp"
     },
     {
       "id": "phys_fn_001509",
@@ -27470,13 +27484,14 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ConvexHull.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/598",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4033",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0002cb50"
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (prerequisite P-Hull and sub-unit B); listing 0x0002d110..0x0002d158 (continuation of 001502): each polygon written into its edge's run, the offsets advanced; the row is the listing's instructions, naked, and its built code in NxPhysics.dll equals the listing instruction for instruction (branch targets by index, calls by the candidate row of the same stable ID, absolute operands by the bytes they read in each image; evidence/convex-mesh-gap-2f-listing-compare.py)",
+      "dynamic_proof": "convex-mesh gap Task 2f: nxHullComputeEdges (001510 has no separate address; it is a body of nxHullComputeEdges) hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2f.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 af76122099e40130...)); oracle differential convex_hull (001472, 001502 and 001496 at their RVAs over hull images of polycube meshes -- boxes, separate cubes, a ring, an edge pair, open meshes -- whose lattice words keep the vendored Plane::Set / Triangle::Area exact, and 001463 directly on rectangle corners; every allocation, release and report compared) against the pinned oracle, mismatches=0 on 20,691 words (the concave, nudged and 0x0f7f meshes and 001463's drawn points split to convex_hull.plane_divergent by a rule on the fixed input: 1,595 words from 001463's vendored 005155 / 005179, 0 with the oracle's pair bound in); see evidence/convex-mesh-gap.md, Task 2f",
+      "notes": "continuation of the entry at 0x0002cb50",
+      "implementation": "Physics/src/ConvexHull.cpp"
     },
     {
       "id": "phys_fn_001511",
@@ -27506,13 +27521,14 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/ConvexHull.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/598",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4035",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0002cb50"
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (prerequisite P-Hull and sub-unit B); listing 0x0002d160..0x0002d2d2 (continuation of 001502): the offsets formed again; the three sort arrays released; the self-calls when +0x3c, +0x44 or +0x48 is null; per edge the sum of its first two polygons' normals, normalised unless its squared length is zero (`fucompp; test ah, 0x44; jnp`), stored as integers into +0x40; the sorter released; true; the row is the listing's instructions, naked, and its built code in NxPhysics.dll equals the listing instruction for instruction (branch targets by index, calls by the candidate row of the same stable ID, absolute operands by the bytes they read in each image; evidence/convex-mesh-gap-2f-listing-compare.py)",
+      "dynamic_proof": "convex-mesh gap Task 2f: nxHullComputeEdges (001512 has no separate address; it is a body of nxHullComputeEdges) hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2f.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 af76122099e40130...)); oracle differential convex_hull (001472, 001502 and 001496 at their RVAs over hull images of polycube meshes -- boxes, separate cubes, a ring, an edge pair, open meshes -- whose lattice words keep the vendored Plane::Set / Triangle::Area exact, and 001463 directly on rectangle corners; every allocation, release and report compared) against the pinned oracle, mismatches=0 on 20,691 words (the concave, nudged and 0x0f7f meshes and 001463's drawn points split to convex_hull.plane_divergent by a rule on the fixed input: 1,595 words from 001463's vendored 005155 / 005179, 0 with the oracle's pair bound in); see evidence/convex-mesh-gap.md, Task 2f",
+      "notes": "continuation of the entry at 0x0002cb50",
+      "implementation": "Physics/src/ConvexHull.cpp"
     },
     {
       "id": "phys_fn_001513",
@@ -28196,13 +28212,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "layout_adjacency",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/IceSupportMaps.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/611",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4161",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (prerequisite P-Hull and sub-unit B); listing 0x0002e160..0x0002e1e2: cdecl (direction, u, v); the dominant axis by the magnitudes' bits (a strictly larger y, then z), 1/|dominant| scaling the next two components in the order of the byte table 0x01000201 >> (axis*8); axis*2 + the sign bit returned; the row is the listing's instructions, naked, and its built code in NxPhysics.dll equals the listing instruction for instruction (branch targets by index, calls by the candidate row of the same stable ID, absolute operands by the bytes they read in each image; evidence/convex-mesh-gap-2f-listing-compare.py)",
+      "dynamic_proof": "convex-mesh gap Task 2f: nxSupportMapCubeFace hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2f.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 af76122099e40130...)); oracle differential support_maps (001550 and 001556 over drawn directions, n = 0..20; maps A, B and C built by each side's constructors over polycube hulls built by each side's 001472 and over hand-built hull images of drawn words, Init for n = 0, 1, 2, 3, 5, 8, the bytes, lookups through them, slot 0 with and without the free bit, the allocation failures; both x87 control words) against the pinned oracle, mismatches=0 on 26,162 words; see evidence/convex-mesh-gap.md, Task 2f",
+      "notes": "",
+      "implementation": "Physics/src/IceSupportMaps.cpp"
     },
     {
       "id": "phys_fn_001551",
@@ -28238,7 +28255,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4164",
       "static_proof": "mov dword[eax],0x10107848; mov dword[eax+4],0; mov dword[eax+8],0; ret",
       "dynamic_proof": "confirmed via smallctor drive (3z53): failures=0",
-      "notes": ""
+      "notes": "convex-mesh gap Task 2f: the product form is nxSupportMapBaseConstruct in Physics/src/IceSupportMaps.cpp (the tables gIceSupportMap*Table hold it) (stable-ID line), hit in evidence/convex-mesh-gap-trace-2f.txt; the support_maps family compares its effects with the oracle's. The existing model and its proof stand; state unchanged"
     },
     {
       "id": "phys_fn_001553",
@@ -28274,7 +28291,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4165",
       "static_proof": "mov dword ptr [ecx],0x10107848; ret",
       "dynamic_proof": "confirmed via setget3 drive (3z50): failures=0",
-      "notes": ""
+      "notes": "convex-mesh gap Task 2f: the product form is nxSupportMapBaseTable in Physics/src/IceSupportMaps.cpp (the tables gIceSupportMap*Table hold it) (stable-ID line), hit in evidence/convex-mesh-gap-trace-2f.txt; the support_maps family compares its effects with the oracle's. The existing model and its proof stand; state unchanged"
     },
     {
       "id": "phys_fn_001555",
@@ -28304,13 +28321,14 @@
       "section": ".text",
       "phase": 2,
       "phase_provenance": "shared_by_callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/IceSupportMaps.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/614",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4166",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (prerequisite P-Hull and sub-unit B); listing 0x0002e220..0x0002e2e3: thiscall, `ret 4`; 001550 (u over the argument slot), h = (n - 1) * 0.5 with the unsigned `fild` fix-up, (c + 1) * h rounded by `fistp qword` and incremented when the remainder exceeds 0.5 (u's tested first); (face * n + u) * n + v; the row is the listing's instructions, naked, and its built code in NxPhysics.dll equals the listing instruction for instruction (branch targets by index, calls by the candidate row of the same stable ID, absolute operands by the bytes they read in each image; evidence/convex-mesh-gap-2f-listing-compare.py)",
+      "dynamic_proof": "convex-mesh gap Task 2f: nxSupportMapLookup hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2f.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 af76122099e40130...)); oracle differential support_maps (001550 and 001556 over drawn directions, n = 0..20; maps A, B and C built by each side's constructors over polycube hulls built by each side's 001472 and over hand-built hull images of drawn words, Init for n = 0, 1, 2, 3, 5, 8, the bytes, lookups through them, slot 0 with and without the free bit, the allocation failures; both x87 control words) against the pinned oracle, mismatches=0 on 26,162 words; see evidence/convex-mesh-gap.md, Task 2f",
+      "notes": "",
+      "implementation": "Physics/src/IceSupportMaps.cpp"
     },
     {
       "id": "phys_fn_001557",
@@ -28340,13 +28358,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/IceSupportMaps.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/615",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4172",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (prerequisite P-Hull and sub-unit B); listing 0x0002e2f0..0x0002e369: thiscall, `ret 4`; n and 6 * n * n stored, slot 1 or false; the spacing 1 / ((n - 1) * 0.5) stored narrow; the face, row and column loops, continued in 001560; the switch jumps through a table (0x1002e550; the candidate's is gIceSupportMapFaceCases in .rdata, row-relative); the row is the listing's instructions, naked, and its built code in NxPhysics.dll equals the listing instruction for instruction (branch targets by index, calls by the candidate row of the same stable ID, absolute operands by the bytes they read in each image, and the switch table by the instructions its entries land on; evidence/convex-mesh-gap-2f-listing-compare.py)",
+      "dynamic_proof": "convex-mesh gap Task 2f: nxSupportMapInit hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2f.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 af76122099e40130...)); oracle differential support_maps (001550 and 001556 over drawn directions, n = 0..20; maps A, B and C built by each side's constructors over polycube hulls built by each side's 001472 and over hand-built hull images of drawn words, Init for n = 0, 1, 2, 3, 5, 8, the bytes, lookups through them, slot 0 with and without the free bit, the allocation failures; both x87 control words) against the pinned oracle, mismatches=0 on 26,162 words; see evidence/convex-mesh-gap.md, Task 2f",
+      "notes": "",
+      "implementation": "Physics/src/IceSupportMaps.cpp"
     },
     {
       "id": "phys_fn_001559",
@@ -28376,13 +28395,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/IceSupportMaps.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/615",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4178",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0002e2f0"
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (prerequisite P-Hull and sub-unit B); listing 0x0002e370..0x0002e54d (continuation of 001558): the six-face switch (+-1 on the face's axis, 1 - i*s and 1 - j*s on the other two), the normalisation unless the squared length is zero (`jnp`), slot 2 with the sample face*n*n + j + i*n, false at once when it fails; slot 3 after the six faces and true; the row is the listing's instructions, naked, and its built code in NxPhysics.dll equals the listing instruction for instruction (branch targets by index, calls by the candidate row of the same stable ID, absolute operands by the bytes they read in each image, and the switch table by the instructions its entries land on; evidence/convex-mesh-gap-2f-listing-compare.py)",
+      "dynamic_proof": "convex-mesh gap Task 2f: nxSupportMapInit (001560 has no separate address; it is a body of nxSupportMapInit) hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2f.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 af76122099e40130...)); oracle differential support_maps (001550 and 001556 over drawn directions, n = 0..20; maps A, B and C built by each side's constructors over polycube hulls built by each side's 001472 and over hand-built hull images of drawn words, Init for n = 0, 1, 2, 3, 5, 8, the bytes, lookups through them, slot 0 with and without the free bit, the allocation failures; both x87 control words) against the pinned oracle, mismatches=0 on 26,162 words; see evidence/convex-mesh-gap.md, Task 2f",
+      "notes": "continuation of the entry at 0x0002e2f0",
+      "implementation": "Physics/src/IceSupportMaps.cpp"
     },
     {
       "id": "phys_fn_001561",
@@ -28436,7 +28456,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4197",
       "static_proof": "static review of the recorded shape: allocator-via-004803 deleting destructor (0x2e570u, ret 4); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via allocdtor differential (3z180): both arms failures=0 for both rows, with the 004803 allocator pointer at [0x1012845c] bound to a fake allocator whose slot +0xc records the free",
-      "notes": ""
+      "notes": "convex-mesh gap Task 2f: the product form is nxSupportMapBaseDelete in Physics/src/IceSupportMaps.cpp (stable-ID line), slot 0 of gIceSupportMapBaseTable; not reached by the families (no map is destroyed while it holds the base table), so not hit in evidence/convex-mesh-gap-trace-2f.txt. The ObjectModel.cpp model and its proof stand; state unchanged"
     },
     {
       "id": "phys_fn_001564",
@@ -28472,7 +28492,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4199",
       "static_proof": "calls the 001552 vptr-ctor, sets [+0x10]=arg, [+0xc]=0, installs vptr 0x1010785c; returns this",
       "dynamic_proof": "confirmed via ctorwrap differential (3z98): failures=0",
-      "notes": "",
+      "notes": "convex-mesh gap Task 2f: the product form is nxSupportMapHullConstruct in Physics/src/IceSupportMaps.cpp (the tables gIceSupportMap*Table hold it) (stable-ID line), hit in evidence/convex-mesh-gap-trace-2f.txt; the support_maps family compares its effects with the oracle's. The existing model and its proof stand; state unchanged",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
@@ -28503,13 +28523,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/IceSupportMaps.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/617",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4200",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (prerequisite P-Hull and sub-unit B); listing 0x0002e5d0..0x0002e60e: slot 1 of A and B; the hull's polygons built when the count is zero (001472); false above 255 polygons; the sample bytes (slot 0, type 0) and whether they were allocated; C++ (an integer row)",
+      "dynamic_proof": "convex-mesh gap Task 2f: nxSupportMapHullAllocate hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2f.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 af76122099e40130...)); oracle differential support_maps (001550 and 001556 over drawn directions, n = 0..20; maps A, B and C built by each side's constructors over polycube hulls built by each side's 001472 and over hand-built hull images of drawn words, Init for n = 0, 1, 2, 3, 5, 8, the bytes, lookups through them, slot 0 with and without the free bit, the allocation failures; both x87 control words) against the pinned oracle, mismatches=0 on 26,162 words; see evidence/convex-mesh-gap.md, Task 2f",
+      "notes": "",
+      "implementation": "Physics/src/IceSupportMaps.cpp"
     },
     {
       "id": "phys_fn_001568",
@@ -28539,13 +28560,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/IceSupportMaps.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/769",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4203",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (prerequisite P-Hull and sub-unit B); listing 0x0002e610..0x0002e631: slot 2 of A, `ret 8`; the sample's byte is 001496(direction, no pose); true; C++ (an integer row)",
+      "dynamic_proof": "convex-mesh gap Task 2f: nxSupportMapHullCompute hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2f.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 af76122099e40130...)); oracle differential support_maps (001550 and 001556 over drawn directions, n = 0..20; maps A, B and C built by each side's constructors over polycube hulls built by each side's 001472 and over hand-built hull images of drawn words, Init for n = 0, 1, 2, 3, 5, 8, the bytes, lookups through them, slot 0 with and without the free bit, the allocation failures; both x87 control words) against the pinned oracle, mismatches=0 on 26,162 words; see evidence/convex-mesh-gap.md, Task 2f",
+      "notes": "",
+      "implementation": "Physics/src/IceSupportMaps.cpp"
     },
     {
       "id": "phys_fn_001570",
@@ -28581,7 +28603,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4204",
       "static_proof": "calls the 001552 vptr-ctor, sets [+0x10]=arg, [+0xc]=0, installs vptr 0x1010786c; returns this",
       "dynamic_proof": "confirmed via ctorwrap differential (3z98): failures=0",
-      "notes": "",
+      "notes": "convex-mesh gap Task 2f: the product form is nxSupportMapPlaneConstruct in Physics/src/IceSupportMaps.cpp (the tables gIceSupportMap*Table hold it) (stable-ID line), hit in evidence/convex-mesh-gap-trace-2f.txt; the support_maps family compares its effects with the oracle's. The existing model and its proof stand; state unchanged",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
@@ -28612,13 +28634,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/IceSupportMaps.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/619",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4205",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (prerequisite P-Hull and sub-unit B); listing 0x0002e670..0x0002e7b2: slot 2 of B, `ret 8`; the centre and direction copied, the polygons built when absent (count, then array per pass); per polygon facing the direction (`test ah, 1`) whose n . d lies outside (-1e-7, 1e-7) (the doubles 0x10107880/88), t = -(n . c + D) / (n . d) replacing the best when strictly less (from FLT_MAX); the best index (0xff when none) as the byte; true; the row is the listing's instructions, naked, and its built code in NxPhysics.dll equals the listing instruction for instruction (branch targets by index, calls by the candidate row of the same stable ID, absolute operands by the bytes they read in each image; evidence/convex-mesh-gap-2f-listing-compare.py)",
+      "dynamic_proof": "convex-mesh gap Task 2f: nxSupportMapPlaneCompute hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2f.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 af76122099e40130...)); oracle differential support_maps (001550 and 001556 over drawn directions, n = 0..20; maps A, B and C built by each side's constructors over polycube hulls built by each side's 001472 and over hand-built hull images of drawn words, Init for n = 0, 1, 2, 3, 5, 8, the bytes, lookups through them, slot 0 with and without the free bit, the allocation failures; both x87 control words) against the pinned oracle, mismatches=0 on 26,162 words; see evidence/convex-mesh-gap.md, Task 2f",
+      "notes": "",
+      "implementation": "Physics/src/IceSupportMaps.cpp"
     },
     {
       "id": "phys_fn_001574",
@@ -28654,7 +28677,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4213",
       "static_proof": "calls the 001552 vptr-ctor, sets [+0xc]=0, [+0x10]=0, [+0x14]=arg, installs vptr 0x10107890; returns this",
       "dynamic_proof": "confirmed via ctorwrap differential (3z98): failures=0",
-      "notes": "",
+      "notes": "convex-mesh gap Task 2f: the product form is nxSupportMapVertexConstruct in Physics/src/IceSupportMaps.cpp (the tables gIceSupportMap*Table hold it) (stable-ID line), hit in evidence/convex-mesh-gap-trace-2f.txt; the support_maps family compares its effects with the oracle's. The existing model and its proof stand; state unchanged",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
     {
@@ -28691,7 +28714,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4214",
       "static_proof": "static review of the recorded shape: two owned frees plus a vtable store (0x2e7f0); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the blockers4 differential (3z186): failures=0 for all three rows on both the all-fields-null and all-fields-present arms, comparing the object and the ordered free sequence against each side own blocks",
-      "notes": ""
+      "notes": "convex-mesh gap Task 2f: the product form is nxSupportMapVertexRelease in Physics/src/IceSupportMaps.cpp (the tables gIceSupportMap*Table hold it) (stable-ID line), hit in evidence/convex-mesh-gap-trace-2f.txt; the support_maps family compares its effects with the oracle's. The existing model and its proof stand; state unchanged"
     },
     {
       "id": "phys_fn_001578",
@@ -28721,13 +28744,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/IceSupportMaps.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/622",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4217",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (prerequisite P-Hull and sub-unit B); listing 0x0002e840..0x0002e885: slot 1 of C; false above 255 vertices; both maps (slot 0, type 0), false when the first fails, and whether the second was allocated; C++ (an integer row)",
+      "dynamic_proof": "convex-mesh gap Task 2f: nxSupportMapVertexAllocate hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2f.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 af76122099e40130...)); oracle differential support_maps (001550 and 001556 over drawn directions, n = 0..20; maps A, B and C built by each side's constructors over polycube hulls built by each side's 001472 and over hand-built hull images of drawn words, Init for n = 0, 1, 2, 3, 5, 8, the bytes, lookups through them, slot 0 with and without the free bit, the allocation failures; both x87 control words) against the pinned oracle, mismatches=0 on 26,162 words; see evidence/convex-mesh-gap.md, Task 2f",
+      "notes": "",
+      "implementation": "Physics/src/IceSupportMaps.cpp"
     },
     {
       "id": "phys_fn_001580",
@@ -28757,13 +28781,14 @@
       "section": ".text",
       "phase": 4,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/IceSupportMaps.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/623",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4220",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) with the layout and calls of units/convex-mesh-gap-contract.md (prerequisite P-Hull and sub-unit B); listing 0x0002e890..0x0002ea67: slot 2 of C, `ret 8`; over the source's vertices p = (v.y d.y + v.x d.x) + v.z d.z (each unrolled step its own order), the least p from FLT_MAX (`fst` when strictly below) and the greatest -p kept on the stack; four at a time, then one; both bytes; true; the row is the listing's instructions, naked, and its built code in NxPhysics.dll equals the listing instruction for instruction (branch targets by index, calls by the candidate row of the same stable ID, absolute operands by the bytes they read in each image; evidence/convex-mesh-gap-2f-listing-compare.py)",
+      "dynamic_proof": "convex-mesh gap Task 2f: nxSupportMapVertexCompute hit in the full run of NxPhysicsThirdPartyTests (evidence/convex-mesh-gap-trace-2f.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsThirdPartyTests.exe, sha256 af76122099e40130...)); oracle differential support_maps (001550 and 001556 over drawn directions, n = 0..20; maps A, B and C built by each side's constructors over polycube hulls built by each side's 001472 and over hand-built hull images of drawn words, Init for n = 0, 1, 2, 3, 5, 8, the bytes, lookups through them, slot 0 with and without the free bit, the allocation failures; both x87 control words) against the pinned oracle, mismatches=0 on 26,162 words; see evidence/convex-mesh-gap.md, Task 2f",
+      "notes": "",
+      "implementation": "Physics/src/IceSupportMaps.cpp"
     },
     {
       "id": "phys_fn_001582",
@@ -28799,7 +28824,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4235",
       "static_proof": null,
       "dynamic_proof": "confirmed via the blockers and blockers2 differentials (3z184): failures=0 for all ten rows, with each global function pointer, the lock-API globals and the allocator pointer bound to the same recorders the candidates use",
-      "notes": "",
+      "notes": "convex-mesh gap Task 2f: the product form is nxSupportMapNoop in Physics/src/IceSupportMaps.cpp (the tables gIceSupportMap*Table hold it; a naked `ret`, listing-exact) (stable-ID line), hit in evidence/convex-mesh-gap-trace-2f.txt; the support_maps family compares its effects with the oracle's. The existing model and its proof stand; state unchanged",
       "implementation": "Physics/src/FluidSupport.cpp"
     },
     {
@@ -28836,7 +28861,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4236",
       "static_proof": "static review of the recorded shape: owned-pointer deleting destructor (0x2ea80u, ret 4); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via ownedptr differential (3z181): eight combinations -- both rows by owned-pointer present/absent by both flag arms -- all failures=0, comparing the return, the object and the ordered sequence of freed blocks",
-      "notes": "",
+      "notes": "convex-mesh gap Task 2f: the product form is nxSupportMapHullDelete in Physics/src/IceSupportMaps.cpp (the tables gIceSupportMap*Table hold it) (stable-ID line), hit in evidence/convex-mesh-gap-trace-2f.txt; the support_maps family compares its effects with the oracle's. The existing model and its proof stand; state unchanged",
       "implementation": "Physics/src/ObjectModel.cpp",
       "implementation_symbol": "phys_fn_001585 (harness dispatch table)"
     },
@@ -28874,7 +28899,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4239",
       "static_proof": "static review of the recorded shape: owned-pointer deleting destructor (0x2ead0u, ret 4); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via ownedptr differential (3z181): eight combinations -- both rows by owned-pointer present/absent by both flag arms -- all failures=0, comparing the return, the object and the ordered sequence of freed blocks",
-      "notes": "",
+      "notes": "convex-mesh gap Task 2f: the product form is nxSupportMapPlaneDelete in Physics/src/IceSupportMaps.cpp (the tables gIceSupportMap*Table hold it) (stable-ID line), hit in evidence/convex-mesh-gap-trace-2f.txt; the support_maps family compares its effects with the oracle's. The existing model and its proof stand; state unchanged",
       "implementation": "Physics/src/ObjectModel.cpp",
       "implementation_symbol": "phys_fn_001587 (harness dispatch table)"
     },
@@ -28912,7 +28937,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4242",
       "static_proof": "static review of the recorded shape: destructor chain via 004803 (0x2eb20, ret 4); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
       "dynamic_proof": "confirmed via the dtorchain differential (3z190): both flag arms failures=0 for all three rows, with the 004803 allocator, the allocator singleton and the free recorders all bound to the same bodies the candidates use",
-      "notes": ""
+      "notes": "convex-mesh gap Task 2f: the product form is nxSupportMapVertexDelete in Physics/src/IceSupportMaps.cpp (the tables gIceSupportMap*Table hold it) (stable-ID line), hit in evidence/convex-mesh-gap-trace-2f.txt; the support_maps family compares its effects with the oracle's. The existing model and its proof stand; state unchanged"
     },
     {
       "id": "phys_fn_001590",
@@ -30167,7 +30192,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4588",
       "static_proof": "reverses the first [esp+4] words of the [esp+8] array in place (count>>1 swaps); returns 1 (0 if either arg null)",
       "dynamic_proof": "confirmed via reversearr drive (3z86): failures=0",
-      "notes": ""
+      "notes": "convex-mesh gap Task 2f: the product form is nxIceReverseArray in Physics/src/IceMeshTools.cpp (C++; 001472 calls it) (stable-ID line), hit in evidence/convex-mesh-gap-trace-2f.txt; the hull_leaf family compares its effects with the oracle's. The existing model and its proof stand; state unchanged"
     },
     {
       "id": "phys_fn_001658",

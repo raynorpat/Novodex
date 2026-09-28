@@ -203,7 +203,22 @@ hull (+0x18 centroid, +0x24 polygon count, +0x28 polygons of 0x24 bytes with the
 both built lazily by 001472 when zero). C (0x10107890): +0x0c and +0x10 byte maps, +0x14 vertex
 source (+0x0c count, +0x10 vertices). Slot 0 scalar deleting destructor, 1 allocate, 2
 compute(sample, dir), 3 the no-op 001583. The census object `phys_data_000893` is two 4-slot
-tables (A at 0x1010785c, B at 0x1010786c), not one 8-slot table.
+tables (A at 0x1010785c, B at 0x1010786c), not one 8-slot table. Task 2f: A's byte is the polygon
+001496 finds, B's the polygon the ray from the centre leaves through (001573), C's the least and
+greatest vertex (001581); a map object is 0x14 bytes (A, B) or 0x18 (C). 001407 reads the map at
+TriangleMesh +0xac and the hull at +0xa0 (0x0002961d, 0x000296b9).
+
+**ConvexHull** (`Physics/src/include/ConvexHull.h`, 0x4c bytes; Tasks 2e and 2f): +0x04 face
+count, +0x08 16-bit faces, +0x0c vertex count, +0x10 vertices, +0x14 vertex normals (001461),
++0x18 centre (read by 001407 and 001573; 001472 computes the centre into a local and does not
+store it), +0x24 polygon count, +0x28 polygons (`new[]` of 0x24-byte records with a count cookie,
+000925 zeroing +0x00..+0x08: +0x00 count, +0x04 references into +0x2c, +0x08 edge numbers into
++0x30, +0x0c plane, +0x1c least and +0x20 greatest vertex projection), +0x2c every polygon's
+references, +0x30 every polygon's edge numbers, +0x38 edge count, +0x3c edges (`new[]` of 8-byte
+pairs, cookie, 001391), +0x40 edge normals, +0x44 edge-to-polygon EdgeDescs (8 bytes, no cookie,
+001439), +0x48 the polygons by edge. +0x00 and +0x34 are read by none of these rows (TriangleMesh
+releases the hull through its slot 0, so +0x00 is a table pointer). All allocation is the 004803
+getter's: types 0 (persistent) and 1 (001502's four temporaries).
 
 **MeshBuilder2** (001593, 001623): 13 Containers at +0x00, +0x10, ..., +0xc0; +0xd0 (create
 +0x04), +0xd4/+0xd8/+0xdc stream counts (create +0x00/+0x08/+0x0c), +0xe0 face count,
@@ -285,28 +300,28 @@ Totals: 7 rows; discovered 1,560 B, reconstructed 37 B
 
 | row | rva | bytes | state | phase | callers | role |
 |---|---|---:|---|---:|---|---|
-| 001550 | 0x0002e160 | 131 | discovered | 4 | 001556 | cube-face projection: dominant axis of the direction -> face*2 or sign, and the two in-face coordinates scaled by 1/abs(major) |
+| 001550 | 0x0002e160 | 131 | reconstructed | 4 | 001556 | cube-face projection: dominant axis of the direction -> face*2 or sign, and the two in-face coordinates scaled by 1/abs(major) |
 | 001552 | 0x0002e1f0 | 17 | reconstructed | 4 | 001565, 001571, 001575 | base constructor: vptr 0x10107848, +4/+8 = 0 |
 | 001554 | 0x0002e210 | 7 | reconstructed | 4 | 001577, 001585, 001587 | base vptr store 0x10107848 |
-| 001556 | 0x0002e220 | 196 | discovered | 2 | 001407, 002249 | lookup(dir) -> sample index (face*n + round(u))*n + round(v), with the 0.5 fix-up of the rounding |
-| 001558 | 0x0002e2f0 | 122 | discovered | 4 | 002255 | Init(n): +4 = n, +8 = 6*n*n, slot 1 (allocate), then per face, row and column a direction and slot 2 (compute); switch table 0x0002e550 |
-| 001560 | 0x0002e370 | 478 | discovered | 4 | continuation | continuation of 001558 (the six-face switch body) |
+| 001556 | 0x0002e220 | 196 | reconstructed | 2 | 001407, 002249 | lookup(dir) -> sample index (face*n + round(u))*n + round(v), with the 0.5 fix-up of the rounding |
+| 001558 | 0x0002e2f0 | 122 | reconstructed | 4 | 002255 | Init(n): +4 = n, +8 = 6*n*n, slot 1 (allocate), then per face, row and column a direction and slot 2 (compute); switch table 0x0002e550 |
+| 001560 | 0x0002e370 | 478 | reconstructed | 4 | continuation | continuation of 001558 (the six-face switch body) |
 | 001563 | 0x0002e570 | 35 | reconstructed | 4 | 001552 | base scalar deleting destructor, frees through 004803 |
 | 001565 | 0x0002e5a0 | 34 | reconstructed | 4 | 002255 | constructor wrapper A: +0x10 = hull, vptr 0x1010785c |
-| 001567 | 0x0002e5d0 | 63 | discovered | 4 | 001565 | slot 1 of A and B: hull polygon count (+0x24, built lazily by 001472), fails above 255, allocates +8 bytes through 004803 into +0xc |
-| 001569 | 0x0002e610 | 34 | discovered | 4 | 001565 | slot 2 of A: byte = support vertex of the hull for dir (001496) |
+| 001567 | 0x0002e5d0 | 63 | reconstructed | 4 | 001565 | slot 1 of A and B: hull polygon count (+0x24, built lazily by 001472), fails above 255, allocates +8 bytes through 004803 into +0xc |
+| 001569 | 0x0002e610 | 34 | reconstructed | 4 | 001565 | slot 2 of A: byte = the hull polygon furthest along dir (001496, no pose) |
 | 001571 | 0x0002e640 | 34 | reconstructed | 4 | 002255 | constructor wrapper B: vptr 0x1010786c |
-| 001573 | 0x0002e670 | 323 | discovered | 4 | 001565 | slot 2 of B: from the hull centroid (+0x18) along dir, the nearest facing polygon plane (0x24-byte polygons at +0x28) -> byte index |
+| 001573 | 0x0002e670 | 323 | reconstructed | 4 | 001565 | slot 2 of B: from the hull centroid (+0x18) along dir, the nearest facing polygon plane (0x24-byte polygons at +0x28) -> byte index |
 | 001575 | 0x0002e7c0 | 35 | reconstructed | 4 | 002255 | constructor wrapper C: +0x14 = vertex source, vptr 0x10107890 |
 | 001577 | 0x0002e7f0 | 77 | reconstructed | 4 | 001589 | C destructor body: frees +0x10 and +0xc, stores the base vptr |
-| 001579 | 0x0002e840 | 70 | discovered | 4 | 001575 | slot 1 of C: vertex count ([+0x14]+0xc) below 256, allocates the two byte maps +0xc and +0x10 |
-| 001581 | 0x0002e890 | 472 | discovered | 4 | 001575 | slot 2 of C: brute-force minimum and maximum projection over the vertex array -> two bytes |
+| 001579 | 0x0002e840 | 70 | reconstructed | 4 | 001575 | slot 1 of C: vertex count ([+0x14]+0xc) below 256, allocates the two byte maps +0xc and +0x10 |
+| 001581 | 0x0002e890 | 472 | reconstructed | 4 | 001575 | slot 2 of C: brute-force minimum and maximum projection over the vertex array -> two bytes |
 | 001583 | 0x0002ea70 | 1 | dynamically_gated | 2 | 000008, 000333, 000647, 000663, 000893, 001397, 001552, 0... | one-byte ret: slot 3 of every table here and of nine other tables |
 | 001585 | 0x0002ea80 | 72 | reconstructed | 4 | 001565 | A scalar deleting destructor |
 | 001587 | 0x0002ead0 | 72 | reconstructed | 4 | 001565 | B scalar deleting destructor |
 | 001589 | 0x0002eb20 | 34 | reconstructed | 4 | 001575 | C scalar deleting destructor |
 
-Totals: 20 rows; discovered 1,889 B, reconstructed 417 B, dynamically_gated 1 B
+Totals: 20 rows; reconstructed 2,306 B (1,889 B by Task 2f), dynamically_gated 1 B
 
 - **Evidence.** Four tables, all installed by 001552/001565/001571/001575, whose constructors
   are called only by 002255 (the TriangleMesh finishing row). The tables sit directly after
@@ -321,7 +336,8 @@ Totals: 20 rows; discovered 1,889 B, reconstructed 417 B, dynamically_gated 1 B
 - **Callees outside.** **001472 (0x0002b6f0, 664 B) and 001496 (0x0002c8f0, 296 B)**, both not
   started, in the ConvexHull.cpp gap - P-Hull in `## Out-of-range prerequisites`. 001567 and
   001573 call 001472 when the hull's polygon data is absent; **001569 (class A slot 2) calls
-  001496 unconditionally** (0x0002e61d). So the product rows of B cannot link or run without
+  001496 unconditionally** (0x0002e61d), as 001496(dir, no pose): 001496's stack arguments are
+  (direction, pose) and it returns a polygon index, not a vertex (Task 2f). So the product rows of B cannot link or run without
   P-Hull, which is ordered before B in `## Task split`. 004803.
 - **x87.** 001556, 001558/001560, 001573, 001581 are float code: `/arch:IA32`.
 - **Test route.** `NxPhysicsThirdPartyTests` family `support_maps`: for each class, construct
@@ -799,7 +815,7 @@ differential. Caller chains come from `oracle/dependencies.dot`.
 |---|---|---:|---|---|
 | P-EdgeList | 002063 (`EdgeList::Init`, 225), 002054 (554) with its continuation 002056 (313; added by Task 2c), 002058 (467), 002061 (1,933); vendored 005155 `Plane::Set` and 005181 `Triangle::Normal` | 3,492 | `EdgeList.cpp` | 001546 -> 002063; 001667 -> 002063; 002188 -> 002063; 002063 -> 002054, 002058, 002061 |
 | P-Small | 002144 (217), 001461 (194), 002186 (143), 002188 (152) | 706 | TriangleMesh spans, SphereShape..ConvexHull gap | 001651 -> 002144; 001844 -> 001461 -> 001651; 001859 -> 002186 -> 001546/001544; 001834, 001844, 001849, 001859 -> 002188 -> 002063 |
-| P-Hull | 001441 (178), 001445 (146), 001449 (156), 001459 (241), 001463 (337), 001465 (`ConvexHull.cpp`, 791), 001472 (664), 001496 (296), 001502 (298) | 3,107 | `ConvexHull.cpp` and the gaps either side | 001567, 001573, 001822 -> 001472; 001569 -> 001496 -> 001472; 001844 -> 001502 -> 001472; 001472 -> 001459 (-> 001441, 001445), 001463, 001465 (-> 001449, and in range 001542, 001544, 001546, 001641) |
+| P-Hull | 001441 (178), 001445 (146), 001449 (156), 001459 (241), 001463 (337), 001465 (`ConvexHull.cpp`, 791), 001472 (664), 001496 (296) with its continuations 001498 (217) and 001500 (66), 001502 (298) with its continuations 001504 (749), 001506 (217), 001508 (186), 001510 (73) and 001512 (371) (the seven continuations added by Task 2f) | 4,986 (3,107 before Task 2f added the continuations) | `ConvexHull.cpp` and the gaps either side | 001567, 001573, 001822 -> 001472; 001569 -> 001496 -> 001472; 001844 -> 001502 -> 001472; 001472 -> 001459 (-> 001441, 001445), 001463, 001465 (-> 001449, and in range 001542, 001544, 001546, 001641) |
 | P-Mesh | polygon interface 002217 (11), 002219 (11), 002221 (26), 002223 (38), 002225 (26), 002227..002231 (3 x 26), 002249 (459); their helpers 001514 (441), 001516 (298), 001530 (153) | 649 + 892 | `TriangleMesh.cpp` span; ConvexHull gap | 001820 -> TriangleMesh+0x04 slots 2/3/4/11; 002225 -> 001514 (-> 001472, 001661); 002219 -> 001516 (-> 001472, 001502); 002249 -> 001530, 001556; 002217 -> 001496; 002221/002223 -> 001472; 002227..002231 -> 001502 |
 | P-Emit | 000875 (915) | 915 | `gap:SceneRaycast.cpp..CapsuleShape.cpp` | 001762, 001779, 001844, 001909 -> 000875 |
 | P-Plane | 001909 (733), 001903 (45), 001907 (607) | 1,385 | `gap:ContactPlaneMesh.cpp..PenetrationMap.cpp` | 001818, 001842 -> 001909 -> 001903, 001907, 000875 |
@@ -837,6 +853,32 @@ sit in TriangleMesh's own span, but a file of their own keeps the asset harness,
 TriangleMesh.cpp, free of the ICE rows). Neither tests its allocation before calling Init on it,
 as the listing does not; both return nothing a caller reads.
 
+**Written by Task 2f.** P-Hull is in `Physics/src/ConvexHull.cpp` with sub-unit B in
+`Physics/src/IceSupportMaps.cpp` (both on the `/arch:IA32` and `/EHs-c-` lists).
+- *Errata.* 001496 and 001502 have continuations the row list above lacked (001498, 001500;
+  001504..001512; 1,879 B), and 001496's stack arguments are (direction, pose); it returns the
+  index of the polygon whose normal is furthest along the direction. 001472 computes the centre
+  into a local (001459) and never stores the hull's +0x18. 001502 calls itself when +0x3c, +0x44 or
+  +0x48 is still null after building them, which cannot happen.
+- *Forms.* The x87 rows (001441, 001445, 001459, 001463, 001472, 001496, 001502, 001550, 001556,
+  001558, 001573, 001581) are the listing's instructions, naked; the integer rows 001449, 001465,
+  001567, 001569 and 001579 are C++. Naked code reaches the vendored members (Container, RadixSort,
+  Triangle::Area, Plane::Set) through /alternatename aliases of their decorated names, and calls
+  000001 (`vector constructor iterator`, written as nxIceVectorConstruct) with the candidate's
+  element constructors 000925, 001391 and 001439. 001558's switch table is an .rdata table of
+  row-relative addresses. The support-map tables are arrays of __fastcall slots (thiscall's
+  convention for the callee), with product forms of the eleven small rows the census had closed as
+  ObjectModel.cpp models. 001657's product form is in IceMeshTools.cpp.
+- *Listing findings.* 001641 (called by 001465) reads the first pair of an empty edge Container:
+  a face group with no active edge (an inner shell, an inward-wound mesh, a NaN coordinate) is a
+  null read in the oracle. 001502 over a hull whose polygons failed writes 8 bytes into a
+  zero-byte block and reads 6 bytes before it (0x0002d067, 0x0002d0a1). Neither is driven.
+  001465 reports a broken outline through 002160 with no message (line 318) and returns the
+  report's result.
+- *Wiring.* The only candidate stand-in was the 001407 model (`MeshShape::nxMeshSweepPrepared`,
+  ObjectModel.cpp), which inlined 001556 and required the polygons built; it now calls 001556 and
+  001472, so every target that compiles ObjectModel.cpp links the ICE rows.
+
 **002144 was already modelled.** `Physics/src/SmoothNormals.cpp` had `angleAtVertex`, which
 stands in for 002144 (217 B) inside the reconstructed `NxBuildSmoothNormals`. Task 2e writes
 002144 as a product row and makes `angleAtVertex` a wrapper of it (or replaces it). The existing
@@ -856,7 +898,7 @@ route.
 | 2c | P-EdgeList (002054 with continuation 002056, 002058, 002061, 002063). A: 001537..001548. D: 001667 | 5,564 | edge_list, ice_adjacencies, ice_valencies |
 | 2d | C MeshBuilder2 (001591..001637). D vertex reduction: 001647 | 10,728 | ice_meshbuilder2, vertex_reduction |
 | 2e | D remainder: 001639, 001641/001643, 001651, 001653, 001661. P-Small: 002144 (wrapping `angleAtVertex`), 001461, 002186, 002188 | 4,370 | pose_pair, unique_axis, edge_dedupe, mesh_normals, adjacency_owner |
-| 2f | P-Hull (001441..001502), then B support maps (001550..001589) | 4,996 | convex_hull, support_maps |
+| 2f | P-Hull (001441..001502, with the continuations 001498, 001500, 001504..001512), then B support maps (001550..001589) | 6,875 (4,996 before Task 2f added the continuations) | hull_leaf, convex_hull, support_maps |
 | 2g | The mesh fixture. P-Mesh (649 + 892). P-Emit (000875). P-Plane (001909, 001903, 001907). L convex/convex (001803..001820) | 9,370 | polygon_interface, contact_emit_ext, contact_convex_convex |
 | 2h | M first half: 001822..001842 | 5,160 | leaf families on the fixture |
 | 2i | M second half: 001844..001853. 002081 | 7,506 | contact_convex_heightfield |
@@ -876,9 +918,9 @@ Notes on the split:
 - **x87 build list.** Every new file except `IceAdjacencies.cpp` holds float code and goes on the
   `/arch:IA32` list in `CMakeLists.txt`. `ContactGeneration.cpp`, `NarrowPhase.cpp`,
   `Geometry.cpp` and `SmoothNormals.cpp` are already on it.
-- **Totals.** In range: 76,115 B. Adopted prerequisites: 13,529 B (the `P-*` rows above plus 002081;
-  13,216 before Task 2c added 002056, 002054's continuation). All thirteen tasks: 89,644 B, not
-  counting the mesh-fixture harness code.
+- **Totals.** In range: 76,115 B. Adopted prerequisites: 15,408 B (the `P-*` rows above plus 002081;
+  13,216 before Task 2c added 002056, 002054's continuation, 13,529 before Task 2f added P-Hull's
+  seven continuations). All thirteen tasks: 91,523 B, not counting the mesh-fixture harness code.
 
 ## Open items
 

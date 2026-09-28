@@ -1,0 +1,13 @@
+diff --git a/Physics/src/ConvexHull.cpp b/Physics/src/ConvexHull.cpp
+index a659b03..540b806 100644
+--- a/Physics/src/ConvexHull.cpp
++++ b/Physics/src/ConvexHull.cpp
+@@ -267,7 +267,7 @@ __declspec(naked) void __fastcall nxHullTriangleCenter(const NxU16* /*triangle*/
+ 		fadd	dword ptr [eax + 8]		// 0x0002a7ca
+ 		fstp	dword ptr [esp + 0xc]		// 0x0002a7cd
+ 		fxch	st(1)		// 0x0002a7d1
+-		fadd	dword ptr [ecx]		// 0x0002a7d3
++		fsub	dword ptr [ecx]		// 0x0002a7d3
+ 		fstp	dword ptr [esp + 0x10]		// 0x0002a7d5
+ 		fadd	dword ptr [ecx + 4]		// 0x0002a7d9
+ 		fld	dword ptr [esp + 0xc]		// 0x0002a7dc
