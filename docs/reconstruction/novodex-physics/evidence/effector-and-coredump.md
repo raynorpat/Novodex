@@ -63,6 +63,27 @@ CRT checked against the image. The listing corrected one contract claim: the 0x2
 passed to 004051 (contract, "### Task 3a record"). Gates 2, 3, 4, 6 (482/482) and 7 (355/355)
 pass; Phase 5 fails only on the vtables marker, as before.
 
+## Task 3b: the core dump's second half
+
+The asset writer and everything below it are product code in `Physics/src/core/SceneDump.cpp`: the
+mesh names (003991), trigger flags (004017), welded vertex lines (004035), the mesh block (004046),
+the shape records (004048) and the per-scene asset writer (004051 with its five continuations:
+timing header, gravity, joint blocks, actors with their body records and shapes, joint lines,
+disabled pairs, spring-and-damper effectors). The shape-descriptor inlines carry stable-ID lines
+only. The readers are written with their units: 000015/000017 in `core/JointSupport.cpp`,
+000509/000523 in `Scene.cpp`, 001283 in `ContactGeneration.cpp`. 23 rows, 11,630 B, 15 of them
+moved from `discovered` (the other eight were model rows). Deferred stubs: 001472 (convex polygon
+builder) and 000525/000527 (pair-flag array); with 004046 and the mesh arm they are unreachable in
+the candidate, which builds no mesh shape and raises no pair flag.
+
+Static proofs only (Task 4 wires 000267): every row transcribed from the Capstone listing, the
+three inlined quaternion spellings kept with their spilled pairs, and every format literal checked
+against the image (225 distinct, all present; 222 NUL-delimited, three starting at the oracle's
+pointer behind a table word). One oracle quirk recorded: the capsule arm passes the capsule's own
+`flags` to the trigger writer (contract, "### Task 3b record"). Gates 2, 3, 4, 6 (482/482) and 7
+(355/355) pass; Phase 5 fails only on the vtables marker, as before, with all 12 staged-pair
+targets at `stdout_delta=0`.
+
 ## Timing
 
 | Task | Start | End | Rows written | Bytes written | Notes |
@@ -71,3 +92,4 @@ pass; Phase 5 fails only on the vtables marker, as before.
 | 2 | 2026-09-28T08:32:00 (approx.) | 2026-09-28T09:20:00 | 43 (40 hand-written, 3 compiler-generated: 003932 003938 003954) | 4,244 | 30 effector rows 3,325 B, 12 Scene/NpScene rows 887 B, 000713 32 B; deferred 000791 (133 B, needs 000782). Body record Observable (placement at +0, no field moved, no allocation), the 0x100 notify and `~Observable` in `releaseActor`, 000575 in `nxSceneDelete`. New staged-pair target `NxPhysicsEffectorTests`, 77 registered oracle lines, `stdout_delta=0`. Defect found by the transcript: shape id recycled after the shape free in `releaseActor` (fixed). Left: the record +0x14 pad (zeroed by the candidate) and the missing 000722 island snapshot (+0x1f8). Gates 2/3/4/6/7 pass, 5 only the vtables marker. |
 | 2 (review) | 2026-09-28T09:22:00 (approx.) | 2026-09-28T09:45:00 | 1 (000722) | 127 | Body construction now runs 000760 then 000722 (000797 0x1b6fb/0x1b702); root +0x1f8 and the island words identical to the oracle and registered (2 lines; floors 6/7 = 482/355). Trace re-taken (000722, 000760 hit 4 times each). 003970/003972 caveat added; compound-shape recycle order recorded. Gates 2/3/4/6/7 pass, 5 only the vtables marker. |
 | 3a | 2026-09-28T09:45:00 | 2026-09-28T10:10:38 | 27 (18 hand-written incl. 3 continuations of 004037; 6 compiler-generated desc inlines: 003981 003985 004021 004023 004025 004027; readers 004068 004072 004085) | 11,793 | `core/SceneDump.cpp` (new, /arch:IA32 and /EHs-c-) + `include/core/SceneDump.h`; readers in `core/Joint.cpp`; parameter/group-mask accessors in `PhysicsSDK.cpp`. Not wired (Task 4); static proofs only; 163/164 format literals NUL-delimited in the image (the 164th, `\r\n`, a string tail as in the oracle). Contract correction: the 0x20000 block is 003991's mesh-name table. 004051 placeholder for 3b. 23 rows discovered -> reconstructed, Phase 6 ledger 45/386. Gates 2/3/4/6/7 pass, 5 only the vtables marker. |
+| 3b | 2026-09-28T10:12:00 (approx.) | 2026-09-28T10:58:00 | 23 (11 hand-written incl. 5 continuations of 004051; 7 compiler-generated desc inlines: 003983 003987 003989 004019 004029 004031 004033; readers 000015 000017 000509 000523 001283) | 11,630 | Asset, shape, mesh and effector rows in `core/SceneDump.cpp`; readers in `core/JointSupport.cpp`, `Scene.cpp`, `ContactGeneration.cpp`; deferred stubs 001472 and 000525/000527 (unreachable: no mesh shapes, no pair flags). Not wired (Task 4); static proofs only; 225/225 format literals in the image (222 NUL-delimited, 3 at the oracle pointer behind a table word). Found: capsule arm passes its own flags to 004017. 15 rows discovered -> reconstructed, Phase 6 ledger 30/401. `NxPhysicsInternalTests` links NarrowPhase/ContactGeneration. Gates 2/3/4/6/7 pass, 5 only the vtables marker. |

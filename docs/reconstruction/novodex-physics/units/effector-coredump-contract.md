@@ -566,6 +566,73 @@ proofs stay) and 004085 (`nxRegistryLookupNull` in `ObjectModel.cpp` stays and g
 `// Product row:` pointer). Not reachable yet: `NpPhysicsSDK::coreDump` (000267) is still the
 candidate stub; dynamic proofs come with Task 4's transcript.
 
+### Task 3b record
+
+Written (23 rows, 11,630 B, matching the split): in `Physics/src/core/SceneDump.cpp`, 003991
+(`SceneDumpNames::meshName`), 004017 (`SceneDump::writeTriggerFlags`), 004035
+(`SceneDumpNames::writeVertices`), 004046 (`SceneDump::writeMesh`), 004048 (`SceneDump::writeShape`)
+and 004051 with its continuations 004053 004055 004057 004059 004061 (`SceneDump::writeAsset`,
+replacing 3a's placeholder); the shape-descriptor inlines 003983 003987 003989 004019 004029 004031
+004033 carry stable-ID lines only (the capsule, sphere and triangle-mesh descriptor tables; the
+compiler emits them where `writeShape`/`writeMesh` construct the descriptors). The readers are
+written with their own units: 000015/000017 as `JointActorBody::getNbShapes`/`getShapes` in
+`core/JointSupport.cpp`, beside 000022 of the same gap unit (`JointActorBody` now names its +0x10
+shape word, `mShape`); 000509/000523 as `NxSceneInternal::getGravity`/`getNbPairs` in `Scene.cpp`;
+001283 as `NxShapeGetType` beside 001281 in `ContactGeneration.cpp` (so `NxPhysicsInternalTests`,
+which links `core/*.cpp`, now also links `NarrowPhase.cpp` and `ContactGeneration.cpp`). Former
+model rows now product rows: 003983 003987 003989 000015 000017 000509 000523 001283 (000015's
+`nxBodyShapeRecordCount` model in `ObjectModel.cpp` stays with a `// Product row:` pointer).
+
+Deferred, as `NX_ASSERT(0)` stubs that write nothing (rows stay `discovered`): 001472 (the convex
+mesh's polygon builder, `SceneDumpConvexMesh::buildPolygons` in `SceneDump.cpp`) and 000525 with
+its continuation 000527 (`NxSceneInternal::getPairFlagArray` in `Scene.cpp`). Neither is reachable
+in the candidate: no shape of type 4 can be built (`nxShapeFactoryInstallVtable` has tables for 0-3
+only) and the candidate never raises a pair flag, so 000523 returns 0 and the pair block is
+skipped. 004046 and the mesh arm of 004048 are written in full but likewise not reachable; the
+dump test keeps meshes and pair flags out of its scene. The internal shape's slot 13 and the
+internal mesh's slots 3/10/13 are called through two call-view classes (`SceneDumpShape`,
+`SceneDumpTriangleMesh`); the candidate's `TriangleMesh` has no C++ table, so the mesh view is a
+contract for a later mesh task, not something that runs.
+
+Listing details recorded while writing:
+- The actor record reads both descriptors through the body's `NxActor` (+0), not through the
+  Scene array's pointer; the actor descriptor is an `NxActorDescBase` (its empty constructor
+  leaves only `globalPose`'s identity, matching 0x94324-0x94382), the body descriptor an
+  `NxBodyDesc` (setToDefault inlined, 0x9457c-0x946bb).
+- `NxMat33::toQuat` is inlined in three spellings, reproduced by `sceneDumpQuat`: the actor and
+  centre-of-mass poses form m8 + m4, spill it to a float and add m0 on the stack (the m0 arm uses
+  the float); the plane, sphere, box and capsule arms form m0 + m8 and add m4 (the m4 arm uses the
+  float); the mesh arm stores m0 + m8 first (`fstp`) and forms the trace from the stored float
+  (0x93e6e-0x93e85). The root, `0.5 * s` and `0.5 / s` stay on the stack.
+- `awake(false)` tests the record's +0x4c as a word (`test edx, edx`), so -0.0 counts as awake.
+- The solver count is stored as `(float)(unsigned)` (`fild` + 2^32 when negative, 0x9496b).
+- The box stores its sides (the dimensions doubled, `fadd st0, st0`) before the pose records; the
+  capsule prints height before radius.
+- The capsule arm passes the capsule's own `flags` (desc +0x54, `mov ecx, [esp+0x7c]` at 0x93d02)
+  to the trigger writer 004017 where every other arm passes `shapeFlags` (+0x38). Written as the
+  listing does.
+- With `NX_SHAPE_DESC_LIST` (Nxp.h) `NxShapeDesc::next` sits at +0x48, so each family's fields
+  start at +0x4c (plane normal/d +0x4c/+0x58, capsule radius/height/flags +0x4c/+0x50/+0x54, mesh
+  meshData/meshFlags +0x4c/+0x50); pinned by `static_assert`s.
+- 004035's weld compares each vertex with every earlier one, written or not (`fabs` against
+  1e-5f, .rdata 0x10107a08) and maps a match to its index; 004046's triangle lines break every 16
+  triangles; a convex mesh with a null hull frees a null remap; the triangle loop is signed.
+- The pair block's arrays are `operator new` (005701) and are freed through `free` (005668); the
+  0xc-byte pair records are released through 005700, a `jmp` to `free`, written as
+  `operator delete`, behind the listing's null test.
+- The effector block's five fixed lines and `PsSpring` use `%f` of the promoted floats with `\n`
+  endings; 003964 reads both records' +0x19c before the null tests (a world end still crashes the
+  oracle), and the anchors print only for a non-null end.
+
+Format strings: all 225 distinct literals `SceneDump.cpp` now passes to the CRT occur in the image;
+222 NUL-delimited, and three start exactly at the oracle's pointer behind a non-string word: `"\r\n"`
+(0x101135bc, the tail of a longer string, as in 3a), `"PsVert %s %s %s\r\n"` (0x101182e4) and
+`"tmesh%d"` (0x10117a50), each preceded by the last pointer of a descriptor table. Every one of the
+64 literals the 3b listing references appears verbatim.
+
+Not reachable yet: `NpPhysicsSDK::coreDump` (000267) is still the candidate stub; Task 4 wires it
+and records the dynamic proofs.
+
 ## Task split
 
 Out of scope: 004064, 004066 and 004070, in the same gap, are already written in
