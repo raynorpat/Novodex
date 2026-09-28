@@ -127,3 +127,122 @@ descriptor inlines nothing calls. 29 rows gain `dynamic_proof` (000267 among the
 | 3a | 2026-09-28T09:45:00 | 2026-09-28T10:10:38 | 27 (18 hand-written incl. 3 continuations of 004037; 6 compiler-generated desc inlines: 003981 003985 004021 004023 004025 004027; readers 004068 004072 004085) | 11,793 | `core/SceneDump.cpp` (new, /arch:IA32 and /EHs-c-) + `include/core/SceneDump.h`; readers in `core/Joint.cpp`; parameter/group-mask accessors in `PhysicsSDK.cpp`. Not wired (Task 4); static proofs only; 163/164 format literals NUL-delimited in the image (the 164th, `\r\n`, a string tail as in the oracle). Contract correction: the 0x20000 block is 003991's mesh-name table. 004051 placeholder for 3b. 23 rows discovered -> reconstructed, Phase 6 ledger 45/386. Gates 2/3/4/6/7 pass, 5 only the vtables marker. |
 | 3b | 2026-09-28T10:12:00 (approx.) | 2026-09-28T10:58:00 | 23 (11 hand-written incl. 5 continuations of 004051; 7 compiler-generated desc inlines: 003983 003987 003989 004019 004029 004031 004033; readers 000015 000017 000509 000523 001283) | 11,630 | Asset, shape, mesh and effector rows in `core/SceneDump.cpp`; readers in `core/JointSupport.cpp`, `Scene.cpp`, `ContactGeneration.cpp`; deferred stubs 001472 and 000525/000527 (unreachable: no mesh shapes, no pair flags). Not wired (Task 4); static proofs only; 225/225 format literals in the image (222 NUL-delimited, 3 at the oracle pointer behind a table word). Found: capsule arm passes its own flags to 004017. 15 rows discovered -> reconstructed, Phase 6 ledger 30/401. `NxPhysicsInternalTests` links NarrowPhase/ContactGeneration. Gates 2/3/4/6/7 pass, 5 only the vtables marker. |
 | 4 | 2026-09-28T10:55:00 (approx.) | 2026-09-28T11:30:00 | 1 (000267) | 221 | 000267 wired in `NpPhysicsSDK.cpp` (lock walk, reverse unlock and report at line 225, call to 004062); `NpScene::writeLink()`. New staged-pair target `NxPhysicsCoreDumpTests` (Phases 6/7): two populated scenes dumped seven times (text/binary, with/without addendum, deadlock arm, one scene, none), each `.psc` printed back; date line and pointer tokens normalised. `stdout_delta=0`; 278 oracle lines registered, floors 6/7 = 760/633. Defect found and fixed: body thresholds (maxAngularVelocity, sleep velocities) from the live SDK parameters as 000795 does, not pinned defaults (`Scene.cpp`). Found, not fixed (unwritten Phase 5 rows): no mass from shapes (000008) and a trigger-only dynamic actor accepted; the scene gives explicit masses. cdb trace: 29 rows gain `dynamic_proof`; not hit: mesh arm, pair loop, 000525, descriptor inlines. 000267 Phase 2 ledger `reconstructed_not_falsified`. Gates 2/3/4/6/7 pass, 5 only the vtables marker. |
+| 5 | 2026-09-28T11:30:00 (approx.) | 2026-09-28T12:05:00 | 0 | 0 | Review coverage: scene C in `NxPhysicsCoreDumpTests` (awake(false) on a dynamic body, capsule flags, every printable PsDefaultSettings kind, a static three-shape actor), 95 oracle lines, floors 6/7 = 855/728; defect found and fixed: capsule flags not stored at +0xe8 (`Scene.cpp`). Records: unreached branches, 000008/000795 open-item notes, Phase 6 ledger text, superseded contract sections. `work_units.json` and the three bundles regenerated. Result, defects, open items, rate, verification written. Fresh configure and clean build; gates 2/3/4/6/7 pass, 5 only the vtables marker. |
+
+## Result
+
+Every row of `gap:NpSpringAndDamperEffector.cpp..Joint.cpp` is reconstructed (65 rows, 26,570 B, per
+the regenerated `work_units.json`); `NpSpringAndDamperEffector.cpp` is complete (3 rows, 324 B,
+plus its shared rows in the gap). Rows written, by part:
+
+| Part | Rows | Bytes | Where | Dynamic proof |
+|---|---:|---:|---|---|
+| Spring-and-damper effector (internal and public, incl. 003964) | 30 | 3,325 | `core/SpringAndDamperEffector.cpp`, `core/NpSpringAndDamperEffector.cpp` | 29 of 30 |
+| Scene/NpScene effector rows (000301 000303 000327 000329 000331 000561 000565 000569 000573 000575 000587 000594) | 12 | 887 | `Scene.cpp`, `NpScene.cpp` | 12 |
+| Dump writer, Task 3a (24 rows, 6 of them compiler-generated descriptor inlines) | 24 | 11,702 | `core/SceneDump.cpp` | 19 (the descriptor inlines are never called) |
+| Dump writer, Task 3b (18 rows, 7 of them compiler-generated descriptor inlines) | 18 | 11,517 | `core/SceneDump.cpp` | 10 (mesh arm and pair loop unreachable; descriptor inlines never called) |
+| Readers (004068 004072 004085 000015 000017 000509 000523 001283) | 8 | 204 | `core/Joint.cpp`, `core/JointSupport.cpp`, `Scene.cpp`, `ContactGeneration.cpp` | 8 |
+| 000267 `NpPhysicsSDK::coreDump` | 1 | 221 | `NpPhysicsSDK.cpp` | yes |
+| 000713 record chain root, 000722 island wake counter | 2 | 159 | `core/JointSupport.cpp` | 2 |
+| **Total** | **95** | **28,015** | | |
+
+61 rows (26,599 B) moved from `discovered` to `reconstructed`; the rest were model rows that
+became product rows. 50 rows gained a `dynamic_proof` from the two cdb traces
+(`evidence/effector-and-coredump-trace-effector.txt`, `evidence/effector-and-coredump-trace-coredump.txt`).
+No row is above `reconstructed`; every moved row takes `reconstructed_not_falsified` in its phase
+ledger (Phase 6, 7 and 2).
+
+Wired: `NxScene::createSpringAndDamperEffector`, `releaseEffector`, `getNbEffectors`, the effector
+iterator and every `NxSpringAndDamperEffector` method; `NxPhysicsSDK::coreDump` (text and binary,
+with and without an addendum, and its deadlock arm). Two staged-pair targets on Phases 6 and 7,
+both `stdout_delta=0`: `NxPhysicsEffectorTests` (79 registered oracle lines) and
+`NxPhysicsCoreDumpTests` (373). Floors 6/7 went from 403/276 to 855/728.
+
+Deferred, as asserting stubs with their stable-ID lines, rows left `discovered`:
+- 000791 (133 B, `addForceAtPos` on a body record): needs 000782, not written; the effector's
+  solver slot 003979 reaches it only when a root's +0x1f8 island wake counter is non-zero.
+- 001472 (664 B, the convex mesh's polygon builder): the dump's mesh arm, unreachable because the
+  candidate builds no type-4 shape.
+- 000525/000527 (345 B, the pair-flag array): the dump's pair block, unreachable because the
+  candidate never raises a pair flag.
+
+## Defects found
+
+Found by the transcripts, fixed in source (no expected line was ever edited):
+
+| Defect | Found by | Fix | Commit |
+|---|---|---|---|
+| The scene release recycled a shape's id after freeing the shape; the oracle recycles it first | effector transcript (free order) | `Scene.cpp` `releaseActor` | 7c9e589 |
+| The body record had no Observable part and its teardown no 0x100 notify, so an effector's pointer to a released body stayed live; the scene release did not release live effectors (000575) | effector contract prerequisite, then the transcript | record Observable at +0, notify and `~Observable` in `releaseActor`, 000575 in `nxSceneDelete` | 7c9e589 |
+| Body construction did not build 000797's island (000760, then 000722's copy), so the chain root's +0x1f8 island wake counter was 0 instead of 0x3ecccccc | effector transcript (Task 2 review) | 000722 written; both called in 000797's order | ab526d7 |
+| Bodies with no threshold of their own took a pinned 7.0 max angular velocity and pinned sleep velocities; 000795 reads the live SDK parameters (`maxangularvelocity(7)` against 9) | core-dump transcript | `Scene.cpp` creation model | af43f33 |
+| A capsule's own `flags` (desc +0x54) were not stored at +0xe8, where 000989 stores them and the dump's capsule arm reads them for 004017 (`triggerevent(enter,)` missing) | core-dump transcript, scene C | `Scene.cpp` shape factory | d628181 |
+
+No dump-writer row (3a/3b) needed a change after its static proof: every record format, token,
+name, quote and line ending matched on the first comparison.
+
+## Open items
+
+- **Mass from shapes and the trigger-only dynamic refusal** (separate follow-up task): phys_fn_000008
+  and the shape mass slots are not written; the candidate's creation model covers one unrotated
+  box from a density only, and accepts a dynamic actor whose only shape is a trigger, which the
+  oracle refuses ("Can't compute mass from shapes"). `NxPhysicsCoreDumpTests` gives its dynamic
+  actors explicit masses until then. Recorded on phys_fn_000008 and phys_fn_000795.
+- **000791 / 000782**, the solver's force path from the effector slot 003979: deferred stub; the
+  effector test zeroes the roots' +0x1f8 so it is not reached.
+- **Mesh dump rows** 001472 (stub), 004046 and 004035 (written, unreachable), and the pair-flag
+  rows 000525/000527 (stub): no mesh shape and no pair flag can be made in the candidate.
+- **The dump's elapsed-time header** (004051, Scene+0x544 non-zero): printed only after a simulate,
+  which the candidate does not have.
+- **Compound-shape recycle order in `releaseActor`**: the effector test covers single-shape actors;
+  the order for a compound's children is recorded in the contract (Task 2 review), not compared.
+- **The body record's +0x14 pad**: 0xcdcdcdcd in the oracle (never written), 0 in the candidate
+  (its record is `memset`); not printed by any target.
+- **Address reuse after a free**: the core-dump test restarts its pointer ordinals for scene C,
+  because an address a freed object had may be handed out again depending on the process's
+  address-space history.
+
+## Rate
+
+Method as in `evidence/joint-families.md`: written rows and bytes against the timing table's own
+hours (impl.), and moved rows against the window between final commits.
+
+| Task | Impl. h | Written rows | Written B | Written rows/h | Written B/h |
+|---|---:|---:|---:|---:|---:|
+| 1 (contract) | 0.53 | 0 | 0 | - | - |
+| 2 (effector, Scene rows, 000713) | 0.80 | 43 | 4,244 | 54 | 5,305 |
+| 2 review (000722) | 0.38 | 1 | 127 | 3 | 334 |
+| 3a | 0.43 | 27 | 11,793 | 63 | 27,425 |
+| 3b | 0.77 | 23 | 11,630 | 30 | 15,104 |
+| 4 (000267, test) | 0.58 | 1 | 221 | 2 | 381 |
+| 5 (coverage, records) | 0.58 | 0 | 0 | - | - |
+| **Block** | **4.07** | **95** | **28,015** | **23** | **6,883** |
+
+Window: 07:59:14 (`25acaf2`, the plan) to the Task 5 records commit, about 4.1 h for 61 moved rows
+(26,599 B): about 15 rows/h, 6,500 B/h. The dump writer (3a/3b, 23,423 B with its readers) was
+transcribed at about 19,000 B/h and needed no correction once the transcript ran; the effector
+and the object-state fixes around it are where the time went per byte.
+
+## Verification
+
+On the final tree (Task 5):
+- `cmake -S . -B build -A Win32 --fresh` exit 0; `cmake --build build --config Release --clean-first`
+  exit 0, no errors.
+- Public headers: `git diff 259dc52 -- Physics/include Foundation/include` is empty;
+  `verify_public_headers.py --root Physics/include --manifest public_header_hashes.json` passes
+  (files=80), as do the gates' `immutable_headers` checks.
+- Tool tests: `python -m unittest discover -s docs/reconstruction/novodex-physics/tools/tests -p 'test_*.py'`
+  -> 753 tests OK.
+- Validator: `validate_inventory.py inventory.json` -> `inventory=pass`, exit 0.
+- Gates: 2 pass; 3 pass (103/103); 4 pass (135/135); 5 fails only on `candidate
+  CANDIDATE-MISSING family=vtables` (871/871, 12/12 staged-pair targets `stdout_delta=0`); 6 pass
+  (855/855, 6/6 differentials `stdout_delta=0`); 7 pass (728/728).
+- Stable-ID form: every `// phys_fn_` line in `Physics/src/core/*.cpp` matches
+  `// phys_fn_NNNNNN (0x........, N B)`; 0 violations.
+- CRT use in the block's `core/` files: `SceneDump.cpp` calls only stdio, string and time
+  functions, where the oracle calls its static CRT (fopen, fprintf, sprintf, strstr, fclose,
+  strftime, time, localtime, tzset, operator new, free; plus string copies); its three `fabs` compile to the x87 `fabs`
+  instruction (0x5a02f, 0x5a040, 0x5a051 in the candidate, no call), as the oracle's 004035 does;
+  `SpringAndDamperEffector.cpp` and `NpSpringAndDamperEffector.cpp` call no CRT math (their square
+  roots go through `X87Sqrt.h`). The joint files' existing `sin`/`cos`/`tan`/`atan2` uses are the
+  joint families' and unchanged here.

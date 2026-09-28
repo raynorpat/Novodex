@@ -904,11 +904,11 @@ void __cdecl NxFluidDebugAABB(undefined4 *param_1,undefined4 param_2)
 
 ```
 
-## phys_fn_003922 (0x0008ed20, 33 B, discovered)
+## phys_fn_003922 (0x0008ed20, 33 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/core/SpringAndDamperEffector.cpp
+- implementation: Physics/src/core/SpringAndDamperEffector.cpp
 - prototype: void * __thiscall FUN_1008ed20(undefined4 param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_003960 (0x0008f180)
@@ -936,8 +936,8 @@ void * __thiscall FUN_1008ed20(void *this,undefined4 param_1)
 ## phys_fn_003924 (0x0008ed50, 14 B, reconstructed)
 
 - ambiguous: yes
-- source: virtual dispatch thunk (0x8ed50)
-- implementation: None
+- source: Physics/src/core/SpringAndDamperEffector.cpp
+- implementation: Physics/src/core/SpringAndDamperEffector.cpp
 - prototype: undefined FUN_1008ed50(void)
 - calling convention: unknown, stack purge: 2147483647
 - callers: phys_fn_003922 (0x0008ed20), phys_fn_003960 (0x0008f180)
@@ -961,11 +961,11 @@ void FUN_1008ed50(void)
 
 ```
 
-## phys_fn_003926 (0x0008ed60, 72 B, discovered)
+## phys_fn_003926 (0x0008ed60, 72 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/core/SpringAndDamperEffector.cpp
+- implementation: Physics/src/core/SpringAndDamperEffector.cpp
 - prototype: undefined __thiscall FUN_1008ed60(Observable * param_1, undefined4 param_2)
 - calling convention: __thiscall, stack purge: 8
 - callers: phys_fn_003962 (0x0008f200)
@@ -1003,8 +1003,8 @@ void __thiscall FUN_1008ed60(void *this,Observable *param_1,undefined4 param_2)
 ## phys_fn_003928 (0x0008edb0, 39 B, reconstructed)
 
 - ambiguous: yes
-- source: conditional zero-store (0x8edb0, ret 8)
-- implementation: None
+- source: Physics/src/core/SpringAndDamperEffector.cpp
+- implementation: Physics/src/core/SpringAndDamperEffector.cpp
 - prototype: undefined FUN_1008edb0(void)
 - calling convention: unknown, stack purge: 2147483647
 - callers: phys_fn_003922 (0x0008ed20), phys_fn_003960 (0x0008f180)
@@ -1034,11 +1034,11 @@ void FUN_1008edb0(int param_1,int param_2)
 
 ```
 
-## phys_fn_003930 (0x0008ede0, 59 B, discovered)
+## phys_fn_003930 (0x0008ede0, 59 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/core/SpringAndDamperEffector.cpp
+- implementation: Physics/src/core/SpringAndDamperEffector.cpp
 - prototype: undefined __fastcall FUN_1008ede0(Observable * param_1)
 - calling convention: __fastcall, stack purge: 2147483647
 - callers: phys_fn_003977 (0x0008f6c0)
@@ -1069,11 +1069,11 @@ void __fastcall FUN_1008ede0(Observable *param_1)
 
 ```
 
-## phys_fn_003932 (0x0008ee20, 84 B, discovered)
+## phys_fn_003932 (0x0008ee20, 84 B, reconstructed)
 
 - ambiguous: yes
-- source: None
-- implementation: None
+- source: Physics/src/core/SpringAndDamperEffector.cpp
+- implementation: Physics/src/core/SpringAndDamperEffector.cpp
 - prototype: void * __thiscall FUN_1008ee20(byte param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_003922 (0x0008ed20)
@@ -1110,8 +1110,8 @@ void * __thiscall FUN_1008ee20(void *this,byte param_1)
 ## phys_fn_003934 (0x0008ee80, 35 B, reconstructed)
 
 - ambiguous: yes
-- source: global-call initializer (0x8ee80, ret 4)
-- implementation: None
+- source: Physics/src/core/SpringAndDamperEffector.cpp
+- implementation: Physics/src/core/SpringAndDamperEffector.cpp
 - prototype: void * __thiscall FUN_1008ee80(undefined4 param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_003922 (0x0008ed20)
@@ -1139,8 +1139,8 @@ void * __thiscall FUN_1008ee80(void *this,undefined4 param_1)
 ## phys_fn_003936 (0x0008eeb0, 12 B, reconstructed)
 
 - ambiguous: yes
-- source: vtable store plus global tail jump (0x8eeb0)
-- implementation: None
+- source: Physics/src/core/SpringAndDamperEffector.cpp
+- implementation: Physics/src/core/SpringAndDamperEffector.cpp
 - prototype: undefined __fastcall FUN_1008eeb0(Observable * param_1)
 - calling convention: __fastcall, stack purge: 2147483647
 - callers: phys_fn_003930 (0x0008ede0), phys_fn_003932 (0x0008ee20)
@@ -1168,8 +1168,8 @@ void __fastcall FUN_1008eeb0(Observable *param_1)
 ## phys_fn_003938 (0x0008eec0, 41 B, reconstructed)
 
 - ambiguous: yes
-- source: deleting destructor with a global call (0x8eec0, ret 4)
-- implementation: None
+- source: Physics/src/core/SpringAndDamperEffector.cpp
+- implementation: Physics/src/core/SpringAndDamperEffector.cpp
 - prototype: void * __thiscall FUN_1008eec0(byte param_1)
 - calling convention: __thiscall, stack purge: 4
 - callers: phys_fn_003934 (0x0008ee80)

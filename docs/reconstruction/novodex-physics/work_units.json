@@ -249,14 +249,14 @@
    ],
    "ambiguous_rows": [],
    "rows": {
-    "discovered": 11,
+    "discovered": 10,
     "dynamically_gated": 14,
-    "reconstructed": 1
+    "reconstructed": 2
    },
    "bytes": {
-    "discovered": 1380,
+    "discovered": 1159,
     "dynamically_gated": 1697,
-    "reconstructed": 22
+    "reconstructed": 243
    },
    "phases": {
     "2": 26
@@ -359,12 +359,12 @@
    ],
    "ambiguous_rows": [],
    "rows": {
-    "discovered": 32,
-    "reconstructed": 30
+    "discovered": 30,
+    "reconstructed": 32
    },
    "bytes": {
-    "discovered": 3252,
-    "reconstructed": 1715
+    "discovered": 3020,
+    "reconstructed": 1947
    },
    "phases": {
     "7": 62
@@ -581,14 +581,14 @@
    ],
    "ambiguous_rows": [],
    "rows": {
-    "discovered": 56,
+    "discovered": 52,
     "dynamically_gated": 3,
-    "reconstructed": 24
+    "reconstructed": 28
    },
    "bytes": {
-    "discovered": 8836,
+    "discovered": 8346,
     "dynamically_gated": 5715,
-    "reconstructed": 2217
+    "reconstructed": 2707
    },
    "phases": {
     "7": 83
@@ -797,14 +797,14 @@
     "phys_fn_000985"
    ],
    "rows": {
-    "discovered": 80,
+    "discovered": 79,
     "dynamically_gated": 14,
-    "reconstructed": 47
+    "reconstructed": 48
    },
    "bytes": {
-    "discovered": 39744,
+    "discovered": 39617,
     "dynamically_gated": 1316,
-    "reconstructed": 6534
+    "reconstructed": 6661
    },
    "phases": {
     "2": 20,
@@ -3281,14 +3281,14 @@
     "phys_fn_003938"
    ],
    "rows": {
-    "discovered": 8,
+    "discovered": 4,
     "dynamically_gated": 8,
-    "reconstructed": 6
+    "reconstructed": 10
    },
    "bytes": {
-    "discovered": 4319,
+    "discovered": 4071,
     "dynamically_gated": 1185,
-    "reconstructed": 173
+    "reconstructed": 421
    },
    "phases": {
     "2": 8,
@@ -3309,12 +3309,10 @@
    ],
    "ambiguous_rows": [],
    "rows": {
-    "discovered": 1,
-    "reconstructed": 2
+    "reconstructed": 3
    },
    "bytes": {
-    "discovered": 121,
-    "reconstructed": 203
+    "reconstructed": 324
    },
    "phases": {
     "6": 3
@@ -3392,12 +3390,10 @@
     "phys_fn_004072"
    ],
    "rows": {
-    "discovered": 48,
-    "reconstructed": 17
+    "reconstructed": 65
    },
    "bytes": {
-    "discovered": 25160,
-    "reconstructed": 1410
+    "reconstructed": 26570
    },
    "phases": {
     "6": 65

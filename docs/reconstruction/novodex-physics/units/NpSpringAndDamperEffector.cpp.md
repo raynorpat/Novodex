@@ -13,11 +13,11 @@ Evidenced span: ['0x0008eef0', '0x0008efe0']. Rows: 3 (0 ambiguous). Generated b
 - gap:Controller.cpp..fluids\Fluid.cpp: phys_fn_002364, phys_fn_002366
 - gap:NpSpringAndDamperEffector.cpp..Joint.cpp: phys_fn_003962, phys_fn_003966, phys_fn_003968
 
-## phys_fn_003940 (0x0008eef0, 121 B, discovered)
+## phys_fn_003940 (0x0008eef0, 121 B, reconstructed)
 
 - ambiguous: no
-- source: Physics/src/NpSpringAndDamperEffector.cpp
-- implementation: None
+- source: Physics/src/core/NpSpringAndDamperEffector.cpp
+- implementation: Physics/src/core/NpSpringAndDamperEffector.cpp
 - prototype: undefined __thiscall FUN_1008eef0(int param_1, float * param_2, int param_3, float * param_4)
 - calling convention: __thiscall, stack purge: 16
 - callers: phys_fn_003956 (0x0008f110)
@@ -75,8 +75,8 @@ void __thiscall FUN_1008eef0(void *this,int param_1,float *param_2,int param_3,f
 ## phys_fn_003942 (0x0008ef70, 104 B, reconstructed)
 
 - ambiguous: no
-- source: Physics/src/NpSpringAndDamperEffector.cpp
-- implementation: None
+- source: Physics/src/core/NpSpringAndDamperEffector.cpp
+- implementation: Physics/src/core/NpSpringAndDamperEffector.cpp
 - prototype: undefined __thiscall FUN_1008ef70(undefined4 param_1, undefined4 param_2, undefined4 param_3, undefined4 param_4, undefined4 param_5)
 - calling convention: __thiscall, stack purge: 20
 - callers: phys_fn_003956 (0x0008f110)
@@ -122,8 +122,8 @@ FUN_1008ef70(void *this,undefined4 param_1,undefined4 param_2,undefined4 param_3
 ## phys_fn_003944 (0x0008efe0, 99 B, reconstructed)
 
 - ambiguous: no
-- source: Physics/src/NpSpringAndDamperEffector.cpp
-- implementation: None
+- source: Physics/src/core/NpSpringAndDamperEffector.cpp
+- implementation: Physics/src/core/NpSpringAndDamperEffector.cpp
 - prototype: undefined __thiscall FUN_1008efe0(undefined4 param_1, undefined4 param_2, undefined4 param_3, undefined4 param_4)
 - calling convention: __thiscall, stack purge: 16
 - callers: phys_fn_003956 (0x0008f110)
