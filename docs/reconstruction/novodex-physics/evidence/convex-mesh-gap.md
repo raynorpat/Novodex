@@ -24,6 +24,7 @@ table below.
 | 2e | 2026-09-28T16:14:00 | 2026-09-28T16:52:07 | 10 | 4,370 | The rest of sub-unit D (001639, 001641/001643, 001651, 001653, 001661 in `IceMeshTools.cpp`) and P-Small (002144 in `SmoothNormals.cpp`, 001461 in the new `ConvexHull.cpp`, 002186/002188 in the new `TriangleMeshTopology.cpp`); product forms of 001536 and 001649. 001651, 001653, 001661 and 002144 are naked listing transcriptions whose built code equals the listing instruction for instruction; `angleAtVertex` now calls 002144 (every collision line unchanged). Families pose_pair, unique_axis, edge_dedupe, mesh_normals, adjacency_owner in NxPhysicsThirdPartyTests, all exact with signalling NaNs in the inputs; two fixed-input splits under ceilings (944 NaN words that follow the vendored InvertPRMatrix's quieting of signalling NaNs; 155 on Task 2c's frozen meshes), both 0 with the oracle's callees bound in. One throwaway mutation per x87 row detected (the 001653 one only after cancelling pose kinds were added). 19 lines registered, phase 4 floor 202. 11 traced functions hit. Contract: 001639 is a 3x3 and a 4x4 identity; 001641 chains an outline; TriangleMesh +0x84/+0x88 are the Adjacencies and the EdgeList. See `## Task 2e`. |
 | 2e review | 2026-09-28T16:58:00 | 2026-09-28T17:21:44 | 0 | 0 | Task 2e review cleanups: the four caught mutations re-measured in a `git archive` copy between un-mutated controls (oracle digest a1b4f9a6 unmoved) and cited in the ledger notes of 001661, 001651, 001653 and 002144, which stay reconstructed_not_falsified because a closure needs `dynamically_gated`; the listing comparison now checks absolute operands by their bytes (still 0 differing); the pose_pair split classified over all 944 words (276 quieted signalling NaNs, 668 quiet NaNs differing downstream); the UB of calling Init on a possibly null object noted at 002186/002188; stale contract states updated. See `## Task 2e`, **Review**. |
 | 2f | 2026-09-28T17:22:00 | 2026-09-28T18:38:20 | 25 | 6,875 | P-Hull (001441, 001445, 001449, 001459, 001463, 001465, 001472, 001496 with continuations 001498/001500, 001502 with continuations 001504..001512 -- seven continuations the contract's list lacked) in `ConvexHull.cpp` and sub-unit B (001550, 001556, 001558/001560, 001567, 001569, 001573, 001579, 001581) in the new `IceSupportMaps.cpp`; product forms of the eleven small support-map rows, of 000925, 001391, 001439, 001657, and 000001 (not promoted). The twelve x87 rows are naked listing transcriptions, instruction-equal to the listing (vendored members through /alternatename, 001558's switch table row-relative in .rdata). The 001407 model now calls 001556 and 001472 (shape vtable 626/0 unchanged). Families hull_leaf, convex_hull, support_maps in NxPhysicsThirdPartyTests, all exact with signalling NaNs in the inputs; convex_hull.plane_divergent (a fixed-input rule: concave, nudged and 0x0f7f polycubes, drawn 001463 points) under a ceiling of 1,595 words, 0 with the oracle's 005155/005179 bound into 001463. All twelve x87 mutations caught. Two oracle out-of-bounds reads found and not driven (001641 on an empty Container, 001502 without polygons). 12 lines registered, phase 4 floor 214. 32 of 33 traced functions hit. See `## Task 2f`. |
+| 2f review | 2026-09-28T18:42:00 | 2026-09-28T18:56:30 | 0 | 0 | Task 2f review: 001465's /GS cookie (its `_alloca`) recorded in the row, its static proof and the evidence, with its `__alloca_probe_16` and CRT memset/memcpy (stack and code form, not behaviour); the empty-Container read cited at 0x00031537 (001643); the listing comparison asserts its 67 call/constructor mappings (0 unexpected); round 5 adds 12 exact 0x0f7f meshes on power-of-two steps (convex_hull input, exact, coverage and totals lines re-registered; the split line unchanged); trace re-recorded on c7d5ea8 (32 of 33 hit). Gates 2, 3, 4, 6, 7 pass; phase 5 only CANDIDATE-MISSING vtables. See `## Task 2f`. |
 
 ## Task 2a: box distance kernels and the entries that reach them
 
@@ -1043,10 +1044,12 @@ the oracle's table addresses for the object-layout tests and cannot point at pro
   generated from the listing. `evidence/convex-mesh-gap-2f-listing-compare.py` shows each built
   function in NxPhysics.dll equal to its listing extent instruction for instruction (continuations
   and alignment fillers included): 22, 6, 2, 6, 63, 45, 82, 115, 240, 196, 645, 41, 63, 183, 108,
-  169 and 1 instructions, 0 differing. Branch targets are compared by index; absolute operands by
+  169 and 1 instructions, 0 differing (re-run on c7d5ea8). Branch targets are compared by index; absolute operands by
   the bytes they read in each image (0.0f, 1.0f, 0.5f, 1/3's 0x3eaaaaab, 2^32, FLT_MAX, and the
   doubles 1e-7 / -1e-7); pushed constructor addresses and calls by the candidate function they
-  name (each is the row of the same stable ID, or the vendored member).
+  name (each is the row of the same stable ID, or the vendored member). Since the review the
+  script asserts these mappings rather than printing them (`MAPPINGS checked=67 unexpected=0`) and
+  exits non-zero on any difference.
   - *Why naked:* every float row keeps values on the x87 stack across stores that narrow, and
     001556/001558 convert through `fild` with the 2^32 fix-up and `fistp qword`; 001502 is mostly
     integer but interleaves six allocations, two sorts and an x87 normalisation, so it is one
@@ -1064,9 +1067,14 @@ the oracle's table addresses for the object-layout tests and cannot point at pro
   (naked code cannot be a member; `ret 4` / `ret 8` as the listing's), which is thiscall's
   convention for the callee, so the tables' slots are called by 001558 exactly as the oracle's are;
   001449, 001463, 001465, 001550 and 001657 are cdecl; 000001 stdcall.
-- **Frames.** No new function has a /GS cookie or an unwind frame (checked in the DLL: none of the
-  16 C++ functions loads `__security_cookie` or touches fs:); the naked ones have neither by
-  construction. IceSupportMaps.cpp joins ConvexHull.cpp on the `/EHs-c-` list; both are on the
+- **Frames.** One /GS cookie the oracle lacks: 001465 (`nxHullExtractPolygons`) gets one for its
+  `_alloca` (the cookie xor at DLL 0x10007d66, the check at 0x10008053). It is kept and recorded,
+  as 001541's and 001647's are (no safebuffers). The same row probes through `__alloca_probe_16`
+  (16-byte aligned) where the listing calls __chkstk, and zeroes the marks and copies the references
+  through the CRT's memset / memcpy where the listing inlines `rep stos` / `rep movs`: stack and
+  code form, not behaviour. The first report said no function had a cookie; that check stopped at
+  the first `ret` and was wrong for this row (Task 2f review). None of the other 15 C++ functions
+  has a cookie, and none has an fs: frame; the naked ones have neither by construction. IceSupportMaps.cpp joins ConvexHull.cpp on the `/EHs-c-` list; both are on the
   `/arch:IA32` list (ConvexHull.cpp was not before).
 - **Allocators.** Every allocation is the 004803 getter's, as in the listings: 001472's polygons
   (`new[]`, cookie) and references (type 0); 001502's four temporaries (type 1), edges (`new[]`,
@@ -1097,7 +1105,7 @@ written as bits):
 | family | rows | words | result |
 |---|---|---:|---|
 | hull_leaf | 001441, 001445, 001459, 001496 (hand-built polygons), 001449, 001657, 000001 with 000925 / 001391 / 001439 | 21,813 | exact |
-| convex_hull | 001472, 001502, 001496 (built hulls), 001463; through them 001465, 001449, 001459, 001441, 001445, 001657 | 20,691 | exact |
+| convex_hull | 001472, 001502, 001496 (built hulls), 001463; through them 001465, 001449, 001459, 001441, 001445, 001657 | 32,993 | exact |
 | convex_hull.plane_divergent | the same rows on the split inputs | 56,808 | 1,595 words (52 discrete), ceiling 1,595 / 52 |
 | support_maps | 001550, 001556, 001558/001560, 001565..001589 through the tables | 26,162 | exact |
 
@@ -1119,10 +1127,14 @@ written as bits):
   - *The split is a rule on the fixed inputs:* a mesh goes to `convex_hull.plane_divergent` when
     its voxel set is concave (its concave edges are inactive, so faces across them join a polygon
     that is not planar, whose plane 001463 takes through a skew triangle), when its words were
-    nudged (rounds 2 and 3), or when it runs under 0x0f7f (round 4, the same lattice words: under
-    chop rounding the vendored Plane::Set normalises (0, c, 0) to 0x3f7ffffe where the oracle's
-    005155 gives 0x3f7fffff whenever 1/c is inexact); a 001463 case goes there when its points are
-    drawn words. Main meshes run under 0x027f; the direct 001463 cases under both.
+    nudged (rounds 2 and 3), or when it runs under 0x0f7f on general lattice words (round 4:
+    under chop rounding the vendored Plane::Set normalises (0, c, 0) to 0x3f7ffffe where the
+    oracle's 005155 gives 0x3f7fffff whenever 1/c is inexact); a 001463 case goes there when its
+    points are drawn words. Rounds 0 and 1 run under 0x027f. Round 5 (12 meshes, added in the
+    review) keeps 0x0f7f in the main family: the unit box, the two-cube bar and the separate cubes
+    on the tables whose used steps are powers of two, so every face polygon is at most two cells,
+    every cross product is a power of two times the other step, and the normalisation is exact under
+    chop rounding too. The direct 001463 cases run under both control words.
 - **support_maps.** 2,400 drawn directions through 001550 and 001556 (n = 0..20, ties of magnitude
   and axis directions); A, B and C built by each side's constructors over the main meshes' hulls
   (built by each side's own 001472) and over 30 hand-built hull images of drawn plane, centre and
@@ -1176,27 +1188,31 @@ The ledger notes of the twelve rows (001512 and 001560 for the two continuations
 - `thirdparty input name=hull_leaf words=181380 input=9279a52e`
 - `thirdparty name=hull_leaf ... words=21813 oracle=106d7907 mismatches=0 worst_ulp=0 verdict=exact`
 - `thirdparty coverage name=hull_leaf area=900 center=900 centroid=400 centroid_true=379 support=1500 support_posed=752 gather=300 gather_faces=1639 reverse=24 vector=18 input_snan=7706 x87_0f7f=450 reports=0`
-- `thirdparty input name=convex_hull words=70348 input=2ebe9920`
-- `thirdparty name=convex_hull ... words=20691 oracle=64a1d9bd mismatches=0 worst_ulp=0 verdict=exact`
+- `thirdparty input name=convex_hull words=74098 input=d03735ea`
+- `thirdparty name=convex_hull ... words=32993 oracle=c722f53c mismatches=0 worst_ulp=0 verdict=exact`
 - `thirdparty name=convex_hull.plane_divergent ... words=56808 oracle=87dd3578`
-- `thirdparty coverage name=convex_hull meshes=90 split_meshes=68 polygons_true=53 polygons_false=34 edges_alone=3 polygons=469 edges_true=56 edges_false=0 edges=1495 rebuilt=22 support=1344 plane=700 plane_split=175 reports=24 line318=9 line321=15`
+- `thirdparty coverage name=convex_hull meshes=102 split_meshes=68 polygons_true=63 polygons_false=36 edges_alone=3 polygons=583 edges_true=66 edges_false=0 edges=1735 rebuilt=25 support=1584 plane=700 plane_split=175 reports=24 line318=9 line321=15`
 - `thirdparty input name=support_maps words=26184 input=caa5f9eb`
 - `thirdparty name=support_maps ... words=26162 oracle=79d50caf mismatches=0 worst_ulp=0 verdict=exact`
 - `thirdparty coverage name=support_maps faces=2400 lookups=2400 maps=138 init_true=135 init_false=3 samples=11844 map_lookups=1620 freed=66 input_snan=625 reports=4`
-- `thirdparty coverage driven=89 divergent=30 words=2351025 layout_checks=47`
-- `thirdparty oracle digest=cfa5d10e`
+- `thirdparty coverage driven=89 divergent=30 words=2363327 layout_checks=47`
+- `thirdparty oracle digest=781af325`
 
-The coverage lines count oracle-side values and fixed-input rules only. The phase 4 floor goes from
+As first registered from 0701abc, four of these read `words=70348 input=2ebe9920`,
+`words=20691 oracle=64a1d9bd`, `meshes=90 ... polygons=469 ... edges=1495 rebuilt=22 support=1344`
+and `words=2351025` / `cfa5d10e`; the review's round 5 re-registered them (Task 2f's own lines,
+from the oracle side of the run on c7d5ea8). The split line is unchanged. The coverage lines count oracle-side values and fixed-input rules only. The phase 4 floor goes from
 202 to 214, and the MINIMUM pin with it. `kDivergentCeilings` holds
 `convex_hull.plane_divergent` at 1,595 words, 52 discrete.
 
 **Trace.** `evidence/convex-mesh-gap-trace-2f.txt` records one-shot cdb breakpoints on the 33
 candidate functions carrying this task's stable IDs. 32 were hit in one full run of the build of
-0701abc, which closed `thirdparty candidate mismatches=0` (exe sha256 af76122099e40130...). The one
+c7d5ea8, which closed `thirdparty candidate mismatches=0` (exe sha256 25e8d5625e5cb87a...; first
+recorded on 0701abc, exe af76122099e40130..., re-recorded after the review). The one
 not hit is 001563, the base table's deleting destructor: no map is destroyed while it holds the
 base table.
 
-**Gates** (on 45a4d16 with this commit's inventory): phases 2, 3 (243/243), 4 (214/214), 6 (403)
+**Gates** (on 45a4d16 with this commit's inventory, and again on c7d5ea8 after the review): phases 2, 3 (243/243), 4 (214/214), 6 (403)
 and 7 (276) pass; phase 5 fails only on `candidate CANDIDATE-MISSING family=vtables` through
 NxPhysicsObjectLayoutTests (871/871; shape vtable 626/0). Tool tests 763 OK; validate_inventory.py
 passes.

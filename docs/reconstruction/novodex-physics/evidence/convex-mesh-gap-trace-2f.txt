@@ -11,9 +11,11 @@ Debugger:  Microsoft Windows Debugger 10.0.10586.567 (X86)
 Command:   cdb -cf <script> D:\github\Novodex\.claude\worktrees\trusting-shaw-883d69\build\Release\NxPhysicsThirdPartyTests.exe
            D:\FlamingEnt__\Unreal_3\Binaries 4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
            (the script is the bp lines below, then `g` and `q`)
-Recorded:  2026-09-28, on the build of commit 0701abc (the Task 2f rows, wiring and families).
+Recorded:  2026-09-28, on the build of commit c7d5ea8 (the Task 2f rows, wiring, families and
+           review fixes); first recorded on 0701abc (exe sha256 af76122099e40130...), re-recorded
+           after the review on the current build.
 Binary:    build\Release\NxPhysicsThirdPartyTests.exe
-           sha256=af76122099e401308885fba06a0a609db81bddde987dff95f7b339c34b30bccb
+           sha256=25e8d5625e5cb87ab693c6cd4356b2865d58fff903a718abfa02cea4cd61c41f
 Oracle:    D:\FlamingEnt__\Unreal_3\Binaries\NxPhysics.dll
            sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c (the pin; the
            harness re-hashes it and refuses to run otherwise)
@@ -83,10 +85,10 @@ HIT 001472 nxHullComputePolygons +0x2cbf0
 HIT 001465 nxHullExtractPolygons +0x2ce90
 HIT 001463 nxHullPolygonPlane +0x2d240
 HIT 001502 nxHullComputeEdges +0x2c460
-  | thirdparty input name=convex_hull words=70348 input=2ebe9920
-  | thirdparty name=convex_hull rva=0x0002b6f0 owner=phys_fn_001472 source=ConvexHull.cpp,IceAdjacencies.cpp,EdgeList.cpp,IceMeshTools.cpp words=20691 oracle=64a1d9bd mismatches=0 worst_ulp=0 verdict=exact
+  | thirdparty input name=convex_hull words=74098 input=d03735ea
+  | thirdparty name=convex_hull rva=0x0002b6f0 owner=phys_fn_001472 source=ConvexHull.cpp,IceAdjacencies.cpp,EdgeList.cpp,IceMeshTools.cpp words=32993 oracle=c722f53c mismatches=0 worst_ulp=0 verdict=exact
   | thirdparty name=convex_hull.plane_divergent rva=0x0002b6f0 owner=phys_fn_001472 source=ConvexHull.cpp,IceAdjacencies.cpp,EdgeList.cpp,IceMeshTools.cpp words=56808 oracle=87dd3578 mismatches=1595 discrete=52 float_ulp=inf double_ulp=0 beyond=512 inf_words=118 degenerate=0 finite_ulp=1074731964 beyond_abs=inf first_diff=521 length_delta=0 ceiling=1595/52 verdict=divergent
-  | thirdparty coverage name=convex_hull meshes=90 split_meshes=68 polygons_true=53 polygons_false=34 edges_alone=3 polygons=469 edges_true=56 edges_false=0 edges=1495 rebuilt=22 support=1344 plane=700 plane_split=175 reports=24 line318=9 line321=15
+  | thirdparty coverage name=convex_hull meshes=102 split_meshes=68 polygons_true=63 polygons_false=36 edges_alone=3 polygons=583 edges_true=66 edges_false=0 edges=1735 rebuilt=25 support=1584 plane=700 plane_split=175 reports=24 line318=9 line321=15
 HIT 001550 nxSupportMapCubeFace +0x2e060
 HIT 001556 nxSupportMapLookup +0x2e120
 HIT 001565 nxSupportMapHullConstruct +0x2e0f0
