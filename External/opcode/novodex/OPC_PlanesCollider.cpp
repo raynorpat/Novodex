@@ -1,27 +1,12 @@
 /*
  * NOVODEX LOCAL MODIFICATION
- * upstream: External/opcode/upstream/Opcode/OPC_AABBCollider.cpp
+ * upstream: External/opcode/upstream/Opcode/OPC_PlanesCollider.cpp
  *
- * [1] AABBCollider::_Collide(const AABBTreeNode*), the vanilla-tree walk, passes
- *     the node's extents and centre to AABBAABBOverlap(const Point& b, const
- *     Point& Pb) in that order, as every other _Collide here does. Stock 1.3
- *     passes (Center, Extents), so the test compares the query box's centre
- *     against the node's extents. The image subtracts the node centre
- *     (max+min)*0.5 from the query centre and adds the node extents
- *     (max-min)*0.5 to the query extents.
- *     established at 0x000eee90..0x000eeeb9 (centre (max+min)*0.5 kept at
- *     [esp+0x1c]), 0x000eeee1..0x000eef0d (extents (max-min)*0.5 at
- *     [esp+0x10]), 0x000eef35 `fld [edi+0x34]; fsub [esp+0x1c]` (query centre
- *     minus node centre) and 0x000eef44 `fld [esp+0x10]; fadd [edi+0x40]`
- *     (node extents plus query extents). Found by the vendored-correspondence
- *     Task 4 differential (opcode_aabb_vanilla): with the stock order the
- *     candidate rejected the root of 32 of the 60 queries the oracle answered.
- *
- * [2] InitQuery takes the result Container from the cache's pointer (mTouchedPrimitives =
+ * [1] InitQuery takes the result Container from the cache's pointer (mTouchedPrimitives =
  *     cache.TouchedPrimitives) instead of the address of an embedded one, and the hybrid
  *     collider's Collide resets and adopts that Container through the pointer; see
- *     OPC_VolumeCollider.h [1]. The image: 0x000e9c00 `mov edi,[edx]; mov
- *     [esi+0x10],edi`.
+ *     OPC_VolumeCollider.h [1]. The image: 0x000e173d `mov eax,[eax]; mov
+ *     [ebp+0x10],eax`.
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
@@ -33,8 +18,8 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
- *	Contains code for an AABB collider.
- *	\file		OPC_AABBCollider.cpp
+ *	Contains code for a planes collider.
+ *	\file		OPC_PlanesCollider.cpp
  *	\author		Pierre Terdiman
  *	\date		January, 1st, 2002
  */
@@ -42,9 +27,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
- *	Contains an AABB-vs-tree collider.
+ *	Contains a Planes-vs-tree collider.
  *
- *	\class		AABBCollider
+ *	\class		PlanesCollider
  *	\author		Pierre Terdiman
  *	\version	1.3
  *	\date		January, 1st, 2002
@@ -57,25 +42,22 @@
 
 using namespace Opcode;
 
-#include "OPC_BoxBoxOverlap.h"
-#include "OPC_TriBoxOverlap.h"
+#include "OPC_PlanesAABBOverlap.h"
+#include "OPC_PlanesTriOverlap.h"
 
-#define SET_CONTACT(prim_index, flag)						\
-	/* Set contact status */								\
-	mFlags |= flag;											\
+#define SET_CONTACT(prim_index, flag)		\
+	/* Set contact status */				\
+	mFlags |= flag;							\
 	mTouchedPrimitives->Add(prim_index);
 
-//! AABB-triangle test
-#define AABB_PRIM(prim_index, flag)							\
-	/* Request vertices from the app */						\
-	VertexPointers VP;	mIMesh->GetTriangle(VP, prim_index);\
-	mLeafVerts[0] = *VP.Vertex[0];							\
-	mLeafVerts[1] = *VP.Vertex[1];							\
-	mLeafVerts[2] = *VP.Vertex[2];							\
-	/* Perform triangle-box overlap test */					\
-	if(TriBoxOverlap())										\
-	{														\
-		SET_CONTACT(prim_index, flag)						\
+//! Planes-triangle test
+#define PLANES_PRIM(prim_index, flag)		\
+	/* Request vertices from the app */		\
+	mIMesh->GetTriangle(mVP, prim_index);	\
+	/* Perform triangle-box overlap test */	\
+	if(PlanesTriOverlap(clip_mask))			\
+	{										\
+		SET_CONTACT(prim_index, flag)		\
 	}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -83,7 +65,9 @@ using namespace Opcode;
  *	Constructor.
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-AABBCollider::AABBCollider()
+PlanesCollider::PlanesCollider() :
+	mPlanes		(null),
+	mNbPlanes	(0)
 {
 }
 
@@ -92,8 +76,22 @@ AABBCollider::AABBCollider()
  *	Destructor.
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-AABBCollider::~AABBCollider()
+PlanesCollider::~PlanesCollider()
 {
+	DELETEARRAY(mPlanes);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ *	Validates current settings. You should call this method after all the settings and callbacks have been defined.
+ *	\return		null if everything is ok, else a string describing the problem
+ */
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+const char* PlanesCollider::ValidateSettings()
+{
+	if(TemporalCoherenceEnabled() && !FirstContactEnabled())	return "Temporal coherence only works with ""First contact"" mode!";
+
+	return VolumeCollider::ValidateSettings();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -103,20 +101,24 @@ AABBCollider::~AABBCollider()
  *	- with GetNbTouchedPrimitives()
  *	- with GetTouchedPrimitives()
  *
- *	\param		cache		[in/out] a box cache
- *	\param		box			[in] collision AABB in world space
+ *	\param		cache		[in/out] a planes cache
+ *	\param		planes		[in] list of planes in world space
+ *	\param		nb_planes	[in] number of planes
  *	\param		model		[in] Opcode model to collide with
+ *	\param		worldm		[in] model's world matrix, or null
  *	\return		true if success
  *	\warning	SCALE NOT SUPPORTED. The matrices must contain rotation & translation parts only.
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool AABBCollider::Collide(AABBCache& cache, const CollisionAABB& box, const Model& model)
+bool PlanesCollider::Collide(PlanesCache& cache, const Plane* planes, udword nb_planes, const Model& model, const Matrix4x4* worldm)
 {
 	// Checkings
 	if(!Setup(&model))	return false;
 
 	// Init collision query
-	if(InitQuery(cache, box))	return true;
+	if(InitQuery(cache, planes, nb_planes, worldm))	return true;
+
+	udword PlaneMask = (1<<nb_planes)-1;
 
 	if(!model.HasLeafNodes())
 	{
@@ -129,16 +131,16 @@ bool AABBCollider::Collide(AABBCache& cache, const CollisionAABB& box, const Mod
 			mExtentsCoeff	= Tree->mExtentsCoeff;
 
 			// Perform collision query
-			if(SkipPrimitiveTests())	_CollideNoPrimitiveTest(Tree->GetNodes());
-			else						_Collide(Tree->GetNodes());
+			if(SkipPrimitiveTests())	_CollideNoPrimitiveTest(Tree->GetNodes(), PlaneMask);
+			else						_Collide(Tree->GetNodes(), PlaneMask);
 		}
 		else
 		{
 			const AABBNoLeafTree* Tree = (const AABBNoLeafTree*)model.GetTree();
 
 			// Perform collision query
-			if(SkipPrimitiveTests())	_CollideNoPrimitiveTest(Tree->GetNodes());
-			else						_Collide(Tree->GetNodes());
+			if(SkipPrimitiveTests())	_CollideNoPrimitiveTest(Tree->GetNodes(), PlaneMask);
+			else						_Collide(Tree->GetNodes(), PlaneMask);
 		}
 	}
 	else
@@ -152,16 +154,16 @@ bool AABBCollider::Collide(AABBCache& cache, const CollisionAABB& box, const Mod
 			mExtentsCoeff	= Tree->mExtentsCoeff;
 
 			// Perform collision query
-			if(SkipPrimitiveTests())	_CollideNoPrimitiveTest(Tree->GetNodes());
-			else						_Collide(Tree->GetNodes());
+			if(SkipPrimitiveTests())	_CollideNoPrimitiveTest(Tree->GetNodes(), PlaneMask);
+			else						_Collide(Tree->GetNodes(), PlaneMask);
 		}
 		else
 		{
 			const AABBCollisionTree* Tree = (const AABBCollisionTree*)model.GetTree();
 
 			// Perform collision query
-			if(SkipPrimitiveTests())	_CollideNoPrimitiveTest(Tree->GetNodes());
-			else						_Collide(Tree->GetNodes());
+			if(SkipPrimitiveTests())	_CollideNoPrimitiveTest(Tree->GetNodes(), PlaneMask);
+			else						_Collide(Tree->GetNodes(), PlaneMask);
 		}
 	}
 	return true;
@@ -171,20 +173,39 @@ bool AABBCollider::Collide(AABBCache& cache, const CollisionAABB& box, const Mod
 /**
  *	Initializes a collision query :
  *	- reset stats & contact status
+ *	- compute planes in model space
  *	- check temporal coherence
  *
- *	\param		cache		[in/out] a box cache
- *	\param		box			[in] AABB in world space
+ *	\param		cache		[in/out] a planes cache
+ *	\param		planes		[in] list of planes
+ *	\param		nb_planes	[in] number of planes
+ *	\param		worldm		[in] model's world matrix, or null
  *	\return		TRUE if we can return immediately
+ *	\warning	SCALE NOT SUPPORTED. The matrix must contain rotation & translation parts only.
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-BOOL AABBCollider::InitQuery(AABBCache& cache, const CollisionAABB& box)
+BOOL PlanesCollider::InitQuery(PlanesCache& cache, const Plane* planes, udword nb_planes, const Matrix4x4* worldm)
 {
 	// 1) Call the base method
 	VolumeCollider::InitQuery();
 
-	// 2) Keep track of the query box
-	mBox = box;
+	// 2) Compute planes in model space
+	if(nb_planes>mNbPlanes)
+	{
+		DELETEARRAY(mPlanes);
+		mPlanes = new Plane[nb_planes];
+	}
+	mNbPlanes = nb_planes;
+
+	if(worldm)
+	{
+		Matrix4x4 InvWorldM;
+		InvertPRMatrix(InvWorldM, *worldm);
+
+//		for(udword i=0;i<nb_planes;i++)	mPlanes[i] = planes[i] * InvWorldM;
+		for(udword i=0;i<nb_planes;i++)	TransformPlane(mPlanes[i], planes[i], InvWorldM);
+	}
+	else CopyMemory(mPlanes, planes, nb_planes*sizeof(Plane));
 
 	// 3) Setup destination pointer
 	mTouchedPrimitives = cache.TouchedPrimitives;
@@ -197,15 +218,16 @@ BOOL AABBCollider::InitQuery(AABBCache& cache, const CollisionAABB& box)
 			// We simply perform the BV-Prim overlap test each time. We assume single triangle has index 0.
 			mTouchedPrimitives->Reset();
 
-			// Perform overlap test between the unique triangle and the box (and set contact status if needed)
-			AABB_PRIM(udword(0), OPC_CONTACT)
+			// Perform overlap test between the unique triangle and the planes (and set contact status if needed)
+			udword clip_mask = (1<<mNbPlanes)-1;
+			PLANES_PRIM(udword(0), OPC_CONTACT)
 
 			// Return immediately regardless of status
 			return TRUE;
 		}
 	}
 
-	// 5) Check temporal coherence :
+	// 4) Check temporal coherence:
 	if(TemporalCoherenceEnabled())
 	{
 		// Here we use temporal coherence
@@ -223,8 +245,9 @@ BOOL AABBCollider::InitQuery(AABBCache& cache, const CollisionAABB& box)
 				// - if it isn't, then the array should be reset anyway for the normal query
 				mTouchedPrimitives->Reset();
 
-				// Perform overlap test between the cached triangle and the box (and set contact status if needed)
-				AABB_PRIM(PreviouslyTouchedFace, OPC_TEMPORAL_CONTACT)
+				// Perform overlap test between the cached triangle and the planes (and set contact status if needed)
+				udword clip_mask = (1<<mNbPlanes)-1;
+				PLANES_PRIM(PreviouslyTouchedFace, OPC_TEMPORAL_CONTACT)
 
 				// Return immediately if possible
 				if(GetContactStatus())	return TRUE;
@@ -232,34 +255,7 @@ BOOL AABBCollider::InitQuery(AABBCache& cache, const CollisionAABB& box)
 			// else no face has been touched during previous query
 			// => we'll have to perform a normal query
 		}
-		else
-		{
-			// We're interested in all contacts =>test the new real box N(ew) against the previous fat box P(revious):
-			if(IsCacheValid(cache) && mBox.IsInside(cache.FatBox))
-			{
-				// - if N is included in P, return previous list
-				// => we simply leave the list (mTouchedFaces) unchanged
-
-				// Set contact status if needed
-				if(mTouchedPrimitives->GetNbEntries())	mFlags |= OPC_TEMPORAL_CONTACT;
-
-				// In any case we don't need to do a query
-				return TRUE;
-			}
-			else
-			{
-				// - else do the query using a fat N
-
-				// Reset cache since we'll about to perform a real query
-				mTouchedPrimitives->Reset();
-
-				// Make a fat box so that coherence will work for subsequent frames
-				mBox.mExtents *= cache.FatCoeff;
-
-				// Update cache with query data (signature for cached faces)
-				cache.FatBox = mBox;
-			}
-		}
+		else mTouchedPrimitives->Reset();
 	}
 	else
 	{
@@ -267,69 +263,18 @@ BOOL AABBCollider::InitQuery(AABBCache& cache, const CollisionAABB& box)
 		mTouchedPrimitives->Reset();
 	}
 
-	// 5) Precompute min & max bounds if needed
-	mMin = box.mCenter - box.mExtents;
-	mMax = box.mCenter + box.mExtents;
-
 	return FALSE;
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/**
- *	Collision query for vanilla AABB trees.
- *	\param		cache		[in/out] a box cache
- *	\param		box			[in] collision AABB in world space
- *	\param		tree		[in] AABB tree
- *	\return		true if success
- */
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool AABBCollider::Collide(AABBCache& cache, const CollisionAABB& box, const AABBTree* tree)
-{
-	// This is typically called for a scene tree, full of -AABBs-, not full of triangles.
-	// So we don't really have "primitives" to deal with. Hence it doesn't work with
-	// "FirstContact" + "TemporalCoherence".
-	ASSERT( !(FirstContactEnabled() && TemporalCoherenceEnabled()) );
-
-	// Checkings
-	if(!tree)	return false;
-
-	// Init collision query
-	if(InitQuery(cache, box))	return true;
-
-	// Perform collision query
-	_Collide(tree);
-
-	return true;
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/**
- *	Checks the AABB completely contains the box. In which case we can end the query sooner.
- *	\param		bc	[in] box center
- *	\param		be	[in] box extents
- *	\return		true if the AABB contains the whole box
- */
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-inline_ BOOL AABBCollider::AABBContainsBox(const Point& bc, const Point& be)
-{
-	if(mMin.x > bc.x - be.x)	return FALSE;
-	if(mMin.y > bc.y - be.y)	return FALSE;
-	if(mMin.z > bc.z - be.z)	return FALSE;
-
-	if(mMax.x < bc.x + be.x)	return FALSE;
-	if(mMax.y < bc.y + be.y)	return FALSE;
-	if(mMax.z < bc.z + be.z)	return FALSE;
-
-	return TRUE;
-}
-
-#define TEST_BOX_IN_AABB(center, extents)	\
-	if(AABBContainsBox(center, extents))	\
-	{										\
-		/* Set contact status */			\
-		mFlags |= OPC_CONTACT;				\
-		_Dump(node);						\
-		return;								\
+#define TEST_CLIP_MASK																					\
+	/* If the box is completely included, so are its children. We don't need to do extra tests, we */	\
+	/* can immediately output a list of visible children. Those ones won't need to be clipped. */		\
+	if(!OutClipMask)																					\
+	{																									\
+		/* Set contact status */																		\
+		mFlags |= OPC_CONTACT;																			\
+		_Dump(node);																					\
+		return;																							\
 	}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -338,51 +283,55 @@ inline_ BOOL AABBCollider::AABBContainsBox(const Point& bc, const Point& be)
  *	\param		node	[in] current collision node
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void AABBCollider::_Collide(const AABBCollisionNode* node)
+void PlanesCollider::_Collide(const AABBCollisionNode* node, udword clip_mask)
 {
-	// Perform AABB-AABB overlap test
-	if(!AABBAABBOverlap(node->mAABB.mExtents, node->mAABB.mCenter))	return;
+	// Test the box against the planes. If the box is completely culled, so are its children, hence we exit.
+	udword OutClipMask;
+	if(!PlanesAABBOverlap(node->mAABB.mCenter, node->mAABB.mExtents, OutClipMask, clip_mask))	return;
 
-	TEST_BOX_IN_AABB(node->mAABB.mCenter, node->mAABB.mExtents)
+	TEST_CLIP_MASK
 
+	// Else the box straddles one or several planes, so we need to recurse down the tree.
 	if(node->IsLeaf())
 	{
-		AABB_PRIM(node->GetPrimitive(), OPC_CONTACT)
+		PLANES_PRIM(node->GetPrimitive(), OPC_CONTACT)
 	}
 	else
 	{
-		_Collide(node->GetPos());
+		_Collide(node->GetPos(), OutClipMask);
 
 		if(ContactFound()) return;
 
-		_Collide(node->GetNeg());
+		_Collide(node->GetNeg(), OutClipMask);
 	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
- *	Recursive collision query for normal AABB trees, without primitive tests.
+ *	Recursive collision query for normal AABB trees.
  *	\param		node	[in] current collision node
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void AABBCollider::_CollideNoPrimitiveTest(const AABBCollisionNode* node)
+void PlanesCollider::_CollideNoPrimitiveTest(const AABBCollisionNode* node, udword clip_mask)
 {
-	// Perform AABB-AABB overlap test
-	if(!AABBAABBOverlap(node->mAABB.mExtents, node->mAABB.mCenter))	return;
+	// Test the box against the planes. If the box is completely culled, so are its children, hence we exit.
+	udword OutClipMask;
+	if(!PlanesAABBOverlap(node->mAABB.mCenter, node->mAABB.mExtents, OutClipMask, clip_mask))	return;
 
-	TEST_BOX_IN_AABB(node->mAABB.mCenter, node->mAABB.mExtents)
+	TEST_CLIP_MASK
 
+	// Else the box straddles one or several planes, so we need to recurse down the tree.
 	if(node->IsLeaf())
 	{
 		SET_CONTACT(node->GetPrimitive(), OPC_CONTACT)
 	}
 	else
 	{
-		_CollideNoPrimitiveTest(node->GetPos());
+		_CollideNoPrimitiveTest(node->GetPos(), OutClipMask);
 
 		if(ContactFound()) return;
 
-		_CollideNoPrimitiveTest(node->GetNeg());
+		_CollideNoPrimitiveTest(node->GetNeg(), OutClipMask);
 	}
 }
 
@@ -392,61 +341,65 @@ void AABBCollider::_CollideNoPrimitiveTest(const AABBCollisionNode* node)
  *	\param		node	[in] current collision node
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void AABBCollider::_Collide(const AABBQuantizedNode* node)
+void PlanesCollider::_Collide(const AABBQuantizedNode* node, udword clip_mask)
 {
 	// Dequantize box
 	const QuantizedAABB& Box = node->mAABB;
 	const Point Center(float(Box.mCenter[0]) * mCenterCoeff.x, float(Box.mCenter[1]) * mCenterCoeff.y, float(Box.mCenter[2]) * mCenterCoeff.z);
 	const Point Extents(float(Box.mExtents[0]) * mExtentsCoeff.x, float(Box.mExtents[1]) * mExtentsCoeff.y, float(Box.mExtents[2]) * mExtentsCoeff.z);
 
-	// Perform AABB-AABB overlap test
-	if(!AABBAABBOverlap(Extents, Center))	return;
+	// Test the box against the planes. If the box is completely culled, so are its children, hence we exit.
+	udword OutClipMask;
+	if(!PlanesAABBOverlap(Center, Extents, OutClipMask, clip_mask))	return;
 
-	TEST_BOX_IN_AABB(Center, Extents)
+	TEST_CLIP_MASK
 
+	// Else the box straddles one or several planes, so we need to recurse down the tree.
 	if(node->IsLeaf())
 	{
-		AABB_PRIM(node->GetPrimitive(), OPC_CONTACT)
+		PLANES_PRIM(node->GetPrimitive(), OPC_CONTACT)
 	}
 	else
 	{
-		_Collide(node->GetPos());
+		_Collide(node->GetPos(), OutClipMask);
 
 		if(ContactFound()) return;
 
-		_Collide(node->GetNeg());
+		_Collide(node->GetNeg(), OutClipMask);
 	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
- *	Recursive collision query for quantized AABB trees, without primitive tests.
+ *	Recursive collision query for quantized AABB trees.
  *	\param		node	[in] current collision node
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void AABBCollider::_CollideNoPrimitiveTest(const AABBQuantizedNode* node)
+void PlanesCollider::_CollideNoPrimitiveTest(const AABBQuantizedNode* node, udword clip_mask)
 {
 	// Dequantize box
 	const QuantizedAABB& Box = node->mAABB;
 	const Point Center(float(Box.mCenter[0]) * mCenterCoeff.x, float(Box.mCenter[1]) * mCenterCoeff.y, float(Box.mCenter[2]) * mCenterCoeff.z);
 	const Point Extents(float(Box.mExtents[0]) * mExtentsCoeff.x, float(Box.mExtents[1]) * mExtentsCoeff.y, float(Box.mExtents[2]) * mExtentsCoeff.z);
 
-	// Perform AABB-AABB overlap test
-	if(!AABBAABBOverlap(Extents, Center))	return;
+	// Test the box against the planes. If the box is completely culled, so are its children, hence we exit.
+	udword OutClipMask;
+	if(!PlanesAABBOverlap(Center, Extents, OutClipMask, clip_mask))	return;
 
-	TEST_BOX_IN_AABB(Center, Extents)
+	TEST_CLIP_MASK
 
+	// Else the box straddles one or several planes, so we need to recurse down the tree.
 	if(node->IsLeaf())
 	{
 		SET_CONTACT(node->GetPrimitive(), OPC_CONTACT)
 	}
 	else
 	{
-		_CollideNoPrimitiveTest(node->GetPos());
+		_CollideNoPrimitiveTest(node->GetPos(), OutClipMask);
 
 		if(ContactFound()) return;
 
-		_CollideNoPrimitiveTest(node->GetNeg());
+		_CollideNoPrimitiveTest(node->GetNeg(), OutClipMask);
 	}
 }
 
@@ -456,42 +409,46 @@ void AABBCollider::_CollideNoPrimitiveTest(const AABBQuantizedNode* node)
  *	\param		node	[in] current collision node
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void AABBCollider::_Collide(const AABBNoLeafNode* node)
+void PlanesCollider::_Collide(const AABBNoLeafNode* node, udword clip_mask)
 {
-	// Perform AABB-AABB overlap test
-	if(!AABBAABBOverlap(node->mAABB.mExtents, node->mAABB.mCenter))	return;
+	// Test the box against the planes. If the box is completely culled, so are its children, hence we exit.
+	udword OutClipMask;
+	if(!PlanesAABBOverlap(node->mAABB.mCenter, node->mAABB.mExtents, OutClipMask, clip_mask))	return;
 
-	TEST_BOX_IN_AABB(node->mAABB.mCenter, node->mAABB.mExtents)
+	TEST_CLIP_MASK
 
-	if(node->HasPosLeaf())	{ AABB_PRIM(node->GetPosPrimitive(), OPC_CONTACT) }
-	else					_Collide(node->GetPos());
+	// Else the box straddles one or several planes, so we need to recurse down the tree.
+	if(node->HasPosLeaf())	{ PLANES_PRIM(node->GetPosPrimitive(), OPC_CONTACT) }
+	else					_Collide(node->GetPos(), OutClipMask);
 
 	if(ContactFound()) return;
 
-	if(node->HasNegLeaf())	{ AABB_PRIM(node->GetNegPrimitive(), OPC_CONTACT) }
-	else					_Collide(node->GetNeg());
+	if(node->HasNegLeaf())	{ PLANES_PRIM(node->GetNegPrimitive(), OPC_CONTACT) }
+	else					_Collide(node->GetNeg(), OutClipMask);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
- *	Recursive collision query for no-leaf AABB trees, without primitive tests.
+ *	Recursive collision query for no-leaf AABB trees.
  *	\param		node	[in] current collision node
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void AABBCollider::_CollideNoPrimitiveTest(const AABBNoLeafNode* node)
+void PlanesCollider::_CollideNoPrimitiveTest(const AABBNoLeafNode* node, udword clip_mask)
 {
-	// Perform AABB-AABB overlap test
-	if(!AABBAABBOverlap(node->mAABB.mExtents, node->mAABB.mCenter))	return;
+	// Test the box against the planes. If the box is completely culled, so are its children, hence we exit.
+	udword OutClipMask;
+	if(!PlanesAABBOverlap(node->mAABB.mCenter, node->mAABB.mExtents, OutClipMask, clip_mask))	return;
 
-	TEST_BOX_IN_AABB(node->mAABB.mCenter, node->mAABB.mExtents)
+	TEST_CLIP_MASK
 
+	// Else the box straddles one or several planes, so we need to recurse down the tree.
 	if(node->HasPosLeaf())	{ SET_CONTACT(node->GetPosPrimitive(), OPC_CONTACT) }
-	else					_CollideNoPrimitiveTest(node->GetPos());
+	else					_CollideNoPrimitiveTest(node->GetPos(), OutClipMask);
 
 	if(ContactFound()) return;
 
 	if(node->HasNegLeaf())	{ SET_CONTACT(node->GetNegPrimitive(), OPC_CONTACT) }
-	else					_CollideNoPrimitiveTest(node->GetNeg());
+	else					_CollideNoPrimitiveTest(node->GetNeg(), OutClipMask);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -500,79 +457,60 @@ void AABBCollider::_CollideNoPrimitiveTest(const AABBNoLeafNode* node)
  *	\param		node	[in] current collision node
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void AABBCollider::_Collide(const AABBQuantizedNoLeafNode* node)
+void PlanesCollider::_Collide(const AABBQuantizedNoLeafNode* node, udword clip_mask)
 {
 	// Dequantize box
 	const QuantizedAABB& Box = node->mAABB;
 	const Point Center(float(Box.mCenter[0]) * mCenterCoeff.x, float(Box.mCenter[1]) * mCenterCoeff.y, float(Box.mCenter[2]) * mCenterCoeff.z);
 	const Point Extents(float(Box.mExtents[0]) * mExtentsCoeff.x, float(Box.mExtents[1]) * mExtentsCoeff.y, float(Box.mExtents[2]) * mExtentsCoeff.z);
 
-	// Perform AABB-AABB overlap test
-	if(!AABBAABBOverlap(Extents, Center))	return;
+	// Test the box against the planes. If the box is completely culled, so are its children, hence we exit.
+	udword OutClipMask;
+	if(!PlanesAABBOverlap(Center, Extents, OutClipMask, clip_mask))	return;
 
-	TEST_BOX_IN_AABB(Center, Extents)
+	TEST_CLIP_MASK
 
-	if(node->HasPosLeaf())	{ AABB_PRIM(node->GetPosPrimitive(), OPC_CONTACT) }
-	else					_Collide(node->GetPos());
+	// Else the box straddles one or several planes, so we need to recurse down the tree.
+	if(node->HasPosLeaf())	{ PLANES_PRIM(node->GetPosPrimitive(), OPC_CONTACT) }
+	else					_Collide(node->GetPos(), OutClipMask);
 
 	if(ContactFound()) return;
 
-	if(node->HasNegLeaf())	{ AABB_PRIM(node->GetNegPrimitive(), OPC_CONTACT) }
-	else					_Collide(node->GetNeg());
+	if(node->HasNegLeaf())	{ PLANES_PRIM(node->GetNegPrimitive(), OPC_CONTACT) }
+	else					_Collide(node->GetNeg(), OutClipMask);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
- *	Recursive collision query for quantized no-leaf AABB trees, without primitive tests.
+ *	Recursive collision query for quantized no-leaf AABB trees.
  *	\param		node	[in] current collision node
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void AABBCollider::_CollideNoPrimitiveTest(const AABBQuantizedNoLeafNode* node)
+void PlanesCollider::_CollideNoPrimitiveTest(const AABBQuantizedNoLeafNode* node, udword clip_mask)
 {
 	// Dequantize box
 	const QuantizedAABB& Box = node->mAABB;
 	const Point Center(float(Box.mCenter[0]) * mCenterCoeff.x, float(Box.mCenter[1]) * mCenterCoeff.y, float(Box.mCenter[2]) * mCenterCoeff.z);
 	const Point Extents(float(Box.mExtents[0]) * mExtentsCoeff.x, float(Box.mExtents[1]) * mExtentsCoeff.y, float(Box.mExtents[2]) * mExtentsCoeff.z);
 
-	// Perform AABB-AABB overlap test
-	if(!AABBAABBOverlap(Extents, Center))	return;
+	// Test the box against the planes. If the box is completely culled, so are its children, hence we exit.
+	udword OutClipMask;
+	if(!PlanesAABBOverlap(Center, Extents, OutClipMask, clip_mask))	return;
 
-	TEST_BOX_IN_AABB(Center, Extents)
+	TEST_CLIP_MASK
 
+	// Else the box straddles one or several planes, so we need to recurse down the tree.
 	if(node->HasPosLeaf())	{ SET_CONTACT(node->GetPosPrimitive(), OPC_CONTACT) }
-	else					_CollideNoPrimitiveTest(node->GetPos());
+	else					_CollideNoPrimitiveTest(node->GetPos(), OutClipMask);
 
 	if(ContactFound()) return;
 
 	if(node->HasNegLeaf())	{ SET_CONTACT(node->GetNegPrimitive(), OPC_CONTACT) }
-	else					_CollideNoPrimitiveTest(node->GetNeg());
+	else					_CollideNoPrimitiveTest(node->GetNeg(), OutClipMask);
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/**
- *	Recursive collision query for vanilla AABB trees.
- *	\param		node	[in] current collision node
- */
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void AABBCollider::_Collide(const AABBTreeNode* node)
-{
-	// Perform AABB-AABB overlap test
-	Point Center, Extents;
-	node->GetAABB()->GetCenter(Center);
-	node->GetAABB()->GetExtents(Extents);
-	if(!AABBAABBOverlap(Extents, Center))	return;	// NOVODEX [1]
 
-	if(node->IsLeaf() || AABBContainsBox(Center, Extents))
-	{
-		mFlags |= OPC_CONTACT;
-		mTouchedPrimitives->Add(node->GetPrimitives(), node->GetNbPrimitives());
-	}
-	else
-	{
-		_Collide(node->GetPos());
-		_Collide(node->GetNeg());
-	}
-}
+
 
 
 
@@ -582,7 +520,7 @@ void AABBCollider::_Collide(const AABBTreeNode* node)
  *	Constructor.
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-HybridAABBCollider::HybridAABBCollider()
+HybridPlanesCollider::HybridPlanesCollider()
 {
 }
 
@@ -591,11 +529,11 @@ HybridAABBCollider::HybridAABBCollider()
  *	Destructor.
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-HybridAABBCollider::~HybridAABBCollider()
+HybridPlanesCollider::~HybridPlanesCollider()
 {
 }
 
-bool HybridAABBCollider::Collide(AABBCache& cache, const CollisionAABB& box, const HybridModel& model)
+bool HybridPlanesCollider::Collide(PlanesCache& cache, const Plane* planes, udword nb_planes, const HybridModel& model, const Matrix4x4* worldm)
 {
 	// We don't want primitive tests here!
 	mFlags |= OPC_NO_PRIMITIVE_TESTS;
@@ -604,7 +542,7 @@ bool HybridAABBCollider::Collide(AABBCache& cache, const CollisionAABB& box, con
 	if(!Setup(&model))	return false;
 
 	// Init collision query
-	if(InitQuery(cache, box))	return true;
+	if(InitQuery(cache, planes, nb_planes, worldm))	return true;
 
 	// Special case for 1-leaf trees
 	if(mCurrentModel && mCurrentModel->HasSingleNode())
@@ -613,9 +551,10 @@ bool HybridAABBCollider::Collide(AABBCache& cache, const CollisionAABB& box, con
 		udword Nb = mIMesh->GetNbTriangles();
 
 		// Loop through all triangles
+		udword clip_mask = (1<<mNbPlanes)-1;
 		for(udword i=0;i<Nb;i++)
 		{
-			AABB_PRIM(i, OPC_CONTACT)
+			PLANES_PRIM(i, OPC_CONTACT)
 		}
 		return true;
 	}
@@ -623,6 +562,8 @@ bool HybridAABBCollider::Collide(AABBCache& cache, const CollisionAABB& box, con
 	// Override destination array since we're only going to get leaf boxes here
 	mTouchedBoxes.Reset();
 	mTouchedPrimitives = &mTouchedBoxes;
+
+	udword PlaneMask = (1<<nb_planes)-1;
 
 	// Now, do the actual query against leaf boxes
 	if(!model.HasLeafNodes())
@@ -636,14 +577,14 @@ bool HybridAABBCollider::Collide(AABBCache& cache, const CollisionAABB& box, con
 			mExtentsCoeff	= Tree->mExtentsCoeff;
 
 			// Perform collision query - we don't want primitive tests here!
-			_CollideNoPrimitiveTest(Tree->GetNodes());
+			_CollideNoPrimitiveTest(Tree->GetNodes(), PlaneMask);
 		}
 		else
 		{
 			const AABBNoLeafTree* Tree = (const AABBNoLeafTree*)model.GetTree();
 
 			// Perform collision query - we don't want primitive tests here!
-			_CollideNoPrimitiveTest(Tree->GetNodes());
+			_CollideNoPrimitiveTest(Tree->GetNodes(), PlaneMask);
 		}
 	}
 	else
@@ -657,14 +598,14 @@ bool HybridAABBCollider::Collide(AABBCache& cache, const CollisionAABB& box, con
 			mExtentsCoeff	= Tree->mExtentsCoeff;
 
 			// Perform collision query - we don't want primitive tests here!
-			_CollideNoPrimitiveTest(Tree->GetNodes());
+			_CollideNoPrimitiveTest(Tree->GetNodes(), PlaneMask);
 		}
 		else
 		{
 			const AABBCollisionTree* Tree = (const AABBCollisionTree*)model.GetTree();
 
 			// Perform collision query - we don't want primitive tests here!
-			_CollideNoPrimitiveTest(Tree->GetNodes());
+			_CollideNoPrimitiveTest(Tree->GetNodes(), PlaneMask);
 		}
 	}
 
@@ -686,6 +627,7 @@ bool HybridAABBCollider::Collide(AABBCache& cache, const CollisionAABB& box, con
 		const udword* Indices = model.GetIndices();
 
 		// Loop through touched leaves
+		udword clip_mask = (1<<mNbPlanes)-1;
 		while(Nb--)
 		{
 			const LeafTriangles& CurrentLeaf = LT[*Touched++];
@@ -700,7 +642,7 @@ bool HybridAABBCollider::Collide(AABBCache& cache, const CollisionAABB& box, con
 				while(NbTris--)
 				{
 					udword TriangleIndex = *T++;
-					AABB_PRIM(TriangleIndex, OPC_CONTACT)
+					PLANES_PRIM(TriangleIndex, OPC_CONTACT)
 				}
 			}
 			else
@@ -711,7 +653,7 @@ bool HybridAABBCollider::Collide(AABBCache& cache, const CollisionAABB& box, con
 				while(NbTris--)
 				{
 					udword TriangleIndex = BaseIndex++;
-					AABB_PRIM(TriangleIndex, OPC_CONTACT)
+					PLANES_PRIM(TriangleIndex, OPC_CONTACT)
 				}
 			}
 		}

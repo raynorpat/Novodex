@@ -14,6 +14,12 @@
  *     fabs of each component to +0x58, (mP0+mP1)*0.5f to +0x64, then
  *     `xor eax, eax`: return FALSE), 0x000d38c9 (the fat path multiplies
  *     [esi+0x74] alone).
+ *
+ * [2] InitQuery takes the result Container from the cache's pointer (mTouchedPrimitives =
+ *     cache.TouchedPrimitives) instead of the address of an embedded one, and the hybrid
+ *     collider's Collide resets and adopts that Container through the pointer; see
+ *     OPC_VolumeCollider.h [1]. The image: 0x000d36f2 `mov eax,[ebx]; mov
+ *     [esi+0x10],eax`.
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
@@ -207,7 +213,7 @@ BOOL LSSCollider::InitQuery(LSSCache& cache, const LSS& lss, const Matrix4x4* wo
 	}
 
 	// 3) Setup destination pointer
-	mTouchedPrimitives = &cache.TouchedPrimitives;
+	mTouchedPrimitives = cache.TouchedPrimitives;
 
 	// 4) Special case: 1-triangle meshes [Opcode 1.3]
 	if(mCurrentModel && mCurrentModel->HasSingleNode())
@@ -704,8 +710,8 @@ bool HybridLSSCollider::Collide(LSSCache& cache, const LSS& lss, const HybridMod
 		Collider::InitQuery();
 
 		// Change dest container so that we can use built-in overlap tests and get collided primitives
-		cache.TouchedPrimitives.Reset();
-		mTouchedPrimitives = &cache.TouchedPrimitives;
+		cache.TouchedPrimitives->Reset();
+		mTouchedPrimitives = cache.TouchedPrimitives;
 
 		// Read touched leaf boxes
 		udword Nb = mTouchedBoxes.GetNbEntries();

@@ -1850,8 +1850,8 @@ static void nxDriveRadixSetRankBuffers(const NxOracleRows& o, bool selfOnly)
 // What the harness does to an oracle object is limited to what the oracle
 // reads: inline setters (field writes, no code), the NovodeX field at
 // RayCollider+0x88 that no setter writes (poked on both sides identically, the
-// way the prunable families poke), and the NovodeX-layout cache images the
-// volume colliders read (see NxOracleVolumeCache). Containers the oracle filled
+// way the prunable families poke), and the Container each volume collider's
+// cache points at (see nxTapeVolume). Containers the oracle filled
 // are released through the oracle's own Container destructor, never the
 // candidate's, because the two sides allocate from different heaps.
 
@@ -1986,6 +1986,7 @@ static void nxOracleFree(void* p, size_t size)
 
 static void* nxAt(const NxOracleRows& o, unsigned rva) { return o.base + rva; }
 static void nxTapeWords(NxTape& tape, const void* p, size_t bytes);
+static void nxTapeFloatWords(NxTape& tape, const void* p, size_t bytes);
 
 // Containers built in raw storage by the vendored (inline) constructor, filled
 // by whichever side, released by that side's destructor.
@@ -2816,29 +2817,15 @@ static void nxMakeVolume(NxVolumeKind kind, const NxMesh& m, int q, NxVolumeQuer
 		}
 	}
 
-// THE ORACLE'S VolumeCache IS NOT OPCODE 1.3'S. Stock 1.3 embeds the result
-// Container at the cache's head and the collider takes its address; the
-// oracle's InitQuery LOADS a pointer from there -- `mov ecx,[edx]; mov
-// [esi+0x10],ecx` in SphereCollider::InitQuery (0x000de925) and the same in
-// OBBCollider::InitQuery (0x000d57ab) -- and reads cache.Model at +4
-// (0x000de964) and SphereCache's Center/FatRadius2/FatCoeff at +8/+0x14/+0x18.
-// NovodeX made the cache hold `Container*`, eight bytes of base instead of
-// twenty. The candidate keeps the stock layout (0x000a112a stores &cache). This
-// is a NovodeX layout modification the vendored tree does not have; it is
-// recorded in evidence/vendored-correspondence.md (Task 4) and NOT fixed here.
-//
-// So the harness gives each side the cache its own code reads: the oracle a
-// NovodeX-layout image {Container*, Model, derived fields}, the candidate its
-// vendored cache, both starting from the same state (the derived fields are
-// copied from a freshly constructed vendored cache), and it compares what the
-// query left in them: the touched primitives and the derived fields.
-struct NxOracleVolumeCache
-	{
-	Container*		touched;
-	const void*		model;
-	unsigned char	derived[96];
-	};
-
+// The cache is NovodeX's: a Container* at +0 and the model at +4, which the
+// oracle's InitQuery loads (`mov ecx,[edx]; mov [esi+0x10],ecx` in
+// SphereCollider::InitQuery, 0x000de925; the same in the other four) and whose
+// Container the owner supplies. Stock 1.3 embeds the Container; Task 4 found
+// the difference and gave the oracle a NovodeX-layout image of its own, and
+// Task 5a made the vendored cache the same (novodex/OPC_VolumeCollider.h). So
+// both sides now get the same vendored cache type, each pointing at a Container
+// of its own, and the harness compares what the query left in them: the
+// touched primitives and the derived fields.
 static void nxTapeVolume(NxTape& tape, NxTape& floats, bool returned, const void* collider,
 	const Container& touched, const void* derived, size_t derivedBytes)
 	{
@@ -2847,7 +2834,7 @@ static void nxTapeVolume(NxTape& tape, NxTape& floats, bool returned, const void
 	tape.push(vc->GetNbVolumeBVTests());
 	tape.push(vc->GetNbVolumePrimTests());
 	nxTapeContainerEntries(tape, touched);
-	nxTapeWords(floats, derived, derivedBytes);
+	nxTapeFloatWords(floats, derived, derivedBytes);
 	}
 
 struct NxVolumeRows
@@ -2965,18 +2952,10 @@ static void nxDriveVolume(const NxOracleRows& o, NxVolumeKind kind, const NxVolu
 				NxTape& tape = side == 0 ? gOracleTape : gCandidateTape;
 				NxTape& floats = tape;
 				unsigned char cacheStorage[sizeof(OBBCache) + sizeof(LSSCache) + 64];
-				VolumeCache* vendoredCache = (VolumeCache*) nxNewCache(kind, cacheStorage);
+				VolumeCache* cache = (VolumeCache*) nxNewCache(kind, cacheStorage);
 				const size_t derivedBytes = rows.cacheSize - sizeof(VolumeCache);
 				unsigned char touchedStorage[sizeof(Container) + 16];
-				NxOracleVolumeCache oracleCache;
-				void* cache = vendoredCache;
-				if(side == 0)
-					{
-					oracleCache.touched = new (touchedStorage) Container;
-					oracleCache.model = 0;
-					memcpy(oracleCache.derived, (unsigned char*) vendoredCache + sizeof(VolumeCache), derivedBytes);
-					cache = &oracleCache;
-					}
+				cache->TouchedPrimitives = new (touchedStorage) Container;
 				void* object;
 				if(side == 0)
 					{
@@ -3006,24 +2985,19 @@ static void nxDriveVolume(const NxOracleRows& o, NxVolumeKind kind, const NxVolu
 					const bool returned = side == 0
 						? nxOracleVolume(o, kind, rows.collide, object, cache, moved, p.oracle, wv, wm)
 						: nxCandidateVolume(kind, object, cache, moved, *(const Model*) p.oracle, wv, wm);
-					if(side == 0)
-						nxTapeVolume(tape, floats, returned, object, *oracleCache.touched, oracleCache.derived,
-							derivedBytes);
-					else
-						nxTapeVolume(tape, floats, returned, object, vendoredCache->TouchedPrimitives,
-							(unsigned char*) vendoredCache + sizeof(VolumeCache), derivedBytes);
+					nxTapeVolume(tape, floats, returned, object, *cache->TouchedPrimitives,
+						(unsigned char*) cache + sizeof(VolumeCache), derivedBytes);
 					}
 				if(side == 0)
 					{
 					((NxDtorFn) nxAt(o, rows.dtor))(object);
 					nxOracleFree(object, rows.objectSize);
-					nxReleaseOracleContainer(o, oracleCache.touched);
-					vendoredCache->TouchedPrimitives.~Container();
+					nxReleaseOracleContainer(o, cache->TouchedPrimitives);
 					}
 				else
 					{
 					nxDeleteCollider(kind, object);
-					vendoredCache->TouchedPrimitives.~Container();
+					cache->TouchedPrimitives->~Container();
 					}
 				}
 			}
@@ -3156,16 +3130,10 @@ static void nxDriveVanilla(const NxOracleRows& o, bool selfOnly)
 					NxTape& tape = side == 0 ? gOracleTape : gCandidateTape;
 					unsigned char cacheStorage[sizeof(AABBCache) + sizeof(SphereCache) + 64];
 					const NxVolumeKind kind = which == 0 ? kVolSphere : kVolAABB;
-					VolumeCache* vendoredCache = (VolumeCache*) nxNewCache(kind, cacheStorage);
+					VolumeCache* cache = (VolumeCache*) nxNewCache(kind, cacheStorage);
 					const size_t derivedBytes = (which == 0 ? sizeof(SphereCache) : sizeof(AABBCache)) - sizeof(VolumeCache);
 					unsigned char touchedStorage[sizeof(Container) + 16];
-					NxOracleVolumeCache oracleCache;
-					if(side == 0)
-						{
-						oracleCache.touched = new (touchedStorage) Container;
-						oracleCache.model = 0;
-						memcpy(oracleCache.derived, (unsigned char*) vendoredCache + sizeof(VolumeCache), derivedBytes);
-						}
+					cache->TouchedPrimitives = new (touchedStorage) Container;
 					const size_t size = which == 0 ? sizeof(SphereCollider) : sizeof(AABBCollider);
 					void* object;
 					if(side == 0)
@@ -3179,27 +3147,26 @@ static void nxDriveVanilla(const NxOracleRows& o, bool selfOnly)
 					bool returned;
 					if(side == 0)
 						returned = which == 0
-							? ((NxSphereTreeFn) nxAt(o, kOpcSphereCollideTree))(object, &oracleCache, &v.sphere, trees[mesh].oracle)
-							: ((NxAABBModelFn) nxAt(o, kOpcAABBCollideTree))(object, &oracleCache, &v.aabb, trees[mesh].oracle);
+							? ((NxSphereTreeFn) nxAt(o, kOpcSphereCollideTree))(object, cache, &v.sphere, trees[mesh].oracle)
+							: ((NxAABBModelFn) nxAt(o, kOpcAABBCollideTree))(object, cache, &v.aabb, trees[mesh].oracle);
 					else
 						returned = which == 0
-							? ((SphereCollider*) object)->Collide(*(SphereCache*) vendoredCache, v.sphere, (const AABBTree*) trees[mesh].oracle)
-							: ((AABBCollider*) object)->Collide(*(AABBCache*) vendoredCache, v.aabb, (const AABBTree*) trees[mesh].oracle);
+							? ((SphereCollider*) object)->Collide(*(SphereCache*) cache, v.sphere, (const AABBTree*) trees[mesh].oracle)
+							: ((AABBCollider*) object)->Collide(*(AABBCache*) cache, v.aabb, (const AABBTree*) trees[mesh].oracle);
 					NxTape& floats = tape;
-					if(side == 0)
-						nxTapeVolume(tape, floats, returned, object, *oracleCache.touched, oracleCache.derived, derivedBytes);
-					else
-						nxTapeVolume(tape, floats, returned, object, vendoredCache->TouchedPrimitives,
-							(unsigned char*) vendoredCache + sizeof(VolumeCache), derivedBytes);
+					nxTapeVolume(tape, floats, returned, object, *cache->TouchedPrimitives,
+						(unsigned char*) cache + sizeof(VolumeCache), derivedBytes);
 					if(side == 0)
 						{
 						((NxDtorFn) nxAt(o, which == 0 ? kOpcSphereDtor : kOpcAABBDtor))(object);
 						nxOracleFree(object, size);
-						nxReleaseOracleContainer(o, oracleCache.touched);
+						nxReleaseOracleContainer(o, cache->TouchedPrimitives);
 						}
 					else
+						{
 						nxDeleteCollider(kind, object);
-					vendoredCache->TouchedPrimitives.~Container();
+						cache->TouchedPrimitives->~Container();
+						}
 					}
 				}
 		if(which == 0)
