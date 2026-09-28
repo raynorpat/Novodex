@@ -1489,8 +1489,12 @@ NxActor* NxSceneInternal::createActor(const NxActorDescBase& desc)
 // ([body]) is searched for in the +0x55c array; not found is code 2, line
 // 0x4ae, "Scene::releaseActor: double deletion detected!". Found: the last
 // entry takes its place and the array shrinks; a fluid manager at +0x61c
-// would take 003635 (the candidate has none); Actor.cpp's 000030 destroys
-// the actor and the body is freed through [0x101041bc]; the flag is cleared.
+// takes 003635 (0x1248c-0x12497), which is NOT written: 003635 walks the
+// manager's fluids through 003485 into the emitter rows 003593/003622, none
+// of them written, and +0x61c is only set by createFluid (000645/000400),
+// which the candidate stubs. The row stays `discovered` until that chain is
+// (NpActor completion final review I2). Actor.cpp's 000030 destroys the
+// actor and the body is freed through [0x101041bc]; the flag is cleared.
 void nxActorDestroy(unsigned char* body);
 
 // .data 0x10123c10: the one API reentry flag. Scene::createJoint and

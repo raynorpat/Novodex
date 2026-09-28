@@ -20,21 +20,24 @@ promoting them. The contract is `units/npactor-contract.md`; the execution evide
 | 5 review | 2026-09-28T12:30:00 (approx.; after the Task 5 timing row at 12:25:00) | 2026-09-28T12:55:05 (fb71a41) | 4 | 1702 | Task 5 review (commit fb71a41; this row was added in Task 6). 000833 transcribed from its listing (0x1c040-0x1c598) and checked word for word against the oracle rows in-process; 000849 calls 000833 instead of its inlined centred specialization; 000829 rounds mass/3 and the three pairwise sums to float; SNaN moves through the x87 in 000793's mass, 000030's position and 000841's negations. Rows written: 000833, 000849, 000829 and 000841 (chain rows outside the unit, already `reconstructed`). Tests: 32 oracle lines (inexact translations through updateMassFromShapes and creation; setDynamic with a quiet and a signalling NaN mass); floor 5 = 1849. Gates 2, 3, 4, 6, 7 pass; Phase 5 red only on CANDIDATE-MISSING family=vtables, 12/12 staged pairs stdout_delta=0; tools suite 753 passed. |
 | 6 | 2026-09-28T12:58:00 (approx.; the first build log is stamped 13:01:15) | 2026-09-28T13:19:13 (a2803e0) | 0 | 0 | Final trace (evidence/npactor-trace-final.txt): 138 breakpoints over the 12 Phase 5 actor targets, candidate sha256 5c2e247f.... All 53 discovered unit rows execute (000122 14 hits and 000164 48, unreached in Task 1; 000216 through 000214's epilogue); 000102 now runs (7); every chain row the plan wrote as faithful executes, four of them (000756, 000799, 001037, 000829) only inlined in a named caller. Four Scene.cpp helpers made `__declspec(noinline)` so a breakpoint sees them (001028, 001032, 001941, 000535; their out-of-line copies had no caller), stable-ID lines for 000128 and 000216, the 000947 comment. No row unexecuted, so no case added: floor 5 stays 1849. Phase 5 12/12 staged pairs stdout_delta=0 after the change, red only on CANDIDATE-MISSING family=vtables (candidate_fold 4492c8c1); gates 2, 3, 4, 6, 7 pass. No inventory change. |
 | 7 | 2026-09-28T13:19:13 (after a2803e0) | 2026-09-28T13:37:28 (648946f; this timing row and the results below are committed after it) | 0 | 0 | Promotion (commit 648946f). 85 rows to `reconstructed`: the 53 discovered NpActor.cpp rows (30,673 B; the unit is 87/87) and 32 chain rows the plan wrote as faithful (12,219 B), each with implementation, static_proof (contract verdict and covering targets) and dynamic_proof (the trace); 8 already-reconstructed rows the plan changed get appended evidence. Ledgers: reconstructed_not_falsified for the promoted rows (Phase 5 63, Phase 2 5, Phase 3 9, Phase 6 1, Phase 7 7). Fresh configure and clean build: the DLL differs from the Task 6 incremental build only in its link timestamp, so the trace was re-recorded on it (sha256 ccae6021..., identical offsets and hit counts). work_units.json and the NpActor.cpp bundle regenerated. 18 in-scope rows left discovered, each with its reason in the contract. Validator pass; tools suite 753 passed; gates 2, 3, 4, 6, 7 pass; Phase 5 red only on CANDIDATE-MISSING family=vtables, 12/12 staged pairs stdout_delta=0. No product code change. |
+| final review | 2026-09-28T13:55:00 (approx.; the first NpActor.cpp edit is stamped 14:03:46) | 2026-09-28T14:45:00 (approx.; commit 6112710 and the records commit after it) | 24 | 17521 | Final-review fixes. I1 (6112710): NpActor.cpp's x87 float copies (fld/fstp, which quiet an SNaN) made bit copies where the listings move words with rep movsd/mov (000204, 000208, 000210, 000214/000216, 000192, the 000124/000126 inputs, the 000218/000222 input, the getters 000096, 000100, 000130, 000134); nxNpActorX87Dot3 takes references (the listing's in-place fld/fmul; 000124, 000126, 000134-000144, 000789); 000124 adds pose.t from memory; the x arm of both matrix-to-quaternion conversions subtracts (x87FsqrtDiffSum) instead of adding a negation (000094, 000124, 000126, 000196, 000200, 000756, 000789). 13 ActorCMass SNaN lines (12 differ on the previous candidate); floor 5 = 1862. I2: 000628 demoted to discovered (its 003635 fluid arm needs the unwritten 003485/003593/003622 and the stubbed createFluid); Phase 7 ledger 356/201. Trace re-recorded (sha256 9dadfcea...; only ActorCMass changed); 91 dynamic_proofs re-pinned with the new counts, 24 static_proofs note the fix. Rows written: the 25 rows whose code changed, bytes = their oracle sizes. Validator pass; tools suite 753 passed; gates 2, 3, 4, 6, 7 pass; Phase 5 red only on CANDIDATE-MISSING family=vtables, 12/12 staged pairs stdout_delta=0. |
 
 ## Result
 
-Task 7 (commit 648946f) moved 85 rows to `reconstructed`. Each carries a `static_proof`: the
+Task 7 (commit 648946f) moved 85 rows to `reconstructed`; the final review sent one of them,
+000628, back to `discovered` (I2, below), so 84 stand. Each carries a `static_proof`: the
 contract verdict, its summary, and the staged-pair targets that cover the row. Each also carries a
 `dynamic_proof`: a cdb breakpoint hit in `evidence/npactor-trace-final.txt` (candidate sha256
-ccae6021...), with all twelve Phase 5 actor staged-pair transcripts byte-identical to the oracle.
+9dadfcea..., re-recorded for the final-review fixes; first ccae6021...), with all twelve Phase 5
+actor staged-pair transcripts byte-identical to the oracle.
 
 | Set | Rows | Bytes |
 |---|---:|---:|
 | NpActor.cpp unit: every `discovered` row, so the unit is now 87 of 87 `reconstructed` | 53 | 30,673 |
-| Chain rows the plan wrote in other units: Actor.cpp and the gap before it, Scene.cpp, the SceneRaycast..CapsuleShape gap, the group and pruning gaps, Joint.cpp | 32 | 12,219 |
-| Total | 85 | 42,892 |
+| Chain rows the plan wrote in other units: Actor.cpp and the gap before it, Scene.cpp, the SceneRaycast..CapsuleShape gap, the group and pruning gaps, Joint.cpp | 31 | 11,978 |
+| Total | 84 | 42,651 |
 
-- **The chain rows:** 000006, 000008, 000024, 000026, 000036, 000531, 000533, 000535, 000628,
+- **The chain rows:** 000006, 000008, 000024, 000026, 000036, 000531, 000533, 000535,
   000630, 000632, 000722, 000746, 000756, 000782, 000784, 000785, 000787, 000789, 000791, 000799,
   001018, 001028, 001032, 001033, 001037, 001039, 001041, 001279, 001941, 001945 and 004103.
 - **Inlined rows.** These run only inlined, so each proof names the caller whose hit shows the row
@@ -49,9 +52,9 @@ ccae6021...), with all twelve Phase 5 actor staged-pair transcripts byte-identic
 
   In Task 6, four Scene.cpp helpers were made `__declspec(noinline)` so that a breakpoint sees them
   run, as the oracle calls them: 001028, 001032, 001941 and 000535.
-- **Unreproduced arms.** The only ones in the promoted rows are the fluid-manager calls of 000036,
-  000531, 000533, 000535 and 000628. Scene +0x61c is only ever zeroed in the candidate, so these arms
-  are unreachable in the product today, and each proof says so.
+- **Fluid-manager arms.** 000036, 000531, 000533 and 000535 carry their 003628 call. 000628's
+  003635 call was never written; Task 7 promoted the row with the arm documented as unreachable, and
+  the final review demoted it (see `## Final review fixes`).
 - **Appended evidence.** Eight rows were already `reconstructed` and had their candidate changed by
   the plan: 000557, 000829, 000833, 000845, 000849, 000947, 001024 and 001273. Each got appended
   evidence. 000845's old proof said selector 1 leaves +0x00 unwritten; that claim is now marked
@@ -66,7 +69,7 @@ that owns it:
 | 2 | 5 | homeless_shared_code |
 | 3 | 9 | not_reconstructed_in_phase |
 | 6 | 1 | not_reconstructed_in_phase |
-| 7 | 7 | not_reconstructed_in_phase |
+| 7 | 6 (7 at Task 7; 000628 is back to not_reconstructed_in_phase) | not_reconstructed_in_phase |
 
 No mutation was aimed at any of these rows, so none of them is closed.
 
@@ -87,6 +90,10 @@ the details.
 | 001323 | 182 B | 000517's pair pass and 002406 |
 | 001943 | 270 B | the cached +0x2c object |
 | 001955 | 153 B | the pair-record loop |
+
+**A dependency not written:** 000628 (241 B), Scene::releaseActor. Its fluid-manager arm
+(0x1248c-0x12497) calls 003635, which needs 003485, 003593 and 003622; none is written, and Scene
++0x61c is set only by the stubbed createFluid (000645/000400).
 
 **Reachability not established:** 000032 (539 B). Its triangle-mesh arm is not reproduced.
 - A valid mesh descriptor cannot exist in the product.
@@ -122,6 +129,7 @@ from the oracle. Each case was falsified against the previous commit's candidate
 | Mass from shapes and setDynamic | 65e3add, 5df7040 | 000164 and 000122 were empty. See the list after this table for what was written and fixed. |
 | 000833/000829/000849 | fb71a41 | 000833 was a provisional model and is now transcribed. 000849 inlined a centred specialization that rounded differently. 000829 kept mass/3 and the sums in the register. SNaNs were not quieted in 000793, 000030 and 000841. |
 | Trace visibility | a2803e0 | Four helpers were inlined into conditional arms; they are now noinline. 000128 and 000216 had no stable-ID line. 000947 had a "provisional" comment. |
+| SNaN copies and NaN selection (final review I1) | 6112710 | Under `/arch:IA32` the candidate copied floats through fld/fstp (quieting SNaNs) where the listings move words; by-value dot-product operands were quieted before the multiply; 000124 loaded pose.t first; the conversions' x arm negated a NaN. See `## Final review fixes`. |
 
 **Cross-cutting (22134a8):**
 - G1: 46 write-guarded rows skipped silently on a failed write-lock try. The oracle reports kind 2
@@ -162,7 +170,7 @@ from the oracle. Each case was falsified against the previous commit's candidate
 
 ## Transcripts and tests
 
-The Phase 5 registered coverage floor went from 871 to 1849, an increase of 978 oracle lines. Each
+The Phase 5 registered coverage floor went from 871 to 1862, an increase of 991 oracle lines. Each
 line was copied verbatim from the oracle side, and no existing expected line was edited.
 
 | Task | Lines | Floor |
@@ -174,6 +182,7 @@ line was copied verbatim from the oracle side, and no existing expected line was
 | 5 | 110 | 1817 |
 | 5 review | 32 | 1849 |
 | 6 | 0 (no row unexecuted) | 1849 |
+| final review | 13 | 1862 |
 
 - The staged-pair targets that grew are ActorDynamicSetter, ActorBodyFlag, ActorForce, ActorCMass,
   ActorDynamics, ActorMomentum and ActorShapeMutation.
@@ -191,12 +200,12 @@ The window runs from the plan commit 63fd8cd (08:00:45) to the promotion commit 
 
 | Measure | Plan total | Per window hour | Per implementer hour |
 |---|---:|---:|---:|
-| Rows moved to `reconstructed` | 85 (unit 53, chain 32) | 15.1 | 17.7 |
-| Bytes moved | 42,892 (unit 30,673, chain 12,219) | 7,643 | 8,940 |
+| Rows moved to `reconstructed` | 84 (unit 53, chain 31; 85 at Task 7) | 15.0 | 17.5 |
+| Bytes moved | 42,651 (unit 30,673, chain 11,978) | 7,603 | 8,886 |
 | Row writes (timing table) | 122 (2: 66; 3: 39; 3 review: 2; 4: 9; 5: 2; 5 review: 4) | 21.7 | 25.4 |
 | Bytes written (timing table) | 58,372 | 10,401 | 12,166 |
-| Rows gaining `dynamic_proof` | 87 (the 85, plus 000829 and 000849) | 15.5 | 18.1 |
-| Registered coverage floor 5 | 871 -> 1849 (+978) | - | - |
+| Rows gaining `dynamic_proof` | 86 (the 84, plus 000829 and 000849) | 15.3 | 17.9 |
+| Registered coverage floor 5 | 871 -> 1862 (+991) | - | - |
 
 **Caveats.**
 - Row writes count a row once for each task that changed it. They exclude the chain rows the
@@ -259,3 +268,42 @@ phase 7 exit 0   coverage_assertions_evaluated=276 floor=276 / phase_gate=7 stat
 - **work_units.json and the bundle.** `work_units.py` regenerated work_units.json (units=103,
   named=57, gaps=46). Only the NpActor.cpp unit and the units that own the chain rows changed.
   `unit_bundle.py` generated `units/NpActor.cpp.md`, with the Ghidra supplement.
+
+## Final review fixes
+
+The whole-branch review found two Important defects; `units/npactor-contract.md`
+`## Final review fixes` has the detail.
+
+- **I1 (6112710).** Since Task 2's `/arch:IA32` switch, NpActor.cpp's float copies compiled to
+  `fld dword`/`fstp dword`, which quiet a signalling NaN, where the listings copy words with
+  `rep movsd` or `mov`. Found by scanning every NpActor.obj function for an x87 load stored back
+  without arithmetic and comparing with the same scan of the oracle rows. Fixed with memcpy in
+  000204, 000208, 000210, 000214/000216, 000192, 000124/000126 (their inputs), 000218/000222 (their
+  input) and the getters 000096, 000100, 000130 and 000134. Three NaN-selection defects surfaced in
+  the new cases and were fixed as well: by-value dot-product operands (`nxNpActorX87Dot3` now takes
+  references), 000124's `t + row` order, and the x arm's negated spill in both matrix-to-quaternion
+  conversions (`x87FsqrtDiffSum`). 13 ActorCMass lines (`cmass snan_*`) register the oracle's words;
+  the previous candidate differs in 12 of them.
+- **I2.** 000628 is `discovered` again: its 003635 arm cannot be written without the fluid rows
+  003485, 003593 and 003622, and Scene +0x61c is set only by the stubbed createFluid.
+- **Minor M1** is corrected above (only 000628 lacked its fluid call).
+
+Verification of the fix, 2026-09-28, on 6112710's product source:
+
+```
+cmake --build build --config Release                 exit 0 (incremental)
+cmake --build build --config Release --clean-first   exit 0; NxPhysics.vcxproj warnings unchanged:
+  23 x C4005, 5 x C4291, 4 x D9025
+NxPhysics.dll sha256 9dadfcea6c5bba46368c7f204d5456dd0a63131f1f49162cd82c269ff89b4142
+git diff 259dc52 -- Physics/include Foundation/include: empty; public_headers=pass
+pytest docs/reconstruction/novodex-physics/tools/tests: 753 passed, 690 subtests passed
+validate_inventory.py: inventory=pass, closure phase=7 closed=4 deferred=557, unexplained=0
+phase 2 exit 0   phase_gate=2 status=pass
+phase 3 exit 0   coverage_assertions_evaluated=103 floor=103 / phase_gate=3 status=pass
+phase 4 exit 0   coverage_assertions_evaluated=159 floor=159 / phase_gate=4 status=pass
+phase 5 exit 1   candidate CANDIDATE-MISSING family=vtables (NxPhysicsObjectLayoutTests exit 1,
+                 candidate_fold 4492c8c1); coverage_assertions_evaluated=1862 floor=1862; all 12
+                 actor staged pairs stdout_delta=0 stderr_exact=True
+phase 6 exit 0   coverage_assertions_evaluated=403 floor=403 / phase_gate=6 status=pass
+phase 7 exit 0   coverage_assertions_evaluated=276 floor=276 / phase_gate=7 status=pass
+```

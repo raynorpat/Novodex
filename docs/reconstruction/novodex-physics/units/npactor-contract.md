@@ -704,9 +704,9 @@ Phase 7: 7).
   before it); 000531, 000533, 000535, 000628, 000630, 000632, 000799 (Scene.cpp and phase 7);
   000722, 000746, 000756, 000782, 000791 (phase 2, homeless shared code until this plan); 000784,
   000785, 000787, 000789 (phase 5); 001018, 001028, 001032, 001033, 001037, 001039, 001041, 001279,
-  001945 (phase 3); 001941 (phase 5); 004103 (phase 6). Unreproduced arms these rows have are
-  unreachable in the product today and the proof says so: the fluid-manager calls of 000036,
-  000531, 000533, 000535 and 000628 (Scene +0x61c is only ever zeroed in the candidate). The
+  001945 (phase 3); 001941 (phase 5); 004103 (phase 6). 000036, 000531, 000533 and 000535 carry
+  their fluid-manager call (003628, written); 000628's (003635) was not written, and the final
+  review demoted it (see `## Final review fixes`), so the chain rows are now 31 (11,978 B). The
   reentry reports (0x150, 0x186, 0x492) and 000628's double-deletion report are written and
   static-only: no harness callback can set the flag.
 - **Evidence appended** to rows already `reconstructed` whose candidate this plan changed: 000557
@@ -722,6 +722,7 @@ Phase 7: 7).
 | 000032 | 539 | Actor.cpp | the triangle-mesh arm (0xe8 shape, 001379, Scene +0x10, its own 000503) is not reproduced. No valid mesh descriptor can exist (createTriangleMesh returns 0 and NxTriangleMeshShapeDesc::isValid rejects a null mesh), but createActor validates with NxActorDescBase::isValid(), which runs no shape loop, so reaching the arm with an invalid descriptor is not excluded |
 | 000034 | 565 | Actor.cpp | the creation path is still a model (registration of a dynamic root, the flag-0 refresh) |
 | 000503 | 232 | gap:PhysicsSDK.cpp..Scene.cpp | 004861's per-pruner slot-4 call is absent |
+| 000628 | 241 | Scene.cpp | (demoted by the final review, I2) the fluid-manager arm 0x1248c-0x12497, `003635([scene+0x61c], body)`, is not written: 003635 needs 003485, 003593 and 003622 (the fluid and emitter rows), none written, and +0x61c is set only by the stubbed createFluid (000645/000400) |
 | 000768 | 1,164 | gap:SceneRaycast.cpp..CapsuleShape.cpp | not written or reviewed as a row by this plan (only its calls from 000196-000202 were checked) |
 | 000776 | 117 | gap:SceneRaycast.cpp..CapsuleShape.cpp | the record vptr store (0x10106890) and the Observable destructor call are not carried |
 | 000793, 000795 | 1,613, 3,090 | same | models; only 000793's mass block follows the listing |
@@ -736,6 +737,54 @@ Phase 7: 7).
 
 The unit's already-`reconstructed` rows keep their Task 3 verdicts: 000086 and 000088 (X, the name
 table) and 000116 and 000118 (M, no member table or destructor) were not re-promoted.
+
+## Final review fixes
+
+The whole-branch review (`.superpowers/sdd/na/final-review.md`) found two Important defects.
+
+**I1: signalling NaNs through the x87 float copies.** Task 2 put NpActor.cpp on the `/arch:IA32`
+list, and from then on the candidate's float copies compiled to `fld dword`/`fstp dword` pairs,
+which quiet an SNaN (set bit 22), where the listings copy the words with `rep movsd` or `mov`. A
+scan of every NpActor.obj function for an x87 load stored back with no arithmetic between, against
+the same scan of the oracle rows (whose only such copies are 000128's x/y, 000164's and 000168's
+tensor stores, a global constant stored by 000136/000144, and computed spills in
+000196/000200/000789), gave these fixes:
+- bit copies (memcpy) for the stores of 000204 (+0x134, 0x975b), 000208 (+0x134, 0x9b4c), 000210
+  (+0xdc, 0x9e50), 000214/000216 (+0xdc, 0xa419), 000192's wake counter (0x8869-0x8886), the
+  inputs 000124/000126 read (0x3ffa), 000218/000222's input orientation, and the getters 000096,
+  000100 (via the CMass matrix helper), 000130 (0x466d/0x4697 and the +0x50 movs) and 000134;
+- `nxNpActorX87Dot3` takes its operands by reference, so each `fld`/`fmul` reads the float in place
+  as the listing does (000124, 000126, 000134-000144, 000789); by value, each operand had been
+  quieted first, which changes the NaN the x87 keeps when two NaNs meet;
+- 000124 adds the translation with `fadd dword ptr [pose.t]` onto the row on the stack
+  (0x3c12-0x3c20);
+- the x arm of both matrix-to-quaternion conversions (000801's, used by 000124/000126/000756, and
+  the setters', used by 000094/000196/000200/000789) forms `fld m00; fsub float(m11 + m22)`
+  (new `x87FsqrtDiffSum`); passing the negated spill flipped the sign of a NaN the x87 kept.
+The remaining candidate x87 copies are of computed values (a NaN there is already quiet), the float
+returns in st0 (000050/000052, which the oracle also returns in st0), 000128's two, 000168's and
+000164's tensor stores (the oracle's own), the inline header wrappers 000038/000040 (computed
+velocities) and the shape-handle models, which are not this unit's rows. 13 ActorCMass cases
+(`cmass snan_*`) drive SNaN payloads (0x7f800001, 0xffa00000, 0x7fa00003, 0xff800004, 0x7f900005)
+through 000210, 000214, 000204, 000208, 000124, 000126, 000096/000098/000100, 000130 (both arms)
+and 000192; the candidate before the fix differs from the oracle in 12 of the 13 lines. Floor 5 =
+1862. The same `-negated` form survives in core/Joint.cpp, core/JointSupport.cpp and
+core/RevoluteJoint.cpp; those units are outside this plan.
+
+**I2: 000628's fluid-manager arm.** The arm (0x1248c-0x12497) calls 003635 (0x89ce0, 100 B) with
+the body when Scene +0x61c is set. 003635 reports code 0xce line 0xfa ("fluidsNotifyReleaseActor():
+Feature not available!") when the manager's byte +0x2b is clear and then calls 003485 (0x857b0) for
+each fluid, which calls 003593 (0x88090) and 003622 (0x898d0) on every emitter whose frame actor is
+the body. None of those rows is written, and +0x61c is set only by 000645 from createFluid (000400),
+which the candidate stubs, so the arm cannot be written faithfully the way the siblings' 22-byte
+003628 leaf was. 000628 is back to `discovered` (inventory state, proofs cleared, the reason in
+`notes`; Phase 7 ledger `not_reconstructed_in_phase`, counts 356/201). The candidate code is
+unchanged apart from its comment.
+
+The trace (`evidence/npactor-trace-final.txt`) is re-recorded on the fixed build, sha256
+9dadfcea...; only the ActorCMass section changed (the new cases). Every `dynamic_proof` that
+cited ccae6021... now cites it, with the new hit counts, and the affected rows' `static_proof`
+records the fix.
 
 ## Callees the implementing tasks need
 
