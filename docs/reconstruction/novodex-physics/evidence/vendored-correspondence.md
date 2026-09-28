@@ -146,9 +146,9 @@ symbol.
 | qhull | MAPCHECK / MISSING / AMBIGUOUS | 0 | 0 | 0 |
 | qhull | **total** | **455** | **148,202** | **331** |
 | OPCODE | MATCH | 18 | 233 | 18 |
-| OPCODE | SHAPE | 66 | 12,418 | 64 |
+| OPCODE | SHAPE | 65 | 10,983 | 63 |
 | OPCODE | REVIEW | 176 | 193,271 | 136 |
-| OPCODE | DIFF | 13 | 26,569 | 13 |
+| OPCODE | DIFF | 14 | 28,004 | 14 |
 | OPCODE | MAPCHECK | 0 | 0 | 0 |
 | OPCODE | MISSING | 0 | 0 | 0 |
 | OPCODE | AMBIGUOUS | 0 | 0 | 0 |
@@ -401,15 +401,47 @@ because `unmapped` rows are outside the matcher.
 | `70ab8b1` | Map: `GetSplittingValue`'s loop block | 18 | 60 | 162 | 35 | 0 | 0 | 275 |
 | `f075dd1` | Map: `0x000f11b0` is `Refit2`; `0x000f1350` is an ICE culling walk (unmapped) | 18 | 60 | 163 | 33 | 0 | 0 | 274 |
 | `ad690da` | Map: `0x000e3f50` is `Triangle::Normal` | 18 | 61 | 163 | 32 | 0 | 0 | 274 |
-| `e153286` | Matcher: `-1.0` against a negated `1.0` | 18 | 62 | 163 | 31 | 0 | 0 | 274 |
+| `e153286` | Matcher: `-1.0` against a negated `1.0` (**withdrawn in review**, see "Task 3 review fixes") | 18 | 62 | 163 | 31 | 0 | 0 | 274 |
 | `660dcec` | Matcher: constant-store window of 12 | 18 | 62 | 168 | 26 | 0 | 0 | 274 |
 | `19a9844` | LSSCollider: NovodeX members and inflated-box test; LSS distance rows renamed; census `third_party` for the newly mapped rows | 18 | 66 | 176 | 13 | 0 | 0 | 273 |
+| `ba36f82`..`8c48bd5` | Review fixes: SphereTriOverlap reciprocal form (the `-1.0` rule removed), RayTriOverlap V lifetime, minors | 18 | 65 | 176 | 14 | 0 | 0 | 273 |
 
-The final figures are MATCH 18 rows (233 bytes, 18 groups), SHAPE 66 (12,418, 64), REVIEW 176
-(193,271, 136) and DIFF 13 (26,569, 13). They come from candidate sha256
-`ec405bc23037bc51c95c313752cb05732ee707d59364aa9956eacf00ef30f8ef`, the build of `19a9844`.
+The final figures, after the review fixes, are MATCH 18 rows (233 bytes, 18 groups), SHAPE 65
+(10,983, 63), REVIEW 176 (193,271, 136) and DIFF 14 (28,004, 14); from candidate sha256
+`795324dcc62363a37bc28bd732268eb548bda87b993d6e3f2cf20dd5b2d3f45f`, the build of `8c48bd5`. At `19a9844` they were SHAPE 66 (12,418, 64) and DIFF 13 (26,569, 13).
 The qhull classes did not change. Every qhull match line is unchanged except a candidate string
 address inside one `report_jcc` value, which moved because the candidate DLL's layout moved.
+
+**Task 3 review fixes** (`ba36f82`, `e4f9f73`, `8c48bd5`).
+
+- **The `-1.0` matcher rule (`e153286`) was wrong, and its commit message is too.** It read the
+  oracle's float `-1.0` in `SphereCollider::SphereTriOverlap` as the candidate's `1.0` negated at
+  run time. In fact the oracle evaluates the edge-region distances `u = -fB/fA; SqrDist = fB*u+fC`
+  as a reciprocal product `(-1.0/fA)*fB*fB + fC`, with nothing rounded to float
+  (`0x000de623`..`0x000de635`, `0x000de710`..`0x000de722`), and keeps `SqrDist` on the x87 stack to
+  `fabs; fcomp [mRadius2]` (`0x000de7c1`). The candidate divided (`fchs; fdivrp`) and rounded `u`
+  to float, a low-bit difference the rule hid. The fix is a build-parity overlay,
+  `OPC_SphereTriOverlap.h`, recorded like qhull's `geom.c`: it writes the reciprocal form and makes
+  `SqrDist` a double, the project's convention for a register lifetime. The rule and its test are
+  removed. The group is now DIFF on the `-1.0` constant alone. The 2026 compiler rewrites the new
+  form as `fC - (1/fA)*fB*fB` (`fld1; fdivr; fmul; fmul; fsubr`), and every step of that rewrite is
+  an exact sign identity, so the result is bit-identical. Its review line says so.
+- **RayTriOverlap's V.** At all 14 inline sites the oracle compares V with `-t` and forms `U+V`
+  from the unrounded register (`fcom [lo]; fst [esi+0x58]; ... fadd st(1)`, `0x000b87d9`..`0x000b87ef`).
+  The candidate rounded V to float first. V is now a double lifetime, written out as its dot
+  product because `Point::operator|` rounds on return. Only `mStabbedFace.mV` is float.
+  - Not fixed, and recorded for Task 5: the oracle sums every dot product in these arms z-first,
+    `(qz*Dz + qy*Dy) + qx*Dx` (`0x000b87c0`..`0x000b87d7`, and U at `0x000b871f`). That is a
+    2003 reassociation; the candidate sums x-first.
+- **Minors.**
+  - The `/Qfast_transcendentals` comment now says future transcendentals are inlined too.
+  - `External/README.md` states the line-ending rule.
+  - The closure prose counts are corrected (306 rows; "FIVE of the 608").
+  - The `BaseModel::Save`/`Load` stubs report through the SetIceError seam. The host side of that
+    seam prints nothing, so no transcript changes.
+  - `opcode_review.csv` no longer hard-codes candidate addresses in its hand notes: they moved with
+    every rebuild (`0x000cfe36` was stale). Each line now ends with the current candidate sites,
+    stamped with the build they were read from.
 
 **Real behavioural divergences found and fixed.**
 
@@ -421,7 +453,13 @@ address inside one `report_jcc` value, which moved because the candidate DLL's l
      where stock tests the sign bit and `det` exactly;
    - the distance's sign test stays stock;
    - the non-culling arm is stock;
-   - the same code is inlined in all eight `_RayStab`/`_SegmentStab` variants.
+   - the same code is inlined at 14 sites: `RayCollider::InitQuery` `0x000b5aef`, `0x000b5f75`, and
+     the twelve `_RayStab`/`_SegmentStab` copies `0x000b65be`, `0x000b6bc3`, `0x000b7113`,
+     `0x000b755d`, `0x000b7b30`, `0x000b7f7a`, `0x000b873b`, `0x000b8d50`, `0x000b92d4`,
+     `0x000b9715`, `0x000b9d1d`, `0x000ba15e` (an earlier version of this note said "all eight
+     variants");
+   - V is compared with the lower bound and added to U as the unrounded register value; only the
+     store to `mStabbedFace.mV` is float (fixed in review; see below).
 
    The constructor zeroes it (`0x000b5736`), and the candidate's constructor had not. Its one
    writer is the scene raycast at `0x0002929b`, from `[[scene+0xe0]+0x70]`. The Scene
@@ -481,14 +519,15 @@ defer `vendored_not_falsified`, as the validator requires. `phase4-closure.json`
 to 306/608. `0x000f1350` no longer declares a third party. It is still typed `compiler_artifact`,
 although it is real code: a retype for the ledger's owner.
 
-**Matcher changes** (`vendored_match.py`, 82 tests):
+**Matcher changes** (`vendored_match.py`, 81 tests after the review):
 
 - A register call through a just-loaded vtable slot is the memory call it stands for.
 - A one-sided `vector constructor iterator` is unwrapped: a trivial constructor drops out, and a
   real one becomes a call that the inlining check can absorb.
 - A float constant that only feeds stores matches an integer store of the same bits to the same
   field.
-- `-1.0` against a run-time-negated `1.0` is shape.
+- ~~`-1.0` against a run-time-negated `1.0` is shape.~~ Withdrawn in review: it rested on a
+  misreading and hid a real difference in `SphereCollider::SphereTriOverlap`.
 - The CRT operator thunks are named, and so is `CompleteBoxPruning`.
 - `SEEDED_DATA` holds three hand-identified data objects.
 - The source-name parser keeps a conversion operator's two words.
@@ -499,9 +538,9 @@ although it is real code: a retype for the ledger's owner.
 | Class | Groups | Verdicts |
 |---|---:|---|
 | REVIEW | 136 | all equivalent |
-| SHAPE | 64 | all equivalent |
+| SHAPE | 63 | all equivalent |
 | MATCH | 18 | all equivalent |
-| DIFF | 13 | 9 equivalent, 4 novodex-variant-unwritten |
+| DIFF | 14 | 10 equivalent, 4 novodex-variant-unwritten |
 
 The method:
 
@@ -613,3 +652,4 @@ and none is wired to its cluster.
 | 1 final | 2026-09-27T16:33:00 | 2026-09-27T16:44:39 | 0 | 0 | Router approved; final changes: x87 operation classes as a REVIEW feature (6 SHAPE groups flipped, all explained: fabs_ macro x3, reciprocal x3); coverage-based narrowing replaces the same-dword downgrade (adjacent one-byte fields stay REVIEW); field and bit tokens carry a base class (this / derived / other, derived and other merged for classification) traced through copies and ebp spills; register read-modify-write and/or/xor normalised to the memory form; report-only report_jcc and report_stores columns; "Not compared" and "Promotion policy for Task 5" sections; 69 matcher tests. qhull SHAPE 83 / REVIEW 85 / DIFF 287; OPCODE MATCH 17 / SHAPE 49 / REVIEW 127 / DIFF 72 / MISSING 1 / AMBIGUOUS 1. No product code or ledger change. |
 | 2 | 2026-09-27T16:45:42 | 2026-09-27T17:56:47 | 0 | 0 | qhull triage. Fixes: trace macros on the CRT and mem.c/qset.c prints on the host (qhull_a.h, mem.h, host header), inline fsqrt (/Qfast_transcendentals on NxQhull), io.c/poly2.c typed host dispatches (+0x00/+0x04/+0x08/+0x0c/+0x1c), geom.c reciprocal parity for qh_gausselim/qh_getcenter/qh_normalize2, map row 0x0007f310 corrected to qh_settempfree_all; matcher: high-byte bit tests, new seams, two CRT identities, 71 tests. qhull SHAPE 83->162 / REVIEW 85->197 / DIFF 287->96 rows; qhull_review.csv covers all 331 groups (no unreviewed line). Unmapped NovodeX rows (31 discovered, 3,903 insns) not written: need their own unit. No ledger change; gates 2, 3, 4, 6, 7 pass, Phase 5 red only on `CANDIDATE-MISSING family=vtables`. |
 | 3 | 2026-09-27T17:58:46 | 2026-09-27T19:21:57 | 0 | 0 | OPCODE triage. Fixes: OPCODECREATE clears mDeserializeFrom; RayCollider's +0x88 float widens the culling arm's barycentric bounds (all eight stab variants) and the constructor clears it; host allocator by class (OPC_NOVODEX_ALLOCATEABLE) with empty node constructors and mIndices at its sites; CONTAINER_STATS off; /Qfast_transcendentals on NxOpcode; NovodeX SweepAndPrune (3-argument Init, ctor/dtor, allocator); NovodeX LSSCollider (radius, precomputed segment, inflated-box SAT). Map: 20 rows corrected (CoplanarTriTri, OBB::IsInside/ComputePlanes/ComputePoints/ComputeWorldEdgeNormal, Matrix3x3 cast, SAP Init/PairData::Init/dtor, ~BaseModel, Refit2, Triangle::Normal, the three LSS distance functions, GetSplittingValue loop, the ICE culling walk). Matcher: register vtable calls, trivial-ctor iterators, floats stored as immediates, CRT operators, seeded data, -1.0 negation, conversion-operator names; 82 tests. OPCODE MATCH 17->18 / SHAPE 49->66 / REVIEW 127->176 / DIFF 72->13 / MISSING 1->0 / AMBIGUOUS 1->0 rows; opcode_review.csv covers all 231 groups (227 equivalent, 4 novodex-variant-unwritten). Census: 7 rows third_party=opcode and vendored_not_falsified, 0x000f1350 no longer third party. Unmapped 143 rows classified; the callback tree-collider variant (25,613 B) and serialization (1,277 B) are separate units. Gates 2, 3, 4, 6, 7 pass; Phase 5 red only on `CANDIDATE-MISSING family=vtables`. |
+| 3 review | 2026-09-27T19:25:00 | 2026-09-27T20:01:01 | 0 | 0 | Review fixes: SphereTriOverlap reciprocal form and SqrDist register lifetime (build-parity overlay OPC_SphereTriOverlap.h); the e153286 `-1.0` matcher rule withdrawn with its test (it hid that difference; the group is DIFF on the constant alone, bit-identical by exact sign identities); RayTriOverlap V compared and summed unrounded at all 14 sites; CMake comment, README EOL rule, closure prose, reporting Save/Load stubs; opcode_review.csv notes build-stamped. OPCODE MATCH 18 / SHAPE 65 / REVIEW 176 / DIFF 14 rows. Gates 2, 3, 4, 6, 7 pass; Phase 5 red only on `CANDIDATE-MISSING family=vtables`. |
