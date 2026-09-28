@@ -461,6 +461,9 @@ Globals the dump TU owns: `%s__%I64x` name buffer .data 0x10126878 (0x100), toke
 
 ### Scene contents covered
 
+Superseded by "### Task 4 record" (what the test scenes actually hold and which branches stay
+unreached); kept as the pre-test survey.
+
 Covered: SDK materials, the 13 SDK constants, group collision masks, per scene the timing
 header, gravity, joints (full blocks for prismatic, revolute, cylindrical, spherical,
 point-on-line, point-in-plane; `PsJointEnd` only for distance, pulley, fixed, D6), limit
@@ -472,6 +475,10 @@ Not covered: fluids, implicit meshes, controllers, shape names, pair flags other
 "disabled", anything of a simulated scene beyond the timing header.
 
 ### Proposed test scene for Task 4
+
+Superseded by "### Task 4 record": the scenes built differ (two scenes, then a third;
+multi-shape and zero-shape actors; explicit masses; triggers only where the oracle accepts them).
+Kept as the plan the record amends.
 
 Write every reader the dump needs and exercise only what the candidate can construct:
 - one SDK, one scene (header `Contains one Asset.`), created with a non-default gravity in the
@@ -687,6 +694,33 @@ Trace (`evidence/effector-and-coredump-trace-coredump.txt`): every row the scene
 the three rows the candidate's compiler inlined (003992, 003994, 004013) anchored inside their
 enclosing functions. Not hit: the mesh arm (003991 004035 004046 001472), the pair loop (004059)
 and 000525, and the thirteen descriptor inlines, which nothing calls.
+
+Not hit, after Task 5's scene C as well:
+- the elapsed-time header of 004051 (`## Total Elapsed Time`, `## Elapsed Time Last Frame`,
+  `## MaxTimeStep`, `## MaxIter`, `## TimeStep = FIXED|VARIABLE`): it prints only when Scene+0x544
+  is non-zero, i.e. after a simulate, which the candidate does not have;
+- the mesh arm (003991 004035 004046 001472, and 004048's type-4 arm): no mesh shape can be built;
+- the pair block (004059's `PsActorPair` loop, 000525/000527): no pair flag is ever raised;
+- settings kinds 16 force and 17 torque: never stored or printed by the dump (not a gap);
+- the thirteen descriptor inlines, which nothing calls;
+- an effector with a world end: the oracle's 003964 faults on one, so no test can compare it.
+Every other settings kind prints its `PsDefaultSettings` line in scene C, and `awake(false)` is
+reached on a dynamic body (an unjointed actor created asleep; the jointed actor created asleep in scene A does not print
+it, in either DLL).
+
+### Task 5 addendum (review coverage)
+
+Scene C (dumped after scenes A and B are released, text and binary, with the pointer ordinals
+restarted: an address a freed object had can be handed out again, and which one depends on the
+process's address-space history, so aliasing with freed objects is not compared) holds an
+unjointed actor created asleep, two static capsules, pairs of equal actors and shapes, and a
+static three-shape actor. Its first run found one defect: the candidate's shape factory
+(`nxShapeFactory`, Scene.cpp) did not store a capsule's own `flags` (desc +0x54) at +0xe8, where
+the capsule loader 000989 stores them (0x00021af0) and slot 13 reads them back; 004048's capsule
+arm hands that word to 004017, so the oracle printed `triggerevent(enter,)` for a capsule with
+`NX_SWEPT_SHAPE` and the candidate nothing. Fixed (d628181). A capsule's `shapeFlags` triggers do
+not print, in either DLL: the quirk recorded in "### Task 3b record". 95 lines added; floors 6/7 =
+855/728.
 
 ## Task split
 

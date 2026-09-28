@@ -210,7 +210,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/11",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Open item (effector-and-coredump Task 4/5, tracked as a separate follow-up task): this row, the actor's mass from its shapes, is not written; the candidate's creation model (nxActorComputeMass in Physics/src/Scene.cpp) covers one unrotated box from a density only. The core-dump differential showed spheres, capsules and compounds with mass 0, a local-pose box without its mass frame, a cube's inertia one ulp off, and a dynamic actor whose only shape is a trigger accepted where the oracle refuses it (Actor::loadFromDescInternal: Can't compute mass from shapes); NxPhysicsCoreDumpTests gives its dynamic actors explicit masses until it is written."
     },
     {
       "id": "phys_fn_000009",
@@ -14515,7 +14515,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2415",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x0001a350"
+      "notes": "continuation of the entry at 0x0001a350 Open item (effector-and-coredump Task 4/5): the candidate's stand-in for this body loader is nxActorComputeMass in Physics/src/Scene.cpp; since Task 4 it takes the thresholds a descriptor leaves at or below zero from the live SDK parameters as this row does (+0xd8 NX_MAX_ANGULAR_VELOCITY squared at 0x1b04a, +0xd0/+0xd4 the sleep defaults at 0x1b1fc/0x1b3ac). Mass from shapes (phys_fn_000008) and the trigger-only dynamic refusal are the open follow-up."
     },
     {
       "id": "phys_fn_000796",
