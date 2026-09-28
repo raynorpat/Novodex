@@ -51,9 +51,15 @@
 #include "core/FixedJoint.h"
 #include "core/D6Joint.h"
 #include "core/SpringAndDamperEffector.h"
+#include "core/ActorMass.h"
 #include "NxSpringAndDamperEffectorDesc.h"
 #include "Observable.h"
 #include "PhysicsSDK.h"
+
+// The oracle's __FILE__ strings for the reports this file makes on their
+// behalf (.rdata 0x10106420 and 0x10104278).
+#define NX_SCENE_CPP	"\\Epic\\Novodex\\SDKs\\Physics\\src\\Scene.cpp"
+#define NX_ACTOR_CPP	"\\Epic\\Novodex\\SDKs\\Physics\\src\\Actor.cpp"
 #include "NxMat33.h"
 #include "NxQuat.h"
 #include "FoundationSDK.h"
@@ -1180,10 +1186,13 @@ int nxActorLoadFromDescInternal(void* actor, const unsigned* d)
 		return 1;
 		}
 
+	// The two reports go through FoundationSDK::error with Actor.cpp's
+	// __FILE__ (0x10104278) and lines 0xe5 and 0xe6 (0x21e3, 0x2201).
 	const int mass = nxActorComputeMass(actor, &d[0x0c]);
 	if(mass == 1)
 		{
-		nxSceneReportErrorA("Actor::loadFromDescInternal: Compute mesh inertia tensor "
+		NxFoundation::FoundationSDK::error(NXE_INVALID_PARAMETER, NX_ACTOR_CPP, 0xe5, 0,
+			"Actor::loadFromDescInternal: Compute mesh inertia tensor "
 			"failed for one of the actor's mesh shapes! Please change mesh geometry or "
 			"supply a tensor manually!");
 		return 0;
@@ -1198,7 +1207,8 @@ int nxActorLoadFromDescInternal(void* actor, const unsigned* d)
 			reinterpret_cast<void*>(a[0x10 / 4]), actor);
 		return 1;
 		}
-	nxSceneReportErrorA("Actor::loadFromDescInternal: Can't compute mass from shapes: "
+	NxFoundation::FoundationSDK::error(NXE_INVALID_PARAMETER, NX_ACTOR_CPP, 0xe6, 0,
+		"Actor::loadFromDescInternal: Can't compute mass from shapes: "
 		"must have at least one non-trigger shape!");
 	return 0;
 	}
@@ -1257,11 +1267,24 @@ NxActor* NxSceneInternal::createActor(const NxActorDescBase& desc)
 	unsigned* p = reinterpret_cast<unsigned*>(mBytes);
 
 	// The oracle inlines isValid() here as a long chain of __fpclass tests over the
-	// twelve globalPose floats and the body's twelve, plus a shape validity loop.
-	// The public header's isValid() is the same predicate, so it is used directly.
-	if(!desc.isValid())
+	// twelve globalPose floats and the body's twelve, plus a shape validity loop,
+	// once per descriptor type ([desc+0x48]: 1 at 0x11e99, 2 at 0x11a2d, any
+	// other at 0x1175f). For the two shape-list types it is the whole of the
+	// pinned header's NxActorDesc::isValid(), isValidInternal included (0x11d23:
+	// exactly one of density, mass, or mass with tensor) -- NxActorDescBase::
+	// isValid() is not virtual, so calling it through the base reference, as
+	// this transcription did, skipped that half (actor-mass Task 1: a density
+	// with an explicit mass was accepted). The two list types share one layout,
+	// which Actor::loadFromDescInternal reads the same way for both. The
+	// report goes through FoundationSDK::error with Scene.cpp's __FILE__ and
+	// the arm's line: 0x203, 0x209, 0x21b.
+	const NxU32 descType = static_cast<NxU32>(desc.getType());
+	const bool shapeList = descType == NX_ADT_DEFAULT || descType == NX_ADT_ALLOCATOR;
+	if(shapeList ? !static_cast<const NxActorDesc&>(desc).isValid() : !desc.isValid())
 		{
-		nxSceneReportError("Supplied NxActorDesc is not valid. createActor returns NULL.");
+		NxFoundation::FoundationSDK::error(NXE_INVALID_PARAMETER, NX_SCENE_CPP,
+			descType == NX_ADT_DEFAULT ? 0x203 : descType == NX_ADT_ALLOCATOR ? 0x209 : 0x21b,
+			0, "Supplied NxActorDesc is not valid. createActor returns NULL.");
 		return 0;
 		}
 
@@ -1299,7 +1322,8 @@ NxActor* NxSceneInternal::createActor(const NxActorDescBase& desc)
 		nxSceneActorDestroy(actor);
 		nxGetSdkAllocator()->free(actor);
 		nxGetSdkAllocator()->free(outerMemory);
-		nxSceneReportError("Actor Initialisation failed: returned NULL.");
+		NxFoundation::FoundationSDK::error(NXE_INVALID_PARAMETER, NX_SCENE_CPP, 0x228,
+			0, "Actor Initialisation failed: returned NULL.");
 		return 0;
 		}
 
@@ -1348,6 +1372,52 @@ NxActor* NxSceneInternal::createActor(const NxActorDescBase& desc)
 // body, whose first word points back to the 0x18-byte public actor. The Scene
 // removes that actor by swapping in the last entry, then tears down the owned
 // body graph. Callback and name paths remain separate gaps.
+// The shape half of an actor's teardown: a compound's children (each with
+// its public handle), the compound's two arrays and the compound itself, or
+// the single shape and its handle. releaseActor and the failed-creation path
+// (nxSceneActorDestroy) share it.
+static void nxSceneReleaseBodyShapes(NxSceneInternal* scene, unsigned char* body)
+	{
+	unsigned char* shape = *reinterpret_cast<unsigned char**>(body + 0x10);
+	if(shape && *reinterpret_cast<unsigned*>(shape + 0xd0) == 5u)
+		{
+		void** shapes = *reinterpret_cast<void***>(shape + 0xe0);
+		void** shapesEnd = *reinterpret_cast<void***>(shape + 0xe4);
+		void** helpers = *reinterpret_cast<void***>(shape + 0xf0);
+		for(unsigned i = 0; i < static_cast<unsigned>(shapesEnd - shapes); ++i)
+			{
+			const unsigned id = *reinterpret_cast<unsigned*>(
+				static_cast<unsigned char*>(shapes[i]) + 0xd4);
+			nxSceneAuxUnregisterShape(scene, shapes[i]);
+			nxGetSdkAllocator()->free(helpers[i]);
+			nxShapeSetName(shapes[i], 0);
+			nxGetSdkAllocator()->free(shapes[i]);
+			nxSceneRecycleShapeId(scene, id);
+			}
+		nxGetSdkAllocator()->free(helpers);
+		nxGetSdkAllocator()->free(shapes);
+		nxSceneAuxUnregisterShape(scene, shape);
+		nxSceneRecycleShapeId(scene, *reinterpret_cast<unsigned*>(shape + 0xd4));
+		nxShapeSetName(shape, 0);
+		nxGetSdkAllocator()->free(shape);
+		}
+	else if(shape)
+		{
+		const unsigned id = *reinterpret_cast<unsigned*>(shape + 0xd4);
+		void* helper = *reinterpret_cast<void**>(shape + 0x9c);
+		nxSceneAuxUnregisterShape(scene, shape);
+		if(helper) nxGetSdkAllocator()->free(helper);
+		nxShapeSetName(shape, 0);
+		// The shape id is recycled before the shape is freed: the oracle's
+		// free order is helper, the id vector's old block when the recycle
+		// grows it, then the shape (effector-and-coredump Task 2: the scene
+		// release of NxPhysicsEffectorTests, whose third actor's recycle
+		// grows the vector, printed 1c,8,228 on the oracle side).
+		nxSceneRecycleShapeId(scene, id);
+		nxGetSdkAllocator()->free(shape);
+		}
+	}
+
 void NxSceneInternal::releaseActor(void* bodyPointer)
 	{
 	unsigned char* body = static_cast<unsigned char*>(bodyPointer);
@@ -1404,44 +1474,7 @@ void NxSceneInternal::releaseActor(void* bodyPointer)
 		nxGetSdkAllocator()->free(record);
 		}
 	nxSceneRecycleActorId(this, actorId);
-	unsigned char* shape = *reinterpret_cast<unsigned char**>(body + 0x10);
-	if(shape && *reinterpret_cast<unsigned*>(shape + 0xd0) == 5u)
-		{
-		void** shapes = *reinterpret_cast<void***>(shape + 0xe0);
-		void** shapesEnd = *reinterpret_cast<void***>(shape + 0xe4);
-		void** helpers = *reinterpret_cast<void***>(shape + 0xf0);
-		for(unsigned i = 0; i < static_cast<unsigned>(shapesEnd - shapes); ++i)
-			{
-			const unsigned id = *reinterpret_cast<unsigned*>(
-				static_cast<unsigned char*>(shapes[i]) + 0xd4);
-			nxSceneAuxUnregisterShape(this, shapes[i]);
-			nxGetSdkAllocator()->free(helpers[i]);
-			nxShapeSetName(shapes[i], 0);
-			nxGetSdkAllocator()->free(shapes[i]);
-			nxSceneRecycleShapeId(this, id);
-			}
-		nxGetSdkAllocator()->free(helpers);
-		nxGetSdkAllocator()->free(shapes);
-		nxSceneAuxUnregisterShape(this, shape);
-		nxSceneRecycleShapeId(this, *reinterpret_cast<unsigned*>(shape + 0xd4));
-		nxShapeSetName(shape, 0);
-		nxGetSdkAllocator()->free(shape);
-		}
-	else if(shape)
-		{
-		const unsigned id = *reinterpret_cast<unsigned*>(shape + 0xd4);
-		void* helper = *reinterpret_cast<void**>(shape + 0x9c);
-		nxSceneAuxUnregisterShape(this, shape);
-		if(helper) nxGetSdkAllocator()->free(helper);
-		nxShapeSetName(shape, 0);
-		// The shape id is recycled before the shape is freed: the oracle's
-		// free order is helper, the id vector's old block when the recycle
-		// grows it, then the shape (effector-and-coredump Task 2: the scene
-		// release of NxPhysicsEffectorTests, whose third actor's recycle
-		// grows the vector, printed 1c,8,228 on the oracle side).
-		nxSceneRecycleShapeId(this, id);
-		nxGetSdkAllocator()->free(shape);
-		}
+	nxSceneReleaseBodyShapes(this, body);
 	nxGetSdkAllocator()->free(body);
 	}
 
@@ -1960,9 +1993,21 @@ void* nxSceneActorInitialise(NxActor* actor, const void* desc)
 	return const_cast<void*>(desc);
 	}
 
+// The failed-creation half of phys_fn_001c40 (0x1c40, Actor's destructor,
+// which Scene::createActor calls at 0x11e1b when loadFromDescInternal
+// fails): the actor's name and its shapes are released, so their ids go back
+// to the scene. No record exists yet on this path (000026 returns before
+// allocating it). The rest of 0x1c40 is not reconstructed.
 void nxSceneActorDestroy(NxActor* actor)
 	{
-	(void)actor;
+	unsigned char* body = *reinterpret_cast<unsigned char**>(
+		reinterpret_cast<unsigned char*>(actor) + 0x14);
+	if(!body)
+		return;
+	NxSceneInternal* scene = *reinterpret_cast<NxSceneInternal**>(body + 4);
+	nxShapeSetName(body, 0);
+	nxSceneReleaseBodyShapes(scene, body);
+	*reinterpret_cast<void**>(body + 0x10) = 0;
 	}
 
 void nxSceneUpdateActorCount(void* scene, unsigned count)
@@ -2030,6 +2075,27 @@ int nxActorComputeMass(void* actor, const unsigned* bodyWord)
 	unsigned char* body = *reinterpret_cast<unsigned char**>(actorBytes + 0x14);
 	if(!body)
 		return 1;
+	// The front of phys_fn_000026 (0x19b0): the body descriptor is copied
+	// (000010, 0x78 bytes) and, when the three massSpaceInertia words are all
+	// integer zero (0x19d6..0x19e9), phys_fn_000008 computes mass, mass
+	// frame and inertia from the shapes into the copy, with the density the
+	// loader stored at body+0x18. A non-zero result (1: a shape's inertia
+	// failed, 2: no non-trigger shape) returns before the record is
+	// allocated (0x1a16). Everything below reads the copy. (actor-mass
+	// Task 1; the earlier model had a one-box density formula here.)
+	NxBodyDesc bodyCopy = *reinterpret_cast<const NxBodyDesc*>(*bodyWord);
+	NxU32 inertiaWords[3];
+	memcpy(inertiaWords, &bodyCopy.massSpaceInertia, sizeof(inertiaWords));
+	if(inertiaWords[0] == 0 && inertiaWords[1] == 0 && inertiaWords[2] == 0)
+		{
+		NxReal density;
+		memcpy(&density, body + 0x18, sizeof(density));
+		const NxU32 result = reinterpret_cast<Row000008Fixture*>(body)->row000008(
+			density, &bodyCopy.mass, &bodyCopy.massLocalPose,
+			&bodyCopy.massSpaceInertia);
+		if(result)
+			return static_cast<int>(result);
+		}
 	unsigned char* record = static_cast<unsigned char*>(
 		nxGetSdkAllocator()->malloc(0x260, NX_MEMORY_PERSISTENT));
 	if(!record)
@@ -2064,7 +2130,7 @@ int nxActorComputeMass(void* actor, const unsigned* bodyWord)
 	*reinterpret_cast<void**>(record + 0x19c) = body;
 	*reinterpret_cast<void**>(body + 0x08) = record;
 	NxSceneInternal* scene = *reinterpret_cast<NxSceneInternal**>(actorBytes + 4);
-	const NxBodyDesc* bodyDesc = reinterpret_cast<const NxBodyDesc*>(*bodyWord);
+	const NxBodyDesc* bodyDesc = &bodyCopy;
 	bodyDesc->massLocalPose.M.getRowMajor(reinterpret_cast<float*>(record + 0xdc));
 	memcpy(record + 0x100, &bodyDesc->massLocalPose.t, sizeof(NxVec3));
 	// The world centre of mass (+0x158) is written with +0x134, +0x124 and
@@ -2125,29 +2191,8 @@ int nxActorComputeMass(void* actor, const unsigned* bodyWord)
 	memcpy(record + 0x34, &bodyDesc->linearVelocity, sizeof(NxVec3));
 	memcpy(record + 0x78, &bodyDesc->angularVelocity, sizeof(NxVec3));
 	memcpy(record + 0x40, &bodyDesc->angularVelocity, sizeof(NxVec3));
-	float mass = bodyDesc->mass;
-	NxVec3 inertia = bodyDesc->massSpaceInertia;
-	// The one-box density path in FUN_100019b0/FUN_1001a350 derives mass
-	// from the full box extents and diagonal inertia from their squared radii.
-	// Rotated/translated and compound geometry still need the full tensor path.
-	const unsigned* actorDesc = bodyWord - 0x0c;
-	float density;
-	memcpy(&density, actorDesc + 0x0d, sizeof(density));
-	if(mass == 0.0f && density > 0.0f &&
-		actorDesc[0x14] - actorDesc[0x13] == sizeof(void*))
-		{
-		const NxShapeDesc* shape = *reinterpret_cast<const NxShapeDesc* const*>(
-			actorDesc[0x13]);
-		if(shape && shape->getType() == NX_SHAPE_BOX)
-			{
-			const NxVec3& radii = static_cast<const NxBoxShapeDesc*>(shape)->dimensions;
-			mass = 8.0f * density * radii.x * radii.y * radii.z;
-			const float thirdMass = mass / 3.0f;
-			inertia.x = thirdMass * (radii.y * radii.y + radii.z * radii.z);
-			inertia.y = thirdMass * (radii.x * radii.x + radii.z * radii.z);
-			inertia.z = thirdMass * (radii.x * radii.x + radii.y * radii.y);
-			}
-		}
+	const float mass = bodyDesc->mass;
+	const NxVec3 inertia = bodyDesc->massSpaceInertia;
 	if(mass > 0.0f)
 		{
 		*reinterpret_cast<float*>(record + 0x188) = mass;
@@ -2418,6 +2463,9 @@ void* nxShapeGroupConstruct(void* actor, const unsigned* shapeDescriptions, unsi
 	if(!group)
 		return 0;
 	memset(group, 0, 0x110);
+	// The compound constructor 001033 stores the final table 0x10106c2c
+	// (0x22d76); slot 4 is 000008's route into the children (actor-mass).
+	*reinterpret_cast<void***>(group) = nxCompoundShapeInternalVtable();
 	*reinterpret_cast<unsigned*>(group + 0xd0) = 5;
 	// Like the oracle, the group retains its 0x50-byte outer body at +4.
 	// Its owned children are reached through the two arrays near the end.
@@ -2524,6 +2572,7 @@ void* nxActorAppendShape(void* actor, const NxShapeDesc* descriptor)
 		return 0;
 		}
 	memset(group, 0, 0x110);
+	*reinterpret_cast<void***>(group) = nxCompoundShapeInternalVtable();
 	*reinterpret_cast<void**>(group + 4) = body;
 	*reinterpret_cast<unsigned*>(group + 0xd0) = 5;
 	*reinterpret_cast<unsigned*>(group + 0xd4) = nxSceneTakeShapeId(scene);

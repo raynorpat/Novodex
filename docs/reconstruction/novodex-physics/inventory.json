@@ -204,13 +204,13 @@
       "section": ".text",
       "phase": 5,
       "phase_provenance": "callers",
-      "state": "discovered",
-      "source": null,
+      "state": "reconstructed",
+      "source": "Physics/src/core/ActorMass.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/4",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/11",
-      "static_proof": null,
-      "dynamic_proof": null,
-      "notes": ""
+      "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json) and checked against it; see units/actor-mass-contract.md. Actor::computeMass (__thiscall on the 0x50-byte internal actor, ret 0x10): zeroed frame (000847), root-shape slot 4 at unit density with a zeroed-vector third argument, return 1 on a failed slot, 2 on a non-positive frame mass, else pose.t = frame offset, 000841, the tensor scaled by *mass/frameMass (density <= 0), by the density with *mass = frameMass*density (*mass <= 0) or by the density alone, and NxDiagonalizeInertiaTensor into the inertia and the pose 3x3.",
+      "dynamic_proof": "cdb breakpoint trace of the candidate NxPhysicsActorMassTests (evidence/actor-mass-trace.txt, actor-mass Task 1): hit 13 times, once per createActor that reaches the body creation (every density case and both trigger-only refusals). The NxPhysicsActorMassTests staged pair (Phase 5, 36 registered oracle lines) and scene D of NxPhysicsCoreDumpTests (Phases 6/7) compare its mass, inertia and mass-frame words with the oracle: stdout_delta=0.",
+      "notes": "Actor-mass Task 1: written in core/ActorMass.cpp and wired into the candidate model of 000026 (nxActorComputeMass, Scene.cpp)."
     },
     {
       "id": "phys_fn_000009",
@@ -539,7 +539,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/57",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Actor-mass Task 1: its front half -- the 0x78-byte body descriptor copy (000010), 000008 when the three massSpaceInertia words are integer zero, and the early return of its result -- is modelled in nxActorComputeMass (Scene.cpp); the record construction 000797 and 000630 stay candidate models."
     },
     {
       "id": "phys_fn_000027",
@@ -683,7 +683,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/96",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "Round 54: the reconstruction named here was nxSceneActorInitialise, a function declared and defined in Scene.cpp and called by nothing. The dynamic proof added in round 30 claimed the row executes on the staged-pair differential path; it does not, because no code invokes it. Both fields are cleared rather than corrected, because this session has not established where the row is actually reconstructed.",
+      "notes": "Round 54: the reconstruction named here was nxSceneActorInitialise, a function declared and defined in Scene.cpp and called by nothing. The dynamic proof added in round 30 claimed the row executes on the staged-pair differential path; it does not, because no code invokes it. Both fields are cleared rather than corrected, because this session has not established where the row is actually reconstructed. Actor-mass Task 1: the candidate model nxActorLoadFromDescInternal (Scene.cpp) now reports its two mass failures through FoundationSDK::error with Actor.cpp's __FILE__ and lines 0xe5/0xe6, as 0x21e3/0x2201 do.",
       "implementation": null
     },
     {
@@ -11456,7 +11456,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/1589",
       "static_proof": null,
       "dynamic_proof": "Scene::createActor; executed for every actor, and its transform arm by the joint rows it drives. driven on BOTH pairs by NxPhysicsJointStagedPairTests, a registered Phase 6 staged-pair differential (tools/gate_targets.ps1, floor 11, four coverage assertions). The harness creates the SDK, a scene, two actors with bodies and four revolute joints, reads each joint's anchor, axis, actors and state back, and releases everything; the oracle and candidate transcripts are identical after the runner normalises the pair-identity lines, and the gate runs the differential as part of phase 6. This row executes on that path. Recorded in round 30, after 11s found that the work was done and the census still said `discovered`.",
-      "notes": "",
+      "notes": "Actor-mass Task 1: createActor now applies the whole NxActorDesc::isValid (isValidInternal included, 0x11d23) to the two shape-list descriptor types, and reports through FoundationSDK::error with Scene.cpp's __FILE__ and lines 0x203/0x209/0x21b/0x228; a failed load releases the shapes and name it built (the failed-creation half of 0x1c40).",
       "implementation": "Physics/src/Scene.cpp"
     },
     {
@@ -15146,11 +15146,11 @@
       "phase": 5,
       "phase_provenance": "callers",
       "state": "reconstructed",
-      "source": null,
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/340",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2540",
-      "static_proof": "unit-density solid-box mass-frame builder over three half-extents: replace-or-multiply accumulator opened at the .rdata 1.0f literal with integer zero-word compares, mass = 8*hx*hy*hz ([0x101068f0]), diagonal = (mass/3) ([0x101068ec]) times pairwise squared-extent sums; the mass value stays live on the x87 stack across the whole function",
-      "dynamic_proof": null,
+      "static_proof": "unit-density solid-box mass-frame builder over three half-extents: replace-or-multiply accumulator opened at the .rdata 1.0f literal with integer zero-word compares, mass = 8*hx*hy*hz ([0x101068f0]), diagonal = (mass/3) ([0x101068ec]) times pairwise squared-extent sums; the mass value stays live on the x87 stack across the whole function Actor-mass Task 1 correction from the listing: the diagonal factor 1/3*mass is stored m32 (fstp [esp+0x1c], 0x1bd39) and so are the three pairwise sums of squares (0x1bd67..0x1bd72) before the products; the earlier transcription kept them on the stack.",
+      "dynamic_proof": "cdb breakpoint trace of the candidate NxPhysicsActorMassTests (evidence/actor-mass-trace.txt, actor-mass Task 1): hit 6 times (every box: centred, posed, the small cube and in the compounds).",
       "notes": ""
     },
     {
@@ -15186,7 +15186,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/341",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2544",
       "static_proof": "payload fold step over {Vec3 d; SymMat3 K} records (0x24-byte stride): nine faddp-chain intermediates each rounded to float32 by their fstp m32 stores, then all nine inertia words overwritten from d/K products of the old inertia, COM offset replaced by {o.d, o^T K col0, o^T K col1}; mass untouched; driven bitwise by the paxis family through two crafted frame/payload pairs",
-      "dynamic_proof": null,
+      "dynamic_proof": "cdb breakpoint trace of the candidate NxPhysicsActorMassTests (evidence/actor-mass-trace.txt, actor-mass Task 1): hit 16 times (every posed shape and every box and sphere, whose pose pointer is never null).",
       "notes": "",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
@@ -15222,8 +15222,8 @@
       "source": "Physics/src/ObjectModel.cpp (MassFrame::nxMassFrameTranslate)",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/342",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2545",
-      "static_proof": "MassFrame translate (0x1c040, __thiscall ret 4): early-outs when the {d} arg is all-zero; else moves the reference center from old_offset o to c=d+o and adds the parallel-axis Delta-Q m*(Q(c)-Q(o)) to the nine inertia words, where Q(r)=|r|^2 I - r r^T; the image splits this into a centered path (0x1c0d7, c==0 -> -Q(o)) and a displaced path (0x1c26f, generic, with the 0.0-literal multiplications [0x101041f0] matching the symmetric Q structure), then the shared tail (0x1c578) sets offset=c. nxMassFrameTranslate reproduces Q(c)-Q(o); see 3z40.",
-      "dynamic_proof": "differential 54/54 (6 offsets x 9 translations, incl. negatives/fractionals) byte-exact vs oracle 0x1c040; mutation of the Q off-diagonal sign -> 37/54 red (build/r25-mut.log), restored green",
+      "static_proof": "MassFrame translate (0x1c040, __thiscall ret 4): early-outs when the {d} arg is all-zero; else moves the reference center from old_offset o to c=d+o and adds the parallel-axis Delta-Q m*(Q(c)-Q(o)) to the nine inertia words, where Q(r)=|r|^2 I - r r^T; the image splits this into a centered path (0x1c0d7, c==0 -> -Q(o)) and a displaced path (0x1c26f, generic, with the 0.0-literal multiplications [0x101041f0] matching the symmetric Q structure), then the shared tail (0x1c578) sets offset=c. nxMassFrameTranslate reproduces Q(c)-Q(o); see 3z40. Actor-mass Task 1: retranscribed op for op from the listing -- K(v) = [v]x[v]x as nine sums with the 0.0-literal products kept, the centred path I += m K(o), the displaced path I += m (K(o) - K(c)) with that arm's own stores (-cy, -cy^2, -cx^2 m32; -cz^2 on the stack), each difference, product and sum stored m32; the Phase 2 mftranslate (54/54) and negtrans (5/5) differentials stay green.",
+      "dynamic_proof": "differential 54/54 (6 offsets x 9 translations, incl. negatives/fractionals) byte-exact vs oracle 0x1c040; mutation of the Q off-diagonal sign -> 37/54 red (build/r25-mut.log), restored green cdb breakpoint trace of the candidate NxPhysicsActorMassTests (evidence/actor-mass-trace.txt, actor-mass Task 1): hit 27 times (every shape pose translation and 000841).",
       "notes": "Additional 48-case mesh cached-mass drive found and corrected asymmetric x87 rounding in diagonal Q terms; NxPhysicsShapeVtableTests digest ed1294b6, failures=0."
     },
     {
@@ -15363,11 +15363,11 @@
       "phase": 5,
       "phase_provenance": "callers",
       "state": "reconstructed",
-      "source": "negated-offset translate via nxMassFrameTranslate",
+      "source": "Physics/src/core/ActorMass.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/346",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2553",
-      "static_proof": "negated-offset translate wrapper (0x1c720, __thiscall ret 0): builds {-offset} on the stack by fchs of this+0x24/0x28/0x2c and calls 000833 (MassFrame translate), moving the frame center to the origin",
-      "dynamic_proof": "differential 5/5 (build/r26-restore.log negtrans run=5 failures=0) vs oracle 0x1c720; mutation of the negate sign -> 4/5 red (build/r26-mut.log), restored green",
+      "static_proof": "negated-offset translate wrapper (0x1c720, __thiscall ret 0): builds {-offset} on the stack by fchs of this+0x24/0x28/0x2c and calls 000833 (MassFrame translate), moving the frame center to the origin Actor-mass Task 1: product row in core/ActorMass.cpp (Row000841Fixture), called by 000008.",
+      "dynamic_proof": "differential 5/5 (build/r26-restore.log negtrans run=5 failures=0) vs oracle 0x1c720; mutation of the negate sign -> 4/5 red (build/r26-mut.log), restored green cdb breakpoint trace of the candidate NxPhysicsActorMassTests (evidence/actor-mass-trace.txt, actor-mass Task 1): hit 11 times (000008 minus its two refusals).",
       "notes": ""
     },
     {
@@ -15435,11 +15435,11 @@
       "phase": 3,
       "phase_provenance": "callers",
       "state": "reconstructed",
-      "source": null,
+      "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/348",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2556",
-      "static_proof": "unit-density cylinder mass-frame builder: mass = pi*r^2*2c ([0x101068d0]); axial diagonal = mass*r^2/2 ([0x101043cc] halves it), transverse pair = mass*(3r^2+4c^2)/12 ([0x101068f8]=3, [0x101068f4]=4, [0x101068e0]=1/12); axisSelector argument routes the axial diagonal and selector==1 leaves +0x00 unwritten",
-      "dynamic_proof": null,
+      "static_proof": "unit-density cylinder mass-frame builder: mass = pi*r^2*2c ([0x101068d0]); axial diagonal = mass*r^2/2 ([0x101043cc] halves it), transverse pair = mass*(3r^2+4c^2)/12 ([0x101068f8]=3, [0x101068f4]=4, [0x101068e0]=1/12); axisSelector argument routes the axial diagonal and selector==1 leaves +0x00 unwritten Actor-mass Task 1 correction from the listing: selector 1 DOES write +0x00 -- `mov [ecx], edx` (the transverse value) at 0x1c836 runs before the je at 0x1c838 -- so the earlier \"leaves +0x00 unwritten\" read was wrong; capsule slot 4 passes selector 1.",
+      "dynamic_proof": "cdb breakpoint trace of the candidate NxPhysicsActorMassTests (evidence/actor-mass-trace.txt, actor-mass Task 1): hit 5 times (every capsule: centred, posed, in the compounds, mass-only).",
       "notes": ""
     },
     {
@@ -15475,7 +15475,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/349",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2560",
       "static_proof": null,
-      "dynamic_proof": "driven and gated: the transcript line 'mzero row=phys_fn_000847 zA=00000000 zB=42424242 digest=23206019', is a registered coverage assertion in tools/gate_targets.ps1, which run_phase_gate.ps1 requires to appear at least twice in the differential transcript and fails if it stops appearing. Backfilled from that registration (7i); the row was already driven, the proof field was never filled in.",
+      "dynamic_proof": "driven and gated: the transcript line 'mzero row=phys_fn_000847 zA=00000000 zB=42424242 digest=23206019', is a registered coverage assertion in tools/gate_targets.ps1, which run_phase_gate.ps1 requires to appear at least twice in the differential transcript and fails if it stops appearing. Backfilled from that registration (7i); the row was already driven, the proof field was never filled in. cdb breakpoint trace of the candidate NxPhysicsActorMassTests (evidence/actor-mass-trace.txt, actor-mass Task 1): hit 13 times (000008's zeroed frame).",
       "notes": ""
     },
     {
@@ -15510,8 +15510,8 @@
       "source": "Physics/src/ObjectModel.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/350",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2562",
-      "static_proof": "BOX slot-4 compute-mass row: builds a unit-density solid-box mass frame from three half-extents through 0x0001bd00, folds the optional payload pair through 0x1bdc0/0x1c040 when non-null, scales by density through 0x0001c5c0 unless a fucompp finds it equal to the .rdata 0x101041ec 1.0f literal, then merges into the destination through 0x0001c630; __thiscall ret 0xc",
-      "dynamic_proof": null,
+      "static_proof": "BOX slot-4 compute-mass row: builds a unit-density solid-box mass frame from three half-extents through 0x0001bd00, folds the optional payload pair through 0x1bdc0/0x1c040 when non-null, scales by density through 0x0001c5c0 unless a fucompp finds it equal to the .rdata 0x101041ec 1.0f literal, then merges into the destination through 0x0001c630; __thiscall ret 0xc Actor-mass Task 1: the row now calls 000833 at 0x1c8eb as the listing does instead of a centred-box formula.",
+      "dynamic_proof": "cdb breakpoint trace of the candidate NxPhysicsActorMassTests (evidence/actor-mass-trace.txt, actor-mass Task 1): inlined into 000947 in the traced build, so it has no entry of its own; it runs on each of 000947's 6 hits, none of the traced boxes carrying a trigger flag (an earlier build of the same source, before the noinline changes, hit it 6 times).",
       "notes": "",
       "implementation": "Physics/src/ObjectModel.cpp"
     },
@@ -17283,7 +17283,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/462",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2972",
       "static_proof": "if [this+0xde]&7 open, call the 000849 mass helper on the facade pose/dims (this+0x6c/+0xe4) into the destination MassFrame; always returns true",
-      "dynamic_proof": "confirmed via boxslot4 differential (3z102): cases=pose4 x low8 x density2 failures=0; candidate nxBoxAccumulateMass",
+      "dynamic_proof": "confirmed via boxslot4 differential (3z102): cases=pose4 x low8 x density2 failures=0; candidate nxBoxAccumulateMass cdb breakpoint trace of the candidate NxPhysicsActorMassTests (evidence/actor-mass-trace.txt, actor-mass Task 1): hit 6 times.",
       "notes": ""
     },
     {
@@ -18402,7 +18402,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/492",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3066",
       "static_proof": "when [this+0xde]&7 is clear, computes the capsule mass frame with axisSelector 1, radius [this+0xe0], cylHalfHeight [this+0xe0]+[this+0xe4] and pose [this+0x6c] via the 000853 helper; always returns true",
-      "dynamic_proof": "confirmed via capmass2 differential (3z119): 8 flag-lows x 2 densities failures=0 (needed the capsule builder payload-path fix)",
+      "dynamic_proof": "confirmed via capmass2 differential (3z119): 8 flag-lows x 2 densities failures=0 (needed the capsule builder payload-path fix) cdb breakpoint trace of the candidate NxPhysicsActorMassTests (evidence/actor-mass-trace.txt, actor-mass Task 1): hit 5 times.",
       "notes": ""
     },
     {
@@ -18688,11 +18688,11 @@
       "phase": 3,
       "phase_provenance": "enclosed_by_one_phase",
       "state": "reconstructed",
-      "source": "guarded three-argument dispatch loop (0x229b0, ret 0xc)",
+      "source": "Physics/src/core/ActorMass.cpp",
       "ghidra_ref": "oracle/ghidra/manifest.json#/functions/406",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3096",
-      "static_proof": "static review of the recorded shape: guarded three-argument dispatch loop (0x229b0, ret 0xc); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257)",
-      "dynamic_proof": "confirmed via the loop1024 differential (3z175): twelve combinations -- element counts 0..2, skip flag set and clear, slot returning 1 and 0 -- all failures=0, comparing the result, the slot hit count and all three arguments",
+      "static_proof": "static review of the recorded shape: guarded three-argument dispatch loop (0x229b0, ret 0xc); the row was closed against the differential harness and this proof text is backfilled from the row own recorded description (phase-8 audit, 3z257) Actor-mass Task 1: product row in core/ActorMass.cpp (CompoundShapeMass::row001024), slot 4 of the compound table the candidate now installs on its 0x110-byte group (0x10106c2c); the ObjectModel model nxArrayVtCall3Args1024 keeps a Product row pointer.",
+      "dynamic_proof": "confirmed via the loop1024 differential (3z175): twelve combinations -- element counts 0..2, skip flag set and clear, slot returning 1 and 0 -- all failures=0, comparing the result, the slot hit count and all three arguments cdb breakpoint trace of the candidate NxPhysicsActorMassTests (evidence/actor-mass-trace.txt, actor-mass Task 1): hit 4 times, once per compound (with and without a trigger child, the mass-only compound, the trigger-only compound).",
       "notes": ""
     },
     {
@@ -24978,7 +24978,7 @@
       "ghidra_ref": "oracle/ghidra/manifest.json#/instruction_ranges/673",
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3530",
       "static_proof": "when [this+0xde]&7 is clear, computes the sphere mass frame into the destination from the facade radius [this+0xe0] and pose [this+0x6c] via the 000851 helper; always returns true",
-      "dynamic_proof": "confirmed via sphmass differential (3z118): 8 flag-lows x 2 densities failures=0 (needed the sphere builder payload-path fix)",
+      "dynamic_proof": "confirmed via sphmass differential (3z118): 8 flag-lows x 2 densities failures=0 (needed the sphere builder payload-path fix) cdb breakpoint trace of the candidate NxPhysicsActorMassTests (evidence/actor-mass-trace.txt, actor-mass Task 1): hit 6 times.",
       "notes": ""
     },
     {

@@ -148,6 +148,8 @@ target_compile_definitions(NxPhysics PRIVATE NX_PHYSICS_DLL=1)
 # core/SceneDump.cpp (effector-and-coredump Task 3) is the core dump: its
 # float tokens compare and widen x87 values and round with fistp at the live
 # control word, and its asset writer converts poses to quaternions with fsqrt.
+# core/ActorMass.cpp (actor-mass Task 1) is the actor's mass from shapes,
+# phys_fn_000008: x87 compares, scaling and the NxDiagonalizeInertiaTensor call.
 if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	set_source_files_properties(
 		Physics/src/Geometry.cpp
@@ -170,6 +172,7 @@ if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/core/JointSupport.cpp
 		Physics/src/core/SpringAndDamperEffector.cpp
 		Physics/src/core/SceneDump.cpp
+		Physics/src/core/ActorMass.cpp
 		PROPERTIES COMPILE_OPTIONS "/arch:IA32")
 endif()
 
@@ -352,6 +355,12 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_include_directories(NxPhysicsActorCMassTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include)
 	target_link_libraries(NxPhysicsActorCMassTests bcrypt)
+	# Mass from shapes (actor-mass Task 1): density-based dynamic actors of each
+	# shape type and a compound, and the trigger-only refusal.
+	add_executable(NxPhysicsActorMassTests tests/PhysicsActorMassTests.cpp)
+	target_include_directories(NxPhysicsActorMassTests PRIVATE
+		Foundation/include Foundation/src/include Physics/include)
+	target_link_libraries(NxPhysicsActorMassTests bcrypt)
 	# The same include set as the oracle target above; the harness includes the
 	# Foundation's allocator interface for the page-guarded allocator, and Physics'
 	# public headers for the descriptors.
@@ -405,7 +414,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 			NxPhysicsActorBodyFlagTests
 			NxPhysicsActorDynamicSetterTests NxPhysicsActorMomentumTests
 			NxPhysicsActorForceTests NxPhysicsActorCMassTests
-			NxPhysicsActorShapeMutationTests NxPhysicsJointStagedPairTests
+			NxPhysicsActorMassTests NxPhysicsActorShapeMutationTests NxPhysicsJointStagedPairTests
 			NxPhysicsJointSlotTests NxPhysicsEffectorTests NxPhysicsCoreDumpTests)
 		target_compile_definitions(${nx_fill_target} PRIVATE NX_PAGE_GUARDED_FILL)
 	endforeach()

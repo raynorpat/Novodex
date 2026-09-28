@@ -14,7 +14,7 @@ $NxPhaseTestTargets = [ordered] @{
     '2' = @('NxPhysicsExportTests', 'NxPhysicsSDKTests', 'NxPhysicsCoreClusterTests')
     '3' = @('NxPhysicsGeometryTests', 'NxPhysicsKernelFuzzTests')
     '4' = @()
-    '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests', 'NxPhysicsActorForceTests', 'NxPhysicsActorCMassTests', 'NxPhysicsActorShapeMutationTests')
+    '5' = @('NxPhysicsActorLifecycleTests', 'NxPhysicsDynamicFirstTests', 'NxPhysicsEmptySceneTests', 'NxPhysicsActorNameTests', 'NxPhysicsActorMetadataTests', 'NxPhysicsActorBodyFlagTests', 'NxPhysicsActorDynamicsTests', 'NxPhysicsActorDynamicSetterTests', 'NxPhysicsActorMomentumTests', 'NxPhysicsActorForceTests', 'NxPhysicsActorCMassTests', 'NxPhysicsActorShapeMutationTests', 'NxPhysicsActorMassTests')
     '6' = @('NxPhysicsJointStagedPairTests', 'NxFoundationTangentTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests')
     '7' = @('NxPhysicsJointStagedPairTests', 'NxPhysicsJointAllocatorTests', 'NxPhysicsJointSlotTests', 'NxPhysicsEffectorTests', 'NxPhysicsCoreDumpTests')
     '8' = @()
@@ -87,6 +87,53 @@ $NxPhaseOracleDifferentialTargets = [ordered] @{
 # from 89978 to 3521 and leaves stdout_delta at 0, and this is what turns that
 # from a silent pass into a failure.
 $NxRequiredCoverageLines = [ordered] @{
+    # Actor-mass Task 1: density-based dynamic actors, so that the body
+    # creation 000026 computes mass, mass frame and inertia through 000008 and
+    # the shapes' slot-4 rows -- a sphere, a box, a small cube and a capsule,
+    # each centred and with a local pose, a three-part compound (001024) with
+    # and without a trigger child, the explicit-mass arm of 000008 on a
+    # compound and a capsule, and the refusals: a density with an explicit mass
+    # (createActor's isValidInternal) and no non-trigger shape (000008 returns
+    # 2), alone and in a compound. Every line of the transcript but the module
+    # lines, copied verbatim from the ORACLE side.
+    'NxPhysicsActorMassTests' = @(
+        'mass sphere created=1',
+        'mass sphere mass=406231d6 inertia=3f4b9341.3f4b9341.3f4b9341',
+        'mass sphere cmass_local_pose=3f800000.0.0.0.3f800000.0.0.0.3f800000.0.0.0',
+        'mass box created=1',
+        'mass box mass=41700000 inertia=41de8001.41aa0000.41110000',
+        'mass box cmass_local_pose=3f800000.0.0.0.3f800000.0.0.0.3f800000.0.0.0',
+        'mass cube created=1',
+        'mass cube mass=3ec00000 inertia=3c800000.3c800000.3c800000',
+        'mass cube cmass_local_pose=3f800000.0.0.0.3f800000.0.0.0.3f800000.0.0.0',
+        'mass capsule created=1',
+        'mass capsule mass=3f13fb49 inertia=3e8e4f18.3d3d6a9c.3e8e4f18',
+        'mass capsule cmass_local_pose=3f800000.0.0.0.3f800000.0.0.0.3f800000.0.0.0',
+        'mass sphere_pose created=1',
+        'mass sphere_pose mass=3f860a92 inertia=3dd67750.3dd67750.3dd67750',
+        'mass sphere_pose cmass_local_pose=3f800000.0.0.0.3f800000.0.0.0.3f800000.3e800000.bf800000.3f000000',
+        'mass box_pose created=1',
+        'mass box_pose mass=41700000 inertia=41a9ffff.4110fffd.41de7ffe',
+        'mass box_pose cmass_local_pose=3f1b9b9c.3f2aaaaa.3edcdcdf.bf3ebebe.3f2aaaac.3ca0a06a.be8c8c91.beaaaaa9.3f66e6e7.bf400000.3f000000.3fa00000',
+        'mass capsule_pose created=1',
+        'mass capsule_pose mass=3ebc31a9 inertia=3c877fec.3e5c802b.3e5c8028',
+        'mass capsule_pose cmass_local_pose=3f7771da.3e3abb70.be38831d.be35a285.3f7bb1be.3d322f84.3e3d8839.bc254503.3f7b9040.3f800000.0.bf000000',
+        'mass compound created=1',
+        'mass compound mass=41612cb5 inertia=4150b30b.41a84610.41f5dadb',
+        'mass compound cmass_local_pose=3f49ba0e.bea22edb.3f07274d.3eceeba1.3f69bb7a.bd62f0bb.beedcf20.3e839884.3f58f3d1.bf16d7b0.3ecb9168.3f8ce8d3',
+        'mass compound_trigger created=1',
+        'mass compound_trigger mass=41612cb5 inertia=4150b30b.41a84610.41f5dadb',
+        'mass compound_trigger cmass_local_pose=3f49ba0e.bea22edb.3f07274d.3eceeba1.3f69bb7a.bd62f0bb.beedcf20.3e839884.3f58f3d1.bf16d7b0.3ecb9168.3f8ce8d3',
+        'mass compound_mass_density created=0',
+        'mass compound_mass_only created=1',
+        'mass compound_mass_only mass=40e00000 inertia=4117a82d.40a9febd.4159ccd3',
+        'mass compound_mass_only cmass_local_pose=3f18f5a8.3f28ca18.3ee9a97f.bf3c93b8.3f2d1a42.bc4c730b.bea235ea.bea84e0a.3f63c382.bf334346.3ed9c9d3.3f9b393b',
+        'mass capsule_mass_only created=1',
+        'mass capsule_mass_only mass=40400000 inertia=3e0a3d72.3fe0f5c5.3fe0f5c2',
+        'mass capsule_mass_only cmass_local_pose=3f7771da.3e3d04fd.be362b14.be35a286.3f7b892a.3d646930.3e3d8839.bcb70ded.3f7b82fd.3f800000.0.bf000000',
+        'mass trigger_only created=0',
+        'mass compound_trigger_only created=0'
+    )
     'NxPhysicsActorShapeMutationTests' = @(
         'shape_mutation actor=1',
         'shape_mutation initial=1.2.1',
@@ -1370,6 +1417,13 @@ $NxRequiredCoverageLines = [ordered] @{
     # flags reach the trigger writer), consecutive equal actors and shapes for the
     # PsDefaultSettings lines, and a static three-shape actor; its first run found
     # the capsule's flags missing from the shape (fixed in Scene.cpp).
+    # Actor-mass Task 1 added scene D after scene C, in its own pointer epoch:
+    # scene A's dynamic bodies and scene B's pair with their mass, frame and
+    # inertia from a density (000008), a density with an explicit mass and a
+    # trigger-only body (both refused, with their reports), and a revolute
+    # joint's limit plane over two of the computed frames. Its lines are at the
+    # end of this list: the setup, report and refusal lines not already registered, every density
+    # body's text line, the limit plane, three binary samples and both counts.
     'NxPhysicsCoreDumpTests' = @(
         'sdk materials=3 added=1,2',
         'sdk group_1_3=0 group_2_2=0',
@@ -1743,7 +1797,30 @@ $NxRequiredCoverageLines = [ordered] @{
         'dump scene_c_binary line=156 text=PsCapsule radius(0.2000$3e4ccccd) localposition(0,2.0000$40000000,0) localorientation(0,0,0.7071$3f3504f5,0.7071$3f3504f2) group(6) <CR>',
         'dump scene_c_binary lines=167 normalised_bytes=8523',
         'scene c=released',
-        'dump no_scene lines=67 normalised_bytes=1799'
+        'dump no_scene lines=67 normalised_bytes=1799',
+        'scene d=created',
+        'scene actor crate=created',
+        'scene actor cube=created',
+        'report error code=1 file=\Epic\Novodex\SDKs\Physics\src\Scene.cpp line=515 message=Supplied NxActorDesc is not valid. createActor returns NULL.',
+        'scene actor heavy=null',
+        'report error code=1 file=\Epic\Novodex\SDKs\Physics\src\Actor.cpp line=230 message=Actor::loadFromDescInternal: Can''t compute mass from shapes: must have at least one non-trigger shape!',
+        'report error code=1 file=\Epic\Novodex\SDKs\Physics\src\Scene.cpp line=552 message=Actor Initialisation failed: returned NULL.',
+        'scene actor lure=null',
+        'scene actor sleeper=created',
+        'dump scene_d line=103 text=PsJointLimitPlane -0.000000008 1 -0.000000007 3.000000238<CR>',
+        'dump scene_d line=105 text=PsSphere radius(0.625) localposition(0,0,0) localorientation(0,0,0,1) material(mat1) group(0) name(ball___P3) position(0,1,0) orientation(0.101929434,0.203858867,-0.101929441,0.968329668) density(1.25) com(0,0,0) comrot(0,0,0,1) inertia(0.199737087,0.199737087,0.199737087) mass(1.278317451) solvercount(4) velocity(0.5,-0.25,1) angularvelocity(0.300000012,0.699999988,-0.200000003) wakeupcounter(0.399999976) lineardamping(0) angulardamping(0.050000001) maxangularvelocity(9) <CR>',
+        'dump scene_d line=107 text=PsBox sides(2,1,1.5) localposition(0.125,-0.25,0.5) localorientation(0,0,0.382683486,0.923879504) material(mat2) group(3) name(crate___P4) position(3,0.5,-1) orientation(-0.20519565,0.102597833,0.307793438,0.923380554) density(0.800000012) com(0.125,-0.25,0.5) comrot(0,0,-0.382683426,0.923879504) inertia(1.25,0.649999976,1) mass(2.400000095) solvercount(7) velocity(0,0,0) angularvelocity(0,0,0) lineardamping(0.125) angulardamping(0.0625) maxangularvelocity(12.5) <CR>',
+        'dump scene_d line=109 text=PsCapsule height(1.25) radius(0.375) localposition(0,0,0) localorientation(0,0,0,1) material(mat1) group(2) name(pill___P5) position(-2,0.5,1.5) orientation(0.323029101,-0.107676379,0.215352729,0.915249228) density(1.5) com(0,0,0) comrot(0,0,0,1) inertia(0.488381177,0.093189336,0.488381177) mass(1.325359344) solvercount(4) velocity(-0.75,0.100000001,0.400000006) lineardamping(0) angulardamping(0.050000001) maxangularvelocity(9) <CR>',
+        'dump scene_d line=122 text=PsShape Shape1 name(compound___P6) position(4,2,3) orientation(0.052342389,-0.31405434,0.10468477,0.94216305) density(2) com(0.044699065,-0.455300927,0) comrot(0.000000007,0.000000008,0.154588804,0.987978876) inertia(0.127911374,0.204750523,0.149632752) mass(1.09817481) velocity(0,0,0) angularvelocity(0,1.5,0) <CR>',
+        'dump scene_d line=127 text=PsBox sides(0.600000024,0.600000024,0.600000024) group(0) name(cube___P7) position(-4,1,-4) orientation(0,0,0,1) density(8) com(0,0,0) comrot(0,0,0,1) inertia(0.103680022,0.103680022,0.103680022) mass(1.728000164) angularvelocity(0,0,0) <CR>',
+        'dump scene_d line=133 text=PsSphere radius(0.5) name(sleeper___P8) awake(false) position(2,0.5,4) density(0.949999988) inertia(0.049741883,0.049741883,0.049741883) mass(0.497418851) wakeupcounter(0) <CR>',
+        'dump scene_d line=138 text=PsShape Shape2 name(pair___P9) position(2,1,0) orientation(0,0,0.199960008,0.979804039) density(3) com(0.166666672,0,0) inertia(0.09375,0.296875,0.34375) mass(1.125) wakeupcounter(0.399999976) <CR>',
+        'dump scene_d lines=148 normalised_bytes=7615',
+        'dump scene_d_binary line=103 text=PsJointLimitPlane -0.0000$b20e5099 1 -0.0000$b1e787fc 3.0000$40400001<CR>',
+        'dump scene_d_binary line=107 text=PsBox sides(2.0000$40000000,1,1.5000$3fc00000) localposition(0.1250$3e000000,-0.2500$be800000,0.5000$3f000000) localorientation(0,0,0.3827$3ec3ef17,0.9239$3f6c835e) material(mat2) group(3) name(crate___P4) position(3.0000$40400000,0.5000$3f000000,-1) orientation(-0.2052$be521ecf,0.1026$3dd21ed0,0.3078$3e9d971a,0.9234$3f6c62ab) density(0.8000$3f4ccccd) com(0.1250$3e000000,-0.2500$be800000,0.5000$3f000000) comrot(0,0,-0.3827$bec3ef15,0.9239$3f6c835e) inertia(1.2500$3fa00000,0.6500$3f266666,1) mass(2.4000$4019999a) solvercount(7) velocity(0,0,0) angularvelocity(0,0,0) lineardamping(0.1250$3e000000) angulardamping(0.0625$3d800000) maxangularvelocity(12.5000$41480000) <CR>',
+        'dump scene_d_binary line=122 text=PsShape Shape1 name(compound___P6) position(4.0000$40800000,2.0000$40000000,3.0000$40400000) orientation(0.0523$3d5664f9,-0.3141$bea0cbbb,0.1047$3dd664f8,0.9422$3f713199) density(2.0000$40000000) com(0.0447$3d37165e,-0.4553$bee91d34,0) comrot(0.0000$31eddb69,0.0000$32044391,0.1546$3e1e4c87,0.9880$3f7cec2f) inertia(0.1279$3e02fb33,0.2048$3e51aa1f,0.1496$3e193954) mass(1.0982$3f8c90fe) velocity(0,0,0) angularvelocity(0,1.5000$3fc00000,0) <CR>',
+        'dump scene_d_binary lines=148 normalised_bytes=8858',
+        'scene d=released'
     )
     'NxFoundationTangentTests' = @(
         'tangent sweep unit=120000 threshold=60000 scaled=60000 digest=5db0093f',
@@ -2802,11 +2879,11 @@ $NxPhaseCoverageFloor = [ordered] @{
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 135  # 34 for NxPhysicsAssetTests, 101 for NxPhysicsThirdPartyTests (67 + 29 from
                # vendored-correspondence Task 4 + 5 from its Task 5a)
-    '5' = 871  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines
-               # (RED on purpose: vtables family open)
-    '6' = 855  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
-               # + 12 joint-allocator + 146 joint-slot + 79 effector + 373 core-dump
-    '7' = 728  # the 118 + 12 + 146 + 79 + 373 STAGED-PAIR assertions; the oracle-differential assertions
+    '5' = 907  # 126 object-layout, 1 shape-vtable and 780 public actor/pruner/box/scene lines
+               # (36 of them actor-mass) (RED on purpose: vtables family open)
+    '6' = 878  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
+               # + 12 joint-allocator + 146 joint-slot + 79 effector + 396 core-dump
+    '7' = 751  # the 118 + 12 + 146 + 79 + 396 STAGED-PAIR assertions; the oracle-differential assertions
                # belong to NxPhysicsJointDescTests and NxPhysicsJointTests, which phase 7
                # does not run
     '8' = 0
@@ -2837,6 +2914,7 @@ $NxRegisteredTestTargets = @(
     'NxPhysicsActorMomentumTests',
     'NxPhysicsActorForceTests',
     'NxPhysicsActorCMassTests',
+    'NxPhysicsActorMassTests',
     'NxPhysicsDynamicFirstTests',
     'NxPhysicsEmptySceneTests',
     'NxPhysicsEffectorTests',

@@ -10,12 +10,13 @@
 //
 // Scene contents: everything the dump's written readers cover and nothing
 // an unwritten row is needed for -- no mesh shapes (the candidate builds
-// shape types 0-3 only), no actor/shape pair flags (the pair-flag array
-// 000525 is deferred), and no mass computed from shapes: every dynamic actor
-// but one gives its mass and mass-space inertia (and some a rotated or
-// shifted mass frame), because the mass-from-shapes row phys_fn_000008 is
-// not written (the candidate's creation model covers one unrotated box, and
-// only that actor, "mover", takes its mass from a density).
+// shape types 0-3 only) and no actor/shape pair flags (the pair-flag array
+// 000525 is deferred). In scenes A-C every dynamic actor but one gives its
+// mass and mass-space inertia (and some a rotated or shifted mass frame):
+// they were built before the mass-from-shapes row phys_fn_000008 was written
+// and their dump lines are registered, so they stay as they are. Scene D
+// (nxBuildSceneD, below) is the same bodies again with densities, now that
+// 000008 is written (actor-mass Task 1).
 //   * SDK: two added materials (one with anisotropy and a moving surface,
 //     flags bits 0 and 1), three changed parameters (NX_MAX_ANGULAR_VELOCITY
 //     among them, which every body without its own limit takes), two
@@ -39,7 +40,8 @@
 // Dumps: text, text with a two-line addendum, binary, binary with an
 // addendum, the deadlock arm of 000267 (below), scene B released (one
 // asset), both released (no asset, binary, an empty addendum); then scene C
-// (nxBuildSceneC, below) in text and binary, in a new pointer epoch. Every report
+// (nxBuildSceneC, below) in text and binary, in a new pointer epoch, and scene D
+// (nxBuildSceneD) likewise. Every report
 // the SDK makes goes to a printing output stream and is compared too.
 //
 // What is normalised, and nothing else:
@@ -736,6 +738,116 @@ static void nxBuildSceneC(NxScene& scene)
 	nxReport("gate", gateActor);
 	}
 
+// Scene D (actor-mass Task 1): scene A's dynamic bodies and scene B's pair
+// again, with their mass, mass frame and inertia computed from a density
+// (phys_fn_000008 through each shape's slot 4 and the compound's 001024):
+// a sphere, a box with a rotated and shifted local pose, a capsule, a
+// three-part compound whose sphere is a trigger (skipped), a small cube, a
+// sphere created asleep and a two-box compound; a density with an explicit
+// mass, which createActor refuses (isValidInternal), and a dynamic actor
+// whose only shape is a trigger, which loadFromDescInternal refuses (000008
+// returns 2) -- both release what they built before the next actor. A
+// revolute joint between two of them carries a limit point and plane, whose
+// dump reads the bodies' computed mass frames.
+static void nxBuildSceneD(NxScene& scene)
+	{
+	NxSphereShapeDesc ballShape;
+	ballShape.radius = 0.625f;
+	NxBodyDesc ballBody;
+	ballBody.linearVelocity = NxVec3(0.5f, -0.25f, 1.0f);
+	ballBody.angularVelocity = NxVec3(0.3f, 0.7f, -0.2f);
+	nxDynamic(scene, "ball", &ballShape, 0, 0, nxQuatMatrix(0.1f, 0.2f, -0.1f, 0.95f), NxVec3(0.0f, 1.0f, 0.0f),
+		ballBody, 1.25f, 0);
+
+	NxBoxShapeDesc crateShape;
+	crateShape.dimensions = NxVec3(1.0f, 0.5f, 0.75f);
+	crateShape.localPose.M = nxQuatMatrix(0.0f, 0.0f, 0.3826834f, 0.9238795f);
+	crateShape.localPose.t = NxVec3(0.125f, -0.25f, 0.5f);
+	crateShape.group = 3;
+	crateShape.materialIndex = 1;
+	NxBodyDesc crateBody;
+	crateBody.linearDamping = 0.125f;
+	crateBody.angularDamping = 0.0625f;
+	crateBody.maxAngularVelocity = 12.5f;
+	crateBody.solverIterationCount = 7;
+	NxActor* crate = nxDynamic(scene, "crate", &crateShape, 0, 0, nxQuatMatrix(-0.2f, 0.1f, 0.3f, 0.9f),
+		NxVec3(3.0f, 0.5f, -1.0f), crateBody, 0.8f, 0);
+
+	NxCapsuleShapeDesc pillShape;
+	pillShape.radius = 0.375f;
+	pillShape.height = 1.25f;
+	pillShape.group = 2;
+	NxBodyDesc pillBody;
+	pillBody.linearVelocity = NxVec3(-0.75f, 0.1f, 0.4f);
+	NxActor* pill = nxDynamic(scene, "pill", &pillShape, 0, 0, nxQuatMatrix(0.3f, -0.1f, 0.2f, 0.85f),
+		NxVec3(-2.0f, 0.5f, 1.5f), pillBody, 1.5f, 0);
+
+	NxBoxShapeDesc partBox;
+	partBox.dimensions = NxVec3(0.5f, 0.25f, 0.5f);
+	partBox.localPose.t = NxVec3(0.0f, -0.5f, 0.0f);
+	NxSphereShapeDesc partSphere;
+	partSphere.radius = 0.25f;
+	partSphere.localPose.t = NxVec3(0.0f, 0.5f, 0.0f);
+	partSphere.shapeFlags |= NX_TRIGGER_ON_LEAVE;
+	NxCapsuleShapeDesc partCapsule;
+	partCapsule.radius = 0.125f;
+	partCapsule.height = 0.75f;
+	partCapsule.localPose.M = nxQuatMatrix(0.7071068f, 0.0f, 0.0f, 0.7071068f);
+	partCapsule.localPose.t = NxVec3(0.5f, 0.0f, 0.0f);
+	NxBodyDesc compoundBody;
+	compoundBody.angularVelocity = NxVec3(0.0f, 1.5f, 0.0f);
+	nxDynamic(scene, "compound", &partBox, &partSphere, &partCapsule, nxQuatMatrix(0.05f, -0.3f, 0.1f, 0.9f),
+		NxVec3(4.0f, 2.0f, 3.0f), compoundBody, 2.0f, 0);
+
+	NxBoxShapeDesc cubeShape;
+	cubeShape.dimensions = NxVec3(0.3f, 0.3f, 0.3f);
+	NxBodyDesc cubeBody;
+	nxDynamic(scene, "cube", &cubeShape, 0, 0, nxQuatMatrix(0.0f, 0.0f, 0.0f, 1.0f), NxVec3(-4.0f, 1.0f, -4.0f),
+		cubeBody, 8.0f, 0);
+
+	NxBoxShapeDesc heavyShape;
+	heavyShape.dimensions = NxVec3(0.5f, 0.5f, 0.5f);
+	NxBodyDesc heavyBody;
+	heavyBody.mass = 3.0f;
+	nxDynamic(scene, "heavy", &heavyShape, 0, 0, nxQuatMatrix(0.0f, 0.0f, 0.0f, 1.0f), NxVec3(-4.0f, 3.0f, -4.0f),
+		heavyBody, 2.0f, 0);
+
+	NxSphereShapeDesc lureShape;
+	lureShape.radius = 0.5f;
+	lureShape.shapeFlags |= NX_TRIGGER_ON_ENTER;
+	NxBodyDesc lureBody;
+	nxDynamic(scene, "lure", &lureShape, 0, 0, nxQuatMatrix(0.0f, 0.0f, 0.0f, 1.0f), NxVec3(-5.0f, 1.0f, 2.0f),
+		lureBody, 1.0f, 0);
+
+	NxSphereShapeDesc sleeperShape;
+	sleeperShape.radius = 0.5f;
+	NxBodyDesc sleeperBody;
+	sleeperBody.wakeUpCounter = 0.0f;
+	nxDynamic(scene, "sleeper", &sleeperShape, 0, 0, nxQuatMatrix(0.0f, 0.0f, 0.0f, 1.0f), NxVec3(2.0f, 0.5f, 4.0f),
+		sleeperBody, 0.95f, 0);
+
+	NxBoxShapeDesc pairBox;
+	pairBox.dimensions = NxVec3(0.25f, 0.25f, 0.25f);
+	pairBox.localPose.t = NxVec3(-0.5f, 0.0f, 0.0f);
+	NxBoxShapeDesc pairBox2;
+	pairBox2.dimensions = NxVec3(0.25f, 0.5f, 0.25f);
+	pairBox2.localPose.t = NxVec3(0.5f, 0.0f, 0.0f);
+	NxBodyDesc pairBody;
+	nxDynamic(scene, "pair", &pairBox, &pairBox2, 0, nxQuatMatrix(0.0f, 0.0f, 0.2f, 0.98f), NxVec3(2.0f, 1.0f, 0.0f),
+		pairBody, 3.0f, 0);
+
+	if(!crate || !pill)
+		return;
+	NxRevoluteJointDesc revolute;
+	NxJoint* hinge = nxJoint(scene, "revolute", revolute, crate, pill, NxVec3(0.5f, 1.0f, 0.25f),
+		NxVec3(0.0f, 0.0f, 1.0f));
+	if(hinge)
+		{
+		hinge->setLimitPoint(NxVec3(2.0f, 0.5f, -0.5f), true);
+		hinge->addLimitPlane(NxVec3(0.0f, 1.0f, 0.0f), NxVec3(0.0f, -3.0f, 0.0f));
+		}
+	}
+
 static void nxBuildSceneB(NxScene& scene)
 	{
 	NxBoxShapeDesc floorShape;
@@ -880,6 +992,20 @@ int wmain(int argc, wchar_t** argv)
 		nxDump(*sdk, "scene_c_binary", "coredump_scene_c_binary", true, 0);
 		sdk->releaseScene(*sceneC);
 		printf("scene c=released\n");
+		}
+
+	// Scene D, dumped on its own after scene C, in its own pointer epoch.
+	NxScene* sceneD = sdk->createScene(sceneDesc);
+	printf("scene d=%s\n", sceneD ? "created" : "null");
+	if(sceneD)
+		{
+		gPointerCount = 0;
+		printf("dump pointer_epoch reset\n");
+		nxBuildSceneD(*sceneD);
+		nxDump(*sdk, "scene_d", "coredump_scene_d", false, 0);
+		nxDump(*sdk, "scene_d_binary", "coredump_scene_d_binary", true, 0);
+		sdk->releaseScene(*sceneD);
+		printf("scene d=released\n");
 		}
 
 	sdk->release();

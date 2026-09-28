@@ -2142,6 +2142,7 @@ void nxMutexWorkEx(void* self, unsigned lockOff, unsigned objOff,
 	}
 
 // phys_fn_001024 (0x229b0, ret 0xc): the guarded three-argument dispatch loop.
+// Product row: Physics/src/core/ActorMass.cpp.
 unsigned char nxArrayVtCall3Args1024(void* self, unsigned a1, unsigned a2,
 	unsigned a3)
 	{
@@ -4710,11 +4711,15 @@ namespace
 // phys_fn_000829 (0x0001bd00), __thiscall ret 4. Volume over half-extents:
 // the accumulator replaces with the first non-zero extent then multiplies the
 // rest, times 8 ([0x101068f0]) -- full extents are twice half-extents. That
-// mass value stays live on the x87 stack for the whole function; a copy times
-// 1/3 ([0x101068ec]) becomes the diagonal factor F. Squares are taken from
-// the raw floats; each diagonal is F times its pairwise sum (xx: y^2+z^2,
-// yy: z^2+x^2, zz: x^2+y^2), rounded once at the store.
-void MassFrame::nxMassFrameBuildBox(const float* he)
+// mass value stays live on the x87 stack for the whole function. Two values
+// go through 32-bit stack slots before they are used (actor-mass Task 1,
+// checked against the listing): the diagonal factor F = 1/3 ([0x101068ec])
+// times the mass (`fstp [esp+0x1c]` at 0x1bd39) and each pairwise sum of the
+// squared extents (`fstp [esp]`/`[esp+4]`/`[esp+8]` at 0x1bd67..0x1bd72).
+// Each diagonal is then the stored sum times the stored F, rounded at its
+// store. The earlier transcription kept F and the sums in registers.
+// noinline, as the listing calls it, so a breakpoint on the row sees it run.
+__declspec(noinline) void MassFrame::nxMassFrameBuildBox(const float* he)
 	{
 	double acc = static_cast<double>(gMassDensitySentinel);	// fld 1.0f
 	if(nonZeroWord(he[0]))
@@ -4724,24 +4729,26 @@ void MassFrame::nxMassFrameBuildBox(const float* he)
 	if(nonZeroWord(he[2]))
 		acc *= static_cast<double>(he[2]);
 
-	double m = acc * static_cast<double>(gMassKEight);		// fmul [0x101068f0]
-	double f = m * static_cast<double>(gMassKOneThird);		// fld 1/3; fmul st(1)
+	const double m = acc * static_cast<double>(gMassKEight);	// fmul [0x101068f0]
+	const NxF32 f = static_cast<NxF32>(
+		static_cast<double>(gMassKOneThird) * m);			// fld 1/3; fmul st(1); fstp
 
-	double xx = static_cast<double>(he[0]) * static_cast<double>(he[0]);
-	double yy = static_cast<double>(he[1]) * static_cast<double>(he[1]);
-	double zz = static_cast<double>(he[2]) * static_cast<double>(he[2]);
+	const double xx = static_cast<double>(he[0]) * static_cast<double>(he[0]);
+	const double yy = static_cast<double>(he[1]) * static_cast<double>(he[1]);
+	const double zz = static_cast<double>(he[2]) * static_cast<double>(he[2]);
 
 	mInertia[1] = mInertia[2] = mInertia[3] = 0.0f;			// integer zero stores
 	mInertia[5] = mInertia[6] = mInertia[7] = 0.0f;
 
-	double iXX = (zz + yy) * f;								// fadd st(2) chain
-	double iYY = (zz + xx) * f;
-	double iZZ = (yy + xx) * f;
+	const NxF32 sumX = static_cast<NxF32>(zz + yy);			// fld st(0); fadd st(2)
+	const NxF32 sumY = static_cast<NxF32>(zz + xx);			// fadd st(2)
+	const NxF32 sumZ = static_cast<NxF32>(yy + xx);			// fadd st(1)
 
+	const double iXX = static_cast<double>(sumX) * f;		// stays on the stack
+	mInertia[4] = static_cast<NxF32>(static_cast<double>(sumY) * f);	// via [esp+0x10]
+	mInertia[8] = static_cast<NxF32>(static_cast<double>(sumZ) * f);	// via [esp+0x14]
 	mMass = static_cast<NxF32>(m);							// fstp [ecx+0x30]
 	mInertia[0] = static_cast<NxF32>(iXX);					// fstp [ecx]
-	mInertia[4] = static_cast<NxF32>(iYY);					// via [esp+0x10]
-	mInertia[8] = static_cast<NxF32>(iZZ);					// via [esp+0x14]
 	mOffset.x = 0.0f; mOffset.y = 0.0f; mOffset.z = 0.0f;
 	}
 
@@ -4751,9 +4758,9 @@ void MassFrame::nxMassFrameBuildBox(const float* he)
 // .rdata 0.5f at 0x101043cc); the transverse pair carries the full cylinder
 // formula mass*(3r^2+4c^2)/12 ([0x101068f8] = 3, [0x101068f4] = 4, over the
 // .rdata 1/12 at 0x101068e0). axisSelector routes the axial term:
-// 0 -> +0x00, 1 -> +0x10 (and that path never writes +0x00 -- an image hole
-// this transcription reproduces), anything else -> +0x20.
-void MassFrame::nxMassFrameBuildCapsule(unsigned axisSelector, float radius,
+// 0 -> +0x00, 1 -> +0x10, anything else -> +0x20; the other two diagonal
+// words take the transverse value on every arm.
+__declspec(noinline) void MassFrame::nxMassFrameBuildCapsule(unsigned axisSelector, float radius,
 	float cylHalfHeight)
 	{
 	mInertia[1] = mInertia[2] = mInertia[3] = 0.0f;
@@ -4789,10 +4796,14 @@ void MassFrame::nxMassFrameBuildCapsule(unsigned axisSelector, float radius,
 		}
 	else if(axisSelector == 1)
 		{
+		// `mov [ecx], edx` at 0x1c836 runs before the `je` at 0x1c838 that
+		// selects this arm, so +0x00 takes the transverse value here too.
+		// The earlier transcription left +0x00 unwritten on this arm
+		// (actor-mass Task 1); capsule slot 4 passes selector 1, so every
+		// capsule actor's frame would have kept stack garbage there.
+		mInertia[0] = sSide;
 		mInertia[4] = sAx;
 		mInertia[8] = sSide;
-		// +0x00 stays as the caller left it: the image's selector==1 path
-		// never stores it.
 		}
 	else
 		{
@@ -4883,65 +4894,124 @@ void MassFrame::nxMassFrameConditionalZero(unsigned flag)
 	mMass = 0.0f;
 	}
 
-// phys_fn_000833 (0x1c040), __thiscall ret 4: translate the frame by
-// {d.x,d.y,d.z} at param+0. PROVISIONAL: early-out when d all-zero; else
-// d+offset; centered path (new center at origin) vs displaced path.
+// phys_fn_000833 (0x1c040), __thiscall ret 4: translate the frame's
+// reference point by {d.x, d.y, d.z} at param+0 (the parallel-axis step).
+// Transcribed op for op from the listing (actor-mass Task 1); the earlier
+// version combined the two paths into one Q(c) - Q(o) formula.
+//
+// The listing forms, for a vector v, the matrix K(v) = [v]x [v]x (that is
+// v v^T - |v|^2 I) as nine sums whose second terms multiply the .rdata 0.0f
+// at 0x101041f0 -- the zero entries of the skew matrices -- and keeps those
+// products: they decide the sign of a zero result. Operands are negated
+// copies stored to the stack frame (fchs; fstp m32, exact).
+//
+//   * d all-zero words (integer tests): return untouched (0x1c04e..0x1c05e);
+//   * c = d + o, stored m32; c all-zero words (so -0.0f counts as non-zero):
+//     the centred path 0x1c0d7, I += m K(o) -- the frame moves to its own
+//     centre, which is what 000841 asks for;
+//   * otherwise the displaced path 0x1c26f: I += m (K(o) - K(c)).
+//
+// Each element difference, each product with the mass and each sum with the
+// old inertia is stored m32 before the next step reads it (the rep movsd
+// copies at 0x1c1a8/0x1c216, 0x1c34e/0x1c421/0x1c4a2/0x1c514). Both paths end
+// in the shared tail 0x1c578: offset += d, per component.
+namespace
+	{
+	// 0x1c0d7..0x1c1a4 (and again 0x1c350..0x1c41d): K(o) from o and its
+	// stored negations. -ox^2 is stored (`fstp [esp+8]`) before it feeds two
+	// diagonals; -oy^2 and -oz^2 stay on the stack.
+	void massFrameCrossSquare(const NxF32* o, NxF32* k)
+		{
+		static const NxF32 zero = 0.0f;					// [0x101041f0]
+		const NxF32 nx = -o[0], ny = -o[1], nz = -o[2];	// fchs; fstp m32
+		const double a = static_cast<double>(ny) * o[1];	// fld -oy; fmul oy
+		const double b = static_cast<double>(o[2]) * nz;	// fld oz; fmul -oz
+		k[0] = static_cast<NxF32>(b + a);
+		k[1] = static_cast<NxF32>(static_cast<double>(o[0]) * o[1] +
+			static_cast<double>(nz) * zero);
+		k[2] = static_cast<NxF32>(static_cast<double>(nx) * nz +
+			static_cast<double>(o[1]) * zero);
+		k[3] = static_cast<NxF32>(static_cast<double>(ny) * nx +
+			static_cast<double>(o[2]) * zero);
+		const NxF32 c = static_cast<NxF32>(static_cast<double>(o[0]) * nx);	// fstp [esp+8]
+		k[4] = static_cast<NxF32>(b + c);
+		k[5] = static_cast<NxF32>(static_cast<double>(o[2]) * o[1] +
+			static_cast<double>(nx) * zero);
+		k[6] = static_cast<NxF32>(static_cast<double>(o[0]) * o[2] +
+			static_cast<double>(ny) * zero);
+		k[7] = static_cast<NxF32>(static_cast<double>(ny) * nz +
+			static_cast<double>(o[0]) * zero);
+		k[8] = static_cast<NxF32>(a + c);
+		}
+	}
+
 void MassFrame::nxMassFrameTranslate(const void* param)
 	{
+	static const NxF32 zero = 0.0f;						// [0x101041f0]
 	const float* d = static_cast<const float*>(param);
-	unsigned w0,w1,w2;
-	memcpy(&w0,d+0,4); memcpy(&w1,d+1,4); memcpy(&w2,d+2,4);
-	if(w0==0 && w1==0 && w2==0)
-		return;								// 0x1c04e..0x1c05e all-zero early-out
-	// Move the reference center from old_offset (o) to c = d + o. The
-	// inertia about the new reference gains m*(Q(c) - Q(o)) where
-	// Q(r)=|r|^2 I - r r^T. The image splits this into a "centered" path
-	// (when c lands at the origin, Q(c)=0) and a "displaced" path
-	// (generic), but both are the same Delta-Q; we compute the plain delta.
-	const float ox = mOffset.x, oy = mOffset.y, oz = mOffset.z;
-	const float cx = d[0] + ox, cy = d[1] + oy, cz = d[2] + oz;
-	// Q(r) diagonals/off-diagonals as float products, matched to the image's
-	// m32 store points.
-	const float Qc[9] = {
-		cy*cy+cz*cz, -(cx*cy), -(cx*cz),
-		-(cx*cy), cx*cx+cz*cz, -(cy*cz),
-		-(cx*cz), -(cy*cz), cx*cx+cy*cy };
-	const float Qo[9] = {
-		oy*oy+oz*oz, -(ox*oy), -(ox*oz),
-		-(ox*oy), ox*ox+oz*oz, -(oy*oz),
-		-(ox*oz), -(oy*oz), ox*ox+oy*oy };
-	// The diagonal x87 chains at 0x1c26f..34a and 0x1c350..421
-	// materialize negative Q(c) and negative Q(o) with asymmetric product
-	// stores. In particular c.y^2 and c.x^2 are rounded before two of the
-	// additions; an ordinary Q(c)-Q(o) expression differs by a few ulps.
-	const double cx2 = static_cast<double>(cx) * cx;
-	const double cy2 = static_cast<double>(cy) * cy;
-	const double cz2 = static_cast<double>(cz) * cz;
-	const double ox2 = static_cast<double>(ox) * ox;
-	const double oy2 = static_cast<double>(oy) * oy;
-	const double oz2 = static_cast<double>(oz) * oz;
-	const float negativeQc[3] = {
-		static_cast<float>(static_cast<double>(static_cast<float>(-cy2)) - cz2),
-		static_cast<float>(-cx2 - cz2),
-		static_cast<float>(static_cast<double>(static_cast<float>(-cx2)) +
-			static_cast<float>(-cy2))
-		};
-	const float negativeQo[3] = {
-		static_cast<float>(-oy2 - oz2),
-		static_cast<float>(-oz2 + static_cast<float>(-ox2)),
-		static_cast<float>(-oy2 + static_cast<float>(-ox2))
-		};
-	// Centered (c == 0) vs displaced path select the same Delta-Q.
-	for(unsigned i = 0; i < 9; ++i)
+	unsigned w0, w1, w2;
+	memcpy(&w0, d + 0, 4); memcpy(&w1, d + 1, 4); memcpy(&w2, d + 2, 4);
+	if(w0 == 0 && w1 == 0 && w2 == 0)
+		return;											// 0x1c04e..0x1c05e
+
+	const NxF32 o[3] = { mOffset.x, mOffset.y, mOffset.z };
+	NxF32 c[3];
+	c[0] = static_cast<NxF32>(static_cast<double>(d[0]) + o[0]);	// fld [edx]; fadd [eax+0x24]
+	c[1] = static_cast<NxF32>(static_cast<double>(o[1]) + d[1]);	// fld [eax+0x28]; fadd [edx+4]
+	c[2] = static_cast<NxF32>(static_cast<double>(o[2]) + d[2]);
+	unsigned c0, c1, c2;
+	memcpy(&c0, &c[0], 4); memcpy(&c1, &c[1], 4); memcpy(&c2, &c[2], 4);
+
+	NxF32 k[9];
+	if(c0 == 0 && c1 == 0 && c2 == 0)
 		{
-		const float term = i % 4 == 0
-			? static_cast<float>(static_cast<double>(negativeQo[i / 4]) -
-				negativeQc[i / 4])
-			: Qc[i] - Qo[i];
-		const float scaled = static_cast<float>(static_cast<double>(term) * mMass);
-		mInertia[i] = static_cast<float>(static_cast<double>(mInertia[i]) + scaled);
+		// 0x1c0d7: the centred path.
+		massFrameCrossSquare(o, k);
 		}
-	mOffset.x = cx; mOffset.y = cy; mOffset.z = cz;	// shared tail 0x1c578
+	else
+		{
+		// 0x1c26f: K(c), with this arm's stack discipline -- -cy is stored
+		// (`fst [esp+0x7c]`), -cy^2 is stored, -cx^2 is stored but the sum
+		// for (1,1) uses the register copy, -cz^2 is kept.
+		const NxF32 nz = -c[2], nx = -c[0], ny = -c[1];
+		const NxF32 y = static_cast<NxF32>(static_cast<double>(ny) * c[1]);	// fstp [esp+0xc]
+		const double z = static_cast<double>(nz) * c[2];
+		NxF32 p[9];
+		p[0] = static_cast<NxF32>(static_cast<double>(y) + z);
+		p[1] = static_cast<NxF32>(static_cast<double>(c[1]) * c[0] +
+			static_cast<double>(nz) * zero);
+		p[2] = static_cast<NxF32>(static_cast<double>(nx) * nz +
+			static_cast<double>(c[1]) * zero);
+		p[3] = static_cast<NxF32>(static_cast<double>(ny) * nx +
+			static_cast<double>(c[2]) * zero);
+		const double xWide = static_cast<double>(nx) * c[0];
+		const NxF32 x = static_cast<NxF32>(xWide);				// fst [esp+8]
+		p[4] = static_cast<NxF32>(xWide + z);
+		p[5] = static_cast<NxF32>(static_cast<double>(c[2]) * c[1] +
+			static_cast<double>(nx) * zero);
+		p[6] = static_cast<NxF32>(static_cast<double>(c[2]) * c[0] +
+			static_cast<double>(ny) * zero);
+		p[7] = static_cast<NxF32>(static_cast<double>(ny) * nz +
+			static_cast<double>(c[0]) * zero);
+		p[8] = static_cast<NxF32>(static_cast<double>(x) + y);
+
+		// 0x1c350: K(o), then 0x1c423: K(o) - K(c).
+		massFrameCrossSquare(o, k);
+		for(unsigned i = 0; i < 9; ++i)
+			k[i] = static_cast<NxF32>(static_cast<double>(k[i]) - p[i]);
+		}
+
+	// 0x1c1aa / 0x1c4a4: times the mass, then added to the inertia.
+	const double mass = mMass;
+	for(unsigned i = 0; i < 9; ++i)
+		k[i] = static_cast<NxF32>(static_cast<double>(k[i]) * mass);
+	for(unsigned i = 0; i < 9; ++i)
+		mInertia[i] = static_cast<NxF32>(static_cast<double>(k[i]) + mInertia[i]);
+
+	// 0x1c578: the shared tail.
+	mOffset.x = static_cast<NxF32>(static_cast<double>(mOffset.x) + d[0]);
+	mOffset.y = static_cast<NxF32>(static_cast<double>(mOffset.y) + d[1]);
+	mOffset.z = static_cast<NxF32>(static_cast<double>(mOffset.z) + d[2]);
 	}
 
 // Provisional phys_fn_000947, ret 12: three stack DWORDs; the last is unused.
@@ -5210,9 +5280,12 @@ void MeshShape::nxMeshTransformCenter(float* out) const
 	out[3] = v[3];
 	}
 
-// phys_fn_000849 (0x0001c8c0), __thiscall ret 0xc, helper of BOX slot 4.
-// Pose support is provisional: centered boxes and the driven finite poses;
-// general x87 staging, exceptional inputs and payload aliasing remain open.
+// phys_fn_000849 (0x0001c8c0), __thiscall ret 0xc, helper of BOX slot 4:
+// build the unit-density box, fold the pose's rotation (000831) and translate
+// by its position (000833) when a pose is given, scale unless the density is
+// the 1.0f sentinel, merge. The earlier version replaced the 000833 call with
+// a centred-box formula; with 000833 transcribed (actor-mass Task 1) the row
+// calls it as the listing does (0x1c8eb).
 void BoxShape::nxBoxComputeMassFrame(MassFrame* dest, float density,
 	const float* halfExtents, const void* extra)
 	{
@@ -5220,25 +5293,9 @@ void BoxShape::nxBoxComputeMassFrame(MassFrame* dest, float density,
 	local.nxMassFrameBuildBox(halfExtents);
 	if(extra != nullptr)
 		{
-		// 0x1c8dd: rotate the centered box frame by the first nine pose words.
 		local.nxMassFrameFoldPayload(extra);
-		// Centered-box specialization of 000833 (0x1c040): the local
-		// frame starts with zero center. Add m*(|t|^2 I - t*t^T), then
-		// center += t. The image stores mass-scaled terms to float before
-		// adding them to inertia (0x1c4a3..0x1c575).
-		const float* translation = static_cast<const float*>(extra) + 9;
-		const double x = translation[0], y = translation[1], z = translation[2];
-		const double terms[9] = { y*y+z*z, -x*y, -x*z,
-			-y*x, x*x+z*z, -y*z, -z*x, -z*y, x*x+y*y };
-		for(unsigned i = 0; i < 9; ++i)
-			{
-			const float term = static_cast<float>(terms[i]);
-			const float scaled = static_cast<float>(static_cast<double>(term) * local.mMass);
-			local.mInertia[i] = static_cast<float>(static_cast<double>(local.mInertia[i]) + scaled);
-			}
-		local.mOffset.x += translation[0];
-		local.mOffset.y += translation[1];
-		local.mOffset.z += translation[2];
+		local.nxMassFrameTranslate(
+			reinterpret_cast<const unsigned char*>(extra) + 0x24);
 		}
 	if(density != gMassDensitySentinel)
 		local.nxMassFrameScale(density);
