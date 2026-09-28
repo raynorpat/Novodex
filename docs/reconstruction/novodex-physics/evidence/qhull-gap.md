@@ -381,6 +381,197 @@ The registrations are in `tools/gate_targets.ps1`:
 
 The gate results are in the Timing row below.
 
+## Task 2: promotion under the rules, including the DIFF-equivalent arm
+
+### The rule applied
+
+The DIFF-equivalent arm is recorded in `vendored-correspondence.md`, "Promotion policy for Task 5"
+(`0fe9b4e`), before any row uses it. A held-back qhull group's `discovered` rows are promoted when
+its review verdict is exactly `equivalent` and it meets one arm:
+
+| Arm | Match class | Condition |
+|---|---|---|
+| (i) exact | MATCH, SHAPE, REVIEW | Some execution matched in every word (`vendored_coverage.csv` `outcome=exact`). |
+| (ii) outcome-exact | MATCH, SHAPE, REVIEW | The Task 5a conditions: (a) a non-vacuous discrete tape that is exact; (b) its float twin has `discrete=0` and `length_delta=0`; (c) the proof states the twin's worst ulp, `beyond` and `beyond_abs`; (d) `kDivergentCeilings` holds those figures; (e) the proof lists and attributes every discrete-mismatch family the group ran in. |
+| static-only | MATCH, SHAPE | No x87 code, no `inlining:` note, no other-immediates note. |
+| DIFF-equivalent | DIFF | Review `equivalent` citing addresses; execution class `exact`; the proof states the matcher difference and why it is equivalent. |
+
+On top of the arms:
+
+- **The Task 2 rule.** For arms (i) and DIFF-equivalent, the `exact` class counts only because every
+  proof lists each divergent family the group also ran in (`vendored_coverage.csv`
+  `differential`), with its figures and its attribution. A named divergence source is excluded
+  from those two arms: `qh_distplane`, and the groups owning `sum_grouping.csv` sites
+  (`qh_normalize2`, `qh_sethyperplane_det`, both promoted by vendored-correspondence Task 5b; the
+  qhull float families' attribution implicates all three). Among the held-back groups only
+  `qh_distplane` is one, and it is held back anyway, as option-gated.
+- **Float-returning groups.** An `inf` distance counts as a discrete outcome unless each such word
+  is attributed on its own. Four families have `inf` words. `qhull_rotation_x87` (20) and
+  `qhull_paths_t4_x87` (85) belong to executions that are discrete-mismatch as a whole and are
+  attributed as a whole (QRn; the T4 misalignment). The other two float twins are attributed word
+  by word, below, so no `inf` word is left unexplained.
+- **Never promoted:** MISSING/AMBIGUOUS; DIFF groups without an `exact` execution; option-gated
+  reviews whose option arm still diverges; unexecuted x87 groups and unexecuted groups with notes;
+  groups whose only compared executions have a discrete difference; and the deferred NovodeX rows
+  (the 31 unmapped hull rows are not matcher groups, and Tasks 3-4 own them).
+
+**The matcher re-run.** `tools/vendored_match.py` over the gate's candidate DLL (`f9075db4...`) gives
+`qhull_match.csv`, `opcode_match.csv` and `vendored_data_map.csv` byte-identical to the committed
+ones, so no class changed since Task 1.
+
+### Attributing the inf words one by one
+
+`NXQHGAP_SIGNS=1` (`ffd6a47`, stderr only) lists every float or double whose sign bit differs
+between the sides. It is uncapped, and it shows each word's source. The doubles
+`nxQhullDirect` pushes itself are labelled `<direct push N>`, in push order: push 0 is
+`qh_maxouter`, then per facet `qh_facetarea`, `qh_nearvertex`'s distance and `qh_distnorm`.
+Without the variable, stdout and stderr are byte-identical to the Task 1 run. The 15 words:
+
+| Family | Run | Words | Oracle / candidate | Source |
+|---|---|---|---|---|
+| `qhull_trace_x87` | 19 (set 7, `T2`) | 7584, 7594 | `0` / `-0` | `qh_detsimplex`'s trace `det= 0` against `det=-0`: the signed-zero print artefact. The 2003 CRT prints a negative zero without its sign. |
+| `qhull_trace_x87` | 19 | 8602, 8610, 8666, 8846, 9090, 9094 | `0` / `-2.775558e-17` | `qh_findhorizon`'s trace `point p%d is coplanar to horizon f%d, dist=`: a distance `qh_distplane` computed for a point coplanar with a horizon facet. Both sides take the same branch (below `qh MINvisible`). |
+| `qhull_direct_x87` | 2, 7, 8, 9, 10, 11 | 4457, 4541, 11909, 13527, 15600, 18659, 21081 | up to 1.5e-16, opposite signs | `<direct push 6/9/15/18>`: `qh_distnorm` of a vertex of the facet itself, which is zero in exact arithmetic. |
+
+`qh_distnorm`'s code is the same operation for operation on both sides:
+
+- oracle `0x0005ed6e`..`0x0005ed82`, candidate `0x0007c38c`..`0x0007c3a1`;
+- `fld` of the offset, then `fld`/`fmul`/`faddp` for each coordinate, in the same order.
+
+So the sign comes from its inputs, the facet's normal and offset, which the hull build computes
+(the `qh_distplane` class). `qh_distnorm` is therefore promoted on arm (i).
+
+### The DIFF groups' field, immediate and x87-class tokens
+
+The matcher classes a DIFF before it filters the field and immediate tokens. So a DIFF row's
+`diff_fields` and `diff_imms` are the raw tokens, before:
+
+- the `derived`/`other` pointer-class merge;
+- the narrowing rule.
+
+The review lines of the DIFF groups explain the DIFF causes, not these tokens. So, for the proofs,
+a provenance run of `vendored_match.py` over the same binaries recorded which instruction adds
+each token, and recomputed the residue a REVIEW class would carry. Then:
+
+- **7 of the 31 groups have no residue:** `qh_findbestnew`, `qh_init_B`,
+  `qh_printfacet3geom_points`, `qh_printfacet3math`, `qh_printpoints_out`, `qh_printspheres`
+  and `qh_memstatistics`.
+- **The other 24 have a residue.** Each proof names every residual token's site and its listing
+  form:
+  - host vptr loads (`mov r,[eax]` after `mov eax,[0x10125080]`);
+  - the same flag tested through a high byte, or through a register-held mask;
+  - format codes compared through registers (`qh_initflags`: `cmp ecx,edi/ebx/esi`, the codes 1,
+    13 and 19);
+  - set-element walks;
+  - the `PRINTout` loop as a pointer walk against an index (`qh_produce_output`);
+  - the tokens of callees one side inlines, which the reviews already name: `qh_gethash`,
+    `qh_point_add`, `qh_printextremes_2d`, `qh_allstatA..I`, `qh_appendmergeset` and `memcmp`;
+  - `fadd st,st` for a folded `2*x`, or `fmul -2.0` against `fchs`/`fadd`.
+
+  Four tokens are not in the group's own body: `qh_init_A`'s `--1`, and
+  `qh_test_appendmerge`'s five. They come from callee bodies the inlining check merged into that
+  side.
+
+### Results
+
+**Promoted, `discovered` to `reconstructed`: 167 rows, 61,010 bytes** (`5c07d5d`).
+
+| Arm | Groups | Rows | Bytes |
+|---|---:|---:|---:|
+| (i) exact | 51 | 66 | 16,104 |
+| (ii) outcome-exact | 24 | 32 | 8,908 |
+| static-only | 0 | 0 | 0 |
+| DIFF-equivalent | 31 | 69 | 35,998 |
+| **total** | **106** | **167** | **61,010** |
+
+By Task 5b's held-back reason:
+
+| Held back as | Arm | Groups | Rows | Bytes |
+|---|---|---:|---:|---:|
+| DIFF | DIFF-equivalent | 31 | 69 | 35,998 |
+| not executed, x87 | (i) | 33 | 40 | 10,903 |
+| not executed, x87 | (ii) | 9 | 15 | 5,252 |
+| not executed, notes | (i) | 17 | 25 | 5,109 |
+| not executed, notes | (ii) | 8 | 10 | 2,008 |
+| QR1-only | (i) | 1 | 1 | 92 |
+| QR1-only | (ii) | 7 | 7 | 1,648 |
+
+- **The (i) groups** are the 50 x87/notes/QR1-only groups that Task 1 lists as exact, plus
+  `qh_rotatepoints`.
+  - Every one of the 51 is exact only through the `qhull_exact_*` reruns.
+  - `qh_rotatepoints` appears in Task 5b's attribution of `qhull_hull_rotated` as part of the
+    rotation chain, but it owns no `sum_grouping.csv` site. Its executions here are
+    `qhull_direct` and the exact rerun; it did not run in any QRn family. So it is not a named
+    source under the rule.
+- **The (ii) groups** are the 24 groups Task 1 lists as outcome-exact outside DIFF and
+  option-gated.
+  - Each proof cites the first inf-free pair it ran in: `qhull_output_delaunay`, `qhull_options`,
+    `qhull_random`, `qhull_merge2` or `qhull_output_dims`.
+  - The exception is `qh_printvdiagram`, whose only qualifying pair is `qhull_direct`. Its seven
+    inf words are attributed one by one above.
+- **The DIFF-equivalent groups** are Task 1's 32 exact DIFF groups less `qh_initqhull_globals`,
+  whose review is `equivalent-option-gated`.
+  - 30 of the 31 are exact only through the reruns.
+  - `qh_setequal` is also exact in `qh_set`.
+
+**Still held back: 71 rows, 22,664 bytes** (49 groups).
+
+| Reason | Groups | Rows | Bytes | Groups named |
+|---|---:|---:|---:|---|
+| DIFF, outcome-exact only: the arm needs execution class `exact` | 8 | 15 | 4,542 | `qh_detvridge3`, `qh_find_newvertex`, `qh_printvdiagram2`, `qh_printvoronoi`, `qh_scalelast`, `qh_setdelaunay`, `qh_vertexridges`, `qh_voronoi_center` |
+| DIFF, discrete only | 1 | 1 | 390 | `qh_errprint` |
+| DIFF, not executed | 6 | 9 | 2,189 | `qh_eachvoronoi`, `qh_init_qhull_command`, `qh_initqhull_mem`, `qh_initqhull_start`, `qh_mergecycle`, `qh_printallstatistics` |
+| review `equivalent-option-gated` (the option arms still diverge in `qhull_random_x87`) | 9 | 10 | 6,539 | `qh_distplane`, `qh_getangle`, `qh_getdistance`, `qh_initialvertices`, `qh_joggleinput`, `qh_nextfurthest`, `qh_randommatrix`, `qh_tracemerging`, and the DIFF `qh_initqhull_globals` |
+| not executed, x87 code | 6 | 10 | 3,083 | `qh_appendmergeset`, `qh_findgooddist`, `qh_furthestout`, `qh_initqhull_buffers`, `qh_matchduplicates`, `qh_maydropneighbor` |
+| not executed, inlining or other-immediate note | 17 | 24 | 5,587 | the merge internals the exe inlines, the `qh_mergecycle_*` family, `qh_checkvertex`, `qh_degen_redundant_facet`, `qh_matchvertices`, `qh_printhashtable`, `qh_setprint`, `qh_triangulate_mirror` |
+| only compared executions are QRn (discrete) | 2 | 2 | 334 | `qh_gram_schmidt`, `qh_rotateinput` |
+
+**The ledger** (`gates/phase4-closure.json`): 167 deferrals move from `vendored_not_falsified` to
+`reconstructed_not_falsified`.
+
+- The counts go from 257 to 90 and from 462 to 629.
+- Each moved row's note names this task and its arm.
+- The reason prose and the ledger note are updated.
+- `validate_inventory` exits 0 (`unexplained=0`).
+- 90 vendored rows stay `discovered`: 71 qhull and 19 OPCODE.
+- `work_units.json` and the `gap:Controller.cpp..fluids\Fluid.cpp` bundle are regenerated. Only
+  the row states change.
+
+**What each promoted row carries.** The Task 5b format:
+
+- `implementation` and `source`: the defining overlay or upstream file.
+- `implementation_symbol`: the function's source name.
+- `static_proof`, which states:
+  - the matcher class, what it compares and the "Not compared" list;
+  - the summation-order and register-lifetime caveat, and that the group owns no
+    `sum_grouping.csv` site;
+  - the review verdict with its addresses;
+  - for a DIFF-equivalent group, every `diff_*` token, the review's reason and the residue
+    attribution;
+  - the execution class and its exact families, or the (ii) conditions (a)-(e) with the figures;
+  - every divergent family the group also ran in, with figures and attribution.
+- `dynamic_proof` on every traced row. It cites:
+  - `vendored-trace-qhull.txt`;
+  - the traced exe `07a435eb...` and the DLL `f9075db4...`;
+  - the identity result.
+
+**Binaries.** The traced exe is Task 1's `07a435eb...`. The gate now runs `24a45e0b...`
+(`ffd6a47`), which differs from it in harness code only. Its identity check against the DLL
+gives the same verdict as the traced exe for all 562 groups.
+
+### What this does not settle
+
+- **Arm (i) and DIFF-equivalent rest on reruns selected by measurement.** 81 of the 82 promoted
+  exact groups are exact only in `qhull_exact_output` / `qhull_exact_other`. The proofs attribute
+  the divergent families those groups also ran in. They do not make the groups' other executions
+  exact.
+- **The residue attribution is a provenance listing, not a statement-by-statement re-read.** For
+  each DIFF group it names the instruction behind every residual token and its listing form. The
+  exact execution, both tapes, is the evidence that those forms compute the same thing on these
+  inputs.
+- **The ten `qhull_paths` runs are still attributed to the tie mechanism by analogy.** Only the
+  cube and the lattice `Qr` run were read at trace level 4.
+
 ## Timing
 
 | Task | Start | End | Rows written | Bytes written | Notes |
