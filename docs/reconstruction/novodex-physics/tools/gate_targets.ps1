@@ -612,6 +612,75 @@ $NxRequiredCoverageLines = [ordered] @{
         'force kinematic_unchanged=0.0.0.0.0.0.0.0'
     )
     'NxPhysicsActorMomentumTests' = @(
+        # NpActor.cpp completion Task 3 (000168, 000166, 000060/000742, 000134-000144): the
+        # _fpclass gate on 1/m (negative, zero, -0, NaN, Inf, denormal, FLT_MIN inertias),
+        # positive masses the report does not reach, the kinetic energy (one case where the
+        # listing's order decides a tie), and the getters' W = R F orders and 000746 tensors
+        # over mass frames near R^T and two frames where 000134's order differs from 000138's.
+        'momentum t3_get_general created=1',
+        'momentum t3_get_general cmass_orientation=bf1df347.bf47721d.bde38e3b.3e93e93e.beb60b63.3f638e38.bf3b6611.3f042ed8.3ee38e38',
+        'momentum t3_get_general cmass_position=3eaaaaa9.3f8aaaab.402aaaab',
+        'momentum t3_get_general cmass_orientation_only=bf1df347.bf47721d.bde38e3b.3e93e93e.beb60b63.3f638e38.bf3b6611.3f042ed8.3ee38e38',
+        'momentum t3_get_general inertia=400352c4.3a185632.bf2cf961.3a185632.40858cf4.3f939d16.bf2cf961.3f939d16.40119350',
+        'momentum t3_get_general inverse_inertia=3f0cc86b.bd5761d1.3e42944c.bd5761d1.3e913ddd.be234528.3e42944c.be234528.3f13b0e6',
+        'momentum t3_get_general angular_momentum=3c888485.c0403612.40337d35',
+        'momentum t3_get_inverse0 created=1',
+        'momentum t3_get_inverse0 cmass_orientation=3f7fffff.32cccccc.b0888888.b0888888.3f800000.b1088884.334ccccc.3288888a.3f800000',
+        'momentum t3_get_inverse0 cmass_position=3eaaaaa9.3f8aaaab.402aaaab',
+        'momentum t3_get_inverse0 cmass_orientation_only=3f7fffff.32cccccc.b0888888.b0888888.3f800000.b1088884.334ccccc.3288888a.3f800000',
+        'momentum t3_get_inverse0 inertia=3f9fffff.337aaaaa.336bbbba.337aaaaa.40200000.33022225.336bbbba.33022225.40980000',
+        'momentum t3_get_inverse0 inverse_inertia=3f4ccccb.32162fc9.3322f116.32162fc9.3ecccccd.31cc14da.3322f116.31cc14da.3e579436',
+        'momentum t3_get_inverse0 angular_momentum=3f5fffff.c04fffff.411f9999',
+        'momentum t3_get_inverse1 created=1',
+        'momentum t3_get_inverse1 cmass_orientation=3f7fffff.33fe10c2.337d0482.33f05cda.3f7ffff6.32cfa327.33512b33.32ea1356.3f7ffff8',
+        'momentum t3_get_inverse1 cmass_position=be696e47.3ed09ac1.3f19cb26',
+        'momentum t3_get_inverse1 cmass_orientation_only=3f7fffff.33fe10c2.337d0482.33f05cda.3f7ffff6.32cfa327.33512b33.32ea1356.3f7ffff8',
+        'momentum t3_get_inverse1 inertia=3f9fffff.34e9e777.34b6e968.34e9e777.401ffff4.34446ee4.34b6e968.34446ee4.4097fff7',
+        'momentum t3_get_inverse1 inverse_inertia=3f4ccccb.3412f549.335c9a12.3412f549.3eccccbd.328957e2.335c9a12.328957e2.3e579429',
+        'momentum t3_get_inverse1 angular_momentum=3f600001.c04fffed.411f9990',
+        'momentum t3_get_inverse2 created=1',
+        'momentum t3_get_inverse2 cmass_orientation=3f7ffffe.b2f00a38.b0236e80.31c4a0e4.3f7fffff.3350705c.b384b54f.33866251.3f800001',
+        'momentum t3_get_inverse2 cmass_position=bfc33128.3fdf856e.4036d2ac',
+        'momentum t3_get_inverse2 cmass_orientation_only=3f7ffffe.b2f00a38.b0236e80.31c4a0e4.3f7fffff.3350705c.b384b54f.33866251.3f800001',
+        'momentum t3_get_inverse2 inertia=3f9ffffe.b386a9d1.b3abf33c.b386a9d1.401ffffe.34cfc02a.b3abf33c.34cfc02a.40980002',
+        'momentum t3_get_inverse2 inverse_inertia=3f4cccca.b1e2c2d6.b354deea.b1e2c2d6.3ecccccb.3317639d.b354deea.3317639d.3e579439',
+        'momentum t3_get_inverse2 angular_momentum=3f5ffffb.c04ffffa.411f999b',
+        'momentum t3_get_inverse3 created=1',
+        'momentum t3_get_inverse3 cmass_orientation=3f7ffffd.b2b26c9a.331f07c1.b316c9b2.3f7fffff.b1014af6.33d890cd.b351745c.3f7ffffd',
+        'momentum t3_get_inverse3 cmass_position=bfb79890.bf819dbc.4012bf5b',
+        'momentum t3_get_inverse3 cmass_orientation_only=3f7ffffd.b2b26c9a.331f07c1.b316c9b2.3f7fffff.b1014af6.33d890cd.b351745c.3f7ffffd',
+        'momentum t3_get_inverse3 inertia=3f9ffffc.b3cdc1ee.34a219d9.b3cdc1ee.401ffffe.b40c8149.34a219d9.b40c8149.4097fffc',
+        'momentum t3_get_inverse3 inverse_inertia=3f4cccc8.b31c50ac.33bdfe15.b31c50ac.3ecccccb.b2aaf751.33bdfe15.b2aaf751.3e579431',
+        'momentum t3_get_inverse3 angular_momentum=3f600007.c04ffffe.411f9995',
+        'momentum t3_get_near3 created=1',
+        'momentum t3_get_near3 cmass_orientation=3f7ff62f.bc25827c.bc663e52.3c241e56.3f7ffb7d.bbc819ac.3c673cd1.3bc37519.3f7ff84f',
+        'momentum t3_get_near3 cmass_position=bfb79890.bf819dbc.4012bf5b',
+        'momentum t3_get_near3 cmass_orientation_only=3f7ff62f.bc25827c.bc663e52.3c241e56.3f7ffb7d.bbc819ac.3c673cd1.3bc37519.3f7ff84f',
+        'momentum t3_get_near3 inertia=3fa01ad4.bc49f32c.bd49bf85.bc49f32c.401fff51.bc63fb68.bd49bf85.bc63fb68.4097f9a3',
+        'momentum t3_get_near3 inverse_inertia=3f4cc27f.3b82be5e.3c0819d0.3b82be5e.3eccd122.3a9f0c89.3c0819d0.3a9f0c89.3e57b4c3',
+        'momentum t3_get_near3 angular_momentum=3f49c4f6.c0526b3d.411f4fca',
+        'momentum t3_rf0 pose_orientation=3f7ffffc.acbc4cc0.b4db35b3.3455b488.3f800005.34ef07c0.b4a8c1be.3330a7e6.3f7ffffb',
+        'momentum t3_rf0 orientation=3f7ffffc.acbc4d00.b4db35b3.3455b488.3f800005.34ef07c0.b4a8c1be.3330a7e6.3f7ffffb',
+        'momentum t3_rf0 inverse_inertia=3f4cccc7.342af637.b4b527a3.342af637.3eccccdd.33ec9ea3.b4b527a3.33ec9ea3.3e57942e',
+        'momentum t3_rf1 pose_orientation=3f800005.3482424e.b285c4c1.b3b6192b.3f800007.30b8f4d4.32ab3868.3504862a.3f7ffff6',
+        'momentum t3_rf1 orientation=3f800005.3482424e.b285c4c1.b3b6192b.3f800007.30b8f4d5.32ab3868.3504862a.3f7ffff6',
+        'momentum t3_rf1 inverse_inertia=3f4cccdd.32faf182.3259a145.32faf182.3ecccce3.345457c9.3259a145.345457c9.3e579425',
+        'momentum t3_inertia 0 in=40000000.40400000.40800000 stored=40000000.40400000.40800000 inverse=3f000000.3eaaaaab.3e800000',
+        'momentum t3_inertia 1 in=c0000000.40400000.40800000 stored=c0000000.40400000.40800000 inverse=bf000000.3eaaaaab.3e800000',
+        'momentum t3_inertia 2 in=0.3f800000.3f800000 stored=0.3f800000.3f800000 inverse=0.0.0',
+        'momentum t3_inertia 3 in=80000000.3f800000.3f800000 stored=80000000.3f800000.3f800000 inverse=0.0.0',
+        'momentum t3_inertia 4 in=3f800000.7fc00000.3f800000 stored=3f800000.7fc00000.3f800000 inverse=0.0.0',
+        'momentum t3_inertia 5 in=3f800000.3f800000.7f800000 stored=3f800000.3f800000.7f800000 inverse=3f800000.3f800000.0',
+        'momentum t3_inertia 6 in=100.3f800000.3f800000 stored=100.3f800000.3f800000 inverse=0.0.0',
+        'momentum t3_inertia 7 in=800000.3f800000.3f800000 stored=800000.3f800000.3f800000 inverse=7e800000.3f800000.3f800000',
+        'momentum t3_inertia 8 in=3e800000.3e800000.ff800000 stored=3e800000.3e800000.ff800000 inverse=40800000.40800000.80000000',
+        'momentum t3_mass 0 in=7f800000 stored=7f800000 inverse=0',
+        'momentum t3_mass 1 in=100 stored=100 inverse=7f800000',
+        'momentum t3_mass 2 in=800000 stored=800000 inverse=7e800000',
+        'momentum t3_mass 3 in=40a00000 stored=40a00000 inverse=3e4ccccd',
+        'momentum t3_energy 0 energy=4286f0a9',
+        'momentum t3_energy 1 energy=3f000000',
+        'momentum t3_energy 2 energy=3f000000',
         # NpActor.cpp completion Task 3 (000174, 000176, 000180, 000182): the velocity and
         # momentum setters' wake at, just below and just above the sleep thresholds, NaN and
         # asleep, with the dirty word; 000182's row sums over a general +0x164, including
@@ -2962,7 +3031,7 @@ $NxPhaseCoverageFloor = [ordered] @{
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
     '4' = 159  # 34 for NxPhysicsAssetTests, 125 for NxPhysicsThirdPartyTests (67 + 29 from
                # vendored-correspondence Task 4 + 5 from its Task 5a + 24 from qhull-gap Task 1)
-    '5' = 1458 # 126 object-layout, 1 shape-vtable and 1331 public actor/pruner/box/scene lines
+    '5' = 1522 # 126 object-layout, 1 shape-vtable and 1395 public actor/pruner/box/scene lines
                # (744 + 251 from NpActor.cpp completion Task 2; RED on purpose: vtables
                # family open)
     '6' = 403  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent

@@ -119,8 +119,105 @@ static void task3Wake(NxActor* actor, const char* name, Task3Setter setter,
 		word(record, 0x78), word(record, 0x7c), word(record, 0x80),
 		word(record, 0x84), word(record, 0x4c), word(record, 0x114), mark);
 }
+// The getters' world mass rotation W = R F (000134 and 000142 in one operand
+// order, 000138, 000140 and 000144 in theirs) and the 000746 tensors. With
+// the mass frame near R^T, W is near the identity and its off-diagonal
+// elements come out of cancelling products, where the order decides the
+// bits.
+static void task3Getters(NxScene* scene, const char* name, const NxMat33& orientation,
+	const NxMat33& massRotation)
+{
+	NxBoxShapeDesc box;
+	box.dimensions = NxVec3(1.0f, 2.0f, 3.0f);
+	NxBodyDesc body;
+	body.mass = 3.0f;
+	body.massSpaceInertia = NxVec3(1.25f, 2.5f, 4.75f);
+	body.massLocalPose.M = massRotation;
+	body.massLocalPose.t = NxVec3(0.5f, -0.25f, 1.5f);
+	body.angularVelocity = NxVec3(0.7f, -1.3f, 2.1f);
+	NxActorDesc desc;
+	desc.shapes.pushBack(&box);
+	desc.body = &body;
+	desc.globalPose.M = orientation;
+	desc.globalPose.t = NxVec3(-1.0f, 0.5f, 2.0f);
+	NxActor* actor = scene->createActor(desc);
+	char tag[96];
+	sprintf(tag, "t3_get_%s created=%u", name, actor ? 1u : 0u);
+	printf("momentum %s\n", tag);
+	if(!actor) return;
+	sprintf(tag, "t3_get_%s cmass_orientation", name);
+	printMatrix(tag, actor->getCMassGlobalPose().M);
+	sprintf(tag, "t3_get_%s cmass_position", name);
+	printVector(tag, actor->getCMassGlobalPose().t);
+	sprintf(tag, "t3_get_%s cmass_orientation_only", name);
+	printMatrix(tag, actor->getCMassGlobalOrientation());
+	sprintf(tag, "t3_get_%s inertia", name);
+	printMatrix(tag, actor->getGlobalInertiaTensor());
+	sprintf(tag, "t3_get_%s inverse_inertia", name);
+	printMatrix(tag, actor->getGlobalInertiaTensorInverse());
+	sprintf(tag, "t3_get_%s angular_momentum", name);
+	printVector(tag, actor->getAngularMomentum());
+	scene->releaseActor(*actor);
+}
+static NxMat33 task3Transpose(const NxMat33& m)
+{
+	NxMat33 t;
+	t.setTransposed(m);
+	return t;
+}
 static void task3Cases(NxScene* scene)
 {
+	const NxMat33 r0 = task3Rotation(1.0f, 2.0f, 3.0f, 4.0f);
+	const NxMat33 r1 = task3Rotation(0.95f, 0.2f, 0.1f, 0.2f);
+	const NxMat33 r2 = task3Rotation(-0.2f, 0.25f, 0.9f, 0.3f);
+	const NxMat33 r3 = task3Rotation(0.3f, -0.7f, 0.5f, 0.4f);
+	task3Getters(scene, "general", r0, task3Rotation(-0.3f, 0.5f, 0.2f, 0.8f));
+	task3Getters(scene, "inverse0", r0, task3Transpose(r0));
+	task3Getters(scene, "inverse1", r1, task3Transpose(r1));
+	task3Getters(scene, "inverse2", r2, task3Transpose(r2));
+	task3Getters(scene, "inverse3", r3, task3Transpose(r3));
+	task3Getters(scene, "near3", r3, task3Transpose(task3Rotation(0.3f, -0.7f, 0.5f, 0.41f)));
+	// 000134's column 1 and 2 orders against 000138's: a stored body quaternion
+	// and a local mass frame found so that one element of W differs between
+	// the two orders (row 0 column 1, row 1 column 2).
+	const unsigned rfCases[2][13] = {
+		{ 0x3e06942du, 0x3ef77032u, 0xbf0368c5u, 0xbf32684fu, 0x3bc12f05u, 0x3f57adcdu,
+			0x3f09e664u, 0xbf16a3c3u, 0x3ee07e9au, 0xbf2de891u, 0xbf4efb48u, 0xbea03d86u,
+			0x3eff2673u },
+		{ 0x3f4d6825u, 0xbd847e35u, 0xbd62d9b9u, 0x3f173960u, 0x3f7c496cu, 0xbe2d4f91u,
+			0xbc4be2edu, 0xbd1d3950u, 0xbe9663e3u, 0x3f748284u, 0xbe294675u, 0xbf70d75cu,
+			0xbe9788f6u },
+	};
+	for(unsigned i = 0; i < 2; ++i)
+	{
+		NxBoxShapeDesc box;
+		box.dimensions = NxVec3(1.0f, 2.0f, 3.0f);
+		NxBodyDesc body;
+		body.mass = 3.0f;
+		body.massSpaceInertia = NxVec3(1.25f, 2.5f, 4.75f);
+		NxActorDesc desc;
+		desc.shapes.pushBack(&box);
+		desc.body = &body;
+		NxActor* actor = scene->createActor(desc);
+		if(!actor) continue;
+		float frame[9];
+		memcpy(frame, rfCases[i] + 4, sizeof(frame));
+		NxMat33 local;
+		local.setRowMajor(frame);
+		actor->setCMassOffsetLocalOrientation(local);
+		NxQuat q;
+		memcpy(&q.x, rfCases[i], 4); memcpy(&q.y, rfCases[i] + 1, 4);
+		memcpy(&q.z, rfCases[i] + 2, 4); memcpy(&q.w, rfCases[i] + 3, 4);
+		actor->setGlobalOrientationQuat(q);
+		char tag[64];
+		sprintf(tag, "t3_rf%u pose_orientation", i);
+		printMatrix(tag, actor->getCMassGlobalPose().M);
+		sprintf(tag, "t3_rf%u orientation", i);
+		printMatrix(tag, actor->getCMassGlobalOrientation());
+		sprintf(tag, "t3_rf%u inverse_inertia", i);
+		printMatrix(tag, actor->getGlobalInertiaTensorInverse());
+		scene->releaseActor(*actor);
+	}
 	NxBoxShapeDesc box;
 	box.dimensions = NxVec3(1.0f, 2.0f, 3.0f);
 	NxBodyDesc body;
@@ -181,6 +278,60 @@ static void task3Cases(NxScene* scene)
 		task3Bits(0xc54e02beu, 0xc1e93addu, 0x44289883u), false);
 	task3Wake(actor, "am_nan", T3_ANGULAR_MOMENTUM, NxVec3(nan, 1.0f, 1.0f), false);
 	task3Wake(actor, "am_asleep", T3_ANGULAR_MOMENTUM, NxVec3(3.0f, 4.0f, 5.0f), true);
+	// 000168: the inverse inertia is gated by _fpclass on each float 1/m.
+	const unsigned inertiaCases[][3] = {
+		{ 0x40000000u, 0x40400000u, 0x40800000u },	// 2, 3, 4
+		{ 0xc0000000u, 0x40400000u, 0x40800000u },	// -2 keeps its inverse
+		{ 0x00000000u, 0x3f800000u, 0x3f800000u },	// 0: +Inf
+		{ 0x80000000u, 0x3f800000u, 0x3f800000u },	// -0: -Inf
+		{ 0x3f800000u, 0x7fc00000u, 0x3f800000u },	// NaN
+		{ 0x3f800000u, 0x3f800000u, 0x7f800000u },	// +Inf: inverse 0
+		{ 0x00000100u, 0x3f800000u, 0x3f800000u },	// denormal: overflow
+		{ 0x00800000u, 0x3f800000u, 0x3f800000u },	// FLT_MIN: 2^126
+		{ 0x3e800000u, 0x3e800000u, 0xff800000u },	// -Inf: inverse -0
+	};
+	for(unsigned i = 0; i < sizeof(inertiaCases) / sizeof(inertiaCases[0]); ++i)
+	{
+		actor->setMassSpaceInertiaTensor(task3Bits(inertiaCases[i][0],
+			inertiaCases[i][1], inertiaCases[i][2]));
+		printf("momentum t3_inertia %u in=%x.%x.%x stored=%x.%x.%x inverse=%x.%x.%x\n", i,
+			inertiaCases[i][0], inertiaCases[i][1], inertiaCases[i][2],
+			word(record, 0x18c), word(record, 0x190), word(record, 0x194),
+			word(record, 0xc4), word(record, 0xc8), word(record, 0xcc));
+	}
+	// 000166 on positive masses the report does not reach: +Inf, a denormal
+	// (whose inverse overflows) and FLT_MIN.
+	const unsigned massCases[] = { 0x7f800000u, 0x00000100u, 0x00800000u, 0x40a00000u };
+	for(unsigned i = 0; i < sizeof(massCases) / sizeof(massCases[0]); ++i)
+	{
+		float mass; memcpy(&mass, &massCases[i], 4);
+		actor->setMass(mass);
+		printf("momentum t3_mass %u in=%x stored=%x inverse=%x\n", i, massCases[i],
+			word(record, 0x188), word(record, 0xc0));
+	}
+	// 000060/000742: the kinetic energy with distinct components, and a case
+	// built so that the listing's order decides the rounding: m v.v =
+	// 1 + 2^-24 (a float midpoint once halved) and three spin terms of
+	// 0.39 ulp each, which survive only when summed before they meet it.
+	struct EnergyCase { unsigned m, i0, i1, i2, v0, v1, v2, w0, w1, w2; };
+	const EnergyCase energyCases[] = {
+		{ 0x40400000u, 0x3fc00000u, 0x40100000u, 0x40700000u, 0x3fa66666u, 0xc02ccccdu,
+			0x3f666666u, 0xbebd70a4u, 0x3de147aeu, 0x40a9999au },
+		{ 0x3f800000u, 0x3f800000u, 0x3f800000u, 0x3f800000u, 0x3f800000u, 0x39800000u,
+			0x00000000u, 0x32200000u, 0x32200000u, 0x32200000u },
+		{ 0x3f800000u, 0x3f800000u, 0x3f800000u, 0x3f800000u, 0x3f800000u, 0x39800000u,
+			0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u },
+	};
+	for(unsigned i = 0; i < sizeof(energyCases) / sizeof(energyCases[0]); ++i)
+	{
+		const EnergyCase& c = energyCases[i];
+		float mass; memcpy(&mass, &c.m, 4);
+		actor->setMass(mass);
+		actor->setMassSpaceInertiaTensor(task3Bits(c.i0, c.i1, c.i2));
+		actor->setLinearVelocity(task3Bits(c.v0, c.v1, c.v2));
+		actor->setAngularVelocity(task3Bits(c.w0, c.w1, c.w2));
+		printf("momentum t3_energy %u energy=%x\n", i, bits(actor->computeKineticEnergy()));
+	}
 	scene->releaseActor(*actor);
 }
 

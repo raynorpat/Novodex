@@ -31,6 +31,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
+#include <float.h>
 
 
 static unsigned char* nxNpActorBody(void* actor)
@@ -51,34 +52,23 @@ static void nxNpActorNotifyOwnedShapes(unsigned char* body);
 void* nxActorAppendShape(void* actor, const NxShapeDesc* descriptor);
 void nxActorRemoveShape(void* actor, void* handle);
 
+// The RF operand orders of nxNpActorWorldMassRotation (defined below).
+enum NxNpActorRfOrder { NX_RF_134, NX_RF_138, NX_RF_140, NX_RF_144 };
+static void nxNpActorWorldMassRotation(const unsigned char* record,
+	NxNpActorRfOrder order, float* worldMass);
+
+// The world tensors of 000140 (diagonal +0x18c), 000142 (+0xc4) and 000144
+// (+0x18c): W = R F in the row's own order, then 000746(diagonal, W, out).
 static NxMat33 nxNpActorInstantTensor(const unsigned char* record,
-	unsigned diagonalOffset, bool roundedQuaternionProducts)
+	unsigned diagonalOffset, NxNpActorRfOrder order)
 	{
-	// The momentum getter stores quaternion products as floats before its
-	// matrix multiply; the public tensor getters retain x87 precision longer.
 	NxMat33 out(NX_IDENTITY_MATRIX);
 	if(!record) return out;
-	float bodyElements[9];
-	if(roundedQuaternionProducts)
-		{
-		NxQuat quaternion;
-		memcpy(&quaternion, record + 0x5c, sizeof(quaternion));
-		NxMat33 fromQuaternion(quaternion);
-		fromQuaternion.getRowMajor(bodyElements);
-		}
-	else
-		nxNpActorRotationFromQuaternion(record, bodyElements);
-	NxMat33 bodyRotation;
-	bodyRotation.setRowMajor(bodyElements);
-	NxMat33 inertiaFrame;
-	inertiaFrame.setRowMajor(reinterpret_cast<const float*>(record + 0xdc));
-	NxMat33 worldRotation;
-	worldRotation.multiply(bodyRotation, inertiaFrame);
-	float rotation[9];
-	worldRotation.getRowMajor(rotation);
+	float worldMass[9];
+	nxNpActorWorldMassRotation(record, order, worldMass);
 	float tensor[9];
-	nxNpActorWorldTensor(reinterpret_cast<const float*>(record + diagonalOffset),
-		rotation, tensor);
+	nxNpActorWorldTensorRDRt(reinterpret_cast<const float*>(record + diagonalOffset),
+		worldMass, tensor);
 	out.setRowMajor(tensor);
 	return out;
 	}
@@ -1764,23 +1754,64 @@ static void nxNpActorApplyWorldMassPose(unsigned char* record)
 	nxNpActorMarkRecordDirty(record, 2);
 	}
 
+// The getters' world mass rotation W = R F: R from the body quaternion +0x5c
+// by the ROT sequence every getter inlines, F the local mass frame +0xdc, and
+// each element one x87 dot product rounded once. The rows differ only in the
+// operand order of each column's sum (a = row i of R, f = F row-major):
+//   134 (000134, 000142): (a0f0 + a1f3) + a2f6, (a1f4 + a2f7) + a0f1,
+//                         (a0f2 + a1f5) + a2f8
+//   138 (000138):         (a0f0 + a1f3) + a2f6, (a0f1 + a1f4) + a2f7,
+//                         (a1f5 + a2f8) + a0f2
+//   140 (000140):         (a1f3 + a2f6) + a0f0, (a0f1 + a1f4) + a2f7,
+//                         (a0f2 + a1f5) + a2f8
+//   144 (000144):         as 140, except row 0's third column, which is
+//                         (a1f5 + a2f8) + a0f2
+// (000134 0x49c3-0x4b34, 000138 0x4e78-0x4fce, 000140 0x5117-0x527e, 000142
+// 0x53e9-0x5550, 000144 0x56d3-0x583b.)
+static void nxNpActorWorldMassRotation(const unsigned char* record,
+	NxNpActorRfOrder order, float* worldMass)
+	{
+	float actorRotation[9];
+	nxNpActorRotationFromQuaternionGetter(
+		reinterpret_cast<const float*>(record + 0x5c), actorRotation);
+	const float* f = reinterpret_cast<const float*>(record + 0xdc);
+	for(unsigned row = 0; row < 3; ++row)
+		{
+		const float* a = actorRotation + row * 3;
+		float* w = worldMass + row * 3;
+		switch(order)
+			{
+			case NX_RF_134:
+				w[0] = nxNpActorX87Dot3(a[0], f[0], a[1], f[3], a[2], f[6]);
+				w[1] = nxNpActorX87Dot3(a[1], f[4], a[2], f[7], a[0], f[1]);
+				w[2] = nxNpActorX87Dot3(a[0], f[2], a[1], f[5], a[2], f[8]);
+				break;
+			case NX_RF_138:
+				w[0] = nxNpActorX87Dot3(a[0], f[0], a[1], f[3], a[2], f[6]);
+				w[1] = nxNpActorX87Dot3(a[0], f[1], a[1], f[4], a[2], f[7]);
+				w[2] = nxNpActorX87Dot3(a[1], f[5], a[2], f[8], a[0], f[2]);
+				break;
+			case NX_RF_140:
+			case NX_RF_144:
+				w[0] = nxNpActorX87Dot3(a[1], f[3], a[2], f[6], a[0], f[0]);
+				w[1] = nxNpActorX87Dot3(a[0], f[1], a[1], f[4], a[2], f[7]);
+				w[2] = order == NX_RF_144 && row == 0
+					? nxNpActorX87Dot3(a[1], f[5], a[2], f[8], a[0], f[2])
+					: nxNpActorX87Dot3(a[0], f[2], a[1], f[5], a[2], f[8]);
+				break;
+			}
+		}
+	}
+
 static const unsigned char* nxNpActorDerivedMassFrame(
-	const unsigned char* record, unsigned char* scratch)
+	const unsigned char* record, unsigned char* scratch, NxNpActorRfOrder order)
 	{
 	if(!record) return 0;
 	memcpy(scratch, record, 0x260);
 	float actorRotation[9];
 	nxNpActorRotationFromQuaternionGetter(
 		reinterpret_cast<const float*>(record + 0x5c), actorRotation);
-	const float* localMass = reinterpret_cast<const float*>(record + 0xdc);
-	float* worldMass = reinterpret_cast<float*>(scratch + 0x134);
-	for(unsigned row = 0; row < 3; ++row)
-		{
-		const float* a = actorRotation + row * 3;
-		worldMass[row * 3] = nxNpActorX87Dot3(a[0], localMass[0], a[1], localMass[3], a[2], localMass[6]);
-		worldMass[row * 3 + 1] = nxNpActorX87Dot3(a[0], localMass[1], a[1], localMass[4], a[2], localMass[7]);
-		worldMass[row * 3 + 2] = nxNpActorX87Dot3(a[1], localMass[5], a[2], localMass[8], a[0], localMass[2]);
-		}
+	nxNpActorWorldMassRotation(record, order, reinterpret_cast<float*>(scratch + 0x134));
 	const float* localPosition = reinterpret_cast<const float*>(record + 0x100);
 	const float* actorPosition = reinterpret_cast<const float*>(record + 0x50);
 	float* worldPosition = reinterpret_cast<float*>(scratch + 0x158);
@@ -1904,7 +1935,7 @@ NxMat34 NpActorVtable::getCMassGlobalPoseVal() const
 	const unsigned char* source = nxNpActorRecord(const_cast<NpActorVtable*>(this));
 	if(!source)
 		nxNpActorReport(0x30a, "Actor::getCMassGlobalPose: Cannot be called on a static actor!");
-	const unsigned char* record = nxNpActorDerivedMassFrame(source, scratch);
+	const unsigned char* record = nxNpActorDerivedMassFrame(source, scratch, NX_RF_134);
 	NxMat34 result(nxNpActorCMassMatrix(record, 0x134),
 		nxNpActorCMassPosition(record, 0x158));
 	nxNpSceneGuardLeave(ctx);
@@ -1921,7 +1952,7 @@ NxVec3 NpActorVtable::getCMassGlobalPositionVal() const
 	if(!source)
 		nxNpActorReport(0x314, "Actor::getCMassGlobalPosition: Cannot be called on a static actor!");
 	NxVec3 result = nxNpActorCMassPosition(
-		nxNpActorDerivedMassFrame(source, scratch), 0x158);
+		nxNpActorDerivedMassFrame(source, scratch, NX_RF_138), 0x158);
 	nxNpSceneGuardLeave(ctx);
 	return result;
 	}
@@ -1936,7 +1967,7 @@ NxMat33 NpActorVtable::getCMassGlobalOrientationVal() const
 	if(!source)
 		nxNpActorReport(0x31d, "Actor::getCMassGlobalOrientation: Cannot be called on a static actor!");
 	NxMat33 result = nxNpActorCMassMatrix(
-		nxNpActorDerivedMassFrame(source, scratch), 0x134);
+		nxNpActorDerivedMassFrame(source, scratch, NX_RF_138), 0x134);
 	nxNpSceneGuardLeave(ctx);
 	return result;
 	}
@@ -1978,6 +2009,13 @@ NxReal NpActorVtable::getMass() const
 	}
 
 // phys_fn_000168 (0x00006e40, 577 B)
+// 0x6ec9-0x6f85: the tensor is stored, the three inverses 1/m are formed and
+// spilled to float, and each spill, widened to a double, is classified by the
+// CRT's _fpclass (phys_fn_005666, 0xf4140, which the oracle calls): any
+// _FPCLASS_SNAN | QNAN | NINF | PINF (0x207) stores zero in all three
+// (+0xc4..+0xcc); otherwise the float inverses are stored as they are, so a
+// negative inertia keeps its negative inverse and a zero or denormal one
+// (whose inverse overflows) zeroes the three.
 void NpActorVtable::setMassSpaceInertiaTensor(const NxVec3& m)
 	{
 	void* ctx = nxNpActorContext(this, 0xc);
@@ -1987,14 +2025,22 @@ void NpActorVtable::setMassSpaceInertiaTensor(const NxVec3& m)
 		{
 		memcpy(record + 0x18c, &m, sizeof(m));
 		float* inverse = reinterpret_cast<float*>(record + 0xc4);
-		if(m.x > 0.0f && m.y > 0.0f && m.z > 0.0f)
+		const float inverseX = 1.0f / m.x;
+		const float inverseY = 1.0f / m.y;
+		const float inverseZ = 1.0f / m.z;
+		if((_fpclass(inverseX) & 0x207) || (_fpclass(inverseY) & 0x207) ||
+			(_fpclass(inverseZ) & 0x207))
 			{
-			inverse[0] = 1.0f / m.x;
-			inverse[1] = 1.0f / m.y;
-			inverse[2] = 1.0f / m.z;
+			inverse[0] = 0.0f;
+			inverse[1] = 0.0f;
+			inverse[2] = 0.0f;
 			}
 		else
-			memset(inverse, 0, sizeof(NxVec3));
+			{
+			inverse[0] = inverseX;
+			inverse[1] = inverseY;
+			inverse[2] = inverseZ;
+			}
 		nxNpActorMarkRecordDirty(record, 0x20000);
 		}
 	else
@@ -2026,7 +2072,7 @@ NxMat33 NpActorVtable::getGlobalInertiaTensorVal() const
 	unsigned char* record = nxNpActorRecord(self);
 	if(!record)
 		nxNpActorReport(0x32f, "Actor::getGlobalInertiaTensorVal: Cannot be called on a static actor!");
-	NxMat33 out = nxNpActorInstantTensor(record, 0x18c, false);
+	NxMat33 out = nxNpActorInstantTensor(record, 0x18c, NX_RF_140);
 	nxNpSceneGuardLeave(ctx);
 	return out;
 	}
@@ -2039,7 +2085,7 @@ NxMat33 NpActorVtable::getGlobalInertiaTensorInverseVal() const
 	unsigned char* record = nxNpActorRecord(const_cast<NpActorVtable*>(this));
 	if(!record)
 		nxNpActorReport(0x338, "Actor::getGlobalInertiaTensorInverseVal: Cannot be called on a static actor!");
-	return nxNpActorInstantTensor(record, 0xc4, false);
+	return nxNpActorInstantTensor(record, 0xc4, NX_RF_134);
 	}
 
 // phys_fn_000170 (0x00007090, 431 B)
@@ -2310,14 +2356,15 @@ NxVec3 NpActorVtable::getAngularMomentumVal() const
 	NxVec3 out(0.0f, 0.0f, 0.0f);
 	if(record)
 		{
-		NxMat33 world = nxNpActorInstantTensor(record, 0x18c, true);
-		float tensor[9];
-		world.getRowMajor(tensor);
+		NxMat33 world = nxNpActorInstantTensor(record, 0x18c, NX_RF_144);
+		float t[9];
+		world.getRowMajor(t);
 		const float* v = reinterpret_cast<const float*>(record + 0x78);
+		// 0x5854-0x58ca: each row (t1 wy + t2 wz) + t0 wx, rounded once.
 		out = NxVec3(
-			tensor[0] * v[0] + tensor[1] * v[1] + tensor[2] * v[2],
-			tensor[3] * v[0] + tensor[4] * v[1] + tensor[5] * v[2],
-			tensor[6] * v[0] + tensor[7] * v[1] + tensor[8] * v[2]);
+			nxNpActorX87Dot3(t[1], v[1], t[2], v[2], t[0], v[0]),
+			nxNpActorX87Dot3(t[4], v[1], t[5], v[2], t[3], v[0]),
+			nxNpActorX87Dot3(t[7], v[1], t[8], v[2], t[6], v[0]));
 		}
 	nxNpSceneGuardLeave(ctx);
 	return out;
@@ -2558,6 +2605,7 @@ void NpActorVtable::addLocalTorque(const NxVec3& torque, NxForceMode mode )
 	nxNpSceneGuardLeave(ctx);
 	}
 
+// phys_fn_000060 (0x00002900, 72 B)
 NxReal NpActorVtable::computeKineticEnergy() const
 	{
 	void* self = const_cast<NpActorVtable*>(this);
@@ -2571,15 +2619,21 @@ NxReal NpActorVtable::computeKineticEnergy() const
 		const float* angular = reinterpret_cast<const float*>(record + 0x78);
 		const float mass = *reinterpret_cast<const float*>(record + 0x188);
 		const float* inertia = reinterpret_cast<const float*>(record + 0x18c);
-		const double rotational =
-			static_cast<double>(inertia[0]) * angular[0] * angular[0] +
-			static_cast<double>(inertia[1]) * angular[1] * angular[1] +
-			static_cast<double>(inertia[2]) * angular[2] * angular[2];
+		// phys_fn_000742 (0x00016dd0, 89 B), a row of
+		// gap:SceneRaycast.cpp..CapsuleShape.cpp: the three I_k w_k stay in
+		// registers, the linear (vz vz + vy vy) + vx vx is scaled by the mass,
+		// then ((m v.v + I2 w2 w2) + I1 w1 w1) + I0 w0 w0 is halved; 000060
+		// rounds the result to float (fstp [esp+8]) before its unlock.
+		const double spin0 = static_cast<double>(inertia[0]) * angular[0];
+		const double spin1 = static_cast<double>(inertia[1]) * angular[1];
+		const double spin2 = static_cast<double>(inertia[2]) * angular[2];
 		const double translational =
-			(static_cast<double>(linear[0]) * linear[0] +
-			static_cast<double>(linear[1]) * linear[1] +
-			static_cast<double>(linear[2]) * linear[2]) * mass;
-		energy = static_cast<NxReal>((rotational + translational) * 0.5);
+			((static_cast<double>(linear[2]) * linear[2] +
+			static_cast<double>(linear[1]) * linear[1]) +
+			static_cast<double>(linear[0]) * linear[0]) * mass;
+		energy = static_cast<NxReal>(
+			(((translational + spin2 * angular[2]) + spin1 * angular[1]) +
+			spin0 * angular[0]) * 0.5);
 		}
 	nxNpSceneGuardLeave(ctx);
 	return energy;
