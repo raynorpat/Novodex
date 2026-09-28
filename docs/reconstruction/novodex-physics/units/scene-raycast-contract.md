@@ -774,3 +774,110 @@ written rows with no decompile (000686, 005208, 005214), requesting the union wi
 all `ok`; the 63 are byte-identical). Bundles regenerated: SceneRaycast.cpp,
 gap:Scene.cpp..SceneRaycast.cpp (new), gap:SceneRaycast.cpp..CapsuleShape.cpp and
 gap:opcode\IcePrunable.cpp..opcode\OPC_MeshInterface.cpp.
+
+## Task 4 results: body-creation
+
+Sub-area body-creation wrote the dynamic body record's constructor and destructor rows from the listing,
+replaced the emulated record build in Scene.cpp with calls to them, added a Phase 5 staged-pair target, and
+promoted every row it wrote. Traces of both sides: `evidence/scene-raycast-trace-task4-body-creation.txt`
+(18 targets, candidate NxPhysics.dll sha256 cc7aba6d1e8075b2...; every written row hit exactly as often as the
+oracle row on every target, and the ordered sequences of the eleven compared labels identical, 1,249 hits each).
+
+**Written, claimed and promoted to `reconstructed` (8 rows, 6,188 B), all with dynamic evidence:**
+
+| Row | B | Candidate | Hits (both sides) |
+|---|---:|---|---:|
+| 000797 | 402 | `DynamicBody::construct` (new Physics/src/BodyCreation.cpp) | 86 |
+| 000801 | 741 | `DynamicBodyBase::construct` (BodyCreation.cpp) | 86 |
+| 000793+000795 | 1,613 + 3,090 | `DynamicBody::loadFromBodyDesc` (BodyCreation.cpp), one function carrying both lines | 86 (000795's own address 0x1a9a0 is reached only by the queue-growth `jmp` 0x1a99b: 0 on both sides) |
+| 000722 | 127 | `Row000722Fixture::row000722` (core/JointSupport.cpp), main's function brought in unchanged | 258 |
+| 000748 | 47 | `DynamicBody::markIslandDirty` (BodyCreation.cpp) | 86 |
+| 000776 | 117 | `DynamicBody::destruct` (BodyCreation.cpp) | 86 |
+| 000799 | 51 | `DynamicBodyBase::destruct` (BodyCreation.cpp) | 86 |
+
+The members give the rows their thiscall ABI and `ret` sizes; each is `noinline`, since the image calls every
+one as its own function. The rows run at API time (createActor, releaseActor, the Scene release) under 0x027f;
+BodyCreation.cpp keeps the default architecture and is built /EHs-c- (000776 is frameless in the image, /EHsc
+framed the Observable destructor call). 000722: `main` (885438f, effector-and-coredump Task 2) already has
+`Row000722Fixture::row000722` in core/JointSupport.cpp; walked against 0x16130-0x161ae, faithful, and brought
+here with the same name, body and placement (after 000712); its header comment line begins `// Row` here (the
+marker rule), where main's begins `// phys_fn_000722`.
+
+**Scene.cpp (localized).** `nxActorComputeMass` now does only what 000026 does around the constructor: the
+body-descriptor copy, the emulated one-box 000008 mass (unchanged, written into the copy), the pose, the
+allocation, `DynamicBody::construct`, body+8. `releaseActor` calls `DynamicBody::destruct` where 000030 calls
+000776, before the record's free; the early aux unregistration and the id recycle moved into 000799/000776.
+`nxSceneTakeRecordId` is gone (000797 inlines it, as the image does); `nxSceneRecycleRecordId` is no longer
+static; the aux-manager emulations `nxSceneAuxRegisterRecord`/`nxSceneAuxUnregisterRecord` take the manager
+(the record's +0x120) instead of the Scene, as 002421/002411 do. NpActor.cpp: `nxNpActorTransitionKinematic`
+lost `static` (000795 calls it).
+
+**Defects of the emulation that the rows fix (oracle addresses):**
+- The record was not an Observable: no ??0Observable (0x1b60e), no body table at +0 (0x1b614), no ??1Observable
+  (0x185d6).
+- 1/mass was guarded (the image's fdiv at 0x1a370 is unconditional); inverse inertia was taken only of a tensor
+  with three positive elements (the image tests for any nonzero word, 0x1a83a, and zeroes all three inverses
+  when _fpclass rejects one, 0x1a8ab-0x1a8e4); the all-zero tensor branch ((1, 1, 1), inverses 1.0,
+  0x1aa06-0x1aaa6) was missing.
+- The sleep and angular-velocity fallbacks were pinned constants; the image reads the live SDK parameters
+  (0x10123b20, 0x10123b24, 0x10123b34).
+- A body created kinematic never ran 000785 (0x1b4a8): no inverse zeroing and no 0x20-byte block; and 000799's
+  free of that block (0x1b76f-0x1b791) was absent, so a kinematic record leaked it at release.
+- 000760/000722/000748 were not called at creation (+0x1bc/+0x1e8 were stored directly), and 000776's island
+  teardown (000713, the +0x1fc walk of 000722, 000760, 000722) was absent.
+- The aux registration ran at the end of the build, not inside 000801 (0x1ba79); the dirty marks of
+  000793/000795 were not made.
+- Fields the constructor chain writes and the emulation did not: +0x20c..+0x238 (the identity and copies),
+  +0x244..+0x258 (the empty bounds), +0x1a0..+0x1b8, +0x1cc and +0x1ec..+0x200 (000722), +0x208, +0x25c.
+
+**New Phase 5 staged-pair target `NxPhysicsBodyCreationTests`** (tests/PhysicsBodyCreationTests.cpp,
+0xcd-filled allocations): six bodies (defaults with density; live SDK parameters NX_DEFAULT_SLEEP_LIN/ANG and
+NX_MAX_ANGULAR_VELOCITY set before creation, zero and negative descriptor values; an explicit descriptor with
+rotated mass frame, velocities, damping, limits, solver count and flags on a rotated pose; a tensor with a zero
+element; a body created kinematic; a record that reuses a released id), printing the record words the
+constructor chain writes, the getters, the kinematic block and flag, the record ids, and the create/release
+allocator traffic. 149 lines, equal on both pairs; all 149 are oracle-sourced and registered (Phase 5 floor
+871 -> 1020; test_gate_targets.py MINIMUM and test_gate_commands.py's Phase 5 list follow). The density bodies'
+tensor lines are not printed: that tensor is 000008's (not reproduced; the candidate's one-box emulation differs
+from the image in its last bit, e.g. 41de8001 vs 41de8000).
+
+**Recorded differences (neither reachable by any target):**
+- The dirty-mark queue growth inside 000793/000795 allocates through nxGetSdkAllocator() where the image uses
+  [0x101041bc] (0x1a3d9/0x1a419): the queue is the aux manager's, allocated and freed in Scene.cpp through the
+  SDK allocator, so it stays on Task 2's deferred list (the whole lifetime moves in one change).
+- The dirty mark returns for a record id of 256 or more: Scene.cpp's emulation of the manager (002421) keeps
+  fixed 256-entry tables, which the image grows by id.
+- 000776's body-table store (0x1857f) is made by the class destructor just before ??1Observable; the word already
+  holds that table.
+- The SDK parameters are read through PhysicsSDK::getParameter (the same stored floats).
+
+**Not rows of this sub-area, left as they are:**
+- 000026/000030: the record is still allocated and freed through the SDK allocator (the image: [0x101041bc] at
+  0x1b2e/0x1d96) and zeroed after allocation (the image constructs over the allocator's bytes; the chain leaves
+  only +0x10, +0x14, +0x23c and +0x240 unwritten). 000008 (the shape mass pass; 000947/000849/000829/000831/
+  000833/000839/000841/000847 on every density body) is not reproduced: the one-box emulation stays in
+  nxActorComputeMass. 000030's 0x100 notify (0x1d82) is main's (effector-and-coredump Task 2).
+- 002421/002411: the emulations register by first free slot / unregister by search, where the image keys on the
+  id (+0x104 of the base).
+- 000785/000787 (setters sub-area): 000795 calls NpActor.cpp's nxNpActorTransitionKinematic; on a new record its
+  enable path equals the image's (no island object yet) and its disable path returns as the image's does.
+- 000760: the image also calls it from 000632 (the Scene's body removal) and the joint rows; the candidate's
+  000632 emulation does not (418 vs 246 hits over the 18 targets).
+
+**Merge hazards with `main`.** Main's Scene.cpp builds the record's Observable itself (`NxBodyRecordObservable`,
+placement-new in its body build) and its releaseActor calls `notifyObservers(0x100)`, recycles the record id and
+runs `~NxBodyRecordObservable()` before the free. Here 000797 constructs the Observable and 000776 recycles the
+id and runs the destructor, so the merge must keep main's notify (000030's) and drop main's recycle and
+destructor call there, or the id is recycled twice and the Observable destroyed twice. Main's
+`static_assert(sizeof(NxBodyRecordObservable) == 0x14)` and this branch's 0x10-byte Observable should be
+reconciled (the image's ??0Observable writes +0..+0xc). Main's 000795 emulation also reads the live SDK
+parameters; BodyCreation.cpp replaces it. Main's Row000713Fixture (core/JointSupport.cpp) duplicates this
+branch's claimed 000713 (ObjectModel.cpp nxBodyRecordFixRoot); 000776 calls the latter.
+
+**Verification.** Build clean; gates 2, 3, 4, 6, 7 pass and Phase 5 fails only on `candidate CANDIDATE-MISSING
+family=vtables` (the documented `batch3268 ... failures=3`, `layout ... candidate_fold=4492c8c1` and `shape
+vtable oracle_digest=ed1294b6 cases=626 failures=0` unchanged), every staged target stdout_delta=0 including the
+new one; validator unexplained=0; tool tests OK; stable-ID check: 8 new lines (BodyCreation.cpp 7,
+core/JointSupport.cpp 1), exact form, RVA and size equal to the inventory, no duplicates. The pre-existing
+non-stable `// phys_fn_` description lines in Scene.cpp (52) and NpActor.cpp (17) are other rows' and are not
+touched.

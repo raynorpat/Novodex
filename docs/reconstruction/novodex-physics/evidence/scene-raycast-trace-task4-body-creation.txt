@@ -1,0 +1,386 @@
+SceneRaycast..CapsuleShape block: cdb breakpoint traces of the body creation and destruction rows
+(scene-raycast Task 4, sub-area body-creation)
+====================================================================================================
+
+A trimmed excerpt of the raw cdb logs, in the method of evidence/joint-open-items-trace-slots.txt and
+evidence/scene-raycast-trace-task3.txt. ModLoad lines, banners, register dumps, the echoed breakpoint
+commands and the programs' own stdout are removed. The per-label hit counts are complete for every target
+on both sides; the ordered HIT lines are kept for NxPhysicsActorBodyFlagTests and NxPhysicsBodyCreationTests.
+For the other targets the full ordered sequences of the eleven compared labels (the seven functions written
+here, and 000768, 000785, 002421, 002411) were compared instead: identical on the two sides for every target.
+It is the evidence behind the dynamic_proof fields recorded in inventory.json for 000797, 000801, 000793,
+000795, 000722, 000748, 000776 and 000799 (units/scene-raycast-contract.md, ## Task 4 results: body-creation).
+
+Debugger:  Microsoft Windows Debugger 10.0.10586.567 (X86)
+Command:   cdb -cf <script> build\Release\<target>.exe <pair directory>
+           (cwd the pairs root; the script breaks on the NxPhysics load with `sxe ld:NxPhysics`, sets the
+           breakpoints below as `bp NxPhysics+<offset> ".printf \"HIT <label>\\n\"; gc"`, then runs to exit.)
+           The pair directories were staged by hand (D:\FlamingEnt__\novodex-analysis\pairs-bc\oracle and
+           \candidate, not kept); the sha256s below identify the modules. Every run exited 0; the same builds give
+           stdout_delta=0 on all 18 targets (the 12 Phase 5 staged targets, NxPhysicsBodyCreationTests, the
+           joint targets, the tangent target and NxPhysicsSceneRaycastTests).
+Recorded:  2026-09-28, branch claude/scene-raycast-block (bb2e485 plus the body-creation working tree).
+Oracle:    NxPhysics.dll sha256=4b7db3e126735c576f79fe5666e6fa661de9724b2a78808bb0924325ac79602c
+Candidate: NxPhysics.dll sha256=cc7aba6d1e8075b29789c26cae01e7d50ca4475211114ba443b27fe200506a13
+           (identical to build\Release\NxPhysics.dll at the time of the trace)
+Offsets:   module-relative. Oracle: every row's inventory RVA. 000795c is the continuation 0x1a9a0, which
+           is entered only by the `jmp` at 0x1a99b, the end of the +0xc4 dirty mark's queue-growth path: no
+           target grows the queue there, so it is 0 on both sides of the image and the one function is counted
+           at 000793 (the all-zero-tensor entry `je 0x1aa06` lands past it). Candidate: from
+           build\Release\NxPhysics.map of that build, one breakpoint per out-of-line symbol; the split rows
+           000793+000795 are one function. Labels ending in x are context, not claimed here: 000760
+           (JointSupport.cpp), 000768 (both NpActorDynamicMath.h copies), 000785 (NpActor.cpp
+           nxNpActorTransitionKinematic), 002421/002411 (the Scene.cpp auxiliary-manager emulations), 000713
+           (ObjectModel.cpp), and the callers 000026 (Scene.cpp nxActorComputeMass) and 000030 (Scene.cpp
+           NxSceneInternal::releaseActor).
+
+BREAKPOINTS, ORACLE (label, module offset)
+------------------------------------------
+  000797    0x1b5c0
+  000801    0x1b7a0
+  000793    0x1a350
+  000795c   0x1a9a0
+  000722    0x16130
+  000748    0x16f80
+  000776    0x18570
+  000799    0x1b760
+  000760x   0x17710
+  000768x   0x17f10
+  000785x   0x19620
+  002421x   0x5c160
+  002411x   0x5bbb0
+  000713x   0x15d50
+  000026x   0x19b0
+  000030x   0x1c40
+
+BREAKPOINTS, CANDIDATE (label, module offset, object, symbol)
+------------------------------------------------------------
+  000797    0x1280    BodyCreation       ?construct@DynamicBody@@QAEPAU1@PAXPBMPBVNxBodyDesc@@@Z
+  000801    0x1540    BodyCreation       ?construct@DynamicBodyBase@@QAEPAU1@PAXPBMI@Z
+  000793    0x1860    BodyCreation       ?loadFromBodyDesc@DynamicBody@@QAEXPBVNxBodyDesc@@@Z
+  000722    0x3b9a0   JointSupport       ?row000722@Row000722Fixture@@QAEXXZ
+  000748    0x2930    BodyCreation       ?markIslandDirty@DynamicBody@@QAEXXZ
+  000776    0x17a0    BodyCreation       ?destruct@DynamicBody@@QAEXXZ
+  000799    0x1820    BodyCreation       ?destruct@DynamicBodyBase@@QAEXXZ
+  000760x   0x3bf90   JointSupport       ?row000760@Row000760Fixture@@QAEXXZ
+  000768x   0x2dd0    BodyCreation       ?nxNpActorUpdateMassFrame@@YAXPAE@Z
+  000768x   0x14d60   NpActor            ?nxNpActorUpdateMassFrame@@YAXPAE@Z
+  000785x   0x14bf0   NpActor            ?nxNpActorTransitionKinematic@@YAXPAE_N@Z
+  002421x   0x2d370   Scene              ?nxSceneAuxRegisterRecord@@YAXPAX0@Z
+  002411x   0x2d640   Scene              ?nxSceneAuxUnregisterRecord@@YAXPAX0@Z
+  000713x   0x1d020   ObjectModel        ?nxBodyRecordFixRoot@@YAIPAX@Z
+  000026x   0x2c8f0   Scene              ?nxActorComputeMass@@YAHPAXPBI@Z
+  000030x   0x2e8e0   Scene              ?releaseActor@NxSceneInternal@@QAEXPAX@Z
+
+HIT COUNTS PER TARGET (oracle/candidate; targets with no hit on either side omitted)
+------------------------------------------------------------------------------------
+  000797   total 86/86: Life 6/6, DynF 1/1, BFlag 1/1, Dyn 2/2, DSet 4/4, Mom 3/3, Force 11/11, CMass 10/10, BodyC 6/6, JSP 8/8, JAll 2/2, JSlot 27/27, SRay 5/5
+  000801   total 86/86: Life 6/6, DynF 1/1, BFlag 1/1, Dyn 2/2, DSet 4/4, Mom 3/3, Force 11/11, CMass 10/10, BodyC 6/6, JSP 8/8, JAll 2/2, JSlot 27/27, SRay 5/5
+  000793   total 86/86: Life 6/6, DynF 1/1, BFlag 1/1, Dyn 2/2, DSet 4/4, Mom 3/3, Force 11/11, CMass 10/10, BodyC 6/6, JSP 8/8, JAll 2/2, JSlot 27/27, SRay 5/5
+  000795c  total 0/0: -
+  000722   total 258/258: Life 18/18, DynF 3/3, BFlag 3/3, Dyn 6/6, DSet 12/12, Mom 9/9, Force 33/33, CMass 30/30, BodyC 18/18, JSP 24/24, JAll 6/6, JSlot 81/81, SRay 15/15
+  000748   total 86/86: Life 6/6, DynF 1/1, BFlag 1/1, Dyn 2/2, DSet 4/4, Mom 3/3, Force 11/11, CMass 10/10, BodyC 6/6, JSP 8/8, JAll 2/2, JSlot 27/27, SRay 5/5
+  000776   total 86/86: Life 6/6, DynF 1/1, BFlag 1/1, Dyn 2/2, DSet 4/4, Mom 3/3, Force 11/11, CMass 10/10, BodyC 6/6, JSP 8/8, JAll 2/2, JSlot 27/27, SRay 5/5
+  000799   total 86/86: Life 6/6, DynF 1/1, BFlag 1/1, Dyn 2/2, DSet 4/4, Mom 3/3, Force 11/11, CMass 10/10, BodyC 6/6, JSP 8/8, JAll 2/2, JSlot 27/27, SRay 5/5
+  000760x  total 418/246: Life 24/12, DynF 4/2, BFlag 4/2, Dyn 8/4, DSet 16/8, Mom 12/6, Force 44/22, CMass 40/20, BodyC 24/12, JSP 90/74, JAll 10/6, JSlot 122/68, SRay 20/10
+  000768x  total 203/203: Life 6/6, DynF 1/1, BFlag 1/1, Dyn 2/2, DSet 15/15, Mom 3/3, Force 11/11, CMass 87/87, BodyC 6/6, JSP 8/8, JAll 2/2, JSlot 55/55, SRay 6/6
+  000785x  total 100/100: Life 6/6, DynF 1/1, BFlag 1/1, Dyn 10/10, DSet 6/6, Mom 5/5, Force 13/13, CMass 10/10, BodyC 6/6, JSP 8/8, JAll 2/2, JSlot 27/27, SRay 5/5
+  002421x  total 86/86: Life 6/6, DynF 1/1, BFlag 1/1, Dyn 2/2, DSet 4/4, Mom 3/3, Force 11/11, CMass 10/10, BodyC 6/6, JSP 8/8, JAll 2/2, JSlot 27/27, SRay 5/5
+  002411x  total 86/86: Life 6/6, DynF 1/1, BFlag 1/1, Dyn 2/2, DSet 4/4, Mom 3/3, Force 11/11, CMass 10/10, BodyC 6/6, JSP 8/8, JAll 2/2, JSlot 27/27, SRay 5/5
+  000713x  total 4/0: DSet 4/0
+  000026x  total 83/83: Life 5/5, DynF 1/1, BFlag 1/1, Dyn 2/2, DSet 4/4, Mom 3/3, Force 11/11, CMass 10/10, BodyC 6/6, JSP 6/6, JAll 2/2, JSlot 27/27, SRay 5/5
+  000030x  total 102/102: Life 5/5, DynF 1/1, Name 1/1, Meta 1/1, BFlag 1/1, Dyn 2/2, DSet 8/8, Mom 4/4, Force 11/11, CMass 11/11, ShMut 1/1, BodyC 6/6, JSP 8/8, JAll 2/2, JSlot 27/27, SRay 13/13
+
+  Every written row (000797, 000801, 000793, 000722, 000748, 000776, 000799) is hit exactly as often as
+  the oracle row on every target, and so are 000768, 000785, 002421 and 002411. The context rows differ only
+  where callers outside this sub-area are not reproduced: 000760 (the image also calls it from 000632, the
+  Scene's body removal, and from the joint rows) and 000713 (the image's isGroupSleeping path 000744; the
+  product's 000062 uses its own copy).
+
+ORDERED SEQUENCES (the eleven compared labels, per target; oracle/candidate hits)
+--------------------------------------------------------------------------------
+  NxPhysicsActorLifecycleTests         78/78   identical
+  NxPhysicsDynamicFirstTests           13/13   identical
+  NxPhysicsEmptySceneTests              0/0    identical
+  NxPhysicsActorNameTests               0/0    identical
+  NxPhysicsActorMetadataTests           0/0    identical
+  NxPhysicsActorBodyFlagTests          13/13   identical
+  NxPhysicsActorDynamicsTests          34/34   identical
+  NxPhysicsActorDynamicSetterTests     65/65   identical
+  NxPhysicsActorMomentumTests          41/41   identical
+  NxPhysicsActorForceTests            145/145  identical
+  NxPhysicsActorCMassTests            207/207  identical
+  NxPhysicsActorShapeMutationTests      0/0    identical
+  NxPhysicsBodyCreationTests           78/78   identical
+  NxPhysicsJointStagedPairTests       104/104  identical
+  NxFoundationTangentTests              0/0    identical
+  NxPhysicsJointAllocatorTests         26/26   identical
+  NxPhysicsJointSlotTests             379/379  identical
+  NxPhysicsSceneRaycastTests           66/66   identical
+  all targets: 1249 hits each side; sha256 of the newline-joined label sequence
+    oracle    802748c0b05182384eba43cb8d7cb0aa1b0ccd6393ed3c0c4b4199f45b8934c0
+    candidate 802748c0b05182384eba43cb8d7cb0aa1b0ccd6393ed3c0c4b4199f45b8934c0
+
+HIT LINES, NxPhysicsActorBodyFlagTests, ORACLE (19)
+------------------------------------------------------------
+HIT 000026x
+HIT 000797
+HIT 000801
+HIT 002421x
+HIT 000760x
+HIT 000722
+HIT 000793
+HIT 000768x
+HIT 000785x
+HIT 000748
+HIT 000030x
+HIT 000760x
+HIT 000760x
+HIT 000776
+HIT 000722
+HIT 000760x
+HIT 000722
+HIT 000799
+HIT 002411x
+
+HIT LINES, NxPhysicsActorBodyFlagTests, CANDIDATE (17)
+------------------------------------------------------------
+HIT 000026x
+HIT 000797
+HIT 000801
+HIT 002421x
+HIT 000760x
+HIT 000722
+HIT 000793
+HIT 000768x
+HIT 000785x
+HIT 000748
+HIT 000030x
+HIT 000776
+HIT 000722
+HIT 000760x
+HIT 000722
+HIT 000799
+HIT 002411x
+
+HIT LINES, NxPhysicsBodyCreationTests, ORACLE (114)
+------------------------------------------------------------
+HIT 000026x
+HIT 000797
+HIT 000801
+HIT 002421x
+HIT 000760x
+HIT 000722
+HIT 000793
+HIT 000768x
+HIT 000785x
+HIT 000748
+HIT 000026x
+HIT 000797
+HIT 000801
+HIT 002421x
+HIT 000760x
+HIT 000722
+HIT 000793
+HIT 000768x
+HIT 000785x
+HIT 000748
+HIT 000026x
+HIT 000797
+HIT 000801
+HIT 002421x
+HIT 000760x
+HIT 000722
+HIT 000793
+HIT 000768x
+HIT 000785x
+HIT 000748
+HIT 000026x
+HIT 000797
+HIT 000801
+HIT 002421x
+HIT 000760x
+HIT 000722
+HIT 000793
+HIT 000768x
+HIT 000785x
+HIT 000748
+HIT 000026x
+HIT 000797
+HIT 000801
+HIT 002421x
+HIT 000760x
+HIT 000722
+HIT 000793
+HIT 000768x
+HIT 000785x
+HIT 000748
+HIT 000030x
+HIT 000760x
+HIT 000760x
+HIT 000776
+HIT 000722
+HIT 000760x
+HIT 000722
+HIT 000799
+HIT 002411x
+HIT 000026x
+HIT 000797
+HIT 000801
+HIT 002421x
+HIT 000760x
+HIT 000722
+HIT 000793
+HIT 000768x
+HIT 000785x
+HIT 000748
+HIT 000030x
+HIT 000760x
+HIT 000760x
+HIT 000776
+HIT 000722
+HIT 000760x
+HIT 000722
+HIT 000799
+HIT 002411x
+HIT 000030x
+HIT 000760x
+HIT 000760x
+HIT 000776
+HIT 000722
+HIT 000760x
+HIT 000722
+HIT 000799
+HIT 002411x
+HIT 000030x
+HIT 000760x
+HIT 000760x
+HIT 000776
+HIT 000722
+HIT 000760x
+HIT 000722
+HIT 000799
+HIT 002411x
+HIT 000030x
+HIT 000760x
+HIT 000760x
+HIT 000776
+HIT 000722
+HIT 000760x
+HIT 000722
+HIT 000799
+HIT 002411x
+HIT 000030x
+HIT 000760x
+HIT 000760x
+HIT 000776
+HIT 000722
+HIT 000760x
+HIT 000722
+HIT 000799
+HIT 002411x
+
+HIT LINES, NxPhysicsBodyCreationTests, CANDIDATE (102)
+------------------------------------------------------------
+HIT 000026x
+HIT 000797
+HIT 000801
+HIT 002421x
+HIT 000760x
+HIT 000722
+HIT 000793
+HIT 000768x
+HIT 000785x
+HIT 000748
+HIT 000026x
+HIT 000797
+HIT 000801
+HIT 002421x
+HIT 000760x
+HIT 000722
+HIT 000793
+HIT 000768x
+HIT 000785x
+HIT 000748
+HIT 000026x
+HIT 000797
+HIT 000801
+HIT 002421x
+HIT 000760x
+HIT 000722
+HIT 000793
+HIT 000768x
+HIT 000785x
+HIT 000748
+HIT 000026x
+HIT 000797
+HIT 000801
+HIT 002421x
+HIT 000760x
+HIT 000722
+HIT 000793
+HIT 000768x
+HIT 000785x
+HIT 000748
+HIT 000026x
+HIT 000797
+HIT 000801
+HIT 002421x
+HIT 000760x
+HIT 000722
+HIT 000793
+HIT 000768x
+HIT 000785x
+HIT 000748
+HIT 000030x
+HIT 000776
+HIT 000722
+HIT 000760x
+HIT 000722
+HIT 000799
+HIT 002411x
+HIT 000026x
+HIT 000797
+HIT 000801
+HIT 002421x
+HIT 000760x
+HIT 000722
+HIT 000793
+HIT 000768x
+HIT 000785x
+HIT 000748
+HIT 000030x
+HIT 000776
+HIT 000722
+HIT 000760x
+HIT 000722
+HIT 000799
+HIT 002411x
+HIT 000030x
+HIT 000776
+HIT 000722
+HIT 000760x
+HIT 000722
+HIT 000799
+HIT 002411x
+HIT 000030x
+HIT 000776
+HIT 000722
+HIT 000760x
+HIT 000722
+HIT 000799
+HIT 002411x
+HIT 000030x
+HIT 000776
+HIT 000722
+HIT 000760x
+HIT 000722
+HIT 000799
+HIT 002411x
+HIT 000030x
+HIT 000776
+HIT 000722
+HIT 000760x
+HIT 000722
+HIT 000799
+HIT 002411x

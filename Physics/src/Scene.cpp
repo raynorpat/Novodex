@@ -37,6 +37,7 @@
 #include "NxActor.h"
 #include "NpActor.h"
 #include "NpActorDynamicMath.h"
+#include "BodyCreation.h"
 #include "NpScene.h"
 #include "NxJointDesc.h"
 #include "NxJoint.h"
@@ -114,8 +115,8 @@ bool nxSceneEngineRemoveShape(void* engine, void* shape);
 void nxSceneEngineDestroyPruners(void* engine);
 void nxSceneEngineSetExternalBuffer(void* engine, unsigned capacity, void* entries);
 void nxShapeFactoryInstallPrunable(void* shape);
-void nxSceneAuxRegisterRecord(NxSceneInternal* scene, void* record);
-void nxSceneAuxUnregisterRecord(NxSceneInternal* scene, void* record);
+void nxSceneAuxRegisterRecord(void* aux, void* record);
+void nxSceneAuxUnregisterRecord(void* aux, void* record);
 unsigned nxSceneTakeShapeId(NxSceneInternal* scene);
 void nxSceneRecycleShapeId(NxSceneInternal* scene, unsigned id);
 
@@ -625,22 +626,10 @@ void nxSceneRecycleActorId(NxSceneInternal* scene, unsigned id)
 	}
 
 // Dynamic-record IDs use the same LIFO vector layout at Scene+0x6fc,
-// with the next fresh ID at +0x6f8. The record destructor returns its +0x11c
-// ID through this vector before releasing the 0x260-byte record.
-static unsigned nxSceneTakeRecordId(NxSceneInternal* scene)
-	{
-	unsigned* first = scene->at<unsigned*>(0x6fc);
-	unsigned* last = scene->at<unsigned*>(0x700);
-	if(first && last != first)
-		{
-		--last;
-		scene->at<unsigned*>(0x700) = last;
-		return *last;
-		}
-	return scene->at<unsigned>(0x6f8)++;
-	}
-
-static void nxSceneRecycleRecordId(NxSceneInternal* scene, unsigned id)
+// with the next fresh ID at +0x6f8. The record constructor 000797 takes one
+// (inlined there, BodyCreation.cpp); the record destructor 000776 returns its
+// +0x11c ID through this vector (000028's push) before the record is freed.
+void nxSceneRecycleRecordId(NxSceneInternal* scene, unsigned id)
 	{
 	unsigned char* header = scene->bytes() + 0x6fc;
 	nxSceneArrayReserve(header, 1);
@@ -678,9 +667,9 @@ static bool nxSceneAuxPrepareStagedArray(unsigned char* aux, unsigned offset,
 	return true;
 	}
 
-void nxSceneAuxRegisterRecord(NxSceneInternal* scene, void* recordPointer)
+void nxSceneAuxRegisterRecord(void* auxPointer, void* recordPointer)
 	{
-	unsigned char* aux = scene->at<unsigned char*>(0x48);
+	unsigned char* aux = static_cast<unsigned char*>(auxPointer);
 	unsigned char* record = static_cast<unsigned char*>(recordPointer);
 	if(!aux || !record) return;
 	if(!*reinterpret_cast<void**>(aux + 0x80))
@@ -838,9 +827,9 @@ void nxSceneMarkShapeDirty(void* shapePointer, unsigned flag)
 	flags[id] |= flag;
 	}
 
-void nxSceneAuxUnregisterRecord(NxSceneInternal* scene, void* recordPointer)
+void nxSceneAuxUnregisterRecord(void* auxPointer, void* recordPointer)
 	{
-	unsigned char* aux = scene->at<unsigned char*>(0x48);
+	unsigned char* aux = static_cast<unsigned char*>(auxPointer);
 	unsigned char* record = static_cast<unsigned char*>(recordPointer);
 	if(!aux || !record) return;
 	unsigned* active = *reinterpret_cast<unsigned**>(aux + 0x50);
@@ -1297,7 +1286,6 @@ void NxSceneInternal::releaseActor(void* bodyPointer)
 	unsigned char* record = *reinterpret_cast<unsigned char**>(body + 8);
 	if(record)
 		{
-		nxSceneAuxUnregisterRecord(this, record);
 		void** objects = at<void**>(0x56c);
 		void** objectsEnd = at<void**>(0x570);
 		for(void** it = objects; it && it != objectsEnd; ++it)
@@ -1317,8 +1305,10 @@ void NxSceneInternal::releaseActor(void* bodyPointer)
 	nxShapeSetName(body, 0);
 	if(record)
 		{
-		nxSceneRecycleRecordId(this,
-			*reinterpret_cast<unsigned*>(record + 0x11c));
+		// The record destructor 000776 (BodyCreation.cpp): the id recycle,
+		// the island teardown, the auxiliary manager's unregistration and the
+		// kinematic block's free (000799), as 000030 calls it before the free.
+		reinterpret_cast<DynamicBody*>(record)->destruct();
 		nxGetSdkAllocator()->free(record);
 		}
 	nxSceneRecycleActorId(this, actorId);
@@ -1920,91 +1910,27 @@ void nxActorBuildBody(void* actor, const unsigned* desc)
 
 int nxActorComputeMass(void* actor, const unsigned* bodyWord)
 	{
-	// The dynamic record is built after the shape and its helper, in the
-	// order the guarded oracle allocator reports. bodyWord addresses the
-	// descriptor's body POINTER at d[0xc], rather than the body descriptor.
+	// What phys_fn_000026 (Body::createBody, 0x19b0; not a row of this block)
+	// does before and after the record constructor. The dynamic record is built
+	// after the shape and its helper, in the order the guarded oracle allocator
+	// reports. bodyWord addresses the descriptor's body POINTER at d[0xc],
+	// rather than the body descriptor.
 	unsigned char* actorBytes = static_cast<unsigned char*>(actor);
 	unsigned char* body = *reinterpret_cast<unsigned char**>(actorBytes + 0x14);
 	if(!body)
 		return 1;
-	unsigned char* record = static_cast<unsigned char*>(
-		nxGetSdkAllocator()->malloc(0x260, NX_MEMORY_PERSISTENT));
-	if(!record)
-		return 1;
-	memset(record, 0, 0x260);
-
-	// The joint-descriptor exports walk actor+0x14 -> body+8 -> record+0x19c.
-	// The last link points BACK to this same 0x50-byte body, whose +8 in turn
-	// points to the record. The earlier candidate allocated an extra pose here.
-
-	// The translation and matrix were copied from the descriptor into body.
-	memcpy(record + 0x50, body + 0x44, 12);
-	memcpy(record + 0x18, body + 0x44, 12);
-
-	// The dynamic record carries a quaternion at +0x5c with w last. Convert
-	// the descriptor's matrix already copied to body+0x20 the way the body
-	// pose constructor phys_fn_000801 does (0x1b82e-0x1b987): it writes +0x24
-	// and copies it to +0x5c. The public NxQuat(NxMat33) conversion rounds its
-	// intermediates to float and differs from it in the last bit for a general
-	// rotation (joint-open-items Task 4, rotated fixture actor b).
-	float quaternion[4];
-	nxNpActorBodyQuaternionFromMatrix(reinterpret_cast<const float*>(body + 0x20), quaternion);
-	memcpy(record + 0x24, quaternion, sizeof(quaternion));
-	memcpy(record + 0x5c, quaternion, sizeof(quaternion));
-
-	*reinterpret_cast<void**>(record + 0x19c) = body;
-	*reinterpret_cast<void**>(body + 0x08) = record;
-	NxSceneInternal* scene = *reinterpret_cast<NxSceneInternal**>(actorBytes + 4);
-	const NxBodyDesc* bodyDesc = reinterpret_cast<const NxBodyDesc*>(*bodyWord);
-	bodyDesc->massLocalPose.M.getRowMajor(reinterpret_cast<float*>(record + 0xdc));
-	memcpy(record + 0x100, &bodyDesc->massLocalPose.t, sizeof(NxVec3));
-	// The world centre of mass (+0x158) is written with +0x134, +0x124 and
-	// +0x164 by nxNpActorUpdateMassFrame below.
-	*reinterpret_cast<unsigned*>(record + 0x10c) = bodyDesc->flags;
-	*reinterpret_cast<unsigned*>(record + 0x110) =
-		bodyDesc->solverIterationCount;
-	*reinterpret_cast<unsigned char**>(record + 0x120) =
-		scene->at<unsigned char*>(0x48);
-	*reinterpret_cast<unsigned*>(record + 0x11c) = nxSceneTakeRecordId(scene);
-	*reinterpret_cast<unsigned char**>(record + 0x1bc) = record;
-	*reinterpret_cast<unsigned char**>(record + 0x1e8) = record;
-	// The body's JointSupportBody pointer: the oracle's body constructor
-	// Row 000797 stores 0 at +0x204 (0x1b713), after +0x1e4/+0x1e0. Only
-	// the simulation step's phys_fn_000611 (0x11305) points it at an element
-	// of the Scene's +0x5ac array; the candidate has no step, so it stays 0
-	// (joint-open-items-contract.md "## Body record +0x204"). No allocation.
-	reinterpret_cast<JointBodyRecord*>(record)->mUnknown204 = 0;
-	*reinterpret_cast<float*>(record + 0xb8) = bodyDesc->linearDamping;
-	*reinterpret_cast<float*>(record + 0xbc) = bodyDesc->angularDamping;
-	*reinterpret_cast<float*>(record + 0x84) = bodyDesc->wakeUpCounter;
-	*reinterpret_cast<float*>(record + 0x4c) = bodyDesc->wakeUpCounter;
-	// FUN_1001a350 uses pinned SDK defaults when descriptor thresholds are
-	// negative. These are 0.15^2 and 0.14^2 in the shipped binary.
-	*reinterpret_cast<unsigned*>(record + 0xd0) = 0x3cb851ecu;
-	*reinterpret_cast<unsigned*>(record + 0xd4) = 0x3ca0902eu;
-	const float maxAngularVelocity = bodyDesc->maxAngularVelocity > 0.0f
-		? bodyDesc->maxAngularVelocity : 7.0f;
-	*reinterpret_cast<float*>(record + 0xd8) =
-		maxAngularVelocity * maxAngularVelocity;
-	if(bodyDesc->sleepLinearVelocity > 0.0f)
-		*reinterpret_cast<float*>(record + 0xd0) =
-			bodyDesc->sleepLinearVelocity * bodyDesc->sleepLinearVelocity;
-	if(bodyDesc->sleepAngularVelocity > 0.0f)
-		*reinterpret_cast<float*>(record + 0xd4) =
-			bodyDesc->sleepAngularVelocity * bodyDesc->sleepAngularVelocity;
-	memcpy(record + 0x6c, &bodyDesc->linearVelocity, sizeof(NxVec3));
-	memcpy(record + 0x34, &bodyDesc->linearVelocity, sizeof(NxVec3));
-	memcpy(record + 0x78, &bodyDesc->angularVelocity, sizeof(NxVec3));
-	memcpy(record + 0x40, &bodyDesc->angularVelocity, sizeof(NxVec3));
-	float mass = bodyDesc->mass;
-	NxVec3 inertia = bodyDesc->massSpaceInertia;
+	// 000026 works on a copy of the body descriptor (000010, 0x19d1) and, when
+	// its massSpaceInertia is all zero, fills mass and inertia from the shapes
+	// (000008, 0x1a11); the record constructor reads the copy.
+	NxBodyDesc desc = *reinterpret_cast<const NxBodyDesc*>(*bodyWord);
 	// The one-box density path in FUN_100019b0/FUN_1001a350 derives mass
 	// from the full box extents and diagonal inertia from their squared radii.
-	// Rotated/translated and compound geometry still need the full tensor path.
+	// Rotated/translated and compound geometry still need the full tensor path
+	// (000008 is not reproduced).
 	const unsigned* actorDesc = bodyWord - 0x0c;
 	float density;
 	memcpy(&density, actorDesc + 0x0d, sizeof(density));
-	if(mass == 0.0f && density > 0.0f &&
+	if(desc.mass == 0.0f && density > 0.0f &&
 		actorDesc[0x14] - actorDesc[0x13] == sizeof(void*))
 		{
 		const NxShapeDesc* shape = *reinterpret_cast<const NxShapeDesc* const*>(
@@ -2012,36 +1938,32 @@ int nxActorComputeMass(void* actor, const unsigned* bodyWord)
 		if(shape && shape->getType() == NX_SHAPE_BOX)
 			{
 			const NxVec3& radii = static_cast<const NxBoxShapeDesc*>(shape)->dimensions;
-			mass = 8.0f * density * radii.x * radii.y * radii.z;
+			const float mass = 8.0f * density * radii.x * radii.y * radii.z;
 			const float thirdMass = mass / 3.0f;
-			inertia.x = thirdMass * (radii.y * radii.y + radii.z * radii.z);
-			inertia.y = thirdMass * (radii.x * radii.x + radii.z * radii.z);
-			inertia.z = thirdMass * (radii.x * radii.x + radii.y * radii.y);
+			desc.mass = mass;
+			desc.massSpaceInertia.x = thirdMass * (radii.y * radii.y + radii.z * radii.z);
+			desc.massSpaceInertia.y = thirdMass * (radii.x * radii.x + radii.z * radii.z);
+			desc.massSpaceInertia.z = thirdMass * (radii.x * radii.x + radii.y * radii.y);
 			}
 		}
-	if(mass > 0.0f)
-		{
-		*reinterpret_cast<float*>(record + 0x188) = mass;
-		*reinterpret_cast<float*>(record + 0xc0) = 1.0f / mass;
-		}
-	if(inertia.x > 0.0f && inertia.y > 0.0f && inertia.z > 0.0f)
-		{
-		memcpy(record + 0x18c, &inertia, sizeof(NxVec3));
-		*reinterpret_cast<float*>(record + 0xc4) =
-			1.0f / inertia.x;
-		*reinterpret_cast<float*>(record + 0xc8) =
-			1.0f / inertia.y;
-		*reinterpret_cast<float*>(record + 0xcc) =
-			1.0f / inertia.z;
-		}
-	// The oracle's creation path refreshes the mass frame through
-	// Row 000768 (called from 000795 at 0x1b497): +0x134, +0x158, +0x124
-	// and +0x164 from the +0x24 quaternion and +0x18 position. Joint-open-items
-	// Task 4 found the earlier sequence one bit off on rotated bodies (the
-	// fixed and prismatic relative rotations read +0x124/+0x134/+0x158).
-	nxNpActorUpdateMassFrame(record);
-	*reinterpret_cast<unsigned*>(record + 0x198) = 2;
-	nxSceneAuxRegisterRecord(scene, record);
+	// The pose the constructor takes: a new body's global pose, the 3x3 at
+	// body+0x20 and the position at body+0x44 (0x1b11-0x1b38).
+	float pose[12];
+	memcpy(pose, body + 0x20, 9 * sizeof(float));
+	memcpy(pose + 9, body + 0x44, 3 * sizeof(float));
+	unsigned char* record = static_cast<unsigned char*>(
+		nxGetSdkAllocator()->malloc(0x260, NX_MEMORY_PERSISTENT));
+	if(!record)
+		return 1;
+	// Not in the image, which constructs over the allocator's bytes: the
+	// constructor chain writes every word but +0x10, +0x14, +0x23c and +0x240,
+	// which nothing before a simulation step reads.
+	memset(record, 0, 0x260);
+	// The record constructor Row 000797 (BodyCreation.cpp), then body+8 = the
+	// record (0x1b6c). The joint-descriptor exports walk actor+0x14 -> body+8
+	// -> record+0x19c, which the constructor points back at this body.
+	reinterpret_cast<DynamicBody*>(record)->construct(body, pose, &desc);
+	*reinterpret_cast<void**>(body + 0x08) = record;
 
 	return 0;
 	}

@@ -127,7 +127,8 @@ static void nxNpActorMarkRecordDirty(unsigned char* record, unsigned mask)
 // The kinematic branch at 0x19620 runs before the ordinary body-flag OR/AND.
 // The explicit-mass path keeps inverse mass/inertia at +0xc0..+0xcc and a
 // 0x20-byte transition block at +0x118. Scene dirties are independent bits.
-static void nxNpActorTransitionKinematic(unsigned char* record, bool enable)
+// Not static: the body creation row 000795 (BodyCreation.cpp) calls it too.
+void nxNpActorTransitionKinematic(unsigned char* record, bool enable)
 	{
 	unsigned& flags = *reinterpret_cast<unsigned*>(record + 0x10c);
 	if(enable ? (flags & 0x80u) != 0 : (flags & 0x80u) == 0)

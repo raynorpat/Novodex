@@ -420,6 +420,36 @@ Row000712Fixture* Row000712Fixture::row000712()
 	return static_cast<Row000712Fixture*>(supportPointer(this, 0x1bc));
 	}
 
+// phys_fn_000722 (0x00016130, 127 B)
+// The maximum is `fcom [rec+0x4c]; test ah,5; jp`: the running value is
+// replaced only when it is ordered below the record's; an unordered or
+// greater-or-equal one is kept. All the values are floats loaded exactly,
+// so no x87 precision question arises.
+__declspec(noinline) void Row000722Fixture::row000722()
+	{
+	void* parent = supportPointer(this, 0x1bc);
+	if(this != parent)
+		supportPointer(this, 0x1bc) = static_cast<Row000712Fixture*>(parent)->row000712();
+	void* root = supportPointer(this, 0x1bc);
+	if(root == this)
+		{
+		NxReal wake = 0.0f;
+		for(void* body = root; body; body = supportPointer(body, 0x1d0))
+			{
+			const NxReal value = *reinterpret_cast<const NxReal*>(static_cast<NxU8*>(body) + 0x4c);
+			if(wake < value)
+				wake = value;
+			}
+		*reinterpret_cast<NxReal*>(static_cast<NxU8*>(root) + 0x1cc) = wake;
+		}
+	else
+		supportWord(root, 0x1cc) = 0x4b7afafa;
+	for(NxU32 i = 0; i < 7; i++)
+		supportWord(this, 0x1e8 + i * 4) = supportWord(this, 0x1bc + i * 4);
+	supportWord(this, 0x25c) = 0;
+	supportWord(this, 0x208) = 0;
+	}
+
 // phys_fn_000738 (0x00016c00, 21 B)
 // `mov eax,[ecx+0x1e4]; test ah,2`: bit 9 of +0x1e4 set returns
 // `lea eax,[ecx+0x244]`, clear returns 0. The only caller is 001303 in the

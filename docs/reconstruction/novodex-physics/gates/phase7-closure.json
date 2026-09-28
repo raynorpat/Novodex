@@ -20,8 +20,8 @@
   },
   "counts": {
     "differential_falsified": 4,
-    "deferred_not_reconstructed_in_phase": 342,
-    "deferred_reconstructed_not_falsified": 215
+    "deferred_not_reconstructed_in_phase": 341,
+    "deferred_reconstructed_not_falsified": 216
   },
   "closed": [
     {
@@ -1258,9 +1258,10 @@
       "id": "phys_fn_000799",
       "rva": "0x0001b760",
       "size": 51,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "layout_adjacency",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_000855",

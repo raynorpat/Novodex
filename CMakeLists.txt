@@ -215,9 +215,12 @@ if(MSVC)
 	# The scene raycasts and the pruners (scene-raycast block Task 3), for the
 	# same reason: the static pruner's tree build (0x000e5110) is frameless in
 	# the oracle, where /EHsc gave its `new AABBTree` an unwind frame. None of
-	# these files uses try, catch or throw.
+	# these files uses try, catch or throw. BodyCreation.cpp (Task 4): the
+	# record destructor 000776 (0x18570) is frameless, where /EHsc framed the
+	# Observable's destructor call.
 	set_property(SOURCE
 		Physics/src/SceneRaycast.cpp
+		Physics/src/BodyCreation.cpp
 		Physics/src/opcode/IcePruner.cpp
 		Physics/src/opcode/IcePruningEngine.cpp
 		APPEND PROPERTY COMPILE_OPTIONS "/EHs-c-")
@@ -361,6 +364,14 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	target_include_directories(NxPhysicsActorCMassTests PRIVATE
 		Foundation/include Foundation/src/include Physics/include)
 	target_link_libraries(NxPhysicsActorCMassTests bcrypt)
+	# The dynamic body record's constructor and destructor rows (scene-raycast
+	# block Task 4, body-creation): the record words the constructor chain
+	# writes for default, live-SDK-parameter, explicit, zero-element-tensor and
+	# kinematic body descriptors, the record id pool, and the release traffic.
+	add_executable(NxPhysicsBodyCreationTests tests/PhysicsBodyCreationTests.cpp)
+	target_include_directories(NxPhysicsBodyCreationTests PRIVATE
+		Foundation/include Foundation/src/include Physics/include)
+	target_link_libraries(NxPhysicsBodyCreationTests bcrypt)
 	# The same include set as the oracle target above; the harness includes the
 	# Foundation's allocator interface for the page-guarded allocator, and Physics'
 	# public headers for the descriptors.
@@ -406,7 +417,8 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 			NxPhysicsActorDynamicSetterTests NxPhysicsActorMomentumTests
 			NxPhysicsActorForceTests NxPhysicsActorCMassTests
 			NxPhysicsActorShapeMutationTests NxPhysicsJointStagedPairTests
-			NxPhysicsJointSlotTests NxPhysicsSceneRaycastTests)
+			NxPhysicsJointSlotTests NxPhysicsSceneRaycastTests
+			NxPhysicsBodyCreationTests)
 		target_compile_definitions(${nx_fill_target} PRIVATE NX_PAGE_GUARDED_FILL)
 	endforeach()
 	target_include_directories(NxPhysicsJointTests PRIVATE Foundation/include Physics/include)
@@ -560,7 +572,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 	add_executable(NxPhysicsInternalTests tests/PhysicsInternalTests.cpp
 		Physics/src/PhysicsInternal.cpp Physics/src/Containers.cpp
 		Physics/src/Scene.cpp Physics/src/NpScene.cpp Physics/src/NpActor.cpp
-		Physics/src/SceneRaycast.cpp
+		Physics/src/SceneRaycast.cpp Physics/src/BodyCreation.cpp
 		Physics/src/ObjectModel.cpp Physics/src/MemoryStream.cpp
 		Physics/src/Geometry.cpp Physics/src/ShapeRaycast.cpp
 		Physics/src/opcode/IcePrunable.cpp Physics/src/ThirdPartyHost.cpp
@@ -654,7 +666,7 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		Physics/src/PhysicsSDK.cpp Physics/src/NpPhysicsSDK.cpp
 		Physics/src/PhysicsInternal.cpp Physics/src/Containers.cpp
 		Physics/src/Scene.cpp Physics/src/NpScene.cpp Physics/src/NpActor.cpp
-		Physics/src/SceneRaycast.cpp
+		Physics/src/SceneRaycast.cpp Physics/src/BodyCreation.cpp
 		Physics/src/ObjectModel.cpp Physics/src/MemoryStream.cpp
 		Physics/src/opcode/IcePrunable.cpp Physics/src/ThirdPartyHost.cpp
 		Physics/src/opcode/IcePruner.cpp Physics/src/opcode/IcePruningEngine.cpp

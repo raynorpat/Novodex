@@ -190,6 +190,19 @@ struct Row000760Fixture
 	void row000760();
 	};
 
+// Row 000722 (0x00016130, 127 B; owner gap SceneRaycast..CapsuleShape;
+// written by effector-and-coredump Task 2). Thiscall on a body record, no
+// stack arguments, plain `ret`: compresses the +0x1bc island root (000712
+// on the parent), stores in the root's +0x1cc the largest +0x4c wake counter
+// over the island's +0x1d0 chain (from 0.0f; 0x4b7afafa when the record is
+// not its own root), copies the seven words +0x1bc..+0x1d4 to +0x1e8..+0x200
+// and zeroes +0x25c and +0x208. The body constructor 000797 calls it right
+// after 000760 (0x1b6fb, 0x1b702).
+struct Row000722Fixture
+	{
+	void row000722();
+	};
+
 // Row 000778 (0x000185f0, 58 B, with its continuation phys_fn_000780 at
 // 0x00018630, 243 B; owner gap SceneRaycast..CapsuleShape). Thiscall on a
 // body record, two stack arguments, `ret 8`: dissolves the body's island.
