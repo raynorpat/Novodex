@@ -396,6 +396,7 @@ static const NxDivergentCeiling kDivergentCeilings[] =
 	{ "ice_adjacencies.plane_divergent", 124, 124, 0, 0, 0, 0, 0, 0ull, 0.0 },	// the same, through 001546's EdgeList
 	{ "pose_pair.inverse_divergent", 944, 0, 0xffffffffu, 0, 944, 944, 0, 0ull, HUGE_VAL },	// convex-mesh gap Task 2e: 001653 over the inverse of a raw pose; every word a NaN: 276 are a signalling NaN the oracle's 005191 copies as integers and the vendored InvertPRMatrix quiets by copying through the FPU, and 668 are quiet NaNs on both sides that differ only in sign (252), payload (140) or both (276), where that quieted inverse meets other NaNs downstream in 001653's products; 0 with the oracle's 005191 bound in
 	{ "adjacency_owner.plane_divergent", 155, 155, 0, 0, 0, 0, 0, 0ull, 0.0 },	// convex-mesh gap Task 2e: 002188's EdgeList on Task 2c's 13 frozen meshes (005155, 005181); 0 with the oracle's bound in
+	{ "convex_hull.plane_divergent", 1595, 52, 0xffffffffu, 0, 512, 118, 0, 1074731964ull, HUGE_VAL },	// convex-mesh gap Task 2f: the concave, nudged and 0x0f7f polycube meshes and 001463's drawn points, whose planes 001463 takes through the vendored Plane::Set / Triangle::Area (005155, 005179); 0 with the oracle's pair bound into 001463
 	};
 
 static const NxDivergentCeiling* nxFindCeiling(const char* name)
@@ -6026,6 +6027,7 @@ static unsigned	gIceReportLines[8];
 static const int kIceReportLineValues[8] = { 0x72, 0x10a, 0x10b, 0x10e, 0x111, 0x114, 0x117, 266 };
 static unsigned	gIceReportLine267 = 0;
 static unsigned	gIceReportLine321 = 0;
+static unsigned	gIceReportLine318 = 0;	// Task 2f: 001465's outline report
 
 static unsigned nxIceStringDigest(const char* s)
 	{
@@ -6052,6 +6054,8 @@ static void nxIceReportWords(const char* message, const char* file, int line)
 			++gIceReportLine267;
 		if(line == 321)
 			++gIceReportLine321;
+		if(line == 318)
+			++gIceReportLine318;
 		}
 	gIceTape->push(0x5e7e0000u);
 	gIceTape->push((unsigned) line);
@@ -6128,8 +6132,8 @@ static NxIceRecordingAllocator gIceAllocator;
 static const int kIceMaxMeshes = 72;
 static NxMesh gIceMeshes[kIceMaxMeshes];
 static int gIceNbMeshes = 0;
-static unsigned gIceInputDigest[10];	// 0..2 Task 2c; 3, 4 Task 2d; 5..9 Task 2e
-static unsigned gIceInputWords[10];
+static unsigned gIceInputDigest[13];	// 0..2 Task 2c; 3, 4 Task 2d; 5..9 Task 2e
+static unsigned gIceInputWords[13];
 
 static NxMesh& nxIceNewMesh(unsigned nbVerts, unsigned nbTris)
 	{
@@ -8989,6 +8993,1176 @@ static void nxDriveMeshToolsRest(const NxOracleRows& o, bool selfOnly)
 		gIceReportLines[0], gIceReportLine321);
 	}
 
+//////////////////////////////////////////////////////////////////////////////
+// convex-mesh gap Task 2f. P-Hull (Physics/src/ConvexHull.cpp: 001441, 001445,
+// 001449, 001459, 001463, 001465, 001472, 001496, 001502, and the helpers
+// 000001, 000925, 001391, 001439 and 001657) and the support maps
+// (Physics/src/IceSupportMaps.cpp: 001550..001589), linked into this harness.
+// Three families through nxIceFamily (the recording 004803 allocator and the
+// report recorder on both sides; oracle rows by RVA, candidates on the same
+// inputs; every float input written as bits):
+//
+//   hull_leaf     the rows no vendored code reaches, over drawn words: 001441
+//                 and 001445 over drawn triangles of drawn vertex words (null
+//                 vertices too); 001459 over hull images of drawn faces and
+//                 vertex words (no vertex count, no vertex array, no faces);
+//                 001496 over hand-built polygon arrays (a non-zero count, so
+//                 001472 is not reached) with and without a drawn pose; 001449
+//                 over drawn link words; 001657; 000001 with each element
+//                 constructor (000925, 001391, 001439).
+//   convex_hull   001472, then 001502, then 001496, over hull images of
+//                 polycube meshes: the boundary faces of voxel sets, each unit
+//                 square split along a drawn diagonal, the lattice mapped
+//                 through fixed tables of short-mantissa words (every face is
+//                 axis-aligned, and every product the vendored Plane::Set,
+//                 Triangle::Area and Triangle::Normal form is exact). Voxel
+//                 sets that touch along an edge (non-manifold), open meshes and
+//                 a ring (genus one: 001641 cannot close the top face, the
+//                 line-318 report) reach 001465's failure arms; a second 001472
+//                 and 001502 over a built hull reach their releases; 001502 on
+//                 a fresh hull builds the polygons itself; separate cubes put
+//                 the centre on the outer side of their facing planes (001472's
+//                 flip). And 001463 directly over
+//                 polygons of lattice points in an axis-aligned plane. By a
+//                 rule on the fixed input, meshes whose words were nudged or
+//                 replaced by raw words, and 001463 calls over drawn points, go
+//                 to convex_hull.plane_divergent: there 001463 and 002061
+//                 (through 001465's Adjacencies) decide from the vendored
+//                 Plane::Set, Triangle::Area and Triangle::Normal (005155,
+//                 005179, 005181), which are measured divergences.
+//   support_maps  001550 and 001556 directly over drawn directions (n = 0..20
+//                 for the lookup); A, B and C built by each side's constructors
+//                 (001565, 001571, 001575) over the hulls convex_hull's main
+//                 meshes give (built by each side's own 001472) and over
+//                 hand-built hull images of drawn planes, centres and vertex
+//                 words; Init (001558) for n = 0, 1, 2, 3, 5, 8, the bytes,
+//                 lookups through them, and slot 0 with and without the free
+//                 bit; the allocation failures (256 polygons, 256 vertices).
+//
+// Tapes: every return value; the hulls' fields and arrays word for word (the
+// larger arrays their first 48 words and a digest of all, as Task 2d); pointers
+// only as offsets into the array they point into, or as which table; every
+// allocation and release through the 004803 getter and every report,
+// interleaved.
+#include "IceSupportMaps.h"
+
+static const unsigned kChVectorCtor		= 0x00001000;	// phys_fn_000001
+static const unsigned kChPolygonCtor	= 0x00020440;	// phys_fn_000925
+static const unsigned kChIdentityCtor	= 0x00027f00;	// phys_fn_001391
+static const unsigned kChEdgeDescCtor	= 0x0002a610;	// phys_fn_001439
+static const unsigned kChArea			= 0x0002a620;	// phys_fn_001441
+static const unsigned kChCenter			= 0x0002a790;	// phys_fn_001445
+static const unsigned kChGather			= 0x0002a900;	// phys_fn_001449
+static const unsigned kChCentroid		= 0x0002ad60;	// phys_fn_001459
+static const unsigned kChPlane			= 0x0002af30;	// phys_fn_001463
+static const unsigned kChPolygons		= 0x0002b6f0;	// phys_fn_001472
+static const unsigned kChSupport		= 0x0002c8f0;	// phys_fn_001496
+static const unsigned kChEdges			= 0x0002cb50;	// phys_fn_001502
+static const unsigned kChReverse		= 0x00032460;	// phys_fn_001657
+static const unsigned kSmCubeFace		= 0x0002e160;	// phys_fn_001550
+static const unsigned kSmLookup			= 0x0002e220;	// phys_fn_001556
+static const unsigned kSmInit			= 0x0002e2f0;	// phys_fn_001558
+static const unsigned kSmCtorA			= 0x0002e5a0;	// phys_fn_001565
+static const unsigned kSmCtorB			= 0x0002e640;	// phys_fn_001571
+static const unsigned kSmCtorC			= 0x0002e7c0;	// phys_fn_001575
+static const unsigned kSmTables[4]		= { 0x00107848, 0x0010785c, 0x0010786c, 0x00107890 };
+
+typedef void		(__cdecl* ChGatherFn)(void*, const void*, unsigned, unsigned char*);
+typedef bool		(__cdecl* ChPlaneFn)(void*, unsigned, const unsigned*, const void*);
+typedef bool		(__cdecl* ChReverseFn)(unsigned, unsigned*);
+typedef void		(__stdcall* ChVectorCtorFn)(void*, unsigned, unsigned, const void*);
+typedef unsigned	(__cdecl* SmCubeFaceFn)(const void*, float*, float*);
+
+typedef char nxChLayout0[sizeof(HullPolygon) == 0x24 && offsetof(HullPolygon, mPlane) == 0x0c
+	&& offsetof(HullPolygon, mMax) == 0x20 && offsetof(ConvexHull, mCentroid) == 0x18
+	&& offsetof(ConvexHull, mPolygons) == 0x28 && offsetof(ConvexHull, mEdgePolygons) == 0x48
+	&& sizeof(ConvexHull) == 0x4c && offsetof(IceSupportMap, mVertexSource) == 0x14 ? 1 : -1];
+
+static const int kHullLeafFamily = 10;
+static const int kHullFamily = 11;
+static const int kSupportFamily = 12;
+
+// Oracle-side coverage for the three families' lines.
+struct NxChCoverage
+	{
+	unsigned areaCalls, centerCalls, centroidCalls, centroidTrue, supportCalls, supportPosed, gatherCases,
+		gatherFaces, reverseCalls, vectorCalls, leafSnan, leafX87;
+	unsigned meshes, splitMeshes, polygonsTrue, polygonsFalse, polygons, edgesTrue, edgesFalse, edges,
+		edgesAlone, rebuilt, planeCalls, planeSplit, hullSupport;
+	unsigned faceCalls, lookupCalls, maps, initTrue, initFalse, samples, freed, mapLookups, mapSnan;
+	};
+static NxChCoverage gChCoverage;
+
+// The oracle's thiscall rows and the candidate's __fastcall product forms are
+// called the same way: ecx the object, edx cleared, the arguments pushed and
+// popped by the callee.
+static unsigned nxChCall0(const void* fn, const void* self)
+	{
+	unsigned r;
+	__asm
+		{
+		mov		ecx, self
+		xor		edx, edx
+		call	fn
+		mov		r, eax
+		}
+	return r;
+	}
+static unsigned nxChCall1(const void* fn, const void* self, unsigned a0)
+	{
+	unsigned r;
+	__asm
+		{
+		push	a0
+		mov		ecx, self
+		xor		edx, edx
+		call	fn
+		mov		r, eax
+		}
+	return r;
+	}
+static unsigned nxChCall2(const void* fn, const void* self, unsigned a0, unsigned a1)
+	{
+	unsigned r;
+	__asm
+		{
+		push	a1
+		push	a0
+		mov		ecx, self
+		xor		edx, edx
+		call	fn
+		mov		r, eax
+		}
+	return r;
+	}
+// 001441 returns in st(0): kept as a double, so a result that the float store
+// would round is still compared whole.
+static double nxChCallSt1(const void* fn, const void* self, unsigned a0)
+	{
+	double r;
+	__asm
+		{
+		push	a0
+		mov		ecx, self
+		xor		edx, edx
+		call	fn
+		fstp	qword ptr r
+		}
+	return r;
+	}
+
+static const void* nxChRow(const NxIceSide& s, unsigned rva, const void* candidate)
+	{
+	return s.oracle ? (const void*) (s.o->base + rva) : candidate;
+	}
+
+static unsigned nxChPtr(const void* p)
+	{
+	return (unsigned) (size_t) p;
+	}
+
+// A finite word of +-[2^-7, 2^8), drawn as bits.
+static unsigned nxChMidWord()
+	{
+	const unsigned mantissa = nxNext();
+	const unsigned exponent = nxNext();
+	return (mantissa & 0x807fffffu) | ((120u + exponent % 15u) << 23);
+	}
+// One word in four raw (nxMtRawWord: signalling and quiet NaNs, infinities,
+// denormals, -0, [0.5, 1), drawn), the rest nxChMidWord.
+static unsigned nxChWord()
+	{
+	const unsigned select = nxNext();
+	if(select % 4 == 0)
+		return nxMtRawWord(false);
+	return nxChMidWord();
+	}
+static void nxChWords(unsigned* w, unsigned count)
+	{
+	for(unsigned i = 0; i < count; ++i)
+		w[i] = nxChWord();
+	}
+
+static void nxChTapeDouble(double v)
+	{
+	unsigned w[2];
+	memcpy(w, &v, 8);
+	gIceTape->pushKind(w[0], kWordDoubleLo);
+	gIceTape->pushKind(w[1], kWordDoubleHi);
+	}
+
+// A discrete array: its first 48 words, then the digest of all of it.
+static void nxChWordArray(const void* data, unsigned words)
+	{
+	NxTape& t = *gIceTape;
+	t.push(words);
+	if(!data)
+		{
+		t.push(0xdeadu);
+		return;
+		}
+	const unsigned char* p = (const unsigned char*) data;
+	for(unsigned i = 0; i < words && i < 48; ++i)
+		{
+		unsigned w;
+		memcpy(&w, p + 4 * i, 4);
+		t.push(w);
+		}
+	if(words > 48)
+		t.push(nxMb2Digest(data, words));
+	}
+
+// ---------------------------------------------------------------------------
+// hull_leaf
+
+static void nxChLeafTriangles(const NxIceSide& s)
+	{
+	NxChCoverage& c = gChCoverage;
+	NxTape& t = *gIceTape;
+	for(unsigned k = 0; k < 900; ++k)
+		{
+		const unsigned short cw = (k & 1) ? 0x0f7f : 0x027f;
+		unsigned verts[24];
+		nxChWords(verts, 24);
+		const unsigned r0 = nxNext();
+		const unsigned r1 = nxNext();
+		const unsigned r2 = nxNext();
+		unsigned short tri[3] = { (unsigned short) (r0 % 8), (unsigned short) (r1 % 8), (unsigned short) (r2 % 8) };
+		const bool noVerts = k % 45 == 7;
+		nxMb2FoldInput(kHullLeafFamily, verts, 24);
+		nxIceFoldRun(kHullLeafFamily, tri[0] | (tri[1] << 8) | (tri[2] << 16), noVerts ? 1u : 0u, cw);
+		const unsigned vp = noVerts ? 0u : nxChPtr(verts);
+		unsigned center[4] = { 0xcdcd0001u, 0xcdcd0002u, 0xcdcd0003u, 0xcdcd0004u };
+		const unsigned short saved = nxMb2SetControlWord(cw);
+		const double area = nxChCallSt1(nxChRow(s, kChArea, (const void*) &nxHullTriangleArea), tri, vp);
+		nxChCall2(nxChRow(s, kChCenter, (const void*) &nxHullTriangleCenter), tri, vp, nxChPtr(center));
+		nxMb2SetControlWord(saved);
+		nxChTapeDouble(area);
+		for(int i = 0; i < 4; ++i)
+			t.pushKind(center[i], kWordFloat);
+		if(s.oracle)
+			{
+			++c.areaCalls;
+			++c.centerCalls;
+			c.leafSnan += nxMb2CountSnan((const float*) verts, 24);
+			if(cw == 0x0f7f)
+				++c.leafX87;
+			}
+		}
+	}
+
+static void nxChLeafCentroids(const NxIceSide& s)
+	{
+	NxChCoverage& c = gChCoverage;
+	NxTape& t = *gIceTape;
+	for(unsigned k = 0; k < 400; ++k)
+		{
+		const unsigned short cw = (k & 1) ? 0x027f : 0x0f7f;
+		const unsigned nbVertsDraw = nxNext();
+		const unsigned nbFacesDraw = nxNext();
+		const unsigned nbVerts = 1 + nbVertsDraw % 10;
+		const unsigned nbFaces = nbFacesDraw % 13;
+		unsigned verts[30];
+		nxChWords(verts, 30);
+		unsigned short faces[39];
+		for(unsigned i = 0; i < 39; ++i)
+			{
+			const unsigned r = nxNext();
+			faces[i] = (unsigned short) (r % nbVerts);
+			}
+		unsigned hull[0x4c / 4];
+		for(unsigned i = 0; i < 0x4c / 4; ++i)
+			hull[i] = 0xcdcd5000u + i;
+		hull[1] = nbFaces;
+		hull[2] = nxChPtr(faces);
+		hull[3] = k % 37 == 5 ? 0u : nbVerts;
+		hull[4] = k % 41 == 9 ? 0u : nxChPtr(verts);
+		nxMb2FoldInput(kHullLeafFamily, verts, 30);
+		nxMb2FoldInput(kHullLeafFamily, faces, 39 / 2);
+		nxIceFoldRun(kHullLeafFamily, hull[1], hull[3], hull[4] ? cw : 0u);
+		unsigned center[4] = { 0xcdcd0011u, 0xcdcd0012u, 0xcdcd0013u, 0xcdcd0014u };
+		const unsigned short saved = nxMb2SetControlWord(cw);
+		const unsigned ok = nxChCall1(nxChRow(s, kChCentroid, (const void*) &nxHullComputeCentroid), hull,
+			nxChPtr(center)) & 0xff;
+		nxMb2SetControlWord(saved);
+		t.push(ok);
+		for(int i = 0; i < 4; ++i)
+			t.pushKind(center[i], kWordFloat);
+		if(s.oracle)
+			{
+			++c.centroidCalls;
+			if(ok)
+				++c.centroidTrue;
+			c.leafSnan += nxMb2CountSnan((const float*) verts, 3 * nbVerts);
+			}
+		}
+	}
+
+// 001496 over polygon arrays built here: only the planes' normals are read.
+static void nxChLeafSupport(const NxIceSide& s)
+	{
+	NxChCoverage& c = gChCoverage;
+	NxTape& t = *gIceTape;
+	static unsigned polygons[16 * 9];
+	for(unsigned k = 0; k < 1500; ++k)
+		{
+		const unsigned short cw = (k & 1) ? 0x0f7f : 0x027f;
+		const unsigned nbDraw = nxNext();
+		const unsigned nb = 1 + nbDraw % 13;
+		nxChWords(polygons, 9 * nb);
+		// Ties: a drawn normal copied over a later polygon's.
+		const unsigned tieDraw = nxNext();
+		if(nb > 1 && tieDraw % 3 == 0)
+			{
+			const unsigned from = tieDraw % nb;
+			const unsigned to = (tieDraw >> 8) % nb;
+			memcpy(&polygons[9 * to + 3], &polygons[9 * from + 3], 12);
+			}
+		unsigned dir[3];
+		nxChWords(dir, 3);
+		unsigned pose[16];
+		nxChWords(pose, 16);
+		const unsigned posed = nxNext() & 1;
+		unsigned hull[0x4c / 4];
+		for(unsigned i = 0; i < 0x4c / 4; ++i)
+			hull[i] = 0xcdcd6000u + i;
+		hull[9] = nb;
+		hull[10] = nxChPtr(polygons);
+		nxMb2FoldInput(kHullLeafFamily, polygons, 9 * nb);
+		nxMb2FoldInput(kHullLeafFamily, dir, 3);
+		if(posed)
+			nxMb2FoldInput(kHullLeafFamily, pose, 16);
+		nxIceFoldRun(kHullLeafFamily, nb, posed, cw);
+		const unsigned short saved = nxMb2SetControlWord(cw);
+		const unsigned index = nxChCall2(nxChRow(s, kChSupport, (const void*) &nxHullSupportPolygon), hull,
+			nxChPtr(dir), posed ? nxChPtr(pose) : 0u);
+		nxMb2SetControlWord(saved);
+		t.push(index);
+		if(s.oracle)
+			{
+			++c.supportCalls;
+			if(posed)
+				++c.supportPosed;
+			c.leafSnan += nxMb2CountSnan((const float*) polygons, 9 * nb) + nxMb2CountSnan((const float*) dir, 3)
+				+ (posed ? nxMb2CountSnan((const float*) pose, 16) : 0);
+			}
+		}
+	}
+
+// 001449 over drawn link words: each face's three words link a drawn face with
+// bit 29 drawn (and the edge bits drawn), from a drawn face, with some faces
+// marked beforehand.
+static void nxChLeafGather(const NxIceSide& s)
+	{
+	NxChCoverage& c = gChCoverage;
+	NxTape& t = *gIceTape;
+	for(unsigned k = 0; k < 300; ++k)
+		{
+		const unsigned nbDraw = nxNext();
+		const unsigned nb = 1 + nbDraw % 40;
+		unsigned links[3 * 40];
+		for(unsigned i = 0; i < 3 * nb; ++i)
+			{
+			const unsigned face = nxNext();
+			const unsigned bits = nxNext();
+			links[i] = (face % nb) | (bits & 0xe0000000u);
+			}
+		unsigned char marks[40];
+		for(unsigned i = 0; i < nb; ++i)
+			{
+			const unsigned m = nxNext();
+			marks[i] = (unsigned char) (m % 7 == 0 ? 1 : 0);
+			}
+		const unsigned startDraw = nxNext();
+		const unsigned start = startDraw % nb;
+		nxMb2FoldInput(kHullLeafFamily, links, 3 * nb);
+		nxIceFoldRun(kHullLeafFamily, nb, start, marks[start]);
+		unsigned char obj[16];
+		nxMtContainerCtor(s, obj);
+		ChGatherFn gather = (ChGatherFn) nxChRow(s, kChGather, (const void*) &nxHullGatherFaces);
+		gather(obj, links, start, marks);
+		nxMtTapeContainer(obj, false);
+		for(unsigned i = 0; i < nb; ++i)
+			t.push(marks[i]);
+		if(s.oracle)
+			{
+			++c.gatherCases;
+			c.gatherFaces += nxIceWord(obj, 4);
+			}
+		nxMtContainerDtor(s, obj);
+		}
+	}
+
+static void nxChLeafHelpers(const NxIceSide& s)
+	{
+	NxChCoverage& c = gChCoverage;
+	NxTape& t = *gIceTape;
+	// 001657: counts 0..9, a null array.
+	for(unsigned k = 0; k < 24; ++k)
+		{
+		unsigned words[9];
+		for(unsigned i = 0; i < 9; ++i)
+			words[i] = nxNext();
+		const unsigned count = k % 10;
+		const bool nullArray = k == 17;
+		nxIceFoldRun(kHullLeafFamily, 0x657, count, nullArray ? 1u : 0u);
+		ChReverseFn reverse = (ChReverseFn) nxChRow(s, kChReverse, (const void*) &nxIceReverseArray);
+		const bool ok = reverse(count, nullArray ? 0 : words);
+		t.push(ok ? 1u : 0u);
+		for(unsigned i = 0; i < 9; ++i)
+			t.push(words[i]);
+		if(s.oracle)
+			++c.reverseCalls;
+		}
+	// 000001 with each element constructor, over poisoned 0x24-byte elements;
+	// counts 0..4 and a negative one (nothing constructed).
+	const unsigned ctors[3] = { kChPolygonCtor, kChIdentityCtor, kChEdgeDescCtor };
+	const void* candidates[3] = { (const void*) &nxHullPolygonConstruct, (const void*) &nxIceIdentityConstruct,
+		(const void*) &nxEdgeDescConstruct };
+	for(unsigned k = 0; k < 18; ++k)
+		{
+		unsigned block[5 * 9];
+		for(unsigned i = 0; i < 5 * 9; ++i)
+			block[i] = 0xcdcd7000u + i;
+		const unsigned which = k % 3;
+		const unsigned count = k / 3 < 5 ? k / 3 : 0xffffffffu;
+		const unsigned size = which == 0 ? 0x24u : 8u;
+		nxIceFoldRun(kHullLeafFamily, 0x001, which, count);
+		ChVectorCtorFn construct = (ChVectorCtorFn) nxChRow(s, kChVectorCtor, (const void*) &nxIceVectorConstruct);
+		construct(block, size, count, nxChRow(s, ctors[which], candidates[which]));
+		for(unsigned i = 0; i < 5 * 9; ++i)
+			t.push(block[i]);
+		if(s.oracle)
+			++c.vectorCalls;
+		}
+	}
+
+static void nxChLeafDrive(const NxIceSide& s)
+	{
+	const unsigned savedState = gState;
+	gState = 0x2f0a1eafu;
+	nxChLeafTriangles(s);
+	nxChLeafCentroids(s);
+	nxChLeafSupport(s);
+	nxChLeafGather(s);
+	nxChLeafHelpers(s);
+	if(gIceTape->overflow)
+		{
+		fprintf(stderr, "FAIL hull_leaf tape overflow (%u words beyond)\n", gIceTape->overflow);
+		++gMismatches;
+		}
+	gState = savedState;
+	}
+
+// ---------------------------------------------------------------------------
+// convex_hull
+
+// The lattice tables: five increasing words each, every pairwise difference of
+// at most six significant bits, so a cross product of two differences, its
+// square and the sums the vendored rows form are exact in a float. None
+// decreases: a mirrored lattice winds every face inward, every convex edge then
+// reads as concave and none is active, and 001641 reads the first pair of an
+// empty Container (a null read on both sides; see nxChBuildMesh).
+static const unsigned kChLattice[8][5] =
+	{
+	{ 0x00000000u, 0x3f800000u, 0x40000000u, 0x40400000u, 0x40800000u },	// 0 1 2 3 4
+	{ 0xbfc00000u, 0xbf000000u, 0x3e800000u, 0x3fe00000u, 0x41200000u },	// -1.5 -0.5 0.25 1.75 10
+	{ 0x42c00000u, 0x43000000u, 0x43200000u, 0x43600000u, 0x43800000u },	// 96 128 160 224 256
+	{ 0x3e000000u, 0x3ec00000u, 0x3f000000u, 0x3f200000u, 0x40600000u },	// 0.125 0.375 0.5 0.625 3.5
+	{ 0xc0800000u, 0xc0400000u, 0xc0000000u, 0xbf800000u, 0x80000000u },	// -4 -3 -2 -1 -0
+	{ 0x80000000u, 0x3f000000u, 0x3fc00000u, 0x40200000u, 0x40c00000u },	// -0 0.5 1.5 2.5 6
+	{ 0xc1000000u, 0xc0c00000u, 0xc0000000u, 0xbf800000u, 0xbf400000u },	// -8 -6 -2 -1 -0.75
+	{ 0x45000000u, 0x45400000u, 0x45800000u, 0x45c00000u, 0x46000000u },	// 2048 3072 4096 6144 8192
+	};
+
+static const unsigned kChMaxVerts = 5 * 4 * 4;
+static const unsigned kChMaxTris = 2 * 6 * 4 * 3 * 3;
+
+struct NxChMesh
+	{
+	unsigned		nbVerts, nbTris;
+	unsigned		verts[3 * kChMaxVerts];
+	unsigned short	tris[3 * kChMaxTris];
+	bool			split;		// convex_hull.plane_divergent (see nxChBuildMesh)
+	bool			buildable;	// a main-set closed manifold convex set: 001472 succeeds
+	unsigned short	cw;			// the control word the mesh runs under
+	};
+
+// The voxel sets: dimensions, one bit per voxel (x fastest) or 0 for a drawn
+// fill, and whether the set is concave. Kinds: boxes, box less a corner, L,
+// staircase, plus, ring (genus one), two voxels on an edge (non-manifold),
+// pocket, drawn, separate cubes. A concave set's concave edges are inactive, so faces across
+// them join one polygon that is not planar, whose plane 001463 takes through
+// a skew triangle with the vendored Plane::Set: those meshes are in the split
+// (the fifth word, a rule on the fixed input). The ring fails in 001465 (its
+// outline report) before any plane, and the edge pair in Adjacencies.
+static const unsigned kChShapes[][5] =
+	{
+	{ 1, 1, 1, 0x1u, 0 },
+	{ 2, 1, 1, 0x3u, 0 },
+	{ 2, 2, 2, 0xffu, 0 },
+	{ 3, 2, 1, 0x3fu, 0 },
+	{ 2, 2, 2, 0x7fu, 1 },		// the box less a corner
+	{ 3, 2, 1, 0x0fu, 1 },		// L
+	{ 3, 1, 3, 0x5fu, 1 },		// a staircase in x-z
+	{ 3, 3, 1, 0x0bau, 1 },		// plus
+	{ 3, 3, 1, 0x1efu, 0 },		// ring: the centre voxel empty
+	{ 2, 2, 1, 0x9u, 0 },		// two voxels meeting along an edge
+	{ 4, 3, 2, 0x0u, 1 },		// drawn
+	{ 4, 1, 1, 0xfu, 0 },
+	{ 1, 3, 3, 0x1ffu, 0 },
+	{ 3, 3, 3, 0x7ffffffu, 0 },
+	{ 3, 3, 3, 0x7bfffffu, 1 },	// a cube less the voxel at the centre of its top (a pocket)
+	{ 3, 3, 3, 0x0u, 1 },		// drawn
+	{ 3, 1, 1, 0x5u, 0 },		// two separate cubes: the centre lies between them, on the
+	{ 3, 3, 1, 0x145u, 0 },		// outer side of their facing faces (001472's flip); four
+	};							// separate cubes
+static const unsigned kChNbShapes = sizeof(kChShapes) / sizeof(kChShapes[0]);
+
+static unsigned nxChLatticeIndex(unsigned i, unsigned j, unsigned k)
+	{
+	return i + 5 * (j + 4 * k);
+	}
+
+// Builds mesh `index`: its shape, tables and diagonals are drawn from a seed of
+// its own. Meshes 0..(2 * kChNbShapes - 1) are the main set; the rest are the
+// same shapes with words nudged by a few units in the last place, or replaced
+// by raw words (the split).
+static void nxChBuildMesh(NxChMesh& m, unsigned index)
+	{
+	gState = 0x2f0c0000u ^ (index * 0x9e3779b9u + 1u);
+	const unsigned* shape = kChShapes[index % kChNbShapes];
+	const unsigned nx = shape[0], ny = shape[1], nz = shape[2];
+	unsigned fill = shape[3];
+	if(!fill)
+		{
+		// A drawn fill, with the first voxel and, for 3 x 3 x 3, the centre
+		// voxel set: an enclosed empty voxel would give an inner shell whose
+		// edges are all concave, so a face group with no active edge, and
+		// 001641 (0x000314c0) reads the first pair of an empty Container
+		// without testing its count -- a null read on both sides. Such an
+		// input cannot be driven (a rule on the fixed input, as Task 2e's
+		// edge_dedupe does not drive pairs that all cancel).
+		const unsigned drawn = nxNext();
+		fill = drawn | 1u | (nx == 3 && ny == 3 && nz == 3 ? 0x2000u : 0u);
+		}
+	const unsigned tx = nxNext() % 8;
+	const unsigned ty = nxNext() % 8;
+	const unsigned tz = nxNext() % 8;
+	bool solid[5][4][4];
+	memset(solid, 0, sizeof(solid));
+	for(unsigned k = 0; k < nz; ++k)
+		for(unsigned j = 0; j < ny; ++j)
+			for(unsigned i = 0; i < nx; ++i)
+				solid[i][j][k] = ((fill >> (i + nx * (j + ny * k))) & 1) != 0;
+	// Lattice vertices used by a face, compacted in lattice order.
+	unsigned remap[5 * 4 * 4];
+	bool used[5 * 4 * 4];
+	memset(used, 0, sizeof(used));
+	unsigned quads[6 * 4 * 3 * 3][4];
+	unsigned nbQuads = 0;
+	for(unsigned k = 0; k < nz; ++k)
+		for(unsigned j = 0; j < ny; ++j)
+			for(unsigned i = 0; i < nx; ++i)
+				{
+				if(!solid[i][j][k])
+					continue;
+				// +x, -x, +y, -y, +z, -z; corners c0, c1, c2, c3 with (c1 - c0) x (c3 - c0) outward.
+				const bool px = i + 1 >= nx || !solid[i + 1][j][k];
+				const bool mx = i == 0 || !solid[i - 1][j][k];
+				const bool py = j + 1 >= ny || !solid[i][j + 1][k];
+				const bool my = j == 0 || !solid[i][j - 1][k];
+				const bool pz = k + 1 >= nz || !solid[i][j][k + 1];
+				const bool mz = k == 0 || !solid[i][j][k - 1];
+				if(px) { unsigned* q = quads[nbQuads++]; q[0] = nxChLatticeIndex(i + 1, j, k); q[1] = nxChLatticeIndex(i + 1, j + 1, k); q[2] = nxChLatticeIndex(i + 1, j + 1, k + 1); q[3] = nxChLatticeIndex(i + 1, j, k + 1); }
+				if(mx) { unsigned* q = quads[nbQuads++]; q[0] = nxChLatticeIndex(i, j, k); q[1] = nxChLatticeIndex(i, j, k + 1); q[2] = nxChLatticeIndex(i, j + 1, k + 1); q[3] = nxChLatticeIndex(i, j + 1, k); }
+				if(py) { unsigned* q = quads[nbQuads++]; q[0] = nxChLatticeIndex(i, j + 1, k); q[1] = nxChLatticeIndex(i, j + 1, k + 1); q[2] = nxChLatticeIndex(i + 1, j + 1, k + 1); q[3] = nxChLatticeIndex(i + 1, j + 1, k); }
+				if(my) { unsigned* q = quads[nbQuads++]; q[0] = nxChLatticeIndex(i, j, k); q[1] = nxChLatticeIndex(i + 1, j, k); q[2] = nxChLatticeIndex(i + 1, j, k + 1); q[3] = nxChLatticeIndex(i, j, k + 1); }
+				if(pz) { unsigned* q = quads[nbQuads++]; q[0] = nxChLatticeIndex(i, j, k + 1); q[1] = nxChLatticeIndex(i + 1, j, k + 1); q[2] = nxChLatticeIndex(i + 1, j + 1, k + 1); q[3] = nxChLatticeIndex(i, j + 1, k + 1); }
+				if(mz) { unsigned* q = quads[nbQuads++]; q[0] = nxChLatticeIndex(i, j, k); q[1] = nxChLatticeIndex(i, j + 1, k); q[2] = nxChLatticeIndex(i + 1, j + 1, k); q[3] = nxChLatticeIndex(i + 1, j, k); }
+				}
+	for(unsigned q = 0; q < nbQuads; ++q)
+		for(unsigned c = 0; c < 4; ++c)
+			used[quads[q][c]] = true;
+	m.nbVerts = 0;
+	for(unsigned v = 0; v < 5 * 4 * 4; ++v)
+		{
+		if(!used[v])
+			continue;
+		remap[v] = m.nbVerts;
+		const unsigned i = v % 5, j = (v / 5) % 4, k = v / 20;
+		m.verts[3 * m.nbVerts + 0] = kChLattice[tx][i];
+		m.verts[3 * m.nbVerts + 1] = kChLattice[ty][j];
+		m.verts[3 * m.nbVerts + 2] = kChLattice[tz][k];
+		m.nbVerts++;
+		}
+	m.nbTris = 0;
+	for(unsigned q = 0; q < nbQuads; ++q)
+		{
+		const unsigned diagonal = nxNext() & 1;
+		const unsigned a = remap[quads[q][0]], b = remap[quads[q][1]], c = remap[quads[q][2]], d = remap[quads[q][3]];
+		unsigned short* t = &m.tris[3 * m.nbTris];
+		if(diagonal)
+			{
+			t[0] = (unsigned short) a; t[1] = (unsigned short) b; t[2] = (unsigned short) c;
+			t[3] = (unsigned short) a; t[4] = (unsigned short) c; t[5] = (unsigned short) d;
+			}
+		else
+			{
+			t[0] = (unsigned short) a; t[1] = (unsigned short) b; t[2] = (unsigned short) d;
+			t[3] = (unsigned short) b; t[4] = (unsigned short) c; t[5] = (unsigned short) d;
+			}
+		m.nbTris += 2;
+		}
+	// An open mesh: every seventh mesh loses its last two triangles.
+	const bool open = index % 7 == 3 && m.nbTris > 4;
+	if(open)
+		m.nbTris -= 2;
+	const unsigned kind = index % kChNbShapes;
+	m.buildable = !open && kind != 8 && kind != 9 && !shape[4] && index < 2 * kChNbShapes;
+	// Rounds 0 and 1 run under 0x027f, round 4 (the same lattice words) under
+	// 0x0f7f, and the nudged rounds 2 and 3 alternate. Under 0x0f7f's chop
+	// rounding the vendored Plane::Set normalises (0, c, 0) to 0x3f7ffffe where
+	// the oracle's 005155, which keeps the length and its reciprocal on the
+	// x87 stack, gives 0x3f7fffff, whenever 1/c is inexact: so every mesh
+	// under 0x0f7f is in the split too, as is every concave set.
+	m.cw = index >= 4 * kChNbShapes ? 0x0f7f : index >= 2 * kChNbShapes && (index & 1) ? 0x0f7f : 0x027f;
+	m.split = index >= 2 * kChNbShapes || shape[4] != 0;
+	if(m.split)
+		{
+		// Past the first two rounds, nudges of a few units in the last place (by
+		// integer steps on the bits; one mesh in two nudges up to 40 words)
+		// into drawn coordinate words; the concave sets of the first two rounds
+		// keep their lattice words. No raw word goes into a mesh: a NaN
+		// coordinate can leave a face group with no active edge, and 001641
+		// then reads an empty Container (a null read on both sides; see
+		// above), which no rule on the input could foresee.
+		const unsigned nbDraw = nxNext();
+		const unsigned nbChanges = (index & 1) ? 1 + nbDraw % 40 : 1 + nbDraw % 4;
+		for(unsigned n = 0; n < nbChanges; ++n)
+			{
+			const unsigned where = nxNext() % (3 * m.nbVerts);
+			const unsigned step = nxNext();
+			if(index < 2 * kChNbShapes || index >= 4 * kChNbShapes)
+				continue;
+			if(m.verts[where] & 0x7fffffffu)
+				m.verts[where] += (step & 4) ? (1u + step % 3u) : 0u - (1u + step % 3u);
+			}
+		}
+	}
+
+// A hull image: the faces and vertices, the rest zero (as a constructor
+// leaves it), in 0x50 bytes.
+static void nxChHullImage(unsigned* hull, const NxChMesh& m)
+	{
+	memset(hull, 0, 0x50);
+	hull[0] = 0xcdcd8000u;
+	hull[1] = m.nbTris;
+	hull[2] = nxChPtr(m.tris);
+	hull[3] = m.nbVerts;
+	hull[4] = nxChPtr(m.verts);
+	hull[13] = 0xcdcd8034u;
+	}
+
+// The hull's fields and arrays; pointers as offsets into their arrays.
+static void nxChTapeHull(const unsigned* hull)
+	{
+	NxTape& t = *gIceTape;
+	for(int i = 6; i < 9; ++i)
+		t.pushKind(hull[i], kWordFloat);
+	const unsigned nbPolygons = hull[9];
+	const unsigned* polygons = (const unsigned*) (size_t) hull[10];
+	const unsigned* vrefs = (const unsigned*) (size_t) hull[11];
+	const unsigned* erefs = (const unsigned*) (size_t) hull[12];
+	t.push(nbPolygons);
+	t.push(polygons ? polygons[-1] : 0xdeadu);
+	unsigned total = 0;
+	if(polygons)
+		for(unsigned p = 0; p < nbPolygons; ++p)
+			{
+			const unsigned* poly = polygons + 9 * p;
+			total += poly[0];
+			if(p < 64)
+				{
+				t.push(poly[0]);
+				t.push(poly[1] ? (poly[1] - nxChPtr(vrefs)) : 0xdeadu);
+				t.push(poly[2] ? (poly[2] - nxChPtr(erefs)) : 0xdeadu);
+				for(int i = 3; i < 9; ++i)
+					t.pushKind(poly[i], kWordFloat);
+				}
+			}
+	if(polygons && nbPolygons > 64)
+		t.push(nxMb2Digest(polygons, 9 * nbPolygons));
+	nxChWordArray(vrefs, total);
+	nxChWordArray(erefs, erefs ? total : 0);
+	const unsigned nbEdges = hull[14];
+	const unsigned* edges = (const unsigned*) (size_t) hull[15];
+	const unsigned* normals = (const unsigned*) (size_t) hull[16];
+	const unsigned* descs = (const unsigned*) (size_t) hull[17];
+	const unsigned* table = (const unsigned*) (size_t) hull[18];
+	t.push(nbEdges);
+	t.push(edges ? edges[-1] : 0xdeadu);
+	nxChWordArray(edges, edges ? 2 * nbEdges : 0);
+	t.push(normals ? 1u : 0u);
+	if(normals)
+		nxMtFloatArray(normals, 3 * nbEdges);
+	nxChWordArray(descs, descs ? 2 * nbEdges : 0);
+	unsigned links = 0;
+	if(descs)
+		for(unsigned e = 0; e < nbEdges; ++e)
+			links += descs[2 * e] >> 16;
+	nxChWordArray(table, table ? links : 0);
+	t.push(hull[0]);
+	t.push(hull[13]);
+	}
+
+static void nxChFreeHull(unsigned* hull)
+	{
+	const unsigned cookieFields[2] = { 10, 15 };
+	const unsigned plainFields[5] = { 11, 12, 16, 17, 18 };
+	for(int i = 0; i < 2; ++i)
+		if(hull[cookieFields[i]])
+			gIceAllocator.free((unsigned*) (size_t) hull[cookieFields[i]] - 1);
+	for(int i = 0; i < 5; ++i)
+		if(hull[plainFields[i]])
+			gIceAllocator.free((void*) (size_t) hull[plainFields[i]]);
+	}
+
+// One mesh: 001472, then 001502 when the side's own 001472 built polygons
+// (with none, 001502 writes 8 bytes into the zero-byte block it allocates for
+// the edge-to-polygon table and reads 6 bytes before it, 0x0002d067 and
+// 0x0002d0a1, in the oracle as here: not driven); for every fifth buildable
+// mesh (a rule on the fixed input: a convex main-set set, closed and manifold,
+// whose 001472 cannot fail) 001502 alone, which builds the polygons itself; a second 001472 and
+// 001502 for every third; and 001496 over drawn directions.
+static void nxChHullCase(const NxIceSide& s, const NxChMesh& m, unsigned index)
+	{
+	NxChCoverage& c = gChCoverage;
+	gIceTape = m.split ? s.splitTape : s.mainTape;
+	NxTape& t = *gIceTape;
+	const unsigned short cw = m.cw;
+	nxMb2FoldInput(kHullFamily, m.verts, 3 * m.nbVerts);
+	nxMb2FoldInput(kHullFamily, m.tris, (3 * m.nbTris) / 2);
+	nxIceFoldRun(kHullFamily, index, m.nbTris, cw);
+	unsigned hull[0x50 / 4];
+	nxChHullImage(hull, m);
+	const void* polygons = nxChRow(s, kChPolygons, (const void*) &nxHullComputePolygons);
+	const void* edges = nxChRow(s, kChEdges, (const void*) &nxHullComputeEdges);
+	const void* support = nxChRow(s, kChSupport, (const void*) &nxHullSupportPolygon);
+	const unsigned short saved = nxMb2SetControlWord(cw);
+	unsigned okPolygons = 0xffu;
+	unsigned okEdges = 0xffu;
+	if(index % 5 == 4 && m.buildable)
+		okEdges = nxChCall0(edges, hull) & 0xff;
+	else
+		{
+		okPolygons = nxChCall0(polygons, hull) & 0xff;
+		if(okPolygons && hull[9])
+			okEdges = nxChCall0(edges, hull) & 0xff;
+		}
+	nxMb2SetControlWord(saved);
+	t.push(okPolygons);
+	t.push(okEdges);
+	nxChTapeHull(hull);
+	if(s.oracle)
+		{
+		++c.meshes;
+		if(m.split)
+			++c.splitMeshes;
+		if(okPolygons == 1)
+			++c.polygonsTrue;
+		else if(okPolygons == 0)
+			++c.polygonsFalse;
+		else
+			++c.edgesAlone;
+		if(okEdges != 0xffu)
+			okEdges ? ++c.edgesTrue : ++c.edgesFalse;
+		c.polygons += hull[9];
+		c.edges += hull[14];
+		}
+	if(index % 3 == 1 && okEdges == 1)
+		{
+		const unsigned short saved2 = nxMb2SetControlWord(cw);
+		const unsigned again = nxChCall0(polygons, hull) & 0xff;
+		const unsigned againEdges = nxChCall0(edges, hull) & 0xff;
+		nxMb2SetControlWord(saved2);
+		t.push(again);
+		t.push(againEdges);
+		nxChTapeHull(hull);
+		if(s.oracle)
+			++c.rebuilt;
+		}
+	if(okEdges == 1 && hull[9])
+		for(unsigned d = 0; d < 24; ++d)
+			{
+			unsigned dir[3];
+			nxChWords(dir, 3);
+			unsigned pose[16];
+			nxChWords(pose, 16);
+			const unsigned posed = d & 1;
+			nxMb2FoldInput(kHullFamily, dir, 3);
+			if(posed)
+				nxMb2FoldInput(kHullFamily, pose, 16);
+			const unsigned short saved3 = nxMb2SetControlWord((d & 2) ? 0x0f7f : 0x027f);
+			const unsigned best = nxChCall2(support, hull, nxChPtr(dir), posed ? nxChPtr(pose) : 0u);
+			nxMb2SetControlWord(saved3);
+			t.push(best);
+			if(s.oracle)
+				++c.hullSupport;
+			}
+	nxChFreeHull(hull);
+	gIceTape = s.mainTape;
+	}
+
+// Pairs of words whose difference is a power of two.
+static const unsigned kChPairs[8][2] =
+	{
+	{ 0x00000000u, 0x3f800000u },	// 0, 1
+	{ 0x40400000u, 0x40800000u },	// 3, 4
+	{ 0xbf000000u, 0x3f000000u },	// -0.5, 0.5
+	{ 0x42c00000u, 0x43000000u },	// 96, 128
+	{ 0xc1000000u, 0x41000000u },	// -8, 8
+	{ 0x3e800000u, 0x3f000000u },	// 0.25, 0.5
+	{ 0x80000000u, 0x40000000u },	// -0, 2
+	{ 0x45800000u, 0x46000000u },	// 4096, 8192
+	};
+
+// 001463 directly: n references (0..12, repeats allowed) into 16 points, under
+// both control words. In the main family the points lie in an axis-aligned
+// plane (a lattice word) with each other coordinate one of a pair of words a
+// power of two apart: the points are a rectangle's corners, repeated, so every
+// triangle's cross product is 0, 2^k or 2^(k+1) on one axis, and the vendored
+// Plane::Set normalises it exactly in both rounding modes (for other lattice
+// words it does not under either: 0x3f7fffff for 1.0f). One case in four has
+// drawn points and goes to the split.
+static void nxChPlaneCases(const NxIceSide& s)
+	{
+	NxChCoverage& c = gChCoverage;
+	for(unsigned k = 0; k < 700; ++k)
+		{
+		const bool split = k % 4 == 3;
+		gIceTape = split ? s.splitTape : s.mainTape;
+		NxTape& t = *gIceTape;
+		const unsigned short cw = (k & 1) ? 0x0f7f : 0x027f;
+		unsigned points[48];
+		const unsigned axis = nxNext() % 3;
+		const unsigned table = nxNext() % 8;
+		const unsigned level = nxNext() % 5;
+		const unsigned pairU = nxNext() % 8;
+		const unsigned pairV = nxNext() % 8;
+		for(unsigned p = 0; p < 16; ++p)
+			{
+			const unsigned a = nxNext();
+			const unsigned b = nxNext();
+			for(unsigned i = 0; i < 3; ++i)
+				points[3 * p + i] = i == axis ? kChLattice[table][level]
+					: i == (axis + 1) % 3 ? kChPairs[pairU][a & 1] : kChPairs[pairV][b & 1];
+			}
+		if(split)
+			nxChWords(points, 48);
+		const unsigned nbDraw = nxNext();
+		const unsigned nb = nbDraw % 13;
+		unsigned refs[12];
+		for(unsigned i = 0; i < 12; ++i)
+			{
+			const unsigned r = nxNext();
+			refs[i] = r % 16;
+			}
+		const unsigned arm = k % 50;	// 1: no refs array, 2: no points
+		nxMb2FoldInput(kHullFamily, points, 48);
+		nxMb2FoldInput(kHullFamily, refs, nb);
+		nxIceFoldRun(kHullFamily, 0x463, nb, arm < 3 ? arm : 0u);
+		unsigned plane[5] = { 0xcdcd9000u, 0xcdcd9001u, 0xcdcd9002u, 0xcdcd9003u, 0xcdcd9004u };
+		ChPlaneFn planeFn = (ChPlaneFn) nxChRow(s, kChPlane, (const void*) &nxHullPolygonPlane);
+		const unsigned short saved = nxMb2SetControlWord(cw);
+		const bool ok = planeFn(plane, nb, arm == 1 ? 0 : refs, arm == 2 ? 0 : points);
+		nxMb2SetControlWord(saved);
+		t.push(ok ? 1u : 0u);
+		for(int i = 0; i < 5; ++i)
+			t.pushKind(plane[i], kWordFloat);
+		if(s.oracle)
+			{
+			++c.planeCalls;
+			if(split)
+				++c.planeSplit;
+			}
+		}
+	gIceTape = s.mainTape;
+	}
+
+static const unsigned kChNbMeshes = 5 * kChNbShapes;
+
+static void nxChHullDrive(const NxIceSide& s)
+	{
+	const unsigned savedState = gState;
+	static NxChMesh mesh;
+	for(unsigned index = 0; index < kChNbMeshes; ++index)
+		{
+		nxChBuildMesh(mesh, index);
+		gState = 0x2f0d0000u ^ (index * 0x85ebca6bu + 7u);
+		nxChHullCase(s, mesh, index);
+		}
+	gState = 0x2f0e1463u;
+	nxChPlaneCases(s);
+	if(s.mainTape->overflow || s.splitTape->overflow)
+		{
+		fprintf(stderr, "FAIL convex_hull tape overflow (%u, %u words beyond)\n", s.mainTape->overflow,
+			s.splitTape->overflow);
+		++gMismatches;
+		}
+	gState = savedState;
+	}
+
+// ---------------------------------------------------------------------------
+// support_maps
+
+static unsigned nxChTableIndex(const NxIceSide& s, unsigned vptr)
+	{
+	for(unsigned i = 0; i < 4; ++i)
+		{
+		const unsigned expected = s.oracle ? nxChPtr(s.o->base + kSmTables[i])
+			: nxChPtr(i == 0 ? gIceSupportMapBaseTable : i == 1 ? gIceSupportMapHullTable
+				: i == 2 ? gIceSupportMapPlaneTable : gIceSupportMapVertexTable);
+		if(vptr == expected)
+			return i;
+		}
+	return 0xdeadu;
+	}
+
+static void nxChDirections(const NxIceSide& s)
+	{
+	NxChCoverage& c = gChCoverage;
+	NxTape& t = *gIceTape;
+	SmCubeFaceFn cubeFace = (SmCubeFaceFn) nxChRow(s, kSmCubeFace, (const void*) &nxSupportMapCubeFace);
+	const void* lookup = nxChRow(s, kSmLookup, (const void*) &nxSupportMapLookup);
+	for(unsigned k = 0; k < 2400; ++k)
+		{
+		const unsigned short cw = (k & 1) ? 0x0f7f : 0x027f;
+		unsigned dir[3];
+		nxChWords(dir, 3);
+		// Ties of magnitude (a component's word copied, its sign drawn) and
+		// axis directions.
+		const unsigned shape = nxNext();
+		if(shape % 5 == 0)
+			dir[(shape >> 4) % 3] = dir[(shape >> 8) % 3] ^ (shape & 0x80000000u);
+		else if(shape % 5 == 1)
+			{
+			dir[(shape >> 4) % 3] = 0;
+			dir[(shape >> 8) % 3] = (shape >> 12) & 1 ? 0x80000000u : 0u;
+			}
+		const unsigned nDraw = nxNext();
+		const unsigned n = nDraw % 21;
+		nxMb2FoldInput(kSupportFamily, dir, 3);
+		nxIceFoldRun(kSupportFamily, 0x550, n, cw);
+		unsigned u = 0xcdcda001u, v = 0xcdcda002u;
+		unsigned map[6] = { 0xcdcdb000u, n, 6 * n * n, 0, 0, 0 };
+		const unsigned short saved = nxMb2SetControlWord(cw);
+		const unsigned face = cubeFace(dir, (float*) &u, (float*) &v);
+		const unsigned sample = nxChCall1(lookup, map, nxChPtr(dir));
+		nxMb2SetControlWord(saved);
+		t.push(face);
+		t.pushKind(u, kWordFloat);
+		t.pushKind(v, kWordFloat);
+		t.push(sample);
+		if(s.oracle)
+			{
+			++c.faceCalls;
+			++c.lookupCalls;
+			c.mapSnan += nxMb2CountSnan((const float*) dir, 3);
+			}
+		}
+	}
+
+// A map of kind 0 (A), 1 (B) or 2 (C) over a hull: constructed by the side's
+// constructor in a block from the recording allocator, Init(n), its bytes,
+// lookups through it, and slot 0 (with the free bit for odd n).
+static void nxChMapCase(const NxIceSide& s, unsigned kind, unsigned* hull, unsigned n, unsigned seed)
+	{
+	NxChCoverage& c = gChCoverage;
+	NxTape& t = *gIceTape;
+	nxIceFoldRun(kSupportFamily, kind, n, seed);
+	const unsigned ctorRva = kind == 0 ? kSmCtorA : kind == 1 ? kSmCtorB : kSmCtorC;
+	const void* candidateCtor = kind == 0 ? (const void*) &nxSupportMapHullConstruct
+		: kind == 1 ? (const void*) &nxSupportMapPlaneConstruct : (const void*) &nxSupportMapVertexConstruct;
+	unsigned* obj = (unsigned*) gIceAllocator.malloc(0x18, NX_MEMORY_PERSISTENT);
+	for(unsigned i = 0; i < 6; ++i)
+		obj[i] = 0xcdcdc000u + i;
+	const unsigned made = nxChCall1(nxChRow(s, ctorRva, candidateCtor), obj, nxChPtr(hull));
+	t.push(made == nxChPtr(obj) ? 1u : 0u);
+	t.push(nxChTableIndex(s, obj[0]));
+	const unsigned short cw = (seed & 1) ? 0x0f7f : 0x027f;
+	const unsigned short saved = nxMb2SetControlWord(cw);
+	const unsigned ok = nxChCall1(nxChRow(s, kSmInit, (const void*) &nxSupportMapInit), obj, n) & 0xff;
+	nxMb2SetControlWord(saved);
+	t.push(ok);
+	t.push(obj[1]);
+	t.push(obj[2]);
+	const unsigned char* bytes = (const unsigned char*) (size_t) obj[3];
+	const unsigned char* bytes2 = kind == 2 ? (const unsigned char*) (size_t) obj[4] : 0;
+	t.push(bytes ? 1u : 0u);
+	t.push(bytes2 ? 1u : 0u);
+	if(ok)
+		{
+		for(unsigned i = 0; i < obj[2]; i += 4)
+			{
+			unsigned w = 0;
+			memcpy(&w, bytes + i, obj[2] - i < 4 ? obj[2] - i : 4);
+			t.push(w);
+			if(bytes2)
+				{
+				memcpy(&w, bytes2 + i, obj[2] - i < 4 ? obj[2] - i : 4);
+				t.push(w);
+				}
+			}
+		// Lookups through the map.
+		for(unsigned d = 0; d < 12; ++d)
+			{
+			unsigned dir[3];
+			nxChWords(dir, 3);
+			nxMb2FoldInput(kSupportFamily, dir, 3);
+			const unsigned short saved2 = nxMb2SetControlWord((d & 1) ? 0x0f7f : 0x027f);
+			const unsigned sample = nxChCall1(nxChRow(s, kSmLookup, (const void*) &nxSupportMapLookup), obj,
+				nxChPtr(dir));
+			nxMb2SetControlWord(saved2);
+			t.push(sample);
+			t.push(sample < obj[2] ? bytes[sample] : 0xdeadu);
+			if(s.oracle)
+				++c.mapLookups;
+			}
+		}
+	if(s.oracle)
+		{
+		++c.maps;
+		ok ? ++c.initTrue : ++c.initFalse;
+		if(ok)
+			c.samples += obj[2];
+		}
+	// Slot 0 through the object's own table.
+	const unsigned flags = n & 1;
+	const void* const* table = (const void* const*) (size_t) obj[0];
+	const unsigned deleted = nxChCall1(table[0], obj, flags);
+	t.push(deleted == nxChPtr(obj) ? 1u : 0u);
+	if(!flags)
+		{
+		t.push(nxChTableIndex(s, obj[0]));
+		t.push(obj[3]);
+		t.push(kind == 2 ? obj[4] : 0u);
+		gIceAllocator.free(obj);
+		}
+	else if(s.oracle)
+		++c.freed;
+	}
+
+// Hand-built hull images: nb polygons of drawn plane words and a drawn centre
+// (A and B read nothing else while the count is non-zero), and nb vertices of
+// drawn words (C reads +0x0c and +0x10).
+static void nxChImageMaps(const NxIceSide& s)
+	{
+	static unsigned polygons[24 * 9];
+	static unsigned verts[3 * 256];
+	for(unsigned k = 0; k < 30; ++k)
+		{
+		const unsigned nbDraw = nxNext();
+		const unsigned nb = 1 + nbDraw % 24;
+		nxChWords(polygons, 9 * nb);
+		nxChWords(verts, 3 * nb);
+		unsigned hull[0x50 / 4];
+		memset(hull, 0, sizeof(hull));
+		nxChWords(&hull[6], 3);
+		hull[3] = nb;
+		hull[4] = nxChPtr(verts);
+		hull[9] = nb;
+		hull[10] = nxChPtr(polygons);
+		nxMb2FoldInput(kSupportFamily, polygons, 9 * nb);
+		nxMb2FoldInput(kSupportFamily, verts, 3 * nb);
+		nxMb2FoldInput(kSupportFamily, &hull[6], 3);
+		const unsigned n = 1 + k % 6;
+		for(unsigned kind = 0; kind < 3; ++kind)
+			nxChMapCase(s, kind, hull, n, k);
+		if(s.oracle)
+			gChCoverage.mapSnan += nxMb2CountSnan((const float*) polygons, 9 * nb)
+				+ nxMb2CountSnan((const float*) verts, 3 * nb);
+		}
+	// The allocation failures: 256 polygons (A, B), 256 vertices (C).
+	unsigned hull[0x50 / 4];
+	memset(hull, 0, sizeof(hull));
+	for(unsigned i = 0; i < 3 * 256; ++i)
+		verts[i] = 0x3f800000u;
+	hull[3] = 256;
+	hull[4] = nxChPtr(verts);
+	hull[9] = 256;
+	hull[10] = nxChPtr(polygons);
+	for(unsigned kind = 0; kind < 3; ++kind)
+		nxChMapCase(s, kind, hull, 2, 0x100 + kind);
+	}
+
+static void nxChSupportDrive(const NxIceSide& s)
+	{
+	const unsigned savedState = gState;
+	gState = 0x2f0f0550u;
+	nxChDirections(s);
+	nxChImageMaps(s);
+	// The hulls of convex_hull's main meshes, built by each side's own 001472.
+	static NxChMesh mesh;
+	static const unsigned kSizes[6] = { 0, 1, 2, 3, 5, 8 };
+	for(unsigned index = 0; index < 2 * kChNbShapes; ++index)
+		{
+		nxChBuildMesh(mesh, index);
+		if(mesh.split)
+			continue;
+		gState = 0x2f100000u ^ (index * 0x27d4eb2du + 3u);
+		nxMb2FoldInput(kSupportFamily, mesh.verts, 3 * mesh.nbVerts);
+		unsigned hull[0x50 / 4];
+		nxChHullImage(hull, mesh);
+		const unsigned ok = nxChCall0(nxChRow(s, kChPolygons, (const void*) &nxHullComputePolygons), hull) & 0xff;
+		gIceTape->push(ok);
+		if(ok && hull[9])
+			for(unsigned kind = 0; kind < 3; ++kind)
+				nxChMapCase(s, kind, hull, kSizes[(index + kind) % 6], index);
+		nxChFreeHull(hull);
+		}
+	if(gIceTape->overflow)
+		{
+		fprintf(stderr, "FAIL support_maps tape overflow (%u words beyond)\n", gIceTape->overflow);
+		++gMismatches;
+		}
+	gState = savedState;
+	}
+
+static void nxDriveConvexHull(const NxOracleRows& o, bool selfOnly)
+	{
+	memset(&gChCoverage, 0, sizeof(gChCoverage));
+	const NxChCoverage& c = gChCoverage;
+
+	gIceReports = 0;
+	nxIceFamily(o, selfOnly, nxChLeafDrive, "hull_leaf", "0x0002a620", "phys_fn_001441",
+		"ConvexHull.cpp,IceMeshTools.cpp", kHullLeafFamily);
+	printf("thirdparty coverage name=hull_leaf area=%u center=%u centroid=%u centroid_true=%u support=%u"
+		" support_posed=%u gather=%u gather_faces=%u reverse=%u vector=%u input_snan=%u x87_0f7f=%u reports=%u\n",
+		c.areaCalls, c.centerCalls, c.centroidCalls, c.centroidTrue, c.supportCalls, c.supportPosed,
+		c.gatherCases, c.gatherFaces, c.reverseCalls, c.vectorCalls, c.leafSnan, c.leafX87, gIceReports);
+
+	gIceReports = 0;
+	gIceReportLine318 = 0;
+	gIceReportLine321 = 0;
+	nxIceFamily(o, selfOnly, nxChHullDrive, "convex_hull", "0x0002b6f0", "phys_fn_001472",
+		"ConvexHull.cpp,IceAdjacencies.cpp,EdgeList.cpp,IceMeshTools.cpp", kHullFamily);
+	printf("thirdparty coverage name=convex_hull meshes=%u split_meshes=%u polygons_true=%u polygons_false=%u"
+		" edges_alone=%u polygons=%u edges_true=%u edges_false=%u edges=%u rebuilt=%u support=%u plane=%u plane_split=%u"
+		" reports=%u line318=%u line321=%u\n",
+		c.meshes, c.splitMeshes, c.polygonsTrue, c.polygonsFalse, c.edgesAlone, c.polygons, c.edgesTrue, c.edgesFalse,
+		c.edges, c.rebuilt, c.hullSupport, c.planeCalls, c.planeSplit, gIceReports, gIceReportLine318,
+		gIceReportLine321);
+
+	gIceReports = 0;
+	nxIceFamily(o, selfOnly, nxChSupportDrive, "support_maps", "0x0002e2f0", "phys_fn_001558",
+		"IceSupportMaps.cpp,ConvexHull.cpp", kSupportFamily);
+	printf("thirdparty coverage name=support_maps faces=%u lookups=%u maps=%u init_true=%u init_false=%u"
+		" samples=%u map_lookups=%u freed=%u input_snan=%u reports=%u\n",
+		c.faceCalls, c.lookupCalls, c.maps, c.initTrue, c.initFalse, c.samples, c.mapLookups, c.freed,
+		c.mapSnan, gIceReports);
+	}
+
 static void nxPrintTotals()
 	{
 	printf("thirdparty coverage driven=%u divergent=%u words=%u layout_checks=%u\n",
@@ -9133,6 +10307,11 @@ int wmain(int argc, wchar_t** argv)
 	// convex-mesh gap Task 2e: the same two lines after its five families, with
 	// the running totals; the pairs above stay where they were printed.
 	nxDriveMeshToolsRest(o, selfOnly);
+	nxPrintTotals();
+
+	// convex-mesh gap Task 2f: the same two lines after its three families, with
+	// the running totals; the pairs above stay where they were printed.
+	nxDriveConvexHull(o, selfOnly);
 	nxPrintTotals();
 	printf("thirdparty candidate mismatches=%u layout_failures=%u\n", gMismatches, gLayoutFailures);
 

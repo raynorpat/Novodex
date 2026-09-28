@@ -2648,7 +2648,35 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty name=adjacency_owner.plane_divergent rva=0x000543d0 owner=phys_fn_002186 source=TriangleMeshTopology.cpp,IceAdjacencies.cpp,EdgeList.cpp words=6300 oracle=50e4dd46',
         'thirdparty coverage name=adjacency_owner meshes=65 adjacencies=66 adjacencies_built=36 edge_lists=66 edge_lists_built=65 frozen_split_runs=13 reports=30 line72=1 line321=29',
         'thirdparty coverage driven=85 divergent=29 words=2225551 layout_checks=47',
-        'thirdparty oracle digest=a1b4f9a6'
+        'thirdparty oracle digest=a1b4f9a6',
+        # convex-mesh gap Task 2f: P-Hull (ConvexHull.cpp: 001441, 001445, 001449, 001459, 001463, 001465,
+        # 001472, 001496, 001502, and the helpers 000001, 000925, 001391, 001439; 001657 in
+        # IceMeshTools.cpp) and the support maps (IceSupportMaps.cpp: 001550..001589), linked into the
+        # harness. hull_leaf drives the rows no vendored code reaches (001441, 001445, 001459, 001496 on
+        # hand-built polygons, 001449, 001657, 000001 with the three element constructors) over drawn
+        # words; convex_hull drives 001472, 001502 and 001496 over polycube hull images and 001463
+        # directly; support_maps drives 001550, 001556 and the three map kinds (001565/001571/001575,
+        # 001558, the slots, the deleting destructors) over built and hand-built hulls. Every float
+        # input is written as bits (signalling and quiet NaNs, infinities, denormals, -0). The exact
+        # families are registered whole. convex_hull.plane_divergent is a rule on the fixed inputs
+        # (concave sets, nudged words, meshes under 0x0f7f and 001463's drawn points: the planes 001463
+        # takes through the vendored Plane::Set / Triangle::Area, 005155 / 005179), registered up to
+        # the oracle digest and held by kDivergentCeilings. Every line below is copied from the oracle
+        # side of a run (evidence/convex-mesh-gap.md, Task 2f): the name lines' agreement fields are
+        # the gate's assertion, and the coverage lines count oracle-side values and fixed inputs only.
+        # The pairs above keep printing where they were; the pair below carries the totals.
+        'thirdparty input name=hull_leaf words=181380 input=9279a52e',
+        'thirdparty name=hull_leaf rva=0x0002a620 owner=phys_fn_001441 source=ConvexHull.cpp,IceMeshTools.cpp words=21813 oracle=106d7907 mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty coverage name=hull_leaf area=900 center=900 centroid=400 centroid_true=379 support=1500 support_posed=752 gather=300 gather_faces=1639 reverse=24 vector=18 input_snan=7706 x87_0f7f=450 reports=0',
+        'thirdparty input name=convex_hull words=70348 input=2ebe9920',
+        'thirdparty name=convex_hull rva=0x0002b6f0 owner=phys_fn_001472 source=ConvexHull.cpp,IceAdjacencies.cpp,EdgeList.cpp,IceMeshTools.cpp words=20691 oracle=64a1d9bd mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty name=convex_hull.plane_divergent rva=0x0002b6f0 owner=phys_fn_001472 source=ConvexHull.cpp,IceAdjacencies.cpp,EdgeList.cpp,IceMeshTools.cpp words=56808 oracle=87dd3578',
+        'thirdparty coverage name=convex_hull meshes=90 split_meshes=68 polygons_true=53 polygons_false=34 edges_alone=3 polygons=469 edges_true=56 edges_false=0 edges=1495 rebuilt=22 support=1344 plane=700 plane_split=175 reports=24 line318=9 line321=15',
+        'thirdparty input name=support_maps words=26184 input=caa5f9eb',
+        'thirdparty name=support_maps rva=0x0002e2f0 owner=phys_fn_001558 source=IceSupportMaps.cpp,ConvexHull.cpp words=26162 oracle=79d50caf mismatches=0 worst_ulp=0 verdict=exact',
+        'thirdparty coverage name=support_maps faces=2400 lookups=2400 maps=138 init_true=135 init_false=3 samples=11844 map_lookups=1620 freed=66 input_snan=625 reports=4',
+        'thirdparty coverage driven=89 divergent=30 words=2351025 layout_checks=47',
+        'thirdparty oracle digest=cfa5d10e'
     )
 }
 
@@ -2672,9 +2700,10 @@ $NxPhaseCoverageFloor = [ordered] @{
     '2' = 0
     '3' = 243  # 18 for NxPhysicsKernelFuzzTests, 225 for NxPhysicsCollisionTests (85 + 23 from
                # convex-mesh gap Task 2a + 14 from its Task 2b + 59 + 44 from its harness hardening)
-    '4' = 202  # 34 for NxPhysicsAssetTests, 168 for NxPhysicsThirdPartyTests (67 + 29 from
+    '4' = 214  # 34 for NxPhysicsAssetTests, 180 for NxPhysicsThirdPartyTests (67 + 29 from
                # vendored-correspondence Task 4 + 5 from its Task 5a + 26 from qhull-gap Task 1
-               # + 14 from convex-mesh gap Task 2c + 8 from its Task 2d + 19 from its Task 2e)
+               # + 14 from convex-mesh gap Task 2c + 8 from its Task 2d + 19 from its Task 2e
+               # + 12 from its Task 2f)
     '5' = 871  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines
                # (RED on purpose: vtables family open)
     '6' = 403  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
