@@ -195,6 +195,8 @@ The matcher does not look at any of the following. A static proof that relies on
 - store and argument immediates (report-only `report_stores`, and the shape `imms` note);
 - indexed operands and array offsets, and negative displacements (pointer walks);
 - call counts once the inlining check has absorbed a callee (compared as sets only);
+- the order of the arguments at a call the compiler inlined. Task 4 found one such difference by
+  execution: `AABBCollider::_Collide(const AABBTreeNode*)` swaps them in stock 1.3;
 - which object a field belongs to, beyond the `this`/pointer base class;
 - arithmetic order and precision. In particular the grouping of float sums, which the 2003
   compiler reassociated per site. `tools/x87_sum_grouping.py` reports it for three-product sums
@@ -219,7 +221,9 @@ Which evidence a group needs before its rows can move depends on its class and n
 
   The review must record which addresses it read and what each difference is.
 - **Execution evidence** (a cdb trace, or a differential with a matching outcome) is required
-  for any group with x87 compares or x87 arithmetic, whatever else it has.
+  for any group with x87 compares or x87 arithmetic, whatever else it has. Task 4 records it per
+  group in `phase4-third-party-map/vendored_coverage.csv` (`hits`, `outcome`, `differential`),
+  backed by `evidence/vendored-trace-{qhull,opcode}.txt`.
 - **Not promotable until fixed:** DIFF, MISSING and AMBIGUOUS groups. MAPCHECK groups wait for
   the map to be corrected.
 - **Summation order and register lifetimes (added after the Task 3 review).** A static proof
@@ -709,6 +713,217 @@ Consequences for promotion:
   site-by-site unit) or contain no
   such sum.
 
+## Task 4: execution coverage
+
+The promotion policy needs execution evidence (a cdb trace, or a differential with a matching
+outcome) for every group with x87 code. Task 4 measured how many groups the Phase 4 differentials
+execute, found almost none, and extended `NxPhysicsThirdPartyTests` until most of them run with
+their outcome compared against the oracle.
+
+### Which binary is traced, and why it is the shipped code
+
+The Phase 4 differentials are oracle differentials. `NxPhysicsThirdPartyTests` and
+`NxPhysicsAssetTests` load the pinned oracle and call its rows at their RVAs. The candidate side
+of every comparison is the vendored code linked into the test exe itself, not a staged pair of
+DLLs. So the exe is what executes candidate code, and the exe is what is traced.
+
+- The exe links the same `NxQhull.lib`/`NxOpcode.lib` objects that `NxPhysics.dll` takes with
+  `/WHOLEARCHIVE`. `External/CMakeLists.txt` compiles each library once, with one set of flags.
+- `tools/vendored_trace.py identity` checks the linked result as well. It compares each traced
+  group's body in the exe with its body in `build/Release/NxPhysics.dll`, instruction by
+  instruction. A relocated operand, or a branch or call target, is compared as the symbol (plus
+  offset) it resolves to in that image's own linker map; one address can carry several names
+  under the exe's `/OPT:ICF`.
+- The result: every traced body is the same code except one, `??_GAABBTreeBuilder` (no x87
+  code). The exe's linker took that inline COMDAT from the harness's own object.
+- Both test targets now link with `/MAP`, which writes a map beside the exe and changes nothing
+  in it. The exes have no PDB, so the trace resolves breakpoints from those maps.
+
+### Method
+
+`tools/vendored_trace.py` (14 tests in `tools/tests/test_vendored_trace.py`):
+
+- `script` writes a cdb command file. It sets one counting breakpoint per distinct exe address of
+  a MATCH/SHAPE/REVIEW/DIFF group (501 in the ThirdParty exe, 13 in the asset exe). The counters
+  sit in a page allocated at `0x60000000`, and each is capped at 5 per family.
+- A boundary breakpoint on `nxReport` prints `SEG <family>`, dumps the counters and re-arms them.
+  A second boundary at `nxDriveQhullPure` closes the candidate-only layout assertions (`layout`).
+- `parse` turns the log into per-family counts, and reads each family's verdict from the
+  harness's own lines.
+- `coverage` writes `phase4-third-party-map/vendored_coverage.csv`, one line per group, with
+  these columns:
+  - `x87`: the oracle rows' x87 instruction count;
+  - `identity`;
+  - `hits`: a trailing `+` means a family reached the cap;
+  - `outcome` and `differential`: the families, with their verdicts.
+- `report` writes the committed excerpts `evidence/vendored-trace-qhull.txt` and
+  `vendored-trace-opcode.txt`. They pin the sha256 of the DLL and of both exes, list every
+  group's counts per family, and keep the head of the raw log.
+
+Pinned binaries:
+
+- candidate DLL `f3a603a23b3cbbcd582c6fdec9f8ad2679a2a10e959078ffd521481f03e00224`;
+- `NxPhysicsThirdPartyTests.exe` `77cb0e722b2465a152ef0a95d8dbf551964d96e61b7b376b6cedb91b0e0140b7`;
+- `NxPhysicsAssetTests.exe` `3a18abf599ed3186ddf98c8007f50ffc2f854a650ec1cd5d0829ca903a30db72`;
+- oracle `4b7db3e1…602c`.
+
+Reading `outcome`:
+
+| Value | Meaning |
+|---|---|
+| `exact` | Every family the group ran in compares with no mismatch. |
+| `exact+divergent` | It ran in a drive whose discrete outcome is exact and whose float outputs are a measured, attributed divergence (below). |
+| `divergent` | Only divergent families ran it. |
+| `layout` | Only the candidate-only layout assertions ran it: execution, not a compared outcome. |
+| `none` | Nothing ran it. |
+
+### Coverage before and after
+
+Groups executed. The columns after "executed" split it by `outcome`. "x87 compared" counts the
+groups with x87 code that ran in a compared family, whatever the verdict.
+
+| Library | Class | Groups | Before: executed | Before: x87 compared | After: executed | exact | exact+divergent | divergent | layout | After: x87 compared / x87 groups |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| qhull | SHAPE | 142 | 6 | 3 | 76 | 3 | 73 | 0 | 0 | 19 / 48 |
+| qhull | REVIEW | 142 | 2 | 0 | 81 | 0 | 81 | 0 | 0 | 38 / 63 |
+| qhull | DIFF | 47 | 1 | 0 | 23 | 1 | 22 | 0 | 0 | 16 / 32 |
+| OPCODE | MATCH | 18 | 1 (layout) | 0 | 11 | 6 | 5 | 0 | 0 | 0 / 0 |
+| OPCODE | SHAPE | 63 | 14 (6 layout) | 1 | 50 | 23 | 22 | 5 | 0 | 13 / 15 |
+| OPCODE | REVIEW | 136 | 12 (4 layout) | 5 | 124 | 79 | 40 | 5 | 0 | 96 / 96 |
+| OPCODE | DIFF | 14 | 4 (3 layout) | 0 | 8 | 3 | 3 | 1 | 1 | 2 / 5 |
+
+"Before" is the trace of the unextended harnesses, on candidate `e9e1ba15…11a9`. Together they
+executed 40 groups.
+
+### What was added
+
+`tests/PhysicsThirdPartyTests.cpp` gains 29 registered families; `tests/PhysicsThirdPartyQhull.c`
+holds the qhull half. Inputs are built once and handed to both sides. The oracle runs at its
+RVAs on objects its own constructors initialise.
+
+- The colliders query the **oracle-built** models on both sides, so they compare the colliders
+  and not the builds.
+- Containers the oracle filled are released through the oracle's own destructor.
+- Registrations: exact families are registered whole, and divergent ones only up to their oracle
+  digest, so no registered line pins candidate output. The Phase 4 floor goes from 101 to 130.
+
+**OPCODE.** Six meshes are used:
+
+- a height field;
+- a triangle soup;
+- a flat grid, where every triangle is coplanar;
+- a degenerate set: collinear, repeated-vertex and duplicate triangles;
+- a single triangle, the single-node model;
+- a closed box.
+
+What runs over them:
+
+- **Model builds.** Each mesh in all four tree kinds, all five splitting-rule families, the kept
+  source tree, and both NovodeX build settings (families `opcode_model_build`, `opcode_refit`).
+- **Colliders.** `RayCollider` in ray and segment form, with culling, closest hit, first contact,
+  temporal coherence, the `+0x88` tolerance, world matrices and `ValidateSettings`. `Sphere`,
+  `OBB` (full box test on and off), `AABB`, `LSS` and `Planes`, with primitive tests on and off,
+  temporal coherence, world matrices, huge and zero-size volumes, a degenerate segment, and
+  planes that contain everything.
+- **Tree-versus-tree.** `AABBTreeCollider` through `BVTCache`: seven model pairs in three
+  placements, both full tests, first contact and temporal coherence. Box against box and flat
+  against flat reach `CoplanarTriTri`.
+- **Vanilla `AABBTree`.** Build, `Refit2`, and the ray, sphere and AABB queries on it.
+- **`SweepAndPrune`.** The NovodeX three-argument `Init`, updates, and the pairs.
+- **ICE maths.** `AABB`, `Plane`, `Triangle`, `IndexedTriangle`, `Matrix4x4`, `InvertPRMatrix`
+  and `OBB`, over singular matrices, collinear triangles and zero extents.
+
+**qhull.** It runs the NovodeX driver's own sequence (`003236`): `qh_init_A`, `qh_initflags`,
+`qh_init_B`, `qh_qhull`, `qh_check_output`, `qh_produce_output`.
+
+- The option sets are `"o"` over 12 point sets, and `"o Qt"`, `"o FA"`, `"o C-0"`, `"o Qx"`,
+  `"o Qbb"`, `"o QbB"`, `"o Qs"`, `"o Tv"` and `"o QR1"` over the five sets that merge.
+- The point sets include a lattice with coplanar points on every face, a jittered slab,
+  duplicated points, a cylinder of coplanar rings, and points far from the origin. Three sets
+  exit with an error: a flat set, too few points, and a collinear set.
+- Every facet, ridge and vertex is compared: ids, flags, sets and point indices on one tape; the
+  doubles on another.
+- The oracle's host object (`.data:0x00125080`, the unrecovered NovodeX class) is replaced for
+  the family by a stand-in with the same nine slots. Each slot's argument count was read at its
+  call sites (`0x0006c727`, `0x00067f84`, `0x00067c7a`, `0x0006d458`, `0x0005c753`,
+  `0x0006dade`, `0x0006dc74`, `0x0007965a`, `0x0008480d`).
+- What `qh_produce_output` hands the host is not compared, because the candidate's hooks are
+  shims. The state it leaves (total area and volume, facet areas) is compared.
+- An error exit is compared as taken or not. The candidate's `qhNovodeXErrexit` drops the exit
+  code and aborts; the harness catches the abort with a `SIGABRT` handler.
+
+### Outcome differences found
+
+**1. Fixed: `AABBCollider::_Collide(const AABBTreeNode*)` argument order.**
+
+- Stock OPCODE 1.3 passes `(Center, Extents)` to `AABBAABBOverlap(const Point& b, const Point& Pb)`,
+  whose parameters are extents then centre. Every other walk passes them the right way round.
+- The image subtracts the node centre from the query centre (`0x000eef35`) and adds the node
+  extents to the query extents (`0x000eef44`). The candidate did the reverse.
+- As a result 33 of the 60 vanilla AABB queries came out differently; in 32 of them the
+  candidate rejected the root.
+- The fix is the new overlay `External/opcode/novodex/OPC_AABBCollider.cpp`, recorded in
+  `MODIFICATIONS.md`. It is the only product change in Task 4, and it moves the candidate from
+  `e9e1ba15…` to `f3a603a2…`. The match class of the group (REVIEW) is unchanged: the matcher
+  cannot see argument order.
+
+**2. Not fixed: the oracle's `VolumeCache` is not OPCODE 1.3's.**
+
+- Stock 1.3 embeds the result `Container` at the head of the cache, and `InitQuery` takes its
+  address. The oracle **loads a `Container*`** from `+0` instead: `mov ecx,[edx]; mov
+  [esi+0x10],ecx` in `SphereCollider::InitQuery` (`0x000de925`), and the same in
+  `OBBCollider::InitQuery` (`0x000d57ab`).
+- It reads `cache.Model` at `+4` (`0x000dea64`), and `SphereCache`'s `Center`, `FatRadius2` and
+  `FatCoeff` at `+8`, `+0x14` and `+0x18` (`0x000dea87`, `0x000dea58`, `0x000dea7f`).
+- NovodeX made the base 8 bytes (`Container*`, `Model`) where stock is 20. The candidate keeps
+  the stock layout: `0x000a112a` stores `&cache`.
+- The harness therefore gives the oracle a NovodeX-layout cache image and the candidate its
+  vendored one, from the same state. With that, all five volume colliders compare exactly, the
+  cache's derived fields included, which confirms the NovodeX layout for all five.
+- The fix changes `OPC_VolumeCollider.h` and the five `InitQuery` bodies, and with them the
+  vendored API that NovodeX callers use. It is left as an open item (below) rather than done here.
+
+**3. Divergent (measured, attributed, not fixed).** These all belong to the summation-order and
+register-lifetime work unit.
+
+| Family | Mismatches, worst ulp | What differs, and where |
+|---|---|---|
+| `opcode_model_build_x87` | 2,316 words | Two causes. **(a) `SPLIT_SPLATTER_POINTS` over a mesh whose x and y variances tie in exact arithmetic** (the height field, the flat grid, the box). The tie is broken by rounding, and the two sides round differently:<br>• `AABBTreeOfTrianglesBuilder::GetSplittingValue` sums `(v2+v1)+v0` and returns the x87 register unrounded in the oracle (`0x000e9925`..`0x000e9933`); the candidate sums `(v0+v1)+v2` and rounds to float (`0x0009f5c1`..`0x0009f5ea`);<br>• `AABBTreeNode::Subdivide` keeps `1/n` unrounded in the oracle (`0x000f0b37`); the candidate stores it as a float (`0x000c4081`).<br>The first split that differs changes the tree. **(b) Every quantized tree.** The oracle keeps `32767/CMax` on the x87 stack and takes `mCenterCoeff = 1/that` (`0x000f31f3`..`0x000f32fd`); the candidate rounds in between, so a coefficient can differ in its last bit and a quantized box by one step. These are three-term sums and precision, not the three-product sums `sum_grouping.csv` records, so no site is listed there. Builds without a tie are `opcode_model_build`, which is exact. |
+| `opcode_ray_x87` | 194 of 525 float words, 377 ulp | Hit distances and barycentrics: `OPC_RayTriOverlap.h`'s sums. There are 84 oracle three-product sites in the eight stab groups and 20 in `RayCollider::InitQuery`. The large ulp values are relative to barycentrics near 0 (absolute differences of about `6e-8`). The discrete outcome of the same queries (`opcode_ray`: hits, face ids, BV and primitive test counts, the cache) is exact. |
+| `opcode_ray_boundary` | 1 (4 words shorter on the candidate side) | Rays aimed exactly at a vertex, along the plane of the root box's face, or through an edge midpoint. `RayAABBOverlap`'s `f = mDir.y*Dz - mDir.z*Dy` stays unrounded in the oracle (`0x000b912d`..`0x000b913f`); the candidate rounds it to float before `fabs` (`0x000a63ff`..`0x000a6407`). The compare predicates are the same: reject iff `abs(f) > r` on both sides. So one boundary ray passes the oracle's root test and fails the candidate's. |
+| `opcode_treecollider_boundary` | 1 (14 words) | The flat grid against the height field, unrotated. Their vertices lie on the same x/y lines, so triangle edges meet exactly, and `TriTriOverlap`'s last bit decides 1 to 5 pair verdicts in five of the queries (381 oracle sites in the ten `_Collide` groups). The other pairs and placements (`opcode_treecollider`) are exact. |
+| `ice_plane_triangle` | 947 of 4,000 | Cross products and `Normalize`. On a collinear triangle the oracle's unrounded residue is tiny but non-zero, so it normalises it; the candidate's is exactly zero, so it returns a zero normal. 5 sum sites. |
+| `ice_matrix4x4` | 1,815 of 6,800 | Cofactor sums: up to 106 ulp in `Invert`, and a singular determinant that is `0` in the oracle against `-1e-16` in the candidate (129 sites). |
+| `ice_obb` | 1,204 of 10,800, 512 ulp | Rotations in `ComputePoints`/`ComputePlanes` (21 sites). |
+| `qhull_hull_x87` | 1,284 of 32,036 double words | Normals, offsets, centrums, `max_outside`/`min_vertex` and areas. `qh_distplane` is one of them (see "Summation order"). The combinatorial hull of every run in `qhull_hull` (52 runs over 9 option sets) is exact. |
+| `qhull_hull_rotated` | 1,201 of 9,431 | `"o QR1"` rotates the input by qhull's random matrix (`qh_randommatrix`, `qh_gram_schmidt`, `qh_rotatepoints`). The rotation rounds differently, the lattice and the slab stop being exactly coplanar in different places, and the merges that follow differ. |
+
+**4. Stock behaviour on both sides, avoided.** OPCODE 1.3 faults in three places:
+
+- a single-triangle model has no tree, and `Collide` walks it when primitive tests are off;
+- `BaseModel::Refit` dereferences the missing tree (`0x000e9418`);
+- `AABBTreeCollider` does the same.
+
+The oracle faults in each, and so would the candidate. The harness does not drive them.
+
+### What still does not run
+
+- **qhull: 151 groups, 70 of them with x87 code.**
+  - About 30 are `io.c` printers for formats the NovodeX driver never asks for (geomview,
+    Mathematica, Voronoi, summaries, statistics).
+  - The rest are geometry and merge paths that only other options reach: Delaunay, half-space,
+    joggle, projection, `qh_getdistance`.
+  - `qh_initqhull_start` and `qh_initqhull_buffers` run inlined into `qh_init_A` in the exe, so
+    their own bodies are not hit.
+- **OPCODE: 38 groups, 5 of them with x87 code.**
+  - `AABBTreeBuilder::GetSplittingValue` (the base version, which only the vertex builder
+    reaches) and the two `AABBTreeOfAABBsBuilder` rows.
+  - The inlined `AABBTreeCollider::Collide(tree, tree)` overloads and `SAP_PairData::Init`/
+    `DumpPairs`. Their code runs inside the callers that inline them in both images, but their
+    own bodies are not hit.
+  - The four callback-variant rows. Their oracle rows have no candidate body of their own.
+  - The `Walk` functions, and destructors the exe inlines.
+
 ## Open items
 
 - **The NovodeX hull library (separate work unit, controller decision after Task 2).** The 31
@@ -730,6 +945,16 @@ Consequences for promotion:
   `qh_distplane` in qhull. Until it lands, Task 5's static proofs for vendored rows state that
   summation order and some register lifetimes are not reproduced, and rows with x87 arithmetic
   still need execution evidence.
+- **The NovodeX `VolumeCache` layout (found by Task 4; not fixed).** The oracle's cache holds a
+  `Container*` at `+0` and the owning model at `+4`, with each collider's own fields from `+8`; the
+  vendored cache embeds the `Container` (see "Task 4: execution coverage", difference 2). The five
+  volume colliders' `InitQuery` rows read the other layout, so they are not promotable as they
+  stand. The fix changes `OPC_VolumeCollider.h`, the five `InitQuery` bodies and the vendored API,
+  and needs a decision on who owns the container (the oracle's scene code supplies it).
+- **Execution gaps after Task 4.** qhull has 70 x87 groups that no differential runs, most of them
+  printers for output formats the NovodeX driver never requests. OPCODE has 5: the base
+  `GetSplittingValue`, the two `AABBTreeOfAABBsBuilder` rows, and two bodies the exes inline. See
+  "What still does not run". A static proof covers these, or nothing does.
 - **OPCODE, after Task 3 (separate work units; see the Task 3 section).**
   - The NovodeX callback instantiation of the no-leaf tree-versus-tree collider:
     - rows `0x000d12b0`, `0x000cd700`, `0x000ca5a0`, `0x000cbe50` (25,613 bytes);
