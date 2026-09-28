@@ -4766,7 +4766,8 @@ void MassFrame::nxMassFrameBuildBox(const float* he)
 		acc *= static_cast<double>(he[2]);
 
 	double m = acc * static_cast<double>(gMassKEight);		// fmul [0x101068f0]
-	double f = m * static_cast<double>(gMassKOneThird);		// fld 1/3; fmul st(1)
+	// fld 1/3; fmul st(1); fstp [esp+0x1c]: the factor is spilled to float.
+	const NxF32 f = static_cast<NxF32>(m * static_cast<double>(gMassKOneThird));
 
 	double xx = static_cast<double>(he[0]) * static_cast<double>(he[0]);
 	double yy = static_cast<double>(he[1]) * static_cast<double>(he[1]);
@@ -4775,9 +4776,16 @@ void MassFrame::nxMassFrameBuildBox(const float* he)
 	mInertia[1] = mInertia[2] = mInertia[3] = 0.0f;			// integer zero stores
 	mInertia[5] = mInertia[6] = mInertia[7] = 0.0f;
 
-	double iXX = (zz + yy) * f;								// fadd st(2) chain
-	double iYY = (zz + xx) * f;
-	double iZZ = (yy + xx) * f;
+	// 0x1bd60-0x1bd72: the three pairwise sums are spilled to float first
+	// (zz + yy, zz + xx, yy + xx), then each is multiplied by the factor
+	// (NpActor.cpp completion Task 5 review; an earlier model kept both in
+	// the register and differed in the last bit at inexact extents).
+	const NxF32 sumX = static_cast<NxF32>(zz + yy);
+	const NxF32 sumY = static_cast<NxF32>(zz + xx);
+	const NxF32 sumZ = static_cast<NxF32>(yy + xx);
+	double iXX = static_cast<double>(sumX) * f;
+	double iYY = static_cast<double>(sumY) * f;
+	double iZZ = static_cast<double>(sumZ) * f;
 
 	mMass = static_cast<NxF32>(m);							// fstp [ecx+0x30]
 	mInertia[0] = static_cast<NxF32>(iXX);					// fstp [ecx]
@@ -4792,8 +4800,8 @@ void MassFrame::nxMassFrameBuildBox(const float* he)
 // .rdata 0.5f at 0x101043cc); the transverse pair carries the full cylinder
 // formula mass*(3r^2+4c^2)/12 ([0x101068f8] = 3, [0x101068f4] = 4, over the
 // .rdata 1/12 at 0x101068e0). axisSelector routes the axial term:
-// 0 -> +0x00, 1 -> +0x10 (and that path never writes +0x00 -- an image hole
-// this transcription reproduces), anything else -> +0x20.
+// 0 -> +0x00, 1 -> +0x10 (with the side term at +0x00, stored at 0x1c836
+// before the selector-1 branch), anything else -> +0x20.
 void MassFrame::nxMassFrameBuildCapsule(unsigned axisSelector, float radius,
 	float cylHalfHeight)
 	{
@@ -4939,65 +4947,91 @@ void nxMassFrameTranslateAt(void* frame, const void* displacement)
 	static_cast<MassFrame*>(frame)->nxMassFrameTranslate(displacement);
 	}
 
-// phys_fn_000833 (0x1c040), __thiscall ret 4: translate the frame by
-// {d.x,d.y,d.z} at param+0. PROVISIONAL: early-out when d all-zero; else
-// d+offset; centered path (new center at origin) vs displaced path.
+// phys_fn_000833 (0x1c040), __thiscall ret 4: translate the frame by the
+// {d.x,d.y,d.z} at param+0 (0x1c040-0x1c598, from the listing).
+// - d all zero bits (integer tests, -0.0 is not zero): nothing.
+// - The cross-product matrix S(o) of the old centre o is built on the stack
+//   (0x1c064-0x1c092: -o.z, o.y, o.z, -o.x, -o.y, o.x; its diagonal is the
+//   .rdata 0.0f [0x101041f0], multiplied in rather than folded); the new
+//   centre c = fl(d + o).
+// - P = S(o) S(o) in the listing's operand orders (0x1c0d7/0x1c350): each
+//   off-diagonal is a product plus a product by 0.0 (so its zero sign and an
+//   infinity's NaN are the x87's), P11 and P22 add the float-rounded -o.x^2.
+// - c all zero bits (0x1c0b9-0x1c0d1): T = P. Otherwise (0x1c26f) Q = S(c)
+//   S(c) with its own orders (-c.y^2 and -c.x^2 rounded where the listing
+//   spills them) and T = fl(P - Q).
+// - Each T word times the mass (+0x30), rounded, then added to the inertia
+//   word (T' + I); the centre becomes fl(o + d) (0x1c578).
+// Every intermediate is a register (double) value rounded at its fstp.
+static volatile NxF32 gMassTranslateZero = 0.0f;	// [0x101041f0]
+
+namespace
+	{
+	inline NxU32 nxMassWordBits(float value)
+		{
+		NxU32 word;
+		memcpy(&word, &value, sizeof(word));
+		return word;
+		}
+	}
+
 void MassFrame::nxMassFrameTranslate(const void* param)
 	{
 	const float* d = static_cast<const float*>(param);
-	unsigned w0,w1,w2;
-	memcpy(&w0,d+0,4); memcpy(&w1,d+1,4); memcpy(&w2,d+2,4);
-	if(w0==0 && w1==0 && w2==0)
-		return;								// 0x1c04e..0x1c05e all-zero early-out
-	// Move the reference center from old_offset (o) to c = d + o. The
-	// inertia about the new reference gains m*(Q(c) - Q(o)) where
-	// Q(r)=|r|^2 I - r r^T. The image splits this into a "centered" path
-	// (when c lands at the origin, Q(c)=0) and a "displaced" path
-	// (generic), but both are the same Delta-Q; we compute the plain delta.
-	const float ox = mOffset.x, oy = mOffset.y, oz = mOffset.z;
-	const float cx = d[0] + ox, cy = d[1] + oy, cz = d[2] + oz;
-	// Q(r) diagonals/off-diagonals as float products, matched to the image's
-	// m32 store points.
-	const float Qc[9] = {
-		cy*cy+cz*cz, -(cx*cy), -(cx*cz),
-		-(cx*cy), cx*cx+cz*cz, -(cy*cz),
-		-(cx*cz), -(cy*cz), cx*cx+cy*cy };
-	const float Qo[9] = {
-		oy*oy+oz*oz, -(ox*oy), -(ox*oz),
-		-(ox*oy), ox*ox+oz*oz, -(oy*oz),
-		-(ox*oz), -(oy*oz), ox*ox+oy*oy };
-	// The diagonal x87 chains at 0x1c26f..34a and 0x1c350..421
-	// materialize negative Q(c) and negative Q(o) with asymmetric product
-	// stores. In particular c.y^2 and c.x^2 are rounded before two of the
-	// additions; an ordinary Q(c)-Q(o) expression differs by a few ulps.
-	const double cx2 = static_cast<double>(cx) * cx;
-	const double cy2 = static_cast<double>(cy) * cy;
-	const double cz2 = static_cast<double>(cz) * cz;
-	const double ox2 = static_cast<double>(ox) * ox;
-	const double oy2 = static_cast<double>(oy) * oy;
-	const double oz2 = static_cast<double>(oz) * oz;
-	const float negativeQc[3] = {
-		static_cast<float>(static_cast<double>(static_cast<float>(-cy2)) - cz2),
-		static_cast<float>(-cx2 - cz2),
-		static_cast<float>(static_cast<double>(static_cast<float>(-cx2)) +
-			static_cast<float>(-cy2))
-		};
-	const float negativeQo[3] = {
-		static_cast<float>(-oy2 - oz2),
-		static_cast<float>(-oz2 + static_cast<float>(-ox2)),
-		static_cast<float>(-oy2 + static_cast<float>(-ox2))
-		};
-	// Centered (c == 0) vs displaced path select the same Delta-Q.
+	if(!nxMassWordBits(d[0]) && !nxMassWordBits(d[1]) && !nxMassWordBits(d[2]))
+		return;
+	const double zero = gMassTranslateZero;
+	const double ox = mOffset.x, oy = mOffset.y, oz = mOffset.z;
+	const float cx = static_cast<float>(static_cast<double>(d[0]) + ox);
+	const float cy = static_cast<float>(oy + d[1]);
+	const float cz = static_cast<float>(oz + d[2]);
+
+	// P = S(o) S(o), 0x1c350-0x1c41d (the same as 0x1c0d7-0x1c1a4).
+	float t[9];
+	const double a = -oy * oy;
+	const double b = oz * -oz;
+	t[0] = static_cast<float>(b + a);
+	t[1] = static_cast<float>(ox * oy + -oz * zero);
+	t[2] = static_cast<float>(-ox * -oz + oy * zero);
+	t[3] = static_cast<float>(-oy * -ox + oz * zero);
+	const float xx = static_cast<float>(ox * -ox);
+	t[4] = static_cast<float>(b + xx);
+	t[5] = static_cast<float>(oz * oy + -ox * zero);
+	t[6] = static_cast<float>(ox * oz + -oy * zero);
+	t[7] = static_cast<float>(-oy * -oz + ox * zero);
+	t[8] = static_cast<float>(a + xx);
+
+	if(nxMassWordBits(cx) || nxMassWordBits(cy) || nxMassWordBits(cz))
+		{
+		// Q = S(c) S(c), 0x1c26f-0x1c34a, then T = P - Q (0x1c423-0x1c49e).
+		const double x = cx, y = cy, z = cz;
+		float q[9];
+		const float yy = static_cast<float>(-y * y);
+		const double zz = -z * z;
+		q[0] = static_cast<float>(yy + zz);
+		q[1] = static_cast<float>(y * x + -z * zero);
+		q[2] = static_cast<float>(-x * -z + y * zero);
+		q[3] = static_cast<float>(-y * -x + z * zero);
+		const double cxx = -x * x;
+		const float cxxSpill = static_cast<float>(cxx);
+		q[4] = static_cast<float>(cxx + zz);
+		q[5] = static_cast<float>(z * y + -x * zero);
+		q[6] = static_cast<float>(z * x + -y * zero);
+		q[7] = static_cast<float>(-y * -z + x * zero);
+		q[8] = static_cast<float>(static_cast<double>(cxxSpill) + yy);
+		for(unsigned i = 0; i < 9; ++i)
+			t[i] = static_cast<float>(static_cast<double>(t[i]) - q[i]);
+		}
+
+	const double mass = mMass;
 	for(unsigned i = 0; i < 9; ++i)
 		{
-		const float term = i % 4 == 0
-			? static_cast<float>(static_cast<double>(negativeQo[i / 4]) -
-				negativeQc[i / 4])
-			: Qc[i] - Qo[i];
-		const float scaled = static_cast<float>(static_cast<double>(term) * mMass);
-		mInertia[i] = static_cast<float>(static_cast<double>(mInertia[i]) + scaled);
+		const float scaled = static_cast<float>(static_cast<double>(t[i]) * mass);
+		mInertia[i] = static_cast<float>(static_cast<double>(scaled) + mInertia[i]);
 		}
-	mOffset.x = cx; mOffset.y = cy; mOffset.z = cz;	// shared tail 0x1c578
+	mOffset.x = static_cast<float>(ox + d[0]);
+	mOffset.y = static_cast<float>(oy + d[1]);
+	mOffset.z = static_cast<float>(oz + d[2]);
 	}
 
 // Provisional phys_fn_000947, ret 12: three stack DWORDs; the last is unused.
@@ -5278,23 +5312,8 @@ void BoxShape::nxBoxComputeMassFrame(MassFrame* dest, float density,
 		{
 		// 0x1c8dd: rotate the centered box frame by the first nine pose words.
 		local.nxMassFrameFoldPayload(extra);
-		// Centered-box specialization of 000833 (0x1c040): the local
-		// frame starts with zero center. Add m*(|t|^2 I - t*t^T), then
-		// center += t. The image stores mass-scaled terms to float before
-		// adding them to inertia (0x1c4a3..0x1c575).
-		const float* translation = static_cast<const float*>(extra) + 9;
-		const double x = translation[0], y = translation[1], z = translation[2];
-		const double terms[9] = { y*y+z*z, -x*y, -x*z,
-			-y*x, x*x+z*z, -y*z, -z*x, -z*y, x*x+y*y };
-		for(unsigned i = 0; i < 9; ++i)
-			{
-			const float term = static_cast<float>(terms[i]);
-			const float scaled = static_cast<float>(static_cast<double>(term) * local.mMass);
-			local.mInertia[i] = static_cast<float>(static_cast<double>(local.mInertia[i]) + scaled);
-			}
-		local.mOffset.x += translation[0];
-		local.mOffset.y += translation[1];
-		local.mOffset.z += translation[2];
+		// 0x1c8e3-0x1c8eb: 000833 with the pose translation (extra + 0x24).
+		local.nxMassFrameTranslate(reinterpret_cast<const unsigned char*>(extra) + 0x24);
 		}
 	if(density != gMassDensitySentinel)
 		local.nxMassFrameScale(density);

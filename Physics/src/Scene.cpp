@@ -2112,6 +2112,41 @@ void nxActorBuildBody(void* actor, const unsigned* desc)
 	}
 
 
+// A float moved through the x87 (fld; fstp) and one negated there (fld;
+// fchs; fstp), as the listings do: loading a signalling NaN quiets it, which
+// an SSE move or sign flip would not.
+static void nxX87MoveFloat(const void* from, void* to)
+	{
+#if defined(_MSC_VER) && defined(_M_IX86)
+	__asm {
+		mov eax, from
+		mov edx, to
+		fld dword ptr [eax]
+		fstp dword ptr [edx]
+	}
+#else
+	memcpy(to, from, 4);
+#endif
+	}
+
+static void nxX87NegateFloat(const void* from, void* to)
+	{
+#if defined(_MSC_VER) && defined(_M_IX86)
+	__asm {
+		mov eax, from
+		mov edx, to
+		fld dword ptr [eax]
+		fchs
+		fstp dword ptr [edx]
+	}
+#else
+	float value;
+	memcpy(&value, from, 4);
+	value = -value;
+	memcpy(to, &value, 4);
+#endif
+	}
+
 int nxActorComputeMassFromShapes(unsigned char* body, float density, float* totalMass,
 	NxMat34* pose, NxVec3* diagonal);
 
@@ -2261,7 +2296,7 @@ static void nxBodyRecordConstruct(unsigned char* record, unsigned char* body,
 // (its two increments).
 static void nxBodyRecordApplyDesc(unsigned char* record, const NxBodyDesc* bodyDesc)
 	{
-	memcpy(record + 0x188, &bodyDesc->mass, 4);
+	nxX87MoveFloat(&bodyDesc->mass, record + 0x188);		// fld [+0x3c]; fst [+0x188]
 	*reinterpret_cast<float*>(record + 0xc0) = static_cast<float>(1.0 / bodyDesc->mass);
 	*reinterpret_cast<float*>(record + 0xb8) = bodyDesc->linearDamping;
 	*reinterpret_cast<float*>(record + 0xbc) = bodyDesc->angularDamping;
@@ -2444,11 +2479,8 @@ void nxActorDestroy(unsigned char* body)
 		float rows[9];
 		nxNpActorComposeRotation(reinterpret_cast<const float*>(record + 0x5c), rows);
 		memcpy(body + 0x20, rows, sizeof(rows));
-		const float* position = reinterpret_cast<const float*>(record + 0x50);
-		*reinterpret_cast<float*>(body + 0x44) = static_cast<float>(
-			static_cast<double>(position[0]));
-		*reinterpret_cast<float*>(body + 0x48) = static_cast<float>(
-			static_cast<double>(position[1]));
+		nxX87MoveFloat(record + 0x50, body + 0x44);
+		nxX87MoveFloat(record + 0x54, body + 0x48);
 		memcpy(body + 0x4c, record + 0x58, 4);
 		nxSceneRemoveBody(scene, record);
 		reinterpret_cast<NxFoundation::Observable*>(record)->notifyObservers(0x100);
@@ -3249,7 +3281,7 @@ static void nxActorRemoveRootFromScene(unsigned char* body)
 // third argument. A false return is 1 (the mesh-inertia failure); a mass
 // that is not above zero (ordered: NaN passes, `test ah,0x41; jp`) is 2.
 // Otherwise pose.t = the centre (integer copies), the frame moves to its
-// centre (0x1c720: 000833 with the negated centre, each fchs exact), and the
+// centre (0x1c720, 000841: 000833 with the negated centre), and the
 // tensor is scaled into the nine-word local:
 // - density > 0 and totalMass > 0 (0x118e): each word times the density;
 // - density > 0 only (0x1242): *totalMass = mass * density, then each word
@@ -3286,7 +3318,10 @@ int nxActorComputeMassFromShapes(unsigned char* body, float density, float* tota
 	if(frame.mass <= 0.0f)
 		return 2;
 	memcpy(&pose->t, frame.offset, sizeof(NxVec3));
-	const float centre[3] = { -frame.offset[0], -frame.offset[1], -frame.offset[2] };
+	// 0x1c720 (row 000841): fld; fchs; fstp of each centre word, then 000833.
+	float centre[3];
+	for(unsigned i = 0; i < 3; ++i)
+		nxX87NegateFloat(&frame.offset[i], &centre[i]);
 	nxMassFrameTranslateAt(&frame, centre);
 	float tensor[9];
 	if(density > 0.0f)

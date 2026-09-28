@@ -788,6 +788,101 @@ static void runTask5DynamicCases(NxPhysicsSDK* sdk, NxPageGuardedAllocator& allo
 	sdk->releaseScene(*scene);
 	}
 
+// Task 5 review: boxes and capsules at translations that are not exact in
+// binary (000849 and 000853 through 000833's displaced path), through
+// updateMassFromShapes and through creation; setDynamic with a quiet and a
+// signalling NaN mass (the 0x63 test lets a NaN mass through; 000793 moves
+// it through the x87).
+static void runTask5ReviewCases(NxPhysicsSDK* sdk, NxActorErrorStream& errors)
+	{
+	errors.enabled = true;
+	NxSceneDesc sceneDesc;
+	sceneDesc.setToDefault();
+	NxScene* scene = sdk->createScene(sceneDesc);
+	if(!scene) { printf("shape_mutation t5r_scene=0\n"); return; }
+	NxMat34 pose;
+	pose.M = axisRotation(1, 0.95533651f, 0.29552022f);
+	pose.t = NxVec3(-0.7f, 1.3f, 0.45f);
+	static const float offsets[4][3] = {
+		{ 0.1f, 0.2f, 0.3f }, { -0.7f, 1.3f, 0.45f }, { 2.9f, -0.35f, 0.05f },
+		{ 0.0f, 0.0f, 0.3f } };
+	const NxVec3 given(1.0f, 2.0f, 3.0f);
+	char label[64];
+	for(unsigned i = 0; i < 4; ++i)
+		{
+		NxBoxShapeDesc box;
+		box.dimensions = NxVec3(0.3f, 1.1f, 0.7f);
+		box.localPose.t = NxVec3(offsets[i][0], offsets[i][1], offsets[i][2]);
+		if(i & 1)
+			box.localPose.M = axisRotation(0, 0.87758255f, 0.47942555f);
+		NxCapsuleShapeDesc capsule;
+		capsule.radius = 0.35f;
+		capsule.height = 1.3f;
+		capsule.localPose.t = NxVec3(offsets[i][2], offsets[i][0], offsets[i][1]);
+		if(i & 2)
+			capsule.localPose.M = axisRotation(2, 0.76484221f, -0.64421767f);
+		NxShapeDesc* one[1] = { &box };
+		NxActor* boxActor = t5Dynamic(scene, one, 1, pose, 0.0f, 2.0f, given);
+		one[0] = &capsule;
+		NxActor* capsuleActor = t5Dynamic(scene, one, 1, pose, 0.0f, 2.0f, given);
+		NxShapeDesc* both[2] = { &box, &capsule };
+		NxActor* pairActor = t5Dynamic(scene, both, 2, pose, 0.0f, 2.0f, given);
+		one[0] = &box;
+		NxActor* createdBox = t5Dynamic(scene, one, 1, pose, 1.7f, 0.0f, NxVec3(0, 0, 0));
+		one[0] = &capsule;
+		NxActor* createdCapsule = t5Dynamic(scene, one, 1, pose, 0.0f, 3.1f, NxVec3(0, 0, 0));
+		NxActor* createdPair = t5Dynamic(scene, both, 2, pose, 0.9f, 0.0f, NxVec3(0, 0, 0));
+		if(!boxActor || !capsuleActor || !pairActor || !createdBox || !createdCapsule ||
+			!createdPair)
+			{
+			printf("shape_mutation t5r_%u_created=0\n", i);
+			continue;
+			}
+		sprintf(label, "t5r_%u_box_density", i);
+		{ const unsigned e0 = errors.reports; boxActor->updateMassFromShapes(1.3f, 0.0f);
+		  printMass(label, boxActor, errors.reports - e0); }
+		sprintf(label, "t5r_%u_box_total", i);
+		{ const unsigned e0 = errors.reports; boxActor->updateMassFromShapes(0.0f, 4.7f);
+		  printMass(label, boxActor, errors.reports - e0); }
+		sprintf(label, "t5r_%u_capsule_density", i);
+		{ const unsigned e0 = errors.reports; capsuleActor->updateMassFromShapes(2.3f, 0.0f);
+		  printMass(label, capsuleActor, errors.reports - e0); }
+		sprintf(label, "t5r_%u_pair_total", i);
+		{ const unsigned e0 = errors.reports; pairActor->updateMassFromShapes(0.0f, 5.9f);
+		  printMass(label, pairActor, errors.reports - e0); }
+		sprintf(label, "t5r_%u_create_box", i);
+		printMass(label, createdBox, 0);
+		sprintf(label, "t5r_%u_create_capsule", i);
+		printMass(label, createdCapsule, 0);
+		sprintf(label, "t5r_%u_create_pair", i);
+		printMass(label, createdPair, 0);
+		}
+
+	// setDynamic with a NaN mass: quiet, then signalling (0x7fa00000).
+	static const unsigned nanBits[2] = { 0x7fc00000u, 0x7fa00000u };
+	for(unsigned i = 0; i < 2; ++i)
+		{
+		NxBoxShapeDesc box;
+		box.dimensions = NxVec3(0.5f, 0.5f, 0.5f);
+		NxActorDesc staticDesc;
+		staticDesc.shapes.pushBack(&box);
+		staticDesc.globalPose = pose;
+		NxActor* actor = scene->createActor(staticDesc);
+		if(!actor) { printf("shape_mutation t5r_nan_%u=0\n", i); continue; }
+		NxBodyDesc body;
+		memcpy(&body.mass, &nanBits[i], 4);
+		body.massSpaceInertia = NxVec3(0.25f, 0.5f, 0.75f);
+		const unsigned e0 = errors.reports;
+		actor->setDynamic(body);
+		sprintf(label, "t5r_nan_%u", i);
+		printMass(label, actor, errors.reports - e0);
+		sprintf(label, "t5r_nan_%u_root", i);
+		printRoot(label, actor);
+		}
+	errors.enabled = false;
+	sdk->releaseScene(*scene);
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	setvbuf(stdout, 0, _IONBF, 0);
@@ -883,6 +978,7 @@ int wmain(int argc, wchar_t** argv)
 	runTask4Cases(sdk, allocator, errors);
 	runTask5Cases(sdk, allocator, errors);
 	runTask5DynamicCases(sdk, allocator, errors);
+	runTask5ReviewCases(sdk, errors);
 	sdk->release();
 	return nxReportPairIdentity(pairDirectory);
 	}

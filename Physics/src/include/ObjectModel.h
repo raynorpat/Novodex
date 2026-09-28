@@ -614,8 +614,9 @@ class MassFrame
 	//! by a {Vec3 d} at param+0. Early-outs when d is all-zero; otherwise
 	//! forms d+offset; if the new center is at the origin uses the centered
 	//! quadratic path (0x1c0d7), else the displaced parallel-axis path
-	//! (0x1c26f), and finally adds d to the offset. PROVISIONAL transcription
-	//! being driven differentially (NOT yet census-closed).
+	//! (0x1c26f), and finally adds d to the offset. Transcribed from the
+	//! listing (NpActor.cpp completion Task 5 review): the 0.0f-multiplied
+	//! diagonal terms and the spilled squares are the listing's.
 	void				nxMassFrameTranslate(const void* param);
 
 	//! +0x00..+0x20, stored row-major as three column triples.

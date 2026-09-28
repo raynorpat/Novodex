@@ -555,7 +555,7 @@ The chain rows, each claimed with a `// phys_fn_` line:
 
 | Row | RVA | B | Owning unit | Candidate | Notes |
 |---|---|---:|---|---|---|
-| 000008 | 0x10a0 | 751 | gap:<start>..Actor.cpp | Scene.cpp:3276 `nxActorComputeMassFromShapes` | 000847 zero, the root's slot 4 at unit density (false: 1), mass not above zero (ordered): 2, pose.t = centre, 0x1c720 (000833 with the negated centre), the three scaling arms (density with or without totalMass written, else the register ratio totalMass / mass), NxDiagonalizeInertiaTensor ([0x101041b8]) |
+| 000008 | 0x10a0 | 751 | gap:<start>..Actor.cpp | Scene.cpp:3308 `nxActorComputeMassFromShapes` | 000847 zero, the root's slot 4 at unit density (false: 1), mass not above zero (ordered): 2, pose.t = centre, 000841 (0x1c720: each centre word through fld/fchs/fstp, then 000833 with them), the three scaling arms (density with or without totalMass written, else the register ratio totalMass / mass), NxDiagonalizeInertiaTensor ([0x101041b8]) |
 | 000026 | 0x19b0 | 465 | Actor.cpp | Scene.cpp:2339 `nxActorBuildRecord` | replaces the creation path's one-box density approximation (`nxActorComputeMass`, removed): 000034 now calls it |
 | 000030 | 0x1c40 | 403 | Actor.cpp | Scene.cpp:2430 `nxActorDestroy` | used by releaseActor and the creation failure path (it replaces `nxSceneActorDestroy`, an empty stub) |
 | 000628 | 0x123d0 | 241 | Scene.cpp | Scene.cpp:1501 `releaseActor` | rewritten: reentry 0x492, the search, E1-style code-2 report 0x4ae ("double deletion detected!"), swap-remove, 000030, the body freed through [0x101041bc] |
@@ -594,8 +594,8 @@ gives 1.0f (000793's arms); every existing Phase 5 transcript is byte-identical.
 **Review items from Task 4.**
 1. The reentry flag .data 0x10123c10 is one variable, `gNxApiReentry` (Scene.cpp), used by
    createJoint/releaseJoint, releaseActor and 000036/000024.
-2. The two `// phys_fn_001273` lines: ObjectModel.cpp's `ShapeBase::ShapeBase` is canonical (the
-   object-layout differential drives it); Scene.cpp's `nxRuntimeShapeBaseInit` is the runtime
+2. The two `// phys_fn_001273` lines: the canonical claim is ObjectModel.h:233, the declaration of
+   `ShapeBase::ShapeBase` (ObjectModel.cpp; the object-layout differential drives it); Scene.cpp's `nxRuntimeShapeBaseInit` is the runtime
    shapes' copy of the same stores.
 3. releaseActor is now 000628 -> 000030: the runtime shapes and groups go through their deleting
    destructors (001323's id push before each free, the [0x101041bc] frees), the record through
@@ -628,6 +628,27 @@ and getLinearVelocity, getMassSpaceInertiaTensor, getCMassGlobalPosition, getMas
 Each case prints the record's mass words, the root's pruning bytes and the Scene's counts. 110
 oracle lines are registered verbatim (repeated report lines once); floor 5 = 1817. 99 of the
 110 are absent from the Task 4 candidate's transcript (6b1a6f2's DLL under the new test).
+
+**Task 5 review** (the follow-up commit):
+- 000833 (`MassFrame::nxMassFrameTranslate`, ObjectModel.cpp) rewritten from the listing
+  (0x1c040-0x1c598): P = S(o) S(o) and, unless the new centre is all zero bits, Q = S(c) S(c) in
+  the listing's operand orders, with the 0.0f-multiplied diagonal terms (their zero signs and an
+  infinity's NaN) and the spilled -c.y^2/-c.x^2 and -o.x^2; T = fl(P - Q), fl(T m) + I. Checked
+  word for word against the oracle's 000833 and 000841 on four translations (a scratch probe calling
+  the oracle rows in-process).
+- 000849 (the box's mass frame) calls 000833 (0x1c8e3-0x1c8eb) instead of its inlined centred
+  specialization, which rounded the squares' sums differently.
+- 000829 (`nxMassFrameBuildBox`) spills the factor mass/3 and the three pairwise sums to float
+  (0x1bd31-0x1bd72); the model kept them in the register and differed in the last bit at the
+  review's extents.
+- Signalling NaNs: 000793's mass (fld/fst), 000030's position x/y (fld/fstp) and 000841's
+  negations (fld/fchs/fstp; the load quiets it) go through the x87 (`nxX87MoveFloat`,
+  `nxX87NegateFloat`, Scene.cpp); a setDynamic case with an SNaN mass shows 0x7fa00000 stored
+  as 0x7fe00000.
+- Tests: boxes and capsules at four inexact translations (with and without rotations), through
+  updateMassFromShapes and creation, and setDynamic with a quiet and a signalling NaN mass: 32
+  more oracle lines, floor 5 = 1849. The object-layout differential (boxslot4 64, mftranslate 54,
+  negtrans 5, mfcombo 6) still has no failure.
 
 Counts after Task 5. Of the 53 `discovered` rows, **53 are faithful**. The 34 `reconstructed` rows
 are unchanged: 30 faithful, 2 X (000086, 000088), 2 M (000116, 000118).
