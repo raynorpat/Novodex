@@ -388,11 +388,41 @@ static const NxDivergentCeiling kDivergentCeilings[] =
 	{ "qhull_random_x87", 317, 0, 0, 3197379813572608ull, 14, 0, 0, 3197379813572608ull, 1.3877787807814457e-14 },	// qhull-gap: QJ/Qr/R: the qhull_hull_x87 class over joggled and perturbed input
 	{ "qhull_direct_x87", 1062, 0, 0, kInf64, 43, 7, 0, 18858823439613952ull, 2.2204460492503131e-16 },	// qhull-gap: out-of-line printers and helpers; the inf words are distances next to 0
 	{ "qhull_merge2_x87", 1700, 0, 0, 2814749767106560ull, 103, 0, 0, 2814749767106560ull, 5.5511151231257827e-15 },	// qhull-gap: the Qn switches, larger thresholds, Qf, Delaunay Qt
-	{ "qhull_paths", 3212, 3204, 0, 0ull, 0, 0, 0, 0ull, 0.0 },	// qhull-gap: distance-test counts and a trace-4 search path; the T4 run is 9 words longer
-	{ "qhull_paths_x87", 644, 1, 0, kInf64, 348, 85, 0, 4616189618054758400ull, HUGE_VAL },	// qhull-gap: the same runs; misaligned after the T4 run's extra lines
+	{ "qhull_paths", 10, 10, 0, 0ull, 0, 0, 0, 0ull, 0.0 },	// qhull-gap: distance-test counts; the hull is the same (10 runs, all aligned)
+	{ "qhull_paths_x87", 186, 0, 0, 1618481116086272ull, 14, 0, 0, 1618481116086272ull, 1.9984014443252818e-15 },	// qhull-gap: the same runs' doubles
+	{ "qhull_paths_t4", 3202, 3194, 0, 0ull, 0, 0, 0, 0ull, 0.0 },	// qhull-gap: T4 over the cube: one more qh_findbest line on the candidate, the rest out of step
+	{ "qhull_paths_t4_x87", 458, 1, 0, kInf64, 334, 85, 0, 4616189618054758400ull, HUGE_VAL },	// qhull-gap: the same run's doubles, out of step
 	{ "qhull_rotation", 268, 268, 0, 0ull, 0, 0, 0, 0ull, 0.0 },	// qhull-gap: "QRn": the merges differ, as qhull_hull_rotated
 	{ "qhull_rotation_x87", 2001, 0, 0, kInf64, 547, 20, 0, 4611686018427387904ull, 2.0 },	// qhull-gap: "QRn"
 	};
+
+// qhull-gap Task 1: the tape-length difference some divergent families are
+// held to exactly (candidate words minus oracle words). A family listed here
+// fails when its length_delta is anything else; families not listed are held
+// by their words/discrete ceilings alone, which count the length difference.
+struct NxLengthCeiling
+	{
+	const char*	name;
+	int			lengthDelta;
+	};
+
+static const NxLengthCeiling kLengthCeilings[] =
+	{
+	{ "qhull_paths", 0 },
+	{ "qhull_paths_x87", 0 },
+	{ "qhull_paths_t4", 9 },		// one more qh_findbest trace line on the candidate
+	{ "qhull_paths_t4_x87", 2 },	// its one number
+	};
+
+static const int kNoLengthCeiling = 0x7fffffff;
+
+static int nxFindLengthCeiling(const char* name)
+	{
+	for(unsigned i = 0; i < sizeof(kLengthCeilings) / sizeof(kLengthCeilings[0]); ++i)
+		if(!strcmp(kLengthCeilings[i].name, name))
+			return kLengthCeilings[i].lengthDelta;
+	return kNoLengthCeiling;
+	}
 
 static const NxDivergentCeiling* nxFindCeiling(const char* name)
 	{
@@ -647,6 +677,12 @@ static void nxReport(const char* name, const char* rva, const char* owner, const
 				name, d.words, ceiling->words, d.discrete, ceiling->discrete, d.floatUlp, ceiling->floatUlp,
 				d.doubleUlp, ceiling->doubleUlp, d.beyond, ceiling->beyond, d.infWords, ceiling->infWords,
 				d.degenerate, ceiling->degenerate, d.finiteUlp, ceiling->finiteUlp, d.beyondAbs, ceiling->beyondAbs);
+			fatal = 1;
+			}
+		else if(nxFindLengthCeiling(name) != kNoLengthCeiling && d.lengthDelta != nxFindLengthCeiling(name))
+			{
+			fprintf(stderr, "FAIL %s length_delta %d is not its recorded %d\n", name, d.lengthDelta,
+				nxFindLengthCeiling(name));
 			fatal = 1;
 			}
 		else if(d.words < ceiling->words || d.discrete < ceiling->discrete || d.floatUlp < ceiling->floatUlp
@@ -5574,7 +5610,10 @@ static void nxQhGapRun(const NxOracleRows& o, const NxQhullEntries& oracle, cons
 			gQhGapTape[0].words[a], gQhGapTape[1].words[b], line);
 		++shown;
 		}
-	// The floats and doubles more than 1e-9 apart, for attribution.
+	// The floats and doubles more than 1e-9 apart (NXQHGAP_FLOAT_MIN=<x> for
+	// another bound), for attribution.
+	const char* floatShowEnv = getenv("NXQHGAP_FLOAT_MIN");
+	const double floatShowMin = floatShowEnv ? atof(floatShowEnv) : 1e-9;
 	shown = 0;
 	for(unsigned i = 0; i + 1 < lenF0 && i + 1 < lenF1 && shown < 4; ++i)
 		{
@@ -5601,7 +5640,7 @@ static void nxQhGapRun(const NxOracleRows& o, const NxQhullEntries& oracle, cons
 			}
 		else
 			continue;
-		if(!(fabs(x - y) > 1e-9) && x == x && y == y)
+		if(!(fabs(x - y) > floatShowMin) && x == x && y == y)
 			continue;
 		const char* source = gQhFloatSource[0][a] ? gQhFloatSource[0][a] : "<hull>";
 		char line[96];
@@ -5877,10 +5916,20 @@ static void nxDriveQhullGap(const NxOracleRows& o, bool selfOnly)
 		{
 		{ 16, "s", 0 }, { 12, "d Qbb", 1 }, { 16, "C-0", 0 }, { 16, "Qx", 0 }, { 16, "Qv", 0 },
 		{ 18, "C0.01", 0 }, { 21, "C0.01", 0 }, { 2, "Qr", 0 }, { 2, "QR-5 Qr", 0 }, { 12, "d Qt", 1 },
-		{ 1, "T4", 0 },	// last: its tape is 9 words longer on the candidate side
 		};
 	nxQhGapFamily(o, "qhull_paths", "qhull_paths_x87", "0x0005c5c0", "phys_fn_002425", "geom.c,qhull.c,poly2.c,merge.c,io.c",
 		"0x0005c5c0", "phys_fn_002425", "geom.c,geom2.c,merge.c", kPaths, sizeof(kPaths) / sizeof(kPaths[0]),
+		selfOnly, kDivergent, kDivergent);
+
+	// DIVERGENT: the cube at trace level 4, in a pair of its own because its
+	// candidate tape is longer (qh_findbest prints one more neighbour visit), so
+	// every word after that line is compared out of step.
+	static const NxQhGapRun kPathsT4[] =
+		{
+		{ 1, "T4", 0 },
+		};
+	nxQhGapFamily(o, "qhull_paths_t4", "qhull_paths_t4_x87", "0x0005dfb0", "phys_fn_002454", "geom.c,qhull.c,poly2.c,merge.c,io.c",
+		"0x0005dfb0", "phys_fn_002454", "geom.c,geom2.c,merge.c", kPathsT4, sizeof(kPathsT4) / sizeof(kPathsT4[0]),
 		selfOnly, kDivergent, kDivergent);
 
 	// DIVERGENT, as qhull_hull_rotated: "QRn" rotates the input by qhull's own

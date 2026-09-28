@@ -2299,7 +2299,7 @@ $NxRequiredCoverageLines = [ordered] @{
         # fopen opened; evidence/qhull-gap.md). Each family is a discrete tape and a
         # float tape. The discrete families that compare exactly, and both tapes of
         # qhull_exact_output/qhull_exact_other, are registered whole; the other float
-        # families, qhull_paths and qhull_rotation are DIVERGENT, registered up to
+        # families, qhull_paths, qhull_paths_t4 and qhull_rotation are DIVERGENT, registered up to
         # the oracle digest, and held by kDivergentCeilings. The
         # pairs above keep printing where Tasks 4 and 5a put them; the pair below
         # carries the totals.
@@ -2327,12 +2327,14 @@ $NxRequiredCoverageLines = [ordered] @{
         'thirdparty name=qhull_exact_output_x87 rva=0x0006d800 owner=phys_fn_002866 source=io.c,geom.c,geom2.c words=24566 oracle=3ae85f24 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=qhull_exact_other rva=0x0007d180 owner=phys_fn_003234 source=qhull.c,poly.c,poly2.c,merge.c,global.c,io.c,qset.c words=37571 oracle=cb2d8512 mismatches=0 worst_ulp=0 verdict=exact',
         'thirdparty name=qhull_exact_other_x87 rva=0x0007d180 owner=phys_fn_003234 source=geom.c,geom2.c,merge.c,io.c words=18072 oracle=22bf6dbb mismatches=0 worst_ulp=0 verdict=exact',
-        'thirdparty name=qhull_paths rva=0x0005c5c0 owner=phys_fn_002425 source=geom.c,qhull.c,poly2.c,merge.c,io.c words=27407 oracle=cc3e11e3',
-        'thirdparty name=qhull_paths_x87 rva=0x0005c5c0 owner=phys_fn_002425 source=geom.c,geom2.c,merge.c words=18247 oracle=a11a0524',
+        'thirdparty name=qhull_paths rva=0x0005c5c0 owner=phys_fn_002425 source=geom.c,qhull.c,poly2.c,merge.c,io.c words=9518 oracle=96cb5a62',
+        'thirdparty name=qhull_paths_x87 rva=0x0005c5c0 owner=phys_fn_002425 source=geom.c,geom2.c,merge.c words=15524 oracle=216821ea',
+        'thirdparty name=qhull_paths_t4 rva=0x0005dfb0 owner=phys_fn_002454 source=geom.c,qhull.c,poly2.c,merge.c,io.c words=17889 oracle=5bc3fc9a',
+        'thirdparty name=qhull_paths_t4_x87 rva=0x0005dfb0 owner=phys_fn_002454 source=geom.c,geom2.c,merge.c words=2723 oracle=248026db',
         'thirdparty name=qhull_rotation rva=0x0005fec0 owner=phys_fn_002518 source=geom2.c,global.c,qhull.c,merge.c words=9980 oracle=e80e1851',
         'thirdparty name=qhull_rotation_x87 rva=0x0005fec0 owner=phys_fn_002518 source=geom2.c,geom.c words=8724 oracle=07282fca',
-        'thirdparty coverage driven=75 divergent=25 words=1636017 layout_checks=47',
-        'thirdparty oracle digest=00d40782'
+        'thirdparty coverage driven=77 divergent=27 words=1636017 layout_checks=47',
+        'thirdparty oracle digest=52015450'
     )
 }
 
@@ -2355,8 +2357,8 @@ $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 0
     '3' = 103  # 18 for NxPhysicsKernelFuzzTests, 85 for NxPhysicsCollisionTests
-    '4' = 165  # 34 for NxPhysicsAssetTests, 131 for NxPhysicsThirdPartyTests (67 + 29 from
-               # vendored-correspondence Task 4 + 5 from its Task 5a + 30 from qhull-gap Task 1)
+    '4' = 167  # 34 for NxPhysicsAssetTests, 133 for NxPhysicsThirdPartyTests (67 + 29 from
+               # vendored-correspondence Task 4 + 5 from its Task 5a + 32 from qhull-gap Task 1)
     '5' = 871  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines
                # (RED on purpose: vtables family open)
     '6' = 403  # 3 oracle-descriptor + 118 oracle-joint + 118 staged-pair-joint + 6 tangent
