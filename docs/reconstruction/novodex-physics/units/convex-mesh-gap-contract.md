@@ -394,24 +394,24 @@ Totals: 25 rows; discovered 10,236 B
 
 | row | rva | bytes | state | phase | callers | role |
 |---|---|---:|---|---:|---|---|
-| 001639 | 0x000313e0 | 157 | discovered | 7 | 002296 | function-static pose pair at 0x10123c7c, guarded by the byte 0x10123c78: a 3x3 identity, then a 4x4 identity at +0x24 (0x10123ca0) (corrected by Task 2e) |
-| 001641 | 0x00031480 | 61 | discovered | 3 | 001465 | edge-pair list dedupe over a copied Container (004844): removes both copies of an edge that appears twice |
-| 001643 | 0x000314c0 | 433 | discovered | 3 | continuation | continuation of 001641 |
+| 001639 | 0x000313e0 | 157 | reconstructed (Task 2e) | 7 | 002296 | function-static pose pair at 0x10123c7c, guarded by the byte 0x10123c78: a 3x3 identity, then a 4x4 identity at +0x24 (0x10123ca0) (corrected by Task 2e) |
+| 001641 | 0x00031480 | 61 | reconstructed (Task 2e) | 3 | 001465 | edge-pair list dedupe over a copied Container (004844): removes both copies of an edge that appears twice |
+| 001643 | 0x000314c0 | 433 | reconstructed (Task 2e) | 3 | continuation | continuation of 001641 |
 | 001645 | 0x00031680 | 29 | reconstructed | 2 | 001451, 001476, 001602, 001611 | vertex-reduction init: [+4] = arg1, [+0] = arg2, zero +8/+0xc/+0x10 |
-| 001647 | 0x000316a0 | 492 | discovered | 2 | 001451, 001476, 001602, 001611 | vertex reduction: RadixSort on the x, y and z keys, writes the remap and the reduced vertex array (004803) |
+| 001647 | 0x000316a0 | 492 | reconstructed (Task 2d) | 2 | 001451, 001476, 001602, 001611 | vertex reduction: RadixSort on the x, y and z keys, writes the remap and the reduced vertex array (004803) |
 | 001649 | 0x00031890 | 61 | reconstructed | 3 | 001461 | release of two owned pointers [+0], [+4] |
-| 001651 | 0x000318d0 | 1,240 | discovered | 3 | 001461 | per-face and per-vertex normal arrays for a mesh description (allocates nbFaces*12 and nbVerts*12 unless supplied); calls 002144 |
-| 001653 | 0x00031db0 | 1,618 | discovered | 3 | 001818, 001849, 002264 | two poses (null = identity, else InvertPRMatrix 005191) and the relative transform of two frames (1,618 B) |
+| 001651 | 0x000318d0 | 1,240 | reconstructed (Task 2e) | 3 | 001461 | per-face and per-vertex normal arrays for a mesh description (allocates nbFaces*12 and nbVerts*12 unless supplied); calls 002144 |
+| 001653 | 0x00031db0 | 1,618 | reconstructed (Task 2e) | 3 | 001818, 001849, 002264 | two poses (null = identity, else InvertPRMatrix 005191) and the relative transform of two frames (1,618 B) |
 | 001655 | 0x00032410 | 66 | reconstructed | 3 | 001431 | buffer pop |
 | 001657 | 0x00032460 | 60 | reconstructed | 4 | 001472 | array reverse |
 | 001659 | 0x000324a0 | 65 | reconstructed | 2 | 001451, 001476, 001602, 001611 | release [+0x10], [+0xc] (the vertex-reduction destructor) |
-| 001661 | 0x000324f0 | 155 | discovered | 2 | 001514, 001812, 001834, 001836 | add a unique axis to a Container of directions: canonical sign, rejected when abs(dot) > 0.9999 against a stored axis |
+| 001661 | 0x000324f0 | 155 | reconstructed (Task 2e) | 2 | 001514, 001812, 001834, 001836 | add a unique axis to a Container of directions: canonical sign, rejected when abs(dot) > 0.9999 against a stored axis |
 | 001663 | 0x00032590 | 19 | reconstructed | 3 | 001411 | Valencies constructor: zero +0..+0x10 |
 | 001665 | 0x000325b0 | 95 | reconstructed | 3 | 001411, 001415, 001419 | Valencies destructor: free +8, +0xc, +0x10 |
-| 001667 | 0x00032610 | 512 | discovered | 3 | 001411 | Valencies::Compute: per-vertex edge counts through an EdgeList (epsilon 0.001f), offsets, adjacent vertices |
+| 001667 | 0x00032610 | 512 | reconstructed (Task 2c) | 3 | 001411 | Valencies::Compute: per-vertex edge counts through an EdgeList (epsilon 0.001f), offsets, adjacent vertices |
 | 001668 | 0x00032810 | 40 | reconstructed | 3 | 001413 | conditional dot-delta sum |
 
-Totals: 16 rows; discovered 4,668 B, reconstructed 435 B
+Totals: 16 rows; discovered 4,668 B, reconstructed 435 B when surveyed. Now all 16 are reconstructed: 001667 by Task 2c, 001647 by Task 2d, the other six discovered rows by Task 2e (the state column says which).
 
 - **Evidence.** The rows between MeshBuilder2 and the distance kernels, with no strings. 001661
   opens the first Foundation-header unit after the ICE files (its 0.9999f follows the block at
@@ -424,8 +424,8 @@ Totals: 16 rows; discovered 4,668 B, reconstructed 435 B
   001514 (convex wrappers), 001812, 001834, 001836; 001663..001668 <- 001411, 001413, 001415,
   001419 (0x00029780.., MESH-shape helpers). **Candidate:** 001413 is modelled in `ObjectModel.cpp`
   (calls 001668's model); the rest have no candidate callers.
-- **Callees outside.** 002144 (0x000532e0, 217 B, not started, closure empty; modelled today as `angleAtVertex` in
-  `SmoothNormals.cpp`, see P-Small) for 001651; 005191
+- **Callees outside.** 002144 (0x000532e0, 217 B, closure empty; reconstructed by Task 2e as a naked
+  row in `SmoothNormals.cpp`, which `angleAtVertex` now calls, see P-Small) for 001651; 005191
   (vendored) for 001653; 004844 (vendored) for 001641; the EdgeList closure for 001667.
 - **x87.** 001651, 001653, 001661, 001668: `/arch:IA32`.
 - **As written by Task 2e** (`Physics/src/IceMeshTools.cpp`). 001651, 001653 and 001661 are the
@@ -445,7 +445,8 @@ Totals: 16 rows; discovered 4,668 B, reconstructed 435 B
   - 001653 is cdecl (relative0, relative1, pose0, pose1): relative0 = pose0 * inverse(pose1) and
     relative1 = pose1 * inverse(pose0), null poses read as identity, each output skipped when
     null; the inverses go through the vendored 005191, whose copies quiet signalling NaNs (the
-    oracle's copy them as integers) -- the one split of its family.
+    oracle's copy them as integers), and the quieted inverse then reaches other NaN signs and
+    payloads downstream -- the one split of its family.
   - 001661 is thiscall on the Container (`ret 4`); the candidate's is __fastcall with an unused edx.
 - **Test route.** As driven by Task 2e: every family is in `NxPhysicsThirdPartyTests` (the rows
   call 001591, the vendored Container and InvertPRMatrix, which that harness links), not in

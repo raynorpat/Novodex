@@ -21,7 +21,8 @@ table below.
 | 2c review | 2026-09-28T14:38:42 | 2026-09-28T14:58:32 | 0 | 0 | Task 2c review: the edge_list / ice_adjacencies plane-divergent split frozen as a list of 13 meshes (the candidate pre-flight kept as a failing check, detail on stderr); every digest unchanged, the coverage line `pairs=1487 side=40 angle=9 meshes=13` replaced by `frozen_meshes=13`; the throwaway callee binding committed as `convex-mesh-gap-2c-bind-oracle-callees.patch` (re-run: 465/124, 306/100, 342/92, 0/0); the 002160 product shim recorded (evidence, contract, row notes); the 001539 errata extended to the no-face-array case. See `## Task 2c`. |
 | 2d | 2026-09-28T15:01:00 | 2026-09-28T15:41:14 | 26 | 10,728 | MeshBuilder2 (sub-unit C, 001591..001637, 25 rows incl. seven continuations) in the new `IceMeshBuilder2.cpp` and the vertex reduction 001647 in `IceMeshTools.cpp`; product forms of 001645 / 001659. Heap checked first: 005700/005701 are `jmp`s to 005668/005702, the same static-CRT heap as 001514's pair (contract Open item 7 closed); the candidate uses its CRT's nothrow `operator new` / `free` with the listing's cookies; the reduction uses the 004803 getter. x87 sections as assembly blocks; the FPU sequences of 001597, 001603, 001607, 001627 equal the listing's (45/62/6/110). Families ice_meshbuilder2 (249 cases over 68 meshes, eight create-block configurations, both control words) and vertex_reduction: exact (178,377 and 24,313 words). 8 lines registered, phase 4 floor 183. 21 traced functions hit. Contract corrected: 001627 runs once per run of faces, not per face. See `## Task 2d`. |
 | 2d review | 2026-09-28T15:44:00 | 2026-09-28T16:09:23 | 0 | 0 | Task 2d review: the uvw and colour streams written as bits (signalling and quiet NaNs, infinities, denormals; 510 / 347 signalling-NaN input words), so the fld/fstp pass-through of 001607 / 001627 is exercised -- still exact, and an integer copy there gives 276 mismatches (patch committed); the ice_meshbuilder2 input, exact, coverage lines and the totals pair re-registered (before/after under `## Task 2d`); 001591 given the oracle's register ABI (__fastcall, `ret 4`); 001647's /GS cookie recorded; trace re-recorded (21 hit). See `## Task 2d`. |
-| 2e | 2026-09-28T16:14:00 | 2026-09-28T16:52:07 | 10 | 4,370 | The rest of sub-unit D (001639, 001641/001643, 001651, 001653, 001661 in `IceMeshTools.cpp`) and P-Small (002144 in `SmoothNormals.cpp`, 001461 in the new `ConvexHull.cpp`, 002186/002188 in the new `TriangleMeshTopology.cpp`); product forms of 001536 and 001649. 001651, 001653, 001661 and 002144 are naked listing transcriptions whose built code equals the listing instruction for instruction; `angleAtVertex` now calls 002144 (every collision line unchanged). Families pose_pair, unique_axis, edge_dedupe, mesh_normals, adjacency_owner in NxPhysicsThirdPartyTests, all exact with signalling NaNs in the inputs; two fixed-input splits under ceilings (944 NaN words the vendored InvertPRMatrix quiets; 155 on Task 2c's frozen meshes), both 0 with the oracle's callees bound in. One throwaway mutation per x87 row detected (the 001653 one only after cancelling pose kinds were added). 19 lines registered, phase 4 floor 202. 11 traced functions hit. Contract: 001639 is a 3x3 and a 4x4 identity; 001641 chains an outline; TriangleMesh +0x84/+0x88 are the Adjacencies and the EdgeList. See `## Task 2e`. |
+| 2e | 2026-09-28T16:14:00 | 2026-09-28T16:52:07 | 10 | 4,370 | The rest of sub-unit D (001639, 001641/001643, 001651, 001653, 001661 in `IceMeshTools.cpp`) and P-Small (002144 in `SmoothNormals.cpp`, 001461 in the new `ConvexHull.cpp`, 002186/002188 in the new `TriangleMeshTopology.cpp`); product forms of 001536 and 001649. 001651, 001653, 001661 and 002144 are naked listing transcriptions whose built code equals the listing instruction for instruction; `angleAtVertex` now calls 002144 (every collision line unchanged). Families pose_pair, unique_axis, edge_dedupe, mesh_normals, adjacency_owner in NxPhysicsThirdPartyTests, all exact with signalling NaNs in the inputs; two fixed-input splits under ceilings (944 NaN words that follow the vendored InvertPRMatrix's quieting of signalling NaNs; 155 on Task 2c's frozen meshes), both 0 with the oracle's callees bound in. One throwaway mutation per x87 row detected (the 001653 one only after cancelling pose kinds were added). 19 lines registered, phase 4 floor 202. 11 traced functions hit. Contract: 001639 is a 3x3 and a 4x4 identity; 001641 chains an outline; TriangleMesh +0x84/+0x88 are the Adjacencies and the EdgeList. See `## Task 2e`. |
+| 2e review | 2026-09-28T16:58:00 | 2026-09-28T17:21:44 | 0 | 0 | Task 2e review cleanups: the four caught mutations re-measured in a `git archive` copy between un-mutated controls (oracle digest a1b4f9a6 unmoved) and cited in the ledger notes of 001661, 001651, 001653 and 002144, which stay reconstructed_not_falsified because a closure needs `dynamically_gated`; the listing comparison now checks absolute operands by their bytes (still 0 differing); the pose_pair split classified over all 944 words (276 quieted signalling NaNs, 668 quiet NaNs differing downstream); the UB of calling Init on a possibly null object noted at 002186/002188; stale contract states updated. See `## Task 2e`, **Review**. |
 
 ## Task 2a: box distance kernels and the entries that reach them
 
@@ -794,7 +795,9 @@ No other row has a candidate caller:
   001712 is. `evidence/convex-mesh-gap-2e-listing-compare.py` shows that each built function in
   NxPhysics.dll equals its listing instruction for instruction (85, 445, 454 and 55 instructions):
   - branch targets are compared by index;
-  - absolute operands are compared as "[abs]";
+  - absolute operands (the float constants) are compared by the 4 bytes each image holds at that
+    address, the oracle's in the pinned DLL and the candidate's in the built one (Task 2e review;
+    first written masking them as "[abs]");
   - the two alignment `lea`s are emitted as their bytes.
 
   Each call reaches the candidate row of the same stable ID: the 004803 getter, 002144, the vendored
@@ -855,8 +858,14 @@ bits):
   - The last two kinds make each element's two large products cancel, so the listing's
     per-element term order is visible.
   - A call that uses the inverse of a raw pose goes to `.inverse_divergent` by a rule on the fixed
-    inputs. Every word that differs there is a NaN that the vendored 005191 quiets, because it
-    copies through the FPU where the oracle copies as integers.
+    inputs. Every word that differs there is a NaN on both sides, and all of them trace to the
+    vendored 005191, which copies through the FPU (quieting signalling NaNs) where the oracle copies
+    as integers (0 with the oracle's bound in, below). 276 are that signalling NaN itself, quieted on
+    the candidate side; the other 668 are quiet NaNs on both sides that differ only in sign (252),
+    payload (140) or both (276): the quieted inverse meets other NaNs downstream in 001653's
+    products, and x87 propagation picks a different operand. (Classified over all 944 words from
+    the harness's ULP_BEYOND detail with its 160-line cap lifted for one throwaway run; Task 2e
+    review.)
   - 001639 is compared on its block, on the same pointer from a second call, and on a third call
     over a poisoned block, which must leave the poison (the guard).
 - **unique_axis.**
@@ -947,3 +956,33 @@ All 11 were hit in one full run of the build of 5aad0c8, which closed
   unresolved-source allowlist entry be removed.
 - The four mutated rows keep the standard note: the mutations above are evidence, not the
   ledgers' closure procedure.
+
+**Review (cleanups).**
+- *Ledger notes of the mutated rows.* 001661 (phase 2), 001651 and 001653 (phase 3) and 002144
+  (phase 4) had a mutation aimed at them and caught, so the standard note ("no mutation has been
+  aimed at this row") was wrong for them. `oracle_differential_falsified` is not available: the
+  validator rejects a differential closure on a row the inventory leaves below `dynamically_gated`
+  (validate_inventory.py, `validate_closure`), and this plan promotes no row above `reconstructed`.
+  Earlier tasks of this plan left their caught mutations (2d's fld/fstp, 276) out of the ledgers
+  altogether. Decision: the four rows keep `reconstructed_not_falsified` and their notes now say
+  the mutation was caught, cite the patch and the count, and say why the row stays deferred; the
+  phase 2, 3 and 4 reason texts name them as the exception. For the notes the four mutations were
+  re-measured in a throwaway `git archive` copy of 14c8ec7 (D:/nx2e), NxPhysicsThirdPartyTests
+  rebuilt after each `git apply` and after each `git apply -R`, with an un-mutated control before
+  the first and after each: every control `thirdparty candidate mismatches=0`, and
+  `thirdparty oracle digest=a1b4f9a6` in all nine runs. Counts: 002144 mesh_normals 4,311; 001651
+  mesh_normals 15,539; 001653 pose_pair 32; 001661 unique_axis 1 (the tape length). 001651's
+  phase 3 deferral named no later phase (`driving_phases: []`), so it could not have been
+  discharged by phase 4 even at `dynamically_gated`; 001661 ([3, 4]) and 001653 ([4, 5, 7]) could.
+- *Listing comparison.* `convex-mesh-gap-2e-listing-compare.py` compares each absolute memory
+  operand by the bytes it reads in its own image (the oracle's pinned DLL, the candidate's built
+  DLL), not as a mask. Re-run on the build of 14c8ec7: 85 / 445 / 454 / 55 instructions, 0 differing
+  (0.0f, 1.0f and 0.9999f's 0x3f7ff972 on both sides).
+- *pose_pair.inverse_divergent wording.* See the corrected bullet above: 276 of the 944 words are the
+  quieted signalling NaN itself and 668 are quiet NaNs on both sides differing in sign or payload
+  downstream (the first wording said every word was a quieted NaN).
+- *002186 / 002188.* Calling Init on the unchecked allocation, as the listing does, is undefined
+  behaviour in C++ when the allocation fails, which would let a compiler drop the null test on the
+  release path. The build of 14c8ec7 keeps it (`test ecx, ecx` before the release in both functions
+  of NxPhysics.dll, 0x10037a13 and 0x10037aaa); TriangleMeshTopology.cpp says so at both calls. The
+  families cannot see it: the recording allocator never fails.

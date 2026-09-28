@@ -2623,7 +2623,8 @@ $NxRequiredCoverageLines = [ordered] @{
         # quiet NaNs, infinities, denormals, -0). The exact families are registered whole. The two
         # splits are rules on the fixed inputs: pose_pair.inverse_divergent holds the calls that use
         # the inverse of a raw pose (the vendored InvertPRMatrix, 005191, quiets signalling NaNs
-        # the oracle's copies as integers), adjacency_owner.plane_divergent 002188's runs on Task
+        # the oracle's copies as integers, and the quieted inverse propagates to other NaN
+        # payloads and signs downstream), adjacency_owner.plane_divergent 002188's runs on Task
         # 2c's 13 frozen meshes; both are registered up to the oracle digest and held by
         # kDivergentCeilings. Every line below is copied from the oracle side of a run
         # (evidence/convex-mesh-gap.md, Task 2e): the name lines' agreement fields are the gate's

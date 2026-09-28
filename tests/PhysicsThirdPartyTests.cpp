@@ -394,7 +394,7 @@ static const NxDivergentCeiling kDivergentCeilings[] =
 	{ "qhull_rotation_x87", 2001, 0, 0, kInf64, 547, 20, 0, 4611686018427387904ull, 2.0 },	// qhull-gap: "QRn"
 	{ "edge_list.plane_divergent", 465, 465, 0, 0, 0, 0, 0, 0ull, 0.0 },	// convex-mesh gap Task 2c: active-edge bits that follow the vendored Plane::Set / Triangle::Normal (005155, 005181); 0 with the oracle's bound in
 	{ "ice_adjacencies.plane_divergent", 124, 124, 0, 0, 0, 0, 0, 0ull, 0.0 },	// the same, through 001546's EdgeList
-	{ "pose_pair.inverse_divergent", 944, 0, 0xffffffffu, 0, 944, 944, 0, 0ull, HUGE_VAL },	// convex-mesh gap Task 2e: 001653 over the inverse of a raw pose; every word a NaN whose signalling bit the vendored InvertPRMatrix (005191) quiets by copying through the FPU; 0 with the oracle's bound in
+	{ "pose_pair.inverse_divergent", 944, 0, 0xffffffffu, 0, 944, 944, 0, 0ull, HUGE_VAL },	// convex-mesh gap Task 2e: 001653 over the inverse of a raw pose; every word a NaN: 276 are a signalling NaN the oracle's 005191 copies as integers and the vendored InvertPRMatrix quiets by copying through the FPU, and 668 are quiet NaNs on both sides that differ only in sign (252), payload (140) or both (276), where that quieted inverse meets other NaNs downstream in 001653's products; 0 with the oracle's 005191 bound in
 	{ "adjacency_owner.plane_divergent", 155, 155, 0, 0, 0, 0, 0, 0ull, 0.0 },	// convex-mesh gap Task 2e: 002188's EdgeList on Task 2c's 13 frozen meshes (005155, 005181); 0 with the oracle's bound in
 	};
 

@@ -46,6 +46,12 @@ __declspec(noinline) void TriangleMesh::createAdjacencies()
 
 	void* memory = nxIceAlloc(sizeof(Adjacencies), NX_MEMORY_PERSISTENT);
 	mAdjacencies = memory ? new(memory) Adjacencies : 0;
+	// As the listing (the call at 0x00054427): Init is called on the pointer without a
+	// null test, so a failed allocation calls it on null. In C++ that call is
+	// undefined behaviour, which lets a compiler drop the null test below; it is
+	// kept by the build of 14c8ec7 (`test ecx, ecx` at 0x10037a13 in its NxPhysics.dll,
+	// checked in its disassembly). A compiler change that drops it moves nothing
+	// the families compare (the recording allocator never fails).
 	if(!mAdjacencies->Init(create))
 		{
 		if(mAdjacencies)
@@ -75,6 +81,12 @@ __declspec(noinline) void TriangleMesh::createEdgeList()
 
 	void* memory = nxIceAlloc(sizeof(EdgeList), NX_MEMORY_PERSISTENT);
 	mEdgeList = memory ? new(memory) EdgeList : 0;
+	// As the listing (the call at 0x000544c0): Init is called on the pointer without a
+	// null test, so a failed allocation calls it on null. In C++ that call is
+	// undefined behaviour, which lets a compiler drop the null test below; it is
+	// kept by the build of 14c8ec7 (`test ecx, ecx` at 0x10037aaa in its NxPhysics.dll,
+	// checked in its disassembly). A compiler change that drops it moves nothing
+	// the families compare (the recording allocator never fails).
 	if(!mEdgeList->Init(create))
 		{
 		if(mEdgeList)
