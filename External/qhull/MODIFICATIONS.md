@@ -105,9 +105,11 @@ site went unconverted. What is unambiguous: **malloc and free survive in `mem.c`
 and in NovodeX's own rows only**, the error exit in `user.c` only, and printing
 everywhere else.
 
-The object itself has no upstream counterpart and is **Task 2b's**, along with
-the driver at `0x0007d420` that calls `qh_init_A` + `qh_initflags` the way
-`unix.c`'s `main()` does, and the OBJ writers at `0x0007df20`/`0x0007dea0`.
+The object itself has no upstream counterpart. It is written by qhull-gap Task 4a
+in `Physics/src/QhullHost.cpp` (first assigned to Task 2b), along with the driver
+at `0x0007d420` that calls `qh_init_A` + `qh_initflags` the way `unix.c`'s `main()`
+does, and the OBJ writers at `0x0007df20`/`0x0007dea0` (qhull-gap Task 4b);
+`docs/reconstruction/novodex-physics/units/convex-cooking-contract.md` has the layout.
 
 ## Claims checked and found to be STOCK — do not "restore" these
 

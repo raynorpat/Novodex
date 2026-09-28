@@ -1012,6 +1012,13 @@ const void* __fastcall NxShapeOwner(const NxCollisionShape* shape, void* edxUnus
 	return shape->owner;
 	}
 
+// phys_fn_001283 at 0x000257b0. The type word at Shape+0xd0, read whole.
+NxU32 __fastcall NxShapeGetType(const NxCollisionShape* shape, void* edxUnused)
+	{
+	(void) edxUnused;
+	return shape->type;
+	}
+
 // phys_fn_002266 at 0x00056650.
 //
 // `mov ecx,[0x10123c04]` loads the SDK singleton and phys_fn_000429 -- the

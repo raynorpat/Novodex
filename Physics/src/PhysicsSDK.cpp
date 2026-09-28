@@ -55,6 +55,17 @@ static ShapePairFunctionTable* gShapePairFunctionTable = 0;
 
 PhysicsSDK* PhysicsSDK::instance = 0;
 
+// The core dump's view of the two file-static arrays above (PhysicsSDK.h).
+const NxReal* nxPhysicsSDKParameters()
+	{
+	return gParameter;
+	}
+
+const NxU32* nxPhysicsSDKGroupCollisionMasks()
+	{
+	return gGroupCollisionMask;
+	}
+
 // Bit 31 of NxMaterial::flags. NxMaterial.h reserves bits 16-31 for internal
 // use; 0x0000e9ee sets this one on the template after the default material has
 // been copied into the material array, and nothing in Phase 2 reads it back.

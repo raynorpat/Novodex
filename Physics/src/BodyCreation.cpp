@@ -51,8 +51,6 @@ class NxSceneInternal;
 void nxSceneAuxRegisterRecord(void* aux, void* record);
 void nxSceneAuxUnregisterRecord(void* aux, void* record);
 void nxSceneRecycleRecordId(NxSceneInternal* scene, unsigned id);
-// 000713 (ObjectModel.cpp): the sleep-group root at +0x1e8, path-compressed.
-unsigned nxBodyRecordFixRoot(void* rec);
 
 namespace
 	{
@@ -68,6 +66,10 @@ class DynamicBodyObservable : public NxFoundation::Observable
 	__forceinline DynamicBodyObservable() {}
 	__forceinline ~DynamicBodyObservable() {}
 	};
+
+// The Observable part is +0x00..+0x13 (+0x14 is a pad word; the pose
+// sub-object starts at +0x18), as the effector session's record found.
+static_assert(sizeof(DynamicBodyObservable) == 0x14, "the record's Observable part is +0x00..+0x13");
 
 NX_INLINE NxU32& bodyWord(void* p, unsigned offset)
 	{
@@ -510,7 +512,7 @@ __declspec(noinline) void DynamicBody::destruct()
 	nxSceneRecycleRecordId(reinterpret_cast<NxSceneInternal*>(scene), bodyWord(this, 0x11c));
 	void* parent = bodyPointer(this, 0x1e8);
 	if(this != parent)
-		bodyWord(this, 0x1e8) = nxBodyRecordFixRoot(parent);
+		bodyPointer(this, 0x1e8) = static_cast<Row000713Fixture*>(parent)->row000713();
 	for(void* member = bodyPointer(this, 0x1e8); member; )
 		{
 		void* next = bodyPointer(member, 0x1fc);

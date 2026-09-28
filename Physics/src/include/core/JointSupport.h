@@ -180,6 +180,18 @@ struct Row000738Fixture
 	void* row000738();
 	};
 
+// Row 000713 (0x00015d50, 32 B; owner gap SceneRaycast..CapsuleShape;
+// written by the effector-and-coredump plan, Task 2). Thiscall on a body
+// record, no stack arguments, plain `ret`: the root of the record chain
+// through +0x1e8 (the candidate's record points +0x1e8 at itself), found
+// recursively with path compression -- 000712's shape on the other chain.
+// The spring-and-damper solver slot 003979 calls it on each body and tests
+// the root's +0x1f8 before it applies a force.
+struct Row000713Fixture
+	{
+	Row000713Fixture* row000713();
+	};
+
 // Row 000791 (0x0001a2c0, 133 B; owner gap SceneRaycast..CapsuleShape;
 // scene-raycast Task 4, sub-area setters). Thiscall on a body record, four
 // stack arguments, `ret 0x10`: add a force at a world position (force,

@@ -1,0 +1,1758 @@
+Scene core dump: cdb breakpoint trace of the core-dump transcript (effector-and-coredump Task 4)
+================================================================================================
+
+A trimmed excerpt of the raw cdb log, in the method of evidence/effector-and-coredump-trace-effector.txt.
+ModLoad lines, banners, register dumps, the echoed breakpoint commands and the program's own
+stdout are removed; the HIT lines of three of the seven coreDump calls are kept in order and
+otherwise unedited (the four full dumps of both scenes repeat the first call's sequence: each
+has the same 1487 hits). The counts below are over the whole raw log. It is the evidence
+behind the dynamic_proof this task records in inventory.json (see
+evidence/effector-and-coredump.md, Task 4).
+
+Debugger:  Microsoft Windows Debugger 10.0.10586.567 (X86)
+Command:   cdb -cf <script> build\Release\NxPhysicsCoreDumpTests.exe <worktree>\build\pairs\candidate
+           (the script breaks on the NxPhysics load with `sxe ld:NxPhysics`, sets the
+           breakpoints below, then runs to exit)
+Recorded:  2026-09-28, on the Task 4 working tree at commit af43f33 (000267 wired, the body
+           loader's live-parameter thresholds, NxPhysicsCoreDumpTests and its registration).
+Candidate: build\pairs\candidate\NxPhysics.dll
+           sha256=0093a9455c82e1de150081fdd10e6bfd54bc4e1c20f584e91dd4d2962f40086f
+           (identical to build\Release\NxPhysics.dll at the time of the trace; the staged pair
+           of the NxPhysicsCoreDumpTests differential, stdout_delta=0).
+Raw log:   397689 bytes, sha256=fb01e1d5938fc6403a589be37471610e9eef1c3172e08e795cb2c3bd439c3fad
+           (not committed; the program's transcript in it matches the differential's).
+Offsets:   module-relative, from build\Release\NxPhysics.map of that build. Rows the
+           candidate's compiler inlined (003992, 003994, 004013) and the continuations of
+           004037 and 004051 are anchored on an instruction inside the enclosing function
+           that only that part executes: the push of a format string only it prints, or
+           (004053) the head of its settings-initialisation loop, found by disassembling the
+           candidate DLL.
+
+The seven calls, in order: text, text with addendum, binary, binary with addendum, the
+deadlock arm (scene B's lock made to look held; 000267 alone), one scene, no scene.
+
+  row     breakpoint                                                                      total  per call (text, text+add, bin, bin+add, deadlock, one, none)
+  000267  NpPhysicsSDK::coreDump                                                              7  1.1.1.1.1.1.1
+  004062  PhysicsSDK::coreDump                                                                6  1.1.1.1.0.1.1
+  003991  SceneDumpNames::meshName                                                            0  0.0.0.0.0.0.0
+  003992  sceneDumpDateTime                                                                   0  0.0.0.0.0.0.0
+  003994  sceneDumpPointerName                                                                0  0.0.0.0.0.0.0
+  003995  sceneDumpToken                                                                   3073  628.628.628.628.0.519.42
+  003997  SceneDumpSetting::store                                                          1079  226.226.226.226.0.175.0
+  003999  SceneDumpSetting::print                                                          1079  226.226.226.226.0.175.0
+  004002  SceneDump::hasDelimiter                                                           187  38.38.38.38.0.35.0
+  004004  SceneDump::jointName                                                              100  20.20.20.20.0.20.0
+  004006  SceneDump::actorName                                                               72  15.15.15.15.0.12.0
+  004007  SceneDump::writeJointFrames                                                        40  8.8.8.8.0.8.0
+  004009  SceneDump::limitPairText                                                           10  2.2.2.2.0.2.0
+  004011  SceneDump::tripleText                                                              25  5.5.5.5.0.5.0
+  004013  SceneDump::motorText                                                                0  0.0.0.0.0.0.0
+  004015  SceneDump::writeJointLine                                                          60  12.12.12.12.0.12.0
+  004017  SceneDump::writeTriggerFlags                                                       71  15.15.15.15.0.11.0
+  004035  SceneDumpNames::writeVertices                                                       0  0.0.0.0.0.0.0
+  004037  SceneDump::writeJoint entry                                                        60  12.12.12.12.0.12.0
+  004046  SceneDump::writeMesh                                                                0  0.0.0.0.0.0.0
+  004048  SceneDump::writeShape                                                              71  15.15.15.15.0.11.0
+  004051  SceneDump::writeAsset entry                                                         9  2.2.2.2.0.1.0
+  001472  SceneDumpConvexMesh::buildPolygons (deferred stub)                                  0  0.0.0.0.0.0.0
+  003981  NxJointDesc::isValid                                                                0  0.0.0.0.0.0.0
+  003983  NxCapsuleShapeDesc::setToDefault                                                    0  0.0.0.0.0.0.0
+  003985  NxJointDesc::setToDefault                                                           0  0.0.0.0.0.0.0
+  003985  NxCylindricalJointDesc::setToDefault                                                0  0.0.0.0.0.0.0
+  003985  NxPrismaticJointDesc::setToDefault                                                  0  0.0.0.0.0.0.0
+  003985  NxPointOnLineJointDesc::setToDefault                                                0  0.0.0.0.0.0.0
+  003985  NxPointInPlaneJointDesc::setToDefault                                               0  0.0.0.0.0.0.0
+  003987  NxSphereShapeDesc::setToDefault                                                     0  0.0.0.0.0.0.0
+  003989  NxTriangleMeshShapeDesc::setToDefault                                               0  0.0.0.0.0.0.0
+  004019  NxCapsuleShapeDesc::isValid                                                         0  0.0.0.0.0.0.0
+  004021  NxRevoluteJointDesc::isValid                                                        0  0.0.0.0.0.0.0
+  004023  NxCylindricalJointDesc::isValid                                                     0  0.0.0.0.0.0.0
+  004023  NxPrismaticJointDesc::isValid                                                       0  0.0.0.0.0.0.0
+  004023  NxPointOnLineJointDesc::isValid                                                     0  0.0.0.0.0.0.0
+  004023  NxPointInPlaneJointDesc::isValid                                                    0  0.0.0.0.0.0.0
+  004025  NxJointDesc scalar deleting destructor                                              0  0.0.0.0.0.0.0
+  004025  NxCylindricalJointDesc scalar deleting destructor                                   0  0.0.0.0.0.0.0
+  004025  NxPrismaticJointDesc scalar deleting destructor                                     0  0.0.0.0.0.0.0
+  004025  NxPointOnLineJointDesc scalar deleting destructor                                   0  0.0.0.0.0.0.0
+  004025  NxPointInPlaneJointDesc scalar deleting destructor                                  0  0.0.0.0.0.0.0
+  004025  NxRevoluteJointDesc scalar deleting destructor                                      0  0.0.0.0.0.0.0
+  004025  NxSphericalJointDesc scalar deleting destructor                                     0  0.0.0.0.0.0.0
+  004027  NxSphericalJointDesc::isValid                                                       0  0.0.0.0.0.0.0
+  004029  NxSphereShapeDesc::isValid                                                          0  0.0.0.0.0.0.0
+  004031  NxCapsuleShapeDesc scalar deleting destructor                                       0  0.0.0.0.0.0.0
+  004031  NxSphereShapeDesc scalar deleting destructor                                        0  0.0.0.0.0.0.0
+  004031  NxTriangleMeshShapeDesc scalar deleting destructor                                  0  0.0.0.0.0.0.0
+  004033  NxTriangleMeshShapeDesc::isValid                                                    0  0.0.0.0.0.0.0
+  004068  Joint::getBodyOwners                                                              120  24.24.24.24.0.24.0
+  004070  Joint::getType                                                                     60  12.12.12.12.0.12.0
+  004072  Joint::is                                                                          40  8.8.8.8.0.8.0
+  004081  Joint::resetLimitPlaneIterator                                                     60  12.12.12.12.0.12.0
+  004083  Joint::hasMoreLimitPlanes                                                          75  15.15.15.15.0.15.0
+  004145  Joint::getNextLimitPlane                                                           15  3.3.3.3.0.3.0
+  004085  Joint::getName                                                                    140  28.28.28.28.0.28.0
+  000015  JointActorBody::getNbShapes                                                        62  13.13.13.13.0.10.0
+  000017  JointActorBody::getShapes                                                          62  13.13.13.13.0.10.0
+  000509  NxSceneInternal::getGravity                                                         9  2.2.2.2.0.1.0
+  000523  NxSceneInternal::getNbPairs                                                         9  2.2.2.2.0.1.0
+  000525  NxSceneInternal::getPairFlagArray (deferred stub)                                   0  0.0.0.0.0.0.0
+  000563  NxSceneInternal::resetJointIterator                                                18  4.4.4.4.0.2.0
+  000567  NxSceneInternal::getNextJoint                                                     138  28.28.28.28.0.26.0
+  001283  NxShapeGetType                                                                     71  15.15.15.15.0.11.0
+  003964  SpringAndDamperEffector::getBodies                                                  5  1.1.1.1.0.1.0
+  003974  SpringAndDamperEffector::getLinearSpring                                            5  1.1.1.1.0.1.0
+  003975  SpringAndDamperEffector::getLinearDamper                                            5  1.1.1.1.0.1.0
+  004037  writeJoint: prismatic header (### Prismatic Joint)                                  5  1.1.1.1.0.1.0
+  004039  writeJoint: revolute limit text (motor(false))                                      5  1.1.1.1.0.1.0
+  004039  writeJoint: cylindrical header (### Cylindrical Joint)                              5  1.1.1.1.0.1.0
+  004041  writeJoint: cylindrical limit text                                                  5  1.1.1.1.0.1.0
+  004043  writeJoint: spherical limit text (jointspring(none))                                5  1.1.1.1.0.1.0
+  004051  writeAsset: asset banner (#### Asset Information)                                   9  2.2.2.2.0.1.0
+  004053  writeAsset: settings initialisation loop head                                     216  48.48.48.48.0.24.0
+  004055  writeAsset: multi-shape block (PsShapeBegin Shape%d)                               14  3.3.3.3.0.2.0
+  004057  writeAsset: actor line (PsShape Shape%d)                                           14  3.3.3.3.0.2.0
+  004057  writeAsset: actor line (kinematic(true))                                            5  1.1.1.1.0.1.0
+  004059  writeAsset: pair loop (PsActorPair)                                                 0  0.0.0.0.0.0.0
+  004061  writeAsset: effector line (PsSpring)                                                5  1.1.1.1.0.1.0
+  003992  date/time, inlined in PhysicsSDK::coreDump (push of the strftime date format)       6  1.1.1.1.0.1.1
+  003994  pointer name, inlined in SceneDump::actorName (named-actor sprintf)                67  14.14.14.14.0.11.0
+  004013  motor text, inlined in SceneDump::writeJoint (push of %s,%s,%s)                     5  1.1.1.1.0.1.0
+
+  Not hit, as expected:
+  - 003991, 004035, 004046, 001472: the mesh arm; the candidate builds no type-4 shape, so the
+    scene has none (units/effector-coredump-contract.md, Task 3b record).
+  - 004059 (its PsActorPair loop) and 000525: no pair flag is ever raised; 000523 returns 0
+    in each of the 9 asset blocks and the loop is skipped.
+  - The descriptor inlines 003981 003983 003985 003987 003989 004019 004021 004023 004025
+    004027 004029 004031 004033: nothing calls them. They are slots of the descriptor tables
+    the dump builds on its stack; the candidate's descriptor constructors inline
+    setToDefault and no isValid or deleting destructor runs, as in the oracle, where the
+    same bodies are reached only through their tables.
+  - The out-of-line copies of 003992 sceneDumpDateTime, 003994 sceneDumpPointerName and
+    004013 SceneDump::motorText: the candidate's compiler inlined each at its one caller;
+    the inlined copies are hit (the anchor rows).
+
+Breakpoints (each echoes and continues):
+bp NxPhysics+0x167c0 ".echo HIT 000267 NpPhysicsSDK::coreDump; gc"
+bp NxPhysics+0x535c0 ".echo HIT 004062 PhysicsSDK::coreDump; gc"
+bp NxPhysics+0x557b0 ".echo HIT 003991 SceneDumpNames::meshName; gc"
+bp NxPhysics+0x56160 ".echo HIT 003992 sceneDumpDateTime; gc"
+bp NxPhysics+0x561d0 ".echo HIT 003994 sceneDumpPointerName; gc"
+bp NxPhysics+0x56430 ".echo HIT 003995 sceneDumpToken; gc"
+bp NxPhysics+0x56c70 ".echo HIT 003997 SceneDumpSetting::store; gc"
+bp NxPhysics+0x558d0 ".echo HIT 003999 SceneDumpSetting::print; gc"
+bp NxPhysics+0x53de0 ".echo HIT 004002 SceneDump::hasDelimiter; gc"
+bp NxPhysics+0x555e0 ".echo HIT 004004 SceneDump::jointName; gc"
+bp NxPhysics+0x534a0 ".echo HIT 004006 SceneDump::actorName; gc"
+bp NxPhysics+0x58c80 ".echo HIT 004007 SceneDump::writeJointFrames; gc"
+bp NxPhysics+0x556c0 ".echo HIT 004009 SceneDump::limitPairText; gc"
+bp NxPhysics+0x574a0 ".echo HIT 004011 SceneDump::tripleText; gc"
+bp NxPhysics+0x55860 ".echo HIT 004013 SceneDump::motorText; gc"
+bp NxPhysics+0x58f30 ".echo HIT 004015 SceneDump::writeJointLine; gc"
+bp NxPhysics+0x59f60 ".echo HIT 004017 SceneDump::writeTriggerFlags; gc"
+bp NxPhysics+0x59fd0 ".echo HIT 004035 SceneDumpNames::writeVertices; gc"
+bp NxPhysics+0x582c0 ".echo HIT 004037 SceneDump::writeJoint entry; gc"
+bp NxPhysics+0x591b0 ".echo HIT 004046 SceneDump::writeMesh; gc"
+bp NxPhysics+0x59590 ".echo HIT 004048 SceneDump::writeShape; gc"
+bp NxPhysics+0x57510 ".echo HIT 004051 SceneDump::writeAsset entry; gc"
+bp NxPhysics+0x535b0 ".echo HIT 001472 SceneDumpConvexMesh::buildPolygons (deferred stub); gc"
+bp NxPhysics+0x543d0 ".echo HIT 003981 NxJointDesc::isValid; gc"
+bp NxPhysics+0x56650 ".echo HIT 003983 NxCapsuleShapeDesc::setToDefault; gc"
+bp NxPhysics+0x56710 ".echo HIT 003985 NxJointDesc::setToDefault; gc"
+bp NxPhysics+0x566a0 ".echo HIT 003985 NxCylindricalJointDesc::setToDefault; gc"
+bp NxPhysics+0x568b0 ".echo HIT 003985 NxPrismaticJointDesc::setToDefault; gc"
+bp NxPhysics+0x56840 ".echo HIT 003985 NxPointOnLineJointDesc::setToDefault; gc"
+bp NxPhysics+0x567d0 ".echo HIT 003985 NxPointInPlaneJointDesc::setToDefault; gc"
+bp NxPhysics+0x56a80 ".echo HIT 003987 NxSphereShapeDesc::setToDefault; gc"
+bp NxPhysics+0x56c10 ".echo HIT 003989 NxTriangleMeshShapeDesc::setToDefault; gc"
+bp NxPhysics+0x540b0 ".echo HIT 004019 NxCapsuleShapeDesc::isValid; gc"
+bp NxPhysics+0x54ba0 ".echo HIT 004021 NxRevoluteJointDesc::isValid; gc"
+bp NxPhysics+0x542b0 ".echo HIT 004023 NxCylindricalJointDesc::isValid; gc"
+bp NxPhysics+0x54a80 ".echo HIT 004023 NxPrismaticJointDesc::isValid; gc"
+bp NxPhysics+0x54960 ".echo HIT 004023 NxPointOnLineJointDesc::isValid; gc"
+bp NxPhysics+0x54840 ".echo HIT 004023 NxPointInPlaneJointDesc::isValid; gc"
+bp NxPhysics+0x532c0 ".echo HIT 004025 NxJointDesc scalar deleting destructor; gc"
+bp NxPhysics+0x53290 ".echo HIT 004025 NxCylindricalJointDesc scalar deleting destructor; gc"
+bp NxPhysics+0x53380 ".echo HIT 004025 NxPrismaticJointDesc scalar deleting destructor; gc"
+bp NxPhysics+0x53350 ".echo HIT 004025 NxPointOnLineJointDesc scalar deleting destructor; gc"
+bp NxPhysics+0x53320 ".echo HIT 004025 NxPointInPlaneJointDesc scalar deleting destructor; gc"
+bp NxPhysics+0x533b0 ".echo HIT 004025 NxRevoluteJointDesc scalar deleting destructor; gc"
+bp NxPhysics+0x53440 ".echo HIT 004025 NxSphericalJointDesc scalar deleting destructor; gc"
+bp NxPhysics+0x55150 ".echo HIT 004027 NxSphericalJointDesc::isValid; gc"
+bp NxPhysics+0x54f70 ".echo HIT 004029 NxSphereShapeDesc::isValid; gc"
+bp NxPhysics+0x53260 ".echo HIT 004031 NxCapsuleShapeDesc scalar deleting destructor; gc"
+bp NxPhysics+0x53410 ".echo HIT 004031 NxSphereShapeDesc scalar deleting destructor; gc"
+bp NxPhysics+0x53470 ".echo HIT 004031 NxTriangleMeshShapeDesc scalar deleting destructor; gc"
+bp NxPhysics+0x55430 ".echo HIT 004033 NxTriangleMeshShapeDesc::isValid; gc"
+bp NxPhysics+0x363f0 ".echo HIT 004068 Joint::getBodyOwners; gc"
+bp NxPhysics+0x36f00 ".echo HIT 004070 Joint::getType; gc"
+bp NxPhysics+0x36f20 ".echo HIT 004072 Joint::is; gc"
+bp NxPhysics+0x37fd0 ".echo HIT 004081 Joint::resetLimitPlaneIterator; gc"
+bp NxPhysics+0x36f10 ".echo HIT 004083 Joint::hasMoreLimitPlanes; gc"
+bp NxPhysics+0x36e40 ".echo HIT 004145 Joint::getNextLimitPlane; gc"
+bp NxPhysics+0x36e30 ".echo HIT 004085 Joint::getName; gc"
+bp NxPhysics+0x39620 ".echo HIT 000015 JointActorBody::getNbShapes; gc"
+bp NxPhysics+0x39650 ".echo HIT 000017 JointActorBody::getShapes; gc"
+bp NxPhysics+0x290e0 ".echo HIT 000509 NxSceneInternal::getGravity; gc"
+bp NxPhysics+0x29130 ".echo HIT 000523 NxSceneInternal::getNbPairs; gc"
+bp NxPhysics+0x29180 ".echo HIT 000525 NxSceneInternal::getPairFlagArray (deferred stub); gc"
+bp NxPhysics+0x2d920 ".echo HIT 000563 NxSceneInternal::resetJointIterator; gc"
+bp NxPhysics+0x29160 ".echo HIT 000567 NxSceneInternal::getNextJoint; gc"
+bp NxPhysics+0x51e0 ".echo HIT 001283 NxShapeGetType; gc"
+bp NxPhysics+0x5f390 ".echo HIT 003964 SpringAndDamperEffector::getBodies; gc"
+bp NxPhysics+0x5f510 ".echo HIT 003974 SpringAndDamperEffector::getLinearSpring; gc"
+bp NxPhysics+0x5f4e0 ".echo HIT 003975 SpringAndDamperEffector::getLinearDamper; gc"
+bp NxPhysics+0x58349 ".echo HIT 004037 writeJoint: prismatic header (### Prismatic Joint); gc"
+bp NxPhysics+0x585e6 ".echo HIT 004039 writeJoint: revolute limit text (motor(false)); gc"
+bp NxPhysics+0x58665 ".echo HIT 004039 writeJoint: cylindrical header (### Cylindrical Joint); gc"
+bp NxPhysics+0x5871d ".echo HIT 004041 writeJoint: cylindrical limit text; gc"
+bp NxPhysics+0x58990 ".echo HIT 004043 writeJoint: spherical limit text (jointspring(none)); gc"
+bp NxPhysics+0x5757c ".echo HIT 004051 writeAsset: asset banner (#### Asset Information); gc"
+bp NxPhysics+0x57710 ".echo HIT 004053 writeAsset: settings initialisation loop head; gc"
+bp NxPhysics+0x57bbc ".echo HIT 004055 writeAsset: multi-shape block (PsShapeBegin Shape%d); gc"
+bp NxPhysics+0x57c32 ".echo HIT 004057 writeAsset: actor line (PsShape Shape%d); gc"
+bp NxPhysics+0x57d46 ".echo HIT 004057 writeAsset: actor line (kinematic(true)); gc"
+bp NxPhysics+0x5803e ".echo HIT 004059 writeAsset: pair loop (PsActorPair); gc"
+bp NxPhysics+0x5826d ".echo HIT 004061 writeAsset: effector line (PsSpring); gc"
+bp NxPhysics+0x53696 ".echo HIT 003992 date/time, inlined in PhysicsSDK::coreDump (push of the strftime date format); gc"
+bp NxPhysics+0x53534 ".echo HIT 003994 pointer name, inlined in SceneDump::actorName (named-actor sprintf); gc"
+bp NxPhysics+0x585c2 ".echo HIT 004013 motor text, inlined in SceneDump::writeJoint (push of %s,%s,%s); gc"
+
+--- coreDump call 1 (text): 1487 hits
+HIT 000267 NpPhysicsSDK::coreDump
+HIT 004062 PhysicsSDK::coreDump
+HIT 003992 date/time, inlined in PhysicsSDK::coreDump (push of the strftime date format)
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 004051 SceneDump::writeAsset entry
+HIT 004051 writeAsset: asset banner (#### Asset Information)
+HIT 000509 NxSceneInternal::getGravity
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 000563 NxSceneInternal::resetJointIterator
+HIT 000567 NxSceneInternal::getNextJoint
+HIT 004037 SceneDump::writeJoint entry
+HIT 004068 Joint::getBodyOwners
+HIT 004070 Joint::getType
+HIT 004081 Joint::resetLimitPlaneIterator
+HIT 004083 Joint::hasMoreLimitPlanes
+HIT 000567 NxSceneInternal::getNextJoint
+HIT 004037 SceneDump::writeJoint entry
+HIT 004068 Joint::getBodyOwners
+HIT 004070 Joint::getType
+HIT 004081 Joint::resetLimitPlaneIterator
+HIT 004083 Joint::hasMoreLimitPlanes
+HIT 000567 NxSceneInternal::getNextJoint
+HIT 004037 SceneDump::writeJoint entry
+HIT 004068 Joint::getBodyOwners
+HIT 004070 Joint::getType
+HIT 004081 Joint::resetLimitPlaneIterator
+HIT 004083 Joint::hasMoreLimitPlanes
+HIT 000567 NxSceneInternal::getNextJoint
+HIT 004037 SceneDump::writeJoint entry
+HIT 004068 Joint::getBodyOwners
+HIT 004070 Joint::getType
+HIT 004081 Joint::resetLimitPlaneIterator
+HIT 004083 Joint::hasMoreLimitPlanes
+HIT 004145 Joint::getNextLimitPlane
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 004083 Joint::hasMoreLimitPlanes
+HIT 000567 NxSceneInternal::getNextJoint
+HIT 004037 SceneDump::writeJoint entry
+HIT 004068 Joint::getBodyOwners
+HIT 004070 Joint::getType
+HIT 004004 SceneDump::jointName
+HIT 004085 Joint::getName
+HIT 004072 Joint::is
+HIT 004007 SceneDump::writeJointFrames
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 004085 Joint::getName
+HIT 004081 Joint::resetLimitPlaneIterator
+HIT 004083 Joint::hasMoreLimitPlanes
+HIT 000567 NxSceneInternal::getNextJoint
+HIT 004037 SceneDump::writeJoint entry
+HIT 004068 Joint::getBodyOwners
+HIT 004070 Joint::getType
+HIT 004004 SceneDump::jointName
+HIT 004085 Joint::getName
+HIT 004072 Joint::is
+HIT 004007 SceneDump::writeJointFrames
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 004085 Joint::getName
+HIT 004081 Joint::resetLimitPlaneIterator
+HIT 004083 Joint::hasMoreLimitPlanes
+HIT 004145 Joint::getNextLimitPlane
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 004083 Joint::hasMoreLimitPlanes
+HIT 000567 NxSceneInternal::getNextJoint
+HIT 004037 SceneDump::writeJoint entry
+HIT 004068 Joint::getBodyOwners
+HIT 004070 Joint::getType
+HIT 004004 SceneDump::jointName
+HIT 004085 Joint::getName
+HIT 004072 Joint::is
+HIT 004007 SceneDump::writeJointFrames
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 004085 Joint::getName
+HIT 004043 writeJoint: spherical limit text (jointspring(none))
+HIT 004081 Joint::resetLimitPlaneIterator
+HIT 004083 Joint::hasMoreLimitPlanes
+HIT 000567 NxSceneInternal::getNextJoint
+HIT 004037 SceneDump::writeJoint entry
+HIT 004068 Joint::getBodyOwners
+HIT 004070 Joint::getType
+HIT 004004 SceneDump::jointName
+HIT 004085 Joint::getName
+HIT 004002 SceneDump::hasDelimiter
+HIT 004072 Joint::is
+HIT 004007 SceneDump::writeJointFrames
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 004085 Joint::getName
+HIT 004011 SceneDump::tripleText
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 004009 SceneDump::limitPairText
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 004011 SceneDump::tripleText
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 004011 SceneDump::tripleText
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 004011 SceneDump::tripleText
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 004081 Joint::resetLimitPlaneIterator
+HIT 004083 Joint::hasMoreLimitPlanes
+HIT 000567 NxSceneInternal::getNextJoint
+HIT 004037 SceneDump::writeJoint entry
+HIT 004068 Joint::getBodyOwners
+HIT 004070 Joint::getType
+HIT 004004 SceneDump::jointName
+HIT 004085 Joint::getName
+HIT 004039 writeJoint: cylindrical header (### Cylindrical Joint)
+HIT 004072 Joint::is
+HIT 004007 SceneDump::writeJointFrames
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 004085 Joint::getName
+HIT 004041 writeJoint: cylindrical limit text
+HIT 004081 Joint::resetLimitPlaneIterator
+HIT 004083 Joint::hasMoreLimitPlanes
+HIT 000567 NxSceneInternal::getNextJoint
+HIT 004037 SceneDump::writeJoint entry
+HIT 004068 Joint::getBodyOwners
+HIT 004070 Joint::getType
+HIT 004004 SceneDump::jointName
+HIT 004085 Joint::getName
+HIT 004072 Joint::is
+HIT 004007 SceneDump::writeJointFrames
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 004085 Joint::getName
+HIT 004039 writeJoint: revolute limit text (motor(false))
+HIT 004081 Joint::resetLimitPlaneIterator
+HIT 004083 Joint::hasMoreLimitPlanes
+HIT 000567 NxSceneInternal::getNextJoint
+HIT 004037 SceneDump::writeJoint entry
+HIT 004068 Joint::getBodyOwners
+HIT 004070 Joint::getType
+HIT 004004 SceneDump::jointName
+HIT 004085 Joint::getName
+HIT 004002 SceneDump::hasDelimiter
+HIT 004072 Joint::is
+HIT 004007 SceneDump::writeJointFrames
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 004085 Joint::getName
+HIT 004009 SceneDump::limitPairText
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 004013 motor text, inlined in SceneDump::writeJoint (push of %s,%s,%s)
+HIT 004011 SceneDump::tripleText
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 004081 Joint::resetLimitPlaneIterator
+HIT 004083 Joint::hasMoreLimitPlanes
+HIT 004145 Joint::getNextLimitPlane
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 004083 Joint::hasMoreLimitPlanes
+HIT 000567 NxSceneInternal::getNextJoint
+HIT 004037 SceneDump::writeJoint entry
+HIT 004068 Joint::getBodyOwners
+HIT 004070 Joint::getType
+HIT 004004 SceneDump::jointName
+HIT 004085 Joint::getName
+HIT 004037 writeJoint: prismatic header (### Prismatic Joint)
+HIT 004072 Joint::is
+HIT 004007 SceneDump::writeJointFrames
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 004085 Joint::getName
+HIT 004081 Joint::resetLimitPlaneIterator
+HIT 004083 Joint::hasMoreLimitPlanes
+HIT 000567 NxSceneInternal::getNextJoint
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004006 SceneDump::actorName
+HIT 004002 SceneDump::hasDelimiter
+HIT 003994 pointer name, inlined in SceneDump::actorName (named-actor sprintf)
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 000015 JointActorBody::getNbShapes
+HIT 000017 JointActorBody::getShapes
+HIT 004048 SceneDump::writeShape
+HIT 001283 NxShapeGetType
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 004017 SceneDump::writeTriggerFlags
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 004006 SceneDump::actorName
+HIT 004002 SceneDump::hasDelimiter
+HIT 003994 pointer name, inlined in SceneDump::actorName (named-actor sprintf)
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 000015 JointActorBody::getNbShapes
+HIT 000017 JointActorBody::getShapes
+HIT 004048 SceneDump::writeShape
+HIT 001283 NxShapeGetType
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003997 SceneDumpSetting::store
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 004017 SceneDump::writeTriggerFlags
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 004006 SceneDump::actorName
+HIT 004002 SceneDump::hasDelimiter
+HIT 003994 pointer name, inlined in SceneDump::actorName (named-actor sprintf)
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 000015 JointActorBody::getNbShapes
+HIT 000017 JointActorBody::getShapes
+HIT 004048 SceneDump::writeShape
+HIT 001283 NxShapeGetType
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 004017 SceneDump::writeTriggerFlags
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 004006 SceneDump::actorName
+HIT 004002 SceneDump::hasDelimiter
+HIT 003994 pointer name, inlined in SceneDump::actorName (named-actor sprintf)
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003995 sceneDumpToken
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 000015 JointActorBody::getNbShapes
+HIT 000017 JointActorBody::getShapes
+HIT 004048 SceneDump::writeShape
+HIT 001283 NxShapeGetType
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 004017 SceneDump::writeTriggerFlags
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 004006 SceneDump::actorName
+HIT 004002 SceneDump::hasDelimiter
+HIT 003994 pointer name, inlined in SceneDump::actorName (named-actor sprintf)
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 000015 JointActorBody::getNbShapes
+HIT 000017 JointActorBody::getShapes
+HIT 004048 SceneDump::writeShape
+HIT 001283 NxShapeGetType
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 004017 SceneDump::writeTriggerFlags
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 004006 SceneDump::actorName
+HIT 004002 SceneDump::hasDelimiter
+HIT 003994 pointer name, inlined in SceneDump::actorName (named-actor sprintf)
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003997 SceneDumpSetting::store
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003995 sceneDumpToken
+HIT 003997 SceneDumpSetting::store
+HIT 003995 sceneDumpToken
+HIT 003997 SceneDumpSetting::store
+HIT 003995 sceneDumpToken
+HIT 000015 JointActorBody::getNbShapes
+HIT 000017 JointActorBody::getShapes
+HIT 004048 SceneDump::writeShape
+HIT 001283 NxShapeGetType
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003997 SceneDumpSetting::store
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 004017 SceneDump::writeTriggerFlags
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 004057 writeAsset: actor line (kinematic(true))
+HIT 004006 SceneDump::actorName
+HIT 004002 SceneDump::hasDelimiter
+HIT 003994 pointer name, inlined in SceneDump::actorName (named-actor sprintf)
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 000015 JointActorBody::getNbShapes
+HIT 000017 JointActorBody::getShapes
+HIT 004055 writeAsset: multi-shape block (PsShapeBegin Shape%d)
+HIT 004048 SceneDump::writeShape
+HIT 001283 NxShapeGetType
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 004017 SceneDump::writeTriggerFlags
+HIT 004048 SceneDump::writeShape
+HIT 001283 NxShapeGetType
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 004017 SceneDump::writeTriggerFlags
+HIT 004048 SceneDump::writeShape
+HIT 001283 NxShapeGetType
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 004017 SceneDump::writeTriggerFlags
+HIT 004057 writeAsset: actor line (PsShape Shape%d)
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 004006 SceneDump::actorName
+HIT 004002 SceneDump::hasDelimiter
+HIT 003994 pointer name, inlined in SceneDump::actorName (named-actor sprintf)
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 000015 JointActorBody::getNbShapes
+HIT 000017 JointActorBody::getShapes
+HIT 004048 SceneDump::writeShape
+HIT 001283 NxShapeGetType
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 004017 SceneDump::writeTriggerFlags
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 004006 SceneDump::actorName
+HIT 004002 SceneDump::hasDelimiter
+HIT 003994 pointer name, inlined in SceneDump::actorName (named-actor sprintf)
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 000015 JointActorBody::getNbShapes
+HIT 000017 JointActorBody::getShapes
+HIT 004055 writeAsset: multi-shape block (PsShapeBegin Shape%d)
+HIT 004057 writeAsset: actor line (PsShape Shape%d)
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 004006 SceneDump::actorName
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 000015 JointActorBody::getNbShapes
+HIT 000017 JointActorBody::getShapes
+HIT 004048 SceneDump::writeShape
+HIT 001283 NxShapeGetType
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 004017 SceneDump::writeTriggerFlags
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 000563 NxSceneInternal::resetJointIterator
+HIT 000567 NxSceneInternal::getNextJoint
+HIT 004015 SceneDump::writeJointLine
+HIT 004068 Joint::getBodyOwners
+HIT 004002 SceneDump::hasDelimiter
+HIT 004004 SceneDump::jointName
+HIT 004085 Joint::getName
+HIT 000567 NxSceneInternal::getNextJoint
+HIT 004015 SceneDump::writeJointLine
+HIT 004068 Joint::getBodyOwners
+HIT 004002 SceneDump::hasDelimiter
+HIT 004004 SceneDump::jointName
+HIT 004085 Joint::getName
+HIT 000567 NxSceneInternal::getNextJoint
+HIT 004015 SceneDump::writeJointLine
+HIT 004068 Joint::getBodyOwners
+HIT 004002 SceneDump::hasDelimiter
+HIT 004002 SceneDump::hasDelimiter
+HIT 004004 SceneDump::jointName
+HIT 004085 Joint::getName
+HIT 000567 NxSceneInternal::getNextJoint
+HIT 004015 SceneDump::writeJointLine
+HIT 004068 Joint::getBodyOwners
+HIT 004002 SceneDump::hasDelimiter
+HIT 004004 SceneDump::jointName
+HIT 004085 Joint::getName
+HIT 004002 SceneDump::hasDelimiter
+HIT 000567 NxSceneInternal::getNextJoint
+HIT 004015 SceneDump::writeJointLine
+HIT 004068 Joint::getBodyOwners
+HIT 004002 SceneDump::hasDelimiter
+HIT 004004 SceneDump::jointName
+HIT 004085 Joint::getName
+HIT 000567 NxSceneInternal::getNextJoint
+HIT 004015 SceneDump::writeJointLine
+HIT 004068 Joint::getBodyOwners
+HIT 004002 SceneDump::hasDelimiter
+HIT 004002 SceneDump::hasDelimiter
+HIT 004004 SceneDump::jointName
+HIT 004085 Joint::getName
+HIT 000567 NxSceneInternal::getNextJoint
+HIT 004015 SceneDump::writeJointLine
+HIT 004068 Joint::getBodyOwners
+HIT 004002 SceneDump::hasDelimiter
+HIT 004004 SceneDump::jointName
+HIT 004085 Joint::getName
+HIT 000567 NxSceneInternal::getNextJoint
+HIT 004015 SceneDump::writeJointLine
+HIT 004068 Joint::getBodyOwners
+HIT 004002 SceneDump::hasDelimiter
+HIT 004002 SceneDump::hasDelimiter
+HIT 004004 SceneDump::jointName
+HIT 004085 Joint::getName
+HIT 004002 SceneDump::hasDelimiter
+HIT 000567 NxSceneInternal::getNextJoint
+HIT 004015 SceneDump::writeJointLine
+HIT 004068 Joint::getBodyOwners
+HIT 004002 SceneDump::hasDelimiter
+HIT 004002 SceneDump::hasDelimiter
+HIT 004004 SceneDump::jointName
+HIT 004085 Joint::getName
+HIT 000567 NxSceneInternal::getNextJoint
+HIT 004015 SceneDump::writeJointLine
+HIT 004068 Joint::getBodyOwners
+HIT 004002 SceneDump::hasDelimiter
+HIT 004002 SceneDump::hasDelimiter
+HIT 004004 SceneDump::jointName
+HIT 004085 Joint::getName
+HIT 000567 NxSceneInternal::getNextJoint
+HIT 004015 SceneDump::writeJointLine
+HIT 004068 Joint::getBodyOwners
+HIT 004002 SceneDump::hasDelimiter
+HIT 004002 SceneDump::hasDelimiter
+HIT 004004 SceneDump::jointName
+HIT 004085 Joint::getName
+HIT 004002 SceneDump::hasDelimiter
+HIT 000567 NxSceneInternal::getNextJoint
+HIT 004015 SceneDump::writeJointLine
+HIT 004068 Joint::getBodyOwners
+HIT 004002 SceneDump::hasDelimiter
+HIT 004002 SceneDump::hasDelimiter
+HIT 004004 SceneDump::jointName
+HIT 004085 Joint::getName
+HIT 000567 NxSceneInternal::getNextJoint
+HIT 000523 NxSceneInternal::getNbPairs
+HIT 003974 SpringAndDamperEffector::getLinearSpring
+HIT 003975 SpringAndDamperEffector::getLinearDamper
+HIT 003964 SpringAndDamperEffector::getBodies
+HIT 004006 SceneDump::actorName
+HIT 004002 SceneDump::hasDelimiter
+HIT 003994 pointer name, inlined in SceneDump::actorName (named-actor sprintf)
+HIT 004006 SceneDump::actorName
+HIT 004002 SceneDump::hasDelimiter
+HIT 003994 pointer name, inlined in SceneDump::actorName (named-actor sprintf)
+HIT 004061 writeAsset: effector line (PsSpring)
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 004051 SceneDump::writeAsset entry
+HIT 004051 writeAsset: asset banner (#### Asset Information)
+HIT 000509 NxSceneInternal::getGravity
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 000563 NxSceneInternal::resetJointIterator
+HIT 000567 NxSceneInternal::getNextJoint
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004053 writeAsset: settings initialisation loop head
+HIT 004006 SceneDump::actorName
+HIT 004002 SceneDump::hasDelimiter
+HIT 003994 pointer name, inlined in SceneDump::actorName (named-actor sprintf)
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 000015 JointActorBody::getNbShapes
+HIT 000017 JointActorBody::getShapes
+HIT 004048 SceneDump::writeShape
+HIT 001283 NxShapeGetType
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 004017 SceneDump::writeTriggerFlags
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 004006 SceneDump::actorName
+HIT 004002 SceneDump::hasDelimiter
+HIT 003994 pointer name, inlined in SceneDump::actorName (named-actor sprintf)
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 000015 JointActorBody::getNbShapes
+HIT 000017 JointActorBody::getShapes
+HIT 004048 SceneDump::writeShape
+HIT 001283 NxShapeGetType
+HIT 003997 SceneDumpSetting::store
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003997 SceneDumpSetting::store
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 004017 SceneDump::writeTriggerFlags
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 004006 SceneDump::actorName
+HIT 004002 SceneDump::hasDelimiter
+HIT 003994 pointer name, inlined in SceneDump::actorName (named-actor sprintf)
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003997 SceneDumpSetting::store
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003997 SceneDumpSetting::store
+HIT 003995 sceneDumpToken
+HIT 003997 SceneDumpSetting::store
+HIT 003995 sceneDumpToken
+HIT 003997 SceneDumpSetting::store
+HIT 003995 sceneDumpToken
+HIT 003997 SceneDumpSetting::store
+HIT 003995 sceneDumpToken
+HIT 000015 JointActorBody::getNbShapes
+HIT 000017 JointActorBody::getShapes
+HIT 004055 writeAsset: multi-shape block (PsShapeBegin Shape%d)
+HIT 004048 SceneDump::writeShape
+HIT 001283 NxShapeGetType
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 004017 SceneDump::writeTriggerFlags
+HIT 004048 SceneDump::writeShape
+HIT 001283 NxShapeGetType
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003997 SceneDumpSetting::store
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 004017 SceneDump::writeTriggerFlags
+HIT 004057 writeAsset: actor line (PsShape Shape%d)
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003995 sceneDumpToken
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 003999 SceneDumpSetting::print
+HIT 000563 NxSceneInternal::resetJointIterator
+HIT 000567 NxSceneInternal::getNextJoint
+HIT 000523 NxSceneInternal::getNbPairs
+
+--- coreDump call 5 (deadlock): 1 hits
+HIT 000267 NpPhysicsSDK::coreDump
+
+--- coreDump call 7 (no_scene): 45 hits
+HIT 000267 NpPhysicsSDK::coreDump
+HIT 004062 PhysicsSDK::coreDump
+HIT 003992 date/time, inlined in PhysicsSDK::coreDump (push of the strftime date format)
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+HIT 003995 sceneDumpToken
+

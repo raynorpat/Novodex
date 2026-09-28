@@ -82,12 +82,12 @@ static NX_INLINE void* islandCompress(void* record)
 	}
 
 // The sleep-group find as the listing inlines it around 000713 (the claimed
-// 000713 is the cdecl nxBodyRecordFixRoot, ObjectModel.cpp).
+// 000713 is core/JointSupport.cpp's thiscall Row000713Fixture::row000713).
 static NX_INLINE void* islandGroupCompress(void* record)
 	{
 	void* parent = islandPointer(record, 0x1e8);
 	if(record != parent)
-		islandWord(record, 0x1e8) = nxBodyRecordFixRoot(parent);
+		islandPointer(record, 0x1e8) = static_cast<Row000713Fixture*>(parent)->row000713();
 	return islandPointer(record, 0x1e8);
 	}
 

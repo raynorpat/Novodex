@@ -46,6 +46,11 @@ class NpScene : public NxScene, public NxAllocateable
 	NxSceneInternal* scene() { return mScene; }
 	const NxSceneInternal* scene() const { return mScene; }
 
+	// The write-lock link at +0x0c (the VALUE, not its address): what the SDK
+	// singletons' scene walks pass to nxNpSceneGuardWriteTry/Leave
+	// (NpPhysicsSDK::coreDump, phys_fn_000267).
+	void* writeLink() const { return mWriteLock; }
+
 	// phys_fn_000293 (0x0000c490) reads the write lock, forwards, and releases it.
 	// The lock walk itself is Phase 3's; the forward is in NpScene.cpp.
 	NxActor* createActor(const NxActorDescBase& desc);

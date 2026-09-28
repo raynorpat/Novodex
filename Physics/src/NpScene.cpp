@@ -40,6 +40,8 @@
 #include "NxJoint.h"
 #include "FoundationSDK.h"
 #include "core/Joint.h"
+#include "core/SpringAndDamperEffector.h"
+#include "core/NpSpringAndDamperEffector.h"
 
 // ---------------------------------------------------------------------------
 // Lock helpers and the remaining condition-object reproduction hole.
@@ -222,16 +224,61 @@ void NpScene::releaseJoint(NxJoint& joint)
 	nxNpSceneGuardLeave(link);
 	}
 
-// (unimplemented) createSpringAndDamperEffector
-NxSpringAndDamperEffector* NpScene::createSpringAndDamperEffector(const NxSpringAndDamperEffectorDesc&)
+// phys_fn_000301 (0x0000c630, 140 B, phase 7):
+// NxScene::createSpringAndDamperEffector. The write lock at +0xc through
+// phys_fn_002364; on failure the deadlock report (code 2, NpScene.cpp line
+// 0x87) and 0. Otherwise Scene::createSpringAndDamperEffector
+// (phys_fn_000587). A null internal effector returns 0. An internal effector
+// with a public object gets the scene's read link (+0x10) at np+0x10 and its
+// write link (+0xc) at np+0xc and the public object is returned; one whose
+// public object is null (its allocation failed) is released again through
+// Scene::releaseEffector (phys_fn_000594) and 0 is returned. The unlock is
+// on the link value loaded before the call.
+NxSpringAndDamperEffector* NpScene::createSpringAndDamperEffector(const NxSpringAndDamperEffectorDesc& desc)
 	{
+	if(!nxNpSceneGuardWriteTry(mWriteLock))
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0x87, 0,
+			"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
+		return 0;
+		}
+	void* link = mWriteLock;
+	SpringAndDamperEffector* effector = mScene->createSpringAndDamperEffector(desc);
+	if(effector)
+		{
+		NpSpringAndDamperEffector* np = effector->mPublicObject;
+		if(np)
+			{
+			np->mWord08 = reinterpret_cast<NxU32>(mReadLock);
+			np->mWord04 = reinterpret_cast<NxU32>(mWriteLock);
+			nxNpSceneGuardLeave(link);
+			return np;
+			}
+		mScene->releaseEffector(effector);
+		}
+	nxNpSceneGuardLeave(link);
 	return 0;
 	}
 
-// (unimplemented) releaseEffector
-void NpScene::releaseEffector(NxEffector&)
+// phys_fn_000303 (0x0000c6c0, 92 B, phase 7): NxScene::releaseEffector. The
+// write lock at +0xc; on failure the deadlock report (code 2, NpScene.cpp
+// line 0x9a). Otherwise the internal effector at the public object's +0x14
+// (phys_fn_003952, called on the argument as the spring-and-damper
+// wrapper, the only effector type) goes to Scene::releaseEffector
+// (phys_fn_000594), then the unlock on the link value loaded before it.
+void NpScene::releaseEffector(NxEffector& effector)
 	{
-	
+	if(!nxNpSceneGuardWriteTry(mWriteLock))
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION,
+			"\\Epic\\Novodex\\SDKs\\Physics\\src\\NpScene.cpp", 0x9a, 0,
+			"PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
+		return;
+		}
+	void* link = mWriteLock;
+	mScene->releaseEffector(static_cast<NpSpringAndDamperEffector&>(effector).getInternal());
+	nxNpSceneGuardLeave(link);
 	}
 
 // (unimplemented) createController
@@ -333,22 +380,40 @@ NxJoint * NpScene::getNextJoint()
 	return result;
 	}
 
-// (unimplemented) getNbEffectors
+// phys_fn_000327 (0x0000c9a0, 36 B, phase 7): NxScene::getNbEffectors. The
+// read lock at +0x10 (phys_fn_002362 / phys_fn_002366, the link value loaded
+// once) around Scene::getNbEffectors (phys_fn_000561).
 NxU32 NpScene::getNbEffectors() const
 	{
-	return 0;
+	void* link = mReadLock;
+	nxNpSceneGuardEnter(link);
+	const NxU32 count = mScene->getNbEffectors();
+	nxNpSceneGuardLeave(link);
+	return count;
 	}
 
-// (unimplemented) resetEffectorIterator
+// phys_fn_000329 (0x0000c9d0, 31 B, phase 7): NxScene::resetEffectorIterator,
+// the same lock around Scene::resetEffectorIterator (phys_fn_000565); the
+// unlock is a tail jump.
 void NpScene::resetEffectorIterator()
 	{
-	
+	void* link = mReadLock;
+	nxNpSceneGuardEnter(link);
+	mScene->resetEffectorIterator();
+	nxNpSceneGuardLeave(link);
 	}
 
-// (unimplemented) getNextEffector
+// phys_fn_000331 (0x0000c9f0, 55 B, phase 7): NxScene::getNextEffector, the
+// same lock around Scene::getNextEffector (phys_fn_000569); an effector is
+// returned as its public object ([internal+0x20], 0xca0a), the end as 0.
 NxEffector * NpScene::getNextEffector()
 	{
-	return 0;
+	void* link = mReadLock;
+	nxNpSceneGuardEnter(link);
+	Effector* effector = mScene->getNextEffector();
+	NxEffector* result = effector ? effector->mPublicObject : 0;
+	nxNpSceneGuardLeave(link);
+	return result;
 	}
 
 // (unimplemented) flushStream

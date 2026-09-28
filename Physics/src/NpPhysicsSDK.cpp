@@ -13,6 +13,8 @@
 #include <stdio.h>
 #include <new>
 #include "Scene.h"
+#include "NpSceneGuard.h"
+#include "FoundationSDK.h"
 
 // 0x0000ea05 allocates 0xc bytes for this object, phys_fn_000226 stores the SDK
 // pointer at +4 and constructs the lock at +8.
@@ -194,10 +196,42 @@ void NpPhysicsSDK::purgeMaterials()
 	mSdk->purgeMaterials();
 	}
 
-bool NpPhysicsSDK::coreDump(const char*, bool, const char*)
+// The scene write link 000267 tries: 000450(i) -> [+0x6cc] (the NxScene
+// wrapper) -> [+0xc].
+static void* nxSdkSceneWriteLink(PhysicsSDK* sdk, NxU32 index)
 	{
-	// phys_fn_000267 -> phys_fn_004062.
-	return false;
+	NxSceneInternal* scene = reinterpret_cast<NxSceneInternal*>(sdk->getScene(index));
+	return static_cast<NpScene*>(scene->publicScene())->writeLink();
+	}
+
+// phys_fn_000267 (0x0000bf20, 221 B)
+// A writer slot. It tries every scene's write link in order (002364); on the
+// first failure it releases the links already taken in reverse (002366),
+// reports code 2 at NpPhysicsSDK.cpp:225 (the immediate 0xe1 at 0x0000bfe1)
+// with the deadlock message and returns false. Otherwise it calls the core
+// dump (phys_fn_004062, `this` = mSdk), keeps its result in bl, releases every
+// link in order and returns the result -- 004062 always returns false.
+bool NpPhysicsSDK::coreDump(const char* fname, bool binary, const char* addendum)
+	{
+	NxU32 i = 0;
+	for(; i < mSdk->getNbScenes(); i++)
+		{
+		if(!nxNpSceneGuardWriteTry(nxSdkSceneWriteLink(mSdk, i)))
+			{
+			while(i)
+				{
+				i--;
+				nxNpSceneGuardLeave(nxSdkSceneWriteLink(mSdk, i));
+				}
+			NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION, NX_NP_PHYSICS_SDK_CPP,
+				0xe1, 0, "PhysicsSDK: WriteLock is still aquired. Procedure call skipped to avoid a deadlock!");
+			return false;
+			}
+		}
+	const bool result = mSdk->coreDump(fname, binary, addendum);
+	for(i = 0; i < mSdk->getNbScenes(); i++)
+		nxNpSceneGuardLeave(nxSdkSceneWriteLink(mSdk, i));
+	return result;
 	}
 
 // phys_fn_000277 with phys_fn_000279 as its outlined unwind, which reports

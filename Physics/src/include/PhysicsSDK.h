@@ -83,6 +83,11 @@ class PhysicsSDK : public NxAllocateable
 	// is Phase 7, so no Phase 2 differential can reach it.
 	void clearDebugRenderable();
 
+	// phys_fn_004062 (0x000950f0). The scene core dump (the .psc writer)
+	// NpPhysicsSDK::coreDump (phys_fn_000267) calls with every scene locked;
+	// always returns false. Written in core/SceneDump.cpp.
+	bool coreDump(const char* fname, bool binary, const char* addendum);
+
 	NpPhysicsSDK* getNp() const { return mNp; }
 
 	// .data 0x00123c04
@@ -100,5 +105,12 @@ class PhysicsSDK : public NxAllocateable
 // directly (ContactPairManager.cpp). Defined in PhysicsSDK.cpp; not rows.
 const NxReal* nxSdkParameterTable();
 const NxU32* nxSdkGroupCollisionMaskTable();
+
+// The live SDK parameters (.data 0x00123b18, NX_PARAMS_NUM_VALUES floats)
+// and the 32 collision-group masks (.data 0x00123a98), which PhysicsSDK.cpp
+// keeps file-static. The core dump (phys_fn_004062) reads both directly;
+// these accessors hand it the arrays without making them global.
+const NxReal* nxPhysicsSDKParameters();
+const NxU32* nxPhysicsSDKGroupCollisionMasks();
 
 #endif

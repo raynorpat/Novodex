@@ -2,16 +2,16 @@
   "schema_version": 1,
   "phase": 4,
   "evidence_file": "evidence/phase4-falsification.md",
-  "note": "Phase 4 owns 1,137 function rows; its code ledger has 1,053 rows: 28 closed and 1,025 deferred. The 84 compiler artifacts and 2,813 data objects stand at classified. Three OPCODE functions formerly misclassified as compiler artifacts are now code. Vendored-correspondence Task 5b promoted 351 vendored rows (qhull 202, OPCODE 149) from discovered to reconstructed; they defer reconstructed_not_falsified, and 257 vendored rows stay vendored_not_falsified (evidence/vendored-correspondence.md, Results). The 2026-09-24 NovodeX pruning helper at phys_fn_004816 and continuation phys_fn_004818 add two closures through exact direct-link oracle cases and row-specific falsifying mutations. phys_fn_005493 has exact direct-link Segment behavior but no isolated mutation, while phys_fn_005517 and phys_fn_005523 have shared-overlay layout evidence but no isolated per-row falsification. These Phase 4 closures remain intermediate; public-DLL routing and final full-image closure are separate work. See evidence/phase4-falsification.md sections 3, 7, 10 and 11.",
+  "note": "Phase 4 owns 1,137 function rows; its code ledger has 1,053 rows: 28 closed and 1,025 deferred. The 84 compiler artifacts and 2,813 data objects stand at classified. Three OPCODE functions formerly misclassified as compiler artifacts are now code. Vendored-correspondence Task 5b promoted 351 vendored rows (qhull 202, OPCODE 149) from discovered to reconstructed; they defer reconstructed_not_falsified, and 257 vendored rows stayed vendored_not_falsified (evidence/vendored-correspondence.md, Results). qhull-gap Task 2 promoted 167 more qhull rows (61,010 bytes) the same way, including 69 rows under the DIFF-equivalent arm; 90 vendored rows (71 qhull, 19 OPCODE) stay vendored_not_falsified (evidence/qhull-gap.md, Task 2). The 2026-09-24 NovodeX pruning helper at phys_fn_004816 and continuation phys_fn_004818 add two closures through exact direct-link oracle cases and row-specific falsifying mutations. phys_fn_005493 has exact direct-link Segment behavior but no isolated mutation, while phys_fn_005517 and phys_fn_005523 have shared-overlay layout evidence but no isolated per-row falsification. These Phase 4 closures remain intermediate; public-DLL routing and final full-image closure are separate work. See evidence/phase4-falsification.md sections 3, 7, 10 and 11.",
   "proof_kinds": {
     "differential_falsified": "a mutation aimed at this row's reconstruction in a throwaway `git archive` copy, rebuilt and run through a staged-pair differential. Phase 4 registers no staged-pair target -- `run_differential.ps1 -Phase 4` resolves none and exits the skip code -- so it closes no row this way",
     "static_proof_falsified": "a mutation aimed at this row and caught by a static check rather than a differential. Phase 4 registers no static-proof target and closes no row this way",
     "oracle_differential_falsified": "a mutation aimed at this row in a throwaway `git archive` copy of the branch, rebuilt, and run through NxPhysicsAssetTests or NxPhysicsThirdPartyTests -- targets that load the pinned DLL in their own process, re-hash it and call the recorded internal addresses, because nothing Phase 4 owns is exported except NxReleasePMap. They run once rather than once per pair, so there is no transcript to diff and the detection is a mismatch count against the shipped bytes. Every closure here was re-measured on this branch between two un-mutated controls built and run in the same session, and the ORACLE-SIDE digest is unmoved in every run -- eaefc573 for the asset target, b87c3219 for the third-party target -- which is what says the mutation moved the candidate and not the measurement. Where a row carries more than one mutation the largest single count is recorded and the mutation field names the rest; where an edit's source statement reaches other census rows the mutation field names that split and only the row the edit belongs to is closed"
   },
   "deferred_reasons": {
-    "not_reconstructed_in_phase": "this phase did not reconstruct this NovodeX row and names nothing that blocks it. A debt, not an obstruction: 306 rows (315 as first written; 313 after later closures; 306 once vendored-correspondence Task 3 moved seven rows it mapped to stock OPCODE functions to vendored_not_falsified). No per-row reachability claim is made, for the reason Phase 3 gave -- this component dispatches through vtables and function-pointer tables and a call-edge walk over it undercounts",
-    "reconstructed_not_falsified": "the row is reconstructed and carries a recorded proof, but no mutation aimed at its own extent produced a measured non-zero count. 462 rows: 76 NovodeX, 35 vendored rows later drives confirmed, and 351 vendored rows vendored-correspondence Task 5b promoted to `reconstructed` on the static and execution evidence each row's static_proof records (this text said 110 and 34 before Task 5b; the ledger held 111 and 35). The sharpest are named in their own notes -- six penetration-map rows against which mutations R, S and U come out GREEN because every accepted fixture leaves a uniform grid, the cell-run decoder whose mutation V is green on this branch and was red only by crash at bcf544f, and two compiler-generated deleting destructors whose only mutation edits a class declaration",
-    "vendored_not_falsified": "NEW IN PHASE 4. The row's candidate side is a pinned upstream source tree -- qhull 2003.1 or OPCODE 1.3 -- vendored under External/, verified byte-identical to the archives outside the recorded modifications, and compiled into the NxQhull or NxOpcode static library NxPhysics.dll links; and NO MUTATION THIS LEDGER CAN SPEND IS AIMED AT THIS ROW. It is PRESENT, NOT PROVEN. 257 rows, 113,070 bytes: 238 qhull and 19 OPCODE (608 and 344,949 until vendored-correspondence Task 5b promoted 351 rows, 231,879 bytes, to `reconstructed` and moved them to reconstructed_not_falsified; 601 and 341,680 until vendored-correspondence Task 3 mapped seven rows the census had filed as NovodeX code to the stock OBB and SweepAndPrune functions they are). With the 386 vendored rows at `reconstructed` that defer `reconstructed_not_falsified` (35 raised by later drives, 351 by Task 5b), 643 vendored rows are unfalsified. It is used only where the census leaves a vendored code row at `discovered` -- validate_inventory.py rejects it on any other row, and rejects any reason but the two vendored ones on such a row -- because `not_reconstructed_in_phase` is false about such a row -- a candidate for its bytes exists and builds; a vendored row a later drive raised to `reconstructed` keeps that reason instead. The reason deliberately makes no reachability claim -- it does not say nothing runs the row -- because the harness drives library entry points that call onward and a per-row 'not exercised' claim would be another of this programme's undercounting walks. FIVE of the 608, none of them among the seven Task 3 added, owned a family NxPhysicsThirdPartyTests drives and that agrees exactly; each note says which family, how many words and which oracle digest, and agreement is still not falsification. Task 5b promoted four of them (phys_fn_002493, phys_fn_002505, phys_fn_003308, phys_fn_005357) and left phys_fn_004844, a DIFF group, here. phys_fn_004842, promoted too, carries an inlined copy of the statement mutation A edits, and none of that mutation's 20 mismatches lands on a word SetSize's call writes",
+    "not_reconstructed_in_phase": "this phase did not reconstruct this NovodeX row and names nothing that blocks it. A debt, not an obstruction: 272 rows (315 as first written; 313 after later closures; 306 once vendored-correspondence Task 3 moved seven rows it mapped to stock OPCODE functions to vendored_not_falsified; 298 after qhull-gap Task 4a wrote 8 more of this phase's rows; 290 after qhull-gap Task 4b wrote 8 more of this phase's rows; 288 after qhull-gap Task 4c wrote 2 more; 275 after qhull-gap Task 4d wrote 13 more; 272 after qhull-gap Task 4e wrote 3 more). No per-row reachability claim is made, for the reason Phase 3 gave -- this component dispatches through vtables and function-pointer tables and a call-edge walk over it undercounts",
+    "reconstructed_not_falsified": "the row is reconstructed and carries a recorded proof, but no mutation aimed at its own extent produced a measured non-zero count. 663 rows: 110 NovodeX (76 before qhull-gap Task 4a, 84 after it, 92 after Task 4b, 94 after Task 4c, 107 after Task 4d), 35 vendored rows later drives confirmed, 351 vendored rows vendored-correspondence Task 5b promoted and 167 vendored qhull rows qhull-gap Task 2 promoted to `reconstructed` on the static and execution evidence each row's static_proof records (462 before qhull-gap Task 2; this text said 110 and 34 before Task 5b; the ledger held 111 and 35). The sharpest are named in their own notes -- six penetration-map rows against which mutations R, S and U come out GREEN because every accepted fixture leaves a uniform grid, the cell-run decoder whose mutation V is green on this branch and was red only by crash at bcf544f, and two compiler-generated deleting destructors whose only mutation edits a class declaration",
+    "vendored_not_falsified": "NEW IN PHASE 4. The row's candidate side is a pinned upstream source tree -- qhull 2003.1 or OPCODE 1.3 -- vendored under External/, verified byte-identical to the archives outside the recorded modifications, and compiled into the NxQhull or NxOpcode static library NxPhysics.dll links; and NO MUTATION THIS LEDGER CAN SPEND IS AIMED AT THIS ROW. It is PRESENT, NOT PROVEN. 90 rows, 52,060 bytes: 71 qhull and 19 OPCODE (257 and 113,070 until qhull-gap Task 2 promoted 167 qhull rows, 61,010 bytes, to `reconstructed` and moved them to reconstructed_not_falsified; 608 and 344,949 until vendored-correspondence Task 5b promoted 351 rows, 231,879 bytes, to `reconstructed` and moved them to reconstructed_not_falsified; 601 and 341,680 until vendored-correspondence Task 3 mapped seven rows the census had filed as NovodeX code to the stock OBB and SweepAndPrune functions they are). With the 553 vendored rows at `reconstructed` that defer `reconstructed_not_falsified` (35 raised by later drives, 351 by Task 5b, 167 by qhull-gap Task 2), 643 vendored rows are unfalsified. It is used only where the census leaves a vendored code row at `discovered` -- validate_inventory.py rejects it on any other row, and rejects any reason but the two vendored ones on such a row -- because `not_reconstructed_in_phase` is false about such a row -- a candidate for its bytes exists and builds; a vendored row a later drive raised to `reconstructed` keeps that reason instead. The reason deliberately makes no reachability claim -- it does not say nothing runs the row -- because the harness drives library entry points that call onward and a per-row 'not exercised' claim would be another of this programme's undercounting walks. FIVE of the 608, none of them among the seven Task 3 added, owned a family NxPhysicsThirdPartyTests drives and that agrees exactly; each note says which family, how many words and which oracle digest, and agreement is still not falsification. Task 5b promoted four of them (phys_fn_002493, phys_fn_002505, phys_fn_003308, phys_fn_005357) and left phys_fn_004844, a DIFF group, here. phys_fn_004842, promoted too, carries an inlined copy of the statement mutation A edits, and none of that mutation's 20 mismatches lands on a word SetSize's call writes",
     "vendored_driven_divergent": "The row has vendored source and is driven against the pinned oracle, but its candidate differs. Used for phys_fn_005493, Segment::SquareDistance: 9356 mismatches in the grid family and 15538 in the wide family; see evidence/phase4-falsification.md section 7. The code remains discovered and must be corrected before falsification can close it.",
     "data_object_not_dispositioned": "no Phase 4 data object gives it: all 2,813 stand at `classified`, the terminal rung their structural proof gives them, and are accounted for by that state"
   },
@@ -50,13 +50,13 @@
       "NxPhysicsThirdPartyTests"
     ],
     "method": "every address above but four is called directly inside NxPhysicsAssetTests or NxPhysicsThirdPartyTests against the pinned DLL after a self-administered SHA-256 check, because no public API path reaches them. The four -- 0x0004ff80 (phys_fn_002033), 0x00050110 (phys_fn_002035), 0x000b3aa0 (phys_fn_004772) and 0x000b3ac0 (phys_fn_004774) -- appear in no harness source: they are reached as callees of 0x00050640 (phys_fn_002047), which NxPhysicsAssetTests calls directly and which calls 0x000b3aa0 four times, 0x000b3ac0 twice, then 0x0004ff80 and 0x00050110. Each closed row was entered by a block that prints an oracle-side digest, and every digest and coverage line is registered in tools/gate_targets.ps1 with a per-phase floor -- 100 for Phase 4, 34 from NxPhysicsAssetTests and 66 from NxPhysicsThirdPartyTests -- so a generator that degrades to nothing fails the gate rather than passing it",
-    "control_words": "every block in both targets runs under the CRT default 0x027f and nothing in Phase 4 runs under 0x0f7f, the _PC_64 | _RC_CHOP word Scene::simulate installs. All 26 closed rows execute under 0x027f in the measurement. Escalated in gates/phase4.json"
+    "control_words": "every block in both targets runs under the CRT default 0x027f and nothing in Phase 4 runs under 0x0f7f, the _PC_64 | _RC_CHOP word Scene::simulate installs. All 26 closed rows execute under 0x027f in the measurement. Escalated in gates/phase4.json qhull-gap addendum (2026-09-28, appended; the text before it is as measured then): NxPhysicsThirdPartyTests now sets 0x0f7f itself for the convex-cooking families hull_create_pc64, hull_compute_pc64 and their _obj/_objbytes twins (qhull-gap Tasks 4e and 5), so the 40 hull-library rows (phys_fn_002233-002237, 003236-003371) and the vendored qhull they call run under 0x0f7f in that target, compared exact against the oracle under the same word; every other Phase 4 block still runs under 0x027f."
   },
   "counts": {
     "oracle_differential_falsified": 28,
-    "deferred_not_reconstructed_in_phase": 289,
-    "deferred_reconstructed_not_falsified": 479,
-    "deferred_vendored_not_falsified": 257
+    "deferred_not_reconstructed_in_phase": 255,
+    "deferred_reconstructed_not_falsified": 680,
+    "deferred_vendored_not_falsified": 90
   },
   "closed": [
     {
@@ -1569,25 +1569,28 @@
       "id": "phys_fn_002233",
       "rva": "0x00054920",
       "size": 277,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002235",
       "rva": "0x00054a40",
       "size": 22,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002237",
       "rva": "0x00054a60",
       "size": 28,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002239",
@@ -1706,9 +1709,10 @@
       "id": "phys_fn_002430",
       "rva": "0x0005cb40",
       "size": 869,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002432",
@@ -1784,9 +1788,10 @@
       "id": "phys_fn_002448",
       "rva": "0x0005d980",
       "size": 107,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002450",
@@ -1801,9 +1806,10 @@
       "id": "phys_fn_002452",
       "rva": "0x0005de50",
       "size": 348,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm ii) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002454",
@@ -1836,17 +1842,19 @@
       "id": "phys_fn_002460",
       "rva": "0x0005e490",
       "size": 439,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002462",
       "rva": "0x0005e650",
       "size": 1026,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002464",
@@ -1897,9 +1905,10 @@
       "id": "phys_fn_002475",
       "rva": "0x0005ed60",
       "size": 39,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002477",
@@ -1984,9 +1993,10 @@
       "id": "phys_fn_002495",
       "rva": "0x0005f590",
       "size": 98,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002497",
@@ -2019,9 +2029,10 @@
       "id": "phys_fn_002503",
       "rva": "0x0005fa60",
       "size": 258,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002505",
@@ -2036,9 +2047,10 @@
       "id": "phys_fn_002507",
       "rva": "0x0005fbb0",
       "size": 146,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002509",
@@ -2053,9 +2065,10 @@
       "id": "phys_fn_002511",
       "rva": "0x0005fd10",
       "size": 264,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002518",
@@ -2069,9 +2082,10 @@
       "id": "phys_fn_002520",
       "rva": "0x0005ff40",
       "size": 167,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002522",
@@ -2152,33 +2166,37 @@
       "id": "phys_fn_002540",
       "rva": "0x00060a40",
       "size": 410,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002542",
       "rva": "0x00060be0",
       "size": 1413,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002544",
       "rva": "0x00061170",
       "size": 303,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002546",
       "rva": "0x000612a0",
       "size": 100,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm ii) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002548",
@@ -2201,25 +2219,28 @@
       "id": "phys_fn_002552",
       "rva": "0x00061780",
       "size": 519,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002554",
       "rva": "0x00061990",
       "size": 616,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002556",
       "rva": "0x00061c00",
       "size": 206,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002558",
@@ -2242,17 +2263,19 @@
       "id": "phys_fn_002562",
       "rva": "0x00061d90",
       "size": 378,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm ii) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002564",
       "rva": "0x00061f10",
       "size": 343,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm ii) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002566",
@@ -2341,217 +2364,244 @@
       "id": "phys_fn_002585",
       "rva": "0x000626c0",
       "size": 47,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002587",
       "rva": "0x000626f0",
       "size": 356,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002591",
       "rva": "0x00062860",
       "size": 68,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002595",
       "rva": "0x000628b0",
       "size": 68,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002599",
       "rva": "0x00062900",
       "size": 68,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002603",
       "rva": "0x00062950",
       "size": 68,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002607",
       "rva": "0x000629a0",
       "size": 1590,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002609",
       "rva": "0x00062fe0",
       "size": 68,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002613",
       "rva": "0x00063030",
       "size": 196,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002617",
       "rva": "0x00063100",
       "size": 68,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002621",
       "rva": "0x00063150",
       "size": 68,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002625",
       "rva": "0x000631a0",
       "size": 68,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002629",
       "rva": "0x000631f0",
       "size": 132,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002633",
       "rva": "0x00063280",
       "size": 72,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002635",
       "rva": "0x000632d0",
       "size": 85,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002637",
       "rva": "0x00063330",
       "size": 148,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002641",
       "rva": "0x000633d0",
       "size": 72,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002643",
       "rva": "0x00063420",
       "size": 136,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002645",
       "rva": "0x000634b0",
       "size": 84,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002649",
       "rva": "0x00063510",
       "size": 55,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002651",
       "rva": "0x00063550",
       "size": 72,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002653",
       "rva": "0x000635a0",
       "size": 72,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002655",
       "rva": "0x000635f0",
       "size": 148,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002659",
       "rva": "0x00063690",
       "size": 58,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002661",
       "rva": "0x000636d0",
       "size": 1325,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002663",
       "rva": "0x00063c00",
       "size": 2397,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002665",
       "rva": "0x00064560",
       "size": 2199,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002670",
@@ -2591,57 +2641,64 @@
       "id": "phys_fn_002678",
       "rva": "0x000660a0",
       "size": 183,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002680",
       "rva": "0x00066160",
       "size": 168,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002682",
       "rva": "0x00066210",
       "size": 93,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002689",
       "rva": "0x00066310",
       "size": 317,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm ii) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002691",
       "rva": "0x00066450",
       "size": 389,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm ii) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002693",
       "rva": "0x000665e0",
       "size": 90,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm ii) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002695",
       "rva": "0x00066640",
       "size": 1233,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm ii) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002697",
@@ -2687,105 +2744,118 @@
       "id": "phys_fn_002707",
       "rva": "0x00067080",
       "size": 171,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002709",
       "rva": "0x00067130",
       "size": 186,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002711",
       "rva": "0x000671f0",
       "size": 465,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002713",
       "rva": "0x000673d0",
       "size": 292,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002715",
       "rva": "0x00067500",
       "size": 116,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002719",
       "rva": "0x00067580",
       "size": 253,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002721",
       "rva": "0x00067680",
       "size": 286,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002723",
       "rva": "0x000677a0",
       "size": 169,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002725",
       "rva": "0x00067850",
       "size": 216,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002727",
       "rva": "0x00067930",
       "size": 255,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002729",
       "rva": "0x00067a30",
       "size": 102,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002731",
       "rva": "0x00067aa0",
       "size": 360,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002733",
       "rva": "0x00067c10",
       "size": 130,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002735",
@@ -2800,25 +2870,28 @@
       "id": "phys_fn_002737",
       "rva": "0x00067e00",
       "size": 205,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002739",
       "rva": "0x00067ed0",
       "size": 70,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002741",
       "rva": "0x00067f20",
       "size": 105,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002743",
@@ -2832,17 +2905,19 @@
       "id": "phys_fn_002745",
       "rva": "0x00068070",
       "size": 125,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002747",
       "rva": "0x000680f0",
       "size": 269,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002749",
@@ -2866,33 +2941,37 @@
       "id": "phys_fn_002753",
       "rva": "0x00068290",
       "size": 223,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm ii) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002755",
       "rva": "0x00068370",
       "size": 156,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "translation_unit",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm ii) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002757",
       "rva": "0x00068410",
       "size": 26,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002759",
       "rva": "0x00068430",
       "size": 75,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002761",
@@ -2925,73 +3004,82 @@
       "id": "phys_fn_002767",
       "rva": "0x00068700",
       "size": 189,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002769",
       "rva": "0x000687c0",
       "size": 103,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002771",
       "rva": "0x00068830",
       "size": 54,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002773",
       "rva": "0x00068870",
       "size": 381,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm ii) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002775",
       "rva": "0x000689f0",
       "size": 92,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm ii) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002777",
       "rva": "0x00068a50",
       "size": 644,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002779",
       "rva": "0x00068ce0",
       "size": 255,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002781",
       "rva": "0x00068de0",
       "size": 186,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002783",
       "rva": "0x00068ea0",
       "size": 246,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002785",
@@ -3006,65 +3094,73 @@
       "id": "phys_fn_002787",
       "rva": "0x000690b0",
       "size": 264,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002789",
       "rva": "0x000691c0",
       "size": 858,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002791",
       "rva": "0x00069520",
       "size": 361,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002793",
       "rva": "0x00069690",
       "size": 39,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002795",
       "rva": "0x000696c0",
       "size": 110,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002797",
       "rva": "0x00069730",
       "size": 660,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002799",
       "rva": "0x000699d0",
       "size": 222,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002801",
       "rva": "0x00069ab0",
       "size": 147,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002803",
@@ -3079,17 +3175,19 @@
       "id": "phys_fn_002805",
       "rva": "0x00069c10",
       "size": 182,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002807",
       "rva": "0x00069cd0",
       "size": 206,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm ii) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002809",
@@ -3104,9 +3202,10 @@
       "id": "phys_fn_002811",
       "rva": "0x00069e10",
       "size": 706,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002813",
@@ -3128,9 +3227,10 @@
       "id": "phys_fn_002817",
       "rva": "0x0006a550",
       "size": 701,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002819",
@@ -3145,137 +3245,154 @@
       "id": "phys_fn_002822",
       "rva": "0x0006a9b0",
       "size": 628,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002824",
       "rva": "0x0006ac30",
       "size": 594,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002826",
       "rva": "0x0006ae90",
       "size": 282,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002828",
       "rva": "0x0006afb0",
       "size": 251,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002830",
       "rva": "0x0006b0b0",
       "size": 87,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm ii) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002832",
       "rva": "0x0006b110",
       "size": 199,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm ii) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002834",
       "rva": "0x0006b1e0",
       "size": 194,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm ii) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002836",
       "rva": "0x0006b2b0",
       "size": 1846,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002838",
       "rva": "0x0006b9f0",
       "size": 234,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002840",
       "rva": "0x0006bae0",
       "size": 218,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002842",
       "rva": "0x0006bbc0",
       "size": 112,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002843",
       "rva": "0x0006bc30",
       "size": 845,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002845",
       "rva": "0x0006bf80",
       "size": 295,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002847",
       "rva": "0x0006c0b0",
       "size": 664,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002849",
       "rva": "0x0006c350",
       "size": 170,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002851",
       "rva": "0x0006c400",
       "size": 247,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002853",
       "rva": "0x0006c500",
       "size": 976,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002855",
@@ -3290,41 +3407,46 @@
       "id": "phys_fn_002857",
       "rva": "0x0006c950",
       "size": 1018,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002859",
       "rva": "0x0006cd50",
       "size": 1081,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002862",
       "rva": "0x0006d200",
       "size": 1260,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002864",
       "rva": "0x0006d6f0",
       "size": 263,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002866",
       "rva": "0x0006d800",
       "size": 566,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002870",
@@ -3357,9 +3479,10 @@
       "id": "phys_fn_002876",
       "rva": "0x0006dcc0",
       "size": 218,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002878",
@@ -3383,9 +3506,10 @@
       "id": "phys_fn_002882",
       "rva": "0x0006df50",
       "size": 345,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002884",
@@ -3478,17 +3602,19 @@
       "id": "phys_fn_002908",
       "rva": "0x0006ec30",
       "size": 186,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm ii) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002910",
       "rva": "0x0006ecf0",
       "size": 424,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm ii) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002912",
@@ -3695,41 +3821,46 @@
       "id": "phys_fn_002959",
       "rva": "0x00070590",
       "size": 280,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm ii) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002961",
       "rva": "0x000706b0",
       "size": 555,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm ii) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002963",
       "rva": "0x000708e0",
       "size": 766,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002965",
       "rva": "0x00070be0",
       "size": 105,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002967",
       "rva": "0x00070c50",
       "size": 224,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002968",
@@ -3760,9 +3891,10 @@
       "id": "phys_fn_002974",
       "rva": "0x00071030",
       "size": 132,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm ii) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_002976",
@@ -3871,9 +4003,10 @@
       "id": "phys_fn_002999",
       "rva": "0x00072590",
       "size": 148,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003001",
@@ -3933,9 +4066,10 @@
       "id": "phys_fn_003013",
       "rva": "0x00072e20",
       "size": 652,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm ii) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003015",
@@ -4049,17 +4183,19 @@
       "id": "phys_fn_003036",
       "rva": "0x00073e10",
       "size": 269,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003038",
       "rva": "0x00073f20",
       "size": 367,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003040",
@@ -4083,9 +4219,10 @@
       "id": "phys_fn_003044",
       "rva": "0x000742f0",
       "size": 281,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm ii) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003047",
@@ -4252,9 +4389,10 @@
       "id": "phys_fn_003083",
       "rva": "0x000751c0",
       "size": 883,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003085",
@@ -4304,17 +4442,19 @@
       "id": "phys_fn_003095",
       "rva": "0x00075fe0",
       "size": 131,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm ii) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003097",
       "rva": "0x00076070",
       "size": 77,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm ii) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003099",
@@ -4371,9 +4511,10 @@
       "id": "phys_fn_003113",
       "rva": "0x00076730",
       "size": 428,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003115",
@@ -4406,9 +4547,10 @@
       "id": "phys_fn_003121",
       "rva": "0x00076a80",
       "size": 184,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm ii) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003123",
@@ -4432,17 +4574,19 @@
       "id": "phys_fn_003127",
       "rva": "0x00076c30",
       "size": 237,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003129",
       "rva": "0x00076d20",
       "size": 83,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003131",
@@ -4473,9 +4617,10 @@
       "id": "phys_fn_003137",
       "rva": "0x00076fb0",
       "size": 360,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003139",
@@ -4631,25 +4776,28 @@
       "id": "phys_fn_003169",
       "rva": "0x00078c50",
       "size": 202,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm ii) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003171",
       "rva": "0x00078d20",
       "size": 199,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm ii) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003173",
       "rva": "0x00078df0",
       "size": 708,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003175",
@@ -4673,9 +4821,10 @@
       "id": "phys_fn_003178",
       "rva": "0x00079350",
       "size": 148,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003180",
@@ -4770,17 +4919,19 @@
       "id": "phys_fn_003200",
       "rva": "0x0007a330",
       "size": 1274,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003202",
       "rva": "0x0007a830",
       "size": 848,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003203",
@@ -4812,17 +4963,19 @@
       "id": "phys_fn_003208",
       "rva": "0x0007ae80",
       "size": 109,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003210",
       "rva": "0x0007aef0",
       "size": 2490,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003212",
@@ -4918,9 +5071,10 @@
       "id": "phys_fn_003232",
       "rva": "0x0007cf80",
       "size": 509,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm ii) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003234",
@@ -4935,145 +5089,163 @@
       "id": "phys_fn_003236",
       "rva": "0x0007d420",
       "size": 214,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003240",
       "rva": "0x0007d570",
       "size": 32,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003241",
       "rva": "0x0007d590",
       "size": 31,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003243",
       "rva": "0x0007d5b0",
       "size": 933,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003245",
       "rva": "0x0007d960",
       "size": 1331,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003247",
       "rva": "0x0007dea0",
       "size": 121,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003249",
       "rva": "0x0007df20",
       "size": 299,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003251",
       "rva": "0x0007e050",
       "size": 158,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003253",
       "rva": "0x0007e0f0",
       "size": 526,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003255",
       "rva": "0x0007e300",
       "size": 99,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003259",
       "rva": "0x0007e3d0",
       "size": 210,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003263",
       "rva": "0x0007e4e0",
       "size": 60,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003267",
       "rva": "0x0007e540",
       "size": 32,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003270",
       "rva": "0x0007e640",
       "size": 454,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003272",
       "rva": "0x0007e810",
       "size": 222,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003275",
       "rva": "0x0007e920",
       "size": 92,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003277",
       "rva": "0x0007e980",
       "size": 130,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003279",
       "rva": "0x0007ea10",
       "size": 819,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003281",
@@ -5097,25 +5269,28 @@
       "id": "phys_fn_003285",
       "rva": "0x0007edf0",
       "size": 92,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003287",
       "rva": "0x0007ee50",
       "size": 86,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003289",
       "rva": "0x0007eeb0",
       "size": 115,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm ii) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003291",
@@ -5192,9 +5367,10 @@
       "id": "phys_fn_003310",
       "rva": "0x0007f310",
       "size": 106,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm ii) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003312",
@@ -5263,9 +5439,10 @@
       "id": "phys_fn_003326",
       "rva": "0x0007f6f0",
       "size": 139,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm ii) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003328",
@@ -5361,105 +5538,118 @@
       "id": "phys_fn_003347",
       "rva": "0x0007fda0",
       "size": 125,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003349",
       "rva": "0x0007fe20",
       "size": 1145,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003351",
       "rva": "0x000802a0",
       "size": 351,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003353",
       "rva": "0x00080400",
       "size": 138,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003355",
       "rva": "0x00080490",
       "size": 210,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003357",
       "rva": "0x00080570",
       "size": 261,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003359",
       "rva": "0x00080680",
       "size": 245,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003361",
       "rva": "0x00080780",
       "size": 405,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003363",
       "rva": "0x00080920",
       "size": 486,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003365",
       "rva": "0x00080b10",
       "size": 235,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003367",
       "rva": "0x00080c00",
       "size": 648,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003369",
       "rva": "0x00080e90",
       "size": 93,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003371",
       "rva": "0x00080ef0",
       "size": 1536,
-      "reason": "not_reconstructed_in_phase",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "reconstructed with a recorded proof, but no mutation has been aimed at this row, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003372",
@@ -5555,81 +5745,91 @@
       "id": "phys_fn_003392",
       "rva": "0x00083a80",
       "size": 378,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003394",
       "rva": "0x00083c00",
       "size": 805,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003396",
       "rva": "0x00083f30",
       "size": 689,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003398",
       "rva": "0x000841f0",
       "size": 74,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003400",
       "rva": "0x00084240",
       "size": 401,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003402",
       "rva": "0x000843e0",
       "size": 39,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003404",
       "rva": "0x00084410",
       "size": 130,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003406",
       "rva": "0x000844a0",
       "size": 103,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003408",
       "rva": "0x00084510",
       "size": 566,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003410",
       "rva": "0x00084750",
       "size": 116,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm diff-equivalent) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_003412",
@@ -5651,9 +5851,10 @@
       "id": "phys_fn_003417",
       "rva": "0x000849b0",
       "size": 148,
-      "reason": "vendored_not_falsified",
+      "reason": "reconstructed_not_falsified",
       "phase_provenance": "callers",
-      "driving_phases": []
+      "driving_phases": [],
+      "note": "vendored qhull row promoted by qhull-gap Task 2 (arm i) on its static and execution evidence (the row's static_proof); no mutation has been aimed at it, and a mutation is the only thing the schema accepts as a closure"
     },
     {
       "id": "phys_fn_004790",

@@ -51,6 +51,10 @@
 #include "core/PulleyJoint.h"
 #include "core/FixedJoint.h"
 #include "core/D6Joint.h"
+#include "core/SpringAndDamperEffector.h"
+#include "NxSpringAndDamperEffectorDesc.h"
+#include "Observable.h"
+#include "PhysicsSDK.h"
 #include "NxMat33.h"
 #include "NxQuat.h"
 #include "FoundationSDK.h"
@@ -1310,6 +1314,11 @@ void NxSceneInternal::releaseActor(void* bodyPointer)
 	nxShapeSetName(body, 0);
 	if(record)
 		{
+		// The internal actor teardown phys_fn_000030 notifies the record's
+		// observers with 0x100 (import 0x101041ac, 0x1d82) before the
+		// record's destructor runs: every effector observing the record nulls
+		// its pointer to it (phys_fn_003928). (effector-and-coredump Task 2.)
+		reinterpret_cast<NxFoundation::Observable*>(record)->notifyObservers(0x100);
 		// The record destructor 000776 (BodyCreation.cpp): the id recycle,
 		// the island teardown, the auxiliary manager's unregistration and the
 		// kinematic block's free (000799), as 000030 calls it before the free.
@@ -1347,8 +1356,13 @@ void NxSceneInternal::releaseActor(void* bodyPointer)
 		nxSceneAuxUnregisterShape(this, shape);
 		if(helper) nxGetSdkAllocator()->free(helper);
 		nxShapeSetName(shape, 0);
-		nxGetSdkAllocator()->free(shape);
+		// The shape id is recycled before the shape is freed: the oracle's
+		// free order is helper, the id vector's old block when the recycle
+		// grows it, then the shape (effector-and-coredump Task 2: the scene
+		// release of NxPhysicsEffectorTests, whose third actor's recycle
+		// grows the vector, printed 1c,8,228 on the oracle side).
 		nxSceneRecycleShapeId(this, id);
+		nxGetSdkAllocator()->free(shape);
 		}
 	nxGetSdkAllocator()->free(body);
 	}
@@ -1722,6 +1736,11 @@ static void nxSceneDelete(void* self, int flags)
 		scene->releaseActor(body);
 		if(scene->at<NxActor**>(0x560) == end) break;
 		}
+	// The effectors (phys_fn_000575, which the oracle's Scene destructor
+	// phys_fn_000663 calls at 0x13f90, after the actors and before the
+	// joint lists). The actor loop above has already nulled every record
+	// pointer an effector held (the 0x100 notify in releaseActor).
+	scene->releaseEffectors();
 	// The joints still registered (phys_fn_000606, the continuation of
 	// phys_fn_000604 that the oracle's Scene destructor phys_fn_000663 calls at
 	// 0x13f9e, after the actors): for each list, +0x59c then +0x5a0, the head
@@ -2118,6 +2137,12 @@ void* nxShapeFactory(void* shapeDesc, void* actor)
 			memcpy(shape + 0xe0, &capsule->radius, sizeof(float));
 			const float halfHeight = capsule->height * 0.5f;
 			memcpy(shape + 0xe4, &halfHeight, sizeof(float));
+			// The capsule's own flags (desc +0x54) go to +0xe8, as the
+			// capsule loader phys_fn_000989 stores them (0x00021af0) and its
+			// saveToDesc (slot 13) reads them back. The core-dump
+			// differential (effector-and-coredump Task 5) found them missing:
+			// the dump hands this word to its trigger writer 004017.
+			memcpy(shape + 0xe8, &capsule->flags, sizeof(NxU32));
 			}
 		else if(descriptor->getType() == NX_SHAPE_PLANE)
 			{
@@ -2624,4 +2649,168 @@ void NxSceneInternal::visualize()
 		nxSceneVisualizeCollisionShapes(&at<unsigned char>(0x624), at<NxDebugRenderable*>(0x6b8));
 	if(void* fluids = at<void*>(0x61c))
 		nxSceneVisualizeFluids(fluids, at<NxDebugRenderable*>(0x6b8));
+	}
+
+// ---------------------------------------------------------------------------
+// The effector rows (effector-and-coredump Task 2,
+// units/effector-coredump-contract.md "### Scene and NpScene rows").
+
+// phys_fn_000587 (0x00010c90, 187 B, phase 7) is
+// Scene::createSpringAndDamperEffector. Allocates (0x68, 0) through the
+// Foundation allocator's slot +8 and constructs (003960); a constructed
+// effector is pushed at the head of the +0x5a4 list. The count +0x6c4 is
+// incremented and the cursor +0x6c0 reset to the head on every path, the
+// failed allocation included (0x10ced jumps back to 0x10cc5), and the
+// setters then run on the result, null or not, as in the listing: bodies
+// from each desc actor's +0x14 (0 for a null actor) with desc.pos1/pos2
+// (003962), the spring words desc+0x20..+0x30 (003966), the damper words
+// desc+0x34..+0x40 (003968). The desc's isValid() is not called.
+SpringAndDamperEffector* NxSceneInternal::createSpringAndDamperEffector(const NxSpringAndDamperEffectorDesc& desc)
+	{
+	void* memory = nxFoundationSDKAllocator->malloc(0x68, NX_MEMORY_PERSISTENT);
+	SpringAndDamperEffector* effector = 0;
+	if(memory)
+		{
+		effector = new(memory) SpringAndDamperEffector(this);
+		if(effector)
+			{
+			effector->mNext = at<Effector*>(0x5a4);
+			at<Effector*>(0x5a4) = effector;
+			}
+		}
+	++at<NxU32>(0x6c4);
+	at<void*>(0x6c0) = at<void*>(0x5a4);
+	void* body1 = desc.body1 ? *reinterpret_cast<void**>(reinterpret_cast<NxU8*>(desc.body1) + 0x14) : 0;
+	void* body2 = desc.body2 ? *reinterpret_cast<void**>(reinterpret_cast<NxU8*>(desc.body2) + 0x14) : 0;
+	effector->setBodies(body1, desc.pos1, body2, desc.pos2);
+	effector->setLinearSpring(desc.springDistCompressSaturate, desc.springDistRelaxed,
+		desc.springDistStretchSaturate, desc.springMaxCompressForce, desc.springMaxStretchForce);
+	effector->setLinearDamper(desc.damperVelCompressSaturate, desc.damperVelStretchSaturate,
+		desc.damperMaxCompressForce, desc.damperMaxStretchForce);
+	return effector;
+	}
+
+// phys_fn_000573 (0x00010900, 109 B, phase 7) is Scene::removeEffector.
+// Unlinks the effector from the +0x5a4 list (head or successor) and clears
+// its link; an effector not in the list is reported (code 2, line 0x84c)
+// and left as it is. noinline: the oracle calls it as its own function
+// (000594, 0x10ecb), so a breakpoint on the row sees it run.
+__declspec(noinline) void NxSceneInternal::removeEffector(Effector* effector)
+	{
+	Effector* head = at<Effector*>(0x5a4);
+	if(effector == head)
+		{
+		at<Effector*>(0x5a4) = effector->mNext;
+		effector->mNext = 0;
+		return;
+		}
+	for(Effector* link = head; link; link = link->mNext)
+		{
+		if(link->mNext == effector)
+			{
+			link->mNext = effector->mNext;
+			effector->mNext = 0;
+			return;
+			}
+		}
+	NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION, NX_SCENE_CPP, 0x84c, 0,
+		"Scene::removeEffector: effector is not in the scene.");
+	}
+
+// phys_fn_000575 (0x00010970, 68 B, phase 7): every effector in the +0x5a4
+// list, head first: the head's link is saved and cleared, the head is
+// destroyed through slot 1 with 1 and the head word zeroed, then the head
+// becomes the saved link. The count and cursor are not touched. noinline:
+// the Scene destructor 000663 calls it as a function (0x13f90).
+__declspec(noinline) void NxSceneInternal::releaseEffectors()
+	{
+	while(at<Effector*>(0x5a4))
+		{
+		Effector* next = at<Effector*>(0x5a4)->mNext;
+		at<Effector*>(0x5a4)->mNext = 0;
+		if(at<Effector*>(0x5a4))
+			{
+			delete at<Effector*>(0x5a4);
+			at<Effector*>(0x5a4) = 0;
+			}
+		at<Effector*>(0x5a4) = next;
+		}
+	}
+
+// phys_fn_000594 (0x00010e80, 126 B, phase 7) is Scene::releaseEffector.
+// The re-entry flag is createJoint's (.data 0x00123c10); a re-entrant call is
+// reported with the message the pointer at .data 0x00122050 names (code 2,
+// line 0x4ec). Otherwise: removeEffector, the effector's scalar deleting
+// destructor (slot 1 with 1) when the pointer is non-null, --[+0x6c4] and
+// the cursor reset to the list head, then the flag cleared.
+void NxSceneInternal::releaseEffector(Effector* effector)
+	{
+	if(gCreateJointReentry)
+		{
+		NxFoundation::FoundationSDK::getInstance().error(NXE_INVALID_OPERATION, NX_SCENE_CPP, 0x4ec, 0,
+			"Reentry check: You may not call this API method from a callback!");
+		return;
+		}
+	gCreateJointReentry = true;
+	removeEffector(effector);
+	if(effector)
+		delete effector;
+	--at<NxU32>(0x6c4);
+	at<void*>(0x6c0) = at<void*>(0x5a4);
+	gCreateJointReentry = false;
+	}
+
+// phys_fn_000509 (0x00010200, 33 B, phase 2): the three gravity words at
+// +0x520..+0x528 copied out as words (`ret 4`). The core dump's `PsGravity`
+// line.
+void NxSceneInternal::getGravity(NxVec3& gravity) const
+	{
+	NxU32* out = reinterpret_cast<NxU32*>(&gravity.x);
+	out[0] = at<NxU32>(0x520);
+	out[1] = at<NxU32>(0x524);
+	out[2] = at<NxU32>(0x528);
+	}
+
+// phys_fn_000523 (0x00010400, 4 B, phase 7): the pair-flag count at +0x3c.
+// The candidate never raises a pair flag, so it stays 0 and the core dump
+// never reaches getPairFlagArray.
+NxU32 NxSceneInternal::getNbPairs() const
+	{
+	return at<NxU32>(0x3c);
+	}
+
+// phys_fn_000525 (0x00010410, 61 B, phase 7), deferred with its continuation
+// phys_fn_000527 (0x00010450, 284 B): the pairs are walked out of the hash at
+// +0x624 through phys_fn_001957 into a 0x4000c-byte frame, which the
+// candidate's pair-flag hash does not reproduce. Its one caller is the core
+// dump, behind getNbPairs() != 0, which the candidate never has.
+bool NxSceneInternal::getPairFlagArray(NxPairFlag* userArray, NxU32 numPairs) const
+	{
+	(void)userArray; (void)numPairs;
+	NX_ASSERT(0);
+	return false;
+	}
+
+// phys_fn_000561 (0x00010870, 7 B, phase 7): the effector count at +0x6c4.
+NxU32 NxSceneInternal::getNbEffectors() const
+	{
+	return at<NxU32>(0x6c4);
+	}
+
+// phys_fn_000565 (0x00010890, 13 B, phase 7): the cursor at +0x6c0 = the
+// list head at +0x5a4.
+void NxSceneInternal::resetEffectorIterator()
+	{
+	at<void*>(0x6c0) = at<void*>(0x5a4);
+	}
+
+// phys_fn_000569 (0x000108c0, 23 B, phase 7): the effector under the cursor,
+// which advances through Effector +0x18; 0 at the end.
+Effector* NxSceneInternal::getNextEffector()
+	{
+	Effector* effector = at<Effector*>(0x6c0);
+	if(!effector)
+		return 0;
+	at<Effector*>(0x6c0) = effector->mNext;
+	return effector;
 	}

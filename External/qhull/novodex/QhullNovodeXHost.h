@@ -39,9 +39,11 @@
  * malloc and free survive in mem.c and in NovodeX's own rows only, the error
  * exit survives in user.c only, and printing survives everywhere else.
  *
- * The object itself is a NovodeX row inside qhull's address span. Task 2b owns
- * it. This header is the interface the vendored tree calls; the host supplies
- * the definitions.
+ * The object itself is a NovodeX row inside qhull's address span, written by
+ * qhull-gap Task 4a (Physics/src/QhullHost.cpp, docs/reconstruction/
+ * novodex-physics/units/convex-cooking-contract.md). This header is the
+ * interface the vendored tree calls; QhullHost.cpp defines the nine hooks, each
+ * forwarding to the published host object.
  */
 #ifndef qhDEFnovodexhost
 #define qhDEFnovodexhost 1
