@@ -48,6 +48,8 @@
 #include "NxMeshContactHelpers.h"
 #include "NxRay.h"
 #include "NxPlane.h"
+#include "NxIntersectionRayPlane.h"
+#include "NxIntersectionSegmentBox.h"
 
 // ---------------------------------------------------------------------------
 // The recovered dispatch matrix.
@@ -320,9 +322,11 @@ static float nxUnit(unsigned* state)
 // payloads -- a signalling memory operand loses to a quiet register operand on
 // x87 whatever the significands, and the candidates load operands in orders the
 // listings do not -- and, where a sign-bit test reads such a NaN, branches);
-// that is recorded in evidence/convex-mesh-gap.md, `Harness hardening`, and is
-// not registered here. nxPickRawWord keeps signalling NaNs, for the families
-// whose rows are measured on them (step_ray_tri; Task 2b's use nxPickBits).
+// those blocks also run as `<block>.snan` variants, on the same draws with the
+// signalling NaNs kept (gKeepSignallingNaN, below), divergent under enforced
+// ceilings (kSnanCeilings; evidence/convex-mesh-gap.md, `Harness hardening`).
+// nxPickRawWord always keeps signalling NaNs, for the families whose rows are
+// exact on them (step_ray_tri; Task 2b's use nxPickBits).
 static void nxPickWordFrom(unsigned* state, unsigned choice, float* out)
 	{
 	unsigned bits;
@@ -348,6 +352,152 @@ static void nxPickWordFrom(unsigned* state, unsigned choice, float* out)
 	memcpy(out, &bits, 4);
 	}
 
+// ---------------------------------------------------------------------------
+// The `.snan` variants (convex-mesh gap harness hardening, controller decision).
+//
+// Fifteen pre-Task-2b blocks draw their NaNs quiet (nxPickWord), and are exact on
+// those draws. Handed the same draws with their signalling NaNs kept, their
+// candidates differ from the oracle: x87 lets a signalling memory operand lose to
+// a quiet register operand whatever the significands, and `fld` quiets what it
+// loads, so a candidate that loads an operand its listing uses from memory (or the
+// reverse) propagates another NaN -- and where a sign-bit test or a compare reads
+// that NaN, takes another branch. Each of those blocks therefore runs twice: its
+// registered family on quiet draws (gating, exact), then `<block>.snan` on the
+// same draws with the signalling NaNs kept, which does not gate on equality but on
+// the ceilings below (evidence/convex-mesh-gap.md, Harness hardening). Fixing one
+// takes listing-faithful memory operands; the naked transcription of
+// phys_fn_001712 in Geometry.cpp is the precedent.
+//
+// Per control word (0x027f, 0x0f7f) a .snan pass counts the differing words
+// (`words`), how many of them are discrete -- a verdict, a count, a stream
+// header, a word that is not a float -- (`discrete`), and how many are float
+// words that are not a NaN on both sides (`non_nan`: a branch, or a NaN against
+// a number, rather than a payload). The ceilings are the counts measured when the
+// variants were registered; a count may fall, never rise.
+static bool gKeepSignallingNaN = false;
+
+struct NxSnanTally
+	{
+	unsigned words[2];
+	unsigned discrete[2];
+	unsigned nonNan[2];
+	};
+static NxSnanTally gSnanTally;
+
+struct NxSnanCeiling
+	{
+	const char* name;
+	unsigned words[2];
+	unsigned discrete[2];
+	unsigned nonNan[2];
+	};
+
+static const NxSnanCeiling kSnanCeilings[] =
+	{
+	//  block, words (0x027f, 0x0f7f), discrete, non_nan
+	{ "box_corner", { 268, 268 }, { 0, 0 }, { 0, 0 } },
+	{ "box_quad_depth", { 2, 2 }, { 0, 0 }, { 0, 0 } },
+	{ "box_clip.random", { 19717, 19700 }, { 589, 588 }, { 18520, 18504 } },
+	{ "box_axis.random", { 30212, 30190 }, { 2904, 2897 }, { 25904, 25889 } },
+	{ "box_shim", { 5105, 5105 }, { 435, 435 }, { 4335, 4335 } },
+	{ "contact_box_box", { 307, 307 }, { 39, 39 }, { 236, 236 } },
+	{ "step_smooth_normals", { 15, 15 }, { 0, 0 }, { 0, 0 } },
+	{ "contact_emit", { 3738, 3738 }, { 0, 0 }, { 0, 0 } },
+	{ "shape_raycast_plane", { 1720, 1720 }, { 0, 0 }, { 0, 0 } },
+	{ "contact_plane_capsule", { 470, 470 }, { 0, 0 }, { 0, 0 } },
+	{ "shape_raycast_sphere", { 2171, 2171 }, { 0, 0 }, { 0, 0 } },
+	{ "contact_sphere_capsule", { 804, 804 }, { 0, 0 }, { 0, 0 } },
+	{ "sphere_box_contact", { 3181, 3181 }, { 0, 0 }, { 0, 0 } },
+	{ "contact_sphere_box", { 2022, 2022 }, { 0, 0 }, { 0, 0 } },
+	{ "contact_box_capsule", { 96, 90 }, { 4, 4 }, { 40, 40 } },
+	// the kernel fuzz harness's three (nxDriveFuzzSnan)
+	{ "fuzz_ray_plane", { 15, 15 }, { 0, 0 }, { 0, 0 } },
+	{ "fuzz_ray_aabb", { 1, 1 }, { 0, 0 }, { 0, 0 } },
+	{ "fuzz_segment_box", { 2, 2 }, { 0, 0 }, { 0, 0 } }
+	};
+
+// Sets the pass for the scope of one iteration of a block's pass loop.
+struct NxSnanPass
+	{
+	explicit NxSnanPass(int pass)
+		{
+		gKeepSignallingNaN = pass != 0;
+		memset(&gSnanTally, 0, sizeof(gSnanTally));
+		}
+	~NxSnanPass() { gKeepSignallingNaN = false; }
+	};
+
+static const char* nxSnanName(const char* name)
+	{
+	if(!gKeepSignallingNaN)
+		return name;
+	static char buffer[4][64];
+	static unsigned next = 0;
+	char* out = buffer[next++ & 3];
+	sprintf_s(out, 64, "%s.snan", name);
+	return out;
+	}
+
+static bool nxWordIsNaN(NxU32 word)
+	{
+	return (word & 0x7f800000u) == 0x7f800000u && (word & 0x007fffffu) != 0;
+	}
+
+// A float word compared under a .snan pass.
+static void nxSnanWord(int mode, NxU32 a, NxU32 b)
+	{
+	if(!gKeepSignallingNaN || a == b)
+		return;
+	++gSnanTally.words[mode];
+	if(!(nxWordIsNaN(a) && nxWordIsNaN(b)))
+		++gSnanTally.nonNan[mode];
+	}
+
+// A discrete word -- a verdict, a count, a header -- compared under a .snan pass.
+static void nxSnanDiscrete(int mode, unsigned a, unsigned b)
+	{
+	if(!gKeepSignallingNaN || a == b)
+		return;
+	++gSnanTally.words[mode];
+	++gSnanTally.discrete[mode];
+	}
+
+// A ten-byte register spill compared under a .snan pass: one word.
+static void nxSnanWide(int mode, const unsigned char* a, const unsigned char* b)
+	{
+	if(!gKeepSignallingNaN || memcmp(a, b, 10) == 0)
+		return;
+	++gSnanTally.words[mode];
+	const bool nanA = (a[9] & 0x7f) == 0x7f && a[8] == 0xff && (a[7] & 0x7f) | a[6] | a[5] | a[4] | a[3] | a[2] | a[1] | a[0];
+	const bool nanB = (b[9] & 0x7f) == 0x7f && b[8] == 0xff && (b[7] & 0x7f) | b[6] | b[5] | b[4] | b[3] | b[2] | b[1] | b[0];
+	if(!(nanA && nanB))
+		++gSnanTally.nonNan[mode];
+	}
+
+// What a block adds to the run's mismatch total: its own gating count on the
+// quiet pass; on the .snan pass, 1 if any count is over the block's ceiling (or it
+// has none), after printing the counts.
+static unsigned nxSnanGate(const char* name, unsigned gating)
+	{
+	if(!gKeepSignallingNaN)
+		return gating;
+	const NxSnanCeiling* ceiling = 0;
+	for(unsigned i = 0; i < sizeof(kSnanCeilings) / sizeof(kSnanCeilings[0]); ++i)
+		if(!strcmp(kSnanCeilings[i].name, name))
+			ceiling = &kSnanCeilings[i];
+	bool over = ceiling == 0;
+	for(int mode = 0; mode < 2 && ceiling; ++mode)
+		if(gSnanTally.words[mode] > ceiling->words[mode]
+			|| gSnanTally.discrete[mode] > ceiling->discrete[mode]
+			|| gSnanTally.nonNan[mode] > ceiling->nonNan[mode])
+			over = true;
+	printf("collision divergent name=%s.snan cause=signalling_nan words=%u words_simulate=%u discrete=%u discrete_simulate=%u non_nan=%u non_nan_simulate=%u ceiling=%s\n",
+		name, gSnanTally.words[0], gSnanTally.words[1], gSnanTally.discrete[0],
+		gSnanTally.discrete[1], gSnanTally.nonNan[0], gSnanTally.nonNan[1],
+		over ? "exceeded" : "ok");
+	return over ? 1 : 0;
+	}
+
 static void nxPickRawWord(unsigned* state, float* out)
 	{
 	nxPickWordFrom(state, nxNext(state) & 7, out);
@@ -358,7 +508,7 @@ static void nxPickWord(unsigned* state, float* out)
 	nxPickRawWord(state, out);
 	unsigned bits;
 	memcpy(&bits, out, 4);
-	if((bits & 0x7f800000u) == 0x7f800000u && (bits & 0x007fffffu) != 0)
+	if(!gKeepSignallingNaN && (bits & 0x7f800000u) == 0x7f800000u && (bits & 0x007fffffu) != 0)
 		{
 		bits |= 0x00400000u;
 		memcpy(out, &bits, 4);
@@ -1025,18 +1175,31 @@ static void nxFoldStream(NxDigest* digest, const NxContactWorld* world)
 		}
 	}
 
-static unsigned nxCompareStreams(const NxContactWorld* a, const NxContactWorld* b)
+// `mode` is the control word's index, for a .snan pass's counts: differing
+// header counts are one discrete word, and the stream words both sides have are
+// classified as floats (nxSnanWord).
+static unsigned nxCompareStreams(const NxContactWorld* a, const NxContactWorld* b, int mode)
 	{
 	unsigned differing = 0;
 	if(a->sink.streamCount != b->sink.streamCount
 		|| a->sink.contactCount != b->sink.contactCount
 		|| a->sink.featurePairValid != b->sink.featurePairValid)
+		{
 		++differing;
+		nxSnanDiscrete(mode, 0, 1);
+		}
 	const unsigned common = a->sink.streamCount < b->sink.streamCount
 		? a->sink.streamCount : b->sink.streamCount;
 	for(unsigned w = 0; w < common; ++w)
-		if(nxCanonical(a, a->stream[w]) != nxCanonical(b, b->stream[w]))
+		{
+		const NxU32 wordA = nxCanonical(a, a->stream[w]);
+		const NxU32 wordB = nxCanonical(b, b->stream[w]);
+		if(wordA != wordB)
+			{
 			++differing;
+			nxSnanWord(mode, wordA, wordB);
+			}
+		}
 	return differing;
 	}
 
@@ -1332,7 +1495,11 @@ static void nxMixedBits(unsigned* state, float* out)
 	if((nxNext(state) & 15) == 0)
 		bits = nxNext(state) & 0x80000000u;
 	else
-		bits = (nxNext(state) & 0x807fffffu) | ((100u + nxNext(state) % 100u) << 23);
+		{
+		// Sequenced: as one expression the two draws' order was the compiler's.
+		const unsigned significand = nxNext(state) & 0x807fffffu;
+		bits = significand | ((100u + nxNext(state) % 100u) << 23);
+		}
 	memcpy(out, &bits, 4);
 	}
 
@@ -2343,6 +2510,156 @@ static __declspec(noinline) unsigned nxDriveTask2b(unsigned char* base)
 	return totalMismatch;
 	}
 
+// The kernel fuzz harness's `.snan` variants. tests/PhysicsKernelFuzzTests.cpp is a
+// staged-pair differential -- one binary run against the shipped pair and against
+// the rebuilt pair, the two transcripts compared line for line -- so it cannot
+// carry a line on which the two sides are known to differ. Its families draw their
+// NaNs quiet (exact, its lines unchanged); the three whose candidates differ once
+// the signalling NaNs are kept are measured here instead, where the oracle is in
+// process: the fuzz harness's own draws (its xorshift, seeds and mixture,
+// replayed word for word by nxFuzzPickWord), both control words, the candidates
+// as linked from Geometry.cpp.
+static void nxFuzzPickWord(unsigned* state, unsigned mode, float* out)
+	{
+	NxU32 bits;
+	switch(mode & 7)
+		{
+		case 0:
+			bits = nxNext(state);
+			break;
+		case 1:
+			{
+			const float value = (float) ((int) (nxNext(state) % 9) - 4);
+			memcpy(&bits, &value, 4);
+			break;
+			}
+		case 2:
+			{
+			const float value = (float) ((int) (nxNext(state) % 9) - 4) * 0.5f;
+			memcpy(&bits, &value, 4);
+			break;
+			}
+		case 7:
+			bits = 0;
+			break;
+		default:
+			{
+			const NxU32 exponent = (mode & 7) == 6
+				? ((110 + (nxNext(state) % 35)) & 0xff) << 23
+				: ((120 + (nxNext(state) % 16)) & 0xff) << 23;
+			const NxU32 significand = nxNext(state) & 0x7fffff;
+			bits = exponent | significand | ((nxNext(state) & 1) << 31);
+			break;
+			}
+		}
+	memcpy(out, &bits, 4);
+	}
+
+// The fuzz harness's output poison, cdcd0000 + index.
+static void nxFuzzPoison(float* out, unsigned count)
+	{
+	for(unsigned k = 0; k < count; ++k)
+		{
+		const NxU32 word = 0xcdcd0000u + k;
+		memcpy(&out[k], &word, 4);
+		}
+	}
+
+static __declspec(noinline) unsigned nxDriveFuzzSnan(HMODULE physics)
+	{
+	typedef unsigned char (NX_CALL_CONV* NxFnRayPlane)(const float*, const float*, float*, float*);
+	typedef unsigned char (NX_CALL_CONV* NxFnRayAABB)(const float*, const float*, const float*,
+		const float*, float*);
+	typedef unsigned char (NX_CALL_CONV* NxFnSegBox)(const float*, const float*, const float*,
+		const float*, float*);
+	const NxFnRayPlane oracleRayPlane = (NxFnRayPlane) GetProcAddress(physics, "NxRayPlaneIntersect");
+	const NxFnRayAABB oracleRayAabb = (NxFnRayAABB) GetProcAddress(physics, "NxRayAABBIntersect");
+	const NxFnSegBox oracleSegBox = (NxFnSegBox) GetProcAddress(physics, "NxSegmentBoxIntersect");
+	if(!oracleRayPlane || !oracleRayAabb || !oracleSegBox)
+		return 1;
+	unsigned totalMismatch = 0;
+
+	// NxRayPlaneIntersect: the fuzz vector block (seed 02468ace, 15 words a draw,
+	// 40,000 draws); the ray is words 0..5 and the plane words 6..9.
+	for(int kernel = 0; kernel < 3; ++kernel)
+		{
+		static const char* const names[3] = { "fuzz_ray_plane", "fuzz_ray_aabb", "fuzz_segment_box" };
+		static const char* const owners[3] = { "phys_fn_001704", "phys_fn_001722", "phys_fn_001714" };
+		NxSnanPass snanScope(1);
+		NxDigest oracleDigest, candidateDigest, inputDigest;
+		nxDigestInit(&oracleDigest);
+		nxDigestInit(&candidateDigest);
+		nxDigestInit(&inputDigest);
+		unsigned mismatches = 0;
+		unsigned hits = 0;
+		unsigned state = kernel == 0 ? 0x02468aceu : 0x1a2b3c4du;
+		const unsigned wordsPerDraw = kernel == 0 ? 15u : 24u;
+		for(unsigned i = 0; i < 40000; ++i)
+			{
+			float w[24];
+			for(unsigned k = 0; k < wordsPerDraw; ++k)
+				nxFuzzPickWord(&state, i + k, &w[k]);
+			nxFoldInput(&inputDigest, w, wordsPerDraw * 4);
+			for(int mode = 0; mode < 2; ++mode)
+				{
+				float out[2][4];
+				nxFuzzPoison(out[0], 4);
+				nxFuzzPoison(out[1], 4);
+				unsigned char result[2];
+				nxSetControl(mode ? kControlSimulate : kControlDefault);
+				if(kernel == 0)
+					{
+					result[0] = oracleRayPlane(w + 0, w + 6, &out[0][3], out[0]);
+					result[1] = NxRayPlaneIntersect(*(const NxRay*) (w + 0), *(const NxPlane*) (w + 6),
+						out[1][3], *(NxVec3*) out[1]) ? 1 : 0;
+					}
+				else if(kernel == 1)
+					{
+					result[0] = oracleRayAabb(w + 0, w + 3, w + 6, w + 9, out[0]);
+					result[1] = NxRayAABBIntersect(*(const NxVec3*) (w + 0), *(const NxVec3*) (w + 3),
+						*(const NxVec3*) (w + 6), *(const NxVec3*) (w + 9), *(NxVec3*) out[1]) ? 1 : 0;
+					}
+				else
+					{
+					result[0] = oracleSegBox(w + 0, w + 3, w + 6, w + 9, out[0]);
+					result[1] = NxSegmentBoxIntersect(*(const NxVec3*) (w + 0), *(const NxVec3*) (w + 3),
+						*(const NxVec3*) (w + 6), *(const NxVec3*) (w + 9), *(NxVec3*) out[1]) ? 1 : 0;
+					}
+				nxSetControl(kControlDefault);
+				result[0] = result[0] ? 1 : 0;
+				if(mode == 0 && result[0])
+					++hits;
+				nxDigestByte(&oracleDigest, result[0]);
+				nxDigestByte(&candidateDigest, result[1]);
+				if(result[0] != result[1])
+					++mismatches;
+				nxSnanDiscrete(mode, result[0], result[1]);
+				const unsigned count = kernel == 0 ? 4u : 3u;
+				for(unsigned k = 0; k < count; ++k)
+					{
+					const NxU32 a = nxBits(out[0][k]);
+					const NxU32 b = nxBits(out[1][k]);
+					for(int byte = 0; byte < 4; ++byte)
+						{
+						nxDigestByte(&oracleDigest, (unsigned char) (a >> (byte * 8)));
+						nxDigestByte(&candidateDigest, (unsigned char) (b >> (byte * 8)));
+						}
+					if(a != b)
+						++mismatches;
+					nxSnanWord(mode, a, b);
+					}
+				}
+			}
+		totalMismatch += nxSnanGate(names[kernel], mismatches);
+		printf("collision name=%s index=- rva=export owner=%s checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+			nxSnanName(names[kernel]), owners[kernel], oracleDigest.checks, oracleDigest.state,
+			candidateDigest.state, mismatches);
+		nxPrintInput(nxSnanName(names[kernel]), &inputDigest);
+		printf("collision coverage name=%s hits=%u\n", nxSnanName(names[kernel]), hits);
+		}
+	return totalMismatch;
+	}
+
 int wmain(int argc, wchar_t** argv)
 	{
 	if(argc != 3)
@@ -2649,7 +2966,9 @@ int wmain(int argc, wchar_t** argv)
 	// only place the NaN payload rule -- the thing /arch:IA32 exists for -- can
 	// be observed at all. Its output is poisoned before every call so that
 	// "wrote nothing" and "wrote zero" are different transcripts.
+	for(int snanPass = 0; snanPass < 2; ++snanPass)
 	{
+	NxSnanPass snanScope(snanPass);
 	typedef void(__thiscall* NxOracleCornerFn)(const NxCollisionShape*, int, int, int, NxVec3*);
 	NxOracleCornerFn oracleCorner = (NxOracleCornerFn) (base + 0x00020750);
 
@@ -2702,16 +3021,17 @@ int wmain(int argc, wchar_t** argv)
 					}
 				if(a != b)
 					++mismatches;
+				nxSnanWord(mode, a, b);
 				if((a & 0x7f800000u) == 0x7f800000u)
 					++nonFinite;
 				}
 			}
 		}
-	totalMismatch += mismatches;
-	printf("collision name=box_corner index=- rva=0x00020750 owner=phys_fn_000943 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+	totalMismatch += nxSnanGate("box_corner", mismatches);
+	printf("collision name=%s index=- rva=0x00020750 owner=phys_fn_000943 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n", nxSnanName("box_corner"),
 		oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches);
-	nxPrintInput("box_corner", &inputDigest);
-	printf("collision coverage name=box_corner non_finite_words=%u\n", nonFinite);
+	nxPrintInput(nxSnanName("box_corner"), &inputDigest);
+	printf("collision coverage name=%s non_finite_words=%u\n", nxSnanName("box_corner"), nonFinite);
 	}
 
 	{
@@ -2803,7 +3123,9 @@ int wmain(int argc, wchar_t** argv)
 	// is rejected at the very first edge. Both are needed: without the first the
 	// whole second half of the row is dead, and without the second the loop
 	// never exits early.
+	for(int snanPass = 0; snanPass < 2; ++snanPass)
 	{
+	NxSnanPass snanScope(snanPass);
 	const void* oracleQuadDepth = (const void*) (base + 0x00038a90);
 	// -1.0f as x87 leaves it in st(0): significand 0x8000000000000000,
 	// exponent 0x3fff, sign set.
@@ -2919,13 +3241,14 @@ int wmain(int argc, wchar_t** argv)
 				if(wide[0][byte] != wide[1][byte])
 					{ ++mismatches; ++perMode[mode]; }
 				}
+				nxSnanWide(mode, wide[0], wide[1]);
 			}
 		}
-	totalMismatch += mismatches;
-	printf("collision name=box_quad_depth index=- rva=0x00038a90 owner=phys_fn_001739 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+	totalMismatch += nxSnanGate("box_quad_depth", mismatches);
+	printf("collision name=%s index=- rva=0x00038a90 owner=phys_fn_001739 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n", nxSnanName("box_quad_depth"),
 		oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches);
-	nxPrintInput("box_quad_depth", &inputDigest);
-	printf("collision coverage name=box_quad_depth aimed_inside=%u reversed=%u interpolated=%u non_finite=%u default_mismatches=%u simulate_mismatches=%u\n",
+	nxPrintInput(nxSnanName("box_quad_depth"), &inputDigest);
+	printf("collision coverage name=%s aimed_inside=%u reversed=%u interpolated=%u non_finite=%u default_mismatches=%u simulate_mismatches=%u\n", nxSnanName("box_quad_depth"),
 		aimedInside, reversed, interpolated, nonFinite, perMode[0], perMode[1]);
 	}
 
@@ -2957,7 +3280,9 @@ int wmain(int argc, wchar_t** argv)
 	// strictly inside. Nothing in the attribution is computed from the
 	// candidate. The incident box keeps a general pose, so the relative
 	// geometry is fully general; the random family covers the reference pose.
+	for(int snanPass = 0; snanPass < 2; ++snanPass)
 	{
+	NxSnanPass snanScope(snanPass);
 	const void* oracleClip = (const void*) (base + 0x00038ba0);
 	const int kSlots = 80;		// 8 corners + 5 cases on each of 12 edges + 4
 
@@ -2984,6 +3309,8 @@ int wmain(int argc, wchar_t** argv)
 
 	for(int family = 0; family < 2; ++family)
 		{
+		if(snanPass && family)
+			continue;
 		unsigned state = family ? 0x2c1de5a7u : 0x9f31b70du;
 		const unsigned iterations = family ? kAimedIterations : kPairIterations;
 		for(unsigned i = 0; i < iterations; ++i)
@@ -3123,16 +3450,21 @@ int wmain(int argc, wchar_t** argv)
 					// count, so a contact written past either side's answer is
 					// a mismatch and not a silent agreement.
 					unsigned differing = (countO != countC) ? 1u : 0u;
+					nxSnanDiscrete(mode, (unsigned) countO, (unsigned) countC);
 					for(int c = 0; c < kSlots; ++c)
 						{
 						if(nxBits(separationsO[c]) != nxBits(separationsC[c]))
 							++differing;
+						nxSnanWord(mode, nxBits(separationsO[c]), nxBits(separationsC[c]));
 						if(nxBits(pointsO[c].x) != nxBits(pointsC[c].x))
 							++differing;
+						nxSnanWord(mode, nxBits(pointsO[c].x), nxBits(pointsC[c].x));
 						if(nxBits(pointsO[c].y) != nxBits(pointsC[c].y))
 							++differing;
+						nxSnanWord(mode, nxBits(pointsO[c].y), nxBits(pointsC[c].y));
 						if(nxBits(pointsO[c].z) != nxBits(pointsC[c].z))
 							++differing;
+						nxSnanWord(mode, nxBits(pointsO[c].z), nxBits(pointsC[c].z));
 						}
 					mismatches[family] += differing;
 					perMode[family][mode] += differing;
@@ -3175,18 +3507,21 @@ int wmain(int argc, wchar_t** argv)
 			}
 		}
 
-	totalMismatch += mismatches[0] + mismatches[1];
-	printf("collision name=box_clip.random index=- rva=0x00038ba0 owner=phys_fn_001741 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+	totalMismatch += nxSnanGate("box_clip.random", mismatches[0] + mismatches[1]);
+	printf("collision name=%s index=- rva=0x00038ba0 owner=phys_fn_001741 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n", nxSnanName("box_clip.random"),
 		oracleDigest[0].checks, oracleDigest[0].state, candidateDigest[0].state, mismatches[0]);
-	nxPrintInput("box_clip.random", &inputDigest[0]);
-	printf("collision coverage name=box_clip.random emitted=%u zero_count=%u swap_differs=%u nan_depth=%u over_sixteen=%u max_contacts=%u default_mismatches=%u simulate_mismatches=%u\n",
+	nxPrintInput(nxSnanName("box_clip.random"), &inputDigest[0]);
+	printf("collision coverage name=%s emitted=%u zero_count=%u swap_differs=%u nan_depth=%u over_sixteen=%u max_contacts=%u default_mismatches=%u simulate_mismatches=%u\n", nxSnanName("box_clip.random"),
 		emitted[0], zeroCount[0], swapDiffers[0], nanDepth[0], overSixteen[0], maxContacts[0], perMode[0][0], perMode[0][1]);
-	printf("collision name=box_clip.aimed index=- rva=0x00038ba0 owner=phys_fn_001741 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
-		oracleDigest[1].checks, oracleDigest[1].state, candidateDigest[1].state, mismatches[1]);
-	nxPrintInput("box_clip.aimed", &inputDigest[1]);
-	printf("collision coverage name=box_clip.aimed emitted=%u zero_count=%u face_face=%u edge_clip=%u vertex_face=%u plane_cross=%u swap_differs=%u nan_depth=%u over_sixteen=%u max_contacts=%u default_mismatches=%u simulate_mismatches=%u\n",
-		emitted[1], zeroCount[1], faceFace, edgeClip, vertexFace, planeCross,
-		swapDiffers[1], nanDepth[1], overSixteen[1], maxContacts[1], perMode[1][0], perMode[1][1]);
+	if(!snanPass)
+		{
+		printf("collision name=box_clip.aimed index=- rva=0x00038ba0 owner=phys_fn_001741 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+			oracleDigest[1].checks, oracleDigest[1].state, candidateDigest[1].state, mismatches[1]);
+		nxPrintInput("box_clip.aimed", &inputDigest[1]);
+		printf("collision coverage name=box_clip.aimed emitted=%u zero_count=%u face_face=%u edge_clip=%u vertex_face=%u plane_cross=%u swap_differs=%u nan_depth=%u over_sixteen=%u max_contacts=%u default_mismatches=%u simulate_mismatches=%u\n",
+			emitted[1], zeroCount[1], faceFace, edgeClip, vertexFace, planeCross,
+			swapDiffers[1], nanDepth[1], overSixteen[1], maxContacts[1], perMode[1][0], perMode[1][1]);
+		}
 	}
 
 
@@ -3225,7 +3560,9 @@ int wmain(int argc, wchar_t** argv)
 	// are counted rather than assumed; `negated` compares the normal the oracle
 	// returned against the raw words of the row it came from, which is exact
 	// because `fchs` always flips the sign bit.
+	for(int snanPass = 0; snanPass < 2; ++snanPass)
 	{
+	NxSnanPass snanScope(snanPass);
 	const void* oracleAxis = (const void*) (base + 0x00039c10);
 	const int kSlots = 80;
 	const unsigned kAxisIterations = 24000;
@@ -3256,6 +3593,8 @@ int wmain(int argc, wchar_t** argv)
 
 	for(int family = 0; family < 2; ++family)
 		{
+		if(snanPass && family)
+			continue;
 		unsigned state = family ? 0x5be13c09u : 0x71a3d84fu;
 		for(unsigned it = 0; it < kAxisIterations; ++it)
 			{
@@ -3425,24 +3764,33 @@ int wmain(int argc, wchar_t** argv)
 					// eighty slots rather than the count, so a contact written
 					// past either side's answer is a mismatch.
 					unsigned differing = (countO != countC) ? 1u : 0u;
+					nxSnanDiscrete(mode, (unsigned) countO, (unsigned) countC);
 					if(*cO != *cC)
 						++differing;
+					nxSnanDiscrete(mode, *cO, *cC);
 					if(nxBits(normalO.x) != nxBits(normalC.x))
 						++differing;
+					nxSnanWord(mode, nxBits(normalO.x), nxBits(normalC.x));
 					if(nxBits(normalO.y) != nxBits(normalC.y))
 						++differing;
+					nxSnanWord(mode, nxBits(normalO.y), nxBits(normalC.y));
 					if(nxBits(normalO.z) != nxBits(normalC.z))
 						++differing;
+					nxSnanWord(mode, nxBits(normalO.z), nxBits(normalC.z));
 					for(int c = 0; c < kSlots; ++c)
 						{
 						if(nxBits(separationsO[c]) != nxBits(separationsC[c]))
 							++differing;
+						nxSnanWord(mode, nxBits(separationsO[c]), nxBits(separationsC[c]));
 						if(nxBits(pointsO[c].x) != nxBits(pointsC[c].x))
 							++differing;
+						nxSnanWord(mode, nxBits(pointsO[c].x), nxBits(pointsC[c].x));
 						if(nxBits(pointsO[c].y) != nxBits(pointsC[c].y))
 							++differing;
+						nxSnanWord(mode, nxBits(pointsO[c].y), nxBits(pointsC[c].y));
 						if(nxBits(pointsO[c].z) != nxBits(pointsC[c].z))
 							++differing;
+						nxSnanWord(mode, nxBits(pointsO[c].z), nxBits(pointsC[c].z));
 						}
 					mismatches[family] += differing;
 					perMode[family][mode] += differing;
@@ -3498,21 +3846,24 @@ int wmain(int argc, wchar_t** argv)
 			}
 		}
 
-	totalMismatch += mismatches[0] + mismatches[1];
-	printf("collision name=box_axis.random index=- rva=0x00039c10 owner=phys_fn_001745 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+	totalMismatch += nxSnanGate("box_axis.random", mismatches[0] + mismatches[1]);
+	printf("collision name=%s index=- rva=0x00039c10 owner=phys_fn_001745 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n", nxSnanName("box_axis.random"),
 		oracleDigest[0].checks, oracleDigest[0].state, candidateDigest[0].state, mismatches[0]);
-	nxPrintInput("box_axis.random", &inputDigest[0]);
-	printf("collision coverage name=box_axis.random arm0=%u arm1=%u arm2=%u arm3=%u arm4=%u arm5=%u separated=%u negated=%u warm_entry=%u carry_warmed=%u edge_only=%u emitted=%u at_sixteen=%u over_sixteen=%u max_contacts=%u default_mismatches=%u simulate_mismatches=%u\n",
+	nxPrintInput(nxSnanName("box_axis.random"), &inputDigest[0]);
+	printf("collision coverage name=%s arm0=%u arm1=%u arm2=%u arm3=%u arm4=%u arm5=%u separated=%u negated=%u warm_entry=%u carry_warmed=%u edge_only=%u emitted=%u at_sixteen=%u over_sixteen=%u max_contacts=%u default_mismatches=%u simulate_mismatches=%u\n", nxSnanName("box_axis.random"),
 		arms[0][0], arms[0][1], arms[0][2], arms[0][3], arms[0][4], arms[0][5],
 		separatedCount[0], negatedCount[0], warmEntry[0], carryWarmed[0], edgeOnly[0],
 		emitted[0], atSixteen[0], overSixteen[0], maxContacts[0], perMode[0][0], perMode[0][1]);
-	printf("collision name=box_axis.aimed index=- rva=0x00039c10 owner=phys_fn_001745 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
-		oracleDigest[1].checks, oracleDigest[1].state, candidateDigest[1].state, mismatches[1]);
-	nxPrintInput("box_axis.aimed", &inputDigest[1]);
-	printf("collision coverage name=box_axis.aimed arm0=%u arm1=%u arm2=%u arm3=%u arm4=%u arm5=%u separated=%u negated=%u warm_entry=%u carry_warmed=%u edge_only=%u emitted=%u at_sixteen=%u over_sixteen=%u max_contacts=%u default_mismatches=%u simulate_mismatches=%u\n",
-		arms[1][0], arms[1][1], arms[1][2], arms[1][3], arms[1][4], arms[1][5],
-		separatedCount[1], negatedCount[1], warmEntry[1], carryWarmed[1], edgeOnly[1],
-		emitted[1], atSixteen[1], overSixteen[1], maxContacts[1], perMode[1][0], perMode[1][1]);
+	if(!snanPass)
+		{
+		printf("collision name=box_axis.aimed index=- rva=0x00039c10 owner=phys_fn_001745 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+			oracleDigest[1].checks, oracleDigest[1].state, candidateDigest[1].state, mismatches[1]);
+		nxPrintInput("box_axis.aimed", &inputDigest[1]);
+		printf("collision coverage name=box_axis.aimed arm0=%u arm1=%u arm2=%u arm3=%u arm4=%u arm5=%u separated=%u negated=%u warm_entry=%u carry_warmed=%u edge_only=%u emitted=%u at_sixteen=%u over_sixteen=%u max_contacts=%u default_mismatches=%u simulate_mismatches=%u\n",
+			arms[1][0], arms[1][1], arms[1][2], arms[1][3], arms[1][4], arms[1][5],
+			separatedCount[1], negatedCount[1], warmEntry[1], carryWarmed[1], edgeOnly[1],
+			emitted[1], atSixteen[1], overSixteen[1], maxContacts[1], perMode[1][0], perMode[1][1]);
+		}
 	}
 
 
@@ -3529,7 +3880,9 @@ int wmain(int argc, wchar_t** argv)
 	// Two pairs per iteration through one cache byte, for the same reason the
 	// search's own block does it: the shim forwards that pointer and does not
 	// touch it, so the carry has to survive one more frame.
+	for(int snanPass = 0; snanPass < 2; ++snanPass)
 	{
+	NxSnanPass snanScope(snanPass);
 	typedef int(__cdecl* NxOracleShimFn)(NxVec3*, NxReal*, NxVec3*, const NxReal*,
 		const NxReal*, const NxReal*, const NxReal*, unsigned char*);
 	NxOracleShimFn oracleShim = (NxOracleShimFn) (base + 0x0003ace0);
@@ -3657,24 +4010,33 @@ int wmain(int argc, wchar_t** argv)
 					}
 
 				unsigned differing = (countO != countC) ? 1u : 0u;
+				nxSnanDiscrete(mode, (unsigned) countO, (unsigned) countC);
 				if(cacheO != cacheC)
 					++differing;
+				nxSnanDiscrete(mode, cacheO, cacheC);
 				if(nxBits(normalO.x) != nxBits(normalC.x))
 					++differing;
+				nxSnanWord(mode, nxBits(normalO.x), nxBits(normalC.x));
 				if(nxBits(normalO.y) != nxBits(normalC.y))
 					++differing;
+				nxSnanWord(mode, nxBits(normalO.y), nxBits(normalC.y));
 				if(nxBits(normalO.z) != nxBits(normalC.z))
 					++differing;
+				nxSnanWord(mode, nxBits(normalO.z), nxBits(normalC.z));
 				for(int c = 0; c < kSlots; ++c)
 					{
 					if(nxBits(separationsO[c]) != nxBits(separationsC[c]))
 						++differing;
+					nxSnanWord(mode, nxBits(separationsO[c]), nxBits(separationsC[c]));
 					if(nxBits(pointsO[c].x) != nxBits(pointsC[c].x))
 						++differing;
+					nxSnanWord(mode, nxBits(pointsO[c].x), nxBits(pointsC[c].x));
 					if(nxBits(pointsO[c].y) != nxBits(pointsC[c].y))
 						++differing;
+					nxSnanWord(mode, nxBits(pointsO[c].y), nxBits(pointsC[c].y));
 					if(nxBits(pointsO[c].z) != nxBits(pointsC[c].z))
 						++differing;
+					nxSnanWord(mode, nxBits(pointsO[c].z), nxBits(pointsC[c].z));
 					}
 				mismatches += differing;
 				perMode[mode] += differing;
@@ -3704,11 +4066,11 @@ int wmain(int argc, wchar_t** argv)
 			}
 		}
 
-	totalMismatch += mismatches;
-	printf("collision name=box_shim index=- rva=0x0003ace0 owner=phys_fn_001748 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+	totalMismatch += nxSnanGate("box_shim", mismatches);
+	printf("collision name=%s index=- rva=0x0003ace0 owner=phys_fn_001748 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n", nxSnanName("box_shim"),
 		oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches);
-	nxPrintInput("box_shim", &inputDigest);
-	printf("collision coverage name=box_shim aimed=%u separated=%u emitted=%u carry_warmed=%u over_sixteen=%u aimed_max=%u max_contacts=%u default_mismatches=%u simulate_mismatches=%u\n",
+	nxPrintInput(nxSnanName("box_shim"), &inputDigest);
+	printf("collision coverage name=%s aimed=%u separated=%u emitted=%u carry_warmed=%u over_sixteen=%u aimed_max=%u max_contacts=%u default_mismatches=%u simulate_mismatches=%u\n", nxSnanName("box_shim"),
 		aimedCalls, separatedCount, emittedContacts, carryWarmed, overSixteen,
 		aimedMax, maxContacts, perMode[0], perMode[1]);
 	}
@@ -3738,7 +4100,9 @@ int wmain(int argc, wchar_t** argv)
 	// zeroes it, so the sequence is started at one sentinel or the other in
 	// turn -- both mean "no cache" to the search and driving only one would
 	// leave the other's branch untested.
+	for(int snanPass = 0; snanPass < 2; ++snanPass)
 	{
+	NxSnanPass snanScope(snanPass);
 	typedef void(__cdecl* NxOracleContactFn)(const NxCollisionShape*, const NxCollisionShape*,
 		NxContactSink*, void*);
 	NxOracleContactFn oracleContact = (NxOracleContactFn) (base + nxMatrixA[14].rva);
@@ -3917,17 +4281,17 @@ int wmain(int argc, wchar_t** argv)
 
 			nxFoldStream(&oracleDigest, &world[0]);
 			nxFoldStream(&candidateDigest, &world[1]);
-			const unsigned differing = nxCompareStreams(&world[0], &world[1]);
+			const unsigned differing = nxCompareStreams(&world[0], &world[1], mode);
 			mismatches += differing;
 			perMode[mode] += differing;
 			}
 		}
-	totalMismatch += mismatches;
-	printf("collision name=contact_box_box index=14 rva=0x%08x owner=%s checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+	totalMismatch += nxSnanGate("contact_box_box", mismatches);
+	printf("collision name=%s index=14 rva=0x%08x owner=%s checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n", nxSnanName("contact_box_box"),
 		nxMatrixA[14].rva, nxMatrixA[14].stableId,
 		oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches);
-	nxPrintInput("contact_box_box", &inputDigest);
-	printf("collision coverage name=contact_box_box emitted=%u negated=%u static0=%u static1=%u warm_carried=%u axis_cleared=%u w11=%u w15=%u w31=%u at_sixteen=%u max_contacts=%u overflow_skipped=%u probe_max=%u default_mismatches=%u simulate_mismatches=%u\n",
+	nxPrintInput(nxSnanName("contact_box_box"), &inputDigest);
+	printf("collision coverage name=%s emitted=%u negated=%u static0=%u static1=%u warm_carried=%u axis_cleared=%u w11=%u w15=%u w31=%u at_sixteen=%u max_contacts=%u overflow_skipped=%u probe_max=%u default_mismatches=%u simulate_mismatches=%u\n", nxSnanName("contact_box_box"),
 		emitted, negatedPath, staticSide[0], staticSide[1], warmCarried, axisCleared,
 		widths[11], widths[15], widths[31], atSixteen, maxContacts,
 		overflowSkipped, probeMax, perMode[0], perMode[1]);
@@ -4054,6 +4418,9 @@ int wmain(int argc, wchar_t** argv)
 	printf("collision coverage name=step_ray_tri hits=%u non_finite_words=%u default_mismatches=%u simulate_mismatches=%u\n",
 		hits, nonFinite, perMode[0], perMode[1]);
 
+	for(int snanPass = 0; snanPass < 2; ++snanPass)
+	{
+	NxSnanPass snanScope(snanPass);
 	nxDigestInit(&oracleDigest);
 	nxDigestInit(&candidateDigest);
 	nxDigestInit(&inputDigest);
@@ -4105,6 +4472,7 @@ int wmain(int argc, wchar_t** argv)
 			nxDigestByte(&candidateDigest, b);
 			if(a != b)
 				{ ++mismatches; ++perMode[mode]; }
+			nxSnanDiscrete(mode, a, b);
 			for(NxU32 vertex = 0; vertex < nbVerts; ++vertex)
 				for(int c = 0; c < 3; ++c)
 					{
@@ -4118,6 +4486,7 @@ int wmain(int argc, wchar_t** argv)
 						}
 					if(x != y)
 						{ ++mismatches; ++perMode[mode]; }
+					nxSnanWord(mode, x, y);
 					if((x & 0x7f800000u) == 0x7f800000u)
 						++nonFinite;
 					}
@@ -4148,12 +4517,13 @@ int wmain(int argc, wchar_t** argv)
 	// The simulate-word count is printed and registered rather than dropped, so
 	// it is a tripwire in its own right: it fails if it moves in either
 	// direction, including toward zero.
-	totalMismatch += perMode[0];
-	printf("collision name=step_smooth_normals index=- rva=export owner=phys_fn_002146 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
-		oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches);
-	nxPrintInput("step_smooth_normals", &inputDigest);
-	printf("collision coverage name=step_smooth_normals non_finite_words=%u default_mismatches=%u simulate_mismatches=%u\n",
-		nonFinite, perMode[0], perMode[1]);
+	totalMismatch += nxSnanGate("step_smooth_normals", perMode[0]);
+	printf("collision name=%s index=- rva=export owner=phys_fn_002146 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+		nxSnanName("step_smooth_normals"), oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches);
+	nxPrintInput(nxSnanName("step_smooth_normals"), &inputDigest);
+	printf("collision coverage name=%s non_finite_words=%u default_mismatches=%u simulate_mismatches=%u\n",
+		nxSnanName("step_smooth_normals"), nonFinite, perMode[0], perMode[1]);
+	}
 	}
 
 	// -----------------------------------------------------------------------
@@ -4298,7 +4668,7 @@ int wmain(int argc, wchar_t** argv)
 			// Everything else is folded raw.
 			nxFoldStream(&oracleDigest, &world[0]);
 			nxFoldStream(&candidateDigest, &world[1]);
-			mismatches += nxCompareStreams(&world[0], &world[1]);
+			mismatches += nxCompareStreams(&world[0], &world[1], mode);
 			}
 		}
 	totalMismatch += mismatches;
@@ -4319,7 +4689,9 @@ int wmain(int argc, wchar_t** argv)
 	// validity test at 0x0001d694 and the swap at 0x0001d63c -- were dead. The
 	// mesh entries are where real ids come from and they need Phase 4, but the
 	// emitter is __thiscall at a known address and can be driven now.
+	for(int snanPass = 0; snanPass < 2; ++snanPass)
 	{
+	NxSnanPass snanScope(snanPass);
 	typedef void(__thiscall* NxOracleEmitFn)(NxContactSink*, void*, void*, NxU32,
 		const NxVec3*, const NxVec3*, NxU16, NxU16);
 	NxOracleEmitFn oracleEmit = (NxOracleEmitFn) (base + 0x0001d610);
@@ -4411,14 +4783,14 @@ int wmain(int argc, wchar_t** argv)
 
 			nxFoldStream(&oracleDigest, &emitWorld[0]);
 			nxFoldStream(&candidateDigest, &emitWorld[1]);
-			mismatches += nxCompareStreams(&emitWorld[0], &emitWorld[1]);
+			mismatches += nxCompareStreams(&emitWorld[0], &emitWorld[1], mode);
 			}
 		}
-	totalMismatch += mismatches;
-	printf("collision name=contact_emit index=- rva=0x0001d610 owner=phys_fn_000873 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+	totalMismatch += nxSnanGate("contact_emit", mismatches);
+	printf("collision name=%s index=- rva=0x0001d610 owner=phys_fn_000873 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n", nxSnanName("contact_emit"),
 		oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches);
-	nxPrintInput("contact_emit", &inputDigest);
-	printf("collision coverage name=contact_emit real_feature_pairs=%u fifth_words=%u\n",
+	nxPrintInput(nxSnanName("contact_emit"), &inputDigest);
+	printf("collision coverage name=%s real_feature_pairs=%u fifth_words=%u\n", nxSnanName("contact_emit"),
 		realFeatures, fifthWords);
 	}
 
@@ -4437,7 +4809,9 @@ int wmain(int argc, wchar_t** argv)
 	// zero" are different transcripts. It matters here: NxRayPlaneIntersect
 	// fills hit.worldImpact before either distance gate runs, so a raycast
 	// rejected for being behind the origin still leaves one field written.
+	for(int snanPass = 0; snanPass < 2; ++snanPass)
 	{
+	NxSnanPass snanScope(snanPass);
 	typedef const void*(__thiscall* NxOracleRaycastFn)(const void*, const NxRay*, NxReal,
 		NxU32, NxU32, NxRaycastHit*);
 	NxOracleRaycastFn oracleRaycast = (NxOracleRaycastFn) (base + kPlaneRaycastRva);
@@ -4545,6 +4919,7 @@ int wmain(int argc, wchar_t** argv)
 			nxDigestByte(&candidateDigest, fromCandidate);
 			if(fromOracle != fromCandidate)
 				++mismatches;
+			nxSnanDiscrete(mode, fromOracle, fromCandidate);
 			for(unsigned w = 0; w < sizeof(NxRaycastHit) / 4; ++w)
 				{
 				NxU32 a, b;
@@ -4557,14 +4932,15 @@ int wmain(int argc, wchar_t** argv)
 					}
 				if(a != b)
 					++mismatches;
+				nxSnanWord(mode, a, b);
 				}
 			}
 		}
-	totalMismatch += mismatches;
-	printf("collision name=shape_raycast_plane index=- rva=0x%08x owner=phys_fn_001261 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+	totalMismatch += nxSnanGate("shape_raycast_plane", mismatches);
+	printf("collision name=%s index=- rva=0x%08x owner=phys_fn_001261 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n", nxSnanName("shape_raycast_plane"),
 		kPlaneRaycastRva, oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches);
-	nxPrintInput("shape_raycast_plane", &inputDigest);
-	printf("collision coverage name=shape_raycast_plane hits=%u wrote_normal=%u aimed=%u\n",
+	nxPrintInput(nxSnanName("shape_raycast_plane"), &inputDigest);
+	printf("collision coverage name=%s hits=%u wrote_normal=%u aimed=%u\n", nxSnanName("shape_raycast_plane"),
 		hits, wroteNormal, aimedRays);
 	}
 
@@ -4582,7 +4958,9 @@ int wmain(int argc, wchar_t** argv)
 	// so it is driven from the generator on both sides.
 	//
 	// world->sphere is the second shape slot; here it carries the capsule.
+	for(int snanPass = 0; snanPass < 2; ++snanPass)
 	{
+	NxSnanPass snanScope(snanPass);
 	typedef void(__cdecl* NxOracleContactFn)(const NxCollisionShape*, const NxCollisionShape*,
 		NxContactSink*, void*);
 	NxOracleContactFn oracleContact = (NxOracleContactFn) (base + nxMatrixA[3].rva);
@@ -4779,19 +5157,19 @@ int wmain(int argc, wchar_t** argv)
 
 			nxFoldStream(&oracleDigest, &world[0]);
 			nxFoldStream(&candidateDigest, &world[1]);
-			mismatches += nxCompareStreams(&world[0], &world[1]);
+			mismatches += nxCompareStreams(&world[0], &world[1], mode);
 			}
 		}
-	totalMismatch += mismatches;
-	printf("collision name=contact_plane_capsule index=3 rva=0x%08x owner=%s checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+	totalMismatch += nxSnanGate("contact_plane_capsule", mismatches);
+	printf("collision name=%s index=3 rva=0x%08x owner=%s checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n", nxSnanName("contact_plane_capsule"),
 		nxMatrixA[3].rva, nxMatrixA[3].stableId,
 		oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches);
 	// one/two are the oracle's own contact count moving by one or by two, which
 	// is the multiple-contact rule; swept_emitted is how often the vtable call
 	// reported a hit. w15 is a header, a normal block and two records in one
 	// call -- the state only this entry can produce.
-	nxPrintInput("contact_plane_capsule", &inputDigest);
-	printf("collision coverage name=contact_plane_capsule emitted=%u one=%u two=%u swept=%u swept_emitted=%u zero_axis=%u w4=%u w8=%u w11=%u w15=%u\n",
+	nxPrintInput(nxSnanName("contact_plane_capsule"), &inputDigest);
+	printf("collision coverage name=%s emitted=%u one=%u two=%u swept=%u swept_emitted=%u zero_axis=%u w4=%u w8=%u w11=%u w15=%u\n", nxSnanName("contact_plane_capsule"),
 		emitted, oneContact, twoContacts, swept, sweptEmitted, zeroAxis,
 		widths[4], widths[8], widths[11], widths[15]);
 	}
@@ -4807,7 +5185,9 @@ int wmain(int argc, wchar_t** argv)
 	// writes hit.distance before it tests the limit, so a rejected raycast
 	// still leaves one field written. Poisoning the hit is what makes the
 	// second visible.
+	for(int snanPass = 0; snanPass < 2; ++snanPass)
 	{
+	NxSnanPass snanScope(snanPass);
 	typedef const void*(__thiscall* NxOracleRaycastFn)(const void*, const NxRay*, NxReal,
 		NxU32, NxU32, NxRaycastHit*);
 	NxOracleRaycastFn oracleRaycast = (NxOracleRaycastFn) (base + kSphereRaycastRva);
@@ -4919,6 +5299,7 @@ int wmain(int argc, wchar_t** argv)
 			nxDigestByte(&candidateDigest, fromCandidate);
 			if(fromOracle != fromCandidate)
 				{ ++mismatches; ++perMode[mode]; }
+			nxSnanDiscrete(mode, fromOracle, fromCandidate);
 			for(unsigned w = 0; w < sizeof(NxRaycastHit) / 4; ++w)
 				{
 				NxU32 a, b;
@@ -4931,6 +5312,7 @@ int wmain(int argc, wchar_t** argv)
 					}
 				if(a != b)
 					{ ++mismatches; ++perMode[mode]; }
+				nxSnanWord(mode, a, b);
 				}
 			}
 		}
@@ -4950,11 +5332,11 @@ int wmain(int argc, wchar_t** argv)
 	// operation after it. That is Task 2's row and the same escalation
 	// NxBuildSmoothNormals already carries, so the count is registered rather
 	// than dropped: it fails if it moves either way, including toward zero.
-	totalMismatch += perMode[0];
-	printf("collision name=shape_raycast_sphere index=- rva=0x%08x owner=phys_fn_001377 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+	totalMismatch += nxSnanGate("shape_raycast_sphere", perMode[0]);
+	printf("collision name=%s index=- rva=0x%08x owner=phys_fn_001377 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n", nxSnanName("shape_raycast_sphere"),
 		kSphereRaycastRva, oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches);
-	nxPrintInput("shape_raycast_sphere", &inputDigest);
-	printf("collision coverage name=shape_raycast_sphere hits=%u wrote_normal=%u aimed=%u behind=%u default_mismatches=%u simulate_mismatches=%u\n",
+	nxPrintInput(nxSnanName("shape_raycast_sphere"), &inputDigest);
+	printf("collision coverage name=%s hits=%u wrote_normal=%u aimed=%u behind=%u default_mismatches=%u simulate_mismatches=%u\n", nxSnanName("shape_raycast_sphere"),
 		hits, wroteNormal, aimedRays, behindRays, perMode[0], perMode[1]);
 	}
 
@@ -4971,7 +5353,9 @@ int wmain(int argc, wchar_t** argv)
 	//
 	// world->plane is the first shape slot; here it carries the sphere, and it
 	// is the one that needs a vtable.
+	for(int snanPass = 0; snanPass < 2; ++snanPass)
 	{
+	NxSnanPass snanScope(snanPass);
 	typedef void(__cdecl* NxOracleContactFn)(const NxCollisionShape*, const NxCollisionShape*,
 		NxContactSink*, void*);
 	NxOracleContactFn oracleContact = (NxOracleContactFn) (base + nxMatrixA[9].rva);
@@ -5140,15 +5524,15 @@ int wmain(int argc, wchar_t** argv)
 
 			nxFoldStream(&oracleDigest, &world[0]);
 			nxFoldStream(&candidateDigest, &world[1]);
-			mismatches += nxCompareStreams(&world[0], &world[1]);
+			mismatches += nxCompareStreams(&world[0], &world[1], mode);
 			}
 		}
-	totalMismatch += mismatches;
-	printf("collision name=contact_sphere_capsule index=9 rva=0x%08x owner=%s checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+	totalMismatch += nxSnanGate("contact_sphere_capsule", mismatches);
+	printf("collision name=%s index=9 rva=0x%08x owner=%s checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n", nxSnanName("contact_sphere_capsule"),
 		nxMatrixA[9].rva, nxMatrixA[9].stableId,
 		oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches);
-	nxPrintInput("contact_sphere_capsule", &inputDigest);
-	printf("collision coverage name=contact_sphere_capsule emitted=%u swept=%u swept_emitted=%u zero_axis=%u coincident=%u beyond_end=%u w4=%u w8=%u w11=%u\n",
+	nxPrintInput(nxSnanName("contact_sphere_capsule"), &inputDigest);
+	printf("collision coverage name=%s emitted=%u swept=%u swept_emitted=%u zero_axis=%u coincident=%u beyond_end=%u w4=%u w8=%u w11=%u\n", nxSnanName("contact_sphere_capsule"),
 		emitted, swept, sweptEmitted, zeroAxis, coincident, beyondEnd,
 		widths[4], widths[8], widths[11]);
 	}
@@ -5302,7 +5686,7 @@ int wmain(int argc, wchar_t** argv)
 
 			nxFoldStream(&oracleDigest, &world[0]);
 			nxFoldStream(&candidateDigest, &world[1]);
-			const unsigned differing = nxCompareStreams(&world[0], &world[1]);
+			const unsigned differing = nxCompareStreams(&world[0], &world[1], mode);
 			mismatches += differing;
 			perMode[mode] += differing;
 			}
@@ -5764,7 +6148,7 @@ int wmain(int argc, wchar_t** argv)
 
 			nxFoldStream(&oracleDigest, &world[0]);
 			nxFoldStream(&candidateDigest, &world[1]);
-			const unsigned differing = nxCompareStreams(&world[0], &world[1]);
+			const unsigned differing = nxCompareStreams(&world[0], &world[1], mode);
 			mismatches += differing;
 			perMode[mode] += differing;
 			}
@@ -6388,7 +6772,7 @@ int wmain(int argc, wchar_t** argv)
 
 			nxFoldStream(&oracleDigest, &world[0]);
 			nxFoldStream(&candidateDigest, &world[1]);
-			const unsigned differing = nxCompareStreams(&world[0], &world[1]);
+			const unsigned differing = nxCompareStreams(&world[0], &world[1], mode);
 			mismatches += differing;
 			perMode[mode] += differing;
 			}
@@ -6413,7 +6797,9 @@ int wmain(int argc, wchar_t** argv)
 	// which a placed pair reaches by accident. Half this generator puts the
 	// centre inside on purpose, the same way the phys_fn_001913 block does for
 	// the early return that path shares.
+	for(int snanPass = 0; snanPass < 2; ++snanPass)
 	{
+	NxSnanPass snanScope(snanPass);
 	typedef bool (__cdecl* NxOracleSphereBoxContactFn)(const NxCollisionSphereData*,
 		const NxCollisionBoxData*, NxVec3*, NxVec3*, NxReal*);
 	NxOracleSphereBoxContactFn oracleContact =
@@ -6504,6 +6890,7 @@ int wmain(int argc, wchar_t** argv)
 			nxDigestByte(&candidateDigest, fromCandidate);
 			if(fromOracle != fromCandidate)
 				{ ++mismatches; ++perMode[mode]; }
+			nxSnanDiscrete(mode, fromOracle, fromCandidate);
 
 			// Which face won, taken from the oracle's own normal rather than
 			// from anything this harness recomputes: on the inside path exactly
@@ -6540,6 +6927,7 @@ int wmain(int argc, wchar_t** argv)
 				nxDigestByte(&candidateDigest, (unsigned char) (words[1][word] >> 24));
 				if(words[0][word] != words[1][word])
 					{ ++mismatches; ++perMode[mode]; }
+				nxSnanWord(mode, words[0][word], words[1][word]);
 				}
 			const NxU32* normalWords[2];
 			normalWords[0] = (const NxU32*) &normal[0];
@@ -6556,6 +6944,7 @@ int wmain(int argc, wchar_t** argv)
 				nxDigestByte(&candidateDigest, (unsigned char) (normalWords[1][word] >> 24));
 				if(normalWords[0][word] != normalWords[1][word])
 					{ ++mismatches; ++perMode[mode]; }
+				nxSnanWord(mode, normalWords[0][word], normalWords[1][word]);
 				}
 			NxU32 separationWords[2];
 			memcpy(&separationWords[0], &separation[0], 4);
@@ -6566,14 +6955,15 @@ int wmain(int argc, wchar_t** argv)
 						(unsigned char) (separationWords[half] >> (byte * 8)));
 			if(separationWords[0] != separationWords[1])
 				{ ++mismatches; ++perMode[mode]; }
+			nxSnanWord(mode, separationWords[0], separationWords[1]);
 			}
 		}
-	totalMismatch += perMode[0];
-	printf("collision name=sphere_box_contact index=- rva=0x%08x owner=phys_fn_001917 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+	totalMismatch += nxSnanGate("sphere_box_contact", perMode[0]);
+	printf("collision name=%s index=- rva=0x%08x owner=phys_fn_001917 checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n", nxSnanName("sphere_box_contact"),
 		kSphereBoxContactRva, oracleDigest.checks, oracleDigest.state,
 		candidateDigest.state, mismatches);
-	nxPrintInput("sphere_box_contact", &inputDigest);
-	printf("collision coverage name=sphere_box_contact true=%u centre_inside=%u axis_x=%u axis_y=%u axis_z=%u default_mismatches=%u simulate_mismatches=%u\n",
+	nxPrintInput(nxSnanName("sphere_box_contact"), &inputDigest);
+	printf("collision coverage name=%s true=%u centre_inside=%u axis_x=%u axis_y=%u axis_z=%u default_mismatches=%u simulate_mismatches=%u\n", nxSnanName("sphere_box_contact"),
 		trueCount, insideCount, axisWins[0], axisWins[1], axisWins[2],
 		perMode[0], perMode[1]);
 	}
@@ -6589,7 +6979,9 @@ int wmain(int argc, wchar_t** argv)
 	// collision object the ordering rule compares, so the two materials and the
 	// two identities are driven apart here for the same reason the emitter block
 	// drives them apart.
+	for(int snanPass = 0; snanPass < 2; ++snanPass)
 	{
+	NxSnanPass snanScope(snanPass);
 	typedef void(__cdecl* NxOracleContactFn)(const NxCollisionShape*, const NxCollisionShape*,
 		NxContactSink*, void*);
 	NxOracleContactFn oracleContact = (NxOracleContactFn) (base + nxMatrixA[8].rva);
@@ -6715,17 +7107,17 @@ int wmain(int argc, wchar_t** argv)
 
 			nxFoldStream(&oracleDigest, &world[0]);
 			nxFoldStream(&candidateDigest, &world[1]);
-			const unsigned differing = nxCompareStreams(&world[0], &world[1]);
+			const unsigned differing = nxCompareStreams(&world[0], &world[1], mode);
 			mismatches += differing;
 			perMode[mode] += differing;
 			}
 		}
-	totalMismatch += perMode[0];
-	printf("collision name=contact_sphere_box index=8 rva=0x%08x owner=%s checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+	totalMismatch += nxSnanGate("contact_sphere_box", perMode[0]);
+	printf("collision name=%s index=8 rva=0x%08x owner=%s checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n", nxSnanName("contact_sphere_box"),
 		nxMatrixA[8].rva, nxMatrixA[8].stableId,
 		oracleDigest.checks, oracleDigest.state, candidateDigest.state, mismatches);
-	nxPrintInput("contact_sphere_box", &inputDigest);
-	printf("collision coverage name=contact_sphere_box emitted=%u centre_inside=%u repeated=%u static0=%u static1=%u negated=%u w4=%u w8=%u w11=%u default_mismatches=%u simulate_mismatches=%u\n",
+	nxPrintInput(nxSnanName("contact_sphere_box"), &inputDigest);
+	printf("collision coverage name=%s emitted=%u centre_inside=%u repeated=%u static0=%u static1=%u negated=%u w4=%u w8=%u w11=%u default_mismatches=%u simulate_mismatches=%u\n", nxSnanName("contact_sphere_box"),
 		emitted, insideCount, repeated, staticSide[0], staticSide[1], negatedPath,
 		widths[4], widths[8], widths[11], perMode[0], perMode[1]);
 	}
@@ -7043,7 +7435,9 @@ int wmain(int argc, wchar_t** argv)
 	// branch's box/box search) -- and the swept flag is driven on its own.
 	// Slot 5 of the BOX is the oracle's raycast on both sides (see
 	// kBoxRaycastRva).
+	for(int snanPass = 0; snanPass < 2; ++snanPass)
 	{
+	NxSnanPass snanScope(snanPass);
 	typedef void(__cdecl* NxOracleContactFn)(const NxCollisionShape*, const NxCollisionShape*,
 		NxContactSink*, void*);
 	NxOracleContactFn oracleContact = (NxOracleContactFn) (base + nxMatrixA[15].rva);
@@ -7246,7 +7640,7 @@ int wmain(int argc, wchar_t** argv)
 
 			nxFoldStream(&oracleDigest, &world[0]);
 			nxFoldStream(&candidateDigest, &world[1]);
-			const unsigned differing = nxCompareStreams(&world[0], &world[1]);
+			const unsigned differing = nxCompareStreams(&world[0], &world[1], mode);
 			perMode[mode] += differing;
 			if(world[0].sink.separatingAxis != world[1].sink.separatingAxis)
 				++perMode[mode];
@@ -7254,12 +7648,12 @@ int wmain(int argc, wchar_t** argv)
 			nxDigestByte(&candidateDigest, world[1].sink.separatingAxis);
 			}
 		}
-	totalMismatch += perMode[0];
-	printf("collision name=contact_box_capsule index=15 rva=0x%08x owner=%s checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n",
+	totalMismatch += nxSnanGate("contact_box_capsule", perMode[0]);
+	printf("collision name=%s index=15 rva=0x%08x owner=%s checks=%u oracle=%016llx candidate=%016llx mismatches=%u\n", nxSnanName("contact_box_capsule"),
 		nxMatrixA[15].rva, nxMatrixA[15].stableId,
 		oracleDigest.checks, oracleDigest.state, candidateDigest.state, perMode[0] + perMode[1]);
-	nxPrintInput("contact_box_capsule", &inputDigest);
-	printf("collision coverage name=contact_box_capsule emitted=%u swept=%u swept_emitted=%u centred=%u parallel=%u zero_axis=%u c0=%u c1=%u c2=%u c3=%u c4=%u c5=%u c6=%u c7plus=%u max_contacts=%u overflow_skipped=%u probe_max=%u default_mismatches=%u simulate_mismatches=%u\n",
+	nxPrintInput(nxSnanName("contact_box_capsule"), &inputDigest);
+	printf("collision coverage name=%s emitted=%u swept=%u swept_emitted=%u centred=%u parallel=%u zero_axis=%u c0=%u c1=%u c2=%u c3=%u c4=%u c5=%u c6=%u c7plus=%u max_contacts=%u overflow_skipped=%u probe_max=%u default_mismatches=%u simulate_mismatches=%u\n", nxSnanName("contact_box_capsule"),
 		emitted, swept, sweptEmitted, centred, parallel, zeroAxis,
 		contactCounts[0], contactCounts[1], contactCounts[2], contactCounts[3],
 		contactCounts[4], contactCounts[5], contactCounts[6], contactCounts[7],
@@ -7371,7 +7765,13 @@ int wmain(int argc, wchar_t** argv)
 				++inverted;
 				}
 			else if(tame && boundsMode == 1)
-				bounds[handle][3 + (nxNext(&state) % 3)] = bounds[handle][nxNext(&state) % 3];
+				{
+				// Flat: one max bound set to one min bound. The two draws are
+				// sequenced here; as one expression their order was the compiler's.
+				const unsigned target = 3 + nxNext(&state) % 3;
+				const unsigned source = nxNext(&state) % 3;
+				bounds[handle][target] = bounds[handle][source];
+				}
 
 			// The primitive near the chosen bounds: inside, touching or
 			// just clear, gated on the bounds being finite.
@@ -7465,6 +7865,9 @@ int wmain(int argc, wchar_t** argv)
 	// convex-mesh gap Task 2b's families (units/convex-mesh-gap-contract.md,
 	// sub-units E, F, I and N), in a function of their own; see nxDriveTask2b.
 	totalMismatch += nxDriveTask2b(base);
+
+	// The kernel fuzz harness's signalling-NaN variants; see nxDriveFuzzSnan.
+	totalMismatch += nxDriveFuzzSnan(physics);
 
 	// What is not covered, named rather than left as an absence.
 	for(unsigned index = 0; index < 36; ++index)

@@ -65,6 +65,17 @@ COLLISION_DIRECT_BLOCKS = ("box_corner", "sphere_box_data",
                            "ray_inflated_tris", "aabb_slab", "triangle_plane",
                            "segment_triangle_edges")
 
+# The `.snan` variants of the harness hardening: the same blocks re-run with
+# their signalling NaNs kept, divergent under enforced ceilings. Each registers
+# its oracle digest and its input digest (and coverage only where no candidate
+# count is in it), so they are required separately from the blocks above.
+COLLISION_SNAN_BLOCKS = tuple("%s.snan" % name for name in (
+    "box_corner", "box_quad_depth", "box_clip.random", "box_axis.random",
+    "box_shim", "contact_box_box", "step_smooth_normals", "contact_emit",
+    "shape_raycast_plane", "contact_plane_capsule", "shape_raycast_sphere",
+    "contact_sphere_capsule", "sphere_box_contact", "contact_sphere_box",
+    "contact_box_capsule", "fuzz_ray_plane", "fuzz_ray_aabb", "fuzz_segment_box"))
+
 
 def registered_lines():
     """The string literals inside $NxRequiredCoverageLines, per target."""
@@ -380,7 +391,7 @@ class CoverageFloor(unittest.TestCase):
 
     # Pinned independently of the registry. Raising this is fine; lowering it is
     # the edit that has to be justified.
-    MINIMUM = {"3": 199, "4": 161, "5": 871, "6": 403, "7": 276}
+    MINIMUM = {"3": 243, "4": 161, "5": 871, "6": 403, "7": 276}
 
     def test_the_floor_is_at_least_what_this_task_recorded(self):
         floor = coverage_floor()
@@ -480,6 +491,20 @@ class OracleDifferentialCoverageLines(unittest.TestCase):
                 "the harness drives %s but gate_targets.ps1 registers no input digest "
                 "line for it" % block)
 
+    def test_every_snan_variant_registers_its_digest_and_inputs(self):
+        for block in COLLISION_SNAN_BLOCKS:
+            for prefix in ("collision name=%s " % block, "collision input name=%s " % block):
+                self.assertTrue(any(line.startswith(prefix) for line in self.registered),
+                    "gate_targets.ps1 registers no `%s` line" % prefix.strip())
+            for line in self.registered:
+                if line.startswith("collision coverage name=%s " % block):
+                    self.assertNotIn("mismatches=", line,
+                        "a .snan coverage registration pins a candidate count")
+        source = COLLISION_SOURCE.read_text(encoding="utf-8")
+        for block in COLLISION_SNAN_BLOCKS:
+            self.assertIn('{ "%s",' % block[:-len(".snan")], source,
+                "%s has no entry in kSnanCeilings" % block)
+
     def test_no_generator_returns_a_raw_word_as_a_float(self):
         """Raw words are written into their slots as bits.
 
@@ -497,6 +522,7 @@ class OracleDifferentialCoverageLines(unittest.TestCase):
         names = list(collision_driven_names())
         live = {"%s.%s" % (name, kind) for name in names for kind in ("random", "aimed")}
         live |= set(COLLISION_DIRECT_BLOCKS)
+        live |= set(COLLISION_SNAN_BLOCKS)
         for line in self.registered:
             match = re.match(r"collision (?:coverage |input )?name=(\S+) ", line)
             if match:

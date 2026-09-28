@@ -151,19 +151,59 @@ static float nxFromBits(NxU32 bits)
 // NaN of both signs and arbitrary payload, infinity, denormals and negative
 // zero without any of them having to be written down. The rest keep the run
 // anchored on values a caller would really pass.
-static float nxPick(NxRandom* r, unsigned mode)
+//
+// The word is written into its slot as bits and never returned as a float
+// (convex-mesh gap harness hardening, as tests/PhysicsCollisionTests.cpp's
+// nxPickWord): a float return travels in st(0) under the x86 ABI, where a
+// signalling NaN is quieted -- or not, if the call is inlined -- so the words
+// handed to the exports depended on the compiler's inlining. The three draws of
+// cases 6 and default are sequenced (exponent, significand, sign): as one
+// expression their order was the compiler's too.
+//
+// A NaN is then quieted explicitly (bit 22, sign and payload kept -- what the
+// st(0) return did): every digest this harness prints is the one the
+// float-returning generator gave, on both pairs. With the signalling NaNs kept,
+// three exports' candidates differ from the oracle (NxRayPlaneIntersect,
+// NxRayAABBIntersect, NxSegmentBoxIntersect: NaN payloads), and a staged-pair
+// differential cannot carry a line on which the two pairs differ, so those draws
+// are replayed with their signalling NaNs in tests/PhysicsCollisionTests.cpp
+// (nxDriveFuzzSnan), under enforced ceilings.
+static void nxPickWord(NxRandom* r, unsigned mode, float* out)
 	{
+	NxU32 bits;
 	switch(mode & 7)
 		{
-		case 0:  return nxFromBits(nxNext(r));
-		case 1:  return (float) ((int) (nxNext(r) % 9) - 4);
-		case 2:  return (float) ((int) (nxNext(r) % 9) - 4) * 0.5f;
-		case 7:  return 0.0f;
-		case 6:  return nxFromBits((((110 + (nxNext(r) % 35)) & 0xff) << 23)
-					| (nxNext(r) & 0x7fffff) | ((nxNext(r) & 1) << 31));
-		default: return nxFromBits((((120 + (nxNext(r) % 16)) & 0xff) << 23)
-					| (nxNext(r) & 0x7fffff) | ((nxNext(r) & 1) << 31));
+		case 0:
+			bits = nxNext(r);
+			break;
+		case 1:
+			{
+			const float value = (float) ((int) (nxNext(r) % 9) - 4);
+			memcpy(&bits, &value, 4);
+			break;
+			}
+		case 2:
+			{
+			const float value = (float) ((int) (nxNext(r) % 9) - 4) * 0.5f;
+			memcpy(&bits, &value, 4);
+			break;
+			}
+		case 7:
+			bits = 0;
+			break;
+		default:
+			{
+			const NxU32 exponent = (mode & 7) == 6
+				? ((110 + (nxNext(r) % 35)) & 0xff) << 23
+				: ((120 + (nxNext(r) % 16)) & 0xff) << 23;
+			const NxU32 significand = nxNext(r) & 0x7fffff;
+			bits = exponent | significand | ((nxNext(r) & 1) << 31);
+			break;
+			}
 		}
+	if((bits & 0x7f800000u) == 0x7f800000u && (bits & 0x7fffffu))
+		bits |= 0x400000u;
+	memcpy(out, &bits, 4);
 	}
 
 // Output buffers are poisoned before every call with the same cdcd000N ladder
@@ -281,10 +321,14 @@ static void nxRunScalarBlock(HMODULE physics)
 	NxRandom random = { 0x13579bdfu };
 	for(unsigned i = 0; i < kScalarIterations; ++i)
 		{
-		const float a = nxPick(&random, i);
-		const float b = nxPick(&random, i >> 2);
-		const float c = nxPick(&random, i >> 4);
-		const float d = nxPick(&random, i >> 6);
+		float a;
+		nxPickWord(&random, i, &a);
+		float b;
+		nxPickWord(&random, i >> 2, &b);
+		float c;
+		nxPickWord(&random, i >> 4, &c);
+		float d;
+		nxPickWord(&random, i >> 6, &d);
 		const float extents[3] = { a, b, c };
 		const unsigned char hollow = (unsigned char) (nxNext(&random) & 3);
 
@@ -339,7 +383,7 @@ static void nxRunVectorBlock(HMODULE physics)
 		{
 		float w[15];
 		for(int k = 0; k < 15; ++k)
-			w[k] = nxPick(&random, i + k);
+			nxPickWord(&random, i + k, &w[k]);
 
 		if(rayPlane)
 			{
@@ -490,7 +534,7 @@ static void nxRunBoxBlock(HMODULE physics)
 		{
 		float w[24];
 		for(int k = 0; k < 24; ++k)
-			w[k] = nxPick(&random, i + k);
+			nxPickWord(&random, i + k, &w[k]);
 
 		if(rayAabb)
 			{
@@ -711,7 +755,7 @@ static void nxRunCapsuleBlock(HMODULE physics)
 		{
 		float w[16];
 		for(int k = 0; k < 16; ++k)
-			w[k] = nxPick(&random, i + k);
+			nxPickWord(&random, i + k, &w[k]);
 
 		if(rayCapsule)
 			{
@@ -817,7 +861,7 @@ static void nxRunSatBlock(HMODULE physics)
 		{
 		float w[30];
 		for(int k = 0; k < 30; ++k)
-			w[k] = nxPick(&random, i + k);
+			nxPickWord(&random, i + k, &w[k]);
 		for(unsigned char full = 0; full < 2; ++full)
 			{
 			if(boxBox)
@@ -926,9 +970,10 @@ static void nxRunNormalsBlock(HMODULE physics)
 		const int nonFinite = (nxNext(&random) & 1) != 0;
 		for(NxU32 v = 0; v < nbVerts; ++v)
 			for(int k = 0; k < 3; ++k)
-				verts[v * 3 + k] = nonFinite
-					? nxPick(&random, i + v + (unsigned) k)
-					: nxUnit(&random) * 4.0f - 2.0f;
+				if(nonFinite)
+					nxPickWord(&random, i + v + (unsigned) k, &verts[v * 3 + k]);
+				else
+					verts[v * 3 + k] = nxUnit(&random) * 4.0f - 2.0f;
 		for(NxU32 t = 0; t < nbTris * 3; ++t)
 			{
 			const NxU32 index = nxNext(&random) % nbVerts;

@@ -1993,7 +1993,64 @@ $NxRequiredCoverageLines = [ordered] @{
 
         # ray_inflated_tris' gating fans per control word and draw kind: the fans on which
         # both callees (Triangle::Inflate and NxRayTriIntersect) agree between the sides.
-        'collision gated name=ray_inflated_tris raw=10778 aimed=14293 mixed=6204 raw_simulate=3727 aimed_simulate=13581 mixed_simulate=1494'
+        'collision gated name=ray_inflated_tris raw=10778 aimed=14293 mixed=6204 raw_simulate=3727 aimed_simulate=13581 mixed_simulate=1494',
+
+        # The `.snan` variants (harness hardening, controller decision): fifteen pre-Task-2b
+        # blocks re-run on the same draws with their signalling NaNs kept. Their candidates
+        # differ from the oracle there -- NaN propagation under x87's operand rules, since the
+        # candidates load (and quiet) operands the listings use from memory -- so these do not
+        # gate on equality: the harness enforces per-word ceilings (kSnanCeilings: differing,
+        # discrete and non-NaN words under each control word). Only oracle-side lines are
+        # registered: the digest, the input digest and coverage lines that carry no
+        # candidate count. See evidence/convex-mesh-gap.md, Harness hardening.
+        'collision name=box_corner.snan index=- rva=0x00020750 owner=phys_fn_000943 checks=1440000 oracle=2ed93033dd627a73',
+        'collision input name=box_corner.snan words=1260000 input=1b330a32752715db',
+        'collision coverage name=box_corner.snan non_finite_words=37792',
+        'collision name=box_quad_depth.snan index=- rva=0x00038a90 owner=phys_fn_001739 checks=1200000 oracle=addbbb55befee36b',
+        'collision input name=box_quad_depth.snan words=840000 input=d4b9d0e89d892667',
+        'collision name=box_clip.random.snan index=- rva=0x00038ba0 owner=phys_fn_001741 checks=2668096 oracle=9f2da01a5e545ea6',
+        'collision input name=box_clip.random.snan words=1800000 input=eb8b706c453d9ade',
+        'collision name=box_axis.random.snan index=- rva=0x00039c10 owner=phys_fn_001745 checks=2911952 oracle=c8841fd268d4a000',
+        'collision input name=box_axis.random.snan words=1446000 input=09273ced2c5dc9ad',
+        'collision name=box_shim.snan index=- rva=0x0003ace0 owner=phys_fn_001748 checks=2987808 oracle=72387ed80ea96392',
+        'collision input name=box_shim.snan words=964000 input=a3a06d965694a4fe',
+        'collision name=contact_box_box.snan index=14 rva=0x0003add0 owner=phys_fn_001749 checks=5996662 oracle=10da3b07497beb38',
+        'collision input name=contact_box_box.snan words=1803996 input=cfebc2a170aa5707',
+        'collision name=step_smooth_normals.snan index=- rva=export owner=phys_fn_002146 checks=919352 oracle=d1dd1830b3d92626',
+        'collision input name=step_smooth_normals.snan words=200049 input=a33800bfc184161f',
+        'collision name=contact_emit.snan index=- rva=0x0001d610 owner=phys_fn_000873 checks=4453104 oracle=d0fa2678c7090891',
+        'collision input name=contact_emit.snan words=2196392 input=4bde64778acade06',
+        'collision coverage name=contact_emit.snan real_feature_pairs=25106 fifth_words=25276',
+        'collision name=shape_raycast_plane.snan index=- rva=0x00025350 owner=phys_fn_001261 checks=5880000 oracle=cc2eae87e1884d1c',
+        'collision input name=shape_raycast_plane.snan words=1560000 input=31c4940c9db34cdf',
+        'collision coverage name=shape_raycast_plane.snan hits=36662 wrote_normal=18252 aimed=22353',
+        'collision name=contact_plane_capsule.snan index=3 rva=0x00048370 owner=phys_fn_001891 checks=2161616 oracle=43a7f3eb813411d5',
+        'collision input name=contact_plane_capsule.snan words=1793520 input=b6ee6c781b7d6ba3',
+        'collision coverage name=contact_plane_capsule.snan emitted=38322 one=14258 two=24064 swept=49582 swept_emitted=9242 zero_axis=40868 w4=710 w8=1694 w11=13166 w15=22054',
+        'collision name=shape_raycast_sphere.snan index=- rva=0x00027c70 owner=phys_fn_001377 checks=5880000 oracle=672f5d70efa6ac62',
+        'collision input name=shape_raycast_sphere.snan words=1560000 input=353aae5f6328fe70',
+        'collision name=contact_sphere_capsule.snan index=9 rva=0x0004a4b0 owner=phys_fn_001923 checks=1802896 oracle=2db2dedd6b554b45',
+        'collision input name=contact_sphere_capsule.snan words=1799928 input=922750234e014dee',
+        'collision coverage name=contact_sphere_capsule.snan emitted=38192 swept=50378 swept_emitted=17834 zero_axis=34458 coincident=4074 beyond_end=11046 w4=1 w8=3127 w11=35064',
+        'collision name=sphere_box_contact.snan index=- rva=0x00049f00 owner=phys_fn_001917 checks=3480000 oracle=b5e77c1b2d4cded9',
+        'collision input name=sphere_box_contact.snan words=1140000 input=8e3cfaf73b680120',
+        'collision name=contact_sphere_box.snan index=8 rva=0x0004a2d0 owner=phys_fn_001919 checks=2453136 oracle=aea04356bbe21b21',
+        'collision input name=contact_sphere_box.snan words=1807056 input=0bec74210f5b4779',
+        'collision name=contact_box_capsule.snan index=15 rva=0x0003b260 owner=phys_fn_001753 checks=6530764 oracle=2a16f2bc09199cc1',
+        'collision input name=contact_box_capsule.snan words=1797372 input=fa667f1771221c95',
+
+        # The kernel fuzz harness's three: a staged-pair differential cannot carry a line on
+        # which its two pairs differ, so its signalling-NaN draws are replayed here, where the
+        # oracle is in process (nxDriveFuzzSnan), under the same ceilings rule.
+        'collision name=fuzz_ray_plane.snan index=- rva=export owner=phys_fn_001704 checks=1360000 oracle=1e5f1c12b433895a',
+        'collision input name=fuzz_ray_plane.snan words=600000 input=1836a2154a685afc',
+        'collision coverage name=fuzz_ray_plane.snan hits=39118',
+        'collision name=fuzz_ray_aabb.snan index=- rva=export owner=phys_fn_001722 checks=1040000 oracle=371bb0fec7ea600c',
+        'collision input name=fuzz_ray_aabb.snan words=960000 input=fa0bf57a1d24ad6a',
+        'collision coverage name=fuzz_ray_aabb.snan hits=802',
+        'collision name=fuzz_segment_box.snan index=- rva=export owner=phys_fn_001714 checks=1040000 oracle=f8fc7328318f7628',
+        'collision input name=fuzz_segment_box.snan words=960000 input=fa0bf57a1d24ad6a',
+        'collision coverage name=fuzz_segment_box.snan hits=995'
     )
 
     # The Phase 4 asset-format gate. It went GREEN in P4 Task 3 for the pmap
@@ -2528,8 +2585,8 @@ $NxRequiredCoverageLines = [ordered] @{
 $NxPhaseCoverageFloor = [ordered] @{
     '1' = 0
     '2' = 0
-    '3' = 199  # 18 for NxPhysicsKernelFuzzTests, 181 for NxPhysicsCollisionTests (85 + 23 from
-               # convex-mesh gap Task 2a + 14 from its Task 2b + 59 from its harness hardening)
+    '3' = 243  # 18 for NxPhysicsKernelFuzzTests, 225 for NxPhysicsCollisionTests (85 + 23 from
+               # convex-mesh gap Task 2a + 14 from its Task 2b + 59 + 44 from its harness hardening)
     '4' = 161  # 34 for NxPhysicsAssetTests, 127 for NxPhysicsThirdPartyTests (67 + 29 from
                # vendored-correspondence Task 4 + 5 from its Task 5a + 26 from qhull-gap Task 1)
     '5' = 871  # 126 object-layout, 1 shape-vtable and 744 public actor/pruner/box/scene lines

@@ -15,7 +15,7 @@ table below.
 | 2a | 2026-09-28T08:51:30 | 2026-09-28T09:40:40 | 15 | 8,468 | Box distance kernels (001670, 001674..001688 incl. 001686) in the new `Physics/src/Distance.cpp`; matrix B 001751, 001774, 001785, 001789, 001791 and matrix A 001753. All exact against the oracle under both control words (point_box, line_box, segment_box, box_capsule, capsule_capsule, contact_box_capsule, three compound families; 23 lines registered, phase 3 floor 126). Defects: Face as one function spilled wide values (16 segment_box words under 0x0f7f; fixed by splitting its leaves); the contract's compound entries test the compound's own world bounds, not children (corrected); 001753's indirect call is the box's slot 5 (000949); Case00's pnt[i1] typo reproduced; the oracle's 16-slot manifold overflow in 001753 pre-flighted (21 pairs skipped). All 24 traced functions hit. See `## Task 2a`. |
 | 2b | 2026-09-28T09:53:44 | 2026-09-28T11:01:37 | 8 | 9,919 | Triangle distance kernels 001672, 001692, 001694 in `Physics/src/Distance.cpp`; 001708 and 001730/001732 in `Geometry.cpp`; 001760 in the new `ContactBoxMeshICE.cpp` and 001855 in the new `ContactMeshHeightfield.cpp`. BOX slot 7 (000951) written from its listing and wired to 001730 (still `discovered`). All exact under 0x027f (point_triangle, line_line, segment_triangle, ray_inflated_tris, aabb_slab, triangle_plane, segment_triangle_edges; 14 lines registered, phase 3 floor 140); under 0x0f7f 001694 differs on 14 words inherited from 001690, 001760 on 51 and 001855 on 32 from the square root's qword operand. ray_inflated_tris gates the fans whose two Triangle::Inflates (005185) agree, the rest under ceilings. Defects: 001672 and 001694 spilled wide values until split into leaves; a Triangle object gave 001708 an unwind frame; contract roles of 001692/001708/001855 corrected; the harness's generators shift oracle digests when its inlining changes. All 34 traced functions hit. 2a review minors fixed in their own commit. See `## Task 2b`. |
 | 2b review | 2026-09-28T11:18:00 | 2026-09-28T11:32:34 | 0 | 0 | No row added; 001760 (x87 block), 001672 (first-edge leaf) and the Task 2b families (bit-written raw draws, mixed exponents, 001712 pre-flight) reworked after the review. Under 0x0f7f: 001672, 001692, 001708, 001730, 001760 exact; 001694 31 on these draws (all 001690's; its own interior leaf differed on 2 of the review's 1M draws, which these did not reach -- see the harness hardening), 001855 215, pinned. The 14 Task 2b lines re-registered; all 122 collision lines reproduce. 35 traced functions hit. See `## Task 2b`, **Review**. |
-| H | 2026-09-28T11:36:00 | 2026-09-28T12:29:36 | 1 | 782 | Harness hardening. Every raw draw of the collision harness is written as bits (no float return, which quieted signalling NaNs depending on inlining); pre-Task-2b families draw their NaNs quiet explicitly (all their digests reproduce); handed signalling NaNs, 15 of their blocks' candidates differ (recorded, not registered). 58 input-digest lines registered. 001712 rewritten as a naked x87 transcription (its C++ loaded operands the listing uses from memory: 1,310 step_ray_tri words and 75 / 31 fans on signalling NaNs; now 0), step_ray_tri on signalling NaNs. 001694's interior leaf an x87 block (2 own 0x0f7f words on the review's draws; now 0); segment_triangle replays the review's 250,000 draws (0x0f7f 940, all 001690's). Compound raw bounds drawn directly. 11 lines re-registered once, 59 added; phase 3 floor 199. 12 traced functions hit. See `## Harness hardening`. |
+| H | 2026-09-28T11:36:00 | 2026-09-28T12:29:36 | 1 | 782 | Harness hardening. Every raw draw of the collision harness is written as bits (no float return, which quieted signalling NaNs depending on inlining); pre-Task-2b families draw their NaNs quiet explicitly (all their digests reproduce); handed signalling NaNs, 15 of their blocks' candidates differ (recorded, not registered). 58 input-digest lines registered. 001712 rewritten as a naked x87 transcription (its C++ loaded operands the listing uses from memory: 1,310 step_ray_tri words and 75 / 31 fans on signalling NaNs; now 0), step_ray_tri on signalling NaNs. 001694's interior leaf an x87 block (2 own 0x0f7f words on the review's draws; now 0); segment_triangle replays the review's 250,000 draws (0x0f7f 940, all 001690's). Compound raw bounds drawn directly. 11 lines re-registered once, 59 added; phase 3 floor 199. 12 traced functions hit. Follow-up (controller decision): the 15 blocks, and 3 kernel-fuzz exports replayed in-process, also run as `.snan` variants divergent under enforced ceilings (44 lines, floor 243); the fuzz harness writes bits and quiets explicitly (its lines unchanged); two unsequenced draws sequenced; the affected rows' notes say signalling-NaN propagation is not reproduced. See `## Harness hardening`. |
 
 ## Task 2a: box distance kernels and the entries that reach them
 
@@ -242,37 +242,71 @@ the harness's code generation (Task 2b, defect 4). The Task 2b families already 
   122 registered lines reproduced. With `nxPickWord` as written, every pre-Task-2b block's input
   digest and oracle digest is the same as the float-returning generator's -- every one of those call
   sites had been going through st(0) -- except the compound families, changed on purpose (below).
-- *Signalling NaNs, the finding.* Handed the same draws with their signalling NaNs kept, 15
-  pre-Task-2b blocks' candidates differ from the oracle (table below). All of it is signalling-NaN
-  driven: quieting the same draws restores every digest and every count. Sampled: box_corner's
-  differing words are NaNs on both sides with different payloads; step_ray_tri's included a `t` the
-  oracle left unwritten where the candidate wrote a NaN (a sign-bit test reading a propagated NaN).
-  The mechanism is x87's NaN rule -- a signalling memory operand loses to a quiet register operand
-  whatever the significands, and `fld` quiets what it loads -- so a candidate that loads operands the
-  listing uses from memory (or the reverse) propagates another payload. These blocks keep drawing
-  their NaNs quiet (their registered lines unchanged) and the divergence is NOT registered; it is left
-  for the controller to decide (fix the rows or pin counts under ceilings).
+- *Signalling NaNs: a class, and the policy.* Handed the same draws with their signalling NaNs
+  kept, 15 pre-Task-2b blocks' candidates differ from the oracle; quieting the same draws restores
+  every digest and every count, so all of it is signalling-NaN driven. The mechanism is x87's NaN
+  rule: a signalling memory operand loses to a quiet register operand whatever the significands, and
+  `fld` quiets what it loads, so a candidate that loads an operand its listing uses from memory (or
+  the reverse) propagates another NaN -- mostly a different payload, and where a sign-bit test or a
+  compare reads the propagated NaN, a different branch (a different verdict, contact count or
+  stream). Policy (controller decision, after the first report):
+  - each block's registered family keeps drawing its NaNs quiet (`nxPickWord`), exact, its lines
+    unchanged;
+  - each also runs as `<block>.snan` on the same draws with the signalling NaNs kept, under both
+    control words, divergent under ceilings the harness enforces (`kSnanCeilings`, the
+    `kDivergentCeilings` pattern of `tests/PhysicsThirdPartyTests.cpp`): differing words, how many
+    of them are discrete (a verdict, a count, a stream header) and how many are float words not NaN
+    on both sides ("non-NaN": a branch, or a NaN against a number, rather than a payload), per
+    control word; a count may fall, never rise. Only oracle-side lines are registered -- the oracle
+    digest, the input digest, and coverage lines with no candidate count in them;
+  - these rows are not rewritten for it: a signalling NaN is a pathological input, and the fix --
+    listing-faithful memory operands -- is a transcription as large as the row. The naked copy of
+    phys_fn_001712 (below) is the precedent if a row ever needs it. Each row's inventory `notes`
+    says its signalling-NaN propagation is not reproduced and names its `.snan` block.
 
-| block | row | checks | differing (both words) | 0x027f / 0x0f7f |
-|---|---|---:|---:|---|
-| box_corner | 000943 | 1,440,000 | 536 | -- |
-| box_quad_depth | 001739 | 1,200,000 | 14 | 7 / 7 |
-| box_clip.random | 001741 | 2,668,096 | 39,417 | 19,717 / 19,700 |
-| box_axis.random | 001745 | 2,911,952 | 60,402 | 30,212 / 30,190 |
-| box_shim | 001748 | 2,987,808 | 10,210 | 5,105 / 5,105 |
-| contact_box_box | 001749 | 5,996,662 | 692 | 346 / 346 |
-| step_smooth_normals | 002146 | 919,352 | 30 | 15 / 15 |
-| contact_emit | 000873 | 4,453,104 | 7,476 | -- |
-| shape_raycast_plane | 001261 | 5,880,000 | 3,440 | -- |
-| contact_plane_capsule | 001891 | 2,161,616 | 940 | -- |
-| shape_raycast_sphere | 001377 | 5,880,000 | 4,342 | 2,171 / 2,171 |
-| contact_sphere_capsule | 001923 | 1,802,896 | 1,608 | -- |
-| sphere_box_contact | 001917 | 3,480,000 | 6,362 | 3,181 / 3,181 |
-| contact_sphere_box | 001919 | 2,453,136 | 4,044 | 2,022 / 2,022 |
-| contact_box_capsule | 001753 | 6,530,764 | 192 | 99 / 93 |
+  The ceilings (0x027f / 0x0f7f), measured on the build of this commit:
 
-  (A scratch build with `nxPickWord` not quieting, on the final code; step_ray_tri, the sixteenth
-  before 001712's fix, is 0. `--` is a block that prints no per-word split.)
+| `.snan` block | row | words | discrete | non-NaN |
+|---|---|---:|---:|---:|
+| box_corner | 000943 | 268 / 268 | 0 / 0 | 0 / 0 |
+| box_quad_depth | 001739 | 2 / 2 | 0 / 0 | 0 / 0 |
+| box_clip.random | 001741 (001743) | 19,717 / 19,700 | 589 / 588 | 18,520 / 18,504 |
+| box_axis.random | 001745 | 30,212 / 30,190 | 2,904 / 2,897 | 25,904 / 25,889 |
+| box_shim | 001748 | 5,105 / 5,105 | 435 / 435 | 4,335 / 4,335 |
+| contact_box_box | 001749 | 307 / 307 | 39 / 39 | 236 / 236 |
+| step_smooth_normals | 002146 | 15 / 15 | 0 / 0 | 0 / 0 |
+| contact_emit | 000873 | 3,738 / 3,738 | 0 / 0 | 0 / 0 |
+| shape_raycast_plane | 001261 | 1,720 / 1,720 | 0 / 0 | 0 / 0 |
+| contact_plane_capsule | 001891 | 470 / 470 | 0 / 0 | 0 / 0 |
+| shape_raycast_sphere | 001377 | 2,171 / 2,171 | 0 / 0 | 0 / 0 |
+| contact_sphere_capsule | 001923 | 804 / 804 | 0 / 0 | 0 / 0 |
+| sphere_box_contact | 001917 | 3,181 / 3,181 | 0 / 0 | 0 / 0 |
+| contact_sphere_box | 001919 | 2,022 / 2,022 | 0 / 0 | 0 / 0 |
+| contact_box_capsule | 001753 | 96 / 90 | 4 / 4 | 40 / 40 |
+| fuzz_ray_plane | 001704 | 15 / 15 | 0 / 0 | 0 / 0 |
+| fuzz_ray_aabb | 001722 | 1 / 1 | 0 / 0 | 0 / 0 |
+| fuzz_segment_box | 001714 | 2 / 2 | 0 / 0 | 0 / 0 |
+
+  Ten of the fifteen differ in NaN payloads only; box_clip, box_axis, box_shim, contact_box_box and
+  contact_box_capsule also branch (discrete and non-NaN words). A block's `words` here counts a
+  ten-byte spill as one word and a stream's differing header as one discrete word, so the figures
+  differ in unit from the blocks' own `mismatches`. The fifteen add 35 registered lines (15 digests,
+  15 input digests, 5 coverage lines without candidate counts).
+- *The kernel fuzz harness* (`tests/PhysicsKernelFuzzTests.cpp`) had the same float-returning
+  `nxPick`, and three unsequenced draws in one expression in two of its cases. Its generator now
+  writes bits (the draws sequenced exponent, significand, sign) and quiets NaNs explicitly: every
+  line it prints is unchanged on both pairs (compared against the float-returning build on the
+  shipped and the rebuilt pair), so none of its 18 registered lines moved and none was
+  re-registered. With the signalling NaNs kept, three of its exports' candidates differ
+  (NxRayPlaneIntersect, NxRayAABBIntersect, NxSegmentBoxIntersect; NaN payloads). A staged-pair
+  differential cannot carry a line on which its pairs differ, so those draws -- the fuzz harness's
+  own stream, replayed word for word -- run in NxPhysicsCollisionTests (`nxDriveFuzzSnan`, the
+  oracle in process, both control words) as `fuzz_ray_plane.snan`, `fuzz_ray_aabb.snan` and
+  `fuzz_segment_box.snan`, in the table above (9 lines registered).
+- *Unsequenced draws.* Two more expressions drew twice from the xorshift in one expression (the
+  compound families' flat-bounds index pair and `nxMixedBits`); both are sequenced now, in the
+  order that reproduces their registered digests. The first had already moved: adding the
+  `.snan` passes changed MSVC's evaluation order there and with it the compound families' inputs.
 - The compound families' raw bounds were `c - h` and `c + h` over two raw draws; SSE propagates the
   first operand's NaN and the sum is commutative, so the operand order the compiler emitted chose the
   payload. They are now the two drawn words themselves (same stream).
@@ -330,13 +364,15 @@ from the oracle side; candidate agreement unchanged except where noted):
 
 ("Before" is the old generator with the input digests added, which reproduced all 122 registered
 lines.) The name and coverage lines of the first five and ray_inflated_tris' coverage line were
-replaced (11 lines); 58 input lines and the gated line were added (59). Phase 3 floor 140 -> 199;
-`test_gate_targets.py` pins 199 and requires an input line for every driven block and no
-float-returning raw generator (755 tool tests).
+replaced (11 lines); 58 input lines and the gated line were added (59), then the 44 `.snan` lines
+(35 + 9). Phase 3 floor 140 -> 243; `test_gate_targets.py` pins 243 and requires an input line for
+every driven block, a digest and an input line (and no candidate count in a coverage line) for every
+`.snan` block and a `kSnanCeilings` entry for it, and no float-returning raw generator (756 tool
+tests).
 
 **Trace.** `evidence/convex-mesh-gap-trace-H.txt`: 12 one-shot breakpoints (001712; 001694 and its
 ten leaves, the interior block among them) on the build of a8df0e8 (exe sha256 7fc1fb88...); all hit,
 `collision=pass`.
 
-**Not in scope, noted.** `tests/PhysicsKernelFuzzTests.cpp` has its own `static float nxPick(NxRandom*,
-unsigned)`, a float-returning raw generator behind the registered `fuzz` lines of Phase 3.
+**Trace, `.snan` follow-up.** No product code changed after a8df0e8 (harness, registry, inventory
+notes and evidence only), so the trace above stands.

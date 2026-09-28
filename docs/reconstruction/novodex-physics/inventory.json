@@ -15929,7 +15929,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2661",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Signalling-NaN propagation is not reproduced (convex-mesh gap harness hardening): exact on quiet-NaN draws, but with signalling NaNs kept the candidate differs from the oracle (x87 NaN rules: the candidate loads, and so quiets, operands its listing uses as memory operands, or the reverse); measured and pinned under ceilings as NxPhysicsCollisionTests `contact_emit.snan` (evidence/convex-mesh-gap.md, Harness hardening). Fixing it needs listing-faithful memory operands (precedent: phys_fn_001712)."
     },
     {
       "id": "phys_fn_000874",
@@ -17194,7 +17194,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/2968",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Signalling-NaN propagation is not reproduced (convex-mesh gap harness hardening): exact on quiet-NaN draws, but with signalling NaNs kept the candidate differs from the oracle (x87 NaN rules: the candidate loads, and so quiets, operands its listing uses as memory operands, or the reverse); measured and pinned under ceilings as NxPhysicsCollisionTests `box_corner.snan` (evidence/convex-mesh-gap.md, Harness hardening). Fixing it needs listing-faithful memory operands (precedent: phys_fn_001712)."
     },
     {
       "id": "phys_fn_000944",
@@ -22962,7 +22962,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3395",
       "static_proof": null,
       "dynamic_proof": "NxPhysicsCollisionTests plane-raycast family and 16 NxPhysicsShapeVtableTests oracle/candidate slot-5 ray, limit and normal-hint cases, bitwise",
-      "notes": ""
+      "notes": "Signalling-NaN propagation is not reproduced (convex-mesh gap harness hardening): exact on quiet-NaN draws, but with signalling NaNs kept the candidate differs from the oracle (x87 NaN rules: the candidate loads, and so quiets, operands its listing uses as memory operands, or the reverse); measured and pinned under ceilings as NxPhysicsCollisionTests `shape_raycast_plane.snan` (evidence/convex-mesh-gap.md, Harness hardening). Fixing it needs listing-faithful memory operands (precedent: phys_fn_001712)."
     },
     {
       "id": "phys_fn_001262",
@@ -25070,7 +25070,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/3536",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "Sphere vtable slot 5 is implemented once in ShapeRaycast.cpp and reached through the candidate table; 16 isolated through-vtable ray/limit/normal-hint fixtures match the oracle in NxPhysicsShapeVtableTests.",
+      "notes": "Sphere vtable slot 5 is implemented once in ShapeRaycast.cpp and reached through the candidate table; 16 isolated through-vtable ray/limit/normal-hint fixtures match the oracle in NxPhysicsShapeVtableTests. Signalling-NaN propagation is not reproduced (convex-mesh gap harness hardening): exact on quiet-NaN draws, but with signalling NaNs kept the candidate differs from the oracle (x87 NaN rules: the candidate loads, and so quiets, operands its listing uses as memory operands, or the reverse); measured and pinned under ceilings as NxPhysicsCollisionTests `shape_raycast_sphere.snan` (evidence/convex-mesh-gap.md, Harness hardening). Fixing it needs listing-faithful memory operands (precedent: phys_fn_001712).",
       "implementation": "Physics/src/ShapeRaycast.cpp"
     },
     {
@@ -30996,7 +30996,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4833",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "",
+      "notes": "Signalling-NaN propagation is not reproduced (convex-mesh gap harness hardening): exact on quiet-NaN draws, but with signalling NaNs kept the candidate differs from the oracle (x87 NaN rules: the candidate loads, and so quiets, operands its listing uses as memory operands, or the reverse); measured and pinned under ceilings as NxPhysicsCollisionTests `fuzz_ray_plane.snan` (evidence/convex-mesh-gap.md, Harness hardening). Fixing it needs listing-faithful memory operands (precedent: phys_fn_001712).",
       "implementation": "Physics/src/ContactGeneration.cpp",
       "implementation_symbol": null
     },
@@ -31184,7 +31184,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4850",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "",
+      "notes": "Signalling-NaN propagation is not reproduced (convex-mesh gap harness hardening): exact on quiet-NaN draws, but with signalling NaNs kept the candidate differs from the oracle (x87 NaN rules: the candidate loads, and so quiets, operands its listing uses as memory operands, or the reverse); measured and pinned under ceilings as NxPhysicsCollisionTests `fuzz_segment_box.snan` (evidence/convex-mesh-gap.md, Harness hardening). Fixing it needs listing-faithful memory operands (precedent: phys_fn_001712).",
       "implementation": "Physics/include/NxIntersectionSegmentBox.h",
       "implementation_symbol": null
     },
@@ -31336,7 +31336,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4889",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "",
+      "notes": "Signalling-NaN propagation is not reproduced (convex-mesh gap harness hardening): exact on quiet-NaN draws, but with signalling NaNs kept the candidate differs from the oracle (x87 NaN rules: the candidate loads, and so quiets, operands its listing uses as memory operands, or the reverse); measured and pinned under ceilings as NxPhysicsCollisionTests `fuzz_ray_aabb.snan` (evidence/convex-mesh-gap.md, Harness hardening). Fixing it needs listing-faithful memory operands (precedent: phys_fn_001712).",
       "implementation": "Physics/include/NxIntersectionSegmentBox.h",
       "implementation_symbol": null
     },
@@ -31656,7 +31656,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4963",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Signalling-NaN propagation is not reproduced (convex-mesh gap harness hardening): exact on quiet-NaN draws, but with signalling NaNs kept the candidate differs from the oracle (x87 NaN rules: the candidate loads, and so quiets, operands its listing uses as memory operands, or the reverse); measured and pinned under ceilings as NxPhysicsCollisionTests `box_quad_depth.snan` (evidence/convex-mesh-gap.md, Harness hardening). Fixing it needs listing-faithful memory operands (precedent: phys_fn_001712)."
     },
     {
       "id": "phys_fn_001740",
@@ -31692,7 +31692,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/4966",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Signalling-NaN propagation is not reproduced (convex-mesh gap harness hardening): exact on quiet-NaN draws, but with signalling NaNs kept the candidate differs from the oracle (x87 NaN rules: the candidate loads, and so quiets, operands its listing uses as memory operands, or the reverse); measured and pinned under ceilings as NxPhysicsCollisionTests `box_clip.random.snan` (evidence/convex-mesh-gap.md, Harness hardening). Fixing it needs listing-faithful memory operands (precedent: phys_fn_001712)."
     },
     {
       "id": "phys_fn_001742",
@@ -31728,7 +31728,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5014",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "continuation of the entry at 0x00038ba0"
+      "notes": "continuation of the entry at 0x00038ba0 Signalling-NaN propagation is not reproduced (convex-mesh gap harness hardening): exact on quiet-NaN draws, but with signalling NaNs kept the candidate differs from the oracle (x87 NaN rules: the candidate loads, and so quiets, operands its listing uses as memory operands, or the reverse); measured and pinned under ceilings as NxPhysicsCollisionTests `box_clip.random.snan` (evidence/convex-mesh-gap.md, Harness hardening). Fixing it needs listing-faithful memory operands (precedent: phys_fn_001712)."
     },
     {
       "id": "phys_fn_001744",
@@ -31764,7 +31764,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5030",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Signalling-NaN propagation is not reproduced (convex-mesh gap harness hardening): exact on quiet-NaN draws, but with signalling NaNs kept the candidate differs from the oracle (x87 NaN rules: the candidate loads, and so quiets, operands its listing uses as memory operands, or the reverse); measured and pinned under ceilings as NxPhysicsCollisionTests `box_axis.random.snan` (evidence/convex-mesh-gap.md, Harness hardening). Fixing it needs listing-faithful memory operands (precedent: phys_fn_001712)."
     },
     {
       "id": "phys_fn_001746",
@@ -31818,7 +31818,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5060",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Signalling-NaN propagation is not reproduced (convex-mesh gap harness hardening): exact on quiet-NaN draws, but with signalling NaNs kept the candidate differs from the oracle (x87 NaN rules: the candidate loads, and so quiets, operands its listing uses as memory operands, or the reverse); measured and pinned under ceilings as NxPhysicsCollisionTests `box_shim.snan` (evidence/convex-mesh-gap.md, Harness hardening). Fixing it needs listing-faithful memory operands (precedent: phys_fn_001712)."
     },
     {
       "id": "phys_fn_001749",
@@ -31836,7 +31836,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5061",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Signalling-NaN propagation is not reproduced (convex-mesh gap harness hardening): exact on quiet-NaN draws, but with signalling NaNs kept the candidate differs from the oracle (x87 NaN rules: the candidate loads, and so quiets, operands its listing uses as memory operands, or the reverse); measured and pinned under ceilings as NxPhysicsCollisionTests `contact_box_box.snan` (evidence/convex-mesh-gap.md, Harness hardening). Fixing it needs listing-faithful memory operands (precedent: phys_fn_001712)."
     },
     {
       "id": "phys_fn_001750",
@@ -31909,7 +31909,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5084",
       "static_proof": "transcribed from the Capstone listing (oracle/capstone/manifest.json; units/gap__IceAdjacencies.cpp__to__ContactConvexHeightfield.cpp.md) with the layout and calls of units/convex-mesh-gap-contract.md; listing 0x0003b260..0x0003bb3a: the swept arm raycasts through the BOX's vtable slot 5 (`call [eax+0x14]` at 0x0003b3da, ecx = arg0; phys_fn_000949 on a box); the end spheres through 001917 with the -0.01 (double) facing test and the axis negated each pass; 001688, then the segment/box contact or, at squared distance 0, 001748 over the capsule as a (0.666r, h, 0.666r) box with the inline manifold",
       "dynamic_proof": "convex-mesh gap Task 2a: NxContactBoxCapsule hit in the full run of NxPhysicsCollisionTests (evidence/convex-mesh-gap-trace-2a.txt (cdb one-shot breakpoint on the candidate function in build/Release/NxPhysicsCollisionTests.exe, sha256 4442c4767cfc46f7...)); oracle differential contact_box_capsule, matrix A index 15 (base+0x0003b260), box slot 5 bound to the oracle's 000949 on both sides against the pinned oracle, mismatches=0 under 0x027f and 0x0f7f; see evidence/convex-mesh-gap.md",
-      "notes": "",
+      "notes": "Signalling-NaN propagation is not reproduced (convex-mesh gap harness hardening): exact on quiet-NaN draws, but with signalling NaNs kept the candidate differs from the oracle (x87 NaN rules: the candidate loads, and so quiets, operands its listing uses as memory operands, or the reverse); measured and pinned under ceilings as NxPhysicsCollisionTests `contact_box_capsule.snan` (evidence/convex-mesh-gap.md, Harness hardening). Fixing it needs listing-faithful memory operands (precedent: phys_fn_001712).",
       "implementation": "Physics/src/ContactGeneration.cpp"
     },
     {
@@ -34400,7 +34400,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5698",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Signalling-NaN propagation is not reproduced (convex-mesh gap harness hardening): exact on quiet-NaN draws, but with signalling NaNs kept the candidate differs from the oracle (x87 NaN rules: the candidate loads, and so quiets, operands its listing uses as memory operands, or the reverse); measured and pinned under ceilings as NxPhysicsCollisionTests `contact_plane_capsule.snan` (evidence/convex-mesh-gap.md, Harness hardening). Fixing it needs listing-faithful memory operands (precedent: phys_fn_001712)."
     },
     {
       "id": "phys_fn_001892",
@@ -34868,7 +34868,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5791",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Signalling-NaN propagation is not reproduced (convex-mesh gap harness hardening): exact on quiet-NaN draws, but with signalling NaNs kept the candidate differs from the oracle (x87 NaN rules: the candidate loads, and so quiets, operands its listing uses as memory operands, or the reverse); measured and pinned under ceilings as NxPhysicsCollisionTests `sphere_box_contact.snan` (evidence/convex-mesh-gap.md, Harness hardening). Fixing it needs listing-faithful memory operands (precedent: phys_fn_001712)."
     },
     {
       "id": "phys_fn_001918",
@@ -34904,7 +34904,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5810",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Signalling-NaN propagation is not reproduced (convex-mesh gap harness hardening): exact on quiet-NaN draws, but with signalling NaNs kept the candidate differs from the oracle (x87 NaN rules: the candidate loads, and so quiets, operands its listing uses as memory operands, or the reverse); measured and pinned under ceilings as NxPhysicsCollisionTests `contact_sphere_box.snan` (evidence/convex-mesh-gap.md, Harness hardening). Fixing it needs listing-faithful memory operands (precedent: phys_fn_001712)."
     },
     {
       "id": "phys_fn_001920",
@@ -34976,7 +34976,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/5817",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": ""
+      "notes": "Signalling-NaN propagation is not reproduced (convex-mesh gap harness hardening): exact on quiet-NaN draws, but with signalling NaNs kept the candidate differs from the oracle (x87 NaN rules: the candidate loads, and so quiets, operands its listing uses as memory operands, or the reverse); measured and pinned under ceilings as NxPhysicsCollisionTests `contact_sphere_capsule.snan` (evidence/convex-mesh-gap.md, Harness hardening). Fixing it needs listing-faithful memory operands (precedent: phys_fn_001712)."
     },
     {
       "id": "phys_fn_001924",
@@ -39014,7 +39014,7 @@
       "capstone_ref": "oracle/capstone/manifest.json#/entries/6806",
       "static_proof": null,
       "dynamic_proof": null,
-      "notes": "",
+      "notes": "Signalling-NaN propagation is not reproduced (convex-mesh gap harness hardening): exact on quiet-NaN draws, but with signalling NaNs kept the candidate differs from the oracle (x87 NaN rules: the candidate loads, and so quiets, operands its listing uses as memory operands, or the reverse); measured and pinned under ceilings as NxPhysicsCollisionTests `step_smooth_normals.snan` (evidence/convex-mesh-gap.md, Harness hardening). Fixing it needs listing-faithful memory operands (precedent: phys_fn_001712).",
       "implementation": "Physics/include/NxSmoothNormals.h",
       "implementation_symbol": null
     },
